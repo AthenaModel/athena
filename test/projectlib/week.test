@@ -1,0 +1,167 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    week.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Tcltest test suite for projectlib(n) week(n)
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+ 
+# Import tcltest(n)
+namespace import ::tcltest::*
+ 
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+source ../../lib/projectlib/pkgModules.tcl
+namespace import ::projectlib::*
+
+
+#-------------------------------------------------------------------
+# toString
+
+test toString-1.1 {epoch} -body {
+    week toString 0
+} -result {2000W01}
+
+test toString-1.2 {epoch+52} -body {
+    week toString 52
+} -result {2001W01}
+
+test toString-1.3 {epoch + 10 years, 26 weeks} -body {
+    week toString 546
+} -result {2010W27}
+
+#-------------------------------------------------------------------
+# toInteger
+
+test toInteger-1.1 {week too big} -body {
+    week toInteger 2000W53 
+} -returnCodes {
+    error
+} -result {Invalid week string: "2000W53"}
+
+test toInteger-1.2 {week too small} -body {
+    week toInteger 2000W00 
+} -returnCodes {
+    error
+} -result {Invalid week string: "2000W00"}
+
+test toInteger-1.3 {week too short} -body {
+    week toInteger 2000W5 
+} -returnCodes {
+    error
+} -result {Invalid week string: "2000W5"}
+
+test toInteger-1.4 {year negative} -body {
+    week toInteger -100W01 
+} -returnCodes {
+    error
+} -result {Invalid week string: "-100W01"}
+
+test toInteger-1.5 {year too short} -body {
+    week toInteger 100W01 
+} -returnCodes {
+    error
+} -result {Invalid week string: "100W01"}
+
+test toInteger-1.6 {no match} -body {
+    week toInteger NONESUCH 
+} -returnCodes {
+    error
+} -result {Invalid week string: "NONESUCH"}
+
+test toInteger-2.1 {epoch} -body {
+    week toInteger 2000W01 
+} -result {0}
+
+test toInteger-2.2 {epoch + 1 year} -body {
+    week toInteger 2001W01
+} -result {52}
+
+test toInteger-2.3 {epoch + 10 years, 26 weeks} -body {
+    week toInteger 2010W27 
+} -result {546}
+
+test toInteger-2.4 {lowercase is OK} -body {
+    week toInteger 2010w27 
+} -result {546}
+
+#--------------------------------------------------------------------
+# toTimestamp
+
+test toTimestamp-1.1 {epoch} -body {
+    week toTimestamp 2000W01 
+} -result {946684800}
+
+test toTimestamp-2.2 {epoch + 1 year} -body {
+    week toTimestamp 2001W01
+} -result {978134400}
+
+test toTimestamp-2.3 {epoch + 10 years, 26 weeks} -body {
+    week toTimestamp 2010W27 
+} -result {1276905600}
+
+test toTimestamp-2.4 {lowercase is OK} -body {
+    week toTimestamp 2010w27 
+} -result {1276905600}
+
+#--------------------------------------------------------------------
+# toWeek
+
+test toWeek-1.1 {negative number for timestamp not allowed} -body {
+    week toWeek -604800
+} -returnCodes {
+    error
+} -result {Assertion failed: $ts > -1}
+
+test toWeek-2.1 {epoch} -body {
+    week toWeek 946684800 
+} -result {0}
+
+test toWeek-2.2 {epoch + 1 year} -body {
+    week toWeek 978134400
+} -result {52}
+
+test toWeek-2.3 {epoch + 10 years, 26 weeks} -body {
+    week toWeek 1276905600 
+} -result {546}
+
+
+#-------------------------------------------------------------------
+# validate
+#
+# The validate command works by calling toInteger, then returning the
+# string in canonical form (i.e., uppercase).  Thus, we don't need
+# to test all of the error cases.
+
+test validate-1.1 {invalid week string} -body {
+    week validate NONESUCH
+} -returnCodes {
+    error
+} -result {Invalid week string: "NONESUCH"}
+
+test validate-1.2 {valid, all caps} -body {
+    week validate 2012W42
+} -result {2012W42}
+
+test validate-1.3 {valid, lower case} -body {
+    week validate 2012w42
+} -result {2012W42}
+
+#-------------------------------------------------------------------
+# Cleanup
+
+cleanupTests

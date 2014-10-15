@@ -1,0 +1,80 @@
+<manpage {projectgui(n) toolbutton(n)} "Toolbutton Helpers">
+
+<section SYNOPSIS>
+
+<pre>
+package require projectgui 1.0
+namespace import ::projectgui::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+This module defines several convenience commands for defining toolbar 
+buttons.<p>
+
+
+<section COMMANDS>
+
+This module defines the following command:<p>
+
+<deflist commands>
+
+<defitem mktoolbutton {mktoolbutton <i>w icon tooltip</i> ?<i>options...</i>?}>
+
+Creates a new <code>ttk::button</code> widget named <i>w</i>, which will
+be configured with <code>-style</code> <b>Toolbutton</b>.  The button will
+display the given <i>icon</i>, and will display the <i>tooltip</i> when the 
+mouse pointer hovers over it.  Any <i>options</i> and their values are 
+passed along to the underlying <code>ttk::button</code>.<p>
+
+Returns <i>w</i>.<p>
+
+<b>Note:</b> the <i>icon</i> must be the name of a Tk image.  In addition,
+it is assumed that the name of the "disabled" version of the icon is 
+just <i>icon</i> with a "<code>d</code>" suffix, e.g., 
+<code>::marsgui::icon::plus22</code> and
+<code>::marsgui::icon::plus22d</code>.  This naming convention is standard 
+for <xref marsicons(n)> icons.<p>
+
+<defitem mkaddbutton {mkaddbutton <i>w tooltip</i> ?<i>options...</i>?}>
+
+This is a wrapper around <iref mktoolbutton> that uses the basic
+<xref marsicons(n)> <code>::marsgui::icon::plus22</code> "plus sign"
+icon.<p>
+
+<defitem mkdeletebutton {mkdeletebutton <i>w tooltip</i> ?<i>options...</i>?}>
+
+This is a wrapper around <iref mktoolbutton> that uses the basic
+<xref marsicons(n)> <code>::marsgui::icon::trash22</code> "trash can"
+icon.<p>
+
+<defitem mkeditbutton {mkeditbutton <i>w tooltip</i> ?<i>options...</i>?}>
+
+This is a wrapper around <iref mktoolbutton> that uses the basic
+<xref marsicons(n)> <code>::marsgui::icon::pencil22</code> "pencil"
+icon.<p>
+
+
+</deflist commands>
+
+<section ENVIRONMENT>
+
+toolbutton(n) requires Tcl 8.5 or later.<p>
+
+<section AUTHOR>
+
+Dave Hanks, Will Duquette<p>
+
+<section HISTORY>
+
+toolbutton(n) is a new widget patterned after <xref sqlbrowser(n)>.<p>
+
+
+</manpage>
+
+
+
+
+

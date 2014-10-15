@@ -1,0 +1,170 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    order_payload.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: PAYLOAD:* Orders
+#
+#    This file is included into order.help.
+#
+#-----------------------------------------------------------------------
+
+page /order payload "Payload Orders" {
+    <title>
+
+    These orders are used to create, update, and delete
+    <term iom>
+    <term payload>s, of which there are many different type.
+    Each payload type has its own "CREATE" and "UPDATE" orders; 
+    other PAYLOAD:* orders are shared by all payload types.<p>
+
+    The PAYLOAD:* orders are as follows:
+
+    <childlinks>
+} 
+
+order PAYLOAD:DELETE "Delete Payload" {
+    Deletes the <term payload>.  The order parameters
+    are as follows:<p>
+
+    <parmlist>
+    <payload_ parm id -required>
+    </parmlist>
+}
+
+order PAYLOAD:STATE "Set Payload State" {
+    Sets the <term payload>'s state.  Note that this order is for 
+    internal use by the application; there is no associated order 
+    dialog.  The order parameters are as follows:<p>
+
+    <parmlist>
+    <payload_ parms -required -tags state>
+    </parmlist>
+}
+
+
+#-----------------------------------------------------------------------
+# payload: COOP
+
+page /order/payload coop PAYLOAD:COOP:* {
+    <title>
+
+    The following orders are used to create and update
+    <cref /object/payload/coop>s.<p>
+
+    <childlinks>
+}
+
+order PAYLOAD:COOP:CREATE "Create Payload: Cooperation" {
+    Creates a <cref /object/payload/coop>.<p>
+
+    <parmlist>
+    <payload_coop parm iom_id -required>
+    <payload_coop parms -required -tags create>
+    </parmlist>
+}
+
+order PAYLOAD:COOP:UPDATE "Update Payload: Cooperation" {
+    Updates an existing <cref /object/payload/coop>.<p>
+
+    <parmlist>
+    <payload_coop parm id -required>
+    <payload_coop parms -optional -tags update>
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+# payload: HREL
+
+page /order/payload hrel PAYLOAD:HREL:* {
+    <title>
+
+    The following orders are used to create and update
+    <cref /object/payload/hrel>s.<p>
+
+    <childlinks>
+}
+
+order PAYLOAD:HREL:CREATE "Create Payload: Horizontal Relationship" {
+    Creates a <cref /object/payload/hrel>.<p>
+
+    <parmlist>
+    <payload_hrel parm iom_id -required>
+    <payload_hrel parms -required -tags create>
+    </parmlist>
+}
+
+order PAYLOAD:HREL:UPDATE "Update Payload: Horizontal Relationship" {
+    Updates an existing <cref /object/payload/hrel>.<p>
+
+    <parmlist>
+    <payload_hrel parm id -required>
+    <payload_hrel parms -optional -tags update>
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+# payload: SAT
+
+page /order/payload sat PAYLOAD:SAT:* {
+    <title>
+
+    The following orders are used to create and update
+    <cref /object/payload/sat>s.<p>
+
+    <childlinks>
+}
+
+order PAYLOAD:SAT:CREATE "Create Payload: Satisfaction" {
+    Creates a <cref /object/payload/sat>.<p>
+
+    <parmlist>
+    <payload_sat parm iom_id -required>
+    <payload_sat parms -required -tags create>
+    </parmlist>
+}
+
+order PAYLOAD:SAT:UPDATE "Update Payload: Satisfaction" {
+    Updates an existing <cref /object/payload/sat>.<p>
+
+    <parmlist>
+    <payload_sat parm id -required>
+    <payload_sat parms -optional -tags update>
+    </parmlist>
+}
+
+
+#-----------------------------------------------------------------------
+# payload: VREL
+
+page /order/payload vrel PAYLOAD:VREL:* {
+    <title>
+
+    The following orders are used to create and update
+    <cref /object/payload/vrel>s.<p>
+
+    <childlinks>
+}
+
+order PAYLOAD:VREL:CREATE "Create Payload: Vertical Relationship" {
+    Creates a <cref /object/payload/vrel>.<p>
+
+    <parmlist>
+    <payload_vrel parm iom_id -required>
+    <payload_vrel parms -required -tags create>
+    </parmlist>
+}
+
+order PAYLOAD:VREL:UPDATE "Update Payload: Vertical Relationship" {
+    Updates an existing <cref /object/payload/vrel>.<p>
+
+    <parmlist>
+    <payload_vrel parm id -required>
+    <payload_vrel parms -optional -tags update>
+    </parmlist>
+}
+

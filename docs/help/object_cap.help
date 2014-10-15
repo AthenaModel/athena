@@ -1,0 +1,109 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    object_CAP.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: "CAP" Simulation Object
+#
+#    This file is included into object.help.
+#
+#-----------------------------------------------------------------------
+
+object cap_ {
+    noun CAP
+
+    overview {
+        A <i>CAP</i> is a Communications Asset Package, i.e, a newspaper, 
+        television station, telephone system, internet service
+        provider, website, or other bundle of assets that is used to
+        communicate information from one person to another (or, in
+        the case of electronic warfare CAPs, to prevent information from 
+        spreading).  Athena 4 implements only "broadcast" CAPs, which
+        are used by actors to broadcast messages to the civilian
+        population.  CAPs are owned by actors.<p>
+
+        Each CAP has a coverage area that consists of some or all of
+        one or more neighborhoods; it is defined as a neighborhood
+        coverage fraction, 0.0 to 1.0, for each neighborhood in the
+        playbox.  The initial coverage of each neighborhood will
+        usually be 1.0; if neighborhoods are very large, however, the
+        neighborhood coverage fraction can be used to limit the
+        coverage area to a portion of the neighborhood.<p>
+
+        Although a CAP might completely cover a neighborhood, it may
+        be that only certain groups receive it; and possibly only a
+        portion of those groups.  Thus, we say that a CAP has
+        penetration into one or more groups.  Penetration is also a
+        fraction from 0.0 to 1.0.  <b>Note:</b> It is possible
+        (though not useful) for group penetration to be positive for
+        groups outside of the CAP's coverage area.  Such "orphan"
+        groups are highlighted on the 
+        <cref /tab/infrastructure/caps/group>.<p>
+        
+        CAPs are edited on the <cref /tab/infrastructure/caps>.<p>
+    }
+
+    attribute k "CAP" {
+        The CAP ID.  It may contain letters and digits, and
+        must begin with a letter.  It should usually be short,
+        between 2 and 8 characters in length, e.g., <b>USA</b>.<p>
+        
+        A CAP ID cannot be the same as the ID of any group, 
+        neighborhood, etc.
+    } -tags {create}
+
+    attribute longname "Long Name" {
+        The CAP's long name, a human-readable equivalent to the
+        CAP's ID, e.g., "New York Times".
+    } -tags {create update browser}
+
+    attribute a "Owning Actor" {
+        The CAP's owning actor.  This parameter may remain unset during
+        <term prep>, but must be specified before time can be
+        advanced.
+    } -tags {create update browser multi}
+
+    attribute capacity "Capacity" {
+        The CAP's capacity, a fraction from 0.0 to 1.0 indicating the
+        CAP's level of repair.  The CAP's coverage declines as the
+        capacity decreases.
+    } -tags {create update browser multi}
+
+    attribute cost "Cost, $/message/week" {
+        The cost of sending a message via this CAP, in dollars per
+        message per week.
+    } -tags {create update browser multi}
+
+    attribute nlist "Neighborhoods" {
+        The initial set of covered neighborhoods.  This list is
+        specified when the CAP is created; by default, the CAP has
+        1.0 neighborhood coverage in these neighborhoods.  Neighborhood
+        coverage can also be edited subsequently using 
+        <cref /order/cap/nbcov/set>.
+    } -tags {create optcreate}
+
+    attribute glist "Civ. Groups" {
+        The initial set of civilian groups reached by this CAP.  This
+        list is specified when the CAP is created; by default, the
+        CAP has 1.0 penetration of these groups.  Group penetration can
+        also be edited subsequently using
+        <cref /order/cap/pen/set>. 
+    } -tags {create optcreate}
+
+}
+
+page /object cap "CAP" {
+    <sotitle>
+
+    <cap_ overview><p>
+
+    CAPs have the following attributes:<p>
+
+    <cap_ parmlist>
+}
+
+

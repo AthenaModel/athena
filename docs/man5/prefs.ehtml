@@ -1,0 +1,60 @@
+<manpage prefs(5) "User Preference Definitions">
+
+<section SYNOPSIS>
+
+<expand [project tclsh {
+    package require projectlib
+    ::projectlib::parmdb init
+    ::projectlib::parmdb manlinks
+}]>
+
+<section DESCRIPTION>
+
+prefs(5) defines the Athena user preference settings.  These are
+distinct from the model parameters defined in <xref parmdb(5)> in
+that they apply to the application rather than to individual
+scenarios.  Therefore,<p>
+
+<ul>
+  <li> They are not saved in scenario files.
+  <li> They may not affect the outcome of simulation runs.
+</ul>
+
+<xref prefs(n)> handles prefs(5) files using the <xref mars:parmset(n)>
+mechanism.  A valid file consists of zero or more parameter settings,
+each of which has this basic syntax,<p>
+
+<pre>parm <i>name</i> <i>value</i></pre><p>
+
+where <i>value</i> must be quoted if it contains whitespace.  See
+<xref mars:parmset(n)> for more details.<p>
+
+<section PARAMETERS>
+
+The valid parameters are as follows:<p>
+
+<expand [project tclsh {
+    package require projectlib
+    ::projectlib::parmdb init
+    ::projectlib::parmdb manpage
+}]>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<BODY>
+    <PLACE CID="6BFA29D8">
+        <REVISIONHISTORY>
+            <USERNAME>Name</USERNAME>
+            <DATETIME>2014-08-4T13:42:35-0400</DATETIME>
+            <CREATED></CREATED>
+        </REVISIONHISTORY>
+        <LOCALUPDATETIME>2014-07-26T13:42:35-0400</LOCALUPDATETIME>
+        <TITLE>Suicide bombing</TITLE>
+        <DESCRIPTION>Suicide bombing killed 6 and wounded 14 in attack on police station</DESCRIPTION>
+        <UNITID></UNITID>
+        <LOCATIONLIST COUNT="1">
+            <POINT>
+                <COORDINATES>34446804N070476820E</COORDINATES>
+            </POINT>
+        </LOCATIONLIST>
+        <TIMEPERIOD>
+            <START>2014-11-25T11:52:39-0500</START>
+            <END>2014-11-25T12:30:39-0500</END>
+        </TIMEPERIOD>
+    </PLACE>
+    <security_class_tx>UNCLASSIFIED</security_class_tx>
+    <security_caveat_tx>FOUO</security_caveat_tx>
+</BODY>

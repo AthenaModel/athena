@@ -1,0 +1,841 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    function.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: Executive Functions
+#
+#    This file is included into athena.help.
+#
+#    Function pages have paths like /function/{name}.
+#
+#-----------------------------------------------------------------------
+
+page / function "Executive Functions" {
+    <title>
+    Athena provides a number of functions that can be used in math
+    expressions in Athena <cref /command executive> scripts, at the
+    Athena command-line interface (CLI), and in 
+    <cref /object/condition/expr>s.  For example, the 
+    <cref /function/mood> function retrieves a group's mood given
+    its name:<p>
+
+    <pre>
+    if {mood("G1") > 20.0} {
+        ...
+    }
+    </pre>
+
+    Note that string literals need to be enclosed in double-quotes
+    when used in Tcl expressions.<p>
+
+    All executive functions can also be used as commands:<p>
+
+    <cli {
+        set m [mood G1]
+    }>
+
+    Most functions depend on data that is only available when the
+    simulation is locked.  During scenario prep, these functions will
+    return some default value, as described on their help pages.<p>
+
+    This page lists the available functions.<p>
+
+    <childlinks>
+}
+
+# function name text
+#
+# name     The name of the function, e.g., "mood"
+#
+# Defines a function page, defining the parent/child links properly.
+
+proc function {name text} {
+    set ndx [string first "(" $name]
+    set slug [string range $name 0 $ndx-1]
+
+    page /function $slug $name "<function_syntax>\n$text"
+}
+
+macro function_syntax {} {
+    set fullname [pageinfo title]
+    set toplink "<a href=\"/function\">Executive Function</a>"
+} {
+    |<--
+    [mktitle small $toplink $fullname ""]
+}
+
+#=======================================================================
+# affinity
+
+function "affinity(x,y)" {
+    Returns the affinity of <term group> or <term actor> <i>x</i> with 
+    <term group> or <term actor> <i>y</i> as a number between -1.0 and 1.0.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/affinity> rule.
+}
+
+#=======================================================================
+# aplants
+
+function "aplants(a)" {
+    Returns the total number of plants owned by <term agent> <i>a</i>.<p>
+
+    Returns 0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/agent_plants> rule.
+}
+
+#=======================================================================
+# assigned
+
+function "assigned(g,activity,n)" {
+    Returns the number of the <term consumer>s in the playbox that
+    belong to one of the listed <term civgroup>s in <i>glist</i>.<p>
+
+    Returns 0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/assigned> rule.
+}
+
+#=======================================================================
+# consumers
+
+function "consumers(g,?g...?)" {
+    Given the names of one or more <term civgroup>s <i>glist</i>, returns 
+    the number of <term consumer>s belonging to those civgroups.<p>
+
+    Returns 0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/group_consumers> rule.
+}
+
+#=======================================================================
+# controls
+
+function "controls(a,n,?n...?)" {
+    Returns 1 if <term actor> <i>a</i> controls the listed 
+    <term nbhood>s,
+    and 0 otherwise.  At least one neighborhood must be specified.<p>
+
+    Neighborhood control is not computed until the scenario is locked; the
+    function will throw an error if the data is unavailable.
+}
+
+#=======================================================================
+# coop
+
+function "coop(f,g)" {
+    Returns the cooperation of <term civgroup> <i>f</i> with 
+    <term frcgroup> <i>g</i> as a number between 0.0 and 100.0.<p>
+
+    Returns 50.0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/coop> rule.
+}
+
+#=======================================================================
+# coverage
+
+function "coverage(g,activity,n)" {
+    Returns the coverage fraction for <term frcgroup> or 
+    <term orggroup> <i>g</i> assigned to implicit or explicit
+    <term activity> in <term nbhood> <i>n</i>
+    as a number between 0.0 and 1.0.<p>
+
+    Returns 0.0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/coverage> rule.
+}
+
+#=======================================================================
+# deployed
+
+function "deployed(g,n,?n...?)" {
+    Returns the personnel of <term frcgroup> or <term orggroup> 
+     <i>g</i> deployed in the <term nbhood>s in <i>nlist</i>. <p>
+
+    Returns 0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/deployed> rule.
+}
+
+#=======================================================================
+# gdp
+
+function "gdp()" {
+    Returns the Gross Domestic Product of the regional economy in
+    base-year dollars.<p>
+
+    Returns 0.00 when the scenario is unlocked.<p>
+
+    It will return 0.00 if the economic model is
+    disabled.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/gdp> rule.
+}
+
+#=======================================================================
+# goodscap
+
+function "goodscap(a)" {
+    Returns the total output capacity of all goods production plants 
+    owned by <term agent> <i>a</i>.<p>
+
+    Returns 0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/goods_cap> rule.
+}
+
+#=======================================================================
+# goodsidle
+
+function "goodsidle()" {
+    Returns the idle capacity for the playbox.<p>
+
+    Returns 0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/goods_idle> rule.
+}
+
+#=======================================================================
+# hrel
+
+function "hrel(f,g)" {
+    Returns the horizontal relationship of <term group> <i>f</i> with 
+    <term group> <i>g</i> as a number between -1.0 and 1.0.<p>
+
+    Returns 0.0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/hrel> rule.
+}
+
+#=======================================================================
+# income
+
+function "income(a,?a...?)" {
+    Returns the total income for the listed <term actor>s in 
+    <i>alist</i>.<p>
+
+    Returns 0.00 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/income> rule.
+}
+
+#=======================================================================
+# income_black
+
+function "income_black(a,?a...?)" {
+    Returns the total income from the black market sector
+    for the listed <term actor>s in <i>alist</i>.<p>
+
+    Returns 0.00 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/income_black> rule.
+}
+
+#=======================================================================
+# income_goods
+
+function "income_goods(a,?a...?)" {
+    Returns the total income from the goods sector
+    for the listed <term actor>s in <i>alist</i>.<p>
+
+    Returns 0.00 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/income_goods> rule.
+}
+
+#=======================================================================
+# income_pop
+
+function "income_pop(a,?a...?)" {
+    Returns the total income from the population sector
+    for the listed <term actor>s in <i>alist</i>.<p>
+
+    Returns 0.00 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/income_pop> rule.
+}
+
+#=======================================================================
+# income_region
+
+function "income_region(a,?a...?)" {
+    Returns the total income from the region sector
+    for the listed <term actor>s in <i>alist</i>.<p>
+
+    Returns 0.00 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/income_region> rule.
+}
+
+#=======================================================================
+# income_world
+
+function "income_world(a,?a...?)" {
+    Returns the total income from the world sector
+    for the listed <term actor>s in <i>alist</i>.<p>
+
+    Returns 0.00 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/income_world> rule.
+}
+
+#=======================================================================
+# influence
+
+function "influence(a,n)" {
+    Returns the influence of <term actor> <i>a</i> in 
+    <term nbhood> <i>n</i>
+    as a number between 0.0 and 1.0.<p>
+
+    Returns 0.0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/influence> rule.
+}
+
+#=======================================================================
+# local_consumers
+
+function "local_consumers()" {
+    Returns the number of the <term consumer>s in the playbox that
+    reside in the local <term nbhood>s (all consumers).
+
+    Returns 0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/local_consumers> rule.
+}
+
+#=======================================================================
+# local_pop
+
+function "local_pop()" {
+    Returns the population of civilian groups in the local <term nbhood>s.<p>
+
+    Returns 0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/local_population> rule.
+}
+
+#=======================================================================
+# local_unemp
+
+function "local_unemp()" {
+    Returns the unemployment rate in the local <term nbhood>s as 
+    a number between 0.00 and 100.00.<p>
+
+    Returns 0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/local_unemployment_rate> rule.
+}
+
+#=======================================================================
+# local_workers
+
+function "local_workers()" {
+    Returns the number of the <term worker>s in the playbox that
+    reside in the local <term nbhood>s.
+
+    Returns 0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/local_workers> rule.
+}
+
+#=======================================================================
+# mobilized
+
+function "mobilized(g,?g...?)" {
+    Returns the personnel of <term frcgroup>s or <term orggroup>s 
+     in <i>glist</i> mobilized in the playbox. <p>
+
+    Returns 0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/mobilized> rule.
+}
+
+#=======================================================================
+# mood
+
+function "mood(g)" {
+    Returns the <term mood> of <term civgroup> <i>g</i> as a 
+    number between -100.0 and 100.0.<p>
+
+    Returns 0.0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/mood> rule.
+
+}
+
+#=======================================================================
+# nbconsumers
+
+function "nbconsumers(n,?n...?)" {
+    Returns the number of the <term consumer>s in the playbox that
+    reside in the <term nbhood>s in <i>nlist</i>.<p>
+
+    Returns 0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/nbconsumers> rule.
+}
+
+#=======================================================================
+# nbcoop
+
+function "nbcoop(n,g)" {
+    Returns the <term cooperation> of <term nbhood> <i>n</i> with
+    <term frcgroup> <i>g</i>.<p>
+
+    Neighborhood cooperation is the
+    average of the cooperations of the <term civgroup>s living in
+    the neighborhood with the given force group.<p>
+
+    Returns 50.0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/nbcoop> rule.
+}
+
+#=======================================================================
+# nbgoodscap
+
+function "nbgoodscap(n)" {
+    Returns the total output capacity of all goods production plants 
+    in <term nbhood> <i>n</i>.<p>
+
+    Returns 0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/nb_goods_cap> rule.
+}
+
+#=======================================================================
+# nbmood
+
+function "nbmood(n)" {
+    Returns the <term mood> of <term nbhood> <i>n</i> as a 
+    number between -100.0 and 100.0.<p>
+
+    Returns 0.0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/nbmood> rule.
+
+}
+
+#=======================================================================
+# nbplants
+
+function "nbplants(n)" {
+    Returns the total number of plants in <term nbhood> <i>n</i>.<p>
+
+    Returns 0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/nb_plants> rule.
+}
+
+#=======================================================================
+# nbpop
+
+function "nbpop(n,?n...?)" {
+    Returns the civilian population in the <term nbhood>s in <i>nlist</i>.
+
+    Returns 0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/nbpopulation> rule.
+}
+
+#=======================================================================
+# nbsupport
+
+function "nbsupport(a,n)" {
+    Returns the support for <term actor> <i>a</i>  in 
+    <term nbhood> <i>n</i> as a number between 
+    0.0 and 1.0.<p>
+
+    Returns 0.0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/nbsupport> rule.
+}
+
+#=======================================================================
+# nbunemp
+
+function "nbunemp(n,?n...?)" {
+    Returns the unemployment rate for the <term nbhood>s in 
+    <i>nlist</i> as a number between 0.0 and 100.0.<p>
+
+    Returns 0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/nb_unemployment_rate> rule.
+}
+
+#=======================================================================
+# nbworkers
+
+function "nbworkers(n,?n...?)" {
+    Returns the number of the <term worker>s in the playbox that
+    reside in the <term nbhood>s in <i>nlist</i>.<p>
+
+    Returns 0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/nbworkers> rule.
+}
+
+#=======================================================================
+# now
+
+function "now()" {
+    Returns the current simulation time in integer weeks.<p>
+
+    Returns 0 when the scenario is unlocked.
+}
+
+#=======================================================================
+# onhand
+
+function "onhand(a)" {
+    Returns the cash on hand of <term actor> <i>a</i>.<p>
+
+    If actor a is the actor whose strategy is being executed 
+    then it is their current cash on hand.<p>
+
+    If actor a is an actor whose strategy is NOT being executed, then
+    it is the cash on hand for that actor at the time strategy execution began.<p>
+
+    It will return 0.00 if the economic model is
+    disabled.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/cash_on_hand> rule.
+}
+
+#=======================================================================
+# parm
+
+function "parm(parm)" {
+    Returns the value of <cref /parmdb "model parameter"> <i>parm</i>.
+}
+
+#=======================================================================
+# pbconsumers
+
+function "pbconsumers()" {
+    Returns the number of <term consumer>s residing in the playbox.<p>
+
+    Returns 0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/playbox_consumers> rule.
+}
+
+#=======================================================================
+# pbgoodscap
+
+function "pbgoodscap()" {
+    Returns the total output capacity of all goods production plants 
+    in the playbox.<p>
+
+    Returns 0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/playbox_goods_cap> rule.
+}
+
+#=======================================================================
+# pbplants
+
+function "pbplants()" {
+    Returns the total number of plants in the playbox.<p>
+
+    Returns 0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/playbox_plants> rule.
+}
+
+#=======================================================================
+# pbpop
+
+function "pbpop()" {
+    Returns the population of the <term civgroup>s in the playbox.<p>
+
+    Returns 0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/playbox_population> rule.
+}
+
+#=======================================================================
+# pbunemp
+
+function "pbunemp()" {
+    Returns the unemployment rate in the playbox as a number 
+    between 0.0 and 100.0.<p>
+
+    Returns 0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/playbox_unemployment_rate> rule.
+}
+
+#=======================================================================
+# pbworkers
+
+function "pbworkers()" {
+    Returns the number of <term worker>s residing in the playbox.<p>
+
+    Returns 0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/playbox_workers> rule.
+}
+
+#=======================================================================
+# pctcontrol
+
+function "pctcontrol(a,?a...?)" {
+    Given the names of one or more <term actor>s, returns the 
+    percentage of <term nbhood>s controlled by those actors as a 
+    number from 0.0 to 100.0.
+
+    Returns 0.0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/pctcontrol> rule.
+
+
+}
+
+#=======================================================================
+# plants
+
+function "plants(a,n)" {
+    Returns the total number of plants owned by <term agent> 
+    <i>a</i> in <term nbhood> <i>n</i>.<p>
+
+    Returns 0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/plants> rule.
+}
+
+#=======================================================================
+# pop
+
+function "pop(g,?g...?)" {
+    Returns the Population of the <term civgroup>s in <i>glist</i>, 
+    in the playbox.<p>
+
+    Returns 0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/group_population> rule.
+}
+
+#=======================================================================
+# repair
+
+function "repair(a,n)" {
+    Returns the current level of repair of plants owned by <term actor> 
+    <i>a</i> in <term nbhood> <i>n</i>.<p>
+
+    Returns 0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/repair> rule.
+}
+
+#=======================================================================
+# reserve
+
+function "reserve(a)" {
+    Returns the cash reserve of <term actor> <i>a</i>.<p>
+
+    If actor a is the actor whose strategy is being executed 
+    then it is their current reserve.<p>
+
+    If actor a is an actor whose strategy is NOT being executed, then
+    it is the cash reserve for that actor at the time strategy execution began.<p>
+
+    It will return 0.00 if the economic model is
+    disabled.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/cash_reserve> rule.
+}
+
+#=======================================================================
+# sat
+
+function sat(g,c) {
+    Returns the <term satisfaction> of 
+    <term civgroup> <i>g</i> with respect to <term concern>
+    <i>c</i> as a number between -100.0 and 100.0.<p>
+
+    Returns 0.0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/sat> rule.
+
+}
+
+#=======================================================================
+# security
+
+function security(g,n) {
+    Returns the <term security> of <term group> <i>g</i> in 
+    <term nbhood> <i>n</i> as a number between -100 and 100.<p>
+
+    If n is not given, then it returns the <term security> of 
+    <term civgroup> <i>g</i> as a number between -100 and 100.<p>
+
+    Returns 0 when the scenario is unlocked.<p>
+
+    If n is given, this function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/security> rule.<p>
+
+    If n is NOT given, this function is equivalent to the 
+    <cref /gofer/number>'s <cref /gofer/number/security_civ> rule.
+}
+
+#=====================================================================
+# support
+
+function support(a,g,?n?) {
+    Returns the support for <term actor> <i>a</i>  by
+    <term group> <i>g</i> in <term nbhood> <i>n</i> 
+    as a number between 0.0 and 1.0.  <p>
+    
+    If n is not entered, then it assumes the group is
+    a civilian group.<p>
+    
+    Returns 0 when the scenario is unlocked.<p>
+    
+    If a nbhood is entered, then this function is 
+    equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/support> rule.
+    
+    If a nbhood is not entered, then this function is
+    equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/support_civ> rule.
+}
+
+#=======================================================================
+# supports
+
+function supports(a,b,?n...?) {
+    Returns 1 if <term actor> <i>a</i> supports actor <i>b</i> 
+    politically, and 0 otherwise.<p>
+
+    If no <term nbhood> is given, the function returns 1 if actor
+    <i>a</i> usually supports actor <i>b</i>, as indicated in the
+    definition of actor <i>a</i>.  If one or more neighborhoods are
+    listed, the function returns 1 if <i>a</i> supports <i>b</i> in
+    all of them.<p>
+
+    For one actor to support another actor politically means that the
+    first actor directs his supporters to support the second actor.
+    These supporters (i.e., group members) contribute to the second
+    actor's influence rather than to the first actor's influence.  See
+    also the <term actor> object, and the 
+    <cref /object/tactic/support>.<p>
+}
+
+#=======================================================================
+# troops
+
+function troops(g,?n...?) {
+    Returns the number of personnel in the playbox that belong to
+    <term frcgroup> or <term orggroup> <i>g</i>.  If one or more
+    <term nbhood>s are given, returns the number of personnel
+    just in those neighborhoods.<p>
+
+    Force levels are not computed until the scenario is locked; the
+    function return 0 until then.
+}
+
+#=======================================================================
+# unemp
+
+function "unemp(g,?g...?)" {
+    Returns the unemployment rate for the <term civgroup>s 
+    in <i>glist</i> as a number between 0.0 and 100.0.<p>
+
+    Returns 0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/group_unemployment_rate> rule.
+}
+
+#=======================================================================
+# volatility
+
+function volatility(n) {
+    Returns the <term volatility> of 
+    <term nbhood> <i>n</i> as a number
+    from 0 to 100.<p>
+
+    Volatility is not computed until the scenario is locked; the
+    function will throw an error if the data is unavailable.<p>
+}
+
+#=======================================================================
+# vrel
+
+function "vrel(g,a)" {
+    Returns the vertical relationship of <term group> <i>g</i> with 
+    <term actor> <i>a</i> as a number between -1.0 and 1.0.<p>
+
+    Returns 0.0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/vrel> rule.
+}
+
+#=======================================================================
+# workers
+
+function "workers(g,?g...?)" {
+    Returns the number of the <term worker>s in the playbox that
+    belong to one of the <term civgroup>s in <i>glist</i>.<p>
+
+    Returns 0 when the scenario is unlocked.<p>
+
+    This function is equivalent to the <cref /gofer/number>'s
+    <cref /gofer/number/group_workers> rule.
+}

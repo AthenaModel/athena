@@ -1,0 +1,119 @@
+<manpage {projectgui(n) goferfield(n)} "Gofer Field Widget">
+
+<section SYNOPSIS>
+
+<pre>
+package require projectgui 1.0
+namespace import ::projectgui::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+The goferfield(n) widget is used to edit values of 
+<xref gofer(i)> types.  It displays the current value's
+narrative string and an "Edit" button; pressing the "Edit" button pops
+up a <xref dynabox(n)> displaying the type's <xref dynaform(n)>.<p>
+
+Note that the <b>-brief</b> form of the value's narrative string is 
+displayed.<p>
+
+<section COMMANDS>
+
+This module defines the following commands.<p>
+
+<deflist commands>
+
+<defitem goferfield {goferfield <i>pathName</i> ?<i>options...</i>?}>
+
+Creates a new <iref goferfield> widget named <i>pathName</i>, and
+returns <i>pathName</i>.  The widget supports the following
+options, in addition to those provided by the underlying frame widget:<p>
+
+<deflist options>
+
+<defopt {-changecmd <i>command</i>}>
+
+Specifies a <i>command</i> to be called
+whenever the selected entity changes, for any reason whatsoever
+(including explicit calls to <iref set>.  The newly selected
+entity's name is appended to the <i>command</i> as an argument.<p>
+
+<defopt {-typename <i>typename</i>}>
+
+Specifies the name of the <xref gofer(i)> type being edited.<p>
+
+<defopt {-state <i>state</i>}>
+
+Sets the field's state to <b>normal</b> or <b>disabled</b>.<p>
+
+<defopt {-wraplength <i>pixels</i>}>
+
+Specifies the width in pixels at which the widget will wrap the narrative
+across multiple lines.
+
+<defopt {-width <i>chars</i>}>
+
+Specifies the minimum width of the widget's narrative box in characters.
+Defaults to 30.<p>
+
+</deflist options>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+goferfield(n) widgets have the following subcommands:<p>
+
+<deflist instance>
+
+<defitem cget {<i>pathName</i> cget <i>option</i>}>
+
+Returns the value of the specified <i>option</i>.<p>
+
+<defitem configure {<i>pathName</i> configure <i>option value...</i>}>
+
+Sets the value of one or more of the object's options.<p>
+
+<defitem get {<i>pathName</i> get}>
+
+Returns the current value of the field, i.e., the <i>gdict</i>.<p> 
+
+<defitem set {<i>pathName</i> set <i>value</i>}>
+
+Sets the current <i>value</i> (i.e., the <i>gdict</i>) of the field.  
+The value's <b>-brief</b> narrative will be displayed.<p>
+
+</deflist instance>
+
+<section "FIELD TYPE">
+
+projectlib(n) defines a
+<xref mars:dynaform_field(i)> field type called <b>gofer</b>.  The field
+type takes the same <b>-typename</b>, <b>-width</b>, and <b>-wraplength</b>
+options as the <xref goferfield(n)> widget; the 
+<b>-typename</b> option is required.<p>
+
+<section ENVIRONMENT>
+
+projectgui(n) requires Tcl 8.5 or later.
+
+To use projectgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+

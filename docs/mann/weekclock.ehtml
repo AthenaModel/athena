@@ -1,0 +1,235 @@
+<manpage {projectlib(n) weekclock(n)} "Week-based Simulation Clock">
+
+<section SYNOPSIS>
+
+<pre>
+package require projectlib 1.0
+namespace import ::projectlib::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+weekclock(n) defines a <xref simclock(i)> simulation clock type
+that tracks simulation in integer ticks, each tick corresponding to
+one week.  Simulation time is converted to julian calendar weeks
+using <xref week(n)>.<p>
+
+The <b>-tick0</b> option specifies the simulation time in ticks when
+the scenario is locked.  Normally this will be 0, but if a scenario is
+designed to follow on to a previous scenario it might be greater than 0.
+
+The <b>-week0</b> option specifies the "start week", a <xref week(n)>
+string for the specific calendar week corresponding to
+t=0.  Consequently, the weekclock(n) can convert between
+sim times in ticks and <xref week(n)> strings.  <b>Note:</b>
+it is not necessary to change <b>-week0</b> when changing <b>-tick0</b>;
+<b>-week0</b> is always tied to t=0, even if <b>-tick0</b> has
+been advanced.<p>
+
+<subsection "Advancing Time">
+
+Time is advanced manually by calling the weekclock(n)'s 
+<iref advance> method.  Use <iref reset> to reset the clock to
+<b>-tick0</b>.<p>
+
+<subsection "Marks">
+
+Significant points in time in the life of the simulation can be "marked"
+with a name, so that they can be used  
+<xref "Time Specification Strings">.  For example, the "RUN" mark can
+be set to the time at which the analyst last pressed the simulation's
+RUN button.  The "RUN" mark will then indicate the beginning of the
+most recent run.<p> 
+
+<subsection "Time Specification Strings">
+
+To ease user input, weekclock(n) supports time specification strings,
+or "time specs".  A time spec consists of a base time, specified in
+one of a number of ways, with an optional positive or negative offset
+in ticks.  The time spec can be validated and translated into
+ticks.<p>
+
+The base time can be specified in the following ways:<p>
+
+<ul>
+  <li> As a <xref week(n)> string.
+  <li> As a sim time in integer ticks.
+  <li> As the string <b>T0,</b> which translates to <b>-tick0</b>.
+  <li> As the string <b>NOW</b>, which translates to the current simulation
+       time in ticks.
+  <li> As a named mark.
+</ul><p>
+
+Thus, the following are all valid time specs:<p>
+
+<ul>
+  <li> <b>NOW</b>: the current simulation time.
+  <li> <b>NOW+10</b>: Ten ticks from now.
+  <li> <b>NOW-10</b>: Ten ticks ago.
+  <li> <b>2012W02</b>: The second week of 2012.
+  <li> <b>2012W02-26</b>: half-a-year prior to the second week of
+  2012.
+</ul><p>
+
+If the base time is omitted, it is presumed to be the current
+simulation time; thus <b>+10</b> means 10 ticks from now and
+<b>-10</b> means 10 ticks ago.  Note that <b>+10</b> and
+<b>10</b> are two different times; the former is 10 ticks from now,
+and the latter is sim time 10.<p>
+
+See also the <iref timespec validate> command.<p>
+
+<section COMMANDS>
+
+<deflist commands>
+
+<defitem weekclock {weekclock <i>name ?options?</i>}>
+
+Creates a new <iref weekclock> object called <i>name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<iref weekclock> returns the fully-qualified form of the
+<i>name</i>.<p>
+
+The <iref weekclock> object may be created with the following options:<p>
+
+<deflist options>
+
+<defopt {-tick0 <i>tick</i>}>
+
+Sets the simulation start tick to <i>tick</i>, which should be
+greater than or equal to 0.  This would usually be used when running
+a sequence of scenarios, each beginning where its predecessor ends,
+so as to have a consistent set of times across the whole set of runs.
+The default start tick is 0.<p>
+
+<defopt {-week0 <i>wstring</i>}>
+
+Sets the calendar date corresponding to t=0 to <i>wstring</i>.
+The default date is "2012W01".<p>
+
+</deflist options>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+Each instance of weekclock(n) has the following subcommands.<p>
+
+<deflist instance command>
+
+<defitem advance {$weekclock advance <i>t</i>}>
+
+Manually advances simulation time to <i>t</i>
+ticks in response to some external time update.  The value of <i>t</i>
+must be greater than <b>-tick0</b>.<p>
+
+<defitem asString {$weekclock asString ?<i>offset</i>?}>
+
+Returns the current simulation time as a <xref week(n)> time
+string.  If given, <i>offset</i> should be an offset in ticks; it is
+added to the returned time.<p>
+
+<defitem cget {$weekclock cget <i>option</i>}>
+
+Retrieve the value of any of the object's options.<p>
+
+<defitem checkpoint {$weekclock checkpoint}>
+
+Returns the state of the clock as a string.  The state can be restored in
+this or another <xref weekclock(n)> object using the <iref restore>
+subcommand.<p>
+
+<defitem configure {$weekclock configure ?<i>option value...</i>?}>
+
+Set any of the object's options.<p>
+
+<defitem delta {$weekclock delta}>
+
+Returns the number of ticks since the start of simulation, i.e., the
+time <iref now> minus <b>-tick0</b>.  The <iref delta> is always
+0 on <iref reset>.<p>
+
+<defitem fromString {$weekclock fromString <i>wstring</i>}>
+
+Converts a <xref week(n)> time string into a simulation time
+in ticks.<p>
+
+<defitem {timespec validate} {$weekclock timespec validate <i>spec</i>}>
+
+Validates the <i>spec</i> and returns the corresponding sim time in
+ticks.  Throws <b>INVALID</b> if the <i>spec</i> is invalid.<p>
+
+<defitem now {$weekclock now ?<i>offset</i>?}>
+
+Returns the current simulation time in ticks.  If given,
+<i>offset</i> should be an offset in ticks; it is added to
+the returned time.<p>
+
+<defitem reset {$weekclock reset}>
+
+Resets simulation time to <b>-tick0</b> ticks, clearing all marks<p>
+
+<defitem restore {$weekclock restore <i>checkpoint</i>}>
+
+Restores the state of the clock to the given <iref checkpoint>.<p>
+
+<defitem tick {$weekclock tick}>
+
+Advances simulation time by one tick.<p>
+
+<defitem toString {$weekclock toString <i>ticks</i> ?<i>offset</i>?}>
+
+Converts a simulation time in integer <i>ticks</i> into a
+<xref week(n)> time string.  If given,
+<i>offset</i> should be an offset in ticks; it is added to
+the specified time.<p>
+
+<defitem mark {$weekclock mark <i>subcommand</i> ?<i>args...</i>?}>
+
+This command manages "marks", named points in time.  See 
+<xref "Marks">.  The subcommands are as follows:<p>
+
+<deflist mark>
+
+<defitem "mark set" {$weekclock mark set <i>name</i> ?<i>offset</i>?}>
+
+Marks the current time (plus the <i>offset</i>, if any) 
+with the given <i>name</i>.<p>
+
+<defitem "mark get" {$weekclock mark get <i>name</i>}>
+
+Returns the time tick associated with the named mark, or "" if the mark
+is undefined.<p>
+
+<defitem "mark names" {$weekclock mark names}>
+
+Returns the names of all currently defined marks.<p>
+
+</deflist mark>
+
+</deflist instance command>
+
+<section "SEE ALSO">
+
+<xref week(n)>
+
+<section ENVIRONMENT>
+
+weekclock(n) requires Tcl 8.5 or later.
+
+To use week(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the projectlib(n)
+library directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+

@@ -1,0 +1,310 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    order_tactic.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: TACTIC:* Orders
+#
+#    This file is included into order.help.
+#
+#-----------------------------------------------------------------------
+
+page /order tactic "Tactic Orders" {
+    <title>
+
+    These orders are used to create, update, and delete
+    <term tactic>s, of which there are many different type.
+    Each tactic type has its own specific order; 
+    other TACTIC:* orders are shared by all tactic types.<p>
+
+    The full set of tactic orders is as follows:
+
+    <childlinks>
+} 
+
+order TACTIC:STATE "Set Tactic State" {
+    <b><term prep> Only.</b>  
+    Sets the <term tactic>'s state.  Note that this order is for 
+    internal use by the application; there is no associated order 
+    dialog.  The order parameters are as follows:<p>
+
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    <tactic_ parms -required -tags state>
+    </parmlist>
+}
+
+order TACTIC:ABSIT "Tactic: Abstract Situation" {
+    <b><term prep> Only.</b>  
+    Updates an existing <cref /object/tactic/absit>.<p>
+
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    <tactic_absit parms -optional -tags update>
+    </parmlist>
+}
+
+order TACTIC:ACCIDENT "Tactic: ACCIDENT Event" {
+    <b><term prep> Only.</b>  
+    Updates an existing <cref /object/tactic/accident>.<p>
+
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    <tactic_accident parms -optional -tags update>
+    </parmlist>
+}
+
+
+order TACTIC:ASSIGN "Tactic: Assign Personnel" {
+    <b><term prep> Only.</b>  
+    Updates an existing <cref /object/tactic/assign>.<p>
+
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    <tactic_assign parms -optional -tags update>
+    </parmlist>
+}
+
+order TACTIC:ATTRIT "Tactic: Magic Attrition" {
+    <b><term prep> Only.</b>  
+    Updates an existing <cref /object/tactic/attrit>.<p>
+
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    <tactic_attrit parms -optional -tags update>
+    </parmlist>
+}
+
+order TACTIC:BROADCAST "Tactic: Broadcast an IOM" {
+    <b><term prep> Only.</b>  
+    Updates an existing <cref /object/tactic/broadcast>.<p>
+
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    <tactic_broadcast parms -optional -tags update>
+    </parmlist>
+}
+
+order TACTIC:BUILD "Tactic: Build Infrastructure" {
+    <b><term prep> Only.</b>  
+    Updates an existing <cref /object/tactic/build>.<p>
+
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    <tactic_build parms -optional -tags update>
+    </parmlist>
+}
+
+order TACTIC:CURSE "Tactic: CURSE" {
+    <b><term prep> Only.</b>  
+    Updates and existing <cref /object/tactic/curse>.<p>
+
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    <tactic_curse parms -optional -tags update>
+    </parmlist>
+}
+
+order TACTIC:DAMAGE "Tactic: Damage Infrastructure" {
+    <b><term prep> Only.</b>  
+    Updates an existing <cref /object/tactic/damage>.<p>
+
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    <tactic_damage parms -optional -tags update>
+    </parmlist>
+}
+
+order TACTIC:DEMO "Tactic: DEMO Event" {
+    <b><term prep> Only.</b>  
+    Updates an existing <cref /object/tactic/demo>.<p>
+
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    <tactic_demo parms -optional -tags update>
+    </parmlist>
+}
+
+
+order TACTIC:DEMOB "Tactic: Demobilize Forces" {
+    <b><term prep> Only.</b>  
+    Updates an existing <cref /object/tactic/demob>.<p>
+
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    <tactic_demob parms -optional -tags update>
+    </parmlist>
+}
+
+order TACTIC:DEPLOY "Tactic: Deploy Troops" {
+    <b><term prep> Only.</b>  
+    Updates an existing <cref /object/tactic/deploy>.<p>
+
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    <tactic_deploy parms -optional -tags update>
+    </parmlist>
+}
+
+order TACTIC:DEPOSIT "Tactic: Deposit Money" {
+    <b><term prep> Only.</b>  
+    Updates an existing <cref /object/tactic/deposit>.<p>
+
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    <tactic_deposit parms -optional -tags update>
+    </parmlist>
+}
+
+order TACTIC:EXECUTIVE "Tactic: Executive Command" {
+    <b><term prep> Only.</b>  
+    Updates an existing <cref /object/tactic/executive>.<p>
+
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    <tactic_executive parms -optional -tags update>
+    </parmlist>
+}
+
+order TACTIC:EXPLOSION "Tactic: EXPLOSION Event" {
+    <b><term prep> Only.</b>  
+    Updates an existing <cref /object/tactic/explosion>.<p>
+
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    <tactic_explosion parms -optional -tags update>
+    </parmlist>
+}
+
+order TACTIC:FLOW "Tactic: Flow Personnel" {
+    <b><term prep> Only.</b>  
+    Updates an existing <cref /object/tactic/flow>.<p>
+
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    <tactic_flow parms -optional -tags update>
+    </parmlist>
+}
+
+order TACTIC:FUND "Tactic: Fund Actor" {
+    <b><term prep> Only.</b>  
+    Updates an existing <cref /object/tactic/fund>.<p>
+
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    <tactic_fund parms -optional -tags update>
+    </parmlist>
+}
+
+order TACTIC:FUNDENI "Tactic: Fund Essential Non-infrastructure Services" {
+    <b><term prep> Only.</b>  
+    Updates an existing <cref /object/tactic/fundeni>.<p>
+
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    <tactic_fundeni parms -optional -tags update>
+    </parmlist>
+}
+
+order TACTIC:GRANT "Tactic: Grant Access to CAP" {
+    <b><term prep> Only.</b>  
+    Updates an existing <cref /object/tactic/grant>.<p>
+
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    <tactic_grant parms -optional -tags update>
+    </parmlist>
+}
+
+order TACTIC:MAINTAIN "Tactic: Maintain Infrastructure" {
+    <b><term prep> Only.</b>  
+    Updates an existing <cref /object/tactic/maintain>.<p>
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    <tactic_maintain parms -optional -tags update>
+    </parmlist>
+}
+
+order TACTIC:MOBILIZE "Tactic: Mobilize Forces" {
+    <b><term prep> Only.</b>  
+    Updates an existing <cref /object/tactic/mobilize>.<p>
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    <tactic_mobilize parms -optional -tags update>
+    </parmlist>
+}
+
+order TACTIC:RIOT "Tactic: RIOT Event" {
+    <b><term prep> Only.</b>  
+    Updates an existing <cref /object/tactic/riot>.<p>
+
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    <tactic_riot parms -optional -tags update>
+    </parmlist>
+}
+
+
+order TACTIC:SIGEVENT "Tactic: Log Significant Event" {
+    <b><term prep> Only.</b>  
+    Updates an existing <cref /object/tactic/sigevent>.<p>
+
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    <tactic_sigevent parms -optional -tags update>
+    </parmlist>
+}
+
+order TACTIC:SPEND "Tactic: Spend Money" {
+    <b><term prep> Only.</b>  
+    Updates an existing <cref /object/tactic/spend>.<p>
+
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    <tactic_spend parms -optional -tags update>
+    </parmlist>
+}
+
+order TACTIC:STANCE "Tactic: Force Group Stance" {
+    <b><term prep> Only.</b>  
+    Updates an existing <cref /object/tactic/stance>.<p>
+
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    <tactic_stance parms -optional -tags update>
+    </parmlist>
+}
+
+order TACTIC:SUPPORT "Tactic: Support Actor" {
+    <b><term prep> Only.</b>  
+    Updates an existing <cref /object/tactic/support>.<p>
+
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    <tactic_support parms -optional -tags update>
+    </parmlist>
+}
+
+order TACTIC:VIOLENCE "Tactic: VIOLENCE Event" {
+    <b><term prep> Only.</b>  
+    Updates an existing <cref /object/tactic/violence>.<p>
+
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    <tactic_violence parms -optional -tags update>
+    </parmlist>
+}
+
+order TACTIC:WITHDRAW "Tactic: Withdraw Money" {
+    <b><term prep> Only.</b>  
+    Updates an existing <cref /object/tactic/withdraw>.<p>
+
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    <tactic_withdraw parms -optional -tags update>
+    </parmlist>
+}

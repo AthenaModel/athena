@@ -1,0 +1,245 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    order_cap.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: CAP:* Orders
+#
+#    This file is included into order.help.
+#
+#-----------------------------------------------------------------------
+
+
+page /order cap "CAP Orders" {
+    <title>
+
+    These orders are used create, update, and delete 
+    <term cap>s, and to set the neighborhood coverage and group
+    penetration for CAPs.
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+
+order CAP:CREATE "Create Comm. Asset Package" {
+    <b><term prep> Only.</b>  This order creates a new 
+    <term cap>.
+    The order parameters are as follows:<p>
+
+    <parmlist>
+    <cap_ parms -required -tags create>
+    <cap_ parms -optional -tags optcreate>
+    </parmlist>
+}
+
+
+#-----------------------------------------------------------------------
+
+order CAP:DELETE "Delete Comm. Asset Package" {
+    <b><term prep> Only.</b>  Deletes an existing
+    <term cap>, along with all entities
+    that depend upon it, given its ID.    
+    The order parameters are as follows:<p>
+
+    <parmlist>
+    <parm k "CAP">
+    <b>Required.</b>  ID of an existing CAP.
+    </parm>
+    </parmlist>
+
+}
+
+#-----------------------------------------------------------------------
+
+order CAP:UPDATE "Update Comm. Asset Package" {
+    <b><term prep> Only.</b>  This order modifies the
+    definition of an existing <term cap>.  The order
+    parameters are as follows:<p>
+
+    <parmlist>
+    <parm k "Select CAP">
+    <b>Required.</b> ID of an existing CAP.
+    </parm>
+
+    <cap_ parms -optional -tags update>
+
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order CAP:UPDATE+MULTI "Update Multiple CAPs" {
+    <b><term prep> Only.</b>  This order modifies the definition
+    of two or more existing <term cap>s, as selected in the GUI.
+    The order parameters are as follows:<p>
+
+    <parmlist>
+    <parm ids "IDs">
+    <b>Required.</b>  <parm.ids "CAP">
+    </parm>
+
+    <cap_ parms -optional -tags multi>
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order CAP:CAPACITY "Set CAP Capacity" {
+    This order sets the capacity of an existing <term cap>.  The order
+    parameters are as follows:<p>
+
+    <parmlist>
+    <parm k "Select CAP">
+    <b>Required.</b> ID of an existing CAP.
+    </parm>
+
+    <cap_ parm capacity -optional>
+
+    </parmlist>
+
+    This order can be <cref /command/send sent> by the
+    <cref /object/tactic/executive>.<p>
+}
+
+#-----------------------------------------------------------------------
+
+order CAP:CAPACITY+MULTI "Set Multiple CAP Capacities" {
+    This order sets the capacity of two or more existing <term cap>s, 
+    as selected in the GUI.  The order parameters are as follows:<p>
+
+    <parmlist>
+    <parm ids "IDs">
+    <b>Required.</b>  <parm.ids "CAP">
+    </parm>
+
+    <cap_ parm capacity -optional>
+    </parmlist>
+
+    This order can be <cref /command/send sent> by the
+    <cref /object/tactic/executive>.<p>
+}
+
+#-----------------------------------------------------------------------
+
+page /order/cap nbcov "Neighborhood Coverage Orders" {
+    <title>
+
+    Each <term cap> has a coverage area consisting of part or all of
+    some set of neighborhoods; the coverage area is defined as a
+    neighborhood coverage fraction for each neighborhood in the
+    playbox.  The following orders are used to edit the coverage area.<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+
+order CAP:NBCOV:SET "Set CAP Neighborhood Coverage" {
+    This order sets the neighborhood
+    coverage fraction for a particular <term cap> and neighborhood.<p>
+
+    <parmlist>
+    <parm id "CAP/Nbhood">
+    <b>Required.</b> A CAP neighborhood coverage ID, which is a list
+    {<i>k n</i>} where <i>k</i> is the CAP ID and <i>n</i> is the 
+    neighborhood ID.
+    </parm>
+
+    <parm nbcov "Coverage">
+        The CAP's coverage of the neighborhood, expressed as a fraction
+        from 0.0 to 1.0.
+    </parm>
+    </parmlist><p>
+
+    This order can be <cref /command/send sent> by the
+    <cref /object/tactic/executive>.<p>
+}
+
+#-----------------------------------------------------------------------
+
+order CAP:NBCOV:SET+MULTI "Set Multiple CAP Neighborhood Coverages" {
+    This order sets the neighborhood coverage fraction for several
+    <term cap>s and neighborhoods.<p>
+
+    <parmlist>
+    <parm ids "IDs">
+    <b>Required.</b> A list of CAP neighborhood coverage IDs.  
+    Programmatically, each ID is a list {<i>k n</i>} where <i>k</i>
+    is the CAP ID and <i>n</i> is the neighborhood ID.
+    </parm>
+
+    <parm nbcov "Coverage">
+        The CAPs' coverage of the neighborhoods, expressed as a fraction
+        from 0.0 to 1.0.
+    </parm>
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+page /order/cap pen "Group Penetration Orders" {
+    <title>
+
+    Each <term cap> is received by some portion of the groups in
+    its coverage area.   This is called the group penetration, and it
+    is set as a penetration fraction from 0.0 to 1.0 for each
+    civilian group in the playbox.  Note that it is possible to give
+    a group a positive penetration fraction even if its neighborhood
+    is not in the CAP's coverage area; such a group is called an
+    "orphan" group.  Orphan groups are highlighted in the 
+    <cref /tab/infrastructure/caps/group>.<p>
+
+    The following orders are used to set group penetration.<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+
+order CAP:PEN:SET "Set CAP Group Penetration" {
+    This order sets the group penetration fraction for a particular 
+    <term cap> and civilian group.<p>
+
+    <parmlist>
+    <parm id "CAP/Group">
+    <b>Required.</b> A CAP group penetration ID, which is a list
+    {<i>k g</i>} where <i>k</i> is the CAP ID and <i>g</i> is the 
+    civilian group ID.
+    </parm>
+
+    <parm pen "Penetration">
+        The CAP's penetration of the group, expressed as a fraction
+        from 0.0 to 1.0.
+    </parm>
+    </parmlist><p>
+
+    This order can be <cref /command/send sent> by the
+    <cref /object/tactic/executive>.<p>
+}
+
+#-----------------------------------------------------------------------
+
+order CAP:PEN:SET+MULTI "Set Multiple CAP Group Penetrations" {
+    This order sets the group penetration fraction for several 
+    <term cap>s and civilian groups.<p>
+
+    <parmlist>
+    <parm ids "IDs">
+    <b>Required.</b> A list of CAP group penetration IDs.  
+    Programmatically, each ID is a list {<i>k g</i>} where <i>k</i>
+    is the CAP ID and <i>g</i> is the civilian group ID.
+    </parm>
+
+    <parm pen "Penetration">
+        The CAPs' penetration of the civilian groups, expressed as 
+        a fraction from 0.0 to 1.0.
+    </parm>
+    </parmlist>
+}
+
+

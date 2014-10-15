@@ -1,0 +1,84 @@
+<manpage {projectgui(n) textwin(n)} "Text Viewer Widget">
+
+<section SYNOPSIS>
+
+<pre>
+package require projectgui 1.0
+namespace import ::projectgui::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+The textwin(n) widget is a toplevel window that displays arbitrary
+text in a scrolling <xref mars:rotext(n)> widget.  Incremental
+search is supported.  The usual pattern is create a textwin(n) to hold
+a particular string, and forget about it; it will go away when the
+user decides to close it or exits the application.<p>
+
+<section COMMANDS>
+
+This module defines the following commands.<p>
+
+<deflist commands>
+
+<defitem textwin {textwin <i>pathName</i> ?<i>options...</i>?}>
+
+Creates a new <iref textwin> widget named <i>pathName</i>, and
+returns <i>pathName</i>.  The widget supports the following
+options, in addition to those provided by the underlying frame widget:<p>
+
+<deflist options>
+
+<defopt {-title <i>title</i>}>
+
+Sets the window title.<p>
+
+<defopt {-text <i>text</i>}>
+
+Sets the text to be displayed in the window.<p>
+
+</deflist options>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+textwin(n) widgets have the following subcommands:<p>
+
+<deflist instance>
+
+<defitem cget {<i>pathName</i> cget <i>option</i>}>
+
+Returns the value of the specified <i>option</i>.<p>
+
+<defitem configure {<i>pathName</i> configure <i>option value...</i>}>
+
+Sets the value of one or more of the object's
+options.<p>
+
+</deflist instance>
+
+<section ENVIRONMENT>
+
+projectgui(n) requires Tcl 8.5 or later.
+
+To use projectgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+

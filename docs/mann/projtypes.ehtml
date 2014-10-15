@@ -1,0 +1,397 @@
+<manpage {projectlib(n) projtypes(n)} "Athena Data Types">
+
+<toproject {
+    package require projectlib [version]
+}>
+
+<section SYNOPSIS>
+
+<pre>
+package require projectlib 1.0
+namespace import ::projectlib::projtypes
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+This module defines data types used by the Athena code base.  Each
+type is defined as a type ensemble command.<p>
+
+<section TYPES>
+
+<deflist types>
+
+<defitem "boolean validate" {boolean validate <i>flag</i>}>
+
+Boolean flag type.  Accepts any of the standard Tcl boolean values.<p>
+
+Validates the <i>flag</i>, returning either 1 for true values and 0
+for false values.  On error, throws an error with <code>-errorcode</code>
+<b>INVALID</b>.<p>
+
+This call differs from <code>snit::boolean</code> in that it converts
+the value to canonical form, and throws <b>INVALID</b> on error.<p>
+
+<defitem eactortype {eactortype <i>subcommand</i> ?<i>args</i>?}>
+
+This <xref mars:enum(n)> type defines the set of actor types.
+Almost all actors are "normal" actors.<p>
+
+<fromproject {projectlib::eactortype html}>
+
+<defitem ebeanstate {ebeanstate <i>subcommand</i> ?<i>args</i>?}>
+
+This <xref enumx(n)> enumeration maps the entity states
+<b>normal</b>, <b>disabled</b>, and <b>invalid</b> to standard
+fonts and colors.<p>
+
+<fromproject {projectlib::ebeanstate html}>
+
+<defitem ecause {ecause <i>subcommand</i> ?<i>args</i>?}>
+
+An <xref mars:enum(n)> type, representing the "causes" of GRAM
+attitude change.<p>
+
+<fromproject {projectlib::ecause html}>
+
+<defitem ecomparator {ecomparator <i>subcommand</i> ?<i>args</i>?}>
+
+An <xref enum(n)> type, representing a variety of comparisons
+used by Athena conditions:<p>
+
+<fromproject {projectlib::ecomparator html}>
+
+<defitem ecomparatorx {ecomparatorx <i>subcommand</i> ?<i>args</i>?}>
+
+An <xref enumx(n)> type, representing a variety of comparisons
+used by Athena conditions:<p>
+
+<fromproject {projectlib::ecomparatorx html}>
+
+The type has one unique subcommand:<p>
+
+<deflist ecomparatorx>
+
+<defitem "ecomparatorx compare" {ecomparatorx compare <i>x comp y</i>}>
+
+Compares numeric value <i>x</i> with numeric value <i>y</i> according to
+<iref ecomparator> value <i>comp</i>, returning 1 if the comparison is
+true and 0 otherwise. <p>
+
+</deflist ecomparatorx>
+
+
+
+<defitem econcern {econcern <i>subcommand</i> ?<i>args</i>?}>
+
+An <xref mars:enum(n)> type, representing the concerns
+of groups for which satisfaction is tracked.<p>
+
+<fromproject {projectlib::econcern html}>
+
+
+<defitem econdition_state {econdition_state <i>subcommand</i> ?<i>args</i>?}>
+
+An <xref mars:enum(n)> type, representing the current state of a
+condition.  A "normal" condition can be evaluated.  A "disabled" condition has
+been disabled by the user.  An "invalid" condition has failed its sanity
+check, and currently cannot be evaluated.<p>
+
+<fromproject {projectlib::econdition_state html}>
+
+
+<defitem econdition_type {econdition_type <i>subcommand</i> ?<i>args</i>?}>
+
+An <xref mars:enum(n)> type, representing the list of
+condition types supported by Athena.  See the Athena Analyst's Guide
+for a catalog of condition types, with descriptions.<p>
+
+<fromproject {projectlib::econdition_type html}>
+
+
+<defitem edamrule {edamrule <i>subcommand</i> ?<i>args</i>?}>
+
+An <xref mars:enum(n)> type, enumerating the names and descriptions
+of all Athena Driver Assessment rules.<p>
+
+<fromproject {projectlib::edamrule html}>
+
+
+<defitem edamruleset {edamruleset <i>subcommand</i> ?<i>args</i>?}>
+
+An <xref mars:enum(n)> type, enumerating the names and descriptions
+of all Athena Driver Assessment rule sets.<p>
+
+<fromproject {projectlib::edamruleset html}>
+
+<defitem edemeanor {edemeanor <i>subcommand</i> ?<i>args</i>?}>
+
+An <xref mars:enum(n)> type, representing neighborhood group
+demeanor.<p>
+
+<fromproject {projectlib::edemeanor html}>
+
+
+<defitem eforcetype {eforcetype <i>subcommand</i> ?<i>args</i>?}>
+
+An <xref mars:enum(n)> type, representing force group types.<p>
+
+<fromproject {projectlib::eforcetype html}>
+
+
+<defitem egoal_state {egoal_state <i>subcommand</i> ?<i>args</i>?}>
+
+An <xref mars:enum(n)> type, representing the current state of a
+goal.  A "normal" goal can be evaluated.  A "disabled" goal is ignored.
+An "invalid" goal is ignored, and should be fixed.<p>
+
+<fromproject {projectlib::egoal_state html}>
+
+
+<defitem ehousing {ehousing <i>subcommand</i> ?<i>args</i>?}>
+
+An <xref mars:enum(n)> type, representing a civilian group's
+housing status: are they living in their normal homes? Are they
+displaced from their normal homes, living among the settled population
+in their neighborhood?  Or are they isolated from the settled population
+in some kind of refugee or displaced persons camp?<p>
+
+<fromproject {projectlib::ehousing html}>
+
+<defitem emoveitem {emoveitem <i>subcommand</i> ?<i>args</i>?}>
+
+An <xref enumx(n)> type, representing ways to move an item in a list.<p>
+
+<fromproject {projectlib::emoveitem html}>
+
+The type has one unique subcommand:<p>
+
+<deflist emoveitem>
+
+<defitem "emoveitem move" {emoveitem move <i>where list item</i>}>
+
+Moves the <i>item</i> to the place in the <i>list</i> indicated by
+by <i>where</i>, which is an <iref emoveitem> value, and returns
+the new list.<p>
+
+</deflist emoveitem>
+
+<defitem epagesize {epagesize <i>subcommand</i> ?<i>args</i>?}>
+
+An <xref mars:enum(n)> type, representing the number of results to 
+display on one page of output.<p>
+
+<fromproject {projectlib::epagesize html}>
+
+
+
+
+<defitem eorgtype {eorgtype <i>subcommand</i> ?<i>args</i>?}>
+
+An <xref mars:enum(n)> type, representing organization group types.<p>
+
+<fromproject {projectlib::eorgtype html}>
+
+
+<defitem esitstate {esitstate <i>subcommand</i> ?<i>args</i>?}>
+
+An <xref mars:enum(n)> type, representing the current state of a
+situation.<p>
+
+<fromproject {projectlib::esitstate html}>
+
+
+<defitem etactic_state {etactic_state <i>subcommand</i> ?<i>args</i>?}>
+
+An <xref mars:enum(n)> type, representing the current state of a
+tactic.  A "normal" tactic can be executed.  A "disabled" tactic has
+been disabled by the user.  An "invalid" tactic has failed its sanity
+check, and is currently unusable.<p>
+
+<fromproject {projectlib::etactic_state html}>
+
+<defitem etopic_state {etopic_state <i>subcommand</i> ?<i>args</i>?}>
+
+An <xref mars:enum(n)> type, representing the current state of a
+semantic hook topic.  A "normal" topic is considered when computing 
+resonance of a message.  A "disabled" topic has been disabled by the 
+user and is not considered.  An "invalid" topic has failed its sanity 
+check, and is currently unusable.<p>
+
+<fromproject {projectlib::etopic_state html}>
+
+<defitem etraining {etraining <i>subcommand</i> ?<i>args</i>?}>
+
+An <xref mars:enum(n)> type, representing force group training
+levels.<p>
+
+<fromproject {projectlib::etraining html}>
+
+<defitem eurbanization {eurbanization <i>subcommand</i> ?<i>args</i>?}>
+
+An <xref mars:enum(n)> type, representing neighborhood urbanization
+levels.<p>
+
+<fromproject {projectlib::eurbanization html}>
+
+<defitem eyesno {eyesno <i>subcommand</i> ?<i>args</i>?}>
+
+An <xref mars:enum(n)> type, representing boolean "Yes" and "No" values.<p>
+
+<fromproject {projectlib::eyesno html}>
+
+<defitem "hexcolor validate" {hexcolor validate <i>color</i>}>
+
+Hex color type.  A hex color specification is a string
+"<code>#<i>rrggbb</i></code>" where <i>rr</i>, <i>gg</i>, and
+<i>bb</i> are two-digit hexadecimal numbers representing the intensity
+of the RGB color channels.<p>
+
+Validates and returns the <i>color</i>; the hex-digits are
+upper-cased.  On error, throws an error with <code>-errorcode</code>
+<b>INVALID</b>.<p>
+
+<defitem "idays validate" {idays validate <i>days</i>}>
+
+Integer days type: a non-negative integer number.<p>
+
+Validates and returns <i>days</i>.  On error, throws
+an error with <code>-errorcode</code> <b>INVALID</b>.<p>
+
+<defitem "ident validate" {ident validate <i>name</i>}>
+
+Identifier type.  An identifier is a string consisting only of letters
+and digits, beginning with a letter.<p>
+
+Validates and returns the <i>name</i>.  On error, throws
+an error with <code>-errorcode</code> <b>INVALID</b>.<p>
+
+<defitem "iminlines validate" {iminlines validate <i>quantity</i>}>
+
+The minimum value for the
+<xref prefs(5) cli.maxlines> preferences parameter.  An integer
+number no less than 100.<p>
+
+Validates and returns <i>quantity</i>.  On error, throws
+an error with <code>-errorcode</code> <b>INVALID</b>.<p>
+
+<defitem "ipositive validate" {ipositive validate <i>quantity</i>}>
+
+Integer quantity type: a positive integer number.<p>
+
+Validates and returns <i>quantity</i>.  On error, throws
+an error with <code>-errorcode</code> <b>INVALID</b>.<p>
+
+<defitem "iquantity validate" {iquantity validate <i>quantity</i>}>
+
+Integer quantity type: a non-negative integer number.<p>
+
+Validates and returns <i>quantity</i>.  On error, throws
+an error with <code>-errorcode</code> <b>INVALID</b>.<p>
+
+
+
+<defitem "money validate" {money validate <i>dollars</i>}>
+
+Money type; the <i>dollars</i> value must be a string accepted
+by the <xref mars:marsmisc(n)> <xref mars:marsmisc(n) moneyscan>
+function.  The value is returned as a normal floating point value.<p>
+
+<defitem "polygon validate" {polygon validate <i>coords</i>}>
+
+Validates the polygon described by the <i>coords</i>, which is a flat
+list of <i>x</i> and <i>y</i> coordinates.  It may be passed as a
+single argument, or as one argument per coordinate.  On error, throws
+an error with <code>-errorcode</code> <b>INVALID</b>.<p>
+
+<defitem qcredit qcredit>
+
+This quality is used to assess the credit an actor receives for
+provision of service to civilian groups.  <iref qcredit> values have
+the bounds shown in the following table:<p>
+
+<fromproject {projectlib::qcredit html}>
+
+<defitem qsecurity qsecurity>
+
+This quality is use to rate a group's security in a neighborhood.
+Numerically, <iref qsecurity> values are
+formatted as "<fromproject {projectlib::qsecurity cget -format}>" 
+and have the bounds shown in the following table:<p>
+
+<fromproject {projectlib::qsecurity html}>
+
+<defitem "rgain validate" {rgain validate <i>value</i>}>
+
+A <xref mars:range(n)> representing a gain control
+setting: a non-negative floating-point value.   On error, throws
+an error with <code>-errorcode</code> <b>INVALID</b>.<p>
+
+<defitem "rpercent validate" {rpercent validate <i>value</i>}>
+
+A <xref mars:range(n)> representing a non-negative percentage, e.g.,
+a non-negative floating-point value between 0.0 and 100.0, inclusive.
+On error, throws an error with <code>-errorcode</code> <b>INVALID</b>.<p>
+
+<defitem "rpercentpm validate" {rpercentpm validate <i>value</i>}>
+
+A <xref mars:range(n)> representing a positive or negative percentage, e.g.,
+a floating-point value between -100.0 and 100.0, inclusive.
+On error, throws an error with <code>-errorcode</code> <b>INVALID</b>.<p>
+
+<defitem "rposfrac validate" {rposfrac validate <i>value</i>}>
+
+A <xref mars:range(n)> representing a positive fraction from 0.01 to
+1.0, inclusive.  On error, throws an error with <code>-errorcode</code> 
+<b>INVALID</b>.<p>
+
+<defitem "rrate validate" {rrate validate <i>value</i>}>
+
+A <xref mars:range(n)> representing a rate, e.g.,
+events/day: a non-negative floating-point value.   On error, throws
+an error with <code>-errorcode</code> <b>INVALID</b>.<p>
+
+<defitem "unitname validate" {unitname validate <i>name</i>}>
+
+Identifier type.  A unit name is a string consisting only of letters
+and digits, "-", or "/", beginning with a letter.<p>
+
+Validates and returns the <i>name</i>.  On error, throws
+an error with <code>-errorcode</code> <b>INVALID</b>.<p>
+
+<defitem "weight validate" {weight validate <i>value</i>}>
+
+A weight is a non-negative floating-point value, used as a weighting factor.<p>
+
+Validates the <i>value</i>, returning it on success.  On error, throws
+an error with <code>-errorcode</code> <b>INVALID</b>.<p>
+
+</deflist types>
+
+
+<section ENVIRONMENT>
+
+Requires Tcl 8.5 or later.
+
+To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+
+

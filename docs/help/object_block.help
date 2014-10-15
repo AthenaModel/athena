@@ -1,0 +1,157 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    object_block.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: "Block" Simulation Object
+#
+#    This file is included into object.help.
+#
+#-----------------------------------------------------------------------
+
+object block_ {
+    noun block
+
+    overview {
+        A <i>block</i> is a component in an <term agent>'s 
+        <term strategy>; it typically
+        consists of a set of <term tactic tactics> that execute as 
+        a group
+        in order to achieve some particular aim.  For example, a block
+        might be responsible for deploying an actor's troops, 
+        and assigning them to activities, and setting their stance 
+        toward the local population.  Under different 
+        <term condition conditions>,
+        the actor could execute different blocks, deploying 
+        troops in different ways.<p>
+    }
+
+    # The block ID for the object page
+    attribute id "Block ID" {
+        The block ID, an integer number that uniquely
+        identifies the block.    It is assigned automatically when the
+        block is created.In orders, the parameter name is
+        <i>block_id</i>.
+    } -tags {object browser}
+
+    # The block ID for the order pages
+    attribute block_id "Block ID" {
+        The block ID, an integer number that uniquely
+        identifies the block.  It is assigned automatically when the
+        block is created.
+    } -tags {cget}
+
+    attribute agent "Agent" {
+        The name of the <term agent> to whose 
+        <term strategy> the block belongs.
+    } -tags {cget}
+
+
+    attribute execstatus "Execution Status" {
+        The block's execution status.  It is usually represented by 
+        one of the following icons: TBD
+    } -tags {browser}
+
+    attribute state "State" {
+        The block's state, one of <b>normal</b>, <b>disabled</b>, or 
+        <b>invalid</b>.  A block is <b>invalid</b> if a sanity check 
+        has found sanity check failures for an attached <term tactic> 
+        or <term condition>.  Invalid blocks must be fixed or 
+        disabled before the scenario can be locked.
+        <b>Disabled</b> blocks
+        are ignored when the owner's strategy is executed.
+    } -tags {object state browser configure cget}
+
+    attribute intent "Intent" {
+        A brief statement of the purpose of the block, entered by the 
+        analyst as a mnemonic.
+    } -tags {object update browser configure cget}
+
+    attribute onlock "On Lock?" {
+        The block's "On Lock" flag: <b>Yes</b> if the block should be 
+        executed on scenario lock, to help initialize the scenario, and 
+        <b>No</b> otherwise.
+    } -tags {object update configure cget}
+
+    attribute once "Once Only?" {
+        The block's "Once Only" flag: if <b>Yes</b>, the block will disable 
+        itself after the first time it executes.  Use this for blocks that 
+        should execute once, the first time a particular set of conditions 
+        is met.
+    } -tags {object update configure cget}
+
+    attribute tmode "Time Constraint Mode" {
+        This mode parameter has one of the following values:<p>
+
+        <b>ALWAYS</b>: The block is eligible for execution every week.<p>
+
+        <b>AT</b>: The block is eligible for execution at week <i>t1</i>.<p>
+
+        <b>BEFORE</b>: The block is eligible for execution every week
+        prior to week <i>t1</i>.<p>
+
+        <b>AFTER</b>: The block is eligible for execution every week
+        after week <i>t1</i>.<p>
+
+        <b>DURING</b>: The block is eligible for execution every week
+        from week <i>t1</i> to week <i>t2</i>.<p>
+    } -tags {object update configure cget}
+
+    attribute t1 "Week:" {
+        Week <i>t1</i>; see the Time Constraint Mode, above.
+    } -tags {object update configure cget}
+
+    attribute t2 "To Week:" {
+        Week <i>t2</i>; see the Time Constraint Mode, above.
+    } -tags {object update configure cget}
+
+    attribute cmode "Condition Mode" {
+        This mode determines how conditions affect execution of the block:<p>
+
+        <b>ALL</b>: The block is eligible for execution only if all of the
+        attached conditions are met.<p>
+
+        <b>ANY</b>: The block is eligible for execution if at least one
+        of the attached conditions are met.<p>
+        
+        This setting is ignored if the block has no attached conditions.
+    } -tags {object update configure cget}
+
+    attribute emode "Execution Mode" {
+        This mode determines how the block executes in the face of insufficient
+        resources:<p>
+
+        <b>ALL</b>: The block will only execute if there are sufficient
+        resources for all of the block's tactics.<p>
+
+        <b>SOME</b>: The block will execute as many of its tactics as
+        resources will permit, in priority order from first to last.
+    } -tags {object update configure cget}
+
+    attribute exectime "Last Execution Time" {
+        The simulation time at which the block last executed, if any.
+    } -tags {object browser}
+
+    attribute conditions "Conditions" {
+        A list of the IDs of the conditions attached to this block.
+    } -tags {cget}
+
+    attribute tactics "Tactics" {
+        A list of the IDs of the tactics attached to this block.
+    } -tags {cget}
+}
+
+page /object block "Block" {
+    <sotitle>
+
+    <block_ overview><p>
+
+    Blocks have the following attributes:<p>
+
+    <block_ parmlist -tags object>
+}
+

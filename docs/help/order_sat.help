@@ -1,0 +1,149 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    order_sat.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: SAT:* Orders
+#
+#    This file is included into order.help.
+#
+#-----------------------------------------------------------------------
+
+page /order sat "Satisfaction Orders" {
+    <title>
+
+    Athena models the satisfaction of civilian groups with respect
+    to a variety of
+    concerns.  This family of orders are used to manipulate the
+    initial baseline satisfaction levels and related parameters.  
+    (Use the <cref /order/mad/sat> to adjust or otherwise influence the 
+    levels during simulation.)<p>
+
+    The full set of orders is as follows:<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+
+order SAT:UPDATE "Update Baseline Satisfaction" {
+    <parmlist>
+    <parm id "Curve">
+    <b>Required.</b>  A satisfaction curve ID, which is a list 
+    {<i>g c</i>} where <i>g</i> is a
+    civilian group and <i>c</i> is a concern.
+    </parm>
+
+    <parm base "Baseline">
+    <b>Optional.</b>  The initial baseline satisfaction level of 
+    group <i>g</i> with concern <i>c</i>.  Satisfaction levels
+    run from -100.0 to 100.0, and are defined either numerically or using
+    the following rating scale:<p>
+
+    <super ::simlib::qsat html>
+    </parm>
+
+    <parm saliency "Saliency">
+    <b>Optional.</b>  The importance of concern <i>c</i> to the group.
+    Saliencies range from 0.0 to 1.0, and are defined either
+    numerically or using the following rating scale:<p>
+
+    <super ::simlib::qsaliency html>
+    </parm>
+
+    <parm hist_flag "Start Mode">
+    <b>Optional.</b> The start mode indicates whether the scenario is a new scenario, or if it
+    was created to reflect an existing time-advanced scenario via the
+    <cref /order/sim/rebase> order.  The value is either 0 ("New Scenario") or
+    1 ("From Previous Scenario").  If 1, the specified <i>current</i> value
+    will be used.<p>
+    </parm>
+
+    <parm current "Current">
+    <b>Optional.</b> If the start mode is 1 ("From Previous Scenario") then this is the initial
+    current level of the curve on scenario lock.  Usually it will be set
+    by <cref /order/sim/rebase> rather than by the user.<p>
+
+    This setting determines the "current" value of the curve during the
+    first part of locking the scenario, when it can affect the value of
+    security and other models as part of bootstrapping the simulation.  It
+    is set by <cref /order/sim/rebase> to increase the fidelity of a
+    rebased scenario on-lock; there is little reason to set it manually.
+    </parm>
+
+    </parmlist>
+
+    <b><term prep> Only.</b>  This order updates the initial baseline
+    satisfaction level of one group with a concern; this can only be done
+    during the Scenario Preparation phase.<p>
+
+    (Use the <cref /order/mad> to adjust or otherwise influence the 
+    levels during simulation.)
+}
+
+
+#-----------------------------------------------------------------------
+
+order SAT:UPDATE+MULTI "Update Baseline Satisfaction (Multi)" {
+    <parmlist>
+    <parm ids "IDs">
+    <b>Required.</b>  <parm.ids satisfaction><p>
+
+    Programmatically, each ID is a list {<i>g c</i>} where
+    <i>g</i> and <i>c</i> are defined as for the 
+    <cref /order/sat/update> order.
+    </parm>
+
+    <parm base "baseline">
+    <b>Optional.</b>  The initial baseline satisfaction level of 
+    group <i>g</i> with concern <i>c</i>.  Satisfaction levels
+    run from -100.0 to 100.0, and are defined either numerically or using
+    the following rating scale:<p>
+
+    <super ::simlib::qsat html>
+    </parm>
+
+    <parm saliency "Saliency">
+    <b>Optional.</b>  The importance of concern <i>c</i> to the group.
+    Saliencies range from 0.0 to 1.0, and are defined either
+    numerically or using the following rating scale:<p>
+
+    <super ::simlib::qsaliency html>
+    </parm>
+    
+    <parm hist_flag "Start Mode">
+    <b>Optional.</b> The start mode indicates whether the scenario is a new 
+    scenario, or if it
+    was created to reflect an existing time-advanced scenario via the
+    <cref /order/sim/rebase> order.  The value is either 0 ("New Scenario") or
+    1 ("From Previous Scenario").  If 1, the specified <i>current</i> value
+    will be used.<p>
+    </parm>
+
+    <parm current "Current">
+    <b>Optional.</b> If the start mode is 1 ("From Previous Scenario") then this is the initial
+    current level of the curve on scenario lock.  Usually it will be set
+    by <cref /order/sim/rebase> rather than by the user.<p>
+
+    This setting determines the "current" value of the curve during the
+    first part of locking the scenario, when it can affect the value of
+    security and other models as part of bootstrapping the simulation.  It
+    is set by <cref /order/sim/rebase> to increase the fidelity of a
+    rebased scenario on-lock; there is little reason to set it manually.
+    </parm>
+
+    </parmlist>
+
+    <b><term prep> Only.</b>  This order updates two or more initial
+    baseline satisfaction levels, as selected in the GUI; this can only 
+    be done during the Scenario Preparation phase.<p>
+
+    (Use the <cref /order/mad> to adjust or otherwise influence the 
+    levels during simulation.)
+}
+
+

@@ -1,0 +1,99 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    object_plant.help
+#
+# AUTHOR:
+#    Dave Hanks
+#
+# DESCRIPTION:
+#    Athena Help Documentation: GOODS Production Plants
+#
+#    This file is included into object.help.
+#
+#-----------------------------------------------------------------------
+
+object plant_ {
+    noun "plant"
+
+    overview {
+        <i>GOODS Production Plants</i> determine the total production output
+        capacity of the goods sector.  Rather than specify a specific
+        number of plants that are owned by an actor in particular 
+        neighborhoods, Athena allows the user to specify a number of shares
+        of the total production capacity along with an initial
+        repair level by actor and neighborhood.  When the scenario is locked
+        Athena will compute exactly the number of plants needed given the 
+        initial output of the goods sector from the economic model, an 
+        individual plants maximum capacity (taking into account that the 
+        initial average repair level for some plants may be in a degraded 
+        state) and the production capacity of each neighborhood in which 
+        plants should reside.  Athena then assigns plants to actors and 
+        neighborhoods taking into account the number of shares allocated to 
+        each actor that owns them in each neighborhood.<p>
+
+        Note that the SYSTEM agent will own any infrastructure in 
+        neighborhoods to which no actor is assigned shares of GOODS
+        production infrastructure.  However, the SYSTEM will not be 
+        allocated any infrastructure in neighborhoods that do not have 
+        any consumers (ie. consist only of subsisters).<p>
+
+        Shares of GOODS Production Plants are defined and edited on the 
+        <cref /tab/infrastructure/goods_plants>.<p>
+
+        Unless an actor is automatically maintaining his infrastructure, money
+        must be spent during <term strategy> execution to maintain it by
+        way of the MAINTAIN <term tactic>.  Infrastructure that is not
+        maintained will fall into disrepair and produce less and less goods
+        until it stops production completely.<p>
+
+        Actors can also build new infrastructure by way of the BUILD 
+        <term tactic>.  This new infrastructure will also need to be
+        maintained after it is completed, unless the actor who built it
+        is automatically maintaining it.<p>
+
+        GOODS Production Plants cannot exist in non-local neighborhoods.
+        Thus, attempting to BUILD, MAINTAIN or DAMAGE them as part of an
+        actor's <term strategy> in non-local neighborhoods is not allowed.<p>
+    }
+
+
+    attribute a "Agent ID" {
+        The agent ID.  It may be any actor in Athena or 'SYSTEM'.
+    } -tags {create}
+
+    attribute n "Neighborhood" {
+        A neighborhood ID.  It may be any local neighborhood defined.
+    } -tags {create}
+
+    attribute id "ID" {
+        An agent/neighborhood pair consisting of a list <i>{a n}</i> 
+        that uniquely identifies the definition of shares.
+    } 
+
+    attribute num "Number of Shares" {
+        The number of shares that should be owned by the agent in the
+        neighborhood.  If the production capacity of the neighborhood is
+        zero, then no plants will be allocated to the agent in this
+        neighborhood.
+    } -tags {create update}
+
+    attribute rho "Average Repair Level" {
+        This is the average repair level of the plants allocated to the
+        agent in this neighborhood when the scenario is locked. It is
+        a number between 0.0 and 1.0
+    } -tags {create update}
+}
+
+page /object plant "GOODS Production Plants" {
+    <sotitle>
+
+    <plant_ overview><p>
+
+    Define GOODS production plant shares with these attributes:<p>
+
+    <plant_ parmlist>
+}
+
+
+

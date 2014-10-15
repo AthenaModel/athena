@@ -1,0 +1,186 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    020-INJECT.test
+#
+# AUTHOR:
+#    Dave Hanks
+#
+# DESCRIPTION:
+#    app_sim(1) INJECT:* order tests.
+#
+#    This test suite tests the inject-related orders.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Standard injects
+
+    set I1 {
+        curse_id     C1
+        f            @C1
+        g            @F1
+        mag          1.0
+    }
+
+    set I2 {
+        curse_id     C2
+        f            @C1
+        g            @F1
+        mag          2.0
+    }
+
+    # Setup
+    proc setup {} {
+        ted order CURSE:CREATE curse_id C1
+        ted order CURSE:CREATE curse_id C2
+    }
+
+
+    # Clean up after a test
+    proc cleanup {} {
+        # Clean up the test environment
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # INJECT:DELETE
+    #
+    # Note: normally we'd test the CREATE orders before DELETE; but
+    # there's a CREATE order for each flavor of inject.  We'll be
+    # testing each flavor's orders together instead, and doing the
+    # generic orders up front.
+
+    test DELETE-1.1 {required parms} -body {
+        ted order -reject INJECT:DELETE {}
+    } -result {
+        id {required value}
+    }
+
+    test DELETE-1.2 {invalid inject ID: no such CURSE} -body {
+        ted order -reject INJECT:DELETE id {NONESUCH 1}
+    } -result {
+        id {Invalid CURSE, none are defined}
+    }
+
+    test DELETE-1.3 {invalid inject ID: no such inject num} -setup {
+        setup
+    } -body {
+        ted order -reject INJECT:DELETE id {C1 NONESUCH}
+    } -cleanup {
+        cleanup
+    } -result {
+        id {Invalid inject "C1 NONESUCH", no injects are defined for this CURSE}
+    }
+
+
+    test DELETE-2.1 {Effects} -setup {
+        setup
+        ted order INJECT:COOP:CREATE $I1
+    } -body {
+        ted notifier bind ::rdb <curse_injects>
+        ted order INJECT:DELETE id {C1 1}
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <curse_injects> delete {C1 1}}
+    }
+
+
+    test DELETE-3.1 {Undo effects} -setup {
+        setup
+        ted order INJECT:COOP:CREATE $I1
+        ted order INJECT:DELETE id {C1 1}
+    } -body {
+        ted notifier bind ::rdb <curse_injects>
+        cif undo -test
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <curse_injects> update {C1 1}}
+    }
+
+
+    #-------------------------------------------------------------------
+    # INJECT:STATE
+
+    test STATE-1.1 {required parms} -body {
+        ted order -reject INJECT:STATE {}
+    } -result {
+        id {required value}
+        state {required value}
+    }
+
+    
+    test STATE-1.2 {unknown inject id} -body {
+        ted order -reject INJECT:STATE id {NONESUCH 1} state disabled
+    } -result {
+        id {Invalid CURSE, none are defined}
+    }
+
+
+    test STATE-2.1 {Effects} -setup {
+        setup
+        ted order INJECT:COOP:CREATE $I1
+    } -body {
+        ted notifier bind ::rdb <curse_injects>
+        ted order INJECT:STATE id {C1 1} state disabled
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <curse_injects> update {C1 1}}
+    }
+
+
+    test STATE-3.1 {Undo effects} -setup {
+        setup
+        ted order INJECT:COOP:CREATE $I1
+        ted order INJECT:STATE id {C1 1} state disabled
+    } -body {
+        ted notifier bind ::rdb <curse_injects>
+        cif undo -test
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <curse_injects> update {C1 1}}
+    }
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+

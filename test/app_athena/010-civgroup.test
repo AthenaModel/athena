@@ -1,0 +1,587 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-civgroup.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    civgroup(sim) tests.
+#
+#    This test suite tests the civgroup(sim) mutators and queries
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        # Clean up the test environment
+        array unset parms
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # mutate create
+
+    test create-1.1 {civgroup is created} -body {
+        civgroup mutate create [ted entity SHIA]
+        ted querylist {SELECT * FROM civgroups_view}
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+g           SHIA
+longname    Shia
+bsid        1
+color       #c00001
+demeanor    AVERAGE
+basepop     1000
+pop_cr      0.0
+gtype       CIV
+n           NB1
+sa_flag     0
+lfp         60
+housing     AT_HOME
+hist_flag   0
+upc         0.0
+    }
+
+    test create-1.3 {sat curves are created} -body {
+        civgroup mutate create [ted entity SHIA]
+        rdb eval {SELECT c FROM sat_gc WHERE g='SHIA' ORDER BY c}
+    } -cleanup {
+        cleanup
+    } -result {AUT CUL QOL SFT}
+
+    test create-1.4 {coop curves are created} -setup {
+        ted create BLUE
+    } -body {
+        civgroup mutate create [ted entity SHIA]
+        rdb eval {SELECT f,g FROM coop_fg ORDER BY f,g}
+    } -cleanup {
+        cleanup
+    } -result {SHIA BLUE}
+
+    test create-2.1 {undo deletes the civgroup} -setup {
+        civgroup mutate create [ted entity SHIA]
+        set undo [civgroup mutate create [ted entity SUNN]]
+    } -body {
+        namespace eval :: $undo
+        rdb eval {SELECT g FROM civgroups_view}
+    } -cleanup {
+        cleanup
+    } -result {SHIA}
+
+    test create-2.3 {undo deletes the sat curves} -setup {
+        set undo [civgroup mutate create [ted entity SUNN]]
+    } -body {
+        namespace eval :: $undo
+        rdb eval {SELECT c FROM sat_gc WHERE g='SHIA' ORDER BY c}
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test create-1.5 {undo deletes the coop curves} -setup {
+        ted create BLUE
+    } -body {
+        set undo [civgroup mutate create [ted entity SHIA]]
+
+        namespace eval :: $undo
+        rdb eval {SELECT f,g FROM coop_fg ORDER BY f,g}
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    #-------------------------------------------------------------------
+    # mutate delete
+
+    test delete-1.1 {Group is deleted} -setup {
+        ted create SHIA SUNN
+    } -body {
+        civgroup mutate delete SHIA
+
+        # Is SHIA gone?
+        rdb eval {SELECT g FROM civgroups_view}
+    } -cleanup {
+        cleanup
+    } -result {SUNN}
+
+
+    test delete-2.1 {Undo restores group} -setup {
+        ted create SHIA
+        set undo [civgroup mutate delete SHIA]
+    } -body {
+        namespace eval :: $undo
+        ted querylist {SELECT * FROM civgroups_view}
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+g           SHIA
+longname    Shia
+bsid        1
+color       #c00001
+demeanor    AVERAGE
+basepop     1000
+pop_cr      0.0
+gtype       CIV
+n           NB1
+sa_flag     0
+lfp         60
+housing     AT_HOME
+hist_flag   0
+upc         0.0
+    }
+
+    test delete-4.1 {sat curves are deleted} -setup {
+        ted create SHIA
+    } -body {
+        civgroup mutate delete SHIA
+
+        rdb eval {SELECT c FROM sat_gc WHERE g='SHIA' ORDER BY c}
+    } -cleanup {
+        cleanup
+    } -result {}
+
+
+    test delete-4.2 {Undo restores sat curves} -setup {
+        ted create SHIA
+        set undo [civgroup mutate delete SHIA]
+    } -body {
+        namespace eval :: $undo
+        rdb eval {SELECT c FROM sat_gc WHERE g='SHIA' ORDER BY c}
+    } -cleanup {
+        cleanup
+    } -result {AUT CUL QOL SFT}
+
+    test delete-5.1 {coop curves are deleted} -setup {
+        ted create BLUE SHIA
+    } -body {
+        civgroup mutate delete SHIA
+
+        rdb eval {SELECT f,g FROM coop_fg ORDER BY f,g}
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test delete-5.2 {Undo restores coop curves} -setup {
+        ted create BLUE SHIA
+        set undo [civgroup mutate delete SHIA]
+    } -body {
+        namespace eval :: $undo
+        rdb eval {SELECT f,g FROM coop_fg ORDER BY f,g}
+    } -cleanup {
+        cleanup
+    } -result {SHIA BLUE}
+
+
+    test delete-7.1 {deletes hrel_fg overrides} -setup {
+        ted create SHIA SUNN
+        ted order HREL:OVERRIDE id {SHIA SUNN}
+        ted order HREL:OVERRIDE id {SUNN SHIA}
+    } -body {
+        civgroup mutate delete SHIA
+
+        rdb eval {SELECT f,g FROM hrel_fg ORDER BY f,g}
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test delete-7.2 {undo restores hrel_fg overrides} -setup {
+        ted create SHIA SUNN
+        ted order HREL:OVERRIDE id {SHIA SUNN}
+        ted order HREL:OVERRIDE id {SUNN SHIA}
+
+        set undo [civgroup mutate delete SHIA]
+    } -body {
+        namespace eval :: $undo
+
+        rdb eval {SELECT f,g FROM hrel_fg ORDER BY f,g}
+    } -cleanup {
+        cleanup
+    } -result {SHIA SUNN SUNN SHIA}
+
+    test delete-8.1 {deletes vrel_ga overrides} -setup {
+        ted create JOE SHIA
+        ted order VREL:OVERRIDE id {SHIA JOE}
+    } -body {
+        civgroup mutate delete SHIA
+
+        rdb eval {SELECT g,a FROM vrel_ga ORDER BY g,a}
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test delete-8.2 {undo restores vrel_ga overrides} -setup {
+        ted create JOE SHIA
+        ted order VREL:OVERRIDE id {SHIA JOE}
+
+        set undo [civgroup mutate delete SHIA]
+    } -body {
+        namespace eval :: $undo
+
+        rdb eval {SELECT g,a FROM vrel_ga ORDER BY g,a}
+    } -cleanup {
+        cleanup
+    } -result {SHIA JOE}
+
+    test delete-9.1 {deletes cap_kg overrides} -setup {
+        ted create CBS
+    } -body {
+        civgroup mutate delete SHIA
+
+        rdb eval {SELECT k,g FROM cap_kg}
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test delete-9.2 {undo restores cap_kg overrides} -setup {
+        ted create CBS
+
+        set undo [civgroup mutate delete SHIA]
+    } -body {
+        namespace eval :: $undo
+
+        rdb eval {SELECT k,g FROM cap_kg}
+    } -cleanup {
+        cleanup
+    } -result {CBS SHIA}
+
+
+    #-------------------------------------------------------------------
+    # mutate update
+
+
+    test update-1.1 {civgroup is updated} -setup {
+        ted create SHIA
+    } -body {
+        civgroup mutate update {
+            g            SHIA
+            longname     "Shia Folk"
+            bsid         2
+            color        "#ff0000"
+            hist_flag    1
+            upc          10.0
+        }
+
+        ted querylist {SELECT * FROM civgroups_view}
+    } -cleanup {
+        cleanup
+    } -result {
+g          SHIA
+longname   Shia Folk
+bsid       2
+color      #ff0000
+demeanor   AVERAGE
+basepop    1000
+pop_cr     0.0
+gtype      CIV
+n          NB1
+sa_flag    0
+lfp        60
+housing    AT_HOME
+hist_flag  1
+upc        10.0
+    }
+
+
+    test update-1.2 {identical values are OK} -setup {
+        ted create SHIA
+    } -body {
+        set a [ted query {SELECT * FROM civgroups_view}]
+
+        civgroup mutate update [ted entity SHIA]
+
+        set b [ted query {SELECT * FROM civgroups_view}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    test update-1.3 {empty values are OK} -setup {
+        ted create SHIA
+    } -body {
+        set a [ted query {SELECT * FROM civgroups_view}]
+
+        civgroup mutate update  {
+            g            SHIA
+            longname     ""
+            color        ""
+        }
+
+        set b [ted query {SELECT * FROM civgroups_view}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    test update-2.1 {undo undoes the change} -setup {
+        ted create SHIA
+    } -body {
+
+        set a [ted query {SELECT * FROM civgroups_view}]
+
+        set undo [civgroup mutate update {
+            g            SHIA
+            longname     "Shia Folk"
+            color        "#ff0000"
+        }]
+
+        namespace eval :: $undo
+
+        set b [ted query {SELECT * FROM civgroups_view}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    #-------------------------------------------------------------------
+    # names
+
+    test names-1.1 {Returns names: none defined} -body {
+        civgroup names
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test names-1.2 {Returns names} -setup {
+        ted create SHIA SUNN
+    } -body {
+        civgroup names
+    } -cleanup {
+        cleanup
+    } -result {SHIA SUNN}
+
+
+    #-------------------------------------------------------------------
+    # namedict
+
+    test namedict-1.1 {Returns namedict: none defined} -body {
+        civgroup namedict
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test namedict-1.2 {Returns namedict} -setup {
+        ted create SHIA SUNN
+    } -body {
+        ted pdicts [civgroup namedict]
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+        SHIA Shia
+        SUNN Sunni
+    }
+
+
+    #-------------------------------------------------------------------
+    # validate
+
+    test validate-1.1 {Invalid name: none defined} -body {
+        civgroup validate NONESUCH
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Invalid civilian group, none are defined}
+
+    test validate-1.2 {Invalid name: some defined} -setup {
+        ted create SHIA SUNN
+    } -body {
+        civgroup validate NONESUCH
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Invalid civilian group, should be one of: SHIA, SUNN}
+
+    test validate-2.1 {Valid name} -setup {
+        ted create SHIA SUNN
+    } -body {
+        civgroup validate SUNN
+    } -cleanup {
+        cleanup
+    } -result {SUNN}
+
+    #-------------------------------------------------------------------
+    # local names
+
+    test local_names-1.1 {Returns local names: none defined} -body {
+        civgroup local names
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test local_names-1.2 {Returns local names} -setup {
+        ted create SHIA SUNN KURD
+        rdb eval {
+            UPDATE nbhoods SET local=0 WHERE n='NB1'
+        }
+    } -body {
+        civgroup local names
+    } -cleanup {
+        cleanup
+    } -result {KURD}
+
+    #-------------------------------------------------------------------
+    # local namedict
+
+    test local_namedict-1.1 {Returns local namedict: none defined} -body {
+        civgroup local namedict
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test local_namedict-1.2 {Returns local namedict} -setup {
+        ted create SHIA SUNN KURD
+        rdb eval {
+            UPDATE nbhoods SET local=0 WHERE n='NB1'
+        }
+    } -body {
+        civgroup local namedict
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+        KURD Kurd
+    }
+
+    #-------------------------------------------------------------------
+    # local validate
+
+    test local_validate-1.1 {Invalid name: none defined} -body {
+        civgroup local validate NONESUCH
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Invalid local civilian group, none are defined}
+
+    test local_validate-1.2 {Invalid name: some defined} -setup {
+        ted create SHIA SUNN KURD
+        rdb eval {
+            UPDATE nbhoods SET local=0 WHERE n='NB1'
+        }
+    } -body {
+        civgroup local validate SHIA
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Invalid local civilian group, should be one of: KURD}
+
+    test local_validate-2.1 {Valid name} -setup {
+        ted create SHIA SUNN KURD
+        rdb eval {
+            UPDATE nbhoods SET local=0 WHERE n='NB1'
+        }
+    } -body {
+        civgroup local validate KURD
+    } -cleanup {
+        cleanup
+    } -result {KURD}
+
+    #-------------------------------------------------------------------
+    # gInN
+
+    test gInN-1.1 {g resides in n} -setup {
+        ted create NB1 NB2 SHIA KURD
+    } -body {
+        civgroup gInN SHIA NB1
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test gInN-1.1 {g does not reside in n} -setup {
+        ted create NB1 NB2 SHIA KURD
+    } -body {
+        civgroup gInN KURD NB1
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+    #-------------------------------------------------------------------
+    # gIn
+
+    test gIn-1.1 {get groups in n} -setup {
+        ted create NB1 NB2 SHIA SUNN KURD
+    } -body {
+        civgroup gIn NB1
+    } -cleanup {
+        cleanup
+    } -result {SHIA SUNN}
+
+
+    #-------------------------------------------------------------------
+    # getg
+
+    test getg-1.1 {get group dict} -setup {
+        ted create NB1 SHIA
+    } -body {
+        ted pdicts [civgroup getg SHIA]
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+        basepop    1000
+        bsid       1
+        color      {#c00001}
+        demeanor   AVERAGE
+        g          SHIA
+        gtype      CIV
+        hist_flag  0
+        housing    AT_HOME
+        lfp        60
+        longname   Shia
+        n          NB1
+        pop_cr     0.0
+        sa_flag    0
+        upc        0.0
+    }
+
+    test getg-1.2 {get group attribute} -setup {
+        ted create NB1 SHIA
+    } -body {
+        civgroup getg SHIA n
+    } -cleanup {
+        cleanup
+    } -result {NB1}
+
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+

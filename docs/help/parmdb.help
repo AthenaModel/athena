@@ -1,0 +1,102 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    parmdb.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: Model Parameters
+#
+#    This file is included into athena.help.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+
+page / parmdb "Model Parameters" {
+    <title>
+    Model parameters are variable settings used to calibrate
+    Athena's models and configure its low-level behavior.
+    Parameter values can be queried and set on the 
+    <link "my://app/parmdb" "Model Parameter"> page on the
+    <tab Detail>, or by using the <command parm> executive command.<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+
+page /parmdb locked "Locked Parameters" {
+    <title>
+    A few model parameters can only be set during
+    <term prep>; once time advances they are
+    "locked", and can no longer be changed using the
+    <command parm set>, <command parm import>, and 
+    <command parm reset> commands.<p>
+}
+
+#-----------------------------------------------------------------------
+# The pages for the individual parameters are created automatically
+# by the parmpages macros.
+
+
+# parmpage parm itemtype
+#
+# parm     The name of the parameter or subset
+# itemtype parm|subset
+#
+# Defines a parameter help page, defining the parent/child links properly.
+
+proc parmpage {parm itemtype} {
+    # FIRST, get the parent and slug of this page.
+    lassign [name2path /parmdb . $parm] parent slug
+
+    if {$itemtype eq "subset"} {
+        set title "$parm.*"
+        set tlinks [name2pathlinks /parmdb . $parm].*
+    } else {
+        set title $parm
+        set tlinks [name2pathlinks /parmdb . $parm]
+    }
+
+    set toplink "<link \"/parmdb\" \"Model Parameter\">"
+
+    set text "<mktitle small {$toplink} {$tlinks} {}>\n\n"
+
+    if {$itemtype ne "subset"} {
+        append text \
+       "Default value: [super ::projectlib::parmdb getdefault $parm]<p>\n\n"
+    }
+
+    set docstring [super ::projectlib::parmdb docstring $parm]
+    append text [string map {& &amp; < &lt; > &gt;} $docstring]
+    append text "<p>"
+
+    if {$itemtype eq "subset"} {
+        append text "\n<childlinks>"
+    }
+
+    page $parent $slug $title $text
+}
+
+# parmpages
+#
+# Creates a page called "parm.<parmname>" for each parameters.
+
+proc parmpages {} {
+    super ::projectlib::parmdb init
+
+    foreach {item itemtype} [super ::projectlib::parmdb items] {
+        parmpage $item $itemtype
+    }
+}
+
+#-----------------------------------------------------------------------
+
+parmpages
+
+
+
+

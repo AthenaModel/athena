@@ -1,0 +1,75 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    order_map.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: MAP:* Orders
+#
+#    This file is included into order.help.
+#
+#-----------------------------------------------------------------------
+
+page /order map "Map Orders" {
+    <title>
+
+    Athena allows the user to specify a map background to aid in both
+    the construction of the scenario and the analysis and
+    visualization of the results.  The following orders manipulate
+    the image used as the map background:<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+
+order MAP:IMPORT+FILE "Import Map From File" {
+    <parmlist>
+
+    <parm filename "Map File">
+    <b>Required.</b>  The name of a GIF, JPEG, or PNG image to be used
+    as the map background.
+    </parm>
+    </parmlist>
+
+    Imports an image into the scenario for use as the map background,
+    replacing any previous map image.  The image data is saved within
+    the scenario; it's not necessary to send the image file along with
+    the saved .adb file.<p>
+
+    This order is usually sent indirectly, using the
+    <menu "File/Import Map From File..."> menu item.  However, Athena should
+    eventually support order script, and it it is documented here for
+    that purpose.
+}
+
+#-----------------------------------------------------------------------
+
+order MAP:IMPORT+DATA "Import Map As Data" {
+    <parmlist>
+
+    <parm data  "Map Data">
+    <b>Required.</b> Binary data representing the image of a map.
+    </parm>
+
+    <parm proj  "Projection Data">
+    <b>Optional.</b> Map projection data in the form of a dictionary
+    </parm>
+
+    </parmlist>
+
+    Imports an image into the scenario for use as the map background,
+    replacing any previous map image.  The image data is saved within
+    the scenario; it's not necessary to send the image file along with
+    the saved .adb file.<p>
+
+    This order is usually sent indirectly, using the
+    <menu "File/Import Map From WMS..."> menu item.  However, Athena should
+    eventually support order script, and it it is documented here for
+    that purpose.
+}
+
+

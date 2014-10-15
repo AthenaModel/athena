@@ -1,0 +1,107 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-appserver.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    appserver(sim) tests.
+#
+#    This test suite tests the appserver(sim) API and URLs.
+#    The goal for the URLs is not to test the content in detail
+#    (Generated HTML content is too fragile) but to make sure that
+#    all URLs can be produced in all of their content types.
+#
+#    In addition, data content types (e.g., tcl/linkdict) should be
+#    tested explicitly.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Clean up after a test
+    proc cleanup {} {
+        ted cleanup
+    }
+
+    # errcatch cmd...
+    #
+    # cmd...   A command
+    #
+    # Catches the command, expecting an error; returns the error code
+    # and result.
+
+    proc errcatch {args} {
+        if {[catch {
+            uplevel 1 $args
+        } result opts]} {
+            return "[dict get $opts -errorcode] $result"
+        }
+
+        error "Expected error return, got OK"
+    }
+
+
+    #-------------------------------------------------------------------
+    # get
+
+    test get-1.1 {Retrieves content} -body {
+        expr {[dict get [appserver get /] content] ne ""}
+    } -result {1}
+
+    test get-1.2 {Returns URL} -body {
+        dict get [appserver get my://app/actors] url
+    } -result {my://app/actors}
+
+    test get-1.3 {Retrieves preferred ctype if no ctype given} -body {
+        dict get [appserver get /actors] contentType
+    } -result {tcl/linkdict}
+
+    test get-1.4 {Retrieves desired ctype if ctype given} -body {
+        dict get [appserver get /actors text/html] contentType
+    } -result {text/html}
+
+    test get-1.5 {Desired ctype can contain wild cards} -body {
+        dict get [appserver get /actors text/*] contentType
+    } -result {text/html}
+
+    test get-1.6 {NOTFOUND if resource is unknown} -body {
+        errcatch appserver get /nonesuch
+    } -result {NOTFOUND Resource not found or not compatible with this application.}
+
+    test get-1.7 {NOTFOUND if required content type is unavailable} -body {
+        errcatch appserver get /actors text/nonesuch
+    } -result {NOTFOUND Content-type unavailable: text/nonesuch}
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+

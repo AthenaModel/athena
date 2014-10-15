@@ -1,0 +1,305 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    020-BOOKMARK.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    app_sim(1) BOOKMARK:* order tests.
+#
+#    This test suite tests the bookmark-related orders.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Standard groups
+
+    set B1 {
+        url   my://app/one
+        title "Link One"
+    }
+
+    set B2 {
+        url   my://app/two
+        title "Link Two"
+    }
+
+    set B3 {
+        url   my://app/three
+        title "Link Three"
+    }
+
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        # Clean up the test environment
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # BOOKMARK:CREATE
+
+    test CREATE-1.1 {required parms} -body {
+        ted order -reject BOOKMARK:CREATE {}
+    } -result {
+        url {required value}
+        title {required value}
+    }
+    
+    test CREATE-2.1 {bookmark is created} -body {
+        ted order BOOKMARK:CREATE $B1
+
+        ted querylist {SELECT * FROM bookmarks}
+    } -cleanup {
+        cleanup
+    } -result {
+bookmark_id  1
+url          my://app/one
+title        Link One
+rank         1
+    }
+
+
+    test CREATE-2.2 {Effects} -body {
+        ted notifier bind ::rdb <bookmarks>
+        ted order BOOKMARK:CREATE $B1
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <bookmarks> update 1}
+    }
+
+
+    test CREATE-3.1 {undo effects} -setup {
+        ted order BOOKMARK:CREATE $B1
+    } -body {
+        ted notifier bind ::rdb <bookmarks>
+        cif undo -test
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <bookmarks> delete 1}
+    }
+
+
+    #-------------------------------------------------------------------
+    # BOOKMARK:DELETE
+
+    test DELETE-1.1 {required parms} -body {
+        ted order -reject BOOKMARK:DELETE {}
+    } -result {
+        bookmark_id {required value}
+    }
+
+    
+    test DELETE-1.2 {unknown bookmark} -body {
+        ted order -reject BOOKMARK:DELETE bookmark_id NONESUCH
+    } -result {
+        bookmark_id {Invalid bookmark ID, "NONESUCH"}
+    }
+
+
+    test DELETE-2.1 {Effects} -setup {
+        ted order BOOKMARK:CREATE $B1
+    } -body {
+        ted notifier bind ::rdb <bookmarks>
+        ted order BOOKMARK:DELETE bookmark_id 1 
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <bookmarks> delete 1}
+    }
+
+
+    test DELETE-3.1 {Undo effects} -setup {
+        ted order BOOKMARK:CREATE $B1
+        ted order BOOKMARK:DELETE bookmark_id 1 
+    } -body {
+        ted notifier bind ::rdb <bookmarks>
+        cif undo -test
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <bookmarks> update 1}
+    }
+
+
+    #-------------------------------------------------------------------
+    # BOOKMARK:UPDATE
+
+    test UPDATE-1.1 {required parms} -body {
+        ted order -reject BOOKMARK:UPDATE {}
+    } -result {
+        bookmark_id {required value}
+    }
+
+    test UPDATE-2.1 {bookmark is updated} -setup {
+        ted order BOOKMARK:CREATE $B1
+        ted order BOOKMARK:CREATE $B2
+    } -body {
+        ted order BOOKMARK:UPDATE {
+            bookmark_id  1
+            url          my://app/newone
+            title        "New Link One" 
+        }
+
+        ted query {SELECT * FROM bookmarks}
+    } -cleanup {
+        cleanup
+    } -result {
+bookmark_id url             title        rank 
+----------- --------------- ------------ ---- 
+1           my://app/newone New Link One 1    
+2           my://app/two    Link Two     2    
+    }
+
+
+    test UPDATE-2.2 {table monitor event} -setup {
+        ted order BOOKMARK:CREATE $B1
+    } -body {
+        ted notifier bind ::rdb <bookmarks>
+        ted order BOOKMARK:UPDATE bookmark_id 1 title "New Title" 
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <bookmarks> update 1}
+    }
+
+
+    test UPDATE-3.1 {undo undoes the change} -setup {
+        ted order BOOKMARK:CREATE $B1
+        ted order BOOKMARK:UPDATE {
+            bookmark_id  1
+            url          my://app/newone
+            title        "New Link One" 
+        }
+    } -body {
+        ted notifier bind ::rdb <bookmarks>
+        cif undo -test
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <bookmarks> update 1}
+    }
+
+    #-------------------------------------------------------------------
+    # BOOKMARK:RANK
+
+    proc rank_setup {} {
+        variable B1
+        variable B2
+        variable B3
+
+        ted order BOOKMARK:CREATE $B1
+        ted order BOOKMARK:CREATE $B2
+        ted order BOOKMARK:CREATE $B3
+    }
+
+    test RANK-1.1 {required parms} -body {
+        ted order -reject BOOKMARK:RANK {}
+    } -result {
+        bookmark_id {required value}
+        rank {required value}
+    }
+
+    
+    test RANK-1.2 {unknown bookmark_id} -body {
+        ted order -reject BOOKMARK:RANK bookmark_id NONESUCH rank top
+    } -result {
+        bookmark_id {Invalid bookmark ID, "NONESUCH"}
+    }
+
+    test RANK-1.3 {invalid rank} -setup {
+        rank_setup
+    } -body {
+        ted order -reject BOOKMARK:RANK bookmark_id 1 rank NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        rank {invalid value "nonesuch", should be one of: top, raise, lower, bottom}
+    }
+
+    test RANK-2.1 {set rank} -setup {
+        rank_setup
+    } -body {
+        ted order BOOKMARK:RANK bookmark_id 3 rank top
+        rdb eval {SELECT bookmark_id FROM bookmarks ORDER BY rank}
+    } -cleanup {
+        cleanup
+    } -result {3 1 2}
+
+    test RANK-2.2 {Effects} -setup {
+        rank_setup
+    } -body {
+        ted notifier bind ::rdb <bookmarks>
+        ted order BOOKMARK:RANK bookmark_id 3 rank top
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <bookmarks> update 3}
+        {::rdb <bookmarks> update 1}
+        {::rdb <bookmarks> update 2}
+    }
+
+
+    test RANK-3.1 {Undo effects} -setup {
+        rank_setup
+        ted order BOOKMARK:RANK bookmark_id 3 rank top
+    } -body {
+        ted notifier bind ::rdb <bookmarks>
+        cif undo -test
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <bookmarks> update 1}
+        {::rdb <bookmarks> update 2}
+        {::rdb <bookmarks> update 3}
+    }
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+

@@ -1,0 +1,58 @@
+<manpage {devtools(1) helptool(1)} "Help Compiler">
+
+<section SYNOPSIS>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+<deflist program>
+
+<defitem helptool {helptool ?<i>options...</i>? <i>file.help</i> ?<i>file.helpdb</i>?}>
+
+</deflist program>
+
+helptool(1) compiles <xref help(5)> input into a *.helpdb help
+database that can be browsed using <xref helpserver(n)> and
+<xref mybrowser(n)>.  For example,<p>
+
+<pre>
+    $ helptool input.help output.helpdb
+</pre>
+
+If the output file name is omitted, the output file's name
+will be the same as the input file's name with the extension switched to
+"<code>.helpdb</code>".<p>
+
+The command takes the following options:<p>
+
+<deflist options>
+
+<defopt {-libdir <i>dirname</i>}>
+
+Adds an external Tcl library directory to the Tcl
+<code>auto_path</code>, so that packages can be loaded from it.<p>
+
+<defopt {-lib "<i>packageName</i> ?<i>packageVersion</i>?"}>
+
+Loads an external Tcl package, so that its commands can called to help
+define help pages.  If the <i>packageVersion</i> is included, the
+package name and version must be enclosed in double quotes.<p>
+
+<defopt {-version <i>version</i>}>
+
+Specifies the version number of the software for which the on-line is
+being written.  This version number can be included in the text of a
+help page using the <xref help(5) version> macro.<p>
+
+</deflist options>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+New program.<p>
+
+</manpage>

@@ -1,0 +1,93 @@
+Title: Standards
+
+Application standard practices.
+
+File:
+   standard.txt
+
+Package:
+   app_sim(n) -- athena_sim(1) implementation package
+
+Project:
+   Athena S&RO Simulation
+
+Author:
+   Will Duquette
+
+#-----------------------------------------------------------------------
+Section: Standard Method Names
+
+Athena application modules use the following standard method names.
+
+dbsync   - Database synchronization.  This takes place when the RDB is
+           changed out from under the module, and the module needs to
+           resynchronize itself with the database.  This name is used
+           only if the method needs to be public; most modules will
+           dbsync in response to a notifier event.
+
+init     - Module initializer; can be used by any module.  Called once 
+           at application start-up.
+
+mutate * - Mutator method: modifies the model's data, supporting
+           undo.  See <Orders and Mutators>.  Mutators handle the
+           direct consequences of orders.
+
+analyze  - An analysis routine; if the module does multiple
+           Analysis steps, this routine may have subcommands.  Analyze
+           routines are called at start and during advances.
+
+start    - Model initializer; used by simulation modules.  It is called
+           when the simulation transitions from the Scenario Preparation
+           (PREP) state to the PAUSED state at time 0.  A start
+           routine can call Analysis and Assessment routines.
+
+tock     - Model updater; used by simulation modules.  It is called
+           during the simulation tick to advance the module's model(s) to
+           the current simulation time.  A "tock" routine can also
+           call Analysis and Assessment routines.
+
+tick     - Like "tock", but a tick routine would be called every time tick.
+
+assess   - An Assessment routine.  It will be called only during a
+           time advance.
+
+advance  - A "tick" or "tock" routine.  Usually used by library modules.
+
+#-----------------------------------------------------------------------
+Section: Orders and Mutators
+
+Operations that change scenario data in response to user input are
+implemented in two pieces, as an *order* and a *mutator*.  
+
+The mutator is an object method or typemethod that actually does the
+work.  The conventions for mutators are as follows.
+
+* All of an object's mutators are subcommands of the object's 
+  "mutate" subcommand.  Thus, "::nbhood mutate delete" is the mutator
+  that deletes a neighborhood.
+
+* The mutator takes as its arguments any data required to do the work.
+  If more than one or two parameters are required, they are usually
+  passed as a dictionary.
+
+* The mutator does not validate its parameters; this is the
+  responsibility of the caller.
+
+* If the mutator's action is undoable, it must return a script that
+  undoes it when executed.  Otherwise, it must return the empty string.
+
+The order is an order(sim) order handler.  It must
+
+* Validate the order parameters thoroughly, providing detailed error
+  messages.
+
+* Call "returnOnError -final" after all validation has been done.
+
+* Call the relevant mutator or mutators to perform the change.
+
+* Accumulate the undo scripts, if any, and pass the combined undo
+  script back to order(sim) using "setundo".
+
+In general, orders and the mutators they call should reside in the
+same module; and mutators should generally be called only by orders by
+other mutators.

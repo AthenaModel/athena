@@ -1,0 +1,88 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    order_frcgroup.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: FRCGROUP:* Orders
+#
+#    This file is included into order.help.
+#
+#-----------------------------------------------------------------------
+
+#=======================================================================
+# Force Group Orders
+
+page /order frcgroup "Force Group Orders" {
+    <title>
+
+    These orders are used create, update, and delete 
+    <term frcgroup>s.
+
+    <childlinks>
+}
+
+
+#-----------------------------------------------------------------------
+
+order FRCGROUP:CREATE "Create Force Group" {
+    <b><term prep> Only.</b>  This order creates a new 
+    <term frcgroup>.
+    The order parameters are as follows:<p>
+
+    <parmlist>
+    <group_frc parms -required -tags create>
+    </parmlist>
+}
+
+
+#-----------------------------------------------------------------------
+
+order FRCGROUP:DELETE "Delete Force Group" {
+    <b><term prep> Only.</b>  Deletes an existing
+    <term frcgroup>, along with all entities
+    that depend upon it.  The order parameters are as follows:<p>
+
+    <parmlist>
+    <parm g "Group">
+    <b>Required.</b>  <GROUP.g force>
+    </parm>
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order FRCGROUP:UPDATE "Update Force Group" {
+    <b><term prep> Only.</b>  This order modifies the
+    definition of an existing <term frcgroup>.  The order
+    parameters are as follows:<p>
+
+    <parmlist>
+    <parm g "Select Group">
+    <b>Required.</b>  <GROUP.g force>
+    </parm>
+
+    <group_frc parms -optional -tags update>
+    </parmlist>
+}
+
+
+#-----------------------------------------------------------------------
+
+order FRCGROUP:UPDATE+MULTI "Update Multiple Force Groups" {
+    <b><term prep> Only.</b>  This order modifies the
+    definition of two or more existing <term frcgroup>s, as
+    selected in the GUI.  The order parameters are as follows:<p>
+
+    <parmlist>
+    <parm ids "Groups">
+    <b>Required.</b>  <parm.ids "force group">
+    </parm>
+
+    <group_frc parms -optional -tags multi>
+    </parmlist>
+}
+

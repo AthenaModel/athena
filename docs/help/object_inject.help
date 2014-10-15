@@ -1,0 +1,291 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    object_inject.help
+#
+# AUTHOR:
+#    Dave Hanks
+#
+# DESCRIPTION:
+#    Athena Help Documentation: inject Simulation Objects
+#
+#    This file is included into object.help.
+#
+#-----------------------------------------------------------------------
+
+macro INJECT.mag {} {
+    |<--
+    The magnitude of the inject in points, expressed as a real
+    number, or as one of the symbols from the following table:<p>
+
+    [super ::simlib::qmag html]
+}
+
+object inject_ {
+    noun "inject"
+    overview {
+        Injects are the <cref /object> by which a
+        <term curse> has its effect on actors and groups.
+        Each CURSE has one or more injects, each of which affects
+        a specific set of attitudes.  For example, a CURSE may need
+        to cause the vertical relationship between one or more <term actor>s
+        and one or more <term civgroup>s to simulate the effects of some 
+        event.<p>
+
+        Injects use <term role>s rather than explicitly chosen groups
+        and actors to cause effects in Athena.  A <term role> can be
+        thought of as a variable that holds one or more IDs for a group or
+        actor depending on the type of inject.  For example, a 
+        <cref /object/inject/vrel VREL> inject must have a role for one
+        or more <term actor>s and one or more <term group>s.<p>
+
+        There are several different types of inject; they are all 
+        created, edited, and browsed on the 
+        <cref /tab/physical/curses>.<p>
+    }
+
+    attribute curse_id "CURSE ID" {
+        The CURSE ID, the identifier of the <term curse> to which
+        this inject is attached.
+    } -tags {object create}
+
+
+    attribute inject_num "Inject Number" {
+        The inject number, which identifies the inject relative to 
+        its <term curse>.
+    } -tags {object}
+
+    attribute id "Inject" {
+        The ID of this inject, which consists of the ID of the
+        <term curse> to which it is attached, and its inject number
+        with respect to the CURSE, as a list 
+        {<i>curse_id inject_number</i>}.
+    } -tags {object state}
+
+    attribute mode "Mode" {
+        The mode, <b>persistent</b> or <b>transient</b>.  Transient
+        injects affect the current level of the curve during the next
+        time step; persistent injects affect the curve's baseline, and
+        hence usually persistent during subsequent weeks.
+    } -tags {object create update}
+
+    attribute inject_type "Inject Type" {
+        The inject's type, e.g., 
+        <b><cref /object/inject/vrel VREL></b>.
+    } -tags {object}
+
+    attribute state "State" {
+        The inject's state, one of <b>normal</b>, <b>disabled</b>, or 
+        <b>invalid</b>.  Both <b>disabled</b> and <b>invalid</b> injects
+        are ignored when the <term curse> is sent; the 
+        difference is that <b>disabled</b> injects are explicitly
+        disabled by the user, while <b>invalid</b> injects are disabled
+        due to failing a sanity check.
+    } -tags {object state}
+}
+
+page /object inject "Inject" {
+    <sotitle>
+
+    <inject_ overview><p>
+
+    There are several different kinds of injects; all share the following
+    parameters:<p>
+
+    <inject_ parmlist -tags object>
+
+    The full set of injects is as follows:<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+# COOP
+
+object inject_coop {
+    noun "COOP inject"
+    overview {
+        This <term inject> affects the cooperation of the 
+        civilian groups in the civilian group <term role>
+        with force groups in the force group <term role>.
+    }
+
+    include inject_ -attrs {curse_id inject_num state mode}
+
+    attribute ftype "Civlian Group Role Type" {
+        This parameter specifies if the <term role> is new or already 
+        exists. For new roles, it should be set to <b>NEW</b> for roles
+        that already exist, it should be set to <b>EXISTING</b>.
+    } -tags {create update}
+
+    attribute gtype "Force Group Role Type" {
+        This parameter specifies if the <term role> is new or already 
+        exists. For new roles, it should be set to <b>NEW</b> for roles
+        that already exist, it should be set to <b>EXISTING</b>.
+    } -tags {create update}
+
+    attribute f "Of Civ Group Role" {
+        The ID of a <term role> for civilian groups.
+    } -tags {create update}
+
+    attribute g "With Force Group Role" {
+        The ID of a <term role> for force groups.
+    } -tags {create update}
+
+    attribute mag "Magnitude" {
+        <INJECT.mag>
+    } -tags {create update}
+}
+
+page /object/inject coop "COOP inject" {
+    <sotitle>
+
+    <inject_coop overview><p>
+
+    COOP injects have the following attributes:<p>
+
+    <inject_coop parmlist>
+}
+
+#-----------------------------------------------------------------------
+# HREL
+
+object inject_hrel {
+    noun "HREL inject"
+    overview {
+        This <term inject> affects the horizontal relationship
+        of the set of groups in one <term role> with the
+        set of groups in another <term role>.
+    }
+
+    include inject_ -attrs {curse_id inject_num state mode}
+
+    attribute ftype "Group Role Type" {
+        This parameter specifies if the <term role> is new or already 
+        exists. For new roles, it should be set to <b>NEW</b> for roles
+        that already exist, it should be set to <b>EXISTING</b>.
+    } -tags {create update}
+
+    attribute gtype "Group Role Type" {
+        This parameter specifies if the <term role> is new or already 
+        exists. For new roles, it should be set to <b>NEW</b> for roles
+        that already exist, it should be set to <b>EXISTING</b>.
+    } -tags {create update}
+
+    attribute f "Of Group Role" {
+        The ID of a <term role> for one or more <term group>s.  
+        The group may be of any type.
+    } -tags {create update}
+
+    attribute g "With Group Role" {
+        The ID of a <term role> for one or more <term group>s.  
+        The group may be of any type.
+    } -tags {create update}
+
+    attribute mag "Magnitude" {
+        <INJECT.mag>
+    } -tags {create update}
+}
+
+page /object/inject hrel "HREL inject" {
+    <sotitle>
+
+    <inject_hrel overview><p>
+
+    HREL injects have the following attributes:<p>
+
+    <inject_hrel parmlist>
+}
+
+#-----------------------------------------------------------------------
+# SAT
+
+object inject_sat {
+    noun "SAT inject"
+    overview {
+        This <term inject> affects the satisfaction
+        of the civilian groups in a <term role> with a particular 
+        concern.
+    }
+
+    include inject_ -attrs {curse_id inject_num state mode}
+
+    attribute gtype "Civlian Group Role Type" {
+        This parameter specifies if the <term role> is new or already 
+        exists. For new roles, it should be set to <b>NEW</b> for roles
+        that already exist, it should be set to <b>EXISTING</b>.
+    } -tags {create update}
+
+    attribute g "Civ. Group Role" {
+        The ID of a <term role> for one or more <term civgroup>s.  
+    } -tags {create update}
+
+    attribute c "With" {
+        The ID of a <term concern>.
+    } -tags {create update}
+
+    attribute mag "Magnitude" {
+        <INJECT.mag>
+    } -tags {create update}
+}
+
+page /object/inject sat "SAT inject" {
+    <sotitle>
+
+    <inject_sat overview><p>
+
+    SAT injects have the following attributes:<p>
+
+    <inject_sat parmlist>
+}
+
+#-----------------------------------------------------------------------
+# HREL
+
+object inject_vrel {
+    noun "VREL inject"
+    overview {
+        This <term inject> affects the vertical relationship
+        of the groups in a <term role> with actors in another 
+        <term role>.
+    }
+
+    include inject_ -attrs {curse_id inject_num state mode}
+
+    attribute gtype "Group Role Type" {
+        This parameter specifies if the <term role> is new or already 
+        exists. For new roles, it should be set to <b>NEW</b> for roles
+        that already exist, it should be set to <b>EXISTING</b>.
+    } -tags {create update}
+
+    attribute atype "Actor Role Type" {
+        This parameter specifies if the <term role> is new or already 
+        exists. For new roles, it should be set to <b>NEW</b> for roles
+        that already exist, it should be set to <b>EXISTING</b>.
+    } -tags {create update}
+
+    attribute g "Of Group Role" {
+        The ID of a <term role> for one or more <term group>s.  
+        The group may be of any type.
+    } -tags {create update}
+
+    attribute a "With Actor Role" {
+        The ID of a <term role> for one or more <term actor>s.
+    } -tags {create update}
+
+    attribute mag "Magnitude" {
+        <INJECT.mag>
+    } -tags {create update}
+}
+
+page /object/inject vrel "VREL inject" {
+    <sotitle>
+
+    <inject_vrel overview><p>
+
+    VREL injects have the following attributes:<p>
+
+    <inject_vrel parmlist>
+}
+
+

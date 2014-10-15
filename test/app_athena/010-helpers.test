@@ -1,0 +1,122 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-helpers.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    helper(sim) tests.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Clean up after a test
+    proc cleanup {} {
+        ted cleanup
+    }
+
+
+    #-----------------------------------------------------------------
+    # andlist 
+
+    test andlist-1.1 {No items} -body {
+        andlist widget {}
+    } -result {widget ???}
+
+    test andlist-1.2 {One item} -body {
+        andlist widget {A}
+    } -result {widget A}
+
+    test andlist-1.3 {Two items} -body {
+        andlist widget {A B}
+    } -result {widgets A and B}
+    
+    test andlist-1.4 {Three items} -body {
+        andlist widget {A B C}
+    } -result {widgets A, B and C}
+
+    #-----------------------------------------------------------------
+    # fillparms
+
+    test fillparms-1.1 {Fills in order parms} -setup {
+        ted create SHIA
+    } -body {
+        array unset parms
+        set parms(basepop) 150000
+        set parms(demeanor) ""
+        set parms(NONESUCH) ""
+
+        fillparms parms [civgroup getg SHIA]
+        ted pdict [array get parms]
+
+        # Parms with values are unchanged.
+        # Parms with empty values are filled in, if a value is available.
+    } -cleanup {
+        cleanup
+    } -result {
+        basepop  150000
+        NONESUCH {}
+        demeanor AVERAGE
+    }
+
+    #-------------------------------------------------------------------
+    # lmap
+
+    test lmap-1.1 {maps old list to new list} -body {
+        lmap {a b c} x {string toupper $x}
+    } -result {A B C}
+
+    test lmap-1.2 {empty list yields empty list} -body {
+        lmap {} x {string toupper $x}
+    } -result {}
+
+    test lmap-1.3 {empty body yields list of empty lists} -body {
+        lmap {a b c} x {}
+    } -result {{} {} {}}
+
+    #-------------------------------------------------------------------
+    # optdict2parmdict
+
+    test optdict2parmdict {converts to parmdict} -body {
+        optdict2parmdict {-first 1 -second 2 third 3}
+    } -result {first 1 second 2 third 3}
+
+    #-------------------------------------------------------------------
+    # parmdict2optdict
+    
+    test parmdict2optdict {converts to optdict} -body {
+        parmdict2optdict {-first 1 second 2 third 3}
+    } -result {-first 1 -second 2 -third 3}
+
+
+    #-------------------------------------------------------------------
+    # Done
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::

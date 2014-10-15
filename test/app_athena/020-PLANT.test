@@ -1,0 +1,342 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    020-PLANT.test
+#
+# AUTHOR:
+#    Dave Hanks
+#
+# DESCRIPTION:
+#    app_sim(1) PLANT:* order tests.
+#
+#    This test suite tests the plant-related orders.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Standard allocations of plant shares
+    set p1 {
+        n NB1
+        a JOE
+        rho 0.9
+        num 2
+    }
+
+    set p2 {
+        n NB1
+        a BOB
+        rho 0.8
+        num 1 
+    }
+
+    # Setup
+    proc setup {} {
+        ted create JOE BOB NB1 NB2 NL1 SHIA SUNN KURD NOT_LOCALS
+    }
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        # Clean up the test environment
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # PLANT:SHARES:CREATE
+
+    test CREATE-1.1 {required parms} -body {
+        ted order -reject PLANT:SHARES:CREATE {}
+    } -result {
+        a {required value}
+        n {required value}
+    }
+    
+    test CREATE-1.2 {invalid nbhood} -body {
+        setup
+        ted order -reject PLANT:SHARES:CREATE {*}$p1 n NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        n {Invalid local neighborhood, should be one of: NB1, NB2}
+    }
+
+    test CREATE-1.3 {invalid nbhood, not local} -body {
+        setup
+        ted order -reject PLANT:SHARES:CREATE {*}$p1 n NL1
+    } -cleanup {
+        cleanup
+    } -result {
+        n {Invalid local neighborhood, should be one of: NB1, NB2}
+    }
+
+    test CREATE-1.4 {invalid agent} -body {
+        setup
+        ted order -reject PLANT:SHARES:CREATE {*}$p1 a NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        a {Invalid agent, should be one of: BOB, JOE, SYSTEM}
+    }
+
+    test CREATE-2.1 {record is created} -setup {
+        setup
+    } -body {
+        ted order PLANT:SHARES:CREATE $p1
+
+        ted querylist {SELECT * FROM plants_shares}
+    } -cleanup {
+        cleanup
+    } -result {
+n    NB1
+a    JOE
+num  2
+rho  0.9
+    }
+
+    test CREATE-2.2 {Effects} -setup {
+        setup
+    } -body {
+        ted notifier bind ::rdb <plants_shares>
+        ted order PLANT:SHARES:CREATE $p1
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <plants_shares> update {NB1 JOE}}
+    }
+
+    test CREATE-3.1 {undo effects} -setup {
+        setup
+        ted order PLANT:SHARES:CREATE $p1
+    } -body {
+        ted notifier bind ::rdb <plants_shares>
+        cif undo -test
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <plants_shares> delete {NB1 JOE}}
+    }
+
+
+    #-------------------------------------------------------------------
+    # PLANT:SHARES:DELETE
+
+    test DELETE-1.1 {required parms} -body {
+        ted order -reject PLANT:SHARES:DELETE {}
+    } -result {
+        id {required value}
+    }
+
+    
+    test DELETE-1.2 {unknown id} -body {
+        ted order -reject PLANT:SHARES:DELETE id {NONESUCH NONESUCH}
+    } -result {
+        id {Invalid plant ID "NONESUCH NONESUCH".}
+    }
+
+
+    test DELETE-2.1 {Effects} -setup {
+        setup
+        ted order PLANT:SHARES:CREATE $p1
+    } -body {
+        ted notifier bind ::rdb <plants_shares>
+        ted order PLANT:SHARES:DELETE id {NB1 JOE}
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <plants_shares> delete {NB1 JOE}}
+    }
+
+
+    test DELETE-3.1 {Undo effects} -setup {
+        setup
+        ted order PLANT:SHARES:CREATE $p1
+        ted order PLANT:SHARES:DELETE id {NB1 JOE}
+    } -body {
+        ted notifier bind ::rdb <plants_shares>
+        cif undo -test
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <plants_shares> update {NB1 JOE}}
+    }
+
+
+    #-------------------------------------------------------------------
+    # PLANT:SHARES:UPDATE
+
+    test UPDATE-1.1 {required parms} -body {
+        ted order -reject PLANT:SHARES:UPDATE {}
+    } -result {
+        id {required value}
+    }
+
+    test UPDATE-1.2 {invalid id} -setup {
+        setup
+        ted order PLANT:SHARES:CREATE $p1
+    } -body {
+        ted order -reject PLANT:SHARES:UPDATE id {FOO JOE}
+    } -cleanup {
+        cleanup
+    } -result {
+        id {Invalid plant ID "FOO JOE".}
+    }
+
+    test UPDATE-2.1 {record is updated} -setup {
+        setup
+        ted order PLANT:SHARES:CREATE $p1
+    } -body {
+        ted order PLANT:SHARES:UPDATE {
+            id        {NB1 JOE}
+            rho       0.5
+            num       3
+        }
+
+        ted querylist {SELECT * FROM plants_shares}
+    } -cleanup {
+        cleanup
+    } -result {
+n    NB1
+a    JOE
+num  3
+rho  0.5
+    }
+
+    test UPDATE-2.2 {table monitor event} -setup {
+        setup
+        ted order PLANT:SHARES:CREATE $p1
+    } -body {
+        ted notifier bind ::rdb <plants_shares>
+        ted order PLANT:SHARES:UPDATE id {NB1 JOE} rho 0.5
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <plants_shares> update {NB1 JOE}}
+    }
+
+    test UPDATE-3.1 {undo undoes the change} -setup {
+        setup
+        ted order PLANT:SHARES:CREATE $p1
+        ted order PLANT:SHARES:UPDATE id {NB1 JOE} rho 0.5
+    } -body {
+        ted notifier bind ::rdb <plants_shares>
+        cif undo -test
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <plants_shares> update {NB1 JOE}}
+    }
+
+    #-------------------------------------------------------------------
+    # PLANT:SHARES:UPDATE:MULTI
+
+    test UPDATE:MULTI-1.1 {required parms} -body {
+        ted order -reject PLANT:SHARES:UPDATE:MULTI {}
+    } -result {
+        ids {required value}
+    }
+    
+
+    test UPDATE:MULTI-1.2 {invalid ids} -body {
+        ted order -reject PLANT:SHARES:UPDATE:MULTI ids NONESUCH
+    } -result {
+        ids {Invalid plant ID "NONESUCH".}
+    }
+
+    test UPDATE:MULTI-2.1 {one record of several is updated} -setup {
+        setup
+        ted order PLANT:SHARES:CREATE $p1
+        ted order PLANT:SHARES:CREATE $p2
+    } -body {
+        ted notifier bind ::rdb <plants_shares>
+
+        ted order PLANT:SHARES:UPDATE:MULTI {
+            ids          {{NB1 JOE}}
+            rho          0.5
+            num          3
+        }
+
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <plants_shares> update {NB1 JOE}}
+    }
+
+
+    test UPDATE:MULTI-2.2 {several records are updated} -setup {
+        setup
+        ted order PLANT:SHARES:CREATE $p1
+        ted order PLANT:SHARES:CREATE $p2
+    } -body {
+        ted notifier bind ::rdb <plants_shares>
+
+        ted order PLANT:SHARES:UPDATE:MULTI {
+            ids          {{NB1 JOE} {NB1 BOB}}
+            rho          0.5
+            num          1
+        }
+
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <plants_shares> update {NB1 JOE}}
+        {::rdb <plants_shares> update {NB1 BOB}}
+    }
+
+    test UPDATE:MULTI-3.1 {undo effects} -setup {
+        setup
+        ted order PLANT:SHARES:CREATE $p1
+        ted order PLANT:SHARES:CREATE $p2
+        ted order PLANT:SHARES:UPDATE:MULTI {
+            ids          {{NB1 JOE} {NB1 BOB}}
+            rho          0.5
+            num          1
+        }
+    } -body {
+        ted notifier bind ::rdb <plants_shares>
+        cif undo -test
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <plants_shares> update {NB1 JOE}}
+        {::rdb <plants_shares> update {NB1 BOB}}
+    }
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+

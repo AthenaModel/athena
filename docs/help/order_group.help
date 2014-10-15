@@ -1,0 +1,72 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    order_group.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: macros for the *GROUP:* orders.
+#
+#    This file is included into order.help.
+#
+#-----------------------------------------------------------------------
+
+macro GROUP.g {flavor} {
+    |<--
+    The ID of an existing $flavor group.
+}
+
+macro GROUP.color {} {
+    |<--
+    The group's color, used when displaying the group's units
+    on the map viewer.  In general, group colors will be selected
+    using the color selection dialog; if a color is entered as a
+    string, it must be specified as a hex color string, of
+    one of the following forms<p>
+
+    #<i>rrggbb</i><br>
+    #<i>rrrgggbbb</i><br>
+    #<i>rrrrggggbbbb</i><p>
+
+    where <i>r</i>, <i>g</i> and <i>b</i> are hexadecimal digits 
+    expressing a shade of red, green, or blue.  Thus, "#000000" is
+    black, and "#FFFFFF" is white.<p>
+}
+
+macro GROUP.shape {} {
+    |<--
+    According to MIL-STD-2525a, friendly, neutral, and enemy units
+    are drawn differently by the map viewer.  This parameter
+    determines whether the group's units are drawn as friendly,
+    neutral, or enemy.  The possible values are as follows:<p>
+
+    [enumdoc ::projectlib::eunitshape]
+}
+
+macro GROUP.demeanor {} {
+    |<--
+    The demeanor of the group, i.e., its propensity for
+    violence. The possible values are as follows:<p>
+
+    [enumdoc ::projectlib::edemeanor]
+}
+
+macro GROUP.a {} {
+    |<--
+    The group's owning actor.  This parameter may remain unset during
+    [term prep], but must be specified before time can be
+    advanced.
+}
+
+macro GROUP.cost {} {
+    |<--
+    The cost to the owning actor of 
+    maintaining one member of the group in the playbox for one week,
+    in dollars.
+    Costs incurred outside the playbox should be excluded, e.g., 
+    wages for U.S. troops.  The cost is expressed as a decimal number
+    with an optional "K", "M", or "B" suffix, "1K" is 1,000 dollars.
+}
+

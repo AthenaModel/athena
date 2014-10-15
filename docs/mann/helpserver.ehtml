@@ -1,0 +1,190 @@
+<manpage {projectlib(n) helpserver(n)} "help(5) myserver(i) Server">
+
+<section SYNOPSIS>
+
+<pre>
+package require projectlib 1.0
+namespace import ::projectlib::helpserver
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+helpserver(n) is a <xref myserver(i)> implementation designed for
+browsing <xref help(5)> help files.
+The application creates an instance of helpserver(n), specifying a
+help database using the <code>-helpdb</code> option, and registers the
+instance with <xref myagent(n)>.  At that point, <xref myagent(n)>
+clients like <xref mybrowser(n)> can query it.<p>
+
+The resources known to the server are listed under <xref RESOURCES>;
+they can also be seen by querying the server's 
+<code>/urlhelp</code> resource.<p>
+
+<subsection "Searching">
+
+A page URL can include a query in the usual way, delimited with a
+question mark, e.g.,<p>
+
+<pre>
+    /?my search text
+</pre>
+
+A query can be added to any page URL; however, the page path is
+discarded and doesn't affect the search.<p>
+
+Searching proceeds as follows:<p>
+
+<ol>
+  <li> If the search text exactly matches a page title, that page is
+       returned.  This match is case-insensitive.<p>
+
+  <li> Otherwise, the search text is passed to SQLite3's full text
+       search engine, and a page of links to matched pages is returned.<p>
+</ol><p>
+
+
+<section "CONTENT TYPES">
+
+All <xref help(5)> pages have the content type <b>text/html</b>.
+Embedded images have the content type <b>tk/image</b>.  All page URLs
+can also be retrieved as <b>tcl/linkdict</b>, in which the data
+returned is a dictionary of links to the page's children, if any.<p>
+
+<section "RESOURCES">
+
+In addition to the standard resources provided by
+<xref myserver(n)>, helpserver(n) provides the following:<p>
+
+<deflist resources>
+
+<defitem / {/}>
+
+This is the main help page; lower level pages can be referenced by
+adding on to the path in the usual way.  The <b>text/html</b> content type
+is the help text itself; the <b>tcl/linkdict</b> content type is a
+dictionary of links to the child pages, if any.<p>
+
+If the URL contains a query, the help database will be searched.  See
+<xref Searching> for details.
+
+<defitem /image {/image/<i>name</i>}>
+
+Returns the <b>tk/image</b> resources compiled into the help database
+with the given name.<p>
+
+</deflist resources>
+
+<section "COMMANDS">
+
+helpserver(n) provides the following commands for use by the
+application.<p>
+
+<deflist commands>
+
+<defitem helpserver {helpserver <i>name</i> ?<i>options...</i>?}>
+
+Creates a new instance of helpserver(n) called <i>name</i>; returns the
+fully-qualified command name.<p>
+
+helpserver(n) has the following option:<p>
+
+<deflist options>
+
+<defopt {-helpdb <i>database</i>}>
+
+Specifies the <xref help(5)> database to query, expressed as an
+<xref sqldocument(n)> object.<p>
+
+<defopt {-headercmd <i>command</i>}>
+
+Specifies a <i>command</i> that will be called for each returned
+<b>text/html</b> help page.  It take one argument, the "udict" passed
+to the <xref myserver(n)> content handler, and returns a snippet of
+HTML text to be inserted at the top of the HTML page.<p>
+
+</deflist options>
+
+</deflist commands>
+
+
+<section "INSTANCE COMMANDS">
+
+Instances of helpserver(n) provide the following subcommands for use by
+the application.<p>
+
+<deflist instance>
+
+<defitem ctypes {$server ctypes <i>rtype</i>}>
+
+Given a resource type name, <i>rtype</i>, returns a list of the
+available content types.<p>
+
+<defitem get {$server get <i>url</i> ?<i>contentTypes</i>?}>
+
+<b>From <xref myserver(i)>:</b> Retrieves the <i>url</i> from the
+server.  If the <i>url</i> cannot be retrieved for any reason, the
+server throws an error with error code <b>NOTFOUND</b>; the error
+message is a human-readable message explaining why the resource cannot
+be found.<p>
+
+The <i>contentTypes</i> argument, if given, is a list of content types
+accepted by the client.  Browse the server's <code>/urlhelp</code> resource
+to see what URLs are accepted, and what content types they can
+provide.  Custom content types should be documented by the application.<p>
+
+If <i>contentTypes</i> is empty, the server will return the first
+available content type for the requested <i>url</i>.  Otherwise, it
+will return the first content type listed in <i>contentTypes</i> which
+is available for the requested <i>url</i>.<p>
+
+Note that the content types listed in <i>contentTypes</i> can include
+wild cards, e.g., <b>text/*</b> and <b>*/*</b>.<p>
+
+On success, the <iref get> command returns a dictionary with the
+following keys:<p>
+
+<deflist getdict>
+
+<defitem url {url}>
+
+The complete URL given to the server.  This is of interest because the
+<xref myagent(n)> might have performed address resolution; hence,
+the URL given to the server might not be the same as the URL given to
+the agent.<p>
+
+<defitem contentType {contentType}>
+
+The content type of the returned content.<p>
+
+<defitem content {content}>
+
+The returned content itself.
+
+</deflist>
+
+<defitem resources {$server resources}>
+
+Returns a list of the names of the registered resource types.<p>
+
+</deflist instance>
+
+<section ENVIRONMENT>
+
+Requires Tcl 8.5 or later.<p>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+

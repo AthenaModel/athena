@@ -1,0 +1,89 @@
+<manpage {projectlib(n) week(n)} "Julian Week Type">
+
+<section SYNOPSIS>
+
+<pre>
+package require projectlib 1.0
+namespace import ::projectlib::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+The Athena simulation's time tick is one week.  For convenience, we
+map this to real time in the form of Julian weeks.  Each year
+consists of 52 Julian weeks, starting on January 1st.  The week
+containing February 29th contains eight days during leap year, and
+the last week in December always contains eight days.  Athena ignores
+these distinctions, just as it ignores the days of the week.<p>
+
+The <xref week(n)> type is responsible for converting between
+Julian week strings and the integer number of Julian weeks since the epoch,
+which for this type is defined as the first week of 2000 AD.  Thus,
+the first week of 2000 AD is week 0, the first week of 2001 is week
+52, the first week of 2002 is week 104, and so on.  Note that
+negative week numbers are perfectly fine; the first week of 1999 is
+week -52.<p>
+
+<subsection "Julian Week Strings">
+
+The string representation of a particular Julian week is a string
+<b><i>yyyy</i>W<i>ww</i></b> where <i>yyyy</i> is the four digit
+year, and <i>ww</i> is the Julian week number for that year, 1 to 52.
+Thus, the first week of 2000 (the epoch) is represented as
+<code>2000W01</code>, and the 37th week of 2012 is represented as
+<code>2012W37</code>.<p>
+
+<section "COMMANDS">
+
+This module defines the following commands:<p>
+
+<deflist commands>
+
+<defitem "week toString" {week toString <i>week</i>}>
+
+Converts an integer week expressed as the number of weeks since the
+epoch into a week string.<p>
+
+<defitem "week toWeek" {week toWeek <i>ts</i>}>
+
+Converts a Unix timestamp to  the integer number of weeks since the
+epoch.  It could be a negative number.<p>
+
+<defitem "week toInteger" {week toInteger <i>wstring</i>}>
+
+Converts a week string into the integer number of weeks since the
+epoch.<p>
+
+<defitem "week toTimestamp" {week toTimestamp <i>wstring</i>}>
+
+Converts a week string into a standard Unix timestamp. Note that since
+Athena operates in time units of weeks, using week(n) to convert from a Unix
+timestamp and back will not result in the same timestamp being returned.<p>
+
+<defitem "week validate" {week validate <i>wstring</i>}>
+
+Validates a week string.  If the string is valid, it is returned in
+canonical form (i.e., with a capital "W").  If not, throws an error
+with error code <b>INVALID</b>.<p>
+
+</deflist commands>
+
+<section ENVIRONMENT>
+
+This package requires Tcl 8.5 or later.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+New package.<p>
+
+</manpage>
+
+
+
+

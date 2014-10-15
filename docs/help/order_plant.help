@@ -1,0 +1,77 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    order_plant.help
+#
+# AUTHOR:
+#    Dave Hanks
+#
+# DESCRIPTION:
+#    Athena Help Documentation: PLANT:* Orders
+#
+#    This file is included into order.help.
+#
+#-----------------------------------------------------------------------
+
+
+page /order plant "GOODS Production Plant Orders" {
+    <title>
+
+    These orders are used create, update, and delete shares of
+    goods production infrastructure <term plant>s.
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+
+order PLANT:SHARES+CREATE "Define GOODS Production Plant Shares" {
+    <b><term prep> Only.</b> This order creates a new definition
+    of how shares of plants should be allocated to an <term agent>
+    in a neighborhood.
+    The order parameters are as follows:<p>
+
+    <parmlist>
+    <plant_ parms -required -tags create>
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order PLANT:SHARES+DELETE "Delete GOODS Production Plant Shares" {
+    <b><term prep> Only.</b> Deletes the shares of 
+    GOODS production plants allocated to an <term agent>.
+    The order parameters are as follows:<p>
+
+    <parmlist>
+    <plant_ parm id -required>
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order PLANT:SHARES+UPDATE "Update GOODS Production Plant Shares" {
+    <b><term prep> Only.</b>  Updates an existing definition
+    of shares for an <term agent> in a neighborhood. The order
+    parameters are as follows:<p>
+
+    <parmlist>
+    <plant_ parm id -required>
+    <plant_ parms -optional -tags update>
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order PLANT:SHARES+UPDATE+MULTI "Update GOODS Production Plant Shares (Multi)" {
+    <b><term prep> Only.</b>  Updates two or more existing definitions
+    of shares for an <term agent> in a neighborhood. The order
+    parameters are as follows:<p>
+
+    <parmlist>
+    <parm ids "IDs">
+    <b>Required.</b> <parm.ids "share definition">
+    <plant_ parms -optional -tags update>
+    </parmlist>
+}
+

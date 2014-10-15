@@ -1,0 +1,3213 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    gofer.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: Gofer Types
+#
+#    This file is included into athena.help.
+#
+#    Gofers have help pages with names like
+#
+#        /gofer/<typename>
+#        /gofer/<typename>/rulename
+#
+#    E.g, the CIVGROUPS gofer has the page
+#
+#       /gofer/civgroups
+#
+#    plus a page for each rule, e.g.,
+#
+#       /gofer/civgroups/by_value
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Procs for defining /gofer pages
+
+# gofer name title text
+#
+# name  - The gofer type's name
+# title - The gofer type's title (e.g., one line description of the output 
+#         value)
+# text  - The documentation for the gofer type.
+#
+# Defines a help page for one gofer type.
+
+proc gofer {name title text} {
+    set parent /gofer
+    set slug   [string tolower $name]
+    set prefix "<gofer.header [list $title]>"
+
+    page $parent $slug "$name gofer" "$prefix\n\n$text"
+}
+
+# gofer_rule typename rulename title text
+#
+# typename - the gofer type's typename
+# rulename - this rule's rulename
+# title    - A oneliner, similar to the rule's narrative
+# text     - Full documentation, including a table of rule keys.
+#
+# Defines a help page for a gofer rule.
+
+proc gofer_rule {typename rulename title text} {
+    set pslug  [string tolower $typename]
+    set parent "/gofer/$pslug"
+    set slug   [string tolower $rulename]
+
+    set prefix "<gofer_rule.header $typename $rulename [list $title]>"
+    page $parent $slug $title "$prefix\n\n$text"
+}
+
+#-----------------------------------------------------------------------
+# Macros for use in gofer pages
+
+# Formats the title for a gofer page
+macro gofer.header {otitle} {
+    set toplink "<a href=\"/gofer\">Gofer Type</a>"
+} {
+    |<--
+    [mktitle small $toplink "<b>[pageinfo title]:</b> $otitle" ""]<p>
+}
+
+# gofer.rules
+#
+# List a gofer type's rules in a table, with links.
+macro gofer.rules {} {
+    set out {}
+    foreach {path title} [children] {
+        set plist [split $path "/"]
+        set rulename [string toupper [lindex $plist end]]
+        
+        append out "[topic [link $path $rulename]] $title [/topic] \n"
+    }
+} {
+    |<--
+    [topiclist "Rule"]
+    $out
+    [/topiclist]
+}
+
+# gofer.rule_header
+#
+# Formats the title for a gofer rule page
+macro gofer_rule.header {typename rulename rtitle} {
+    set toplink "<a href=\"/gofer\">Gofer Type:</a>"
+    set typelink "<b><a href\"[pageinfo parent]\">$typename</a></b>"
+} {
+    |<--
+    Gofer Rule: <b>$rtitle</b><p>
+}
+
+# gofer.details
+#
+# Formats the gofer type's details in an item list.
+
+macro gofer.details {args} {
+    set plist [split [pageinfo path] "/"]
+
+    set ltype [lindex $plist end-1]
+    set typename [string toupper $ltype]
+    set typelink [link [pageinfo parent] $typename]
+
+    set lrule [lindex $plist end]
+    set rulename [string toupper $lrule]
+    set keys [dict keys $args]
+} {
+    |<--
+    [gofer.type]
+    [gofer.rule_id]
+    [gofer.constructor <i>$keys</i>]
+    [gofer.sample $args]
+}
+
+# gofer.type
+#
+# Formats the gofer's type name item.
+
+macro gofer.type {} {
+    set plist [split [pageinfo path] "/"]
+
+    set ltype [lindex $plist end-1]
+    set typename [string toupper $ltype]
+    set typelink [link [pageinfo parent] $typename]
+} {
+    |<--
+    [item [cref /gofer "Gofer Type:"]]
+    $typelink
+    [/item]
+}
+
+# gofer.rule_id
+#
+# Formats the specific rule ID in an item list.
+
+macro gofer.rule_id {args} {
+    set plist [split [pageinfo path] "/"]
+    set lrule [lindex $plist end]
+    set rulename [string toupper $lrule]
+} {
+    |<--
+    [item [cref /gofer#rule_id "Rule ID:"]]
+    $rulename
+    [/item]
+}
+
+# gofer.constructor arglist
+#
+# arglist   - The constructor argument list, including <i> tags.
+#
+# Formats the gofer type's constructor in an item list.
+
+macro gofer.constructor {arglist} {
+    set plist [split [pageinfo path] "/"]
+    set ltype [lindex $plist end-1]
+    set lrule [lindex $plist end]
+} {
+    |<--
+    [item [cref /gofer#constructor "Constructor:"]] 
+    [command gofer] $ltype $lrule $arglist
+    [/item]
+}
+
+# gofer.sample
+#
+# Formats the gofer type's sample value in an item list.
+
+macro gofer.sample {arglist} {
+    set plist [split [pageinfo path] "/"]
+
+    set ltype [lindex $plist end-1]
+    set typename [string toupper $ltype]
+
+    set lrule [lindex $plist end]
+    set rulename [string toupper $lrule]
+} {
+    |<--
+    [item [cref /gofer#gdict "Sample value:"]]
+    _type $typename _rule $rulename $arglist
+    [/item]
+}
+
+
+
+# gofer.function function arglist
+#
+# Formats a gofer-value in function call format.
+
+macro gofer.function {function arglist} {
+    [item [cref /gofer#function "Function:"]]
+    [cref /function/$function <tt>${function}($arglist)</tt>]
+    [/item]
+}
+
+
+#-----------------------------------------------------------------------
+
+page / gofer "Gofers" {
+    <title>
+
+    <b>Overview:</b>
+    A gofer is a piece of code that will retrieve data for you on demand,
+    given a description of the data you want.  This is best explained using
+    an example.<p>
+
+    The <cref /object/tactic/fundeni> is used to fund Essential
+    Non-Infrastructure services for civilian groups; one of its inputs
+    is the list of groups for which the services are funded.  In Athena 4
+    this list had to be specified explicitly.  In Athena 5, 
+    you can describe the desired set of groups in any number of ways
+    by using the <cref /gofer/civgroups>.  For example, you can request
+    the set of civilian groups resident in a particular neighborhood.  
+    When the tactic executes, the gofer will retrieve ("go for") the desired
+    list of groups, and use it.<p>
+
+    Each gofer specializes in a particular kind of value, e.g., a list
+    of civilian groups, a list of force groups, or a list of neighborhoods.
+    Further, each gofer has some number of <i>rules</i> for you to choose from, 
+    including the ability to simply pick the value explicitly, as in the 
+    old days.<p>
+
+    <b>Using Gofers:</b>
+    Gofers are used automatically in Athena's order dialogs; in addition,
+    gofers can be used in executive scripts via the 
+    <command gofer> command.  This command is especially useful in
+    conjunction with the <command send> command, for those orders
+    that use gofers.<p>
+
+    <b>Gofer Names:</b>
+    Every gofer has a name; for example, "CIVGROUPS" is the name of the
+    <cref /gofer/civgroups>.  You don't need to know this name when using
+    the GUI, but it is useful when writing <term executive> scripts.<p>
+
+    <b><anchor rule_id "Rules and Rule IDs:"></b>
+    As noted above, every gofer has one or more rules to pick from.  
+    Each rule has a <i>rule ID</i>; for example, the 
+    <cref /gofer/civgroups>'s rule for finding all groups resident
+    in a neighborhood has the ID "RESIDENT_IN".  Again, you don't need to
+    know this ID when using the GUI, but it is useful when writing
+    executive scripts.<p>
+
+    <b><anchor gdict "Gofer Values:"></b>
+    A <i>gofer value</i> is a key-value list (also called a gofer dictionary,
+    or <i>gdict</i>)
+    that specifies the gofer name, the rule ID, and any data needed by 
+    the rule.  For example, the <cref /gofer/civgroups>'s 
+    <cref /gofer/civgroups/resident_in RESIDENT_IN> rule retrieves
+    all civilian groups resident in a list of one or more neighborhoods.
+    A gofer value for this rule must therefore include such a list.
+    The following is a gofer value that can be used to retrieve 
+    a list of the civilian groups resident in neighborhood NB1 and
+    NB2.<p>
+
+    <pre>
+    _type CIVGROUPS _rule RESIDENT_IN nlist {NB1 NB2}
+    </pre>
+
+    Every gofer value will include the <b>_type</b> and <b>_rule</b>
+    keys, which name the gofer and the rule; the remaining keys are specific 
+    to the rule.  Each rule's
+    help page documents the keys it requires and the values they can
+    take.<p>
+
+    <b><anchor constructor "Constructors:"></b>
+    Many Athena orders take gofer values as arguments; and so, when 
+    writing executive scripts it will often be necessary to create
+    gofer values.  One way is to simply write them as lists in the
+    body of the script:<p>
+
+    <pre>
+    set gdict {_type CIVGROUPS _rule RESIDENT_IN nlist {NB1 NB2}}
+    send TACTIC:CREATE:FUNDENI -glist $gdict ...
+    </pre>
+
+    This works, but is error prone; the value needs to be exactly right,
+    and the syntax might be hard to remember.  As a result, it will often
+    be easier to use the <command gofer> command to create the value: <p>
+
+    <pre>
+    set gdict [gofer civgroups resident_in {NB1 NB2}]
+    send TACTIC:CREATE:FUNDENI -glist $gdict ...
+    </pre>
+
+    You simply specify the gofer name, the rule ID, and then a value for
+    each of the rule-specific keys, in the order shown on the rule's 
+    help page.  See the <command gofer> command's help page for more 
+    details.<p>
+
+    <b><anchor function "Functions:"></b>
+
+    Some gofer rules are associated with <cref /function>.  In such cases,
+    the gofer rule's page will show an example of what the 
+    executive function looks like in use.<p>
+
+    <b>Existing Gofers:</b>
+    Athena supports many different gofer types, as follows:
+
+    <childlinks>
+}
+
+
+
+#==========================================================================
+# ACTORS
+
+gofer ACTORS "A list of actors" {
+    This gofer retrieves a list of <cref /object/actor> names
+    according to one of the following rules:<p>
+
+    <gofer.rules>
+}
+
+gofer_rule ACTORS BY_VALUE "Actors, By name" {
+    Retrieves an arbitrary list of 
+    <cref /object/actor "actors">
+    selected by name.<p>
+
+    <itemlist>
+    <gofer.details raw_value {GOV USA}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>raw_value</i></tt> >
+    A list of <cref /object/actor> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule ACTORS CONTROLLING "Actors, Controlling Neighborhood(s)" {
+    Retrieves a list of <cref /object/actor "actors"> who are
+    in control of a specified list of 
+    <cref /object/nbhood neighborhoods>.<p>
+
+    <itemlist>
+    <gofer.details nlist {N1 N2}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>nlist</i></tt> >
+    A list of <cref /object/nbhood> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule ACTORS INFLUENCE_IN "Actors, With Influence in Neighborhoods(s)" {
+    Retrieves a list of <cref /object/actor "actors"> who
+    have <term influence> in any or all of 
+    a specified list of <cref /object/nbhood neighborhoods>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY nlist {N1 N2}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve actors that have influence in <b>ANY</b> or <b>ALL</b> 
+    of the listed neighborhoods.
+    </topic>
+
+    <topic <tt><i>nlist</i></tt> >
+    A list of <cref /object/nbhood> names.
+    </topic>
+
+    </topiclist>
+}
+
+
+gofer_rule ACTORS OWNING "Actors, Owning Group(s)" {
+    Retrieves a list of <cref /object/actor "actors"> who own
+    a specified list of <cref /object/group/frc "force groups">
+    and <cref /object/group/org "organization groups">.<p>
+
+    <itemlist>
+    <gofer.details glist {BLUE BRIT}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>glist</i></tt> >
+    A list of <cref /object/group/frc> and
+    <cref /object/group/org> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule ACTORS SUPPORTED_BY "Actors, Supported by Group(s)" {
+    Retrieves a list of <cref /object/actor "actors"> who are
+    actively <term support>ed by any or all of 
+    a specified list of <cref /object/group groups>.<p>
+
+    <itemlist>
+    <gofer.details glist {BLUE BRIT}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve actors that are supported by <b>ANY</b> or <b>ALL</b> 
+    of the listed groups.
+    </topic>
+
+    <topic <tt><i>glist</i></tt> >
+    A list of <cref /object/group> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule ACTORS LIKED_BY_GROUP "Actors, Liked by Group(s)" {
+    Retrieves a list of <cref /object/actor "actors">
+    for whom any or all of a specified list of <cref /object/group groups>
+    have a <term vrel> of <b>LIKE</b> or <b>SUPPORT</b>.<p>
+
+    <itemlist>
+    <gofer.details glist {BLUE BRIT}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve actors that are liked by <b>ANY</b> or <b>ALL</b> 
+    of the listed groups.
+    </topic>
+
+    <topic <tt><i>glist</i></tt> >
+    A list of <cref /object/group> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule ACTORS DISLIKED_BY_GROUP "Actors, Disliked by Group(s)" {
+    Retrieves a list of <cref /object/actor "actors">
+    for whom any or all of a specified list of <cref /object/group groups>
+    have a <term vrel> of <b>DISLIKE</b> or <b>OPPOSE</b>.<p>
+
+    <itemlist>
+    <gofer.details glist {BLUE BRIT}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve actors that are disliked by <b>ANY</b> or <b>ALL</b> 
+    of the listed groups.
+    </topic>
+
+    <topic <tt><i>glist</i></tt> >
+    A list of <cref /object/group> names.
+    </topic>
+
+    </topiclist>
+}
+
+
+
+#==========================================================================
+# CIVGROUPS
+
+gofer CIVGROUPS "A list of civilian groups" {
+    This gofer retrieves a list of <cref /object/group/civ> names
+    according to one of the following rules.  The retrieved list will
+    not include any empty civilian groups (groups with a population of
+    zero).<p>
+
+    <gofer.rules>
+}
+
+gofer_rule CIVGROUPS BY_VALUE "Civilian groups, By name" {
+    Retrieves an arbitrary list of 
+    <cref /object/group/civ "civilian groups">
+    selected by name.  The user is free to select any civilian group,
+    including groups with zero population; however, no empty groups
+    will be included in the retrieved list.<p>
+
+    <itemlist>
+    <gofer.details raw_value {SUNN SHIA}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>raw_value</i></tt> >
+    A list of <cref /object/group/civ> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule CIVGROUPS MEGA "Civilian group Mega-Filter" {
+    Retrieves a list of <cref /object/group/civ "civilian groups">,
+    subject to any number of constraints.  The rule begins with the
+    set of all civilian groups (or some arbitrary subset) and then 
+    applies filters to that set, winnowing it down according to the
+    user's requirements, e.g., all civilian groups resident in 
+    one or more specific neighborhoods who live by subsistence 
+    agriculture and support a specific actor.  No empty groups
+    will be included in the retrieved list.<p>
+
+    <itemlist>
+    <gofer.type>
+    <gofer.rule_id>
+    <gofer.constructor "?<i>option value...</i>?">
+    <gofer.sample {base ALL glist {} where IGNORE nlist {} livingby IGNORE mood IGNORE byactors IGNORE awhich ALL alist {} bygroups IGNORE hwhich ALL hlist {}}>
+    </itemlist><p>
+
+    The option names in the constructor are simply the rule's parameter names
+    prefixed with a hyphen ("-").  In order to find all groups living by
+    subsistence agriculture in neighborhood NB1, for example, the constructor
+    looks like this:<p>
+
+    <pre>
+    gofer civgroups mega -where IN -nlist NB1 -livingby SA
+    </pre>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>base</i></tt> >
+    The rule starts with a base set of civilian groups.  If <i>base</i> is
+    <b>ALL</b> (the default), it starts with all civilian groups in the
+    scenario.  If <i>base</i> is <b>THESE</b>, then it starts with the 
+    specific civilian groups listed in <i>glist</i>.
+    </topic>
+
+    <topic <tt><i>where</i></tt> >
+    This parameter filters groups by where they live.<p>
+
+    If <i>where</i> is <b>IN</b>, then the rule retains only those
+    civilian groups that live in the neighborhoods listed in <i>nlist</i>.
+    <p>
+
+    If <i>where</i> is <b>NOTIN</b>, the rule retains only those 
+    groups that <b>do not</b> live in the neighborhoods listed in 
+    <i>nlist</i>.<p>
+
+    If <i>where</i> is <b>IGNORE</b> (the default), then this filter is
+    ignored.
+    </topic>
+
+
+    <topic <tt><i>nlist</i></tt> >
+    When <i>where</i> is set to something other than <b>IGNORE</b>, this
+    parameter must be a list of neighborhood names.  Otherwise, it is
+    ignored.
+    </topic>
+
+    <topic <tt><i>livingby</i></tt> >
+    This parameter filters groups depending on how they participate in the
+    economy of the region.<p>
+
+    If <i>livingby</i> is <b>SA</b>, the rule retains only those groups
+    that live by subsistence agriculture.<p>
+
+    If <i>livingby</i> is <b>CASH</b>, the rule retains only those groups
+    that participate in the cash economy.<p>
+
+    If <i>livingby</i> is <b>IGNORE</b> (the default), then this filter
+    is ignored.
+    </topic>
+
+    <topic <tt><i>mood</i></tt> >
+    This parameter filters groups depending on how their moods.<p>
+
+    If <i>mood</i> is <b>GOOD</b>, the rule retains only those groups
+    whose mood is satisfied or very satisfied.<p>
+
+    If <i>mood</i> is <b>AMBIVALENT</b>, the rule retains only those groups
+    whose mood is ambivalent.<p>
+
+    If <i>mood</i> is <b>BAD</b>, the rule retains only those groups
+    whose mood is dissatisfied or very dissatisfied.<p>
+
+    If <i>mood</i> is <b>IGNORE</b> (the default), then this filter
+    is ignored.
+    </topic>
+    
+    <topic <tt><i>byactors</i></tt> >
+    This parameter filters groups based on their relationships with one or
+    more actors.<p>
+
+    If <i>byactors</i> is <b>SUPPORTING</b>, the rule retains only those 
+    groups that actively support any or all (see <i>awhich</i>) of the
+    actors in the <i>alist</i>.  Note that supporting an actor requires
+    having a positive vertical relationship as well as sufficient 
+    security to act.<p>
+
+    If <i>byactors</i> is <b>LIKING</b>, the rule retains only those groups
+    who have a positive vertical relationship with any or all 
+    (see <i>awhich</i>) of the actors in the <i>alist</i>.<p>
+
+    If <i>byactors</i> is <b>DISLIKING</b>, the rule retains only those groups
+    who have a negative vertical relationship with any or all 
+    (see <i>awhich</i>) of the actors in the <i>alist</i>.<p>
+
+    If <i>byactors</i> is <b>IGNORE</b> (the default), then this filter
+    is ignored.
+    </topic>
+
+
+    <topic <tt><i>awhich</i></tt> >
+    This parameter can be <b>ALL</b> (the default) or <b>ANY</b>.<p>
+
+    If <b>ALL</b>, then the relationship expressed by <i>byactors</i> must
+    apply to all of the actors in the <i>alist</i>.<p>
+
+    If <b>ANY</b>, then the relationship expressed by <i>byactors</i> must
+    apply to at least one of the actors in the <i>alist</i>.<p>
+
+    If the <i>alist</i> contains only one actor, this parameter is 
+    irrelevant.
+    </topic>
+
+    <topic <tt><i>alist</i></tt> >
+    When <i>byactors</i> is something other than <b>IGNORE</b>, this
+    parameter must be a list of the names of one or more actors.
+    </topic>
+
+    <topic <tt><i>bygroups</i></tt> >
+    This parameter filters groups based on their relationships with one or
+    more other groups.<p>
+
+    If <i>bygroups</i> is <b>LIKING</b>, the rule retains only those groups
+    who have a positive horizontal relationship with any or all 
+    (see <i>hwhich</i>) of the groups in the <i>hlist</i>.<p>
+
+    If <i>bygroups</i> is <b>DISLIKING</b>, the rule retains only those groups
+    who have a negative horizontal relationship with any or all 
+    (see <i>hwhich</i>) of the groups in the <i>hlist</i>.<p>
+
+    If <i>bygroups</i> is <b>LIKED_BY</b>, the rule retains only those groups
+    with which any or all (see <i>hwhich</i>) of the groups in the 
+    <i>hlist</i> have a positive horizontal relationship.<p>
+
+    If <i>bygroups</i> is <b>DISLIKED_BY</b>, the rule retains only those groups
+    with which any or all (see <i>hwhich</i>) of the groups in the 
+    <i>hlist</i> have a negative horizontal relationship.<p>
+
+    If <i>bygroups</i> is <b>IGNORE</b> (the default), then this filter
+    is ignored.
+    </topic>
+
+    <topic <tt><i>hwhich</i></tt> >
+    This parameter can be <b>ALL</b> (the default) or <b>ANY</b>.<p>
+
+    If <b>ALL</b>, then the relationship expressed by <i>bygroups</i> must
+    apply to all of the groups in the <i>hlist</i>.<p>
+
+    If <b>ANY</b>, then the relationship expressed by <i>bygroups</i> must
+    apply to at least one of the groups in the <i>hlist</i>.<p>
+
+    If the <i>hlist</i> contains only one group, this parameter is 
+    irrelevant.
+    </topic>
+
+    <topic <tt><i>hlist</i></tt> >
+    When <i>bygroups</i> is something other than <b>IGNORE</b>, this
+    parameter must be a list of the names of one or more groups.  The
+    groups can be of any type (i.e., not just civilian groups).
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule CIVGROUPS RESIDENT_IN "Civilian groups, Resident in Neighborhood(s)" {
+    Retrieves a list of 
+    <cref /object/group/civ "civilian groups">
+    resident in a particular 
+    <cref /object/nbhood "neighborhood or neighborhoods">.<p>
+
+    <itemlist>
+    <gofer.details nlist {NB1 NB2}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>nlist</i></tt> >
+    A list of <cref /object/nbhood> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule CIVGROUPS NOT_RESIDENT_IN "Civilian groups, Not Resident in Neighborhood(s)" {
+    Retrieves a list of 
+    <cref /object/group/civ "civilian groups">
+    who do not reside in a particular 
+    <cref /object/nbhood "neighborhood or neighborhoods">.<p>
+
+    <itemlist>
+    <gofer.details nlist {NB1 NB2}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>nlist</i></tt> >
+    A list of <cref /object/nbhood> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule CIVGROUPS MOOD_IS_GOOD "Civilian groups, Mood is Good" {
+    Retrieves a list of 
+    <cref /object/group/civ "civilian groups">
+    whose <term mood> is <b>Satisfied</b> or <b>Very Satisfied</b>.<p>
+
+    <itemlist>
+    <gofer.details>
+    </itemlist><p>
+
+    This rule has no parameters.<p>
+    
+    </topiclist>
+}
+
+gofer_rule CIVGROUPS MOOD_IS_BAD "Civilian groups, Mood is Bad" {
+    Retrieves a list of 
+    <cref /object/group/civ "civilian groups">
+    whose <term mood> is <b>Dissatisfied</b> or <b>Very Dissatisfied</b>.<p>
+
+    <itemlist>
+    <gofer.details>
+    </itemlist><p>
+
+    This rule has no parameters.<p>
+    
+    </topiclist>
+}
+
+gofer_rule CIVGROUPS MOOD_IS_AMBIVALENT "Civilian groups, Mood is Ambivalent" {
+    Retrieves a list of 
+    <cref /object/group/civ "civilian groups">
+    whose <term mood> is <b>Ambivalent</b>.<p>
+
+    <itemlist>
+    <gofer.details>
+    </itemlist><p>
+
+    This rule has no parameters.<p>
+    
+    </topiclist>
+}
+
+gofer_rule CIVGROUPS SUPPORTING_ACTOR "Civilian groups, Supporting Actor(s)" {
+    Retrieves a list of 
+    <cref /object/group/civ "civilian groups">
+    who are actively <term support>ing any or all of 
+    a specified list of 
+    <cref /object/actor actors>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY alist {JOE BOB}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that support <b>ANY</b> or <b>ALL</b> of the listed
+    actors.
+    </topic>
+
+    <topic <tt><i>alist</i></tt> >
+    A list of <cref /object/actor> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule CIVGROUPS LIKING_ACTOR "Civilian groups, Liking Actor(s)" {
+    Retrieves a list of 
+    <cref /object/group/civ "civilian groups">
+    who have a <term vrel> of <b>LIKE</b> or <b>SUPPORT</b>
+    with any or all of a specified list of
+    <cref /object/actor actors>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY alist {JOE BOB}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that like <b>ANY</b> or <b>ALL</b> of the listed
+    actors.
+    </topic>
+
+    <topic <tt><i>alist</i></tt> >
+    A list of <cref /object/actor> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule CIVGROUPS DISLIKING_ACTOR "Civilian groups, Disliking Actor(s)" {
+    Retrieves a list of 
+    <cref /object/group/civ "civilian groups">
+    who have a <term vrel> of <b>DISLIKE</b> or <b>OPPOSE</b>
+    with any or all of a specified list of
+    <cref /object/actor actors>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY alist {JOE BOB}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that dislike <b>ANY</b> or <b>ALL</b> of the listed
+    actors.
+    </topic>
+
+    <topic <tt><i>alist</i></tt> >
+    A list of <cref /object/actor> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule CIVGROUPS LIKING_GROUP "Civilian groups, Liking Group(s)" {
+    Retrieves a list of 
+    <cref /object/group/civ "civilian groups">
+    who have a <term hrel> of <b>LIKE</b> or <b>SUPPORT</b>
+    with any or all of a specified list of
+    <cref /object/group groups>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY glist {SHIA SUNN}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that like <b>ANY</b> or <b>ALL</b> of the listed
+    groups.
+    </topic>
+
+    <topic <tt><i>glist</i></tt> >
+    A list of <cref /object/group> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule CIVGROUPS DISLIKING_GROUP "Civilian groups, Disliking Group(s)" {
+    Retrieves a list of 
+    <cref /object/group/civ "civilian groups">
+    who have a <term hrel> of <b>DISLIKE</b> or <b>OPPOSE</b>
+    with any or all of a specified list of
+    <cref /object/group groups>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY glist {SHIA SUNN}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that dislike <b>ANY</b> or <b>ALL</b> of the listed
+    groups.
+    </topic>
+
+    <topic <tt><i>glist</i></tt> >
+    A list of <cref /object/group> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule CIVGROUPS LIKED_BY_GROUP "Civilian groups, Liked by Group(s)" {
+    Retrieves a list of 
+    <cref /object/group/civ "civilian groups">
+    for whom any or all of a specified list of
+    <cref /object/group groups> have a <term hrel> 
+    of <b>LIKE</b> or <b>SUPPORT</b>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY glist {SHIA SUNN}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that are liked by <b>ANY</b> or <b>ALL</b> of the listed
+    groups.
+    </topic>
+
+    <topic <tt><i>glist</i></tt> >
+    A list of <cref /object/group> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule CIVGROUPS DISLIKED_BY_GROUP "Civilian groups, Disliked by Group(s)" {
+    Retrieves a list of 
+    <cref /object/group/civ "civilian groups">
+    for whom any or all of a specified list of
+    <cref /object/group groups> have a <term hrel> 
+    of <b>DISLIKE</b> or <b>OPPOSE</b>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY glist {SHIA SUNN}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that are disliked by <b>ANY</b> or <b>ALL</b> of the listed
+    groups.
+    </topic>
+
+    <topic <tt><i>glist</i></tt> >
+    A list of <cref /object/group> names.
+    </topic>
+
+    </topiclist>
+}
+
+#==========================================================================
+# FRCGROUPS
+
+gofer FRCGROUPS "A list of force groups" {
+    This gofer retrieves a list of <cref /object/group/frc> names
+    according to one of the following rules:<p>
+
+    <gofer.rules>
+}
+
+gofer_rule FRCGROUPS BY_VALUE "Force groups, By name" {
+    Retrieves an arbitrary list of 
+    <cref /object/group/frc "force groups">
+    selected by name.<p>
+
+    <itemlist>
+    <gofer.details raw_value {BLUE BRIT}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>raw_value</i></tt> >
+    A list of <cref /object/group/frc> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule FRCGROUPS OWNED_BY "Force groups, Owned by Actor(s)" {
+    Retrieves a list of 
+    <cref /object/group/frc "force groups">
+    who are owned by any of a specified list of
+    <cref /object/actor actors>.<p>
+
+    <itemlist>
+    <gofer.details alist {JOE BOB}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>alist</i></tt> >
+    A list of <cref /object/actor> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule FRCGROUPS DEPLOYED_TO "Force groups, Deployed to Neighborhood(s)" {
+    Retrieves a list of 
+    <cref /object/group/frc "force groups">
+    that are deployed to any or all of a specified list of
+    <cref /object/nbhood neighborhoods>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY nlist {N1 N2}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that are deployed to <b>ANY</b> or <b>ALL</b> of the listed
+    neighborhoods.
+    </topic>
+
+    <topic <tt><i>nlist</i></tt> >
+    A list of <cref /object/nbhood> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule FRCGROUPS NOT_DEPLOYED_TO "Force groups, Not Deployed to Neighborhood(s)" {
+    Retrieves a list of 
+    <cref /object/group/frc "force groups">
+    that are not deployed to any or all of a specified list of
+    <cref /object/nbhood neighborhoods>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY nlist {N1 N2}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that are not deployed to <b>ANY</b> or <b>ALL</b> of the listed
+    neighborhoods.
+    </topic>
+
+    <topic <tt><i>nlist</i></tt> >
+    A list of <cref /object/nbhood> names.
+    </topic>
+
+    </topiclist>
+}
+
+
+
+gofer_rule FRCGROUPS SUPPORTING_ACTOR "Force groups, Supporting Actor(s)" {
+    Retrieves a list of 
+    <cref /object/group/frc "force groups">
+    who are actively <term support>ing any or all of 
+    a specified list of 
+    <cref /object/actor actors>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY alist {JOE BOB}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that support <b>ANY</b> or <b>ALL</b> of the listed
+    actors.
+    </topic>
+
+    <topic <tt><i>alist</i></tt> >
+    A list of <cref /object/actor> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule FRCGROUPS LIKING_ACTOR "Force groups, Liking Actor(s)" {
+    Retrieves a list of 
+    <cref /object/group/frc "force groups">
+    who have a <term vrel> of <b>LIKE</b> or <b>SUPPORT</b>
+    with any or all of a specified list of
+    <cref /object/actor actors>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY alist {JOE BOB}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that like <b>ANY</b> or <b>ALL</b> of the listed
+    actors.
+    </topic>
+
+    <topic <tt><i>alist</i></tt> >
+    A list of <cref /object/actor> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule FRCGROUPS DISLIKING_ACTOR "Force groups, Disliking Actor(s)" {
+    Retrieves a list of 
+    <cref /object/group/frc "force groups">
+    who have a <term vrel> of <b>DISLIKE</b> or <b>OPPOSE</b>
+    with any or all of a specified list of
+    <cref /object/actor actors>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY alist {JOE BOB}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that dislike <b>ANY</b> or <b>ALL</b> of the listed
+    actors.
+    </topic>
+
+    <topic <tt><i>alist</i></tt> >
+    A list of <cref /object/actor> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule FRCGROUPS LIKING_GROUP "Force groups, Liking Group(s)" {
+    Retrieves a list of 
+    <cref /object/group/frc "force groups">
+    who have a <term hrel> of <b>LIKE</b> or <b>SUPPORT</b>
+    with any or all of a specified list of
+    <cref /object/group groups>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY glist {SHIA SUNN}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that like <b>ANY</b> or <b>ALL</b> of the listed
+    groups.
+    </topic>
+
+    <topic <tt><i>glist</i></tt> >
+    A list of <cref /object/group> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule FRCGROUPS DISLIKING_GROUP "Force groups, Disliking Group(s)" {
+    Retrieves a list of 
+    <cref /object/group/frc "force groups">
+    who have a <term hrel> of <b>DISLIKE</b> or <b>OPPOSE</b>
+    with any or all of a specified list of
+    <cref /object/group groups>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY glist {SHIA SUNN}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that dislike <b>ANY</b> or <b>ALL</b> of the listed
+    groups.
+    </topic>
+
+    <topic <tt><i>glist</i></tt> >
+    A list of <cref /object/group> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule FRCGROUPS LIKED_BY_GROUP "Force groups, Liked by Group(s)" {
+    Retrieves a list of 
+    <cref /object/group/frc "force groups">
+    for whom any or all of a specified list of
+    <cref /object/group groups> have a <term hrel> 
+    of <b>LIKE</b> or <b>SUPPORT</b>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY glist {SHIA SUNN}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that are liked by <b>ANY</b> or <b>ALL</b> of the listed
+    groups.
+    </topic>
+
+    <topic <tt><i>glist</i></tt> >
+    A list of <cref /object/group> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule FRCGROUPS DISLIKED_BY_GROUP "Force groups, Disliked by Group(s)" {
+    Retrieves a list of 
+    <cref /object/group/frc "force groups">
+    for whom any or all of a specified list of
+    <cref /object/group groups> have a <term hrel> 
+    of <b>DISLIKE</b> or <b>OPPOSE</b>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY glist {SHIA SUNN}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that are disliked by <b>ANY</b> or <b>ALL</b> of the listed
+    groups.
+    </topic>
+
+    <topic <tt><i>glist</i></tt> >
+    A list of <cref /object/group> names.
+    </topic>
+
+    </topiclist>
+}
+
+
+#==========================================================================
+# GROUPS
+
+gofer GROUPS "A list of groups" {
+    This gofer retrieves a list of <cref /object/group> names
+    according to one of the following rules:<p>
+
+    <gofer.rules>
+}
+
+gofer_rule GROUPS BY_VALUE "Groups, By name" {
+    Retrieves an arbitrary list of 
+    <cref /object/group "groups">
+    selected by name.<p>
+
+    <itemlist>
+    <gofer.details raw_value {BLUE SHIA}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>raw_value</i></tt> >
+    A list of <cref /object/group> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule GROUPS SUPPORTING_ACTOR "Groups, Supporting Actor(s)" {
+    Retrieves a list of 
+    <cref /object/group "groups">
+    who are actively <term support>ing any or all of 
+    a specified list of 
+    <cref /object/actor actors>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY alist {JOE BOB}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that support <b>ANY</b> or <b>ALL</b> of the listed
+    actors.
+    </topic>
+
+    <topic <tt><i>alist</i></tt> >
+    A list of <cref /object/actor> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule GROUPS LIKING_ACTOR "Groups, Liking Actor(s)" {
+    Retrieves a list of 
+    <cref /object/group "groups">
+    who have a <term vrel> of <b>LIKE</b> or <b>SUPPORT</b>
+    with any or all of a specified list of
+    <cref /object/actor actors>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY alist {JOE BOB}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that like <b>ANY</b> or <b>ALL</b> of the listed
+    actors.
+    </topic>
+
+    <topic <tt><i>alist</i></tt> >
+    A list of <cref /object/actor> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule GROUPS DISLIKING_ACTOR "Groups, Disliking Actor(s)" {
+    Retrieves a list of 
+    <cref /object/group "groups">
+    who have a <term vrel> of <b>DISLIKE</b> or <b>OPPOSE</b>
+    with any or all of a specified list of
+    <cref /object/actor actors>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY alist {JOE BOB}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that dislike <b>ANY</b> or <b>ALL</b> of the listed
+    actors.
+    </topic>
+
+    <topic <tt><i>alist</i></tt> >
+    A list of <cref /object/actor> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule GROUPS LIKING_GROUP "Groups, Liking Group(s)" {
+    Retrieves a list of 
+    <cref /object/group "groups">
+    who have a <term hrel> of <b>LIKE</b> or <b>SUPPORT</b>
+    with any or all of a specified list of
+    <cref /object/group groups>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY glist {SHIA SUNN}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that like <b>ANY</b> or <b>ALL</b> of the listed
+    groups.
+    </topic>
+
+    <topic <tt><i>glist</i></tt> >
+    A list of <cref /object/group> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule GROUPS DISLIKING_GROUP "Groups, Disliking Group(s)" {
+    Retrieves a list of 
+    <cref /object/group "groups">
+    who have a <term hrel> of <b>DISLIKE</b> or <b>OPPOSE</b>
+    with any or all of a specified list of
+    <cref /object/group groups>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY glist {SHIA SUNN}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that dislike <b>ANY</b> or <b>ALL</b> of the listed
+    groups.
+    </topic>
+
+    <topic <tt><i>glist</i></tt> >
+    A list of <cref /object/group> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule GROUPS LIKED_BY_GROUP "Groups, Liked by Group(s)" {
+    Retrieves a list of 
+    <cref /object/group "groups">
+    for whom any or all of a specified list of
+    <cref /object/group groups> have a <term hrel> 
+    of <b>LIKE</b> or <b>SUPPORT</b>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY glist {SHIA SUNN}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that are liked by <b>ANY</b> or <b>ALL</b> of the listed
+    groups.
+    </topic>
+
+    <topic <tt><i>glist</i></tt> >
+    A list of <cref /object/group> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule GROUPS DISLIKED_BY_GROUP "Groups, Disliked by Group(s)" {
+    Retrieves a list of 
+    <cref /object/group "groups">
+    for whom any or all of a specified list of
+    <cref /object/group groups> have a <term hrel> 
+    of <b>DISLIKE</b> or <b>OPPOSE</b>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY glist {SHIA SUNN}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that are disliked by <b>ANY</b> or <b>ALL</b> of the listed
+    groups.
+    </topic>
+
+    <topic <tt><i>glist</i></tt> >
+    A list of <cref /object/group> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule GROUPS CIV_RESIDENT_IN "Civilian groups, Resident in Neighborhood(s)" {
+    Retrieves a list of 
+    <cref /object/group/civ "civilian groups">
+    resident in a particular 
+    <cref /object/nbhood "neighborhood or neighborhoods">.<p>
+
+    <itemlist>
+    <gofer.details nlist {NB1 NB2}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>nlist</i></tt> >
+    A list of <cref /object/nbhood> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule GROUPS CIV_NOT_RESIDENT_IN "Civilian groups, Not Resident in Neighborhood(s)" {
+    Retrieves a list of 
+    <cref /object/group/civ "civilian groups">
+    who do not reside in a particular 
+    <cref /object/nbhood "neighborhood or neighborhoods">.<p>
+
+    <itemlist>
+    <gofer.details nlist {NB1 NB2}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>nlist</i></tt> >
+    A list of <cref /object/nbhood> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule GROUPS CIV_MOOD_IS_GOOD "Civilian groups, Mood is Good" {
+    Retrieves a list of 
+    <cref /object/group/civ "civilian groups">
+    whose <term mood> is <b>Satisfied</b> or <b>Very Satisfied</b>.<p>
+
+    <itemlist>
+    <gofer.details>
+    </itemlist><p>
+
+    This rule has no parameters.<p>
+    
+    </topiclist>
+}
+
+gofer_rule GROUPS CIV_MOOD_IS_BAD "Civilian groups, Mood is Bad" {
+    Retrieves a list of 
+    <cref /object/group/civ "civilian groups">
+    whose <term mood> is <b>Dissatisfied</b> or <b>Very Dissatisfied</b>.<p>
+
+    <itemlist>
+    <gofer.details>
+    </itemlist><p>
+
+    This rule has no parameters.<p>
+    
+    </topiclist>
+}
+
+gofer_rule GROUPS CIV_MOOD_IS_AMBIVALENT "Civilian groups, Mood is Ambivalent" {
+    Retrieves a list of 
+    <cref /object/group/civ "civilian groups">
+    whose <term mood> is <b>Ambivalent</b>.<p>
+
+    <itemlist>
+    <gofer.details>
+    </itemlist><p>
+
+    This rule has no parameters.<p>
+    
+    </topiclist>
+}
+
+gofer_rule GROUPS CIV_SUPPORTING_ACTOR "Civilian groups, Supporting Actor(s)" {
+    Retrieves a list of 
+    <cref /object/group/civ "civilian groups">
+    who are actively <term support>ing any or all of 
+    a specified list of 
+    <cref /object/actor actors>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY alist {JOE BOB}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that support <b>ANY</b> or <b>ALL</b> of the listed
+    actors.
+    </topic>
+
+    <topic <tt><i>alist</i></tt> >
+    A list of <cref /object/actor> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule GROUPS CIV_LIKING_ACTOR "Civilian groups, Liking Actor(s)" {
+    Retrieves a list of 
+    <cref /object/group/civ "civilian groups">
+    who have a <term vrel> of <b>LIKE</b> or <b>SUPPORT</b>
+    with any or all of a specified list of
+    <cref /object/actor actors>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY alist {JOE BOB}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that like <b>ANY</b> or <b>ALL</b> of the listed
+    actors.
+    </topic>
+
+    <topic <tt><i>alist</i></tt> >
+    A list of <cref /object/actor> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule GROUPS CIV_DISLIKING_ACTOR "Civilian groups, Disliking Actor(s)" {
+    Retrieves a list of 
+    <cref /object/group/civ "civilian groups">
+    who have a <term vrel> of <b>DISLIKE</b> or <b>OPPOSE</b>
+    with any or all of a specified list of
+    <cref /object/actor actors>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY alist {JOE BOB}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that dislike <b>ANY</b> or <b>ALL</b> of the listed
+    actors.
+    </topic>
+
+    <topic <tt><i>alist</i></tt> >
+    A list of <cref /object/actor> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule GROUPS CIV_LIKING_GROUP "Civilian groups, Liking Group(s)" {
+    Retrieves a list of 
+    <cref /object/group/civ "civilian groups">
+    who have a <term hrel> of <b>LIKE</b> or <b>SUPPORT</b>
+    with any or all of a specified list of
+    <cref /object/group groups>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY glist {SHIA SUNN}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that like <b>ANY</b> or <b>ALL</b> of the listed
+    groups.
+    </topic>
+
+    <topic <tt><i>glist</i></tt> >
+    A list of <cref /object/group> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule GROUPS CIV_DISLIKING_GROUP "Civilian groups, Disliking Group(s)" {
+    Retrieves a list of 
+    <cref /object/group/civ "civilian groups">
+    who have a <term hrel> of <b>DISLIKE</b> or <b>OPPOSE</b>
+    with any or all of a specified list of
+    <cref /object/group groups>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY glist {SHIA SUNN}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that dislike <b>ANY</b> or <b>ALL</b> of the listed
+    groups.
+    </topic>
+
+    <topic <tt><i>glist</i></tt> >
+    A list of <cref /object/group> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule GROUPS CIV_LIKED_BY_GROUP "Civilian groups, Liked by Group(s)" {
+    Retrieves a list of 
+    <cref /object/group/civ "civilian groups">
+    for whom any or all of a specified list of
+    <cref /object/group groups> have a <term hrel> 
+    of <b>LIKE</b> or <b>SUPPORT</b>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY glist {SHIA SUNN}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that are liked by <b>ANY</b> or <b>ALL</b> of the listed
+    groups.
+    </topic>
+
+    <topic <tt><i>glist</i></tt> >
+    A list of <cref /object/group> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule GROUPS CIV_DISLIKED_BY_GROUP "Civilian groups, Disliked by Group(s)" {
+    Retrieves a list of 
+    <cref /object/group/civ "civilian groups">
+    for whom any or all of a specified list of
+    <cref /object/group groups> have a <term hrel> 
+    of <b>DISLIKE</b> or <b>OPPOSE</b>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY glist {SHIA SUNN}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that are disliked by <b>ANY</b> or <b>ALL</b> of the listed
+    groups.
+    </topic>
+
+    <topic <tt><i>glist</i></tt> >
+    A list of <cref /object/group> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule GROUPS FRC_OWNED_BY "Force groups, Owned by Actor(s)" {
+    Retrieves a list of 
+    <cref /object/group/frc "force groups">
+    who are owned by any of a specified list of
+    <cref /object/actor actors>.<p>
+
+    <itemlist>
+    <gofer.details alist {JOE BOB}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>alist</i></tt> >
+    A list of <cref /object/actor> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule GROUPS FRC_DEPLOYED_TO "Force groups, Deployed to Neighborhood(s)" {
+    Retrieves a list of 
+    <cref /object/group/frc "force groups">
+    that are deployed to any or all of a specified list of
+    <cref /object/nbhood neighborhoods>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY nlist {N1 N2}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that are deployed to <b>ANY</b> or <b>ALL</b> of the listed
+    neighborhoods.
+    </topic>
+
+    <topic <tt><i>nlist</i></tt> >
+    A list of <cref /object/nbhood> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule GROUPS FRC_NOT_DEPLOYED_TO "Force groups, Not Deployed to Neighborhood(s)" {
+    Retrieves a list of 
+    <cref /object/group/frc "force groups">
+    that are not deployed to any or all of a specified list of
+    <cref /object/nbhood neighborhoods>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY nlist {N1 N2}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that are not deployed to <b>ANY</b> or <b>ALL</b> of the listed
+    neighborhoods.
+    </topic>
+
+    <topic <tt><i>nlist</i></tt> >
+    A list of <cref /object/nbhood> names.
+    </topic>
+
+    </topiclist>
+}
+
+
+
+gofer_rule GROUPS FRC_SUPPORTING_ACTOR "Force groups, Supporting Actor(s)" {
+    Retrieves a list of 
+    <cref /object/group/frc "force groups">
+    who are actively <term support>ing any or all of 
+    a specified list of 
+    <cref /object/actor actors>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY alist {JOE BOB}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that support <b>ANY</b> or <b>ALL</b> of the listed
+    actors.
+    </topic>
+
+    <topic <tt><i>alist</i></tt> >
+    A list of <cref /object/actor> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule GROUPS FRC_LIKING_ACTOR "Force groups, Liking Actor(s)" {
+    Retrieves a list of 
+    <cref /object/group/frc "force groups">
+    who have a <term vrel> of <b>LIKE</b> or <b>SUPPORT</b>
+    with any or all of a specified list of
+    <cref /object/actor actors>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY alist {JOE BOB}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that like <b>ANY</b> or <b>ALL</b> of the listed
+    actors.
+    </topic>
+
+    <topic <tt><i>alist</i></tt> >
+    A list of <cref /object/actor> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule GROUPS FRC_DISLIKING_ACTOR "Force groups, Disliking Actor(s)" {
+    Retrieves a list of 
+    <cref /object/group/frc "force groups">
+    who have a <term vrel> of <b>DISLIKE</b> or <b>OPPOSE</b>
+    with any or all of a specified list of
+    <cref /object/actor actors>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY alist {JOE BOB}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that dislike <b>ANY</b> or <b>ALL</b> of the listed
+    actors.
+    </topic>
+
+    <topic <tt><i>alist</i></tt> >
+    A list of <cref /object/actor> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule GROUPS FRC_LIKING_GROUP "Force groups, Liking Group(s)" {
+    Retrieves a list of 
+    <cref /object/group/frc "force groups">
+    who have a <term hrel> of <b>LIKE</b> or <b>SUPPORT</b>
+    with any or all of a specified list of
+    <cref /object/group groups>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY glist {SHIA SUNN}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that like <b>ANY</b> or <b>ALL</b> of the listed
+    groups.
+    </topic>
+
+    <topic <tt><i>glist</i></tt> >
+    A list of <cref /object/group> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule GROUPS FRC_DISLIKING_GROUP "Force groups, Disliking Group(s)" {
+    Retrieves a list of 
+    <cref /object/group/frc "force groups">
+    who have a <term hrel> of <b>DISLIKE</b> or <b>OPPOSE</b>
+    with any or all of a specified list of
+    <cref /object/group groups>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY glist {SHIA SUNN}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that dislike <b>ANY</b> or <b>ALL</b> of the listed
+    groups.
+    </topic>
+
+    <topic <tt><i>glist</i></tt> >
+    A list of <cref /object/group> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule GROUPS FRC_LIKED_BY_GROUP "Force groups, Liked by Group(s)" {
+    Retrieves a list of 
+    <cref /object/group/frc "force groups">
+    for whom any or all of a specified list of
+    <cref /object/group groups> have a <term hrel> 
+    of <b>LIKE</b> or <b>SUPPORT</b>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY glist {SHIA SUNN}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that are liked by <b>ANY</b> or <b>ALL</b> of the listed
+    groups.
+    </topic>
+
+    <topic <tt><i>glist</i></tt> >
+    A list of <cref /object/group> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule GROUPS FRC_DISLIKED_BY_GROUP "Force groups, Disliked by Group(s)" {
+    Retrieves a list of 
+    <cref /object/group/frc "force groups">
+    for whom any or all of a specified list of
+    <cref /object/group groups> have a <term hrel> 
+    of <b>DISLIKE</b> or <b>OPPOSE</b>.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY glist {SHIA SUNN}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve groups that are disliked by <b>ANY</b> or <b>ALL</b> of the listed
+    groups.
+    </topic>
+
+    <topic <tt><i>glist</i></tt> >
+    A list of <cref /object/group> names.
+    </topic>
+
+    </topiclist>
+}
+
+#==========================================================================
+# NBHOODS
+
+gofer NBHOODS "A list of neighborhoods" {
+    This gofer retrieves a list of <cref /object/nbhood> names
+    according to one of the following rules:<p>
+
+    <gofer.rules>
+}
+
+gofer_rule NBHOODS BY_VALUE "Neighborhoods, By name" {
+    Retrieves an arbitrary list of 
+    <cref /object/nbhood "nbhoods">
+    selected by name.<p>
+
+    <itemlist>
+    <gofer.details nlist {NB1 NB2}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>nlist</i></tt> >
+    A list of <cref /object/nbhood> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NBHOODS CONTROLLED_BY "Neighborhoods, Controlled by Actor(s)" {
+    Retrieves a list of <cref /object/nbhood "neighborhoods"> that are
+    controlled by any of a specified list of 
+    <cref /object/actor actors>.<p>
+
+    <itemlist>
+    <gofer.details alist {GOV USA}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>alist</i></tt> >
+    A list of <cref /object/actor> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NBHOODS NOT_CONTROLLED_BY "Neighborhoods, Not Controlled by Actor(s)" {
+    Retrieves a list of <cref /object/nbhood "neighborhoods"> that are
+    not controlled by any of a specified list of 
+    <cref /object/actor actors>.<p>
+
+    <itemlist>
+    <gofer.details alist {GOV USA}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>alist</i></tt> >
+    A list of <cref /object/actor> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NBHOODS WITH_DEPLOYMENT "Neighborhoods, With Deployment of Group(s)" {
+    Retrieves a list of <cref /object/nbhood "neighborhoods"> in which
+    any or all of a specified list of <term frcgroup "force groups">
+    are deployed.<p>
+
+    <itemlist>
+    <gofer.details anyall ANY glist {BLUE BRIT}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>anyall</i></tt> >
+    Retrieve neighborhoods with deployments of <b>ANY</b> or <b>ALL</b> 
+    of the listed groups.
+    </topic>
+
+    <topic <tt><i>glist</i></tt> >
+    A list of <cref /object/group/frc> names.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NBHOODS WITHOUT_DEPLOYMENT "Neighborhoods, Without Deployment of Group(s)" {
+    Retrieves a list of <cref /object/nbhood "neighborhoods"> in which
+    none of a specified list of <term frcgroup "force groups">
+    are deployed.<p>
+
+    <itemlist>
+    <gofer.details glist {BLUE BRIT}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>glist</i></tt> >
+    A list of <cref /object/group/frc> names.
+    </topic>
+
+    </topiclist>
+}
+
+
+#==========================================================================
+# NUMBER
+
+gofer NUMBER "A number" {
+    This gofer retrieves a single number 
+    according to one of the following rules:<p>
+
+    <gofer.rules>
+}
+
+gofer_rule NUMBER BY_VALUE "specific number" {
+    Retrieves an arbitrary floating point number
+    entered by the user.<p>
+
+    <itemlist>
+    <gofer.details raw_value {45.0}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>raw_value</i></tt> >
+    A number in any normal numeric format.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER EXPR "TCL expression" {
+    Returns the value of the entered TCL boolean expression.<p>
+
+    <itemlist>
+    <gofer.details expr_value {45.0*7/8}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>expr_value</i></tt> >
+    A TCL boolean expression.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER AFFINITY "affinity(x,y)" {
+    Returns the affinity of <term group> or <term actor> <i>x</i> with 
+    <term group> or <term actor> <i>y</i> as a number between -1.0 and 1.0.<p>
+
+    <itemlist>
+    <gofer.details x SHIA y SUNN>
+    <gofer.function affinity {"SHIA","SUNN"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>x</i></tt> >
+    ID of a <term group> or <term actor>.
+    </topic>
+
+    <topic <tt><i>y</i></tt> >
+    ID of a <term group> or <term actor>.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER AGENT_PLANTS "aplants(a)" {
+    Returns the total number of plants owned by <term agent> <i>a</i>.<p>
+
+    <itemlist>
+    <gofer.details a JOE>
+    <gofer.function aplants {"JOE"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>a</i></tt> >
+    ID of a <term agent>.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER ASSIGNED "assigned(g,activity,n)" {
+    Returns the number of personnel of <term frcgroup> or 
+    <term orggroup> <i>g</i> assigned to do the explicit 
+    <term activity> in <term nbhood> <i>n</i><p>
+
+    <itemlist>
+    <gofer.details g BLUE activity PATROL n N01>
+    <gofer.function assigned {"BLUE","PATROL","N01"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>g</i></tt> >
+    ID of a <term frcgroup> or <term orggroup>.
+    </topic>
+
+    <topic <tt><i>activity</i></tt> >
+    ID of an explicit <term activity>.
+    </topic>
+
+    <topic <tt><i>n</i></tt> >
+    ID of a <term nbhood>.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER GROUP_CONSUMERS "consumers(g,...)" {
+    Returns the number of the <term consumer>s in the playbox that
+    belong to one of the listed <term civgroup>s in <i>glist</i>.<p>
+
+    <itemlist>
+    <gofer.details glist {C1 C2}>
+    <gofer.function consumers {"C1","C2"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>glist</i></tt> >
+    A list of the IDs of one or more <term civgroup>s.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER COOP "coop(f,g)" {
+    Returns the cooperation of <term civgroup> <i>f</i> with 
+    <term frcgroup> <i>g</i> as a number between 0.0 and 100.0.<p>
+
+    <itemlist>
+    <gofer.details f SHIA g SUNN>
+    <gofer.function coop {"SHIA","SUNN"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>f</i></tt> >
+    ID of a <term civgroup>.
+    </topic>
+
+    <topic <tt><i>g</i></tt> >
+    ID of a <term frcgroup>.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER COVERAGE "coverage(g,activity,n)" {
+    Returns the coverage fraction for <term frcgroup> or 
+    <term orggroup> <i>g</i> assigned to implicit or explicit
+    <term activity> in <term nbhood> <i>n</i>
+    as a number between 0.0 and 1.0.<p>
+
+    <itemlist>
+    <gofer.details g BLUE activity PATROL n NB1>
+    <gofer.function coverage {"BLUE","PATROL","NB1"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>g</i></tt> >
+    ID of a <term frcgroup> or <term orggroup>.
+    </topic>
+
+    <topic <tt><i>activity</i></tt> >
+    ID of an implicit or explicit <term activity>.
+    </topic>
+
+    <topic <tt><i>n</i></tt> >
+    ID of a <term nbhood>.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER DEPLOYED "deployed(g,n,...)" {
+    Returns the personnel of <term frcgroup> or <term orggroup> 
+     <i>g</i> deployed in the <term nbhood>s in <i>nlist</i>. <p>
+
+    <itemlist>
+    <gofer.details g BLUE nlist {N1 N2}>
+    <gofer.function deployed {"BLUE","N1","N2"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>g</i></tt> >
+    ID of a <term frcgroup> or <term orggroup>.
+    </topic>
+
+    <topic <tt><i>nlist</i></tt> >
+    A list of the IDs of one or more <term nbhood>s.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER GDP "gdp()" {
+    Returns the Gross Domestic Product of the regional economy in
+    base-year dollars.<p>
+
+    <itemlist>
+    <gofer.details>
+    <gofer.function gdp {}>
+    </itemlist><p>
+}
+
+gofer_rule NUMBER GOODS_CAP "goodscap(a)" {
+    Returns the total output capacity of all goods production 
+    plants owned by <term agent> <i>a</i>.<p>
+
+    <itemlist>
+    <gofer.details a JOE>
+    <gofer.function goodscap {"JOE"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>a</i></tt> >
+    ID of a <term agent>.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER GOODS_IDLE "goodsidle()" {
+    Returns the idle capacity for the playbox.<p>
+
+    <itemlist>
+    <gofer.details>
+    <gofer.function goodsidle {}>
+    </itemlist><p>
+}
+
+gofer_rule NUMBER HREL "hrel(f,g)" {
+    Returns the horizontal relationship of <term group> <i>f</i> with 
+    <term group> <i>g</i> as a number between -1.0 and 1.0.<p>
+
+    <itemlist>
+    <gofer.details f SHIA g SUNN>
+    <gofer.function hrel {"SHIA","SUNN"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>f</i></tt> >
+    ID of a <term group>.
+    </topic>
+
+    <topic <tt><i>g</i></tt> >
+    ID of a <term group>.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER INCOME "income(a,...)" {
+    Returns the total income for the listed <term actor>s in 
+    <i>alist</i>.<p>
+
+    <itemlist>
+    <gofer.details alist {A1 A2}>
+    <gofer.function income {"A1","A2"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>alist</i></tt> >
+    A list of the IDs of one or more <term actor>s.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER INCOME_BLACK "income_black(a,...)" {
+    Returns the total income from the black market sector
+    for the listed <term actor>s in <i>alist</i>.<p>
+
+    <itemlist>
+    <gofer.details alist {A1 A2}>
+    <gofer.function income_black {"A1","A2"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>alist</i></tt> >
+    A list of the IDs of one or more <term actor>s.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER INCOME_GOODS "income_goods(a,...)" {
+    Returns the total income from the goods sector
+    for the listed <term actor>s in <i>alist</i>.<p>
+
+    <itemlist>
+    <gofer.details alist {A1 A2}>
+    <gofer.function income_goods {"A1","A2"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>alist</i></tt> >
+    A list of the IDs of one or more <term actor>s.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER INCOME_POP "income_pop(a,...)" {
+    Returns the total income from the population sector
+    for the listed <term actor>s in <i>alist</i>.<p>
+
+    <itemlist>
+    <gofer.details alist {A1 A2}>
+    <gofer.function income_pop {"A1","A2"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>alist</i></tt> >
+    A list of the IDs of one or more <term actor>s.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER INCOME_REGION "income_region(a,...)" {
+    Returns the total income from the region sector
+    for the listed <term actor>s in <i>alist</i>.<p>
+
+    <itemlist>
+    <gofer.details alist {A1 A2}>
+    <gofer.function income_region {"A1","A2"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>alist</i></tt> >
+    A list of the IDs of one or more <term actor>s.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER INCOME_WORLD "income_world(a,...)" {
+    Returns the total income from the world sector
+    for the listed <term actor>s in <i>alist</i>.<p>
+
+    <itemlist>
+    <gofer.details alist {A1 A2}>
+    <gofer.function income_world {"A1","A2"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>alist</i></tt> >
+    A list of the IDs of one or more <term actor>s.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER INFLUENCE "influence(a,n)" {
+    Returns the <term influence> of <term actor> <i>a</i> with 
+    <term nbhood> <i>n</i> as a number between 0.0 and 1.0.<p>
+
+    <itemlist>
+    <gofer.details a USA n CITY>
+    <gofer.function influence {"USA","CITY"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>a</i></tt> >
+    ID of an <term actor>.
+    </topic>
+
+    <topic <tt><i>n</i></tt> >
+    ID of a <term nbhood>.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER LOCAL_CONSUMERS "local_consumers()" {
+    Returns the number of the <term consumer>s in the playbox that
+    reside in the local <term nbhood>s (all consumers).
+
+    <itemlist>
+    <gofer.details>
+    <gofer.function local_consumers {}>
+    </itemlist><p>
+}
+
+gofer_rule NUMBER LOCAL_POPULATION "local_pop()" {
+    Returns the population of civilian groups in the local <term nbhood>s.<p>
+
+    <itemlist>
+    <gofer.details>
+    <gofer.function local_pop {}>
+    </itemlist><p>
+}
+
+gofer_rule NUMBER LOCAL_UNEMPLOYMENT_RATE "local_unemp()" {
+    Returns the unemployment rate in the local <term nbhood>s as 
+    a number between 0.00 and 100.00.<p>
+
+    <itemlist>
+    <gofer.details>
+    <gofer.function local_unemp {}>
+    </itemlist><p>
+}
+
+gofer_rule NUMBER LOCAL_WORKERS "local_workers()" {
+    Returns the number of the <term worker>s in the playbox that
+    reside in the local <term nbhood>s.
+
+    <itemlist>
+    <gofer.details>
+    <gofer.function local_workers {}>
+    </itemlist><p>
+}
+
+gofer_rule NUMBER MOBILIZED "mobilized(g,...)" {
+    Returns the personnel of <term frcgroup>s or <term orggroup>s 
+     in <i>glist</i> mobilized in the playbox. <p>
+
+    <itemlist>
+    <gofer.details glist {BLUE BRIT}>
+    <gofer.function mobilized {"BLUE","BRIT"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>glist</i></tt> >
+    A list of the IDs of one or more <term frcgroup> or <term orggroup>.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER MOOD "mood(g)" {
+    Returns the mood of <term civgroup> <i>g</i> as a number between 
+    -100.0 and 100.0.<p>
+
+    <itemlist>
+    <gofer.details g SHIA>
+    <gofer.function mood {"SHIA"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>g</i></tt> >
+    ID of a <term civgroup>.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER NBCONSUMERS "nbconsumers(n,...)" {
+    Returns the number of the <term consumer>s in the playbox that
+    reside in the <term nbhood>s in <i>nlist</i>.<p>
+
+    <itemlist>
+    <gofer.details nlist {N1 N2}>
+    <gofer.function nbconsumers {"N1","N2"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>nlist</i></tt> >
+    A list of the IDs of one or more <term nbhood>s
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER NBCOOP "nbcoop(n,g)" {
+    Returns the cooperation of <term nbhood> <i>n</i> with 
+    <term frcgroup> <i>g</i> as a number between 0.0 and 100.0.<p>
+
+    <itemlist>
+    <gofer.details n NB1 g SUNN>
+    <gofer.function nbcoop {"NB1","SUNN"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>n</i></tt> >
+    ID of a <term nbhood>.
+    </topic>
+
+    <topic <tt><i>g</i></tt> >
+    ID of a <term frcgroup>.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER NB_GOODS_CAP "nbgoodscap(n)" {
+    Returns the total output capacity of all goods production 
+    plants in <term nbhood> <i>n</i>.<p>
+
+    <itemlist>
+    <gofer.details n NB1>
+    <gofer.function nbgoodscap {"NB1"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>n</i></tt> >
+    ID of a <term nbhood>.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER NBMOOD "nbmood(n)" {
+    Returns the mood of <term nbhood> <i>n</i> as a number between 
+    -100.0 and 100.0.<p>
+
+    <itemlist>
+    <gofer.details n N1>
+    <gofer.function nbmood {"N1"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>n</i></tt> >
+    ID of a <term nbhood>.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER NB_PLANTS "nbplants(n)" {
+    Returns the total number of plants in <term nbhood> <i>n</i>.<p>
+
+    <itemlist>
+    <gofer.details n NB1>
+    <gofer.function nbplants {"NB1"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>n</i></tt> >
+    ID of a <term nbhood>.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER NBPOPULATION "nbpop(n,...)" {
+    Returns the civilian population in the <term nbhood>s in <i>nlist</i>.
+
+    <itemlist>
+    <gofer.details nlist {N1 N2}>
+    <gofer.function nbpop {"N1","N2"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>nlist</i></tt> >
+    A list of the IDs of one or more <term nbhood>s
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER NBSUPPORT "nbsupport(a,n)" {
+    Returns the support for <term actor> <i>a</i> in 
+    <term nbhood> <i>n</i> as a number between 
+    0.0 and 1.0.<p>
+    
+    <itemlist>
+    <gofer.details a JOE n N1>
+    <gofer.function nbsupport {"JOE","N1"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>a</i></tt> >
+    ID of a <term actor>.
+    </topic>
+
+    <topic <tt><i>n</i></tt> >
+    ID of a <term nbhood>.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER NB_UNEMPLOYMENT_RATE "nbunemp(n,...)" {
+    Returns the unemployment rate for the <term nbhood>s in 
+    <i>nlist</i> as a number between 0.0 and 100.0.<p>
+
+    <itemlist>
+    <gofer.details nlist {N1 N2}>
+    <gofer.function nbunemp {"N1","N2"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>nlist</i></tt> >
+    A list of the IDs of one or more <term nbhood>s
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER NBWORKERS "nbworkers(n,...)" {
+    Returns the number of the <term worker>s in the playbox that
+    reside in the <term nbhood>s in <i>nlist</i>.<p>
+
+    <itemlist>
+    <gofer.details nlist {N1 N2}>
+    <gofer.function nbworkers {"N1","N2"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>nlist</i></tt> >
+    A list of the IDs of one or more <term nbhood>s
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER CASH_ON_HAND "onhand(a)" {
+    Returns the cash on hand of <term actor> <i>a</i>.<p>
+
+    If actor a is the actor whose strategy is being executed 
+    then it is their current cash on hand.<p>
+
+    If actor a is an actor whose strategy is NOT being executed, then
+    it is the cash on hand for that actor at the time strategy execution began.<p>
+
+    <itemlist>
+    <gofer.details a JOE>
+    <gofer.function onhand {"JOE"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>a</i></tt> >
+    ID of a <term actor>.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER PLAYBOX_CONSUMERS "pbconsumers()" {
+    Returns the number of the <term consumer>s in the playbox.
+
+    <itemlist>
+    <gofer.details>
+    <gofer.function pbconsumers {}>
+    </itemlist><p>
+}
+
+gofer_rule NUMBER PLAYBOX_GOODS_CAP "pbgoodscap()" {
+    Returns the total output capacity of all goods production 
+    plants in the playbox.<p>
+
+    <itemlist>
+    <gofer.details>
+    <gofer.function pbgoodscap {}>
+    </itemlist><p>
+}
+
+gofer_rule NUMBER PLAYBOX_PLANTS "pbplants()" {
+    Returns the total number of plants in the playbox.<p>
+
+    <itemlist>
+    <gofer.details>
+    <gofer.function pbplants {}>
+    </itemlist><p>
+}
+
+gofer_rule NUMBER PLAYBOX_POPULATION "pbpop()" {
+    Returns the population of the <term civgroup>s in the playbox.
+
+    <itemlist>
+    <gofer.details>
+    <gofer.function pbpop {}>
+    </itemlist><p>
+}
+
+gofer_rule NUMBER PLAYBOX_UNEMPLOYMENT_RATE "pbunemp()" {
+    Returns the unemployment rate in the playbox as a number 
+    between 0.0 and 100.0.<p>
+
+    <itemlist>
+    <gofer.details>
+    <gofer.function pbunemp {}>
+    </itemlist><p>
+}
+
+gofer_rule NUMBER PLAYBOX_WORKERS "pbworkers()" {
+    Returns the number of the <term worker>s in the playbox 
+    (same as LOCAL_WORKERS).
+
+    <itemlist>
+    <gofer.details>
+    <gofer.function pbworkers {}>
+    </itemlist><p>
+}
+
+gofer_rule NUMBER PCTCONTROL "pctcontrol(a,...)" {
+    Returns the percentage of the <term nbhood>s in the playbox that
+    are controlled by one of the listed <term actor>s,
+    as a number between 0.0 and 100.0.<p>
+
+    <itemlist>
+    <gofer.details alist {A1 A2}>
+    <gofer.function pctcontrol {"A1","A2"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>alist</i></tt> >
+    A list of the IDs of one or more <term actor>s.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER PLANTS "plants(a,n)" {
+    Returns the total number of plants owned by <term agent> 
+    <i>a</i> in <term nbhood> <i>n</i>.<p>
+
+    <itemlist>
+    <gofer.details a JOE n NB1>
+    <gofer.function plants {"JOE","NB1"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>a</i></tt> >
+    ID of a <term agent>.
+    </topic>
+
+    <topic <tt><i>n</i></tt> >
+    ID of a <term nbhood>.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER GROUP_POPULATION "pop(g,...)" {
+    Returns the Population of the <term civgroup>s in <i>glist</i>, 
+    in the playbox.<p>
+
+    <itemlist>
+    <gofer.details glist {C1 C2}>
+    <gofer.function pop {"C1","C2"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>glist</i></tt> >
+    A list of the IDs of one or more <term civgroup>s.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER REPAIR "repair(a,n)" {
+    Returns the current level of repair of plants owned by <term actor> 
+    <i>a</i> in <term nbhood> <i>n</i>.<p>
+
+    <itemlist>
+    <gofer.details a JOE n NB1>
+    <gofer.function repair {"JOE","NB1"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>a</i></tt> >
+    ID of a <term actor>.
+    </topic>
+
+    <topic <tt><i>n</i></tt> >
+    ID of a <term nbhood>.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER CASH_RESERVE "reserve(a)" {
+    Returns the cash reserve of <term actor> <i>a</i>.<p>
+
+    If actor a is the actor whose strategy is being executed 
+    then it is their current reserve.<p>
+
+    If actor a is an actor whose strategy is NOT being executed, then
+    it is the cash reserve for that actor at the time strategy execution began.<p>
+
+    <itemlist>
+    <gofer.details a JOE>
+    <gofer.function reserve {"JOE"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>a</i></tt> >
+    ID of a <term actor>.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER SAT "sat(g,c)" {
+    Returns the satisfaction of <term civgroup> <i>g</i> with 
+    <term concern> <i>c</i> as a number between -100.0 and 100.0.<p>
+
+    <itemlist>
+    <gofer.details g SHIA c AUT>
+    <gofer.function sat {"SHIA","AUT"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>g</i></tt> >
+    ID of a <term civgroup>.
+    </topic>
+
+    <topic <tt><i>c</i></tt> >
+    ID of a <term concern>:<p>
+
+    <enumdoc ::projectlib::econcern>
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER SECURITY_CIV "security(g)" {
+    Returns the security of <term civgroup> <i>g</i> 
+    as a number between -100.0 and 100.0.<p>
+
+    <itemlist>
+    <gofer.details g SHIA>
+    <gofer.function security {"SHIA"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>g</i></tt> >
+    ID of a <term group>.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER SECURITY "security(g,n)" {
+    Returns the security of <term group> <i>g</i> in 
+    <term nbhood> <i>n</i> as a number between -100.0 and 100.0.<p>
+
+    <itemlist>
+    <gofer.details g SHIA n NB1>
+    <gofer.function security {"SHIA","NB1"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>g</i></tt> >
+    ID of a <term group>.
+    </topic>
+
+    <topic <tt><i>n</i></tt> >
+    ID of a <term nbhood>:<p>
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER SUPPORT_CIV "support(a,g)" {
+    Returns the support for <term actor> <i>a</i> by
+    <term civgroup> <i>g</i> as a number between 
+    0.0 and 1.0.<p>
+    
+    <itemlist>
+    <gofer.details a JOE g SHIA>
+    <gofer.function support {"JOE","SHIA"}>
+    </itemlist><p>
+    
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+    
+    <topic <tt><i>a</i></tt> >
+    ID of a <term actor>.
+    </topic>
+    
+    <topic <tt><i>g</i></tt> >
+    ID of a <term civgroup>.
+    </topic>
+    
+    </topiclist>
+}
+
+gofer_rule NUMBER SUPPORT "support(a,g,n)" {
+    Returns the support for <term actor> <i>a</i>  by
+    <term group> <i>g</i> in <term nbhood> <i>n</i> 
+    as a number between 0.0 and 1.0.<p>
+    
+    <itemlist>
+    <gofer.details a JOE g SHIA n N1>
+    <gofer.function support {"JOE","SHIA","N1"}>
+    </itemlist><p>
+    
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+    
+    <topic <tt><i>a</i></tt> >
+    ID of a <term actor>.
+    </topic>
+    
+    <topic <tt><i>g</i></tt> >
+    ID of a <term group>.
+    </topic>
+    
+    <topic <tt><i>n</i></tt> >
+    ID of a <term nbhood>.
+    </topic>
+    
+    </topiclist>
+}
+
+gofer_rule NUMBER GROUP_UNEMPLOYMENT_RATE "unemp(g,...)" {
+    Returns the unemployment rate for the <term civgroup>s 
+    in <i>glist</i> as a number between 0.0 and 100.0.<p>
+
+    <itemlist>
+    <gofer.details glist {C1 C2}>
+    <gofer.function unemp {"C1","C2"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>glist</i></tt> >
+    A list of the IDs of one or more <term civgroup>s.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER VREL "vrel(g,a)" {
+    Returns the vertical relationship of <term group> <i>g</i> with 
+    <term actor> <i>a</i> as a number between -1.0 and 1.0.<p>
+
+    <itemlist>
+    <gofer.details g SHIA a JOE>
+    <gofer.function vrel {"SHIA","JOE"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>g</i></tt> >
+    ID of a <term group>.
+    </topic>
+
+    <topic <tt><i>a</i></tt> >
+    ID of a <term actor>.
+    </topic>
+
+    </topiclist>
+}
+
+gofer_rule NUMBER GROUP_WORKERS "workers(g,...)" {
+    Returns the number of the <term worker>s in the playbox that
+    belong to one of the <term civgroup>s in <i>glist</i>.<p>
+
+    <itemlist>
+    <gofer.details glist {C1 C2}>
+    <gofer.function workers {"C1","C2"}>
+    </itemlist><p>
+
+    The rule parameters are as follows:<p>
+    
+    <topiclist "Parameter">
+
+    <topic <tt><i>glist</i></tt> >
+    A list of the IDs of one or more <term civgroup>s.
+    </topic>
+
+    </topiclist>
+}

@@ -1,0 +1,140 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    order_vrel.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: VREL:* Orders
+#
+#    This file is included into order.help.
+#
+#-----------------------------------------------------------------------
+
+page /order vrel "Vertical Relationship Orders" {
+    <title>
+
+    A group can support or oppose an actor, as determined by its
+    <i>vertical relationship</i> with the actor, a number between 
+    -1.0 and 1.0.<p>
+
+    Initial vertical relationships are computed from the belief
+    systems of the group and actor, where force and organization groups 
+    inherit their belief systems from their owning actors; they can be 
+    overridden manually using these orders.  Once the scenario 
+    is locked, relationships can vary dynamically.<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+
+order VREL:OVERRIDE "Override Baseline Vertical Relationship" {
+    <parmlist>
+    <parm id "Group/Actor">
+    <b>Required.</b>  A vertical relationship ID, specified as a 
+    list {<i>g a</i>} where <i>g</i> is a group and <i>a</i> is an actor.
+    The associated relationship is <i>g</i>'s relationship with <i>a</i>.
+    </parm>
+
+    <parm base "Baseline">
+    <b>Optional.</b>  The new baseline relationship between the group 
+    and the actor, a decimal number between -1.0 and 1.0.
+    </parm>
+
+    <parm hist_flag "Start Mode">
+    <b>Optional.</b> The start mode indicates whether the scenario is a new
+    scenario, or if it
+    was created to reflect an existing time-advanced scenario via the
+    <cref /order/sim/rebase> order.  The value is either 0 ("New Scenario") or
+    1 ("From Previous Scenario").  If 1, the specified <i>current</i> value
+    will be used.<p>
+    </parm>
+
+    <parm current "Current">
+    <b>Optional.</b> If the start mode is 1 ("From Previous Scenario") then 
+    this is the initial
+    current relationship on scenario lock.  Usually it will be set
+    by <cref /order/sim/rebase> rather than by the user.<p>
+
+    This setting determines the "current" relationship during the
+    first part of locking the scenario, when it can affect the value of
+    various models as part of bootstrapping the simulation.  It
+    is set by <cref /order/sim/rebase> to increase the fidelity of a
+    rebased scenario on-lock; there is little reason to set it manually.
+    </parm>
+
+    </parmlist>
+
+    <b><term prep> Only.</b>  This order overrides the
+    affinity-based initial baseline relationship between the group
+    and the actor with one of the user's choosing.
+}
+
+#-----------------------------------------------------------------------
+
+order VREL:RESTORE "Restore Baseline Vertical Relationship" {
+    <parmlist>
+    <parm id "Group/Actor">
+    <b>Required.</b>  A vertical relationship ID, specified as a 
+    list {<i>g a</i>} where <i>g</i> is a group and <i>a</i> is an 
+    actor.  The associated relationship is <i>g</i>'s relationship 
+    with <i>a</i>.
+    </parm>
+
+    </parmlist>
+
+    <b><term prep> Only.</b>  This order restores the affinity-based
+    initial baseline relationship between the group and the actor, 
+    deleting any manual override.
+}
+
+#-----------------------------------------------------------------------
+
+order VREL:OVERRIDE+MULTI "Override Multiple Baseline Vertical Relationships" {
+    <parmlist>
+    <parm ids "IDs">
+    <b>Required.</b>  <parm.ids relationship><p>
+
+    Programmatically, each ID is a list {<i>g a</i>} where
+    <i>g</i> and <i>a</i> are defined as for the 
+    <cref /order/hrel/override> order.
+    </parm>
+
+    <parm base "Baseline">
+    <b>Optional.</b>  The baseline relationship between a group and an 
+    actor, a decimal number between -1.0 and 1.0.
+    </parm>
+
+    <parm hist_flag "Start Mode">
+    <b>Optional.</b> The start mode indicates whether the scenario is a new
+    scenario, or if it
+    was created to reflect an existing time-advanced scenario via the
+    <cref /order/sim/rebase> order.  The value is either 0 ("New Scenario") or
+    1 ("From Previous Scenario").  If 1, the specified <i>current</i> value
+    will be used.<p>
+    </parm>
+
+    <parm current "Current">
+    <b>Optional.</b> If the start mode is 1 ("From Previous Scenario") then 
+    this is the initial
+    current relationship on scenario lock.  Usually it will be set
+    by <cref /order/sim/rebase> rather than by the user.<p>
+
+    This setting determines the "current" relationship during the
+    first part of locking the scenario, when it can affect the value of
+    various models as part of bootstrapping the simulation.  It
+    is set by <cref /order/sim/rebase> to increase the fidelity of a
+    rebased scenario on-lock; there is little reason to set it manually.
+    </parm>
+
+    </parmlist>
+
+    <b><term prep> Only.</b>  This order overrides two or more
+    affinity-based initial baseline vertical relationships, 
+    as selected in the GUI, with values of the user's choosing.
+}
+
+

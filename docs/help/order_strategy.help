@@ -1,0 +1,76 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    order_strategy.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: STRATEGY:* Orders
+#
+#    This file is included into order.help.
+#
+#-----------------------------------------------------------------------
+
+page /order strategy "Strategy Orders" {
+    <title>
+
+    These orders are used to update and manage the 
+    <term agent agents>' <term strategy strategies> and 
+    the <term block blocks> they contain.<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+
+order STRATEGY:BLOCK+ADD "Add Block to Strategy" {
+    <b><term prep> Only.</b>  Adds an empty <term block> to the strategy.  
+    The order parameters are as follows:<p>
+
+    <parmlist>
+    <parm agent "Agent">
+    The name of the <term agent> to whom the strategy belongs.
+    </parm>
+
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order STRATEGY:BLOCK+MOVE "Move Block in Strategy" {
+    <b><term prep> Only.</b>  A <term strategy> lists 
+    <term block blocks> in priority order.  This order moves a
+    block to a different spot in the list, thus changing its
+    priority.  The order parameters are as follows:<p>
+
+    <parmlist>
+    <block_ parm block_id -required>
+    
+    <parm where "Where">
+    Where to move the block, one of the following symbolic values:<p>
+
+    <b>top</b>: Move to top<br>
+    <b>up</b>: Move up one slot<br>
+    <b>down</b>: Move down one slot<br>
+    <b>bottom</b>: Move to bottom<p>
+
+    </parm>
+
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order STRATEGY:BLOCK+DELETE "Delete Block from Strategy" {
+    <b><term prep> Only.</b>  Deletes one or more blocks from a strategy.
+    The order parameters are as follows:<p>
+
+    <parmlist>
+    <parm ids "IDs">
+    A list of the IDs of the blocks to delete.
+    </parm>
+
+    </parmlist>
+}

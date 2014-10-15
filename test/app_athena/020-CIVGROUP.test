@@ -1,0 +1,634 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    020-GROUP-CIVILIAN.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    app_sim(1) CIVGROUP:* order tests.
+#
+#    This test suite tests the civgroup-related orders.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Standard groups
+
+    set shia {
+        g         SHIA
+        longname  "Shia Locals"
+        n         NB1
+        bsid      1
+        color     #ffff00
+        demeanor  AVERAGE
+        basepop   10000
+        pop_cr    0.0
+        sa_flag   0
+        lfp       60
+        housing   AT_HOME
+        hist_flag 0
+        upc       0.0
+    }
+
+    set sunn {
+        g         SUNN
+        longname  "Sunni Locals"
+        n         NB1
+        bsid      1
+        color     #ffffff
+        demeanor  AGGRESSIVE
+        basepop   20000
+        pop_cr    0.0
+        sa_flag   1
+        lfp       0
+        housing   AT_HOME
+        hist_flag 1
+        upc       5.0
+    }
+
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        # Clean up the test environment
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # CIVGROUP:CREATE
+
+    test CREATE-1.1 {required parms} -body {
+        ted order -reject CIVGROUP:CREATE {}
+    } -result {
+        g {required value}
+        n {required value}
+    }
+
+    test CREATE-1.2 {Duplicate g} -setup {
+        ted create NB1
+        ted order CIVGROUP:CREATE $shia
+    } -body {
+        ted order -reject CIVGROUP:CREATE $shia
+    } -cleanup {
+        cleanup
+    } -result {
+        g {An entity with this ID already exists}
+    }
+
+    test CREATE-1.3 {g is not an ident} -body {
+        ted create NB1
+        ted order -reject CIVGROUP:CREATE [dict merge $shia {
+            g "BL&E"
+        }]
+    } -cleanup {
+        cleanup
+    } -result {
+        g {Identifiers begin with a letter and contain only letters and digits.}
+    }
+
+    test CREATE-1.4 {invalid n} -body {
+        ted create NB1
+        ted order -reject CIVGROUP:CREATE [dict merge $shia {
+            n NONESUCH
+        }]
+    } -cleanup {
+        cleanup
+    } -result {
+        n {Invalid neighborhood, should be one of: NB1}
+    }
+
+    test CREATE-1.5 {invalid bsid} -body {
+        ted create NB1
+        ted order -reject CIVGROUP:CREATE [dict merge $shia {
+            bsid 2
+        }]
+    } -cleanup {
+        cleanup
+    } -result {
+        bsid {Invalid belief system ID}
+    }
+
+
+    test CREATE-1.6 {invalid color} -body {
+        ted create NB1
+        ted order -reject CIVGROUP:CREATE [dict merge $shia {
+            color NONESUCH
+        }]
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        color {Invalid hex color*}
+    }
+
+
+    test CREATE-1.8 {invalid demeanor} -setup {
+        ted create NB1
+    } -body {
+        ted order -reject CIVGROUP:CREATE [dict merge $shia {
+            demeanor NONESUCH
+        }]
+    } -cleanup {
+        cleanup
+    } -result {
+        demeanor {invalid value "NONESUCH", should be one of: APATHETIC, AVERAGE, AGGRESSIVE}
+    }
+
+
+    test CREATE-1.9 {non-numeric basepop} -setup {
+        ted create NB1
+    } -body {
+        ted order -reject CIVGROUP:CREATE [dict merge $shia {
+            basepop NONESUCH
+        }]
+    } -cleanup {
+        cleanup
+    } -result {
+        basepop {invalid value "NONESUCH", expected integer}
+    }
+
+
+    test CREATE-1.10 {negative basepop} -setup {
+        ted create NB1
+    } -body {
+        ted order -reject CIVGROUP:CREATE [dict merge $shia {
+            basepop -1
+        }]
+    } -cleanup {
+        cleanup
+    } -result {
+        basepop {invalid value "-1", expected integer no less than 0}
+    }
+
+    test CREATE-1.11 {invalid sa_flag} -setup {
+        ted create NB1
+    } -body {
+        ted order -reject CIVGROUP:CREATE [dict merge $shia {
+            sa_flag NONESUCH
+        }]
+    } -cleanup {
+        cleanup
+    } -result {
+        sa_flag {invalid boolean "NONESUCH", should be one of: 1, 0, true, false, yes, no, on, off}
+    }
+
+    test CREATE-1.12 {invalid lfp, non-numeric} -setup {
+        ted create NB1
+    } -body {
+        ted order -reject CIVGROUP:CREATE [dict merge $shia {
+            lfp NONESUCH
+        }]
+    } -cleanup {
+        cleanup
+    } -result {
+        lfp {invalid value "NONESUCH", expected integer}
+    }
+
+    test CREATE-1.13 {invalid lfp, out-of-range} -setup {
+        ted create NB1
+    } -body {
+        ted order -reject CIVGROUP:CREATE [dict merge $shia {
+            lfp 101
+        }]
+    } -cleanup {
+        cleanup
+    } -result {
+        lfp {invalid value "101", expected integer in range 0, 100}
+    }
+
+    test CREATE-1.14 {positive lfp, but sa_flag} -setup {
+        ted create NB1
+    } -body {
+        ted order -reject CIVGROUP:CREATE [dict merge $sunn {
+            lfp 60
+        }]
+    } -cleanup {
+        cleanup
+    } -result {
+        lfp {subsistence agriculture requires labor force % = 0}
+    }
+
+    test CREATE-1.15 {invalid housing} -setup {
+        ted create NB1
+    } -body {
+        ted order -reject CIVGROUP:CREATE [dict merge $shia {
+            housing NONESUCH
+        }]
+    } -cleanup {
+        cleanup
+    } -result {
+        housing {invalid value "NONESUCH", should be one of: AT_HOME, DISPLACED, IN_CAMP}
+    }
+
+    test CREATE-1.16 {not at home, but sa_flag} -setup {
+        ted create NB1
+    } -body {
+        ted order -reject CIVGROUP:CREATE [dict merge $sunn {
+            housing DISPLACED
+        }]
+    } -cleanup {
+        cleanup
+    } -result {
+        housing {subsistence agriculture can only be done "at home"}
+    }
+
+    test CREATE-1.17 {invalid hist_flag} -setup {
+        ted create NB1
+    } -body {
+        ted order -reject CIVGROUP:CREATE {*}$sunn hist_flag NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        hist_flag {invalid boolean "NONESUCH", should be one of: 1, 0, true, false, yes, no, on, off}
+    }
+
+    test CREATE-1.18 {invalid upc, non-numeric} -setup {
+        ted create NB1
+    } -body {
+        ted order -reject CIVGROUP:CREATE {*}$sunn upc NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        upc {invalid value "NONESUCH", expected double}
+    }
+
+    test CREATE-2.1 {group is created} -body {
+        ted create NB1
+        ted order CIVGROUP:CREATE $shia
+
+        ted querylist {SELECT * FROM civgroups_view}
+    } -cleanup {
+        cleanup
+    } -result {
+g          SHIA
+longname   Shia Locals
+bsid       1
+color      #FFFF00
+demeanor   AVERAGE
+basepop    10000
+pop_cr     0.0
+gtype      CIV
+n          NB1
+sa_flag    0
+lfp        60
+housing    AT_HOME
+hist_flag  0
+upc        0.0
+    }
+
+
+    test CREATE-2.2 {longname defaults to ID} -body {
+        ted create NB1
+        ted order CIVGROUP:CREATE {*}$shia longname ""
+
+        rdb onecolumn {SELECT longname FROM civgroups_view}
+    } -cleanup {
+        cleanup
+    } -result {SHIA}
+
+    test CREATE-2.3 {bsid defaults to 1} -body {
+        ted create NB1
+        ted order CIVGROUP:CREATE {*}$shia bsid ""
+
+        rdb onecolumn {SELECT bsid FROM civgroups_view}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test CREATE-2.4 {basepop can be zero} -body {
+        ted create NB1
+        ted order CIVGROUP:CREATE {*}$shia basepop 0
+
+        rdb onecolumn {SELECT basepop FROM civgroups_view}
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+    test CREATE-2.5 {effects} -body {
+        ted create NB1
+        ted notifier bind ::rdb <civgroups>
+        ted order CIVGROUP:CREATE $sunn
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <civgroups> update SUNN}
+    }
+
+
+    test CREATE-3.1 {effects are undone} -setup {
+        ted create NB1
+        ted order CIVGROUP:CREATE $sunn
+    } -body {
+        ted notifier bind ::rdb <civgroups>
+        cif undo -test
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <civgroups> delete SUNN}
+    }
+
+    #-------------------------------------------------------------------
+    # CIVGROUP:DELETE
+
+    test DELETE-1.1 {required parms} -body {
+        ted order -reject CIVGROUP:DELETE {}
+    } -result {
+        g {required value}
+    }
+
+
+    test DELETE-1.2 {unknown g} -body {
+        ted order -reject CIVGROUP:DELETE g NONESUCH
+    } -result {
+        g {Invalid civilian group, none are defined}
+    }
+
+
+    test DELETE-2.1 {Effects} -setup {
+        ted create NB1 SHIA
+    } -body {
+        ted notifier bind ::rdb <civgroups>
+        ted order CIVGROUP:DELETE g SHIA
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <civgroups> delete SHIA}
+    }
+
+
+    test DELETE-3.1 {Effects on undo} -setup {
+        ted create NB1 SHIA
+        ted order CIVGROUP:DELETE g SHIA
+    } -body {
+        ted notifier bind ::rdb <civgroups>
+        cif undo -test
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <civgroups> update SHIA}
+    }
+
+    #-------------------------------------------------------------------
+    # CIVGROUP:UPDATE
+
+    test UPDATE-1.1 {required parms} -body {
+        ted order -reject CIVGROUP:UPDATE {}
+    } -result {
+        g {required value}
+    }
+
+
+    test UPDATE-1.2 {invalid neighborhood} -setup {
+        ted create NB1 SHIA
+    } -body {
+        ted order -reject CIVGROUP:UPDATE g SHIA n NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        n {Invalid neighborhood, should be one of: NB1}
+    }
+
+    test UPDATE-1.3 {invalid bsid} -setup {
+        ted create NB1 SHIA
+    } -body {
+        ted order -reject CIVGROUP:UPDATE g SHIA bsid 2
+    } -cleanup {
+        cleanup
+    } -result {
+        bsid {Invalid belief system ID}
+    }
+
+    test UPDATE-1.4 {invalid color} -setup {
+        ted create NB1 SHIA
+    } -body {
+        ted order -reject CIVGROUP:UPDATE g SHIA color NONESUCH
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        color {Invalid hex color*}
+    }
+
+
+    test UPDATE-1.6 {invalid demeanor} -setup {
+        ted create NB1 SHIA
+    } -body {
+        ted order -reject CIVGROUP:UPDATE g SHIA demeanor NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        demeanor {invalid value "NONESUCH", should be one of: APATHETIC, AVERAGE, AGGRESSIVE}
+    }
+
+
+    test UPDATE-1.7 {invalid population 1} -setup {
+        ted create NB1 SHIA
+    } -body {
+        ted order -reject CIVGROUP:UPDATE \
+            g SHIA basepop NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        basepop {invalid value "NONESUCH", expected integer}
+    }
+
+
+    test UPDATE-1.8 {basepop can't be negative} -setup {
+        ted create NB1 SHIA
+    } -body {
+        ted order -reject CIVGROUP:UPDATE \
+            g SHIA basepop -1
+    } -cleanup {
+        cleanup
+    } -result {
+        basepop {invalid value "-1", expected integer no less than 0}
+    }
+
+
+    test UPDATE-1.9 {invalid sa_flag} -setup {
+        ted create NB1 SHIA
+    } -body {
+        ted order -reject CIVGROUP:UPDATE g SHIA sa_flag NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        sa_flag {invalid boolean "NONESUCH", should be one of: 1, 0, true, false, yes, no, on, off}
+    }
+
+    test UPDATE-1.10 {invalid lfp, non-numeric} -setup {
+        ted create SHIA
+    } -body {
+        ted order -reject CIVGROUP:UPDATE g SHIA lfp NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        lfp {invalid value "NONESUCH", expected integer}
+    }
+
+    test UPDATE-1.11 {invalid lfp, out-of-range} -setup {
+        ted create SHIA
+    } -body {
+        ted order -reject CIVGROUP:UPDATE g SHIA lfp 101
+    } -cleanup {
+        cleanup
+    } -result {
+        lfp {invalid value "101", expected integer in range 0, 100}
+    }
+
+    test UPDATE-1.12 {positive lfp, but sa_flag} -setup {
+        ted create NB1 NB2
+        ted order CIVGROUP:CREATE $sunn
+    } -body {
+        ted order -reject CIVGROUP:UPDATE g SUNN lfp 60
+    } -cleanup {
+        cleanup
+    } -result {
+        lfp {subsistence agriculture requires labor force % = 0}
+    }
+
+    test UPDATE-1.13 {invalid housing} -setup {
+        ted create SHIA
+    } -body {
+        ted order -reject CIVGROUP:UPDATE g SHIA housing NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        housing {invalid value "NONESUCH", should be one of: AT_HOME, DISPLACED, IN_CAMP}
+    }
+
+    test UPDATE-1.14 {not at home, but sa_flag} -setup {
+        ted create NB1 NB2
+        ted order CIVGROUP:CREATE $sunn
+    } -body {
+        ted order -reject CIVGROUP:UPDATE g SUNN housing DISPLACED
+    } -cleanup {
+        cleanup
+    } -result {
+        housing {subsistence agriculture can only be done "at home"}
+    }
+
+    test UPDATE-1.15 {invalid hist_flag} -setup {
+        ted create NB1 NB2
+        ted order CIVGROUP:CREATE $sunn
+    } -body {
+        ted order -reject CIVGROUP:UPDATE g SUNN hist_flag NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        hist_flag {invalid boolean "NONESUCH", should be one of: 1, 0, true, false, yes, no, on, off}
+    }
+
+    test UPDATE-1.16 {invalid upc} -setup {
+        ted create SHIA
+    } -body {
+        ted order -reject CIVGROUP:UPDATE g SHIA upc -1
+    } -cleanup {
+        cleanup
+    } -result {
+        upc {invalid value "-1", expected double in range 0.0, 100.0}
+    }
+
+    test UPDATE-2.1 {civgroup is updated} -setup {
+        ted create NB1 NB2 SHIA
+        bsys system add 2
+    } -body {
+        ted order CIVGROUP:UPDATE {
+            g            SHIA
+            longname     "Shia Folk"
+            n            NB2
+            bsid         2
+            color        "#ff0000"
+            demeanor     APATHETIC
+            basepop      5000
+            pop_cr       2.5
+            sa_flag      YES
+            lfp          0
+            hist_flag    1
+            upc          10.0
+        }
+
+        ted querylist {SELECT * FROM civgroups_view}
+    } -cleanup {
+        cleanup
+    } -result {
+g          SHIA
+longname   Shia Folk
+bsid       2
+color      #FF0000
+demeanor   APATHETIC
+basepop    5000
+pop_cr     2.5
+gtype      CIV
+n          NB2
+sa_flag    1
+lfp        0
+housing    AT_HOME
+hist_flag  1
+upc        10.0
+    }
+
+
+    test UPDATE-2.2 {table monitor event} -setup {
+        ted create NB1 SHIA
+    } -body {
+        ted notifier bind ::rdb <civgroups>
+        ted order CIVGROUP:UPDATE g SHIA longname "Shia Folk"
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <civgroups> update SHIA}
+    }
+
+
+    test UPDATE-3.1 {undo effects} -setup {
+        ted create NB1 SHIA
+        ted order CIVGROUP:UPDATE {
+            g            SHIA
+            longname     "Shia Folk"
+            color        "#ff0000"
+        }
+    } -body {
+        ted notifier bind ::rdb <civgroups>
+        cif undo -test
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <civgroups> update SHIA}
+    }
+
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::

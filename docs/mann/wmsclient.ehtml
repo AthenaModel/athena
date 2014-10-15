@@ -1,0 +1,188 @@
+<manpage {projectlib(n) wmsclient(n)} "Web Map Service (WMS) client">
+
+<section SYNOPSIS>
+
+<pre>
+package require projectlib 1.0
+namespace import ::projectlib::wmsclient
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+wmsclient(n) is an implementation of a client interface to an Open GIS
+(OGC) compliant Web Map Service (WMS).  The WMS standard has been around
+for many years and is well documented.  A detailed discussion of WMS is
+outside the scope of this man page.<p>
+
+An application using the wmsclient(n) is able to extract the pertinent meta
+data from a WMS to make requests for geo-referenced maps served up by the
+WMS server.<p>
+
+For now, it is assumed that maps served up by the WMS has the content type
+of <b>image/png</b>. It would be trivial to expand this to other image types,
+but PNG is recommended by the Open GIS as a minumum for compliant servers.<p>
+
+<section "COMMANDS">
+
+wmsclient(n) provides the following commands for use by the
+application.<p>
+
+<deflist commands>
+
+<defitem wmsclient {wmsclient <i>name</i> ?<i>options...</i>?}>
+
+Creates a new instance of wmsclient(n) called <i>name</i>; returns the
+fully-qualified command name.<p>
+
+wmsclient(n) has the following option:<p>
+
+<deflist options>
+
+<defopt {-agent <i>httpagent</i>}>
+
+Specifies an agent used to process http requests. This is normally left
+empty, in which case the wmsclient(n) uses <xref httpagent(n)> for 
+processing http requests.<p>
+
+<defopt {-servercmd <i>cmd</i>}>
+
+Specifies a callback command that is executed as a result of an http server
+state change.<p>
+
+</deflist options>
+
+</deflist commands>
+
+
+<section "INSTANCE COMMANDS">
+
+Instances of wmsclient(n) provide the following subcommands for use by
+the application.<p>
+
+<deflist instance>
+
+<defitem server {$client server <i>subcommand</i> ?<i>args...</i>?}>
+
+This command is used to connect and retrieve data from the WMS server.
+The subcommands are as follows:<p>
+
+<deflist server>
+
+<defitem "server connect" {$client server connect <i>url</i>}>
+
+Attempts to connect to a WMS server located at the specified URL.  If a
+connection is successful the WMS server capabilities are automatically 
+retrieved and stored in a dictionary that can be accessed using other
+commands provided by wmsclient(n).<p>
+
+<defitem "server getmap" {$client server getmap <i>qparms</i>}>
+
+Attempts to retrieve a map from the WMS server using any supplied query
+parameters in the form of a dictionary of WMS server parameters and values.
+See <xref "Query Parms"> for the list of recognized parameters.<p>
+
+<defitem "server url" {$client server url}>
+
+Returns the URL of the currently connected WMS server.<p>
+
+<defitem "server state" {$client server state}>
+
+Returns the current state of the WMS server. Possible server states are:<p>
+
+<ul>
+  <li> <b>OK</b>: The server request was completed normally.
+  <li> <b>IDLE</b>: The server is idle.
+  <li> <b>WAITING</b>: Waiting for a response from the server.
+  <li> <b>ERROR</b>: An error occurred due to a server request.
+</ul><p>
+
+<defitem "server status" {$client server status}>
+
+Returns nicely formatted, human-readable text of the server status based on
+the <iref server state>.<p>
+
+<defitem "server error" {$client server error}>
+
+Returns a nicely formatted, human-readable text of the error encountered by
+the server if the <iref server state> is <b>ERROR</b>.<p>
+
+<defitem "server wmscap" {$client server wmscap}>
+
+Returns the capabilities of the WMS server in dictionary format. Not all the
+data in a <b>WMS GetCapabilities</b> request is stored in this dictionary. The
+available data is parsed out by the <xref wmscap(n)> object. See 
+<xref wmscap(n)> for a description of the data.<p>
+
+<subsection "Query Parms">
+
+By default wmsclient(n) makes an initial request for a map using default
+query parameters once a successful connection to a WMS server has been made 
+and the WMS server capabilities retrieved.  The query parameters used for
+requesting this default map are entirely defined by the capabilities returned
+from the server. Whenever a new request is made for a map, the default 
+query parameters are used unless they are overridden.  The following query
+parameters are ones that can be overridden by passing them in as a dictionary
+using the <iref server getmap> command:
+
+<ul>
+  <li><b>CRS</b> - The coordinate reference system. Usually, this does not need to be specified. If it is, it must be one supported by the WMS server.
+  <li><b>BBOX</b> - A list of four bounding box coordinates in the CRS, usually two lat/long pairs as follows: minimum lat, minimum long, maximum lat, maximum long.
+  <li><b>LAYERS</b> - A list of map layers to be retrieved. The names of layers to appear in this list are defined by the WMS server.
+  <li><b>WIDTH</b> - The width in pixels of the map to be retrieved.
+  <li><b>HEIGHT</b> - The height in pixels of the map to be retrieved.
+</ul>
+
+</deflist server>
+
+<defitem map {$client map <i>subcommand</i>}>
+
+This command is used to retrieve information about the currently requested
+map. The subcommands are as follows:<p>
+
+<deflist map>
+
+<defitem "map data" {$client map data}>
+Returns the image of the map in binary form.  The data is suitable for 
+conversion to an image using the Tk image command.<p>
+
+<defitem "map bbox" {$client map bbox}>
+Returns the bounding box of the current map using the coordinate reference
+system as specified in the map request.  The bounding box consists of a list
+of four values corresponding to two lat/long pairs, one for the lower left
+of the box and one for the upper right. Thus, the returned list is, in order,
+minumum latitude, minimum longitude, maximum latitude and maximum longitude.<p>
+
+<defitem "map crs" {$client map crs}>
+Returns the coordinate reference system in use.  Only CRS:84 or EPSG:4326
+coordinate reference systems are recognized.<p>
+
+<defitem "map width" {$client map width}>
+Returns the width of the current map in pixels.<p>
+
+<defitem "map height" {$client map height}>
+Returns the height of the current map in pixels.<p>
+
+</deflist map>
+
+</deflist instance>
+
+<section ENVIRONMENT>
+
+Requires Tcl 8.5 or later.<p>
+
+<section AUTHOR>
+
+Dave Hanks<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+

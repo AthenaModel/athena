@@ -1,0 +1,57 @@
+<manpage {wizpage(i)} "Wizard Page Interface">
+
+<section SYNOPSIS>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+A wizpage(i) widget is a widget that forms one "page" in a wizard created
+using the <xref wizman(n)> widget.  A wizard page usually displays 
+data to the user, possibly allows him to enter some input, and when all
+is complete allows the user to move on to the next page or to complete the
+work of the wizard as a whole.<p>
+
+Any widget can be used as a wizard page, so long as it provides the 
+interface documented in this man page.<p>
+
+
+<section "SUBCOMMANDS">
+
+Each <xref wizpage(i)> ensemble must implement at least the following
+subcommands.<p>
+
+<deflist subcommands>
+
+<defitem enter {<i>wizpage</i> enter}>
+
+This subcommand is called whenever the wizard begins to display this page.
+It must assess the state of the wizard and initialize its display 
+accordingly.<p>
+
+<defitem finished {<i>wizpage</i> finished}>
+
+This subcommand should return 1 when it is OK to go on to the next page,
+and 0 otherwise.  Usually this will involve verifying that the user has
+entered the necessary data.<p>
+
+<defitem leave {<i>wizpage</i> leave}>
+
+This subcommand is called when the user presses the "Next" button to go
+on to the next page.  It allows the page to do any work required to set up
+for the next page.<p>
+
+</deflist subcommands>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original interface.
+
+</manpage>
+
+
+

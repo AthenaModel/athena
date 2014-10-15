@@ -1,0 +1,812 @@
+<manpage {projectlib(n) bean(n)} "Bean Base Class">
+
+<section SYNOPSIS>
+
+<pre>
+package require projectlib 1.0
+namespace import ::projectlib::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+A "bean" is a TclOO object that can be automatically checkpointed and restored
+as part of the program's state, i.e., as part of an Athena scenario.  As such,
+it is used for scenario data that is store in memory, rather than in the 
+RDB.  At present, the bean mechanism assumes that <b>all</b> beans are part of 
+the program state, i.e., there's no notion of multiple open documents, or
+of checkpointing a subset of the beans.<p>
+
+bean(n) is the base class for all bean classes; it provides the basic
+functionality for all beans.  This man page describes this functionality,
+along with the constraints on bean classes.<p>
+
+<subsection "Defining a Bean Class">
+
+All bean classes are created using <xref beanclass(n)> as follows:<p>
+
+<pre>
+    ::projectlib::beanclass create pet {
+        # Variable and method definitions
+    }
+</pre>
+
+The new <code>::pet</code> class command will be a sublcass of 
+<code>::projectlib::bean</code>, and will have 
+<xref beanclass(n) exists>, 
+<xref beanclass(n) get>, and
+<xref beanclass(n) ids> subcommands for retrieving and querying the
+existence of members of the classes (and its subclasses).  See
+<xref beanclass(n)> for specifics.<p>
+
+Subclasses of <code>pet</code> also need to be defined using 
+<xref beanclass(n)>:
+
+<pre>
+    ::projectlib::beanclass create dog {
+        superclass pet
+
+        # Variable and method definitions
+    }
+</pre>
+
+If a bean can own other beans, it should define one or more "beanslot" 
+variables; the value of a beanslot should be a list of zero or more bean
+instance names.  Beanslot variables are defined in the class definition
+using the <code>beanslot</code> command.<p>
+
+
+<subsection "Bean IDs">
+
+Every instance of bean(n) and its subclasses has a unique numeric ID; beans can be looked up given their IDs.  The ID is stored in a predefined instance 
+variable called <code>id</code>, which cannot be changed.<p>
+
+<subsection "Beans and Dictionaries">
+
+A bean can be converted to and from a Tcl dictionary using its
+<iref getdict> and <iref setdict> commands; this is important because
+beans are often edited by the user via orders.  The keys in a bean's 
+dictionary are simply its instance variable names.<p>
+
+<b>NOTE:</b> At present, the bean mechanism does not support array 
+instance variables.  Use dicts in scalar instance variables instead.<p>
+
+<subsection "Bean Instance Variables">
+
+Bean instance variables are just normal scalar TclOO instance variables.  The
+usual way to define them is via the <code>variable</code> statement in the
+beanclass definition.<p>
+
+The variables defined in this way by a particular bean(n) subclass can be
+accessed by name, without declaration, within that subclass's own code.
+For example:<p>
+
+<pre>
+    ::projectlib::beanclass create dog {
+        superclass pet
+
+        variable barksound
+
+        method bark {} { puts $barksound }
+    }
+</pre>
+
+Instance variables declared by ancestor classes cannot be accessed in this way,
+unless the subclass explicitly declares them.  (This is normal TclOO behavior.)
+<p>
+
+Because beans are intended to be edited by external mutators, however, 
+bean(n) defines the <iref set>, <iref get>, <iref setdict>, and 
+<iref getdict> methods, which may be used to set and query any bean
+variables defined in the subclass or its parent classes.
+(The <code>id</code> variable is a special case; it can be set in this way,
+but only to itself.  Any attempt to set it to anything else results in an
+error.)<p>
+
+<subsection "Array Instance Variables">
+
+Only scalar instance variables are included in a bean's checkpointable state.
+Array instance variables cannot be checkpointed, and cannot be queried or
+modified using <iref getdict>, <iref setdict>, and so on.  For structured
+bean data, use dictionaries rather than arrays.<p>
+
+<subsection "Transient Instance Variables">
+
+It is sometimes convenient for a bean to have transient state, i.e., state data
+that is preserved for the duration of an operation that lasts across several
+method calls, but which should never be saved as part of a checkpoint.<p>
+
+For example,
+a tactic's "obligate" method may compute the actual resources to expend given
+its parameters and the resources available; then, shortly thereafter, the
+tactic's "execute" method will expend the actual resources.  The values are
+transient; once strategy execution has completed for the given agent, they
+are irrelevant.<p>
+
+Such transient data shouldn't be saved in the checkpoint, as it is meaningless.  
+This is easily ensured by storing the transient data in
+<xref "Array Instance Variables">.<p>
+
+<subsection "Bean Views">
+
+The <iref getdict> method returns all of a bean's data, but not necessarily
+in the most convenient form.  A flag variable might be stored as 1 or 0 
+internally but be displayed as "Yes" or "No".  Numeric values might need to
+be formatted.  Other data might be computed from several of the bean's 
+variables on demand, or be retrieved from another bean related to this one
+(i.e., from an owning bean).<p>
+
+Consequently, we define the notion of a "view" on the bean's data.  A bean
+class can support any number of alternate views.  Given a view name, the bean's
+<iref view> method returns a view dictionary.<p>
+
+Bean classes define views by overriding the <iref view> method.  Every bean
+class has a default view, called ""; unless overridden, it simply returns the
+<iref getdict>.  Subclasses are free to add additional keys to the default
+view, and to define any additional views that might be needed.<p>
+
+The <iref view> method is usually overridden like this:<p>
+
+<pre>
+    method view {{view ""}} {
+        set result [next $view]
+
+        # Add entries to the result dictionary given the $view name.
+
+        return $result
+    }
+</pre>
+
+If a view method doesn't recognize the view name, it should simply return
+its default view.<p>
+
+<subsection "Detecting Changes">
+
+The bean(n) type is a <xref saveable(i)>, so that beans can be checkpointed
+and restored with the Athena scenario.  Consequently, bean(n) needs to know
+when there are unsaved changes to beans.  Bean subclass methods can signal that
+changes have been made by calling <iref bean markchanged>.  Further, the
+<iref set> method always sets the changed flag.  Thus, it is often useful for
+bean methods to set instance variables using the <iref set> method, like this:
+
+<pre>
+    my set <i>var</i> <i>value</i>
+</pre>
+
+A method that makes many changes to the subclass's own variables can instead
+use the normal Tcl <code>set</code> command, and call
+<iref bean markchanged> when done.<p>
+
+The bean(n) class provides <iref lappend> and <iref ldelete> methods as
+well, for modifying list-valued variables with notification.<p>
+
+<subsection "Checkpoint/Restore">
+
+The bean(n) class object is a <xref saveable(i)>, and thus can be plugged
+into Athena's checkpoint/restore mechanism.  Note that both bean IDs and
+bean object names are preserved across checkpoint/restore.<p>
+
+Beans can be checkpointed in two different ways.  In the default way, the
+checkpoint string includes all bean data.  Alternatively, the individual 
+beans can be stored as rows the <code>beans</code> table in a 
+<xref scenariodb(n)> RDB.  This mode is selected by setting the
+<iref bean configure> <b>-rdb</b> option.<p>
+
+The <b>-rdb</b> mode uses less memory when saving than the normal mode, and
+also allows bean data to be accessed by ID in SQL queries.<p>
+
+If the beans are checkpointed with <b>-rdb</b>, they must be restored with 
+<b>-rdb</b>; any given application should use one mode or the other.
+
+<subsection "Bean Ownership and Bean Slots">
+
+It is common for beans to own other beans, as a strategy block can own 
+conditions and tactics.  Note that this pattern should be used only when
+both the owner and the owned objects are user-editable, and the owned objects
+are added to the owner after it is created.   Objects that are created by the
+owner in its constructor ought not be beans.<p>
+
+To put it another way, a bean may be made of non-beans by composition 
+(the has-a relationship), and may contain beans given to it from outside
+(the container/contained relationship).<p>
+
+Owned beans are saved by their object command names, which are preserved
+across checkpoint/restore and delete/undelete.
+
+An instance variable that contains the names of owned beans is called a 
+<i>bean slot</i>, and should be declared as such in the class definition.
+For example, suppose that each instance of the dog class can own a 
+tail, also defined as a bean class.  The dog class would then have a 
+beanslot called "tail":<p>
+
+<pre>
+    ::projectlib::beanclass create dog {
+        superclass pet
+
+        # Variable and method definitions
+        beanslot tail
+    }
+</pre>
+
+The tail, for its part, must retain a pointer to its parent:<p>
+
+<pre>
+    ::projectlib::beanclass create tail {
+        variable parent  ;# The dog to which the tail belongs.
+    }
+</pre>
+
+The <iref addbean_> method updates both the bean slot and the added
+bean's <code>parent</code> variable.<p>
+
+Beans named in bean slots will be destroyed automatically with the owning
+bean.<p>
+
+<b>Note:</b> Sometimes a bean will have a reference to a bean it 
+<i>doesn't</i> own.  For example, an owned bean will often have a reference
+to its owner.  Such references must be stored in a normal instance variable,
+not in a bean slot variable, as that would cause the owner to be destroyed
+with the bean (potentially with other problems as well).  Further, the 
+validity of such references across checkpoint/restore boundaries must be 
+ensured by the application.<p>
+
+<subsection "Delete/Undelete">
+
+The <iref bean delete> and <iref bean undelete> commands support 
+cascading deletion of beans with undo.  To delete a bean, pass its ID
+to <iref bean delete>, which returns a checkpoint-like delete set.  To 
+undo the deletion, pass the delete set to <iref bean undelete>.<p>
+
+<subsection "Order Mutators">
+
+The bean(n) class defines a number of mutators for use within
+<xref order(n)> bodies.  Mutator method names end with a "_"; see, 
+for example, <iref addbean_>, <iref deletebean_>, <iref movebean_> and 
+<iref update_>.<p>
+
+Each mutator has a companion method that can be overridden.  For example,
+suppose certain instance variables need to be modified on every
+<iref update_>.  The class can override the <iref onUpdate_> method
+to make the relevant changes.<p>
+
+<subsection "Notifier Events">
+
+The bean(n) <xref "Order Mutators"> send out <xref notifier(n)> events
+on mutate and on undo.  Every mutator sends out a 
+"<code>::projectlib::bean &lt;Monitor&gt;</code>" event, as does its undo 
+script.  In addition, if the class's <iref subject> is defined the 
+mutators will send out more specific events from that subject.<p>
+
+
+<subsection "Copy and Paste">
+
+The <iref copydata> method returns a copy set for the bean and the 
+dependent beans in its beanslots, a collection of data suitable to be 
+placed on a clipboard.  The copy set is a dictionary of data with the
+following content:<p>
+
+<ul>
+    <li> The keys and values from the bean's default <iref view>, which
+         contains data in the user formats required for order processing.
+    <li> The <b>id</b> field, and the <b>parent</b> field if present, are
+         removed, since they won't apply to the pasted data.
+    <li> A <b>class_</b> key is added, naming the bean's leaf class.
+    <li> The beanslots in the copy set will contain a list of copy sets like 
+         this, one for each owned bean, instead of the bean instance names.
+</ul>
+
+Pasting must be handled by the application, because it needs to be done
+using orders.<p>
+
+
+<section "CLASS COMMANDS">
+
+This module defines the following commands:<p>
+
+<deflist commands>
+
+<defitem "bean changed" {bean changed}>
+
+Returns 1 if any bean data has changed, and 0 otherwise.  (This is part of
+bean(n)'s <xref saveable(i)> interface.)<p>
+
+<defitem "bean cget" {bean cget <i>option</i>}>
+
+Returns the value of the named class configuration option.  See
+<iref bean configure> for a list of options.<p> 
+
+<defitem "bean checkpoint" {bean checkpoint ?-saved?}>
+
+Returns a checkpoint of all existing beans; if <b>-saved</b> is given, then
+the <iref bean changed> flag is cleared.  (This is part of
+bean(n)'s <xref saveable(i)> interface.)<p>
+
+If the <iref bean configure> <b>-rdb</b> option has been set, the
+individual beans will be saved in the RDB's <code>beans</code> table;
+the returned checkpoint string will contain only bean metadata.<p>
+
+If the beans are checkpointed with <b>-rdb</b>, they must be restored
+with <b>-rdb</b>; any given application should use one mode or the other.<p>
+
+<defitem "bean configure" {bean configure <i>option value ...</i>}>
+
+Sets the value of one or more of the <xref bean(n)> class configuration
+options, which are as follows:<p>
+
+<deflist options>
+
+<defopt {-onchange <i>command</i>}>
+
+Specifies a command to call whenever any bean changes in any way.  This
+is most useful as a debugging aid, as it detects every set of every
+instance variable.  For significant scenario changes, use the class
+<xref "Notifier Events"> instead.<p>
+
+<defopt {-rdb <i>command</i>}>
+
+Specifies the name of an instances of <xref scenariodb(n)> serving
+as a run-time database (RDB).  This command will be used when checkpointing
+and restoring the set of beans.<p> 
+
+</deflist options> 
+
+<defitem "bean create" {bean create <i>name</i>}>
+
+Creates a bean(n) instance called <i>name</i>.  Application code will rarely 
+use this command, as a bare bean isn't much use.<p>
+
+<defitem "bean delete" {bean delete <i>id</i>}>
+
+Deletes the bean with the given <i>id</i>, and returns a "delete set" 
+that can be used to undelete it (under normal undo conditions).  If the
+bean owns other beans and uses bean slots properly 
+(see <xref "Bean Ownership and Bean Slots">) the owned beans will be 
+included in the delete set and will be undeleted
+with their owner.<p>
+
+<defitem "bean dump" {bean dump}>
+
+Returns a dump of information about all existing beans.  The output is similar
+to a checkpoint, but is easier to read.<p>
+
+<defitem "bean exists" {bean exists <i>id</i>}>
+
+Returns 1 if there is a bean with the given <i>id</i>, and 0 otherwise.<p>
+
+<defitem "bean get" {bean get <i>id</i>}>
+
+Returns the bean object with the given ID, throwing an error if there is 
+no such bean.<p>
+
+<defitem "bean getslots" {bean getslots <i>cls</i>}>
+
+Returns the names of all bean slot variables defined by <i>cls</i> and its
+superclasses.<p>
+
+<defitem "bean ids" {bean ids}>
+
+Returns a list of the IDs of all existing beans.<p>
+
+<defitem "bean init" {bean init}>
+
+Initializes the bean(n) mechanism when the program is loaded.  This command
+should not be called by clients.<p>
+
+<defitem "bean lastid" {bean lastid}>
+
+Returns the unique ID of the most recently created bean (which is, not
+coincidentally, the bean with the largest ID number).<p>
+
+<defitem "bean markchanged" {bean markchanged}>
+
+Sets the bean(n) <iref bean changed> flag.  A bean class should call 
+this when it knows that bean data has changed.  Note that all commands
+defined in this man page, including <iref set>, call this routine as
+needed.<p>
+
+
+<defitem "bean new" {bean new}>
+
+Creates a bean(n) instance with a name in the <code>::bean</code> namespace.
+Application code will rarely use this command, as a bare bean isn't much 
+use.<p>
+
+<defitem "bean nextid" {bean nextid}>
+
+Returns the unique ID that will be assigned to the next bean to be created.
+Application code should generally not need to call this, though it might
+be useful in some circumstances.  Note that <iref bean setnextid> can
+be used to control ID assignment.<p>
+
+<defitem "bean register" {bean register <i>bean</i>}>
+
+<b>Private.</b> Registers a new <i>bean</i> object and assigns it a unique 
+bean ID.  This
+command is solely for the use of the bean(n) class itself, and should not
+be used by clients.<p>
+
+<defitem "bean reset" {bean reset}>
+
+Deletes all beans and resets the bean infrastructure to its state at program
+start-up.  This command is primarily for use by the test suite, though it can
+also be called when creating a new scenario.<p>
+
+<defitem "bean restore" {bean restore <i>checkpoint</i> ?-saved?}>
+
+Restores a <i>checkpoint</i> returned by <iref bean checkpoint>.  By
+default, the <iref bean changed> flag is set; if <b>-saved</b> is given,
+the <iref bean changed> flag is cleared.  (This is part of
+bean(n)'s <xref saveable(i)> interface.)<p>
+
+If the <iref bean configure> <b>-rdb</b> option has been set, this 
+routine assumes that the individual beans were saved in the RDB's
+<code>beans</code> table, and that the <i>checkpoint</i> string
+contains only bean metadata.<p>
+
+<defitem "bean setnextid" {bean setnextid <i>nid</i>}>
+
+Sets the bean ID, <i>nid</i>, to be returned the next time 
+<iref bean nextid> is used to assign a bean ID.  The <i>nid</i> must
+be greater than <iref bean lastid> to have any effect.<p>
+
+This command is for use in <xref order(n)> <xref order(n) setredo>
+scripts, to ensure that an order produces the same bean IDs on redo.<p>
+
+
+<defitem "bean uncreate" {bean uncreate <i>bean</i>}>
+
+This command is used by the undo code for bean(n) mutators that create new 
+beans.  When creation of a bean is undone, the ID counter used to assign 
+bean IDs must be reset.  This command verifies that the <i>bean</i> is
+the most recently created bean, destroys it, and decrements the ID 
+counter.<p> 
+
+<defitem "bean undelete" {bean undelete <i>deleteSet</i>}>
+
+Undoes a call to <iref bean delete> given the <i>deleteSet</i> returned
+by <iref bean delete>.  Normal undo conditions apply; if any other changes
+have been made to beans since the deletion, they must be undone first.<p>
+
+<defitem "bean unregister" {bean unregister <i>id</i>}>
+
+<b>Private.</b> Unregisters the bean with the given <i>id</i> when it is 
+destroyed.  This
+command is solely for the use of the bean(n) class itself, and should not
+be used by clients.<p>
+
+<defitem "bean view" {bean view <i>id</i> ?<i>view</i>?}>
+
+Returns a view dictionary for the bean with the given <i>id</i>.<p>
+
+</deflist commands>
+
+<section "INSTANCE COMMANDS">
+
+Instances of bean(n), and instances of subclasses, have the following
+subcommands.<p>
+
+<deflist instance>
+
+<defitem addbean_ {<i>bean</i> addbean_ <i>slot cls</i> ?<i>beanvar</i>?}>
+
+<b>Protected.</b>  This mutator creates a new bean of class <i>cls</i>,
+and appends it to the named <i>slot</i> variable, 
+returns a script that will undo the change.  If <i>beanvar</i> is given,
+it is the name of a variable in the caller's context; this variable
+will receive the newly added bean object's name.<p>
+
+In addition, the mutator performs the following actions after modifying
+the slot variable:<p>
+
+<ul>
+<li> Call <iref onAddBean_>, which by default does nothing.
+     Subclasses should override this method rather than <iref addbean_> 
+     itself.<p>
+
+<li> Sends a detailed notifier event, if <iref subject> is defined:<p>
+    <pre>$subject &lt;$slot&gt; add $id $bean_id</pre><p>
+
+<li> Send a generic notifier event:<p>
+    <pre>::bean &lt;Monitor&gt;</pre><p>
+</ul>
+
+The undo script will undo the change; it will also:<p>
+
+<ul>
+<li> Send a detailed notifier event, if <iref subject> is defined:<p>
+    <pre>$subject &lt;$slot&gt; delete $id $bean_id</pre><p>
+
+<li> Send a generic notifier event:<p>
+    <pre>::bean &lt;Monitor&gt;</pre><p>
+</ul>
+
+Subclasses will usually wrap this in a mutator specific to the slot.<p>
+
+<defitem cget {<i>bean</i> cget <i>option</i>}>
+
+This method is simply syntactic sugar around <iref get>.  The
+<i>option</i> names are simply the object's instance variables in
+option form, i.e., "-varname" gets the variable named "varname".<p>
+
+<defitem configure {<i>bean</i> configure ?<i>option value...</i>?}>
+
+This method is simply syntactic sugar around <iref setdict>.  The
+<i>option</i> names are simply the object's instance variables in
+option form, i.e., "-varname" sets the variable named "varname".<p>
+
+The <iref set> method is used to save the <i>value</i>; if any
+validation is to be done, the child class should override 
+<iref set>.<p>
+
+<defitem copydata {<i>bean</i> copydata}>
+
+Returns a "copy set" value that can be used to duplicate the <i>bean</i>
+and its dependents.  See <xref "Copy and Paste"> for a description of
+how to implement copy and paste.<p>
+
+<defitem deletebean_ {<i>bean</i> deletebean_ <i>slot id</i>}>
+
+<b>Protected.</b>  This mutator deletes the bean with the given <i>id</i> 
+from the named bean <i>slot</i> variable, destroys the bean, and 
+returns a script that will undo the change.<p>
+
+In addition, the mutator performs the following actions after modifying
+the slot variable:<p>
+
+<ul>
+<li> Call <iref onDeleteBean_>, which by default does nothing.
+     Subclasses should override this method rather than <iref deletebean_> 
+     itself.<p>
+
+<li> Send a detailed notifier event, if <iref subject> is defined:<p>
+    <pre>$subject &lt;$slot&gt; delete $id $bean_id</pre><p>
+
+<li> Send a generic notifier event:<p>
+    <pre>::bean &lt;Monitor&gt;</pre><p>
+</ul>
+
+The undo script will undo the change; it will also:<p>
+
+<ul>
+<li> Send a detailed notifier event, if <iref subject> is defined:<p>
+    <pre>$subject &lt;$slot&gt; add $id $bean_id</pre><p>
+
+<li> Send a generic notifier event:<p>
+    <pre>::bean &lt;Monitor&gt;</pre><p>
+</ul>
+
+This method is protected; subclasses will need to wrap it in a more 
+specific mutator.<p>
+
+<defitem destroyslots {<i>bean</i> destroyslots <i>slot...</i>}>
+
+<b>Protected.</b>  This command destroys all beans listed in the named
+bean <i>slot</i> variables.  It is primarily intended to be called from 
+the bean base class destructor, but it can also be used when resetting the 
+slot owner's state.<p>
+
+<iref destroyslots> is useful because it avoids to common errors in 
+implementing destructors for beans that own other beans.  First, if there is
+an error in calling the constructor then the bean's destructor is called; and
+if a slot variable hasn't yet been initialized and the destructor tries to
+clean it up in a naive way, it will throw an unknown variable error.  Second,
+the <iref bean reset> command can sometimes destroy beans out of order, so
+that a bean named by a slot no longer exists.  <iref destroyslots> handles
+both of these cases automatically, thus simplifying the destructor.
+
+When using <iref destroyslots> to reset a bean owner's state, i.e., in a 
+"reset" method, be aware that <iref destroyslots> does not change the value 
+of the slot variables.  The subclass must clear them explicitly.<p>
+
+<defitem get {<i>bean</i> get <i>var</i>}>
+
+Returns the value of the instance variable named <i>var</i>.  It's an
+error if there is no such variable.<p>
+
+<defitem getdict {<i>bean</i> getdict}>
+
+Returns the bean's state as a dictionary. The keys are the names of the bean's
+instance variables, and the values are (naturally) the values of the instance
+variables.<p>
+
+<defitem getowned {<i>bean</i> getowned ?-shallow|-deep?}>
+
+Returns a list of the beans owned by <i>bean</i>, i.e., those named
+in bean slots.  With the 
+<code>-shallow</code> option, the list contains only those beans owned 
+directly by <i>bean</i> itself.  With the <code>-deep</code> option
+(the default), the list contains all beans in <i>bean</i>'s ownership
+tree, whether owned directly or indirectly.<p>
+
+<defitem getslots {<i>bean</i> getslots}>
+
+Returns the names of the bean slot variables for this object.<p>
+
+<defitem id {<i>bean</i> id}>
+
+Returns the bean's unique ID.  See <xref "Bean IDs">.<p>
+
+<defitem lappend {<i>bean</i> lappend <i>listvar value...</i>}>
+
+Appends the value(s) to the instance variable called <i>listvar</i>,
+and sets the <iref bean changed> flag.  (This is a convenience
+wrapper around <iref set>.)<p>
+
+<defitem ldelete {<i>bean</i> ldelete <i>listvar value</i>}>
+
+Deletes the value from the instance variable called <i>listvar</i>,
+and sets the <iref bean changed> flag.  (This is a convenience
+wrapper around <iref set>.)<p>
+
+<defitem movebean_ {<i>bean</i> movebean_ <i>slot bean_id where</i>}>
+
+<b>Protected.</b>  This mutator moves the bean with the given <i>bean_id</i>
+to a different place in the same <i>slot</i> given the <i>where</i>
+value, which is an <xref projtypes(n) emoveitem(n)> value, and returns 
+a script that will undo the change.<p>
+
+In addition, the mutator performs the following actions after modifying
+the slot variable:<p>
+
+<ul>
+<li> Call <iref onMoveBean_>, which by default does nothing.
+     Subclasses should override this method rather than <iref movebean_> 
+     itself.<p>
+
+<li> Sends a detailed notifier event, if <iref subject> is defined:<p>
+    <pre>$subject &lt;$slot&gt; move $id $bean_id</pre><p>
+
+<li> Send a generic notifier event:<p>
+    <pre>::bean &lt;Monitor&gt;</pre><p>
+</ul>
+
+The undo script will undo the change; it will also:<p>
+
+<ul>
+<li> Send a detailed notifier event, if <iref subject> is defined:<p>
+    <pre>$subject &lt;$slot&gt; move $id $bean_id</pre><p>
+
+<li> Send a generic notifier event:<p>
+    <pre>::bean &lt;Monitor&gt;</pre><p>
+</ul>
+
+Subclasses will usually wrap this in a mutator specific to the slot.<p>
+
+<defitem onAddBean_ {<i>bean</i> onAddBean_ <i>slot bean_id</i>}>
+
+<b>Protected.</b>  This method is called when a bean is added to
+the named <i>slot</i> by the <iref addbean_> method.  Subclasses 
+can override this to take some additional action when a bean is added; 
+this is preferable to overriding <iref addbean_>, as <iref onAddBean_> is 
+guaranteed to be called after the slot is modified but before any
+notifications are sent.<p>
+
+<defitem onDeleteBean_ {<i>bean</i> onDeleteBean_ <i>slot bean_id</i>}>
+
+<b>Protected.</b>  This method is called when a bean is deleted from
+the named <i>slot</i> by the <iref deletebean_> method.  Subclasses 
+can override this to take some additional action when a bean is deleted; 
+this is preferable to overriding <iref deletebean_>, as 
+<iref onDeleteBean_> is guaranteed to be called after the slot is 
+modified but before any notifications are sent.<p>
+
+<defitem onMoveBean_ {<i>bean</i> onMoveBean_ <i>slot bean_id</i>}>
+
+<b>Protected.</b>  This method is called when a bean is moved in a slot
+by the <iref movebean_> method.  Subclasses can override this to 
+take some additional action when a bean is moved; this is preferable
+to overriding <iref movebean_>, as <iref onMoveBean_> is 
+guaranteed to be called after the slot is modified but before any
+notifications are sent.<p>
+
+<defitem onUpdate_ {<i>bean</i> onUpdate_}>
+
+<b>Protected.</b>  This method is called when a bean is updated
+by the <iref update_> method.  Subclasses 
+can override this to take some additional action when a bean is 
+updated; this is preferable to overriding <iref update_>, as
+<iref onUpdate_> is guaranteed to be called after the bean is 
+modified but before any notifications are sent.</i><p>
+
+<defitem set {<i>bean</i> set <i>var value</i>}>
+
+Sets the <i>value</i> of the instance variable named <i>var</i>, and sets
+the <iref bean changed> flag.  It is an
+error to set the value of an undefined variable.<p>
+
+Because the changed flag is set, bean methods will usually want to use
+this method to set the value of instance variables, rather than the
+normal Tcl <code>set</code> command.<p>
+
+<defitem setdict {<i>bean</i> setdict <i>dict</i>}>
+
+Updates the bean's variables given a dictionary of variable names and values,
+and sets the <iref bean changed> flag.<p>
+
+Any or all of the bean's variables can be included; it is an error if the
+dictionary contains keys which are not the names of instance variables.<p>
+
+<b>Note:</b> it is not allowed to change the value of the bean's 
+<code>id</code> variable; however, it <i>is</i> allowed to set it to its
+existing value.  Thus, the following code is valid:<p>
+
+<pre>
+    $bean setdict [$bean getdict]
+</pre>
+
+This is often useful when undoing changes to a bean's state.<p>
+
+<defitem subject {<i>bean</i> subject}>
+
+By default, this method returns the empty string.  Subclasses can override
+it to name the <xref notifier(n)> subject used for detailed notifications;
+doing so enables these detailed notifications.<p>
+
+<defitem update_ {<i>bean</i> update_ <i>varlist userdict</i>}>
+
+This command is intended for use as an "update" mutator in orders.
+It updates the bean's variables and returns an undo script that undoes
+the change.<p>
+
+The <i>varlist</i> is a list of bean variables to update.  The
+<i>userdict</i> is a dictionary of variable names and values from the order.
+For each variable in <i>varlist</i>, the command updates the variable given 
+the matching value from <i>userdict</i>, if and only if:<p>
+
+<ul>
+    <li>There is a matching value in <i>userdict</i>
+    <li>The value is not the empty string.
+</ul>
+
+In addition, the <i>userdict</i> can contain any number of other keys; these
+are ignored.<p>
+
+<ul>
+<li> Call <iref onUpdate_>, which by default does nothing.
+     Subclasses should override this method rather than <iref update_> 
+     itself.<p>
+
+<li> Send a detailed notifier event, if <iref subject> is defined:<p>
+    <pre>$subject &lt;update&gt; $id</pre><p>
+
+<li> Send a generic notifier event:<p>
+    <pre>::bean &lt;Monitor&gt;</pre><p>
+</ul>
+
+The undo script will undo the change; it will also:<p>
+
+<ul>
+<li> Send a detailed notifier event, if <iref subject> is defined:<p>
+    <pre>$subject &lt;update&gt; $id</pre><p>
+
+<li> Send a generic notifier event:<p>
+    <pre>::bean &lt;Monitor&gt;</pre><p>
+</ul>
+
+<defitem view {<i>bean</i> view ?<i>view</i>?}>
+
+Returns the view dictionary for the requested <i>view</i> of the bean.
+Every bean supports the default view dictionary, "", which is returned
+if the view name is omitted.  See <xref "Bean Views"> for more 
+information.<p> 
+
+</deflist instance>
+
+<section ENVIRONMENT>
+
+This package requires Tcl 8.5 or later, plus the TclOO package.<p>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+New package.<p>
+
+</manpage>
+
+
+
+

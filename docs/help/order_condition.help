@@ -1,0 +1,74 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    order_condition.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: CONDITION:* Orders
+#
+#    This file is included into order.help.
+#
+#-----------------------------------------------------------------------
+
+
+#=======================================================================
+# Condition Orders
+
+page /order condition "Condition Orders" {
+    <title>
+
+    These orders are used to create, update, and delete
+    <term condition>s, of which there are many different type.
+    Each condition type has its own specific order; 
+    other CONDITION:* orders are shared by all condition types.<p>
+
+    The full set of condition orders is as follows:
+
+    <childlinks>
+} 
+
+order CONDITION:STATE "Set Condition State" {
+    <b><term prep> Only.</b>  Sets the <term condition>'s state.  
+    Note that this order is for 
+    internal use by the application; there is no associated order 
+    dialog.  The order parameters are as follows:<p>
+
+    <parmlist>
+    <condition_ parm condition_id -required>
+    <condition_ parms -required -tags state>
+    </parmlist>
+}
+
+
+order CONDITION:COMPARE "Condition: Compare Numbers" {
+    <b><term prep> Only.</b>  
+    Updates an existing <cref /object/condition/compare>.<p>
+
+    <parmlist>
+    <condition_ parm condition_id -required>
+    <condition_compare parms -optional -tags update>
+    </parmlist>
+}
+
+order CONDITION:CONTROL "Condition: Control of Neighborhoods" {
+    <b><term prep> Only.</b>  
+    Updates an existing <cref /object/condition/control>.<p>
+
+    <parmlist>
+    <condition_ parm condition_id -required>
+    <condition_control parms -optional -tags update>
+    </parmlist>
+}
+
+order CONDITION:EXPR "Condition: Boolean Expression" {
+    <b><term prep> Only.</b>  
+    Updates an existing <cref /object/condition/expr>.<p>
+
+    <parmlist>
+    <condition_ parm condition_id -required>
+    <condition_expr parms -optional -tags update>
+    </parmlist>
+}

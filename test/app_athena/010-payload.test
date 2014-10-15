@@ -1,0 +1,392 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-payload.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    payload(sim) tests.
+#
+#    This test suite tests the payload(sim) mutators and queries
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Set up for tests
+
+    proc setup {} {
+        ted create BLUE BRIT IOM1 IOM2
+
+        # Verify that unused columns contain NULL
+        rdb nullvalue "@"
+    }
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        # Clean up the test environment
+        rdb nullvalue ""
+        array unset parms
+        ted cleanup
+    }
+
+    # Standard payloads
+    
+    set P1 {
+        iom_id       IOM1
+        payload_type COOP 
+        g            BLUE
+        mag          1.0
+    }
+
+    # Ideally, this should have a different type.
+    set P2 {
+        iom_id       IOM2
+        payload_type COOP 
+        g            BRIT
+        mag          2.0
+    }
+
+    #-------------------------------------------------------------------
+    # mutate create
+
+    test create-1.1 {payload is created} -setup {
+        setup
+    } -body {
+        payload mutate create $P1
+        ted querylist {SELECT * FROM payloads}
+    } -cleanup {
+        cleanup
+    } -result {
+iom_id        IOM1
+payload_num   1
+payload_type  COOP
+narrative     Change cooperation with BLUE by 1.0 points (XXXS+).
+state         normal
+a             @
+c             @
+g             BLUE
+mag           1.0
+    }
+
+    test create-2.1 {undo deletes the payload} -setup {
+        setup
+        set undo [payload mutate create $P1]
+    } -body {
+        namespace eval :: $undo
+        rdb eval {SELECT * FROM payloads}
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    #-------------------------------------------------------------------
+    # mutate delete
+
+    test delete-1.1 {payload is deleted} -setup {
+        setup
+        payload mutate create $P1
+        payload mutate create $P2
+    } -body {
+        payload mutate delete {IOM1 1}
+
+        rdb eval {SELECT iom_id,payload_num FROM payloads}
+    } -cleanup {
+        cleanup
+    } -result {IOM2 1}
+
+    test delete-2.1 {Undo restores payload} -setup {
+        setup
+        payload mutate create $P1
+        payload mutate create $P2
+        set undo [payload mutate delete {IOM1 1}]
+    } -body {
+        namespace eval :: $undo
+        ted querylist {SELECT * FROM payloads ORDER BY iom_id, payload_num}
+    } -cleanup {
+        cleanup
+    } -result {
+iom_id        IOM1
+payload_num   1
+payload_type  COOP
+narrative     Change cooperation with BLUE by 1.0 points (XXXS+).
+state         normal
+a             @
+c             @
+g             BLUE
+mag           1.0
+
+iom_id        IOM2
+payload_num   1
+payload_type  COOP
+narrative     Change cooperation with BRIT by 2.0 points (XS+).
+state         normal
+a             @
+c             @
+g             BRIT
+mag           2.0
+    }
+
+    #-------------------------------------------------------------------
+    # mutate update
+
+    test update-1.1 {payload is updated} -setup {
+        setup
+        payload mutate create $P2
+    } -body {
+        payload mutate update {
+            id     {IOM2 1}
+            g      BLUE
+            mag    3.0
+        }
+
+        # This verifies both that requested changes are made, and
+        # that NULL columns remain NULL.
+        ted querylist {SELECT * FROM payloads}
+    } -cleanup {
+        cleanup
+    } -result {
+iom_id        IOM2
+payload_num   1
+payload_type  COOP
+narrative     Change cooperation with BLUE by 3.0 points (S+).
+state         normal
+a             @
+c             @
+g             BLUE
+mag           3.0
+    }
+
+    test update-1.2 {empty values are OK} -setup {
+        setup
+        payload mutate create $P2
+    } -body {
+        set a [ted query {SELECT * FROM payloads}]
+
+        payload mutate update {
+            id   {IOM2 1}
+        }
+
+        set b [ted query {SELECT * FROM payloads}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    test update-2.1 {undo undoes the change} -setup {
+        setup
+        payload mutate create $P2
+    } -body {
+
+        set a [ted query {SELECT * FROM payloads}]
+
+        set undo [payload mutate update {
+            id     {IOM2 1}
+            g      BLUE
+            mag    3.0
+        }]
+
+        namespace eval :: $undo
+
+        set b [ted query {SELECT * FROM payloads}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    #-------------------------------------------------------------------
+    # mutate state
+
+    test state-1.1 {payload state is changed} -setup {
+        setup
+        payload mutate create $P2
+    } -body {
+        payload mutate state {IOM2 1} disabled
+
+        ted querylist {SELECT * FROM payloads}
+    } -cleanup {
+        cleanup
+    } -result {
+iom_id        IOM2
+payload_num   1
+payload_type  COOP
+narrative     Change cooperation with BRIT by 2.0 points (XS+).
+state         disabled
+a             @
+c             @
+g             BRIT
+mag           2.0
+    }
+
+
+    test state-2.1 {undo undoes the change} -setup {
+        setup
+        payload mutate create $P2
+    } -body {
+
+        set a [ted query {SELECT * FROM payloads}]
+
+        set undo [payload mutate state {IOM2 1} disabled]
+
+        namespace eval :: $undo
+
+        set b [ted query {SELECT * FROM payloads}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    #-------------------------------------------------------------------
+    # validate
+
+    test validate-1.1 {Invalid ID: no such IOM} -setup {
+        setup
+    } -body {
+        payload validate {NONESUCH 1}
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Invalid IOM, should be one of: IOM1, IOM2}
+
+    test validate-1.2 {Invalid ID: no payloads defined} -setup {
+        setup
+    } -body {
+        payload validate {IOM1 1}
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Invalid payload "IOM1 1", no payloads are defined for this IOM}
+
+    test validate-1.3 {Invalid ID: no such payload} -setup {
+        setup
+        payload mutate create $P1
+        payload mutate create $P2
+    } -body {
+        payload validate {IOM1 2}
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Invalid payload "IOM1 2", payload number should be one of: 1}
+
+    test validate-2.1 {Valid name} -setup {
+        setup
+        payload mutate create $P1
+    } -body {
+        payload validate {IOM1 1}
+    } -cleanup {
+        cleanup
+    } -result {IOM1 1}
+
+    #-------------------------------------------------------------------
+    # exists
+
+    test exists-1.1 {no such payload} -setup {
+        setup
+        payload mutate create $P1
+        payload mutate create $P2
+    } -body {
+        payload exists {IOM1 2}
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+    test exists-2.1 {Valid payload} -setup {
+        setup
+        payload mutate create $P1
+    } -body {
+        payload exists {IOM1 1}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    #-------------------------------------------------------------------
+    # get
+
+    proc setup_get {} {
+        variable P2
+        setup
+        payload mutate create $P2
+    }
+
+    test get-1.1 {get payload dict} -setup {
+        setup_get
+    } -body {
+        ted pdict [payload get {IOM2 1}]
+    } -cleanup {
+        cleanup
+    } -result {
+        narrative    {Change cooperation with BRIT by 2.0 points (XS+).}
+        mag          2.0
+        a            @
+        state        normal
+        payload_num  1
+        iom_id       IOM2
+        g            BRIT
+        c            @
+        payload_type COOP
+    }
+
+    test get-1.2 {get parameter} -setup {
+        setup_get
+    } -body {
+        payload get {IOM2 1} g
+    } -cleanup {
+        cleanup
+    } -result {BRIT}
+
+    #-------------------------------------------------------------------
+    # call
+
+    test call-1.1 {call payload method} -setup {
+        setup
+        payload mutate create $P2
+    } -body {
+        payload call narrative [payload get {IOM2 1}]
+    } -cleanup {
+        cleanup
+    } -result {Change cooperation with BRIT by 2.0 points (XS+).}
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+

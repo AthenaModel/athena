@@ -1,0 +1,106 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    image.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Image definitions for Athena help(5) input.
+#
+#-----------------------------------------------------------------------
+
+#=======================================================================
+# Images
+
+image athena             "Sculpture of Athena"         img/athena.png
+image button_a           "Button: A"                   img/button_a.png
+image button_absit       "Button: New Absit"           img/button_absit.png
+image button_arrow       "Button: Arrow"               img/button_arrow.png
+image button_autoscroll  "Button: Autoscroll"          img/button_autoscroll.png
+image button_axe         "Button: Axe"                 img/button_axe.png
+image button_backward    "Button: Backward"            img/button_backward.png
+image button_check       "Button: Checkmark"           img/button_check.png
+image button_checktxt    "Button: Check"               img/button_checktxt.png
+image button_clock       "Button: Clock"               img/button_clock.png
+image button_closex      "Button: Close X"             img/button_closex.png
+image button_export      "Button: Export"              img/button_export.png
+image button_extmap      "Button: Extend Map"          img/button_extmap.png
+image button_forward     "Button: Forward"             img/button_forward.png
+image button_home        "Button: Home"                img/button_home.png
+image button_import      "Button: Import"              img/button_import.png
+image button_location    "Button: Location Pointer"    img/button_location.png
+image button_lock        "Button: Lock"                img/button_lock.png 
+image button_lockprep    "Button: Lock Prep"           img/button_lockprep.png 
+image button_lower       "Button: Lower"               img/button_lower.png
+image button_man         "Button: Man"                 img/button_man.png
+image button_nbfill      "Button: Fill Nbhood"         img/button_nbfill.png
+image button_nbhood      "Button: New Neighborhood"    img/button_nbhood.png
+image button_pan         "Button: Pan"                 img/button_pan.png
+image button_pencil      "Button: Pencil"              img/button_pencil.png
+image button_pencil0     "Button: Pencil 0"            img/button_pencil0.png
+image button_pencils     "Button: Pencil S"            img/button_pencils.png
+image button_pencila     "Button: Pencil A"            img/button_pencila.png
+image button_pencilb     "Button: Pencil B"            img/button_pencilb.png
+image button_pencili     "Button: Pencil I"            img/button_pencili.png
+image button_pencilt     "Button: Pencil T"            img/button_pencilt.png
+image button_pause       "Button: Pause"               img/button_pause.png
+image button_peabody     "Button: Peabody"             img/button_peabody.png
+image button_play        "Button: Play"                img/button_play.png
+image button_plus        "Button: Plus"                img/button_plus.png
+image button_plusc       "Button: Plus C"              img/button_plusc.png
+image button_plusg       "Button: Plus G"              img/button_plusg.png
+image button_plush       "Button: Plus H"              img/button_plush.png
+image button_plusi       "Button: Plus I"              img/button_plusi.png
+image button_plusp       "Button: Plus P"              img/button_plusp.png
+image button_plust       "Button: Plus T"              img/button_plust.png
+image button_poly        "Button: Polygon"             img/button_poly.png
+image button_polyg       "Button: Polygon G"           img/button_polyg.png
+image button_power       "Button: Power"               img/button_power.png
+image button_raise       "Button: Raise"               img/button_raise.png
+image button_reload      "Button: Reload"              img/button_reload.png
+image button_rewind      "Button: Rewind"              img/button_rewind.png
+image button_totop       "Button: To Top"              img/button_totop.png
+image button_tobottom    "Button: To Bottom"           img/button_tobottom.png
+image button_trash       "Button: Trash"               img/button_trash.png
+image button_unit        "Button: New Unit"            img/button_unit.png
+image button_updown      "Button: Up/Down"             img/button_updown.png
+image button_unlockprep  "Button: Unlock Prep"         img/button_unlockprep.png 
+image button_x           "Button: X"                   img/button_x.png
+image control_addressbar "Control: Address Bar"        img/control_addressbar.png
+image control_affinity   "Control: Affinity Flag"      img/control_affinity.png
+image control_dbsidebar  "Control: Sidebar"            img/control_dbsidebar.png
+image control_emphasis   "Control: Emphasis"           img/control_emphasis.png
+image control_filltype   "Control: Fill Type"          img/control_filltype.png
+image control_fromtime   "Control: From Time"          img/control_fromtime.png
+image control_nfilter    "Control: Nbhood Filter"      img/control_nfilter.png
+image control_gfilter    "Control: Group Filter"       img/control_gfilter.png
+image control_hotlist    "Control: Hot List"           img/control_hotlist.png
+image control_infilter   "Control: In Nbhood Filter"   img/control_infilter.png
+image control_knview     "Control: CAP View"           img/control_knview.png
+image control_loglevel   "Control: Log Level"          img/control_loglevel.png
+image control_logtar     "Control: Log Target"         img/control_logtar.png
+image control_logsrch    "Control: Log Up/Down"        img/control_logsrch.png
+image control_logcnt     "Control: Log Count"          img/control_logcnt.png
+image control_logvcr     "Control: Log VCR"            img/control_logvcr.png
+image control_mapref     "Control: Map Ref"            img/control_mapref.png
+image control_pcommon    "Control: Playbox Common."    img/control_pcommon.png
+image control_position   "Control: Position"           img/control_position.png
+image control_scommon    "Control: Commonality"        img/control_scommon.png
+image control_search     "Control: Search"             img/control_search.png
+image control_simtime    "Control: Sim Time"           img/control_simtime.png
+image control_simvcr     "Control: Sim VCR"            img/control_simvcr.png
+image control_speed      "Control: Speed"              img/control_speed.png
+image control_state      "Control: State"              img/control_state.png
+image control_stoptime   "Control: Stop Time"          img/control_stoptime.png
+image control_totime     "Control: To Time"            img/control_totime.png
+image control_weekday    "Control: Weekday"            img/control_weekday.png
+image control_zoom       "Control: Zoom"               img/control_zoom.png
+image econ_sam           "Econ SAM"                    img/econ_sam.png
+image econ_sam_locked    "Econ SAM (locked)"           img/econ_sam_locked.png
+image econ_simple_sam    "Econ Simple Sam"             img/econ_simple_sam.png
+image econ_ss_inputs     "Econ Simple Other Inputs"    img/econ_ss_inputs.png
+image econ_current       "Econ Current Inputs"         img/econ_current.png
+image filterbox          "Filter Box"                  img/filterbox.png
+image viewbox            "View Box"                    img/viewbox.png

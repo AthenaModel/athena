@@ -1,0 +1,736 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    020-MAD.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    app_sim(1) MAD:* order tests.
+#
+#    This test suite tests the unit-related orders.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Standard MADs
+
+    set m1 {
+        narrative "The First MAD" 
+        cause     UNIQUE
+        s         1.0
+        p         1.0
+        q         0.9
+    }
+
+    set m2 {
+        narrative "The Second MAD"
+        cause     CIVCAS
+        s         0.9
+        p         0.8
+        q         0.7
+    }
+
+    set m3 {
+        narrative "The Third MAD"
+        cause     PATROL
+        s         0.7
+        p         0.6
+        q         0.5
+    }
+
+    # Standard Magic Inputs
+
+    set hrelinput {
+        mad_id    1
+        mode      transient
+        f         SHIA 
+        g         BLUE
+        mag       5 
+    }
+
+    set vrelinput {
+        mad_id    1
+        mode      transient
+        g         SHIA 
+        a         JOE
+        mag       5 
+    }
+
+    set satinput {
+        mad_id    1
+        mode      transient
+        g         SHIA 
+        c         AUT
+        mag       5 
+    }
+
+    set coopinput {
+        mad_id    1
+        mode      persistent
+        f         SHIA 
+        g         BLUE 
+        mag       5 
+    }
+
+    # Set up for magic inputs
+    proc lock {} {
+        variable m1
+        econ setstate DISABLED
+        ted create JOE NB1 NB2 BLUE SHIA KURD
+        ted lock
+
+        # Delete other drivers not needed for this test.
+        rdb eval {DELETE FROM drivers}
+        ted order MAD:CREATE $m1 ;# 1
+    }
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        # Clean up the test environment
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # MAD:CREATE
+
+    test CREATE-1.1 {required parms} -body {
+        ted order -reject MAD:CREATE {}
+    } -result {
+        narrative {required value}
+    }
+
+
+    test CREATE-1.2 {invalid cause} -body {
+        ted order -reject MAD:CREATE [dict merge $m1 {cause NONESUCH}]
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        cause {Invalid cause "NONESUCH", should be one of: UNIQUE, CHKPOINT, *}
+    }
+
+
+    test CREATE-1.3 {invalid s} -body {
+        ted order -reject MAD:CREATE [dict merge $m1 {s NONESUCH}]
+    } -cleanup {
+        cleanup
+    } -result {
+        s {invalid value "NONESUCH", should be a real number in range 0.0, 1.0}
+    }
+
+
+    test CREATE-1.4 {invalid p} -body {
+        ted order -reject MAD:CREATE [dict merge $m1 {p NONESUCH}]
+    } -cleanup {
+        cleanup
+    } -result {
+        p {invalid value "NONESUCH", should be a real number in range 0.0, 1.0}
+    }
+
+
+    test CREATE-1.5 {invalid q} -body {
+        ted order -reject MAD:CREATE [dict merge $m1 {q NONESUCH}]
+    } -cleanup {
+        cleanup
+    } -result {
+        q {invalid value "NONESUCH", should be a real number in range 0.0, 1.0}
+    }
+
+
+
+    test CREATE-2.1 {MAD is created} -body {
+        ted order MAD:CREATE $m1  ;# 1
+        ted order MAD:CREATE $m2  ;# 2
+        ted order MAD:CREATE $m3  ;# 3
+
+        ted query {SELECT * FROM mads}
+    } -cleanup {
+        cleanup
+    } -result {
+mad_id narrative      cause  s   p   q   
+------ -------------- ------ --- --- --- 
+1      The First MAD  UNIQUE 1.0 1.0 0.9 
+2      The Second MAD CIVCAS 0.9 0.8 0.7 
+3      The Third MAD  PATROL 0.7 0.6 0.5 
+    }
+
+
+    test CREATE-2.2 {Effects} -body {
+        ted notifier bind ::rdb <mads>
+        ted order MAD:CREATE $m1
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <mads> update 1}
+    }
+
+
+    test CREATE-3.1 {undo effects} -setup {
+        ted order MAD:CREATE $m1
+    } -body {
+        ted notifier bind ::rdb <mads>
+        cif undo -test
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <mads> delete 1}
+    }
+
+
+    #-------------------------------------------------------------------
+    # MAD:DELETE
+
+    test DELETE-1.1 {required parms} -body {
+        ted order -reject MAD:DELETE {}
+    } -result {
+        mad_id {required value}
+    }
+
+    
+    test DELETE-1.2 {unknown id} -body {
+        ted order -reject MAD:DELETE mad_id NONESUCH
+    } -result {
+        mad_id {MAD does not exist or is not in initial state: "NONESUCH"}
+    }
+
+
+    test DELETE-1.3 {invalid MAD (not initial)} -body {
+        ted order MAD:CREATE $m2   ;# 1
+        rdb eval {
+            INSERT INTO drivers(dtype,signature) VALUES('MAGIC',1)
+        }
+        ted order -reject MAD:DELETE mad_id 1
+    } -cleanup {
+        cleanup
+    } -result {
+        mad_id {MAD does not exist or is not in initial state: "1"}
+    }
+
+
+    test DELETE-2.1 {Effects} -setup {
+        ted create BLUE
+        ted order MAD:CREATE $m1     ;# 1
+    } -body {
+        ted notifier bind ::rdb <mads>
+        ted order MAD:DELETE mad_id    1
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <mads> delete 1}
+    }
+
+
+    test DELETE-3.1 {Undo effects} -setup {
+        ted create BLUE
+        ted order MAD:CREATE $m1    ;# 1
+        ted order MAD:DELETE mad_id    1
+    } -body {
+        ted notifier bind ::rdb <mads>
+        cif undo -test
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <mads> update 1}
+    }
+
+
+    #-------------------------------------------------------------------
+    # MAD:UPDATE
+
+    test UPDATE-1.1 {required parms} -body {
+        ted order -reject MAD:UPDATE {}
+    } -result {
+        mad_id {required value}
+    }
+    
+
+    test UPDATE-1.2 {invalid MAD} -body {
+        ted order -reject MAD:UPDATE mad_id    1 narrative PATROL
+    } -cleanup {
+        cleanup
+    } -result {
+        mad_id {MAD does not exist: "1"}
+    }
+
+
+    test UPDATE-1.3 {invalid cause} -setup {
+        ted order MAD:CREATE $m1    ;# 1
+    } -body {
+        ted order -reject MAD:UPDATE mad_id    1 cause NONESUCH
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        cause {Invalid cause "NONESUCH", should be one of: UNIQUE, CHKPOINT, *}
+    }
+
+
+    test UPDATE-1.4 {invalid s} -setup {
+        ted order MAD:CREATE $m1    ;# 1
+    } -body {
+        ted order -reject MAD:UPDATE mad_id    1 s NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        s {invalid value "NONESUCH", should be a real number in range 0.0, 1.0}
+    }
+
+
+    test UPDATE-1.5 {invalid p} -setup {
+        ted order MAD:CREATE $m1    ;# 1
+    } -body {
+        ted order -reject MAD:UPDATE mad_id    1 p NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        p {invalid value "NONESUCH", should be a real number in range 0.0, 1.0}
+    }
+
+
+    test UPDATE-1.6 {invalid q} -setup {
+        ted order MAD:CREATE $m1    ;# 1
+    } -body {
+        ted order -reject MAD:UPDATE mad_id    1 q NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        q {invalid value "NONESUCH", should be a real number in range 0.0, 1.0}
+    }
+
+
+    test UPDATE-2.1 {MAD is updated} -setup {
+        ted order MAD:CREATE $m1  ;# 1
+    } -body {
+        ted order MAD:UPDATE {
+            mad_id    1 
+            narrative "MAD the First"
+            cause     GUARD
+            s         0.5
+            p         0.1
+            q         0.0
+        }
+
+        ted query {SELECT * FROM mads}
+    } -cleanup {
+        cleanup
+    } -result {
+mad_id narrative     cause s   p   q   
+------ ------------- ----- --- --- --- 
+1      MAD the First GUARD 0.5 0.1 0.0 
+    }
+
+
+    test UPDATE-2.2 {table monitor event} -setup {
+        ted order MAD:CREATE $m1   ;# 1
+    } -body {
+        ted notifier bind ::rdb <mads>
+        ted order MAD:UPDATE mad_id    1 narrative "MAD the FIRST"
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <mads> update 1}
+    }
+
+
+    test UPDATE-3.1 {undo undoes the change} -setup {
+        ted order MAD:CREATE $m1    ;# 1
+        ted order MAD:UPDATE mad_id    1 narrative "MAD the FIRST"
+    } -body {
+        ted notifier bind ::rdb <mads>
+        cif undo -test
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::rdb <mads> update 1}
+    }
+
+
+    #-------------------------------------------------------------------
+    # MAD:HREL
+
+    test HREL-1.1 {required parms}   -setup {
+        lock
+    } -body {
+        ted order -reject MAD:HREL {}
+    } -cleanup {
+        cleanup
+    } -result {
+        mad_id {required value}
+        f {required value}
+        g {required value}
+        mag {required value}
+    }
+    
+    test HREL-1.2 {invalid mad_id} -setup {
+        lock
+    } -body {
+        ted order -reject MAD:HREL \
+            [dict merge $hrelinput {mad_id NONESUCH}]
+    } -cleanup {
+        cleanup
+    } -result {
+        mad_id {MAD does not exist: "NONESUCH"}
+    }
+
+
+    test HREL-1.3 {invalid mode} -setup {
+        lock
+    } -body {
+        ted order -reject MAD:HREL \
+            [dict merge $hrelinput {mode NONESUCH}]
+    } -cleanup {
+        cleanup
+    } -result {
+        mode {invalid value "nonesuch", should be one of: transient, persistent}
+    }
+
+    test HREL-1.4 {invalid f} -setup {
+        lock
+    } -body {
+        ted order -reject MAD:HREL \
+            [dict merge $hrelinput {f NONESUCH}]
+    } -cleanup {
+        cleanup
+    } -result {
+        f {Invalid group, should be one of: BLUE, KURD, SHIA}
+    }
+
+
+    test HREL-1.5 {invalid g} -setup {
+        lock
+    } -body {
+        ted order -reject MAD:HREL \
+            [dict merge $hrelinput {g NONESUCH}]
+    } -cleanup {
+        cleanup
+    } -result {
+        g {Invalid group, should be one of: BLUE, KURD, SHIA}
+    }
+
+    test HREL-1.6 {f=g} -setup {
+        lock
+    } -body {
+        ted order -reject MAD:HREL \
+            [dict merge $hrelinput {g SHIA}]
+    } -cleanup {
+        cleanup
+    } -result {
+        g {Cannot change a group's relationship with itself.}
+    }
+
+    test HREL-1.7 {invalid mag} -setup {
+        lock
+    } -body {
+        ted order -reject MAD:HREL \
+            [dict merge $hrelinput {mag NONESUCH}]
+    } -cleanup {
+        cleanup
+    } -result {
+        mag {invalid value "NONESUCH", should be a real number in range -100.0, 100.0, or one of: XXXXL+, XXXL+, XXL+, XL+, L+, M+, S+, XS+, XXS+, XXXS+, ZERO, XXXS-, XXS-, XS-, S-, M-, L-, XL-, XXL-, XXXL-, XXXXL-}
+    }
+
+    test HREL-2.1 {Order is accepted} -setup {
+        lock
+    } -body {
+        ted order MAD:HREL $hrelinput
+        ted order SIM:RUN weeks 1 block yes
+    } -cleanup {
+        cleanup
+    } -result {}
+
+
+    #-------------------------------------------------------------------
+    # MAD:VREL
+
+    test VREL-1.1 {required parms}   -setup {
+        lock
+    } -body {
+        ted order -reject MAD:VREL {}
+    } -cleanup {
+        cleanup
+    } -result {
+        mad_id {required value}
+        g {required value}
+        a {required value}
+        mag {required value}
+    }
+    
+    test VREL-1.2 {invalid mad_id} -setup {
+        lock
+    } -body {
+        ted order -reject MAD:VREL \
+            [dict merge $vrelinput {mad_id NONESUCH}]
+    } -cleanup {
+        cleanup
+    } -result {
+        mad_id {MAD does not exist: "NONESUCH"}
+    }
+
+
+    test VREL-1.3 {invalid mode} -setup {
+        lock
+    } -body {
+        ted order -reject MAD:VREL \
+            [dict merge $vrelinput {mode NONESUCH}]
+    } -cleanup {
+        cleanup
+    } -result {
+        mode {invalid value "nonesuch", should be one of: transient, persistent}
+    }
+
+    test VREL-1.4 {invalid f} -setup {
+        lock
+    } -body {
+        ted order -reject MAD:VREL \
+            [dict merge $vrelinput {g NONESUCH}]
+    } -cleanup {
+        cleanup
+    } -result {
+        g {Invalid group, should be one of: BLUE, KURD, SHIA}
+    }
+
+
+    test VREL-1.5 {invalid a} -setup {
+        lock
+    } -body {
+        ted order -reject MAD:VREL \
+            [dict merge $vrelinput {a NONESUCH}]
+    } -cleanup {
+        cleanup
+    } -result {
+        a {Invalid actor, should be one of: JOE}
+    }
+
+    test VREL-1.6 {invalid mag} -setup {
+        lock
+    } -body {
+        ted order -reject MAD:VREL \
+            [dict merge $vrelinput {mag NONESUCH}]
+    } -cleanup {
+        cleanup
+    } -result {
+        mag {invalid value "NONESUCH", should be a real number in range -100.0, 100.0, or one of: XXXXL+, XXXL+, XXL+, XL+, L+, M+, S+, XS+, XXS+, XXXS+, ZERO, XXXS-, XXS-, XS-, S-, M-, L-, XL-, XXL-, XXXL-, XXXXL-}
+    }
+
+    test VREL-2.1 {Order is accepted} -setup {
+        lock
+    } -body {
+        ted order MAD:VREL $vrelinput
+        ted order SIM:RUN weeks 1 block yes
+    } -cleanup {
+        cleanup
+    } -result {}
+
+
+    #-------------------------------------------------------------------
+    # MAD:SAT
+
+    test SAT-1.1 {required parms}  -setup {
+        lock
+    } -body {
+        ted order -reject MAD:SAT {}
+    } -cleanup {
+        cleanup
+    } -result {
+        mad_id {required value}
+        g {required value}
+        c {required value}
+        mag {required value}
+    }
+    
+
+    test SAT-1.2 {invalid mad_id}  -setup {
+        lock
+    } -body {
+        ted order -reject MAD:SAT \
+            [dict merge $satinput {mad_id NONESUCH}]
+    } -cleanup {
+        cleanup
+    } -result {
+        mad_id {MAD does not exist: "NONESUCH"}
+    }
+
+    test SAT-1.3 {invalid mode}  -setup {
+        lock
+    } -body {
+        ted order -reject MAD:SAT \
+            [dict merge $satinput {mode NONESUCH}]
+    } -cleanup {
+        cleanup
+    } -result {
+        mode {invalid value "nonesuch", should be one of: transient, persistent}
+    }
+
+
+    test SAT-1.4 {invalid g}  -setup {
+        lock
+    } -body {
+        ted order -reject MAD:SAT \
+            [dict merge $satinput {g NONESUCH}]
+    } -cleanup {
+        cleanup
+    } -result {
+        g {Invalid civilian group, should be one of: SHIA, KURD}
+    }
+
+
+    test SAT-1.5 {invalid c}  -setup {
+        lock
+    } -body {
+        ted order -reject MAD:SAT \
+            [dict merge $satinput {c NONESUCH}]
+    } -cleanup {
+        cleanup
+    } -result {
+        c {Invalid concern "NONESUCH", should be one of: AUT, CUL, QOL, SFT}
+    }
+
+    test SAT-1.6 {invalid mag}  -setup {
+        lock
+    } -body {
+        ted order -reject MAD:SAT \
+            [dict merge $satinput {mag NONESUCH}]
+    } -cleanup {
+        cleanup
+    } -result {
+        mag {invalid value "NONESUCH", should be a real number in range -100.0, 100.0, or one of: XXXXL+, XXXL+, XXL+, XL+, L+, M+, S+, XS+, XXS+, XXXS+, ZERO, XXXS-, XXS-, XS-, S-, M-, L-, XL-, XXL-, XXXL-, XXXXL-}
+    }
+
+    test SAT-2.1 {Order is accepted}  -setup {
+        lock
+    } -body {
+        ted order MAD:SAT $satinput
+        ted order SIM:RUN weeks 1 block yes
+    } -cleanup {
+        cleanup
+    } -result {}
+
+
+    #-------------------------------------------------------------------
+    # MAD:COOP
+
+    test COOP-1.1 {required parms}   -setup {
+        lock
+    } -body {
+        ted order -reject MAD:COOP {}
+    } -cleanup {
+        cleanup
+    } -result {
+        mad_id {required value}
+        f {required value}
+        g {required value}
+        mag {required value}
+    }
+    
+    test COOP-1.2 {invalid mad_id} -setup {
+        lock
+    } -body {
+        ted order -reject MAD:COOP \
+            [dict merge $coopinput {mad_id NONESUCH}]
+    } -cleanup {
+        cleanup
+    } -result {
+        mad_id {MAD does not exist: "NONESUCH"}
+    }
+
+
+    test COOP-1.3 {invalid mode} -setup {
+        lock
+    } -body {
+        ted order -reject MAD:COOP \
+            [dict merge $coopinput {mode NONESUCH}]
+    } -cleanup {
+        cleanup
+    } -result {
+        mode {invalid value "nonesuch", should be one of: transient, persistent}
+    }
+
+    test COOP-1.4 {invalid f} -setup {
+        lock
+    } -body {
+        ted order -reject MAD:COOP \
+            [dict merge $coopinput {f NONESUCH}]
+    } -cleanup {
+        cleanup
+    } -result {
+        f {Invalid civilian group, should be one of: SHIA, KURD}
+    }
+
+
+    test COOP-1.5 {invalid g} -setup {
+        lock
+    } -body {
+        ted order -reject MAD:COOP \
+            [dict merge $coopinput {g NONESUCH}]
+    } -cleanup {
+        cleanup
+    } -result {
+        g {Invalid force group, should be one of: BLUE}
+    }
+
+
+    test COOP-1.6 {invalid mag} -setup {
+        lock
+    } -body {
+        ted order -reject MAD:COOP \
+            [dict merge $coopinput {mag NONESUCH}]
+    } -cleanup {
+        cleanup
+    } -result {
+        mag {invalid value "NONESUCH", should be a real number in range -100.0, 100.0, or one of: XXXXL+, XXXL+, XXL+, XL+, L+, M+, S+, XS+, XXS+, XXXS+, ZERO, XXXS-, XXS-, XS-, S-, M-, L-, XL-, XXL-, XXXL-, XXXXL-}
+    }
+
+    test COOP-2.1 {Order is accepted} -setup {
+        lock
+    } -body {
+        ted order MAD:COOP $coopinput
+        ted order SIM:RUN weeks 1 block yes
+    } -cleanup {
+        cleanup
+    } -result {}
+
+
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+

@@ -1,0 +1,446 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-gofer.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    gofer(n) tests.
+#
+#    This test suite tests the gofer type.  It makes use of the
+#    gofer::CIVGROUPS type to test the generic code.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    proc cleanup {} {
+        ted cleanup
+    }
+
+    proc valgood {value} {
+        return [string toupper $value]
+    }
+
+    proc valbad {value} {
+        error "Invalid value: \"$value\""
+    }
+
+    #-------------------------------------------------------------------
+    # joinlist
+    
+    test joinlist-1.1 {defaults} -body {
+        ::projectlib::gofer::joinlist {a b c d e f g h i j}  
+    } -result {a, b, c, d, e, f, g, h, i, j}
+    
+    test joinlist-1.2 {maxlen} -body {
+        ::projectlib::gofer::joinlist {a b c d e f g h i j} 4  
+    } -result {a, b, c, d, ...}
+    
+    test joinlist-1.3 {delim} -body {
+        ::projectlib::gofer::joinlist {a b c d} "" .  
+    } -result {a.b.c.d}
+    
+    
+    #-------------------------------------------------------------------
+    # listval
+    
+    test listval-1.1 {canonicalizes when valid} -body {
+        ::projectlib::gofer::listval "items" [namespace current]::valgood {a b c}  
+    } -result {A B C}
+    
+    test listval-1.2 {no items} -body {
+        ::projectlib::gofer::listval "items" [namespace current]::valgood {}
+    } -returnCodes {
+        error 
+    } -result {No items selected}
+    
+    test listval-1.3 {bad item} -body {
+        ::projectlib::gofer::listval "items" [namespace current]::valbad {a b c}
+    } -returnCodes {
+        error 
+    } -result {Invalid value: "a"}
+    
+
+    #-------------------------------------------------------------------
+    # listnar
+    
+    test listnar-1.1 {single with single noun} -body {
+        ::projectlib::gofer::listnar "item" "items" a  
+    } -result {item a}
+    
+    test listnar-1.2 {single with no noun} -body {
+        ::projectlib::gofer::listnar "" "items" a  
+    } -result {a}
+
+    test listnar-1.3 {multiple, no -brief} -body {
+        ::projectlib::gofer::listnar "item" "items" {a b c d e f g h i j}  
+    } -result {items (a, b, c, d, e, f, g, h, i, j)}
+
+    test listnar-1.4 {multiple, -brief} -body {
+        ::projectlib::gofer::listnar "item" "items" {a b c d e f g h i j} -brief 
+    } -result {items (a, b, c, d, e, f, g, h, ...)}
+
+    #-------------------------------------------------------------------
+    # namespaces and paths
+
+    test namespace-1.1 {::gofer namespace path} -body {
+        namespace eval ::gofer { namespace path }
+    } -result {::projectlib::gofer}
+    
+    test namespace-1.2 {::gofer type namespace path} -body {
+        namespace eval ::gofer::CIVGROUPS { namespace path }
+    } -result {::gofer ::projectlib::gofer}
+    
+    test namespace-1.3 {::gofer rule namespace path} -body {
+        namespace eval ::gofer::CIVGROUPS::BY_VALUE { namespace path }
+    } -result {::gofer::CIVGROUPS ::gofer ::projectlib::gofer}
+    
+    
+    #-------------------------------------------------------------------
+    # gofer check
+    #
+    # This test calls gofer's sanity checker, which sanity checks
+    # all of the defined gofers, i.e., that each has the BY_VALUE
+    # rule, and that the type's form is consistent with its rules.
+
+    test gofer_check-1.1 {runs the sanity check} -body {
+        gofer check
+    } -result {OK}
+
+    #-------------------------------------------------------------------
+    # gofer validate
+
+    test gofer_validate-1.1 {not a dict} -body {
+        gofer validate NONESUCH
+    } -returnCodes {
+        error
+    } -result {Not a gofer value}
+    
+    test gofer_validate-1.2 {no _type given} -body {
+        gofer validate {NONESUCH NONESUCH}
+    } -returnCodes {
+        error
+    } -result {Not a gofer value}
+    
+    test gofer_validate-1.3 {no such _type} -body {
+        gofer validate {_type NONESUCH}
+    } -returnCodes {
+        error
+    } -result {No such gofer type: "NONESUCH"}
+    
+    test gofer_validate-1.4 {bad type parms} -body {
+        gofer validate {_type CIVGROUPS _rule BY_VALUE raw_value NONESUCH}
+    } -returnCodes {
+        error
+    } -match glob -result {Invalid civilian group*}
+
+    test gofer_validate-1.5 {canonicalizes} -setup {
+        ted create SUNN
+    } -body {
+        gofer validate {_type civgroups _rule by_value raw_value SUNN}
+    } -cleanup {
+        cleanup
+    } -result {_type CIVGROUPS _rule BY_VALUE raw_value SUNN}
+
+    #-------------------------------------------------------------------
+    # gofer narrative
+
+    test gofer_narrative-1.1 {not a dict} -body {
+        gofer narrative NONESUCH
+    } -result {???}
+    
+    test gofer_narrative-1.2 {no _type given} -body {
+        gofer narrative {NONESUCH NONESUCH}
+    } -result {???}
+    
+    test gofer_narrative-1.3 {no such _type} -body {
+        gofer narrative {_type NONESUCH}
+    } -result {???}
+    
+    test gofer_narrative-1.4 {success} -body {
+        gofer narrative {
+            _type     CIVGROUPS 
+            _rule     BY_VALUE 
+            raw_value {a b c d e f g h i j}
+        }
+    } -result {these groups (a, b, c, d, e, f, g, h, i, j)}
+
+    test gofer_narrative-1.5 {success, -brief} -body {
+        gofer narrative {
+            _type     CIVGROUPS 
+            _rule     BY_VALUE 
+            raw_value {a b c d e f g h i j}
+        } -brief
+    } -result {these groups (a, b, c, d, e, f, g, h, ...)}
+
+    #-------------------------------------------------------------------
+    # gofer eval
+
+    test gofer_eval-1.1 {not a dict} -body {
+        gofer eval NONESUCH
+    } -returnCodes {
+        error
+    } -result {Not a gofer value}
+    
+    test gofer_eval-1.2 {no _type given} -body {
+        gofer eval {NONESUCH NONESUCH}
+    } -returnCodes {
+        error
+    } -result {Not a gofer value}
+    
+    test gofer_eval-1.3 {no such _type} -body {
+        gofer eval {_type NONESUCH}
+    } -returnCodes {
+        error
+    } -result {No such gofer type: "NONESUCH"}
+    
+    test gofer_eval-1.4 {success} -setup {
+        ted create SUNN SHIA KURD BLUE
+        ted lock
+    } -body {
+        gofer eval {
+            _type     CIVGROUPS 
+            _rule     BY_VALUE 
+            raw_value {SUNN SHIA KURD}
+        }
+    } -cleanup {
+        cleanup    
+    } -result {SUNN SHIA KURD}
+
+    #-------------------------------------------------------------------
+    # $type dynaform
+
+    test dynaform-1.1 {dynaform value is returned} -body {
+        gofer::CIVGROUPS dynaform
+    } -cleanup {
+        cleanup
+    } -result {::gofer::CIVGROUPS.form}
+    
+    #-------------------------------------------------------------------
+    # $type validate
+
+    test validate-1.1 {canonicalizes _type} -setup {
+        ted create SUNN SHIA KURD
+    } -body {
+        gofer::CIVGROUPS validate {_type civgroups _rule BY_VALUE raw_value SUNN}
+    } -cleanup {
+        cleanup
+    } -result {_type CIVGROUPS _rule BY_VALUE raw_value SUNN}    
+
+    test validate-1.2 {missing _type} -setup {
+        ted create SUNN SHIA KURD
+    } -body {
+        gofer::CIVGROUPS validate NONESUCH
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Not a gofer CIVGROUPS value}
+
+    test validate-1.3 {unknown _type} -setup {
+        ted create SUNN SHIA KURD
+    } -body {
+        gofer::CIVGROUPS validate {_type NONESUCH _rule BY_VALUE raw_value SUNN}
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {No such gofer type: "NONESUCH"}
+
+    test validate-1.4 {_type mismatch} -setup {
+        ted create SUNN SHIA KURD
+    } -body {
+        gofer::CIVGROUPS validate {_type ACTORS _rule BY_VALUE raw_value SUNN}
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Type mismatch, got "ACTORS", expected "CIVGROUPS"}
+
+    test validate-1.5 {canonicalizes _rule} -setup {
+        ted create SUNN SHIA KURD
+    } -body {
+        gofer::CIVGROUPS validate {_type CIVGROUPS _rule by_value raw_value SUNN}
+    } -cleanup {
+        cleanup
+    } -result {_type CIVGROUPS _rule BY_VALUE raw_value SUNN}
+
+    test validate-1.6 {missing _rule} -setup {
+        ted create SUNN SHIA KURD
+    } -body {
+        gofer::CIVGROUPS validate {_type CIVGROUPS raw_value NONESUCH}
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {No rule specified}
+
+    test validate-1.7 {invalid rule} -setup {
+        ted create SUNN SHIA KURD
+    } -body {
+        gofer::CIVGROUPS validate {_type CIVGROUPS _rule NONESUCH raw_value NONESUCH}
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Unknown rule: "NONESUCH"}
+
+    test validate-1.8 {invalid rule parms} -setup {
+        ted create SUNN SHIA KURD
+    } -body {
+        gofer::CIVGROUPS validate {_type CIVGROUPS _rule BY_VALUE raw_value NONESUCH}
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -match glob -result {Invalid civilian group,*}
+
+    #-------------------------------------------------------------------
+    # $type eval
+
+    test eval-1.1 {unknown type} -body {
+        gofer::CIVGROUPS eval {_type NONESUCH raw_value {SUNN SHIA}}
+    } -returnCodes {
+        error
+    } -result {No such gofer type: "NONESUCH"}
+
+    test eval-1.2 {type mismatch} -body {
+        gofer::CIVGROUPS eval {_type ACTORS raw_value {SUNN SHIA}}
+    } -returnCodes {
+        error
+    } -result {Type mismatch, got "ACTORS", expected "CIVGROUPS"}
+
+    test eval-1.3 {missing rule} -body {
+        gofer::CIVGROUPS eval {_type CIVGROUPS raw_value {SUNN SHIA}}
+    } -returnCodes {
+        error
+    } -result {No rule specified}
+
+    test eval-1.4 {unknown rule} -body {
+        gofer::CIVGROUPS eval {_type CIVGROUPS _rule NONESUCH raw_value {SUNN SHIA}}
+    } -returnCodes {
+        error
+    } -result {Unknown rule: "NONESUCH"}
+
+    test eval-1.5 {successful evaluation} -setup {
+        ted create SUNN SHIA KURD
+    } -body {
+        gofer::CIVGROUPS eval {_type CIVGROUPS _rule BY_VALUE raw_value {SUNN SHIA}}
+    } -cleanup {
+        cleanup
+    } -result {SUNN SHIA}
+    
+
+    #-------------------------------------------------------------------
+    # $type narrative
+
+    test narrative-1.1 {raw value} -setup {
+        ted create SUNN SHIA KURD
+    } -body {
+        gofer::CIVGROUPS narrative {SUNN SHIA}
+    } -cleanup {
+        cleanup
+    } -result {group ???}
+
+    test narrative-1.2 {unknown type} -body {
+        gofer::CIVGROUPS narrative {_type NONESUCH raw_value {SUNN SHIA}}
+    } -result {group ???}
+
+    test narrative-1.3 {type mismatch} -body {
+        gofer::CIVGROUPS narrative {_type NONESUCH raw_value {SUNN SHIA}}
+    } -result {group ???}
+
+    test narrative-1.4 {missing rule} -body {
+        gofer::CIVGROUPS narrative {_type CIVGROUPS raw_value {SUNN SHIA}}
+    } -result {group ???}
+
+    test narrative-1.4 {unknown rule} -body {
+        gofer::CIVGROUPS narrative {_type CIVGROUPS _rule NONESUCH raw_value {SUNN SHIA}}
+    } -result {group ???}
+
+    test narrative-1.5 {brief output} -body {
+        gofer::CIVGROUPS narrative {
+            _type CIVGROUPS _rule BY_VALUE raw_value {A B C D E F G H I J}
+        } -brief
+    } -result {these groups (A, B, C, D, E, F, G, H, ...)}
+
+    #-------------------------------------------------------------------
+    # $type keys
+
+    test keys-1.1 {keys for known rule} -body {
+        gofer::CIVGROUPS keys BY_VALUE
+    } -result {raw_value}
+    
+    test keys-1.2 {keys for unknown rule} -body {
+        gofer::CIVGROUPS keys NONESUCH
+    } -returnCodes {
+        error
+    } -result {Unknown rule: "NONESUCH"}
+    
+    #-------------------------------------------------------------------
+    # $type name
+
+    test name-1.1 {gofer name} -body {
+        gofer::CIVGROUPS name
+    } -result {CIVGROUPS}
+    
+    #-------------------------------------------------------------------
+    # $type blank
+    
+    test blank-1.1 {blank value} -body {
+        gofer::CIVGROUPS blank
+    } -result {_type CIVGROUPS _rule {}}
+    
+    
+
+    #-------------------------------------------------------------------
+    # Rule Constructors
+    #
+    # Every rule should have a constructor subcommand automatically
+    # defined.
+
+    test construct-1.1 {rule constructor is defined} -setup {
+        ted create SUNN SHIA KURD
+    } -body {
+        gofer::CIVGROUPS BY_VALUE {SUNN SHIA}
+    } -cleanup {
+        cleanup
+    } -result {_type CIVGROUPS _rule BY_VALUE raw_value {SUNN SHIA}}
+    
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+

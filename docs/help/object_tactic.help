@@ -1,0 +1,2083 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    object_tactic.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: Tactic Simulation Objects
+#
+#    This file is included into object.help.
+#
+#-----------------------------------------------------------------------
+
+# This object defines attributes shared across all tactic types.
+
+object tactic_ {
+    noun "tactic"
+    overview {
+        Tactics are the <cref /object> by which an
+        <term agent> implements his <term strategy>.  For
+        example, an <term actor> may use the 
+        <cref /object/tactic/deploy>
+        to position troops in a neighborhood, and then use the
+        <cref /object/tactic/assign> activities to them.  
+        Tactics may have <term condition>s attached
+        to them.  Tactics are browsed and 
+        edited on the <tab Strategy>.
+    }
+
+    # The tactic ID for the object page
+    attribute id "Tactic ID" {
+        The tactic ID, an integer number that uniquely
+        identifies the tactic.  In orders, the parameter name is
+        <i>tactic_id</i>.
+    } -tags {object}
+
+    # The tactic ID for the order pages
+    attribute tactic_id "Tactic ID" {
+        The tactic ID, an integer number that uniquely
+        identifies the tactic.
+    } -tags {cget}
+
+    attribute agent "Agent" {
+        The ID of the <term agent> to whose strategy this
+        tactic belongs.
+    } -tags {object cget}
+
+    attribute typename "Tactic Type" {
+        The tactic's type, e.g., 
+        <b><cref /object/tactic/deploy DEPLOY></b>.
+    } -tags {object cget}
+
+    attribute parent "Parent" {
+        The ID of the <term block> containing this tactic.
+    } -tags {cget}
+
+    attribute state "State" {
+        The tactic's state, one of <b>normal</b>, <b>disabled</b>, or 
+        <b>invalid</b>.  Both <b>disabled</b> and <b>invalid</b> tactics
+        are ignored when the owner's strategy is executed; the
+        difference is that <b>disabled</b> tactics are explicitly
+        disabled by the user, while <b>invalid</b> tactics are disabled
+        due to failing a sanity check.
+    } -tags {object state cget configure}
+
+    attribute narrative "Narrative" {
+        A human-readable narrative string reflecting the tactic's
+        current configuration.
+    } -tags {cget}
+
+}
+
+page /object tactic "Tactic" {
+    <sotitle>
+
+    <tactic_ overview><p>
+
+    There are many different kinds of tactic; all share the following
+    parameters:<p>
+
+    <tactic_ parmlist -tags object>
+
+    The full set of tactics is as follows:<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+# ABSIT Tactic
+
+object tactic_absit {
+    noun "ABSIT tactic"
+    overview {
+        <b>Can execute on lock.</b><p>
+
+        This <term tactic> creates an <term absit> of a given
+        type in a <term nbhood>.  The tactic may specify the 
+        coverage fraction, the duration of the situation in weeks,
+        and the force group that will resolve the situation.<p>
+
+        Note that this tactic is semantically equivalent to sending
+        the <cref /order/absit/create> order in an
+        <cref /object/tactic/executive>.<p>
+
+        If multiple tactics attempt to create absits of the same type in 
+        the same neighborhood with overlapping durations, only the first
+        will be created.<p> 
+    }
+
+    include tactic_ -attrs id
+    include tactic_ -attrs agent
+    include tactic_ -attrs state
+
+    attribute n "Neighborhood" {
+        A <term nbhood> ID.  The situation will be created in
+        this neighborhood.
+    } -tags {update}
+
+    attribute stype "Type" {
+        The type of situation to create.<p>
+
+        <enumdoc ::projectlib::eabsit>
+    } -tags {update}
+
+    attribute coverage "Coverage" {
+        Neighborhood coverage fraction, as a positive real number
+        less than or equal to 1.0.  The coverage represents the fraction
+        of the neighborhood's population that will be affected by this 
+        situation.
+    } -tags {update}
+
+    attribute resolver "Resolver" {
+        The name of the group that the neighborhood
+        population will consider responsible for resolving this situation,
+        or <b>NONE</b> if none.  This entry is used when the situation
+        resolves itself automatically; it can be overridden if the
+        situation is resolved manually.    
+    } -tags {update}
+
+    attribute duration "Duration" {
+        A duration, in integer weeks.  If positive, the
+        situation will automatically be resolved at the end of the
+        specified time. If 0, no auto-resolution will take place.<p>
+
+        If this value is omitted, it will default to the value of the
+        <b>absit.<i>stype</i>.duration</b> <cref /parmdb parameter>.
+    } -tags {update}
+
+}
+
+page /object/tactic absit "ABSIT tactic" {
+    <sotitle>
+
+    <tactic_absit overview><p>
+
+    Abstract Situation tactics have the following attributes:<p>
+
+    <tactic_absit parmlist>
+}
+
+
+#-----------------------------------------------------------------------
+# ACCIDENT Tactic
+
+object tactic_accident {
+    noun "ACCIDENT tactic"
+    overview {
+        This <term tactic> creates an abstract event of type
+        "ACCIDENT" in a <term nbhood>, specifying the neighborhood
+        coverage fraction.  The event will drive civilian attitudes
+        in the neighborhood for each week that the tactic executes.<p>
+
+        See the <i>Athena Rules Document</i> for a description of
+        these abstract events.
+    }
+
+    include tactic_ -attrs id
+    include tactic_ -attrs agent
+    include tactic_ -attrs state
+
+    attribute n "Neighborhood" {
+        A <term nbhood> ID.  The event will occur in
+        this neighborhood.
+    } -tags {update}
+
+    attribute coverage "Coverage" {
+        Neighborhood coverage fraction, as a positive real number
+        less than or equal to 1.0.  The coverage represents the fraction
+        of the neighborhood's population that will be affected by this 
+        event.   A coverage of 0.5 yields the nominal effect.
+    } -tags {update}
+
+}
+
+page /object/tactic accident "ACCIDENT tactic" {
+    <sotitle>
+
+    <tactic_accident overview><p>
+
+    ACCIDENT tactics have the following attributes:<p>
+
+    <tactic_accident parmlist>
+}
+
+
+#-----------------------------------------------------------------------
+# ASSIGN Tactic
+
+object tactic_assign {
+    noun "ASSIGN tactic"
+    overview {
+        <b>Can execute on lock.</b><p>
+
+        This <term tactic> assigns an 
+        abstract <term activity> to an <term actor>'s
+        <term frcgroup> or <term orggroup> personnel
+        in a particular <term nbhood>.  The personnel must already
+        be <cref /object/tactic/deploy deployed> in the
+        neighborhood.  Athena will create a <term unit> containing
+        the assigned personnel; the unit will be visible on the
+        <tab Physical/Map>.<p>
+
+        The number of troops to assign is determined by the personnel
+        mode (<i>pmode</i>); see the table below.<p>
+
+        The cost in dollars/person/week of assigning troops to do
+        activities is defined for each activity using 
+        <cref /parmdb>.  Look under <cref /parmdb/activity/frc> and
+        <cref /parmdb/activity/org> for the cost parameters, e.g.,
+        <parmdb activity.FRC.PATROL.cost>.  By
+        default, all activity costs are set to zero.<p>
+
+        Multiple ASSIGN tactics are cumulative.  The assignment lasts
+        until the next strategy tock.
+    }
+
+    include tactic_ -attrs id
+    include tactic_ -attrs agent
+    include tactic_ -attrs state
+
+    attribute g "Group" {
+        The ID of a <term frcgroup> or 
+        <term orggroup> belonging to the tactic's owning <i>agent</i>.
+    } -tags {update}
+
+    attribute n "Neighborhood" {
+        A <term nbhood> ID.  The personnel to be assigned will be 
+        drawn from those deployed into this neighborhood.
+    } -tags {create update}
+
+    attribute activity "Activity" {
+        The <term activity> to be assigned.  The valid
+        abstract activities are different for different group types;
+        see <i>Athena Rules Document</i>, delivered with the software,
+        for the full set.
+    } -tags {update}
+
+    attribute pmode "Personnel Mode" {
+        The personnel mode, which has one of the following values.<p>
+
+        <b>ALL</b>: Athena will assign
+        as many of the group's unassigned personnel as the actor 
+        can afford.  If no unassigned personnel are available, the
+        tactic succeeds trivially.  If personnel are available but
+        there's not enough cash to assign any, the tactic fails due
+        to insufficient cash.<p>
+
+        <b>SOME</b>: Athena will assign
+        the specified number of <i>personnel</i>.  The tactic fails
+        if there are insufficient troops available to assign, or if
+        the actor cannot afford to assign the requested number.<p>
+
+        <b>UPTO</b>: Athena will assign
+        as many troops as the actor can afford, from at least 
+        the <i>min</i> number of personnel up to the
+        given <i>max</i> number.  The tactic fails if there are fewer
+        than <i>min</i> personnel available for assignment, or if
+        the actor cannot afford at least <i>min</i> personnel.<p>
+
+        <b>ALLBUT</b>: Athena will assign
+        all but the specified number of <i>personnel</i>, leaving 
+        <i>personnel</i> available for additional assignments.  The
+        tactic operates on a best-efforts basis with respect to personnel;
+        if there are only <i>personnel</i> or fewer troops available,
+        the tactic will succeed trivially with an empty assignment.<p>
+
+        <b>PERCENT</b>: Athena will assign a given <i>percent</i>
+        of the group's unassigned personnel, rounding up (so that it always
+        assigns at least one person).  If no personnel are available,
+        succeeds trivially.  Fails if the actor cannot afford to 
+        assign the requested percentage.
+    } -tags {update}
+
+    attribute personnel "Personnel" {
+        When the <i>pmode</i> is <b>SOME</b>, the 
+        number of unassigned personnel to be assigned.<p>
+
+        When the <i>pmode</i> is <b>ALLBUT</b>, the number of unassigned
+        personnel to retain; any excess will be be assigned.<p>
+
+        This parameter is ignored for other modes.
+    } -tags {update}
+
+    attribute min "Min Personnel" {
+        When the <i>pmode</i> is <b>UPTO</b>, the 
+        minimum number of unassigned personnel to be assigned.<p>
+
+        This parameter is ignored for other modes.
+    } -tags {update}
+
+    attribute max "Max Personnel" {
+        When the <i>pmode</i> is <b>UPTO</b>, the 
+        maximum number of unassigned personnel to be assigned.<p>
+
+        This parameter is ignored for other modes.
+    } -tags {update}
+
+    attribute percent "Percentage" {
+        When the <i>pmode</i> is <b>PERCENT</b>, the percentage of 
+        unassigned troops to deploy, expressed as a real number, i.e.,
+        a value of 3.5 will assign 3.5% of the unassigned troops.<p>
+
+        This parameter is ignored for other modes.
+    } -tags {update}
+}
+
+page /object/tactic assign "ASSIGN tactic" {
+    <sotitle>
+
+    <tactic_assign overview><p>
+
+    Assign Troops tactics have the following attributes:<p>
+
+    <tactic_assign parmlist>
+}
+
+#-----------------------------------------------------------------------
+# ATTRIT Tactic
+
+object tactic_attrit {
+    noun "ATTRIT tactic"
+    overview {
+        <b>Ignored on lock.</b><p>
+
+        This <term tactic> causes magic attrition to a neighborhood
+        or to a specific group in a neighborhood.<p>
+
+        If a specific group is specified in the tactic but at execution
+        time there are no units of that group to attrit, the tactic does
+        not fail, it just has no effect. In short, this tactic executes
+        on a best efforts basis.  If more casualties are specified than 
+        there are personnel, all personnel suffer attrition.<p>
+
+        For civilian casualties, if responsible groups are specified 
+        there are cooperation effects.<p>
+
+        This tactic has no cost and can be executed only by the SYSTEM
+        agent.
+    }
+
+    include tactic_ -attrs id
+    include tactic_ -attrs agent
+    include tactic_ -attrs state
+
+    attribute mode "Attrition Mode" {
+        The attrition mode, which has one of the following values.<p>
+
+        <b>NBHOOD</b>: Cause attrition to units belonging to all groups
+        in a neighborhood.<p>
+
+        <b>GROUP</b>: Cause attrition to units belonging only to a 
+        specific group in a neighborhood.<p>
+    } -tags {update}
+
+    attribute n "Nbhood" {
+        A <term nbhood> ID.  The neighborhood in which to cause
+        attrition.
+    } -tags {update}
+
+    attribute f "Group" {
+        A <term group> ID. If "Attrition Mode" is <b>GROUP</b> this
+        is the group that should suffer attrition.
+    } -tags {update}
+
+    attribute casualties "Casualties" {
+        The number of casualties to inflict.  In <b>NBHOOD</b> mode, the
+        casualties are spread out among all units in the neighborhood. In
+        <b>GROUP</b> mode just units of the specified group suffers
+        casualties.
+    } -tags {update}
+
+    attribute g1 "Responsible Group" {
+        A <term frcgroup> ID.  A force group that is 
+        responsible for the attrition.  This is available in <b>NBHOOD</b>
+        mode or if the "Group" suffering casualties in <b>GROUP</b> mode 
+        is a civilian group.
+    } -tags {update}
+
+    attribute g2 "Responsible Group 2" {
+        A <term frcgroup> ID.  A second force group that 
+        is responsible for the attrition.  This is available in <b>NBHOOD</b> 
+        mode or in <b>GROUP</b> mode if the "Group" suffering casualties is 
+        a civilian group.
+    } -tags {update}
+}
+
+page /object/tactic attrit "ATTRIT tactic" {
+    <sotitle>
+
+    <tactic_attrit overview><p>
+
+    Magic Attrition tactics have the following attributes:<p>
+
+    <tactic_attrit parmlist>
+}
+
+
+#-----------------------------------------------------------------------
+# BROADCAST
+
+object tactic_broadcast {
+    noun "BROADCAST tactic"
+    overview {
+        <b>Can execute on lock.</b><p>
+
+        This <term tactic> broadcasts an <term iom> via a
+        <term cap>.  The message may be attributed to a particular 
+        actor, including the owner, or may be anonymous.  The message
+        will have a particular preparation cost, in addition to the
+        cost of transmission by the chosen <term cap>.<p>
+
+        Note that the tactic owner might or might not have access to
+        his chosen <term cap>, due to the decisions of the other
+        actors.  This cannot be known until all strategies have been
+        executed.  At that time, all pending broadcasts will occur;
+        and if the tactic owner has no access to the chosen 
+        <term cap>, the broadcast will be cancelled, and the cost 
+        will be refunded.<p>
+    }
+
+    include tactic_ -attrs id
+    include tactic_ -attrs agent
+    include tactic_ -attrs state
+
+    attribute cap "CAP" {
+        The ID of a <term cap> by which the <term iom> will be 
+        sent.  For a successful broadcast, the <i>owner</i> must have 
+        access to the <term cap>.
+    } -tags {update}
+
+    attribute a "Attr. Source" {
+        The attributed source: the name of an <term actor>, 
+        <b>SELF</b> if the message is to be attributed to the 
+        <i>owner</i>, or <b>NONE</b> if the message is to be anonymous.
+    } -tags {update}
+
+    attribute iom "Message ID" {
+        The <term iom> to be broadcast.
+    } -tags {update}
+
+    attribute cost "Prep. Cost" {
+        The preparation cost for the message, as distinct from the 
+        <term cap>'s broadcast cost.
+    } -tags {update}
+}
+
+page /object/tactic broadcast "BROADCAST tactic" {
+    <sotitle>
+
+    <tactic_broadcast overview><p>
+
+    BROADCAST tactics have the following attributes:<p>
+
+    <tactic_broadcast parmlist>
+}
+
+#-----------------------------------------------------------------------
+# BUILD
+
+object tactic_build {
+    noun "BUILD tactic"
+    overview {
+        <b>Ignored on lock.</b><p>
+
+        This <term tactic> allows an <term actor> to construct
+        new goods sector production infrastructure thereby increasing the
+        output capacity of that sector.<p>
+
+        There are two ways to allocate resources to construction jobs;
+        see the "Construction Mode" parameter, below.<p>
+
+        As long as this tactic executes, every effort is made to complete
+        existing construction jobs in priority order with the most complete
+        jobs getting resources first.  If there are any resources left over
+        after existing plants have had the maximum amount allocated, then new
+        plants are started.  The maximum amount of construction that can
+        take place on a plant each week is controlled by a 
+        <cref /parmdb/plant "plant model parameter">.<p>  
+
+        Once new infrastructure is completed, it adds to the production 
+        capacity of the goods sector and it must be maintained by using 
+        the MAINTAIN <term tactic>.  Nominally it will take multiple weeks 
+        of construction before new infrastructure contributes to the 
+        production capacity of the goods sector.<p>
+
+        If an actor cannot complete the construction of new infrastructure due
+        to monetary constraints, then that infrastructure will remain in
+        an unfinished state until more resources can be allocated to it.<p> 
+    }
+
+    include tactic_ -attrs id
+    include tactic_ -attrs agent
+    include tactic_ -attrs state
+
+    attribute n "Nbhood" {
+        The <term nbhood> in which infrastructure is to be built.
+    } -tags {update}
+
+    attribute mode "Construction Mode" {
+        The construction mode.  This determines how resources should be
+        allocated to build new infrastructure.
+        In both cases, the amount of construction done is on a best efforts
+        basis and is constrained by the amount of cash-on-hand.<p>
+
+        <b>CASH</b>: Construction cost is constrained by some amount of money
+        and cannot exceed remaining cash-on-hand.<p>
+
+        <b>EFFORT</b>: Construction cost is constrained by a number of work
+        weeks allocated to build new infrastructure.  The cost cannot exceed
+        remaining cash-on-hand.<p>
+    } -tags {update}
+
+    attribute amount "Amount" {
+        If mode is <b>CASH</b>, the maximum amount of money to use when 
+        allocating work.  This is constrained by remaining cash-on-hand.<p>
+    } -tags {update}
+
+    attribute num "Number" {
+        If mode is <b>EFFORT</b>, the maximum number of work-weeks per week to 
+        allocate to the job.  The effort is converted to an amount of money
+        which is constrained by remaining cash-on-hand.<p>
+    } -tags {update}
+}
+
+page /object/tactic build "BUILD tactic" {
+    <sotitle>
+
+    <tactic_build overview><p>
+
+    BUILD tactics have the following attributes:<p>
+
+    <tactic_build parmlist>
+}
+
+#-----------------------------------------------------------------------
+# CURSE Tactic
+object tactic_curse {
+    noun "CURSE tactic"
+    overview {
+        <b>Ignored on lock.</b><p>
+
+        This SYSTEM <term tactic> causes a Complex User-defined
+        Role-based Situation and Event (or CURSE) to be executed with
+        all of it's injects.  Injects associated with a CURSE cause
+        changes to one or more of: Horizontal relationships, Vertical
+        relationships, Satisfaction and Cooperation.  Injects are similar
+        to <term mad>s in that the changes to attitude are identical to 
+        magic changes.  CURSEs are meant to be used when the effects of 
+        something not already explictly modeled in Athena needs to be 
+        injected into the simulation.
+    }
+
+    include tactic_ -attrs id
+    include tactic_ -attrs agent
+    include tactic_ -attrs state
+
+    attribute curse "CURSE ID" {
+        The ID of the <term curse> to be executed.
+    } -tags {update}
+
+    attribute roles "Role Mapping" {
+        The mapping of <term role>s to particular <term group>s and
+        <term actor>s.  The mapping of roles completely depends on the
+        types of injects defined for the <term curse>.
+    } -tags {update}
+
+}
+
+page /object/tactic curse "CURSE tactic" {
+    <sotitle>
+
+    <tactic_curse overview><p>
+
+    CURSE tactics have the following attributes:<p>
+
+    <tactic_curse parmlist>
+}
+
+#-----------------------------------------------------------------------
+# DAMAGE Tactic
+
+object tactic_damage {
+    noun "DAMAGE tactic"
+    overview {
+        <b>Ignored on lock.</b><p>
+
+        This SYSTEM <term tactic> sets the average repair level for goods
+        production infrastructure <term plant>s owned by an <term actor>
+        in a <term nbhood>.  It's possible to use this tactic not only to 
+        decrease average repair levels, but increase them as well.<p>
+
+        This tactic consumes no resources, and consequently never fails
+        due to lack of resources.   If the <term actor> specified does
+        not own any infrastructure in the <term nbhood> specified the 
+        tactic will execute trivially without changing anything.<p>
+    }
+
+    include tactic_ -attrs id
+    include tactic_ -attrs agent
+    include tactic_ -attrs state
+
+    attribute a "Actor" {
+        The ID of an <term actor> that owns infrastructure.
+    } -tags {update}
+
+    attribute n "Nbhood" {
+        The <term nbhood> for which the average repair will be set.
+    } -tags {update}
+
+    attribute percent "Repair Level" {
+        The new average repair level.
+    } -tags {update}
+}
+
+page /object/tactic damage "DAMAGE tactic" {
+    <sotitle>
+
+    <tactic_damage overview><p>
+
+    Damage infrastructure tactics have the following attributes:<p>
+
+    <tactic_damage parmlist>
+}
+
+#-----------------------------------------------------------------------
+# DEMO Tactic
+
+object tactic_demo {
+    noun "DEMO tactic"
+    overview {
+        This <term tactic> creates an abstract event of type
+        "DEMO" (non-violent demonstration) in a <term nbhood>, 
+        specifying demonstrating group and the neighborhood
+        coverage fraction.  The event will drive civilian attitudes
+        in the neighborhood for each week that the tactic executes.<p>
+
+        See the <i>Athena Rules Document</i> for a description of
+        these abstract events.
+    }
+
+    include tactic_ -attrs id
+    include tactic_ -attrs agent
+    include tactic_ -attrs state
+
+    attribute n "Neighborhood" {
+        A <term nbhood> ID.  The event will occur in
+        this neighborhood.
+    } -tags {update}
+
+    attribute g "Demonstrating Group" {
+        The <term civgroup> ID of the group that is demonstrating.
+        The group need not be a resident of the neighborhood.
+    } -tags {update}
+
+    attribute coverage "Coverage" {
+        Neighborhood coverage fraction, as a positive real number
+        less than or equal to 1.0.  The coverage represents the fraction
+        of the neighborhood's population that will be affected by this 
+        event.   A coverage of 0.5 yields the nominal effect.
+    } -tags {update}
+
+}
+
+page /object/tactic demo "DEMO tactic" {
+    <sotitle>
+
+    <tactic_demo overview><p>
+
+    DEMO tactics have the following attributes:<p>
+
+    <tactic_demo parmlist>
+}
+
+#-----------------------------------------------------------------------
+# DEMOB Tactic
+
+object tactic_demob {
+    noun "DEMOB tactic"
+    overview {
+        <b>Ignored on lock.</b><p>
+
+        This tactic demobilizes 
+        <term frcgroup> or 
+        <term orggroup> personnel,
+        i.e., it removes them from the playbox.  Only personnel available
+        for deployment can be demobilized.<p>
+
+        There are several ways to select the number of troops to demobilize;
+        see the "Mode" parameter, below.<p>
+
+        Multiple DEMOB tactics executed during a single
+        week are cumulative.<p>
+
+        The tactic only fails when the <i>mode</i> is <b>SOME</b> and 
+        insufficient troops are available.  For all other modes, the 
+        tactic operates on a best-efforts basis and is considered to 
+        succeed even if no troops could be demobilized.
+    }
+
+    include tactic_ -attrs id
+    include tactic_ -attrs agent
+    include tactic_ -attrs state
+
+    attribute g "Group" {
+        The ID of a <term frcgroup> or 
+        <term orggroup> belonging to the tactic's owning <i>agent</i>.
+    } -tags {update}
+
+    attribute mode "Mode" {
+        The demobilization mode, which has one of the following values.<p>
+
+        <b>ALL</b>: Demobilize all undeployed personnel belonging to group
+        <i>g</i>.<p>
+
+        <b>SOME</b>: Demobilize the specified number of undeployed
+        <i>personnel</i>, if available.  Fails if there are insufficient
+        personnel.<p>
+
+        <b>PERCENT</b>: Demobilize the specified <i>percent</i> of 
+        undeployed personnel.<p>
+
+        <b>EXCESS</b>: Demobilize all undeployed personnel in 
+        excess of the specified number of <i>personnel</i>. 
+    } -tags {update}
+
+    attribute personnel "Personnel" {
+        When the <i>mode</i> is <b>SOME</b>, the 
+        number of undeployed personnel to be demobilized.<p>
+
+        When the <i>mode</i> is <b>EXCESS</b>, the number of undeployed
+        personnel to retain; any excess will be be demobilized.<p>
+
+        This parameter is ignored for other modes.
+    } -tags {update}
+
+    attribute percent "Percentage" {
+        When the <i>mode</i> is <b>PERCENT</b>, the percentage of 
+        undeployed troops to demobilized, expressed as a real number, i.e.,
+        a value of 3.5 will demobilize 3.5% of the undeployed troops.<p>
+
+        This parameter is ignored for other modes.
+    } -tags {update}
+}
+
+page /object/tactic demob "DEMOB tactic" {
+    <sotitle>
+
+    <tactic_demob overview><p>
+
+    Demobilization tactics have the following attributes:<p>
+
+    <tactic_demob parmlist>
+}
+
+#-----------------------------------------------------------------------
+# DEPLOY Tactic
+
+object tactic_deploy {
+    noun "DEPLOY tactic"
+    overview {
+        <b>Can execute on lock.</b><p>
+
+        This <term tactic> deploys an <term actor>'s
+        <term frcgroup> or <term orggroup> personnel
+        into particular <term nbhood>s.  The personnel must already
+        be present in the <term playbox>.  The group's maintenance
+        cost is paid for each person deployed.  Once deployed, the
+        personnel may then be assigned to particular tasks.<p>
+
+        The number of troops to deploy is determined by the personnel
+        mode (<i>pmode</i>); see the table below.<p>
+
+        The chosen troops are deployed into the neighborhoods
+        indicated by the neighborhood list, a 
+        <cref /gofer/nbhoods> value, according to the
+        neighborhood mode (<i>nmode</i>):<p>
+
+        <b>Redeployment and Existing Deployments</b>
+
+        The neighborhood and personnel modes control new deployments only.
+        If the tactic executed the previous week, then by default the
+        remaining personnel will remain in place when the tactic executes
+        this week.<p>
+
+        If the redeploy flag is set (<i>redeploy</i>), then every deployment
+        is a new deployment.  In addition, any changes to the tactic
+        are tantamount to creating a new tactic; it will create a new
+        deployment when it next executes.<p>
+
+        Multiple DEPLOY tactics are cumulative.  The deployment lasts
+        until the next week, when troops are automatically withdrawn in
+        preparation for that week's deployment.
+    }
+
+    include tactic_ -attrs id
+    include tactic_ -attrs agent
+    include tactic_ -attrs state
+
+    attribute g "Group" {
+        The ID of a <term frcgroup> or 
+        <term orggroup> belonging to the tactic's owning <i>agent</i>.
+    } -tags {update}
+
+    attribute pmode "Personnel Mode" {
+        The personnel mode, which has one of the following values.<p>
+
+        <b>ALL</b>: Athena will deploy
+        as many of the group's undeployed personnel as the actor 
+        can afford.  If no undeployed personnel are available, the
+        tactic succeeds trivially.  If personnel are available but
+        there's not enough cash to deploy any, the tactic fails due
+        to insufficient cash.<p>
+
+        <b>SOME</b>: Athena will deploy
+        the specified number of <i>personnel</i>.  The tactic fails
+        if there are insufficient troops available to deploy, or if
+        the actor cannot afford to deploy the requested number.<p>
+
+        <b>UPTO</b>: Athena will deploy
+        as many troops as the actor can afford, from at least 
+        the <i>min</i> number of personnel up to the
+        given <i>max</i> number.  The tactic fails if there are fewer
+        than <i>min</i> personnel available for deployment, or if
+        the actor cannot afford at least <i>min</i> personnel.<p>
+
+        <b>ALLBUT</b>: Athena will deploy
+        all but the specified number of <i>personnel</i>, leaving 
+        <i>personnel</i> available for additional deployments.  The
+        tactic operates on a best-efforts basis with respect to personnel;
+        if there are only <i>personnel</i> or fewer troops available,
+        the tactic will succeed trivially with an empty deployment.<p>
+
+        <b>PERCENT</b>: Athena will deploy a given <i>percent</i>
+        of the group's undeployed personnel, rounding up (so that it always
+        deploys at least one person).  If no personnel are available,
+        succeeds trivially.  Fails if the actor cannot afford to 
+        deploy the requested percentage.
+    } -tags {update}
+
+    attribute personnel "Personnel" {
+        When the <i>pmode</i> is <b>SOME</b>, the 
+        number of undeployed personnel to be deployed.<p>
+
+        When the <i>pmode</i> is <b>ALLBUT</b>, the number of undeployed
+        personnel to retain; any excess will be be deployed.<p>
+
+        This parameter is ignored for other modes.
+    } -tags {update}
+
+    attribute min "Min Personnel" {
+        When the <i>pmode</i> is <b>UPTO</b>, the 
+        minimum number of undeployed personnel to be deployed.<p>
+
+        This parameter is ignored for other modes.
+    } -tags {update}
+
+    attribute max "Max Personnel" {
+        When the <i>pmode</i> is <b>UPTO</b>, the 
+        maximum number of undeployed personnel to be deployed.<p>
+
+        This parameter is ignored for other modes.
+    } -tags {update}
+
+    attribute percent "Percentage" {
+        When the <i>pmode</i> is <b>PERCENT</b>, the percentage of 
+        undeployed troops to deploy, expressed as a real number, i.e.,
+        a value of 3.5 will deploy 3.5% of the undeployed troops.<p>
+
+        This parameter is ignored for other modes.
+    } -tags {update}
+
+    attribute nlist "In Neighborhoods" {
+        A <cref /gofer/nbhoods> value, which will be evaluated to determine
+        the list of <term nbhood> IDs when the tactic is executed.
+    } -tags {create update}
+
+    attribute nmode "Neighborhood Mode" {
+        The neighborhood mode, which has one of the following values.<p>
+
+        <b>BY_POP</b>: The chosen troops
+        are deployed into the neighborhoods in proportion with the
+        neighborhood population.  If neighborhood A has twice the population
+        of neighborhood B, it will receive twice the troops.  This is
+        the default.<p>
+
+        <b>EQUAL</b>: Every neighborhood
+        will get the same number of troops, give or take one.  This
+        was the only choice in Athena 5.1 and prior.<p>
+    } -tags {update}
+
+    attribute redeploy "Redeploy?" {
+        If false (the default), then any existing deployment will be retained
+        when this tactic executes in subsequent weeks.  If true, then 
+        the tactic will do a new deployment every week.<p>
+    } -tags {create update}
+
+}
+
+page /object/tactic deploy "DEPLOY tactic" {
+    <sotitle>
+
+    <tactic_deploy overview><p>
+
+    Deploy Troops tactics have the following attributes:<p>
+
+    <tactic_deploy parmlist>
+}
+
+#-----------------------------------------------------------------------
+# DEPOSIT Tactic
+
+object tactic_deposit {
+    noun "DEPOSIT tactic"
+
+    overview {
+        <b>Ignored on lock.</b><p>
+
+        This <term tactic> allows the <term actor> to deposit
+        a sum of money from his cash-on-hand into his cash reserve.
+        The funds can then be withdrawn for spending using the
+        <cref /object/tactic/withdraw>.
+
+        There are several ways to select how much money should be 
+        deposited to cash-on-hand; see the "Mode" parameter below.
+
+        The tactic only fails when an exact amount of money is slated
+        to be deposited and it is greater than cash-on-hand.
+    }
+
+    include tactic_ -attrs id
+    include tactic_ -attrs agent
+    include tactic_ -attrs state
+
+    attribute mode "Mode" {
+        The deposit amount mode, which has one of the following values.<p>
+
+        <b>ALL</b>: Deposit all remaining cash-on-hand. The tactic will
+        still execute if cash-on-hand is zero or negative, just no cash
+        will be deposited.<p>
+
+        <b>EXACT</b>: Deposit the exact amount of money from cash-on-hand. 
+        The tactic will fail to execute if there is not at least this amount
+        of money in cash-on-hand.<p>
+
+        <b>UPTO</b>: Deposit any amount of money up to the given amount from
+        available cash-on-hand.  The tactic will still execute if there is
+        not enough cash, just less cash will be deposited.<p>
+
+        <b>PERCENT</b>: Deposit the specified percent of 
+        cash-on-hand.  The tactic will still execute if cash-on-hand is 
+        zero or negative, just no cash will be deposited.<p>
+
+        <b>EXCESS</b>: Deposit any cash-on-hand that is in
+        excess of the specified amount.  The tactic will still execute
+        if there is not enough cash, just no cash will be deposited.<p> 
+    } -tags {update}
+
+    attribute amount "Amount" {
+        When the <i>mode</i> is EXACT, the exact amount of money to
+        be deposited.<p>
+
+        When the <i>mode</i> is UPTO, the maximum amount of money that 
+        should be deposited.<p>
+
+        When the <i>mode</i> is EXCESS, the amount of money over which
+        any excess should be deposited.<p>
+
+        This parameter is ignored for other modes.
+    } -tags {update}
+
+    attribute percent "Percent" {
+        When the <i>mode</i> is PERCENT, the percentage of cash-on-hand
+        that should be deposited.<p>
+
+        This parameter is ignored for other modes.
+    } -tags {update}
+}
+
+page /object/tactic deposit "DEPOSIT tactic" {
+    <sotitle>
+
+    <tactic_deposit overview><p>
+
+    Deposit tactics have the following attributes:<p>
+
+    <tactic_deposit parmlist>
+}
+
+#-----------------------------------------------------------------------
+# EXECUTIVE Tactic
+
+object tactic_executive {
+    noun "EXECUTIVE tactic"
+    overview {
+        <b>Can execute on lock.</b><p>
+        
+        This <term tactic> executes an Athena 
+        <cref /command "executive command">, possibly affecting the 
+        state of the simulation.
+        The tactic succeeds if the command returns normally, and fails
+        if the command throws an error.  In the latter case, any
+        database changes made by the command are rolled back, and a
+        stack trace is written to the debugging log.<p>
+    }
+
+    include tactic_ -attrs id
+    include tactic_ -attrs agent
+    include tactic_ -attrs state
+
+    attribute command "Command" {
+        The <cref /command command> to execute, often a 
+        <cref /command/call> or a user-defined command defined
+        in the <tab "Scripts">.
+    } -tags {update}
+}
+
+page /object/tactic executive "EXECUTIVE tactic" {
+    <sotitle>
+
+    <tactic_executive overview><p>
+
+    EXECUTIVE tactics have the following attributes:<p>
+
+    <tactic_executive parmlist>
+}
+
+#-----------------------------------------------------------------------
+# EXPLOSION Tactic
+
+object tactic_explosion {
+    noun "EXPLOSION tactic"
+    overview {
+        This <term tactic> creates an abstract event of type
+        "EXPLOSION" in a <term nbhood>, specifying the neighborhood
+        coverage fraction.  The event will drive civilian attitudes
+        in the neighborhood for each week that the tactic executes.<p>
+
+        See the <i>Athena Rules Document</i> for a description of
+        these abstract events.
+    }
+
+    include tactic_ -attrs id
+    include tactic_ -attrs agent
+    include tactic_ -attrs state
+
+    attribute n "Neighborhood" {
+        A <term nbhood> ID.  The event will occur in
+        this neighborhood.
+    } -tags {update}
+
+    attribute coverage "Coverage" {
+        Neighborhood coverage fraction, as a positive real number
+        less than or equal to 1.0.  The coverage represents the fraction
+        of the neighborhood's population that will be affected by this 
+        event.   A coverage of 0.5 yields the nominal effect.
+    } -tags {update}
+
+}
+
+page /object/tactic explosion "EXPLOSION tactic" {
+    <sotitle>
+
+    <tactic_explosion overview><p>
+
+    EXPLOSION tactics have the following attributes:<p>
+
+    <tactic_explosion parmlist>
+}
+
+#-----------------------------------------------------------------------
+# FLOW Tactic
+
+object tactic_flow {
+    noun "FLOW tactic"
+
+    overview {
+        <b>Ignored on lock.</b><p>
+
+        This SYSTEM <term tactic> causes population to flow from
+        one civilian group to another.  There are several ways to specify
+        the number of people to transfer between the groups.  
+        The transfer is permanent, unless reversed explicitly by 
+        another FLOW tactic.<p>
+
+        This tactic never executes on lock, and never fails due to
+        insufficient resources.
+    }
+
+    include tactic_ -attrs id
+    include tactic_ -attrs agent
+    include tactic_ -attrs state
+
+    attribute f "Source Group" {
+        The ID of the <term civgroup> from which the population
+        will flow.
+    } -tags {update}
+
+    attribute g "Destination Group" {
+        The ID of the <term civgroup> to which the population will
+        flow.
+    } -tags {update}
+
+    attribute mode "Mode" {
+        The mode, which has one of the following values.<p>
+
+        <b>ALL</b>: Flow all remaining people from group <i>f</i> to
+        group <i>g</i>.<p>
+
+        <b>RATE</b>: Flow people from <i>f</i> to <i>g</i> at the given
+        rate, expressed as a <i>percent</i> per year.  If the 
+        <i>percent</i> is 5, then over the course of a year this tactic
+        would flow about 5% of the population.<p>
+
+        <b>UPTO</b>: Flow available personnel up to a maximum of
+        <i>personnel</i> people from 
+        <i>f</i> to <i>g</i>, but no more.<p>
+
+        <b>ALLBUT</b>: Flow all but <i>personnel</i> of the available
+        personnel from <i>f</i> to <i>g</i>.<p>
+
+    } -tags {update}
+
+    attribute personnel "Personnel" {
+        When the <i>mode</i> is <b>UPTO</b>, the maximum number of 
+        personnel to be transferred.  If
+        there are insufficient personnel available, then
+        all remaining personnel are transferred.<p>
+
+        When the <i>mode</i> is <b>ALLBUT</b>, the number of personnel
+        to leave in the source group.<p>
+        
+        This parameter is ignored for other modes.
+    } -tags {update}
+
+    attribute percent "Rate" {
+        The rate at which personnel are to be transferred when the
+        <i>mode</i> is <b>RATE</b>, expressed as a yearly percentage,
+        e.g., 5%/year.<p>
+        
+        This parameter is ignored for other modes.
+    } -tags {update}
+
+}
+
+page /object/tactic flow "FLOW tactic" {
+    <sotitle>
+
+    <tactic_flow overview><p>
+
+    Flow Personnel tactics have the following attributes:<p>
+
+    <tactic_flow parmlist>
+}
+
+
+
+#-----------------------------------------------------------------------
+# FUND Tactic
+
+object tactic_fund {
+    noun "FUND tactic"
+
+    overview {
+        <b>Ignored on lock.</b><p>
+
+        This <term tactic> allows an <term actor> to give
+        a sum of money from his cash-on-hand to another <term actor>. 
+
+        There are several ways to select how much money should be 
+        taken from cash-on-hand for funding; see the "Mode" parameter below.
+
+        The tactic only fails when an exact amount of money is slated
+        to be used and it is greater than cash-on-hand.
+    }
+
+    include tactic_ -attrs id
+    include tactic_ -attrs agent
+    include tactic_ -attrs state
+
+    attribute a "Actor" {
+        The ID of an <term actor> to receive the cash.
+    } -tags {update}
+
+    attribute mode "Mode" {
+        The funding amount mode, which has one of the following values.<p>
+
+        <b>ALL</b>: Fund with all remaining cash-on-hand. The tactic will
+        still execute if cash-on-hand is zero or negative, just no cash
+        will be transferred.<p>
+
+        <b>EXACT</b>: Fund with the exact amount of money from cash-on-hand. 
+        The tactic will fail to execute if there is not at least this amount
+        of money in cash-on-hand.<p>
+
+        <b>UPTO</b>: Fund with any amount of money up to the given amount from
+        available cash-on-hand.  The tactic will still execute if there is
+        not enough cash, just less cash will be transferred.<p>
+
+        <b>PERCENT</b>: Fund with the specified percent of 
+        cash-on-hand.  The tactic will still execute if cash-on-hand is 
+        zero or negative, just no cash will be transferred.<p>
+
+        <b>EXCESS</b>: Fund with any cash-on-hand that is in
+        excess of the specified amount.  The tactic will still execute
+        if there is not enough cash, just no cash will be transferred.<p> 
+    } -tags {update}
+
+    attribute amount "Amount" {
+        When the <i>mode</i> is EXACT, the exact amount of money to
+        be used for funding.<p>
+
+        When the <i>mode</i> is UPTO, the maximum amount of money that 
+        should be used for funding.<p>
+
+        When the <i>mode</i> is EXCESS, the amount of money over which
+        any excess should be used for funding.<p>
+
+        This parameter is ignored for other modes.
+    } -tags {update}
+
+    attribute percent "Percent" {
+        When the <i>mode</i> is PERCENT, the percentage of cash-on-hand
+        that should be used for funding.<p>
+
+        This parameter is ignored for other modes.
+    } -tags {update}
+}
+
+page /object/tactic fund "FUND tactic" {
+    <sotitle>
+
+    <tactic_fund overview><p>
+
+    Fund tactics have the following attributes:<p>
+
+    <tactic_fund parmlist>
+}
+
+#-----------------------------------------------------------------------
+# FUNDENI Tactic
+
+object tactic_fundeni {
+    noun "FUNDENI tactic"
+
+    overview {
+        <b>Can execute on lock.</b><p>
+
+        This <term tactic> funds Essential Non-Infrastructure (ENI) 
+        services for one or more <term civgroup>s living in 
+        <term local_economy "local"> neighborhoods.  The <term actor>
+        may specify any amount of money, which will come out of the 
+        actor's cash-on-hand.  If the cash is unavailable, the groups
+        will not be funded.<p>
+
+        There are several ways to select how much money should be 
+        taken from cash-on-hand for funding; see the "Mode" parameter below.<p>
+
+        Civilian groups require a minimum amount of ENI services, and 
+        may expect a much higher amount.  When a group's requirements and
+        expectations are not met, the group's mood will fall, and the
+        group's vertical relationships with the actors may also fall.
+        If the group's requirements and expectations are exceeded, the
+        group's mood and vertical relationships may rise.<p>
+
+        The maximum amount of funding is capped as a function of saturation
+        level of service.  By default this level is set to 100% of SLOS but
+        can be dialed down; see the "LOS" parameter below.<p>
+
+        When executed, the FUNDENI tactic funds provision of the
+        service until the next strategy tock (one week).  Multiple
+        FUNDENI tactics are cumulative.
+    }
+
+    include tactic_ -attrs id
+    include tactic_ -attrs agent
+    include tactic_ -attrs state
+
+    attribute mode "Mode" {
+        The funding amount mode, which has one of the following values. In
+        all cases, the amount of money is capped by default to the amount of
+        money it would take to fund at 100% of the saturation level of 
+        service assuming the actor that owns this tactic is the only one
+        funding ENI.  It's possible to cap at a lower percentage of SLOS;
+        see the "LOS" parameter.<p>
+
+        <b>ALL</b>: Fund with all remaining cash-on-hand. The tactic will
+        still execute if cash-on-hand is zero or negative, just no cash
+        will be spent.<p>
+
+        <b>EXACT</b>: Fund with the exact amount of money from cash-on-hand. 
+        The tactic will fail to execute if there is not at least this amount
+        of money in cash-on-hand.<p>
+
+        <b>UPTO</b>: Fund with any amount of money up to the given amount from
+        available cash-on-hand.  The tactic will still execute if there is
+        not enough cash, just less cash will be spent.<p>
+
+        <b>PERCENT</b>: Fund with the specified percent of 
+        cash-on-hand.  The tactic will still execute if cash-on-hand is 
+        zero or negative, just no cash will be spent.<p>
+
+        <b>EXCESS</b>: Fund with any cash-on-hand that is in
+        excess of the specified amount.  The tactic will still execute
+        if there is not enough cash, just no cash will be spent.<p> 
+    } -tags {update}
+
+    attribute glist "Groups"  {
+        The IDs of one or more civilian groups, or
+        a <cref /gofer/civgroups> value.<p>
+
+        The tactic will attempt to fund all groups returned by the 
+        selected gofer value.  However, the tactic will never fund
+        the following kinds of groups:<p>
+
+        <ul>
+            <li> Groups in non-local neighborhoods; these do not require 
+                 or expect ENI services.
+            <li> "Empty" groups, i.e., groups whose population is zero; 
+                 there is no one to serve.
+            <li> Groups in neighborhoods which lack a minimal level of
+                 support for the funding actor.
+        </ul>
+    } -tags {update}
+
+    attribute amount "Amount" {
+        When the <i>mode</i> is EXACT, the exact amount of money to
+        be used for funding.<p>
+
+        When the <i>mode</i> is UPTO, the maximum amount of money that 
+        should be used for funding.<p>
+
+        When the <i>mode</i> is EXCESS, the amount of money over which
+        any excess should be used for funding.<p>
+
+        This parameter is ignored for other modes.
+    } -tags {update}
+
+    attribute percent "Percent" {
+        When the <i>mode</i> is PERCENT, the percentage of cash-on-hand
+        that should be used for funding.<p>
+
+        This parameter is ignored for other modes.
+    } -tags {update}
+
+    attribute los "LOS" {
+        This parameter is used to cap the amount an actor spends on ENI as
+        a percentage of the saturation level of service.  For instance, if 
+        this parameter is set to 50, Athena will compute the amount of money
+        it would take to fund ENI for the groups in "Groups" to meet 
+        the 50 percent of the saturation level of service and ensure that the
+        owning actor does not spend any more than that amount on ENI.
+    } -tags {update}
+}
+
+page /object/tactic fundeni "FUNDENI tactic" {
+    <sotitle>
+
+    <tactic_fundeni overview><p>
+
+    Fund ENI tactics have the following attributes:<p>
+
+    <tactic_fundeni parmlist>
+}
+
+#-----------------------------------------------------------------------
+# GRANT Tactic
+
+object tactic_grant {
+    noun "GRANT tactic"
+    overview {
+        <b>Can execute on lock.</b><p>
+
+        This <term tactic> grants one or more <term actor>s access to
+        one or more of the tactic owner's <term cap>s.  The actors 
+        granted access can then 
+        <cref /object/tactic/broadcast broadcast> 
+        <term iom>s via any of the listed <term cap>s.<p>
+
+        This tactic can execute on lock.  It never fails due to lack of 
+        resources.
+    }
+
+    include tactic_ -attrs id
+    include tactic_ -attrs agent
+    include tactic_ -attrs state
+
+    attribute klist "CAP List" {
+        A list of one or more <term cap>s belonging to the 
+        <i>agent</i>.
+    } -tags {update}
+
+    attribute alist "Actor List" {
+        An <cref /gofer/actors> value specifying a list of one or 
+        more <term actor>s.
+    } -tags {update}
+
+}
+
+page /object/tactic grant "GRANT tactic" {
+    <sotitle>
+
+    <tactic_grant overview><p>
+
+    Grant Access tactics have the following attributes:<p>
+
+    <tactic_grant parmlist>
+}
+
+#-----------------------------------------------------------------------
+# MAINTAIN Tactic
+
+object tactic_maintain {
+    noun "MAINTAIN tactic"
+
+    overview {
+        <b>Ignored on lock.</b><p>
+
+        This <term tactic> spends money to maintain the GOODS production
+        infrastructure owned by an <term actor> in the
+        neighborhoods specified.  The <term actor>
+        may specify any amount of money as a cap on repair spending. The total
+        cost of repairs is computed and then compared to the cap.  If the cost
+        is less than the cap, the maximum amount of repair that could take
+        place does.  If the cap is less, as much repair than can be done within
+        that cap is allocated to the actors infrastructure in proportion 
+        to the total cost of repairs across the neighborhoods specified in 
+        the tactic.<p>
+
+        There are three ways to specify how the cost of the tactic
+        should be funded; see the "Funding Mode" parameter
+        below.<p>
+
+        There are two ways to select how much repair should be 
+        attempted; see the "Maintenance Mode" parameter below.<p>
+
+        Goods production plants produce goods depending on their level of
+        repair (or disrepair).  If an actor does not spend money to maintain
+        a certain level of repair it will degrade the
+        production capacity of his <term plant>s and thus negatively impact
+        the economic model potentially leading to shortages of
+        goods and higher unemployment.
+
+        The cost of repair is capped as a function of the requested
+        level of repair, or the maximum amount of repair that can be
+        performed in a single week, whichever is less.  If an actor desires
+        to maintain his infrastructure at a repair level that is something
+        less than the current repair level, the tactic will execute but no
+        money will be spent until the repair level degrades below the desired
+        repair level. By default the repair level is set to 100% of total 
+        capacity but can be dialed down; see the "level" parameter below.<p>
+
+        When executed, the MAINTAIN tactic computes how much money it will
+        take to make the repairs to the infrastructure owned by the actor.  
+        The most the repair level can move up in one week is controlled by a 
+        parameter.  The "Amount" parameter puts a spending cap on how much
+        an actor could possible spend doing repairs.
+    }
+
+    include tactic_ -attrs id
+    include tactic_ -attrs agent
+    include tactic_ -attrs state
+
+    attribute nlist "Nbhoods"  {
+        The IDs of one or more neighborhoods, or
+        a <cref /gofer/nbhoods> value.
+    } -tags {update}
+
+    attribute fmode "Funding Mode" {
+        The funding mode, which has one of the following values. In all cases,
+        the actual amount of money spent is the lesser of:<p>
+
+        <ul>
+        <li> The cost to do one weeks worth of repairs.
+        <li> The amount specified in the funding mode.
+        <li> The amount of cash-on-hand.
+        </ul>
+        
+        <b>ALL</b>: Spend as much cash on hand as it takes to maintain
+        the infrastructure.<p>
+
+        <b>EXACT</b>: Spend up to some exact amount of cash on hand to maintain
+        the infrastructure.<p>
+
+        <b>PERCENT</b>: Spend up to a percentage of cash on hand to maintain
+        the infrastructure.<p>
+
+    } -tags {update}
+
+    attribute percent "Fund Percentage" {
+        If the "Funding Mode" is <b>PERCENT</b> the percentage of
+        cash-on-hand to use as a maximum amount of funds for repairs. 
+    } -tags {update}
+
+    attribute amount "Amount" {
+        If the "Funding Mode" is <b>EXACT</b> the amount of money that any
+        spending for repairs should be capped. Setting this amount to a 
+        large number will cause all repairs to take place, assuming that 
+        the actor has enough cash-on-hand to do them.
+    } -tags {update}
+
+    attribute rmode "Maintenance Mode" {
+        The maintenance mode, which has one of the following values. In
+        all cases, the cost of repairs is capped by default to the amount of
+        money it would take to bring up the repair level by one weeks worth
+        of repairs.<p>
+
+        <b>FULL</b>: Try to maintian a repair level of 100% of capacity.
+        The tactic will still execute if cash-on-hand is less than the cost
+        to maintain this level of repair, just the repairs will fall short.<p>
+
+        <b>UPTO</b>: Try to maintain a repair level at some amount less
+        than full capacity. The tactic will still execute if there is
+        not enough cash to maintain this level, just the repairs will fall 
+        short.<p>
+
+    } -tags {update}
+
+    attribute level "Capacity Percentage" {
+        If the "Maintenance Mode" is <b>UPTO</b> this parameter is used 
+        to cap the maximum level of repair to some percentage of full
+        capacity. Setting this to 100% is equivalent to specifying a
+        "Maintenance Mode" of <b>FULL</b>.
+    } -tags {update}
+}
+
+page /object/tactic maintain "MAINTAIN tactic" {
+    <sotitle>
+
+    <tactic_maintain overview><p>
+
+    Maintain tactics have the following attributes:<p>
+
+    <tactic_maintain parmlist>
+}
+
+#-----------------------------------------------------------------------
+# MOBILIZE Tactic
+
+object tactic_mobilize {
+    noun "MOBILIZE tactic"
+    overview {
+        <b>Ignored on lock.</b><p>
+
+        This tactic mobilizes 
+        <term frcgroup> or 
+        <term orggroup> personnel,
+        i.e., it brings new personnel into the playbox.  There is no
+        direct cost to mobilization; however, a maintenance cost will be
+        paid when the troops are deployed (and if they are not
+        deployed, they will be automatically demobilized again.)<p>
+
+        There are several ways to select the number of troops to mobilize;
+        see the "Mode" parameter, below.<p>
+
+        Multiple MOBILIZE tactics executed during a single
+        week are cumulative.<p>
+
+        This tactic never fails to execute.  However, for several of the 
+        modes the selected number of troops might be zero (e.g., when the
+        <i>mode</i> is <b>UPTO</b> and the number of group <i>g</i>'s 
+        troops in the playbox exceeds the desired quantity).
+    }
+
+    include tactic_ -attrs id
+    include tactic_ -attrs agent
+    include tactic_ -attrs state
+
+    attribute g "Group" {
+        The ID of a <term frcgroup> or 
+        <term orggroup> belonging to the tactic's owning <i>agent</i>.
+    } -tags {update}
+
+    attribute mode "Mode" {
+        The mobilization mode, which has one of the following values.<p>
+
+        <b>ADD</b>: Mobilizes a specific number of new <i>personnel</i> for group
+        <i>g</i>.<p>
+
+        <b>PERCENT</b>: Increases the number of mobilized troops by a
+        specific percentage, <i>percent</i>.  If no troops are currently
+        mobilized, none will be added.<p>
+
+        <b>UPTO</b>: Increases the number of mobilized troops up to a
+        some maximum number of <i>personnel</i>.  If the current number of 
+        mobilized troops exceeds that number, none will be added.<p>
+
+        <b>ENSURE</b>: Increases the number of mobilized troops so as to
+        ensure that least the specified number of <i>personnel</i> are 
+        available for deployment.  If the current number of 
+        undeployed troops exceeds that number, none will be added.<p>
+    } -tags {update}
+
+    attribute personnel "Personnel" {
+        When the <i>mode</i> is <b>ADD</b>, the 
+        number of personnel to mobilize.<p>
+
+        When the <i>mode</i> is <b>UPTO</b>, mobilizes troops up to the
+        specified maximum number of <i>personnel</i>.<p>
+
+        When the <i>mode</i> is <b>ENSURE</b>, ensures that at least
+        <i>personnel</i> troops are available for deployment, mobilizing
+        troops if necessary.<p>
+
+        This parameter is ignored for other modes.
+    } -tags {update}
+
+    attribute percent "Percentage" {
+        When the <i>mode</i> is <b>PERCENT</b>, increases the number
+        of mobilized troops by the given percentage, <i>percent</i>, i.e.,
+        a value of 3.5 will mobilize 3.5% more troops.<p>
+
+        This parameter is ignored for other modes.
+    } -tags {update}
+}
+
+page /object/tactic mobilize "MOBILIZE tactic" {
+    <sotitle>
+
+    <tactic_mobilize overview><p>
+
+    Mobilize tactics have the following attributes:<p>
+
+    <tactic_mobilize parmlist>
+}
+
+#-----------------------------------------------------------------------
+# RIOT Tactic
+
+object tactic_riot {
+    noun "RIOT tactic"
+    overview {
+        This <term tactic> creates an abstract event of type
+        "RIOT" in a <term nbhood>, specifying the neighborhood
+        coverage fraction.  The event will drive civilian attitudes
+        in the neighborhood for each week that the tactic executes.<p>
+
+        See the <i>Athena Rules Document</i> for a description of
+        these abstract events.
+    }
+
+    include tactic_ -attrs id
+    include tactic_ -attrs agent
+    include tactic_ -attrs state
+
+    attribute n "Neighborhood" {
+        A <term nbhood> ID.  The event will occur in
+        this neighborhood.
+    } -tags {update}
+
+    attribute coverage "Coverage" {
+        Neighborhood coverage fraction, as a positive real number
+        less than or equal to 1.0.  The coverage represents the fraction
+        of the neighborhood's population that will be affected by this 
+        event.   A coverage of 0.5 yields the nominal effect.
+    } -tags {update}
+
+}
+
+page /object/tactic riot "RIOT tactic" {
+    <sotitle>
+
+    <tactic_riot overview><p>
+
+    RIOT tactics have the following attributes:<p>
+
+    <tactic_riot parmlist>
+}
+
+#-----------------------------------------------------------------------
+# SIGEVENT Tactic
+
+object tactic_sigevent {
+    noun "SIGEVENT tactic"
+    overview {
+        <b>Ignored on lock.</b><p>
+
+        This tactic logs a message to the significant events log.
+        The message will have a log level of 1 (highest priority) and
+        a component field of "tactic".<p>
+
+        This tactic is never insane, and never fails to execute.<p>
+    }
+
+    include tactic_ -attrs id
+    include tactic_ -attrs agent
+    include tactic_ -attrs state
+
+    attribute msg "Message" {
+        The message text to log when the tactic executes.
+    } -tags {update}
+}
+
+page /object/tactic sigevent "SIGEVENT tactic" {
+    <sotitle>
+
+    <tactic_sigevent overview><p>
+
+    SIGEVENT tactics have the following attributes:<p>
+
+    <tactic_sigevent parmlist>
+}
+
+#-----------------------------------------------------------------------
+# SPEND Tactic
+
+object tactic_spend {
+    noun "SPEND tactic"
+
+    overview {
+        <b>Can execute on lock.</b><p>
+
+        This <term tactic> allows the <term actor> to spend
+        a sum of money from his cash-on-hand to the various 
+        sectors in the economy according to some amount of shares
+        per sector.
+
+        There are several ways to select how much money should be 
+        spent from cash-on-hand; see the "Mode" parameter below.
+
+        The tactic only fails when an exact amount of money is slated
+        to be spent and it is greater than cash-on-hand.
+        
+        <b>Note:</b> This tactic will always execute on lock even if
+        the amount to spend is greater than cash-on-hand.
+    }
+
+    include tactic_ -attrs id
+    include tactic_ -attrs agent
+    include tactic_ -attrs state
+
+    attribute mode "Mode" {
+        The spend mode, which has one of the following values.<p>
+
+        <b>ALL</b>: Spend all remaining cash-on-hand. The tactic will
+        still execute if cash-on-hand is zero or negative, just no cash
+        will be spent.<p>
+
+        <b>EXACT</b>: Spend the exact amount of money from cash-on-hand. 
+        The tactic will fail to execute if there is not at least this amount
+        of money in cash-on-hand and the Athena scenario is not locking.<p>
+
+        <b>UPTO</b>: Spend any amount of money up to the given amount from
+        available cash-on-hand.  The tactic will still execute if there is
+        not enough cash, just less cash will be spent.<p>
+
+        <b>PERCENT</b>: Spend the specified percentage of 
+        cash-on-hand.  The tactic will still execute if cash-on-hand is 
+        zero or negative, just no cash will be spent.<p>
+
+        <b>EXCESS</b>: Spend any cash-on-hand that is in
+        excess of the specified amount.  The tactic will still execute
+        if there is not enough cash, just no cash will be spent.<p> 
+    } -tags {update}
+
+    attribute amount "Amount" {
+        When the <i>mode</i> is EXACT, the exact amount of money to
+        be spent.<p>
+
+        When the <i>mode</i> is UPTO, the maximum amount of money that 
+        should be spent.<p>
+
+        When the <i>mode</i> is EXCESS, the amount of money over which
+        any excess should be spent.<p>
+
+        This parameter is ignored for other modes.
+    } -tags {update}
+
+    attribute percent "Percent" {
+        When the <i>mode</i> is PERCENT, the percentage of cash-on-hand
+        that should be spent.<p>
+
+        This parameter is ignored for other modes.
+    } -tags {update}
+
+    attribute goods "Goods Shares" {
+        The number of shares of the money allocated to the
+        <b>goods</b> sector.
+    } -tags {update}
+
+    attribute black "Black Shares" {
+        The number of shares of the money allocated to the
+        <b>black</b> sector.
+    } -tags {update}
+    
+    attribute pop "Pop Shares" {
+        The number of shares of the money allocated to the
+        <b>pop</b> sector.
+    } -tags {update}
+    
+    attribute region "Region Shares" {
+        The number of shares of the money allocated to the
+        <b>region</b> sector.
+    } -tags {update}
+    
+    attribute world "World Shares" {
+        The number of shares of the money allocated to the
+        <b>world</b> sector.
+    } -tags {update}
+}
+
+page /object/tactic spend "SPEND tactic" {
+    <sotitle>
+
+    <tactic_spend overview><p>
+
+    Spend tactics have the following attributes:<p>
+
+    <tactic_spend parmlist>
+}
+
+#-----------------------------------------------------------------------
+# STANCE
+
+object tactic_stance {
+    noun "STANCE tactic"
+    overview {
+        <b>Can execute on lock.</b><p>
+
+        This <term tactic> allows an <term actor> to 
+        tell his force groups to adopt a particular 
+        <term stance> towards other groups.  This stance is a 
+        relationship value that indicates how the force group is expected 
+        to behave toward the designated groups.  How well the force group
+        succeeds in this depends on the force group's training level,
+        and on its actual relationships toward the designated groups.<p>
+
+        An actor can execute multiple STANCE tactics during a single week.
+        If two such tactics affect the same relationship, the higher priority 
+        tactic determines the outcome.<p>
+    }
+
+    include tactic_ -attrs id
+    include tactic_ -attrs agent
+    include tactic_ -attrs state
+
+    attribute f "Force Group" {
+        The force group whose stance is being set.
+    } -tags {update}
+
+    attribute mode "Mode" {
+        This parameter determines how the designated groups are specified:
+        as an explicit list of groups (<b>BY_GROUP</b>) or as all civilians
+        living in a particular list of neighborhoods (<b>BY_NBHOOD</b>).
+    }  -tags {update}
+
+    attribute glist "Groups" {
+        When the mode is <b>BY_GROUP</b>, a <cref /gofer/groups> value
+        specifying a list of one or more groups for which force group 
+        <i>f</i>'s relationship is being designated.
+    } -tags {update}
+
+    attribute nlist "Neighborhoods" {
+        When the mode is <b>BY_NBHOOD</b>, a <cref /gofer/nbhoods> 
+        value specifying a list of one or more  neighborhoods for which 
+        force group <i>f</i>'s relationship is being designated.
+    } -tags {update}
+
+    attribute drel "Designated Rel." {
+        The relationship which force group <i>f</i> is required to adopt
+        toward the designated groups, expressed as a value from the following
+        scaled:<p>
+
+        <super ::simlib::qaffinity html>
+    } -tags {update}
+}
+
+page /object/tactic stance "STANCE tactic" {
+    <sotitle>
+
+    <tactic_stance overview><p>
+
+    STANCE tactics have the following attributes:<p>
+
+    <tactic_stance parmlist>
+}
+
+#-----------------------------------------------------------------------
+# SUPPORT Tactic
+
+object tactic_support {
+    noun "SUPPORT tactic"
+    overview {
+        <b>Can execute on lock.</b><p>
+
+        This <term tactic> allows an <term actor> to determine who
+        will receive his political support in one or more
+        <term nbhood>s.  Each actor has an actor he usually
+        supports, as given in his actor definition; using this tactic,
+        he can support other actors (or no one at all) in any given
+        neighborhood.<p>
+
+        When an actor supports another, this means that whatever
+        support the actor has from the groups in the neighborhood is
+        given to the supported actor, thus possibly increasing that
+        actor's influence and making it easier for that actor to gain
+        or maintain control.<p>
+
+        The support is given only until the next strategy execution,
+        at which time it must be explicitly renewed.<p>
+
+        This tactic never fails due to insufficient resources.  If
+        the rule for selecting neighborhoods returns no neighborhoods,
+        the tactic will succeed, but do nothing.
+    }
+
+    include tactic_ -attrs id
+    include tactic_ -attrs agent
+    include tactic_ -attrs state
+
+    attribute a "Supported Actor" {
+        The ID of the <term actor> who will receive the
+        owning actor's political support.
+    } -tags {update}
+
+    attribute nlist "In Neighborhoods" {
+        A <cref /gofer/nbhoods> value specifying a list of one or 
+        more <term nbhood>s.  Actor <i>a</i> will receive the
+        owner's political support in these neighborhoods.
+    } -tags {update}
+
+}
+
+page /object/tactic support "SUPPORT tactic" {
+    <sotitle>
+
+    <tactic_support overview><p>
+
+    Support Actor tactics have the following attributes:<p>
+
+    <tactic_support parmlist>
+}
+
+#-----------------------------------------------------------------------
+# VIOLENCE Tactic
+
+object tactic_violence {
+    noun "VIOLENCE tactic"
+    overview {
+        This <term tactic> creates an abstract event of type
+        "VIOLENCE" in a <term nbhood>, specifying the neighborhood
+        coverage fraction.  The event will drive civilian attitudes
+        in the neighborhood for each week that the tactic executes.<p>
+
+        See the <i>Athena Rules Document</i> for a description of
+        these abstract events.
+    }
+
+    include tactic_ -attrs id
+    include tactic_ -attrs agent
+    include tactic_ -attrs state
+
+    attribute n "Neighborhood" {
+        A <term nbhood> ID.  The event will occur in
+        this neighborhood.
+    } -tags {update}
+
+    attribute coverage "Coverage" {
+        Neighborhood coverage fraction, as a positive real number
+        less than or equal to 1.0.  The coverage represents the fraction
+        of the neighborhood's population that will be affected by this 
+        event.   A coverage of 0.5 yields the nominal effect.
+    } -tags {update}
+
+}
+
+page /object/tactic violence "VIOLENCE tactic" {
+    <sotitle>
+
+    <tactic_violence overview><p>
+
+    VIOLENCE tactics have the following attributes:<p>
+
+    <tactic_violence parmlist>
+}
+
+
+#-----------------------------------------------------------------------
+# WITHDRAW Tactic
+
+object tactic_withdraw {
+    noun "WITHDRAW tactic"
+
+    overview {
+        <b>Ignored on lock.</b><p>
+
+        This <term tactic> allows the <term actor> to withdraw
+        a sum of money from his cash reserve into his cash-on-hand
+        so that it can be spent on other tactics.  Funds are deposited
+        into the cash reserve using the <cref /object/tactic/deposit>.<p>
+        
+        Actors are frequently in the position of borrowing money.  Athena
+        does not explicitly model any kind of banking system; as a work
+        around, however, the cash reserve is allowed to be negative,
+        reflecting debt rather than savings.  In short, the actor
+        may withdraw as much money as he likes.  It is up to the
+        analyst to ensure that this doesn't get out of hand.<p>
+
+        There are several ways to select how much money should be 
+        withdrawn from cash reserve; see the "Mode" parameter below.
+    }
+
+    include tactic_ -attrs id
+    include tactic_ -attrs agent
+    include tactic_ -attrs state
+
+    attribute mode "Mode" {
+        The withdrawal amount mode, which has one of the following values.<p>
+
+        <b>ALL</b>: Withdraw all remaining cash reserve. The tactic will
+        still execute if the cash reserve is zero or negative, just no cash
+        will be withdrawn.<p>
+
+        <b>EXACT</b>: Withdraw the exact amount of money from cash reserve. 
+        The tactic will fail to execute if there is not at least this amount
+        of money in cash reserve.<p>
+
+        <b>UPTO</b>: Withdraw any amount of money up to the given amount from
+        cash reserve.  The tactic will still execute if there is
+        not enough cash, just less cash will be withdrawn.<p>
+
+        <b>PERCENT</b>: Withdraw the specified percent of the
+        cash reserve.  The tactic will still execute if the reserve is 
+        zero or negative, just no cash will be withdrawn.<p>
+
+        <b>BORROW</b>: Withdraw any amount from cash reserve, allowing
+        the balance to go negative if need be. This is a workaround for 
+        borrowing money in the absence of a model of a banking system. 
+        The tactic will always execute.<p> 
+    } -tags {update}
+
+    attribute amount "Amount" {
+        When the <i>mode</i> is EXACT, the exact amount of money to
+        be withdrawn.<p>
+
+        When the <i>mode</i> is UPTO, the maximum amount of money that 
+        should be withdrawn.<p>
+
+        When the <i>mode</i> is BORROW, the amount of money to be 
+        withdrawn, allowing the reserve to go negative, if necessary.<p>
+
+        This parameter is ignored for other modes.
+    } -tags {update}
+
+    attribute percent "Percent" {
+        When the <i>mode</i> is PERCENT, the percentage of cash-on-hand
+        that should be deposited.<p>
+
+        This parameter is ignored for other modes.
+    } -tags {update}
+}
+
+page /object/tactic withdraw "WITHDRAW tactic" {
+    <sotitle>
+
+    <tactic_withdraw overview><p>
+
+    Withdraw tactics have the following attributes:<p>
+
+    <tactic_withdraw parmlist>
+}
+

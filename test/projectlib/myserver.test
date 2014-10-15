@@ -1,0 +1,208 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    myserver.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Tcltest test suite for projectlib(n), myserver(n)
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+ 
+# Import tcltest(n)
+namespace import ::tcltest::*
+ 
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+source ../../lib/projectlib/pkgModules.tcl
+namespace import ::projectlib::*
+
+#-------------------------------------------------------------------
+# Set up the test environment
+
+# errcall cmd...
+#
+# Calls the command, expecting an error, and returns the
+# error code and result.
+
+proc errcall {args} {
+    set code [catch {
+        uplevel 1 $args
+    } result opts]
+
+    if {!$code} {
+        error "Expected error, got ok"
+    }
+
+    return "[dict get $opts -errorcode] $result"
+}
+
+# setup
+
+proc setup {{flag ""}} {
+    myserver server
+
+    if {$flag eq "-register"} {
+        server register /test/{value} {test/(.+)} \
+            text/plain ::plain_Test \
+            text/html  ::html_Test \
+            "Return the test {value}."
+    }
+}
+
+# cleanup
+
+proc cleanup {} {
+    rename server ""
+}
+
+# plain_Test udict matchArray
+#
+# Return the inputs as plain text.
+
+proc plain_Test {udict matchArray} {
+    upvar 1 $matchArray ""
+
+    dict with udict {
+        return "$url $(1)"
+    }
+}
+
+# html_Test udict matchArray
+#
+# Return the inputs as HTML
+
+proc html_Test {udict matchArray} {
+    upvar 1 $matchArray ""
+
+    dict with udict {
+        return "<tt>$url $(1)</tt>"
+    }
+}
+
+#-------------------------------------------------------------------
+# creation
+
+test creation-1.1 {predefined resources} -setup {
+    setup
+} -body {
+    server resources
+} -cleanup {
+    cleanup
+} -result {/urlhelp /urlhelp/{path}}
+
+test creation-1.2 {predefined content types} -setup {
+    setup
+} -body {
+    list \
+        [server ctypes /urlhelp]       \
+        [server ctypes /urlhelp/{path}]
+} -cleanup {
+    cleanup
+} -result {text/html text/html}
+
+#-------------------------------------------------------------------
+# register
+
+test register-1.1 {Added resource} -setup {
+    setup -register
+} -body {
+    server resources
+} -cleanup {
+    cleanup
+} -result {/urlhelp /urlhelp/{path} /test/{value}}
+
+test register-1.2 {Added content types} -setup {
+    setup -register
+} -body {
+    server ctypes /test/{value}
+} -cleanup {
+    cleanup
+} -result {text/plain text/html}
+
+#-------------------------------------------------------------------
+# get
+
+test get-1.1 {NOTFOUND} -setup {
+    setup -register
+} -body {
+    errcall server get /dummy
+} -cleanup {
+    cleanup
+} -result {NOTFOUND Resource not found or not compatible with this application.}
+
+test get-2.1 {Exact content type} -setup {
+    setup -register
+} -body {
+    server get /test/mydata text/html
+} -cleanup {
+    cleanup
+} -result {url /test/mydata content {<tt>/test/mydata mydata</tt>} contentType text/html}
+
+test get-2.2 {Preferred content type} -setup {
+    setup -register
+} -body {
+    server get /test/mydata
+} -cleanup {
+    cleanup
+} -result {url /test/mydata content {/test/mydata mydata} contentType text/plain}
+
+test get-2.3 {Wildcard content type} -setup {
+    setup -register
+} -body {
+    server get /test/mydata */html
+} -cleanup {
+    cleanup
+} -result {url /test/mydata content {<tt>/test/mydata mydata</tt>} contentType text/html}
+
+#-------------------------------------------------------------------
+# Built-in Content
+
+test content-1.1 {/urlhelp} -setup {
+    setup -register
+} -body {
+    set cdict [server get /urlhelp]
+
+    dict with cdict {
+        if {$content ne ""} {
+            set content "{content elided}"
+        }
+    }
+
+    set cdict
+} -cleanup {
+    cleanup
+} -result {url /urlhelp content {{content elided}} contentType text/html}
+
+test content-1.2 {/urlhelp/{path}} -setup {
+    setup -register
+} -body {
+    set cdict [server get /urlhelp/urlhelp]
+
+    dict with cdict {
+        if {$content ne ""} {
+            set content "{content elided}"
+        }
+    }
+
+    set cdict
+} -cleanup {
+    cleanup
+} -result {url /urlhelp/urlhelp content {{content elided}} contentType text/html}
+
+
+#-------------------------------------------------------------------
+# Cleanup
+
+cleanupTests

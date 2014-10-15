@@ -1,0 +1,87 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    order_orggroup.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: ORGGROUP:* Orders
+#
+#    This file is included into order.help.
+#
+#-----------------------------------------------------------------------
+
+#=======================================================================
+# Organization Group Orders
+
+page /order orggroup "Organization Group Orders" {
+    <title>
+
+    These orders are used create, update, and delete 
+    <term orggroup>s.
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+
+order ORGGROUP:CREATE "Create Organization Group" {
+    <b><term prep> Only.</b>  This order creates a new 
+    <term orggroup>.
+    The order parameters are as follows:<p>
+
+    <parmlist>
+    <group_org parms -required -tags create>
+    </parmlist>
+}
+
+
+#-----------------------------------------------------------------------
+
+order ORGGROUP:DELETE "Delete Organization Group" {
+    <b><term prep> Only.</b>  Deletes an existing
+    <term orggroup>, along with all entities
+    that depend upon it.<p>
+
+    <parmlist>
+    <parm g "Group">
+    <b>Required.</b>  <GROUP.g organization>
+    </parm>
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order ORGGROUP:UPDATE "Update Organization Group" {
+    <b><term prep> Only.</b>  This order modifies the
+    definition of an existing <term orggroup>.  The order
+    parameters are as follows:<p>
+
+    <parmlist>
+    <parm g "Select Group">
+    <b>Required.</b>  <GROUP.g organization>
+    </parm>
+
+    <group_org parms -optional -tags update>
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order ORGGROUP:UPDATE+MULTI "Update Multiple Organization Groups" {
+    <b><term prep> Only.</b>  This order modifies the
+    definition of two or more existing <term orggroup>s, as
+    selected in the GUI.  The order parameters are as follows:<p>
+
+    <parmlist>
+    <parm ids "Groups">
+    <b>Required.</b>  <parm.ids "organization group">
+    </parm>
+
+    <group_org parms -optional -tags multi>
+    </parmlist>
+}
+
+

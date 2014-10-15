@@ -1,0 +1,200 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    020-TACTIC-BUILD.test
+#
+# AUTHOR:
+#    Dave Hanks
+#
+# DESCRIPTION:
+#    app_sim(1) TACTIC:BUILD:* order tests.
+#
+#    This test suite tests the BUILD tactic's orders.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Set up for tests
+    proc setup {} {
+        ted create JOE NB1 NB2 SHIA SUNN KURD BLUE
+        variable S1
+        variable B1
+        variable T1
+
+        set S1 [strategy getname JOE]
+        ted order STRATEGY:BLOCK:ADD agent JOE
+        lassign [$S1 blocks] B1
+        ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename BUILD
+        lassign [$B1 tactics] T1
+    }
+
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        # Clean up the test environment
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # TACTIC:BUILD
+
+    test TACTIC:BUILD-1.1 {required parms} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:BUILD
+    } -result {
+        tactic_id {required value}
+    }
+
+    test TACTIC:BUILD-1.2 {tactic_id is unknown} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:BUILD tactic_id NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        tactic_id {Invalid BUILD ID: "NONESUCH"}
+    }
+
+    test TACTIC:BUILD-1.3 {mode is unknown} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:BUILD tactic_id [$T1 id] mode NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        mode {invalid value "NONESUCH", should be one of: EFFORT, CASH}
+    }
+
+    test TACTIC:BUILD-1.4 {amount is non-numeric} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:BUILD tactic_id [$T1 id] amount NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        amount {invalid money value "NONESUCH", expected positive numeric value with optional K, M, or B suffix}
+    }
+
+    test TACTIC:BUILD-1.5 {amount is negative} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:BUILD tactic_id [$T1 id] amount -1
+    } -cleanup {
+        cleanup
+    } -result {
+        amount {invalid money value "-1", expected positive numeric value with optional K, M, or B suffix}
+    }
+
+    test TACTIC:BUILD-2.1 {tactic is created} -setup {
+        setup
+    } -body {
+        ted order TACTIC:BUILD tactic_id [$T1 id] n NB1
+        ted pdicts [$T1 getdict]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        amount     0
+        done       0
+        execstatus NONE
+        faildict   {}
+        id         *
+        mode       CASH
+        n          NB1
+        num        1
+        parent     ::bean::block*
+        percent    0
+        state      normal
+    }
+
+    test TACTIC:BUILD-2.2 {tactic is created, EFFORT} -setup {
+        setup
+    } -body {
+        ted order TACTIC:BUILD tactic_id [$T1 id] n NB1 mode EFFORT num 10
+
+        ted pdicts [$T1 getdict]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        amount     0
+        done       0
+        execstatus NONE
+        faildict   {}
+        id         *
+        mode       EFFORT
+        n          NB1
+        num        10
+        parent     ::bean::block*
+        percent    0
+        state      normal
+    }
+
+    test TACTIC:BUILD-2.4 {notifier event} -setup {
+        setup
+    } -body {
+        ted notifier bind ::projectlib::bean <Monitor>
+        ted order TACTIC:BUILD tactic_id [$T1 id] n NB1 mode CASH amount 10000
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::projectlib::bean <Monitor>}
+    }
+
+
+    test TACTIC:BUILD-3.1 {undo effects} -setup {
+        setup
+        ted order TACTIC:BUILD tactic_id [$T1 id] n NB1 mode CASH amount 10000
+    } -body {
+        ted notifier bind ::projectlib::bean <Monitor>
+        cif undo -test
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::projectlib::bean <Monitor>}
+    }
+
+    test TACTIC:BUILD-4.1 {identity} -setup {
+        setup
+    } -body {
+        ted tactic identity $T1
+    } -cleanup {
+        cleanup
+    } -result {OK}
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+

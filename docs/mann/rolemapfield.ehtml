@@ -1,0 +1,139 @@
+<manpage {projectgui(n) rolemapfield(n)} "Role Map Field Widget">
+
+<section SYNOPSIS>
+
+<pre>
+package require projectgui 1.0
+namespace import ::projectgui::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+The rolemapfield(n) widget is used to associate lists of entities with
+user-defined roles in tactic dialogs, e.g., the CURSE tactic.  When
+the user defines a "curse" entity with attitude injects, the groups
+and actors affected by the injects are specified using "roles": essentially,
+named arguments.  When the CURSE tactic is set up to inject a given curse,
+the user needs to map those roles to actual lists of groups and actors.<p>
+
+The number and name of these roles will vary from curse to curse.  However, the
+handling is identical for each role:<p>
+
+<ol>
+<li> There is a list of valid choices for each role, determined on-the-fly.
+<li> The user may select multiple items from that list.
+<li> The mapping is incomplete if any role's mapping is empty.
+</ol><p>
+
+The rolemapfield(n) widget handles this use case.  It is a thin wrapper around
+the <xref mars:form(n)> widget that displays a configurable set of labels
+and edit fields given a <b>-rolespec</b>, which is a dictionary with this form:<p>
+
+<i>role-name</i> <i>valid-list</i> ...<p>
+
+The value of the widget is a similar dictionary,<p>
+
+<i>role-name</i> <i>selected-list</i> ...<p>
+
+<subsection "Implementation">
+
+When configured with a <b>-rolespec</b>, the widget populates its 
+<xref mars:form(n)> widget with a label and a 
+<xref mars:textfield(n)> widget for each role.  Each text field is
+read-only with an "Edit" button; displays a whitespace-delimited list
+of the currently chosen entities for that role.  Pressing the "Edit" button
+pops up a <xref mars:messagebox(n)> list selector.<p>
+
+<section COMMANDS>
+
+This module defines the following commands.<p>
+
+<deflist commands>
+
+<defitem rolemapfield {rolemapfield <i>pathName</i> ?<i>options...</i>?}>
+
+Creates a new <iref rolemapfield> widget named <i>pathName</i>, and
+returns <i>pathName</i>.  The widget supports the following
+options, in addition to those provided by the underlying frame widget:<p>
+
+<deflist options>
+
+<defopt {-changecmd <i>command</i>}>
+
+Specifies a <i>command</i> to be called
+whenever the selected entity changes, for any reason whatsoever
+(including explicit calls to <iref set>.  The newly selected
+entity's name is appended to the <i>command</i> as an argument.<p>
+
+<defopt {-listheight <i>num</i>}>
+<defopt {-liststripe <i>flag</i>}>
+<defopt {-listwidth <i>num</i>}>
+
+These options are used to configure the <xref mars:messagebox(n)>
+list selector when a role's mapping is being edited.<p>
+
+<defopt {-rolespec <i>spec</i>}>
+
+Sets the dictionary of roles and valid lists, and reconfigures the
+widget.  See <xref DESCRIPTION>.<p>
+
+<defopt {-state <i>state</i>}>
+
+Sets the field's state to <b>normal</b> or <b>disabled</b>.<p>
+
+<defopt {-textwidth <i>num</i>}>
+
+The width of the role text fields, in characters.<p>
+
+</deflist options>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+rolemapfield(n) widgets have the following subcommands:<p>
+
+<deflist instance>
+
+<defitem cget {<i>pathName</i> cget <i>option</i>}>
+
+Returns the value of the specified <i>option</i>.<p>
+
+<defitem configure {<i>pathName</i> configure <i>option value...</i>}>
+
+Sets the value of one or more of the object's options.<p>
+
+<defitem get {<i>pathName</i> get}>
+
+Returns the current value of the field.<p> 
+
+<defitem set {<i>pathName</i> set <i>value</i>}>
+
+Sets the current value of the field.<p>
+
+</deflist instance>
+
+<section ENVIRONMENT>
+
+projectgui(n) requires Tcl 8.5 or later.
+
+To use projectgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+

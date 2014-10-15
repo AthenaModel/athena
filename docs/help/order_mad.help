@@ -1,0 +1,333 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    order_mad.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: MAD:* Orders
+#
+#    This file is included into order.help.
+#
+#-----------------------------------------------------------------------
+
+page /order mad "Magic Attitude Driver Orders" {
+    <title>
+
+    Athena models a number of events and situations that drive
+    attitude change, e.g., civilian attrition and environmental
+    situations.  The set of drivers is not all encompassing, and so
+    Athena allows the analyst to create <i>Magic Attitude Drivers</i>
+    (MADs).  Once a MAD is created, the analyst may associate with it a
+    variety of attitude inputs; and the effects of
+    these inputs will be associated with the MAD when viewing the history.<p>
+
+    The following orders are used to create and manipulate MADs:<p>
+
+    <childlinks>
+}
+
+macro MAD.mad {} {
+    |<--
+    The ID of the Magic Attitude Driver (MAD) to which
+    the change will be attributed.
+}
+
+macro MAD.mode {} {
+    |<--
+    The mode, <b>persistent</b> or <b>transient</b>.  Transient inputs
+    affect the current level of the curve during the next time step; 
+    persistent inputs affect the curve's baseline, and hence usually 
+    persistent during subsequent weeks.
+}
+
+macro MAD.mag {} {
+    |<--
+    The magnitude of the input in points, expressed as a real
+    number, or as one of the symbols from the following table:<p>
+
+    [super ::simlib::qmag html]
+}
+
+macro MAD.cause {} {
+    |<--
+    The [term cause] for any magic attitude input associated with
+    this MAD.  The cause
+    may be <b>UNIQUE</b>, indicating that the effects of this MAD
+    are independent of all other drivers, or it may be
+    any cause from the following list:<p>
+
+    [enumdoc ::projectlib::ecause]
+}
+
+macro MAD.s {} {
+    |<--
+    Indirect effects of magic attitude inputs for this MAD in the same
+    neighborhood as the input are multiplied by this factor.  
+    If it is 0.0, there will be no such indirect effects.
+}
+
+macro MAD.p {} {
+    |<--
+    Indirect effects of magic attitude inputs for this MAD in <b>NEAR</b>
+    neighborhoods are multiplied by this factor.  If it is 0.0, there
+    will be no such indirect effects.
+}
+
+macro MAD.q {} {
+    |<--
+    Indirect effects of magic attitude inputs for this MAD in <b>FAR</b>
+    neighborhoods are multiplied by 
+    this factor.  If it is 0.0, there will be no such indirect effects.
+}
+
+
+
+#-----------------------------------------------------------------------
+
+order MAD:CREATE "Create Magic Attitude Driver" {
+    <parmlist>
+
+    <parm narrative "Narrative">
+    <b>Required.</b>  A one-line description of the driver.
+    </parm>
+
+    <parm cause "Cause">
+    <b>Required.</b> <MAD.cause>
+    </parm>
+
+    <parm s "Here Factor">
+    <b>Required.</b> <MAD.s>
+    </parm>
+
+    <parm p "Near Factor">
+    <b>Required.</b> <MAD.p>
+    </parm>
+
+    <parm q "Far Factor">
+    <b>Required.</b> <MAD.q>
+    </parm>
+    
+    </parmlist>
+
+    Creates a new Magic Attitude Driver (MAD).  The narrative need
+    not be unique, but should remind the analyst of the reason for the
+    attitude inputs associated with the MAD.<p>
+
+    All magic inputs associated with this MAD will use
+    the specified cause, near factor, and far factor.<p>
+
+    <b>Note:</b> Once any attitude inputs have been
+    associated with this MAD, it can no longer be deleted.<p>
+
+    This order can be <cref /command/send sent> by the
+    <cref /object/tactic/executive>.
+}
+
+#-------------------------------------------------------------------
+
+order MAD:DELETE "Delete Magic Attitude Driver" {
+    <parmlist>
+
+    <parm mad_id "MAD ID">
+    <b>Required.</b>  The ID of the Magic Attitude Driver (MAD) to delete.
+    </parm>
+    </parmlist>
+
+    Deletes the specified MAD.  Note that a MAD cannot be deleted once
+    any attitude inputs have been associated with it.
+}
+
+#-------------------------------------------------------------------
+
+order MAD:UPDATE "Update Magic Attitude Driver" {
+    <parmlist>
+
+    <parm mad_id "MAD ID">
+    <b>Required.</b>  The ID of the Magic Attitude Driver (MAD) to update.
+    </parm>
+
+    <parm narrative "Narrative">
+    <b>Optional.</b>  A one-line description of the driver.
+    </parm>
+
+    <parm cause "Cause">
+    <b>Optional.</b> <MAD.cause>
+    </parm>
+
+    <parm s "Here Factor">
+    <b>Optional.</b> <MAD.s>
+    </parm>
+
+    <parm p "Near Factor">
+    <b>Optional.</b> <MAD.p>
+    </parm>
+
+    <parm q "Far Factor">
+    <b>Optional.</b> <MAD.q>
+    </parm>
+    
+    </parmlist>
+
+    Updates the MAD's definition.
+}
+
+#-----------------------------------------------------------------------
+
+order MAD:HREL "Magic Horizontal Relationship Input" {
+    <parmlist>
+    
+    <parm mad_id "MAD ID">
+    <b>Required.</b>  <MAD.mad>
+    </parm>
+
+    <parm mode "Mode">
+    <b>Required.</b> <MAD.mode>
+    </parm>
+
+    <parm f "Of Group">
+    <b>Required.</b>  A group ID.
+    </parm>
+
+    <parm g "With Group">
+    <b>Required.</b>  A different group ID.
+    </parm>
+
+    <parm mag "Magnitude">
+    <b>Required.</b>  <MAD.mag>
+    </parm>
+    </parmlist>
+
+    Enters a magic horizontal relationship input into URAM.   The input will
+    be persistent or transient, and will the specified curve's value 
+    by <i>mag</i> nominal points at the next time advance.
+    The input will be attributed to the
+    specified MAD.<p>
+
+    The order will be ignored if either group is an empty civilian
+    group.<p>
+
+    This order can be <cref /command/send sent> by the
+    <cref /object/tactic/executive>.
+}
+
+#-----------------------------------------------------------------------
+
+order MAD:VREL "Magic Vertical Relationship Input" {
+    <parmlist>
+    
+    <parm mad_id "MAD ID">
+    <b>Required.</b>  <MAD.mad>
+    </parm>
+
+    <parm mode "Mode">
+    <b>Required.</b> <MAD.mode>
+    </parm>
+
+    <parm g "Of Group">
+    <b>Required.</b>  A group ID.
+    </parm>
+
+    <parm a "With Actor">
+    <b>Required.</b>  An actor ID.
+    </parm>
+
+    <parm mag "Magnitude">
+    <b>Required.</b>  <MAD.mag>
+    </parm>
+    </parmlist>
+
+    Enters a magic vertical relationship input into URAM.   The input will
+    be persistent or transient, and will the specified curve's value 
+    by <i>mag</i> nominal points at the next time advance.
+    The input will be attributed to the
+    specified MAD.<p>
+
+    The order will be ignored if the group is an empty civilian
+    group.<p>
+
+    This order can be <cref /command/send sent> by the
+    <cref /object/tactic/executive>.
+}
+
+#-----------------------------------------------------------------------
+
+order MAD:SAT "Magic Satisfaction Input" {
+    <parmlist>
+    
+    <parm mad_id "MAD ID">
+    <b>Required.</b>  <MAD.mad>
+    </parm>
+
+    <parm mode "Mode">
+    <b>Required.</b> <MAD.mode>
+    </parm>
+
+    <parm g "Group">
+    <b>Required.</b>  A civilian group ID.
+    </parm>
+
+    <parm c "Concern">
+    <b>Required.</b>  A concern.
+    </parm>
+
+    <parm mag "Magnitude">
+    <b>Required.</b>  <MAD.mag>
+    </parm>
+
+    </parmlist>
+
+    Enters a magic satisfaction input into URAM.  The input will
+    be persistent or transient, and will the specified curve's value 
+    by <i>mag</i> nominal points at the next time advance.
+    The input will be attributed to the
+    specified MAD.<p>
+
+    The order will be ignored if the group is an empty civilian
+    group.<p>
+
+    This order can be <cref /command/send sent> by the
+    <cref /object/tactic/executive>.
+}
+
+#-----------------------------------------------------------------------
+
+order MAD:COOP "Magic Cooperation Input" {
+    <parmlist>
+    
+    <parm mad_id "MAD ID">
+    <b>Required.</b>  <MAD.mad>
+    </parm>
+
+    <parm mode "Mode">
+    <b>Required.</b> <MAD.mode>
+    </parm>
+
+    <parm f "Of Group">
+    <b>Required.</b>  A civilian group ID.
+    </parm>
+
+    <parm g "With Group">
+    <b>Required.</b>  A force group ID.
+    </parm>
+
+    <parm mag "Magnitude">
+    <b>Required.</b>  <MAD.mag>
+    </parm>
+    </parmlist>
+
+    Enters a magic cooperation input into URAM.   The input will
+    be persistent or transient, and will the specified curve's value 
+    by <i>mag</i> nominal points at the next time advance.
+    The input will be attributed to the
+    specified MAD.<p>
+
+    The order will be ignored if the civilian group is empty.<p>
+
+    This order can be <cref /command/send sent> by the
+    <cref /object/tactic/executive>.
+}
+
+

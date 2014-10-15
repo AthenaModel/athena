@@ -1,0 +1,29 @@
+<html> <head>
+<title>Overview Pages</title>
+</head>
+
+<body>
+<h1>Overview Pages</h1>
+
+This page gives an overview of the data available through this browser:<p>
+
+<ul>
+  <li> <a href="my://app/sigevents?start=RUN">Recent Significant Events</a>
+       <ul>
+         <li> <a href="my://app/sigevents">All Significant Events</a>
+       </ul>
+  <li> <a href="my://app/actors">Actors</a>
+  <li> <a href="my://app/groups">Groups</a>
+       <ul>
+         <li> <a href="my://app/groups/civ">Groups: Civilian</a>
+         <li> <a href="my://app/groups/frc">Groups: Force</a>
+         <li> <a href="my://app/groups/org">Groups: Organization</a>
+         <li> <a href="my://app/overview/deployment">Personnel Deployment</a>
+       </ul>
+  <li> <a href="my://app/nbhoods">Neighborhoods</a>
+       <ul>
+         <li> <a href="my://app/nbhoods/prox">Neighborhood Proximities</a>
+       </ul>
+</ul>
+
+</body> </html>

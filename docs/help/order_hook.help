@@ -1,0 +1,146 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    order_hook.help
+#
+# AUTHOR:
+#    Dave Hanks
+#
+# DESCRIPTION:
+#    Athena Help Documentation: HOOK:* Orders
+#
+#    This file is included into order.help.
+#
+#-----------------------------------------------------------------------
+
+
+page /order hook "Semantic Hook Orders" {
+    <title>
+
+    These orders are used create, update, and delete 
+    <term hook>s.
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+
+page /order/hook topic "Semantic Hook Topic Orders" {
+    <title>
+    
+    These order are used to create, update and delete
+    <term topic>s associated with <term hook>s.
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+
+order HOOK:CREATE "Create Semantic Hook" {
+    <b><term prep> Only.</b>  This order creates a new 
+    <term hook>.
+    The order parameters are as follows:<p>
+
+    <parmlist>
+    <hook_ parms -required -tags create>
+    </parmlist>
+}
+
+
+#-----------------------------------------------------------------------
+
+order HOOK:DELETE "Delete Semantic Hook" {
+    <b><term prep> Only.</b>  Deletes an existing
+    <term hook>, along with all entities
+    that depend upon it, given its ID.    
+    The order parameters are as follows:<p>
+
+    <parmlist>
+    <parm hook_id "Semantic Hook">
+    <b>Required.</b>  ID of an existing semantic hook.
+    </parm>
+    </parmlist>
+
+}
+
+#-----------------------------------------------------------------------
+
+order HOOK:UPDATE "Update Semantic Hook" {
+    <b><term prep> Only.</b>  This order modifies the
+    definition of an existing <term hook>.  The order
+    parameters are as follows:<p>
+
+    <parmlist>
+    <parm hook_id "Select Hook">
+    <b>Required.</b> ID of an existing semantic hook.
+    </parm>
+
+    <hook_ parms -optional -tags update>
+
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order HOOK:TOPIC:CREATE "Create Semantic Hook Topic" {
+    <b><term prep> Only.</b> This order adds a topic
+    along with a position on that topic to a <term hook>.
+    The order parameters are as follows:<p>
+
+    <parmlist>
+    <hook_topic parms -required -tags create>
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order HOOK:TOPIC:DELETE "Delete Semantic Hook Topic" {
+    <b><term prep> Only.</b> Deletes a topic
+    from a <term hook>.  The order parameters are as 
+    follows:<p>
+
+    <parmlist>
+    <hook_topic parm id -required>
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order HOOK:TOPIC:UPDATE "Update Semantic Hook Topic" {
+    <b><term prep> Only.</b>  Updates the position of
+    a topic associated with a semantic hook.  The order
+    parameters are as follows:<p>
+
+    <parmlist>
+    <hook_topic parm id -required>
+    <hook_topic parm position -required>
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order HOOK:TOPIC:UPDATE+MULTI "Update Semantic Hook Topic (Multi)" {
+    <b><term prep> Only.</b>  Updates the position of 
+    multiple topics associates with a semantic hook.  The 
+    order parameters are as follows:<p>
+
+    <parmlist>
+    <hook_topic parm position -required>
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order HOOK:TOPIC:STATE "Set Semantic Hook State" {
+    <b><term prep> Only.</b>  Toggles the state of
+    a topic associated with a semantic hook.  When
+    <i>disabled</i> the topic is not considered as 
+    part of the semantic hook.  The order parameters
+    are as follows:<p>
+
+    <parmlist>
+    <hook_topic parm id -required>
+    <hook_topic parm state -required>
+    </parmlist>
+}
+

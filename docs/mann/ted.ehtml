@@ -1,0 +1,300 @@
+<manpage {ted(n)} "Athena Test Execution Deputy">
+
+<section SYNOPSIS>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+The test execution deputy, or TED, is a module of test harness code
+available to the test files in <tt test/app_athena>.  It is loaded
+automatically by the test scripts.<p>
+
+Every test script begins by calling <iref ted init> if it hasn't
+already been called.<p>
+
+<section "ENTITIES">
+
+TED defines a number of standard entities--neighborhoods, groups, and
+so on--for use in test suites.  The complete list is found in
+<code>test/app_athena/ted.tcl</code>.  The <iref ted create> routine is
+used to create them, and <iref ted entity> is used to retrieve the
+parameters with which they are created.  Note that these parameters
+are defined to be used with the relevant "<b>mutate create</b>"
+commands, not with the <b>*:CREATE</b> orders (i.e., data values are
+in canonical internal form).
+
+The command <iref ted lock> will reconcile the scenario, thus
+creating all dependent entities, and send the <b>SIM:LOCK</b> order.<p>
+
+The <iref ted cleanup> command will
+delete all entities created using <iref ted create>, among other things.<p>
+
+<section "COMMANDS">
+
+This section documents the commands provided by the TED.<p>
+
+<deflist test_commands>
+
+<defitem "ted init" {ted init <i argv>}>
+
+This command should be called exactly once each time tests are executed.
+The <i argv> parameter is the argument list given to the test script;
+if it includes the <tt -notk> option, Tk will not be loaded.  (Tests requiring
+Tk should use "<tt -constraints tk>".)  Any remaining arguments are passed
+to tcltest(n).<p>
+
+Then, this command loads the app_athena(n) code and initializes the 
+athena(1) application in a neutral state, destroying its GUI, and initializes
+tcltest(n).  If the <tt test/app_athena/all_tests.test> script is run, all 
+of the app_athena(n) tests will run; otherwise, the named script will run.<p>
+
+<defitem "ted cleanup" {ted cleanup}>
+
+This command is to be used in a test's <code>-cleanup</code> script.
+It cleans up in the following ways:<p>
+
+<ul>
+  <li> It calls <iref ted notifier forget>.
+  <li> It deletes entities from the scenario tables in the RDB and
+       reconfigures the related modules.
+  <li> It clears the CIF history.
+  <li> It resets all <xref parms(sim)> parameters to their
+       programmatic defaults.<p>
+</ul><p>
+
+<defitem "ted create" {ted create <i>name</i> ?<i>name...</i>?}>
+
+Creates one or more named entities using "<code>mutate
+create</code>".  If an entity depends on the existence of
+other entities (e.g., as the civilian group SHIA depends on
+the neighborhood NB1), the "parent" entities are created automatically.<p>
+
+<defitem "ted dictdiff" {ted dictdiff <i>a b...</i>}>
+
+Compares two dictionaries <i>a</i> and <i>b</i> and outputs a
+pretty-printed list of differences, formatted to look nice in a test's
+<code>-result</code>.  Dictionary <i>a</i> is always specified as a
+single argument; dictionary <i>b</i> may be specified as a single
+argument or as keys and values on the command line.<p>
+
+The output, though pretty-printed, is a valid Tcl list-of-lists, with
+each entry representing a value in <i>a</i> or <i>b</i> that's
+different than what's in the other.  Each entry looks like this:<p>
+
+<pre>
+    {A|B <i>key</i> <i>value</i>}
+</pre>
+
+<defitem "ted dictmatch" {ted dictmatch <i>a b...</i>}>
+
+Compares a dictionary <i>a</i> with a dictionary of glob-patterns
+<i>b</i> and outputs a pretty-printed list of entries of <i>a</i> which
+do not match the entries of <i>b</i>.  Keys appearing in <i>a</i>
+but not in <i>b</i> are ignored; keys appearing in <i>b</i> but not in
+<i>a</i> appear in the output as "<i>key</i> *null*".
+
+The output is either "OK", if all patterns match, or
+a list of the keys and values that didn't match, with one key/value
+pair per line, indented so as to fit nicely in a <code>-result</code>.<p>
+
+
+<defitem "ted entity" {ted entity <i>name</i> ?<i>dict</i>?}>
+<defitem "ted entity" {ted entity <i>name</i> ?<i>key value...</i>?}>
+
+Returns a "<b>mutate create</b>" parameter dictionary for the
+named entity.  If additional parameters are provided, either as a
+single <i>dict</i> or as individual keys and values, they are merged
+into the returned dictionary.<p>
+
+<defitem "ted lock" {ted lock}>
+
+Locks the scenario so that time can advance, but first calls
+<b>scenario reconcile</b> so that all dependent entities are
+created.<p>
+
+<defitem "ted notifier" {ted notifier <i>subcommand</i> ?<i>args...</i>?}>
+
+The deputy can bind to any number of <xref mars:notifier(n)> events; the
+received events are simply accumulated in a list without further
+processing.<p>
+
+<deflist ted notifier>
+
+<defitem "ted notifier bind" {ted notifier bind <i>subject event</i>}>
+
+Binds the deputy to the specified <i>subject</i> and <i>event</i>.<p>
+
+<defitem "ted notifier diff" {ted notifier diff <i>ndx event dict...</i>}>
+
+Used to verify that notifier events were sent as expected.
+First, verifies that the <i>ndx</i> event in the
+<iref ted notifier received> queue has the right <i>event</i> type.
+Next, computes and returns the <iref ted dictdiff> of the
+event's dictionary with <i>dict</i>, which may be specified as a single
+argument or as keys and values on the command line.  <b>Note: This
+presumes that the event has one argument, which is a dictionary!</b><p>
+
+<defitem "ted notifier match" {ted notifier match <i>ndx event dict...</i>}>
+
+Used to verify that notifier events were sent as expected.
+First, verifies that the <i>ndx</i> event in the
+<iref ted notifier received> queue has the right <i>event</i> type.
+Next, does a <iref ted dictmatch> of the keys and patterns in
+<i>dict</i> with the event's dictionary.  Note that <i>dict</i>
+may be specified as a single argument or as keys and values on the
+command line.  <b>Note: This presumes that the event has one argument,
+which is a dictionary!</b><p>
+
+<defitem "ted notifier forget" {ted notifier forget}>
+
+Causes the deputy to forget all bindings and received events.  This
+should be done in the <code>-cleanup</code> of any test that uses
+<iref ted notifier>.<p>
+
+<defitem "ted notifier received" {ted notifier received}>
+
+Returns the events received since the last
+<iref ted notifier forget>, each pretty-printed and indented on its
+own line, so as to look nice as a test's <code>-result</code>.  Note
+that the output is also a valid Tcl list of lists, one for each event,
+where each event list has the syntax "<i>subject event args...</i>".<p>
+
+</deflist ted notifier>
+
+<defitem "ted order" {ted order ?-reject? <i>name parmdict</i>}>
+
+Sends the order with the specified <i>name</i> and <i>parmdict</i>,
+using the <b>test</b> order interface. (The <b>test</b> interfaces
+works just like the <b>gui</b> interface, but disables interactive
+prompts.)  By default, the order is expected to be successful; if
+<b>-reject</b> is specified, the order should be rejected, i.e.,
+should have an error code of REJECT.  If so, <iref ted order>
+returns a pretty-printed REJECT dictionary; otherwise, the rejection
+doesn't follow the protocol.  On any other kind of error,
+<iref ted order> propagates the error.<p>
+
+<defitem "ted pdict" {ted pdict <i>dict</i>}>
+
+Pretty-prints a dictionary, with keys and values in left-justified
+parallel columns, indented to look nice in the <b>-result</b> of a
+test.<p>
+
+<defitem "ted schedule" {ted schedule ?-reject? <i>timespec name parmdict</i>}>
+
+Schedules the order with the specified <i>name</i> and <i>parmdict</i>
+to be executed at the <i>timespec</i>.  In short, this wraps
+<xref order(sim) "order schedule"> in the same way that
+<iref ted order> wraps <xref order(sim) "order send">.<p>
+
+<defitem "ted query" {ted query <i>sql</i>}>
+
+Does a query on the RDB given the <i>sql</i>, and pretty-prints the
+result so that it looks nice in a test <b>-result</b>.  The result is
+in standard tabular format.<p>
+
+<defitem "ted querylist" {ted querylist <i>sql</i>}>
+
+Does a query on the RDB given the <i>sql</i>, and pretty-prints the
+result so that it looks nice in a test <b>-result</b>.  The result is
+in "list" format, with each row in the result written as a block
+of column name/value pairs.<p>
+
+<defitem "ted sendex" {ted sendex ?-error? <i>command...</i>}>
+
+Sends the <i>command...</i> to the Athena executive as the "test"
+client, and returns the result.  <iref ted sendex> is therefore used
+when testing executive commands.  If the <code>-error</code> option
+is included, <iref ted sendex> expects the command to throw an
+error, and will return the error message.  If the command does not
+throw an error in this case, <iref ted sendex> will in turn throw an
+error.<p>
+
+A <i>command...</i> may be passed as a single argument or as
+individual arguments which are aggregated into a single command.<p>
+
+<b>TBD:</b> This command pre-dates the Athena executive interface,
+and so commands are currently sent directly to the main interpreter.
+This will need to be fixed eventually.<p>
+
+<defitem "ted unit" {ted unit <i>subcommand</i> ?<i>args...</i>?}>
+
+Commands for easily manipulating units.
+
+<deflist ted unit>
+
+<defitem "ted unit activity" {ted unit activity <i>u</i> ?<i>a</i>?}>
+
+Sets/queries the unit's activity.<p>
+
+<defitem "ted unit location" {ted unit location <i>u</i> ?<i>location</i>?}>
+
+Moves unit <i>u</i> to the specified <i>location</i> (if given), which
+may be a neighborhood name or a map reference.  Returns the unit's
+location.<p>
+
+<defitem "ted unit personnel" {ted unit personnel <i>u</i> ?<i>personnel</i>?}>
+
+Sets/queries the unit's personnel.<p>
+
+</deflist ted unit>
+
+</deflist test_commands>
+
+<section "TEST MATCH ALGORITHMS">
+
+ted(n) defines the following custom resulting matching
+algorithms, available via the TclTest <code>-match</code> option:<p>
+
+<deflist match>
+
+<defitem "match dict" {-match dict}>
+
+The <code>-result</code> is a dictionary; the test result must be a 
+dictionary with exactly the same keys and all keys must have 
+identical values.<p>
+
+<defitem "match indict" {-match indict}>
+
+The <code>-result</code> is a dictionary; the test result must be a dictionary
+containing at least the keys in the <code>-result</code>, and those keys
+must have identical values.<p>
+
+<defitem "match dictglob" {-match dictglob}>
+
+The <code>-result</code> is a dictionary whose values may contain
+glob-wildcards; the test result must be a 
+dictionary with exactly the same keys and the key values must match
+the patterns in <code>-result</code>.<p>
+
+</deflist match>
+
+<section "TEST CONSTRAINTS">
+
+ted(n) defines one constraint, <b tk>, which is to be used with tests
+that require Tk.  The test suite can be run with a <tt -notk> flag to
+prevent Tk from being loaded.<p>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

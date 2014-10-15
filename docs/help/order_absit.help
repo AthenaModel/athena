@@ -1,0 +1,235 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    order_absit.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: ABSIT:* Orders
+#
+#    This file is included into order.help.
+#
+#-----------------------------------------------------------------------
+
+page /order absit "Abstract Situation Orders" {
+    <title>
+
+    Athena models a variety of on-going conditions within
+    neighborhoods; these are collectively referred to as
+    <i>abstract situations</i>.  The set of situation types
+    includes epidemics, contaminated food and water, power and
+    communication outages, and so forth.  Detailed information about
+    each situation type may be found in the Athena Rules document.<p>
+
+    This family of orders is used to create, update, and resolve
+    abstract situations.<p>
+
+    The full set of orders is as follows:<p>
+
+    <childlinks>
+}
+
+macro ABSIT.initial {} {
+    |<--
+    The numeric ID of an abstract situation that has not yet
+    become active.  Absits become active at the first time advance
+    after their creation.
+}
+
+macro ABSIT.n {} {
+    |<--
+    The neighborhood affected by the situation.
+}
+
+macro ABSIT.stype {} {
+    |<--
+    The type of situation.  There may be only one
+    abstract situation of a given type in each neighborhood.<p>
+
+    [enumdoc ::projectlib::eabsit]
+}
+
+macro ABSIT.coverage {} {
+    |<--
+    Neighborhood coverage fraction, as a positive real number
+    less than or equal to 1.0.  The coverage represents the fraction
+    of the neighborhood's population that is affected by this situation.
+}
+
+macro ABSIT.inception {} {
+    |<--
+    A flag (<b>YES</b>, <b>NO</b>) that determines
+    whether the situation has inception effects.  Set this to
+    <b>NO</b> for situations that are to be on-going at time 0. 
+}
+
+macro ABSIT.g {} {
+    |<--
+    The name of the group that the neighborhood
+    population considers responsible for causing this situation,
+    or <b>NONE</b> if none.
+}
+
+macro ABSIT.rduration {} {
+    |<--
+    A duration, in integer weeks.  If positive, the
+    situation will automatically be resolved at the end of the
+    specified time. If 0, no auto-resolution will take place.<p>
+
+    If this value is omitted, it will default to the value of the
+    <b>absit.<i>stype</i>.duration</b> [cref /parmdb parameter].
+}
+
+#-----------------------------------------------------------------------
+
+order ABSIT:CREATE "Create Abstract Situation" {
+    This order creates a new abstract situation.  Note that the
+    <cref /order/absit/update> order can be used to
+    edit any of these values so long as the situation has not yet
+    become active, i.e., up until the next time advance.<p>
+
+    This order can be <cref /command/send sent> by the
+    <cref /object/tactic/executive>.<p>
+
+    <parmlist>
+    <parm n "Neighborhood">
+    <b>Required.</b>  <ABSIT.n>
+    </parm>
+
+    <parm stype "Type">
+    <b>Required.</b> <ABSIT.stype>
+    </parm>
+
+    <parm coverage "Coverage">
+    <b>Required.</b> <ABSIT.coverage>
+    </parm>
+
+    <parm inception "Inception?">
+    <b>Required.</b> <ABSIT.inception>
+    </parm>
+
+    <parm resolver "Resolver">
+    <b>Required.</b>  The name of the group that the neighborhood
+    population will consider responsible for resolving this situation,
+    or <b>NONE</b> if none.  This entry is used when the situation
+    resolves itself automatically; it can be overridden if the
+    situation is resolved manually.
+    </parm>
+
+    <parm rduration "Duration">
+    <b>Optional.</b>  <ABSIT.rduration>
+    </parm>
+
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order ABSIT:DELETE "Delete Abstract Situation" {
+    <parmlist>
+
+    <parm s "Situation">
+    <b>Required.</b>  <ABSIT.initial>
+    </parm>
+    </parmlist>
+
+    Deletes an existing abstract situation.
+}
+
+#-----------------------------------------------------------------------
+
+order ABSIT:UPDATE "Update Abstract Situation" {
+    Updates an existing abstract situation that has not yet
+    become active.<p>
+
+    <parmlist>
+
+    <parm s "Situation">
+    <b>Required.</b>  <ABSIT.initial>
+    </parm>
+
+    <parm n "Neighborhood">
+    <b>Required.</b>  <ABSIT.n>
+    </parm>
+
+    <parm stype "Type">
+    <b>Required.</b> <ABSIT.stype>
+    </parm>
+
+    <parm coverage "Coverage">
+    <b>Required.</b> <ABSIT.coverage>
+    </parm>
+
+    <parm inception "Inception?">
+    <b>Required.</b> <ABSIT.inception>
+    </parm>
+
+    <parm resolver "Resolver">
+    <b>Required.</b>  The name of the group that the neighborhood
+    population will consider responsible for resolving this situation,
+    or <b>NONE</b> if none.  This entry is used when the situation
+    resolves itself automatically; it can be overridden if the
+    situation is resolved manually.
+    </parm>
+
+    <parm rduration "Duration">
+    <b>Optional.</b>  <ABSIT.rduration>
+    </parm>
+
+    </parmlist>
+}
+
+
+#-----------------------------------------------------------------------
+
+order ABSIT:MOVE "Move Abstract Situation" {
+    <parmlist>
+
+    <parm s "Situation">
+    <b>Required.</b>  The numeric ID of any existing abstract
+    situation.
+    </parm>
+
+    <parm location "Location">
+    <b>Required.</b>  The location of the situation within its
+    neighborhood.  <b>Note:</b> the absit's location within the
+    neighborhood has no effect on model outputs.  The absit
+    cannot be moved out of its neighborhood using this order.
+    </parm>
+
+    </parmlist>
+
+    Moves an existing abstract situation from one place to another.
+}
+
+
+order ABSIT:RESOLVE "Resolve Abstract Situation" {
+    <parmlist>
+
+    <parm s "Situation">
+    <b>Required.</b>  The numeric ID of any unresolved abstract
+    situation.
+    </parm>
+
+    <parm resolver "Resolved By">
+    <b>Optional.</b> The name of the group that the neighborhood
+    population will consider responsible for resolving this situation,
+    or <b>NONE</b> if none.  If specified, overrides the group name
+    given when the situation was 
+    <cref /order/absit/create created>.
+    </parm>
+
+    </parmlist>
+
+    Resolves an unresolved abstract situation.  Any on-going
+    effects will be terminated, and the neighborhood population will
+    usually respond favorably.<p>
+
+
+    This order can be <cref /command/send sent> by the
+    <cref /object/tactic/executive>.
+}
+
+

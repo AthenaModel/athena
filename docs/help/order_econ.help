@@ -1,0 +1,169 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    order_econ.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: ECON:* Orders
+#
+#    This file is included into order.help.
+#
+#-----------------------------------------------------------------------
+
+page /order econ "Economic Model Orders" {
+    <title>
+
+    This section describes the orders used to configure Athena's
+    Economic Model.
+
+    <childlinks>
+}
+
+
+macro ECON.numbercell {} {
+    |<--
+    The name of a valid cell in the underlying cell model that corresponds
+    to a number.  See the Athena Analyst's Guide for a complete list of the
+    names of cells that can be edited.
+}
+
+macro ECON.moneycell {} {
+    |<--
+    The name of a valid cell in the underlying cell model that corresponds
+    to an amount of money.  Entries in these cells must not be negative, 
+    and can contain the letters K, M, B and T at the end indicating thousands,
+    millions, billions and trillions, respectively.  Cells 
+    appearing in a matrix take the form <i><b>var.idx1.idx2</i></b> where 
+    <i><b>idx1</b></i> is the name of the row and <i><b>idx2</b></i> is the
+    name of a column.  Other cells have names based upon the row only, the
+    column only or neither.  See the Athena Analyst's Guide for a complete list
+    of the names of cells that can be edited.
+}
+
+#-----------------------------------------------------------------------
+
+order ECON:SAM+UPDATE "Update Cell Values in the Social Accounting Matrix" {
+    <b><term prep> Only.</b>  This order edits a cell in the economic
+    model's Social Accounting Matrix.  It is presumed that the cell being
+    edited corresponds to some amount of money.  The order parameters are as
+    follows:<p>
+
+    <parmlist>
+
+    <parm id "Cell Name">
+    <b>Required.</b> <ECON.moneycell><p>
+    </parm>
+
+    <parm val "Cell Value">
+    <b>Required.</b>  The value the cell should take, any valid money format.
+    </parm>
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order ECON:SAM+GLOBAL "Update Global Values in the Social Accounting Matrix" {
+    <b><term prep> Only.</b>  This order edits a cell in the economic
+    model's Social Accounting Matrix.  This order is used typically to change
+    a global parameter that affects money flows in the economic model as 
+    opposed to the money flows themselves.  An example of this type of cell
+    is the one that controls the change rate of remittances.  The order 
+    parameters are as follows:<p>
+    <parmlist>
+
+    <parm id "Cell Name">
+    <b>Required.</b> <ECON.numbercell><p>
+    </parm>
+
+    <parm val "Cell Value">
+    <b>Required.</b>  The value the cell should take.
+    </parm>
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order ECON:CGE+UPDATE "Update Cell Values in the CGE" {
+    This order edits a cell in the economic model's Computable General 
+    Equilibrium matrix.  It is presumed that the cell being edited 
+    corresponds to some amount of money.  Generally speaking, this order 
+    should not ever have to be used.  If it needs to be used, it is because 
+    the CGE is not working right and a stopgap measure must take place until
+    the underlying problem can be fixed by the Athena development team.
+    The order parameters are as follows:<p>
+
+    <parmlist>
+
+    <parm id "Cell Name">
+    <b>Required.</b> <ECON.moneycell><p>
+    </parm>
+
+    <parm val "Cell Value">
+    <b>Required.</b>  The value the cell should take, any valid money format.
+    </parm>
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order ECON:UPDATE+REMRATE "Update Remittance Change Rate in Economy" {
+    This order is used to increase or decrease the rate of remittances
+    flowing into the economy over time.  Each week, Athena computes a
+    new amount of remittances based on the rate and applies it to the
+    economic model. There is only one parameter:<p>
+
+    <parmlist>
+
+    <parm val "Value">
+    <b>Required.</b>  The new annual percentage change. Can be negative.
+    </parm>
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order ECON:UPDATE+HIST "Update Historical Economic Data" {
+    <b><term prep> Only.</b>  This order is used tweak data that is from
+    a rebased scenario, should it be necessary to do so.  In most cases, it
+    would not be necessary, but could be if the start time of a rebased
+    scenario changes to something other than the end time the scenario was
+    rebased from. The parameters are as follows:<p>
+
+    <parmlist>
+
+    <parm hist_flag "Start Mode">
+    <b>Required.</b> Sets whether historical data from a previous scenario
+    should be used. 
+    </parm>
+
+    <parm rem "REM">
+    <b>Optional.</b> Used to change historical remittances to something 
+    different than from a rebased scenario.
+    </parm>
+
+    <parm rem_rate "REM Change Rate">
+    <b>Optional.</b> Used to change historical annual remittance percentage
+    change rate to something different thatn from a rebased scenario.
+    </parm>
+
+    <parm base_consumers "Base Consumers">
+    <b>Optional.</b> Used to change historical number of base consumers to
+    something different than from a rebased scenario. <b>Note</b>: Changing
+    this will cause certain economic shape parameters to be different than
+    from a previous run.
+    </parm>
+
+    <parm base_ur "Base Unemp. Rate">
+    <b>Optional.</b> Used to change the historical unemployment rate to 
+    something different than from a rebased scenario.
+    </parm>
+
+    <parm base_gdp "Base GDP">
+    <b>Optional.</b> Used to change the historical GDP to something 
+    different than from a rebased scenario.
+    </parm>
+    </parmlist>
+}

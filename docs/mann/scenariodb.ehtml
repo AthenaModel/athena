@@ -1,0 +1,267 @@
+<manpage {projectlib(n) scenariodb(n)} "Scenario Database Object">
+
+<swallow {
+    set ::schemaDict [project tclsh {
+        package require projectlib
+        ::projectlib::scenariodb sectiondict
+    }]
+
+    proc sqlSectionLink {section} {
+        global schemaDict
+        set title [dict get $schemaDict $section title]
+
+        if {[regexp {^\w+\([1-9in]\)$} $title]} {
+            # FIRST, mars sections have different xref syntax
+            if {[string range $section 0 5] eq "::mars" ||
+                [string range $section 0 7] eq "::simlib"} {
+                set title [xref mars:$title]
+            } else {
+                set title [xref $title]
+            }
+        }
+
+        return $title
+    }
+
+    proc schemaDoc {} {
+        global schemaDict
+        set out ""
+        dict for {section sdict} $schemaDict {
+            # FIRST, are there any schema definitions
+            set schema ""
+
+            if {[dict get $sdict schema] ne ""} {
+                lappend schema [dict get $sdict schema]
+            }
+
+            if {[dict get $sdict tempschema] ne ""} {
+                lappend schema [dict get $sdict tempschema]
+            }
+
+            if {[llength $schema] == 0} {
+                continue
+            }
+
+            # NEXT, document them.
+            set title [dict get $sdict title]
+            append out [subsection [list From $title]]
+            append out "\n\n"
+
+            # Make it a link, if appropriate
+            set title [sqlSectionLink $section]
+
+            append out \
+                "The following schema definitions are from $title.<p>\n\n"
+
+            append out "<pre>\n"
+            append out [join $schema "\n\n"]
+            append out "</pre>\n\n"
+        }
+
+        return $out
+    }
+
+    proc sqlFunctionsDoc {} {
+        global schemaDict
+        set out ""
+
+        dict for {section sdict} $schemaDict {
+            set funcs [dict get $sdict functions]
+
+            if {[llength $funcs] > 0} {
+                append out "<li> From [sqlSectionLink $section]:</li>\n"
+                append out "<ul>\n"
+                foreach {func def} $funcs {
+                    append out "<li>${func}() =&gt; $def</li>\n"
+                }
+                append out "</ul>\n"
+            }
+        }
+
+        return "<ul>\n$out</ul><p>"
+    }
+}>
+
+<section SYNOPSIS>
+
+<pre>
+package require projectlib 1.0
+namespace import ::projectlib::scenariodb
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+The scenariodb(n) type is responsible for Athena's scenario
+database format.  It is an SQLite3 format based on
+<xref mars:sqldocument(n)>; as such, it automatically includes all
+<xref mars:sqlsection(i)>s defined by the Mars infrastructure.  It
+also includes all tables, indices, and so forth defined explicitly for
+Mars.<p>
+
+<xref athena(1)> uses scenariodb(n) to define its
+run-time database (RDB), and to save and load scenario data to and
+from external files.  By convention, these "scenario files" have a
+"<code>.adb</code>" (Athena Scenario) extension.<p>
+
+<section COMMANDS>
+
+<deflist commands>
+
+<defitem scenariodb {scenariodb <i>name</i> ?<i>options...?</i>}>
+
+Creates a new scenariodb(n) object called <i>name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<iref scenariodb> returns the fully-qualified form of the
+<i>name</i>.<p>
+
+Before the new scenariodb(n) can be used, a database file must be
+<iref open>ed, and possibly <iref clear>ed.<p>
+
+The scenariodb(n) may be created with the following options:<p>
+
+<deflist options>
+
+<defopt {-clock <i>clock</i>}>
+
+Specifies a <xref mars:simclock(n)> object, or the equivalent.  This
+option is delegated to the underlying <xref mars:sqldocument(n)> object,
+which uses it to provide <xref mars:simclock(n)>-related SQL functions.<p>
+
+<defopt {-explaincmd <i>command</i>}>
+
+This option is delegated to <xref mars:sqldocument(n)>.<p>
+
+</deflist options>
+
+<defitem "scenariodb checkschema" {scenariodb checkschema <i>db</i>}>
+
+Given an SQLite3 database handle <i>db</i>, this command
+checks to see whether it is an Athena scenario file, and if so, 
+whether it is compatible with this version of scenariodb(n).  If not,
+the command throws an informative error suitable for display to the user.<p>
+
+Note that <i>db</i> can be any SQLite3 database handle; it need not have
+been opened with scenariodb(n) or <xref mars:sqldocument(n)>.<p>
+
+<defitem "scenariodb sqlsections" {scenariodb sqlsections}>
+
+Returns a list of the <xref mars:sqlsection(i)> objects that 
+scenariodb(n) registers.<p>
+
+<defitem "scenariodb sectiondict" {scenariodb sectiondict}>
+
+Returns a dictionary of information about the <xref mars:sqlsection(i)>
+objects that scenariodb(n) registers.  The dictionary has this
+structure:<p>
+
+<example>
+$section => An SQL section registered by scenariodb
+         -> title => The section's title
+         -> schema => The section's schema string
+         -> tempschema => The section's tempschema string
+         -> functions  => Dictionary of SQL functions by name
+                       -> $name => SQL function name
+                                -> function definition
+</example>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+Each instance of scenariodb(n) inherits all methods
+of the <xref mars:sqldocument(n)> object and the underlying SQLite3
+database handle.  In addition, it has the following subcommands:<p>
+
+<deflist instance>
+
+<defitem clear {<i>obj</i> clear}>
+
+Clears the contents of the database, establishing a fresh, empty scenario.
+Also, clears the <iref unsaved> flag.<p>
+
+
+<defitem load {<i>obj</i> load <i>filename</i>}>
+
+Loads the scenario file called <i>filename</i> into the database, and
+clears the <iref unsaved> flag.<p>
+
+<defitem marksaved {<i>obj</i> marksaved}>
+
+Marks the scenario saved.  This is generally useful if the application
+adds additional behavior on top of <iref clear>.<p>
+
+<defitem open {<i>obj</i> open <i>filename</i>}>
+
+Opens an existing scenario file, and clears the <iref unsaved>
+flag.  <xref athena(1)> will usually use this to open a working
+RDB, into which the user's scenario file will be <iref load>ed.
+If <i>filename</i> is "<code>:memory:</code>", the database will be
+opened in memory rather than on the disk.<p>
+
+<defitem saveas {<i>obj</i> saveas <i>filename</i>}>
+
+Saves the current contents of the database to the file with name
+<i>filename</i>, which conventionally should have a
+"<code>.ath</code>" extension.  Clears the <iref unsaved> flag.<p>
+
+<defitem unsaved {<i>obj</i> unsaved}>
+
+Returns 1 if changes have been made to the database since the last
+<iref clear>, <iref load>, <iref open>, or <iref saveas>, and
+0 otherwise.  Applications can use this flag to determine whether
+there are unsaved changes, e.g., before shutting down.<p>
+
+</deflist instance>
+
+<section "SQL FUNCTIONS">
+
+Every <xref scenariodb(n)> database will support at least the
+following SQL functions, in addition to those defined by SQLite3
+and those defined by <xref mars:sqlsection(i)> modules explicitly
+loaded by the application.<p>
+
+<sqlFunctionsDoc>
+
+
+<section "SCHEMA">
+
+scenariodb(n) adds the following definitions to the database
+schema:<p>
+
+Every <xref scenariodb(n)> database will contain at least the
+following schema definitions, in addition to those from any other
+<xref mars:sqlsection(i)>'s loaded explicitly by the application.<p>
+
+<schemaDoc>
+
+
+
+<section "SEE ALSO">
+
+<xref mars:sqldocument(n)>.
+
+<section ENVIRONMENT>
+
+Requires Tcl 8.5 or later.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+
+
+

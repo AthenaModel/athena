@@ -1,0 +1,136 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    macros.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Macro definitions for Athena help(5) input
+#
+#-----------------------------------------------------------------------
+
+#=======================================================================
+# Macros
+
+# mktitle size over title under
+#
+# size   normal | small
+# over   Small text to appear over the title, or ""
+# title  The title text proper
+# under  Small text to appear under the title, or ""
+# title ?text...?
+#
+# Formats the title in the standard way.  This macro is intended
+# for use in defining other macros.
+
+macro mktitle {size over title under} {
+    array set sizes {
+        normal 7
+        small  4
+        tiny   2
+    }
+
+    if {$over ne ""} {
+        set over "<font size=$sizes(tiny)>$over</font><br>\n"
+    }
+
+    if {$under ne ""} {
+        set under "<br>$under"
+    }
+} {
+    |<--
+    $over
+    <font size=$sizes($size)><b>$title</b></font>
+    $under<p>
+}
+
+# title ?text...?
+#
+# text    The title text
+#
+# Formats the title in the standard way.  The title text defaults
+# to the page's "title", but this can be overridden, e.g., to
+# insert links.
+
+macro title {args} {
+    if {[llength $args] == 1} {
+        set title [lindex $args 0]
+    } elseif {[llength $args] > 1} {
+        set title [join $args " "]
+    } else {
+        set title [pageinfo title]
+    }
+} {
+    |<--
+    [mktitle normal "" $title ""]
+}
+
+# seebelow anchor ?text?
+#
+# anchor     The href anchor
+# text       The link text; defaults to "below".
+#
+# Creates a link to an anchor on the same page.
+
+macro seebelow {anchor {text below}} {<a href="#$anchor">$text</a>}
+
+# command args
+#
+# args    The full name of an executive command, e.g., "parm set".
+#
+# Formats up a standard cref link to the command's help page.
+
+macro command {args} {
+    set path "/command/[join $args /]"
+} {<b>[cref $path $args]</b>}
+
+
+# menu name ?link?
+#
+# name   The name of a menu or menu item, e.g., Edit/Undo
+# link   Link text, which defaults to the name.
+#
+# Returns a cref-link to the help page.
+
+macro menu {name {link ""}} {
+    set replist [list " " "_" . ""]
+    
+    set path "/menu/[string tolower [string map $replist $name]]"
+} {[cref $path $link]}
+
+
+# tab args
+#
+# args    The name of a tab or tab item
+#
+# Returns a cref-link to the help page.
+
+macro tab {args} {
+    set replist [list " " "_" ( "" ) ""]
+    
+    set path "/tab/[string tolower [string map $replist $args]]"
+} {[cref $path "$args Tab"]}
+
+# term slug ?link?
+#
+# slug   The term page's slug, as defined in glossary.help
+# link   The link text; the term's title is used by default.
+#
+# Returns a link to the term's page.
+
+macro term {slug {link ""}} {[cref /term/$slug $link]}
+
+# parmdb parm ?link?
+#
+# parm   - The name of a parmdb parameter, e.g., Edit/Undo
+# link   - Link text, which defaults to the name.
+#
+# Returns a cref-link to the help page.
+
+macro parmdb {parm {link ""}} {
+    set replist {. /}
+    set path "/parmdb/[string tolower [string map $replist $parm]]"
+} {[cref $path $link]}
+

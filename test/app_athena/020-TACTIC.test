@@ -1,0 +1,136 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    020-TACTIC.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    TACTIC:* Orders tests
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Set up for tests
+
+    set S1 ::strategy::SYSTEM
+
+    proc setup {} {
+        ted create SHIA
+        variable S1
+        variable B1
+        variable T1
+        ted order STRATEGY:BLOCK:ADD agent SYSTEM
+        lassign [$S1 blocks] B1
+        ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename SIGEVENT
+        lassign [$B1 tactics] T1
+    }
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # TACTIC:STATE
+
+    test TACTIC:STATE-1.1 {required parameters} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:STATE
+    } -cleanup {
+        cleanup
+    } -result {
+        tactic_id {required value}
+        state {required value}
+    }
+
+    test TACTIC:STATE-1.2 {unknown tactic_id} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:STATE tactic_id NONESUCH state normal
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        tactic_id {Invalid tactic ID: "NONESUCH"}
+    }
+
+    test TACTIC:STATE-1.3 {invalid state} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:STATE tactic_id [$T1 id] state NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        state {invalid value "nonesuch", should be one of: normal, disabled, invalid}
+    }
+
+    test TACTIC:STATE-2.1 {block updated} -setup {
+        setup
+    } -body {
+        ted order TACTIC:STATE tactic_id [$T1 id] state disabled
+
+        $T1 state
+    } -cleanup {
+        cleanup
+    } -result {disabled}
+
+    test TACTIC:STATE-2.2 {notifier event} -setup {
+        setup
+    } -body {
+        ted notifier bind ::projectlib::bean <Monitor>
+        ted order TACTIC:STATE tactic_id [$T1 id] state disabled
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -match glob -result {*{::projectlib::bean <Monitor>}*}
+
+    test TACTIC:STATE-2.3 {undo notifier event} -setup {
+        setup
+        ted order TACTIC:STATE tactic_id [$T1 id] state disabled
+    } -body {
+        ted notifier bind ::projectlib::bean <Monitor>
+        cif undo -test
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -match glob -result {*{::projectlib::bean <Monitor>}*}
+ 
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+

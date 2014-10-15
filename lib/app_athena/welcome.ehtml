@@ -1,0 +1,37 @@
+<html> <head>
+<title>Welcome to Athena V[kiteinfo version]</title>
+</head>
+
+<body>
+<img src="/docs/Athena_logo_small.png" align="right">
+<h1>Welcome to Athena V[kiteinfo version]</h1>
+
+Use this browser to examine Athena
+<a href="/actors">actors</a>,
+<a href="/nbhoods">neighborhoods</a>, and
+<a href="/groups">groups</a> in detail.  Select actors, etc., in the
+object tree to the left.  You may also browse the
+<a href="my://help">help pages</a> via the
+<a href="my://help/menu/help">Help Menu</a> or via the help tree to
+the left (click on the "?" tab).<p>
+
+Navigate as you would in a web browser.<p>
+
+<h3>About Athena</h3>
+
+Athena V[kiteinfo version] Regional Stability Simulation<p>
+
+Copyright 2008-[clock format [clock seconds] -format %Y],
+by the California Institute of Technology. ALL
+RIGHTS RESERVED. United States Government Sponsorship acknowledged. Any
+commercial use must be negotiated with the Office of Technology Transfer
+at the California Institute of Technology.<p>
+
+This software is subject to U.S. export control laws and regulations and
+has been classified as EAR99.  By accepting this software, the
+user agrees to comply with all applicable U.S. export laws and
+regulations.  User has the responsibility to obtain export licenses, or
+other export authority as may be required before exporting such
+information to foreign countries or providing access to foreign persons.<p>
+
+</body> </html>

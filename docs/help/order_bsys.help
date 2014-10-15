@@ -1,0 +1,284 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    order_bsys.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: BSYS:* Orders
+#
+#    This file is included into order.help.
+#
+#-----------------------------------------------------------------------
+
+
+macro SYSTEM.sid {} {
+    |<--
+    The ID of an existing belief system.
+}
+
+macro TOPIC.tid {} {
+    |<--
+    The ID of an existing topic.
+}
+
+macro TOPIC.name {} {
+    |<--
+    A human-readable name for the topic.
+}
+
+macro TOPIC.affinity {} {
+    |<--
+    A boolean flag that indicates whether or not the topic is 
+    included in the affinity computations.
+}
+
+page /order bsys "Belief System Orders" {
+    <title>
+
+    A belief system is a set of <term position>s on 
+    various <term topic> of interest in the playbox, topics that 
+    divide groups and actors and
+    lead to conflict.  Every <term civgroup> and every <term actor> 
+    is explicitly assigned a <term bsystem>; force and organization
+    groups inherit the belief systems of their owners.<p>
+
+    Athena computes the <term affinity> between between belief systems,
+    based on their agreements and disagreements on topics; these
+    affinities are the basis for the natural relationships between the
+    groups and actors who have the belief systems.<p>
+
+    These orders are used to create and update belief systems.<p>
+
+    <childlinks>
+}
+
+
+#-----------------------------------------------------------------------
+
+order BSYS:PLAYBOX+UPDATE "Update Playbox-wide Belief System Parameters" {
+    <b><term prep> Only.</b>  This order sets the playbox gamma 
+    figure.
+
+    <parmlist>
+    <parm gamma "Playbox Gamma">
+    <b>Required.</b>  The playbox commonality represents the dominant
+    culture in the playbox, and is defined as the number of virtual 
+    topics on which there is general agreement among the people of the 
+    playbox.  The playbox "gamma" is a multiplier that increases or 
+    decreases the playbox commonality.  Increasing gamma generally 
+    increases all affinities;
+    decreasing it decreases them.
+    </parm>
+
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+page /order/bsys system "System Orders" {
+    <title>
+
+    These orders are used to create belief systems and configure
+    belief system metadata.
+
+    <childlinks>
+}
+
+
+#-----------------------------------------------------------------------
+
+order BSYS:SYSTEM:ADD "Add New Belief System" {
+    <b><term prep> Only.</b>  This order adds a new belief system
+    to the scenario.  The belief system will have a default name.<p>
+
+    The order returns the ID of the newly created belief system.<p>
+
+    <parmlist>
+    <parm sid "System ID">
+    <b>Optional.</b>  The ID of the new belief system: a unique integer.<p>
+
+    Normally, the system ID is assigned automatically.  This parameter is
+    usually only used by exported order scripts.
+    </parm>
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order BSYS:SYSTEM:DELETE "Delete Belief System" {
+    <b><term prep> Only.</b>  Deletes an existing
+    belief system, along with all beliefs
+    that depend upon it.<p>
+
+    <b>NOTE:</b> a belief system cannot be deleted if there are any 
+    actors or groups that depend on it.<p>
+
+    <parmlist>
+
+    <parm sid "System ID">
+    <b>Required.</b>  <SYSTEM.sid>
+    </parm>
+
+    </parmlist>
+}
+
+
+#-----------------------------------------------------------------------
+
+order BSYS:SYSTEM:UPDATE "Update Belief System Metadata" {
+    <b><term prep> Only.</b>  This order sets a belief system's 
+    metadata.<p>
+
+    <parmlist>
+    <parm sid "System ID">
+    <b>Required.</b>  The ID of a belief system.<p>
+    </parm>
+
+    <parm name "Name">
+    <b>Optional.</b>  The human-readable name for this belief system.  
+    This name will often reflect some ethnic or tribal grouping within
+    the playbox.
+    </parm>
+
+    <parm commonality "Commonality Fraction">
+    <b>Optional.</b>  The system's commonality fraction is the degree to
+    which it shares in the general culture of the playbox as a whole, i.e.,
+    the degree to which it shares the playbox commonality.  Increasing
+    or decreasing the system's commonality fraction will generally increase or
+    decrease its affinity with other systems. 
+    </parm>
+
+    </parmlist>
+}
+
+
+#-----------------------------------------------------------------------
+
+page /order/bsys topic "Topic Orders" {
+    <title>
+
+    Each <term bsystem> consists of a set of 
+    <term position>s on each of a set of <term topic>s of
+    interest.  These
+    orders are used to create, update, and delete topics.<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+
+order BSYS:TOPIC:ADD "Add New Belief Topic" {
+    <b><term prep> Only.</b>  This order adds a new belief topic
+    to the scenario.  The topic will have a default name.<p>
+
+    The order returns the ID of the newly created topic.<p>
+
+    <parmlist>
+    <parm tid "Topic ID">
+    The new topic's ID, a unique integer.<p>
+
+    Normally, the topic ID is assigned automatically.  This parameter is
+    usually only used by exported order scripts.    
+    </parm>
+    </parmlist>
+
+}
+
+
+#-----------------------------------------------------------------------
+
+order BSYS:TOPIC:DELETE "Delete Belief Topic" {
+    <b><term prep> Only.</b>  Deletes an existing
+    belief system <term topic>, along with all beliefs
+    that depend upon it.<p>
+
+    <b>NOTE:</b> a belief topic cannot be deleted if there are any 
+    <term hook "semantic hooks"> that depend on it.<p>
+
+    <parmlist>
+
+    <parm tid "Topic ID">
+    <b>Required.</b>  <TOPIC.tid>
+    </parm>
+
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order BSYS:TOPIC:UPDATE "Update Topic Metadata" {
+
+    <b><term prep> Only.</b>  This order modifies the
+    metadata associated with an existing <term topic> of belief.<p>
+
+    <parmlist>
+    <parm tid "Topic ID">
+    <b>Required.</b>  <TOPIC.tid>
+    </parm>
+
+    <parm name "Name">
+    <b>Optional.</b> <TOPIC.name>
+    </parm>
+
+    <parm affinity "Affinity?">
+    <b>Optional.</b> <TOPIC.affinity>
+    </parm>
+
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+page /order/bsys belief "Belief Orders" {
+    <title>
+
+    Each <term bsystem> consists of a 
+    set of beliefs on <term topic topics>, each consisting of a 
+    <term position> and an <term emphasis> on agreement or
+    disagreement with respect that position.  Every belief system
+    automatically contains a position and emphasis on every
+    topic that is created; the position defaults to "Ambivalent" and
+    the emphasis to "Neither".<p>
+
+    The following order is used to edit beliefs.<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+
+order BSYS:BELIEF:UPDATE "Update Belief" {
+    <b><term prep> Only.</b>  This order modifies
+    an existing belief in a <term bsystem>.<p>
+
+    <parmlist>
+    <parm bid "Belief ID">
+    <b>Required.</b>  A belief ID, which is an {<i>sid tid</i>} pair.
+    The <i>sid</i> is an system ID, and the <i>tid</i> is a 
+    <term topic> ID.
+    </parm>
+
+    <parm position "Position">
+    <b>Optional.</b> The system's <term position> on the topic, a
+    number from -1.0 to 1.0.  The symbolic constants defined in the
+    following table may also be used:<p>
+
+    <super ::simlib::qposition html>
+    </parm>
+
+    <parm emphasis "Emphasis is On">
+    <b>Optional.</b> The system's <term emphasis> on agreement or 
+    disagreement for the topic, a number from 0.0 to 1.0.  The 
+    symbolic constants defined in the following table should generally
+    be used.<p>
+
+    <super ::simlib::qemphasis html>
+    </parm>
+
+    </parmlist>
+}
+
+

@@ -1,0 +1,482 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    weekclock.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Tcltest test suite for projectlib(n) weekclock(n)
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+
+# Import tcltest(n)
+namespace import ::tcltest::*
+
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+source ../../lib/projectlib/pkgModules.tcl
+namespace import ::projectlib::*
+
+#-------------------------------------------------------------------
+# Set up the test environment
+ 
+proc setup {args} {
+    weekclock myclock {*}$args
+}
+
+proc cleanup {} {
+    myclock destroy
+}
+
+#-------------------------------------------------------------------
+# Creation
+
+test creation-1.1 {Default -week0} -setup {
+    setup
+} -body {
+    myclock cget -week0
+} -cleanup {
+    cleanup
+} -result {2012W01}
+
+test creation-1.2 {Default -tick0} -setup {
+    setup
+} -body {
+    myclock cget -tick0
+} -cleanup {
+    cleanup
+} -result {0}
+
+test creation-1.3 {Time normally starts at 0} -setup {
+    setup
+} -body {
+    myclock now
+} -cleanup {
+    cleanup
+} -result {0}
+
+test creation-1.4 {Time starts at -tick0} -setup {
+    setup -tick0 100
+} -body {
+    myclock now
+} -cleanup {
+    cleanup
+} -result {100}
+
+test creation-1.5 {Time string starts at -week0} -setup {
+    setup
+} -body {
+    myclock asString
+} -cleanup {
+    cleanup
+} -result {2012W01}
+
+#-------------------------------------------------------------------
+# advance
+
+test advance-1.1 {Error on non-integer} -setup {
+    setup
+} -body {
+    myclock advance now
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {expected integer ticks: "now"}
+
+test advance-1.2 {Error on negative} -setup {
+    setup
+} -body {
+    myclock advance -1
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {expected t >= 0, got "-1"}
+
+test advance-1.3 {Error on less than -tick0} -setup {
+    setup -tick0 100
+} -body {
+    myclock advance 99
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {expected t >= 100, got "99"}
+
+test advance-2.1 {Time can advance by ticks.} -setup {
+    setup
+} -body {
+    myclock advance 10
+    set a [myclock now]
+    myclock advance 20 
+    set b [myclock now]
+
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {10 20}
+
+test advance-2.2 {Time can advance to current time.} -setup {
+    setup
+} -body {
+    myclock advance 0
+    myclock now
+} -cleanup {
+    cleanup
+} -result {0}
+
+#-------------------------------------------------------------------
+# tick
+
+test tick-1.1 {advance time by one tick} -setup {
+    setup
+    myclock advance 9
+} -body {
+    myclock tick
+    myclock now
+} -cleanup {
+    cleanup
+} -result {10}
+
+#-------------------------------------------------------------------
+# reset
+
+test reset-1.1 {Resetting sets time back to 0} -setup {
+    setup
+} -body {
+    set t1 [myclock now]
+
+    myclock advance 60
+    set t2 [myclock now]
+
+    myclock reset
+    set t3 [myclock now]
+
+    list $t1 $t2 $t3
+} -cleanup {
+    cleanup
+} -result {0 60 0}
+
+test reset-1.2 {Resetting sets time back to -tick0} -setup {
+    setup -tick0 100
+} -body {
+    set t1 [myclock now]
+
+    myclock advance 160
+    set t2 [myclock now]
+
+    myclock reset
+    set t3 [myclock now]
+
+    list $t1 $t2 $t3
+} -cleanup {
+    cleanup
+} -result {100 160 100}
+
+#-------------------------------------------------------------------
+# now
+
+test now-1.1 {now + offset} -setup {
+    setup
+} -body {
+    myclock advance 60
+    list [myclock now] [myclock now 30] [myclock now -30]
+} -cleanup {
+    cleanup
+} -result {60 90 30}
+
+#-------------------------------------------------------------------
+# fromString
+
+test fromString-1.1 {fromString to ticks} -setup {
+    setup
+} -body {
+    myclock fromString 2012W05
+} -cleanup {
+    cleanup
+} -result {4}
+
+test fromString-1.2 {fromString to ticks, non-zero -tick0} -setup {
+    setup -tick0 100
+} -body {
+    # -week0 always corresponds to t=0, not to -tick0, so there
+    # should be no change.
+    myclock fromString 2012W05
+} -cleanup {
+    cleanup
+} -result {4}
+
+#-------------------------------------------------------------------
+# toString
+
+test toString-1.1 {ticks to string} -setup {
+    setup
+} -body {
+    myclock toString 10
+} -cleanup {
+    cleanup
+} -result {2012W11}
+
+test toString-1.2 {ticks to string, non-zero -tick0} -setup {
+    setup -tick0 5
+} -body {
+    # -week0 always corresponds to t=0, not to -tick0, so there
+    # should be no change.
+    myclock toString 10
+} -cleanup {
+    cleanup
+} -result {2012W11}
+
+#-------------------------------------------------------------------
+# mark set/get/names
+
+test mark-1.1 {no names initially} -setup {
+    setup
+} -body {
+    myclock mark names
+} -cleanup {
+    cleanup
+} -result {}
+
+test mark-1.2 {returns defined names} -setup {
+    setup
+} -body {
+    myclock mark set TEST1
+    myclock mark set TEST2
+    myclock mark names
+} -cleanup {
+    cleanup
+} -result {TEST1 TEST2}
+
+test mark-1.3 {can retrieve marked time.} -setup {
+    setup
+    myclock advance 10
+} -body {
+    myclock mark set TEST
+    myclock advance 20
+    myclock mark get TEST
+} -cleanup {
+    cleanup
+} -result {10}
+
+test mark-1.4 {marks are cleared on reset} -setup {
+    setup
+    myclock advance 10
+    myclock mark set TEST
+} -body {
+    myclock reset
+    myclock mark names
+} -cleanup {
+    cleanup
+} -result {}
+
+test mark-1.5 {can mark time with offset} -setup {
+    setup
+    myclock advance 10
+} -body {
+    myclock mark set TEST 2
+    myclock advance 20
+    myclock mark get TEST
+} -cleanup {
+    cleanup
+} -result {12}
+
+
+#-------------------------------------------------------------------
+# timespec
+
+test timespec-1.1 {invalid spec 1} -setup {
+    setup
+} -body {
+    myclock timespec validate NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid time spec "NONESUCH", base time should be "NOW", "T0", an integer tick, or a week string}
+
+test timespec-1.2 {invalid spec 2} -setup {
+    setup
+} -body {
+    myclock timespec validate NOW++10
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid time spec "NOW++10", should be <basetime><+/-><offset>}
+
+test timespec-1.3 {invalid spec 3, with marks} -setup {
+    setup
+} -body {
+    myclock mark set TEST1
+    myclock mark set TEST2
+    myclock timespec validate NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid time spec "NONESUCH", base time should be "NOW", "T0", "TEST1", "TEST2", an integer tick, or a week string}
+
+
+test timespec-2.1 {valid specs} -setup {
+    setup
+    myclock advance 10
+    myclock mark set THEN
+    myclock advance 30
+} -body {
+    set result [list]
+    foreach spec {
+        NOW
+        T0
+        10
+        +10
+        -10
+        NOW+10
+        NOW-10
+        T0+10
+        2012W30
+        2012W30-5
+        2012W30+5
+        THEN-5
+        THEN
+        THEN+5
+    } {
+        lappend result [myclock timespec validate $spec]
+    }
+
+    set result
+} -cleanup {
+    cleanup
+} -result {30 0 10 40 20 40 20 10 29 24 34 5 10 15}
+
+test timespec-2.2 {T0 == tick0} -setup {
+    setup -tick0 100
+} -body {
+    set result [myclock timespec validate T0]
+} -cleanup {
+    cleanup
+} -result {100}
+
+
+#-------------------------------------------------------------------
+# asString
+
+test asString-1.1 {asString for non-zero t.} -setup {
+    setup
+} -body {
+    myclock advance 10
+    list [myclock asString] [myclock asString 30]
+} -cleanup {
+    cleanup
+} -result {2012W11 2012W41}
+
+#-------------------------------------------------------------------
+# -week0
+
+test week0-1.1 {-week0 sets start time} -setup {
+    setup
+} -body {
+    myclock configure -week0 2010W20
+    list [myclock now 5] [myclock asString 5]
+} -cleanup {
+    cleanup
+} -result {5 2010W25}
+
+#-------------------------------------------------------------------
+# -tick0
+
+test tick0-1.1 {configuring -tick0 resets clock} -setup {
+    setup
+} -body {
+    myclock advance 10
+    myclock configure -tick0 100
+    myclock now
+} -cleanup {
+    cleanup
+} -result {100}
+
+#-------------------------------------------------------------------
+# delta
+
+test delta-1.1 {returns 0 on reset, -tick0 0} -setup {
+    setup
+    myclock reset
+} -body {
+    myclock delta
+} -cleanup {
+    cleanup
+} -result {0}
+
+test delta-1.2 {returns 0 on reset, -tick0 > 0} -setup {
+    setup -tick0 100
+    myclock reset
+} -body {
+    myclock delta
+} -cleanup {
+    cleanup
+} -result {0}
+
+
+test delta-2.1 {returns t, -tick0 0} -setup {
+    setup
+    myclock advance 100
+} -body {
+    myclock delta
+} -cleanup {
+    cleanup
+} -result {100}
+
+test delta-2.2 {returns t-tick0, -tick0 > 0} -setup {
+    setup -tick0 100
+    myclock advance 150
+} -body {
+    myclock delta
+} -cleanup {
+    cleanup
+} -result {50}
+
+#-------------------------------------------------------------------
+# checkpoint
+
+test checkpoint-1.1 {returns clock state} -setup {
+    setup
+    myclock configure -tick0 100 -week0 2013W15
+    myclock advance 110
+} -body {
+    myclock checkpoint
+} -cleanup {
+    cleanup
+} -result {{-tick0 100 -week0 2013W15} {t 110 week0 690 marks {}}}
+
+#-------------------------------------------------------------------
+# restore
+
+test restore-1.1 {restores clock state} -setup {
+    setup
+    myclock configure -tick0 100 -week0 2013W15
+    myclock advance 110
+} -body {
+    weekclock tempclock
+    tempclock restore [myclock checkpoint]
+    tempclock checkpoint
+} -cleanup {
+    tempclock destroy
+    cleanup
+} -result {{-tick0 100 -week0 2013W15} {t 110 week0 690 marks {}}}
+
+#-------------------------------------------------------------------
+# Cleanup
+
+cleanupTests

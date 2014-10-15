@@ -1,0 +1,191 @@
+<manpage {projectlib(n) enumx(n)} "Enumerated value definition type">
+
+<section SYNOPSIS>
+
+<pre>
+package require projectlib 1.0
+namespace import ::projectlib::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+enumx(n) is a replacement for the <xref marsutil(n)>
+<xref enum(n)> enumerated value definition type, implemented using 
+TclOO instead of Snit.  Each instance of
+the class defines an enumeration type: an ordered set of symbolic
+names, possibly with equivalent forms.  An enumx(n) type allows 
+symbolic names to be validated, and translated to their numeric indices
+and to equivalent forms.<p>
+
+An enumx(n) type can define any number of equivalent forms.<p>
+
+<subsection "Differences from enum(n)">
+
+This type differs from <xref enum(n)> in the following ways:<p>
+
+<ul>
+    <li> Short names can be translated into indices and equivalent forms, 
+         but not <i>vice versa</i>.  As <xref enum(n)> types were originally
+         used, the short names, long names, and indices were all equally valid 
+         in input, but we haven't made use of that in a long time.<p>
+
+    <li> The API has been streamlined; rarely used subcommands have been
+         eliminated.<p>
+
+    <li> A type can define any number of equivalent forms, rather than
+         just one kind, the long name.
+
+    <li> Because this type is implemented using TclOO, it's easy to add
+         type-specific subcommands using <code>oo::objdefine</code>.
+         (This was the original motivation for defining this new type.)<p>
+</ul>
+
+<subsection "Customization">
+
+Because an enumx(type) is a TclOO object, new subcommands
+can be added to it as object methods using <code>oo::objdefine</code>.  
+For convenience, the type constructor takes an <code>oo::objdefine</code>
+script as an optional argument.<p>
+
+<section COMMANDS>
+
+<deflist>
+
+<defitem "enumx create" {enumx create <i>name defdict</i> ?<i>custom</i>?}>
+
+<iref enumx create> defines a new enumeration definition type called
+<i>name</i>, which becomes a Tcl command defined in the current scope;
+<iref enumx create> returns the fully-qualified form of <i>name</i>.<p>
+
+If <i>custom</i> is given, it is an <code>oo::objdefine</code> script used
+to add type-specific subcommands to the new type.<p>
+
+The symbolic names and any equivalents are given by the
+<i>defdict</i>, which has the form:<p>
+
+<pre>
+name {form value ...}
+name {form value ...}
+</pre>
+
+For example, the following enumeration has two equivalent forms, 
+<code>longname</code> and <code>grade</code>:<p>
+
+<pre>
+enumx create MyEnum {
+    G  {longname "The Good" grade A}
+    B  {longname "The Bad"  grade C}
+    U  {longname "The Ugly" grade F}
+}
+</pre>
+
+Alternatively, the <i>defdict</i> can be the empty string, "", and
+values can be added later using the <iref add> subcommand.<p>
+
+A valid enumeration value is a symbolic name, regardless of case.
+The canonical form of the value has the case used in the <i>defdict</i>.<p>
+
+<b>Note:</b> It usual for all symbolic names to have the same equivalent
+forms, but this is not required.<p>
+
+</deflist>
+
+<section "INSTANCE COMMAND">
+
+Each enumx(n) type has the following subcommands (and may add others
+by subclassing or via <code>oo::objdefine</code>):<p>
+
+<deflist>
+
+<defitem add {<i>type</i> add <i>defdict</i>}>
+
+This command can add additional symbols to the enumeration, additional
+equivalent forms to existing symbols, and any combination of the two.
+Thus, the enumeration can be defined a little at a time.  The syntax of
+<i>defdict</i> is the same as for <iref enumx create>.<p>
+
+<defitem as {<i>type</i> as <i>form name</i>}>
+
+Returns the requested equivalent <i>form</i> of the symbolic <i>name</i>,
+or "" if it has none.<p>
+
+<defitem asdict {<i>type</i> asdict <i>form</i>}>
+
+Returns a dictionary of symbolic names and equivalent values of the given
+<i>form</i>.  If a given symbolic name lacks the requested form, the
+dictionary will contain the empty string for that name.<p>
+
+<defitem aslist {<i>type</i> aslist <i>form</i>}>
+
+Returns a list of equivalent values of the given <i>form</i>, one for each
+symbolic name in index order.  If a given symbolic name lacks the requested 
+form, the list will contain the empty string for that name.<p>
+
+<defitem defdict {<i>type</i> defdict}>
+
+Returns the enum's current definition dictionary, suitable for creating
+another enumeration.<p>
+
+<defitem forms {<i>type</i> forms}>
+
+Returns a list of the names of the equivalent forms defined by this
+type.<p>
+
+<defitem html {<i>type</i> html}>
+
+Returns an HTML snippet which documents the enumeration's names and
+equivalent forms, suitable for including in a man page.<p>
+
+<defitem index {<i>type</i> index <i>name</i>}>
+
+Returns the index of the given short <i>name</i>.
+If the name is not a valid short name, returns -1.  Name lookups are
+case-insensitive.<p>
+
+<defitem names {<i>type</i> names}>
+
+Returns a list of the symbolic names, in index order.<p>
+
+<defitem validate {<i>type</i> validate <i>name</i>}>
+
+Ensures that <i>name</i> is a valid symbolic name (ignoring case).  
+If it is, it is returned with its canonical case.  If it is not, 
+an error is thrown with an <code>-errorcode</code>
+of <b>INVALID</b>.<p>
+
+<defitem size {<i>type</i> size}>
+
+Returns the number of symbolic names in the enumerated type.  Given <i>n</i>
+symbols, the symbols are indexed from 0 to <i>n</i>-1.<p>
+
+
+</deflist>
+
+<section "SEE ALSO">
+
+<xref enum(n)>.
+
+<section ENVIRONMENT>
+
+enumx(n) requires Tcl 8.5 or later, plus TclOO.
+
+To use enumx(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the projectlib(n)
+library directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+

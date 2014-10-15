@@ -1,0 +1,302 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    enumx.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Tcltest test suite for projectlib(n) enumx(n)
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+
+# Import tcltest(n)
+namespace import ::tcltest::*
+ 
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+source ../../lib/projectlib/pkgModules.tcl
+namespace import ::projectlib::*
+
+#-------------------------------------------------------------------
+# Set up the test environment
+ 
+proc pprint {text} {
+    return "\n$text"
+}
+
+enumx create goodness {
+    VG {longname "Very Good" grade A}
+    G  {longname "Good"      grade B}
+    N  {longname "Neutral"   grade C}
+    B  {longname "Bad"       grade D}
+    VB {longname "Very Bad"  grade F}
+}
+
+enumx create badness {}
+
+
+# No equivalent forms
+enumx create noforms {
+    A {}
+    B {}
+    C {}
+}
+
+#-------------------------------------------------------------------
+# validate
+
+test validate-1.1 {valid input} -body {
+    goodness validate VG
+} -result {VG}
+
+test validate-1.2 {case is irrelevant to short name} -body {
+    goodness validate "vg"
+} -result {VG}
+
+test validate-1.3 {invalid input} -body {
+    goodness validate VVG
+} -returnCodes {
+    error
+} -result {invalid value "VVG", should be one of: VG, G, N, B, VB}
+
+
+test validate-2.1 {invalid input yields -errorcode INVALID} -body {
+    catch {goodness validate VVG} result opts
+    dict get $opts -errorcode
+} -result {INVALID}
+
+#-------------------------------------------------------------------
+# index
+
+test index-1.1 {index: from name} -body {
+    list \
+        [goodness index VB] \
+        [goodness index B] \
+        [goodness index N] \
+        [goodness index G] \
+        [goodness index VG]
+} -result {4 3 2 1 0}
+
+test index-1.2 {index: case-insensitive matching} -body {
+    goodness index vb
+} -result {4}
+
+#-------------------------------------------------------------------
+# names
+
+test names-1.1 {names: nominal case} -body {
+    goodness names
+} -result {VG G N B VB}
+
+#-------------------------------------------------------------------
+# forms
+
+test forms-1.1 {No equivalent forms} -body {
+    noforms forms
+} -result {}
+
+test forms-1.2 {equivalent forms} -body {
+    goodness forms
+} -result {longname grade}
+
+#-------------------------------------------------------------------
+# defdict
+
+test defdict-1.1 {Empty defdict} -body {
+    badness defdict
+} -result {}
+
+test defdict-1.2 {Non-empty defdict} -body {
+    goodness defdict
+} -result {VG {longname {Very Good} grade A} G {longname Good grade B} N {longname Neutral grade C} B {longname Bad grade D} VB {longname {Very Bad} grade F}}
+
+#-------------------------------------------------------------------
+# add
+#
+# Note that "add" is used in the constructor as well.
+
+test add-1.1 {add: add symbols to existing enum} -setup {
+    enumx create myenum {
+        A {longname Aaa}
+        B {longname Bbb}
+    }
+} -body {
+    myenum add {
+        C {longname Ccc}
+        D {longname Ddd}
+    }
+    myenum defdict
+} -cleanup {
+    myenum destroy
+} -result {A {longname Aaa} B {longname Bbb} C {longname Ccc} D {longname Ddd}}
+
+test add-1.2 {add: add forms to existing enum} -setup {
+    enumx create myenum {
+        A {longname Aaa}
+        B {longname Bbb}
+    }
+} -body {
+    myenum add {
+        A {tag a}
+        B {tag b}
+    }
+    myenum defdict
+} -cleanup {
+    myenum destroy
+} -result {A {longname Aaa tag a} B {longname Bbb tag b}}
+
+test add-1.3 {no equivalents} -setup {
+    enumx create myenum {
+        A {}
+        B {}
+        C {}
+        D {}
+    }
+} -body {
+    myenum defdict 
+} -cleanup {
+    myenum destroy
+} -result {A {} B {} C {} D {}}
+
+
+#-------------------------------------------------------------------
+# size 
+
+test size-1.1 {size: empty and full sizes} -body {
+    list [goodness size] [badness size]
+} -result {5 0}
+
+#-------------------------------------------------------------------
+# as
+
+test as-1.1 {return as form} -body {
+    goodness as longname VG
+} -result {Very Good}
+
+test as-1.2 {unknown form} -body {
+    goodness as NONESUCH VG
+} -result {}
+
+test as-1.3 {unknown name} -body {
+    goodness as longname VVG
+} -result {}
+
+#-------------------------------------------------------------------
+# aslist
+
+test aslist-1.1 {return list of equivalents} -body {
+    goodness aslist grade 
+} -result {A B C D F}
+
+test aslist-1.2 {return list of equivalents with gaps} -setup {
+    enumx create myenum {
+        A {}
+        B {}
+        C {}
+        D {}
+    }
+
+    myenum add {
+        A {number 5}
+        C {number 10}
+    }
+} -body {
+    myenum aslist number 
+} -cleanup {
+    myenum destroy
+} -result {5 {} 10 {}}
+
+#-------------------------------------------------------------------
+# asdict
+
+test asdict-1.1 {return dict of names and equivalents} -body {
+    goodness asdict grade 
+} -result {VG A G B N C B D VB F}
+
+test asdict-1.2 {return dict of equivalents with gaps} -setup {
+    enumx create myenum {
+        A {}
+        B {}
+        C {}
+        D {}
+    }
+
+    myenum add {
+        A {number 5}
+        C {number 10}
+    }
+} -body {
+    myenum asdict number 
+} -cleanup {
+    myenum destroy
+} -result {A 5 B {} C 10 D {}} 
+
+#-------------------------------------------------------------------
+# html
+
+test html-1.1 {Html docs} -body {
+    pprint [goodness html]
+} -result {
+<table>
+<tr>
+<th align="right">Index</th>
+<th align="left">Name</th>
+<th align="left">longname</th>
+<th align="left">grade</th>
+</tr>
+<tr>
+<td valign="baseline" align="center">0</td>
+<td valign="baseline" align="left"><tt>VG</tt></td>
+<td valign="baseline" align="left"><tt>Very Good</tt></td>
+<td valign="baseline" align="left"><tt>A</tt></td>
+</tr>
+<tr>
+<td valign="baseline" align="center">1</td>
+<td valign="baseline" align="left"><tt>G</tt></td>
+<td valign="baseline" align="left"><tt>Good</tt></td>
+<td valign="baseline" align="left"><tt>B</tt></td>
+</tr>
+<tr>
+<td valign="baseline" align="center">2</td>
+<td valign="baseline" align="left"><tt>N</tt></td>
+<td valign="baseline" align="left"><tt>Neutral</tt></td>
+<td valign="baseline" align="left"><tt>C</tt></td>
+</tr>
+<tr>
+<td valign="baseline" align="center">3</td>
+<td valign="baseline" align="left"><tt>B</tt></td>
+<td valign="baseline" align="left"><tt>Bad</tt></td>
+<td valign="baseline" align="left"><tt>D</tt></td>
+</tr>
+<tr>
+<td valign="baseline" align="center">4</td>
+<td valign="baseline" align="left"><tt>VB</tt></td>
+<td valign="baseline" align="left"><tt>Very Bad</tt></td>
+<td valign="baseline" align="left"><tt>F</tt></td>
+</tr>
+</table>
+}
+
+
+#-------------------------------------------------------------------
+# Cleanup
+
+cleanupTests
+
+
+
+
+
+
+

@@ -1,0 +1,555 @@
+poly {
+    id      1
+    polyset Afghan_national.kml
+    setnum  1
+    name    Afghanistan
+    ptype   National
+    children {Badakhshan Badghis Baghlan Balkh Bamyan Farah Faryab Ghazni 
+        Ghor Hilmand Hirat Jawzjan Kabul Kandahar Kapisa Khost Kunar Kunduz 
+        Laghman Logar Wardak Nangarhar Nimroz Nuristan Paktya Paktika Parwan
+        Samangan Sari_Pul Takhar Uruzgan Zabul}
+    parent  {}
+}
+
+poly {
+    id      1
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Badakhshan
+    ptype   Provincial
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      2 
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Takhar
+    ptype   Provincial
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      3 
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Jawzjan
+    ptype   Provincial
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      4
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Balkh
+    ptype   Provincial
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      5 
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Kunduz
+    ptype   Provincia
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      6 
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Faryab
+    ptype   Provincial
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      7 
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Samangan
+    ptype   Provincial
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      8 
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Baghlan
+    ptype   Provincial
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      9
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Sari_Pul
+    ptype   Provincial
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      10
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Nuristan
+    ptype   Provincial
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      11
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Badghis
+    ptype   Provincial
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      12 
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Parwan
+    ptype   Provincial
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      13 
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Hirat
+    ptype   Provincial
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      14
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Kunar
+    ptype   Provincial
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      15
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Bamyan
+    ptype   Provincial
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      16
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Ghor
+    ptype   Provincial
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      17
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Laghman
+    ptype   Provincial
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      18
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Kapisa
+    ptype   Provincial
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      19
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Kabul
+    ptype   Provincial
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      20
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Wardak
+    ptype   Provincial
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      21
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Nangarhar
+    ptype   Provincial
+    children {Achin Bati_Kot Chaparhar Dara_I_Nur Dih_Bala Dur_Baba Goshta
+        Hisarak Jalalabad Kama Khogyani Kuz_Kunar Lal_Pur Muhmand_Dara 
+        Nazyan Pachir_Wa_Agam Rodat Sherzad Shiwar Surkh_Rod} 
+    parent  Afghanistan
+}
+
+poly {
+    id      22
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Uruzgan
+    ptype   Provincial
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      23
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Logar
+    ptype   Provincial
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      24
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Paktya
+    ptype   Provincial
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      25
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Ghazni
+    ptype   Provincial
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      26
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Khost
+    ptype   Provincial
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      27
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Farah
+    ptype   Provincial
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      28
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Paktika
+    ptype   Provincial
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      29
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Hilmand
+    ptype   Provincial
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      30
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Zabul
+    ptype   Provincial
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      31
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Kandahar
+    ptype   Provincial
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      32
+    polyset Afghan_provinces.kml
+    setnum  2
+    name    Nimroz
+    ptype   Provincial
+    children {} 
+    parent  Afghanistan
+}
+
+poly {
+    id      1
+    polyset Nangarhar_districts.kml
+    setnum  3
+    name    Achin
+    ptype   District
+    children {} 
+    parent  Nangarhar
+}
+
+poly {
+    id      2
+    polyset Nangarhar_districts.kml
+    setnum  3
+    name    Bati_Kot
+    ptype   District
+    children {} 
+    parent  Nangarhar
+}
+
+poly {
+    id      3
+    polyset Nangarhar_districts.kml
+    setnum  3
+    name    Chaparhar
+    ptype   District
+    children {} 
+    parent  Nangarhar
+}
+
+poly {
+    id      4
+    polyset Nangarhar_districts.kml
+    setnum  3
+    name    Dara_I_Nur
+    ptype   District
+    children {} 
+    parent  Nangarhar
+}
+
+poly {
+    id      5
+    polyset Nangarhar_districts.kml
+    setnum  3
+    name    Dih_Bala
+    ptype   District
+    children {} 
+    parent  Nangarhar
+}
+
+poly {
+    id      6
+    polyset Nangarhar_districts.kml
+    setnum  3
+    name    Dur_Baba
+    ptype   District
+    children {} 
+    parent  Nangarhar
+}
+
+poly {
+    id      7
+    polyset Nangarhar_districts.kml
+    setnum  3
+    name    Goshta
+    ptype   District
+    children {} 
+    parent  Nangarhar
+}
+
+poly {
+    id      8
+    polyset Nangarhar_districts.kml
+    setnum  3
+    name    Hisarak
+    ptype   District
+    children {} 
+    parent  Nangarhar
+}
+
+poly {
+    id      9
+    polyset Nangarhar_districts.kml
+    setnum  3
+    name    Jalalabad
+    ptype   District
+    children {} 
+    parent  Nangarhar
+}
+
+poly {
+    id      10
+    polyset Nangarhar_districts.kml
+    setnum  3
+    name    Kama
+    ptype   District
+    children {} 
+    parent  Nangarhar
+}
+
+poly {
+    id      11
+    polyset Nangarhar_districts.kml
+    setnum  3
+    name    Khogyani
+    ptype   District
+    children {} 
+    parent  Nangarhar
+}
+
+poly {
+    id      12
+    polyset Nangarhar_districts.kml
+    setnum  3
+    name    Kuz_Kunar
+    ptype   District
+    children {} 
+    parent  Nangarhar
+}
+
+poly {
+    id      13
+    polyset Nangarhar_districts.kml
+    setnum  3
+    name    Lal_Pur
+    ptype   District
+    children {} 
+    parent  Nangarhar
+}
+
+poly {
+    id      14
+    polyset Nangarhar_districts.kml
+    setnum  3
+    name    Muhmand_Dara
+    ptype   District
+    children {} 
+    parent  Nangarhar
+}
+
+poly {
+    id      15
+    polyset Nangarhar_districts.kml
+    setnum  3
+    name    Nazyan
+    ptype   District
+    children {} 
+    parent  Nangarhar
+}
+
+poly {
+    id      16
+    polyset Nangarhar_districts.kml
+    setnum  3
+    name    Pachir_Wa_Agam
+    ptype   District
+    children {} 
+    parent  Nangarhar
+}
+
+poly {
+    id      17
+    polyset Nangarhar_districts.kml
+    setnum  3
+    name    Rodat
+    ptype   District
+    children {} 
+    parent  Nangarhar
+}
+
+poly {
+    id      18
+    polyset Nangarhar_districts.kml
+    setnum  3
+    name    Sherzad
+    ptype   District
+    children {} 
+    parent  Nangarhar
+}
+
+poly {
+    id      19
+    polyset Nangarhar_districts.kml
+    setnum  3
+    name    Shiwar
+    ptype   District
+    children {} 
+    parent  Nangarhar
+}
+
+poly {
+    id      20
+    polyset Nangarhar_districts.kml
+    setnum  3
+    name    Surkh_Rod
+    ptype   District
+    children {} 
+    parent  Nangarhar
+}
+
+poly {
+    id      1
+    polyset Pakistan_national.kml
+    setnum  4 
+    name    Pakistan
+    ptype   National
+    children {}
+    parent  {}
+}
+
+poly {
+    id      1
+    polyset Tajikistan_national.kml
+    setnum  5 
+    name    Tajikistan
+    ptype   National
+    children {}
+    parent  {}
+}
+

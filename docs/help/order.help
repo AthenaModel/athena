@@ -1,0 +1,134 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    order.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: Orders
+#
+#    This file is included into athena.help.
+#
+#    Orders have help pages with names like
+#
+#        /order/<token1>/<token2>?/...?
+#
+#    E.g, the CIVGROUP:CREATE order has the page
+#
+#       /order/civgroup/create
+#
+#    In some cases, the implied hierarchy in the order names is misleading;
+#    for example, CIVGROUP:UPDATE:MULTI has the page
+#
+#       /order/civgroup/update:multi
+#
+#    It would better if the "UPDATE:MULTI" orders were renamed, but for
+#    now, that's how it is.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+
+page / order "Orders" {
+    <title>
+    The analyst communicates with Athena by means of <i>orders</i>.
+    Most orders are sent by means of an order dialog; some are sent
+    implicitly.  For example, dragging a unit from one place to
+    another on the map implicitly sends the <cref /order/unit/move> 
+    order.  Order dialogs can be invoked in a number of ways, e.g., by
+    selecting an order from the <cref /menu/orders>.<p>
+
+    Orders are grouped in the following categories:<p>
+
+    <childlinks>
+}
+
+# order name title text
+#
+# name     The order's name (but see below)
+# title    The order's title (e.g., menu item text)
+# text     The documentation of the order.
+#
+# Defines a help page for one order.  The order hierarchy is determined
+# automatically using the ":"'s in the order name.
+#
+# Sometimes a colon shouldn't add a new level to the order hierarchy,
+# e.g., orders FOO:UPDATE and FOO:UPDATE:MULTI are at the same level.
+# In this case, enter the latter as "FOO:UPDATE+MULTI".
+
+proc order {name title text} {
+    lassign [name2path /order : $name] parent slug
+    set slug [string map {+ :} $slug]
+    set name [string map {+ :} $name]
+
+    set text "<order.header [list $title]>\n\n$text"
+    page $parent $slug $name $text
+}
+
+# Formats the title for an order page
+macro order.header {otitle} {
+    |<--
+    [mktitle normal "" $otitle "(<tt>[pageinfo title]</tt>)"]
+}
+
+macro parm.identifier {entity example} {
+    |<--
+    The ID for the new $entity.  It may
+    contain letters and digits, and must begin with a letter.  It may
+    not be the same as the ID or long name of any existing
+    neighborhood, group, etc.  It should usually be short, between 2
+    and 8 characters in length, e.g., <b>$example</b>.
+}
+
+macro parm.longname {entity example} {
+    |<--
+    A short human-readable name for the
+    $entity, e.g., "$example".  If left empty on creation, the long 
+    name defaults to the ${entity} ID.
+}
+
+macro parm.ids {entity} {
+    |<--
+    The IDs of two or more $entity entities, as selected in the GUI.
+}
+
+
+#=======================================================================
+# Order Files
+
+include order_absit.help
+include order_actor.help
+include order_block.help
+include order_bookmark.help
+include order_bsys.help
+include order_cap.help
+include order_group.help      ;# Macros for *GROUP:* orders.
+include order_civgroup.help
+include order_condition.help
+include order_coop.help
+include order_curse.help
+include order_econ.help
+include order_frcgroup.help
+include order_hrel.help
+include order_inject.help
+include order_iom.help
+include order_mad.help
+include order_map.help
+include order_parm.help       ;# Sort as "Model Parameter"
+include order_plant.help
+include order_nbhood.help
+include order_nbrel.help
+include order_orggroup.help
+include order_payload.help
+include order_sat.help
+include order_hook.help       ;# Sort as "Semantic Hook"
+include order_sim.help
+include order_strategy.help
+include order_tactic.help
+include order_unit.help
+include order_vrel.help
+
+
+

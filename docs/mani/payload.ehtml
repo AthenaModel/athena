@@ -1,0 +1,79 @@
+<manpage {payload(i)} "Payload Interface">
+
+<section SYNOPSIS>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+An Info Operations Message (IOM) payload is an action attached to an
+IOM that affects one or more attitudes, e.g., satisfaction levels or
+relationships. Each payload type is defined by a Snit type
+ensemble within the ::payload:: namespace, and is created using the
+payload(sim) "type define" subcommand.  For example, the COOP
+payload is defined by code that looks like
+
+<pre>
+payload type define COOP {g mag} {
+    # Definition script
+}
+</pre>
+
+resulting in a type ensemble called <code>payload::COOP</code>.  The
+definition script is simply a Snit type ensemble definition script.<p>
+
+Every payload ensemble must implement the subcommands defined
+in this interface; it may also define other commands as needed.<p>
+Thus, a payload is essentially a special kind of module.<p>
+
+In addition, every payload type must provide two orders,
+PAYLOAD:<i>type</i>:CREATE and PAYLOAD:<i>type</i>:UPDATE.<p>
+
+<section "SUBCOMMANDS">
+
+Each <xref payload(i)> ensemble must implement at least the following
+subcommands.  Note that they all take the "payload parameter
+dictionary", or <i>tdict</i>, as their first argument.  This is simply a
+row from the payloads table in the form of a dictionary.<p>
+
+<deflist subcommands>
+
+<defitem narrative {narrative <i>tdict</i>}>
+
+Returns a human-readable narrative description of the payload.  The
+description should include all of the payload's parameters, so that the
+narrative is a complete description of the payload.<p>
+
+<defitem check {check <i>tdict</i>}>
+
+Sanity-checks the payload's parameters.  Returns a human-readable
+string describing any errors that are found, and the empty string
+otherwise.  If a group referenced by a payload is deleted, for
+example, the error message might be "Group no longer exists."<p>
+
+Many payload parameters can be valid when the payload is created but
+become invalid later, especially during scenario preparation.  For
+example, a payload might effect the relationship of civilian groups to
+a particular force group.  If the force group is then deleted, then
+the payload is no longer valid.<p>
+
+Checking for such errors as they occur is tedious and error-prone, and
+inconvenient for the user.  Instead, we simply sanity-check all
+payloads at appropriate times, such as when the scenario is locked.
+We make any problems known to the user, and allow them to fix them.<p>
+
+
+</deflist subcommands>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original interface.
+
+</manpage>
+
+
+

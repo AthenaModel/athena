@@ -1,0 +1,1134 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    030-commands.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    executive(sim) tests: commands
+#
+#    This test suite tests the executive(sim) executive commands.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    proc setup {} {
+        ted create NB1 JOE
+    }
+
+    # Clean up after a test
+    proc cleanup {} {
+        executive reset
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # block add
+
+    test block_add-1.1 {unknown agent} -setup {
+        setup
+    } -body {
+        ted sendex -error block add NONESUCH
+    } -cleanup {
+        cleanup
+    } -match glob -result {*Invalid agent,*}
+
+    test block_add-1.2 {returns block_id} -setup {
+        setup
+    } -body {
+        set id [ted sendex block add JOE]
+        expr {$id == [ted sendex last block]}
+    } -cleanup {
+        cleanup
+    } -result {1}
+    
+    test block_add-1.3 {creates default block} -setup {
+        setup
+    } -body {
+        set id [ted sendex block add JOE]
+        [block get $id] get intent
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test block_add-1.4 {can use options} -setup {
+        setup
+    } -body {
+        set id [ted sendex block add JOE -intent "New Block"]
+        [block get $id] get intent
+    } -cleanup {
+        cleanup
+    } -result {New Block}
+
+    test block_add-1.5 {can set state} -setup {
+        setup
+    } -body {
+        set id [ted sendex block add JOE -state disabled]
+        [block get $id] get state
+    } -cleanup {
+        cleanup
+    } -result {disabled}
+
+    #-------------------------------------------------------------------
+    # block cget
+
+    test block_cget-1.1 {unknown block id} -setup {
+        setup
+    } -body {
+        ted sendex -error block cget NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {Invalid block ID: "NONESUCH"}
+
+    test block_cget-1.2 {retrieve data for specific block} -setup {
+        setup
+    } -body {
+        set B [ted addblock JOE intent "block_cget-1.2"]
+        ted sendex block cget [$B id] -intent
+    } -cleanup {
+        cleanup
+    } -result {block_cget-1.2}
+
+    test block_cget-1.3 {can retrieve state} -setup {
+        setup
+    } -body {
+        set B [ted addblock JOE intent "block_cget-1.3"]
+        $B configure -state disabled
+        ted sendex block cget [$B id] -state
+    } -cleanup {
+        cleanup
+    } -result {disabled}
+
+    test block_cget-1.4 {can retrieve data for last block} -setup {
+        setup
+    } -body {
+        ted addblock JOE intent "A"
+        ted addblock JOE intent "B"
+        ted sendex block cget - -intent
+    } -cleanup {
+        cleanup
+    } -result {B}
+
+    test block_cget-1.5 {can retrieve all data} -setup {
+        setup
+    } -body {
+        ted addblock JOE intent "A"
+        ted pdicts [ted sendex block cget -] 
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        -agent      JOE
+        -block_id   3
+        -cmode      ALL
+        -conditions {}
+        -emode      ALL
+        -intent     A
+        -once       0
+        -onlock     0
+        -state      normal
+        -t1         {}
+        -t2         {}
+        -tactics    {}
+        -tmode      ALWAYS
+    }
+
+    #-------------------------------------------------------------------
+    # block configure
+
+    test block_configure-1.1 {unknown block id} -setup {
+        setup
+    } -body {
+        ted sendex -error block configure NONESUCH -intent "My block"
+    } -cleanup {
+        cleanup
+    } -match glob -result {*Invalid block ID: "NONESUCH"*}
+
+    test block_configure-1.2 {set data for specific block} -setup {
+        setup
+    } -body {
+        set B1 [ted addblock JOE]
+        set B2 [ted addblock JOE]
+
+        ted sendex block configure [$B1 id] -intent "New intent"
+        $B1 get intent
+    } -cleanup {
+        cleanup
+    } -result {New intent}
+
+    test block_configure-1.3 {can set state} -setup {
+        setup
+    } -body {
+        set B [ted addblock JOE]
+        ted sendex block configure [$B id] -state disabled
+        $B get state
+    } -cleanup {
+        cleanup
+    } -result {disabled}
+
+    test block_configure-1.4 {can set data for last block} -setup {
+        setup
+    } -body {
+        set B1 [ted addblock JOE]
+        set B2 [ted addblock JOE]
+        ted sendex block configure - -intent "New intent"
+        $B2 get intent
+    } -cleanup {
+        cleanup
+    } -result {New intent}
+
+    #-------------------------------------------------------------------
+    # condition add
+
+    test condition_add-1.1 {unknown block id} -setup {
+        setup
+    } -body {
+        ted sendex -error condition add NONESUCH EXPR
+    } -cleanup {
+        cleanup
+    } -match glob -result {*Invalid block ID*}
+
+    test condition_add-1.2 {returns condition_id} -setup {
+        setup
+        set B1 [ted addblock JOE]
+    } -body {
+        set id [ted sendex condition add [$B1 id] EXPR]
+        expr {$id == [ted sendex last condition]}
+    } -cleanup {
+        cleanup
+    } -result {1}
+    
+    test condition_add-1.3 {creates default condition} -setup {
+        setup
+        set B1 [ted addblock JOE]
+    } -body {
+        set id [ted sendex condition add [$B1 id] EXPR]
+        [condition get $id] get metflag
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test condition_add-1.4 {can use options} -setup {
+        setup
+        set B1 [ted addblock JOE]
+    } -body {
+        set id [ted sendex condition add [$B1 id] EXPR -expression "1 + 1 == 2"]
+        [condition get $id] get expression
+    } -cleanup {
+        cleanup
+    } -result {1 + 1 == 2}
+
+    test condition_add-1.5 {can set state} -setup {
+        setup
+        set B1 [ted addblock JOE]
+    } -body {
+        set id [ted sendex condition add [$B1 id] EXPR -state disabled]
+        [condition get $id] get state
+    } -cleanup {
+        cleanup
+    } -result {disabled}
+
+
+    test condition_add-1.5 {can add to last block} -setup {
+        setup
+        set B1 [ted addblock JOE]
+        set B2 [ted addblock JOE]
+    } -body {
+        set id [ted sendex condition add - EXPR -expression {1 == 1}]
+        [$B2 conditions end] get expression        
+    } -cleanup {
+        cleanup
+    } -result {1 == 1}
+
+    #-------------------------------------------------------------------
+    # condition cget
+
+    test condition_cget-1.1 {unknown condition id} -setup {
+        setup
+    } -body {
+        ted sendex -error condition cget NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {Invalid condition ID: "NONESUCH"}
+
+    test condition_cget-1.2 {retrieve data for specific condition} -setup {
+        setup
+        set B1 [ted addblock JOE]
+        set C1 [ted addcondition $B1 EXPR expression "1 + 1 == 2"]
+    } -body {
+        ted sendex condition cget [$C1 id] -expression
+    } -cleanup {
+        cleanup
+    } -result {1 + 1 == 2}
+
+    test condition_cget-1.3 {can retrieve state} -setup {
+        setup
+        set B1 [ted addblock JOE]
+        set C1 [ted addcondition $B1 EXPR]
+        $C1 configure -state disabled
+    } -body {
+        ted sendex condition cget [$C1 id] -state
+    } -cleanup {
+        cleanup
+    } -result {disabled}
+
+    test condition_cget-1.4 {can retrieve data for last condition} -setup {
+        setup
+        set B1 [ted addblock JOE]
+        set C1 [ted addcondition $B1 EXPR]
+        set C2 [ted addcondition $B1 EXPR]
+        $C2 configure -expression {1 == 1}
+    } -body {
+        ted sendex condition cget - -expression
+    } -cleanup {
+        cleanup
+    } -result {1 == 1}
+
+    test condition_cget-1.5 {can retrieve all data} -setup {
+        setup
+        set B1 [ted addblock JOE]
+        set C1 [ted addcondition $B1 EXPR expression "1 + 1 == 2"]
+    } -body {
+        ted pdicts [ted sendex condition cget [$C1 id]]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        -agent        JOE
+        -condition_id 4
+        -expression   {1 + 1 == 2}
+        -narrative    {Expression: 1 + 1 == 2}
+        -parent       3
+        -state        normal
+        -typename     EXPR
+    }
+
+    #-------------------------------------------------------------------
+    # condition configure
+
+    test condition_configure-1.1 {unknown condition id} -setup {
+        setup
+    } -body {
+        ted sendex -error condition configure NONESUCH -expression "My condition"
+    } -cleanup {
+        cleanup
+    } -match glob -result {*Invalid condition ID: "NONESUCH"*}
+
+    test condition_configure-1.2 {set data for specific condition} -setup {
+        setup
+        set B1 [ted addblock JOE]
+        set C1 [ted addcondition $B1 EXPR]
+        set C2 [ted addcondition $B1 EXPR]
+    } -body {
+        ted sendex condition configure [$C1 id] -expression "1 == 2"
+        $C1 get expression
+    } -cleanup {
+        cleanup
+    } -result {1 == 2}
+
+    test condition_configure-1.3 {can set state} -setup {
+        setup
+        set B1 [ted addblock JOE]
+        set C1 [ted addcondition $B1 EXPR]
+        set C2 [ted addcondition $B1 EXPR]
+    } -body {
+        ted sendex condition configure [$C1 id] -state disabled
+        $C1 get state
+    } -cleanup {
+        cleanup
+    } -result {disabled}
+
+    test condition_configure-1.4 {can set data for last condition} -setup {
+        setup
+        set B1 [ted addblock JOE]
+        set C1 [ted addcondition $B1 EXPR]
+        set C2 [ted addcondition $B1 EXPR]
+    } -body {
+        ted sendex condition configure - -expression {2 + 2 == 4}
+        $C2 get expression
+    } -cleanup {
+        cleanup
+    } -result {2 + 2 == 4}
+
+    #-------------------------------------------------------------------
+    # last *
+
+    test last-1.1 {last block: none} -setup {
+        setup
+    } -body {
+        ted sendex -error last block
+    } -cleanup {
+        cleanup
+    } -result {last block: no blocks have been created.}
+
+    test last-1.2 {last block: some} -setup {
+        setup
+        ted addblock JOE
+        set B [ted addblock JOE]
+    } -body {
+        set last [ted sendex last block]
+        expr {[$B id] == $last}
+    } -cleanup {
+        cleanup
+    } -result {1}
+ 
+    test last-2.1 {last condition: none} -setup {
+        setup
+    } -body {
+        ted sendex -error last condition
+    } -cleanup {
+        cleanup
+    } -result {last condition: no conditions have been created.}
+
+    test last-2.2 {last condition: some} -setup {
+        setup
+        set B [ted addblock JOE]
+
+        ted addcondition $B EXPR
+        set C [ted addcondition $B EXPR]
+    } -body {
+        set last [ted sendex last condition]
+        expr {[$C id] == $last}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    # TBD: last-3.* is for [last ensit]
+
+    # TBD: last-4.* is for [last mad]
+
+    test last-5.1 {last tactic: none} -setup {
+        setup
+    } -body {
+        ted sendex -error last tactic
+    } -cleanup {
+        cleanup
+    } -result {last tactic: no tactics have been created.}
+
+    test last-5.2 {last tactic: some} -setup {
+        setup
+        set B [ted addblock JOE]
+
+        ted addtactic $B SIGEVENT
+        set T [ted addtactic $B SIGEVENT]
+    } -body {
+        set last [ted sendex last tactic]
+        expr {[$T id] == $last}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    #-------------------------------------------------------------------
+    # tactic add
+
+    test tactic_add-1.1 {unknown block id} -setup {
+        setup
+    } -body {
+        ted sendex -error tactic add NONESUCH SIGEVENT
+    } -cleanup {
+        cleanup
+    } -match glob -result {*Invalid block ID*}
+
+    test tactic_add-1.2 {returns tactic_id} -setup {
+        setup
+        set B1 [ted addblock JOE]
+    } -body {
+        set id [ted sendex tactic add [$B1 id] SIGEVENT]
+        expr {$id == [ted sendex last tactic]}
+    } -cleanup {
+        cleanup
+    } -result {1}
+    
+    test tactic_add-1.3 {creates default tactic} -setup {
+        setup
+        set B1 [ted addblock JOE]
+    } -body {
+        set id [ted sendex tactic add [$B1 id] SIGEVENT]
+        [tactic get $id] get msg
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test tactic_add-1.4 {can use options} -setup {
+        setup
+        set B1 [ted addblock JOE]
+    } -body {
+        set id [ted sendex tactic add [$B1 id] SIGEVENT -msg "1 + 1 == 2"]
+        [tactic get $id] get msg
+    } -cleanup {
+        cleanup
+    } -result {1 + 1 == 2}
+
+    test tactic_add-1.5 {can set state} -setup {
+        setup
+        set B1 [ted addblock JOE]
+    } -body {
+        set id [ted sendex tactic add [$B1 id] SIGEVENT -state disabled]
+        [tactic get $id] get state
+    } -cleanup {
+        cleanup
+    } -result {disabled}
+
+
+    test tactic_add-1.5 {can add to last block} -setup {
+        setup
+        set B1 [ted addblock JOE]
+        set B2 [ted addblock JOE]
+    } -body {
+        set id [ted sendex tactic add - SIGEVENT -msg {1 == 1}]
+        [$B2 tactics end] get msg        
+    } -cleanup {
+        cleanup
+    } -result {1 == 1}
+
+    #-------------------------------------------------------------------
+    # tactic cget
+
+    test tactic_cget-1.1 {unknown tactic id} -setup {
+        setup
+    } -body {
+        ted sendex -error tactic cget NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {Invalid tactic ID: "NONESUCH"}
+
+    test tactic_cget-1.2 {retrieve data for specific tactic} -setup {
+        setup
+        set B1 [ted addblock JOE]
+        set T1 [ted addtactic $B1 SIGEVENT msg "1 + 1 == 2"]
+    } -body {
+        ted sendex tactic cget [$T1 id] -msg
+    } -cleanup {
+        cleanup
+    } -result {1 + 1 == 2}
+
+    test tactic_cget-1.3 {can retrieve state} -setup {
+        setup
+        set B1 [ted addblock JOE]
+        set T1 [ted addtactic $B1 SIGEVENT]
+        $T1 configure -state disabled
+    } -body {
+        ted sendex tactic cget [$T1 id] -state
+    } -cleanup {
+        cleanup
+    } -result {disabled}
+
+    test tactic_cget-1.4 {can retrieve data for last tactic} -setup {
+        setup
+        set B1 [ted addblock JOE]
+        set T1 [ted addtactic $B1 SIGEVENT]
+        set T2 [ted addtactic $B1 SIGEVENT]
+        $T2 configure -msg {1 == 1}
+    } -body {
+        ted sendex tactic cget - -msg
+    } -cleanup {
+        cleanup
+    } -result {1 == 1}
+
+    test tactic_cget-1.5 {can retrieve all data} -setup {
+        setup
+        set B1 [ted addblock JOE]
+        set T1 [ted addtactic $B1 SIGEVENT msg "1 + 1 == 2"]
+    } -body {
+        ted pdicts [ted sendex tactic cget [$T1 id]]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        -agent     JOE
+        -msg       {1 + 1 == 2}
+        -narrative {Logs "1 + 1 == 2" to the sigevents log}
+        -parent    3
+        -state     normal
+        -tactic_id 4
+        -typename  SIGEVENT
+    }
+
+    #-------------------------------------------------------------------
+    # tactic configure
+
+    test tactic_configure-1.1 {unknown tactic id} -setup {
+        setup
+    } -body {
+        ted sendex -error tactic configure NONESUCH -msg "My tactic"
+    } -cleanup {
+        cleanup
+    } -match glob -result {*Invalid tactic ID: "NONESUCH"*}
+
+    test tactic_configure-1.2 {set data for specific tactic} -setup {
+        setup
+        set B1 [ted addblock JOE]
+        set T1 [ted addtactic $B1 SIGEVENT]
+        set T2 [ted addtactic $B1 SIGEVENT]
+    } -body {
+        ted sendex tactic configure [$T1 id] -msg "1 == 2"
+        $T1 get msg
+    } -cleanup {
+        cleanup
+    } -result {1 == 2}
+
+    test tactic_configure-1.3 {can set state} -setup {
+        setup
+        set B1 [ted addblock JOE]
+        set T1 [ted addtactic $B1 SIGEVENT]
+        set T2 [ted addtactic $B1 SIGEVENT]
+    } -body {
+        ted sendex tactic configure [$T1 id] -state disabled
+        $T1 get state
+    } -cleanup {
+        cleanup
+    } -result {disabled}
+
+    test tactic_configure-1.4 {can set data for last tactic} -setup {
+        setup
+        set B1 [ted addblock JOE]
+        set T1 [ted addtactic $B1 SIGEVENT]
+        set T2 [ted addtactic $B1 SIGEVENT]
+    } -body {
+        ted sendex tactic configure - -msg {2 + 2 == 4}
+        $T2 get msg
+    } -cleanup {
+        cleanup
+    } -result {2 + 2 == 4}
+
+    #----------------------------------------------------------------------
+    # autogen tests
+
+    #----------------------------------------------------------------------
+    # basic autogen errors
+
+    test autogen_errors-1.1 {actors, bad arguments} -setup {
+    } -body {
+        ted sendex -error autogen actors FOO
+    } -cleanup {
+        cleanup
+    } -result {argument must be integer}
+
+    test autogen_errors-1.2 {nbhoods, no actors} -setup {
+    } -body {
+        ted sendex -error autogen nbhoods
+    } -cleanup {
+        cleanup
+    } -result {Must create actors first}
+
+    test autogen_errors-1.3 {civgroups, no nbhoods} -setup {
+    } -body {
+        ted sendex -error autogen civgroups
+    } -cleanup {
+        cleanup
+    } -result {Must create nbhoods first}
+
+    test autogen_errors-1.4 {orggroups, no actors} -setup {
+    } -body {
+        ted sendex -error autogen orggroups
+    } -cleanup {
+        cleanup
+    } -result {Must create actors first}
+
+    test autogen_errors-1.5 {frcgroups, no actors} -setup {
+    } -body {
+        ted sendex -error autogen frcgroups
+    } -cleanup {
+        cleanup
+    } -result {Must create actors first}
+
+    test autogen_errors-1.6 {bsystem, no CIV groups} -setup {
+    } -body {
+        ted sendex -error autogen bsystem
+    } -cleanup {
+        cleanup
+    } -result {Must create CIV groups first}
+
+    #----------------------------------------------------------------
+    # autogen actors and associated error conditions
+
+    test autogen_actors-1.1 {error, num < 1} -setup {
+    } -body {
+        ted sendex -error autogen actors 0
+    } -cleanup {
+        cleanup
+    } -result {argument must be >= 1}
+
+    test autogen_actors-1.2 {successful creation} -setup {
+    } -body {
+        ted sendex autogen actors
+        expr {[llength [actor names]] > 0}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test autogen_actors-1.3 {creation fails because actors exist} -setup {
+        ted sendex autogen actors
+    } -body {
+        ted sendex -error autogen actors
+    } -cleanup {
+        cleanup
+    } -result {Actors already exist, must delete them first}
+
+    #------------------------------------------------------------------
+    # autogen nbhoods and associated error conditions
+
+    test autogen_nbhoods-1.1 {error, num < 2} -setup {
+        ted sendex autogen actors
+    } -body {
+        ted sendex -error autogen nbhoods 0
+    } -cleanup {
+        cleanup
+    } -result {argument must be >= 2}
+
+    test autogen_nbhoods-1.2 {successful creation} -setup {
+        ted sendex autogen actors
+    } -body {
+        ted sendex autogen nbhoods
+        expr {[llength [nbhood names]] > 0}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test autogen_nbhoods-1.3 {creation fails because nbhoods exist} -setup {
+        ted sendex autogen actors
+        ted sendex autogen nbhoods
+    } -body {
+        ted sendex -error autogen nbhoods
+    } -cleanup {
+        cleanup
+    } -result {Nbhoods already exist, must delete them first}
+
+    #------------------------------------------------------------------
+    # autogen civgroups and associated error conditions
+
+    test autogen_civgroups-1.1 {error, num < 1} -setup {
+        ted sendex autogen actors
+        ted sendex autogen nbhoods
+    } -body {
+        ted sendex -error autogen civgroups 0
+    } -cleanup {
+        cleanup
+    } -result {argument must be >= 1}
+
+    test autogen_civgroups-1.2 {successful creation} -setup {
+        ted sendex autogen actors
+        ted sendex autogen nbhoods
+    } -body {
+        ted sendex autogen civgroups 
+        expr {[llength [civgroup names]] > 0}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test autogen_civgroups-1.3 {creation fails because civgroups exist} -setup {
+        ted sendex autogen actors
+        ted sendex autogen nbhoods
+        ted sendex autogen civgroups 
+    } -body {
+        ted sendex -error autogen civgroups
+    } -cleanup {
+        cleanup
+    } -result {CIV groups already exist, must delete them first}
+
+    #------------------------------------------------------------------
+    # autogen orggroups and associated error conditions
+
+    test autogen_orggroups-1.1 {error, num < 1} -setup {
+        ted sendex autogen actors
+        ted sendex autogen nbhoods
+    } -body {
+        ted sendex -error autogen orggroups 0
+    } -cleanup {
+        cleanup
+    } -result {argument must be >= 1}
+
+    test autogen_orggroups-1.2 {successful creation} -setup {
+        ted sendex autogen actors
+        ted sendex autogen nbhoods
+    } -body {
+        ted sendex autogen orggroups 
+        expr {[llength [orggroup names]] > 0}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test autogen_orggroups-1.3 {creation fails because orggroups exist} -setup {
+        ted sendex autogen actors
+        ted sendex autogen nbhoods
+        ted sendex autogen orggroups 
+    } -body {
+        ted sendex -error autogen orggroups
+    } -cleanup {
+        cleanup
+    } -result {ORG groups already exist, must delete them first}
+
+    #------------------------------------------------------------------
+    # autogen frcgroups and associated error conditions
+
+    test autogen_frcgroups-1.1 {error, num < 1} -setup {
+        ted sendex autogen actors
+        ted sendex autogen nbhoods
+    } -body {
+        ted sendex -error autogen frcgroups 0
+    } -cleanup {
+        cleanup
+    } -result {argument must be >= 1}
+
+    test autogen_frcgroups-1.2 {successful creation} -setup {
+        ted sendex autogen actors
+        ted sendex autogen nbhoods
+    } -body {
+        ted sendex autogen frcgroups 
+        expr {[llength [frcgroup names]] > 0}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test autogen_frcgroups-1.3 {creation fails because frcgroups exist} -setup {
+        ted sendex autogen actors
+        ted sendex autogen nbhoods
+        ted sendex autogen frcgroups 
+    } -body {
+        ted sendex -error autogen frcgroups
+    } -cleanup {
+        cleanup
+    } -result {FRC groups already exist, must delete them first}
+
+    #------------------------------------------------------------------
+    # autogen bsystem and associated error conditions
+    # Creating only 1 CIV group for each test greatly reduces the time
+    # to run the test without any loss of robustness
+
+    test autogen_bsystem-1.1 {error, num < 1} -setup {
+        ted sendex autogen actors
+        ted sendex autogen nbhoods
+        ted sendex autogen civgroups 1
+    } -body {
+        ted sendex -error autogen bsystem 0
+    } -cleanup {
+        cleanup
+    } -result {argument must be >= 1}
+
+    test autogen_bsystem-1.2 {successful creation} -setup {
+        ted sendex autogen actors
+        ted sendex autogen nbhoods
+        ted sendex autogen civgroups 1
+    } -body {
+        ted sendex autogen bsystem
+        expr {[llength [bsys topic ids]] > 0}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test autogen_bsystem-1.3 {creation fails because bsystem exists} -setup {
+        ted sendex autogen actors
+        ted sendex autogen nbhoods
+        ted sendex autogen civgroups 1
+        ted sendex autogen bsystem
+    } -body {
+        ted sendex -error autogen bsystem
+    } -cleanup {
+        cleanup
+    } -result {Belief system topics already exist, must delete them first}
+
+    #------------------------------------------------------------------
+    # autogen assign and associated error conditions
+
+    test autogen_assign-1.1 {error, no actors} -setup {
+    } -body {
+        ted sendex -error autogen assign A00
+    } -cleanup {
+        cleanup
+    } -result {Must create actors first}
+
+    test autogen_assign-1.2 {error, no nbhoods} -setup {
+        ted sendex autogen actors
+    } -body {
+        ted sendex -error autogen assign A00
+    } -cleanup {
+        cleanup
+    } -result {Must create nbhoods first}
+
+    test autogen_assign-1.3 {error, no frcgroups} -setup {
+        ted sendex autogen actors
+        ted sendex autogen nbhoods
+    } -body {
+        ted sendex -error autogen assign A00
+    } -cleanup {
+        cleanup
+    } -result {Must have at least one FRC group or one ORG group}
+
+    test autogen_assign-1.4 {error, unrecognized actor} -setup {
+        ted sendex autogen actors
+        ted sendex autogen nbhoods
+        ted sendex autogen frcgroups
+    } -body {
+        ted sendex -error autogen assign NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {Unrecognized actor: NONESUCH}
+
+    test autogen_assign-1.5 {bad option, -frcg} -setup {
+        ted sendex autogen actors
+        ted sendex autogen nbhoods
+        ted sendex autogen frcgroups
+    } -body {
+        ted sendex -error autogen assign A00 -frcg NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {Unrecognized force group: NONESUCH}
+
+    test autogen_assign-1.6 {bad option, -orgg} -setup {
+        ted sendex autogen actors
+        ted sendex autogen nbhoods
+        ted sendex autogen frcgroups
+    } -body {
+        ted sendex -error autogen assign A00 -orgg NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {Unrecognized org group: NONESUCH}
+
+    test autogen_assign-1.7 {bad option, -frcact} -setup {
+        ted sendex autogen actors
+        ted sendex autogen nbhoods
+        ted sendex autogen frcgroups
+    } -body {
+        ted sendex -error autogen assign A00 -frcact NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {NONESUCH is not a valid force activity}
+
+    test autogen_assign-1.8 {bad option, -orgact} -setup {
+        ted sendex autogen actors
+        ted sendex autogen nbhoods
+        ted sendex autogen frcgroups
+    } -body {
+        ted sendex -error autogen assign A00 -orgact NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {NONESUCH is not a valid org activity}
+
+    test autogen_assign-2.0 {tactics created} -setup {
+        ted sendex autogen actors
+        ted sendex autogen nbhoods
+        ted sendex autogen frcgroups
+        set a [llength [::strategy::A00 blocks]]
+    } -body {
+        ted sendex autogen assign A00 
+        set b [llength [::strategy::A00 blocks]]]
+        expr {$b > $a}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    #------------------------------------------------------------------
+    # autogen strategy and associated error conditions
+
+    test autogen_strategy-1.1 {error, no actors} -setup {
+    } -body {
+        ted sendex -error autogen strategy
+    } -cleanup {
+        cleanup
+    } -result {Must create actors first}
+
+    test autogen_strategy-1.2 {error, no nbhoods} -setup {
+        autogen actors
+    } -body {
+        ted sendex -error autogen strategy
+    } -cleanup {
+        cleanup
+    } -result {Must create nbhoods first}
+
+    test autogen_strategy-1.3 {error, no force or org groups} -setup {
+        autogen actors
+        autogen nbhoods
+    } -body {
+        ted sendex -error autogen strategy
+    } -cleanup {
+        cleanup
+    } -result {Must have at least one FRC group or one ORG group}
+
+    test autogen_strategy-1.4 {bad option, -actors} -setup {
+        autogen actors
+        autogen nbhoods
+        autogen frcgroups
+    } -body {
+        ted sendex -error autogen strategy -actors NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {Unrecognized actor: NONESUCH}
+
+    test autogen_strategy-1.5 {bad option, -civg} -setup {
+        autogen actors
+        autogen nbhoods
+        autogen frcgroups
+    } -body {
+        ted sendex -error autogen strategy -civg NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {Unrecognized CIV group: NONESUCH}
+
+    test autogen_strategy-1.6 {bad option, -frcg} -setup {
+        autogen actors
+        autogen nbhoods
+        autogen frcgroups
+    } -body {
+        ted sendex -error autogen strategy -frcg NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {Unrecognized FRC group: NONESUCH}
+
+    test autogen_strategy-1.7 {bad option, -orgg} -setup {
+        autogen actors
+        autogen nbhoods
+        autogen frcgroups
+    } -body {
+        ted sendex -error autogen strategy -orgg NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {Unrecognized ORG group: NONESUCH}
+
+    test autogen_strategy-1.8 {bad option, -nbhoods} -setup {
+        autogen actors
+        autogen nbhoods
+        autogen frcgroups
+    } -body {
+        ted sendex -error autogen strategy -nbhoods NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {Unrecognized nbhood: NONESUCH}
+
+    test autogen_strategy-1.9 {bad option, -frcact} -setup {
+        autogen actors
+        autogen nbhoods
+        autogen frcgroups
+    } -body {
+        ted sendex -error autogen strategy -frcact NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {Unrecognized force activity: NONESUCH}
+
+    test autogen_strategy-1.10 {bad option, -orgact} -setup {
+        autogen actors
+        autogen nbhoods
+        autogen frcgroups
+    } -body {
+        ted sendex -error autogen strategy -orgact NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {Unrecognized org activity: NONESUCH}
+
+    test autogen_strategy-2.0 {strategy created} -setup {
+        autogen actors
+        autogen nbhoods
+        autogen frcgroups
+    } -body {
+        set a [llength [::strategy::A00 blocks]]
+        ted sendex autogen strategy
+        set b [llength [::strategy::A00 blocks]]
+        list $a $b
+    } -cleanup {
+        cleanup
+    } -result {0 1}
+
+    #------------------------------------------------------------------
+    # autogen scenario and associated error conditions
+
+    test autogen_scenario-1.1 {bad option} -setup {
+    } -body {
+        ted sendex -error autogen scenario -foo
+    } -cleanup {
+        cleanup
+    } -result {Unknown option: -foo}
+
+    test autogen_scenario-1.2 {options not numbers} -setup {
+    } -body {
+        set a [ted sendex -error autogen scenario -actors foo]
+        set b [ted sendex -error autogen scenario -nb foo]
+        set c [ted sendex -error autogen scenario -frcg foo]
+        set d [ted sendex -error autogen scenario -civg foo]
+        set e [ted sendex -error autogen scenario -orgg foo]
+        set f [ted sendex -error autogen scenario -topics foo]
+        list $a $b $c $d $e $f
+    } -cleanup {
+        cleanup
+    } -result {{-actors: must be integer} {-nb: must be integer} {-frcg: must be integer} {-civg: must be integer} {-orgg: must be integer} {-topics: must be integer}}
+
+    test autogen_scenario-1.3 {options out of range, min} -setup {
+    } -body {
+        set a [ted sendex -error autogen scenario -actors 0]
+        set b [ted sendex -error autogen scenario -nb 0]
+        set c [ted sendex -error autogen scenario -frcg 0]
+        set d [ted sendex -error autogen scenario -civg 0]
+        set e [ted sendex -error autogen scenario -orgg -1]
+        set f [ted sendex -error autogen scenario -topics 0]
+        list $a $b $c $d $e $f
+    } -cleanup {
+        cleanup
+    } -result {{-actors: must be positive integer} {-nb: must be integer >= 2} {-frcg: must be positive integer} {-civg: must be positive integer} {-orgg: must be >= 0} {-topics: must be >= 1}}
+
+    test autogen_scenario-1.4 {options out of range, max} -setup {
+    } -body {
+        # There's only a max on nbhoods
+        ted sendex -error autogen scenario -nb 1000
+    } -cleanup {
+        cleanup
+    } -result {-nb: max nbhoods is 999}
+
+    test autogen_scenario-2.1 {successful creation} -setup {
+    } -body {
+        ted sendex autogen scenario -civg 1
+        set a [expr {[llength [actor names]] > 0}]
+        set b [expr {[llength [nbhood names]] > 0}]
+        set c [expr {[llength [civgroup names]] > 0}]
+        set d [expr {[llength [frcgroup names]] > 0}]
+        set e [expr {[llength [orggroup names]] > 0}]
+        set f [expr {[llength [bsys topic ids]] > 0}]
+
+        list $a $b $c $d $e $f
+    } -cleanup {
+        cleanup
+    } -result {1 1 1 1 1 1}
+
+    test autogen_scenario-2.2 {creating whole scenario dumps existing} -setup {
+        ted sendex autogen scenario -civg 1
+    } -body {
+        set a [llength [actor names]]
+        ted sendex autogen scenario -civg 1
+        set b [llength [actor names]] 
+
+        expr {$a == $b}
+
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+

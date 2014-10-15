@@ -1,0 +1,234 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    object_actor.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: "Actor" Simulation Object
+#
+#    This file is included into object.help.
+#
+#-----------------------------------------------------------------------
+
+object actor_ {
+    noun actor
+
+    overview {
+        An <i>actor</i> is a significant decision-maker in the 
+        region of interest.  Actors are <term agent>s, so they 
+        can use <term tactic>s to
+        achieve their goals subject to certain 
+        <term condition>s.  Collectively, this is called the
+        actor's <term strategy>; it is browsed and edited on 
+        the <tab Strategy>.<p>
+
+        Actors own <term frcgroup>s and <term orggroup>s,
+        and also receive income from the Economic model; this income is used
+        to support the actor's tactics.  Thus, one can attack an actor's
+        ability to act by attacking the actor's sources of income.<p>
+    }
+
+    attribute a "Actor ID" {
+        The actor ID.  It may contain letters and digits, and
+        must begin with a letter.  It should usually be short,
+        between 2 and 8 characters in length, e.g., <b>USA</b>.<p>
+        
+        An actor ID cannot be the same as the ID of any group, 
+        neighborhood, etc.
+    } -tags {create}
+
+    attribute longname "Long Name" {
+        The actor's long name, a human-readable equivalent to the
+        actor's ID, e.g., "United States".
+    } -tags {create_opt update browser}
+
+    attribute bsid "Belief System" {
+        The actor's belief system, a collection of positions on
+        topics of interest in the region that determines how
+        groups perceive this actor.  Belief systems are 
+        created and edited on the <tab "Social/Beliefs">.
+    } -tags {create_opt update browser}
+
+    attribute supports "Supports" {
+        The name of the actor that usually receives this actor's political
+        support, or <b>NONE</b> if the actor supports no other actor,
+        or <b>SELF</b> if the actor intends to use his support directly.<p>
+
+        Every actor can receive political support from the groups
+        present in the various neighborhoods in the playbox.  Most
+        will use this support to attempt to gain political control for
+        themselves.  Others may choose to support another actor, or no
+        actor at all.<p>
+
+        This kind of support applies to each neighborhood separately;
+        the actor can explicitly specify who to support in each
+        neighborhood using the <cref /object/tactic/support>.  In
+        the absence of such a tactic for a particular neighborhood,
+        the actor will support the actor specified here.<p>
+    } -tags {create update browser}
+
+
+    attribute atype "Funding Type" {
+        The actor's funding type, either "<b>INCOME</b>", e.g., income
+        from the local economy, or "<b>BUDGET</b>", e.g., income from
+        some foreign source outside of the local economy.<p>
+        
+        The significant difference is that a "<b>BUDGET</b>" actor's
+        money does not enter the local economy unless it is spent.
+    } -tags {create update browser}
+    
+    attribute auto_maintain "Auto-maintain Infrastrucure?" {
+        A flag indicating whether an actor has automatic maintenance of
+        GOODS production infrastructure enabled.  If set to "Yes", then any
+        infrastructure owned by this actor does not degrade over time.
+        Note that the infrastructure will stay at it's initial repair level
+        and any enabled MAINTAIN tactics owned by this actor will have
+        a sanity check failure. Defaults to "No".
+    } -tags {create_opt update browser}
+
+    attribute cash_reserve "Cash Reserve, $" {
+        <b>INCOME actors only!</b>
+        Every actor has some amount of cash in reserve for future needs
+        that can be released for use via the 
+        <cref /object/tactic/withdraw>.  The actor is given an initial 
+        reserve as part of the scenario; once
+        the simulation begins, the level of the reserve can fluctuate.
+    } -tags {create_opt update browser}
+
+    attribute cash_on_hand "Cash-On-Hand, $" {
+        <b>INCOME actors only!</b>
+        An actor's cash-on-hand is the amount of the money the actor
+        has available to fund tactics.  The actor receives income
+        into his cash-on-hand every week, and may also move money
+        between his cash-on-hand and cash reserve using the
+        <cref /object/tactic/deposit> and 
+        <cref /object/tactic/withdraw>.  Cash-on-hand that is unspent
+        during a given week automatically carries over to the next week.<p>
+
+        The actor is given an initial amount of cash-on-hand as part
+        of the scenario; this reflects carry-over from the previous
+        week, and possibly funds received from other actors prior to
+        the start of the simulation.<p>
+    } -tags {create_opt update browser}
+
+    attribute income_goods "Income, GOODS Sector, $/week" {
+        <b>INCOME actors only!</b>
+        The actor's income from the Goods sector of the economy, in dollars
+        per week.  This is a tax-like income: genuine taxes, 
+        tolls, bribes, baksheesh, fees, and the like paid to the
+        actor during the production of goods.<p>
+        
+        If the Economics model is enabled, then this is the actor's income
+        from GOODS as of time 0; income in subsequent weeks will depend on 
+        the size of the GOODS sector.<p>
+
+        This is one component of the actor's regular weekly income.  The
+        actor's income flows into his cash-on-hand, where it may be
+        used to fund tactics.
+    } -tags {create_opt update browser income}
+
+    attribute income_black_nr "Income, BLACK Profits, shares" {
+        <b>INCOME actors only!</b>
+        The actor's income from the profits of the Black Market
+        sector of the economy, in shares of the profit, e.g., because the 
+        actor is in some sense an owner of the means of the production
+        and distribution.  If only one actor has shares then he gets all of
+        the black market profits.  If more than one has shares then the
+        profit is divvied up according to the shares each has.  If no actor
+        has any shares of the black market profits, then all profits go to 
+        the world sector.<p>
+        
+        If the Economics model is enabled, then this is the actor's
+        income from Black Market profits as of time 0; income in 
+        subsequent weeks will depend on the difference between revenue and
+        expenditures of the BLACK sector.<p>
+
+        This is one component of the actor's regular weekly income.  The
+        actor's income flows into his cash-on-hand, where it may be
+        used to fund tactics.
+    } -tags {create_opt update browser income}
+
+    attribute income_black_tax "Income, BLACK Tax, $/week" {
+        <b>INCOME actors only!</b>
+        The actor's income from the Black Market sector of the economy, 
+        in dollars per week.  This is a tax-like income: genuine taxes, 
+        tolls, bribes, baksheesh, fees, and the like paid to the
+        actor during the production and sale of black market goods.<p>
+        
+        If the Economics model is enabled, then this is the actor's 
+        income from Black Market tax-like payments as of time 0; income 
+        in subsequent weeks will depend on the size of the BLACK sector.<p>
+
+        This is one component of the actor's regular weekly income.  The
+        actor's income flows into his cash-on-hand, where it may be
+        used to fund tactics.
+    } -tags {create_opt update browser income}
+
+    attribute income_pop "Income, POP Sector, $/week" {
+        <b>INCOME actors only!</b>
+        The actor's income from the Pop sector of the economy, in dollars
+        per week.  This is a tax-like income: genuine taxes, 
+        tolls, bribes, baksheesh, fees, and the like paid by consumers
+        to the actor.<p>
+
+        If the Economics model is enabled, then this is the actor's income
+        from POP as of time 0; income in subsequent weeks will depend on 
+        the size of the POP sector.<p>
+
+        This is one component of the actor's regular weekly income.  The
+        actor's income flows into his cash-on-hand, where it may be
+        used to fund tactics.
+    } -tags {create_opt update browser income}
+
+    attribute income_graft "Income, Graft on FA, $/week" {
+        <b>INCOME actors only!</b>
+        The actor's income from graft on foreign aid to the region, 
+        in dollars per week.<p>
+        
+        If the Economics model is enabled, then this is the actor's income
+        from graft as of time 0; income in subsequent weeks will depend on 
+        the amount of foreign aid coming into the region in those weeks.<p>
+
+        This is one component of the actor's regular weekly income.  The
+        actor's income flows into his cash-on-hand, where it may be
+        used to fund tactics.
+    } -tags {create_opt update browser income}
+
+    attribute income_world "Income, WORLD Sector, $/week" {
+        <b>INCOME actors only!</b>
+        The actor's income from outside the playbox in dollars per 
+        week.  This includes foreign aid to local actors from actors outside
+        the playbox who are not modeled explicitly in the scenario, as well as
+        money used by foreign actors to fund their operations in the playbox.<p>
+        
+        If the Economics model is enabled, then this is the actor's income
+        as of time 0; income in subsequent weeks will depend on 
+        the amount of money coming into the playbox in those weeks.<p>
+
+        This is one component of the actor's regular weekly income.  The
+        actor's income flows into his cash-on-hand, where it may be
+        used to fund tactics.
+    } -tags {create_opt update browser income}
+    
+    attribute budget "Weekly Budget, $/week" {
+        <b>BUDGET actors only!</b>
+        The actor's weekly budget from his home country or other
+        foreign source.  It flows into his cash-on-hand, where it may
+        be used to fund tactics.  Note that unspent cash-on-hand is
+        <b>not</b> carried over to the next week; it simply vanishes.<p>
+    } -tags {create_opt update browser income}
+}
+
+page /object actor "Actor" {
+    <sotitle>
+
+    <actor_ overview><p>
+
+    Actors have the following attributes:<p>
+
+    <actor_ parmlist>
+}
+

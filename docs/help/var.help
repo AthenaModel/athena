@@ -1,0 +1,321 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    var.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: Display Variables
+#
+#    This file is included into athena.help.
+#
+#    Individual variable types have page names like
+#
+#       /var/<domain>/<vartype>
+#
+#-----------------------------------------------------------------------
+
+page / var "Display Variables" {
+    <title>
+    Athena provides the ability to plot or otherwise visualize a 
+    wide variety of <i>display variables</i>.  There are two kinds:<p>
+
+    <ul>
+    <li> <cref /var/n>
+    <li> <cref /var/t>
+    </ul>
+
+    Every display variable name consists of a variable type, possibly 
+    followed by one or more index values.  For example, the
+    neighborhood variable <b>sat.SHIA.SFT</b> is the <term satisfaction> of 
+    of the SHIA group with respect to its SFT concern across
+    neighborhoods.<p>
+
+    The valid index values generally vary from scenario to scenario;
+    thus, this documentation describes families of variables like
+    this:<p>
+
+    <b>sat.<i>g.c</i></b><p>
+
+    is the <term satisfaction> of group <i>g</i> with concern <i>c</i> 
+    across
+    neighborhoods.
+}
+
+proc var {domain varname text} {
+    set parent /var/$domain
+    set slug $varname
+
+    page $parent $slug $varname $text
+}
+
+# vartitle ?index...?
+#
+# index...   The variable type's indices
+#
+# Formats the header for the command, including a link to the parent
+# page.
+
+macro vartitle {args} {
+    set namelist [split [pageinfo path] "/"]
+    lassign $namelist dummy1 dummy2 domain vartype
+
+    if {$domain eq "n"} {
+        set dtext [cref /var/$domain "Neighborhood Variable"]
+    } elseif {$domain eq "t"} {
+        set dtext [cref /var/$domain "Time Series Variable"]
+    } else {
+        error "Unexpected variable domain: \"$domain\""
+    }
+
+    set pattern $vartype
+
+    foreach index $args {
+        append pattern ".<i>$index</i>"
+    }
+    
+} {
+    |<--
+    [mktitle small $dtext $pattern ""]
+}
+
+
+#=======================================================================
+# Neighborhood Variables
+
+page /var n "Neighborhood Variables" {
+    <title>
+    A <i>neighborhood variable</i> is a
+    <cref /var "display variable"> whose value varies across
+    neighborhoods. For example, the
+    neighborhood variable <b>sat.SHIA.SFT</b> is the <term satisfaction> of 
+    of the SHIA group with respect to its SFT concern across
+    neighborhoods.<p>
+
+    The available variable types are as follows:<p>
+
+    <childlinks>
+}
+
+var n cap {
+    <vartitle>
+    The production capacity for goods of each neighborhood, in
+    goodsBKT/year.
+}
+
+var n cov {
+    <vartitle g a>
+    The <term coverage> fraction for <term activity> <i>a</i> by 
+    group <i>g</i>.
+}
+
+var n nbcoop {
+    <vartitle g>
+    The overall <term cooperation> of each neighborhood with group <i>g</i>.
+}
+
+var n nbmood {
+    <vartitle>
+    The overall <term mood> (composite <term satisfaction>) across
+    neighborhoods.
+}
+
+var n nbmood0 {
+    <vartitle>
+    The overall <term mood> (composite <term satisfaction>) across
+    neighborhoods at time 0.
+}
+
+var n none {
+    <vartitle>
+    A null variable, 0 for all neighborhoods.
+}
+
+var n pcf {
+    <vartitle>
+    The production capacity factor for goods across neighborhoods.
+    A number less than 1.0 indicates that production
+    capacity has been destroyed or disabled; a number greater than
+    1.0 indicates that new capacity has been built.
+}
+
+var n sec {
+    <vartitle g>
+    The <term security> of group <i>g</i> across neighborhoods.
+}
+
+
+#=======================================================================
+# Time Series Variables
+
+page /var t "Time Series Variables" {
+    <title>
+    A <i>time series variable</i> is a
+    <cref /var "display variable"> whose value varies with time.
+    For example, the
+    time series variable <b>sat.N1.SHIA.SFT</b> is the <term satisfaction>
+    of the SHIA group in neighborhood N1 with respect to its SFT
+    concern over time.<p>
+
+    The available variable types are as follows:<p>
+
+    <childlinks>
+}
+
+var t consumers {
+    <vartitle>
+    The number of non-subsistence consumers in the economy over time, 
+    measured at each update of the economic model.
+}
+
+var t coop {
+    <vartitle f g>
+    The actual <term cooperation> of civilian group <i>f</i> with force
+    group <i>g</i> over time.
+}
+
+var t basecoop {
+    <vartitle f g>
+    The baseline <term cooperation> of civilian group <i>f</i> with force
+    group <i>g</i> over time.
+}
+
+var t natcoop {
+    <vartitle f g>
+    The natural <term cooperation> of civilian group <i>f</i> with force
+    group <i>g</i> over time.
+}
+
+var t cpi {
+    <vartitle>
+    The Consumer Price Index (CPI) of the economy, measured 
+    at each update of the economic model.
+}
+
+var t dgdp {
+    <vartitle>
+    The Deflated Gross Domestic Product (DGDP) of the economy, 
+    measured at each update of the economic model.
+}
+
+var t hrel {
+    <vartitle f g>
+    The actual <term hrel> of group <i>f</i> with 
+    group <i>g</i> over time.
+}
+
+var t basehrel {
+    <vartitle f g>
+    The baseline <term hrel> of group <i>f</i> with 
+    group <i>g</i> over time.
+}
+
+var t nathrel {
+    <vartitle f g>
+    The natural <term hrel> of group <i>f</i> with 
+    group <i>g</i> over time.
+}
+
+var t labor {
+    <vartitle>
+    The number of non-subsistence workers in the economy, measured 
+    at each update of the economic model.
+}
+
+var t lsf {
+    <vartitle>
+    The Labor Security Factor (LSF) of the economy, measured 
+    at each update of the economic model.
+}
+
+var t mood {
+    <vartitle g>
+    The <term mood> of group <i>g</i> over time.
+}
+
+var t nbcoop {
+    <vartitle n g>
+    The <term cooperation> of the civilians in neighborhood <i>n</i>
+    with force group <i>g</i> over time.
+}
+
+var t nbmood {
+    <vartitle n>
+    The <term mood> of the civilians in neighborhood <i>n</i> 
+    over time.
+}
+
+var t price {
+    <vartitle i>
+    The price of one unit of <term sector> <i>i</i>,
+    measured at each update of the economic model.
+}
+
+var t qd {
+    <vartitle i j>
+    The quantity/year of <term sector> <i>i</i>'s units purchased by
+    sector <i>j</i>, measured at each update of the economic model.
+}
+
+var t qs {
+    <vartitle i>
+    The quantity/year produced by <term sector> <i>i</i> in <i>i</i>'s units,
+    measured at each update of the economic model.
+}
+
+var t rev {
+    <vartitle i>
+    The revenue in $/year received by <term sector> <i>i</i>,
+    measured at each update of the economic model.
+}
+
+var t sat {
+    <vartitle g c>
+    The actual <term satisfaction> of group <i>g</i> with respect to
+    <term concern> <i>c</i> over time.
+}
+
+var t basesat {
+    <vartitle g c>
+    The baseline <term satisfaction> of group <i>g</i> with respect to
+    <term concern> <i>c</i> over time.
+}
+
+var t natsat {
+    <vartitle g c>
+    The natural <term satisfaction> of group <i>g</i> with respect to
+    <term concern> <i>c</i> over time.
+}
+
+var t ur {
+    <vartitle>
+    The unemployment rate as a percentage of the labor force,
+    measured at each update of the economic model.
+}
+
+var t vrel {
+    <vartitle g a>
+    The actual <term vrel> of group <i>g</i> with 
+    actor <i>a</i> over time.
+}
+
+var t basevrel {
+    <vartitle g a>
+    The baseline <term vrel> of group <i>g</i> with 
+    actor <i>a</i> over time.
+}
+
+var t natvrel {
+    <vartitle g a>
+    The natural <term vrel> of group <i>g</i> with 
+    actor <i>a</i> over time.
+}
+
+var t x {
+    <vartitle i j>
+    The payment in $/year from <term sector> <i>j</i> to
+    sector <i>i</i>, measured at each update of the economic model.
+}
+

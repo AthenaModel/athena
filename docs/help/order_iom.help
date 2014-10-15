@@ -1,0 +1,82 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    order_iom.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: IOM:* Orders
+#
+#    This file is included into order.help.
+#
+#-----------------------------------------------------------------------
+
+
+page /order iom "IOM Orders" {
+    <title>
+
+    These orders are used create, update, and delete 
+    <term iom>s.
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+
+order IOM:CREATE "Create Info Ops Message" {
+    <b><term prep> Only.</b>  This order creates a new 
+    <term iom>.
+    The order parameters are as follows:<p>
+
+    <parmlist>
+    <iom_ parms -required -tags create>
+    </parmlist>
+}
+
+
+#-----------------------------------------------------------------------
+
+order IOM:DELETE "Delete Info Ops Message" {
+    <b><term prep> Only.</b>  Deletes an existing
+    <term iom>, along with all entities
+    that depend upon it, given its ID.    
+    The order parameters are as follows:<p>
+
+    <parmlist>
+    <parm iom_id "IOM">
+    <b>Required.</b>  ID of an existing IOM.
+    </parm>
+    </parmlist>
+
+}
+
+#-----------------------------------------------------------------------
+
+order IOM:UPDATE "Update Info Ops Message" {
+    <b><term prep> Only.</b>  This order modifies the
+    definition of an existing <term iom>.  The order
+    parameters are as follows:<p>
+
+    <parmlist>
+    <parm iom_id "Select IOM">
+    <b>Required.</b> ID of an existing IOM.
+    </parm>
+
+    <iom_ parms -optional -tags update>
+
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order IOM:STATE "Set IOM State" {
+    Sets the <term iom>'s state.  Note that this order is for 
+    internal use by the application; there is no associated order 
+    dialog.  The order parameters are as follows:<p>
+
+    <parmlist>
+    <iom_ parms -required -tags state>
+    </parmlist>
+}

@@ -1,0 +1,137 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    order_block.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: BLOCK:* Orders
+#
+#    This file is included into order.help.
+#
+#-----------------------------------------------------------------------
+
+page /order block "Block Orders" {
+    <title>
+
+    These orders are used to update and manage 
+    <term block>s and their content.
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+
+order BLOCK:UPDATE "Update Strategy Block" {
+    <b><term prep> Only.</b>  This order modifies the
+    definition of an existing <term block>.  The order
+    parameters are as follows:<p>
+
+    <parmlist>
+    <block_ parm block_id -required>
+    <block_ parms -optional -tags update>
+
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order BLOCK:STATE "Set Strategy Block State" {
+    <b><term prep> Only.</b>  Sets the <term block>'s state.  Note that 
+    this order is for 
+    internal use by the application; there is no associated order 
+    dialog.  The order parameters are as follows:<p>
+
+    <parmlist>
+    <block_ parm block_id -required>
+    <block_ parms -required -tags state>
+    </parmlist>
+}
+
+
+#-----------------------------------------------------------------------
+
+order BLOCK:CONDITION+ADD "Add Condition to Block" {
+    <b><term prep> Only.</b>  Adds a <term condition> of a particular type to
+    the block.  The order parameters are as follows:<p>
+
+    <parmlist>
+    <block_ parm block_id -required>
+    
+    <parm typename "Condition Type">
+    The type of the desired condition.
+    </parm>
+
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order BLOCK:CONDITION+DELETE "Delete Condition from Block" {
+    <b><term prep> Only.</b>  Deletes one or more conditions from the block 
+    that owns them.
+    The order parameters are as follows:<p>
+
+    <parmlist>
+    <parm ids "IDs">
+    A list of the IDs of the conditions to delete.
+    </parm>
+
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order BLOCK:TACTIC+ADD "Add Tactic to Block" {
+    <b><term prep> Only.</b>  Adds a <term tactic> of a particular type to
+    the block.  The order parameters are as follows:<p>
+
+    <parmlist>
+    <block_ parm block_id -required>
+    
+    <parm typename "Tactic Type">
+    The type of the desired tactic.
+    </parm>
+
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order BLOCK:TACTIC+MOVE "Move Tactic Within Block" {
+    <b><term prep> Only.</b>  A <term block> lists 
+    <term tactic tactics> in priority order.  This order moves a
+    tactic to a different spot in the list, thus changing its
+    priority.  The order parameters are as follows:<p>
+
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    
+    <parm where "Where">
+    Where to move the tactic, one of the following symbolic values:<p>
+
+    <b>top</b>: Move to top<br>
+    <b>up</b>: Move up one slot<br>
+    <b>down</b>: Move down one slot<br>
+    <b>bottom</b>: Move to bottom<p>
+    </parm>
+
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order BLOCK:TACTIC+DELETE "Delete Tactic from Block" {
+    <b><term prep> Only.</b>  Deletes one or more tactics from the block 
+    that owns them.
+    The order parameters are as follows:<p>
+
+    <parmlist>
+    <parm ids "IDs">
+    A list of the IDs of the tactics to delete.
+    </parm>
+
+    </parmlist>
+}

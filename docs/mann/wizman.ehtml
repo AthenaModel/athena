@@ -1,0 +1,115 @@
+<manpage {projectgui(n) wizman(n)} "Wizard Manager Widget">
+
+<section SYNOPSIS>
+
+<pre>
+package require projectgui 1.0
+namespace import ::projectgui::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+The wizman(n) widget is used to implement "wizard" interfaces.  A wizard
+consists of a series of pages; the flow from one page to another is determined
+by the inputs on each page.  Any kind of widget can be used as a page, 
+provided that it adheres to the <xref wizpage(i)> interface.<p>
+
+<section COMMANDS>
+
+This module defines the following commands.<p>
+
+<deflist commands>
+
+<defitem wizman {wizman <i>pathName</i> ?<i>options...</i>?}>
+
+Creates a new <iref wizman> widget named <i>pathName</i>, and
+returns <i>pathName</i>.  The widget is based on the <b>ttk::notebook</b>
+widget, and supports the same options.  In addition, it defines the following
+options:<p>
+
+<deflist options>
+<defopt {-cancelcmd <i>command</i>}>
+
+Specifies a command to call when the user presses the "Cancel" button.
+The client should always set this option.  The <i>command</i> should
+clean up after the wizard.<p>
+
+<defopt {-finishcmd <i>command</i>}>
+
+Specifies a command to call when the user reaches the final wizard page
+and presses the "Finish" button.  The client should always set this option.
+The <i>command</i> should carry out the desired activity, and clean up
+after the wizard.<p>
+
+</deflist options>
+
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+wizman(n) widgets have the following subcommands:<p>
+
+<deflist instance>
+
+<defitem cget {<i>pathName</i> cget <i>option</i>}>
+
+Returns the value of the specified <i>option</i>.<p>
+
+<defitem configure {<i>pathName</i> configure <i>option value...</i>}>
+
+Sets the value of one or more of the object's
+options.<p>
+
+<defitem add {<i>pathName</i> add <i>page</i> ?<i>options...</i>?}>
+
+Adds a <xref wizpage(i)> widget called <i>page</i> as a wizard page.  
+The options are as for <b>ttk::notebook</b> tabs.  By default, pages get
+the following layout options:<p>
+
+<pre>-sticky nsew -padding 2</pre>
+
+<defitem nextpage {<i>pathName</i> nextpage}>
+
+Returns the widget name of the next wizard page to go to.<p>
+
+
+<defitem refresh {<i>pathName</i> refresh}>
+
+The wizman(n) widget must manage the navigation buttons that move the wizard
+from page to page, and enable or disable them based on the state of the
+currently displayed page.  This function does this work; it should be called
+by the current page, either directly or indirectly, whenever the page's
+state has changed significantly.<p> 
+
+<defitem start {<i>pathName</i> start}>
+
+Starts the wizard going, displaying the first page and calling its
+<xref wizpage(i) enter> command.<p>
+
+<defitem thispage {<i>pathName</i> thispage}>
+
+Returns the widget name of the currently displayed wizard page.<p>
+
+</deflist instance>
+
+<section ENVIRONMENT>
+
+projectgui(n) requires Tcl 8.6 or later.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+

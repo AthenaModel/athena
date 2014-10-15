@@ -1,0 +1,123 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    order_sim.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: SIM:* Orders
+#
+#    This file is included into order.help.
+#
+#-----------------------------------------------------------------------
+
+page /order sim "Simulation Control Orders" {
+    <title>
+
+    The orders in this set are used to control the simulation in
+    general.  Most of them are used implicitly, by various GUI
+    controls.  They are documented here for completeness.<p>
+
+    The full set of orders is as follows:<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+
+order SIM:LOCK "Lock Scenario Preparation" {
+    <b><term prep> Only.</b>  Locks scenario preparation and places 
+    the simulation in the <term paused> state, ready for time to be
+    advanced.  A detailed sanity check
+    is performed as part of the locking process; if their are failures they
+    are displayed to the user, and the simulation remains in the 
+    <term prep> state.
+}
+
+order SIM:PAUSE "Pause Simulation" {
+    Returns the running simulation to the <term paused> state at the
+    next possible moment: immediately if
+    the simulation is waiting in the Tcl event loop between 
+    <term tick>s, and at the end of the current tick if it is in the 
+    middle of a tick.<p>
+
+    This order is usually triggered by the "pause" button in the GUI.
+}
+
+order SIM:REBASE "Rebase Simulation" {
+    Creates a new scenario in the <term prep> state that reflects
+    the current state of the simulation.  This is used to create a sequence
+    of back-to-back scenarios; in each one, the analyst has the opportunity
+    to make structural changes, e.g., he can add actors, redefine groups, and
+    so forth.    
+}
+
+order SIM:RUN "Run Simulation" {
+    <b><term paused> only.</b>  Advances simulation time.  This order
+    is usually triggered by the "play" button in the GUI.<p>
+
+    <parmlist>
+    <parm weeks "Weeks to Run">
+    <b>Optional.</b>  An integer number of weeks.  If 0, or not
+    specified, the simulation will run until explicitly paused by the
+    user.  If greater than 0, the simulation will run for the
+    specified number of weeks, and then halt.
+    </parm>
+
+    <parm block "Block?">
+    <b>Optional.</b>  A boolean flag.  If true, the order will
+    block--that is, the simulation will run for the specified number
+    of weeks and then the order handler will return.  If false (the
+    default) the order handler returns immediately, and the simulation
+    runs forward under the control of the Tcl event loop.  Blocking
+    mode is intended for using during testing, and while advancing
+    time under the control of an executive script.<p>
+    </parm>
+
+    </parmlist>
+}
+
+order SIM:STARTDATE "Set Start Date" {
+    <b><term prep> Only.</b>  Athena generally reports
+    simulation time as a number of integer weeks and as a 
+    <term jweek> string.<p>
+
+    <parmlist>
+    <parm startdate "Start Date">
+    <b>Required.</b>  A <term jweek> string corresponding to 
+    simulation time 0.  If time 0 is the 17th week of 2014, the
+    start date is "2014W17".<p>
+    </parm>
+
+    </parmlist>
+}
+
+order SIM:STARTTICK "Set Start Tick" {
+    <b><term prep> Only.</b>  Athena measures simulation time
+    in integer ticks, where each tick is one week in length.  The
+    simulation time on scenario lock is usually 0; however, this
+    order specifies a different starting point.  This allows a
+    sequence of related scenarios to use one consistent time sequence
+    through out, beginning one scenario where its predecessor left off.<p>
+    
+    Note that the start date is always relative to time t=0, not to the
+    current start tick.<p>
+
+    <parmlist>
+    <parm starttick "Start Tick">
+    <b>Required.</b>  An integer, greater than or equal to zero,
+    representing the simulation time in ticks on scenario lock.<p>
+    </parm>
+
+    </parmlist>
+}
+
+order SIM:UNLOCK "Unlock Scenario Preparation" {
+    <b><term paused> only.</b> Unlocks the scenario, returning to the
+    <term prep> state and allowing the user
+    to edit actors, groups, neighborhoods, and other starting conditions
+    once again.  If time has been advanced, the related history is thrown
+    away.
+}

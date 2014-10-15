@@ -1,0 +1,104 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    object_curse.help
+#
+# AUTHOR:
+#    Dave Hanks
+#
+# DESCRIPTION:
+#    Athena Help Documentation: "CURSE" Simulation Object
+#
+#    This file is included into object.help.
+#
+#-----------------------------------------------------------------------
+
+object curse_ {
+    noun CURSE
+
+    overview {
+        A <i>CURSE</i> is a Complex User-defined Role-based Simulation
+        and Events object. It consists of some user specified description
+        (ie. "Flood") and contains one or more <term inject>s that 
+        cause the required changes to satisfaction, cooperation, and 
+        horizontal and vertical relationships that simulate the 
+        <i>CURSE</i> being modeled.<p>
+
+        Typically, CURSEs are used to simulate infrequent, catastrophic
+        events that aren't already modeled in Athena.  There is no
+        reason, however, that they cannot be used for simple, less
+        invasive injects into Athena.<p>
+
+        CURSEs are executed using the CURSE <term tactic>.  Thus, the
+        SYSTEM agent can be given a strategy that employs CURSE tactics
+        to cause the CURSE to happen whenever the analyst likes.<p>
+
+        CURSEs are created and edited on the 
+        <cref /tab/physical/curses>.<p>
+
+    }
+
+    attribute curse_id "CURSE ID" {
+        The CURSE ID.  It may contain letters and digits, and
+        must begin with a letter.  It should usually be short,
+        between 2 and 10 characters in length, e.g., <b>FLOOD</b>.<p>
+        
+        A CURSE ID cannot be the same as the ID of any group, 
+        neighborhood, etc.
+    } -tags {create}
+
+    attribute longname "Description" {
+        This field should contain a brief statement of the real 
+        situation or event being modeled as an aid to the analyst. 
+        For example, <b><i>Flood in the lowlands of the eastern plain.</b></i>
+    } -tags {create update browser}
+
+    attribute cause "Cause" {
+        The <term cause> for any <term inject> associated with this
+        CURSE.  The cause may be <b>UNIQUE</b>, indicating that the effects
+        of this CURSE are independant of all other drivers, or it may be
+        any cause from the following list:<p>
+
+        <enumdoc ::projectlib::ecause>
+
+    } -tags {create update browser}
+
+    attribute s "Here Factor" {
+        Indirect effects of injects for this CURSE in the same
+        neighborhood as the CURSE are multiplied by this factor.  
+        If it is 0.0, there will be no such indirect effects.
+    } -tags {create update browser}
+
+    attribute p "Near Factor" {
+        Indirect effects of injects for this CURSE in <b>NEAR</b>
+        neighborhoods are multiplied by this factor.  
+        If it is 0.0, there will be no such indirect effects.
+    } -tags {create update browser}
+
+    attribute q "Far Factor" {
+        Indirect effects of injects for this CURSE in <b>FAR</b>
+        neighborhoods are multiplied by this factor.  
+        If it is 0.0, there will be no such indirect effects.
+    } -tags {create update browser}
+
+    attribute state "State" {
+        The CURSE's state, one of <b>normal</b>, <b>disabled</b>, or 
+        <b>invalid</b>.  Both <b>disabled</b> and <b>invalid</b> CURSEs
+        are ignored when the CURSE tactic executes; the difference is 
+        that <b>disabled</b> CURSEs are explicitly
+        disabled by the user, while <b>invalid</b> CURSEs are disabled
+        due to failing a sanity check.
+    } -tags {object state}
+}
+
+page /object curse "CURSE" {
+    <sotitle>
+
+    <curse_ overview><p>
+
+    CURSEs have the following attributes:<p>
+
+    <curse_ parmlist>
+}
+
+

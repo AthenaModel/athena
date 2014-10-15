@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<BODY>
+    <PLACE CID="302587F3">
+        <REVISIONHISTORY>
+            <USERNAME>Name</USERNAME>
+            <DATETIME>2014-09-26T13:42:35-0400</DATETIME>
+            <CREATED></CREATED>
+        </REVISIONHISTORY>
+        <LOCALUPDATETIME>2014-07-26T13:42:35-0400</LOCALUPDATETIME>
+        <TITLE>Poppy production</TITLE>
+        <DESCRIPTION>Poppy production is up near Laghman</DESCRIPTION>
+        <UNITID></UNITID>
+        <LOCATIONLIST COUNT="1">
+            <POINT>
+                <COORDINATES>34399193N070259600E</COORDINATES>
+            </POINT>
+        </LOCATIONLIST>
+        <TIMEPERIOD>
+            <START>2014-11-18T11:52:39-0500</START>
+            <END>2014-11-18T12:30:39-0500</END>
+        </TIMEPERIOD>
+    </PLACE>
+    <security_class_tx>UNCLASSIFIED</security_class_tx>
+    <security_caveat_tx>FOUO</security_caveat_tx>
+</BODY>

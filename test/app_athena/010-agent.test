@@ -1,0 +1,140 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-agent.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    agent(sim) tests.
+#
+#    This test suite tests the agent(sim) queries
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        # Clean up the test environment
+        array unset parms
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # names
+
+    test names-1.1 {Returns names: no actors defined} -body {
+        agent names
+    } -cleanup {
+        cleanup
+    } -result {SYSTEM}
+
+    test names-1.2 {Returns names with actors} -setup {
+        ted create JOE BOB
+    } -body {
+        agent names
+    } -cleanup {
+        cleanup
+    } -result {BOB JOE SYSTEM}
+
+
+    #-------------------------------------------------------------------
+    # validate
+
+    test validate-1.1 {Invalid name: some defined} -setup {
+        ted create JOE BOB
+    } -body {
+        agent validate NONESUCH
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Invalid agent, should be one of: BOB, JOE, SYSTEM}
+
+    test validate-2.1 {Valid name} -setup {
+        ted create JOE BOB
+    } -body {
+        agent validate BOB
+    } -cleanup {
+        cleanup
+    } -result {BOB}
+
+    #-------------------------------------------------------------------
+    # system names
+
+    test system_names-1.1 {Returns name} -body {
+        agent system names
+    } -cleanup {
+        cleanup
+    } -result {SYSTEM}
+
+    #-------------------------------------------------------------------
+    # validate
+
+    test validate-1.1 {Invalid name} -body {
+        agent system validate NONESUCH
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Invalid system agent, should be one of: SYSTEM}
+
+    test validate-2.1 {Valid name} -body {
+        agent system validate SYSTEM
+    } -cleanup {
+        cleanup
+    } -result {SYSTEM}
+
+    #-------------------------------------------------------------------
+    # type
+
+    test get-1.1 {get SYSTEM type} -body {
+        agent type SYSTEM
+    } -result {system}
+
+    test get-1.2 {get actor type} -setup {
+        ted create JOE
+    } -body {
+        agent type JOE
+    } -cleanup {
+        cleanup
+    } -result {actor}
+
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+

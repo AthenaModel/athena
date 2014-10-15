@@ -1,0 +1,446 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-gofer_actors.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    actor(sim) tests.
+#
+#    This test suite tests the gofer::ACTORS type.
+#
+#    NOTE: The type itself is implemented using gofer(n); thus,
+#    we don't need to test the behavior of the type itself.  As a result,
+#    this test suite focusses on the gofer::ACTORS-specific rule
+#    objects.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    proc setup {} {
+        ted create JOE BOB BLUE BRIT TAL SUNN SHIA KURD USAID
+    }
+
+    proc cleanup {} {
+        # Clean up the test environment
+        array unset parms
+        ted cleanup
+    }
+
+
+    #-------------------------------------------------------------------
+    # Rule: BY_VALUE
+
+    test BY_VALUE-1.1 {construct, valid} -setup {
+        setup
+    } -body {
+        ::gofer::ACTORS::BY_VALUE construct {BOB JOE}
+    } -cleanup {
+        cleanup
+    } -result {raw_value {BOB JOE}}
+
+    test BY_VALUE-2.1 {validate, valid} -setup {
+        setup
+    } -body {
+        ::gofer::ACTORS::BY_VALUE validate {raw_value {BOB JOE}}
+    } -cleanup {
+        cleanup
+    } -result {raw_value {BOB JOE}}
+
+    test BY_VALUE-2.2 {validate, invalid} -setup {
+        setup
+    } -body {
+        ::gofer::ACTORS::BY_VALUE validate {raw_value {BOB NONESUCH}}
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -match glob -result {Invalid actor*}
+
+    test BY_VALUE-3.1 {narrative} -body {
+        ::gofer::ACTORS::BY_VALUE narrative {raw_value BOB}
+    } -result {actor BOB}
+
+    test BY_VALUE-4.1 {eval} -setup {
+        setup
+    } -body {
+        ::gofer::ACTORS::BY_VALUE eval {raw_value {BOB JOE}}
+    } -cleanup {
+        cleanup
+    } -result {BOB JOE}
+
+    #-------------------------------------------------------------------
+    # Rule: CONTROLLING
+
+    test CONTROLLING-1.1 {construct} -setup {
+        setup
+    } -body {
+        ::gofer::ACTORS::CONTROLLING construct {NB1 NB2}
+    } -cleanup {
+        cleanup
+    } -result {nlist {NB1 NB2}}
+
+    test CONTROLLING-2.1 {validate} -setup {
+        setup
+    } -body {
+        ::gofer::ACTORS::CONTROLLING validate {nlist {NB1 NB2}}
+    } -cleanup {
+        cleanup
+    } -result {nlist {NB1 NB2}}
+
+    test CONTROLLING-3.1 {narrative} -body {
+        ::gofer::ACTORS::CONTROLLING narrative {nlist NB1}
+    } -match glob -result {actors who are in control of *}
+
+    proc setupControlling {} {
+        setup
+        dict for {n a} {
+            NB1 JOE
+            NB2 BOB
+        } { 
+            rdb eval {INSERT INTO control_n(n,controller) VALUES($n,$a)}
+        }
+    }
+
+    test CONTROLLING-4.1 {eval, one} -setup {
+        setupControlling 
+    } -body {
+        ::gofer::ACTORS::CONTROLLING eval {nlist NB1}
+    } -cleanup {
+        cleanup
+    } -result {JOE}
+
+    test CONTROLLING-4.2 {eval, multi} -setup {
+        setupControlling 
+    } -body {
+        ::gofer::ACTORS::CONTROLLING eval {nlist {NB1 NB2}}
+    } -cleanup {
+        cleanup
+    } -result {BOB JOE}
+
+    #-------------------------------------------------------------------
+    # Rule: INFLUENCE_IN
+
+    test INFLUENCE_IN-1.1 {construct} -setup {
+        setup
+    } -body {
+        ::gofer::ACTORS::INFLUENCE_IN construct any {NB1 NB2}
+    } -cleanup {
+        cleanup
+    } -result {anyall ANY nlist {NB1 NB2}}
+
+    test INFLUENCE_IN-2.1 {validate} -setup {
+        setup
+    } -body {
+        ::gofer::ACTORS::INFLUENCE_IN validate {anyall any nlist {NB1 NB2}}
+    } -cleanup {
+        cleanup
+    } -result {anyall ANY nlist {NB1 NB2}}
+
+    test INFLUENCE_IN-3.1 {narrative} -body {
+        ::gofer::ACTORS::INFLUENCE_IN narrative {anyall ANY nlist NB1}
+    } -match glob -result {actors who have influence in *}
+
+    proc setupInfluenceIn {dict} {
+        setup
+        dict for {n a} $dict {
+            rdb eval {
+                INSERT INTO influence_na(n,a,influence) VALUES($n,$a,0.1)
+            }
+        }
+    }
+
+    test INFLUENCE_IN-4.1 {eval, one} -setup {
+        setupInfluenceIn {
+            NB1 JOE
+            NB2 BOB
+        }
+    } -body {
+        ::gofer::ACTORS::INFLUENCE_IN eval {anyall ANY nlist NB1}
+    } -cleanup {
+        cleanup
+    } -result {JOE}
+
+    test INFLUENCE_IN-4.2 {eval, any} -setup {
+        setupInfluenceIn {
+            NB1 JOE
+            NB2 BOB
+        }
+    } -body {
+        ::gofer::ACTORS::INFLUENCE_IN eval {anyall ANY nlist {NB1 NB2}}
+    } -cleanup {
+        cleanup
+    } -result {BOB JOE}
+
+    test INFLUENCE_IN-4.1 {eval, all} -setup {
+        setupInfluenceIn {
+            NB1 JOE
+            NB2 BOB
+        }
+    } -body {
+        ::gofer::ACTORS::INFLUENCE_IN eval {anyall ALL nlist {NB1 NB2}}
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    #-------------------------------------------------------------------
+    # Rule: OWNING
+
+    test OWNING-1.1 {construct} -setup {
+        setup
+    } -body {
+        ::gofer::ACTORS::OWNING construct {BRIT BLUE}
+    } -cleanup {
+        cleanup
+    } -result {glist {BRIT BLUE}}
+
+    test OWNING-2.1 {validate} -setup {
+        setup
+    } -body {
+        ::gofer::ACTORS::OWNING validate {glist {BRIT BLUE}}
+    } -cleanup {
+        cleanup
+    } -result {glist {BRIT BLUE}}
+
+    test OWNING-3.1 {narrative} -body {
+        ::gofer::ACTORS::OWNING narrative {glist BRIT}
+    } -match glob -result {actors who own *}
+
+    test OWNING-4.1 {eval, one} -setup {
+        setup
+    } -body {
+        ::gofer::ACTORS::OWNING eval {glist BLUE}
+    } -cleanup {
+        cleanup
+    } -result {JOE}
+
+    test OWNING-4.2 {eval, org group} -setup {
+        setup
+    } -body {
+        ::gofer::ACTORS::OWNING eval {glist USAID}
+    } -cleanup {
+        cleanup
+    } -result {JOE}
+
+    test OWNING-4.3 {eval, multiple} -setup {
+        setup
+    } -body {
+        ::gofer::ACTORS::OWNING eval {glist {BLUE TAL}}
+    } -cleanup {
+        cleanup
+    } -result {JOE BOB}
+
+    #-------------------------------------------------------------------
+    # Rule: SUPPORTED_BY
+
+    test SUPPORTED_BY-1.1 {construct} -setup {
+        setup
+    } -body {
+        ::gofer::ACTORS::SUPPORTED_BY construct any {BRIT BLUE}
+    } -cleanup {
+        cleanup
+    } -result {anyall ANY glist {BRIT BLUE}}
+
+    test SUPPORTED_BY-2.1 {validate} -setup {
+        setup
+    } -body {
+        ::gofer::ACTORS::SUPPORTED_BY validate {anyall any glist {BRIT BLUE}}
+    } -cleanup {
+        cleanup
+    } -result {anyall ANY glist {BRIT BLUE}}
+
+    test SUPPORTED_BY-3.1 {narrative} -body {
+        ::gofer::ACTORS::SUPPORTED_BY narrative {anyall ANY glist BRIT}
+    } -match glob -result {actors who are actively supported by *}
+
+    proc setupSupportedBy {} {
+        setup
+        foreach {g a support} {
+            BLUE JOE 0.3
+            BLUE BOB 0.3
+            BRIT JOE 0.3
+            BRIT BOB 0.0
+            TAL  JOE 0.0
+            TAL  BOB 0.3
+        } {
+            rdb eval {
+                INSERT INTO support_nga(n,g,a,support)
+                VALUES('NB1',$g,$a,$support)
+            }
+        }
+
+    } 
+
+    test SUPPORTED_BY-4.1 {eval, one} -setup {
+        setupSupportedBy
+    } -body {
+        ::gofer::ACTORS::SUPPORTED_BY eval {anyall ANY glist BLUE}
+    } -cleanup {
+        cleanup
+    } -result {BOB JOE}
+
+    test SUPPORTED_BY-4.2 {eval, any} -setup {
+        setupSupportedBy
+    } -body {
+        ::gofer::ACTORS::SUPPORTED_BY eval {anyall ANY glist {BRIT TAL}}
+    } -cleanup {
+        cleanup
+    } -result {BOB JOE}
+
+    test SUPPORTED_BY-4.3 {eval, all} -setup {
+        setupSupportedBy
+    } -body {
+        ::gofer::ACTORS::SUPPORTED_BY eval {anyall ALL glist {BLUE BRIT}}
+    } -cleanup {
+        cleanup
+    } -result {JOE}
+
+    #-------------------------------------------------------------------
+    # Rule: LIKED_BY_GROUP
+
+    test LIKED_BY_GROUP-1.1 {construct} -setup {
+        setup
+    } -body {
+        ::gofer::ACTORS::LIKED_BY_GROUP construct any {BRIT BLUE}
+    } -cleanup {
+        cleanup
+    } -result {anyall ANY glist {BRIT BLUE}}
+
+    test LIKED_BY_GROUP-2.1 {validate} -setup {
+        setup
+    } -body {
+        ::gofer::ACTORS::LIKED_BY_GROUP validate {anyall any glist {BRIT BLUE}}
+    } -cleanup {
+        cleanup
+    } -result {anyall ANY glist {BRIT BLUE}}
+
+    test LIKED_BY_GROUP-3.1 {narrative} -body {
+        ::gofer::ACTORS::LIKED_BY_GROUP narrative {anyall ANY glist BRIT}
+    } -match glob -result {actors who are liked by *}
+
+    proc setupLikedBy {} {
+        setup
+        ted lock
+        aram vrel bset 1 BLUE JOE  0.3
+        aram vrel bset 1 BLUE BOB  0.3
+        aram vrel bset 1 BRIT JOE  0.3
+        aram vrel bset 1 BRIT BOB  0.0
+        aram vrel bset 1 TAL  JOE  0.0
+        aram vrel bset 1 TAL  BOB  0.3
+        ted step
+    } 
+
+    test LIKED_BY_GROUP-4.1 {eval, one} -setup {
+        setupLikedBy
+    } -body {
+        ::gofer::ACTORS::LIKED_BY_GROUP eval {anyall ANY glist BLUE}
+    } -cleanup {
+        cleanup
+    } -result {BOB JOE}
+
+    test LIKED_BY_GROUP-4.2 {eval, any} -setup {
+        setupLikedBy
+    } -body {
+        ::gofer::ACTORS::LIKED_BY_GROUP eval {anyall ANY glist {BRIT TAL}}
+    } -cleanup {
+        cleanup
+    } -result {BOB JOE}
+
+    test LIKED_BY_GROUP-4.3 {eval, all} -setup {
+        setupLikedBy
+    } -body {
+        ::gofer::ACTORS::LIKED_BY_GROUP eval {anyall ALL glist {BLUE BRIT}}
+    } -cleanup {
+        cleanup
+    } -result {JOE}
+
+    #-------------------------------------------------------------------
+    # Rule: DISLIKED_BY_GROUP
+
+    test DISLIKED_BY_GROUP-1.1 {construct} -setup {
+        setup
+    } -body {
+        ::gofer::ACTORS::DISLIKED_BY_GROUP construct any {BRIT BLUE}
+    } -cleanup {
+        cleanup
+    } -result {anyall ANY glist {BRIT BLUE}}
+
+    test DISLIKED_BY_GROUP-2.1 {validate} -setup {
+        setup
+    } -body {
+        ::gofer::ACTORS::DISLIKED_BY_GROUP validate {anyall any glist {BRIT BLUE}}
+    } -cleanup {
+        cleanup
+    } -result {anyall ANY glist {BRIT BLUE}}
+
+    test DISLIKED_BY_GROUP-3.1 {narrative} -body {
+        ::gofer::ACTORS::DISLIKED_BY_GROUP narrative {anyall ANY glist BRIT}
+    } -match glob -result {actors who are disliked by *}
+
+    proc setupDislikedBy {} {
+        setup
+        ted lock
+        aram vrel bset 1 BLUE JOE -0.3
+        aram vrel bset 1 BLUE BOB -0.3
+        aram vrel bset 1 BRIT JOE -0.3
+        aram vrel bset 1 BRIT BOB  0.0
+        aram vrel bset 1 TAL  JOE  0.0
+        aram vrel bset 1 TAL  BOB -0.3
+        ted step
+    } 
+
+    test DISLIKED_BY_GROUP-4.1 {eval, one} -setup {
+        setupDislikedBy
+    } -body {
+        ::gofer::ACTORS::DISLIKED_BY_GROUP eval {anyall ANY glist BLUE}
+    } -cleanup {
+        cleanup
+    } -result {BOB JOE}
+
+    test DISLIKED_BY_GROUP-4.2 {eval, any} -setup {
+        setupDislikedBy
+    } -body {
+        ::gofer::ACTORS::DISLIKED_BY_GROUP eval {anyall ANY glist {BRIT TAL}}
+    } -cleanup {
+        cleanup
+    } -result {BOB JOE}
+
+    test DISLIKED_BY_GROUP-4.3 {eval, all} -setup {
+        setupDislikedBy
+    } -body {
+        ::gofer::ACTORS::DISLIKED_BY_GROUP eval {anyall ALL glist {BLUE BRIT}}
+    } -cleanup {
+        cleanup
+    } -result {JOE}
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+

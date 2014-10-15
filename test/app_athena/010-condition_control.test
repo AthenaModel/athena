@@ -1,0 +1,288 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-condition_control.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    condition_control(sim) tests.
+#
+#    This test suite tests the condition_control(sim) class.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Set up for tests
+
+    proc setup {} {
+        variable C1
+        ted create JOE BOB NB1 NB2 BLUE BRIT SHIA SUNN KURD
+        set C1 [condition::CONTROL new]
+    }
+
+    # setcontrol a nlist ?a nlist...?
+    #
+    # a      - An actor
+    # nlist  - A neighborhood list
+    #
+    # Set up control_n so that a controls the neighborhoods.
+
+    proc setcontrol {args} {
+        rdb eval {DELETE FROM control_n}
+        foreach {a nlist} $args {
+            foreach n $nlist {
+                rdb eval {INSERT INTO control_n(n,controller) VALUES($n,$a)}
+            }
+        }
+    }
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    test constructor-1.1 {default state} -setup {
+        setup
+    } -body {
+        ted pdicts [$C1 getdict]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        a       {}
+        anyall  ALL
+        id      *
+        metflag {}
+        nlist   {_type NBHOODS _rule {}}
+        parent  {}
+        sense   DOES
+        state   invalid
+    }
+
+    test constructor-1.2 {can set options} -setup {
+        setup
+    } -body {
+        set C1 [condition::CONTROL new -parent DUMMY]
+        $C1 get parent
+    } -cleanup {
+        cleanup
+    } -result {DUMMY}
+
+
+    #-------------------------------------------------------------------
+    # narrative
+
+    test narrative-1.1 {narrative, initial state} -setup {
+        setup
+    } -body {
+        $C1 narrative
+    } -cleanup {
+        cleanup
+    } -result {Actor ??? does control all of nbhood ???.}
+
+    test narrative-1.2 {narrative, with group} -setup {
+        setup
+        $C1 configure      \
+            -a      JOE    \
+            -sense  DOESNT \
+            -anyall ANY    \
+            -nlist  [gofer construct NBHOODS BY_VALUE {NB1 NB2}]
+    } -body {
+        $C1 narrative
+    } -cleanup {
+        cleanup
+    } -result {Actor {actor:JOE} does not control any of these neighborhoods (NB1, NB2).}
+
+    #-------------------------------------------------------------------
+    # check
+
+    test check-1.1 {check: default} -setup {
+        setup
+    } -body {
+        ted pdicts [$C1 check]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        a     {No actor selected.}
+        nlist {No rule specified}
+    }
+
+    test check-1.2 {check: successful} -setup {
+        setup
+        $C1 configure \
+            -a     JOE \
+            -nlist [gofer construct NBHOODS BY_VALUE {NB1 NB2}]
+    } -body {
+        $C1 check
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    #-------------------------------------------------------------------
+    # eval
+
+    test eval-1.1 {No nbhoods returned} -setup {
+        setup
+        $C1 configure \
+            -a     JOE \
+            -nlist [gofer construct NBHOODS WITH_DEPLOYMENT ANY BLUE]
+    } -body {
+        $C1 eval
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+    test eval-2.1 {DOES, ALL, met} -setup {
+        setup
+        $C1 configure \
+            -a      JOE \
+            -sense  DOES \
+            -anyall ALL \
+            -nlist  [gofer construct NBHOODS BY_VALUE {NB1 NB2}]
+        setcontrol JOE {NB1 NB2}
+    } -body {
+        $C1 eval
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test eval-2.2 {DOES, ALL, unmet} -setup {
+        setup
+        $C1 configure \
+            -a      JOE \
+            -sense  DOES \
+            -anyall ALL \
+            -nlist  [gofer construct NBHOODS BY_VALUE {NB1 NB2}]
+        setcontrol JOE NB1 BOB NB2
+    } -body {
+        $C1 eval
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+    test eval-3.1 {DOES, ANY, met} -setup {
+        setup
+        $C1 configure \
+            -a      JOE \
+            -sense  DOES \
+            -anyall ANY \
+            -nlist  [gofer construct NBHOODS BY_VALUE {NB1 NB2}]
+        setcontrol JOE NB1 BOB NB2
+    } -body {
+        $C1 eval
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test eval-3.2 {DOES, ANY, unmet} -setup {
+        setup
+        $C1 configure \
+            -a      JOE \
+            -sense  DOES \
+            -anyall ANY \
+            -nlist  [gofer construct NBHOODS BY_VALUE {NB1 NB2}]
+        setcontrol BOB {NB1 NB2}
+    } -body {
+        $C1 eval
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+    test eval-4.1 {DOESNT, ALL, met} -setup {
+        setup
+        $C1 configure \
+            -a      JOE \
+            -sense  DOESNT \
+            -anyall ALL \
+            -nlist  [gofer construct NBHOODS BY_VALUE {NB1 NB2}]
+        setcontrol JOE NB1 BOB NB2
+    } -body {
+        $C1 eval
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test eval-4.2 {DOESNT, ALL, unmet} -setup {
+        setup
+        $C1 configure \
+            -a      JOE \
+            -sense  DOESNT \
+            -anyall ALL \
+            -nlist  [gofer construct NBHOODS BY_VALUE {NB1 NB2}]
+        setcontrol JOE {NB1 NB2}
+    } -body {
+        $C1 eval
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+    test eval-5.1 {DOESNT, ANY, met} -setup {
+        setup
+        $C1 configure \
+            -a      JOE \
+            -sense  DOESNT \
+            -anyall ANY \
+            -nlist  [gofer construct NBHOODS BY_VALUE {NB1 NB2}]
+        setcontrol BOB {NB1 NB2}
+    } -body {
+        $C1 eval
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test eval-3.2 {DOES, ANY, unmet} -setup {
+        setup
+        $C1 configure \
+            -a      JOE \
+            -sense  DOESNT \
+            -anyall ANY \
+            -nlist  [gofer construct NBHOODS BY_VALUE {NB1 NB2}]
+        setcontrol JOE NB1 BOB NB2
+    } -body {
+        $C1 eval
+    } -cleanup {
+        cleanup
+    } -result {0}
+    
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+
+

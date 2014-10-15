@@ -1,0 +1,76 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    order_civgroup.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: CIVGROUP:* Orders
+#
+#    This file is included into order.help.
+#
+#-----------------------------------------------------------------------
+
+#=======================================================================
+# Civilian Group Orders
+
+page /order civgroup "Civilian Group Orders" {
+    <title>
+
+    These orders are used create, update, and delete 
+    <term civgroup>s.
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+
+order CIVGROUP:CREATE "Create Civilian Group" {
+    <b><term prep> Only.</b>  This order creates a
+    new <term civgroup>.  The order parameters
+    are as follows:<p>
+    
+    <parmlist>
+    <group_civ parms -required -tags create>
+    </parmlist>
+}
+
+
+#-----------------------------------------------------------------------
+
+order CIVGROUP:DELETE "Delete Civilian Group" {
+    <b><term prep> Only.</b>  Deletes an existing
+    civilian group, along with all entities (e.g., attitudes)
+    that depend upon it.<p>
+
+    <parmlist>
+    <parm g "Group">
+    <b>Required.</b>  <GROUP.g civilian>
+    </parm>
+    </parmlist>
+
+}
+
+#-----------------------------------------------------------------------
+
+order CIVGROUP:UPDATE "Update Civilian Group" {
+    <b><term prep> Only.</b>  This order updates an
+    existing <term civgroup>.  The order parameters
+    are as follows:<p>
+
+    <parmlist>
+    <parm g "Select Group">
+    <b>Required.</b>  <GROUP.g civilian>
+    </parm>
+
+    <group_civ parms -optional -tags update>
+    </parmlist>
+}
+
+
+
+
+
+

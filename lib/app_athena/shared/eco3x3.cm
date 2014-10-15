@@ -1,0 +1,684 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    eco3x3.cm, version r
+#
+# AUTHOR:
+#    Bob Chamberlain
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Prototype CGE for the Athena Economics Model.  This is a
+#    3x3 Cobb-Douglas model, based on Ian Sue Wing's MIT paper.
+#
+#    Criteria for success:
+#
+#    * The model converges.
+#    * All REV.i = EXP.i
+#    * Prices and quantities are reasonable
+#      * Prices should recover the values used to calibrate the
+#        constants A.i.
+#    * Quantities produced should equal the sum of the demands.
+#      * I.e., deltaQ.i should = 0 for all i.
+#    * Quantities should not all be zero.
+#
+# PAGES:
+#    The model contains the following pages.  We expect the whole
+#    model to be computed at time 0, as part of calibration; as time
+#    advances, the model will be recomputed periodically starting at 
+#    page In.
+#
+#    "null" Basic inputs, including the Base Case and possibly SAM
+#           data, and non-iterative calibration.
+#    Cal    Iterative calibration based on data from the null page.
+#    In     Application-settable inputs for the U and C pages.
+#    U      Unconstrained model; the size of the economy is driven by
+#           consumer demand.
+#    C      Constrained model; the size of the economy is constrained
+#           by the production capacity and the labor supply, both of
+#           which are supplied by the rest of Athena.
+#    Out    Output page: computes overages, shortages, and idle capacity
+#           (e.g., unemployment) by comparing the constrained and
+#           unconstrained results, as well as other outputs to the 
+#           rest of Athena.
+#
+#    NOTE: The Athena application is aware only of the "null", In, and Out 
+#    pages.
+#
+# HISTORY:
+#    Version r: Revised the formulas for C::QS.goods and C::QS.pop so that
+#               in the absence of binding constraints they will be at least
+#               as big as on the U page.
+#
+#               Added a number of diagnostic cells to the Out page, to
+#               support the application's sanity check of the results.
+#
+#    Version q: Added CSF and LSF, so that low security can decrease
+#               both consumption and the labor supply.
+#               Added ediff() to the deltaQ.i and deltaREV.i formulas, 
+#               so that it's easier to see whether they are met or not.
+#               Copied the values of deltaQ.i and deltaREV.i to the 
+#               Out page, in case we want the application to keep
+#               an eye on them.  Note that CSF has no affect at this time.
+#
+#               Added a new command to initialize the C page from the
+#               U page each time C is solved.  The C page does not
+#               stand alone; it is explicitly an adjustment of the 
+#               unconstrained result.
+#
+#    Version p: Corrected computation of CPI on page C to be based on
+#               consumer purchases rather than all purchases.  Removed
+#               CAP.else once again, as it is no longer needed.
+#               Renamed the names BasePopulation and In::population
+#               with the correct names BaseConsumers and
+#               In::Consumers.  Added computation of GDP.
+#
+#    Version o: Added capacity limits for the else sector to facilitate
+#               further testing.  Deleted the "deltaP" parameters, as
+#               they aren't needed.  Other cosmetic changes.
+#
+#    Version n: Corrected the price adjustment equations so they
+#               correctly use the optimal Cobb-Douglas demands to
+#               adjust prices so that demand equals supply (i.e.,
+#               markets clear).  This is justified by the assumption
+#               that there are no economies of scale in any sector.
+#               Changed numeraire for the price equations on the C
+#               page to U::P.pop, the average wage in the
+#               unconstrained case.  Revised QD.goods.pop to maintain
+#               f.goods.pop under reduced production.
+#
+#    Version m: The price adjustments in version l affect the CPI, so
+#               the P.goods implied by the base case CPI, U::P.goods,
+#               is used as the numeraire instead of the CPI.
+#  
+#    Version l: Adjusts prices when production constraints are encountered
+#               on page C until demand reduces enough to achieve market 
+#               clearance.  Based on version j, not on version k.
+#
+#    Version k: Attempted to achieve market clearance when production is
+#               constrained by simply limiting QD.i.j.  Didn't work;
+#               some QD.i.j went negative during iteration.
+#               Constraining QD.i.j >= 0.0 still didn't work.  Attempt
+#               abandoned for further analysis.
+#
+#    Version j: Replaced [Cal::SUM] in U::P.goods with [SUM]; [SUM]
+#               is now computed as part of pages U and C.  In addition,
+#               SHORTAGE.i is really the latent demand for the product
+#               of section i, so it is renamed LATENTDEMAND.i.  OVERAGE.i
+#               turns out not to be useful, so it has been removed.
+#
+#    Version i: Added computation of labor market turbulence as a 
+#               percentage of the labor force.  Added explicit
+#               computation of the non-turbulent, "real",
+#               unemployment.  Made minor cosmetic improvements.
+#
+#    Version h: Re-integration of version g into Athena.
+#               * Added Out::BQS.goods = Cal::QS.goods, to support the
+#                 CAP.goods calibration.
+#
+#    Version g: Re-ordered the equations per RGC.
+#
+#    Version f: Restored the notion that the work force should be
+#               endogenous by calibrating the per capita demands on
+#               the null page, then assuming jobs will be driven by the
+#               demand for labor, but limited by the possibly changing
+#               workforce statistics (population, available work force).
+#
+#    Version e: Made the CPI the numeraire.  Assumed the demographics 
+#               model will compute both CAP.pop and QS.pop, i.e., the
+#               demographics model owns the unemployment rate.
+#
+#               WHD: It's reasonable that Demographics should compute
+#               the size of the workforce given wages and other 
+#               opportunities.  But the CGE must compute the number
+#               of people who actually *can* work given production
+#               constraints.  (This assumes that idle goods production
+#               capacity, if any, can be put to work as demand rises
+#               in the equilibrium economy.)
+#
+#               WHD: In this version, the cal page and the U page could
+#               be merged; however, I'm going to leave them be.
+#
+#    Version d: Revised P.pop and A.pop: per RGC, they are defined
+#               just like the other P.i's and A.i's.  Also, completed
+#               distinction between Quantity Supplied (QS.i) and
+#               Quantity Demanded (QD.i, QD.i.j).
+#
+#    Version c: Added QS.i, Quantity Supplied, with REV.i = P.i*QS.i.
+#
+#    Version b: Set In::CAP.goods and In::CAP.pop to 1e15 initially;
+#               they are set by econ(sim) and should be effectively
+#               infinite until then.
+#
+#               Copied X.i.j, Q.i.j, P.i, Q.i, REV.i, EXP.i from C
+#               to out, to make them visible to econ(sim).
+#
+#    Version a: Based on prototype cd3x3r.cm.
+#               Added In:: page, distinguished between base case inputs
+#               and dynamic inputs (e.g., BasePopulation and 
+#               In::population).
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Indices
+
+index i     {goods pop else}
+index ing   {pop else}
+index j     {goods pop else}
+index imost {goods pop}
+
+#=======================================================================
+# Null Page
+#
+# The "null" page contains cells that are global to the rest of the
+# model, and that do not change as simulation time advances.  Some are
+# inputs to the model; others are computed from the inputs and should 
+# not be changed.  In principle, many of these parameters are "calibrated"
+# from a Social Accounting Matrix (SAM).
+
+# Normal turbulence in employment
+
+let TurFrac = 0.04 ;# Average fraction of workers "temporarily" unemployed
+
+# SAM-based Parameters
+#
+# A Social-Accounting Matrix can in principle be used to calibrate the
+# model, as described here.  HOWEVER, from Athena's point of view the
+# SAM data should be used only to determine the "shape" of the economy,
+# i.e., the f.i.j's; the "size" of the economy must be driven
+# by the Ground and Demographic models.
+#
+# If there is SAM data, it is:
+#
+#   BX.i.j     The payment in $/year from sector j to sector i
+#   BP.j       The price of one unit of the product of sector j
+#
+# Then compute:
+#
+#   BREV.i      = sum.j BX.i.j
+#   BEXP.j      = sum.i BX.i.j
+#   BQD.i.j     = BX.i.j/BP.i
+#   f.i.j       = BX.i.j/BREV.j
+#   A.goods.pop = BQD.goods.pop/BaseConsumers
+#
+# If there is no SAM, we need to input BaseConsumers, A.goods.pop, 
+# f.i.j, and BP.j.
+#
+# Since the SAM specifies both "size" and "shape", whereas the
+# f.i.j's specify only "shape", and since we must determine the "size"
+# from the Ground and Demographic models, we prefer to input the
+# f.i.j's rather than the BX.i.j's.  The f.i.j's can, of course, 
+# be computed from a SAM ahead of time. 
+
+#-----------------------------------------------------------------------
+# Scenario Inputs
+
+let BaseConsumers = 1e6     ;# Number of consumers in the inital population.
+
+#  f.i.j is the fraction of j's revenue that is spent in sector i.
+
+let f.goods.goods = 0.2
+let f.pop.goods   = 0.4
+let f.else.goods  = {1 - [f.goods.goods] - [f.pop.goods]}
+
+let f.goods.pop   = 0.75
+let f.pop.pop     = 0.1
+let f.else.pop    = {1 - [f.goods.pop] - [f.pop.pop]}
+
+let f.goods.else  = 0.3
+let f.pop.else    = 0.05
+let f.else.else   = {1 - [f.goods.else] - [f.pop.else]}
+
+# Base prices: These are the sector prices used to calibrate the
+# Cobb-Douglas coefficients.
+
+let BP.goods = 1       ;# $/goodsBKT
+let BP.pop   = 400     ;# $/work-year
+let BP.else  = 1       ;# $/elseBKT
+
+# Base quantities demanded by pop.  The population spends its 
+# income, BREV.pop, on the sectors according to the f.i.pop's.
+# We begin with the per-capita consumption of goods, A.goods.pop,
+# and the base number of consumers.  From this, we compute BQD.goods.pop.
+# Given the price of goods and the fraction that the population
+# spends on goods, we get BREV.pop.  We then use the f.i.pop's and
+# P.j's to compute the other BQD.i.pop's.
+#
+# The BQD.i.pop's are used in the equation for P.goods.  Ultimately,
+# the "size" of the economy depends on A.goods.pop and the population.
+
+let A.goods.pop    =  114    ;# Direct consumption of goods, in 
+                              # goodsBKT/year per capita
+
+let BQD.goods.pop  =  {
+    [BaseConsumers]*[A.goods.pop]
+} -value 1.14e8    ;# goodsBKT/year
+
+let BREV.pop       =  {
+    [BQD.goods.pop]*[BP.goods]/[f.goods.pop]
+} -value 1.52e8 
+
+let BQD.pop.pop    =  {
+    [f.pop.pop]*[BREV.pop]/[BP.pop]
+} -value 38000     ;# work-year/year
+
+let BQD.else.pop   =  {
+    [f.else.pop]*[BREV.pop]/[BP.else]
+} -value 2.28e7    ;# elseBKT/year
+
+#----------------------------------------------------------------------
+# Calibration Constants
+#
+# These values are computed from the inputs above, and should not
+# be modified.
+
+# Cobb-Douglas production function coefficients.  The following
+# formulas compute the calibrated Cobb-Douglas coefficients A.i that
+# should yield the P.i = BP.i when the model is solved.
+#
+# The A.j's describe the technology via the production function
+# (and the utility via the utility function).  Athena might want to
+# change these assumptions eventually, especially for different kinds
+# of sectors.
+
+let A.pop = {
+    <:prod i {([BP.$i]/[f.$i.pop])**[f.$i.pop]}:> / [BP.pop]
+} -value 0.0094501
+
+let A.else = {
+    <:prod i {([BP.$i]/[f.$i.else])**[f.$i.else]}:> / [BP.else]
+} -value 2.975941843
+
+# Base CPI: defines the CPI for the base case; indexes the CPI to the
+# start of the simulation. 
+let BCPI = 1.0
+
+#=======================================================================
+# Calibration
+#
+# The following page is used to calibrate the CGE during scenario 
+# preparation, based on data from the null page.  It is not recomputed
+# as time advances. 
+
+#-----------------------------------------------------------------------
+# Calibration Page
+#
+# This page defines the basic CGE equations, and solves by using data
+# from the null page, sizing the economy by population's demand for
+# goods in the base case.
+
+page Cal
+
+# REV.i is the income of sector i: the product of P.i * QS.i, where 
+# QS.i is the quantity supplied of i's product.
+#
+# EXP.j is the expenditures by sector j on the various
+# sectors i: sum of the X.i.j's down the column.  At present, it is
+# used only for output, to verify that EXP.j=REV.j.
+
+# REV.i = P.i * QS.i
+# EXP.j = sum.i X.i.j
+
+define REV.i {i} {[P.$i]*[QS.$i]}
+define EXP.j {j} {<:sum i {[X.$i.$j]}:>}
+
+let REV.goods = [REV.i goods]                      -value 2.92125e8
+let EXP.goods = [EXP.j goods]                      -value 2.92125e8
+
+let REV.pop   = [REV.i pop]                        -value 1.52e8
+let EXP.pop   = [EXP.j pop]                        -value 1.52e8
+
+let REV.else  = [REV.i else]                       -value 3.99e8
+let EXP.else  = [EXP.j else]                       -value 3.99e8
+
+# X.i.j is the revenue sector i receives from sector j; it's computed
+# as i's share of j's total revenue.
+#
+# X.i.j = f.i.j * REV.j
+
+define X.i.j  {i j} { [f.$i.$j] * [REV.$j] }
+
+let X.goods.goods  = {<:X.i.j goods goods:>}  -value 5.8425e7
+let X.pop.goods    = {<:X.i.j pop goods:>}    -value 1.1685e8
+let X.else.goods   = {<:X.i.j else goods:>}   -value 1.1685e8
+let X.goods.pop    = {<:X.i.j goods pop:>}    -value 1.14e8
+let X.pop.pop      = {<:X.i.j pop pop:>}      -value 1.52e7
+let X.else.pop     = {<:X.i.j else pop:>}     -value 2.28e7
+let X.goods.else   = {<:X.i.j goods else:>}   -value 1.197e8
+let X.pop.else     = {<:X.i.j pop else:>}     -value 1.995e7
+let X.else.else    = {<:X.i.j else else:>}    -value 2.5935e8
+
+
+# QD.i.j is number of i's units "purchased" by j at price P.i; 
+# it's simply the dollar amount divided by the price.
+#
+# QD.i.j = X.i.j / P.i
+#
+# Note that QD.goods.pop is special, as it drives the size of the
+# economy.
+
+define QD.i.j {i j} { [X.$i.$j] / [P.$i] }
+
+let QD.goods.goods = {<:QD.i.j goods goods:>} -value 5.8425e7
+let QD.pop.goods   = {<:QD.i.j pop goods:>}   -value 292125
+let QD.else.goods  = {<:QD.i.j else goods:>}  -value 1.1685e8
+let QD.pop.pop     = {<:QD.i.j pop pop:>}     -value 38000
+let QD.else.pop    = {<:QD.i.j else pop:>}    -value 2.28e7
+let QD.goods.else  = {<:QD.i.j goods else:>}  -value 1.197e8
+let QD.pop.else    = {<:QD.i.j pop else:>}    -value 49875
+let QD.else.else   = {<:QD.i.j else else:>}   -value 2.5935e8
+
+# Some sort of exogenous demand is required to size the 
+# economy, so we have chosen to size the economy (in the unconstrained
+# case) based on the per capita consumer demand for goods.
+
+# NOTE: We'll redefine this in U as A.goods.pop*In::consumers
+let QD.goods.pop = {[BQD.goods.pop]} -value 1.14e8
+
+# QD.i is the demand for the product of sector i in the sector's units.
+# It is computed as the sum of the sector-by-sector demands for sector 
+# i's product.
+#
+# QD.i = SUM.j(QD.i.j)
+
+define QD.i {i} {
+    <:sum j {[QD.$i.$j]}:>
+}
+
+let QD.goods = {<:QD.i goods:>} -value 2.92125e8
+let QD.pop   = {<:QD.i pop:>}   -value 380000
+let QD.else  = {<:QD.i else:>}  -value 3.99e8
+
+# In the unconstrained case, the quantities supplied, QS.i, are made 
+# equal to the quantity demanded, QD.i.  This is Walras' Law that 
+# supply = demand at equilibrium.
+
+let QS.goods = {[QD.goods]}     -value 2.92125e8
+let QS.pop   = {[QD.pop]}       -value 380000
+let QS.else  = {[QD.else]}      -value 3.99e8
+
+# When j is a production sector, the price of one unit of its product,
+# P.j, is obtained by inserting the expressions for the optimal values
+# of the ingredients, 
+#
+#   QD.i.j = f.i.j*P.j*QS.j/P.i, 
+#
+# into the condition that REV.j=EXP.j, where REV.j is the product of
+# the price, P.j, and the quantity supplied, QS.j, and EXP.j is computed
+# by summing the expenses.  We use the Cobb-Douglas production function, 
+#
+#   QS.j = A.j * PROD.i (QD.i.j ** f.i.j)
+#
+# to express the supplied quantity in terms of the quantities of
+# ingredients, and insert the expressions for those quantities.  The
+# QS.j drop out of the equation and we solve for P.j.  The solution is
+#
+#   P.j = (PROD.i (P.i/f.i.j)**f.i.j)/A.j.
+#
+# Goods and else are production sectors; pop may be treated like one,
+# with consumption "producing" the labor.
+
+define P.j {j} {
+    <:prod i {([P.$i]/[f.$i.$j])**[f.$i.$j]}:> / [A.$j]
+}
+
+# let P.goods = [P.j goods] -value 1.0
+let P.pop   = [P.j pop]   -value 400.0
+let P.else  = [P.j else]  -value 1.0
+
+# However, the price equations are homogeneous, so one of them is
+# useless, and the above equation for P.goods is not used. Instead,
+# we use the BCPI (base case consumer price index) as the numeraire that
+# defines the value of the $ in terms of a weighted sum of prices, 
+# where the weights are consumption by consumers in a base case.
+# Solving BCPI=1 for P.goods gives:
+
+let C       = {<:sum i {[BP.$i] * [BQD.$i.pop]}:>}      -value 1.52e8
+let SUM     = {<:sum ing {[P.$ing] * [BQD.$ing.pop]}:>} -value 3.8e7
+let P.goods = {([C]*[BCPI] - [SUM])/[BQD.goods.pop]}    -value 1
+
+# P.goods was chosen because QD.goods.pop, which becomes a 
+# divisor, is never zero.
+
+#-----------------------------------------------------------------------
+# Diagnostics
+
+# deltaQD.i.pop verifies that QD.i.pop = BQD.i.pop at the end of
+# calibration.
+
+define deltaQD.i.pop {i} {
+    ([QD.$i.pop] - [BQD.$i.pop])/
+    max(1.0, [QD.$i.pop], [BQD.$i.pop])
+}
+
+let deltaQD.goods.pop = {<:deltaQD.i.pop goods:>}
+let deltaQD.pop.pop   = {<:deltaQD.i.pop pop:>}
+let deltaQD.else.pop  = {<:deltaQD.i.pop else:>}
+
+# deltaQ.i: Verifies that QS.i = SUM.j QD.i.j.  The value of deltaQ.i 
+# should be within an epsilon of 0.0.
+
+define deltaQ.i {i} {
+    ediff(0.0, 1.0 - <:sum j {[QD.$i.$j]}:>/[QS.$i])
+}
+
+let deltaQ.goods = {<:deltaQ.i goods:>}
+let deltaQ.pop   = {<:deltaQ.i pop:>}
+let deltaQ.else  = {<:deltaQ.i else:>}
+
+# deltaREV.i: Verifies that REV.i = SUM.j X.i.j.  The value of deltaREV.i
+# would be within an epsilon of 0.0.
+
+define deltaREV.i {i} {
+    ediff(0.0, ([REV.$i] - <:sum j {[X.$i.$j]}:>)/[REV.$i])
+}
+
+let deltaREV.goods = {<:deltaREV.i goods:>}
+let deltaREV.pop   = {<:deltaREV.i pop:>}
+let deltaREV.else  = {<:deltaREV.i else:>}
+
+#=======================================================================
+# Dynamic Pages
+#
+# The following pages are recomputed at each "tock".  Inputs from the
+# rest of Athena and from the user that can change as time passes
+# appear on the In page.  Outputs to Athena appear on the Out
+# page.
+
+#-----------------------------------------------------------------------
+# Inputs page
+#
+# The values given on this page are notional; the real values will
+# come from outside the CGE.
+
+page In
+
+# Current Consumer Price Inflator
+let Inflator   = 1.0
+
+# Consumption Security Factor: decreases consumption due to low
+# neighborhood group security.
+let CSF        = 1.0
+
+# Labor Security Factor: decreases labor due to low neighborhood group
+# security.
+let LSF        = 1.0
+
+# Number of consumers currently in the population.
+let Consumers = 1e6          ;# people.
+
+# Max capacity for each sector.  These are set by Athena; the initial
+# values are intended to be effectively infinite.
+
+# Max production rate for goods
+let CAP.goods  = 1e15         ;# goodsBKT/year
+
+# Work Force: Number of people who want to be employed
+let WF         = 400000       ;# work-years/year
+
+# Due to the normal turbulence, some of those in the Work Force
+# are temporarily unemployed and hence not available to work. Thus,
+# CAP.pop is the WF less this turbulence.  In addition, low security
+# can reduce the effective workforce because people are afraid to
+# go to work.
+let CAP.pop = {[WF]*[LSF]*(1 - [TurFrac])}
+
+# NOTE: Because else includes the rest of the world, it is presumed to
+# have unlimited capacity even in the constrained case.  Hence, there
+# is no CAP.else.
+
+# let CAP.else = 1e15
+
+
+#-----------------------------------------------------------------------
+# Unconstrained Page
+#
+# This pages runs the CGE for the unconstrained solution, using
+# equations copied from the Cal page, sizing the economy based on
+# demand for goods by the current population.
+
+page U 
+
+copypage Cal -except {
+    C 
+    deltaQD.goods.pop
+    deltaQD.pop.pop
+    deltaQD.else.pop
+}
+
+# QD.goods.pop is now computed from the current population, not 
+# from the base population.
+let QD.goods.pop = {[A.goods.pop]*[In::Consumers]} -value 1.14e8
+
+# P.goods is now based on the current Consumer Price Index, rather 
+# than the Base CPI.
+let P.goods = {([Cal::C]*[In::Inflator] - [SUM])/[BQD.goods.pop]} -value 1
+
+let CPI = {
+    <:sum i {[P.$i]  * [BQD.$i.pop]}:> / <:sum i {[BP.$i] * [BQD.$i.pop]}:>
+} -value 1.0
+
+let deltaCPI = {
+    ([CPI] - [In::Inflator])/[In::Inflator]
+}
+
+
+#-----------------------------------------------------------------------
+# Constrained Page
+#
+# This page runs the CGE for the constrained solution, i.e., it takes
+# the current labor force and production capacity into account and may
+# therefore impose limits on the Quantity Supplied (QS.i) by the 
+# goods and pop sectors, as compared with the unconstrained solution.
+# When demand exceeds capacity, prices increase to force market clearance.
+#
+# Otherwise, the model is the same as on the U page.
+
+page C
+copypage U
+initfrom U
+
+let QD.goods.pop = {
+    [f.goods.pop]*[REV.pop]/[P.goods]
+} -value 1.14e8
+
+# The quantity supplied is constrained by the production capacity; if
+# the constraint is not binding, it should be at least as big as on
+# the U page.
+let QS.goods = {
+    min([In::CAP.goods], max([QD.goods], [U::QD.goods]))
+} -value 2.92125e8
+
+let QS.pop = {
+    min([In::CAP.pop], max([QD.pop], [U::QD.pop]))
+} -value 380000
+
+# The capacity of else is unconstrained.  This entry doesn't really
+# change anything, but it makes the assumption explicit.
+let QS.else = {[QD.else]}   -value 3.99e8
+
+let P.goods = {
+    ([f.goods.pop]*[REV.pop] + [f.goods.else]*[REV.else]) /
+    ((1.0 - [f.goods.goods])*[QS.goods])
+} -value 1
+
+# The value of P.pop implied by CPI=1 in the unconstrained case is the
+# numeraire for the constrained case.  Note that P.pop is already
+# inflated by the In::Inflator.
+
+let P.pop = {[U::P.pop]} -value 400
+
+let P.else = {
+    ([f.else.goods]*[REV.goods] + [f.else.pop]*[REV.pop]) /
+    ((1.0 - [f.else.else])*[QS.else])
+} -value 1
+
+
+#=======================================================================
+# Page Out: The outputs.
+
+page Out
+
+# Copy base case outputs from Cal
+let BQS.goods = {[Cal::QS.goods]}
+
+# Copy outputs from C
+foreach i {goods pop else} {
+    let P.$i        = {[C::P.$i]}
+    let QS.$i       = {[C::QS.$i]}
+    let REV.$i      = {[C::REV.$i]}
+    let EXP.$i      = {[C::EXP.$i]}
+    let deltaQ.$i   = {[C::deltaQ.$i]}
+    let deltaREV.$i = {[C::deltaREV.$i]}
+
+    foreach j {goods pop else} {
+        let QD.$i.$j = {[C::QD.$i.$j]}
+        let X.$i.$j  = {[C::X.$i.$j]}
+    }
+}
+
+let CPI = {[C::CPI]}
+
+# goods shortages and overages: goodsBKT/year
+let LATENTDEMAND.goods = {max(0.0, ediff([U::QD.goods],   [C::QS.goods]))}
+let IDLECAP.goods      = {max(0,0, ediff([In::CAP.goods], [C::QS.goods]))}
+
+# pop shortages and overages: work-years/year
+let LATENTDEMAND.pop   = {max(0.0, ediff([U::QD.pop],   [C::QS.pop]))}
+let IDLECAP.pop        = {max(0,0, ediff([In::CAP.pop], [C::QS.pop]))}
+
+# Unemployment Statistics
+let RealUnemployment = {max(0.0, ediff([In::CAP.pop],[C::QS.pop]))}  ;# People
+let Turbulence       = {[TurFrac]*[In::WF]}                          ;# People
+let Unemployment     = {[RealUnemployment] + [Turbulence]}           ;# People
+
+# Unemployment Rates, real and reported
+let RealUR = {100.0 * [RealUnemployment]/[In::WF]} ;# Percentage
+let UR     = {100.0 * [Unemployment]/[In::WF]}     ;# Percentage
+
+# Gross Domestic Product, GDP
+
+let GDP  = {
+    [X.goods.pop] + [X.pop.pop] + [X.goods.else] + [X.pop.else]
+}
+
+# GDP deflated by CPI, which is used as a proxy for the GDP deflator.
+let DGDP = {[GDP]/[CPI]}
+
+# Sanity Check Values
+let SUM.QS = {
+    ediff([QS.goods] + [QS.pop] + [QS.else], 0.0)
+}
+
+let FLAG.QS.NONNEG = {
+    [QS.goods] >= 0.0 || [QS.pop] >= 0.0 || [QS.else] >= 0.0
+}
+
+let FLAG.P.POS = {
+    [P.goods] > 0.0 || [P.pop] > 0.0 || [P.else] > 0.0
+}
+
+let FLAG.DELTAQ.ZERO = {
+    [deltaQ.goods] == 0.0 && [deltaQ.pop] == 0.0 && [deltaQ.else] == 0.0
+}

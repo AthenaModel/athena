@@ -1,0 +1,501 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    040-driver_control.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    driver_control(sim) tests
+#
+#    This test suite tests that the rules fire when appropriate.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Define an htools buffer for tests
+    htools ht
+
+    # pprint text
+    #
+    # text  - block text
+    #
+    # Prints it so that it looks nice in a -result option.
+
+    proc pprint {text} {
+        return "\n[string trim $text]\n    "
+    }
+
+    # setup a b
+    #
+    # a   - Actor losing control, or ""
+    # b   - Actor gaining control, or ""
+    #
+    # Sets up for tests.
+    
+    proc setup {a b} {
+        # FIRST, other rule sets shouldn't muddy the waters.
+        parm set dam.CONSUMP.active no
+        parm set dam.PRESENCE.active no
+        parm set dam.UNEMP.active no
+        parm set dam.ENI.active no
+        rdb eval {DELETE FROM drivers}
+        
+        # NEXT, create the entities
+        ted create JOE BOB DAVE NB1 NB2 BLUE BRIT TAL SHIA SUNN KURD
+        
+        # NEXT, give DAVE the BRITs, to offset JOE's BLUEs.
+        ted order FRCGROUP:UPDATE g BRIT a DAVE
+        
+        # NEXT, is BOB initially in control?
+        if {$a ne ""} {
+            rdb eval {
+                UPDATE nbhoods
+                SET controller=$a
+                WHERE n='NB1'
+            }
+        }
+        
+        # NEXT, deploy BLUE troops to NB1 
+        ted deploy NB1 BLUE all
+        
+        # NEXT, set up the troops to get the right transition.
+        # If JOE has all of the troops in the neighborhood, he will take
+        # control, so we need do nothing more.  To get a transition from
+        # BOB to no one, we need a balance of power such that no actor
+        # has .5 or more of the influence, and BOB doesn't have the most.
+        # Thus, we need three actors to deploy troops, with BOB deploying the
+        # least.
+        #
+        # JOE has 2000 BLUE, DAVE has 2000 BRIT, and BOB has 1000 TAL.
+    
+        if {$a eq "BOB" && $b eq ""} {
+            ted deploy NB1 BRIT all
+            ted deploy NB1 TAL all
+        }
+    }
+    
+    # Clean up after a test
+    proc cleanup {} {
+        ht clear
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # assess
+    
+    # assess-1.*: The CONTROL-1-1 rule
+    #
+    # BOB loses control of NB1 to JOE
+    
+    test assess-1.1 {Rule 1-1 fires} -setup {
+        setup BOB JOE
+    } -body {
+        ted step
+        ted querylist {
+            SELECT * FROM rule_firings
+            WHERE rule GLOB 'CONTROL-1-*'
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          1
+driver_id  1000
+ruleset    CONTROL
+rule       CONTROL-1-1
+fdict      n NB1 a BOB b JOE dtype CONTROL
+    }
+    
+    test assess-1.2 {Rule 1-1 sat inputs} -setup {
+        setup BOB JOE
+        
+        # By default, all V.ga's are 0.0.  Modify some so we get
+        # different cases.
+        ted order VREL:OVERRIDE id {SHIA JOE} base 0.5
+        ted order VREL:OVERRIDE id {SUNN BOB} base 0.5
+    } -body {
+        ted step
+        ted query {
+            SELECT rule, g, c, note
+            FROM rule_firings JOIN rule_inputs USING (firing_id)
+            WHERE rule GLOB 'CONTROL-1-*' AND atype='sat'
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+rule        g    c   note    
+----------- ---- --- ------- 
+CONTROL-1-1 SHIA AUT DV=+0.5 
+CONTROL-1-1 SUNN AUT DV=-0.5 
+    }
+    
+    
+    test assess-1.3 {Rule 1-1 coop inputs} -setup {
+        setup BOB JOE
+        
+        # By default, all V.ga's are 0.0.  Modify some so we get
+        # different cases.
+        ted order VREL:OVERRIDE id {SHIA JOE} base 0.5
+        ted order VREL:OVERRIDE id {SUNN BOB} base 0.5
+    } -body {
+        ted step
+        ted query {
+            SELECT rule, f, g, note
+            FROM rule_firings JOIN rule_inputs USING (firing_id)
+            WHERE rule GLOB 'CONTROL-1-*' AND atype='coop'
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+rule        f    g    note                   
+----------- ---- ---- ---------------------- 
+CONTROL-1-1 SHIA TAL  a's group, V.fa=INDIFF 
+CONTROL-1-1 SHIA BLUE b's group, V.fb=LIKE   
+CONTROL-1-1 SUNN TAL  a's group, V.fa=LIKE   
+CONTROL-1-1 SUNN BLUE b's group, V.fb=INDIFF 
+    }
+    
+    # assess-2.*: The CONTROL-1-2 rule
+    #
+    # BOB loses control of the neighborhood.
+    
+    test assess-2.1 {Rule 1-2 fires} -setup {
+        setup BOB {}
+    } -body {
+        ted step
+        ted querylist {
+            SELECT * FROM rule_firings
+            WHERE rule GLOB 'CONTROL-1-*'
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          1
+driver_id  1000
+ruleset    CONTROL
+rule       CONTROL-1-2
+fdict      n NB1 a BOB b {} dtype CONTROL
+    }
+    
+    test assess-2.2 {Rule 1-2 sat inputs} -setup {
+        setup BOB {}
+        # By default, all V.ga's are 0.0.  Modify some so we get
+        # different cases.
+        ted order VREL:OVERRIDE id {SUNN BOB} base -0.4
+    } -body {
+        ted step
+        ted query {
+            SELECT rule, g, c, note
+            FROM rule_firings JOIN rule_inputs USING (firing_id)
+            WHERE rule GLOB 'CONTROL-1-*' AND atype='sat'
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+rule        g    c   note         
+----------- ---- --- ------------ 
+CONTROL-1-2 SHIA AUT V.fa=INDIFF  
+CONTROL-1-2 SUNN AUT V.fa=DISLIKE 
+    }
+    
+    test assess-2.3 {Rule 1-2 coop inputs} -setup {
+        setup BOB {}
+        # By default, all V.ga's are 0.0.  Modify some so we get
+        # different cases.
+        ted order VREL:OVERRIDE id {SUNN BOB} base -0.4
+    } -body {
+        ted step
+        ted query {
+            SELECT rule, f, g, note
+            FROM rule_firings JOIN rule_inputs USING (firing_id)
+            WHERE rule GLOB 'CONTROL-1-*' AND atype='coop'
+            ORDER BY f,g
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+rule        f    g    note                    
+----------- ---- ---- ----------------------- 
+CONTROL-1-2 SHIA BLUE c's group, V.fc=INDIFF  
+CONTROL-1-2 SHIA BRIT c's group, V.fc=INDIFF  
+CONTROL-1-2 SHIA TAL  a's group, V.fa=INDIFF  
+CONTROL-1-2 SUNN BLUE c's group, V.fc=INDIFF  
+CONTROL-1-2 SUNN BRIT c's group, V.fc=INDIFF  
+CONTROL-1-2 SUNN TAL  a's group, V.fa=DISLIKE 
+    }
+    
+    
+    # assess-3.*: The CONTROL-1-3 rule
+    #
+    # NB1 has no controller; JOE takes control of NB1.
+    
+    test assess-3.1 {Rule 1-3 fires} -setup {
+        setup {} JOE
+    } -body {
+        ted step
+        ted querylist {
+            SELECT * FROM rule_firings
+            WHERE rule GLOB 'CONTROL-1-*'
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          1
+driver_id  1000
+ruleset    CONTROL
+rule       CONTROL-1-3
+fdict      n NB1 a {} b JOE dtype CONTROL
+    }
+
+    test assess-3.2 {Rule 1-3 sat inputs} -setup {
+        setup {} JOE
+        
+        # By default, all V.ga's are 0.0.  Modify some so we get
+        # different cases.
+        ted order VREL:OVERRIDE id {SHIA JOE} base 0.5
+        ted order VREL:OVERRIDE id {SUNN BOB} base 0.5
+    } -body {
+        ted step
+        ted query {
+            SELECT rule, g, c, note
+            FROM rule_firings JOIN rule_inputs USING (firing_id)
+            WHERE rule GLOB 'CONTROL-1-*' AND atype='sat'
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+rule        g    c   note        
+----------- ---- --- ----------- 
+CONTROL-1-3 SHIA AUT V.fb=LIKE   
+CONTROL-1-3 SUNN AUT V.fb=INDIFF 
+    }
+    
+    test assess-3.3 {Rule 1-3 coop inputs} -setup {
+        setup {} JOE
+        
+        # By default, all V.ga's are 0.0.  Modify some so we get
+        # different cases.
+        ted order VREL:OVERRIDE id {SHIA JOE} base 0.5
+        ted order VREL:OVERRIDE id {SUNN BOB} base 0.5
+    } -body {
+        ted step
+        ted query {
+            SELECT rule, f, g, note
+            FROM rule_firings JOIN rule_inputs USING (firing_id)
+            WHERE rule GLOB 'CONTROL-1-*' AND atype='coop'
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+rule        f    g    note                   
+----------- ---- ---- ---------------------- 
+CONTROL-1-3 SHIA BLUE b's group, V.fb=LIKE   
+CONTROL-1-3 SUNN BLUE b's group, V.fb=INDIFF 
+    }
+    
+    # assess-4.*: The CONTROL-2-1 rule
+    #
+    # Vertical relationship effects.
+    
+    test assess-4.1 {Rule 2-1 fires} -setup {
+        setup BOB JOE
+    } -body {
+        ted step
+        ted querylist {
+            SELECT * FROM rule_firings
+            WHERE rule GLOB 'CONTROL-2-*'
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  2
+t          1
+driver_id  1000
+ruleset    CONTROL
+rule       CONTROL-2-1
+fdict      n NB1 a BOB b JOE dtype CONTROL
+    }
+    
+    test assess-4.2 {Rule 2-1 inputs} -setup {
+        setup BOB JOE
+        # By default, all V.ga's are 0.0.  Modify some so we get
+        # different cases.
+        ted order VREL:OVERRIDE id {SHIA JOE} base 0.5
+        ted order VREL:OVERRIDE id {SUNN BOB} base 0.5
+    } -body {
+        ted step
+        ted query {
+            SELECT rule, g, a, note
+            FROM rule_firings JOIN rule_inputs USING (firing_id)
+            WHERE rule GLOB 'CONTROL-2-*'
+            ORDER BY g,a
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+rule        g    a    note                        
+----------- ---- ---- --------------------------- 
+CONTROL-2-1 SHIA BOB  V.ga=INDIFF, lost control   
+CONTROL-2-1 SHIA DAVE V.ga=INDIFF, neither        
+CONTROL-2-1 SHIA JOE  V.ga=LIKE, gained control   
+CONTROL-2-1 SUNN BOB  V.ga=LIKE, lost control     
+CONTROL-2-1 SUNN DAVE V.ga=INDIFF, neither        
+CONTROL-2-1 SUNN JOE  V.ga=INDIFF, gained control 
+    }
+    
+    #-------------------------------------------------------------------
+    # sigline
+
+    test sigline-1.1 {sigline output} -setup {
+        # not needed
+    } -body {
+        driver::CONTROL sigline NB1 
+    } -cleanup {
+        cleanup
+    } -result {Shift in control of nbhood NB1}
+         
+
+    #-------------------------------------------------------------------
+    # narrative
+
+    test narrative-1.1 {narrative output: a and b} -setup {
+        # not needed
+    } -body {
+        driver::CONTROL narrative {
+            dtype      CONTROL
+            n          NB1
+            a          JOE
+            b          BOB
+        } 
+    } -cleanup {
+        cleanup
+    } -result {Control of {nbhood:NB1} shifted from {actor:JOE} to {actor:BOB}}
+
+    test narrative-1.2 {narrative output: a only} -setup {
+        # not needed
+    } -body {
+        driver::CONTROL narrative {
+            dtype      CONTROL
+            n          NB1
+            a          JOE
+            b          ""
+        } 
+    } -cleanup {
+        cleanup
+    } -result {Control of {nbhood:NB1} shifted from {actor:JOE} to NONE}
+
+    test narrative-1.3 {narrative output: b only} -setup {
+        # not needed
+    } -body {
+        driver::CONTROL narrative {
+            dtype      CONTROL
+            n          NB1
+            a          ""
+            b          BOB
+        } 
+    } -cleanup {
+        cleanup
+    } -result {Control of {nbhood:NB1} shifted from NONE to {actor:BOB}}
+
+    #-------------------------------------------------------------------
+    # detail
+
+    test detail-1.1 {detail, a and b} -setup {
+        # not needed
+    } -body {
+        driver::CONTROL detail {
+            dtype      CONTROL
+            n          NB1
+            a          JOE
+            b          BOB
+        } [namespace current]::ht
+
+        pprint [ht get] 
+    } -cleanup {
+        cleanup
+    } -result {
+Actor <a href="my://app/actor/BOB">BOB</a>
+has taken control of neighborhood
+<a href="my://app/nbhood/NB1">NB1</a>
+from <a href="my://app/actor/JOE">JOE</a>.<p>
+    }
+    
+    test detail-1.2 {detail, a only} -setup {
+        # not needed
+    } -body {
+        driver::CONTROL detail {
+            dtype      CONTROL
+            n          NB1
+            a          JOE
+            b          ""
+        } [namespace current]::ht
+
+        pprint [ht get] 
+    } -cleanup {
+        cleanup
+    } -result {
+Actor <a href="my://app/actor/JOE">JOE</a>
+has lost control of neighborhood
+<a href="my://app/nbhood/NB1">NB1</a>,
+which is now in a state of chaos.<p>
+    }
+
+    test detail-1.3 {detail, b only} -setup {
+        # not needed
+    } -body {
+        driver::CONTROL detail {
+            dtype      CONTROL
+            n          NB1
+            a          ""
+            b          BOB
+        } [namespace current]::ht
+
+        pprint [ht get] 
+    } -cleanup {
+        cleanup
+    } -result {
+Actor <a href="my://app/actor/BOB">BOB</a>
+has taken control of neighborhood
+<a href="my://app/nbhood/NB1">NB1</a><p>
+    }
+
+
+    
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+
+

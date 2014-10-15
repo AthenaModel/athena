@@ -1,0 +1,2073 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document id="Nangarhar" xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd http://www.google.com/kml/ext/2.2 http://code.google.com/apis/kml/schema/kml22gx.xsd">
+	<name>Nangarhar</name>
+	<open>1</open>
+	<Snippet maxLines="0"></Snippet>
+	<StyleMap id="PolyStyle00">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#PolyStyle0040</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#PolyStyle007</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="PolyStyle000">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<StyleMap id="PolyStyle001">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#PolyStyle0024</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#PolyStyle0025</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="PolyStyle002">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<Style id="PolyStyle003">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<StyleMap id="PolyStyle004">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#PolyStyle0015</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#PolyStyle0021</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="PolyStyle005">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<Style id="PolyStyle006">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<Style id="PolyStyle007">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<Style id="PolyStyle008">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<Style id="PolyStyle009">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<StyleMap id="PolyStyle0010">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#PolyStyle008</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#PolyStyle0014</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="PolyStyle0011">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<Style id="PolyStyle0012">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<Style id="PolyStyle0013">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<Style id="PolyStyle0014">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<Style id="PolyStyle0015">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<StyleMap id="PolyStyle0016">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#PolyStyle006</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#PolyStyle0011</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="PolyStyle0017">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<StyleMap id="PolyStyle0018">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#PolyStyle0031</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#PolyStyle0039</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="PolyStyle0019">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#PolyStyle0012</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#PolyStyle0054</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="PolyStyle0020">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<Style id="PolyStyle0021">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<Style id="PolyStyle0022">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<StyleMap id="PolyStyle0023">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#PolyStyle0043</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#PolyStyle000</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="PolyStyle0024">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<Style id="PolyStyle0025">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<StyleMap id="PolyStyle0026">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#PolyStyle0030</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#PolyStyle0057</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="PolyStyle0027">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#PolyStyle003</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#PolyStyle0028</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="PolyStyle0028">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<Style id="PolyStyle0029">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<Style id="PolyStyle0030">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<Style id="PolyStyle0031">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<StyleMap id="PolyStyle0032">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#PolyStyle0051</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#PolyStyle002</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="PolyStyle0033">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#PolyStyle0035</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#PolyStyle0041</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="PolyStyle0034">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<Style id="PolyStyle0035">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<StyleMap id="PolyStyle0036">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#PolyStyle0048</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#PolyStyle0034</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="PolyStyle0037">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#PolyStyle005</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#PolyStyle0044</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="PolyStyle0038">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#PolyStyle0022</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#PolyStyle0013</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="PolyStyle0039">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<Style id="PolyStyle0040">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<Style id="PolyStyle0041">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<Style id="PolyStyle0042">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<Style id="PolyStyle0043">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<Style id="PolyStyle0044">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<Style id="PolyStyle0045">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<StyleMap id="PolyStyle0046">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#PolyStyle0042</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#PolyStyle0017</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="PolyStyle0047">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<Style id="PolyStyle0048">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<Style id="PolyStyle0049">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<StyleMap id="PolyStyle0050">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#PolyStyle0058</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#PolyStyle009</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="PolyStyle0051">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<Style id="PolyStyle0052">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<StyleMap id="PolyStyle0053">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#PolyStyle0045</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#PolyStyle0047</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="PolyStyle0054">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<StyleMap id="PolyStyle0055">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#PolyStyle0049</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#PolyStyle0020</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="PolyStyle0056">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#PolyStyle0052</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#PolyStyle0029</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="PolyStyle0057">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<Style id="PolyStyle0058">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff6e6e6e</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>fff5e0ba</color>
+		</PolyStyle>
+	</Style>
+	<Folder id="FeatureLayer0">
+		<name>Nangarhar</name>
+		<open>1</open>
+		<Snippet maxLines="0"></Snippet>
+		<Placemark id="ID_00000">
+			<name>Achin</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>0</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>0</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Id</td>
+
+<td>0</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#PolyStyle0050</styleUrl>
+			<MultiGeometry>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								70.73056,34.222648,0 70.726562,34.22438,0 70.717917,34.228658,0 70.706132,34.218507,0 70.69380200000001,34.211074,0 70.68115899999999,34.197224,0 70.674026,34.172798,0 70.66237700000001,34.152434,0 70.65844800000001,34.139983,0 70.65362500000001,34.132989,0 70.641006,34.124583,0 70.621011,34.119075,0 70.612892,34.119952,0 70.60077,34.118936,0 70.591781,34.116388,0 70.581673,34.109311,0 70.575401,34.101765,0 70.54441799999999,34.077157,0 70.544555,34.07264,0 70.542732,34.069722,0 70.542191,34.051963,0 70.538253,34.03928,0 70.53501900000001,34.036896,0 70.53244100000001,34.030646,0 70.520202,33.951009,0 70.52503900000001,33.952347,0 70.53914,33.945785,0 70.547714,33.951476,0 70.560463,33.957871,0 70.59388,33.964321,0 70.63065400000001,33.956866,0 70.651168,33.954341,0 70.6763,33.960235,0 70.701134,33.960971,0 70.74035499999999,33.960267,0 70.750716,33.960713,0 70.767937,33.954856,0 70.779472,33.957833,0 70.780587,33.959088,0 70.77967700000001,34.002563,0 70.782661,34.016147,0 70.789687,34.030243,0 70.786378,34.064214,0 70.78002100000001,34.084104,0 70.778786,34.116139,0 70.77503900000001,34.123296,0 70.76275699999999,34.131473,0 70.75145000000001,34.142083,0 70.735512,34.159073,0 70.73316199999999,34.168796,0 70.73850899999999,34.187355,0 70.751373,34.202897,0 70.75412799999999,34.208503,0 70.754814,34.214744,0 70.752022,34.226757,0 70.746926,34.224011,0 70.734268,34.222098,0 70.73056,34.222648,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</MultiGeometry>
+		</Placemark>
+		<Placemark id="ID_00001">
+			<name>Bati_Kot</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>0</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>1</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Id</td>
+
+<td>0</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#PolyStyle0018</styleUrl>
+			<MultiGeometry>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								70.806792,34.337368,0 70.80006400000001,34.340946,0 70.796128,34.34576,0 70.78810799999999,34.350949,0 70.765822,34.352971,0 70.762085,34.355029,0 70.75496699999999,34.364437,0 70.740517,34.370197,0 70.734931,34.373609,0 70.728043,34.379334,0 70.725753,34.374363,0 70.722396,34.359931,0 70.716584,34.345188,0 70.69774700000001,34.316974,0 70.693237,34.290545,0 70.686538,34.276524,0 70.68525699999999,34.269584,0 70.68716499999999,34.261669,0 70.697793,34.250793,0 70.704621,34.238171,0 70.710617,34.232979,0 70.717917,34.228658,0 70.726562,34.22438,0 70.73056,34.222648,0 70.734268,34.222098,0 70.746926,34.224011,0 70.752022,34.226757,0 70.75341,34.23124,0 70.760002,34.236721,0 70.78847500000001,34.251317,0 70.809746,34.2598,0 70.82304499999999,34.263146,0 70.828996,34.27909,0 70.839707,34.292877,0 70.84066,34.306866,0 70.839685,34.319016,0 70.834992,34.329617,0 70.829308,34.336377,0 70.824364,34.338829,0 70.816688,34.336354,0 70.806792,34.337368,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</MultiGeometry>
+		</Placemark>
+		<Placemark id="ID_00002">
+			<name>Chaparhar</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>0</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>2</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Id</td>
+
+<td>0</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#PolyStyle0032</styleUrl>
+			<MultiGeometry>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								70.46296599999999,34.362785,0 70.461724,34.365798,0 70.454978,34.365433,0 70.43736300000001,34.364207,0 70.370194,34.354138,0 70.321662,34.355496,0 70.308808,34.342781,0 70.295165,34.321858,0 70.279129,34.303215,0 70.267585,34.280223,0 70.266685,34.272358,0 70.26911200000001,34.26447,0 70.27445899999999,34.261701,0 70.283562,34.261081,0 70.286559,34.257667,0 70.287651,34.252887,0 70.282051,34.245617,0 70.301148,34.240069,0 70.31733,34.238278,0 70.348381,34.24651,0 70.357139,34.24651,0 70.36372400000001,34.244794,0 70.368302,34.242383,0 70.37452,34.235709,0 70.37640500000001,34.230014,0 70.381455,34.234422,0 70.410004,34.261521,0 70.436936,34.289809,0 70.473991,34.316154,0 70.482544,34.328331,0 70.483665,34.340345,0 70.47931,34.347991,0 70.46296599999999,34.362785,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</MultiGeometry>
+		</Placemark>
+		<Placemark id="ID_00003">
+			<name>Dara_I_Nur</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>0</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>3</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Id</td>
+
+<td>0</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#PolyStyle0010</styleUrl>
+			<MultiGeometry>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								70.65740200000001,34.587676,0 70.67739899999999,34.590879,0 70.68632599999999,34.591384,0 70.68061899999999,34.593983,0 70.67074599999999,34.600863,0 70.661666,34.608353,0 70.65603,34.614757,0 70.65359599999999,34.620933,0 70.65385499999999,34.633182,0 70.659049,34.651852,0 70.658851,34.667435,0 70.65889,34.68312,0 70.659836,34.688102,0 70.662514,34.694919,0 70.668471,34.704074,0 70.670327,34.71041,0 70.668877,34.725154,0 70.66409299999999,34.737297,0 70.659888,34.74854,0 70.659043,34.75674,0 70.654968,34.775418,0 70.642669,34.790387,0 70.640609,34.792773,0 70.627937,34.804062,0 70.59594,34.793961,0 70.56282899999999,34.789624,0 70.55278,34.785068,0 70.54066400000001,34.77411,0 70.529763,34.76306,0 70.519532,34.755206,0 70.504998,34.745094,0 70.501839,34.739403,0 70.494332,34.712539,0 70.483093,34.694169,0 70.50450100000001,34.675414,0 70.51083300000001,34.661712,0 70.51842499999999,34.65084,0 70.532608,34.63993,0 70.547798,34.634658,0 70.587097,34.617316,0 70.59356800000001,34.612683,0 70.606331,34.599079,0 70.622109,34.589707,0 70.638031,34.587025,0 70.65740200000001,34.587676,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</MultiGeometry>
+		</Placemark>
+		<Placemark id="ID_00004">
+			<name>Dih_Bala</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>0</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>4</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Id</td>
+
+<td>0</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#PolyStyle001</styleUrl>
+			<MultiGeometry>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								70.509445,34.175233,0 70.507172,34.187266,0 70.497384,34.20015,0 70.486863,34.205871,0 70.47123000000001,34.207858,0 70.44619,34.205673,0 70.403663,34.192723,0 70.392639,34.186751,0 70.367507,34.177689,0 70.348725,34.173541,0 70.331658,34.173676,0 70.33020000000001,34.171547,0 70.318054,34.149902,0 70.313644,34.134156,0 70.311616,34.108151,0 70.30365000000001,34.066021,0 70.29969800000001,34.024406,0 70.29068,33.975697,0 70.297843,33.972854,0 70.29793600000001,33.974571,0 70.326264,33.963216,0 70.40372499999999,33.962945,0 70.426309,33.960381,0 70.430306,33.958389,0 70.433527,33.945674,0 70.435722,33.937008,0 70.44285499999999,33.934193,0 70.44577,33.933437,0 70.45281300000001,33.930804,0 70.456557,33.929631,0 70.46561199999999,33.928528,0 70.467057,33.928352,0 70.470962,33.928227,0 70.478866,33.92778,0 70.484611,33.927718,0 70.490364,33.927848,0 70.49676599999999,33.928231,0 70.501001,33.928097,0 70.50447200000001,33.928607,0 70.506432,33.929214,0 70.512961,33.931046,0 70.517388,33.932694,0 70.517848,33.935691,0 70.520202,33.951009,0 70.53244100000001,34.030646,0 70.53501900000001,34.036896,0 70.538253,34.03928,0 70.542191,34.051963,0 70.542732,34.069722,0 70.544555,34.07264,0 70.54441799999999,34.077157,0 70.540154,34.080154,0 70.522994,34.100304,0 70.51883700000001,34.110573,0 70.519013,34.122329,0 70.509224,34.150253,0 70.50937,34.172028,0 70.509445,34.175233,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</MultiGeometry>
+		</Placemark>
+		<Placemark id="ID_00005">
+			<name>Dur_Baba</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>0</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>5</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Id</td>
+
+<td>0</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#PolyStyle0016</styleUrl>
+			<MultiGeometry>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								71.06527800000001,34.051792,0 71.076286,34.062507,0 71.07734600000001,34.079673,0 71.072754,34.105689,0 71.07965900000001,34.113445,0 71.08017700000001,34.114063,0 71.07811,34.114639,0 71.06485000000001,34.119515,0 71.05482600000001,34.126167,0 71.048401,34.13342,0 71.045564,34.141376,0 71.04516700000001,34.157287,0 71.042197,34.168892,0 71.03600299999999,34.174508,0 71.02961000000001,34.178925,0 71.02076,34.181808,0 71.005296,34.183007,0 70.97863,34.187576,0 70.959611,34.193475,0 70.952094,34.185821,0 70.934112,34.164154,0 70.913535,34.155345,0 70.893632,34.144275,0 70.880866,34.132435,0 70.876397,34.126037,0 70.87445099999999,34.119927,0 70.873063,34.109299,0 70.872292,34.096942,0 70.871529,34.090424,0 70.865799,34.079121,0 70.852158,34.065365,0 70.838853,34.055829,0 70.82214399999999,34.047179,0 70.805573,34.041099,0 70.789687,34.030243,0 70.782661,34.016147,0 70.77967700000001,34.002563,0 70.780587,33.959088,0 70.78832199999999,33.967799,0 70.809388,33.974689,0 70.82428,33.981827,0 70.851083,33.980731,0 70.86850699999999,33.978295,0 70.88494799999999,33.976756,0 70.898712,33.982213,0 70.915008,33.999782,0 70.916389,34.001271,0 70.917939,34.009811,0 70.925307,34.01209,0 70.93562300000001,34.011657,0 70.946096,34.015483,0 70.954651,34.018608,0 70.983177,34.0286,0 70.99870199999999,34.028805,0 71.017792,34.036602,0 71.03416300000001,34.050536,0 71.042366,34.049329,0 71.06527800000001,34.051792,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</MultiGeometry>
+		</Placemark>
+		<Placemark id="ID_00006">
+			<name>Goshta</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>0</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>6</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Id</td>
+
+<td>0</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#PolyStyle00</styleUrl>
+			<MultiGeometry>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								70.995559,34.554772,0 70.996589,34.556281,0 70.99687900000001,34.556701,0 70.990197,34.559994,0 70.940735,34.566754,0 70.914247,34.569206,0 70.891587,34.568272,0 70.86784299999999,34.553551,0 70.858756,34.552254,0 70.827507,34.552917,0 70.796083,34.545159,0 70.754723,34.547219,0 70.739204,34.530276,0 70.746628,34.523108,0 70.769189,34.51347,0 70.781364,34.502776,0 70.784165,34.495987,0 70.786469,34.477145,0 70.785225,34.46915,0 70.78076900000001,34.461403,0 70.767402,34.450974,0 70.76361900000001,34.442329,0 70.76567,34.430557,0 70.763138,34.420773,0 70.739243,34.398529,0 70.72689699999999,34.384216,0 70.728043,34.379334,0 70.734931,34.373609,0 70.740517,34.370197,0 70.75496699999999,34.364437,0 70.762085,34.355029,0 70.765822,34.352971,0 70.78810799999999,34.350949,0 70.796128,34.34576,0 70.80006400000001,34.340946,0 70.806792,34.337368,0 70.816688,34.336354,0 70.824364,34.338829,0 70.851798,34.359959,0 70.869744,34.370778,0 70.890113,34.388489,0 70.925781,34.411681,0 70.973557,34.435902,0 70.99797100000001,34.44492,0 71.01624200000001,34.453551,0 71.00681400000001,34.461116,0 70.994873,34.491508,0 70.992836,34.527637,0 70.995559,34.554772,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</MultiGeometry>
+		</Placemark>
+		<Placemark id="ID_00007">
+			<name>Hisarak</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>0</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>7</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Id</td>
+
+<td>0</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#PolyStyle0026</styleUrl>
+			<MultiGeometry>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								69.962356,34.419052,0 69.959198,34.423492,0 69.95090399999999,34.427838,0 69.945144,34.427841,0 69.934861,34.424518,0 69.92523199999999,34.418991,0 69.908058,34.415479,0 69.89299800000001,34.414268,0 69.856201,34.405918,0 69.84449100000001,34.405469,0 69.824127,34.408596,0 69.814773,34.414193,0 69.806015,34.421466,0 69.793525,34.411572,0 69.769494,34.406697,0 69.75715700000001,34.399417,0 69.74971100000001,34.392594,0 69.737985,34.389294,0 69.72442599999999,34.390782,0 69.70755800000001,34.401489,0 69.697845,34.411342,0 69.690467,34.41557,0 69.68452499999999,34.416554,0 69.67663500000001,34.4141,0 69.66899100000001,34.406522,0 69.668533,34.401806,0 69.664024,34.378502,0 69.669816,34.36903,0 69.670616,34.362915,0 69.666595,34.354382,0 69.64310399999999,34.339027,0 69.61623299999999,34.313576,0 69.594055,34.288845,0 69.57337200000001,34.275439,0 69.55326100000001,34.267506,0 69.525398,34.24816,0 69.488105,34.214591,0 69.4833,34.211129,0 69.480271,34.209274,0 69.479866,34.203849,0 69.480659,34.196643,0 69.482186,34.192388,0 69.49866400000001,34.173382,0 69.50044200000001,34.167675,0 69.50069499999999,34.161457,0 69.510215,34.165409,0 69.51793600000001,34.176399,0 69.524323,34.181473,0 69.533601,34.185771,0 69.54394600000001,34.198265,0 69.551934,34.203929,0 69.590424,34.208446,0 69.60597900000001,34.208282,0 69.63262899999999,34.210739,0 69.648353,34.216866,0 69.668815,34.228954,0 69.692596,34.239064,0 69.73819,34.25203,0 69.758223,34.253849,0 69.771554,34.248969,0 69.77896800000001,34.241993,0 69.78643,34.228252,0 69.801529,34.2178,0 69.81369100000001,34.206883,0 69.83103300000001,34.18277,0 69.84103399999999,34.151169,0 69.848404,34.136428,0 69.865646,34.118897,0 69.87480100000001,34.105439,0 69.88426200000001,34.095889,0 69.891876,34.107613,0 69.896348,34.120387,0 69.908851,34.129071,0 69.917457,34.143865,0 69.918007,34.150139,0 69.912621,34.180962,0 69.913093,34.189347,0 69.919746,34.215655,0 69.933646,34.24012,0 69.931663,34.254223,0 69.933548,34.272971,0 69.921036,34.29741,0 69.909677,34.31297,0 69.90883599999999,34.324958,0 69.91300200000001,34.333268,0 69.919534,34.339105,0 69.92146200000001,34.349944,0 69.924897,34.352235,0 69.93633300000001,34.353244,0 69.946275,34.357162,0 69.953919,34.363225,0 69.96462200000001,34.378169,0 69.967277,34.395985,0 69.962233,34.402829,0 69.962356,34.419052,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</MultiGeometry>
+		</Placemark>
+		<Placemark id="ID_00008">
+			<name>Jalalabad</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>0</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>8</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Id</td>
+
+<td>0</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#PolyStyle0056</styleUrl>
+			<MultiGeometry>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								70.47802,34.520832,0 70.464195,34.522869,0 70.424134,34.520232,0 70.41128500000001,34.518514,0 70.39728599999999,34.503738,0 70.36962200000001,34.486733,0 70.39512600000001,34.470383,0 70.40160299999999,34.463454,0 70.402344,34.454139,0 70.398574,34.443512,0 70.39805699999999,34.434493,0 70.400582,34.426712,0 70.406029,34.419362,0 70.419442,34.408101,0 70.43821,34.398674,0 70.453063,34.387242,0 70.46504299999999,34.380359,0 70.46700300000001,34.381542,0 70.467208,34.384918,0 70.46807200000001,34.39212,0 70.4684,34.398415,0 70.472365,34.407513,0 70.476691,34.41154,0 70.498307,34.42129,0 70.530395,34.431394,0 70.533615,34.454967,0 70.536498,34.460701,0 70.553986,34.479602,0 70.575608,34.498925,0 70.559738,34.510799,0 70.553063,34.513935,0 70.542205,34.515729,0 70.52636699999999,34.516631,0 70.497621,34.514876,0 70.47802,34.520832,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</MultiGeometry>
+		</Placemark>
+		<Placemark id="ID_00009">
+			<name>Kama</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>0</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>9</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Id</td>
+
+<td>0</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#PolyStyle0037</styleUrl>
+			<MultiGeometry>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								70.784165,34.495987,0 70.781364,34.502776,0 70.769189,34.51347,0 70.746628,34.523108,0 70.739204,34.530276,0 70.71122800000001,34.51994,0 70.680854,34.517342,0 70.66250700000001,34.511138,0 70.633758,34.493129,0 70.619896,34.488224,0 70.6092,34.487568,0 70.595947,34.489029,0 70.584442,34.494056,0 70.575608,34.498925,0 70.553986,34.479602,0 70.536498,34.460701,0 70.533615,34.454967,0 70.530395,34.431394,0 70.534271,34.424613,0 70.540733,34.419465,0 70.579528,34.398663,0 70.58751700000001,34.397264,0 70.603562,34.398818,0 70.64810300000001,34.407032,0 70.65810999999999,34.4103,0 70.669281,34.410825,0 70.677581,34.408969,0 70.706009,34.392085,0 70.72689699999999,34.384216,0 70.739243,34.398529,0 70.763138,34.420773,0 70.76567,34.430557,0 70.76361900000001,34.442329,0 70.767402,34.450974,0 70.78076900000001,34.461403,0 70.785225,34.46915,0 70.786469,34.477145,0 70.784165,34.495987,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</MultiGeometry>
+		</Placemark>
+		<Placemark id="ID_00010">
+			<name>Khogyani</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>0</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>10</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Id</td>
+
+<td>0</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#PolyStyle0033</styleUrl>
+			<MultiGeometry>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								70.308808,34.342781,0 70.321662,34.355496,0 70.290634,34.359649,0 70.255105,34.361092,0 70.240005,34.359002,0 70.212075,34.348308,0 70.1865,34.33541,0 70.14634700000001,34.324154,0 70.124588,34.32465,0 70.08635700000001,34.308129,0 70.086975,34.300934,0 70.088386,34.294472,0 70.090508,34.288043,0 70.105926,34.267907,0 70.10862,34.253876,0 70.115861,34.2398,0 70.105012,34.222896,0 70.092201,34.210814,0 70.074365,34.188538,0 70.05497800000001,34.177384,0 70.04782899999999,34.170189,0 70.044572,34.163684,0 70.044693,34.157287,0 70.049499,34.143113,0 70.050842,34.130908,0 70.04727200000001,34.122208,0 70.044478,34.103469,0 70.026833,34.089897,0 70.018715,34.075272,0 69.988883,34.041851,0 69.98560999999999,34.038186,0 69.97886699999999,34.026371,0 69.982123,34.026343,0 69.987771,34.026576,0 69.991356,34.027112,0 70.000199,34.028511,0 70.002563,34.029445,0 70.00502899999999,34.02996,0 70.008172,34.030068,0 70.01033700000001,34.030113,0 70.01443500000001,34.029304,0 70.01712000000001,34.028436,0 70.02398,34.025879,0 70.02697000000001,34.0247,0 70.030051,34.022836,0 70.037474,34.020871,0 70.040558,34.018998,0 70.044533,34.017555,0 70.04763,34.016498,0 70.05253500000001,34.013692,0 70.054641,34.012113,0 70.059288,34.00822,0 70.064583,34.004227,0 70.070176,34.001742,0 70.075142,33.999028,0 70.077995,33.999137,0 70.081138,33.998939,0 70.08744,33.999532,0 70.11369999999999,33.999431,0 70.117392,33.999589,0 70.125962,33.999347,0 70.13018700000001,33.999137,0 70.132248,33.998848,0 70.13507199999999,33.998463,0 70.137665,33.997635,0 70.158294,33.989162,0 70.161858,33.987336,0 70.169067,33.984086,0 70.169038,33.999374,0 70.168992,34.020744,0 70.171921,34.040112,0 70.18083900000001,34.064735,0 70.17937600000001,34.068184,0 70.174904,34.07085,0 70.17420199999999,34.076129,0 70.18456999999999,34.090595,0 70.187569,34.108308,0 70.19343600000001,34.118626,0 70.198883,34.143056,0 70.21929299999999,34.16969,0 70.23249800000001,34.195034,0 70.26418200000001,34.229893,0 70.282051,34.245617,0 70.287651,34.252887,0 70.286559,34.257667,0 70.283562,34.261081,0 70.27445899999999,34.261701,0 70.26911200000001,34.26447,0 70.266685,34.272358,0 70.267585,34.280223,0 70.279129,34.303215,0 70.295165,34.321858,0 70.308808,34.342781,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</MultiGeometry>
+		</Placemark>
+		<Placemark id="ID_00011">
+			<name>Kuz_Kunar</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>0</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>11</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Id</td>
+
+<td>0</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#PolyStyle0038</styleUrl>
+			<MultiGeometry>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								70.622109,34.589707,0 70.606331,34.599079,0 70.59356800000001,34.612683,0 70.587097,34.617316,0 70.547798,34.634658,0 70.532608,34.63993,0 70.51842499999999,34.65084,0 70.51083300000001,34.661712,0 70.50450100000001,34.675414,0 70.483093,34.694169,0 70.480538,34.6922,0 70.473756,34.686873,0 70.469658,34.682869,0 70.459609,34.682297,0 70.447906,34.679799,0 70.437736,34.674808,0 70.426926,34.665454,0 70.42201300000001,34.656189,0 70.42070699999999,34.643062,0 70.41731299999999,34.639005,0 70.404128,34.630406,0 70.40364700000001,34.626529,0 70.40580799999999,34.624585,0 70.419129,34.622082,0 70.424262,34.618543,0 70.42785600000001,34.610885,0 70.431938,34.588513,0 70.43592,34.56697,0 70.435058,34.556094,0 70.428597,34.538964,0 70.420953,34.528378,0 70.41128500000001,34.518514,0 70.424134,34.520232,0 70.464195,34.522869,0 70.47802,34.520832,0 70.497621,34.514876,0 70.52636699999999,34.516631,0 70.542205,34.515729,0 70.553063,34.513935,0 70.559738,34.510799,0 70.575608,34.498925,0 70.584442,34.494056,0 70.595947,34.489029,0 70.6092,34.487568,0 70.619896,34.488224,0 70.633758,34.493129,0 70.66250700000001,34.511138,0 70.680854,34.517342,0 70.71122800000001,34.51994,0 70.739204,34.530276,0 70.754723,34.547219,0 70.730231,34.555169,0 70.720299,34.561523,0 70.70985400000001,34.576673,0 70.698859,34.586571,0 70.69345800000001,34.589126,0 70.68632599999999,34.591384,0 70.67739899999999,34.590879,0 70.65740200000001,34.587676,0 70.638031,34.587025,0 70.622109,34.589707,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</MultiGeometry>
+		</Placemark>
+		<Placemark id="ID_00012">
+			<name>Lal_Pur</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>0</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>12</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Id</td>
+
+<td>0</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#PolyStyle0023</styleUrl>
+			<MultiGeometry>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								71.121292,34.254932,0 71.122056,34.267207,0 71.13033400000001,34.280914,0 71.156738,34.313175,0 71.15840799999999,34.322772,0 71.171089,34.338925,0 71.171258,34.358256,0 71.16950799999999,34.363498,0 71.169471,34.36361,0 71.16923300000001,34.363701,0 71.168834,34.363854,0 71.164582,34.365483,0 71.15393899999999,34.369561,0 71.147769,34.371204,0 71.11846900000001,34.379006,0 71.087272,34.389136,0 71.07602,34.395771,0 71.065353,34.412048,0 71.053575,34.427494,0 71.02300200000001,34.448127,0 71.01624200000001,34.453551,0 70.99797100000001,34.44492,0 70.973557,34.435902,0 70.925781,34.411681,0 70.890113,34.388489,0 70.869744,34.370778,0 70.851798,34.359959,0 70.824364,34.338829,0 70.829308,34.336377,0 70.834992,34.329617,0 70.839685,34.319016,0 70.84066,34.306866,0 70.839707,34.292877,0 70.86899699999999,34.276474,0 70.88932,34.270706,0 70.90244300000001,34.262779,0 70.917884,34.2581,0 70.928856,34.256431,0 70.963852,34.251862,0 70.98672500000001,34.246745,0 71.01357400000001,34.237865,0 71.042756,34.23975,0 71.054031,34.234321,0 71.065292,34.219295,0 71.07444,34.215516,0 71.08313699999999,34.216088,0 71.102036,34.223151,0 71.11097700000001,34.225013,0 71.134582,34.226299,0 71.126525,34.237125,0 71.121292,34.254932,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</MultiGeometry>
+		</Placemark>
+		<Placemark id="ID_00013">
+			<name>Muhmand_Dara</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>0</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>13</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Id</td>
+
+<td>0</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#PolyStyle004</styleUrl>
+			<MultiGeometry>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								70.98672500000001,34.246745,0 70.963852,34.251862,0 70.928856,34.256431,0 70.917884,34.2581,0 70.90244300000001,34.262779,0 70.88932,34.270706,0 70.86899699999999,34.276474,0 70.839707,34.292877,0 70.828996,34.27909,0 70.82304499999999,34.263146,0 70.82994100000001,34.247276,0 70.834329,34.241542,0 70.850235,34.231026,0 70.883437,34.222851,0 70.912492,34.219363,0 70.935509,34.212127,0 70.95704000000001,34.1945,0 70.959611,34.193475,0 70.97863,34.187576,0 71.005296,34.183007,0 71.02076,34.181808,0 71.02961000000001,34.178925,0 71.03600299999999,34.174508,0 71.042197,34.168892,0 71.04516700000001,34.157287,0 71.045564,34.141376,0 71.048401,34.13342,0 71.05482600000001,34.126167,0 71.06485000000001,34.119515,0 71.07811,34.114639,0 71.08017700000001,34.114063,0 71.089855,34.111365,0 71.09080400000001,34.1111,0 71.09369,34.110756,0 71.095803,34.112618,0 71.100655,34.116356,0 71.103554,34.119995,0 71.105361,34.124066,0 71.10685599999999,34.12616,0 71.108582,34.128068,0 71.11309900000001,34.132526,0 71.117074,34.137157,0 71.118576,34.138527,0 71.12235200000001,34.141438,0 71.12602200000001,34.143997,0 71.12904399999999,34.146,0 71.13864100000001,34.153831,0 71.140259,34.155201,0 71.141547,34.156838,0 71.142937,34.159465,0 71.14320600000001,34.160571,0 71.144189,34.164619,0 71.14449500000001,34.165333,0 71.145043,34.166615,0 71.144864,34.166991,0 71.142937,34.171025,0 71.141267,34.175353,0 71.14048,34.177605,0 71.139366,34.181026,0 71.13779599999999,34.185628,0 71.137328,34.18978,0 71.137413,34.192757,0 71.137467,34.198457,0 71.13881000000001,34.2056,0 71.140091,34.208408,0 71.14267100000001,34.21168,0 71.14653800000001,34.216672,0 71.14804,34.218484,0 71.14850800000001,34.219062,0 71.15105300000001,34.22221,0 71.151794,34.224109,0 71.150474,34.225636,0 71.14894099999999,34.227081,0 71.146252,34.226934,0 71.134582,34.226299,0 71.11097700000001,34.225013,0 71.102036,34.223151,0 71.08313699999999,34.216088,0 71.07444,34.215516,0 71.065292,34.219295,0 71.054031,34.234321,0 71.042756,34.23975,0 71.01357400000001,34.237865,0 70.98672500000001,34.246745,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</MultiGeometry>
+		</Placemark>
+		<Placemark id="ID_00014">
+			<name>Nazyan</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>0</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>14</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Id</td>
+
+<td>0</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#PolyStyle0027</styleUrl>
+			<MultiGeometry>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								70.805573,34.041099,0 70.82214399999999,34.047179,0 70.838853,34.055829,0 70.852158,34.065365,0 70.865799,34.079121,0 70.871529,34.090424,0 70.872292,34.096942,0 70.873063,34.109299,0 70.87445099999999,34.119927,0 70.876397,34.126037,0 70.880866,34.132435,0 70.879013,34.144517,0 70.86492800000001,34.162937,0 70.85854500000001,34.167725,0 70.85283800000001,34.169341,0 70.84017900000001,34.169418,0 70.828872,34.166946,0 70.818749,34.163543,0 70.809021,34.160797,0 70.797714,34.156521,0 70.783333,34.147735,0 70.77942,34.143063,0 70.774873,34.135147,0 70.77503900000001,34.123296,0 70.778786,34.116139,0 70.78002100000001,34.084104,0 70.786378,34.064214,0 70.789687,34.030243,0 70.805573,34.041099,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</MultiGeometry>
+		</Placemark>
+		<Placemark id="ID_00015">
+			<name>Pachir_Wa_Agam</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>0</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>15</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Id</td>
+
+<td>0</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#PolyStyle0053</styleUrl>
+			<MultiGeometry>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								70.368302,34.242383,0 70.36372400000001,34.244794,0 70.357139,34.24651,0 70.348381,34.24651,0 70.31733,34.238278,0 70.301148,34.240069,0 70.282051,34.245617,0 70.26418200000001,34.229893,0 70.23249800000001,34.195034,0 70.21929299999999,34.16969,0 70.198883,34.143056,0 70.19343600000001,34.118626,0 70.187569,34.108308,0 70.18456999999999,34.090595,0 70.17420199999999,34.076129,0 70.174904,34.07085,0 70.17937600000001,34.068184,0 70.18083900000001,34.064735,0 70.171921,34.040112,0 70.168992,34.020744,0 70.169038,33.999374,0 70.16931099999999,33.999206,0 70.19823599999999,33.985314,0 70.20276800000001,33.984583,0 70.22378500000001,33.981189,0 70.238822,33.973144,0 70.260955,33.977714,0 70.279122,33.980278,0 70.29068,33.975697,0 70.29969800000001,34.024406,0 70.30365000000001,34.066021,0 70.311616,34.108151,0 70.313644,34.134156,0 70.318054,34.149902,0 70.33020000000001,34.171547,0 70.331658,34.173676,0 70.33941,34.186913,0 70.351708,34.204278,0 70.37211499999999,34.224858,0 70.37640500000001,34.230014,0 70.37452,34.235709,0 70.368302,34.242383,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</MultiGeometry>
+		</Placemark>
+		<Placemark id="ID_00016">
+			<name>Rodat</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>0</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>16</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Id</td>
+
+<td>0</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#PolyStyle0046</styleUrl>
+			<MultiGeometry>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								70.579528,34.398663,0 70.540733,34.419465,0 70.534271,34.424613,0 70.530395,34.431394,0 70.498307,34.42129,0 70.476691,34.41154,0 70.472365,34.407513,0 70.4684,34.398415,0 70.46807200000001,34.39212,0 70.467208,34.384918,0 70.46700300000001,34.381542,0 70.46504299999999,34.380359,0 70.461319,34.371521,0 70.461724,34.365798,0 70.46296599999999,34.362785,0 70.47931,34.347991,0 70.483665,34.340345,0 70.482544,34.328331,0 70.473991,34.316154,0 70.436936,34.289809,0 70.410004,34.261521,0 70.381455,34.234422,0 70.37640500000001,34.230014,0 70.37211499999999,34.224858,0 70.351708,34.204278,0 70.33941,34.186913,0 70.331658,34.173676,0 70.348725,34.173541,0 70.367507,34.177689,0 70.392639,34.186751,0 70.403663,34.192723,0 70.44619,34.205673,0 70.47123000000001,34.207858,0 70.486863,34.205871,0 70.497384,34.20015,0 70.507172,34.187266,0 70.509445,34.175233,0 70.50937,34.172028,0 70.509224,34.150253,0 70.519013,34.122329,0 70.51883700000001,34.110573,0 70.522994,34.100304,0 70.540154,34.080154,0 70.54441799999999,34.077157,0 70.575401,34.101765,0 70.581673,34.109311,0 70.591781,34.116388,0 70.60077,34.118936,0 70.612892,34.119952,0 70.621011,34.119075,0 70.641006,34.124583,0 70.65362500000001,34.132989,0 70.65844800000001,34.139983,0 70.66237700000001,34.152434,0 70.674026,34.172798,0 70.68115899999999,34.197224,0 70.69380200000001,34.211074,0 70.706132,34.218507,0 70.717917,34.228658,0 70.710617,34.232979,0 70.704621,34.238171,0 70.697793,34.250793,0 70.68716499999999,34.261669,0 70.68525699999999,34.269584,0 70.686538,34.276524,0 70.693237,34.290545,0 70.69774700000001,34.316974,0 70.716584,34.345188,0 70.722396,34.359931,0 70.725753,34.374363,0 70.728043,34.379334,0 70.72689699999999,34.384216,0 70.706009,34.392085,0 70.677581,34.408969,0 70.669281,34.410825,0 70.65810999999999,34.4103,0 70.64810300000001,34.407032,0 70.603562,34.398818,0 70.58751700000001,34.397264,0 70.579528,34.398663,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</MultiGeometry>
+		</Placemark>
+		<Placemark id="ID_00017">
+			<name>Sherzad</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>0</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>17</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Id</td>
+
+<td>0</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#PolyStyle0036</styleUrl>
+			<MultiGeometry>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								70.059837,34.406177,0 70.040916,34.39838,0 70.020661,34.398029,0 70.006996,34.400735,0 69.991181,34.401168,0 69.967277,34.395985,0 69.96462200000001,34.378169,0 69.953919,34.363225,0 69.946275,34.357162,0 69.93633300000001,34.353244,0 69.924897,34.352235,0 69.92146200000001,34.349944,0 69.919534,34.339105,0 69.91300200000001,34.333268,0 69.90883599999999,34.324958,0 69.909677,34.31297,0 69.921036,34.29741,0 69.933548,34.272971,0 69.931663,34.254223,0 69.933646,34.24012,0 69.919746,34.215655,0 69.913093,34.189347,0 69.912621,34.180962,0 69.918007,34.150139,0 69.917457,34.143865,0 69.908851,34.129071,0 69.896348,34.120387,0 69.891876,34.107613,0 69.88426200000001,34.095889,0 69.892731,34.083481,0 69.89606600000001,34.071637,0 69.905807,34.058803,0 69.90692799999999,34.052428,0 69.906989,34.047574,0 69.90879,34.041912,0 69.913467,34.037921,0 69.91497099999999,34.036641,0 69.920051,34.029489,0 69.92137099999999,34.025345,0 69.925004,34.025956,0 69.928001,34.026485,0 69.931657,34.026738,0 69.933646,34.027,0 69.935973,34.027255,0 69.940955,34.027497,0 69.943955,34.027747,0 69.947608,34.027996,0 69.95026300000001,34.028256,0 69.953254,34.028506,0 69.955918,34.028764,0 69.95858,34.029293,0 69.961235,34.029274,0 69.963555,34.028702,0 69.965873,34.028408,0 69.96785800000001,34.027839,0 69.970839,34.027264,0 69.97316600000001,34.02697,0 69.97515199999999,34.026676,0 69.97886699999999,34.026371,0 69.98560999999999,34.038186,0 69.988883,34.041851,0 70.018715,34.075272,0 70.026833,34.089897,0 70.044478,34.103469,0 70.04727200000001,34.122208,0 70.050842,34.130908,0 70.049499,34.143113,0 70.044693,34.157287,0 70.044572,34.163684,0 70.04782899999999,34.170189,0 70.05497800000001,34.177384,0 70.074365,34.188538,0 70.092201,34.210814,0 70.105012,34.222896,0 70.115861,34.2398,0 70.10862,34.253876,0 70.105926,34.267907,0 70.090508,34.288043,0 70.088386,34.294472,0 70.086975,34.300934,0 70.08635700000001,34.308129,0 70.084924,34.310294,0 70.084664,34.317127,0 70.086373,34.326417,0 70.093559,34.342724,0 70.094323,34.356515,0 70.092406,34.363136,0 70.083023,34.374855,0 70.07266900000001,34.393612,0 70.059837,34.406177,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</MultiGeometry>
+		</Placemark>
+		<Placemark id="ID_00018">
+			<name>Shiwar</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>0</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>18</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Id</td>
+
+<td>0</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#PolyStyle0019</styleUrl>
+			<MultiGeometry>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								70.952094,34.185821,0 70.959611,34.193475,0 70.95704000000001,34.1945,0 70.935509,34.212127,0 70.912492,34.219363,0 70.883437,34.222851,0 70.850235,34.231026,0 70.834329,34.241542,0 70.82994100000001,34.247276,0 70.82304499999999,34.263146,0 70.809746,34.2598,0 70.78847500000001,34.251317,0 70.760002,34.236721,0 70.75341,34.23124,0 70.752022,34.226757,0 70.754814,34.214744,0 70.75412799999999,34.208503,0 70.751373,34.202897,0 70.73850899999999,34.187355,0 70.73316199999999,34.168796,0 70.735512,34.159073,0 70.75145000000001,34.142083,0 70.76275699999999,34.131473,0 70.77503900000001,34.123296,0 70.774873,34.135147,0 70.77942,34.143063,0 70.783333,34.147735,0 70.797714,34.156521,0 70.809021,34.160797,0 70.818749,34.163543,0 70.828872,34.166946,0 70.84017900000001,34.169418,0 70.85283800000001,34.169341,0 70.85854500000001,34.167725,0 70.86492800000001,34.162937,0 70.879013,34.144517,0 70.880866,34.132435,0 70.893632,34.144275,0 70.913535,34.155345,0 70.934112,34.164154,0 70.952094,34.185821,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</MultiGeometry>
+		</Placemark>
+		<Placemark id="ID_00019">
+			<name>Surkh_Rod</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>0</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>19</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Id</td>
+
+<td>0</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#PolyStyle0055</styleUrl>
+			<MultiGeometry>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								70.43736300000001,34.364207,0 70.454978,34.365433,0 70.461724,34.365798,0 70.461319,34.371521,0 70.46504299999999,34.380359,0 70.453063,34.387242,0 70.43821,34.398674,0 70.419442,34.408101,0 70.406029,34.419362,0 70.400582,34.426712,0 70.39805699999999,34.434493,0 70.398574,34.443512,0 70.402344,34.454139,0 70.40160299999999,34.463454,0 70.39512600000001,34.470383,0 70.36962200000001,34.486733,0 70.32526300000001,34.470536,0 70.2809,34.466793,0 70.265053,34.462281,0 70.249436,34.455222,0 70.23993,34.452544,0 70.197495,34.448189,0 70.183303,34.445251,0 70.142135,34.432488,0 70.099403,34.421299,0 70.07761499999999,34.414077,0 70.059837,34.406177,0 70.07266900000001,34.393612,0 70.083023,34.374855,0 70.092406,34.363136,0 70.094323,34.356515,0 70.093559,34.342724,0 70.086373,34.326417,0 70.084664,34.317127,0 70.084924,34.310294,0 70.08635700000001,34.308129,0 70.124588,34.32465,0 70.14634700000001,34.324154,0 70.1865,34.33541,0 70.212075,34.348308,0 70.240005,34.359002,0 70.255105,34.361092,0 70.290634,34.359649,0 70.321662,34.355496,0 70.370194,34.354138,0 70.43736300000001,34.364207,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</MultiGeometry>
+		</Placemark>
+	</Folder>
+</Document>
+</kml>

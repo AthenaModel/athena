@@ -1,0 +1,87 @@
+<manpage {projectlib(n) tigrmsg(n)} "TIGR Message Parser">
+
+<section SYNOPSIS>
+
+<pre>
+package require projectlib 1.0
+namespace import ::projectlib::tigrmsg
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+tigrmsg(n) parses XML returned as a result of a request for TIGR messages.
+
+The data parsed from the XML is returned in the form of a nested dictionary.  
+See <xref "DATA DICTIONARY"> for a description of the data returned.<p>
+
+<section "COMMANDS">
+
+tigrmsg(n) provides the following commands:<p>
+
+<deflist commands>
+
+<defitem "tigrmsg parse" {tigrmsg parse <i>xml</i>}>
+
+This method parses XML that has resulted from a TIGR message request.  The 
+data extracted from the XML is returned in a nested dictionary.<p>
+
+<defitem "tigrmsg parsefile" {tigrmsg parsefile <i>filename</i>}>
+
+This method parses XML from a given file called <i>filename</i>.  The XML 
+should comply with the TIGR message format.<p>
+
+</deflist commands>
+
+<section "DATA DICTIONARY">
+
+Data parsed by the <xref tigrmsg(n)> object is returned as a nested dictionary
+with the following form:<p>
+
+<code>
+<ul>
+  <li>CID          => The unique ID of the message
+  <li>BODY         => Entire XML body of the TIGR message
+  <li>TITLE        => Human readable title of the message
+  <li>DESCRIPTION  => Human readable description of the message
+  <li>LOCATIONLIST => List of lat/lon pairs: {{lat1 lon1} {lat2 lon2}...}
+  <li>TIMEPERIOD => dictionary of time period info for this message
+  <ul>
+    <li> -> START => dictionary of start time info
+    <ul>
+      <li> -> STRING => Time string, as parsed from file
+      <li> -> ZULUSEC => Integer, unix time stamp of start time corresponding
+                         to GMT
+      <li> -> TIMEZONE => String, time zone suitable to be used with the Tcl
+                          [clock format] command
+    </ul>
+    <li> -> END => dictionary of end time info
+    <ul>
+      <li> -> STRING => Time string, as parsed from file
+      <li> -> ZULUSEC => Integer, unix time stamp of end time corresponding
+                         to GMT
+      <li> -> TIMEZONE => String, time zone suitable to be used with the Tcl
+                          [clock format] command
+    </ul>
+  </ul>
+</ul>
+
+</code><p>
+
+<section ENVIRONMENT>
+
+Requires Tcl 8.5 or later.<p>
+
+<section AUTHOR>
+
+Dave Hanks<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+

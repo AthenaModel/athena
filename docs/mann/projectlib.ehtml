@@ -1,0 +1,45 @@
+<manpage projectlib(n) "Athena Library">
+
+<section SYNOPSIS>
+
+<pre>
+package require projectlib 1.0
+namespace import ::projectlib::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+projectlib(n) is a package of non-GUI code for use in <xref athena_sim(1)> and
+related tools.<p>
+
+<section MODULES>
+
+<b>TBD</b><p>
+
+<section ENVIRONMENT>
+
+Requires Tcl 8.5 or later.<p>
+
+To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.<p>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+

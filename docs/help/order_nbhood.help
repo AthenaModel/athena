@@ -1,0 +1,140 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    order_nbhood.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: NBHOOD:* Orders
+#
+#    This file is included into order.help.
+#
+#-----------------------------------------------------------------------
+
+page /order nbhood "Neighborhood Orders" {
+    <title>
+
+    These orders are used create, update, and delete 
+    <term nbhood>s.
+
+    <childlinks>
+}
+
+macro NBHOOD.n {} {
+    |<--
+    [parm n "Neighborhood"] <b>Required.</b>  
+    The ID of an existing neighborhood.
+    [/parm]
+}
+
+
+#-----------------------------------------------------------------------
+
+order NBHOOD:CREATE "Create Neighborhood" {
+    <b><term prep> Only.</b>  This order creates a new 
+    <term nbhood>.
+    The order parameters are as follows:<p>
+
+    <parmlist>
+    <nbhood_ parms -required -tags create>
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order NBHOOD:CREATE+RAW "Create Neighborhood From Raw Data" {
+    <b><term prep> Only.</b>  This order creates a new 
+    <term nbhood> from raw lat/long data.  A minimum number of
+    parameters are required and there is minimal validation 
+    of parameters done.  It is intended that the parameters in this 
+    order be independantly validated before attempting to send them to 
+    Athena.
+    The order parameters are as follows:<p>
+
+    <parmlist>
+    <nbhood_ parms -required -tags raw>
+    <nbhood_ parms -optional -tags optraw>
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order NBHOOD:DELETE "Delete Neighborhood" {
+    <b><term prep> Only.</b>  Deletes an existing
+    neighborhood, along with all entities (e.g., civilian groups)
+    that depend upon it.  The order parameters are as follows:<p>
+
+    <parmlist>
+    <NBHOOD.n>
+    </parmlist>
+}
+
+
+#-----------------------------------------------------------------------
+
+order NBHOOD:LOWER "Lower Neighborhood" {
+    <b><term prep> Only.</b>  Lowers a neighborhood
+    to the bottom of the stacking order, so that all overlapping
+    neighborhoods are stacked upon this one, and then determines
+    whether this neighborhood is obscured by any of those above it.
+    (One neighborhood obscures another if it covers the other
+    neighborhood's reference point.)  The order parameters are as
+    follows:<p>
+
+    <parmlist>
+    <NBHOOD.n>
+    </parmlist>
+
+}
+
+
+#-----------------------------------------------------------------------
+
+order NBHOOD:RAISE "Raise Neighborhood" {
+    <b><term prep> Only.</b>  Raises a neighborhood
+    to the top of the stacking order, so that all overlapping
+    neighborhoods are underneath it, and then determines
+    whether this neighborhood obscures any of those below it.
+    (One neighborhood obscures another if it covers the other
+    neighborhood's reference point.)  The order parameters are as
+    follows:<p>
+
+    <parmlist>
+    <NBHOOD.n>
+    </parmlist>
+}
+
+
+#-----------------------------------------------------------------------
+
+order NBHOOD:UPDATE "Update Neighborhood" {
+    <b><term prep> Only.</b>  This order modifies the
+    definition of an existing <term nbhood>.  The order
+    parameters are as follows:<p>
+
+    <parmlist>
+    <NBHOOD.n>
+    <nbhood_ parms -optional -tags update>
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order NBHOOD:UPDATE+MULTI "Update Multiple Neighborhoods" {
+    <b><term prep> Only.</b>  This order modifies the
+    definition of two or more existing <term nbhood>s, as selected
+    in the GUI.  The order parameters are as follows:<p>
+
+    <parmlist>
+    <parm ids "Neighborhoods">
+    <b>Required.</b>  <parm.ids neighborhood>
+    </parm>
+
+    <nbhood_ parms -optional -tags multi>
+
+    </parmlist>
+}
+
+

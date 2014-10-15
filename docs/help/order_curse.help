@@ -1,0 +1,81 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    order_curse.help
+#
+# AUTHOR:
+#    Dave Hanks
+#
+# DESCRIPTION:
+#    Athena Help Documentation: CURSE:* Orders
+#
+#    This file is included into order.help.
+#
+#-----------------------------------------------------------------------
+
+
+page /order curse "CURSE Orders" {
+    <title>
+
+    These orders are used create, update, and delete 
+    <term curse>s.
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+
+order CURSE:CREATE "Create CURSE" {
+    <b><term prep> Only.</b>  This order creates a new 
+    <term curse>.
+    The order parameters are as follows:<p>
+
+    <parmlist>
+    <curse_ parms -required -tags create>
+    </parmlist>
+}
+
+
+#-----------------------------------------------------------------------
+
+order CURSE:DELETE "Delete CURSE" {
+    <b><term prep> Only.</b>  Deletes an existing
+    <term curse> given its ID.    
+    The order parameters are as follows:<p>
+
+    <parmlist>
+    <parm curse_id "CURSE">
+    <b>Required.</b>  ID of an existing CURSE.
+    </parm>
+    </parmlist>
+
+}
+
+#-----------------------------------------------------------------------
+
+order CURSE:UPDATE "Update CURSE" {
+    <b><term prep> Only.</b>  This order modifies the
+    definition of an existing <term curse>.  The order
+    parameters are as follows:<p>
+
+    <parmlist>
+    <parm curse_id "Select CURSE">
+    <b>Required.</b> ID of an existing CURSE.
+    </parm>
+
+    <curse_ parms -optional -tags update>
+
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order CURSE:STATE "Set CURSE State" {
+    Sets the <term curse>'s state.  Note that this order is for 
+    internal use by the application; there is no associated order 
+    dialog.  The order parameters are as follows:<p>
+
+    <parmlist>
+    <curse_ parms -required -tags state>
+    </parmlist>
+}

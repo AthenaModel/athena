@@ -1,0 +1,224 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    object_condition.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: Simulation Objects: Conditions
+#
+#    This file is included into object.help.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Condition Objects
+
+object condition_ {
+    noun "condition"
+
+    overview {
+        A <i>condition</i> a Boolean predicate that can be
+        attached to a <term strategy> <term block>.
+        Conditions (along with the block's time constraints and resources
+        required by the block's <term tactic>s) determine whether or 
+        not the block should execute.<p>
+    }
+
+    # The condition ID for the object page
+    attribute id "Condition ID" {
+        The condition ID, an integer number that uniquely
+        identifies the condition.
+    } -tags {object}
+
+    # The condition ID for the order pages.
+    attribute condition_id "Condition ID" {
+        The condition ID, an integer number that uniquely
+        identifies the condition.
+    } -tags {cget}
+
+    attribute agent "Agent" {
+        The ID of the <term agent> to whose strategy this
+        condition belongs.
+    } -tags {object cget}
+
+    attribute typename "Condition Type" {
+        The condition's type, e.g., 
+        <b><cref /object/condition/compare COMPARE></b>.
+    } -tags {object cget}
+
+    attribute parent "Parent" {
+        The ID of the <term block> containing this condition.
+    } -tags {cget}
+
+    attribute state "State" {
+        The condition's state, one of <b>normal</b>, <b>disabled</b>, or 
+        <b>invalid</b>.  Both <b>disabled</b> and <b>invalid</b> conditions
+        are ignored when the owner's strategy is executed; the
+        difference is that <b>disabled</b> conditions are explicitly
+        disabled by the user, while <b>invalid</b> conditions are disabled
+        due to failing a sanity check.
+    } -tags {object state configure cget}
+
+    attribute narrative "Narrative" {
+        A human-readable narrative string reflecting the condition's
+        current configuration.
+    } -tags {cget}
+}
+
+page /object condition "Condition" {
+    <sotitle>
+
+    <condition_ overview><p>
+
+    There are many different kinds of condition; all share the following
+    parameters:<p>
+
+    <condition_ parmlist -tags object>
+
+    The full set of conditions is as follows:<p>
+
+    <childlinks>
+}
+
+
+#-----------------------------------------------------------------------
+# COMPARE
+
+object condition_compare {
+    noun "COMPARE condition"
+    overview {
+        This <term condition> compares two numbers according to 
+        the selected comparison operator.  The numbers are selected
+        using the <cref /gofer/number>s. <p>
+    }
+
+    include condition_ -attrs {id typename agent state}
+
+    attribute x "X Value" {
+        The X value in the comparison, chosen by rule using the
+        <cref /gofer/number>.
+    } -tags {update}
+
+    attribute comp "Is" {
+        The kind of comparison being done: a value from
+        the following table:<p>
+
+        <super ::projectlib::ecomparatorx html>
+    } -tags {create update}
+
+    attribute y "Y Value" {
+        The Y value in the comparison, chosen by rule using the
+        <cref /gofer/number>.
+    } -tags {update}
+}
+
+page /object/condition compare "COMPARE condition" {
+    <sotitle>
+
+    <condition_compare overview><p>
+
+    COMPARE conditions have the following attributes:<p>
+
+    <condition_compare parmlist>
+}
+
+
+#-----------------------------------------------------------------------
+# CONTROL
+
+object condition_control {
+    noun "CONTROL condition"
+    overview {
+        This <term condition> determines whether an actor controls
+        or does not control any or all of a set of neighborhoods.  The set
+        of neighborhoods is selected using the <cref /gofer/nbhoods>s.<p>
+
+        If the set of neighborhoods turns out to be empty, the condition
+        is assumed to be unmet.
+    }
+
+    include condition_ -attrs {id typename agent state}
+
+    attribute a "Actor" {
+        The actor who does or does not control the neighborhoods.
+    } -tags {update}
+
+    attribute sense "Sense" {
+        The sense of the condition: <b>DOES</b> or <b>DOESNT</b> the actor
+        control the selected neighborhoods?
+    } -tags {update}
+
+    attribute anyall "Any/All" {
+        Does the actor control <b>ANY</b> or <b>ALL</b> of the selected neighborhoods?
+    } -tags {update}
+
+    attribute nlist "Neighborhoods" {
+        The selected neighborhoods, chosen by rule using the
+        <cref /gofer/nbhoods>.
+    } -tags {update}
+}
+
+page /object/condition control "CONTROL condition" {
+    <sotitle>
+
+    <condition_control overview><p>
+
+    CONTROL conditions have the following attributes:<p>
+
+    <condition_control parmlist>
+}
+
+
+#-----------------------------------------------------------------------
+# EXPR
+
+object condition_expr {
+    noun "EXPR condition"
+    overview {
+        This <term condition> is met when a particular boolean
+        expression is true.  The expression has Tcl expression 
+        syntax, and is evaluated by the Athena
+        <term executive>.  The expression can call
+        arbitrary executive <cref /command commands> and 
+        <cref /function functions>, 
+        but should avoid calling commands with side effects.<p>
+
+        Athena does the best it can to detect errors in the user's
+        expression when the expression is first entered, and when
+        sanity checks are performed.  Some errors (e.g., divide by zero)
+        can only be discovered when Athena evaluates the condition
+        during <term strategy> execution.  In this case, the error will 
+        be logged in the <link "my://app/sigevents" "Significant Events">
+        log.<p>
+
+        A condition whose expression contains a sanity check failure
+        error is assumed to be false, and it is marked invalid.  
+        Such conditions can be seen at a glance in the
+        <link "gui:/tab/strategy" "Strategy Browser"> because they
+        will be displayed in red.  In addition, the block to which the
+        condition belongs will not execute.  To execute the scenario,
+        either fix the error or disable the condition.
+    }
+
+    include condition_ -attrs {id typename agent state}
+
+    attribute expression "Expression" {
+        A boolean expression with Tcl syntax to be evaluated by the
+        Athena <term executive>.
+    } -tags {update}
+}
+
+page /object/condition expr "EXPR condition" {
+    <sotitle>
+
+    <condition_expr overview><p>
+
+    EXPR conditions have the following attributes:<p>
+
+    <condition_expr parmlist>
+}
+
+

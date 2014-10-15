@@ -1,0 +1,114 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    object_hook.help
+#
+# AUTHOR:
+#    Dave Hanks
+#
+# DESCRIPTION:
+#    Athena Help Documentation: Semantic Hook Simulation Object
+#
+#    This file is included into object.help.
+#
+#-----------------------------------------------------------------------
+
+object hook_ {
+    noun "hook"
+
+    overview {
+        A <i>Semantic Hook</i> is part of a information operations
+        campaign intended to sway civilian attitudes.  The semantic 
+        hook consists of a narrative and a set of postions on one or 
+        more <term topic>s defined in Athena's <term bsystem>.  
+        The semantic hook should appeal to those topics that matter 
+        to the civilians in order for it to be effective.  The semantic
+        hook along with one or more <term payload>s make up an Information
+        Operations Message or <term iom>.
+
+        Semantic Hooks are created and edited on the 
+        <cref /tab/information/semantic_hooks>.<p>
+
+    }
+
+    attribute hook_id "Hook ID" {
+        The hook ID.  It may contain letters and digits, and
+        must begin with a letter.  It should usually be short,
+        between 2 and 10 characters in length, e.g., <b>MYHOOK</b>.<p>
+        
+        A hook ID cannot be the same as the ID of any group, 
+        neighborhood, etc.
+    } -tags {create}
+
+    attribute longname "Description" {
+        This field should contain a brief statement of the real hook 
+        as an aid to the analyst. For example, <i>Puppies are good</i>.
+    } -tags {create update browser}
+}
+
+page /object hook "Semantic Hook" {
+    <sotitle>
+
+    <hook_ overview><p>
+
+    Semantic hooks have the following attributes:<p>
+
+    <hook_ parmlist>
+}
+
+#----------------------------------------------------------------------
+# Hook Topic
+
+object hook_topic {
+    noun "hook topic"
+
+    overview {
+        One or more hook topics are associated with a <term hook>
+        in order to appeal to the <term bsystem> of civilians.
+        It consists of a belief system <term topic> and a 
+        <term position> on that topic.  A narrative is computed
+        from the topic and position as an aid to the analyst.
+    }
+
+    attribute hook_id "Semantic Hook" {
+        A hook topic must be associated with a particular semantic hook. 
+        This parameter specifies that semantic hook.
+    } -tags {create}
+
+    attribute topic_id "Topic" {
+        A hook topic must be associated with a particular belief system
+        topic. This parameter specifies that topic.
+    } -tags {create}
+
+    attribute id "Hook/Topic" {
+        The hook/topic pair that uniquely identify this hook topic.
+    } -tags {update}
+
+    attribute state "State" {
+        One of "normal", "disabled" or "invalid".  A hook topic that is
+        "disabled" or "invalid" will not be considered as part of the 
+        semantic hook.  A hook topic can become "invalid" if the the topic
+        is deleted from the <term bsystem>.
+    } 
+
+    attribute position "Position" {
+        A hook topic must take a <term position> on the specified belief 
+        system topic. This parameter specifies the position expressed as
+        a real number, or as one of the symbols from the following table:<p>
+
+        <super ::simlib::qposition html>
+    } -tags {create update browser}
+}
+
+page /object/hook topic "Semantic Hook Topic" {
+    <sotitle>
+
+    <hook_topic overview><p>
+
+    Hook Topics have the following attributes:<p>
+
+    <hook_topic parmlist>
+}
+
+
+

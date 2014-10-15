@@ -1,0 +1,408 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    040-driver_abevent.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    driver_abevent(sim) tests
+#
+#    This test suite tests that the abeventrules fire when appropriate.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Define an htools buffer for tests
+    htools ht
+
+    # pprint text
+    #
+    # text  - block text
+    #
+    # Prints it so that it looks nice in a -result option.
+
+    proc pprint {text} {
+        return "\n[string trim $text]\n    "
+    }
+
+    # setup
+    #
+    # Sets up for tests
+    
+    proc setup {} {
+        # FIRST, other rule sets shouldn't muddy the waters.
+        parm set dam.CONSUMP.active no
+        parm set dam.PRESENCE.active no
+        parm set dam.UNEMP.active no
+        parm set dam.ENI.active no
+        parm set dam.MOOD.active no
+        rdb eval {DELETE FROM drivers}
+        
+        # NEXT, create the entities
+        ted create JOE BOB NB1 NB2 BLUE TAL SHIA SUNN KURD
+
+        # NEXT, make sure SHIA and SUNN dislike each other.
+        ted order HREL:OVERRIDE id {SHIA SUNN} base -0.8
+        ted order HREL:OVERRIDE id {SUNN SHIA} base -0.8
+        
+        # NEXT, lock the scenario
+        ted lock
+    }
+
+    # abevent dtype args...
+    #
+    # Creates an abstract event and then assesses it.
+
+    proc abevent {dtype args} {
+        driver::abevent create $dtype NB1 0.5 {*}$args
+        driver::abevent assess
+    }
+        
+    # inputs
+    #
+    # Output the rule inputs from the current firings.
+    
+    proc inputs {} {
+        rdb eval {
+            DROP TABLE IF EXISTS temp_inputs;
+            CREATE TEMP TABLE temp_inputs AS
+            SELECT DISTINCT t, rule, '' AS aut, '' AS cul, '' AS qol, '' AS sft
+            FROM rule_firings
+        }
+        
+        rdb eval {
+            SELECT F.t AS t, F.rule AS rule, I.g AS g, I.c AS c
+            FROM rule_firings AS F
+            JOIN rule_inputs  AS I USING (firing_id)
+        } {
+            rdb eval "
+                UPDATE temp_inputs
+                SET $c = $c || \$g || ' '
+                WHERE t=\$t AND rule=\$rule
+            "
+        }
+        
+        ted query {
+            SELECT * FROM temp_inputs ORDER BY t, rule
+        }
+    }
+    
+    # Clean up after a test
+    proc cleanup {} {
+        ht clear
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # sigline
+    #
+    # Most event types delegate to the same method in the same way,
+    # so we'll test the general case here.
+
+    test sigline-1.1 {sigline text} -setup {
+        # none needed
+    } -body {
+        driver::ACCIDENT sigline {NB1}
+    } -cleanup {
+        cleanup
+    } -result {ACCIDENT in NB1}
+
+    #-------------------------------------------------------------------
+    # narrative
+    #
+    # Most event types delegate to the same method in the same way,
+    # so we'll test the general case here.
+
+
+    test narrative-1.1 {narrative text} -setup {
+        # none needed
+    } -body {
+        driver::ACCIDENT narrative {
+            dtype       ACCIDENT
+            n           NB1
+            coverage    0.5
+        }
+    } -cleanup {
+        cleanup
+    } -result {ACCIDENT in {nbhood:NB1} (50%)}
+    
+
+    #-------------------------------------------------------------------
+    # detail
+    #
+    # Most event types delegate to the same method in the same way,
+    # so we'll test the general case here.
+
+    test detail-1.1 {detail text} -setup {
+        setup 
+    } -body {
+        set fdict {
+            dtype       ACCIDENT
+            n           NB1
+            coverage    0.5
+        }
+
+        driver::ACCIDENT detail $fdict [namespace current]::ht
+        pprint [ht get]
+    } -cleanup {
+        cleanup
+    } -result {
+An abstract event of type ACCIDENT
+has occurred in neighborhood
+<a href="my://app/nbhood/NB1">NB1</a> with 50% coverage.<p>
+    }
+    
+
+
+    #-------------------------------------------------------------------
+    # ACCIDENT
+    
+    test ACCIDENT-1.1 {firing} -setup {
+        setup 
+    } -body {
+        abevent ACCIDENT
+        ted querylist {SELECT * FROM rule_firings}
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          0
+driver_id  1000
+ruleset    ACCIDENT
+rule       ACCIDENT-1-1
+fdict      dtype ACCIDENT n NB1 coverage 0.5
+    }
+
+    test ACCIDENT-1.2 {inputs} -setup {
+        setup
+    } -body {
+        abevent ACCIDENT       
+        inputs
+    } -cleanup {
+        cleanup
+    } -result {
+t rule         aut cul qol sft        
+- ------------ --- --- --- ---------- 
+0 ACCIDENT-1-1             SHIA SUNN  
+    }
+
+
+    #-------------------------------------------------------------------
+    # DEMO
+    
+    test DEMO-1.1 {firing} -setup {
+        setup 
+    } -body {
+        abevent DEMO g SHIA
+        ted querylist {SELECT * FROM rule_firings}
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          0
+driver_id  1000
+ruleset    DEMO
+rule       DEMO-1-1
+fdict      dtype DEMO n NB1 coverage 0.5 g SHIA
+
+firing_id  2
+t          0
+driver_id  1000
+ruleset    DEMO
+rule       DEMO-1-2
+fdict      dtype DEMO n NB1 coverage 0.5 g SHIA
+    }
+
+    test DEMO-1.2 {inputs} -setup {
+        setup
+    } -body {
+        abevent DEMO g SHIA    
+        inputs
+    } -cleanup {
+        cleanup
+    } -result {
+t rule     aut   cul   qol   sft   
+- -------- ----- ----- ----- ----- 
+0 DEMO-1-1 SHIA  SHIA              
+0 DEMO-1-2 SUNN  SUNN  SUNN  SUNN  
+    }
+
+    # The sigline, etc., for DEMO differs from the rest of the abevents,
+    # so we test them here.
+
+    test DEMO-2.1 {sigline text} -setup {
+        # none needed
+    } -body {
+        driver::DEMO sigline {NB1 SHIA}
+    } -cleanup {
+        cleanup
+    } -result {DEMO by SHIA in NB1}
+
+    test DEMO-2.2 {narrative text} -setup {
+        # none needed
+    } -body {
+        driver::DEMO narrative {
+            dtype       DEMO
+            n           NB1
+            coverage    0.5
+            g           SHIA
+        }
+    } -cleanup {
+        cleanup
+    } -result {DEMO by {group:SHIA} in {nbhood:NB1} (50%)}
+    
+    test DEMO-2.3 {detail text} -setup {
+        setup 
+    } -body {
+        set fdict {
+            dtype       DEMO
+            n           NB1
+            coverage    0.5
+            g           SHIA
+        }
+
+        driver::DEMO detail $fdict [namespace current]::ht
+        pprint [ht get]
+    } -cleanup {
+        cleanup
+    } -result {
+Group <a href="my://app/group/SHIA">SHIA</a>
+is demonstrating in neighborhood
+<a href="my://app/nbhood/NB1">NB1</a> with 50% coverage.<p>
+    }
+
+
+    #-------------------------------------------------------------------
+    # EXPLOSION
+    
+    test EXPLOSION-1.1 {firing} -setup {
+        setup 
+    } -body {
+        abevent EXPLOSION
+        ted querylist {SELECT * FROM rule_firings}
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          0
+driver_id  1000
+ruleset    EXPLOSION
+rule       EXPLOSION-1-1
+fdict      dtype EXPLOSION n NB1 coverage 0.5
+    }
+
+    test EXPLOSION-1.2 {inputs} -setup {
+        setup
+    } -body {
+        abevent EXPLOSION       
+        inputs
+    } -cleanup {
+        cleanup
+    } -result {
+t rule          aut        cul qol sft        
+- ------------- ---------- --- --- ---------- 
+0 EXPLOSION-1-1 SHIA SUNN          SHIA SUNN  
+    }
+
+
+    #-------------------------------------------------------------------
+    # RIOT
+    
+    test RIOT-1.1 {firing} -setup {
+        setup 
+    } -body {
+        abevent RIOT
+        ted querylist {SELECT * FROM rule_firings}
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          0
+driver_id  1000
+ruleset    RIOT
+rule       RIOT-1-1
+fdict      dtype RIOT n NB1 coverage 0.5
+    }
+
+    test RIOT-1.2 {inputs} -setup {
+        setup
+    } -body {
+        abevent RIOT       
+        inputs
+    } -cleanup {
+        cleanup
+    } -result {
+t rule     aut        cul qol        sft        
+- -------- ---------- --- ---------- ---------- 
+0 RIOT-1-1 SHIA SUNN      SHIA SUNN  SHIA SUNN  
+    }
+
+    
+
+    
+    #-------------------------------------------------------------------
+    # VIOLENCE
+    
+    test VIOLENCE-1.1 {firing} -setup {
+        setup 
+    } -body {
+        abevent VIOLENCE
+        ted querylist {SELECT * FROM rule_firings}
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          0
+driver_id  1000
+ruleset    VIOLENCE
+rule       VIOLENCE-1-1
+fdict      dtype VIOLENCE n NB1 coverage 0.5
+    }
+
+    test VIOLENCE-1.2 {inputs} -setup {
+        setup
+    } -body {
+        abevent VIOLENCE       
+        inputs
+    } -cleanup {
+        cleanup
+    } -result {
+t rule         aut cul qol sft        
+- ------------ --- --- --- ---------- 
+0 VIOLENCE-1-1             SHIA SUNN  
+    }
+
+    
+
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+

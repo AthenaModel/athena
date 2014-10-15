@@ -1,0 +1,49 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    wizard.help
+#
+# AUTHOR:
+#    Dave Hanks
+#
+# DESCRIPTION:
+#    Athena Help Documentation: Wizards
+#
+#    This file is included into athena.help.
+#
+#    This is simply an overview with a reference to the AUG where a 
+#    complete description of the wizards resides.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+
+page / wizard "Wizards" {
+    <title>
+    
+    <b>Overview:</b>
+    Wizards are used in Athena as a means to ingest certain kinds of data
+    in their own format and convert them into data formats that Athena 
+    recognizes as an object or part(s) of other objects.<p>
+
+    There are currently two wizards implemented in Athena: 
+    
+    <ul>
+    <li> Intel Ingestion Wizard
+    <li> Neighborhood Ingestion Wizard
+    </ul><p>
+    
+    The Intel Ingestion Wizard
+    takes intel messages that are in the TIGR format and allows the user
+    to bin them by type to cause events to happen in the future in Athena by
+    adding appropriate tactics to the SYSTEM agent.  The Neighborhood Ingestion
+    Wizard reads polygons in KML format and allows the user to pick and choose 
+    which polygons should be included as neighborhoods in Athena.<p>
+
+    For a complete description of how to use these Wizards consult the section
+    called "The Athena User Interface" in Part II of the Athena User's Guide
+    (AUG). The AUG can be found in the docs/dev directory under the software 
+    installation location.
+}
+
+

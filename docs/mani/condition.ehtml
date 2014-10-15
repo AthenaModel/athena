@@ -1,0 +1,93 @@
+<manpage {condition(i)} "Condition Interface">
+
+<section SYNOPSIS>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+A condition is an object can be true or false based on the state
+of the simulation.  We say that the condition is "met" or "unmet".
+Each condition type is defined by a Snit type
+ensemble within the ::condition:: namespace that is created using the
+condition(sim) "type define" subcommand.  For example, the CASH
+condition is defined by code that looks like
+
+<pre>
+condition type define CASH {
+    # Definition script
+}
+</pre>
+
+resulting in a type ensemble called <code>condition::CASH</code>.  The
+definition script is simply a Snit type ensemble definition script.
+Every condition ensemble must implement the subcommands defined in
+this interface; it may also define other commands as needed.  Thus, a
+condition is essentially a special kind of module.<p>
+
+<subsection "Condition Orders">
+
+Every condition type must provide two orders,
+CONDITION:<i>type</i>:CREATE and CONDITION:<i>type</i>:UPDATE.  The
+CONDITION:<i>type</i>:UPDATE order is expected to use RefreshUPDATE as
+its <code>-refreshcmd</code> so that the user cannot switch to a
+different condition.<p>
+
+<section "SUBCOMMANDS">
+
+Each <xref condition(i)> ensemble must implement at least the following
+subcommands.  Note that most of them take the "condition parameter
+dictionary", or <i>cdict</i>, as their first argument.  This is simply a
+row from the conditions table in the form of a dictionary.<p>
+
+<deflist subcommands>
+
+<defitem narrative {narrative <i>cdict</i>}>
+
+Returns a human-readable narrative description of the condition.  The
+description should include all of the condition's parameters, so that the
+narrative is a complete description of the condition.<p>
+
+<defitem check {check <i>cdict</i>}>
+
+Sanity-checks the condition's parameters.  Returns a human-readable
+string describing any errors that are found, and the empty string
+otherwise.  If a force group referenced by a condition is deleted, for
+example, the error message might be "Force group no longer exists."<p>
+
+Many condition parameters can be valid when the condition is created but
+become invalid later, especially during scenario preparation.  For
+example, a condition might require a force group that is owned by the
+actor executing the condition...and the force group might subsequently be
+assigned to some other actor.<p>
+
+Checking for such errors as they occur is tedious and error-prone, and
+inconvenient for the user.  Instead, we simply sanity-check all
+conditions at appropriate times, such as when the scenario is locked.
+We make any problems known to the user, and allow them to fix them.<p>
+
+<defitem eval {eval <i>cdict</i>}>
+
+Evaluates the condition, returning 1 if true (met), 0 if false
+(unmet), and the empty string, "", if no value can be computed.<p>
+
+Note that the "eval" subcommand will be called only after the
+simulation is locked, and should almost always be able to compute a
+value for a condition with "normal" state.  The primary exception is a
+condition that evaluates an expression provided by the user, which may
+contain errors.<p>
+
+</deflist subcommands>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original interface.
+
+</manpage>
+
+
+

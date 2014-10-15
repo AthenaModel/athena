@@ -1,0 +1,62 @@
+<manpage {projectlib(n) appdir(n)} "Application Directory Utility">
+
+<section SYNOPSIS>
+
+<pre>
+package require projectlib 1.0
+namespace import ::projectlib::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+<xref appdir(n)> is responsible for locating the directory from which
+Athena is running, and making it available to the application.
+At start-up, Athena calls <iref appdir init>, which locates and
+returns the directory; thereafter, <iref appdir join> can be
+used to create absolute paths to files in the application directory
+tree.<p>
+
+<section "COMMANDS">
+
+This module defines the following commands:<p>
+
+<deflist commands>
+
+<defitem "appdir init" {appdir init}>
+
+Initializes appdir(n).  In particular, it determines, saves,
+and returns the full path to the application directory.<p>
+
+<defitem "appdir join" {appdir join ?<i>arg arg...</i>?}>
+
+Called with no arguments, returns the name of the application directory.
+Otherwise, returns the path name resulting from joining the
+arguments to the application directory.  For example, the
+following command returns the absolute path of the on-line
+help file:<p>
+
+<pre>
+set helpfile [appdir join docs help athena.helpdb]
+</pre>
+
+</deflist commands>
+
+<section ENVIRONMENT>
+
+This package requires Tcl 8.5 or later.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+New package derived from the JNEM simdir(n) module.<p>
+
+</manpage>
+
+
+
+

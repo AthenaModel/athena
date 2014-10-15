@@ -1,0 +1,81 @@
+<manpage {projectlib(n) wmsexcept(n)} "WMS Service Exception Parser">
+
+<section SYNOPSIS>
+
+<pre>
+package require projectlib 1.0
+namespace import ::projectlib::wmsexcept
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+wmsexcept(n) parses XML returned as a result of a service exception encountered
+by a Web Map Service (WMS) server.  WMS servers will raise service exception
+if a service request is not formatted properly or if requested data does not
+exist.  For example, requesting a non-existent map layer using the GetMap 
+service would result in a service exception being returned to the requesting
+client.  The XML parsed by this object must comply with version 1.3.0 of 
+the WMS service exception schema.  The Open GIS standard for WMS can be found 
+<link http://www.opengeospatial.org/standards/wms/ here>.<p>
+
+The data parsed from the XML is returned in the form of a nested dictionary.  
+See <xref "DATA DICTIONARY"> for a description of the data returned.<p>
+
+<section "COMMANDS">
+
+wmsexcept(n) provides the following commands:<p>
+
+<deflist commands>
+
+<defitem "wmsexcept parse" {wmsexcept parse <i>xml</i>}>
+
+This method parses XML that has resulted in a service exception from a Web 
+Map Service (WMS) request.  The data extracted from the XML is returned in 
+a nested dictionary.<p>
+
+<defitem "wmsexcept parsefile" {wmsexcept parsefile <i>filename</i>}>
+
+This method parses XML from a given file called <i>filename</i>.  The XML file
+must comply with version 1.3.0 of the WMS service exception schema.  The data 
+extracted from the XML is returned in a nested dictionary.<p>
+
+</deflist commands>
+
+<section "DATA DICTIONARY">
+
+Data parsed by the <xref wmsexcept(n)> object is returned as a nested 
+dictionary with the following form:<p>
+
+<code>
+<ul>
+  <li>Version -> The version of the WMS
+  <li>ServiceException => dictionary of exceptions
+  <ul>
+    <li> -> code => list of strings, one per exception. The code of
+                    the exception, a code may be the empty string. 
+    <li> -> locator => list of strings, one per exception. Not yet used.
+    <li> -> exception => list of strings, one per exception. Always present,
+                         this is human readable text of the exception.
+  </ul>
+</ul>
+
+</code><p>
+
+<section ENVIRONMENT>
+
+Requires Tcl 8.5 or later.<p>
+
+<section AUTHOR>
+
+Dave Hanks<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+

@@ -1,0 +1,1384 @@
+#-----------------------------------------------------------------------
+# TITLE:
+#    term.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPETION:
+#    Athena Help Documentation: Glossary.  Terms defined in the
+#    glossary have an ID like "term.<tag>", and are referenced
+#    using the <term <tag> > macro.
+#
+#    This file is included into athena.help.
+#
+#-----------------------------------------------------------------------
+
+page / term "Glossary" {
+    <title>
+    This page describes terms and concepts used by the
+    Athena models and software.<p>
+
+    <childlinks>
+}
+
+# term slug term text
+#
+# slug     The term's slug, e.g., "mapref", used in references.
+# term     The full term, e.g., "map reference string".
+# text     The documentation of the term.
+#
+# Defines a help page for the term.
+
+proc term {slug term text} {
+    set text "<term.header>\n\n$text"
+    page /term $slug $term $text
+}
+
+# Formats the title for a glossary term
+macro term.header {} {
+    |<--
+    [mktitle normal [cref /term] [pageinfo title] ""]
+}
+
+#-----------------------------------------------------------------------
+
+term absit "abstract situation" {
+    An <i>abstract situation</i> or <i>absit</i> is an on-going 
+    <term situation> within a <term nbhood>; it is an 
+    <term attitude> <term driver>, and affects
+    all of the people living in the neighborhood.  It may also affect
+    surrounding neighborhoods.  For a complete list of situation
+    types, and the effect of each, see the <i>Athena Rules</i> document,
+    delivered with the software.<p>
+
+    <b>Note:</b> Athena tracks the neighborhood in which each 
+    abstract situation is
+    located.  The precise location of an absit within a neighborhood
+    is meaningless.<p>
+
+    Abstract situations can be created and positioned using the 
+    controls on the <tab Physical/Map>.  
+}
+
+#-----------------------------------------------------------------------
+
+term activity "activity" {
+    An <i>activity</i> is an action that a <term group> can perform in a
+    <term nbhood>, as initiated by a <term tactic>.  Activities are
+    staffed by group <term personnel> <term deployment deployed> to
+    neighborhoods during <term strategy> execution.  Personnel assigned to
+    an activity appear as a <term unit> on the <tab Physical/Map>; the unit is said
+    to perform the activity.  Different kinds of group can perform different
+    kinds of activity.  For the full list of activities, and the meaning and
+    effect of each, see the <i>Athena Rules</i> document, which is delivered
+    with the software.
+}
+
+#-----------------------------------------------------------------------
+
+alias /term actor "actor" /object/actor
+
+#-----------------------------------------------------------------------
+
+term affinity "affinity" {
+    The <i>affinity</i> of one <term group> or <term actor> for another is
+    a measure of the natural depth of feeling or support of the one for the
+    other.  Affinity is a number from +1.0 to -1.0; it is computed by
+    comparing the <term bsystem>s of the two <term entity entities>, and
+    is the basis for group and group/actor <term relationship>s.<p>
+}
+
+#-----------------------------------------------------------------------
+
+alias /term agent "agent" /object/agent
+
+#-----------------------------------------------------------------------
+
+term attitude "attitude" {
+    An <i>attitude</i> of a particular <term group> toward
+    something.  Attitudes include:<p>
+
+    <ul>
+    <li> Group <term satisfaction> with various <term concern>s
+    <li> The <term cooperation> of <term civgroup>s with 
+         <term frcgroup>s 
+    <li> The <term hrel>s between all pairs of groups
+    <li> The <term vrel>s between groups and <term actor>s.
+    </ul><p>
+
+    Attitudes change over time in response to attitude
+    <term driver>s: <term event>s and <term situation>s in the
+    simulated world that affect attitudes.<p>
+}
+
+
+#-----------------------------------------------------------------------
+
+term bsystem "belief system" {
+    A <i>belief 
+    system</i>, which is a set of beliefs with regard to a number of 
+    <term topic>s of belief.  Each belief consists of a 
+    <term position> for 
+    or against the topic, along with an <term emphasis> on agreement 
+    or disagreement for that position.<p>
+
+    Every <term civgroup> and <term actor> is explicitly assigned
+    a belief system; every <term frcgroup> and 
+    <term orggroup> inherits the belief system of its owner.</p>
+
+    Belief systems are used to compute <term affinity affinities>,
+    which in turn are the basis for <term group> and group/actor 
+    <term relationship>s.<p>
+
+    Belief systems are created and edited on the 
+    <tab Social/Beliefs>, or via the <cref /order/bsys>.<p>
+}
+
+#-----------------------------------------------------------------------
+
+term bgerror "bgerror" {
+    When Athena encounters an unexpected run-time error, it does not
+    usually halt execution.  Instead, the error and a complete stack
+    trace are written to the <tab Log>, and the user is
+    notified.  This is called a <i>background error</i>, or 
+    <i>bgerror</i> for short.<p>
+
+    It's usually wise to save the scenario under a new name after a 
+    bgerror, and then restart the application.  However, the only 
+    consequence of most bgerrors is that a particular feature is 
+    unavailable, or unavailable in certain circumstances.<p>
+
+    Background errors should be reported to the development team.  The
+    report should include the following items, insofar as this is
+    possible given security considerations:<p>
+
+    <ul>
+    <li> The bgerror and stack trace from the debugging log.  This is
+         the text with the orange background.
+    <li> The complete text of the log file, if possible.  Select
+         <b>detail</b> on the <b>Log</b> pulldown on the Log Browser
+         toolbar before cutting and pasting the log text.
+    <li> A description of what was happening immediately before the
+         bgerror occurred (if known).
+    <li> A detailed procedure for reproducing the error, if known.
+    </ul><p>
+
+    It is often wise to contact the development team with the bare
+    fact of the error prior to gathering all of the information, in
+    case it is a known problem.<p>
+}
+
+#-----------------------------------------------------------------------
+
+alias /term block "block" /object/block
+
+
+#-----------------------------------------------------------------------
+
+term calibration "calibration" {
+    Athena's models can be calibrated and adjusted by 
+    tweaking Athena's <cref /parmdb>.  The model descriptions in the 
+    <i>Athena Analyst's Guide</i>, <i>Mars Analyst's Guide</i>, and so 
+    forth, call out relevant model parameters in the footnotes. 
+}
+
+#-----------------------------------------------------------------------
+
+alias /term cap "CAP" /object/cap
+
+#-----------------------------------------------------------------------
+
+term capacity "capacity" {
+    The term <i>capacity</i> is used in several contexts in Athena.<p>
+
+    <b>Communications Asset Packages.</b>  Each <term cap> has a
+    capacity, a measure of the CAP's level of repair.  When operating at
+    full capacity, the CAP reaches its full audience.<p>
+
+    <b>Economics.</b> Each <term sector> in the Economics model has 
+    a maximum size, or <i>capacity</i>.  The size of the <b>pop</b> 
+    sector is limited by the size of the labor force, for example.<p>
+
+    Usually when we speak of capacity, however, we mean the
+    capacity of the <b>goods</b> sector: the ability of the economy 
+    to produce goods and services.  This capacity is set when the
+    scenario is locked and then increases or decreases depending
+    on how the <term plant> infrastructure is maintained by the 
+    <term actor>s that own them.  Allocation of infrastructure to
+    actors is done on the <tab Infrastructure/GOODS Plants>.
+}
+
+#-----------------------------------------------------------------------
+
+term cause "cause" {
+    Every <term attitude> <term driver> has an associated
+    <i>cause</i>.  All inputs to <term uram> for the driver will be 
+    tagged with this cause; for example, the <b>DISEASE</b> and
+    <b>EPIDEMIC</b> <term absit>s both have the cause
+    <b>SICKNESS</b>.<p>
+
+    The purpose of causes is to prevent multiple inputs of a similar
+    type from piling on in an unreasonable way.  For example, suppose
+    that there is a serious epidemic in <term nbhood> A which then
+    spreads to nearby neighborhood B.  While the epidemic remained in
+    A, the folks in B were somewhat unhappy about it (because it might
+    spread, and because they care about some or all of the people in
+    A).  Once the epidemic spreads to B, though, the people in B have
+    their own problems; it's unlikely to expect them to feel all that
+    bad about the situation in neighborhood A.<p>
+
+    Next, consider neighborhood C, which is near to both A and B.
+    The spread of the epidemic to B might heighten their alarm
+    somewhat, but it shouldn't double their alarm.<p>
+
+    In these cases, where there are multiple inputs to URAM for a
+    given curve (say, <term civgroup> G's SFT in neighborhood C), 
+    the smaller inputs get swamped by the larger rather than adding to 
+    them.<p>
+
+    The cause associated with each kind of driver can be found in the
+    <i>Athena Rules</i> document, delivered with the software.
+}
+
+#-----------------------------------------------------------------------
+
+alias /term civgroup "civilian group" /object/group/civ
+
+#-----------------------------------------------------------------------
+
+term cli CLI {
+    Athena has a command-line interface, or "CLI", where 
+    <term executive> <cref /command commands> and scripts can be
+    executed.  The CLI is hidden by default; to make it visible, 
+    select <menu "View/Command Line"> from the 
+    <cref /menu>.
+}
+
+#-----------------------------------------------------------------------
+
+term concern "concern" {
+    Athena tracks the <term satisfaction> of 
+    <term civgroup>s with respect to a number
+    of <i>concerns</i>, also known as <i>soft factors</i>.<p>
+
+    Civilians have the following four concerns; note that the
+    <term saliency> of a given concern will typically differ
+    from one <term civgroup> to another.<p>
+
+    <topiclist>
+
+    <topic "Autonomy (AUT)">
+    Does the group feel it can maintain order and govern itself with a
+    stable government and a viable economy?
+    </topic>
+
+    <topic "Safety (SFT)">
+    Do members of the group fear for their lives, either from hostile
+    attack or from collateral damage from force activities?  This fear
+    includes environmental concerns such as life-threatening disease,
+    starvation, and dying of thirst.
+    </topic>
+
+    <topic "Culture (CUL)">
+    Does the group feel that its culture and religion, including
+    cultural and religious sites and artifacts, are respected or
+    denigrated?
+    </topic>
+
+    <topic "Quality of Life (QOL)">
+    QOL includes the physical plants that provide services, including
+    water, power, public transportation, commercial markets,
+    hospitals, etc., and those things associated with these services,
+    such as sanitation, health, education, employment, food, clothing,
+    and shelter.
+    </topic>
+
+    </topiclist><p>
+}
+
+#-----------------------------------------------------------------------
+
+alias /term condition "condition" /object/condition
+
+#-----------------------------------------------------------------------
+
+term consumer "consumer" {
+    A <i>consumer</i> is a member of the civilian population who
+    consumes goods produced by the <term local_economy>.
+    Consumers are distinguished from members of the
+    <term sapop> who live off of
+    their own land and do not participate in the cash economy.<p>
+
+    <term worker "Workers"> are a subset of <term consumer>s.<p>
+}
+
+#-----------------------------------------------------------------------
+
+term control "control" {
+    An <term actor> with sufficient <term support> in a 
+    <term nbhood> can gain <term influence> in that neighborhood;
+    and given sufficient influence, may take control of the neighborhood.
+    The model is sufficiently general to account for both peaceful and
+    violent transfers of control.<p>
+
+    The actor seen as being in control of the neighborhood will receive
+    credit or blame form the civilians in the neighborhood for current
+    conditions.
+}
+
+#-----------------------------------------------------------------------
+
+term cooperation "cooperation" {
+    A cooperation level is an <term attitude> that represents
+    the likelihood that a member of a <term civgroup> will give
+    information to a member of a particular <term frcgroup> when
+    asked.  (Whether a member of the civilian group would give actual 
+    help to a member of the force group is a different question, and 
+    one not addressed by the Athena cooperation model.)<p>
+
+    Cooperation levels are represented using the following scale:<p>
+
+    <super ::simlib::qcooperation html><p>
+
+    Athena creates the required cooperation curves automatically as 
+    groups are created.  The cooperation between groups
+    is viewed and modified on the <tab Information/Cooperation>
+    using the <cref /order/coop> and <cref /order/mad/coop>.  
+    Cooperation can
+    also be changed by <term driver>s that trigger Athena's
+    <term damrules>.
+}
+
+#-----------------------------------------------------------------------
+
+term coverage "coverage" {
+    Coverage is a measure of the fraction of a <term nbhood> that
+    is affected by something--a <term group> <term activity>, an
+    <term absit>, etc.--expressed as a number between 0.0 and 1.0.
+    It is a common input to the <term damrules>.
+}
+
+
+alias /term curse "curse" /object/curse
+
+#-----------------------------------------------------------------------
+
+term damrules "DAM Rules" {
+    Athena assesses the affect of <term attitude> <term driver>s 
+    using a collection of rule sets that belong to Athena's 
+    <term dam> (DAM); the rule sets are collectively
+    known as the <i>DAM Rules</i>.  The full set of rules and their 
+    effects are defined in the <i>Athena Rules</i> document, delivered 
+    with the software.
+}
+
+#-----------------------------------------------------------------------
+
+term demobilize "demobilize" {
+    To <i>demobilize</i> <term frcgroup> or <term orggroup>
+    personnel is to remove them from the playbox.
+    See <term personnel>.<p>
+}
+
+#-----------------------------------------------------------------------
+
+term demsit "demographic situation" {
+    A <i>demographic situation</i> is an on-going 
+    <term situation> involving
+    the residents of a neighborhood as detected by the 
+    Demographics model.  It is an 
+    <term attitude> <term driver>.
+    At present, there is only one type of demographic situation, the
+    Unemployment (UNEMP) situation; see the <i>Athena Rules</i>
+    document for details.<p>
+}
+
+#-----------------------------------------------------------------------
+
+term deployment "deployment" {
+    <term actor Actors> own <term frcgroup>s and 
+    <term orggroup>s, and can make use of their 
+    <term mobilize "mobilized"> <term personnel>.  To do useful work,
+    such personnel must be 
+    <cref /object/tactic/deploy deployed> into neighborhoods.  A particular
+    group's <i>deployment</i> is simply the number of personnel allocated
+    to each neighborhood.<p>
+
+    In particular, deployed personnel can be assigned to do 
+    <term activity "activities">, and can be 
+    <term demobilize "demobilized">, thus removing them from the
+    playbox.<p>
+}
+
+#-----------------------------------------------------------------------
+
+term driver "driver" {
+    <b>1.</b> Any <term event> or <term situation> occuring in the
+    <term playbox> that causes a change in 
+    one or more <term attitude>s.<p>
+
+    Examples of drivers include casualties to 
+    <term civgroup>s, the presence
+    and activities of <term frcgroup> in <term nbhood>s, 
+    <term absit>s, <term demsit>s, <term iom>s, 
+    and <term mad>s.<p>
+
+    <b>2.</b> A <term mad>.<p>
+
+    <b>3.</b> A <term uram> driver ID.
+}
+
+#-----------------------------------------------------------------------
+
+term dam "Driver Assessment Model" {
+    Athena's Driver Assessment Model (DAM) is the collection of rule
+    sets that assess the effects of <term attitude> 
+    <term driver>s.  These rule sets are referred to as the 
+    <term damrules>.
+}
+
+#-----------------------------------------------------------------------
+
+term emphasis "emphasis" {
+    A <term civgroup> or <term actor>'s 
+    <term bsystem belief> about a 
+    <term topic> is represented as a <term position> and an
+    emphasis on agreement or disagreement with that position.
+    The emphasis is a number from 0.0 to 1.0; 0.0 indicates that when
+    computing affinity, disagreement counts entirely and agreement not
+    at all, and 1.0 indicates that agreement counts entirely and
+    disagreement not at all.  In general, the lower the emphasis, the
+    the lower the resulting <term affinity affinities>.<p>
+
+    <b>Note:</b> the 
+    extreme values of 0.0 and 1.0 represent extreme pathological cases
+    and generally should not be used.<p>
+
+    Emphasis can and should be defined using the following symbolic
+    constants:<p>
+
+    <super ::simlib::qemphasis html>
+}
+
+
+#-----------------------------------------------------------------------
+
+term entity "entity" {
+    A simulation <i>entity</i> is simply some object in the simulation
+    that has identity: an <term actor>, a <term group>, a
+    <term nbhood>, etc.  In the context of the 
+    <term bsystem> model, <term actor>s and <term civgroup>s are
+    sometimes referred to as "belief system entities".<p>
+}
+
+#-----------------------------------------------------------------------
+
+term event "event" {
+    <b>1.</b> An <term attitude> <term driver> that takes place once,
+    at some particular time, e.g., civilian casualties due to combat, as
+    opposed to an on-going <term situation>.  The terms "event" and
+    "situation" come from JNEM, but the distinction between 
+    events and situations is considerably muddier in Athena than it was
+    in JNEM.<p>
+
+    <b>2.</b> A significant event, as included in the 
+    Significant Events log.<p>
+
+    <b>3.</b> More generally, any thing that happens in the simulation 
+    (a <i>simulation event</i>).<p>
+}
+
+#-----------------------------------------------------------------------
+
+term executive "executive" {
+    The Athena "executive" is the object that processes 
+    <cref /command commands> entered at the Athena command-line or 
+    in Athena executive scripts.  In addition, it is responsible for
+    executing <cref /object/tactic/executive>s and for evaluating
+    the boolean expressions entered for the
+    <cref /object/condition/expr>.<p>
+
+    Executive scripts can be executed from the host computer's 
+    file system using the <command call> command; alternatively,
+    scripts can be defined and saved as part of the scenario using
+    Athena's built-in script editor.  The <command reset>
+    command resets the executive interpreter to its initial state,
+    and loads any saved scripts.  See <tab Scripts> or the
+    <i>Athena User's Guide</i> for more information.
+}
+
+#-----------------------------------------------------------------------
+
+term filterbox "filter box" {
+    <image "filterbox"><p>
+
+    The various Athena data browsers all feature a filter box, which
+    is a control used to limit what is shown in the browser to some
+    <i>ad hoc</i> set chosen by the user.<p>
+
+    For example, enter "FRED" in the filter box to show only rows that
+    contain the name "FRED" somewhere in the row.  To see all of the
+    rows again, click the "circle-X" icon at the right-hand end of the
+    filter box.<p>
+
+    The filter box's behavior can be modified in two ways.  First, you
+    can change the criteria that determines a "match"; in
+    every case, what's being matched is some portion of the text on
+    the row.  Second, you can
+    tell it to display only those rows that <b>do not</b> match.<p>
+
+    To modify the filter box's behavior, click on the "sieve" icon at
+    the left-hand of the filter box.  This pops up a menu with the
+    following choices:<p>
+
+    <topiclist "Menu Item" "Description">
+
+    <topic "Exact">
+    This item and the three that follow determine how the filter text
+    is used.<p>
+
+    Selects rows that match the filter text exactly; filters when the
+    user presses Enter. Choose this option if <b>Incremental</b> is
+    too slow.
+    </topic>
+
+    <topic "Incremental">
+    <b>Default.</b> Selects rows that match the filter text exactly;
+    filters as the user types the filter text.
+    </topic>
+
+    <topic "Wildcard">
+    Selects rows that match the filter text, using "*" as a wildcard
+    character; filters when the user presses Enter.
+    </topic>
+
+    <topic "Regexp">
+    Selects rows that match a regular expression; filters when the user
+    presses Enter.
+    </topic>
+
+    <topic "Ignore Case">
+    <b>Default.</b> If this item is selected, all matches ignore case.
+    Deselect this option for case-sensitive matching.
+    </topic>
+
+    <topic "Include Matches">
+    <b>Default.</b> If this item is selected, rows that match the filter
+    text will be displayed.
+    </topic>
+
+    <topic "Exclude Matches">
+    If this item is selected, rows that <b>do not</b>
+    match the filter text will be displayed.
+    </topic>
+
+    </topiclist>
+}
+
+#-----------------------------------------------------------------------
+
+alias /term frcgroup "force group" /object/group/frc
+
+#-----------------------------------------------------------------------
+
+alias /term group "group" /object/group
+
+#-----------------------------------------------------------------------
+
+term hrel "horizontal relationship" {
+    The <term relationship> between two <term group>s, expressed
+    using the following scale:<p>
+
+    <super ::simlib::qaffinity html><p>
+
+    Horizontal relationships have effects throughout the Athena models.  
+    Every group has a relationship of 1.0 with itself and by default a
+    relationship with every other group equal to its affinity with
+    that group.  Horizontal relationships can vary over time in response
+    to <term attitude> <term driver>s, and specifically in response
+    to <term iom>s and <term mad>s.<p>
+
+    The initial relationship can be overridden on the 
+    <tab Social/Hrel>, using the 
+    <cref /order/hrel> orders.<p>
+}
+
+#-----------------------------------------------------------------------
+
+term influence "influence" {
+    <i>Influence</i> is a measure of an <term actor>'s influence in
+    a <term nbhood>, based on the <term support> for the actor
+    by the residents of the neighborhood relative to other actors.  
+    Mathematically, influence is a fraction of neighborhood control;
+    the influence of all actors in the neighborhood sums to one.  In
+    general, an actor takes <term control> of a neighborhood by
+    having an influence greater than 0.5.
+}
+
+#-----------------------------------------------------------------------
+
+alias /term inject "inject" /object/inject
+
+#-----------------------------------------------------------------------
+
+alias /term iom "IOM" /object/iom
+
+#-----------------------------------------------------------------------
+
+term jweek "Julian week number" {
+    Athena maps simulation times to calendar dates using Julian week 
+    numbers. In this scheme, each year has exactly 52 weeks, numbered 1 to
+    52. Week 1 begins on January 1st; week 52 ends on December
+    31st.<p>
+
+    For data entry, Julian weeks are represented by a week string, 
+    "<i>yyyy</i>W<i>ww</i>", where <i>yyyy</i> is the 4-digit year
+    and <i>ww</i> is the week number.  Thus, the first week of 2014 is
+    represented as <b>2014W01</b> and the last week as
+    <b>2014W52</b>.<p>
+    
+    Of course, 52 seven-day weeks adds up to a 364-day year.
+    Therefore, the final week of the year always has eight days, and
+    in leap years the week containing February 28th also has eight
+    days.  Note that Athena doesn't care about this, as it doesn't
+    deal with durations smaller than one week.<p>
+
+    In real world use, Julian week numbers have been replaced by
+    the ISO8601 week numbering scheme.  In this scheme, every week
+    begins on a Monday, and all of the weeks have seven days.  On the
+    other hand, the first day of the first week of the year will
+    usually be in December of the previous year.  As Athena doesn't
+    need this level of detail, we stick with a simple, 52-week Julian
+    numbering scheme.<p>
+}
+
+#-----------------------------------------------------------------------
+
+term local_economy "local economy" {
+    Athena's Economics model concerns the economy of a region: a
+    single country, part of that country, or perhaps several small
+    countries taken together.  Each of Athena's <term nbhood>s can be 
+    "local", i.e., part of the economic region of interest, or
+    non-local, outside the region.  The <i>local economy</i> is then
+    the economy of this local region of interest, which is a subset 
+    of the <term playbox>.
+}
+
+#-----------------------------------------------------------------------
+
+term lock "lock" {
+    To "lock" the scenario is to leave the <term prep> state,
+    initialize the simulation, and make it possible for simulation
+    time to advance.  Many scenario inputs are fixed once the 
+    scenario is locked.  See also <term unlock>.
+}
+
+#-----------------------------------------------------------------------
+
+term loglevel "log level" {
+    Every entry written to the debugging log has an associated <i>log
+    level</i>, as follows:<p>
+
+    <ul>
+    <li> <b>fatal</b>:    Used when the prouram is about to halt.
+                          Displayed with a red background.
+    <li> <b>error</b>:    Used only for <term bgerror>s. Displayed
+                          with an orange background.
+    <li> <b>warning</b>:  Used when a potential problem is
+                          noticed. Displayed with a yellow background.
+    <li> <b>normal</b>:   Normal informational message.
+    <li> <b>detail</b>:   Detailed informational message.
+    <li> <b>debug</b>:    Debugging message, low-level details.
+    </ul><p>
+
+    Note that <b>debug</b> messages are only written to the log when
+    enabled by the developer.  By default, the <tab Log> shows
+    <b>normal</b> messages of severity <b>normal</b> and above.
+}
+
+#-----------------------------------------------------------------------
+
+term mad "magic attitude driver" {
+    A <i>magic attitude driver</i> (MAD) is a "magic" 
+    <term driver> (<term event> or <term situation>) 
+    defined by the user; it
+    affects attitudes in any way the user determines, via the 
+    <cref /order/mad>.<p>
+}
+
+
+#-----------------------------------------------------------------------
+
+term mapref "map reference string" {
+    A map reference string is a six-character string that represents
+    a point on the scenario's map.  It has the form
+    <b><i>AnnAnn</i></b> where <i>A</i> is a letter from "A" to "K"
+    (excluding "I") and <i>n</i> is a digit, "0" to "9".<p>
+
+    <h2>Background</h2>
+
+    Athena is designed to use any map image the analyst may have on
+    hand, from a high-quality scan of a printed map to a snapshot of a
+    map hand-drawn on a piece of paper.  Consequently, Athena cannot
+    use geographic coordinates, as it cannot assume that maps are
+    properly geo-referenced.<p>
+
+    Instead, Athena uses X,Y coordinates in the range 0 to 999 for
+    both axes.  The origin is at the upper left; positive X runs from
+    left to right and positive Y from top to bottom.<p>
+
+    These numeric X,Y coordinates are used internally; for input and
+    output they are converted to the form shown above.  For example,
+    the location (123,456) has reference string "B23E56".<p>
+
+    Note that X and Y coordinates are scaled identically.  The lower
+    right corner of a map 1000 pixels wide by 500 pixels high would
+    have numeric map coordinates (999,499) and map reference string
+    "K99E99".
+}
+
+#-----------------------------------------------------------------------
+
+term mobilize "mobilize" {
+    A <term frcgroup> or <term orggroup>'s <i>mobilized</i>
+    personnel are the group's personnel actually present in
+    the playbox.  See <term personnel>.<p>
+}
+
+#-----------------------------------------------------------------------
+
+term mood "mood" {
+    <b>1.</b> A <term civgroup>'s
+    <term satisfaction> averaged across its 
+    <term concern>s, taking <term saliency> into account.  In
+    other words, a group's mood is how satisfied or dissatisfied the 
+    group is with things in general.<p>
+
+    <b>2.</b> A <term nbhood>'s mood, i.e., the satisfaction of
+    all groups in the neighborhood with things in general.
+}
+
+#-----------------------------------------------------------------------
+
+alias /term nbhood "neighborhood" /object/nbhood
+
+#-----------------------------------------------------------------------
+
+term order "order" {
+    Inputs to the Athena scenario and models are presented to Athena
+    as <cref /order orders>.<p>
+
+    Orders may be sent interactively by a variety
+    of methods; such orders can usually be 
+    <menu Edit/Undo undone>.  The complete history of orders
+    sent interactively to Athena is shown on the 
+    <tab Orders>.<p>
+}
+
+
+#-----------------------------------------------------------------------
+
+alias /term orggroup "organization group" /object/group/org
+
+#-----------------------------------------------------------------------
+
+term parameter "parameter" {
+    <b>1.</b> A model parameter, as contained in the 
+    <cref /parmdb "model parameter database">.<p>
+
+    <b>2.</b> An input to a <term condition>, <term order>,
+    or <term tactic>.
+}
+
+#-----------------------------------------------------------------------
+
+term paused "Paused" {
+    The "Paused" <term state>, or "Paused" for short, is
+    the simulation state in which course-corrections can be made and
+    time can be advanced.  To make major changes to the scenario, it is
+    necessary to return to the <term prep> state by 
+    <term unlock unlocking> the scenario.
+}
+
+#-----------------------------------------------------------------------
+
+alias /term payload "payload" /object/payload
+
+#-----------------------------------------------------------------------
+
+term personnel "personnel" {
+    In Athena, <term frcgroup>s and <term orggroup>s exist to 
+    provide manpower to <term actor>s.  The people who make up a 
+    group are called the group's <i>personnel</i>.<p>
+
+    <b><term mobilize "Mobilized"> Personnel:</b>  Group personnel
+    who are currently present in the <term playbox>.  Personnel may 
+    exist in the playbox at time zero, or be mobilized later using the
+    <cref /object/tactic/mobilize>.<p>
+
+    <b><term deployment "Deployed"> Personnel:</b>  Once mobilized, 
+    personnel must be deployed to neighborhoods 
+    via the <cref /object/tactic/deploy> before they can be used. 
+    Personnel remaining undeployed at the end of strategy execution
+    are automatically demobilized.<p>
+
+    <b><term demobilize "Demobilization">:</b>  Troops can be
+    demobilized, i.e., removed from the playbox, using the 
+    <cref /object/tactic/demob>, or simply by not deploying them.<p>
+
+    Once deployed, personnel can be assigned to 
+    <term activity activities> and used in a variety of other ways.<p>
+}
+
+#-----------------------------------------------------------------------
+
+term plant "plant" {
+    In Athena, the infrastructure associated with production capacity
+    in the goods sector in the economy is encapsulated by the abstract
+    notion of a goods production plant or just "plant".  A plant by itself
+    is capable of producing some amount of the product of the goods sector,
+    namely the "goods basket".  One goods basket is a notional set of goods
+    portioned in such a way as to represent nominally one dollars worth
+    of all goods produced by the economy being modeled.  Aggregated
+    together, all the plants in the simulation represent
+    the total capacity of the goods sector.
+}
+
+    
+#-----------------------------------------------------------------------
+
+term playbox "playbox" {
+    The <i>playbox</i> is the region of interest to the analyst in 
+    the current scenario, i.e., the region for which
+    <term nbhood>s are defined.
+}
+
+#-----------------------------------------------------------------------
+
+term pmesii "PMESII-PT" {
+    PMESII-PT is a paradigm for breaking down the operating environment.
+    Its components are:<p>
+
+    <ul>
+        <li> Political
+        <li> Military
+        <li> Economics
+        <li> Social
+        <li> Infrastructure
+        <li> Information
+        <li> Physical
+        <li> Time
+    </ul><p>
+
+    Athena uses the PMESII-PT paradigm as the organizing principle for
+    its user interface and documentation.
+}
+
+#-----------------------------------------------------------------------
+
+term position "position" {
+    A <term civgroup> or <term actor>'s 
+    <term bsystem belief> about a 
+    <term topic> is represented as a position and an
+    <term emphasis> on agreement or disagreement with that position.
+    The position is a number from 1.0 to
+    -1.0 that represents not only whether the <term entity> is for or against
+    the topic, but also the strength of that position: the greater the
+    absolute magnitude of the number, the more likely the entity is to
+    take political action in support of its belief.  Note that
+    political action does not necessarily imply violent action.<p>
+
+  <b>Note:</b> the 
+    extreme values of -1.0 and 1.0 represent extreme pathological cases
+    and generally should not be used.<p>
+
+    Positions can be defined using the following symbolic
+    constants:<p>
+
+    <super ::simlib::qposition html>
+}
+
+#-----------------------------------------------------------------------
+
+term prep "Prep" {
+    The "Scenario Preparation" <term state>, or "Prep" for short, is
+    the simulation state in which scenarios are defined, edited, and
+    changed.  When it is time to run the simulation, the scenario is
+    <term lock locked>, and enters the <term paused> state; and then, 
+    in order to change the scenario it must
+    first be <term unlock unlocked>.
+}
+
+#-----------------------------------------------------------------------
+
+term proximity "proximity" {
+    The <i>proximity</i> of one <term nbhood> with another is
+    expressed as one of the following four values, <b>HERE</b>, 
+    <b>NEAR</b>, <b>FAR</b>, and <b>REMOTE</b>, where <b>HERE</b>
+    represents the proximity of a neighborhood to itself.<p>
+
+    Proximity is assigned by the analyst, and can take into
+    account physical distance, physical obstacles, psychological
+    distance, and so forth.  Further, it need not be symmetric:
+    neighborhood A might regard neighborhood B as <b>NEAR</b> while B
+    regards A as <b>FAR</b>, or even as <b>REMOTE</b>.<p>
+
+    The attitudes of a <term group> can be affected by 
+    <term driver>s that occur <b>HERE</b> in the same neighborhood; to a
+    lesser degree by drivers occuring in a <b>NEAR</b>
+    neighborhood, even less by drivers in a <b>FAR</b>
+    neighborhood, and not at all by drivers in a <b>REMOTE</b>
+    neighborhood.<p>
+
+    The extent to which <b>NEAR</b> and <b>FAR</b> drivers have an
+    effect <b>HERE</b> varies from one kind of driver to another; see
+    the <i>Athena Rules</i> document for details.<p>
+
+    The proximity between two neighborhoods is edited on the
+    <tab Physical/Proximities>, using the
+    <cref /order/nbrel>.<p>
+}
+
+#-----------------------------------------------------------------------
+
+term relationship "relationship" {
+    The <term attitude> a group has toward another group
+    (the <term hrel>) or toward an actor (the <term vrel>).  
+    Relationships play a part in many of the Athena models.
+}
+
+#-----------------------------------------------------------------------
+
+term role "role" {
+    Roles are used to specify one or more <term group>s or 
+    <term actor>s as part of an <term inject> associated with a 
+    <term curse>.  Roles can be thought of as user-defined variables
+    that will be filled in with lists of IDs when the CURSE tactic
+    is added to a strategy.  When the CURSE tactic executes, those groups 
+    and/or actors are the ones effected by the injects.  Note that all
+    roles begin with the "at" sign (@).<p>
+
+    There are a number of different ways that roles can be filled with
+    entities from within Athena using <cref /gofer>.
+}
+
+
+#-----------------------------------------------------------------------
+
+term saliency "saliency" {
+    The <i>saliency</i> of a <term concern> to a 
+    <term civgroup> is the importance of that concern to the group.
+    Some groups will value quality of life more than autonomy; for
+    others, culture will trump quality of life.  This comes into play
+    when computing a group or <term nbhood>'s <term mood>, and
+    when comparing <term satisfaction> levels across groups.<p>
+    
+    Saliency is represented using the following scale:<p>
+
+    <super ::simlib::qsaliency html>
+
+    A group's saliency for each concern is set on the
+    <tab Social/Satisfaction> using the
+    <cref /order/sat>.
+}
+
+
+#-----------------------------------------------------------------------
+
+term satisfaction "satisfaction" {
+    A satisfaction level is an <term attitude> that
+    represents a <term civgroup>'s satisfaction with respect to some
+    <term concern>.  Satisfaction
+    levels are represented using the following scale:<p>
+
+    <super ::simlib::qsat html><p>
+
+    Athena creates the required satisfaction curves automatically as 
+    civilian groups are created.  A group's initial baseline 
+    satisfaction levels are viewed and modified on the 
+    <tab Social/Satisfaction> using the <cref /order/sat>.  Once
+    the simulation is running, satisfaction can be changed by
+    <term attitude> <term driver>s that trigger Athena's
+    <term damrules>.
+}
+
+#-----------------------------------------------------------------------
+
+term scenariofile "scenario file" {
+    Athena is a document-centric application, rather like a word
+    processor or spreadsheet application.  An Athena "document" is
+    called an <i>Athena scenario file</i>.  The scenario file contains
+    the scenario data, the map image (if any), any simulation results,
+    and in general everything
+    to do with the scenario.<p>
+
+    Athena scenario files have an ".adb" file type.<p>
+}
+
+
+#-----------------------------------------------------------------------
+
+term sector "sector" {
+    Athena's Economic Model divides the economy into six sectors:
+
+    <ul>
+    <li> <b>goods:</b> Production of goods and services.
+
+    <li> <b>black:</b> International black market in drugs, guns,
+    human trafficking, and the like.
+
+    <li> <b>pop:</b> All labor, and all personal consumption.<p>
+
+    <li> <b>actors:</b> All income flowing to <term actor>s, and
+    all expenditures by actors.
+
+    <li> <b>region:</b> Everything in the local economy that isn't
+    covered by the first four sectors.
+
+    <li> <b>world:</b> The rest of world, outside the local economy.
+    </ul><p>
+
+    See the <i>Athena User's Guide</i> and the 
+    <i>Athena Analyst's Guide</i> for more detail.<p>
+}
+
+#-----------------------------------------------------------------------
+
+term security "security" {
+    A <term group>'s <i>security</i> is a number that indicates
+    how safe members of the group are in a <term nbhood>, as opposed to
+    how satisfied they are with their safety.<p>
+
+    Security is represented
+    by the following scale:<p>
+
+    <super ::projectlib::qsecurity html>
+
+    A group's security is affected by its size and by its 
+    <term hrel>s with other groups present in the neighborhood.  See
+    the <i>Athena Analyst's Guide</i> for a complete description of how
+    security is computed.  Many Athena models (and notably the model
+    of <term actor> <term support>, <term influence>, and 
+    <term control>) depend on security.
+}
+
+#-----------------------------------------------------------------------
+
+term hook "semantic hook" {
+    As part of an Information Operations Message or <term iom>, a 
+    semantic hook consists of a narrative and a position on one or more
+    <term bsystem> <term topic>s. The hook is used to catch the 
+    audience of the IOM by appealing to their beliefs, so that the IOM's 
+    <term payload>s can take affect.
+}
+
+#-----------------------------------------------------------------------
+
+term servsit "service situation" {
+    An <term attitude> <term driver> that involves the provision
+    of some service to the <term civgroup>s in a 
+    <term nbhood>.  At present, the only
+    service situation is the Essential Non-infrastructure (ENI)
+    services situation.
+}
+
+#-----------------------------------------------------------------------
+
+term situation "situation" {
+    An <term attitude> <term driver> that takes place over
+    time, e.g., an epidemic or the provision of ENI services, as 
+    opposed to a one-time <term event>.  The terms "event" and
+    "situation" come from JNEM, but the distinction between 
+    events and situations is considerably muddier in Athena than it was
+    in JNEM.<p>
+}
+
+#-----------------------------------------------------------------------
+
+term stance "stance" {
+    A <term frcgroup>'s <i>stance</i> toward another 
+    <term group> is a designated <term hrel> value established 
+    by the force group's owning <term actor> that
+    indicates how the force group is supposed to behave toward the
+    other group.<p>
+
+    For example, a force group given peace-keeping duties in a 
+    <term nbhood> should be given a strongly positive stance toward
+    the groups that reside in the neighborhood, indicating that the
+    group is to treat the residents well.  This will increase the
+    <term security> of the residents.<p>
+
+    How well a force group succeeds in behaving according to its 
+    designated stance depends on the group's training level and 
+    on the difference between the stance and the group's actual 
+    relationship with the designated groups.  If the force group is
+    poorly trained, and has a hatred for the designated groups, 
+    the increase in security will be much less than if the force
+    group is highly trained or better disposed toward the residents.
+}
+
+#-----------------------------------------------------------------------
+
+term state "state" {
+    <b>1.</b> The complete state of the simulation at a given time: all
+    data associated with the simulation.  This is what is saved in the
+    <term scenariofile>.<p>
+
+    <b>2.</b> The simulation mode in which Athena is currently operating.
+    The Athena simulation can be in one of the following states at
+    any given time:<p>
+
+    <ul>
+    <li> <b><term prep></b>
+    <li> <b>Running</b>
+    <li> <b>Paused</b>
+    <li> <b>Snapshot</b>
+    </ul>
+
+    See the <i>Athena User's Guide</i> for more information.
+}
+
+#-----------------------------------------------------------------------
+
+term strategy "strategy" {
+    An <term actor>'s <i>strategy</i> is the collection of 
+    <term tactic>s he will use to achieve his 
+    goals, collected in <term block blocks> with the set of 
+    <term condition conditions>
+    under which he will use them.  The actor's strategy is
+    browsed and edited on the <tab Strategy>.
+}
+
+
+#-----------------------------------------------------------------------
+
+term sapop "subsistence agriculture population" {
+    That part of the population that lives by subsistence agriculture,
+    whether farming or herding, and hence does not participate in the
+    cash economy.  Athena assumes that there is a hard line between
+    the subsistence farmers and the <term consumer>s, although there
+    is certainly some overlap in reality.
+}
+
+
+#-----------------------------------------------------------------------
+
+term support "support" {
+    An <term actor>'s <i>support</i> in a <term nbhood> is the
+    degree to which the people (including <term frcgroup> and
+    <term orggroup> personnel) in the neighborhood will do his bidding.
+    Support is based on the <term vrel>s
+    between local groups and the actor, on each group's 
+    <term security>, and
+    on the number of people in each group.<p>
+
+    <b>Note:</b> To support an actor in this sense, a group must not only 
+    have a positive
+    <term vrel>, but most also have sufficient security to be active in
+    the actor's favor.  Thus, support in this sense is sometimes 
+    called <i>active support</i>.  One of the <term vrel> bins is also
+    called "SUPPORT"; this is simply a qualitative label put on 
+    relationships greater than 0.7, and should not be confused with 
+    active support.<p>
+
+    Support is used to compute <term influence>.<p>
+}
+
+#-----------------------------------------------------------------------
+
+alias /term system "SYSTEM agent" /object/agent/system
+
+#-----------------------------------------------------------------------
+
+alias /term tactic "tactic" /object/tactic
+
+#-----------------------------------------------------------------------
+
+term tick "tick" {
+    Athena advances time <term week> by week; the processing done
+    for each week as the simulation runs is referred to as happening at or 
+    on the "tick".<p>
+
+    Processing that occurs every so many ticks is said to happen on the
+    "tock"; in earlier versions of Athena, for example, the tick size was one
+    day and the economics model was updated once a week.  Thus, it was said
+    that the economics model was updated every economics tock, which was every
+    seven ticks.<p>
+
+    In Athena 4, everything that happens happens on the tick.<p>
+}
+
+#-----------------------------------------------------------------------
+
+term timespec "time specification string" {
+    A time specification string identifies a particular simulation
+    time.  It has the form "<i>baseTime</i> +/- <i>offset</i>", where
+    the offset is some number of days and the base time has one of
+    the following forms:<p>
+
+    <ul>
+    <li> <b>LOCK</b>: The time at which the scenario was locked.  Note that
+        this will not be t=0 if the start tick has been changed.
+    <li> <b>RUN</b>: The time at which the most recent run began.  If
+        the Run button was pressed while paused at t=10, then RUN
+        will be t=11, the first time tick of the run.
+    <li> <b>NOW</b>: The current simulation time.
+    <li> <b><i>weeks</i></b>: A specific time in ticks.
+    <li> <b><i>weekString</i></b>: A specific calendar week, specified as
+         "<i>yyyy</i>W<i>ww</i>", where <i>yyyy</i> is the four-digit 
+         year and <i>ww</i> is the <term jweek>, 1 to 52.  Thus, the weeks
+         of 2014 range from <b>2014W01</b> to <b>2014W52</b>.
+    </ul><p>
+
+    Either the base time or the offset may be omitted.  If the base
+    time is omitted, it defaults to <b>NOW</b>; if the offset is
+    omitted, it is 0.  For example,<p>
+
+    <ul>
+    <li> <b>NOW</b>: The current simulation time.
+    <li> <b>NOW+10</b>: 10 weeks from now.
+    <li> <b>2014W26+5</b>: 5 weeks after the middle of 2014.
+    <li> <b>-5</b>: Five weeks ago
+    <li> <b>+5</b>: Five weeks from now 
+    <li> <b>5</b>: Week five.
+    </ul>
+}
+
+
+#-----------------------------------------------------------------------
+
+term tock "tock" {
+    See <term tick>.
+}
+
+#-----------------------------------------------------------------------
+
+term topic "topic" {
+    A <term civgroup> or <term actor>'s <term bsystem> consists
+    of beliefs about a number of topics.  At its a base, a topic is
+    something which can drive people in the playbox to political
+    action: e.g., Shia Islam or the presence of the US forces in the
+    playbox.<p>
+
+    There are an unlimited number of topics in any given region of the
+    world.  Topics are of interest from Athena's point of view if 
+    feelings for or against the topic are strong enough to motivate 
+    political action, and if there is strong disagreement about the
+    topic among the groups and actors in the playbox.<p>
+
+    Topics must be stated globally, so that they mean the same thing
+    to all actors and groups.  For example, "I control the country" is
+    not a topic.  "Actor A controls the country", on the other hand, is.<p>
+}
+
+#-----------------------------------------------------------------------
+
+term unit "unit" {
+    A <i>unit</i> is a collection of <term personnel> belonging to some
+    <term group> that can be positioned in the <term playbox>
+    and displayed on the <tab Physical/Map>.<p>
+
+    Units come into existence automatically to represent the
+    civilian population of the <term nbhood>, and to represent 
+    <term frcgroup> and <term orggroup> 
+    personnel <term deployment deployed> to neighborhoods by the 
+    <cref /object/tactic/deploy>;
+    and also to represent personnel assigned to particular activities
+    by the <cref /object/tactic/assign>.  Thus, every unit belongs to 
+    some group and represents personnel drawn from some particular 
+    neighborhood.<p>
+
+    Each unit is tied to a particular neighborhood and can be moved
+    about within that neighborhood for the purposes of visualization;
+    however, a unit's specific location within a neighborhood has no
+    effect on the simulation.  Units cannot be moved from one 
+    neighborhood to another.<p>
+
+    In conventional war games, units correspond to a Table of
+    Organization and Equipment (TOE); thus, a unit might be Company A
+    of such-and-such a battalion.  In Athena, a unit is simply
+    an allocation of personnel to some purpose over a period of time, 
+    e.g., an allocation of members of a force group to the 
+    <term activity> of law enforcement.<p>
+
+    Units can be positioned using the controls on the
+    <tab Physical/Map>.
+}
+
+
+
+#-----------------------------------------------------------------------
+
+term unlock "unlock" {
+    To "unlock" the scenario is to terminate a simulation run and
+    re-enter the <term prep> state, thus making it possible to edit
+    the scenario inputs.  Unlocking the scenario erases the simulation
+    results from the current run; to retain them, save a copy of the
+    scenario file prior to unlocking the scenario.
+}
+
+#-----------------------------------------------------------------------
+
+term uram "URAM" {
+    The Unified Regional Attitude Model (URAM) is that part of
+    Athena that tracks changes to <term cooperation> levels, 
+    to <term satisfaction> levels, and to <term hrel>s and 
+    <term vrel>s.  It is given inputs by the <term damrules>,
+    which fire in response to <term attitude> <term driver>s
+    as described in the <i>Athena Rules</i> document.
+}
+
+#-----------------------------------------------------------------------
+
+term urbanization "urbanization" {
+    The urbanization level of the neighborhood:<p>
+
+    <enumdoc ::projectlib::eurbanization><p>
+}
+
+
+
+#-----------------------------------------------------------------------
+
+term vrel "vertical relationship" {
+    The relationship between a <term civgroup> and an 
+    <term actor>, expressed as a number from -1.0 to +1.0.  Vertical
+    relationships change over time, based on circumstances.
+    Relationships are often described using the following scale:<p>
+
+   <super ::simlib::qaffinity html><p>
+
+   The term "SUPPORT" as it appears in this table is simply a 
+   symbolic name for relationships greater than 0.7.  It should not be
+   confused with the notion of active <term support> used in the Politics
+   model.
+}
+
+#-----------------------------------------------------------------------
+
+term volatility "volatility" {
+    The <i>volatility</i> of each <term nbhood> is a number from 0
+    to 100 that indicates how likely it is that a random person in the
+    neighborhood will get caught up in violence unrelated to his
+    presence.  It is computed by the Security model.<p>
+
+    Volatility is a major component of a <term group>'s 
+    <term security>.
+}
+
+#-----------------------------------------------------------------------
+
+term week "week" {
+    The basic unit of time in Athena is one week.
+    See <term tick>.
+}
+
+#-----------------------------------------------------------------------
+
+term worker "worker" {
+    A member of the labor force, as determined by the
+    Demographics model.  All workers are 
+    <term consumer>s.
+}
+

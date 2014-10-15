@@ -1,0 +1,87 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    prefs.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: User Preferences
+#
+#    This file is included into athena.help.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+
+page / prefs "User Preferences" {
+    <title>
+    User preferences are user-specific settings that customize
+    the behavior of the application.  As such, preference parameters
+    affect the user experience, but not the simulation outputs.
+    Preference values can be queried and set using the
+    <command prefs> executive command.<p>
+
+    <childlinks>
+}
+
+
+# prefpage parm itemtype
+#
+# parm     The name of the parameter or subset
+# itemtype parm|subset
+#
+# Defines a parameter help page, defining the parent/child links properly.
+
+proc prefpage {parm itemtype} {
+    # FIRST, get the parent and slug of this page.
+    lassign [name2path /prefs . $parm] parent slug
+
+    if {$itemtype eq "subset"} {
+        set title "$parm.*"
+        set tlinks [name2pathlinks /prefs . $parm].*
+    } else {
+        set title $parm
+        set tlinks [name2pathlinks /prefs . $parm]
+    }
+
+    set toplink "<a href=\"/prefs\">User Preference</a>"
+
+    set text "<mktitle small {$toplink} {$tlinks} {}>\n\n"
+
+    if {$itemtype ne "subset"} {
+        append text \
+       "Default value: [super ::projectlib::prefs getdefault $parm]<p>\n\n"
+    }
+
+    append text [super ::projectlib::prefs docstring $parm]
+    append text "<p>"
+
+    if {$itemtype eq "subset"} {
+        append text "\n<childlinks>"
+    }
+
+    page $parent $slug $title $text
+}
+
+
+
+# prefpages
+#
+# Creates a page called "pref.<parmname>" for each preference parameter.
+
+proc prefpages {} {
+    super ::projectlib::prefs init
+
+    foreach {item itemtype} [super ::projectlib::prefs items] {
+        prefpage $item $itemtype
+    }
+}
+
+
+#-----------------------------------------------------------------------
+
+prefpages
+
+

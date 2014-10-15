@@ -1,0 +1,58 @@
+<manpage parmdb(5) "Athena Model Parameter Definitions">
+
+<section SYNOPSIS>
+
+<expand [project tclsh {
+    package require projectlib
+    ::projectlib::parmdb init
+    ::projectlib::parmdb manlinks
+}]>
+
+<section DESCRIPTION>
+
+parmdb(5) defines the Athena model parameters and the related file
+format.  The model parameters are used to calibrate Athena's models;
+and the parameters can be imported and exported using this file
+format.<p>
+
+<xref parmdb(n)> handles parmdb(5) files using the <xref mars:parmset(n)>
+mechanism.  A valid file consists of zero or more parameter settings,
+each of which has this basic syntax,<p>
+
+<pre>parm <i>name</i> <i>value</i></pre><p>
+
+where <i>value</i> must be quoted if it contains whitespace.  See
+<xref mars:parmset(n)> for more details.<p>
+
+<section PARAMETERS>
+
+The majority of the parameters in parmdb(5) are defined by
+<xref parmdb(n)>.  Some of the parameters are pulled in from library
+modules.<p>
+
+The valid parameters are as follows:<p>
+<expand [project tclsh {
+    package require projectlib
+    ::projectlib::parmdb init
+    ::projectlib::parmdb manpage
+}]>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+
+
+

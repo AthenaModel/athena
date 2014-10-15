@@ -1,0 +1,118 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    order_coop.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: COOP:* Orders
+#
+#    This file is included into order.help.
+#
+#-----------------------------------------------------------------------
+
+page /order coop "Cooperation Orders" {
+    <title>
+
+    Athena models the cooperation of neighborhood
+    civilian groups with force groups, where cooperation is defined as
+    in the TRAC HUMINT methodology: the likelihood that a member of
+    the civilian group will give intelligence to a member of the force
+    group.  This family of orders are used to manipulate the
+    initial baseline cooperation levels between various groups.  (Use the
+    <cref /order/mad/coop> to adjust or otherwise influence the 
+    cooperation levels during simulation.)<p>
+
+    The full set of orders is as follows:<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+
+order COOP:UPDATE "Update Initial Cooperation" {
+    <parmlist>
+    <parm id "Curve">
+    <b>Required.</b>  A cooperation curve ID, which is a list 
+    {<i>f g</i>} where <i>f</i> is a
+    civilian group and <i>g</i> is a force group.
+    </parm>
+
+    <parm base "Baseline">
+    <b>Optional.</b>  The initial baseline cooperation level of 
+    group <i>f</i> with group <i>g</i>.  Cooperation levels
+    run from 0.0 to 100.0, and are defined either numerically or using
+    the following rating scale:<p>
+
+    <super ::simlib::qcooperation html>
+    </parm>
+
+    <parm regress_to "Regress To">
+    <b>Optional.</b>  Indicates how the natural level of the cooperation 
+    curve is 
+    determined.  If <b>BASELINE</b>, the natural level of the curve is 
+    always the same as the <i>base</i> value.  If <b>NATURAL</b>, it is
+    the specified <i>natural</i> level.
+    </parm>
+
+    <parm natural "Natural">
+    <b>Optional.</b>  The natural level of cooperation of 
+    group <i>f</i> with group <i>g</i>.  The level will regress to this
+    value over time if <i>regress_to</i> is <b>NATURAL</b>.
+    </parm>
+    </parmlist>
+
+    <b><term prep> Only.</b>  This order updates the initial baseline
+    cooperation level of one group with another; this can only be done
+    during the Scenario Preparation phase.<p>
+
+    (Use the <cref /order/mad> to adjust or otherwise influence the 
+    cooperation levels during simulation.)
+}
+
+#-----------------------------------------------------------------------
+
+order COOP:UPDATE+MULTI "Update Initial Cooperation (Multi)" {
+    <parmlist>
+    <parm ids "IDs">
+    <b>Required.</b>  <parm.ids cooperation><p>
+
+    Programmatically, each ID is a list {<i>f g</i>} where
+    <i>f</i> and <i>g</i> are defined as for the 
+    <cref /order/coop/update> order.
+    </parm>
+
+    <parm base "Baseline">
+    <b>Optional.</b>  The initial baseline cooperation level for 
+    the selected curves.  Cooperation levels run from 0.0 to 100.0, and 
+    are defined either numerically or using the following rating scale:<p>
+
+    <super ::simlib::qcooperation html>
+    </parm>
+
+    <parm regress_to "Regress To">
+    <b>Optional.</b>  Indicates how the natural level of the cooperation 
+    curve is 
+    determined.  If <b>BASELINE</b>, the natural level of the curve is 
+    always the same as the <i>base</i> value.  If <b>NATURAL</b>, it is
+    the specified <i>natural</i> level.
+    </parm>
+
+    <parm natural "Natural">
+    <b>Optional.</b>  The natural level of cooperation of 
+    group <i>f</i> with group <i>g</i>.  The level will regress to this
+    value over time if <i>regress_to</i> is <b>NATURAL</b>.
+    </parm>
+    </parmlist>
+
+    <b><term prep> Only.</b>  This order updates the initial baseline
+    cooperation level for two or more cooperation curves, as selected 
+    in the GUI.<p>
+
+    (Use the <cref /order/mad> to adjust or otherwise influence the 
+    cooperation levels during simulation.)
+}
+
+

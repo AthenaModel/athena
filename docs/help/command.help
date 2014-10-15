@@ -1,0 +1,2280 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    command.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: Executive Commands
+#
+#    This file is included into athena.help.
+#
+#    Command pages have paths like /command/{name}.  If the command's 
+#    name has multiple tokens, they are connected by "/", as in 
+#    "/command/parm/set".
+#
+#-----------------------------------------------------------------------
+
+page / command "Executive Commands" {
+    <title>
+    Athena provides a command-line interface (CLI) at the bottom on
+    the main window.  The CLI is primarily used during testing and
+    development, as most user tasks are done via 
+    <cref /order "order dialogs"> and other GUI interactions.  However,
+    there are a small number of tasks that the user can do by typing
+    <i>executive commands</i> at the CLI.  Most of these are low-level
+    tasks, such as calibrating the Athena models by setting model
+    parameters.<p>
+
+    This page lists the available commands.<p>
+
+    <childlinks>
+}
+
+# command name text
+#
+# name     The name of the command, e.g., "parm set"
+#
+# Defines a command page, defining the parent/child links properly.
+
+proc command {name text} {
+    set parent [join [linsert [lrange $name 0 end-1] 0 /command] /]
+    set slug   [lindex $name end]
+
+    page $parent $slug $name $text
+}
+
+
+# syntax ?arglist?
+#
+# arglist      The command's argument spec
+#
+# Formats the header for the command, including a link to the parent
+# commands, if any.
+
+macro syntax {{arglist ""}} {
+    set fullname [pageinfo title]
+    set prefix [lrange $fullname 0 end-1]
+    set name   [lindex $fullname end]
+
+    set ancestor "/command"
+    set nametext ""
+
+    foreach token $prefix {
+        append ancestor /$token
+        append nametext "[cref $ancestor $token] "
+    }
+
+    append nametext $name
+    set toplink "<a href=\"/command\">Executive Command</a>"
+} {
+    |<--
+    [mktitle small $toplink "$nametext $arglist" ""]
+}
+
+# cli text
+#
+# text    A CLI script
+#
+# Formats a CLI dialog properly.
+
+macro cli {text} {
+    set text [string map {& &amp; < &lt; > &gt;} $text]
+} {
+    |<--
+    <pre>[super outdent $text]</pre><p>
+}
+
+# caution.debugging
+
+macro caution.debugging {} {
+    |<--
+    <b>Caution:</b>  This command is intended for use by the Athena
+    developers while debugging the simulation.  Careless use can
+    corrupt the application.<p>
+}
+
+# defopt text
+#
+# text   - Text defining an option, e.g., "-foo <i>bar</i>"
+#
+# An item in a list that defines an option to a command
+
+macro defopt {text} {
+    |<--
+    <dt><tt>$text</tt></dt>
+    <dd>
+}
+
+#=======================================================================
+# = command
+
+command "=" {
+    <syntax {<i>expression...</i>}>
+
+    Computes the value of an arithmetic expression:<p>
+
+    <cli {
+        > = 1 + 1
+        2
+        >
+    }>
+
+    Variables can be defined with <command set> and retrieved using
+    "$" notation:<p>
+
+    <cli {
+        > set num 5
+        5
+        > = $num * 2
+        10
+        >
+    }>
+}
+
+#=======================================================================
+# absit
+
+command "absit" {
+    <syntax {<i>subcommand</i> ?<i>args...</i>?}>
+    
+    This command queries information about <term absit>s.
+    It has the following subcommands:<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+# absit id
+
+command "absit id" {
+    <syntax {<i>n stype</i>}>
+    
+    Returns the situation ID of the <term absit> of type
+    <i>stype</i> in neighborhood <i>n</i>, if any, and the empty string
+    otherwise.
+}
+
+command "absit last" {
+    <syntax>
+    
+    Returns the situation ID of the most recently created 
+    <term absit>, or the empty string if none.
+}
+
+
+#=======================================================================
+# advance command
+
+command "advance" {
+    <syntax {<i>weeks</i>}>
+
+    Advances simulation time by the specified number of integer <i>weeks</i>,
+    <cref /command/lock>ing the scenario first if necessary.
+}
+
+#=======================================================================
+# autogen commands
+
+command "autogen" {
+    <syntax {<i>subcommand</i> ?<i>args...</i>?}>
+
+    This command is used to automatically generate entire scenarios 
+    or parts of scenarios, if desired. It has the following subcommands:<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+# autogen scenario
+
+command "autogen scenario" {
+    <syntax {?<i>options...</i>?}>
+    
+    Creates a scenario with a default number of each of Athena's entities
+    or, if any of the options are supplied, the number of entities 
+    requested by the user. If the <i>-nostrategy</i> flag is supplied then
+    no tactics are created, otherwise a default set of tactics are created 
+    for each actor.<p>
+
+    The available options are:<p>
+
+    <deflist options>
+
+    <defopt {-nb <i>n</i>}>
+    Specifies the number of neighborhoods to create. Each neighborhood is
+    a 10x10 pixel square. Neighborhoods are laid out in strips starting at
+    the top of the map. Defaults to 10.<p>
+
+    <defopt {-actors <i>n</i>}>
+    Specifies the number of actors to create. Defaults to 3.<p>
+
+    <defopt {-frcg <i>n</i>}>
+    Specifies the number of force groups to create. As they are created,
+    the force group type is cycled through each possible type. Each force 
+    group is given a base personnel of 100000. Defaults to 3.<p>
+
+    <defopt {-civg <i>n</i>}>
+    Specifies the number of civilian groups to create per neighborhood. The 
+    last group in each neighborhood is created with the subsistence 
+    agriculture flag set to true. The different types of housing are 
+    cycled through as each group is created. The exception to this are 
+    subsistence agriculture groups, which are always  
+    <code>AT_HOME</code>.  The population of every group in a neighborhood 
+    is some non-negative multiple of 10000. Thus, the first group in a 
+    neighborhood has a base population of zero and each group created 
+    after has a base population of 10000 more than the previous group.
+    Defaults to 6.<p>
+
+    <defopt {-orgg <i>n</i>}>
+    Specifies the number of organization groups to create. As groups are
+    created, the organization type is cycled through. Each group has a 
+    base personnel of 100000. Defaults to 2.<p>
+
+    <defopt {-topics <i>n</i>}>
+    Specifies the number of belief system topics to create.  Each actor and
+    civilian group is given its own belief system, and assigned a belief 
+    for each topic.  The beliefs
+    assigned are cycled through four possibilities comprised of a position
+    and emphasis pair. They are:
+
+    <ul>
+    <li><b>Passionately For</b> and <b>Agreement--Strong</b>
+    <li><b>Passionately For</b> and <b>Disagreement--Extreme</b>
+    <li><b>Passionately Against</b> and <b>Agreement--Strong</b>
+    <li><b>Passionately Against</b> and <b>Disagreement--Extreme</b>
+    </ul>
+    
+    Note that if 4 topics are requested then all actors and
+    civilians will have identical belief systems resulting in affinities of
+    1 between all entity pairs. Defaults to 3.<p>
+
+    <defopt {-nostrategy}>
+    If specified, no tactics are employed by any actor.<p>
+
+    </deflist options>
+    
+    To create a scenario with 8 neighborhoods and the default number of
+    entities for all others, enter<p>
+
+    <pre>
+        autogen scenario -nb 8
+    </pre>
+
+    To create a scenario with no tactics for any actor, enter<p>
+
+    <pre>
+        autogen scenario -nostrategy
+    </pre>
+}
+
+command "autogen actors" {
+    <syntax {?<i>num</i>?}>
+
+    Automatically generates the requested number of actors subject to
+    certain constraints. If no argument is supplied, three actors are
+    created. The only constraint is that no actors already exist.<p>
+
+    To create five actors, enter<p>
+
+    <pre>
+        autogen actors 5
+    </pre>
+}
+
+command "autogen nbhoods" {
+    <syntax {?<i>num</i>?}>
+
+    Automatically generates the requested number of neighborhoods 
+    subject to certain constraints. Each neighborhood is
+    a 10x10 pixel square. Neighborhoods are laid out in strips starting at
+    the top of the map. If no argument is supplied, 
+    ten neighborhoods are created. The constraints are as follows:<p> 
+
+    <ul>
+    <li> No neighborhoods exist
+    <li> At least one actor exists
+    </ul>
+
+    To create 8 neighborhoods, enter<p>
+
+    <pre>
+        autogen nbhoods 5
+    </pre>
+}
+
+command "autogen civgroups" {
+    <syntax {?<i>num</i>?}>
+
+    Automatically generates the requested number of civilian groups per
+    neighborhood. The last group in each neighborhood is created with 
+    the subsistence agriculture flag set to true. The different types 
+    of housing are cycled through as each group is created. The exception
+    to this are subsistence agriculture groups, which are
+    always <code>AT_HOME</code>. The population of every group in a 
+    neighborhood is some non-negative multiple of 10000. Thus, the first
+    group in a neighborhood has a base population of zero and each group 
+    created after has a base population of 10000 more than the previous 
+    group.<p>
+
+    The creation of civilian groups is subject to certain constraints. 
+    If no argument is supplied, six groups per neighborhood are created. 
+    The constraints are as follows:<p> 
+
+    <ul>
+    <li> Neighborhoods must exist
+    <li> No civilian groups exist
+    </ul>
+
+    To create 5 civilian groups, enter<p>
+
+    <pre>
+        autogen civgroups 5
+    </pre>
+}
+
+command "autogen orggroups" {
+    <syntax {?<i>num</i>?}>
+
+    Specifies the number of organization groups to create. As groups are
+    created, the organization type is cycled through. Each group has a 
+    base personnel of 100000.<p>
+
+    The creation of organization groups is subject to certain constraints. 
+    If no argument is supplied, two groups are created. The constraints 
+    are as follows:<p> 
+
+    <ul>
+    <li> At least one actor must exist
+    <li> No organization groups exist
+    </ul>
+
+    To create 5 organization groups, enter<p>
+
+    <pre>
+        autogen orggroups 5
+    </pre>
+}
+
+command "autogen frcgroups" {
+    <syntax {?<i>num</i>?}>
+
+    Specifies the number of force groups to create. As they are created
+    force group type is cycled through each possible type. Each force 
+    group is given a base personnel of 100000.<p>
+
+    The creation of force groups is subject to certain constraints. 
+    If no argument is supplied, three groups are created. The 
+    constraints are as follows:<p> 
+
+    <ul>
+    <li> At least one actor must exist
+    <li> No force groups exist
+    </ul>
+
+    To create 5 force groups, enter<p>
+
+    <pre>
+        autogen frcgroups 5
+    </pre>
+}
+
+command "autogen bsystem" {
+    <syntax {?<i>num</i>?}>
+
+    Specifies the number of belief system topics to create.  Each actor and
+    civilian group is given its own belief system, and is assigned a belief 
+    for each topic.  The beliefs
+    assigned are cycled through four possibilities comprised of a position
+    and emphasis pair. They are:
+
+    <ul>
+    <li><b>Passionately For</b> and <b>Agreement--Strong</b>
+    <li><b>Passionately For</b> and <b>Disagreement--Extreme</b>
+    <li><b>Passionately Against</b> and <b>Agreement--Strong</b>
+    <li><b>Passionately Against</b> and <b>Disagreement--Extreme</b>
+    </ul>
+
+    Creation of a belief system is subject to certain constraints. If 
+    no argument is supplied, three topics are created. The constraints
+    are as follows:<p> 
+
+    <ul>
+    <li> At least one actor must exist
+    <li> Civilian groups must exist
+    <li> No topics exist
+    </ul><p>
+
+
+    To create a belief system with 5 topics, enter<p>
+
+    <pre>
+        autogen bsystem 5
+    </pre><p>
+
+    <b>Note:</b> Because there are four possible position/emphasis 
+    combinations, creating a belief system with four topics will 
+    result in every entity having an affinity of 1.0 for every other 
+    entity.
+}
+
+command "autogen strategy" {
+    <syntax {?<i>args...</i>?}>
+
+    Automatically generates a set of tactics for each actor subject
+    to certain constraints. The constraints are as follows:<p>
+
+    <ul>
+    <li> At least one actor must exist
+    <li> Neighborhoods must exist
+    <li> At least one force or organization group must exist
+    </ul>
+
+    Currently there are only three tactic types automatically created.
+    They are the <cref /object/tactic/deploy>, the 
+    <cref /object/tactic/assign> and the <cref /object/tactic/fundeni>.  
+    In the future there may be more automatically generated tactics.<p>
+
+    By default, the <cref /object/tactic/deploy> is created for each
+    group owned by each actor in each neighborhood with the personnel in 
+    groups being evenly distributed among the several neighborhoods. Then,
+    for each deployed group, the <cref /object/tactic/assign> is used to 
+    assign activities in turn depending on whether the owned group is a 
+    force group or an organization group.<p>
+
+    Also by default, the <cref /object/tactic/fundeni> is created for
+    each actor to fund ENI for all civilians in every neighborhood.  The
+    amount of money spent for each tactic is one thousand dollars.<p>
+
+    The defaults can be changed by providing optional arguments. Every
+    option has the default of "ALL".
+    The available options are:<p>
+
+    <deflist options>
+
+    <defopt {-actors <i>alist</i>}>
+    Specifies a list of actors for which the default set of tactics should
+    be created.<p>
+
+    <defopt {-civg <i>glist</i>}>
+    The list of civilian groups to use when creating tactics. This
+    will only apply to the tactics that affect civilians.<p>
+
+    <defopt {-frcg <i>glist</i>}>
+    The list of force groups to use when creating tactics.  This
+    will only apply to tactics that require force groups.<p>
+
+    <defopt {-frcact <i>actlist</i>}>
+    The list of force group activities to use when creating 
+    tactics.  This will only apply to tactics that require force group
+    activities.<p>
+
+    <defopt {-orgg <i>n</i>}>
+    The list of organization groups to use when creating tactics. This will
+    only apply to tactics that require organization groups.<p>
+
+    <defopt {-orgact <i>actlist</i>}>
+    The list of organization group activities to use when creating 
+    tactics.  This will only apply to tactics that require organization 
+    group activities.<p>
+
+    <defopt {-nbhoods <i>nlist</i>}>
+    The list of neighborhoods to use when creating tactics.  Tactics will
+    only be created for neighborhoods in this list.
+
+    </deflist options>
+}
+
+command "autogen assign" {
+    <syntax {<i>owner</i> ?<i>args...</i>?}>
+
+    This command automatically generates one or more 
+    <cref /object/tactic/assign>s for force or organization groups
+    that belong to the specified owner.  By default all activities are
+    assigned in turn for each neighborhood.  For each tactic created,
+    100 personnel are specified to be doing the activity.  The list
+    of available options are:<p>
+
+    <deflist options>
+
+    <defopt {-frcg <i>glist</i>}>
+    List of force groups owned by owner that should be assigned activities.
+    Defaults to all force groups owned by the owner.<p>
+
+    <defopt {-orgg <i>glist</i>}>
+    List of organization groups owned by owner that should be assigned
+    activities. Defaults to all organization groups owned by owner.<p>
+
+    <defopt {-nbhoods <i>nlist</i>}>
+    List of neighborhoods that activities should be assigned in.  Defaults
+    to all neighborhoods.<p>
+
+    <defopt {-frcact <i>alist</i>}>
+    List of force activities that should be assigned, in turn, to each
+    force group in each neighborhood.  Defaults to all force activities.<p>
+
+    <defopt {-orgact <i>alist</i>}>
+    List of organization activities that should be assigned, in turn, to each
+    organization group in each neighborhood.  Defaults to all organization
+    activities.<p>
+
+    </deflist options>
+
+}
+
+
+#=======================================================================
+# axdb command
+
+command "axdb" {
+    <syntax {<i>subcommand</i> ?<i>args...</i>?}>
+
+    This command is used to manage .axdb (Athena eXperiment DataBase)
+    files.  Athena's experiment capabilities allow the analyst to set up
+    a large number of runs and accumulate the results in one file.
+    See the <i>Athena User's Guide</i> for more.<p>
+
+    Use <command axdb create> or <command axdb open> to create or
+    open an experiment file.<p>
+
+    This command has the following subcommands:<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+# axdb case command
+
+command "axdb case" {
+    <syntax {<i>subcommand</i> ?<i>args...</i>?}>
+
+    This command is used to manage individual cases within an
+    .axdb (Athena eXperiment DataBase) file.  A case represents one set
+    of changes to the base scenario for which a run can be made.
+    See the <i>Athena User's Guide</i> for more.<p>
+
+    This command has the following subcommands:<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+# axdb case add command
+
+command "axdb case add" {
+    <syntax {<i>parm value</i> ?<i>parm value...</i>?}>
+
+    This command adds a new case to the experiment.  A case is defined
+    by assigning values to zero or more of the experiment parameters.
+    For example, the following command defines a case in which "pop"
+    is 100000 and "troops" is 5000.  (The experiment parameter definition
+    determines how those numbers affect the scenario.)<p>
+
+    <cli {
+        > axdb case add pop 100000 troops 5000
+        >
+    }>
+}
+
+#-----------------------------------------------------------------------
+# axdb case dump command
+
+command "axdb case dump" {
+    <syntax {<i>id</i>}>
+
+    This command displays information about the case with the given
+    <i>id</i>, including the outcome if the case has been run; if the
+    case ran unsuccessfully, the output will give whatever information
+    is known about why it failed.<p>
+}
+
+#-----------------------------------------------------------------------
+# axdb case list command
+
+command "axdb case list" {
+    <syntax>
+
+    This command outputs a list of all of the currently defined cases;
+    it contains the following information:<p>
+
+    <topiclist>
+
+    <topic "ID">
+    The case ID, a number from 1 to N.
+    </topic>
+
+    <topic "Outcome">
+    The outcome: <b>OK</b>, <b>FAILURE</b>, or <b>ERROR</b>.  <b>FAILURE</b>
+    indicates a sanity check failure; <b>ERROR</b> indicates that the
+    application raised an unexpected error during the run.  <b>OK</b>
+    means that the application saw nothing obviously wrong.
+    </topic>.
+
+    <topic "Parms">
+    The set of parameter values that define this particular case.
+    </topic>
+
+    </topiclist>
+}
+
+#-----------------------------------------------------------------------
+# axdb clear command
+
+command "axdb clear" {
+    <syntax>
+
+    This command deletes all data from the experiment file,
+    both definition and results.
+}
+
+#-----------------------------------------------------------------------
+# axdb close command
+
+command "axdb close" {
+    <syntax>
+
+    This command closes the current experiment file.
+}
+
+
+#-----------------------------------------------------------------------
+# axdb create command
+
+command "axdb create" {
+    <syntax {<i>filename</i>}>
+
+    This command creates a new experiment file, adding the ".axdb" 
+    extension automatically.  Use <command axdb parm define> to
+    define new experiment parameters, and 
+    <command axdb case add> to add cases to run.<p>
+}
+
+#-----------------------------------------------------------------------
+# axdb csv command
+
+command "axdb csv" {
+    <syntax {<i>sql...</i>}>
+
+    This command is like the normal <command csv> command, but queries
+    the experiment file rather than the RDB.<p>
+}
+
+
+#-----------------------------------------------------------------------
+# axdb csvfile command
+
+command "axdb csvfile" {
+    <syntax {<i>filename sql...</i>}>
+
+    This command is like the normal <command csvfile> command, but queries
+    the experiment file rather than the RDB.  If the file name has no
+    extension, ".csv" will be appended automatically.<p>
+}
+
+#-----------------------------------------------------------------------
+# axdb open command
+
+command "axdb open" {
+    <syntax {<i>filename</i>}>
+
+    This command opens an existing experiment file, adding the ".axdb" 
+    extension to the filename automatically.<p>
+}
+
+#-----------------------------------------------------------------------
+# axdb parm command
+
+command "axdb parm" {
+    <syntax {<i>subcommand</i> ?<i>args...</i>?}>
+
+    This command is used to manage experiment parameters: variables
+    that determine how each case differs from the baseline scenario.<p>
+
+    This command has the following subcommands:<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+# axdb parm define command
+
+command "axdb parm define" {
+    <syntax {<i>name docstring script</i>}>
+
+    This command defines a new experiment parameter called <i>name</i>;
+    the <i>name</i> should be an identifier, i.e., it should begin with
+    a letter and can contain letters, numbers, and underscores.<p>
+
+    The <i>docstring</i> should be human-readable text describing the
+    parameter and what it means, for the benefit of those analyzing
+    the results of the experiment.<p>
+
+    The <i>script</i> is an executive script that translates the 
+    parameter's value into inputs to the scenario.  It will usually
+    use the <command send> command to send orders making the 
+    necessary changes.  The parameter's value is available as a 
+    variable when the script is executed.<p>
+
+    For example, suppose it is desired to modify the base population
+    of some particular civilian group CG1:
+
+    <cli {
+        > axdb parm define cg1pop {
+            The base population of group CG1.
+        } {
+            send CIVGROUP:UPDATE -g CG1 -basepop $cg1pop
+        }
+        >
+    }>
+}
+
+#-----------------------------------------------------------------------
+# axdb parm dump command
+
+command "axdb parm dump" {
+    <syntax {<i>name</i>}>
+
+    This command displays the definition of the parameter with the given
+    <i>name</i>, including its documentation string and script.
+}
+
+
+#-----------------------------------------------------------------------
+# axdb parm list command
+
+command "axdb parm list" {
+    <syntax>
+
+    This command displays a table of the defined parameter names
+    and their documentation strings. 
+}
+
+#-----------------------------------------------------------------------
+# axdb parm names command
+
+command "axdb parm names" {
+    <syntax>
+
+    This command returns a list of the names of the defined parameters. 
+}
+
+#-----------------------------------------------------------------------
+# axdb prepare command
+
+command "axdb prepare" {
+    <syntax {<i>case_id</i>}>
+
+    This command reverts the open scenario to its base state (i.e.,
+    it reloads the scenario file without saving any current changes)
+    and then prepares to run the case with the given <i>case_id</i>.<p>
+
+    This command is useful while debugging an experiment definition script
+    or in order to examine a particular case that caused problems while
+    running all of the cases in the experiment.<p>
+}
+
+
+#-----------------------------------------------------------------------
+# axdb run command
+
+command "axdb run" {
+    <syntax {?<i>option value...</i>?}>
+
+    This command runs the cases in the experiment, saving the results
+    in the experiment file.  It is controlled by the following options:<p>
+
+    <deflist options>
+    <defopt {-start <i>case_id</i>}>
+    The ID of the first case to run.  The default is case 1.<p>
+
+    <defopt {-end <i>case_id</i>}>
+    The ID of the last case to run.  The default is the last case in the
+    experiment.<p>
+
+    <defopt {-weeks <i>weeks</i>}>
+    The number of weeks of simulation time to run for each case.
+    The default is one week.<p>
+    </deflist options>
+
+    If this command is used from the Athena GUI, note that the GUI will not
+    update until the run is complete (which might be quite a long while).<p>
+
+    When the run is complete, Athena will be left in the PREP state with
+    the base scenario loaded.<p>
+}
+
+#-----------------------------------------------------------------------
+# axdb runcase command
+
+command "axdb runcase" {
+    <syntax {<i>case_id</i> ?<i>option value...</i>?}>
+
+    This command runs the case with the given <i>case_id</i>,
+    leaving the simulation with time advanced.  It is useful for 
+    running a particular case in the Athena GUI.<p>
+
+    <deflist options>
+    <defopt {-weeks <i>weeks</i>}>
+    The number of weeks of simulation time for which to run the case.
+    The default is one week.<p>
+    </deflist options>
+}
+
+#-----------------------------------------------------------------------
+# axdb select command
+
+command "axdb select" {
+    <syntax {<i>sql...</i>}>
+
+    This command is like the normal <command select> command, but queries
+    the experiment file rather than the RDB.  <p>
+}
+
+
+#-----------------------------------------------------------------------
+# axdb selectfile command
+
+command "axdb selectfile" {
+    <syntax {<i>filename sql...</i>}>
+
+    This command is like the normal <command selectfile> command, but queries
+    the experiment file rather than the RDB.  If the file name has no
+    extension, ".txt" will be appended automatically.<p>
+}
+
+
+#=======================================================================
+# block commands
+
+command "block" {
+    <syntax {<i>subcommand</i> ?<i>args...</i>?}>
+
+    This command is used to create, query, and update <term strategy>
+    <term block blocks>.<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+# block add
+
+command "block add" {
+    <syntax {<i>agent</i> ?<i>option value...</i>?}>
+
+    This command adds a new <term block> to the <term strategy>
+    of the given <term agent>, returning the new block's ID.  The
+    options can be used to configure the new block; see 
+    <cref /command/block/configure> for the list of options.<p>
+
+    For example,<p>
+
+    <pre>
+    athena> set block_id [block add SYSTEM -tmode AT -t1 20]
+    12
+    athena>
+    </pre>
+}
+
+#-----------------------------------------------------------------------
+# block cget
+
+command "block cget" {
+    <syntax {<i>block_id</i> ?<i>option</i>?}>
+
+    This command queries an existing <term block>.<p>
+
+    The <i>block_id</i> may be any valid block ID, as returned by
+    <cref /command/block/add> or displayed in the <tab Strategy>.
+    If the <i>block_id</i> is a hyphen, "<tt>-</tt>", then the 
+    command will query the most recently created block,
+    i.e., the <cref /command/last/block>.<p> 
+
+    If no <i>option</i> name is given, the command returns a 
+    TCL dictionary of all of the options listed below, with their
+    values.  Otherwise, it retrieves the value of the given option.<p>
+
+    The following options may be queried:<p>
+
+    <optionlist>
+    <block_ parms -tags cget -asoption>
+    </optionlist>
+
+
+    For example,<p>
+
+    <pre>
+    athena> block cget - -agent
+    SYSTEM
+    athena>
+    </pre>
+}
+
+
+#-----------------------------------------------------------------------
+# block configure
+
+command "block configure" {
+    <syntax {<i>block_id</i> ?<i>option value...</i>?}>
+
+    This command configures an existing <term block>; the result is the
+    same as editing the block using the "Update Strategy Block" 
+    dialog in the <tab Strategy>.<p>
+
+    The <i>block_id</i> may be any valid block ID, as returned by
+    <cref /command/block/add> or displayed in the <tab Strategy>.
+    If the <i>block_id</i> is a hyphen, "<tt>-</tt>", then the 
+    command will update the most recently created block,
+    i.e., the <cref /command/last/block>.<p> 
+
+    The following options may be configured:<p>
+
+    <optionlist>
+    <block_ parms -tags configure -asoption>
+    </optionlist>
+
+
+    For example,<p>
+
+    <pre>
+    athena> block configure - -tmode AT -t1 20
+    athena>
+    </pre>
+}
+
+#-----------------------------------------------------------------------
+# block last
+
+command "block last" {
+    <syntax>
+
+    Returns the ID of the most recently created strategy 
+    <term block>.  This command is equivalent to
+    <cref /command/last/block>.
+}
+
+
+
+
+#=======================================================================
+# call command
+
+command "call" {
+    <syntax {<i>script</i> ?<i>args...</i>?}>
+
+    Calls the named <i>script</i>, which is assumed to be either
+    an internal script, as created in the <tab Scripts>, or an external
+    script stored in a disk file.  In the latter case, the script file is
+    assumed to be in the current
+    working directory unless an absolute path is specified, and the ".tcl"
+    extension may be omitted; <b>call</b> will add it automatically.<p>
+
+    An executive script is a Tcl script containing <cref /command>.  A
+    number of standard Tcl commands may also be used.<p>
+
+    When the script is executed, a list containing the optional
+    arguments will be assigned to the variable <i>argv</i>.  If the 
+    script takes arguments, and uses <cref /command/call> to call
+    any other scripts, it should make a copy of its arguments
+    beforehand, as using <cref /command/call> will overwrite 
+    <i>argv</i>'s value.<p>
+}
+
+#=======================================================================
+# clear command
+
+command "clear" {
+    <syntax>
+
+    Clears the contents of the CLI's scrollback buffer.
+}
+
+#=======================================================================
+# condition commands
+
+command "condition" {
+    <syntax {<i>subcommand</i> ?<i>args...</i>?}>
+
+    This command is used to create, query, and update <term strategy>
+    <term condition conditions>.<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+# condition add
+
+command "condition add" {
+    <syntax {<i>block_id typename</i> ?<i>option value...</i>?}>
+
+    This command adds a new <term condition> to the given <term block>
+    returning the new condition's ID.  The
+    options can be used to configure the new condition; see 
+    <cref /command/condition/configure> for the list of options.<p>
+
+    The <i>block_id</i> may be any valid block ID, as returned by
+    <cref /command/block/add> or displayed in the <tab Strategy>.
+    If the <i>block_id</i> is a hyphen, "<tt>-</tt>", then the 
+    command will update the most recently created block,
+    i.e., the <cref /command/last/block>.<p> 
+
+    The <i>typename</i> must be a valid <term condition> type name.<p>
+
+    For example,<p>
+
+    <pre>
+    athena> block add SYSTEM
+    11
+    athena> condition add - EXPR -expression {1 + 1 == 2}
+    12
+    athena>
+    </pre>
+}
+
+#-----------------------------------------------------------------------
+# condition cget
+
+command "condition cget" {
+    <syntax {<i>condition_id</i> ?<i>option</i>?}>
+
+    This command queries an existing <term condition>.<p>
+
+    The <i>condition_id</i> may be any valid condition ID, as returned by
+    <cref /command/condition/add> or displayed in the <tab Strategy>.
+    If the <i>condition_id</i> is a hyphen, "<tt>-</tt>", then the 
+    command will query the most recently created condition,
+    i.e., the <cref /command/last/condition>.<p> 
+
+    If no <i>option</i> name is given, the command returns a 
+    TCL dictionary of all of the options listed below, with their
+    values.  Otherwise, it retrieves the value of the given option.<p>
+
+    The following options may be queried:<p>
+
+    <optionlist>
+    <condition_ parms -tags cget -asoption>
+    </optionlist>
+
+
+    For example,<p>
+
+    <pre>
+    athena> condition cget - -parent
+    11
+    athena>
+    </pre>
+}
+
+
+#-----------------------------------------------------------------------
+# condition configure
+
+command "condition configure" {
+    <syntax {<i>condition_id</i> ?<i>option value...</i>?}>
+
+    This command configures an existing <term condition>; the result is the
+    same as editing the condition in the <tab Strategy>.<p>
+
+    The <i>condition_id</i> may be any valid condition ID, as returned by
+    <cref /command/condition/add> or displayed in the <tab Strategy>.
+    If the <i>condition_id</i> is a hyphen, "<tt>-</tt>", then the 
+    command will update the most recently created condition,
+    i.e., the <cref /command/last/condition>.<p> 
+
+    The following options may be configured for all condition types;
+    in addition, the type-specific parameters of the given condition type's
+    <cref /order/condition> update order may be also be used by
+    prefixing their names with a hyphen, e.g., "<code>-expression</code>"
+    for the <cref /object/condition/expr>.<p>
+
+    <optionlist>
+    <condition_ parms -tags configure -asoption>
+    </optionlist>
+
+
+    For example,<p>
+
+    <pre>
+    athena> condition add - EXPR
+    12
+    athena> condition configure - -expression {2 + 2 == 4}
+    athena>
+    </pre>
+}
+
+#-----------------------------------------------------------------------
+# condition last
+
+command "condition last" {
+    <syntax>
+
+    Returns the ID of the most recently created strategy 
+    <term condition>.  This command is equivalent to
+    <cref /command/last/condition>.
+}
+
+
+#=======================================================================
+# csv command
+
+command "csv" {
+    <syntax {<i>sql...</i>}>
+
+    The <b>csv</b> command is a simplified version of 
+    <command rdb query>, intended for interactive use with short,
+    simple SQL queries; it produces the output in CSV
+    (comma-separated value) format.  The command has the form of a single SQL
+    "SELECT" statement.  For example,<p>
+
+    <cli {
+        > csv g,forcetype from frcgroups
+        "g","forcetype" 
+        "TALIBAN","IRREGULAR" 
+        "PAR","REGULAR"
+        "AQ","IRREGULAR" 
+        "POLI","POLICE"  
+        "TRIBMIL","IRREGULAR" 
+        >}>
+
+    If the query is longer than one line, consider using
+    <command rdb query> with <command tofile> instead.<p>
+}
+
+#=======================================================================
+# csvfile command
+
+command "csvfile" {
+    <syntax {<i>filename sql...</i>}>
+
+    The <b>csvfile</b> command is like <command csv>, but saves
+    the query result to the named file.  If the file name has no
+    extension, ".csv" will be appended automatically.  For example,<p>
+
+    <cli {
+        > csvfile save g,forcetype from frcgroups
+        Saved save.csv
+        >}>
+
+    If the query is longer than one line, consider using
+    <command rdb query> with <command tofile> instead.<p>
+}
+
+
+
+#=======================================================================
+# debug command
+
+command "debug" {
+    <syntax>
+    <caution.debugging>
+    Invokes a debugger window. The debugger is simply a Tcl interpreter
+    with full access to the application's code and data; it's intended
+    for developer use only. 
+}
+
+#=======================================================================
+# dump commands
+
+command "dump" {
+    <syntax {<i>subcommand</i> ?<i>args...</i>?}>
+
+    This command is used to dump debugging information to the CLI, 
+    particularly data that is not available on the various browser
+    tabs.  It has the following subcommands:<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+# dump econ
+
+command "dump econ" {
+    <syntax {?<i>page</i>?}>
+    
+    Dumps the Economic model's cell values and formulas.  By default,
+    <i>page</i> defaults to <b>Out</b>, the model's output page.  
+    To see all pages, enter<p>
+
+    <pre>
+        dump econ all
+    </pre>
+
+    You can also request any particular page, e.g., <b>null</b>, <b>In</i>, 
+    <b>Out</b>.
+}
+
+
+
+#=======================================================================
+# errtrace command
+
+command "errtrace" {
+    <syntax>
+    Returns the stack trace associated with the last command which
+    returned an error, and also saves it to the debugging log.
+    This command is a debugging aid, and has no
+    effect on the execution of the program.
+}
+
+#=======================================================================
+# export command
+
+command "export" {
+    <syntax {?-history? <i>scriptFile</i>}>
+
+    Exports the current scenario as an <term executive> script;
+    execute the script in a new, empty scenario via the
+    <code>-script</code> start-up option or the <command call>
+    command at the <term cli>.<p>
+
+    By default, the scenario must be exported while in 
+    scenario preparation; the result will be a minimal script that
+    will reproduce essentially the same scenario, though some
+    insignificant details (such as numeric object IDs) might be different.<p>
+
+    If the <code>-history</code> option is given, then the script
+    contains exactly the sequence of orders used to produce the current
+    state of the program; this can be many times longer than the 
+    minimal set.  However, it can also capture the application's state
+    in simulation mode, after time has advanced.<p>
+
+    The script file will be saved in the current working directory.<p>
+}
+
+#=======================================================================
+# gofer command
+
+command "gofer" {
+    <syntax {<i>typeOrGdict</i> ?<i>rulename</i>? ?<i>args...</i>?}>
+
+    This command is used to create <cref /gofer "gofer"> values for use as
+    order parameters with the <command send> command; it can also
+    be used to evaluate gofer values.<p>
+
+    For example, suppose you are using the <command send> command
+    to create a <cref /object/tactic/fundeni>.  You want to fund
+    all civilian groups resident in neighborhood N1.  The order's 
+    <i>glist</i> parameter uses the <cref /gofer/civgroups> gofer type,
+    and you see that <cref /gofer/civgroups> has a rule called 
+    <cref /gofer/civgroups/resident_in> that will get the list of 
+    civilian groups resident in one or more neighborhoods.  Consequently,
+    you can do this<p>
+
+    <pre>
+    send TACTIC:FUNDENI:CREATE -glist [gofer civgroups resident_in N1] ...
+    </pre>
+
+    The <command gofer> command will validate the type name, the rule
+    name, and the neighborhood name, and return a gofer value usable
+    by the order.  <b>NOTE:</b> gofer type and rule names are all upper case,
+    but the <command gofer> command automatically converts the
+    names you give it to upper case for you.<p>
+
+    The <command gofer> command can also evaluate gofer values, returning
+    the selected data.  For example,<p>
+
+    <cli {
+        > set gdict [gofer civgroups resident_in N1]
+        _type CIVGROUPS _rule RESIDENT_IN nlist N1
+        > gofer $gdict
+        SHIA SUNN
+        >
+    }>
+
+    <b>NOTE:</b>  Most gofers are designed to work with a locked scenario;
+    if you explicitly use <command gofer> to retrieve data during 
+    scenario preparation, don't be surprised if the result is empty.<p>
+}
+
+
+#=======================================================================
+# help command
+
+command "help" {
+    <syntax {?-info? ?<i>command...</i>?}>
+
+    This command accesses the on-line help for Athena's
+    <cref /command>.  To display a list of all commands, enter this
+    command with no arguments:<p>
+
+    <cli {
+        > help
+        >
+    }>
+
+    To request help for a particular command, enter it on the command
+    line.  For example, to see the help page for the 
+    <command parm set> command, enter the following:<p>
+
+    <cli {
+        > help parm set
+        >
+    }>
+
+    The <b>-info</b> option is for use in debugging the Athena
+    Executive; if specified, the <b>help</b> command will dump
+    implementation info to the CLI.
+}
+
+#=======================================================================
+# last commands
+
+command "last" {
+    <syntax {<i>subcommand</i>}>
+
+    This command is used to return the object ID of the most recently
+    created instance of some kind of object, e.g., the ID of the most
+    recently created strategy block.  The kind of object is determined
+    by the <i>subcommand</i>.
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+
+command "last block" {
+    <syntax>
+    
+    Returns the ID of the most recently created strategy 
+    <term block>.  This command is equivalent to
+    <cref /command/block/last>.
+}
+
+#-----------------------------------------------------------------------
+
+command "last condition" {
+    <syntax>
+    
+    Returns the ID of the most recently created 
+    <term condition>.
+}
+
+#-----------------------------------------------------------------------
+
+command "last absit" {
+    <syntax>
+    
+    Returns the ID of the most recently created 
+    <term absit>.
+}
+
+#-----------------------------------------------------------------------
+
+command "last mad" {
+    <syntax>
+    
+    Returns the ID of the most recently created 
+    <term mad>.
+}
+
+#-----------------------------------------------------------------------
+
+command "last tactic" {
+    <syntax>
+    
+    Returns the ID of the most recently created 
+    <term tactic>.
+}
+
+#=======================================================================
+# last_mad command
+
+command "last_mad" {
+    <syntax>
+
+    <b>Deprecated.  Use <cref /command/last/mad> instead.</b>
+    Returns the ID of the most recently created Magic Attitude
+    Driver (MAD).  A script can create a MAD by 
+    <cref /command/send>ing the <cref /order/mad/create> order,
+    and then retrieve the ID of the new MAD using this command, for use
+    when sending other <cref /order/mad> orders.
+}
+
+#=======================================================================
+# load command
+
+command "load" {
+    <syntax {<i>filename</i>}>
+
+    Loads the scenario data (including simulation results, if any)
+    from the given <i>filename</i>, overwriting any existing scenario.
+    If the requested scenario cannot be loaded, the application will be
+    left with an empty scenario.
+}
+
+#=======================================================================
+# lock command
+
+command "lock" {
+    <syntax>
+
+    <b>Scenario Preparation only.</b> Locks the scenario so that 
+    simulation time can advance.  Does a sanity check of the scenario
+    data; the lock will fail if the scenario is incomplete.<p>
+
+    The scenario can later be unlocked using the 
+    <cref /command/unlock> command.<p>
+}
+
+#=======================================================================
+# log command
+
+command "log" {
+    <syntax {<i>message</i>}>
+
+    Writes the <i>message</i> to the debugging log with severity
+    "normal", as component "script".  Contrast this command with
+    <cref /command/sigevent>, which writes a message to the
+    significant events log.<p>
+}
+
+#=======================================================================
+# nbfill command
+
+command "nbfill" {
+    <syntax {<i>varname</i>}>
+
+    This command directs the <tab Physical/Map> tab to fill neighborhood
+    polygons with a color based on the value of a particular 
+    <cref /var/n "Neighborhood Variable">.  See the link for a list
+    of the available variables.
+}
+
+#=======================================================================
+# new command
+
+command "new" {
+    <syntax>
+
+    Creates a new, empty scenario, throwing away any loaded scenario
+    data (including simulation results).
+}
+
+
+#=======================================================================
+# parm commands
+
+command "parm" {
+    <syntax {<i>subcommand</i> ?<i>args...</i>?}>
+
+    This command is used to set and query Athena's 
+    <cref /parmdb "model parameters">.  It has the following subcommands:<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+
+command "parm export" {
+    <syntax {<i>filename</i>}>
+    
+    Exports the current <cref /parmdb "model parameter"> settings
+    to a disk file; if the named file already exists, it is copied
+    to "<i>filename</i>.bak".
+}
+
+#-----------------------------------------------------------------------
+
+command "parm get" {
+    <syntax {<i>parm</i>}>
+    
+    Retrieves the value of the named <cref /parmdb "model parameter">.
+}
+
+#-----------------------------------------------------------------------
+
+command "parm import" {
+    <syntax {<i>filename</i>}>
+    
+    Imports new <cref /parmdb "model parameter"> values from
+    the named file.  Note that some parameters are 
+    <cref /parmdb/locked "locked"> once time advances, and cannot be
+    changed.<p>
+
+    This command works by sending the <cref /order/parm/import> order.
+}
+
+#-----------------------------------------------------------------------
+
+command "parm list" {
+    <syntax {?<i>pattern</i>?}>
+
+    When called with no argument, this command lists the names and
+    values of all parameters.  If given, <i>pattern</i> is a wild-card
+    pattern; only matching parameters are included.  For example, the
+    following command will list all parameters related to the FUELSHRT
+    rule set:<p>
+
+    <cli {
+        > parm list dam.FUELSHRT.*
+        dam.FUELSHRT.active     yes
+        dam.FUELSHRT.cause      FUELSHRT
+        dam.FUELSHRT.nearFactor 0.0
+        dam.FUELSHRT.farFactor  0.0
+
+        >}>
+</pre>
+}
+
+#-----------------------------------------------------------------------
+
+command "parm names" {
+    <syntax {?<i>pattern</i>?}>
+
+    When called with no argument, this command lists the names of all
+    parameters.  If given, <i>pattern</i> is a wild-card
+    pattern; only matching parameters are included.  For example, the
+    following command will list the names of all parameters related to 
+    the FUELSHRT rule set:<p>
+
+    <cli {
+        > parm names dam.FUELSHRT.*
+        dam.FUELSHRT.active dam.FUELSHRT.cause dam.FUELSHRT.nearFactor dam.FUELSHRT.farFactor
+        >}>
+</pre>
+}
+
+
+#-----------------------------------------------------------------------
+
+command "parm reset" {
+    <syntax>
+    
+    Resets all <cref /parmdb "model parameters"> to their default
+    values.<p>
+
+    Note that some parameters are 
+    <cref /parmdb/locked "locked"> once time advances past the
+    <term prep> state, and cannot be changed.  Unlocked
+    parameters will be reset; locked parameters will not.<p>
+
+    This command works by sending the <cref /order/parm/reset> order.
+}
+
+
+#-----------------------------------------------------------------------
+
+command "parm set" {
+    <syntax {<i>parm value</i>}>
+    
+    Sets the named <cref /parmdb "model parameter"> to the specified
+    <i>value</i>.  Updated
+    parameter values are saved automatically with the scenario; there
+    is no need to <cref /command/parm/export export> the parameter
+    settings in order to save them.<p>
+
+    Note that some parameters are 
+    <cref /parmdb/locked "locked"> once time advances past the
+    <term prep> state, and cannot be changed.<p>
+
+    This command works by sending the <cref /order/parm/set> order.
+}
+
+#=======================================================================
+# prefs commands
+
+command "prefs" {
+    <syntax {<i>subcommand</i> ?<i>args...</i>?}>
+
+    The <b>prefs</b> command sets and queries <cref /prefs>.
+    Preference parameters are distinct from the <cref /parmdb> edited
+    using the <command parm> command in that they apply to the application
+    rather than to individual scenarios. Therefore,<p>
+
+    <ul>
+    <li> They are not saved in scenario files.
+    <li> They do not affect the outcome of simulation runs. 
+    </ul>
+
+    This command has the following subcommands:<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+
+command "prefs get" {
+    <syntax {<i>parm</i>}>
+    
+    Retrieves the value of the named preference parameter.
+}
+
+#-----------------------------------------------------------------------
+
+command "prefs help" {
+    <syntax {<i>parm</i>}>
+    
+    Displays the help string for the named preference parameter.
+}
+
+#-----------------------------------------------------------------------
+
+command "prefs list" {
+    <syntax {?<i>pattern</i>?}>
+
+    When called with no argument, this command lists the names and
+    values of all preference parameters.  If given, <i>pattern</i> is
+    a wild-card pattern; only matching parameters are included.
+}
+
+#-----------------------------------------------------------------------
+
+command "prefs names" {
+    <syntax {?<i>pattern</i>?}>
+
+    When called with no argument, this command lists the names of all
+    preference parameters.  If given, <i>pattern</i> is a wild-card
+    pattern; only matching parameters are included.
+}
+
+
+#-----------------------------------------------------------------------
+
+command "prefs reset" {
+    <syntax>
+    
+    Resets all preference parameters to their default
+    settings.
+}
+
+
+#-----------------------------------------------------------------------
+
+command "prefs set" {
+    <syntax {<i>parm value</i>}>
+    
+    Sets the named preference parameter to the specified
+    <i>value</i>.
+}
+
+#=======================================================================
+# proc command
+
+command "proc" {
+    <syntax {<i>name arglist body</i>}>
+
+    Defines a new executive command as a Tcl procedure, e.g.,
+
+    <pre>
+        # Set the base population of group g
+        proc setpop {g pop} {
+            send CIVGROUP:UPDATE -g $g -basepop $pop
+        }
+    </pre>
+
+    This "setpop" command can then be used during scenario prep to
+    set a civilian group's base population, in place of the longer
+    <command send> command in the procedure's body.
+}
+
+#=======================================================================
+# rdb commands
+
+command "rdb" {
+    <syntax {<i>subcommand</i> ?<i>args...</i>?}>
+
+    Athena stores almost all of its working data in its run-time
+    database, or RDB.  This command allows the user to query 
+    the RDB directly; however, it cannot be used to modify the
+    contents of the RDB.  Note that the <command select> command
+    is often more convenient.<p>
+
+    RDB queries are done using the SQL language, as implemented by
+    SQLite3.  A discussion of SQL is beyond the scope of this
+    document; see the documentation at 
+    <tt>http://sqlite.org</tt> for more information.<p>
+
+    This command has the following subcommands:<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+
+command "rdb eval" {
+    <syntax {<i>sql</i>}>
+
+    Executes the <i>sql</i> query (usually a SELECT statement)
+    and returns the result as an unformatted list
+    of values.  This command can be useful in scripts; for interactive
+    use, the <command rdb query> or <command select> command
+    is almost always more appropriate.
+}
+
+#-----------------------------------------------------------------------
+
+command "rdb query" {
+    <syntax {<i>sql</i> ?<i>options...</i>?}>
+
+    Executes the <i>sql</i> query (usually a SELECT statement)
+    and returns the result as a formatted table.  This command
+    is appropriate for long, complex queries that are spread over
+    multiple lines; for short queries, use <command select>
+    instead.<p>
+
+    For example,<p>
+
+    <cli {
+        > rdb query {select g,forcetype from frcgroups}
+        g       forcetype 
+        ------- --------- 
+        TALIBAN IRREGULAR 
+        PAR     REGULAR   
+        AQ      IRREGULAR 
+        POLI    POLICE    
+        TRIBMIL IRREGULAR 
+        >}>
+
+    The command takes the following options:<p>
+
+    <deflist options>
+<defopt {-mode mc|list|csv}>
+
+Specifies the output mode; the default is <b>mc</b>, multicolumn.<p>
+
+When <b>-mode</b> is <b>mc</b>, each record is output on a single
+line.  Fields are formatted in columns, with the field name as the
+column header.<p>
+
+When <b>-mode</b> is <b>list</b>, the output is a list of records.
+Each record is output on multiple lines, with (nominally) one line
+per field.  Each line consists of the field name and value; the
+record's field names are values are formatted neatly in parallel columns.<p>
+
+When <b>-mode</b> is <b>csv</b>, the output is in CSV (comma-separated value)
+format, one record per line, beginning with a header record of column labels.
+Non-numeric values are enclosed in double-quotes.<p>
+
+<defopt {-labels <i>list</i>}>
+
+Normally the command uses the column names found in the query to
+label the fields in the output.  If specified, the value of
+<b>-labels</b> is a list of labels to be used instead.<p>
+
+<defopt {-maxcolwidth <i>chars</i>}>
+
+Sets the maximum column width, in characters, when <b>-mode</b> is
+<b>mc</b>; the default is 30.  All
+data values longer than this will be truncated with "...".<p>
+
+If <b>-maxcolwidth</b> is set to 0, values will not be
+truncated; this can result in extremely
+wide output.<p>
+
+<defopt {-headercols <i>num</i>}>
+
+Sets the number of header columns.  When <b>-mode</b> is <b>mc</b>,
+repeated values in a column are skipped.  That is, if a column
+contains identical values in consecutive rows, the column will be
+blank in all but the first of the rows.  Defaults to "0".<p>
+    </deflist options>
+}
+
+#-----------------------------------------------------------------------
+
+command "rdb schema" {
+    <syntax {?<i>table</i>?}>
+
+    By default, this command returns the complete SQL schema for the
+    RDB.  If a <i>table</i> or view name is given, it returns only the schema
+    for that table or view.
+}
+
+#-------------------------------------------------------------------
+
+command "rdb tables" {
+    <syntax>
+
+    Returns a list of the names of the tables defined in the 
+    RDB's schema.  (Views are not included.)
+}
+
+#=======================================================================
+# redo command
+
+command "redo" {
+    <syntax>
+
+    Re-does the last thing that was undone using the 
+    <menu Edit/Undo> menu item
+    or the <command undo> executive command.  Returns the string
+    "Nothing to redo" if there is nothing that can be redone.
+}
+
+#=======================================================================
+# reset command
+
+command "reset" {
+    <syntax>
+
+    Resets the executive interpreter to its initial state, and then
+    executes any stored executive scripts whose auto-execute flag
+    is set.  See <command script> and the <i>Athena User's Guide</i>
+    for more about executive scripting.
+}
+
+
+#=======================================================================
+# save command
+
+command "save" {
+    <syntax {<i>filename</i>}>
+
+    Saves the current scenario to disk, including simulation
+    results if the scenario is <cref /command/lock>ed,
+    using the given <i>filename</i>.  The saved scenario 
+    can be loaded again using the <cref /command/load> command.<p>
+}
+
+#=======================================================================
+# script commands
+
+command "script" {
+    <syntax {<i>subcommand</i> ?<i>args...</i>?}>
+
+    The <command script> commands are used to create, modify, and 
+    manage stored <term executive> scripts--scripts stored as part of the
+    scenario, and always loaded into the <term executive>.  See the
+    <i>Athena User's Guide</i> for details.<p>
+
+    This command has the following subcommands:<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+
+command "script auto" {
+    <syntax {<i>name</i> ?<i>flag</i>?}>
+
+    Retrieves the "auto-execute" flag for the named script, first 
+    setting the <i>flag</i> if it is given.  Scripts with their
+    auto-execute flag set are executed automatically when the
+    executive is reset.
+}
+
+#-----------------------------------------------------------------------
+
+command "script delete" {
+    <syntax {<i>name</i>}>
+
+    Deletes the script with the given name.
+}
+
+#-----------------------------------------------------------------------
+
+command "script exists" {
+    <syntax {<i>name</i>}>
+
+    Returns 1 if the script exists, and 0 otherwise.
+}
+
+#-----------------------------------------------------------------------
+
+command "script get" {
+    <syntax {<i>name</i>}>
+
+    Returns the body of the named script.
+}
+
+#-----------------------------------------------------------------------
+
+command "script list" {
+    <syntax>
+
+    Outputs the names of the currently defined scripts, one name per
+    line, in the order
+    in which they will be executed when the <term executive> is
+    <command reset>.
+}
+
+#-----------------------------------------------------------------------
+
+command "script load" {
+    <syntax {<i>name</i>}>
+
+    Loads (i.e., executes) the named script in the <term executive>.  Note that
+    this is done automatically for all stored scripts on
+    scenario load, on scenario lock, on <command reset>, and by
+    all <command axdb> commands that prepare or run cases.
+}
+
+#-----------------------------------------------------------------------
+
+command "script names" {
+    <syntax>
+
+    Returns a Tcl list of the names of the currently defined scripts,
+    in the order in which they will be executed when the <term executive> is
+    <command reset>. 
+}
+
+#-----------------------------------------------------------------------
+
+command "script save" {
+    <syntax {<i>name</i> <i>script</i>}>
+
+    Saves an <term executive> <i>script</i> under the given <i>name</i>.
+}
+
+
+#-----------------------------------------------------------------------
+
+command "script sequence" {
+    <syntax {<i>name priority</i>}>
+
+    Modifies the position of the named script in the execution
+    sequence.  The <i>priority</i> can be <b>top</b>, <b>bottom</b>,
+    <b>raise</b>, or <b>lower</b>, to move the script to the top of the
+    sequence, to the bottom of the sequence, or to move it up or down by
+    one spot.
+}
+
+
+
+#=======================================================================
+# select command
+
+command "select" {
+    <syntax {<i>sql...</i>}>
+
+    The <b>select</b> command is a simplified version of 
+    <command rdb query>, intended for interactive use with short,
+    simple SQL queries.  The command has the form of a single SQL
+    "SELECT" statement.  For example,<p>
+
+    <cli {
+        > select g,forcetype from frcgroups
+        g       forcetype 
+        ------- --------- 
+        TALIBAN IRREGULAR 
+        PAR     REGULAR   
+        AQ      IRREGULAR 
+        POLI    POLICE    
+        TRIBMIL IRREGULAR 
+        >}>
+
+    If the query is longer than one line, consider using
+    <command rdb query> instead.<p>
+ 
+}
+
+#=======================================================================
+# selectfile command
+
+command "selectfile" {
+    <syntax {<i>filename sql...</i>}>
+
+    The <b>selectfile</b> command is like <command select>, but saves
+    the query result to the named file.  If the file name has no
+    extension, ".txt" will be appended automatically.  For example,<p>
+
+    <cli {
+        > selectfile save g,forcetype from frcgroups
+        Saved save.txt
+        >}>
+
+    If the query is longer than one line, consider using
+    <command rdb query> with <command tofile> instead.<p>
+}
+
+
+
+#=======================================================================
+# send command
+
+command "send" {
+    <syntax {<i>order</i> ?<i>option value...</i>?}>
+
+    Sends the named <i>order</i> to the simulation given the set of
+    options and values.  The option names are simply the parameter
+    names as documented on the relevant <cref /order> page,
+    <b>prefixed with a hyphen (-)</b>.  If the order is rejected, the 
+    error message is pretty-printed.
+}
+
+
+#=======================================================================
+# show command
+
+command "show" {
+    <syntax {<i>url</i>}>
+
+    Displays the requested URL in the <tab detail>.
+}
+
+#=======================================================================
+# set command
+
+command "set" {
+    <syntax {<i>variable value</i>}>
+    Assigns a value to a named variable.  By itself, this will have no
+    effect on the execution of the simulation; however, variables can
+    be used with other commands, such as the <command => command.
+}
+
+#=======================================================================
+# sigevent command
+
+command "sigevent" {
+    <syntax {<i>message</i> ?<i>tags...</i>?}>
+
+    Writes the <i>message</i> to the significant events log
+    as component "script".  Contrast this command with
+    <cref /command/log>, which writes a message to the
+    debugging log.<p>
+
+    The <i>tags</i>, if any, are used to tag the message with 
+    group, actor, or neighborhood names, so that the message will show
+    up in the Detail Browser in the context of the tagged entities.
+    For example, the following message involves actor USA in
+    neighborhood N1:<p>
+
+    <cli {
+        > sigevent "USA has take action in N1" USA N1
+        >
+    }>
+
+    The message will then appear on actor USA's page and on
+    neighborhood N1's page.
+    
+}
+
+ 
+#=======================================================================
+# super command
+
+command "super" {
+    <syntax {<i>args...</i>}>
+    <caution.debugging>
+    Concatenates its arguments into a single command, and executes
+    that command in the context of the application rather than in the
+    Athena <term executive>.
+}
+
+
+
+#=======================================================================
+# tactic commands
+
+command "tactic" {
+    <syntax {<i>subcommand</i> ?<i>args...</i>?}>
+
+    This command is used to create, query, and update <term strategy>
+    <term tactic tactics>.<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+# tactic add
+
+command "tactic add" {
+    <syntax {<i>block_id typename</i> ?<i>option value...</i>?}>
+
+    This command adds a new <term tactic> to the given <term block>,
+    returning the new tactic's ID.  The
+    options can be used to configure the new tactic; see 
+    <cref /command/tactic/configure> for the list of options.<p>
+
+    The <i>block_id</i> may be any valid block ID, as returned by
+    <cref /command/block/add> or displayed in the <tab Strategy>.
+    If the <i>block_id</i> is a hyphen, "<tt>-</tt>", then the 
+    command will update the most recently created block,
+    i.e., the <cref /command/last/block>.<p> 
+
+    The <i>typename</i> must be a valid <term tactic> type name.<p>
+
+    For example,<p>
+
+    <pre>
+    athena> block add SYSTEM
+    11
+    athena> tactic add - SIGEVENT -msg {My significant event}
+    12
+    athena>
+    </pre>
+}
+
+#-----------------------------------------------------------------------
+# tactic cget
+
+command "tactic cget" {
+    <syntax {<i>tactic_id</i> ?<i>option</i>?}>
+
+    This command queries an existing <term tactic>.<p>
+
+    The <i>tactic_id</i> may be any valid tactic ID, as returned by
+    <cref /command/tactic/add> or displayed in the <tab Strategy>.
+    If the <i>tactic_id</i> is a hyphen, "<tt>-</tt>", then the 
+    command will query the most recently created tactic,
+    i.e., the <cref /command/last/tactic>.<p> 
+
+    If no <i>option</i> name is given, the command returns a 
+    TCL dictionary of all of the options listed below, with their
+    values.  Otherwise, it retrieves the value of the given option.<p>
+
+    The following options may be queried:<p>
+
+    <optionlist>
+    <tactic_ parms -tags cget -asoption>
+    </optionlist>
+
+
+    For example,<p>
+
+    <pre>
+    athena> tactic cget - -parent
+    11
+    athena>
+    </pre>
+}
+
+
+#-----------------------------------------------------------------------
+# tactic configure
+
+command "tactic configure" {
+    <syntax {<i>tactic_id</i> ?<i>option value...</i>?}>
+
+    This command configures an existing <term tactic>; the result is the
+    same as editing the tactic in the <tab Strategy>.<p>
+
+    The <i>tactic_id</i> may be any valid tactic ID, as returned by
+    <cref /command/tactic/add> or displayed in the <tab Strategy>.
+    If the <i>tactic_id</i> is a hyphen, "<tt>-</tt>", then the 
+    command will update the most recently created tactic,
+    i.e., the <cref /command/last/tactic>.<p> 
+
+    The following options may be configured for all tactic types;
+    in addition, the type-specific parameters of the given tactic type's
+    <cref /order/tactic> update order may be also be used by
+    prefixing their names with a hyphen, e.g., "<code>-msg</code>"
+    for the <cref /object/tactic/sigevent>.<p>
+
+    <optionlist>
+    <tactic_ parms -tags configure -asoption>
+    </optionlist>
+
+
+    For example,<p>
+
+    <pre>
+    athena> tactic add - SIGEVENT
+    12
+    athena> tactic configure - -msg {My significant event}
+    athena>
+    </pre>
+}
+
+#-----------------------------------------------------------------------
+# tactic last
+
+command "tactic last" {
+    <syntax>
+
+    Returns the ID of the most recently created strategy 
+    <term tactic>.  This command is equivalent to
+    <cref /command/last/tactic>.
+}
+
+
+
+#=======================================================================
+# tofile command
+
+command "tofile" {
+    <syntax {<i>filename extension text</i>}>
+
+    The <b>tofile</b> command saves an arbitrary text string to the 
+    named file, replacing whatever was previously in it.  If the
+    filename includes no extension (e.g., ".txt"), then the extension
+    will be added.<p>
+
+    For example,<p>
+
+    <cli {
+        > tofile myfile.txt "" "Hello, world!"
+        Saved myfile.txt
+        > tofile myfile .dat "Some data"
+        > saved myfile.dat
+        >}>
+
+    The result of any executive command can be written in the same way:<p>
+
+    <cli {
+        > tofile myfile.txt "" [select * from frcgroups]
+        Saved myfile.txt
+        >}>
+}
+
+#=======================================================================
+# undo command
+
+command "undo" {
+    <syntax>
+
+    Undoes the operation on top of the undo stack, just like the 
+    <menu Edit/Undo> menu item. Returns the string
+    "Nothing to undo" if the undo stack is empty.  See also
+    the <command redo> command.
+}
+
+#=======================================================================
+# unlock command
+
+command "unlock" {
+    <syntax>
+
+    <b>Simulation only.</b> Unlocks the current scenario so that 
+    the base scenario data can be changed, throwing away any existing
+    simulation results.<p>
+
+    The scenario can be locked again using the 
+    <cref /command/lock> command.<p>
+}
+
+
+#=======================================================================
+# usermode command
+
+command "usermode" {
+    <syntax {?<i>mode</i>?}>
+    <caution.debugging>
+    Sets and queries the user mode.<p>
+
+    Athena's executive runs in two modes, <b>normal</b> and
+    <b>super</b>. In normal mode, user command entry is prevented from
+    affecting application internals, i.e., the user can't kill or
+    corrupt the application by mis-typing. Caution: In super mode, the
+    CLI is attached directly to the application. Anything is possible,
+    including damage to the user's scenario. <p>
+
+    The <b>super</b> mode is intended primarily for use by the Athena
+    developers; other users should consider using the <command super>
+    command in the rare case that evading the normal protections is
+    required.<p>
+
+    <b>Note:</b> in <b>super</b> mode, the CLI's command prompt
+    changes, as shown:<p>
+
+    <cli {
+        > usermode super
+        super> usermode normal
+        >
+    }>
+}
+
+#=======================================================================
+# version command
+
+command "version" {
+    <syntax>
+
+    Returns the Athena version number, e.g., "<version>".
+}
+
+
+
+

@@ -1,0 +1,319 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    object_group.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: Group Simulation Objects
+#
+#    This file is included into object.help.
+#
+#-----------------------------------------------------------------------
+
+object group_ {
+    noun group
+
+    overview {
+        A <i>group</i> is a collection of people with some shared
+        mission, origin, organization, goals, or beliefs.
+    }
+
+    attribute g "Group ID" {
+        The group ID.  It may contain letters and digits, and
+        must begin with a letter.  It should usually be short,
+        between 2 and 8 characters in length.<p>
+
+        A group ID cannot be the same as the ID of any other group, actor,
+        neighborhood, etc.
+    } -tags {create}
+
+    attribute longname "Long Name" {
+        The group's long name, a human-readable equivalent to the
+        group's ID.
+    } -tags {create update}
+
+    attribute color "Color" {
+        The group's color, used when displaying the group's units
+        on the map viewer.  In general, group colors will be selected
+        using the color selection dialog; if a color is entered as a
+        string, it must be specified as a hex color string, of
+        one of the following forms<p>
+
+        #<i>rrggbb</i><br>
+        #<i>rrrgggbbb</i><br>
+        #<i>rrrrggggbbbb</i><p>
+
+        where <i>r</i>, <i>g</i> and <i>b</i> are hexadecimal digits
+        expressing a shade of red, green, or blue.  Thus, "#000000" is
+        black, and "#FFFFFF" is white.<p>
+    } -tags {create update}
+
+    attribute demeanor "Demeanor" {
+        The demeanor of the group, i.e., its propensity for
+        violence. The possible values are as follows:<p>
+
+        <enumdoc ::projectlib::edemeanor>
+    } -tags {create update}
+}
+
+page /object group "Group" {
+    <sotitle>
+
+    <group_ overview><p>
+
+    There are three kinds of group in Athena:<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+# Civilian Groups
+
+object group_civ {
+    noun "civilian group"
+
+    overview {
+        A <i>civilian <term group></i> is an identifiable collection of
+        civilians who live in the playbox and share similar beliefs.
+        Each civilian group resides in a single
+        <term nbhood>.
+    }
+
+    include group_ -attrs g        -tags create
+    include group_ -attrs longname -tags {create update browser}
+
+    attribute n "Neighborhood" {
+        The ID of an existing <term nbhood>, the group's
+        neighborhood of residence.
+    } -tags {create update browser}
+
+    attribute bsid "Belief System" {
+        The group's belief system, a collection of positions on
+        topics of interest in the region that determines how
+        other groups perceive this group.  Belief systems are 
+        created and edited on the <tab "Social/Beliefs">.
+    } -tags {create update browser}
+
+    include group_ -attrs {color demeanor} \
+        -tags {create update browser}
+
+    attribute basepop "Base Population" {
+        The initial population of the group.  This population can be
+        changed at run-time by normal population growth or decline,
+        by explicit transfers to and from other groups, and by
+        attrition.  It will usually be positive, but can be zero, to
+        allow for initially empty "placeholder" groups.
+    } -tags {create update browser}
+
+    attribute pop_cr "Population Change Rate" {
+        The population change in percent per year that the group will
+        have. The rate can be positive, negative or zero.
+    } -tags {create update browser}
+
+    attribute sa_flag "Subsistence Agriculture Flag" {
+        If true, the group supports itself by means of subsistence
+        agriculture, and does not participate in the regional
+        economy.  If false, it's a normal group with consumers and
+        workers.
+    } -tags {create update browser}
+
+    attribute lfp "Labor Force %" {
+        The percentage of the group that belongs to the labor force.
+        Note that this must be zero for subsistence agriculture groups.
+    } -tags {create update browser}
+
+    attribute housing "Housing" {
+        The status of the group's housing: are they <b>AT_HOME</b>,
+        <b>DISPLACED</b> from their homes but mingling with the
+        neighborhood population, or isolated from the neighborhood
+        population <b>IN_CAMP</b>.  Note that subsistence agriculture
+        groups must be <b>AT_HOME</b>.
+    } -tags {create update browser}
+
+    attribute hist_flag "Start Mode" {
+        The start mode indicates whether the group data is for a new
+        scenario, or if it was created to reflect an existing
+        time-advanced scenario via the <cref /order/sim/rebase> order.  
+        The value is either 0 ("New Scenario") or 1 ("From Previous 
+        Scenario").  If 1, the specified <i>upc</i> value
+        will be used.<p>
+    } -tags {create update}
+
+    attribute upc "Unemployment Per Capita" {
+        <b>Only when Start Mode is "From Previous Scenario".</b> 
+        The percentage of unemployed workers in the group per group member
+        at the start of scenario lock.  This value affects the computation of
+        security during scenario lock, and is then overridden by the output
+        of the Economics and Demographics model.  It is set by 
+        <cref /order/sim/rebase> to increase the fidelity of a
+        rebased scenario on-lock; there is little reason to set it manually.
+    } -tags {create update browser}
+
+}
+
+page /object/group civ "Civilian Group" {
+    <sotitle>
+
+    <group_civ overview><p>
+
+    Civilian groups have the following attributes:<p>
+
+    <group_civ parmlist>
+}
+
+#-----------------------------------------------------------------------
+# Force Groups
+
+object group_frc {
+    noun "force group"
+
+    overview {
+        A <i>force <term group></i> is a group or organization that
+        exists to implement policy through the application of force.
+        Examples include the regular army, the local police, and
+        organized crime.  Force groups are owned by
+        <term actor>s, who may use them to achieve their
+        goals.<p>
+
+        Force groups are created on the
+        <tab Military/Force Groups> using the <cref /order/frcgroup>.
+        In order to apply force, force group
+        personnel must be deployed to neighborhoods and assigned
+        duties using <term tactic>s.<p>
+    }
+
+    include group_ -attrs g        -tags create
+    include group_ -attrs longname -tags {create update}
+
+    attribute a "Owning Actor" {
+        The group's owning actor.  This parameter may remain unset during
+        <term prep>, but must be specified before time can be
+        advanced.
+    } -tags {create update multi}
+
+    include group_ -attrs {color} \
+        -tags {create update multi}
+
+    attribute forcetype "Force Type" {
+        The force type: regular military, paramilitary (e.g., national
+        police), police, irregular military (e.g., militias), or
+        organized crime:<p>
+
+        <enumdoc ::projectlib::eforcetype>
+    } -tags {create update multi}
+
+    attribute training "Training Level" {
+        The group's training level, which effects discipline, skill, and so
+        forth.  The possible training levels are as follows:<p>
+
+        <enumdoc ::projectlib::etraining>
+    } -tags {create update multi}
+
+    attribute base_personnel "Base Personnel" {
+        The number of group personnel in the playbox on scenario lock.
+    } -tags {create update multi}
+
+    include group_ -attrs demeanor \
+        -tags {create update multi}
+
+    attribute cost "Cost $/person/week" {
+        The cost to the owning actor of
+        maintaining one member of the group in the playbox for one week,
+        in dollars.
+        Costs incurred outside the playbox should be excluded, e.g.,
+        wages for U.S. troops.  The cost is expressed as a decimal number
+        with an optional "K", "M", or "B" suffix, e.g.,
+        "1K" is 1,000 dollars.
+    } -tags {create update multi}
+
+    attribute local "Local Group?" {
+        Boolean flag (e.g., "Yes" or "No").  Indicates whether or not
+        the civilians perceive the group as being local to the playbox.
+    } -tags {create update multi}
+}
+
+page /object/group frc "Force Group" {
+    <sotitle>
+
+    <group_frc overview><p>
+
+    Force groups have the following attributes:<p>
+
+    <group_frc parmlist>
+}
+
+#-----------------------------------------------------------------------
+# Organization Groups
+
+object group_org {
+    noun "organization group"
+
+    overview {
+        An <i>organization <term group></i> is an organization that
+        performs work (especially humanitarian relief) in the
+        <term playbox>.  Organization groups include Non-Governmental
+        Organizations (NGOs) such as the Red Cross, Inter-Governmental
+        Organizations (IGOs) such as UNESCO, and contractors such as
+        Haliburton.  Organization groups are owned by
+        <term actor>s, who may use them to achieve their
+        goals.<p>
+
+        Organization groups are created on the
+        <tab Social/OrgGroups> using the
+        <cref /order/orggroup>.
+        In order to work, organization group
+        personnel must be deployed to neighborhoods and assigned
+        duties using <term tactic>s.<p>
+    }
+
+    include group_ -attrs g        -tags create
+    include group_ -attrs longname -tags {create update}
+
+    attribute a "Owning Actor" {
+        The group's owning actor.  This parameter may remain unset during
+        <term prep>, but must be specified before time can be
+        advanced.
+    } -tags {create update multi}
+
+    include group_ -attrs {color} \
+        -tags {create update multi}
+
+    attribute orgtype "Organization Type" {
+        The organization type<p>
+
+        <enumdoc ::projectlib::eorgtype>
+    } -tags {create update multi}
+
+    attribute base_personnel "Base Personnel" {
+        The number of group personnel in the playbox on scenario lock.
+    } -tags {create update multi}
+
+    include group_ -attrs demeanor \
+        -tags {create update multi}
+
+    attribute cost "Cost $/person/week" {
+        The cost to the owning actor of
+        maintaining one member of the group in the playbox for one week,
+        in dollars.
+        Costs incurred outside the playbox should be excluded.  The
+        cost is expressed as a decimal number with an optional "K",
+        "M", or "B" suffix, e.g., "1K" is 1,000 dollars.
+    } -tags {create update multi}
+}
+
+page /object/group org "Organization Group" {
+    <sotitle>
+
+    <group_org overview><p>
+
+    Organization groups have the following attributes:<p>
+
+    <group_org parmlist>
+}
+
+
+
+

@@ -1,0 +1,921 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-dam.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    dam(sim) tests.
+#
+#    This test suite tests the dam(sim) API
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Setup
+    proc setup {} {
+        ted create JOE BOB BLUE BRIT USAID NB1 NB2 SHIA SUNN KURD
+        ted lock
+        
+        # Make sure that rule sets that fire on lock don't muddy
+        # the waters.
+        rdb eval {
+            DELETE FROM drivers;
+            DELETE FROM rule_firings;
+            DELETE FROM rule_inputs;
+        }
+    }
+    
+    # Clean up after a test
+    proc cleanup {} {
+        # Clean up the test environment
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # isactive
+
+    test isactive-1.1 {rule set is active by default} -body {
+        dam isactive PATROL
+    } -cleanup {
+        cleanup
+    } -result {yes}
+    
+    test isactive-1.2 {rule set can be deactivated} -setup {
+        parm set dam.PATROL.active no
+    } -body {
+        dam isactive PATROL
+    } -cleanup {
+        ted cleanup
+    } -result {no}
+    
+    
+    #-------------------------------------------------------------------
+    # rule
+    
+    # does not fire if condition is false
+    # fires if condition is true
+    # condition is evaluated in caller's context
+    # data saved to rule_firing
+    # options override
+    
+    test rule-1.1 {does not fire if condition is false} -setup {
+        setup
+    } -body {
+        dam rule MAGIC-1-1 {dtype MAGIC mad_id 1} {0} {
+            dam hrel P SHIA BLUE 1.0
+        }
+        rdb eval {SELECT count(firing_id) FROM rule_firings}
+    } -cleanup {
+        ted cleanup
+    } -result {0}
+    
+    test rule-1.2 {fires if condition is true} -setup {
+        setup
+    } -body {
+        dam rule MAGIC-1-1 {dtype MAGIC mad_id 1} {1} {
+            dam hrel P SHIA BLUE 1.0
+        }
+        rdb eval {SELECT count(firing_id) FROM rule_firings}
+    } -cleanup {
+        ted cleanup
+    } -result {1}
+    
+    test rule-1.3 {condition evaluated in caller's context} -setup {
+        setup
+    } -body {
+        set a 1
+        set b 2
+        dam rule MAGIC-1-1 {dtype MAGIC mad_id 1} {$a + $b > 2} {
+            dam hrel P SHIA BLUE 1.0
+        }
+        rdb eval {SELECT count(firing_id) FROM rule_firings}
+    } -cleanup {
+        ted cleanup
+    } -result {1}
+    
+    test rule-1.4 {data is saved to rule_firings} -setup {
+        setup
+    } -body {
+        set a 1
+        set b 2
+        dam rule MAGIC-1-1 {dtype MAGIC mad_id 1} {$a + $b > 2} {
+            dam hrel P SHIA BLUE 1.0
+        }
+    
+        ted querylist {SELECT * FROM rule_firings}
+    } -cleanup {
+        ted cleanup
+    } -result {
+firing_id  1
+t          0
+driver_id  1000
+ruleset    MAGIC
+rule       MAGIC-1-1
+fdict      dtype MAGIC mad_id 1
+    }
+    
+    test rule-1.5 {uses rule set's options} -setup {
+        setup
+    } -body {
+        dam rule MAGIC-1-1 {dtype MAGIC mad_id 1} {1} {
+            dam sat T SHIA AUT 1.0
+        }
+    
+        # Cause should be MAGIC; s,p,q should be 1.0, 0.0, 0.0
+        ted querylist {SELECT * FROM rule_inputs}
+    } -cleanup {
+        ted cleanup
+    } -result {
+firing_id  1
+input_id   1
+t          0
+atype      sat
+mode       T
+f          
+g          SHIA
+c          AUT
+a          
+gain       1.0
+mag        1.0
+cause      MAGIC
+s          1.0
+p          0.0
+q          0.0
+note       
+    }
+    
+    test rule-1.6 {options can be overridden} -setup {
+        setup
+    } -body {
+        set opts [list -cause PATROL -s 0.8 -p 0.6 -q 0.4]
+        dam rule MAGIC-1-1 {dtype MAGIC mad_id 1} {*}$opts {1} {
+            dam sat T SHIA AUT 1.0
+        }
+    
+        # Cause should be MAGIC; s,p,q should be 1.0, 0.0, 0.0
+        ted querylist {SELECT * FROM rule_inputs}
+    } -cleanup {
+        ted cleanup
+    } -result {
+firing_id  1
+input_id   1
+t          0
+atype      sat
+mode       T
+f          
+g          SHIA
+c          AUT
+a          
+gain       1.0
+mag        1.0
+cause      PATROL
+s          0.8
+p          0.6
+q          0.4
+note       
+    }
+    
+    
+    #-------------------------------------------------------------------
+    # hrel
+    
+    test hrel-1.1 {populates rule_inputs} -setup {
+        setup
+    } -body {
+        dam rule MAGIC-1-1 {dtype MAGIC mad_id 1} {1} {
+            dam hrel P {SUNN SHIA} {BLUE BRIT} 10.0 "sample note"
+        }
+    
+        ted querylist {SELECT * FROM rule_inputs}
+    } -cleanup {
+        ted cleanup
+    } -result {
+firing_id  1
+input_id   1
+t          0
+atype      hrel
+mode       P
+f          SUNN
+g          BLUE
+c          
+a          
+gain       1.0
+mag        10.0
+cause      MAGIC
+s          
+p          
+q          
+note       sample note
+
+firing_id  1
+input_id   2
+t          0
+atype      hrel
+mode       P
+f          SUNN
+g          BRIT
+c          
+a          
+gain       1.0
+mag        10.0
+cause      MAGIC
+s          
+p          
+q          
+note       sample note
+
+firing_id  1
+input_id   3
+t          0
+atype      hrel
+mode       P
+f          SHIA
+g          BLUE
+c          
+a          
+gain       1.0
+mag        10.0
+cause      MAGIC
+s          
+p          
+q          
+note       sample note
+
+firing_id  1
+input_id   4
+t          0
+atype      hrel
+mode       P
+f          SHIA
+g          BRIT
+c          
+a          
+gain       1.0
+mag        10.0
+cause      MAGIC
+s          
+p          
+q          
+note       sample note
+    }
+    
+    test hrel-1.2 {mode P has persistent URAM effects} -setup {
+        setup
+    } -body {
+        dam rule MAGIC-1-1 {dtype MAGIC mad_id 1} {1} {
+            dam hrel P SHIA BLUE 10.0
+        }
+    
+        ted querylist {
+            SELECT driver_id,pflag,f,g,cause,mag FROM uram_hrel_effects
+        }
+    } -cleanup {
+        ted cleanup
+    } -result {
+driver_id  1000
+pflag      1
+f          SHIA
+g          BLUE
+cause      MAGIC
+mag        10.0
+    }
+    
+    test hrel-1.3 {mode T has transient URAM effects} -setup {
+        setup
+    } -body {
+        dam rule MAGIC-1-1 {dtype MAGIC mad_id 1} {1} {
+            dam hrel T SHIA BLUE 10.0
+        }
+    
+        ted querylist {
+            SELECT driver_id,pflag,f,g,cause,mag FROM uram_hrel_effects
+        }
+    } -cleanup {
+        ted cleanup
+    } -result {
+driver_id  1000
+pflag      0
+f          SHIA
+g          BLUE
+cause      MAGIC
+mag        10.0
+    }
+    
+    test hrel-1.4 {rule_inputs shows gain and input mag} -setup {
+        setup
+        parm set attitude.HREL.gain 2.0
+    } -body {
+        dam rule MAGIC-1-1 {dtype MAGIC mad_id 1} {1} {
+            dam hrel T SHIA BLUE 10.0
+        }
+    
+        ted querylist {SELECT * FROM rule_inputs}
+    } -cleanup {
+        ted cleanup
+    } -result {
+firing_id  1
+input_id   1
+t          0
+atype      hrel
+mode       T
+f          SHIA
+g          BLUE
+c          
+a          
+gain       2.0
+mag        10.0
+cause      MAGIC
+s          
+p          
+q          
+note       
+    }
+    
+    test hrel-1.5 {uram shows gain*mag} -setup {
+        setup
+        parm set attitude.HREL.gain 2.0
+    } -body {
+        dam rule MAGIC-1-1 {dtype MAGIC mad_id 1} {1} {
+            dam hrel T SHIA BLUE 10.0
+        }
+    
+        ted querylist {
+            SELECT driver_id,pflag,f,g,cause,mag FROM uram_hrel_effects
+        }
+    } -cleanup {
+        ted cleanup
+    } -result {
+driver_id  1000
+pflag      0
+f          SHIA
+g          BLUE
+cause      MAGIC
+mag        20.0
+    }
+    
+    #-------------------------------------------------------------------
+    # vrel
+    
+    test vrel-1.1 {populates rule_inputs} -setup {
+        setup
+    } -body {
+        dam rule MAGIC-1-1 {dtype MAGIC mad_id 1} {1} {
+            dam vrel P {SUNN SHIA} {JOE BOB} 10.0 "sample note"
+        }
+    
+        ted querylist {SELECT * FROM rule_inputs}
+    } -cleanup {
+        ted cleanup
+    } -result {
+firing_id  1
+input_id   1
+t          0
+atype      vrel
+mode       P
+f          
+g          SUNN
+c          
+a          JOE
+gain       1.0
+mag        10.0
+cause      MAGIC
+s          
+p          
+q          
+note       sample note
+
+firing_id  1
+input_id   2
+t          0
+atype      vrel
+mode       P
+f          
+g          SUNN
+c          
+a          BOB
+gain       1.0
+mag        10.0
+cause      MAGIC
+s          
+p          
+q          
+note       sample note
+
+firing_id  1
+input_id   3
+t          0
+atype      vrel
+mode       P
+f          
+g          SHIA
+c          
+a          JOE
+gain       1.0
+mag        10.0
+cause      MAGIC
+s          
+p          
+q          
+note       sample note
+
+firing_id  1
+input_id   4
+t          0
+atype      vrel
+mode       P
+f          
+g          SHIA
+c          
+a          BOB
+gain       1.0
+mag        10.0
+cause      MAGIC
+s          
+p          
+q          
+note       sample note
+    }
+    
+    test vrel-1.2 {mode P has persistent URAM effects} -setup {
+        setup
+    } -body {
+        dam rule MAGIC-1-1 {dtype MAGIC mad_id 1} {1} {
+            dam vrel P SHIA JOE 10.0
+        }
+    
+        ted querylist {
+            SELECT driver_id,pflag,g,a,cause,mag FROM uram_vrel_effects
+        }
+    } -cleanup {
+        ted cleanup
+    } -result {
+driver_id  1000
+pflag      1
+g          SHIA
+a          JOE
+cause      MAGIC
+mag        10.0
+    }
+    
+    test vrel-1.3 {mode T has transient URAM effects} -setup {
+        setup
+    } -body {
+        dam rule MAGIC-1-1 {dtype MAGIC mad_id 1} {1} {
+            dam vrel T SHIA JOE 10.0
+        }
+    
+        ted querylist {
+            SELECT driver_id,pflag,g,a,cause,mag FROM uram_vrel_effects
+        }
+    } -cleanup {
+        ted cleanup
+    } -result {
+driver_id  1000
+pflag      0
+g          SHIA
+a          JOE
+cause      MAGIC
+mag        10.0
+    }
+    
+    test vrel-1.4 {rule_inputs shows gain and input mag} -setup {
+        setup
+        parm set attitude.VREL.gain 2.0
+    } -body {
+        dam rule MAGIC-1-1 {dtype MAGIC mad_id 1} {1} {
+            dam vrel T SHIA JOE 10.0
+        }
+    
+        ted querylist {SELECT * FROM rule_inputs}
+    } -cleanup {
+        ted cleanup
+    } -result {
+firing_id  1
+input_id   1
+t          0
+atype      vrel
+mode       T
+f          
+g          SHIA
+c          
+a          JOE
+gain       2.0
+mag        10.0
+cause      MAGIC
+s          
+p          
+q          
+note       
+    }
+    
+    test vrel-1.5 {uram shows gain*mag} -setup {
+        setup
+        parm set attitude.VREL.gain 2.0
+    } -body {
+        dam rule MAGIC-1-1 {dtype MAGIC mad_id 1} {1} {
+            dam vrel T SHIA JOE 10.0
+        }
+    
+        ted querylist {
+            SELECT driver_id,pflag,g,a,cause,mag FROM uram_vrel_effects
+        }
+    } -cleanup {
+        ted cleanup
+    } -result {
+driver_id  1000
+pflag      0
+g          SHIA
+a          JOE
+cause      MAGIC
+mag        20.0
+    }
+    
+    #-------------------------------------------------------------------
+    # sat
+    
+    test sat-1.1 {populates rule_inputs} -setup {
+        setup
+    } -body {
+        dam rule MAGIC-1-1 {dtype MAGIC mad_id 1} {1} {
+            dam sat P {SUNN SHIA} AUT 5.0 CUL 10.0 "sample note"
+        }
+    
+        ted querylist {SELECT * FROM rule_inputs}
+    } -cleanup {
+        ted cleanup
+    } -result {
+firing_id  1
+input_id   1
+t          0
+atype      sat
+mode       P
+f          
+g          SUNN
+c          AUT
+a          
+gain       1.0
+mag        5.0
+cause      MAGIC
+s          1.0
+p          0.0
+q          0.0
+note       sample note
+
+firing_id  1
+input_id   2
+t          0
+atype      sat
+mode       P
+f          
+g          SUNN
+c          CUL
+a          
+gain       1.0
+mag        10.0
+cause      MAGIC
+s          1.0
+p          0.0
+q          0.0
+note       sample note
+
+firing_id  1
+input_id   3
+t          0
+atype      sat
+mode       P
+f          
+g          SHIA
+c          AUT
+a          
+gain       1.0
+mag        5.0
+cause      MAGIC
+s          1.0
+p          0.0
+q          0.0
+note       sample note
+
+firing_id  1
+input_id   4
+t          0
+atype      sat
+mode       P
+f          
+g          SHIA
+c          CUL
+a          
+gain       1.0
+mag        10.0
+cause      MAGIC
+s          1.0
+p          0.0
+q          0.0
+note       sample note
+    }
+    
+    test sat-1.2 {mode P has persistent URAM effects} -setup {
+        setup
+    } -body {
+        dam rule MAGIC-1-1 {dtype MAGIC mad_id 1} {1} {
+            dam sat P SHIA AUT 10.0
+        }
+    
+        ted querylist {
+            SELECT driver_id, pflag, g, c, cause, mag FROM uram_sat_effects
+        }
+    } -cleanup {
+        ted cleanup
+    } -result {
+driver_id  1000
+pflag      1
+g          SHIA
+c          AUT
+cause      MAGIC
+mag        10.0
+    }
+    
+    test sat-1.3 {mode T has transient URAM effects} -setup {
+        setup
+    } -body {
+        dam rule MAGIC-1-1 {dtype MAGIC mad_id 1} {1} {
+            dam sat T SHIA AUT 10.0
+        }
+    
+        ted querylist {
+            SELECT driver_id, pflag, g, c, cause, mag FROM uram_sat_effects
+        }
+    } -cleanup {
+        ted cleanup
+    } -result {
+driver_id  1000
+pflag      0
+g          SHIA
+c          AUT
+cause      MAGIC
+mag        10.0
+    }
+    
+    test sat-1.4 {rule_inputs shows gain and input mag} -setup {
+        setup
+        parm set attitude.SAT.gain 2.0
+    } -body {
+        dam rule MAGIC-1-1 {dtype MAGIC mad_id 1} {1} {
+            dam sat T SHIA AUT 10.0
+        }
+    
+        ted querylist {SELECT * FROM rule_inputs}
+    } -cleanup {
+        ted cleanup
+    } -result {
+firing_id  1
+input_id   1
+t          0
+atype      sat
+mode       T
+f          
+g          SHIA
+c          AUT
+a          
+gain       2.0
+mag        10.0
+cause      MAGIC
+s          1.0
+p          0.0
+q          0.0
+note       
+    }
+    
+    test sat-1.5 {uram shows gain*mag} -setup {
+        setup
+        parm set attitude.SAT.gain 2.0
+    } -body {
+        dam rule MAGIC-1-1 {dtype MAGIC mad_id 1} {1} {
+            dam sat T SHIA AUT 10.0
+        }
+    
+        ted querylist {
+            SELECT driver_id, g, c, mag FROM uram_sat_effects
+        }
+    } -cleanup {
+        ted cleanup
+    } -result {
+driver_id  1000
+g          SHIA
+c          AUT
+mag        20.0
+    }
+    
+    #-------------------------------------------------------------------
+    # coop
+    
+    test coop-1.1 {populates rule_inputs} -setup {
+        setup
+    } -body {
+        dam rule MAGIC-1-1 {dtype MAGIC mad_id 1} {1} {
+            dam coop P {SUNN SHIA} {BLUE BRIT} 10.0 "sample note"
+        }
+    
+        ted querylist {SELECT * FROM rule_inputs}
+    } -cleanup {
+        ted cleanup
+    } -result {
+firing_id  1
+input_id   1
+t          0
+atype      coop
+mode       P
+f          SUNN
+g          BLUE
+c          
+a          
+gain       1.0
+mag        10.0
+cause      MAGIC
+s          1.0
+p          0.0
+q          0.0
+note       sample note
+
+firing_id  1
+input_id   2
+t          0
+atype      coop
+mode       P
+f          SUNN
+g          BRIT
+c          
+a          
+gain       1.0
+mag        10.0
+cause      MAGIC
+s          1.0
+p          0.0
+q          0.0
+note       sample note
+
+firing_id  1
+input_id   3
+t          0
+atype      coop
+mode       P
+f          SHIA
+g          BLUE
+c          
+a          
+gain       1.0
+mag        10.0
+cause      MAGIC
+s          1.0
+p          0.0
+q          0.0
+note       sample note
+
+firing_id  1
+input_id   4
+t          0
+atype      coop
+mode       P
+f          SHIA
+g          BRIT
+c          
+a          
+gain       1.0
+mag        10.0
+cause      MAGIC
+s          1.0
+p          0.0
+q          0.0
+note       sample note
+    }
+    
+    test coop-1.2 {mode P has persistent URAM effects} -setup {
+        setup
+    } -body {
+        dam rule MAGIC-1-1 {dtype MAGIC mad_id 1} {1} {
+            dam coop P SHIA BLUE 10.0
+        }
+    
+        ted querylist {
+            SELECT driver_id,pflag,f,g,cause,mag FROM uram_coop_effects
+        }
+    } -cleanup {
+        ted cleanup
+    } -result {
+driver_id  1000
+pflag      1
+f          SHIA
+g          BLUE
+cause      MAGIC
+mag        10.0
+    }
+    
+    test coop-1.3 {mode T has transient URAM effects} -setup {
+        setup
+    } -body {
+        dam rule MAGIC-1-1 {dtype MAGIC mad_id 1} {1} {
+            dam coop T SHIA BLUE 10.0
+        }
+    
+        ted querylist {
+            SELECT driver_id,pflag,f,g,cause,mag FROM uram_coop_effects
+        }
+    } -cleanup {
+        ted cleanup
+    } -result {
+driver_id  1000
+pflag      0
+f          SHIA
+g          BLUE
+cause      MAGIC
+mag        10.0
+    }
+    
+    test coop-1.4 {rule_inputs shows gain and input mag} -setup {
+        setup
+        parm set attitude.COOP.gain 2.0
+    } -body {
+        dam rule MAGIC-1-1 {dtype MAGIC mad_id 1} {1} {
+            dam coop T SHIA BLUE 10.0
+        }
+    
+        ted querylist {SELECT * FROM rule_inputs}
+    } -cleanup {
+        ted cleanup
+    } -result {
+firing_id  1
+input_id   1
+t          0
+atype      coop
+mode       T
+f          SHIA
+g          BLUE
+c          
+a          
+gain       2.0
+mag        10.0
+cause      MAGIC
+s          1.0
+p          0.0
+q          0.0
+note       
+    }
+    
+    test coop-1.5 {uram shows gain*mag} -setup {
+        setup
+        parm set attitude.COOP.gain 2.0
+    } -body {
+        dam rule MAGIC-1-1 {dtype MAGIC mad_id 1} {1} {
+            dam coop T SHIA BLUE 10.0
+        }
+    
+        ted querylist {
+            SELECT driver_id,pflag,f,g,cause,mag FROM uram_coop_effects
+        }
+    } -cleanup {
+        ted cleanup
+    } -result {
+driver_id  1000
+pflag      0
+f          SHIA
+g          BLUE
+cause      MAGIC
+mag        20.0
+    }
+    
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+

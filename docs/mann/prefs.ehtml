@@ -1,0 +1,75 @@
+<manpage {projectlib(n) prefs(n)} "User Preferences Manager">
+
+<section SYNOPSIS>
+
+<pre>
+package require app_sim 1.0
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+prefs(n) manages the Athena user preferences; see <xref prefs(5)>.
+The preferences are saved automatically whenever a parameter's value
+changes to the file <code>~/.athena/user.prefs</code>.<p>
+
+<section "COMMANDS">
+
+prefs(n) provides the following commands:<p>
+
+
+<deflist commands>
+
+<defitem "prefs init" {prefs init}>
+
+Initializes the module.  This should be called once, at application
+start-up.  It defines the full set of preference parameters.<p>
+
+<defitem "prefs get"      {prefs get <i>parm</i>}>
+<defitem "prefs names"    {prefs names ?<i>pattern</i>?}>
+<defitem "prefs manlinks" {prefs manlinks}>
+<defitem "prefs manpage"  {prefs manpage}>
+
+These commands are simply delegated to the underlying
+<xref parmset(n)>.<p>
+
+<defitem "prefs help" {prefs help <i>parm</i>}>
+
+Returns the parameter's help string.<p>
+
+<defitem "prefs set" {prefs set <i>parm value</i>}>
+
+Sets the parameter's value and saves the preferences to disk.<p>
+
+<defitem "prefs reset" {prefs reset}>
+
+Resets all preference parameters to their default values, and
+saves them to disk.<p>
+
+<defitem "prefs list" {prefs list ?<i>pattern</i>?}>
+
+Lists all parameters and their values.  If <i>pattern</i> is given,
+it's a wildcard pattern; only parameters whose names match the pattern
+are listed.<p>
+
+<defitem "prefs load" {prefs load}>
+
+Loads the preferences from disk, if the preference file exists.  This
+is usually only done at application start-up.<p>
+
+</deflist commands>
+
+<section ENVIRONMENT>
+
+Requires Tcl 8.5 or later.<p>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>

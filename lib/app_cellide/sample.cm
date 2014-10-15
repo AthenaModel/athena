@@ -1,0 +1,254 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    sample.cm
+#
+# DESCRIPTION:
+#    This cell model is based on sam6x6.cm, version i.  However, it's
+#    intended as a sample for exercising athena_cell(i).  Don't assume
+#    to much about the contents.
+#
+#=======================================================================
+#
+# The required input data is:
+#
+#   BX.i.j     The payment in $/year from sector j to sector i. The indices
+#              i and j take the values from the set (black goods pop actors 
+#              region world). Strictly speaking, this and only this is 
+#              the social accounting matrix (SAM).
+#
+#   BP.j       The price, in $/unit of the product of sector j, where j 
+#              takes values only for the sectors with products: (black, 
+#              goods, pop).
+#
+#   BRFN       Payments from outside the region directly to the populace, 
+#              consisting of remittances, some of the foreign aid, and 
+#              all of the NGO aid, in $/year. 
+#
+#   BNR.black  Net revenue for the black sector, in $/year.
+#
+#   AF.i.j     Amount of feedstock needed per unit of product. In this SAM
+#              this is used only for i=world and j=black
+#
+#-----------------------------------------------------------------------
+#
+# Indices
+
+index i   {goods black pop actors region world} ;# all receiving sectors
+index j   {goods black pop actors region world} ;# all paying sectors
+index il  {goods black pop}                     ;# sectors in the local 
+                                                ;# economy that have product
+
+# All BX.i.j values are from a SAM.
+# SAM cell definitions do not include cash flows of black feedstock costs
+# nor of the black sector's net revenue or the graft portion of the FAR
+# to the actors sector.
+
+let BX.goods.goods  = 8.13e8
+let BX.goods.black  = 2.0e7
+let BX.goods.pop    = 2.80e9
+let BX.goods.actors = 14.00e9
+let BX.goods.region = 2.50e9
+let BX.goods.world  = 1.13e8
+
+let BX.black.goods = 0.0
+let BX.black.black = 0.0
+let BX.black.pop   = 1.2e7
+let BX.black.actors = 1.40e9
+let BX.black.region = 9.06e8
+let BX.black.world  = 23.800e9
+
+let BX.pop.goods    = 12.0e9
+let BX.pop.black    = 2.2e7
+let BX.pop.pop      = 3.6e7
+let BX.pop.actors   = 4.64e9
+let BX.pop.region   = 4.54e8
+let BX.pop.world    = 7.0e7
+
+let BX.actors.goods = 2.025e9
+let BX.actors.black = 2.612e9
+let BX.actors.pop   = 3.336e9
+let BX.actors.actors = 0.0
+let BX.actors.region = 2.593e9
+let BX.actors.world  = 3.0e6
+
+let BX.region.goods  = 2.714e9
+let BX.region.black  = 2.612e9
+let BX.region.pop    = 5.853e9
+let BX.region.actors = 2.859e9
+let BX.region.region = 1.727e9
+let BX.region.world  = 1.502e9
+
+let BX.world.goods   = 2.695e9
+let BX.world.black   = 2.612e9
+let BX.world.pop     = 5.685e9
+let BX.world.actors  = 2.960e9
+let BX.world.region  = 8.635e9
+let BX.world.world   = 0.0
+
+
+let BP.black = 500000  ;# Base price in the black sector $/tonne
+let BP.pop   = 400     ;# Base price in the pop sector $/work-year
+let BP.goods = 1       ;# Base price in the goods sector $/goodsBKT
+let BP.actors = 0
+let BP.region = 0
+let BP.world  = 0
+
+let BaseConsumers = 8.86e5
+
+let BRFN           = 5.0e8            
+let graft          = 0.3    ;# Fraction of foreign aid to region that 
+                             # goes to actors.
+let PF.world.black = 62.0e3
+let AF.world.black = 1.05
+
+
+# Macro definitions
+
+define t.i.j {i j} {[BX.$i.$j] / [BREV.$j]}
+define k.j {j} {1.0 - ([t.actors.$j] + [t.region.$j] + [t.world.$j])}
+define f.i.j {i j} {[BX.$i.$j] / ([k.$j] * [BALLOC.$j])}
+define A.i.j {i j} {[BX.$i.$j] / ([BP.$i] * [BQD.$j])}
+
+
+#-----------------------------------------------------------------------
+#
+# The sector revenues and expenses are computed by:
+
+foreach i {goods black pop actors region world} {
+    # Sector revenues sum the row
+    let BREV.$i = {<:sum j {[BX.$i.$j]}:>} 
+}
+
+foreach j {goods black pop actors region world} {
+    # Sector expenditures sum the column 
+    let BEXP.$j = {<:sum i {[BX.$i.$j]}:>} 
+}
+
+# Sector-by-sector demands for all i and j are given by:
+foreach i {goods black pop} {
+    foreach j {goods black pop actors region world} {
+        let BQD.$i.$j = {[BX.$i.$j]/[BP.$i]}
+    }
+}
+
+# Production quantities for all producers i are a simple sum of the 
+# sector-by-sector demands:
+
+foreach i {goods black pop} {
+    let BQD.$i = {<:sum j {[BQD.$i.$j]}:>}
+}
+
+let FEED.black = {[PF.world.black]*[AF.world.black]*[BQD.black]}
+
+let BNR.black = {[BREV.black] - ([BEXP.black] + [FEED.black])}
+
+let FAA = {[BX.actors.world]}
+let FAR = {[BX.region.world]}
+
+# The allocatable income for each sector is computed by:
+
+let BALLOC.goods  = {[BREV.goods]}
+let BALLOC.black  = {[BEXP.black]}
+let BALLOC.pop    = {[BREV.pop] + [BRFN]}
+let BALLOC.actors = {[BREV.actors] + [BNR.black] + [FAA] + [graft]*[FAR]}
+let BALLOC.region = {[BREV.region] - [graft]*[FAR]}
+let BALLOC.world  = {[BREV.world] - [BRFN] + [FEED.black]}
+
+# Exports are obtained by:
+
+let EXPORTS.goods = {[BX.goods.world] / [BP.goods]}
+let EXPORTS.black = {[BX.black.world] / [BP.black]}
+let EXPORTS.pop   = {[BX.pop.world]   / [BP.pop]}
+
+# Finally, the shape parameter equations are:
+
+# For the goods sector
+# When, in a later version, the goods sector is split into 
+# user-defined goods sectors, we'll need to bulletproof by checking
+# for division by zero.
+
+let t.actors.goods = {<:t.i.j actors goods:>}
+let t.region.goods = {<:t.i.j region goods:>}
+let t.world.goods  = {<:t.i.j world goods:>}
+let k.goods = {<:k.j goods:>}
+
+let f.goods.goods =  {<:f.i.j goods goods:>}
+let f.black.goods = 0.0  ;# bullet proofing: f.black.goods is not defined
+let f.pop.goods   = {<:f.i.j pop goods:>}
+
+# For the black sector
+# All values are checked for divide by zero in case money flows through
+# the black sector stop.
+
+let A.goods.black = {
+    [BQD.black] > 0.0 ? [BX.goods.black] / ([BP.goods] * [BQD.black]) : 0.0
+}
+let A.black.black = {
+    [BQD.black] > 0.0 ? [BX.black.black] / ([BP.black] * [BQD.black]) : 0.0
+}
+
+let A.pop.black   = {
+    [BQD.black] > 0.0 ? [BX.pop.black] / ([BP.pop] * [BQD.black]) : 0.0
+}
+
+let t.actors.black = {
+    [BREV.black] > 0.0 ? [BX.actors.black] / [BREV.black] : 0.0
+}
+
+let t.region.black = {
+    [BREV.black] > 0.0 ? [BX.region.black] / [BREV.black] : 0.0 
+}
+
+let t.world.black = {
+    [BREV.black] > 0.0 ? [BX.world.black] / [BREV.black] : 0.0
+}
+
+let f.pop.black = 0.0 ;# need to have a value for display purposes
+# RGC: Dave, since there is a value for A.pop.black, won't it be 
+# misleading to show a value for f.pop.black too?
+
+# For the pop sector
+
+foreach i {actors region world} {
+    let t.$i.pop = {[BX.$i.pop] / [BREV.pop]}
+}
+
+let k.pop = {<:k.j pop:>}
+let BATI.pop = {[BRFN] + [k.pop] * [BP.pop] * [BQD.pop]}
+
+foreach i {goods black pop} {
+    let f.$i.pop = {[BX.$i.pop] / [BATI.pop]}
+}
+
+
+# For the actors sector
+
+foreach i {goods black pop actors region world} {
+    let f.$i.actors = {[BX.$i.actors] / [BALLOC.actors]}
+}
+
+# For the region sector
+
+foreach i {goods black pop actors region world} {
+    let f.$i.region = {[BX.$i.region] / [BALLOC.region]}
+}
+
+# For the world sector
+# Foreign aid to actors and to the region are separate SAM cells:
+
+let f.pop.world = {[BRFN] / [BEXP.world]}
+
+let A.goods.pop = {[BX.goods.pop] / [BaseConsumers]}
+
+# Everything that was computed is of interest to the CGE except the 
+# intermediate variable BATI.pop
+
+
+
+
+
+
+
+
+

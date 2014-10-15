@@ -1,0 +1,125 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    object.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: Neighborhood Objects
+#
+#    This file is included into object.help.
+#
+#-----------------------------------------------------------------------
+
+object nbhood_ {
+    noun neighborhood
+
+    overview {
+        The Athena playbox, or region of interest, is divided into 
+        neighborhoods.  A neighborhood is a polygonal area on the map
+        containing civilian groups, units of various kinds, environmental
+        situations, and so forth.<p>
+
+        Neighborhoods can be stacked one on another; the upper
+        neighborhood covers any lower neighborhoods.  Although Athena does
+        not require it, it's customary to stack neighborhoods so that they
+        nest.  The one restriction on nesting is that a neighborhood
+        cannot cover another neighborhood's reference point.<p>
+
+        Neighborhoods can be created on the 
+        <tab Physical/Map> during <term prep>, and manipulated
+        on the <tab Physical/Neighborhoods> and using the
+        <cref /order/nbhood>.
+    }
+
+    attribute n "Neighborhood ID" {
+        The neighborhood ID.  It may contain letters and digits, and
+        must begin with a letter.  It should usually be short,
+        between 2 and 8 characters in length, e.g., <b>NWFP</b>.<p>
+        
+        A neighborhood ID cannot be the same as the ID of any actor, group, 
+        other neighborhood, etc.
+    } -tags {create raw}
+
+    attribute longname "Long Name" {
+        The neighborhood's long name, a human-readable equivalent to the
+        neighborhood's ID, e.g., "Northwest Frontier Provinces".
+    } -tags {create update optraw}
+
+    attribute local "Local Neighborhood?" {
+        Whether or not the neighborhood's labor force and production 
+        capabilities contribute to the economy of the region of interest.
+        Local neighborhoods participate in the regional economy; other
+        neighborhoods do not.<p>
+
+        <enumdoc ::projectlib::eyesno>
+    } -tags {create update multi optraw}
+
+    attribute urbanization "Urbanization" {
+        The neighborhood's urbanization level:<p>
+
+        <enumdoc ::projectlib::eurbanization>
+    } -tags {create update multi optraw}
+
+    attribute controller "Controller" {
+        A neighborhood can be controlled by at most one 
+        <term actor>.  During <term prep>, this is the actor
+        initially in control of the neighborhood.  The attribute may
+        be blank if no actor is initially in control.  As the
+        simulation runs, control can shift from actor to actor.
+    } -tags {create update multi optraw}
+
+    attribute pcf "Production Capacity Factor" {
+        The production capacity factor is a value between 0.0 and 1.0. 
+        This attribute is used to dial up or down how much production 
+        capacity a neighborhood can have.  Set to 0.0, there will be
+        no infrastructure. Set to 1.0, there will be the maximum capacity 
+        that could possibly be present at scenario lock.      
+    } -tags {create update multi optraw}
+
+    attribute stacking_order "Stacking Order" {
+        The neighborhood's Stacking Order.  When
+        neighborhoods overlap, the neighborhood with the higher stacking
+        order is on top of the neighborhood with the lower stacking
+        order.  Given a city neighborhood drawn on top of a province
+        neighborhood, for example, the city should have a higher stacking
+        order than the province.<p>
+
+        If neighborhoods do not overlap, the stacking order doesn't matter.
+    }
+
+    attribute obscured_by "Obscured By" {
+        It's an error in the scenario if one
+        neighborhood overlaps another so as to cover up the second
+        neighborhood's reference point.  Athena flags this by showing the
+        obscuring neighborhood's ID here.
+    }
+
+    attribute refpoint "Reference Point" {
+        The neighborhood's reference point, expressed either as
+        a <term mapref> or as a lat/long coordinate pair.  The reference
+        point is a location within the neighborhood that is guaranteed not 
+        to be obscured by an overlapping or nested neighborhood.  
+    } -tags {create raw update}
+
+    attribute polygon "Polygon" {
+        The neighborhood's boundary polygon, expressed as
+        a list of <term mapref>s or as a list of lat/long coordinate pairs.
+    } -tags {create raw update}
+}
+
+page /object nbhood "Neighborhood" {
+    <sotitle>
+
+    <nbhood_ overview><p>
+
+    Neighborhoods have the following attributes:<p>
+
+    <nbhood_ parmlist>
+}
+
+
+
+

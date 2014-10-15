@@ -1,0 +1,32 @@
+<document "Third-Party Software List">
+
+<h2>Third-party Software List</h2>
+
+Athena depends on the following third-party software during operations:<p>
+
+<ul>
+  <li> Windows 7, 32-bit or 64-bit; the application is built for
+       32-bit Windows.
+
+  <li> Red Hat Enterprise Linux, Version 5 (though other versions of
+       Linux will probably work just as well).
+</ul><p>
+
+The following third-party software is required during development, but not 
+during operations:
+
+<ul>
+  <li> ActiveTcl 8.6.1 (Community Edition), from ActiveState.com.
+
+  <li> <link "http://activestate.com/Products/Tcl_Dev_Kit/?mp=1" "Tcl Dev Kit 5.1">
+  (or later).
+
+  <li> <link "http://www.mingw.org/" MinGW>, to build binary Tcl
+       extensions on Windows 7.
+
+  <li> <link "http://www.jrsoftware.org/isdl.php" "InnoSetup 5">,
+       to build the Windows installer.
+</ul>
+
+</document>
+

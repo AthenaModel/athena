@@ -1,0 +1,100 @@
+<manpage {projectlib(n) profiler(n)} "Athena Command Profiler">
+
+<section SYNOPSIS>
+
+<pre>
+package require projectlib 1.0
+namespace import ::projectlib::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+<xref profiler(n)> allows the developer to dynamically instrument
+routines of interest, and determine how many times they are being
+called, and for how long, as an aid to performance optimization.  The
+results should be interpreted with care, as the instrumentation adds
+some performance overhead; e.g., if command A calls command B, and
+both are instrumented, A's run-time will include the cost of B's
+instrumentation.<p>
+
+Use <iref profiler profile> to instrument a procedure, Snit
+typemethod, or Snit instance method.  Use <iref profiler unprofile>
+to de-instrument a procedure, or <iref profiler reset> to remove all
+instrumentation.  Use <iref profiler dump> to dump the current
+measurements, and <iref profiler clear> to delete them in
+preparation for subsequent runs.<p>
+
+<section COMMANDS>
+
+This module defines the following commands:<p>
+
+<deflist commands>
+
+<defitem "profiler clear" {profiler clear}>
+
+Clears all measurements, leaving a clean slate.<p>
+
+<defitem "profiler dump" {profiler dump}>
+
+Returns a dump of the current results.  The dump includes, for each
+profiled command, the number of times it was called, and the total
+time in microseconds.<p>
+
+<defitem "profiler profile" {profiler profile <i>cmd</i> ?<i>subcmd...</i>?}>
+
+Instruments the named command, which can be a procedure, a Snit
+typemethod, or a Snit instance method.  For instance:<p>
+
+<pre>
+    # Procedure MyProc
+    profiler profile MyProc
+
+    # Typemethod "assess"
+    profiler profile ::mytype assess
+
+    # Instance method "compute"
+    profiler profile $object compute
+</pre>
+
+Notice that when you profile an instance method, you're profiling that
+method for all instances of the type, not just the object named in the
+call.<p>
+
+<defitem "profiler reset" {profiler reset}>
+
+Resets the package, removing all measured results and de-instrumenting
+all instrumented commands.<p>
+
+<defitem "profiler unprofile" {profiler unprofile <i>cmd</i> ?<i>subcmd...</i>?}>
+
+Removes the instrumentation on the specified command, which is named
+as in <iref profiler profile>.<p>
+
+
+</deflist commands>
+
+<section ENVIRONMENT>
+
+This package requires Tcl 8.5 or later.
+
+To use the package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Derived from the JNEM dirman(n) package.<p>
+
+</manpage>
+
+
+
+
+
+

@@ -1,0 +1,215 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    object_payload.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: payload Simulation Objects
+#
+#    This file is included into object.help.
+#
+#-----------------------------------------------------------------------
+
+macro PAYLOAD.mag {} {
+    |<--
+    The magnitude of the payload in points, expressed as a real
+    number, or as one of the symbols from the following table:<p>
+
+    [super ::simlib::qmag html]
+}
+
+object payload_ {
+    noun "payload"
+    overview {
+        Payloads are the <cref /object> by which an
+        <term iom> has its effect on the civilian population.
+        Each IOM has one or more payloads, each of which affects
+        a specific set of civilian attitudes.  For example, an
+        <term actor> might send an IOM with intent of increasing 
+        his support among a certain segment of the population.<p>
+
+        The civilian groups reached by a particular IOM depend on the 
+        <term cap> by which it is broadcast; thus, all payloads are
+        defined in terms of their effect on "the covered civilian
+        groups".<p>
+
+        There are several different types of payload; they are all 
+        created, edited, and browsed on the 
+        <cref /tab/information/info_ops_messages>.<p>
+    }
+
+    attribute iom_id "Message ID" {
+        The Message ID, the identifier of the <term iom> to which
+        this payload is attached.
+    } -tags {object create}
+
+    attribute payload_num "Payload Number" {
+        The payload number, which identifies the payload relative to 
+        its <term iom>.
+    } -tags {object}
+
+    attribute id "Payload ID" {
+        The ID of this payload, which consists of the ID of the
+        <term iom> to which it is attached, and its payload number
+        with respect to the IOM, as a list 
+        {<i>iom_id payload_number</i>}.
+    } -tags {object state}
+
+    attribute payload_type "Payload Type" {
+        The payload's type, e.g., 
+        <b><cref /object/payload/vrel VREL></b>.
+    } -tags object
+
+    attribute state "State" {
+        The payload's state, one of <b>normal</b>, <b>disabled</b>, or 
+        <b>invalid</b>.  Both <b>disabled</b> and <b>invalid</b> payloads
+        are ignored when the <term iom> is sent; the 
+        difference is that <b>disabled</b> payloads are explicitly
+        disabled by the user, while <b>invalid</b> payloads are disabled
+        due to failing a sanity check.
+    } -tags {object state}
+}
+
+page /object payload "Payload" {
+    <sotitle>
+
+    <payload_ overview><p>
+
+    There are several different kinds of payload; all share the following
+    parameters:<p>
+
+    <payload_ parmlist -tags object>
+
+    The full set of payloads is as follows:<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+# COOP
+
+object payload_coop {
+    noun "COOP payload"
+    overview {
+        This <term payload> affects the cooperation of the covered
+        civilian groups with a particular force group.
+    }
+
+    include payload_ -attrs {iom_id payload_num id state}
+
+    attribute g "Group" {
+        The ID of a <term frcgroup>.
+    } -tags {create update}
+
+    attribute mag "Magnitude" {
+        <PAYLOAD.mag>
+    } -tags {create update}
+}
+
+page /object/payload coop "COOP payload" {
+    <sotitle>
+
+    <payload_coop overview><p>
+
+    COOP payloads have the following attributes:<p>
+
+    <payload_coop parmlist>
+}
+
+#-----------------------------------------------------------------------
+# HREL
+
+object payload_hrel {
+    noun "HREL payload"
+    overview {
+        This <term payload> affects the horizontal relationship
+        of the covered civilian groups with a particular group.
+    }
+
+    include payload_ -attrs {iom_id payload_num id state}
+
+    attribute g "Group" {
+        The ID of a <term group>.  The group may be of any type.
+    } -tags {create update}
+
+    attribute mag "Magnitude" {
+        <PAYLOAD.mag>
+    } -tags {create update}
+}
+
+page /object/payload hrel "HREL payload" {
+    <sotitle>
+
+    <payload_hrel overview><p>
+
+    HREL payloads have the following attributes:<p>
+
+    <payload_hrel parmlist>
+}
+
+#-----------------------------------------------------------------------
+# SAT
+
+object payload_sat {
+    noun "SAT payload"
+    overview {
+        This <term payload> affects the satisfaction
+        of the covered civilian groups with a particular concern.
+    }
+
+    include payload_ -attrs {iom_id payload_num id state}
+
+    attribute c "concern" {
+        The ID of a <term concern>.
+    } -tags {create update}
+
+    attribute mag "Magnitude" {
+        <PAYLOAD.mag>
+    } -tags {create update}
+}
+
+page /object/payload sat "SAT payload" {
+    <sotitle>
+
+    <payload_sat overview><p>
+
+    SAT payloads have the following attributes:<p>
+
+    <payload_sat parmlist>
+}
+
+#-----------------------------------------------------------------------
+# HREL
+
+object payload_vrel {
+    noun "VREL payload"
+    overview {
+        This <term payload> affects the vertical relationship
+        of the covered civilian groups with a particular actor.
+    }
+
+    include payload_ -attrs {iom_id payload_num id state}
+
+    attribute a "Actor" {
+        The ID of an <term actor>.
+    } -tags {create update}
+
+    attribute mag "Magnitude" {
+        <PAYLOAD.mag>
+    } -tags {create update}
+}
+
+page /object/payload vrel "VREL payload" {
+    <sotitle>
+
+    <payload_vrel overview><p>
+
+    VREL payloads have the following attributes:<p>
+
+    <payload_vrel parmlist>
+}
+
+

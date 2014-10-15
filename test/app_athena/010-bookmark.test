@@ -1,0 +1,348 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-bookmark.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    bookmark(sim) tests.
+#
+#    This test suite tests the bookmark(sim) mutators and queries
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        # Clean up the test environment
+        array unset parms
+        ted cleanup
+    }
+
+    set B1 {
+        url   my://app/one
+        title "Link One"
+    }
+
+    set B2 {
+        url   my://app/two
+        title "Link Two"
+    }
+
+    set B3 {
+        url   my://app/three
+        title "Link Three"
+    }
+
+    #-------------------------------------------------------------------
+    # mutate create
+
+    test create-1.1 {bookmarks are created and ranked} -body {
+        bookmark mutate create $B1
+        bookmark mutate create $B2
+        bookmark mutate create $B3
+        ted query {SELECT * FROM bookmarks}
+    } -cleanup {
+        cleanup
+    } -result {
+bookmark_id url            title      rank 
+----------- -------------- ---------- ---- 
+1           my://app/one   Link One   1    
+2           my://app/two   Link Two   2    
+3           my://app/three Link Three 3    
+    }
+
+    test create-2.1 {undo deletes the bookmark} -setup {
+        bookmark mutate create $B1 
+        set undo [bookmark mutate create $B2]
+    } -body {
+        {*}$undo
+        ted query {SELECT * FROM bookmarks}
+    } -cleanup {
+        cleanup
+    } -result {
+bookmark_id url          title    rank 
+----------- ------------ -------- ---- 
+1           my://app/one Link One 1    
+    }
+
+    #-------------------------------------------------------------------
+    # mutate delete
+
+    test delete-1.1 {Group is deleted} -setup {
+        bookmark mutate create $B1
+        bookmark mutate create $B2
+    } -body {
+        bookmark mutate delete 1
+
+        # Is B1 gone?
+        ted query {SELECT * FROM bookmarks}
+    } -cleanup {
+        cleanup
+    } -result {
+bookmark_id url          title    rank 
+----------- ------------ -------- ---- 
+2           my://app/two Link Two 2    
+    }
+
+    test delete-1.2 {Undo restores group} -setup {
+        bookmark mutate create $B1
+        bookmark mutate create $B2
+        set undo [bookmark mutate delete 1]
+    } -body {
+        {*}$undo
+        ted query {SELECT * FROM bookmarks}
+    } -cleanup {
+        cleanup
+    } -result {
+bookmark_id url          title    rank 
+----------- ------------ -------- ---- 
+1           my://app/one Link One 1    
+2           my://app/two Link Two 2    
+    }
+
+    #-------------------------------------------------------------------
+    # mutate update
+
+
+    test update-1.1 {bookmark is updated} -setup {
+        bookmark mutate create $B1
+        bookmark mutate create $B2
+    } -body {
+        bookmark mutate update {
+            bookmark_id  1
+            url          my://app/newone
+            title        "New Link One" 
+        }
+
+        ted query {SELECT * FROM bookmarks}
+    } -cleanup {
+        cleanup
+    } -result {
+bookmark_id url             title        rank 
+----------- --------------- ------------ ---- 
+1           my://app/newone New Link One 1    
+2           my://app/two    Link Two     2    
+    }
+
+
+    test update-1.2 {identical values are OK} -setup {
+        bookmark mutate create $B1
+    } -body {
+        set a [ted query {SELECT * FROM bookmarks}]
+
+        bookmark mutate update $B1
+
+        set b [ted query {SELECT * FROM bookmarks}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    test update-1.3 {empty values are OK} -setup {
+        bookmark mutate create $B1
+    } -body {
+        set a [ted query {SELECT * FROM bookmarks}]
+
+        bookmark mutate update {
+            bookmark_id  1
+            url          ""
+            title        "" 
+        }
+
+        set b [ted query {SELECT * FROM bookmarks}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    test update-2.1 {undo undoes the change} -setup {
+        bookmark mutate create $B1
+    } -body {
+
+        set a [ted query {SELECT * FROM bookmarks}]
+
+        set undo [bookmark mutate update {
+            bookmark_id  1
+            url          my://app/newone
+            title        "New Link One" 
+        }]
+
+        {*}$undo
+
+        set b [ted query {SELECT * FROM bookmarks}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    #-------------------------------------------------------------------
+    # mutate rank
+
+    test rank-1.1 {raise to top} -setup {
+        bookmark mutate create $B1
+        bookmark mutate create $B2
+        bookmark mutate create $B3
+    } -body {
+        bookmark mutate rank 3 top
+
+        ted query {SELECT bookmark_id, rank FROM bookmarks}
+    } -cleanup {
+        cleanup
+    } -result {
+bookmark_id rank 
+----------- ---- 
+1           2    
+2           3    
+3           1    
+    }
+
+    test rank-1.2 {raise by one} -setup {
+        bookmark mutate create $B1
+        bookmark mutate create $B2
+        bookmark mutate create $B3
+    } -body {
+        bookmark mutate rank 3 raise
+
+        ted query {SELECT bookmark_id, rank FROM bookmarks}
+    } -cleanup {
+        cleanup
+    } -result {
+bookmark_id rank 
+----------- ---- 
+1           1    
+2           3    
+3           2    
+    }
+
+    test rank-1.3 {lower by one} -setup {
+        bookmark mutate create $B1
+        bookmark mutate create $B2
+        bookmark mutate create $B3
+    } -body {
+        bookmark mutate rank 1 lower
+
+        ted query {SELECT bookmark_id, rank FROM bookmarks}
+    } -cleanup {
+        cleanup
+    } -result {
+bookmark_id rank 
+----------- ---- 
+1           2    
+2           1    
+3           3    
+    }
+
+    test rank-1.4 {lower to bottom} -setup {
+        bookmark mutate create $B1
+        bookmark mutate create $B2
+        bookmark mutate create $B3
+    } -body {
+        bookmark mutate rank 1 bottom
+
+        ted query {SELECT bookmark_id, rank FROM bookmarks}
+    } -cleanup {
+        cleanup
+    } -result {
+bookmark_id rank 
+----------- ---- 
+1           3    
+2           1    
+3           2    
+    }
+
+    #-------------------------------------------------------------------
+    # names
+
+    test names-1.1 {Returns names: none defined} -body {
+        bookmark names
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test names-1.2 {Returns names} -setup {
+        bookmark mutate create $B1
+        bookmark mutate create $B2
+    } -body {
+        bookmark names
+    } -cleanup {
+        cleanup
+    } -result {1 2}
+
+
+    #-------------------------------------------------------------------
+    # validate
+
+    test validate-1.1 {Invalid name: none defined} -body {
+        bookmark validate NONESUCH
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Invalid bookmark ID, "NONESUCH"}
+
+    test validate-1.2 {Invalid name: some defined} -setup {
+        bookmark mutate create $B1
+        bookmark mutate create $B2
+    } -body {
+        bookmark validate NONESUCH
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Invalid bookmark ID, "NONESUCH"}
+
+    test validate-2.1 {Valid name} -setup {
+        bookmark mutate create $B1
+        bookmark mutate create $B2
+    } -body {
+        bookmark validate 2
+    } -cleanup {
+        cleanup
+    } -result {2}
+
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+

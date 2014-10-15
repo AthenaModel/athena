@@ -1,0 +1,125 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-activity.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    activity(sim) tests.
+#
+#    This test suite tests the activity(sim) mutators and queries
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        # Clean up the test environment
+        array unset parms
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # asched
+
+    test asched-1.1 {List of schedulable names} -body {
+        activity asched names
+    } -result {CHKPOINT COERCION CONSTRUCT CRIME CURFEW EDU EMPLOY GUARD INDUSTRY INFRA LAWENF MEDICAL PATROL PSYOP RELIEF}
+
+    test asched-1.2 {List of schedulable names group g} -body {
+        activity asched names BLUE
+    } -result {}
+
+    test asched-2.1 {Invalid name} -body {
+        activity asched validate NONESUCH
+    } -returnCodes {
+        error
+    } -result {Invalid activity, should be one of: CHKPOINT, COERCION, CONSTRUCT, CRIME, CURFEW, EDU, EMPLOY, GUARD, INDUSTRY, INFRA, LAWENF, MEDICAL, PATROL, PSYOP, RELIEF}
+
+    test asched-2.2 {Valid name} -body {
+        activity asched validate PATROL
+    } -result {PATROL}
+
+    #-------------------------------------------------------------------
+    # withcov
+
+    test withcov-1.1 {List of implicit/explicit names force group} -body {
+        activity withcov names BLUE
+    } -result {}
+
+    test withcov-1.2 {List of implicit/explicit names force group} -body {
+        activity withcov names USAID 
+    } -result {}
+
+    test withcov-2.1 {FRC - Invalid name} -body {
+        activity withcov frc validate NONESUCH
+    } -returnCodes {
+        error
+    } -result {Invalid activity, should be one of: CHKPOINT, COERCION, CONSTRUCT, CRIME, CURFEW, EDU, EMPLOY, GUARD, INDUSTRY, INFRA, LAWENF, MEDICAL, PATROL, PRESENCE, PSYOP, RELIEF}
+
+    test withcov-2.2 {ORG - Invalid name} -body {
+        activity withcov org validate NONESUCH
+    } -returnCodes {
+        error
+    } -result {Invalid activity, should be one of: CONSTRUCT, EDU, EMPLOY, INDUSTRY, INFRA, MEDICAL, RELIEF}
+
+    #-------------------------------------------------------------------
+    # check
+
+    test check-1.1 {group/activity mismatch} -setup {
+        ted create BLUE
+    } -body {
+        activity check BLUE NONESUCH
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Group BLUE cannot be assigned activity NONESUCH}
+    
+    test check-1.2 {group/activity match} -setup {
+        ted create BLUE
+    } -body {
+        activity check BLUE PATROL
+    } -cleanup {
+        cleanup
+    } -result {}
+
+
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+

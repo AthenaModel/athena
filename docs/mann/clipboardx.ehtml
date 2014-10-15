@@ -1,0 +1,85 @@
+<manpage {projectlib(n) clipboardx(n)} "Extended Clipboard">
+
+<section SYNOPSIS>
+
+<pre>
+package require projectlib 1.0
+namespace import ::projectlib::clipboardx
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+clipboardx(n) is a clipboard for internal Athena objects, especially
+<xref bean(n)> objects such as blocks, tactics, and conditions.<p>
+
+In response to a &lt;&lt;Cut&gt;&gt; or &lt;&lt;Copy&gt;&gt; event,
+a widget will use <iref clipboardx clear> to erase the clipboard and 
+then use <iref clipboardx set> to place the copied data
+on it using the "tag" for the widget's preferred data type.
+If the data can be represented in multiple
+ways, the widget can place it on the clipboard in each of the ways,
+using the appropriate type tag for each.<p>
+
+Later, in response to a &lt;&lt;Paste&gt;&gt; another widget can request
+the copied data using the <iref clipboardx get> subcommand, specifying the 
+tag that it understands.  If there is data available for that tag, it will
+be returned.<p>
+
+If the widget understands multiple types, it can use the 
+<iref clipboardx has> subcommand to determine which if any of the 
+types is available.<p>
+
+<section "COMMANDS">
+
+clipboardx(n) provides the following commands for use by the
+application.<p>
+
+<deflist commands>
+
+<defitem "clipboardx clear" {clipboardx clear}>
+
+Erases all data from the clipboard.<p>
+
+<defitem "clipboardx get" {clipboardx get <i>tag</i>}>
+
+Retrieves any data on the clipboard with the given data type <i>tag</i>.
+If none, returns the empty string.<p> 
+
+<defitem "clipboardx has" {clipboardx has <i>tag</i> ?<i>tag...</i>?}>
+
+Given one or more data type <i>tag</i> names, returns the name of the
+first tag for which there is clipboard data, or the empty string if no
+data is found.  A client that supports pasting of multiple data types
+can use this to retrieve the name of its most preferred type.<p>
+
+<defitem "clipboardx set" {clipboardx set <i>tag value</i>}>
+
+Puts the <i>value</i> on the clipboard with the given data type
+<i>tag</i>, replacing any previous data for that <i>tag</i>.<p>
+
+<defitem "clipboardx tags" {clipboardx tags}>
+
+Returns the names of the tags for which data is on the clipboard.<p>
+
+</deflist commands>
+
+<section ENVIRONMENT>
+
+Requires Tcl 8.5 or later.<p>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+

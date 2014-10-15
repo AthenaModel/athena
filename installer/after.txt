@@ -1,0 +1,1 @@
+You can find Athena's documentation by going to the Start Menu and selecting "Athena Documentation" from the Athena folder. If you are unfamiliar with Athena, the Athena User's Guide is a good place to start.  Considerable information about using Athena is also available from the Help menu within the Athena application itself.

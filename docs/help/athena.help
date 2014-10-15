@@ -1,0 +1,181 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    athena.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Main Athena help(5) file
+#
+#-----------------------------------------------------------------------
+
+#=======================================================================
+# Global Definitions
+
+include procs.help
+include macros.help
+include images.help
+
+#-----------------------------------------------------------------------
+
+page "" "" "Athena Help" {
+    <image athena right>
+
+    This is the on-line help for <b>V<version></b> of the
+    Athena Stability & Recovery Operations Simulation.  Please see the 
+    <i>Athena User's Guide</i> for more information.<p>
+
+    <ul>
+    <li> <cref /changelog>
+    <li> <cref /about>
+    <li> <cref /release>
+    <li> <cref /object>
+    <li> <cref /menu>
+    <li> <cref /tab>
+    <li> <cref /order>
+    <li> <cref /gofer>
+    <li> <cref /wizard>
+    <li> <cref /var>
+    <li> <cref /command>
+    <li> <cref /function>
+    <li> <cref /parmdb>
+    <li> <cref /prefs>
+    <li> <cref /term>
+    </ul>
+}
+
+#-----------------------------------------------------------------------
+
+page / changelog "Change Log" {
+    <title>
+    <changelog>
+    <change 10/7/2014 New whd>
+    Final changes for Athena 6.2.
+    </change>
+    <change 2/19/2014 New whd>
+    Final changes for Athena 6.
+    </change>
+    <change 8/15/2013 New whd>
+    Final scrub for Athena 5.
+    </change>
+    <change 11/15/2012 New whd>
+    Final scrub for Athena 4.
+    </change>
+    <change 2/6/2012 New whd>
+    Final scrub for Athena 3.
+    </change>
+    <change 9/22/2010 New whd>
+    Updated for Athena 2.
+    </change>
+    <change 10/9/2009 New whd>
+    Initial draft.
+    </change>
+    </changelog>
+}
+
+
+
+#-----------------------------------------------------------------------
+
+page / about "About Athena" {
+    <image athena right>
+
+    <mktitle normal "" "Athena V[version]" {
+        Stability and Recovery Operations Simulation
+    }>
+
+    Copyright 2008-<clock format [clock seconds] -format %Y>,
+    by the California Institute of Technology. ALL
+    RIGHTS RESERVED. United States Government Sponsorship acknowledged. Any
+    commercial use must be negotiated with the Office of Technology Transfer
+    at the California Institute of Technology.<p>
+
+    This software is subject to U.S. export control laws and regulations and
+    has been classified as EAR99.  By accepting this software, the
+    user agrees to comply with all applicable U.S. export laws and
+    regulations.  User has the responsibility to obtain export licenses, or
+    other export authority as may be required before exporting such
+    information to foreign countries or providing access to foreign persons.<p>
+}
+
+#-----------------------------------------------------------------------
+
+page / release "Release Notes" {
+    <title Athena V[version] Release notes>
+
+    The <i>Athena Users's Guide</i> gives a complete list of 
+    changes for Athena V<version>. Here is a summary:<p>
+
+    <b>Athena 6.2</b><p>
+
+    <ul>
+    <li> Belief Systems are now assigned to civilian groups and actors;
+         multiple groups and actors can share a single belief system.
+    <li> The <tab Social/Beliefs> is now simpler and easier 
+         to use.
+    <li> Athena now includes two <cref /wizard wizards>, to aid in
+         building scenarios.
+    <li> Environment situations are now called abstract situations.
+    <li> There are a number of new tactics; in particular, the
+         <cref /object/tactic/absit> creates abstract situations.
+    <li> There are a number of new abstract situation and event types;
+         see the <i>Athena Rules Document</i>
+    </ul><p>
+
+    <b>NOTE:</b> Because of the significant changes to the belief system
+    code, it is not generally possible to import Athena 6.1 order scripts
+    as is.  At a minimum it will be necessary to strip out the BSYSTEM:*
+    orders and rebuild the belief systems by hand.<p>
+
+    <b>Athena 6.1</b><p>
+
+    <ul>
+    <li> The user interface and documentation are now organized around the 
+         <term pmesii> paradigm.
+    <li> Athena's <term strategy> engine has been improved and generalized.
+         Strategies are now more powerful, and much easier to create and
+         edit, as the strategy editor supports cut, copy, and paste of
+         <term block blocks>, <term condition conditions>, and 
+         <term tactic tactics>.
+    <li> The user can now assign ownership of the production infrastucture
+         for the <b>goods</b> sector to individual actors, who can maintain
+         and build <term plant plants> as the simulation progresses.
+    <li> The distribution of <b>goods</b> production capacity across the
+         playbox now determines the distribution of employment and also
+         the consumption of <b>goods</b> by civilians.  
+    <li> Athena now has much better edit-time syntax checking for TCL 
+         expressions entered with the <cref /object/condition/expr>, and for
+         TCL scripts written in the <tab Scripts>.
+    <li> Athena can now <cref /command/export> scenario order scripts in 
+         "minimal" form, i.e.,
+         the minimum number of orders required to rebuild the scenario, all
+         in logical order.  This is the new default behavior.  The older
+         form of order script can also be produced if need be.
+    </ul><p>
+
+    <b>NOTE:</b> Because of the significant changes to the strategy 
+    mechanism, it is not generally possible to import Athena 5 order
+    scripts as is.  At a minimum, it will be necessary to strip out
+    all GOAL:*, TACTIC:* and CONDITION:* orders and rebuild the 
+    actor's strategies by hand.
+}
+
+
+#======================================================================
+# The following sections are in separate files
+
+include wms.help
+include wizard.help
+include object.help
+include menu.help
+include tab.help
+include order.help
+include gofer.help
+include var.help
+include command.help
+include function.help
+include parmdb.help
+include prefs.help
+include term.help

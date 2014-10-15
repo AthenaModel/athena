@@ -1,0 +1,1440 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    040-driver_actsit.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    driver_actsit(sim) tests
+#
+#    This test suite tests that the actsit rules fire when appropriate.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Define an htools buffer for tests
+    htools ht
+
+    # pprint text
+    #
+    # text  - block text
+    #
+    # Prints it so that it looks nice in a -result option.
+
+    proc pprint {text} {
+        return "\n[string trim $text]\n    "
+    }
+
+    # setup ?ensit?
+    #
+    # ensit - An ensit type, or ""
+    #
+    # Sets up for tests, and deploys some all BLUE troops to NB1.
+    
+    proc setup {{ensit ""}} {
+        # FIRST, other rule sets shouldn't muddy the waters.
+        parm set dam.CONSUMP.active no
+        parm set dam.PRESENCE.active no
+        parm set dam.UNEMP.active no
+        parm set dam.ENI.active no
+        rdb eval {DELETE FROM drivers}
+        
+        # NEXT, create the entities
+        ted create JOE BOB NB1 NB2 BLUE BRIT HAL SHIA SUNN KURD
+        
+        # NEXT, at least one group should be an enemy of BLUE
+        ted order HREL:OVERRIDE id {SHIA BLUE} base  1.0
+        ted order HREL:OVERRIDE id {SUNN BLUE} base -1.0
+        
+        # NEXT, deploy BLUE and HAL troops to NB1, so we can assign them.
+        ted deploy NB1 BLUE all
+        ted deploy NB1 HAL all
+    
+        # NEXT, create an ensit on request.
+        if {$ensit ne ""} {
+            parm set dam.$ensit.active no
+            ted order ABSIT:CREATE n NB1 stype $ensit \
+                coverage 1.0 inception 1 resolver NONE
+        }
+    }
+    
+    # assign a personnel
+    #
+    # a          - activity
+    # personnel  - Number of personnel doing the activity.
+    #
+    # Assigns BLUE troops do an an activity in NB1.
+    proc assign {a personnel} {
+        ted assign NB1 BLUE $a $personnel
+        ted lock
+    }
+    
+    # orgassign a personnel
+    #
+    # a          - activity
+    # personnel  - Number of personnel doing the activity.
+    #
+    # Assigns HAL troops do an an activity in NB1.
+    
+    proc orgassign {a personnel} {
+        ted assign NB1 HAL $a $personnel
+
+        # Set security requirement to N, so that we know the activity
+        # will fire.
+        parm set activity.ORG.$a.minSecurity.CTR N
+        ted lock
+    }
+    
+    # Clean up after a test
+    proc cleanup {} {
+        ht clear
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # sigline
+    #
+    # All situation types delegate to the same method in the same way,
+    # so we'll test just one.
+
+    test sigline-1.1 {sigline text} -setup {
+        # none needed
+    } -body {
+        driver::PATROL sigline {N1 BLUE}
+    } -cleanup {
+        cleanup
+    } -result {BLUE PATROL in N1}
+
+    #-------------------------------------------------------------------
+    # narrative
+    #
+    # All situation types delegate to the same method in the same way,
+    # so we'll test just one.
+
+
+    test narrative-1.1 {narrative text} -setup {
+        # none needed
+    } -body {
+        driver::PATROL narrative {
+            dtype       PATROL
+            n           N1
+            g           BLUE
+            coverage    0.25
+        }
+    } -cleanup {
+        cleanup
+    } -result {{group:BLUE} PATROL in {nbhood:N1} (25%)}
+    
+    #-------------------------------------------------------------------
+    # detail
+    #
+    # All situation types delegate to the same method in the same way,
+    # so we'll test just one.
+
+    test detail-1.1 {detail text, no mitigation} -setup {
+        setup
+    } -body {
+        assign CONSTRUCT 2000
+        
+        set fdict [rdb onecolumn {SELECT fdict FROM rule_firings}]
+
+        driver::CONSTRUCT detail $fdict [namespace current]::ht
+        pprint [ht get]
+    } -cleanup {
+        cleanup
+    } -result {
+Group <a href="my://app/group/BLUE">BLUE</a>
+is performing the CONSTRUCT activity
+in neighborhood
+<a href="my://app/nbhood/NB1">NB1</a>
+with 2000 effective personnel.
+yielding 100% coverage.<p>
+
+Note: The coverage function is 20/1000
+(2/3rds coverage at 20 personnel per 1000 in the population).<p>
+    }
+    
+    test detail-1.2 {detail text, mitigation} -setup {
+        setup DISEASE
+    } -body {
+        assign CONSTRUCT 2000
+        
+        set fdict [rdb onecolumn {SELECT fdict FROM rule_firings}]
+
+        driver::CONSTRUCT detail $fdict [namespace current]::ht
+        pprint [ht get]
+    } -cleanup {
+        cleanup
+    } -result {
+Group <a href="my://app/group/BLUE">BLUE</a>
+is performing the CONSTRUCT activity
+in neighborhood
+<a href="my://app/nbhood/NB1">NB1</a>
+with 2000 effective personnel.
+yielding 100% coverage.<p>
+
+The activity is mitigating the following absits:
+DISEASE.<p>
+
+Note: The coverage function is 20/1000
+(2/3rds coverage at 20 personnel per 1000 in the population).<p>
+    }
+    
+ 
+    #-------------------------------------------------------------------
+    # DISPLACED
+    
+    # Not tested; this will soon become a demsit.
+    
+    
+    #-------------------------------------------------------------------
+    # PRESENCE
+    
+    # Not tested; we've been asked to disable it for now.
+    
+    #-------------------------------------------------------------------
+    # CHKPOINT
+    
+    test CHKPOINT-1.1 {Rule 1-1 fires} -setup {
+        setup
+    } -body {
+        assign CHKPOINT 2000
+        ted querylist {SELECT * FROM rule_firings}
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          0
+driver_id  1000
+ruleset    CHKPOINT
+rule       CHKPOINT-1-1
+fdict      dtype CHKPOINT n NB1 g BLUE gtype FRC personnel 2000 coverage 1.0 flist {SHIA SUNN}
+    }
+
+    test CHKPOINT-1.2 {Rule 1-1 inputs} -setup {
+        setup
+    } -body {
+        assign CHKPOINT 2000
+        
+        ted query {SELECT atype,f,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype f    g    c   note    
+----- ---- ---- --- ------- 
+sat        SHIA AUT friends 
+sat        SHIA SFT friends 
+sat        SHIA CUL friends 
+sat        SHIA QOL friends 
+sat        SUNN AUT enemies 
+sat        SUNN SFT enemies 
+sat        SUNN CUL enemies 
+sat        SUNN QOL enemies 
+coop  SHIA BLUE             
+coop  SUNN BLUE             
+    }
+
+    #-------------------------------------------------------------------
+    # COERCION
+    
+    test COERCION-1.1 {Rule 1-1 fires} -setup {
+        setup
+    } -body {
+        assign COERCION 2000
+        ted querylist {SELECT * FROM rule_firings}
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          0
+driver_id  1000
+ruleset    COERCION
+rule       COERCION-1-1
+fdict      dtype COERCION n NB1 g BLUE gtype FRC personnel 2000 coverage 1.0 flist {SHIA SUNN}
+    }
+
+    test COERCION-1.2 {Rule 1-1 inputs, no mitigation} -setup {
+        setup
+    } -body {
+        assign COERCION 2000
+        
+        ted query {SELECT atype,f,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype f    g    c   note 
+----- ---- ---- --- ---- 
+sat        SHIA AUT      
+sat        SHIA SFT      
+sat        SHIA CUL      
+sat        SHIA QOL      
+sat        SUNN AUT      
+sat        SUNN SFT      
+sat        SUNN CUL      
+sat        SUNN QOL      
+coop  SHIA BLUE          
+coop  SUNN BLUE          
+    }
+    
+    #-------------------------------------------------------------------
+    # CONSTRUCT
+    
+    test CONSTRUCT-1.1 {Rule 1-1 fires} -setup {
+        setup DISEASE
+    } -body {
+        assign CONSTRUCT 2000
+        ted querylist {SELECT * FROM rule_firings}
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          0
+driver_id  1000
+ruleset    CONSTRUCT
+rule       CONSTRUCT-1-1
+fdict      dtype CONSTRUCT n NB1 g BLUE gtype FRC personnel 2000 coverage 1.0 flist {SHIA SUNN} mitigates DISEASE note mitigates stops 1
+    }
+
+    test CONSTRUCT-1.2 {Rule 1-1 inputs, no mitigation} -setup {
+        setup
+    } -body {
+        assign CONSTRUCT 2000
+        
+        ted query {SELECT atype,f,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype f    g    c   note 
+----- ---- ---- --- ---- 
+sat        SHIA AUT      
+sat        SHIA SFT      
+sat        SHIA CUL      
+sat        SHIA QOL      
+sat        SUNN AUT      
+sat        SUNN SFT      
+sat        SUNN CUL      
+sat        SUNN QOL      
+coop  SHIA BLUE          
+coop  SUNN BLUE          
+    }
+    
+    test CONSTRUCT-1.3 {Rule 1-1 inputs, mitigation} -setup {
+        setup DISEASE
+    } -body {
+        assign CONSTRUCT 2000
+        
+        ted query {SELECT atype,f,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype f    g    c   note      
+----- ---- ---- --- --------- 
+sat        SHIA AUT mitigates 
+sat        SHIA SFT mitigates 
+sat        SHIA CUL mitigates 
+sat        SHIA QOL mitigates 
+sat        SUNN AUT mitigates 
+sat        SUNN SFT mitigates 
+sat        SUNN CUL mitigates 
+sat        SUNN QOL mitigates 
+coop  SHIA BLUE     mitigates 
+coop  SUNN BLUE     mitigates 
+    }
+
+    test CONSTRUCT-2.1 {Rule 2-1 fires} -setup {
+        setup
+    } -body {
+        orgassign CONSTRUCT 2000
+        ted querylist {SELECT * FROM rule_firings}
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          0
+driver_id  1000
+ruleset    CONSTRUCT
+rule       CONSTRUCT-2-1
+fdict      dtype CONSTRUCT n NB1 g HAL gtype ORG personnel 2000 coverage 1.0 flist {SHIA SUNN} mitigates {} note {} stops 0
+    }
+
+    test CONSTRUCT-2.2 {Rule 2-1 inputs, no mitigation} -setup {
+        setup
+    } -body {
+        orgassign CONSTRUCT 2000
+        
+        ted query {SELECT atype,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype g    c   note 
+----- ---- --- ---- 
+sat   SHIA AUT      
+sat   SHIA SFT      
+sat   SHIA CUL      
+sat   SHIA QOL      
+sat   SUNN AUT      
+sat   SUNN SFT      
+sat   SUNN CUL      
+sat   SUNN QOL      
+    }
+    
+    test CONSTRUCT-2.3 {Rule 2-1 inputs, mitigation} -setup {
+        setup DISEASE
+    } -body {
+        orgassign CONSTRUCT 2000
+        
+        ted query {SELECT atype,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype g    c   note      
+----- ---- --- --------- 
+sat   SHIA AUT mitigates 
+sat   SHIA SFT mitigates 
+sat   SHIA CUL mitigates 
+sat   SHIA QOL mitigates 
+sat   SUNN AUT mitigates 
+sat   SUNN SFT mitigates 
+sat   SUNN CUL mitigates 
+sat   SUNN QOL mitigates 
+    }
+
+    #-------------------------------------------------------------------
+    # CRIME
+    
+    test CRIME-1.1 {Rule 1-1 fires} -setup {
+        setup
+    } -body {
+        assign CRIME 2000
+        ted querylist {SELECT * FROM rule_firings}
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          0
+driver_id  1000
+ruleset    CRIME
+rule       CRIME-1-1
+fdict      dtype CRIME n NB1 g BLUE gtype FRC personnel 2000 coverage 1.0 flist {SHIA SUNN}
+    }
+
+    test CRIME-1.2 {Rule 1-1 inputs, no mitigation} -setup {
+        setup
+    } -body {
+        assign CRIME 2000
+        
+        ted query {SELECT atype,f,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype f g    c   note 
+----- - ---- --- ---- 
+sat     SHIA AUT      
+sat     SHIA SFT      
+sat     SHIA QOL      
+sat     SUNN AUT      
+sat     SUNN SFT      
+sat     SUNN QOL      
+    }
+
+
+    #-------------------------------------------------------------------
+    # CURFEW
+    
+    test CURFEW-1.1 {Rule 1-1 fires} -setup {
+        setup
+    } -body {
+        assign CURFEW 2000
+        ted querylist {SELECT * FROM rule_firings}
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          0
+driver_id  1000
+ruleset    CURFEW
+rule       CURFEW-1-1
+fdict      dtype CURFEW n NB1 g BLUE gtype FRC personnel 2000 coverage 1.0 flist {SHIA SUNN}
+    }
+
+    test CURFEW-1.2 {Rule 1-1 inputs} -setup {
+        setup
+    } -body {
+        assign CURFEW 2000
+        
+        ted query {SELECT atype,f,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype f    g    c   note    
+----- ---- ---- --- ------- 
+sat        SHIA AUT friends 
+sat        SHIA SFT friends 
+sat        SHIA CUL friends 
+sat        SHIA QOL friends 
+sat        SUNN AUT enemies 
+sat        SUNN SFT enemies 
+sat        SUNN CUL enemies 
+sat        SUNN QOL enemies 
+coop  SHIA BLUE             
+coop  SUNN BLUE             
+    }
+
+    
+    #-------------------------------------------------------------------
+    # EDU
+    
+    test EDU-1.1 {Rule 1-1 fires} -setup {
+        setup
+    } -body {
+        assign EDU 2000
+        ted querylist {SELECT * FROM rule_firings}
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          0
+driver_id  1000
+ruleset    EDU
+rule       EDU-1-1
+fdict      dtype EDU n NB1 g BLUE gtype FRC personnel 2000 coverage 1.0 flist {SHIA SUNN} mitigates {} note {} stops 0
+    }
+
+    test EDU-1.2 {Rule 1-1 inputs, no mitigation} -setup {
+        setup
+    } -body {
+        assign EDU 2000
+        
+        ted query {SELECT atype,f,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype f    g    c   note 
+----- ---- ---- --- ---- 
+sat        SHIA AUT      
+sat        SHIA SFT      
+sat        SHIA CUL      
+sat        SHIA QOL      
+sat        SUNN AUT      
+sat        SUNN SFT      
+sat        SUNN CUL      
+sat        SUNN QOL      
+coop  SHIA BLUE          
+coop  SUNN BLUE          
+    }
+    
+    test EDU-1.3 {Rule 1-1 inputs, mitigation} -setup {
+        setup DISEASE
+        # By default, EDU doesn't mitigate any ensits.
+        parm set dam.EDU.mitigates DISEASE
+    } -body {
+        assign EDU 2000
+        
+        ted query {SELECT atype,f,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype f    g    c   note      
+----- ---- ---- --- --------- 
+sat        SHIA AUT mitigates 
+sat        SHIA SFT mitigates 
+sat        SHIA CUL mitigates 
+sat        SHIA QOL mitigates 
+sat        SUNN AUT mitigates 
+sat        SUNN SFT mitigates 
+sat        SUNN CUL mitigates 
+sat        SUNN QOL mitigates 
+coop  SHIA BLUE     mitigates 
+coop  SUNN BLUE     mitigates 
+    }
+
+    
+    test EDU-2.1 {Rule 2-1 fires} -setup {
+        setup
+    } -body {
+        orgassign EDU 2000
+        ted querylist {SELECT * FROM rule_firings}
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          0
+driver_id  1000
+ruleset    EDU
+rule       EDU-2-1
+fdict      dtype EDU n NB1 g HAL gtype ORG personnel 2000 coverage 1.0 flist {SHIA SUNN} mitigates {} note {} stops 0
+    }
+
+    test EDU-2.2 {Rule 2-1 inputs, no mitigation} -setup {
+        setup
+    } -body {
+        orgassign EDU 2000
+        
+        ted query {SELECT atype,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype g    c   note 
+----- ---- --- ---- 
+sat   SHIA AUT      
+sat   SHIA SFT      
+sat   SHIA CUL      
+sat   SHIA QOL      
+sat   SUNN AUT      
+sat   SUNN SFT      
+sat   SUNN CUL      
+sat   SUNN QOL      
+    }
+    
+    test EDU-2.3 {Rule 2-1 inputs, mitigation} -setup {
+        setup DISEASE
+        # By default, EDU doesn't mitigate any ensits.
+        parm set dam.EDU.mitigates DISEASE
+    } -body {
+        orgassign EDU 2000
+        
+        ted query {SELECT atype,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype g    c   note      
+----- ---- --- --------- 
+sat   SHIA AUT mitigates 
+sat   SHIA SFT mitigates 
+sat   SHIA CUL mitigates 
+sat   SHIA QOL mitigates 
+sat   SUNN AUT mitigates 
+sat   SUNN SFT mitigates 
+sat   SUNN CUL mitigates 
+sat   SUNN QOL mitigates 
+    }
+
+    #-------------------------------------------------------------------
+    # EMPLOY
+    
+    test EMPLOY-1.1 {Rule 1-1 fires} -setup {
+        setup
+    } -body {
+        assign EMPLOY 2000
+        ted querylist {SELECT * FROM rule_firings}
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          0
+driver_id  1000
+ruleset    EMPLOY
+rule       EMPLOY-1-1
+fdict      dtype EMPLOY n NB1 g BLUE gtype FRC personnel 2000 coverage 1.0 flist {SHIA SUNN} mitigates {} note {} stops 0
+    }
+
+    test EMPLOY-1.2 {Rule 1-1 inputs, no mitigation} -setup {
+        setup
+    } -body {
+        assign EMPLOY 2000
+        
+        ted query {SELECT atype,f,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype f    g    c   note 
+----- ---- ---- --- ---- 
+sat        SHIA AUT      
+sat        SHIA SFT      
+sat        SHIA CUL      
+sat        SHIA QOL      
+sat        SUNN AUT      
+sat        SUNN SFT      
+sat        SUNN CUL      
+sat        SUNN QOL      
+coop  SHIA BLUE          
+coop  SUNN BLUE          
+    }
+    
+    test EMPLOY-1.3 {Rule 1-1 inputs, mitigation} -setup {
+        setup DISEASE
+        # By default, EMPLOY doesn't mitigate any ensits.
+        parm set dam.EMPLOY.mitigates DISEASE
+    } -body {
+        assign EMPLOY 2000
+        
+        ted query {SELECT atype,f,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype f    g    c   note      
+----- ---- ---- --- --------- 
+sat        SHIA AUT mitigates 
+sat        SHIA SFT mitigates 
+sat        SHIA CUL mitigates 
+sat        SHIA QOL mitigates 
+sat        SUNN AUT mitigates 
+sat        SUNN SFT mitigates 
+sat        SUNN CUL mitigates 
+sat        SUNN QOL mitigates 
+coop  SHIA BLUE     mitigates 
+coop  SUNN BLUE     mitigates 
+    }
+
+    
+    
+    test EMPLOY-2.1 {Rule 2-1 fires} -setup {
+        setup
+    } -body {
+        orgassign EMPLOY 2000
+        ted querylist {SELECT * FROM rule_firings}
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          0
+driver_id  1000
+ruleset    EMPLOY
+rule       EMPLOY-2-1
+fdict      dtype EMPLOY n NB1 g HAL gtype ORG personnel 2000 coverage 1.0 flist {SHIA SUNN} mitigates {} note {} stops 0
+    }
+
+    test EMPLOY-2.2 {Rule 2-1 inputs, no mitigation} -setup {
+        setup
+    } -body {
+        orgassign EMPLOY 2000
+        
+        ted query {SELECT atype,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype g    c   note 
+----- ---- --- ---- 
+sat   SHIA AUT      
+sat   SHIA SFT      
+sat   SHIA CUL      
+sat   SHIA QOL      
+sat   SUNN AUT      
+sat   SUNN SFT      
+sat   SUNN CUL      
+sat   SUNN QOL      
+    }
+    
+    test EMPLOY-2.3 {Rule 2-1 inputs, mitigation} -setup {
+        setup DISEASE
+        # By default, EMPLOY doesn't mitigate any ensits.
+        parm set dam.EMPLOY.mitigates DISEASE
+    } -body {
+        orgassign EMPLOY 2000
+        
+        ted query {SELECT atype,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype g    c   note      
+----- ---- --- --------- 
+sat   SHIA AUT mitigates 
+sat   SHIA SFT mitigates 
+sat   SHIA CUL mitigates 
+sat   SHIA QOL mitigates 
+sat   SUNN AUT mitigates 
+sat   SUNN SFT mitigates 
+sat   SUNN CUL mitigates 
+sat   SUNN QOL mitigates 
+    }
+
+    #-------------------------------------------------------------------
+    # GUARD
+    
+    test GUARD-1.1 {Rule 1-1 fires} -setup {
+        setup
+    } -body {
+        assign GUARD 2000
+        ted querylist {SELECT * FROM rule_firings}
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          0
+driver_id  1000
+ruleset    GUARD
+rule       GUARD-1-1
+fdict      dtype GUARD n NB1 g BLUE gtype FRC personnel 2000 coverage 1.0 flist {SHIA SUNN}
+    }
+
+    test GUARD-1.2 {Rule 1-1 inputs, no mitigation} -setup {
+        setup
+    } -body {
+        assign GUARD 2000
+        
+        ted query {SELECT atype,f,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype f    g    c   note 
+----- ---- ---- --- ---- 
+sat        SHIA AUT      
+sat        SHIA SFT      
+sat        SHIA CUL      
+sat        SHIA QOL      
+sat        SUNN AUT      
+sat        SUNN SFT      
+sat        SUNN CUL      
+sat        SUNN QOL      
+coop  SHIA BLUE          
+coop  SUNN BLUE          
+    }
+    
+    #-------------------------------------------------------------------
+    # PATROL
+    
+    test PATROL-1.1 {Rule 1-1 fires} -setup {
+        setup
+    } -body {
+        assign PATROL 2000
+        ted querylist {SELECT * FROM rule_firings}
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          0
+driver_id  1000
+ruleset    PATROL
+rule       PATROL-1-1
+fdict      dtype PATROL n NB1 g BLUE gtype FRC personnel 2000 coverage 1.0 flist {SHIA SUNN}
+    }
+
+    test PATROL-1.2 {Rule 1-1 inputs, no mitigation} -setup {
+        setup
+    } -body {
+        assign PATROL 2000
+        
+        ted query {SELECT atype,f,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype f    g    c   note 
+----- ---- ---- --- ---- 
+sat        SHIA AUT      
+sat        SHIA SFT      
+sat        SHIA CUL      
+sat        SHIA QOL      
+sat        SUNN AUT      
+sat        SUNN SFT      
+sat        SUNN CUL      
+sat        SUNN QOL      
+coop  SHIA BLUE          
+coop  SUNN BLUE          
+    }
+    
+    #-------------------------------------------------------------------
+    # INDUSTRY
+    
+    test INDUSTRY-1.1 {Rule 1-1 fires} -setup {
+        setup NOWATER
+    } -body {
+        assign INDUSTRY 2000
+        ted querylist {SELECT * FROM rule_firings}
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          0
+driver_id  1000
+ruleset    INDUSTRY
+rule       INDUSTRY-1-1
+fdict      dtype INDUSTRY n NB1 g BLUE gtype FRC personnel 2000 coverage 1.0 flist {SHIA SUNN} mitigates NOWATER note mitigates stops 1
+    }
+
+    test INDUSTRY-1.2 {Rule 1-1 inputs, no mitigation} -setup {
+        setup
+    } -body {
+        assign INDUSTRY 2000
+        
+        ted query {SELECT atype,f,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype f    g    c   note 
+----- ---- ---- --- ---- 
+sat        SHIA AUT      
+sat        SHIA SFT      
+sat        SHIA CUL      
+sat        SHIA QOL      
+sat        SUNN AUT      
+sat        SUNN SFT      
+sat        SUNN CUL      
+sat        SUNN QOL      
+coop  SHIA BLUE          
+coop  SUNN BLUE          
+    }
+    
+    test INDUSTRY-1.3 {Rule 1-1 inputs, mitigation} -setup {
+        setup NOWATER
+    } -body {
+        assign INDUSTRY 2000
+        
+        ted query {SELECT atype,f,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype f    g    c   note      
+----- ---- ---- --- --------- 
+sat        SHIA AUT mitigates 
+sat        SHIA SFT mitigates 
+sat        SHIA CUL mitigates 
+sat        SHIA QOL mitigates 
+sat        SUNN AUT mitigates 
+sat        SUNN SFT mitigates 
+sat        SUNN CUL mitigates 
+sat        SUNN QOL mitigates 
+coop  SHIA BLUE     mitigates 
+coop  SUNN BLUE     mitigates 
+    }
+
+    
+    test INDUSTRY-2.1 {Rule 2-1 fires} -setup {
+        setup
+    } -body {
+        orgassign INDUSTRY 2000
+        ted querylist {SELECT * FROM rule_firings}
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          0
+driver_id  1000
+ruleset    INDUSTRY
+rule       INDUSTRY-2-1
+fdict      dtype INDUSTRY n NB1 g HAL gtype ORG personnel 2000 coverage 1.0 flist {SHIA SUNN} mitigates {} note {} stops 0
+    }
+
+    test INDUSTRY-2.2 {Rule 2-1 inputs, no mitigation} -setup {
+        setup
+    } -body {
+        orgassign INDUSTRY 2000
+        
+        ted query {SELECT atype,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype g    c   note 
+----- ---- --- ---- 
+sat   SHIA AUT      
+sat   SHIA SFT      
+sat   SHIA CUL      
+sat   SHIA QOL      
+sat   SUNN AUT      
+sat   SUNN SFT      
+sat   SUNN CUL      
+sat   SUNN QOL      
+    }
+    
+    test INDUSTRY-2.3 {Rule 2-1 inputs, mitigation} -setup {
+        setup NOWATER
+    } -body {
+        orgassign INDUSTRY 2000
+        
+        ted query {SELECT atype,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype g    c   note      
+----- ---- --- --------- 
+sat   SHIA AUT mitigates 
+sat   SHIA SFT mitigates 
+sat   SHIA CUL mitigates 
+sat   SHIA QOL mitigates 
+sat   SUNN AUT mitigates 
+sat   SUNN SFT mitigates 
+sat   SUNN CUL mitigates 
+sat   SUNN QOL mitigates 
+    }
+
+    #-------------------------------------------------------------------
+    # INFRA
+    
+    test INFRA-1.1 {Rule 1-1 fires} -setup {
+        setup NOWATER
+    } -body {
+        assign INFRA 2000
+        ted querylist {SELECT * FROM rule_firings}
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          0
+driver_id  1000
+ruleset    INFRA
+rule       INFRA-1-1
+fdict      dtype INFRA n NB1 g BLUE gtype FRC personnel 2000 coverage 1.0 flist {SHIA SUNN} mitigates NOWATER note mitigates stops 1
+    }
+
+    test INFRA-1.2 {Rule 1-1 inputs, no mitigation} -setup {
+        setup
+    } -body {
+        assign INFRA 2000
+        
+        ted query {SELECT atype,f,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype f    g    c   note 
+----- ---- ---- --- ---- 
+sat        SHIA AUT      
+sat        SHIA SFT      
+sat        SHIA CUL      
+sat        SHIA QOL      
+sat        SUNN AUT      
+sat        SUNN SFT      
+sat        SUNN CUL      
+sat        SUNN QOL      
+coop  SHIA BLUE          
+coop  SUNN BLUE          
+    }
+    
+    test INFRA-1.3 {Rule 1-1 inputs, mitigation} -setup {
+        setup NOWATER
+    } -body {
+        assign INFRA 2000
+        
+        ted query {SELECT atype,f,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype f    g    c   note      
+----- ---- ---- --- --------- 
+sat        SHIA AUT mitigates 
+sat        SHIA SFT mitigates 
+sat        SHIA CUL mitigates 
+sat        SHIA QOL mitigates 
+sat        SUNN AUT mitigates 
+sat        SUNN SFT mitigates 
+sat        SUNN CUL mitigates 
+sat        SUNN QOL mitigates 
+coop  SHIA BLUE     mitigates 
+coop  SUNN BLUE     mitigates 
+    }
+
+    
+    test INFRA-2.1 {Rule 2-1 fires} -setup {
+        setup
+    } -body {
+        orgassign INFRA 2000
+        ted querylist {SELECT * FROM rule_firings}
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          0
+driver_id  1000
+ruleset    INFRA
+rule       INFRA-2-1
+fdict      dtype INFRA n NB1 g HAL gtype ORG personnel 2000 coverage 1.0 flist {SHIA SUNN} mitigates {} note {} stops 0
+    }
+
+    test INFRA-2.2 {Rule 2-1 inputs, no mitigation} -setup {
+        setup
+    } -body {
+        orgassign INFRA 2000
+        
+        ted query {SELECT atype,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype g    c   note 
+----- ---- --- ---- 
+sat   SHIA AUT      
+sat   SHIA SFT      
+sat   SHIA CUL      
+sat   SHIA QOL      
+sat   SUNN AUT      
+sat   SUNN SFT      
+sat   SUNN CUL      
+sat   SUNN QOL      
+    }
+    
+    test INFRA-2.3 {Rule 2-1 inputs, mitigation} -setup {
+        setup NOWATER
+    } -body {
+        orgassign INFRA 2000
+        
+        ted query {SELECT atype,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype g    c   note      
+----- ---- --- --------- 
+sat   SHIA AUT mitigates 
+sat   SHIA SFT mitigates 
+sat   SHIA CUL mitigates 
+sat   SHIA QOL mitigates 
+sat   SUNN AUT mitigates 
+sat   SUNN SFT mitigates 
+sat   SUNN CUL mitigates 
+sat   SUNN QOL mitigates 
+    }
+
+    #-------------------------------------------------------------------
+    # LAWENF
+    
+    test LAWENF-1.1 {Rule 1-1 fires} -setup {
+        setup
+    } -body {
+        assign LAWENF 2000
+        ted querylist {SELECT * FROM rule_firings}
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          0
+driver_id  1000
+ruleset    LAWENF
+rule       LAWENF-1-1
+fdict      dtype LAWENF n NB1 g BLUE gtype FRC personnel 2000 coverage 1.0 flist {SHIA SUNN}
+    }
+
+    test LAWENF-1.2 {Rule 1-1 inputs} -setup {
+        setup
+    } -body {
+        assign LAWENF 2000
+        
+        ted query {SELECT atype,f,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype f    g    c   note 
+----- ---- ---- --- ---- 
+sat        SHIA AUT      
+sat        SHIA SFT      
+sat        SUNN AUT      
+sat        SUNN SFT      
+coop  SHIA BLUE          
+coop  SUNN BLUE          
+    }
+    
+     
+    #-------------------------------------------------------------------
+    # MEDICAL
+    
+    test MEDICAL-1.1 {Rule 1-1 fires} -setup {
+        setup DISEASE
+    } -body {
+        assign MEDICAL 2000
+        ted querylist {SELECT * FROM rule_firings}
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          0
+driver_id  1000
+ruleset    MEDICAL
+rule       MEDICAL-1-1
+fdict      dtype MEDICAL n NB1 g BLUE gtype FRC personnel 2000 coverage 1.0 flist {SHIA SUNN} mitigates DISEASE note mitigates stops 1
+    }
+
+    test MEDICAL-1.2 {Rule 1-1 inputs, no mitigation} -setup {
+        setup
+    } -body {
+        assign MEDICAL 2000
+        
+        ted query {SELECT atype,f,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype f    g    c   note 
+----- ---- ---- --- ---- 
+sat        SHIA AUT      
+sat        SHIA SFT      
+sat        SHIA QOL      
+sat        SUNN AUT      
+sat        SUNN SFT      
+sat        SUNN QOL      
+coop  SHIA BLUE          
+coop  SUNN BLUE          
+    }
+    
+    test MEDICAL-1.3 {Rule 1-1 inputs, mitigation} -setup {
+        setup DISEASE
+    } -body {
+        assign MEDICAL 2000
+        
+        ted query {SELECT atype,f,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype f    g    c   note      
+----- ---- ---- --- --------- 
+sat        SHIA AUT mitigates 
+sat        SHIA SFT mitigates 
+sat        SHIA QOL mitigates 
+sat        SUNN AUT mitigates 
+sat        SUNN SFT mitigates 
+sat        SUNN QOL mitigates 
+coop  SHIA BLUE     mitigates 
+coop  SUNN BLUE     mitigates 
+    }
+
+   
+    test MEDICAL-2.1 {Rule 2-1 fires} -setup {
+        setup
+    } -body {
+        orgassign MEDICAL 2000
+        ted querylist {SELECT * FROM rule_firings}
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          0
+driver_id  1000
+ruleset    MEDICAL
+rule       MEDICAL-2-1
+fdict      dtype MEDICAL n NB1 g HAL gtype ORG personnel 2000 coverage 1.0 flist {SHIA SUNN} mitigates {} note {} stops 0
+    }
+
+    test MEDICAL-2.2 {Rule 2-1 inputs, no mitigation} -setup {
+        setup
+    } -body {
+        orgassign MEDICAL 2000
+        
+        ted query {SELECT atype,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype g    c   note 
+----- ---- --- ---- 
+sat   SHIA AUT      
+sat   SHIA SFT      
+sat   SHIA CUL      
+sat   SHIA QOL      
+sat   SUNN AUT      
+sat   SUNN SFT      
+sat   SUNN CUL      
+sat   SUNN QOL      
+    }
+    
+    test MEDICAL-2.3 {Rule 2-1 inputs, mitigation} -setup {
+        setup DISEASE
+    } -body {
+        orgassign MEDICAL 2000
+        
+        ted query {SELECT atype,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype g    c   note      
+----- ---- --- --------- 
+sat   SHIA AUT mitigates 
+sat   SHIA SFT mitigates 
+sat   SHIA CUL mitigates 
+sat   SHIA QOL mitigates 
+sat   SUNN AUT mitigates 
+sat   SUNN SFT mitigates 
+sat   SUNN CUL mitigates 
+sat   SUNN QOL mitigates 
+    }
+
+    #-------------------------------------------------------------------
+    # PSYOP
+    
+    test PSYOP-1.1 {Rule 1-1 fires} -setup {
+        setup
+    } -body {
+        assign PSYOP 2000
+        ted querylist {SELECT * FROM rule_firings}
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          0
+driver_id  1000
+ruleset    PSYOP
+rule       PSYOP-1-1
+fdict      dtype PSYOP n NB1 g BLUE gtype FRC personnel 2000 coverage 1.0 flist {SHIA SUNN}
+    }
+
+    test PSYOP-1.2 {Rule 1-1 inputs} -setup {
+        setup
+    } -body {
+        assign PSYOP 2000
+        
+        ted query {SELECT atype,f,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype f    g    c   note    
+----- ---- ---- --- ------- 
+sat        SHIA AUT friends 
+sat        SHIA SFT friends 
+sat        SHIA CUL friends 
+sat        SHIA QOL friends 
+sat        SUNN AUT enemies 
+sat        SUNN SFT enemies 
+sat        SUNN CUL enemies 
+sat        SUNN QOL enemies 
+coop  SHIA BLUE             
+coop  SUNN BLUE             
+    }
+
+    
+    #-------------------------------------------------------------------
+    # RELIEF
+    
+    test RELIEF-1.1 {Rule 1-1 fires} -setup {
+        setup DISEASE
+    } -body {
+        assign RELIEF 2000
+        ted querylist {SELECT * FROM rule_firings}
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          0
+driver_id  1000
+ruleset    RELIEF
+rule       RELIEF-1-1
+fdict      dtype RELIEF n NB1 g BLUE gtype FRC personnel 2000 coverage 1.0 flist {SHIA SUNN} mitigates DISEASE note mitigates stops 1
+    }
+
+    test RELIEF-1.2 {Rule 1-1 inputs, no mitigation} -setup {
+        setup
+    } -body {
+        assign RELIEF 2000
+        
+        ted query {SELECT atype,f,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype f    g    c   note 
+----- ---- ---- --- ---- 
+sat        SHIA AUT      
+sat        SHIA SFT      
+sat        SHIA CUL      
+sat        SHIA QOL      
+sat        SUNN AUT      
+sat        SUNN SFT      
+sat        SUNN CUL      
+sat        SUNN QOL      
+coop  SHIA BLUE          
+coop  SUNN BLUE          
+    }
+    
+    test RELIEF-1.3 {Rule 1-1 inputs, mitigation} -setup {
+        setup DISEASE
+    } -body {
+        assign RELIEF 2000
+        
+        ted query {SELECT atype,f,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype f    g    c   note      
+----- ---- ---- --- --------- 
+sat        SHIA AUT mitigates 
+sat        SHIA SFT mitigates 
+sat        SHIA CUL mitigates 
+sat        SHIA QOL mitigates 
+sat        SUNN AUT mitigates 
+sat        SUNN SFT mitigates 
+sat        SUNN CUL mitigates 
+sat        SUNN QOL mitigates 
+coop  SHIA BLUE     mitigates 
+coop  SUNN BLUE     mitigates 
+    }
+
+    
+    test RELIEF-2.1 {Rule 2-1 fires} -setup {
+        setup
+    } -body {
+        orgassign RELIEF 2000
+        ted querylist {SELECT * FROM rule_firings}
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          0
+driver_id  1000
+ruleset    RELIEF
+rule       RELIEF-2-1
+fdict      dtype RELIEF n NB1 g HAL gtype ORG personnel 2000 coverage 1.0 flist {SHIA SUNN} mitigates {} note {} stops 0
+    }
+
+    test RELIEF-2.2 {Rule 2-1 inputs, no mitigation} -setup {
+        setup
+    } -body {
+        orgassign RELIEF 2000
+        
+        ted query {SELECT atype,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype g    c   note 
+----- ---- --- ---- 
+sat   SHIA AUT      
+sat   SHIA SFT      
+sat   SHIA CUL      
+sat   SHIA QOL      
+sat   SUNN AUT      
+sat   SUNN SFT      
+sat   SUNN CUL      
+sat   SUNN QOL      
+    }
+    
+    test RELIEF-2.3 {Rule 2-1 inputs, mitigation} -setup {
+        setup DISEASE
+    } -body {
+        orgassign RELIEF 2000
+        
+        ted query {SELECT atype,g,c,note FROM rule_inputs}
+    } -cleanup {
+        cleanup
+    } -result {
+atype g    c   note      
+----- ---- --- --------- 
+sat   SHIA AUT mitigates 
+sat   SHIA SFT mitigates 
+sat   SHIA CUL mitigates 
+sat   SHIA QOL mitigates 
+sat   SUNN AUT mitigates 
+sat   SUNN SFT mitigates 
+sat   SUNN CUL mitigates 
+sat   SUNN QOL mitigates 
+    }
+
+
+
+
+
+    
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,136 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-driver.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    mad(sim) tests.
+#
+#    This test suite tests the driver(sim) module.
+#
+#    Note: the driver type definition calls are adequately tested by the
+#    040-* rule sets and will not be tested here.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        # Clean up the test environment
+        ted cleanup
+    }
+
+
+
+    #-------------------------------------------------------------------
+    # getid
+
+    test getid-1.1 {Drivers can be created} -body {
+        driver getid {dtype MAGIC mad_id 1}
+        driver getid {dtype PATROL n NB1 g BLUE}
+
+        ted querylist {SELECT * FROM drivers}
+    } -cleanup {
+        cleanup
+    } -result {
+driver_id  1000
+dtype      MAGIC
+signature  1
+
+driver_id  1001
+dtype      PATROL
+signature  NB1 BLUE
+    }
+
+    test getid-1.2 {Returns driver ID} -body {
+        driver getid {dtype MAGIC mad_id 1}
+    } -cleanup {
+        cleanup
+    } -result {1000}
+
+    test getid-1.3 {Retrieves existing id} -body {
+        set a [driver getid {dtype MAGIC mad_id 1}]
+        set b [driver getid {dtype MAGIC mad_id 1}]
+        expr {$a == $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    #-------------------------------------------------------------------
+    # get
+
+    test get-1.1 {Retrieves existing id} -setup {
+        set a [driver getid {dtype MAGIC mad_id 1}]
+    } -body {
+        set b [driver get MAGIC 1]
+        expr {$a == $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test get-1.2 {Returns "" if no such driver} -setup {
+        driver getid {dtype MAGIC mad_id 1}
+    } -body {
+        driver get MAGIC 2
+    } -cleanup {
+        cleanup
+    } -result {}
+
+
+    
+
+    #-------------------------------------------------------------------
+    # call
+
+    test call-1.1 {can call driver methods} -body {
+        driver call narrative {
+            dtype     PATROL 
+            n         NB1 
+            g         BLUE 
+            a         PATROL
+            personnel 100
+            coverage  0.5
+        }
+    } -cleanup {
+        cleanup
+    } -result {{group:BLUE} PATROL in {nbhood:NB1} (50%)}
+    
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+

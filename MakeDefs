@@ -1,0 +1,70 @@
+# -*-Makefile-*-
+#---------------------------------------------------------------------
+# TITLE:
+#    MakeDefs -- Standard Make Definitions
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    The following definitions
+#    Makefiles.
+#
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+# Settings
+
+include $(TOP_DIR)/mars/MakePlatform
+
+# Location of Tcl Libraries
+export ATHENA_TCL_HOME = $(MARS_TCL_HOME)
+
+# Set ATHENA_VERSION for development if it isn't set.
+export ATHENA_VERSION_DEFAULT = 6.2.x
+
+ifndef ATHENA_VERSION
+    export ATHENA_VERSION = \
+	$(strip $(shell $(TOP_DIR)/bin/athena_projinfo versionfull))
+endif
+
+# Set location of Athena documentation directory on the web server
+ATHENA_SERVER   = pepper.jpl.nasa.gov
+ATHENA_HOME     = /home/www/athena
+
+ifeq "$(MARS_OS)" "win"
+    ATHENA_INSTALLER = $(TOP_DIR)/installer/Output/Athena$(ATHENA_VERSION)_Installer.exe
+else
+    ATHENA_INSTALLER =
+endif
+
+ATHENA_DOCS = $(ATHENA_HOME)/docs/athena_6.2/$(ATHENA_VERSION)
+ATHENA_ARCHIVE = $(ATHENA_HOME)/archive/athena_$(ATHENA_VERSION)
+
+
+# Tools
+export SSH        = ssh -q $(ATHENA_SERVER)
+export SCP        = scp -q 
+export TCLSH      = $(ATHENA_TCL_HOME)/bin/tclsh
+export TCLLIBPATH = $(TOP_DIR)/lib $(TOP_DIR)/mars/lib
+
+MAN_ROOTS = :     $(TOP_DIR)/docs/man%s/%n.html \
+            mars: $(TOP_DIR)/mars/docs/man%s/%n.html \
+            tcl:n http://www.tcl.tk/man/tcl8.6/TclCmd/%n.htm \
+            tk:n  http://www.tcl.tk/man/tcl8.6/TkCmd/%n.htm
+
+PROJECT = Athena
+LONGPROJECT = "Athena S&RO Simulation"
+
+DOC_TOOL = $(TOP_DIR)/mars/bin/mars doc -manroots "$(MAN_ROOTS)" -version $(ATHENA_VERSION) -project $(PROJECT) -longproject $(LONGPROJECT)
+
+MAN_TOOL = $(TOP_DIR)/mars/bin/mars man -manroots "$(MAN_ROOTS)" -version $(ATHENA_VERSION) -project $(PROJECT) -longproject $(LONGPROJECT)
+
+HELP_TOOL    = $(TOP_DIR)/tools/bin/helptool -version $(ATHENA_VERSION) -libdir $(TOP_DIR)/lib -lib simlib -lib projectlib
+HELP_BROWSER = $(TOP_DIR)/mars/bin/mars helpbrowser
+
+TEST_TOOL = $(TCLSH) $(TOP_DIR)/bin/athena_test
+
+
+
+

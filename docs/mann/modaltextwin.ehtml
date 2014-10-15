@@ -1,0 +1,68 @@
+<manpage {projectgui(n) modaltextwin(n)} "Modal Text Window">
+
+<section SYNOPSIS>
+
+<pre>
+package require projectgui 1.0
+namespace import ::projectgui::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+<xref modaltextwin(n)> displays a scrolling read-only text widget in
+a modal window with an "OK" button.  It is used for displaying
+arbitrarily large possibly formatted text messages to the user, and is
+usually used in MS Windows for exit messages that would otherwise be
+written to standard out.<p>
+
+<section "COMMANDS">
+
+This module defines the following commands:<p>
+
+<deflist commands>
+
+<defitem "modaltextwin popup" {modaltextwin popup ?<i>option value...</i>?}>
+
+Pops up the modal text window given the following options.  Execution
+will continue after the user presses the "OK" button in the window.<p>
+
+<deflist options>
+
+<defopt {-title <i>title</i>}>
+
+Sets the window's title string.<p>
+
+<defopt {-message <i>text</i>}>
+
+Sets the displayed text.  The text is displayed in a monospaced font,
+so simple formatting is possible.<p>
+
+</deflist options>
+
+</deflist commands>
+
+<section ENVIRONMENT>
+
+This package requires Tcl 8.5 or later.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+
+
+

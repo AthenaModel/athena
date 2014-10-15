@@ -1,0 +1,180 @@
+<manpage {projectlib(n) rdbserver(n)} "Database Introspection myserver(i) Server">
+
+<section SYNOPSIS>
+
+<pre>
+package require projectlib 1.0
+namespace import ::projectlib::rdbserver
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+rdbserver(n) is a <xref myserver(i)> implementation designed for
+developer introspection of SQLite3 databases.
+The application creates an instance of rdbserver(n), specifying a
+database using the <code>-rdb</code> option, and registers the
+instance with <xref myagent(n)>.  At that point, <xref myagent(n)>
+clients like <xref mybrowser(n)> can query it.<p>
+
+The resources known to the server are listed under <xref RESOURCES>;
+they can also be seen by querying the server's 
+<code>/urlhelp</code> resource.<p>
+
+<section "CONTENT TYPES">
+
+All rdbserver(n) data has the content type <b>text/html</b>.<p>
+
+<section "RESOURCES">
+
+In addition to the standard resources provided by
+<xref myserver(n)>, rdbserver(n) provides the following:<p>
+
+<deflist resources>
+
+<defitem / {/}>
+<defitem /main {/main}>
+<defitem /temp {/temp}>
+
+Returns a tabular list of tables, views, and triggers.  The list
+contains either all entities ("/"), persistent entities ("/main"), or
+temporary entiteis ("/temp").  All three of this resources accept a
+query string, which is a wildcard pattern.  The tabular list will
+contain all entities whose names match the pattern.  For example, if
+the rdbserver(n) is registered with <xref myagent(n)> as "rdb", the
+URL<p>
+
+<pre>
+    my://rdb/temp/gui_*
+</pre>
+
+will return a tabular listing of all temporary tables, views, and
+triggers whose names begin with "gui_".<p>
+
+<defitem /content {/content/<i>name</i>}>
+
+Displays the content of the table or view called <i>name</i> in
+tabular form.  This resource accepts a query string of the form<p>
+
+<pre>
+    <i>column=value</i>?+<i>column=value</i>...?
+</pre>
+
+where <i>column</i> is a column name in the table or view.  The query
+will return all rows for which the columns have the specified values.
+Note that the values may be wildcard patterns.  Query values are
+case-sensitive.<p>
+
+<defitem /schema {/schema/<i>name</i>}>
+
+Displays the SQL schema for the table, view, or trigger with the
+specified name.<p>
+
+</deflist resources>
+
+<section "COMMANDS">
+
+rdbserver(n) provides the following commands for use by the
+application.<p>
+
+<deflist commands>
+
+<defitem rdbserver {rdbserver <i>name</i> ?<i>options...</i>?}>
+
+Creates a new instance of rdbserver(n) called <i>name</i>; returns the
+fully-qualified command name.<p>
+
+rdbserver(n) has the following option:<p>
+
+<deflist options>
+
+<defopt {-rdb <i>database</i>}>
+
+Specifies the SQLite3 database to query, expressed as an
+<xref sqldocument(n)> object.<p>
+
+</deflist options>
+
+</deflist commands>
+
+
+<section "INSTANCE COMMANDS">
+
+Instances of rdbserver(n) provide the following subcommands for use by
+the application.<p>
+
+<deflist instance>
+
+<defitem ctypes {$server ctypes <i>rtype</i>}>
+
+Given a resource type name, <i>rtype</i>, returns a list of the
+available content types.<p>
+
+<defitem get {$server get <i>url</i> ?<i>contentTypes</i>?}>
+
+<b>From <xref myserver(i)>:</b> Retrieves the <i>url</i> from the
+server.  If the <i>url</i> cannot be retrieved for any reason, the
+server throws an error with error code <b>NOTFOUND</b>; the error
+message is a human-readable message explaining why the resource cannot
+be found.<p>
+
+The <i>contentTypes</i> argument, if given, is a list of content types
+accepted by the client.  Browse the server's <code>/urlhelp</code> resource
+to see what URLs are accepted, and what content types they can
+provide.  Custom content types should be documented by the application.<p>
+
+If <i>contentTypes</i> is empty, the server will return the first
+available content type for the requested <i>url</i>.  Otherwise, it
+will return the first content type listed in <i>contentTypes</i> which
+is available for the requested <i>url</i>.<p>
+
+Note that the content types listed in <i>contentTypes</i> can include
+wild cards, e.g., <b>text/*</b> and <b>*/*</b>.<p>
+
+On success, the <iref get> command returns a dictionary with the
+following keys:<p>
+
+<deflist getdict>
+
+<defitem url {url}>
+
+The complete URL given to the server.  This is of interest because the
+<xref myagent(n)> might have performed address resolution; hence,
+the URL given to the server might not be the same as the URL given to
+the agent.<p>
+
+<defitem contentType {contentType}>
+
+The content type of the returned content.<p>
+
+<defitem content {content}>
+
+The returned content itself.
+
+</deflist>
+
+<defitem resources {$server resources}>
+
+Returns a list of the names of the registered resource types.<p>
+
+</deflist instance>
+
+<section ENVIRONMENT>
+
+Requires Tcl 8.5 or later.<p>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+

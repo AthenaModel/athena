@@ -1,0 +1,117 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    order_actor.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: ACTOR:* Orders
+#
+#    This file is included into order.help.
+#
+#-----------------------------------------------------------------------
+
+page /order actor "Actor Orders" {
+    <title>
+
+    These orders are used create, update, and delete 
+    <term actor>s.
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+
+order ACTOR:CREATE "Create Actor" {
+    <b><term prep> Only.</b>  This order creates a new 
+    <term actor>.
+    The order parameters are as follows:<p>
+
+    <parmlist>
+    <actor_ parms -required -tags create>
+    <actor_ parms -optional -tags create_opt>
+    </parmlist>
+}
+
+
+#-----------------------------------------------------------------------
+
+order ACTOR:DELETE "Delete Actor" {
+    <b><term prep> Only.</b>  Deletes an existing
+    <term actor>, along with all entities (e.g., beliefs)
+    that depend upon it, given its ID.    
+    The order parameters are as follows:<p>
+
+    <parmlist>
+    <parm a "Actor">
+    <b>Required.</b>  ID of an existing actor.
+    </parm>
+    </parmlist>
+
+}
+
+#-----------------------------------------------------------------------
+
+order ACTOR:UPDATE "Update Actor" {
+    <b><term prep> Only.</b>  This order modifies the
+    definition of an existing <term actor>.  The order
+    parameters are as follows:<p>
+
+    <parmlist>
+    <parm a "Select Actor">
+    <b>Required.</b> ID of an existing actor.
+    </parm>
+
+    <actor_ parms -optional -tags update>
+
+    </parmlist>
+}
+
+#-----------------------------------------------------------------------
+
+order ACTOR:INCOME "Update Actor Income" {
+    This order modifies the income of an existing <term actor>.  
+    It may be used interactively when the simulation is paused, and
+    by the <cref /object/tactic/executive>.<p>
+   
+    If the Economic model is in use, these income values are used to
+    initialize and calibration the Economy; the actor's income will then come
+    from the Economic model.  In this case, changing these parameters after
+    the scenario is locked will have no effect on the simulation.<p>
+    
+    The order parameters are as follows:<p>
+
+    <parmlist>
+    <parm a "Select Actor">
+    <b>Required.</b> ID of an existing actor.
+    </parm>
+
+    <actor_ parms -optional -tags income>
+
+    </parmlist>
+}
+
+
+#-----------------------------------------------------------------------
+
+order ACTOR:SUPPORTS "Update Actor Supports" {
+    This order specifies which <term actor> this actor usually
+    supports politically, in the absence of a 
+    <cref /object/tactic/support> for a given neighborhood.
+    It may be used interactively when the simulation is paused, and
+    by the <cref /object/tactic/executive>.  The order
+    parameters are as follows:<p>
+
+    <parmlist>
+    <parm a "Select Actor">
+    <b>Required.</b> ID of an existing actor.
+    </parm>
+
+    <actor_ parm supports -required>
+
+    </parmlist>
+}
+
+

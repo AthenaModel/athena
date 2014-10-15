@@ -1,0 +1,79 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    order_parm.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: PARM:* Orders
+#
+#    This file is included into order.help.
+#
+#-----------------------------------------------------------------------
+
+page /order parm "Model Parameter Orders" {
+    <title>
+
+    These orders are used to set the values of the 
+    Athena <cref /parmdb>.<p>
+
+    The user will usually use these orders indirectly, via the
+    <command parm> <cref /command "executive command"> and its
+    subcommands; Athena <version> provides no other way for the user
+    to access them.  They are documented here for completeness'
+    sake.<p>
+
+    In the long-run, it is likely that Athena will be able to execute
+    order scripts; at that time, the user will be able to enter these
+    orders directly into the scripts.<p>
+
+    The orders are as follows:<p>
+
+    <childlinks>
+}
+
+#-------------------------------------------------------------------
+
+order PARM:IMPORT "Import Parameter File" {
+    <parmlist>
+
+    <parm filename "Parameter File"> 
+    <b>Required.</b>  Name of a parmdb(5) parameter file.
+    </parm>
+
+    </parmlist>
+
+    This order imports <cref /parmdb "model parameter"> settings from
+    a disk file.  See <command parm import> for details.
+}
+
+
+#-------------------------------------------------------------------
+
+order PARM:RESET "Reset Parameters to Defaults" {
+    This order resets all <cref /parmdb "model parameters"> to
+    their default values.  See <command parm reset> for details.
+}
+
+#-------------------------------------------------------------------
+
+order PARM:SET "Set Parameter Value" {
+    <parmlist>
+
+    <parm parm "Parameter"> 
+    <b>Required.</b>  Name of a parmdb(5) parameter.
+    </parm>
+
+    <parm value "Value"> 
+    <b>Required.</b>  New parameter value.
+    </parm>
+
+    </parmlist>
+
+    This order sets the value of the named parameter.  See 
+    <command parm set> for details. 
+}
+
+

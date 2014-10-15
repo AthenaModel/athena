@@ -1,0 +1,183 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    020-TACTIC-ABSIT.test
+#
+# AUTHOR:
+#    Dave Hanks
+#
+# DESCRIPTION:
+#    TACTIC:ABSIT:* Orders tests
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Set up for tests
+
+    proc setup {} {
+        variable B1
+        variable T1
+
+        ted create JOE BLUE ALQ NB1 NB2 SUNN SHIA KURD USAID
+
+        set B1 [ted addblock SYSTEM]
+        set T1 [ted addtactic $B1 ABSIT]
+    }
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # TACTIC:ABSIT
+
+    test TACTIC:ABSIT-1.1 {required parameters} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:ABSIT
+    } -cleanup {
+        cleanup
+    } -result {
+        tactic_id {required value}
+    }
+
+    test TACTIC:ABSIT-1.2 {unknown tactic_id} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:ABSIT tactic_id NONESUCH
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        tactic_id {Invalid ABSIT ID: "NONESUCH"}
+    }
+
+    test TACTIC:ABSIT-1.3 {invalid coverage} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:ABSIT tactic_id [$T1 id] coverage NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        coverage {invalid value "NONESUCH", should be a real number in range 0.0, 1.0}
+    }
+
+    test TACTIC:ABSIT-1.4 {zero coverage} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:ABSIT tactic_id [$T1 id] coverage 0.0
+    } -cleanup {
+        cleanup
+    } -result {
+        coverage {Coverage must be greater than 0.}
+    }
+
+    test TACTIC:ABSIT-1.5 {invalid duration} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:ABSIT tactic_id [$T1 id] duration NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        duration {invalid value "NONESUCH", expected integer}
+    }
+
+    test TACTIC:ABSIT-2.1 {tactic valid} -setup {
+        setup
+    } -body {
+        ted order TACTIC:ABSIT \
+            tactic_id [$T1 id]  \
+            n          NB1      \
+            stype      COMMOUT  \
+            coverage   0.5      \
+            resolver   BLUE     \
+            duration   5
+
+        ted pdicts [$T1 getdict]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        coverage   0.5
+        duration   5
+        execstatus NONE
+        faildict   {}
+        id         *
+        n          NB1
+        parent     ::bean::block*
+        resolver   BLUE
+        state      normal
+        stype      COMMOUT
+    }
+
+    test TACTIC:ABSIT-2.2 {notifier event} -setup {
+        setup
+    } -body {
+        ted notifier bind ::projectlib::bean <Monitor>
+        ted order TACTIC:ABSIT \
+            tactic_id [$T1 id]  \
+            n          NB1      \
+            stype      COMMOUT
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -match glob -result {*{::projectlib::bean <Monitor>}*}
+
+    test TACTIC:ABSIT-2.3 {undo notifier event} -setup {
+        setup
+        ted order TACTIC:ABSIT \
+            tactic_id [$T1 id]  \
+            n          NB1      \
+            stype      COMMOUT
+    } -body {
+        ted notifier bind ::projectlib::bean <Monitor>
+        cif undo -test
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -match glob -result {*{::projectlib::bean <Monitor>}*}
+ 
+    test TACTIC:ABSIT-3.1 {identity} -setup {
+        setup
+    } -body {
+        ted tactic identity $T1
+    } -cleanup {
+        cleanup
+    } -result {OK}
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+

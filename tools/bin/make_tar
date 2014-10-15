@@ -1,0 +1,271 @@
+#!/bin/sh
+# -*-tcl-*-
+# The next line restarts using tclsh \
+exec tclsh "$0" "$@"
+
+#-----------------------------------------------------------------------
+#
+# TITLE:
+#       make_tar
+#
+# AUTHOR:
+#       Will Duquette
+#
+# DESCRIPTION:
+#       Installation .tar file creator
+#
+#       This tool creates a .tar file of the files needed for 
+#       Athena installation.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Required Packages
+
+# TBD
+
+#-----------------------------------------------------------------------
+# File name tags
+
+array set tags {
+    install ""
+    source  "_src"
+    docs    "_doc"
+}
+
+#-------------------------------------------------------------------
+# Tar sets by platform
+
+array set tarset {
+    win32 {source docs}
+    linux32 {install source docs}
+    linux64 {install source docs}
+}
+
+#-------------------------------------------------------------------
+# Installation patterns
+#
+# Files matching one of the following glob patterns (relative to
+# the toplevel "athena_x.y.z" directory) will be included in the 
+# installation tar file.
+
+set patterns(install) {
+    README
+    bin/athena
+    docs/README
+    docs/*.html
+    docs/*.png
+    docs/*.txt
+    docs/man*/*.html
+    docs/man*/*.gif
+    docs/dev/*.html
+    docs/dev/*.pdf
+    docs/dev/*.doc
+    docs/dev/*.docx
+    docs/dev/*.pptx
+    docs/dev/*.odt
+    docs/dev/*.ods
+    docs/dev/*.txt
+    docs/dev/*.gif
+    docs/help/*.helpdb
+    mars/docs/*.html
+    mars/docs/man*/*.html
+    mars/docs/man*/*.gif
+    mars/docs/dev/*.html
+    mars/docs/dev/*.pdf
+    mars/docs/dev/*.doc
+    mars/docs/dev/*.docx
+    mars/docs/dev/*.pptx
+    mars/docs/dev/*.txt
+    mars/docs/dev/*.odt
+    maps/*.png
+    maps/*.tif
+    data/polygons/*.npf
+    data/polygons/*.kml
+    data/messages/*.xml
+    mods/*
+}
+
+#-------------------------------------------------------------------
+# Documentation patterns
+#
+# Files matching one of the following glob patterns (relative to
+# the toplevel "jnem_x.y.z" directory) will be included in the docs
+# tar file.
+
+set patterns(docs) {
+    docs/*.html
+    docs/*.png
+    docs/*.txt
+    docs/man*/*.html
+    docs/man*/*.gif
+    docs/dev/*.html
+    docs/dev/*.pdf
+    docs/dev/*.doc
+    docs/dev/*.docx
+    docs/dev/*.pptx
+    docs/dev/*.odt
+    docs/dev/*.ods
+    docs/dev/*.txt
+    docs/help/*.helpdb
+    mars/docs/*.html
+    mars/docs/man*/*.html
+    mars/docs/man*/*.gif
+    mars/docs/dev/*.html
+    mars/docs/dev/*.pdf
+    mars/docs/dev/*.doc
+    mars/docs/dev/*.docx
+    mars/docs/dev/*.pptx
+    mars/docs/dev/*.txt
+    mars/docs/dev/*.odt
+}
+
+#-------------------------------------------------------------------
+# Source patterns
+#
+# Files matching one of the following glob patterns (relative to
+# the toplevel "athena_x.y.z" directory) will be included in the source
+# docs tar file.  (Presumes that the tar is made after "make clean".
+
+set patterns(source) {
+    *
+    */*
+    */*/*
+    */*/*/*
+    */*/*/*/*
+}
+
+#-------------------------------------------------------------------
+# Antipatterns -- files to never include in tar files
+
+# Files matching any of the following "string match" patterns will be
+# excluded.
+
+set antipatterns {
+    */.svn
+    *~
+    #*#
+}
+
+#-----------------------------------------------------------------------
+# Main Routine
+
+# main argv
+#
+# argv      The command line: install|source|docs version
+#
+# Builds the tar file.
+
+proc main {argv} {
+    global patterns
+    global tags
+    global tarset
+
+    # FIRST, check args
+    if {[llength $argv] != 3} {
+        puts "usage: make_tar type x.y.z platform"
+        exit 1
+    }
+
+    # NEXT, get type and version number
+    set tarType  [lindex $argv 0]
+    set version  [lindex $argv 1]
+    set platform [lindex $argv 2]
+
+    if {![info exists patterns($tarType)]} {
+        puts "invalid tar file type: \"$tarType\""
+        exit 1
+    }
+
+    if {![info exists tarset($platform)]} {
+        puts "invalid platform: \"$platform\""
+        exit 1
+    }
+
+    # NEXT, if the tar type is not for this platform, done.
+    if {$tarType ni $tarset($platform)} {
+
+        puts "make_tar: skipping $tarType on $platform"
+        exit 0
+    }
+
+    # FIRST, get the absolute path of the athena_x.y.z directory.
+    set toolsDir [file normalize [file dirname [info script]]]
+
+    # NEXT, get the Athena directory name--not the path, but just
+    # the subdirectory itself.
+    set athenaDir [file tail [file normalize [file join $toolsDir .. ..]]]
+    
+    # NEXT, get the parent directory of the athena directory.
+    set parentDir [file normalize [file join $toolsDir .. .. ..]]
+
+    # NEXT, change to the parent directory; that's where we'll
+    # do the tarring.
+    cd $parentDir
+
+    # NEXT, build a list of the installation files.
+    set files {}
+
+    foreach pattern $patterns($tarType) {
+        set newFiles [glob -nocomplain [file join $athenaDir $pattern]]
+
+        set files [concat $files $newFiles]
+    }
+
+    # NEXT, exclude files matching the antipatterns
+    set installSet {}
+
+    foreach file $files {
+        if {![excluded $file]} {
+            lappend installSet $file
+        }
+    }
+
+    # NEXT, save the list of files to disk.
+    set f [open tarfiles.txt wb]
+    puts $f [join $installSet \n]
+    close $f
+
+    # NEXT, make the tar file
+    set tarFile athena_${version}$tags($tarType)
+    if {$platform eq "linux64" && $tarType eq "install"} {
+        append tarFile "-x86_64.tgz"
+    } else {
+        append tarFile ".tgz"
+    }
+
+    puts "make_tar: [file join [pwd] $tarFile]"
+    eval [concat [list exec tar cvzf $tarFile] -T tarfiles.txt]
+}
+
+# excluded file
+# 
+# file   A file name
+#
+# If the file name matches any of the antipatterns, it's
+# excluded.
+
+proc excluded {file} {
+    global antipatterns
+
+    if {[file isdirectory $file]} {
+        return 1
+    }
+
+    foreach pattern $antipatterns {
+        if {[string match $pattern $file]} {
+            return 1
+        }
+    }
+
+    return 0
+}
+
+
+#-----------------------------------------------------------------------
+# Execute Program
+
+main $argv
+
+
+

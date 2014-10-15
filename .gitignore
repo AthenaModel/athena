@@ -1,0 +1,20 @@
+# Project Artifacts
+*.log
+*.kit
+/.kite
+teapot.txt
+/*.zip
+*~
+*.bak
+/includes
+*.exe
+/bin/*-linux
+/bin/*-macosx*
+/docs/*.html
+/docs/*/*.html
+*.adb
+*.helpdb
+
+# SublimeText artifacts.
+*.sublime-*
+

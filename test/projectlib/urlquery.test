@@ -1,0 +1,101 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    urlquery.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Tcltest test suite for projectlib(n), urlquery(n)
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+ 
+# Import tcltest(n)
+namespace import ::tcltest::*
+ 
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+source ../../lib/projectlib/pkgModules.tcl
+namespace import ::projectlib::*
+
+#-------------------------------------------------------------------
+# fromdict
+
+test fromdict-1.1 {empty dict} -body {
+    urlquery fromdict {}
+} -result {}
+
+test fromdict-1.2 {one pair} -body {
+    urlquery fromdict {p1 v1}
+} -result {p1=v1}
+
+test fromdict-1.3 {multiple pairs} -body {
+    urlquery fromdict {p1 v1 p2 v2 p3 v3}
+} -result {p1=v1+p2=v2+p3=v3}
+
+test fromdict-1.4 {one empty parm} -body {
+    urlquery fromdict {p1 ""}
+} -result {p1}
+
+test fromdict-1.5 {multiple pairs, one empty} -body {
+    urlquery fromdict {p1 v1 p2 "" p3 v3}
+} -result {p1=v1+p2+p3=v3}
+
+
+
+#-------------------------------------------------------------------
+# todict
+
+test todict-1.1 {empty query} -body {
+    urlquery todict ""
+} -result {}
+
+test todict-1.2 {one parm, no value} -body {
+    urlquery todict "p1"
+} -result {p1 {}}
+
+test todict-1.3 {one parm and value} -body {
+    urlquery todict "p1=v1"
+} -result {p1 v1}
+
+test todict-1.4 {multiple parms and values} -body {
+    urlquery todict "p1=v1+p2=v2+p3=v3"
+} -result {p1 v1 p2 v2 p3 v3}
+
+test todict-1.5 {multiple parms, one missing value} -body {
+    urlquery todict "p1=v1+p2+p3=v3"
+} -result {p1 v1 p2 {} p3 v3}
+
+test todict-1.6 {extra =} -body {
+    urlquery todict "p1=v1=ex+p2=v2"
+} -result {p1 v1 p2 v2}
+
+#-------------------------------------------------------------------
+# get
+
+test get-1.1 {fills out dictionary} -body {
+    urlquery get {p1=v1} {p1 p2 p3}
+} -result {p1 v1 p2 {} p3 {}}
+
+test get-1.2 {omits unknown parameters} -body {
+    urlquery get {p1=v1+nonesuch=v2} {p1 p2 p3}
+} -result {p1 v1 p2 {} p3 {}}
+
+test get-1.3 {sets default values} -body {
+    urlquery get {p1=v1+nonesuch=v2} {{p1 aaa} {p2 bbb} {p3 ccc}}
+} -result {p1 v1 p2 bbb p3 ccc}
+
+#-------------------------------------------------------------------
+# Cleanup
+
+cleanupTests

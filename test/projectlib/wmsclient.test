@@ -1,0 +1,175 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#  wmsclient.test
+#
+# AUTHOR:
+#   Dave Hanks
+#
+# DESCRIPTION:
+#   Tests for wmsclient(n). 
+#    
+#   These tests use an httpagent simulator to mimic an actual http
+#   server.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+ 
+# Import tcltest(n)
+namespace import ::tcltest::*
+ 
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+source ../../lib/projectlib/pkgModules.tcl
+namespace import ::projectlib::*
+
+#-------------------------------------------------------------------
+# Set up the test environment
+
+proc setup {} {
+    set testfile [file join $::projectlib::library wmsCapTest.xml]
+    set agent [httpagentsim agent -testfile $testfile]
+    wmsclient wms -agent $agent
+}
+
+proc errorSetup {} {
+    set testfile [file join $::projectlib::library wmsCapErrorTest.xml]
+    set agent [httpagentsim agent -testfile $testfile]
+    wmsclient wms -agent $agent
+}
+
+proc cleanup {} {
+    wms destroy
+    agent destroy
+}
+
+#-------------------------------------------------------------------
+# connect
+
+test connect-1.1 {default state} -setup {
+    setup
+} -body {
+    wms server state
+} -cleanup {
+    cleanup
+} -result {IDLE}
+
+test connect-1.2 {server state} -setup {
+    setup
+} -body {
+    wms server connect "http://foobar"
+    wms server state
+} -cleanup {
+    cleanup
+} -result {OK}
+
+test connect-1.3 {server status} -setup {
+    setup
+} -body {
+    wms server connect "http://foobar"
+    wms server status
+} -cleanup {
+    cleanup
+} -result {Success}
+
+#------------------------------------------------------------------
+# error state
+
+test error-1.1 {bad XML file} -setup {
+    errorSetup
+    wms server connect "http://foobar"
+} -body {
+    list [wms server state] [wms server status]
+} -cleanup {
+    cleanup
+} -result {ERROR {Could not retrieve WMS Server Capabilities}}
+
+#------------------------------------------------------------------
+# server timeout
+
+test timeout-1.1 {server times out} -setup {
+    setup
+    agent configure -forcetimeout 1
+} -body {
+    wms server connect "http://foobar"
+    list [wms server state] [wms server error]
+} -cleanup {
+    cleanup
+} -result {ERROR {Server timed out}}
+
+#------------------------------------------------------------------
+# url
+
+test url-1.1 {url returned} -setup {
+    setup
+} -body {
+    wms server connect "http://foobar/baz?a=1&b=2"
+    wms server url
+} -cleanup {
+    cleanup
+} -result {http://foobar/baz?a=1&b=2}
+
+#------------------------------------------------------------------
+# capabilities
+
+test capabilities-1.1 {capabilities} -setup {
+    setup 
+} -body {
+    wms server connect "http://foobar"
+    wms server wmscap
+} -cleanup {
+    cleanup
+} -match glob -result {Version 1.3.0*GetCapabilities*}
+
+#-----------------------------------------------------------------
+# get map
+
+test getmap-1.1 {get a map} -setup {
+   setup
+   wms server connect "http://foobar"
+} -body {
+   wms server getmap ""
+   wms server state
+} -cleanup {
+   cleanup
+} -result {OK}
+
+test getmap-1.2 {map width} -setup {
+   setup
+   wms server connect "http://foobar"
+   wms server getmap ""
+} -body {
+   wms map width
+} -cleanup {
+   cleanup
+} -result {4000}
+
+test getmap-1.3 {map height} -setup {
+   setup
+   wms server connect "http://foobar"
+   wms server getmap ""
+} -body {
+   wms map height
+} -cleanup {
+   cleanup
+} -result {3000}
+
+test getmap-1.4 {map bbox} -setup {
+   setup
+   wms server connect "http://foobar"
+   wms server getmap ""
+} -body {
+   wms map bbox
+} -cleanup {
+   cleanup
+} -result {-90 -180 90 180}
+
+cleanupTests

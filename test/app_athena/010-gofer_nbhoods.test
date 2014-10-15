@@ -1,0 +1,381 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-gofer_nbhoods.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    nbhood(sim) tests.
+#
+#    This test suite tests the gofer::NBHOODS type.
+#
+#    NOTE: The type itself is implemented using gofer(n); thus,
+#    we don't need to test the behavior of the type itself.  As a result,
+#    this test suite focusses on the gofer::NBHOODS-specific rule
+#    objects.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    proc setup {} {
+        ted create JOE BOB NB1 NB2 BLUE BRIT TAL SUNN SHIA KURD USAID
+    }
+
+    proc cleanup {} {
+        # Clean up the test environment
+        array unset parms
+        ted cleanup
+    }
+
+
+    #-------------------------------------------------------------------
+    # Rule: BY_VALUE
+
+    test BY_VALUE-1.1 {construct, valid} -setup {
+        setup
+    } -body {
+        ::gofer::NBHOODS::BY_VALUE construct {NB1 NB2}
+    } -cleanup {
+        cleanup
+    } -result {nlist {NB1 NB2}}
+
+    test BY_VALUE-2.1 {validate, valid} -setup {
+        setup
+    } -body {
+        ::gofer::NBHOODS::BY_VALUE validate {nlist {NB1 NB2}}
+    } -cleanup {
+        cleanup
+    } -result {nlist {NB1 NB2}}
+
+    test BY_VALUE-2.2 {validate, invalid} -setup {
+        setup
+    } -body {
+        ::gofer::NBHOODS::BY_VALUE validate {nlist {NB1 NONESUCH}}
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -match glob -result {Invalid neighborhood*}
+
+    test BY_VALUE-3.1 {narrative} -body {
+        ::gofer::NBHOODS::BY_VALUE narrative {nlist NB1}
+    } -result {neighborhood NB1}
+
+    test BY_VALUE-4.1 {eval} -setup {
+        setup
+    } -body {
+        ::gofer::NBHOODS::BY_VALUE eval {nlist {NB1 NB2}}
+    } -cleanup {
+        cleanup
+    } -result {NB1 NB2}
+
+    #-------------------------------------------------------------------
+    # Rule: CONTROLLED_BY
+
+    test CONTROLLED_BY-1.1 {construct} -setup {
+        setup
+    } -body {
+        ::gofer::NBHOODS::CONTROLLED_BY construct {JOE BOB}
+    } -cleanup {
+        cleanup
+    } -result {alist {JOE BOB}}
+
+    test CONTROLLED_BY-2.1 {validate: valid} -setup {
+        setup
+    } -body {
+        ::gofer::NBHOODS::CONTROLLED_BY validate {alist {JOE BOB}}
+    } -cleanup {
+        cleanup
+    } -result {alist {JOE BOB}}
+
+    test CONTROLLED_BY-2.2 {validate: invalid} -setup {
+        setup
+    } -body {
+        ::gofer::NBHOODS::CONTROLLED_BY validate {alist {JOE NONESUCH}}
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -match glob -result {Invalid actor,*}
+
+    test CONTROLLED_BY-3.1 {narrative} -body {
+        ::gofer::NBHOODS::CONTROLLED_BY narrative {alist JOE}
+    } -match glob -result {neighborhoods controlled by actor JOE}
+
+    proc setupControlling {} {
+        setup
+        dict for {n a} {
+            NB1 JOE
+            NB2 BOB
+        } { 
+            rdb eval {INSERT INTO control_n(n,controller) VALUES($n,$a)}
+        }
+    }
+
+    test CONTROLLED_BY-4.1 {eval, one} -setup {
+        setupControlling 
+    } -body {
+        ::gofer::NBHOODS::CONTROLLED_BY eval {alist JOE}
+    } -cleanup {
+        cleanup
+    } -result {NB1}
+
+    test CONTROLLED_BY-4.2 {eval, multi} -setup {
+        setupControlling 
+    } -body {
+        ::gofer::NBHOODS::CONTROLLED_BY eval {alist {JOE BOB}}
+    } -cleanup {
+        cleanup
+    } -result {NB1 NB2}
+
+
+    #-------------------------------------------------------------------
+    # Rule: NOT_CONTROLLED_BY
+
+    test NOT_CONTROLLED_BY-1.1 {construct} -setup {
+        setup
+    } -body {
+        ::gofer::NBHOODS::NOT_CONTROLLED_BY construct {JOE BOB}
+    } -cleanup {
+        cleanup
+    } -result {alist {JOE BOB}}
+
+    test NOT_CONTROLLED_BY-2.1 {validate: valid} -setup {
+        setup
+    } -body {
+        ::gofer::NBHOODS::NOT_CONTROLLED_BY validate {alist {JOE BOB}}
+    } -cleanup {
+        cleanup
+    } -result {alist {JOE BOB}}
+
+    test NOT_CONTROLLED_BY-2.2 {validate: invalid} -setup {
+        setup
+    } -body {
+        ::gofer::NBHOODS::NOT_CONTROLLED_BY validate {alist {JOE NONESUCH}}
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -match glob -result {Invalid actor,*}
+
+    test NOT_CONTROLLED_BY-3.1 {narrative} -body {
+        ::gofer::NBHOODS::NOT_CONTROLLED_BY narrative {alist JOE}
+    } -match glob -result {neighborhoods not controlled by actor JOE}
+
+    test NOT_CONTROLLED_BY-4.1 {eval, one} -setup {
+        setupControlling 
+    } -body {
+        ::gofer::NBHOODS::NOT_CONTROLLED_BY eval {alist JOE}
+    } -cleanup {
+        cleanup
+    } -result {NB2}
+
+    test NOT_CONTROLLED_BY-4.2 {eval, multi} -setup {
+        setupControlling 
+    } -body {
+        ::gofer::NBHOODS::NOT_CONTROLLED_BY eval {alist {JOE BOB}}
+    } -cleanup {
+        cleanup
+    } -result {}
+
+
+    #-------------------------------------------------------------------
+    # Rule: WITH_DEPLOYMENT
+
+    test WITH_DEPLOYMENT-1.1 {construct} -setup {
+        setup
+    } -body {
+        ::gofer::NBHOODS::WITH_DEPLOYMENT construct ANY {BLUE BRIT}
+    } -cleanup {
+        cleanup
+    } -result {anyall ANY glist {BLUE BRIT}}
+
+    test WITH_DEPLOYMENT-2.1 {validate: valid} -setup {
+        setup
+    } -body {
+        ::gofer::NBHOODS::WITH_DEPLOYMENT validate {anyall any glist {BLUE BRIT}}
+    } -cleanup {
+        cleanup
+    } -result {anyall ANY glist {BLUE BRIT}}
+
+    test WITH_DEPLOYMENT-2.2 {validate: invalid g} -setup {
+        setup
+    } -body {
+        ::gofer::NBHOODS::WITH_DEPLOYMENT validate {anyall ALL glist {BLUE NONESUCH}}
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -match glob -result {Invalid force group,*}
+
+
+    test WITH_DEPLOYMENT-3.1 {narrative, one} -body {
+        ::gofer::NBHOODS::WITH_DEPLOYMENT narrative {anyall ANY glist BLUE}
+    } -match glob -result {neighborhoods with deployments of group BLUE}
+
+    test WITH_DEPLOYMENT-3.2 {narrative, two} -body {
+        ::gofer::NBHOODS::WITH_DEPLOYMENT narrative {anyall ANY glist {BLUE BRIT}}
+    } -match glob -result {neighborhoods with deployments of any of these groups (BLUE, BRIT)}
+
+    # setupDeployments
+    #
+    # Clears deploy_ng, and inserts a large set of data with bogus
+    # neighborhoods and groups.
+
+    proc setupDeployments {} {
+        ted create NB1 NB2 NB3 NB4 BLUE BRIT TAL ALQ
+
+        foreach {n g personnel} {
+            NB1 BLUE 1
+            NB1 BRIT 0
+            NB1 TAL  0
+            NB1 ALQ  0
+
+            NB2 BLUE 1
+            NB2 BRIT 1
+            NB2 TAL  1
+            NB2 ALQ  1
+
+            NB3 BLUE 0
+            NB3 BRIT 0
+            NB3 TAL  0
+            NB3 ALQ  1
+
+            NB4 BLUE 0
+            NB4 BRIT 1
+            NB4 TAL  1
+            NB4 ALQ  1
+        } { 
+            rdb eval {
+                INSERT OR REPLACE INTO deploy_ng(n,g,personnel) 
+                VALUES($n,$g,$personnel)
+            }
+        }
+    }
+
+    test WITH_DEPLOYMENT-4.1 {eval, one} -setup {
+        setupDeployments
+    } -body {
+        ::gofer::NBHOODS::WITH_DEPLOYMENT eval {anyall ANY glist BLUE}
+    } -cleanup {
+        cleanup
+    } -result {NB1 NB2}
+
+    test WITH_DEPLOYMENT-4.2 {eval, one} -setup {
+        setupDeployments
+    } -body {
+        ::gofer::NBHOODS::WITH_DEPLOYMENT eval {anyall ALL glist BLUE}
+    } -cleanup {
+        cleanup
+    } -result {NB1 NB2}
+
+    test WITH_DEPLOYMENT-4.3 {eval, multi, any} -setup {
+        setupDeployments 
+    } -body {
+        ::gofer::NBHOODS::WITH_DEPLOYMENT eval {anyall ANY glist {BLUE ALQ}}
+    } -cleanup {
+        cleanup
+    } -result {NB1 NB2 NB3 NB4}
+
+    test WITH_DEPLOYMENT-4.4 {eval, multi, all} -setup {
+        setupDeployments 
+    } -body {
+        ::gofer::NBHOODS::WITH_DEPLOYMENT eval {anyall ALL glist {BLUE ALQ}}
+    } -cleanup {
+        cleanup
+    } -result {NB2}
+
+    #-------------------------------------------------------------------
+    # Rule: WITHOUT_DEPLOYMENT
+
+    test WITHOUT_DEPLOYMENT-1.1 {construct} -setup {
+        setup
+    } -body {
+        ::gofer::NBHOODS::WITHOUT_DEPLOYMENT construct {BLUE BRIT}
+    } -cleanup {
+        cleanup
+    } -result {glist {BLUE BRIT}}
+
+    test WITHOUT_DEPLOYMENT-2.1 {validate: valid} -setup {
+        setup
+    } -body {
+        ::gofer::NBHOODS::WITHOUT_DEPLOYMENT validate {glist {BLUE BRIT}}
+    } -cleanup {
+        cleanup
+    } -result {glist {BLUE BRIT}}
+
+    test WITHOUT_DEPLOYMENT-2.2 {validate: invalid g} -setup {
+        setup
+    } -body {
+        ::gofer::NBHOODS::WITHOUT_DEPLOYMENT validate {glist {BLUE NONESUCH}}
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -match glob -result {Invalid force group,*}
+
+
+    test WITHOUT_DEPLOYMENT-3.1 {narrative, one} -body {
+        ::gofer::NBHOODS::WITHOUT_DEPLOYMENT narrative {glist BLUE}
+    } -match glob -result {neighborhoods without deployments of group BLUE}
+
+    test WITHOUT_DEPLOYMENT-3.2 {narrative, two} -body {
+        ::gofer::NBHOODS::WITHOUT_DEPLOYMENT narrative {glist {BLUE BRIT}}
+    } -result {neighborhoods without deployments of any of these groups (BLUE, BRIT)}
+
+    test WITHOUT_DEPLOYMENT-4.1 {eval, one} -setup {
+        setupDeployments
+    } -body {
+        ::gofer::NBHOODS::WITHOUT_DEPLOYMENT eval {glist BLUE}
+    } -cleanup {
+        cleanup
+    } -result {NB3 NB4}
+
+    test WITHOUT_DEPLOYMENT-4.2 {eval, multi, none found} -setup {
+        setupDeployments 
+    } -body {
+        ::gofer::NBHOODS::WITHOUT_DEPLOYMENT eval {glist {BLUE ALQ}}
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test WITHOUT_DEPLOYMENT-4.3 {eval, multi, some found} -setup {
+        setupDeployments 
+    } -body {
+        ::gofer::NBHOODS::WITHOUT_DEPLOYMENT eval {glist {BRIT TAL}}
+    } -cleanup {
+        cleanup
+    } -result {NB1 NB3}
+
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+

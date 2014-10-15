@@ -1,0 +1,55 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    object.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: Simulation Objects
+#
+#    This file is included into athena.help.
+#
+#    Simulation Object types have help pages with names like
+#
+#        /object/?.../?<type>/
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+
+page / object "Sim Objects" {
+    <title>
+    This section of the help documents the significant object types
+    in the Athena simulation, e.g., 
+    <term actor>s, <term group>s, 
+    <term nbhood>s, and so forth.  The full set of 
+    object types is as follows:<p>
+
+    <childlinks>
+}
+
+macro sotitle {} {
+    |<--
+    [mktitle normal [cref /object "Simulation Object"] [pageinfo title] ""]
+}
+
+#-----------------------------------------------------------------------
+# Object Types
+
+include object_actor.help
+include object_agent.help
+include object_block.help
+include object_cap.help
+include object_condition.help
+include object_curse.help
+include object_hook.help
+include object_inject.help
+include object_iom.help
+include object_group.help
+include object_nbhood.help
+include object_payload.help
+include object_plant.help
+include object_tactic.help
+
