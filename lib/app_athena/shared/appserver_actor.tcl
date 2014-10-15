@@ -319,7 +319,7 @@ appserver module ACTOR {
                        G.pct_expected          AS 'Expected<br>LOS',
                        G.pct_required          AS 'Required<br>LOS'
                 FROM gui_service_ga AS GA
-                JOIN gui_service_g  AS G USING (g)
+                JOIN gui_service_sg AS G ON (G.g=GA.g AND G.s='ENI')
                 WHERE GA.a=$a AND numeric_funding > 0.0
                 ORDER BY GA.numeric_funding;
             } -align LLRRRRR

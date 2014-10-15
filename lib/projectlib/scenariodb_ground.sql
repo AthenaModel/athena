@@ -411,12 +411,14 @@ CREATE TABLE service_ga (
     PRIMARY KEY (g,a)
 );
 
--- Service Table: level of service experienced by civilian groups.
+-- Service Table: level of services s experienced by civilian groups g
 
-CREATE TABLE service_g (
+CREATE TABLE service_sg (
+    -- Service ID; eg. ENI, ENERGY...
+    s                   TEXT,
+
     -- Civilian Group ID
-    g                   TEXT PRIMARY KEY
-                             REFERENCES civgroups(g) 
+    g                   TEXT REFERENCES civgroups(g) 
                              ON DELETE CASCADE
                              DEFERRABLE INITIALLY DEFERRED,
 
@@ -442,7 +444,9 @@ CREATE TABLE service_g (
 
     -- Needs Factor: measures degree to which actual exceeds required
     -- (or vice versa) for use in ENI rule set.
-    needs               REAL DEFAULT 0.0
+    needs               REAL DEFAULT 0.0,
+
+    PRIMARY KEY (s,g)
 );
 
 ------------------------------------------------------------------------

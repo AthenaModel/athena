@@ -54,11 +54,11 @@ namespace eval ::athena_test::tests:: {
     }
 
     #-------------------------------------------------------------------
-    # srcompute
-    test srcompute-1.1 {srcompute populates sr_service in PREP} -setup {
+    # srservice
+    test srservice-1.1 {srservice populates sr_service in PREP} -setup {
         setup
     } -body {
-        service srcompute
+        service_eni srservice
         ted query {SELECT * FROM sr_service}
     } -cleanup {
         cleanup
@@ -70,11 +70,11 @@ SUNN 240.0       400.0
 KURD 20.0        100.0       
     }
 
-    test srcompute-1.2 {srcompute populates sr_service on LOCK} -setup {
+    test srservice-1.2 {srservice populates sr_service on LOCK} -setup {
         ted create JOE BOB BLUE USAID NB1 NB2 SHIA SUNN KURD
         ted lock
     } -body {
-        service srcompute
+        service_eni srservice
         ted query {SELECT * FROM sr_service}
     } -cleanup {
         cleanup
@@ -108,40 +108,31 @@ SUNN BOB 0.0     0.0
 SUNN JOE 0.0     0.0    
     }
 
-    test start-1.2 {start populates service_g} -setup {
+    test start-1.2 {start populates service_sg} -setup {
         setup
     } -body {
         service start
-        ted querylist {SELECT * FROM service_g ORDER BY g}
+        ted querylist {SELECT g,s FROM service_sg ORDER BY g}
     } -cleanup {
         cleanup
     } -result {
-g                   KURD
-saturation_funding  0.0
-required            0.0
-funding             0.0
-actual              0.0
-expected            0.0
-expectf             0.0
-needs               0.0
+g  KURD
+s  ENERGY
 
-g                   SHIA
-saturation_funding  0.0
-required            0.0
-funding             0.0
-actual              0.0
-expected            0.0
-expectf             0.0
-needs               0.0
+g  KURD
+s  ENI
 
-g                   SUNN
-saturation_funding  0.0
-required            0.0
-funding             0.0
-actual              0.0
-expected            0.0
-expectf             0.0
-needs               0.0
+g  SHIA
+s  ENERGY
+
+g  SHIA
+s  ENI
+
+g  SUNN
+s  ENERGY
+
+g  SUNN
+s  ENI
     }
 
     #-------------------------------------------------------------------
@@ -151,7 +142,7 @@ needs               0.0
         setup
         service start
     } -body {
-        service load
+        service_eni load
         ted query {SELECT * FROM working_service_ga ORDER BY g,a}
     } -cleanup {
         cleanup
@@ -170,12 +161,12 @@ SUNN JOE 0.0
     #-------------------------------------------------------------------
     # fundeni
 
-    test fundeni-1.1 {Increments funding for a group} -setup {
+    test fundeni-1.1 {Increments ENI funding for a group} -setup {
         setup
         service start
-        service load
+        service_eni load
     } -body {
-        service fundeni JOE 2000 SHIA
+        service_eni fundeni JOE 2000 SHIA
         ted query {SELECT * FROM working_service_ga ORDER BY g,a}
     } -cleanup {
         cleanup
@@ -193,9 +184,9 @@ SUNN JOE 0.0
     test fundeni-1.2 {Increments for groups in proportion to pop} -setup {
         setup
         service start
-        service load
+        service_eni load
     } -body {
-        service fundeni BOB 3000 {SHIA SUNN}
+        service_eni fundeni BOB 3000 {SHIA SUNN}
         ted query {SELECT * FROM working_service_ga ORDER BY g,a}
     } -cleanup {
         cleanup
@@ -213,10 +204,10 @@ SUNN JOE 0.0
     test fundeni-1.3 {Fund one group several times} -setup {
         setup
         service start
-        service load
+        service_eni load
     } -body {
-        service fundeni JOE 2000 SHIA
-        service fundeni JOE 3000 SHIA
+        service_eni fundeni JOE 2000 SHIA
+        service_eni fundeni JOE 3000 SHIA
         ted query {SELECT * FROM working_service_ga ORDER BY g,a}
     } -cleanup {
         cleanup
@@ -234,13 +225,13 @@ SUNN JOE 0.0
     #-------------------------------------------------------------------
     # fundlevel
 
-    test fundlevel-1.1 {Returns funding level for groups} -setup {
+    test fundlevel-1.1 {Returns ENI funding level for groups} -setup {
         setup
         service start
-        service load
+        service_eni load
     } -body {
-        service save
-        service fundlevel 100 {SUNN SHIA}
+        service_eni save
+        service_eni fundlevel 100 {SUNN SHIA}
     } -cleanup {
         cleanup
     } -result {12000.0}
@@ -248,10 +239,10 @@ SUNN JOE 0.0
     test fundlevel-1.2 {Returns funding level for groups, smaller %} -setup {
         setup
         service start
-        service load
+        service_eni load
     } -body {
-        service save
-        service fundlevel 50 {SUNN SHIA}
+        service_eni save
+        service_eni fundlevel 50 {SUNN SHIA}
     } -cleanup {
         cleanup
     } -result {6000.0}
@@ -259,26 +250,26 @@ SUNN JOE 0.0
     #-------------------------------------------------------------------
     # save
 
-    test save-1.1 {Logs changed funding levels} -setup {
+    test save-1.1 {Logs changed ENI funding levels} -setup {
         setup
         service start
-        service load
-        service fundeni JOE 7000.0 {SHIA SUNN KURD}
+        service_eni load
+        service_eni fundeni JOE 7000.0 {SHIA SUNN KURD}
     } -body {
-        service save
+        service_eni save
 
         rdb eval {SELECT count(event_id) FROM sigevents}
     } -cleanup {
         cleanup
     } -result {3}
 
-    test save-2.1 {Saves service back to service_g} -setup {
+    test save-2.1 {Saves service back to service_sg} -setup {
         setup
         service start
-        service load
-        service fundeni JOE 7000.0 {SHIA SUNN KURD}
+        service_eni load
+        service_eni fundeni JOE 7000.0 {SHIA SUNN KURD}
     } -body {
-        service save
+        service_eni save
 
         ted query {SELECT * FROM service_ga ORDER BY g,a}
     } -cleanup {
@@ -298,14 +289,18 @@ SUNN JOE 3500.0  0.0
     test save-3.1 {Computes saturation funding} -setup {
         setup
         service start
-        service load
+        service_eni load
     } -body {
-        service save
+        service_eni save
 
         # saturation_funding is population.g * S.urb;
         # NB1.urb = URBAN, S.URBAN = 0.2 (SHIA, SUNN)
         # NB2.urb = RURAL, S.RURAL = 0.1 (KURD)
-        ted query {SELECT g, saturation_funding FROM service_g ORDER BY g}
+        ted query {
+            SELECT g, saturation_funding FROM service_sg 
+            WHERE s = 'ENI' 
+            ORDER BY g
+        }
     } -cleanup {
         cleanup
     } -result {
@@ -319,11 +314,11 @@ SUNN 8000.0
     test save-3.2 {Retrieves required fraction} -setup {
         setup
         service start
-        service load
+        service_eni load
     } -body {
-        service save
+        service_eni save
 
-        ted query {SELECT g, required FROM service_g ORDER BY g}
+        ted query {SELECT g, required FROM service_sg WHERE s='ENI' ORDER BY g}
     } -cleanup {
         cleanup
     } -result {
@@ -334,14 +329,14 @@ SHIA 0.6
 SUNN 0.6      
     }
 
-    test save-3.3 {Computes funding: zero funding} -setup {
+    test save-3.3 {Computes ENI funding: zero funding} -setup {
         setup
         service start
-        service load
+        service_eni load
     } -body {
-        service save
+        service_eni save
 
-        ted query {SELECT g, funding FROM service_g ORDER BY g}
+        ted query {SELECT g, funding FROM service_sg WHERE s='ENI' ORDER BY g}
     } -cleanup {
         cleanup
     } -result {
@@ -352,19 +347,19 @@ SHIA 0.0
 SUNN 0.0     
     }
 
-    test save-3.4 {Computes funding: JOE and BOB fund} -setup {
+    test save-3.4 {Computes ENI funding: JOE and BOB fund} -setup {
         setup
         service start
-        service load
-        service fundeni JOE 700.0  {SHIA SUNN KURD}
-        service fundeni BOB 1400.0 {SHIA SUNN KURD}
+        service_eni load
+        service_eni fundeni JOE 700.0  {SHIA SUNN KURD}
+        service_eni fundeni BOB 1400.0 {SHIA SUNN KURD}
     } -body {
-        service save
+        service_eni save
 
         # Groups get funding in proportion to their size.
         # So from JOE the groups get 100, 200, and 400
         # and from BOB, they get 200, 400, and 800
-        ted query {SELECT g, funding FROM service_g ORDER BY g}
+        ted query {SELECT g, funding FROM service_sg WHERE s='ENI' ORDER BY g}
     } -cleanup {
         cleanup
     } -result {
@@ -375,14 +370,14 @@ SHIA 525.0
 SUNN 1050.0  
     }
 
-    test save-3.5 {Computes actual level of service fraction} -setup {
+    test save-3.5 {Computes actual level of ENI service fraction} -setup {
         setup
         service start
-        service load
-        service fundeni JOE 700.0  {SHIA SUNN KURD}
-        service fundeni BOB 1400.0 {SHIA SUNN KURD}
+        service_eni load
+        service_eni fundeni JOE 700.0  {SHIA SUNN KURD}
+        service_eni fundeni BOB 1400.0 {SHIA SUNN KURD}
     } -body {
-        service save
+        service_eni save
 
         ted query {
             SELECT g, 
@@ -390,7 +385,7 @@ SUNN 1050.0
                    saturation_funding,
                    funding/saturation_funding,
                    actual 
-            FROM service_g ORDER BY g
+            FROM service_sg WHERE s='ENI' ORDER BY g
         }
     } -cleanup {
         cleanup
@@ -405,16 +400,16 @@ SUNN 1050.0  8000.0             0.13125                    0.13125
     test save-3.6 {Computes expected LOS fraction at time 0} -setup {
         setup
         service start
-        service load
-        service save
-        service fundeni JOE 700.0  {SHIA SUNN KURD}
-        service fundeni BOB 1400.0 {SHIA SUNN KURD}
+        service_eni load
+        service_eni save
+        service_eni fundeni JOE 700.0  {SHIA SUNN KURD}
+        service_eni fundeni BOB 1400.0 {SHIA SUNN KURD}
     } -body {
-        service save
+        service_eni save
 
         # The expected will be between 0 and actual
         ted query {
-            SELECT g, actual, expected FROM service_g ORDER BY g
+            SELECT g, actual, expected FROM service_sg WHERE s='ENI' ORDER BY g
         }
     } -cleanup {
         cleanup

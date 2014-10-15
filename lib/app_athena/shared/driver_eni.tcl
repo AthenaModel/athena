@@ -105,9 +105,9 @@ driver type define ENI {g} {
             SELECT g, actual, required, expected, expectf, needs, controller
             FROM local_civgroups 
             JOIN demog_g USING (g)
-            JOIN service_g USING (g)
+            JOIN service_sg USING (g)
             JOIN control_n ON (local_civgroups.n = control_n.n)
-            WHERE demog_g.population > 0
+            WHERE demog_g.population > 0 AND service_sg.s = $dtype
             ORDER BY g
         } gdata {
             unset -nocomplain gdata(*)
@@ -303,7 +303,7 @@ driver type define ENI {g} {
     
     # GetCase fdict
     #
-    # fdict   - The civgroups/service_g group dictionary
+    # fdict   - The civgroups/service_sg group dictionary
     #
     # Returns the case symbol, E+, E, E-, R-, for the provision
     # of service to the group.

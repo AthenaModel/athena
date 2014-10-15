@@ -224,11 +224,12 @@ CREATE TABLE hist_flow (
     PRIMARY KEY (case_id,t,f,g)
 );
 
-CREATE TABLE hist_service_g (
-    -- History: service.g (amount of ENI service by g)
+CREATE TABLE hist_service_sg (
+    -- History: service.sg (amount of service s to group g)
     case_id INTEGER DEFAULT 0,
 
     t INTEGER,
+    s TEXT,
     g TEXT,
     saturation_funding REAL,
     required           REAL,
@@ -238,7 +239,7 @@ CREATE TABLE hist_service_g (
     expectf            REAL,
     needs              REAL,
 
-    PRIMARY KEY (case_id,t,g)
+    PRIMARY KEY (case_id,t,g,s)
 );
 
 

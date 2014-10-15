@@ -116,7 +116,7 @@ tactic define FUNDENI \
 
         # NEXT, compute the upper limit of funding as a percentage of
         # saturation level of service for all groups
-        let max_fund [service fundlevel $los $trans(glist)]
+        let max_fund [service_eni fundlevel $los $trans(glist)]
         let amt {min($amount, $max_fund)}
 
         set funds 0.0
@@ -199,7 +199,7 @@ tactic define FUNDENI \
         
         # NEXT, try to fund the service.  This will fail if
         # all of the groups are empty.
-        if {![service fundeni $owner $trans(amount) $trans(glist)]} {
+        if {![service_eni fundeni $owner $trans(amount) $trans(glist)]} {
             cash refund $owner FUNDENI $trans(amount)
             sigevent log 2 tactic "
                 FUNDENI: Actor {actor:$owner} could not fund

@@ -157,7 +157,7 @@ oo::objdefine strategy {
         profile 1 control load
         profile 1 cash load
         profile 1 personnel load
-        profile 1 service load
+        profile 1 service_eni load
         profile 1 plant load
         profile 1 cap access load
 
@@ -187,7 +187,7 @@ oo::objdefine strategy {
 
         profile 1 personnel save
         profile 1 tactic::FLOW save
-        profile 1 service save
+        profile 1 service_eni save
         profile 1 plant save
         profile 1 cap access save
 

@@ -136,10 +136,11 @@ FROM magic_attrit;
 ------------------------------------------------------------------------
 -- SERVICES MODELS VIEWS
 
--- gui_service_g: Provision of ENI services to civilian groups
-CREATE TEMPORARY VIEW gui_service_g AS
+-- gui_service_sg: Provision of services to civilian groups
+CREATE TEMPORARY VIEW gui_service_sg AS
 SELECT g                                           AS id,
        g                                           AS g,
+       s                                           AS s,
        url                                         AS url,
        fancy                                       AS fancy,
        link                                        AS link,
@@ -155,7 +156,7 @@ SELECT g                                           AS id,
        percent(expected)                           AS pct_expected,
        format('%.2f', needs)                       AS needs,
        format('%.2f', expectf)                     AS expectf
-FROM service_g
+FROM service_sg
 JOIN gui_civgroups USING (g);
 
 

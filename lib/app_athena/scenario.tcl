@@ -94,7 +94,7 @@ snit::type scenario {
         hist_nbmood
         hist_sat
         hist_security
-        hist_service_g
+        hist_service_sg
         hist_support
         hist_volatility
         hist_vrel

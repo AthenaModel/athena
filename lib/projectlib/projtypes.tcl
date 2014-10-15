@@ -42,6 +42,7 @@ namespace eval ::projectlib:: {
         eorgtype         \
         epagesize        \
         epayload_state   \
+        eservice         \
         esitstate        \
         etactic_state    \
         etraining        \
@@ -499,6 +500,12 @@ snit::type ::projectlib::typewrapper {
     NGO "Non-Governmental Organization"
     IGO "Intergovernmental Organization"
     CTR "Contractor"
+}
+
+# Services
+::marsutil::enum ::projectlib::eservice {
+    ENERGY "Energy Infrastructure Services"
+    ENI    "Essential Non-Infrastructure Services"
 }
 
 # Situation State

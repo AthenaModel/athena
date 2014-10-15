@@ -415,10 +415,12 @@ appserver module NBHOOD {
                 rdb eval {
                     SELECT g, longlink, funding, pct_required, 
                            pct_actual, pct_expected 
-                    FROM gui_service_g
+                    FROM gui_service_sg
                     JOIN nbhoods USING (n)
                     JOIN demog_g USING (g)
-                    WHERE n = $n AND demog_g.population > 0
+                    WHERE n = $n AND 
+                          gui_service_sg.s = 'ENI' AND 
+                          demog_g.population > 0
                     ORDER BY g
                 } row {
                     if {![info exists funders($row(g))]} {
