@@ -32,12 +32,12 @@ namespace eval ::kiteinfo:: {
         apps {athena cellide helptool}
         local-Tkhtml 0
         local-fileutil 0
-        dists {}
-        reqver-kitedocs 0.4.0a0
+        dists {install-win32-ix86 src docs}
+        reqver-kitedocs 0.4.1
         local-textutil::adjust 0
         local-tablelist 0
         local-treectrl 0
-        reqver-kiteutils 0.4.0a0
+        reqver-kiteutils 0.4.1
         reqver-fileutil 1.14
         local-marsutil 1
         reqver-marsgui 3.0.2a0
@@ -70,12 +70,72 @@ namespace eval ::kiteinfo:: {
         gui-athena 1
         local-sqlite3 0
         reqver-tablelist 5.11
+        distpat-docs {
+    docs/*.html
+    docs/*.png
+    docs/man*/*.html
+    docs/man*/*.png
+    %get { 
+        docs/aag.docx 
+        https://pepper.jpl.nasa.gov/kite/athena/6.3/aag-20141010.docx
+    }
+    %get { 
+        docs/aug.docx 
+        https://pepper.jpl.nasa.gov/kite/athena/6.3/aug-20141010.docx
+    }
+    %get { 
+        docs/rules.pptx
+        https://pepper.jpl.nasa.gov/kite/athena/6.3/rules-20141010.docx
+    }
+}
         reqver-struct::set 2.2
         gui-helptool 1
         reqver-simlib 3.0.2a0
         local-struct::set 0
+        distpat-src {
+    project.kite
+    LICENSE
+    README.md
+    TODO.md
+    bin/*.tcl
+    data/*/*
+    docs/*.ehtml
+    docs/*.png
+    docs/*.mm
+    docs/*.graphml
+    docs/*/*.ehtml
+    docs/help/*.help
+    docs/help/img/*.png
+    installer/*
+    lib/*/*
+    lib/*/*/*
+    scenarios/*.tcl
+    test/*/*
+}
         reqver-Tkhtml 3.0
         requires {snit comm Img BWidget Tktable treectrl sqlite3 tablelist textutil::expander textutil::adjust Tkhtml uri fileutil ctext tls tdom struct::set kiteutils kitedocs marsutil marsgui simlib Marsbin}
+        distpat-install-win32-ix86 {
+    LICENSE
+    README.md
+    %apps
+    docs/*.html
+    docs/*.png
+    docs/man1/athena.html
+    docs/man1/cellide.html
+    docs/help/athena.helpdb   
+    %get { 
+        docs/aag.docx 
+        https://pepper.jpl.nasa.gov/kite/athena/6.3/aag-20141010.docx
+    }
+    %get { 
+        docs/aug.docx 
+        https://pepper.jpl.nasa.gov/kite/athena/6.3/aug-20141010.docx
+    }
+    %get { 
+        docs/rules.pptx
+        https://pepper.jpl.nasa.gov/kite/athena/6.3/rules-20141010.docx
+    }
+}
         poc William.H.Duquette@jpl.nasa.gov
         srcs {}
         local-comm 0

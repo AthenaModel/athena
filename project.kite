@@ -32,6 +32,69 @@ require marsgui 3.0.2a0 -local
 require simlib 3.0.2a0 -local
 require Marsbin 3.0.2a0 -local
 
+dist install-%platform {
+    LICENSE
+    README.md
+    %apps
+    docs/*.html
+    docs/*.png
+    docs/man1/athena.html
+    docs/man1/cellide.html
+    docs/help/athena.helpdb   
+    %get { 
+        docs/aag.docx 
+        https://pepper.jpl.nasa.gov/kite/athena/6.3/aag-20141010.docx
+    }
+    %get { 
+        docs/aug.docx 
+        https://pepper.jpl.nasa.gov/kite/athena/6.3/aug-20141010.docx
+    }
+    %get { 
+        docs/rules.pptx
+        https://pepper.jpl.nasa.gov/kite/athena/6.3/rules-20141010.docx
+    }
+}
+
+dist src {
+    project.kite
+    LICENSE
+    README.md
+    TODO.md
+    bin/*.tcl
+    data/*/*
+    docs/*.ehtml
+    docs/*.png
+    docs/*.mm
+    docs/*.graphml
+    docs/*/*.ehtml
+    docs/help/*.help
+    docs/help/img/*.png
+    installer/*
+    lib/*/*
+    lib/*/*/*
+    scenarios/*.tcl
+    test/*/*
+}
+
+dist docs {
+    docs/*.html
+    docs/*.png
+    docs/man*/*.html
+    docs/man*/*.png
+    %get { 
+        docs/aag.docx 
+        https://pepper.jpl.nasa.gov/kite/athena/6.3/aag-20141010.docx
+    }
+    %get { 
+        docs/aug.docx 
+        https://pepper.jpl.nasa.gov/kite/athena/6.3/aug-20141010.docx
+    }
+    %get { 
+        docs/rules.pptx
+        https://pepper.jpl.nasa.gov/kite/athena/6.3/rules-20141010.docx
+    }
+}
+
 shell {
     catch {rename echo ""}
     package require projectlib

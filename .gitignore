@@ -12,6 +12,9 @@ teapot.txt
 /bin/*-macosx*
 /docs/*.html
 /docs/*/*.html
+*.docx
+*.pptx
+*.xlsx
 *.adb
 *.helpdb
 
