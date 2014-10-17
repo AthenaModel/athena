@@ -75,6 +75,9 @@ snit::type app {
             exit 1
         }
 
+        puts "Input: $infile"
+        puts "Output: $outfile"
+
         # NEXT, if the outfile exists, delete it.
         file delete $outfile
 
@@ -89,6 +92,7 @@ snit::type app {
 
         # NEXT, create the help db in the global namespace so that
         # the macro code can see it.
+
         sqldocument ::hdb   \
             -autotrans off  \
             -rollback  off

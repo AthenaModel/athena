@@ -7,6 +7,9 @@ app athena -apptype exe -gui
 app cellide -apptype exe -gui
 app helptool -apptype kit -gui
 
+# Source Directories
+src help
+
 # External Dependencies
 require snit 2.3
 require comm 4.6
@@ -25,8 +28,8 @@ require ctext 3.3
 require tls 1.6
 require tdom 0.8
 require struct::set 2.2
-require kiteutils 0.4.1 -local
-require kitedocs 0.4.1 -local
+require kiteutils 0.4.2 -local
+require kitedocs 0.4.2 -local
 require marsutil 3.0.2a0 -local
 require marsgui 3.0.2a0 -local
 require simlib 3.0.2a0 -local
@@ -40,7 +43,7 @@ dist install-%platform {
     docs/*.png
     docs/man1/athena.html
     docs/man1/cellide.html
-    docs/help/athena.helpdb   
+    docs/athena.helpdb   
     %get { 
         docs/aag.docx 
         https://pepper.jpl.nasa.gov/kite/athena/6.3/aag-20141010.docx
@@ -67,8 +70,8 @@ dist src {
     docs/*.mm
     docs/*.graphml
     docs/*/*.ehtml
-    docs/help/*.help
-    docs/help/img/*.png
+    src/help/*
+    src/help/img/*
     installer/*
     lib/*/*
     lib/*/*/*

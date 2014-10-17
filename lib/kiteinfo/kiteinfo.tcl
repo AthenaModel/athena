@@ -25,26 +25,51 @@ namespace eval ::kiteinfo:: {
         local-Marsbin 1
         local-Img 0
         local-kitedocs 1
-        reqver-comm 4.6
         reqver-tdom 0.8
+        reqver-comm 4.6
         local-Tktable 0
         local-simlib 1
         apps {athena cellide helptool}
         local-Tkhtml 0
         local-fileutil 0
-        dists {install-win32-ix86 src docs}
-        reqver-kitedocs 0.4.1
+        dists {install-%platform src docs}
+        reqver-kitedocs 0.4.2
         local-textutil::adjust 0
         local-tablelist 0
         local-treectrl 0
-        reqver-kiteutils 0.4.1
+        icon-athena {}
+        reqver-kiteutils 0.4.2
         reqver-fileutil 1.14
         local-marsutil 1
         reqver-marsgui 3.0.2a0
         reqver-uri 1.2
+        distpat-install-%platform {
+    LICENSE
+    README.md
+    %apps
+    docs/*.html
+    docs/*.png
+    docs/man1/athena.html
+    docs/man1/cellide.html
+    docs/athena.helpdb   
+    %get { 
+        docs/aag.docx 
+        https://pepper.jpl.nasa.gov/kite/athena/6.3/aag-20141010.docx
+    }
+    %get { 
+        docs/aug.docx 
+        https://pepper.jpl.nasa.gov/kite/athena/6.3/aug-20141010.docx
+    }
+    %get { 
+        docs/rules.pptx
+        https://pepper.jpl.nasa.gov/kite/athena/6.3/rules-20141010.docx
+    }
+}
         gui-cellide 1
         reqver-textutil::adjust 0.7
         reqver-tls 1.6
+        icon-helptool {}
+        build-help {make clean all}
         local-snit 0
         reqver-treectrl 2.4
         local-marsgui 1
@@ -58,14 +83,15 @@ namespace eval ::kiteinfo:: {
         local-BWidget 0
         apptype-helptool kit
         reqver-sqlite3 3.8.5
+        local-ctext 0
         shell {
     catch {rename echo ""}
     package require projectlib
     namespace import projectlib::*
 }
+        icon-cellide {}
         reqver-snit 2.3
         reqver-textutil::expander 1.3
-        local-ctext 0
         name athena-sim
         gui-athena 1
         local-sqlite3 0
@@ -104,8 +130,8 @@ namespace eval ::kiteinfo:: {
     docs/*.mm
     docs/*.graphml
     docs/*/*.ehtml
-    docs/help/*.help
-    docs/help/img/*.png
+    src/help/*
+    src/help/img/*
     installer/*
     lib/*/*
     lib/*/*/*
@@ -114,32 +140,11 @@ namespace eval ::kiteinfo:: {
 }
         reqver-Tkhtml 3.0
         requires {snit comm Img BWidget Tktable treectrl sqlite3 tablelist textutil::expander textutil::adjust Tkhtml uri fileutil ctext tls tdom struct::set kiteutils kitedocs marsutil marsgui simlib Marsbin}
-        distpat-install-win32-ix86 {
-    LICENSE
-    README.md
-    %apps
-    docs/*.html
-    docs/*.png
-    docs/man1/athena.html
-    docs/man1/cellide.html
-    docs/help/athena.helpdb   
-    %get { 
-        docs/aag.docx 
-        https://pepper.jpl.nasa.gov/kite/athena/6.3/aag-20141010.docx
-    }
-    %get { 
-        docs/aug.docx 
-        https://pepper.jpl.nasa.gov/kite/athena/6.3/aug-20141010.docx
-    }
-    %get { 
-        docs/rules.pptx
-        https://pepper.jpl.nasa.gov/kite/athena/6.3/rules-20141010.docx
-    }
-}
+        clean-help {make clean}
         poc William.H.Duquette@jpl.nasa.gov
-        srcs {}
-        local-comm 0
+        srcs help
         local-tdom 0
+        local-comm 0
         reqver-Marsbin 3.0.2a0
         local-kiteutils 1
         version 6.3.1a0
