@@ -13,26 +13,29 @@
 <h2>Man Pages</h2>
 
 <ul>
-  <li> <link "man1/index.html" "Section (1)">: Executables
-  <li> <link "man5/index.html" "Section (5)">: File Formats
-  <li> <link "mann/index.html" "Section (n)">: Tcl Commands
-  <li> <link "mani/index.html" "Section (i)">: Tcl Interfaces
-  <li> <link "mansim/index.html" "Section (sim)">:
-       <xref athena_sim(1)> Internals
-       
+  <li> <xref man1/index.html "Section (1)">: Executables
+  <li> <xref man5/index.html "Section (5)">: File Formats
+  <li> <xref mann/index.html "Section (n)">: Tcl Commands
+  <li> <xref mani/index.html "Section (i)">: Tcl Interfaces
 </ul>
 
-<h2>Mars Man Pages</h2>
-
-<b>FIXME: This is broken; not clear yet how to fix it.</b>
+<h2>Mars Documentation</h2>
 
 <ul>
-  <li> <link "../mars/docs/man1/index.html" "Section (1)">: Executables
-  <li> <link "../mars/docs/man5/index.html" "Section (5)">: File Formats
-  <li> <link "../mars/docs/mann/index.html" "Section (n)">: Tcl
-       Commands
-  <li> <link "../mars/docs/mani/index.html" "Section (i)">: Tcl
-       Interfaces
+  <li> <xref mars:index.html      "Mars Documentation Tree">
+  <li> <xref mars:man1/index.html "Section (1)">: Executables
+  <li> <xref mars:man5/index.html "Section (5)">: File Formats
+  <li> <xref mars:mann/index.html "Section (n)">: Tcl Commands
+  <li> <xref mars:mani/index.html "Section (i)">: Tcl Interfaces
+</ul>
+
+<h2>Kite Man Pages</h2>
+
+<ul>
+  <li> <xref kite:index.html      "Kite Documentation Tree">
+  <li> <xref kite:man5/index.html "Section (5)">: File Formats
+  <li> <xref kite:mann/index.html "Section (n)">: Tcl Commands
+  <li> <xref kite:mani/index.html "Section (i)">: Tcl Interfaces
 </ul>
 
 <h2>Modeling Documents</h2>
