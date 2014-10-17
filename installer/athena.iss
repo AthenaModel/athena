@@ -42,7 +42,7 @@ Source: "..\bin\athena.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\docs\build_notes.html"; DestDir: "{app}\docs"; Flags: ignoreversion 
 Source: "..\docs\index.html"; DestDir: "{app}\docs"; Flags: ignoreversion 
 Source: "..\docs\*.png"; DestDir: "{app}\docs"; Flags: ignoreversion 
-Source: "..\docs\help\athena.helpdb"; DestDir: "{app}\docs\help"; Flags: ignoreversion 
+Source: "..\docs\athena.helpdb"; DestDir: "{app}\docs"; Flags: ignoreversion 
 Source: "..\docs\man1\athena.html"; DestDir: "{app}\docs\man1"; Flags: ignoreversion 
 Source: "..\docs\dev\*.odt"; DestDir: "{app}\docs\dev"; Flags: ignoreversion skipifsourcedoesntexist
 Source: "..\docs\dev\*.docx"; DestDir: "{app}\docs\dev"; Flags: ignoreversion 
