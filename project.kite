@@ -1,14 +1,11 @@
 # project.kite
-project athena-sim 6.3.1a0 {Athena Regional Stability Simulation}
+project athena 6.3.1a0 {Athena Regional Stability Simulation}
 poc William.H.Duquette@jpl.nasa.gov
 
 # Applications
 app athena -apptype exe -gui
 app cellide -apptype exe -gui
 app helptool -apptype kit -gui
-
-# Source Directories
-src help
 
 # External Dependencies
 require snit 2.3
@@ -28,12 +25,18 @@ require ctext 3.3
 require tls 1.6
 require tdom 0.8
 require struct::set 2.2
-require kiteutils 0.4.2 -local
-require kitedocs 0.4.2 -local
-require marsutil 3.0.2a0 -local
-require marsgui 3.0.2a0 -local
-require simlib 3.0.2a0 -local
-require Marsbin 3.0.2a0 -local
+require kiteutils 0.4.3 -local
+require kitedocs 0.4.3 -local
+require marsutil 3.0.2 -local
+require marsgui 3.0.2 -local
+require simlib 3.0.2 -local
+require Marsbin 3.0.2 -local
+
+# External Files
+xfile docs/aag.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aag-20141010.docx
+xfile docs/aug.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aug-20141010.docx
+xfile docs/rules.pptx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/rules-20141010.pptx
+xfile docs/mag.docx https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20140826.docx
 
 dist install-%platform {
     LICENSE
@@ -43,19 +46,9 @@ dist install-%platform {
     docs/*.png
     docs/man1/athena.html
     docs/man1/cellide.html
-    docs/athena.helpdb   
-    %get { 
-        docs/aag.docx 
-        https://pepper.jpl.nasa.gov/kite/athena/6.3/aag-20141010.docx
-    }
-    %get { 
-        docs/aug.docx 
-        https://pepper.jpl.nasa.gov/kite/athena/6.3/aug-20141010.docx
-    }
-    %get { 
-        docs/rules.pptx
-        https://pepper.jpl.nasa.gov/kite/athena/6.3/rules-20141010.docx
-    }
+    docs/help/athena.helpdb
+    docs/*.docx
+    docs/*.pptx
 }
 
 dist src {
@@ -70,8 +63,8 @@ dist src {
     docs/*.mm
     docs/*.graphml
     docs/*/*.ehtml
-    src/help/*
-    src/help/img/*
+    docs/help/*.help
+    docs/help/img/*.png
     installer/*
     lib/*/*
     lib/*/*/*
@@ -84,18 +77,8 @@ dist docs {
     docs/*.png
     docs/man*/*.html
     docs/man*/*.png
-    %get { 
-        docs/aag.docx 
-        https://pepper.jpl.nasa.gov/kite/athena/6.3/aag-20141010.docx
-    }
-    %get { 
-        docs/aug.docx 
-        https://pepper.jpl.nasa.gov/kite/athena/6.3/aug-20141010.docx
-    }
-    %get { 
-        docs/rules.pptx
-        https://pepper.jpl.nasa.gov/kite/athena/6.3/rules-20141010.docx
-    }
+    docs/*.docx
+    docs/*.pptx
 }
 
 shell {

@@ -1,4 +1,4 @@
-<document "Athena Document Tree">
+<document "Athena Documentation Tree">
 
 <h2>Start Here</h2>
 
@@ -40,15 +40,11 @@
 
 <h2>Modeling Documents</h2>
 
-<b>FIXME: The binary docs are now on the boxkite server, since they can't go 
-into GitHub.  We need to make them available.</b>
-
 <ul>
-  <li> Athena User Guide (<link "dev/aug.docx" "MS Word docx">)
-  <li> Athena Analyst's Guide (<link "dev/aag.docx" "MS Word docx">)
-  <li> Athena Rules Document (<link "dev/rules.pptx" "PowerPoint pptx">)
-  <li> Mars Analyst's Guide (<link "../mars/docs/dev/mag.docx" "MS
-  Word docx">)
+  <li> Athena User Guide (<link "aug.docx" "MS Word docx">)
+  <li> Athena Analyst's Guide (<link "aag.docx" "MS Word docx">)
+  <li> Athena Rules Document (<link "rules.pptx" "PowerPoint pptx">)
+  <li> Mars Analyst's Guide (<link "mag.docx" "MS Word docx">)
 </ul>
 
 <h2>Copyright</h2>

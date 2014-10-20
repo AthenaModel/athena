@@ -3,7 +3,7 @@
 #    pkgModules.tcl
 #
 # PROJECT:
-#    athena-sim - Athena Regional Stability Simulation
+#    athena - Athena Regional Stability Simulation
 #
 # DESCRIPTION:
 #    kiteinfo(n) package modules file

@@ -30,9 +30,8 @@ package provide projectgui 6.3.1a0
 package require snit 2.3
 package require Img 1.4.1
 package require Tkhtml 3.0
-package require -exact marsutil 3.0.2a0
 package require projectlib
-package require -exact marsgui 3.0.2a0
+package require marsgui 3.0.2
 # -kite-require-end
 
 #-----------------------------------------------------------------------
