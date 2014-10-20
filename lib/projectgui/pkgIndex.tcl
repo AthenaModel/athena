@@ -12,5 +12,5 @@
 #-------------------------------------------------------------------------
 
 # -kite-ifneeded-start  DO NOT EDIT THIS BLOCK BY HAND
-package ifneeded projectgui 6.3.1a0 [list source [file join $dir pkgModules.tcl]]
+package ifneeded projectgui 6.3.0a1 [list source [file join $dir pkgModules.tcl]]
 # -kite-ifneeded-end

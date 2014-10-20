@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Athena"
-#define MyAppVersion "6.2.x-By"
+#define MyAppVersion "6.3.0a0"
 #define MyAppPublisher "Jet Propulsion Laboratory, California Institute of Technology"
 #define MyAppExeName "athena.exe"
 
@@ -17,7 +17,7 @@ AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 DefaultDirName={pf}\Athena {#MyAppVersion}
 DefaultGroupName=Athena {#MyAppVersion}
-LicenseFile=..\license.txt
+LicenseFile=..\LICENSE
 ;InfoBeforeFile=before.txt
 InfoAfterFile=after.txt
 ;OutputDir=
@@ -44,15 +44,11 @@ Source: "..\docs\index.html"; DestDir: "{app}\docs"; Flags: ignoreversion
 Source: "..\docs\*.png"; DestDir: "{app}\docs"; Flags: ignoreversion 
 Source: "..\docs\athena.helpdb"; DestDir: "{app}\docs"; Flags: ignoreversion 
 Source: "..\docs\man1\athena.html"; DestDir: "{app}\docs\man1"; Flags: ignoreversion 
-Source: "..\docs\dev\*.odt"; DestDir: "{app}\docs\dev"; Flags: ignoreversion skipifsourcedoesntexist
-Source: "..\docs\dev\*.docx"; DestDir: "{app}\docs\dev"; Flags: ignoreversion 
-Source: "..\docs\dev\*.pptx"; DestDir: "{app}\docs\dev"; Flags: ignoreversion skipifsourcedoesntexist
-Source: "..\docs\dev\*.pdf"; DestDir: "{app}\docs\dev"; Flags: ignoreversion skipifsourcedoesntexist
-Source: "..\mars\docs\dev\*.docx"; DestDir: "{app}\mars\docs\dev"; Flags: ignoreversion 
-Source: "..\mars\docs\dev\*.pptx"; DestDir: "{app}\mars\docs\dev"; Flags: ignoreversion skipifsourcedoesntexist
-Source: "..\mars\docs\dev\*.pdf"; DestDir: "{app}\mars\docs\dev"; Flags: ignoreversion skipifsourcedoesntexist
-Source: "..\maps\*.png"; DestDir: "{app}\maps"; Flags: ignoreversion 
-Source: "..\maps\*.tif"; DestDir: "{app}\maps"; Flags: ignoreversion
+Source: "..\docs\*.docx"; DestDir: "{app}\docs\dev"; Flags: ignoreversion 
+Source: "..\docs\*.pptx"; DestDir: "{app}\docs\dev"; Flags: ignoreversion skipifsourcedoesntexist
+Source: "..\docs\*.pdf"; DestDir: "{app}\docs\dev"; Flags: ignoreversion skipifsourcedoesntexist
+Source: "..\maps\*.png"; DestDir: "{app}\maps"; Flags: ignoreversion skipifsourcedoesntexist
+Source: "..\maps\*.tif"; DestDir: "{app}\maps"; Flags: ignoreversion skipifsourcedoesntexist
 Source: "..\data\polygons\*.npf"; DestDir: "{app}\data\polygons"; Flags: ignoreversion
 Source: "..\data\polygons\*.kml"; DestDir: "{app}\data\polygons"; Flags: ignoreversion
 Source: "..\data\messages\*.xml"; DestDir: "{app}\data\messages"; Flags: ignoreversion

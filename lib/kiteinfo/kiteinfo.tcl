@@ -63,6 +63,7 @@ namespace eval ::kiteinfo:: {
         url-docs/rules.pptx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/rules-20141010.pptx
         reqver-tls 1.6
         icon-helptool {}
+        build-help {make clean all}
         local-snit 0
         reqver-treectrl 2.4
         local-marsgui 1
@@ -76,6 +77,7 @@ namespace eval ::kiteinfo:: {
         local-BWidget 0
         apptype-helptool kit
         reqver-sqlite3 3.8.5
+        local-ctext 0
         shell {
     catch {rename echo ""}
     package require projectlib
@@ -84,7 +86,6 @@ namespace eval ::kiteinfo:: {
         icon-cellide {}
         reqver-snit 2.3
         reqver-textutil::expander 1.3
-        local-ctext 0
         name athena
         gui-athena 1
         url-docs/aag.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aag-20141010.docx
@@ -124,13 +125,14 @@ namespace eval ::kiteinfo:: {
 }
         reqver-Tkhtml 3.0
         requires {snit comm Img BWidget Tktable treectrl sqlite3 tablelist textutil::expander textutil::adjust Tkhtml uri fileutil ctext tls tdom struct::set kiteutils kitedocs marsutil marsgui simlib Marsbin}
+        clean-help {make clean}
         poc William.H.Duquette@jpl.nasa.gov
-        srcs {}
+        srcs help
         local-tdom 0
         local-comm 0
         reqver-Marsbin 3.0.2
         local-kiteutils 1
-        version 6.3.1a0
+        version 6.3.0a1
         local-textutil::expander 0
         reqver-Img 1.4.1
     }

@@ -1,0 +1,50 @@
+#!/bin/sh
+#----------------------------------------------------------------------
+# FILE:
+#    topepper
+#
+# AUTHOR:
+#    will
+#
+# DESCRIPTION
+#    Copies the current build products to the Athena Home Page on
+#    pepper.jpl.nasa.gov
+#
+#    In particular:
+#
+#    * The .zip files and installer are copied to 
+#      archive/athena_<version>
+#
+#    * The archive/athena_<version>/athena-<version>-docs.zip file
+#      is expanded to docs/athena_6.3/<version>/.
+
+WEBHOST=pepper.jpl.nasa.gov
+HOMEPAGE=/home/www/athena
+ROOT=`kite info -root`
+VERSION=`kite info -version`
+
+if [ "$ROOT" = "Could not find project.kite in this directory or its parents" ]; then
+    echo "Not in Athena project"
+    exit
+fi
+
+cd $ROOT
+
+# Make the archive directory
+ARCHIVE=$HOMEPAGE/archive/athena_$VERSION
+echo "Creating $ARCHIVE on $WEBHOST"
+ssh -q $WEBHOST mkdir -p $ARCHIVE
+
+# Copy the .zip files.
+echo "Copying archive .zip files to $ARCHIVE"
+scp -q athena-$VERSION-*.zip $WEBHOST:$ARCHIVE
+scp -q installer/Output/Athena${VERSION}_Installer.exe $WEBHOST:$ARCHIVE
+
+# Expand the docs.
+echo "Making the documentation tree available"
+DOCZIP=$ARCHIVE/athena-$VERSION-docs.zip
+DOCDIR=$HOMEPAGE/docs/athena_6.3/$VERSION
+
+ssh -q $WEBHOST unzip $DOCZIP -d $DOCDIR
+
+echo "All done"
