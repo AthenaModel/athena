@@ -3,7 +3,8 @@
 <section SYNOPSIS>
 
 <pre>
-package require app_sim 1.0
+package require projectlib <version>
+namespace import ::projectlib::*
 </pre>
 
 <itemlist>

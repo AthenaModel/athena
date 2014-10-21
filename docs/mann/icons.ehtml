@@ -3,7 +3,7 @@
 <section SYNOPSIS>
 
 <pre>
-package require projectgui 1.0
+package require projectgui <version>
 </pre>
 
 <itemlist>

@@ -85,7 +85,7 @@
 <section SYNOPSIS>
 
 <pre>
-package require projectlib 1.0
+package require projectlib <version>
 namespace import ::projectlib::scenariodb
 </pre>
 
