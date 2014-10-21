@@ -5,8 +5,8 @@
 * Document ted somewhere. DONE
 * Build the on-line help. DONE.
 * Add source and docs distributions. DONE.
-* Update [package requires] in all man pages.
-* Cleanup osdir.
+* Update [package requires] in all man pages. DONE
+* Cleanup osdir. DONE
 * Use standard app loader scripts
 * Verify that mods work.
 * Write cellide manpage.
