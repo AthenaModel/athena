@@ -2,7 +2,7 @@
 
 <h2>Build Notes</h2>
 
-<h3>Build 6.3.1a0, 21 October 2014</h3>
+<h3>Build 6.3.0a1, 21 October 2014</h3>
 
 This build is the first build to use the new 'kite' project system. From a
 users point of view the only change is the way version numbers are represented.
