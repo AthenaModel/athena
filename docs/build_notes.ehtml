@@ -2,6 +2,28 @@
 
 <h2>Build Notes</h2>
 
+<h3>Build 6.3.1a0, 21 October 2014</h3>
+
+This build is the first build to use the new 'kite' project system. From a
+users point of view the only change is the way version numbers are represented.
+However, the GIT repository is where testers should now go to view 'issues'
+instead of bugs to see details about the things that have gone into a build.<p>
+This build contains the first of a handful of what we are calling Abstract
+Infrastructure Services (AIS). The first one being the ENERGY service.  A user
+can use the new SERVICE tactic (SYSTEM agent only) to change the actual level
+of ENERGY service received by a neighborhood(s).  All the civilian groups 
+resident in the neighborhood(s) are then affected.  NOTE: the rule set in
+this build should be considered a place holder until the actual magnitudes
+are determined.<p>
+
+<ul>
+<li> Issue 15: Add ENERGY abstract infrastrucure service
+<li> Issue 12: Move docs/help to src/help
+<li> Issue 11: Add distribution sets to project.kite 
+<li> Issue 10: app_athena should not include packages that projectlib does
+<li> Issue 9: Separate the ENI specific functionality from the service module
+</ul>
+
 <h3>Build 6.2.2-B23, 7 October 2014</h3>
 
 This build is the release candidate for Athena 6.2.2.  It contains
