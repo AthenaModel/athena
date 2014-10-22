@@ -38,7 +38,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]             
-Source: "..\bin\athena.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\bin\athena-{#MyAppVersion}-win32-ix86.exe"; DestDir: "{app}"; DestName: "athena.exe"; Flags: ignoreversion
 Source: "..\docs\build_notes.html"; DestDir: "{app}\docs"; Flags: ignoreversion 
 Source: "..\docs\index.html"; DestDir: "{app}\docs"; Flags: ignoreversion 
 Source: "..\docs\*.png"; DestDir: "{app}\docs"; Flags: ignoreversion 
