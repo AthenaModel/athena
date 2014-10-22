@@ -87,6 +87,66 @@ snit::type service {
                 }
            }
         }
+
+        # NEXT, initialize abstract services
+        set aisnames [eabservice names]
+
+        foreach {g urb s} [rdb eval {
+            SELECT G.g                AS g,
+                   G.urbanization     AS urb,
+                   SG.s               AS s
+            FROM local_civgroups AS G 
+            JOIN demog_g    AS D   ON (D.g = G.g)
+            JOIN service_sg AS SG  ON (SG.g = G.g)
+        }] {
+
+            if {$s ni $aisnames} {
+                continue
+            }
+
+            # NEXT, defaults for actual, required and expected
+            set actual [parm get service.$s.actual.$urb]
+            rdb eval {
+                UPDATE service_sg
+                SET actual=$actual,
+                    new_actual=$actual,
+                    required=$actual,
+                    expected=$actual
+                WHERE g=$g AND s=$s
+            }
+        }
+    }
+
+    # actual n s los
+    #
+    # nlist - a list of neighborhoods
+    # s     - an abstract infrastructure service; eabservice(n) name
+    # los   - the actual level of service for s
+    #
+    # This method sets the actual level of service 's' to los for
+    # each group in neighborhood n.  Satisfaction effects are then
+    # based on this level of service when the rule set for this 
+    # service fires.
+
+    typemethod actual {nlist s los} {
+        # FIRST, los must be in the range [0.0, 1.0]
+        require {$los >= 0.0 && $los <= 1.0} \
+            "Invalid LOS: $los, must be between 0.0 and 1.0 inclusive."
+
+        # NEXT, grab all groups in the neighborhoods and set
+        # their ALOS
+        set glist [list]
+        foreach n $nlist {
+            lappend glist {*}[civgroup gIn $n]
+        }
+
+        set gclause "g IN ('[join $glist {','}]') AND s='$s'"
+
+        rdb eval "
+            UPDATE service_sg
+            SET new_actual = $los
+            WHERE $gclause
+        "
     }
 
     # expectf  pdict

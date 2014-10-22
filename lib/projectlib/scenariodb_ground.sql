@@ -435,6 +435,9 @@ CREATE TABLE service_sg (
     -- Actual level of service, fraction of saturation
     actual              REAL DEFAULT 0.0,
 
+    -- New actual level of service, for abstract services
+    new_actual          REAL DEFAULT 0.0,
+
     -- Expected level of service, fraction of saturation
     expected            REAL DEFAULT 0.0,
 

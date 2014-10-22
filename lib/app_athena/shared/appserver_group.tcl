@@ -306,9 +306,9 @@ appserver module GROUPS {
         service_eni srservice
 
         # NEXT, get the data about this group
-        rdb eval {SELECT * FROM gui_civgroups WHERE g=$g}       data {}
-        rdb eval {SELECT * FROM gui_nbhoods   WHERE n=$data(n)} nb   {}
-        rdb eval {SELECT * FROM gui_service_g WHERE g=$g}       eni  {}
+        rdb eval {SELECT * FROM gui_civgroups  WHERE g=$g}       data {}
+        rdb eval {SELECT * FROM gui_nbhoods    WHERE n=$data(n)} nb   {}
+        rdb eval {SELECT * FROM gui_service_sg WHERE g=$g}       eni  {}
         
         # NEXT, begin the page.
         ht page "Civilian Group: $g"

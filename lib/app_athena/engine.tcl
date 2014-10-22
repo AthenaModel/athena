@@ -97,6 +97,7 @@ snit::type engine {
         profile control_model analyze
         profile driver::actsit assess
         profile service_eni assess
+        profile service_ais assess
         set econOK [econ tock]
 
         # NEXT, if the econ tock is okay, we compute the demographics model
@@ -161,6 +162,7 @@ snit::type engine {
         profile control_model analyze
         profile driver::actsit assess
         profile service_eni assess
+        profile service_ais assess
         profile driver::abevent assess
 
         # NEXT, do attrition and recompute demog stats, since groups

@@ -112,6 +112,7 @@ namespace eval ::athena_test::tests:: {
         parm set dam.PRESENCE.active no
         parm set dam.UNEMP.active no
         parm set dam.ENI.active no
+        parm set dam.ENERGY.active no
         rdb eval {DELETE FROM drivers}
         rdb eval {DELETE FROM mads}
 

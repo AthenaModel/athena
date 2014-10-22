@@ -16,6 +16,7 @@
 namespace eval ::projectlib:: {
     namespace export     \
         boolean          \
+        eabservice       \
         eabsit           \
         eactortype       \
         ebeanstate       \
@@ -345,6 +346,7 @@ snit::type ::projectlib::typewrapper {
     DROUGHT   "Long-term Drought"
     EDU       "Schools"
     EMPLOY    "Provide Employment"
+    ENERGY    "Energy Infrastructure Services"
     ENI       "ENI Services"
     EPIDEMIC  "Epidemic"
     EXPLOSION "Explosion"
@@ -399,6 +401,7 @@ snit::type ::projectlib::typewrapper {
     DROUGHT   "Long-term Drought"
     EDU       "Schools"
     EMPLOY    "Provide Employment"
+    ENERGY    "Energy Infrastructure Services"
     ENI       "ENI Services"
     FUELSHRT  "Fuel Shortage"
     GARBAGE   "Garbage in the Streets"
@@ -506,6 +509,11 @@ snit::type ::projectlib::typewrapper {
 ::marsutil::enum ::projectlib::eservice {
     ENERGY "Energy Infrastructure Services"
     ENI    "Essential Non-Infrastructure Services"
+}
+
+# Abstract Infrastructure Services
+::marsutil::enum ::projectlib::eabservice {
+    ENERGY "Energy Infrastructure Services"
 }
 
 # Situation State
