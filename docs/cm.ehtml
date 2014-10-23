@@ -59,6 +59,10 @@
 
 <changelog>
 
+<change 10/23/2014 Update will>
+More GitHub4Enterprise changes.
+</change>
+
 <change 10/15/2014 Update will>
 GitHub4Enterprise Changes.
 </change>
@@ -252,7 +256,7 @@ This structure allows one project to reference documentation in the other
 projects.  <b NOTE:> This is a stopgap, as there is no way to insure that
 the version of Athena in the <tt athena/> directory is consistent with the
 version of Mars in the <tt mars/> directory.  We are looking into defining
-a broader notion of "Kite package" that includes libraries and 
+a broader notion of "Kite parcel" that includes libraries and 
 documentation; then the Athena tree might actually include the documentation
 for (some of) its external dependencies.<p>
 
@@ -298,11 +302,23 @@ The project directory tree is as follows:<p>
 
 <section vc "Version Control">
 
-Athena uses Git in a straightforward way.  Most development takes place
-on the <b master> branch.  Individual developers may create branches
-for specific efforts, and merge them with the master branch when the work 
-is complete; afterwards, the branch should be deleted.  When it is necessary
-to modify an existing release in place, a release branch will be created.<p>
+Athena uses Git in a straightforward way.  
+
+<ul>
+<li> Most development takes place on the <b master> branch.<p>
+
+<li> When an official build is done, the <b master> or release branch is 
+     tagged with the project version, e.g., "<tt v6.3.1a5>".  Note the
+     initial "v"; this is a GitHub convention for tag names.<p>
+
+<li> Individual developers may create branches for specific efforts, and 
+     merge them with the master branch when the work is complete; afterwards, 
+     the branch should be deleted.<p>
+
+<li> When creating a formal release, a release branch will be created,
+     and all bug fixes for that release will take place on that release
+     branch.<p>
+</ul>
 
 On Windows and OS X, the GitHub for Windows and GitHub for OSX applications
 should be used.  On Linux, the <tt git> command line client may be used
@@ -345,10 +361,13 @@ The developers will create a new milestone for each forthcoming build,
 and associate all issues contained in the build with the build's milestone.
 <p>
 
-Similarly, when writing a bug the tester should reference the milestone
-of the build in which it was found.
+Similarly, when writing a bug the tester should reference the version 
+number of the build in which it was found.<p>
 
 Milestone names shall be the same as build tag names.<p>
+
+Milestones are "open" on creation; the tester should "close" the milestone
+when all of the issues associated with the milestone have been tested.<p>
 
 <section issue.attributes "Issue Attributes">
 
@@ -394,9 +413,9 @@ A typical issue goes through the following life-cycle.<p>
 
 <b Creation:> First, it is created by a developer or tester.  It should 
 be labeled as a "bug" or an "enhancement", and assigned to one of the
-developers.  For bugs, the initial report should reference the milestone
-of the build in which it was found, and provide enough information to
-reproduce the bug.  See <xref proc.newissue>.<p>
+developers.  For bugs, the initial report should reference the version
+number of of the build in which it was found, and provide enough information 
+to reproduce the bug.  See <xref proc.newissue>.<p>
 
 <b Resolution:> The assigned developer resolves the issue, usually by
 modifying the project's code or documentation.  He may alter the 
@@ -416,13 +435,8 @@ change is working correctly.<p>
 issues associated with the build's milestone.  If problems are found,
 the tester should write a new issue for each, linking to the new issue
 in a comment.  When the tester is done working with the issue, he should
-label it <b complete>.<p>
-
-<section issue.text "Report Description">
-
-Bug reports should include enough specific information to allow the
-issue to be reproduced.  When the issue is fixed, the comment should
-include the precise test needed to verify the fix.<p>
+label it <b complete>; and when the tester is done working with the build's
+issues, he should close the milestone.<p>
 
 <section proc "Procedures">
 
@@ -534,12 +548,12 @@ See <xref proc.build>
 <section proc.newissue "Creating an Issue">
 
 Create the issue in the <xref github-athena> issue tracker, and label it
-as a <b bug> or an <b enhancment>.  If it is a bug, it is presumably being
-written against a particular milestone.  Include the milestone as a link
-in the initial comment, e.g.,
+as a <b bug> or an <b enhancement>.  If it is a bug, it is presumably being
+written against a particular version of the software; include the 
+version number in the initial comment, e.g.,<p> 
 
 <example>
-Milestone: [<i link to milestone page>]
+Version: 6.3.1a5
 </example>
 
 <section proc.fixissue "Fixing an Issue">
@@ -642,8 +656,7 @@ issue, e.g., "issue22".<p>
 An official, or "CM", build is one that will be packaged for delivery
 to Integration and Test (I&amp;T).  It is rather more complicated than a
 development build, particularly as it involves not only tagging the
-development branch, but also building the Mars Simulation
-Infrastructure Library.<p>
+development branch.<p>
 
 In addition, some steps are different on Windows than on Linux.<p>
 
@@ -659,20 +672,25 @@ n/a
 </step>
 
 <step>
-Perform an official build of Mars, if
-necessary (that is, if anything has changed since the previous Athena
-build).
-</step/>
-See the <xref marscm>.  We'll assume that the
-resulting Mars version is Mars 3.0.10.
-</step>
+Build and install Kite and Mars if necessary.<p>
 
-<step>
-Install the Mars library packages locally, if they are not already
-installed.
+Our current convention is that official builds of Kite and Mars are done
+whenever they are needed, rather than waiting until the next Athena build.
+Thus, the required versions of Kite and Mars should already be present.
+If, however, either project contains changes required by the current build
+Athena, then build them according to their CM plans and install them
+locally.
 </step/>
+If building these locally, use <tt kite install> to install them for use.
+Otherwise,<p>
+
 <pre>
+$ boxkite get kite 0.4.3
 $ boxkite get mars 3.0.10
+</pre>
+
+You might need to specify the specific "install-%platform" distribution
+set name.<p>
 </step>
 
 <step>
@@ -685,8 +703,8 @@ $ git pull
 </step>
 
 <step>
-Update <tt project.kite> to reflect the new Mars version for
-each of the Mars libraries.<p>
+If needed, update <tt project.kite> to reflect new Kite or Mars version for
+each of the relevant libraries.<p>
 </step/>
 <pre>
 $ vim project.kite
@@ -706,21 +724,12 @@ $ kite info
 
 <step>
 Update the build notes file with a description of the changes, and
-check it into the repository.
+check it into the repository.  Note that this will also commit any
+metadata changes resulting from editing <tt project.kite>, above.
 </step/>
 <pre>
 $ vim docs/build_notes.ehtml
 $ git commit -m "Updated for Build 6.3.1a5"
-</pre>
-</step>
-
-<step>
-Build the online-help database, fixing and committing any errors,
-until it builds cleanly.
-</step/>
-<pre>
-$ cd docs/help
-$ ../../bin/help.tcl athena.help
 </pre>
 </step>
 
@@ -790,7 +799,8 @@ $ git commit -m "Set version number in installer file"
 At this point we have a clean build with no errors, and all changes
 have been committed and synced to <xref github-athena>.  Go to
 <xref github-athena> and create a new "release" with tag
-"v6.3.1a5"
+"v6.3.1a5".  Note the leading "v"; this is a GitHub convention for
+tag names.
 </step/>
 <ol>
 <li> Verify that all changes have truly been synced.
@@ -841,6 +851,91 @@ $ cd ~/github/athena
 $ vim project.kite
 $ kite info
 $ git commit -m "Updated working version"
+</pre>
+</step>
+</procedure>
+
+<section proc.cmbuild2 "Rebuilding an Official Build">
+
+Sometimes it is necessary to rebuild an official build, e.g., we built
+Athena on Windows and now we need to build the same version on Linux.
+This procedure explains how to do such a duplicate build.<p>
+
+Throughout the following, the GitHub GUI may be used in preference
+to the command line tool.<p>
+
+<procedure>
+
+<step>
+Checkout the tagged build into your work area.  We will assume we
+are rebuilding Athena 6.3.1a5.
+</step/>
+<pre>
+$ git checkout v6.3.1a5
+</pre>
+
+It might complain about <tt lib/kiteinfo/kiteinfo.tcl>.  In that case,<p>
+
+<pre>
+$ git checkout --force lib/kiteinfo/kiteinfo.tcl
+$ git checkout v6.3.1a5
+</pre>
+</step>
+
+<step>
+Examine <tt project.kite> and determine the versions of Kite and Mars
+that are required.  If they are not present on the current system, 
+they will need to be built and installed as described in the previous 
+procedure.
+</step/>
+See the relevant CM documents.
+</step>
+
+<step>
+Do a complete build.<p>
+
+There should be no test failures.  If there are, you are probably
+in the position of needing to do a new build with a new version
+number.
+</step/>
+<pre>
+$ kite build all
+</pre>
+</step>
+
+
+<step>
+<b>Windows Only.</b>  When rebuilding on Windows, build the installer
+using the existing <tt athena.iss> file.
+</step/>
+<pre>
+$ cd ~/github/athena/installer
+$ start athena.iss
+</pre>
+
+In the resulting InnoSetup window select Build/Compile from the menu bar.  
+This builds the following file:
+
+<pre>
+    installer/Output/Athena6.3.1a5_Installer.exe
+</pre><p>
+
+</step>
+
+<step>
+If desired, copy the build to the boxkite server.
+</step/>
+<pre>
+$ boxkite put install-%platform
+</pre>
+</step>
+
+<step>
+Return to normal development.
+</step/>
+<pre>
+$ cd ~/github/athena
+$ git checkout master
 </pre>
 </step>
 </procedure>
