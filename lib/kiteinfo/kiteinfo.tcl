@@ -132,7 +132,7 @@ namespace eval ::kiteinfo:: {
         local-comm 0
         reqver-Marsbin 3.0.2
         local-kiteutils 1
-        version 6.3.0a1
+        version 6.3.0a2
         local-textutil::expander 0
         reqver-Img 1.4.1
     }
