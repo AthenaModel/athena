@@ -187,6 +187,7 @@ appserver module NBHOOD {
             "#civs"      "Civilian Groups"
             "#forces"    "Forces Present"
             "#eni"       "ENI Services"
+            "#ais"       "Abstract Infrastructure Services"
             "#cap"       "CAP Coverage"
             "#infra"     "GOODS Production Infrastructure"
             "#control"   "Support and Control"
@@ -448,6 +449,64 @@ appserver module NBHOOD {
                 service is the level the civilians expect to receive
                 based on past history.
             }
+        }
+
+        ht para
+
+        ht subtitle "Abstract Infrastructure Services" ais
+
+        if {!$data(local)} {
+            ht putln {
+                This neighborhood is non-local, and is therefore outside
+                the local economy.  Groups residing in this neighborhood
+                neither require nor expect Infrastructure
+                Services.
+            }
+            ht para
+        } elseif {$data(population) == 0} {
+            ht putln {
+                This neighborhood has no population to require
+                services.
+            }
+            ht para
+        } elseif {[locked]} {
+            ht putln {
+                This neighborhood needs abstract infrastructure service 
+                (AIS) provided to the civilians in this neighborhood.  
+                The required, expected and actual levels of service (LOS)
+                for each service and group is as follows.
+            }
+
+            ht query  {
+                SELECT link           AS "Civ. Group",
+                       s              AS "Abstract Service", 
+                       pct_required   AS "Required LOS %", 
+                       pct_expected   AS "Expected LOS %", 
+                       pct_actual     AS "Actual LOS %"
+                FROM gui_service_sg 
+                WHERE n=$n AND s!='ENI' AND population > 0
+            } -default "None." -align LLRRR
+
+    
+            ht para
+    
+        } else  {
+            ht putln {
+                This neighborhood needs abstract infrastructure service 
+                (AIS) provided to the civilians in this neighborhood.  
+                The required and actual levels of service (LOS) 
+                for each service and group when the scenario is locked
+                is as follows.
+            }
+
+            ht query {
+                SELECT glink        AS "Civ. Group", 
+                       s            AS "Service",
+                       pct_act      AS "% Actual LOS", 
+                       pct_req      AS "% Required LOS"
+                FROM gui_abservice
+                WHERE n=$n  AND population > 0
+            } -default "None." -align LLRR
         }
 
         ht para

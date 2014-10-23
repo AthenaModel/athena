@@ -134,7 +134,20 @@ FROM demog_g   AS DG
 JOIN civgroups AS CG USING (g)
 JOIN demog_n   AS DN USING (n);
 
-
+-- Neighborhoods Population View
+--
+-- This view figures out the population of each neighborhood
+-- based on which tables are present and have data.  This view
+-- is necessary because it provides population statistics 
+-- whether Athena is in PREP or is LOCKED.  This view is 
+-- defined here because it references demog_n, defined above.
+CREATE VIEW pop_n AS
+SELECT N.n                                         AS n,
+       COALESCE(D.population,total(CG.basepop),0)  AS pop
+FROM nbhoods              AS N
+LEFT OUTER JOIN demog_n   AS D USING(n)
+LEFT OUTER JOIN civgroups AS CG USING(n)
+GROUP BY n;
 
 
 ------------------------------------------------------------------------

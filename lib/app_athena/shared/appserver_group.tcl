@@ -306,9 +306,9 @@ appserver module GROUPS {
         service_eni srservice
 
         # NEXT, get the data about this group
-        rdb eval {SELECT * FROM gui_civgroups  WHERE g=$g}       data {}
-        rdb eval {SELECT * FROM gui_nbhoods    WHERE n=$data(n)} nb   {}
-        rdb eval {SELECT * FROM gui_service_sg WHERE g=$g}       eni  {}
+        rdb eval {SELECT * FROM gui_civgroups  WHERE g=$g}              data {}
+        rdb eval {SELECT * FROM gui_nbhoods    WHERE n=$data(n)}        nb   {}
+        rdb eval {SELECT * FROM gui_service_sg WHERE g=$g AND s='ENI'}  eni  {}
         
         # NEXT, begin the page.
         ht page "Civilian Group: $g"
@@ -322,6 +322,7 @@ appserver module GROUPS {
             "#actors"     "Relationships with Actors"
             "#rel"        "Friends and Enemies"
             "#eni"        "ENI Service"
+            "#ais"        "Abstract Infrastructure Services"
             "#cap"        "CAP Coverage"
             "#sat"        "Satisfaction Levels"
             "#drivers"    "Drivers"
@@ -560,9 +561,9 @@ appserver module GROUPS {
             } -align LLRLR
         }
 
-       ht subtitle "ENI Services" eni
+        ht subtitle "ENI Services" eni
 
-       if {!$nb(local)} {
+        if {!$nb(local)} {
             ht putln {
                 This group resides in a non-local neighborhood, and
                 consequently does not receive or require ENI services
@@ -575,7 +576,7 @@ appserver module GROUPS {
                 at this time.
             }
             ht para        
-       } elseif {[locked]} {
+        } elseif {[locked]} {
             ht putln "$g can receive Essential Non-Infrastructure (ENI) "
             ht put   "services from actors. At present, $g is receiving "
             ht put   "\$$eni(funding)/week worth of "
@@ -618,6 +619,57 @@ appserver module GROUPS {
             ht para
         }
         
+        ht subtitle "Abstract Infrastructure Services" ais
+        
+        if {!$nb(local)} {
+            ht putln {
+                This group resides in a non-local neighborhood, and
+                consequently does not receive or require any insfrastructure
+                services.
+            }
+            ht para
+        } elseif {$population == 0} {
+            ht putln {
+                This information is not available for this group
+                at this time.
+            }
+            ht para        
+        } elseif {[locked]} {
+            ht putln "$g can receive Abstract Infrastructure Services. "
+            ht put   "The table below shows which abstract services $g "
+            ht put   "is receiving along with the level of service (LOS) "
+            ht put   "they require, expect and are actually getting. The "
+            ht put   "saturation level of service is always 1.0."
+            ht para  
+
+            ht query  {
+                SELECT s              AS "Abstract Service", 
+                       pct_required   AS "Required LOS %", 
+                       pct_expected   AS "Expected LOS %", 
+                       pct_actual     AS "Actual LOS %"
+                FROM gui_service_sg 
+                WHERE g=$g AND s!='ENI'
+            } -default "None." -align LRRR
+
+        } else {
+            ht putln "When the scenario is locked $g will have the "
+            ht put   "following required and actual services for each "
+            ht put   "abstract service listed.   The actual level of "
+            ht put   "service can be changed by using the SERVICE tactic "
+            ht put   "with the "
+            ht link  /agent/SYSTEM SYSTEM
+            ht put   " agent."
+            ht para
+
+            ht query {
+                SELECT s             AS "Abstract Service",
+                       pct_req       AS "Required LOS %",
+                       pct_act       AS "Actual LOS %"
+                FROM gui_abservice
+                WHERE g=$g AND s!='ENI'
+            } -default "None." -align LRR
+        }
+
         ht subtitle "CAP Coverage" cap
 
         if {$population == 0} {

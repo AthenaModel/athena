@@ -60,6 +60,17 @@ CREATE TEMPORARY TABLE activity_gtype (
 );
 
 --------------------------------------------------------------------
+-- Abstract Infrastructure Services
+
+CREATE TEMPORARY TABLE abservice (
+    -- Symbolic abstract service name
+    s        TEXT PRIMARY KEY,
+
+    -- Human readable name
+    longname TEXT
+);
+
+--------------------------------------------------------------------
 -- Strategy Tock Working Tables
 
 -- Actor's Working Cash

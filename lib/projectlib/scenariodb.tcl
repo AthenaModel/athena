@@ -106,6 +106,10 @@ snit::type ::projectlib::scenariodb {
             { a MEDICAL   gtype ORG assignable 1 }
             { a RELIEF    gtype ORG assignable 1 }
         }
+
+        abservice {
+            { s ENERGY  longname "Energy Infrastructure Services" }
+        }
     }
 
     #-------------------------------------------------------------------

@@ -1650,20 +1650,36 @@ snit::type ::projectlib::parmdb {
         $ps subset service.ENERGY.actual {
             The default actual level of service, by neighborhood
             urbanization level, expressed as a fraction of the
-            saturation level of service.  Override the default by
-            using the SERVICE tactic upon scenario lock.
+            saturation level of service.  On scenario lock, the
+            expected levels of service are set to this value.  
+            This value can be changed using the SERVICE tactic.
+        }
+
+        $ps subset service.ENERGY.required {
+            The default required level of service, by neighborhood
+            urbanization level, expressed as a fraction of the
+            saturation level of service.
         }
 
         foreach ul [::projectlib::eurbanization names] {
             $ps define service.ENERGY.actual.$ul \
                 ::simlib::rfraction 0.0 \
                 "Value of service.ENERGY.actual for urbanization level $ul."
+
+            $ps define service.ENERGY.required.$ul \
+                ::simlib::rfraction 0.0 \
+                "Value of service.ENERGY.required for urbanization level $ul."
         }
 
         $ps setdefault service.ENERGY.actual.ISOLATED  0.0
         $ps setdefault service.ENERGY.actual.RURAL     0.4
         $ps setdefault service.ENERGY.actual.SUBURBAN  0.9
         $ps setdefault service.ENERGY.actual.URBAN     1.0
+
+        $ps setdefault service.ENERGY.required.ISOLATED  0.0
+        $ps setdefault service.ENERGY.required.RURAL     0.4
+        $ps setdefault service.ENERGY.required.SUBURBAN  0.9
+        $ps setdefault service.ENERGY.required.URBAN     1.0
 
         $ps subset service.ENI {
             Parameters which affect the Essential Non-Infrastructure

@@ -146,6 +146,7 @@ SELECT g                                           AS id,
        link                                        AS link,
        longlink                                    AS longlink,
        n                                           AS n,
+       population                                  AS population,
        sat_funding                                 AS saturation_funding,
        required                                    AS required,
        percent(required)                           AS pct_required,
@@ -157,8 +158,23 @@ SELECT g                                           AS id,
        format('%.2f', needs)                       AS needs,
        format('%.2f', expectf)                     AS expectf
 FROM service_sg
-JOIN gui_civgroups USING (g);
+JOIN gui_civgroups USING (g)
+ORDER BY g;
 
+CREATE TEMPORARY VIEW gui_abservice AS
+SELECT CG.g                                              AS g,
+       CG.link                                           AS glink,
+       CG.n                                              AS n,
+       CG.population                                     AS population,
+       N.link                                            AS nlink,
+       N.urbanization                                    AS urb,
+       S.s                                               AS s,
+       percent(service(S.s, 'ACTUAL',   N.urbanization)) AS pct_act,
+       percent(service(S.s, 'REQUIRED', N.urbanization)) AS pct_req
+FROM gui_civgroups AS CG 
+JOIN abservice AS S
+JOIN gui_nbhoods AS N USING (n)
+ORDER BY CG.g;
 
 -- gui_service_ga: Provision of ENI services to civilian groups
 -- by particular actors.

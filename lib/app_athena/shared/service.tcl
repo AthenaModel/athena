@@ -106,11 +106,13 @@ snit::type service {
 
             # NEXT, defaults for actual, required and expected
             set actual [parm get service.$s.actual.$urb]
+            set required [parm get service.$s.required.$urb]
+
             rdb eval {
                 UPDATE service_sg
                 SET actual=$actual,
                     new_actual=$actual,
-                    required=$actual,
+                    required=$required,
                     expected=$actual
                 WHERE g=$g AND s=$s
             }

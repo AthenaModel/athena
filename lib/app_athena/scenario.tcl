@@ -620,6 +620,7 @@ snit::type scenario {
         rdb function affinity             ::bsys::affinity
         rdb function qposition            [myproc QPosition]
         rdb function hook_narrative       ::hook::hook_narrative
+        rdb function service              [myproc Service]
 
         # NEXT, define the GUI Views
         RdbEvalFile gui_scenario.sql       ;# Scenario Entities
@@ -646,6 +647,19 @@ snit::type scenario {
 
     #-------------------------------------------------------------------
     # SQL Functions
+
+    # Service  service which urb
+    #
+    # service    - an eabservice(n) value
+    # which      - either 'ACTUAL' or 'REQUIRED'
+    # urb        - an eurbanization(n) value
+    #
+    # Returns the proper parmdb parameter value for an abstract
+    # infrastructure service based on urbanization and type of LOS
+
+    proc Service {service which urb} {
+        return [parm get service.$service.$which.$urb]
+    }
 
     # Locked
     #

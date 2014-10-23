@@ -82,7 +82,7 @@ SELECT N.n                                                    AS id,
        m2ref(N.refpoint)                                      AS refpoint,
        m2ref(N.polygon)                                       AS polygon,
        COALESCE(F.volatility,0)                               AS volatility,
-       COALESCE(D.population,0)                               AS population,
+       PN.pop                                                 AS population,
        COALESCE(D.subsistence,0)                              AS subsistence,
        COALESCE(D.consumers,0)                                AS consumers,
        COALESCE(D.labor_force,0)                              AS labor_force,
@@ -94,7 +94,8 @@ FROM nbhoods              AS N
 LEFT OUTER JOIN demog_n   AS D  USING (n)
 LEFT OUTER JOIN force_n   AS F  USING (n)
 LEFT OUTER JOIN uram_n    AS UN USING (n)
-LEFT OUTER JOIN control_n AS C  USING (n);
+LEFT OUTER JOIN control_n AS C  USING (n)
+LEFT OUTER JOIN pop_n     AS PN USING (n);
 
 
 -- gui_nbrel_mn: Neighborhood Proximities
