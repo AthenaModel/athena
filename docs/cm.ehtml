@@ -688,9 +688,6 @@ Otherwise,<p>
 $ boxkite get kite 0.4.3
 $ boxkite get mars 3.0.10
 </pre>
-
-You might need to specify the specific "install-%platform" distribution
-set name.<p>
 </step>
 
 <step>
@@ -814,10 +811,10 @@ tag names.
 </step>
 
 <step>
-If desired, copy the build to the boxkite server.
+If desired, copy the installation set to the boxkite server.
 </step/>
 <pre>
-$ boxkite put install-%platform
+$ boxkite put
 </pre>
 </step>
 
@@ -923,10 +920,10 @@ This builds the following file:
 </step>
 
 <step>
-If desired, copy the build to the boxkite server.
+If desired, copy the installation set to the boxkite server.
 </step/>
 <pre>
-$ boxkite put install-%platform
+$ boxkite put
 </pre>
 </step>
 
