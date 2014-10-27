@@ -661,7 +661,7 @@ snit::type ::projectlib::parmdb {
         $ps setdefault dam.EMPLOY.farFactor       0.5
         $ps setdefault dam.EMPLOY.mitigates       {}
 
-        # Rule Set: ENI
+        # Rule Set: ENERGY
         $ps setdefault dam.ENERGY.cause          ENERGY
         $ps setdefault dam.ENERGY.nearFactor     0.25
         $ps setdefault dam.ENERGY.farFactor      0.0
@@ -859,6 +859,11 @@ snit::type ::projectlib::parmdb {
         $ps setdefault dam.VIOLENCE.cause         CIVCAS
         $ps setdefault dam.VIOLENCE.nearFactor    0.0
         $ps setdefault dam.VIOLENCE.farFactor     0.0
+
+        # Rule Set: WATER
+        $ps setdefault dam.WATER.cause            WATER
+        $ps setdefault dam.WATER.nearFactor       0.25
+        $ps setdefault dam.WATER.farFactor        0.0
 
         # demog.* parameters
         $ps subset demog {
@@ -1588,87 +1593,89 @@ snit::type ::projectlib::parmdb {
             Parameters which affect the Athena Service models.
         }
 
-        $ps subset service.ENERGY {
-            Parameters which affect the Abstract Energy Infrastructure
-            Services model.
-        }
-
-        $ps define service.ENERGY.alphaA ::simlib::rfraction 0.50 {
-            Smoothing constant for computing the expected level of
-            service <b>when the average amount of service has been
-            higher than the expectation</b>.  If 1.0, the expected
-            level of service will just be the current level of service
-            (expectations change instantly); if 0.0, the expected
-            level of service will never change at all.<p>
-
-            The value can be thought of as 1 over the average age of
-            the data in weeks.  Thus, the default value of 0.5 implies
-            that the data used for smoothing has an average age of 2
-            weeks.
-        }
-
-        $ps define service.ENERGY.alphaX ::simlib::rfraction 0.25 {
-            Smoothing constant for computing the expected level of
-            service <b>when the expectation of service has been higher
-            than the average amount</b>.  If 1.0, the expected
-            level of service will just be the current level of service
-            (expectations change instantly); if 0.0, the expected
-            level of service will never change at all.  <p>
-
-            The value can be thought of as 1 over the average age of
-            the data in weeks.  Thus, the default value of 0.25 implies
-            that the data used for smoothing has an average age of 4
-            weeks.
-        }
-
-        $ps define service.ENERGY.delta ::simlib::rfraction 0.1 {
-            An actual service level A is presumed to be approximately
-            equal to the expected service level X if
-            abs(A-X) <= delta*X.
-        }
-
-        $ps define service.ENERGY.gainNeeds ::simlib::rmagnitude 2.0 {
-            A "gain" multiplier applied to the ENI service "needs"
-            factor.  When the gain is 0.0, the needs factor is 0.0.
-            When the gain is 1.0, then -1.0 <= needs <= 1.0.  When
-            the gain is 2.0 (the default), then -2.0 <= needs <= 2.0,
-            and so on.  Setting the gain greater than 1.0 allows the
-            magnitude applied to the needs factor in the ENI rule set
-            to represent a median value rather than an extreme value.
-        }
-
-        $ps define service.ENERGY.gainExpect ::simlib::rmagnitude 2.0 {
-            A "gain" multiplier applied to the ENI service "expectations"
-            factor.  When the gain is 0.0, the expectations factor is 0.0.
-            When the gain is 1.0, then -1.0 <= expectf <= 1.0.  When
-            the gain is 2.0 (the default), then -2.0 <= expectf <= 2.0,
-            and so on.  Setting the gain greater than 1.0 allows the
-            magnitude applied to expectf in the ENI rule set
-            to represent a median value rather than an extreme value.
-        }
-
-        $ps subset service.ENERGY.actual {
-            The default actual level of service, by neighborhood
-            urbanization level, expressed as a fraction of the
-            saturation level of service.  On scenario lock, the
-            expected levels of service are set to this value.  
-            This value can be changed using the SERVICE tactic.
-        }
-
-        $ps subset service.ENERGY.required {
-            The default required level of service, by neighborhood
-            urbanization level, expressed as a fraction of the
-            saturation level of service.
-        }
-
-        foreach ul [::projectlib::eurbanization names] {
-            $ps define service.ENERGY.actual.$ul \
-                ::simlib::rfraction 0.0 \
-                "Value of service.ENERGY.actual for urbanization level $ul."
-
-            $ps define service.ENERGY.required.$ul \
-                ::simlib::rfraction 0.0 \
-                "Value of service.ENERGY.required for urbanization level $ul."
+        foreach s [eabservice names] {
+            $ps subset service.$s "
+                Parameters which affect the Abstract $s Infrastructure
+                Services model.
+            "
+    
+            $ps define service.$s.alphaA ::simlib::rfraction 0.50 {
+                Smoothing constant for computing the expected level of
+                service <b>when the average amount of service has been
+                higher than the expectation</b>.  If 1.0, the expected
+                level of service will just be the current level of service
+                (expectations change instantly); if 0.0, the expected
+                level of service will never change at all.<p>
+    
+                The value can be thought of as 1 over the average age of
+                the data in weeks.  Thus, the default value of 0.5 implies
+                that the data used for smoothing has an average age of 2
+                weeks.
+            }
+    
+            $ps define service.$s.alphaX ::simlib::rfraction 0.25 {
+                Smoothing constant for computing the expected level of
+                service <b>when the expectation of service has been higher
+                than the average amount</b>.  If 1.0, the expected
+                level of service will just be the current level of service
+                (expectations change instantly); if 0.0, the expected
+                level of service will never change at all.  <p>
+    
+                The value can be thought of as 1 over the average age of
+                the data in weeks.  Thus, the default value of 0.25 implies
+                that the data used for smoothing has an average age of 4
+                weeks.
+            }
+    
+            $ps define service.$s.delta ::simlib::rfraction 0.1 {
+                An actual service level A is presumed to be approximately
+                equal to the expected service level X if
+                abs(A-X) <= delta*X.
+            }
+    
+            $ps define service.$s.gainNeeds ::simlib::rmagnitude 2.0 {
+                A "gain" multiplier applied to the ENI service "needs"
+                factor.  When the gain is 0.0, the needs factor is 0.0.
+                When the gain is 1.0, then -1.0 <= needs <= 1.0.  When
+                the gain is 2.0 (the default), then -2.0 <= needs <= 2.0,
+                and so on.  Setting the gain greater than 1.0 allows the
+                magnitude applied to the needs factor in the ENI rule set
+                to represent a median value rather than an extreme value.
+            }
+    
+            $ps define service.$s.gainExpect ::simlib::rmagnitude 2.0 {
+                A "gain" multiplier applied to the ENI service "expectations"
+                factor.  When the gain is 0.0, the expectations factor is 0.0.
+                When the gain is 1.0, then -1.0 <= expectf <= 1.0.  When
+                the gain is 2.0 (the default), then -2.0 <= expectf <= 2.0,
+                and so on.  Setting the gain greater than 1.0 allows the
+                magnitude applied to expectf in the ENI rule set
+                to represent a median value rather than an extreme value.
+            }
+    
+            $ps subset service.$s.actual {
+                The default actual level of service, by neighborhood
+                urbanization level, expressed as a fraction of the
+                saturation level of service.  On scenario lock, the
+                expected levels of service are set to this value.  
+                This value can be changed using the SERVICE tactic.
+            }
+    
+            $ps subset service.$s.required {
+                The default required level of service, by neighborhood
+                urbanization level, expressed as a fraction of the
+                saturation level of service.
+            }
+    
+            foreach ul [::projectlib::eurbanization names] {
+                $ps define service.$s.actual.$ul \
+                    ::simlib::rfraction 0.0 \
+                    "Value of service.$s.actual for urbanization level $ul."
+    
+                $ps define service.$s.required.$ul \
+                    ::simlib::rfraction 0.0 \
+                    "Value of service.$s.required for urbanization level $ul."
+            }
         }
 
         $ps setdefault service.ENERGY.actual.ISOLATED  0.0
@@ -1680,6 +1687,16 @@ snit::type ::projectlib::parmdb {
         $ps setdefault service.ENERGY.required.RURAL     0.4
         $ps setdefault service.ENERGY.required.SUBURBAN  0.9
         $ps setdefault service.ENERGY.required.URBAN     1.0
+
+        $ps setdefault service.WATER.actual.ISOLATED  0.0
+        $ps setdefault service.WATER.actual.RURAL     0.4
+        $ps setdefault service.WATER.actual.SUBURBAN  0.9
+        $ps setdefault service.WATER.actual.URBAN     1.0
+
+        $ps setdefault service.WATER.required.ISOLATED  0.0
+        $ps setdefault service.WATER.required.RURAL     0.4
+        $ps setdefault service.WATER.required.SUBURBAN  0.9
+        $ps setdefault service.WATER.required.URBAN     1.0
 
         $ps subset service.ENI {
             Parameters which affect the Essential Non-Infrastructure

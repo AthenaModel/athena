@@ -1,24 +1,24 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#    driver_energy.tcl
+#    driver_abservice.tcl
 #
 # AUTHOR:
 #    Dave Hanks
 #
 # DESCRIPTION:
-#    Athena Driver Assessment Model (DAM): ENERGY
+#    Athena Driver Assessment Model (DAM): 
+#    Abstract Infrastructure Services
 #
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-# ENERGY
+# abservice
 
-driver type define ENERGY {g} {
+snit::type driver::abservice {
+    pragma -hasinstances 0
     #-------------------------------------------------------------------
     # Look-up tables
 
-    # vmags: VREL magnitudes for ENERGY rule set given these variables:
-    #
     # case: R-, E-, E, E+
     #
     #   R-  - actual LOS is less than required.
@@ -36,7 +36,6 @@ driver type define ENERGY {g} {
     }
 
 
-   
     #-------------------------------------------------------------------
     # Public Typemethods
 
@@ -45,7 +44,7 @@ driver type define ENERGY {g} {
     # Monitors the level of service provided to civilian groups.  The
     # rule firing dictionary contains the following data:
     #
-    #   dtype       - The driver type (ENERGY)
+    #   dtype       - The driver type (ENERGY, WATER, etc...)
     #   g           - The civilian group receiving the services
     #   actual      - The actual level of service (ALOS)
     #   required    - The required level of service (RLOS)
@@ -55,35 +54,50 @@ driver type define ENERGY {g} {
     #   case        - The case: E+, E, E-, R-
     
     typemethod assess {} {
-        set dtype ENERGY
+        set slist [eabservice names]
 
-        if {![dam isactive $dtype]} {
-            log warning $dtype "driver type has been deactivated"
-            return
-        }
-
-        # NEXT, call the ENERGY rule set.
-        rdb eval {
-            SELECT g, actual, required, expected, expectf, needs
+        # NEXT, call the abstract services rule sets.
+        rdb eval "
+            SELECT s AS dtype, g, actual, required, expected, expectf, needs
             FROM local_civgroups 
             JOIN demog_g USING (g)
             JOIN service_sg USING (g)
             JOIN control_n ON (local_civgroups.n = control_n.n)
-            WHERE demog_g.population > 0 AND service_sg.s = $dtype
+            WHERE s IN ('[join $slist ',']')
+            AND   demog_g.population > 0
             ORDER BY g
-        } gdata {
+        " gdata {
             unset -nocomplain gdata(*)
 
+            set dtype $gdata(dtype)
+
             set fdict [array get gdata]
-            dict set fdict dtype $dtype
+
+            if {![dam isactive $dtype]} {
+                log warning $dtype "driver type has been deactivated"
+                continue
+            }
 
             bgcatch {
                 log detail $dtype $fdict
-                $type ruleset $fdict
+                driver::$dtype ruleset $fdict
             }
         }
     }
 
+    typemethod define {name defscript} {
+        set footer "
+            delegate typemethod sigline   using {driver::abservice %m $name}
+            delegate typemethod narrative using {driver::abservice %m}
+            delegate typemethod detail    using {driver::abservice %m}
+
+            typeconstructor {
+                namespace path ::driver::abservice::
+            }
+        "
+
+        driver type define $name {g} "$defscript\n$footer" 
+    }
     #-------------------------------------------------------------------
     # Narrative Type Methods
 
@@ -94,9 +108,9 @@ driver type define ENERGY {g} {
     # Returns a one-line description of the driver given its signature
     # values.
 
-    typemethod sigline {signature} {
+    typemethod sigline {dtype signature} {
         set g $signature
-        return "Provision of ENERGY services to $g"
+        return "Provision of $dtype services to $g"
     }
 
     # narrative fdict
@@ -108,7 +122,7 @@ driver type define ENERGY {g} {
     typemethod narrative {fdict} {
         dict with fdict {}
 
-        return "{group:$g} receives ENERGY services (case $case)"
+        return "{group:$g} receives $dtype services (case $case)"
     }
     
     # detail fdict 
@@ -123,7 +137,7 @@ driver type define ENERGY {g} {
 
         $ht putln "Civilian group\n"
         $ht link my://app/group/$g $g
-        $ht putln "received ENERGY services at an actual level of"
+        $ht putln "received $dtype services at an actual level of"
         $ht putln "[format %.2f $actual], that is, at"
         $ht putln "[string trim [percent $actual]] of the saturation level"
         $ht putln "of service.  Group $g requires a level of at least"
@@ -149,11 +163,40 @@ driver type define ENERGY {g} {
     }
 
     #-------------------------------------------------------------------
-    # Rule Set: ENERGY:  Essential Non-Infrastructure Services
+    # Helper Routines
+    
+    # GetCase fdict
     #
-    # Service Situation: effect of provision/non-provision of service
-    # on a civilian group.
+    # fdict   - The civgroups/service_sg group dictionary
+    #
+    # Returns the case symbol, E+, E, E-, R-, for the provision
+    # of service to the group.
+    
+    proc GetCase {fdict} {
+        dict with fdict {}
+        # FIRST, get the delta parameter
+        set delta [parmdb get service.$dtype.delta]
 
+        # NEXT, compute the case
+        if {$actual < $required} {
+            return R-
+        } elseif {abs($actual - $expected) < $delta * $expected} {
+            return E
+        } elseif {$actual < $expected} {
+            return E-
+        } else {
+            return E+
+        }
+    }
+}
+
+#-------------------------------------------------------------------
+# Rule Set: ENERGY:  Provision of ENERGY services to civilians
+#
+# Service Situation: effect of provision/non-provision of service
+# on a civilian group.
+
+driver::abservice define ENERGY {
     typemethod ruleset {fdict} {
         dict with fdict {}
         
@@ -202,38 +245,64 @@ driver type define ENERGY {g} {
                 QOL [mag* $expectf XXS+]
         }
     }
+}
 
-    #-------------------------------------------------------------------
-    # Helper Routines
-    
-    # GetCase fdict
-    #
-    # fdict   - The civgroups/service_sg group dictionary
-    #
-    # Returns the case symbol, E+, E, E-, R-, for the provision
-    # of service to the group.
-    
-    proc GetCase {fdict} {
-        # FIRST, get the delta parameter
-        set delta [parmdb get service.ENERGY.delta]
+#-------------------------------------------------------------------
+# Rule Set: WATER:  Provision of WATER services to civilians
+#
+# Service Situation: effect of provision/non-provision of service
+# on a civilian group.
 
-        # NEXT, compute the case
-        dict with fdict {
-            if {$actual < $required} {
-                return R-
-            } elseif {abs($actual - $expected) < $delta * $expected} {
-                return E
-            } elseif {$actual < $expected} {
-                return E-
-            } else {
-                return E+
-            }
+driver::abservice define WATER {
+    typemethod ruleset {fdict} {
+        dict with fdict {}
+        
+        # FIRST, get some data
+        set case [GetCase $fdict]
+
+        dict set fdict case $case
+        
+        # WATER-1: Satisfaction Effects
+        dam rule WATER-1-1 $fdict {
+            $case eq "R-"
+        } {
+            # While WATER is less than required for CIV group g
+            # Then for group g
+            dam sat T $g \
+                AUT [expr {[mag* $expectf XXS+] + [mag* $needs XXS-]}] \
+                QOL [expr {[mag* $expectf XXS+] + [mag* $needs XXS-]}]
+        }
+
+        dam rule WATER-1-2 $fdict {
+            $case eq "E-"
+        } {
+            # While WATER is less than expected for CIV group g
+            # Then for group g
+            dam sat T $g \
+                AUT [mag* $expectf XXS+] \
+                QOL [mag* $expectf XXS+]
+        }
+
+        dam rule WATER-1-3 $fdict {
+            $case eq "E"
+        } {
+            # While WATER is as expected for CIV group g
+            # Then for group g
+
+            # Nothing
+        }
+
+        dam rule WATER-1-4 $fdict {
+            $case eq "E+"
+        } {
+            # While WATER is better than expected for CIV group g
+            # Then for group g
+            dam sat T $g \
+                AUT [mag* $expectf XXS+] \
+                QOL [mag* $expectf XXS+]
         }
     }
 }
-
-
-
 
 
 

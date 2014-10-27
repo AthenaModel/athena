@@ -222,6 +222,11 @@ snit::type ::projectlib::typewrapper {
     EMPLOY-1-1    "Force is providing employment"
     EMPLOY-2-1    "ORG is providing employment"
 
+    ENERGY-1-1    "Energy services are less than required"
+    ENERGY-1-2    "Energy services are less than expected"
+    ENERGY-1-3    "Energy services are as expected"
+    ENERGY-1-4    "Energy services are better than expected"
+
     ENI-1-1       "ENI Services are less than required"
     ENI-1-2       "ENI Services are less than expected"
     ENI-1-3       "ENI Services are as expected"
@@ -321,6 +326,12 @@ snit::type ::projectlib::typewrapper {
     UNEMP-1-1     "Group is suffering from unemployment"
 
     VIOLENCE-1.1  "Random violence in neighborhood"
+
+    WATER-1-1    "Residential water services are less than required"
+    WATER-1-2    "Residential water services are less than expected"
+    WATER-1-3    "Residential water services are as expected"
+    WATER-1-4    "Residential water services are better than expected"
+
 }
 
 # DAM Rule Sets
@@ -379,6 +390,7 @@ snit::type ::projectlib::typewrapper {
     TRAFFIC   "Traffic Congestion"
     UNEMP     "Unemployment"
     VIOLENCE  "Random Violence"
+    WATER     "Residential Water Services"
 }
 
 # DAM Rule Set Causes
@@ -430,6 +442,7 @@ snit::type ::projectlib::typewrapper {
     THIRST    "Thirst"
     TRAFFIC   "Traffic Congestion"
     UNEMP     "Unemployment"
+    WATER     "Residential Water Services"
 }
 
 # Civ group housing
@@ -509,11 +522,13 @@ snit::type ::projectlib::typewrapper {
 ::marsutil::enum ::projectlib::eservice {
     ENERGY "Energy Infrastructure Services"
     ENI    "Essential Non-Infrastructure Services"
+    WATER  "Residential Water Services"
 }
 
 # Abstract Infrastructure Services
 ::marsutil::enum ::projectlib::eabservice {
     ENERGY "Energy Infrastructure Services"
+    WATER  "Residential Water Services"
 }
 
 # Situation State

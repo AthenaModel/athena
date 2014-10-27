@@ -26,19 +26,33 @@ snit::type service_ais {
     pragma -hasinstances no
 
     typemethod assess {} {
-        foreach s [eabservice names] {
-            $type LogLOSChanges $s
-            $type ComputeLOS $s
-            profile 1 driver::$s assess
-        }
+        $type LogLOSChanges 
+        $type ComputeFactors 
+        profile 1 driver::abservice assess
     }
 
-    typemethod ComputeLOS {s} {
-        set parms(gainNeeds)  [parm get service.$s.gainNeeds]
-        set parms(gainExpect) [parm get service.$s.gainExpect]
+    # ComputeFactors
+    #
+    # This method uses the new ALOS, current ELOS and RLOS to compute
+    # the needs and expectations factors which are then used later
+    # when the abservice driver module assess the LOS of each abstract
+    # service on the civilian population.
 
-        foreach {g urb pop oldX Ag Rg} [rdb eval {
-            SELECT G.g                AS g,
+    typemethod ComputeFactors {} {
+        # FIRST, extract the names of all abstract services
+        set slist [eabservice names]
+
+        # NEXT, cache the needs and expectations factor gain values so
+        # we do not need to keep hitting the parmdb
+        foreach s $slist {
+            set parms(gainNeeds,$s)  [parm get service.$s.gainNeeds]
+            set parms(gainExpect,$s) [parm get service.$s.gainExpect]
+        }
+
+        # NEXT, extract data from the RDB for abstract services
+        foreach {s g urb pop oldX Ag Rg} [rdb eval "
+            SELECT SG.s               AS s,
+                   G.g                AS g,
                    G.urbanization     AS urb,
                    D.population       AS pop,
                    SG.expected        AS oldX,
@@ -46,9 +60,12 @@ snit::type service_ais {
                    SG.required        AS Rg
             FROM local_civgroups AS G 
             JOIN demog_g    AS D   ON (D.g = G.g)
-            JOIN service_sg AS SG  ON (SG.g = G.g AND SG.s=$s)
-            GROUP BY G.g
-        }] {
+            JOIN service_sg AS SG  ON (SG.g = G.g)
+            WHERE s IN ('[join $slist ',']')
+        "] {
+            set parms(gainNeeds)  $parms(gainNeeds,$s)
+            set parms(gainExpect) $parms(gainExpect,$s)
+
             # FIRST, set actual and required, abstract service gets 
             # ALOS set from outside
             set parms(Ag) $Ag
@@ -97,16 +114,16 @@ snit::type service_ais {
         }
     }
 
-    # LogLOSChanges  s
-    #
-    # s   - an eabservice(n) value
+    # LogLOSChanges
     #
     # This method logs changes to actual level of service provided to
     # civilian groups.  Only changes greater than 0.001 to the
     # current level of service are logged.
 
-    typemethod LogLOSChanges {s} {
-        rdb eval {
+    typemethod LogLOSChanges {} {
+        set slist [eabservice names]
+
+        rdb eval "
             SELECT SG.new_actual  AS new,
                    SG.actual      AS actual,
                    SG.new_actual-actual AS delta,
@@ -115,10 +132,10 @@ snit::type service_ais {
                    G.n            AS n
             FROM service_sg AS SG
             JOIN local_civgroups AS G ON (G.g = SG.g)
-            WHERE abs(delta) > 0.001
-            AND s=$s
+            WHERE s IN ('[join $slist ',']')
+            AND   abs(delta) > 0.001
             ORDER BY delta DESC, g
-        } {
+        " {
             set dir "increased"
             if {$delta < 0} {
                 set dir "decreased"

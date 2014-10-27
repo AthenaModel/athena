@@ -639,17 +639,19 @@ appserver module GROUPS {
             ht put   "The table below shows which abstract services $g "
             ht put   "is receiving along with the level of service (LOS) "
             ht put   "they require, expect and are actually getting. The "
-            ht put   "saturation level of service is always 1.0."
+            ht put   "saturation level of service is always 100%."
             ht para  
 
             ht query  {
                 SELECT s              AS "Abstract Service", 
                        pct_required   AS "Required LOS %", 
                        pct_expected   AS "Expected LOS %", 
-                       pct_actual     AS "Actual LOS %"
+                       pct_actual     AS "Actual LOS %",
+                       needs          AS "Needs factor",
+                       expectf        AS "Expectations factor"
                 FROM gui_service_sg 
                 WHERE g=$g AND s!='ENI'
-            } -default "None." -align LRRR
+            } -default "None." -align LRRRRR
 
         } else {
             ht putln "When the scenario is locked $g will have the "
@@ -658,7 +660,8 @@ appserver module GROUPS {
             ht put   "service can be changed by using the SERVICE tactic "
             ht put   "with the "
             ht link  /agent/SYSTEM SYSTEM
-            ht put   " agent."
+            ht put   " agent.  The needs and expectations factors will "
+            ht put   "be calculated after the scenario is locked."
             ht para
 
             ht query {

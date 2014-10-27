@@ -1,0 +1,645 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#   040-driver_abservice.test
+#
+# AUTHOR:
+#   Dave Hanks
+#
+# DESCRIPTION:
+#   Abstract service tests.
+#
+#   This test suite tests that the rules fire when appropriate, by 
+#   driving the abstract infrastructure services model.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Define an htools buffer for tests
+    htools ht
+
+    # pprint text
+    #
+    # text  - block text
+    #
+    # Prints it so that it looks nice in a -result option.
+
+    proc pprint {text} {
+        return "\n[string trim $text]\n    "
+    }
+
+    # setup 
+    #
+    # Sets up for tests.
+    
+    proc setup {} {
+        # FIRST, other rule sets shouldn't muddy the waters.
+        parm set dam.PRESENCE.active no
+        parm set dam.UNEMP.active no
+        parm set dam.CONSUMP.active no
+        parm set dam.ENI.active no
+        parm set service.ENERGY.actual.URBAN 0.5
+        parm set service.ENERGY.required.URBAN 0.5
+        parm set service.WATER.actual.URBAN 0.5
+        parm set service.WATER.required.URBAN 0.5
+        rdb eval {DELETE FROM drivers}
+        
+        # NEXT, create the entities
+        ted create JOE BOB NB1 BLUE SHIA SUNN
+    }
+    
+    # lock
+    #
+    # Locks the scenario and cleans up the rule firing data prior to a step.
+    # This lets us get at expectations.
+
+    proc lock {} {
+        ted lock
+        rdb eval {
+            DELETE FROM rule_firings;
+            DELETE FROM rule_inputs;
+            DELETE FROM drivers;
+        }
+    }
+    
+    # Clean up after a test
+    proc cleanup {} {
+        ht clear
+        ted cleanup
+    }
+
+    
+    #-------------------------------------------------------------------
+    # assess
+    
+    test assess-1.1 {Rule ENERGY-1-1 fires} -setup {
+        setup
+        parm set dam.WATER.active no
+    } -body {
+        # Default.
+        lock
+        service actual NB1 ENERGY 0.0
+        ted step
+
+        ted querylist {
+            SELECT * FROM rule_firings
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          1
+driver_id  1000
+ruleset    ENERGY
+rule       ENERGY-1-1
+fdict      required 0.5 expected 0.375 actual 0.0 dtype ENERGY needs 2.0 expectf -0.75 g SHIA case R-
+
+firing_id  2
+t          1
+driver_id  1001
+ruleset    ENERGY
+rule       ENERGY-1-1
+fdict      required 0.5 expected 0.375 actual 0.0 dtype ENERGY needs 2.0 expectf -0.75 g SUNN case R-
+    }
+    
+    test assess-1.2 {Rule ENERGY-1-1 satisfaction} -setup {
+        setup
+        parm set dam.WATER.active no
+    } -body {
+        # No funding.
+        lock
+        service actual NB1 ENERGY 0.0
+        ted step
+        ted query {
+            SELECT rule, g, c
+            FROM rule_firings JOIN rule_inputs USING (firing_id)
+            WHERE atype='sat'
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+rule       g    c   
+---------- ---- --- 
+ENERGY-1-1 SHIA AUT 
+ENERGY-1-1 SHIA QOL 
+ENERGY-1-1 SUNN AUT 
+ENERGY-1-1 SUNN QOL 
+    }
+
+    test assess-1.3 {Rule WATER-1-1 fires} -setup {
+        setup
+        parm set dam.ENERGY.active no
+    } -body {
+        # Default.
+        lock
+        service actual NB1 WATER 0.0
+        ted step
+
+        ted querylist {
+            SELECT * FROM rule_firings
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          1
+driver_id  1000
+ruleset    WATER
+rule       WATER-1-1
+fdict      required 0.5 expected 0.375 actual 0.0 dtype WATER needs 2.0 expectf -0.75 g SHIA case R-
+
+firing_id  2
+t          1
+driver_id  1001
+ruleset    WATER
+rule       WATER-1-1
+fdict      required 0.5 expected 0.375 actual 0.0 dtype WATER needs 2.0 expectf -0.75 g SUNN case R-
+    }
+    
+    test assess-1.4 {Rule WATER-1-1 satisfaction} -setup {
+        setup
+        parm set dam.ENERGY.active no
+    } -body {
+        # No funding.
+        lock
+        service actual NB1 WATER 0.0
+        ted step
+        ted query {
+            SELECT rule, g, c
+            FROM rule_firings JOIN rule_inputs USING (firing_id)
+            WHERE atype='sat'
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+rule      g    c   
+--------- ---- --- 
+WATER-1-1 SHIA AUT 
+WATER-1-1 SHIA QOL 
+WATER-1-1 SUNN AUT 
+WATER-1-1 SUNN QOL 
+    }
+
+    test assess-2.1 {Rule ENERGY-1-2 fires} -setup {
+        setup
+        parm set dam.WATER.active no
+    } -body {
+        lock
+        service actual NB1 ENERGY 0.5
+        rdb eval {UPDATE service_sg SET expected=0.6}
+        ted step
+        ted querylist {
+            SELECT * FROM rule_firings
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          1
+driver_id  1000
+ruleset    ENERGY
+rule       ENERGY-1-2
+fdict      required 0.5 expected 0.575 actual 0.5 dtype ENERGY needs 0.0 expectf -0.1499999999999999 g SHIA case E-
+
+firing_id  2
+t          1
+driver_id  1001
+ruleset    ENERGY
+rule       ENERGY-1-2
+fdict      required 0.5 expected 0.575 actual 0.5 dtype ENERGY needs 0.0 expectf -0.1499999999999999 g SUNN case E-
+    }
+    
+    test assess-2.2 {Rule ENERGY-1-2 satisfaction} -setup {
+        setup
+        parm set dam.WATER.active no
+    } -body {
+        lock
+        service actual NB1 ENERGY 0.5
+        rdb eval {UPDATE service_sg SET expected=0.6}
+        ted step
+
+        ted query {
+            SELECT rule, g, c
+            FROM rule_firings JOIN rule_inputs USING (firing_id)
+            WHERE atype='sat'
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+rule       g    c   
+---------- ---- --- 
+ENERGY-1-2 SHIA AUT 
+ENERGY-1-2 SHIA QOL 
+ENERGY-1-2 SUNN AUT 
+ENERGY-1-2 SUNN QOL 
+    }
+
+    test assess-2.3 {Rule WATER-1-2 fires} -setup {
+        setup
+        parm set dam.ENERGY.active no
+    } -body {
+        lock
+        service actual NB1 WATER 0.5
+        rdb eval {UPDATE service_sg SET expected=0.6}
+        ted step
+        ted querylist {
+            SELECT * FROM rule_firings
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          1
+driver_id  1000
+ruleset    WATER
+rule       WATER-1-2
+fdict      required 0.5 expected 0.575 actual 0.5 dtype WATER needs 0.0 expectf -0.1499999999999999 g SHIA case E-
+
+firing_id  2
+t          1
+driver_id  1001
+ruleset    WATER
+rule       WATER-1-2
+fdict      required 0.5 expected 0.575 actual 0.5 dtype WATER needs 0.0 expectf -0.1499999999999999 g SUNN case E-
+    }
+    
+    test assess-2.4 {Rule WATER-1-2 satisfaction} -setup {
+        setup
+        parm set dam.ENERGY.active no
+    } -body {
+        lock
+        service actual NB1 WATER 0.5
+        rdb eval {UPDATE service_sg SET expected=0.6}
+        ted step
+
+        ted query {
+            SELECT rule, g, c
+            FROM rule_firings JOIN rule_inputs USING (firing_id)
+            WHERE atype='sat'
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+rule      g    c   
+--------- ---- --- 
+WATER-1-2 SHIA AUT 
+WATER-1-2 SHIA QOL 
+WATER-1-2 SUNN AUT 
+WATER-1-2 SUNN QOL 
+    }
+
+    test assess-3.1 {Rule ENERGY-1-3 fires} -setup {
+        setup
+        parm set dam.WATER.active no
+    } -body {
+        lock
+        service actual NB1 ENERGY 0.5
+        ted step
+
+        ted querylist {
+            SELECT * FROM rule_firings
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          1
+driver_id  1000
+ruleset    ENERGY
+rule       ENERGY-1-3
+fdict      required 0.5 expected 0.5 actual 0.5 dtype ENERGY needs 0.0 expectf 0.0 g SHIA case E
+
+firing_id  2
+t          1
+driver_id  1001
+ruleset    ENERGY
+rule       ENERGY-1-3
+fdict      required 0.5 expected 0.5 actual 0.5 dtype ENERGY needs 0.0 expectf 0.0 g SUNN case E
+    }
+    
+    test assess-3.2 {Rule ENERGY-1-3 satisfaction} -setup {
+        setup
+        parm set dam.WATER.active no
+    } -body {
+        lock
+        service actual NB1 ENERGY 0.5
+        ted step
+
+        # No satisfaction effects when expectations are met
+        rdb eval {
+            SELECT count(*)
+            FROM rule_firings JOIN rule_inputs USING (firing_id)
+            WHERE atype='sat'
+        }
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+    test assess-3.3 {Rule WATER-1-3 fires} -setup {
+        setup
+        parm set dam.ENERGY.active no
+    } -body {
+        lock
+        service actual NB1 WATER 0.5
+        ted step
+
+        ted querylist {
+            SELECT * FROM rule_firings
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          1
+driver_id  1000
+ruleset    WATER
+rule       WATER-1-3
+fdict      required 0.5 expected 0.5 actual 0.5 dtype WATER needs 0.0 expectf 0.0 g SHIA case E
+
+firing_id  2
+t          1
+driver_id  1001
+ruleset    WATER
+rule       WATER-1-3
+fdict      required 0.5 expected 0.5 actual 0.5 dtype WATER needs 0.0 expectf 0.0 g SUNN case E
+    }
+    
+    test assess-3.4 {Rule WATER-1-3 satisfaction} -setup {
+        setup
+        parm set dam.ENERGY.active no
+    } -body {
+        lock
+        service actual NB1 WATER 0.5
+        ted step
+
+        # No satisfaction effects when expectations are met
+        rdb eval {
+            SELECT count(*)
+            FROM rule_firings JOIN rule_inputs USING (firing_id)
+            WHERE atype='sat'
+        }
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+    test assess-4.1 {Rule ENERGY-1-4 fires} -setup {
+        setup
+        parm set dam.WATER.active no
+    } -body {
+        lock
+        service actual NB1 ENERGY 1.0
+        ted step
+
+        ted querylist {
+            SELECT * FROM rule_firings
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          1
+driver_id  1000
+ruleset    ENERGY
+rule       ENERGY-1-4
+fdict      required 0.5 expected 0.75 actual 1.0 dtype ENERGY needs 0.0 expectf 0.5 g SHIA case E+
+
+firing_id  2
+t          1
+driver_id  1001
+ruleset    ENERGY
+rule       ENERGY-1-4
+fdict      required 0.5 expected 0.75 actual 1.0 dtype ENERGY needs 0.0 expectf 0.5 g SUNN case E+
+    }
+    
+    test assess-4.2 {Rule ENERGY-1-4 satisfaction} -setup {
+        setup
+        parm set dam.WATER.active no
+    } -body {
+        lock
+        service actual NB1 ENERGY 1.0
+        ted step
+
+        ted query {
+            SELECT rule, g, c
+            FROM rule_firings JOIN rule_inputs USING (firing_id)
+            WHERE atype='sat'
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+rule       g    c   
+---------- ---- --- 
+ENERGY-1-4 SHIA AUT 
+ENERGY-1-4 SHIA QOL 
+ENERGY-1-4 SUNN AUT 
+ENERGY-1-4 SUNN QOL 
+    }
+
+    test assess-4.3 {Rule WATER-1-4 fires} -setup {
+        setup
+        parm set dam.ENERGY.active no
+    } -body {
+        lock
+        service actual NB1 WATER 1.0
+        ted step
+
+        ted querylist {
+            SELECT * FROM rule_firings
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  1
+t          1
+driver_id  1000
+ruleset    WATER
+rule       WATER-1-4
+fdict      required 0.5 expected 0.75 actual 1.0 dtype WATER needs 0.0 expectf 0.5 g SHIA case E+
+
+firing_id  2
+t          1
+driver_id  1001
+ruleset    WATER
+rule       WATER-1-4
+fdict      required 0.5 expected 0.75 actual 1.0 dtype WATER needs 0.0 expectf 0.5 g SUNN case E+
+    }
+    
+    test assess-4.4 {Rule WATER-1-4 satisfaction} -setup {
+        setup
+        parm set dam.ENERGY.active no
+    } -body {
+        lock
+        service actual NB1 WATER 1.0
+        ted step
+
+        ted query {
+            SELECT rule, g, c
+            FROM rule_firings JOIN rule_inputs USING (firing_id)
+            WHERE atype='sat'
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+rule      g    c   
+--------- ---- --- 
+WATER-1-4 SHIA AUT 
+WATER-1-4 SHIA QOL 
+WATER-1-4 SUNN AUT 
+WATER-1-4 SUNN QOL 
+    }
+
+    #-------------------------------------------------------------------
+    # sigline
+
+    test sigline-1.1 {ENERGY sigline output} -setup {
+        setup
+    } -body {
+        driver::ENERGY sigline SHIA 
+    } -cleanup {
+        cleanup
+    } -result {Provision of ENERGY services to SHIA}
+
+    test sigline-1.2 {WATER sigline output} -setup {
+        setup
+    } -body {
+        driver::WATER sigline SHIA 
+    } -cleanup {
+        cleanup
+    } -result {Provision of WATER services to SHIA}
+         
+
+    #-------------------------------------------------------------------
+    # narrative
+
+    test narrative-1.1 {ENERGY narrative output} -setup {
+        setup
+    } -body {
+        driver::ENERGY narrative {
+            dtype      ENERGY
+            g          SHIA
+            case       E-
+        } 
+    } -cleanup {
+        cleanup
+    } -result {{group:SHIA} receives ENERGY services (case E-)}
+
+    test narrative-1.2 {WATER narrative output} -setup {
+        setup
+    } -body {
+        driver::WATER narrative {
+            dtype      WATER
+            g          SHIA
+            case       E-
+        } 
+    } -cleanup {
+        cleanup
+    } -result {{group:SHIA} receives WATER services (case E-)}
+
+    #-------------------------------------------------------------------
+    # detail
+
+    test detail-1.1 {ENERGY detail} -setup {
+        setup
+    } -body {
+        driver::ENERGY detail {
+            g          SHIA
+            actual     0.8
+            required   0.6
+            expected   0.7
+            expectf    0.5
+            needs      0.0
+            case       E+
+            dtype      ENERGY
+        } [namespace current]::ht
+
+        pprint [ht get] 
+    } -cleanup {
+        cleanup
+    } -result {
+Civilian group
+<a href="my://app/group/SHIA">SHIA</a>
+received ENERGY services at an actual level of
+0.80, that is, at
+80% of the saturation level
+of service.  Group SHIA requires a level of at least
+0.60, and expected a level of
+0.70.<p>
+
+The case is therefore E+, that is, SHIA received
+more than expected.
+These values led to the following rule set inputs:<p>
+
+<i>expectf</i> = 0.50<br>
+<i>needs</i> = 0.00<p>
+    }
+
+    test detail-1.2 {WATER detail} -setup {
+        setup
+    } -body {
+        driver::WATER detail {
+            g          SHIA
+            actual     0.8
+            required   0.6
+            expected   0.7
+            expectf    0.5
+            needs      0.0
+            case       E+
+            dtype      WATER
+        } [namespace current]::ht
+
+        pprint [ht get] 
+    } -cleanup {
+        cleanup
+    } -result {
+Civilian group
+<a href="my://app/group/SHIA">SHIA</a>
+received WATER services at an actual level of
+0.80, that is, at
+80% of the saturation level
+of service.  Group SHIA requires a level of at least
+0.60, and expected a level of
+0.70.<p>
+
+The case is therefore E+, that is, SHIA received
+more than expected.
+These values led to the following rule set inputs:<p>
+
+<i>expectf</i> = 0.50<br>
+<i>needs</i> = 0.00<p>
+    }
+    
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+
+
+

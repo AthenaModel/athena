@@ -482,10 +482,12 @@ appserver module NBHOOD {
                        s              AS "Abstract Service", 
                        pct_required   AS "Required LOS %", 
                        pct_expected   AS "Expected LOS %", 
-                       pct_actual     AS "Actual LOS %"
+                       pct_actual     AS "Actual LOS %",
+                       needs          AS "Needs factor",
+                       expectf        AS "Expectations factor"
                 FROM gui_service_sg 
                 WHERE n=$n AND s!='ENI' AND population > 0
-            } -default "None." -align LLRRR
+            } -default "None." -align LLRRRRR
 
     
             ht para
@@ -496,7 +498,8 @@ appserver module NBHOOD {
                 (AIS) provided to the civilians in this neighborhood.  
                 The required and actual levels of service (LOS) 
                 for each service and group when the scenario is locked
-                is as follows.
+                is as follows.  The needs and expectations factors will
+                be calculated after the scenario is locked.
             }
 
             ht query {
