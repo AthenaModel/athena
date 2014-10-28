@@ -109,7 +109,7 @@ snit::type ::projectlib::scenariodb {
 
         abservice {
             { s ENERGY    longname "Energy Infrastructure Services" }
-            { s WATER     longname "Residential Water Services"     }
+            { s WATER     longname "Potable Water"                  }
             { s TRANSPORT longname "Transportation Services"        }
         }
     }

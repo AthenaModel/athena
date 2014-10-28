@@ -332,10 +332,10 @@ snit::type ::projectlib::typewrapper {
 
     VIOLENCE-1-1 "Random violence in neighborhood"
 
-    WATER-1-1    "Residential water services are less than required"
-    WATER-1-2    "Residential water services are less than expected"
-    WATER-1-3    "Residential water services are as expected"
-    WATER-1-4    "Residential water services are better than expected"
+    WATER-1-1    "Access to potable water is less than required"
+    WATER-1-2    "Access to potable water is less than expected"
+    WATER-1-3    "Access to potable water is as expected"
+    WATER-1-4    "Access to potable water is better than expected"
 
 }
 
@@ -396,7 +396,7 @@ snit::type ::projectlib::typewrapper {
     TRANSPORT "Transportation Services"
     UNEMP     "Unemployment"
     VIOLENCE  "Random Violence"
-    WATER     "Residential Water Services"
+    WATER     "Potable Water"
 }
 
 # DAM Rule Set Causes
@@ -449,7 +449,7 @@ snit::type ::projectlib::typewrapper {
     TRAFFIC   "Traffic Congestion"
     TRANSPORT "Transportation Services"
     UNEMP     "Unemployment"
-    WATER     "Residential Water Services"
+    WATER     "Potable Water"
 }
 
 # Civ group housing
@@ -530,13 +530,13 @@ snit::type ::projectlib::typewrapper {
     ENERGY     "Energy Infrastructure Services"
     ENI        "Essential Non-Infrastructure Services"
     TRANSPORT  "Transportation Services"
-    WATER      "Residential Water Services"
+    WATER      "Potable Water"
 }
 
 # Abstract Infrastructure Services
 ::marsutil::enum ::projectlib::eabservice {
     ENERGY     "Energy Infrastructure Services"
-    WATER      "Residential Water Services"
+    WATER      "Potable Water"
     TRANSPORT  "Transportation Services"
 }
 
