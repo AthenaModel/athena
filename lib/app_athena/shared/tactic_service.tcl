@@ -81,7 +81,7 @@ tactic define SERVICE "Update Level of Service" {system actor} -onlock {
     }
 
     method execute {} {
-        # FRIST, get the owner
+        # FIRST, get the owner
         set owner [my agent]
         set nbhoods {}
 

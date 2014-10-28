@@ -323,10 +323,10 @@ snit::type ::projectlib::typewrapper {
     TRAFFIC-1-1   "Traffic has begun to congest the streets"
     TRAFFIC-1-2   "Traffic congestion continues"
 
-    TRANSPORT-1-1 "Public transportation services are less than required"
-    TRANSPORT-1-2 "Public transportation services are less than expected"
-    TRANSPORT-1-3 "Public transportation services are as expected"
-    TRANSPORT-1-4 "Public transportation services are better than expected"
+    TRANSPORT-1-1 "Transportation services are less than required"
+    TRANSPORT-1-2 "Transportation services are less than expected"
+    TRANSPORT-1-3 "Transportation services are as expected"
+    TRANSPORT-1-4 "Transportation services are better than expected"
 
     UNEMP-1-1    "Group is suffering from unemployment"
 
