@@ -116,16 +116,12 @@ snit::type app {
     # See <usage> for the definition of the arguments.
     
     typemethod init {argv} {
-        # FIRST, are we running in batch mode or not?
-        if {!$::tkLoaded} {
-            set opts(-batch) 1
-        }
-        
         # FIRST, Process the command line.
         while {[string match "-*" [lindex $argv 0]]} {
             set opt [lshift argv]
 
             switch -exact -- $opt {
+                -batch      -
                 -dev        -
                 -ignoreuser {
                     set opts($opt) 1

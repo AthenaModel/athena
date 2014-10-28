@@ -138,12 +138,16 @@ snit::type ted {
         set appLoaded 1
 
         # NEXT, check for -notk.
-        set ::loadTk 1
+        set ::tkLoaded 1
 
         if {"-notk" in $argv} {
             set ndx [lsearch -exact $argv -notk]
             set argv [lreplace $argv $ndx $ndx]
-            set ::loadTk 0
+            set ::tkLoaded 0
+        }
+
+        if {$::tkLoaded} {
+            package require Tk
         }
 
         # NEXT, load and initialize app_athena.
@@ -169,7 +173,7 @@ snit::type ted {
         DefineEntities
 
         # NEXT, Define Constraints
-        ::tcltest::testConstraint tk $::loadTk
+        ::tcltest::testConstraint tk $::tkLoaded
 
         # NEXT, define custom match algorithms.
         ::tcltest::customMatch dict     [mytypemethod MatchDict]
@@ -177,7 +181,7 @@ snit::type ted {
         ::tcltest::customMatch dictglob [mytypemethod MatchDictGlob]
 
         # NEXT, get rid of the window, if it exists.
-        if {$::loadTk} {
+        if {$::tkLoaded} {
             wm protocol .main WM_DELETE_WINDOW { 
                 # NOP 
             }
