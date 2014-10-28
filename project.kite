@@ -4,10 +4,11 @@ poc William.H.Duquette@jpl.nasa.gov
 
 # Applications
 app athena -apptype exe -gui
+app athena_batch -apptype exe 
 app cellide -apptype exe -gui
 app helptool -apptype kit -gui
 
-# Source Directories
+# Compiled Directories
 src help
 
 # External Dependencies
@@ -41,6 +42,7 @@ xfile docs/aug.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aug-201410
 xfile docs/rules.pptx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/rules-20141010.pptx
 xfile docs/mag.docx https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20140826.docx
 
+# Distribution Targets
 dist install-%platform {
     LICENSE
     README.md
@@ -53,7 +55,6 @@ dist install-%platform {
     docs/*.docx
     docs/*.pptx
 }
-
 dist src {
     project.kite
     LICENSE
@@ -74,7 +75,6 @@ dist src {
     scenarios/*.tcl
     test/*/*
 }
-
 dist docs {
     docs/*.html
     docs/*.png
@@ -84,6 +84,7 @@ dist docs {
     docs/*.pptx
 }
 
+# Shell Initialization
 shell {
     catch {rename echo ""}
     package require projectlib

@@ -3,7 +3,7 @@
 #    pkgModules.tcl
 #
 # PROJECT:
-#    athena-sim - Athena Regional Stability Simulation
+#    athena - Athena Regional Stability Simulation
 #
 # DESCRIPTION:
 #    app_athena(n) package modules file
@@ -18,6 +18,13 @@
 package provide app_athena 6.3.0a2
 # -kite-provide-end
 
+#-----------------------------------------------------------------------
+# Is Tk loaded?
+#
+# For athena(1), Tk is already loaded, and we have a GUI.
+# For athena_batch(1), Tk is not loaded, and we will not have a GUI.
+
+set ::tkLoaded [expr {[info command tk] ne ""}]
 
 #-----------------------------------------------------------------------
 # Required Packages
@@ -35,12 +42,12 @@ package require projectlib
 namespace import ::projectlib::*
 
 # For Tk applications
-if {$::loadTk} {
-    package require Tk 8.6
+if {$::tkLoaded} {
     package require ctext 3.3
     package require projectgui
 
     namespace import ::projectgui::*
+    puts "projectgui loaded and imported"
 }
 
 # -kite-require-end
@@ -55,6 +62,7 @@ namespace eval ::app_athena:: {
 #-----------------------------------------------------------------------
 # Load app_athena(n) modules
 
+source [file join $::app_athena::library main.tcl     ]
 source [file join $::app_athena::library app.tcl      ]
 source [file join $::app_athena::library scenario.tcl ]
 source [file join $::app_athena::library sim.tcl      ]
@@ -71,7 +79,7 @@ source [file join $::app_athena::library axdb.tcl     ]
 source [file join $::app_athena::library shared modules.tcl]
 
 # For Tk applications
-if {$::loadTk} {
+if {$::tkLoaded} {
     source [file join $::app_athena::library ui      modules.tcl]
     source [file join $::app_athena::library wnbhood modules.tcl]
     source [file join $::app_athena::library wintel  modules.tcl]

@@ -55,15 +55,11 @@ snit::type app {
     #
     # Application command-line options.
     #
-    # -batch           - If 1, run in batch mode.
-    # 
     # -dev             - If 1, run in development mode (e.g., include 
     #                    debugging log in appwin)
     #
     # -ignoreuser      - If 1, ignore user preferences, etc.
     #                    Used for testing.
-    #
-    # -threads         - If 1, the app runs multi-threaded.
     #
     # -script filename - The name of a script to execute at start-up,
     #                    after loading the scenario file (if any).
@@ -77,11 +73,11 @@ snit::type app {
         -batch      0
         -dev        0
         -ignoreuser 0
-        -threads    0
         -script     {}
         -scratch    {}
         -url        {}
     }
+
 
     #-------------------------------------------------------------------
     # Group: Application Initialization
@@ -112,23 +108,19 @@ snit::type app {
     # See <usage> for the definition of the arguments.
     
     typemethod init {argv} {
+        # FIRST, are we running in batch mode or not?
+        if {!$::tkLoaded} {
+            set opts(-batch) 1
+        }
+        
         # FIRST, Process the command line.
         while {[string match "-*" [lindex $argv 0]]} {
             set opt [lshift argv]
 
             switch -exact -- $opt {
-                -batch      -
                 -dev        -
                 -ignoreuser {
                     set opts($opt) 1
-                }
-
-                -threads    {
-                    if {![catch {package require Thread}]} {
-                        set opts($opt) 1
-                    } else {
-                        app exit "Multi-threading is not available."
-                    }
                 }
 
                 -script -
@@ -194,7 +186,7 @@ snit::type app {
         }
 
         # NEXT, open the debugging log.
-        log init $opts(-threads)
+        log init 0
 
         # NEXT, log any loaded mods
         if {[namespace exists ::athena_mods::]} {
@@ -427,7 +419,7 @@ snit::type app {
     # use as needed.
 
     typemethod tkloaded {} {
-        return $::loadTk
+        return $::tkLoaded
     }
 
     # AddOrderToCIF interface name parmdict undoScript ?redoScript?
@@ -655,13 +647,11 @@ snit::type app {
         append usage \
             "Usage: athena ?options...? ?scenario.adb?\n"               \
             "\n"                                                        \
-            "-batch              Executed Athena in batch mode.\n"      \
             "-script filename    A script to execute after loading\n"   \
             "                    the scenario file (if any).\n"         \
             "-dev                Turns on all developer tools (e.g.,\n" \
             "                    the CLI and scrolling log)\n"          \
             "-ignoreuser         Ignore preference settings.\n"         \
-            "-threads            Run Athena multi-threaded.\n"          \
             "-url url            Load the URL in the detail browser.\n" \
             "                    '%' is replaced with '/'.\n"           \
             "\n"                                                        \

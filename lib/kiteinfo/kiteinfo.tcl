@@ -31,11 +31,12 @@ namespace eval ::kiteinfo:: {
         local-Tktable 0
         local-simlib 1
         xfiles {docs/aag.docx docs/aug.docx docs/rules.pptx docs/mag.docx}
-        apps {athena cellide helptool}
+        apps {athena athena_batch cellide helptool}
         local-Tkhtml 0
         local-fileutil 0
         dists {install-%platform src docs}
         reqver-kitedocs 0.4.3
+        icon-athena_batch {}
         local-textutil::adjust 0
         local-tablelist 0
         local-treectrl 0
@@ -45,6 +46,7 @@ namespace eval ::kiteinfo:: {
         url-docs/mag.docx https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20140826.docx
         local-marsutil 1
         reqver-marsgui 3.0.2
+        apptype-athena_batch exe
         reqver-uri 1.2
         distpat-install-%platform {
     LICENSE
@@ -67,13 +69,14 @@ namespace eval ::kiteinfo:: {
         local-snit 0
         reqver-treectrl 2.4
         local-marsgui 1
-        reqver-BWidget 1.9
         local-uri 0
+        reqver-BWidget 1.9
         apptype-cellide exe
         reqver-marsutil 3.0.2
         local-tls 0
         provides {}
         description {Athena Regional Stability Simulation}
+        gui-athena_batch 0
         local-BWidget 0
         apptype-helptool kit
         reqver-sqlite3 3.8.5
