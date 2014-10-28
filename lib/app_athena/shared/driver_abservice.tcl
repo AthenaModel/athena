@@ -304,6 +304,62 @@ driver::abservice define WATER {
     }
 }
 
+#-------------------------------------------------------------------
+# Rule Set: TRANSPORT:  Provision of transportation services to civilians
+#
+# Service Situation: effect of provision/non-provision of service
+# on a civilian group.
+
+driver::abservice define TRANSPORT {
+    typemethod ruleset {fdict} {
+        dict with fdict {}
+        
+        # FIRST, get some data
+        set case [GetCase $fdict]
+
+        dict set fdict case $case
+        
+        # TRANSPORT-1: Satisfaction Effects
+        dam rule TRANSPORT-1-1 $fdict {
+            $case eq "R-"
+        } {
+            # While TRANSPORT is less than required for CIV group g
+            # Then for group g
+            dam sat T $g \
+                AUT [expr {[mag* $expectf XXS+] + [mag* $needs XXS-]}] \
+                QOL [expr {[mag* $expectf XXS+] + [mag* $needs XXS-]}]
+        }
+
+        dam rule TRANSPORT-1-2 $fdict {
+            $case eq "E-"
+        } {
+            # While TRANSPORT is less than expected for CIV group g
+            # Then for group g
+            dam sat T $g \
+                AUT [mag* $expectf XXS+] \
+                QOL [mag* $expectf XXS+]
+        }
+
+        dam rule TRANSPORT-1-3 $fdict {
+            $case eq "E"
+        } {
+            # While TRANSPORT is as expected for CIV group g
+            # Then for group g
+
+            # Nothing
+        }
+
+        dam rule TRANSPORT-1-4 $fdict {
+            $case eq "E+"
+        } {
+            # While TRANSPORT is better than expected for CIV group g
+            # Then for group g
+            dam sat T $g \
+                AUT [mag* $expectf XXS+] \
+                QOL [mag* $expectf XXS+]
+        }
+    }
+}
 
 
 
