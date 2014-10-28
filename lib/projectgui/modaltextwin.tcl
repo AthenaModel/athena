@@ -17,14 +17,14 @@
 #
 #-----------------------------------------------------------------------
 
-namespace eval ::marsgui:: {
+namespace eval ::projectgui:: {
     namespace export modaltextwin
 }
 
 #-----------------------------------------------------------------------
 # modaltextwin
 
-snit::type ::marsgui::modaltextwin {
+snit::type ::projectgui::modaltextwin {
     pragma -hasinstances no
 
     #-------------------------------------------------------------------
