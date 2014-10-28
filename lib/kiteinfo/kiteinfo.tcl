@@ -19,7 +19,7 @@ namespace eval ::kiteinfo:: {
     variable kiteInfo
 
     array set kiteInfo {
-        url-docs/aug.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aug-20141010.docx
+        url-docs/aug.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aug-20141028.docx
         apptype-athena exe
         reqver-Tktable 2.11
         reqver-ctext 3.3
