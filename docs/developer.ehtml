@@ -4,6 +4,7 @@
 
 <ul>
   <li> <xref athena(1)>: The Athena simulation.
+  <li> <xref athena_batch(1)>: Athena batch mode.
   <li> <link "build_notes.html" "Build Notes">: Details of each
        Athena build.
   <li> <link "cm.html" "CM Plan">

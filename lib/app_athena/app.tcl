@@ -53,22 +53,24 @@ snit::type app {
 
     # Type Variable: opts
     #
-    # Application command-line options.
+    # Application options.  These are set in a variety of ways.
     #
-    # -batch           - If 1, run in batch mode.
-    # 
-    # -dev             - If 1, run in development mode (e.g., include 
-    #                    debugging log in appwin)
+    # -batch           - If 1, athena_batch(1) is running; otherwise,
+    #                    athena(1) is running.
     #
     # -ignoreuser      - If 1, ignore user preferences, etc.
     #                    Used for testing.
-    #
-    # -threads         - If 1, the app runs multi-threaded.
     #
     # -script filename - The name of a script to execute at start-up,
     #                    after loading the scenario file (if any).
     # -scratch dir     - The name of a directory to use for writing
     #                    log and working rdb files.
+    #
+    # athena(1) only:
+    #
+    # -dev             - If 1, run in development mode (e.g., include 
+    #                    debugging log in appwin)
+    #
     # -url url         - A URL to load into the detail browser.
     #                    "%" is replaced with "/", to work around MSys
     #                    path-munging.
@@ -77,16 +79,18 @@ snit::type app {
         -batch      0
         -dev        0
         -ignoreuser 0
-        -threads    0
         -script     {}
         -scratch    {}
         -url        {}
     }
 
+
     #-------------------------------------------------------------------
     # Group: Application Initialization
 
-    # Type Method: init
+    # init argv
+    #
+    # argv - Command line arguments from main.
     #
     # Initializes the application.  This routine should be called once
     # at application start-up, and passed the arguments from the
@@ -121,14 +125,6 @@ snit::type app {
                 -dev        -
                 -ignoreuser {
                     set opts($opt) 1
-                }
-
-                -threads    {
-                    if {![catch {package require Thread}]} {
-                        set opts($opt) 1
-                    } else {
-                        app exit "Multi-threading is not available."
-                    }
                 }
 
                 -script -
@@ -194,12 +190,10 @@ snit::type app {
         }
 
         # NEXT, open the debugging log.
-        log init $opts(-threads)
+        log init 0
 
         # NEXT, log any loaded mods
-        if {[namespace exists ::athena_mods::]} {
-            ::athena_mods::logmods
-        }
+        mod logmods
 
         # NEXT, initialize and load the user preferences
         prefs init
@@ -427,7 +421,7 @@ snit::type app {
     # use as needed.
 
     typemethod tkloaded {} {
-        return $::loadTk
+        return $::tkLoaded
     }
 
     # AddOrderToCIF interface name parmdict undoScript ?redoScript?
@@ -647,25 +641,37 @@ snit::type app {
         }
     }
 
-    # Type Method: usage
+    # usage
     #
     # Returns the application's command-line syntax.
     
     typemethod usage {} {
+        if {$opts(-batch)} {
+            set usage \
+                "Usage: athena_batch ?options...? ?scenario.adb?\n\n"
+        } else {
+            set usage \
+                "Usage: athena ?options...? ?scenario.adb?\n\n"
+        }
+
         append usage \
-            "Usage: athena ?options...? ?scenario.adb?\n"               \
-            "\n"                                                        \
-            "-batch              Executed Athena in batch mode.\n"      \
             "-script filename    A script to execute after loading\n"   \
             "                    the scenario file (if any).\n"         \
+            "-ignoreuser         Ignore preference settings.\n"
+
+        if {!$opts(-batch)} {
+            append usage \
             "-dev                Turns on all developer tools (e.g.,\n" \
             "                    the CLI and scrolling log)\n"          \
-            "-ignoreuser         Ignore preference settings.\n"         \
-            "-threads            Run Athena multi-threaded.\n"          \
             "-url url            Load the URL in the detail browser.\n" \
             "                    '%' is replaced with '/'.\n"           \
-            "\n"                                                        \
-            "See athena(1) for more information.\n"
+            "\nSee athena(1) for more information.\n"
+        } else {
+            append usage \
+                "\nSee athena_batch(1) for more information.\n"
+        }
+
+        return $usage
     }
 
     # Type Method: NotifierTrace

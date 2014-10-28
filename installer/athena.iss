@@ -39,11 +39,13 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]             
 Source: "..\bin\athena-{#MyAppVersion}-win32-ix86.exe"; DestDir: "{app}"; DestName: "athena.exe"; Flags: ignoreversion
+Source: "..\bin\athena_batch-{#MyAppVersion}-win32-ix86.exe"; DestDir: "{app}"; DestName: "athena_batch.exe"; Flags: ignoreversion
 Source: "..\docs\build_notes.html"; DestDir: "{app}\docs"; Flags: ignoreversion 
 Source: "..\docs\index.html"; DestDir: "{app}\docs"; Flags: ignoreversion 
 Source: "..\docs\*.png"; DestDir: "{app}\docs"; Flags: ignoreversion 
 Source: "..\docs\athena.helpdb"; DestDir: "{app}\docs"; Flags: ignoreversion 
 Source: "..\docs\man1\athena.html"; DestDir: "{app}\docs\man1"; Flags: ignoreversion 
+Source: "..\docs\man1\athena_batch.html"; DestDir: "{app}\docs\man1"; Flags: ignoreversion 
 Source: "..\docs\*.docx"; DestDir: "{app}\docs\dev"; Flags: ignoreversion 
 Source: "..\docs\*.pptx"; DestDir: "{app}\docs\dev"; Flags: ignoreversion skipifsourcedoesntexist
 Source: "..\docs\*.pdf"; DestDir: "{app}\docs\dev"; Flags: ignoreversion skipifsourcedoesntexist

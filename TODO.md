@@ -7,6 +7,6 @@
 * Add source and docs distributions. DONE.
 * Update [package requires] in all man pages. DONE
 * Cleanup osdir. DONE
-* Use standard app loader scripts
-* Verify that mods work.
+* Use standard app loader scripts. DONE
+* Verify that mods work. DONE
 * Write cellide manpage.

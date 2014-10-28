@@ -4,10 +4,11 @@ poc William.H.Duquette@jpl.nasa.gov
 
 # Applications
 app athena -apptype exe -gui
+app athena_batch -apptype exe 
 app cellide -apptype exe -gui
 app helptool -apptype kit -gui
 
-# Source Directories
+# Compiled Directories
 src help
 
 # External Dependencies
@@ -37,10 +38,11 @@ require Marsbin 3.0.2 -local
 
 # External Files
 xfile docs/aag.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aag-20141010.docx
-xfile docs/aug.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aug-20141010.docx
+xfile docs/aug.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aug-20141028.docx
 xfile docs/rules.pptx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/rules-20141010.pptx
 xfile docs/mag.docx https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20140826.docx
 
+# Distribution Targets
 dist install-%platform {
     LICENSE
     README.md
@@ -48,12 +50,12 @@ dist install-%platform {
     docs/*.html
     docs/*.png
     docs/man1/athena.html
+    docs/man1/athena_batch.html
     docs/man1/cellide.html
-    docs/help/athena.helpdb
+    docs/athena.helpdb
     docs/*.docx
     docs/*.pptx
 }
-
 dist src {
     project.kite
     LICENSE
@@ -66,15 +68,14 @@ dist src {
     docs/*.mm
     docs/*.graphml
     docs/*/*.ehtml
-    docs/help/*.help
-    docs/help/img/*.png
+    src/help/*.help
+    src/help/img/*.png
     installer/*
     lib/*/*
     lib/*/*/*
     scenarios/*.tcl
     test/*/*
 }
-
 dist docs {
     docs/*.html
     docs/*.png
@@ -84,6 +85,7 @@ dist docs {
     docs/*.pptx
 }
 
+# Shell Initialization
 shell {
     catch {rename echo ""}
     package require projectlib

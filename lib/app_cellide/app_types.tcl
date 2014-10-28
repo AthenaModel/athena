@@ -4,7 +4,7 @@
 #   Application Data Types
 #
 # PACKAGE:
-#   app_cellide(n) -- athena_cell(1) implementation package
+#   app_cellide(n) -- cellide(1) implementation package
 #
 # PROJECT:
 #   Athena S&RO Simulation
