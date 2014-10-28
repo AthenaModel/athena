@@ -47,7 +47,6 @@ if {$::tkLoaded} {
     package require projectgui
 
     namespace import ::projectgui::*
-    puts "projectgui loaded and imported"
 }
 
 # -kite-require-end

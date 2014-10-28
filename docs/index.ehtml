@@ -7,6 +7,8 @@
   <li> Athena Analyst's Guide (<link "aag.docx" "MS Word docx">)
   <li> Athena Rules Document (<link "rules.pptx" "PowerPoint pptx">)
   <li> Mars Analyst's Guide (<link "mag.docx" "MS Word docx">)
+  <li> <xref athena(1)> Man Page
+  <li> <xref athena_batch(1)> Man Page
 </ul>
 
 <h2>Software Notes</h2>
