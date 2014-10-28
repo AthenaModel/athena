@@ -320,12 +320,17 @@ snit::type ::projectlib::typewrapper {
     SEWAGE-1-2    "Sewage has pooled in the streets"
     SEWAGE-2-1    "Sewage is cleaned up by locals"
 
-    TRAFFIC-1-1    "Traffic has begun to congest the streets"
-    TRAFFIC-1-2    "Traffic congestion continues"
+    TRAFFIC-1-1   "Traffic has begun to congest the streets"
+    TRAFFIC-1-2   "Traffic congestion continues"
 
-    UNEMP-1-1     "Group is suffering from unemployment"
+    TRANSPORT-1-1 "Public transportation services are less than required"
+    TRANSPORT-1-2 "Public transportation services are less than expected"
+    TRANSPORT-1-3 "Public transportation services are as expected"
+    TRANSPORT-1-4 "Public transportation services are better than expected"
 
-    VIOLENCE-1.1  "Random violence in neighborhood"
+    UNEMP-1-1    "Group is suffering from unemployment"
+
+    VIOLENCE-1-1 "Random violence in neighborhood"
 
     WATER-1-1    "Residential water services are less than required"
     WATER-1-2    "Residential water services are less than expected"
@@ -388,6 +393,7 @@ snit::type ::projectlib::typewrapper {
     RIOT      "Riot"
     SEWAGE    "Sewage Spill"
     TRAFFIC   "Traffic Congestion"
+    TRANSPORT "Transportation Services"
     UNEMP     "Unemployment"
     VIOLENCE  "Random Violence"
     WATER     "Residential Water Services"
@@ -441,6 +447,7 @@ snit::type ::projectlib::typewrapper {
     SICKNESS  "Sickness"
     THIRST    "Thirst"
     TRAFFIC   "Traffic Congestion"
+    TRANSPORT "Transportation Services"
     UNEMP     "Unemployment"
     WATER     "Residential Water Services"
 }
@@ -520,15 +527,17 @@ snit::type ::projectlib::typewrapper {
 
 # Services
 ::marsutil::enum ::projectlib::eservice {
-    ENERGY "Energy Infrastructure Services"
-    ENI    "Essential Non-Infrastructure Services"
-    WATER  "Residential Water Services"
+    ENERGY     "Energy Infrastructure Services"
+    ENI        "Essential Non-Infrastructure Services"
+    TRANSPORT  "Transportation Services"
+    WATER      "Residential Water Services"
 }
 
 # Abstract Infrastructure Services
 ::marsutil::enum ::projectlib::eabservice {
-    ENERGY "Energy Infrastructure Services"
-    WATER  "Residential Water Services"
+    ENERGY     "Energy Infrastructure Services"
+    WATER      "Residential Water Services"
+    TRANSPORT  "Transportation Services"
 }
 
 # Situation State

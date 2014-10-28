@@ -855,6 +855,11 @@ snit::type ::projectlib::parmdb {
         $ps setdefault dam.TRAFFIC.nearFactor     0.0
         $ps setdefault dam.TRAFFIC.farFactor      0.0
 
+        # Rule Set: TRANSPORT
+        $ps setdefault dam.TRANSPORT.cause        TRANSPORT
+        $ps setdefault dam.TRANSPORT.nearFactor   0.25
+        $ps setdefault dam.TRANSPORT.farFactor    0.0
+
         # Rule Set: VIOLENCE
         $ps setdefault dam.VIOLENCE.cause         CIVCAS
         $ps setdefault dam.VIOLENCE.nearFactor    0.0
@@ -1687,6 +1692,16 @@ snit::type ::projectlib::parmdb {
         $ps setdefault service.ENERGY.required.RURAL     0.4
         $ps setdefault service.ENERGY.required.SUBURBAN  0.9
         $ps setdefault service.ENERGY.required.URBAN     1.0
+
+        $ps setdefault service.TRANSPORT.actual.ISOLATED  0.0
+        $ps setdefault service.TRANSPORT.actual.RURAL     0.4
+        $ps setdefault service.TRANSPORT.actual.SUBURBAN  0.9
+        $ps setdefault service.TRANSPORT.actual.URBAN     1.0
+
+        $ps setdefault service.TRANSPORT.required.ISOLATED  0.0
+        $ps setdefault service.TRANSPORT.required.RURAL     0.4
+        $ps setdefault service.TRANSPORT.required.SUBURBAN  0.9
+        $ps setdefault service.TRANSPORT.required.URBAN     1.0
 
         $ps setdefault service.WATER.actual.ISOLATED  0.0
         $ps setdefault service.WATER.actual.RURAL     0.4

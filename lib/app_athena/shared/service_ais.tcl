@@ -124,12 +124,12 @@ snit::type service_ais {
         set slist [eabservice names]
 
         rdb eval "
-            SELECT SG.new_actual  AS new,
-                   SG.actual      AS actual,
+            SELECT SG.new_actual        AS new,
+                   SG.actual            AS actual,
                    SG.new_actual-actual AS delta,
-                   SG.g           AS g,
-                   SG.s           AS s,
-                   G.n            AS n
+                   SG.g                 AS g,
+                   SG.s                 AS s,
+                   G.n                  AS n
             FROM service_sg AS SG
             JOIN local_civgroups AS G ON (G.g = SG.g)
             WHERE s IN ('[join $slist ',']')
@@ -144,8 +144,8 @@ snit::type service_ais {
 
             sigevent log 1 strategy "
                 Civilian group {group:$g} has actual level of $s
-                service $dir by [format %.3f $delta] to
-                [format %.3f $new].
+                service $dir by [format %.1f%% [expr {$delta*100.0}]]
+                to [format %.1f%% [expr {$new*100.0}]].
             " $g $n
         }
     }

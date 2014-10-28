@@ -122,17 +122,35 @@ s  ENERGY
 g  KURD
 s  ENI
 
+g  KURD
+s  TRANSPORT
+
+g  KURD
+s  WATER
+
 g  SHIA
 s  ENERGY
 
 g  SHIA
 s  ENI
 
+g  SHIA
+s  TRANSPORT
+
+g  SHIA
+s  WATER
+
 g  SUNN
 s  ENERGY
 
 g  SUNN
 s  ENI
+
+g  SUNN
+s  TRANSPORT
+
+g  SUNN
+s  WATER
     }
 
     #-------------------------------------------------------------------

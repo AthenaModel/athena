@@ -92,7 +92,7 @@ namespace eval ::athena_test::tests:: {
     } -cleanup {
         cleanup
     } -result {
-        s {invalid value "NONESUCH", should be one of: ENERGY}
+        s {invalid value "NONESUCH", should be one of: ENERGY, WATER, TRANSPORT}
     }
 
     test TACTIC:SERVICE-1.5 {negative los} -setup {

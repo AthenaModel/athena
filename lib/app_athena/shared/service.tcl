@@ -105,7 +105,7 @@ snit::type service {
             }
 
             # NEXT, defaults for actual, required and expected
-            set actual [parm get service.$s.actual.$urb]
+            set actual   [parm get service.$s.actual.$urb]
             set required [parm get service.$s.required.$urb]
 
             rdb eval {

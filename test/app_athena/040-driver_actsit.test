@@ -62,6 +62,8 @@ namespace eval ::athena_test::tests:: {
         parm set dam.UNEMP.active no
         parm set dam.ENI.active no
         parm set dam.ENERGY.active no
+        parm set dam.WATER.active no
+        parm set dam.TRANSPORT.active no
         rdb eval {DELETE FROM drivers}
         
         # NEXT, create the entities

@@ -15,7 +15,7 @@
 #-------------------------------------------------------------------
 # Tactic: SERVICE
 
-tactic define SERVICE "Update Level of Service" {system} {
+tactic define SERVICE "Update Level of Service" {system actor} -onlock {
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -63,7 +63,17 @@ tactic define SERVICE "Update Level of Service" {system} {
     }
 
     method narrative {} {
-        set narr "Set the actual level of $s service to $los in "
+        # FIRST, get the owner and build the narrative appropriately
+        set owner [my agent]
+        set narr "Actor {actor:$owner} "
+        set pct [format %.1f%% [expr {$los * 100.0}]]
+
+        if {$owner eq "SYSTEM"} {
+            set narr "The SYSTEM agent "
+        }
+
+        append narr "sets the actual level of $s service to "
+        append narr "$pct of saturation level in "
 
         append narr [gofer::NBHOODS narrative $nlist]
         
@@ -71,6 +81,7 @@ tactic define SERVICE "Update Level of Service" {system} {
     }
 
     method execute {} {
+        # FRIST, get the owner
         set owner [my agent]
         set nbhoods {}
 
@@ -83,6 +94,7 @@ tactic define SERVICE "Update Level of Service" {system} {
 
         sigevent log 2 tactic $msg {*}$objects
 
+        # NEXT, update actual LOS in the nbhoods specified
         service actual $nbhoods $s $los
     }
 }
@@ -121,7 +133,7 @@ order define TACTIC:SERVICE {
     # takes place on sanity check.
     prepare nlist     
     prepare s        -toupper -type eabservice
-    prepare los -num -type rfraction
+    prepare los -num          -type rfraction
 
     returnOnError -final
 

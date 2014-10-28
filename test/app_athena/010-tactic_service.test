@@ -102,7 +102,7 @@ namespace eval ::athena_test::tests:: {
         $T1 narrative
     } -cleanup {
         cleanup
-    } -result {Set the actual level of ENERGY service to 1.0 in nbhood ???}
+    } -result {The SYSTEM agent sets the actual level of ENERGY service to 100.0% of saturation level in nbhood ???}
 
     test narrative-1.2 {narrative, specific settings} -setup {
         setup
@@ -114,7 +114,7 @@ namespace eval ::athena_test::tests:: {
         $T1 narrative
     } -cleanup {
         cleanup
-    } -result {Set the actual level of ENERGY service to 0.5 in these neighborhoods (NB1, NB2)}
+    } -result {The SYSTEM agent sets the actual level of ENERGY service to 50.0% of saturation level in these neighborhoods (NB1, NB2)}
 
     #-------------------------------------------------------------------
     # check
@@ -196,14 +196,20 @@ namespace eval ::athena_test::tests:: {
     } -cleanup {
         cleanup
     } -match dict -result {
-new_actual s      g    
----------- ------ ---- 
-0.25       ENERGY SUNN 
-0.25       ENERGY SHIA 
-0.25       ENERGY KURD 
-0.0        ENI    SUNN 
-0.0        ENI    SHIA 
-0.0        ENI    KURD 
+new_actual s         g    
+---------- --------- ---- 
+0.25       ENERGY    SUNN 
+0.25       ENERGY    SHIA 
+0.25       ENERGY    KURD 
+0.0        ENI       SUNN 
+0.0        ENI       SHIA 
+0.0        ENI       KURD 
+0.0        TRANSPORT SUNN 
+0.0        TRANSPORT SHIA 
+0.0        TRANSPORT KURD 
+0.0        WATER     SUNN 
+0.0        WATER     SHIA 
+0.0        WATER     KURD 
     }
 
     #-------------------------------------------------------------------
