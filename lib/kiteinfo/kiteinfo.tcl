@@ -55,8 +55,9 @@ namespace eval ::kiteinfo:: {
     docs/*.html
     docs/*.png
     docs/man1/athena.html
+    docs/man1/athena_batch.html
     docs/man1/cellide.html
-    docs/help/athena.helpdb
+    docs/athena.helpdb
     docs/*.docx
     docs/*.pptx
 }
@@ -118,8 +119,8 @@ namespace eval ::kiteinfo:: {
     docs/*.mm
     docs/*.graphml
     docs/*/*.ehtml
-    docs/help/*.help
-    docs/help/img/*.png
+    src/help/*.help
+    src/help/img/*.png
     installer/*
     lib/*/*
     lib/*/*/*
