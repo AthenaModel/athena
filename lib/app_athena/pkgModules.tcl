@@ -62,6 +62,7 @@ namespace eval ::app_athena:: {
 # Load app_athena(n) modules
 
 source [file join $::app_athena::library main.tcl     ]
+source [file join $::app_athena::library mod.tcl      ]
 source [file join $::app_athena::library app.tcl      ]
 source [file join $::app_athena::library scenario.tcl ]
 source [file join $::app_athena::library sim.tcl      ]

@@ -197,9 +197,7 @@ snit::type app {
         log init 0
 
         # NEXT, log any loaded mods
-        if {[namespace exists ::athena_mods::]} {
-            ::athena_mods::logmods
-        }
+        mod logmods
 
         # NEXT, initialize and load the user preferences
         prefs init
