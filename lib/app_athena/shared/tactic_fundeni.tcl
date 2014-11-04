@@ -23,6 +23,7 @@ tactic define FUNDENI \
     # Instance Variables 
 
     variable mode    ;# ALL, EXACT, UPTO, PERCENT or EXCESS
+    variable cmode   ;# CAPPED, UNCAPPED
     variable los     ;# Desired level of service to fund, as a percentage
     variable amount  ;# Amount of money to use for funding
     variable percent ;# Percent of money to use if mode is PERCENT
@@ -40,6 +41,7 @@ tactic define FUNDENI \
 
         # Initialize state variables
         set mode    ALL
+        set cmode   CAPPED
         set los     100.0
         set amount  0.0
         set percent 0.0
@@ -72,30 +74,33 @@ tactic define FUNDENI \
         set gtext [gofer::CIVGROUPS narrative $glist]
         set atext [moneyfmt $amount]
         set ltext [format "%.1f%%" $los]
-        set ptext "[format "%.1f%%" $percent] of cash-on-hand"
-        set anarr "\$$atext but not more than $ltext of the saturation LOS"
-        set pnarr "$ptext but not more than $ltext of the saturation LOS"
-        set enarr "worth of Essential Non-Infrastructure services for $gtext"
+        set cnarr "The amount spent is not capped by the saturation LOS."
+        if {$cmode eq "CAPPED"} {
+            set cnarr \
+            "The amount spent will be capped at $ltext of the saturation LOS."
+        }
+        set pnarr "[format "%.1f%%" $percent] of cash-on-hand"
+        set enarr "Essential Non-Infrastructure services for $gtext."
 
         switch -exact -- $mode {
             ALL {
-                return "Use remaining cash on hand to fund at least $ltext of the saturation LOS $enarr."
+                return "Use remaining cash on hand to fund $enarr $cnarr"
             }
 
             EXACT {
-                return "Fund exactly $anarr $enarr."
+                return "Fund exactly \$$atext worth of $enarr $cnarr"
             }
 
             UPTO {
-                return "Fund up to $anarr $enarr."
+                return "Fund up to \$$atext worth of $enarr $cnarr"
             }
 
             PERCENT {
-                return "Fund $pnarr $enarr."
+                return "Fund $pnarr worth of $enarr $cnarr"
             }
 
             EXCESS {
-                return "Fund with anything in excess of $anarr $enarr."
+                return "Fund with anything in excess of \$$atext worth of $enarr $cnarr"
             }
 
             default {
@@ -114,9 +119,15 @@ tactic define FUNDENI \
         set list [gofer::CIVGROUPS eval $glist]
         set trans(glist) [my groupsInSupportingNbhoods [my agent] $list]
 
-        # NEXT, compute the upper limit of funding as a percentage of
-        # saturation level of service for all groups
-        let max_fund [service_eni fundlevel $los $trans(glist)]
+        # NEXT, initialize the max funding amount to all cash on hand
+        let max_fund $cash
+
+        # NEXT, if spending is capped compute the upper limit of funding 
+        # as a percentage of saturation level of service for all groups
+        if {$cmode eq "CAPPED"} {
+            let max_fund [service_eni fundlevel $los $trans(glist)]
+        }
+
         let amt {min($amount, $max_fund)}
 
         set funds 0.0
@@ -273,7 +284,7 @@ order define TACTIC:FUNDENI {
         text tactic_id -context yes \
             -loadcmd {beanload}
 
-        rc "Fund ENI For:" -span 2
+        rc "Fund ENI For:" -span 2 
 
         rcc "Groups:" -for glist -span 3
         gofer glist -typename gofer::CIVGROUPS
@@ -283,12 +294,12 @@ order define TACTIC:FUNDENI {
             case ALL "All remaining cash-on-hand" {}
 
             case EXACT "Exactly this much" {
-                c "" -for amount
+                cc "" -for amount 
                 text amount
             }
 
             case UPTO "Up to this much" {
-                c "" -for amount
+                cc "" -for amount 
                 text amount
             }
 
@@ -300,14 +311,22 @@ order define TACTIC:FUNDENI {
             }
 
             case EXCESS "Excess of cash-on-hand" {
-                c "" -for amount
+                cc "" -for amount
                 text amount
             }
         }
 
-        rcc "Up to:" -for los
-        text los
-        label "% of SLOS"
+        rcc "Spending Cap:" -for cmode 
+        selector cmode {
+            case UNCAPPED "None" {}
+
+            case CAPPED "Capped" {
+                cc "At:" -for los
+                text los
+                c
+                label "% of SLOS"
+            }
+        }
 
     }
 } {
@@ -319,6 +338,7 @@ order define TACTIC:FUNDENI {
     # FIRST, prepare and validate the parameters
     prepare glist   
     prepare mode    -toupper -selector
+    prepare cmode   -toupper -selector
     prepare amount  -type money
     prepare percent -type rpercent
     prepare los     -type rpercent
@@ -340,7 +360,9 @@ order define TACTIC:FUNDENI {
     returnOnError -final
 
     # NEXT, create the tactic
-    setundo [$tactic update_ {glist mode amount percent los} [array get parms]]
+    setundo [$tactic update_ {
+        glist cmode mode amount percent los
+    } [array get parms]]
 }
 
 
