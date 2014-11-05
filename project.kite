@@ -31,10 +31,10 @@ require tdom 0.8
 require struct::set 2.2
 require kiteutils 0.4.3 -local
 require kitedocs 0.4.3 -local
-require marsutil 3.0.2 -local
-require marsgui 3.0.2 -local
-require simlib 3.0.2 -local
-require Marsbin 3.0.2 -local
+require marsutil 3.0.3 -local
+require marsgui 3.0.3 -local
+require simlib 3.0.3 -local
+require Marsbin 3.0.3 -local
 
 # External Files
 xfile docs/aag.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aag-20141010.docx
