@@ -17,6 +17,7 @@ teapot.txt
 *.xlsx
 *.adb
 *.helpdb
+.backup
 
 # SublimeText artifacts.
 *.sublime-*
