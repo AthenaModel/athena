@@ -58,7 +58,14 @@ snit::type driver::abservice {
 
         # NEXT, call the abstract services rule sets.
         rdb eval "
-            SELECT s AS dtype, g, actual, required, expected, expectf, needs
+            SELECT s          AS dtype,
+                   controller AS a,
+                   g          AS g, 
+                   actual     AS actual, 
+                   required   AS required, 
+                   expected   AS expected, 
+                   expectf    AS expectf, 
+                   needs      AS needs
             FROM local_civgroups 
             JOIN demog_g USING (g)
             JOIN service_sg USING (g)
@@ -144,6 +151,17 @@ snit::type driver::abservice {
         $ht putln "[format %.2f $required], and expected a level of"
         $ht putln "[format %.2f $expected]."
         $ht para
+        if {$a ne ""} {
+            $ht putln "Actor\n"
+            $ht link my://app/actor/$a $a
+            $ht putln "is in control of the neighborhood, so "
+            $ht link my://app/group/$g $g
+            $ht putln "'s relationship with $a is affected."
+            $ht para
+        } else {
+            $ht putln "There is no actor in control of the neighborhood,"
+            $ht putln "so there are no vertical relationships affected."
+        }
 
         $ht putln "The case is therefore $case, that is, $g received"
         switch -exact -- $case {
@@ -214,6 +232,10 @@ driver::abservice define ENERGY {
             dam sat T $g \
                 AUT [expr {[mag* $expectf XXS+] + [mag* $needs XXS-]}] \
                 QOL [expr {[mag* $expectf XXS+] + [mag* $needs XXS-]}]
+
+            if {$a ne ""} {
+                dam vrel T $g $a L-
+            }
         }
 
         dam rule ENERGY-1-2 $fdict {
@@ -224,6 +246,10 @@ driver::abservice define ENERGY {
             dam sat T $g \
                 AUT [mag* $expectf XXS+] \
                 QOL [mag* $expectf XXS+]
+
+            if {$a ne ""} {
+                dam vrel T $g $a M-
+            }
         }
 
         dam rule ENERGY-1-3 $fdict {
@@ -243,12 +269,16 @@ driver::abservice define ENERGY {
             dam sat T $g \
                 AUT [mag* $expectf XXS+] \
                 QOL [mag* $expectf XXS+]
+
+            if {$a ne ""} {
+                dam vrel T $g $a XL+
+            }
         }
     }
 }
 
 #-------------------------------------------------------------------
-# Rule Set: WATER:  Provision of WATER services to civilians
+# Rule Set: WATER:  Provision of Potable WATER to civilians
 #
 # Service Situation: effect of provision/non-provision of service
 # on a civilian group.
@@ -269,8 +299,12 @@ driver::abservice define WATER {
             # While WATER is less than required for CIV group g
             # Then for group g
             dam sat T $g \
-                AUT [expr {[mag* $expectf XXS+] + [mag* $needs XXS-]}] \
-                QOL [expr {[mag* $expectf XXS+] + [mag* $needs XXS-]}]
+                AUT [expr {[mag* $expectf XS+] + [mag* $needs XS-]}] \
+                QOL [expr {[mag* $expectf L+]  + [mag* $needs L-]}]
+
+            if {$a ne ""} {
+                dam vrel T $g $a L-
+            }
         }
 
         dam rule WATER-1-2 $fdict {
@@ -280,7 +314,11 @@ driver::abservice define WATER {
             # Then for group g
             dam sat T $g \
                 AUT [mag* $expectf XXS+] \
-                QOL [mag* $expectf XXS+]
+                QOL [mag* $expectf XS+]
+
+            if {$a ne ""} {
+                dam vrel T $g $a M-
+            }
         }
 
         dam rule WATER-1-3 $fdict {
@@ -300,6 +338,10 @@ driver::abservice define WATER {
             dam sat T $g \
                 AUT [mag* $expectf XXS+] \
                 QOL [mag* $expectf XXS+]
+
+            if {$a ne ""} {
+                dam vrel T $g $a XL+
+            }
         }
     }
 }
@@ -328,6 +370,10 @@ driver::abservice define TRANSPORT {
             dam sat T $g \
                 AUT [expr {[mag* $expectf XXS+] + [mag* $needs XXS-]}] \
                 QOL [expr {[mag* $expectf XXS+] + [mag* $needs XXS-]}]
+
+            if {$a ne ""} {
+                dam vrel T $g $a L-
+            }
         }
 
         dam rule TRANSPORT-1-2 $fdict {
@@ -338,6 +384,10 @@ driver::abservice define TRANSPORT {
             dam sat T $g \
                 AUT [mag* $expectf XXS+] \
                 QOL [mag* $expectf XXS+]
+
+            if {$a ne ""} {
+                dam vrel T $g $a M-
+            }
         }
 
         dam rule TRANSPORT-1-3 $fdict {
@@ -346,7 +396,7 @@ driver::abservice define TRANSPORT {
             # While TRANSPORT is as expected for CIV group g
             # Then for group g
 
-            # Nothing
+            # Nothing 
         }
 
         dam rule TRANSPORT-1-4 $fdict {
@@ -355,8 +405,12 @@ driver::abservice define TRANSPORT {
             # While TRANSPORT is better than expected for CIV group g
             # Then for group g
             dam sat T $g \
-                AUT [mag* $expectf XXS+] \
-                QOL [mag* $expectf XXS+]
+                AUT [mag* $expectf XS+] \
+                QOL [mag* $expectf XS+]
+
+            if {$a ne ""} {
+                dam vrel T $g $a XL+
+            }
         }
     }
 }

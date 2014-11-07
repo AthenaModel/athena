@@ -858,7 +858,7 @@ snit::type ::projectlib::parmdb {
         # Rule Set: TRANSPORT
         $ps setdefault dam.TRANSPORT.cause        TRANSPORT
         $ps setdefault dam.TRANSPORT.nearFactor   0.25
-        $ps setdefault dam.TRANSPORT.farFactor    0.0
+        $ps setdefault dam.TRANSPORT.farFactor    0.1
 
         # Rule Set: VIOLENCE
         $ps setdefault dam.VIOLENCE.cause         CIVCAS
@@ -867,7 +867,7 @@ snit::type ::projectlib::parmdb {
 
         # Rule Set: WATER
         $ps setdefault dam.WATER.cause            WATER
-        $ps setdefault dam.WATER.nearFactor       0.25
+        $ps setdefault dam.WATER.nearFactor       0.4
         $ps setdefault dam.WATER.farFactor        0.0
 
         # demog.* parameters
@@ -1703,14 +1703,14 @@ snit::type ::projectlib::parmdb {
         $ps setdefault service.TRANSPORT.required.SUBURBAN  0.9
         $ps setdefault service.TRANSPORT.required.URBAN     1.0
 
-        $ps setdefault service.WATER.actual.ISOLATED  0.0
-        $ps setdefault service.WATER.actual.RURAL     0.4
-        $ps setdefault service.WATER.actual.SUBURBAN  0.9
+        $ps setdefault service.WATER.actual.ISOLATED  0.8
+        $ps setdefault service.WATER.actual.RURAL     0.9
+        $ps setdefault service.WATER.actual.SUBURBAN  1.0
         $ps setdefault service.WATER.actual.URBAN     1.0
 
-        $ps setdefault service.WATER.required.ISOLATED  0.0
-        $ps setdefault service.WATER.required.RURAL     0.4
-        $ps setdefault service.WATER.required.SUBURBAN  0.9
+        $ps setdefault service.WATER.required.ISOLATED  0.8
+        $ps setdefault service.WATER.required.RURAL     0.9
+        $ps setdefault service.WATER.required.SUBURBAN  1.0
         $ps setdefault service.WATER.required.URBAN     1.0
 
         $ps subset service.ENI {
