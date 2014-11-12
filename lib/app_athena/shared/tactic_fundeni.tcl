@@ -119,26 +119,27 @@ tactic define FUNDENI \
         set list [gofer::CIVGROUPS eval $glist]
         set trans(glist) [my groupsInSupportingNbhoods [my agent] $list]
 
-        # NEXT, initialize the max funding amount to all cash on hand
-        let max_fund $cash
-
-        # NEXT, if spending is capped compute the upper limit of funding 
-        # as a percentage of saturation level of service for all groups
-        if {$cmode eq "CAPPED"} {
-            let max_fund [service_eni fundlevel $los $trans(glist)]
-        }
-
-        let amt {min($amount, $max_fund)}
+        # NEXT, if spending is capped we need to get that amount
+        set cap [service_eni fundlevel $los $trans(glist)]
 
         set funds 0.0
 
         # NEXT, depending on mode, try to obligate money
         switch -exact -- $mode {
             ALL {
-                let funds {min($cash, $max_fund)}
+                set funds $cash
+                if {$cmode eq "CAPPED"} {
+                    let funds {min($cash, $cap)}
+                }
             }
 
             EXACT {
+                set amt $amount
+
+                if {$cmode eq "CAPPED"} {
+                    let amt {min($amount, $cap)}
+                }
+
                 # This is the only one than could give rise to an error
                 if {[my InsufficientCash $cash $amt]} {
                     return
@@ -148,18 +149,31 @@ tactic define FUNDENI \
             }
 
             UPTO {
+                set amt $amount
+
+                if {$cmode eq "CAPPED"} {
+                    let amt {min($amount, $cap)}
+                }
+
                 let funds {max(0.0, min($cash, $amt))}
             }
 
             PERCENT {
                 if {$cash > 0.0} {
-                    let funds \
-                        {min(double($percent/100.0) * $cash,$max_fund)}
+                    let funds {double($percent/100.0) * $cash}
+
+                    if {$cmode eq "CAPPED"} {
+                        let funds {min($funds, $cap)}
+                    }
                 }
             }
 
             EXCESS {
-                let funds {max(0.0, min($cash-$amount,$max_fund))}
+                if {$cmode eq "CAPPED"} {
+                    let funds {max(0.0, min($cash-$amount, $cap))}
+                } else {
+                    let funds {max(0.0, $cash-$amount)}
+                }
             }
 
             default {

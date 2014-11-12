@@ -208,9 +208,22 @@ namespace eval ::athena_test::tests:: {
         list $a $b $c
     } -cleanup {
         cleanup
+    } -result {10000.0 1 9100.0}
+
+    test obligate-1.2 {mode ALL, UNCAPPED} -setup {
+        setup
+        $T1 set glist [gofer construct CIVGROUPS BY_VALUE {SHIA SUNN KURD}]
+        $T1 set cmode UNCAPPED
+    } -body {
+        set a [$coffer cash]
+        set b [$T1 obligate $coffer]
+        set c [$coffer cash]
+        list $a $b $c
+    } -cleanup {
+        cleanup
     } -result {10000.0 1 0.0}
 
-    test obligate-1.2 {mode EXACT, enough money} -setup {
+    test obligate-1.3 {mode EXACT, enough money} -setup {
         setup
         $T1 set glist [gofer construct CIVGROUPS BY_VALUE {SHIA SUNN KURD}]
         $T1 set mode EXACT
@@ -222,24 +235,55 @@ namespace eval ::athena_test::tests:: {
         list $a $b $c
     } -cleanup {
         cleanup
-    } -result {10000.0 1 5000.0}
+    } -result {10000.0 1 9100.0}
 
-    test obligate-1.3 {mode EXACT, not enough money} -setup {
+    test obligate-1.4 {mode EXACT UNCAPPED, enough money} -setup {
         setup
         $T1 set glist [gofer construct CIVGROUPS BY_VALUE {SHIA SUNN KURD}]
         $T1 set mode EXACT
+        $T1 set cmode UNCAPPED
+        $T1 set amount 5000.0
+    } -body {
+        set a [$coffer cash]
+        set b [$T1 obligate $coffer]
+        set c [$coffer cash]
+        list $a $b $c
+    } -cleanup {
+        cleanup
+    } -result {10000.0 1 5000.0}
+
+    test obligate-1.5 {mode EXACT, UNCAPPED, not enough money} -setup {
+        setup
+        $T1 set glist [gofer construct CIVGROUPS BY_VALUE {SHIA SUNN KURD}]
+        $T1 set mode EXACT
+        $T1 set cmode UNCAPPED
         $T1 set amount 50000.0
     } -body {
         $T1 obligate $coffer
         $T1 faildict
     } -cleanup {
         cleanup
-    } -result {CASH {Required $16,000, but had only $10,000.}}
+    } -result {CASH {Required $50,000, but had only $10,000.}}
 
-    test obligate-1.4 {mode PERCENT} -setup {
+    test obligate-1.6 {mode PERCENT} -setup {
         setup
         $T1 set glist [gofer construct CIVGROUPS BY_VALUE {SHIA SUNN KURD}]
         $T1 set mode PERCENT
+        $T1 set percent 5
+    } -body {
+        set a [$coffer cash]
+        set b [$T1 obligate $coffer]
+        set c [$coffer cash]
+        list $a $b $c
+    } -cleanup {
+        cleanup
+    } -result {10000.0 1 9500.0}
+
+    test obligate-1.7 {mode PERCENT UNCAPPED} -setup {
+        setup
+        $T1 set glist [gofer construct CIVGROUPS BY_VALUE {SHIA SUNN KURD}]
+        $T1 set mode PERCENT
+        $T1 set cmode UNCAPPED
         $T1 set percent 10
     } -body {
         set a [$coffer cash]
@@ -250,10 +294,25 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -result {10000.0 1 9000.0}
 
-    test obligate-1.5 {mode UPTO, under cash on hand} -setup {
+    test obligate-1.8 {mode UPTO, under cash on hand} -setup {
         setup
         $T1 set glist [gofer construct CIVGROUPS BY_VALUE {SHIA SUNN KURD}]
         $T1 set mode UPTO
+        $T1 set amount 500.0
+    } -body {
+        set a [$coffer cash]
+        set b [$T1 obligate $coffer]
+        set c [$coffer cash]
+        list $a $b $c
+    } -cleanup {
+        cleanup
+    } -result {10000.0 1 9500.0}
+
+    test obligate-1.9 {mode UPTO UNCAPPED, under cash on hand} -setup {
+        setup
+        $T1 set glist [gofer construct CIVGROUPS BY_VALUE {SHIA SUNN KURD}]
+        $T1 set mode UPTO
+        $T1 set cmode UNCAPPED
         $T1 set amount 1000.0
     } -body {
         set a [$coffer cash]
@@ -264,7 +323,7 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -result {10000.0 1 9000.0}
 
-    test obligate-1.6 {mode UPTO, over cash on hand} -setup {
+    test obligate-1.10 {mode UPTO, over cash on hand} -setup {
         setup
         $T1 set glist [gofer construct CIVGROUPS BY_VALUE {SHIA SUNN KURD}]
         $T1 set mode UPTO
@@ -276,12 +335,42 @@ namespace eval ::athena_test::tests:: {
         list $a $b $c
     } -cleanup {
         cleanup
+    } -result {10000.0 1 9100.0}
+
+    test obligate-1.11 {mode UPTO UNCAPPED, over cash on hand} -setup {
+        setup
+        $T1 set glist [gofer construct CIVGROUPS BY_VALUE {SHIA SUNN KURD}]
+        $T1 set mode UPTO
+        $T1 set cmode UNCAPPED
+        $T1 set amount 50000.0
+    } -body {
+        set a [$coffer cash]
+        set b [$T1 obligate $coffer]
+        set c [$coffer cash]
+        list $a $b $c
+    } -cleanup {
+        cleanup
     } -result {10000.0 1 0.0}
 
-    test obligate-1.7 {mode EXCESS, under cash on hand} -setup {
+    test obligate-1.12 {mode EXCESS, under cash on hand} -setup {
         setup
         $T1 set glist [gofer construct CIVGROUPS BY_VALUE {SHIA SUNN KURD}]
         $T1 set mode EXCESS
+        $T1 set amount 9000.0
+    } -body {
+        set a [$coffer cash]
+        set b [$T1 obligate $coffer]
+        set c [$coffer cash]
+        list $a $b $c
+    } -cleanup {
+        cleanup
+    } -result {10000.0 1 9100.0}
+
+    test obligate-1.13 {mode EXCESS UNCAPPED, under cash on hand} -setup {
+        setup
+        $T1 set glist [gofer construct CIVGROUPS BY_VALUE {SHIA SUNN KURD}]
+        $T1 set mode EXCESS
+        $T1 set cmode UNCAPPED
         $T1 set amount 1000.0
     } -body {
         set a [$coffer cash]
@@ -292,7 +381,7 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -result {10000.0 1 1000.0}
 
-    test obligate-1.8 {mode EXCESS, over cash on hand} -setup {
+    test obligate-1.14 {mode EXCESS, over cash on hand} -setup {
         setup
         $T1 set glist [gofer construct CIVGROUPS BY_VALUE {SHIA SUNN KURD}]
         $T1 set mode EXCESS
@@ -321,7 +410,7 @@ namespace eval ::athena_test::tests:: {
     } -result {
 a   cash_reserve income  cash_on_hand gifts 
 --- ------------ ------- ------------ ----- 
-JOE 200000.0     10000.0 0.0          0.0   
+JOE 200000.0     10000.0 9100.0       0.0   
 BOB 150000.0     5000.0  5000.0       0.0   
     }
 

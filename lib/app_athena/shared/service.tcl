@@ -110,10 +110,10 @@ snit::type service {
 
             rdb eval {
                 UPDATE service_sg
-                SET actual=$actual,
-                    new_actual=$actual,
-                    required=$required,
-                    expected=$actual
+                SET actual     = $actual,
+                    new_actual = $actual,
+                    required   = $required,
+                    expected   = $actual
                 WHERE g=$g AND s=$s
             }
         }
