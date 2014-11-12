@@ -400,7 +400,7 @@ snit::type service_eni {
                 set parms(Rg) [parm get service.ENI.required.$urb]
                 set beta [parm get service.ENI.beta.$urb]
 
-                let parms(Ag) {($parms(Fg)/$parms(Pg))**$beta}
+                let parms(Ag) {min(1.0,($parms(Fg)/$parms(Pg))**$beta)}
 
                 # The status quo expected value is the same as the
                 # status quo actual value (but not more than 1.0).
@@ -416,7 +416,7 @@ snit::type service_eni {
                 }
 
                 # Compute the expected value
-                let parms(Xg) {$oldX + $alpha*(min(1.0,$parms(Ag)) - $oldX)}
+                let parms(Xg) {$oldX + $alpha*($parms(Ag) - $oldX)}
 
                 # Compute expectf and needs factor
                 set parms(expectf) [service expectf [array get parms]]
