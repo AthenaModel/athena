@@ -12,19 +12,18 @@
 #    responsible for the open/save/save as/new scenario functionality;
 #    as such, it manages the scenariodb(n).
 #
+# TODO:
+#    * Move saving to instance
+#    * Move saveable saving and restore to methods.
+#      * Leave registration in place until all saveables are owned by
+#        the grand scenario object.
+#
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
 # scenario ensemble
 
 snit::type scenario {
-    pragma -hastypedestroy 0 -hasinstances 0
-
-    #-------------------------------------------------------------------
-    # Type Components
-
-    typecomponent rdb                ;# The scenario RDB
-
     #-------------------------------------------------------------------
     # Type Variables
 
@@ -112,82 +111,16 @@ snit::type scenario {
 
     # Info Array: most scalars are stored here
     #
-    # dbfile              Name of the current scenario file
     # saveable            List of saveables.
 
-    typevariable info -array {
-        dbfile             ""
-        saveables          {}
-    }
-
-    #-------------------------------------------------------------------
-    # Singleton Initializer
-
-    # init
-    #
-    # Initializes the scenario RDB.
-
-    typemethod init {} {
-        log normal scenario "init"
-
-        # FIRST, create a clean working RDB.
-        scenariodb ::rdb \
-            -clock      ::simclock \
-            -explaincmd [mytypemethod ExplainCmd]
-        set rdb ::rdb
-        bean configure -rdb ::rdb
-
-        rdb register ::service
-
-        # NEXT, monitor tables.
-        rdb monitor add actors        {a}
-        rdb monitor add bookmarks     {bookmark_id}
-        rdb monitor add caps          {k}
-        rdb monitor add cap_kn        {k n}
-        rdb monitor add cap_kg        {k g}
-        rdb monitor add civgroups     {g}
-        rdb monitor add coop_fg       {f g}
-        rdb monitor add curses        {curse_id}
-        rdb monitor add deploy_ng     {n g}
-        rdb monitor add drivers       {driver_id}
-        rdb monitor add econ_n        {n}
-        rdb monitor add absits        {s}
-        rdb monitor add frcgroups     {g}
-        rdb monitor add groups        {g}
-        rdb monitor add hooks         {hook_id}
-        rdb monitor add hook_topics   {hook_id topic_id}
-        rdb monitor add hrel_fg       {f g}
-        rdb monitor add curse_injects {curse_id inject_num}
-        rdb monitor add ioms          {iom_id}
-        rdb monitor add mads          {mad_id}
-        rdb monitor add magic_attrit  {id}
-        rdb monitor add nbhoods       {n}
-        rdb monitor add nbrel_mn      {m n}
-        rdb monitor add orggroups     {g}
-        rdb monitor add payloads      {iom_id payload_num}
-        rdb monitor add plants_shares {n a}
-        rdb monitor add sat_gc        {g c}
-        rdb monitor add units         {u}
-        rdb monitor add vrel_ga       {g a}
-
-        InitializeRuntimeData
-
-        log normal scenario "init complete"
-    }
-
-    # ExplainCmd query explanation
-    #
-    # query       - An sql query
-    # explanation -  Result of calling EXPLAIN QUERY PLAN on the query.
-    #
-    # Logs the query and its explanation.
-
-    typemethod ExplainCmd {query explanation} {
-        log normal rdb "EXPLAIN QUERY PLAN {$query}\n---\n$explanation"
+    typevariable meta -array {
+        saveables {}
     }
 
     #-------------------------------------------------------------------
     # Scenario Management Methods
+    #
+    # This whole section is obsolete.
 
     # new
     #
@@ -244,9 +177,6 @@ snit::type scenario {
         # NEXT, restore the saveables
         $type RestoreSaveables -saved
 
-        # NEXT, save the name.
-        set info(dbfile) $filename
-
         # NEXT, reset the executive, loading any user scripts.
         executive reset
 
@@ -264,6 +194,12 @@ snit::type scenario {
             $type new
         }
     }
+
+    #-------------------------------------------------------------------
+    # Save scenario
+    #
+    # TODO: Move to instance.
+    
 
     # save ?filename?
     #
@@ -309,14 +245,6 @@ snit::type scenario {
     }
 
 
-    # dbfile
-    #
-    # Returns the name of the current scenario file
-
-    typemethod dbfile {} {
-        return $info(dbfile)
-    }
-
     # unsaved
     #
     # Returns 1 if there are unsaved changes, and 0 otherwise.
@@ -326,7 +254,7 @@ snit::type scenario {
             return 1
         }
 
-        foreach saveable $info(saveables) {
+        foreach saveable $meta(saveables) {
             if {[{*}$saveable changed]} {
                 return 1
             }
@@ -474,99 +402,6 @@ snit::type scenario {
     }
     
     #-------------------------------------------------------------------
-    # Configure RDB
-
-    # InitializeRuntimeData
-    #
-    # Clears the RDB, inserts the schema, and loads initial data:
-    #
-    # * Blank map
-
-    proc InitializeRuntimeData {} {
-        # FIRST, create and clear the RDB
-        if {[rdb isopen]} {
-            rdb close
-        }
-
-        set rdbfile [workdir join rdb working.rdb]
-        file delete -force $rdbfile
-        rdb open $rdbfile
-        rdb clear
-
-        # NEXT, enable write-ahead logging on the RDB
-        rdb eval { PRAGMA journal_mode = WAL; }
-
-        # NEXT, define the temp schema
-        DefineTempSchema
-
-        # NEXT, load the blank map, but only if we have a GUI
-        if {[app tkloaded]} {
-            map load [file join $::app_athena::library blank.png]
-        }
-
-        # NEXT, create the neutral belief system.
-        bsys clear
-
-        # NEXT, Reset the model parameters to their defaults, and
-        # mark them saved.
-        parm reset
-
-        parm checkpoint -saved
-
-        # NEXT, mark it saved; there's no reason to save a scenario
-        # that has only these things in it.
-        rdb marksaved
-    }
-
-    # DefineTempSchema
-    #
-    # Adds the temporary schema definitions into the RDB
-
-    proc DefineTempSchema {} {
-        # FIRST, define SQL functions
-        # TBD: qsecurity should be added to scenariodb(n).
-        # TBD: moneyfmt should be added to sqldocument(n).
-        rdb function locked               [myproc Locked]
-        rdb function m2ref                [myproc M2Ref]
-        rdb function qsecurity            ::projectlib::qsecurity
-        rdb function moneyfmt             ::marsutil::moneyfmt
-        rdb function mklinks              [list ::link html]
-        rdb function uram_gamma           [myproc UramGamma]
-        rdb function sigline              [myproc Sigline]
-        rdb function firing_narrative     [myproc FiringNarrative]
-        rdb function elink                [myproc EntityLink]
-        rdb function yesno                [myproc YesNo]
-        rdb function bsysname             ::bsys::bsysname
-        rdb function topicname            ::bsys::topicname
-        rdb function affinity             ::bsys::affinity
-        rdb function qposition            [myproc QPosition]
-        rdb function hook_narrative       ::hook::hook_narrative
-        rdb function service              [myproc Service]
-
-        # NEXT, define the GUI Views
-        RdbEvalFile gui_scenario.sql       ;# Scenario Entities
-        RdbEvalFile gui_attitude.sql       ;# Attitude Area
-        RdbEvalFile gui_econ.sql           ;# Economics Area
-        RdbEvalFile gui_ground.sql         ;# Ground Area
-        RdbEvalFile gui_info.sql           ;# Information Area
-        RdbEvalFile gui_curses.sql         ;# User-defined CURSEs Area
-        RdbEvalFile gui_politics.sql       ;# Politics Area
-        RdbEvalFile gui_infrastructure.sql ;# Infrastructure Area
-        RdbEvalFile gui_application.sql    ;# Application Views
-    }
-
-    # RdbEvalFile filename
-    #
-    # filename   - An SQL file
-    #
-    # Reads the file from the application library directory and
-    # passes it to the RDB for evaluation.
-
-    proc RdbEvalFile {filename} {
-        rdb eval [readfile [file join $::app_athena::library $filename]]
-    }
-
-    #-------------------------------------------------------------------
     # SQL Functions
 
     # Service  service which urb
@@ -693,8 +528,8 @@ snit::type scenario {
     # the scenario and restored as appropriate.
 
     typemethod register {saveable} {
-        if {$saveable ni $info(saveables)} {
-            lappend info(saveables) $saveable
+        if {$saveable ni $meta(saveables)} {
+            lappend meta(saveables) $saveable
         }
     }
 
@@ -704,10 +539,10 @@ snit::type scenario {
     # clearing the "changed" flag for all of the saveables.
 
     typemethod SaveSaveables {{option ""}} {
-        foreach saveable $info(saveables) {
+        foreach saveable $meta(saveables) {
             # Forget and skip saveables that no longer exist
             if {[llength [info commands [lindex $saveable 0]]] == 0} {
-                ldelete info(saveables) $saveable
+                ldelete meta(saveables) $saveable
                 continue
             }
 
@@ -738,5 +573,246 @@ snit::type scenario {
             }
         }
     }
+
+    #===================================================================
+    # Instance Code
+
+    #-------------------------------------------------------------------
+    # Components
+    
+    component rdb ;# The scenario db component
+
+    #-------------------------------------------------------------------
+    # Instance Variables
+
+    # Scenario working info.
+
+    variable info -array {
+        dbfile ""
+    }
+    
+
+    #-------------------------------------------------------------------
+    # Constructor/Destructor
+
+    # constructor filename ?options...?
+    #
+    # filename - An .adb filename or ""
+    #
+    # Creates a new scenario object.  If a valid .adb file name is given,
+    # the .adb file will be loaded; otherwise, the new scenario will
+    # be empty.  
+
+    constructor {filename} {
+        # FIRST, create the RDB component.
+        $self CreateRDB
+
+        # NEXT, either load file name or create empty database.
+        if {$filename ne ""} {
+            try {
+                $rdb load $filename
+            } on error {result eopts} {
+                throw {SCENARIO OPEN} $result
+            }
+
+            # NEXT, restore the saveables
+            $type RestoreSaveables -saved
+
+            # NEXT, save the name.
+            # TODO: Add this variable.
+            set info(dbfile) $filename
+        } else {
+            set info(dbfile) ""
+
+            # Initialize external packages
+            bsys clear
+            parm reset
+            parm checkpoint -saved
+        }
+
+        # NEXT, finish up
+        $self DefineTempSchema
+        executive reset
+
+        $rdb marksaved
+    } 
+
+    # CreateRDB
+    #
+    # Creates the RDB Component.
+    #
+    # TODO:
+    #   * Make ::simclock a true component
+    #   * Merge scenariodb(n) into this object.
+    #     * Merge "marksaved" code in scenariodb(n) into sqldocument(n).
+    #   * Consider where SQL sections should be registered.
+    #   * Consider where table monitoring should be done.  I don't
+    #     think the grand scenario object will need it internally.
+    #   * Consider how to clean up sqldocument so that the temp schema
+    #     can be defined in an sqlsection.
+    #   * Add -subject option (passed to RDB) so that we can be a source
+    #     of notifier events.
+    #   * Remove ::rdb alias when it is no longer needed.
+    #   
+
+    method CreateRDB {} {
+        # FIRST, create a clean working RDB.
+        # 
+        # TODO: Make ::simclock ${selfns}::clock
+
+        set rdb ${selfns}::rdb
+
+        scenariodb $rdb \
+            -clock      ::simclock \
+            -explaincmd [mymethod ExplainCmd] \
+            -subject    ::rdb
+        bean configure -rdb $rdb
+
+        # NEXT, for now, alias it into the global namespace.
+        interp alias {} ::rdb {} $rdb
+
+        # NEXT, register SQL sections
+        $rdb register ::service
+
+        # NEXT, monitor tables.
+        $rdb monitor add actors        {a}
+        $rdb monitor add bookmarks     {bookmark_id}
+        $rdb monitor add caps          {k}
+        $rdb monitor add cap_kn        {k n}
+        $rdb monitor add cap_kg        {k g}
+        $rdb monitor add civgroups     {g}
+        $rdb monitor add coop_fg       {f g}
+        $rdb monitor add curses        {curse_id}
+        $rdb monitor add deploy_ng     {n g}
+        $rdb monitor add drivers       {driver_id}
+        $rdb monitor add econ_n        {n}
+        $rdb monitor add absits        {s}
+        $rdb monitor add frcgroups     {g}
+        $rdb monitor add groups        {g}
+        $rdb monitor add hooks         {hook_id}
+        $rdb monitor add hook_topics   {hook_id topic_id}
+        $rdb monitor add hrel_fg       {f g}
+        $rdb monitor add curse_injects {curse_id inject_num}
+        $rdb monitor add ioms          {iom_id}
+        $rdb monitor add mads          {mad_id}
+        $rdb monitor add magic_attrit  {id}
+        $rdb monitor add nbhoods       {n}
+        $rdb monitor add nbrel_mn      {m n}
+        $rdb monitor add orggroups     {g}
+        $rdb monitor add payloads      {iom_id payload_num}
+        $rdb monitor add plants_shares {n a}
+        $rdb monitor add sat_gc        {g c}
+        $rdb monitor add units         {u}
+        $rdb monitor add vrel_ga       {g a}
+
+        # NEXT, create the actual RDB file on the disk.
+        set rdbfile [fileutil::tempfile rdb]
+        $rdb open $rdbfile
+        $rdb clear
+
+        # NEXT, enable write-ahead logging on the RDB
+        $rdb eval { PRAGMA journal_mode = WAL; }
+    }
+
+    # DefineTempSchema
+    #
+    # Adds the temporary schema definitions into the RDB
+
+    method DefineTempSchema {} {
+        # FIRST, define SQL functions
+        # TBD: qsecurity should be added to scenariodb(n).
+        # TBD: moneyfmt should be added to sqldocument(n).
+        $rdb function locked               [myproc Locked]
+        $rdb function m2ref                [myproc M2Ref]
+        $rdb function qsecurity            ::projectlib::qsecurity
+        $rdb function moneyfmt             ::marsutil::moneyfmt
+        $rdb function mklinks              [list ::link html]
+        $rdb function uram_gamma           [myproc UramGamma]
+        $rdb function sigline              [myproc Sigline]
+        $rdb function firing_narrative     [myproc FiringNarrative]
+        $rdb function elink                [myproc EntityLink]
+        $rdb function yesno                [myproc YesNo]
+        $rdb function bsysname             ::bsys::bsysname
+        $rdb function topicname            ::bsys::topicname
+        $rdb function affinity             ::bsys::affinity
+        $rdb function qposition            [myproc QPosition]
+        $rdb function hook_narrative       ::hook::hook_narrative
+        $rdb function service              [myproc Service]
+
+        # NEXT, define the GUI Views
+        $self RdbEvalFile gui_scenario.sql       ;# Scenario Entities
+        $self RdbEvalFile gui_attitude.sql       ;# Attitude Area
+        $self RdbEvalFile gui_econ.sql           ;# Economics Area
+        $self RdbEvalFile gui_ground.sql         ;# Ground Area
+        $self RdbEvalFile gui_info.sql           ;# Information Area
+        $self RdbEvalFile gui_curses.sql         ;# User-defined CURSEs Area
+        $self RdbEvalFile gui_politics.sql       ;# Politics Area
+        $self RdbEvalFile gui_infrastructure.sql ;# Infrastructure Area
+        $self RdbEvalFile gui_application.sql    ;# Application Views
+    }
+
+    # RdbEvalFile filename
+    #
+    # filename   - An SQL file
+    #
+    # Reads the file from the application library directory and
+    # passes it to the RDB for evaluation.
+    #
+    # TODO:
+    #   * Consider adding evalfile as an sqldocument command.
+
+    method RdbEvalFile {filename} {
+        $rdb eval [readfile [file join $::app_athena::library $filename]]
+    }
+
+    # destructor
+    #
+    # This command cleans up when an existing scenario is destroyed.
+    #
+    # NOTE: In the long run, this destructor might not be needed.
+    # At present, it is resetting the Athena application objects that
+    # are not yet owned by scenario.
+
+    destructor {
+        # FIRST, close and destroy the RDB.
+        $rdb destroy
+
+        # NEXT, reset other modules not yet owned by this object.
+        bean reset
+        catch {sim new}
+    }
+
+    #-------------------------------------------------------------------
+    # Event Handlers
+
+
+    # ExplainCmd query explanation
+    #
+    # query       - An sql query
+    # explanation -  Result of calling EXPLAIN QUERY PLAN on the query.
+    #
+    # Logs the query and its explanation.
+    #
+    # TODO: Make -explaincmd an option on the scenario instance; the
+    # application can create it as necessary.
+
+    method ExplainCmd {query explanation} {
+        log normal rdb "EXPLAIN QUERY PLAN {$query}\n---\n$explanation"
+    }
+
+    
+
+    #-------------------------------------------------------------------
+    # Scenario queries
+
+    # dbfile
+    #
+    # Returns the name of the loaded .adb file, or "" if none.
+
+    method dbfile {} {
+        return $info(dbfile)
+    } 
+     
+    
 }
 

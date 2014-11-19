@@ -227,7 +227,7 @@ snit::type app {
             -logcmd       ::log                  \
             -ordercmd     [myproc AddOrderToCIF]
         bsys      init
-        scenario  init
+        scenario ::sdb ""
         nbhood    init
         sim       init
         axdb      init
@@ -1004,12 +1004,8 @@ snit::type app {
         }
 
         # NEXT, create a new, blank scenario
-        # TODO: This should be:
-        #
-        #   catch {sdb destroy}
-        #   scenario ::sdb
-
-        scenario new
+        ::sdb destroy
+        scenario ::sdb ""
 
         # NEXT, log it.
         log newlog new
@@ -1030,13 +1026,9 @@ snit::type app {
 
         # FIRST, try to open the scenario.
         try {
-            # TODO: Should be
-            #
-            # catch {sdb destroy}
-            # scenario ::sdb $filename
-            scenario open $filename
-        } on error {result} {
-            # TODO: Should be on trap {SCENARIO OPEN}
+            ::sdb destroy
+            scenario ::sdb $filename
+        } trap {SCENARIO OPEN} {result} {
 
             app error {
                 |<--
@@ -1046,6 +1038,9 @@ snit::type app {
 
                 $result
             }
+
+            # At least have an empty scenario.
+            scenario ::sdb ""
 
             return
         }
@@ -1103,9 +1098,9 @@ snit::type app {
             log newlog saveas
         }
 
-        log normal scenario "Save Scenario: [scenario dbfile]"
+        log normal scenario "Save Scenario: [sdb dbfile]"
 
-        app puts "Saved Scenario [file tail [scenario dbfile]]"
+        app puts "Saved Scenario [file tail [sdb dbfile]]"
 
         notifier send $type <ScenarioSaved>
 

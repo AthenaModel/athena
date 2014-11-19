@@ -1210,7 +1210,7 @@ snit::widget appwin {
 
     method SetWindowTitle {} {
         # FIRST, get the file name.
-        set dbfile [file tail [scenario dbfile]]
+        set dbfile [file tail [sdb dbfile]]
 
         if {$dbfile eq ""} {
             set dbfile "Untitled"
@@ -1646,7 +1646,7 @@ snit::widget appwin {
         }
 
         # FIRST, if no file name is known, do a SaveAs.
-        if {[scenario dbfile] eq ""} {
+        if {[sdb dbfile] eq ""} {
             $self FileSaveAs
         }
 
@@ -1895,7 +1895,7 @@ snit::widget appwin {
             wm deiconify $win
 
             # NEXT, popup the message box for the user
-            set name [file tail [scenario dbfile]]
+            set name [file tail [sdb dbfile]]
 
             set message [tsubst {
                 |<--
