@@ -117,6 +117,8 @@ snit::type sim {
     # new
     #
     # Reinitializes the module when a new scenario is created.
+    #
+    # TODO: move to scenario destructor.
 
     typemethod new {} {
         # FIRST, configure the simclock.
@@ -134,8 +136,6 @@ snit::type sim {
         # NEXT, set the simulation status
         set info(changed) 0
         set info(state)   PREP
-
-        $type dbsync
     }
 
     # restart

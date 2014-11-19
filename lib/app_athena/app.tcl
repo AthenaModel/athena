@@ -1012,6 +1012,9 @@ snit::type app {
         log normal scenario "New Scenario: Untitled"
 
         app puts "New scenario created"
+
+        # NEXT, Resync the app with the RDB.
+        sim dbsync
     }
 
     # open filename
