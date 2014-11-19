@@ -1563,7 +1563,7 @@ snit::widget appwin {
         }
 
         # NEXT, create the new scenario
-        scenario new
+        app new
     }
 
     # FileOpen
@@ -1597,7 +1597,7 @@ snit::widget appwin {
         }
 
         # NEXT, Open the requested scenario.
-        scenario open $filename
+        app open $filename
     }
 
     # FileSaveAs
@@ -1629,7 +1629,7 @@ snit::widget appwin {
         }
 
         # NEXT, Save the scenario using this name
-        return [scenario save $filename]
+        return [app save $filename]
     }
 
     # FileSave
@@ -1651,7 +1651,7 @@ snit::widget appwin {
         }
 
         # NEXT, Save the scenario to the current file.
-        return [scenario save]
+        return [app save]
     }
 
     # FileExportAs

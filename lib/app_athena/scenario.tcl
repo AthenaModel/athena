@@ -304,11 +304,15 @@ snit::type scenario {
 
     # revert
     #
-    # Revert to the last saved scenario.
+    # Revert to the last saved scenario.  If there is none, revert to the
+    # initial scenario.
 
     typemethod revert {} {
-        require {$info(dbfile) != ""} "No scenario to which to revert"
-        $type open $info(dbfile)
+        if {$info(dbfile) ne ""} {
+            $type open $info(dbfile)
+        } else {
+            $type new
+        }
     }
 
     # save ?filename?

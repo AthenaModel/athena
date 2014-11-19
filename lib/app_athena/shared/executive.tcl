@@ -405,8 +405,9 @@ snit::type executive {
             [myproc last_mad]
 
         # load
+        # TBD: Will need to access executive's $sdb
         $interp smartalias load 1 1 {filename} \
-            [list scenario open]
+            [list app open]
 
         # lock
         $interp smartalias lock 0 0 {} \
@@ -421,8 +422,9 @@ snit::type executive {
             [list .main nbfill]
 
         # new
+        # TBD: Will need to access executive's $sdb
         $interp smartalias new 0 0 {} \
-            [list scenario new]
+            [list app new]
 
         # parm
         $interp ensemble parm
@@ -2418,11 +2420,11 @@ snit::type executive {
     #
     # Saves the scenario using the name.  Errors are handled by
     # [app error].
+    #
+    # TBD: Will need to access executive's $sdb
 
     proc save {filename} {
-        scenario save $filename
-
-        # Don't let [scenario save]'s return value pass through.
+        app save $filename
         return
     }
     

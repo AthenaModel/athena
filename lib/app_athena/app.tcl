@@ -342,7 +342,7 @@ snit::type app {
         # NEXT, if a scenario file is specified on the command line,
         # open it.
         if {[llength $argv] == 1} {
-            scenario open [file normalize [lindex $argv 0]]
+            app open [file normalize [lindex $argv 0]]
         } else {
             # This makes sure that the notifier events are sent that
             # initialize the user interface.
@@ -981,7 +981,52 @@ snit::type app {
             $message
         }
     }
+
+    #-------------------------------------------------------------------
+    # Scenario Management
+    #
+    # These are the routines to be used by the rest of the application
+    # to manage the scenario as a whole.  They delegate the bulk of
+    # the work to the scenario object, providing only the application's
+    # policy and error handling glue.
+
+    # new
+    #
+    # Creates a new scenario, throwing away unsaved changes.
+
+    typemethod new {} {
+        scenario new
+    }
+
+    # open filename
+    #
+    # filename - The name of the .adb file to open.
+    #
+    # Opens and loads an existing scenario, throwing away unsaved 
+    # changes.
     
+    typemethod open {filename} {
+        scenario open $filename
+    }
+
+    # save ?filename?
+    #
+    # filename - A new file name
+    #
+    # Saves the current scenario using the existing name.
+
+    typemethod save {{filename ""}} {
+        scenario save $filename
+    }
+
+    # revert
+    #
+    # Revert the current scenario to its last save (or to the 
+    # default initial scenario if there is none).
+
+    typemethod revert {} {
+        scenario revert
+    }
 }
 
 
