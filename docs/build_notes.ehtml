@@ -2,6 +2,21 @@
 
 <h2>Build Notes</h2>
 
+<h3>Build 6.3.0a3, 19 November 2014</h3>
+
+This build contains updated rule sets for the Abstract Infrastructure services
+and a few bug fixes.  The most notable change to the rule sets is the added
+effect to vertical relationship with the controlling actor (if there is one).<p>
+
+<ul>
+<li> Issue #31: Neighborhood Abstract Infrastructure Services table is redundant
+<li> Issue #30: Update project file to exclude unnecessary packages 
+<li> Issue #29: Updated abstract infrastructure rule sets
+<li> Issue #28: ALOS needs to be capped
+<li> Issue #27: FUNDENI tactics should set ALOS on lock
+<li> Issue #23: app_athena test failure: 020-NBHOOD, CREATE_RAW-1.12 
+</ul><p>
+
 <h3>Build 6.3.0a2, 5 November 2014</h3>
 
 This build contains more abstract services: WATER and TRANSPORT. The rules 
