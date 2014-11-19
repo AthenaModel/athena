@@ -2,6 +2,25 @@
 
 <h2>Build Notes</h2>
 
+<h3>Build 6.3.0a2, 5 November 2014</h3>
+
+This build contains more abstract services: WATER and TRANSPORT. The rules 
+still need to be scrubbed, for now the magnitudes of the effects are identical
+to the ENERGY abstract infrastructure.  The detail browser for neighborhoods
+and groups should show the new abstract services.  There's also some 
+documentation updates and some transparent changes to how Athena applications
+are loaded at startup.<p>
+
+<ul>
+<li> Issue #25: FUNDENI tactics should be able to have uncapped spending
+<li> Issue #22: Add TRANSPORT abstract infrastructure service 
+<li> Issue #20: athena(1) and cellide(1) should use standard loader scripts 
+<li> Issue #19: Add WATER abstract infrastructure service
+<li> Issue #18: Add appserver pages for abstract services
+<li> Issue #18: Installer file should reference the full name of the executable.
+<li> Issue #16: CM plan should no longer mention manual build of athena.helpdb
+</ul><p>
+
 <h3>Build 6.3.0a1, 21 October 2014</h3>
 
 This build is the first build to use the new 'kite' project system. From a

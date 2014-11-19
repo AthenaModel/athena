@@ -385,8 +385,8 @@ polygon       80 80 120 80 100 120
         ted order -reject NBHOOD:CREATE:RAW [dict merge $rawnb1 {
             refpoint {-91 180}
         }]
-    } -result {
-        refpoint {invalid latitude, should be -90.0 to 90.0 degrees: "-91"}
+    } -match glob -result {
+        refpoint {invalid latitude, should be -90.0 to 90.0 degrees*}
     }
 
 

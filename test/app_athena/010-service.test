@@ -52,6 +52,17 @@ namespace eval ::athena_test::tests:: {
             UPDATE demog_g SET population=40000 WHERE g='KURD';
         }
     }
+    
+    proc setup_lock {} {
+        ted create JOE BOB BLUE USAID NB1 NB2 SHIA SUNN KURD
+        rdb eval {
+            UPDATE civgroups SET basepop=10000 WHERE g='SHIA';
+            UPDATE civgroups SET basepop=20000 WHERE g='SUNN';
+            UPDATE civgroups SET basepop=40000 WHERE g='KURD';
+        }
+        ted lock
+    }
+
 
     #-------------------------------------------------------------------
     # srservice
@@ -243,23 +254,27 @@ SUNN JOE 0.0
     #-------------------------------------------------------------------
     # fundlevel
 
-    test fundlevel-1.1 {Returns ENI funding level for groups} -setup {
+    test fundlevel-1.1 {Returns ENI funding level for groups in PREP} -setup {
         setup
         service start
         service_eni load
     } -body {
-        service_eni save
+        service_eni fundlevel 100 {SUNN SHIA}
+    } -cleanup {
+        cleanup
+    } -result {800.0}
+
+    test fundlevel-1.2 {Returns ENI funding level for groups} -setup {
+        setup_lock
+    } -body {
         service_eni fundlevel 100 {SUNN SHIA}
     } -cleanup {
         cleanup
     } -result {12000.0}
 
-    test fundlevel-1.2 {Returns funding level for groups, smaller %} -setup {
-        setup
-        service start
-        service_eni load
+    test fundlevel-1.3 {Returns funding level for groups, smaller %} -setup {
+        setup_lock
     } -body {
-        service_eni save
         service_eni fundlevel 50 {SUNN SHIA}
     } -cleanup {
         cleanup
