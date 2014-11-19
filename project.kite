@@ -1,5 +1,5 @@
 # project.kite
-project athena 6.3.0a2 {Athena Regional Stability Simulation}
+project athena 6.3.0a3 {Athena Regional Stability Simulation}
 poc William.H.Duquette@jpl.nasa.gov
 
 # Applications
@@ -32,10 +32,10 @@ require tdom 0.8
 require struct::set 2.2
 require kiteutils 0.4.3 -local
 require kitedocs 0.4.3 -local
-require marsutil 3.0.3 -local
-require marsgui 3.0.3 -local
-require simlib 3.0.3 -local
-require Marsbin 3.0.3 -local
+require marsutil 3.0.4 -local
+require marsgui 3.0.4 -local
+require simlib 3.0.4 -local
+require Marsbin 3.0.4 -local
 
 # External Files
 xfile docs/aag.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aag-20141010.docx

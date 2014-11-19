@@ -12,5 +12,5 @@
 #-------------------------------------------------------------------------
 
 # -kite-ifneeded-start  DO NOT EDIT THIS BLOCK BY HAND
-package ifneeded projectlib 6.3.0a2 [list source [file join $dir pkgModules.tcl]]
+package ifneeded projectlib 6.3.0a3 [list source [file join $dir pkgModules.tcl]]
 # -kite-ifneeded-end

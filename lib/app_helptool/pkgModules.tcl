@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide app_helptool 6.3.0a2
+package provide app_helptool 6.3.0a3
 # -kite-provide-end
 
 #-----------------------------------------------------------------------
