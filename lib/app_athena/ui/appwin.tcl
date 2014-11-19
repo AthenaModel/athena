@@ -1625,17 +1625,17 @@ snit::widget appwin {
 
         # NEXT, If none, they cancelled.
         if {$filename eq ""} {
-            return 0
+            return
         }
 
         # NEXT, Save the scenario using this name
-        return [app save $filename]
+        app save $filename
     }
 
     # FileSave
     #
     # Saves the scenario to the current file, making a backup
-    # copy.  Returns 1 on success and 0 on failure.
+    # copy.
 
     method FileSave {} {
         # FIRST, we can only save a scenario if we're not RUNNING.
@@ -1647,11 +1647,13 @@ snit::widget appwin {
 
         # FIRST, if no file name is known, do a SaveAs.
         if {[scenario dbfile] eq ""} {
-            return [$self FileSaveAs]
+            $self FileSaveAs
         }
 
         # NEXT, Save the scenario to the current file.
-        return [app save]
+        app save
+
+        return
     }
 
     # FileExportAs

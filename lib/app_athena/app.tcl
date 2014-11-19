@@ -995,7 +995,27 @@ snit::type app {
     # Creates a new scenario, throwing away unsaved changes.
 
     typemethod new {} {
+        require {[sim stable]} "A new scenario cannot be created in this state."
+
+        # FIRST, unlock the scenario if it is locked; this
+        # will reinitialize modules like URAM.
+        if {[sim state] ne "PREP"} {
+            sim mutate unlock
+        }
+
+        # NEXT, create a new, blank scenario
+        # TODO: This should be:
+        #
+        #   catch {sdb destroy}
+        #   scenario ::sdb
+
         scenario new
+
+        # NEXT, log it.
+        log newlog new
+        log normal scenario "New Scenario: Untitled"
+
+        app puts "New scenario created"
     }
 
     # open filename
@@ -1006,7 +1026,42 @@ snit::type app {
     # changes.
     
     typemethod open {filename} {
-        scenario open $filename
+        require {[sim stable]} "A new scenario cannot be opened in this state."
+
+        # FIRST, try to open the scenario.
+        try {
+            # TODO: Should be
+            #
+            # catch {sdb destroy}
+            # scenario ::sdb $filename
+            scenario open $filename
+        } on error {result} {
+            # TODO: Should be on trap {SCENARIO OPEN}
+
+            app error {
+                |<--
+                Could not open scenario
+
+                    $filename
+
+                $result
+            }
+
+            return
+        }
+
+        # NEXT, set the current working directory to the scenario
+        # file location.
+        catch {cd [file dirname [file normalize $filename]]}
+
+        # NEXT, log it.
+        log newlog open
+        log normal scenario "Open Scenario: $filename"
+
+        app puts "Opened Scenario [file tail $filename]"
+
+        # NEXT, Resync the app with the RDB.
+        sim dbsync
     }
 
     # save ?filename?
@@ -1016,7 +1071,45 @@ snit::type app {
     # Saves the current scenario using the existing name.
 
     typemethod save {{filename ""}} {
-        scenario save $filename
+        require {[sim stable]} "The scenario cannot be saved in this state."
+
+        # FIRST, notify the simulation that we're saving, so other
+        # modules can prepare.
+        notifier send ::scenario <Saving>
+
+        # NEXT, save the scenario to disk.
+        try {
+            scenario save $filename
+        } on error {result eopts} {
+            log warning scenario "Could not save: $result"
+            log error scenario [dict get $eopts -errorinfo]
+            app error {
+                |<--
+                Could not save as
+
+                    $filename
+
+                $result
+            }
+            return 0
+        }
+
+        # NEXT, set the current working directory to the scenario
+        # file location.
+        catch {cd [file dirname [file normalize $filename]]}
+
+        # NEXT, log it.
+        if {$filename ne ""} {
+            log newlog saveas
+        }
+
+        log normal scenario "Save Scenario: [scenario dbfile]"
+
+        app puts "Saved Scenario [file tail [scenario dbfile]]"
+
+        notifier send $type <ScenarioSaved>
+
+        return 1
     }
 
     # revert

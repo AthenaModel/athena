@@ -194,26 +194,12 @@ snit::type scenario {
     # Creates a new, blank scenario.
 
     typemethod new {} {
-        require {[sim stable]} "A new scenario cannot be created in this state."
-
-        # FIRST, unlock the scenario if it is locked; this
-        # will reinitialize modules like URAM.
-        if {[sim state] ne "PREP"} {
-            sim mutate unlock
-        }
-
-        # NEXT, Create a blank scenario
+        # FIRST, Create a blank scenario
         $type MakeBlankScenario
-
-        # NEXT, log it.
-        log newlog new
-        log normal scenario "New Scenario: Untitled"
 
         # NEXT, reset the executive, getting rid of any script
         # definitions from the previous scenario.
         executive reset
-
-        app puts "New scenario created"
     }
 
     # MakeBlankScenario
@@ -243,42 +229,14 @@ snit::type scenario {
     # Opens the specified file name, replacing the existing file.
 
     typemethod open {filename} {
-        require {[sim stable]} "A new scenario cannot be opened in this state."
-
-        # FIRST, load the file.
-        if {[catch {
+        try {
             rdb load $filename
-        } result]} {
-            $type MakeBlankScenario
+        } on error {result eopts} {
+            $type new
 
-            app error {
-                |<--
-                Could not open scenario
-
-                    $filename
-
-                $result
-            }
-
-            return
+            # Rethrow error.
+            return {*}$eopts $result
         }
-
-        $type FinishOpeningScenario $filename
-
-        return
-    }
-
-    # FinishOpeningScenario filename
-    #
-    # filename       Name of the file being opened.
-    #
-    # Once the data has been loaded into the RDB, this routine
-    # completes the process.
-
-    typemethod FinishOpeningScenario {filename} {
-        # FIRST, set the current working directory to the scenario
-        # file location.
-        catch {cd [file dirname [file normalize $filename]]}
 
         # NEXT, define the temporary schema definitions
         DefineTempSchema
@@ -289,17 +247,9 @@ snit::type scenario {
         # NEXT, save the name.
         set info(dbfile) $filename
 
-        # NEXT, log it.
-        log newlog open
-        log normal scenario "Open Scenario: $filename"
-
-        app puts "Opened Scenario [file tail $filename]"
-
         # NEXT, reset the executive, loading any user scripts.
         executive reset
 
-        # NEXT, Resync the app with the RDB.
-        sim dbsync
     }
 
     # revert
@@ -324,8 +274,6 @@ snit::type scenario {
     # the save is successful and 0 otherwise.
 
     typemethod save {{filename ""}} {
-        require {[sim stable]} "The scenario cannot be saved in this state."
-
         # FIRST, if filename is not specified, get the dbfile
         if {$filename eq ""} {
             if {$info(dbfile) eq ""} {
@@ -342,53 +290,22 @@ snit::type scenario {
             append dbfile ".adb"
         }
 
-        # NEXT, save the saveables
+        # NEXT, save the saveables to the sdb.
         $type SaveSaveables -saved
 
-        # NEXT, notify the simulation that we're saving, so other
-        # modules can prepare.
-        notifier send ::scenario <Saving>
-
-        # NEXT, Save, and check for errors.
-        if {[catch {
-            if {[file exists $dbfile]} {
-                file rename -force $dbfile [file rootname $dbfile].bak
-            }
-
-            rdb saveas $dbfile
-        } result opts]} {
-            log warning scenario "Could not save: $result"
-            log error scenario [dict get $opts -errorinfo]
-            app error {
-                |<--
-                Could not save as
-
-                    $dbfile
-
-                $result
-            }
-            return 0
+        # NEXT, Save the scenario to disk.
+        # TODO: Catch errors and rethrow with 
+        # "SCENARIO *" error codes.
+        if {[file exists $dbfile]} {
+            file rename -force $dbfile [file rootname $dbfile].bak
         }
 
-        # NEXT, set the current working directory to the scenario
-        # file location.
-        catch {cd [file dirname [file normalize $filename]]}
+        rdb saveas $dbfile
 
         # NEXT, save the name
         set info(dbfile) $dbfile
 
-        # NEXT, log it.
-        if {$filename ne ""} {
-            log newlog saveas
-        }
-
-        log normal scenario "Save Scenario: $info(dbfile)"
-
-        app puts "Saved Scenario [file tail $info(dbfile)]"
-
-        notifier send $type <ScenarioSaved>
-
-        return 1
+        return
     }
 
 
