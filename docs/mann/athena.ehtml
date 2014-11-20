@@ -1,0 +1,119 @@
+<manpage {athena(n)} "Athena Scenario Type">
+
+<section SYNOPSIS>
+
+<pre>
+package require athena <version>
+namespace import ::athena::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+athena(n) is a Snit type whose instances represent entire Athena
+scenarios.  To create a new scenario, possibly loading an <tt .adb> file,
+create an instance of athena(n).<p>
+
+<section "COMMANDS">
+
+This module defines the following commands:<p>
+
+<deflist commands>
+
+<defitem "athena create" {athena create <i name> <i filename> ?<i options...>?}>
+
+Creates a new instance of athena(n) called <i name>, which becomes a 
+Tcl command defined in the current scope; <iref athena create> returns
+the fully-qualified form of the name.<p>
+
+If the <i filename> isn't the empty string, it specifies the name of 
+an <tt .adb> scenario file to load.  If the named file cannot be loaded, 
+athena(n) will throw "<tt SCENARIO OPEN>".<p>
+
+The following options may be used:<p>
+
+<deflist options>
+
+<defopt {-logcmd <i command>}>
+
+Specifies the name of a <xref mars:logger(n)> object used to log the 
+object's activities.  The last component of the <tt -subject> name 
+is used as the log "component".<p>
+
+<defopt {-subject <i name>}>
+
+Specifies the subject <i name> used for any <xref mars:notifier(n)>
+events sent by the object.  By default, the <i name> defaults to the
+object's fully-qualified command name.<p>
+
+For example, 
+athena(n) wraps an <xref mars:sqldocument(n)> object used to contain
+the scenario's run-time database (RDB).  When monitoring is enabled, the
+RDB can generate <xref mars:notifier(n)> events as tables are updated.<p>
+
+</deflist options>
+
+
+<defitem "athena register" {athena register <i saveable>}>
+
+Registers the name of an <xref mars:saveable(i)> command with Athena,
+so that the command's data will be loaded and restored with the scenario
+data.<p>
+
+Ultimately, this might need to be an instance method.<p>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+Each athena(n) instance has the following subcommands:<p>
+
+<deflist instance>
+
+<defitem adbfile {<i adb> adbfile}>
+
+Returns the name of the <tt .adb> file loaded on creation, if any, or
+the <tt .adb> file name last used for saving, or "" if no <tt .adb> file
+has ever been loaded or saved.<p>
+
+<defitem log {<i adb> log <i level message>}>
+
+Given a <tt -logcmd>, logs the <i message> at the given <i level>,
+e.g., "warning".<p>
+
+<defitem rebase {<i adb> rebase}>
+
+Given a scenario with time advanced, this command converts it into a
+scenario with the same data at time 0.  This is experimental.<p>
+
+<defitem save {<i adb> save ?<i filename>?}>
+
+Saves the scenario to disk as an <tt .adb> file called <i filename>,
+adding the "<tt .adb>" extension if necessary.  On failure, throws
+"<tt SCENARIO SAVE>".<p>
+
+<defitem unsaved {<i adb> unsaved}>
+
+Returns 1 if there is unsaved scenario data, and 0 otherwise.<p>
+
+</deflist instance>
+
+<section FUNCTIONS>
+
+athena(n) defines many SQL functions for use in database queries.  The
+functions are TBD.<p>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+New package derived from Athena internals.<p>
+
+</manpage>
+
+
+
+

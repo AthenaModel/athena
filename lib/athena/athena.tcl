@@ -508,6 +508,9 @@ snit::type ::athena::athena {
 
     #-------------------------------------------------------------------
     # Snapshot management
+    #
+    # TBD: This code is essential, but private.  Once the sim module
+    # has been incorporated into athena(n), these should be renamed.
 
     # snapshot save
     #
