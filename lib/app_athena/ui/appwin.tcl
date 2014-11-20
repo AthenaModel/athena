@@ -1889,7 +1889,7 @@ snit::widget appwin {
     # cancelled.
 
     method SaveUnsavedData {} {
-        if {[scenario unsaved]} {
+        if {[sdb unsaved]} {
             # FIRST, deiconify the window, this gives the message box
             # a parent to popup over.
             wm deiconify $win

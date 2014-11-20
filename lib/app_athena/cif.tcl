@@ -419,10 +419,15 @@ snit::type cif {
                 |<--
                 Error during undo (changes have been rolled back):
 
-                [cif dump]
-
                 Stack Trace:
                 $einfo
+            }]
+
+            log error cif [tsubst {
+                |<--
+                CIF Dump:
+
+                [cif dump]
             }]
 
             # NEXT, clear all undo information; we can't undo, and

@@ -1077,8 +1077,8 @@ snit::type app {
 
         # NEXT, save the scenario to disk.
         try {
-            scenario save $filename
-        } on error {result eopts} {
+            sdb save $filename
+        } trap {SCENARIO SAVE} {result eopts} {
             log warning scenario "Could not save: $result"
             log error scenario [dict get $eopts -errorinfo]
             app error {
@@ -1089,7 +1089,8 @@ snit::type app {
 
                 $result
             }
-            return 0
+
+            return
         }
 
         # NEXT, set the current working directory to the scenario
@@ -1107,7 +1108,7 @@ snit::type app {
 
         notifier send $type <ScenarioSaved>
 
-        return 1
+        return
     }
 
     # revert
@@ -1116,7 +1117,12 @@ snit::type app {
     # default initial scenario if there is none).
 
     typemethod revert {} {
-        scenario revert
+        if {[sdb dbfile] ne ""} {
+            app open [sdb dbfile]
+        } else {
+            app new
+        }
+
     }
 }
 

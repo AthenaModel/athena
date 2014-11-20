@@ -41,7 +41,7 @@ namespace eval ::athena_test::tests:: {
     proc cleanup {} {
         array unset parms
         ted notifier forget
-        scenario new
+        app new
     }
 
     #-------------------------------------------------------------------

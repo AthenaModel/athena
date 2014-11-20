@@ -145,6 +145,7 @@ snit::type sim {
     typemethod restart {} {
         sim mutate unlock
     }
+    
     #-------------------------------------------------------------------
     # RDB Synchronization
 
@@ -310,7 +311,7 @@ snit::type sim {
         bsys start
 
         # NEXT, save an on-lock snapshot
-        scenario snapshot save
+        sdb snapshot save
 
         # NEXT, do initial analyses, and initialize modules that
         # begin to work at this time.
@@ -342,8 +343,8 @@ snit::type sim {
         assert {$info(state) eq "PAUSED"}
 
         # FIRST, load the PREP snapshot
-        scenario snapshot load
-        scenario snapshot purge
+        sdb snapshot load
+        sdb snapshot purge
         sigevent purge 0
 
         # NEXT, set state
@@ -370,7 +371,7 @@ snit::type sim {
 
         # FIRST, save the current simulation state to the
         # scenario tables
-        scenario rebase
+        sdb rebase
 
         # NEXT, set state
         $type SetState PREP

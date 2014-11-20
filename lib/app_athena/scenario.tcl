@@ -117,289 +117,7 @@ snit::type scenario {
         saveables {}
     }
 
-    #-------------------------------------------------------------------
-    # Scenario Management Methods
-    #
-    # This whole section is obsolete.
 
-    # new
-    #
-    # Creates a new, blank scenario.
-
-    typemethod new {} {
-        # FIRST, Create a blank scenario
-        $type MakeBlankScenario
-
-        # NEXT, reset the executive, getting rid of any script
-        # definitions from the previous scenario.
-        executive reset
-    }
-
-    # MakeBlankScenario
-    #
-    # Creates a new, blank, scenario.  This is used on
-    # "scenario new", and when "scenario open" tries and fails.
-
-    typemethod MakeBlankScenario {} {
-        # FIRST, initialize the runtime database
-        InitializeRuntimeData
-
-        # NEXT, initialize the beans
-        bean reset
-
-        # NEXT, there is no dbfile.
-        set info(dbfile) ""
-
-        # NEXT, Restart the simulation.  This also resyncs the app
-        # with the RDB.
-        sim new
-    }
-
-    # open filename
-    #
-    # filename       An .adb scenario file
-    #
-    # Opens the specified file name, replacing the existing file.
-
-    typemethod open {filename} {
-        try {
-            rdb load $filename
-        } on error {result eopts} {
-            $type new
-
-            # Rethrow error.
-            return {*}$eopts $result
-        }
-
-        # NEXT, define the temporary schema definitions
-        DefineTempSchema
-
-        # NEXT, restore the saveables
-        $type RestoreSaveables -saved
-
-        # NEXT, reset the executive, loading any user scripts.
-        executive reset
-
-    }
-
-    # revert
-    #
-    # Revert to the last saved scenario.  If there is none, revert to the
-    # initial scenario.
-
-    typemethod revert {} {
-        if {$info(dbfile) ne ""} {
-            $type open $info(dbfile)
-        } else {
-            $type new
-        }
-    }
-
-    #-------------------------------------------------------------------
-    # Save scenario
-    #
-    # TODO: Move to instance.
-    
-
-    # save ?filename?
-    #
-    # filename       Name for the new save file
-    #
-    # Saves the file, notify the application on success.  If no
-    # file name is specified, the dbfile is used.  Returns 1 if
-    # the save is successful and 0 otherwise.
-
-    typemethod save {{filename ""}} {
-        # FIRST, if filename is not specified, get the dbfile
-        if {$filename eq ""} {
-            if {$info(dbfile) eq ""} {
-                error "Cannot save: no file name"
-            }
-
-            set dbfile $info(dbfile)
-        } else {
-            set dbfile $filename
-        }
-
-        # NEXT, make sure it has a .adb extension.
-        if {[file extension $dbfile] ne ".adb"} {
-            append dbfile ".adb"
-        }
-
-        # NEXT, save the saveables to the sdb.
-        $type SaveSaveables -saved
-
-        # NEXT, Save the scenario to disk.
-        # TODO: Catch errors and rethrow with 
-        # "SCENARIO *" error codes.
-        if {[file exists $dbfile]} {
-            file rename -force $dbfile [file rootname $dbfile].bak
-        }
-
-        rdb saveas $dbfile
-
-        # NEXT, save the name
-        set info(dbfile) $dbfile
-
-        return
-    }
-
-
-    # unsaved
-    #
-    # Returns 1 if there are unsaved changes, and 0 otherwise.
-
-    typemethod unsaved {} {
-        if {[rdb unsaved]} {
-            return 1
-        }
-
-        foreach saveable $meta(saveables) {
-            if {[{*}$saveable changed]} {
-                return 1
-            }
-        }
-
-        return 0
-    }
-
-
-    #-------------------------------------------------------------------
-    # Snapshot Management
-
-    # snapshot save
-    #
-    # Saves an on-lock snapshot of the scenario, so that we can 
-    # return to it on-lock.  See nonSnapshotTables, above, for the
-    # excluded tables.
-
-    typemethod {snapshot save} {} {
-        # FIRST, save the saveables
-        $type SaveSaveables
-
-        # NEXT, get the snapshot text
-        set snapshot [GrabAllBut $nonSnapshotTables]
-
-        # NEXT, save it into the RDB
-        rdb eval {
-            INSERT OR REPLACE INTO snapshots(tick,snapshot)
-            VALUES(-1,$snapshot)
-        }
-
-        log normal scenario "snapshot saved: [string length $snapshot] bytes"
-    }
-
-    # GrabAllBut exclude
-    #
-    # exclude  - Names of tables to exclude from the snapshot.
-    #
-    # Grabs all but the named tables.
-
-    proc GrabAllBut {exclude} {
-        # FIRST, Get the list of tables to include
-        set tables [list]
-
-        rdb eval {
-            SELECT name FROM sqlite_master WHERE type='table'
-        } {
-            if {$name ni $exclude} {
-                lappend tables $name
-            }
-        }
-
-        # NEXT, export each of the required tables.
-        set snapshot [list]
-
-        foreach name $tables {
-            lassign [rdb grab $name {}] grabbedName content
-
-            # grab returns the empty list if there was nothing to
-            # grab; we want to have the table name present with
-            # an empty content string, indicated that the table
-            # should be empty.  Adds the INSERT tag, so that
-            # ungrab will do the right thing.
-            lappend snapshot [list $name INSERT] $content
-        }
-
-        # NEXT, return the document
-        return $snapshot
-    }
-
-    # snapshot load
-    #
-    # Loads the on-lock snapshot.  The caller should
-    # dbsync the sim.
-
-    typemethod {snapshot load} {} {
-        set snapshot [rdb onecolumn {
-            SELECT snapshot FROM snapshots
-            WHERE tick = -1
-        }]
-
-        # NEXT, import it.
-        log normal scenario \
-            "Loading on-lock snapshot: [string length $snapshot] bytes"
-
-        rdb transaction {
-            # NEXT, clear the tables being loaded.
-            foreach {tableSpec content} $snapshot {
-                lassign $tableSpec table tag
-                rdb eval "DELETE FROM $table;"
-            }
-
-            # NEXT, import the tables
-            rdb ungrab $snapshot
-        }
-
-        # NEXT, restore the saveables
-        $type RestoreSaveables
-    }
-
-    # snapshot purge
-    #
-    # Purges the on-lock snapshot and all history.
-
-    typemethod {snapshot purge} {} {
-        profile rdb eval {
-            DELETE FROM snapshots;
-            DELETE FROM ucurve_contribs_t;
-            DELETE FROM rule_firings;
-            DELETE FROM rule_inputs;
-        }
-
-        hist purge -1
-    }
-
-
-    #-------------------------------------------------------------------
-    # Save current simulation state as new baseline scenario.
-    
-    typemethod rebase {} {
-        # FIRST, allow all modules to rebase.
-        rebase save
-        
-        # NEXT, purge history.  (Do this second, in case the modules
-        # needed the history to do their work.)
-        scenario snapshot purge
-        sigevent purge 0
-
-        # NEXT, update the clock
-        simclock configure -tick0 [simclock now]
-
-        # NEXT, reinitialize modules that depend on the time.
-
-        aram clear
-
-        # NEXT, purge simulation tables
-        foreach table [rdb tables] {
-            if {$table ni $scenarioTables} {
-                rdb eval "DELETE FROM $table"
-            } 
-        }
-        
-        # NEXT, this is a new scenario; it has no name.
-        set info(dbfile) ""
-    }
     
     #-------------------------------------------------------------------
     # SQL Functions
@@ -533,46 +251,6 @@ snit::type scenario {
         }
     }
 
-    # SaveSaveables ?-saved?
-    #
-    # Save all saveable data to the checkpoint table, optionally
-    # clearing the "changed" flag for all of the saveables.
-
-    typemethod SaveSaveables {{option ""}} {
-        foreach saveable $meta(saveables) {
-            # Forget and skip saveables that no longer exist
-            if {[llength [info commands [lindex $saveable 0]]] == 0} {
-                ldelete meta(saveables) $saveable
-                continue
-            }
-
-            set checkpoint [{*}$saveable checkpoint $option]
-
-            rdb eval {
-                INSERT OR REPLACE
-                INTO saveables(saveable,checkpoint)
-                VALUES($saveable,$checkpoint)
-            }
-        }
-    }
-
-    # RestoreSaveables ?-saved?
-    #
-    # Restore all saveable data from the checkpoint table, optionally
-    # clearing the "changed" flag for all of the saveables.
-
-    typemethod RestoreSaveables {{option ""}} {
-        rdb eval {
-            SELECT saveable,checkpoint FROM saveables
-        } {
-            if {[llength [info commands [lindex $saveable 0]]] != 0} {
-                {*}$saveable restore $checkpoint $option
-            } else {
-                log warning scenario \
-                    "Unknown saveable found in checkpoint: \"$saveable\""
-            }
-        }
-    }
 
     #===================================================================
     # Instance Code
@@ -616,13 +294,21 @@ snit::type scenario {
             }
 
             # NEXT, restore the saveables
-            $type RestoreSaveables -saved
+            $self RestoreSaveables -saved
 
             # NEXT, save the name.
             # TODO: Add this variable.
             set info(dbfile) $filename
         } else {
             set info(dbfile) ""
+
+            # NEXT, load the blank map, but only if we have a GUI
+            # TODO: Take this out once Dave has changed the blank map
+            # handling.
+            if {[app tkloaded]} {
+                map load [file join $::app_athena::library blank.png]
+            }
+
 
             # Initialize external packages
             bsys clear
@@ -800,7 +486,255 @@ snit::type scenario {
         log normal rdb "EXPLAIN QUERY PLAN {$query}\n---\n$explanation"
     }
 
+    #-------------------------------------------------------------------
+    # Saving the Scenario
+        
+    # save ?filename?
+    #
+    # filename - Name for the new save file
+    #
+    # Saves the scenario to the current or specified filename.
+    # Throws "SCENARIO SAVE" if there's an error saving.
+
+    method save {{filename ""}} {
+        # FIRST, if filename is not specified, get the dbfile
+        if {$filename eq ""} {
+            if {$info(dbfile) eq ""} {
+                # This is a coding error in the client; hence, no
+                # special error code.
+                error "Cannot save: no file name"
+            }
+
+            set dbfile $info(dbfile)
+        } else {
+            set dbfile $filename
+        }
+
+        # NEXT, make sure it has a .adb extension.
+        if {[file extension $dbfile] ne ".adb"} {
+            append dbfile ".adb"
+        }
+
+        # NEXT, save the saveables to the rdb.
+        $self SaveSaveables -saved
+
+        # NEXT, Save the scenario to disk.
+        try {
+            if {[file exists $dbfile]} {
+                file rename -force $dbfile [file rootname $dbfile].bak
+            }
+
+            $rdb saveas $dbfile
+        } on error {result} {
+            throw {SCENARIO SAVE} $result
+        }
+
+        # NEXT, save the name
+        set info(dbfile) $dbfile
+
+        return
+    }
+
+    # unsaved
+    #
+    # Returns 1 if there are unsaved changes, and 0 otherwise.
+
+    method unsaved {} {
+        if {[$rdb unsaved]} {
+            return 1
+        }
+
+        foreach saveable $meta(saveables) {
+            if {[{*}$saveable changed]} {
+                return 1
+            }
+        }
+
+        return 0
+    }
+
+
+
+    # SaveSaveables ?-saved?
+    #
+    # Save all saveable data to the checkpoint table, optionally
+    # clearing the "changed" flag for all of the saveables.
+
+    method SaveSaveables {{option ""}} {
+        foreach saveable $meta(saveables) {
+            # Forget and skip saveables that no longer exist
+            if {[llength [info commands [lindex $saveable 0]]] == 0} {
+                ldelete meta(saveables) $saveable
+                continue
+            }
+
+            set checkpoint [{*}$saveable checkpoint $option]
+
+            $rdb eval {
+                INSERT OR REPLACE
+                INTO saveables(saveable,checkpoint)
+                VALUES($saveable,$checkpoint)
+            }
+        }
+    }
+
+    # RestoreSaveables ?-saved?
+    #
+    # Restore all saveable data from the checkpoint table, optionally
+    # clearing the "changed" flag for all of the saveables.
+
+    method RestoreSaveables {{option ""}} {
+        $rdb eval {
+            SELECT saveable,checkpoint FROM saveables
+        } {
+            if {[llength [info commands [lindex $saveable 0]]] != 0} {
+                {*}$saveable restore $checkpoint $option
+            } else {
+                # TODO: can't call "log" here. -warningcmd?
+                log warning scenario \
+                    "Unknown saveable found in checkpoint: \"$saveable\""
+            }
+        }
+    }
+
+    #-------------------------------------------------------------------
+    # Snapshot management
+
+    # snapshot save
+    #
+    # Saves an on-lock snapshot of the scenario, so that we can 
+    # return to it on-lock.  See nonSnapshotTables, above, for the
+    # excluded tables.
+
+    method {snapshot save} {} {
+        # FIRST, save the saveables
+        $self SaveSaveables
+
+        # NEXT, get the snapshot text
+        set snapshot [$self GrabAllBut $nonSnapshotTables]
+
+        # NEXT, save it into the RDB
+        $rdb eval {
+            INSERT OR REPLACE INTO snapshots(tick,snapshot)
+            VALUES(-1,$snapshot)
+        }
+
+        # TODO: move log to app, or add -logcmd.
+        log normal scenario "snapshot saved: [string length $snapshot] bytes"
+    }
+
+    # GrabAllBut exclude
+    #
+    # exclude  - Names of tables to exclude from the snapshot.
+    #
+    # Grabs all but the named tables.
+
+    method GrabAllBut {exclude} {
+        # FIRST, Get the list of tables to include
+        set tables [list]
+
+        $rdb eval {
+            SELECT name FROM sqlite_master WHERE type='table'
+        } {
+            if {$name ni $exclude} {
+                lappend tables $name
+            }
+        }
+
+        # NEXT, export each of the required tables.
+        set snapshot [list]
+
+        foreach name $tables {
+            lassign [$rdb grab $name {}] grabbedName content
+
+            # grab returns the empty list if there was nothing to
+            # grab; we want to have the table name present with
+            # an empty content string, indicated that the table
+            # should be empty.  Adds the INSERT tag, so that
+            # ungrab will do the right thing.
+            lappend snapshot [list $name INSERT] $content
+        }
+
+        # NEXT, return the document
+        return $snapshot
+    }
+
+    # snapshot load
+    #
+    # Loads the on-lock snapshot.  The caller should
+    # dbsync the sim.
+
+    method {snapshot load} {} {
+        set snapshot [$rdb onecolumn {
+            SELECT snapshot FROM snapshots
+            WHERE tick = -1
+        }]
+
+        # NEXT, import it.
+        # TODO: Do log in app, or add -logcmd.
+        log normal scenario \
+            "Loading on-lock snapshot: [string length $snapshot] bytes"
+
+        $rdb transaction {
+            # NEXT, clear the tables being loaded.
+            foreach {tableSpec content} $snapshot {
+                lassign $tableSpec table tag
+                $rdb eval "DELETE FROM $table;"
+            }
+
+            # NEXT, import the tables
+            $rdb ungrab $snapshot
+        }
+
+        # NEXT, restore the saveables
+        $self RestoreSaveables
+    }
+
+    # snapshot purge
+    #
+    # Purges the on-lock snapshot and all history.
+
+    method {snapshot purge} {} {
+        $rdb eval {
+            DELETE FROM snapshots;
+            DELETE FROM ucurve_contribs_t;
+            DELETE FROM rule_firings;
+            DELETE FROM rule_inputs;
+        }
+
+        # TODO: This should be part of grand scenario object.
+        hist purge -1
+    }
+
+    #-------------------------------------------------------------------
+    # Rebase Scenario
     
+    method rebase {} {
+        # FIRST, allow all modules to rebase.
+        rebase save
+        
+        # NEXT, purge history.  (Do this second, in case the modules
+        # needed the history to do their work.)
+        sdb snapshot purge
+        sigevent purge 0
+
+        # NEXT, update the clock
+        simclock configure -tick0 [simclock now]
+
+        # NEXT, reinitialize modules that depend on the time.
+        aram clear
+
+        # NEXT, purge simulation tables
+        foreach table [$rdb tables] {
+            if {$table ni $scenarioTables} {
+                $rdb eval "DELETE FROM $table"
+            } 
+        }
+        
+        # NEXT, this is a new scenario; it has no name.
+        set info(dbfile) ""
+    }
+
 
     #-------------------------------------------------------------------
     # Scenario queries

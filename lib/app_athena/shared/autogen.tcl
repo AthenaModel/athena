@@ -163,7 +163,7 @@ snit::type autogen {
         }
 
         # NEXT, all inputs check out, blank out the scenario
-        scenario new
+        app new
         
         # NEXT, create scenario entities, order matters
         autogen Actors    $opts(-actors)
