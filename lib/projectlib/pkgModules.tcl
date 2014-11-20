@@ -3,7 +3,7 @@
 #    pkgModules.tcl
 #
 # PROJECT:
-#    athena-sim - Athena Regional Stability Simulation
+#    athena - Athena Regional Stability Simulation
 #
 # DESCRIPTION:
 #    projectlib(n) package modules file

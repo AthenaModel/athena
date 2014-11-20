@@ -95,7 +95,7 @@ snit::type exporter {
         set f [open $scriptFile w]
 
         # NEXT, write a header
-        puts $f "# Exporting [sdb dbfile] from history"
+        puts $f "# Exporting [adb adbfile] from history"
         puts $f "# Exported @ [clock format [clock seconds]]"
         puts $f "# Written by Athena version [version]"
 
@@ -172,7 +172,7 @@ snit::type exporter {
 
     proc ExportFromData {f} {
         # FIRST, write header.
-        puts $f "# Exporting [sdb dbfile] from current data"
+        puts $f "# Exporting [adb adbfile] from current data"
         puts $f "# Exported @ [clock format [clock seconds]]"
         puts $f "# Written by Athena version [version]"
         puts $f "#"

@@ -34,12 +34,11 @@ set ::tkLoaded [expr {[info command tk] ne ""}]
 # numbers automatically as they change in project.kite.
 
 # -kite-require-start ADD EXTERNAL DEPENDENCIES
-package require snit 2.3
-package require sqlite3 3.8.5
-package require textutil::adjust 0.7
 package require projectlib
+package require -exact athena 6.3.0a4
 
 namespace import ::projectlib::*
+namespace import ::athena::*
 
 # For Tk applications
 if {$::tkLoaded} {
@@ -64,7 +63,6 @@ namespace eval ::app_athena:: {
 source [file join $::app_athena::library main.tcl     ]
 source [file join $::app_athena::library mod.tcl      ]
 source [file join $::app_athena::library app.tcl      ]
-source [file join $::app_athena::library scenario.tcl ]
 source [file join $::app_athena::library sim.tcl      ]
 source [file join $::app_athena::library engine.tcl   ]
 source [file join $::app_athena::library log.tcl      ]

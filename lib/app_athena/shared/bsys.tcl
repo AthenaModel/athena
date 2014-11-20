@@ -60,7 +60,7 @@ snit::type bsys {
         set mam ::simlib::mam
 
         # NEXT, register this module as a saveable
-        scenario register $type
+        athena register $type
 
         log normal bsys "init complete"
     }

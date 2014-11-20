@@ -49,7 +49,7 @@ namespace eval ::kiteinfo:: {
         reqver-fileutil 1.14
         url-docs/mag.docx https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20140826.docx
         local-marsutil 1
-        exclude-athena_batch {Img BWidget Tktable treectrl tablelist Tkhtml}
+        exclude-athena_batch {}
         reqver-marsgui 3.0.4
         reqver-uri 1.2
         apptype-athena_batch exe
@@ -80,7 +80,7 @@ namespace eval ::kiteinfo:: {
         apptype-cellide exe
         reqver-marsutil 3.0.4
         local-tls 0
-        provides {}
+        provides athena
         description {Athena Regional Stability Simulation}
         gui-athena_batch 0
         local-BWidget 0
@@ -100,8 +100,8 @@ namespace eval ::kiteinfo:: {
         url-docs/aag.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aag-20141010.docx
         force-athena 0
         local-sqlite3 0
-        force-cellide 0
         reqver-tablelist 5.11
+        force-cellide 0
         distpat-docs {
     docs/*.html
     docs/*.png
@@ -114,6 +114,7 @@ namespace eval ::kiteinfo:: {
         exclude-athena {}
         gui-helptool 1
         reqver-simlib 3.0.4
+        binary-athena 0
         local-struct::set 0
         distpat-src {
     project.kite

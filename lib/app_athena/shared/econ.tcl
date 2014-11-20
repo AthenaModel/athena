@@ -310,7 +310,7 @@ snit::type econ {
         require {[cge sane]} "The econ model's CGE (cge6x6.cm) is not sane."
 
         # NEXT, register this type as a saveable
-        scenario register ::econ
+        athena register ::econ
 
         # NEXT, Econ is up.
         log normal econ "init complete"

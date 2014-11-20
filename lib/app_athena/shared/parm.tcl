@@ -57,7 +57,7 @@ snit::type parm {
             notifier bind ::sim <State> $type [mytypemethod SimState]
 
             # Register this type as a saveable
-            scenario register ::parm
+            athena register ::parm
         } else {
             # Slave
             $type LockParms

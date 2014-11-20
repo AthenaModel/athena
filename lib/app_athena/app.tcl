@@ -227,7 +227,7 @@ snit::type app {
             -logcmd       ::log                  \
             -ordercmd     [myproc AddOrderToCIF]
         bsys      init
-        scenario ::sdb ""
+        MakeAthena ::adb
         nbhood    init
         sim       init
         axdb      init
@@ -236,8 +236,11 @@ snit::type app {
         coverage_model init
 
         # NEXT, register other saveables
-        scenario register ::projectlib::bean
-        scenario register ::wintel::wizard
+        # 
+        # TODO: bean should be registered within athena; wintel is 
+        # application specific.  Need to allow for that.
+        athena register ::projectlib::bean
+        athena register ::wintel::wizard
 
         # NEXT, register my:// servers with myagent.
         appserver init
@@ -326,7 +329,7 @@ snit::type app {
         if {[app tkloaded]} {
             wm withdraw .
             appwin .main -dev $opts(-dev)
-            scenario register .main
+            athena register .main
         }
 
         # NEXT, log that we're up.
@@ -1004,8 +1007,8 @@ snit::type app {
         }
 
         # NEXT, create a new, blank scenario
-        ::sdb destroy
-        scenario ::sdb ""
+        ::adb destroy
+        MakeAthena ::adb
 
         # NEXT, log it.
         log newlog new
@@ -1029,8 +1032,8 @@ snit::type app {
 
         # FIRST, try to open the scenario.
         try {
-            ::sdb destroy
-            scenario ::sdb $filename
+            ::adb destroy
+            MakeAthena ::adb $filename
         } trap {SCENARIO OPEN} {result} {
 
             app error {
@@ -1043,7 +1046,7 @@ snit::type app {
             }
 
             # At least have an empty scenario.
-            scenario ::sdb ""
+            MakeAthena ::adb
 
             return
         }
@@ -1077,7 +1080,7 @@ snit::type app {
 
         # NEXT, save the scenario to disk.
         try {
-            sdb save $filename
+            adb save $filename
         } trap {SCENARIO SAVE} {result eopts} {
             log warning scenario "Could not save: $result"
             log error scenario [dict get $eopts -errorinfo]
@@ -1102,9 +1105,9 @@ snit::type app {
             log newlog saveas
         }
 
-        log normal scenario "Save Scenario: [sdb dbfile]"
+        log normal scenario "Save Scenario: [adb adbfile]"
 
-        app puts "Saved Scenario [file tail [sdb dbfile]]"
+        app puts "Saved Scenario [file tail [adb adbfile]]"
 
         notifier send $type <ScenarioSaved>
 
@@ -1117,12 +1120,24 @@ snit::type app {
     # default initial scenario if there is none).
 
     typemethod revert {} {
-        if {[sdb dbfile] ne ""} {
-            app open [sdb dbfile]
+        if {[adb adbfile] ne ""} {
+            app open [adb adbfile]
         } else {
             app new
         }
+    }
 
+    # MakeAthena name ?filename?
+    #
+    # name     - The command name
+    # filename - An .adb file name, or ""
+    #
+    # Creates the ::adb object.
+
+    proc MakeAthena {name {filename ""}} {
+        athena $name $filename \
+            -logcmd  ::log     \
+            -subject ::rdb
     }
 }
 

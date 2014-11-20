@@ -43,7 +43,7 @@ snit::type engine {
             -logcomponent "aram"
 
 
-        scenario register [list ::aram saveable]
+        athena register [list ::aram saveable]
 
         # NEXT, initialize the simulation modules
         econ init ;# TBD: Proxy needed, but not a simple forwarding proxy.

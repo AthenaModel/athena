@@ -1210,7 +1210,7 @@ snit::widget appwin {
 
     method SetWindowTitle {} {
         # FIRST, get the file name.
-        set dbfile [file tail [sdb dbfile]]
+        set dbfile [file tail [adb adbfile]]
 
         if {$dbfile eq ""} {
             set dbfile "Untitled"
@@ -1646,7 +1646,7 @@ snit::widget appwin {
         }
 
         # FIRST, if no file name is known, do a SaveAs.
-        if {[sdb dbfile] eq ""} {
+        if {[adb adbfile] eq ""} {
             $self FileSaveAs
         }
 
@@ -1889,13 +1889,13 @@ snit::widget appwin {
     # cancelled.
 
     method SaveUnsavedData {} {
-        if {[sdb unsaved]} {
+        if {[adb unsaved]} {
             # FIRST, deiconify the window, this gives the message box
             # a parent to popup over.
             wm deiconify $win
 
             # NEXT, popup the message box for the user
-            set name [file tail [sdb dbfile]]
+            set name [file tail [adb adbfile]]
 
             set message [tsubst {
                 |<--

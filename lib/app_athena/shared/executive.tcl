@@ -405,7 +405,7 @@ snit::type executive {
             [myproc last_mad]
 
         # load
-        # TBD: Will need to access executive's $sdb
+        # TBD: Will need to access executive's $adb
         $interp smartalias load 1 1 {filename} \
             [list app open]
 
@@ -422,7 +422,7 @@ snit::type executive {
             [list .main nbfill]
 
         # new
-        # TBD: Will need to access executive's $sdb
+        # TBD: Will need to access executive's $adb
         $interp smartalias new 0 0 {} \
             [list app new]
 
@@ -2421,7 +2421,7 @@ snit::type executive {
     # Saves the scenario using the name.  Errors are handled by
     # [app error].
     #
-    # TBD: Will need to access executive's $sdb
+    # TBD: Will need to access executive's $adb
 
     proc save {filename} {
         app save $filename

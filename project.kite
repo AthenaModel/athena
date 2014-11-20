@@ -4,10 +4,12 @@ poc William.H.Duquette@jpl.nasa.gov
 
 # Applications
 app athena -apptype exe -gui
-app athena_batch -exclude {Img BWidget Tktable treectrl tablelist Tkhtml} \
-                 -apptype exe
+app athena_batch -apptype exe
 app cellide -apptype exe -gui
 app helptool -apptype kit -gui
+
+# Provided Libraries
+provide athena
 
 # Compiled Directories
 src help

@@ -83,7 +83,7 @@ snit::type sim {
         log normal sim "init"
 
         # FIRST, register with scenario(sim) as a saveable
-        scenario register $type
+        athena register $type
 
         # NEXT, set the simulation state
         set info(state)    PREP
@@ -311,7 +311,7 @@ snit::type sim {
         bsys start
 
         # NEXT, save an on-lock snapshot
-        sdb snapshot save
+        adb snapshot save
 
         # NEXT, do initial analyses, and initialize modules that
         # begin to work at this time.
@@ -343,8 +343,8 @@ snit::type sim {
         assert {$info(state) eq "PAUSED"}
 
         # FIRST, load the PREP snapshot
-        sdb snapshot load
-        sdb snapshot purge
+        adb snapshot load
+        adb snapshot purge
         sigevent purge 0
 
         # NEXT, set state
@@ -371,7 +371,7 @@ snit::type sim {
 
         # FIRST, save the current simulation state to the
         # scenario tables
-        sdb rebase
+        adb rebase
 
         # NEXT, set state
         $type SetState PREP

@@ -1,31 +1,30 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#    scenario.tcl
+#   athena.tcl
 #
-# AUTHOR:
-#    Will Duquette
+# PROJECT:
+#   athena - Athena Regional Stability Simulation
 #
 # DESCRIPTION:
-#    app_sim(n) Scenario Ensemble
+#   athena(n) Package: athena scenario object.
 #
-#    This module does all scenario file for the application.  It is
-#    responsible for the open/save/save as/new scenario functionality;
-#    as such, it manages the scenariodb(n).
-#
-# TODO:
-#    * Move saving to instance
-#    * Move saveable saving and restore to methods.
-#      * Leave registration in place until all saveables are owned by
-#        the grand scenario object.
+#   This type is the main entry point into the athena(n) library.
+#   Instances of athena(n) define entire scenarios, and can be saved
+#   to and loaded from .adb files.
 #
 #-----------------------------------------------------------------------
 
-#-----------------------------------------------------------------------
-# scenario ensemble
+namespace eval ::athena:: {
+    namespace export \
+        athena
+}
 
-snit::type scenario {
+#-----------------------------------------------------------------------
+# athena type
+
+snit::type ::athena::athena {
     #-------------------------------------------------------------------
-    # Type Variables
+    # Lookup tables
 
     # scenarioTables
     #
@@ -109,129 +108,16 @@ snit::type scenario {
         uram_frcrel_t
     }
 
+    #-------------------------------------------------------------------
+    # Type Variables
+    
+
     # Info Array: most scalars are stored here
     #
     # saveable            List of saveables.
 
     typevariable meta -array {
         saveables {}
-    }
-
-
-    
-    #-------------------------------------------------------------------
-    # SQL Functions
-
-    # Service  service which urb
-    #
-    # service    - an eabservice(n) value
-    # which      - either 'ACTUAL' or 'REQUIRED'
-    # urb        - an eurbanization(n) value
-    #
-    # Returns the proper parmdb parameter value for an abstract
-    # infrastructure service based on urbanization and type of LOS
-
-    proc Service {service which urb} {
-        return [parm get service.$service.$which.$urb]
-    }
-
-    # Locked
-    #
-    # Returns 1 if the scenario is locked, and 0 otherwise.
-
-    proc Locked {} {
-        expr {[sim state] ne "PREP"}
-    }
-
-    # M2Ref args
-    #
-    # args    map coordinates of one or more points as a flat list
-    #
-    # Returns a list of one or more map reference strings corrresponding
-    # to the coords
-
-    proc M2Ref {args} {
-        if {[llength $args] == 1} {
-            set args [lindex $args 0]
-        }
-
-        map m2ref {*}$args
-    }
-
-    # UramGamma ctype
-    #
-    # ctype - A URAM curve type: HREL, VREL, COOP, AUT, CUL, QOL.
-    #
-    # Returns the "gamma" parameter for curves of that type from
-    # parmdb(5).
-
-    proc UramGamma {ctype} {
-        # The [expr] converts it to a number.
-        return [expr [lindex [parm get uram.factors.$ctype] 1]]
-    }
-
-    # Sigline dtype signature
-    #
-    # dtype     - A driver type
-    # signature - The driver's signature
-    #
-    # Returns the driver's signature line.
-
-    proc Sigline {dtype signature} {
-        driver::$dtype sigline $signature
-    }
-
-    # FiringNarrative fdict
-    #
-    # fdict   - A rule firing dictionary
-    #
-    # Returns the rule firing's narrative string.
-
-    proc FiringNarrative {fdict} {
-        driver call narrative $fdict
-    }
-
-    # EntityLink etype name
-    #
-    # etype   - An entity type, e.g., "group"
-    # name    - An entity name
-    #
-    # Translates the args into 
-    #
-    #   <a href="my://app/$etype/$name">$name</a>
-
-    proc EntityLink {etype name} {
-        return "<a href=\"my://app/$etype/$name\">$name</a>"
-    }
-
-    # YesNo value
-    #
-    # value - An integer flag
-    #
-    # Returns "YES" or "NO".
-
-    proc YesNo {value} {
-        if {$value} {
-            return "YES"
-        } else {
-            return "NO"
-        }
-    }
-
-    # QPosition position
-    #
-    # position   - A qposition(n) value
-    #
-    # Returns the human-readable equivalent as a string.
-
-    proc QPosition {position} {
-        set ptext [qposition longname $position]
-
-        if {$ptext eq "Ambivalent"} {
-            append ptext " Towards"
-        }
-
-        return $ptext
     }
 
 
@@ -244,6 +130,9 @@ snit::type scenario {
     #
     # Registers the saveable(i); its data will be included in
     # the scenario and restored as appropriate.
+    #
+    # TODO: Ultimately, all registration will be done internally,
+    # and this can become a private helper method.
 
     typemethod register {saveable} {
         if {$saveable ni $meta(saveables)} {
@@ -251,22 +140,43 @@ snit::type scenario {
         }
     }
 
-
     #===================================================================
     # Instance Code
 
     #-------------------------------------------------------------------
     # Components
     
-    component rdb ;# The scenario db component
+    component rdb ;# The scenario's sqldatabase component
+
+    #-------------------------------------------------------------------
+    # Options
+
+    # -logcmd cmd
+    #
+    # The name of a logger(n) object (or equivalent) to use to log the 
+    # scenario's activities.  This object will use the -subject as its
+    # logger(n) "component" name.
+
+    option -logcmd
+
+    # -subject name
+    #
+    # The name of the object for use in log messages and as a 
+    # notifier(n) subject.  Defaults to the tail of the object's command.
+
+    option -subject \
+        -readonly yes
+    
 
     #-------------------------------------------------------------------
     # Instance Variables
 
     # Scenario working info.
+    #
+    # adbfile - The name of the related .adb file, or "" if none.
 
     variable info -array {
-        dbfile ""
+        adbfile ""
     }
     
 
@@ -281,11 +191,17 @@ snit::type scenario {
     # the .adb file will be loaded; otherwise, the new scenario will
     # be empty.  
 
-    constructor {filename} {
-        # FIRST, create the RDB component.
+    constructor {filename args} {
+        # FIRST, set the -subject's default value.  Then, get the option
+        # values.
+        set options(-subject) $self
+
+        $self configurelist $args
+
+        # NEXT, create the RDB component.
         $self CreateRDB
 
-        # NEXT, either load file name or create empty database.
+        # NEXT, either load the named file or create an empty database.
         if {$filename ne ""} {
             try {
                 $rdb load $filename
@@ -297,10 +213,9 @@ snit::type scenario {
             $self RestoreSaveables -saved
 
             # NEXT, save the name.
-            # TODO: Add this variable.
-            set info(dbfile) $filename
+            set info(adbfile) $filename
         } else {
-            set info(dbfile) ""
+            set info(adbfile) ""
 
             # NEXT, load the blank map, but only if we have a GUI
             # TODO: Take this out once Dave has changed the blank map
@@ -336,8 +251,6 @@ snit::type scenario {
     #     think the grand scenario object will need it internally.
     #   * Consider how to clean up sqldocument so that the temp schema
     #     can be defined in an sqlsection.
-    #   * Add -subject option (passed to RDB) so that we can be a source
-    #     of notifier events.
     #   * Remove ::rdb alias when it is no longer needed.
     #   
 
@@ -351,7 +264,7 @@ snit::type scenario {
         scenariodb $rdb \
             -clock      ::simclock \
             -explaincmd [mymethod ExplainCmd] \
-            -subject    ::rdb
+            -subject    $options(-subject)
         bean configure -rdb $rdb
 
         # NEXT, for now, alias it into the global namespace.
@@ -408,14 +321,14 @@ snit::type scenario {
         # FIRST, define SQL functions
         # TBD: qsecurity should be added to scenariodb(n).
         # TBD: moneyfmt should be added to sqldocument(n).
-        $rdb function locked               [myproc Locked]
-        $rdb function m2ref                [myproc M2Ref]
+        $rdb function locked               [mymethod Locked]
+        $rdb function m2ref                [mymethod M2Ref]
         $rdb function qsecurity            ::projectlib::qsecurity
         $rdb function moneyfmt             ::marsutil::moneyfmt
         $rdb function mklinks              [list ::link html]
-        $rdb function uram_gamma           [myproc UramGamma]
-        $rdb function sigline              [myproc Sigline]
-        $rdb function firing_narrative     [myproc FiringNarrative]
+        $rdb function uram_gamma           [mymethod UramGamma]
+        $rdb function sigline              [mymethod Sigline]
+        $rdb function firing_narrative     [mymethod FiringNarrative]
         $rdb function elink                [myproc EntityLink]
         $rdb function yesno                [myproc YesNo]
         $rdb function bsysname             ::bsys::bsysname
@@ -423,7 +336,7 @@ snit::type scenario {
         $rdb function affinity             ::bsys::affinity
         $rdb function qposition            [myproc QPosition]
         $rdb function hook_narrative       ::hook::hook_narrative
-        $rdb function service              [myproc Service]
+        $rdb function service              [mymethod Service]
 
         # NEXT, define the GUI Views
         $self RdbEvalFile gui_scenario.sql       ;# Scenario Entities
@@ -448,7 +361,7 @@ snit::type scenario {
     #   * Consider adding evalfile as an sqldocument command.
 
     method RdbEvalFile {filename} {
-        $rdb eval [readfile [file join $::app_athena::library $filename]]
+        $rdb eval [readfile [file join $::athena::library $filename]]
     }
 
     # destructor
@@ -478,12 +391,9 @@ snit::type scenario {
     # explanation -  Result of calling EXPLAIN QUERY PLAN on the query.
     #
     # Logs the query and its explanation.
-    #
-    # TODO: Make -explaincmd an option on the scenario instance; the
-    # application can create it as necessary.
 
     method ExplainCmd {query explanation} {
-        log normal rdb "EXPLAIN QUERY PLAN {$query}\n---\n$explanation"
+        $self log normal "EXPLAIN QUERY PLAN {$query}\n---\n$explanation"
     }
 
     #-------------------------------------------------------------------
@@ -499,13 +409,13 @@ snit::type scenario {
     method save {{filename ""}} {
         # FIRST, if filename is not specified, get the dbfile
         if {$filename eq ""} {
-            if {$info(dbfile) eq ""} {
+            if {$info(adbfile) eq ""} {
                 # This is a coding error in the client; hence, no
                 # special error code.
                 error "Cannot save: no file name"
             }
 
-            set dbfile $info(dbfile)
+            set dbfile $info(adbfile)
         } else {
             set dbfile $filename
         }
@@ -530,7 +440,7 @@ snit::type scenario {
         }
 
         # NEXT, save the name
-        set info(dbfile) $dbfile
+        set info(adbfile) $dbfile
 
         return
     }
@@ -590,8 +500,7 @@ snit::type scenario {
             if {[llength [info commands [lindex $saveable 0]]] != 0} {
                 {*}$saveable restore $checkpoint $option
             } else {
-                # TODO: can't call "log" here. -warningcmd?
-                log warning scenario \
+                $self log warning \
                     "Unknown saveable found in checkpoint: \"$saveable\""
             }
         }
@@ -619,8 +528,8 @@ snit::type scenario {
             VALUES(-1,$snapshot)
         }
 
-        # TODO: move log to app, or add -logcmd.
-        log normal scenario "snapshot saved: [string length $snapshot] bytes"
+        # NEXT, log the size.
+        $self log normal "snapshot saved: [string length $snapshot] bytes"
     }
 
     # GrabAllBut exclude
@@ -671,8 +580,7 @@ snit::type scenario {
         }]
 
         # NEXT, import it.
-        # TODO: Do log in app, or add -logcmd.
-        log normal scenario \
+        $self log normal \
             "Loading on-lock snapshot: [string length $snapshot] bytes"
 
         $rdb transaction {
@@ -715,7 +623,7 @@ snit::type scenario {
         
         # NEXT, purge history.  (Do this second, in case the modules
         # needed the history to do their work.)
-        sdb snapshot purge
+        $self snapshot purge
         sigevent purge 0
 
         # NEXT, update the clock
@@ -732,21 +640,152 @@ snit::type scenario {
         }
         
         # NEXT, this is a new scenario; it has no name.
-        set info(dbfile) ""
+        set info(adbfile) ""
     }
 
 
     #-------------------------------------------------------------------
     # Scenario queries
 
-    # dbfile
+    # adbfile
     #
     # Returns the name of the loaded .adb file, or "" if none.
 
-    method dbfile {} {
-        return $info(dbfile)
+    method adbfile {} {
+        return $info(adbfile)
     } 
-     
+
+    #===================================================================
+    # Helper API
+    #
+    # These methods are defined for use by components.
+
+    method log {level message} {
+        callwith $options(-logcmd)              \
+            $level                              \
+            [namespace tail $options(-subject)] \
+            $message
+    }
     
+
+    #===================================================================
+    # SQL Functions
+    #
+    # TODO: Some should be application specific.
+    
+
+    # Locked
+    #
+    # Returns 1 if the scenario is locked, and 0 otherwise.
+
+    method Locked {} {
+        expr {[sim state] ne "PREP"}
+    }
+
+    # M2Ref args
+    #
+    # args    map coordinates of one or more points as a flat list
+    #
+    # Returns a list of one or more map reference strings corrresponding
+    # to the coords
+
+    method M2Ref {args} {
+        if {[llength $args] == 1} {
+            set args [lindex $args 0]
+        }
+
+        map m2ref {*}$args
+    }
+
+    # UramGamma ctype
+    #
+    # ctype - A URAM curve type: HREL, VREL, COOP, AUT, CUL, QOL.
+    #
+    # Returns the "gamma" parameter for curves of that type from
+    # parmdb(5).
+
+    method UramGamma {ctype} {
+        # The [expr] converts it to a number.
+        return [expr [lindex [parm get uram.factors.$ctype] 1]]
+    }
+
+    # Sigline dtype signature
+    #
+    # dtype     - A driver type
+    # signature - The driver's signature
+    #
+    # Returns the driver's signature line.
+
+    method Sigline {dtype signature} {
+        driver::$dtype sigline $signature
+    }
+
+    # FiringNarrative fdict
+    #
+    # fdict   - A rule firing dictionary
+    #
+    # Returns the rule firing's narrative string.
+
+    method FiringNarrative {fdict} {
+        driver call narrative $fdict
+    }
+
+    # EntityLink etype name
+    #
+    # etype   - An entity type, e.g., "group"
+    # name    - An entity name
+    #
+    # Translates the args into 
+    #
+    #   <a href="my://app/$etype/$name">$name</a>
+
+    proc EntityLink {etype name} {
+        return "<a href=\"my://app/$etype/$name\">$name</a>"
+    }
+
+    # YesNo value
+    #
+    # value - An integer flag
+    #
+    # Returns "YES" or "NO".
+
+    proc YesNo {value} {
+        if {$value} {
+            return "YES"
+        } else {
+            return "NO"
+        }
+    }
+
+    # QPosition position
+    #
+    # position   - A qposition(n) value
+    #
+    # Returns the human-readable equivalent as a string.
+
+    proc QPosition {position} {
+        set ptext [qposition longname $position]
+
+        if {$ptext eq "Ambivalent"} {
+            append ptext " Towards"
+        }
+
+        return $ptext
+    }
+
+    # Service  service which urb
+    #
+    # service    - an eabservice(n) value
+    # which      - either 'ACTUAL' or 'REQUIRED'
+    # urb        - an eurbanization(n) value
+    #
+    # Returns the proper parmdb parameter value for an abstract
+    # infrastructure service based on urbanization and type of LOS
+
+    method Service {service which urb} {
+        return [parm get service.$service.$which.$urb]
+    }
+
+
 }
 
