@@ -472,22 +472,24 @@ appserver module NBHOOD {
         } elseif {[locked]} {
             ht putln {
                 This neighborhood needs abstract infrastructure service 
-                (AIS) provided to the civilians in this neighborhood.  
+                (AIS) provided to the civilians.  
                 The required, expected and actual levels of service (LOS)
-                for each service and group is as follows.
-            }
+                for each service to all civilian groups in the neighborhood
+                is as follows.  <b>Note:</b> Civilian groups with zero 
+                population do not require abstract services.
+        }
 
             ht query  {
-                SELECT link           AS "Civ. Group",
-                       s              AS "Abstract Service", 
+                SELECT s              AS "Abstract Service", 
                        pct_required   AS "Required LOS %", 
                        pct_expected   AS "Expected LOS %", 
                        pct_actual     AS "Actual LOS %",
                        needs          AS "Needs factor",
                        expectf        AS "Expectations factor"
                 FROM gui_service_sg 
-                WHERE n=$n AND s!='ENI' AND population > 0
-            } -default "None." -align LLRRRRR
+                WHERE s != 'ENI' AND n=$n
+                GROUP BY s
+            } -default "None." -align LRRRRR
 
     
             ht para
@@ -495,21 +497,21 @@ appserver module NBHOOD {
         } else  {
             ht putln {
                 This neighborhood needs abstract infrastructure service 
-                (AIS) provided to the civilians in this neighborhood.  
-                The required and actual levels of service (LOS) 
-                for each service and group when the scenario is locked
-                is as follows.  The needs and expectations factors will
-                be calculated after the scenario is locked.
+                (AIS) provided to the civilians.  
+                The required and actual levels of service (LOS) to each 
+                civilian group in the neighborhood will be as follows when
+                the scenario is locked. The needs and expectations factors 
+                will also be calculated upon lock.
             }
 
             ht query {
-                SELECT glink        AS "Civ. Group", 
-                       s            AS "Service",
+                SELECT s            AS "Service",
                        pct_act      AS "% Actual LOS", 
                        pct_req      AS "% Required LOS"
                 FROM gui_abservice
-                WHERE n=$n  AND population > 0
-            } -default "None." -align LLRR
+                WHERE n=$n
+                GROUP BY s
+            } -default "None." -align LRR
         }
 
         ht para

@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Athena"
-#define MyAppVersion "6.3.0a2"
+#define MyAppVersion "6.3.0a3"
 #define MyAppPublisher "Jet Propulsion Laboratory, California Institute of Technology"
 #define MyAppExeName "athena.exe"
 

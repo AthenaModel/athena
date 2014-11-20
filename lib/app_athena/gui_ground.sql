@@ -161,6 +161,8 @@ FROM service_sg
 JOIN gui_civgroups USING (g)
 ORDER BY g;
 
+-- gui_abservice:  in PREP, the actual and required LOS for abstract
+-- services
 CREATE TEMPORARY VIEW gui_abservice AS
 SELECT CG.g                                              AS g,
        CG.link                                           AS glink,
