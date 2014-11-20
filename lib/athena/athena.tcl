@@ -12,6 +12,15 @@
 #   Instances of athena(n) define entire scenarios, and can be saved
 #   to and loaded from .adb files.
 #
+# QUESTIONS:
+#   * Should [$adb eval]/[$adb query] be delegated to the safe queries, 
+#     access to the unsafe eval and query be given only to internals?
+#     (since changes to the database should be done through other 
+#     public methods, e.g., orders).
+#
+#   * Do I need a public interface for the client, and a private interface
+#     used by components? 
+#
 #-----------------------------------------------------------------------
 
 namespace eval ::athena:: {
@@ -382,6 +391,18 @@ snit::type ::athena::athena {
     }
 
     #-------------------------------------------------------------------
+    # Delegated commands
+
+    # RDB
+
+    delegate method eval            to rdb as eval
+    delegate method onecolumn       to rdb as onecolumn
+    delegate method query           to rdb as query
+    delegate method {rdb safeeval}  to rdb as safeeval
+    delegate method {rdb safequery} to rdb as safequery
+    
+
+    #-------------------------------------------------------------------
     # Event Handlers
 
 
@@ -673,7 +694,7 @@ snit::type ::athena::athena {
 
     #===================================================================
     # SQL Functions
-    #
+    #dsf
     # TODO: Some should be application specific.
     
 

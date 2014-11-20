@@ -77,10 +77,95 @@ Returns the name of the <tt .adb> file loaded on creation, if any, or
 the <tt .adb> file name last used for saving, or "" if no <tt .adb> file
 has ever been loaded or saved.<p>
 
+<defitem eval {<i adb> eval <i query> ?<i args...>?}>
+
+Evaluates an SQL <i query> with respect to the scenario's run-time 
+database.  The arguments are as for the standard SQLite3 <tt eval>
+subcommand.<p>
+
 <defitem log {<i adb> log <i level message>}>
 
 Given a <tt -logcmd>, logs the <i message> at the given <i level>,
 e.g., "warning".<p>
+
+<defitem onecolumn {<i adb> onecolumn <i query>}>
+
+Evaluates an SQL <i query> with respect to the scenario's run-time 
+database, returning only the first column.<p>
+
+<defitem query {<i adb> query <i query> ?<i options...>?}>
+
+Evaluates an SQL <i query> with respect to the scenario's run-time 
+database, and returns the result set as a formatted string.  The 
+<i query> can contain any valid SQL statements understood by SQLite3,
+but in practice it will be a single statemet that returns a result 
+set (i.e., <tt SELECT> or certain <tt PRAGMA> statements).<p>
+
+The following options may be used:<p>
+
+<deflist query>
+
+<defopt {-mode mc|list|csv}>
+
+Specifies the output mode; the default is <b>mc</b>, multicolumn.<p>
+
+When <tt -mode> is <b>mc</b>, each record is output on a single
+line.  Fields are formatted in columns, with the field name as the
+column header.<p>
+
+When <tt -mode> is <b>list</b>, the output is a list of records.
+Each record is output on multiple lines, with (nominally) one line
+per field.  Each line consists of the field name and value; the
+record's field names are values are formatted neatly in parallel columns.<p>
+
+When <tt -mode> is <b>csv</b>, the output is in CSV (comma-separated value)
+format, one record per line, beginning with a header record of column labels.
+Non-numeric values are enclosed in double-quotes.<p>
+
+<defopt {-labels <i>list</i>}>
+
+Normally <iref query> uses the column names found in the query to
+label the fields in the output.  If specified, the value of
+<b>-labels</b> is a list of labels to be used instead.<p>
+
+<defopt {-maxcolwidth <i>chars</i>}>
+
+Sets the maximum column width, in characters, when <tt -mode> is
+<b>mc</b>; the default is 30.  All
+data values longer than this will be truncated with "...".<p>
+
+If <b>-maxcolwidth</b> is set to 0 then values will not be
+truncated.<p>
+
+<defopt {-headercols <i>num</i>}>
+
+Sets the number of header columns.  When <tt -mode> is <b>mc</b>,
+repeated values in a column are skipped.  That is, if a column
+contains identical values in consecutive rows, the column will be
+blank in all but the first of the rows.  Defaults to "0".<p>
+
+</deflist query>
+
+<defitem rdb {<i adb> rdb <i subcommand> ?<i args...>?}>
+
+This subcommand gives direct access to the scenario's run-time database
+(RDB).  The following RDB subcommands are available:<p>
+
+<deflist rdb>
+
+    <defitem "rdb safeeval" {<i adb> rdb safeeval <i args...>}>
+
+    This is like <iref eval>, but is prevented from changing the 
+    contents of the database. It is intended for use in commands accessible 
+    to the user of the application.<p>
+
+    <defitem "rdb safequery" {<i adb> rdb safequery <i args...>}>
+
+    This is like <iref query>, but is prevented from changing the 
+    contents of the database. It is intended for use in commands accessible 
+    to the user of the application.  Note that the query may not contain
+    variables.<p>
+</deflist rdb>
 
 <defitem rebase {<i adb> rebase}>
 
