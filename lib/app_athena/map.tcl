@@ -76,9 +76,9 @@ snit::type map {
         } {
             set mapimage [image create photo -format jpeg -data $data]
 
-            set projection [[eprojtype as proj $projtype] %AUTO \
-                                          -width $width         \
-                                          -height $height       \
+            set projection [[eprojtype as proj $projtype] %AUTO% \
+                                          -width $width          \
+                                          -height $height        \
                                           {*}$proj_opts]
         }
     }
@@ -101,7 +101,7 @@ snit::type map {
 
     # projection
     #
-    # Returns the current map projection, or [myproc NoMap].
+    # Returns the current map projection
 
     typemethod projection {} {
         return $projection
@@ -134,7 +134,7 @@ snit::type map {
         rdb eval {
             INSERT OR REPLACE
             INTO maps(id,filename,width,height,projtype,proj_opts,data)
-            VALUES(1,'FromWMS',$width,$height,$ptype,$proj_opts,$data);
+            VALUES(1,'rawdata',$width,$height,$ptype,$proj_opts,$data);
         }
 
         $type DbSync
@@ -167,7 +167,7 @@ snit::type map {
         # NEXT, try to load any projection metadata. For now only
         # GeoTIFF with GEOGRAPHIC model types are recognized.
         if {[catch {
-            set mdata [dict create {*}[geotiff read $filename]]
+            set mdata [dict create {*}[marsutil::geotiff read $filename]]
             if {[dict get $mdata modeltype] eq "GEOGRAPHIC"} {
                 set projtype RECT
             } else {
@@ -236,12 +236,19 @@ snit::type map {
             return ""
         }
 
-        # NEXT, get the undo information
-        rdb eval {
-            SELECT * FROM maps WHERE id=1
-        } row {
-            unset row(*)
-            binary scan $row(data) H* row(data)
+        # NEXT, undo either goes back to previous map or to 
+        # default map
+        if {![rdb exists {SELECT * FROM maps WHERE id=1}]} {
+            set undo [mytypemethod UndoToDefault]
+        } else {
+            rdb eval {
+                SELECT * FROM maps WHERE id=1
+            } row {
+                unset row(*)
+                binary scan $row(data) H* row(data)
+            }
+
+            set undo [mytypemethod UndoImport [array get row]]
         }
 
         # NEXT, try to load it into the RDB
@@ -256,7 +263,7 @@ snit::type map {
         notifier send $type <MapChanged>
 
         # NEXT, Return the undo script
-        return [mytypemethod UndoImport [array get row]]
+        return $undo
     }
 
     # mutate data  parmdict
@@ -275,12 +282,19 @@ snit::type map {
             return ""
         }
 
-        # NEXT, get the undo information
-        rdb eval {
-            SELECT * FROM maps WHERE id=1
-        } row {
-            unset row(*)
-            binary scan $row(data) H* row(data)
+        # NEXT, undo either goes back to previous map or to 
+        # default map
+        if {![rdb exists {SELECT * FROM maps WHERE id=1}]} {
+            set undo [mytypemethod UndoToDefault]
+        } else {
+            rdb eval {
+                SELECT * FROM maps WHERE id=1
+            } row {
+                unset row(*)
+                binary scan $row(data) H* row(data)
+            }
+
+            set undo [mytypemethod UndoImport [array get row]]
         }
 
         $type data $parmdict
@@ -289,9 +303,28 @@ snit::type map {
         notifier send $type <MapChanged>
 
         # NEXT, Return the undo script
-        return [mytypemethod UndoImport [array get row]]
+        return $undo
     }
 
+    # UndoToDefault
+    #
+    # Undoes an import and sets back to default
+
+    typemethod UndoToDefault {} {
+        # FIRST, blank everything out
+        rdb eval {DELETE FROM maps;}
+        image delete $mapimage
+        set mapimage   ""
+
+        # NEXT, default projection
+        set projection [mapref %AUTO%]
+
+        log normal app "Using Default Map"
+        app puts "Using Default Map"
+
+        # NEXT, notify application
+        notifier send $type <MapChanged>
+    }
 
     # UndoImport dict
     #
