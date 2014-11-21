@@ -578,11 +578,6 @@ snit::type scenario {
         # NEXT, define the temp schema
         DefineTempSchema
 
-        # NEXT, load the blank map, but only if we have a GUI
-        if {[app tkloaded]} {
-            map load [file join $::app_athena::library blank.png]
-        }
-
         # NEXT, create the neutral belief system.
         bsys clear
 
