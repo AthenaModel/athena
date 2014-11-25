@@ -41,4 +41,5 @@ namespace eval ::athena:: {
 #-----------------------------------------------------------------------
 # Modules
 
-source [file join $::athena::library athena.tcl]
+source [file join $::athena::library athena.tcl  ]
+source [file join $::athena::library athenadb.tcl]

@@ -1,26 +1,25 @@
-<manpage {athena(n)} "Athena Scenario Type">
+<manpage {athena(n) athenadb(n)} "Athena Internal Scenario Type">
 
 <section SYNOPSIS>
 
 <pre>
 package require athena <version>
-namespace import ::athena::*
 </pre>
 
 <itemlist>
 
 <section DESCRIPTION>
 
-athena(n) is the primary public interface for the athena(n) package.
-athena(n) is a Snit type whose instances represent entire Athena
-scenarios.  To create a new scenario, possibly loading an <tt .adb> file,
-create an instance of athena(n).<p>
+athenadb(n) is a Snit type whose instances represent entire Athena
+scenarios.  It is the main type in the <xref athena(n)> library; 
+creating an instance of athenadb(n) creates all of the other objects 
+required by a scenario.  It is also a utility object for all objects in 
+the scenario; it passes itself to all objects it creates, and they use it 
+as the primary means of accessing other objects.<p>
 
-<section "Relationship with athenadb(n)">
-
-athena(n) is a thin wrapper around <xref athenadb(n)>, which is the true
-main object in the package.  <xref athenadb(n)> also provides services to 
-internal modules that aren't appropriate for use by clients.<p>
+athenadb(n) is a <b private> type, to be used only within the library code.
+Note that <xref athena(n)>, the public interface to the library, is a thin
+wrapper around athenadb(n), providing only the public operations.<p>
 
 <section "COMMANDS">
 
@@ -90,14 +89,15 @@ Evaluates an SQL <i query> with respect to the scenario's run-time
 database.  The arguments are as for the standard SQLite3 <tt eval>
 subcommand.<p>
 
-<b TODO>: Ultimately, this should be a read-only operation.<p>
+<defitem log {<i adb> log <i level message>}>
+
+Given a <tt -logcmd>, logs the <i message> at the given <i level>,
+e.g., "warning".<p>
 
 <defitem onecolumn {<i adb> onecolumn <i query>}>
 
 Evaluates an SQL <i query> with respect to the scenario's run-time 
 database, returning only the first column.<p>
-
-<b TODO:> Ultimately, this should be a read-only operation.<p>
 
 <defitem query {<i adb> query <i query> ?<i options...>?}>
 
@@ -106,8 +106,6 @@ database, and returns the result set as a formatted string.  The
 <i query> can contain any valid SQL statements understood by SQLite3,
 but in practice it will be a single statemet that returns a result 
 set (i.e., <tt SELECT> or certain <tt PRAGMA> statements).<p>
-
-<b TODO:> Ultimately, this should be a read-only operation.<p>
 
 The following options may be used:<p>
 
@@ -160,14 +158,12 @@ This subcommand gives direct access to the scenario's run-time database
 (RDB).  The following RDB subcommands are available:<p>
 
 <deflist rdb>
+
     <defitem "rdb safeeval" {<i adb> rdb safeeval <i args...>}>
 
     This is like <iref eval>, but is prevented from changing the 
     contents of the database. It is intended for use in commands accessible 
     to the user of the application.<p>
-
-    <b TODO>: Ultimately, this should be the only form of eval accessible
-    to the client.<p>
 
     <defitem "rdb safequery" {<i adb> rdb safequery <i args...>}>
 
@@ -175,9 +171,6 @@ This subcommand gives direct access to the scenario's run-time database
     contents of the database. It is intended for use in commands accessible 
     to the user of the application.  Note that the query may not contain
     variables.<p>
-
-    <b TODO>: Ultimately, this should be the only form of query accessible
-    to the client.<p>
 </deflist rdb>
 
 <defitem rebase {<i adb> rebase}>

@@ -1135,7 +1135,8 @@ snit::type app {
     # Creates the ::adb object.
 
     proc MakeAthena {name {filename ""}} {
-        athena $name $filename \
+        athena create $name \
+            -adbfile $filename \
             -logcmd  ::log     \
             -subject ::rdb
     }
