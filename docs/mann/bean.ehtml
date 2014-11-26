@@ -51,9 +51,9 @@ Subclasses of <code>pet</code> also need to be defined using
     }
 </pre>
 
-If a bean can own other beans, it should define one or more "beanslot" 
-variables; the value of a beanslot should be a list of zero or more bean
-instance names.  Beanslot variables are defined in the class definition
+If a bean can own other beans, it should define one or more "bean slot" 
+variables; the value of a bean slot should be a list of zero or more bean
+IDs.  Bean slot variables are defined in the class definition
 using the <code>beanslot</code> command.<p>
 
 
@@ -211,10 +211,10 @@ To put it another way, a bean may be made of non-beans by composition
 (the has-a relationship), and may contain beans given to it from outside
 (the container/contained relationship).<p>
 
-Owned beans are saved by their object command names, which are preserved
+Owned beans are saved by their bean IDs, which are preserved
 across checkpoint/restore and delete/undelete.
 
-An instance variable that contains the names of owned beans is called a 
+An instance variable that contains the IDs of owned beans is called a 
 <i>bean slot</i>, and should be declared as such in the class definition.
 For example, suppose that each instance of the dog class can own a 
 tail, also defined as a bean class.  The dog class would then have a 
@@ -242,6 +242,9 @@ bean's <code>parent</code> variable.<p>
 
 Beans named in bean slots will be destroyed automatically with the owning
 bean.<p>
+
+
+
 
 <b>Note:</b> Sometimes a bean will have a reference to a bean it 
 <i>doesn't</i> own.  For example, an owned bean will often have a reference
@@ -282,7 +285,7 @@ mutators will send out more specific events from that subject.<p>
 <subsection "Copy and Paste">
 
 The <iref copydata> method returns a copy set for the bean and the 
-dependent beans in its beanslots, a collection of data suitable to be 
+dependent beans in its bean slots, a collection of data suitable to be 
 placed on a clipboard.  The copy set is a dictionary of data with the
 following content:<p>
 
@@ -292,7 +295,7 @@ following content:<p>
     <li> The <b>id</b> field, and the <b>parent</b> field if present, are
          removed, since they won't apply to the pasted data.
     <li> A <b>class_</b> key is added, naming the bean's leaf class.
-    <li> The beanslots in the copy set will contain a list of copy sets like 
+    <li> The bean slots in the copy set will contain a list of copy sets like 
          this, one for each owned bean, instead of the bean instance names.
 </ul>
 
@@ -491,7 +494,7 @@ subcommands.<p>
 <defitem addbean_ {<i>bean</i> addbean_ <i>slot cls</i> ?<i>beanvar</i>?}>
 
 <b>Protected.</b>  This mutator creates a new bean of class <i>cls</i>,
-and appends it to the named <i>slot</i> variable, 
+and appends its ID to the named <i>slot</i> variable, 
 returns a script that will undo the change.  If <i>beanvar</i> is given,
 it is the name of a variable in the caller's context; this variable
 will receive the newly added bean object's name.<p>
@@ -547,7 +550,7 @@ how to implement copy and paste.<p>
 
 <defitem deletebean_ {<i>bean</i> deletebean_ <i>slot id</i>}>
 
-<b>Protected.</b>  This mutator deletes the bean with the given <i>id</i> 
+<b>Protected.</b>  This mutator deletes the bean's <i>id</i> 
 from the named bean <i>slot</i> variable, destroys the bean, and 
 returns a script that will undo the change.<p>
 
@@ -581,10 +584,10 @@ specific mutator.<p>
 
 <defitem destroyslots {<i>bean</i> destroyslots <i>slot...</i>}>
 
-<b>Protected.</b>  This command destroys all beans listed in the named
-bean <i>slot</i> variables.  It is primarily intended to be called from 
-the bean base class destructor, but it can also be used when resetting the 
-slot owner's state.<p>
+<b>Protected.</b>  This command destroys all beans whose IDs are listed in 
+the named bean <i>slot</i> variables.  It is primarily intended to be 
+called from the bean base class destructor, but it can also be used 
+when resetting the slot owner's state.<p>
 
 <iref destroyslots> is useful because it avoids to common errors in 
 implementing destructors for beans that own other beans.  First, if there is
@@ -592,7 +595,7 @@ an error in calling the constructor then the bean's destructor is called; and
 if a slot variable hasn't yet been initialized and the destructor tries to
 clean it up in a naive way, it will throw an unknown variable error.  Second,
 the <iref bean reset> command can sometimes destroy beans out of order, so
-that a bean named by a slot no longer exists.  <iref destroyslots> handles
+that a bean listed by a slot no longer exists.  <iref destroyslots> handles
 both of these cases automatically, thus simplifying the destructor.
 
 When using <iref destroyslots> to reset a bean owner's state, i.e., in a 
@@ -641,7 +644,7 @@ wrapper around <iref set>.)<p>
 
 <defitem movebean_ {<i>bean</i> movebean_ <i>slot bean_id where</i>}>
 
-<b>Protected.</b>  This mutator moves the bean with the given <i>bean_id</i>
+<b>Protected.</b>  This mutator moves the <i>bean_id</i>
 to a different place in the same <i>slot</i> given the <i>where</i>
 value, which is an <xref projtypes(n) emoveitem(n)> value, and returns 
 a script that will undo the change.<p>
@@ -736,6 +739,14 @@ existing value.  Thus, the following code is valid:<p>
 </pre>
 
 This is often useful when undoing changes to a bean's state.<p>
+
+<defitem slot {<i>bean</i> <i slot> ?<i idx>?}>
+
+A method is automatically defined for each bean slot variable.  It has the
+same name as the slot, and returns the list of bean commands corresponding
+to the list of bean IDs in the slot.  If the <i idx> is specified, it
+should be a <tt lindex> index; the method then returns the command for the
+indicated bean ID.<p>
 
 <defitem subject {<i>bean</i> subject}>
 

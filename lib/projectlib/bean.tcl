@@ -42,6 +42,15 @@ proc oo::define::beanslot {slot} {
     # NEXT, Define the slot as a normal variable
     oo::define $cls variable $slot
 
+    # NEXT, add a slot method for the slot that returns the list of 
+    # bean commands.
+    oo::define $cls method $slot {{idx ""}} [format {
+        return [my SlotAccessor %s $idx]
+    } $slot]
+
+    #
+    # TODO: make it provide the features of existing ad hoc methods.
+
     # NEXT, add it to this class's list of bean slots.
     namespace upvar [info object namespace ::projectlib::bean] slots slots
 
@@ -669,10 +678,10 @@ oo::define ::projectlib::bean {
                 continue
             }
 
-            foreach bean [my get $slot] {
+            foreach bean_id [my get $slot] {
                 # Only destroy it if it exists
-                if {[info object isa object $bean]} {
-                    $bean destroy
+                if {[bean exists $bean_id]} {
+                    [bean get $bean_id] destroy
                 }
             }
         }
@@ -829,14 +838,17 @@ oo::define ::projectlib::bean {
     # only those beans owned directly by this bean.
     #
     # Note: this bean is not included.
+    #
+    # TBD: This routine appears to be unused.  We might wish to 
+    # remove it.
 
     method getowned {{mode -deep}} {
         # FIRST, handle shallow mode immediately
         if {$mode eq "-shallow"} {
             set result [list]
 
-            foreach var [my getslots] {
-                lappend result {*}[my get $var]
+            foreach slot [my getslots] {
+                lappend result {*}[my $slot]
             }
 
             return $result
@@ -875,6 +887,30 @@ oo::define ::projectlib::bean {
     }
 
     #-------------------------------------------------------------------
+    # Slot Support
+
+    # SlotAccessor slot ?idx?
+    #
+    # idx - Optionally, a lindex index.
+    #
+    # Returns all or one entries from the slot, converting the slot
+    # ids to bean commands.
+
+    method SlotAccessor {slot {idx ""}} {
+        if {$idx eq ""} {
+            return [lmap bean_id [my get $slot] { bean get $bean_id }]
+        } else {
+            set bean_id [lindex [my get $slot] $idx]
+            if {$bean_id ne ""} {
+                return [bean get $bean_id]
+            } else {
+                return ""
+            }
+        }
+    }
+    
+
+    #-------------------------------------------------------------------
     # Copy/Paste Support
 
     # copydata
@@ -896,7 +932,7 @@ oo::define ::projectlib::bean {
         foreach slot [my getslots] {
             dict set cdict $slot [list]
 
-            foreach bean [my get $slot] {
+            foreach bean [my $slot] {
                 dict lappend cdict $slot [$bean copydata]
             }
         }
@@ -956,7 +992,7 @@ oo::define ::projectlib::bean {
 
         # NEXT, add the new bean to the slot
         set bean [$cls new]
-        my lappend $slot $bean
+        my lappend $slot [$bean id]
         $bean configure -parent [self]
 
         # NEXT, do activities on add to slot
@@ -1030,7 +1066,7 @@ oo::define ::projectlib::bean {
         # NEXT, delete the bean from the slot and from memory,
         # saving the delete set.
         set bean [[self class] get $bean_id]
-        my ldelete $slot $bean
+        my ldelete $slot $bean_id
         set delset [[self class] delete $bean_id]
 
         # NEXT, do other activities on delete.
@@ -1098,19 +1134,16 @@ oo::define ::projectlib::bean {
         # FIRST, save the bean's previous state.
         set undodict [my getdict]
 
-        # NEXT, get the bean to move.
-        set bean [[self class] get $bean_id]
-
         # NEXT, move the bean in its slot.
-        my set $slot [::projectlib::emoveitem move $where [my get $slot] $bean]
+        my set $slot [::projectlib::emoveitem move $where [my get $slot] $bean_id]
 
         # NEXT, do activities on move
-        my onMoveBean_ $slot [$bean id]
+        my onMoveBean_ $slot $bean_id
 
         # NEXT, do notifications
         if {[my subject] ne ""} {
             ::marsutil::notifier send \
-                [my subject] <$slot> move [my id] [$bean id]
+                [my subject] <$slot> move [my id] $bean_id
         }
 
         ::marsutil::notifier send ::projectlib::bean <Monitor>

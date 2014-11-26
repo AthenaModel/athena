@@ -183,27 +183,6 @@ namespace eval ::athena_test::tests:: {
     } -result {SYSTEM}
 
     #-------------------------------------------------------------------
-    # blocks
-    
-    test blocks-1.1 {returns blocks} -setup {
-        setup
-    } -body {
-        $S1 set blocks {A B C D}
-        $S1 blocks
-    } -cleanup {
-        cleanup
-    } -result {A B C D}
-
-    test blocks-1.2 {returns a specific block} -setup {
-        setup
-    } -body {
-        $S1 set blocks {A B C D}
-        $S1 blocks end
-    } -cleanup {
-        cleanup
-    } -result {D}
-
-    #-------------------------------------------------------------------
     # check
 
     # TBD

@@ -417,36 +417,13 @@ oo::define strategy {
         return $agent
     }
 
-    # blocks ?idx?
-    #
-    # idx   - Optionally, a lindex index
-    #
-    # Returns a list of the strategy's blocks in priority order.
-    # If the idx is given, returns the selected block.
-
-    method blocks {{idx ""}} {
-        if {$idx eq ""} {
-            return $blocks
-        } else {
-            return [lindex $blocks $idx]
-        }
-    }
-
     # block_ids
     #
     # Returns a list of the IDs of the blocks owned by this strategy,
     # in priority order.
-    #
-    # TBD: Should probably be a [bean] command for this.
 
     method block_ids {} {
-        set result [list]
-
-        foreach block $blocks {
-            lappend result [$block id]
-        }
-
-        return $result
+        return $blocks
     }
 
     # state
@@ -457,7 +434,7 @@ oo::define strategy {
     # only if it contains invalid blocks.
     
     method state {} {
-        foreach block $blocks {
+        foreach block [my blocks] {
             if {[$block state] eq "invalid"} {
                 return "invalid"
             }
@@ -480,7 +457,7 @@ oo::define strategy {
     method check {} {
         set result [dict create]
 
-        foreach block $blocks {
+        foreach block [my blocks] {
             if {[$block state] eq "disabled"} {
                 continue
             }
@@ -506,7 +483,7 @@ oo::define strategy {
         # NEXT, try to execute each block.  The coffer will
         # keep track of resources as execution proceeds.  Each block
         # will remember its execution status.
-        foreach block $blocks {
+        foreach block [my blocks] {
             $block execute $coffer
         }
     }
@@ -573,7 +550,7 @@ order define STRATEGY:BLOCK:ADD {
     setundo [$s addblock_]
 
     # NEXT, return the new block's ID
-    set block [lindex [$s blocks] end]
+    set block [$s blocks end]
 
     setredo [list bean setnextid [$block id]]
     return [$block id]

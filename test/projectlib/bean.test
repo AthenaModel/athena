@@ -144,11 +144,11 @@ beanclass create wagger {
     }
 
     method addtail {newTail} {
-        set tail $newTail
+        set tail [$newTail id]
     }
 
     method wag {} {
-        my say "Wagging tail [$tail id], of length [$tail get length]"
+        my say "Wagging tail [[my tail 0] id], of length [[my tail 0] get length]"
     }
 
 }
@@ -607,7 +607,7 @@ test addbean-1.1 {adds the bean to the slot} -body {
     blist get blocks
 } -cleanup {
     cleanup
-} -result {::bean::block2 ::bean::block3}
+} -result {2 3}
 
 test addbean-1.2 {returns an undo script} -body {
     blocklist create blist
@@ -619,7 +619,7 @@ test addbean-1.2 {returns an undo script} -body {
     list [blist get blocks] [llength [info commands $bean]]
 } -cleanup {
     cleanup
-} -result {::bean::block2 0}
+} -result {2 0}
 
 test addbean-2.1 {notifications on add and undo} -setup {
     setupNotifier ::projectlib::bean <Monitor>
@@ -653,7 +653,7 @@ test deletebean-1.1 {deletes the bean from the slot} -body {
     list [blist get blocks] [llength [info commands $bean]]
 } -cleanup {
     cleanup
-} -result {::bean::block3 0}
+} -result {3 0}
 
 test deletebean-1.2 {returns an undo script} -body {
     blocklist create blist
@@ -666,7 +666,7 @@ test deletebean-1.2 {returns an undo script} -body {
     blist get blocks
 } -cleanup {
     cleanup
-} -result {::bean::block2 ::bean::block3}
+} -result {2 3}
 
 test deletebean-2.1 {notifications on delete and undo} -body {
     setupNotifier ::projectlib::bean <Monitor>
@@ -701,7 +701,7 @@ test movebean-1.1 {moves a bean in its slot} -body {
     blist get blocks
 } -cleanup {
     cleanup
-} -result {::bean::block3 ::bean::block2}
+} -result {3 2}
 
 test movebean-1.2 {returns an undo script} -body {
     blocklist create blist
@@ -905,6 +905,42 @@ test copydata-1.3 {copy set is based on default view} -body {
 } -cleanup {
     cleanup
 } -result {name FRED class_ ::viewbean}
+
+#-------------------------------------------------------------------
+# slot methods
+
+test slot-1.1 {can retrieve bean commands for slot} -body {
+    blocklist create blist
+    blist addblock_ b1
+    blist addblock_ b2
+    blist addblock_ b3
+
+    blist blocks
+} -cleanup {
+    cleanup
+} -result {::bean::block2 ::bean::block3 ::bean::block4}
+
+test slot-1.2 {can retrieve specific bean command from slot} -body {
+    blocklist create blist
+    blist addblock_ b1
+    blist addblock_ b2
+    blist addblock_ b3
+
+    blist blocks end
+} -cleanup {
+    cleanup
+} -result {::bean::block4}
+
+test slot-1.3 {invalid index returns empty string.} -body {
+    blocklist create blist
+    blist addblock_ b1
+    blist addblock_ b2
+    blist addblock_ b3
+
+    blist blocks 3
+} -cleanup {
+    cleanup
+} -result {}
 
 #===================================================================
 # bean Class Methods
