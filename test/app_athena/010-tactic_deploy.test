@@ -142,7 +142,7 @@ namespace eval ::athena_test::tests:: {
         min        0
         nlist      {_type NBHOODS _rule {}}
         nmode      BY_POP
-        parent     ::bean::block*
+        parent     *
         percent    0
         personnel  0
         pmode      ALL

@@ -993,7 +993,7 @@ oo::define ::projectlib::bean {
         # NEXT, add the new bean to the slot
         set bean [$cls new]
         my lappend $slot [$bean id]
-        $bean configure -parent [self]
+        $bean configure -parent [my id]
 
         # NEXT, do activities on add to slot
         my onAddBean_ $slot [$bean id]

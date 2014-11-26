@@ -78,7 +78,7 @@ oo::define block {
     #-------------------------------------------------------------------
     # Instance Variables
 
-    variable parent     ;# Name of the owning strategy
+    variable parent     ;# Bean ID of the owning strategy
     variable intent     ;# Intent of the analyst for this block
     variable state      ;# normal, disabled
     variable once       ;# Flag; if true, the block will be disabled
@@ -144,7 +144,7 @@ oo::define block {
     # Returns the strategy's agent
 
     method agent {} {
-        return [$parent agent]
+        return [[bean get $parent] agent]
     }
 
     # strategy
@@ -152,7 +152,7 @@ oo::define block {
     # Return the block's owning strategy
 
     method strategy {} {
-        return $parent
+        return [bean get $parent]
     }
 
     # state

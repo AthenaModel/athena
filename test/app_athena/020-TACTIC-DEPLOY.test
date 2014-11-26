@@ -220,7 +220,7 @@ namespace eval ::athena_test::tests:: {
         min        5
         nlist      NONESUCH
         nmode      EQUAL
-        parent     ::bean::block*
+        parent     *
         percent    15
         personnel  1000
         pmode      SOME
@@ -259,7 +259,7 @@ namespace eval ::athena_test::tests:: {
         min        5
         nlist      {_type NBHOODS _rule BY_VALUE nlist NB1}
         nmode      EQUAL
-        parent     ::bean::block*
+        parent     *
         percent    15
         personnel  1000
         pmode      SOME

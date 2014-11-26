@@ -149,7 +149,7 @@ namespace eval ::athena_test::tests:: {
         g          BLUE
         id         *
         mode       UPTO
-        parent     ::bean::block*
+        parent     *
         percent    5.0
         personnel  1000
         state      normal

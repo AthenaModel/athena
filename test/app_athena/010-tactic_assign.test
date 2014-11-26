@@ -103,7 +103,7 @@ namespace eval ::athena_test::tests:: {
         max        0
         min        0
         n          {}
-        parent     ::bean::block4
+        parent     4
         percent    0.0
         personnel  0
         pmode      ALL

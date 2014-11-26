@@ -181,7 +181,7 @@ oo::define condition {
     #-------------------------------------------------------------------
     # Instance Variables
 
-    variable parent   ;# The condition's owning block
+    variable parent   ;# The bean ID of the condition's owning block
                        # TBD: in the long run, it won't always be a block.
     variable state    ;# The condition's state
     variable metflag  ;# 1 if condition is met, 0 if it is unmet, 
@@ -225,7 +225,7 @@ oo::define condition {
     # owns this condition.
 
     method agent {} {
-        return [$parent agent]
+        return [[bean get $parent] agent]
     }
     
     # strategy 
@@ -233,7 +233,7 @@ oo::define condition {
     # Returns the strategy that owns the block that owns this condition.
 
     method strategy {} {
-        return [$parent strategy]
+        return [[bean get $parent] strategy]
     }
 
     # block
@@ -241,7 +241,7 @@ oo::define condition {
     # Returns the block that owns this condition.
 
     method block {} {
-        return $parent
+        return [bean get $parent]
     }
 
     # state
@@ -312,7 +312,7 @@ oo::define condition {
         # NEXT, translate and trim for cget view
         if {$view eq "cget"} {
             dict set vdict condition_id [my id]
-            dict set vdict parent       [[my get parent] id]
+            dict set vdict parent       [my get parent]
 
             set vdict [dict remove $vdict {*}{
                 id

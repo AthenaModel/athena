@@ -80,7 +80,7 @@ namespace eval ::athena_test::tests:: {
         g          {}
         id         *
         n          {}
-        parent     ::bean::block*
+        parent     *
         state      invalid
     }
 

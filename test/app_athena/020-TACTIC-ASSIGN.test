@@ -213,7 +213,7 @@ namespace eval ::athena_test::tests:: {
         max        2
         min        1
         n          NB1
-        parent     ::bean::block*
+        parent     *
         percent    5.0
         personnel  1000
         pmode      SOME
@@ -246,7 +246,7 @@ namespace eval ::athena_test::tests:: {
         max        2
         min        1
         n          NB1
-        parent     ::bean::block*
+        parent     *
         percent    5.0
         personnel  1000
         pmode      SOME

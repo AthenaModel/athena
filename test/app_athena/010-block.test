@@ -112,7 +112,7 @@ namespace eval ::athena_test::tests:: {
         intent     {}
         once       1
         onlock     0
-        parent     ::strategy::BOB
+        parent     3
         state      normal
         t1         10
         t2         {}
@@ -183,7 +183,7 @@ namespace eval ::athena_test::tests:: {
         t1         {}
         onlock     0
         t2         {}
-        parent     ::strategy::SYSTEM
+        parent     1
         intent     {}
         tactics    {}
         exectime   {}
@@ -268,7 +268,7 @@ namespace eval ::athena_test::tests:: {
         intent          {}
         once            0
         onlock          0
-        parent          ::strategy::SYSTEM
+        parent          1
         pretty_exectime -
         pretty_once     No
         pretty_onlock   No
@@ -299,7 +299,7 @@ namespace eval ::athena_test::tests:: {
         intent          {}
         once            0
         onlock          0
-        parent          ::strategy::SYSTEM
+        parent          1
         pretty_exectime 2012W06
         pretty_once     No
         pretty_onlock   No
@@ -364,7 +364,7 @@ namespace eval ::athena_test::tests:: {
         t1         {}
         onlock     0
         t2         {}
-        parent     ::strategy::SYSTEM
+        parent     1
         intent     {}
         tactics    {}
         exectime   {}

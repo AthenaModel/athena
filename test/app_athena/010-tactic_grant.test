@@ -72,7 +72,7 @@ namespace eval ::athena_test::tests:: {
         faildict   {}
         id         *
         klist      {}
-        parent     ::bean::block*
+        parent     *
         state      invalid
     }
 

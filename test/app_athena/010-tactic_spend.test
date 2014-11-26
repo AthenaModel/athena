@@ -75,7 +75,7 @@ namespace eval ::athena_test::tests:: {
         goods      1
         id         *
         mode       ALL
-        parent     ::bean::block*
+        parent     *
         percent    0.0
         pop        1
         region     1
