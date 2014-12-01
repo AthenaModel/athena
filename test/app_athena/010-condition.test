@@ -185,10 +185,10 @@ namespace eval ::athena_test::tests:: {
     test strategy-1.1 {can retrieve owning strategy} -setup {
         setup
     } -body {
-        $C1 strategy
+        expr {[$C1 strategy] eq [strategy getname SYSTEM]}
     } -cleanup {
         cleanup
-    } -result {::strategy::SYSTEM}
+    } -result {1}
     
     #-------------------------------------------------------------------
     # block

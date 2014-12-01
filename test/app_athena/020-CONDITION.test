@@ -36,14 +36,13 @@ namespace eval ::athena_test::tests:: {
 
     # Set up for tests
 
-    set S1 ::strategy::SYSTEM
-
     proc setup {} {
         ted create SHIA
         variable S1
         variable B1
         variable C1
         ted order STRATEGY:BLOCK:ADD agent SYSTEM
+        set S1 [strategy getname SYSTEM]
         lassign [$S1 blocks] B1
         ted order BLOCK:CONDITION:ADD block_id [$B1 id] typename EXPR
         lassign [$B1 conditions] C1
