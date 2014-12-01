@@ -28,6 +28,7 @@ oo::objdefine strategy {
 
     variable locking   ;# Flag: 1 if locking the scenario, 0 otherwise.
     variable acting    ;# Name of the acting agent, or "" if none.
+    variable cache     ;# Array, strategy bean ID by agent name.
     
     #-------------------------------------------------------------------
     # Initialization
@@ -37,14 +38,32 @@ oo::objdefine strategy {
     # Initializes strategy execution on new scenario.
 
     method init {} {
-        # FIRST, create strategies for predefined agents.
+        # FIRST, initialize class data.
+        set locking 0
+        set acting  ""
+        array unset cache
+
+        # NEXT, create strategies for predefined agents.
         foreach agent [agent system names] {
             log normal strategy "Creating strategy for agent $agent"
             my create_ $agent
         }
 
-        # NEXT, initialize class data.
-        set locking 0
+        # NEXT, update cache on dbsync
+        notifier bind ::sim <DbSyncA> [self] [mymethod Recache]
+    }
+
+    # Recache
+    #
+    # Recache strategies by agent name.
+
+    method Recache {} {
+        array unset cache
+
+        foreach id [strategy ids] {
+            set s [bean get $id]
+            set cache([$s agent]) $id 
+        }
     }
 
     # rebase
@@ -344,13 +363,16 @@ oo::objdefine strategy {
     # Gets the name of the strategy object for the given agent.
 
     method getname {agent} {
-        return "::strategy::$agent"
+        if {![info exists cache($agent)]} {
+            return ""
+        }
+        
+        return [bean get $cache($agent)]
     }
     
 
     #-------------------------------------------------------------------
     # Mutators
-    
 
     # create_ agent
     # 
@@ -360,8 +382,8 @@ oo::objdefine strategy {
     # mutator is used on creation of an agent entity (i.e., an actor).
 
     method create_ {agent} {
-        set s [my getname $agent]
-        strategy create $s $agent
+        set s [strategy new $agent]
+        set cache($agent) [$s id]
 
         return [list bean delete [$s id]]
     }

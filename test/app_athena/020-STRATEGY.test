@@ -36,8 +36,6 @@ namespace eval ::athena_test::tests:: {
 
     # Set up for tests
 
-    set S1 ::strategy::SYSTEM
-
     proc setup {} {
         # TBD
     }
@@ -75,6 +73,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         ted order STRATEGY:BLOCK:ADD agent SYSTEM
+        set S1 [strategy getname SYSTEM]
         $S1 blocks
     } -cleanup {
         cleanup

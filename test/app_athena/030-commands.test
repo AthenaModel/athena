@@ -930,10 +930,10 @@ namespace eval ::athena_test::tests:: {
         ted sendex autogen actors
         ted sendex autogen nbhoods
         ted sendex autogen frcgroups
-        set a [llength [::strategy::A00 blocks]]
+        set a [llength [[strategy getname A00] blocks]]
     } -body {
         ted sendex autogen assign A00 
-        set b [llength [::strategy::A00 blocks]]]
+        set b [llength [[strategy getname A00] blocks]]]
         expr {$b > $a}
     } -cleanup {
         cleanup
@@ -1041,9 +1041,9 @@ namespace eval ::athena_test::tests:: {
         autogen nbhoods
         autogen frcgroups
     } -body {
-        set a [llength [::strategy::A00 blocks]]
+        set a [llength [[strategy getname A00] blocks]]
         ted sendex autogen strategy
-        set b [llength [::strategy::A00 blocks]]
+        set b [llength [[strategy getname A00] blocks]]
         list $a $b
     } -cleanup {
         cleanup

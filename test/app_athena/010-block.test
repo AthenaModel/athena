@@ -98,7 +98,7 @@ namespace eval ::athena_test::tests:: {
         $B1 configure -tmode BEFORE -t1 10 -cmode ANY -once 1
     } -body {
         block paste BOB [list [$B1 copydata]]
-        set B2 [::strategy::BOB blocks 0]
+        set B2 [[strategy getname BOB] blocks 0]
         ted pdicts [$B2 getdict]
     } -cleanup {
         cleanup
@@ -126,7 +126,7 @@ namespace eval ::athena_test::tests:: {
         ted addcondition $B1 EXPR expression {2 == 2}
     } -body {
         block paste BOB [list [$B1 copydata]]
-        set B2 [::strategy::BOB blocks 0]
+        set B2 [[strategy getname BOB] blocks 0]
         lassign [$B2 conditions] C1 C2
         list [$C1 get expression] [$C2 get expression]
     } -cleanup {
@@ -139,7 +139,7 @@ namespace eval ::athena_test::tests:: {
         ted addtactic $B1 SIGEVENT msg {message 2}
     } -body {
         block paste BOB [list [$B1 copydata]]
-        set B2 [::strategy::BOB blocks 0]
+        set B2 [[strategy getname BOB] blocks 0]
         lassign [$B2 tactics] T1 T2
         list [$T1 get msg] [$T2 get msg]
     } -cleanup {
@@ -153,7 +153,7 @@ namespace eval ::athena_test::tests:: {
         $B2 configure -tmode AFTER -t1 20
     } -body {
         block paste BOB [list [$B1 copydata] [$B2 copydata]]
-        lassign [::strategy::BOB blocks] B3 B4
+        lassign [[strategy getname BOB] blocks] B3 B4
         list [$B3 get tmode] [$B4 get tmode]
     } -cleanup {
         cleanup
@@ -231,10 +231,10 @@ namespace eval ::athena_test::tests:: {
     test strategy-1.1 {can retrieve owning strategy} -setup {
         setup
     } -body {
-        $B1 strategy
+        expr {[$B1 strategy] eq [strategy getname SYSTEM]}
     } -cleanup {
         cleanup
-    } -result {::strategy::SYSTEM}
+    } -result {1}
         
     #-------------------------------------------------------------------
     # state
