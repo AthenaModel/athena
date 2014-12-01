@@ -114,7 +114,7 @@ namespace eval ::athena_test::tests:: {
         faildict   {}
         id         *
         msg        {my message}
-        parent     ::bean::block*
+        parent     *
         state      normal
     }
     
@@ -193,7 +193,7 @@ namespace eval ::athena_test::tests:: {
         faildict   {}
         id         *
         msg        {}
-        parent     ::bean::block*
+        parent     *
         state      normal
     }
 
@@ -300,7 +300,7 @@ namespace eval ::athena_test::tests:: {
         id         *
         mode       ALL
         narrative  {Demobilize all of group BLUE's undeployed personnel.}
-        parent     ::bean::block*
+        parent     *
         percent    0
         personnel  0
         state      normal
@@ -324,7 +324,7 @@ namespace eval ::athena_test::tests:: {
         id         *
         mode       ALL
         narrative  {Demobilize all of group <a href="my://app/group/BLUE">BLUE</a>'s undeployed personnel.}
-        parent     ::bean::block*
+        parent     *
         percent    0
         personnel  0
         state      normal

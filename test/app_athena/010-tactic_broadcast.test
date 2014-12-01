@@ -108,7 +108,7 @@ namespace eval ::athena_test::tests:: {
         faildict   {}
         id         *
         iom        {}
-        parent     ::bean::block*
+        parent     *
         state      invalid
     }
 
@@ -127,7 +127,7 @@ namespace eval ::athena_test::tests:: {
         faildict   {}
         id         *
         iom        IOM1
-        parent     ::bean::block*
+        parent     *
         state      invalid
     }
 

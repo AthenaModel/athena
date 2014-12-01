@@ -65,7 +65,7 @@ namespace eval ::athena_test::tests:: {
         expression {}
         id         *
         metflag    {}
-        parent     ::bean::block*
+        parent     *
         state      invalid
     }
 

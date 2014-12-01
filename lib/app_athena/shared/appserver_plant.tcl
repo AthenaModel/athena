@@ -304,7 +304,7 @@ appserver module PLANT {
                 dict set data [list $nlink $alink] {}
             }
 
-            set pcts [lmap $levels x {appserver::PLANT::percent $x}]
+            set pcts [lmap x $levels {appserver::PLANT::percent $x}]
 
             set pdict [dict create]
 

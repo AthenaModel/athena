@@ -82,7 +82,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         cif undo
         rdb onecolumn {SELECT filename FROM maps WHERE id=1}
-    } -result {blank.png}
+    } -result {}
 
     test MAP:IMPORT:FILE:3.2 {undo sends <MapChanged>} -constraints tk -setup {
         ted order MAP:IMPORT:FILE filename map.png

@@ -112,7 +112,7 @@ namespace eval ::athena_test::tests:: {
         faildict   {}
         id         *
         n          NB1
-        parent     ::bean::block*
+        parent     *
         percent    80
         state      normal
     }

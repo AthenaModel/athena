@@ -93,7 +93,7 @@ namespace eval ::athena_test::tests:: {
         faildict   {}
         id         *
         msg        Hello
-        parent     ::bean::block*
+        parent     *
         state      normal
     }
 

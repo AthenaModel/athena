@@ -114,7 +114,7 @@ namespace eval ::athena_test::tests:: {
         faildict   {}
         id         *
         mode       ALL
-        parent     ::bean::block*
+        parent     *
         percent    0.0
         state      normal
     }
@@ -136,7 +136,7 @@ namespace eval ::athena_test::tests:: {
         faildict   {}
         id         *
         mode       EXACT
-        parent     ::bean::block*
+        parent     *
         percent    0.0
         state      normal
     }
@@ -158,7 +158,7 @@ namespace eval ::athena_test::tests:: {
         faildict   {}
         id         *
         mode       UPTO
-        parent     ::bean::block*
+        parent     *
         percent    0.0
         state      normal
     }
@@ -180,7 +180,7 @@ namespace eval ::athena_test::tests:: {
         faildict   {}
         id         *
         mode       PERCENT
-        parent     ::bean::block*
+        parent     *
         percent    10.0
         state      normal
     }
@@ -202,7 +202,7 @@ namespace eval ::athena_test::tests:: {
         faildict   {}
         id         *
         mode       EXCESS
-        parent     ::bean::block*
+        parent     *
         percent    0.0
         state      normal
     }

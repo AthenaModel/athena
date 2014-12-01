@@ -132,7 +132,7 @@ namespace eval ::athena_test::tests:: {
         id         *
         mode       GROUP
         n          NB1
-        parent     ::bean::block*
+        parent     *
         state      normal
     }
 

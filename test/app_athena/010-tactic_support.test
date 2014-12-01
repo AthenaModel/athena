@@ -72,7 +72,7 @@ namespace eval ::athena_test::tests:: {
         faildict   {}
         id         *
         nlist      {_type NBHOODS _rule {}}
-        parent     ::bean::block*
+        parent     *
         state      invalid
     }
 

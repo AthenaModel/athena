@@ -44,6 +44,8 @@ package require kiteinfo
 #-----------------------------------------------------------------------
 # Namespace definition
 
+catch {rename echo ""} ;# tkcon
+
 namespace import ::kiteutils::*
 namespace import ::marsutil::* 
 namespace import ::simlib::*

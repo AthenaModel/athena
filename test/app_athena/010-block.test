@@ -112,7 +112,7 @@ namespace eval ::athena_test::tests:: {
         intent     {}
         once       1
         onlock     0
-        parent     ::strategy::BOB
+        parent     3
         state      normal
         t1         10
         t2         {}
@@ -183,7 +183,7 @@ namespace eval ::athena_test::tests:: {
         t1         {}
         onlock     0
         t2         {}
-        parent     ::strategy::SYSTEM
+        parent     1
         intent     {}
         tactics    {}
         exectime   {}
@@ -268,7 +268,7 @@ namespace eval ::athena_test::tests:: {
         intent          {}
         once            0
         onlock          0
-        parent          ::strategy::SYSTEM
+        parent          1
         pretty_exectime -
         pretty_once     No
         pretty_onlock   No
@@ -299,7 +299,7 @@ namespace eval ::athena_test::tests:: {
         intent          {}
         once            0
         onlock          0
-        parent          ::strategy::SYSTEM
+        parent          1
         pretty_exectime 2012W06
         pretty_once     No
         pretty_onlock   No
@@ -364,7 +364,7 @@ namespace eval ::athena_test::tests:: {
         t1         {}
         onlock     0
         t2         {}
-        parent     ::strategy::SYSTEM
+        parent     1
         intent     {}
         tactics    {}
         exectime   {}
@@ -576,28 +576,6 @@ namespace eval ::athena_test::tests:: {
     } -result {NONE {}}
 
     #-------------------------------------------------------------------
-    # conditions
-
-    test conditions-1.1 {returns conditions} -setup {
-        setup
-    } -body {
-        $B1 set conditions {A B C D}
-        $B1 conditions
-    } -cleanup {
-        cleanup
-    } -result {A B C D}
-
-    test conditions-1.2 {returns a specific condition} -setup {
-        setup
-    } -body {
-        $B1 set conditions {A B C D}
-        $B1 conditions end
-    } -cleanup {
-        cleanup
-    } -result {D}
-
-
-    #-------------------------------------------------------------------
     # condition_ids
 
     test condition_ids-1.1 {returns condition IDs} -setup {
@@ -614,28 +592,6 @@ namespace eval ::athena_test::tests:: {
     } -cleanup {
         cleanup
     } -result {1}
-
-    #-------------------------------------------------------------------
-    # tactics
-
-    test tactics-1.1 {returns tactics} -setup {
-        setup
-    } -body {
-        $B1 set tactics {A B C D}
-        $B1 tactics
-    } -cleanup {
-        cleanup
-    } -result {A B C D}
-
-    test tactics-1.2 {returns a specific tactic} -setup {
-        setup
-    } -body {
-        $B1 set tactics {A B C D}
-        $B1 tactics end
-    } -cleanup {
-        cleanup
-    } -result {D}
-
 
     #-------------------------------------------------------------------
     # tactic_ids

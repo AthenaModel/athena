@@ -78,7 +78,7 @@ oo::define block {
     #-------------------------------------------------------------------
     # Instance Variables
 
-    variable parent     ;# Name of the owning strategy
+    variable parent     ;# Bean ID of the owning strategy
     variable intent     ;# Intent of the analyst for this block
     variable state      ;# normal, disabled
     variable once       ;# Flag; if true, the block will be disabled
@@ -144,7 +144,7 @@ oo::define block {
     # Returns the strategy's agent
 
     method agent {} {
-        return [$parent agent]
+        return [[bean get $parent] agent]
     }
 
     # strategy
@@ -152,7 +152,7 @@ oo::define block {
     # Return the block's owning strategy
 
     method strategy {} {
-        return $parent
+        return [bean get $parent]
     }
 
     # state
@@ -188,7 +188,7 @@ oo::define block {
         # FIRST, if it's a resource failure return the icon
         # for the first failed tactic.
         if {$execstatus eq "FAIL_RESOURCES"} {
-            foreach tactic $tactics {
+            foreach tactic [my tactics] {
                 if {[$tactic failicon] ne ""} {
                     return [$tactic failicon]
                 }
@@ -249,46 +249,12 @@ oo::define block {
         }
     }
 
-    # conditions ?idx?
-    #
-    # idx   - Optionally, a lindex index
-    #
-    # Returns a list of the block's conditions in priority order.
-    # If the idx is given, returns the selected block.
-
-    method conditions {{idx ""}} {
-        if {$idx eq ""} {
-            return $conditions
-        } else {
-            return [lindex $conditions $idx]
-        }
-    }
-
     # condition_ids
     #
     # Returns a list of the block's condition IDs
 
     method condition_ids {} {
-        set result [list]
-        foreach cond $conditions {
-            lappend result [$cond id]
-        }
-        return $result
-    }
-
-    # tactics ?idx?
-    #
-    # idx   - Optionally, a lindex index
-    #
-    # Returns a list of the block's tactics in priority order.
-    # If the idx is given, returns the selected block.
-
-    method tactics {{idx ""}} {
-        if {$idx eq ""} {
-            return $tactics
-        } else {
-            return [lindex $tactics $idx]
-        }
+        return $conditions
     }
 
     # tactic_ids
@@ -296,11 +262,7 @@ oo::define block {
     # Returns a list of the block's tactic IDs
 
     method tactic_ids {} {
-        set result [list]
-        foreach tactic $tactics {
-            lappend result [$tactic id]
-        }
-        return $result
+        return $tactics
     }
 
     #-------------------------------------------------------------------
@@ -314,7 +276,7 @@ oo::define block {
         my set execstatus NONE
         my set exectime   ""
 
-        foreach tactic $tactics {
+        foreach tactic [my tactics] {
             $tactic reset
         }
     }
@@ -358,8 +320,8 @@ oo::define block {
         if {$view eq "cget"} {
             # FIRST, define or translate needed keys
             dict set vdict block_id   [my id]
-            dict set vdict conditions [lmap $conditions x {$x id}]
-            dict set vdict tactics    [lmap $tactics x {$x id}]
+            dict set vdict conditions $conditions
+            dict set vdict tactics    $tactics
 
             # NEXT, remove extraneous keys
             set vdict [dict remove $vdict {*}{
@@ -665,7 +627,7 @@ oo::define block {
     method check {} {
         set result [dict create]
 
-        foreach cond $conditions {
+        foreach cond [my conditions] {
             if {[$cond state] eq "disabled"} {
                 continue
             }
@@ -676,7 +638,7 @@ oo::define block {
             }
         }
 
-        foreach tactic $tactics {
+        foreach tactic [my tactics] {
             if {[$tactic state] eq "disabled"} {
                 continue
             }
@@ -716,7 +678,7 @@ oo::define block {
 
         # NEXT, mark all tactics as SKIP_BLOCK.  We'll update that later
         # if need be.
-        foreach tactic $tactics {
+        foreach tactic [my tactics] {
             $tactic set execstatus SKIP_BLOCK
         }
 
@@ -780,7 +742,7 @@ oo::define block {
         # FIRST, get the conditions whose state is normal.
         set normals [list]
 
-        foreach cond $conditions {
+        foreach cond [my conditions] {
             if {[$cond get state] eq "normal"} {
                 lappend normals $cond
             }
@@ -823,7 +785,7 @@ oo::define block {
 
         my set execstatus SKIP_EMPTY
 
-        foreach tactic $tactics {
+        foreach tactic [my tactics] {
             # FIRST, skip disabled and invalid tactics
             if {[$tactic get state] ne "normal"} {
                 $tactic set execstatus SKIP_STATE

@@ -311,7 +311,7 @@ oo::define tactic {
 
     # Every tactic has a "id", due to being a bean.
 
-    variable parent      ;# The tactic's owning block
+    variable parent      ;# The bean ID of the tactic's owning block
     variable state       ;# The tactic's state: normal, disabled, invalid
     variable execstatus  ;# An eexecstatus value: NONE, SKIPPED, 
                           # FAIL_RESOURCES, or SUCCESS.
@@ -359,7 +359,7 @@ oo::define tactic {
     # owns this condition.
 
     method agent {} {
-        return [$parent agent]
+        return [[bean get $parent] agent]
     }
     
     # strategy 
@@ -367,7 +367,7 @@ oo::define tactic {
     # Returns the strategy that owns the block that owns this condition.
 
     method strategy {} {
-        return [$parent strategy]
+        return [[bean get $parent] strategy]
     }
 
     # block
@@ -375,7 +375,7 @@ oo::define tactic {
     # Returns the block that owns this condition.
 
     method block {} {
-        return $parent
+        return [bean get $parent]
     }
 
     # state
@@ -553,7 +553,7 @@ oo::define tactic {
         # NEXT, translate and trim for cget view
         if {$view eq "cget"} {
             dict set vdict tactic_id [my id]
-            dict set vdict parent    [[my get parent] id]
+            dict set vdict parent    [my get parent]
 
             set vdict [dict remove $vdict {*}{
                 execstatus

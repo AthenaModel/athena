@@ -213,7 +213,7 @@ namespace eval ::athena_test::tests:: {
         t1         5
         onlock     1
         t2         10
-        parent     ::strategy::SYSTEM
+        parent     *
         intent     {New intent}
         tactics    {}
         exectime   {}

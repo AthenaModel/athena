@@ -72,7 +72,7 @@ namespace eval ::athena_test::tests:: {
         g          {}
         id         *
         mode       ALL
-        parent     ::bean::block*
+        parent     *
         percent    0
         personnel  0
         state      invalid

@@ -84,21 +84,6 @@ namespace eval ::athena_test::tests {
     }
 
     #-------------------------------------------------------------------
-    # lmap
-
-    test lmap-1.1 {maps old list to new list} -body {
-        lmap {a b c} x {string toupper $x}
-    } -result {A B C}
-
-    test lmap-1.2 {empty list yields empty list} -body {
-        lmap {} x {string toupper $x}
-    } -result {}
-
-    test lmap-1.3 {empty body yields list of empty lists} -body {
-        lmap {a b c} x {}
-    } -result {{} {} {}}
-
-    #-------------------------------------------------------------------
     # optdict2parmdict
 
     test optdict2parmdict {converts to parmdict} -body {

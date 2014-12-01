@@ -114,7 +114,7 @@ namespace eval ::athena_test::tests:: {
         id         *
         mode       BY_GROUP
         nlist      {_type NBHOODS _rule {}}
-        parent     ::bean::block*
+        parent     *
         state      normal
     }
 
@@ -138,7 +138,7 @@ namespace eval ::athena_test::tests:: {
         id         *
         mode       BY_NBHOOD
         nlist      {_type NBHOODS _rule BY_VALUE nlist {NB1 NB2}}
-        parent     ::bean::block*
+        parent     *
         state      normal
     }
 

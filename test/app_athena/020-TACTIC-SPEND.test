@@ -200,7 +200,7 @@ namespace eval ::athena_test::tests:: {
         goods      10
         id         *
         mode       EXACT
-        parent     ::bean::block*
+        parent     *
         percent    0.0
         pop        1
         region     1
@@ -228,7 +228,7 @@ namespace eval ::athena_test::tests:: {
         goods      10
         id         *
         mode       UPTO
-        parent     ::bean::block*
+        parent     *
         percent    0.0
         pop        1
         region     1
@@ -256,7 +256,7 @@ namespace eval ::athena_test::tests:: {
         goods      10
         id         *
         mode       PERCENT
-        parent     ::bean::block*
+        parent     *
         percent    10.0
         pop        1
         region     1
@@ -284,7 +284,7 @@ namespace eval ::athena_test::tests:: {
         goods      10
         id         *
         mode       EXCESS
-        parent     ::bean::block*
+        parent     *
         percent    0.0
         pop        1
         region     1

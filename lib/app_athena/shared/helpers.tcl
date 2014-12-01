@@ -68,25 +68,6 @@ proc optdict2parmdict {dict} {
     return $result
 }
 
-# lmap list x body
-#
-# list   - A list of things
-# var    - A variable to take on values from the list.
-# body   - A body to return a new value given $var
-#
-# Returns a list of values computed by calling body for each value
-# in the list.
-
-proc lmap {list var body} {
-    set result [list]
-
-    foreach $var $list {
-        lappend result [eval $body]
-    }
-
-    return $result
-}
-
 # parmdict2optdict dict
 #
 # dict   - A dictionary in which the keys have option syntax

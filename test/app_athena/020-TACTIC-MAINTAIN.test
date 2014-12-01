@@ -198,7 +198,7 @@ namespace eval ::athena_test::tests:: {
         id         *
         level      0.0
         nlist      {_type NBHOODS _rule BY_VALUE nlist {NB1 NB2}}
-        parent     ::bean::block*
+        parent     *
         percent    100
         rmode      FULL
         state      normal
@@ -221,7 +221,7 @@ namespace eval ::athena_test::tests:: {
         id         *
         level      90.0
         nlist      {_type NBHOODS _rule BY_VALUE nlist {NB1 NB2}}
-        parent     ::bean::block*
+        parent     *
         percent    100
         rmode      UPTO
         state      normal
@@ -244,7 +244,7 @@ namespace eval ::athena_test::tests:: {
         id         *
         level      90.0
         nlist      {_type NBHOODS _rule BY_VALUE nlist {NB1 NB2}}
-        parent     ::bean::block*
+        parent     *
         percent    100
         rmode      UPTO
         state      normal
@@ -267,7 +267,7 @@ namespace eval ::athena_test::tests:: {
         id         *
         level      90.0
         nlist      {_type NBHOODS _rule BY_VALUE nlist {NB1 NB2}}
-        parent     ::bean::block*
+        parent     *
         percent    100
         rmode      UPTO
         state      normal
