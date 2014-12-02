@@ -34,11 +34,6 @@ proc oo::define::beanslot {slot} {
     # FIRST, get the name of the class we're defining.
     set cls [namespace which [lindex [info level -1] 1]]
 
-    # NEXT, Is this class really a bean class?
-    if {[info object class $cls] ne "::projectlib::beanclass"} {
-        error "tried to define beanslot on $cls, which is not a bean class"
-    }
-
     # NEXT, Define the slot as a normal variable
     oo::define $cls variable $slot
 
@@ -118,7 +113,7 @@ oo::objdefine ::projectlib::bean {
 
         return $result
     }
-
+}
 
 #-----------------------------------------------------------------------
 # bean: Class Initialization
@@ -245,11 +240,22 @@ oo::define ::projectlib::bean {
     # setdict dict
     #
     # Sets the object's state as a dictionary.  No validation is done,
-    # but the variables must already exist.
+    # but the variables must already exist.  "pot" and "id" cannot be set.
 
     method setdict {dict} {
         dict for {key value} $dict {
             my set $key $value
+        }
+    }
+
+    # SetDict dict
+    #
+    # Sets the object's state as a dictionary.  All variables are allowed.
+    # This is used in "undo" routines to restore state.
+
+    method SetDict {dict} {
+        dict for {key value} $dict {
+            set [self namespace]::$key $value
         }
     }
 
@@ -402,11 +408,11 @@ oo::define ::projectlib::bean {
 
     method SlotAccessor {slot {idx ""}} {
         if {$idx eq ""} {
-            return [lmap bean_id [my get $slot] { bean get $bean_id }]
+            return [lmap bean_id [my get $slot] { $pot get $bean_id }]
         } else {
             set bean_id [lindex [my get $slot] $idx]
             if {$bean_id ne ""} {
-                return [bean get $bean_id]
+                return [$pot get $bean_id]
             } else {
                 return ""
             }
@@ -538,7 +544,7 @@ oo::define ::projectlib::bean {
     # if the subject is defined.
 
     method UndoAddBean {slot bean undodict} {
-        my setdict $undodict
+        my SetDict $undodict
         set bean_id [$bean id]
 
         # Uncreate the bean, verifying that it really is the most recent
@@ -611,7 +617,7 @@ oo::define ::projectlib::bean {
     # bean's state.
 
     method UndoDeleteBean {slot bean_id undodict delset} {
-        my setdict $undodict
+        my SetDict $undodict
         $pot undelete $delset
 
         # NEXT, send the ::marsutil::notifier event.
@@ -677,7 +683,7 @@ oo::define ::projectlib::bean {
     # Undoes the movement of a bean in a slot, sending out notifications.
 
     method UndoMoveBean {slot bean_id undodict} {
-        my setdict $undodict
+        my SetDict $undodict
 
         if {[my subject] ne ""} {
             ::marsutil::notifier send [my subject] <$slot> move [my id] $bean_id
@@ -753,7 +759,7 @@ oo::define ::projectlib::bean {
     # Restores the bean's state dictionary.
 
     method UndoUpdate {udict} {
-        my setdict $udict
+        my SetDict $udict
 
         if {[my subject] ne ""} {
             ::marsutil::notifier send [my subject] <update> [my id]

@@ -59,7 +59,7 @@ snit::type ::projectlib::beanpot {
     # Instance Variables
     
     variable beans      ;# Dictionary of bean objects by ID
-    variable pendingId  ;# The next ID to assign, if > [my lastid]
+    variable pendingId  ;# The next ID to assign, if > [$self lastid]
     variable changed    ;# If true, there are unsaved beans.
     variable deleting   ;# If true, we are in [bean delete].
     variable deletions  ;# Dict of deleted beans, accumulated 
@@ -112,7 +112,7 @@ snit::type ::projectlib::beanpot {
         }
 
         set beans     [dict create]
-        set pendingID 0
+        set pendingId 0
         set changed   0
         set deleting  0
         set deletions [dict create]
@@ -233,10 +233,10 @@ snit::type ::projectlib::beanpot {
 
     method undelete {deleteSet} {
         dict for {id blist} $deleteSet {
-            my UndeleteBean $id $blist
+            $self UndeleteBean $id $blist
         }
 
-        my markchanged
+        $self markchanged
     }
 
     # UndeleteData bean
@@ -281,8 +281,6 @@ snit::type ::projectlib::beanpot {
     #-------------------------------------------------------------------
     # Checkpoint/Restore
 
-
-
     # changed
     #
     # Returns 1 if there are unsaved beans, and 0 otherwise.  
@@ -311,7 +309,7 @@ snit::type ::projectlib::beanpot {
     method checkpoint {{flag ""}} {
         set data [dict create]
         
-        my SaveBeansToRDB
+        $self SaveBeansToRDB
 
         if {$flag eq "-saved"} {
             set changed 0
@@ -486,7 +484,7 @@ snit::type ::projectlib::beanpot {
     # Returns the ID of the next bean to create.
 
     method nextid {} {
-        return [expr {max($pendingId,[my lastid] + 1)}]
+        return [expr {max($pendingId,[$self lastid] + 1)}]
     }
     
     # setnextid nid
@@ -510,7 +508,7 @@ snit::type ::projectlib::beanpot {
     # dictionary if the bean doesn't exist.
 
     method view {id {view ""}} {
-        if {![my exists $id]} {
+        if {![$self exists $id]} {
             return [dict create]
         }
 
