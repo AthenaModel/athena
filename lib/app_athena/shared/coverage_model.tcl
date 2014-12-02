@@ -72,9 +72,6 @@ snit::type coverage_model {
     # effectiveness. Must follow [security analyze].
 
     typemethod analyze {} {
-
-
-        
         profile 2 $type InitializeActivityTable
         profile 2 $type ComputeActivityPersonnel
         profile 2 $type ComputeForceActivityFlags
