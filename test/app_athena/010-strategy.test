@@ -38,10 +38,13 @@ namespace eval ::athena_test::tests:: {
 
     # Set up for tests
 
-    set S1 ::strategy::SYSTEM
+    variable S1
 
     proc setup {} {
+        variable S1
         ted create JOE BOB NB1 NB2 BLUE BRIT SHIA SUNN KURD
+
+        set S1 [strategy getname SYSTEM]
     }
 
     # Clean up after a test
@@ -60,7 +63,7 @@ namespace eval ::athena_test::tests:: {
     test strategy_init-1.1 {creates predefined agent strategies} -body {
         # init is called automatically when the application is initialized.
         info class instances ::strategy 
-    } -result {::strategy::SYSTEM}
+    } -result {::bean::strategy1}
 
     test strategy_init-1.2 {locking is initialized} -body {
         # init is called automatically when the application is initialized.
@@ -70,9 +73,9 @@ namespace eval ::athena_test::tests:: {
     #-------------------------------------------------------------------
     # strategy getname
 
-    test strategy_getname-1.1 {defines strategy names} -body {
-        strategy getname DUMMY
-    } -result {::strategy::DUMMY}
+    test strategy_getname-1.1 {retrieves strategy names} -body {
+        strategy getname SYSTEM
+    } -result {::bean::strategy1}
 
     #-------------------------------------------------------------------
     # strategy locking
@@ -92,19 +95,19 @@ namespace eval ::athena_test::tests:: {
 
     test strategy_create-1.1 {creates a strategy} -body {
         strategy create_ DUMMY
+        set s [strategy getname DUMMY]
 
-        list \
-            [info object class ::strategy::DUMMY] \
-            [::strategy::DUMMY agent]
+        $s agent
     } -cleanup {
         cleanup
-    } -result {::strategy DUMMY}
+    } -result {DUMMY}
 
     test strategy_create-2.1 {create can be undone} -body {
         set undo [strategy create_ DUMMY]
+        set s [strategy getname DUMMY]
         namespace eval :: $undo
 
-        info object isa object ::strategy::DUMMY
+        info object isa object $s
     } -cleanup {
         cleanup
     } -result {0}
@@ -115,9 +118,10 @@ namespace eval ::athena_test::tests:: {
     test strategy_delete-1.1 {deletes a strategy} -setup {
         strategy create_ DUMMY
     } -body {
+        set s [strategy getname DUMMY]
         strategy delete_ DUMMY
 
-        info object isa object ::strategy::DUMMY
+        info object isa object $s
     } -cleanup {
         cleanup
     } -result {0}
@@ -126,12 +130,13 @@ namespace eval ::athena_test::tests:: {
     test strategy_delete-2.1 {delete can be undone} -setup {
         strategy create_ DUMMY
     } -body {
+        set s [strategy getname DUMMY]
         set undo [strategy delete_ DUMMY]
         namespace eval :: $undo
 
         list \
-            [info object class ::strategy::DUMMY] \
-            [::strategy::DUMMY agent]
+            [info object class $s] \
+            [$s agent]
     } -cleanup {
         cleanup
     } -result {::strategy DUMMY}
