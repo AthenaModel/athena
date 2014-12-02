@@ -1871,7 +1871,12 @@ snit::widget appwin {
     # Verifies that the user has saved data before exiting.
 
     method FileExit {} {
-        # FIRST, Allow the user to save unsaved data.
+        # FIRST, check for modal dialogs, this is a problem on Linux
+        if {[grab current] ne ""} {
+            return
+        }
+
+        # NEXT, Allow the user to save unsaved data.
         if {![$self SaveUnsavedData]} {
             return
         }
