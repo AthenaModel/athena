@@ -140,7 +140,9 @@ oo::define ::projectlib::bean {
     # bean's pot and ID.
 
     constructor {} {
-        # Nothing to do.
+        # A pot-less bean has no pot or ID.
+        set pot ""
+        set id ""
     }
 
     # destructor
@@ -148,8 +150,10 @@ oo::define ::projectlib::bean {
     # Unregisters the bean
 
     destructor {
-        my destroyslots {*}[my getslots]
-        $pot forget $id
+        if {$pot ne ""} {
+            my destroyslots {*}[my getslots]
+            $pot forget $id
+        }
     }
 
     # destroyslots beanslot...
@@ -188,6 +192,14 @@ oo::define ::projectlib::bean {
 
     #-------------------------------------------------------------------
     # Instance Methods
+
+    # pot
+    #
+    # Returns the bean's pot.
+
+    method pot {} {
+        return $pot
+    }
 
     # id
     #

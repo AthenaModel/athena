@@ -285,6 +285,22 @@ test bean_getslots-1.2 {got slots} -body {
 # bean(n) Instance Methods
 
 #-------------------------------------------------------------------
+# Creation
+
+test creation-1.1 {can destroy potless bean without error} -body {
+    set fido [pet new]
+    $fido destroy
+} -result {}
+
+test creation-1.2 {potless bean} -body {
+    set fido [pet new]
+    list [$fido get pot] [$fido get id]
+} -cleanup {
+    $fido destroy
+} -result {{} {}}
+
+
+#-------------------------------------------------------------------
 # id
 
 test id-1.1 {can retrieve id} -body {
@@ -317,15 +333,6 @@ test setget-1.2 {can set and get values} -body {
 } -cleanup {
     cleanup
 } -result {1 Fido Brown}
-
-# TBD: At present, you can't set "id" at all.  I think that's
-# OK; the beanpot code that sets it doesn't use the set method.
-test setget-1.3 {can set ID to itself} -constraints tbd -body {
-    set fido [pot new pet]
-    $fido set id [$fido id]
-} -cleanup {
-    cleanup
-} -result {1}
 
 test setget-2.1 {can't get unknown variable} -body {
     set fido [pot new pet]
@@ -429,18 +436,6 @@ test setdict-1.1 {can set variable dictionary} -body {
     $fido set color "Brown"
 
     $fido setdict [list name "Spot" color "White"]
-    $fido getdict
-} -cleanup {
-    cleanup
-} -result {id 1 name Spot pot ::pot color White}
-
-# TBD: At present this fails.  I don't think this behavior is required.
-test setdict-1.2 {can set ID to itself} -constraints tbd -body {
-    set fido [pot new pet]
-    $fido set name "Fido"
-    $fido set color "Brown"
-
-    $fido setdict [list id 1 name "Spot" color "White"]
     $fido getdict
 } -cleanup {
     cleanup

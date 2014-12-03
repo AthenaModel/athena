@@ -55,15 +55,17 @@ snit::type ::projectlib::beanpot {
         -default  pot \
         -readonly yes
 
+
     #-------------------------------------------------------------------
     # Instance Variables
     
     variable beans      ;# Dictionary of bean objects by ID
     variable pendingId  ;# The next ID to assign, if > [$self lastid]
+                         # Supports setnextid.
     variable changed    ;# If true, there are unsaved beans.
-    variable deleting   ;# If true, we are in [bean delete].
+    variable deleting   ;# If true, we are in [pot delete].
     variable deletions  ;# Dict of deleted beans, accumulated 
-                         # during [bean delete]
+                         # during [pot delete]
 
     #-------------------------------------------------------------------
     # Constructor/Destructor
@@ -77,7 +79,7 @@ snit::type ::projectlib::beanpot {
             set tag "$options(-rdb)/$options(-dbid)"
 
             if {$tag in $potList} {
-                error "There exist two ::projectlib:beanpot objects for ($tag)."
+                error "There exist two ::projectlib::beanpot objects for ($tag)."
             }
             lappend potList $tag
         }
@@ -104,10 +106,12 @@ snit::type ::projectlib::beanpot {
     # Destroys all beans, and resets the pot to its initial state.
 
     method reset {} {
-        foreach bean [dict values $beans] {
-            # Only destroy it if it exists
-            if {[info object isa object $bean]} {
-                $bean destroy
+        catch {
+            foreach bean [dict values $beans] {
+                # Only destroy it if it exists
+                if {[info object isa object $bean]} {
+                    $bean destroy
+                }
             }
         }
 
@@ -133,7 +137,6 @@ snit::type ::projectlib::beanpot {
     method new {beanclass args} {
         # FIRST Get the next bean ID and object name.
         set id [$self nextid]
-        incr pendingID
         set bean ${self}::[namespace tail $beanclass]$id
 
         # NEXT, create the new object.
@@ -187,6 +190,158 @@ snit::type ::projectlib::beanpot {
         require {[$bean id] == [$self lastid]} "not most recent bean: \"$bean\""
 
         $bean destroy
+
+    }
+
+    #-------------------------------------------------------------------
+    # Queries
+    
+    # get id
+    #
+    # Retrieves an object given a bean ID.  Throws an error if the
+    # bean doesn't exist in this pot.
+
+    method get {id} {
+        if {[dict exists $beans $id]} {
+            return [dict get $beans $id]
+        }
+
+        error "$self contains no bean with ID $id"
+    }
+
+    # exists id
+    #
+    # Returns 1 if there is a bean with the given ID in the pot.
+
+    method exists {id} {
+        return [dict exist $beans $id]
+    }
+
+    # validate id
+    #
+    # id   - Possibly, a bean ID in this pot.
+    #
+    # Throws an error with errorcode INVALID if this is not
+    # a bean belonging to this pot.
+
+    method validate {id} {
+        if {![$self exists $id]} {
+            throw INVALID "Invalid object ID: \"$id\""
+        }
+
+        return $id     
+    }
+
+    # valclass cls id
+    #
+    # cls  - A bean class
+    # id   - Possibly, a bean ID in this pot with the given class.
+    #
+    # Throws an error with errorcode INVALID if this is not
+    # a bean belonging to this pot having the given class.
+
+    method valclass {cls id} {
+        set short [namespace tail $cls]
+
+        if {![$self exists $id]} {
+            throw INVALID "Invalid $cls ID: \"$id\""
+        }
+
+        set bean [dict get $beans $id]
+
+        if {![info object isa typeof $bean $cls]} {
+            throw INVALID "Invalid $cls ID: \"$id\""
+        }
+
+        return $id     
+    }
+
+    # ids ?beanclass?
+    #
+    # Returns a list of the IDs of all beans in the pot, optionally
+    # filtering for a given class.
+
+    method ids {{beanclass ""}} {
+        set result [list]
+
+        foreach id [dict keys $beans] {
+            if {$beanclass ne ""} {
+                set bean [$self get $id]
+
+                if {![info object isa typeof $bean $beanclass]} {
+                    continue
+                }
+            }
+
+            lappend result $id
+        }
+
+        return $result
+    }
+
+    # lastid 
+    #
+    # Returns the ID of the most recently created bean, or 0 if 
+    # there are no beans.
+
+    method lastid {} {
+        if {[dict size $beans] > 0} {
+            tcl::mathfunc::max {*}[dict keys $beans]        
+        } else {
+            return 0
+        }
+    }
+
+    # nextid
+    #
+    # Returns the ID of the next bean to create.
+
+    method nextid {} {
+        return [expr {max($pendingId,[$self lastid] + 1)}]
+    }
+    
+    # setnextid nid
+    #
+    # nid   - The next ID to assign.
+    #
+    # Sets the next id to assign.  This is for use in 
+    # order setredo scripts, to ensure that orders yield the same IDs
+    # on redo.
+
+    method setnextid {nid} {
+        set pendingId $nid
+    }
+
+    # view id ?view?
+    #
+    # id     - A bean's ID
+    # view   - Optionally, a view name
+    #
+    # Given a bean ID, returns a view dictionary.  Returns the empty
+    # dictionary if the bean doesn't exist.
+
+    method view {id {view ""}} {
+        if {![$self exists $id]} {
+            return [dict create]
+        }
+
+        set bean [$self get $id]
+
+        return [$bean view $view]
+    }
+
+    # dump
+    #
+    # Dumps all beans
+
+    method dump {} {
+        set result ""
+        foreach id [lsort -integer [$self ids]] {
+            set bean [dict get $beans $id]
+            append result \
+                "$id ([info object class $bean]/$bean): [$bean getdict]\n"
+        }
+        return $result
     }
 
 
@@ -307,6 +462,9 @@ snit::type ::projectlib::beanpot {
     # is given, the object's unsaved changes flag is cleared.
 
     method checkpoint {{flag ""}} {
+        require {$options(-rdb) ne ""} \
+            "Cannot checkpoint; -rdb is not set"
+
         set data [dict create]
         
         $self SaveBeansToRDB
@@ -325,16 +483,16 @@ snit::type ::projectlib::beanpot {
     method SaveBeansToRDB {} {
         set dbid $options(-dbid)
 
-        $rdb eval {
+        $options(-rdb) eval {
             DELETE FROM beans WHERE dbid=$dbid;
         }
 
         foreach {id bean} $beans {
-            set cls [info object class $bean_object]
+            set cls [info object class $bean]
 
             set bdict [$bean getdict]
 
-            $rdb eval {
+            $options(-rdb) eval {
                 INSERT INTO beans(dbid, id, bean_class, bean_dict)
                 VALUES($dbid, $id, $cls, $bdict)
             }
@@ -353,13 +511,16 @@ snit::type ::projectlib::beanpot {
     # -saved is given, the flag will be cleared.
 
     method restore {checkpoint {flag ""}} {
+        require {$options(-rdb) ne ""} \
+            "Cannot restore; -rdb is not set"
+
         # FIRST, destroy all registered beans.
         $self reset
 
         # NEXT, restore the checkpoint
-        set dbid      $options(-dbid)
+        set dbid $options(-dbid)
 
-        $rdb eval {
+        $options(-rdb) eval {
             SELECT * FROM beans
             WHERE dbid=$dbid
             ORDER BY id
@@ -368,7 +529,7 @@ snit::type ::projectlib::beanpot {
             $self RestoreBean $id $bean_class $bean_dict
         }
 
-        set changed [expr {$flag eq "-saved"}]
+        set changed [expr {$flag ne "-saved"}]
 
         return
     }
@@ -395,7 +556,7 @@ snit::type ::projectlib::beanpot {
         dict for {var value} $bdict {
             set ${ns}::$var $value
         }
-        set {$ns}::pot $self
+        set ${ns}::pot $self
 
         # NEXT, register it.
         dict set beans $id $bean
@@ -403,133 +564,6 @@ snit::type ::projectlib::beanpot {
 
 
 
-
-    #-------------------------------------------------------------------
-    # Queries
-    
-    # get id
-    #
-    # Retrieves an object given a bean ID.  Throws an error if the
-    # bean doesn't exist in this pot.
-
-    method get {id} {
-        if {[dict exists $beans $id]} {
-            return [dict get $beans $id]
-        }
-
-        error "$self contains no bean with ID $id"
-    }
-
-    # exists id
-    #
-    # Returns 1 if there is a bean with the given ID in the pot.
-
-    method exists {id} {
-        return [dict exist $beans $id]
-    }
-
-    # validate id
-    #
-    # id   - Possibly, a bean ID in this pot.
-    #
-    # Throws an error with errorcode INVALID if this is not
-    # a bean belonging to this pot.
-
-    method validate {id} {
-        if {![$self exists $id]} {
-            throw INVALID "Invalid object ID: \"$id\""
-        }
-
-        return $id     
-    }
-
-    # ids ?beanclass?
-    #
-    # Returns a list of the IDs of all beans in the pot, optionally
-    # filtering for a given class.
-
-    method ids {{beanclass ""}} {
-        set result [list]
-
-        foreach id [dict keys $beans] {
-            if {$beanclass ne ""} {
-                set bean [$self get $id]
-
-                if {![info object isa typeof $bean $beanclass]} {
-                    continue
-                }
-            }
-
-            lappend result $id
-        }
-
-        return $result
-    }
-
-    # lastid 
-    #
-    # Returns the ID of the most recently created bean, or 0 if 
-    # there are no beans.
-
-    method lastid {} {
-        if {[dict size $beans] > 0} {
-            tcl::mathfunc::max {*}[dict keys $beans]        
-        } else {
-            return 0
-        }
-    }
-
-    # nextid
-    #
-    # Returns the ID of the next bean to create.
-
-    method nextid {} {
-        return [expr {max($pendingId,[$self lastid] + 1)}]
-    }
-    
-    # setnextid nid
-    #
-    # nid   - The next ID to assign.
-    #
-    # Sets the next id to assign.  This is for use in 
-    # order setredo scripts, to ensure that orders yield the same IDs
-    # on redo.
-
-    method setnextid {nid} {
-        set pendingId $nid
-    }
-
-    # view id ?view?
-    #
-    # id     - A bean's ID
-    # view   - Optionally, a view name
-    #
-    # Given a bean ID, returns a view dictionary.  Returns the empty
-    # dictionary if the bean doesn't exist.
-
-    method view {id {view ""}} {
-        if {![$self exists $id]} {
-            return [dict create]
-        }
-
-        set bean [$self get $id]
-
-        return [$bean view $view]
-    }
-
-    # dump
-    #
-    # Dumps all beans
-
-    method dump {} {
-        set result ""
-        foreach id [$self ids] {
-            set bean [dict get $beans $id]
-            append result \
-                "$id ([info object class $bean]/$bean): [$bean getdict]\n"
-        }
-        return $result
-    }
 
 }
 
