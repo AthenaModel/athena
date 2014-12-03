@@ -173,7 +173,8 @@ snit::type ted {
         DefineEntities
 
         # NEXT, Define Constraints
-        ::tcltest::testConstraint tk $::tkLoaded
+        ::tcltest::testConstraint tk    $::tkLoaded
+        ::tcltest::testConstraint notk  [expr !$::tkLoaded]
 
         # NEXT, define custom match algorithms.
         ::tcltest::customMatch dict     [mytypemethod MatchDict]
