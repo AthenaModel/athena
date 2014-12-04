@@ -107,10 +107,10 @@ order define TACTIC:ACCIDENT {
 
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -type tactic::ACCIDENT
+    prepare tactic_id  -required -with {::pot valclass tactic::ACCIDENT}
     returnOnError
 
-    set tactic [tactic get $parms(tactic_id)]
+    set tactic [pot get $parms(tactic_id)]
 
     # Validation of initially invalid items or contingent items
     # takes place on sanity check.

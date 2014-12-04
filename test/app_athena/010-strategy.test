@@ -63,7 +63,7 @@ namespace eval ::athena_test::tests:: {
     test strategy_init-1.1 {creates predefined agent strategies} -body {
         # init is called automatically when the application is initialized.
         info class instances ::strategy 
-    } -result {::bean::strategy1}
+    } -result {::pot::strategy1}
 
     test strategy_init-1.2 {locking is initialized} -body {
         # init is called automatically when the application is initialized.
@@ -75,7 +75,7 @@ namespace eval ::athena_test::tests:: {
 
     test strategy_getname-1.1 {retrieves strategy names} -body {
         strategy getname SYSTEM
-    } -result {::bean::strategy1}
+    } -result {::pot::strategy1}
 
     #-------------------------------------------------------------------
     # strategy locking
@@ -169,10 +169,11 @@ namespace eval ::athena_test::tests:: {
         ted pdict [$S1 getdict]
     } -cleanup {
         cleanup
-    } -match glob -result {
-        id     *
-        blocks {}
+    } -match dictglob -result {
         agent  SYSTEM
+        blocks {}
+        id     *
+        pot    ::pot
     }
 
 
@@ -241,7 +242,7 @@ namespace eval ::athena_test::tests:: {
         $S1 blocks
     } -cleanup {
         cleanup
-    } -match glob -result {::bean::block* ::bean::block*}
+    } -match glob -result {::pot::block* ::pot::block*}
 
     test addblock_-2.1 {undo: blocks is restored} -setup {
         setup

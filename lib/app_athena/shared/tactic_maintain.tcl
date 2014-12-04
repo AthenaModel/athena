@@ -377,10 +377,10 @@ order define TACTIC:MAINTAIN {
     }
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -type tactic::MAINTAIN
+    prepare tactic_id  -required -with {::pot valclass tactic::MAINTAIN}
     returnOnError
 
-    set tactic [tactic get $parms(tactic_id)]
+    set tactic [pot get $parms(tactic_id)]
 
     prepare nlist
     prepare rmode   -toupper  -selector

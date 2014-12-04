@@ -1262,7 +1262,7 @@ snit::type autogen {
             order send cli BLOCK:UPDATE block_id $bid {*}$args
         }
 
-        return [block get $bid]
+        return [pot get $bid]
     }
 
     # AddTactic ttype block args

@@ -136,10 +136,10 @@ order define SIMEVENT:DEMO {
     }
 } {
     # FIRST, prepare the parameters
-    prepare event_id   -required -type ::wintel::simevent::DEMO
+    prepare event_id   -required -with {::pot valclass ::wintel::simevent::DEMO}
     returnOnError
 
-    set e [::wintel::simevent get $parms(event_id)]
+    set e [::pot get $parms(event_id)]
 
     prepare glist     -toupper -listof ::civgroup
     prepare coverage  -num     -type   rposfrac

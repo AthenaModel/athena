@@ -91,9 +91,10 @@ namespace eval ::athena_test::tests:: {
         a          BOB
         execstatus NONE
         faildict   {}
-        id         5
+        id         *
         nlist      {_type NBHOODS _rule BY_VALUE nlist NB1}
-        parent     4
+        parent     *
+        pot        ::pot
         state      normal
     }
 
@@ -109,9 +110,10 @@ namespace eval ::athena_test::tests:: {
         a          BOB
         execstatus NONE
         faildict   {}
-        id         5
+        id         *
         nlist      NONESUCH
-        parent     4
+        parent     *
+        pot        ::pot
         state      invalid
     }
 

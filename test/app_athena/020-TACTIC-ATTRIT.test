@@ -133,6 +133,7 @@ namespace eval ::athena_test::tests:: {
         mode       GROUP
         n          NB1
         parent     *
+        pot        ::pot
         state      normal
     }
 

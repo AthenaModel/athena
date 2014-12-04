@@ -116,6 +116,7 @@ namespace eval ::athena_test::tests:: {
         mode       ALL
         parent     *
         percent    0.0
+        pot        ::pot
         state      normal
     }
 
@@ -138,6 +139,7 @@ namespace eval ::athena_test::tests:: {
         mode       EXACT
         parent     *
         percent    0.0
+        pot        ::pot
         state      normal
     }
 
@@ -160,6 +162,7 @@ namespace eval ::athena_test::tests:: {
         mode       UPTO
         parent     *
         percent    0.0
+        pot        ::pot
         state      normal
     }
 
@@ -182,6 +185,7 @@ namespace eval ::athena_test::tests:: {
         mode       PERCENT
         parent     *
         percent    10.0
+        pot        ::pot
         state      normal
     }
 
@@ -204,6 +208,7 @@ namespace eval ::athena_test::tests:: {
         mode       EXCESS
         parent     *
         percent    0.0
+        pot        ::pot
         state      normal
     }
 

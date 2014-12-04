@@ -175,6 +175,10 @@ oo::define ::projectlib::bean {
 
     unexport destroyslots
     method destroyslots {args} {
+        if {$pot eq ""} {
+            return
+        }
+        
         foreach slot $args {
             # Skip the slot if it hasn't been initialized yet.
             if {![info exists [self namespace]::$slot]} {
@@ -288,7 +292,9 @@ oo::define ::projectlib::bean {
             error "cannot set the bean's \"$var\" attribute."
         }
 
-        $pot markchanged
+        if {$pot ne ""} {
+            $pot markchanged
+        }
 
         set [self namespace]::$var $value
     }

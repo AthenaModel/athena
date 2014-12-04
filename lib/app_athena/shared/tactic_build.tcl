@@ -196,10 +196,10 @@ order define TACTIC:BUILD {
     }
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -type tactic::BUILD
+    prepare tactic_id  -required -with {::pot valclass tactic::BUILD}
     returnOnError
 
-    set tactic [tactic get $parms(tactic_id)]
+    set tactic [pot get $parms(tactic_id)]
 
     prepare n
     prepare mode    -toupper  -selector

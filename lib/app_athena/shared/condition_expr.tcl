@@ -99,7 +99,7 @@ order define CONDITION:EXPR {
         expr expression
     }
 } {
-    prepare condition_id -required -type condition::EXPR
+    prepare condition_id -required -with {::pot valclass condition::EXPR}
 
     # In the GUI, give detailed feedback on errors.  From other sources,
     # the sanity check will catch it.
@@ -107,7 +107,7 @@ order define CONDITION:EXPR {
 
     returnOnError -final
 
-    set cond [condition get $parms(condition_id)]
+    set cond [pot get $parms(condition_id)]
 
     # NEXT, update the block
     setundo [$cond update_ {expression} [array get parms]]

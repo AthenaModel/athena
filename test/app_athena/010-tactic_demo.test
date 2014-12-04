@@ -81,6 +81,7 @@ namespace eval ::athena_test::tests:: {
         id         *
         n          {}
         parent     *
+        pot        ::pot
         state      invalid
     }
 

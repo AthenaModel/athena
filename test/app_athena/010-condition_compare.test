@@ -41,7 +41,7 @@ namespace eval ::athena_test::tests:: {
     proc setup {} {
         variable C1
         ted create JOE BOB NB1 NB2 BLUE BRIT SHIA SUNN KURD
-        set C1 [condition::COMPARE new]
+        set C1 [pot new condition::COMPARE]
     }
 
     # Clean up after a test
@@ -64,6 +64,7 @@ namespace eval ::athena_test::tests:: {
         id      *
         metflag {}
         parent  {}
+        pot     ::pot
         state   normal
         x       {_type NUMBER _rule BY_VALUE raw_value 0}
         y       {_type NUMBER _rule BY_VALUE raw_value 0}

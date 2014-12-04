@@ -318,6 +318,33 @@ test exists-1.2 {ID exists} -body {
 } -result {1}
 
 #-------------------------------------------------------------------
+# isa
+
+test isa-1.1 {ID does not exist} -body {
+    pot new dog
+    pot new cat
+    pot isa ::dog 500
+} -cleanup {
+    cleanup
+} -result {0}
+
+test isa-1.2 {ID isa dog} -body {
+    set p1 [pot new dog]
+    set p2 [pot new cat]
+    list [pot isa dog [$p1 id]] [pot isa dog [$p2 id]]
+} -cleanup {
+    cleanup
+} -result {1 0}
+
+test isa-1.3 {ID isa pet} -body {
+    set p1 [pot new dog]
+    set p2 [pot new cat]
+    list [pot isa pet [$p1 id]] [pot isa pet [$p2 id]]
+} -cleanup {
+    cleanup
+} -result {1 1}
+
+#-------------------------------------------------------------------
 # validate
 
 test validate-1.1 {not a bean id} -body {

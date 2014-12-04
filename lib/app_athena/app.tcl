@@ -231,12 +231,13 @@ snit::type app {
         nbhood    init
         sim       init
         axdb      init
+        beanpot ::pot -rdb ::rdb
         strategy  init
 
         coverage_model init
 
         # NEXT, register other saveables
-        scenario register ::projectlib::bean
+        scenario register ::pot
         scenario register ::wintel::wizard
 
         # NEXT, register my:// servers with myagent.

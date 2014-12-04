@@ -66,6 +66,7 @@ namespace eval ::athena_test::tests:: {
         id         *
         metflag    {}
         parent     *
+        pot        ::pot
         state      invalid
     }
 

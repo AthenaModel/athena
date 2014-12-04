@@ -100,6 +100,7 @@ namespace eval ::athena_test::tests:: {
         expression {1 == 1}
         id         *
         metflag    {}
+        pot        ::pot
         parent     *
         state      normal
     }
@@ -199,7 +200,7 @@ namespace eval ::athena_test::tests:: {
         $C1 block
     } -cleanup {
         cleanup
-    } -match glob -result {::bean::block*}
+    } -match glob -result {::pot::block*}
     
     #-------------------------------------------------------------------
     # state
@@ -239,6 +240,7 @@ namespace eval ::athena_test::tests:: {
         metflag    {}
         narrative  {Expression: 1 == 1}
         parent     *
+        pot        ::pot
         state      normal
         statusicon ::projectgui::icon::dash13
         typename   EXPR
@@ -258,6 +260,7 @@ namespace eval ::athena_test::tests:: {
         metflag    {}
         narrative  {Expression: 1 == 1}
         parent     *
+        pot        ::pot
         state      normal
         statusicon ::projectgui::icon::dash13
         typename   EXPR

@@ -164,10 +164,10 @@ order define TACTIC:ABSIT {
 
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -type tactic::ABSIT
+    prepare tactic_id  -required -with {::pot valclass tactic::ABSIT}
     returnOnError
 
-    set tactic [tactic get $parms(tactic_id)]
+    set tactic [pot get $parms(tactic_id)]
 
     # Validation of initially invalid items or contingent items
     # takes place on sanity check.

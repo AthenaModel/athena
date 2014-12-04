@@ -147,14 +147,14 @@ order define CONDITION:CONTROL {
     }
 } {
     # FIRST, prepare and validate the parameters
-    prepare condition_id -required -type condition::CONTROL
+    prepare condition_id -required -with {::pot valclass condition::CONTROL}
     prepare a      -toupper -type actor
     prepare sense  -toupper -type edoes
     prepare anyall -toupper -type eanyall                
     prepare nlist                      
     returnOnError -final
 
-    set cond [condition get $parms(condition_id)]
+    set cond [pot get $parms(condition_id)]
 
     # NEXT, update the block
     setundo [$cond update_ {a sense anyall nlist} [array get parms]]

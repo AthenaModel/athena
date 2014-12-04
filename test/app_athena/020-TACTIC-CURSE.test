@@ -140,6 +140,7 @@ namespace eval ::athena_test::tests:: {
         faildict   {}
         id         *
         parent     *
+        pot        ::pot
         roles      {@CIV1 {_type CIVGROUPS _rule BY_VALUE raw_value {SUNN SHIA}}}
         state      normal
     }

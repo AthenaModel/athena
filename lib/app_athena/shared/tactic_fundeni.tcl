@@ -344,10 +344,10 @@ order define TACTIC:FUNDENI {
 
     }
 } {
-    prepare tactic_id -required -type tactic::FUNDENI
+    prepare tactic_id -required -with {::pot valclass tactic::FUNDENI}
     returnOnError
 
-    set tactic [tactic get $parms(tactic_id)]
+    set tactic [pot get $parms(tactic_id)]
 
     # FIRST, prepare and validate the parameters
     prepare glist   

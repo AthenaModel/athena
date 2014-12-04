@@ -486,11 +486,11 @@ order define TACTIC:ASSIGN {
     }
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -type tactic::ASSIGN
+    prepare tactic_id  -required -with {::pot valclass tactic::ASSIGN}
     returnOnError
 
     # NEXT, get the tactic
-    set tactic [tactic get $parms(tactic_id)]
+    set tactic [pot get $parms(tactic_id)]
 
     prepare g          -toupper  -type ident
     prepare n          -toupper  -type ident

@@ -193,6 +193,7 @@ namespace eval ::athena_test::tests:: {
         faildict   {}
         id         5
         parent     *
+        pot        ::pot
         roles      *
         state      normal
     }

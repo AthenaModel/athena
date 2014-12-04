@@ -127,6 +127,7 @@ namespace eval ::athena_test::tests:: {
         id         *
         n          NB1
         parent     *
+        pot        ::pot
         resolver   BLUE
         state      normal
         stype      COMMOUT

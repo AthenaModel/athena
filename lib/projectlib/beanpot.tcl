@@ -217,6 +217,24 @@ snit::type ::projectlib::beanpot {
         return [dict exist $beans $id]
     }
 
+    # isa cls id
+    #
+    # cls    - A bean class
+    # id     - Possibly, a bean ID
+    #
+    # Returns 1 if there is a bean with the given ID, and if that bean
+    # is a member of the given class.
+
+    method isa {cls id} {
+        if {![dict exists $beans $id]} {
+            return 0
+        }
+
+        set bean [dict get $beans $id]
+
+        return [info object isa typeof $bean $cls]
+    }
+
     # validate id
     #
     # id   - Possibly, a bean ID in this pot.
@@ -244,13 +262,13 @@ snit::type ::projectlib::beanpot {
         set short [namespace tail $cls]
 
         if {![$self exists $id]} {
-            throw INVALID "Invalid $cls ID: \"$id\""
+            throw INVALID "Invalid $short ID: \"$id\""
         }
 
         set bean [dict get $beans $id]
 
         if {![info object isa typeof $bean $cls]} {
-            throw INVALID "Invalid $cls ID: \"$id\""
+            throw INVALID "Invalid $short ID: \"$id\""
         }
 
         return $id     

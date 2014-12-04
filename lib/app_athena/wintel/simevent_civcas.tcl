@@ -104,13 +104,13 @@ order define SIMEVENT:CIVCAS {
     }
 } {
     # FIRST, prepare the parameters
-    prepare event_id   -required -type ::wintel::simevent::CIVCAS
+    prepare event_id   -required -with {::pot valclass ::wintel::simevent::CIVCAS}
     prepare casualties -num      -type ipositive
  
     returnOnError -final
 
     # NEXT, update the event.
-    set e [::wintel::simevent get $parms(event_id)]
+    set e [::pot get $parms(event_id)]
     $e update_ {casualties} [array get parms]
 
     return

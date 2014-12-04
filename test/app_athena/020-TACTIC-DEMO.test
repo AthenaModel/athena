@@ -115,6 +115,7 @@ namespace eval ::athena_test::tests:: {
         id         *
         n          NB1
         parent     *
+        pot        ::pot
         state      normal
     }
 

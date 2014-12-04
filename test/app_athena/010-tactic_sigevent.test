@@ -67,6 +67,7 @@ namespace eval ::athena_test::tests:: {
         id         *
         msg        {}
         parent     *
+        pot        ::pot
         state      normal
     }
 

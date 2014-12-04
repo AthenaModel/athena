@@ -2047,10 +2047,10 @@ snit::type executive {
             set block_id [last_bean ::block]
         }
 
-        block validate $block_id
+        pot valclass block $block_id
 
         # NEXT, get the block data
-        set block [block get $block_id]
+        set block [pot get $block_id]
 
         set dict [parmdict2optdict [$block view cget]]
 
@@ -2143,10 +2143,10 @@ snit::type executive {
             set condition_id [last_bean ::condition]
         }
 
-        condition validate $condition_id
+        pot valclass condition $condition_id
 
         # NEXT, get the condition data
-        set condition [condition get $condition_id]
+        set condition [pot get $condition_id]
 
         set dict [parmdict2optdict [$condition view cget]]
 
@@ -2175,7 +2175,7 @@ snit::type executive {
             set condition_id [last_bean ::condition]
         }
 
-        condition validate $condition_id
+        pot valclass ::condition $condition_id
 
         # NEXT, configure it
         cif transaction "condition configure..." {
@@ -2192,7 +2192,7 @@ snit::type executive {
     # CONDITION:UPDATE send options plus -state.
 
     proc ConditionConfigure {condition_id opts} {
-        set c [condition get $condition_id]
+        set c [pot get $condition_id]
 
         set state [from opts -state ""]
 
@@ -2307,7 +2307,7 @@ snit::type executive {
     # the given bean class, or "" if none.
 
     proc last_bean {cls} {
-        set last [lindex [$cls ids] end]
+        set last [lindex [pot ids $cls] end]
 
         if {$last eq ""} {
             set kind [namespace tail $cls]
@@ -2595,10 +2595,10 @@ snit::type executive {
             set tactic_id [last_bean ::tactic]
         }
 
-        tactic validate $tactic_id
+        pot valclass tactic $tactic_id
 
         # NEXT, get the tactic data
-        set tactic [tactic get $tactic_id]
+        set tactic [pot get $tactic_id]
 
         set dict [parmdict2optdict [$tactic view cget]]
 
@@ -2627,7 +2627,7 @@ snit::type executive {
             set tactic_id [last_bean ::tactic]
         }
 
-        tactic validate $tactic_id
+        pot valclass tactic $tactic_id
 
         # NEXT, configure it
         cif transaction "tactic configure..." {
@@ -2644,7 +2644,7 @@ snit::type executive {
     # TACTIC:UPDATE send options plus -state.
 
     proc TacticConfigure {tactic_id opts} {
-        set c [tactic get $tactic_id]
+        set c [pot get $tactic_id]
 
         set state [from opts -state ""]
 

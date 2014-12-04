@@ -831,11 +831,11 @@ order define TACTIC:DEPLOY {
     }
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -type tactic::DEPLOY
+    prepare tactic_id  -required -with {::pot valclass tactic::DEPLOY}
     returnOnError
 
     # NEXT, get the tactic
-    set tactic [tactic get $parms(tactic_id)]
+    set tactic [pot get $parms(tactic_id)]
 
     prepare g                    
     prepare pmode      -toupper  -selector

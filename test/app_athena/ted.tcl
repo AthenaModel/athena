@@ -38,6 +38,7 @@ snit::type ted {
         actors
         attrit_nf
         attrit_nfg
+        beans
         bookmarks
         caps
         cap_access
@@ -749,7 +750,7 @@ snit::type ted {
         econ            reset
         simclock        reset
         aram            clear
-        bean            reset
+        pot             reset
         strategy        init
         driver::abevent reset
     }
@@ -899,7 +900,7 @@ snit::type ted {
             ted order BLOCK:UPDATE block_id $bid {*}$args
         }
 
-        return [block get $bid]
+        return [pot get $bid]
     }
 
     # addcondition block typename ?parm value...?
@@ -918,7 +919,7 @@ snit::type ted {
             ted order CONDITION:${typename} condition_id $cid {*}$args
         }
 
-        return [condition get $cid]
+        return [pot get $cid]
     }
 
     # addtactic block typename ?parm value...?
@@ -937,7 +938,7 @@ snit::type ted {
             ted order TACTIC:${typename} tactic_id $tid {*}$args
         }
 
-        return [tactic get $tid]
+        return [pot get $tid]
     }
 
     # deploy n g personnel

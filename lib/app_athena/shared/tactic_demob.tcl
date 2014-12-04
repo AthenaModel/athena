@@ -185,7 +185,7 @@ order define TACTIC:DEMOB {
     }
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -type tactic::DEMOB
+    prepare tactic_id  -required -with {::pot valclass tactic::DEMOB}
     prepare g          -toupper  -type ident
     prepare mode       -toupper  -selector
     prepare personnel  -num      -type iquantity
@@ -194,7 +194,7 @@ order define TACTIC:DEMOB {
     returnOnError
 
     # NEXT, get the tactic and do cross-checks
-    set tactic [tactic get $parms(tactic_id)]
+    set tactic [pot get $parms(tactic_id)]
 
     fillparms parms [$tactic getdict]
 

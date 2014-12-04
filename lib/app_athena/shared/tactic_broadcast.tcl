@@ -296,11 +296,11 @@ order define TACTIC:BROADCAST {
     }
 } {
     # FIRST, there must be a tactic ID
-    prepare tactic_id  -required -type tactic::BROADCAST
+    prepare tactic_id  -required -with {::pot valclass tactic::BROADCAST}
     returnOnError
 
     # NEXT, get the tactic
-    set tactic [tactic get $parms(tactic_id)]
+    set tactic [pot get $parms(tactic_id)]
 
     # NEXT, the parameters
     prepare cap      -toupper   

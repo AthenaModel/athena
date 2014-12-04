@@ -109,13 +109,13 @@ order define SIMEVENT:RIOT {
     }
 } {
     # FIRST, prepare the parameters
-    prepare event_id  -required -type ::wintel::simevent::RIOT
+    prepare event_id  -required -with {::pot valclass ::wintel::simevent::RIOT}
     prepare coverage  -num      -type rposfrac
  
     returnOnError -final
 
     # NEXT, update the event.
-    set e [::wintel::simevent get $parms(event_id)]
+    set e [::pot get $parms(event_id)]
     $e update_ {coverage} [array get parms]
 
     return
