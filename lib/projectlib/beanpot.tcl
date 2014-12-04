@@ -579,10 +579,4 @@ snit::type ::projectlib::beanpot {
         # NEXT, register it.
         dict set beans $id $bean
     }
-
-
-
-
 }
-
-
