@@ -11,6 +11,18 @@
 #    This module is responsible for computing and applying attritions
 #    to units and neighborhood groups.
 #
+#    As attrition tactics execute, a list of attrition dictionaries
+#    is accumulated by this module.  When the assess method is called
+#    the attrition data is extracted from this list and applied.  For 
+#    civilian casualties, satisfaction and cooperation dictionaries 
+#    are built up and then passed into the CIVCAS rule set where the 
+#    effects are applied.
+#
+#    The satisfaction and cooperation dictionaries are entirely 
+#    transient. They only exist for the purpose of storing the data 
+#    needed by the CIVCAS rule set.  The dictionaries are created, 
+#    used and deleted within the assess typemethod.
+#
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
@@ -20,10 +32,19 @@ snit::type aam {
     # Make it a singleton
     pragma -hasinstances no
 
-    typevariable alist  ;# list of all attrition dictionaries
+    typevariable alist {} ;# list of attrition dictionaries
 
-    typevariable sdict  ;# dict used to assess SAT effects
-    typevariable cdict  ;# dict used to assess COOP effects
+    typevariable sdict    ;# dict used to assess SAT effects
+    typevariable cdict    ;# dict used to assess COOP effects
+
+    #-------------------------------------------------------------------
+    # reset
+
+    typemethod reset {} {
+        set alist ""
+        set sdict ""
+        set cdict ""
+    }
 
     #-------------------------------------------------------------------
     # Attrition Assessment

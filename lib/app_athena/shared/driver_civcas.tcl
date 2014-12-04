@@ -19,6 +19,14 @@ driver type define CIVCAS {f} {
 
     # assess sdict cdict
     #
+    # sdict - dictionary of satisfaction rule firing data, the keys
+    #         are CIV group names and values are number of casualties
+    #
+    # cdict - dictionary of cooperation rule firing data, the keys
+    #         are two element lists: a CIV group and a FRC group.
+    #         The values are the number of casualties the FRC group
+    #         caused the CIV group
+    #
     # Assess all civilian casualties for the current week.
 
     typemethod assess {sdict cdict} {
