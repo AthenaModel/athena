@@ -745,7 +745,7 @@ snit::type app {
     typemethod error {text} {
         set text [uplevel 1 [list tsubst $text]]
 
-        if {[![app tkloaded]} {
+        if {![app tkloaded]} {
             # Uplevel, so that [app exit] can expand the text.
             uplevel 1 [list app exit $text]
         } else {
