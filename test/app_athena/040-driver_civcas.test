@@ -115,14 +115,14 @@ t          1
 driver_id  1000
 ruleset    CIVCAS
 rule       CIVCAS-1-1
-fdict      casualties 500.0 f SHIA dtype CIVCAS mult 2.0
+fdict      casualties 500 f SHIA dtype CIVCAS mult 2.0
 
 firing_id  2
 t          1
 driver_id  1001
 ruleset    CIVCAS
 rule       CIVCAS-1-1
-fdict      casualties 500.0 f SUNN dtype CIVCAS mult 2.0
+fdict      casualties 500 f SUNN dtype CIVCAS mult 2.0
     }
     
     test assess-1.2 {Rule 1-1 inputs} -setup {
@@ -173,14 +173,14 @@ t          1
 driver_id  1000
 ruleset    CIVCAS
 rule       CIVCAS-2-1
-fdict      casualties 500.0 f SHIA dtype CIVCAS g BLUE mult 2.0
+fdict      casualties 500 f SHIA dtype CIVCAS g BLUE mult 2.0
 
 firing_id  4
 t          1
 driver_id  1001
 ruleset    CIVCAS
 rule       CIVCAS-2-1
-fdict      casualties 500.0 f SUNN dtype CIVCAS g BLUE mult 2.0
+fdict      casualties 500 f SUNN dtype CIVCAS g BLUE mult 2.0
     }
     
     test assess-2.3 {Rule 2-1 fires with two groups} -setup {
@@ -198,28 +198,28 @@ t          1
 driver_id  1000
 ruleset    CIVCAS
 rule       CIVCAS-2-1
-fdict      casualties 500.0 f SHIA dtype CIVCAS g BLUE mult 2.0
+fdict      casualties 500 f SHIA dtype CIVCAS g BLUE mult 2.0
 
 firing_id  4
 t          1
 driver_id  1000
 ruleset    CIVCAS
 rule       CIVCAS-2-1
-fdict      casualties 500.0 f SHIA dtype CIVCAS g BRIT mult 2.0
+fdict      casualties 500 f SHIA dtype CIVCAS g BRIT mult 2.0
 
 firing_id  5
 t          1
 driver_id  1001
 ruleset    CIVCAS
 rule       CIVCAS-2-1
-fdict      casualties 500.0 f SUNN dtype CIVCAS g BLUE mult 2.0
+fdict      casualties 500 f SUNN dtype CIVCAS g BLUE mult 2.0
 
 firing_id  6
 t          1
 driver_id  1001
 ruleset    CIVCAS
 rule       CIVCAS-2-1
-fdict      casualties 500.0 f SUNN dtype CIVCAS g BRIT mult 2.0
+fdict      casualties 500 f SUNN dtype CIVCAS g BRIT mult 2.0
     }
     
     

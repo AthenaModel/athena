@@ -160,7 +160,6 @@ snit::type scenario {
         rdb monitor add curse_injects {curse_id inject_num}
         rdb monitor add ioms          {iom_id}
         rdb monitor add mads          {mad_id}
-        rdb monitor add magic_attrit  {id}
         rdb monitor add nbhoods       {n}
         rdb monitor add nbrel_mn      {m n}
         rdb monitor add orggroups     {g}
