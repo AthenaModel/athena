@@ -17,44 +17,36 @@ driver type define CIVCAS {f} {
     #-------------------------------------------------------------------
     # Public Typemethods
 
-    # assess
+    # assess sdict cdict
     #
     # Assess all civilian casualties for the current week.
 
-    typemethod assess {} {
+    typemethod assess {sdict cdict} {
         if {![dam isactive CIVCAS]} {
             log warning CIVCAS "driver type has been deactivated"
             return
         }
 
-        # FIRST, assess the satisfaction implications
-        rdb eval {
-            SELECT 'CIVCAS'          AS dtype,
-                   f                 AS f,
-                   total(casualties) AS casualties
-            FROM attrit_nf
-            GROUP BY f
-        } row {
-            unset -nocomplain row(*)
+        set parms(dtype) CIVCAS
 
-            $type ruleset1 [array get row]
+        # FIRST, sat effects
+        dict for {key value} $sdict {
+            set parms(f)          $key
+            set parms(casualties) $value
+
+            $type ruleset1 [array get parms]
         }
 
-        # NEXT, assess the cooperation implications
-        rdb eval {
-            SELECT 'CIVCAS'          AS dtype,
-                   f                 AS f,
-                   g                 AS g,
-                   total(casualties) AS casualties
-            FROM attrit_nfg
-            GROUP BY f,g
-        } row {
-            unset -nocomplain row(*)
+        # NET coop effects
+        dict for {key value} $cdict {
+            set parms(f)          [lindex $key 0]
+            set parms(g)          [lindex $key 1]
+            set parms(casualties) $value
 
-            $type ruleset2 [array get row]
+            $type ruleset2 [array get parms]
         }
     }
-    
+
     #-------------------------------------------------------------------
     # Narrative Type Methods
 
@@ -138,7 +130,7 @@ driver type define CIVCAS {f} {
         dict set fdict mult $mult
             
         # NEXT, The rule fires trivially
-        dam rule CIVCAS-1-1  $fdict {1} {
+        dam rule CIVCAS-1-1 $fdict {1} {
             dam sat P $f \
                 AUT [mag* $mult L-]  \
                 SFT [mag* $mult XL-] \

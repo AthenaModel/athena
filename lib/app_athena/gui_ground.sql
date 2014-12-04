@@ -116,24 +116,6 @@ SELECT * FROM gui_absits
 WHERE state = 'RESOLVED';
 
 ------------------------------------------------------------------------
--- ATTRITION MODEL VIEWS
-
--- gui_magic_attrit: All pending magic attrition 
-CREATE TEMPORARY VIEW gui_magic_attrit AS
-SELECT id                                              AS id,
-       CASE WHEN mode = 'NBHOOD' 
-            THEN 'Attrition to neighborhood ' || n
-            WHEN mode = 'GROUP'
-            THEN 'Attrition to ' || f || ' in neighborhood ' || n
-            ELSE 'Unknown'
-            END                                        AS narrative,
-       casualties                                      AS casualties,
-       CASE WHEN g1 IS NULL THEN '' ELSE g1 END AS g1,
-       CASE WHEN g2 IS NULL THEN '' ELSE g2 END AS g2
-FROM magic_attrit;
-
-
-------------------------------------------------------------------------
 -- SERVICES MODELS VIEWS
 
 -- gui_service_sg: Provision of services to civilian groups
