@@ -55,9 +55,6 @@ snit::type app {
     #
     # Application options.  These are set in a variety of ways.
     #
-    # -batch           - If 1, athena_batch(1) is running; otherwise,
-    #                    athena(1) is running.
-    #
     # -ignoreuser      - If 1, ignore user preferences, etc.
     #                    Used for testing.
     #
@@ -76,7 +73,6 @@ snit::type app {
     #                    path-munging.
 
     typevariable opts -array {
-        -batch      0
         -dev        0
         -ignoreuser 0
         -script     {}
@@ -121,7 +117,6 @@ snit::type app {
             set opt [lshift argv]
 
             switch -exact -- $opt {
-                -batch      -
                 -dev        -
                 -ignoreuser {
                     set opts($opt) 1
@@ -137,7 +132,16 @@ snit::type app {
                 }
                 
                 default {
-                    app exit "Unknown option: \"$opt\"\n[app usage]"
+                    # Generate error message for users that are accustomed
+                    # to the -batch option in previous versions of Athena
+                    if {$opt eq "-batch"} {
+                        set errmsg "\"-batch\" is invalid, use athena_batch "
+                        append errmsg "instead.\nSee the athena_batch(1) "
+                        append errmsg "documentation for more information."
+                    } else {
+                        set errmsg "Unknown option: \"$opt\"\n[app usage]"
+                    }
+                    app exit $errmsg
                 }
             }
         }
@@ -176,7 +180,7 @@ snit::type app {
         }
 
         # NEXT, create the preferences directory.
-        if {!$opts(-batch) && !$opts(-ignoreuser)} {
+        if {[app tkloaded] && !$opts(-ignoreuser)} {
             if {[catch {prefsdir init} result]} {
                 app exit {
                     |<--
@@ -198,7 +202,7 @@ snit::type app {
         # NEXT, initialize and load the user preferences
         prefs init
         
-        if {!$opts(-ignoreuser) && !$opts(-batch)} {
+        if {[app tkloaded] && !$opts(-ignoreuser)} {
             prefs load
         }
 
@@ -322,7 +326,7 @@ snit::type app {
         # NEXT, Create the main window, and register it as a saveable.
         # It does not, in fact, contain any scenario data; but this allows
         # us to capture the user's "session" as part of the scenario file.
-        # No main window in batch mode.
+        # No main window in non-GUI mode.
 
         if {[app tkloaded]} {
             wm withdraw .
@@ -333,8 +337,8 @@ snit::type app {
         # NEXT, log that we're up.
         log normal app "Athena [kiteinfo version]"
         
-        # NEXT, if we're in batch mode print that we are up
-        if {$opts(-batch)} {
+        # NEXT, if we're in non-GUI mode print that we are up
+        if {![app tkloaded]} {
             puts [format "%-25s %s" "Athena version:"        [kiteinfo version]]
             puts [format "%-25s %s" "Application directory:" [appdir join]]
             puts [format "%-25s %s" "Working directory:"     [workdir join]]
@@ -405,21 +409,15 @@ snit::type app {
             }
         }
 
-        # NEXT, if we're in batch mode, exit; we're done.
-        if {$opts(-batch)} {
-            app exit
-        }
-
-        # NEXT, if there's a URL, load it.
-        if {$opts(-url) ne ""} {
+        # NEXT, if there's a URL and we're in GUI mode, load it.
+        if {$opts(-url) ne "" && [app tkloaded]} {
             app show [string map {% /} $opts(-url)]
         }
     }
 
     # tkloaded
     #
-    # Returns the value of the -batch option for other modules to
-    # use as needed.
+    # Returns the value of the tkLoaded flag for other modules to use
 
     typemethod tkloaded {} {
         return $::tkLoaded
@@ -644,10 +642,11 @@ snit::type app {
 
     # usage
     #
-    # Returns the application's command-line syntax.
+    # Returns the application's command-line syntax based on whether
+    # in GUI mode or non-GUI mode
     
     typemethod usage {} {
-        if {$opts(-batch)} {
+        if {![app tkloaded]} {
             set usage \
                 "Usage: athena_batch ?options...? ?scenario.adb?\n\n"
         } else {
@@ -660,16 +659,16 @@ snit::type app {
             "                    the scenario file (if any).\n"         \
             "-ignoreuser         Ignore preference settings.\n"
 
-        if {!$opts(-batch)} {
+        if {![app tkloaded]} {
+            append usage \
+                "\nSee athena_batch(1) for more information.\n"
+        } else {
             append usage \
             "-dev                Turns on all developer tools (e.g.,\n" \
             "                    the CLI and scrolling log)\n"          \
             "-url url            Load the URL in the detail browser.\n" \
             "                    '%' is replaced with '/'.\n"           \
             "\nSee athena(1) for more information.\n"
-        } else {
-            append usage \
-                "\nSee athena_batch(1) for more information.\n"
         }
 
         return $usage
@@ -747,7 +746,7 @@ snit::type app {
     typemethod error {text} {
         set text [uplevel 1 [list tsubst $text]]
 
-        if {$opts(-batch)} {
+        if {![app tkloaded]} {
             # Uplevel, so that [app exit] can expand the text.
             uplevel 1 [list app exit $text]
         } else {
@@ -789,7 +788,7 @@ snit::type app {
         if {$text ne ""} {
             set text [uplevel 1 [list tsubst $text]]
 
-            if {!$opts(-batch)} {
+            if {[app tkloaded]} {
                 app DisplayExitText $text
             } else {
                 set f [open "error.log" w]
@@ -801,7 +800,7 @@ snit::type app {
         }
 
         # NEXT, save the CLI history, if any.
-        if {!$opts(-ignoreuser) && !$opts(-batch) && [winfo exists .main]} {
+        if {!$opts(-ignoreuser) && [app tkloaded] && [winfo exists .main]} {
             .main savehistory
         }
 
@@ -1055,7 +1054,7 @@ proc bgerror {msg} {
         }
     }
 
-    if {$app::opts(-batch)} {
+    if {![app tkloaded]} {
         # app exit subst's in the caller's context
         app exit {$msg\n\nStack Trace:\n$bgErrorInfo\n$trace}
     } elseif {[winfo exists .main]} {

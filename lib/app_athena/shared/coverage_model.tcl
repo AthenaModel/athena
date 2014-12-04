@@ -19,9 +19,6 @@ snit::type coverage_model {
     #-------------------------------------------------------------------
     # Type Variables
 
-    # minFrcSecurity requirement as an integer, by activity 
-    typevariable minFrcSecurity -array {}
-
     # strictSecurity: caches strict security level by security level
     typevariable strictSecurity -array {}
 
@@ -30,20 +27,10 @@ snit::type coverage_model {
 
     # init
     #
-    # Initializes some lookup tables.
+    # Initializes a lookup table.
 
     typemethod init {} {
-        # FIRST, remember minFrcSecurity
-        rdb eval {
-            SELECT a
-            FROM activity_gtype
-            WHERE gtype = 'FRC' AND a != 'NONE'
-        } {
-            set minFrcSecurity($a) \
-                [qsecurity value [parmdb get activity.FRC.$a.minSecurity]]
-        }
-
-        # NEXT, remember strict security.
+        # FIRST, store strict security.
         for {set i -100} {$i <= 100} {incr i} {
             set strictSecurity($i) [qsecurity strictvalue $i]
         }
@@ -158,7 +145,18 @@ snit::type coverage_model {
     # Computes the effectiveness of force activities based on security.
 
     typemethod ComputeForceActivityFlags {} {
-        # FIRST, clear security flags when security is too low
+        # FIRST, load up the min security values into an array
+        # NOTE: this is for performance reasons
+        rdb eval {
+            SELECT a
+            FROM activity_gtype
+            WHERE gtype = 'FRC' AND a != 'NONE'
+        } {
+            set minFrcSecurity($a) \
+                [qsecurity value [parmdb get activity.FRC.$a.minSecurity]]
+        }
+        
+        # NEXT, clear security flags when security is too low
         rdb eval {
             SELECT activity_nga.n      AS n,
                    activity_nga.g      AS g,

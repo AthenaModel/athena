@@ -65,8 +65,7 @@ if {[kiteinfo gui athena_batch]} {
 # command.
 
 # WHD: This is the only unusual feature of this loader script:
-# It requires app_athena rather than app_athena_batch, and passes
-# -batch in the arguments.
+# It requires app_athena rather than app_athena_batch
 package require app_athena
 
 #-----------------------------------------------------------------------
@@ -75,7 +74,6 @@ package require app_athena
 try {
     # Allow for interactive testing
     if {!$tcl_interactive} {
-        set argv [linsert $argv 0 -batch]
         main $argv
     }
 } trap FATAL {result} {

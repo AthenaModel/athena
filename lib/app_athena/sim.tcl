@@ -864,6 +864,10 @@ order define SIM:RUN {
         if {$parms(block) && ($parms(weeks) eq "" || $parms(weeks) == 0)} {
             reject block "Cannot block without specifying the weeks to run"
         }
+
+        if {![app tkloaded] && !$parms(block)} {
+            reject block "Must be YES when Athena is in non-GUI mode"
+        }
     }
 
     returnOnError -final

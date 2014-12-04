@@ -253,18 +253,27 @@ namespace eval ::athena_test::tests:: {
         block {Cannot block without specifying the weeks to run}
     }
 
-
-    test RUN-2.1 {Run until paused} -setup {
+    test RUN-1.5 {no blocking, no GUI present} -constraints notk -setup {
         setup
     } -body {
-        ted order SIM:RUN
+        ted order -reject SIM:RUN block NO
+    } -cleanup {
+        cleanup
+    } -result {
+        block {Must be YES when Athena is in non-GUI mode.}
+    }
+
+    test RUN-2.1 {Run until paused} -constraints tk -setup {
+        setup
+    } -body {
+        ted order SIM:RUN 
         list [sim state] [sim stoptime]
     } -cleanup {
         cleanup
     } -result {RUNNING 0}
 
 
-    test RUN-2.2 {Run for days} -setup {
+    test RUN-2.2 {Run for days} -constraints tk -setup {
         setup
     } -body {
         ted order SIM:RUN weeks 5
@@ -274,7 +283,7 @@ namespace eval ::athena_test::tests:: {
     } -result {RUNNING 5}
 
 
-    test RUN-2.3 {Sends <State>} -setup {
+    test RUN-2.3 {Sends <State>} -constraints tk -setup {
         setup
     } -body {
         ted notifier bind ::sim <State>
@@ -298,7 +307,7 @@ namespace eval ::athena_test::tests:: {
     }
 
 
-    test PAUSE-1.2 {Pauses while running} -setup {
+    test PAUSE-1.2 {Pauses while running} -constraints tk -setup {
         setup
     } -body {
         ted order SIM:RUN
@@ -310,7 +319,7 @@ namespace eval ::athena_test::tests:: {
     } -result {PAUSED}
 
 
-    test PAUSE-1.3 {Not allowed while paused} -setup {
+    test PAUSE-1.3 {Not allowed while paused} -constraints tk -setup {
         setup
     } -body {
         ted order SIM:RUN
@@ -324,7 +333,7 @@ namespace eval ::athena_test::tests:: {
     }
 
 
-    test PAUSE-1.4 {Sends <State>} -setup {
+    test PAUSE-1.4 {Sends <State>} -constraints tk -setup {
         setup
     } -body {
         ted order SIM:RUN
