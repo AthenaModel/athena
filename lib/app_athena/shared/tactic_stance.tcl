@@ -209,7 +209,7 @@ tactic define STANCE "Adopt a Stance" {actor} -onlock {
     # tactic with the supplied id.
 
     typemethod frcgrpsOwnedBy {tactic_id} {
-        if {![pot exists $tactic_id]} {
+        if {![pot has $tactic_id]} {
             return [list]
         }
 

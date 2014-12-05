@@ -102,7 +102,7 @@ snit::type unit {
             FROM units
             WHERE tactic_id > 0
         } {
-            if {![pot isa ::tactic $tactic_id]} {
+            if {![pot hasa ::tactic $tactic_id]} {
                 unit delete $u
             }
         }

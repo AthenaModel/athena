@@ -169,11 +169,6 @@ with their owner.<p>
 
 Returns a dump of information about all beans in the pot.<p>
 
-<defitem "exists" {<i pot> exists <i>id</i>}>
-
-Returns 1 if the pot contains a bean with the given <i>id</i>, and
-0 otherwise.<p>
-
 <defitem "forget" {<i pot> forget <i>id</i>}>
 
 <b>Private.</b> Unregisters the bean with the given <i>id</i> when it is 
@@ -185,17 +180,23 @@ and should not be used by other clients.<p>
 Returns the bean object with the given ID, throwing an error if there is 
 no such bean in the pot.<p>
 
+<defitem "has" {<i pot> has <i>id</i>}>
+
+Returns 1 if the pot contains a bean with the given <i>id</i>, and
+0 otherwise.<p>
+
+<defitem "hasa" {<i pot> hasa <i cls id>}>
+
+Returns 1 if the pot contains a bean with the given <i id> which is also
+a member of the given <i cls> (or one of its subclasses) and 0 
+otherwise.<p>
+
 <defitem "ids" {<i pot> ids ?<i cls>?}>
 
 By default, returns a list of the IDs of all beans in the pot.  If
 <i cls> is given, returns a list of the IDs of the beans that are 
 members of that class or its subclasses.<p>
 
-<defitem "isa" {<i pot> isa <i cls id>}>
-
-Returns 1 if the pot contains a bean with the given <i id> which is also
-a member of the given <i cls> (or one of its subclasses) and 0 
-otherwise.<p>
 
 <defitem "lastid" {<i pot> lastid}>
 
