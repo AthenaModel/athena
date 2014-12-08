@@ -84,6 +84,7 @@ namespace eval ::athena_test::tests:: {
         mode       NBHOOD
         n          {}
         parent     *
+        pot        ::pot
         state      invalid
     }
 

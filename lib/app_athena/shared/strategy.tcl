@@ -19,7 +19,9 @@
 #-----------------------------------------------------------------------
 
 # FIRST, create the class
-beanclass create strategy
+oo::class create strategy {
+    superclass ::projectlib::bean
+}
 
 # NEXT, define class members
 oo::objdefine strategy {
@@ -60,8 +62,8 @@ oo::objdefine strategy {
     method Recache {} {
         array unset cache
 
-        foreach id [strategy ids] {
-            set s [bean get $id]
+        foreach id [pot ids strategy] {
+            set s [pot get $id]
             set cache([$s agent]) $id 
         }
     }
@@ -367,7 +369,7 @@ oo::objdefine strategy {
             return ""
         }
         
-        return [bean get $cache($agent)]
+        return [pot get $cache($agent)]
     }
     
 
@@ -382,10 +384,10 @@ oo::objdefine strategy {
     # mutator is used on creation of an agent entity (i.e., an actor).
 
     method create_ {agent} {
-        set s [strategy new $agent]
+        set s [pot new strategy $agent]
         set cache($agent) [$s id]
 
-        return [list bean delete [$s id]]
+        return [list pot delete [$s id]]
     }
 
     # delete_ agent
@@ -398,7 +400,7 @@ oo::objdefine strategy {
     method delete_ {agent} {
         set s [my getname $agent]
 
-        return [list bean undelete [bean delete [$s id]]]        
+        return [list pot undelete [pot delete [$s id]]]        
     }
 }
 
@@ -574,7 +576,7 @@ order define STRATEGY:BLOCK:ADD {
     # NEXT, return the new block's ID
     set block [$s blocks end]
 
-    setredo [list bean setnextid [$block id]]
+    setredo [list pot setnextid [$block id]]
     return [$block id]
 }
 
@@ -592,14 +594,14 @@ order define STRATEGY:BLOCK:DELETE {
     }
 } {
     # FIRST, prepare and validate the parameters
-    prepare ids -required -listof ::block
+    prepare ids -required -listwith {::pot valclass ::block}
 
     returnOnError -final
 
     # NEXT, delete the block(s)
     set undo [list]
     foreach bid $parms(ids) {
-        set block [block get $bid]
+        set block [pot get $bid]
         set s [$block strategy]
         lappend undo [$s deleteblock_ $bid]
     }
@@ -625,13 +627,13 @@ order define STRATEGY:BLOCK:MOVE {
     }
 } {
     # FIRST, prepare and validate the parameters
-    prepare block_id -required -type ::block
+    prepare block_id -required -with {::pot valclass ::block}
     prepare where    -required -type emoveitem
 
     returnOnError -final
 
     # NEXT, move the block
-    set block [block get $parms(block_id)]
+    set block [pot get $parms(block_id)]
     set s [$block strategy]
 
     setundo [$s moveblock_ $parms(block_id) $parms(where)]

@@ -113,6 +113,7 @@ namespace eval ::athena_test::tests:: {
         once       1
         onlock     0
         parent     3
+        pot        ::pot
         state      normal
         t1         10
         t2         {}
@@ -184,6 +185,7 @@ namespace eval ::athena_test::tests:: {
         onlock     0
         t2         {}
         parent     1
+        pot        ::pot
         intent     {}
         tactics    {}
         exectime   {}
@@ -191,7 +193,7 @@ namespace eval ::athena_test::tests:: {
 
     test constructor-1.2 {can set options} -setup {
         setup
-        set B1 [block new -cmode ANY -intent "My block"]
+        set B1 [pot new block -cmode ANY -intent "My block"]
     } -body {
         ted pdicts [$B1 getdict]
     } -cleanup {
@@ -209,6 +211,7 @@ namespace eval ::athena_test::tests:: {
         onlock     0
         t2         {}
         parent     {}
+        pot        ::pot
         intent     {My block}
         tactics    {}
         exectime   {}
@@ -269,6 +272,7 @@ namespace eval ::athena_test::tests:: {
         once            0
         onlock          0
         parent          1
+        pot             ::pot
         pretty_exectime -
         pretty_once     No
         pretty_onlock   No
@@ -300,6 +304,7 @@ namespace eval ::athena_test::tests:: {
         once            0
         onlock          0
         parent          1
+        pot             ::pot
         pretty_exectime 2012W06
         pretty_once     No
         pretty_onlock   No
@@ -352,22 +357,23 @@ namespace eval ::athena_test::tests:: {
         ted pdict [$B1 getdict]
     } -cleanup {
         cleanup
-    } -match glob -result {
+    } -match dictglob -result {
         cmode      ANY
-        execstatus NONE
-        state      normal
-        tmode      ALWAYS
         conditions {}
         emode      ALL
-        id         *
-        once       0
-        t1         {}
-        onlock     0
-        t2         {}
-        parent     1
-        intent     {}
-        tactics    {}
+        execstatus NONE
         exectime   {}
+        id         *
+        intent     {}
+        once       0
+        onlock     0
+        parent     1
+        pot        ::pot
+        state      normal
+        t1         {}
+        t2         {}
+        tactics    {}
+        tmode      ALWAYS
     }
 
     #-------------------------------------------------------------------
@@ -380,7 +386,7 @@ namespace eval ::athena_test::tests:: {
         $B1 tactics
     } -cleanup {
         cleanup
-    } -match glob -result {::bean::SIGEVENT*}
+    } -match glob -result {::pot::SIGEVENT*}
 
     test addtactic-1.2 {can be undone} -setup {
         setup
@@ -499,7 +505,7 @@ namespace eval ::athena_test::tests:: {
         $B1 conditions
     } -cleanup {
         cleanup
-    } -match glob -result {::bean::EXPR*}
+    } -match glob -result {::pot::EXPR*}
 
     test addcondition-1.2 {can be undone} -setup {
         setup
@@ -585,7 +591,7 @@ namespace eval ::athena_test::tests:: {
         $B1 addcondition_ EXPR
         $B1 addcondition_ EXPR
 
-        set a [condition ids]
+        set a [pot ids condition]
         set b [$B1 condition_ids]
 
         expr {$a eq $b}
@@ -603,7 +609,7 @@ namespace eval ::athena_test::tests:: {
         $B1 addtactic_ SIGEVENT
         $B1 addtactic_ SIGEVENT
 
-        set a [tactic ids]
+        set a [pot ids tactic]
         set b [$B1 tactic_ids]
 
         expr {$a eq $b}
@@ -635,7 +641,7 @@ namespace eval ::athena_test::tests:: {
         $B1 check
     } -cleanup {
         cleanup
-    } -match glob -result {tactics {*EXECUTIVE* {command *} ::bean::EXECUTIVE* {command *}}}
+    } -match glob -result {tactics {*EXECUTIVE* {command *} ::pot::EXECUTIVE* {command *}}}
 
     #-------------------------------------------------------------------
     # timestring

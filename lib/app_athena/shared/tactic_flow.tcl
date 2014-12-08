@@ -258,7 +258,7 @@ order define TACTIC:FLOW {
     }
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -type tactic::FLOW
+    prepare tactic_id  -required -with {::pot valclass tactic::FLOW}
     prepare f          -toupper  -type ident
     prepare g          -toupper  -type ident
     prepare mode       -toupper  -selector
@@ -268,7 +268,7 @@ order define TACTIC:FLOW {
     returnOnError
 
     # NEXT, get the tactic and do cross-checks
-    set tactic [tactic get $parms(tactic_id)]
+    set tactic [pot get $parms(tactic_id)]
 
     fillparms parms [$tactic getdict]
 

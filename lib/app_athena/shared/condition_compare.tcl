@@ -100,13 +100,13 @@ order define CONDITION:COMPARE {
     }
 } {
     # FIRST, prepare and validate the parameters
-    prepare condition_id -required -type condition::COMPARE
+    prepare condition_id -required -with {::pot valclass condition::COMPARE}
     prepare x                      
     prepare comp         -toupper  -type ecomparatorx
     prepare y                      
     returnOnError -final
 
-    set cond [condition get $parms(condition_id)]
+    set cond [pot get $parms(condition_id)]
 
     # NEXT, update the block
     setundo [$cond update_ {x comp y} [array get parms]]

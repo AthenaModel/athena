@@ -18,7 +18,9 @@
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
-beanclass create condition
+oo::class create condition {
+    superclass ::projectlib::bean
+}
 
 # NEXT, define class methods
 #
@@ -41,7 +43,7 @@ oo::objdefine condition {
         set fullname ::condition::$typename
         lappend types $fullname
 
-        beanclass create $fullname {
+        oo::class create $fullname {
             superclass ::condition
         }
 
@@ -225,7 +227,7 @@ oo::define condition {
     # owns this condition.
 
     method agent {} {
-        return [[bean get $parent] agent]
+        return [[[my pot] get $parent] agent]
     }
     
     # strategy 
@@ -233,7 +235,7 @@ oo::define condition {
     # Returns the strategy that owns the block that owns this condition.
 
     method strategy {} {
-        return [[bean get $parent] strategy]
+        return [[[my pot] get $parent] strategy]
     }
 
     # block
@@ -241,7 +243,7 @@ oo::define condition {
     # Returns the block that owns this condition.
 
     method block {} {
-        return [bean get $parent]
+        return [[my pot] get $parent]
     }
 
     # state
@@ -315,6 +317,7 @@ oo::define condition {
             dict set vdict parent       [my get parent]
 
             set vdict [dict remove $vdict {*}{
+                pot
                 id
                 metflag
                 statusicon
@@ -512,11 +515,11 @@ order define CONDITION:STATE {
     }
 } {
     # FIRST, prepare and validate the parameters
-    prepare condition_id -required          -type condition
+    prepare condition_id -required          -with {::pot valclass ::condition}
     prepare state        -required -tolower -type ebeanstate
     returnOnError -final
 
-    set cond [condition get $parms(condition_id)]
+    set cond [pot get $parms(condition_id)]
 
     # NEXT, update the block
     setundo [$cond update_ {state} [array get parms]]

@@ -252,10 +252,10 @@ order define TACTIC:CURSE {
     }
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -type tactic::CURSE
+    prepare tactic_id  -required -with {::pot valclass tactic::CURSE}
     returnOnError
 
-    set tactic [tactic get $parms(tactic_id)]
+    set tactic [pot get $parms(tactic_id)]
 
     # All validation takes place on sanity check
     prepare curse -toupper

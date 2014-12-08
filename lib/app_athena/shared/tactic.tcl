@@ -34,7 +34,9 @@
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
-beanclass create tactic
+oo::class create tactic {
+    superclass ::projectlib::bean
+}
 
 # NEXT, define class methods
 oo::objdefine tactic {
@@ -83,7 +85,7 @@ oo::objdefine tactic {
         set fullname ::tactic::$typename
         lappend types $fullname
 
-        beanclass create $fullname {
+        oo::class create $fullname {
             superclass ::tactic
         }
 
@@ -259,8 +261,8 @@ oo::objdefine tactic {
     # dynaforms where the user must choose an owned group.
 
     method groupsOwnedByAgent {id} {
-        if {[my exists $id]} {
-            set tactic [my get $id]
+        if {[pot has $id]} {
+            set tactic [pot get $id]
             return [group ownedby [$tactic agent]]
         } else {
             return [list]
@@ -276,8 +278,8 @@ oo::objdefine tactic {
     # dynaforms where the user must choose an owned group.
 
     method frcgroupsOwnedByAgent {id} {
-        if {[my exists $id]} {
-            set tactic [my get $id]
+        if {[pot has $id]} {
+            set tactic [pot get $id]
             return [frcgroup ownedby [$tactic agent]]
         } else {
             return [list]
@@ -292,8 +294,8 @@ oo::objdefine tactic {
     # given tactic.
 
     method allAgentsBut {id} {
-        if {[my exists $id]} {
-            set tactic [my get $id]
+        if {[pot has $id]} {
+            set tactic [pot get $id]
             set alist [actor names]
             return [ldelete alist [$tactic agent]]
         } else {
@@ -359,7 +361,7 @@ oo::define tactic {
     # owns this condition.
 
     method agent {} {
-        return [[bean get $parent] agent]
+        return [[[my pot] get $parent] agent]
     }
     
     # strategy 
@@ -367,7 +369,7 @@ oo::define tactic {
     # Returns the strategy that owns the block that owns this condition.
 
     method strategy {} {
-        return [[bean get $parent] strategy]
+        return [[[my pot] get $parent] strategy]
     }
 
     # block
@@ -375,7 +377,7 @@ oo::define tactic {
     # Returns the block that owns this condition.
 
     method block {} {
-        return [bean get $parent]
+        return [[my pot] get $parent]
     }
 
     # state
@@ -560,6 +562,7 @@ oo::define tactic {
                 faildict
                 failures
                 id
+                pot
                 statusicon
             }]
         }
@@ -783,11 +786,11 @@ order define TACTIC:STATE {
     }
 } {
     # FIRST, prepare and validate the parameters
-    prepare tactic_id -required          -type tactic
+    prepare tactic_id -required          -with {::pot valclass ::tactic}
     prepare state     -required -tolower -type ebeanstate
     returnOnError -final
 
-    set tactic [tactic get $parms(tactic_id)]
+    set tactic [pot get $parms(tactic_id)]
 
     # NEXT, update the block, clearing the execution status
     setundo [$tactic update_ {state} [array get parms]]

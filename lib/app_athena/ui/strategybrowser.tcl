@@ -304,7 +304,7 @@ snit::widget strategybrowser {
 
     method StrategyBlocks {op strategy_id block_id} {
         # FIRST, if it's not our strategy we don't care.
-        set s [strategy get $strategy_id]
+        set s [pot get $strategy_id]
 
         if {$info(agent) eq "" || $info(agent) ne [$s agent]} {
             return
@@ -864,7 +864,7 @@ snit::widget strategybrowser {
         set id [lindex [$blist uid curselection] 0]
 
         if {$id ne ""} {
-            set newBlock [block get $id]
+            set newBlock [pot get $id]
         } else {
             set newBlock ""
         }
@@ -899,7 +899,7 @@ snit::widget strategybrowser {
         set data [list]
 
         foreach id $ids {
-            set bean [block get $id]
+            set bean [pot get $id]
             lappend copyData [$bean copydata]
         }
 
@@ -1000,7 +1000,7 @@ snit::widget strategybrowser {
         set id [lindex [$blist uid curselection] 0]
 
         # NEXT, get the block's state
-        set block [block get $id]
+        set block [pot get $id]
         set state [$block state]
 
         if {$state eq "disabled"} {
@@ -1310,7 +1310,7 @@ snit::widget strategybrowser {
         set data [list]
 
         foreach id $ids {
-            set bean [condition get $id]
+            set bean [pot get $id]
             lappend copyData [$bean copydata]
         }
 
@@ -1405,7 +1405,7 @@ snit::widget strategybrowser {
     method CTabEdit {} {
         # FIRST, there should be only one selected.
         set id [lindex [$ctab uid curselection] 0]
-        set cond [condition get $id]
+        set cond [pot get $id]
 
         # NEXT, allow editing.
         order enter CONDITION:[$cond typename] condition_id $id
@@ -1421,7 +1421,7 @@ snit::widget strategybrowser {
         set id [lindex [$ctab uid curselection] 0]
 
         # NEXT, get the condition's state
-        set cond [condition get $id]
+        set cond [pot get $id]
         set state [$cond state]
 
         if {$state eq "disabled"} {
@@ -1658,7 +1658,7 @@ snit::widget strategybrowser {
         set data [list]
 
         foreach id $ids {
-            set bean [tactic get $id]
+            set bean [pot get $id]
             lappend copyData [$bean copydata]
         }
 
@@ -1760,7 +1760,7 @@ snit::widget strategybrowser {
         # FIRST, there should be only one selected.
         set id [lindex [$ttab uid curselection] 0]
 
-        set tactic [tactic get $id]
+        set tactic [pot get $id]
 
         # NEXT, allow editing.
         order enter TACTIC:[$tactic typename] tactic_id $id
@@ -1777,7 +1777,7 @@ snit::widget strategybrowser {
         set id [lindex [$ttab uid curselection] 0]
 
         # NEXT, get the tactic's state
-        set tactic [tactic get $id]
+        set tactic [pot get $id]
         set state [$tactic state]
 
         if {$state eq "disabled"} {

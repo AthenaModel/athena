@@ -209,11 +209,11 @@ tactic define STANCE "Adopt a Stance" {actor} -onlock {
     # tactic with the supplied id.
 
     typemethod frcgrpsOwnedBy {tactic_id} {
-        if {![tactic exists $tactic_id]} {
+        if {![pot has $tactic_id]} {
             return [list]
         }
 
-        set tactic [tactic get $tactic_id]
+        set tactic [pot get $tactic_id]
         set owner [$tactic agent]
 
         return [frcgroup ownedby $owner]
@@ -255,7 +255,7 @@ order define TACTIC:STANCE {
     }
 } {
     # FIRST, prepare and validate the parameters
-    prepare tactic_id -required -type tactic::STANCE
+    prepare tactic_id -required -with {::pot valclass tactic::STANCE}
     prepare f    -toupper
     prepare mode -toupper -selector
     prepare drel -toupper -num -type qaffinity
@@ -264,7 +264,7 @@ order define TACTIC:STANCE {
 
     returnOnError -final
 
-    set tactic [tactic get $parms(tactic_id)]
+    set tactic [pot get $parms(tactic_id)]
 
     # NEXT, create the tactic
     setundo [$tactic update_ {f mode drel glist nlist} [array get parms]]

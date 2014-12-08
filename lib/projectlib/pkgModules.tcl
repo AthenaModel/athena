@@ -35,8 +35,8 @@ package require tls 1.6
 package require tdom 0.8
 package require struct::set 2.2
 package require kiteutils 0.4.3
-package require marsutil 3.0.5
-package require simlib 3.0.5
+package require marsutil 3.0.6
+package require simlib 3.0.6
 # -kite-require-end
 
 package require kiteinfo
@@ -86,7 +86,7 @@ source [file join $::projectlib::library gofer.tcl          ]
 source [file join $::projectlib::library field_types.tcl    ]
 source [file join $::projectlib::library rolemap.tcl        ]
 source [file join $::projectlib::library oohelpers.tcl      ]
-source [file join $::projectlib::library beanclass.tcl      ]
+source [file join $::projectlib::library beanpot.tcl        ]
 source [file join $::projectlib::library bean.tcl           ]
 source [file join $::projectlib::library clipboardx.tcl     ]
 source [file join $::projectlib::library httpagent.tcl      ]

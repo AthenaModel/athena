@@ -103,6 +103,7 @@ namespace eval ::athena_test::tests:: {
         id      *
         metflag {}
         parent  *
+        pot     ::pot
         state   normal
         x       {_type NUMBER _rule BY_VALUE raw_value 5.0}
         y       {_type NUMBER _rule BY_VALUE raw_value 10.0}
@@ -120,6 +121,7 @@ namespace eval ::athena_test::tests:: {
         id      *
         metflag {}
         parent  *
+        pot     ::pot
         state   invalid
         x       NONESUCH
         y       {_type NUMBER _rule BY_VALUE raw_value 0}

@@ -112,13 +112,13 @@ order define SIMEVENT:EXPLOSION {
     }
 } {
     # FIRST, prepare the parameters
-    prepare event_id  -required -type ::wintel::simevent::EXPLOSION
+    prepare event_id  -required -with {::pot valclass ::wintel::simevent::EXPLOSION}
     prepare coverage  -num      -type rposfrac
  
     returnOnError -final
 
     # NEXT, update the event.
-    set e [::wintel::simevent get $parms(event_id)]
+    set e [::pot get $parms(event_id)]
     $e update_ {coverage} [array get parms]
 
     return

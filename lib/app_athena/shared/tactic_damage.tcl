@@ -140,10 +140,10 @@ order define TACTIC:DAMAGE {
     }
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -type tactic::DAMAGE
+    prepare tactic_id  -required -with {::pot valclass tactic::DAMAGE}
     returnOnError
 
-    set tactic [tactic get $parms(tactic_id)]
+    set tactic [pot get $parms(tactic_id)]
 
     prepare n
     prepare a

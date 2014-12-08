@@ -22,7 +22,9 @@
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
-beanclass create ::wintel::simevent
+oo::class create ::wintel::simevent {
+    superclass ::projectlib::bean
+}
 
 # NEXT, define class methods
 oo::objdefine ::wintel::simevent {
@@ -44,7 +46,7 @@ oo::objdefine ::wintel::simevent {
         set fullname ::wintel::simevent::$typename
         lappend types $fullname
 
-        beanclass create $fullname {
+        oo::class create $fullname {
             superclass ::wintel::simevent
         }
 
@@ -143,8 +145,8 @@ oo::objdefine ::wintel::simevent {
     method normals {} {
         set result [list]
 
-        foreach id [my ids] {
-            if {[[my get $id] state] eq "normal"} {
+        foreach id [pot ids] {
+            if {[[pot get $id] state] eq "normal"} {
                 lappend result $id
             }
         }
@@ -170,8 +172,8 @@ oo::objdefine ::wintel::simevent {
 
         # NEXT, assign numbers
         set i 0
-        foreach id [my ids] {
-            set e [my get $id]
+        foreach id [pot ids] {
+            set e [pot get $id]
             $e set num $inum-[incr i]
         }
     }
@@ -190,13 +192,13 @@ oo::objdefine ::wintel::simevent {
         " row {
             # FIRST, create a new event.
             set etype [my type $typename]
-            set e [$etype new {*}$row(optlist)]
+            set e [pot new $etype {*}$row(optlist)]
 
             # NEXT, if it can extend the previous event,
             # extend the previous event.
             if {$lastEvent ne "" && [$lastEvent canmerge $e]} {
                 $lastEvent merge $e
-                bean uncreate $e  ;# Reuses $e's bean ID
+                pot uncreate $e  ;# Reuses $e's bean ID
             } else {
                 set lastEvent $e
             }
@@ -575,11 +577,11 @@ order define EVENT:STATE {
     }
 } {
     # FIRST, prepare and validate the parameters
-    prepare event_id -required          -type event
+    prepare event_id -required          -with {pot valclass ::wintel::simevent}
     prepare state    -required -tolower -type ebeanstate
     returnOnError    -final
 
-    set event [event get $parms(event_id)]
+    set event [pot get $parms(event_id)]
 
     # NEXT, update the event.
     setundo [$event update_ {state} [array get parms]]

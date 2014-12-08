@@ -189,10 +189,10 @@ order define TACTIC:DEPOSIT {
     }
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -type tactic::DEPOSIT
+    prepare tactic_id  -required -with {::pot valclass tactic::DEPOSIT}
     returnOnError 
     
-    set tactic [tactic get $parms(tactic_id)]
+    set tactic [pot get $parms(tactic_id)]
 
     prepare mode       -toupper  -selector
     prepare amount     -toupper  -type money

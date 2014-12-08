@@ -94,6 +94,7 @@ namespace eval ::athena_test::tests:: {
         id         *
         klist      {ABC CBS}
         parent     *
+        pot        ::pot
         state      normal
     }
 
@@ -115,6 +116,7 @@ namespace eval ::athena_test::tests:: {
         id         *
         klist      {CNN FOX}
         parent     *
+        pot        ::pot
         state      invalid
     }
 

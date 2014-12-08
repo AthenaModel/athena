@@ -201,7 +201,7 @@ namespace eval ::athena_test::tests:: {
         ted pdict [$B1 getdict]
     } -cleanup {
         cleanup
-    } -match glob -result {
+    } -match dictglob -result {
         cmode      ANY
         execstatus NONE
         state      normal
@@ -214,6 +214,7 @@ namespace eval ::athena_test::tests:: {
         onlock     1
         t2         10
         parent     *
+        pot        ::pot
         intent     {New intent}
         tactics    {}
         exectime   {}
@@ -347,7 +348,7 @@ namespace eval ::athena_test::tests:: {
         $B1 tactics
     } -cleanup {
         cleanup
-    } -match glob -result {::bean::SIGEVENT*}
+    } -match glob -result {::pot::SIGEVENT*}
 
     test BLOCK:TACTIC:ADD-2.2 {notifier event} -setup {
         setup
@@ -410,7 +411,7 @@ namespace eval ::athena_test::tests:: {
         $B1 tactics
     } -cleanup {
         cleanup
-    } -match glob -result {::bean::DEPLOY*}
+    } -match glob -result {::pot::DEPLOY*}
 
     test BLOCK:TACTIC:DELETE-2.2 {two deleted} -setup {
         btd_setup
@@ -440,7 +441,7 @@ namespace eval ::athena_test::tests:: {
         $B1 tactics
     } -cleanup {
         cleanup
-    } -match glob -result {::bean::SIGEVENT* ::bean::DEPLOY*}
+    } -match glob -result {::pot::SIGEVENT* ::pot::DEPLOY*}
  
     test BLOCK:TACTIC:DELETE-2.5 {undo notifier event} -setup {
         btd_setup
@@ -574,7 +575,7 @@ namespace eval ::athena_test::tests:: {
         $B1 conditions
     } -cleanup {
         cleanup
-    } -match glob -result {::bean::EXPR*}
+    } -match glob -result {::pot::EXPR*}
 
     test BLOCK:CONDITION:ADD-2.2 {notifier event} -setup {
         setup
@@ -637,7 +638,7 @@ namespace eval ::athena_test::tests:: {
         $B1 conditions
     } -cleanup {
         cleanup
-    } -match glob -result {::bean::COMPARE*}
+    } -match glob -result {::pot::COMPARE*}
 
     test BLOCK:CONDITION:DELETE-2.2 {two deleted} -setup {
         bcd_setup
@@ -670,7 +671,7 @@ namespace eval ::athena_test::tests:: {
         $B1 conditions
     } -cleanup {
         cleanup
-    } -match glob -result {::bean::EXPR* ::bean::COMPARE*}
+    } -match glob -result {::pot::EXPR* ::pot::COMPARE*}
 
     test BLOCK:CONDITION:DELETE-2.5 {undo notifier event} -setup {
         bcd_setup

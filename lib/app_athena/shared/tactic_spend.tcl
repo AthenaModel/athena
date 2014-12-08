@@ -270,7 +270,7 @@ order define TACTIC:SPEND {
     }
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -type tactic::SPEND
+    prepare tactic_id  -required -with {::pot valclass tactic::SPEND}
     prepare mode       -toupper  -selector
     prepare amount     -toupper  -type money
     prepare percent    -toupper  -type rpercent
@@ -283,7 +283,7 @@ order define TACTIC:SPEND {
     returnOnError
 
     # NEXT, get the tactic
-    set tactic [tactic get $parms(tactic_id)]
+    set tactic [pot get $parms(tactic_id)]
 
     # NEXT, check cross-constraints
     fillparms parms [$tactic view]

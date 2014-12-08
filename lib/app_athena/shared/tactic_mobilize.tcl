@@ -231,7 +231,7 @@ order define TACTIC:MOBILIZE {
     }
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -type tactic::MOBILIZE
+    prepare tactic_id  -required -with {::pot valclass tactic::MOBILIZE}
     prepare g          -toupper  -type  ident
     prepare mode       -toupper  -selector
     prepare personnel  -num      -type  iquantity
@@ -240,7 +240,7 @@ order define TACTIC:MOBILIZE {
     returnOnError
 
     # NEXT, get the tactic and do cross checks.
-    set tactic [tactic get $parms(tactic_id)]
+    set tactic [pot get $parms(tactic_id)]
 
     fillparms parms [$tactic getdict]
 

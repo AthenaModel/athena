@@ -111,14 +111,14 @@ order define SIMEVENT:TRAFFIC {
     }
 } {
     # FIRST, prepare the parameters
-    prepare event_id  -required -type ::wintel::simevent::TRAFFIC
+    prepare event_id  -required -with {::pot valclass ::wintel::simevent::TRAFFIC}
     prepare duration  -num      -type ipositive
     prepare coverage  -num      -type rposfrac
  
     returnOnError -final
 
     # NEXT, update the event.
-    set e [::wintel::simevent get $parms(event_id)]
+    set e [::pot get $parms(event_id)]
     $e update_ {duration coverage} [array get parms]
 
     return

@@ -109,11 +109,11 @@ tactic define GRANT "Grant Access to CAP" {actor} -onlock {
     # Returns a namedict of CAPs owned by the tactic's agent.
     
     typemethod capsOwnedBy {tactic_id} {
-        if {![tactic exists $tactic_id]} {
+        if {![pot has $tactic_id]} {
             return [list]
         }
 
-        set tactic [tactic get $tactic_id]
+        set tactic [pot get $tactic_id]
         set owner  [$tactic agent]
 
         return [rdb eval {
@@ -153,7 +153,7 @@ order define TACTIC:GRANT {
     }
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -type tactic::GRANT
+    prepare tactic_id  -required -with {::pot valclass tactic::GRANT}
     prepare klist      -toupper
     prepare alist
  
@@ -164,7 +164,7 @@ order define TACTIC:GRANT {
 
     # NEXT, update the tactic, saving the undo script, and clearing
     # historical state data.
-    set tactic [tactic get $parms(tactic_id)]
+    set tactic [pot get $parms(tactic_id)]
     set undo [$tactic update_ {klist alist} [array get parms]]
 
     # NEXT, save the undo script

@@ -125,11 +125,11 @@ tactic define SUPPORT "Support Actor" {actor} -onlock {
     # owning agent (because a is represented by SELF)
 
     typemethod allButMe {tactic_id} {
-        if {![tactic exists $tactic_id]} {
+        if {![pot has $tactic_id]} {
             return [list]
         }
 
-        set tactic [tactic get $tactic_id]
+        set tactic [pot get $tactic_id]
 
         set list [list SELF NONE {*}[actor names]]
 
@@ -163,7 +163,7 @@ order define TACTIC:SUPPORT {
     }
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -type tactic::SUPPORT
+    prepare tactic_id  -required -with {::pot valclass tactic::SUPPORT}
     prepare a          -toupper
     prepare nlist
  
@@ -174,7 +174,7 @@ order define TACTIC:SUPPORT {
 
     # NEXT, update the tactic, saving the undo script, and clearing
     # historical state data.
-    set tactic [tactic get $parms(tactic_id)]
+    set tactic [pot get $parms(tactic_id)]
     set undo [$tactic update_ {a nlist} [array get parms]]
 
     # NEXT, save the undo script

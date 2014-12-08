@@ -134,6 +134,7 @@ namespace eval ::athena_test::tests:: {
         los        0.75
         nlist      {_type NBHOODS _rule BY_VALUE nlist {NB1 NB2}}
         parent     *
+        pot        ::pot
         s          ENERGY
         state      normal
     }

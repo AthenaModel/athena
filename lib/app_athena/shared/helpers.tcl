@@ -12,6 +12,18 @@
 #
 #-----------------------------------------------------------------------
 
+# isa cls obj
+#
+# cls   - An oo:: class
+# obj   - An oo:: object
+#
+# Returns 1 if the object is an instance of the class or one of its
+# subclasses, and 0 otherwise.
+
+proc isa {cls obj} {
+    return [info object isa typeof $obj $cls]
+}
+
 # beanload idict id ?view?
 #
 # idict    - A dynaform(n) field's item metadata dictionary
@@ -25,7 +37,7 @@
 # the default view, as that is what will be copied.
 
 proc beanload {idict id {view ""}} {
-    return [bean view $id $view]
+    return [pot view $id $view]
 }
 
 # fillparms parmsVar parmdict

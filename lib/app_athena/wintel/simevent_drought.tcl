@@ -118,14 +118,14 @@ order define SIMEVENT:DROUGHT {
     }
 } {
     # FIRST, prepare the parameters
-    prepare event_id  -required -type ::wintel::simevent::DROUGHT
+    prepare event_id  -required -with {::pot valclass ::wintel::simevent::DROUGHT}
     prepare duration  -num      -type ipositive
     prepare coverage  -num      -type rposfrac
  
     returnOnError -final
 
     # NEXT, update the event.
-    set e [::wintel::simevent get $parms(event_id)]
+    set e [::pot get $parms(event_id)]
     $e update_ {duration coverage} [array get parms]
 
     return

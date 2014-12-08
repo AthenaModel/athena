@@ -249,10 +249,10 @@ order define TACTIC:ATTRIT {
 
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -type tactic::ATTRIT
+    prepare tactic_id  -required -with {::pot valclass tactic::ATTRIT}
     returnOnError
 
-    set tactic [tactic get $parms(tactic_id)]
+    set tactic [pot get $parms(tactic_id)]
 
     # All validation takes place on sanity check
     prepare mode       -toupper -selector

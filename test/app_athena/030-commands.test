@@ -70,7 +70,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         set id [ted sendex block add JOE]
-        [block get $id] get intent
+        [pot get $id] get intent
     } -cleanup {
         cleanup
     } -result {}
@@ -79,7 +79,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         set id [ted sendex block add JOE -intent "New Block"]
-        [block get $id] get intent
+        [pot get $id] get intent
     } -cleanup {
         cleanup
     } -result {New Block}
@@ -88,7 +88,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         set id [ted sendex block add JOE -state disabled]
-        [block get $id] get state
+        [pot get $id] get state
     } -cleanup {
         cleanup
     } -result {disabled}
@@ -226,7 +226,7 @@ namespace eval ::athena_test::tests:: {
         set B1 [ted addblock JOE]
     } -body {
         set id [ted sendex condition add [$B1 id] EXPR]
-        [condition get $id] get metflag
+        [pot get $id] get metflag
     } -cleanup {
         cleanup
     } -result {}
@@ -236,7 +236,7 @@ namespace eval ::athena_test::tests:: {
         set B1 [ted addblock JOE]
     } -body {
         set id [ted sendex condition add [$B1 id] EXPR -expression "1 + 1 == 2"]
-        [condition get $id] get expression
+        [pot get $id] get expression
     } -cleanup {
         cleanup
     } -result {1 + 1 == 2}
@@ -246,7 +246,7 @@ namespace eval ::athena_test::tests:: {
         set B1 [ted addblock JOE]
     } -body {
         set id [ted sendex condition add [$B1 id] EXPR -state disabled]
-        [condition get $id] get state
+        [pot get $id] get state
     } -cleanup {
         cleanup
     } -result {disabled}
@@ -467,7 +467,7 @@ namespace eval ::athena_test::tests:: {
         set B1 [ted addblock JOE]
     } -body {
         set id [ted sendex tactic add [$B1 id] SIGEVENT]
-        [tactic get $id] get msg
+        [pot get $id] get msg
     } -cleanup {
         cleanup
     } -result {}
@@ -477,7 +477,7 @@ namespace eval ::athena_test::tests:: {
         set B1 [ted addblock JOE]
     } -body {
         set id [ted sendex tactic add [$B1 id] SIGEVENT -msg "1 + 1 == 2"]
-        [tactic get $id] get msg
+        [pot get $id] get msg
     } -cleanup {
         cleanup
     } -result {1 + 1 == 2}
@@ -487,7 +487,7 @@ namespace eval ::athena_test::tests:: {
         set B1 [ted addblock JOE]
     } -body {
         set id [ted sendex tactic add [$B1 id] SIGEVENT -state disabled]
-        [tactic get $id] get state
+        [pot get $id] get state
     } -cleanup {
         cleanup
     } -result {disabled}

@@ -14,7 +14,9 @@
 #-----------------------------------------------------------------------
 
 # FIRST, create the class
-beanclass create block 
+oo::class create block {
+    superclass ::projectlib::bean
+}
 
 # NEXT, define class methods
 oo::objdefine block {
@@ -144,7 +146,7 @@ oo::define block {
     # Returns the strategy's agent
 
     method agent {} {
-        return [[bean get $parent] agent]
+        return [[[my pot] get $parent] agent]
     }
 
     # strategy
@@ -152,7 +154,7 @@ oo::define block {
     # Return the block's owning strategy
 
     method strategy {} {
-        return [bean get $parent]
+        return [[my pot] get $parent]
     }
 
     # state
@@ -329,6 +331,7 @@ oo::define block {
                 exectime
                 id
                 parent
+                pot
                 pretty_exectime
                 pretty_once 
                 pretty_onlock
@@ -996,7 +999,7 @@ order define BLOCK:UPDATE {
     }
 } {
     # FIRST, prepare and validate the parameters
-    prepare block_id -required -type ::block
+    prepare block_id -required -with {::pot valclass ::block}
     prepare intent
     prepare tmode    -toupper  -selector
     prepare t1       -toupper  -type {simclock timespec}
@@ -1009,7 +1012,7 @@ order define BLOCK:UPDATE {
     returnOnError
 
     # NEXT, get the block.
-    set block [block get $parms(block_id)]
+    set block [pot get $parms(block_id)]
 
 
     # NEXT, do cross-checks
@@ -1059,11 +1062,11 @@ order define BLOCK:STATE {
     }
 } {
     # FIRST, prepare and validate the parameters
-    prepare block_id -required          -type ::block
+    prepare block_id -required          -with {::pot valclass ::block}
     prepare state    -required -tolower -type ebeanstate
     returnOnError -final
 
-    set block [block get $parms(block_id)]
+    set block [pot get $parms(block_id)]
 
     # NEXT, update the block
     setundo [$block update_ {state} [array get parms]]
@@ -1090,19 +1093,19 @@ order define BLOCK:TACTIC:ADD {
     }
 } {
     # FIRST, prepare and validate the parameters
-    prepare block_id -required          -type  ::block
+    prepare block_id -required          -with  {::pot valclass ::block}
     prepare typename -required -toupper -oneof [tactic typenames]
 
     returnOnError -final
 
     # NEXT, add the tactic
-    set block [block get $parms(block_id)]
+    set block [pot get $parms(block_id)]
 
     setundo [$block addtactic_ $parms(typename)]
 
     set tactic [$block tactics end]
 
-    setredo [list bean setnextid [$tactic id]]
+    setredo [list pot setnextid [$tactic id]]
 
     return [$tactic id]
 }
@@ -1123,13 +1126,13 @@ order define BLOCK:TACTIC:DELETE {
     }
 } {
     # FIRST, prepare and validate the parameters
-    prepare ids   -required -listof tactic
+    prepare ids   -required -listwith {::pot valclass ::tactic}
     returnOnError -final
 
     # NEXT, delete the tactics
     set undo [list]
     foreach tid $parms(ids) {
-        set tactic [tactic get $tid]
+        set tactic [pot get $tid]
         set block [$tactic block]
         lappend undo [$block deletetactic_ $tid]
     }
@@ -1157,13 +1160,13 @@ order define BLOCK:TACTIC:MOVE {
     }
 } {
     # FIRST, prepare and validate the parameters
-    prepare tactic_id -required -type tactic
+    prepare tactic_id -required -with {::pot valclass ::tactic}
     prepare where     -required -type emoveitem
 
     returnOnError -final
 
     # NEXT, move the block
-    set tactic [tactic get $parms(tactic_id)]
+    set tactic [pot get $parms(tactic_id)]
     set block [$tactic block]
 
     setundo [$block movetactic_ $parms(tactic_id) $parms(where)]
@@ -1191,19 +1194,19 @@ order define BLOCK:CONDITION:ADD {
     }
 } {
     # FIRST, prepare and validate the parameters
-    prepare block_id -required          -type block
+    prepare block_id -required          -with {::pot valclass ::block}
     prepare typename -required -toupper -oneof [condition typenames]
 
     returnOnError -final
 
     # NEXT, add the condition
-    set block [block get $parms(block_id)]
+    set block [pot get $parms(block_id)]
 
     setundo [$block addcondition_ $parms(typename)]
 
     set cond [$block conditions end]
 
-    setredo [list bean setnextid [$cond id]]
+    setredo [list pot setnextid [$cond id]]
 
     return [$cond id]
 }
@@ -1223,13 +1226,13 @@ order define BLOCK:CONDITION:DELETE {
         text ids
     }
 } {
-    prepare ids   -required -listof condition
+    prepare ids   -required -listwith {::pot valclass ::condition}
     returnOnError -final
 
     # NEXT, delete the conditions
     set undo [list]
     foreach tid $parms(ids) {
-        set condition [condition get $tid]
+        set condition [pot get $tid]
         set block [$condition block]
         lappend undo [$block deletecondition_ $tid]
     }

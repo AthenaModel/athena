@@ -224,6 +224,7 @@ namespace eval ::athena_test::tests:: {
         percent    15
         personnel  1000
         pmode      SOME
+        pot        ::pot
         redeploy   1
         state      invalid
     }
@@ -263,6 +264,7 @@ namespace eval ::athena_test::tests:: {
         percent    15
         personnel  1000
         pmode      SOME
+        pot        ::pot
         redeploy   1
         state      normal
     }

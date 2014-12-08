@@ -213,10 +213,10 @@ order define TACTIC:FUND {
         }
     }
 } {
-    prepare tactic_id -required -type tactic::FUND
+    prepare tactic_id -required -with {::pot valclass tactic::FUND}
     returnOnError
 
-    set tactic [tactic get $parms(tactic_id)]
+    set tactic [pot get $parms(tactic_id)]
 
     # FIRST, prepare and validate the parameters
     prepare a        -toupper 

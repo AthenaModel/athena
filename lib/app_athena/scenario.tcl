@@ -135,7 +135,6 @@ snit::type scenario {
             -clock      ::simclock \
             -explaincmd [mytypemethod ExplainCmd]
         set rdb ::rdb
-        bean configure -rdb ::rdb
 
         rdb register ::service
 
@@ -225,7 +224,7 @@ snit::type scenario {
         InitializeRuntimeData
 
         # NEXT, initialize the beans
-        bean reset
+        pot reset
 
         # NEXT, there is no dbfile.
         set info(dbfile) ""

@@ -73,6 +73,7 @@ namespace eval ::athena_test::tests:: {
         id         *
         klist      {}
         parent     *
+        pot        ::pot
         state      invalid
     }
 

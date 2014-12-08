@@ -84,9 +84,7 @@ snit::type ::wintel::wizard {
         }
 
         # Destroy wizard objects
-        bgcatch {
-            wdb destroy
-        }
+        bgcatch { wdb destroy }
 
         # Reset the sim state, if necessary.
         sim wizard off
