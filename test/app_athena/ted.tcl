@@ -36,8 +36,6 @@ snit::type ted {
     typevariable cleanupTables {
         activity_nga
         actors
-        attrit_nf
-        attrit_nfg
         beans
         bookmarks
         caps
@@ -64,7 +62,6 @@ snit::type ted {
         income_a
         ioms
         mads
-        magic_attrit
         nbhoods
         nbrel_mn
         orggroups
@@ -752,6 +749,7 @@ snit::type ted {
         simclock        reset
         aram            clear
         pot             reset
+        aam             reset
         strategy        init
         driver::abevent reset
     }
