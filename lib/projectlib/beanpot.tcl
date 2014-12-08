@@ -209,15 +209,15 @@ snit::type ::projectlib::beanpot {
         error "$self contains no bean with ID $id"
     }
 
-    # exists id
+    # has id
     #
     # Returns 1 if there is a bean with the given ID in the pot.
 
-    method exists {id} {
+    method has {id} {
         return [dict exist $beans $id]
     }
 
-    # isa cls id
+    # hasa cls id
     #
     # cls    - A bean class
     # id     - Possibly, a bean ID
@@ -225,7 +225,7 @@ snit::type ::projectlib::beanpot {
     # Returns 1 if there is a bean with the given ID, and if that bean
     # is a member of the given class.
 
-    method isa {cls id} {
+    method hasa {cls id} {
         if {![dict exists $beans $id]} {
             return 0
         }
@@ -243,7 +243,7 @@ snit::type ::projectlib::beanpot {
     # a bean belonging to this pot.
 
     method validate {id} {
-        if {![$self exists $id]} {
+        if {![$self has $id]} {
             throw INVALID "Invalid object ID: \"$id\""
         }
 
@@ -261,7 +261,7 @@ snit::type ::projectlib::beanpot {
     method valclass {cls id} {
         set short [namespace tail $cls]
 
-        if {![$self exists $id]} {
+        if {![$self has $id]} {
             throw INVALID "Invalid $short ID: \"$id\""
         }
 
@@ -339,7 +339,7 @@ snit::type ::projectlib::beanpot {
     # dictionary if the bean doesn't exist.
 
     method view {id {view ""}} {
-        if {![$self exists $id]} {
+        if {![$self has $id]} {
             return [dict create]
         }
 
@@ -377,7 +377,7 @@ snit::type ::projectlib::beanpot {
     # called).
 
     method delete {id} {
-        if {![$self exists $id]} {
+        if {![$self has $id]} {
             error "no such bean: \"$id\""
         }
 

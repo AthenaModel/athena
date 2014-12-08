@@ -187,7 +187,7 @@ oo::define ::projectlib::bean {
 
             foreach bean_id [my get $slot] {
                 # Only destroy it if it exists
-                if {[$pot exists $bean_id]} {
+                if {[$pot has $bean_id]} {
                     [$pot get $bean_id] destroy
                 }
             }

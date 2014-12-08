@@ -125,7 +125,7 @@ tactic define SUPPORT "Support Actor" {actor} -onlock {
     # owning agent (because a is represented by SELF)
 
     typemethod allButMe {tactic_id} {
-        if {![pot exists $tactic_id]} {
+        if {![pot has $tactic_id]} {
             return [list]
         }
 

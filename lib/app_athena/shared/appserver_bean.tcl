@@ -162,7 +162,7 @@ appserver module BEAN {
         # FIRST, is there a bean with this id?
         set id [string toupper $(1)]
 
-        if {![pot exists $id]} {
+        if {![pot has $id]} {
             return -code error -errorcode NOTFOUND \
                 "Unknown entity: [dict get $udict url]."
         }

@@ -261,7 +261,7 @@ oo::objdefine tactic {
     # dynaforms where the user must choose an owned group.
 
     method groupsOwnedByAgent {id} {
-        if {[pot exists $id]} {
+        if {[pot has $id]} {
             set tactic [pot get $id]
             return [group ownedby [$tactic agent]]
         } else {
@@ -278,7 +278,7 @@ oo::objdefine tactic {
     # dynaforms where the user must choose an owned group.
 
     method frcgroupsOwnedByAgent {id} {
-        if {[pot exists $id]} {
+        if {[pot has $id]} {
             set tactic [pot get $id]
             return [frcgroup ownedby [$tactic agent]]
         } else {
@@ -294,7 +294,7 @@ oo::objdefine tactic {
     # given tactic.
 
     method allAgentsBut {id} {
-        if {[pot exists $id]} {
+        if {[pot has $id]} {
             set tactic [pot get $id]
             set alist [actor names]
             return [ldelete alist [$tactic agent]]

@@ -109,7 +109,7 @@ tactic define GRANT "Grant Access to CAP" {actor} -onlock {
     # Returns a namedict of CAPs owned by the tactic's agent.
     
     typemethod capsOwnedBy {tactic_id} {
-        if {![pot exists $tactic_id]} {
+        if {![pot has $tactic_id]} {
             return [list]
         }
 
