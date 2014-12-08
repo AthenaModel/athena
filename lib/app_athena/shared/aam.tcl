@@ -11,6 +11,18 @@
 #    This module is responsible for computing and applying attritions
 #    to units and neighborhood groups.
 #
+#    As attrition tactics execute, a list of attrition dictionaries
+#    is accumulated by this module.  When the assess method is called
+#    the attrition data is extracted from this list and applied.  For 
+#    civilian casualties, satisfaction and cooperation dictionaries 
+#    are built up and then passed into the CIVCAS rule set where the 
+#    effects are applied.
+#
+#    The satisfaction and cooperation dictionaries are entirely 
+#    transient. They only exist for the purpose of storing the data 
+#    needed by the CIVCAS rule set.  The dictionaries are created, 
+#    used and deleted within the assess typemethod.
+#
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
@@ -19,6 +31,20 @@
 snit::type aam {
     # Make it a singleton
     pragma -hasinstances no
+
+    typevariable alist {} ;# list of attrition dictionaries
+
+    typevariable sdict    ;# dict used to assess SAT effects
+    typevariable cdict    ;# dict used to assess COOP effects
+
+    #-------------------------------------------------------------------
+    # reset
+
+    typemethod reset {} {
+        set alist ""
+        set sdict ""
+        set cdict ""
+    }
 
     #-------------------------------------------------------------------
     # Attrition Assessment
@@ -31,34 +57,23 @@ snit::type aam {
     typemethod assess {} {
         log normal aam "assess"
 
-        # FIRST, Apply all saved magic attrition from the
-        # magic_attrit table.  This updates units and deployments,
-        # and accumulates all civilian attrition as input to the
-        # CIVCAS rule set.
+        # FIRST, create SAT and COOP dicts to hold transient data
+        set sdict [dict create]
+        set cdict [dict create]
+
+        # NEXT, Apply all saved magic attrition. This updates 
+        # units and deployments, and accumulates all civilian 
+        # attrition as input to the CIVCAS rule set.
         $type ApplyAttrition
 
         # NEXT, assess the attitude implications of all attrition for
         # this tick.
-        driver::CIVCAS assess
+        driver::CIVCAS assess $sdict $cdict
 
         # NEXT, clear the saved data for this tick; we're done.
-        $type ClearPendingdAta
-    }
-
-
-    # ClearPendingdAta
-    #
-    # Clears the tables used to store attrition for use in
-    # assessing attitudinal effects.
-
-    typemethod ClearPendingdAta {} {
-        # FIRST, clear the accumulated attrition statistics, in preparation
-        # for the next tock.
-        rdb eval {
-            DELETE FROM magic_attrit;
-            DELETE FROM attrit_nf;
-            DELETE FROM attrit_nfg;
-        }
+        set alist ""
+        set sdict ""
+        set cdict ""
     }
 
     #-------------------------------------------------------------------
@@ -82,18 +97,7 @@ snit::type aam {
     # g1 and g2 are used only for attrition to a civilian group
 
     typemethod attrit {parmdict} {
-        dict with parmdict {
-            # FIRST add a record to the table
-            rdb eval {
-                INSERT INTO magic_attrit(mode,casualties,n,f,g1,g2)
-                VALUES($mode,
-                       $casualties,
-                       $n,
-                       nullif($f,  ''),
-                       nullif($g1, ''),
-                       nullif($g2, ''));
-            }
-        }
+        lappend alist $parmdict
     }
 
     #-------------------------------------------------------------------
@@ -106,15 +110,8 @@ snit::type aam {
 
     typemethod ApplyAttrition {} {
         # FIRST, apply the magic attrition
-        rdb eval {
-            SELECT mode,
-                   n,
-                   f,
-                   casualties,
-                   g1,
-                   g2
-            FROM magic_attrit
-        } {
+        foreach adict $alist {
+            dict with adict {}
             switch -exact -- $mode {
                 NBHOOD {
                     $type AttritNbhood $n $casualties $g1 $g2
@@ -127,6 +124,7 @@ snit::type aam {
                 default {error "Unrecognized attrition mode: \"$mode\""}
             }
         }
+
     }
 
     # AttritGroup n f casualties g1 g2
@@ -281,29 +279,29 @@ snit::type aam {
     # routine; the others all flow down to this.
  
     typemethod AttritUnit {parmdict} {
-        dict with parmdict {
-            # FIRST, log the attrition
-            let personnel {$personnel - $casualties}
+        dict with parmdict {}
 
-            log normal aam \
+        # FIRST, log the attrition
+        let personnel {$personnel - $casualties}
+
+        log normal aam \
           "Unit $u takes $casualties casualties, leaving $personnel personnel"
             
-            # NEXT, update the unit.
-            unit mutate personnel $u $personnel
+        # NEXT, update the unit.
+        unit mutate personnel $u $personnel
 
-            # NEXT, if this is a CIV unit, attrit the unit's
-            # group.
-            if {$gtype eq "CIV"} {
-                # FIRST, attrit the group 
-                demog attrit $g $casualties
+        # NEXT, if this is a CIV unit, attrit the unit's
+        # group.
+        if {$gtype eq "CIV"} {
+            # FIRST, attrit the group 
+            demog attrit $g $casualties
 
-                # NEXT, save the attrition for attitude assessment
-                $type SaveCivAttrition $n $g $casualties $g1 $g2
-            } else {
-                # FIRST, It's a force or org unit.  Attrit its pool in
-                # its neighborhood.
-                personnel attrit $n $g $casualties
-            }
+            # NEXT, save the attrition for attitude assessment
+            $type SaveCivAttrition $parmdict
+        } else {
+            # FIRST, It's a force or org unit.  Attrit its pool in
+            # its neighborhood.
+            personnel attrit $n $g $casualties
         }
 
         return
@@ -371,36 +369,46 @@ snit::type aam {
         }
     }
     
-    # SaveCivAttrition n f casualties g1 g2
+    # SaveCivAttrition parmdict
+    #
+    # parmdict contains the following keys/data:
     #
     # n           The neighborhood in which the attrition took place.
-    # f           The CIV group receiving the attrition
+    # g           The CIV group receiving the attrition
     # casualties  The number of casualties
     # g1          A responsible force group, or ""
     # g2          A responsible force group, g2 != g1, or ""
     #
     # Accumulates the attrition for later attitude assessment.
 
-    typemethod SaveCivAttrition {n f casualties g1 g2} {
-        # FIRST, save nf casualties for satisfaction.
-        rdb eval {
-            INSERT INTO attrit_nf(n,f,casualties)
-            VALUES($n,$f,$casualties);
+    typemethod SaveCivAttrition {parmdict} {
+        dict with parmdict {}
+
+        # FIRST, accumulate by CIV group for SAT effects
+        if {![dict exists $sdict $g]} {
+            dict set sdict $g 0
         }
 
-        # NEXT, save nfg casualties for cooperation
+        let sum {[dict get $sdict $g] + $casualties}
+        dict set sdict $g $sum
+
+        # NEXT, accumulate by CIV and FRC group for COOP effects
         if {$g1 ne ""} {
-            rdb eval {
-                INSERT INTO attrit_nfg(n,f,casualties,g)
-                VALUES($n,$f,$casualties,$g1);
+            if {![dict exists cdict "$g $g1"]} {
+                dict set cdict "$g $g1" 0
             }
+
+            let sum {[dict get $cdict "$g $g1"] + $casualties}
+            dict set cdict "$g $g1" $sum
         }
 
         if {$g2 ne ""} {
-            rdb eval {
-                INSERT INTO attrit_nfg(n,f,casualties,g)
-                VALUES($n,$f,$casualties,$g2);
+            if {![dict exists cdict "$g $g2"]} {
+                dict set cdict "$g $g2" 0
             }
+
+            let sum {[dict get $cdict "$g $g2"] + $casualties}
+            dict set cdict "$g $g2" $sum
         }
 
         return 
