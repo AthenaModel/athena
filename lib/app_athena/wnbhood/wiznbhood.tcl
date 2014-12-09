@@ -130,7 +130,7 @@ snit::widget ::wnbhood::wiznbhood {
 
     method TestData {} {
         wizard retrievePolygons \
-            [appdir join data polygons SE_Asia.npf]
+            [appdir join data polygons CentralAsia.npf]
     }
 
     # BrowseForData
