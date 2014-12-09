@@ -1050,9 +1050,9 @@ snit::type view {
             set gtype [group gtype $g]
 
             switch -exact -- $gtype {
-                CIV     { ptype civa     validate $a }
-                FRC     { ptype frca+cov validate $a }
-                ORG     { ptype orga     validate $a }
+                CIV     { ptype civa validate $a }
+                FRC     { ptype frca validate $a }
+                ORG     { ptype orga validate $a }
                 default { error "Unexpected gtype: \"$gtype\""   }
             }
         }

@@ -101,24 +101,7 @@ snit::type coverage_model {
     # Computes the activity personnel for FRC and ORG groups.
 
     typemethod ComputeActivityPersonnel {} {
-        # NEXT, set the PRESENCE of each FRC group.
-        rdb eval {
-            SELECT n, 
-                   g, 
-                   total(personnel) AS nominal
-            FROM units
-            WHERE gtype='FRC' AND personnel > 0
-            GROUP BY n,g
-        } {
-            # All troops are present
-            rdb eval {
-                UPDATE activity_nga
-                SET nominal   = $nominal
-                WHERE n=$n AND g=$g AND a='PRESENCE'
-            }
-        }
-
-        # NEXT, Run through all of the deployed units and compute
+        # FIRST, Run through all of the deployed units and compute
         # nominal and active personnel.
         rdb eval {
             SELECT n, 

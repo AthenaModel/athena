@@ -281,10 +281,6 @@ snit::type ::projectlib::typewrapper {
     MOOD-1-1      "Mood is much worse"
     MOOD-1-2      "Mood is much better"
 
-    NOWATER-1-1   "Water becomes unavailable"
-    NOWATER-1-2   "Water continues to be unavailable"
-    NOWATER-2-1   "Water supply is restored by locals"
-
     ORDNANCE-1-1  "Unexploded ordnance is found"
     ORDNANCE-1-2  "Unexploded ordnance remains"
     ORDNANCE-2-1  "Unexploded ordnance is removed by locals"
@@ -294,12 +290,6 @@ snit::type ::projectlib::typewrapper {
     PIPELINE-1-1  "Oil pipeline catches fire"
     PIPELINE-1-2  "Oil pipeline is still burning"
     PIPELINE-2-1  "Oil pipeline fire is extinguished by locals"
-
-    POWEROUT-1-1  "Power goes out"
-    POWEROUT-1-2  "Power remains out"
-    POWEROUT-2-1  "Power is restored by locals"
-
-    PRESENCE-1-1  "Force is present"
 
     PSYOP-1-1     "Force is doing PSYOP"
 
@@ -319,9 +309,6 @@ snit::type ::projectlib::typewrapper {
     SEWAGE-1-1    "Sewage begins to pool in the streets"
     SEWAGE-1-2    "Sewage has pooled in the streets"
     SEWAGE-2-1    "Sewage is cleaned up by locals"
-
-    TRAFFIC-1-1   "Traffic has begun to congest the streets"
-    TRAFFIC-1-2   "Traffic congestion continues"
 
     TRANSPORT-1-1 "Transportation services are less than required"
     TRANSPORT-1-2 "Transportation services are less than expected"
@@ -379,20 +366,16 @@ snit::type ::projectlib::typewrapper {
     MEDICAL   "Healthcare"
     MINEFIELD "Minefield"
     MOOD      "Civilian Mood Changes"
-    NOWATER   "Interrupted Water Supply"
     ORDNANCE  "Unexploded Ordnance"
     ORGCAS    "Organization Casualties"
     PATROL    "Patrol"
     PIPELINE  "Oil Pipeline Fire"
-    POWEROUT  "Power Outage"
-    PRESENCE  "Mere Presence of Force Units"
     PSYOP     "PSYOP"
     REFINERY  "Oil Refinery Fire"
     RELIEF    "Humanitarian Relief"
     RELSITE   "Damage to Religious Site/Artifact"
     RIOT      "Riot"
     SEWAGE    "Sewage Spill"
-    TRAFFIC   "Traffic Congestion"
     TRANSPORT "Transportation Services"
     UNEMP     "Unemployment"
     VIOLENCE  "Random Violence"
@@ -437,8 +420,6 @@ snit::type ::projectlib::typewrapper {
     ORGCAS    "Organization Casualties"
     PATROL    "Patrol"
     PIPELINE  "Oil Pipeline Fire"
-    POWEROUT  "Power Outage"
-    PRESENCE  "Mere Presence of Force Units"
     PSYOP     "PSYOP"
     REFINERY  "Oil Refinery Fire"
     RELIEF    "Humanitarian Relief"
@@ -446,7 +427,6 @@ snit::type ::projectlib::typewrapper {
     SEWAGE    "Sewage Spill"
     SICKNESS  "Sickness"
     THIRST    "Thirst"
-    TRAFFIC   "Traffic Congestion"
     TRANSPORT "Transportation Services"
     UNEMP     "Unemployment"
     WATER     "Potable Water"
@@ -757,14 +737,11 @@ snit::type ::projectlib::typewrapper {
     GARBAGE     "Garbage In The Streets"
     INDSPILL    "Industrial Spill"
     MINEFIELD   "Mine Field"
-    NOWATER     "No Water"
     ORDNANCE    "Unexploded Ordnance"
     PIPELINE    "Oil Pipeline Fire"
-    POWEROUT    "Power Outage"
     REFINERY    "Oil Refinery Fire"
     RELSITE     "Damage To Religious Site"
     SEWAGE      "Sewage Spill"
-    TRAFFIC     "Traffic Congestion"
 }
 
 # List of eabsit values

@@ -977,12 +977,11 @@ tab "Physical/Activity" {
     <b>Simulation Mode Only.</b><p>
 
     This tab shows the coverage of the various activities assigned to
-    units in the neighborhoods of the playbox.  All force units
-    contribute to the <b>PRESENCE</b> activity of their group; in addition,
-    group personnel can be assigned activities via the
-    <cref /object/tactic/assign>.  This browser is populated only
-    after Athena leaves <term prep>.  The browser controls are
-    described <seebelow controls>; the data fields are as follows:<p>
+    units in the neighborhoods of the playbox. Group personnel can be 
+    assigned activities via the <cref /object/tactic/assign>.  This 
+    browser is populated only after Athena leaves <term prep>.  The 
+    browser controls are described <seebelow controls>; the data fields
+    are as follows:<p>
 
     <topiclist Column Description>
 
@@ -991,11 +990,10 @@ tab "Physical/Activity" {
     <topic "Group">The ID of the force or organization 
     group.</topic>
     
-    <topic "Activity">An activity assigned to units of the group, or
-    <b>PRESENCE</b> for force groups. If the activity has a 
-    coverage greater than 0.0 it will engender an activity situation,
-    resulting in a variety of attitude effects; see the
-    <i>Athena Rules Document</i> for details.
+    <topic "Activity">An activity assigned to units of the group. If 
+    the activity has a coverage greater than 0.0 it will engender an 
+    activity situation, resulting in a variety of attitude effects; 
+    see the <i>Athena Rules Document</i> for details.
     </topic>
 
     <topic "Coverage">The coverage of the activity, as a number

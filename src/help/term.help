@@ -419,8 +419,7 @@ term driver "driver" {
     one or more <term attitude>s.<p>
 
     Examples of drivers include casualties to 
-    <term civgroup>s, the presence
-    and activities of <term frcgroup> in <term nbhood>s, 
+    <term civgroup>s, the activities of <term frcgroup> in <term nbhood>s, 
     <term absit>s, <term demsit>s, <term iom>s, 
     and <term mad>s.<p>
 

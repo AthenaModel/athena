@@ -71,7 +71,6 @@ snit::type ::projectlib::scenariodb {
             { a LAWENF     longname "Law Enforcement"            }
             { a MEDICAL    longname "Provide Healthcare"         }
             { a PATROL     longname "Patrol"                     }
-            { a PRESENCE   longname "Presence"                   }
             { a PSYOP      longname "PSYOP"                      }
             { a RELIEF     longname "Humanitarian Relief"        }
         }
@@ -93,7 +92,6 @@ snit::type ::projectlib::scenariodb {
             { a LAWENF    gtype FRC assignable 1 }
             { a MEDICAL   gtype FRC assignable 1 }
             { a PATROL    gtype FRC assignable 1 }
-            { a PRESENCE  gtype FRC assignable 0 }
             { a PSYOP     gtype FRC assignable 1 }
             { a RELIEF    gtype FRC assignable 1 }
             

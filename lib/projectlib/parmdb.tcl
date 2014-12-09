@@ -135,14 +135,11 @@ snit::type ::projectlib::parmdb {
         $ps setdefault absit.GARBAGE.duration        6
         $ps setdefault absit.INDSPILL.duration       12
         $ps setdefault absit.MINEFIELD.duration      156
-        $ps setdefault absit.NOWATER.duration        2
         $ps setdefault absit.ORDNANCE.duration       78
         $ps setdefault absit.PIPELINE.duration       1
-        $ps setdefault absit.POWEROUT.duration       8
         $ps setdefault absit.REFINERY.duration       1
         $ps setdefault absit.RELSITE.duration        6
         $ps setdefault absit.SEWAGE.duration         9
-        $ps setdefault absit.TRAFFIC.duration        1
 
         # NEXT, Activity Parameters
 
@@ -176,7 +173,6 @@ snit::type ::projectlib::parmdb {
             LAWENF
             MEDICAL
             PATROL
-            PRESENCE
             PSYOP
             RELIEF
         } {
@@ -184,13 +180,11 @@ snit::type ::projectlib::parmdb {
                 Parameters relating to this force activity.
             }
 
-            if {$a ne "PRESENCE"} {
-                $ps define activity.FRC.$a.cost ::projectlib::money 0 {
-                    The cost, in dollars, to assign one person to do this
-                    activity for one strategy tock, i.e., for one week.
-                    The dollar amount may be defined with a "K", "M", or
-                    "B" suffix to connote thousands, millions, or billions.
-                }
+            $ps define activity.FRC.$a.cost ::projectlib::money 0 {
+                The cost, in dollars, to assign one person to do this
+                activity for one strategy tock, i.e., for one week.
+                The dollar amount may be defined with a "K", "M", or
+                "B" suffix to connote thousands, millions, or billions.
             }
             
             $ps define activity.FRC.$a.minSecurity ::projectlib::qsecurity L {
@@ -257,10 +251,6 @@ snit::type ::projectlib::parmdb {
          }
 
         # FRC Activities
-
-        # Activity: PRESENCE
-        $ps setdefault activity.FRC.PRESENCE.minSecurity  N
-        $ps setdefault activity.FRC.PRESENCE.coverage     {25 1000}
 
         # Activity: CHKPOINT
         $ps setdefault activity.FRC.CHKPOINT.minSecurity  L
@@ -595,7 +585,7 @@ snit::type ::projectlib::parmdb {
         $ps setdefault dam.CONSTRUCT.mitigates    {
             BADFOOD  BADWATER COMMOUT  CULSITE  DISASTER DISEASE
             EPIDEMIC FOODSHRT FUELSHRT GARBAGE  INDSPILL MINEFIELD
-            NOWATER  ORDNANCE PIPELINE POWEROUT REFINERY RELSITE   SEWAGE
+            ORDNANCE PIPELINE REFINERY RELSITE   SEWAGE
         }
 
         # Rule Set: COERCION
@@ -711,8 +701,8 @@ snit::type ::projectlib::parmdb {
         $ps setdefault dam.INDUSTRY.nearFactor    0.75
         $ps setdefault dam.INDUSTRY.farFactor     0.25
         $ps setdefault dam.INDUSTRY.mitigates     {
-            COMMOUT  FOODSHRT FUELSHRT INDSPILL NOWATER PIPELINE
-            POWEROUT REFINERY
+            COMMOUT  FOODSHRT FUELSHRT INDSPILL PIPELINE
+            REFINERY
         }
 
         # Rule Set: INFRA
@@ -720,7 +710,7 @@ snit::type ::projectlib::parmdb {
         $ps setdefault dam.INFRA.nearFactor       0.75
         $ps setdefault dam.INFRA.farFactor        0.25
         $ps setdefault dam.INFRA.mitigates        {
-            BADWATER COMMOUT NOWATER POWEROUT SEWAGE
+            BADWATER COMMOUT SEWAGE
         }
 
         # Rule Set: IOM
@@ -778,11 +768,6 @@ snit::type ::projectlib::parmdb {
             in mood meets or exceeds this threshold.
         }
 
-        # Rule Set: NOWATER
-        $ps setdefault dam.NOWATER.cause          THIRST
-        $ps setdefault dam.NOWATER.nearFactor     0.1
-        $ps setdefault dam.NOWATER.farFactor      0.0
-
         # Rule Set: ORDNANCE
         $ps setdefault dam.ORDNANCE.cause         ORDNANCE
         $ps setdefault dam.ORDNANCE.nearFactor    0.0
@@ -803,17 +788,6 @@ snit::type ::projectlib::parmdb {
         $ps setdefault dam.PIPELINE.nearFactor    0.0
         $ps setdefault dam.PIPELINE.farFactor     0.0
 
-        # Rule Set: POWEROUT
-        $ps setdefault dam.POWEROUT.cause         POWEROUT
-        $ps setdefault dam.POWEROUT.nearFactor    0.1
-        $ps setdefault dam.POWEROUT.farFactor     0.0
-
-        # Rule Set: PRESENCE
-        $ps setdefault dam.PRESENCE.active        0
-        $ps setdefault dam.PRESENCE.cause         PRESENCE
-        $ps setdefault dam.PRESENCE.nearFactor    0.25
-        $ps setdefault dam.PRESENCE.farFactor     0.0
-
         # Rule Set: PSYOP
         $ps setdefault dam.PSYOP.cause            PSYOP
         $ps setdefault dam.PSYOP.nearFactor       0.1
@@ -831,8 +805,7 @@ snit::type ::projectlib::parmdb {
         $ps setdefault dam.RELIEF.mitigates       {
             BADFOOD  BADWATER COMMOUT  CULSITE  DISASTER DISEASE
             EPIDEMIC FOODSHRT FUELSHRT GARBAGE  INDSPILL MINEFIELD
-            NOWATER  ORDNANCE PIPELINE POWEROUT REFINERY RELSITE
-            SEWAGE
+            ORDNANCE PIPELINE REFINERY RELSITE  SEWAGE
         }
 
         # Rule Set: RELSITE
@@ -849,11 +822,6 @@ snit::type ::projectlib::parmdb {
         $ps setdefault dam.SEWAGE.cause           SEWAGE
         $ps setdefault dam.SEWAGE.nearFactor      0.2
         $ps setdefault dam.SEWAGE.farFactor       0.0
-
-        # Rule Set: TRAFFIC
-        $ps setdefault dam.TRAFFIC.cause          TRAFFIC
-        $ps setdefault dam.TRAFFIC.nearFactor     0.0
-        $ps setdefault dam.TRAFFIC.farFactor      0.0
 
         # Rule Set: TRANSPORT
         $ps setdefault dam.TRANSPORT.cause        TRANSPORT

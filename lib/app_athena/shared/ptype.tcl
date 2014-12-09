@@ -284,18 +284,6 @@ snit::type ptype {
         EnumVal "force activity" [$type frca names] $value
     }
 
-    # frca+cov
-    #
-    # All force unit activities with coverage
-
-    typemethod {frca+cov names} {} {
-        linsert [activity frc names] 0 PRESENCE
-    }
-
-    typemethod {frca+cov validate} {value} {
-        EnumVal "force activity" [$type frca+cov names] $value
-    }
-
     # prox-HERE
     #
     # All proximities but HERE

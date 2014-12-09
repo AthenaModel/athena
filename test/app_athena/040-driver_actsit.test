@@ -49,16 +49,15 @@ namespace eval ::athena_test::tests:: {
         return "\n[string trim $text]\n    "
     }
 
-    # setup ?ensit?
+    # setup ?absit?
     #
-    # ensit - An ensit type, or ""
+    # absit - An absit type, or ""
     #
     # Sets up for tests, and deploys some all BLUE troops to NB1.
     
-    proc setup {{ensit ""}} {
+    proc setup {{absit ""}} {
         # FIRST, other rule sets shouldn't muddy the waters.
         parm set dam.CONSUMP.active no
-        parm set dam.PRESENCE.active no
         parm set dam.UNEMP.active no
         parm set dam.ENI.active no
         parm set dam.ENERGY.active no
@@ -77,10 +76,10 @@ namespace eval ::athena_test::tests:: {
         ted deploy NB1 BLUE all
         ted deploy NB1 HAL all
     
-        # NEXT, create an ensit on request.
-        if {$ensit ne ""} {
-            parm set dam.$ensit.active no
-            ted order ABSIT:CREATE n NB1 stype $ensit \
+        # NEXT, create an absit on request.
+        if {$absit ne ""} {
+            parm set dam.$absit.active no
+            ted order ABSIT:CREATE n NB1 stype $absit \
                 coverage 1.0 inception 1 resolver NONE
         }
     }
@@ -212,12 +211,6 @@ Note: The coverage function is 20/1000
     # DISPLACED
     
     # Not tested; this will soon become a demsit.
-    
-    
-    #-------------------------------------------------------------------
-    # PRESENCE
-    
-    # Not tested; we've been asked to disable it for now.
     
     #-------------------------------------------------------------------
     # CHKPOINT
@@ -552,7 +545,7 @@ coop  SUNN BLUE
     
     test EDU-1.3 {Rule 1-1 inputs, mitigation} -setup {
         setup DISEASE
-        # By default, EDU doesn't mitigate any ensits.
+        # By default, EDU doesn't mitigate any absits.
         parm set dam.EDU.mitigates DISEASE
     } -body {
         assign EDU 2000
@@ -615,7 +608,7 @@ sat   SUNN QOL
     
     test EDU-2.3 {Rule 2-1 inputs, mitigation} -setup {
         setup DISEASE
-        # By default, EDU doesn't mitigate any ensits.
+        # By default, EDU doesn't mitigate any absits.
         parm set dam.EDU.mitigates DISEASE
     } -body {
         orgassign EDU 2000
@@ -680,7 +673,7 @@ coop  SUNN BLUE
     
     test EMPLOY-1.3 {Rule 1-1 inputs, mitigation} -setup {
         setup DISEASE
-        # By default, EMPLOY doesn't mitigate any ensits.
+        # By default, EMPLOY doesn't mitigate any absits.
         parm set dam.EMPLOY.mitigates DISEASE
     } -body {
         assign EMPLOY 2000
@@ -744,7 +737,7 @@ sat   SUNN QOL
     
     test EMPLOY-2.3 {Rule 2-1 inputs, mitigation} -setup {
         setup DISEASE
-        # By default, EMPLOY doesn't mitigate any ensits.
+        # By default, EMPLOY doesn't mitigate any absits.
         parm set dam.EMPLOY.mitigates DISEASE
     } -body {
         orgassign EMPLOY 2000
@@ -853,7 +846,7 @@ coop  SUNN BLUE
     # INDUSTRY
     
     test INDUSTRY-1.1 {Rule 1-1 fires} -setup {
-        setup NOWATER
+        setup INDSPILL
     } -body {
         assign INDUSTRY 2000
         ted querylist {SELECT * FROM rule_firings}
@@ -865,7 +858,7 @@ t          0
 driver_id  1000
 ruleset    INDUSTRY
 rule       INDUSTRY-1-1
-fdict      dtype INDUSTRY n NB1 g BLUE gtype FRC personnel 2000 coverage 1.0 flist {SHIA SUNN} mitigates NOWATER note mitigates stops 1
+fdict      dtype INDUSTRY n NB1 g BLUE gtype FRC personnel 2000 coverage 1.0 flist {SHIA SUNN} mitigates INDSPILL note mitigates stops 1
     }
 
     test INDUSTRY-1.2 {Rule 1-1 inputs, no mitigation} -setup {
@@ -892,7 +885,7 @@ coop  SUNN BLUE
     }
     
     test INDUSTRY-1.3 {Rule 1-1 inputs, mitigation} -setup {
-        setup NOWATER
+        setup INDSPILL
     } -body {
         assign INDUSTRY 2000
         
@@ -953,7 +946,7 @@ sat   SUNN QOL
     }
     
     test INDUSTRY-2.3 {Rule 2-1 inputs, mitigation} -setup {
-        setup NOWATER
+        setup INDSPILL
     } -body {
         orgassign INDUSTRY 2000
         
@@ -977,7 +970,7 @@ sat   SUNN QOL mitigates
     # INFRA
     
     test INFRA-1.1 {Rule 1-1 fires} -setup {
-        setup NOWATER
+        setup SEWAGE
     } -body {
         assign INFRA 2000
         ted querylist {SELECT * FROM rule_firings}
@@ -989,7 +982,7 @@ t          0
 driver_id  1000
 ruleset    INFRA
 rule       INFRA-1-1
-fdict      dtype INFRA n NB1 g BLUE gtype FRC personnel 2000 coverage 1.0 flist {SHIA SUNN} mitigates NOWATER note mitigates stops 1
+fdict      dtype INFRA n NB1 g BLUE gtype FRC personnel 2000 coverage 1.0 flist {SHIA SUNN} mitigates SEWAGE note mitigates stops 1
     }
 
     test INFRA-1.2 {Rule 1-1 inputs, no mitigation} -setup {
@@ -1016,7 +1009,7 @@ coop  SUNN BLUE
     }
     
     test INFRA-1.3 {Rule 1-1 inputs, mitigation} -setup {
-        setup NOWATER
+        setup SEWAGE
     } -body {
         assign INFRA 2000
         
@@ -1077,7 +1070,7 @@ sat   SUNN QOL
     }
     
     test INFRA-2.3 {Rule 2-1 inputs, mitigation} -setup {
-        setup NOWATER
+        setup SEWAGE
     } -body {
         orgassign INFRA 2000
         
