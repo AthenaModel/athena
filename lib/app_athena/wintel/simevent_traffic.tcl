@@ -26,16 +26,16 @@
     blockage of the transportation network which causes hardship on 
     civilian groups.  The event will affect all groups in the neighborhood.<p>
 
-    Set the "Duration" parameter to the length of the congestion in weeks;
-    set the "Coverage" parameter to the fraction of the neighborhood's
-    residents who are aware of the problem and whose attitudes are affected
-    by it (nominally 1.0).<p>
+    Set the "Level of Service" parameter to represent the actual level of
+    transportation service being provided to the neighborhood's
+    residents (nominally 1.0).<p>
 
 } {
     A "Traffic" event is represented in Athena as a "block" in the 
-    SYSTEM agent's strategy.  The block will contain an ABSIT tactic
-    that creates a TRAFFIC abstract situation.  See the <i>Athena
-    Rules Document</i> for the attitude affects of this situation.<p>
+    SYSTEM agent's strategy.  The block will contain a SERVICE tactic
+    that sets the actual level of transportation service (LOS) being 
+    provided to the residents of the neighborhood.  See the <i>Athena
+    Rules Document</i> for the attitude affects of this service.<p>
 } {
     #-------------------------------------------------------------------
     # Instance Variables
@@ -51,7 +51,7 @@
         # FIRST, Initialize as a event bean.
         next
 
-        my set coverage 1.0
+        my set los 1.0
 
 
         # Save the options
@@ -62,25 +62,17 @@
     # Operations
 
     method narrative {} {
-        set t(n) [nbhood fullname [my get n]]
-        set pcov [string trim [percent [my get coverage]]]
+        set t(n)   [nbhood fullname [my get n]]
+        set t(los) [string trim [percent [my get los]]]
 
-        set text "Traffic in $t(n) ($pcov)"
-
-        if {[my get duration] > 1} {
-            append text " for [my get duration] weeks"
-        }
-
-        append text "."
+        set text "Transportation service in $t(n) ($t(los))."
     }
 
     method sendevent {} {
-        my tactic [my block SYSTEM 1] ABSIT \
-            stype    TRAFFIC                \
-            n        [my get n]             \
-            coverage [my get coverage]      \
-            resolver NONE                   \
-            duration [my get duration]
+        my tactic [my block SYSTEM 1] SERVICE \
+            s     TRANSPORT                                     \
+            nlist [gofer construct NBHOODS BY_VALUE [my get n]] \
+            los   [my get los]
     }
 }
 
@@ -101,25 +93,19 @@ order define SIMEVENT:TRAFFIC {
         text event_id -context yes \
             -loadcmd {beanload}
 
-        rcc "Duration:" -for duration
-        text duration -defvalue 1
-        label "week(s)"
-
-        rcc "Coverage:" -for coverage
-        posfrac coverage
-        label "Fraction of neighborhood"
+        rcc "Level of Service:" -for los
+        posfrac los
     }
 } {
     # FIRST, prepare the parameters
     prepare event_id  -required -with {::pot valclass ::wintel::simevent::TRAFFIC}
-    prepare duration  -num      -type ipositive
-    prepare coverage  -num      -type rposfrac
+    prepare los  -num      -type rposfrac
  
     returnOnError -final
 
     # NEXT, update the event.
     set e [::pot get $parms(event_id)]
-    $e update_ {duration coverage} [array get parms]
+    $e update_ {los} [array get parms]
 
     return
 }

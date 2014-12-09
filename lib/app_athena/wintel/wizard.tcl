@@ -79,8 +79,8 @@ snit::type ::wintel::wizard {
 
     typemethod cleanup {} {
         # Destroy all remaining simevents.
-        foreach id [simevent ids] {
-            [simevent get $id] destroy
+        foreach id [pot ids ::wintel::simevent] {
+            [pot get $id] destroy
         }
 
         # Destroy wizard objects
@@ -205,9 +205,10 @@ snit::type ::wintel::wizard {
         $ht para
 
         foreach id [simevent normals] {
-            set e [simevent get $id]
-
-            $ht putln [$e htmltext]
+            if {[pot has $id]} {
+                set e [pot get $id]
+                $ht putln [$e htmltext]
+            }
         }
 
         $ht /page
@@ -239,9 +240,11 @@ snit::type ::wintel::wizard {
 
         cif transaction "Ingest $num Intel Events" {
             foreach id [simevent normals] {
-                set e [simevent get $id]
+                if {[pot has $id]} {
+                    set e [pot get $id]
 
-                $e sendevent
+                    $e sendevent
+                }
             }
         }
 

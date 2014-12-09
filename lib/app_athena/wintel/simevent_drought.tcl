@@ -38,10 +38,10 @@
     residents are affected, but those living by subsistence agriculture
     will be affected more than others.<p>
 
-    Note that DROUGHT is distinct from the NOWATER abstract situation,
-    which reflects a water supply that has been disabled by enemy action,
-    and also from the BADWATER abstract situation, which reflects a 
-    water supply that has been contaminated.
+    Note that DROUGHT is distinct from the level of potable WATER service
+    provided, which reflects a water supply that may have been compromised 
+    by some means, and also from the BADWATER abstract situation, which 
+    reflects a water supply that has been contaminated.
 } {
     #-------------------------------------------------------------------
     # Instance Variables
