@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    projectlib(1): Beans
+#    projectlib(n): Beans
 #
 #    A bean is a TclOO object that can be checkpointed.  All bean classes
 #    should be defined using beanclass(n), and should subclass bean(n),

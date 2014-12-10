@@ -24,6 +24,8 @@
 # arglist  - An argument list
 # 
 # Defines a method on the class's class object.
+#
+# TODO: Remove this; "self method" does the same thing.
 
 proc ::oo::define::typemethod {method arglist body} {
     # FIRST, get the name of the class we're defining.
@@ -31,6 +33,18 @@ proc ::oo::define::typemethod {method arglist body} {
 
     # NEXT, define the typemethod.
     oo::objdefine $cls method $method $arglist $body
+}
+
+# meta name value
+#
+# name     - A metadata variable name
+# value    - The value of the variable
+# 
+# Defines class and instance methods that return the value.
+
+proc ::oo::define::meta {name value} {
+    uplevel 1 [list self method $name {} [list return $value]]
+    uplevel 1 [list method $name {} [list return $value]]
 }
 
 #-----------------------------------------------------------------------
