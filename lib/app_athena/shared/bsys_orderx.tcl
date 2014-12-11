@@ -27,7 +27,6 @@ oo::class create ::bsys::BSYS:PLAYBOX:UPDATE {
         next
     }
 
-    # Q: How would I do a returnOnError if I needed to?
     method CheckParms {} {
         my prepare gamma -required -num -type ::simlib::rmagnitude
     }
@@ -55,7 +54,6 @@ oo::class create ::bsys::BSYS:SYSTEM:ADD {
         my variable parms
 
         my prepare sid -num -type ::marsutil::count
-
         my returnOnError
 
         my validate sid {
