@@ -27,6 +27,8 @@ oo::class create ::bsys::BSYS:PLAYBOX:UPDATE {
     
     constructor {} {
         my defparm gamma 1.0
+
+        next
     }
 
     #-------------------------------------------------------------------
@@ -38,7 +40,7 @@ oo::class create ::bsys::BSYS:PLAYBOX:UPDATE {
     }
 
     method ExecuteOrder {} {
-        my setundo [bsys mutate update playbox "" [my getdict]]\
+        my setundo [bsys mutate update playbox "" [my getdict]]
         return
     }
 
@@ -56,6 +58,8 @@ oo::class create ::bsys::BSYS:SYSTEM:UPDATE {
     
     constructor {} {
         my defparm sid
+
+        next
     }
 
     #-------------------------------------------------------------------

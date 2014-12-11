@@ -92,6 +92,8 @@ oo::class create ::projectlib::orderx {
         dict for {key value} $dict {
             my set $key value
         }
+
+        return
     }
 
     # set name value
@@ -105,7 +107,7 @@ oo::class create ::projectlib::orderx {
     method set {name value} {
         assert {$orderState ne "EXECUTED"}
 
-        if {![info exists parms($name)} {
+        if {![info exists parms($name)]} {
             error "unknown parameter: \"$name\""
         }
 
@@ -113,6 +115,8 @@ oo::class create ::projectlib::orderx {
             set parms($name) $value
             set orderState CHANGED
         }
+
+        return $value
     }
 
     # configure ?option value...?
@@ -127,6 +131,8 @@ oo::class create ::projectlib::orderx {
             set var [string range $opt 1 end]
             my set $var $value
         }
+
+        return
     }
 
     # cget opt
@@ -142,6 +148,14 @@ oo::class create ::projectlib::orderx {
 
     #-------------------------------------------------------------------
     # Metadata and queries
+
+    # state
+    #
+    # Returns the order's state.
+
+    method state {} {
+        return $orderState
+    }
     
     # title
     #
@@ -198,7 +212,7 @@ oo::class create ::projectlib::orderx {
     # The leaf class should override CheckParms.
     
     method check {} {
-        assert {$orderstate ne "EXECUTED"}
+        assert {$orderState ne "EXECUTED"}
         set errdict [dict create]
         my CheckParms
 
@@ -247,7 +261,7 @@ oo::class create ::projectlib::orderx {
     # Can undo if executed and there's an undo script.
 
     method canundo {} {
-        return [expr {$orderState eq "EXECUTED" && $orderScript ne ""}]
+        return [expr {$orderState eq "EXECUTED" && $undoScript ne ""}]
     }
 
     # undo
