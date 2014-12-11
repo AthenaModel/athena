@@ -15,7 +15,7 @@
 #-----------------------------------------------------------------------
 # BSys Order Classes
 
-oo::class create ::bsys::BSYS:PLAYBOX:UPDATE {
+myorders define BSYS:PLAYBOX:UPDATE {
     superclass ::projectlib::orderx
 
     meta title      "Update Playbox-wide Belief System Parameters"
@@ -36,7 +36,7 @@ oo::class create ::bsys::BSYS:PLAYBOX:UPDATE {
 
 }
 
-oo::class create ::bsys::BSYS:SYSTEM:ADD {
+myorders define BSYS:SYSTEM:ADD {
     superclass ::projectlib::orderx
 
     meta title      "Add New Belief System"
@@ -69,7 +69,7 @@ oo::class create ::bsys::BSYS:SYSTEM:ADD {
 }
 
 
-oo::class create ::bsys::BSYS:SYSTEM:UPDATE {
+myorders define BSYS:SYSTEM:UPDATE {
     superclass ::projectlib::orderx
 
     meta title      "Update Belief System Metadata"
