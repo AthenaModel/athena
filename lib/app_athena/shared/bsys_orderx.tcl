@@ -22,21 +22,14 @@ oo::class create ::bsys::BSYS:PLAYBOX:UPDATE {
     meta sendstates {PREP}
     meta form       {}
 
-    #-------------------------------------------------------------------
-    # Constructor/Destructor
-    
     constructor {} {
         my defparm gamma 1.0
-
         next
     }
 
-    #-------------------------------------------------------------------
-    # Public Methods: Order Operations
-
     # Q: How would I do a returnOnError if I needed to?
     method CheckParms {} {
-        my prepare gamma -required -num -type ::simlib rmagnitude
+        my prepare gamma -required -num -type ::simlib::rmagnitude
     }
 
     method ExecuteOrder {} {
@@ -46,34 +39,28 @@ oo::class create ::bsys::BSYS:PLAYBOX:UPDATE {
 
 }
 
-oo::class create ::bsys::BSYS:SYSTEM:UPDATE {
+oo::class create ::bsys::BSYS:SYSTEM:ADD {
     superclass ::projectlib::orderx
 
     meta title      "Add New Belief System"
     meta sendstates {PREP}
     meta form       {}
 
-    #-------------------------------------------------------------------
-    # Constructor/Destructor
-    
     constructor {} {
         my defparm sid
-
         next
     }
 
-    #-------------------------------------------------------------------
-    # Public Methods: Order Operations
-
-    # Q: How would I do a returnOnError if I needed to?
     method CheckParms {} {
         my variable parms
 
         my prepare sid -num -type ::marsutil::count
 
+        my returnOnError
+
         my validate sid {
             if {$parms(sid) in [bsys system ids]} {
-                reject sid \
+                my reject sid \
                     "Belief system ID is already in use: \"$parms(sid)\""
             }
         }

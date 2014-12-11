@@ -42,6 +42,7 @@ oo::class create ::projectlib::orderx {
     variable defaults
 
     # errdict: Dictionary of error values (REJECTED); otherwise empty.
+    variable errdict
 
     # undoScript: Script to execute to undo the order.
     variable undoScript
@@ -110,6 +111,8 @@ oo::class create ::projectlib::orderx {
         if {![info exists parms($name)]} {
             error "unknown parameter: \"$name\""
         }
+
+        set value [string trim $value]
 
         if {$parms($name) ne $value} {
             set parms($name) $value
@@ -210,18 +213,22 @@ oo::class create ::projectlib::orderx {
     # messages.
     #
     # The leaf class should override CheckParms.
+    #
+    # TODO: Should this throw, or just return a status?
     
     method check {} {
         assert {$orderState ne "EXECUTED"}
         set errdict [dict create]
+
         my CheckParms
 
         if {[dict size $errdict] == 0} {
             set orderState VALID
+            return
         } else {
             set orderState REJECTED
+            throw REJECTED $errdict
         }
-        return $errdict
     }
 
     # CheckParms
@@ -233,6 +240,15 @@ oo::class create ::projectlib::orderx {
     
     method CheckParms {} {
         # Nothing to do.
+    }
+
+    # errdict
+    #
+    # Returns the error dictionary.  (It is empty unless the order state
+    # is REJECTED.)
+
+    method errdict {} {
+        return $errdict
     }
 
     # execute
@@ -303,10 +319,219 @@ oo::class create ::projectlib::orderx {
     # errdict if need be.
 
     unexport prepare
-    method prepare {name args} {
-        # TBD
+    method prepare {parm args} {
+        # FIRST, process the options, so long as there's no explicit
+        # error.
+
+        while {![dict exists $errdict $parm] && [llength $args] > 0} {
+            set opt [lshift args]
+            switch -exact -- $opt {
+                -toupper {
+                    set parms($parm) [string toupper $parms($parm)]
+                }
+                -tolower {
+                    set parms($parm) [string tolower $parms($parm)]
+                }
+                -normalize {
+                    set parms($parm) [normalize $parms($parm)]
+                }
+                -num {
+                    # Integer numbers beginning with 0 are interpreted as
+                    # octal, so we need to trim leading zeroes when the
+                    # number is a non-zero integer.
+                    if {[string is integer -strict $parms($parm)] &&
+                        $parms($parm) != 0
+                    } {
+                        set parms($parm) [string trimleft $parms($parm) "0"]
+                    }
+                }
+                -required { 
+                    if {$parms($parm) eq ""} {
+                        my reject $parm "required value"
+                    }
+                }
+                -oldvalue {
+                    # TBD: Should this be handled differently?
+                    set oldvalue [lshift args]
+
+                    if {$parms($parm) eq $oldvalue} {
+                        set parms($parm) ""
+                    }
+                }
+                -oldnum {
+                    # TBD: Should this be handled differently?
+                    set oldvalue [lshift args]
+
+                    if {$parms($parm) == $oldvalue} {
+                        set parms($parm) ""
+                    }
+                }
+                -type {
+                    set parmtype [lshift args]
+
+                    my validate $parm { 
+                        set parms($parm) [{*}$parmtype validate $parms($parm)]
+                    }
+                }
+                -listof {
+                    set parmtype [lshift args]
+
+                    my validate $parm {
+                        set newvalue [list]
+
+                        foreach val $parms($parm) {
+                            lappend newvalue [{*}$parmtype validate $val]
+                        }
+
+                        set parms($parm) $newvalue
+                    }
+                }
+                -oneof {
+                    set list [lshift args]
+
+                    my validate $parm {
+                        if {$parms($parm) ni $list} {
+                            if {[llength $list] > 15} {
+                                my reject $parm \
+                                    "invalid value: \"$parms($parm)\""
+                            } else {
+                                my reject $parm \
+                                    "invalid value \"$parms($parm)\", should be one of: [join $list {, }]"
+                            }
+                        }
+                    }
+                }
+                -someof {
+                    set list [lshift args]
+
+                    my validate $parm {
+                        foreach val $parms($parm) {
+                            if {$val ni $list} {
+                                if {[llength $list] > 15} {
+                                    my reject $parm \
+                                        "invalid value: \"$val\""
+                                } else {
+                                    my reject $parm \
+                                        "invalid value \"$val\", should be one of: [join $list {, }]"
+                                }
+                            }
+                        }
+                    }
+                }
+                -with {
+                    set checker [lshift args]
+
+                    my validate $parm { 
+                        set parms($parm) [{*}$checker $parms($parm)]
+                    }
+                }
+
+                -listwith {
+                    set checker [lshift args]
+
+                    my validate $parm {
+                        set newvalue [list]
+
+                        foreach val $parms($parm) {
+                            lappend newvalue [{*}$checker $val]
+                        }
+
+                        set parms($parm) $newvalue
+                    }
+                }
+
+                -selector {
+                    error "TBD: Not implemented yet"
+                    set frm [order options $parms(_order) -dynaform]
+
+                    if {$frm eq ""} {
+                        error "Not a dynaform selector: \"$parm\""
+                    }
+
+                    set cases [dynaform cases $frm $parm [array get parms]]
+
+                    validate $parm {
+                        if {$parms($parm) ni $cases} {
+                            reject $parm \
+                                "invalid value \"$parms($parm)\", should be one of: [join $cases {, }]"
+                        }
+                    }
+                }
+                default { 
+                    error "unknown option: \"$opt\"" 
+                }
+            }
+        }
     }
 
+    # valid parm
+    #
+    # parm    Parameter name
+    #
+    # Returns 1 if parm's value is not known to be invalid, and
+    # 0 otherwise.  A parm's value is invalid if it's the 
+    # empty string (a missing value) or if it's been explicitly
+    # flagged as invalid.
+
+    unexport valid
+    method valid {parm} {
+        if {$parms($parm) eq "" || [dict exists $errdict $parm]} {
+            return 0
+        }
+
+        return 1
+    }
+
+    # validate parm script
+    #
+    # parm    A parameter to validate
+    # script  A script to validate it.
+    #
+    # Executes the script in the caller's context.  If the script
+    # throws an error, and the error code is INVALID, the value
+    # is rejected.  Any other error is rethrown as an unexpected
+    # error.
+    #
+    # If the parameter is already known to be invalid, the code is skipped.
+    # Further, if the parameter is the empty string, the code is skipped,
+    # as presumably it's an optional parameter.
+
+    unexport validate
+    method validate {parm script} {
+        if {![my valid $parm]} {
+            return
+        }
+
+        try {
+            uplevel 1 $script
+        } trap INVALID {result} {
+            my reject $parm $result
+        }
+    }
+
+    # returnOnError
+    #
+    # Terminates checking if there are accumulated errors.
+
+    unexport returnOnError
+    method returnOnError {} {
+        # FIRST, Were there any errors?
+        if {[dict size $errdict] > 0} {
+            # Trigger a return one level up.
+            return -code return
+        }
+    }
+
+    # cancel
+    #
+    # Use this in the rare case where the user can interactively 
+    # cancel an order that's in progress.
+
+    unexport cancel
+    method cancel {} {
+        return -code error -errorcode CANCEL \
+            "The order was cancelled by the user."
+    }
 
     # reject name errtext
     #
