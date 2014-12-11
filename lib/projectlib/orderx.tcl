@@ -106,7 +106,8 @@ oo::class create ::projectlib::orderx {
     # exist.  
 
     method set {name value} {
-        assert {$orderState ne "EXECUTED"}
+        require {$orderState ne "EXECUTED"} \
+            "Cannot modify an executed order."
 
         if {![info exists parms($name)]} {
             error "unknown parameter: \"$name\""
@@ -206,39 +207,43 @@ oo::class create ::projectlib::orderx {
     #-------------------------------------------------------------------
     # Public Methods: Order Operations
 
-    # check
+    # valid
     #
-    # Attempts to validate the order parameters.  Succeeds silently, or 
-    # throws REJECTED with a dictionary of parameter names and error 
-    # messages.
+    # Returns 1 if the order is valid, and 0 otherwise, calling 
+    # _validate if need be.  The leaf class must define _validate.
     #
-    # The leaf class should override CheckParms.
-    #
-    # TODO: Should this throw, or just return a status?
+    # Errors can be retrieved by calling errdict.
     
-    method check {} {
-        assert {$orderState ne "EXECUTED"}
+    method valid {} {
+        if {$orderState eq "REJECTED"} {
+            return 0
+        }
+
+        if {$orderState ne "CHANGED"} {
+            return 1
+        }
+
         set errdict [dict create]
 
-        my CheckParms
+        my _validate
 
         if {[dict size $errdict] == 0} {
             set orderState VALID
-            return
+            return 1
         } else {
             set orderState REJECTED
-            throw REJECTED $errdict
+            return 0
         }
     }
 
-    # CheckParms
+    # _validate
     #
     # Checks whether there are any problems with the error,
     # adding problems to the errdict.
     #
     # Subclasses should override this method to validate their parameters.
     
-    method CheckParms {} {
+    method _validate {} {
         # Nothing to do.
     }
 
@@ -256,19 +261,20 @@ oo::class create ::projectlib::orderx {
     # Executes the order, assuming the "check" is successful.
 
     method execute {} {
-        assert {$orderState eq "VALID"}
+        require {$orderState eq "VALID"} \
+            "Only validated orders can be executed."
 
-        set result [my ExecuteOrder]
+        set result [my _execute]
         set orderState EXECUTED
 
         return $result
     }
 
-    # ExecuteOrder 
+    # _execute
     #
     # Subclasses should override this.  They can assume that all
     # parameters have been validated.
-    method ExecuteOrder {} {
+    method _execute {} {
         return ""
     }
 
@@ -285,7 +291,9 @@ oo::class create ::projectlib::orderx {
     # Undoes the effect of the order.
 
     method undo {} {
-        assert {[my canundo]}
+        # TODO: Might want to distinguish between wrong state
+        # and no undo script
+        require {[my canundo]} "This order cannot be undone."
 
         namespace eval :: $undoScript
 
@@ -369,14 +377,14 @@ oo::class create ::projectlib::orderx {
                 -type {
                     set parmtype [lshift args]
 
-                    my validate $parm { 
+                    my checkon $parm { 
                         set parms($parm) [{*}$parmtype validate $parms($parm)]
                     }
                 }
                 -listof {
                     set parmtype [lshift args]
 
-                    my validate $parm {
+                    my checkon $parm {
                         set newvalue [list]
 
                         foreach val $parms($parm) {
@@ -389,7 +397,7 @@ oo::class create ::projectlib::orderx {
                 -oneof {
                     set list [lshift args]
 
-                    my validate $parm {
+                    my checkon $parm {
                         if {$parms($parm) ni $list} {
                             if {[llength $list] > 15} {
                                 my reject $parm \
@@ -404,7 +412,7 @@ oo::class create ::projectlib::orderx {
                 -someof {
                     set list [lshift args]
 
-                    my validate $parm {
+                    my checkon $parm {
                         foreach val $parms($parm) {
                             if {$val ni $list} {
                                 if {[llength $list] > 15} {
@@ -421,7 +429,7 @@ oo::class create ::projectlib::orderx {
                 -with {
                     set checker [lshift args]
 
-                    my validate $parm { 
+                    my checkon $parm { 
                         set parms($parm) [{*}$checker $parms($parm)]
                     }
                 }
@@ -429,7 +437,7 @@ oo::class create ::projectlib::orderx {
                 -listwith {
                     set checker [lshift args]
 
-                    my validate $parm {
+                    my checkon $parm {
                         set newvalue [list]
 
                         foreach val $parms($parm) {
@@ -464,25 +472,23 @@ oo::class create ::projectlib::orderx {
         }
     }
 
-    # valid parm
+    # badparm parm
     #
     # parm    Parameter name
     #
-    # Returns 1 if parm's value is not known to be invalid, and
-    # 0 otherwise.  A parm's value is invalid if it's the 
-    # empty string (a missing value) or if it's been explicitly
-    # flagged as invalid.
+    # Returns 1 if parm's value is known to be missing or invalid, and
+    # 0 otherwise.
 
-    unexport valid
-    method valid {parm} {
+    unexport badparm
+    method badparm {parm} {
         if {$parms($parm) eq "" || [dict exists $errdict $parm]} {
-            return 0
+            return 1
         }
 
-        return 1
+        return 0
     }
 
-    # validate parm script
+    # checkon parm script
     #
     # parm    A parameter to validate
     # script  A script to validate it.
@@ -496,9 +502,9 @@ oo::class create ::projectlib::orderx {
     # Further, if the parameter is the empty string, the code is skipped,
     # as presumably it's an optional parameter.
 
-    unexport validate
-    method validate {parm script} {
-        if {![my valid $parm]} {
+    unexport checkon
+    method checkon {parm script} {
+        if {[my badparm $parm]} {
             return
         }
 

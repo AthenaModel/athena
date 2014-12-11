@@ -27,11 +27,11 @@ oo::class create ::bsys::BSYS:PLAYBOX:UPDATE {
         next
     }
 
-    method CheckParms {} {
+    method _validate {} {
         my prepare gamma -required -num -type ::simlib::rmagnitude
     }
 
-    method ExecuteOrder {} {
+    method _execute {} {
         my setundo [bsys mutate update playbox "" [my getdict]]
         return
     }
@@ -50,13 +50,13 @@ oo::class create ::bsys::BSYS:SYSTEM:ADD {
         next
     }
 
-    method CheckParms {} {
+    method _validate {} {
         my variable parms
 
         my prepare sid -num -type ::marsutil::count
         my returnOnError
 
-        my validate sid {
+        my checkon sid {
             if {$parms(sid) in [bsys system ids]} {
                 my reject sid \
                     "Belief system ID is already in use: \"$parms(sid)\""
@@ -64,10 +64,10 @@ oo::class create ::bsys::BSYS:SYSTEM:ADD {
         }
     }
 
-    method ExecuteOrder {} {
+    method _execute {} {
         my variable parms
-        lassign [::bsys mutate add system $parms(sid)] sid undoScript
-        my setundo $undoScript
+        lassign [::bsys mutate add system $parms(sid)] sid undo
+        my setundo $undo
         return
     }
 
