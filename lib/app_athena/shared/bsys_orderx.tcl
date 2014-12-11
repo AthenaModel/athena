@@ -21,10 +21,8 @@ oo::class create ::bsys::BSYS:PLAYBOX:UPDATE {
     meta title      "Update Playbox-wide Belief System Parameters"
     meta sendstates {PREP}
     meta form       {}
-
-    constructor {} {
-        my defparm gamma 1.0
-        next
+    meta defaults   {
+        gamma 1.0
     }
 
     method _validate {} {
@@ -42,13 +40,11 @@ oo::class create ::bsys::BSYS:SYSTEM:ADD {
     superclass ::projectlib::orderx
 
     meta title      "Add New Belief System"
-    meta sendstates {PREP}
-    meta form       {}
-
-    constructor {} {
-        my defparm sid
-        next
+    meta sendstates PREP
+    meta defaults   {
+        sid ""
     }
+    meta form       {}
 
     method _validate {} {
         my variable parms
@@ -70,5 +66,56 @@ oo::class create ::bsys::BSYS:SYSTEM:ADD {
         my setundo $undo
         return
     }
-
 }
+
+
+oo::class create ::bsys::BSYS:SYSTEM:UPDATE {
+    superclass ::projectlib::orderx
+
+    meta title      "Update Belief System Metadata"
+    meta sendstates PREP
+    meta defaults   {
+        sid         ""
+        name        ""
+        commonality ""
+    }
+    meta form       {
+        rcc "System ID:" -for sid
+        text sid -context yes \
+            -loadcmd {bsys::viewload system}
+
+        rcc "Name:" -for name
+        text name
+
+        rcc "Commonality Fraction:" -for commonality
+        range commonality          \
+            -datatype    rfraction \
+            -showsymbols no        \
+            -resetvalue  1.0 
+    }
+
+    method _validate {} {
+        my variable parms
+
+        my prepare sid          -required -toupper -type {bsys editable}
+        my prepare name
+        my prepare commonality            -num     -type ::simlib::rfraction
+
+        my returnOnError
+
+        my checkon name {
+            set oldID [bsys system id $parms(name)]
+            if {$oldID ne "" && $oldID ne $parms(sid)} {
+                my reject name \
+                    "name is in use by another system: \"$parms(name)\""
+            }
+        }
+    }
+
+    method _execute {} {
+        my setundo [bsys mutate update system $parms(sid) [array get parms]]
+
+        return
+    }
+}
+

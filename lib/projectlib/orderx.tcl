@@ -38,9 +38,6 @@ oo::class create ::projectlib::orderx {
     # parms: Array of order parameter values by name.
     variable parms
 
-    # defaults: Array of default parameter values by name.
-    variable defaults
-
     # errdict: Dictionary of error values (REJECTED); otherwise empty.
     variable errdict
 
@@ -59,8 +56,7 @@ oo::class create ::projectlib::orderx {
         set orderState CHANGED
         set errdict    [dict create]
         set undoScript ""
-
-        # Can't initializes parms here, no known parms.
+        array set parms [my defaults]
     }
 
     #-------------------------------------------------------------------
@@ -303,20 +299,6 @@ oo::class create ::projectlib::orderx {
 
     #-------------------------------------------------------------------
     # Protected Methods: for use in leaf classes
-
-    # defparm name ?defvalue?
-    #
-    # name      - Parameter name
-    # defvalue  - Default value, or "" for none
-    #
-    # Defines an order parameter.
-
-    unexport defparm
-    method defparm {name {defvalue ""}} {
-        set parms($name)    $defvalue
-        set defaults($name) $defvalue
-    }
-
 
     # prepare parm options...
     #
