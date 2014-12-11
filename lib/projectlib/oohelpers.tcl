@@ -44,7 +44,7 @@ proc ::oo::define::typemethod {method arglist body} {
 
 proc ::oo::define::meta {name value} {
     uplevel 1 [list self method $name {} [list return $value]]
-    uplevel 1 [list method $name {} [list return $value]]
+    uplevel 1 [list method $name {} [format {[self class] %s} $name]]
 }
 
 #-----------------------------------------------------------------------
