@@ -173,6 +173,20 @@ oo::class create ::projectlib::orderx {
         error "Not defined by subclass"
     }
 
+    # dynaform
+    #
+    # Returns the name of the object's dynaform, which is the same as its
+    # leaf class.  It is assumed that orderx_set has created the form.
+
+    method dynaform {} {
+        # FIRST, if there's no form spec then there's no dynaform.
+        if {[my form] eq ""} {
+            return ""
+        } else {
+            return [info object class [self object]]
+        }
+    }
+
     # narrative
     #
     # Returns a human-readable narrative string for this order, usually
@@ -197,7 +211,14 @@ oo::class create ::projectlib::orderx {
     # parameters with non-default settings.
 
     method prune {} {
-        throw TBD "Not implemented yet."
+        set result [dict create]
+        dict for {parm value} [my defaults] {
+            if {$parms($parm) ne $value} {
+                dict set result $parm $parms($parm)
+            }
+        }
+
+        return $result
     }
 
     #-------------------------------------------------------------------
@@ -340,22 +361,6 @@ oo::class create ::projectlib::orderx {
                         my reject $parm "required value"
                     }
                 }
-                -oldvalue {
-                    # TBD: Should this be handled differently?
-                    set oldvalue [lshift args]
-
-                    if {$parms($parm) eq $oldvalue} {
-                        set parms($parm) ""
-                    }
-                }
-                -oldnum {
-                    # TBD: Should this be handled differently?
-                    set oldvalue [lshift args]
-
-                    if {$parms($parm) == $oldvalue} {
-                        set parms($parm) ""
-                    }
-                }
                 -type {
                     set parmtype [lshift args]
 
@@ -431,8 +436,7 @@ oo::class create ::projectlib::orderx {
                 }
 
                 -selector {
-                    error "TBD: Not implemented yet"
-                    set frm [order options $parms(_order) -dynaform]
+                    set frm [my dynaform]
 
                     if {$frm eq ""} {
                         error "Not a dynaform selector: \"$parm\""
@@ -440,10 +444,10 @@ oo::class create ::projectlib::orderx {
 
                     set cases [dynaform cases $frm $parm [array get parms]]
 
-                    validate $parm {
+                    my checkon $parm {
                         if {$parms($parm) ni $cases} {
-                            reject $parm \
-                                "invalid value \"$parms($parm)\", should be one of: [join $cases {, }]"
+                            my reject $parm \
+"invalid value \"$parms($parm)\", should be one of: [join $cases {, }]"
                         }
                     }
                 }

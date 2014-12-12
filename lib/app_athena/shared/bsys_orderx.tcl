@@ -20,7 +20,6 @@ myorders define BSYS:PLAYBOX:UPDATE {
 
     meta title      "Update Playbox-wide Belief System Parameters"
     meta sendstates {PREP}
-    meta form       {}
     meta defaults   {
         gamma 1.0
     }
@@ -44,7 +43,6 @@ myorders define BSYS:SYSTEM:ADD {
     meta defaults   {
         sid ""
     }
-    meta form       {}
 
     method _validate {} {
         my variable parms

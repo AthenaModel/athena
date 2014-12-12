@@ -50,7 +50,8 @@ oo::class create ::projectlib::orderx_set {
     # body    - The ordex subclass definition script.
     #
     # Defines the new order class.  The full class name is
-    # ${self}::${order}.  Also, defines the "name" meta for the class.
+    # ${self}::${order}.  Also, defines the "name" meta for the class,
+    # and provides empty defaults for the "from" and "parmtags" metas.
 
     method define {order body} {
         # FIRST, get the class name.
@@ -58,7 +59,9 @@ oo::class create ::projectlib::orderx_set {
 
         # NEXT, create and configure the class itself.
         oo::class create $cls
-        oo::define $cls meta name $order
+        oo::define $cls meta name     $order
+        oo::define $cls meta form     ""
+        oo::define $cls meta parmtags ""
         oo::define $cls $body
 
         # NEXT, create the form.
@@ -85,6 +88,18 @@ oo::class create ::projectlib::orderx_set {
         dict set orders $order $cls
     }
 
+    # reset
+    #
+    # Destroys all orders and clears the saved data.
+
+    method reset {} {
+        dict for {name cls} $orders {
+            $cls destroy
+        }
+
+        set orders [dict create]
+    }
+
     #-------------------------------------------------------------------
     # Queries
 
@@ -106,6 +121,16 @@ oo::class create ::projectlib::orderx_set {
         dict get $orders $order
     }
 
+    # title order
+    #
+    # order - The name of an order.
+    #
+    # Returns the order's title.
+
+    method title {order} {
+        [my class $order] title
+    }
+
     # get order
     #
     # order - The name of an order
@@ -113,7 +138,35 @@ oo::class create ::projectlib::orderx_set {
     # Returns an instance of the order.
 
     method get {order} {
-        return [[dict get $orders $order] new]
+        return [[my class $order] new]
     }
-    
+
+    # exists order
+    #
+    # order     An order order
+    #
+    # Returns 1 if there's an order with this name, and 0 otherwise
+
+    typemethod exists {order} {
+        return [dict exists $orders $order]
+    }
+
+    # validate order
+    #
+    # order  - Possibly, the name of an order.
+    #
+    # Throws INVALID if the order name is unknown.  Returns the 
+    # canonicalized order name.
+
+    method validate {order} {
+        set order [string toupper $order]
+
+        if {![my exists $order]} {
+            throw INVALID  \
+                "Order is undefined: \"$order\""
+        }
+
+        return $order
+    }
+
 }
