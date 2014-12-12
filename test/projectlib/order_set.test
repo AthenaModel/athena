@@ -1,0 +1,270 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    order_set.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Tcltest test suite for projectlib(n) order_set(n).
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+
+# Import tcltest(n)
+namespace import ::tcltest::*
+
+ 
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+source ../../lib/projectlib/pkgModules.tcl
+namespace import ::projectlib::*
+
+#------------------------------------------------------------------------
+# Set up the test environment
+
+proc setup {} {
+    order_set create myorders
+}
+
+proc cleanup {} {
+    myorders destroy
+}
+
+#-----------------------------------------------------------------------
+# Creation
+
+test creation-1.1 {order_set is initially empty} -setup {
+    setup
+} -body {
+    myorders names
+} -cleanup {
+    cleanup
+} -result {}
+
+#-----------------------------------------------------------------------
+# define
+
+test define-1.1 {can define order} -setup {
+    setup
+} -body {
+    myorders define MY:ORDER {
+        meta defaults {x 1}
+    }
+    info commands ::myorders::MY:ORDER
+} -cleanup {
+    cleanup
+} -result {::myorders::MY:ORDER}
+
+test define-1.2 {order has standard metadata} -setup {
+    setup
+} -body {
+    myorders define MY:ORDER {
+        meta defaults {x 1}
+    }
+    set cls ::myorders::MY:ORDER
+
+    list [$cls name] [$cls title] [$cls form] [$cls parmtags]
+} -cleanup {
+    cleanup
+} -result {MY:ORDER MY:ORDER {} {}}
+
+test define-1.3 {Form defined} -setup {
+    setup
+} -body {
+    myorders define MY:FORM {
+        meta defaults {x 1}
+        meta form {
+            text x
+        }
+    }
+    set cls ::myorders::MY:FORM
+
+    expr {$cls in [dynaform types]}
+} -cleanup {
+    cleanup
+} -result {1}
+
+test define-1.4 {Form checked} -setup {
+    setup
+} -body {
+    set gotIt 0
+
+    try {
+        myorders define MY:FORM {
+            meta defaults {x 1}
+            meta form {
+                text x
+                text y
+            }
+        }
+    } trap {ORDERX_SET MISMATCH} {result} {
+        set gotIt 1
+    } 
+
+    set gotIt
+} -cleanup {
+    cleanup
+} -result {1}
+
+test define-1.5 {Order "exists"} -setup {
+    setup
+} -body {
+    myorders define NEW:ORDER {
+        meta defaults {x 1}
+    }
+    myorders exists NEW:ORDER
+} -cleanup {
+    cleanup
+} -result {1}
+
+#-----------------------------------------------------------------------
+# reset
+
+# Tested in use by cleanup
+
+#-----------------------------------------------------------------------
+# names
+
+test names-1.1 {order_set is initially empty} -setup {
+    setup
+} -body {
+    myorders names
+} -cleanup {
+    cleanup
+} -result {}
+
+test names-1.2 {names in order of definition} -setup {
+    setup
+    myorders define ORDER:A {}
+    myorders define ORDER:B {}
+} -body {
+    myorders names
+} -cleanup {
+    cleanup
+} -result {ORDER:A ORDER:B}
+
+#-----------------------------------------------------------------------
+# exists
+
+test exists-1.1 {order exists} -setup {
+    setup
+    myorders define ORDER:A {}
+    myorders define ORDER:B {}
+} -body {
+    myorders exists ORDER:B
+} -cleanup {
+    cleanup
+} -result {1}
+
+test exists-1.2 {order doesn't exist} -setup {
+    setup
+    myorders define ORDER:A {}
+    myorders define ORDER:B {}
+} -body {
+    myorders exists ORDER:C
+} -cleanup {
+    cleanup
+} -result {0}
+
+#-----------------------------------------------------------------------
+# validate
+
+test validate-1.1 {order exists} -setup {
+    setup
+    myorders define ORDER:A {}
+    myorders define ORDER:B {}
+} -body {
+    myorders validate ORDER:B
+} -cleanup {
+    cleanup
+} -result {ORDER:B}
+
+test validate-1.2 {upcases} -setup {
+    setup
+    myorders define ORDER:A {}
+    myorders define ORDER:B {}
+} -body {
+    myorders validate order:b
+} -cleanup {
+    cleanup
+} -result {ORDER:B}
+
+test validate-1.3 {order doesn't exist} -setup {
+    setup
+    myorders define ORDER:A {}
+    myorders define ORDER:B {}
+} -body {
+    myorders validate ORDER:C
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Order is undefined: "ORDER:C"}
+
+#-----------------------------------------------------------------------
+# class
+
+test class-1.1 {order class} -setup {
+    setup
+    myorders define ORDER:A {}
+} -body {
+    myorders class ORDER:A
+} -cleanup {
+    cleanup
+} -result {::myorders::ORDER:A}
+
+#-----------------------------------------------------------------------
+# title
+
+test title-1.1 {default title is order name} -setup {
+    setup
+    myorders define ORDER:A {}
+} -body {
+    myorders title ORDER:A
+} -cleanup {
+    cleanup
+} -result {ORDER:A}
+
+test title-1.2 {non-default title} -setup {
+    setup
+    myorders define ORDER:A {
+        meta title "My order title"
+    }
+} -body {
+    myorders title ORDER:A
+} -cleanup {
+    cleanup
+} -result {My order title}
+
+#-----------------------------------------------------------------------
+# get
+
+test get-1.1 {Retrieve an instance of the order} -setup {
+    setup
+    myorders define ORDER:A {
+        meta defaults { x 1 }
+    }
+} -body {
+    set o [myorders get ORDER:A]
+    $o set x 5
+    $o getdict
+} -cleanup {
+    cleanup
+} -result {x 5}
+
+
+
+#-----------------------------------------------------------------------
+# Cleanup
+
+cleanupTests

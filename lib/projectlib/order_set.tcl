@@ -1,6 +1,6 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#    orderx_set.tcl
+#    order_set.tcl
 #
 # AUTHOR:
 #    Will Duquette
@@ -8,7 +8,7 @@
 # DESCRIPTION:
 #    projectlib(n): Order Set Class
 #
-#    orderx_set(n) is a base class whose instances collect orderx 
+#    order_set(n) is a base class whose instances collect orderx 
 #    order classes into sets for introspection purposes.  The collection
 #    provides the following services:
 #
@@ -20,14 +20,13 @@
 #-----------------------------------------------------------------------
 
 namespace eval ::projectlib:: {
-    namespace export orderx_set
+    namespace export order_set
 }
 
 #-----------------------------------------------------------------------
-# orderx class
+# order_set class
 
-# TBD: Use TclOO for now; might use snit::type later.
-oo::class create ::projectlib::orderx_set {
+oo::class create ::projectlib::order_set {
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -39,6 +38,10 @@ oo::class create ::projectlib::orderx_set {
     
     constructor {} {
         set orders [dict create]
+    }
+
+    destructor {
+        my reset
     }
 
     #-------------------------------------------------------------------
@@ -60,9 +63,16 @@ oo::class create ::projectlib::orderx_set {
         # NEXT, create and configure the class itself.
         oo::class create $cls
         oo::define $cls meta name     $order
+        oo::define $cls meta title    $order
         oo::define $cls meta form     ""
         oo::define $cls meta parmtags ""
         oo::define $cls $body
+
+        # TODO: add orderx if it isn't an ancestor class, whether
+        # direct or indirect.
+        if {[info class superclasses $cls] == "::oo::object"} {
+            oo::define $cls superclass ::projectlib::orderx
+        }
 
         # NEXT, create the form.
         #
@@ -90,7 +100,8 @@ oo::class create ::projectlib::orderx_set {
 
     # reset
     #
-    # Destroys all orders and clears the saved data.
+    # Destroys all orders and clears the saved data.  Note that
+    # dynaforms aren't destroyed because there's no way to do it.
 
     method reset {} {
         dict for {name cls} $orders {
@@ -109,6 +120,34 @@ oo::class create ::projectlib::orderx_set {
 
     method names {} {
         return [dict keys $orders]
+    }
+
+    # exists order
+    #
+    # order     An order order
+    #
+    # Returns 1 if there's an order with this name, and 0 otherwise
+
+    method exists {order} {
+        return [dict exists $orders $order]
+    }
+
+    # validate order
+    #
+    # order  - Possibly, the name of an order.
+    #
+    # Throws INVALID if the order name is unknown.  Returns the 
+    # canonicalized order name.
+
+    method validate {order} {
+        set order [string toupper $order]
+
+        if {![my exists $order]} {
+            throw INVALID  \
+                "Order is undefined: \"$order\""
+        }
+
+        return $order
     }
 
     # class order
@@ -141,32 +180,5 @@ oo::class create ::projectlib::orderx_set {
         return [[my class $order] new]
     }
 
-    # exists order
-    #
-    # order     An order order
-    #
-    # Returns 1 if there's an order with this name, and 0 otherwise
-
-    typemethod exists {order} {
-        return [dict exists $orders $order]
-    }
-
-    # validate order
-    #
-    # order  - Possibly, the name of an order.
-    #
-    # Throws INVALID if the order name is unknown.  Returns the 
-    # canonicalized order name.
-
-    method validate {order} {
-        set order [string toupper $order]
-
-        if {![my exists $order]} {
-            throw INVALID  \
-                "Order is undefined: \"$order\""
-        }
-
-        return $order
-    }
 
 }

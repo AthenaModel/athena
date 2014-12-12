@@ -96,5 +96,5 @@ source [file join $::projectlib::library wfsclient.tcl      ]
 
 # orderx prototype
 source [file join $::projectlib::library orderx.tcl         ]
-source [file join $::projectlib::library orderx_set.tcl     ]
+source [file join $::projectlib::library order_set.tcl      ]
 
