@@ -1,0 +1,574 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    orderx.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Tcltest test suite for projectlib(n) orderx(n).
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+
+# Import tcltest(n)
+namespace import ::tcltest::*
+
+ 
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+source ../../lib/projectlib/pkgModules.tcl
+namespace import ::projectlib::*
+
+#------------------------------------------------------------------------
+# Set up the test environment
+
+order_set create myorders
+
+myorders define MY:ORDER {
+    meta title "My Order"
+    meta sendstates "PREP"
+    meta defaults {
+        x 1
+        y yes
+    }
+
+    method _validate {} {
+        my prepare x -type snit::integer
+        my prepare y -type snit::boolean
+    }
+
+    method _execute {} {
+        my variable parms
+        my setundo [list set ::orderResult $::orderResult]
+        set ::orderResult [list $parms(x) $parms(y)]
+    }
+}
+
+myorders define MY:FORM {
+    meta title "My Form"
+    meta sendstates "PREP"
+    meta defaults {
+        x 1
+        y 2
+    }
+    meta form {
+        text x
+        text y
+    }
+}
+
+
+variable orderResult {}
+
+proc setup {} {
+    [myorders class MY:ORDER] create ord
+}
+
+proc cleanup {} {
+    variable orderResult
+    set orderResult {}
+    ord destroy
+}
+
+#-----------------------------------------------------------------------
+# Creation
+
+test creation-1.1 {initial state} -setup {
+    setup
+} -body {
+    ord state
+} -cleanup {
+    cleanup
+} -result {CHANGED}
+
+test creation-1.2 {initial errdict} -setup {
+    setup
+} -body {
+    ord errdict
+} -cleanup {
+    cleanup
+} -result {}
+
+test creation-1.3 {initial values} -setup {
+    setup
+} -body {
+    ord getdict
+} -cleanup {
+    cleanup
+} -result {x 1 y yes}
+
+#-----------------------------------------------------------------------
+# get
+
+test get-1.1 {can get a parameter's value} -setup {
+    setup
+} -body {
+    ord get x
+} -cleanup {
+    cleanup
+} -result {1}
+
+
+#-----------------------------------------------------------------------
+# set
+
+test set-1.1 {can set a parameter's value} -setup {
+    setup
+} -body {
+    ord set x 5
+    ord get x
+} -cleanup {
+    cleanup
+} -result {5}
+
+test set-1.2 {returns new value} -setup {
+    setup
+} -body {
+    ord set x 5
+} -cleanup {
+    cleanup
+} -result {5}
+
+test set-1.3 {trims input value} -setup {
+    setup
+} -body {
+    ord set x "  HELLO  "
+} -cleanup {
+    cleanup
+} -result {HELLO}
+
+test set-1.4 {unknown parameter} -setup {
+    setup
+} -body {
+    ord set nonesuch 1
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Unknown parameter: "nonesuch"}
+
+#-----------------------------------------------------------------------
+# getdict
+
+test getdict-1.1 {retrieves parameter dictionary} -setup {
+    setup
+} -body {
+    ord getdict
+} -cleanup {
+    cleanup
+} -result {x 1 y yes}
+
+#-----------------------------------------------------------------------
+# setdict
+
+test setdict-1.1 {sets parameters} -setup {
+    setup
+} -body {
+    ord setdict [dict create x 5 y 10]
+    ord getdict
+} -cleanup {
+    cleanup
+} -result {x 5 y 10}
+
+test setdict-1.2 {sets parameters} -setup {
+    setup
+} -body {
+    ord setdict [dict create x 5 nonesuch 10]
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Unknown parameter: "nonesuch"}
+
+#-----------------------------------------------------------------------
+# cget
+
+test cget-1.1 {can cget a parameter's value} -setup {
+    setup
+} -body {
+    list [ord cget -x] [ord cget -y]
+} -cleanup {
+    cleanup
+} -result {1 yes}
+
+#-----------------------------------------------------------------------
+# configure
+
+test configure-1.1 {can set parameter values} -setup {
+    setup
+} -body {
+    ord configure -x 3 -y 4
+    list [ord get x] [ord get y]
+} -cleanup {
+    cleanup
+} -result {3 4}
+
+#-----------------------------------------------------------------------
+# state
+
+# Tested under "Life-Cycle", below
+
+#-----------------------------------------------------------------------
+# title
+
+test title-1.1 {can get an order's title} -setup {
+    setup
+} -body {
+    ord title
+} -cleanup {
+    cleanup
+} -result {My Order}
+
+#-----------------------------------------------------------------------
+# sendstates
+
+test sendstates-1.1 {can get an order's sendstates} -setup {
+    setup
+} -body {
+    ord sendstates
+} -cleanup {
+    cleanup
+} -result {PREP}
+
+#-----------------------------------------------------------------------
+# dynaform
+
+test dynaform-1.1 {no form} -setup {
+    setup
+} -body {
+    ord dynaform
+} -cleanup {
+    cleanup
+} -result {}
+
+test dynaform-1.2 {form} -setup {
+    setup
+    ::myorders::MY:FORM create frm
+} -body {
+    frm dynaform
+} -cleanup {
+    frm destroy
+    cleanup
+} -result {::myorders::MY:FORM}
+
+#-----------------------------------------------------------------------
+# narrative
+
+test narrative-1.1 {default narrative} -setup {
+    setup
+} -body {
+    ord narrative
+} -cleanup {
+    cleanup
+} -result {My Order}
+
+#-----------------------------------------------------------------------
+# parms
+
+test parms-1.1 {list of parm names} -setup {
+    setup
+} -body {
+    ord parms
+} -cleanup {
+    cleanup
+} -result {x y}
+
+#-----------------------------------------------------------------------
+# prune
+
+test prune-1.1 {empty for all defaults} -setup {
+    setup
+} -body {
+    ord prune
+} -cleanup {
+    cleanup
+} -result {}
+
+test prune-1.2 {just non-defaults} -setup {
+    setup
+} -body {
+    ord set x 5
+    ord prune
+} -cleanup {
+    cleanup
+} -result {x 5}
+
+#-----------------------------------------------------------------------
+# valid
+
+test valid-1.1 {returns 1 when all parms are valid} -setup {
+    setup
+} -body {
+    ord valid
+} -cleanup {
+    cleanup
+} -result {1}
+
+test valid-1.2 {returns 0 when any parm is invalid} -setup {
+    setup
+} -body {
+    ord set x NONESUCH
+    ord valid
+} -cleanup {
+    cleanup
+} -result {0}
+
+#-----------------------------------------------------------------------
+# errdict
+
+test errdict-1.1 {errdict is empty when items are valid} -setup {
+    setup
+} -body {
+    ord valid
+    ord errdict
+} -cleanup {
+    cleanup
+} -result {}
+
+#-----------------------------------------------------------------------
+# execute
+
+test execute-1.1 {execute calls _execute} -setup {
+    setup
+} -body {
+    ord set x 5 
+    ord set y no
+    ord valid
+    ord execute
+    set ::orderResult
+} -cleanup {
+    cleanup
+} -result {5 no}
+
+#-----------------------------------------------------------------------
+# canundo
+
+test canundo-1.1 {before execution, can't undo} -setup {
+    setup
+} -body {
+    ord canundo
+} -cleanup {
+    cleanup
+} -result {0}
+
+test canundo-1.2 {after execution, can undo} -setup {
+    setup
+} -body {
+    ord set x 5 
+    ord valid
+    ord execute
+    ord canundo
+} -cleanup {
+    cleanup
+} -result {1}
+
+#-----------------------------------------------------------------------
+# undo
+
+test undo-1.1 {undo change} -setup {
+    setup
+    set orderResult [list 6 0]
+    ord set x 10
+    ord set y false
+    ord valid
+} -body {
+    ord execute
+    ord undo
+    set orderResult
+} -cleanup {
+    cleanup
+} -result {6 0}
+
+
+#-----------------------------------------------------------------------
+# Life-Cycle States
+
+test states-1.1 {start => CHANGED} -setup {
+    setup
+} -body {
+    ord state
+} -cleanup {
+    cleanup
+} -result {CHANGED}
+
+test states-1.2 {Can't execute while CHANGED} -setup {
+    setup
+} -body {
+    ord execute
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Only validated orders can be executed.}
+
+test states-1.3 {Can't undo while CHANGED} -setup {
+    setup
+} -body {
+    ord undo
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Only executed orders can be undone.}
+
+
+test states-2.1 {CHANGED => REJECTED} -setup {
+    setup
+} -body {
+    set a [ord state]
+    ord set x NONESUCH
+    ord valid
+    set b [ord state]
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {CHANGED REJECTED}
+
+test states-2.2 {REJECTED => CHANGED} -setup {
+    setup
+} -body {
+    ord set x NONESUCH
+    ord valid
+    set a [ord state]
+    ord set x 1
+    set b [ord state]
+
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {REJECTED CHANGED}
+
+test states-2.3 {REJECTED => REJECTED} -setup {
+    setup
+} -body {
+    ord set x NONESUCH
+    ord valid
+    set a [ord state]
+    ord set x [ord get x]
+    set b [ord state]
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {REJECTED REJECTED}
+
+test states-2.4 {Can't execute while REJECTED} -setup {
+    setup
+} -body {
+    ord set x NONESUCH
+    ord valid
+    ord execute
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Only validated orders can be executed.}
+
+test states-2.5 {Can't undo while REJECTED} -setup {
+    setup
+} -body {
+    ord set x NONESUCH
+    ord valid
+    ord undo
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Only executed orders can be undone.}
+
+test states-3.1 {CHANGED => VALID} -setup {
+    setup
+} -body {
+    set a [ord state]
+    ord valid
+    set b [ord state]
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {CHANGED VALID}
+
+test states-3.2 {VALID => CHANGED} -setup {
+    setup
+} -body {
+    ord valid
+    set a [ord state]
+    ord set x 5
+    set b [ord state]
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {VALID CHANGED}
+
+test states-3.3 {VALID => VALID} -setup {
+    setup
+} -body {
+    ord valid
+    set a [ord state]
+    ord set x [ord get x]
+    set b [ord state]
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {VALID VALID}
+
+test states-3.4 {Can't undo while VALID} -setup {
+    setup
+} -body {
+    ord undo
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Only executed orders can be undone.}
+
+
+test states-4.1 {VALID => EXECUTED} -setup {
+    setup
+} -body {
+    ord valid
+    set a [ord state]
+    ord execute
+    set b [ord state]
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {VALID EXECUTED}
+
+test states-4.2 {EXECUTED => VALID} -setup {
+    setup
+} -body {
+    ord valid
+    ord execute
+    set a [ord state]
+    ord undo
+    set b [ord state]
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {EXECUTED VALID}
+
+test states-4.3 {Can't set while EXECUTED} -setup {
+    setup
+} -body {
+    ord valid
+    ord execute
+    ord set x 5
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Cannot modify an executed order.}
+
+#-----------------------------------------------------------------------
+# Cleanup
+
+cleanupTests

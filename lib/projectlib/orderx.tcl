@@ -87,7 +87,7 @@ oo::class create ::projectlib::orderx {
 
     method setdict {dict} {
         dict for {key value} $dict {
-            my set $key value
+            my set $key $value
         }
 
         return
@@ -106,7 +106,7 @@ oo::class create ::projectlib::orderx {
             "Cannot modify an executed order."
 
         if {![info exists parms($name)]} {
-            error "unknown parameter: \"$name\""
+            error "Unknown parameter: \"$name\""
         }
 
         set value [string trim $value]
@@ -202,7 +202,7 @@ oo::class create ::projectlib::orderx {
     # Returns the names of the order's parameters
 
     method parms {} {
-        return [array names parms]
+        return [dict keys [my defaults]]
     }
 
     # prune
@@ -308,9 +308,10 @@ oo::class create ::projectlib::orderx {
     # Undoes the effect of the order.
 
     method undo {} {
-        # TODO: Might want to distinguish between wrong state
-        # and no undo script
-        require {[my canundo]} "This order cannot be undone."
+        require {$orderState eq "EXECUTED"} \
+            "Only executed orders can be undone."
+        require {$undoScript ne ""} \
+            "This order cannot be undone."
 
         namespace eval :: $undoScript
 

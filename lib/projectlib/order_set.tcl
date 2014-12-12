@@ -62,10 +62,11 @@ oo::class create ::projectlib::order_set {
 
         # NEXT, create and configure the class itself.
         oo::class create $cls
-        oo::define $cls meta name     $order
-        oo::define $cls meta title    $order
-        oo::define $cls meta form     ""
-        oo::define $cls meta parmtags ""
+        oo::define $cls meta name       $order
+        oo::define $cls meta title      $order
+        oo::define $cls meta sendstates ""
+        oo::define $cls meta form       ""
+        oo::define $cls meta parmtags   ""
         oo::define $cls $body
 
         # TODO: add orderx if it isn't an ancestor class, whether
