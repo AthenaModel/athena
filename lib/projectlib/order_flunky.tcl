@@ -31,6 +31,9 @@ oo::class create ::projectlib::order_flunky {
     # oset: The order_set(n) component.
     variable oset
 
+    # order state; used to control which orders are available.
+    variable ostate
+
     # undoStack - stack of orders to be undone.  The top is the end.
     variable undoStack
 
@@ -49,6 +52,7 @@ oo::class create ::projectlib::order_flunky {
     constructor {orderSet_} {
         # FIRST, initialize the instance variables
         set oset      $orderSet_
+        set ostate    ""
         set undoStack [list]
         set redoStack [list]
     }
@@ -160,6 +164,36 @@ oo::class create ::projectlib::order_flunky {
     }
 
     #-------------------------------------------------------------------
+    # Order State
+
+    # state ?newState?
+    #
+    # newState - A new simulation state, e.g., PAUSED.
+    #
+    # Sets/queries the simulation state.
+
+    method state {{newState ""}} {
+        if {$newState ne ""} {
+            set ostate $newState
+        }
+
+        return $ostate
+    }
+
+    # available name
+    #
+    # Returns 1 if order $name is available in the current
+    # order state, and 0 otherwise.
+
+    method available {name} {
+        set ocls [$oset class $name]
+        set states [$ocls sendstates]
+
+        return [expr {$states eq "*" || $ostate in $states}] 
+    }
+    
+
+    #-------------------------------------------------------------------
     # Undo/Redo
     #
     # TODO: Need to handle undo blocks.  That probably means we need
@@ -181,7 +215,7 @@ oo::class create ::projectlib::order_flunky {
     method canundo {} {
         # TODO: Take the top order's sendstates into account?  In that
         # case, if we can't undo, clear the stack?
-        return [expr {[llength $undoStack] > 1}]
+        return [expr {[llength $undoStack] > 0}]
     }
 
     # canredo
@@ -191,7 +225,7 @@ oo::class create ::projectlib::order_flunky {
     method canredo {} {
         # TODO: Take the top order's sendstates into account?  In that
         # case, if we can't redo, clear the stack?
-        return [expr {[llength $redoStack] > 1}]
+        return [expr {[llength $redoStack] > 0}]
     }
 
     # undo

@@ -230,7 +230,7 @@ snit::type app {
             -usedtable    entities               \
             -logcmd       ::log                  \
             -ordercmd     [myproc AddOrderToCIF]
-        athena_flunky create flunky ::myorders
+        athena_flunky create ::flunky ::myorders
         bsys          init
         scenario      init
         nbhood        init
