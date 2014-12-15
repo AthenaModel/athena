@@ -11,7 +11,27 @@ namespace import ::projectlib::*
 
 <section DESCRIPTION>
 
-The oohelpers(n) package contains commands that make using TclOO a bit easier.
+The oohelpers(n) package contains commands that make using TclOO a bit 
+easier.<p>
+
+<section "GENERAL COMMANDS">
+
+This module defines the following commands to be used with TclOO classes
+and objects.<p>
+
+<deflist commands>
+
+<defitem "isa" {isa <i cls obj>}>
+
+Returns 1 if <i obj> is an instance of <i cls> or one of its subclasses,
+and 0 otherwise.<p>
+
+<defitem "isancestor" {isancestor <i parent child>}>
+
+Returns 1 if <i parent> is an ancestor class of the <i child> class
+(including being a direct superclass), and 0 otherwise.<p>
+
+</deflist commands>
 
 <section "CLASS-DEFINITION COMMANDS">
 

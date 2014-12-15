@@ -61,19 +61,13 @@ oo::class create ::projectlib::order_set {
         set cls [self]::$order
 
         # NEXT, create and configure the class itself.
-        oo::class create $cls
+        oo::class create $cls           { superclass ::projectlib::orderx }
         oo::define $cls meta name       $order
         oo::define $cls meta title      $order
         oo::define $cls meta sendstates ""
         oo::define $cls meta form       ""
         oo::define $cls meta parmtags   ""
         oo::define $cls $body
-
-        # TODO: add orderx if it isn't an ancestor class, whether
-        # direct or indirect.
-        if {[info class superclasses $cls] == "::oo::object"} {
-            oo::define $cls superclass ::projectlib::orderx
-        }
 
         # NEXT, create the form.
         #

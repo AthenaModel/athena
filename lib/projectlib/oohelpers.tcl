@@ -12,6 +12,51 @@
 #
 #-----------------------------------------------------------------------
 
+namespace eval ::projectlib:: {
+    namespace export \
+        isa          \
+        isancestor
+}
+
+#-----------------------------------------------------------------------
+# General Commands for use with TclOO
+
+# isa cls obj
+#
+# cls   - An oo:: class
+# obj   - An oo:: object
+#
+# Returns 1 if the object is an instance of the class or one of its
+# subclasses, and 0 otherwise.
+
+proc ::projectlib::isa {cls obj} {
+    return [info object isa typeof $obj $cls]
+}
+
+# isancestor parent child
+#
+# parent - An oo:: class
+# child  - Another oo:: class
+#
+# Returns 1 if parent is an ancestor class of child, and 0 otherwise.
+
+proc ::projectlib::isancestor {parent child} {
+    set parent [namespace origin $parent]
+    set candidates [info class superclasses $child]
+    
+    while {[got $candidates]} {
+        if {$parent in $candidates} {
+            return 1
+        }
+        set list [list]
+        foreach c $candidates {
+            lappend list {*}[info class superclasses $c]
+        }
+        set candidates $list
+    }
+    return 0 
+}
+
 #-----------------------------------------------------------------------
 # Helper commands for use in class definitions
 #
