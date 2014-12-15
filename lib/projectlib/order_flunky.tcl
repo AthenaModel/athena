@@ -40,15 +40,15 @@ oo::class create ::projectlib::order_flunky {
     #-------------------------------------------------------------------
     # Constructor
 
-    # constructor _orderSet
+    # constructor orderSet_
     #
-    # _orderSet - The name of the order_set(n) component.
+    # orderSet_ - The name of the order_set(n) component.
     #
     # TODO: Possibly, we will want an option-based interface.
 
-    constructor {_orderSet} {
+    constructor {orderSet_} {
         # FIRST, initialize the instance variables
-        set oset      $orderSet
+        set oset      $orderSet_
         set undoStack [list]
         set redoStack [list]
     }

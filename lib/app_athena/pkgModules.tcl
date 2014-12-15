@@ -61,17 +61,18 @@ namespace eval ::app_athena:: {
 #-----------------------------------------------------------------------
 # Load app_athena(n) modules
 
-source [file join $::app_athena::library main.tcl     ]
-source [file join $::app_athena::library mod.tcl      ]
-source [file join $::app_athena::library app.tcl      ]
-source [file join $::app_athena::library scenario.tcl ]
-source [file join $::app_athena::library sim.tcl      ]
-source [file join $::app_athena::library engine.tcl   ]
-source [file join $::app_athena::library log.tcl      ]
-source [file join $::app_athena::library cif.tcl      ]
-source [file join $::app_athena::library map.tcl      ]
-source [file join $::app_athena::library sanity.tcl   ]
-source [file join $::app_athena::library axdb.tcl     ]
+source [file join $::app_athena::library main.tcl         ]
+source [file join $::app_athena::library mod.tcl          ]
+source [file join $::app_athena::library app.tcl          ]
+source [file join $::app_athena::library scenario.tcl     ]
+source [file join $::app_athena::library sim.tcl          ]
+source [file join $::app_athena::library engine.tcl       ]
+source [file join $::app_athena::library log.tcl          ]
+source [file join $::app_athena::library cif.tcl          ]
+source [file join $::app_athena::library map.tcl          ]
+source [file join $::app_athena::library sanity.tcl       ]
+source [file join $::app_athena::library axdb.tcl         ]
+source [file join $::app_athena::library athena_flunky.tcl]
 
 #-----------------------------------------------------------------------
 # Load app_athena(n) subpackages

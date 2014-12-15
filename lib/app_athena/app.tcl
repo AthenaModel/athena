@@ -219,24 +219,25 @@ snit::type app {
 
         # NEXT, Create the working scenario RDB and initialize simulation
         # components
-        executive init
-        parm      init master
-        map       init
-        view      init
-        cif       init
-        order     init \
+        executive     init
+        parm          init master
+        map           init
+        view          init
+        cif           init
+        order         init \
             -subject      ::order                \
             -rdb          ::rdb                  \
             -usedtable    entities               \
             -logcmd       ::log                  \
             -ordercmd     [myproc AddOrderToCIF]
-        bsys      init
-        scenario  init
-        nbhood    init
-        sim       init
-        axdb      init
-        beanpot ::pot -rdb ::rdb
-        strategy  init
+        athena_flunky create flunky ::myorders
+        bsys          init
+        scenario      init
+        nbhood        init
+        sim           init
+        axdb          init
+        beanpot       ::pot -rdb ::rdb
+        strategy      init
 
         coverage_model init
 
