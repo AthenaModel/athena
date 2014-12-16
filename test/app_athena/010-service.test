@@ -46,6 +46,7 @@ namespace eval ::athena_test::tests:: {
     proc setup {} {
         ted create JOE BOB BLUE USAID NB1 NB2 SHIA SUNN KURD
         demog start
+        service reset
         rdb eval {
             UPDATE demog_g SET population=10000 WHERE g='SHIA';
             UPDATE demog_g SET population=20000 WHERE g='SUNN';
@@ -512,7 +513,102 @@ SHIA 1.0    0.25
 SUNN 1.0    0.25       
     }
 
-    test abservice-1.4 {Computes new expected LOS} -setup {
+    test abservice-1.4 {Updates actual LOS using delta of ELOS} -setup {
+        setup
+        service start
+    } -body {
+        service delta EDELTA NB1 ENERGY -0.25
+        ted query {
+            SELECT g, expected, new_actual FROM service_sg WHERE s='ENERGY' 
+            ORDER BY g
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+g    expected new_actual 
+---- -------- ---------- 
+KURD 0.4      0.4        
+SHIA 1.0      0.75       
+SUNN 1.0      0.75       
+    }
+
+    test abservice-1.5 {Updates actual LOS using delta of ALOS} -setup {
+        setup
+        service start
+    } -body {
+        service delta ADELTA NB1 ENERGY -0.25
+        ted query {
+            SELECT g, actual, new_actual FROM service_sg WHERE s='ENERGY' 
+            ORDER BY g
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+g    actual new_actual 
+---- ------ ---------- 
+KURD 0.4    0.4        
+SHIA 1.0    0.75       
+SUNN 1.0    0.75       
+    }
+
+    test abservice-1.6 {Updates actual LOS using delta of RLOS} -setup {
+        setup
+        service start
+    } -body {
+        service delta RDELTA NB1 ENERGY -0.25
+        ted query {
+            SELECT g, required, new_actual FROM service_sg WHERE s='ENERGY' 
+            ORDER BY g
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+g    required new_actual 
+---- -------- ---------- 
+KURD 0.4      0.4        
+SHIA 1.0      0.75       
+SUNN 1.0      0.75       
+    }
+
+    test abservice-1.7 {Actual LOS is clamped to 1.0} -setup {
+        setup
+        service start
+    } -body {
+        service delta RDELTA NB1 ENERGY 0.25
+        ted query {
+            SELECT g, required, new_actual FROM service_sg WHERE s='ENERGY' 
+            ORDER BY g
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+g    required new_actual 
+---- -------- ---------- 
+KURD 0.4      0.4        
+SHIA 1.0      1.0        
+SUNN 1.0      1.0        
+    }
+
+    test abservice-1.8 {Actual LOS is clamped to 0.0} -setup {
+        setup
+        service start
+    } -body {
+        service delta RDELTA NB2 ENERGY -1.0
+        ted query {
+            SELECT g, required, new_actual FROM service_sg WHERE s='ENERGY' 
+            ORDER BY g
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+g    required new_actual 
+---- -------- ---------- 
+KURD 0.4      0.0        
+SHIA 1.0      1.0        
+SUNN 1.0      1.0        
+    }
+
+    test abservice-1.9 {Computes new expected LOS} -setup {
         setup
         service start
         service actual NB1 ENERGY 0.25

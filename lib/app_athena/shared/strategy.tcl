@@ -189,6 +189,7 @@ oo::objdefine strategy {
         profile 1 tactic::STANCE reset
 
         profile 1 unit reset
+        profile 1 service reset
 
         # NEXT, execute each agent's strategy.
 

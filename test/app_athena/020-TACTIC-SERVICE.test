@@ -122,15 +122,15 @@ namespace eval ::athena_test::tests:: {
     } -cleanup {
         cleanup
     } -result {
-        mode {invalid value "NONESUCH", should be one of: EXACT, REQ, EXPECT, DELTA}
+        mode {invalid value "NONESUCH", should be one of: EXACT, RDELTA, EDELTA, ADELTA}
     }
 
-    test TACTIC:SERVICE-1.8 {invalid deltap, mode is DELTA} -setup {
+    test TACTIC:SERVICE-1.8 {invalid deltap} -setup {
         setup
     } -body {
         ted order -reject TACTIC:SERVICE \
             tactic_id [$T1 id] \
-            mode DELTA         \
+            mode RDELTA        \
             deltap 999
     } -cleanup {
         cleanup
@@ -158,7 +158,7 @@ namespace eval ::athena_test::tests:: {
         los        0.75
         mode       EXACT
         nlist      {_type NBHOODS _rule BY_VALUE nlist {NB1 NB2}}
-        parent     4
+        parent     *
         pot        ::pot
         s          ENERGY
         state      normal

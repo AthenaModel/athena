@@ -21,8 +21,8 @@ tactic define SERVICE "Update Level of Service" {system actor} -onlock {
 
     # Editable Parameters
     variable s      ;# The abstract service to change ALOS
-    variable mode   ;# One of: EXACT, REQ, EXPECT or DELTA
-    variable deltap ;# Delta pct of ALOS up or down when mode is DELTA
+    variable mode   ;# One of: EXACT, RDELTA, EDELTA or ADELTA
+    variable deltap ;# Delta pct up or down when mode is not EXACT
     variable nlist  ;# A gofer::NBHOODS value
     variable los    ;# Actual level of service
 
@@ -78,27 +78,28 @@ tactic define SERVICE "Update Level of Service" {system actor} -onlock {
             set narr "The SYSTEM agent "
         }
 
-        append narr "sets the actual level of $s service "
+        if {$deltap >= 0.0} {
+            set dir "up"
+        } else {
+            set dir "down"
+        }
+
+        append narr "attempts to set the actual level of $s service "
 
         switch -exact -- $mode {
             EXACT {
                 append narr "to $pct of saturation level in "
             }
 
-            REQ {
-                append narr "to the required LOS in "
+            RDELTA {
+                append narr "$dir by $pdel of current required level in "
             }
 
-            EXPECT {
-                append narr "to the expected LOS in "
+            EDELTA {
+                append narr "$dir by $pdel of current expected level in "
             }
 
-            DELTA {
-                if {$deltap >= 0.0} {
-                    set dir "up"
-                } else {
-                    set dir "down"
-                }
+            ADELTA {
                 append narr "$dir by $pdel of current actual level in "
             }
 
@@ -114,57 +115,55 @@ tactic define SERVICE "Update Level of Service" {system actor} -onlock {
         # FIRST, get the owner
         set owner [my agent]
         set nbhoods {}
+        let frac {$deltap / 100.0}
 
         set nbhoods [gofer eval $nlist]
 
-        # NEXT, log execution
-        set objects [concat $owner $nbhoods]
+        set ngood [list]
+        set nbad  [list]
 
-        set msg "SERVICE([my id]): [my narrative]"
-
-        sigevent log 2 tactic $msg {*}$objects
-
-        set glist [list]
+        # NEXT, determine which nbhoods get a new LOS and which don't
+        # because they've already been updated
         foreach n $nbhoods {
-            lappend glist {*}[civgroup gIn $n]
+            if {[service changed $n $s]} {
+                lappend nbad $n
+            } else {
+                lappend ngood $n
+            }
         }
 
-        set gclause "g IN ('[join $glist {','}]') AND s='$s'"
+        # NEXT, log execution
+        if {[llength $ngood] > 0} {
+            set objects [concat $owner $ngood]
+            set msg "SERVICE([my id]): [my narrative]"
+            sigevent log 2 tactic $msg {*}$objects
+        }
+
+        if {[llength $nbad] > 0} {
+            set objects [concat $owner $nbad]
+            set msg "SERVICE([my id]): "
+            append msg "LOS already set by higher priority tactic(s) in " 
+            append msg "these nbhoods: $nbad."
+            sigevent log 2 tactic $msg {*}$objects
+        }
+
+        # NEXT, if no nbhoods can be modified we are done
+        if {[llength $ngood] == 0} {
+            return
+        }
 
         # NEXT, update actual LOS in the nbhoods specified
         switch -exact -- $mode {
             EXACT {
                 # All nbhoods receive the same LOS
-                service actual $nbhoods $s $los
+                service actual $ngood $s $los
             }
             
-            REQ {
-                # Set LOS to the required level by groups in nbhoods
-                rdb eval "
-                    UPDATE service_sg
-                    SET new_actual = required
-                    WHERE $gclause
-                "
-            }
-
-            EXPECT {
-                # Set LOS to the expected level by groups in nbhoods
-                rdb eval "
-                    UPDATE service_sg
-                    SET new_actual = expected
-                    WHERE $gclause
-                "
-            }
-
-            DELTA {
-                # Set LOS up or down by a percentage of current ALOS
-                # by groups in nbhoods
-                let frac {$deltap / 100.0}
-                rdb eval "
-                    UPDATE service_sg
-                    SET new_actual = max(0.0,min(1.0,actual + (actual * $frac)))
-                    WHERE $gclause
-                "
+            RDELTA - 
+            EDELTA -
+            ADELTA {
+                # Change service in nbhoods by some delta
+                service delta $mode $ngood $s $frac
             }
 
             default {error "Unknown mode: \"$mode\""}
@@ -198,15 +197,25 @@ order define TACTIC:SERVICE {
                 frac los
             }
 
-            case REQ "Set to Required LOS" {}
-
-            case EXPECT "Set to Expected LOS" {}
-
-            case DELTA "Change by (+/-)" {
+            case RDELTA "Delta percent of RLOS" {
                 cc "" -for deltap 
                 text deltap
                 c  
-                label "% of ALOS"
+                label "% (+/-)"
+            }
+
+            case EDELTA "Delta percent of ELOS" {
+                cc "" -for deltap 
+                text deltap
+                c  
+                label "% (+/-)"
+            }
+
+            case ADELTA "Delta percent of current LOS" {
+                cc "" -for deltap 
+                text deltap
+                c  
+                label "% (+/-)"
             }
         }
     }

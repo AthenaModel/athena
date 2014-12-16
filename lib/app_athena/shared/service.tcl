@@ -22,6 +22,18 @@ snit::type service {
     pragma -hasinstances no
  
     #-------------------------------------------------------------------
+    # Non-Checkpointed Variables
+    #
+    # changed 
+    #
+    # This array variable keeps track of which neighborhoods have already
+    # had LOS modified for a particular abstract infrastructure service.  
+    # The SERVICE tactic uses this to determine whether LOS should be 
+    # changed
+
+    typevariable changed -array {}
+
+    #-------------------------------------------------------------------
     # sqlsection(i)
     #
     # The following variables and routines implement the module's 
@@ -119,6 +131,31 @@ snit::type service {
         }
     }
 
+    # reset
+    #
+    # Called between ticks, this method clears the changed array 
+
+    typemethod reset {} {
+        array unset changed
+    }
+
+    # changed n s
+    #
+    # n   - a nbhood
+    # s   - an abstract infrastructure service
+    #
+    # Returns a flag indicating if a particular abstract infrastructure 
+    # service has been changed during strategy execution.  Only services
+    # that have not already had LOS changed should be modified.
+
+    typemethod changed {n s} {
+        if {![info exists changed($n,$s)]} {
+            return 0
+        }
+
+        return 1
+    }
+
     # actual n s los
     #
     # nlist - a list of neighborhoods
@@ -136,10 +173,11 @@ snit::type service {
             "Invalid LOS: $los, must be between 0.0 and 1.0 inclusive."
 
         # NEXT, grab all groups in the neighborhoods and set
-        # their ALOS
+        # their ALOS and changed flag
         set glist [list]
         foreach n $nlist {
             lappend glist {*}[civgroup gIn $n]
+            set changed($n,$s) 1
         }
 
         set gclause "g IN ('[join $glist {','}]') AND s='$s'"
@@ -147,6 +185,56 @@ snit::type service {
         rdb eval "
             UPDATE service_sg
             SET new_actual = $los
+            WHERE $gclause
+        "
+    }
+
+    # delta mode nlist s frac
+    #
+    # mode   - the mode of change one of: RDELTA, EDELTA or ADELTA
+    # nlist  - a list of neighborhoods
+    # s      - the abstract infrastructure service
+    # frac   - the delta amount, up or down, to change the service
+    #
+    # This method changes actual LOS of an abstract infrastructure service
+    # up or down by a fractional amount based on mode:
+    #
+    #  RDELTA  - fraction of required LOS
+    #  EDELTA  - fraction of expected LOS
+    #  ADELTA  - fraction of actual LOS
+    #
+    # The changed flag is set for each neighborhood in nlist for the service
+    # being changed.  
+
+    typemethod delta {mode nlist s frac} {
+        # FIRST, frac must be in the range [-1.0, 1.0]
+        require {$frac >= -1.0 && $frac <= 1.0} \
+            "Invalid fraction: $frac, must be between -1.0 and 1.0 inclusive."
+
+        # NEXT, grab all groups in the neighborhoods and set ALOS
+        # and changed flag
+        set glist [list]
+        foreach n $nlist {
+            lappend glist {*}[civgroup gIn $n]
+            set changed($n,$s) 1
+        }
+
+        set gclause "g IN ('[join $glist {','}]') AND s='$s'"
+
+        # NEXT, update LOS based on mode
+        if {$mode eq "RDELTA"} {
+            set which "required"
+        } elseif {$mode eq "EDELTA"} {
+            set which "expected"
+        } elseif {$mode eq "ADELTA"} {
+            set which "actual"
+        } else {
+            error "Unknown mode: \"$mode\""
+        }
+
+        rdb eval "
+            UPDATE service_sg
+            SET new_actual = max(0.0,min(1.0,$which + ($which * $frac)))
             WHERE $gclause
         "
     }
