@@ -34,6 +34,10 @@ oo::class create ::projectlib::order_flunky {
     # order state; used to control which orders are available.
     variable ostate
 
+    # mode: Execution mode, gui|normal|private.  See [$f execute].
+    # Set while order is executing.
+    variable execMode
+
     # undoStack - stack of orders to be undone.  The top is the end.
     variable undoStack
 
@@ -53,6 +57,7 @@ oo::class create ::projectlib::order_flunky {
         # FIRST, initialize the instance variables
         set oset      $orderSet_
         set ostate    ""
+        set execMode  normal
         set undoStack [list]
         set redoStack [list]
     }
@@ -72,48 +77,65 @@ oo::class create ::projectlib::order_flunky {
         return [$cls new]
     }
 
-    # execute order
+    # execute mode order
     #
-    # order - An orderx(n) object
+    # mode   - Execution mode, gui|normal|private
+    # order  - An orderx(n) object
     #
-    # Validates the order and executes it, adding to the undo stack 
-    # (or clearing the undostack if it cannot be undone.)  Throws
-    # an error if the order is invalid (i.e., the caller should
-    # have already ensured that the order is valid).
+    # Executes the given order according to the mode.
     #
-    # If the order is successful, then ownership of the order object
-    # passes to the flunky.  If not, it is retained by the caller.
+    # If the mode is "normal", this command:
+    #
+    # * Throws an unexpected error if the order isn't valid.
+    # * Executes the order.
+    # * Adds it to the undo stack (or clears the undo stack if it cannot 
+    #   be undone.
+    # * Returns the order's return value.
+    #
+    # If the mode is "gui", execution is as above; but orders that wish
+    # to can pop up confirmation dialogs and the like.
+    #
+    # If the mode is "private", the undo/redo stack is left alone.
+    #
+    # NOTE: If the order is successful, then ownership of the order 
+    # object passes to the flunky.  If not, it is retained by the caller.
     #
     # Returns the order's return value on success.
-    #
-    # TODO: Need to specify interface
-    # TODO: Do all monitoring/notifications!
 
-    method execute {order} {
+    method execute {mode order} {
         if {![$order valid]} {
             error "order [$order name] is invalid."
         }
 
-        set result [$order execute]
+        try {
+            set execMode $mode
+            set result [$order execute [self]]
+        } finally {
+            set execMode normal
+        }
 
-        my UndoPush $order
-        my RedoClear
+        if {$mode eq "private"} {
+            # We no longer need the order.
+            $order destroy
+        } else {
+            my UndoPush $order
+            my RedoClear
+        }
 
         return $result
     }
 
-    # send name options...
+    # send mode name options...
     #
+    # mode      - Execution mode, gui|normal|private
     # name      - The order name, as defined in the oset.
     # options   - The order's parameters, in option syntax.
     #
     # Creates an order object, sets its parameters, and executes it
     # if possible.  Throws REJECTED with a detailed human-readable 
     # error message if the order isn't valid.
-    #
-    # TODO: Need to specify interface
 
-    method send {name args} {
+    method send {mode name args} {
         $oset validate $name
 
         set order [my make $name]
@@ -130,27 +152,26 @@ oo::class create ::projectlib::order_flunky {
             }
         }
 
-        return [my execute $order]
+        return [my execute $mode $order]
     }
 
 
-    # senddict name parmdict
+    # senddict mode name parmdict
     #
+    # mode      - Execution mode, gui|normal|private
     # name      - The order name, as defined in the oset.
     # options   - The order's parameters, as a dictionary.
     #
     # Creates an order object, sets its parameters, and executes it
     # if possible.  Throws REJECTED with an error dictionary 
     # if the order isn't valid.
-    #
-    # TODO: Need to specify interface
 
-    method senddict {name args} {
+    method senddict {mode name parmdict} {
         $oset validate $name
 
         set order [my make $name]
 
-        $order configure {*}$args
+        $order setdict $parmdict
 
         if {![$order valid]} {
             try {
@@ -160,7 +181,7 @@ oo::class create ::projectlib::order_flunky {
             }
         }
 
-        return [my execute $order]
+        return [my execute $mode $order]
     }
 
     #-------------------------------------------------------------------
@@ -178,6 +199,15 @@ oo::class create ::projectlib::order_flunky {
         }
 
         return $ostate
+    }
+
+    # mode
+    #
+    # Returns the flunky's execution mode.  The mode is set while
+    # an order is executing, and is always "normal" otherwise.
+
+    method mode {} {
+        return $execMode
     }
 
     # available name

@@ -39,6 +39,14 @@ oo::class create ::projectlib::orderx {
 
     # undoScript: Script to execute to undo the order.
     variable undoScript
+
+    # flunky: During execution, this is set to the order flunky handling
+    # this order, or "" if none.
+    variable flunky
+
+    # mode: During execution, this is set to the order flunky's 
+    # execution mode.
+    variable mode
     
     #-------------------------------------------------------------------
     # Constructor/Destructor
@@ -52,6 +60,8 @@ oo::class create ::projectlib::orderx {
         set orderState CHANGED
         set errdict    [dict create]
         set undoScript ""
+        set flunky     ""
+        set mode       private
         array set parms [my defaults]
     }
 
@@ -269,13 +279,19 @@ oo::class create ::projectlib::orderx {
         return $errdict
     }
 
-    # execute
+    # execute ?flunky?
+    #
+    # flunky   - The order_flunky(n) object handling order execution.
     #
     # Executes the order, assuming the "check" is successful.
 
-    method execute {} {
+    method execute {{flunky ""}} {
         require {$orderState eq "VALID"} \
             "Only validated orders can be executed."
+
+        if {$flunky ne ""} {
+            set mode [$flunky mode]
+        }
 
         set result [my _execute]
         set orderState EXECUTED
@@ -316,7 +332,7 @@ oo::class create ::projectlib::orderx {
     }
 
     #-------------------------------------------------------------------
-    # Protected Methods: for use in leaf classes
+    # Protected Methods: for use in _validate methods
 
     # prepare parm options...
     #
@@ -347,7 +363,7 @@ oo::class create ::projectlib::orderx {
                     # Integer numbers beginning with 0 are interpreted as
                     # octal, so we need to trim leading zeroes when the
                     # number is a non-zero integer.
-                    if {[string is integer -strict $parms($parm)] &&
+                    if {![string is integer -strict $parms($parm)] ||
                         $parms($parm) != 0
                     } {
                         set parms($parm) [string trimleft $parms($parm) "0"]
@@ -511,17 +527,6 @@ oo::class create ::projectlib::orderx {
         }
     }
 
-    # cancel
-    #
-    # Use this in the rare case where the user can interactively 
-    # cancel an order that's in progress.
-
-    unexport cancel
-    method cancel {} {
-        return -code error -errorcode CANCEL \
-            "The order was cancelled by the user."
-    }
-
     # reject name errtext
     #
     # name    - An order parameter name
@@ -532,6 +537,30 @@ oo::class create ::projectlib::orderx {
     unexport reject
     method reject {name errtext} {
         dict set errdict $name $errtext
+    }
+
+    #-------------------------------------------------------------------
+    # Protected Methods: for use in _execute methods
+
+    # mode
+    #
+    # Returns the flunky's execution mode: gui, normal, private.
+    # If there's no flunky at the moment, returns "private".
+
+    unexport mode
+    method mode {} {
+        return $mode
+    }
+
+    # cancel
+    #
+    # Use this in the rare case where the user can interactively 
+    # cancel an order that's in progress.
+
+    unexport cancel
+    method cancel {} {
+        return -code error -errorcode CANCEL \
+            "The order was cancelled by the user."
     }
 
     # setundo script
