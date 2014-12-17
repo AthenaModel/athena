@@ -44,6 +44,12 @@ myorders define MY:ORDER {
         y yes
     }
 
+    method narrative {} {
+        my variable parms
+
+        return "MY:ORDER x $parms(x) y $parms(y)"
+    }
+
     method _validate {} {
         my prepare x -type snit::integer
         my prepare y -type snit::boolean
@@ -55,6 +61,23 @@ myorders define MY:ORDER {
         set ::orderResult [list $parms(x) $parms(y)]
     }
 }
+
+myorders define MY:TEST {
+    meta title "My Test"
+    meta sendstates PREP
+    meta defaults {x 0}
+
+    method _validate {} {
+        my prepare x -type snit::integer
+    }
+
+    method _execute {} {
+        my variable parms
+        my setundo [list set ::orderResult $::orderResult]
+        set ::orderResult $parms(x)
+    }
+}
+
 
 myorders define NO:STATE    { meta sendstates ""            }
 myorders define ALL:STATES  { meta sendstates "*"           }
@@ -293,7 +316,8 @@ test send-1.3 {order option is invalid} -setup {
     error
 } -cleanup {
     cleanup
-} -result {Unknown option: -nonesuch}
+} -result {MY:ORDER rejected:
+-nonesuch   Unknown option}
 
 test send-1.4 {order option has no value} -setup {
     setup
@@ -403,6 +427,168 @@ test senddict-2.2 {order goes on undo stack} -setup {
     cleanup
 } -result {1}
 
+#-----------------------------------------------------------------------
+# canundo
+
+test canundo-1.1 {can't undo if stack is empty.} -setup {
+    setup
+} -body {
+    myflunky canundo
+} -cleanup {
+    cleanup
+} -result {0}
+
+test canundo-1.2 {can undo after executing undoable order.} -setup {
+    setup
+    myflunky senddict normal MY:ORDER {}
+} -body {
+    myflunky canundo
+} -cleanup {
+    cleanup
+} -result {1}
+
+#-----------------------------------------------------------------------
+# undotext
+
+test undotext-1.1 {empty string if stack is empty} -setup {
+    setup
+} -body {
+    myflunky undotext
+} -cleanup {
+    cleanup
+} -result {}
+
+test undotext-1.2 {undo narrative if stack is not empty} -setup {
+    setup
+    myflunky senddict normal MY:ORDER {}
+} -body {
+    myflunky undotext
+} -cleanup {
+    cleanup
+} -result {Undo: MY:ORDER x 1 y yes}
+
+#-----------------------------------------------------------------------
+# undo
+
+test undo-1.1 {Undo orders} -setup {
+    setup
+} -body {
+    set result [list]
+    lappend result $orderResult
+    myflunky send normal MY:TEST -x 1
+    lappend result $orderResult
+    myflunky send normal MY:TEST -x 2
+    lappend result $orderResult
+    myflunky send normal MY:TEST -x 3
+    lappend result $orderResult
+    myflunky undo
+    lappend result $orderResult
+    myflunky undo
+    lappend result $orderResult
+    myflunky undo
+    lappend result $orderResult
+    lappend result [myflunky canundo]
+} -cleanup {
+    cleanup
+} -result {{} 1 2 3 2 1 {} 0}
+
+#-----------------------------------------------------------------------
+# canredo
+
+test canredo-1.1 {can't redo if stack is empty.} -setup {
+    setup
+} -body {
+    myflunky canredo
+} -cleanup {
+    cleanup
+} -result {0}
+
+test canredo-1.2 {can redo after undoing order.} -setup {
+    setup
+    myflunky senddict normal MY:ORDER {}
+    myflunky undo
+} -body {
+    myflunky canredo
+} -cleanup {
+    cleanup
+} -result {1}
+
+test canredo-1.3 {can't redo after sending order.} -setup {
+    setup
+    myflunky senddict normal MY:ORDER {}
+    myflunky undo
+    myflunky senddict normal MY:ORDER {}
+} -body {
+    myflunky canredo
+} -cleanup {
+    cleanup
+} -result {0}
+
+#-----------------------------------------------------------------------
+# redotext
+
+test redotext-1.1 {empty string if stack is empty} -setup {
+    setup
+} -body {
+    myflunky redotext
+} -cleanup {
+    cleanup
+} -result {}
+
+test redotext-1.2 {redo narrative} -setup {
+    setup
+    myflunky senddict normal MY:ORDER {}
+    myflunky undo
+} -body {
+    myflunky redotext
+} -cleanup {
+    cleanup
+} -result {Redo: MY:ORDER x 1 y yes}
+
+
+
+#-----------------------------------------------------------------------
+# redo
+
+test redo-1.1 {Redo orders} -setup {
+    setup
+    myflunky send normal MY:TEST -x 1
+    myflunky send normal MY:TEST -x 2
+    myflunky send normal MY:TEST -x 3
+    myflunky undo
+    myflunky undo
+    myflunky undo
+} -body {
+    set result [list]
+    lappend result $orderResult
+    myflunky redo
+    lappend result $orderResult
+    myflunky redo
+    lappend result $orderResult
+    myflunky redo
+    lappend result $orderResult
+
+    lappend result [myflunky canredo]
+} -cleanup {
+    cleanup
+} -result {{} 1 2 3 0}
+
+#-----------------------------------------------------------------------
+# reset
+
+test reset-1.1 {Reset both stacks} -setup {
+    setup
+    myflunky send normal MY:TEST -x 1
+    myflunky send normal MY:TEST -x 2
+    myflunky send normal MY:TEST -x 3
+    myflunky undo
+} -body {
+    set result [list [myflunky canundo] [myflunky canredo]]
+    myflunky reset
+    lappend result [myflunky canundo] [myflunky canredo]
+} -cleanup {
+    cleanup
+} -result {1 1 0 0}
 
 
 #-----------------------------------------------------------------------

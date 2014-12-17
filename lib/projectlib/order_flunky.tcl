@@ -165,7 +165,7 @@ oo::class create ::projectlib::order_flunky {
             if {![string match "-*" $opt] ||
                 $parm ni $parms
             } {
-                set text "$name reject:\n"
+                set text "$name rejected:\n"
                 append text "$opt   Unknown option"
                 throw REJECTED $text
             }
