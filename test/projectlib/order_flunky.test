@@ -306,7 +306,7 @@ test send-1.4 {order option has no value} -setup {
     cleanup
 } -result {Missing value for option -x}
 
-test send-1.4 {order is invalid} -setup {
+test send-1.5 {order is invalid} -setup {
     setup
     ord set x NONESUCH
 } -body {
@@ -334,6 +334,70 @@ test send-2.2 {order goes on undo stack} -setup {
     setup
 } -body {
     myflunky send normal MY:ORDER
+    myflunky canundo
+} -cleanup {
+    cleanup
+} -result {1}
+
+
+#-----------------------------------------------------------------------
+# senddict
+
+test senddict-1.1 {mode is checked} -setup {
+    setup
+} -body {
+    myflunky senddict NONESUCH MY:ORDER {}
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Invalid mode: "NONESUCH"}
+
+test senddict-1.2 {order is unavailable} -setup {
+    setup
+    myflunky state RUNNING
+} -body {
+    myflunky senddict normal MY:ORDER {}
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Order MY:ORDER isn't available in state "RUNNING".}
+
+test senddict-1.3 {order option is invalid} -setup {
+    setup
+    ord set x NONESUCH
+} -body {
+    myflunky senddict normal MY:ORDER {nonesuch 5}
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Unknown parameter: "nonesuch"}
+
+test senddict-1.4 {order is invalid} -setup {
+    setup
+    ord set x NONESUCH
+} -body {
+    myflunky senddict normal MY:ORDER {x NONESUCH}
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {x {invalid value "NONESUCH", expected integer}}
+
+test senddict-2.1 {order is sent and result is returned} -setup {
+    setup
+} -body {
+    myflunky senddict normal MY:ORDER {x 5 y false}
+} -cleanup {
+    cleanup
+} -result {5 false}
+
+test senddict-2.2 {order goes on undo stack} -setup {
+    setup
+} -body {
+    myflunky senddict normal MY:ORDER {}
     myflunky canundo
 } -cleanup {
     cleanup

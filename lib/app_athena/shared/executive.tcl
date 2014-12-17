@@ -556,6 +556,10 @@ snit::type executive {
         $interp smartalias send 1 - {order ?option value...?} \
             [myproc send]
 
+        # sendx
+        $interp smartalias sendx 1 - {order ?option value...?} \
+            [list ::flunky send normal]
+
         # show
         $interp smartalias show 1 1 {url} \
             [myproc show]

@@ -139,7 +139,7 @@ oo::class create ::projectlib::order_flunky {
 
     method send {mode name args} {
         # FIRST, get the order object, validating the order name.
-        set order [string toupper $name]
+        set name [string toupper $name]
 
         $oset validate $name
 
@@ -163,7 +163,9 @@ oo::class create ::projectlib::order_flunky {
             if {![string match "-*" $opt] ||
                 $parm ni $parms
             } {
-                error "Unknown option: $opt"
+                set text "$name reject:\n"
+                append text "$opt   Unknown option"
+                throw REJECTED $text
             }
 
             if {[llength $args] == 0} {
@@ -222,6 +224,11 @@ oo::class create ::projectlib::order_flunky {
 
     method senddict {mode name parmdict} {
         $oset validate $name
+
+        if {![my available $name]} {
+            throw REJECTED \
+                "Order $name isn't available in state \"[my state]\"."
+        }
 
         set order [my make $name]
 
@@ -333,7 +340,7 @@ oo::class create ::projectlib::order_flunky {
 
     method undo {} {
         if {![my canundo]} {
-            error "Can't undo"
+            error "Nothing to undo; stack is empty."
         }
 
         set order [my UndoPop]
@@ -351,7 +358,7 @@ oo::class create ::projectlib::order_flunky {
 
     method redo {} {
         if {![my canredo]} {
-            error "Can't redo"
+            error "Nothing to redo; stack is empty."
         }
 
         set order [my RedoPop]
@@ -433,4 +440,30 @@ oo::class create ::projectlib::order_flunky {
         set redoStack [list]
     }
 
+    # dump
+    #
+    # Dumps the undo/redo info.
+
+    method dump {} {
+        set out [list]
+
+        if {[got $redoStack]} {
+            foreach o $redoStack {
+                lappend out "redo $o -- [$o name] <[$o getdict]>"
+            }
+            lappend out ""
+        }
+
+        lappend out "*** top of stack ***"
+
+        if {[got $undoStack]} {
+            lappend out ""
+
+            foreach o [lreverse $undoStack] {
+                lappend out "undo $o -- [$o name] <[$o getdict]>"
+            }
+        }
+
+        return [join $out \n]
+    }
 }
