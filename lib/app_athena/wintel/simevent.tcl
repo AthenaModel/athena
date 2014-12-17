@@ -221,7 +221,7 @@ oo::define ::wintel::simevent {
     variable week       ;# The start week, as a week(n) string.
     variable t          ;# The start week, as a sim week integer.
     variable coverage   ;# The neighborhood coverage fraction
-    variable los        ;# The actual level of service
+    variable deltap     ;# The change in actual level of service
     variable duration   ;# The duration in weeks.
     variable cidlist    ;# The message ID list: messages that drove this
                          # event.
@@ -239,7 +239,7 @@ oo::define ::wintel::simevent {
         set week     ""
         set t        ""
         set coverage 0.5
-        set los      1.0
+        set deltap   -10.0
         set duration 1
         set cidlist  [list]
 
