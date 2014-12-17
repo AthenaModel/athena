@@ -232,7 +232,7 @@ order define TACTIC:SERVICE {
     prepare nlist     
     prepare s      -toupper -type eabservice
     prepare mode   -toupper -selector
-    prepare deltap          -type rpercentpm
+    prepare deltap          -type rsvcpct
     prepare los    -num     -type rfraction
 
     returnOnError -final

@@ -207,9 +207,9 @@ snit::type service {
     # being changed.  
 
     typemethod delta {mode nlist s frac} {
-        # FIRST, frac must be in the range [-1.0, 1.0]
-        require {$frac >= -1.0 && $frac <= 1.0} \
-            "Invalid fraction: $frac, must be between -1.0 and 1.0 inclusive."
+        # FIRST, frac must be >= -1.0
+        require {$frac >= -1.0} \
+            "Invalid fraction: $frac, must be >= -1.0."
 
         # NEXT, grab all groups in the neighborhoods and set ALOS
         # and changed flag
@@ -232,6 +232,7 @@ snit::type service {
             error "Unknown mode: \"$mode\""
         }
 
+        # NEXT, update the new actual LOS clamping it between 0.0 and 1.0
         rdb eval "
             UPDATE service_sg
             SET new_actual = max(0.0,min(1.0,$which + ($which * $frac)))

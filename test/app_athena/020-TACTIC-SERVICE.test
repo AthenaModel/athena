@@ -131,11 +131,11 @@ namespace eval ::athena_test::tests:: {
         ted order -reject TACTIC:SERVICE \
             tactic_id [$T1 id] \
             mode RDELTA        \
-            deltap 999
+            deltap -999
     } -cleanup {
         cleanup
     } -result {
-        deltap {invalid value "999", expected double in range -100.0, 100.0}
+        deltap {invalid value "-999", should be a real number no less than -100.0}
     }
 
     test TACTIC:SERVICE-2.1 {tactic valid} -setup {
