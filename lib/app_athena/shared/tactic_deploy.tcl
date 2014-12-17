@@ -749,7 +749,9 @@ tactic define DEPLOY "Deploy Personnel" {actor} -onlock {
 
         # NEXT, deploy the troops and log the deployments.
         dict for {n ntroops} $trans(deployment) {
-            personnel deploy [my id] $n $g $ntroops
+            if {$ntroops > 0} {
+                personnel deploy [my id] $n $g $ntroops
+            }
 
             if {$trans(old)} {
                 set message "
