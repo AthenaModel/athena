@@ -63,6 +63,18 @@ term absit "abstract situation" {
 
 #-----------------------------------------------------------------------
 
+term abservice "abstract infrastructure service" {
+    An <i>abstract infrastructure service</i> is one that does not have
+    an actual model of infrastructure, such as the generating plants and
+    transmission lines of a power grid, to determine
+    the level of service (LOS) provided to civilians.  It is one for which
+    the LOS can be directly changed to drive civilian attitudes.  See the
+    <i>Athena Rules</i> document, which is delivered with the software,
+    for a complete list of abstract infrastructure services in Athena.
+}
+
+#-----------------------------------------------------------------------
+
 term activity "activity" {
     An <i>activity</i> is an action that a <term group> can perform in a
     <term nbhood>, as initiated by a <term tactic>.  Activities are
