@@ -559,8 +559,7 @@ oo::class create ::projectlib::orderx {
 
     unexport cancel
     method cancel {} {
-        return -code error -errorcode CANCEL \
-            "The order was cancelled by the user."
+        throw CANCEL "The order was cancelled by the user."
     }
 
     # setundo script

@@ -70,7 +70,6 @@ myorders define MY:FORM {
 
 myorders define MY:MODE {
     meta title "My Mode"
-    meta sendstates "PREP"
     meta defaults {
         x 1
         y 2
@@ -127,6 +126,22 @@ myorders define MY:RETURN {
         my set x 0
     }
 }
+
+myorders define MY:CANCEL {
+    meta defaults { x 1 }
+    method _validate {} {
+        my variable parms
+        my checkon x {
+            snit::integer validate $parms(x)
+        }
+    }
+
+    method _execute {} {
+        my cancel
+        error "Shouldn't get here"
+    }
+}
+
 
 variable orderResult {}
 
@@ -934,7 +949,16 @@ test mode-1.3 {flunky's mode is retained} -setup {
 #-----------------------------------------------------------------------
 # cancel
 
-# TBD: Need more code in order_flunky to test this.
+test cancel-1.1 {can cancel} -setup {
+    setup MY:CANCEL
+    ord valid
+} -body {
+    ord execute
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {The order was cancelled by the user.}
 
 
 #-----------------------------------------------------------------------
