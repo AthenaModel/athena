@@ -248,6 +248,15 @@ order TACTIC:RIOT "Tactic: RIOT Event" {
     </parmlist>
 }
 
+order TACTIC:SERVICE "Tactic: Update Level of Service" {
+    <b><term prep> Only.</b>
+    Updates an existing <cref /object/tactic/service>.<p>
+
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    <tactic_service parms -optional -tags update>
+    </parmlist>
+}
 
 order TACTIC:SIGEVENT "Tactic: Log Significant Event" {
     <b><term prep> Only.</b>  

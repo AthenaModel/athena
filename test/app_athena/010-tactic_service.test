@@ -54,6 +54,7 @@ namespace eval ::athena_test::tests:: {
         # NEXT, prepare for obligation
         personnel start
         personnel load
+        service reset
         set coffer [coffer new JOE]
     }
 
@@ -74,12 +75,14 @@ namespace eval ::athena_test::tests:: {
     } -cleanup {
         cleanup
     } -match dictglob -result {
+        deltap     0.0
         execstatus NONE
         faildict   {}
         id         *
         los        1.0
+        mode       EXACT
         nlist      {_type NBHOODS _rule {}}
-        parent     *
+        parent     4
         pot        ::pot
         s          ENERGY
         state      invalid
@@ -103,19 +106,74 @@ namespace eval ::athena_test::tests:: {
         $T1 narrative
     } -cleanup {
         cleanup
-    } -result {The SYSTEM agent sets the actual level of ENERGY service to 100.0% of saturation level in nbhood ???}
+    } -result {The SYSTEM agent attempts to set the actual level of ENERGY service to 100.0% of saturation level in nbhood ???}
 
-    test narrative-1.2 {narrative, specific settings} -setup {
+    test narrative-1.2 {narrative, mode EXACT} -setup {
         setup
         $T1 configure         \
             -nlist    [gofer construct NBHOODS BY_VALUE {NB1 NB2}] \
             -s        ENERGY \
+            -mode     EXACT \
             -los      0.5
     } -body {
         $T1 narrative
     } -cleanup {
         cleanup
-    } -result {The SYSTEM agent sets the actual level of ENERGY service to 50.0% of saturation level in these neighborhoods (NB1, NB2)}
+    } -result {The SYSTEM agent attempts to set the actual level of ENERGY service to 50.0% of saturation level in these neighborhoods (NB1, NB2)}
+
+    test narrative-1.3 {narrative, mode RDELTA} -setup {
+        setup
+        $T1 configure         \
+            -nlist    [gofer construct NBHOODS BY_VALUE {NB1 NB2}] \
+            -s        ENERGY \
+            -mode     RDELTA \
+            -deltap   10
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {The SYSTEM agent attempts to set the actual level of ENERGY service up by 10.0% of current required level in these neighborhoods (NB1, NB2)}
+
+    test narrative-1.4 {narrative, mode EDELTA} -setup {
+        setup
+        $T1 configure         \
+            -nlist    [gofer construct NBHOODS BY_VALUE {NB1 NB2}] \
+            -s        ENERGY \
+            -mode     EDELTA \
+            -deltap   10
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {The SYSTEM agent attempts to set the actual level of ENERGY service up by 10.0% of current expected level in these neighborhoods (NB1, NB2)}
+
+    test narrative-1.5 {narrative, mode positive ADELTA} -setup {
+        setup
+        $T1 configure         \
+            -nlist    [gofer construct NBHOODS BY_VALUE {NB1 NB2}] \
+            -s        ENERGY \
+            -mode     ADELTA \
+            -deltap   20    \
+            -los      0.5
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {The SYSTEM agent attempts to set the actual level of ENERGY service up by 20.0% of current actual level in these neighborhoods (NB1, NB2)}
+
+    test narrative-1.6 {narrative, mode negative ADELTA} -setup {
+        setup
+        $T1 configure         \
+            -nlist    [gofer construct NBHOODS BY_VALUE {NB1 NB2}] \
+            -s        ENERGY \
+            -mode     ADELTA \
+            -deltap   -20    \
+            -los      0.5
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {The SYSTEM agent attempts to set the actual level of ENERGY service down by 20.0% of current actual level in these neighborhoods (NB1, NB2)}
 
     #-------------------------------------------------------------------
     # check
@@ -184,7 +242,7 @@ namespace eval ::athena_test::tests:: {
     #-------------------------------------------------------------------
     # execute
 
-    test execute-1.1 {updates service} -setup {
+    test execute-1.1 {updates service, EXACT} -setup {
         setup
         service start
         $T1 configure         \
@@ -202,6 +260,131 @@ new_actual s         g
 0.25       ENERGY    SUNN 
 0.25       ENERGY    SHIA 
 0.25       ENERGY    KURD 
+0.0        ENI       SUNN 
+0.0        ENI       SHIA 
+0.0        ENI       KURD 
+0.0        TRANSPORT SUNN 
+0.0        TRANSPORT SHIA 
+0.0        TRANSPORT KURD 
+0.0        WATER     SUNN 
+0.0        WATER     SHIA 
+0.0        WATER     KURD 
+    }
+
+    test execute-1.2 {updates service, RDELTA} -setup {
+        setup
+        service start
+        rdb eval {UPDATE service_sg SET required=0.25}
+        $T1 configure         \
+            -nlist    [gofer construct NBHOODS BY_VALUE {NB1 NB2}] \
+            -s        ENERGY  \
+            -deltap   10      \
+            -mode     RDELTA
+    } -body {
+        $T1 execute
+        ted query {SELECT new_actual, s, g FROM service_sg}
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+new_actual s         g    
+---------- --------- ---- 
+0.275      ENERGY    SUNN 
+0.275      ENERGY    SHIA 
+0.275      ENERGY    KURD 
+0.0        ENI       SUNN 
+0.0        ENI       SHIA 
+0.0        ENI       KURD 
+0.0        TRANSPORT SUNN 
+0.0        TRANSPORT SHIA 
+0.0        TRANSPORT KURD 
+0.0        WATER     SUNN 
+0.0        WATER     SHIA 
+0.0        WATER     KURD 
+    }
+
+    test execute-1.3 {updates service, EDELTA} -setup {
+        setup
+        service start
+        rdb eval {UPDATE service_sg SET expected=0.25}
+        $T1 configure         \
+            -nlist    [gofer construct NBHOODS BY_VALUE {NB1 NB2}] \
+            -s        ENERGY  \
+            -mode     EDELTA  \
+            -deltap   10
+    } -body {
+        $T1 execute
+        ted query {SELECT new_actual, s, g FROM service_sg}
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+
+new_actual s         g    
+---------- --------- ---- 
+0.275      ENERGY    SUNN 
+0.275      ENERGY    SHIA 
+0.275      ENERGY    KURD 
+0.0        ENI       SUNN 
+0.0        ENI       SHIA 
+0.0        ENI       KURD 
+0.0        TRANSPORT SUNN 
+0.0        TRANSPORT SHIA 
+0.0        TRANSPORT KURD 
+0.0        WATER     SUNN 
+0.0        WATER     SHIA 
+0.0        WATER     KURD 
+    }
+
+    test execute-1.4 {updates service, ADELTA up} -setup {
+        setup
+        service start
+        rdb eval {UPDATE service_sg SET actual=0.5}
+        $T1 configure         \
+            -nlist    [gofer construct NBHOODS BY_VALUE {NB1 NB2}] \
+            -s        ENERGY  \
+            -mode     ADELTA  \
+            -deltap   50
+    } -body {
+        $T1 execute
+        ted query {SELECT new_actual, s, g FROM service_sg}
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+new_actual s         g    
+---------- --------- ---- 
+0.75       ENERGY    SUNN 
+0.75       ENERGY    SHIA 
+0.75       ENERGY    KURD 
+0.0        ENI       SUNN 
+0.0        ENI       SHIA 
+0.0        ENI       KURD 
+0.0        TRANSPORT SUNN 
+0.0        TRANSPORT SHIA 
+0.0        TRANSPORT KURD 
+0.0        WATER     SUNN 
+0.0        WATER     SHIA 
+0.0        WATER     KURD 
+    }
+
+    test execute-1.5 {updates service, ADELTA down} -setup {
+        setup
+        service start
+        rdb eval {UPDATE service_sg SET actual=1.0}
+        $T1 configure         \
+            -nlist    [gofer construct NBHOODS BY_VALUE {NB1 NB2}] \
+            -s        ENERGY  \
+            -mode     ADELTA  \
+            -deltap   -10
+    } -body {
+        $T1 execute
+        ted query {SELECT new_actual, s, g FROM service_sg}
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+new_actual s         g    
+---------- --------- ---- 
+0.9        ENERGY    SUNN 
+0.9        ENERGY    SHIA 
+0.9        ENERGY    KURD 
 0.0        ENI       SUNN 
 0.0        ENI       SHIA 
 0.0        ENI       KURD 
