@@ -1,0 +1,347 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    order_flunky.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Tcltest test suite for projectlib(n) order_flunky(n).
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+
+# Import tcltest(n)
+namespace import ::tcltest::*
+
+ 
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+source ../../lib/projectlib/pkgModules.tcl
+namespace import ::projectlib::*
+
+#------------------------------------------------------------------------
+# Set up the test environment
+
+variable orderResult {}
+
+order_set create myorders
+
+myorders define MY:ORDER {
+    meta title "My Order"
+    meta sendstates "PREP"
+    meta defaults {
+        x 1
+        y yes
+    }
+
+    method _validate {} {
+        my prepare x -type snit::integer
+        my prepare y -type snit::boolean
+    }
+
+    method _execute {} {
+        my variable parms
+        my setundo [list set ::orderResult $::orderResult]
+        set ::orderResult [list $parms(x) $parms(y)]
+    }
+}
+
+myorders define NO:STATE    { meta sendstates ""            }
+myorders define ALL:STATES  { meta sendstates "*"           }
+myorders define SOME:STATES { meta sendstates {PREP PAUSED} }
+
+proc setup {{cls MY:ORDER}} {
+    variable orderResult
+
+    set orderResult ""
+    order_flunky create ::myflunky ::myorders
+    myflunky state PREP
+    [myorders class $cls] create ord
+}
+
+proc cleanup {} {
+    variable orderResult
+
+    set orderResult ""
+    myflunky destroy
+    ord destroy
+}
+
+#-----------------------------------------------------------------------
+# Creation
+
+test creation-1.1 {initial state} -setup {
+    setup
+    order_flunky create vanilla ::myorders
+} -body {
+    list \
+        [vanilla state]   \
+        [vanilla mode]    \
+        [vanilla canundo] \
+        [vanilla canredo]
+} -cleanup {
+    vanilla destroy
+    cleanup
+} -result {{} normal 0 0}
+
+
+#-----------------------------------------------------------------------
+# state
+#
+# This set of tests covers setting and getting the state.  The effects
+# of the state are handled elsewhere.
+
+test state-1.1 {can set/get} -setup {
+    setup
+} -body {
+    set a [myflunky state]
+    myflunky state PAUSED
+    set b [myflunky state]
+
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {PREP PAUSED}
+
+
+test state-1.2 {returns new state} -setup {
+    setup
+} -body {
+    myflunky state PAUSED
+} -cleanup {
+    cleanup
+} -result {PAUSED}
+
+#-------------------------------------------------------------------
+# available
+
+test available-1.1 {no state set or required} -setup {
+    setup
+    order_flunky create vanilla ::myorders
+} -body {
+    vanilla available NO:STATE
+} -cleanup {
+    vanilla destroy
+    cleanup
+} -result {1}
+
+test available-1.2 {state set but none required} -setup {
+    setup
+} -body {
+    myflunky state PREP
+    myflunky available NO:STATE
+} -cleanup {
+    cleanup
+} -result {0}
+
+test available-1.3 {valid in all states} -setup {
+    setup
+} -body {
+    myflunky state PREP
+    myflunky available ALL:STATES
+} -cleanup {
+    cleanup
+} -result {1}
+
+test available-1.4 {valid in this state} -setup {
+    setup
+} -body {
+    myflunky state PAUSED
+    myflunky available SOME:STATES
+} -cleanup {
+    cleanup
+} -result {1}
+
+test available-1.5 {not valid in this state} -setup {
+    setup
+} -body {
+    myflunky state RUNNING
+    myflunky available SOME:STATES
+} -cleanup {
+    cleanup
+} -result {0}
+
+#-----------------------------------------------------------------------
+# make
+
+test make-1.1 {makes an order object} -setup {
+    setup
+} -body {
+    set o [myflunky make MY:ORDER]
+    $o title
+} -cleanup {
+    $o destroy
+    cleanup
+} -result {My Order}
+
+test make-1.2 {no such order} -setup {
+    setup
+} -body {
+    try {
+        myflunky make NONE:SUCH
+    } trap INVALID {result} {
+        list INVALID $result
+    }
+} -cleanup {
+    cleanup
+} -result {INVALID {Order is undefined: "NONE:SUCH"}}
+
+#-----------------------------------------------------------------------
+# execute
+
+test execute-1.1 {mode is checked} -setup {
+    setup
+} -body {
+    myflunky execute NONESUCH ::ord
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Invalid mode: "NONESUCH"}
+
+test execute-1.2 {order is unavailable} -setup {
+    setup
+    myflunky state RUNNING
+} -body {
+    myflunky execute normal ::ord
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Order MY:ORDER is not available in state "RUNNING"}
+
+test execute-1.3 {order is invalid} -setup {
+    setup
+    ord set x NONESUCH
+} -body {
+    myflunky execute normal ::ord
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {This MY:ORDER order is invalid.}
+
+test execute-2.1 {order is executed and result is returned} -setup {
+    setup
+    ord set x 5
+    ord set y false
+} -body {
+    myflunky execute normal ::ord
+} -cleanup {
+    cleanup
+} -result {5 false}
+
+test execute-2.2 {order goes on undo stack} -setup {
+    setup
+} -body {
+    myflunky execute normal ::ord
+    myflunky canundo
+} -cleanup {
+    cleanup
+} -result {1}
+
+test execute-2.3 {private mode, successful order is destroyed} -setup {
+    setup
+    set o [myflunky make MY:ORDER]
+} -body {
+    myflunky execute private $o
+    info command $o
+} -cleanup {
+    cleanup
+} -result {}
+
+#-----------------------------------------------------------------------
+# send
+
+test send-1.1 {mode is checked} -setup {
+    setup
+} -body {
+    myflunky send NONESUCH MY:ORDER
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Invalid mode: "NONESUCH"}
+
+test send-1.2 {order is unavailable} -setup {
+    setup
+    myflunky state RUNNING
+} -body {
+    myflunky send normal MY:ORDER
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Order MY:ORDER isn't available in state "RUNNING".}
+
+test send-1.3 {order option is invalid} -setup {
+    setup
+    ord set x NONESUCH
+} -body {
+    myflunky send normal MY:ORDER -nonesuch 5
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Unknown option: -nonesuch}
+
+test send-1.4 {order option has no value} -setup {
+    setup
+    ord set x NONESUCH
+} -body {
+    myflunky send normal MY:ORDER -x
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Missing value for option -x}
+
+test send-1.4 {order is invalid} -setup {
+    setup
+    ord set x NONESUCH
+} -body {
+    myflunky send normal MY:ORDER -x NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {MY:ORDER rejected:
+-x   invalid value "NONESUCH", expected integer
+
+Defaulted Parameters:
+-y   yes
+}
+
+test send-2.1 {order is sent and result is returned} -setup {
+    setup
+} -body {
+    myflunky send normal MY:ORDER -x 5 -y false
+} -cleanup {
+    cleanup
+} -result {5 false}
+
+test send-2.2 {order goes on undo stack} -setup {
+    setup
+} -body {
+    myflunky send normal MY:ORDER
+    myflunky canundo
+} -cleanup {
+    cleanup
+} -result {1}
+
+
+
+#-----------------------------------------------------------------------
+# Cleanup
+
+cleanupTests

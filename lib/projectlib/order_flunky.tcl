@@ -65,16 +65,17 @@ oo::class create ::projectlib::order_flunky {
     #-------------------------------------------------------------------
     # Sending Orders
 
-    # make name
+    # make name args
     #
     # name   - An order name
     #
     # Makes an order object for the named order.  Subclasses can override
     # this to add additional context when creating the order.
 
-    method make {name} {
+    method make {name args} {
+        $oset validate $name
         set cls [$oset class $name]
-        return [$cls new]
+        return [$cls new {*}$args]
     }
 
     # execute mode order
@@ -103,9 +104,10 @@ oo::class create ::projectlib::order_flunky {
     # Returns the order's return value on success.
 
     method execute {mode order} {
-        if {![$order valid]} {
-            error "order [$order name] is invalid."
-        }
+        require {$mode in {gui normal private}} "Invalid mode: \"$mode\""
+        require {[my available [$order name]]} \
+            "Order [$order name] is not available in state \"[my state]\""
+        require {[$order valid]} "This [$order name] order is invalid."
 
         try {
             set execMode $mode
@@ -136,22 +138,74 @@ oo::class create ::projectlib::order_flunky {
     # error message if the order isn't valid.
 
     method send {mode name args} {
+        # FIRST, get the order object, validating the order name.
+        set order [string toupper $name]
+
         $oset validate $name
+
+        if {![my available $name]} {
+            throw REJECTED \
+                "Order $name isn't available in state \"[my state]\"."
+        }
 
         set order [my make $name]
 
-        $order configure {*}$args
+        # NEXT, build the parameter dictionary, validating the
+        # parameter names as we go.
+        set parms [$order parms]
+        set userParms [list]
 
-        if {![$order valid]} {
-            # TODO: Turn errdict into human-readable message, a la
-            # "send" executive command.
-            try {
-                throw REJECTED [$order errdict]
-            } finally {
-                $order destroy   
+        while {[llength $args] > 0} {
+            set opt [lshift args]
+
+            set parm [string range $opt 1 end]
+
+            if {![string match "-*" $opt] ||
+                $parm ni $parms
+            } {
+                error "Unknown option: $opt"
             }
+
+            if {[llength $args] == 0} {
+                error "Missing value for option $opt"
+            }
+
+            $order set $parm [lshift args]
+            lappend userParms $parm
         }
 
+        # NEXT, validate the order.
+        if {![$order valid]} {
+            set wid [lmaxlen [$order parms]]
+            set text "$name rejected:\n"
+
+            # FIRST, add the parms in error.
+            dict for {parm msg} [$order errdict] {
+                append text [format "-%-*s   %s\n" $wid $parm $msg]
+            }
+
+            # NEXT, add the defaulted parms
+            set defaulted [list]
+            foreach parm [$order parms] {
+                if {$parm ni $userParms &&
+                    ![dict exists [$order errdict] $parm]
+                } {
+                    lappend defaulted $parm
+                }
+            }
+
+            if {[llength $defaulted] > 0} {
+                append text "\nDefaulted Parameters:\n"
+                foreach parm $defaulted {
+                    set value [$order get $parm]
+                    append text [format "-%-*s   %s\n" $wid $parm $value]
+                }
+            }
+
+            throw REJECT $text
+        }
+
+        # NEXT, execute the order and return the result.
         return [my execute $mode $order]
     }
 
@@ -219,6 +273,20 @@ oo::class create ::projectlib::order_flunky {
         set ocls [$oset class $name]
         set states [$ocls sendstates]
 
+        # FIRST, what if the order doesn't specify any particular states?
+        if {[llength $states] == 0} {
+            # FIRST, if there's no state set, assume the state mechanism
+            # isn't being used.  Otherwise, it's an error; the developer
+            # should have specified the states for this order.
+            if {$ostate eq ""} {
+                return 1
+            } else {
+                return 0
+            }
+        }
+
+        # NEXT, the order is available if it's valid in all
+        # states ("*") or the current state is one of its states.
         return [expr {$states eq "*" || $ostate in $states}] 
     }
     
