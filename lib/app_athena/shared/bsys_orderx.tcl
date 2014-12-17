@@ -24,6 +24,10 @@ myorders define BSYS:PLAYBOX:UPDATE {
         gamma 1.0
     }
 
+    method narrative {} {
+        return "Set Playbox Gamma to [format %g [my get gamma]]"
+    }
+
     method _validate {} {
         my prepare gamma -required -num -type ::simlib::rmagnitude
     }

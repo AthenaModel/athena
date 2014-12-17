@@ -112,6 +112,8 @@ oo::class create ::projectlib::order_flunky {
         try {
             set execMode $mode
             set result [$order execute [self]]
+        } trap CANCEL {result} {
+            return "Order was cancelled."
         } finally {
             set execMode normal
         }
@@ -323,6 +325,21 @@ oo::class create ::projectlib::order_flunky {
         return [expr {[llength $undoStack] > 0}]
     }
 
+    # undotext
+    #
+    # Returns the narrative of the order at the top of the undo stack,
+    # or "" if none.
+
+    method undotext {} {
+        set o [lindex $undoStack end]
+
+        if {$o ne ""} {
+            return "Undo: [$o narrative]"
+        } else {
+            return ""
+        }
+    }
+
     # canredo
     #
     # Returns 1 if there's an order on the redo stack, and 0 otherwise.
@@ -331,6 +348,21 @@ oo::class create ::projectlib::order_flunky {
         # TODO: Take the top order's sendstates into account?  In that
         # case, if we can't redo, clear the stack?
         return [expr {[llength $redoStack] > 0}]
+    }
+
+    # redotext
+    #
+    # Returns the narrative of the order at the top of the redo stack,
+    # or "" if none.
+
+    method redotext {} {
+        set o [lindex $redoStack end]
+
+        if {$o ne ""} {
+            return "Redo: [$o narrative]"
+        } else {
+            return ""
+        }
     }
 
     # undo
