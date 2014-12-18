@@ -63,6 +63,7 @@ oo::class create ::projectlib::order_set {
         oo::define $cls meta sendstates ""
         oo::define $cls meta form       ""
         oo::define $cls meta parmtags   ""
+        oo::define $cls variable parms
         oo::define $cls $body
 
         # NEXT, create the form.
