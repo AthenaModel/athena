@@ -273,16 +273,6 @@ test execute-2.2 {order goes on undo stack} -setup {
     cleanup
 } -result {1}
 
-test execute-2.3 {private mode, successful order is destroyed} -setup {
-    setup
-    set o [myflunky make MY:ORDER]
-} -body {
-    myflunky execute private $o
-    info command $o
-} -cleanup {
-    cleanup
-} -result {}
-
 #-----------------------------------------------------------------------
 # send
 

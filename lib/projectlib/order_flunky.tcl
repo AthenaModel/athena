@@ -43,6 +43,16 @@ oo::class create ::projectlib::order_flunky {
 
     # redoStack - stack of orders to be redone.  The top is the end.
     variable redoStack
+
+    # transList - list of transaction orders, while in a transaction.
+    #
+    # The list begins with the transaction narrative, followed by
+    # all orders in the transaction.
+    #
+    # NOTE: If this variable is non-empty, we are in a transaction.
+    # While in a transaction, we cannot undo or redo; that's an
+    # error which will lead to the transaction's failure.
+    variable transList
     
     #-------------------------------------------------------------------
     # Constructor
@@ -60,6 +70,7 @@ oo::class create ::projectlib::order_flunky {
         set execMode  normal
         set undoStack [list]
         set redoStack [list]
+        set transList [list]
     }
     
     #-------------------------------------------------------------------
@@ -98,8 +109,10 @@ oo::class create ::projectlib::order_flunky {
     #
     # If the mode is "private", the undo/redo stack is left alone.
     #
-    # NOTE: If the order is successful, then ownership of the order 
-    # object passes to the flunky.  If not, it is retained by the caller.
+    # NOTE: The caller always retains ownership of the order object.  
+    # If the order is executed successfully, then a copy is made to
+    # put on the undo stack.  Thus, it's up to the caller to destroy
+    # the order object when it's done with it.
     #
     # Returns the order's return value on success.
 
@@ -118,11 +131,8 @@ oo::class create ::projectlib::order_flunky {
             set execMode normal
         }
 
-        if {$mode eq "private"} {
-            # We no longer need the order.
-            $order destroy
-        } else {
-            my UndoPush $order
+        if {$mode ne "private"} {
+            my UndoPushNew [oo::copy $order]
             my RedoClear
         }
 
@@ -136,7 +146,7 @@ oo::class create ::projectlib::order_flunky {
     # options   - The order's parameters, in option syntax.
     #
     # Creates an order object, sets its parameters, and executes it
-    # if possible.  Throws REJECTED with a detailed human-readable 
+    # if possible.  Throws REJECT with a detailed human-readable 
     # error message if the order isn't valid.
 
     method send {mode name args} {
@@ -146,71 +156,85 @@ oo::class create ::projectlib::order_flunky {
         $oset validate $name
 
         if {![my available $name]} {
-            throw REJECTED \
+            throw REJECT \
                 "Order $name isn't available in state \"[my state]\"."
         }
 
         set order [my make $name]
 
-        # NEXT, build the parameter dictionary, validating the
-        # parameter names as we go.
-        set parms [$order parms]
-        set userParms [list]
+        try {
+            # FIRST, build the parameter dictionary, validating the
+            # parameter names as we go.
+            set parms [$order parms]
+            set userParms [list]
 
-        while {[llength $args] > 0} {
-            set opt [lshift args]
+            while {[llength $args] > 0} {
+                set opt [lshift args]
 
-            set parm [string range $opt 1 end]
+                set parm [string range $opt 1 end]
 
-            if {![string match "-*" $opt] ||
-                $parm ni $parms
-            } {
-                set text "$name rejected:\n"
-                append text "$opt   Unknown option"
-                throw REJECTED $text
-            }
-
-            if {[llength $args] == 0} {
-                error "Missing value for option $opt"
-            }
-
-            $order set $parm [lshift args]
-            lappend userParms $parm
-        }
-
-        # NEXT, validate the order.
-        if {![$order valid]} {
-            set wid [lmaxlen [$order parms]]
-            set text "$name rejected:\n"
-
-            # FIRST, add the parms in error.
-            dict for {parm msg} [$order errdict] {
-                append text [format "-%-*s   %s\n" $wid $parm $msg]
-            }
-
-            # NEXT, add the defaulted parms
-            set defaulted [list]
-            foreach parm [$order parms] {
-                if {$parm ni $userParms &&
-                    ![dict exists [$order errdict] $parm]
+                if {![string match "-*" $opt] ||
+                    $parm ni $parms
                 } {
-                    lappend defaulted $parm
+                    set text "$name rejected:\n"
+                    append text "$opt   Unknown option"
+                    throw REJECT $text
                 }
+
+                if {[llength $args] == 0} {
+                    error "Missing value for option $opt"
+                }
+
+                $order set $parm [lshift args]
+                lappend userParms $parm
             }
 
-            if {[llength $defaulted] > 0} {
-                append text "\nDefaulted Parameters:\n"
-                foreach parm $defaulted {
-                    set value [$order get $parm]
-                    append text [format "-%-*s   %s\n" $wid $parm $value]
-                }
+            # NEXT, execute the order and return the result.
+            if {[$order valid]} {
+                return [my execute $mode $order]
+            } else {
+                throw REJECT [my SendError $order $userParms]
             }
+        } finally {
+            $order destroy
+        }
+    }
 
-            throw REJECT $text
+    # SendError order userParms
+    #
+    # order      - An invalid order
+    # userParms  - Names of parameters explicitly entered by the user.
+    #
+    # Formats a nice, human-readable error message for the order.
+
+    method SendError {order userParms} {
+        set wid [lmaxlen [$order parms]]
+        set text "[$order name] rejected:\n"
+
+        # FIRST, add the parms in error.
+        dict for {parm msg} [$order errdict] {
+            append text [format "-%-*s   %s\n" $wid $parm $msg]
         }
 
-        # NEXT, execute the order and return the result.
-        return [my execute $mode $order]
+        # NEXT, add the defaulted parms
+        set defaulted [list]
+        foreach parm [$order parms] {
+            if {$parm ni $userParms &&
+                ![dict exists [$order errdict] $parm]
+            } {
+                lappend defaulted $parm
+            }
+        }
+
+        if {[llength $defaulted] > 0} {
+            append text "\nDefaulted Parameters:\n"
+            foreach parm $defaulted {
+                set value [$order get $parm]
+                append text [format "-%-*s   %s\n" $wid $parm $value]
+            }
+        }
+
+        return $text
     }
 
 
@@ -234,17 +258,17 @@ oo::class create ::projectlib::order_flunky {
 
         set order [my make $name]
 
-        $order setdict $parmdict
+        try {
+            $order setdict $parmdict
 
-        if {![$order valid]} {
-            try {
+            if {[$order valid]} {
+                return [my execute $mode $order]
+            } else {
                 throw REJECTED [$order errdict]
-            } finally {
-                $order destroy   
             }
+        } finally {
+            $order destroy
         }
-
-        return [my execute $mode $order]
     }
 
     #-------------------------------------------------------------------
@@ -299,6 +323,85 @@ oo::class create ::projectlib::order_flunky {
         return [expr {$states eq "*" || $ostate in $states}] 
     }
     
+    #-------------------------------------------------------------------
+    # Transactions
+    #
+    # A transaction groups a set of orders that are undone and redone
+    # as a unit.  If there is an error during the transaction, all
+    # successful orders previously recorded are undone.
+
+    # transaction narrative script
+    #
+    # narrative  - The narrative for this transaction (i.e., the
+    #              undo/redo text).
+    # script     - The script that implements the transaction.
+    #
+    # Executes the script as a single transaction.  All orders executed
+    # during the transaction (except "private" orders) are added to the
+    # transaction list rather than the undo stack; and then the 
+    # the trans list is added to the undo stack as a unit.
+    #
+    # Transactions may nest; but only the outermost narrative is 
+    # preserved.
+
+    method transaction {narrative script} {
+        # FIRST, if we're not in a transaction then begin one.
+        if {![my InTransaction]} {
+            set tranList [list $narrative]
+        }
+
+        # NEXT, execute the script
+        try {
+            uplevel 1 $script
+        } on error {result eopts} {
+            # Roll back changes, and rethrow.
+            my Rollback
+            return {*}$eopts $result
+        }
+
+        # NEXT, end the transaction.
+        my UndoPush $transList
+        set transList ""
+    }
+
+    # InTransaction
+    #
+    # Returns 1 if we're in the middle of an order transaction, and 0
+    # otherwise.
+
+    method InTransaction {} {
+        return [got $transList]
+    }
+
+    # IsTrans item
+    #
+    # item  - An undo item
+    #
+    # Returns 1 if the item is a transaction, and 0 otherwise.
+
+    method IsTrans {item} {
+        return [expr {[llength $item] > 1}]
+    }
+
+    # Rollback
+    #
+    # Rolls back the current transaction.  If there are nested
+    # transactions, this will get called multiple times; only handle
+    # transList the first time.
+
+    method Rollback {} {
+        if {![got $transList]} {
+            return
+        }
+
+        set orders [lreverse [lrange $transList 1 end]]
+        set transList [list]
+
+        foreach order $orders {
+            $order undo
+            $order destroy
+        }
+    }
 
     #-------------------------------------------------------------------
     # Undo/Redo
@@ -313,6 +416,8 @@ oo::class create ::projectlib::order_flunky {
     method reset {} {
         my UndoClear
         my RedoClear
+
+        set transList [list]
     }
 
     # canundo
@@ -322,22 +427,26 @@ oo::class create ::projectlib::order_flunky {
     method canundo {} {
         # TODO: Take the top order's sendstates into account?  In that
         # case, if we can't undo, clear the stack?
-        return [expr {[llength $undoStack] > 0}]
+
+        if {[my InTransaction]} {
+            return 0
+        }
+
+        return [got $undoStack]
     }
 
     # undotext
     #
-    # Returns the narrative of the order at the top of the undo stack,
+    # Returns the narrative of the item at the top of the undo stack,
     # or "" if none.
 
     method undotext {} {
-        set o [lindex $undoStack end]
-
-        if {$o ne ""} {
-            return "Undo: [$o narrative]"
-        } else {
+        if {![my canundo]} {
             return ""
         }
+
+        return [my ItemNarrative "Undo" [ltop $undoStack]]
+
     }
 
     # canredo
@@ -345,24 +454,26 @@ oo::class create ::projectlib::order_flunky {
     # Returns 1 if there's an order on the redo stack, and 0 otherwise.
 
     method canredo {} {
+        if {[my InTransaction]} {
+            return 0
+        }
+
         # TODO: Take the top order's sendstates into account?  In that
         # case, if we can't redo, clear the stack?
-        return [expr {[llength $redoStack] > 0}]
+        return [got $redoStack]
     }
 
     # redotext
     #
-    # Returns the narrative of the order at the top of the redo stack,
+    # Returns the narrative of the item at the top of the redo stack,
     # or "" if none.
 
     method redotext {} {
-        set o [lindex $redoStack end]
-
-        if {$o ne ""} {
-            return "Redo: [$o narrative]"
-        } else {
+        if {![my canredo]} {
             return ""
         }
+
+        return [my ItemNarrative "Redo" [ltop $redoStack]]
     }
 
     # undo
@@ -371,16 +482,23 @@ oo::class create ::projectlib::order_flunky {
     # redo stack.  It's an error if there's no order to redo.
 
     method undo {} {
+        require {![my InTransaction]} "Cannot undo during transaction."
+
         if {![my canundo]} {
             error "Nothing to undo; stack is empty."
         }
 
-        set order [my UndoPop]
+        set item [lpop undoStack]
 
-        $order undo
+        if {[my IsTrans $item]} {
+            foreach order [lreverse [lrange $item 1 end]] {
+                $order undo
+            }
+        } else {
+            $item undo            
+        }
 
-        my RedoPush $order
-        # TODO: Do all monitoring/notifications
+        lpush redoStack $item
     }
 
     # redo
@@ -389,43 +507,60 @@ oo::class create ::projectlib::order_flunky {
     # undo stack.  It's an error if there's no order to redo.
 
     method redo {} {
+        require {![my InTransaction]} "Cannot redo during transaction."
+
         if {![my canredo]} {
             error "Nothing to redo; stack is empty."
         }
 
-        set order [my RedoPop]
+        set item [lpop redoStack]
 
-        $order execute
+        if {[my IsTrans $item]} {
+            foreach order [lrange $item 1 end] {
+                $order execute
+            }
+        } else {
+            $item execute    
+        }
 
         # We know it can undone, because it wouldn't be on the redo
         # stack otherwise.
-        my UndoPush $order
-        # TODO: Do all monitoring/notifications
+        lpush undoStack $item
     }
 
-    # UndoPush order
+
+
+    # UndoPushNew item
     #
-    # order - An order that was successfully executed.
+    # item - An order or transaction list that was successfully executed.
     #
-    # If the order can be undone, it is pushed onto the Undo Stack;
+    # If the item can be undone, it is pushed onto the Undo Stack;
     # otherwise, the stack is cleared.
 
-    method UndoPush {order} {
-        if {[$order canundo]} {
-            lappend undoStack $order
-        } else {
-            my UndoClear
+    method UndoPushNew {item} {
+        # FIRST, transaction lists are always undoable.
+        if {[my IsTrans $item]} {
+            lpush undoStack $item
+            return
         }
-    }
 
-    # UndoPop
-    #
-    # Pops the order off of the top of the undo stack, and returns it.
+        # NEXT, what happens depends on whether we are in a transaction
+        # or not.
+        set order $item
 
-    method UndoPop {} {
-        set order [lindex $undoStack end]
-        set undoStack [lrange $undoStack 0 end-1]
-        return $order
+        if {[my InTransaction]} {
+            if {[$order canundo]} {
+                lpush transList $order
+            } else {
+                error "Non-undoable order used in transaction: [$order name]"
+            }
+        } else {
+            if {[$order canundo]} {
+                lpush undoStack $order
+            } else {
+                my UndoClear
+            }
+        }
     }
 
     # UndoClear
@@ -433,44 +568,62 @@ oo::class create ::projectlib::order_flunky {
     # Clears the undoStack
 
     method UndoClear {} {
-        foreach o $undoStack {
-            $o destroy
+        try {
+            my DestroyItems $undoStack
+        } finally {
+            set undoStack [list]
         }
-
-        set undoStack [list]
     }
     
-    # RedoPush order
-    #
-    # order - An order that was successfully undone.
-    #
-    # Pushes the order onto the Redo Stack.
-
-    method RedoPush {order} {
-        lappend redoStack $order
-    }
-
-    # RedoPop
-    #
-    # Pops the order off of the top of the redo stack, and returns it.
-
-    method RedoPop {} {
-        set order [lindex $redoStack end]
-        set redoStack [lrange $redoStack 0 end-1]
-        return $order
-    }
-
     # RedoClear
     #
     # Clears the redoStack
 
     method RedoClear {} {
-        foreach o $redoStack {
-            $o destroy
+        try {
+            my DestroyItems $redoStack
+        } finally {
+            set redoStack [list]
         }
-
-        set redoStack [list]
     }
+
+    # DestroyItems list
+    #
+    # list - A list of saved items to destroy.
+    #
+    # Destroys all orders and transactions in the list.
+
+    method DestroyItems {list} {
+        foreach item $list {
+            if {[my IsTrans $item]} {
+                foreach o [lrange $item 1 end] {
+                    $o destroy
+                }
+            } else {
+                $item destroy
+            }
+        }
+    }
+
+    # ItemNarrative op item
+    #
+    # op    - The operation
+    # item  - an order or transaction
+    #
+    # Returns the item's narrative string.
+
+    method ItemNarrative {op item} {
+        if {[my IsTrans $item]} {
+            return "$op: [lindex $item 0]"
+        } else {
+            return "$op: [$item narrative]"
+        }
+    }
+
+
+    #-------------------------------------------------------------------
+    # Debugging Commands
+    
 
     # dump
     #
@@ -481,7 +634,13 @@ oo::class create ::projectlib::order_flunky {
 
         if {[got $redoStack]} {
             foreach o $redoStack {
-                lappend out "redo $o -- [$o name] <[$o getdict]>"
+                if {[my IsTrans $o]} {
+                    lappend out \
+                        "redo transaction -- [lindex $o 0]"
+                } else {
+                    lappend out "redo $o -- [$o name] <[$o getdict]>"
+
+                }
             }
             lappend out ""
         }
@@ -492,7 +651,13 @@ oo::class create ::projectlib::order_flunky {
             lappend out ""
 
             foreach o [lreverse $undoStack] {
-                lappend out "undo $o -- [$o name] <[$o getdict]>"
+                if {[my IsTrans $o]} {
+                    lappend out \
+                        "undo transaction -- [lindex $o 0]"
+                } else {
+                    lappend out "undo $o -- [$o name] <[$o getdict]>"
+
+                }
             }
         }
 

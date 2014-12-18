@@ -57,6 +57,7 @@ namespace eval ::projectlib:: {
 #-----------------------------------------------------------------------
 # Modules
 
+source [file join $::projectlib::library projmisc.tcl       ]
 source [file join $::projectlib::library osdir.tcl          ]
 source [file join $::projectlib::library domparser.tcl      ]
 source [file join $::projectlib::library enumx.tcl          ]
