@@ -1,0 +1,268 @@
+<manpage {projectlib(n) orderx(n)} "Order Base Class">
+
+<section SYNOPSIS>
+
+<pre>
+package require projectlib <version>
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+The <tt ::projectlib::orderx> class is part of the Mars Order Processing
+framework, which indludes <xref orderx(n)>, <xref order_set(n)>, and
+<xref order_flunky(n)>.<p>
+
+In this framework, an "order" is a request from the user to change the
+program's state in some way, e.g., to add, update, or delete an entity
+of some kind.  Each type of order has its own parameters; together they
+have the same interface, which supports validation, logging, and user
+undo/redo.<p>
+
+An order is created as an instance of an order leaf class, which is a
+descendant of <tt ::projectlib::orderx>.  It can be validated and executed
+on its own; more typically, it is executed by an instance of 
+<xref order_flunky(n)>, which handles the undo/redo stacks.<p>
+
+New subclasses of orderx(n) are defined using an instance of 
+<xref order_set(n)>, which ensures that the each order class has the 
+right superclass and good default <xref oohelpers(n) meta>data settings.
+The order set then provides introspection on the set of
+defined order classes and validation of order type names.<p>
+
+Each application or library that defines orders will usually define its
+own <xref order_set(n)> and <xref order_flunky(n)> objects, and may
+choose to subclass <xref orderx(n)> and <xref order_flunky(n)>.<p>
+
+<subsection "Intermediate Base Classes">
+
+When the Mars Order Processing framework is used in an application context,
+the order classes can usually access all needed resources using well-defined
+names.  When it is used in a library context, e.g., to control an instance
+of the library, then the orders will typically need access to the instance
+command.  This is usually done by subclassing orderx(n) to make an 
+intermediate base class.  All order types defined by the application would
+then be subclasses of the intermediate base class.<p>
+
+TBD -- still figuring this out.
+
+<section "ORDER CLASSES">
+
+The actual orders are leaf classes descended from <tt ::projectlib::order>
+
+
+
+<section COMMANDS>
+
+The following commands create instances of orderx(n), which isn't
+usually all that useful.<p>
+
+<deflist>
+
+<defitem "orderx create" {::projectlib::orderx create <i>name</i>}>
+
+Creates a new instance of <tt ::projectlib::orderx>
+called <i name>.  There are no other constructor arguments.<p>
+
+It is more usually to use <iref orderx new> to create instances of an order
+class.<p>
+
+<defitem "orderx new" {::projectlib::orderx new}>
+
+Creates a new instance of <tt ::projectlib::orderx> with an arbitrary
+name.  There are no other constructor arguments.<p>
+
+</deflist>
+
+<section "INSTANCE COMMAND">
+
+Each instance orderx(n) or its subclasses has at least the following 
+groups of subcommands.<p>
+
+<subsection "Metadata">
+
+Each order class will have a number of attached metadata values; these
+are defined by the <xref oohelpers(n) meta> class definition statement.
+The <tt meta> statement takes a <i name> and <i value> and defines an
+instance method and a class method, both called <i name>, and both
+returning the <i value>.<p>
+
+By convention, subclasses of orderx(n) should define the following metadata
+items.  Note that <xref order_set(n)>'s <xref order_set(n) define> method
+provides defaults for these.  In addition, the programmer may choose
+to add any additional metadata he likes.<p>
+
+<deflist meta>
+
+<defitem name {<i>obj</i> name}>
+
+Returns the name of the order, e.g., "MY:ORDER".  By convention, orders
+have names in all capital letters with ":" as a separator.  This is 
+distinct from the order class's name, which is usually the order name
+qualified by some namespace.<p>
+
+The <tt name> metadata item is usually defined automatically by
+<xref order set(n)>.<p>
+
+<defitem title {<i>obj</i> title}>
+
+Returns the title of the order, e.g., "My Order".<p>  If the order class
+doesn't define it explicitly, then <xref order_set(n)> makes it the same
+as the order name.<p>
+
+<defitem defaults {<i obj> defaults}>
+
+Returns the order's default parameter settings, a dictionary of default
+values by parameter names.  In addition, the keys of the dictionary
+are the official specification of the order's parameter names.  Every
+leaf class should define this metadata value.<p>
+
+<defitem sendstates {<i>obj</i> sendstates}>
+
+Returns a list of the <xref order_flunky(n)> states in which this order 
+may be sent.  "Send States" are a means of controlling which orders can
+be used at different times; see <xref order_flonky(n)> for details.<p>
+
+<xref order_set(n)> defaults this value to the empty list, which is
+appropriate if "send states" are not being used.<p>
+
+<defitem form {<i obj> parmtags}>
+
+Parmtags, or "parameter tags", relate order parameter names to data types
+that can be "pucked" in the application's GUI.  The value of this item is
+a dictionary of data types by parameter name.<p>
+
+<xref order_set(n)> defaults this value to the empty list, which is
+usually appropriate.<p>
+
+</deflist meta>
+
+<subsection "Parameter Access">
+
+The order's parameters and their default values are defined by the order
+class's <i defaults> metadata item.  Parameter values are saved in the 
+instance's <tt parms()> array.  Order classes defined using 
+<xref orderset(n)> can use the <tt parms()> array freely in all of their
+methods; other classes would need to call <tt my variable parms> in each
+relevant method to bring <tt parms()> into scope.<p>
+
+The following subcommands manipulate the <tt parms()> array.<p>
+
+<deflist parms>
+
+<defitem cget {<i obj> cget <i option>}>\
+
+This command is identical to <iref get>, but expresses the parameter
+name using option notation, e.g., the parameter "<t foo>" is entered as
+"<t -foo>"<p>
+
+<defitem configure {<i obj> configure <i option value...>}>\
+
+Sets the value of one or more order parameters using option notation.<p>
+
+<defitem get {<i obj> get <i parm>}>
+
+Returns the value of the named <i parm>.<p>
+
+<defitem getdict {<i obj> getdict}>
+
+Returns a dictionary of the order's parameters by parameter name.<p>
+
+<defitem set {<i obj> set <i parm value>}>
+
+Sets the <i value> of the named <i parm>, and changes the order's 
+<iref state> to <b CHANGED>.  This command cannot be used when the
+order is in the <b EXECUTED> state.<p>
+
+<defitem setdict {<i obj> setdict <i parmdict>}>
+
+Sets some or all of the order's parameters given a dictionary of 
+parameter names and values.  Note that <iref set> is used to make the
+actual changes.<p>
+
+</deflist parms>
+
+<subsection "Other Queries">
+
+The user may also make the following queries:<p>
+
+<deflist parms>
+
+<defitem narrative {<i obj> narrative}>
+
+Returns a narrative string for the order instance.  This string
+defaults to the order's title, e.g., "My Order"; the class may override
+this method to provide a more detailed narrative.<p>
+
+The narrative primarily appears in the Edit/Undo and Edit/Redo menu items.<p>
+
+<defitem parms {<i obj> parms}>
+
+Returns a list of the names of the order's parameters, in the order in
+which they appear in the order's <iref defaults>.<p>
+
+<defitem state {<i obj> state}>
+
+This command returns the order object's own state, which is one of
+<b CHANGED>, <b VALID>, <b INVALID>, or <b EXECUTED>:<p>
+
+<ul>
+    <li> A newly created or modified order will be in the <b CHANGED>
+         state.<p>
+
+    <li> Calling <iref valid> attempts to validate the order's parameters.
+         Afterwards the state will be either <b>VALID</b> or 
+         <b>INVALID</b>.<p>
+
+    <li> If the order's state is <b>VALID</b>, then calling 
+        <iref execute> will execute it; and will go
+         into the <b EXECUTED> state.<p>
+
+    <li> Orders in the <b EXECUTED> state can be undone by calling
+         <iref undo>, but cannot be modified in other ways.
+
+    <li> If the order has been executed, then calling <iref undo> will
+         undo its effects, returning it to the <b VALID> state.
+</ul>
+
+</deflist parms>
+
+<subsection "Order Operations">
+
+
+<subsection "Validation Helpers">
+
+<subsection "Execution Helpers">
+
+
+<section "EXAMPLES">
+
+
+
+<section "SEE ALSO">
+
+<xref order_flunky(n)>, <xref order_set(n)>.
+
+<section ENVIRONMENT>
+
+orderx(n) requires Tcl 8.5 or later, plus TclOO.
+
+To use orderx(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the projectlib(n)
+library directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
