@@ -33,7 +33,7 @@ namespace import ::projectlib::*
 # Set up the test environment
 
 proc setup {} {
-    order_set create myorders
+    ::projectlib::order_set create myorders
 }
 
 proc cleanup {} {

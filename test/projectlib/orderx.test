@@ -32,8 +32,8 @@ namespace import ::projectlib::*
 #------------------------------------------------------------------------
 # Set up the test environment
 
-order_set create myorders
-order_flunky create myflunky ::myorders
+::projectlib::order_set create myorders
+::projectlib::order_flunky create myflunky ::myorders
 
 myorders define MY:ORDER {
     meta title "My Order"

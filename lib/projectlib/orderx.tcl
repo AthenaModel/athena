@@ -176,13 +176,14 @@ oo::class create ::projectlib::orderx {
     # Returns the order's sendstates value.  
 
     method sendstates {} {
-        error "Not defined by subclass"
+        return [list]
     }
 
     # dynaform
     #
     # Returns the name of the object's dynaform, which is the same as its
-    # leaf class.  It is assumed that orderx_set has created the form.
+    # leaf class.  It is assumed that order_set(n) has created the form
+    # when the leaf class was created.
 
     method dynaform {} {
         # FIRST, if there's no form spec then there's no dynaform.
@@ -285,14 +286,16 @@ oo::class create ::projectlib::orderx {
     #
     # Executes the order, assuming the "check" is successful.
 
-    method execute {{flunky ""}} {
+    method execute {{flunky_ ""}} {
         require {$orderState eq "VALID"} \
             "Only validated orders can be executed."
+
+        set flunky $flunky_
 
         if {$flunky ne ""} {
             set mode [$flunky mode]
         }
-
+        
         set result [my _execute]
         set orderState EXECUTED
 

@@ -10,7 +10,7 @@
 #
 #    order_flunky(n) is a class that manages the execution of orderx orders,
 #    and the reporting of results to the application.  It also manages
-#    the undo/redo static.
+#    the undo/redo stacks.
 #
 #    An order_flunky is created relative to a particular order_set(n),
 #    and handles the orders in that set.
@@ -38,20 +38,25 @@ oo::class create ::projectlib::order_flunky {
     # Set while order is executing.
     variable execMode
 
-    # undoStack - stack of orders to be undone.  The top is the end.
+    # undoStack - stack of items to be undone.  The top is the end.
+    # An item might be an order or a transaction.
     variable undoStack
 
-    # redoStack - stack of orders to be redone.  The top is the end.
+    # redoStack - stack of items to be redone.  The top is the end.
+    # An item might be an order or a transaction.
     variable redoStack
 
-    # transList - list of transaction orders, while in a transaction.
+    # transList - list of orders in the current transaction, while 
+    # in a transaction.
     #
     # The list begins with the transaction narrative, followed by
-    # all orders in the transaction.
+    # all orders in the transaction.  Such a list is also called
+    # a "transaction".
     #
     # NOTE: If this variable is non-empty, we are in a transaction.
     # While in a transaction, we cannot undo or redo; that's an
     # error which will lead to the transaction's failure.
+
     variable transList
     
     #-------------------------------------------------------------------
@@ -133,7 +138,6 @@ oo::class create ::projectlib::order_flunky {
 
         if {$mode ne "private"} {
             my UndoPushNew [oo::copy $order]
-            my RedoClear
         }
 
         return $result
@@ -153,8 +157,6 @@ oo::class create ::projectlib::order_flunky {
         require {$mode in {gui normal private}} "Invalid mode: \"$mode\""
 
         # FIRST, get the order object, validating the order name.
-        set name [string toupper $name]
-
         $oset validate $name
 
         if {![my available $name]} {
@@ -255,7 +257,7 @@ oo::class create ::projectlib::order_flunky {
         $oset validate $name
 
         if {![my available $name]} {
-            throw REJECTED \
+            throw REJECT \
                 "Order $name isn't available in state \"[my state]\"."
         }
 
@@ -267,7 +269,7 @@ oo::class create ::projectlib::order_flunky {
             if {[$order valid]} {
                 return [my execute $mode $order]
             } else {
-                throw REJECTED [$order errdict]
+                throw REJECT [$order errdict]
             }
         } finally {
             $order destroy
@@ -549,7 +551,11 @@ oo::class create ::projectlib::order_flunky {
     # otherwise, the stack is cleared.
 
     method UndoPushNew {item} {
-        # FIRST, transaction lists are always undoable.
+        # FIRST, we've got a new successful order or transaction; the
+        # redo history is now irrelevant.
+        my RedoClear
+
+        # NEXT, transaction lists are always undoable.
         if {[my IsTrans $item]} {
             lpush undoStack $item
             return

@@ -34,7 +34,7 @@ namespace import ::projectlib::*
 
 variable orderResult {}
 
-order_set create myorders
+::projectlib::order_set create myorders
 
 myorders define MY:ORDER {
     meta title "My Order"

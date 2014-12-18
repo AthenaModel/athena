@@ -558,7 +558,7 @@ snit::type executive {
 
         # sendx
         $interp smartalias sendx 1 - {order ?option value...?} \
-            [list ::flunky send normal]
+            [myproc sendx]
 
         # show
         $interp smartalias show 1 1 {url} \
@@ -2530,6 +2530,36 @@ snit::type executive {
 
         return $result
     }
+
+    # sendx order ?option value...?
+    #
+    # order     The name of an order(sim) order.
+    # option    One of order's parameter names, prefixed with "-"
+    # value     The parameter's value
+    #
+    # This routine provides a convenient way to enter orders from
+    # the command line or a script.  The order name is converted
+    # to upper case automatically.  The parameter names are validated,
+    # and a parameter dictionary is created.  The order is sent.
+    # Any error message is pretty-printed.
+    #
+    # Usually the order is sent using the "normal" mode; if the
+    # order state is TACTIC, meaning that the order is sent by an
+    # EXECUTIVE tactic script, the order is sent using the 
+    # "private" mode.  That way the order state is checked but
+    # the order is not CIF'd.
+
+    proc sendx {order args} {
+        set order [string toupper $order]
+
+        # NEXT, determine the order mode.
+        if {[order state] eq "TACTIC"} {
+            flunky send private $order {*}$args
+        } else {
+            flunky send normal $order {*}$args
+        }
+    }
+
 
     # show url
     #
