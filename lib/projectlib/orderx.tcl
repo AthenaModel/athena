@@ -22,10 +22,10 @@ oo::class create ::projectlib::orderx {
     #-------------------------------------------------------------------
     # Instance Variables
 
-    # orderState: one of CHANGED, REJECTED, VALID, EXECUTED
+    # orderState: one of CHANGED, INVALID, VALID, EXECUTED
     #
     # CHANGED  - The object is new, or its parameters have been changed.
-    # REJECTED - It was checked, and the check failed.
+    # INVALID  - It was checked, and the check failed.
     # VALID    - It was checked and the check succeeded.
     # EXECUTED - It was valid and executed.
 
@@ -34,7 +34,7 @@ oo::class create ::projectlib::orderx {
     # parms: Array of order parameter values by name.
     variable parms
 
-    # errdict: Dictionary of error values (REJECTED); otherwise empty.
+    # errdict: Dictionary of error values (INVALID); otherwise empty.
     variable errdict
 
     # undoScript: Script to execute to undo the order.
@@ -239,7 +239,7 @@ oo::class create ::projectlib::orderx {
     # Errors can be retrieved by calling errdict.
     
     method valid {} {
-        if {$orderState eq "REJECTED"} {
+        if {$orderState eq "INVALID"} {
             return 0
         }
 
@@ -255,7 +255,7 @@ oo::class create ::projectlib::orderx {
             set orderState VALID
             return 1
         } else {
-            set orderState REJECTED
+            set orderState INVALID
             return 0
         }
     }
@@ -274,7 +274,7 @@ oo::class create ::projectlib::orderx {
     # errdict
     #
     # Returns the error dictionary.  (It is empty unless the order state
-    # is REJECTED.)
+    # is INVALID.)
 
     method errdict {} {
         return $errdict
@@ -295,7 +295,7 @@ oo::class create ::projectlib::orderx {
         if {$flunky ne ""} {
             set mode [$flunky mode]
         }
-        
+
         set result [my _execute]
         set orderState EXECUTED
 
