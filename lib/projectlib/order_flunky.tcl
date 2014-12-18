@@ -150,6 +150,8 @@ oo::class create ::projectlib::order_flunky {
     # error message if the order isn't valid.
 
     method send {mode name args} {
+        require {$mode in {gui normal private}} "Invalid mode: \"$mode\""
+
         # FIRST, get the order object, validating the order name.
         set name [string toupper $name]
 
@@ -249,6 +251,7 @@ oo::class create ::projectlib::order_flunky {
     # if the order isn't valid.
 
     method senddict {mode name parmdict} {
+        require {$mode in {gui normal private}} "Invalid mode: \"$mode\""
         $oset validate $name
 
         if {![my available $name]} {
@@ -347,7 +350,10 @@ oo::class create ::projectlib::order_flunky {
     method transaction {narrative script} {
         # FIRST, if we're not in a transaction then begin one.
         if {![my InTransaction]} {
-            set tranList [list $narrative]
+            set transList [list $narrative]
+            set outermost 1
+        } else {
+            set outermost 0
         }
 
         # NEXT, execute the script
@@ -360,8 +366,13 @@ oo::class create ::projectlib::order_flunky {
         }
 
         # NEXT, end the transaction.
-        my UndoPush $transList
-        set transList ""
+        if {$outermost} {
+            # Ensure that an order was sent during the transaction.
+            if {[llength $transList] > 1} {
+                my UndoPushNew $transList
+            }
+            set transList ""
+        }
     }
 
     # InTransaction
