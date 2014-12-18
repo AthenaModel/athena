@@ -49,8 +49,6 @@ myorders define BSYS:SYSTEM:ADD {
     }
 
     method _validate {} {
-        my variable parms
-
         my prepare sid -num -type ::marsutil::count
         my returnOnError
 
@@ -63,7 +61,6 @@ myorders define BSYS:SYSTEM:ADD {
     }
 
     method _execute {} {
-        my variable parms
         lassign [::bsys mutate add system $parms(sid)] sid undo
         my setundo $undo
         return
@@ -97,8 +94,6 @@ myorders define BSYS:SYSTEM:UPDATE {
     }
 
     method _validate {} {
-        my variable parms
-
         my prepare sid          -required -toupper -type {bsys editable}
         my prepare name
         my prepare commonality            -num     -type ::simlib::rfraction
