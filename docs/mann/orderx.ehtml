@@ -35,6 +35,8 @@ Each application or library that defines orders will usually define its
 own <xref order_set(n)> and <xref order_flunky(n)> objects, and may
 choose to subclass <xref orderx(n)> and <xref order_flunky(n)>.<p>
 
+<img {src="orderx.svg" width="100%"}><p>
+
 <subsection "Intermediate Base Classes">
 
 When the Mars Order Processing framework is used in an application context,
