@@ -270,7 +270,7 @@ throws <b INVALID> otherwise.<p>
 
 <defitem "valclass" {<i pot> valclass <i cls id>}>
 
-Returns <i id> unchanged if there <iref isa> bean with that class and ID
+Returns <i id> unchanged if there <iref hasa> bean with that class and ID
 in the pot, and throws <b INVALID> otherwise.<p>
 
 <defitem "view" {<i pot> view <i>id</i> ?<i>view</i>?}>

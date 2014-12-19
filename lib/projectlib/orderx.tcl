@@ -44,18 +44,13 @@ oo::class create ::projectlib::orderx {
     # this order, or "" if none.
     variable flunky
 
-    # mode: During execution, this is set to the order flunky's 
+    # mode: During execution, this is set to the order flunky's
     # execution mode.
     variable mode
-    
+
     #-------------------------------------------------------------------
     # Constructor/Destructor
 
-    # TODO: The constructor should set any necessary context (as 
-    # determined by subclasses) and possibly allow initial values to
-    # be passed to setdict or configure.  In any event, it should
-    # initialize the order parameters.
-    
     constructor {} {
         set orderState CHANGED
         set errdict    [dict create]
@@ -88,8 +83,8 @@ oo::class create ::projectlib::orderx {
 
     # setdict dict
     #
-    # Sets the object's parameters tate as a dictionary.  
-    # No validation is done. 
+    # Sets the object's parameters tate as a dictionary.
+    # No validation is done.
 
     method setdict {dict} {
         dict for {key value} $dict {
@@ -105,7 +100,7 @@ oo::class create ::projectlib::orderx {
     # value  - A new value
     #
     # Assigns the value to the variable; the variable must already
-    # exist.  
+    # exist.
 
     method set {name value} {
         require {$orderState ne "EXECUTED"} \
@@ -162,10 +157,10 @@ oo::class create ::projectlib::orderx {
     method state {} {
         return $orderState
     }
-    
+
     # title
     #
-    # Returns the order's title string.  
+    # Returns the order's title string.
 
     method title {} {
         error "Not defined by subclass"
@@ -173,7 +168,7 @@ oo::class create ::projectlib::orderx {
 
     # sendstates
     #
-    # Returns the order's sendstates value.  
+    # Returns the order's sendstates value.
 
     method sendstates {} {
         return [list]
@@ -228,16 +223,17 @@ oo::class create ::projectlib::orderx {
         return $result
     }
 
+
     #-------------------------------------------------------------------
     # Public Methods: Order Operations
 
     # valid
     #
-    # Returns 1 if the order is valid, and 0 otherwise, calling 
+    # Returns 1 if the order is valid, and 0 otherwise, calling
     # _validate if need be.  The leaf class must define _validate.
     #
     # Errors can be retrieved by calling errdict.
-    
+
     method valid {} {
         if {$orderState eq "INVALID"} {
             return 0
@@ -266,7 +262,7 @@ oo::class create ::projectlib::orderx {
     # adding problems to the errdict.
     #
     # Subclasses should override this method to validate their parameters.
-    
+
     method _validate {} {
         # Nothing to do.
     }
@@ -342,7 +338,7 @@ oo::class create ::projectlib::orderx {
     # parm       - A parameter name
     # options... - Controls that affect or check the parameter value.
     #
-    # Transforms and validates the parameter's value, setting 
+    # Transforms and validates the parameter's value, setting
     # errdict if need be.
 
     unexport prepare
@@ -372,7 +368,7 @@ oo::class create ::projectlib::orderx {
                         set parms($parm) [string trimleft $parms($parm) "0"]
                     }
                 }
-                -required { 
+                -required {
                     if {$parms($parm) eq ""} {
                         my reject $parm "required value"
                     }
@@ -380,7 +376,7 @@ oo::class create ::projectlib::orderx {
                 -type {
                     set parmtype [lshift args]
 
-                    my checkon $parm { 
+                    my checkon $parm {
                         set parms($parm) [{*}$parmtype validate $parms($parm)]
                     }
                 }
@@ -432,7 +428,7 @@ oo::class create ::projectlib::orderx {
                 -with {
                     set checker [lshift args]
 
-                    my checkon $parm { 
+                    my checkon $parm {
                         set parms($parm) [{*}$checker $parms($parm)]
                     }
                 }
@@ -467,8 +463,8 @@ oo::class create ::projectlib::orderx {
                         }
                     }
                 }
-                default { 
-                    error "unknown option: \"$opt\"" 
+                default {
+                    error "unknown option: \"$opt\""
                 }
             }
         }
@@ -530,16 +526,16 @@ oo::class create ::projectlib::orderx {
         }
     }
 
-    # reject name errtext
+    # reject parm errtext
     #
-    # name    - An order parameter name
+    # parm    - An order parameter parm
     # errtext - Rejection error text.
     #
     # Rejects the parameter given the error text.
 
     unexport reject
-    method reject {name errtext} {
-        dict set errdict $name $errtext
+    method reject {parm errtext} {
+        dict set errdict $parm $errtext
     }
 
     #-------------------------------------------------------------------
@@ -557,7 +553,7 @@ oo::class create ::projectlib::orderx {
 
     # cancel
     #
-    # Use this in the rare case where the user can interactively 
+    # Use this in the rare case where the user can interactively
     # cancel an order that's in progress.
 
     unexport cancel
@@ -571,7 +567,7 @@ oo::class create ::projectlib::orderx {
     #
     # Used to save the script in the order body.
 
-    unexport setundo 
+    unexport setundo
     method setundo {script} {
         set undoScript $script
     }
