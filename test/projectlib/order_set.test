@@ -32,8 +32,14 @@ namespace import ::projectlib::*
 #------------------------------------------------------------------------
 # Set up the test environment
 
-proc setup {} {
-    ::projectlib::order_set create myorders
+oo::class create ::orderxsub { superclass ::projectlib::orderx }
+
+proc setup {{bcls ""}} {
+    if {$bcls eq ""} {
+        ::projectlib::order_set create myorders
+    } else {
+        ::projectlib::order_set create myorders $bcls
+    }
 }
 
 proc cleanup {} {
@@ -126,6 +132,28 @@ test define-1.5 {Order "exists"} -setup {
 } -cleanup {
     cleanup
 } -result {1}
+
+test define-1.6 {Order's superclass is orderx} -setup {
+    setup
+} -body {
+    myorders define NEW:ORDER {
+        meta defaults {x 1}
+    }
+    info class superclasses [myorders class NEW:ORDER]
+} -cleanup {
+    cleanup
+} -result {::projectlib::orderx}
+
+test define-1.7 {Can set superclass} -setup {
+    setup ::orderxsub
+} -body {
+    myorders define NEW:ORDER {
+        meta defaults {x 1}
+    }
+    info class superclasses [myorders class NEW:ORDER]
+} -cleanup {
+    cleanup
+} -result {::orderxsub}
 
 #-----------------------------------------------------------------------
 # reset
@@ -245,23 +273,6 @@ test title-1.2 {non-default title} -setup {
 } -cleanup {
     cleanup
 } -result {My order title}
-
-#-----------------------------------------------------------------------
-# get
-
-test get-1.1 {Retrieve an instance of the order} -setup {
-    setup
-    myorders define ORDER:A {
-        meta defaults { x 1 }
-    }
-} -body {
-    set o [myorders get ORDER:A]
-    $o set x 5
-    $o getdict
-} -cleanup {
-    cleanup
-} -result {x 5}
-
 
 
 #-----------------------------------------------------------------------

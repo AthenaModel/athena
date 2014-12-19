@@ -26,13 +26,17 @@ oo::class create ::projectlib::order_set {
     #-------------------------------------------------------------------
     # Instance Variables
 
+    # Superclass for defined order classes.
+    variable baseClass
+
     # orders - dictionary, order name to order class
     variable orders
     
     #-------------------------------------------------------------------
     # Constructor/Destructor
     
-    constructor {} {
+    constructor {{baseClass_ ::projectlib::orderx}} {
+        set baseClass $baseClass_
         set orders [dict create]
     }
 
@@ -57,7 +61,8 @@ oo::class create ::projectlib::order_set {
         set cls [self]::$order
 
         # NEXT, create and configure the class itself.
-        oo::class create $cls           { superclass ::projectlib::orderx }
+        oo::class create $cls
+        oo::define $cls superclass $baseClass
         oo::define $cls meta name       $order
         oo::define $cls meta title      $order
         oo::define $cls meta sendstates ""
@@ -161,16 +166,4 @@ oo::class create ::projectlib::order_set {
     method title {order} {
         [my class $order] title
     }
-
-    # get order
-    #
-    # order - The name of an order
-    #
-    # Returns an instance of the order.
-
-    method get {order} {
-        return [[my class $order] new]
-    }
-
-
 }
