@@ -576,5 +576,6 @@ oo::class create ::projectlib::orderx {
     unexport setundo
     method setundo {script} {
         set undoScript $script
+        return
     }
 }

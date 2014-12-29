@@ -431,6 +431,7 @@ oo::class create ::projectlib::order_flunky {
         my RedoClear
 
         set transList [list]
+        return
     }
 
     # canundo
@@ -512,6 +513,7 @@ oo::class create ::projectlib::order_flunky {
         }
 
         lpush redoStack $item
+        return
     }
 
     # redo
@@ -539,6 +541,7 @@ oo::class create ::projectlib::order_flunky {
         # We know it can undone, because it wouldn't be on the redo
         # stack otherwise.
         lpush undoStack $item
+        return
     }
 
 
