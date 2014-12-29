@@ -72,7 +72,6 @@ source [file join $::app_athena::library cif.tcl          ]
 source [file join $::app_athena::library map.tcl          ]
 source [file join $::app_athena::library sanity.tcl       ]
 source [file join $::app_athena::library axdb.tcl         ]
-source [file join $::app_athena::library athena_flunky.tcl]
 
 #-----------------------------------------------------------------------
 # Load app_athena(n) subpackages

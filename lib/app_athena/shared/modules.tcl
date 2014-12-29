@@ -180,5 +180,6 @@ source [file join $::app_athena_shared::library vrel.tcl               ]
 # Temporary Modules
 ::projectlib::order_set create ::myorders ;# Used to define and query orders.
 source [file join $::app_athena_shared::library athena_order.tcl       ]
+source [file join $::app_athena_shared::library athena_flunky.tcl      ]
 source [file join $::app_athena_shared::library bsys_orderx.tcl        ]
 source [file join $::app_athena_shared::library civgroup_orderx.tcl    ]
