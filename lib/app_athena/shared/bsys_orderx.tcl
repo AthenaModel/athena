@@ -16,7 +16,7 @@
 # BSys Order Classes
 
 myorders define BSYS:PLAYBOX:UPDATE {
-    superclass ::projectlib::orderx
+    superclass ::athena_order
 
     meta title      "Update Playbox-wide Belief System Parameters"
     meta sendstates {PREP}
@@ -32,7 +32,7 @@ myorders define BSYS:PLAYBOX:UPDATE {
         my prepare gamma -required -num -type ::simlib::rmagnitude
     }
 
-    method _execute {} {
+    method _execute {{flunky ""}} {
         my setundo [bsys mutate update playbox "" [my getdict]]
         return
     }
@@ -40,7 +40,7 @@ myorders define BSYS:PLAYBOX:UPDATE {
 }
 
 myorders define BSYS:SYSTEM:ADD {
-    superclass ::projectlib::orderx
+    superclass ::athena_order
 
     meta title      "Add New Belief System"
     meta sendstates PREP
@@ -60,7 +60,7 @@ myorders define BSYS:SYSTEM:ADD {
         }
     }
 
-    method _execute {} {
+    method _execute {{flunky ""}} {
         lassign [::bsys mutate add system $parms(sid)] sid undo
         my setundo $undo
         return
@@ -69,7 +69,7 @@ myorders define BSYS:SYSTEM:ADD {
 
 
 myorders define BSYS:SYSTEM:UPDATE {
-    superclass ::projectlib::orderx
+    superclass ::athena_order
 
     meta title      "Update Belief System Metadata"
     meta sendstates PREP
@@ -109,7 +109,7 @@ myorders define BSYS:SYSTEM:UPDATE {
         }
     }
 
-    method _execute {} {
+    method _execute {{flunky ""}} {
         my setundo [bsys mutate update system $parms(sid) [array get parms]]
 
         return
