@@ -326,7 +326,7 @@ whole.<p>
 
 Executes the order, optionally in the context of an <xref order_flunky(n)>
 called <i flunky>.  If a <i flunky> is provided, then the order preserves
-the identity of the flunky, and more particularly the flunky's execution 
+the flunky's execution 
 mode; this is made available to the order code via its <iref mode> method.
 <p>
 
@@ -336,11 +336,22 @@ along that method's return value to its caller.<p>
 Only <b VALID> orders can be executed; after execution, the order will
 be in the <b EXECUTED> state.<p>
 
-<defitem _execute {<i obj> _execute}>
+<defitem _execute {<i obj> _execute ?<i flunky>?}>
 
 The subclass must override this method to carry out the order's work on 
 execution.  The method may use the <xref "Execution Helpers">.  This
 method's return value will be returned to the ultimate caller.<p>
+
+Usually an undone order can be redone simply by executing the order a
+second time, in the same way.  Sometimes in order to redo the order 
+identically, the order requires information produced during the first
+execution.  In this case, the order should save that information in
+an instance variable so that it is available on redo.<p>
+
+Similarly, if the <iref execute> method was called with a <i flunky>,
+it is passed along to this method; and if there is any information
+from the flunky that the order needs for undo/redo, it should be saved
+in an instance variable or as part of a <iref setredo> script.<p>
 
 <defitem canundo {<i obj> canundo}>
 

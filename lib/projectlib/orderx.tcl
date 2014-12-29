@@ -40,11 +40,7 @@ oo::class create ::projectlib::orderx {
     # undoScript: Script to execute to undo the order.
     variable undoScript
 
-    # flunky: During execution, this is set to the order flunky handling
-    # this order, or "" if none.
-    variable flunky
-
-    # mode: During execution, this is set to the order flunky's
+    # mode: On first execution, this is set to the order flunky's
     # execution mode.
     variable mode
 
@@ -55,7 +51,6 @@ oo::class create ::projectlib::orderx {
         set orderState CHANGED
         set errdict    [dict create]
         set undoScript ""
-        set flunky     ""
         set mode       private
         array set parms [my defaults]
     }
@@ -281,28 +276,38 @@ oo::class create ::projectlib::orderx {
     # flunky   - The order_flunky(n) object handling order execution.
     #
     # Executes the order, assuming the "check" is successful.
+    #
+    # This method is called on execute and on redo.
 
-    method execute {{flunky_ ""}} {
+    method execute {{flunky ""}} {
         require {$orderState eq "VALID"} \
             "Only validated orders can be executed."
-
-        set flunky $flunky_
 
         if {$flunky ne ""} {
             set mode [$flunky mode]
         }
 
-        set result [my _execute]
+        set result [my _execute $flunky]
         set orderState EXECUTED
 
         return $result
     }
 
-    # _execute
+    # _execute ?flunky?
+    #
+    # flunky - The flunky used to execute the order.
     #
     # Subclasses should override this.  They can assume that all
     # parameters have been validated.
-    method _execute {} {
+    #
+    # If the flunky is given and has relevant information for order
+    # processing, the _execute method should save it in an instance
+    # variable for use during undo/redo.  Similarly, if there are 
+    # any other data items needed for redo that become known after
+    # the order is executed for the first time, they should be
+    # saved to instance variables.
+
+    method _execute {{flunky ""}} {
         return ""
     }
 
@@ -544,7 +549,8 @@ oo::class create ::projectlib::orderx {
     # mode
     #
     # Returns the flunky's execution mode: gui, normal, private.
-    # If there's no flunky at the moment, returns "private".
+    # If we've not been executed yet, or if we were executed with no
+    # flunky, the mode is "private".
 
     unexport mode
     method mode {} {

@@ -48,7 +48,7 @@ myorders define MY:ORDER {
         my prepare y -type snit::boolean
     }
 
-    method _execute {} {
+    method _execute {{flunky ""}} {
         my variable parms
         my setundo [list set ::orderResult $::orderResult]
         set ::orderResult [list $parms(x) $parms(y)]
@@ -79,7 +79,7 @@ myorders define MY:MODE {
         # n/a
     }
 
-    method _execute {} {
+    method _execute {{flunky ""}} {
         return [my mode]
     }
 
@@ -136,7 +136,7 @@ myorders define MY:CANCEL {
         }
     }
 
-    method _execute {} {
+    method _execute {{flunky ""}} {
         my cancel
         error "Shouldn't get here"
     }

@@ -55,7 +55,7 @@ myorders define MY:ORDER {
         my prepare y -type snit::boolean
     }
 
-    method _execute {} {
+    method _execute {{flunky ""}} {
         my variable parms
         my setundo [list set ::orderResult $::orderResult]
         set ::orderResult [list $parms(x) $parms(y)]
@@ -71,7 +71,7 @@ myorders define MY:TEST {
         my prepare x -type snit::integer
     }
 
-    method _execute {} {
+    method _execute {{flunky ""}} {
         my variable parms
         my setundo [list set ::orderResult $::orderResult]
         set ::orderResult $parms(x)
@@ -97,7 +97,7 @@ myorders define MY:TRANS {
         my prepare fail -type snit::boolean
     }
 
-    method _execute {} {
+    method _execute {{flunky ""}} {
         my variable parms
         if {$parms(fail)} {
             throw FAIL "Simulated error"
@@ -118,7 +118,7 @@ myorders define CANT:UNDO {
         my prepare item -type snit::integer
     }
 
-    method _execute {} {
+    method _execute {{flunky ""}} {
         # Do nothing; particularly, don't set the undo script.
     }
 }
