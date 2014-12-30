@@ -182,6 +182,16 @@ test creation-1.3 {initial values} -setup {
     cleanup
 } -result {x 1 y yes}
 
+test creation-1.4 {can set values} -setup {
+    setup
+    set o [[myorders class MY:ORDER] new {x 2 y no}]
+} -body {
+    $o getdict
+} -cleanup {
+    cleanup
+} -result {x 2 y no}
+
+
 #-----------------------------------------------------------------------
 # get
 

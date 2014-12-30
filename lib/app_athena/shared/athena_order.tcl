@@ -21,9 +21,32 @@ oo::class create athena_order {
     #-------------------------------------------------------------------
     # Instance Variables
 
+    # rdb - Set automatically as an example.
+    variable rdb
+
     # parms - brought into scope from parent.
     variable parms
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    # constructor rdb_ ?parmdict?
+    #
+    # rdb_       - The RDB in used by the application
+    # parmdict  - A dictionary of initial parameter values
+    #
+    # The rdb is set here as an example of how to do it, and to test
+    # the framework.
+
+    constructor {rdb_ {parmdict ""}} {
+        set rdb $rdb_
+
+        next $parmdict
+    }
     
+    
+    #-------------------------------------------------------------------
+    # Validation Helper Methods
 
     # unused parm
     #

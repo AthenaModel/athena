@@ -60,6 +60,14 @@ oo::class create athena_flunky {
     #-------------------------------------------------------------------
     # order_flunky(n) tweaks
 
+    # make name args
+    #
+    # Ensures that the order is created with the RDB name.
+
+    method make {name args} {
+        next $name ::rdb {*}$args
+    }
+
     # execute mode order
     #
     # Wraps the order_flunky "execute" method.  Adds RDB transactions

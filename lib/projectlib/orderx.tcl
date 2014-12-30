@@ -47,12 +47,14 @@ oo::class create ::projectlib::orderx {
     #-------------------------------------------------------------------
     # Constructor/Destructor
 
-    constructor {} {
+    # constructor ?parmdict?
+    
+    constructor {{parmdict ""}} {
         set orderState CHANGED
         set errdict    [dict create]
         set undoScript ""
         set mode       private
-        array set parms [my defaults]
+        array set parms [dict merge [my defaults] $parmdict]
     }
 
     #-------------------------------------------------------------------
