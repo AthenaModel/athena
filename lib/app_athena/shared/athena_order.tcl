@@ -64,7 +64,7 @@ oo::class create athena_order {
             if {[rdb exists {
                 SELECT id FROM entities WHERE id=$name
             }]} {
-                reject $parm "An entity with this ID already exists"
+                my reject $parm "An entity with this ID already exists"
             }
         }
     }

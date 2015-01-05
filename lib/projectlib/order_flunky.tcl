@@ -122,23 +122,36 @@ oo::class create ::projectlib::order_flunky {
     # Returns the order's return value on success.
 
     method execute {mode order} {
+        # FIRST, do some checks.
         require {$mode in {gui normal private}} "Invalid mode: \"$mode\""
         require {[my available [$order name]]} \
             "Order [$order name] is not available in state \"[my state]\""
         require {[$order valid]} "This [$order name] order is invalid."
 
+        # NEXT, make a copy of the order, as we'll probably want to 
+        # keep it.
+        set mycopy [oo::copy $order]
+
         try {
             set execMode $mode
-            set result [$order execute [self]]
+            set result [$mycopy execute [self]]
         } trap CANCEL {result} {
+            # The order was cancelled; destroy our copy.
+            $mycopy destroy
             return "Order was cancelled."
         } finally {
             set execMode normal
         }
 
-        if {$mode ne "private"} {
-            my UndoPushNew [oo::copy $order]
+        if {$mode eq "private"} {
+            # destroy our copy of the order; we don't need it.
+            $mycopy destroy
+        } else {
+            # pass our copy of the order along to the undo stack.
+            my UndoPushNew $mycopy
         }
+
+        notifier send [self] <Accepted> [$order name]
 
         return $result
     }
@@ -288,6 +301,7 @@ oo::class create ::projectlib::order_flunky {
     method state {{newState ""}} {
         if {$newState ne ""} {
             set ostate $newState
+            notifier send [self] <State>
         }
 
         return $ostate

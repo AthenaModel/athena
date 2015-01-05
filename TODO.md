@@ -32,6 +32,8 @@
         - For convenience, [app enter] calls to 
           [orderx_dialog enter], passing the flunky as first 
           argument.
+      - Define [enterx] executive command to allow popping up the
+        dialog.
     - Option 2 maintains a better separation between library
       and application code.  An Athena back end won't load
       Tk, and its code base has no reason to know about

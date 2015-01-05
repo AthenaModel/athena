@@ -94,9 +94,6 @@ myorders define CIVGROUP:CREATE {
     method _validate {} {
         my prepare g -toupper -required -type ident
         my unused g
-
-        my returnOnError
-
         my prepare longname  -normalize
         my prepare n         -toupper   -required -type nbhood
         my prepare bsid      -num                 -type {bsys system}

@@ -356,6 +356,9 @@ snit::type executive {
         $interp smartalias {absit last} 0 0 {} \
             [myproc last_absit]
 
+        # enterx
+        $interp smartalias enterx 1 - {order ?parm value...?} \
+            [myproc enterx]
         
         # errtrace
         $interp smartalias errtrace 0 0 {} \
@@ -2533,9 +2536,9 @@ snit::type executive {
 
     # sendx order ?option value...?
     #
-    # order     The name of an order(sim) order.
-    # option    One of order's parameter names, prefixed with "-"
-    # value     The parameter's value
+    # order  - The name of an order.
+    # option - One of the order's parameter names, prefixed with "-"
+    # value  - The parameter's value
     #
     # This routine provides a convenient way to enter orders from
     # the command line or a script.  The order name is converted
@@ -2558,6 +2561,28 @@ snit::type executive {
         } else {
             flunky send normal $order {*}$args
         }
+    }
+
+    # enterx order ?parm value...?
+    #
+    # order   - The name of an order.
+    # parm    - One of order's parameter names
+    # value   - The parameter's value
+    #
+    # This routine pops up an order dialog from the command line.  It is
+    # intended for debugging rather than end-user use.
+
+    proc enterx {order args} {
+        set order [string toupper $order]
+
+        set dlg [orderx_dialog .order%AUTO%      \
+            -appname "Athena [kiteinfo version]" \
+            -flunky  ::flunky                    \
+            -order   $order                      \
+            -parent  [app topwin]                \
+            -helpcmd [list app help]]
+
+        $dlg enter $args
     }
 
 

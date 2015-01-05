@@ -48,7 +48,7 @@ oo::class create ::projectlib::orderx {
     # Constructor/Destructor
 
     # constructor ?parmdict?
-    
+
     constructor {{parmdict ""}} {
         set orderState CHANGED
         set errdict    [dict create]
@@ -147,6 +147,14 @@ oo::class create ::projectlib::orderx {
     #-------------------------------------------------------------------
     # Metadata and queries
 
+    # class
+    #
+    # Returns the leaf class.
+
+    method class {} {
+        return [info object class [self]]
+    }
+
     # state
     #
     # Returns the order's state.
@@ -169,6 +177,27 @@ oo::class create ::projectlib::orderx {
 
     method sendstates {} {
         return [list]
+    }
+
+    # parmtags
+    #
+    # Returns the order's parmtags.  Often overridden by a leaf class
+    # "meta parmtags".
+
+    method parmtags {} {
+        return [dict create]
+    }
+
+    # tags parm
+    #
+    # Returns the parmtags for the specific parameter.
+
+    method tags {parm} {
+        if {[dict exists [my parmtags] $parm]} {
+            return [dict get [my parmtags] $parm]
+        }
+
+        return ""
     }
 
     # dynaform
