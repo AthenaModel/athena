@@ -2580,7 +2580,12 @@ snit::type executive {
             -flunky  ::flunky                    \
             -order   $order                      \
             -parent  [app topwin]                \
-            -helpcmd [list app help]]
+            -helpcmd [list app help]             \
+            -refreshon {
+                ::cif <Update>
+                ::sim <Tick>
+                ::sim <DbSyncB>
+            }]
 
         $dlg enter $args
     }

@@ -74,6 +74,14 @@ snit::widget ::projectgui::orderx_dialog {
     option -parent \
         -readonly yes
 
+    # -refreshon eventdict
+    #
+    # Indicates additional notifier events that should cause the dialog
+    # to refresh.
+
+    option -refreshon \
+        -readonly yes
+
     #-------------------------------------------------------------------
     # Components
 
@@ -222,16 +230,12 @@ snit::widget ::projectgui::orderx_dialog {
         }
 
         # NEXT, refresh the dialog on events from the flunky.
-        notifier bind $flunky <State>    $win [mymethod RefreshDialog]
-        notifier bind $flunky <Accepted> $win [mymethod RefreshDialog]
+        notifier bind $flunky <Sync> $win [mymethod RefreshDialog]
 
         # NEXT, prepare to refresh the dialog on particular events from
         # the application.
-        if 0 {
-            # TBD: Figure this out later.
-            foreach {subject event} $info(refreshon) {
-                notifier bind $subject $event $win [mymethod RefreshDialog]
-            }
+        foreach {subject event} $options(-refreshon) {
+            notifier bind $subject $event $win [mymethod RefreshDialog]
         }
 
         # NEXT, raise the widget if it's obscured by its parent.

@@ -151,8 +151,6 @@ oo::class create ::projectlib::order_flunky {
             my UndoPushNew $mycopy
         }
 
-        notifier send [self] <Accepted> [$order name]
-
         return $result
     }
 
@@ -301,7 +299,7 @@ oo::class create ::projectlib::order_flunky {
     method state {{newState ""}} {
         if {$newState ne ""} {
             set ostate $newState
-            notifier send [self] <State>
+            notifier send [self] <Sync>
         }
 
         return $ostate
@@ -527,6 +525,7 @@ oo::class create ::projectlib::order_flunky {
         }
 
         lpush redoStack $item
+        notifier send [self] <Sync>
         return
     }
 
@@ -555,6 +554,7 @@ oo::class create ::projectlib::order_flunky {
         # We know it can undone, because it wouldn't be on the redo
         # stack otherwise.
         lpush undoStack $item
+        notifier send [self] <Sync>
         return
     }
 
@@ -575,6 +575,7 @@ oo::class create ::projectlib::order_flunky {
         # NEXT, transaction lists are always undoable.
         if {[my IsTrans $item]} {
             lpush undoStack $item
+            notifier send [self] <Sync>
             return
         }
 
@@ -595,6 +596,7 @@ oo::class create ::projectlib::order_flunky {
                 my UndoClear
             }
         }
+        notifier send [self] <Sync>
     }
 
     # UndoClear
