@@ -14,14 +14,6 @@
     just use athena_flunky's "make" method.
 - orderx_dialog:
   - Invoking a dialog:
-    - Option 1: NO
-      - flunky enter <orderName> ?parmdict or args?
-      - Flunky creates and initializes the order instance.
-      - Flunky invokes the dialog, configuring it with itself
-        and the order instance.
-        - The order has all it needs.
-        - NOTE: Requires flunky to know about dialog type.
-        - But this is really an application level thing.
     - Option 2: YES
       - orderx_dialog enter <flunky> <orderName> ?parms?
       - [orderx_dialog enter] uses flunky to create the
@@ -34,15 +26,8 @@
           argument.
       - Define [enterx] executive command to allow popping up the
         dialog.
-    - Option 2 maintains a better separation between library
-      and application code.  An Athena back end won't load
-      Tk, and its code base has no reason to know about
-      orderx_dialog.
-- Order Dynaforms
-  - The essential thing is that the order dynaform's callbacks
-    can reference the order object itself.
-  - Dynaform already allows field callbacks to reference upstream
-    fields.
-  - Allow "-contextdict": additional values that are not part of
-    the form parameters but which are made available to the
-    callbacks.
+- Application
+  - Once we convert, get <OrderEntry> events from "::flunky" rather than
+    from "::order".
+    - Should orderx_dialog instances call ::flunky explicitly?
+      - No; it's a GUI thing.

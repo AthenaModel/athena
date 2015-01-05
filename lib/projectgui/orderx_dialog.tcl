@@ -20,10 +20,10 @@ namespace eval ::projectgui:: {
 # The orderx_dialog(n) widget creates order dialogs for orders defined
 # using orderx(n).
 #
-# TBD: This module sends the <OrderEntry> event to indicate what kind of
-# parameter is currently being entered.  Because orderx_dialog(n) is a
-# GUI submodule of orderx(n), it will use the same notifier(n) subject
-# as orderx(n).
+# This module sends the <OrderEntry> event to indicate what kind of
+# parameter is currently being entered.  Because orderx_dialog(n) works
+# with a specific flunky used to enter the order, it will send the event
+# as the flunky.
 #
 #-----------------------------------------------------------------------
 
@@ -293,10 +293,7 @@ snit::widget ::projectgui::orderx_dialog {
             set tags null
         }
 
-        if 0 {
-            # TBD: Notification is TBD
-            $type Notify <OrderEntry> $tags
-        }
+        notifier send $flunky <OrderEntry> $tags
     }
 
     #-------------------------------------------------------------------
@@ -315,10 +312,7 @@ snit::widget ::projectgui::orderx_dialog {
 
         # NEXT, notify the app that the dialog has been cleared; this
         # will allow it to clear up any entry artifacts.
-        if 0 {
-            # TBD: Notification comes later.
-            $type Notify <OrderEntry> {}
-        }
+        notifier send $flunky <OrderEntry> {}
     }
 
     # Close
@@ -328,7 +322,6 @@ snit::widget ::projectgui::orderx_dialog {
     method Close {} {
         if 0 {
             # TBD: position will be handled by dialog positioner.
-            # TBD: notifications are TBD.
 
             # FIRST, save the dialog's position
             set geo [wm geometry $win]
@@ -336,7 +329,7 @@ snit::widget ::projectgui::orderx_dialog {
             set info(position-$options(-order)) [string range $geo $ndx end]
 
             # NEXT, notify the app that no order entry is being done.
-            $type Notify <OrderEntry> {}
+            notifier send $flunky <OrderEntry> {}
         }
 
         # NEXT, destroy the dialog
@@ -371,10 +364,7 @@ snit::widget ::projectgui::orderx_dialog {
 
         # NEXT, notify the app that no order entry is being done; this
         # will allow it to clear up any entry artifacts.
-        if 0 {
-            # TBD: Notifications are TBD.
-            $type Notify <OrderEntry> {}
-        }
+        notifier send $flunky <OrderEntry> {}
 
         # NEXT, the order was accepted; we're done here.
         return 1
@@ -564,12 +554,6 @@ snit::widget ::projectgui::orderx_dialog {
     # message - The error message string
     #
     # Shows the error message on the message line.
-    #
-    # TBD: The method used to get the dynaform field's label 
-    # is kind of fragile.  Perhaps some other way of linking
-    # the field with the message could be used?  I.e., an
-    # asterisk on the current field, if the current field is in
-    # error?
 
     method ShowParmError {parm message} {
         set label [$form getlabel $parm]
