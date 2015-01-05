@@ -244,6 +244,9 @@ order define TACTIC:CURSE {
         text tactic_id -context yes \
             -loadcmd {beanload}
 
+        rcc "Name:" -for name
+        text name -width 20
+
         rcc "CURSE" -for curse
         curse curse
 
@@ -257,14 +260,15 @@ order define TACTIC:CURSE {
 
     set tactic [pot get $parms(tactic_id)]
 
-    # All validation takes place on sanity check
+    # More validation takes place on sanity check
+    prepare name  -toupper   -with [list $tactic valName]
     prepare curse -toupper
     prepare roles
 
     returnOnError -final
 
     # NEXT, modify the tactic
-    setundo [$tactic update_ {curse roles} [array get parms]]
+    setundo [$tactic update_ {name curse roles} [array get parms]]
 }
 
 

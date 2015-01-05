@@ -84,6 +84,9 @@ order define CONDITION:COMPARE {
         text condition_id -context yes \
             -loadcmd {beanload}
 
+        rcc "Name:" -for name
+        text name -width 20
+
         rcc ""
         label {
             This condition is met when
@@ -101,15 +104,19 @@ order define CONDITION:COMPARE {
 } {
     # FIRST, prepare and validate the parameters
     prepare condition_id -required -with {::pot valclass condition::COMPARE}
+    returnOnError
+
+    set cond [pot get $parms(condition_id)]
+
+    prepare name         -toupper  -with [list $cond valName]
     prepare x                      
     prepare comp         -toupper  -type ecomparatorx
     prepare y                      
     returnOnError -final
 
-    set cond [pot get $parms(condition_id)]
 
     # NEXT, update the block
-    setundo [$cond update_ {x comp y} [array get parms]]
+    setundo [$cond update_ {name x comp y} [array get parms]]
 }
 
 

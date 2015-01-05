@@ -75,19 +75,27 @@ order define TACTIC:SIGEVENT {
         text tactic_id -context yes \
             -loadcmd {beanload}
 
+        rcc "Name:" -for name
+        text name -width 20
+
         rcc "Message:" -for msg
         text msg -width 40
     }
 } {
     # FIRST, prepare and validate the parameters
     prepare tactic_id -required -with {::pot valclass tactic::SIGEVENT}
-    prepare msg        
-    returnOnError -final
+    returnOnError
 
     set tactic [pot get $parms(tactic_id)]
 
+    prepare name      -toupper   -with [list $tactic valName]
+    prepare msg        
+
+    returnOnError -final
+
+
     # NEXT, update the block
-    setundo [$tactic update_ {msg} [array get parms]]
+    setundo [$tactic update_ {name msg} [array get parms]]
 }
 
 

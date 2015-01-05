@@ -229,6 +229,9 @@ order define TACTIC:FLOW {
         text tactic_id -context yes \
             -loadcmd {beanload}
 
+        rcc "Name:" -for name
+        text name -width 20
+
         rcc "Source Group:" -for f
         enum f -listcmd {civgroup names}
 
@@ -259,6 +262,11 @@ order define TACTIC:FLOW {
 } {
     # FIRST, prepare the parameters
     prepare tactic_id  -required -with {::pot valclass tactic::FLOW}
+    returnOnError
+
+    set tactic [pot get $parms(tactic_id)]
+
+    prepare name       -toupper  -with [list $tactic valName]
     prepare f          -toupper  -type ident
     prepare g          -toupper  -type ident
     prepare mode       -toupper  -selector
@@ -266,9 +274,6 @@ order define TACTIC:FLOW {
     prepare percent    -num      -type rpercent
 
     returnOnError
-
-    # NEXT, get the tactic and do cross-checks
-    set tactic [pot get $parms(tactic_id)]
 
     fillparms parms [$tactic getdict]
 
@@ -299,7 +304,9 @@ order define TACTIC:FLOW {
     returnOnError -final
 
     # NEXT, update the tactic, saving the undo script
-    set undo [$tactic update_ {f g mode personnel percent} [array get parms]]
+    set undo [$tactic update_ {
+        name f g mode personnel percent
+    } [array get parms]]
 
     # NEXT, modify the tactic
     setundo $undo

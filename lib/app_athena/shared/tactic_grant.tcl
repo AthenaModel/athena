@@ -142,6 +142,9 @@ order define TACTIC:GRANT {
         text tactic_id -context yes \
             -loadcmd {beanload}
 
+        rcc "Name:" -for name
+        text name -width 20
+
         rcc "CAP List:" -for klist
         enumlonglist klist \
             -dictcmd {tactic::GRANT capsOwnedBy $tactic_id} \
@@ -154,7 +157,12 @@ order define TACTIC:GRANT {
 } {
     # FIRST, prepare the parameters
     prepare tactic_id  -required -with {::pot valclass tactic::GRANT}
-    prepare klist      -toupper
+    returnOnError
+
+    set tactic [pot get $parms(tactic_id)]
+
+    prepare name      -toupper  -with [list $tactic valName]
+    prepare klist     -toupper
     prepare alist
  
     # Error checking for klist and alist is done by the SanityCheck 
@@ -164,8 +172,7 @@ order define TACTIC:GRANT {
 
     # NEXT, update the tactic, saving the undo script, and clearing
     # historical state data.
-    set tactic [pot get $parms(tactic_id)]
-    set undo [$tactic update_ {klist alist} [array get parms]]
+    set undo [$tactic update_ {name klist alist} [array get parms]]
 
     # NEXT, save the undo script
     setundo $undo

@@ -188,6 +188,7 @@ oo::define condition {
     variable state    ;# The condition's state
     variable metflag  ;# 1 if condition is met, 0 if it is unmet, 
                        # or "" if the result is unknown
+    variable name     ;# Condition name; can be set by user
     
     #-------------------------------------------------------------------
     # Constructor
@@ -197,6 +198,7 @@ oo::define condition {
         set parent  ""
         set state   normal
         set metflag ""
+        set name    ""
     }
 
     #-------------------------------------------------------------------
@@ -490,6 +492,44 @@ oo::define condition {
         }
 
         next
+    }
+
+    #----------------------------------------------------------------
+    # Order Helpers
+    #
+    
+    # valName name 
+    #
+    # name  - a name for a tactic
+    #
+    # This validator checks to make sure that the name is an 
+    # identifier AND does not already exist in the set of conditions
+    # owned by this conditions parent.
+
+    method valName {name} {
+        # FIRST, name must be an identifier
+        ident validate $name
+
+        # NEXT, gather a list of existing names for all conditions
+        # owned by the parent skipping over the condition we 
+        # are checking
+        set cnames [list]
+
+        set parent [my get parent]
+        foreach condition [[pot get $parent] conditions] {
+            if {[$condition get id] == [my get id]} {
+                continue
+            }
+
+            lappend cnames [$condition get name]
+        }
+
+        # NEXT, invalid if it already exists
+        if {$name in $cnames} {
+            throw INVALID "Name already exists: \"$name\""
+        }
+
+        return $name
     }
 }
 

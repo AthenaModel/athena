@@ -71,7 +71,6 @@ oo::objdefine block {
 
         return $pdict
     }
-
 }
 
 
@@ -97,6 +96,7 @@ oo::define block {
     beanslot tactics    ;# List of tactics
     variable execstatus ;# eexecstatus value: result of last execution attempt
     variable exectime   ;# Sim time at which the block last executed, or ""
+    variable name       ;# Block name, can be set by user
 
     #-------------------------------------------------------------------
     # Constructor/Destructor
@@ -125,6 +125,7 @@ oo::define block {
         set tactics    [list]
         set execstatus NONE
         set exectime   ""
+        set name       ""
 
         # Configure any option values.
         my configure {*}$args
@@ -259,12 +260,71 @@ oo::define block {
         return $conditions
     }
 
+    # next_condition_name
+    #
+    # Returns the next default condition name based upon existing names.
+    # If conditions of the form 'Cn' already exist, where 'n' is an integer, 
+    # then 'Cn+1' is returned, otherwise 'C1' is returned.
+
+    method next_condition_name {} {
+        # FIRST, default n is 1
+        set n 1
+        set cnum ""
+
+        # NEXT, go through the conditions in this block and pull
+        # out the ones that have the pattern "Cnn".
+        foreach cond [my conditions] {
+            set cname [$cond get name]
+            if {[string range $cname 0 0] eq "C"} {
+                set cnum [string range $cname 1 end]
+            } 
+
+            # NEXT, set next n to the larger the existing n+1 or
+            # the current n
+            if {[string is integer -strict $cnum]} {
+               let n {max($cnum+1, $n)}
+            }
+        }
+
+        return "C$n"
+    }
+
     # tactic_ids
     #
     # Returns a list of the block's tactic IDs
 
     method tactic_ids {} {
         return $tactics
+    }
+
+    # next_tactic_name
+    #
+    # Returns the next default tactic name based upon existing names.
+    # If tactics of the form 'Tn' already exist, where 'n' is an integer, 
+    # then 'Tn+1' is returned, otherwise 'T1' is returned.
+
+    method next_tactic_name {} {
+        # FIRST, default index is 1
+        set n 1
+        set tnum ""
+
+        # NEXT, go through the blocks in this strategy and pull
+        # out the ones that have the pattern "Tnn".
+        foreach tactic [my tactics] {
+            set tname [$tactic get name]
+            if {[string range $tname 0 0] eq "T"} {
+                set tnum [string range $tname 1 end]
+            } 
+
+            # NEXT, set next index to the larger the existing id+1 or
+            # the current index
+            if {[string is integer -strict $tnum]} {
+               let n {max($tnum+1, $n)}
+            }
+        }
+
+        return "T$n"
+
     }
 
     #-------------------------------------------------------------------
@@ -357,7 +417,7 @@ oo::define block {
         $ht page "Agent [my agent], Detail for Strategy Block [my id]"
         $ht putln "<b>Agent "
         $ht link my://app/agent/[my agent] [my agent]
-        $ht put ", Strategy Block [my id]: Detail</b>"
+        $ht put ", Strategy Block [my id] ([my get name]): Detail</b>"
         $ht hr
         $ht para
         my html $ht
@@ -375,7 +435,7 @@ oo::define block {
         # FIRST, add the header.  Its color and font should indicate
         # the state.
         $ht putln "<a name=\"block[my id]\"><span class=\"[my state]\">"
-        $ht put "<b>Block [my id]:</b> "
+        $ht put "<b>Block [my id] ([my get name]):</b> "
 
         if {[my state] eq "disabled"} {
             $ht putln "<b>(Disabled)</b> "
@@ -496,7 +556,7 @@ oo::define block {
 
         # TBD: Add state
         $ht table {
-            "Status" "ID" "Type" "State" "Narrative"
+            "Status" "ID" "Name" "Type" "State" "Narrative"
         } {
             set count 0
             foreach bean [my conditions] {
@@ -511,6 +571,7 @@ oo::define block {
                 $ht tr class $cls valign top {
                     $ht td center { $ht image $data(statusicon) }
                     $ht td center { $ht put $data(id)           }
+                    $ht td left   { $ht put $data(name)         }
                     $ht td left   { $ht put $data(typename)     }
                     $ht td left   { $ht put $data(state)        }
                     $ht td left {
@@ -559,7 +620,7 @@ oo::define block {
         $ht para
 
         $ht table {
-            "Status" "ID" "Type" "State" "Narrative"
+            "Status" "ID" "Name" "Type" "State" "Narrative"
         } {
             set count 0
             foreach bean [my tactics] {
@@ -574,6 +635,7 @@ oo::define block {
                 $ht tr class $cls valign top {
                     $ht td center { $ht image $data(statusicon) }
                     $ht td center { $ht put $data(id)           }
+                    $ht td left   { $ht put $data(name)         }
                     $ht td left   { $ht put $data(typename)     }
                     $ht td left   { $ht put $data(state)        }
                     $ht td left {
@@ -864,8 +926,21 @@ oo::define block {
     # Clear the execution status when beans are added.
 
     method onAddBean_ {slot bean_id} {
+        # FIRST, default execution status
         my set execstatus NONE
         my set exectime   ""
+
+        # NEXT, determine default name based on class of bean 
+        set next_name ""
+        if {[pot hasa ::tactic $bean_id]} {
+            set tactic [pot get $bean_id]
+            set next_name [my next_tactic_name]
+        } elseif {[pot hasa ::condition $bean_id]} {
+            set cond [pot get $bean_id]
+            set next_name [my next_condition_name]
+        }
+
+        [pot get $bean_id] configure -name $next_name
 
         next $slot $bean_id   ;# Do notifications
     }
@@ -935,6 +1010,44 @@ oo::define block {
     method movetactic_ {tactic_id where} {
         return [my movebean_ tactics $tactic_id $where]
     }
+
+    #-------------------------------------------------------------------
+    # Order helpers
+
+    # valName name
+    #
+    # name - a name for a block
+    #
+    # This validator checks to make sure that the name is an 
+    # identifier AND does not already exist in the set of blocks 
+    # owned by this blocks parent.
+
+    method valName {name} {
+        # FIRST, name must be an identifier
+        ident validate $name
+
+        # NEXT, gather a list of existing names for all blocks
+        # owned by the parent skipping over the block we 
+        # are checking
+        set bnames [list]
+
+        set parent [my get parent]
+        foreach block [[pot get $parent] blocks] {
+            if {[$block get id] == [my get id]} {
+                continue
+            }
+
+            lappend bnames [$block get name]
+        }
+
+        # NEXT, invalid if it already exists
+        if {$name in $bnames} {
+            throw INVALID "Name already exists: \"$name\""
+        }
+
+        return $name
+    }
+
 }
 
 #-----------------------------------------------------------------------
@@ -959,6 +1072,9 @@ order define BLOCK:UPDATE {
 
         label "&nbsp;&nbsp;"
         check once -text "Once Only?"
+
+        rc "Name:" -for name
+        text name -width 20
 
         rc "Intent:" -for intent
         text intent -width 70
@@ -1000,6 +1116,11 @@ order define BLOCK:UPDATE {
 } {
     # FIRST, prepare and validate the parameters
     prepare block_id -required -with {::pot valclass ::block}
+    returnOnError
+
+    set block [pot get $parms(block_id)]
+
+    prepare name     -toupper  -with [list $block valName]
     prepare intent
     prepare tmode    -toupper  -selector
     prepare t1       -toupper  -type {simclock timespec}
@@ -1010,10 +1131,6 @@ order define BLOCK:UPDATE {
     prepare onlock             -type boolean
 
     returnOnError
-
-    # NEXT, get the block.
-    set block [pot get $parms(block_id)]
-
 
     # NEXT, do cross-checks
     fillparms parms [$block view]
@@ -1036,7 +1153,7 @@ order define BLOCK:UPDATE {
 
     # NEXT, update the block.
     set undo [$block update_ {
-        intent tmode t1 t2 cmode emode once onlock
+        name intent tmode t1 t2 cmode emode once onlock
     } [array get parms]]
 
     # NEXT, save the undo script; we're successful.

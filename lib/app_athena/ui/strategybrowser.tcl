@@ -697,6 +697,7 @@ snit::widget strategybrowser {
             -layout [string map [list %D $::app::derivedfg] {
                 { id              "ID"                              }
                 { statusicon      "Exec"     -align center          }
+                { name            "Name"     -width 10              }
                 { state           "State"    -width 8               }
                 { intent          "Intent"   -width 30 -wrap yes    }
                 { timestring      "At Time"  -stretchable yes       }
@@ -1165,6 +1166,7 @@ snit::widget strategybrowser {
             -layout [string map [list %D $::app::derivedfg] {
                 { id              "ID"                               }
                 { statusicon      "Flag"                             }
+                { name            "Name"      -width 10              }
                 { state           "State"     -width 8               }
                 { narrative       "Narrative" -width 60 -wrap yes    }
                 { typename        "Type"                             }
@@ -1465,6 +1467,7 @@ snit::widget strategybrowser {
             -layout [string map [list %D $::app::derivedfg] {
                 { id              "ID"                               }
                 { statusicon      "Exec"      -align center          }
+                { name            "Name"      -width 10              }
                 { state           "State"     -width 8               }
                 { narrative       "Narrative" -width 60 -wrap yes    }
                 { typename        "Type"                             }

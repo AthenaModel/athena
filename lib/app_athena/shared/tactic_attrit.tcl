@@ -209,6 +209,9 @@ order define TACTIC:ATTRIT {
         text tactic_id -context yes \
             -loadcmd {beanload}
 
+        rcc "Name:" -for name
+        text name -width 20
+
         rcc "Attrition Mode:" -for mode
         selector mode {
             case NBHOOD "Cause attrition in a neighborhood" {
@@ -255,6 +258,7 @@ order define TACTIC:ATTRIT {
     set tactic [pot get $parms(tactic_id)]
 
     # All validation takes place on sanity check
+    prepare name       -toupper -with [list $tactic valName]
     prepare mode       -toupper -selector
     prepare casualties -num     -type iquantity
     prepare n          -toupper
@@ -285,7 +289,7 @@ order define TACTIC:ATTRIT {
 
     # NEXT, modify the tactic
     setundo [$tactic update_ {
-        mode casualties n f g1 g2
+        name mode casualties n f g1 g2
     } [array get parms]]
 }
 

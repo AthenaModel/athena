@@ -161,6 +161,9 @@ order define TACTIC:DEPOSIT {
         text tactic_id -context yes \
             -loadcmd {beanload}
 
+        rcc "Name:" -for name
+        text name -width 20
+
         rcc "Mode:"   -for mode
         selector mode {
             case ALL "Deposit all remaining cash-on-hand" {}
@@ -194,6 +197,7 @@ order define TACTIC:DEPOSIT {
     
     set tactic [pot get $parms(tactic_id)]
 
+    prepare name       -toupper  -with [list $tactic valName]
     prepare mode       -toupper  -selector
     prepare amount     -toupper  -type money
     prepare percent    -toupper  -type rpercent
@@ -216,7 +220,9 @@ order define TACTIC:DEPOSIT {
     returnOnError -final
 
     # NEXT, update the tactic, saving the undo script
-    set undo [$tactic update_ {mode amount percent} [array get parms]]
+    set undo [$tactic update_ {
+        name mode amount percent
+    } [array get parms]]
 
     # NEXT, modify the tactic
     setundo $undo

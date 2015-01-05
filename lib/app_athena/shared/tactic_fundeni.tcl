@@ -298,6 +298,9 @@ order define TACTIC:FUNDENI {
         text tactic_id -context yes \
             -loadcmd {beanload}
 
+        rcc "Name:" -for name
+        text name -width 20
+
         rc "Fund ENI For:" -span 2 
 
         rcc "Groups:" -for glist -span 3
@@ -350,6 +353,7 @@ order define TACTIC:FUNDENI {
     set tactic [pot get $parms(tactic_id)]
 
     # FIRST, prepare and validate the parameters
+    prepare name    -toupper -with [list $tactic valName]
     prepare glist   
     prepare mode    -toupper -selector
     prepare cmode   -toupper -selector
@@ -375,7 +379,7 @@ order define TACTIC:FUNDENI {
 
     # NEXT, create the tactic
     setundo [$tactic update_ {
-        glist cmode mode amount percent los
+        name glist cmode mode amount percent los
     } [array get parms]]
 }
 

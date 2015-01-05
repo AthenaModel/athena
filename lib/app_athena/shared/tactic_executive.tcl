@@ -126,6 +126,9 @@ order define TACTIC:EXECUTIVE {
         text tactic_id -context yes \
             -loadcmd {beanload}
 
+        rcc "Name:" -for name
+        text name -width 20
+
         rcc "Command:" -for command
         text command -width 80
     }
@@ -137,8 +140,10 @@ order define TACTIC:EXECUTIVE {
 
     set tactic [pot get $parms(tactic_id)]
 
+    prepare name  -toupper  -with [list $tactic valName]
+
     # NEXT, update the block
-    setundo [$tactic update_ {command} [array get parms]]
+    setundo [$tactic update_ {name command} [array get parms]]
 }
 
 

@@ -155,6 +155,9 @@ order define TACTIC:SUPPORT {
         text tactic_id -context yes \
             -loadcmd {beanload}
 
+        rcc "Name:" -for name
+        text name -width 20
+
         rcc "Support Actor:" -for a
         enum a -listcmd {tactic::SUPPORT allButMe $tactic_id}
 
@@ -164,7 +167,12 @@ order define TACTIC:SUPPORT {
 } {
     # FIRST, prepare the parameters
     prepare tactic_id  -required -with {::pot valclass tactic::SUPPORT}
-    prepare a          -toupper
+    returnOnError
+
+    set tactic [pot get $parms(tactic_id)]
+
+    prepare name    -toupper   -with [list $tactic valName]
+    prepare a       -toupper
     prepare nlist
  
     # Error checking for a and nlist is done by the SanityCheck 
@@ -174,8 +182,7 @@ order define TACTIC:SUPPORT {
 
     # NEXT, update the tactic, saving the undo script, and clearing
     # historical state data.
-    set tactic [pot get $parms(tactic_id)]
-    set undo [$tactic update_ {a nlist} [array get parms]]
+    set undo [$tactic update_ {name a nlist} [array get parms]]
 
     # NEXT, save the undo script
     setundo $undo
