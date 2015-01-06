@@ -80,6 +80,7 @@ myorders define MY:MODE {
     }
 
     method _execute {{flunky ""}} {
+        my setundo "# foo!"
         return [my mode]
     }
 
@@ -951,7 +952,13 @@ test mode-1.3 {flunky's mode is retained} -setup {
     ord valid
 } -body {
     myflunky execute gui ::ord
-    list [myflunky mode] [ord mymode]
+
+    # myflunky copies ::ord before executing it; our copy is unchanged.
+    # So we have to access myflunky's copy.
+
+    set ns [info object namespace myflunky]
+    set o [ltop [set ${ns}::undoStack]]
+    list [myflunky mode] [$o mymode]
 } -cleanup {
     cleanup
 } -result {normal gui}
