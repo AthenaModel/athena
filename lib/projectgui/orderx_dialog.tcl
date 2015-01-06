@@ -29,6 +29,146 @@ namespace eval ::projectgui:: {
 
 snit::widget ::projectgui::orderx_dialog {
     #===================================================================
+    # Dialog Management
+
+    typeconstructor {
+        # FIRST, create the necessary font.
+        # TBD: Both marsgui/orderdialog.tcl and this module create
+        # this font.  Ultimately, we'll need this one.
+
+        if 0 {
+            font create OrderTitleFont {*}[font actual TkDefaultFont] \
+                -weight bold                                          \
+                -size   -16
+        }
+    }
+
+
+    #-------------------------------------------------------------------
+    # Type Variables
+
+    # winfo: Windows information array, by dialog ID.  The dialog ID
+    # is <flunky>/<orderclass> where both components are fully-qualified
+    # object names.
+    #
+    # counter   - A counter for window names.
+    # win-$id   - The dialog window name
+    # pos-$id   - The saved window position
+
+    typevariable winfo -array {
+        counter 0
+    }
+    
+    #-------------------------------------------------------------------
+    # Public Typemethods
+
+    # enter ?options...?
+    #
+    # Pops up an order dialog so that the user can enter the parameters.
+    # The options are the same as for the dialog proper, plus the following:
+    #
+    # -parmdict   - A parameter dictionary of initial parameter values.
+    #
+    # NOTE: This is the usual way to popup an order dialog; it 
+    # arranges for the dialog
+
+    typemethod enter {args} {
+        # FIRST, extract needed options
+        set flunky   [from args -flunky]
+        set order    [from args -order]
+        set parmdict [from args -parmdict]
+
+        # NEXT, get the dialog ID
+        set oclass [$flunky class $order]
+        set id "$flunky/$oclass"
+
+        # NEXT, make sure the order has a form.
+        if {[$oclass form] eq ""} {
+            error "No dialog form is defined for order $order."
+        }
+
+        # NEXT, if this is a new order, initialize its data.
+        if {![info exists winfo(win-$id)]} {
+            set winfo(win-$id) .order[format %04d [incr winfo(counter)]]
+            set winfo(pos-$id) {}
+        }
+
+        # NEXT, if it doesn't exist, create it.
+        if {![winfo exists $winfo(win-$id)]} {
+            # FIRST, Create the dialog for the specified order
+            orderx_dialog $winfo(win-$id) $id \
+                -flunky $flunky               \
+                -order  $order                \
+                {*}$args
+        }
+
+        # NEXT, give the parms and the focus
+        $winfo(win-$id) enter $parmdict
+    }
+
+    # puck tagdict
+    #
+    # tagdict - A dictionary of tags and values
+    #
+    # Specifies a dictionary of tags and values that indicate an
+    # object or objects selected by the application.  The first
+    # tagged value whose tag matches a tag on the current field
+    # of the topmost order dialog (if any) will be inserted into
+    # that field.
+
+    typemethod puck {tagdict} {
+        # FIRST, is there an active dialog?
+        set dlg [$type TopDialog]
+
+        if {$dlg eq ""} {
+            return
+        }
+
+        $dlg ObjectSelect $tagdict
+    }
+
+    #-------------------------------------------------------------------
+    # Private Typemethods
+
+    # SavePosition id
+    #
+    # id   - A dialog ID
+    #
+    # Saves the dialog's current position.
+
+    typemethod SavePosition {id} {
+        set geo [wm geometry $winfo(win-$id)]
+        set ndx [string first "+" $geo]
+        set winfo(pos-$id) [string range $geo $ndx end]
+    }
+
+    # RestorePosition id
+    #
+    # id   - A dialog ID
+    #
+    # If there is a saved position for the dialog, apply it.
+
+    typemethod RestorePosition {id} {
+        if {$winfo(pos-$id) ne ""} {
+            wm geometry $winfo(win-$id) $winfo(pos-$id)
+        }
+    }
+
+    # TopDialog
+    #
+    # Returns the name of the topmost order dialog
+
+    typemethod TopDialog {} {
+        foreach w [lreverse [wm stackorder .]] {
+            if {[winfo class $w] eq "Orderx_dialog"} {
+                return $w
+            }
+        }
+
+        return ""
+    }
+
+    #===================================================================
     # Dialog Widget
     hulltype toplevel
 
@@ -59,19 +199,20 @@ snit::widget ::projectgui::orderx_dialog {
 
     option -helpcmd
 
+    # -master mwin
+    #
+    # The master window: the application window for which this is a
+    # dialog.
+
+    option -master \
+        -readonly yes
+
     # -order order
     #
     # The name of the order.  The widget will create an instance of
     # the order.
 
     option -order     \
-        -readonly yes
-
-    # -parent pwin
-    #
-    # The parent window
-
-    option -parent \
         -readonly yes
 
     # -refreshon eventdict
@@ -95,10 +236,12 @@ snit::widget ::projectgui::orderx_dialog {
 
     # my array -- scalars and field data
     #
-    # parms             Names of all parms.
-    # context           Names of all context parms
+    # id         - The dialog's ID
+    # parms      - Names of all parms.
+    # context    - Names of all context parms
 
     variable my -array {
+        id         {}
         parms      {}
         context    {}
     }
@@ -106,12 +249,13 @@ snit::widget ::projectgui::orderx_dialog {
     #-------------------------------------------------------------------
     # Constructor
 
-    constructor {args} {
+    constructor {id args} {
         # FIRST, withdraw the hull; we will deiconify at the end of the
         # constructor.
         wm withdraw $win
         
         # NEXT, get the options and save components.
+        set my(id) $id
         $self configurelist $args
 
         set flunky $options(-flunky)
@@ -212,23 +356,12 @@ snit::widget ::projectgui::orderx_dialog {
         pack $win.buttons -side top -fill x -pady 4
 
         # NEXT, make the window visible, and transient over the
-        # current top window.
-        osgui mktoolwindow  $win $options(-parent)
+        # dialog's master window.
+        osgui mktoolwindow $win $options(-master)
+        $type RestorePosition $my(id)
         wm deiconify  $win
         raise $win
         
-        # NEXT, if there's saved position, give the dialog the
-        # position.
-        if 0 {
-            # TBD: Define dialog position manager.  The dialog ID
-            # should be "$flunky/[$order class]".
-            if {$info(position-$options(-order)) ne ""} {
-                wm geometry \
-                    $info(win-$options(-order)) \
-                    $info(position-$options(-order))
-            }
-        }
-
         # NEXT, refresh the dialog on events from the flunky.
         notifier bind $flunky <Sync> $win [mymethod RefreshDialog]
 
@@ -320,17 +453,11 @@ snit::widget ::projectgui::orderx_dialog {
     # Closes the dialog
 
     method Close {} {
-        if 0 {
-            # TBD: position will be handled by dialog positioner.
+        # FIRST, save the dialog's position
+        $type SavePosition $my(id)
 
-            # FIRST, save the dialog's position
-            set geo [wm geometry $win]
-            set ndx [string first "+" $geo]
-            set info(position-$options(-order)) [string range $geo $ndx end]
-
-            # NEXT, notify the app that no order entry is being done.
-            notifier send $flunky <OrderEntry> {}
-        }
+        # NEXT, notify the app that no order entry is being done.
+        notifier send $flunky <OrderEntry> {}
 
         # NEXT, destroy the dialog
         destroy $win
@@ -384,13 +511,14 @@ snit::widget ::projectgui::orderx_dialog {
 
     # KeepVisible 
     #
-    # If the dialog is fully obscured, this raises it above its parent.
+    # If the dialog is fully obscured, this raises it above its master
+    # window.
 
     method KeepVisible {} {
-        set p $options(-parent)
+        set mwin $options(-master)
 
-        if {[winfo exists $p] && [winfo ismapped $p]} {
-            if {[wm stackorder $win isbelow $p]} {
+        if {[winfo exists $mwin] && [winfo ismapped $mwin]} {
+            if {[wm stackorder $win isbelow $mwin]} {
                 raise $win
             }
         }

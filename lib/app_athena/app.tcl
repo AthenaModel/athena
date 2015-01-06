@@ -878,6 +878,37 @@ snit::type app {
         return [$topwin {*}$args]
     }
 
+    # enter order ?parm value...?
+    # enter order ?parmdict?
+    #
+    # order     - The name of an order
+    # parmdict  - Initial parameter settings
+    #
+    # Pops up the order dialog for the named order given the parameters.
+
+    typemethod enter {order args} {
+        if {[llength $args] == 1} {
+            set parmdict [lindex $args 0]
+        } else {
+            set parmdict $args
+        }
+
+        set order [string toupper $order]
+
+        orderx_dialog enter \
+            -parmdict $parmdict                   \
+            -appname  "Athena [kiteinfo version]" \
+            -flunky   ::flunky                    \
+            -order    $order                      \
+            -master   [app topwin]                \
+            -helpcmd  [list app help]             \
+            -refreshon {
+                ::cif <Update>
+                ::sim <Tick>
+                ::sim <DbSyncB>
+            }
+    }
+
     # show uri
     #
     # uri - A URI for some application resource

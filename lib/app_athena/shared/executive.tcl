@@ -2573,21 +2573,7 @@ snit::type executive {
     # intended for debugging rather than end-user use.
 
     proc enterx {order args} {
-        set order [string toupper $order]
-
-        set dlg [orderx_dialog .order%AUTO%      \
-            -appname "Athena [kiteinfo version]" \
-            -flunky  ::flunky                    \
-            -order   $order                      \
-            -parent  [app topwin]                \
-            -helpcmd [list app help]             \
-            -refreshon {
-                ::cif <Update>
-                ::sim <Tick>
-                ::sim <DbSyncB>
-            }]
-
-        $dlg enter $args
+        app enter $order $args
     }
 
 

@@ -81,6 +81,16 @@ oo::class create ::projectlib::order_flunky {
     #-------------------------------------------------------------------
     # Sending Orders
 
+    # class name
+    #
+    # name  - An order name
+    #
+    # Returns the full order class name.
+
+    method class {name} {
+        return [$oset class $name]
+    }
+
     # make name args
     #
     # name   - An order name
