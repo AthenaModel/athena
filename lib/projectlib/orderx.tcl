@@ -490,7 +490,10 @@ oo::class create ::projectlib::orderx {
                         error "Not a dynaform selector: \"$parm\""
                     }
 
-                    set cases [dynaform cases $frm $parm [array get parms]]
+                    set vdict [array get parms]
+                    dict set vdict entity_ [self]
+
+                    set cases [dynaform cases $frm $parm $vdict]
 
                     my checkon $parm {
                         if {$parms($parm) ni $cases} {
