@@ -238,7 +238,7 @@ oo::objdefine tactic {
         set pdict [dict create]
 
         foreach parm [order parms TACTIC:$tname] {
-            if {$parm eq "tactic_id"} {
+            if {$parm eq "tactic_id" || $parm eq "name"} {
                 continue
             }
 
@@ -783,24 +783,18 @@ oo::define tactic {
         # FIRST, name must be an identifier
         ident validate $name
 
-        # NEXT, gather a list of existing names for all tactics
+        # NEXT, check existing names of all tactics
         # owned by the parent skipping over the tactic we 
         # are checking
-        set tnames [list]
-
         set parent [my get parent]
-
         foreach tactic [[pot get $parent] tactics] {
             if {[$tactic get id] == [my get id]} {
                 continue
             }
 
-            lappend tnames [$tactic get name]
-        }
-
-        # NEXT, invalid if it already exists
-        if {$name in $tnames} {
-            throw INVALID "Name already exists: \"$name\""
+            if {$name eq [$tactic get name]} {
+                throw INVALID "Name already exists: \"$name\""
+            }
         }
 
         return $name

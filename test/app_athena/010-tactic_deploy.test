@@ -140,6 +140,7 @@ namespace eval ::athena_test::tests:: {
         last_tick  {}
         max        0
         min        0
+        name       T*
         nlist      {_type NBHOODS _rule {}}
         nmode      BY_POP
         parent     *

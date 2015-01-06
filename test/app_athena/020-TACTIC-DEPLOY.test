@@ -189,6 +189,28 @@ namespace eval ::athena_test::tests:: {
     }
 
 
+    test TACTIC:DEPLOY-1.14 {invalid name} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:DEPLOY tactic_id [$T1 id] name 1234
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Identifiers begin with a letter and contain only letters and digits.}
+    }
+
+    test TACTIC:DEPLOY-1.15 {duplicate name} -setup {
+        setup
+        set T2 [ted addtactic $B1 ABSIT]
+    } -body {
+        ted order -reject TACTIC:DEPLOY tactic_id [$T1 id] \
+            name [$T2 get name]
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Name already exists: "T2"}
+    }
+
     test TACTIC:DEPLOY-2.1 {tactic updated, invalid} -setup {
         setup
 
@@ -218,6 +240,7 @@ namespace eval ::athena_test::tests:: {
         last_tick  {}
         max        10
         min        5
+        name       T*
         nlist      NONESUCH
         nmode      EQUAL
         parent     *
@@ -258,6 +281,7 @@ namespace eval ::athena_test::tests:: {
         last_tick  {}
         max        10
         min        5
+        name       T*
         nlist      {_type NBHOODS _rule BY_VALUE nlist NB1}
         nmode      EQUAL
         parent     *

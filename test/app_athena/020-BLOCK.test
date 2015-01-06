@@ -180,6 +180,31 @@ namespace eval ::athena_test::tests:: {
         t1 {End week must be no earlier than start week.}
     }
 
+    test BLOCK:UPDATE-1.14 {invalid name} -setup {
+        setup
+    } -body {
+        ted order -reject BLOCK:UPDATE block_id [$B1 id] \
+            name 1234
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Identifiers begin with a letter and contain only letters and digits.}
+    }
+
+    test BLOCK:UPDATE-1.15 {duplicate name} -setup {
+        setup
+        ted order STRATEGY:BLOCK:ADD agent SYSTEM
+        set S [strategy getname SYSTEM]
+        lassign [$S blocks end] B2
+    } -body {
+        ted order -reject BLOCK:UPDATE block_id [$B1 id] \
+            name [$B2 get name]
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Name already exists: "B2"}
+    }
+
     test BLOCK:UPDATE-2.1 {block updated} -setup {
         setup
 
@@ -213,9 +238,10 @@ namespace eval ::athena_test::tests:: {
         t1         5
         onlock     1
         t2         10
+        name       B*
         parent     *
-        pot        ::pot
         intent     {New intent}
+        pot        ::pot
         tactics    {}
         exectime   {}
     }

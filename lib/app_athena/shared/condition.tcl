@@ -166,7 +166,7 @@ oo::objdefine condition {
         set pdict [dict create]
 
         foreach parm [order parms CONDITION:$cname] {
-            if {$parm eq "condition_id"} {
+            if {$parm eq "condition_id" || $parm eq "name"} {
                 continue
             }
 
@@ -510,23 +510,18 @@ oo::define condition {
         # FIRST, name must be an identifier
         ident validate $name
 
-        # NEXT, gather a list of existing names for all conditions
+        # NEXT, check existing names of all conditions
         # owned by the parent skipping over the condition we 
-        # are checking
-        set cnames [list]
-
+        # are checking and throwing invalid on first match
         set parent [my get parent]
         foreach condition [[pot get $parent] conditions] {
             if {[$condition get id] == [my get id]} {
                 continue
             }
 
-            lappend cnames [$condition get name]
-        }
-
-        # NEXT, invalid if it already exists
-        if {$name in $cnames} {
-            throw INVALID "Name already exists: \"$name\""
+            if {$name eq [$condition get name]} {
+                throw INVALID "Name already exists: \"$name\""
+            }
         }
 
         return $name

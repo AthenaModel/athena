@@ -114,6 +114,7 @@ namespace eval ::athena_test::tests:: {
         faildict   {}
         id         *
         msg        {my message}
+        name       T*
         parent     *
         pot        ::pot
         state      normal
@@ -194,6 +195,7 @@ namespace eval ::athena_test::tests:: {
         faildict   {}
         id         *
         msg        {}
+        name       T*
         parent     *
         pot        ::pot
         state      normal
@@ -301,6 +303,7 @@ namespace eval ::athena_test::tests:: {
         g          BLUE
         id         *
         mode       ALL
+        name       T*
         narrative  {Demobilize all of group BLUE's undeployed personnel.}
         parent     *
         percent    0
@@ -326,6 +329,7 @@ namespace eval ::athena_test::tests:: {
         g          BLUE
         id         *
         mode       ALL
+        name       T*
         narrative  {Demobilize all of group <a href="my://app/group/BLUE">BLUE</a>'s undeployed personnel.}
         parent     *
         percent    0
@@ -347,8 +351,9 @@ namespace eval ::athena_test::tests:: {
         agent     JOE
         g         BLUE
         mode      ALL
+        name      T*
         narrative {Demobilize all of group BLUE's undeployed personnel.}
-        parent    8
+        parent    *
         percent   0
         personnel 0
         state     normal

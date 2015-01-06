@@ -62,7 +62,7 @@ oo::objdefine block {
         set pdict [dict create]
 
         foreach parm [order parms BLOCK:UPDATE] {
-            if {$parm eq "block_id"} {
+            if {$parm eq "block_id" || $parm eq "name"} {
                 continue
             }
 
@@ -275,13 +275,7 @@ oo::define block {
         # out the ones that have the pattern "Cnn".
         foreach cond [my conditions] {
             set cname [$cond get name]
-            if {[string range $cname 0 0] eq "C"} {
-                set cnum [string range $cname 1 end]
-            } 
-
-            # NEXT, set next n to the larger the existing n+1 or
-            # the current n
-            if {[string is integer -strict $cnum]} {
+            if {[regexp {^C(\d+)$} $cname dummy cnum]} {
                let n {max($cnum+1, $n)}
             }
         }
@@ -312,13 +306,7 @@ oo::define block {
         # out the ones that have the pattern "Tnn".
         foreach tactic [my tactics] {
             set tname [$tactic get name]
-            if {[string range $tname 0 0] eq "T"} {
-                set tnum [string range $tname 1 end]
-            } 
-
-            # NEXT, set next index to the larger the existing id+1 or
-            # the current index
-            if {[string is integer -strict $tnum]} {
+            if {[regexp {^T(\d+)$} $tname dummy tnum]} {
                let n {max($tnum+1, $n)}
             }
         }
@@ -933,10 +921,8 @@ oo::define block {
         # NEXT, determine default name based on class of bean 
         set next_name ""
         if {[pot hasa ::tactic $bean_id]} {
-            set tactic [pot get $bean_id]
             set next_name [my next_tactic_name]
         } elseif {[pot hasa ::condition $bean_id]} {
-            set cond [pot get $bean_id]
             set next_name [my next_condition_name]
         }
 
@@ -1026,23 +1012,19 @@ oo::define block {
         # FIRST, name must be an identifier
         ident validate $name
 
-        # NEXT, gather a list of existing names for all blocks
+        # NEXT, check the existing names for all blocks
         # owned by the parent skipping over the block we 
         # are checking
-        set bnames [list]
-
         set parent [my get parent]
         foreach block [[pot get $parent] blocks] {
             if {[$block get id] == [my get id]} {
                 continue
             }
 
-            lappend bnames [$block get name]
-        }
-
-        # NEXT, invalid if it already exists
-        if {$name in $bnames} {
-            throw INVALID "Name already exists: \"$name\""
+            # NEXT, invalid if name already exists
+            if {$name eq [$block get name]} {
+                throw INVALID "Name already exists: \"$name\""
+            }
         }
 
         return $name

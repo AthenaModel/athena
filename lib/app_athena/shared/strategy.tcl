@@ -466,13 +466,7 @@ oo::define strategy {
         # out the ones that have the pattern "Bn".
         foreach block [my blocks] {
             set bname [$block get name]
-            if {[string range $bname 0 0] eq "B"} {
-                set bnum [string range $bname 1 end]
-            } 
-
-            # NEXT, set next n to the larger the existing n+1 or
-            # the current n 
-            if {[string is integer -strict $bnum]} {
+            if {[regexp {^B(\d+)$} $bname dummy bnum]} {
                let n {max($bnum+1, $n)}
             }
         }

@@ -80,11 +80,12 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -match dictglob -result {
         amount     100000
-        fmode      ALL
         execstatus NONE
         faildict   {}
+        fmode      ALL
         id         *
         level      0.0
+        name       T*
         nlist      {_type NBHOODS _rule {}}
         parent     *
         percent    100

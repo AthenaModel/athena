@@ -110,6 +110,7 @@ namespace eval ::athena_test::tests:: {
         exectime   {}
         id         *
         intent     {}
+        name       B*
         once       1
         onlock     0
         parent     3
@@ -174,21 +175,22 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -match dictglob -result {
         cmode      ALL
-        execstatus NONE
-        state      normal
-        tmode      ALWAYS
         conditions {}
         emode      ALL
+        execstatus NONE
+        exectime   {}
         id         *
+        intent     {}
+        name       B*
         once       0
-        t1         {}
         onlock     0
-        t2         {}
         parent     1
         pot        ::pot
-        intent     {}
+        state      normal
+        t1         {}
+        t2         {}
         tactics    {}
-        exectime   {}
+        tmode      ALWAYS
     }
 
     test constructor-1.2 {can set options} -setup {
@@ -200,21 +202,22 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -match dictglob -result {
         cmode      ANY
-        execstatus NONE
-        state      normal
-        tmode      ALWAYS
         conditions {}
         emode      ALL
+        execstatus NONE
+        exectime   {}
         id         *
+        intent     {My block}
+        name       {}
         once       0
-        t1         {}
         onlock     0
-        t2         {}
         parent     {}
         pot        ::pot
-        intent     {My block}
+        state      normal
+        t1         {}
+        t2         {}
         tactics    {}
-        exectime   {}
+        tmode      ALWAYS
     }
 
     #-------------------------------------------------------------------
@@ -269,6 +272,7 @@ namespace eval ::athena_test::tests:: {
         exectime        {}
         id              *
         intent          {}
+        name            B*
         once            0
         onlock          0
         parent          1
@@ -301,6 +305,7 @@ namespace eval ::athena_test::tests:: {
         exectime        5
         id              *
         intent          {}
+        name            B*
         once            0
         onlock          0
         parent          1
@@ -336,6 +341,7 @@ namespace eval ::athena_test::tests:: {
         conditions {6 7}
         emode      ALL
         intent     {My Block}
+        name       B*
         once       0
         onlock     0
         state      normal
@@ -359,21 +365,22 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -match dictglob -result {
         cmode      ANY
+        execstatus NONE
+        state      normal
+        tmode      ALWAYS
         conditions {}
         emode      ALL
-        execstatus NONE
-        exectime   {}
         id         *
-        intent     {}
         once       0
-        onlock     0
-        parent     1
-        pot        ::pot
-        state      normal
         t1         {}
+        onlock     0
         t2         {}
+        name       B*
+        parent     1
+        intent     {}
+        pot        ::pot
         tactics    {}
-        tmode      ALWAYS
+        exectime   {}
     }
 
     #-------------------------------------------------------------------

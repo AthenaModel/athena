@@ -88,6 +88,28 @@ namespace eval ::athena_test::tests:: {
         command {Script is incomplete; check braces and quotes.}
     }
 
+    test TACTIC:EXECUTIVE-1.4 {invalid name} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:EXECUTIVE tactic_id [$T1 id] name 1234
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Identifiers begin with a letter and contain only letters and digits.}
+    }
+
+    test TACTIC:EXECUTIVE-1.5 {duplicate name} -setup {
+        setup
+        set T2 [ted addtactic $B1 ABSIT]
+    } -body {
+        ted order -reject TACTIC:EXECUTIVE tactic_id [$T1 id] \
+            name [$T2 get name]
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Name already exists: "T2"}
+    }
+
     test TACTIC:EXECUTIVE-2.1 {tactic updated} -setup {
         setup
     } -body {
@@ -102,8 +124,9 @@ namespace eval ::athena_test::tests:: {
         command    Hello
         execstatus NONE
         faildict   {}
-        id         *
-        parent     *
+        id         3
+        name       T1
+        parent     2
         pot        ::pot
         state      normal
     }

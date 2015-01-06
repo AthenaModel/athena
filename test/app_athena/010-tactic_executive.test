@@ -66,6 +66,7 @@ namespace eval ::athena_test::tests:: {
         execstatus NONE
         faildict   {}
         id         *
+        name       T*
         parent     *
         pot        ::pot
         state      invalid

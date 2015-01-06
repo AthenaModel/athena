@@ -86,6 +86,28 @@ namespace eval ::athena_test::tests:: {
         comp {invalid value "NONESUCH", should be one of: EQ,*}
     }
 
+    test CONDITION:COMPARE-1.4 {invalid name} -setup {
+        setup
+    } -body {
+        ted order -reject CONDITION:COMPARE condition_id [$C1 id] name 1234
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Identifiers begin with a letter and contain only letters and digits.}
+    }
+
+    test CONDITION:COMPARE-1.5 {duplicate name} -setup {
+        setup
+        set C2 [ted addcondition $B1 COMPARE]
+    } -body {
+        ted order -reject CONDITION:COMPARE condition_id [$C1 id] \
+            name [$C2 get name]
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Name already exists: "C2"}
+    }
+
     test CONDITION:COMPARE-2.1 {condition updated} -setup {
         setup
     } -body {
@@ -102,6 +124,7 @@ namespace eval ::athena_test::tests:: {
         comp    GT
         id      *
         metflag {}
+        name    C*
         parent  *
         pot     ::pot
         state   normal
@@ -120,6 +143,7 @@ namespace eval ::athena_test::tests:: {
         comp    EQ
         id      *
         metflag {}
+        name    C*
         parent  *
         pot     ::pot
         state   invalid
