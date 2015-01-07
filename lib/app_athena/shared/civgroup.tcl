@@ -166,6 +166,31 @@ snit::type civgroup {
         return ""
     }
 
+    # check lfp/sa_flag lfp sa_flag
+    #
+    # lfp       - Labor force percentage
+    # sa_flag   - Subsistence agriculture flag
+    #
+    # Throws INVALID if the civgroup parameters are inconsistent.
+
+    typemethod {check lfp/sa_flag} {lfp sa_flag} {
+        if {$sa_flag && $lfp != 0} {
+            throw INVALID "Subsistence agriculture requires labor force % = 0"
+        }
+    }
+
+    # check housing/sa_flag housing sa_flag
+    #
+    # housing   - ehousing(n) value
+    # sa_flag   - Subsistence agriculture flag
+    #
+    # Throws INVALID if the civgroup parameters are inconsistent.
+
+    typemethod {check housing/sa_flag} {housing sa_flag} {
+        if {$sa_flag && $housing ne "AT_HOME"} {
+            throw INVALID {Subsistence agriculture can only be done "at home"}
+        }
+    }
 
     #-------------------------------------------------------------------
     # Mutators

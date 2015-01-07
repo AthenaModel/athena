@@ -111,17 +111,11 @@ myorders define CIVGROUP:CREATE {
 
         # NEXT, cross-validation
         my checkon lfp {
-            if {$parms(sa_flag) && $parms(lfp) != 0} {
-                my reject lfp \
-                    {subsistence agriculture requires labor force % = 0}
-            }
+            civgroup check lfp/sa_flag $parms(lfp) $parms(sa_flag)
         }
 
         my checkon housing {
-            if {$parms(sa_flag) && $parms(housing) ne "AT_HOME"} {
-                my reject housing \
-                    {subsistence agriculture can only be done "at home"}
-            }
+            civgroup check housing/sa_flag $parms(housing) $parms(sa_flag)
         }
     }
 
@@ -297,21 +291,12 @@ myorders define CIVGROUP:UPDATE {
 
         fillparms parms [civgroup getg $parms(g)]
 
-        # TBD: These are the same checks that are done for civgroup
-        # update.  Can we define a civgroup validator that is explicitly
-        # used by these orders?
         my checkon lfp {
-            if {$parms(sa_flag) && $parms(lfp) != 0} {
-                my reject lfp \
-                    {subsistence agriculture requires labor force % = 0}
-            }
+            civgroup check lfp/sa_flag $parms(lfp) $parms(sa_flag)
         }
 
         my checkon housing {
-            if {$parms(sa_flag) && $parms(housing) ne "AT_HOME"} {
-                my reject housing \
-                    {subsistence agriculture can only be done "at home"}
-            }
+            civgroup check housing/sa_flag $parms(housing) $parms(sa_flag)
         }
     }
 
