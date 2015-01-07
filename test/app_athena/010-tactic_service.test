@@ -81,8 +81,9 @@ namespace eval ::athena_test::tests:: {
         id         *
         los        1.0
         mode       EXACT
+        name       T*
         nlist      {_type NBHOODS _rule {}}
-        parent     4
+        parent     *
         pot        ::pot
         s          ENERGY
         state      invalid

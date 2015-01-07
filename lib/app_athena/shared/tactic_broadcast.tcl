@@ -281,6 +281,9 @@ order define TACTIC:BROADCAST {
         text tactic_id -context yes \
             -loadcmd {beanload}
 
+        rcc "Name:" -for name
+        text name -width 20
+
         rcc "CAP:" -for cap
         cap cap
         
@@ -303,6 +306,7 @@ order define TACTIC:BROADCAST {
     set tactic [pot get $parms(tactic_id)]
 
     # NEXT, the parameters
+    prepare name     -toupper   -with [list $tactic valName]
     prepare cap      -toupper   
     prepare a        -toupper  
     prepare iom      -toupper   
@@ -313,7 +317,7 @@ order define TACTIC:BROADCAST {
     fillparms parms [$tactic view]
 
     # NEXT, create the tactic
-    setundo [$tactic update_ {cap a iom cost} [array get parms]]
+    setundo [$tactic update_ {name cap a iom cost} [array get parms]]
 }
 
 

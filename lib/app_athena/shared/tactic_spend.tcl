@@ -222,6 +222,9 @@ order define TACTIC:SPEND {
         text tactic_id -context yes \
             -loadcmd {beanload}
 
+        rcc "Name:" -for name
+        text name -width 20
+
         rcc "Mode:"   -for mode
         selector mode {
             case ALL "Spend all remaining cash-on-hand" {}
@@ -271,6 +274,11 @@ order define TACTIC:SPEND {
 } {
     # FIRST, prepare the parameters
     prepare tactic_id  -required -with {::pot valclass tactic::SPEND}
+    returnOnError
+
+    set tactic [pot get $parms(tactic_id)]
+
+    prepare name       -toupper  -with [list $tactic valName]
     prepare mode       -toupper  -selector
     prepare amount     -toupper  -type money
     prepare percent    -toupper  -type rpercent
@@ -281,9 +289,6 @@ order define TACTIC:SPEND {
     prepare world      -num      -type iquantity
 
     returnOnError
-
-    # NEXT, get the tactic
-    set tactic [pot get $parms(tactic_id)]
 
     # NEXT, check cross-constraints
     fillparms parms [$tactic view]
@@ -312,7 +317,7 @@ order define TACTIC:SPEND {
 
     # NEXT, update the tactic, saving the undo script
     set undo [$tactic update_ {
-        mode amount percent goods black pop region world
+        name mode amount percent goods black pop region world
     } [array get parms]]
 
     # NEXT, modify the tactic

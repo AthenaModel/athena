@@ -147,6 +147,7 @@ namespace eval ::athena_test::tests:: {
         -conditions {}
         -emode      ALL
         -intent     A
+        -name       B1
         -once       0
         -onlock     0
         -state      normal
@@ -319,6 +320,7 @@ namespace eval ::athena_test::tests:: {
         -agent        JOE
         -condition_id 4
         -expression   {1 + 1 == 2}
+        -name         C1
         -narrative    {Expression: 1 + 1 == 2}
         -parent       3
         -state        normal
@@ -559,6 +561,7 @@ namespace eval ::athena_test::tests:: {
     } -match dictglob -result {
         -agent     JOE
         -msg       {1 + 1 == 2}
+        -name      T1
         -narrative {Logs "1 + 1 == 2" to the sigevents log}
         -parent    3
         -state     normal

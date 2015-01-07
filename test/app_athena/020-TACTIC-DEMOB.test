@@ -118,6 +118,28 @@ namespace eval ::athena_test::tests:: {
         percent {Mode requires a percentage greater than 0.0%.}
     }
 
+    test TACTIC:DEMOB-1.7 {invalid name} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:DEMOB tactic_id [$T1 id] name 1234
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Identifiers begin with a letter and contain only letters and digits.}
+    }
+
+    test TACTIC:DEMOB-1.8 {duplicate name} -setup {
+        setup
+        set T2 [ted addtactic $B1 ABSIT]
+    } -body {
+        ted order -reject TACTIC:DEMOB tactic_id [$T1 id] \
+            name [$T2 get name]
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Name already exists: "T2"}
+    }
+
     test TACTIC:DEMOB-2.1 {tactic updated} -setup {
         setup
     } -body {
@@ -137,6 +159,7 @@ namespace eval ::athena_test::tests:: {
         g          BLUE
         id         *
         mode       SOME
+        name       T*
         parent     *
         percent    5.0
         personnel  1000

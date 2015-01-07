@@ -98,6 +98,9 @@ order define TACTIC:VIOLENCE {
         text tactic_id -context yes \
             -loadcmd {beanload}
 
+        rcc "Name:" -for name
+        text name -width 20
+
         rcc "Neighborhood:" -for n
         nbhood n
 
@@ -114,6 +117,7 @@ order define TACTIC:VIOLENCE {
 
     # Validation of initially invalid items or contingent items
     # takes place on sanity check.
+    prepare name      -toupper   -with [list $tactic valName]
     prepare n         -toupper
     prepare coverage  -num       -type rfraction
 
@@ -130,7 +134,7 @@ order define TACTIC:VIOLENCE {
 
     # NEXT, modify the tactic
     setundo [$tactic update_ {
-        n coverage
+        name n coverage
     } [array get parms]]
 }
 

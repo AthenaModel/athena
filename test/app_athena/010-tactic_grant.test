@@ -72,6 +72,7 @@ namespace eval ::athena_test::tests:: {
         faildict   {}
         id         *
         klist      {}
+        name       T*
         parent     *
         pot        ::pot
         state      invalid

@@ -162,6 +162,9 @@ order define TACTIC:WITHDRAW {
         text tactic_id -context yes \
             -loadcmd {beanload}
 
+        rcc "Name:" -for name
+        text name -width 20
+
         rcc "Mode:"   -for mode
         selector mode {
             case ALL "Withdraw all available money from cash reserve" {}
@@ -197,6 +200,7 @@ order define TACTIC:WITHDRAW {
     # NEXT, get the tactic
     set tactic [pot get $parms(tactic_id)]
 
+    prepare name    -toupper -with [list $tactic valName]
     prepare mode    -toupper -selector
     prepare amount  -toupper -type money
     prepare percent -toupper -type rpercent
@@ -219,7 +223,7 @@ order define TACTIC:WITHDRAW {
     returnOnError -final
 
     # NEXT, update the tactic, saving the undo script
-    set undo [$tactic update_ {mode amount percent} [array get parms]]
+    set undo [$tactic update_ {name mode amount percent} [array get parms]]
 
     # NEXT, modify the tactic
     setundo $undo

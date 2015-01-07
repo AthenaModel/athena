@@ -126,6 +126,9 @@ order define CONDITION:CONTROL {
         text condition_id -context yes \
             -loadcmd {beanload}
 
+        rcc "Name:" -for name
+        text name -width 20
+
         rc "" -span 2
         label {
             This condition is met when
@@ -148,16 +151,20 @@ order define CONDITION:CONTROL {
 } {
     # FIRST, prepare and validate the parameters
     prepare condition_id -required -with {::pot valclass condition::CONTROL}
+    returnOnError
+
+    set cond [pot get $parms(condition_id)]
+
+    prepare name   -toupper -with [list $cond valName]
     prepare a      -toupper -type actor
     prepare sense  -toupper -type edoes
     prepare anyall -toupper -type eanyall                
     prepare nlist                      
     returnOnError -final
 
-    set cond [pot get $parms(condition_id)]
 
     # NEXT, update the block
-    setundo [$cond update_ {a sense anyall nlist} [array get parms]]
+    setundo [$cond update_ {name a sense anyall nlist} [array get parms]]
 }
 
 

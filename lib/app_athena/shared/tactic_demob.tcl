@@ -159,6 +159,9 @@ order define TACTIC:DEMOB {
         text tactic_id -context yes \
             -loadcmd {beanload}
 
+        rcc "Name:" -for name
+        text name -width 20
+
         rcc "Group:" -for g
         enum g -listcmd {tactic groupsOwnedByAgent $tactic_id}
 
@@ -186,15 +189,17 @@ order define TACTIC:DEMOB {
 } {
     # FIRST, prepare the parameters
     prepare tactic_id  -required -with {::pot valclass tactic::DEMOB}
+    returnOnError
+
+    set tactic [pot get $parms(tactic_id)]
+
+    prepare name       -toupper  -with [list $tactic valName]
     prepare g          -toupper  -type ident
     prepare mode       -toupper  -selector
     prepare personnel  -num      -type iquantity
     prepare percent    -num      -type rpercent
 
     returnOnError
-
-    # NEXT, get the tactic and do cross-checks
-    set tactic [pot get $parms(tactic_id)]
 
     fillparms parms [$tactic getdict]
 
@@ -224,7 +229,7 @@ order define TACTIC:DEMOB {
     returnOnError -final
 
     # NEXT, update the tactic, saving the undo script
-    set undo [$tactic update_ {g mode personnel percent} [array get parms]]
+    set undo [$tactic update_ {name g mode personnel percent} [array get parms]]
 
     # NEXT, modify the tactic
     setundo $undo

@@ -107,6 +107,28 @@ namespace eval ::athena_test::tests:: {
         casualties {invalid value "-1", expected integer no less than 0}
     }
 
+    test TACTIC:ATTRIT-1.6 {invalid name} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:ATTRIT tactic_id [$T1 id] name 1234
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Identifiers begin with a letter and contain only letters and digits.}
+    }
+
+    test TACTIC:ATTRIT-1.7 {duplicate name} -setup {
+        setup
+        set T2 [ted addtactic $B1 ABSIT]
+    } -body {
+        ted order -reject TACTIC:ATTRIT tactic_id [$T1 id] \
+            name [$T2 get name]
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Name already exists: "T2"}
+    }
+
     test TACTIC:ATTRIT-2.1 {tactic valid} -setup {
         setup
     } -body {
@@ -132,6 +154,7 @@ namespace eval ::athena_test::tests:: {
         id         *
         mode       GROUP
         n          NB1
+        name       T*
         parent     *
         pot        ::pot
         state      normal

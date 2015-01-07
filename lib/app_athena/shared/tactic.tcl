@@ -238,7 +238,7 @@ oo::objdefine tactic {
         set pdict [dict create]
 
         foreach parm [order parms TACTIC:$tname] {
-            if {$parm eq "tactic_id"} {
+            if {$parm eq "tactic_id" || $parm eq "name"} {
                 continue
             }
 
@@ -319,6 +319,7 @@ oo::define tactic {
                           # FAIL_RESOURCES, or SUCCESS.
     variable faildict    ;# Dictionary of resource failure detail messages
                           # by eresource symbol.
+    variable name        ;# Tactic name; can be set by user
 
     # Tactic types will add their own variables.
 
@@ -331,6 +332,7 @@ oo::define tactic {
         set state      normal
         set execstatus NONE
         set faildict   [dict create]
+        set name       ""
     }
 
     #-------------------------------------------------------------------
@@ -763,6 +765,39 @@ oo::define tactic {
         }
 
         next
+    }
+
+    #----------------------------------------------------------------
+    # Order Helpers
+    #
+    
+    # valName name 
+    #
+    # name  - a name for a tactic
+    #
+    # This validator checks to make sure that the name is an 
+    # identifier AND does not already exist in the set of tactics
+    # owned by this tactics parent.
+
+    method valName {name} {
+        # FIRST, name must be an identifier
+        ident validate $name
+
+        # NEXT, check existing names of all tactics
+        # owned by the parent skipping over the tactic we 
+        # are checking
+        set parent [my get parent]
+        foreach tactic [[pot get $parent] tactics] {
+            if {[$tactic get id] == [my get id]} {
+                continue
+            }
+
+            if {$name eq [$tactic get name]} {
+                throw INVALID "Name already exists: \"$name\""
+            }
+        }
+
+        return $name
     }
 }
 

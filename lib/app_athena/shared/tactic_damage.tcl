@@ -129,6 +129,9 @@ order define TACTIC:DAMAGE {
         text tactic_id -context yes \
             -loadcmd {beanload}
 
+        rcc "Name:" -for name
+        text name -width 20
+
         rcc "Actor:" -for a
         actor a
 
@@ -145,6 +148,7 @@ order define TACTIC:DAMAGE {
 
     set tactic [pot get $parms(tactic_id)]
 
+    prepare name    -toupper  -with [list $tactic valName]
     prepare n
     prepare a
     prepare percent -type ipercent
@@ -152,7 +156,7 @@ order define TACTIC:DAMAGE {
     returnOnError -final
 
     # NEXT, update the tactic, saving the undo script
-    setundo [$tactic update_ {n a percent} [array get parms]]
+    setundo [$tactic update_ {name n a percent} [array get parms]]
 }
 
 

@@ -184,6 +184,9 @@ order define TACTIC:SERVICE {
         text tactic_id -context yes \
             -loadcmd {beanload}
 
+        rcc "Name:" -for name
+        text name -width 20
+
         rcc "Neighborhoods:" -for nlist -span 3
         gofer nlist -typename gofer::NBHOODS
 
@@ -229,6 +232,7 @@ order define TACTIC:SERVICE {
 
     # Validation of initially invalid items or contingent items
     # takes place on sanity check.
+    prepare name   -toupper -with [list $tactic valName]
     prepare nlist     
     prepare s      -toupper -type eabservice
     prepare mode   -toupper -selector
@@ -239,7 +243,7 @@ order define TACTIC:SERVICE {
 
     # NEXT, modify the tactic
     setundo [$tactic update_ {
-        nlist s los mode deltap
+        name nlist s los mode deltap
     } [array get parms]]
 }
 

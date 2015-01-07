@@ -183,6 +183,9 @@ order define TACTIC:FUND {
         text tactic_id -context yes \
             -loadcmd {beanload}
 
+        rcc "Name:" -for name
+        text name -width 20
+
         rcc "Actor:" -for a
         enum a -listcmd {tactic allAgentsBut $tactic_id}
 
@@ -219,6 +222,7 @@ order define TACTIC:FUND {
     set tactic [pot get $parms(tactic_id)]
 
     # FIRST, prepare and validate the parameters
+    prepare name     -toupper   -with [list $tactic valName]
     prepare a        -toupper 
     prepare amount   -toupper   -type   money
     prepare percent  -toupper   -type   rpercent
@@ -240,7 +244,9 @@ order define TACTIC:FUND {
     returnOnError -final
 
     # NEXT, upeate the tactic
-    setundo [$tactic update_ {a mode amount percent} [array get parms]]
+    setundo [$tactic update_ {
+        name a mode amount percent
+    } [array get parms]]
 }
 
 

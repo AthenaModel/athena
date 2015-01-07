@@ -40,8 +40,11 @@ namespace eval ::athena_test::tests:: {
 
     proc setup {} {
         variable C1
+        variable B1
+
         ted create JOE BOB NB1 NB2 BLUE BRIT SHIA SUNN KURD
-        set C1 [pot new condition::CONTROL]
+        set B1 [ted addblock SYSTEM]
+        set C1 [ted addcondition $B1 CONTROL]
     }
 
     # setcontrol a nlist ?a nlist...?
@@ -80,8 +83,9 @@ namespace eval ::athena_test::tests:: {
         anyall  ALL
         id      *
         metflag {}
+        name    C*
         nlist   {_type NBHOODS _rule {}}
-        parent  {}
+        parent  *
         pot     ::pot
         sense   DOES
         state   invalid

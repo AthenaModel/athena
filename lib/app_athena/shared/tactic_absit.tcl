@@ -145,6 +145,9 @@ order define TACTIC:ABSIT {
         text tactic_id -context yes \
             -loadcmd {beanload}
 
+        rcc "Name:" -for name
+        text name -width 20
+
         rcc "Neighborhood:" -for n
         nbhood n
 
@@ -171,6 +174,7 @@ order define TACTIC:ABSIT {
 
     # Validation of initially invalid items or contingent items
     # takes place on sanity check.
+    prepare name      -toupper   -with [list $tactic valName]
     prepare n         -toupper
     prepare stype     -toupper
     prepare coverage  -num       -type rfraction
@@ -187,10 +191,9 @@ order define TACTIC:ABSIT {
 
     returnOnError -final
 
-
     # NEXT, modify the tactic
     setundo [$tactic update_ {
-        n stype coverage inception resolver duration
+        name n stype coverage inception resolver duration
     } [array get parms]]
 }
 

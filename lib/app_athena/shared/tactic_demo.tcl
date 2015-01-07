@@ -104,6 +104,9 @@ order define TACTIC:DEMO {
         text tactic_id -context yes \
             -loadcmd {beanload}
 
+        rcc "Name:" -for name
+        text name -width 20
+
         rcc "Neighborhood:" -for n
         nbhood n
 
@@ -123,6 +126,7 @@ order define TACTIC:DEMO {
 
     # Validation of initially invalid items or contingent items
     # takes place on sanity check.
+    prepare name      -toupper   -with [list $tactic valName]
     prepare n         -toupper
     prepare g         -toupper
     prepare coverage  -num       -type rfraction
@@ -140,7 +144,7 @@ order define TACTIC:DEMO {
 
     # NEXT, modify the tactic
     setundo [$tactic update_ {
-        n g coverage
+        name n g coverage
     } [array get parms]]
 }
 
