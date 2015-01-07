@@ -220,8 +220,9 @@ myorders define CIVGROUP:UPDATE {
 
     meta form {
         rcc "Select Group:" -for g
+        # implicit -db ::rdb
         key g -table civgroups_view -keys g \
-            -loadcmd {orderdialog keyload g *}
+            -loadcmd {$entity_ keyload g *}
 
         rcc "Long Name:" -for longname
         longname longname
