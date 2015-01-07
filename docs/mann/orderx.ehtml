@@ -184,7 +184,7 @@ leaf class should define this metadata value.<p>
 
 Returns a list of the <xref order_flunky(n)> states in which this order 
 may be sent.  "Send States" are a means of controlling which orders can
-be used at different times; see <xref order_flonky(n)> for details.<p>
+be used at different times; see <xref order_flunky(n)> for details.<p>
 
 <xref order_set(n)> defaults this value to the empty list, which is
 appropriate if "send states" are not being used.<p>

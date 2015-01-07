@@ -2556,7 +2556,7 @@ snit::type executive {
         set order [string toupper $order]
 
         # NEXT, determine the order mode.
-        if {[order state] eq "TACTIC"} {
+        if {[flunky state] eq "TACTIC"} {
             flunky send private $order {*}$args
         } else {
             flunky send normal $order {*}$args
