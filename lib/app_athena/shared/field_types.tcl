@@ -58,9 +58,6 @@ dynaform fieldtype alias concernlist enumlonglist \
     -width 30     \
     -dictcmd {econcern deflist}
 
-# contextkey: key fields should get -db automatically.
-dynaform fieldtype alias contextkey contextkey -db ::rdb
-
 # coop: Pick a cooperation level
 dynaform fieldtype alias coop range \
     -datatype    ::qcooperation     \
