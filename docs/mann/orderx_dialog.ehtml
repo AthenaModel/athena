@@ -125,8 +125,8 @@ refreshed as appropriate.<p>
 
 <section "NOTIFIER EVENTS">
 
-Each instance of orderx_dialog(n) sends the following events on behalf
-of the configured <tt -flunky>:<p>
+Each instance of orderx_dialog(n) sends the following events from 
+subject <tt ::projectgui::orderx_dialog>:<p>
 
 <deflist events>
 

@@ -320,6 +320,7 @@ snit::type app {
         notifier bind ::sim <State> ::order  {::order state [::sim state]}
         notifier bind ::sim <State> ::flunky {::flunky state [::sim state]}
         notifier bind ::app <Puck>  ::order  {::order puck}
+        notifier bind ::app <Puck>  ::orderx_dialog  {::orderx_dialog puck}
 
         # NEXT, create state controllers, to enable and disable
         # GUI components as application state changes.

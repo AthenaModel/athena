@@ -438,7 +438,7 @@ snit::widget ::projectgui::orderx_dialog {
             set tags null
         }
 
-        notifier send $flunky <OrderEntry> $tags
+        notifier send $type <OrderEntry> $tags
     }
 
     #-------------------------------------------------------------------
@@ -457,7 +457,7 @@ snit::widget ::projectgui::orderx_dialog {
 
         # NEXT, notify the app that the dialog has been cleared; this
         # will allow it to clear up any entry artifacts.
-        notifier send $flunky <OrderEntry> {}
+        notifier send $type <OrderEntry> {}
     }
 
     # Close
@@ -469,7 +469,7 @@ snit::widget ::projectgui::orderx_dialog {
         $type SavePosition $my(id)
 
         # NEXT, notify the app that no order entry is being done.
-        notifier send $flunky <OrderEntry> {}
+        notifier send $type <OrderEntry> {}
 
         # NEXT, destroy the dialog
         destroy $win
@@ -503,7 +503,7 @@ snit::widget ::projectgui::orderx_dialog {
 
         # NEXT, notify the app that no order entry is being done; this
         # will allow it to clear up any entry artifacts.
-        notifier send $flunky <OrderEntry> {}
+        notifier send $type <OrderEntry> {}
 
         # NEXT, the order was accepted; we're done here.
         return 1
@@ -580,7 +580,7 @@ snit::widget ::projectgui::orderx_dialog {
         # NEXT, get the tags for the current field.  If there are none,
         # we're done.
 
-        set tags [$order tags $parm]
+        set tags [$order tags $current]
 
         if {[llength $tags] == 0} {
             return
