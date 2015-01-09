@@ -17,6 +17,7 @@ set swaps {
     "    setundo"         "    my setundo"
     "    returnOnError"   "    my returnOnError"
     "    cancel"          "    my cancel"
+    "    validate "       "    checkon "
     {[sender]}            {[my mode]}     
 }
 
