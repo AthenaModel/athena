@@ -103,10 +103,20 @@ Returns 1 if the named order is available, and 0 otherwise.  An order class
 is available if it is compatible with the current send <iref state>.
 See <xref "Send States"> for more information.<p>
 
+<defitem canredo {<i obj> canredo}>
+
+Returns 1 if there's an order or transaction 
+on the redo stack, and 0 otherwise.<p>
+
 <defitem canundo {<i obj> canundo}>
 
 Returns 1 if there's an order or transaction on the undo stack, and 
 0 otherwise.<p>
+
+<defitem class {<i obj> class <i name>}>
+
+Returns the full class name of the order class associated with the
+given order <i name>.<p>
 
 <defitem execute {<i obj> execute <i mode order>}>
 
@@ -126,6 +136,10 @@ undo stack.<p>
 <b>Note:</b> the caller maintains ownership of the order object passed
 in; the flunky makes a copy to put on the undo stack.<p>
 
+<defitem exists {<i obj> exists <i name>}>
+
+Returns 1 if the flunky has on order with the given name, and 0 otherwise.<p>
+
 <defitem make {<i obj> make <i name> ?<i args>?}>
 
 Creates an instance of the order with the given <i name>, passing the
@@ -138,10 +152,10 @@ execution mode, <b gui>, <b normal>, or <b private>.  Because the
 flunky passes itself to the orders as it executes them, they can use this
 to customize their behavior.<p>
 
-<defitem canredo {<i obj> canredo}>
+<defitem names {<i obj> names}>
 
-Returns 1 if there's an order or transaction 
-on the redo stack, and 0 otherwise.<p>
+Returns a list of the names of the orders known to the flunky.<p>
+
 
 <defitem redo {<i obj> redo}>
 
@@ -227,6 +241,11 @@ it onto the redo stack.<p>
 
 Returns the narrative for the order or transaction at the top of the
 undo stack, or "" if there is nothing to undo.<p>
+
+<defitem validate {<i obj> validate <i name>}>
+
+Validates an order <i name>, returning it in canonical form if the order
+is known, and throwing <b INVALID> with a suitable error message if not.<p>
 
 
 </deflist instance>

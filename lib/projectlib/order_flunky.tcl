@@ -77,9 +77,39 @@ oo::class create ::projectlib::order_flunky {
         set redoStack [list]
         set transList [list]
     }
-    
+
+
     #-------------------------------------------------------------------
     # Sending Orders
+
+    # names
+    #
+    # Returns the list of order names.
+
+    method names {} {
+        return [$oset names]
+    }
+
+    # exists name
+    #
+    # name  - An order name
+    #
+    # Returns 1 if there's an order with this name, and 0 otherwise
+
+    method exists {name} {
+        return [$oset exists $name]
+    }
+
+    # validate name
+    #
+    # name  - Possibly, the name of an order.
+    #
+    # Throws INVALID if the order name is unknown.  Returns the 
+    # canonicalized order name.
+
+    method validate {name} {
+        return [$oset validate $name]
+    }
 
     # class name
     #

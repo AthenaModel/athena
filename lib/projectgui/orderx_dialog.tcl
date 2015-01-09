@@ -79,6 +79,7 @@ snit::widget ::projectgui::orderx_dialog {
         set parmdict [from args -parmdict]
 
         # NEXT, get the dialog ID
+        $flunky validate $order
         set oclass [$flunky class $order]
         set id "$flunky/$oclass"
 
@@ -479,7 +480,7 @@ snit::widget ::projectgui::orderx_dialog {
     # Brings up the on-line help for the application
     
     method Help {} {
-        callwith $info(helpcmd) $options(-order)
+        callwith $options(-helpcmd) $options(-order)
     }
 
     # Send
