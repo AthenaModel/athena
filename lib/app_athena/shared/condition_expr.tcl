@@ -88,6 +88,9 @@ order define CONDITION:EXPR {
         text condition_id -context yes \
             -loadcmd {beanload}
 
+        rcc "Name:" -for name
+        text name -width 20
+
         rcc ""
         label {
             This condition is met when the following Boolean
@@ -100,17 +103,19 @@ order define CONDITION:EXPR {
     }
 } {
     prepare condition_id -required -with {::pot valclass condition::EXPR}
+    returnOnError
+
+    set cond [pot get $parms(condition_id)]
 
     # In the GUI, give detailed feedback on errors.  From other sources,
     # the sanity check will catch it.
+    prepare name       -toupper -with [list $cond valName]
     prepare expression -oncheck -type {executive expr}
 
     returnOnError -final
 
-    set cond [pot get $parms(condition_id)]
-
     # NEXT, update the block
-    setundo [$cond update_ {expression} [array get parms]]
+    setundo [$cond update_ {name expression} [array get parms]]
 }
 
 

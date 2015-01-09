@@ -446,6 +446,9 @@ order define TACTIC:ASSIGN {
         text tactic_id -context yes \
             -loadcmd {beanload}
 
+        rcc "Name:" -for name
+        text name -width 20
+
         rcc "Group:" -for g
         enum g -listcmd {tactic groupsOwnedByAgent $tactic_id}
 
@@ -492,6 +495,7 @@ order define TACTIC:ASSIGN {
     # NEXT, get the tactic
     set tactic [pot get $parms(tactic_id)]
 
+    prepare name       -toupper  -with [list $tactic valName]
     prepare g          -toupper  -type ident
     prepare n          -toupper  -type ident
     prepare activity   -toupper  -type {activity asched}
@@ -531,7 +535,7 @@ order define TACTIC:ASSIGN {
     # NEXT, update the tactic, saving the undo script, and clearing
     # historical state data.
     set undo [$tactic update_ {
-        g n activity pmode personnel min max percent
+        name g n activity pmode personnel min max percent
     } [array get parms]]
 
     # NEXT, save the undo script

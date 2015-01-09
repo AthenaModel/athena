@@ -749,7 +749,9 @@ tactic define DEPLOY "Deploy Personnel" {actor} -onlock {
 
         # NEXT, deploy the troops and log the deployments.
         dict for {n ntroops} $trans(deployment) {
-            personnel deploy [my id] $n $g $ntroops
+            if {$ntroops > 0} {
+                personnel deploy [my id] $n $g $ntroops
+            }
 
             if {$trans(old)} {
                 set message "
@@ -784,6 +786,9 @@ order define TACTIC:DEPLOY {
         rcc "Tactic ID:" -for tactic_id
         text tactic_id -context yes \
             -loadcmd {beanload}
+
+        rcc "Name:" -for name
+        text name -width 20
 
         rcc "Group:" -for g
         enum g -listcmd {tactic groupsOwnedByAgent $tactic_id}
@@ -837,6 +842,7 @@ order define TACTIC:DEPLOY {
     # NEXT, get the tactic
     set tactic [pot get $parms(tactic_id)]
 
+    prepare name       -toupper  -with [list $tactic valName]
     prepare g                    
     prepare pmode      -toupper  -selector
     prepare personnel  -num      -type iquantity
@@ -878,7 +884,7 @@ order define TACTIC:DEPLOY {
     # historical state data.
 
     set undo [$tactic update_ {
-        g pmode personnel min max percent nlist nmode redeploy
+        name g pmode personnel min max percent nlist nmode redeploy
     } [array get parms]]
 
     # NEXT, save the undo script

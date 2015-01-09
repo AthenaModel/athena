@@ -210,6 +210,10 @@ enumx create eprojtype {
 
 ::marsutil::range rpcf0 -min 0.1 -max 1.0
 
+# rsvcpct: The range of percentages for abstract services to be changed
+
+::marsutil::range rsvcpct -min -100.0 
+
 # refpoint
 #
 # A refpoint is a location expressed as a map reference.  On validation,

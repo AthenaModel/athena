@@ -234,6 +234,9 @@ order define TACTIC:STANCE {
         text tactic_id -context yes \
             -loadcmd {beanload}
 
+        rcc "Name:" -for name
+        text name -width 20
+
         rcc "Force Group:" -for f
         enum f -listcmd {tactic::STANCE frcgrpsOwnedBy $tactic_id}
 
@@ -256,6 +259,11 @@ order define TACTIC:STANCE {
 } {
     # FIRST, prepare and validate the parameters
     prepare tactic_id -required -with {::pot valclass tactic::STANCE}
+    returnOnError
+
+    set tactic [pot get $parms(tactic_id)]
+
+    prepare name -toupper -with [list $tactic valName]
     prepare f    -toupper
     prepare mode -toupper -selector
     prepare drel -toupper -num -type qaffinity
@@ -264,10 +272,10 @@ order define TACTIC:STANCE {
 
     returnOnError -final
 
-    set tactic [pot get $parms(tactic_id)]
-
     # NEXT, create the tactic
-    setundo [$tactic update_ {f mode drel glist nlist} [array get parms]]
+    setundo [$tactic update_ {
+        name f mode drel glist nlist
+    } [array get parms]]
 }
 
 

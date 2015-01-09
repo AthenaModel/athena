@@ -113,9 +113,9 @@ snit::type ::wintel::wizdb {
         WHERE etype = 'RIOT'
         ORDER BY n, t;
 
-        CREATE VIEW ingest_TRAFFIC AS
+        CREATE VIEW ingest_TRANSPORT AS
         SELECT * FROM ingest_view
-        WHERE etype = 'TRAFFIC'
+        WHERE etype = 'TRANSPORT'
         ORDER BY n, t;
 
         CREATE VIEW ingest_VIOLENCE AS

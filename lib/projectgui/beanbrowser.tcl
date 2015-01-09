@@ -891,7 +891,7 @@ snit::widget ::projectgui::beanbrowser {
 
         # NEXT, get the bean's data and prepare it to be loaded into the
         # tablelist.
-        set bean [bean get $uid]
+        set bean [pot get $uid]
         set bdict [$bean view]
 
         set data [list]

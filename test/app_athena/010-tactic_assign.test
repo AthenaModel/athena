@@ -99,15 +99,16 @@ namespace eval ::athena_test::tests:: {
         execstatus NONE
         faildict   {}
         g          {}
-        id         5
+        id         *
         max        0
         min        0
         n          {}
-        parent     4
+        name       T*
+        parent     *
         percent    0.0
         personnel  0
-        pot        ::pot
         pmode      ALL
+        pot        ::pot
         state      invalid
     }
 

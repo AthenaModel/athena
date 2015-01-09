@@ -80,6 +80,7 @@ namespace eval ::athena_test::tests:: {
         faildict   {}
         id         *
         n          {}
+        name       T*
         parent     *
         pot        ::pot
         resolver   NONE

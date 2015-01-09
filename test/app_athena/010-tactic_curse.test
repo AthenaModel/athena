@@ -191,7 +191,8 @@ namespace eval ::athena_test::tests:: {
         curse      C1
         execstatus NONE
         faildict   {}
-        id         5
+        id         *
+        name       T*
         parent     *
         pot        ::pot
         roles      *

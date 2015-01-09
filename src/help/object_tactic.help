@@ -1689,6 +1689,81 @@ page /object/tactic riot "RIOT tactic" {
 }
 
 #-----------------------------------------------------------------------
+# SERVICE Tactic
+
+object tactic_service {
+    noun "SERVICE tactic"
+    overview {
+        This tactic changes the actual level of service (LOS) of 
+        abstract infrastructure services in neighborhoods.  The LOS
+        can be set to a particular fraction of saturation level, or
+        to a percentage up or down from the current required level of
+        service, the current actual level of service or the current
+        expected level of service.<p>
+
+        Note that once the LOS of a particular service in a neighborhood
+        has been changed by a tactic with higher priority, lower priority 
+        SERVICE tactics will have no effect.  In this way, there is no
+        cumulative effect of multiple SERVICE tactics for the same service
+        and neighborhood, the highest priority one takes precedence.<p>
+
+        Changing the actual LOS will drive civilian attitudes. See the
+        <i>Athena Rules Document</i> for a description of how LOS of
+        abstract infrastructure services affects civilians.
+    }
+
+    include tactic_ -attrs id
+    include tactic_ -attrs agent
+    include tactic_ -attrs state
+
+    attribute s "Service" {
+        The <term abservice> to be changed.
+    } -tags {update}
+
+    attribute nlist "Neighborhoods" {
+        A <cref /gofer/nbhoods> value specifying a list of one or 
+        more neighborhoods for which the actual LOS should be changed.
+    } -tags {update}
+
+    attribute mode "Mode" {
+        The LOS mode, which has one of the following values.<p>
+
+        <b>EXACT</b>: Change the level of service to this exact
+        fraction of the saturation level of service.<p>
+
+        <b>RDELTA</b>: Change the level of service up or down this
+        percentage of the current required level of service.<p>
+
+        <b>EDELTA</b>: Change the level of service up or down this
+        percentage of the current expected level of service.<p>
+
+        <b>ADELTA</b>: Change the level of service up or down this
+        percentage of the current actual level of service.<p>
+    } -tags {update}
+
+    attribute los "Level" {
+        When the <i>mode</i> is EXACT, the actual LOS to assume.<p>
+    } -tags {update}
+
+    attribute deltap "Delta Percent" {
+        When the <i>mode</i> is RDELTA, EDELTA or ADELTA, the percentage
+        up or down from required LOS, expected LOS or actual LOS, 
+        respectively, the actual LOS is to assume.  This can be a 
+        negative percentage.
+    } -tags {update}
+}
+
+page /object/tactic service "SERVICE tactic" {
+    <sotitle>
+
+    <tactic_service overview><p>
+
+    SERVICE tactics have the following attributes:<p>
+
+    <tactic_service parmlist>
+}
+
+#-----------------------------------------------------------------------
 # SIGEVENT Tactic
 
 object tactic_sigevent {

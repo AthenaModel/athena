@@ -176,6 +176,9 @@ order define TACTIC:BUILD {
         text tactic_id -context yes \
             -loadcmd {beanload}
 
+        rcc "Name:" -for name
+        text name -width 20
+
         rcc "Nbhood:" -for n 
         localn n
 
@@ -201,6 +204,7 @@ order define TACTIC:BUILD {
 
     set tactic [pot get $parms(tactic_id)]
 
+    prepare name    -toupper  -with [list $tactic valName]
     prepare n
     prepare mode    -toupper  -selector
     prepare amount  -type money
@@ -224,7 +228,7 @@ order define TACTIC:BUILD {
 
     # NEXT, update the tactic, saving the undo script
     setundo [$tactic update_ {
-        n mode amount num percent
+        name n mode amount num percent
     } [array get parms]]
 }
 

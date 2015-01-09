@@ -39,7 +39,7 @@ source [file join $::wintel::library simevent_drought.tcl  ]
 source [file join $::wintel::library simevent_explosion.tcl]
 source [file join $::wintel::library simevent_flood.tcl    ]
 source [file join $::wintel::library simevent_riot.tcl     ]
-source [file join $::wintel::library simevent_traffic.tcl  ]
+source [file join $::wintel::library simevent_transport.tcl]
 source [file join $::wintel::library simevent_violence.tcl ]
 
 # GUI modules

@@ -189,6 +189,7 @@ oo::objdefine strategy {
         profile 1 tactic::STANCE reset
 
         profile 1 unit reset
+        profile 1 service reset
 
         # NEXT, execute each agent's strategy.
 
@@ -450,6 +451,29 @@ oo::define strategy {
         return $blocks
     }
 
+    # next_block_name
+    #
+    # Returns the next default block name based upon existing names.
+    # If blocks of the form 'Bn' already exist, where 'n' is an integer, 
+    # then 'Bn+1' is returned, otherwise 'B1' is returned.
+
+    method next_block_name {} {
+        # FIRST, default n is 1
+        set n 1
+        set bnum ""
+
+        # NEXT, go through the blocks in this strategy and pull
+        # out the ones that have the pattern "Bn".
+        foreach block [my blocks] {
+            set bname [$block get name]
+            if {[regexp {^B(\d+)$} $bname dummy bnum]} {
+               let n {max($bnum+1, $n)}
+            }
+        }
+
+        return "B$n"
+    }
+
     # state
     #
     # Returns the strategy's state.
@@ -510,6 +534,17 @@ oo::define strategy {
         foreach block [my blocks] {
             $block execute $coffer
         }
+    }
+
+    # onAddBean_ slot bean_id
+    #
+    # Figures out the next default name to use for a new block
+    # and sets it
+
+    method onAddBean_ {slot bean_id} {
+        set block [::pot get $bean_id]
+        $block configure -name [my next_block_name]
+        next $slot $bean_id
     }
 
     #-------------------------------------------------------------------

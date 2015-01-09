@@ -1,9 +1,10 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#    simevent_traffic.tcl
+#    simevent_transport.tcl
 #
 # AUTHOR:
 #    Will Duquette
+#    Dave Hanks
 #
 # PACKAGE:
 #   wintel(n) -- package for athena(1) intel ingestion wizard.
@@ -12,28 +13,29 @@
 #   Athena Regional Stability Simulation
 #
 # DESCRIPTION:
-#    athena_sim(1): Simulation Event, TRAFFIC
+#    athena_sim(1): Simulation Event, TRANSPORT
 #
-#    This module implements the TRAFFIC event, which represents
+#    This module implements the TRANSPORT event, which represents
 #    a transportation network blockage or breakdown in a neighborhood at 
 #    a particular week.
 # 
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
-::wintel::simevent define TRAFFIC "Traffic" {
-    A "Traffic" event represents a significant disturbance or 
+::wintel::simevent define TRANSPORT "Transport" {
+    A "Transport" event represents a significant disturbance or 
     blockage of the transportation network which causes hardship on 
     civilian groups.  The event will affect all groups in the neighborhood.<p>
 
-    Set the "Level of Service" parameter to represent the actual level of
-    transportation service being provided to the neighborhood's
-    residents (nominally 1.0).<p>
+    Set the "Change Level of Service" parameter to represent the actual 
+    percentage change in transportation service being provided to the 
+    neighborhood's residents (nominally -10 percent of current level of
+    service).<p>
 
 } {
-    A "Traffic" event is represented in Athena as a "block" in the 
+    A "Transport" event is represented in Athena as a "block" in the 
     SYSTEM agent's strategy.  The block will contain a SERVICE tactic
-    that sets the actual level of transportation service (LOS) being 
+    that changes the actual level of transportation service (LOS) being 
     provided to the residents of the neighborhood.  See the <i>Athena
     Rules Document</i> for the attitude affects of this service.<p>
 } {
@@ -51,7 +53,7 @@
         # FIRST, Initialize as a event bean.
         next
 
-        my set los 1.0
+        my set deltap -10.0
 
 
         # Save the options
@@ -62,17 +64,19 @@
     # Operations
 
     method narrative {} {
-        set t(n)   [nbhood fullname [my get n]]
-        set t(los) [string trim [percent [my get los]]]
+        set t(n)      [nbhood fullname [my get n]]
+        set t(deltap) [string trim [my get deltap]]
 
-        set text "Transportation service in $t(n) ($t(los))."
+        set text \
+            "Transportation service in $t(n) changes by $t(deltap)%."
     }
 
     method sendevent {} {
         my tactic [my block SYSTEM 1] SERVICE \
-            s     TRANSPORT                                     \
-            nlist [gofer construct NBHOODS BY_VALUE [my get n]] \
-            los   [my get los]
+            s      TRANSPORT                                     \
+            mode   ADELTA                                        \
+            nlist  [gofer construct NBHOODS BY_VALUE [my get n]] \
+            deltap [my get deltap]
     }
 }
 
@@ -80,12 +84,12 @@
 #-----------------------------------------------------------------------
 # EVENT:* orders
 
-# SIMEVENT:TRAFFIC
+# SIMEVENT:TRANSPORT
 #
-# Updates existing TRAFFIC event.
+# Updates existing TRANSPORT event.
 
-order define SIMEVENT:TRAFFIC {
-    title "Event: Random Traffic in Neighborhood"
+order define SIMEVENT:TRANSPORT {
+    title "Event: Change in Transportation Service in Neighborhood"
     options -sendstates WIZARD
 
     form {
@@ -93,19 +97,21 @@ order define SIMEVENT:TRAFFIC {
         text event_id -context yes \
             -loadcmd {beanload}
 
-        rcc "Level of Service:" -for los
-        posfrac los
+        rcc "Change Level of Service:" -for deltap
+        text deltap
+        c 
+        label "%"
     }
 } {
     # FIRST, prepare the parameters
-    prepare event_id  -required -with {::pot valclass ::wintel::simevent::TRAFFIC}
-    prepare los  -num      -type rposfrac
+    prepare event_id  -required -with {::pot valclass ::wintel::simevent::TRANSPORT}
+    prepare deltap  -num      -type rsvcpct
  
     returnOnError -final
 
     # NEXT, update the event.
     set e [::pot get $parms(event_id)]
-    $e update_ {los} [array get parms]
+    $e update_ {deltap} [array get parms]
 
     return
 }

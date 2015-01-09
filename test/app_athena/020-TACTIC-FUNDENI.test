@@ -171,6 +171,28 @@ namespace eval ::athena_test::tests:: {
         percent {You must specify a percent > 0.0}
     }
 
+    test TACTIC:FUNDENI-1.11 {invalid name} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:FUNDENI tactic_id [$T1 id] name 1234
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Identifiers begin with a letter and contain only letters and digits.}
+    }
+
+    test TACTIC:FUNDENI-1.12 {duplicate name} -setup {
+        setup
+        set T2 [ted addtactic $B1 ABSIT]
+    } -body {
+        ted order -reject TACTIC:FUNDENI tactic_id [$T1 id] \
+            name [$T2 get name]
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Name already exists: "T2"}
+    }
+
     test TACTIC:FUNDENI-2.1 {tactic is created} -setup {
         setup
     } -body {
@@ -189,6 +211,7 @@ namespace eval ::athena_test::tests:: {
         id         *
         los        100.0
         mode       ALL
+        name       T*
         parent     *
         percent    0.0
         pot        ::pot
@@ -213,6 +236,7 @@ namespace eval ::athena_test::tests:: {
         id         *
         los        100.0
         mode       EXACT
+        name       T*
         parent     *
         percent    0.0
         pot        ::pot
@@ -237,6 +261,7 @@ namespace eval ::athena_test::tests:: {
         id         *
         los        100.0
         mode       UPTO
+        name       T*
         parent     *
         percent    0.0
         pot        ::pot
@@ -261,10 +286,11 @@ namespace eval ::athena_test::tests:: {
         id         *
         los        100.0
         mode       PERCENT
+        name       T*
         parent     *
         percent    10.0
         pot        ::pot
-       state      normal
+        state      normal
     }
 
     test TACTIC:FUNDENI-2.5 {tactic is created, EXCESS} -setup {
@@ -285,6 +311,7 @@ namespace eval ::athena_test::tests:: {
         id         *
         los        100.0
         mode       EXCESS
+        name       T*
         parent     *
         percent    0.0
         pot        ::pot
@@ -309,6 +336,7 @@ namespace eval ::athena_test::tests:: {
         id         *
         los        100.0
         mode       ALL
+        name       T*
         parent     *
         percent    0.0
         pot        ::pot

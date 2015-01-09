@@ -166,7 +166,7 @@ oo::objdefine condition {
         set pdict [dict create]
 
         foreach parm [order parms CONDITION:$cname] {
-            if {$parm eq "condition_id"} {
+            if {$parm eq "condition_id" || $parm eq "name"} {
                 continue
             }
 
@@ -188,6 +188,7 @@ oo::define condition {
     variable state    ;# The condition's state
     variable metflag  ;# 1 if condition is met, 0 if it is unmet, 
                        # or "" if the result is unknown
+    variable name     ;# Condition name; can be set by user
     
     #-------------------------------------------------------------------
     # Constructor
@@ -197,6 +198,7 @@ oo::define condition {
         set parent  ""
         set state   normal
         set metflag ""
+        set name    ""
     }
 
     #-------------------------------------------------------------------
@@ -490,6 +492,39 @@ oo::define condition {
         }
 
         next
+    }
+
+    #----------------------------------------------------------------
+    # Order Helpers
+    #
+    
+    # valName name 
+    #
+    # name  - a name for a tactic
+    #
+    # This validator checks to make sure that the name is an 
+    # identifier AND does not already exist in the set of conditions
+    # owned by this conditions parent.
+
+    method valName {name} {
+        # FIRST, name must be an identifier
+        ident validate $name
+
+        # NEXT, check existing names of all conditions
+        # owned by the parent skipping over the condition we 
+        # are checking and throwing invalid on first match
+        set parent [my get parent]
+        foreach condition [[pot get $parent] conditions] {
+            if {[$condition get id] == [my get id]} {
+                continue
+            }
+
+            if {$name eq [$condition get name]} {
+                throw INVALID "Name already exists: \"$name\""
+            }
+        }
+
+        return $name
     }
 }
 

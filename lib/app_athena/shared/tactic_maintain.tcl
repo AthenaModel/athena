@@ -344,6 +344,9 @@ order define TACTIC:MAINTAIN {
         text tactic_id -context yes \
             -loadcmd {beanload}
 
+        rcc "Name:" -for name
+        text name -width 20
+
         rcc "Nbhoods:" -for nlist -span 4 
         gofer nlist -typename gofer::NBHOODS
 
@@ -382,6 +385,7 @@ order define TACTIC:MAINTAIN {
 
     set tactic [pot get $parms(tactic_id)]
 
+    prepare name    -toupper  -with [list $tactic valName]
     prepare nlist
     prepare rmode   -toupper  -selector
     prepare fmode   -toupper  -selector
@@ -406,7 +410,7 @@ order define TACTIC:MAINTAIN {
 
     # NEXT, update the tactic, saving the undo script
     setundo [$tactic update_ {
-        nlist rmode amount fmode level percent
+        name nlist rmode amount fmode level percent
     } [array get parms]]
 }
 
