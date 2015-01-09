@@ -223,6 +223,14 @@ snit::widget ::projectgui::orderx_dialog {
     option -refreshon \
         -readonly yes
 
+    # -resources rdict
+    #
+    # A dictionary of other application resources be made available
+    # to the -order's form.
+
+    option -resources \
+        -readonly yes
+
     #-------------------------------------------------------------------
     # Components
 
@@ -301,9 +309,12 @@ snit::widget ::projectgui::orderx_dialog {
         }
 
         # NEXT, create the dynaview.
+        set rdict $options(-resources)
+        dict set rdict order_ $order
+
         install form using dynaview $win.form      \
+            -resources   $rdict                    \
             -formtype    [$order dynaform]         \
-            -entity      $order                    \
             -borderwidth 1                         \
             -relief      raised                    \
             -padding     2                         \

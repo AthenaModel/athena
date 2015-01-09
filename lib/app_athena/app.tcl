@@ -896,12 +896,13 @@ snit::type app {
         set order [string toupper $order]
 
         orderx_dialog enter \
-            -parmdict $parmdict                   \
-            -appname  "Athena [kiteinfo version]" \
-            -flunky   ::flunky                    \
-            -order    $order                      \
-            -master   [app topwin]                \
-            -helpcmd  [list app help]             \
+            -resources [dict create db_ ::rdb]     \
+            -parmdict  $parmdict                   \
+            -appname   "Athena [kiteinfo version]" \
+            -flunky    ::flunky                    \
+            -order     $order                      \
+            -master    [app topwin]                \
+            -helpcmd   [list app help]             \
             -refreshon {
                 ::cif <Update>
                 ::sim <Tick>

@@ -32,9 +32,9 @@ require tdom 0.8
 require struct::set 2.2
 require kiteutils 0.4.3 -local
 require kitedocs 0.4.3 -local
-require marsutil 3.0.6 -local
-require marsgui 3.0.6 -local
-require simlib 3.0.6 -local
+require marsutil 3.0.8 -local
+require marsgui 3.0.8 -local
+require simlib 3.0.8 -local
 require Marsbin 3.0.6 -local
 
 # External Files
