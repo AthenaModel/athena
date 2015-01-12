@@ -169,7 +169,7 @@ snit::widget ::wnbhood::wizwin {
                 set parms(polygon)    $poly
                 set parms(controller) ""
 
-                order send gui NBHOOD:CREATE:RAW [array get parms]
+                flunky senddict gui NBHOOD:CREATE:RAW [array get parms]
 
                 incr ctr
             }

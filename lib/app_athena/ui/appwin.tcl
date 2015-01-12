@@ -816,11 +816,11 @@ snit::widget appwin {
         $ordersmenu add cascade -label "Neighborhood" \
             -underline 0 -menu $submenu
         
-        $self AddOrder $submenu NBHOOD:CREATE
-        $self AddOrder $submenu NBHOOD:UPDATE
-        $self AddOrder $submenu NBHOOD:LOWER
-        $self AddOrder $submenu NBHOOD:RAISE
-        $self AddOrder $submenu NBHOOD:DELETE
+        $self AddOrderX $submenu NBHOOD:CREATE
+        $self AddOrderX $submenu NBHOOD:UPDATE
+        $self AddOrderX $submenu NBHOOD:LOWER
+        $self AddOrderX $submenu NBHOOD:RAISE
+        $self AddOrderX $submenu NBHOOD:DELETE
         $self AddOrder $submenu NBREL:UPDATE
 
         # Orders/Horz. Relationship Menu

@@ -781,7 +781,7 @@ snit::type autogen {
             # NEXT, set the controlling actor
             set parms(controller) [lindex $actors $k]
 
-            order send cli NBHOOD:CREATE [array get parms]
+            flunky senddict normal NBHOOD:CREATE [array get parms]
             
             # NEXT, increase the actor counter, unless we
             # need to go back to the first actor

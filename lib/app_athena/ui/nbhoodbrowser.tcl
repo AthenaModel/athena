@@ -83,7 +83,7 @@ snit::widgetadaptor nbhoodbrowser {
 
         # Assumes that *:UPDATE and *:UPDATE:MULTI always have the
         # the same validity.
-        cond::availableMulti control $editbtn \
+        cond::availableMultix control $editbtn \
             order   NBHOOD:UPDATE                \
             browser $win
 
@@ -94,7 +94,7 @@ snit::widgetadaptor nbhoodbrowser {
             -state   disabled                          \
             -command [mymethod RaiseSelected]
 
-        cond::availableSingle control $raisebtn \
+        cond::availableSinglex control $raisebtn \
             order   NBHOOD:RAISE                   \
             browser $win
 
@@ -105,7 +105,7 @@ snit::widgetadaptor nbhoodbrowser {
             -state   disabled                          \
             -command [mymethod LowerSelected]
 
-        cond::availableSingle control $lowerbtn \
+        cond::availableSinglex control $lowerbtn \
             order   NBHOOD:LOWER                   \
             browser $win
 
@@ -115,7 +115,7 @@ snit::widgetadaptor nbhoodbrowser {
             -state   disabled                              \
             -command [mymethod DeleteSelected]
 
-        cond::availableSingle control $deletebtn \
+        cond::availableSinglex control $deletebtn \
             order   NBHOOD:DELETE                   \
             browser $win
 
@@ -143,8 +143,8 @@ snit::widgetadaptor nbhoodbrowser {
 
     method SelectionChanged {} {
         # FIRST, update buttons
-        cond::availableSingle update [list $deletebtn $lowerbtn $raisebtn]
-        cond::availableMulti  update $editbtn
+        cond::availableSinglex update [list $deletebtn $lowerbtn $raisebtn]
+        cond::availableMultix  update $editbtn
 
         # NEXT, notify the app of the selection.
         if {[llength [$hull uid curselection]] == 1} {
@@ -166,9 +166,9 @@ snit::widgetadaptor nbhoodbrowser {
         if {[llength $ids] == 1} {
             set id [lindex $ids 0]
 
-            order enter NBHOOD:UPDATE n $id
+            app enter NBHOOD:UPDATE n $id
         } else {
-            order enter NBHOOD:UPDATE:MULTI ids $ids
+            app enter NBHOOD:UPDATE:MULTI ids $ids
         }
     }
 
@@ -182,7 +182,7 @@ snit::widgetadaptor nbhoodbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, bring it to the front.
-        order send gui NBHOOD:RAISE [list n $id]
+        flunky senddict gui NBHOOD:RAISE [list n $id]
     }
 
 
@@ -195,7 +195,7 @@ snit::widgetadaptor nbhoodbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, bring it to the front.
-        order send gui NBHOOD:LOWER [list n $id]
+        flunky senddict gui NBHOOD:LOWER [list n $id]
     }
 
 
@@ -208,7 +208,7 @@ snit::widgetadaptor nbhoodbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Send the order.
-        order send gui NBHOOD:DELETE n $id
+        flunky senddict gui NBHOOD:DELETE [list n $id]
     }
 }
 

@@ -442,16 +442,16 @@ snit::widget mapviewer {
         # Separator
         ttk::separator $win.vbar.sep
 
-        cond::available control \
+        cond::availablex control \
             [ttk::button $win.vbar.nbhood                       \
                  -style   Toolbutton                            \
                  -image   [list ${type}::icon::nbpoly           \
                                disabled ${type}::icon::nbpolyd] \
-                 -command [list order enter NBHOOD:CREATE]]     \
+                 -command [list app enter NBHOOD:CREATE]]     \
             order NBHOOD:CREATE
 
         DynamicHelp::add $win.vbar.nbhood \
-            -text [order title NBHOOD:CREATE]
+            -text [myorders title NBHOOD:CREATE]
 
         cond::available control \
             [ttk::button $win.vbar.newabsit                                  \
@@ -1003,12 +1003,12 @@ snit::widget mapviewer {
 
         $mnu add separator
 
-        cond::available control \
+        cond::availablex control \
             [menuitem $mnu command "Bring Neighborhood to Front" \
                  -command [mymethod NbhoodBringToFront]]         \
             order NBHOOD:RAISE
 
-        cond::available control \
+        cond::availablex control \
             [menuitem $mnu command "Send Neighborhood to Back" \
                  -command [mymethod NbhoodSendToBack]]         \
             order NBHOOD:LOWER
@@ -1039,7 +1039,7 @@ snit::widget mapviewer {
     # Brings the transient neighborhood to the front
 
     method NbhoodBringToFront {} {
-        order send gui NBHOOD:RAISE [list n $nbhoods(trans)]
+        flunky senddict gui NBHOOD:RAISE [list n $nbhoods(trans)]
     }
 
 
@@ -1048,7 +1048,7 @@ snit::widget mapviewer {
     # Sends the transient neighborhood to the back
 
     method NbhoodSendToBack {} {
-        order send gui NBHOOD:LOWER [list n $nbhoods(trans)]
+        flunky senddict gui NBHOOD:LOWER [list n $nbhoods(trans)]
     }
 
     #-------------------------------------------------------------------

@@ -616,6 +616,13 @@ snit::type app {
             [llength [$browser curselection]] > 0
         }
 
+        statecontroller ::cond::availableMultix -events {
+            ::flunky <Sync>
+        } -condition {
+            [::flunky available $order]              &&
+            [llength [$browser curselection]] > 0
+        }
+
         # Order is available, and the selection is deletable.
         # The browser should call update for its widgets.
         #
