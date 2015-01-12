@@ -145,8 +145,8 @@ oo::objdefine ::wintel::simevent {
     method normals {} {
         set result [list]
 
-        foreach id [pot ids ::wintel::simevent] {
-            if {[[pot get $id] state] eq "normal"} {
+        foreach id [::wintel::pot ids] {
+            if {[[::wintel::pot get $id] state] eq "normal"} {
                 lappend result $id
             }
         }
@@ -172,8 +172,8 @@ oo::objdefine ::wintel::simevent {
 
         # NEXT, assign numbers
         set i 0
-        foreach id [pot ids ::wintel::simevent] {
-            set e [pot get $id]
+        foreach id [::wintel::pot ids] {
+            set e [::wintel::pot get $id]
             $e set num $inum-[incr i]
         }
     }
@@ -192,13 +192,13 @@ oo::objdefine ::wintel::simevent {
         " row {
             # FIRST, create a new event.
             set etype [my type $typename]
-            set e [pot new $etype {*}$row(optlist)]
+            set e [::wintel::pot new $etype {*}$row(optlist)]
 
             # NEXT, if it can extend the previous event,
             # extend the previous event.
             if {$lastEvent ne "" && [$lastEvent canmerge $e]} {
                 $lastEvent merge $e
-                pot uncreate $e  ;# Reuses $e's bean ID
+                ::wintel::pot uncreate $e  ;# Reuses $e's bean ID
             } else {
                 set lastEvent $e
             }
@@ -579,11 +579,11 @@ order define EVENT:STATE {
     }
 } {
     # FIRST, prepare and validate the parameters
-    prepare event_id -required          -with {pot valclass ::wintel::simevent}
+    prepare event_id -required          -with {::wintel::pot valclass ::wintel::simevent}
     prepare state    -required -tolower -type ebeanstate
     returnOnError    -final
 
-    set event [pot get $parms(event_id)]
+    set event [::wintel::pot get $parms(event_id)]
 
     # NEXT, update the event.
     setundo [$event update_ {state} [array get parms]]

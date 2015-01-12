@@ -25,6 +25,10 @@ namespace eval ::wintel:: {
 
 # NEXT, define the remaining modules in alphabetical order.
 
+# Order Set for this window alone
+
+projectlib::order_set create ::wintel::orders
+
 # Non-GUI modules
 source [file join $::wintel::library wizard.tcl            ]
 source [file join $::wintel::library wizdb.tcl             ]

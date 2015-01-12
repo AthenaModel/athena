@@ -148,6 +148,8 @@ snit::widget ::wintel::wizwin {
         grid $win.status   -sticky ew
     }
 
+
+
     # puts text
     #
     # text     A text string
@@ -157,5 +159,6 @@ snit::widget ::wintel::wizwin {
     method puts {text} {
         $msgline puts $text
     }
+
 }
 

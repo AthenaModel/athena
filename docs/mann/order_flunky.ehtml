@@ -83,7 +83,7 @@ Creates a new instance of <tt ::projectlib::order_flunky>
 called <i name>.  It manages orders from the classes known to the 
 <i orderSet_>, which must be an <xref order_set(n)> object.<p>
 
-<defitem "order_flunky new" {::projectlib::order_flunky new ?<i baseClass>?}>
+<defitem "order_flunky new" {::projectlib::order_flunky new ?<i orderSet_>?}>
 
 Creates a new instance of <tt ::projectlib::order_flunky>
 with an automatically generated name..  It manages orders from the 

@@ -88,36 +88,38 @@
 #
 # Updates existing TRANSPORT event.
 
-order define SIMEVENT:TRANSPORT {
-    title "Event: Change in Transportation Service in Neighborhood"
-    options -sendstates WIZARD
+::wintel::orders define SIMEVENT:TRANSPORT {
+    meta title "Event: Change in Transportation Service in Neighborhood"
 
-    form {
+    meta defaults {
+        event_id ""
+        deltap   ""
+    }
+
+    meta form {
         rcc "Event ID" -for event_id
         text event_id -context yes \
-            -loadcmd {beanload}
+            -loadcmd {::wintel::wizard beanload}
 
         rcc "Change Level of Service:" -for deltap
         text deltap
         c 
         label "%"
     }
-} {
-    # FIRST, prepare the parameters
-    prepare event_id  -required -with {::pot valclass ::wintel::simevent::TRANSPORT}
-    prepare deltap  -num      -type rsvcpct
- 
-    returnOnError -final
+    
+    method _validate {} {
+        my prepare event_id  -required \
+            -with {::wintel::pot valclass ::wintel::simevent::TRANSPORT}
+        my prepare deltap  -num      -type rsvcpct
+    }
 
-    # NEXT, update the event.
-    set e [::pot get $parms(event_id)]
-    $e update_ {deltap} [array get parms]
+    method _execute {{flunky ""}} {
+        set e [::wintel::pot get $parms(event_id)]
+        $e update_ {deltap} [array get parms]
 
-    return
+        return
+    }
 }
-
-
-
 
 
 
