@@ -300,12 +300,13 @@ namespace eval ::athena_test::tests:: {
         execstatus NONE
         faildict   {}
         failures   {}
+        fullname   JOE/B*/T*
         g          BLUE
         id         *
         mode       ALL
         name       T*
         narrative  {Demobilize all of group BLUE's undeployed personnel.}
-        parent     *
+        parent     8
         percent    0
         personnel  0
         pot        ::pot
@@ -326,6 +327,7 @@ namespace eval ::athena_test::tests:: {
         execstatus NONE
         faildict   {}
         failures   {}
+        fullname   JOE/B*/T*
         g          BLUE
         id         *
         mode       ALL
@@ -349,6 +351,7 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -match dictglob -result {
         agent     JOE
+        fullname  JOE/B*/T*
         g         BLUE
         mode      ALL
         name      T*
@@ -357,7 +360,7 @@ namespace eval ::athena_test::tests:: {
         percent   0
         personnel 0
         state     normal
-        tactic_id *
+        tactic_id 10
         typename  DEMOB
     }
     

@@ -147,7 +147,7 @@ oo::define block {
     # The fully qualified name of the block
 
     method fullname {} {
-        return "[[[my pot] get $parent] agent]/[my get name]"
+        return "[my agent]/[my get name]"
     }
 
     # agent

@@ -112,7 +112,7 @@ oo::objdefine strategy {
             return $id
         }
 
-        set retval [strategy nameToBeanId $id]
+        set retval [strategy nameToId $id]
 
         # NEXT, if there is no mapping from name to id, throw INVALID
         if {$retval eq ""} {
@@ -131,12 +131,12 @@ oo::objdefine strategy {
     #-------------------------------------------------------------------
     # Helper methods
 
-    # nameToBeanId name
+    # nameToId name
     #
     # name    - Possibly a full name for a strategy bean
     #
     # This method traverses the supplied full name and tries to find
-    # the bean ID that corresponds to the name. For example, a full
+    # the appropriate ID that corresponds to the name. For example, a full
     # name of the form:
     #
     #     GOV/B1/T1
@@ -145,64 +145,69 @@ oo::objdefine strategy {
     # by the GOV agent and return it (assuming default names are used).
     # If a bean ID cannot be found, the empty string is returned.
 
-    method nameToBeanId {name} {
+    method nameToId {name} {
         # FIRST, no name then no id
         if {$name eq ""} {
             return ""
         }
 
-        # NEXT, get individual names
+        # NEXT, get individual names, expect <= 3 path elements
         set path [split $name "/"]
+        if {[llength $path] > 3} {
+            return ""
+        }
 
         # NEXT, assign names to specific variable. Variable may be
         # empty
         lassign $path agent bname tcname
-
-        # NEXT, must have at least a block name
-        if {$bname eq ""} {
-            return ""
-        }
 
         # NEXT, make sure agent exists
         if {$agent ni [agent names]} {
             return ""
         }
 
+        # NEXT, no block name, return agent name
+        if {$bname eq ""} {
+            return $agent
+        }
+
         set s [strategy getname $agent]
-        set block ""
+        set block_id ""
 
         # NEXT, look for a match on block name
-        foreach block_id [$s block_ids] {
-            if {[[pot get $block_id] get name] eq $bname} {
-                set block [pot get $block_id]
+        foreach block [$s blocks] {
+            if {[$block get name] eq $bname} {
+                set block_id [$block id]
             }
         }
 
         # NEXT, no block found, no id
-        if {$block eq ""} {
+        if {$block_id eq ""} {
             return ""
         }
 
         # NEXT, if only block specified, return block ID
         if {$tcname eq ""} {
-            return [$block id]
+            return $block_id
         }
 
+        set block [pot get $block_id]
+
         # NEXT, see if the name is a tactic, return ID of first match
-        foreach tactic_id [$block tactic_ids] {
-            if {[[pot get $tactic_id] get name] eq $tcname} {
-                return $tactic_id
+        foreach tactic [$block tactics] {
+            if {[$tactic get name] eq $tcname} {
+                return [$tactic get id]
             }
         }
 
         # NEXT, see if the name is a condition, return ID of first match
-        foreach cond_id [$block condition_ids] {
-            if {[[pot get $cond_id] get name] eq $tcname} {
+        foreach cond [$block conditions] {
+            if {[$cond get name] eq $tcname} {
                 return $cond_id
             }
         }
 
-        # NEXT, no matches, no ID
+        # NEXT, if we get here there's no matches, no ID
         return ""
     }
 

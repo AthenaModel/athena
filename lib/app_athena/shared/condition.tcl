@@ -220,7 +220,7 @@ oo::define condition {
     # The fully qualified name of the condition
 
     method fullname {} {
-        return "[[pot get [my get parent]] fullname]/[my get name]"
+        return "[[my block] fullname]/[my get name]"
     }
 
     # typename
@@ -522,8 +522,7 @@ oo::define condition {
         # NEXT, check names of all conditions owned by the parent
         # skipping over the condition we are checking. Throw INVALID
         # on first match.
-        set parent [my get parent]
-        foreach condition [[pot get $parent] conditions] {
+        foreach condition [[my block] conditions] {
             if {[$condition get id] == [my get id]} {
                 continue
             }
@@ -535,7 +534,7 @@ oo::define condition {
 
         # NEXT, check all tactics owned by the parent. Throw INVALID
         # on first match
-        foreach tactic [[pot get $parent] tactics] {
+        foreach tactic [[my block] tactics] {
             if {$name eq [$tactic get name]} {
                 throw INVALID "Name already exists as tactic: \"$name\""
             }

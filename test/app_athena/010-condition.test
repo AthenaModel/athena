@@ -239,6 +239,7 @@ namespace eval ::athena_test::tests:: {
     } -match dictglob -result {
         agent      SYSTEM
         expression {1 == 1}
+        fullname   SYSTEM/B*/C*
         id         *
         metflag    {}
         name       C*
@@ -260,6 +261,7 @@ namespace eval ::athena_test::tests:: {
     } -match dictglob -result {
         agent      SYSTEM
         expression {1 == 1}
+        fullname   SYSTEM/B*/C*
         id         *
         metflag    {}
         name       C*
@@ -282,6 +284,7 @@ namespace eval ::athena_test::tests:: {
         agent        SYSTEM
         condition_id *
         expression   {1 == 1}
+        fullname     SYSTEM/B*/C*
         name         C*
         narrative    {Expression: 1 == 1}
         parent       *

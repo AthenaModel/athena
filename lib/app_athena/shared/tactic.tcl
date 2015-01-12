@@ -795,8 +795,7 @@ oo::define tactic {
         # NEXT, check existing tactics owned by the parent 
         # skipping over the tactic we are checking. Throw 
         # INVALID on first match
-        set parent [my get parent]
-        foreach tactic [[pot get $parent] tactics] {
+        foreach tactic [[my block] tactics] {
             if {[$tactic get id] == [my get id]} {
                 continue
             }
@@ -808,7 +807,7 @@ oo::define tactic {
 
         # NEXT, check all conditions owned by parent. Throw
         # INVALID on first match
-        foreach condition [[pot get $parent] conditions] {
+        foreach condition [[my block] conditions] {
             if {$name eq [$condition get name]} {
                 throw INVALID "Name already exists: \"$name\""
             }
