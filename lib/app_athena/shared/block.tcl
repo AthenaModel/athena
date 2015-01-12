@@ -142,6 +142,14 @@ oo::define block {
         return "::block"
     }
 
+    # fullname
+    #
+    # The fully qualified name of the block
+
+    method fullname {} {
+        return "[[[my pot] get $parent] agent]/[my get name]"
+    }
+
     # agent
     #
     # Returns the strategy's agent
@@ -359,6 +367,7 @@ oo::define block {
         dict set vdict pretty_onlock [expr {$onlock ? "Yes" : "No"}]
         dict set vdict timestring    [my timestring]
         dict set vdict statusicon    [my statusicon]
+        dict set vdict fullname      [my fullname]
 
         if {$exectime ne ""} {
             dict set vdict pretty_exectime [simclock toString $exectime]
@@ -423,7 +432,7 @@ oo::define block {
         # FIRST, add the header.  Its color and font should indicate
         # the state.
         $ht putln "<a name=\"block[my id]\"><span class=\"[my state]\">"
-        $ht put "<b>Block [my id] ([my get name]):</b> "
+        $ht put "<b>Block [my id] ([my fullname]):</b> "
 
         if {[my state] eq "disabled"} {
             $ht putln "<b>(Disabled)</b> "
@@ -559,7 +568,7 @@ oo::define block {
                 $ht tr class $cls valign top {
                     $ht td center { $ht image $data(statusicon) }
                     $ht td center { $ht put $data(id)           }
-                    $ht td left   { $ht put $data(name)         }
+                    $ht td left   { $ht put $data(fullname)     }
                     $ht td left   { $ht put $data(typename)     }
                     $ht td left   { $ht put $data(state)        }
                     $ht td left {
@@ -623,7 +632,7 @@ oo::define block {
                 $ht tr class $cls valign top {
                     $ht td center { $ht image $data(statusicon) }
                     $ht td center { $ht put $data(id)           }
-                    $ht td left   { $ht put $data(name)         }
+                    $ht td left   { $ht put $data(fullname)     }
                     $ht td left   { $ht put $data(typename)     }
                     $ht td left   { $ht put $data(state)        }
                     $ht td left {
@@ -1097,7 +1106,7 @@ order define BLOCK:UPDATE {
     }
 } {
     # FIRST, prepare and validate the parameters
-    prepare block_id -required -with {::pot valclass ::block}
+    prepare block_id -required -toupper -with {::strategy valclass ::block}
     returnOnError
 
     set block [pot get $parms(block_id)]
@@ -1161,7 +1170,7 @@ order define BLOCK:STATE {
     }
 } {
     # FIRST, prepare and validate the parameters
-    prepare block_id -required          -with {::pot valclass ::block}
+    prepare block_id -required -toupper -with {::strategy valclass ::block}
     prepare state    -required -tolower -type ebeanstate
     returnOnError -final
 
@@ -1192,7 +1201,7 @@ order define BLOCK:TACTIC:ADD {
     }
 } {
     # FIRST, prepare and validate the parameters
-    prepare block_id -required          -with  {::pot valclass ::block}
+    prepare block_id -required -toupper -with  {::strategy valclass ::block}
     prepare typename -required -toupper -oneof [tactic typenames]
 
     returnOnError -final
@@ -1225,7 +1234,7 @@ order define BLOCK:TACTIC:DELETE {
     }
 } {
     # FIRST, prepare and validate the parameters
-    prepare ids   -required -listwith {::pot valclass ::tactic}
+    prepare ids   -required -toupper -listwith {::strategy valclass ::tactic}
     returnOnError -final
 
     # NEXT, delete the tactics
@@ -1259,7 +1268,7 @@ order define BLOCK:TACTIC:MOVE {
     }
 } {
     # FIRST, prepare and validate the parameters
-    prepare tactic_id -required -with {::pot valclass ::tactic}
+    prepare tactic_id -required -toupper -with {::strategy valclass ::tactic}
     prepare where     -required -type emoveitem
 
     returnOnError -final
@@ -1293,7 +1302,7 @@ order define BLOCK:CONDITION:ADD {
     }
 } {
     # FIRST, prepare and validate the parameters
-    prepare block_id -required          -with {::pot valclass ::block}
+    prepare block_id -required -toupper -with {::strategy valclass ::block}
     prepare typename -required -toupper -oneof [condition typenames]
 
     returnOnError -final
@@ -1325,7 +1334,7 @@ order define BLOCK:CONDITION:DELETE {
         text ids
     }
 } {
-    prepare ids   -required -listwith {::pot valclass ::condition}
+    prepare ids   -required -toupper -listwith {::strategy valclass ::condition}
     returnOnError -final
 
     # NEXT, delete the conditions

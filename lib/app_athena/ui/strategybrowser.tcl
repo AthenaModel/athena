@@ -689,15 +689,15 @@ snit::widget strategybrowser {
         install blist using beanbrowser $pane          \
             -beancmd        ""                         \
             -columnsorting 0                           \
-            -titlecolumns  2                           \
+            -titlecolumns  3                          \
             -displaycmd    [mymethod BListDisplay]     \
             -selectioncmd  [mymethod BListSelection]   \
             -cutcopycmd    [mymethod BListCutCopy]     \
             -pastecmd      [mymethod BListPaste]       \
             -layout [string map [list %D $::app::derivedfg] {
                 { id              "ID"                              }
+                { fullname        "Name"     -width 10              }
                 { statusicon      "Exec"     -align center          }
-                { name            "Name"     -width 10              }
                 { state           "State"    -width 8               }
                 { intent          "Intent"   -width 30 -wrap yes    }
                 { timestring      "At Time"  -stretchable yes       }
@@ -1157,7 +1157,7 @@ snit::widget strategybrowser {
         install ctab using beanbrowser $pane          \
             -beancmd        ""                        \
             -columnsorting 0                          \
-            -titlecolumns  2                          \
+            -titlecolumns  3                          \
             -height        5                          \
             -displaycmd    [mymethod CTabDisplay]     \
             -selectioncmd  [mymethod CTabSelection]   \
@@ -1165,8 +1165,8 @@ snit::widget strategybrowser {
             -pastecmd      [mymethod CTabPaste]       \
             -layout [string map [list %D $::app::derivedfg] {
                 { id              "ID"                               }
+                { fullname        "Name"      -width 10              }
                 { statusicon      "Flag"                             }
-                { name            "Name"      -width 10              }
                 { state           "State"     -width 8               }
                 { narrative       "Narrative" -width 60 -wrap yes    }
                 { typename        "Type"                             }
@@ -1458,7 +1458,7 @@ snit::widget strategybrowser {
         install ttab using beanbrowser $pane          \
             -beancmd       ""                         \
             -columnsorting 0                          \
-            -titlecolumns  2                          \
+            -titlecolumns  3                          \
             -height        5                          \
             -displaycmd    [mymethod TTabDisplay]     \
             -selectioncmd  [mymethod TTabSelection]   \
@@ -1466,8 +1466,8 @@ snit::widget strategybrowser {
             -pastecmd      [mymethod TTabPaste]       \
             -layout [string map [list %D $::app::derivedfg] {
                 { id              "ID"                               }
+                { fullname        "Name"      -width 10              }
                 { statusicon      "Exec"      -align center          }
-                { name            "Name"      -width 10              }
                 { state           "State"     -width 8               }
                 { narrative       "Narrative" -width 60 -wrap yes    }
                 { typename        "Type"                             }

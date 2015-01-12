@@ -193,7 +193,7 @@ order define TACTIC:WITHDRAW {
     }
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -with {::pot valclass tactic::WITHDRAW}
+    prepare tactic_id  -required -with {::strategy valclass tactic::WITHDRAW}
 
     returnOnError
 
@@ -228,6 +228,7 @@ order define TACTIC:WITHDRAW {
     # NEXT, modify the tactic
     setundo $undo
 }
+
 
 
 

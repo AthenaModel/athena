@@ -89,6 +89,123 @@ oo::objdefine strategy {
         }
     }
 
+    #----------------------------------------------------------------------
+    # Validators
+
+    # valclass cls id
+    #
+    # cls   - A block, tactic or condition class or subclass
+    # id    - Possibly, an id in the beanpot(n) or a full name of an
+    #         existing strategy bean
+    #
+    # Throws an error with an errorcode of INVALID if this is not either
+    # a numeric id belonging to a bean of the given class or the full
+    # name of a strategy bean.
+
+    method valclass {cls id} {
+        # FIRST, grab the short name of the class
+        set short [namespace tail $cls]
+
+        # NEXT, check id against bean IDs of this class
+        set bean_ids [pot ids $cls]
+        if {$id in $bean_ids} {
+            return $id
+        }
+
+        set retval [strategy nameToBeanId $id]
+
+        # NEXT, if there is no mapping from name to id, throw INVALID
+        if {$retval eq ""} {
+            throw INVALID "Invalid $short ID: \"$id\""
+        }
+
+        # NEXT, if the ID belongs to a bean of the wrong class, throw 
+        # INVALID
+        if {![pot hasa $cls $retval]} {
+            throw INVALID "Invalid $short ID: \"$id\""
+        }
+
+        return $retval
+    }
+
+    #-------------------------------------------------------------------
+    # Helper methods
+
+    # nameToBeanId name
+    #
+    # name    - Possibly a full name for a strategy bean
+    #
+    # This method traverses the supplied full name and tries to find
+    # the bean ID that corresponds to the name. For example, a full
+    # name of the form:
+    #
+    #     GOV/B1/T1
+    #
+    # will find the bean ID of the first tactic in the first block owned
+    # by the GOV agent and return it (assuming default names are used).
+    # If a bean ID cannot be found, the empty string is returned.
+
+    method nameToBeanId {name} {
+        # FIRST, no name then no id
+        if {$name eq ""} {
+            return ""
+        }
+
+        # NEXT, get individual names
+        set path [split $name "/"]
+
+        # NEXT, assign names to specific variable. Variable may be
+        # empty
+        lassign $path agent bname tcname
+
+        # NEXT, must have at least a block name
+        if {$bname eq ""} {
+            return ""
+        }
+
+        # NEXT, make sure agent exists
+        if {$agent ni [agent names]} {
+            return ""
+        }
+
+        set s [strategy getname $agent]
+        set block ""
+
+        # NEXT, look for a match on block name
+        foreach block_id [$s block_ids] {
+            if {[[pot get $block_id] get name] eq $bname} {
+                set block [pot get $block_id]
+            }
+        }
+
+        # NEXT, no block found, no id
+        if {$block eq ""} {
+            return ""
+        }
+
+        # NEXT, if only block specified, return block ID
+        if {$tcname eq ""} {
+            return [$block id]
+        }
+
+        # NEXT, see if the name is a tactic, return ID of first match
+        foreach tactic_id [$block tactic_ids] {
+            if {[[pot get $tactic_id] get name] eq $tcname} {
+                return $tactic_id
+            }
+        }
+
+        # NEXT, see if the name is a condition, return ID of first match
+        foreach cond_id [$block condition_ids] {
+            if {[[pot get $cond_id] get name] eq $tcname} {
+                return $cond_id
+            }
+        }
+
+        # NEXT, no matches, no ID
+        return ""
+    }
+
     #-------------------------------------------------------------------
     # Strategy Execution
 
@@ -629,7 +746,7 @@ order define STRATEGY:BLOCK:DELETE {
     }
 } {
     # FIRST, prepare and validate the parameters
-    prepare ids -required -listwith {::pot valclass ::block}
+    prepare ids -required -listwith {::strategy valclass ::block}
 
     returnOnError -final
 
@@ -662,7 +779,7 @@ order define STRATEGY:BLOCK:MOVE {
     }
 } {
     # FIRST, prepare and validate the parameters
-    prepare block_id -required -with {::pot valclass ::block}
+    prepare block_id -required -with {::strategy valclass ::block}
     prepare where    -required -type emoveitem
 
     returnOnError -final
@@ -673,4 +790,5 @@ order define STRATEGY:BLOCK:MOVE {
 
     setundo [$s moveblock_ $parms(block_id) $parms(where)]
 }
+
 

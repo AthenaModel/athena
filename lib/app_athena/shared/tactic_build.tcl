@@ -199,7 +199,7 @@ order define TACTIC:BUILD {
     }
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -with {::pot valclass tactic::BUILD}
+    prepare tactic_id  -required -with {::strategy valclass tactic::BUILD}
     returnOnError
 
     set tactic [pot get $parms(tactic_id)]
@@ -231,6 +231,7 @@ order define TACTIC:BUILD {
         name n mode amount num percent
     } [array get parms]]
 }
+
 
 
 

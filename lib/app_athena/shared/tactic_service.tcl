@@ -225,7 +225,7 @@ order define TACTIC:SERVICE {
 
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -with {::pot valclass tactic::SERVICE}
+    prepare tactic_id  -required -with {::strategy valclass tactic::SERVICE}
     returnOnError
 
     set tactic [pot get $parms(tactic_id)]
@@ -246,6 +246,7 @@ order define TACTIC:SERVICE {
         name nlist s los mode deltap
     } [array get parms]]
 }
+
 
 
 

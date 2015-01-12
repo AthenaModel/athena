@@ -380,7 +380,7 @@ order define TACTIC:MAINTAIN {
     }
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -with {::pot valclass tactic::MAINTAIN}
+    prepare tactic_id  -required -with {::strategy valclass tactic::MAINTAIN}
     returnOnError
 
     set tactic [pot get $parms(tactic_id)]
@@ -413,6 +413,7 @@ order define TACTIC:MAINTAIN {
         name nlist rmode amount fmode level percent
     } [array get parms]]
 }
+
 
 
 

@@ -188,7 +188,7 @@ order define TACTIC:DEMOB {
     }
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -with {::pot valclass tactic::DEMOB}
+    prepare tactic_id  -required -with {::strategy valclass tactic::DEMOB}
     returnOnError
 
     set tactic [pot get $parms(tactic_id)]
@@ -234,6 +234,7 @@ order define TACTIC:DEMOB {
     # NEXT, modify the tactic
     setundo $undo
 }
+
 
 
 

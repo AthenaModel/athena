@@ -134,7 +134,7 @@ order define TACTIC:EXECUTIVE {
     }
 } {
     # FIRST, prepare and validate the parameters
-    prepare tactic_id -required -with {::pot valclass tactic::EXECUTIVE}
+    prepare tactic_id -required -with {::strategy valclass tactic::EXECUTIVE}
     prepare command             -type tclscript
     returnOnError 
 
@@ -147,6 +147,7 @@ order define TACTIC:EXECUTIVE {
     # NEXT, update the block
     setundo [$tactic update_ {name command} [array get parms]]
 }
+
 
 
 

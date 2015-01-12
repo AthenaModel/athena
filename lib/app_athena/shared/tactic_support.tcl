@@ -166,7 +166,7 @@ order define TACTIC:SUPPORT {
     }
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -with {::pot valclass tactic::SUPPORT}
+    prepare tactic_id  -required -with {::strategy valclass tactic::SUPPORT}
     returnOnError
 
     set tactic [pot get $parms(tactic_id)]
@@ -187,6 +187,7 @@ order define TACTIC:SUPPORT {
     # NEXT, save the undo script
     setundo $undo
 }
+
 
 
 

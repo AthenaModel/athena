@@ -83,7 +83,7 @@ order define TACTIC:SIGEVENT {
     }
 } {
     # FIRST, prepare and validate the parameters
-    prepare tactic_id -required -with {::pot valclass tactic::SIGEVENT}
+    prepare tactic_id -required -with {::strategy valclass tactic::SIGEVENT}
     returnOnError
 
     set tactic [pot get $parms(tactic_id)]
@@ -97,6 +97,7 @@ order define TACTIC:SIGEVENT {
     # NEXT, update the block
     setundo [$tactic update_ {name msg} [array get parms]]
 }
+
 
 
 

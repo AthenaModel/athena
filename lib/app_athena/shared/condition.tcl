@@ -215,6 +215,14 @@ oo::define condition {
     }
 
 
+    # fullname
+    #
+    # The fully qualified name of the condition
+
+    method fullname {} {
+        return "[[pot get [my get parent]] fullname]/[my get name]"
+    }
+
     # typename
     #
     # Returns the condition's typename
@@ -305,6 +313,7 @@ oo::define condition {
         dict set vdict agent      [my agent]
         dict set vdict typename   [my typename]
         dict set vdict statusicon [my statusicon]
+        dict set vdict fullname   [my fullname]
 
         if {$view eq "html"} {
             dict set vdict narrative [link html [my narrative]]
@@ -510,9 +519,9 @@ oo::define condition {
         # FIRST, name must be an identifier
         ident validate $name
 
-        # NEXT, check existing names of all conditions
-        # owned by the parent skipping over the condition we 
-        # are checking and throwing invalid on first match
+        # NEXT, check names of all conditions owned by the parent
+        # skipping over the condition we are checking. Throw INVALID
+        # on first match.
         set parent [my get parent]
         foreach condition [[pot get $parent] conditions] {
             if {[$condition get id] == [my get id]} {
@@ -520,7 +529,15 @@ oo::define condition {
             }
 
             if {$name eq [$condition get name]} {
-                throw INVALID "Name already exists: \"$name\""
+                throw INVALID "Name already exists as condition: \"$name\""
+            }
+        }
+
+        # NEXT, check all tactics owned by the parent. Throw INVALID
+        # on first match
+        foreach tactic [[pot get $parent] tactics] {
+            if {$name eq [$tactic get name]} {
+                throw INVALID "Name already exists as tactic: \"$name\""
             }
         }
 
@@ -550,7 +567,7 @@ order define CONDITION:STATE {
     }
 } {
     # FIRST, prepare and validate the parameters
-    prepare condition_id -required          -with {::pot valclass ::condition}
+    prepare condition_id -required          -with {::strategy valclass ::condition}
     prepare state        -required -tolower -type ebeanstate
     returnOnError -final
 
@@ -559,6 +576,7 @@ order define CONDITION:STATE {
     # NEXT, update the block
     setundo [$cond update_ {state} [array get parms]]
 }
+
 
 
 

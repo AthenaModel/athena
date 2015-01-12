@@ -167,7 +167,7 @@ order define TACTIC:ABSIT {
 
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -with {::pot valclass tactic::ABSIT}
+    prepare tactic_id  -required -with {::strategy valclass tactic::ABSIT}
     returnOnError
 
     set tactic [pot get $parms(tactic_id)]
@@ -196,6 +196,7 @@ order define TACTIC:ABSIT {
         name n stype coverage inception resolver duration
     } [array get parms]]
 }
+
 
 
 

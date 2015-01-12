@@ -258,7 +258,7 @@ order define TACTIC:STANCE {
     }
 } {
     # FIRST, prepare and validate the parameters
-    prepare tactic_id -required -with {::pot valclass tactic::STANCE}
+    prepare tactic_id -required -with {::strategy valclass tactic::STANCE}
     returnOnError
 
     set tactic [pot get $parms(tactic_id)]
@@ -277,6 +277,7 @@ order define TACTIC:STANCE {
         name f mode drel glist nlist
     } [array get parms]]
 }
+
 
 
 

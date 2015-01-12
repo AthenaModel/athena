@@ -192,7 +192,7 @@ order define TACTIC:DEPOSIT {
     }
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -with {::pot valclass tactic::DEPOSIT}
+    prepare tactic_id  -required -with {::strategy valclass tactic::DEPOSIT}
     returnOnError 
     
     set tactic [pot get $parms(tactic_id)]
@@ -227,6 +227,7 @@ order define TACTIC:DEPOSIT {
     # NEXT, modify the tactic
     setundo $undo
 }
+
 
 
 

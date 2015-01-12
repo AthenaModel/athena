@@ -110,7 +110,7 @@ order define TACTIC:RIOT {
 
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -with {::pot valclass tactic::RIOT}
+    prepare tactic_id  -required -with {::strategy valclass tactic::RIOT}
     returnOnError
 
     set tactic [pot get $parms(tactic_id)]
@@ -137,6 +137,7 @@ order define TACTIC:RIOT {
         name n coverage
     } [array get parms]]
 }
+
 
 
 

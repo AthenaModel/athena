@@ -299,7 +299,7 @@ order define TACTIC:BROADCAST {
     }
 } {
     # FIRST, there must be a tactic ID
-    prepare tactic_id  -required -with {::pot valclass tactic::BROADCAST}
+    prepare tactic_id  -required -with {::strategy valclass tactic::BROADCAST}
     returnOnError
 
     # NEXT, get the tactic
@@ -319,6 +319,7 @@ order define TACTIC:BROADCAST {
     # NEXT, create the tactic
     setundo [$tactic update_ {name cap a iom cost} [array get parms]]
 }
+
 
 
 

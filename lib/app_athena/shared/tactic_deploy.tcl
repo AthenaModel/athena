@@ -836,7 +836,7 @@ order define TACTIC:DEPLOY {
     }
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -with {::pot valclass tactic::DEPLOY}
+    prepare tactic_id  -required -with {::strategy valclass tactic::DEPLOY}
     returnOnError
 
     # NEXT, get the tactic
@@ -890,6 +890,7 @@ order define TACTIC:DEPLOY {
     # NEXT, save the undo script
     setundo $undo
 }
+
 
 
 

@@ -102,7 +102,7 @@ order define CONDITION:EXPR {
         expr expression
     }
 } {
-    prepare condition_id -required -with {::pot valclass condition::EXPR}
+    prepare condition_id -required -with {::strategy valclass condition::EXPR}
     returnOnError
 
     set cond [pot get $parms(condition_id)]
@@ -117,6 +117,7 @@ order define CONDITION:EXPR {
     # NEXT, update the block
     setundo [$cond update_ {name expression} [array get parms]]
 }
+
 
 
 
