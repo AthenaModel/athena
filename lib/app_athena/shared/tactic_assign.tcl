@@ -489,7 +489,7 @@ order define TACTIC:ASSIGN {
     }
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -with {::pot valclass tactic::ASSIGN}
+    prepare tactic_id  -required -with {::strategy valclass tactic::ASSIGN}
     returnOnError
 
     # NEXT, get the tactic
@@ -541,6 +541,7 @@ order define TACTIC:ASSIGN {
     # NEXT, save the undo script
     setundo $undo
 }
+
 
 
 

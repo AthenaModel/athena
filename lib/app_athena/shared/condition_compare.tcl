@@ -103,7 +103,7 @@ order define CONDITION:COMPARE {
     }
 } {
     # FIRST, prepare and validate the parameters
-    prepare condition_id -required -with {::pot valclass condition::COMPARE}
+    prepare condition_id -required -with {::strategy valclass condition::COMPARE}
     returnOnError
 
     set cond [pot get $parms(condition_id)]
@@ -118,6 +118,7 @@ order define CONDITION:COMPARE {
     # NEXT, update the block
     setundo [$cond update_ {name x comp y} [array get parms]]
 }
+
 
 
 

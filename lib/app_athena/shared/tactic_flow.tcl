@@ -261,7 +261,7 @@ order define TACTIC:FLOW {
     }
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -with {::pot valclass tactic::FLOW}
+    prepare tactic_id  -required -with {::strategy valclass tactic::FLOW}
     returnOnError
 
     set tactic [pot get $parms(tactic_id)]
@@ -311,6 +311,7 @@ order define TACTIC:FLOW {
     # NEXT, modify the tactic
     setundo $undo
 }
+
 
 
 

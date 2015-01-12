@@ -156,7 +156,7 @@ order define TACTIC:GRANT {
     }
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -with {::pot valclass tactic::GRANT}
+    prepare tactic_id  -required -with {::strategy valclass tactic::GRANT}
     returnOnError
 
     set tactic [pot get $parms(tactic_id)]
@@ -177,6 +177,7 @@ order define TACTIC:GRANT {
     # NEXT, save the undo script
     setundo $undo
 }
+
 
 
 

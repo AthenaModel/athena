@@ -150,7 +150,7 @@ order define CONDITION:CONTROL {
     }
 } {
     # FIRST, prepare and validate the parameters
-    prepare condition_id -required -with {::pot valclass condition::CONTROL}
+    prepare condition_id -required -with {::strategy valclass condition::CONTROL}
     returnOnError
 
     set cond [pot get $parms(condition_id)]
@@ -166,6 +166,7 @@ order define CONDITION:CONTROL {
     # NEXT, update the block
     setundo [$cond update_ {name a sense anyall nlist} [array get parms]]
 }
+
 
 
 

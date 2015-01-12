@@ -142,12 +142,13 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -match dictglob -result {
         -agent      JOE
-        -block_id   3
+        -block_id   *
         -cmode      ALL
         -conditions {}
         -emode      ALL
+        -fullname   JOE/B*
         -intent     A
-        -name       B1
+        -name       B*
         -once       0
         -onlock     0
         -state      normal
@@ -318,11 +319,12 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -match dictglob -result {
         -agent        JOE
-        -condition_id 4
+        -condition_id *
         -expression   {1 + 1 == 2}
-        -name         C1
+        -fullname     JOE/B*/C*
+        -name         C*
         -narrative    {Expression: 1 + 1 == 2}
-        -parent       3
+        -parent       *
         -state        normal
         -typename     EXPR
     }
@@ -560,12 +562,13 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -match dictglob -result {
         -agent     JOE
+        -fullname  JOE/B*/T*
         -msg       {1 + 1 == 2}
-        -name      T1
+        -name      T*
         -narrative {Logs "1 + 1 == 2" to the sigevents log}
-        -parent    3
+        -parent    *
         -state     normal
-        -tactic_id 4
+        -tactic_id *
         -typename  SIGEVENT
     }
 

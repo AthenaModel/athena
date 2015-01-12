@@ -347,7 +347,7 @@ order define TACTIC:FUNDENI {
 
     }
 } {
-    prepare tactic_id -required -with {::pot valclass tactic::FUNDENI}
+    prepare tactic_id -required -with {::strategy valclass tactic::FUNDENI}
     returnOnError
 
     set tactic [pot get $parms(tactic_id)]
@@ -382,6 +382,7 @@ order define TACTIC:FUNDENI {
         name glist cmode mode amount percent los
     } [array get parms]]
 }
+
 
 
 

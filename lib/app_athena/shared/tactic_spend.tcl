@@ -273,7 +273,7 @@ order define TACTIC:SPEND {
     }
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -with {::pot valclass tactic::SPEND}
+    prepare tactic_id  -required -with {::strategy valclass tactic::SPEND}
     returnOnError
 
     set tactic [pot get $parms(tactic_id)]
@@ -323,6 +323,7 @@ order define TACTIC:SPEND {
     # NEXT, modify the tactic
     setundo $undo
 }
+
 
 
 

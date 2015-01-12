@@ -349,6 +349,14 @@ oo::define tactic {
     }
 
 
+    # fullname
+    #
+    # The fully qualified name of the tactic
+
+    method fullname {} {
+        return "[[pot get [my get parent]] fullname]/[my get name]"
+    }
+
     # typename
     #
     # Returns the tactic's typename
@@ -544,6 +552,7 @@ oo::define tactic {
         dict set vdict agent      [my agent]
         dict set vdict typename   [my typename]
         dict set vdict statusicon [my statusicon]
+        dict set vdict fullname   [my fullname]
 
         if {$view eq "html"} {
             dict set vdict narrative [link html [my narrative]]
@@ -783,16 +792,23 @@ oo::define tactic {
         # FIRST, name must be an identifier
         ident validate $name
 
-        # NEXT, check existing names of all tactics
-        # owned by the parent skipping over the tactic we 
-        # are checking
-        set parent [my get parent]
-        foreach tactic [[pot get $parent] tactics] {
+        # NEXT, check existing tactics owned by the parent 
+        # skipping over the tactic we are checking. Throw 
+        # INVALID on first match
+        foreach tactic [[my block] tactics] {
             if {[$tactic get id] == [my get id]} {
                 continue
             }
 
             if {$name eq [$tactic get name]} {
+                throw INVALID "Name already exists: \"$name\""
+            }
+        }
+
+        # NEXT, check all conditions owned by parent. Throw
+        # INVALID on first match
+        foreach condition [[my block] conditions] {
+            if {$name eq [$condition get name]} {
                 throw INVALID "Name already exists: \"$name\""
             }
         }
@@ -821,7 +837,7 @@ order define TACTIC:STATE {
     }
 } {
     # FIRST, prepare and validate the parameters
-    prepare tactic_id -required          -with {::pot valclass ::tactic}
+    prepare tactic_id -required          -with {::strategy valclass ::tactic}
     prepare state     -required -tolower -type ebeanstate
     returnOnError -final
 
@@ -830,6 +846,7 @@ order define TACTIC:STATE {
     # NEXT, update the block, clearing the execution status
     setundo [$tactic update_ {state} [array get parms]]
 }
+
 
 
 

@@ -270,12 +270,13 @@ namespace eval ::athena_test::tests:: {
         emode           ALL
         execstatus      NONE
         exectime        {}
+        fullname        SYSTEM/B*
         id              *
         intent          {}
         name            B*
         once            0
         onlock          0
-        parent          1
+        parent          *
         pot             ::pot
         pretty_exectime -
         pretty_once     No
@@ -303,12 +304,13 @@ namespace eval ::athena_test::tests:: {
         emode           ALL
         execstatus      NONE
         exectime        5
+        fullname        SYSTEM/B*
         id              *
         intent          {}
         name            B*
         once            0
         onlock          0
-        parent          1
+        parent          *
         pot             ::pot
         pretty_exectime 2012W06
         pretty_once     No
@@ -340,6 +342,7 @@ namespace eval ::athena_test::tests:: {
         cmode      ALL
         conditions {6 7}
         emode      ALL
+        fullname   JOE/B*
         intent     {My Block}
         name       B*
         once       0

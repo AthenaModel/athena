@@ -216,7 +216,7 @@ order define TACTIC:FUND {
         }
     }
 } {
-    prepare tactic_id -required -with {::pot valclass tactic::FUND}
+    prepare tactic_id -required -with {::strategy valclass tactic::FUND}
     returnOnError
 
     set tactic [pot get $parms(tactic_id)]
@@ -248,5 +248,6 @@ order define TACTIC:FUND {
         name a mode amount percent
     } [array get parms]]
 }
+
 
 

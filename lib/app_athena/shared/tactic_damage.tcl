@@ -143,7 +143,7 @@ order define TACTIC:DAMAGE {
     }
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -with {::pot valclass tactic::DAMAGE}
+    prepare tactic_id  -required -with {::strategy valclass tactic::DAMAGE}
     returnOnError
 
     set tactic [pot get $parms(tactic_id)]
@@ -158,6 +158,7 @@ order define TACTIC:DAMAGE {
     # NEXT, update the tactic, saving the undo script
     setundo [$tactic update_ {name n a percent} [array get parms]]
 }
+
 
 
 

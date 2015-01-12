@@ -252,7 +252,7 @@ order define TACTIC:ATTRIT {
 
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -with {::pot valclass tactic::ATTRIT}
+    prepare tactic_id  -required -with {::strategy valclass tactic::ATTRIT}
     returnOnError
 
     set tactic [pot get $parms(tactic_id)]
@@ -292,6 +292,7 @@ order define TACTIC:ATTRIT {
         name mode casualties n f g1 g2
     } [array get parms]]
 }
+
 
 
 

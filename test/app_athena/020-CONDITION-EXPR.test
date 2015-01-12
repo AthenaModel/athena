@@ -93,7 +93,7 @@ namespace eval ::athena_test::tests:: {
     } -cleanup {
         cleanup
     } -match glob -result {
-        name {Name already exists: "C2"}
+        name {Name already exists as condition: "C2"}
     }
 
     test CONDITION:EXPR-2.1 {condition updated} -setup {

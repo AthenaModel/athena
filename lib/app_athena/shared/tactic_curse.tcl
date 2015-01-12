@@ -255,7 +255,7 @@ order define TACTIC:CURSE {
     }
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -with {::pot valclass tactic::CURSE}
+    prepare tactic_id  -required -with {::strategy valclass tactic::CURSE}
     returnOnError
 
     set tactic [pot get $parms(tactic_id)]
@@ -270,6 +270,7 @@ order define TACTIC:CURSE {
     # NEXT, modify the tactic
     setundo [$tactic update_ {name curse roles} [array get parms]]
 }
+
 
 
 

@@ -110,7 +110,7 @@ order define TACTIC:ACCIDENT {
 
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -with {::pot valclass tactic::ACCIDENT}
+    prepare tactic_id  -required -with {::strategy valclass tactic::ACCIDENT}
     returnOnError
 
     set tactic [pot get $parms(tactic_id)]
@@ -137,6 +137,7 @@ order define TACTIC:ACCIDENT {
         name n coverage
     } [array get parms]]
 }
+
 
 
 

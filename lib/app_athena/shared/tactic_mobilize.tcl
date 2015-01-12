@@ -234,7 +234,7 @@ order define TACTIC:MOBILIZE {
     }
 } {
     # FIRST, prepare the parameters
-    prepare tactic_id  -required -with {::pot valclass tactic::MOBILIZE}
+    prepare tactic_id  -required -with {::strategy valclass tactic::MOBILIZE}
     returnOnError
 
     set tactic [pot get $parms(tactic_id)]
@@ -281,6 +281,7 @@ order define TACTIC:MOBILIZE {
 
     return
 }
+
 
 
 
