@@ -2738,13 +2738,13 @@ snit::type executive {
     # If possible, undoes the order on the top of the stack.
 
     proc undo {} {
-        set title [cif canundo]
+        set title [flunky undotext]
 
         if {$title eq ""} {
             return "Nothing to undo."
         }
 
-        cif undo -test
+        flunky undo
 
         return "Undone: $title"
     }
@@ -2754,13 +2754,13 @@ snit::type executive {
     # If possible, redoes the last undone order.
 
     proc redo {} {
-        set title [cif canredo]
+        set title [cif redotext]
 
         if {$title eq ""} {
             return "Nothing to redo."
         }
 
-        cif redo
+        flunky redo
 
         return "Redone: $title"
     }

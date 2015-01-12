@@ -363,15 +363,28 @@ snit::type civgroup {
 # Orders: CIVGROUP:*
 
 # CIVGROUP:CREATE
-#
-# Creates new civilian groups.
+myorders define CIVGROUP:CREATE {
+    superclass ::athena_order
 
-order define CIVGROUP:CREATE {
-    title "Create Civilian Group"
+    meta title      "Create Civilian Group"
+    meta sendstates {PREP}
+    meta defaults   {
+        g         ""
+        longname  ""
+        n         ""
+        bsid      1
+        color     "#45DD11"
+        demeanor  AVERAGE
+        basepop   10000
+        pop_cr    0.0
+        sa_flag   0
+        lfp       60
+        housing   AT_HOME
+        hist_flag 0
+        upc       0.0
+    }
 
-    options -sendstates PREP
-
-    form {
+    meta form {
         rcc "Group:" -for g
         text g
 
@@ -417,83 +430,95 @@ order define CIVGROUP:CREATE {
             }
         } 
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare g         -toupper   -required -unused -type ident
-    prepare longname  -normalize
-    prepare n         -toupper   -required         -type nbhood
-    prepare bsid      -num                         -type {bsys system}
-    prepare color     -tolower   -required         -type hexcolor
-    prepare demeanor  -toupper   -required         -type edemeanor
-    prepare basepop   -num       -required         -type iquantity
-    prepare pop_cr    -num       -required         -type rpercentpm
-    prepare sa_flag              -required         -type boolean
-    prepare lfp       -num       -required         -type ipercent
-    prepare housing   -toupper   -required         -type ehousing
-    prepare hist_flag -num                         -type snit::boolean
-    prepare upc       -num                         -type rpercent
 
-    returnOnError
-
-    # NEXT, cross-validation
-    validate lfp {
-        if {$parms(sa_flag) && $parms(lfp) != 0} {
-            reject lfp \
-                {subsistence agriculture requires labor force % = 0}
+    method narrative {} {
+        if {$parms(g) ne ""} {
+            return "[my title]: $parms(g)"
+        } else {
+            return "[my title]"
         }
     }
 
-    validate housing {
-        if {$parms(sa_flag) && $parms(housing) ne "AT_HOME"} {
-            reject housing \
-                {subsistence agriculture can only be done "at home"}
+    method _validate {} {
+        my prepare g -toupper -required -type ident
+        my unused g
+        my prepare longname  -normalize
+        my prepare n         -toupper   -required -type nbhood
+        my prepare bsid      -num                 -type {bsys system}
+        my prepare color     -tolower   -required -type hexcolor
+        my prepare demeanor  -toupper   -required -type edemeanor
+        my prepare basepop   -num       -required -type iquantity
+        my prepare pop_cr    -num       -required -type rpercentpm
+        my prepare sa_flag              -required -type boolean
+        my prepare lfp       -num       -required -type ipercent
+        my prepare housing   -toupper   -required -type ehousing
+        my prepare hist_flag -num                 -type snit::boolean
+        my prepare upc       -num                 -type rpercent
+
+        my returnOnError
+
+        # NEXT, cross-validation
+        my checkon lfp {
+            civgroup check lfp/sa_flag $parms(lfp) $parms(sa_flag)
+        }
+
+        my checkon housing {
+            civgroup check housing/sa_flag $parms(housing) $parms(sa_flag)
         }
     }
 
-    returnOnError -final
+    method _execute {{flunky ""}} {
+        # FIRST, If longname is "", defaults to ID.
+        if {$parms(longname) eq ""} {
+            set parms(longname) $parms(g)
+        }
 
-    # NEXT, If longname is "", defaults to ID.
-    if {$parms(longname) eq ""} {
-        set parms(longname) $parms(g)
+        # NEXT, if bsys is "", defaults to 1 (neutral)
+        if {$parms(bsid) eq ""} {
+            set parms(bsid) 1
+        }
+
+        # NEXT, create the group and dependent entities
+        my setundo [civgroup mutate create [array get parms]]
     }
-
-    # NEXT, if bsys is "", defaults to 1 (neutral)
-    if {$parms(bsid) eq ""} {
-        set parms(bsid) 1
-    }
-
-    # NEXT, create the group and dependent entities
-    lappend undo [civgroup mutate create [array get parms]]
-
-    setundo [join $undo \n]
 }
 
 # CIVGROUP:DELETE
+myorders define CIVGROUP:DELETE {
+    meta title      "Delete Civilian Group"
+    meta sendstates PREP
 
-order define CIVGROUP:DELETE {
-    title "Delete Civilian Group"
-    options -sendstates PREP
+    meta defaults {
+        g ""
+    }
 
-    form {
+    meta form {
         rcc "Group:" -for g
         civgroup g
     }
-} {
-    # FIRST, prepare the parameters
-    prepare g -toupper -required -type civgroup
 
-    returnOnError -final
+    method narrative {} {
+        if {$parms(g) ne ""} {
+            return "[my title]: $parms(g)"
+        } else {
+            return "[my title]"
+        }
+    }
 
-    # NEXT, make sure the user knows what he is getting into.
+    method _validate {} {
+        # FIRST, prepare the parameters
+        my prepare g -toupper -required -type civgroup
+    }
 
-    if {[sender] eq "gui"} {
-        set answer [messagebox popup \
+    method _execute {{flunky ""}} {
+        if {[my mode ] eq "gui"} {
+            set answer [messagebox popup \
                         -title         "Are you sure?"                  \
                         -icon          warning                          \
                         -buttons       {ok "Delete it" cancel "Cancel"} \
                         -default       cancel                           \
                         -onclose       cancel                           \
-                        -ignoretag     CIVGROUP:DELETE                  \
+                        -ignoretag     [my name]                        \
                         -ignoredefault ok                               \
                         -parent        [app topwin]                     \
                         -message       [normalize {
@@ -502,31 +527,45 @@ order define CIVGROUP:DELETE {
                             entities that depend upon it?
                         }]]
 
-        if {$answer eq "cancel"} {
-            cancel
+            if {$answer eq "cancel"} {
+                my cancel
+            }
         }
+
+        # NEXT, Delete the group and dependent entities
+        lappend undo [civgroup mutate delete $parms(g)]
+        lappend undo [absit mutate reconcile]
+
+        my setundo [join $undo \n]
+
     }
-
-    # NEXT, Delete the group and dependent entities
-    lappend undo [civgroup mutate delete $parms(g)]
-    lappend undo [absit mutate reconcile]
-
-    setundo [join $undo \n]
 }
 
-
 # CIVGROUP:UPDATE
-#
-# Updates existing groups.
+myorders define CIVGROUP:UPDATE {
+    meta title      "Update Civilian Group"
+    meta sendstates PREP
 
-order define CIVGROUP:UPDATE {
-    title "Update Civilian Group"
-    options -sendstates PREP
+    meta defaults   {
+        g            ""
+        longname     ""
+        n            ""
+        bsid         ""
+        color        ""
+        demeanor     ""
+        basepop      ""
+        pop_cr       ""
+        sa_flag      ""
+        lfp          ""
+        housing      ""
+        hist_flag    ""
+        upc          ""
+    }
 
-    form {
+    meta form {
         rcc "Select Group:" -for g
-        key g -table civgroups_view -keys g \
-            -loadcmd {orderdialog keyload g *}
+        dbkey g -table civgroups_view -keys g \
+            -loadcmd {$order_ keyload g *}
 
         rcc "Long Name:" -for longname
         longname longname
@@ -569,45 +608,46 @@ order define CIVGROUP:UPDATE {
             }
         }
     }
-} {
-    # FIRST, prepare the parameters
-    prepare g         -toupper   -required -type civgroup
-    prepare longname  -normalize
-    prepare n         -toupper   -type nbhood
-    prepare bsid      -num       -type {bsys system}
-    prepare color     -tolower   -type hexcolor
-    prepare demeanor  -toupper   -type edemeanor
-    prepare basepop   -num       -type iquantity
-    prepare pop_cr    -num       -type rpercentpm
-    prepare sa_flag              -type boolean
-    prepare lfp       -num       -type ipercent
-    prepare housing   -toupper   -type ehousing
-    prepare hist_flag -num       -type snit::boolean
-    prepare upc       -num       -type rpercent
 
-    returnOnError
+    method _validate {} {
+        # FIRST, prepare the parameters
+        my prepare g         -toupper   -required -type civgroup
+        my prepare longname  -normalize
+        my prepare n         -toupper   -type nbhood
+        my prepare bsid      -num       -type {bsys system}
+        my prepare color     -tolower   -type hexcolor
+        my prepare demeanor  -toupper   -type edemeanor
+        my prepare basepop   -num       -type iquantity
+        my prepare pop_cr    -num       -type rpercentpm
+        my prepare sa_flag              -type boolean
+        my prepare lfp       -num       -type ipercent
+        my prepare housing   -toupper   -type ehousing
+        my prepare hist_flag -num       -type snit::boolean
+        my prepare upc       -num       -type rpercent
 
-    # NEXT, do cross validation
-    fillparms parms [civgroup getg $parms(g)]
+        my returnOnError
 
-    validate lfp {
-        if {$parms(sa_flag) && $parms(lfp) != 0} {
-            reject lfp \
-                {subsistence agriculture requires labor force % = 0}
+        # NEXT, do cross validation
+    
+        # TBD: this works, but probably ought to be done by the class.
+        # fillparms should be an orderx class helper, and the class should
+        # provide a method that calls [civgroup getg]
+
+        fillparms parms [civgroup getg $parms(g)]
+
+        my checkon lfp {
+            civgroup check lfp/sa_flag $parms(lfp) $parms(sa_flag)
+        }
+
+        my checkon housing {
+            civgroup check housing/sa_flag $parms(housing) $parms(sa_flag)
         }
     }
 
-    validate housing {
-        if {$parms(sa_flag) && $parms(housing) ne "AT_HOME"} {
-            reject housing \
-                {subsistence agriculture can only be done "at home"}
-        }
+
+    method _execute {{flunky ""}} {
+        my setundo [civgroup mutate update [array get parms]]
     }
-
-    returnOnError -final
-
-    # NEXT, modify the group
-    setundo [civgroup mutate update [array get parms]]
 }
 
 

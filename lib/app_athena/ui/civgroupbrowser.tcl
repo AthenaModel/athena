@@ -79,7 +79,7 @@ snit::widgetadaptor civgroupbrowser {
         install addbtn using mkaddbutton $bar.add "Add Civilian Group" \
             -command [mymethod AddEntity]
 
-        cond::available control $addbtn \
+        cond::availablex control $addbtn \
             order CIVGROUP:CREATE
 
 
@@ -87,7 +87,7 @@ snit::widgetadaptor civgroupbrowser {
             -state   disabled                                              \
             -command [mymethod EditSelected]
 
-        cond::availableSingle control $editbtn \
+        cond::availableSinglex control $editbtn \
             order   CIVGROUP:UPDATE           \
             browser $win
 
@@ -97,7 +97,7 @@ snit::widgetadaptor civgroupbrowser {
             -state   disabled                              \
             -command [mymethod DeleteSelected]
 
-        cond::availableSingle control $deletebtn \
+        cond::availableSinglex control $deletebtn \
             order   CIVGROUP:DELETE           \
             browser $win
 
@@ -142,8 +142,8 @@ snit::widgetadaptor civgroupbrowser {
 
     method SelectionChanged {} {
         # FIRST, update buttons
-        cond::availableSingle update $deletebtn
-        cond::availableSingle update $editbtn
+        cond::availableSinglex update $deletebtn
+        cond::availableSinglex update $editbtn
     }
 
 
@@ -153,7 +153,7 @@ snit::widgetadaptor civgroupbrowser {
 
     method AddEntity {} {
         # FIRST, Pop up the dialog
-        order enter CIVGROUP:CREATE
+        app enter CIVGROUP:CREATE
     }
 
 
@@ -165,7 +165,7 @@ snit::widgetadaptor civgroupbrowser {
         # FIRST, there should be only one selected.
         set id [lindex [$hull uid curselection] 0]
 
-        order enter CIVGROUP:UPDATE g $id
+        app enter CIVGROUP:UPDATE g $id
     }
 
     # DeleteSelected
@@ -177,7 +177,7 @@ snit::widgetadaptor civgroupbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Pop up the dialog, and select this entity
-        order send gui CIVGROUP:DELETE g $id
+        flunky senddict gui CIVGROUP:DELETE [list g $id]
     }
 }
 

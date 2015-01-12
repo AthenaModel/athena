@@ -568,6 +568,12 @@ snit::type app {
             [::order available $order]
         }
 
+        statecontroller ::cond::availablex -events {
+            ::flunky <Sync>
+        } -condition {
+            [::flunky available $order]
+        }
+
         # One browser entry is selected.  The
         # browser should call update for its widgets.
         #
@@ -587,6 +593,13 @@ snit::type app {
             ::order <State>
         } -condition {
             [::order available $order]                &&
+            [llength [$browser curselection]] == 1
+        }
+
+        statecontroller ::cond::availableSinglex -events {
+            ::flunky <Sync>
+        } -condition {
+            [::flunky available $order]                &&
             [llength [$browser curselection]] == 1
         }
 

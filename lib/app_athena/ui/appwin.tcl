@@ -789,9 +789,9 @@ snit::widget appwin {
         $ordersmenu add cascade -label "Civilian Group" \
             -underline 0 -menu $submenu
         
-        $self AddOrder $submenu CIVGROUP:CREATE
-        $self AddOrder $submenu CIVGROUP:UPDATE
-        $self AddOrder $submenu CIVGROUP:DELETE
+        $self AddOrderX $submenu CIVGROUP:CREATE
+        $self AddOrderX $submenu CIVGROUP:UPDATE
+        $self AddOrderX $submenu CIVGROUP:DELETE
 
         # Orders/Force Group
         set submenu [menu $ordersmenu.frcgroup]
@@ -966,6 +966,23 @@ snit::widget appwin {
             cond::available control \
                 [menuitem $mnu command [order title $order]... \
                      -command [list order enter $order]]    \
+                order $order
+        }
+    }
+
+    # AddOrderX mnu orders
+    #
+    # mnu    - A pull-down menu
+    # orders - A list of order names
+    #
+    # Adds menu items for the orders
+
+    method AddOrderX {mnu orders} {
+        foreach order $orders {
+            set cls [flunky class $order]
+            cond::availablex control \
+                [menuitem $mnu command [$cls title]... \
+                     -command [list app enter $order]]    \
                 order $order
         }
     }
@@ -1940,12 +1957,12 @@ snit::widget appwin {
 
     method PostEditMenu {} {
         # Undo item
-        set title [cif canundo]
+        set text [flunky undotext]
 
-        if {$title ne ""} {
+        if {$text ne ""} {
             $editmenu entryconfigure 0 \
                 -state normal          \
-                -label "Undo $title"
+                -label $text
         } else {
             $editmenu entryconfigure 0 \
                 -state disabled        \
@@ -1953,12 +1970,12 @@ snit::widget appwin {
         }
 
         # Redo item
-        set title [cif canredo]
+        set text [flunky redotext]
 
-        if {$title ne ""} {
+        if {$text ne ""} {
             $editmenu entryconfigure 1 \
                 -state normal          \
-                -label "Redo $title"
+                -label $text
         } else {
             $editmenu entryconfigure 1 \
                 -state disabled        \
@@ -1971,8 +1988,8 @@ snit::widget appwin {
     # Undoes the top order on the undo stack, if any.
 
     method EditUndo {} {
-        if {[cif canundo] ne ""} {
-            cif undo
+        if {[flunky canundo]} {
+            flunky undo
         }
     }
 
@@ -1981,8 +1998,8 @@ snit::widget appwin {
     # Redoes the last undone order if any.
 
     method EditRedo {} {
-        if {[cif canredo] ne ""} {
-            cif redo
+        if {[flunky canredo]} {
+            flunky redo
         }
     }
 

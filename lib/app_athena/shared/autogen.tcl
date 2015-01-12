@@ -903,7 +903,7 @@ snit::type autogen {
                     set parms(housing) AT_HOME
                 }
 
-                order send cli CIVGROUP:CREATE [array get parms]
+                flunky senddict normal CIVGROUP:CREATE [array get parms]
             }
         }
     }
