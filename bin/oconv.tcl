@@ -6,6 +6,7 @@ exec tclsh "$0" "$@"
 # oconv.tcl
 
 package require kiteutils
+namespace import kiteutils::*
 
 set swaps {
     "order define"        "myorders define"
@@ -17,25 +18,25 @@ set swaps {
     "    setundo"         "    my setundo"
     "    returnOnError"   "    my returnOnError"
     "    cancel"          "    my cancel"
-    "    validate "       "    checkon "
+    "    validate "       "    my checkon "
     {[sender]}            {[my mode]}     
 }
 
-set methods {
+set valText "
 
-    method _validate {} {
+    method _validate {} \{
+"
 
+set exeText "
     }
 
-    method _execute {{flunky ""}} {
-
-    }
-
-}
+    method _execute {{flunky \"\"}} {
+"
 
 proc main {argv} {
     variable swaps
-    variable methods
+    variable valText
+    variable exeText
 
     set file [lindex $argv 0]
 
@@ -49,25 +50,34 @@ proc main {argv} {
         exit 1
     }
 
-    foreach {this that} $swaps {
-        puts "$file: '$this' -> '$that'"
-        exec kite replace $this $that $file
-    }
-
-    set lines [split [readfile $file] \n]
-
+    set inOrders no
     set outlines [list]
 
+
     foreach line [split [readfile $file] \n] {
-        if {[string first "} {" $line] == 0} {
-            lappend outlines $methods
-        } else {
-            lappend outlines $line
+        if {!$inOrders} {
+            if {![string match "order define*" $line]} {
+                lappend outlines $line
+                continue
+            }
+
+            set inOrders 1
         }
+
+        if {[string first "\} \{" $line] == 0} {
+            lappend outlines $valText
+            continue
+        }
+
+        if {[string match "*returnOnError -final*" $line]} {
+            lappend outlines $exeText
+            continue
+        }
+
+        lappend outlines [string map $swaps $line]
     }
 
-    writefile $file [join $outlines \n]
-
+    writefile new_$file [join $outlines \n]
 }
 
 main $argv
