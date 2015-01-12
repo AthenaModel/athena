@@ -58,9 +58,6 @@ dynaform fieldtype alias concernlist enumlonglist \
     -width 30     \
     -dictcmd {econcern deflist}
 
-# contextkey: key fields should get -db automatically.
-dynaform fieldtype alias contextkey contextkey -db ::rdb
-
 # coop: Pick a cooperation level
 dynaform fieldtype alias coop range \
     -datatype    ::qcooperation     \
@@ -106,7 +103,7 @@ dynaform fieldtype alias inject key \
     -table gui_injects  \
     -keys  {curse_id inject_num}
 
-# inject: Pick an inject by its ID.
+# plant: Pick a plant by its ID.
 dynaform fieldtype alias plant key \
     -db    ::rdb        \
     -table gui_plants_na  \
@@ -188,6 +185,7 @@ dynaform fieldtype alias sat range \
     -showsymbols yes    \
     -resetvalue  0.0
 
+# sal: Pick a saliency
 dynaform fieldtype alias sal range \
     -datatype    ::qsaliency \
     -showsymbols yes         \

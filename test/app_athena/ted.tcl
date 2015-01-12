@@ -860,6 +860,69 @@ snit::type ted {
         }
     }
 
+    # orderx ?-reject? name parmdict
+    #
+    # name       A simulation order
+    # parmdict   The order's parameter dictionary, as a single
+    #            argument or as multiple arguments.
+    #
+    # Sends the order in normal mode with transactions off, and returns 
+    # the result. If "-reject" is used, expects the order to be rejected.
+
+    typemethod orderx {args} {
+        # FIRST, is -reject specified?
+        if {[lindex $args 0] eq "-reject"} {
+            lshift args
+            set rejectFlag 1
+        } else {
+            set rejectFlag 0
+        }
+
+        # NEXT, get the order name
+        set order [lshift args]
+
+        require {$order ne ""} "No order specified!"
+
+        # NEXT, get the parm dict
+        if {[llength $args] == 1} {
+            set parmdict [lindex $args 0]
+        } else {
+            set parmdict $args
+        }
+
+        # NEXT, send the order
+        try {
+            flunky transactions off
+            if {$rejectFlag} {
+                set code [catch {
+                    flunky senddict normal $order $parmdict
+                } result opts]
+
+                if {$code} {
+                    if {[dict get $opts -errorcode] eq "REJECT"} {
+
+                        set    results "\n"
+                        foreach {parm error} $result {
+                            append results "        $parm [list $error]\n" 
+                        }
+                        append results "    "
+                        
+                        return $results
+                    } else {
+                        return {*}$opts $result
+                    }
+                } else {
+                    return -code error "Expected rejection, got ok"
+                }
+
+            } else {
+                flunky senddict normal $order $parmdict
+            }
+        } finally {
+            flunky transactions on
+        }
+    }
+
     # query sql
     #
     # sql     - An SQL query

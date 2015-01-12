@@ -1,0 +1,285 @@
+<manpage {projectlib(n) order_flunky(n)} "Order Execution Manager">
+
+<section SYNOPSIS>
+
+<pre>
+package require projectlib <version>
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+The <tt ::projectlib::order_flunky> class is part of the Mars Order Processing
+framework, which includes <xref orderx(n)>, <xref order_set(n)>, and
+<xref order_flunky(n)>.  See <xref orderx(n)> for an overview of the
+framework.<p>
+
+An order_flunky(n) instance manages execution of instances of particular
+orders drawn from an <xref order_set(n)>, i.e., orders manipulating the
+data for a particular application.   It handles validation and execution
+of orders and maintains the undo/redo stack.  In addition, it manages the
+"send state", which is a way of easily controlling which orders are 
+available at different times in the client's lifecycle.<p>
+
+<b TODO:> Figure out how to customize this for Athena-use, with current
+code and with athena(n).
+
+<subsection "Customization">
+
+ Clients can use an instance of <tt ::projectlib::order_flunky> directly;
+ or they can customize it by subclassing.  order_flunky(n) is designed
+ to be customized in the following ways:<p>
+
+<ul>
+<li> The flunky creates instances of a desired order class using 
+    <iref make>.  If the <xref orderx(n)>-derived base class requires
+    additional configuration, <iref make> can be overridden to provide it,
+    either by adding arguments to the <tt create> command or by 
+    explicitly configuring the instance after it's created.<p>
+
+<li> The flunky executes orders (whether created internally or by the
+    client) by passing them to its <iref execute> method.  A subclass
+    can override this method, wrapping it with code to log the order, do
+    other tracing, or enable and disable monitoring.<p>
+
+    <b TBD:> We probably need lowlevel _execute and _undo methods for this
+    purpose, so that the wrappings are executed for each individual
+    order.  Either that, or they'll probably need to wrap <iref undo>
+    and <iref redo> in the same way.<p>
+</ul><p>
+
+<subsection "Send States">
+
+Different orders are available at different times in the lifetime of a 
+running application or library within that application.  The framework 
+helps with this by defining the notion of a "send state".  Each order 
+class can be associated with one or more send states (e.g., "PREP", 
+"PAUSED", "RUNNING").  The flunky can be notified of the application
+or library's current state via its <iref state> method.  An order is 
+considered to be <iref available> if the flunky's send state is one of
+those listed for the order; if it is not available, it cannot be sent.<p>
+
+An order class's send states are specified using the <tt sendstates> 
+<xref oohelpers(n) meta>data item; see <xref orderx(n)>.  Usually it is
+a list of the valid states.  If it is "*", then the order is valid in
+every state.<p>
+
+If send states are not useful in a given library or application, then
+simply don't define send states for any of the orders or the flunky.<p>
+
+The developer can choose any send state names he likes; the names have
+no meaning to <xref order_flunky(n)>.<p>
+
+<section COMMANDS>
+
+The following commands create instances of order_flunky(n):<p>
+
+<deflist>
+
+<defitem "order_flunky create" {::projectlib::order_flunky create <i name> ?<i orderSet_>?}>
+
+Creates a new instance of <tt ::projectlib::order_flunky>
+called <i name>.  It manages orders from the classes known to the 
+<i orderSet_>, which must be an <xref order_set(n)> object.<p>
+
+<defitem "order_flunky new" {::projectlib::order_flunky new ?<i orderSet_>?}>
+
+Creates a new instance of <tt ::projectlib::order_flunky>
+with an automatically generated name..  It manages orders from the 
+classes known to the <i orderSet_>, which must be an <xref order_set(n)> 
+object.<p>
+</deflist>
+
+<section "INSTANCE COMMAND">
+
+Each instance of order_flunky(n) has the following subcommands.<p>
+
+<deflist instance>
+
+<defitem available {<i obj> available <i name>}>
+
+Returns 1 if the named order is available, and 0 otherwise.  An order class
+is available if it is compatible with the current send <iref state>.
+See <xref "Send States"> for more information.<p>
+
+<defitem canredo {<i obj> canredo}>
+
+Returns 1 if there's an order or transaction 
+on the redo stack, and 0 otherwise.<p>
+
+<defitem canundo {<i obj> canundo}>
+
+Returns 1 if there's an order or transaction on the undo stack, and 
+0 otherwise.<p>
+
+<defitem class {<i obj> class <i name>}>
+
+Returns the full class name of the order class associated with the
+given order <i name>.<p>
+
+<defitem execute {<i obj> execute <i mode order>}>
+
+Executes the <i order> instance under the given <i mode>.  The <i order>
+must already be <iref available> and <xref orderx(n) valid>; it is handled
+as an unexpected error if it is not.
+
+The <i mode> indicates how the order should be handled.  If it is
+<b normal> the order will be logged normally, and will be placed on the
+undo stack if it is successful.  If it is <b gui> and the application
+has a significant user interface, the order may interact with the GUI, e.g.,
+to pop up a confirmation dialog; <b gui> is otherwise like <i normal>.<p>
+
+If the <i mode> is private, the order is not logged or added to the 
+undo stack.<p>
+
+<b>Note:</b> the caller maintains ownership of the order object passed
+in; the flunky makes a copy to put on the undo stack.<p>
+
+<defitem exists {<i obj> exists <i name>}>
+
+Returns 1 if the flunky has on order with the given name, and 0 otherwise.<p>
+
+<defitem make {<i obj> make <i name> ?<i args>?}>
+
+Creates an instance of the order with the given <i name>, passing the
+arguments to the constructor, and returns the new instance command.<p>
+
+<defitem mode {<i obj> mode}>
+
+While the flunky is executing an order, this method will return the 
+execution mode, <b gui>, <b normal>, or <b private>.  Because the 
+flunky passes itself to the orders as it executes them, they can use this
+to customize their behavior.<p>
+
+<defitem names {<i obj> names}>
+
+Returns a list of the names of the orders known to the flunky.<p>
+
+
+<defitem redo {<i obj> redo}>
+
+Redoes the order or transaction at the top of the redo stack, and pushes
+it onto the undo stack.<p>
+
+<defitem redotext {<i obj> redotext}>
+
+Returns the narrative for the order or transaction at the top of the
+redo stack, or "" if there is nothing to redo.<p>
+
+<defitem reset {<i obj> reset}>
+
+Resets the flunky, clearing the undo and redo stacks.<p>
+
+This should be done when the send <iref state> changes.<p>
+
+
+<defitem send {<i obj> send <i mode name> ?<i option value...>?}>
+
+Creates an instance of order <i name>, gives it the caller's 
+parameter values (which it reads from the command in option notation), 
+and executes it with the mode <iref mode>, just as for <iref execute>.
+If the order is rejected, it throws <b REJECT> with a detailed
+human-readable error message.<p>
+
+<defitem senddict {<i obj> senddict <i mode name parmdict>}>
+
+Creates an instance of order <i name>, gives it the caller's 
+parameter dictionary <i parmdict>, and executes it with the mode 
+<iref mode>, just as for <iref execute>.
+If the order is rejected, it throws <b REJECT> with an error dictionary,
+as returned by <xref orderx(n)>'s <xref orderx(n) errdict> method.<p>
+
+<defitem state {<i obj> state ?<i state>?}>
+
+Sets/queries the flunky's "send state".<p>
+
+From the standpoint of 
+the undo/redo mechanism, it is wise to <iref reset> the undo/redo
+stacks when the state changes.  If the state is changed by an order
+which cannot be undone (as is often the case) then this will happen
+automatically.<p>
+
+<defitem transaction {<i obj> transaction <i narrative script>}>
+
+Usually orders are executed, undone, and redone as individuals.  
+Sometimes, however, it is easiest to implement a specific user action
+as a collection of orders.  Since it's a single action from the 
+user's point of view, it should be handled atomically, causing one
+entry on the undo or redo stack.<p>
+
+The <iref transaction> method handles this.  It executes its
+<i script>, accumulating sent orders into a transaction object. When the
+transaction is complete, the transaction object is put on the 
+undo stack.<p>
+
+If there are any errors during the transaction, the successfully sent 
+orders are undone automatically; it's all or nothing.<p>
+
+The <i narrative> is used as the <iref undotext> and <iref redotext> for
+the transaction.<p>
+
+Notes:<p>
+
+<ul>
+<li> Transactions can be nested; the orders will be treated as a single
+     transaction.  The outermost transaction's narrative will be used.<p>
+
+<li> Orders cannot be undone or redone during a transaction.<p>
+
+<li> Only undoable orders can be included in a transaction; an order that
+     isn't undoable would clear the undo stack and make using a 
+     transaction pointless.<p>
+</ul><p>
+
+<defitem undo {<i obj> undo}>
+
+Undoes the order or transaction at the top of the undo stack, and pushes
+it onto the redo stack.<p>
+
+<defitem undotext {<i obj> undotext}>
+
+Returns the narrative for the order or transaction at the top of the
+undo stack, or "" if there is nothing to undo.<p>
+
+<defitem validate {<i obj> validate <i name>}>
+
+Validates an order <i name>, returning it in canonical form if the order
+is known, and throwing <b INVALID> with a suitable error message if not.<p>
+
+
+</deflist instance>
+
+<section "NOTIFIER EVENTS">
+
+Instances of order_flunky(n) send the <b><tag Sync></b> event with no
+arguments when the instance's internal state changes significantly, e.g.,
+when orders are successfully sent, undone, or redone, or when the 
+<iref state> method is used to change the order state.<p>
+
+<section "SEE ALSO">
+
+<xref order_set(n)>, <xref orderx(n)>.
+
+<section ENVIRONMENT>
+
+orderx(n) requires Tcl 8.5 or later, plus TclOO.
+
+To use orderx(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the projectlib(n)
+library directory.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+

@@ -1,0 +1,893 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    order_flunky.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Tcltest test suite for projectlib(n) order_flunky(n).
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+
+# Import tcltest(n)
+namespace import ::tcltest::*
+
+ 
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+source ../../lib/projectlib/pkgModules.tcl
+namespace import ::projectlib::*
+
+#------------------------------------------------------------------------
+# Set up the test environment
+
+variable orderResult {}
+
+::projectlib::order_set create myorders
+
+myorders define MY:ORDER {
+    meta title "My Order"
+    meta sendstates "PREP"
+    meta defaults {
+        x 1
+        y yes
+    }
+
+    method narrative {} {
+        my variable parms
+
+        return "MY:ORDER x $parms(x) y $parms(y)"
+    }
+
+    method _validate {} {
+        my prepare x -type snit::integer
+        my prepare y -type snit::boolean
+    }
+
+    method _execute {{flunky ""}} {
+        my variable parms
+        my setundo [list set ::orderResult $::orderResult]
+        set ::orderResult [list $parms(x) $parms(y)]
+    }
+}
+
+myorders define MY:TEST {
+    meta title "My Test"
+    meta sendstates PREP
+    meta defaults {x 0}
+
+    method _validate {} {
+        my prepare x -type snit::integer
+    }
+
+    method _execute {{flunky ""}} {
+        my variable parms
+        my setundo [list set ::orderResult $::orderResult]
+        set ::orderResult $parms(x)
+    }
+}
+
+myorders define MY:TRANS {
+    meta title "My Append"
+    meta sendstates "PREP"
+    meta defaults {
+        item  0
+        fail  0
+    }
+
+    method narrative {} {
+        my variable parms
+
+        return "MY:ORDER item <[my get item]>"
+    }
+
+    method _validate {} {
+        my prepare item -type snit::integer
+        my prepare fail -type snit::boolean
+    }
+
+    method _execute {{flunky ""}} {
+        my variable parms
+        if {$parms(fail)} {
+            throw FAIL "Simulated error"
+        }
+        my setundo [list set ::orderResult $::orderResult]
+        lappend ::orderResult $parms(item)
+    }
+}
+
+myorders define CANT:UNDO {
+    meta title "Cant Undo"
+    meta sendstates "PREP"
+    meta defaults {
+        item  0
+    }
+
+    method _validate {} {
+        my prepare item -type snit::integer
+    }
+
+    method _execute {{flunky ""}} {
+        # Do nothing; particularly, don't set the undo script.
+    }
+}
+
+
+myorders define NO:STATE    { meta sendstates ""            }
+myorders define ALL:STATES  { meta sendstates "*"           }
+myorders define SOME:STATES { meta sendstates {PREP PAUSED} }
+
+proc setup {{cls MY:ORDER}} {
+    variable orderResult
+
+    set orderResult ""
+    order_flunky create ::myflunky ::myorders
+    myflunky state PREP
+    [myorders class $cls] create ord
+}
+
+proc cleanup {} {
+    variable orderResult
+
+    set orderResult ""
+    myflunky destroy
+    ord destroy
+}
+
+#-----------------------------------------------------------------------
+# Creation
+
+test creation-1.1 {initial state} -setup {
+    setup
+    order_flunky create vanilla ::myorders
+} -body {
+    list \
+        [vanilla state]   \
+        [vanilla mode]    \
+        [vanilla canundo] \
+        [vanilla canredo]
+} -cleanup {
+    vanilla destroy
+    cleanup
+} -result {{} normal 0 0}
+
+
+#-----------------------------------------------------------------------
+# state
+#
+# This set of tests covers setting and getting the state.  The effects
+# of the state are handled elsewhere.
+
+test state-1.1 {can set/get} -setup {
+    setup
+} -body {
+    set a [myflunky state]
+    myflunky state PAUSED
+    set b [myflunky state]
+
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {PREP PAUSED}
+
+
+test state-1.2 {returns new state} -setup {
+    setup
+} -body {
+    myflunky state PAUSED
+} -cleanup {
+    cleanup
+} -result {PAUSED}
+
+#-------------------------------------------------------------------
+# available
+
+test available-1.1 {no state set or required} -setup {
+    setup
+    order_flunky create vanilla ::myorders
+} -body {
+    vanilla available NO:STATE
+} -cleanup {
+    vanilla destroy
+    cleanup
+} -result {1}
+
+test available-1.2 {state set but none required} -setup {
+    setup
+} -body {
+    myflunky state PREP
+    myflunky available NO:STATE
+} -cleanup {
+    cleanup
+} -result {0}
+
+test available-1.3 {valid in all states} -setup {
+    setup
+} -body {
+    myflunky state PREP
+    myflunky available ALL:STATES
+} -cleanup {
+    cleanup
+} -result {1}
+
+test available-1.4 {valid in this state} -setup {
+    setup
+} -body {
+    myflunky state PAUSED
+    myflunky available SOME:STATES
+} -cleanup {
+    cleanup
+} -result {1}
+
+test available-1.5 {not valid in this state} -setup {
+    setup
+} -body {
+    myflunky state RUNNING
+    myflunky available SOME:STATES
+} -cleanup {
+    cleanup
+} -result {0}
+
+#-----------------------------------------------------------------------
+# make
+
+test make-1.1 {makes an order object} -setup {
+    setup
+} -body {
+    set o [myflunky make MY:ORDER]
+    $o title
+} -cleanup {
+    $o destroy
+    cleanup
+} -result {My Order}
+
+test make-1.2 {no such order} -setup {
+    setup
+} -body {
+    try {
+        myflunky make NONE:SUCH
+    } trap INVALID {result} {
+        list INVALID $result
+    }
+} -cleanup {
+    cleanup
+} -result {INVALID {Order is undefined: "NONE:SUCH"}}
+
+#-----------------------------------------------------------------------
+# execute
+
+test execute-1.1 {mode is checked} -setup {
+    setup
+} -body {
+    myflunky execute NONESUCH ::ord
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Invalid mode: "NONESUCH"}
+
+test execute-1.2 {order is unavailable} -setup {
+    setup
+    myflunky state RUNNING
+} -body {
+    myflunky execute normal ::ord
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Order MY:ORDER is not available in state "RUNNING"}
+
+test execute-1.3 {order is invalid} -setup {
+    setup
+    ord set x NONESUCH
+} -body {
+    myflunky execute normal ::ord
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {This MY:ORDER order is invalid.}
+
+test execute-2.1 {order is executed and result is returned} -setup {
+    setup
+    ord set x 5
+    ord set y false
+} -body {
+    myflunky execute normal ::ord
+} -cleanup {
+    cleanup
+} -result {5 false}
+
+test execute-2.2 {order goes on undo stack} -setup {
+    setup
+} -body {
+    myflunky execute normal ::ord
+    myflunky canundo
+} -cleanup {
+    cleanup
+} -result {1}
+
+#-----------------------------------------------------------------------
+# send
+
+test send-1.1 {mode is checked} -setup {
+    setup
+} -body {
+    myflunky send NONESUCH MY:ORDER
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Invalid mode: "NONESUCH"}
+
+test send-1.2 {order is unavailable} -setup {
+    setup
+    myflunky state RUNNING
+} -body {
+    myflunky send normal MY:ORDER
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Order MY:ORDER isn't available in state "RUNNING".}
+
+test send-1.3 {order option is invalid} -setup {
+    setup
+    ord set x NONESUCH
+} -body {
+    myflunky send normal MY:ORDER -nonesuch 5
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {MY:ORDER rejected:
+-nonesuch   Unknown option}
+
+test send-1.4 {order option has no value} -setup {
+    setup
+    ord set x NONESUCH
+} -body {
+    myflunky send normal MY:ORDER -x
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Missing value for option -x}
+
+test send-1.5 {order is invalid} -setup {
+    setup
+    ord set x NONESUCH
+} -body {
+    myflunky send normal MY:ORDER -x NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {MY:ORDER rejected:
+-x   invalid value "NONESUCH", expected integer
+
+Defaulted Parameters:
+-y   yes
+}
+
+test send-2.1 {order is sent and result is returned} -setup {
+    setup
+} -body {
+    myflunky send normal MY:ORDER -x 5 -y false
+} -cleanup {
+    cleanup
+} -result {5 false}
+
+test send-2.2 {order goes on undo stack} -setup {
+    setup
+} -body {
+    myflunky send normal MY:ORDER
+    myflunky canundo
+} -cleanup {
+    cleanup
+} -result {1}
+
+
+#-----------------------------------------------------------------------
+# senddict
+
+test senddict-1.1 {mode is checked} -setup {
+    setup
+} -body {
+    myflunky senddict NONESUCH MY:ORDER {}
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Invalid mode: "NONESUCH"}
+
+test senddict-1.2 {order is unavailable} -setup {
+    setup
+    myflunky state RUNNING
+} -body {
+    myflunky senddict normal MY:ORDER {}
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Order MY:ORDER isn't available in state "RUNNING".}
+
+test senddict-1.3 {order option is invalid} -setup {
+    setup
+    ord set x NONESUCH
+} -body {
+    myflunky senddict normal MY:ORDER {nonesuch 5}
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Unknown parameter: "nonesuch"}
+
+test senddict-1.4 {order is invalid} -setup {
+    setup
+    ord set x NONESUCH
+} -body {
+    myflunky senddict normal MY:ORDER {x NONESUCH}
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {x {invalid value "NONESUCH", expected integer}}
+
+test senddict-2.1 {order is sent and result is returned} -setup {
+    setup
+} -body {
+    myflunky senddict normal MY:ORDER {x 5 y false}
+} -cleanup {
+    cleanup
+} -result {5 false}
+
+test senddict-2.2 {order goes on undo stack} -setup {
+    setup
+} -body {
+    myflunky senddict normal MY:ORDER {}
+    myflunky canundo
+} -cleanup {
+    cleanup
+} -result {1}
+
+#-----------------------------------------------------------------------
+# transaction
+#
+# This section tests execution of transactions.  Undo/Redo/etc. is
+# tested below.
+
+test transaction-1.1 {can execute orders in a transaction} -setup {
+    setup
+} -body {
+    myflunky transaction "Multiple Append" {
+        myflunky send normal MY:TRANS -item 1
+        myflunky send normal MY:TRANS -item 2
+        myflunky send normal MY:TRANS -item 3
+    }
+
+    set orderResult
+} -cleanup {
+    cleanup
+} -result {1 2 3}
+
+test transaction-1.2 {rolls back on error} -setup {
+    setup
+} -body {
+    myflunky send normal MY:TRANS -item 1
+
+    try {
+        myflunky transaction "Multiple Append" {
+            myflunky send normal MY:TRANS -item 2
+            myflunky send normal MY:TRANS -item 3 -fail yes
+            myflunky send normal MY:TRANS -item 4
+        }
+    } trap FAIL {result} {
+        set orderResult
+    }
+
+} -cleanup {
+    cleanup
+} -result {1}
+
+test transaction-1.3 {transaction fails on non-undoable order} -setup {
+    setup
+} -body {
+    myflunky send normal MY:TRANS -item 1
+
+    try {
+        myflunky transaction "Multiple Append" {
+            myflunky send normal MY:TRANS -item 2
+            myflunky send normal CANT:UNDO
+            myflunky send normal MY:TRANS -item 4
+        }
+    } on error {result} {
+        set result [list $orderResult $result]
+    }
+
+} -cleanup {
+    cleanup
+} -result {1 {Non-undoable order used in transaction: CANT:UNDO}}
+
+test transaction-2.1 {can execute orders in a nested transaction} -setup {
+    setup
+} -body {
+    myflunky transaction "Multiple Append" {
+        myflunky send normal MY:TRANS -item 1
+        myflunky transaction "Nested" {
+            myflunky send normal MY:TRANS -item 2
+        }
+        myflunky send normal MY:TRANS -item 3
+    }
+
+    set orderResult
+} -cleanup {
+    cleanup
+} -result {1 2 3}
+
+test transaction-2.2 {nested transaction rolls back on error} -setup {
+    setup
+} -body {
+    myflunky send normal MY:TRANS -item 1
+
+    try {
+        myflunky transaction "Multiple Append" {
+            myflunky send normal MY:TRANS -item 1
+            myflunky transaction "Nested" {
+                myflunky send normal MY:TRANS -item 2 -fail yes
+            }
+            myflunky send normal MY:TRANS -item 3
+        }
+    } trap FAIL {result} {
+        set orderResult
+    }
+
+} -cleanup {
+    cleanup
+} -result {1}
+
+test transaction-2.3 {nested transaction fails on non-undoable order} -setup {
+    setup
+} -body {
+    myflunky send normal MY:TRANS -item 1
+
+    try {
+        myflunky transaction "Multiple Append" {
+            myflunky send normal MY:TRANS -item 2
+            myflunky transaction "Nested" {
+                myflunky send normal CANT:UNDO
+            }
+            myflunky send normal MY:TRANS -item 4
+        }
+    } on error {result} {
+        set result [list $orderResult $result]
+    }
+
+} -cleanup {
+    cleanup
+} -result {1 {Non-undoable order used in transaction: CANT:UNDO}}
+
+
+#-----------------------------------------------------------------------
+# canundo
+
+test canundo-1.1 {can't undo if stack is empty.} -setup {
+    setup
+} -body {
+    myflunky canundo
+} -cleanup {
+    cleanup
+} -result {0}
+
+test canundo-1.2 {can undo after executing undoable order.} -setup {
+    setup
+    myflunky senddict normal MY:ORDER {}
+} -body {
+    myflunky canundo
+} -cleanup {
+    cleanup
+} -result {1}
+
+test cantundo-1.3 {can't undo after executing non-undoable order.} -setup {
+    setup
+    myflunky senddict normal CANT:UNDO {}
+} -body {
+    myflunky canundo
+} -cleanup {
+    cleanup
+} -result {0}
+
+
+test canundo-1.4 {can undo after executing transaction.} -setup {
+    setup
+    myflunky transaction "My Transaction" {
+        myflunky send normal MY:TRANS -item 1
+    }
+} -body {
+    myflunky canundo
+} -cleanup {
+    cleanup
+} -result {1}
+
+test canundo-1.5 {can't undo during transaction} -setup {
+    setup
+} -body {
+    myflunky transaction "My Transaction" {
+        set a [myflunky canundo]
+    }
+    set a
+} -cleanup {
+    cleanup
+} -result {0}
+
+
+#-----------------------------------------------------------------------
+# undotext
+
+test undotext-1.1 {empty string if stack is empty} -setup {
+    setup
+} -body {
+    myflunky undotext
+} -cleanup {
+    cleanup
+} -result {}
+
+test undotext-1.2 {undo narrative for order} -setup {
+    setup
+    myflunky senddict normal MY:ORDER {}
+} -body {
+    myflunky undotext
+} -cleanup {
+    cleanup
+} -result {Undo: MY:ORDER x 1 y yes}
+
+test undotext-1.3 {undo narrative for transaction} -setup {
+    setup
+    myflunky transaction "My Transaction" {
+        myflunky send normal MY:TRANS -item 1
+    }
+} -body {
+    myflunky undotext
+} -cleanup {
+    cleanup
+} -result {Undo: My Transaction}
+
+test undotext-1.4 {undo narrative for nested transaction} -setup {
+    setup
+    myflunky transaction "My Transaction" {
+        myflunky transaction "Nested" {
+            myflunky send normal MY:TRANS -item 1
+        }
+    }
+} -body {
+    myflunky undotext
+} -cleanup {
+    cleanup
+} -result {Undo: My Transaction}
+
+#-----------------------------------------------------------------------
+# undo
+
+test undo-1.1 {Undo Orders} -setup {
+    setup
+} -body {
+    set result [list]
+    lappend result $orderResult
+    myflunky send normal MY:TEST -x 1
+    lappend result $orderResult
+    myflunky send normal MY:TEST -x 2
+    lappend result $orderResult
+    myflunky send normal MY:TEST -x 3
+    lappend result $orderResult
+    myflunky undo
+    lappend result $orderResult
+    myflunky undo
+    lappend result $orderResult
+    myflunky undo
+    lappend result $orderResult
+    lappend result [myflunky canundo]
+} -cleanup {
+    cleanup
+} -result {{} 1 2 3 2 1 {} 0}
+
+test undo-1.2 {Undo transaction} -setup {
+    setup
+} -body {
+    set result [list]
+    lappend result $orderResult
+    myflunky transaction "My Transaction" {
+        myflunky send normal MY:TRANS -item 1
+        myflunky send normal MY:TRANS -item 2
+    }
+    lappend result $orderResult
+
+    myflunky undo
+    lappend result $orderResult
+    lappend result [myflunky canundo]
+} -cleanup {
+    cleanup
+} -result {{} {1 2} {} 0}
+
+
+#-----------------------------------------------------------------------
+# canredo
+
+test canredo-1.1 {can't redo if stack is empty.} -setup {
+    setup
+} -body {
+    myflunky canredo
+} -cleanup {
+    cleanup
+} -result {0}
+
+test canredo-1.2 {can redo after undoing order.} -setup {
+    setup
+    myflunky senddict normal MY:ORDER {}
+    myflunky undo
+} -body {
+    myflunky canredo
+} -cleanup {
+    cleanup
+} -result {1}
+
+test canredo-1.3 {can redo after undoing transaction.} -setup {
+    setup
+    myflunky transaction "My Transaction" {
+        myflunky senddict normal MY:ORDER {}
+    }
+    myflunky undo
+} -body {
+    myflunky canredo
+} -cleanup {
+    cleanup
+} -result {1}
+
+test canredo-1.4 {can't redo after sending order.} -setup {
+    setup
+    myflunky senddict normal MY:ORDER {}
+    myflunky undo
+    myflunky senddict normal MY:ORDER {}
+} -body {
+    myflunky canredo
+} -cleanup {
+    cleanup
+} -result {0}
+
+test canredo-1.5 {can't redo after sending transaction.} -setup {
+    setup
+    myflunky senddict normal MY:ORDER {}
+    myflunky undo
+    myflunky transaction "My Transaction" {
+        myflunky senddict normal MY:ORDER {}
+    }
+} -body {
+    myflunky canredo
+} -cleanup {
+    cleanup
+} -result {0}
+
+test canredo-1.6 {can't redo during transaction.} -setup {
+    setup
+    myflunky senddict normal MY:ORDER {}
+    myflunky undo
+} -body {
+    myflunky transaction "My Transaction" {
+        # set a [myflunky canredo]
+    }
+    set a
+} -cleanup {
+    cleanup
+} -result {0}
+
+#-----------------------------------------------------------------------
+# redotext
+
+test redotext-1.1 {empty string if stack is empty} -setup {
+    setup
+} -body {
+    myflunky redotext
+} -cleanup {
+    cleanup
+} -result {}
+
+test redotext-1.2 {redo narrative for order} -setup {
+    setup
+    myflunky senddict normal MY:ORDER {}
+    myflunky undo
+} -body {
+    myflunky redotext
+} -cleanup {
+    cleanup
+} -result {Redo: MY:ORDER x 1 y yes}
+
+test redotext-1.3 {redo narrative for transaction} -setup {
+    setup
+    myflunky transaction "My Transaction" {
+        myflunky senddict normal MY:ORDER {}
+    }
+    myflunky undo
+} -body {
+    myflunky redotext
+} -cleanup {
+    cleanup
+} -result {Redo: My Transaction}
+
+
+#-----------------------------------------------------------------------
+# redo
+
+test redo-1.1 {Redo orders} -setup {
+    setup
+    myflunky send normal MY:TEST -x 1
+    myflunky send normal MY:TEST -x 2
+    myflunky send normal MY:TEST -x 3
+    myflunky undo
+    myflunky undo
+    myflunky undo
+} -body {
+    set result [list]
+    lappend result $orderResult
+    myflunky redo
+    lappend result $orderResult
+    myflunky redo
+    lappend result $orderResult
+    myflunky redo
+    lappend result $orderResult
+
+    lappend result [myflunky canredo]
+} -cleanup {
+    cleanup
+} -result {{} 1 2 3 0}
+
+test redo-1.1 {Redo transation} -setup {
+    setup
+    myflunky transaction "My Transaction" {
+        myflunky send normal MY:TEST -x 1
+        myflunky send normal MY:TEST -x 2
+        myflunky send normal MY:TEST -x 3
+    }
+    myflunky undo
+} -body {
+    set result [list]
+    lappend result $orderResult
+    myflunky redo
+    lappend result $orderResult
+
+    lappend result [myflunky canredo]
+} -cleanup {
+    cleanup
+} -result {{} 3 0}
+
+#-----------------------------------------------------------------------
+# reset
+
+test reset-1.1 {Reset both stacks} -setup {
+    setup
+    myflunky send normal MY:TEST -x 1
+    myflunky send normal MY:TEST -x 2
+    myflunky send normal MY:TEST -x 3
+    myflunky undo
+} -body {
+    set result [list [myflunky canundo] [myflunky canredo]]
+    myflunky reset
+    lappend result [myflunky canundo] [myflunky canredo]
+} -cleanup {
+    cleanup
+} -result {1 1 0 0}
+
+
+#-----------------------------------------------------------------------
+# Cleanup
+
+cleanupTests

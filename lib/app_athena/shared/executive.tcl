@@ -356,6 +356,9 @@ snit::type executive {
         $interp smartalias {absit last} 0 0 {} \
             [myproc last_absit]
 
+        # enterx
+        $interp smartalias enterx 1 - {order ?parm value...?} \
+            [myproc enterx]
         
         # errtrace
         $interp smartalias errtrace 0 0 {} \
@@ -555,6 +558,10 @@ snit::type executive {
         # send
         $interp smartalias send 1 - {order ?option value...?} \
             [myproc send]
+
+        # sendx
+        $interp smartalias sendx 1 - {order ?option value...?} \
+            [myproc sendx]
 
         # show
         $interp smartalias show 1 1 {url} \
@@ -2526,6 +2533,49 @@ snit::type executive {
 
         return $result
     }
+
+    # sendx order ?option value...?
+    #
+    # order  - The name of an order.
+    # option - One of the order's parameter names, prefixed with "-"
+    # value  - The parameter's value
+    #
+    # This routine provides a convenient way to enter orders from
+    # the command line or a script.  The order name is converted
+    # to upper case automatically.  The parameter names are validated,
+    # and a parameter dictionary is created.  The order is sent.
+    # Any error message is pretty-printed.
+    #
+    # Usually the order is sent using the "normal" mode; if the
+    # order state is TACTIC, meaning that the order is sent by an
+    # EXECUTIVE tactic script, the order is sent using the 
+    # "private" mode.  That way the order state is checked but
+    # the order is not CIF'd.
+
+    proc sendx {order args} {
+        set order [string toupper $order]
+
+        # NEXT, determine the order mode.
+        if {[flunky state] eq "TACTIC"} {
+            flunky send private $order {*}$args
+        } else {
+            flunky send normal $order {*}$args
+        }
+    }
+
+    # enterx order ?parm value...?
+    #
+    # order   - The name of an order.
+    # parm    - One of order's parameter names
+    # value   - The parameter's value
+    #
+    # This routine pops up an order dialog from the command line.  It is
+    # intended for debugging rather than end-user use.
+
+    proc enterx {order args} {
+        app enter $order $args
+    }
+
 
     # show url
     #

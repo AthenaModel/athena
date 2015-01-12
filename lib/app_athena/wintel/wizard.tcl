@@ -66,7 +66,9 @@ snit::type ::wintel::wizard {
         assert {[$type caninvoke]}
 
         # NEXT, initialize the non-GUI modules
+        order_flunky create ::wintel::flunky ::wintel::orders
         wizdb ::wintel::wdb
+        beanpot ::wintel::pot
         tigr init
 
         # NEXT, create the real main window.
@@ -78,17 +80,62 @@ snit::type ::wintel::wizard {
     # Cleans up all transient wizard data.
 
     typemethod cleanup {} {
-        # Destroy all remaining simevents.
-        foreach id [pot ids ::wintel::simevent] {
-            [pot get $id] destroy
-        }
-
         # Destroy wizard objects
-        bgcatch { wdb destroy }
+        bgcatch { 
+            wdb destroy
+            ::wintel::pot destroy
+            ::wintel::flunky destroy
+        }
 
         # Reset the sim state, if necessary.
         sim wizard off
     }
+
+    #-------------------------------------------------------------------
+    # Order Dialog Entry
+
+    # enter order ?parm value...?
+    # enter order ?parmdict?
+    #
+    # order     - The name of an order
+    # parmdict  - Initial parameter settings
+    #
+    # Pops up the order dialog for the named order given the parameters.
+
+    typemethod enter {order args} {
+        if {[llength $args] == 1} {
+            set parmdict [lindex $args 0]
+        } else {
+            set parmdict $args
+        }
+
+        set order [string toupper $order]
+
+        orderx_dialog enter \
+            -resources [dict create db_ ::wintel::wdb] \
+            -parmdict  $parmdict                       \
+            -appname   "Athena Intel Ingestor"         \
+            -flunky    ::wintel::flunky                \
+            -order     $order                          \
+            -master    $win 
+    }
+
+    # beanload idict id ?view?
+    #
+    # idict    - A dynaform(n) field's item metadata dictionary
+    # id       - A bean ID
+    # view     - Optionally, a bean view name.  Defaults to "".
+    #
+    # This command is intended for use as a dynaform(n) -loadcmd, to
+    # load a bean's data into a dynaview using a specific bean view.
+    #
+    # Note: a pastable bean's normal UPDATE method should always use
+    # the default view, as that is what will be copied.
+
+    typemethod beanload {idict id {view ""}} {
+        return [::wintel::pot view $id $view]
+    }
+
 
     #-------------------------------------------------------------------
     # Queries
@@ -240,8 +287,8 @@ snit::type ::wintel::wizard {
 
         cif transaction "Ingest $num Intel Events" {
             foreach id [simevent normals] {
-                if {[pot has $id]} {
-                    set e [pot get $id]
+                if {[::wintel::pot has $id]} {
+                    set e [::wintel::pot get $id]
 
                     $e sendevent
                 }

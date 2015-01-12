@@ -89,34 +89,38 @@
 #
 # Updates existing CIVCAS event.
 
-order define SIMEVENT:CIVCAS {
-    title "Event: Civilian Casualties in Neighborhood"
-    options -sendstates WIZARD
+::wintel::orders define SIMEVENT:CIVCAS {
+    meta title "Event: Civilian Casualties in Neighborhood"
 
-    form {
+    meta defaults {
+        event_id   ""
+        casualties ""
+    }
+
+    meta form {
         rcc "Event ID" -for event_id
         text event_id -context yes \
-            -loadcmd {beanload}
+            -loadcmd {::wintel::wizard beanload}
 
         rcc "Casualties:" -for casualties
         text casualties 
         label "civilians killed"
     }
-} {
-    # FIRST, prepare the parameters
-    prepare event_id   -required -with {::pot valclass ::wintel::simevent::CIVCAS}
-    prepare casualties -num      -type ipositive
- 
-    returnOnError -final
+    
+    method _validate {} {
+        my prepare event_id   \
+            -required -with {::wintel::pot valclass ::wintel::simevent::CIVCAS}
+        my prepare casualties -num      -type ipositive
+    }
 
-    # NEXT, update the event.
-    set e [::pot get $parms(event_id)]
-    $e update_ {casualties} [array get parms]
+    method _execute {{flunky ""}} {
+        set e [::wintel::pot get $parms(event_id)]
+        $e update_ {casualties} [array get parms]
 
-    return
+        return
+    }
+
 }
-
-
 
 
 

@@ -11,7 +11,27 @@ namespace import ::projectlib::*
 
 <section DESCRIPTION>
 
-The oohelpers(n) package contains commands that make using TclOO a bit easier.
+The oohelpers(n) package contains commands that make using TclOO a bit 
+easier.<p>
+
+<section "GENERAL COMMANDS">
+
+This module defines the following commands to be used with TclOO classes
+and objects.<p>
+
+<deflist commands>
+
+<defitem "isa" {isa <i cls obj>}>
+
+Returns 1 if <i obj> is an instance of <i cls> or one of its subclasses,
+and 0 otherwise.<p>
+
+<defitem "isancestor" {isancestor <i parent child>}>
+
+Returns 1 if <i parent> is an ancestor class of the <i child> class
+(including being a direct superclass), and 0 otherwise.<p>
+
+</deflist commands>
 
 <section "CLASS-DEFINITION COMMANDS">
 
@@ -20,24 +40,53 @@ with <code>oo::define</code>:<p>
 
 <deflist define>
 
-<defitem "typemethod" {typemethod <i>method arglist body</i>}>
+<defitem "meta" {meta <i name value>}>
 
-Defines a method on the class's class object.  In other words,
+Defines a class metadata variable, a constant <i value> that can be retrieved
+from the class object and from its instances by calling the method of the
+same <i name>.  For example,<p>
 
-<pre>
-    oo::class create myclass {
-        typemethod init {} { ... }
-    }
-</pre>
+<example>
+oo::class create myclass {
+    meta title "The Class's Title"
+}
+</example>
 
 is equivalent to
 
-<pre>
-    oo::class create myclass
-    oo::objdefine myclass {
-        typemethod init {} { ... }
+<example>
+oo::class create myclass {
+    self method title {} {
+        return "The Class's Title"
     }
-</pre>
+    method title {} {
+        return [[self class] title]
+    }
+}
+</example>
+
+<defitem "typemethod" {typemethod <i>method arglist body</i>}>
+
+<b>Deprecated.</b> In class definitions, the syntax "<tt self method>" is
+equivalent to "<tt typemethod>" as defined here.<p>
+
+Defines a method on the class's class object.  In other words,
+
+<example>
+oo::class create myclass {
+    typemethod init {} { ... }
+}
+</example>
+
+is equivalent to
+
+<example>
+oo::class create myclass
+oo::objdefine myclass {
+    typemethod init {} { ... }
+}
+</example>
+
 
 </deflist define>
 

@@ -1,0 +1,145 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-athena_order.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    athena_order(sim) tests.
+#
+#    This test suite tests the athena_order(sim) helpers.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    variable order
+
+    proc setup {name} {
+        variable order
+        set order [flunky make $name]
+        ted create NB1 NB2 BLUE BRIT SUNN SHIA KURD
+    }
+
+    proc cleanup {} {
+        variable order
+        # Clean up the test environment
+        $order destroy
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # keyload
+
+    test keyload-1.1 {retrieve data for key} -setup {
+        setup CIVGROUP:UPDATE
+    } -body {
+        dict set idict ftype [$order dynaform]
+        dict set idict table civgroups_view
+
+        ted pdicts [$order keyload g * $idict SHIA]
+    } -cleanup {
+        cleanup
+    } -result {
+        basepop   1000
+        bsid      1
+        color     {#c00001}
+        demeanor  AVERAGE
+        g         SHIA
+        hist_flag 0
+        housing   AT_HOME
+        lfp       60
+        longname  Shia
+        n         NB1
+        pop_cr    0.0
+        sa_flag   0
+        upc       0.0
+    }
+
+    test keyload-1.2 {unknown key} -setup {
+        setup CIVGROUP:UPDATE
+    } -body {
+        dict set idict ftype [$order dynaform]
+        dict set idict table civgroups_view
+
+        $order keyload g * $idict ""
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    #-------------------------------------------------------------------
+    # multiload
+
+    test multiload-1.1 {retrieve data for key} -setup {
+        setup SAT:UPDATE:MULTI
+    } -body {
+        dict set idict ftype [$order dynaform]
+        dict set idict table gui_sat_view
+        dict set idict key   id
+
+        ted pdicts [$order multiload ids * $idict {{SHIA AUT} {SUNN CUL}}]
+    } -cleanup {
+        cleanup
+    } -result {
+        base      0.000
+        current   0.000
+        hist_flag 0
+        saliency  1.00
+    }
+
+    test multiload-1.2 {unknown keys} -setup {
+        setup SAT:UPDATE:MULTI
+    } -body {
+        dict set idict ftype [$order dynaform]
+        dict set idict table gui_sat_view
+        dict set idict key   id
+
+        $order multiload ids * $idict ""
+    } -cleanup {
+        cleanup
+    } -result {}
+    
+
+    #-------------------------------------------------------------------
+    # unused
+
+    # This is tested in use for most *:CREATE orders.
+
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+

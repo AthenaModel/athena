@@ -19,6 +19,7 @@ teapot.txt
 *.helpdb
 .backup
 ~*.tmp
+temp.tcl
 
 # SublimeText artifacts.
 *.sublime-*

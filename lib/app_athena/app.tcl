@@ -219,24 +219,25 @@ snit::type app {
 
         # NEXT, Create the working scenario RDB and initialize simulation
         # components
-        executive init
-        parm      init master
-        map       init
-        view      init
-        cif       init
-        order     init \
+        executive     init
+        parm          init master
+        map           init
+        view          init
+        cif           init
+        order         init \
             -subject      ::order                \
             -rdb          ::rdb                  \
             -usedtable    entities               \
             -logcmd       ::log                  \
             -ordercmd     [myproc AddOrderToCIF]
-        bsys      init
-        scenario  init
-        nbhood    init
-        sim       init
-        axdb      init
-        beanpot ::pot -rdb ::rdb
-        strategy  init
+        athena_flunky create ::flunky
+        bsys          init
+        scenario      init
+        nbhood        init
+        sim           init
+        axdb          init
+        beanpot       ::pot -rdb ::rdb
+        strategy      init
 
         coverage_model init
 
@@ -316,8 +317,10 @@ snit::type app {
         }
 
         # NEXT, bind components together
-        notifier bind ::sim <State> ::order {::order state [::sim state]}
-        notifier bind ::app <Puck>  ::order {::order puck}
+        notifier bind ::sim <State> ::order  {::order state [::sim state]}
+        notifier bind ::sim <State> ::flunky {::flunky state [::sim state]}
+        notifier bind ::app <Puck>  ::order  {::order puck}
+        notifier bind ::app <Puck>  ::orderx_dialog  {::orderx_dialog puck}
 
         # NEXT, create state controllers, to enable and disable
         # GUI components as application state changes.
@@ -874,6 +877,38 @@ snit::type app {
         }
 
         return [$topwin {*}$args]
+    }
+
+    # enter order ?parm value...?
+    # enter order ?parmdict?
+    #
+    # order     - The name of an order
+    # parmdict  - Initial parameter settings
+    #
+    # Pops up the order dialog for the named order given the parameters.
+
+    typemethod enter {order args} {
+        if {[llength $args] == 1} {
+            set parmdict [lindex $args 0]
+        } else {
+            set parmdict $args
+        }
+
+        set order [string toupper $order]
+
+        orderx_dialog enter \
+            -resources [dict create db_ ::rdb]     \
+            -parmdict  $parmdict                   \
+            -appname   "Athena [kiteinfo version]" \
+            -flunky    ::flunky                    \
+            -order     $order                      \
+            -master    [app topwin]                \
+            -helpcmd   [list app help]             \
+            -refreshon {
+                ::cif <Update>
+                ::sim <Tick>
+                ::sim <DbSyncB>
+            }
     }
 
     # show uri
