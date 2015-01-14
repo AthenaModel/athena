@@ -988,7 +988,7 @@ snit::type autogen {
             set parms(base_personnel) 100000
             set parms(cost)           "1K"
 
-            order send cli FRCGROUP:CREATE [array get parms]
+            flunky senddict normal FRCGROUP:CREATE [array get parms]
 
             incr frctype
             incr j

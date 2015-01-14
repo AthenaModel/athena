@@ -238,12 +238,24 @@ snit::type frcgroup {
 #
 # Creates new force groups.
 
-order define FRCGROUP:CREATE {
-    title "Create Force Group"
+myorders define FRCGROUP:CREATE {
+    meta title "Create Force Group"
     
-    options -sendstates PREP
+    meta sendstates PREP
+    meta defaults {
+        g              ""
+        longname       ""
+        a              ""
+        color          "#AA7744"
+        forcetype      REGULAR
+        training       FULL
+        base_personnel 0
+        demeanor       AVERAGE
+        cost           0
+        local          0
+    }
 
-    form {
+    meta form {
         rcc "Group:" -for g
         text g
 
@@ -275,76 +287,98 @@ order define FRCGROUP:CREATE {
         rcc "Local Group?" -for local
         yesno local -defvalue 0
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare g              -toupper   -required -unused -type ident
-    prepare longname       -normalize
-    prepare a              -toupper             -type actor
-    prepare color          -tolower   -required -type hexcolor
-    prepare forcetype      -toupper   -required -type eforcetype
-    prepare training       -toupper   -required -type etraining
-    prepare base_personnel -num       -required -type iquantity
-    prepare demeanor       -toupper   -required -type edemeanor
-    prepare cost           -toupper   -required -type money
-    prepare local          -toupper   -required -type boolean
 
-    returnOnError -final
-
-    # NEXT, If longname is "", defaults to ID.
-    if {$parms(longname) eq ""} {
-        set parms(longname) $parms(g)
+    method narrative {} {
+        if {$parms(g) ne ""} {
+            return "[my title]: $parms(g)"
+        } else {
+            return "[my title]"
+        }
     }
 
-    # NEXT, create the group and dependent entities
-    lappend undo [frcgroup mutate create [array get parms]]
+    method _validate {} {
+        my prepare g              -toupper   -required -type ident
+        my unused g
+        my prepare longname       -normalize
+        my prepare a              -toupper             -type actor
+        my prepare color          -tolower   -required -type hexcolor
+        my prepare forcetype      -toupper   -required -type eforcetype
+        my prepare training       -toupper   -required -type etraining
+        my prepare base_personnel -num       -required -type iquantity
+        my prepare demeanor       -toupper   -required -type edemeanor
+        my prepare cost           -toupper   -required -type money
+        my prepare local          -toupper   -required -type boolean
+    }
 
-    setundo [join $undo \n]
+    method _execute {{flunky ""}} {
+        # NEXT, If longname is "", defaults to ID.
+        if {$parms(longname) eq ""} {
+            set parms(longname) $parms(g)
+        }
+    
+        # NEXT, create the group and dependent entities
+        lappend undo [frcgroup mutate create [array get parms]]
+    
+        my setundo [join $undo \n]
+    }
 }
 
 # FRCGROUP:DELETE
 
-order define FRCGROUP:DELETE {
-    title "Delete Force Group"
-    options -sendstates PREP
+myorders define FRCGROUP:DELETE {
+    meta title "Delete Force Group"
+    meta sendstates PREP
 
-    form {
+    meta defaults {
+        g ""
+    }
+
+    meta form {
         rcc "Group:" -for g
         frcgroup g
     }
-} {
-    # FIRST, prepare the parameters
-    prepare g -toupper -required -type frcgroup
 
-    returnOnError -final
-
-    # NEXT, make sure the user knows what he is getting into.
-
-    if {[sender] eq "gui"} {
-        set answer [messagebox popup \
-                        -title         "Are you sure?"                  \
-                        -icon          warning                          \
-                        -buttons       {ok "Delete it" cancel "Cancel"} \
-                        -default       cancel                           \
-                        -onclose       cancel                           \
-                        -ignoretag     FRCGROUP:DELETE                  \
-                        -ignoredefault ok                               \
-                        -parent        [app topwin]                     \
-                        -message       [normalize {
-                            Are you sure you
-                            really want to delete this group, along
-                            with all of the entities that depend upon it?
-                        }]]
-
-        if {$answer eq "cancel"} {
-            cancel
+    method narrative {} {
+        if {$parms(g) ne ""} {
+            return "[my title]: $parms(g)"
+        } else {
+            return "[my title]"
         }
     }
 
-    # NEXT, Delete the group and dependent entities
-    lappend undo [frcgroup mutate delete $parms(g)]
-    lappend undo [absit mutate reconcile]
+    method _validate {} {
+        # FIRST, prepare the parameters
+        my prepare g -toupper -required -type frcgroup
+    }
 
-    setundo [join $undo \n]
+    method _execute {{flunky ""}} {
+        if {[my mode] eq "gui"} {
+            set answer [messagebox popup \
+                            -title         "Are you sure?"                  \
+                            -icon          warning                          \
+                            -buttons       {ok "Delete it" cancel "Cancel"} \
+                            -default       cancel                           \
+                            -onclose       cancel                           \
+                            -ignoretag     [my name]                        \
+                            -ignoredefault ok                               \
+                            -parent        [app topwin]                     \
+                            -message       [normalize {
+                                Are you sure you
+                                really want to delete this group, along
+                                with all of the entities that depend upon it?
+                            }]]
+    
+            if {$answer eq "cancel"} {
+                my cancel
+            }
+        }
+
+        # NEXT, Delete the group and dependent entities
+        lappend undo [frcgroup mutate delete $parms(g)]
+        lappend undo [absit mutate reconcile]
+    
+        my setundo [join $undo \n]
+    }
 }
 
 
@@ -352,14 +386,27 @@ order define FRCGROUP:DELETE {
 #
 # Updates existing groups.
 
-order define FRCGROUP:UPDATE {
-    title "Update Force Group"
-    options -sendstates PREP
+myorders define FRCGROUP:UPDATE {
+    meta title "Update Force Group"
+    meta sendstates PREP
 
-    form {
+    meta defaults {
+        g              ""
+        longname       ""
+        a              ""
+        color          ""
+        forcetype      ""
+        training       ""
+        base_personnel ""
+        demeanor       ""
+        cost           ""
+        local          ""
+    }
+
+    meta form {
         rcc "Group:" -for g
-        key g -table gui_frcgroups -keys g \
-            -loadcmd {orderdialog keyload g *}
+        dbkey g -table gui_frcgroups -keys g \
+            -loadcmd {$order_ keyload g *}
 
         rcc "Long Name:" -for longname
         longname longname
@@ -389,40 +436,55 @@ order define FRCGROUP:UPDATE {
         rcc "Local Group?" -for local
         yesno local
     }
-} {
-    # FIRST, prepare the parameters
-    prepare g              -toupper   -required -type frcgroup
-    prepare a              -toupper   -type actor
-    prepare longname       -normalize
-    prepare color          -tolower   -type hexcolor
-    prepare forcetype      -toupper   -type eforcetype
-    prepare training       -toupper   -type etraining
-    prepare base_personnel -num       -type iquantity
-    prepare demeanor       -toupper   -type edemeanor
-    prepare cost           -toupper   -type money
-    prepare local          -toupper   -type boolean
 
-    returnOnError -final
 
-    # NEXT, modify the group.
-    set undo [list]
-    lappend undo [frcgroup mutate update [array get parms]]
+    method _validate {} {
+        # FIRST, prepare the parameters
+        my prepare g              -toupper   -required -type frcgroup
+        my prepare a              -toupper   -type actor
+        my prepare longname       -normalize
+        my prepare color          -tolower   -type hexcolor
+        my prepare forcetype      -toupper   -type eforcetype
+        my prepare training       -toupper   -type etraining
+        my prepare base_personnel -num       -type iquantity
+        my prepare demeanor       -toupper   -type edemeanor
+        my prepare cost           -toupper   -type money
+        my prepare local          -toupper   -type boolean
+    }
 
-    setundo [join $undo \n]
+    method _execute {{flunky ""}} {
+        # NEXT, modify the group.
+        set undo [list]
+        lappend undo [frcgroup mutate update [array get parms]]
+    
+        my setundo [join $undo \n]
+    }
 }
 
 # FRCGROUP:UPDATE:MULTI
 #
 # Updates multiple groups.
 
-order define FRCGROUP:UPDATE:MULTI {
-    title "Update Multiple Force Groups"
-    options -sendstates PREP
+myorders define FRCGROUP:UPDATE:MULTI {
+    meta title "Update Multiple Force Groups"
+    meta sendstates PREP
 
-    form {
+    meta defaults {
+        ids            ""
+        a              ""
+        color          ""
+        forcetype      ""
+        training       ""
+        base_personnel ""
+        demeanor       ""
+        cost           ""
+        local          ""
+    }
+
+    meta form {
         rcc "Groups:" -for ids
-        multi ids -table gui_frcgroups -key g \
-            -loadcmd {orderdialog multiload ids *}
+        dbmulti ids -table gui_frcgroups -key g \
+            -loadcmd {$order_ multiload ids *}
 
         rcc "Owning Actor:" -for a    
         actor a    
@@ -449,31 +511,34 @@ order define FRCGROUP:UPDATE:MULTI {
         rcc "Local Group?" -for local
         yesno local
     }
-} {
-    # FIRST, prepare the parameters
-    prepare ids            -toupper  -required -listof frcgroup
-    prepare a              -toupper            -type   actor
-    prepare color          -tolower            -type   hexcolor
-    prepare forcetype      -toupper            -type   eforcetype
-    prepare training       -toupper            -type   etraining
-    prepare base_personnel -num                -type   iquantity
-    prepare demeanor       -toupper            -type   edemeanor
-    prepare cost           -toupper            -type   money
-    prepare local          -toupper            -type   boolean
 
-    returnOnError -final
 
-    # NEXT, clear the other parameters expected by the mutator
-    prepare longname
+    method _validate {} {
+        my prepare ids            -toupper  -required -listof frcgroup
+        my prepare a              -toupper            -type   actor
+        my prepare color          -tolower            -type   hexcolor
+        my prepare forcetype      -toupper            -type   eforcetype
+        my prepare training       -toupper            -type   etraining
+        my prepare base_personnel -num                -type   iquantity
+        my prepare demeanor       -toupper            -type   edemeanor
+        my prepare cost           -toupper            -type   money
+        my prepare local          -toupper            -type   boolean
 
-    # NEXT, modify the group
-    set undo [list]
-
-    foreach parms(g) $parms(ids) {
-        lappend undo [frcgroup mutate update [array get parms]]
     }
 
-    setundo [join $undo \n]
+    method _execute {{flunky ""}} {
+        # FIRST, clear the other parameters expected by the mutator
+        set parms(longname) ""
+
+        # NEXT, modify the group
+        set undo [list]
+    
+        foreach parms(g) $parms(ids) {
+            lappend undo [frcgroup mutate update [array get parms]]
+        }
+
+        my setundo [join $undo \n]
+    }
 }
 
 

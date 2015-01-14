@@ -798,9 +798,9 @@ snit::widget appwin {
         $ordersmenu add cascade -label "Force Group" \
             -underline 0 -menu $submenu
         
-        $self AddOrder $submenu FRCGROUP:CREATE
-        $self AddOrder $submenu FRCGROUP:UPDATE
-        $self AddOrder $submenu FRCGROUP:DELETE
+        $self AddOrderX $submenu FRCGROUP:CREATE
+        $self AddOrderX $submenu FRCGROUP:UPDATE
+        $self AddOrderX $submenu FRCGROUP:DELETE
 
         # Orders/Org Group
         set submenu [menu $ordersmenu.orggroup]

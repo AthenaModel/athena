@@ -79,7 +79,7 @@ snit::widgetadaptor frcgroupbrowser {
             -state   normal                       \
             -command [mymethod AddEntity]
 
-        cond::available control $addbtn \
+        cond::availablex control $addbtn \
             order FRCGROUP:CREATE
 
 
@@ -88,7 +88,7 @@ snit::widgetadaptor frcgroupbrowser {
             -state   disabled                        \
             -command [mymethod EditSelected]
 
-        cond::availableMulti control $editbtn \
+        cond::availableMultix control $editbtn \
             order   FRCGROUP:UPDATE           \
             browser $win
 
@@ -98,7 +98,7 @@ snit::widgetadaptor frcgroupbrowser {
             -state   disabled                              \
             -command [mymethod DeleteSelected]
 
-        cond::availableSingle control $deletebtn \
+        cond::availableSinglex control $deletebtn \
             order   FRCGROUP:DELETE              \
             browser $win
 
@@ -143,8 +143,8 @@ snit::widgetadaptor frcgroupbrowser {
 
     method SelectionChanged {} {
         # FIRST, update buttons
-        cond::availableSingle update $deletebtn
-        cond::availableMulti  update $editbtn
+        cond::availableSinglex update $deletebtn
+        cond::availableMultix  update $editbtn
     }
 
 
@@ -154,7 +154,7 @@ snit::widgetadaptor frcgroupbrowser {
 
     method AddEntity {} {
         # FIRST, Pop up the dialog
-        order enter FRCGROUP:CREATE
+        app enter FRCGROUP:CREATE
     }
 
 
@@ -168,9 +168,9 @@ snit::widgetadaptor frcgroupbrowser {
         if {[llength $ids] == 1} {
             set id [lindex $ids 0]
 
-            order enter FRCGROUP:UPDATE g $id
+            app enter FRCGROUP:UPDATE g $id
         } else {
-            order enter FRCGROUP:UPDATE:MULTI ids $ids
+            app enter FRCGROUP:UPDATE:MULTI ids $ids
         }
     }
 
@@ -184,7 +184,7 @@ snit::widgetadaptor frcgroupbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Pop up the dialog, and select this entity
-        order send gui FRCGROUP:DELETE g $id
+        flunky senddict gui FRCGROUP:DELETE [list g $id]
     }
 }
 

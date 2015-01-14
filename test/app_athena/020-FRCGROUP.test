@@ -9,7 +9,7 @@
 # DESCRIPTION:
 #    app_sim(1) FRCGROUP:* order tests.
 #
-#    This test suite tests the frcgroup-related orders.
+#    This test suite tests the frcgroup-related orderxs.
 #
 #-----------------------------------------------------------------------
 
@@ -76,7 +76,7 @@ namespace eval ::athena_test::tests:: {
     # FRCGROUP:CREATE
 
     test CREATE-1.1 {required parms} -body {
-        ted order -reject FRCGROUP:CREATE {}
+        ted orderx -reject FRCGROUP:CREATE {}
     } -result {
         g {required value}
     }
@@ -84,9 +84,9 @@ namespace eval ::athena_test::tests:: {
 
     test CREATE-1.2 {Duplicate g} -setup {
         ted create JOE
-        ted order FRCGROUP:CREATE $blue
+        ted orderx FRCGROUP:CREATE $blue
     } -body {
-        ted order -reject FRCGROUP:CREATE $blue
+        ted orderx -reject FRCGROUP:CREATE $blue
     } -cleanup {
         cleanup
     } -result {
@@ -97,7 +97,7 @@ namespace eval ::athena_test::tests:: {
     test CREATE-1.3 {g is not an ident} -setup {
         ted create JOE
     } -body {
-        ted order -reject FRCGROUP:CREATE [dict merge $blue {
+        ted orderx -reject FRCGROUP:CREATE [dict merge $blue {
             g "BL&E"
         }]
     } -cleanup {
@@ -107,7 +107,7 @@ namespace eval ::athena_test::tests:: {
     }
 
     test CREATE-1.4 {invalid actor} -body {
-        ted order -reject FRCGROUP:CREATE $blue
+        ted orderx -reject FRCGROUP:CREATE $blue
     } -cleanup {
         cleanup
     } -result {
@@ -117,7 +117,7 @@ namespace eval ::athena_test::tests:: {
     test CREATE-1.5 {invalid color} -setup {
         ted create JOE
     } -body {
-        ted order -reject FRCGROUP:CREATE [dict merge $blue {
+        ted orderx -reject FRCGROUP:CREATE [dict merge $blue {
             color NONESUCH
         }]
     } -cleanup {
@@ -130,7 +130,7 @@ namespace eval ::athena_test::tests:: {
     test CREATE-1.7 {invalid forcetype} -setup {
         ted create JOE
     } -body {
-        ted order -reject FRCGROUP:CREATE [dict merge $blue {
+        ted orderx -reject FRCGROUP:CREATE [dict merge $blue {
             forcetype NONESUCH
         }]
     } -cleanup {
@@ -142,7 +142,7 @@ namespace eval ::athena_test::tests:: {
     test CREATE-1.8 {invalid training} -setup {
         ted create JOE
     } -body {
-        ted order -reject FRCGROUP:CREATE [dict merge $blue {
+        ted orderx -reject FRCGROUP:CREATE [dict merge $blue {
             training NONESUCH
         }]
     } -cleanup {
@@ -154,7 +154,7 @@ namespace eval ::athena_test::tests:: {
     test CREATE-1.9 {invalid base_personnel} -setup {
         ted create JOE
     } -body {
-        ted order -reject FRCGROUP:CREATE [dict merge $blue {
+        ted orderx -reject FRCGROUP:CREATE [dict merge $blue {
             base_personnel NONESUCH
         }]
     } -cleanup {
@@ -166,7 +166,7 @@ namespace eval ::athena_test::tests:: {
     test CREATE-1.10 {invalid demeanor} -setup {
         ted create JOE
     } -body {
-        ted order -reject FRCGROUP:CREATE [dict merge $blue {
+        ted orderx -reject FRCGROUP:CREATE [dict merge $blue {
             demeanor NONESUCH
         }]
     } -cleanup {
@@ -178,7 +178,7 @@ namespace eval ::athena_test::tests:: {
     test CREATE-1.11 {invalid cost} -setup {
         ted create JOE
     } -body {
-        ted order -reject FRCGROUP:CREATE [dict merge $blue {
+        ted orderx -reject FRCGROUP:CREATE [dict merge $blue {
             cost NONESUCH
         }]
     } -cleanup {
@@ -190,7 +190,7 @@ namespace eval ::athena_test::tests:: {
     test CREATE-1.14 {invalid local} -setup {
         ted create JOE
     } -body {
-        ted order -reject FRCGROUP:CREATE [dict merge $blue {
+        ted orderx -reject FRCGROUP:CREATE [dict merge $blue {
             local NONESUCH
         }]
     } -cleanup {
@@ -202,7 +202,7 @@ namespace eval ::athena_test::tests:: {
     test CREATE-2.1 {frcgroup is created} -setup {
         ted create JOE
     } -body {
-        ted order FRCGROUP:CREATE $blue
+        ted orderx FRCGROUP:CREATE $blue
 
         ted querylist {SELECT * FROM frcgroups_view}
     } -cleanup {
@@ -225,7 +225,7 @@ local           0
     test CREATE-2.2 {longname defaults to ID} -setup {
         ted create JOE
     } -body {
-        ted order FRCGROUP:CREATE [dict merge $blue {longname ""}]
+        ted orderx FRCGROUP:CREATE [dict merge $blue {longname ""}]
 
         rdb onecolumn {SELECT longname FROM frcgroups_view}
     } -cleanup {
@@ -236,7 +236,7 @@ local           0
         ted create JOE
     } -body {
         ted notifier bind ::rdb <frcgroups>
-        ted order FRCGROUP:CREATE $blue
+        ted orderx FRCGROUP:CREATE $blue
         ted notifier received
     } -cleanup {
         cleanup
@@ -247,10 +247,10 @@ local           0
 
     test CREATE-3.1 {undo effects} -setup {
         ted create JOE
-        ted order FRCGROUP:CREATE $blue
+        ted orderx FRCGROUP:CREATE $blue
     } -body {
         ted notifier bind ::rdb <frcgroups>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -263,14 +263,14 @@ local           0
     # FRCGROUP:DELETE
 
     test DELETE-1.1 {required parms} -body {
-        ted order -reject FRCGROUP:DELETE {}
+        ted orderx -reject FRCGROUP:DELETE {}
     } -result {
         g {required value}
     }
 
     
     test DELETE-1.2 {unknown g} -body {
-        ted order -reject FRCGROUP:DELETE g NONESUCH
+        ted orderx -reject FRCGROUP:DELETE g NONESUCH
     } -result {
         g {Invalid force group, none are defined}
     }
@@ -280,7 +280,7 @@ local           0
         ted create BLUE
     } -body {
         ted notifier bind ::rdb <frcgroups>
-        ted order FRCGROUP:DELETE g BLUE
+        ted orderx FRCGROUP:DELETE g BLUE
         ted notifier received
     } -cleanup {
         cleanup
@@ -291,10 +291,10 @@ local           0
 
     test DELETE-3.1 {Undo effects} -setup {
         ted create BLUE
-        ted order FRCGROUP:DELETE g BLUE
+        ted orderx FRCGROUP:DELETE g BLUE
     } -body {
         ted notifier bind ::rdb <frcgroups>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -307,7 +307,7 @@ local           0
     # FRCGROUP:UPDATE
 
     test UPDATE-1.1 {required parms} -body {
-        ted order -reject FRCGROUP:UPDATE {}
+        ted orderx -reject FRCGROUP:UPDATE {}
     } -result {
         g {required value}
     }
@@ -315,7 +315,7 @@ local           0
     test UPDATE-1.2 {invalid actor} -setup {
         ted create BLUE
     } -body {
-        ted order -reject FRCGROUP:UPDATE g BLUE a NONESUCH
+        ted orderx -reject FRCGROUP:UPDATE g BLUE a NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -325,7 +325,7 @@ local           0
     test UPDATE-1.3 {invalid color} -setup {
         ted create BLUE
     } -body {
-        ted order -reject FRCGROUP:UPDATE g BLUE color NONESUCH
+        ted orderx -reject FRCGROUP:UPDATE g BLUE color NONESUCH
     } -cleanup {
         cleanup
     } -match glob -result {
@@ -336,7 +336,7 @@ local           0
     test UPDATE-1.5 {invalid forcetype} -setup {
         ted create BLUE
     } -body {
-        ted order -reject FRCGROUP:UPDATE g BLUE forcetype NONESUCH
+        ted orderx -reject FRCGROUP:UPDATE g BLUE forcetype NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -346,7 +346,7 @@ local           0
     test UPDATE-1.6 {invalid training} -setup {
         ted create BLUE
     } -body {
-        ted order -reject FRCGROUP:UPDATE g BLUE training NONESUCH
+        ted orderx -reject FRCGROUP:UPDATE g BLUE training NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -356,7 +356,7 @@ local           0
     test UPDATE-1.7 {invalid base_personnel} -setup {
         ted create BLUE
     } -body {
-        ted order -reject FRCGROUP:UPDATE g BLUE base_personnel NONESUCH
+        ted orderx -reject FRCGROUP:UPDATE g BLUE base_personnel NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -367,7 +367,7 @@ local           0
     test UPDATE-1.8 {invalid demeanor} -setup {
         ted create BLUE
     } -body {
-        ted order -reject FRCGROUP:UPDATE g BLUE demeanor NONESUCH
+        ted orderx -reject FRCGROUP:UPDATE g BLUE demeanor NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -378,7 +378,7 @@ local           0
     test UPDATE-1.9 {invalid cost} -setup {
         ted create BLUE
     } -body {
-        ted order -reject FRCGROUP:UPDATE g BLUE cost NONESUCH
+        ted orderx -reject FRCGROUP:UPDATE g BLUE cost NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -389,7 +389,7 @@ local           0
     test UPDATE-1.12 {invalid local} -setup {
         ted create BLUE
     } -body {
-        ted order -reject FRCGROUP:UPDATE g BLUE local NONESUCH
+        ted orderx -reject FRCGROUP:UPDATE g BLUE local NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -400,7 +400,7 @@ local           0
     test UPDATE-2.1 {frcgroup is updated} -setup {
         ted create BOB BLUE
     } -body {
-        ted order FRCGROUP:UPDATE {
+        ted orderx FRCGROUP:UPDATE {
             g              BLUE
             longname       "Blue Angels"
             a              BOB
@@ -436,7 +436,7 @@ local           1
         ted create BLUE
     } -body {
         ted notifier bind ::rdb <frcgroups>
-        ted order FRCGROUP:UPDATE g BLUE longname "Blue Angels"
+        ted orderx FRCGROUP:UPDATE g BLUE longname "Blue Angels"
         ted notifier received
     } -cleanup {
         cleanup
@@ -447,7 +447,7 @@ local           1
 
     test UPDATE-3.1 {undo undoes the change} -setup {
         ted create BOB BLUE
-        ted order FRCGROUP:UPDATE {
+        ted orderx FRCGROUP:UPDATE {
             g              BLUE
             longname       "Blue Angels"
             a              BOB
@@ -461,7 +461,7 @@ local           1
         }
     } -body {
         ted notifier bind ::rdb <frcgroups>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -473,14 +473,14 @@ local           1
     # FRCGROUP:UPDATE:MULTI
 
     test UPDATE:MULTI-1.1 {required parms} -body {
-        ted order -reject FRCGROUP:UPDATE:MULTI {}
+        ted orderx -reject FRCGROUP:UPDATE:MULTI {}
     } -result {
         ids {required value}
     }
     
 
     test UPDATE:MULTI-1.2 {invalid ids, no groups} -body {
-        ted order -reject FRCGROUP:UPDATE:MULTI ids NONESUCH
+        ted orderx -reject FRCGROUP:UPDATE:MULTI ids NONESUCH
     } -result {
         ids {Invalid force group, none are defined}
     }
@@ -489,7 +489,7 @@ local           1
     test UPDATE:MULTI-1.3 {invalid ids, groups} -setup {
         ted create BLUE
     } -body {
-        ted order -reject FRCGROUP:UPDATE:MULTI ids NONESUCH
+        ted orderx -reject FRCGROUP:UPDATE:MULTI ids NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -500,7 +500,7 @@ local           1
     test UPDATE:MULTI-1.4 {invalid actor} -setup {
         ted create BLUE
     } -body {
-        ted order -reject FRCGROUP:UPDATE g BLUE a NONESUCH
+        ted orderx -reject FRCGROUP:UPDATE g BLUE a NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -510,7 +510,7 @@ local           1
     test UPDATE:MULTI-1.5 {invalid color} -setup {
         ted create BLUE
     } -body {
-        ted order -reject FRCGROUP:UPDATE:MULTI ids BLUE color NONESUCH
+        ted orderx -reject FRCGROUP:UPDATE:MULTI ids BLUE color NONESUCH
     } -cleanup {
         cleanup
     } -match glob -result {
@@ -521,7 +521,7 @@ local           1
     test UPDATE:MULTI-1.7 {invalid forcetype} -setup {
         ted create BLUE
     } -body {
-        ted order -reject FRCGROUP:UPDATE:MULTI ids BLUE forcetype NONESUCH
+        ted orderx -reject FRCGROUP:UPDATE:MULTI ids BLUE forcetype NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -532,7 +532,7 @@ local           1
     test UPDATE:MULTI-1.8 {invalid training} -setup {
         ted create BLUE
     } -body {
-        ted order -reject FRCGROUP:UPDATE:MULTI ids BLUE training NONESUCH
+        ted orderx -reject FRCGROUP:UPDATE:MULTI ids BLUE training NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -542,7 +542,7 @@ local           1
     test UPDATE:MULTI-1.9 {invalid base_personnel} -setup {
         ted create BLUE
     } -body {
-        ted order -reject FRCGROUP:UPDATE:MULTI ids BLUE base_personnel NONESUCH
+        ted orderx -reject FRCGROUP:UPDATE:MULTI ids BLUE base_personnel NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -553,7 +553,7 @@ local           1
     test UPDATE:MULTI-1.10 {invalid demeanor} -setup {
         ted create BLUE
     } -body {
-        ted order -reject FRCGROUP:UPDATE:MULTI ids BLUE demeanor NONESUCH
+        ted orderx -reject FRCGROUP:UPDATE:MULTI ids BLUE demeanor NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -564,7 +564,7 @@ local           1
     test UPDATE:MULTI-1.11 {invalid cost} -setup {
         ted create BLUE
     } -body {
-        ted order -reject FRCGROUP:UPDATE:MULTI ids BLUE cost NONESUCH
+        ted orderx -reject FRCGROUP:UPDATE:MULTI ids BLUE cost NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -575,7 +575,7 @@ local           1
     test UPDATE:MULTI-1.14 {invalid local} -setup {
         ted create BLUE
     } -body {
-        ted order -reject FRCGROUP:UPDATE:MULTI ids BLUE local NONESUCH
+        ted orderx -reject FRCGROUP:UPDATE:MULTI ids BLUE local NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -588,7 +588,7 @@ local           1
     } -body {
         ted notifier bind ::rdb <frcgroups>
 
-        ted order FRCGROUP:UPDATE:MULTI {
+        ted orderx FRCGROUP:UPDATE:MULTI {
             ids            BLUE 
             a              BOB
             color          "#ff0000"
@@ -613,7 +613,7 @@ local           1
     } -body {
         ted notifier bind ::rdb <frcgroups>
 
-        ted order FRCGROUP:UPDATE:MULTI {
+        ted orderx FRCGROUP:UPDATE:MULTI {
             ids            {BLUE BRIT}
             a              BOB
             color          "#ff0000"
@@ -637,13 +637,13 @@ local           1
 
     test UPDATE:MULTI-3.1 {undo effects} -setup {
         ted create BLUE BRIT
-        ted order FRCGROUP:UPDATE:MULTI {
+        ted orderx FRCGROUP:UPDATE:MULTI {
             ids       {BLUE BRIT}
             color     "#ff0000"
         }
     } -body {
         ted notifier bind ::rdb <frcgroups>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
