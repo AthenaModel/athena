@@ -449,8 +449,8 @@ oo::define ::wintel::simevent {
     #
     # Sends the order and its parameters to the scenario.
 
-    method send {args} {
-        return [order send gui {*}$args]
+    method send {order args} {
+        return [flunky senddict gui $order $args]
     }
 
     # block agent ?dur?

@@ -711,40 +711,37 @@ oo::define strategy {
 # Adds a new strategy block to an agent's strategy.
 
 myorders define STRATEGY:BLOCK:ADD {
-    # saved on execution.
-    variable block_id
-
     meta title "Add Block to Strategy"
 
     meta sendstates PREP
-
-    meta defaults {
-        agent ""
-    }
 
     meta form {
         rcc "Agent:" -for agent
         text agent -context yes
     }
 
+
     method _validate {} {
-        my prepare agent  -toupper -required -type agent
+
+    # FIRST, prepare and validate the parameters
+    my prepare agent  -toupper -required -type agent
+
+
     }
 
     method _execute {{flunky ""}} {
-        set s [strategy getname $parms(agent)]
 
-        if {[info exists block_id]} {
-            pot setnextid $block_id
-        }
 
-        my setundo [$s addblock_]
+    # NEXT, create the block
+    set s [strategy getname $parms(agent)]
 
-        # NEXT, return the new block's ID
-        set block_id [lindex [$s block_ids] end]
+    my setundo [$s addblock_]
 
-        return $block_id
-    }
+    # NEXT, return the new block's ID
+    set block [$s blocks end]
+
+    setredo [list pot setnextid [$block id]]
+    return [$block id]
 }
 
 # STRATEGY:BLOCK:DELETE
@@ -756,28 +753,31 @@ myorders define STRATEGY:BLOCK:DELETE {
 
     meta sendstates PREP
 
-    meta defaults {
-        ids ""
-    }
-
     meta form {
         text ids -context yes
     }
 
+
     method _validate {} {
-        my prepare ids -required -listwith {::strategy valclass ::block}
+
+    # FIRST, prepare and validate the parameters
+    my prepare ids -required -listwith {::strategy valclass ::block}
+
+
     }
 
     method _execute {{flunky ""}} {
-        set undo [list]
-        foreach bid $parms(ids) {
-            set block [pot get $bid]
-            set s [$block strategy]
-            lappend undo [$s deleteblock_ $bid]
-        }
-    
-        my setundo [join [lreverse $undo] "\n"]
+
+
+    # NEXT, delete the block(s)
+    set undo [list]
+    foreach bid $parms(ids) {
+        set block [pot get $bid]
+        set s [$block strategy]
+        lappend undo [$s deleteblock_ $bid]
     }
+    
+    my setundo [join [lreverse $undo] "\n"]
 }
 
 # STRATEGY:BLOCK:MOVE
@@ -789,11 +789,6 @@ myorders define STRATEGY:BLOCK:MOVE {
 
     meta sendstates PREP
 
-    meta defaults {
-        block_id ""
-        where    ""
-    }
-
     meta form {
         rcc "Block ID:" -for block_id
         text block_id -context yes
@@ -804,15 +799,22 @@ myorders define STRATEGY:BLOCK:MOVE {
 
 
     method _validate {} {
-        my prepare block_id -required -with {::strategy valclass ::block}
-        my prepare where    -required -type emoveitem
+
+    # FIRST, prepare and validate the parameters
+    my prepare block_id -required -with {::strategy valclass ::block}
+    my prepare where    -required -type emoveitem
+
+
     }
 
     method _execute {{flunky ""}} {
-        set block [pot get $parms(block_id)]
-        set s [$block strategy]
-        my setundo [$s moveblock_ $parms(block_id) $parms(where)]
-    }
+
+
+    # NEXT, move the block
+    set block [pot get $parms(block_id)]
+    set s [$block strategy]
+
+    my setundo [$s moveblock_ $parms(block_id) $parms(where)]
 }
 
 

@@ -909,7 +909,7 @@ snit::widget strategybrowser {
 
         # NEXT, if the mode is cut delete the items.
         if {$mode eq "cut"} {
-            order send gui STRATEGY:BLOCK:DELETE ids $ids
+            flunky senddict gui STRATEGY:BLOCK:DELETE [ids $ids]
         }
 
         # NEXT, notify the user:
@@ -969,7 +969,8 @@ snit::widget strategybrowser {
     # Creates a new block and adds it to the strategy.
     
     method BListAdd {} {
-        set block_id [order send gui STRATEGY:BLOCK:ADD agent $info(agent)]
+        set block_id [flunky senddict gui STRATEGY:BLOCK:ADD \
+                        [list agent $info(agent)]]
 
         $blist uid select $block_id
         $self BListEdit
@@ -987,7 +988,8 @@ snit::widget strategybrowser {
         set id [lindex [$blist uid curselection] 0]
 
         # NEXT, Change its priority.
-        order send gui STRATEGY:BLOCK:MOVE block_id $id where $where
+        flunky senddict gui STRATEGY:BLOCK:MOVE \
+            [list block_id $id where $where]
     }
 
 
@@ -1035,7 +1037,8 @@ snit::widget strategybrowser {
     # Deletes the selected block(s).
 
     method BListDelete {} {
-        order send gui STRATEGY:BLOCK:DELETE ids [$blist uid curselection]
+        flunky senddict gui STRATEGY:BLOCK:DELETE \
+            [list ids [$blist uid curselection]]
     }
 
     #-------------------------------------------------------------------

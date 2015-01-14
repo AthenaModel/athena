@@ -1256,7 +1256,7 @@ snit::type autogen {
     # agents strategy. The ID of the block is returned
 
     typemethod AddBlock {agent args} {
-        set bid [order send cli STRATEGY:BLOCK:ADD agent $agent]
+        set bid [flunky send normal STRATEGY:BLOCK:ADD -agent $agent]
 
         if {[llength $args] > 0} {
             order send cli BLOCK:UPDATE block_id $bid {*}$args

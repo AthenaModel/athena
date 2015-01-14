@@ -2030,8 +2030,8 @@ snit::type executive {
     # plus -state.
 
     typemethod {block add} {agent args} {
-        cif transaction "block add..." {
-            set block_id [send STRATEGY:BLOCK:ADD -agent $agent]
+        flunky transaction "block add..." {
+            set block_id [sendx STRATEGY:BLOCK:ADD -agent $agent]
             BlockConfigure $block_id $args
         }
 

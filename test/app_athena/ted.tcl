@@ -956,7 +956,7 @@ snit::type ted {
     # are given, they are passed to BLOCK:UPDATE.
 
     typemethod addblock {agent args} {
-        set bid [ted order STRATEGY:BLOCK:ADD agent $agent]
+        set bid [ted orderx STRATEGY:BLOCK:ADD agent $agent]
 
         if {[llength $args] > 0} {
             ted order BLOCK:UPDATE block_id $bid {*}$args

@@ -41,7 +41,8 @@ oo::objdefine block {
             set bdict [my GetOrderParmsFromCopySet $copyset]
 
             # NEXT, create the block with default settings
-            set block_id [order send gui STRATEGY:BLOCK:ADD agent $agent]
+            set block_id [flunky senddict gui STRATEGY:BLOCK:ADD \
+                                [list agent $agent]]
 
             # NEXT, update the block with the right data.
             order send gui BLOCK:UPDATE block_id $block_id {*}$bdict
