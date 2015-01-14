@@ -846,7 +846,7 @@ snit::widget appwin {
         $ordersmenu add cascade -label "Satisfaction" \
             -underline 0 -menu $submenu
         
-        $self AddOrder $submenu SAT:UPDATE
+        $self AddOrderX $submenu SAT:UPDATE
         $self AddOrder $submenu MAD:SAT
 
         # Orders/Cooperation Menu
