@@ -44,6 +44,7 @@ order TACTIC:ABSIT "Tactic: Abstract Situation" {
 
     <parmlist>
     <tactic_ parm tactic_id -required>
+    <tactic_ parm name -optional>
     <tactic_absit parms -optional -tags update>
     </parmlist>
 }
@@ -54,6 +55,7 @@ order TACTIC:ACCIDENT "Tactic: ACCIDENT Event" {
 
     <parmlist>
     <tactic_ parm tactic_id -required>
+    <tactic_ parm name -optional>
     <tactic_accident parms -optional -tags update>
     </parmlist>
 }
@@ -65,6 +67,7 @@ order TACTIC:ASSIGN "Tactic: Assign Personnel" {
 
     <parmlist>
     <tactic_ parm tactic_id -required>
+    <tactic_ parm name -optional>
     <tactic_assign parms -optional -tags update>
     </parmlist>
 }
@@ -75,6 +78,7 @@ order TACTIC:ATTRIT "Tactic: Magic Attrition" {
 
     <parmlist>
     <tactic_ parm tactic_id -required>
+    <tactic_ parm name -optional>
     <tactic_attrit parms -optional -tags update>
     </parmlist>
 }
@@ -85,6 +89,7 @@ order TACTIC:BROADCAST "Tactic: Broadcast an IOM" {
 
     <parmlist>
     <tactic_ parm tactic_id -required>
+    <tactic_ parm name -optional>
     <tactic_broadcast parms -optional -tags update>
     </parmlist>
 }
@@ -95,6 +100,7 @@ order TACTIC:BUILD "Tactic: Build Infrastructure" {
 
     <parmlist>
     <tactic_ parm tactic_id -required>
+    <tactic_ parm name -optional>
     <tactic_build parms -optional -tags update>
     </parmlist>
 }
@@ -105,6 +111,7 @@ order TACTIC:CURSE "Tactic: CURSE" {
 
     <parmlist>
     <tactic_ parm tactic_id -required>
+    <tactic_ parm name -optional>
     <tactic_curse parms -optional -tags update>
     </parmlist>
 }
@@ -115,6 +122,7 @@ order TACTIC:DAMAGE "Tactic: Damage Infrastructure" {
 
     <parmlist>
     <tactic_ parm tactic_id -required>
+    <tactic_ parm name -optional>
     <tactic_damage parms -optional -tags update>
     </parmlist>
 }
@@ -125,6 +133,7 @@ order TACTIC:DEMO "Tactic: DEMO Event" {
 
     <parmlist>
     <tactic_ parm tactic_id -required>
+    <tactic_ parm name -optional>
     <tactic_demo parms -optional -tags update>
     </parmlist>
 }
@@ -136,6 +145,7 @@ order TACTIC:DEMOB "Tactic: Demobilize Forces" {
 
     <parmlist>
     <tactic_ parm tactic_id -required>
+    <tactic_ parm name -optional>
     <tactic_demob parms -optional -tags update>
     </parmlist>
 }
@@ -146,6 +156,7 @@ order TACTIC:DEPLOY "Tactic: Deploy Troops" {
 
     <parmlist>
     <tactic_ parm tactic_id -required>
+    <tactic_ parm name -optional>
     <tactic_deploy parms -optional -tags update>
     </parmlist>
 }
@@ -156,6 +167,7 @@ order TACTIC:DEPOSIT "Tactic: Deposit Money" {
 
     <parmlist>
     <tactic_ parm tactic_id -required>
+    <tactic_ parm name -optional>
     <tactic_deposit parms -optional -tags update>
     </parmlist>
 }
@@ -166,6 +178,7 @@ order TACTIC:EXECUTIVE "Tactic: Executive Command" {
 
     <parmlist>
     <tactic_ parm tactic_id -required>
+    <tactic_ parm name -optional>
     <tactic_executive parms -optional -tags update>
     </parmlist>
 }
@@ -176,6 +189,7 @@ order TACTIC:EXPLOSION "Tactic: EXPLOSION Event" {
 
     <parmlist>
     <tactic_ parm tactic_id -required>
+    <tactic_ parm name -optional>
     <tactic_explosion parms -optional -tags update>
     </parmlist>
 }
@@ -186,6 +200,7 @@ order TACTIC:FLOW "Tactic: Flow Personnel" {
 
     <parmlist>
     <tactic_ parm tactic_id -required>
+    <tactic_ parm name -optional>
     <tactic_flow parms -optional -tags update>
     </parmlist>
 }
@@ -196,6 +211,7 @@ order TACTIC:FUND "Tactic: Fund Actor" {
 
     <parmlist>
     <tactic_ parm tactic_id -required>
+    <tactic_ parm name -optional>
     <tactic_fund parms -optional -tags update>
     </parmlist>
 }
@@ -206,6 +222,7 @@ order TACTIC:FUNDENI "Tactic: Fund Essential Non-infrastructure Services" {
 
     <parmlist>
     <tactic_ parm tactic_id -required>
+    <tactic_ parm name -optional>
     <tactic_fundeni parms -optional -tags update>
     </parmlist>
 }
@@ -216,6 +233,7 @@ order TACTIC:GRANT "Tactic: Grant Access to CAP" {
 
     <parmlist>
     <tactic_ parm tactic_id -required>
+    <tactic_ parm name -optional>
     <tactic_grant parms -optional -tags update>
     </parmlist>
 }
@@ -225,6 +243,7 @@ order TACTIC:MAINTAIN "Tactic: Maintain Infrastructure" {
     Updates an existing <cref /object/tactic/maintain>.<p>
     <parmlist>
     <tactic_ parm tactic_id -required>
+    <tactic_ parm name -optional>
     <tactic_maintain parms -optional -tags update>
     </parmlist>
 }
@@ -234,6 +253,7 @@ order TACTIC:MOBILIZE "Tactic: Mobilize Forces" {
     Updates an existing <cref /object/tactic/mobilize>.<p>
     <parmlist>
     <tactic_ parm tactic_id -required>
+    <tactic_ parm name -optional>
     <tactic_mobilize parms -optional -tags update>
     </parmlist>
 }
@@ -244,6 +264,7 @@ order TACTIC:RIOT "Tactic: RIOT Event" {
 
     <parmlist>
     <tactic_ parm tactic_id -required>
+    <tactic_ parm name -optional>
     <tactic_riot parms -optional -tags update>
     </parmlist>
 }
@@ -254,6 +275,7 @@ order TACTIC:SERVICE "Tactic: Update Level of Service" {
 
     <parmlist>
     <tactic_ parm tactic_id -required>
+    <tactic_ parm name -optional>
     <tactic_service parms -optional -tags update>
     </parmlist>
 }
@@ -264,6 +286,7 @@ order TACTIC:SIGEVENT "Tactic: Log Significant Event" {
 
     <parmlist>
     <tactic_ parm tactic_id -required>
+    <tactic_ parm name -optional>
     <tactic_sigevent parms -optional -tags update>
     </parmlist>
 }
@@ -274,6 +297,7 @@ order TACTIC:SPEND "Tactic: Spend Money" {
 
     <parmlist>
     <tactic_ parm tactic_id -required>
+    <tactic_ parm name -optional>
     <tactic_spend parms -optional -tags update>
     </parmlist>
 }
@@ -284,6 +308,7 @@ order TACTIC:STANCE "Tactic: Force Group Stance" {
 
     <parmlist>
     <tactic_ parm tactic_id -required>
+    <tactic_ parm name -optional>
     <tactic_stance parms -optional -tags update>
     </parmlist>
 }
@@ -294,6 +319,7 @@ order TACTIC:SUPPORT "Tactic: Support Actor" {
 
     <parmlist>
     <tactic_ parm tactic_id -required>
+    <tactic_ parm name -optional>
     <tactic_support parms -optional -tags update>
     </parmlist>
 }
@@ -304,6 +330,7 @@ order TACTIC:VIOLENCE "Tactic: VIOLENCE Event" {
 
     <parmlist>
     <tactic_ parm tactic_id -required>
+    <tactic_ parm name -optional>
     <tactic_violence parms -optional -tags update>
     </parmlist>
 }
@@ -314,6 +341,7 @@ order TACTIC:WITHDRAW "Tactic: Withdraw Money" {
 
     <parmlist>
     <tactic_ parm tactic_id -required>
+    <tactic_ parm name -optional>
     <tactic_withdraw parms -optional -tags update>
     </parmlist>
 }

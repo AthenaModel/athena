@@ -31,16 +31,29 @@ object tactic_ {
 
     # The tactic ID for the object page
     attribute id "Tactic ID" {
-        The tactic ID, an integer number that uniquely
-        identifies the tactic.  In orders, the parameter name is
+        The tactic ID, an integer number or the tactic's user defined name
+        that uniquely identifies the tactic.  In orders, the parameter name is
         <i>tactic_id</i>.
     } -tags {object}
 
     # The tactic ID for the order pages
     attribute tactic_id "Tactic ID" {
-        The tactic ID, an integer number that uniquely
-        identifies the tactic.
+        The tactic ID, an integer number or the tactic's user defined name
+        that uniquely identifies the tactic.  It is assigned automatically 
+        when the tactic is created.
     } -tags {cget}
+
+    attribute name "Name" {
+        The tactic name, a string identifier that, along with the owning
+        actor's ID and parent block name, can be used to uniquely identify 
+        this tactic in orders.  In order to guarantee uniqueness, this name 
+        cannot be the same as the name of a tactic or condition already owned 
+        by the parent block.  For example, if actor GOV has a block named 
+        BLOCK1 and that block has a tactic named TACTIC1, then the 
+        <i>tactic_id</i> can be specified as <i>GOV/BLOCK1/TACTIC1</i> 
+        in orders and Athena will convert the name to the tactic integer 
+        ID automatically.
+    } -tags {object cget}
 
     attribute agent "Agent" {
         The ID of the <term agent> to whose strategy this
@@ -110,6 +123,7 @@ object tactic_absit {
     }
 
     include tactic_ -attrs id
+    include tactic_ -attrs name
     include tactic_ -attrs agent
     include tactic_ -attrs state
 
@@ -177,6 +191,7 @@ object tactic_accident {
     }
 
     include tactic_ -attrs id
+    include tactic_ -attrs name
     include tactic_ -attrs agent
     include tactic_ -attrs state
 
@@ -237,6 +252,7 @@ object tactic_assign {
     }
 
     include tactic_ -attrs id
+    include tactic_ -attrs name
     include tactic_ -attrs agent
     include tactic_ -attrs state
 
@@ -361,6 +377,7 @@ object tactic_attrit {
     }
 
     include tactic_ -attrs id
+    include tactic_ -attrs name
     include tactic_ -attrs agent
     include tactic_ -attrs state
 
@@ -441,6 +458,7 @@ object tactic_broadcast {
     }
 
     include tactic_ -attrs id
+    include tactic_ -attrs name
     include tactic_ -attrs agent
     include tactic_ -attrs state
 
@@ -511,6 +529,7 @@ object tactic_build {
     }
 
     include tactic_ -attrs id
+    include tactic_ -attrs name
     include tactic_ -attrs agent
     include tactic_ -attrs state
 
@@ -573,6 +592,7 @@ object tactic_curse {
     }
 
     include tactic_ -attrs id
+    include tactic_ -attrs name
     include tactic_ -attrs agent
     include tactic_ -attrs state
 
@@ -618,6 +638,7 @@ object tactic_damage {
     }
 
     include tactic_ -attrs id
+    include tactic_ -attrs name
     include tactic_ -attrs agent
     include tactic_ -attrs state
 
@@ -661,6 +682,7 @@ object tactic_demo {
     }
 
     include tactic_ -attrs id
+    include tactic_ -attrs name
     include tactic_ -attrs agent
     include tactic_ -attrs state
 
@@ -720,6 +742,7 @@ object tactic_demob {
     }
 
     include tactic_ -attrs id
+    include tactic_ -attrs name
     include tactic_ -attrs agent
     include tactic_ -attrs state
 
@@ -815,6 +838,7 @@ object tactic_deploy {
     }
 
     include tactic_ -attrs id
+    include tactic_ -attrs name
     include tactic_ -attrs agent
     include tactic_ -attrs state
 
@@ -950,6 +974,7 @@ object tactic_deposit {
     }
 
     include tactic_ -attrs id
+    include tactic_ -attrs name
     include tactic_ -attrs agent
     include tactic_ -attrs state
 
@@ -1026,6 +1051,7 @@ object tactic_executive {
     }
 
     include tactic_ -attrs id
+    include tactic_ -attrs name
     include tactic_ -attrs agent
     include tactic_ -attrs state
 
@@ -1062,6 +1088,7 @@ object tactic_explosion {
     }
 
     include tactic_ -attrs id
+    include tactic_ -attrs name
     include tactic_ -attrs agent
     include tactic_ -attrs state
 
@@ -1109,6 +1136,7 @@ object tactic_flow {
     }
 
     include tactic_ -attrs id
+    include tactic_ -attrs name
     include tactic_ -attrs agent
     include tactic_ -attrs state
 
@@ -1196,6 +1224,7 @@ object tactic_fund {
     }
 
     include tactic_ -attrs id
+    include tactic_ -attrs name
     include tactic_ -attrs agent
     include tactic_ -attrs state
 
@@ -1294,6 +1323,7 @@ object tactic_fundeni {
     }
 
     include tactic_ -attrs id
+    include tactic_ -attrs name
     include tactic_ -attrs agent
     include tactic_ -attrs state
 
@@ -1403,6 +1433,7 @@ object tactic_grant {
     }
 
     include tactic_ -attrs id
+    include tactic_ -attrs name
     include tactic_ -attrs agent
     include tactic_ -attrs state
 
@@ -1479,6 +1510,7 @@ object tactic_maintain {
     }
 
     include tactic_ -attrs id
+    include tactic_ -attrs name
     include tactic_ -attrs agent
     include tactic_ -attrs state
 
@@ -1584,6 +1616,7 @@ object tactic_mobilize {
     }
 
     include tactic_ -attrs id
+    include tactic_ -attrs name
     include tactic_ -attrs agent
     include tactic_ -attrs state
 
@@ -1661,6 +1694,7 @@ object tactic_riot {
     }
 
     include tactic_ -attrs id
+    include tactic_ -attrs name
     include tactic_ -attrs agent
     include tactic_ -attrs state
 
@@ -1713,6 +1747,7 @@ object tactic_service {
     }
 
     include tactic_ -attrs id
+    include tactic_ -attrs name
     include tactic_ -attrs agent
     include tactic_ -attrs state
 
@@ -1779,6 +1814,7 @@ object tactic_sigevent {
     }
 
     include tactic_ -attrs id
+    include tactic_ -attrs name
     include tactic_ -attrs agent
     include tactic_ -attrs state
 
@@ -1822,6 +1858,7 @@ object tactic_spend {
     }
 
     include tactic_ -attrs id
+    include tactic_ -attrs name
     include tactic_ -attrs agent
     include tactic_ -attrs state
 
@@ -1927,6 +1964,7 @@ object tactic_stance {
     }
 
     include tactic_ -attrs id
+    include tactic_ -attrs name
     include tactic_ -attrs agent
     include tactic_ -attrs state
 
@@ -2001,6 +2039,7 @@ object tactic_support {
     }
 
     include tactic_ -attrs id
+    include tactic_ -attrs name
     include tactic_ -attrs agent
     include tactic_ -attrs state
 
@@ -2043,6 +2082,7 @@ object tactic_violence {
     }
 
     include tactic_ -attrs id
+    include tactic_ -attrs name
     include tactic_ -attrs agent
     include tactic_ -attrs state
 
@@ -2097,6 +2137,7 @@ object tactic_withdraw {
     }
 
     include tactic_ -attrs id
+    include tactic_ -attrs name
     include tactic_ -attrs agent
     include tactic_ -attrs state
 
