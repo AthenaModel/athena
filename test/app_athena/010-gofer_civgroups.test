@@ -45,7 +45,7 @@ namespace eval ::athena_test::tests:: {
 
         # Add an empty group.  If any rule retrieves it, that's 
         # an error.
-        ted order CIVGROUP:CREATE g NOBODY n NB1 basepop 0
+        ted orderx CIVGROUP:CREATE g NOBODY n NB1 basepop 0
     }
 
     proc setupMood {} {

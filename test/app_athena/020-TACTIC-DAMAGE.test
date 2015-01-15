@@ -44,9 +44,9 @@ namespace eval ::athena_test::tests:: {
         variable T1
 
         set S1 [strategy getname SYSTEM]
-        ted order STRATEGY:BLOCK:ADD agent SYSTEM
+        ted orderx STRATEGY:BLOCK:ADD agent SYSTEM
         lassign [$S1 blocks] B1
-        ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename DAMAGE
+        ted orderx BLOCK:TACTIC:ADD block_id [$B1 id] typename DAMAGE
         lassign [$B1 tactics] T1
     }
 

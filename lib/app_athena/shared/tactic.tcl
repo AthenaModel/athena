@@ -218,8 +218,8 @@ oo::objdefine tactic {
 
             # NEXT, create the tactic with default settings
             set tactic_id \
-                [order send gui BLOCK:TACTIC:ADD \
-                    block_id $block_id typename $tname]
+                [flunky senddict gui BLOCK:TACTIC:ADD \
+                    [list block_id $block_id typename $tname]]
 
             # NEXT, update the tactic with the right data.
             order send gui TACTIC:$tname tactic_id $tactic_id \

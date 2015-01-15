@@ -81,18 +81,44 @@ oo::class create ::projectlib::order_set {
             dynaform define $cls [$cls form]
 
             # NEXT, Check for mismatch errors.
+            set parms  [lsort [my GetParms $cls]]
             set fields [lsort [dynaform fields $cls]]
-            set parms  [lsort [dict keys [$cls defaults]]]
+
             if {$fields ne $parms} {
                 throw {ORDERX_SET MISMATCH} [outdent "
                 Order $order has a mismatch between its parameter list
                 and its dynaform.
+
+                parms  = <$parms>
+                fields = <$fields>
                 "]
             }
         }
 
         # NEXT, remember that we've successfully defined this order.
         dict set orders $order $cls
+    }
+
+    # GetParms cls
+    #
+    # cls   - An order class
+    #
+    # Extracts parm names from meta parmlist or defaults
+    # NOTE: defaults is deprecated.
+
+    method GetParms {cls} {
+        set result ""
+
+        try {
+            foreach spec [$cls parmlist] {
+                lassign $spec parm value
+                lappend result $parm
+            }
+
+            return $result
+        } on error {} {
+            return [dict keys [$cls defaults]]
+        }
     }
 
     # reset
@@ -155,6 +181,14 @@ oo::class create ::projectlib::order_set {
 
     method class {order} {
         dict get $orders $order
+    }
+
+    # parms order
+    #
+    # Return the parm names for the order.
+
+    method parms {order} {
+        return [my GetParms [my class $order]]
     }
 
     # title order

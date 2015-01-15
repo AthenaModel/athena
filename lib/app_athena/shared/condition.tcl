@@ -146,8 +146,8 @@ oo::objdefine condition {
 
             # NEXT, create the condition with default settings
             set condition_id \
-                [order send gui BLOCK:CONDITION:ADD \
-                    block_id $block_id typename $cname]
+                [flunky senddict gui BLOCK:CONDITION:ADD \
+                    [list block_id $block_id typename $cname]]
 
             # NEXT, update the condition with the right data.
             order send gui CONDITION:$cname condition_id $condition_id \

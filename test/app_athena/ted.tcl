@@ -959,7 +959,7 @@ snit::type ted {
         set bid [ted orderx STRATEGY:BLOCK:ADD agent $agent]
 
         if {[llength $args] > 0} {
-            ted order BLOCK:UPDATE block_id $bid {*}$args
+            ted orderx BLOCK:UPDATE block_id $bid {*}$args
         }
 
         return [pot get $bid]
@@ -974,7 +974,7 @@ snit::type ted {
     # are given, they are passed to CONDITION:$typename:UPDATE.
 
     typemethod addcondition {block typename args} {
-        set cid [ted order BLOCK:CONDITION:ADD \
+        set cid [ted orderx BLOCK:CONDITION:ADD \
                     block_id [$block id] typename $typename]
 
         if {[llength $args] > 0} {
@@ -993,7 +993,7 @@ snit::type ted {
     # are given, they are passed to TACTIC:$typename:UPDATE.
 
     typemethod addtactic {block typename args} {
-        set tid [ted order BLOCK:TACTIC:ADD \
+        set tid [ted orderx BLOCK:TACTIC:ADD \
                     block_id [$block id] typename $typename]
 
         if {[llength $args] > 0} {

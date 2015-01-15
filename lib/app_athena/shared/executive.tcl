@@ -2087,7 +2087,7 @@ snit::type executive {
         }
 
         # NEXT, configure it
-        cif transaction "block configure..." {
+        flunky transaction "block configure..." {
             BlockConfigure $block_id $args
         }
     }
@@ -2103,10 +2103,10 @@ snit::type executive {
     proc BlockConfigure {block_id opts} {
         set state [from opts -state ""]
 
-        send BLOCK:UPDATE -block_id $block_id {*}$opts
+        sendx BLOCK:UPDATE -block_id $block_id {*}$opts
 
         if {$state ne ""} {
-            send BLOCK:STATE -block_id $block_id -state $state
+            sendx BLOCK:STATE -block_id $block_id -state $state
         }
     }
 
@@ -2127,8 +2127,8 @@ snit::type executive {
         }
 
         # NEXT, create the condition
-        cif transaction "condition add..." {
-            set condition_id [send BLOCK:CONDITION:ADD \
+        flunky transaction "condition add..." {
+            set condition_id [sendx BLOCK:CONDITION:ADD \
                                     -block_id $block_id \
                                     -typename $typename]
             ConditionConfigure $condition_id $args
@@ -2623,7 +2623,7 @@ snit::type executive {
 
         # NEXT, create the tactic
         cif transaction "tactic add..." {
-            set tactic_id [send BLOCK:TACTIC:ADD \
+            set tactic_id [sendx BLOCK:TACTIC:ADD \
                                     -block_id $block_id \
                                     -typename $typename]
             TacticConfigure $tactic_id $args

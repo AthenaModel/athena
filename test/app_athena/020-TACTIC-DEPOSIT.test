@@ -43,9 +43,9 @@ namespace eval ::athena_test::tests:: {
         variable T1
         ted order ACTOR:UPDATE a JOE cash_on_hand 10000.0 cash_reserve 0.0
         set S1 [strategy getname JOE]
-        ted order STRATEGY:BLOCK:ADD agent JOE
+        ted orderx STRATEGY:BLOCK:ADD agent JOE
         lassign [$S1 blocks] B1
-        ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename DEPOSIT
+        ted orderx BLOCK:TACTIC:ADD block_id [$B1 id] typename DEPOSIT
         lassign [$B1 tactics] T1
     }
 

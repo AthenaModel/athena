@@ -225,6 +225,23 @@ oo::class create ::projectlib::orderx {
         return [my title]
     }
 
+    # defaults 
+    #
+    # Returns a dictionary of order parameter names and default values.
+    # 
+    # TBD: At present, most existing orderx classes have this as a 
+    # meta, which will override this command.  But if they define
+    # "meta parmlist" instead, this will compute the defaults from it.
+
+    method defaults {} {
+        foreach parmspec [my parmlist] {
+            lassign $parmspec parm value
+            dict set result $parm $value
+        }
+
+        return $result
+    }
+
     # parms
     #
     # Returns the names of the order's parameters

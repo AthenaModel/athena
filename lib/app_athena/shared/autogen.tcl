@@ -1259,7 +1259,8 @@ snit::type autogen {
         set bid [flunky send normal STRATEGY:BLOCK:ADD -agent $agent]
 
         if {[llength $args] > 0} {
-            order send cli BLOCK:UPDATE block_id $bid {*}$args
+            flunky senddict normal BLOCK:UPDATE \
+                [list block_id $bid {*}$args]
         }
 
         return [pot get $bid]
@@ -1276,9 +1277,9 @@ snit::type autogen {
     # proper arguments.
 
     typemethod AddTactic {ttype block args} {
-        set tid [order send cli BLOCK:TACTIC:ADD \
-            block_id [$block id] \
-            typename $ttype]
+        set tid [flunky send normal BLOCK:TACTIC:ADD \
+                    -block_id [$block id] \
+                    -typename $ttype]
 
         order send cli TACTIC:${ttype} tactic_id $tid {*}$args
 

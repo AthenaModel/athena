@@ -67,7 +67,7 @@ namespace eval ::athena_test::tests:: {
         ted create JOE BOB NB1 BLUE SHIA SUNN
 
         # NEXT, JOE is the controller of neighborhood N1.
-        ted order NBHOOD:UPDATE n NB1 controller JOE
+        ted orderx NBHOOD:UPDATE n NB1 controller JOE
 
     }
     

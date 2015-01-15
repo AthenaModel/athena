@@ -173,12 +173,15 @@ Returns the title of the order, e.g., "My Order".<p>  If the order class
 doesn't define it explicitly, then <xref order_set(n)> makes it the same
 as the order name.<p>
 
-<defitem defaults {<i obj> defaults}>
+<defitem parmlist {<i obj> parmlist}>
 
-<b Required.> Returns the order's default parameter settings, a dictionary of default
-values by parameter names.  In addition, the keys of the dictionary
-are the official specification of the order's parameter names.  Every
-leaf class should define this metadata value.<p>
+<b Required.> Defines the order's parameter names and their default
+values using Tcl's <tt proc> argument list syntax: each element in the
+list defines the name of a parameter.  If the element is a pair, the second 
+item in the pair is the default value; otherwise the default value is the
+empty string.<p>
+
+Every leaf class should define this metadata value.<p>
 
 <defitem sendstates {<i>obj</i> sendstates}>
 
@@ -188,6 +191,7 @@ be used at different times; see <xref order_flunky(n)> for details.<p>
 
 <xref order_set(n)> defaults this value to the empty list, which is
 appropriate if "send states" are not being used.<p>
+
 
 <defitem form {<i obj> parmtags}>
 
@@ -213,15 +217,20 @@ The following subcommands manipulate the <tt parms()> array.<p>
 
 <deflist parms>
 
-<defitem cget {<i obj> cget <i option>}>\
+<defitem cget {<i obj> cget <i option>}>
 
 This command is identical to <iref get>, but expresses the parameter
 name using option notation, e.g., the parameter "<tt foo>" is entered as
 "<tt -foo>"<p>
 
-<defitem configure {<i obj> configure <i option value...>}>\
+<defitem configure {<i obj> configure <i option value...>}>
 
 Sets the value of one or more order parameters using option notation.<p>
+
+<defitem defaults {<i obj> defaults}>
+
+Returns the order's default parameter settings, a dictionary of default
+values by parameter name.<p>
 
 <defitem get {<i obj> get <i parm>}>
 
@@ -230,6 +239,11 @@ Returns the value of the named <i parm>.<p>
 <defitem getdict {<i obj> getdict}>
 
 Returns a dictionary of the order's parameters by parameter name.<p>
+
+<defitem parms {<i obj> parms}>
+
+Returns a list of the names of the order's parameters, in the order in
+which they appear in the order's <iref defaults>.<p>
 
 <defitem set {<i obj> set <i parm value>}>
 
@@ -258,11 +272,6 @@ defaults to the order's title, e.g., "My Order"; the class may override
 this method to provide a more detailed narrative.<p>
 
 The narrative primarily appears in the Edit/Undo and Edit/Redo menu items.<p>
-
-<defitem parms {<i obj> parms}>
-
-Returns a list of the names of the order's parameters, in the order in
-which they appear in the order's <iref defaults>.<p>
 
 <defitem state {<i obj> state}>
 

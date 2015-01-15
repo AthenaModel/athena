@@ -711,8 +711,7 @@ oo::define strategy {
 # Adds a new strategy block to an agent's strategy.
 
 myorders define STRATEGY:BLOCK:ADD {
-    # saved on execution.
-    variable block_id
+    variable block_id  ;# Saved on first execution for redo
 
     meta title "Add Block to Strategy"
 

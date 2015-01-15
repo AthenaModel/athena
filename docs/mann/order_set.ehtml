@@ -110,6 +110,10 @@ or throwing <b INVALID> if the order isn't in the set.<p>
 
 Returns the order's full class name.<p>
 
+<defitem parms {<i obj> parms <i order>}>
+
+Returns a list of the names of the order's parameters.<p>
+
 <defitem title {<i obj> title <i order>}>
 
 Returns the order's title.<p>
