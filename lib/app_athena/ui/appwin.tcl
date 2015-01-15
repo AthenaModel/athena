@@ -753,11 +753,11 @@ snit::widget appwin {
         $ordersmenu add cascade -label "Situation" \
             -underline 0 -menu $submenu
         
-        $self AddOrder $submenu ABSIT:CREATE
-        $self AddOrder $submenu ABSIT:MOVE
-        $self AddOrder $submenu ABSIT:DELETE
-        $self AddOrder $submenu ABSIT:RESOLVE
-        $self AddOrder $submenu ABSIT:UPDATE
+        $self AddOrderX $submenu ABSIT:CREATE
+        $self AddOrderX $submenu ABSIT:MOVE
+        $self AddOrderX $submenu ABSIT:DELETE
+        $self AddOrderX $submenu ABSIT:RESOLVE
+        $self AddOrderX $submenu ABSIT:UPDATE
 
         # Orders/Magic Attitude Drivers
         set submenu [menu $ordersmenu.mad]

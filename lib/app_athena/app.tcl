@@ -636,6 +636,13 @@ snit::type app {
             [$browser candelete]
         }
 
+        statecontroller ::cond::availableCanDeletex -events {
+            ::flunky <Sync>
+        } -condition {
+            [::flunky available $order] &&
+            [$browser candelete]
+        }
+
         # Order is available, and the selection is updateable.
         # The browser should call update for its widgets.
         #
@@ -649,6 +656,13 @@ snit::type app {
             [$browser canupdate]
         }
 
+        statecontroller ::cond::availableCanUpdatex -events {
+            ::flunky <Sync>
+        } -condition {
+            [::flunky available $order] &&
+            [$browser canupdate]
+        }
+
         # Order is available, and the selection can be resolved.
         # The browser should call update for its widgets.
         #
@@ -659,6 +673,13 @@ snit::type app {
             ::order <State>
         } -condition {
             [::order available $order] &&
+            [$browser canresolve]
+        }
+
+        statecontroller ::cond::availableCanResolvex -events {
+            ::flunky <Sync>
+        } -condition {
+            [::flunky available $order] &&
             [$browser canresolve]
         }
     }

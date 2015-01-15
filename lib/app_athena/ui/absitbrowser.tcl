@@ -79,7 +79,7 @@ snit::widgetadaptor absitbrowser {
             -state   normal                       \
             -command [mymethod AddEntity]
 
-        cond::available control $addbtn \
+        cond::availablex control $addbtn \
             order ABSIT:CREATE
 
 
@@ -88,7 +88,7 @@ snit::widgetadaptor absitbrowser {
             -state   disabled                        \
             -command [mymethod EditSelected]
 
-        cond::availableCanUpdate control $editbtn \
+        cond::availableCanUpdatex control $editbtn \
             order   ABSIT:UPDATE   \
             browser $win
 
@@ -98,7 +98,7 @@ snit::widgetadaptor absitbrowser {
             -state   disabled                              \
             -command [mymethod ResolveSelected]
 
-        cond::availableCanResolve control $resolvebtn  \
+        cond::availableCanResolvex control $resolvebtn  \
             order   ABSIT:RESOLVE   \
             browser $win
 
@@ -107,7 +107,7 @@ snit::widgetadaptor absitbrowser {
             -state   disabled                              \
             -command [mymethod DeleteSelected]
 
-        cond::availableCanDelete control $deletebtn \
+        cond::availableCanDeletex control $deletebtn \
             order   ABSIT:DELETE  \
             browser $win
 
@@ -190,9 +190,9 @@ snit::widgetadaptor absitbrowser {
 
     method SelectionChanged {} {
         # FIRST, update buttons
-        cond::availableCanUpdate  update $editbtn
-        cond::availableCanResolve update $resolvebtn
-        cond::availableCanDelete  update $deletebtn
+        cond::availableCanUpdatex  update $editbtn
+        cond::availableCanResolvex update $resolvebtn
+        cond::availableCanDeletex  update $deletebtn
 
         # NEXT, notify the app of the selection.
         if {[llength [$hull uid curselection]] == 1} {
@@ -209,7 +209,7 @@ snit::widgetadaptor absitbrowser {
 
     method AddEntity {} {
         # FIRST, Pop up the dialog
-        order enter ABSIT:CREATE
+        app enter ABSIT:CREATE
     }
 
     # EditSelected
@@ -221,7 +221,7 @@ snit::widgetadaptor absitbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Pop up the order dialog.
-        order enter ABSIT:UPDATE s $id
+        app enter ABSIT:UPDATE s $id
     }
 
 
@@ -234,7 +234,7 @@ snit::widgetadaptor absitbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Pop up the order dialog.
-        order enter ABSIT:RESOLVE s $id
+        app enter ABSIT:RESOLVE s $id
     }
 
 
@@ -247,7 +247,7 @@ snit::widgetadaptor absitbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Send the delete order.
-        order send gui ABSIT:DELETE s $id
+        flunky senddict gui ABSIT:DELETE [list s $id]
     }
 
 }

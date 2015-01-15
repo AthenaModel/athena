@@ -453,16 +453,16 @@ snit::widget mapviewer {
         DynamicHelp::add $win.vbar.nbhood \
             -text [myorders title NBHOOD:CREATE]
 
-        cond::available control \
+        cond::availablex control \
             [ttk::button $win.vbar.newabsit                                  \
                  -style   Toolbutton                                         \
                  -image   [list ${type}::icon::abpoly                       \
                                disabled ${type}::icon::abpolyd]             \
-                 -command [list order enter ABSIT:CREATE]] \
+                 -command [list app enter ABSIT:CREATE]] \
             order ABSIT:CREATE
 
         DynamicHelp::add $win.vbar.newabsit \
-            -text [order title ABSIT:CREATE]
+            -text [myorders title ABSIT:CREATE]
 
         pack $win.vbar.sep       -side top -fill x -pady 2
         pack $win.vbar.nbhood    -side top -fill x -padx 2
@@ -996,7 +996,7 @@ snit::widget mapviewer {
             -label   "Browse Neighborhood Detail" \
             -command [mymethod NbhoodBrowseDetail]
 
-        cond::available control \
+        cond::availablex control \
             [menuitem $mnu command "Create Abstract Situation" \
                  -command [mymethod NbhoodCreateAbsitHere]]         \
             order ABSIT:CREATE
@@ -1030,7 +1030,7 @@ snit::widget mapviewer {
     # Pops up the create absit dialog with this location filled in.
 
     method NbhoodCreateAbsitHere {} {
-        order enter ABSIT:CREATE location $nbhoods(transref)
+        app enter ABSIT:CREATE location $nbhoods(transref)
     }
 
 
@@ -1610,7 +1610,7 @@ snit::widget mapviewer {
     method CreateAbsitContextMenu {} {
         set mnu [menu $canvas.absitmenu]
 
-        cond::availableCanUpdate control \
+        cond::availableCanUpdatex control \
             [menuitem $mnu command "Update Situation" \
                  -command [mymethod UpdateAbsit]] \
             order ABSIT:UPDATE browser $win
@@ -1621,7 +1621,7 @@ snit::widget mapviewer {
     # Pops up the "Update Abstract Situation" dialog for this unit
 
     method UpdateAbsit {} {
-        order enter ABSIT:UPDATE s $icons(context)
+        app enter ABSIT:UPDATE s $icons(context)
     }
 
     #-------------------------------------------------------------------
