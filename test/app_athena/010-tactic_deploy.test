@@ -93,7 +93,7 @@ namespace eval ::athena_test::tests:: {
 
     # Set the maintenance cost for BLUE, in $/person deployed
     proc setcost {cost} {
-        ted order FRCGROUP:UPDATE g BLUE cost $cost
+        ted orderx FRCGROUP:UPDATE g BLUE cost $cost
     }
 
     # Set the amount of cash in the coffer.

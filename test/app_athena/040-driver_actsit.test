@@ -79,7 +79,7 @@ namespace eval ::athena_test::tests:: {
         # NEXT, create an absit on request.
         if {$absit ne ""} {
             parm set dam.$absit.active no
-            ted order ABSIT:CREATE n NB1 stype $absit \
+            ted orderx ABSIT:CREATE n NB1 stype $absit \
                 coverage 1.0 inception 1 resolver NONE
         }
     }

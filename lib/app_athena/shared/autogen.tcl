@@ -720,7 +720,7 @@ snit::type autogen {
             set parms(supports) "SELF"
             set parms(cash_on_hand) "500B"
 
-            order send cli ACTOR:CREATE [array get parms]
+            flunky senddict normal ACTOR:CREATE [array get parms]
         }
     }
 
@@ -925,7 +925,7 @@ snit::type autogen {
 
         # NEXT, have that actors support no one
         set parms(supports) NONE
-        order send cli ACTOR:UPDATE [array get parms]
+        flunky senddict normal ACTOR:UPDATE [array get parms]
 
         # NEXT, no longer need the "supports" parm
         unset parms(supports)
