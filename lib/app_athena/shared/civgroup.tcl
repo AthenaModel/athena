@@ -368,20 +368,20 @@ myorders define CIVGROUP:CREATE {
 
     meta title      "Create Civilian Group"
     meta sendstates {PREP}
-    meta defaults   {
-        g         ""
-        longname  ""
-        n         ""
-        bsid      1
-        color     "#45DD11"
-        demeanor  AVERAGE
-        basepop   10000
-        pop_cr    0.0
-        sa_flag   0
-        lfp       60
-        housing   AT_HOME
-        hist_flag 0
-        upc       0.0
+    meta parmlist   {
+        g
+        longname
+        n
+        {bsid      1}
+        {color     "#45DD11"}
+        {demeanor  AVERAGE}
+        {basepop   10000}
+        {pop_cr    0.0}
+        {sa_flag   0}
+        {lfp       60}
+        {housing   AT_HOME}
+        {hist_flag 0}
+        {upc       0.0}
     }
 
     meta form {
@@ -488,9 +488,7 @@ myorders define CIVGROUP:DELETE {
     meta title      "Delete Civilian Group"
     meta sendstates PREP
 
-    meta defaults {
-        g ""
-    }
+    meta parmlist   { g }
 
     meta form {
         rcc "Group:" -for g
@@ -545,21 +543,20 @@ myorders define CIVGROUP:DELETE {
 myorders define CIVGROUP:UPDATE {
     meta title      "Update Civilian Group"
     meta sendstates PREP
-
-    meta defaults   {
-        g            ""
-        longname     ""
-        n            ""
-        bsid         ""
-        color        ""
-        demeanor     ""
-        basepop      ""
-        pop_cr       ""
-        sa_flag      ""
-        lfp          ""
-        housing      ""
-        hist_flag    ""
-        upc          ""
+    meta parmlist   {
+        g        
+        longname 
+        n        
+        bsid     
+        color    
+        demeanor 
+        basepop  
+        pop_cr   
+        sa_flag  
+        lfp      
+        housing  
+        hist_flag
+        upc      
     }
 
     meta form {
