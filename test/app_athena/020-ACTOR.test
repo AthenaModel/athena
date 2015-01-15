@@ -9,7 +9,7 @@
 # DESCRIPTION:
 #    app_sim(1) ACTOR:* order tests.
 #
-#    This test suite tests the actor-related orders.
+#    This test suite tests the actor-related orderxs.
 #
 #-----------------------------------------------------------------------
 
@@ -103,15 +103,15 @@ namespace eval ::athena_test::tests:: {
     # ACTOR:CREATE
 
     test CREATE-1.1 {required parms} -body {
-        ted order -reject ACTOR:CREATE {}
+        ted orderx -reject ACTOR:CREATE {}
     } -result {
         a {required value}
     }
     
     test CREATE-1.2 {Duplicate a} -setup {
-        ted order ACTOR:CREATE $joe
+        ted orderx ACTOR:CREATE $joe
     } -body {
-        ted order -reject ACTOR:CREATE $joe
+        ted orderx -reject ACTOR:CREATE $joe
     } -cleanup {
         cleanup
     } -result {
@@ -119,7 +119,7 @@ namespace eval ::athena_test::tests:: {
     }
 
     test CREATE-1.3 {a is not an ident} -body {
-        ted order -reject ACTOR:CREATE [dict merge $joe {
+        ted orderx -reject ACTOR:CREATE [dict merge $joe {
             a "JOE&BOB"
         }]
     } -cleanup {
@@ -129,7 +129,7 @@ namespace eval ::athena_test::tests:: {
     }
 
     test CREATE-1.4 {bsid is not a belief system ID} -body {
-        ted order -reject ACTOR:CREATE [dict merge $joe {
+        ted orderx -reject ACTOR:CREATE [dict merge $joe {
             bsid 2
         }]
     } -cleanup {
@@ -139,7 +139,7 @@ namespace eval ::athena_test::tests:: {
     }
 
     test CREATE-1.5 {invalid supports} -body {
-        ted order -reject ACTOR:CREATE [dict merge $joe {
+        ted orderx -reject ACTOR:CREATE [dict merge $joe {
             supports "NONESUCH"
         }]
     } -cleanup {
@@ -149,7 +149,7 @@ namespace eval ::athena_test::tests:: {
     }
 
     test CREATE-1.6 {invalid atype} -body {
-        ted order -reject ACTOR:CREATE [dict merge $joe {
+        ted orderx -reject ACTOR:CREATE [dict merge $joe {
             atype "NONESUCH"
         }]
     } -cleanup {
@@ -159,7 +159,7 @@ namespace eval ::athena_test::tests:: {
     }
 
     test CREATE-1.7 {invalid cash_reserve} -body {
-        ted order -reject ACTOR:CREATE [dict merge $joe {
+        ted orderx -reject ACTOR:CREATE [dict merge $joe {
             cash_reserve NONESUCH
         }]
     } -cleanup {
@@ -169,7 +169,7 @@ namespace eval ::athena_test::tests:: {
     }
 
     test CREATE-1.8 {invalid cash_on_hand} -body {
-        ted order -reject ACTOR:CREATE [dict merge $joe {
+        ted orderx -reject ACTOR:CREATE [dict merge $joe {
             cash_on_hand NONESUCH
         }]
     } -cleanup {
@@ -179,7 +179,7 @@ namespace eval ::athena_test::tests:: {
     }
 
     test CREATE-1.9 {invalid income_goods} -body {
-        ted order -reject ACTOR:CREATE [dict merge $joe {
+        ted orderx -reject ACTOR:CREATE [dict merge $joe {
             income_goods NONESUCH
         }]
     } -cleanup {
@@ -189,7 +189,7 @@ namespace eval ::athena_test::tests:: {
     }
     
     test CREATE-1.10 {invalid shares_black_nr} -body {
-        ted order -reject ACTOR:CREATE [dict merge $joe {
+        ted orderx -reject ACTOR:CREATE [dict merge $joe {
             shares_black_nr NONESUCH
         }]
     } -cleanup {
@@ -199,7 +199,7 @@ namespace eval ::athena_test::tests:: {
     }
     
     test CREATE-1.11 {invalid income_black_tax} -body {
-        ted order -reject ACTOR:CREATE [dict merge $joe {
+        ted orderx -reject ACTOR:CREATE [dict merge $joe {
             income_black_tax NONESUCH
         }]
     } -cleanup {
@@ -209,7 +209,7 @@ namespace eval ::athena_test::tests:: {
     }
     
     test CREATE-1.12 {invalid income_pop} -body {
-        ted order -reject ACTOR:CREATE [dict merge $joe {
+        ted orderx -reject ACTOR:CREATE [dict merge $joe {
             income_pop NONESUCH
         }]
     } -cleanup {
@@ -219,7 +219,7 @@ namespace eval ::athena_test::tests:: {
     }
     
     test CREATE-1.13 {invalid income_graft} -body {
-        ted order -reject ACTOR:CREATE [dict merge $joe {
+        ted orderx -reject ACTOR:CREATE [dict merge $joe {
             income_graft NONESUCH
         }]
     } -cleanup {
@@ -229,7 +229,7 @@ namespace eval ::athena_test::tests:: {
     }
     
     test CREATE-1.14 {invalid income_world} -body {
-        ted order -reject ACTOR:CREATE [dict merge $joe {
+        ted orderx -reject ACTOR:CREATE [dict merge $joe {
             income_world NONESUCH
         }]
     } -cleanup {
@@ -239,7 +239,7 @@ namespace eval ::athena_test::tests:: {
     }
     
     test CREATE-1.15 {invalid budget} -body {
-        ted order -reject ACTOR:CREATE [dict merge $joe {
+        ted orderx -reject ACTOR:CREATE [dict merge $joe {
             budget NONESUCH
         }]
     } -cleanup {
@@ -252,7 +252,7 @@ namespace eval ::athena_test::tests:: {
         # Adds belief system 2
         bsys system add 2
     } -body {
-        ted order ACTOR:CREATE $bob
+        ted orderx ACTOR:CREATE $bob
         
         ted querylist {SELECT * FROM actors}
     } -cleanup {
@@ -276,7 +276,7 @@ budget            0.0
     }
 
     test CREATE-2.2 {longname defaults to ID} -body {
-        ted order ACTOR:CREATE [dict merge $joe {longname ""}]
+        ted orderx ACTOR:CREATE [dict merge $joe {longname ""}]
         
         rdb onecolumn {SELECT longname FROM actors}
     } -cleanup {
@@ -284,7 +284,7 @@ budget            0.0
     } -result {JOE}
 
     test CREATE-2.3 {bsid defaults to 1} -body {
-        ted order ACTOR:CREATE [dict merge $bob {bsid ""}]
+        ted orderx ACTOR:CREATE [dict merge $bob {bsid ""}]
         
         rdb onecolumn {SELECT bsid FROM actors}
     } -cleanup {
@@ -293,7 +293,7 @@ budget            0.0
 
     test CREATE-2.3 {effects} -body {
         ted notifier bind ::rdb <actors>
-        ted order ACTOR:CREATE $joe
+        ted orderx ACTOR:CREATE $joe
         ted notifier received
     } -cleanup {
         cleanup
@@ -303,10 +303,10 @@ budget            0.0
 
 
     test CREATE-3.1 {effects are undone} -setup {
-        ted order ACTOR:CREATE $joe
+        ted orderx ACTOR:CREATE $joe
     } -body {
         ted notifier bind ::rdb <actors>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -318,14 +318,14 @@ budget            0.0
     # ACTOR:DELETE
 
     test DELETE-1.1 {required parms} -body {
-        ted order -reject ACTOR:DELETE {}
+        ted orderx -reject ACTOR:DELETE {}
     } -result {
         a {required value}
     }
     
 
     test DELETE-1.2 {unknown a} -body {
-        ted order -reject ACTOR:DELETE a NONESUCH
+        ted orderx -reject ACTOR:DELETE a NONESUCH
     } -result {
         a {Invalid actor, none are defined}
     }
@@ -335,7 +335,7 @@ budget            0.0
         ted create JOE
     } -body {
         ted notifier bind ::rdb <actors>
-        ted order ACTOR:DELETE a JOE
+        ted orderx ACTOR:DELETE a JOE
         ted notifier received
     } -cleanup {
         cleanup
@@ -346,10 +346,10 @@ budget            0.0
 
     test DELETE-3.1 {Effects on undo} -setup {
         ted create JOE
-        ted order ACTOR:DELETE a JOE
+        ted orderx ACTOR:DELETE a JOE
     } -body {
         ted notifier bind ::rdb <actors>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -361,7 +361,7 @@ budget            0.0
     # ACTOR:UPDATE
 
     test UPDATE-1.1 {required parms} -body {
-        ted order -reject ACTOR:UPDATE {}
+        ted orderx -reject ACTOR:UPDATE {}
     } -result {
         a {required value}
     }
@@ -369,7 +369,7 @@ budget            0.0
     test UPDATE-1.2 {invalid bsid} -setup {
         ted create JOE
     } -body {
-        ted order -reject ACTOR:UPDATE a JOE bsid 2
+        ted orderx -reject ACTOR:UPDATE a JOE bsid 2
     } -cleanup {
         cleanup
     } -result {
@@ -380,7 +380,7 @@ budget            0.0
     test UPDATE-1.3 {invalid supports} -setup {
         ted create JOE BOB
     } -body {
-        ted order -reject ACTOR:UPDATE a JOE supports NONESUCH
+        ted orderx -reject ACTOR:UPDATE a JOE supports NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -390,7 +390,7 @@ budget            0.0
     test UPDATE-1.4 {invalid atype} -setup {
         ted create JOE BOB
     } -body {
-        ted order -reject ACTOR:UPDATE a JOE atype NONESUCH
+        ted orderx -reject ACTOR:UPDATE a JOE atype NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -400,7 +400,7 @@ budget            0.0
     test UPDATE-1.5 {invalid cash_reserve} -setup {
         ted create JOE
     } -body {
-        ted order -reject ACTOR:UPDATE a JOE cash_reserve NONESUCH
+        ted orderx -reject ACTOR:UPDATE a JOE cash_reserve NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -410,7 +410,7 @@ budget            0.0
     test UPDATE-1.6 {invalid cash_on_hand} -setup {
         ted create JOE
     } -body {
-        ted order -reject ACTOR:UPDATE a JOE cash_on_hand NONESUCH
+        ted orderx -reject ACTOR:UPDATE a JOE cash_on_hand NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -421,7 +421,7 @@ budget            0.0
     test UPDATE-1.7 {invalid income_goods} -setup {
         ted create JOE
     } -body {
-        ted order -reject ACTOR:UPDATE a JOE income_goods NONESUCH
+        ted orderx -reject ACTOR:UPDATE a JOE income_goods NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -431,7 +431,7 @@ budget            0.0
     test UPDATE-1.8 {invalid shares_black_nr} -setup {
         ted create JOE
     } -body {
-        ted order -reject ACTOR:UPDATE a JOE shares_black_nr NONESUCH
+        ted orderx -reject ACTOR:UPDATE a JOE shares_black_nr NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -441,7 +441,7 @@ budget            0.0
     test UPDATE-1.9 {invalid income_black_tax} -setup {
         ted create JOE
     } -body {
-        ted order -reject ACTOR:UPDATE a JOE income_black_tax NONESUCH
+        ted orderx -reject ACTOR:UPDATE a JOE income_black_tax NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -451,7 +451,7 @@ budget            0.0
     test UPDATE-1.10 {invalid income_pop} -setup {
         ted create JOE
     } -body {
-        ted order -reject ACTOR:UPDATE a JOE income_pop NONESUCH
+        ted orderx -reject ACTOR:UPDATE a JOE income_pop NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -461,7 +461,7 @@ budget            0.0
     test UPDATE-1.11 {invalid income_graft} -setup {
         ted create JOE
     } -body {
-        ted order -reject ACTOR:UPDATE a JOE income_graft NONESUCH
+        ted orderx -reject ACTOR:UPDATE a JOE income_graft NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -471,7 +471,7 @@ budget            0.0
     test UPDATE-1.12 {invalid income_world} -setup {
         ted create JOE
     } -body {
-        ted order -reject ACTOR:UPDATE a JOE income_world NONESUCH
+        ted orderx -reject ACTOR:UPDATE a JOE income_world NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -481,7 +481,7 @@ budget            0.0
     test UPDATE-1.13 {invalid budget} -setup {
         ted create JOE
     } -body {
-        ted order -reject ACTOR:UPDATE a JOE budget NONESUCH
+        ted orderx -reject ACTOR:UPDATE a JOE budget NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -493,7 +493,7 @@ budget            0.0
         ted create JOE BOB
         bsys system add 2
     } -body {
-        ted order ACTOR:UPDATE {
+        ted orderx ACTOR:UPDATE {
             a                JOE
             longname         "Joe the Actress"
             bsid             2
@@ -552,7 +552,7 @@ budget            0.0
         ted create JOE
     } -body {
         ted notifier bind ::rdb <actors>
-        ted order ACTOR:UPDATE a JOE longname "Joe the Actress"
+        ted orderx ACTOR:UPDATE a JOE longname "Joe the Actress"
         ted notifier received
     } -cleanup {
         cleanup
@@ -563,13 +563,13 @@ budget            0.0
 
     test UPDATE-3.1 {undo effects} -setup {
         ted create NB1 JOE
-        ted order ACTOR:UPDATE {
+        ted orderx ACTOR:UPDATE {
             a            JOE
             longname     "Joe the Actress"
         }
     } -body {
         ted notifier bind ::rdb <actors>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -581,7 +581,7 @@ budget            0.0
     # ACTOR:INCOME
 
     test INCOME-1.1 {required parms} -body {
-        ted order -reject ACTOR:INCOME {}
+        ted orderx -reject ACTOR:INCOME {}
     } -result {
         a {required value}
     }
@@ -589,7 +589,7 @@ budget            0.0
     test INCOME-1.2 {invalid income_goods} -setup {
         ted create JOE
     } -body {
-        ted order -reject ACTOR:INCOME a JOE income_goods NONESUCH
+        ted orderx -reject ACTOR:INCOME a JOE income_goods NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -599,7 +599,7 @@ budget            0.0
     test INCOME-1.3 {invalid shares_black_nr} -setup {
         ted create JOE
     } -body {
-        ted order -reject ACTOR:INCOME a JOE shares_black_nr NONESUCH
+        ted orderx -reject ACTOR:INCOME a JOE shares_black_nr NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -609,7 +609,7 @@ budget            0.0
     test INCOME-1.4 {invalid income_black_tax} -setup {
         ted create JOE
     } -body {
-        ted order -reject ACTOR:INCOME a JOE income_black_tax NONESUCH
+        ted orderx -reject ACTOR:INCOME a JOE income_black_tax NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -619,7 +619,7 @@ budget            0.0
     test INCOME-1.5 {invalid income_pop} -setup {
         ted create JOE
     } -body {
-        ted order -reject ACTOR:INCOME a JOE income_pop NONESUCH
+        ted orderx -reject ACTOR:INCOME a JOE income_pop NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -629,7 +629,7 @@ budget            0.0
     test INCOME-1.6 {invalid income_graft} -setup {
         ted create JOE
     } -body {
-        ted order -reject ACTOR:INCOME a JOE income_graft NONESUCH
+        ted orderx -reject ACTOR:INCOME a JOE income_graft NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -639,7 +639,7 @@ budget            0.0
     test INCOME-1.7 {invalid income_world} -setup {
         ted create JOE
     } -body {
-        ted order -reject ACTOR:INCOME a JOE income_world NONESUCH
+        ted orderx -reject ACTOR:INCOME a JOE income_world NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -649,7 +649,7 @@ budget            0.0
     test INCOME-2.1 {actor is updated} -setup {
         ted create JOE
     } -body {
-        ted order ACTOR:INCOME {
+        ted orderx ACTOR:INCOME {
             a                 JOE
             income_goods      0
             shares_black_nr   1
@@ -684,7 +684,7 @@ budget            0.0
     test INCOME-2.3 {can't change atype} -setup {
         ted create JOE
     } -body {
-        ted order ACTOR:INCOME {
+        ted orderx ACTOR:INCOME {
             a                 JOE
             atype             BUDGET
             income_goods      0
@@ -723,7 +723,7 @@ budget            0.0
         ted create JOE
     } -body {
         ted notifier bind ::rdb <actors>
-        ted order ACTOR:INCOME a JOE income_goods 5
+        ted orderx ACTOR:INCOME a JOE income_goods 5
         ted notifier received
     } -cleanup {
         cleanup
@@ -734,13 +734,13 @@ budget            0.0
 
     test INCOME-3.1 {undo effects} -setup {
         ted create NB1 JOE
-        ted order ACTOR:INCOME {
+        ted orderx ACTOR:INCOME {
             a            JOE
             income_goods 5
         }
     } -body {
         ted notifier bind ::rdb <actors>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -752,7 +752,7 @@ budget            0.0
     # ACTOR:SUPPORTS
 
     test SUPPORTS-1.1 {required parms} -body {
-        ted order -reject ACTOR:SUPPORTS {}
+        ted orderx -reject ACTOR:SUPPORTS {}
     } -result {
         a {required value}
         supports {required value}
@@ -762,7 +762,7 @@ budget            0.0
     test SUPPORTS-1.2 {invalid supports} -setup {
         ted create JOE BOB
     } -body {
-        ted order -reject ACTOR:SUPPORTS a JOE supports NONESUCH
+        ted orderx -reject ACTOR:SUPPORTS a JOE supports NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -774,7 +774,7 @@ budget            0.0
     test SUPPORTS-2.1 {actor is updated} -setup {
         ted create JOE BOB
     } -body {
-        ted order ACTOR:SUPPORTS {
+        ted orderx ACTOR:SUPPORTS {
             a            JOE
             supports     BOB
         }
@@ -794,7 +794,7 @@ BOB BOB
         ted create JOE
     } -body {
         ted notifier bind ::rdb <actors>
-        ted order ACTOR:SUPPORTS a JOE supports NONE
+        ted orderx ACTOR:SUPPORTS a JOE supports NONE
         ted notifier received
     } -cleanup {
         cleanup
@@ -805,13 +805,13 @@ BOB BOB
 
     test SUPPORTS-3.1 {undo effects} -setup {
         ted create JOE BOB
-        ted order ACTOR:SUPPORTS {
+        ted orderx ACTOR:SUPPORTS {
             a            JOE
             supports     BOB
         }
     } -body {
         ted notifier bind ::rdb <actors>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

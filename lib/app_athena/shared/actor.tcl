@@ -341,13 +341,30 @@ snit::type actor {
 #
 # Creates new actors.
 
-order define ACTOR:CREATE {
-    title "Create Actor"
+myorders define ACTOR:CREATE {
+    meta title "Create Actor"
 
-    options \
-        -sendstates PREP
+    meta sendstates PREP
 
-    form {
+    meta defaults {
+        a                ""
+        longname         ""
+        bsid             1
+        supports         SELF
+        auto_maintain    0
+        atype            INCOME
+        cash_reserve     0
+        cash_on_hand     0
+        income_goods     0
+        shares_black_nr  0
+        income_black_tax 0
+        income_pop       0
+        income_graft     0
+        income_world     0
+        budget           0
+    }
+
+    meta form {
         rcc "Actor:" -for a
         text a
         
@@ -406,104 +423,131 @@ order define ACTOR:CREATE {
             }
         }
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare a                -toupper -required -unused -type ident
-    prepare longname         -normalize
-    prepare bsid             -num               -type {bsys system}
-    prepare supports         -toupper           -type {ptype a+self+none}
-    prepare auto_maintain    -toupper           -type boolean 
-    prepare atype            -toupper           -selector
-    prepare cash_reserve     -toupper           -type money
-    prepare cash_on_hand     -toupper           -type money
-    prepare income_goods     -toupper           -type money
-    prepare shares_black_nr  -num               -type iquantity
-    prepare income_black_tax -toupper           -type money
-    prepare income_pop       -toupper           -type money
-    prepare income_graft     -toupper           -type money
-    prepare income_world     -toupper           -type money
-    prepare budget           -toupper           -type money
 
-    returnOnError -final
 
-    # NEXT, If longname is "", defaults to ID.
-    if {$parms(longname) eq ""} {
-        set parms(longname) $parms(a)
+    method _validate {} {
+
+        # FIRST, prepare and validate the parameters
+        my prepare a                -toupper -required -type ident
+        my unused a
+        my prepare longname         -normalize
+        my prepare bsid             -num               -type {bsys system}
+        my prepare supports         -toupper           -type {ptype a+self+none}
+        my prepare auto_maintain    -toupper           -type boolean 
+        my prepare atype            -toupper           -selector
+        my prepare cash_reserve     -toupper           -type money
+        my prepare cash_on_hand     -toupper           -type money
+        my prepare income_goods     -toupper           -type money
+        my prepare shares_black_nr  -num               -type iquantity
+        my prepare income_black_tax -toupper           -type money
+        my prepare income_pop       -toupper           -type money
+        my prepare income_graft     -toupper           -type money
+        my prepare income_world     -toupper           -type money
+        my prepare budget           -toupper           -type money
     }
 
-    # NEXT, if bsys is "", defaults to 1 (neutral)
-    if {$parms(bsid) eq ""} {
-        set parms(bsid) 1
-    }
-
-    # NEXT, if supports is "", defaults to SELF
-    if {$parms(supports) eq ""} {
-        set parms(supports) "SELF"
-    }
+    method _execute {{flunky ""}} {
+        # NEXT, If longname is "", defaults to ID.
+        if {$parms(longname) eq ""} {
+            set parms(longname) $parms(a)
+        }
     
-    # NEXT, create the actor
-    setundo [actor mutate create [array get parms]]
+        # NEXT, if bsys is "", defaults to 1 (neutral)
+        if {$parms(bsid) eq ""} {
+            set parms(bsid) 1
+        }
+    
+        # NEXT, if supports is "", defaults to SELF
+        if {$parms(supports) eq ""} {
+            set parms(supports) "SELF"
+        }
+        
+        # NEXT, create the actor
+        my setundo [actor mutate create [array get parms]]
+    }
 }
 
 # ACTOR:DELETE
 
-order define ACTOR:DELETE {
-    title "Delete Actor"
-    options -sendstates PREP
+myorders define ACTOR:DELETE {
+    meta title "Delete Actor"
+    meta sendstates PREP
 
-    form {
+    meta defaults {
+        a ""
+    }
+
+    meta form {
         rcc "Actor:" -for a
         actor a
     }
-} {
-    # FIRST, prepare the parameters
-    prepare a -toupper -required -type actor
 
-    returnOnError -final
-
-    # NEXT, make sure the user knows what he is getting into.
-
-    if {[sender] eq "gui"} {
-        set answer [messagebox popup \
-                        -title         "Are you sure?"                  \
-                        -icon          warning                          \
-                        -buttons       {ok "Delete it" cancel "Cancel"} \
-                        -default       cancel                           \
-                        -onclose       cancel                           \
-                        -ignoretag     ACTOR:DELETE            \
-                        -ignoredefault ok                               \
-                        -parent        [app topwin]                     \
-                        -message       [normalize {
-                            Are you sure you
-                            really want to delete this actor and all of the
-                            entities that depend upon it?
-                        }]]
-
-        if {$answer eq "cancel"} {
-            cancel
-        }
+    method _validate {} {
+        # FIRST, prepare the parameters
+        my prepare a -toupper -required -type actor
     }
 
-    # NEXT, Delete the actor and dependent entities
-    lappend undo 
+    method _execute {{flunky ""}} {
+        if {[my mode] eq "gui"} {
+            set answer [messagebox popup \
+                            -title         "Are you sure?"                  \
+                            -icon          warning                          \
+                            -buttons       {ok "Delete it" cancel "Cancel"} \
+                            -default       cancel                           \
+                            -onclose       cancel                           \
+                            -ignoretag     ACTOR:DELETE                     \
+                            -ignoredefault ok                               \
+                            -parent        [app topwin]                     \
+                            -message       [normalize {
+                                Are you sure you
+                                really want to delete this actor and all of the
+                                entities that depend upon it?
+                            }]]
+    
+            if {$answer eq "cancel"} {
+                my cancel
+            }
+        }
 
-    setundo [actor mutate delete $parms(a)]
+        # NEXT, Delete the actor and dependent entities
+        lappend undo 
+    
+        my setundo [actor mutate delete $parms(a)]
+    }
 }
 
 # ACTOR:UPDATE
 #
 # Updates existing actors.
 
-order define ACTOR:UPDATE {
-    title "Update Actor"
-    options -sendstates PREP
+myorders define ACTOR:UPDATE {
+    meta title "Update Actor"
+    meta sendstates PREP
 
-    form {
+    meta defaults {
+        a                ""
+        longname         ""
+        bsid             ""
+        supports         ""
+        auto_maintain    ""
+        atype            ""
+        cash_reserve     ""
+        cash_on_hand     ""
+        income_goods     ""
+        shares_black_nr  ""
+        income_black_tax ""
+        income_pop       ""
+        income_graft     ""
+        income_world     ""
+        budget           ""
+    }
+
+    meta form {
         ;# Use explicit width so that long labels don't wrap.  Ugh!
         rc "Select Actor:" -for a -width 2in
         c
-        key a -table gui_actors -keys a \
-            -loadcmd {::orderdialog keyload a *} 
+        dbkey a -table gui_actors -keys a \
+            -loadcmd {$order_ keyload a *} 
         
         rcc "Long Name:" -for longname
         longname longname
@@ -559,28 +603,29 @@ order define ACTOR:UPDATE {
             }
         }
     }
-} {
-    # FIRST, prepare the parameters
-    prepare a                -toupper   -required -type actor
-    prepare longname         -normalize
-    prepare bsid             -num                 -type {bsys system}
-    prepare supports         -toupper             -type {ptype a+self+none}
-    prepare auto_maintain    -toupper             -type boolean 
-    prepare atype            -toupper             -selector
-    prepare cash_reserve     -toupper             -type money
-    prepare cash_on_hand     -toupper             -type money
-    prepare income_goods     -toupper             -type money
-    prepare shares_black_nr  -num                 -type iquantity
-    prepare income_black_tax -toupper             -type money
-    prepare income_pop       -toupper             -type money
-    prepare income_graft     -toupper             -type money
-    prepare income_world     -toupper             -type money
-    prepare budget           -toupper             -type money
-    
-    returnOnError -final
-    
-    # NEXT, modify the actor
-    setundo [actor mutate update [array get parms]]
+
+
+    method _validate {} {
+        my prepare a                -toupper   -required -type actor
+        my prepare longname         -normalize
+        my prepare bsid             -num               -type {bsys system}
+        my prepare supports         -toupper           -type {ptype a+self+none}
+        my prepare auto_maintain    -toupper           -type boolean 
+        my prepare atype            -toupper           -selector
+        my prepare cash_reserve     -toupper           -type money
+        my prepare cash_on_hand     -toupper           -type money
+        my prepare income_goods     -toupper           -type money
+        my prepare shares_black_nr  -num               -type iquantity
+        my prepare income_black_tax -toupper           -type money
+        my prepare income_pop       -toupper           -type money
+        my prepare income_graft     -toupper           -type money
+        my prepare income_world     -toupper           -type money
+        my prepare budget           -toupper           -type money
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [actor mutate update [array get parms]]
+    }
 }
 
 # ACTOR:INCOME
@@ -588,13 +633,25 @@ order define ACTOR:UPDATE {
 # Updates existing actor's income or budget.  Does not
 # allow changing the actor's type.
 
-order define ACTOR:INCOME {
-    title "Update Actor Income"
-    options -sendstates {PREP PAUSED TACTIC}
+myorders define ACTOR:INCOME {
+    meta title "Update Actor Income"
+    meta sendstates {PREP PAUSED TACTIC}
 
-    form {
+    meta defaults {
+        a                ""
+        atype            ""
+        income_goods     ""
+        shares_black_nr  ""
+        income_black_tax ""
+        income_pop       ""
+        income_graft     ""
+        income_world     ""
+        budget           ""
+    }
+
+    meta form {
         rcc "Select Actor:" -for a
-        key a -table gui_actors -keys a \
+        dbkey a -table gui_actors -keys a \
             -loadcmd {::orderdialog keyload a *} 
 
         selector atype -invisible yes {
@@ -630,76 +687,83 @@ order define ACTOR:INCOME {
             }
         }
     }
-} {
-    # FIRST, clear atype; they can't really change it.
-    set parms(atype) ""
-    
-    # NEXT, prepare the parameters
-    prepare a                -toupper   -required -type actor
-    prepare income_goods     -toupper             -type money
-    prepare shares_black_nr  -num                 -type iquantity
-    prepare income_black_tax -toupper             -type money
-    prepare income_pop       -toupper             -type money
-    prepare income_graft     -toupper             -type money
-    prepare income_world     -toupper             -type money
-    prepare budget           -toupper             -type money
-    
-    returnOnError -final
 
-    # NEXT, fill in the empty parameters
-    array set parms {
-        auto_maintain {}
-        longname      {}
-        supports      {}
-        cash_reserve  {}
-        cash_on_hand  {}
+
+    method _validate {} {
+        set parms(atype) ""
+        
+        my prepare a                -toupper   -required -type actor
+        my prepare income_goods     -toupper             -type money
+        my prepare shares_black_nr  -num                 -type iquantity
+        my prepare income_black_tax -toupper             -type money
+        my prepare income_pop       -toupper             -type money
+        my prepare income_graft     -toupper             -type money
+        my prepare income_world     -toupper             -type money
+        my prepare budget           -toupper             -type money
     }
 
-    # NEXT, modify the actor
-    setundo [actor mutate update [array get parms]]
+    method _execute {{flunky ""}} {
+        # FIRST, fill in the empty parameters
+        array set parms {
+            auto_maintain {}
+            longname      {}
+            supports      {}
+            cash_reserve  {}
+            cash_on_hand  {}
+        }
+    
+        # NEXT, modify the actor
+        my setundo [actor mutate update [array get parms]]
+    }
 }
 
 # ACTOR:SUPPORTS
 #
 # Updates existing actor's "supports" attribute.
 
-order define ACTOR:SUPPORTS {
-    title "Update Actor Supports"
-    options -sendstates {PREP PAUSED TACTICS}
+myorders define ACTOR:SUPPORTS {
+    meta title "Update Actor Supports"
+    meta sendstates {PREP PAUSED TACTICS}
 
-    form {
+    meta defaults {
+        a        ""
+        supports ""
+    }
+
+    meta form {
         rcc "Select Actor:" -for a
-        key a -table gui_actors -keys a \
+        dbkey a -table gui_actors -keys a \
             -loadcmd {::orderdialog keyload a *} 
         
         rcc "Supports:" -for supports
         enum supports -listcmd {ptype a+self+none names}
     }
-} {
-    # FIRST, prepare the parameters
-    prepare a            -toupper   -required -type actor
-    prepare supports     -toupper   -required -type {ptype a+self+none}
 
-    returnOnError -final
-
-    # NEXT, fill in the empty parameters
-    array set parms {
-        longname         {}
-        atype            {}
-        auto_maintain    {}
-        cash_reserve     {}
-        cash_on_hand     {}
-        income_goods     {}
-        shares_black_nr  {}
-        income_black_tax {}
-        income_pop       {}
-        income_graft     {}
-        income_world     {}
-        budget           {}
+    method _validate {} {
+        my prepare a            -toupper   -required -type actor
+        my prepare supports     -toupper   -required -type {ptype a+self+none}
     }
 
-    # NEXT, modify the actor
-    setundo [actor mutate update [array get parms]]
+    method _execute {{flunky ""}} {
+        # FIRST, fill in the empty parameters
+        array set parms {
+            longname         {}
+            atype            {}
+            auto_maintain    {}
+            cash_reserve     {}
+            cash_on_hand     {}
+            income_goods     {}
+            shares_black_nr  {}
+            income_black_tax {}
+            income_pop       {}
+            income_graft     {}
+            income_world     {}
+            budget           {}
+        }
+    
+        # NEXT, modify the actor
+        my setundo [actor mutate update [array get parms]]
+    }
 }
 
 

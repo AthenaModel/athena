@@ -778,11 +778,11 @@ snit::widget appwin {
         $ordersmenu add cascade -label "Actors" \
             -underline 0 -menu $submenu
         
-        $self AddOrder $submenu ACTOR:CREATE
-        $self AddOrder $submenu ACTOR:UPDATE
-        $self AddOrder $submenu ACTOR:INCOME
-        $self AddOrder $submenu ACTOR:SUPPORTS
-        $self AddOrder $submenu ACTOR:DELETE
+        $self AddOrderX $submenu ACTOR:CREATE
+        $self AddOrderX $submenu ACTOR:UPDATE
+        $self AddOrderX $submenu ACTOR:INCOME
+        $self AddOrderX $submenu ACTOR:SUPPORTS
+        $self AddOrderX $submenu ACTOR:DELETE
 
         # Orders/Civilian Group
         set submenu [menu $ordersmenu.civgroup]

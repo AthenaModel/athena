@@ -96,7 +96,7 @@ snit::widgetadaptor actorbrowser {
         install addbtn using mkaddbutton $bar.add "Add Actor" \
             -command [mymethod AddEntity]
 
-        cond::available control $addbtn \
+        cond::availablex control $addbtn \
             order ACTOR:CREATE
 
 
@@ -104,7 +104,7 @@ snit::widgetadaptor actorbrowser {
             -state   disabled                                     \
             -command [mymethod EditSelected]
 
-        cond::availableSingle control $editbtn   \
+        cond::availableSinglex control $editbtn   \
             order   ACTOR:UPDATE                    \
             browser $win
 
@@ -114,7 +114,7 @@ snit::widgetadaptor actorbrowser {
             -state   disabled                              \
             -command [mymethod DeleteSelected]
 
-        cond::availableSingle control $deletebtn \
+        cond::availableSinglex control $deletebtn \
             order   ACTOR:DELETE           \
             browser $win
 
@@ -145,7 +145,7 @@ snit::widgetadaptor actorbrowser {
 
     method SelectionChanged {} {
         # FIRST, update buttons
-        cond::availableSingle update [list $editbtn $deletebtn]
+        cond::availableSinglex update [list $editbtn $deletebtn]
     }
 
 
@@ -155,7 +155,7 @@ snit::widgetadaptor actorbrowser {
 
     method AddEntity {} {
         # FIRST, Pop up the dialog
-        order enter ACTOR:CREATE
+        app enter ACTOR:CREATE
     }
 
 
@@ -168,7 +168,7 @@ snit::widgetadaptor actorbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Pop up the dialog, and select this entity
-        order enter ACTOR:UPDATE a $id
+        app enter ACTOR:UPDATE a $id
     }
 
     # DeleteSelected
@@ -180,7 +180,7 @@ snit::widgetadaptor actorbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Delete the entity
-        order send gui ACTOR:DELETE a $id
+        flunky senddict gui ACTOR:DELETE [list a $id]
     }
 }
 
