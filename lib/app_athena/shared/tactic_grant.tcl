@@ -133,11 +133,12 @@ tactic define GRANT "Grant Access to CAP" {actor} -onlock {
 #
 # Updates existing GRANT tactic.
 
-order define TACTIC:GRANT {
-    title "Tactic: Grant Access to CAP"
-    options -sendstates PREP
+myorders define TACTIC:GRANT {
+    meta title      "Tactic: Grant Access to CAP"
+    meta sendstates PREP
+    meta parmlist   {tactic_id name klist alist}
 
-    form {
+    meta form {
         rcc "Tactic ID" -for tactic_id
         text tactic_id -context yes \
             -loadcmd {beanload}
@@ -154,28 +155,27 @@ order define TACTIC:GRANT {
         rcc "Actor List:" -for alist
         gofer alist -typename gofer::ACTORS
     }
-} {
-    # FIRST, prepare the parameters
-    prepare tactic_id  -required -with {::strategy valclass tactic::GRANT}
-    returnOnError
 
-    set tactic [pot get $parms(tactic_id)]
 
-    prepare name      -toupper  -with [list $tactic valName]
-    prepare klist     -toupper
-    prepare alist
- 
-    # Error checking for klist and alist is done by the SanityCheck 
-    # routine.
+    method _validate {} {
+        # FIRST, prepare the parameters
+        my prepare tactic_id  -required -with {::strategy valclass tactic::GRANT}
+        my returnOnError
 
-    returnOnError -final
+        set tactic [pot get $parms(tactic_id)]
 
-    # NEXT, update the tactic, saving the undo script, and clearing
-    # historical state data.
-    set undo [$tactic update_ {name klist alist} [array get parms]]
+        my prepare name      -toupper  -with [list $tactic valName]
+        my prepare klist     -toupper
+        my prepare alist
+     
+        # Error checking for klist and alist is done by the SanityCheck 
+        # routine.
+    }
 
-    # NEXT, save the undo script
-    setundo $undo
+    method _execute {{flunky ""}} {
+        set tactic [pot get $parms(tactic_id)]
+        my setundo [$tactic update_ {name klist alist} [array get parms]]
+    }
 }
 
 

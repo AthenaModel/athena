@@ -129,7 +129,7 @@ namespace eval ::athena_test::tests:: {
     } -cleanup {
         cleanup
     } -match dictglob -result {
-        coverage   0.75
+        coverage   .75
         execstatus NONE
         faildict   {}
         id         *
