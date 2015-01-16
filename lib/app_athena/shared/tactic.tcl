@@ -222,8 +222,8 @@ oo::objdefine tactic {
                     [list block_id $block_id typename $tname]]
 
             # NEXT, update the tactic with the right data.
-            order send gui TACTIC:$tname tactic_id $tactic_id \
-                {*}$tdict
+            flunky senddict gui TACTIC:$tname \
+                [list tactic_id $tactic_id {*}$tdict]
         }
     }
 
@@ -237,7 +237,7 @@ oo::objdefine tactic {
     method GetOrderParmsFromCopySet {tname copyset} {
         set pdict [dict create]
 
-        foreach parm [order parms TACTIC:$tname] {
+        foreach parm [myorders parms TACTIC:$tname] {
             if {$parm eq "tactic_id" || $parm eq "name"} {
                 continue
             }

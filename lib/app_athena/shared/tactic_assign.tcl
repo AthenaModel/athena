@@ -537,6 +537,7 @@ myorders define TACTIC:ASSIGN {
     }
 
     method _execute {{flunky ""}} {
+        set tactic [pot get $parms(tactic_id)]
         my setundo [$tactic update_ {
             name g n activity pmode personnel min max percent
         } [array get parms]]

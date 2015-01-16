@@ -177,7 +177,7 @@ namespace eval ::athena_test::tests:: {
         execstatus NONE
         faildict   {}
         id         *
-        los        0.75
+        los        .75
         mode       EXACT
         name       T*
         nlist      {_type NBHOODS _rule BY_VALUE nlist {NB1 NB2}}

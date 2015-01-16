@@ -175,11 +175,12 @@ tactic define SERVICE "Update Level of Service" {system actor} -onlock {
 #
 # Creates/Updates SERVICE tactic.
 
-order define TACTIC:SERVICE {
-    title "Tactic: Update Level of Service"
-    options -sendstates PREP
+myorders define TACTIC:SERVICE {
+    meta title      "Tactic: Update Level of Service"
+    meta sendstates PREP
+    meta parmlist   {tactic_id name nlist s mode los deltap}
 
-    form {
+    meta form {
         rcc "Tactic ID" -for tactic_id
         text tactic_id -context yes \
             -loadcmd {beanload}
@@ -223,28 +224,29 @@ order define TACTIC:SERVICE {
         }
     }
 
-} {
-    # FIRST, prepare the parameters
-    prepare tactic_id  -required -with {::strategy valclass tactic::SERVICE}
-    returnOnError
+    method _validate {} {
+        # FIRST, prepare the parameters
+        my prepare tactic_id  -required -with {::strategy valclass tactic::SERVICE}
+        my returnOnError
 
-    set tactic [pot get $parms(tactic_id)]
+        set tactic [pot get $parms(tactic_id)]
 
-    # Validation of initially invalid items or contingent items
-    # takes place on sanity check.
-    prepare name   -toupper -with [list $tactic valName]
-    prepare nlist     
-    prepare s      -toupper -type eabservice
-    prepare mode   -toupper -selector
-    prepare deltap          -type rsvcpct
-    prepare los    -num     -type rfraction
+        # Validation of initially invalid items or contingent items
+        # takes place on sanity check.
+        my prepare name   -toupper -with [list $tactic valName]
+        my prepare nlist     
+        my prepare s      -toupper -type eabservice
+        my prepare mode   -toupper -selector
+        my prepare deltap          -type rsvcpct
+        my prepare los    -num     -type rfraction
+    }
 
-    returnOnError -final
-
-    # NEXT, modify the tactic
-    setundo [$tactic update_ {
-        name nlist s los mode deltap
-    } [array get parms]]
+    method _execute {{flunky ""}} {
+        set tactic [pot get $parms(tactic_id)]
+        my setundo [$tactic update_ {
+            name nlist s los mode deltap
+        } [array get parms]]
+    }
 }
 
 

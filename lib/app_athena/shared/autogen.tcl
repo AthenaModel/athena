@@ -1281,7 +1281,8 @@ snit::type autogen {
                     -block_id [$block id] \
                     -typename $ttype]
 
-        order send cli TACTIC:${ttype} tactic_id $tid {*}$args
+        flunky senddict normal TACTIC:${ttype} \
+            [list tactic_id $tid {*}$args]
 
     }
 }

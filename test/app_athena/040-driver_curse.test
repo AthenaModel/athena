@@ -102,7 +102,7 @@ namespace eval ::athena_test::tests:: {
         ted orderx BLOCK:TACTIC:ADD block_id [$B1 id] typename CURSE
         lassign [$B1 tactics] T1
 
-        ted order TACTIC:CURSE tactic_id [$T1 id] \
+        ted orderx TACTIC:CURSE tactic_id [$T1 id] \
             curse       $cid   \
             roles       $roles 
 
