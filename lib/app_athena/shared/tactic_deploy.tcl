@@ -778,11 +778,14 @@ tactic define DEPLOY "Deploy Personnel" {actor} -onlock {
 #
 # Updates existing DEPLOY tactic.
 
-order define TACTIC:DEPLOY {
-    title "Tactic: Deploy Personnel"
-    options -sendstates PREP
+myorders define TACTIC:DEPLOY {
+    meta title      "Tactic: Deploy Personnel"
+    meta sendstates PREP
+    meta parmlist {
+        tactic_id name g pmode personnel min max percent nlist nmode redeploy
+    }
 
-    form {
+    meta form {
         rcc "Tactic ID:" -for tactic_id
         text tactic_id -context yes \
             -loadcmd {beanload}
@@ -834,61 +837,58 @@ order define TACTIC:DEPLOY {
         rcc "Redeploy each week?" -for redeploy
         yesno redeploy -defvalue 0
     }
-} {
-    # FIRST, prepare the parameters
-    prepare tactic_id  -required -with {::strategy valclass tactic::DEPLOY}
-    returnOnError
 
-    # NEXT, get the tactic
-    set tactic [pot get $parms(tactic_id)]
 
-    prepare name       -toupper  -with [list $tactic valName]
-    prepare g                    
-    prepare pmode      -toupper  -selector
-    prepare personnel  -num      -type iquantity
-    prepare min        -num      -type iquantity
-    prepare max        -num      -type iquantity
-    prepare percent    -num      -type rpercent
-    prepare nlist 
-    prepare nmode                -selector
-    prepare redeploy             -type boolean
-    returnOnError
+    method _validate {} {
+        # FIRST, prepare the parameters
+        my prepare tactic_id  -required -with {::strategy valclass tactic::DEPLOY}
+        my returnOnError
 
-    # NEXT, do the cross checks
-    fillparms parms [$tactic view]
+        # NEXT, get the tactic
+        set tactic [pot get $parms(tactic_id)]
 
-    if {$parms(pmode) eq "SOME" && $parms(personnel) == 0} {
-        reject personnel "For pmode SOME, personnel must be positive."
-    }
+        my prepare name       -toupper  -with [list $tactic valName]
+        my prepare g                    
+        my prepare pmode      -toupper  -selector
+        my prepare personnel  -num      -type iquantity
+        my prepare min        -num      -type iquantity
+        my prepare max        -num      -type iquantity
+        my prepare percent    -num      -type rpercent
+        my prepare nlist 
+        my prepare nmode                -selector
+        my prepare redeploy             -type boolean
+        my returnOnError
 
-    if {$parms(pmode) eq "UPTO"} {
-        if {$parms(max) < $parms(min)} {
-            reject max "For pmode UPTO, max must be greater than min."
+        # NEXT, do the cross checks
+        fillparms parms [$tactic view]
+
+        if {$parms(pmode) eq "SOME" && $parms(personnel) == 0} {
+            my reject personnel "For pmode SOME, personnel must be positive."
         }
 
-        if {$parms(max) == 0} {
-            reject max "For pmode UPTO, max must be greater than 0."
+        if {$parms(pmode) eq "UPTO"} {
+            if {$parms(max) < $parms(min)} {
+                my reject max "For pmode UPTO, max must be greater than min."
+            }
+
+            if {$parms(max) == 0} {
+                my reject max "For pmode UPTO, max must be greater than 0."
+            }
+        }
+
+        if {$parms(pmode) eq "PERCENT"} {
+            if {$parms(percent) == 0} {
+                my reject max "For pmode PERCENT, percent must be positive."
+            }
         }
     }
 
-    if {$parms(pmode) eq "PERCENT"} {
-        if {$parms(percent) == 0} {
-            reject max "For pmode PERCENT, percent must be positive."
-        }
+    method _execute {{flunky ""}} {
+        set tactic [pot get $parms(tactic_id)]
+        my setundo [$tactic update_ {
+            name g pmode personnel min max percent nlist nmode redeploy
+        } [array get parms]]
     }
-
-
-    returnOnError -final
-
-    # NEXT, update the tactic, saving the undo script, and clearing
-    # historical state data.
-
-    set undo [$tactic update_ {
-        name g pmode personnel min max percent nlist nmode redeploy
-    } [array get parms]]
-
-    # NEXT, save the undo script
-    setundo $undo
 }
 
 
