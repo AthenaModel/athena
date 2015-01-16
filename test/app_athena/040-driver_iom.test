@@ -95,8 +95,8 @@ namespace eval ::athena_test::tests:: {
         ted order PAYLOAD:VREL:CREATE iom_id IOM1 a JOE  mag XL+
 
         # NEXT, make the CAPs free to use.
-        ted order CAP:UPDATE k CBS cost 0
-        ted order CAP:UPDATE k PBS cost 0
+        ted orderx CAP:UPDATE k CBS cost 0
+        ted orderx CAP:UPDATE k PBS cost 0
     }
     
     # broadcast iom cap a

@@ -862,7 +862,7 @@ snit::widget appwin {
         $ordersmenu add cascade -label "Comm. Asset Package" \
             -underline 2 -menu $submenu
 
-        $self AddOrder $submenu {
+        $self AddOrderX $submenu {
             CAP:CREATE
             CAP:UPDATE
             CAP:DELETE

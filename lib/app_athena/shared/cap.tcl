@@ -517,12 +517,22 @@ snit::type cap {
 #
 # Creates new CAPs.
 
-order define CAP:CREATE {
-    title "Create Comm. Asset Package"
+myorders define CAP:CREATE {
+    meta title "Create Comm. Asset Package"
     
-    options -sendstates PREP 
+    meta sendstates PREP 
 
-    form {
+    meta parmlist {
+        k 
+        longname
+        owner
+        {capacity 1.0}
+        {cost 0}
+        nlist
+        glist
+    }
+
+    meta form {
         rcc "CAP:" -for k
         text k
 
@@ -545,73 +555,75 @@ order define CAP:CREATE {
         rcc "Civ. Groups:" -for glist
         civlist glist
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare k           -toupper   -required -unused -type ident
-    prepare longname    -normalize
-    prepare owner       -toupper   -required -type actor
-    prepare capacity    -num       -required -type rfraction
-    prepare cost        -toupper   -required -type money
-    prepare nlist       -toupper             -listof nbhood
-    prepare glist       -toupper             -listof civgroup
 
-    returnOnError -final
 
-    # NEXT, If longname is "", defaults to ID.
-    if {$parms(longname) eq ""} {
-        set parms(longname) $parms(k)
+    method _validate {} {
+        my prepare k           -toupper   -required -type ident
+        my unused k
+        my prepare longname    -normalize
+        my prepare owner       -toupper   -required -type actor
+        my prepare capacity    -num       -required -type rfraction
+        my prepare cost        -toupper   -required -type money
+        my prepare nlist       -toupper             -listof nbhood
+        my prepare glist       -toupper             -listof civgroup
     }
 
-    # NEXT, create the CAP and dependent entities
-    lappend undo [cap mutate create [array get parms]]
-
-    setundo [join $undo \n]
+    method _execute {{flunky ""}} {
+        if {$parms(longname) eq ""} {
+            set parms(longname) $parms(k)
+        }
+        lappend undo [cap mutate create [array get parms]]
+    
+        my setundo [join $undo \n]
+    }
 }
 
 # CAP:DELETE
 
-order define CAP:DELETE {
-    title "Delete Comm. Asset Package"
-    options -sendstates PREP
+myorders define CAP:DELETE {
+    meta title "Delete Comm. Asset Package"
+    meta sendstates PREP
 
-    form {
+    meta parmlist {k}
+
+    meta form {
         # This form is not usually used.
         rcc "CAP:" -for k
         cap k
     }
-} {
-    # FIRST, prepare the parameters
-    prepare k -toupper -required -type cap
 
-    returnOnError -final
 
-    # NEXT, make sure the user knows what he is getting into.
-
-    if {[sender] eq "gui"} {
-        set answer [messagebox popup \
-                        -title         "Are you sure?"                  \
-                        -icon          warning                          \
-                        -buttons       {ok "Delete it" cancel "Cancel"} \
-                        -default       cancel                           \
-                        -onclose       cancel                           \
-                        -ignoretag     CAP:DELETE                    \
-                        -ignoredefault ok                               \
-                        -parent        [app topwin]                     \
-                        -message       [normalize {
-                            Are you sure you
-                            really want to delete this CAP, along
-                            with all of the entities that depend upon it?
-                        }]]
-
-        if {$answer eq "cancel"} {
-            cancel
-        }
+    method _validate {} {
+        my prepare k -toupper -required -type cap
     }
 
-    # NEXT, Delete the CAP and dependent entities
-    lappend undo [cap mutate delete $parms(k)]
-
-    setundo [join $undo \n]
+    method _execute {{flunky ""}} {
+        if {[my mode] eq "gui"} {
+            set answer [messagebox popup \
+                            -title         "Are you sure?"                  \
+                            -icon          warning                          \
+                            -buttons       {ok "Delete it" cancel "Cancel"} \
+                            -default       cancel                           \
+                            -onclose       cancel                           \
+                            -ignoretag     [my name]                        \
+                            -ignoredefault ok                               \
+                            -parent        [app topwin]                     \
+                            -message       [normalize {
+                                Are you sure you
+                                really want to delete this CAP, along
+                                with all of the entities that depend upon it?
+                            }]]
+    
+            if {$answer eq "cancel"} {
+                my cancel
+            }
+        }
+    
+        # NEXT, Delete the CAP and dependent entities
+        lappend undo [cap mutate delete $parms(k)]
+    
+        my setundo [join $undo \n]
+    }
 }
 
 
@@ -619,14 +631,22 @@ order define CAP:DELETE {
 #
 # Updates existing CAPs.
 
-order define CAP:UPDATE {
-    title "Update Comm. Asset Package"
-    options -sendstates PREP 
+myorders define CAP:UPDATE {
+    meta title "Update Comm. Asset Package"
+    meta sendstates PREP 
 
-    form {
+    meta parmlist {
+        k
+        longname
+        owner
+        capacity
+        cost
+    }
+
+    meta form {
         rcc "Select CAP:" -for k
-        key k -table gui_caps -keys k \
-            -loadcmd {orderdialog keyload k *}
+        dbkey k -table gui_caps -keys k \
+            -loadcmd {$order_ keyload k *}
 
         rcc "Long Name:" -for longname
         longname longname
@@ -641,35 +661,43 @@ order define CAP:UPDATE {
         text cost
         label "$/message/week"
     }
-} {
-    # FIRST, prepare the parameters
-    prepare k           -toupper   -required -type cap
-    prepare longname    -normalize
-    prepare owner       -toupper             -type actor
-    prepare capacity    -num                 -type rfraction
-    prepare cost        -toupper             -type money
 
-    returnOnError -final
 
-    # NEXT, modify the CAP.
-    set undo [list]
-    lappend undo [cap mutate update [array get parms]]
+    method _validate {} {
+        my prepare k           -toupper   -required -type cap
+        my prepare longname    -normalize
+        my prepare owner       -toupper             -type actor
+        my prepare capacity    -num                 -type rfraction
+        my prepare cost        -toupper             -type money
+    }
 
-    setundo [join $undo \n]
+    method _execute {{flunky ""}} {
+        set undo [list]
+        lappend undo [cap mutate update [array get parms]]
+    
+        my setundo [join $undo \n]
+    }
 }
 
 # CAP:UPDATE:MULTI
 #
 # Updates multiple CAPs.
 
-order define CAP:UPDATE:MULTI {
-    title "Update Multiple CAPs"
-    options -sendstates PREP
+myorders define CAP:UPDATE:MULTI {
+    meta title "Update Multiple CAPs"
+    meta sendstates PREP
 
-    form {
+    meta parmlist {
+        ids
+        owner
+        capacity
+        cost
+    }
+
+    meta form {
         rcc "CAPs:" -for ids
-        multi ids -table gui_caps -key k \
-            -loadcmd {orderdialog multiload ids *}
+        dbmulti ids -table gui_caps -key k \
+            -loadcmd {$order_ multiload ids *}
 
         rcc "Owning Actor:" -for owner
         actor owner
@@ -681,97 +709,110 @@ order define CAP:UPDATE:MULTI {
         text cost
         label "$/message/week"
     }
-} {
-    # FIRST, prepare the parameters
-    prepare ids         -toupper  -required -listof cap
-    prepare owner       -toupper            -type   actor
-    prepare capacity    -num                -type   rfraction
-    prepare cost        -toupper            -type   money
 
-    returnOnError -final
 
-    # NEXT, clear the other parameters expected by the mutator
-    prepare longname
-
-    # NEXT, modify the CAP
-    set undo [list]
-
-    foreach parms(k) $parms(ids) {
-        lappend undo [cap mutate update [array get parms]]
+    method _validate {} {
+        my prepare ids         -toupper  -required -listof cap
+        my prepare owner       -toupper            -type   actor
+        my prepare capacity    -num                -type   rfraction
+        my prepare cost        -toupper            -type   money
     }
 
-    setundo [join $undo \n]
+    method _execute {{flunky ""}} {
+        # FIRST, clear parameters expected by mutator
+        set parms(longname) ""
+    
+        set undo [list]
+    
+        foreach parms(k) $parms(ids) {
+            lappend undo [cap mutate update [array get parms]]
+        }
+    
+        my setundo [join $undo \n]
+    }
 }
 
 # CAP:CAPACITY
 #
 # Updates the capacity of an existing CAP.
 
-order define CAP:CAPACITY {
-    title "Set CAP Capacity"
-    options -sendstates {PREP PAUSED TACTIC}
+myorders define CAP:CAPACITY {
+    meta title "Set CAP Capacity"
+    meta sendstates {PREP PAUSED TACTIC}
 
-    form {
+    meta parmlist {
+        k 
+        capacity
+    }
+
+    meta form {
         rcc "Select CAP:" -for k
-        key k -table gui_caps -keys k \
-            -loadcmd {orderdialog keyload k *}
+        dbkey k -table gui_caps -keys k \
+            -loadcmd {$order_ keyload k *}
 
         rcc "Capacity:" -for capacity
         frac capacity
     }
-} {
-    # FIRST, prepare the parameters
-    prepare k           -toupper   -required -type cap
-    prepare capacity    -num                 -type rfraction
 
-    returnOnError -final
 
-    # NEXT, prepare the others, so that the mutator will be happy.
-    prepare longname
-    prepare owner
-    prepare cost
+    method _validate {} {
+        my prepare k           -toupper   -required -type cap
+        my prepare capacity    -num                 -type rfraction
+    }
 
-    # NEXT, modify the CAP.
-    set undo [list]
-    lappend undo [cap mutate update [array get parms]]
-
-    setundo [join $undo \n]
+    method _execute {{flunky ""}} {
+        # FIRST, clear other parms expected by the mutator
+        set parms(longname) ""
+        set parms(owner)    ""
+        set parms(cost)     ""
+    
+        set undo [list]
+        lappend undo [cap mutate update [array get parms]]
+    
+        my setundo [join $undo \n]
+    }
 }
 
 # CAP:CAPACITY:MULTI
 #
 # Updates capacity for multiple CAPs.
 
-order define CAP:CAPACITY:MULTI {
-    title "Set Multiple CAP Capacities"
-    options -sendstates {PREP PAUSED TACTIC}
+myorders define CAP:CAPACITY:MULTI {
+    meta title "Set Multiple CAP Capacities"
+    meta sendstates {PREP PAUSED TACTIC}
 
-    form {
+    meta parmlist {
+        ids
+        capacity
+    }
+
+    meta form {
         rcc "CAPs:" -for ids 
-        multi ids -table gui_caps -key k \
-            -loadcmd {orderdialog multiload ids *}
+        dbmulti ids -table gui_caps -key k \
+            -loadcmd {$order_ multiload ids *}
 
         rcc "Capacity:" -for capacity
         frac capacity
     }
-} {
-    # FIRST, prepare the parameters
-    prepare ids         -toupper  -required -listof cap
-    prepare capacity    -num                -type   rfraction
 
-    returnOnError -final
 
-    # NEXT, clear the other parameters expected by the mutator
-    prepare longname
-
-    # NEXT, modify the CAP
-    set undo [list]
-
-    foreach parms(k) $parms(ids) {
-        lappend undo [cap mutate update [array get parms]]
+    method _validate {} {
+        my prepare ids         -toupper  -required -listof cap
+        my prepare capacity    -num                -type   rfraction
     }
 
-    setundo [join $undo \n]
+    method _execute {{flunky ""}} {
+        # FIRST, clear other parms expected by the mutator
+        set parms(longname) ""
+    
+        set undo [list]
+    
+        foreach parms(k) $parms(ids) {
+            lappend undo [cap mutate update [array get parms]]
+        }
+    
+        my setundo [join $undo \n]
+    }
 }
 
 
@@ -779,34 +820,40 @@ order define CAP:CAPACITY:MULTI {
 #
 # Sets nbcov for k,n
 
-order define CAP:NBCOV:SET {
-    title "Set CAP Neighborhood Coverage"
-    options -sendstates {PREP PAUSED TACTIC}
+myorders define CAP:NBCOV:SET {
+    meta title "Set CAP Neighborhood Coverage"
+    meta sendstates {PREP PAUSED TACTIC}
 
-    form {
+    meta parmlist {
+        id
+        nbcov
+    }
+
+    meta form {
         rcc "CAP/Nbhood:" -for id
-        key id -table gui_cap_kn -keys {k n} -labels {Of In} \
-            -loadcmd {orderdialog keyload id *}
+        dbkey id -table gui_cap_kn -keys {k n} -labels {Of In} \
+            -loadcmd {$order_ keyload id *}
 
         rcc "Coverage:" -for nbcov
         frac nbcov
     }
-} {
-    # FIRST, prepare the parameters
-    prepare id       -toupper  -required -type {cap nbcov}
-    prepare nbcov    -num                -type rfraction
 
-    returnOnError -final
 
-    # NEXT, modify the curve
-    if {[cap nbcov exists $parms(id)]} {
-        if {$parms(nbcov) > 0.0} {
-            setundo [cap mutate nbcov update [array get parms]]
+    method _validate {} {
+        my prepare id       -toupper  -required -type {cap nbcov}
+        my prepare nbcov    -num                -type rfraction
+    }
+
+    method _execute {{flunky ""}} {
+        if {[cap nbcov exists $parms(id)]} {
+            if {$parms(nbcov) > 0.0} {
+                my setundo [cap mutate nbcov update [array get parms]]
+            } else {
+                my setundo [cap mutate nbcov delete $parms(id)]
+            }
         } else {
-            setundo [cap mutate nbcov delete $parms(id)]
+            my setundo [cap mutate nbcov create [array get parms]]
         }
-    } else {
-        setundo [cap mutate nbcov create [array get parms]]
     }
 }
 
@@ -815,75 +862,87 @@ order define CAP:NBCOV:SET {
 #
 # Updates nbcov for multiple k,n
 
-order define CAP:NBCOV:SET:MULTI {
-    title "Set Multiple CAP Neighborhood Coverages"
-    options -sendstates {PREP PAUSED TACTIC}
+myorders define CAP:NBCOV:SET:MULTI {
+    meta title "Set Multiple CAP Neighborhood Coverages"
+    meta sendstates {PREP PAUSED TACTIC}
 
-    form {
+    meta parmlist {
+        ids
+        nbcov
+    }
+
+    meta form {
         rcc "IDs:" -for ids
-        multi ids -table gui_cap_kn -key id \
-            -loadcmd {orderdialog multiload ids *}
+        dbmulti ids -table gui_cap_kn -key id \
+            -loadcmd {$order_ multiload ids *}
 
         rcc "Coverage:" -for nbcov
         frac nbcov
     }
-} {
-    # FIRST, prepare the parameters
-    prepare ids      -toupper  -required -listof {cap nbcov}
-    prepare nbcov    -num                -type rfraction
 
-    returnOnError -final
 
-    # NEXT, modify the records
-    set undo [list]
-
-    foreach parms(id) $parms(ids) {
-        if {[cap nbcov exists $parms(id)]} {
-            if {$parms(nbcov) > 0.0} {
-                lappend undo [cap mutate nbcov update [array get parms]]
-            } else {
-                lappend undo [cap mutate nbcov delete $parms(id)]
-            }
-        } else {
-            lappend undo [cap mutate nbcov create [array get parms]]
-        }
+    method _validate {} {
+        my prepare ids      -toupper  -required -listof {cap nbcov}
+        my prepare nbcov    -num                -type rfraction
     }
 
-    setundo [join $undo \n]
+    method _execute {{flunky ""}} {
+        set undo [list]
+    
+        foreach parms(id) $parms(ids) {
+            if {[cap nbcov exists $parms(id)]} {
+                if {$parms(nbcov) > 0.0} {
+                    lappend undo [cap mutate nbcov update [array get parms]]
+                } else {
+                    lappend undo [cap mutate nbcov delete $parms(id)]
+                }
+            } else {
+                lappend undo [cap mutate nbcov create [array get parms]]
+            }
+        }
+
+        my setundo [join $undo \n]
+    }
 }
 
 # CAP:PEN:SET
 #
 # Sets pen for k,n
 
-order define CAP:PEN:SET {
-    title "Set CAP Group Penetration"
-    options -sendstates {PREP PAUSED TACTIC}
+myorders define CAP:PEN:SET {
+    meta title "Set CAP Group Penetration"
+    meta sendstates {PREP PAUSED TACTIC}
 
-    form {
+    meta parmlist {
+        id
+        pen
+    }
+
+    meta form {
         rcc "CAP/Group:" -for id
-        key id -table gui_capcov -keys {k g} -labels {Of Into} \
-            -loadcmd {orderdialog keyload id *}
+        dbkey id -table gui_capcov -keys {k g} -labels {Of Into} \
+            -loadcmd {$order_ keyload id *}
 
         rcc "Penetration:" -for pen
         frac pen
     }
-} {
-    # FIRST, prepare the parameters
-    prepare id     -toupper  -required -type {cap pen}
-    prepare pen    -num                -type rfraction
 
-    returnOnError -final
 
-    # NEXT, modify the curve
-    if {[cap pen exists $parms(id)]} {
-        if {$parms(pen) > 0.0} {
-            setundo [cap mutate pen update [array get parms]]
+    method _validate {} {
+        my prepare id     -toupper  -required -type {cap pen}
+        my prepare pen    -num                -type rfraction
+    }
+
+    method _execute {{flunky ""}} {
+        if {[cap pen exists $parms(id)]} {
+            if {$parms(pen) > 0.0} {
+                my setundo [cap mutate pen update [array get parms]]
+            } else {
+                my setundo [cap mutate pen delete $parms(id)]
+            }
         } else {
-            setundo [cap mutate pen delete $parms(id)]
+            my setundo [cap mutate pen create [array get parms]]
         }
-    } else {
-        setundo [cap mutate pen create [array get parms]]
     }
 }
 
@@ -892,41 +951,46 @@ order define CAP:PEN:SET {
 #
 # Updates pen for multiple k,g
 
-order define CAP:PEN:SET:MULTI {
-    title "Set Multiple CAP Group Penetrations"
-    options \
-        -sendstates {PREP PAUSED TACTIC}
+myorders define CAP:PEN:SET:MULTI {
+    meta title "Set Multiple CAP Group Penetrations"
+    meta sendstates {PREP PAUSED TACTIC}
 
-    form {
+    meta parmlist {
+        ids
+        pen
+    }
+
+    meta form {
         rcc "IDs:" -for ids
-        multi ids -table gui_capcov -key id \
-            -loadcmd {orderdialog multiload ids *}
+        dbmulti ids -table gui_capcov -key id \
+            -loadcmd {$order_ multiload ids *}
 
         rcc "Penetration:" -for pen
         frac pen
     }
-} {
-    # FIRST, prepare the parameters
-    prepare ids  -toupper  -required -listof {cap pen}
-    prepare pen  -num                -type rfraction
 
-    returnOnError -final
 
-    # NEXT, modify the records
-    set undo [list]
-
-    foreach parms(id) $parms(ids) {
-        if {[cap pen exists $parms(id)]} {
-            if {$parms(pen) > 0.0} {
-                lappend undo [cap mutate pen update [array get parms]]
-            } else {
-                lappend undo [cap mutate pen delete $parms(id)]
-            }
-        } else {
-            lappend undo [cap mutate pen create [array get parms]]
-        }
+    method _validate {} {
+        my prepare ids  -toupper  -required -listof {cap pen}
+        my prepare pen  -num                -type rfraction
     }
 
-    setundo [join $undo \n]
+    method _execute {{flunky ""}} {
+        set undo [list]
+    
+        foreach parms(id) $parms(ids) {
+            if {[cap pen exists $parms(id)]} {
+                if {$parms(pen) > 0.0} {
+                    lappend undo [cap mutate pen update [array get parms]]
+                } else {
+                    lappend undo [cap mutate pen delete $parms(id)]
+                }
+            } else {
+                lappend undo [cap mutate pen create [array get parms]]
+            }
+        }
+    
+        my setundo [join $undo \n]
+    }
 }
 

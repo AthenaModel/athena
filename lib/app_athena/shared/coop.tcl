@@ -122,8 +122,8 @@ myorders define COOP:UPDATE {
 
     meta form {
         rcc "Curve:" -for id
-        key id -table gui_coop_view -keys {f g} -labels {"Of" "With"} \
-            -loadcmd {orderdialog keyload id *}
+        dbkey id -table gui_coop_view -keys {f g} -labels {"Of" "With"} \
+            -loadcmd {$order_ keyload id *}
 
         rcc "Baseline:" -for base
         coop base
@@ -169,8 +169,8 @@ myorders define COOP:UPDATE:MULTI {
 
     meta form {
         rcc "IDs:" -for ids
-        multi ids -table gui_coop_view -key id \
-            -loadcmd {orderdialog multiload ids *}
+        dbmulti ids -table gui_coop_view -key id \
+            -loadcmd {$order_ multiload ids *}
 
         rcc "Baseline:" -for base
         coop base

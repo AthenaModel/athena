@@ -148,7 +148,7 @@ snit::widget capbrowser {
             -state normal                          \
             -command [mymethod CapAddEntity]
 
-        cond::available control $caddbtn \
+        cond::availablex control $caddbtn \
             order CAP:CREATE
 
         install ceditbtn using mkeditbutton $bar.edit \
@@ -157,7 +157,7 @@ snit::widget capbrowser {
             -command [mymethod CapEditSelected]
 
         # CAP:CAPACITY is used when CAP:UPDATE is not available.
-        cond::availableMulti control $ceditbtn \
+        cond::availableMultix control $ceditbtn \
             order   CAP:CAPACITY              \
             browser $caps
 
@@ -166,7 +166,7 @@ snit::widget capbrowser {
             -state   disabled                              \
             -command [mymethod CapDeleteSelected]
 
-        cond::availableSingle control $cdeletebtn \
+        cond::availableSinglex control $cdeletebtn \
             order   CAP:DELETE              \
             browser $caps
 
@@ -183,7 +183,7 @@ snit::widget capbrowser {
     # Called when the user presses the "Add CAP" button.
 
     method CapAddEntity {} {
-        order enter CAP:CREATE
+        app enter CAP:CREATE
     }
 
     # CapEditSelected
@@ -206,9 +206,9 @@ snit::widget capbrowser {
         if {[llength $ids] == 1} {
             set id [lindex $ids 0]
 
-            order enter $root k $id
+            app enter $root k $id
         } else {
-            order enter ${root}:MULTI ids $ids
+            app enter ${root}:MULTI ids $ids
         }
     }
 
@@ -221,7 +221,7 @@ snit::widget capbrowser {
         set id [lindex [$caps uid curselection] 0]
 
         # NEXT, Pop up the dialog, and select this entity
-        order send gui CAP:DELETE k $id
+        flunky senddict gui CAP:DELETE [list k $id]
     }
 
     # CapSelectionChanged
@@ -230,8 +230,8 @@ snit::widget capbrowser {
 
     method CapSelectionChanged {} {
         # FIRST trigger conditions
-        cond::availableSingle update $cdeletebtn
-        cond::availableMulti  update $ceditbtn
+        cond::availableSinglex update $cdeletebtn
+        cond::availableMultix  update $ceditbtn
 
         # NEXT, determine which CAPs are selected
         set ids [$caps uid curselection]
@@ -289,7 +289,7 @@ snit::widget capbrowser {
             -state disabled                            \
             -command [mymethod NbcovEditSelected] 
 
-        cond::availableMulti control $nceditbtn \
+        cond::availableMultix control $nceditbtn \
             order CAP:NBCOV:SET                 \
             browser $nbcov
 
@@ -305,7 +305,7 @@ snit::widget capbrowser {
     # coverage records in the browser
 
     method NbcovSelectionChanged {} {
-        cond::availableMulti update $nceditbtn
+        cond::availableMultix update $nceditbtn
     }
 
     # NbcovEditSelected
@@ -319,9 +319,9 @@ snit::widget capbrowser {
         set ids [$nbcov uid curselection]
 
         if {[llength $ids] == 1} {
-            order enter CAP:NBCOV:SET id [lindex $ids 0]
+            app enter CAP:NBCOV:SET id [lindex $ids 0]
         } else {
-            order enter CAP:NBCOV:SET:MULTI ids $ids
+            app enter CAP:NBCOV:SET:MULTI ids $ids
         }
     }
 
@@ -364,7 +364,7 @@ snit::widget capbrowser {
             -state disabled                            \
             -command [mymethod CapcovEditSelected]
 
-        cond::availableMulti control $cceditbtn \
+        cond::availableMultix control $cceditbtn \
             order CAP:PEN:SET                   \
             browser $capcov
 
@@ -380,7 +380,7 @@ snit::widget capbrowser {
     # user
 
     method CapcovSelectionChanged {} {
-        cond::availableMulti update $cceditbtn
+        cond::availableMultix update $cceditbtn
     }
 
     # CapcovDataDisplay  rindex values
@@ -415,9 +415,9 @@ snit::widget capbrowser {
         set ids [$capcov uid curselection]
 
         if {[llength $ids] == 1} {
-            order enter CAP:PEN:SET id [lindex $ids 0]
+            app enter CAP:PEN:SET id [lindex $ids 0]
         } else {
-            order enter CAP:PEN:SET:MULTI ids $ids
+            app enter CAP:PEN:SET:MULTI ids $ids
         }
     }
 }

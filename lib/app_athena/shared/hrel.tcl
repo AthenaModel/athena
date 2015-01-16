@@ -227,8 +227,8 @@ myorders define HREL:OVERRIDE {
 
     meta form {
         rcc "Groups:" -for id
-        key id -table gui_hrel_view -keys {f g} -labels {Of With} \
-            -loadcmd {orderdialog keyload id *}
+        dbkey id -table gui_hrel_view -keys {f g} -labels {Of With} \
+            -loadcmd {$order_ keyload id *}
 
         rcc "Baseline:" -for base
         rel base
@@ -279,8 +279,8 @@ myorders define HREL:OVERRIDE:MULTI {
 
     meta form {
         rcc "IDs:" -for ids
-        multi ids -table gui_hrel_view -key id \
-            -loadcmd {orderdialog multiload ids *}
+        dbmulti ids -table gui_hrel_view -key id \
+            -loadcmd {$order_ multiload ids *}
 
         rcc "Baseline:" -for base
         rel base

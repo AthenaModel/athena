@@ -221,8 +221,8 @@ myorders define VREL:OVERRIDE {
 
     meta form {
         rcc "Group/Actor:" -for id
-        key id -table gui_vrel_view -keys {g a} -labels {Of With} \
-            -loadcmd {orderdialog keyload id *}
+        dbkey id -table gui_vrel_view -keys {g a} -labels {Of With} \
+            -loadcmd {$order_ keyload id *}
 
         rcc "Baseline:" -for base
         rel base
@@ -272,8 +272,8 @@ myorders define VREL:OVERRIDE:MULTI {
 
     meta form {
         rcc "IDs:" -for id
-        multi ids -table gui_vrel_view -key id \
-            -loadcmd {orderdialog multiload ids *}
+        dbmulti ids -table gui_vrel_view -key id \
+            -loadcmd {$order_ multiload ids *}
 
         rcc "Baseline:" -for base
         rel base
