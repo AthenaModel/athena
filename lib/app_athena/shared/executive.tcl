@@ -2701,7 +2701,7 @@ snit::type executive {
         send TACTIC:[$c typename] -tactic_id $tactic_id {*}$opts
 
         if {$state ne ""} {
-            send TACTIC:STATE -tactic_id $tactic_id -state $state
+            sendx TACTIC:STATE -tactic_id $tactic_id -state $state
         }
     }
 

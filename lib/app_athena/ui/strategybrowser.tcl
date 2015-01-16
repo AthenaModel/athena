@@ -1788,9 +1788,9 @@ snit::widget strategybrowser {
         set state [$tactic state]
 
         if {$state eq "disabled"} {
-            order send gui TACTIC:STATE tactic_id $id state normal
+            flunky send gui TACTIC:STATE -tactic_id $id -state normal
         } else {
-            order send gui TACTIC:STATE tactic_id $id state disabled
+            flunky send gui TACTIC:STATE -tactic_id $id -state disabled
         }
     }
 

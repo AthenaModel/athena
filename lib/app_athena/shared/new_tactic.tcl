@@ -818,27 +818,6 @@ oo::define tactic {
 }
 
 
-# TACTIC:STATE
-#
-# Sets a tactic's state to normal or disabled.
-
-myorders define TACTIC:STATE {
-    meta title      "Set Tactic State"
-    meta sendstates PREP
-    meta parmlist   { tactic_id state }
-
-    method _validate {} {
-        my prepare tactic_id -required -with {::strategy valclass ::tactic}
-        my prepare state     -required -tolower -type ebeanstate
-    }
-
-    method _execute {{flunky ""}} {
-        set tactic [pot get $parms(tactic_id)]
-        my setundo [$tactic update_ {state} [array get parms]]
-    }
-}
-
-
 
 
 
