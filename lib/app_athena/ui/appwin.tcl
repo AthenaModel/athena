@@ -828,8 +828,8 @@ snit::widget appwin {
         $ordersmenu add cascade -label "Horz. Relationship" \
             -underline 0 -menu $submenu
         
-        $self AddOrder $submenu HREL:OVERRIDE
-        $self AddOrder $submenu HREL:RESTORE
+        $self AddOrderX $submenu HREL:OVERRIDE
+        $self AddOrderX $submenu HREL:RESTORE
         $self AddOrder $submenu MAD:HREL
     
         # Orders/Vert. Relationship Menu

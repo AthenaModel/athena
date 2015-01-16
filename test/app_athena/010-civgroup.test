@@ -199,8 +199,8 @@ upc         0.0
 
     test delete-7.1 {deletes hrel_fg overrides} -setup {
         ted create SHIA SUNN
-        ted order HREL:OVERRIDE id {SHIA SUNN}
-        ted order HREL:OVERRIDE id {SUNN SHIA}
+        ted orderx HREL:OVERRIDE id {SHIA SUNN}
+        ted orderx HREL:OVERRIDE id {SUNN SHIA}
     } -body {
         civgroup mutate delete SHIA
 
@@ -211,8 +211,8 @@ upc         0.0
 
     test delete-7.2 {undo restores hrel_fg overrides} -setup {
         ted create SHIA SUNN
-        ted order HREL:OVERRIDE id {SHIA SUNN}
-        ted order HREL:OVERRIDE id {SUNN SHIA}
+        ted orderx HREL:OVERRIDE id {SHIA SUNN}
+        ted orderx HREL:OVERRIDE id {SUNN SHIA}
 
         set undo [civgroup mutate delete SHIA]
     } -body {

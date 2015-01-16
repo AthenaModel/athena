@@ -116,7 +116,7 @@ snit::widgetadaptor hrelbrowser {
             -state   disabled                          \
             -command [mymethod EditSelected]
 
-        cond::availableCanUpdate control $editbtn \
+        cond::availableCanUpdatex control $editbtn \
             order   HREL:OVERRIDE                 \
             browser $win
 
@@ -125,7 +125,7 @@ snit::widgetadaptor hrelbrowser {
             -state   disabled                              \
             -command [mymethod DeleteSelected]
 
-        cond::availableCanDelete control $deletebtn \
+        cond::availableCanDeletex control $deletebtn \
             order   HREL:RESTORE                    \
             browser $win
 
@@ -277,8 +277,8 @@ snit::widgetadaptor hrelbrowser {
 
     method SelectionChanged {} {
         # FIRST, update buttons
-        cond::availableCanUpdate update $editbtn
-        cond::availableCanDelete update $deletebtn
+        cond::availableCanUpdatex update $editbtn
+        cond::availableCanDeletex update $deletebtn
     }
 
     # EditSelected
@@ -289,9 +289,9 @@ snit::widgetadaptor hrelbrowser {
         set ids [$hull uid curselection]
 
         if {[llength $ids] == 1} {
-            order enter HREL:OVERRIDE id [lindex $ids 0]
+            app enter HREL:OVERRIDE id [lindex $ids 0]
         } else {
-            order enter HREL:OVERRIDE:MULTI ids $ids
+            app enter HREL:OVERRIDE:MULTI ids $ids
         }
     }
 
@@ -304,7 +304,7 @@ snit::widgetadaptor hrelbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Pop up the dialog, and select this entity
-        order send gui HREL:RESTORE id $id
+        flunky senddict gui HREL:RESTORE [list id $id]
     }
 }
 

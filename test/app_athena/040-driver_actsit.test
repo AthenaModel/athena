@@ -69,8 +69,8 @@ namespace eval ::athena_test::tests:: {
         ted create JOE BOB NB1 NB2 BLUE BRIT HAL SHIA SUNN KURD
         
         # NEXT, at least one group should be an enemy of BLUE
-        ted order HREL:OVERRIDE id {SHIA BLUE} base  1.0
-        ted order HREL:OVERRIDE id {SUNN BLUE} base -1.0
+        ted orderx HREL:OVERRIDE id {SHIA BLUE} base  1.0
+        ted orderx HREL:OVERRIDE id {SUNN BLUE} base -1.0
         
         # NEXT, deploy BLUE and HAL troops to NB1, so we can assign them.
         ted deploy NB1 BLUE all
