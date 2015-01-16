@@ -106,7 +106,7 @@ snit::widgetadaptor coopbrowser {
             -state   disabled                        \
             -command [mymethod EditSelected]
 
-        cond::availableMulti control $editbtn \
+        cond::availableMultix control $editbtn \
             order   COOP:UPDATE           \
             browser $win
 
@@ -180,7 +180,7 @@ snit::widgetadaptor coopbrowser {
 
     method SelectionChanged {} {
         # FIRST, update buttons
-        cond::availableMulti  update $editbtn
+        cond::availableMultix  update $editbtn
     }
 
 
@@ -192,9 +192,9 @@ snit::widgetadaptor coopbrowser {
         set ids [$hull uid curselection]
 
         if {[llength $ids] == 1} {
-            order enter COOP:UPDATE id [lindex $ids 0]
+            app enter COOP:UPDATE id [lindex $ids 0]
         } else {
-            order enter COOP:UPDATE:MULTI ids $ids
+            app enter COOP:UPDATE:MULTI ids $ids
         }
     }
 }

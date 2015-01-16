@@ -854,7 +854,7 @@ snit::widget appwin {
         $ordersmenu add cascade -label "Cooperation" \
             -underline 0 -menu $submenu
         
-        $self AddOrder $submenu COOP:UPDATE
+        $self AddOrderX $submenu COOP:UPDATE
         $self AddOrder $submenu MAD:COOP
 
         # Orders/Comm. Asset Package Menu

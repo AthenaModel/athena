@@ -109,11 +109,18 @@ snit::type coop {
 #
 # Updates existing cooperations
 
-order define COOP:UPDATE {
-    title "Update Initial Cooperation"
-    options -sendstates PREP 
+myorders define COOP:UPDATE {
+    meta title "Update Initial Cooperation"
+    meta sendstates PREP 
 
-    form {
+    meta parmlist {
+        id
+        base
+        regress_to
+        natural
+    }
+
+    meta form {
         rcc "Curve:" -for id
         key id -table gui_coop_view -keys {f g} -labels {"Of" "With"} \
             -loadcmd {orderdialog keyload id *}
@@ -130,17 +137,18 @@ order define COOP:UPDATE {
             }
         }
     }
-} {
-    # FIRST, prepare the parameters
-    prepare id         -toupper  -required -type coop
-    prepare base       -toupper  -num      -type qcooperation
-    prepare regress_to -toupper  -selector
-    prepare natural    -toupper  -num      -type qcooperation
- 
-    returnOnError -final
 
-    # NEXT, modify the curve
-    setundo [coop mutate update [array get parms]]
+
+    method _validate {} {
+        my prepare id         -toupper  -required -type coop
+        my prepare base       -toupper  -num      -type qcooperation
+        my prepare regress_to -toupper  -selector
+        my prepare natural    -toupper  -num      -type qcooperation
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [coop mutate update [array get parms]]
+    }
 }
 
 
@@ -148,11 +156,18 @@ order define COOP:UPDATE {
 #
 # Updates multiple existing cooperations
 
-order define COOP:UPDATE:MULTI {
-    title "Update Baseline Cooperation (Multi)"
-    options -sendstates PREP
+myorders define COOP:UPDATE:MULTI {
+    meta title "Update Baseline Cooperation (Multi)"
+    meta sendstates PREP
  
-    form {
+    meta parmlist {
+        ids
+        base
+        regress_to
+        natural
+    }
+
+    meta form {
         rcc "IDs:" -for ids
         multi ids -table gui_coop_view -key id \
             -loadcmd {orderdialog multiload ids *}
@@ -169,23 +184,23 @@ order define COOP:UPDATE:MULTI {
             }
         }
     }
-} {
-    # FIRST, prepare the parameters
-    prepare ids     -toupper  -required -listof coop
-    prepare base    -toupper  -num      -type qcooperation
-    prepare regress_to -toupper  -selector
-    prepare natural    -toupper  -num      -type qcooperation
 
-    returnOnError -final
-
-    # NEXT, modify the curves
-    set undo [list]
-
-    foreach parms(id) $parms(ids) {
-        lappend undo [coop mutate update [array get parms]]
+    method _validate {} {
+        my prepare ids     -toupper  -required -listof coop
+        my prepare base    -toupper  -num      -type qcooperation
+        my prepare regress_to -toupper  -selector
+        my prepare natural    -toupper  -num      -type qcooperation
     }
 
-    setundo [join $undo \n]
+    method _execute {{flunky ""}} {
+        set undo [list]
+
+        foreach parms(id) $parms(ids) {
+            lappend undo [coop mutate update [array get parms]]
+        }
+
+        my setundo [join $undo \n]
+    }
 }
 
 
