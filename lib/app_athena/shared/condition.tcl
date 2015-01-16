@@ -150,8 +150,8 @@ oo::objdefine condition {
                     [list block_id $block_id typename $cname]]
 
             # NEXT, update the condition with the right data.
-            order send gui CONDITION:$cname condition_id $condition_id \
-                {*}$cdict
+            flunky senddict gui CONDITION:$cname \
+                [list condition_id $condition_id {*}$cdict]
         }
     }
 
@@ -165,7 +165,7 @@ oo::objdefine condition {
     method GetOrderParmsFromCopySet {cname copyset} {
         set pdict [dict create]
 
-        foreach parm [order parms CONDITION:$cname] {
+        foreach parm [myorders parms CONDITION:$cname] {
             if {$parm eq "condition_id" || $parm eq "name"} {
                 continue
             }

@@ -1413,7 +1413,7 @@ snit::widget strategybrowser {
         set cond [pot get $id]
 
         # NEXT, allow editing.
-        order enter CONDITION:[$cond typename] condition_id $id
+        app enter CONDITION:[$cond typename] condition_id $id
     }
 
     # CTabState
@@ -1770,7 +1770,7 @@ snit::widget strategybrowser {
         set tactic [pot get $id]
 
         # NEXT, allow editing.
-        order enter TACTIC:[$tactic typename] tactic_id $id
+        app enter TACTIC:[$tactic typename] tactic_id $id
     }
 
 

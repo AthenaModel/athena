@@ -978,7 +978,7 @@ snit::type ted {
                     block_id [$block id] typename $typename]
 
         if {[llength $args] > 0} {
-            ted order CONDITION:${typename} condition_id $cid {*}$args
+            ted orderx CONDITION:${typename} condition_id $cid {*}$args
         }
 
         return [pot get $cid]
@@ -1089,11 +1089,11 @@ snit::type ted {
 
         set pdict [dict create]
 
-        foreach parm [order parms $order] {
+        foreach parm [myorders parms $order] {
             dict set pdict $parm [dict get $cdict $parm]
         }
 
-        ted order $order {*}$pdict
+        ted orderx $order {*}$pdict
 
         return "OK"
     }

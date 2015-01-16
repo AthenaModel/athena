@@ -74,12 +74,12 @@ condition define COMPARE "Compare Numbers" {
 #
 # Updates the condition's parameters
 
-order define CONDITION:COMPARE {
-    title "Condition: Compare Numbers"
+myorders define CONDITION:COMPARE {
+    meta title      "Condition: Compare Numbers"
+    meta sendstates PREP
+    meta parmlist   {condition_id name x comp y}
 
-    options -sendstates PREP
-
-    form {
+    meta form {
         rcc "Condition ID:" -for condition_id
         text condition_id -context yes \
             -loadcmd {beanload}
@@ -101,22 +101,24 @@ order define CONDITION:COMPARE {
         rcc "Y Value:" -for y
         gofer y -typename gofer::NUMBER
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare condition_id -required -with {::strategy valclass condition::COMPARE}
-    returnOnError
-
-    set cond [pot get $parms(condition_id)]
-
-    prepare name         -toupper  -with [list $cond valName]
-    prepare x                      
-    prepare comp         -toupper  -type ecomparatorx
-    prepare y                      
-    returnOnError -final
 
 
-    # NEXT, update the block
-    setundo [$cond update_ {name x comp y} [array get parms]]
+    method _validate {} {
+        my prepare condition_id -required -with {::strategy valclass condition::COMPARE}
+        my returnOnError
+
+        set cond [pot get $parms(condition_id)]
+
+        my prepare name         -toupper  -with [list $cond valName]
+        my prepare x                      
+        my prepare comp         -toupper  -type ecomparatorx
+        my prepare y                      
+    }
+
+    method _execute {{flunky ""}} {
+        set cond [pot get $parms(condition_id)]
+        my setundo [$cond update_ {name x comp y} [array get parms]]\
+    }
 }
 
 

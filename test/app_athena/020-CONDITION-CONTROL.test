@@ -56,7 +56,7 @@ namespace eval ::athena_test::tests:: {
     test CONDITION:CONTROL-1.1 {required parameters} -setup {
         setup
     } -body {
-        ted order -reject CONDITION:CONTROL
+        ted orderx -reject CONDITION:CONTROL
     } -cleanup {
         cleanup
     } -result {
@@ -66,7 +66,7 @@ namespace eval ::athena_test::tests:: {
     test CONDITION:CONTROL-1.2 {unknown condition_id} -setup {
         setup
     } -body {
-        ted order -reject CONDITION:CONTROL condition_id NONESUCH
+        ted orderx -reject CONDITION:CONTROL condition_id NONESUCH
     } -cleanup {
         cleanup
     } -match glob -result {
@@ -76,7 +76,7 @@ namespace eval ::athena_test::tests:: {
     test CONDITION:CONTROL-1.3 {invalid a} -setup {
         setup
     } -body {
-        ted order -reject CONDITION:CONTROL condition_id [$C1 id] a NONESUCH
+        ted orderx -reject CONDITION:CONTROL condition_id [$C1 id] a NONESUCH
     } -cleanup {
         cleanup
     } -match glob -result {
@@ -86,7 +86,7 @@ namespace eval ::athena_test::tests:: {
     test CONDITION:CONTROL-1.4 {invalid sense} -setup {
         setup
     } -body {
-        ted order -reject CONDITION:CONTROL condition_id [$C1 id] \
+        ted orderx -reject CONDITION:CONTROL condition_id [$C1 id] \
             sense NONESUCH
     } -cleanup {
         cleanup
@@ -97,7 +97,7 @@ namespace eval ::athena_test::tests:: {
     test CONDITION:CONTROL-1.5 {invalid anyall} -setup {
         setup
     } -body {
-        ted order -reject CONDITION:CONTROL condition_id [$C1 id] \
+        ted orderx -reject CONDITION:CONTROL condition_id [$C1 id] \
             anyall NONESUCH
     } -cleanup {
         cleanup
@@ -108,7 +108,7 @@ namespace eval ::athena_test::tests:: {
     test CONDITION:CONTROL-1.6 {invalid name} -setup {
         setup
     } -body {
-        ted order -reject CONDITION:CONTROL condition_id [$C1 id] name 1234
+        ted orderx -reject CONDITION:CONTROL condition_id [$C1 id] name 1234
     } -cleanup {
         cleanup
     } -match glob -result {
@@ -119,7 +119,7 @@ namespace eval ::athena_test::tests:: {
         setup
         set C2 [ted addcondition $B1 COMPARE]
     } -body {
-        ted order -reject CONDITION:CONTROL condition_id [$C1 id] \
+        ted orderx -reject CONDITION:CONTROL condition_id [$C1 id] \
             name [$C2 get name]
     } -cleanup {
         cleanup
@@ -130,7 +130,7 @@ namespace eval ::athena_test::tests:: {
     test CONDITION:CONTROL-2.1 {condition updated} -setup {
         setup
     } -body {
-        ted order CONDITION:CONTROL \
+        ted orderx CONDITION:CONTROL \
             condition_id [$C1 id] \
             a      JOE  \
             sense  DOESNT \
@@ -156,7 +156,7 @@ namespace eval ::athena_test::tests:: {
     test CONDITION:CONTROL-2.2 {sanity check done} -setup {
         setup
     } -body {
-        ted order CONDITION:CONTROL condition_id [$C1 id] a "JOE" nlist NONESUCH
+        ted orderx CONDITION:CONTROL condition_id [$C1 id] a "JOE" nlist NONESUCH
         ted pdicts [$C1 getdict]
     } -cleanup {
         cleanup
@@ -177,7 +177,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        ted order CONDITION:CONTROL condition_id [$C1 id] a JOE
+        ted orderx CONDITION:CONTROL condition_id [$C1 id] a JOE
         ted notifier received
     } -cleanup {
         cleanup
@@ -185,10 +185,10 @@ namespace eval ::athena_test::tests:: {
 
     test CONDITION:CONTROL-2.4 {undo notifier event} -setup {
         setup
-        ted order CONDITION:CONTROL condition_id [$C1 id] a JOE
+        ted orderx CONDITION:CONTROL condition_id [$C1 id] a JOE
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
