@@ -2185,7 +2185,7 @@ snit::type executive {
         pot valclass ::condition $condition_id
 
         # NEXT, configure it
-        cif transaction "condition configure..." {
+        flunky transaction "condition configure..." {
             ConditionConfigure $condition_id $args
         }
     }
@@ -2203,10 +2203,10 @@ snit::type executive {
 
         set state [from opts -state ""]
 
-        send CONDITION:[$c typename] -condition_id $condition_id {*}$opts
+        sendx CONDITION:[$c typename] -condition_id $condition_id {*}$opts
 
         if {$state ne ""} {
-            send CONDITION:STATE -condition_id $condition_id -state $state
+            sendx CONDITION:STATE -condition_id $condition_id -state $state
         }
     }
 
@@ -2622,7 +2622,7 @@ snit::type executive {
         }
 
         # NEXT, create the tactic
-        cif transaction "tactic add..." {
+        flunky transaction "tactic add..." {
             set tactic_id [sendx BLOCK:TACTIC:ADD \
                                     -block_id $block_id \
                                     -typename $typename]
@@ -2680,7 +2680,7 @@ snit::type executive {
         pot valclass tactic $tactic_id
 
         # NEXT, configure it
-        cif transaction "tactic configure..." {
+        flunky transaction "tactic configure..." {
             TacticConfigure $tactic_id $args
         }
     }
@@ -2698,7 +2698,7 @@ snit::type executive {
 
         set state [from opts -state ""]
 
-        send TACTIC:[$c typename] -tactic_id $tactic_id {*}$opts
+        sendx TACTIC:[$c typename] -tactic_id $tactic_id {*}$opts
 
         if {$state ne ""} {
             sendx TACTIC:STATE -tactic_id $tactic_id -state $state

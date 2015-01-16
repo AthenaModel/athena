@@ -1430,9 +1430,9 @@ snit::widget strategybrowser {
         set state [$cond state]
 
         if {$state eq "disabled"} {
-            order send gui CONDITION:STATE condition_id $id state normal
+            flunky send gui CONDITION:STATE -condition_id $id -state normal
         } else {
-            order send gui CONDITION:STATE condition_id $id state disabled
+            flunky send gui CONDITION:STATE -condition_id $id -state disabled
         }
     }
 

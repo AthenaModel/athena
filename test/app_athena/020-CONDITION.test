@@ -61,7 +61,7 @@ namespace eval ::athena_test::tests:: {
     test CONDITION:STATE-1.1 {required parameters} -setup {
         setup
     } -body {
-        ted order -reject CONDITION:STATE
+        ted orderx -reject CONDITION:STATE
     } -cleanup {
         cleanup
     } -result {
@@ -72,7 +72,7 @@ namespace eval ::athena_test::tests:: {
     test CONDITION:STATE-1.2 {unknown condition_id} -setup {
         setup
     } -body {
-        ted order -reject CONDITION:STATE condition_id NONESUCH state normal
+        ted orderx -reject CONDITION:STATE condition_id NONESUCH state normal
     } -cleanup {
         cleanup
     } -match glob -result {
@@ -82,7 +82,7 @@ namespace eval ::athena_test::tests:: {
     test CONDITION:STATE-1.3 {invalid state} -setup {
         setup
     } -body {
-        ted order -reject CONDITION:STATE condition_id [$C1 id] state NONESUCH
+        ted orderx -reject CONDITION:STATE condition_id [$C1 id] state NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -92,7 +92,7 @@ namespace eval ::athena_test::tests:: {
     test CONDITION:STATE-2.1 {block updated} -setup {
         setup
     } -body {
-        ted order CONDITION:STATE condition_id [$C1 id] state disabled
+        ted orderx CONDITION:STATE condition_id [$C1 id] state disabled
 
         $C1 state
     } -cleanup {
@@ -103,7 +103,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        ted order CONDITION:STATE condition_id [$C1 id] state disabled
+        ted orderx CONDITION:STATE condition_id [$C1 id] state disabled
         ted notifier received
     } -cleanup {
         cleanup
@@ -111,10 +111,10 @@ namespace eval ::athena_test::tests:: {
 
     test CONDITION:STATE-2.3 {undo notifier event} -setup {
         setup
-        ted order CONDITION:STATE condition_id [$C1 id] state disabled
+        ted orderx CONDITION:STATE condition_id [$C1 id] state disabled
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

@@ -552,28 +552,20 @@ oo::define condition {
 # Sets a condition's state to normal or disabled.  The order dialog
 # is not generally used.
 
-order define CONDITION:STATE {
-    title "Set Condition State"
+myorders define CONDITION:STATE {
+    meta title      "Set Condition State"
+    meta sendstates PREP
+    meta parmlist   {condition_id state}
 
-    options -sendstates PREP
-
-    form {
-        label "Condition ID:" -for condition_id
-        text condition_id -context yes
-
-        rc "State:" -for state
-        text state
+    method _validate {} {
+        my prepare condition_id -required -with {::strategy valclass ::condition}
+        my prepare state        -required -tolower -type ebeanstate
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare condition_id -required          -with {::strategy valclass ::condition}
-    prepare state        -required -tolower -type ebeanstate
-    returnOnError -final
 
-    set cond [pot get $parms(condition_id)]
-
-    # NEXT, update the block
-    setundo [$cond update_ {state} [array get parms]]
+    method _execute {{flunky ""}} {
+        set cond [pot get $parms(condition_id)]
+        my setundo [$cond update_ {state} [array get parms]]
+    }
 }
 
 
