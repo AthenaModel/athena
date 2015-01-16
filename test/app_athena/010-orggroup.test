@@ -163,7 +163,7 @@ base_personnel  1000
 
     test delete-6.1 {deletes vrel_ga overrides} -setup {
         ted create JOE USAID
-        ted order VREL:OVERRIDE id {USAID JOE}
+        ted orderx VREL:OVERRIDE id {USAID JOE}
     } -body {
         orggroup mutate delete USAID
 
@@ -174,7 +174,7 @@ base_personnel  1000
 
     test delete-6.2 {undo restores vrel_ga overrides} -setup {
         ted create JOE USAID
-        ted order VREL:OVERRIDE id {USAID JOE}
+        ted orderx VREL:OVERRIDE id {USAID JOE}
 
         set undo [orggroup mutate delete USAID]
     } -body {

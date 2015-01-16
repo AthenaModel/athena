@@ -837,8 +837,8 @@ snit::widget appwin {
         $ordersmenu add cascade -label "Vert. Relationship" \
             -underline 0 -menu $submenu
         
-        $self AddOrder $submenu VREL:OVERRIDE
-        $self AddOrder $submenu VREL:RESTORE
+        $self AddOrderX $submenu VREL:OVERRIDE
+        $self AddOrderX $submenu VREL:RESTORE
         $self AddOrder $submenu MAD:VREL
     
         # Orders/Satisfaction Menu

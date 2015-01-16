@@ -225,7 +225,7 @@ upc         0.0
 
     test delete-8.1 {deletes vrel_ga overrides} -setup {
         ted create JOE SHIA
-        ted order VREL:OVERRIDE id {SHIA JOE}
+        ted orderx VREL:OVERRIDE id {SHIA JOE}
     } -body {
         civgroup mutate delete SHIA
 
@@ -236,7 +236,7 @@ upc         0.0
 
     test delete-8.2 {undo restores vrel_ga overrides} -setup {
         ted create JOE SHIA
-        ted order VREL:OVERRIDE id {SHIA JOE}
+        ted orderx VREL:OVERRIDE id {SHIA JOE}
 
         set undo [civgroup mutate delete SHIA]
     } -body {

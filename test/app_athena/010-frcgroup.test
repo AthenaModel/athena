@@ -210,7 +210,7 @@ local           0
 
     test delete-8.1 {deletes vrel_ga overrides} -setup {
         ted create JOE BLUE
-        ted order VREL:OVERRIDE id {BLUE JOE}
+        ted orderx VREL:OVERRIDE id {BLUE JOE}
     } -body {
         frcgroup mutate delete BLUE
 
@@ -221,7 +221,7 @@ local           0
 
     test delete-8.2 {undo restores vrel_ga overrides} -setup {
         ted create JOE BLUE
-        ted order VREL:OVERRIDE id {BLUE JOE}
+        ted orderx VREL:OVERRIDE id {BLUE JOE}
 
         set undo [frcgroup mutate delete BLUE]
     } -body {

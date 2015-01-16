@@ -242,7 +242,7 @@ budget            0.0
 
     test delete-9.1 {deletes vrel_ga overrides} -setup {
         ted create JOE SHIA
-        ted order VREL:OVERRIDE id {SHIA JOE}
+        ted orderx VREL:OVERRIDE id {SHIA JOE}
     } -body {
         actor mutate delete JOE
 
@@ -253,7 +253,7 @@ budget            0.0
 
     test delete-9.2 {undo restores vrel_ga overrides} -setup {
         ted create JOE SHIA
-        ted order VREL:OVERRIDE id {SHIA JOE}
+        ted orderx VREL:OVERRIDE id {SHIA JOE}
 
         set undo [actor mutate delete JOE]
     } -body {

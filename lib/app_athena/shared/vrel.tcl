@@ -183,33 +183,43 @@ snit::type vrel {
 #
 # Deletes existing relationship override
 
-order define VREL:RESTORE {
-    title "Restore Baseline Vertical Relationship"
-    options -sendstates PREP
+myorders define VREL:RESTORE {
+    meta title "Restore Baseline Vertical Relationship"
+    meta sendstates PREP
+    
+    meta parmlist {id}
 
-    form {
+    meta form {
         # Form not used in dialog.
-        key id -table gui_vrel_view -keys {g a} -labels {Of With}
+        dbkey id -table gui_vrel_view -keys {g a} -labels {Of With}
     }
-} {
-    # FIRST, prepare the parameters
-    prepare id       -toupper  -required -type vrel
 
-    returnOnError -final
 
-    # NEXT, delete the record
-    setundo [vrel mutate delete $parms(id)]
+    method _validate {} {
+        my prepare id       -toupper  -required -type vrel
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [vrel mutate delete $parms(id)]
+    }
 }
 
 # VREL:OVERRIDE
 #
 # Updates existing override
 
-order define VREL:OVERRIDE {
-    title "Override Baseline Vertical Relationship"
-    options -sendstates PREP 
+myorders define VREL:OVERRIDE {
+    meta title "Override Baseline Vertical Relationship"
+    meta sendstates PREP 
 
-    form {
+    meta parmlist {
+        id
+        base
+        {hist_flag 0}
+        current
+    }
+
+    meta form {
         rcc "Group/Actor:" -for id
         key id -table gui_vrel_view -keys {g a} -labels {Of With} \
             -loadcmd {orderdialog keyload id *}
@@ -226,20 +236,21 @@ order define VREL:OVERRIDE {
             }
         }
     }
-} {
-    # FIRST, prepare the parameters
-    prepare id        -toupper  -required -type vrel
-    prepare base -num -toupper            -type qaffinity
-    prepare hist_flag           -num      -type snit::boolean
-    prepare current   -toupper  -num      -type qaffinity 
 
-    returnOnError -final
 
-    # NEXT, modify the curve
-    if {[vrel exists $parms(id)]} {
-        setundo [vrel mutate update [array get parms]]
-    } else {
-        setundo [vrel mutate create [array get parms]]
+    method _validate {} {
+        my prepare id        -toupper  -required -type vrel
+        my prepare base -num -toupper            -type qaffinity
+        my prepare hist_flag           -num      -type snit::boolean
+        my prepare current   -toupper  -num      -type qaffinity 
+    }
+
+    method _execute {{flunky ""}} {
+        if {[vrel exists $parms(id)]} {
+            my setundo [vrel mutate update [array get parms]]
+        } else {
+            my setundo [vrel mutate create [array get parms]]
+        }
     }
 }
 
@@ -248,11 +259,18 @@ order define VREL:OVERRIDE {
 #
 # Updates multiple existing relationship overrides
 
-order define VREL:OVERRIDE:MULTI {
-    title "Override Multiple Baseline Vertical Relationships"
-    options -sendstates PREP
+myorders define VREL:OVERRIDE:MULTI {
+    meta title "Override Multiple Baseline Vertical Relationships"
+    meta sendstates PREP
 
-    form {
+    meta parmlist {
+        ids
+        base
+        {hist_flag 0}
+        current
+    }
+
+    meta form {
         rcc "IDs:" -for id
         multi ids -table gui_vrel_view -key id \
             -loadcmd {orderdialog multiload ids *}
@@ -269,28 +287,28 @@ order define VREL:OVERRIDE:MULTI {
             }
         }
     }
-} {
-    # FIRST, prepare the parameters
-    prepare ids       -toupper  -required -listof vrel
-    prepare base -num -toupper            -type qaffinity
-    prepare hist_flag           -num      -type snit::boolean
-    prepare current   -toupper  -num      -type qaffinity 
-
-    returnOnError -final
 
 
-    # NEXT, modify the records
-    set undo [list]
-
-    foreach parms(id) $parms(ids) {
-        if {[vrel exists $parms(id)]} {
-            lappend undo [vrel mutate update [array get parms]]
-        } else {
-            lappend undo [vrel mutate create [array get parms]]
-        }
+    method _validate {} {
+        my prepare ids       -toupper  -required -listof vrel
+        my prepare base -num -toupper            -type qaffinity
+        my prepare hist_flag           -num      -type snit::boolean
+        my prepare current   -toupper  -num      -type qaffinity 
     }
 
-    setundo [join $undo \n]
+    method _execute {{flunky ""}} {
+        set undo [list]
+    
+        foreach parms(id) $parms(ids) {
+            if {[vrel exists $parms(id)]} {
+                lappend undo [vrel mutate update [array get parms]]
+            } else {
+                lappend undo [vrel mutate create [array get parms]]
+            }
+        }
+
+        my setundo [join $undo \n]
+    }
 }
 
 
