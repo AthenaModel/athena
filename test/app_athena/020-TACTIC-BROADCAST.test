@@ -61,13 +61,13 @@ namespace eval ::athena_test::tests:: {
     # TACTIC:BROADCAST
 
     test TACTIC:BROADCAST-1.1 {required parms} -body {
-        ted order -reject TACTIC:BROADCAST
+        ted orderx -reject TACTIC:BROADCAST
     } -result {
         tactic_id {required value}
     }
 
     test TACTIC:BROADCAST-1.2 {unknown tactic_id} -body {
-        ted order -reject TACTIC:BROADCAST tactic_id NONESUCH
+        ted orderx -reject TACTIC:BROADCAST tactic_id NONESUCH
     } -result {
         tactic_id {Invalid BROADCAST ID: "NONESUCH"}
     }
@@ -75,7 +75,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:BROADCAST-1.3 {cost is invalid} -setup {
         setup
     } -body {
-        ted order -reject TACTIC:BROADCAST \
+        ted orderx -reject TACTIC:BROADCAST \
             tactic_id [$T1 id] \
             cost NONESUCH
     } -cleanup {
@@ -87,7 +87,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:BROADCAST-1.4 {cost is negative} -setup {
         setup
     } -body {
-        ted order -reject TACTIC:BROADCAST \
+        ted orderx -reject TACTIC:BROADCAST \
             tactic_id [$T1 id] \
             cost -1
     } -cleanup {
@@ -99,7 +99,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:BROADCAST-1.5 {invalid name} -setup {
         setup
     } -body {
-        ted order -reject TACTIC:BROADCAST tactic_id [$T1 id] name 1234
+        ted orderx -reject TACTIC:BROADCAST tactic_id [$T1 id] name 1234
     } -cleanup {
         cleanup
     } -match glob -result {
@@ -110,7 +110,7 @@ namespace eval ::athena_test::tests:: {
         setup
         set T2 [ted addtactic $B1 ABSIT]
     } -body {
-        ted order -reject TACTIC:BROADCAST tactic_id [$T1 id] \
+        ted orderx -reject TACTIC:BROADCAST tactic_id [$T1 id] \
             name [$T2 get name]
     } -cleanup {
         cleanup
@@ -121,7 +121,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:BROADCAST-2.1 {tactic updated} -setup {
         setup
     } -body {
-        ted order TACTIC:BROADCAST \
+        ted orderx TACTIC:BROADCAST \
             tactic_id [$T1 id] \
             a         SELF     \
             cap       CBS      \
@@ -149,7 +149,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        ted order TACTIC:BROADCAST \
+        ted orderx TACTIC:BROADCAST \
             tactic_id [$T1 id] \
             cap       CBS      \
             iom       IOM1   
@@ -163,13 +163,13 @@ namespace eval ::athena_test::tests:: {
 
     test TACTIC:BROADCAST-3.1 {undo notifier event} -setup {
         setup
-        ted order TACTIC:BROADCAST \
+        ted orderx TACTIC:BROADCAST \
             tactic_id [$T1 id] \
             cap       CBS      \
             iom       IOM1   
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

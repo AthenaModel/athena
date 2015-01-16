@@ -997,7 +997,7 @@ snit::type ted {
                     block_id [$block id] typename $typename]
 
         if {[llength $args] > 0} {
-            ted order TACTIC:${typename} tactic_id $tid {*}$args
+            ted orderx TACTIC:${typename} tactic_id $tid {*}$args
         }
 
         return [pot get $tid]
@@ -1065,11 +1065,11 @@ snit::type ted {
 
         set pdict [dict create]
 
-        foreach parm [order parms $order] {
+        foreach parm [myorders parms $order] {
             dict set pdict $parm [dict get $tdict $parm]
         }
 
-        ted order $order {*}$pdict
+        ted orderx $order {*}$pdict
 
         return "OK"
     }

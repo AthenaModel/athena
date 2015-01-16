@@ -34,16 +34,23 @@ set exeText "
 "
 
 proc main {argv} {
-    variable swaps
-    variable valText
-    variable exeText
-
     set file [lindex $argv 0]
 
     if {$file eq ""} {
         puts "Usage: oconv.tcl orderx_file.tcl"
         exit 1
     }
+
+    foreach file $argv {
+        puts "$file..."
+        updatefile $file
+    }
+}
+
+proc updatefile {file} {
+    variable swaps
+    variable valText
+    variable exeText
 
     if {![file exists $file]} {
         puts "File doesn't exist: $file"
@@ -78,6 +85,7 @@ proc main {argv} {
     }
 
     writefile new_$file [join $outlines \n]
+
 }
 
 main $argv

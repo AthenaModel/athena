@@ -60,7 +60,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:DEMOB-1.1 {required parameters} -setup {
         setup
     } -body {
-        ted order -reject TACTIC:DEMOB
+        ted orderx -reject TACTIC:DEMOB
     } -cleanup {
         cleanup
     } -result {
@@ -70,7 +70,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:DEMOB-1.2 {unknown tactic_id} -setup {
         setup
     } -body {
-        ted order -reject TACTIC:DEMOB tactic_id NONESUCH
+        ted orderx -reject TACTIC:DEMOB tactic_id NONESUCH
     } -cleanup {
         cleanup
     } -match glob -result {
@@ -80,7 +80,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:DEMOB-1.3 {invalid g} -setup {
         setup
     } -body {
-        ted order -reject TACTIC:DEMOB tactic_id [$T1 id] g "NONE SUCH"
+        ted orderx -reject TACTIC:DEMOB tactic_id [$T1 id] g "NONE SUCH"
     } -cleanup {
         cleanup
     } -result {
@@ -90,7 +90,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:DEMOB-1.4 {invalid personnel} -setup {
         setup
     } -body {
-        ted order -reject TACTIC:DEMOB tactic_id [$T1 id] personnel NONESUCH
+        ted orderx -reject TACTIC:DEMOB tactic_id [$T1 id] personnel NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -100,7 +100,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:DEMOB-1.5 {0 personnel in order} -setup {
         setup
     } -body {
-        ted order -reject TACTIC:DEMOB tactic_id [$T1 id] \
+        ted orderx -reject TACTIC:DEMOB tactic_id [$T1 id] \
             mode SOME personnel 0
     } -cleanup {
         cleanup
@@ -111,7 +111,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:DEMOB-1.6 {0.0 percentage in tactic} -setup {
         setup
     } -body {
-        ted order -reject TACTIC:DEMOB tactic_id [$T1 id] mode PERCENT
+        ted orderx -reject TACTIC:DEMOB tactic_id [$T1 id] mode PERCENT
     } -cleanup {
         cleanup
     } -result {
@@ -121,7 +121,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:DEMOB-1.7 {invalid name} -setup {
         setup
     } -body {
-        ted order -reject TACTIC:DEMOB tactic_id [$T1 id] name 1234
+        ted orderx -reject TACTIC:DEMOB tactic_id [$T1 id] name 1234
     } -cleanup {
         cleanup
     } -match glob -result {
@@ -132,7 +132,7 @@ namespace eval ::athena_test::tests:: {
         setup
         set T2 [ted addtactic $B1 ABSIT]
     } -body {
-        ted order -reject TACTIC:DEMOB tactic_id [$T1 id] \
+        ted orderx -reject TACTIC:DEMOB tactic_id [$T1 id] \
             name [$T2 get name]
     } -cleanup {
         cleanup
@@ -143,7 +143,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:DEMOB-2.1 {tactic updated} -setup {
         setup
     } -body {
-        ted order TACTIC:DEMOB \
+        ted orderx TACTIC:DEMOB \
             tactic_id [$T1 id]         \
             g         BLUE             \
             mode      SOME             \
@@ -171,7 +171,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        ted order TACTIC:DEMOB tactic_id [$T1 id] personnel 100
+        ted orderx TACTIC:DEMOB tactic_id [$T1 id] personnel 100
         ted notifier received
     } -cleanup {
         cleanup
@@ -179,10 +179,10 @@ namespace eval ::athena_test::tests:: {
 
     test TACTIC:DEMOB-2.3 {undo notifier event} -setup {
         setup
-        ted order TACTIC:DEMOB tactic_id [$T1 id] personnel 100
+        ted orderx TACTIC:DEMOB tactic_id [$T1 id] personnel 100
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
