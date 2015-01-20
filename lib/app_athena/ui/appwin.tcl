@@ -746,7 +746,7 @@ snit::widget appwin {
         $ordersmenu add cascade -label "Unit" \
             -underline 0 -menu $submenu
         
-        $self AddOrder $submenu UNIT:MOVE
+        $self AddOrderX $submenu UNIT:MOVE
 
         # Orders/Situation
         set submenu [menu $ordersmenu.sit]

@@ -1327,9 +1327,9 @@ snit::widget mapviewer {
         switch -exact $icons(itype-$cid) {
             unit {
                 if {[catch {
-                    order send gui UNIT:MOVE             \
+                    flunky senddict gui UNIT:MOVE [list  \
                         u        $icons(sid-$cid)        \
-                        location [$canvas icon ref $cid]
+                        location [$canvas icon ref $cid]]
                 }]} {
                     $self UnitDrawSingle $icons(sid-$cid)
                 }
@@ -1337,9 +1337,9 @@ snit::widget mapviewer {
 
             situation {
                 if {[catch {
-                    order send gui ABSIT:MOVE \
-                        s        $icons(sid-$cid)                 \
-                        location [$canvas icon ref $cid]
+                    flunky senddict gui ABSIT:MOVE [list \
+                        s        $icons(sid-$cid)        \
+                        location [$canvas icon ref $cid]]
                 }]} {
                     $self AbsitDrawSingle $icons(sid-$cid)
                 }

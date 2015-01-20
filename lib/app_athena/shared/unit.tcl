@@ -357,42 +357,45 @@ snit::type unit {
 #
 # Moves an existing unit.
 
-order define UNIT:MOVE {
-    title "Move Unit"
-    options -sendstates {PREP PAUSED}
+myorders define UNIT:MOVE {
+    meta title "Move Unit"
+    meta sendstates {PREP PAUSED}
 
-    form {
+    meta parmlist {u location}
+
+    meta form {
         rcc "Unit" -for u
-        key u -table gui_units -keys u \
-            -loadcmd {::orderdialog keyload u *}
+        dbkey u -table gui_units -keys u \
+            -loadcmd {$order_ keyload u *}
 
         rcc "Location" -for location
         text location
     }
 
-    parmtags location point
-} {
-    # FIRST, prepare the parameters
-    prepare u          -toupper -required -type unit
-    prepare location   -toupper -required -type refpoint
+    meta parmtags {
+        location point
+    }
 
-    returnOnError
-
-    validate location {
-        set n [nbhood find {*}$parms(location)]
-
-        if {$n ne [unit get $parms(u) n]} {
-            reject location "Cannot remove unit from its neighborhood"
+    method _validate {} {
+        my prepare u          -toupper -required -type unit
+        my prepare location   -toupper -required -type refpoint
+    
+        my returnOnError
+    
+        my checkon location {
+            set n [nbhood find {*}$parms(location)]
+    
+            if {$n ne [unit get $parms(u) n]} {
+                my reject location "Cannot remove unit from its neighborhood"
+            }
         }
     }
 
-    returnOnError -final
-
-    # NEXT, move the unit
-    lappend undo [unit mutate move $parms(u) $parms(location)]
-
-
-    setundo [join $undo \n]
+    method _execute {{flunky ""}} {
+        lappend undo [unit mutate move $parms(u) $parms(location)]
+    
+        my setundo [join $undo \n]
+    }
 }
 
 

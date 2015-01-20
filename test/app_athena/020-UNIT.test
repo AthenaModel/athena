@@ -9,7 +9,7 @@
 # DESCRIPTION:
 #    app_sim(1) UNIT:* order tests.
 #
-#    This test suite tests the unit-related orders.
+#    This test suite tests the unit-related orderxs.
 #
 #-----------------------------------------------------------------------
 
@@ -63,14 +63,14 @@ namespace eval ::athena_test::tests:: {
     # UNIT:MOVE
 
     test MOVE-1.1 {required parms} -body {
-        ted order -reject UNIT:MOVE {}
+        ted orderx -reject UNIT:MOVE {}
     } -result {
         u {required value}
         location {required value}
     }
     
     test MOVE-1.2 {invalid unit} -body {
-        ted order -reject UNIT:MOVE u U1 location A00A00
+        ted orderx -reject UNIT:MOVE u U1 location A00A00
     } -cleanup {
         cleanup
     } -result {
@@ -81,7 +81,7 @@ namespace eval ::athena_test::tests:: {
     test MOVE-1.3 {invalid location} -setup {
         setup
     } -body {
-        ted order -reject UNIT:MOVE u BLUE/NB1 location NONESUCH
+        ted orderx -reject UNIT:MOVE u BLUE/NB1 location NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -92,7 +92,7 @@ namespace eval ::athena_test::tests:: {
     test MOVE-1.4 {location not in neighborhood} -setup {
         setup
     } -body {
-        ted order -reject UNIT:MOVE u BLUE/NB1 location A00A00
+        ted orderx -reject UNIT:MOVE u BLUE/NB1 location A00A00
     } -cleanup {
         cleanup
     } -result {
@@ -103,7 +103,7 @@ namespace eval ::athena_test::tests:: {
     test MOVE-2.1 {unit is moved} -setup {
         setup
     } -body {
-        ted order UNIT:MOVE u BLUE/NB1 location B01B01
+        ted orderx UNIT:MOVE u BLUE/NB1 location B01B01
 
         ted query {SELECT u,location FROM units WHERE u='BLUE/NB1'}
     } -cleanup {
@@ -119,7 +119,7 @@ BLUE/NB1 101 101
         setup
     } -body {
         ted notifier bind ::rdb <units>
-        ted order UNIT:MOVE u BLUE/NB1 location B01B01
+        ted orderx UNIT:MOVE u BLUE/NB1 location B01B01
         ted notifier received
     } -cleanup {
         cleanup
@@ -130,10 +130,10 @@ BLUE/NB1 101 101
 
     test MOVE-3.1 {undo undoes the change} -setup {
         setup        
-        ted order UNIT:MOVE u BLUE/NB1 location B01B01
+        ted orderx UNIT:MOVE u BLUE/NB1 location B01B01
     } -body {
         ted notifier bind ::rdb <units>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
