@@ -821,7 +821,7 @@ snit::widget appwin {
         $self AddOrderX $submenu NBHOOD:LOWER
         $self AddOrderX $submenu NBHOOD:RAISE
         $self AddOrderX $submenu NBHOOD:DELETE
-        $self AddOrder $submenu NBREL:UPDATE
+        $self AddOrderX $submenu NBREL:UPDATE
 
         # Orders/Horz. Relationship Menu
         set submenu [menu $ordersmenu.hrel]

@@ -812,7 +812,7 @@ snit::type autogen {
         }
 
         set parms(proximity) "FAR"
-        order send cli NBREL:UPDATE:MULTI [array get parms]
+        flunky senddict normal NBREL:UPDATE:MULTI [array get parms]
 
         # NEXT, if the user only requested two neighborhoods we
         # are done
@@ -841,7 +841,7 @@ snit::type autogen {
 
         set parms(proximity) "NEAR"
 
-        order send cli NBREL:UPDATE:MULTI [array get parms]
+        flunky senddict normal NBREL:UPDATE:MULTI [array get parms]
     }
 
     # Civgroups num 

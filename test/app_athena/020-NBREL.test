@@ -52,7 +52,7 @@ namespace eval ::athena_test::tests:: {
     # NBREL:UPDATE
 
     test UPDATE-1.1 {required parms} -body {
-        ted order -reject NBREL:UPDATE {}
+        ted orderx -reject NBREL:UPDATE {}
     } -result {
         id {required value}
     }
@@ -61,7 +61,7 @@ namespace eval ::athena_test::tests:: {
     test UPDATE-1.2 {invalid m, n} -setup {
         setup
     } -body {
-        ted order -reject NBREL:UPDATE \
+        ted orderx -reject NBREL:UPDATE \
             id {NONESUCH NONESUCH}
     } -cleanup {
         cleanup
@@ -72,7 +72,7 @@ namespace eval ::athena_test::tests:: {
     test UPDATE-1.3 {m eq n} -setup {
         setup
     } -body {
-        ted order -reject NBREL:UPDATE \
+        ted orderx -reject NBREL:UPDATE \
             id {NB1 NB1}
     } -cleanup {
         cleanup
@@ -83,7 +83,7 @@ namespace eval ::athena_test::tests:: {
     test UPDATE-1.4 {invalid proximity: unknown symbol} -setup {
         setup
     } -body {
-        ted order -reject NBREL:UPDATE \
+        ted orderx -reject NBREL:UPDATE \
             id {NB1 NB2} proximity NONESUCH
     } -cleanup {
         cleanup
@@ -94,7 +94,7 @@ namespace eval ::athena_test::tests:: {
     test UPDATE-2.1 {values are updated} -setup {
         setup
     } -body {
-        ted order NBREL:UPDATE {
+        ted orderx NBREL:UPDATE {
             id            {NB1 NB2}
             proximity     NEAR
         }
@@ -116,7 +116,7 @@ NB2 NB2 HERE
         setup
     } -body {
         ted notifier bind ::rdb <nbrel_mn>
-        ted order NBREL:UPDATE id {NB1 NB2}
+        ted orderx NBREL:UPDATE id {NB1 NB2}
         ted notifier received
     } -cleanup {
         cleanup
@@ -128,13 +128,13 @@ NB2 NB2 HERE
     test UPDATE-3.1 {undo undoes the change} -setup {
         setup
 
-        ted order NBREL:UPDATE {
+        ted orderx NBREL:UPDATE {
             id            {NB1 NB2}
             proximity     NEAR
         }
     } -body {
         ted notifier bind ::rdb <nbrel_mn>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -148,7 +148,7 @@ NB2 NB2 HERE
     test UPDATE:MULTI-1.1 {required parms} -setup {
         setup
     } -body {
-        ted order -reject NBREL:UPDATE:MULTI {}
+        ted orderx -reject NBREL:UPDATE:MULTI {}
     } -cleanup {
         cleanup
     } -result {
@@ -159,7 +159,7 @@ NB2 NB2 HERE
     test UPDATE:MULTI-1.2 {invalid m in ids} -setup {
         setup
     } -body {
-        ted order -reject NBREL:UPDATE:MULTI \
+        ted orderx -reject NBREL:UPDATE:MULTI \
             ids {{NONESUCH NONESUCH}}
     } -cleanup {
         cleanup
@@ -171,7 +171,7 @@ NB2 NB2 HERE
     test UPDATE:MULTI-1.3 {invalid n in ids} -setup {
         setup
     } -body {
-        ted order -reject NBREL:UPDATE:MULTI \
+        ted orderx -reject NBREL:UPDATE:MULTI \
             ids {{NB1 NONESUCH}}
     } -cleanup {
         cleanup
@@ -183,7 +183,7 @@ NB2 NB2 HERE
     test UPDATE:MULTI-1.4 {m eq n in ids} -setup {
         setup
     } -body {
-        ted order -reject NBREL:UPDATE:MULTI \
+        ted orderx -reject NBREL:UPDATE:MULTI \
             ids {{NB1 NB1}}
     } -cleanup {
         cleanup
@@ -195,7 +195,7 @@ NB2 NB2 HERE
     test UPDATE:MULTI-1.5 {invalid proximity: unknown symbol} -setup {
         setup
     } -body {
-        ted order -reject NBREL:UPDATE:MULTI \
+        ted orderx -reject NBREL:UPDATE:MULTI \
             ids {{NB1 NB2}} proximity NONESUCH
     } -cleanup {
         cleanup
@@ -209,7 +209,7 @@ NB2 NB2 HERE
     } -body {
         ted notifier bind ::rdb <nbrel_mn>
 
-        ted order NBREL:UPDATE:MULTI {
+        ted orderx NBREL:UPDATE:MULTI {
             ids           {{NB1 NB2}}
             proximity     NEAR
         }
@@ -227,7 +227,7 @@ NB2 NB2 HERE
     } -body {
         ted notifier bind ::rdb <nbrel_mn>
 
-        ted order NBREL:UPDATE:MULTI {
+        ted orderx NBREL:UPDATE:MULTI {
             ids           {{NB1 NB2} {NB2 NB1}}
             proximity     NEAR
         }
@@ -244,13 +244,13 @@ NB2 NB2 HERE
     test UPDATE:MULTI-3.1 {undo undoes the change} -setup {
         setup
 
-        ted order NBREL:UPDATE:MULTI {
+        ted orderx NBREL:UPDATE:MULTI {
             ids           {{NB1 NB2} {NB2 NB1}}
             proximity     NEAR
         }
     } -body {
         ted notifier bind ::rdb <nbrel_mn>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

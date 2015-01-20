@@ -67,7 +67,7 @@ snit::widgetadaptor nbrelbrowser {
             -state   disabled                        \
             -command [mymethod EditSelected]
 
-        cond::availableCanUpdate control $editbtn \
+        cond::availableCanUpdatex control $editbtn \
             order   NBREL:UPDATE   \
             browser $win
 
@@ -116,7 +116,7 @@ snit::widgetadaptor nbrelbrowser {
 
     method SelectionChanged {} {
         # FIRST, update buttons
-        cond::availableCanUpdate update $editbtn
+        cond::availableCanUpdatex update $editbtn
 
         # NEXT, notify the app of the selection.
         if {[llength [$hull uid curselection]] == 1} {
@@ -137,9 +137,9 @@ snit::widgetadaptor nbrelbrowser {
         set ids [$hull uid curselection]
 
         if {[llength $ids] == 1} {
-            order enter NBREL:UPDATE id [lindex $ids 0]
+            app enter NBREL:UPDATE id [lindex $ids 0]
         } else {
-            order enter NBREL:UPDATE:MULTI ids $ids
+            app enter NBREL:UPDATE:MULTI ids $ids
         }
     }
 }
