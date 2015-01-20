@@ -77,7 +77,7 @@ snit::widgetadaptor orggroupbrowser {
             -state   normal                       \
             -command [mymethod AddEntity]
 
-        cond::available control $addbtn \
+        cond::availablex control $addbtn \
             order ORGGROUP:CREATE
 
 
@@ -86,7 +86,7 @@ snit::widgetadaptor orggroupbrowser {
             -state   disabled                        \
             -command [mymethod EditSelected]
 
-        cond::availableMulti control $editbtn \
+        cond::availableMultix control $editbtn \
             order   ORGGROUP:UPDATE    \
             browser $win
 
@@ -96,7 +96,7 @@ snit::widgetadaptor orggroupbrowser {
             -state   disabled                              \
             -command [mymethod DeleteSelected]
         
-        cond::availableSingle control $deletebtn \
+        cond::availableSinglex control $deletebtn \
             order   ORGGROUP:DELETE       \
             browser $win
 
@@ -136,8 +136,8 @@ snit::widgetadaptor orggroupbrowser {
 
     method SelectionChanged {} {
         # FIRST, update buttons
-        cond::availableSingle update $deletebtn
-        cond::availableMulti  update $editbtn
+        cond::availableSinglex update $deletebtn
+        cond::availableMultix  update $editbtn
     }
 
 
@@ -147,7 +147,7 @@ snit::widgetadaptor orggroupbrowser {
 
     method AddEntity {} {
         # FIRST, Pop up the dialog
-        order enter ORGGROUP:CREATE
+        app enter ORGGROUP:CREATE
     }
 
 
@@ -161,9 +161,9 @@ snit::widgetadaptor orggroupbrowser {
         if {[llength $ids] == 1} {
             set id [lindex $ids 0]
 
-            order enter ORGGROUP:UPDATE g $id
+            app enter ORGGROUP:UPDATE g $id
         } else {
-            order enter ORGGROUP:UPDATE:MULTI ids $ids
+            app enter ORGGROUP:UPDATE:MULTI ids $ids
         }
     }
 
@@ -177,7 +177,7 @@ snit::widgetadaptor orggroupbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Send the order
-        order send gui ORGGROUP:DELETE g $id
+        flunky senddict gui ORGGROUP:DELETE [list g $id]
     }
 }
 

@@ -807,9 +807,9 @@ snit::widget appwin {
         $ordersmenu add cascade -label "Org Group" \
             -underline 0 -menu $submenu
         
-        $self AddOrder $submenu ORGGROUP:CREATE
-        $self AddOrder $submenu ORGGROUP:UPDATE
-        $self AddOrder $submenu ORGGROUP:DELETE
+        $self AddOrderX $submenu ORGGROUP:CREATE
+        $self AddOrderX $submenu ORGGROUP:UPDATE
+        $self AddOrderX $submenu ORGGROUP:DELETE
 
         # Orders/Neighborhood Menu
         set submenu [menu $ordersmenu.nbhood]

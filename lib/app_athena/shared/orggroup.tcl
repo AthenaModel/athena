@@ -175,11 +175,22 @@ snit::type orggroup {
 #
 # Creates new organization groups.
 
-order define ORGGROUP:CREATE {
-    title "Create Organization Group"
-    options -sendstates PREP
+myorders define ORGGROUP:CREATE {
+    meta title "Create Organization Group"
+    meta sendstates PREP
 
-    form {
+    meta parmlist {
+        g
+        longname
+        a
+        {color          "#B200B3"}
+        {orgtype        NGO}
+        {base_personnel 0}
+        {demeanor       AVERAGE}
+        {cost           0}
+    }
+
+    meta form {
         rcc "Group:" -for g
         text g
 
@@ -205,74 +216,76 @@ order define ORGGROUP:CREATE {
         text cost -defvalue 0
         label "$/person/week"
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare g              -toupper   -required -unused -type ident
-    prepare longname       -normalize
-    prepare a              -toupper             -type actor
-    prepare color          -tolower   -required -type hexcolor
-    prepare orgtype        -toupper   -required -type eorgtype
-    prepare base_personnel -num       -required -type iquantity
-    prepare demeanor       -toupper   -required -type edemeanor
-    prepare cost           -toupper   -required -type money
 
-    returnOnError -final
 
-    # NEXT, If longname is "", defaults to ID.
-    if {$parms(longname) eq ""} {
-        set parms(longname) $parms(g)
+    method _validate {} {
+        my prepare g              -toupper   -required -type ident
+        my unused g
+        my prepare longname       -normalize
+        my prepare a              -toupper             -type actor
+        my prepare color          -tolower   -required -type hexcolor
+        my prepare orgtype        -toupper   -required -type eorgtype
+        my prepare base_personnel -num       -required -type iquantity
+        my prepare demeanor       -toupper   -required -type edemeanor
+        my prepare cost           -toupper   -required -type money
     }
 
-    # NEXT, create the group and dependent entities
-    lappend undo [orggroup mutate create [array get parms]]
+    method _execute {{flunky ""}} {
+        if {$parms(longname) eq ""} {
+            set parms(longname) $parms(g)
+        }
     
-    setundo [join $undo \n]
+        lappend undo [orggroup mutate create [array get parms]]
+        
+        my setundo [join $undo \n]
+    }
 }
 
 # ORGGROUP:DELETE
 
-order define ORGGROUP:DELETE {
-    title "Delete Organization Group"
-    options -sendstates PREP
+myorders define ORGGROUP:DELETE {
+    meta title "Delete Organization Group"
+    meta sendstates PREP
 
-    form {
+    meta parmlist {g}
+
+    meta form {
         rcc "Group:" -for g
         orggroup g
     }
-} {
-    # FIRST, prepare the parameters
-    prepare g -toupper -required -type orggroup
 
-    returnOnError -final
 
-    # NEXT, make sure the user knows what he is getting into.
-
-    if {[sender] eq "gui"} {
-        set answer [messagebox popup \
-                        -title         "Are you sure?"                  \
-                        -icon          warning                          \
-                        -buttons       {ok "Delete it" cancel "Cancel"} \
-                        -default       cancel                           \
-                        -onclose       cancel                           \
-                        -ignoretag     ORGGROUP:DELETE                  \
-                        -ignoredefault ok                               \
-                        -parent        [app topwin]                     \
-                        -message       [normalize {
-                            Are you sure you really want to delete this 
-                            group, along with all of the entities that 
-                            depend upon it?
-                        }]]
-
-        if {$answer eq "cancel"} {
-            cancel
-        }
+    method _validate {} {
+        my prepare g -toupper -required -type orggroup
     }
 
-    # NEXT, Delete the group and dependent entities
-    lappend undo [orggroup mutate delete $parms(g)]
-    lappend undo [absit mutate reconcile]
+    method _execute {{flunky ""}} {
+        if {[my mode] eq "gui"} {
+            set answer [messagebox popup \
+                            -title         "Are you sure?"                  \
+                            -icon          warning                          \
+                            -buttons       {ok "Delete it" cancel "Cancel"} \
+                            -default       cancel                           \
+                            -onclose       cancel                           \
+                            -ignoretag     [my name]                        \
+                            -ignoredefault ok                               \
+                            -parent        [app topwin]                     \
+                            -message       [normalize {
+                                Are you sure you really want to delete this 
+                                group, along with all of the entities that 
+                                depend upon it?
+                            }]]
     
-    setundo [join $undo \n]
+            if {$answer eq "cancel"} {
+                my cancel
+            }
+        }
+
+        lappend undo [orggroup mutate delete $parms(g)]
+        lappend undo [absit mutate reconcile]
+        
+        my setundo [join $undo \n]
+    }
 }
 
 
@@ -280,14 +293,25 @@ order define ORGGROUP:DELETE {
 #
 # Updates existing groups.
 
-order define ORGGROUP:UPDATE {
-    title "Update Organization Group"
-    options -sendstates PREP
+myorders define ORGGROUP:UPDATE {
+    meta title "Update Organization Group"
+    meta sendstates PREP
 
-    form {
+    meta parmlist {
+        g
+        longname
+        a
+        color
+        orgtype 
+        base_personnel
+        demeanor
+        cost
+    }
+
+    meta form {
         rcc "Group:" -for g
-        key g -table gui_orggroups -keys g \
-            -loadcmd {orderdialog keyload g *}
+        dbkey g -table gui_orggroups -keys g \
+            -loadcmd {$order_ keyload g *}
 
         rcc "Long Name:" -for longname
         longname longname
@@ -311,21 +335,22 @@ order define ORGGROUP:UPDATE {
         text cost
         label "$/person/week"
     }
-} {
-    # FIRST, prepare the parameters
-    prepare g              -toupper   -required -type orggroup
-    prepare a              -toupper   -type actor
-    prepare longname       -normalize 
-    prepare color          -tolower   -type hexcolor
-    prepare orgtype        -toupper   -type eorgtype
-    prepare base_personnel -num       -type iquantity
-    prepare demeanor       -toupper   -type edemeanor
-    prepare cost           -toupper   -type money
 
-    returnOnError -final
 
-    # NEXT, modify the group
-    setundo [orggroup mutate update [array get parms]]
+    method _validate {} {
+        my prepare g              -toupper   -required -type orggroup
+        my prepare a              -toupper   -type actor
+        my prepare longname       -normalize 
+        my prepare color          -tolower   -type hexcolor
+        my prepare orgtype        -toupper   -type eorgtype
+        my prepare base_personnel -num       -type iquantity
+        my prepare demeanor       -toupper   -type edemeanor
+        my prepare cost           -toupper   -type money
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [orggroup mutate update [array get parms]]
+    }
 }
 
 
@@ -333,14 +358,23 @@ order define ORGGROUP:UPDATE {
 #
 # Updates multiple groups.
 
-order define ORGGROUP:UPDATE:MULTI {
-    title "Update Multiple Organization Groups"
-    options -sendstates PREP
+myorders define ORGGROUP:UPDATE:MULTI {
+    meta title "Update Multiple Organization Groups"
+    meta sendstates PREP
+    meta parmlist {
+        ids
+        a
+        color
+        orgtype
+        base_personnel
+        demeanor
+        cost
+    }
 
-    form {
+    meta form {
         rcc "Groups:" -for ids
-        multi ids -table gui_orggroups -key g \
-            -loadcmd {orderdialog multiload ids *}
+        dbmulti ids -table gui_orggroups -key g \
+            -loadcmd {$order_ multiload ids *}
 
         rcc "Owning Actor:" -for a    
         actor a    
@@ -361,29 +395,29 @@ order define ORGGROUP:UPDATE:MULTI {
         text cost
         label "$/person/week"
     }
-} {
-    # FIRST, prepare the parameters
-    prepare ids            -toupper  -required -listof orggroup
-    prepare a              -toupper            -type   actor
-    prepare color          -tolower            -type   hexcolor
-    prepare orgtype        -toupper            -type   eorgtype
-    prepare base_personnel -num                -type   iquantity
-    prepare demeanor       -toupper            -type   edemeanor
-    prepare cost           -toupper            -type   money
 
-    returnOnError -final
 
-    # NEXT, clear the other parameters expected by the mutator
-    prepare longname
-
-    # NEXT, modify the group
-    set undo [list]
-
-    foreach parms(g) $parms(ids) {
-        lappend undo [orggroup mutate update [array get parms]]
+    method _validate {} {
+        my prepare ids            -toupper  -required -listof orggroup
+        my prepare a              -toupper            -type   actor
+        my prepare color          -tolower            -type   hexcolor
+        my prepare orgtype        -toupper            -type   eorgtype
+        my prepare base_personnel -num                -type   iquantity
+        my prepare demeanor       -toupper            -type   edemeanor
+        my prepare cost           -toupper            -type   money
     }
 
-    setundo [join $undo \n]
+    method _execute {{flunky ""}} {
+        # FIRST, clear the other parameters expected by the mutator
+        set parms(longname) ""
+    
+        set undo [list]
+        foreach parms(g) $parms(ids) {
+            lappend undo [orggroup mutate update [array get parms]]
+        }
+    
+        my setundo [join $undo \n]
+    }
 }
 
 

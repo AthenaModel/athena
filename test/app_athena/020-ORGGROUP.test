@@ -9,7 +9,7 @@
 # DESCRIPTION:
 #    app_sim(1) ORGGROUP:* order tests.
 #
-#    This test suite tests the frcgroup-related orders.
+#    This test suite tests the frcgroup-related orderxs.
 #
 #-----------------------------------------------------------------------
 
@@ -72,7 +72,7 @@ namespace eval ::athena_test::tests:: {
     # ORGGROUP:CREATE
 
     test CREATE-1.1 {required parms} -body {
-        ted order -reject ORGGROUP:CREATE {}
+        ted orderx -reject ORGGROUP:CREATE {}
     } -result {
         g {required value}
     }
@@ -80,9 +80,9 @@ namespace eval ::athena_test::tests:: {
     
     test CREATE-1.2 {Duplicate g} -setup {
         ted create JOE
-        ted order ORGGROUP:CREATE $usaid
+        ted orderx ORGGROUP:CREATE $usaid
     } -body {
-        ted order -reject ORGGROUP:CREATE $usaid
+        ted orderx -reject ORGGROUP:CREATE $usaid
     } -cleanup {
         cleanup
     } -result {
@@ -93,7 +93,7 @@ namespace eval ::athena_test::tests:: {
     test CREATE-1.3 {g is not an ident} -setup {
         ted create JOE
     } -body {
-        ted order -reject ORGGROUP:CREATE [dict merge $usaid {
+        ted orderx -reject ORGGROUP:CREATE [dict merge $usaid {
             g "NONE&SUCH"
         }]
     } -cleanup {
@@ -104,7 +104,7 @@ namespace eval ::athena_test::tests:: {
 
 
     test CREATE-1.4 {Unknown actor} -body {
-        ted order -reject ORGGROUP:CREATE $usaid
+        ted orderx -reject ORGGROUP:CREATE $usaid
     } -cleanup {
         cleanup
     } -result {
@@ -114,7 +114,7 @@ namespace eval ::athena_test::tests:: {
     test CREATE-1.5 {invalid color} -setup {
         ted create JOE
     } -body {
-        ted order -reject ORGGROUP:CREATE [dict merge $usaid {
+        ted orderx -reject ORGGROUP:CREATE [dict merge $usaid {
             color NONESUCH
         }]
     } -cleanup {
@@ -127,7 +127,7 @@ namespace eval ::athena_test::tests:: {
     test CREATE-1.7 {invalid orgtype} -setup {
         ted create JOE
     } -body {
-        ted order -reject ORGGROUP:CREATE [dict merge $usaid {
+        ted orderx -reject ORGGROUP:CREATE [dict merge $usaid {
             orgtype NONESUCH
         }]
     } -cleanup {
@@ -140,7 +140,7 @@ namespace eval ::athena_test::tests:: {
     test CREATE-1.8 {invalid demeanor} -setup {
         ted create JOE
     } -body {
-        ted order -reject ORGGROUP:CREATE [dict merge $usaid {
+        ted orderx -reject ORGGROUP:CREATE [dict merge $usaid {
             demeanor NONESUCH
         }]
     } -cleanup {
@@ -152,7 +152,7 @@ namespace eval ::athena_test::tests:: {
     test CREATE-1.10 {invalid cost} -setup {
         ted create JOE
     } -body {
-        ted order -reject ORGGROUP:CREATE [dict merge $usaid {
+        ted orderx -reject ORGGROUP:CREATE [dict merge $usaid {
             cost NONESUCH
         }]
     } -cleanup {
@@ -164,8 +164,8 @@ namespace eval ::athena_test::tests:: {
     test CREATE-2.1 {orggroup is created} -setup {
         ted create JOE
     } -body {
-        ted order ORGGROUP:CREATE $usaid
-        ted order ORGGROUP:CREATE $hal
+        ted orderx ORGGROUP:CREATE $usaid
+        ted orderx ORGGROUP:CREATE $hal
         ted querylist {SELECT * FROM orggroups_view}
     } -cleanup {
         cleanup
@@ -196,7 +196,7 @@ base_personnel  1000
     test CREATE-2.2 {longname defaults to ID} -setup {
         ted create JOE
     } -body {
-        ted order ORGGROUP:CREATE [dict merge $usaid {longname ""}]
+        ted orderx ORGGROUP:CREATE [dict merge $usaid {longname ""}]
 
         rdb onecolumn {SELECT longname FROM orggroups_view}
     } -cleanup {
@@ -207,7 +207,7 @@ base_personnel  1000
         ted create JOE
     } -body {
         ted notifier bind ::rdb <orggroups>
-        ted order ORGGROUP:CREATE $usaid
+        ted orderx ORGGROUP:CREATE $usaid
         ted notifier received
     } -cleanup {
         cleanup
@@ -218,10 +218,10 @@ base_personnel  1000
 
     test CREATE-3.1 {Undo effects} -setup {
         ted create JOE
-        ted order ORGGROUP:CREATE $usaid
+        ted orderx ORGGROUP:CREATE $usaid
     } -body {
         ted notifier bind ::rdb <orggroups>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -234,14 +234,14 @@ base_personnel  1000
     # ORGGROUP:DELETE
 
     test DELETE-1.1 {required parms} -body {
-        ted order -reject ORGGROUP:DELETE {}
+        ted orderx -reject ORGGROUP:DELETE {}
     } -result {
         g {required value}
     }
 
     
     test DELETE-1.2 {unknown g} -body {
-        ted order -reject ORGGROUP:DELETE g NONESUCH
+        ted orderx -reject ORGGROUP:DELETE g NONESUCH
     } -result {
         g {Invalid organization group, none are defined}
     }
@@ -251,7 +251,7 @@ base_personnel  1000
         ted create USAID
     } -body {
         ted notifier bind ::rdb <orggroups>
-        ted order ORGGROUP:DELETE g USAID
+        ted orderx ORGGROUP:DELETE g USAID
         ted notifier received
     } -cleanup {
         cleanup
@@ -262,10 +262,10 @@ base_personnel  1000
 
     test DELETE-3.1 {Undo effects} -setup {
         ted create USAID
-        ted order ORGGROUP:DELETE g USAID
+        ted orderx ORGGROUP:DELETE g USAID
     } -body {
         ted notifier bind ::rdb <orggroups>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -278,7 +278,7 @@ base_personnel  1000
     # ORGGROUP:UPDATE
 
     test UPDATE-1.1 {required parms} -body {
-        ted order -reject ORGGROUP:UPDATE {}
+        ted orderx -reject ORGGROUP:UPDATE {}
     } -result {
         g {required value}
     }
@@ -286,7 +286,7 @@ base_personnel  1000
     test UPDATE-1.2 {invalid actor} -setup {
         ted create USAID
     } -body {
-        ted order -reject ORGGROUP:UPDATE g USAID a NONESUCH
+        ted orderx -reject ORGGROUP:UPDATE g USAID a NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -297,7 +297,7 @@ base_personnel  1000
     test UPDATE-1.3 {invalid color} -setup {
         ted create USAID
     } -body {
-        ted order -reject ORGGROUP:UPDATE g USAID color NONESUCH
+        ted orderx -reject ORGGROUP:UPDATE g USAID color NONESUCH
     } -cleanup {
         cleanup
     } -match glob -result {
@@ -308,7 +308,7 @@ base_personnel  1000
     test UPDATE-1.5 {invalid orgtype} -setup {
         ted create USAID
     } -body {
-        ted order -reject ORGGROUP:UPDATE g USAID orgtype NONESUCH
+        ted orderx -reject ORGGROUP:UPDATE g USAID orgtype NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -319,7 +319,7 @@ base_personnel  1000
     test UPDATE-1.6 {invalid demeanor} -setup {
         ted create USAID
     } -body {
-        ted order -reject ORGGROUP:UPDATE g USAID demeanor NONESUCH
+        ted orderx -reject ORGGROUP:UPDATE g USAID demeanor NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -330,7 +330,7 @@ base_personnel  1000
     test UPDATE-1.8 {invalid cost} -setup {
         ted create USAID
     } -body {
-        ted order -reject ORGGROUP:UPDATE g USAID cost NONESUCH
+        ted orderx -reject ORGGROUP:UPDATE g USAID cost NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -340,7 +340,7 @@ base_personnel  1000
     test UPDATE-2.1 {orggroup is updated} -setup {
         ted create USAID
     } -body {
-        ted order ORGGROUP:UPDATE {
+        ted orderx ORGGROUP:UPDATE {
             g              USAID
             longname       "Red Cross"
             color          "#ff0000"
@@ -370,7 +370,7 @@ base_personnel  1000
         ted create USAID
     } -body {
         ted notifier bind ::rdb <orggroups>
-        ted order ORGGROUP:UPDATE g USAID longname "Red Cross"
+        ted orderx ORGGROUP:UPDATE g USAID longname "Red Cross"
         ted notifier received
     } -cleanup {
         cleanup
@@ -381,14 +381,14 @@ base_personnel  1000
 
     test UPDATE-3.1 {undo effects} -setup {
         ted create USAID
-        ted order ORGGROUP:UPDATE {
+        ted orderx ORGGROUP:UPDATE {
             g              USAID
             longname       "Red Cross"
             color          "#ff0000"
         }
     } -body {
         ted notifier bind ::rdb <orggroups>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -400,13 +400,13 @@ base_personnel  1000
     # ORGGROUP:UPDATE:MULTI
 
     test UPDATE:MULTI-1.1 {required parms} -body {
-        ted order -reject ORGGROUP:UPDATE:MULTI {}
+        ted orderx -reject ORGGROUP:UPDATE:MULTI {}
     } -result {
         ids {required value}
     }
     
     test UPDATE:MULTI-1.2 {invalid ids, no groups} -body {
-        ted order -reject ORGGROUP:UPDATE:MULTI ids NONESUCH
+        ted orderx -reject ORGGROUP:UPDATE:MULTI ids NONESUCH
     } -result {
         ids {Invalid organization group, none are defined}
     }
@@ -414,7 +414,7 @@ base_personnel  1000
     test UPDATE:MULTI-1.3 {invalid ids, groups} -setup {
         ted create USAID
     } -body {
-        ted order -reject ORGGROUP:UPDATE:MULTI ids NONESUCH
+        ted orderx -reject ORGGROUP:UPDATE:MULTI ids NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -424,7 +424,7 @@ base_personnel  1000
     test UPDATE:MULTI-1.4 {invalid actor} -setup {
         ted create USAID
     } -body {
-        ted order -reject ORGGROUP:UPDATE:MULTI ids USAID a NONESUCH
+        ted orderx -reject ORGGROUP:UPDATE:MULTI ids USAID a NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -434,7 +434,7 @@ base_personnel  1000
     test UPDATE:MULTI-1.5 {invalid color} -setup {
         ted create USAID
     } -body {
-        ted order -reject ORGGROUP:UPDATE:MULTI ids USAID color NONESUCH
+        ted orderx -reject ORGGROUP:UPDATE:MULTI ids USAID color NONESUCH
     } -cleanup {
         cleanup
     } -match glob -result {
@@ -445,7 +445,7 @@ base_personnel  1000
     test UPDATE:MULTI-1.7 {invalid orgtype} -setup {
         ted create USAID
     } -body {
-        ted order -reject ORGGROUP:UPDATE:MULTI \
+        ted orderx -reject ORGGROUP:UPDATE:MULTI \
             ids USAID orgtype NONESUCH
     } -cleanup {
         cleanup
@@ -457,7 +457,7 @@ base_personnel  1000
     test UPDATE:MULTI-1.8 {invalid demeanor} -setup {
         ted create USAID
     } -body {
-        ted order -reject ORGGROUP:UPDATE:MULTI \
+        ted orderx -reject ORGGROUP:UPDATE:MULTI \
             ids USAID demeanor NONESUCH
     } -cleanup {
         cleanup
@@ -469,7 +469,7 @@ base_personnel  1000
     test UPDATE:MULTI-1.10 {invalid cost} -setup {
         ted create USAID
     } -body {
-        ted order -reject ORGGROUP:UPDATE:MULTI \
+        ted orderx -reject ORGGROUP:UPDATE:MULTI \
             ids USAID cost NONESUCH
     } -cleanup {
         cleanup
@@ -483,7 +483,7 @@ base_personnel  1000
     } -body {
         ted notifier bind ::rdb <orggroups>
 
-        ted order ORGGROUP:UPDATE:MULTI {
+        ted orderx ORGGROUP:UPDATE:MULTI {
             ids            USAID 
             color          "#ff0000"
             orgtype        IGO
@@ -501,7 +501,7 @@ base_personnel  1000
     } -body {
         ted notifier bind ::rdb <orggroups>
 
-        ted order ORGGROUP:UPDATE:MULTI {
+        ted orderx ORGGROUP:UPDATE:MULTI {
             ids            {USAID HAL}
             color          "#ff0000"
             orgtype        IGO
@@ -518,11 +518,11 @@ base_personnel  1000
 
     test UPDATE:MULTI-3.2 {undo effects} -setup {
         ted create USAID HAL
-        ted order ORGGROUP:UPDATE:MULTI \
+        ted orderx ORGGROUP:UPDATE:MULTI \
             ids {USAID HAL} color "#ff0000"
     } -body {
         ted notifier bind ::rdb <orggroups>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

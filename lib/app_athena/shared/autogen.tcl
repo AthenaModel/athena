@@ -942,7 +942,7 @@ snit::type autogen {
             set parms(base_personnel) 100000
             set parms(cost) "1K"
 
-            order send cli ORGGROUP:CREATE [array get parms]
+            flunky senddict normal ORGGROUP:CREATE [array get parms]
 
             incr orgtype
             
