@@ -124,7 +124,7 @@ namespace eval ::athena_test::tests:: {
         ted lock
 
         # NEXT, Create a MAD for use; it will be MAD 1.
-        ted order MAD:CREATE narrative "MAGIC Test" \
+        ted orderx MAD:CREATE narrative "MAGIC Test" \
             cause UNIQUE s 1.0 p 0.2 q 0.1
 
         # NEXT, give each listed group zero population.

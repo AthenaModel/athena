@@ -9,7 +9,7 @@
 # DESCRIPTION:
 #    app_sim(1) MAD:* order tests.
 #
-#    This test suite tests the unit-related orders.
+#    This test suite tests the unit-related orderxs.
 #
 #-----------------------------------------------------------------------
 
@@ -105,7 +105,7 @@ namespace eval ::athena_test::tests:: {
 
         # Delete other drivers not needed for this test.
         rdb eval {DELETE FROM drivers}
-        ted order MAD:CREATE $m1 ;# 1
+        ted orderx MAD:CREATE $m1 ;# 1
     }
 
     # Clean up after a test
@@ -119,14 +119,14 @@ namespace eval ::athena_test::tests:: {
     # MAD:CREATE
 
     test CREATE-1.1 {required parms} -body {
-        ted order -reject MAD:CREATE {}
+        ted orderx -reject MAD:CREATE {}
     } -result {
         narrative {required value}
     }
 
 
     test CREATE-1.2 {invalid cause} -body {
-        ted order -reject MAD:CREATE [dict merge $m1 {cause NONESUCH}]
+        ted orderx -reject MAD:CREATE [dict merge $m1 {cause NONESUCH}]
     } -cleanup {
         cleanup
     } -match glob -result {
@@ -135,7 +135,7 @@ namespace eval ::athena_test::tests:: {
 
 
     test CREATE-1.3 {invalid s} -body {
-        ted order -reject MAD:CREATE [dict merge $m1 {s NONESUCH}]
+        ted orderx -reject MAD:CREATE [dict merge $m1 {s NONESUCH}]
     } -cleanup {
         cleanup
     } -result {
@@ -144,7 +144,7 @@ namespace eval ::athena_test::tests:: {
 
 
     test CREATE-1.4 {invalid p} -body {
-        ted order -reject MAD:CREATE [dict merge $m1 {p NONESUCH}]
+        ted orderx -reject MAD:CREATE [dict merge $m1 {p NONESUCH}]
     } -cleanup {
         cleanup
     } -result {
@@ -153,7 +153,7 @@ namespace eval ::athena_test::tests:: {
 
 
     test CREATE-1.5 {invalid q} -body {
-        ted order -reject MAD:CREATE [dict merge $m1 {q NONESUCH}]
+        ted orderx -reject MAD:CREATE [dict merge $m1 {q NONESUCH}]
     } -cleanup {
         cleanup
     } -result {
@@ -163,9 +163,9 @@ namespace eval ::athena_test::tests:: {
 
 
     test CREATE-2.1 {MAD is created} -body {
-        ted order MAD:CREATE $m1  ;# 1
-        ted order MAD:CREATE $m2  ;# 2
-        ted order MAD:CREATE $m3  ;# 3
+        ted orderx MAD:CREATE $m1  ;# 1
+        ted orderx MAD:CREATE $m2  ;# 2
+        ted orderx MAD:CREATE $m3  ;# 3
 
         ted query {SELECT * FROM mads}
     } -cleanup {
@@ -181,7 +181,7 @@ mad_id narrative      cause  s   p   q
 
     test CREATE-2.2 {Effects} -body {
         ted notifier bind ::rdb <mads>
-        ted order MAD:CREATE $m1
+        ted orderx MAD:CREATE $m1
         ted notifier received
     } -cleanup {
         cleanup
@@ -191,10 +191,10 @@ mad_id narrative      cause  s   p   q
 
 
     test CREATE-3.1 {undo effects} -setup {
-        ted order MAD:CREATE $m1
+        ted orderx MAD:CREATE $m1
     } -body {
         ted notifier bind ::rdb <mads>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -207,25 +207,25 @@ mad_id narrative      cause  s   p   q
     # MAD:DELETE
 
     test DELETE-1.1 {required parms} -body {
-        ted order -reject MAD:DELETE {}
+        ted orderx -reject MAD:DELETE {}
     } -result {
         mad_id {required value}
     }
 
     
     test DELETE-1.2 {unknown id} -body {
-        ted order -reject MAD:DELETE mad_id NONESUCH
+        ted orderx -reject MAD:DELETE mad_id NONESUCH
     } -result {
         mad_id {MAD does not exist or is not in initial state: "NONESUCH"}
     }
 
 
     test DELETE-1.3 {invalid MAD (not initial)} -body {
-        ted order MAD:CREATE $m2   ;# 1
+        ted orderx MAD:CREATE $m2   ;# 1
         rdb eval {
             INSERT INTO drivers(dtype,signature) VALUES('MAGIC',1)
         }
-        ted order -reject MAD:DELETE mad_id 1
+        ted orderx -reject MAD:DELETE mad_id 1
     } -cleanup {
         cleanup
     } -result {
@@ -235,10 +235,10 @@ mad_id narrative      cause  s   p   q
 
     test DELETE-2.1 {Effects} -setup {
         ted create BLUE
-        ted order MAD:CREATE $m1     ;# 1
+        ted orderx MAD:CREATE $m1     ;# 1
     } -body {
         ted notifier bind ::rdb <mads>
-        ted order MAD:DELETE mad_id    1
+        ted orderx MAD:DELETE mad_id    1
         ted notifier received
     } -cleanup {
         cleanup
@@ -249,11 +249,11 @@ mad_id narrative      cause  s   p   q
 
     test DELETE-3.1 {Undo effects} -setup {
         ted create BLUE
-        ted order MAD:CREATE $m1    ;# 1
-        ted order MAD:DELETE mad_id    1
+        ted orderx MAD:CREATE $m1    ;# 1
+        ted orderx MAD:DELETE mad_id    1
     } -body {
         ted notifier bind ::rdb <mads>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -266,14 +266,14 @@ mad_id narrative      cause  s   p   q
     # MAD:UPDATE
 
     test UPDATE-1.1 {required parms} -body {
-        ted order -reject MAD:UPDATE {}
+        ted orderx -reject MAD:UPDATE {}
     } -result {
         mad_id {required value}
     }
     
 
     test UPDATE-1.2 {invalid MAD} -body {
-        ted order -reject MAD:UPDATE mad_id    1 narrative PATROL
+        ted orderx -reject MAD:UPDATE mad_id    1 narrative PATROL
     } -cleanup {
         cleanup
     } -result {
@@ -282,9 +282,9 @@ mad_id narrative      cause  s   p   q
 
 
     test UPDATE-1.3 {invalid cause} -setup {
-        ted order MAD:CREATE $m1    ;# 1
+        ted orderx MAD:CREATE $m1    ;# 1
     } -body {
-        ted order -reject MAD:UPDATE mad_id    1 cause NONESUCH
+        ted orderx -reject MAD:UPDATE mad_id    1 cause NONESUCH
     } -cleanup {
         cleanup
     } -match glob -result {
@@ -293,9 +293,9 @@ mad_id narrative      cause  s   p   q
 
 
     test UPDATE-1.4 {invalid s} -setup {
-        ted order MAD:CREATE $m1    ;# 1
+        ted orderx MAD:CREATE $m1    ;# 1
     } -body {
-        ted order -reject MAD:UPDATE mad_id    1 s NONESUCH
+        ted orderx -reject MAD:UPDATE mad_id    1 s NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -304,9 +304,9 @@ mad_id narrative      cause  s   p   q
 
 
     test UPDATE-1.5 {invalid p} -setup {
-        ted order MAD:CREATE $m1    ;# 1
+        ted orderx MAD:CREATE $m1    ;# 1
     } -body {
-        ted order -reject MAD:UPDATE mad_id    1 p NONESUCH
+        ted orderx -reject MAD:UPDATE mad_id    1 p NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -315,9 +315,9 @@ mad_id narrative      cause  s   p   q
 
 
     test UPDATE-1.6 {invalid q} -setup {
-        ted order MAD:CREATE $m1    ;# 1
+        ted orderx MAD:CREATE $m1    ;# 1
     } -body {
-        ted order -reject MAD:UPDATE mad_id    1 q NONESUCH
+        ted orderx -reject MAD:UPDATE mad_id    1 q NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -326,9 +326,9 @@ mad_id narrative      cause  s   p   q
 
 
     test UPDATE-2.1 {MAD is updated} -setup {
-        ted order MAD:CREATE $m1  ;# 1
+        ted orderx MAD:CREATE $m1  ;# 1
     } -body {
-        ted order MAD:UPDATE {
+        ted orderx MAD:UPDATE {
             mad_id    1 
             narrative "MAD the First"
             cause     GUARD
@@ -348,10 +348,10 @@ mad_id narrative     cause s   p   q
 
 
     test UPDATE-2.2 {table monitor event} -setup {
-        ted order MAD:CREATE $m1   ;# 1
+        ted orderx MAD:CREATE $m1   ;# 1
     } -body {
         ted notifier bind ::rdb <mads>
-        ted order MAD:UPDATE mad_id    1 narrative "MAD the FIRST"
+        ted orderx MAD:UPDATE mad_id    1 narrative "MAD the FIRST"
         ted notifier received
     } -cleanup {
         cleanup
@@ -361,11 +361,11 @@ mad_id narrative     cause s   p   q
 
 
     test UPDATE-3.1 {undo undoes the change} -setup {
-        ted order MAD:CREATE $m1    ;# 1
-        ted order MAD:UPDATE mad_id    1 narrative "MAD the FIRST"
+        ted orderx MAD:CREATE $m1    ;# 1
+        ted orderx MAD:UPDATE mad_id    1 narrative "MAD the FIRST"
     } -body {
         ted notifier bind ::rdb <mads>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -380,7 +380,7 @@ mad_id narrative     cause s   p   q
     test HREL-1.1 {required parms}   -setup {
         lock
     } -body {
-        ted order -reject MAD:HREL {}
+        ted orderx -reject MAD:HREL {}
     } -cleanup {
         cleanup
     } -result {
@@ -393,7 +393,7 @@ mad_id narrative     cause s   p   q
     test HREL-1.2 {invalid mad_id} -setup {
         lock
     } -body {
-        ted order -reject MAD:HREL \
+        ted orderx -reject MAD:HREL \
             [dict merge $hrelinput {mad_id NONESUCH}]
     } -cleanup {
         cleanup
@@ -405,7 +405,7 @@ mad_id narrative     cause s   p   q
     test HREL-1.3 {invalid mode} -setup {
         lock
     } -body {
-        ted order -reject MAD:HREL \
+        ted orderx -reject MAD:HREL \
             [dict merge $hrelinput {mode NONESUCH}]
     } -cleanup {
         cleanup
@@ -416,7 +416,7 @@ mad_id narrative     cause s   p   q
     test HREL-1.4 {invalid f} -setup {
         lock
     } -body {
-        ted order -reject MAD:HREL \
+        ted orderx -reject MAD:HREL \
             [dict merge $hrelinput {f NONESUCH}]
     } -cleanup {
         cleanup
@@ -428,7 +428,7 @@ mad_id narrative     cause s   p   q
     test HREL-1.5 {invalid g} -setup {
         lock
     } -body {
-        ted order -reject MAD:HREL \
+        ted orderx -reject MAD:HREL \
             [dict merge $hrelinput {g NONESUCH}]
     } -cleanup {
         cleanup
@@ -439,7 +439,7 @@ mad_id narrative     cause s   p   q
     test HREL-1.6 {f=g} -setup {
         lock
     } -body {
-        ted order -reject MAD:HREL \
+        ted orderx -reject MAD:HREL \
             [dict merge $hrelinput {g SHIA}]
     } -cleanup {
         cleanup
@@ -450,7 +450,7 @@ mad_id narrative     cause s   p   q
     test HREL-1.7 {invalid mag} -setup {
         lock
     } -body {
-        ted order -reject MAD:HREL \
+        ted orderx -reject MAD:HREL \
             [dict merge $hrelinput {mag NONESUCH}]
     } -cleanup {
         cleanup
@@ -461,7 +461,7 @@ mad_id narrative     cause s   p   q
     test HREL-2.1 {Order is accepted} -setup {
         lock
     } -body {
-        ted order MAD:HREL $hrelinput
+        ted orderx MAD:HREL $hrelinput
         ted order SIM:RUN weeks 1 block yes
     } -cleanup {
         cleanup
@@ -474,7 +474,7 @@ mad_id narrative     cause s   p   q
     test VREL-1.1 {required parms}   -setup {
         lock
     } -body {
-        ted order -reject MAD:VREL {}
+        ted orderx -reject MAD:VREL {}
     } -cleanup {
         cleanup
     } -result {
@@ -487,7 +487,7 @@ mad_id narrative     cause s   p   q
     test VREL-1.2 {invalid mad_id} -setup {
         lock
     } -body {
-        ted order -reject MAD:VREL \
+        ted orderx -reject MAD:VREL \
             [dict merge $vrelinput {mad_id NONESUCH}]
     } -cleanup {
         cleanup
@@ -499,7 +499,7 @@ mad_id narrative     cause s   p   q
     test VREL-1.3 {invalid mode} -setup {
         lock
     } -body {
-        ted order -reject MAD:VREL \
+        ted orderx -reject MAD:VREL \
             [dict merge $vrelinput {mode NONESUCH}]
     } -cleanup {
         cleanup
@@ -510,7 +510,7 @@ mad_id narrative     cause s   p   q
     test VREL-1.4 {invalid f} -setup {
         lock
     } -body {
-        ted order -reject MAD:VREL \
+        ted orderx -reject MAD:VREL \
             [dict merge $vrelinput {g NONESUCH}]
     } -cleanup {
         cleanup
@@ -522,7 +522,7 @@ mad_id narrative     cause s   p   q
     test VREL-1.5 {invalid a} -setup {
         lock
     } -body {
-        ted order -reject MAD:VREL \
+        ted orderx -reject MAD:VREL \
             [dict merge $vrelinput {a NONESUCH}]
     } -cleanup {
         cleanup
@@ -533,7 +533,7 @@ mad_id narrative     cause s   p   q
     test VREL-1.6 {invalid mag} -setup {
         lock
     } -body {
-        ted order -reject MAD:VREL \
+        ted orderx -reject MAD:VREL \
             [dict merge $vrelinput {mag NONESUCH}]
     } -cleanup {
         cleanup
@@ -544,7 +544,7 @@ mad_id narrative     cause s   p   q
     test VREL-2.1 {Order is accepted} -setup {
         lock
     } -body {
-        ted order MAD:VREL $vrelinput
+        ted orderx MAD:VREL $vrelinput
         ted order SIM:RUN weeks 1 block yes
     } -cleanup {
         cleanup
@@ -557,7 +557,7 @@ mad_id narrative     cause s   p   q
     test SAT-1.1 {required parms}  -setup {
         lock
     } -body {
-        ted order -reject MAD:SAT {}
+        ted orderx -reject MAD:SAT {}
     } -cleanup {
         cleanup
     } -result {
@@ -571,7 +571,7 @@ mad_id narrative     cause s   p   q
     test SAT-1.2 {invalid mad_id}  -setup {
         lock
     } -body {
-        ted order -reject MAD:SAT \
+        ted orderx -reject MAD:SAT \
             [dict merge $satinput {mad_id NONESUCH}]
     } -cleanup {
         cleanup
@@ -582,7 +582,7 @@ mad_id narrative     cause s   p   q
     test SAT-1.3 {invalid mode}  -setup {
         lock
     } -body {
-        ted order -reject MAD:SAT \
+        ted orderx -reject MAD:SAT \
             [dict merge $satinput {mode NONESUCH}]
     } -cleanup {
         cleanup
@@ -594,7 +594,7 @@ mad_id narrative     cause s   p   q
     test SAT-1.4 {invalid g}  -setup {
         lock
     } -body {
-        ted order -reject MAD:SAT \
+        ted orderx -reject MAD:SAT \
             [dict merge $satinput {g NONESUCH}]
     } -cleanup {
         cleanup
@@ -606,7 +606,7 @@ mad_id narrative     cause s   p   q
     test SAT-1.5 {invalid c}  -setup {
         lock
     } -body {
-        ted order -reject MAD:SAT \
+        ted orderx -reject MAD:SAT \
             [dict merge $satinput {c NONESUCH}]
     } -cleanup {
         cleanup
@@ -617,7 +617,7 @@ mad_id narrative     cause s   p   q
     test SAT-1.6 {invalid mag}  -setup {
         lock
     } -body {
-        ted order -reject MAD:SAT \
+        ted orderx -reject MAD:SAT \
             [dict merge $satinput {mag NONESUCH}]
     } -cleanup {
         cleanup
@@ -628,7 +628,7 @@ mad_id narrative     cause s   p   q
     test SAT-2.1 {Order is accepted}  -setup {
         lock
     } -body {
-        ted order MAD:SAT $satinput
+        ted orderx MAD:SAT $satinput
         ted order SIM:RUN weeks 1 block yes
     } -cleanup {
         cleanup
@@ -641,7 +641,7 @@ mad_id narrative     cause s   p   q
     test COOP-1.1 {required parms}   -setup {
         lock
     } -body {
-        ted order -reject MAD:COOP {}
+        ted orderx -reject MAD:COOP {}
     } -cleanup {
         cleanup
     } -result {
@@ -654,7 +654,7 @@ mad_id narrative     cause s   p   q
     test COOP-1.2 {invalid mad_id} -setup {
         lock
     } -body {
-        ted order -reject MAD:COOP \
+        ted orderx -reject MAD:COOP \
             [dict merge $coopinput {mad_id NONESUCH}]
     } -cleanup {
         cleanup
@@ -666,7 +666,7 @@ mad_id narrative     cause s   p   q
     test COOP-1.3 {invalid mode} -setup {
         lock
     } -body {
-        ted order -reject MAD:COOP \
+        ted orderx -reject MAD:COOP \
             [dict merge $coopinput {mode NONESUCH}]
     } -cleanup {
         cleanup
@@ -677,7 +677,7 @@ mad_id narrative     cause s   p   q
     test COOP-1.4 {invalid f} -setup {
         lock
     } -body {
-        ted order -reject MAD:COOP \
+        ted orderx -reject MAD:COOP \
             [dict merge $coopinput {f NONESUCH}]
     } -cleanup {
         cleanup
@@ -689,7 +689,7 @@ mad_id narrative     cause s   p   q
     test COOP-1.5 {invalid g} -setup {
         lock
     } -body {
-        ted order -reject MAD:COOP \
+        ted orderx -reject MAD:COOP \
             [dict merge $coopinput {g NONESUCH}]
     } -cleanup {
         cleanup
@@ -701,7 +701,7 @@ mad_id narrative     cause s   p   q
     test COOP-1.6 {invalid mag} -setup {
         lock
     } -body {
-        ted order -reject MAD:COOP \
+        ted orderx -reject MAD:COOP \
             [dict merge $coopinput {mag NONESUCH}]
     } -cleanup {
         cleanup
@@ -712,7 +712,7 @@ mad_id narrative     cause s   p   q
     test COOP-2.1 {Order is accepted} -setup {
         lock
     } -body {
-        ted order MAD:COOP $coopinput
+        ted orderx MAD:COOP $coopinput
         ted order SIM:RUN weeks 1 block yes
     } -cleanup {
         cleanup

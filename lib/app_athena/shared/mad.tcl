@@ -360,12 +360,20 @@ snit::type mad {
 #
 # Creates a new MAD.
 
-order define MAD:CREATE {
-    title "Create Magic Attitude Driver"
+myorders define MAD:CREATE {
+    meta title "Create Magic Attitude Driver"
 
-    options -sendstates {PREP PAUSED TACTIC}
+    meta sendstates {PREP PAUSED TACTIC}
 
-    form {
+    meta parmlist {
+        narrative
+        {cause UNIQUE}
+        {s     1.0}
+        {p     0.0}
+        {q     0.0}
+    }
+
+    meta form {
         rcc "Narrative:" -for narrative
         text narrative -width 40
 
@@ -381,20 +389,21 @@ order define MAD:CREATE {
         rcc "Far Factor:" -for q
         frac q -defvalue 0.0
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare narrative          -required
-    prepare cause     -toupper -required -type {ptype ecause+unique}
-    prepare s         -num     -required -type rfraction
-    prepare p         -num     -required -type rfraction
-    prepare q         -num     -required -type rfraction
 
-    returnOnError -final
 
-    # NEXT, create the mad
-    lappend undo [mad mutate create [array get parms]]
+    method _validate {} {
+        my prepare narrative          -required
+        my prepare cause     -toupper -required -type {ptype ecause+unique}
+        my prepare s         -num     -required -type rfraction
+        my prepare p         -num     -required -type rfraction
+        my prepare q         -num     -required -type rfraction
+    }
 
-    setundo [join $undo \n]
+    method _execute {{flunky ""}} {
+        lappend undo [mad mutate create [array get parms]]
+    
+        my setundo [join $undo \n]
+    }
 }
 
 
@@ -402,50 +411,50 @@ order define MAD:CREATE {
 #
 # Deletes a MAD in the initial state
 
-order define MAD:DELETE {
-    title "Delete Magic Attitude Driver"
-    options \
-        -sendstates {PREP PAUSED}
+myorders define MAD:DELETE {
+    meta title "Delete Magic Attitude Driver"
+    meta sendstates {PREP PAUSED}
 
-    form {
+    meta parmlist {mad_id}
+
+    meta form {
         rcc "MAD ID:" -for mad_id
         # Can't use "mad" field type, since only unused MADs can be
         # deleted.
-        key mad_id -table gui_mads_initial -keys mad_id -dispcols longid
+        dbkey mad_id -table gui_mads_initial -keys mad_id -dispcols longid
     }
-} {
-    # FIRST, prepare the parameters
-    prepare mad_id -toupper -required -type {mad initial}
 
-    returnOnError -final
 
-    # NEXT, make sure the user knows what he is getting into.
+    method _validate {} {
+        my prepare mad_id -toupper -required -type {mad initial}
+    }
 
-    if {[sender] eq "gui"} {
-        set answer [messagebox popup \
-                        -title         "Are you sure?"                  \
-                        -icon          warning                          \
-                        -buttons       {ok "Delete it" cancel "Cancel"} \
-                        -default       cancel                           \
-                        -onclose       cancel                           \
-                        -ignoretag     MAD:DELETE                       \
-                        -ignoredefault ok                               \
-                        -parent        [app topwin]                     \
-                        -message       [normalize {
-                            Are you sure you
-                            really want to delete this magic attitude
-                            driver?
-                        }]]
-
-        if {$answer eq "cancel"} {
-            cancel
+    method _execute {{flunky ""}} {
+        if {[my mode] eq "gui"} {
+            set answer [messagebox popup \
+                            -title         "Are you sure?"                  \
+                            -icon          warning                          \
+                            -buttons       {ok "Delete it" cancel "Cancel"} \
+                            -default       cancel                           \
+                            -onclose       cancel                           \
+                            -ignoretag     [my name]                        \
+                            -ignoredefault ok                               \
+                            -parent        [app topwin]                     \
+                            -message       [normalize {
+                                Are you sure you
+                                really want to delete this magic attitude
+                                driver?
+                            }]]
+    
+            if {$answer eq "cancel"} {
+                my cancel
+            }
         }
+    
+        lappend undo [mad mutate delete $parms(mad_id)]
+    
+        my setundo [join $undo \n]
     }
-
-    # NEXT, Delete the mad
-    lappend undo [mad mutate delete $parms(mad_id)]
-
-    setundo [join $undo \n]
 }
 
 
@@ -453,14 +462,18 @@ order define MAD:DELETE {
 #
 # Updates an existing mad's description
 
-order define MAD:UPDATE {
-    title "Update Magic Attitude Driver"
-    options -sendstates {PREP PAUSED TACTIC}
+myorders define MAD:UPDATE {
+    meta title "Update Magic Attitude Driver"
+    meta sendstates {PREP PAUSED TACTIC}
 
-    form {
+    meta parmlist {
+        mad_id narrative cause s p q
+    }
+
+    meta form {
         rcc "MAD ID:" -for mad_id
         mad mad_id \
-            -loadcmd {orderdialog keyload mad_id *}
+            -loadcmd {$order_ keyload mad_id *}
 
         rcc "Narrative:" -for narrative
         text narrative -width 40
@@ -478,32 +491,37 @@ order define MAD:UPDATE {
         frac q
 
     }
-} {
-    # FIRST, prepare the parameters
-    prepare mad_id    -required -type mad
-    prepare narrative
-    prepare cause     -toupper  -type {ptype ecause+unique}
-    prepare s         -num      -type rfraction
-    prepare p         -num      -type rfraction
-    prepare q         -num      -type rfraction
 
-    returnOnError -final
 
-    # NEXT, update the MAD
-    lappend undo [mad mutate update [array get parms]]
+    method _validate {} {
+        my prepare mad_id    -required -type mad
+        my prepare narrative
+        my prepare cause     -toupper  -type {ptype ecause+unique}
+        my prepare s         -num      -type rfraction
+        my prepare p         -num      -type rfraction
+        my prepare q         -num      -type rfraction
+    }
 
-    setundo [join $undo \n]
+    method _execute {{flunky ""}} {
+        lappend undo [mad mutate update [array get parms]]
+    
+        my setundo [join $undo \n]
+    }
 }
 
 # MAD:HREL
 #
 # Enters a magic horizontal relationship input.
 
-order define MAD:HREL {
-    title "Magic Horizontal Relationship Input"
-    options -sendstates {PAUSED TACTIC}
+myorders define MAD:HREL {
+    meta title "Magic Horizontal Relationship Input"
+    meta sendstates {PAUSED TACTIC}
 
-    form {
+    meta parmlist {
+        mad_id {mode transient} f g mag
+    }
+
+    meta form {
         rcc "MAD ID:" -for mad_id
         mad mad_id
 
@@ -520,39 +538,42 @@ order define MAD:HREL {
         mag mag
         label "points of change"
     }
-} {
-    # FIRST, prepare the parameters
-    prepare mad_id             -required -type mad
-    prepare mode      -tolower -required -type einputmode
-    prepare f         -toupper -required -type group
-    prepare g         -toupper -required -type group
-    prepare mag  -num -toupper -required -type qmag
 
-    returnOnError
 
-    validate g {
-        if {$parms(g) eq $parms(f)} {
-            reject g "Cannot change a group's relationship with itself."
+    method _validate {} {
+        my prepare mad_id             -required -type mad
+        my prepare mode      -tolower -required -type einputmode
+        my prepare f         -toupper -required -type group
+        my prepare g         -toupper -required -type group
+        my prepare mag  -num -toupper -required -type qmag
+    
+        my returnOnError
+    
+        my checkon g {
+            if {$parms(g) eq $parms(f)} {
+                my reject g "Cannot change a group's relationship with itself."
+            }
         }
     }
 
-    returnOnError -final
-
-    # NEXT, modify the curve
-    mad mutate hrel [array get parms]
-
-    return
+    method _execute {{flunky ""}} {
+        mad mutate hrel [array get parms]
+    }
 }
 
 # MAD:VREL
 #
 # Enters a magic vertical relationship input.
 
-order define MAD:VREL {
-    title "Magic Vertical Relationship Input"
-    options -sendstates {PAUSED TACTIC}
+myorders define MAD:VREL {
+    meta title "Magic Vertical Relationship Input"
+    meta sendstates {PAUSED TACTIC}
 
-    form {
+    meta parmlist {
+        mad_id {mode transient} g a mag
+    }
+
+    meta form {
         rcc "MAD ID:" -for mad_id
         mad mad_id
 
@@ -569,31 +590,34 @@ order define MAD:VREL {
         mag mag
         label "points of change"
     }
-} {
-    # FIRST, prepare the parameters
-    prepare mad_id             -required -type mad
-    prepare mode      -tolower -required -type einputmode
-    prepare g         -toupper -required -type group
-    prepare a         -toupper -required -type actor
-    prepare mag  -num -toupper -required -type qmag
 
-    returnOnError -final
 
-    # NEXT, modify the curve
-    mad mutate vrel [array get parms]
+    method _validate {} {
+        my prepare mad_id             -required -type mad
+        my prepare mode      -tolower -required -type einputmode
+        my prepare g         -toupper -required -type group
+        my prepare a         -toupper -required -type actor
+        my prepare mag  -num -toupper -required -type qmag
+    }
 
-    return
+    method _execute {{flunky ""}} {
+        mad mutate vrel [array get parms]
+    }
 }
 
 # MAD:SAT
 #
 # Enters a magic satisfaction input.
 
-order define MAD:SAT {
-    title "Magic Satisfaction Input"
-    options -sendstates {PAUSED TACTIC}
+myorders define MAD:SAT {
+    meta title "Magic Satisfaction Input"
+    meta sendstates {PAUSED TACTIC}
 
-    form {
+    meta parmlist {
+        mad_id {mode transient} g c mag
+    }
+
+    meta form {
         rcc "MAD ID:" -for mad_id
         mad mad_id
 
@@ -610,20 +634,19 @@ order define MAD:SAT {
         mag mag
         label "points of change"
     }
-} {
-    # FIRST, prepare the parameters
-    prepare mad_id             -required -type mad
-    prepare mode      -tolower -required -type einputmode
-    prepare g         -toupper -required -type civgroup
-    prepare c         -toupper -required -type {ptype c}
-    prepare mag  -num -toupper -required -type qmag
 
-    returnOnError -final
 
-    # NEXT, modify the curve
-    mad mutate sat [array get parms]
+    method _validate {} {
+        my prepare mad_id             -required -type mad
+        my prepare mode      -tolower -required -type einputmode
+        my prepare g         -toupper -required -type civgroup
+        my prepare c         -toupper -required -type {ptype c}
+        my prepare mag  -num -toupper -required -type qmag
+    }
 
-    return
+    method _execute {{flunky ""}} {
+        mad mutate sat [array get parms]
+    }
 }
 
 
@@ -631,11 +654,15 @@ order define MAD:SAT {
 #
 # Enters a magic cooperation input.
 
-order define MAD:COOP {
-    title "Magic Cooperation Input"
-    options -sendstates {PAUSED TACTIC}
+myorders define MAD:COOP {
+    meta title "Magic Cooperation Input"
+    meta sendstates {PAUSED TACTIC}
 
-    form {
+    meta parmlist {
+        mad_id {mode transient} f g mag
+    }
+
+    meta form {
         rcc "MAD ID:" -for mad_id
         mad mad_id
 
@@ -652,20 +679,19 @@ order define MAD:COOP {
         mag mag
         label "points of change"
     }
-} {
-    # FIRST, prepare the parameters
-    prepare mad_id             -required -type mad
-    prepare mode      -tolower -required -type einputmode
-    prepare f         -toupper -required -type civgroup
-    prepare g         -toupper -required -type frcgroup
-    prepare mag  -num -toupper -required -type qmag
 
-    returnOnError -final
 
-    # NEXT, modify the curve
-    mad mutate coop [array get parms]
+    method _validate {} {
+        my prepare mad_id             -required -type mad
+        my prepare mode      -tolower -required -type einputmode
+        my prepare f         -toupper -required -type civgroup
+        my prepare g         -toupper -required -type frcgroup
+        my prepare mag  -num -toupper -required -type qmag
+    }
 
-    return
+    method _execute {{flunky ""}} {
+        mad mutate coop [array get parms]
+    }
 }
 
 

@@ -75,7 +75,7 @@ snit::widgetadaptor madbrowser {
             -state   normal                       \
             -command [mymethod AddEntity]
 
-        cond::available control $addbtn \
+        cond::availablex control $addbtn \
             order MAD:CREATE
 
 
@@ -84,7 +84,7 @@ snit::widgetadaptor madbrowser {
             -state   disabled                        \
             -command [mymethod EditSelected]
 
-        cond::availableSingle control $editbtn   \
+        cond::availableSinglex control $editbtn   \
             order   MAD:UPDATE \
             browser $win
 
@@ -94,7 +94,7 @@ snit::widgetadaptor madbrowser {
             -state   disabled                              \
             -command [mymethod DeleteSelected]
 
-        cond::availableCanDelete control $deletebtn \
+        cond::availableCanDeletex control $deletebtn \
             order   MAD:DELETE  \
             browser $win
 
@@ -142,8 +142,8 @@ snit::widgetadaptor madbrowser {
 
     method SelectionChanged {} {
         # FIRST, update buttons
-        cond::availableSingle     update $editbtn
-        cond::availableCanDelete  update $deletebtn
+        cond::availableSinglex     update $editbtn
+        cond::availableCanDeletex  update $deletebtn
 
         # NEXT, notify the app of the selection.
         if {[llength [$hull uid curselection]] == 1} {
@@ -159,7 +159,7 @@ snit::widgetadaptor madbrowser {
 
     method AddEntity {} {
         # FIRST, Pop up the dialog
-        order enter MAD:CREATE
+        app enter MAD:CREATE
     }
 
     # EditSelected
@@ -171,7 +171,7 @@ snit::widgetadaptor madbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Pop up the order dialog.
-        order enter MAD:UPDATE mad_id $id
+        app enter MAD:UPDATE mad_id $id
     }
 
 
@@ -184,7 +184,7 @@ snit::widgetadaptor madbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Send the delete order.
-        order send gui MAD:DELETE mad_id $id
+        flunky senddict normal MAD:DELETE [list mad_id $id]
     }
 
 }

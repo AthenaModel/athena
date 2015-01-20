@@ -764,14 +764,14 @@ snit::widget appwin {
         $ordersmenu add cascade -label "Magic Attitude Driver" \
             -underline 0 -menu $submenu
 
-        $self AddOrder $submenu MAD:CREATE
-        $self AddOrder $submenu MAD:UPDATE
-        $self AddOrder $submenu MAD:DELETE
+        $self AddOrderX $submenu MAD:CREATE
+        $self AddOrderX $submenu MAD:UPDATE
+        $self AddOrderX $submenu MAD:DELETE
 
-        $self AddOrder $submenu MAD:HREL
-        $self AddOrder $submenu MAD:VREL
-        $self AddOrder $submenu MAD:SAT
-        $self AddOrder $submenu MAD:COOP
+        $self AddOrderX $submenu MAD:HREL
+        $self AddOrderX $submenu MAD:VREL
+        $self AddOrderX $submenu MAD:SAT
+        $self AddOrderX $submenu MAD:COOP
 
         # Orders/Actors
         set submenu [menu $ordersmenu.actor]
@@ -830,7 +830,7 @@ snit::widget appwin {
         
         $self AddOrderX $submenu HREL:OVERRIDE
         $self AddOrderX $submenu HREL:RESTORE
-        $self AddOrder $submenu MAD:HREL
+        $self AddOrderX $submenu MAD:HREL
     
         # Orders/Vert. Relationship Menu
         set submenu [menu $ordersmenu.vrel]
@@ -839,7 +839,7 @@ snit::widget appwin {
         
         $self AddOrderX $submenu VREL:OVERRIDE
         $self AddOrderX $submenu VREL:RESTORE
-        $self AddOrder $submenu MAD:VREL
+        $self AddOrderX $submenu MAD:VREL
     
         # Orders/Satisfaction Menu
         set submenu [menu $ordersmenu.sat]
@@ -847,7 +847,7 @@ snit::widget appwin {
             -underline 0 -menu $submenu
         
         $self AddOrderX $submenu SAT:UPDATE
-        $self AddOrder $submenu MAD:SAT
+        $self AddOrderX $submenu MAD:SAT
 
         # Orders/Cooperation Menu
         set submenu [menu $ordersmenu.coop]
@@ -855,7 +855,7 @@ snit::widget appwin {
             -underline 0 -menu $submenu
         
         $self AddOrderX $submenu COOP:UPDATE
-        $self AddOrder $submenu MAD:COOP
+        $self AddOrderX $submenu MAD:COOP
 
         # Orders/Comm. Asset Package Menu
         set submenu [menu $ordersmenu.cap]

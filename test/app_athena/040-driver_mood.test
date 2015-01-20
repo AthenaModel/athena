@@ -76,11 +76,11 @@ namespace eval ::athena_test::tests:: {
         ted lock
         
         # NEXT, add an input of the relevant kind.
-        ted order MAD:CREATE narrative "Mood Test" \
+        ted orderx MAD:CREATE narrative "Mood Test" \
             cause UNIQUE s 0.0 p 0.0 q 0.0
         set madId [ted sendex last_mad]
         foreach c {AUT CUL QOL SFT} {
-            ted order MAD:SAT mad_id $madId mode persistent \
+            ted orderx MAD:SAT mad_id $madId mode persistent \
                 g SHIA c $c mag $delta
         }
         
