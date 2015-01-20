@@ -56,12 +56,14 @@ payload type define VREL {a mag} {
 #
 # Creates a new VREL payload.
 
-order define PAYLOAD:VREL:CREATE {
-    title "Create Payload: Vertical Relationship"
+myorders define PAYLOAD:VREL:CREATE {
+    meta title "Create Payload: Vertical Relationship"
 
-    options -sendstates PREP
+    meta sendstates PREP
 
-    form {
+    meta parmlist {iom_id longname a mag}
+
+    meta form {
         rcc "Message ID:" -for iom_id
         text iom_id -context yes
 
@@ -75,34 +77,36 @@ order define PAYLOAD:VREL:CREATE {
         mag mag
         label "points of change"
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare iom_id   -toupper   -required -type iom
-    prepare a        -toupper   -required -type actor
-    prepare mag -num -toupper   -required -type qmag
 
-    returnOnError -final
 
-    # NEXT, put payload_type in the parmdict
-    set parms(payload_type) VREL
+    method _validate {} {
+        my prepare iom_id   -toupper   -required -type iom
+        my prepare a        -toupper   -required -type actor
+        my prepare mag -num -toupper   -required -type qmag
+    }
 
-    # NEXT, create the payload
-    setundo [payload mutate create [array get parms]]
+    method _execute {{flunky ""}} {
+        set parms(payload_type) VREL
+    
+        my setundo [payload mutate create [array get parms]]
+    }
 }
 
 # PAYLOAD:VREL:UPDATE
 #
 # Updates existing VREL payload.
 
-order define PAYLOAD:VREL:UPDATE {
-    title "Update Payload: Vertical Relationship"
-    options -sendstates PREP 
+myorders define PAYLOAD:VREL:UPDATE {
+    meta title "Update Payload: Vertical Relationship"
+    meta sendstates PREP 
 
-    form {
+    meta parmlist {id longname a mag}
+
+    meta form {
         rcc "Payload:" -for id
-        key id -context yes -table gui_payloads_VREL \
+        dbkey id -context yes -table gui_payloads_VREL \
             -keys {iom_id payload_num} \
-            -loadcmd {orderdialog keyload id {a mag}}
+            -loadcmd {$order_ keyload id {a mag}}
 
         rcc "Description:" -for longname
         disp longname -width 60
@@ -114,16 +118,17 @@ order define PAYLOAD:VREL:UPDATE {
         mag mag
         label "points of change"
     }
-} {
-    # FIRST, prepare the parameters
-    prepare id         -required -type payload
-    prepare a          -toupper  -type actor
-    prepare mag  -num  -toupper  -type qmag
 
-    returnOnError -final
 
-    # NEXT, modify the payload
-    setundo [payload mutate update [array get parms]]
+    method _validate {} {
+        my prepare id         -required -type payload
+        my prepare a          -toupper  -type actor
+        my prepare mag  -num  -toupper  -type qmag
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [payload mutate update [array get parms]]
+    }
 }
 
 

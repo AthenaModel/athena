@@ -451,7 +451,7 @@ snit::widget iombrowser {
         } else {
             set iom_id [payload get $oid iom_id]
             set longname [iom get $iom_id longname]
-            order enter PAYLOAD:$otype:UPDATE id $oid longname $longname
+            app enter PAYLOAD:$otype:UPDATE id $oid longname $longname
         }
     }
 
@@ -491,9 +491,9 @@ snit::widget iombrowser {
             set state [payload get $oid state]
 
             if {$state eq "normal"} {
-                order send gui PAYLOAD:STATE id $oid state disabled
+                flunky senddict gui PAYLOAD:STATE [list id $oid state disabled]
             } elseif {$state eq "disabled"} {
-                order send gui PAYLOAD:STATE id $oid state normal
+                flunky senddict gui PAYLOAD:STATE [list id $oid state normal]
             } else {
                 # Do nothing (this should never happen anyway)
             }
@@ -525,8 +525,8 @@ snit::widget iombrowser {
             order send gui IOM:DELETE \
                 iom_id [$iptree item text $id {tag id}]
         } else {
-            order send gui PAYLOAD:DELETE \
-                id [$iptree item text $id {tag id}]
+            flunky senddict gui PAYLOAD:DELETE \
+                [list id [$iptree item text $id {tag id}]]
         }
     }
 
@@ -584,7 +584,7 @@ snit::widget iombrowser {
             }
 
             # Get title, and remove the "Create payload: " prefix
-            set title [order title $order]
+            set title [myorders title $order]
             set ndx [string first ":" $title]
             set title [string range $title $ndx+2 end]
             dict set odict $title $order
@@ -618,7 +618,7 @@ snit::widget iombrowser {
                        "]]
 
         if {$title ne ""} {
-            order enter [dict get $odict $title] \
+            app enter [dict get $odict $title] \
                 iom_id $iom_id longname $longname
         }
     }

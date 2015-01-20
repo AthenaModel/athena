@@ -89,10 +89,10 @@ namespace eval ::athena_test::tests:: {
             topic_id $tid(T1) position 0.6
 
         # NEXT, add payloads to IOM1
-        ted order PAYLOAD:COOP:CREATE iom_id IOM1 g BLUE mag S+
-        ted order PAYLOAD:HREL:CREATE iom_id IOM1 g BLUE mag M+
-        ted order PAYLOAD:SAT:CREATE  iom_id IOM1 c AUT  mag L+
-        ted order PAYLOAD:VREL:CREATE iom_id IOM1 a JOE  mag XL+
+        ted orderx PAYLOAD:COOP:CREATE iom_id IOM1 g BLUE mag S+
+        ted orderx PAYLOAD:HREL:CREATE iom_id IOM1 g BLUE mag M+
+        ted orderx PAYLOAD:SAT:CREATE  iom_id IOM1 c AUT  mag L+
+        ted orderx PAYLOAD:VREL:CREATE iom_id IOM1 a JOE  mag XL+
 
         # NEXT, make the CAPs free to use.
         ted orderx CAP:UPDATE k CBS cost 0
