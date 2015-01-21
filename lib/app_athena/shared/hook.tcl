@@ -474,76 +474,84 @@ snit::type hook {
 #
 # Creates new semantic hooks.
 
-order define HOOK:CREATE {
-    title "Create Semantic Hook"
+myorders define HOOK:CREATE {
+    meta title "Create Semantic Hook"
 
-    options -sendstates PREP
+    meta sendstates PREP
 
-    form {
+    meta parmlist {
+        hook_id
+        longname
+    }
+
+    meta form {
         rcc "Hook ID:" -for hook_id
         text hook_id
 
         rcc "Long Name:" -for longname
         text longname -width 40
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare hook_id  -toupper -unused -required -type ident  
-    prepare longname -normalize       
 
-    returnOnError -final
 
-    # NEXT, If longname is "", defaults to ID.
-    if {$parms(longname) eq ""} {
-        set parms(longname) $parms(hook_id)
+    method _validate {} {
+        my prepare hook_id  -toupper -required -type ident  
+        my unused hook_id
+        my prepare longname -normalize
     }
 
-    # NEXT, create the semantic hook
-    setundo [hook mutate create [array get parms]]
+    method _execute {{flunky ""}} {
+        if {$parms(longname) eq ""} {
+            set parms(longname) $parms(hook_id)
+        }
+
+        my setundo [hook mutate create [array get parms]]
+    }
 }
 
 # HOOK:DELETE
 #
 # Deletes semantic hooks
 
-order define HOOK:DELETE {
-    title "Delete Semantic Hook"
-    options -sendstates PREP
+myorders define HOOK:DELETE {
+    meta title "Delete Semantic Hook"
+    meta sendstates PREP
 
-    form {
+    meta parmlist {hook_id}
+
+    meta form {
         rcc "Hook ID:" -for hook_id
         hook hook_id
     }
-} {
-    # FIRST, prepare the parameters
-    prepare hook_id -toupper -required -type hook
 
-    returnOnError -final
 
-    # NEXT, make sure the user knows what he is getting into.
-
-    if {[sender] eq "gui"} {
-        set answer [messagebox popup \
-                        -title         "Are you sure?"                  \
-                        -icon          warning                          \
-                        -buttons       {ok "Delete it" cancel "Cancel"} \
-                        -default       cancel                           \
-                        -onclose       cancel                           \
-                        -ignoretag     HOOK:DELETE                      \
-                        -ignoredefault ok                               \
-                        -parent        [app topwin]                     \
-                        -message       [normalize {
-                            Are you sure you
-                            really want to delete this semantic hook 
-                            and all hook topics that depend on it?
-                        }]]
-
-        if {$answer eq "cancel"} {
-            cancel
-        }
+    method _validate {} {
+        my prepare hook_id -toupper -required -type hook
     }
 
-    setundo [hook mutate delete $parms(hook_id)]
+    method _execute {{flunky ""}} {
+        if {[my mode] eq "gui"} {
+            set answer [messagebox popup \
+                            -title         "Are you sure?"                  \
+                            -icon          warning                          \
+                            -buttons       {ok "Delete it" cancel "Cancel"} \
+                            -default       cancel                           \
+                            -onclose       cancel                           \
+                            -ignoretag     [my name]                        \
+                            -ignoredefault ok                               \
+                            -parent        [app topwin]                     \
+                            -message       [normalize {
+                                Are you sure you
+                                really want to delete this semantic hook 
+                                and all hook topics that depend on it?
+                            }]]
+
+            if {$answer eq "cancel"} {
+                my cancel
+            }
+        }
+
+        my setundo [hook mutate delete $parms(hook_id)]
+    }
 }
 
 
@@ -551,39 +559,52 @@ order define HOOK:DELETE {
 #
 # Updates existing semantic hooks.
 
-order define HOOK:UPDATE {
-    title "Update Semantic Hook"
-    options -sendstates PREP
+myorders define HOOK:UPDATE {
+    meta title "Update Semantic Hook"
+    meta sendstates PREP
 
-    form {
+    meta parmlist {
+        hook_id
+        longname
+    }
+
+    meta form {
         rcc "Select Hook:" -for hook_id
         hook hook_id \
-            -loadcmd {orderdialog keyload hook_id *}
+            -loadcmd {$order_ keyload hook_id *}
 
         rcc "Long Name:"
         text longname -width 40
     }
-} {
-    # FIRST, prepare the parameters
-    prepare hook_id      -toupper   -required -type hook
-    prepare longname     -normalize
 
-    returnOnError -final
 
-    # NEXT, modify the hook
-    setundo [hook mutate update [array get parms]]
+    method _validate {} {
+        my prepare hook_id      -toupper   -required -type hook
+        my prepare longname     -normalize
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [hook mutate update [array get parms]]
+    }
 }
 
 # HOOK:TOPIC:CREATE
 #
 # Creates a new semantic hook/topic pair
 
-order define HOOK:TOPIC:CREATE {
-    title "Create Semantic Hook Topic"
+myorders define HOOK:TOPIC:CREATE {
+    meta title "Create Semantic Hook Topic"
 
-    options -sendstates PREP
+    meta sendstates PREP
 
-    form {
+    meta parmlist {
+        hook_id
+        longname
+        topic_id
+        position
+    }
+
+    meta form {
         rcc "Hook ID:" -for hook_id
         hook hook_id -context yes
 
@@ -596,69 +617,87 @@ order define HOOK:TOPIC:CREATE {
         rcc "Position:" -for position
         enumlong position -dictcmd {qposition namedict}
     }
-} {
-    prepare hook_id       -toupper -required -type hook
-    prepare topic_id      -toupper -required -type {bsys topic}
-    prepare position -num -toupper -required -type qposition 
 
-    returnOnError 
 
-    if {[hook topic exists [list $parms(hook_id) $parms(topic_id)]]} {
-        reject topic_id "Hook/Topic pair already exists"
+    method _validate {} {
+        my prepare hook_id       -toupper -required -type hook
+        my prepare topic_id      -toupper -required -type {bsys topic}
+        my prepare position -num -toupper -required -type qposition 
+
+        my returnOnError 
+
+        if {[hook topic exists [list $parms(hook_id) $parms(topic_id)]]} {
+            my reject topic_id "Hook/Topic pair already exists"
+        }
     }
 
-    returnOnError -final
-
-    setundo [hook mutate topic create [array get parms]]
+    method _execute {{flunky ""}} {
+        my setundo [hook mutate topic create [array get parms]]
+    }
 }
 
 # HOOK:TOPIC:DELETE
 #
 # Removes a semantic hook topic from the database
 
-order define HOOK:TOPIC:DELETE {
-    title "Delete Semantic Hook Topic"
+myorders define HOOK:TOPIC:DELETE {
+    meta title "Delete Semantic Hook Topic"
 
-    options -sendstates PREP
+    meta sendstates PREP
+
+    meta parmlist {
+        id
+    }
     
-    form {
+    meta form {
         rcc "Hook/Topic:" -for id
-        key id -table gui_hook_topics -keys {hook_id topic_id} \
+        dbkey id -table gui_hook_topics -keys {hook_id topic_id} \
             -labels {"Of" "On"}
     }
-} {
-    prepare id   -toupper -required -type {hook topic}
 
-    returnOnError -final
 
-    setundo [hook mutate topic delete $parms(id)]
+    method _validate {} {
+        my prepare id   -toupper -required -type {hook topic}
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [hook mutate topic delete $parms(id)]
+    }
 }
 
 # HOOK:TOPIC:UPDATE
 #
 # Updates an existing hook/topic pair
 
-order define HOOK:TOPIC:UPDATE {
-    title "Update Semantic Hook Topic"
+myorders define HOOK:TOPIC:UPDATE {
+    meta title "Update Semantic Hook Topic"
 
-    options -sendstates PREP 
+    meta sendstates PREP 
 
-    form {
+    meta parmlist {
+        id
+        position
+    }
+
+    meta form {
         rcc "Hook/Topic:" -for id
-        key id -table gui_hook_topics -keys {hook_id topic_id} \
+        dbkey id -table gui_hook_topics -keys {hook_id topic_id} \
             -labels {"Of" "On"} \
             -loadcmd {hook LoadPosition}
 
         rcc "Position:" -for position
         enumlong position -dictcmd {qposition namedict}
     }
-} {
-    prepare id            -toupper -required -type {hook topic}
-    prepare position -num -toupper -required -type qposition
 
-    returnOnError -final
 
-    setundo [hook mutate topic update [array get parms]]
+    method _validate {} {
+        my prepare id            -toupper -required -type {hook topic}
+        my prepare position -num -toupper -required -type qposition
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [hook mutate topic update [array get parms]]
+    }
 }
 
 
@@ -666,22 +705,30 @@ order define HOOK:TOPIC:UPDATE {
 #
 # Updates the state of a hook topic
 
-order define HOOK:TOPIC:STATE {
-    title "Set Semantic Hook State"
+myorders define HOOK:TOPIC:STATE {
+    meta title "Set Semantic Hook State"
 
-    options -sendstates {PREP}
+    meta sendstates {PREP}
 
-    form {
-        key id -table gui_hook_topics -keys {hook_id topic_id} 
+    meta parmlist {
+        id
+        state
+    }
+
+    meta form {
+        dbkey id -table gui_hook_topics -keys {hook_id topic_id} 
         text state
     }
-} {
-    prepare id    -required          -type {hook topic}
-    prepare state -required -tolower -type etopic_state
 
-    returnOnError -final
 
-    setundo [hook mutate topic state $parms(id) $parms(state)]
+    method _validate {} {
+        my prepare id    -required          -type {hook topic}
+        my prepare state -required -tolower -type etopic_state
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [hook mutate topic state $parms(id) $parms(state)]
+    }
 }
 
 

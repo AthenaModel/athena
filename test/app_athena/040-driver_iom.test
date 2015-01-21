@@ -85,7 +85,7 @@ namespace eval ::athena_test::tests:: {
             bid [list $sid(SUNN) $tid(T1)] position -0.6 emphasis 0.35
 
         # NEXT, associate HOOK1 with $tid(T1)
-        ted order HOOK:TOPIC:CREATE hook_id HOOK1 \
+        ted orderx HOOK:TOPIC:CREATE hook_id HOOK1 \
             topic_id $tid(T1) position 0.6
 
         # NEXT, add payloads to IOM1
