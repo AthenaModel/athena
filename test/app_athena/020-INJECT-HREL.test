@@ -72,7 +72,7 @@ namespace eval ::athena_test::tests:: {
     # INJECT:HREL:CREATE
 
     test CREATE-1.1 {required parms} -body {
-        ted order -reject INJECT:HREL:CREATE {}
+        ted orderx -reject INJECT:HREL:CREATE {}
     } -result {
         curse_id {required value}
         f {required value}
@@ -83,7 +83,7 @@ namespace eval ::athena_test::tests:: {
     test CREATE-1.2 {curse_id is unknown} -setup {
         setup
     } -body {
-        ted order -reject INJECT:HREL:CREATE {*}$I1 curse_id NONESUCH
+        ted orderx -reject INJECT:HREL:CREATE {*}$I1 curse_id NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -93,7 +93,7 @@ namespace eval ::athena_test::tests:: {
     test CREATE-1.3 {mag is invalid} -setup {
         setup
     } -body {
-        ted order -reject INJECT:HREL:CREATE {*}$I1 mag NONESUCH
+        ted orderx -reject INJECT:HREL:CREATE {*}$I1 mag NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -103,7 +103,7 @@ namespace eval ::athena_test::tests:: {
     test CREATE-2.1 {inject is created} -setup {
         setup
     } -body {
-        ted order INJECT:HREL:CREATE $I2
+        ted orderx INJECT:HREL:CREATE $I2
 
         ted querylist {SELECT * FROM gui_injects_HREL}
     } -cleanup {
@@ -125,7 +125,7 @@ mag         5.0
         setup
     } -body {
         ted notifier bind ::rdb <curse_injects>
-        ted order INJECT:HREL:CREATE $I1
+        ted orderx INJECT:HREL:CREATE $I1
         ted notifier received
     } -cleanup {
         cleanup
@@ -136,10 +136,10 @@ mag         5.0
 
     test CREATE-3.1 {undo effects} -setup {
         setup
-        ted order INJECT:HREL:CREATE $I1
+        ted orderx INJECT:HREL:CREATE $I1
     } -body {
         ted notifier bind ::rdb <curse_injects>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -153,11 +153,11 @@ mag         5.0
     proc setup_update_hrel {} {
         variable I2
         setup
-        ted order INJECT:HREL:CREATE $I2
+        ted orderx INJECT:HREL:CREATE $I2
     }
 
     test UPDATE-1.1 {required parms} -body {
-        ted order -reject INJECT:HREL:UPDATE {}
+        ted orderx -reject INJECT:HREL:UPDATE {}
     } -result {
         id {required value}
     }
@@ -165,7 +165,7 @@ mag         5.0
     test UPDATE-1.2 {CURSE in id is unknown} -setup {
         setup_update_hrel
     } -body {
-        ted order -reject INJECT:HREL:UPDATE id {NONESUCH 1}
+        ted orderx -reject INJECT:HREL:UPDATE id {NONESUCH 1}
     } -cleanup {
         cleanup
     } -result {
@@ -175,7 +175,7 @@ mag         5.0
     test UPDATE-1.3 {inject number in id is unknown} -setup {
         setup_update_hrel
     } -body {
-        ted order -reject INJECT:HREL:UPDATE id {C1 NONESUCH}
+        ted orderx -reject INJECT:HREL:UPDATE id {C1 NONESUCH}
     } -cleanup {
         cleanup
     } -result {
@@ -185,7 +185,7 @@ mag         5.0
     test UPDATE-1.4 {mag is invalid} -setup {
         setup_update_hrel
     } -body {
-        ted order -reject INJECT:HREL:UPDATE id {C2 1} mag NONESUCH
+        ted orderx -reject INJECT:HREL:UPDATE id {C2 1} mag NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -195,7 +195,7 @@ mag         5.0
     test UPDATE-2.1 {inject is updated} -setup {
         setup_update_hrel
     } -body {
-        ted order INJECT:HREL:UPDATE id {C2 1} f @C9 g @F9 mag 10.0
+        ted orderx INJECT:HREL:UPDATE id {C2 1} f @C9 g @F9 mag 10.0
 
         ted querylist {SELECT * FROM gui_injects_HREL}
     } -cleanup {
@@ -215,10 +215,10 @@ mag         10.0
 
     test UPDATE-2.2 {Effects} -setup {
         setup
-        ted order INJECT:HREL:CREATE $I2
+        ted orderx INJECT:HREL:CREATE $I2
     } -body {
         ted notifier bind ::rdb <curse_injects>
-        ted order INJECT:HREL:UPDATE id {C2 1} g BLUE
+        ted orderx INJECT:HREL:UPDATE id {C2 1} g BLUE
         ted notifier received
     } -cleanup {
         cleanup
@@ -230,10 +230,10 @@ mag         10.0
 
     test UPDATE-3.1 {undo effects} -setup {
         setup_update_hrel
-        ted order INJECT:HREL:UPDATE id {C2 1} g BLUE
+        ted orderx INJECT:HREL:UPDATE id {C2 1} g BLUE
     } -body {
         ted notifier bind ::rdb <curse_injects>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

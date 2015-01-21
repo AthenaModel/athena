@@ -836,24 +836,27 @@ snit::type inject {
 #
 # Deletes an existing inject, of whatever type.
 
-order define INJECT:DELETE {
+myorders define INJECT:DELETE {
     # This order dialog isn't usually used.
 
-    title "Delete Inject"
-    options -sendstates {PREP PAUSED}
+    meta title "Delete Inject"
+    meta sendstates {PREP PAUSED}
 
-    form {
+    meta parmlist {id}
+
+    meta form {
         rcc "Inject ID:" -for id
         inject id -context yes
     }
-} {
-    # FIRST, prepare the parameters
-    prepare id -toupper -required -type inject
 
-    returnOnError -final
 
-    # NEXT, Delete the inject and dependent entities
-    setundo [inject mutate delete $parms(id)]
+    method _validate {} {
+        my prepare id -toupper -required -type inject
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [inject mutate delete $parms(id)]
+    }
 }
 
 # INJECT:STATE
@@ -861,25 +864,29 @@ order define INJECT:DELETE {
 # Sets a injects's state.  Note that this order isn't intended
 # for use with a dialog.
 
-order define INJECT:STATE {
-    title "Set Inject State"
+myorders define INJECT:STATE {
+    meta title "Set Inject State"
 
-    options -sendstates {PREP PAUSED}
+    meta sendstates {PREP PAUSED}
 
-    form {
+    meta parmlist {id state}
+
+    meta form {
         rcc "Inject ID:" -for id
         inject id -context yes
 
         rcc "State:" -for state
         text state
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare id     -required          -type inject
-    prepare state  -required -tolower -type einject_state
 
-    returnOnError -final
 
-    setundo [inject mutate state $parms(id) $parms(state)]
+    method _validate {} {
+        my prepare id     -required          -type inject
+        my prepare state  -required -tolower -type einject_state
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [inject mutate state $parms(id) $parms(state)]
+    }
 }
 

@@ -463,7 +463,7 @@ snit::widget cursebrowser {
         } else {
             set curse_id [inject get $oid curse_id]
             set longname [curse get $curse_id longname]
-            order enter INJECT:$otype:UPDATE id $oid longname $longname
+            app enter INJECT:$otype:UPDATE id $oid longname $longname
         }
     }
 
@@ -503,9 +503,9 @@ snit::widget cursebrowser {
             set state [inject get $oid state]
 
             if {$state eq "normal"} {
-                order send gui INJECT:STATE id $oid state disabled
+                flunky senddict gui INJECT:STATE [list id $oid state disabled]
             } elseif {$state eq "disabled"} {
-                order send gui INJECT:STATE id $oid state normal
+                flunky senddict gui INJECT:STATE [list id $oid state normal]
             } else {
                 # Do nothing (this should never happen anyway)
             }
@@ -537,8 +537,8 @@ snit::widget cursebrowser {
             order send gui CURSE:DELETE \
                 curse_id [$citree item text $id {tag id}]
         } else {
-            order send gui INJECT:DELETE \
-                id [$citree item text $id {tag id}]
+            flunky senddict gui INJECT:DELETE \
+                [list id [$citree item text $id {tag id}]]
         }
     }
 
@@ -598,7 +598,7 @@ snit::widget cursebrowser {
             }
 
             # Get title, and remove the "Create inject: " prefix
-            set title [order title $order]
+            set title [myorders title $order]
             set ndx [string first ":" $title]
             set title [string range $title $ndx+2 end]
             dict set odict $title $order
@@ -632,7 +632,7 @@ snit::widget cursebrowser {
                        "]]
 
         if {$title ne ""} {
-            order enter [dict get $odict $title] \
+            app enter [dict get $odict $title] \
                 curse_id $curse_id longname $longname
         }
     }

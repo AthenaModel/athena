@@ -74,13 +74,13 @@ namespace eval ::athena_test::tests:: {
     # generic orders up front.
 
     test DELETE-1.1 {required parms} -body {
-        ted order -reject INJECT:DELETE {}
+        ted orderx -reject INJECT:DELETE {}
     } -result {
         id {required value}
     }
 
     test DELETE-1.2 {invalid inject ID: no such CURSE} -body {
-        ted order -reject INJECT:DELETE id {NONESUCH 1}
+        ted orderx -reject INJECT:DELETE id {NONESUCH 1}
     } -result {
         id {Invalid CURSE, none are defined}
     }
@@ -88,7 +88,7 @@ namespace eval ::athena_test::tests:: {
     test DELETE-1.3 {invalid inject ID: no such inject num} -setup {
         setup
     } -body {
-        ted order -reject INJECT:DELETE id {C1 NONESUCH}
+        ted orderx -reject INJECT:DELETE id {C1 NONESUCH}
     } -cleanup {
         cleanup
     } -result {
@@ -98,10 +98,10 @@ namespace eval ::athena_test::tests:: {
 
     test DELETE-2.1 {Effects} -setup {
         setup
-        ted order INJECT:COOP:CREATE $I1
+        ted orderx INJECT:COOP:CREATE $I1
     } -body {
         ted notifier bind ::rdb <curse_injects>
-        ted order INJECT:DELETE id {C1 1}
+        ted orderx INJECT:DELETE id {C1 1}
         ted notifier received
     } -cleanup {
         cleanup
@@ -112,11 +112,11 @@ namespace eval ::athena_test::tests:: {
 
     test DELETE-3.1 {Undo effects} -setup {
         setup
-        ted order INJECT:COOP:CREATE $I1
-        ted order INJECT:DELETE id {C1 1}
+        ted orderx INJECT:COOP:CREATE $I1
+        ted orderx INJECT:DELETE id {C1 1}
     } -body {
         ted notifier bind ::rdb <curse_injects>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -129,7 +129,7 @@ namespace eval ::athena_test::tests:: {
     # INJECT:STATE
 
     test STATE-1.1 {required parms} -body {
-        ted order -reject INJECT:STATE {}
+        ted orderx -reject INJECT:STATE {}
     } -result {
         id {required value}
         state {required value}
@@ -137,7 +137,7 @@ namespace eval ::athena_test::tests:: {
 
     
     test STATE-1.2 {unknown inject id} -body {
-        ted order -reject INJECT:STATE id {NONESUCH 1} state disabled
+        ted orderx -reject INJECT:STATE id {NONESUCH 1} state disabled
     } -result {
         id {Invalid CURSE, none are defined}
     }
@@ -145,10 +145,10 @@ namespace eval ::athena_test::tests:: {
 
     test STATE-2.1 {Effects} -setup {
         setup
-        ted order INJECT:COOP:CREATE $I1
+        ted orderx INJECT:COOP:CREATE $I1
     } -body {
         ted notifier bind ::rdb <curse_injects>
-        ted order INJECT:STATE id {C1 1} state disabled
+        ted orderx INJECT:STATE id {C1 1} state disabled
         ted notifier received
     } -cleanup {
         cleanup
@@ -159,11 +159,11 @@ namespace eval ::athena_test::tests:: {
 
     test STATE-3.1 {Undo effects} -setup {
         setup
-        ted order INJECT:COOP:CREATE $I1
-        ted order INJECT:STATE id {C1 1} state disabled
+        ted orderx INJECT:COOP:CREATE $I1
+        ted orderx INJECT:STATE id {C1 1} state disabled
     } -body {
         ted notifier bind ::rdb <curse_injects>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

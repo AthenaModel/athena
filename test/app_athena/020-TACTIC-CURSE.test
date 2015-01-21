@@ -50,8 +50,8 @@ namespace eval ::athena_test::tests:: {
         ted order CURSE:CREATE curse_id C1
         ted order CURSE:CREATE curse_id C2
 
-        ted order INJECT:SAT:CREATE curse_id C1 g @CIV1 c SFT mag XL+
-        ted order INJECT:SAT:CREATE curse_id C2 g @CIV2 c SFT mag XL+
+        ted orderx INJECT:SAT:CREATE curse_id C1 g @CIV1 c SFT mag XL+
+        ted orderx INJECT:SAT:CREATE curse_id C2 g @CIV2 c SFT mag XL+
 
         lassign [$S1 blocks] B1
         ted orderx BLOCK:TACTIC:ADD block_id [$B1 id] typename CURSE
