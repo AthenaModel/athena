@@ -234,6 +234,7 @@ oo::class create ::projectlib::orderx {
     # "meta parmlist" instead, this will compute the defaults from it.
 
     method defaults {} {
+        set result [dict create]
         foreach parmspec [my parmlist] {
             lassign $parmspec parm value
             dict set result $parm $value

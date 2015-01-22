@@ -624,7 +624,7 @@ snit::widget appwin {
         $mnu add cascade -label "Parameters" \
             -underline 0 -menu $submenu
 
-        cond::available control                           \
+        cond::availablex control                           \
             [menuitem $submenu command "Import..."           \
                  -underline 0                                \
                  -command   [mymethod FileParametersImport]] \
@@ -1840,9 +1840,9 @@ snit::widget appwin {
             return
         }
 
-        # NEXT, Import the map
+        # NEXT, Import the parmdb file
         if {[catch {
-            order send gui PARM:IMPORT [list filename $filename]
+            flunky senddict gui PARM:IMPORT [list filename $filename]
         } result]} {
             app error {
                 |<--

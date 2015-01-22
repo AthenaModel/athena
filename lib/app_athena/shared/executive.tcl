@@ -2377,7 +2377,7 @@ snit::type executive {
     # Imports the .parmdb file
 
     proc parmImport {filename} {
-        send PARM:IMPORT -filename $filename
+        sendx PARM:IMPORT -filename $filename
     }
 
 
@@ -2404,7 +2404,7 @@ snit::type executive {
     # Resets all parameters to defaults.
 
     proc parmReset {} {
-        send PARM:RESET
+        sendx PARM:RESET
     }
 
 
@@ -2416,7 +2416,7 @@ snit::type executive {
     # Sets the parameter's value, using PARM:SET
 
     proc parmSet {parm value} {
-        send PARM:SET -parm $parm -value $value
+        sendx PARM:SET -parm $parm -value $value
     }
 
     # save filename

@@ -263,32 +263,43 @@ snit::type parm {
 #
 # Imports the contents of a parmdb file into the scenario.
 
-order define PARM:IMPORT {
-    title "Import Parameter File"
+myorders define PARM:IMPORT {
+    meta title "Import Parameter File"
 
-    options -sendstates {PREP PAUSED}
+    meta sendstates {PREP PAUSED}
+
+    meta parmlist {filename}
 
     # NOTE: Dialog is not usually used.  Could define a "filepicker"
     # -editcmd or field type, though.
-    form {
+    meta form {
         rcc "Parameter File:" -for filename
         text filename
     }
-} {
-    # FIRST, prepare the parameters
-    prepare filename -required 
 
-    returnOnError -final
 
-    # NEXT, validate the parameters
-    if {[catch {
-        # In this case, simply try it.
-        setundo [parm mutate import $parms(filename)]
-    } result]} {
-        reject filename $result
+    method _validate {} {
+        my prepare filename -required 
+
+        my checkon filename {
+            if {![file exists $parms(filename)]} {
+                my reject filename "Error, file not found: \"$parms(filename)\""
+            }
+
+        }
+
+        my returnOnError
     }
 
-    returnOnError
+    method _execute {{flunky ""}} {
+        if {[catch {
+            # In this case, simply try it.
+            my setundo [parm mutate import $parms(filename)]
+        } result]} {
+            # TBD: what do we do here? bgerror for now
+            error $result
+        }
+    }
 }
 
 
@@ -296,22 +307,23 @@ order define PARM:IMPORT {
 #
 # Imports the contents of a parmdb file into the scenario.
 
-order define PARM:RESET {
-    title "Reset Parameters to Defaults"
+myorders define PARM:RESET {
+    meta title "Reset Parameters to Defaults"
 
-    options -sendstates {PREP PAUSED}
-} {
-    returnOnError -final
+    meta sendstates {PREP PAUSED}
+    meta parmlist {}
+    method _validate {} {}
 
-    # FIRST, try to do it.
-    if {[catch {
-        # In this case, simply try it.
-        setundo [parm mutate reset]
-    } result]} {
-        reject * $result
+    method _execute {{flunky ""}} {
+        if {[catch {
+            # In this case, simply try it.
+            my setundo [parm mutate reset]
+        } result]} {
+            my reject * $result
+        }
+
+        my returnOnError
     }
-
-    returnOnError
 }
 
 
@@ -319,12 +331,14 @@ order define PARM:RESET {
 #
 # Sets the value of a parameter.
 
-order define PARM:SET {
-    title "Set Parameter Value"
+myorders define PARM:SET {
+    meta title "Set Parameter Value"
 
-    options -sendstates {PREP PAUSED}
+    meta sendstates {PREP PAUSED}
 
-    form {
+    meta parmlist {parm value}
+
+    meta form {
         rcc "Parameter:" -for parm
         enum parm -listcmd {parm names} \
             -loadcmd {parm::LoadValue}
@@ -332,22 +346,23 @@ order define PARM:SET {
         rcc "Value:" -for value
         text value -width 40
     }
-} {
-    # FIRST, prepare the parameters
-    prepare parm  -required  -type parm
-    prepare value
 
-    returnOnError
 
-    # NEXT, validate the value
-    set vtype [parm type $parms(parm)]
+    method _validate {} {
+        my prepare parm  -required  -type parm
+        my prepare value
 
-    if {[catch {$vtype validate $parms(value)} result]} {
-        reject value $result
+        my returnOnError
+
+        # NEXT, validate the value
+        set vtype [parm type $parms(parm)]
+
+        if {[catch {$vtype validate $parms(value)} result]} {
+            my reject value $result
+        }
     }
 
-    returnOnError -final
-
-    # NEXT, set the value
-    setundo [parm mutate set $parms(parm) $parms(value)]
+    method _execute {{flunky ""}} {
+        my setundo [parm mutate set $parms(parm) $parms(value)]
+    }
 }
