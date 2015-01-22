@@ -41,8 +41,8 @@ namespace eval ::athena_test::tests:: {
     proc setup {} {
         ted create BLUE BRIT 
 
-        ted order CURSE:CREATE curse_id C1
-        ted order CURSE:CREATE curse_id C2
+        ted orderx CURSE:CREATE curse_id C1
+        ted orderx CURSE:CREATE curse_id C2
 
         # Verify that unused columns contain NULL
         rdb nullvalue "@"

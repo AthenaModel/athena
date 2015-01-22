@@ -47,8 +47,8 @@ namespace eval ::athena_test::tests:: {
         set S1 [strategy getname SYSTEM]
         ted orderx STRATEGY:BLOCK:ADD agent SYSTEM
 
-        ted order CURSE:CREATE curse_id C1
-        ted order CURSE:CREATE curse_id C2
+        ted orderx CURSE:CREATE curse_id C1
+        ted orderx CURSE:CREATE curse_id C2
 
         ted orderx INJECT:SAT:CREATE curse_id C1 g @CIV1 c SFT mag XL+
         ted orderx INJECT:SAT:CREATE curse_id C2 g @CIV2 c SFT mag XL+
@@ -118,7 +118,7 @@ namespace eval ::athena_test::tests:: {
 
     test TACTIC:CURSE-1.5 {curse isn't normal} -setup {
         setup
-        ted order CURSE:STATE curse_id C1 state disabled
+        ted orderx CURSE:STATE curse_id C1 state disabled
     } -body {
         ted orderx TACTIC:CURSE tactic_id [$T1 id] curse C1
         $T1 check

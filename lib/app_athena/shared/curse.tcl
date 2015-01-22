@@ -523,12 +523,21 @@ snit::type curse {
 #
 # Creates a new CURSE
 
-order define CURSE:CREATE {
-    title "Create CURSE"
+myorders define CURSE:CREATE {
+    meta title "Create CURSE"
     
-    options -sendstates PREP
+    meta sendstates PREP
 
-    form {
+    meta parmlist {
+        curse_id
+        longname
+        {cause UNIQUE}
+        {s 1.0}
+        {p 0.0}
+        {q 0.0}
+    }
+
+    meta form {
         rcc "CURSE ID:" -for curse_id
         text curse_id
 
@@ -547,72 +556,76 @@ order define CURSE:CREATE {
         rcc "Far Factor:" -for q
         frac q -defvalue 0.0
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare curse_id  -toupper   -required -unused -type ident
-    prepare longname  -normalize
-    prepare cause     -toupper   -required -type {ptype ecause+unique}
-    prepare s         -num       -required -type rfraction
-    prepare p         -num       -required -type rfraction
-    prepare q         -num       -required -type rfraction
 
-    returnOnError -final
 
-    # NEXT, If longname is "", defaults to ID.
-    if {$parms(longname) eq ""} {
-        set parms(longname) $parms(curse_id)
+    method _validate {} {
+        my prepare curse_id  -toupper   -required -type ident
+        my unused curse_id
+        my prepare longname  -normalize
+        my prepare cause     -toupper   -required -type {ptype ecause+unique}
+        my prepare s         -num       -required -type rfraction
+        my prepare p         -num       -required -type rfraction
+        my prepare q         -num       -required -type rfraction
     }
 
-    # NEXT, create the message.
-    lappend undo [curse mutate create [array get parms]]
+    method _execute {{flunky ""}} {
+        if {$parms(longname) eq ""} {
+            set parms(longname) $parms(curse_id)
+        }
 
-    setundo [join $undo \n]
+        # NEXT, create the message.
+        lappend undo [curse mutate create [array get parms]]
+
+        my setundo [join $undo \n]
+    }
 }
 
 # CURSE:DELETE
 #
 # Deletes a CURSE and its inputs.
 
-order define CURSE:DELETE {
-    title "Delete CURSE"
-    options -sendstates PREP
+myorders define CURSE:DELETE {
+    meta title "Delete CURSE"
+    meta sendstates PREP
 
-    form {
+    meta form {
         rcc "CURSE ID:" -for curse_id
-        key curse_id -table curses -keys curse_id
+        dbkey curse_id -table curses -keys curse_id
     }
-} {
-    # FIRST, prepare the parameters
-    prepare curse_id -toupper -required -type curse 
 
-    returnOnError -final
+    meta parmlist {curse_id}
 
-    # NEXT, make sure the user knows what he is getting into.
 
-    if {[sender] eq "gui"} {
-        set answer [messagebox popup \
-                        -title         "Are you sure?"                  \
-                        -icon          warning                          \
-                        -buttons       {ok "Delete it" cancel "Cancel"} \
-                        -default       cancel                           \
-                        -onclose       cancel                           \
-                        -ignoretag     CURSE:DELETE                     \
-                        -ignoredefault ok                               \
-                        -parent        [app topwin]                     \
-                        -message       [normalize {
-                            Are you sure you really want to delete this 
-                            CURSE, along with all of its inputs?
-                        }]]
+    method _validate {} {
+        my prepare curse_id -toupper -required -type curse 
+    }
 
-        if {$answer eq "cancel"} {
-            cancel
+    method _execute {{flunky ""}} {
+        if {[my mode] eq "gui"} {
+            set answer [messagebox popup \
+                            -title         "Are you sure?"                  \
+                            -icon          warning                          \
+                            -buttons       {ok "Delete it" cancel "Cancel"} \
+                            -default       cancel                           \
+                            -onclose       cancel                           \
+                            -ignoretag     [my name]                        \
+                            -ignoredefault ok                               \
+                            -parent        [app topwin]                     \
+                            -message       [normalize {
+                                Are you sure you really want to delete this 
+                                CURSE, along with all of its inputs?
+                            }]]
+
+            if {$answer eq "cancel"} {
+                my cancel
+            }
         }
+
+        # NEXT, Delete the record and dependent entities
+        lappend undo [curse mutate delete $parms(curse_id)]
+
+        my setundo [join $undo \n]
     }
-
-    # NEXT, Delete the record and dependent entities
-    lappend undo [curse mutate delete $parms(curse_id)]
-
-    setundo [join $undo \n]
 }
 
 
@@ -620,14 +633,23 @@ order define CURSE:DELETE {
 #
 # Updates an existing CURSE.
 
-order define CURSE:UPDATE {
-    title "Update CURSE"
-    options -sendstates PREP
+myorders define CURSE:UPDATE {
+    meta title "Update CURSE"
+    meta sendstates PREP
 
-    form {
+    meta parmlist {
+        curse_id
+        longname
+        cause
+        s
+        p
+        q
+    }
+
+    meta form {
         rcc "CURSE ID" -for curse_id
-        key curse_id -table curses -keys curse_id \
-            -loadcmd {orderdialog keyload curse_id *}
+        dbkey curse_id -table curses -keys curse_id \
+            -loadcmd {$order_ keyload curse_id *}
 
         rcc "Description:" -for longname
         text longname -width 60
@@ -645,19 +667,20 @@ order define CURSE:UPDATE {
         frac q
 
     }
-} {
-    # FIRST, prepare the parameters
-    prepare curse_id  -toupper   -required -type curse
-    prepare longname  -normalize
-    prepare cause     -toupper             -type {ptype ecause+unique}
-    prepare s         -num                 -type rfraction
-    prepare p         -num                 -type rfraction
-    prepare q         -num                 -type rfraction
 
-    returnOnError -final
 
-    # NEXT, modify the message.
-    setundo [curse mutate update [array get parms]]
+    method _validate {} {
+        my prepare curse_id  -toupper   -required -type curse
+        my prepare longname  -normalize
+        my prepare cause     -toupper             -type {ptype ecause+unique}
+        my prepare s         -num                 -type rfraction
+        my prepare p         -num                 -type rfraction
+        my prepare q         -num                 -type rfraction
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [curse mutate update [array get parms]]
+    }
 }
 
 
@@ -666,23 +689,27 @@ order define CURSE:UPDATE {
 # Sets a CURSE's state.  Note that this order isn't intended
 # for use with a dialog.
 
-order define CURSE:STATE {
-    title "Set CURSE State"
+myorders define CURSE:STATE {
+    meta title "Set CURSE State"
 
-    options -sendstates PREP 
+    meta sendstates PREP 
 
-    form {
+    meta parmlist {curse_id state}
+
+    meta form {
         # Not used for dialog.
-        key curse_id -table curses -keys curse_id
+        dbkey curse_id -table curses -keys curse_id
         text state
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare curse_id -required -toupper -type curse
-    prepare state    -required -tolower -type ecurse_state
 
-    returnOnError -final
 
-    setundo [curse mutate state $parms(curse_id) $parms(state)]
+    method _validate {} {
+        my prepare curse_id -required -toupper -type curse
+        my prepare state    -required -tolower -type ecurse_state
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [curse mutate state $parms(curse_id) $parms(state)]
+    }
 }
 

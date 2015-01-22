@@ -239,7 +239,7 @@ snit::widget cursebrowser {
             -state   normal                             \
             -command [mymethod AddCURSE]
 
-        cond::available control $caddbtn                \
+        cond::availablex control $caddbtn                \
             order CURSE:CREATE
 
         install iaddbtn using mktoolbutton $bar.iaddbtn \
@@ -459,7 +459,7 @@ snit::widget cursebrowser {
 
         # NEXT, it's a curse or an inject.
         if {"curse" in [$citree item tag names $id]} {
-            order enter CURSE:UPDATE curse_id $oid
+            app enter CURSE:UPDATE curse_id $oid
         } else {
             set curse_id [inject get $oid curse_id]
             set longname [curse get $curse_id longname]
@@ -472,7 +472,7 @@ snit::widget cursebrowser {
     # Allows the user to create a new CURSE.
     
     method AddCURSE {} {
-        order enter CURSE:CREATE 
+        app enter CURSE:CREATE 
     }
 
 
@@ -493,9 +493,11 @@ snit::widget cursebrowser {
             set state [curse get $oid state]
 
             if {$state eq "normal"} {
-                order send gui CURSE:STATE curse_id $oid state disabled
+                flunky senddict gui CURSE:STATE \
+                    [list curse_id $oid state disabled]
             } elseif {$state eq "disabled"} {
-                order send gui CURSE:STATE curse_id $oid state normal
+                flunky senddict gui CURSE:STATE \
+                    [list curse_id $oid state normal]
             } else {
                 # Do nothing (this should never happen anyway)
             }
@@ -534,8 +536,8 @@ snit::widget cursebrowser {
 
         # NEXT, it's a curse or an inject.
         if {"curse" in [$citree item tag names $id]} {
-            order send gui CURSE:DELETE \
-                curse_id [$citree item text $id {tag id}]
+            flunky senddict gui CURSE:DELETE \
+                [list curse_id [$citree item text $id {tag id}]]
         } else {
             flunky senddict gui INJECT:DELETE \
                 [list id [$citree item text $id {tag id}]]

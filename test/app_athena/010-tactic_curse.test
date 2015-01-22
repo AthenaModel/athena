@@ -53,7 +53,7 @@ namespace eval ::athena_test::tests:: {
         }
 
         ted create JOE BOB NB1 NB2 NO_ONE SHIA SUNN KURD BLUE
-        ted order CURSE:CREATE curse_id C2
+        ted orderx CURSE:CREATE curse_id C2
 
         ted orderx INJECT:SAT:CREATE \
             curse_id C2          \
@@ -122,8 +122,8 @@ namespace eval ::athena_test::tests:: {
 
 
         ted create JOE BOB NB1 NB2 NO_ONE SHIA SUNN KURD BLUE
-        ted order CURSE:CREATE curse_id C1
-        ted order CURSE:CREATE curse_id C2
+        ted orderx CURSE:CREATE curse_id C1
+        ted orderx CURSE:CREATE curse_id C2
 
         ted orderx INJECT:COOP:CREATE \
             curse_id C1          \

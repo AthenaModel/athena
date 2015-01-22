@@ -39,7 +39,7 @@ namespace eval ::athena_test::tests:: {
     # Set up for tests
 
     proc setup {} {
-        ted order CURSE:CREATE curse_id C1
+        ted orderx CURSE:CREATE curse_id C1
 
         # Verify that unused columns contain NULL
         rdb nullvalue "@"

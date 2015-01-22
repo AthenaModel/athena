@@ -67,11 +67,11 @@ namespace eval ::athena_test::tests:: {
         # NEXT, create the entities
         ted create JOE BOB NB1 SHIA SUNN BLUE
 
-        ted order CURSE:CREATE curse_id C1
-        ted order CURSE:CREATE curse_id C2
-        ted order CURSE:CREATE curse_id C3
-        ted order CURSE:CREATE curse_id C4
-        ted order CURSE:CREATE curse_id C5
+        ted orderx CURSE:CREATE curse_id C1
+        ted orderx CURSE:CREATE curse_id C2
+        ted orderx CURSE:CREATE curse_id C3
+        ted orderx CURSE:CREATE curse_id C4
+        ted orderx CURSE:CREATE curse_id C5
 
         # NEXT, add INJECTS to CURSES
         # Individual injects
