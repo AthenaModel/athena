@@ -875,12 +875,12 @@ snit::widget appwin {
         $ordersmenu add cascade -label "Economics" \
             -underline 0 -menu $submenu
         
-        $self AddOrder $submenu ECON:UPDATE:REMRATE
-        $self AddOrder $submenu ECON:CGE:UPDATE
+        $self AddOrderX $submenu ECON:UPDATE:REMRATE
+        $self AddOrderX $submenu ECON:CGE:UPDATE
 
-        cond::available control \
-            [menuitem $submenu command [order title ECON:UPDATE:HIST]... \
-            -command {order enter ECON:UPDATE:HIST [econ hist]}]    \
+        cond::availablex control \
+            [menuitem $submenu command [myorders title ECON:UPDATE:HIST]... \
+            -command {app enter ECON:UPDATE:HIST [econ hist]}]    \
             order ECON:UPDATE:HIST
 
         # Wizard menu
