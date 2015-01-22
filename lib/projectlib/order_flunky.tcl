@@ -297,13 +297,13 @@ oo::class create ::projectlib::order_flunky {
     #
     # mode      - Execution mode, gui|normal|private
     # name      - The order name, as defined in the oset.
-    # options   - The order's parameters, as a dictionary.
+    # parmdict  - The order's parameters, if any, as a dictionary
     #
     # Creates an order object, sets its parameters, and executes it
     # if possible.  Throws REJECTED with an error dictionary 
     # if the order isn't valid.
 
-    method senddict {mode name parmdict} {
+    method senddict {mode name {parmdict ""}} {
         require {$mode in {gui normal private}} "Invalid mode: \"$mode\""
         $oset validate $name
 

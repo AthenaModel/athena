@@ -1023,24 +1023,24 @@ snit::type autogen {
     typemethod BSystem {num} {
         # FIRST, create the requested topics
         for {set i 1} {$i <= $num} {incr i} {
-            order send cli BSYS:TOPIC:ADD tid $i
+            flunky senddict normal BSYS:TOPIC:ADD [list tid $i]
         }
 
         # FIRST, create a belief system for each actor and group.
         set sids [list]
 
         foreach a [actor names] {
-            set sid [order send cli BSYS:SYSTEM:ADD]
-            order send cli BSYS:SYSTEM:UPDATE \
-                sid $sid name "Actor $a's Beliefs"
+            set sid [flunky senddict normal BSYS:SYSTEM:ADD]
+            flunky senddict normal BSYS:SYSTEM:UPDATE \
+                [list sid $sid name "Actor $a's Beliefs"]
 
             lappend sids $sid
         }
 
         foreach g [civgroup names] {
-            set sid [order send cli BSYS:SYSTEM:ADD]
-            order send cli BSYS:SYSTEM:UPDATE \
-                sid $sid name "Group $g's Beliefs"
+            set sid [flunky senddict normal BSYS:SYSTEM:ADD]
+            flunky senddict normal BSYS:SYSTEM:UPDATE \
+                [list sid $sid name "Group $g's Beliefs"]
 
             lappend sids $sid
         }
@@ -1062,7 +1062,7 @@ snit::type autogen {
                 # NEXT, set position/emphasis pair 
                 lassign [lindex $pelist $idx] parms(position) parms(emphasis)
 
-                order send cli BSYS:BELIEF:UPDATE [array get parms]
+                flunky senddict normal BSYS:BELIEF:UPDATE [array get parms]
 
                 # NEXT, go to next position/emphasis pair
                 incr idx

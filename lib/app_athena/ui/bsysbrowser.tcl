@@ -397,7 +397,7 @@ snit::widget bsysbrowser {
     # Creates a new belief system.
     
     method SListAdd {} {
-        set sid [order send gui BSYS:SYSTEM:ADD]
+        set sid [flunky senddict gui BSYS:SYSTEM:ADD]
 
         $slist uid select $sid
         $self SListEdit
@@ -412,7 +412,7 @@ snit::widget bsysbrowser {
         set sid [lindex [$slist uid curselection] 0]
 
         # NEXT, Edit the system
-        order enter BSYS:SYSTEM:UPDATE sid $sid
+        app enter BSYS:SYSTEM:UPDATE sid $sid
     }
 
 
@@ -427,9 +427,8 @@ snit::widget bsysbrowser {
             return
         }
 
-        order send gui BSYS:SYSTEM:UPDATE   \
-            sid         $info(sid)          \
-            commonality $newValue
+        flunky senddict gui BSYS:SYSTEM:UPDATE   \
+            [list sid $info(sid) commonality $newValue]
     }
 
     # SListDelete
@@ -438,7 +437,7 @@ snit::widget bsysbrowser {
     # Deletes the selected system.
 
     method SListDelete {} {
-        order send gui BSYS:SYSTEM:DELETE sid [$self SListGet]
+        flunky senddict gui BSYS:SYSTEM:DELETE [list sid [$self SListGet]]
     }
 
 
@@ -549,7 +548,7 @@ snit::widget bsysbrowser {
             -type        ::rgamma                     \
             -changecmd   [mymethod AListGammaChanged]
 
-        cond::available control $alist_gamma \
+        cond::availablex control $alist_gamma \
             order BSYS:PLAYBOX:UPDATE
 
         pack $bar.title -side left
@@ -609,7 +608,7 @@ snit::widget bsysbrowser {
 
     method AListGammaChanged {newGamma} {
         if {$newGamma != [bsys playbox cget -gamma]} {
-            order send gui BSYS:PLAYBOX:UPDATE gamma $newGamma
+            flunky senddict gui BSYS:PLAYBOX:UPDATE [list gamma $newGamma]
         }
     }
 
@@ -867,7 +866,7 @@ snit::widget bsysbrowser {
     # Creates a new belief topic
     
     method TListAdd {} {
-        set tid [order send gui BSYS:TOPIC:ADD]
+        set tid [flunky senddict gui BSYS:TOPIC:ADD]
 
         $tlist uid select $tid
         $self TListEditTopic
@@ -878,7 +877,7 @@ snit::widget bsysbrowser {
     # Called when the user wants to edit the topic metadata.
 
     method TListEditTopic {} {
-        order enter BSYS:TOPIC:UPDATE tid [$self TListGet]
+        app enter BSYS:TOPIC:UPDATE tid [$self TListGet]
     }
 
     # TListEditBelief
@@ -887,7 +886,7 @@ snit::widget bsysbrowser {
 
     method TListEditBelief {} {
         set bid [list [$self SListGet] [$self TListGet]]
-        order enter BSYS:BELIEF:UPDATE bid $bid
+        app enter BSYS:BELIEF:UPDATE bid $bid
     }
 
     # TListAffinityChanged newValue
@@ -896,8 +895,8 @@ snit::widget bsysbrowser {
 
     method TListAffinityChanged {newValue} {
         if {$newValue != [bsys topic cget $info(tid) -affinity]} {
-            order send gui BSYS:TOPIC:UPDATE \
-                tid $info(tid) affinity $newValue
+            flunky senddict gui BSYS:TOPIC:UPDATE \
+                [list tid $info(tid) affinity $newValue]
         }
     }
 
@@ -909,8 +908,8 @@ snit::widget bsysbrowser {
         set bid [list $info(sid) $info(tid)]
 
         if {$newValue != [bsys belief cget {*}$bid -$parm]} {
-            order send gui BSYS:BELIEF:UPDATE \
-                bid $bid $parm $newValue
+            flunky senddict gui BSYS:BELIEF:UPDATE \
+                [list bid $bid $parm $newValue]
         }
     }
 
@@ -920,7 +919,7 @@ snit::widget bsysbrowser {
 
     method TListGammaChanged {newGamma} {
         if {$newGamma != [bsys playbox cget -gamma]} {
-            order send gui BSYS:PLAYBOX:UPDATE gamma $newGamma
+            flunky senddict gui BSYS:PLAYBOX:UPDATE [list gamma $newGamma]
         }
     }
 
@@ -930,7 +929,7 @@ snit::widget bsysbrowser {
     # Deletes the selected topic.
 
     method TListDelete {} {
-        order send gui BSYS:TOPIC:DELETE tid [$self TListGet]
+        flunky senddict gui BSYS:TOPIC:DELETE [list tid [$self TListGet]]
     }
 
 

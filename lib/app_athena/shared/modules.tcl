@@ -184,6 +184,3 @@ source [file join $::app_athena_shared::library unit.tcl               ]
 source [file join $::app_athena_shared::library view.tcl               ]
 source [file join $::app_athena_shared::library vrel.tcl               ]
 
-# Temporary Modules
-
-source [file join $::app_athena_shared::library bsys_orderx.tcl        ]

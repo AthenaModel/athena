@@ -66,22 +66,22 @@ namespace eval ::athena_test::tests:: {
 
 
         # NEXT, define belief systems
-        set sid(JOE)  [ted order BSYS:SYSTEM:ADD]
-        set sid(BOB)  [ted order BSYS:SYSTEM:ADD]
-        set sid(SHIA) [ted order BSYS:SYSTEM:ADD]
-        set sid(SUNN) [ted order BSYS:SYSTEM:ADD]
+        set sid(JOE)  [ted orderx BSYS:SYSTEM:ADD]
+        set sid(BOB)  [ted orderx BSYS:SYSTEM:ADD]
+        set sid(SHIA) [ted orderx BSYS:SYSTEM:ADD]
+        set sid(SUNN) [ted orderx BSYS:SYSTEM:ADD]
 
-        set tid(T1) [ted order BSYS:TOPIC:ADD]
-        ted order BSYS:TOPIC:UPDATE \
+        set tid(T1) [ted orderx BSYS:TOPIC:ADD]
+        ted orderx BSYS:TOPIC:UPDATE \
             tid $tid(T1) name "Topic 1" affinity no
 
-        ted order BSYS:BELIEF:UPDATE \
+        ted orderx BSYS:BELIEF:UPDATE \
             bid [list $sid(JOE) $tid(T1)] position 0.6 emphasis 0.5
-        ted order BSYS:BELIEF:UPDATE \
+        ted orderx BSYS:BELIEF:UPDATE \
             bid [list $sid(BOB) $tid(T1)] position -0.6 emphasis 0.5
-        ted order BSYS:BELIEF:UPDATE \
+        ted orderx BSYS:BELIEF:UPDATE \
             bid [list $sid(SHIA) $tid(T1)] position 0.6 emphasis 0.35
-        ted order BSYS:BELIEF:UPDATE \
+        ted orderx BSYS:BELIEF:UPDATE \
             bid [list $sid(SUNN) $tid(T1)] position -0.6 emphasis 0.35
 
         # NEXT, associate HOOK1 with $tid(T1)
