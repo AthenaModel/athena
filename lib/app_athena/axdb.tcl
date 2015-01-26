@@ -434,7 +434,7 @@ snit::type axdb {
 
         # NEXT, lock the scenario
         if {[catch {
-            order send app SIM:LOCK
+            flunky send private SIM:LOCK
         } result eopts]} {
             $type SetCaseOutcome $case_id ERROR [dict get $eopts -errorinfo]
             return "ERROR: case $case_id, $result"
@@ -442,7 +442,7 @@ snit::type axdb {
 
         # NEXT, run for the specified number of weeks
         if {[catch {
-            order send app SIM:RUN weeks $weeks block 1
+            flunky send private SIM:RUN -weeks $weeks -block 1
         } result eopts]} {
             $type SetCaseOutcome $case_id ERROR [dict get $eopts -errorinfo]
             return "ERROR: case $case_id, $result"

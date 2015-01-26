@@ -847,7 +847,7 @@ myorders define SIM:RUN {
         text weeks
 
         rcc "Block?" -for block
-        enumlong block -dict {1 Yes 0 No} -defvalue 0
+        yesno block -defvalue 0
     }
 
 

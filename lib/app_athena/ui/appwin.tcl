@@ -733,12 +733,12 @@ snit::widget appwin {
         $ordersmenu add cascade -label "Simulation" \
             -underline 0 -menu $submenu
         
-        $self AddOrder $submenu SIM:STARTDATE
-        $self AddOrder $submenu SIM:STARTTICK
+        $self AddOrderX $submenu SIM:STARTDATE
+        $self AddOrderX $submenu SIM:STARTTICK
         
-        cond::available control \
-            [menuitem $submenu command [order title SIM:REBASE]... \
-                -command [list order send gui SIM:REBASE]]    \
+        cond::availablex control \
+            [menuitem $submenu command [myorders title SIM:REBASE]... \
+                -command [list flunky send gui SIM:REBASE]]    \
                 order SIM:REBASE
 
         # Orders/Unit
@@ -961,7 +961,7 @@ snit::widget appwin {
     #
     # Adds menu items for the orders
 
-    method AddOrder {mnu orders} {
+    method AddOrderFoo {mnu orders} {
         foreach order $orders {
             cond::available control \
                 [menuitem $mnu command [order title $order]... \
@@ -2012,10 +2012,10 @@ snit::widget appwin {
 
     method RunPause {} {
         if {[sim state] eq "RUNNING"} {
-            order send gui SIM:PAUSE
+            flunky send gui SIM:PAUSE
         } else {
-            order send gui SIM:RUN \
-                weeks [dict get $durations [$simtools.duration get]]
+            flunky send gui SIM:RUN \
+                -weeks [dict get $durations [$simtools.duration get]]
         }
     }
 
@@ -2044,7 +2044,7 @@ snit::widget appwin {
                 return
             }
 
-            order send gui SIM:LOCK
+            flunky send gui SIM:LOCK
             return
         }
 
@@ -2068,7 +2068,7 @@ snit::widget appwin {
                         }]]
 
         if {$answer eq "ok"} {
-            order send gui SIM:UNLOCK
+            flunky send gui SIM:UNLOCK
         }
     }
 

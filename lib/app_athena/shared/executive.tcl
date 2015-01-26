@@ -2433,108 +2433,8 @@ snit::type executive {
         return
     }
     
+
     # send order ?option value...?
-    #
-    # order     The name of an order(sim) order.
-    # option    One of order's parameter names, prefixed with "-"
-    # value     The parameter's value
-    #
-    # This routine provides a convenient way to enter orders from
-    # the command line or a script.  The order name is converted
-    # to upper case automatically.  The parameter names are validated,
-    # and a parameter dictionary is created.  The order is sent.
-    # Any error message is pretty-printed.
-    #
-    # Usually the order is sent using the "raw" interface; if the
-    # order state is TACTIC, meaning that the order is sent by an
-    # EXECUTIVE tactic script, the order is sent using the 
-    # "tactic" interface.  That way the order state is checked but
-    # the order is not CIF'd.
-
-    proc send {order args} {
-        # FIRST, build the parameter dictionary, validating the
-        # parameter names as we go.
-        set order [string toupper $order]
-
-        order validate $order
-
-        # NEXT, build the parameter dictionary, validating the
-        # parameter names as we go.
-        set parms [order parms $order]
-        set pdict [dict create]
-
-        while {[llength $args] > 0} {
-            set opt [lshift args]
-
-            set parm [string range $opt 1 end]
-
-            if {![string match "-*" $opt] ||
-                $parm ni $parms
-            } {
-                error "unknown option: $opt"
-            }
-
-            if {[llength $args] == 0} {
-                error "missing value for option $opt"
-            }
-
-            dict set pdict $parm [lshift args]
-        }
-
-        # NEXT, fill in default values.
-        set userParms [dict keys $pdict]
-
-        # NEXT, determine the order interface.
-        if {[order state] eq "TACTIC"} {
-            set interface tactic
-        } else {
-            set interface raw
-        }
-
-        # NEXT, send the order, and handle errors.
-        if {[catch {
-            order send $interface $order $pdict
-        } result eopts]} {
-            if {[dict get $eopts -errorcode] ne "REJECT"} {
-                # Rethrow
-                return {*}$eopts $result
-            }
-
-            set wid [lmaxlen [dict keys $pdict]]
-
-            set text "$order rejected:\n"
-
-            # FIRST, add the parms in error.
-            dict for {parm msg} $result {
-                append text [format "-%-*s   %s\n" $wid $parm $msg]
-            }
-
-            # NEXT, add the defaulted parms
-            set defaulted [list]
-            dict for {parm value} $pdict {
-                if {$parm ni $userParms &&
-                    ![dict exists $result $parm]
-                } {
-                    lappend defaulted $parm
-                }
-            }
-
-            if {[llength $defaulted] > 0} {
-                append text "\nDefaulted Parameters:\n"
-                dict for {parm value} $pdict {
-                    if {$parm in $defaulted} {
-                        append text [format "-%-*s   %s\n" $wid $parm $value]
-                    }
-                }
-            }
-
-            return -code error -errorcode REJECT $text
-        }
-
-        return $result
-    }
-
-    # sendx order ?option value...?
     #
     # order  - The name of an order.
     # option - One of the order's parameter names, prefixed with "-"
@@ -2552,7 +2452,7 @@ snit::type executive {
     # "private" mode.  That way the order state is checked but
     # the order is not CIF'd.
 
-    proc sendx {order args} {
+    proc send {order args} {
         set order [string toupper $order]
 
         # NEXT, determine the order mode.
@@ -2563,7 +2463,7 @@ snit::type executive {
         }
     }
 
-    # enterx order ?parm value...?
+    # enter order ?parm value...?
     #
     # order   - The name of an order.
     # parm    - One of order's parameter names
@@ -2572,7 +2472,7 @@ snit::type executive {
     # This routine pops up an order dialog from the command line.  It is
     # intended for debugging rather than end-user use.
 
-    proc enterx {order args} {
+    proc enter {order args} {
         app enter $order $args
     }
 

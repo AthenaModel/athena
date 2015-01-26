@@ -202,6 +202,17 @@ a dictionary of data types by parameter name.<p>
 <xref order_set(n)> defaults this value to the empty list, which is
 usually appropriate.<p>
 
+<defitem monitor {<i obj> monitor}>
+
+This a boolean flag; if true (the default), the order's execution should
+be monitored and reported to the application, and if false then not.
+Just what form the monitoring will take depends on the application,
+and will be implemented by a subclass of <xref order_flunky(n)>.<p>
+
+The only reason for turning monitoring off is when executing an order
+that performs a large amount of work and then sends its own notification
+at the end (i.e., locking a scenario or ticking time forward).<p>
+
 </deflist meta>
 
 <subsection "Parameter Access">

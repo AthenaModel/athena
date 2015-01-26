@@ -71,11 +71,14 @@ oo::class create athena_flunky {
     # execute mode order
     #
     # Wraps the order_flunky "execute" method.  Adds RDB transactions
-    # and monitoring.
-
+    # and monitoring (unless the order isn't monitored).
 
     method execute {mode order} {
-        rdb monitor $transMode {
+        if {[$order monitor]} {
+            rdb monitor $transMode {
+                set result [next $mode $order]
+            }
+        } else {
             set result [next $mode $order]
         }
 
