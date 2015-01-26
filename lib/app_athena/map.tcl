@@ -418,54 +418,68 @@ snit::type map {
 #
 # Imports a map from a file into the scenario
 
-order define MAP:IMPORT:FILE {
-    title "Import Map From File"
-    options -sendstates {PREP PAUSED}
+myorders define MAP:IMPORT:FILE {
+    meta title "Import Map From File"
+    meta sendstates {PREP PAUSED}
 
     # NOTE: Dialog is not usually used.  Could define a "filepicker"
     # -editcmd, though.
-    form {
+    meta form {
         text filename
     }
-} {
-    # FIRST, prepare the parameters
-    prepare filename -required 
 
-    returnOnError -final
+    meta parmlist {filename}
 
-    # NEXT, validate the parameters
-    if {[catch {
-        # In this case, simply try it.
-        setundo [map mutate import $parms(filename)]
-    } result]} {
-        reject filename $result
+    method _validate {} {
+        my prepare filename -required 
+
+            my checkon filename {
+            if {![file exists $parms(filename)]} {
+                my reject filename \
+                    "Error, file not found: \"$parms(filename)\""
+            }
+
+        }
+
+        my returnOnError
     }
 
-    returnOnError
+    method _execute {{flunky ""}} {
+        if {[catch {
+            # In this case, simply try it.
+            my setundo [map mutate import $parms(filename)]
+        } result]} {
+            # TBD: what do we do here? bgerror for now
+            error $result
+        }
+    }
 }
 
 # MAP:IMPORT:DATA
 #
 # Imports map data into the scenario
 
-order define MAP:IMPORT:DATA {
-    title "Import Map As Data"
-    options -sendstates {PREP}
+myorders define MAP:IMPORT:DATA {
+    meta title "Import Map As Data"
+    meta sendstates {PREP}
+
+    meta parmlist {data proj}
 
     # NOTE: Dialog cannot easily be used. The format of the
     # image data is binary, it would be tough to cobble that together.
-    form {
+    meta form {
         text data
         text proj
     }
-} {
-    # FIRST, prepare parameters
-    prepare data -required
-    prepare proj -type projection
 
-    returnOnError -final
 
-    # NEXT, set the data in the map
-    setundo [map mutate data [array get parms]]
+    method _validate {} {
+        my prepare data -required
+        my prepare proj -type projection
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [map mutate data [array get parms]]
+    }
 }
 

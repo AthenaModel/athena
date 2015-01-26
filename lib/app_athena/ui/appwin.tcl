@@ -607,7 +607,7 @@ snit::widget appwin {
 
         $mnu add separator
 
-        cond::available control                  \
+        cond::availablex control                  \
             [menuitem $mnu command "Import Map From File..."    \
                  -underline 4                         \
                  -command   [mymethod FileImportMap]] \
@@ -1809,7 +1809,7 @@ snit::widget appwin {
 
         # NEXT, Import the map
         if {[catch {
-            order send gui MAP:IMPORT:FILE [list filename $filename]
+            flunky senddict gui MAP:IMPORT:FILE [list filename $filename]
         } result]} {
             app error {
                 |<--
