@@ -24,4 +24,5 @@ temp.tcl
 # SublimeText artifacts.
 *.sublime-*
 
+# VI artifacts
 *.swp

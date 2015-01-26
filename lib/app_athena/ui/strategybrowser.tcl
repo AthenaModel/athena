@@ -944,7 +944,7 @@ snit::widget strategybrowser {
         }
 
         # NEXT, begin an undo block
-        cif transaction "Paste Block(s)" {
+        flunky transaction "Paste Block(s)" {
             block paste $info(agent) $copysets
         }
 
@@ -1359,7 +1359,7 @@ snit::widget strategybrowser {
         }
 
         # NEXT, begin an undo block
-        cif transaction "Paste Condition(s)" {
+        flunky transaction "Paste Condition(s)" {
             condition paste [$info(block) id] $copysets
         }
 
@@ -1709,7 +1709,7 @@ snit::widget strategybrowser {
         }
 
         # NEXT, begin an undo block
-        cif transaction "Paste Tactic(s)" {
+        flunky transaction "Paste Tactic(s)" {
             tactic paste [$info(block) id] $copysets
         }
 
