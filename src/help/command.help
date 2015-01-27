@@ -1262,7 +1262,7 @@ command "gofer" {
     you can do this<p>
 
     <pre>
-    send TACTIC:FUNDENI:CREATE -glist [gofer civgroups resident_in N1] ...
+    send TACTIC:FUNDENI -glist [gofer civgroups resident_in N1] ...
     </pre>
 
     The <command gofer> command will validate the type name, the rule
