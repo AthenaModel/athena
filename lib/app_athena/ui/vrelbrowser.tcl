@@ -125,7 +125,7 @@ snit::widgetadaptor vrelbrowser {
             -state   disabled                          \
             -command [mymethod EditSelected]
 
-        cond::availableCanUpdatex control $editbtn \
+        cond::availableCanUpdate control $editbtn \
             order   VREL:OVERRIDE                 \
             browser $win
 
@@ -134,7 +134,7 @@ snit::widgetadaptor vrelbrowser {
             -state   disabled                              \
             -command [mymethod DeleteSelected]
 
-        cond::availableCanDeletex control $deletebtn \
+        cond::availableCanDelete control $deletebtn \
             order   VREL:RESTORE                    \
             browser $win
 
@@ -285,8 +285,8 @@ snit::widgetadaptor vrelbrowser {
 
     method SelectionChanged {} {
         # FIRST, update buttons
-        cond::availableCanUpdatex update $editbtn
-        cond::availableCanDeletex update $deletebtn
+        cond::availableCanUpdate update $editbtn
+        cond::availableCanDelete update $deletebtn
     }
 
     # EditSelected

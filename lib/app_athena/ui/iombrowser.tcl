@@ -238,7 +238,7 @@ snit::widget iombrowser {
             -state   normal                             \
             -command [mymethod AddIOM]
 
-        cond::availablex control $iaddbtn                \
+        cond::available control $iaddbtn                \
             order IOM:CREATE
 
         install paddbtn using mktoolbutton $bar.paddbtn \

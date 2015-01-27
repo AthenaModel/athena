@@ -96,7 +96,7 @@ snit::widgetadaptor actorbrowser {
         install addbtn using mkaddbutton $bar.add "Add Actor" \
             -command [mymethod AddEntity]
 
-        cond::availablex control $addbtn \
+        cond::available control $addbtn \
             order ACTOR:CREATE
 
 
@@ -104,7 +104,7 @@ snit::widgetadaptor actorbrowser {
             -state   disabled                                     \
             -command [mymethod EditSelected]
 
-        cond::availableSinglex control $editbtn   \
+        cond::availableSingle control $editbtn   \
             order   ACTOR:UPDATE                    \
             browser $win
 
@@ -114,7 +114,7 @@ snit::widgetadaptor actorbrowser {
             -state   disabled                              \
             -command [mymethod DeleteSelected]
 
-        cond::availableSinglex control $deletebtn \
+        cond::availableSingle control $deletebtn \
             order   ACTOR:DELETE           \
             browser $win
 
@@ -145,7 +145,7 @@ snit::widgetadaptor actorbrowser {
 
     method SelectionChanged {} {
         # FIRST, update buttons
-        cond::availableSinglex update [list $editbtn $deletebtn]
+        cond::availableSingle update [list $editbtn $deletebtn]
     }
 
 

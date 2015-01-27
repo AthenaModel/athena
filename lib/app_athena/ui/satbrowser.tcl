@@ -110,7 +110,7 @@ snit::widgetadaptor satbrowser {
             -state   disabled                        \
             -command [mymethod EditSelected]
 
-        cond::availableMultix control $editbtn \
+        cond::availableMulti control $editbtn \
             order   SAT:UPDATE          \
             browser $win
 
@@ -184,7 +184,7 @@ snit::widgetadaptor satbrowser {
 
     method SelectionChanged {} {
         # FIRST, update buttons
-        cond::availableMultix update $editbtn
+        cond::availableMulti update $editbtn
     }
 
 

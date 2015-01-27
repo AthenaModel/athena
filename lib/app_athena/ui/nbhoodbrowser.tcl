@@ -83,7 +83,7 @@ snit::widgetadaptor nbhoodbrowser {
 
         # Assumes that *:UPDATE and *:UPDATE:MULTI always have the
         # the same validity.
-        cond::availableMultix control $editbtn \
+        cond::availableMulti control $editbtn \
             order   NBHOOD:UPDATE                \
             browser $win
 
@@ -94,7 +94,7 @@ snit::widgetadaptor nbhoodbrowser {
             -state   disabled                          \
             -command [mymethod RaiseSelected]
 
-        cond::availableSinglex control $raisebtn \
+        cond::availableSingle control $raisebtn \
             order   NBHOOD:RAISE                   \
             browser $win
 
@@ -105,7 +105,7 @@ snit::widgetadaptor nbhoodbrowser {
             -state   disabled                          \
             -command [mymethod LowerSelected]
 
-        cond::availableSinglex control $lowerbtn \
+        cond::availableSingle control $lowerbtn \
             order   NBHOOD:LOWER                   \
             browser $win
 
@@ -115,7 +115,7 @@ snit::widgetadaptor nbhoodbrowser {
             -state   disabled                              \
             -command [mymethod DeleteSelected]
 
-        cond::availableSinglex control $deletebtn \
+        cond::availableSingle control $deletebtn \
             order   NBHOOD:DELETE                   \
             browser $win
 
@@ -143,8 +143,8 @@ snit::widgetadaptor nbhoodbrowser {
 
     method SelectionChanged {} {
         # FIRST, update buttons
-        cond::availableSinglex update [list $deletebtn $lowerbtn $raisebtn]
-        cond::availableMultix  update $editbtn
+        cond::availableSingle update [list $deletebtn $lowerbtn $raisebtn]
+        cond::availableMulti  update $editbtn
 
         # NEXT, notify the app of the selection.
         if {[llength [$hull uid curselection]] == 1} {

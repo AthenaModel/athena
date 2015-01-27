@@ -595,7 +595,7 @@ snit::widget appwin {
 
         $mnu add separator
 
-        cond::availablex control                  \
+        cond::available control                  \
             [menuitem $mnu command "Import Map From File..."    \
                  -underline 4                         \
                  -command   [mymethod FileImportMap]] \
@@ -612,7 +612,7 @@ snit::widget appwin {
         $mnu add cascade -label "Parameters" \
             -underline 0 -menu $submenu
 
-        cond::availablex control                           \
+        cond::available control                           \
             [menuitem $submenu command "Import..."           \
                  -underline 0                                \
                  -command   [mymethod FileParametersImport]] \
@@ -703,7 +703,7 @@ snit::widget appwin {
         $self AddOrder $submenu SIM:STARTDATE
         $self AddOrder $submenu SIM:STARTTICK
         
-        cond::availablex control \
+        cond::available control \
             [menuitem $submenu command [myorders title SIM:REBASE]... \
                 -command [list flunky send gui SIM:REBASE]]    \
                 order SIM:REBASE
@@ -845,7 +845,7 @@ snit::widget appwin {
         $self AddOrder $submenu ECON:UPDATE:REMRATE
         $self AddOrder $submenu ECON:CGE:UPDATE
 
-        cond::availablex control \
+        cond::available control \
             [menuitem $submenu command [myorders title ECON:UPDATE:HIST]... \
             -command {app enter ECON:UPDATE:HIST [econ hist]}]    \
             order ECON:UPDATE:HIST
@@ -931,7 +931,7 @@ snit::widget appwin {
     method AddOrder {mnu orders} {
         foreach order $orders {
             set cls [flunky class $order]
-            cond::availablex control \
+            cond::available control \
                 [menuitem $mnu command [$cls title]... \
                      -command [list app enter $order]]    \
                 order $order

@@ -106,7 +106,7 @@ snit::widgetadaptor coopbrowser {
             -state   disabled                        \
             -command [mymethod EditSelected]
 
-        cond::availableMultix control $editbtn \
+        cond::availableMulti control $editbtn \
             order   COOP:UPDATE           \
             browser $win
 
@@ -180,7 +180,7 @@ snit::widgetadaptor coopbrowser {
 
     method SelectionChanged {} {
         # FIRST, update buttons
-        cond::availableMultix  update $editbtn
+        cond::availableMulti  update $editbtn
     }
 
 

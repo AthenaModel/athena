@@ -79,7 +79,7 @@ snit::widgetadaptor civgroupbrowser {
         install addbtn using mkaddbutton $bar.add "Add Civilian Group" \
             -command [mymethod AddEntity]
 
-        cond::availablex control $addbtn \
+        cond::available control $addbtn \
             order CIVGROUP:CREATE
 
 
@@ -87,7 +87,7 @@ snit::widgetadaptor civgroupbrowser {
             -state   disabled                                              \
             -command [mymethod EditSelected]
 
-        cond::availableSinglex control $editbtn \
+        cond::availableSingle control $editbtn \
             order   CIVGROUP:UPDATE           \
             browser $win
 
@@ -97,7 +97,7 @@ snit::widgetadaptor civgroupbrowser {
             -state   disabled                              \
             -command [mymethod DeleteSelected]
 
-        cond::availableSinglex control $deletebtn \
+        cond::availableSingle control $deletebtn \
             order   CIVGROUP:DELETE           \
             browser $win
 
@@ -142,8 +142,8 @@ snit::widgetadaptor civgroupbrowser {
 
     method SelectionChanged {} {
         # FIRST, update buttons
-        cond::availableSinglex update $deletebtn
-        cond::availableSinglex update $editbtn
+        cond::availableSingle update $deletebtn
+        cond::availableSingle update $editbtn
     }
 
 

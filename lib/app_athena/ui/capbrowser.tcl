@@ -148,7 +148,7 @@ snit::widget capbrowser {
             -state normal                          \
             -command [mymethod CapAddEntity]
 
-        cond::availablex control $caddbtn \
+        cond::available control $caddbtn \
             order CAP:CREATE
 
         install ceditbtn using mkeditbutton $bar.edit \
@@ -157,7 +157,7 @@ snit::widget capbrowser {
             -command [mymethod CapEditSelected]
 
         # CAP:CAPACITY is used when CAP:UPDATE is not available.
-        cond::availableMultix control $ceditbtn \
+        cond::availableMulti control $ceditbtn \
             order   CAP:CAPACITY              \
             browser $caps
 
@@ -166,7 +166,7 @@ snit::widget capbrowser {
             -state   disabled                              \
             -command [mymethod CapDeleteSelected]
 
-        cond::availableSinglex control $cdeletebtn \
+        cond::availableSingle control $cdeletebtn \
             order   CAP:DELETE              \
             browser $caps
 
@@ -230,8 +230,8 @@ snit::widget capbrowser {
 
     method CapSelectionChanged {} {
         # FIRST trigger conditions
-        cond::availableSinglex update $cdeletebtn
-        cond::availableMultix  update $ceditbtn
+        cond::availableSingle update $cdeletebtn
+        cond::availableMulti  update $ceditbtn
 
         # NEXT, determine which CAPs are selected
         set ids [$caps uid curselection]
@@ -289,7 +289,7 @@ snit::widget capbrowser {
             -state disabled                            \
             -command [mymethod NbcovEditSelected] 
 
-        cond::availableMultix control $nceditbtn \
+        cond::availableMulti control $nceditbtn \
             order CAP:NBCOV:SET                 \
             browser $nbcov
 
@@ -305,7 +305,7 @@ snit::widget capbrowser {
     # coverage records in the browser
 
     method NbcovSelectionChanged {} {
-        cond::availableMultix update $nceditbtn
+        cond::availableMulti update $nceditbtn
     }
 
     # NbcovEditSelected
@@ -364,7 +364,7 @@ snit::widget capbrowser {
             -state disabled                            \
             -command [mymethod CapcovEditSelected]
 
-        cond::availableMultix control $cceditbtn \
+        cond::availableMulti control $cceditbtn \
             order CAP:PEN:SET                   \
             browser $capcov
 
@@ -380,7 +380,7 @@ snit::widget capbrowser {
     # user
 
     method CapcovSelectionChanged {} {
-        cond::availableMultix update $cceditbtn
+        cond::availableMulti update $cceditbtn
     }
 
     # CapcovDataDisplay  rindex values

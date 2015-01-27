@@ -239,7 +239,7 @@ snit::widget cursebrowser {
             -state   normal                             \
             -command [mymethod AddCURSE]
 
-        cond::availablex control $caddbtn                \
+        cond::available control $caddbtn                \
             order CURSE:CREATE
 
         install iaddbtn using mktoolbutton $bar.iaddbtn \

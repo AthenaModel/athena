@@ -234,7 +234,7 @@ snit::widget hookbrowser {
             -state   normal                             \
             -command [mymethod AddHook]
 
-        cond::availablex control $haddbtn                \
+        cond::available control $haddbtn                \
             order HOOK:CREATE
 
         install taddbtn using mktoolbutton $bar.taddbtn \

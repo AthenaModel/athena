@@ -482,12 +482,6 @@ snit::type app {
         # Objdict:   order   THE:ORDER:NAME
 
         statecontroller ::cond::available -events {
-            ::order <State>
-        } -condition {
-            [::order available $order]
-        }
-
-        statecontroller ::cond::availablex -events {
             ::flunky <Sync>
         } -condition {
             [::flunky available $order]
@@ -509,13 +503,6 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableSingle -events {
-            ::order <State>
-        } -condition {
-            [::order available $order]                &&
-            [llength [$browser curselection]] == 1
-        }
-
-        statecontroller ::cond::availableSinglex -events {
             ::flunky <Sync>
         } -condition {
             [::flunky available $order]                &&
@@ -529,13 +516,6 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableMulti -events {
-            ::order <State>
-        } -condition {
-            [::order available $order]              &&
-            [llength [$browser curselection]] > 0
-        }
-
-        statecontroller ::cond::availableMultix -events {
             ::flunky <Sync>
         } -condition {
             [::flunky available $order]              &&
@@ -549,13 +529,6 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableCanDelete -events {
-            ::order <State>
-        } -condition {
-            [::order available $order] &&
-            [$browser candelete]
-        }
-
-        statecontroller ::cond::availableCanDeletex -events {
             ::flunky <Sync>
         } -condition {
             [::flunky available $order] &&
@@ -569,13 +542,6 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableCanUpdate -events {
-            ::order <State>
-        } -condition {
-            [::order available $order] &&
-            [$browser canupdate]
-        }
-
-        statecontroller ::cond::availableCanUpdatex -events {
             ::flunky <Sync>
         } -condition {
             [::flunky available $order] &&
@@ -589,13 +555,6 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableCanResolve -events {
-            ::order <State>
-        } -condition {
-            [::order available $order] &&
-            [$browser canresolve]
-        }
-
-        statecontroller ::cond::availableCanResolvex -events {
             ::flunky <Sync>
         } -condition {
             [::flunky available $order] &&

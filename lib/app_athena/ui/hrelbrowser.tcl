@@ -116,7 +116,7 @@ snit::widgetadaptor hrelbrowser {
             -state   disabled                          \
             -command [mymethod EditSelected]
 
-        cond::availableCanUpdatex control $editbtn \
+        cond::availableCanUpdate control $editbtn \
             order   HREL:OVERRIDE                 \
             browser $win
 
@@ -125,7 +125,7 @@ snit::widgetadaptor hrelbrowser {
             -state   disabled                              \
             -command [mymethod DeleteSelected]
 
-        cond::availableCanDeletex control $deletebtn \
+        cond::availableCanDelete control $deletebtn \
             order   HREL:RESTORE                    \
             browser $win
 
@@ -277,8 +277,8 @@ snit::widgetadaptor hrelbrowser {
 
     method SelectionChanged {} {
         # FIRST, update buttons
-        cond::availableCanUpdatex update $editbtn
-        cond::availableCanDeletex update $deletebtn
+        cond::availableCanUpdate update $editbtn
+        cond::availableCanDelete update $deletebtn
     }
 
     # EditSelected

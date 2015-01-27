@@ -67,7 +67,7 @@ snit::widgetadaptor nbrelbrowser {
             -state   disabled                        \
             -command [mymethod EditSelected]
 
-        cond::availableCanUpdatex control $editbtn \
+        cond::availableCanUpdate control $editbtn \
             order   NBREL:UPDATE   \
             browser $win
 
@@ -116,7 +116,7 @@ snit::widgetadaptor nbrelbrowser {
 
     method SelectionChanged {} {
         # FIRST, update buttons
-        cond::availableCanUpdatex update $editbtn
+        cond::availableCanUpdate update $editbtn
 
         # NEXT, notify the app of the selection.
         if {[llength [$hull uid curselection]] == 1} {

@@ -442,7 +442,7 @@ snit::widget mapviewer {
         # Separator
         ttk::separator $win.vbar.sep
 
-        cond::availablex control \
+        cond::available control \
             [ttk::button $win.vbar.nbhood                       \
                  -style   Toolbutton                            \
                  -image   [list ${type}::icon::nbpoly           \
@@ -453,7 +453,7 @@ snit::widget mapviewer {
         DynamicHelp::add $win.vbar.nbhood \
             -text [myorders title NBHOOD:CREATE]
 
-        cond::availablex control \
+        cond::available control \
             [ttk::button $win.vbar.newabsit                                  \
                  -style   Toolbutton                                         \
                  -image   [list ${type}::icon::abpoly                       \
@@ -996,19 +996,19 @@ snit::widget mapviewer {
             -label   "Browse Neighborhood Detail" \
             -command [mymethod NbhoodBrowseDetail]
 
-        cond::availablex control \
+        cond::available control \
             [menuitem $mnu command "Create Abstract Situation" \
                  -command [mymethod NbhoodCreateAbsitHere]]         \
             order ABSIT:CREATE
 
         $mnu add separator
 
-        cond::availablex control \
+        cond::available control \
             [menuitem $mnu command "Bring Neighborhood to Front" \
                  -command [mymethod NbhoodBringToFront]]         \
             order NBHOOD:RAISE
 
-        cond::availablex control \
+        cond::available control \
             [menuitem $mnu command "Send Neighborhood to Back" \
                  -command [mymethod NbhoodSendToBack]]         \
             order NBHOOD:LOWER
@@ -1610,7 +1610,7 @@ snit::widget mapviewer {
     method CreateAbsitContextMenu {} {
         set mnu [menu $canvas.absitmenu]
 
-        cond::availableCanUpdatex control \
+        cond::availableCanUpdate control \
             [menuitem $mnu command "Update Situation" \
                  -command [mymethod UpdateAbsit]] \
             order ABSIT:UPDATE browser $win

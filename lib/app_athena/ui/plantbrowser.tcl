@@ -101,7 +101,7 @@ snit::widgetadaptor plantbrowser {
             -state normal                         \
             -command [mymethod AddOwnership]
 
-        cond::availablex control $addbtn \
+        cond::available control $addbtn \
             order PLANT:SHARES:CREATE
             
         install editbtn using mkeditbutton $bar.edit \
@@ -111,7 +111,7 @@ snit::widgetadaptor plantbrowser {
 
         # Assumes that *:UPDATE and *:UPDATE:MULTI always have the
         # the same validity.
-        cond::availableMultix control $editbtn \
+        cond::availableMulti control $editbtn \
             order   PLANT:SHARES:UPDATE       \
             browser $win
 
@@ -120,7 +120,7 @@ snit::widgetadaptor plantbrowser {
             -state disabled          \
             -command [mymethod DeleteSelected]
 
-        cond::availableSinglex control $deletebtn \
+        cond::availableSingle control $deletebtn \
             order PLANT:SHARES:DELETE \
             browser $win
 
@@ -193,8 +193,8 @@ snit::widgetadaptor plantbrowser {
 
     method SelectionChanged {} {
         # FIRST, update buttons
-        cond::availableSinglex update $deletebtn
-        cond::availableMultix  update $editbtn
+        cond::availableSingle update $deletebtn
+        cond::availableMulti  update $editbtn
     }
 
     # AddOwnership

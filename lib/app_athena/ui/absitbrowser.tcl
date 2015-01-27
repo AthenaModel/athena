@@ -79,7 +79,7 @@ snit::widgetadaptor absitbrowser {
             -state   normal                       \
             -command [mymethod AddEntity]
 
-        cond::availablex control $addbtn \
+        cond::available control $addbtn \
             order ABSIT:CREATE
 
 
@@ -88,7 +88,7 @@ snit::widgetadaptor absitbrowser {
             -state   disabled                        \
             -command [mymethod EditSelected]
 
-        cond::availableCanUpdatex control $editbtn \
+        cond::availableCanUpdate control $editbtn \
             order   ABSIT:UPDATE   \
             browser $win
 
@@ -98,7 +98,7 @@ snit::widgetadaptor absitbrowser {
             -state   disabled                              \
             -command [mymethod ResolveSelected]
 
-        cond::availableCanResolvex control $resolvebtn  \
+        cond::availableCanResolve control $resolvebtn  \
             order   ABSIT:RESOLVE   \
             browser $win
 
@@ -107,7 +107,7 @@ snit::widgetadaptor absitbrowser {
             -state   disabled                              \
             -command [mymethod DeleteSelected]
 
-        cond::availableCanDeletex control $deletebtn \
+        cond::availableCanDelete control $deletebtn \
             order   ABSIT:DELETE  \
             browser $win
 
@@ -190,9 +190,9 @@ snit::widgetadaptor absitbrowser {
 
     method SelectionChanged {} {
         # FIRST, update buttons
-        cond::availableCanUpdatex  update $editbtn
-        cond::availableCanResolvex update $resolvebtn
-        cond::availableCanDeletex  update $deletebtn
+        cond::availableCanUpdate  update $editbtn
+        cond::availableCanResolve update $resolvebtn
+        cond::availableCanDelete  update $deletebtn
 
         # NEXT, notify the app of the selection.
         if {[llength [$hull uid curselection]] == 1} {

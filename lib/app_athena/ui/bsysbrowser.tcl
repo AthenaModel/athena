@@ -548,7 +548,7 @@ snit::widget bsysbrowser {
             -type        ::rgamma                     \
             -changecmd   [mymethod AListGammaChanged]
 
-        cond::availablex control $alist_gamma \
+        cond::available control $alist_gamma \
             order BSYS:PLAYBOX:UPDATE
 
         pack $bar.title -side left
