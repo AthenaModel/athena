@@ -9,7 +9,7 @@
 # DESCRIPTION:
 #    app_sim(1) CURSE:* order tests.
 #
-#    This test suite tests the CURSE-related orderxs.
+#    This test suite tests the CURSE-related orders.
 #
 #-----------------------------------------------------------------------
 
@@ -63,7 +63,7 @@ namespace eval ::athena_test::tests:: {
     # CURSE:CREATE
 
     test CREATE-1.1 {required parms} -body {
-        ted orderx -reject CURSE:CREATE {}
+        ted order -reject CURSE:CREATE {}
     } -result {
         curse_id {required value}
     }
@@ -71,9 +71,9 @@ namespace eval ::athena_test::tests:: {
 
     test CREATE-1.2 {Duplicate curse_id} -setup {
         setup
-        ted orderx CURSE:CREATE $c1
+        ted order CURSE:CREATE $c1
     } -body {
-        ted orderx -reject CURSE:CREATE $c1
+        ted order -reject CURSE:CREATE $c1
     } -cleanup {
         cleanup
     } -result {
@@ -84,7 +84,7 @@ namespace eval ::athena_test::tests:: {
     test CREATE-1.3 {curse_id is not an ident} -setup {
         setup
     } -body {
-        ted orderx -reject CURSE:CREATE {*}$c1 curse_id "C&"
+        ted order -reject CURSE:CREATE {*}$c1 curse_id "C&"
     } -cleanup {
         cleanup
     } -result {
@@ -94,7 +94,7 @@ namespace eval ::athena_test::tests:: {
       test CREATE-2.1 {curse is created} -setup {
         setup
     } -body {
-        ted orderx CURSE:CREATE $c1
+        ted order CURSE:CREATE $c1
 
         ted querylist {SELECT * FROM curses}
     } -cleanup {
@@ -112,7 +112,7 @@ state     normal
     test CREATE-2.2 {longname defaults to ID} -setup {
         setup
     } -body {
-        ted orderx CURSE:CREATE {*}$c1 longname ""
+        ted order CURSE:CREATE {*}$c1 longname ""
 
         rdb onecolumn {SELECT longname FROM curses}
     } -cleanup {
@@ -123,7 +123,7 @@ state     normal
         setup
     } -body {
         ted notifier bind ::rdb <curses>
-        ted orderx CURSE:CREATE $c1
+        ted order CURSE:CREATE $c1
         ted notifier received
     } -cleanup {
         cleanup
@@ -134,7 +134,7 @@ state     normal
 
     test CREATE-3.1 {undo effects} -setup {
         setup
-        ted orderx CURSE:CREATE $c1
+        ted order CURSE:CREATE $c1
     } -body {
         ted notifier bind ::rdb <curses>
         flunky undo
@@ -150,24 +150,24 @@ state     normal
     # CURSE:DELETE
 
     test DELETE-1.1 {required parms} -body {
-        ted orderx -reject CURSE:DELETE {}
+        ted order -reject CURSE:DELETE {}
     } -result {
         curse_id {required value}
     }
 
     
     test DELETE-1.2 {unknown CURSE} -body {
-        ted orderx -reject CURSE:DELETE curse_id NONESUCH
+        ted order -reject CURSE:DELETE curse_id NONESUCH
     } -result {
         curse_id {Invalid CURSE, none are defined}
     }
 
 
     test DELETE-2.1 {Effects} -setup {
-        ted orderx CURSE:CREATE $c1
+        ted order CURSE:CREATE $c1
     } -body {
         ted notifier bind ::rdb <curses>
-        ted orderx CURSE:DELETE curse_id C1
+        ted order CURSE:DELETE curse_id C1
         ted notifier received
     } -cleanup {
         cleanup
@@ -177,8 +177,8 @@ state     normal
 
 
     test DELETE-3.1 {Undo effects} -setup {
-        ted orderx CURSE:CREATE $c1
-        ted orderx CURSE:DELETE curse_id C1
+        ted order CURSE:CREATE $c1
+        ted order CURSE:DELETE curse_id C1
     } -body {
         ted notifier bind ::rdb <curses>
         flunky undo
@@ -194,15 +194,15 @@ state     normal
     # CURSE:UPDATE
 
     test UPDATE-1.1 {required parms} -body {
-        ted orderx -reject CURSE:UPDATE {}
+        ted order -reject CURSE:UPDATE {}
     } -result {
         curse_id {required value}
     }
 
     test UPDATE-2.1 {curse is updated} -setup {
-        ted orderx CURSE:CREATE $c1
+        ted order CURSE:CREATE $c1
     } -body {
-        ted orderx CURSE:UPDATE {
+        ted order CURSE:UPDATE {
             curse_id     C1
             longname   "New Name"
         }
@@ -222,10 +222,10 @@ state     normal
 
 
     test UPDATE-2.2 {table monitor event} -setup {
-        ted orderx CURSE:CREATE $c1
+        ted order CURSE:CREATE $c1
     } -body {
         ted notifier bind ::rdb <curses>
-        ted orderx CURSE:UPDATE curse_id C1 longname "New Name"
+        ted order CURSE:UPDATE curse_id C1 longname "New Name"
         ted notifier received
     } -cleanup {
         cleanup
@@ -235,8 +235,8 @@ state     normal
 
 
     test UPDATE-3.1 {undo undoes the change} -setup {
-        ted orderx CURSE:CREATE $c1
-        ted orderx CURSE:UPDATE {
+        ted order CURSE:CREATE $c1
+        ted order CURSE:UPDATE {
             curse_id   C1
             longname "New Name"
         }
@@ -254,7 +254,7 @@ state     normal
     # CURSE:STATE
 
     test STATE-1.1 {required parms} -body {
-        ted orderx -reject CURSE:STATE {}
+        ted order -reject CURSE:STATE {}
     } -result {
         curse_id {required value}
         state {required value}
@@ -262,7 +262,7 @@ state     normal
 
     
     test STATE-1.2 {unknown curse id} -body {
-        ted orderx -reject CURSE:STATE curse_id NONESUCH state disabled
+        ted order -reject CURSE:STATE curse_id NONESUCH state disabled
     } -result {
         curse_id {Invalid CURSE, none are defined}
     }
@@ -270,10 +270,10 @@ state     normal
 
     test STATE-2.1 {Effects} -setup {
         setup
-        ted orderx CURSE:CREATE $c1
+        ted order CURSE:CREATE $c1
     } -body {
         ted notifier bind ::rdb <curses>
-        ted orderx CURSE:STATE curse_id C1 state disabled
+        ted order CURSE:STATE curse_id C1 state disabled
         ted notifier received
     } -cleanup {
         cleanup
@@ -284,8 +284,8 @@ state     normal
 
     test STATE-3.1 {Undo effects} -setup {
         setup
-        ted orderx CURSE:CREATE $c1
-        ted orderx CURSE:STATE curse_id C1 state disabled
+        ted order CURSE:CREATE $c1
+        ted order CURSE:STATE curse_id C1 state disabled
     } -body {
         ted notifier bind ::rdb <curses>
         flunky undo

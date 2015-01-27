@@ -113,12 +113,6 @@ tab "Detail" {
     Athena will usually reload the displayed page when data changes.)
     </topic>
 
-    <topic [image button_plus]>
-    Bookmark the current page.  Bookmarks appear on the 
-    <cref /menu/bookmarks> and can be edited on the
-    <tab Bookmarks>.
-    </topic>
-
     <topic [image control_addressbar]>
     The address bar; enter a page's URL here to go straight to that page.
     </topic>
@@ -3122,70 +3116,6 @@ tab "Orders" {
     <topiclist Control Description>
     <control.filterbox>
     <control.headers>
-    </topiclist>
-}
-
-
-#=======================================================================
-
-tab "Bookmarks" {
-    <b>This tab can be made visible by selecting the
-    <menu "View/Bookmarks"> menu item.</b><p>
-
-    This tab shows the bookmarks the user has created to 
-    <cref /tab/detail "Detail Browser"> pages.  Bookmarks appear
-    on the menu in the same order as they appear on this tab.
-    The controls are
-    described <seebelow controls>; the data fields are as follows:<p>
-
-    <topiclist Column Description>
-
-    <topic "Title">The bookmark's title, as it appears on the
-    <cref /menu/bookmarks>.
-    </topic>
-
-    <topic "URL">The URL of the bookmarked page.
-    </topic>
-    </topiclist>
-
-    <b><anchor controls "Browser Controls:"></b>  The browser's
-    toolbar contains the following controls:<p>
-
-    <topiclist Control Description>
-    <topic "Go">
-    Displays the selected bookmark in the
-    <cref /tab/detail "Detail Browser">.
-    </topic>
-
-    <topic [image button_plus]>
-    Creates a new bookmark to the URL of the user's choice.
-    </topic>
-
-    <topic [image button_pencil]>
-    Pops up the update dialog for the selected bookmark.
-    </topic>
-
-    <topic [image button_totop]>
-    Raises the selected bookmark to the top of the list.
-    </topic>
-
-    <topic [image button_raise]>
-    Moves the selected bookmark up one slot in the list.
-    </topic>
-
-    <topic [image button_lower]>
-    Moves the selected bookmark down one slot in the list.
-    </topic>
-
-    <topic [image button_tobottom]>
-    Lowers the selected bookmark to the bottom of the list.
-    </topic>
-
-    <topic [image button_trash]>
-    Deletes the selected bookmark.
-    </topic>
-
-    <control.filterbox>
     </topiclist>
 }
 

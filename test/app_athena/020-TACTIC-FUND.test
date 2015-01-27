@@ -41,9 +41,9 @@ namespace eval ::athena_test::tests:: {
         variable B1
         variable T1
         set S1 [strategy getname JOE]
-        ted orderx STRATEGY:BLOCK:ADD agent JOE
+        ted order STRATEGY:BLOCK:ADD agent JOE
         lassign [$S1 blocks] B1
-        ted orderx BLOCK:TACTIC:ADD block_id [$B1 id] typename FUND
+        ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename FUND
         lassign [$B1 tactics] T1
     }
 
@@ -70,7 +70,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:FUND-1.1 {required parms} -setup {
         setup
     } -body {
-        ted orderx -reject TACTIC:FUND
+        ted order -reject TACTIC:FUND
     } -result {
         tactic_id {required value}
     }
@@ -78,7 +78,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:FUND-1.2 {unknown tactic_id} -setup {
         setup
     } -body {
-        ted orderx -reject TACTIC:FUND tactic_id NONESUCH
+        ted order -reject TACTIC:FUND tactic_id NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -88,7 +88,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:FUND-1.3 {invalid amount} -setup {
         setup
     } -body {
-        ted orderx -reject TACTIC:FUND tactic_id [$T1 id] amount NONESUCH
+        ted order -reject TACTIC:FUND tactic_id [$T1 id] amount NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -98,7 +98,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:FUND-1.4 {amount is negative} -setup {
         setup
     } -body {
-        ted orderx -reject TACTIC:FUND tactic_id [$T1 id] amount -1
+        ted order -reject TACTIC:FUND tactic_id [$T1 id] amount -1
     } -cleanup {
         cleanup
     } -result {
@@ -108,7 +108,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:FUND-1.5 {invalid percent} -setup {
         setup
     } -body {
-        ted orderx -reject TACTIC:FUND tactic_id [$T1 id] \
+        ted order -reject TACTIC:FUND tactic_id [$T1 id] \
                               mode PERCENT percent NONESUCH
     } -cleanup {
         cleanup
@@ -119,7 +119,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:FUND-1.6 {percent is negative} -setup {
         setup
     } -body {
-        ted orderx -reject TACTIC:FUND tactic_id [$T1 id] \
+        ted order -reject TACTIC:FUND tactic_id [$T1 id] \
                               mode PERCENT percent -1
     } -cleanup {
         cleanup
@@ -130,7 +130,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:FUND-1.7 {invalid name} -setup {
         setup
     } -body {
-        ted orderx -reject TACTIC:FUND tactic_id [$T1 id] name 1234
+        ted order -reject TACTIC:FUND tactic_id [$T1 id] name 1234
     } -cleanup {
         cleanup
     } -match glob -result {
@@ -141,7 +141,7 @@ namespace eval ::athena_test::tests:: {
         setup
         set T2 [ted addtactic $B1 ABSIT]
     } -body {
-        ted orderx -reject TACTIC:FUND tactic_id [$T1 id] \
+        ted order -reject TACTIC:FUND tactic_id [$T1 id] \
             name [$T2 get name]
     } -cleanup {
         cleanup
@@ -152,7 +152,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:FUND-2.1 {tactic is created: ALL} -setup {
         setup
     } -body {
-        ted orderx TACTIC:FUND  \
+        ted order TACTIC:FUND  \
             tactic_id [$T1 id] \
             a BOB
 
@@ -176,7 +176,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:FUND-2.2 {tactic is updated: EXACT} -setup {
         setup
     } -body {
-        ted orderx TACTIC:FUND  \
+        ted order TACTIC:FUND  \
             tactic_id [$T1 id] \
             a BOB              \
             mode EXACT         \
@@ -202,7 +202,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:FUND-2.3 {tactic is updated: UPTO} -setup {
         setup
     } -body {
-        ted orderx TACTIC:FUND  \
+        ted order TACTIC:FUND  \
             tactic_id [$T1 id] \
             a BOB              \
             mode UPTO          \
@@ -228,7 +228,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:FUND-2.4 {tactic is updated: PERCENT} -setup {
         setup
     } -body {
-        ted orderx TACTIC:FUND  \
+        ted order TACTIC:FUND  \
             tactic_id [$T1 id] \
             a BOB              \
             mode PERCENT       \
@@ -254,7 +254,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:FUND-2.5 {tactic is updated: EXCESS} -setup {
         setup
     } -body {
-        ted orderx TACTIC:FUND  \
+        ted order TACTIC:FUND  \
             tactic_id [$T1 id] \
             a BOB              \
             mode EXCESS        \
@@ -281,7 +281,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        ted orderx TACTIC:FUND tactic_id [$T1 id]
+        ted order TACTIC:FUND tactic_id [$T1 id]
         ted notifier received
     } -cleanup {
         cleanup
@@ -292,7 +292,7 @@ namespace eval ::athena_test::tests:: {
 
     test TACTIC:FUND-2.7 {undo notifier event} -setup {
         setup
-        ted orderx TACTIC:FUND tactic_id [$T1 id]
+        ted order TACTIC:FUND tactic_id [$T1 id]
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
         flunky undo

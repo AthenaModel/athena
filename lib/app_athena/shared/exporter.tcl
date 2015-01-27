@@ -350,10 +350,6 @@ snit::type exporter {
             }
         }
 
-        # NEXT, Bookmarks
-        SectionHeader $f "Bookmarks"
-        FromRDB $f BOOKMARK:CREATE {SELECT * FROM bookmarks}
-
         # NEXT, Scripts
         SectionHeader $f "Executive Scripts"
         ExportScripts $f

@@ -66,37 +66,37 @@ namespace eval ::athena_test::tests:: {
 
 
         # NEXT, define belief systems
-        set sid(JOE)  [ted orderx BSYS:SYSTEM:ADD]
-        set sid(BOB)  [ted orderx BSYS:SYSTEM:ADD]
-        set sid(SHIA) [ted orderx BSYS:SYSTEM:ADD]
-        set sid(SUNN) [ted orderx BSYS:SYSTEM:ADD]
+        set sid(JOE)  [ted order BSYS:SYSTEM:ADD]
+        set sid(BOB)  [ted order BSYS:SYSTEM:ADD]
+        set sid(SHIA) [ted order BSYS:SYSTEM:ADD]
+        set sid(SUNN) [ted order BSYS:SYSTEM:ADD]
 
-        set tid(T1) [ted orderx BSYS:TOPIC:ADD]
-        ted orderx BSYS:TOPIC:UPDATE \
+        set tid(T1) [ted order BSYS:TOPIC:ADD]
+        ted order BSYS:TOPIC:UPDATE \
             tid $tid(T1) name "Topic 1" affinity no
 
-        ted orderx BSYS:BELIEF:UPDATE \
+        ted order BSYS:BELIEF:UPDATE \
             bid [list $sid(JOE) $tid(T1)] position 0.6 emphasis 0.5
-        ted orderx BSYS:BELIEF:UPDATE \
+        ted order BSYS:BELIEF:UPDATE \
             bid [list $sid(BOB) $tid(T1)] position -0.6 emphasis 0.5
-        ted orderx BSYS:BELIEF:UPDATE \
+        ted order BSYS:BELIEF:UPDATE \
             bid [list $sid(SHIA) $tid(T1)] position 0.6 emphasis 0.35
-        ted orderx BSYS:BELIEF:UPDATE \
+        ted order BSYS:BELIEF:UPDATE \
             bid [list $sid(SUNN) $tid(T1)] position -0.6 emphasis 0.35
 
         # NEXT, associate HOOK1 with $tid(T1)
-        ted orderx HOOK:TOPIC:CREATE hook_id HOOK1 \
+        ted order HOOK:TOPIC:CREATE hook_id HOOK1 \
             topic_id $tid(T1) position 0.6
 
         # NEXT, add payloads to IOM1
-        ted orderx PAYLOAD:COOP:CREATE iom_id IOM1 g BLUE mag S+
-        ted orderx PAYLOAD:HREL:CREATE iom_id IOM1 g BLUE mag M+
-        ted orderx PAYLOAD:SAT:CREATE  iom_id IOM1 c AUT  mag L+
-        ted orderx PAYLOAD:VREL:CREATE iom_id IOM1 a JOE  mag XL+
+        ted order PAYLOAD:COOP:CREATE iom_id IOM1 g BLUE mag S+
+        ted order PAYLOAD:HREL:CREATE iom_id IOM1 g BLUE mag M+
+        ted order PAYLOAD:SAT:CREATE  iom_id IOM1 c AUT  mag L+
+        ted order PAYLOAD:VREL:CREATE iom_id IOM1 a JOE  mag XL+
 
         # NEXT, make the CAPs free to use.
-        ted orderx CAP:UPDATE k CBS cost 0
-        ted orderx CAP:UPDATE k PBS cost 0
+        ted order CAP:UPDATE k CBS cost 0
+        ted order CAP:UPDATE k PBS cost 0
     }
     
     # broadcast iom cap a

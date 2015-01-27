@@ -68,8 +68,8 @@ namespace eval ::athena_test::tests:: {
         ted create JOE BOB NB1 NB2 BLUE TAL SHIA SUNN KURD
 
         # NEXT, make sure SHIA and SUNN dislike each other.
-        ted orderx HREL:OVERRIDE id {SHIA SUNN} base -0.8
-        ted orderx HREL:OVERRIDE id {SUNN SHIA} base -0.8
+        ted order HREL:OVERRIDE id {SHIA SUNN} base -0.8
+        ted order HREL:OVERRIDE id {SUNN SHIA} base -0.8
         
         # NEXT, lock the scenario
         ted lock

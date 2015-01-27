@@ -45,16 +45,16 @@ namespace eval ::athena_test::tests:: {
         variable T1
 
         set S1 [strategy getname SYSTEM]
-        ted orderx STRATEGY:BLOCK:ADD agent SYSTEM
+        ted order STRATEGY:BLOCK:ADD agent SYSTEM
 
-        ted orderx CURSE:CREATE curse_id C1
-        ted orderx CURSE:CREATE curse_id C2
+        ted order CURSE:CREATE curse_id C1
+        ted order CURSE:CREATE curse_id C2
 
-        ted orderx INJECT:SAT:CREATE curse_id C1 g @CIV1 c SFT mag XL+
-        ted orderx INJECT:SAT:CREATE curse_id C2 g @CIV2 c SFT mag XL+
+        ted order INJECT:SAT:CREATE curse_id C1 g @CIV1 c SFT mag XL+
+        ted order INJECT:SAT:CREATE curse_id C2 g @CIV2 c SFT mag XL+
 
         lassign [$S1 blocks] B1
-        ted orderx BLOCK:TACTIC:ADD block_id [$B1 id] typename CURSE
+        ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename CURSE
 
         lassign [$B1 tactics] T1
     }
@@ -83,7 +83,7 @@ namespace eval ::athena_test::tests:: {
     # TACTIC:CURSE
 
     test TACTIC:CURSE-1.1 {required parms} -body {
-        ted orderx -reject TACTIC:CURSE
+        ted order -reject TACTIC:CURSE
     } -result {
         tactic_id {required value}
     }
@@ -91,7 +91,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:CURSE-1.2 {unknown tactic_id} -setup {
         setup
     } -body {
-        ted orderx -reject TACTIC:CURSE tactic_id NONESUCH
+        ted order -reject TACTIC:CURSE tactic_id NONESUCH
     } -cleanup {
         cleanup
     } -match glob -result {
@@ -101,7 +101,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:CURSE-1.3 {roles is not a dict} -setup {
         setup
     } -body {
-        ted orderx TACTIC:CURSE tactic_id [$T1 id] roles NONESUCH
+        ted order TACTIC:CURSE tactic_id [$T1 id] roles NONESUCH
         $T1 check
     } -cleanup {
         cleanup
@@ -110,7 +110,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:CURSE-1.4 {roles is invalid} -setup {
         setup
     } -body {
-        ted orderx TACTIC:CURSE tactic_id [$T1 id] roles {NONESUCH NONESUCH}
+        ted order TACTIC:CURSE tactic_id [$T1 id] roles {NONESUCH NONESUCH}
         $T1 check
     } -cleanup {
         cleanup
@@ -118,9 +118,9 @@ namespace eval ::athena_test::tests:: {
 
     test TACTIC:CURSE-1.5 {curse isn't normal} -setup {
         setup
-        ted orderx CURSE:STATE curse_id C1 state disabled
+        ted order CURSE:STATE curse_id C1 state disabled
     } -body {
-        ted orderx TACTIC:CURSE tactic_id [$T1 id] curse C1
+        ted order TACTIC:CURSE tactic_id [$T1 id] curse C1
         $T1 check
     } -cleanup {
         cleanup
@@ -129,7 +129,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:CURSE-1.6 {invalid name} -setup {
         setup
     } -body {
-        ted orderx -reject TACTIC:CURSE tactic_id [$T1 id] name 1234
+        ted order -reject TACTIC:CURSE tactic_id [$T1 id] name 1234
     } -cleanup {
         cleanup
     } -match glob -result {
@@ -140,7 +140,7 @@ namespace eval ::athena_test::tests:: {
         setup
         set T2 [ted addtactic $B1 ABSIT]
     } -body {
-        ted orderx -reject TACTIC:CURSE tactic_id [$T1 id] \
+        ted order -reject TACTIC:CURSE tactic_id [$T1 id] \
             name [$T2 get name]
     } -cleanup {
         cleanup
@@ -151,7 +151,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:CURSE-2.1 {tactic is created} -setup {
         setup
     } -body {
-        ted orderx TACTIC:CURSE tactic_id [$T1 id] {*}$TC1
+        ted order TACTIC:CURSE tactic_id [$T1 id] {*}$TC1
 
         ted pdicts [$T1 getdict]
     } -cleanup {
@@ -172,7 +172,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        ted orderx TACTIC:CURSE tactic_id [$T1 id] {*}$TC1
+        ted order TACTIC:CURSE tactic_id [$T1 id] {*}$TC1
         ted notifier received
 
         # NOTE: Two updates, because of priority setting.
@@ -183,7 +183,7 @@ namespace eval ::athena_test::tests:: {
 
     test TACTIC:CURSE-3.1 {undo notifier event} -setup {
         setup
-        ted orderx TACTIC:CURSE tactic_id [$T1 id] 
+        ted order TACTIC:CURSE tactic_id [$T1 id] 
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
         flunky undo

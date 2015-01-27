@@ -41,10 +41,10 @@ namespace eval ::athena_test::tests:: {
         variable S1
         variable B1
         variable T1
-        ted orderx STRATEGY:BLOCK:ADD agent SYSTEM
+        ted order STRATEGY:BLOCK:ADD agent SYSTEM
         set S1 [strategy getname SYSTEM]
         lassign [$S1 blocks] B1
-        ted orderx BLOCK:TACTIC:ADD block_id [$B1 id] typename SIGEVENT
+        ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename SIGEVENT
         lassign [$B1 tactics] T1
     }
 
@@ -60,7 +60,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:STATE-1.1 {required parameters} -setup {
         setup
     } -body {
-        ted orderx -reject TACTIC:STATE
+        ted order -reject TACTIC:STATE
     } -cleanup {
         cleanup
     } -result {
@@ -71,7 +71,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:STATE-1.2 {unknown tactic_id} -setup {
         setup
     } -body {
-        ted orderx -reject TACTIC:STATE tactic_id NONESUCH state normal
+        ted order -reject TACTIC:STATE tactic_id NONESUCH state normal
     } -cleanup {
         cleanup
     } -match glob -result {
@@ -81,7 +81,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:STATE-1.3 {invalid state} -setup {
         setup
     } -body {
-        ted orderx -reject TACTIC:STATE tactic_id [$T1 id] state NONESUCH
+        ted order -reject TACTIC:STATE tactic_id [$T1 id] state NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -91,7 +91,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:STATE-2.1 {block updated} -setup {
         setup
     } -body {
-        ted orderx TACTIC:STATE tactic_id [$T1 id] state disabled
+        ted order TACTIC:STATE tactic_id [$T1 id] state disabled
 
         $T1 state
     } -cleanup {
@@ -102,7 +102,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        ted orderx TACTIC:STATE tactic_id [$T1 id] state disabled
+        ted order TACTIC:STATE tactic_id [$T1 id] state disabled
         ted notifier received
     } -cleanup {
         cleanup
@@ -110,7 +110,7 @@ namespace eval ::athena_test::tests:: {
 
     test TACTIC:STATE-2.3 {undo notifier event} -setup {
         setup
-        ted orderx TACTIC:STATE tactic_id [$T1 id] state disabled
+        ted order TACTIC:STATE tactic_id [$T1 id] state disabled
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
         flunky undo

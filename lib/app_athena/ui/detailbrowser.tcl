@@ -62,7 +62,6 @@ snit::widget detailbrowser {
             -home         my://app/                   \
             -unknowncmd   [mymethod GuiLinkCmd]       \
             -searchcmd    [mymethod FormatSearchURL]  \
-            -bookmarkcmd  [mymethod BookmarkThisPage] \
             -messagecmd   {app puts}                  \
             -reloadon {
                 ::sim <DbSyncB>             
@@ -333,16 +332,6 @@ snit::widget detailbrowser {
         }
     }
 
-    # BookmarkThisPage
-    #
-    # Pops up a BOOKMARK:CREATE dialog for the currently displayed page.
-
-    method BookmarkThisPage {} {
-        order enter BOOKMARK:CREATE \
-            url   [$self url]       \
-            title [$self title]
-    }
-    
     #-------------------------------------------------------------------
     # Public Methods
 

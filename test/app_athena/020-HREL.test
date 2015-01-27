@@ -9,7 +9,7 @@
 # DESCRIPTION:
 #    app_sim(1) HREL:* order tests.
 #
-#    This test suite tests the horizontal relationship-related orderxs.
+#    This test suite tests the horizontal relationship-related orders.
 #
 #-----------------------------------------------------------------------
 
@@ -51,7 +51,7 @@ namespace eval ::athena_test::tests:: {
     # HREL:OVERRIDE
 
     test OVERRIDE-1.1 {required parms} -body {
-        ted orderx -reject HREL:OVERRIDE {}
+        ted order -reject HREL:OVERRIDE {}
     } -result {
         id {required value}
     }
@@ -60,7 +60,7 @@ namespace eval ::athena_test::tests:: {
     test OVERRIDE-1.2 {invalid f, g} -setup {
         setup
     } -body {
-        ted orderx -reject HREL:OVERRIDE id {NONESUCH NONESUCH}
+        ted order -reject HREL:OVERRIDE id {NONESUCH NONESUCH}
     } -cleanup {
         cleanup
     } -result {
@@ -71,7 +71,7 @@ namespace eval ::athena_test::tests:: {
     test OVERRIDE-1.3 {f eq g} -setup {
         setup
     } -body {
-        ted orderx -reject HREL:OVERRIDE id {SHIA SHIA} base 1.0
+        ted order -reject HREL:OVERRIDE id {SHIA SHIA} base 1.0
     } -cleanup {
         cleanup
     } -result {
@@ -82,7 +82,7 @@ namespace eval ::athena_test::tests:: {
     test OVERRIDE-1.4 {invalid base: out of range} -setup {
         setup
     } -body {
-        ted orderx -reject HREL:OVERRIDE id {SHIA SUNN} base 1.1
+        ted order -reject HREL:OVERRIDE id {SHIA SUNN} base 1.1
     } -cleanup {
         cleanup
     } -result {
@@ -92,7 +92,7 @@ namespace eval ::athena_test::tests:: {
     test OVERRIDE-1.5 {invalid hist_flag} -setup {
         setup
     } -body {
-        ted orderx -reject HREL:OVERRIDE id {SHIA SUNN} hist_flag NONESUCH
+        ted order -reject HREL:OVERRIDE id {SHIA SUNN} hist_flag NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -102,7 +102,7 @@ namespace eval ::athena_test::tests:: {
     test OVERRIDE-1.6 {invalid current} -setup {
         setup
     } -body {
-        ted orderx -reject HREL:OVERRIDE id {SHIA SUNN} current NONESUCH
+        ted order -reject HREL:OVERRIDE id {SHIA SUNN} current NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -114,7 +114,7 @@ namespace eval ::athena_test::tests:: {
     test OVERRIDE-2.1 {override is created, new scenario} -setup {
         setup
     } -body {
-        ted orderx HREL:OVERRIDE {
+        ted order HREL:OVERRIDE {
             id    {SHIA BLUE}
             base   0.5
         }
@@ -131,7 +131,7 @@ SHIA BLUE 0.5  0         0.5
     test OVERRIDE-2.2 {override is created, previous scenario} -setup {
         setup
     } -body {
-        ted orderx HREL:OVERRIDE {
+        ted order HREL:OVERRIDE {
             id        {SHIA BLUE}
             base      0.5
             hist_flag 1
@@ -150,7 +150,7 @@ SHIA BLUE 0.5  1         0.6
     test OVERRIDE-2.3 {Rel defaults to 0.0} -setup {
         setup
     } -body {
-        ted orderx HREL:OVERRIDE {id {SHIA SUNN}}
+        ted order HREL:OVERRIDE {id {SHIA SUNN}}
         ted query {SELECT * FROM hrel_fg}
     } -cleanup {
         cleanup
@@ -165,7 +165,7 @@ SHIA SUNN 0.0  0         0.0
         setup
     } -body {
         ted notifier bind ::rdb <hrel_fg>
-        ted orderx HREL:OVERRIDE id {SHIA BLUE} base 0.5
+        ted order HREL:OVERRIDE id {SHIA BLUE} base 0.5
         ted notifier received
     } -cleanup {
         cleanup
@@ -177,7 +177,7 @@ SHIA SUNN 0.0  0         0.0
     test OVERRIDE-2.5 {undo undoes the creation} -setup {
         setup
 
-        ted orderx HREL:OVERRIDE {
+        ted order HREL:OVERRIDE {
             id    {SHIA BLUE}
             base   0.5
         }
@@ -196,9 +196,9 @@ SHIA SUNN 0.0  0         0.0
 
     test OVERRIDE-3.1 {rel is updated} -setup {
         setup
-        ted orderx HREL:OVERRIDE {id {SHIA BLUE}}
+        ted order HREL:OVERRIDE {id {SHIA BLUE}}
     } -body {
-        ted orderx HREL:OVERRIDE {
+        ted order HREL:OVERRIDE {
             id        {SHIA BLUE}
             base      0.5
             hist_flag 1
@@ -217,10 +217,10 @@ SHIA BLUE 0.5  1         0.6
 
     test OVERRIDE-3.2 {table monitor event} -setup {
         setup
-        ted orderx HREL:OVERRIDE {id {SHIA BLUE}}
+        ted order HREL:OVERRIDE {id {SHIA BLUE}}
     } -body {
         ted notifier bind ::rdb <hrel_fg>
-        ted orderx HREL:OVERRIDE id {SHIA BLUE} base 0.5
+        ted order HREL:OVERRIDE id {SHIA BLUE} base 0.5
         ted notifier received
     } -cleanup {
         cleanup
@@ -232,8 +232,8 @@ SHIA BLUE 0.5  1         0.6
     test OVERRIDE-3.3 {undo undoes the change} -setup {
         setup
 
-        ted orderx HREL:OVERRIDE {id {SHIA BLUE}}
-        ted orderx HREL:OVERRIDE {
+        ted order HREL:OVERRIDE {id {SHIA BLUE}}
+        ted order HREL:OVERRIDE {
             id    {SHIA BLUE}
             base   0.5
         }
@@ -251,7 +251,7 @@ SHIA BLUE 0.5  1         0.6
     # HREL:RESTORE
 
     test DELETE-1.1 {required parms} -body {
-        ted orderx -reject HREL:RESTORE {}
+        ted order -reject HREL:RESTORE {}
     } -result {
         id {required value}
     }
@@ -260,7 +260,7 @@ SHIA BLUE 0.5  1         0.6
     test DELETE-1.2 {unknown f in id} -setup {
         setup
     } -body {
-        ted orderx -reject HREL:RESTORE id {NONESUCH SUNN}
+        ted order -reject HREL:RESTORE id {NONESUCH SUNN}
     } -cleanup {
         cleanup
     } -result {
@@ -270,7 +270,7 @@ SHIA BLUE 0.5  1         0.6
     test DELETE-1.3 {unknown g in id} -setup {
         setup
     } -body {
-        ted orderx -reject HREL:RESTORE id {SHIA NONESUCH}
+        ted order -reject HREL:RESTORE id {SHIA NONESUCH}
     } -cleanup {
         cleanup
     } -result {
@@ -279,10 +279,10 @@ SHIA BLUE 0.5  1         0.6
 
     test DELETE-2.1 {Effects} -setup {
         setup
-        ted orderx HREL:OVERRIDE {id {SHIA SUNN}}
+        ted order HREL:OVERRIDE {id {SHIA SUNN}}
     } -body {
         ted notifier bind ::rdb <hrel_fg>
-        ted orderx HREL:RESTORE id {SHIA SUNN}
+        ted order HREL:RESTORE id {SHIA SUNN}
         ted notifier received
     } -cleanup {
         cleanup
@@ -293,8 +293,8 @@ SHIA BLUE 0.5  1         0.6
 
     test DELETE-2.2 {Effects on undo} -setup {
         setup
-        ted orderx HREL:OVERRIDE {id {SHIA SUNN}}
-        ted orderx HREL:RESTORE {id {SHIA SUNN}}
+        ted order HREL:OVERRIDE {id {SHIA SUNN}}
+        ted order HREL:RESTORE {id {SHIA SUNN}}
     } -body {
         ted notifier bind ::rdb <hrel_fg>
         flunky undo
@@ -309,7 +309,7 @@ SHIA BLUE 0.5  1         0.6
         setup
     } -body {
         ted notifier bind ::rdb <hrel_fg>
-        ted orderx HREL:RESTORE id {SHIA SUNN}
+        ted order HREL:RESTORE id {SHIA SUNN}
         ted notifier received
     } -cleanup {
         cleanup
@@ -318,7 +318,7 @@ SHIA BLUE 0.5  1         0.6
 
     test DELETE-3.2 {Can undo even if there was no override} -setup {
         setup
-        ted orderx HREL:RESTORE {id {SHIA SUNN}}
+        ted order HREL:RESTORE {id {SHIA SUNN}}
     } -body {
         ted notifier bind ::rdb <hrel_fg>
         flunky undo
@@ -334,7 +334,7 @@ SHIA BLUE 0.5  1         0.6
     test UPDATE:MULTI-1.1 {required parms} -setup {
         setup
     } -body {
-        ted orderx -reject HREL:OVERRIDE:MULTI {}
+        ted order -reject HREL:OVERRIDE:MULTI {}
     } -cleanup {
         cleanup
     } -result {
@@ -345,7 +345,7 @@ SHIA BLUE 0.5  1         0.6
     test UPDATE:MULTI-1.2 {invalid f in ids} -setup {
         setup
     } -body {
-        ted orderx -reject HREL:OVERRIDE:MULTI \
+        ted order -reject HREL:OVERRIDE:MULTI \
             ids {{NONESUCH BLUE}}
     } -cleanup {
         cleanup
@@ -357,7 +357,7 @@ SHIA BLUE 0.5  1         0.6
     test UPDATE:MULTI-1.3 {invalid g in ids} -setup {
         setup
     } -body {
-        ted orderx -reject HREL:OVERRIDE:MULTI \
+        ted order -reject HREL:OVERRIDE:MULTI \
             ids {{SHIA NONESUCH}}
     } -cleanup {
         cleanup
@@ -369,7 +369,7 @@ SHIA BLUE 0.5  1         0.6
     test UPDATE:MULTI-1.4 {f eq g in ids} -setup {
         setup
     } -body {
-        ted orderx -reject HREL:OVERRIDE:MULTI \
+        ted order -reject HREL:OVERRIDE:MULTI \
             ids {{SHIA SHIA}}
     } -cleanup {
         cleanup
@@ -381,7 +381,7 @@ SHIA BLUE 0.5  1         0.6
     test UPDATE:MULTI-1.5 {invalid base} -setup {
         setup
     } -body {
-        ted orderx -reject HREL:OVERRIDE:MULTI \
+        ted order -reject HREL:OVERRIDE:MULTI \
             ids {{SHIA BLUE}} base 1.1
     } -cleanup {
         cleanup
@@ -392,7 +392,7 @@ SHIA BLUE 0.5  1         0.6
     test UPDATE:MULTI-1.6 {invalid hist_flag} -setup {
         setup
     } -body {
-        ted orderx -reject HREL:OVERRIDE:MULTI \
+        ted order -reject HREL:OVERRIDE:MULTI \
             ids {{SHIA BLUE}} base 0.5 hist_flag NONESUCH
     } -cleanup {
         cleanup
@@ -403,7 +403,7 @@ SHIA BLUE 0.5  1         0.6
     test UPDATE:MULTI-1.7 {invalid current} -setup {
         setup
     } -body {
-        ted orderx -reject HREL:OVERRIDE:MULTI \
+        ted order -reject HREL:OVERRIDE:MULTI \
             ids {{SHIA BLUE}} base 0.5 current NONESUCH
     } -cleanup {
         cleanup
@@ -418,7 +418,7 @@ SHIA BLUE 0.5  1         0.6
     } -body {
         ted notifier bind ::rdb <hrel_fg>
 
-        ted orderx HREL:OVERRIDE:MULTI {
+        ted order HREL:OVERRIDE:MULTI {
             ids        {{SHIA BLUE} {BLUE SUNN}}
             base       0.5
             hist_flag  0
@@ -435,7 +435,7 @@ SHIA BLUE 0.5  1         0.6
 
     test UPDATE:MULTI-2.2 {undo undoes the change} -setup {
         setup
-        ted orderx HREL:OVERRIDE:MULTI {
+        ted order HREL:OVERRIDE:MULTI {
             ids        {{SHIA BLUE} {SHIA SUNN}}
             base       0.5
             hist_flag  0
@@ -455,11 +455,11 @@ SHIA BLUE 0.5  1         0.6
     # Update existing overrides
     test UPDATE:MULTI-3.1 {several overrides} -setup {
         setup
-        ted orderx HREL:OVERRIDE {id {SHIA SUNN}}
-        ted orderx HREL:OVERRIDE {id {SHIA BLUE}}
+        ted order HREL:OVERRIDE {id {SHIA SUNN}}
+        ted order HREL:OVERRIDE {id {SHIA BLUE}}
     } -body {
         ted notifier bind ::rdb <hrel_fg>
-        ted orderx HREL:OVERRIDE:MULTI {
+        ted order HREL:OVERRIDE:MULTI {
             ids        {{SHIA BLUE} {SHIA SUNN}} 
             base       0.5
             hist_flag  0
@@ -475,10 +475,10 @@ SHIA BLUE 0.5  1         0.6
 
     test UPDATE:MULTI-3.2 {undo undoes the change} -setup {
         setup
-        ted orderx HREL:OVERRIDE {id {SHIA SUNN}}
-        ted orderx HREL:OVERRIDE {id {SHIA BLUE}}
+        ted order HREL:OVERRIDE {id {SHIA SUNN}}
+        ted order HREL:OVERRIDE {id {SHIA BLUE}}
 
-        ted orderx HREL:OVERRIDE:MULTI {
+        ted order HREL:OVERRIDE:MULTI {
             ids        {{SHIA BLUE} {SHIA SUNN}}
             base       0.5
             hist_flag  0

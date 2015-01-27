@@ -53,9 +53,9 @@ namespace eval ::athena_test::tests:: {
         }
 
         ted create JOE BOB NB1 NB2 NO_ONE SHIA SUNN KURD BLUE
-        ted orderx CURSE:CREATE curse_id C2
+        ted order CURSE:CREATE curse_id C2
 
-        ted orderx INJECT:SAT:CREATE \
+        ted order INJECT:SAT:CREATE \
             curse_id C2          \
             mode     transient   \
             g        @N1         \
@@ -122,31 +122,31 @@ namespace eval ::athena_test::tests:: {
 
 
         ted create JOE BOB NB1 NB2 NO_ONE SHIA SUNN KURD BLUE
-        ted orderx CURSE:CREATE curse_id C1
-        ted orderx CURSE:CREATE curse_id C2
+        ted order CURSE:CREATE curse_id C1
+        ted order CURSE:CREATE curse_id C2
 
-        ted orderx INJECT:COOP:CREATE \
+        ted order INJECT:COOP:CREATE \
             curse_id C1          \
             mode     transient   \
             f        @C1         \
             g        @F1         \
             mag      1.0
 
-        ted orderx INJECT:HREL:CREATE \
+        ted order INJECT:HREL:CREATE \
             curse_id C1          \
             mode     transient   \
             f        @C2         \
             g        @F2         \
             mag      1.0
 
-        ted orderx INJECT:VREL:CREATE \
+        ted order INJECT:VREL:CREATE \
             curse_id C1          \
             mode     transient   \
             g        @C3         \
             a        @A1         \
             mag      1.0
 
-        ted orderx INJECT:SAT:CREATE \
+        ted order INJECT:SAT:CREATE \
             curse_id C1          \
             mode     transient   \
             g        @C4         \
@@ -256,10 +256,10 @@ namespace eval ::athena_test::tests:: {
     test check-2.2 {check: inject changes roles} -setup {
         setup
     } -body {
-        ted orderx INJECT:DELETE  \
+        ted order INJECT:DELETE  \
             id       {C1 1} 
 
-        ted orderx INJECT:COOP:CREATE \
+        ted order INJECT:COOP:CREATE \
             curse_id C1          \
             mode     transient   \
             f        @DUMMY1     \
@@ -275,10 +275,10 @@ namespace eval ::athena_test::tests:: {
     test check-2.3 {check: inject changes role types} -setup {
         setup
     } -body {
-        ted orderx INJECT:DELETE  \
+        ted order INJECT:DELETE  \
             id       {C1 1} 
 
-        ted orderx INJECT:COOP:CREATE \
+        ted order INJECT:COOP:CREATE \
             curse_id C1          \
             mode     transient   \
             f        @F1         \

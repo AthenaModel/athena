@@ -9,7 +9,7 @@
 # DESCRIPTION:
 #    app_sim(1) NBHOOD:* order tests.
 #
-#    This test suite tests the nbhood-related orderxs.
+#    This test suite tests the nbhood-related orders.
 #
 #-----------------------------------------------------------------------
 
@@ -116,7 +116,7 @@ namespace eval ::athena_test::tests:: {
     # NBHOOD:CREATE
 
     test CREATE-1.1 {required parms} -body {
-        ted orderx -reject NBHOOD:CREATE {}
+        ted order -reject NBHOOD:CREATE {}
     } -result {
         n {required value}
         refpoint {required value}
@@ -125,9 +125,9 @@ namespace eval ::athena_test::tests:: {
 
     
     test CREATE-1.2 {Duplicate n} -setup {
-        ted orderx NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $nb1
     } -body {
-        ted orderx -reject NBHOOD:CREATE $nb1 
+        ted order -reject NBHOOD:CREATE $nb1 
     } -cleanup {
         cleanup
     } -result {
@@ -136,7 +136,7 @@ namespace eval ::athena_test::tests:: {
 
 
     test CREATE-1.4 {invalid identifier} -body {
-        ted orderx -reject NBHOOD:CREATE [dict merge $nb1 {n "NONE-SUCH"}]
+        ted order -reject NBHOOD:CREATE [dict merge $nb1 {n "NONE-SUCH"}]
     } -cleanup {
         cleanup
     } -result {
@@ -144,7 +144,7 @@ namespace eval ::athena_test::tests:: {
     }
 
     test CREATE-1.4 {invalid urbanization} -body {
-        ted orderx -reject NBHOOD:CREATE [dict merge $nb1 {
+        ted order -reject NBHOOD:CREATE [dict merge $nb1 {
             urbanization NONESUCH
         }]
     } -result {
@@ -152,7 +152,7 @@ namespace eval ::athena_test::tests:: {
     }
 
     test CREATE-1.5 {invalid controller} -body {
-        ted orderx -reject NBHOOD:CREATE [dict merge $nb1 {
+        ted order -reject NBHOOD:CREATE [dict merge $nb1 {
             controller NONESUCH
         }]
     } -result {
@@ -162,7 +162,7 @@ namespace eval ::athena_test::tests:: {
     # CREATE-1.6 obsolete
 
     test CREATE-1.7 {invalid pcf} -body {
-        ted orderx -reject NBHOOD:CREATE [dict merge $nb1 {
+        ted order -reject NBHOOD:CREATE [dict merge $nb1 {
             pcf -1.0
         }]
     } -result {
@@ -170,7 +170,7 @@ namespace eval ::athena_test::tests:: {
     }
 
     test CREATE-1.8 {polygon: invalid map ref} -body {
-        ted orderx -reject NBHOOD:CREATE [dict merge $nb1 {
+        ted order -reject NBHOOD:CREATE [dict merge $nb1 {
             polygon {A80A80 B20A80 Z99Z99 B00B20}
         }]
     } -result {
@@ -178,9 +178,9 @@ namespace eval ::athena_test::tests:: {
     }
 
     test CREATE-1.9 {polygon: duplicate polygon} -setup {
-        ted orderx NBHOOD:CREATE  $nb1
+        ted order NBHOOD:CREATE  $nb1
     } -body {
-        ted orderx -reject NBHOOD:CREATE \
+        ted order -reject NBHOOD:CREATE \
             [dict merge $nb2 [list polygon [dict get $nb1 polygon]]]
     } -cleanup {
         cleanup
@@ -190,7 +190,7 @@ namespace eval ::athena_test::tests:: {
     
 
     test CREATE-1.10 {refpoint: invalid map ref} -body {
-        ted orderx -reject NBHOOD:CREATE [dict merge $nb1 {
+        ted order -reject NBHOOD:CREATE [dict merge $nb1 {
             refpoint X99X99
         }]
     } -result {
@@ -199,9 +199,9 @@ namespace eval ::athena_test::tests:: {
 
 
     test CREATE-1.11 {refpoint: duplicate refpoint} -setup {
-        ted orderx NBHOOD:CREATE  $nb1
+        ted order NBHOOD:CREATE  $nb1
     } -body {
-        ted orderx -reject NBHOOD:CREATE \
+        ted order -reject NBHOOD:CREATE \
             [dict merge $nb2 [list refpoint [dict get $nb1 refpoint]]]
     } -cleanup {
         cleanup
@@ -211,7 +211,7 @@ namespace eval ::athena_test::tests:: {
 
 
     test CREATE-1.12 {refpoint not in polygon} -body {
-        ted orderx -reject NBHOOD:CREATE [dict merge $nb1 {
+        ted order -reject NBHOOD:CREATE [dict merge $nb1 {
             refpoint A00A00
         }]
     } -result {
@@ -220,7 +220,7 @@ namespace eval ::athena_test::tests:: {
 
 
     test CREATE-1.13 {local: invalid boolean} -body {
-        ted orderx -reject NBHOOD:CREATE [dict merge $nb1 {
+        ted order -reject NBHOOD:CREATE [dict merge $nb1 {
             local NONESUCH
         }]
     } -result {
@@ -229,7 +229,7 @@ namespace eval ::athena_test::tests:: {
 
 
     test CREATE-2.1 {nbhood is created, controller is NONE} -body {
-        ted orderx NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $nb1
         set parms [join [dict keys $nb1] ","]
         ted querylist "SELECT $parms FROM nbhoods"
     } -cleanup {
@@ -248,7 +248,7 @@ polygon       80 80 120 80 100 120
     test CREATE-2.2 {nbhood is created, controller is given} -setup {
         ted create JOE
     } -body {
-        ted orderx NBHOOD:CREATE [dict merge $nb1 {controller JOE}]
+        ted order NBHOOD:CREATE [dict merge $nb1 {controller JOE}]
         set parms [join [dict keys $nb1] ","]
         ted querylist "SELECT $parms FROM nbhoods"
     } -cleanup {
@@ -265,7 +265,7 @@ polygon       80 80 120 80 100 120
     }
 
     test CREATE-2.3 {longname defaults to ID} -body {
-        ted orderx NBHOOD:CREATE [dict merge $nb1 {longname ""}]
+        ted order NBHOOD:CREATE [dict merge $nb1 {longname ""}]
 
         rdb onecolumn {SELECT longname FROM nbhoods}
     } -cleanup {
@@ -273,7 +273,7 @@ polygon       80 80 120 80 100 120
     } -result {NB1}
 
     test CREATE-2.4 {pcf defaults to 0.0 for non-local} -body {
-        ted orderx NBHOOD:CREATE [dict merge $nl1 {longname ""}]
+        ted order NBHOOD:CREATE [dict merge $nl1 {longname ""}]
 
         rdb onecolumn {SELECT pcf FROM nbhoods}
     } -cleanup {
@@ -282,7 +282,7 @@ polygon       80 80 120 80 100 120
 
     test CREATE-2.5 {Effects} -body {
         ted notifier bind ::rdb <nbhoods>
-        ted orderx NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $nb1
         ted notifier received
     } -cleanup {
         cleanup
@@ -293,7 +293,7 @@ polygon       80 80 120 80 100 120
 
 
     test CREATE-3.1 {undo effects} -setup {
-        ted orderx NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $nb1
     } -body {
         ted notifier bind ::rdb <nbhoods>
         flunky undo
@@ -308,7 +308,7 @@ polygon       80 80 120 80 100 120
     # NBHOOD:CREATE:RAW
 
     test CREATE_RAW-1.1 {required parms} -body {
-        ted orderx -reject NBHOOD:CREATE:RAW {}
+        ted order -reject NBHOOD:CREATE:RAW {}
     } -result {
         n {required value}
         refpoint {required value}
@@ -317,9 +317,9 @@ polygon       80 80 120 80 100 120
 
     
     test CREATE_RAW-1.2 {Duplicate n} -setup {
-        ted orderx NBHOOD:CREATE:RAW $rawnb1
+        ted order NBHOOD:CREATE:RAW $rawnb1
     } -body {
-        ted orderx -reject NBHOOD:CREATE:RAW $rawnb1 
+        ted order -reject NBHOOD:CREATE:RAW $rawnb1 
     } -cleanup {
         cleanup
     } -result {
@@ -328,7 +328,7 @@ polygon       80 80 120 80 100 120
 
 
     test CREATE_RAW-1.4 {invalid identifier} -body {
-        ted orderx -reject NBHOOD:CREATE:RAW [dict merge $rawnb1 {n "NONE-SUCH"}]
+        ted order -reject NBHOOD:CREATE:RAW [dict merge $rawnb1 {n "NONE-SUCH"}]
     } -cleanup {
         cleanup
     } -result {
@@ -336,7 +336,7 @@ polygon       80 80 120 80 100 120
     }
 
     test CREATE_RAW-1.4 {invalid urbanization} -body {
-        ted orderx -reject NBHOOD:CREATE:RAW [dict merge $rawnb1 {
+        ted order -reject NBHOOD:CREATE:RAW [dict merge $rawnb1 {
             urbanization NONESUCH
         }]
     } -result {
@@ -344,7 +344,7 @@ polygon       80 80 120 80 100 120
     }
 
     test CREATE_RAW-1.5 {invalid controller} -body {
-        ted orderx -reject NBHOOD:CREATE:RAW [dict merge $rawnb1 {
+        ted order -reject NBHOOD:CREATE:RAW [dict merge $rawnb1 {
             controller NONESUCH
         }]
     } -result {
@@ -354,7 +354,7 @@ polygon       80 80 120 80 100 120
     # CREATE_RAW-1.6 obsolete
 
     test CREATE_RAW-1.7 {invalid pcf} -body {
-        ted orderx -reject NBHOOD:CREATE:RAW [dict merge $rawnb1 {
+        ted order -reject NBHOOD:CREATE:RAW [dict merge $rawnb1 {
             pcf -1.0
         }]
     } -result {
@@ -362,9 +362,9 @@ polygon       80 80 120 80 100 120
     }
 
     test CREATE_RAW-1.10 {polygon: duplicate polygon} -setup {
-        ted orderx NBHOOD:CREATE:RAW  $rawnb1
+        ted order NBHOOD:CREATE:RAW  $rawnb1
     } -body {
-        ted orderx -reject NBHOOD:CREATE:RAW \
+        ted order -reject NBHOOD:CREATE:RAW \
             [dict merge $rawnb2 [list polygon [dict get $rawnb1 polygon]]]
     } -cleanup {
         cleanup
@@ -374,7 +374,7 @@ polygon       80 80 120 80 100 120
     
 
     test CREATE_RAW-1.11 {refpoint: invalid ref point, not coord} -body {
-        ted orderx -reject NBHOOD:CREATE:RAW [dict merge $rawnb1 {
+        ted order -reject NBHOOD:CREATE:RAW [dict merge $rawnb1 {
             refpoint 180
         }]
     } -result {
@@ -382,7 +382,7 @@ polygon       80 80 120 80 100 120
     }
 
     test CREATE_RAW-1.12 {refpoint: invalid ref point, invalid coord} -body {
-        ted orderx -reject NBHOOD:CREATE:RAW [dict merge $rawnb1 {
+        ted order -reject NBHOOD:CREATE:RAW [dict merge $rawnb1 {
             refpoint {-91 180}
         }]
     } -match glob -result {
@@ -391,9 +391,9 @@ polygon       80 80 120 80 100 120
 
 
     test CREATE_RAW-1.13 {refpoint: duplicate refpoint} -setup {
-        ted orderx NBHOOD:CREATE:RAW  $rawnb1
+        ted order NBHOOD:CREATE:RAW  $rawnb1
     } -body {
-        ted orderx -reject NBHOOD:CREATE:RAW \
+        ted order -reject NBHOOD:CREATE:RAW \
             [dict merge $rawnb2 [list refpoint [dict get $rawnb1 refpoint]]]
     } -cleanup {
         cleanup
@@ -403,7 +403,7 @@ polygon       80 80 120 80 100 120
 
 
     test CREATE_RAW-1.14 {refpoint not in polygon} -body {
-        ted orderx -reject NBHOOD:CREATE:RAW [dict merge $rawnb1 {
+        ted order -reject NBHOOD:CREATE:RAW [dict merge $rawnb1 {
             polygon {0 0 1 0 1 1 0 1}
         }]
     } -result {
@@ -412,7 +412,7 @@ polygon       80 80 120 80 100 120
 
 
     test CREATE_RAW-1.15 {local: invalid boolean} -body {
-        ted orderx -reject NBHOOD:CREATE:RAW [dict merge $rawnb1 {
+        ted order -reject NBHOOD:CREATE:RAW [dict merge $rawnb1 {
             local NONESUCH
         }]
     } -result {
@@ -421,7 +421,7 @@ polygon       80 80 120 80 100 120
 
 
     test CREATE_RAW-2.1 {nbhood is created, controller is NONE} -body {
-        ted orderx NBHOOD:CREATE:RAW $rawnb1
+        ted order NBHOOD:CREATE:RAW $rawnb1
         set parms [join [dict keys $rawnb1] ","]
         ted querylist "SELECT $parms FROM nbhoods"
     } -cleanup {
@@ -440,7 +440,7 @@ local         1
     test CREATE_RAW-2.2 {nbhood is created, controller is given} -setup {
         ted create JOE
     } -body {
-        ted orderx NBHOOD:CREATE:RAW [dict merge $rawnb1 {controller JOE}]
+        ted order NBHOOD:CREATE:RAW [dict merge $rawnb1 {controller JOE}]
         set parms [join [dict keys $rawnb1] ","]
         ted querylist "SELECT $parms FROM nbhoods"
     } -cleanup {
@@ -457,7 +457,7 @@ local         1
     }
 
     test CREATE_RAW-2.3 {longname defaults to ID} -body {
-        ted orderx NBHOOD:CREATE:RAW [dict merge $rawnb1 {longname ""}]
+        ted order NBHOOD:CREATE:RAW [dict merge $rawnb1 {longname ""}]
 
         rdb onecolumn {SELECT longname FROM nbhoods}
     } -cleanup {
@@ -466,7 +466,7 @@ local         1
 
     test CREATE_RAW-2.4 {Effects} -body {
         ted notifier bind ::rdb <nbhoods>
-        ted orderx NBHOOD:CREATE:RAW $rawnb1
+        ted order NBHOOD:CREATE:RAW $rawnb1
         ted notifier received
     } -cleanup {
         cleanup
@@ -477,7 +477,7 @@ local         1
 
 
     test CREATE_RAW-3.1 {undo effects} -setup {
-        ted orderx NBHOOD:CREATE:RAW $rawnb1
+        ted order NBHOOD:CREATE:RAW $rawnb1
     } -body {
         ted notifier bind ::rdb <nbhoods>
         flunky undo
@@ -493,13 +493,13 @@ local         1
     # NBHOOD:DELETE
 
     test DELETE-1.1 {required parms} -body {
-        ted orderx -reject NBHOOD:DELETE {}
+        ted order -reject NBHOOD:DELETE {}
     } -result {
         n {required value}
     }
     
     test DELETE-1.2 {unknown n} -body {
-        ted orderx -reject NBHOOD:DELETE n NONESUCH
+        ted order -reject NBHOOD:DELETE n NONESUCH
     } -result {
         n {Invalid neighborhood, none are defined}
     }
@@ -508,7 +508,7 @@ local         1
         ted create NB1
     } -body {
         ted notifier bind ::rdb <nbhoods>
-        ted orderx NBHOOD:DELETE n NB1
+        ted order NBHOOD:DELETE n NB1
         ted notifier received
     } -cleanup {
         cleanup
@@ -519,7 +519,7 @@ local         1
 
     test DELETE-3.1 {Undo effects} -setup {
         ted create NB1
-        ted orderx NBHOOD:DELETE n NB1
+        ted order NBHOOD:DELETE n NB1
     } -body {
         ted notifier bind ::rdb <nbhoods>
         flunky undo
@@ -535,22 +535,22 @@ local         1
     # NBHOOD:LOWER
 
     test LOWER-1.1 {required parms} -body {
-        ted orderx -reject NBHOOD:LOWER {}
+        ted order -reject NBHOOD:LOWER {}
     } -result {
         n {required value}
     }
     
     test LOWER-1.2 {unknown n} -body {
-        ted orderx -reject NBHOOD:LOWER n NONESUCH
+        ted order -reject NBHOOD:LOWER n NONESUCH
     } -result {
         n {Invalid neighborhood, none are defined}
     }
 
     test LOWER-2.1 {Nbhood is lower} -setup {
-        ted orderx NBHOOD:CREATE $nb1
-        ted orderx NBHOOD:CREATE $overnb1
+        ted order NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $overnb1
     } -body {
-        ted orderx NBHOOD:LOWER n OV1
+        ted order NBHOOD:LOWER n OV1
         ted query {SELECT n,longname,stacking_order,obscured_by FROM nbhoods}
     } -cleanup {
         cleanup
@@ -562,11 +562,11 @@ OV1 Over     1              NB1
     }
 
     test LOWER-2.2 {<Stack>} -setup {
-        ted orderx NBHOOD:CREATE $nb1
-        ted orderx NBHOOD:CREATE $overnb1
+        ted order NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $overnb1
     } -body {
         ted notifier bind ::nbhood <Stack>
-        ted orderx NBHOOD:LOWER n OV1
+        ted order NBHOOD:LOWER n OV1
         ted notifier received
     } -cleanup {
         cleanup
@@ -575,10 +575,10 @@ OV1 Over     1              NB1
     }
 
     test LOWER-3.1 {Undo} -setup {
-        ted orderx NBHOOD:CREATE $nb1
-        ted orderx NBHOOD:CREATE $overnb1
+        ted order NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $overnb1
     } -body {
-        ted orderx NBHOOD:LOWER n OV1
+        ted order NBHOOD:LOWER n OV1
         flunky undo
         ted query {SELECT n,longname,stacking_order,obscured_by FROM nbhoods}
     } -cleanup {
@@ -594,22 +594,22 @@ OV1 Over     2
     # NBHOOD:RAISE
 
     test RAISE-1.1 {required parms} -body {
-        ted orderx -reject NBHOOD:RAISE {}
+        ted order -reject NBHOOD:RAISE {}
     } -result {
         n {required value}
     }
     
     test RAISE-1.2 {unknown n} -body {
-        ted orderx -reject NBHOOD:RAISE n NONESUCH
+        ted order -reject NBHOOD:RAISE n NONESUCH
     } -result {
         n {Invalid neighborhood, none are defined}
     }
 
     test RAISE-2.1 {Nbhood is lower} -setup {
-        ted orderx NBHOOD:CREATE $nb1
-        ted orderx NBHOOD:CREATE $overnb1
+        ted order NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $overnb1
     } -body {
-        ted orderx NBHOOD:RAISE n NB1
+        ted order NBHOOD:RAISE n NB1
         ted query {SELECT n,longname,stacking_order,obscured_by FROM nbhoods}
     } -cleanup {
         cleanup
@@ -621,11 +621,11 @@ OV1 Over     1              NB1
     }
 
     test RAISE-2.2 {<Stack>} -setup {
-        ted orderx NBHOOD:CREATE $nb1
-        ted orderx NBHOOD:CREATE $overnb1
+        ted order NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $overnb1
     } -body {
         ted notifier bind ::nbhood <Stack>
-        ted orderx NBHOOD:RAISE n NB1
+        ted order NBHOOD:RAISE n NB1
         ted notifier received
     } -cleanup {
         cleanup
@@ -634,10 +634,10 @@ OV1 Over     1              NB1
     }
 
     test RAISE-3.1 {Undo} -setup {
-        ted orderx NBHOOD:CREATE $nb1
-        ted orderx NBHOOD:CREATE $overnb1
+        ted order NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $overnb1
     } -body {
-        ted orderx NBHOOD:RAISE n NB1
+        ted order NBHOOD:RAISE n NB1
         flunky undo
         ted query {SELECT n,longname,stacking_order,obscured_by FROM nbhoods}
     } -cleanup {
@@ -653,15 +653,15 @@ OV1 Over     2
     # NBHOOD:UPDATE
 
     test UPDATE-1.1 {required parms} -body {
-        ted orderx -reject NBHOOD:UPDATE {}
+        ted order -reject NBHOOD:UPDATE {}
     } -result {
         n {required value}
     }
     
     test UPDATE-1.2 {invalid urbanization} -setup {
-        ted orderx NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $nb1
     } -body {
-        ted orderx -reject NBHOOD:UPDATE n NB1 urbanization NONESUCH
+        ted order -reject NBHOOD:UPDATE n NB1 urbanization NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -669,9 +669,9 @@ OV1 Over     2
     }
 
     test UPDATE-1.3 {invalid controller} -setup {
-        ted orderx NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $nb1
     } -body {
-        ted orderx -reject NBHOOD:UPDATE n NB1 controller NONESUCH
+        ted order -reject NBHOOD:UPDATE n NB1 controller NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -681,9 +681,9 @@ OV1 Over     2
     # UPDATE-1.4: Obsolete
 
     test UPDATE-1.5 {invalid pcf} -setup {
-        ted orderx NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $nb1
     } -body {
-        ted orderx -reject NBHOOD:UPDATE n NB1 pcf -1.0
+        ted order -reject NBHOOD:UPDATE n NB1 pcf -1.0
     } -cleanup {
         cleanup
     } -result {
@@ -691,9 +691,9 @@ OV1 Over     2
     }
 
     test UPDATE-1.6 {polygon: invalid map ref} -setup {
-        ted orderx NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $nb1
     } -body {
-        ted orderx -reject NBHOOD:UPDATE           \
+        ted order -reject NBHOOD:UPDATE           \
             n       NB1                          \
             polygon {A80A80 B20A80 Z99Z99 B00B20}
     } -cleanup {
@@ -703,10 +703,10 @@ OV1 Over     2
     }
 
     test UPDATE-1.7 {polygon: duplicate polygon} -setup {
-        ted orderx NBHOOD:CREATE $nb1
-        ted orderx NBHOOD:CREATE $nb2
+        ted order NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $nb2
     } -body {
-        ted orderx -reject NBHOOD:UPDATE     \
+        ted order -reject NBHOOD:UPDATE     \
             n       NB1                    \
             polygon [dict get $nb2 polygon]
     } -cleanup {
@@ -716,9 +716,9 @@ OV1 Over     2
     }
 
     test UPDATE-1.8 {refpoint: invalid map ref} -setup {
-        ted orderx NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $nb1
     } -body {
-        ted orderx -reject NBHOOD:UPDATE \
+        ted order -reject NBHOOD:UPDATE \
             n        NB1               \
             refpoint X99X99
     } -cleanup {
@@ -728,10 +728,10 @@ OV1 Over     2
     }
 
     test UPDATE-1.9 {refpoint: duplicate refpoint} -setup {
-        ted orderx NBHOOD:CREATE $nb1
-        ted orderx NBHOOD:CREATE $nb2
+        ted order NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $nb2
     } -body {
-        ted orderx -reject NBHOOD:UPDATE       \
+        ted order -reject NBHOOD:UPDATE       \
             n        NB1                     \
             refpoint [dict get $nb2 refpoint]
     } -cleanup {
@@ -741,9 +741,9 @@ OV1 Over     2
     }
 
     test UPDATE-1.10 {refpoint not in polygon} -setup {
-        ted orderx NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $nb1
     } -body {
-        ted orderx -reject NBHOOD:UPDATE \
+        ted order -reject NBHOOD:UPDATE \
             n        NB1               \
             refpoint A00A00
     } -cleanup {
@@ -753,9 +753,9 @@ OV1 Over     2
     }
 
     test UPDATE-1.11 {invalid local} -setup {
-        ted orderx NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $nb1
     } -body {
-        ted orderx -reject NBHOOD:UPDATE n NB1 local NONESUCH
+        ted order -reject NBHOOD:UPDATE n NB1 local NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -764,9 +764,9 @@ OV1 Over     2
 
     test UPDATE-2.1 {nbhood is updated} -setup {
         ted create JOE
-        ted orderx NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $nb1
     } -body {
-        ted orderx NBHOOD:UPDATE {
+        ted order NBHOOD:UPDATE {
             n            NB1
             longname     "Not Here"
             local        NO
@@ -794,10 +794,10 @@ polygon       0 0 10 0 10 10 0 10
 
 
     test UPDATE-2.2 {table monitor event} -setup {
-        ted orderx NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $nb1
     } -body {
         ted notifier bind ::rdb <nbhoods>
-        ted orderx NBHOOD:UPDATE n NB1 longname "Not Here"
+        ted order NBHOOD:UPDATE n NB1 longname "Not Here"
         ted notifier received
     } -cleanup {
         cleanup
@@ -807,8 +807,8 @@ polygon       0 0 10 0 10 10 0 10
 
 
     test UPDATE-3.1 {undo undoes the change} -setup {
-        ted orderx NBHOOD:CREATE $nb1
-        ted orderx NBHOOD:UPDATE [dict merge $overnb1 {n NB1}]
+        ted order NBHOOD:CREATE $nb1
+        ted order NBHOOD:UPDATE [dict merge $overnb1 {n NB1}]
     } -body {
         ted notifier bind ::rdb <nbhoods>
         flunky undo
@@ -823,13 +823,13 @@ polygon       0 0 10 0 10 10 0 10
     # NBHOOD:UPDATE:MULTI
 
     test UPDATE:MULTI-1.1 {required parms} -body {
-        ted orderx -reject NBHOOD:UPDATE:MULTI {}
+        ted order -reject NBHOOD:UPDATE:MULTI {}
     } -result {
         ids {required value}
     }
 
     test UPDATE:MULTI-1.2 {invalid ids, no nbhoods} -body {
-        ted orderx -reject NBHOOD:UPDATE:MULTI ids NONESUCH
+        ted order -reject NBHOOD:UPDATE:MULTI ids NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -837,9 +837,9 @@ polygon       0 0 10 0 10 10 0 10
     }
     
     test UPDATE:MULTI-1.3 {invalid ids, nbhoods} -setup {
-        ted orderx NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $nb1
     } -body {
-        ted orderx -reject NBHOOD:UPDATE:MULTI ids NONESUCH
+        ted order -reject NBHOOD:UPDATE:MULTI ids NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -847,9 +847,9 @@ polygon       0 0 10 0 10 10 0 10
     }
 
     test UPDATE:MULTI-1.4 {invalid urbanization} -setup {
-        ted orderx NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $nb1
     } -body {
-        ted orderx -reject NBHOOD:UPDATE:MULTI ids NB1 urbanization NONESUCH
+        ted order -reject NBHOOD:UPDATE:MULTI ids NB1 urbanization NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -859,9 +859,9 @@ polygon       0 0 10 0 10 10 0 10
     # UPDATE:MULTI-1.5: Obsolete
 
     test UPDATE:MULTI-1.6 {invalid pcf} -setup {
-        ted orderx NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $nb1
     } -body {
-        ted orderx -reject NBHOOD:UPDATE:MULTI ids NB1 pcf -1.0
+        ted order -reject NBHOOD:UPDATE:MULTI ids NB1 pcf -1.0
     } -cleanup {
         cleanup
     } -result {
@@ -869,11 +869,11 @@ polygon       0 0 10 0 10 10 0 10
     }
 
     test UPDATE:MULTI-2.1 {one nbhood of several is updated} -setup {
-        ted orderx NBHOOD:CREATE $nb1
-        ted orderx NBHOOD:CREATE $nb2
+        ted order NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $nb2
     } -body {
         ted notifier bind ::rdb <nbhoods>
-        ted orderx NBHOOD:UPDATE:MULTI ids NB1 urbanization SUBURBAN
+        ted order NBHOOD:UPDATE:MULTI ids NB1 urbanization SUBURBAN
         ted notifier received
     } -cleanup {
         cleanup
@@ -882,11 +882,11 @@ polygon       0 0 10 0 10 10 0 10
     }
 
     test UPDATE:MULTI-2.2 {several nbhoods are updated} -setup {
-        ted orderx NBHOOD:CREATE $nb1
-        ted orderx NBHOOD:CREATE $nb2
+        ted order NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $nb2
     } -body {
         ted notifier bind ::rdb <nbhoods>
-        ted orderx NBHOOD:UPDATE:MULTI ids {NB1 NB2} urbanization SUBURBAN
+        ted order NBHOOD:UPDATE:MULTI ids {NB1 NB2} urbanization SUBURBAN
         ted notifier received
     } -cleanup {
         cleanup
@@ -897,9 +897,9 @@ polygon       0 0 10 0 10 10 0 10
 
 
     test UPDATE:MULTI-3.1 {Undo effects} -setup {
-        ted orderx NBHOOD:CREATE $nb1
-        ted orderx NBHOOD:CREATE $nb2
-        ted orderx NBHOOD:UPDATE:MULTI ids {NB1 NB2} urbanization SUBURBAN
+        ted order NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $nb2
+        ted order NBHOOD:UPDATE:MULTI ids {NB1 NB2} urbanization SUBURBAN
     } -body {
         ted notifier bind ::rdb <nbhoods>
         flunky undo

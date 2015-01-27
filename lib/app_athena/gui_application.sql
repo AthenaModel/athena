@@ -93,14 +93,6 @@ SELECT event_id                                        AS event_id,
        tag                                             AS tag
 FROM sigevents_view;
      
------------------------------------------------------------------------
--- BOOKMARKS VIEWS
-
--- gui_bookmarks
-CREATE TEMPORARY VIEW gui_bookmarks AS
-SELECT * FROM bookmarks
-ORDER BY rank ASC;
-
 ------------------------------------------------------------------------
 -- SCRIPTS VIEWS
 

@@ -38,8 +38,8 @@ namespace eval ::athena_test::tests:: {
 
     # Set up for tests
     proc setup {} {
-        ted orderx CURSE:CREATE curse_id C1
-        ted orderx CURSE:CREATE curse_id C2
+        ted order CURSE:CREATE curse_id C1
+        ted order CURSE:CREATE curse_id C2
     }
 
 
@@ -72,7 +72,7 @@ namespace eval ::athena_test::tests:: {
     # INJECT:SAT:CREATE
 
     test CREATE-1.1 {required parms} -body {
-        ted orderx -reject INJECT:SAT:CREATE {}
+        ted order -reject INJECT:SAT:CREATE {}
     } -result {
         curse_id {required value}
         g {required value}
@@ -83,7 +83,7 @@ namespace eval ::athena_test::tests:: {
     test CREATE-1.2 {curse_id is unknown} -setup {
         setup
     } -body {
-        ted orderx -reject INJECT:SAT:CREATE {*}$I1 curse_id NONESUCH
+        ted order -reject INJECT:SAT:CREATE {*}$I1 curse_id NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -93,7 +93,7 @@ namespace eval ::athena_test::tests:: {
     test CREATE-1.3 {mag is invalid} -setup {
         setup
     } -body {
-        ted orderx -reject INJECT:SAT:CREATE {*}$I1 mag NONESUCH
+        ted order -reject INJECT:SAT:CREATE {*}$I1 mag NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -103,7 +103,7 @@ namespace eval ::athena_test::tests:: {
     test CREATE-2.1 {inject is created} -setup {
         setup
     } -body {
-        ted orderx INJECT:SAT:CREATE $I2
+        ted order INJECT:SAT:CREATE $I2
 
         ted querylist {SELECT * FROM gui_injects_SAT}
     } -cleanup {
@@ -125,7 +125,7 @@ mag         5.0
         setup
     } -body {
         ted notifier bind ::rdb <curse_injects>
-        ted orderx INJECT:SAT:CREATE $I1
+        ted order INJECT:SAT:CREATE $I1
         ted notifier received
     } -cleanup {
         cleanup
@@ -136,7 +136,7 @@ mag         5.0
 
     test CREATE-3.1 {undo effects} -setup {
         setup
-        ted orderx INJECT:SAT:CREATE $I1
+        ted order INJECT:SAT:CREATE $I1
     } -body {
         ted notifier bind ::rdb <curse_injects>
         flunky undo
@@ -153,11 +153,11 @@ mag         5.0
     proc setup_update_sat {} {
         variable I2
         setup
-        ted orderx INJECT:SAT:CREATE $I2
+        ted order INJECT:SAT:CREATE $I2
     }
 
     test UPDATE-1.1 {required parms} -body {
-        ted orderx -reject INJECT:SAT:UPDATE {}
+        ted order -reject INJECT:SAT:UPDATE {}
     } -result {
         id {required value}
     }
@@ -165,7 +165,7 @@ mag         5.0
     test UPDATE-1.2 {CURSE in id is unknown} -setup {
         setup_update_sat
     } -body {
-        ted orderx -reject INJECT:SAT:UPDATE id {NONESUCH 1}
+        ted order -reject INJECT:SAT:UPDATE id {NONESUCH 1}
     } -cleanup {
         cleanup
     } -result {
@@ -175,7 +175,7 @@ mag         5.0
     test UPDATE-1.3 {inject number in id is unknown} -setup {
         setup_update_sat
     } -body {
-        ted orderx -reject INJECT:SAT:UPDATE id {C1 NONESUCH}
+        ted order -reject INJECT:SAT:UPDATE id {C1 NONESUCH}
     } -cleanup {
         cleanup
     } -result {
@@ -185,7 +185,7 @@ mag         5.0
     test UPDATE-1.4 {mag is invalid} -setup {
         setup_update_sat
     } -body {
-        ted orderx -reject INJECT:SAT:UPDATE id {C2 1} mag NONESUCH
+        ted order -reject INJECT:SAT:UPDATE id {C2 1} mag NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -195,7 +195,7 @@ mag         5.0
     test UPDATE-2.1 {inject is updated} -setup {
         setup_update_sat
     } -body {
-        ted orderx INJECT:SAT:UPDATE id {C2 1} g @C9 c AUT mag 10.0
+        ted order INJECT:SAT:UPDATE id {C2 1} g @C9 c AUT mag 10.0
 
         ted querylist {SELECT * FROM gui_injects_SAT}
     } -cleanup {
@@ -215,10 +215,10 @@ mag         10.0
 
     test UPDATE-2.2 {Effects} -setup {
         setup
-        ted orderx INJECT:SAT:CREATE $I2
+        ted order INJECT:SAT:CREATE $I2
     } -body {
         ted notifier bind ::rdb <curse_injects>
-        ted orderx INJECT:SAT:UPDATE id {C2 1} g BLUE
+        ted order INJECT:SAT:UPDATE id {C2 1} g BLUE
         ted notifier received
     } -cleanup {
         cleanup
@@ -230,7 +230,7 @@ mag         10.0
 
     test UPDATE-3.1 {undo effects} -setup {
         setup_update_sat
-        ted orderx INJECT:SAT:UPDATE id {C2 1} g BLUE
+        ted order INJECT:SAT:UPDATE id {C2 1} g BLUE
     } -body {
         ted notifier bind ::rdb <curse_injects>
         flunky undo

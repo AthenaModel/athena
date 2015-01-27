@@ -9,7 +9,7 @@
 # DESCRIPTION:
 #    app_sim(1) VREL:* order tests.
 #
-#    This test suite tests the vertical relationship-related orderxs.
+#    This test suite tests the vertical relationship-related orders.
 #
 #-----------------------------------------------------------------------
 
@@ -51,7 +51,7 @@ namespace eval ::athena_test::tests:: {
     # VREL:OVERRIDE
 
     test OVERRIDE-1.1 {required parms} -body {
-        ted orderx -reject VREL:OVERRIDE {}
+        ted order -reject VREL:OVERRIDE {}
     } -result {
         id {required value}
     }
@@ -60,7 +60,7 @@ namespace eval ::athena_test::tests:: {
     test OVERRIDE-1.2 {invalid g} -setup {
         setup
     } -body {
-        ted orderx -reject VREL:OVERRIDE id {NONESUCH JOE}
+        ted order -reject VREL:OVERRIDE id {NONESUCH JOE}
     } -cleanup {
         cleanup
     } -result {
@@ -70,7 +70,7 @@ namespace eval ::athena_test::tests:: {
     test OVERRIDE-1.3 {invalid a} -setup {
         setup
     } -body {
-        ted orderx -reject VREL:OVERRIDE id {SHIA NONESUCH}
+        ted order -reject VREL:OVERRIDE id {SHIA NONESUCH}
     } -cleanup {
         cleanup
     } -result {
@@ -80,7 +80,7 @@ namespace eval ::athena_test::tests:: {
     test OVERRIDE-1.4 {invalid base} -setup {
         setup
     } -body {
-        ted orderx -reject VREL:OVERRIDE id {BLUE JOE} base 1.1
+        ted order -reject VREL:OVERRIDE id {BLUE JOE} base 1.1
     } -cleanup {
         cleanup
     } -result {
@@ -90,7 +90,7 @@ namespace eval ::athena_test::tests:: {
     test OVERRIDE-1.5 {invalid hist_flag} -setup {
         setup
     } -body {
-        ted orderx -reject VREL:OVERRIDE id {BLUE JOE} hist_flag NONESUCH
+        ted order -reject VREL:OVERRIDE id {BLUE JOE} hist_flag NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -100,7 +100,7 @@ namespace eval ::athena_test::tests:: {
     test OVERRIDE-1.6 {invalid current} -setup {
         setup
     } -body {
-        ted orderx -reject VREL:OVERRIDE id {BLUE JOE} current NONESUCH
+        ted order -reject VREL:OVERRIDE id {BLUE JOE} current NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -112,7 +112,7 @@ namespace eval ::athena_test::tests:: {
     test OVERRIDE-2.1 {override is created} -setup {
         setup
     } -body {
-        ted orderx VREL:OVERRIDE {
+        ted order VREL:OVERRIDE {
             id        {SHIA JOE}
             base      0.5
             hist_flag 1
@@ -131,7 +131,7 @@ SHIA JOE 0.5  1         0.6
     test OVERRIDE-2.2 {test defaults} -setup {
         setup
     } -body {
-        ted orderx VREL:OVERRIDE {id {BLUE JOE}}
+        ted order VREL:OVERRIDE {id {BLUE JOE}}
         ted query {SELECT * FROM vrel_ga}
     } -cleanup {
         cleanup
@@ -146,7 +146,7 @@ BLUE JOE 0.0  0         0.0
         setup
     } -body {
         ted notifier bind ::rdb <vrel_ga>
-        ted orderx VREL:OVERRIDE id {SHIA JOE} base 0.5
+        ted order VREL:OVERRIDE id {SHIA JOE} base 0.5
         ted notifier received
     } -cleanup {
         cleanup
@@ -158,7 +158,7 @@ BLUE JOE 0.0  0         0.0
     test OVERRIDE-2.4 {undo undoes the creation} -setup {
         setup
 
-        ted orderx VREL:OVERRIDE {
+        ted order VREL:OVERRIDE {
             id    {SHIA JOE}
             base   0.5
         }
@@ -177,9 +177,9 @@ BLUE JOE 0.0  0         0.0
 
     test OVERRIDE-3.1 {rel is updated} -setup {
         setup
-        ted orderx VREL:OVERRIDE {id {SHIA JOE}}
+        ted order VREL:OVERRIDE {id {SHIA JOE}}
     } -body {
-        ted orderx VREL:OVERRIDE {
+        ted order VREL:OVERRIDE {
             id        {SHIA JOE}
             base      0.5
             hist_flag 1
@@ -198,10 +198,10 @@ SHIA JOE 0.5  1         0.6
 
     test OVERRIDE-3.2 {table monitor event} -setup {
         setup
-        ted orderx VREL:OVERRIDE {id {SHIA JOE}}
+        ted order VREL:OVERRIDE {id {SHIA JOE}}
     } -body {
         ted notifier bind ::rdb <vrel_ga>
-        ted orderx VREL:OVERRIDE id {SHIA JOE} base 0.5
+        ted order VREL:OVERRIDE id {SHIA JOE} base 0.5
         ted notifier received
     } -cleanup {
         cleanup
@@ -213,8 +213,8 @@ SHIA JOE 0.5  1         0.6
     test OVERRIDE-3.3 {undo undoes the change} -setup {
         setup
 
-        ted orderx VREL:OVERRIDE {id {SHIA JOE}}
-        ted orderx VREL:OVERRIDE {
+        ted order VREL:OVERRIDE {id {SHIA JOE}}
+        ted order VREL:OVERRIDE {
             id    {SHIA JOE}
             base   0.5
         }
@@ -232,7 +232,7 @@ SHIA JOE 0.5  1         0.6
     # VREL:RESTORE
 
     test RESTORE-1.1 {required parms} -body {
-        ted orderx -reject VREL:RESTORE {}
+        ted order -reject VREL:RESTORE {}
     } -result {
         id {required value}
     }
@@ -241,7 +241,7 @@ SHIA JOE 0.5  1         0.6
     test RESTORE-1.2 {unknown g in id} -setup {
         setup
     } -body {
-        ted orderx -reject VREL:RESTORE id {NONESUCH JOE}
+        ted order -reject VREL:RESTORE id {NONESUCH JOE}
     } -cleanup {
         cleanup
     } -result {
@@ -251,7 +251,7 @@ SHIA JOE 0.5  1         0.6
     test RESTORE-1.3 {unknown a in id} -setup {
         setup
     } -body {
-        ted orderx -reject VREL:RESTORE id {SHIA NONESUCH}
+        ted order -reject VREL:RESTORE id {SHIA NONESUCH}
     } -cleanup {
         cleanup
     } -result {
@@ -260,10 +260,10 @@ SHIA JOE 0.5  1         0.6
 
     test RESTORE-2.1 {Effects} -setup {
         setup
-        ted orderx VREL:OVERRIDE {id {BLUE JOE}}
+        ted order VREL:OVERRIDE {id {BLUE JOE}}
     } -body {
         ted notifier bind ::rdb <vrel_ga>
-        ted orderx VREL:RESTORE id {BLUE JOE}
+        ted order VREL:RESTORE id {BLUE JOE}
         ted notifier received
     } -cleanup {
         cleanup
@@ -274,8 +274,8 @@ SHIA JOE 0.5  1         0.6
 
     test RESTORE-2.2 {Effects on undo} -setup {
         setup
-        ted orderx VREL:OVERRIDE {id {BLUE JOE}}
-        ted orderx VREL:RESTORE {id {BLUE JOE}}
+        ted order VREL:OVERRIDE {id {BLUE JOE}}
+        ted order VREL:RESTORE {id {BLUE JOE}}
     } -body {
         ted notifier bind ::rdb <vrel_ga>
         flunky undo
@@ -290,7 +290,7 @@ SHIA JOE 0.5  1         0.6
         setup
     } -body {
         ted notifier bind ::rdb <vrel_ga>
-        ted orderx VREL:RESTORE id {BLUE JOE}
+        ted order VREL:RESTORE id {BLUE JOE}
         ted notifier received
     } -cleanup {
         cleanup
@@ -299,7 +299,7 @@ SHIA JOE 0.5  1         0.6
 
     test RESTORE-3.2 {Can undo even if there was no override} -setup {
         setup
-        ted orderx VREL:RESTORE {id {BLUE JOE}}
+        ted order VREL:RESTORE {id {BLUE JOE}}
     } -body {
         ted notifier bind ::rdb <vrel_ga>
         flunky undo
@@ -315,7 +315,7 @@ SHIA JOE 0.5  1         0.6
     test OVERRIDE:MULTI-1.1 {required parms} -setup {
         setup
     } -body {
-        ted orderx -reject VREL:OVERRIDE:MULTI {}
+        ted order -reject VREL:OVERRIDE:MULTI {}
     } -cleanup {
         cleanup
     } -result {
@@ -326,7 +326,7 @@ SHIA JOE 0.5  1         0.6
     test OVERRIDE:MULTI-1.2 {invalid g in ids} -setup {
         setup
     } -body {
-        ted orderx -reject VREL:OVERRIDE:MULTI \
+        ted order -reject VREL:OVERRIDE:MULTI \
             ids {{NONESUCH JOE}}
     } -cleanup {
         cleanup
@@ -338,7 +338,7 @@ SHIA JOE 0.5  1         0.6
     test OVERRIDE:MULTI-1.3 {invalid a in ids} -setup {
         setup
     } -body {
-        ted orderx -reject VREL:OVERRIDE:MULTI \
+        ted order -reject VREL:OVERRIDE:MULTI \
             ids {{SHIA NONESUCH}}
     } -cleanup {
         cleanup
@@ -349,7 +349,7 @@ SHIA JOE 0.5  1         0.6
     test OVERRIDE:MULTI-1.4 {invalid base} -setup {
         setup
     } -body {
-        ted orderx -reject VREL:OVERRIDE:MULTI \
+        ted order -reject VREL:OVERRIDE:MULTI \
             ids {{SHIA JOE}} base 1.1
     } -cleanup {
         cleanup
@@ -360,7 +360,7 @@ SHIA JOE 0.5  1         0.6
     test OVERRIDE:MULTI-1.5 {invalid hist_flag} -setup {
         setup
     } -body {
-        ted orderx -reject VREL:OVERRIDE:MULTI \
+        ted order -reject VREL:OVERRIDE:MULTI \
             ids {{SHIA JOE}} hist_flag NONESUCH
     } -cleanup {
         cleanup
@@ -371,7 +371,7 @@ SHIA JOE 0.5  1         0.6
     test OVERRIDE:MULTI-1.6 {invalid current} -setup {
         setup
     } -body {
-        ted orderx -reject VREL:OVERRIDE:MULTI \
+        ted order -reject VREL:OVERRIDE:MULTI \
             ids {{SHIA JOE}} current NONESUCH
     } -cleanup {
         cleanup
@@ -386,7 +386,7 @@ SHIA JOE 0.5  1         0.6
     } -body {
         ted notifier bind ::rdb <vrel_ga>
 
-        ted orderx VREL:OVERRIDE:MULTI {
+        ted order VREL:OVERRIDE:MULTI {
             ids        {{SHIA JOE} {BLUE JOE}}
             base       0.5
             hist_flag  1
@@ -403,7 +403,7 @@ SHIA JOE 0.5  1         0.6
 
     test OVERRIDE:MULTI-2.2 {undo undoes the change} -setup {
         setup
-        ted orderx VREL:OVERRIDE:MULTI {
+        ted order VREL:OVERRIDE:MULTI {
             ids        {{SHIA JOE} {BLUE JOE}}
             base       0.5
             hist_flag  1
@@ -423,11 +423,11 @@ SHIA JOE 0.5  1         0.6
     # Update existing overrides
     test OVERRIDE:MULTI-3.1 {several overrides} -setup {
         setup
-        ted orderx VREL:OVERRIDE {id {BLUE JOE}}
-        ted orderx VREL:OVERRIDE {id {SHIA JOE}}
+        ted order VREL:OVERRIDE {id {BLUE JOE}}
+        ted order VREL:OVERRIDE {id {SHIA JOE}}
     } -body {
         ted notifier bind ::rdb <vrel_ga>
-        ted orderx VREL:OVERRIDE:MULTI {
+        ted order VREL:OVERRIDE:MULTI {
             ids        {{SHIA JOE} {BLUE JOE}}
             base       0.5
             hist_flag  1
@@ -443,10 +443,10 @@ SHIA JOE 0.5  1         0.6
 
     test OVERRIDE:MULTI-3.2 {undo undoes the change} -setup {
         setup
-        ted orderx VREL:OVERRIDE {id {BLUE JOE}}
-        ted orderx VREL:OVERRIDE {id {SHIA JOE}}
+        ted order VREL:OVERRIDE {id {BLUE JOE}}
+        ted order VREL:OVERRIDE {id {SHIA JOE}}
 
-        ted orderx VREL:OVERRIDE:MULTI {
+        ted order VREL:OVERRIDE:MULTI {
             ids        {{SHIA JOE} {BLUE JOE}}
             base       0.5
             hist_flag  1

@@ -53,14 +53,14 @@ namespace eval ::athena_test::tests:: {
     # BSYS:PLAYBOX:UPDATE
 
     test PLAYBOX:UPDATE-1.1 {required parms} -body {
-        ted orderx -reject BSYS:PLAYBOX:UPDATE {}
+        ted order -reject BSYS:PLAYBOX:UPDATE {}
     } -result {
         gamma {required value}
     }
 
     
     test PLAYBOX:UPDATE-1.2 {invalid gamma} -body {
-        ted orderx -reject BSYS:PLAYBOX:UPDATE gamma NONESUCH
+        ted order -reject BSYS:PLAYBOX:UPDATE gamma NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -69,7 +69,7 @@ namespace eval ::athena_test::tests:: {
 
 
     test PLAYBOX:UPDATE-2.1 {gamma is updated} -body {
-        ted orderx BSYS:PLAYBOX:UPDATE gamma 0.25
+        ted order BSYS:PLAYBOX:UPDATE gamma 0.25
 
         bsys playbox get
     } -cleanup {
@@ -78,7 +78,7 @@ namespace eval ::athena_test::tests:: {
 
     test PLAYBOX:UPDATE-2.2 {playbox is updated} -body {
         ted notifier bind ::bsys <playbox>
-        ted orderx BSYS:PLAYBOX:UPDATE gamma 0.25
+        ted order BSYS:PLAYBOX:UPDATE gamma 0.25
         ted notifier received
     } -cleanup {
         cleanup
@@ -88,7 +88,7 @@ namespace eval ::athena_test::tests:: {
 
 
     test PLAYBOX:UPDATE-3.1 {undo effects} -setup {
-        ted orderx BSYS:PLAYBOX:UPDATE gamma 0.25
+        ted order BSYS:PLAYBOX:UPDATE gamma 0.25
     } -body {
         ted notifier bind ::bsys <playbox>
         flunky undo
@@ -103,7 +103,7 @@ namespace eval ::athena_test::tests:: {
     # BSYS:SYSTEM:ADD
 
     test SYSTEM:ADD-1.1 {non-integer ID specified} -body {
-        ted orderx -reject BSYS:SYSTEM:ADD sid NONESUCH
+        ted order -reject BSYS:SYSTEM:ADD sid NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -111,7 +111,7 @@ namespace eval ::athena_test::tests:: {
     }
 
     test SYSTEM:ADD-1.2 {existing ID specified} -body {
-        ted orderx -reject BSYS:SYSTEM:ADD sid 1
+        ted order -reject BSYS:SYSTEM:ADD sid 1
     } -cleanup {
         cleanup
     } -result {
@@ -119,7 +119,7 @@ namespace eval ::athena_test::tests:: {
     }
 
     test SYSTEM:ADD-2.1 {creates new system, assigning ID} -body {
-        set sid [ted orderx BSYS:SYSTEM:ADD {}]
+        set sid [ted order BSYS:SYSTEM:ADD {}]
         ted pdicts [bsys system get $sid]
     } -cleanup {
         cleanup
@@ -129,14 +129,14 @@ namespace eval ::athena_test::tests:: {
     }
 
     test SYSTEM:ADD-2.2 {creates new system with ID} -body {
-        set sid [ted orderx BSYS:SYSTEM:ADD sid 5]
+        set sid [ted order BSYS:SYSTEM:ADD sid 5]
     } -cleanup {
         cleanup
     } -result {5}
 
     test SYSTEM:ADD-2.3 {notifications} -body {
         ted notifier bind ::bsys <system>
-        ted orderx BSYS:SYSTEM:ADD {}
+        ted order BSYS:SYSTEM:ADD {}
         flunky undo
         ted notifier received
     } -cleanup {
@@ -150,15 +150,15 @@ namespace eval ::athena_test::tests:: {
     # BSYS:SYSTEM:UPDATE
 
     test SYSTEM:UPDATE-1.1 {required parms} -body {
-        ted orderx -reject BSYS:SYSTEM:UPDATE {}
+        ted order -reject BSYS:SYSTEM:UPDATE {}
     } -result {
         sid {required value}
     }
   
     test SYSTEM:UPDATE-1.2 {invalid system} -setup {
-        set sid [ted orderx BSYS:SYSTEM:ADD {}]
+        set sid [ted order BSYS:SYSTEM:ADD {}]
     } -body {
-        ted orderx -reject BSYS:SYSTEM:UPDATE sid NONESUCH commonality 0.5
+        ted order -reject BSYS:SYSTEM:UPDATE sid NONESUCH commonality 0.5
     } -cleanup {
         cleanup
     } -result {
@@ -166,9 +166,9 @@ namespace eval ::athena_test::tests:: {
     }
 
     test SYSTEM:UPDATE-1.3 {invalid name} -setup {
-        ted orderx BSYS:SYSTEM:ADD sid 2
+        ted order BSYS:SYSTEM:ADD sid 2
     } -body {
-        ted orderx -reject BSYS:SYSTEM:UPDATE sid 2 \
+        ted order -reject BSYS:SYSTEM:UPDATE sid 2 \
             name [bsys system cget 1 -name]
     } -cleanup {
         cleanup
@@ -177,9 +177,9 @@ namespace eval ::athena_test::tests:: {
     }
 
     test SYSTEM:UPDATE-1.4 {invalid commonality} -setup {
-        set sid [ted orderx BSYS:SYSTEM:ADD {}]
+        set sid [ted order BSYS:SYSTEM:ADD {}]
     } -body {
-        ted orderx -reject BSYS:SYSTEM:UPDATE sid $sid commonality NONESUCH
+        ted order -reject BSYS:SYSTEM:UPDATE sid $sid commonality NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -187,9 +187,9 @@ namespace eval ::athena_test::tests:: {
     }
 
     test SYSTEM:UPDATE-2.1 {system is updated} -setup {
-        set sid [ted orderx BSYS:SYSTEM:ADD {}]
+        set sid [ted order BSYS:SYSTEM:ADD {}]
     } -body {
-        ted orderx BSYS:SYSTEM:UPDATE sid $sid \
+        ted order BSYS:SYSTEM:UPDATE sid $sid \
             name        FRED  \
             commonality 0.5
 
@@ -202,10 +202,10 @@ namespace eval ::athena_test::tests:: {
     }
 
     test SYSTEM:UPDATE-2.2 {notifications} -setup {
-        set sid [ted orderx BSYS:SYSTEM:ADD {}]
+        set sid [ted order BSYS:SYSTEM:ADD {}]
     } -body {
         ted notifier bind ::bsys <system>
-        ted orderx BSYS:SYSTEM:UPDATE sid $sid \
+        ted order BSYS:SYSTEM:UPDATE sid $sid \
             name        FRED  \
             commonality 0.5
         flunky undo
@@ -218,9 +218,9 @@ namespace eval ::athena_test::tests:: {
     }
 
     test SYSTEM:UPDATE-2.3 {can rename with same name} -setup {
-        ted orderx BSYS:SYSTEM:ADD sid 2
+        ted order BSYS:SYSTEM:ADD sid 2
     } -body {
-        ted orderx BSYS:SYSTEM:UPDATE sid 2 \
+        ted order BSYS:SYSTEM:UPDATE sid 2 \
             name [bsys system cget 2 -name]
     } -cleanup {
         cleanup
@@ -230,29 +230,29 @@ namespace eval ::athena_test::tests:: {
     # BSYS:SYSTEM:DELETE
 
     test SYSTEM:DELETE-1.1 {required parms} -body {
-        ted orderx -reject BSYS:SYSTEM:DELETE {}
+        ted order -reject BSYS:SYSTEM:DELETE {}
     } -result {
         sid {required value}
     }
 
     test SYSTEM:DELETE-1.2 {invalid system} -body {
-        ted orderx -reject BSYS:SYSTEM:DELETE sid 2
+        ted order -reject BSYS:SYSTEM:DELETE sid 2
     } -result {
         sid {Invalid belief system ID}
     }
 
     test SYSTEM:DELETE-1.3 {uneditable system} -body {
-        ted orderx -reject BSYS:SYSTEM:DELETE sid 1
+        ted order -reject BSYS:SYSTEM:DELETE sid 1
     } -result {
         sid {The Neutral belief system cannot be modified.}
     }
 
     test SYSTEM:DELETE-1.4 {can't delete if in use by actor} -setup {
         ted create JOE
-        ted orderx BSYS:SYSTEM:ADD sid 2
+        ted order BSYS:SYSTEM:ADD sid 2
         actor mutate update {a JOE bsid 2}
     } -body {
-        ted orderx -reject BSYS:SYSTEM:DELETE sid 2
+        ted order -reject BSYS:SYSTEM:DELETE sid 2
     } -cleanup {
         cleanup
     } -result {
@@ -261,10 +261,10 @@ namespace eval ::athena_test::tests:: {
 
     test SYSTEM:DELETE-1.5 {can't delete if in use by group} -setup {
         ted create SHIA
-        ted orderx BSYS:SYSTEM:ADD sid 2
+        ted order BSYS:SYSTEM:ADD sid 2
         civgroup mutate update {g SHIA bsid 2}
     } -body {
-        ted orderx -reject BSYS:SYSTEM:DELETE sid 2
+        ted order -reject BSYS:SYSTEM:DELETE sid 2
     } -cleanup {
         cleanup
     } -result {
@@ -273,9 +273,9 @@ namespace eval ::athena_test::tests:: {
 
 
     test SYSTEM:DELETE-2.1 {deletes system} -setup {
-        set sid [ted orderx BSYS:SYSTEM:ADD {}]
+        set sid [ted order BSYS:SYSTEM:ADD {}]
     } -body {
-        ted orderx BSYS:SYSTEM:DELETE sid $sid
+        ted order BSYS:SYSTEM:DELETE sid $sid
         bsys system ids
     } -cleanup {
         cleanup
@@ -283,7 +283,7 @@ namespace eval ::athena_test::tests:: {
 
     test SYSTEM:DELETE-2.2 {notifications} -body {
         ted notifier bind ::bsys <system>
-        ted orderx BSYS:SYSTEM:ADD {}
+        ted order BSYS:SYSTEM:ADD {}
         flunky undo
         ted notifier received
     } -cleanup {
@@ -298,7 +298,7 @@ namespace eval ::athena_test::tests:: {
     # BSYS:TOPIC:ADD
 
     test TOPIC:ADD-1.1 {non-integer ID specified} -body {
-        ted orderx -reject BSYS:TOPIC:ADD tid NONESUCH
+        ted order -reject BSYS:TOPIC:ADD tid NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -308,7 +308,7 @@ namespace eval ::athena_test::tests:: {
     test TOPIC:ADD-1.2 {existing ID specified} -setup {
         bsys topic add 1
     } -body {
-        ted orderx -reject BSYS:TOPIC:ADD tid 1
+        ted order -reject BSYS:TOPIC:ADD tid 1
     } -cleanup {
         cleanup
     } -result {
@@ -316,7 +316,7 @@ namespace eval ::athena_test::tests:: {
     }
 
     test TOPIC:ADD-2.1 {creates topic, assigning ID} -body {
-        set tid [ted orderx BSYS:TOPIC:ADD]
+        set tid [ted order BSYS:TOPIC:ADD]
 
         ted pdicts [bsys topic view $tid]
     } -cleanup {
@@ -330,7 +330,7 @@ namespace eval ::athena_test::tests:: {
     }
 
     test TOPIC:ADD-2.2 {creates topic given ID} -body {
-        set tid [ted orderx BSYS:TOPIC:ADD tid 5]
+        set tid [ted order BSYS:TOPIC:ADD tid 5]
 
         ted pdicts [bsys topic view $tid]
     } -cleanup {
@@ -346,7 +346,7 @@ namespace eval ::athena_test::tests:: {
 
     test TOPIC:ADD-2.3 {effects} -body {
         ted notifier bind ::bsys <topic>
-        ted orderx BSYS:TOPIC:ADD
+        ted order BSYS:TOPIC:ADD
         flunky undo
         ted notifier received
     } -cleanup {
@@ -360,21 +360,21 @@ namespace eval ::athena_test::tests:: {
     # BSYS:TOPIC:DELETE
 
     test TOPIC:DELETE-1.1 {required parms} -body {
-        ted orderx -reject BSYS:TOPIC:DELETE {}
+        ted order -reject BSYS:TOPIC:DELETE {}
     } -result {
         tid {required value}
     }
     
 
     test TOPIC:DELETE-1.2 {unknown topic} -body {
-        ted orderx -reject BSYS:TOPIC:DELETE tid NONESUCH
+        ted order -reject BSYS:TOPIC:DELETE tid NONESUCH
     } -result {
         tid {Invalid topic ID}
     }
 
     test TOPIC:DELETE-1.3 {can't delete if in use by a hook} -setup {
         ted create JOE
-        ted orderx BSYS:TOPIC:ADD tid 1
+        ted order BSYS:TOPIC:ADD tid 1
         hook mutate create {
             hook_id H1
             longname H1
@@ -386,7 +386,7 @@ namespace eval ::athena_test::tests:: {
             position 0.0
         }
     } -body {
-        ted orderx -reject BSYS:TOPIC:DELETE tid 1
+        ted order -reject BSYS:TOPIC:DELETE tid 1
     } -cleanup {
         cleanup
     } -result {
@@ -395,10 +395,10 @@ namespace eval ::athena_test::tests:: {
 
 
     test TOPIC:DELETE-2.1 {Effects} -setup {
-        set tid [ted orderx BSYS:TOPIC:ADD]
+        set tid [ted order BSYS:TOPIC:ADD]
     } -body {
         ted notifier bind ::bsys <topic>
-        ted orderx BSYS:TOPIC:DELETE tid $tid
+        ted order BSYS:TOPIC:DELETE tid $tid
         flunky undo
         ted notifier received
     } -cleanup {
@@ -412,16 +412,16 @@ namespace eval ::athena_test::tests:: {
     # BSYS:TOPIC:UPDATE
 
     test TOPIC:UPDATE-1.1 {required parms} -body {
-        ted orderx -reject BSYS:TOPIC:UPDATE {}
+        ted order -reject BSYS:TOPIC:UPDATE {}
     } -result {
         tid {required value}
     }
 
     
     test TOPIC:UPDATE-1.2 {invalid topic} -setup {
-        set tid [ted orderx BSYS:TOPIC:ADD]
+        set tid [ted order BSYS:TOPIC:ADD]
     } -body {
-        ted orderx -reject BSYS:TOPIC:UPDATE tid NONESUCH name "New Title"
+        ted order -reject BSYS:TOPIC:UPDATE tid NONESUCH name "New Title"
     } -cleanup {
         cleanup
     } -result {
@@ -429,10 +429,10 @@ namespace eval ::athena_test::tests:: {
     }
 
     test TOPIC:UPDATE-1.3 {invalid name} -setup {
-        ted orderx BSYS:TOPIC:ADD tid 1
-        ted orderx BSYS:TOPIC:ADD tid 2
+        ted order BSYS:TOPIC:ADD tid 1
+        ted order BSYS:TOPIC:ADD tid 2
     } -body {
-        ted orderx -reject BSYS:TOPIC:UPDATE tid 2 \
+        ted order -reject BSYS:TOPIC:UPDATE tid 2 \
             name [bsys topic cget 1 -name]
     } -cleanup {
         cleanup
@@ -442,9 +442,9 @@ namespace eval ::athena_test::tests:: {
 
 
     test TOPIC:UPDATE-1.4 {invalid affinity} -setup {
-        set tid [ted orderx BSYS:TOPIC:ADD]
+        set tid [ted order BSYS:TOPIC:ADD]
     } -body {
-        ted orderx -reject BSYS:TOPIC:UPDATE tid $tid affinity NONESUCH
+        ted order -reject BSYS:TOPIC:UPDATE tid $tid affinity NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -453,9 +453,9 @@ namespace eval ::athena_test::tests:: {
 
 
     test TOPIC:UPDATE-2.1 {topic is updated} -setup {
-        set tid [ted orderx BSYS:TOPIC:ADD]
+        set tid [ted order BSYS:TOPIC:ADD]
     } -body {
-        ted orderx BSYS:TOPIC:UPDATE \
+        ted order BSYS:TOPIC:UPDATE \
             tid $tid name "New Title" affinity no
 
         ted pdicts [bsys topic get $tid]
@@ -468,10 +468,10 @@ namespace eval ::athena_test::tests:: {
     }
 
     test TOPIC:UPDATE-2.3 {notifications} -setup {
-        set tid [ted orderx BSYS:TOPIC:ADD]
+        set tid [ted order BSYS:TOPIC:ADD]
     } -body {
         ted notifier bind ::bsys <topic>
-        ted orderx BSYS:TOPIC:UPDATE \
+        ted order BSYS:TOPIC:UPDATE \
             tid $tid name "New Title" affinity no
         flunky undo
         ted notifier received
@@ -483,9 +483,9 @@ namespace eval ::athena_test::tests:: {
     }
 
     test TOPIC:UPDATE-2.3 {can rename with same name} -setup {
-        ted orderx BSYS:TOPIC:ADD tid 1
+        ted order BSYS:TOPIC:ADD tid 1
     } -body {
-        ted orderx BSYS:TOPIC:UPDATE tid 1 \
+        ted order BSYS:TOPIC:UPDATE tid 1 \
             name [bsys topic cget 1 -name]
     } -cleanup {
         cleanup
@@ -496,13 +496,13 @@ namespace eval ::athena_test::tests:: {
     # BSYS:BELIEF:UPDATE
 
     test BELIEF:UPDATE-1.1 {required parms} -body {
-        ted orderx -reject BSYS:BELIEF:UPDATE {}
+        ted order -reject BSYS:BELIEF:UPDATE {}
     } -result {
         bid {required value}
     }
 
     test BELIEF:UPDATE-1.2 {invalid belief: system} -body {
-        ted orderx -reject BSYS:BELIEF:UPDATE \
+        ted order -reject BSYS:BELIEF:UPDATE \
             bid {NONESUCH NONESUCH} position 0.5 emphasis 0.7
     } -cleanup {
         cleanup
@@ -511,9 +511,9 @@ namespace eval ::athena_test::tests:: {
     }
 
     test BELIEF:UPDATE-1.3 {invalid belief: topic} -setup {
-        set sid [ted orderx BSYS:SYSTEM:ADD {}]
+        set sid [ted order BSYS:SYSTEM:ADD {}]
     } -body {
-        ted orderx -reject BSYS:BELIEF:UPDATE \
+        ted order -reject BSYS:BELIEF:UPDATE \
             bid [list $sid NONESUCH] position 0.5 emphasis 0.7
     } -cleanup {
         cleanup
@@ -522,10 +522,10 @@ namespace eval ::athena_test::tests:: {
     }
 
     test BELIEF:UPDATE-1.4 {invalid position} -setup {
-        set sid [ted orderx BSYS:SYSTEM:ADD {}]
-        set tid [ted orderx BSYS:TOPIC:ADD]
+        set sid [ted order BSYS:SYSTEM:ADD {}]
+        set tid [ted order BSYS:TOPIC:ADD]
     } -body {
-        ted orderx -reject BSYS:BELIEF:UPDATE \
+        ted order -reject BSYS:BELIEF:UPDATE \
             bid [list $sid $tid] position NONESUCH
     } -cleanup {
         cleanup
@@ -534,10 +534,10 @@ namespace eval ::athena_test::tests:: {
     }
 
     test BELIEF:UPDATE-1.5 {invalid emphasis} -setup {
-        set sid [ted orderx BSYS:SYSTEM:ADD {}]
-        set tid [ted orderx BSYS:TOPIC:ADD]
+        set sid [ted order BSYS:SYSTEM:ADD {}]
+        set tid [ted order BSYS:TOPIC:ADD]
     } -body {
-        ted orderx -reject BSYS:BELIEF:UPDATE \
+        ted order -reject BSYS:BELIEF:UPDATE \
             bid [list $sid $tid] emphasis NONESUCH
     } -cleanup {
         cleanup
@@ -546,10 +546,10 @@ namespace eval ::athena_test::tests:: {
     }
 
     test BELIEF:UPDATE-2.1 {belief is updated} -setup {
-        set sid [ted orderx BSYS:SYSTEM:ADD {}]
-        set tid [ted orderx BSYS:TOPIC:ADD]
+        set sid [ted order BSYS:SYSTEM:ADD {}]
+        set tid [ted order BSYS:TOPIC:ADD]
     } -body {
-        ted orderx BSYS:BELIEF:UPDATE \
+        ted order BSYS:BELIEF:UPDATE \
             bid [list $sid $tid] position 0.1 emphasis 0.2
 
         ted pdicts [bsys belief get $sid $tid]
@@ -561,10 +561,10 @@ namespace eval ::athena_test::tests:: {
     }
 
     test BELIEF:UPDATE-2.2 {symbols are OK} -setup {
-        set sid [ted orderx BSYS:SYSTEM:ADD {}]
-        set tid [ted orderx BSYS:TOPIC:ADD]
+        set sid [ted order BSYS:SYSTEM:ADD {}]
+        set tid [ted order BSYS:TOPIC:ADD]
     } -body {
-        ted orderx BSYS:BELIEF:UPDATE \
+        ted order BSYS:BELIEF:UPDATE \
             bid [list $sid $tid] position P- emphasis ASTRONG
 
         ted pdicts [bsys belief get $sid $tid]
@@ -576,11 +576,11 @@ namespace eval ::athena_test::tests:: {
     }
 
     test BELIEF:UPDATE-2.3 {notifications} -setup {
-        set sid [ted orderx BSYS:SYSTEM:ADD {}]
-        set tid [ted orderx BSYS:TOPIC:ADD]
+        set sid [ted order BSYS:SYSTEM:ADD {}]
+        set tid [ted order BSYS:TOPIC:ADD]
     } -body {
         ted notifier bind ::bsys <belief>
-        ted orderx BSYS:BELIEF:UPDATE \
+        ted order BSYS:BELIEF:UPDATE \
             bid [list $sid $tid] position 0.1 emphasis 0.2
         flunky undo
         ted notifier received

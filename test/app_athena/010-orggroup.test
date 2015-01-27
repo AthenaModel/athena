@@ -137,8 +137,8 @@ base_personnel  1000
 
     test delete-5.1 {deletes hrel_fg overrides} -setup {
         ted create USAID BRIT
-        ted orderx HREL:OVERRIDE id {USAID BRIT}
-        ted orderx HREL:OVERRIDE id {BRIT USAID}
+        ted order HREL:OVERRIDE id {USAID BRIT}
+        ted order HREL:OVERRIDE id {BRIT USAID}
     } -body {
         orggroup mutate delete USAID
 
@@ -149,8 +149,8 @@ base_personnel  1000
 
     test delete-5.2 {undo restores hrel_fg overrides} -setup {
         ted create USAID BRIT
-        ted orderx HREL:OVERRIDE id {USAID BRIT}
-        ted orderx HREL:OVERRIDE id {BRIT USAID}
+        ted order HREL:OVERRIDE id {USAID BRIT}
+        ted order HREL:OVERRIDE id {BRIT USAID}
 
         set undo [orggroup mutate delete USAID]
     } -body {
@@ -163,7 +163,7 @@ base_personnel  1000
 
     test delete-6.1 {deletes vrel_ga overrides} -setup {
         ted create JOE USAID
-        ted orderx VREL:OVERRIDE id {USAID JOE}
+        ted order VREL:OVERRIDE id {USAID JOE}
     } -body {
         orggroup mutate delete USAID
 
@@ -174,7 +174,7 @@ base_personnel  1000
 
     test delete-6.2 {undo restores vrel_ga overrides} -setup {
         ted create JOE USAID
-        ted orderx VREL:OVERRIDE id {USAID JOE}
+        ted order VREL:OVERRIDE id {USAID JOE}
 
         set undo [orggroup mutate delete USAID]
     } -body {

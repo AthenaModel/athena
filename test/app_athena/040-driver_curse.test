@@ -67,24 +67,24 @@ namespace eval ::athena_test::tests:: {
         # NEXT, create the entities
         ted create JOE BOB NB1 SHIA SUNN BLUE
 
-        ted orderx CURSE:CREATE curse_id C1
-        ted orderx CURSE:CREATE curse_id C2
-        ted orderx CURSE:CREATE curse_id C3
-        ted orderx CURSE:CREATE curse_id C4
-        ted orderx CURSE:CREATE curse_id C5
+        ted order CURSE:CREATE curse_id C1
+        ted order CURSE:CREATE curse_id C2
+        ted order CURSE:CREATE curse_id C3
+        ted order CURSE:CREATE curse_id C4
+        ted order CURSE:CREATE curse_id C5
 
         # NEXT, add INJECTS to CURSES
         # Individual injects
-        ted orderx INJECT:HREL:CREATE curse_id C1 f @CIV1 g @FRC1 mag S+
-        ted orderx INJECT:VREL:CREATE curse_id C2 g @CIV2 a @ACT1 mag M+
-        ted orderx INJECT:SAT:CREATE  curse_id C3 g @CIV3 c AUT   mag L+
-        ted orderx INJECT:COOP:CREATE curse_id C4 f @CIV4 g @FRC2 mag XL+
+        ted order INJECT:HREL:CREATE curse_id C1 f @CIV1 g @FRC1 mag S+
+        ted order INJECT:VREL:CREATE curse_id C2 g @CIV2 a @ACT1 mag M+
+        ted order INJECT:SAT:CREATE  curse_id C3 g @CIV3 c AUT   mag L+
+        ted order INJECT:COOP:CREATE curse_id C4 f @CIV4 g @FRC2 mag XL+
 
         # Multiple injects
-        ted orderx INJECT:HREL:CREATE curse_id C5 f @CIV5 g @FRC3 mag S+
-        ted orderx INJECT:VREL:CREATE curse_id C5 g @CIV6 a @ACT2 mag M+
-        ted orderx INJECT:SAT:CREATE  curse_id C5 g @CIV7 c AUT   mag L+
-        ted orderx INJECT:COOP:CREATE curse_id C5 f @CIV8 g @FRC4 mag XL+
+        ted order INJECT:HREL:CREATE curse_id C5 f @CIV5 g @FRC3 mag S+
+        ted order INJECT:VREL:CREATE curse_id C5 g @CIV6 a @ACT2 mag M+
+        ted order INJECT:SAT:CREATE  curse_id C5 g @CIV7 c AUT   mag L+
+        ted order INJECT:COOP:CREATE curse_id C5 f @CIV8 g @FRC4 mag XL+
     }
     
     # curse cid roles
@@ -97,12 +97,12 @@ namespace eval ::athena_test::tests:: {
     proc curse {cid roles} {
         set S1 [strategy getname SYSTEM]
 
-        ted orderx STRATEGY:BLOCK:ADD agent SYSTEM
+        ted order STRATEGY:BLOCK:ADD agent SYSTEM
         lassign [$S1 blocks] B1
-        ted orderx BLOCK:TACTIC:ADD block_id [$B1 id] typename CURSE
+        ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename CURSE
         lassign [$B1 tactics] T1
 
-        ted orderx TACTIC:CURSE tactic_id [$T1 id] \
+        ted order TACTIC:CURSE tactic_id [$T1 id] \
             curse       $cid   \
             roles       $roles 
 
@@ -181,7 +181,7 @@ CURSE-1-1 coop  SUNN BLUE
 
     test assess-1.3 {Rule 1-1 inputs, inject disabled} -setup {
         setup
-        ted orderx INJECT:STATE id {C5 1} state disabled
+        ted order INJECT:STATE id {C5 1} state disabled
     } -body {
         curse C5 {
             @CIV5 {_type GROUPS    _rule BY_VALUE raw_value {SHIA SUNN}}

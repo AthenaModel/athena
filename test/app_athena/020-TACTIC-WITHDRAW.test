@@ -42,9 +42,9 @@ namespace eval ::athena_test::tests:: {
         variable B1
         variable T1
         set S1 [strategy getname JOE]
-        ted orderx STRATEGY:BLOCK:ADD agent JOE
+        ted order STRATEGY:BLOCK:ADD agent JOE
         lassign [$S1 blocks] B1
-        ted orderx BLOCK:TACTIC:ADD block_id [$B1 id] typename WITHDRAW
+        ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename WITHDRAW
         lassign [$B1 tactics] T1
     }
 
@@ -60,7 +60,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:WITHDRAW-1.1 {required parameters} -setup {
         setup
     } -body {
-        ted orderx -reject TACTIC:WITHDRAW
+        ted order -reject TACTIC:WITHDRAW
     } -cleanup {
         cleanup
     } -result {
@@ -70,7 +70,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:WITHDRAW-1.2 {unknown tactic_id} -setup {
         setup
     } -body {
-        ted orderx -reject TACTIC:WITHDRAW tactic_id NONESUCH
+        ted order -reject TACTIC:WITHDRAW tactic_id NONESUCH
     } -cleanup {
         cleanup
     } -match dictglob -result {
@@ -80,7 +80,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:WITHDRAW-1.3 {invalid amount} -setup {
         setup
     } -body {
-        ted orderx -reject TACTIC:WITHDRAW tactic_id [$T1 id] amount NONESUCH
+        ted order -reject TACTIC:WITHDRAW tactic_id [$T1 id] amount NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -90,7 +90,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:WITHDRAW-1.4 {invalid mode} -setup {
         setup
     } -body {
-        ted orderx -reject TACTIC:WITHDRAW tactic_id [$T1 id] mode NONESUCH
+        ted order -reject TACTIC:WITHDRAW tactic_id [$T1 id] mode NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -100,7 +100,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:WITHDRAW-1.5 {invalid name} -setup {
         setup
     } -body {
-        ted orderx -reject TACTIC:WITHDRAW tactic_id [$T1 id] name 1234
+        ted order -reject TACTIC:WITHDRAW tactic_id [$T1 id] name 1234
     } -cleanup {
         cleanup
     } -match glob -result {
@@ -111,7 +111,7 @@ namespace eval ::athena_test::tests:: {
         setup
         set T2 [ted addtactic $B1 ABSIT]
     } -body {
-        ted orderx -reject TACTIC:WITHDRAW tactic_id [$T1 id] \
+        ted order -reject TACTIC:WITHDRAW tactic_id [$T1 id] \
             name [$T2 get name]
     } -cleanup {
         cleanup
@@ -122,7 +122,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:WITHDRAW-2.1 {tactic updated: ALL} -setup {
         setup
     } -body {
-        ted orderx TACTIC:WITHDRAW \
+        ted order TACTIC:WITHDRAW \
             tactic_id [$T1 id] \
             mode      ALL     
 
@@ -145,7 +145,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:WITHDRAW-2.2 {tactic updated: EXACT} -setup {
         setup
     } -body {
-        ted orderx TACTIC:WITHDRAW \
+        ted order TACTIC:WITHDRAW \
             tactic_id [$T1 id] \
             mode      EXACT    \
             amount    100.0
@@ -169,7 +169,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:WITHDRAW-2.3 {tactic updated: UPTO} -setup {
         setup
     } -body {
-        ted orderx TACTIC:WITHDRAW \
+        ted order TACTIC:WITHDRAW \
             tactic_id [$T1 id] \
             mode      UPTO     \
             amount    100.0
@@ -193,7 +193,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:WITHDRAW-2.4 {tactic updated: PERCENT} -setup {
         setup
     } -body {
-        ted orderx TACTIC:WITHDRAW \
+        ted order TACTIC:WITHDRAW \
             tactic_id [$T1 id] \
             mode      PERCENT \
             percent   10.0
@@ -217,7 +217,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:WITHDRAW-2.5 {tactic updated: BORROW} -setup {
         setup
     } -body {
-        ted orderx TACTIC:WITHDRAW \
+        ted order TACTIC:WITHDRAW \
             tactic_id [$T1 id] \
             mode      BORROW   \
             amount    400000.0
@@ -242,7 +242,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        ted orderx TACTIC:WITHDRAW tactic_id [$T1 id] amount 10.0
+        ted order TACTIC:WITHDRAW tactic_id [$T1 id] amount 10.0
         ted notifier received
     } -cleanup {
         cleanup
@@ -250,7 +250,7 @@ namespace eval ::athena_test::tests:: {
 
     test TACTIC:WITHDRAW-2.7 {undo notifier event} -setup {
         setup
-        ted orderx TACTIC:WITHDRAW tactic_id [$T1 id] amount 10.0
+        ted order TACTIC:WITHDRAW tactic_id [$T1 id] amount 10.0
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
         flunky undo

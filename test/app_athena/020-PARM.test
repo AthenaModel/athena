@@ -47,14 +47,14 @@ namespace eval ::athena_test::tests:: {
     # PARM:IMPORT
 
     test IMPORT-1.1 {required parms} -body {
-        ted orderx -reject PARM:IMPORT {}
+        ted order -reject PARM:IMPORT {}
     } -result {
         filename {required value}
     }
 
 
     test IMPORT-1.2 {invalid filename} -body {
-        ted orderx -reject PARM:IMPORT filename /nonesuch/nonesuch
+        ted order -reject PARM:IMPORT filename /nonesuch/nonesuch
     } -result {
         filename {Error, file not found: "/nonesuch/nonesuch"}
     }
@@ -65,7 +65,7 @@ namespace eval ::athena_test::tests:: {
             parm dam.absit.nominalCoverage 0.5
         } temp.parmdb
     } -body {
-        ted orderx PARM:IMPORT filename \
+        ted order PARM:IMPORT filename \
             [file join [temporaryDirectory] temp.parmdb]
         parm get dam.absit.nominalCoverage
     } -cleanup {
@@ -80,7 +80,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         set a [parm get dam.absit.nominalCoverage]
 
-        ted orderx PARM:IMPORT filename \
+        ted order PARM:IMPORT filename \
             [file join [temporaryDirectory] temp.parmdb]
 
         flunky undo
@@ -100,7 +100,7 @@ namespace eval ::athena_test::tests:: {
     # executed without error, and that the undo script appears to work
 
     test RESET-1.1 {Executes without error} -body {
-        ted orderx PARM:RESET
+        ted order PARM:RESET
     } -cleanup {
         cleanup
     } -result {}
@@ -109,7 +109,7 @@ namespace eval ::athena_test::tests:: {
     test RESET-1.2 {Changes *appear* to be undone} -body {
         set a [parm get dam.absit.nominalCoverage]
 
-        ted orderx PARM:RESET
+        ted order PARM:RESET
         flunky undo
 
         set b [parm get dam.absit.nominalCoverage]
@@ -124,7 +124,7 @@ namespace eval ::athena_test::tests:: {
     # PARM:SET
 
     test SET-1.1 {Required parameters} -body {
-        ted orderx -reject PARM:SET
+        ted order -reject PARM:SET
     } -cleanup {
         cleanup
     } -result {
@@ -133,7 +133,7 @@ namespace eval ::athena_test::tests:: {
 
 
     test SET-1.2 {Sets an unknown parameter} -body {
-        ted orderx -reject PARM:SET parm foo value bar
+        ted order -reject PARM:SET parm foo value bar
     } -cleanup {
         cleanup
     } -result {
@@ -142,7 +142,7 @@ namespace eval ::athena_test::tests:: {
 
 
     test SET-1.3 {Sets a known parameter to an invalid value} -body {
-        ted orderx -reject PARM:SET parm dam.absit.nominalCoverage value bar
+        ted order -reject PARM:SET parm dam.absit.nominalCoverage value bar
     } -cleanup {
         cleanup
     } -result {
@@ -150,7 +150,7 @@ namespace eval ::athena_test::tests:: {
     }
 
     test SET-2.1 {Set is successful} -body {
-        ted orderx PARM:SET parm dam.absit.nominalCoverage value 0.1
+        ted order PARM:SET parm dam.absit.nominalCoverage value 0.1
         parm get dam.absit.nominalCoverage
     } -cleanup {
         cleanup
@@ -160,7 +160,7 @@ namespace eval ::athena_test::tests:: {
     test SET-2.2 {Set can be undone} -body {
         set a [parm get dam.absit.nominalCoverage]
 
-        ted orderx PARM:SET parm dam.absit.nominalCoverage value 0.2
+        ted order PARM:SET parm dam.absit.nominalCoverage value 0.2
         flunky undo
 
         set b [parm get dam.absit.nominalCoverage]

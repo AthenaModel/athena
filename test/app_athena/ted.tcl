@@ -37,7 +37,6 @@ snit::type ted {
         activity_nga
         actors
         beans
-        bookmarks
         caps
         cap_access
         cap_kn
@@ -808,68 +807,10 @@ snit::type ted {
     # parmdict   The order's parameter dictionary, as a single
     #            argument or as multiple arguments.
     #
-    # Sends the order as the test client, and returns the result.
-    # If "-reject" is used, expects the order to be rejected.
-
-    typemethod order {args} {
-        # FIRST, is -reject specified?
-        if {[lindex $args 0] eq "-reject"} {
-            lshift args
-            set rejectFlag 1
-        } else {
-            set rejectFlag 0
-        }
-
-        # NEXT, get the order name
-        set order [lshift args]
-
-        require {$order ne ""} "No order specified!"
-
-        # NEXT, get the parm dict
-        if {[llength $args] == 1} {
-            set parmdict [lindex $args 0]
-        } else {
-            set parmdict $args
-        }
-
-        # NEXT, send the order
-        if {$rejectFlag} {
-            set code [catch {
-                order send test $order $parmdict
-            } result opts]
-
-            if {$code} {
-                if {[dict get $opts -errorcode] eq "REJECT"} {
-
-                    set    results "\n"
-                    foreach {parm error} $result {
-                        append results "        $parm [list $error]\n" 
-                    }
-                    append results "    "
-                    
-                    return $results
-                } else {
-                    return {*}$opts $result
-                }
-            } else {
-                return -code error "Expected rejection, got ok"
-            }
-        } else {
-            # Normal case; let nature take its course
-            return [order send test $order $parmdict]
-        }
-    }
-
-    # orderx ?-reject? name parmdict
-    #
-    # name       A simulation order
-    # parmdict   The order's parameter dictionary, as a single
-    #            argument or as multiple arguments.
-    #
     # Sends the order in normal mode with transactions off, and returns 
     # the result. If "-reject" is used, expects the order to be rejected.
 
-    typemethod orderx {args} {
+    typemethod order {args} {
         # FIRST, is -reject specified?
         if {[lindex $args 0] eq "-reject"} {
             lshift args
@@ -956,10 +897,10 @@ snit::type ted {
     # are given, they are passed to BLOCK:UPDATE.
 
     typemethod addblock {agent args} {
-        set bid [ted orderx STRATEGY:BLOCK:ADD agent $agent]
+        set bid [ted order STRATEGY:BLOCK:ADD agent $agent]
 
         if {[llength $args] > 0} {
-            ted orderx BLOCK:UPDATE block_id $bid {*}$args
+            ted order BLOCK:UPDATE block_id $bid {*}$args
         }
 
         return [pot get $bid]
@@ -974,11 +915,11 @@ snit::type ted {
     # are given, they are passed to CONDITION:$typename:UPDATE.
 
     typemethod addcondition {block typename args} {
-        set cid [ted orderx BLOCK:CONDITION:ADD \
+        set cid [ted order BLOCK:CONDITION:ADD \
                     block_id [$block id] typename $typename]
 
         if {[llength $args] > 0} {
-            ted orderx CONDITION:${typename} condition_id $cid {*}$args
+            ted order CONDITION:${typename} condition_id $cid {*}$args
         }
 
         return [pot get $cid]
@@ -993,11 +934,11 @@ snit::type ted {
     # are given, they are passed to TACTIC:$typename:UPDATE.
 
     typemethod addtactic {block typename args} {
-        set tid [ted orderx BLOCK:TACTIC:ADD \
+        set tid [ted order BLOCK:TACTIC:ADD \
                     block_id [$block id] typename $typename]
 
         if {[llength $args] > 0} {
-            ted orderx TACTIC:${typename} tactic_id $tid {*}$args
+            ted order TACTIC:${typename} tactic_id $tid {*}$args
         }
 
         return [pot get $tid]
@@ -1069,7 +1010,7 @@ snit::type ted {
             dict set pdict $parm [dict get $tdict $parm]
         }
 
-        ted orderx $order {*}$pdict
+        ted order $order {*}$pdict
 
         return "OK"
     }
@@ -1093,7 +1034,7 @@ snit::type ted {
             dict set pdict $parm [dict get $cdict $parm]
         }
 
-        ted orderx $order {*}$pdict
+        ted order $order {*}$pdict
 
         return "OK"
     }

@@ -57,7 +57,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:FLOW-1.1 {required parameters} -setup {
         setup
     } -body {
-        ted orderx -reject TACTIC:FLOW
+        ted order -reject TACTIC:FLOW
     } -cleanup {
         cleanup
     } -result {
@@ -67,7 +67,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:FLOW-1.2 {unknown tactic_id} -setup {
         setup
     } -body {
-        ted orderx -reject TACTIC:FLOW tactic_id NONESUCH
+        ted order -reject TACTIC:FLOW tactic_id NONESUCH
     } -cleanup {
         cleanup
     } -match glob -result {
@@ -77,7 +77,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:FLOW-1.3 {invalid f} -setup {
         setup
     } -body {
-        ted orderx -reject TACTIC:FLOW tactic_id [$T1 id] f "NONE SUCH"
+        ted order -reject TACTIC:FLOW tactic_id [$T1 id] f "NONE SUCH"
     } -cleanup {
         cleanup
     } -result {
@@ -87,7 +87,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:FLOW-1.4 {invalid g} -setup {
         setup
     } -body {
-        ted orderx -reject TACTIC:FLOW tactic_id [$T1 id] g "NONE SUCH"
+        ted order -reject TACTIC:FLOW tactic_id [$T1 id] g "NONE SUCH"
     } -cleanup {
         cleanup
     } -result {
@@ -97,7 +97,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:FLOW-1.5 {invalid mode} -setup {
         setup
     } -body {
-        ted orderx -reject TACTIC:FLOW tactic_id [$T1 id] mode NONESUCH
+        ted order -reject TACTIC:FLOW tactic_id [$T1 id] mode NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -107,7 +107,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:FLOW-1.6 {invalid personnel} -setup {
         setup
     } -body {
-        ted orderx -reject TACTIC:FLOW tactic_id [$T1 id] personnel NONESUCH
+        ted order -reject TACTIC:FLOW tactic_id [$T1 id] personnel NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -117,7 +117,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:FLOW-1.7 {invalid percent} -setup {
         setup
     } -body {
-        ted orderx -reject TACTIC:FLOW tactic_id [$T1 id] percent NONESUCH
+        ted order -reject TACTIC:FLOW tactic_id [$T1 id] percent NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -127,7 +127,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:FLOW-1.8 {0 personnel in tactic} -setup {
         setup
     } -body {
-        ted orderx -reject TACTIC:FLOW tactic_id [$T1 id] mode UPTO
+        ted order -reject TACTIC:FLOW tactic_id [$T1 id] mode UPTO
     } -cleanup {
         cleanup
     } -result {
@@ -137,7 +137,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:FLOW-1.9 {0.0 percentage in tactic} -setup {
         setup
     } -body {
-        ted orderx -reject TACTIC:FLOW tactic_id [$T1 id] mode RATE
+        ted order -reject TACTIC:FLOW tactic_id [$T1 id] mode RATE
     } -cleanup {
         cleanup
     } -result {
@@ -147,7 +147,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:FLOW-1.10 {invalid name} -setup {
         setup
     } -body {
-        ted orderx -reject TACTIC:FLOW tactic_id [$T1 id] name 1234
+        ted order -reject TACTIC:FLOW tactic_id [$T1 id] name 1234
     } -cleanup {
         cleanup
     } -match glob -result {
@@ -158,7 +158,7 @@ namespace eval ::athena_test::tests:: {
         setup
         set T2 [ted addtactic $B1 ABSIT]
     } -body {
-        ted orderx -reject TACTIC:FLOW tactic_id [$T1 id] \
+        ted order -reject TACTIC:FLOW tactic_id [$T1 id] \
             name [$T2 get name]
     } -cleanup {
         cleanup
@@ -169,7 +169,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:FLOW-2.1 {tactic updated} -setup {
         setup
     } -body {
-        ted orderx TACTIC:FLOW \
+        ted order TACTIC:FLOW \
             tactic_id [$T1 id]         \
             f         SHIA             \
             g         KURD             \
@@ -199,7 +199,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        ted orderx TACTIC:FLOW tactic_id [$T1 id] personnel 100
+        ted order TACTIC:FLOW tactic_id [$T1 id] personnel 100
         ted notifier received
     } -cleanup {
         cleanup
@@ -207,7 +207,7 @@ namespace eval ::athena_test::tests:: {
 
     test TACTIC:FLOW-2.3 {undo notifier event} -setup {
         setup
-        ted orderx TACTIC:FLOW tactic_id [$T1 id] personnel 100
+        ted order TACTIC:FLOW tactic_id [$T1 id] personnel 100
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
         flunky undo

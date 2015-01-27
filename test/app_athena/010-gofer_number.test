@@ -427,7 +427,7 @@ namespace eval ::athena_test::tests:: {
     test COOP-4.1 {eval} -setup {
         setup
         # Set coop to 25.0
-        ted orderx COOP:UPDATE \
+        ted order COOP:UPDATE \
             id {SHIA BLUE} base 25.0 regress_to NATURAL natural 25.0
         ted lock
     } -body {
@@ -1704,7 +1704,7 @@ namespace eval ::athena_test::tests:: {
     test NBCOOP-4.1 {eval} -setup {
         setup
         # Set NBCOOP to 25.0
-        ted orderx COOP:UPDATE \
+        ted order COOP:UPDATE \
             id {SHIA BLUE} base 25.0 regress_to NATURAL natural 25.0
         ted lock
     } -body {

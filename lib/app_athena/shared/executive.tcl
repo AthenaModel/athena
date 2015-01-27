@@ -356,9 +356,9 @@ snit::type executive {
         $interp smartalias {absit last} 0 0 {} \
             [myproc last_absit]
 
-        # enterx
-        $interp smartalias enterx 1 - {order ?parm value...?} \
-            [myproc enterx]
+        # enter
+        $interp smartalias enter 1 - {order ?parm value...?} \
+            [myproc enter]
         
         # errtrace
         $interp smartalias errtrace 0 0 {} \
@@ -558,10 +558,6 @@ snit::type executive {
         # send
         $interp smartalias send 1 - {order ?option value...?} \
             [myproc send]
-
-        # sendx
-        $interp smartalias sendx 1 - {order ?option value...?} \
-            [myproc sendx]
 
         # show
         $interp smartalias show 1 1 {url} \
@@ -2031,7 +2027,7 @@ snit::type executive {
 
     typemethod {block add} {agent args} {
         flunky transaction "block add..." {
-            set block_id [sendx STRATEGY:BLOCK:ADD -agent $agent]
+            set block_id [send STRATEGY:BLOCK:ADD -agent $agent]
             BlockConfigure $block_id $args
         }
 
@@ -2103,10 +2099,10 @@ snit::type executive {
     proc BlockConfigure {block_id opts} {
         set state [from opts -state ""]
 
-        sendx BLOCK:UPDATE -block_id $block_id {*}$opts
+        send BLOCK:UPDATE -block_id $block_id {*}$opts
 
         if {$state ne ""} {
-            sendx BLOCK:STATE -block_id $block_id -state $state
+            send BLOCK:STATE -block_id $block_id -state $state
         }
     }
 
@@ -2128,7 +2124,7 @@ snit::type executive {
 
         # NEXT, create the condition
         flunky transaction "condition add..." {
-            set condition_id [sendx BLOCK:CONDITION:ADD \
+            set condition_id [send BLOCK:CONDITION:ADD \
                                     -block_id $block_id \
                                     -typename $typename]
             ConditionConfigure $condition_id $args
@@ -2203,10 +2199,10 @@ snit::type executive {
 
         set state [from opts -state ""]
 
-        sendx CONDITION:[$c typename] -condition_id $condition_id {*}$opts
+        send CONDITION:[$c typename] -condition_id $condition_id {*}$opts
 
         if {$state ne ""} {
-            sendx CONDITION:STATE -condition_id $condition_id -state $state
+            send CONDITION:STATE -condition_id $condition_id -state $state
         }
     }
 
@@ -2377,7 +2373,7 @@ snit::type executive {
     # Imports the .parmdb file
 
     proc parmImport {filename} {
-        sendx PARM:IMPORT -filename $filename
+        send PARM:IMPORT -filename $filename
     }
 
 
@@ -2404,7 +2400,7 @@ snit::type executive {
     # Resets all parameters to defaults.
 
     proc parmReset {} {
-        sendx PARM:RESET
+        send PARM:RESET
     }
 
 
@@ -2416,7 +2412,7 @@ snit::type executive {
     # Sets the parameter's value, using PARM:SET
 
     proc parmSet {parm value} {
-        sendx PARM:SET -parm $parm -value $value
+        send PARM:SET -parm $parm -value $value
     }
 
     # save filename
@@ -2523,7 +2519,7 @@ snit::type executive {
 
         # NEXT, create the tactic
         flunky transaction "tactic add..." {
-            set tactic_id [sendx BLOCK:TACTIC:ADD \
+            set tactic_id [send BLOCK:TACTIC:ADD \
                                     -block_id $block_id \
                                     -typename $typename]
             TacticConfigure $tactic_id $args
@@ -2598,10 +2594,10 @@ snit::type executive {
 
         set state [from opts -state ""]
 
-        sendx TACTIC:[$c typename] -tactic_id $tactic_id {*}$opts
+        send TACTIC:[$c typename] -tactic_id $tactic_id {*}$opts
 
         if {$state ne ""} {
-            sendx TACTIC:STATE -tactic_id $tactic_id -state $state
+            send TACTIC:STATE -tactic_id $tactic_id -state $state
         }
     }
 

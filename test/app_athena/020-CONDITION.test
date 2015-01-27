@@ -41,10 +41,10 @@ namespace eval ::athena_test::tests:: {
         variable S1
         variable B1
         variable C1
-        ted orderx STRATEGY:BLOCK:ADD agent SYSTEM
+        ted order STRATEGY:BLOCK:ADD agent SYSTEM
         set S1 [strategy getname SYSTEM]
         lassign [$S1 blocks] B1
-        ted orderx BLOCK:CONDITION:ADD block_id [$B1 id] typename EXPR
+        ted order BLOCK:CONDITION:ADD block_id [$B1 id] typename EXPR
         lassign [$B1 conditions] C1
         $C1 update_ {expression} {expression {1 == 1}}
     }
@@ -61,7 +61,7 @@ namespace eval ::athena_test::tests:: {
     test CONDITION:STATE-1.1 {required parameters} -setup {
         setup
     } -body {
-        ted orderx -reject CONDITION:STATE
+        ted order -reject CONDITION:STATE
     } -cleanup {
         cleanup
     } -result {
@@ -72,7 +72,7 @@ namespace eval ::athena_test::tests:: {
     test CONDITION:STATE-1.2 {unknown condition_id} -setup {
         setup
     } -body {
-        ted orderx -reject CONDITION:STATE condition_id NONESUCH state normal
+        ted order -reject CONDITION:STATE condition_id NONESUCH state normal
     } -cleanup {
         cleanup
     } -match glob -result {
@@ -82,7 +82,7 @@ namespace eval ::athena_test::tests:: {
     test CONDITION:STATE-1.3 {invalid state} -setup {
         setup
     } -body {
-        ted orderx -reject CONDITION:STATE condition_id [$C1 id] state NONESUCH
+        ted order -reject CONDITION:STATE condition_id [$C1 id] state NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -92,7 +92,7 @@ namespace eval ::athena_test::tests:: {
     test CONDITION:STATE-2.1 {block updated} -setup {
         setup
     } -body {
-        ted orderx CONDITION:STATE condition_id [$C1 id] state disabled
+        ted order CONDITION:STATE condition_id [$C1 id] state disabled
 
         $C1 state
     } -cleanup {
@@ -103,7 +103,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        ted orderx CONDITION:STATE condition_id [$C1 id] state disabled
+        ted order CONDITION:STATE condition_id [$C1 id] state disabled
         ted notifier received
     } -cleanup {
         cleanup
@@ -111,7 +111,7 @@ namespace eval ::athena_test::tests:: {
 
     test CONDITION:STATE-2.3 {undo notifier event} -setup {
         setup
-        ted orderx CONDITION:STATE condition_id [$C1 id] state disabled
+        ted order CONDITION:STATE condition_id [$C1 id] state disabled
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
         flunky undo

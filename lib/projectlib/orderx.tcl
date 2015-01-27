@@ -592,7 +592,7 @@ oo::class create ::projectlib::orderx {
 
     unexport reject
     method reject {parm errtext} {
-        dict set errdict $parm $errtext
+        dict set errdict $parm [normalize $errtext]
     }
 
     #-------------------------------------------------------------------

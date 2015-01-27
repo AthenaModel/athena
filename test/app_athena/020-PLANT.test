@@ -9,7 +9,7 @@
 # DESCRIPTION:
 #    app_sim(1) PLANT:* order tests.
 #
-#    This test suite tests the plant-related orderxs.
+#    This test suite tests the plant-related orders.
 #
 #-----------------------------------------------------------------------
 
@@ -67,7 +67,7 @@ namespace eval ::athena_test::tests:: {
     # PLANT:SHARES:CREATE
 
     test CREATE-1.1 {required parms} -body {
-        ted orderx -reject PLANT:SHARES:CREATE {}
+        ted order -reject PLANT:SHARES:CREATE {}
     } -result {
         a {required value}
         n {required value}
@@ -75,7 +75,7 @@ namespace eval ::athena_test::tests:: {
     
     test CREATE-1.2 {invalid nbhood} -body {
         setup
-        ted orderx -reject PLANT:SHARES:CREATE {*}$p1 n NONESUCH
+        ted order -reject PLANT:SHARES:CREATE {*}$p1 n NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -84,7 +84,7 @@ namespace eval ::athena_test::tests:: {
 
     test CREATE-1.3 {invalid nbhood, not local} -body {
         setup
-        ted orderx -reject PLANT:SHARES:CREATE {*}$p1 n NL1
+        ted order -reject PLANT:SHARES:CREATE {*}$p1 n NL1
     } -cleanup {
         cleanup
     } -result {
@@ -93,7 +93,7 @@ namespace eval ::athena_test::tests:: {
 
     test CREATE-1.4 {invalid agent} -body {
         setup
-        ted orderx -reject PLANT:SHARES:CREATE {*}$p1 a NONESUCH
+        ted order -reject PLANT:SHARES:CREATE {*}$p1 a NONESUCH
     } -cleanup {
         cleanup
     } -result {
@@ -103,7 +103,7 @@ namespace eval ::athena_test::tests:: {
     test CREATE-2.1 {record is created} -setup {
         setup
     } -body {
-        ted orderx PLANT:SHARES:CREATE $p1
+        ted order PLANT:SHARES:CREATE $p1
 
         ted querylist {SELECT * FROM plants_shares}
     } -cleanup {
@@ -119,7 +119,7 @@ rho  0.9
         setup
     } -body {
         ted notifier bind ::rdb <plants_shares>
-        ted orderx PLANT:SHARES:CREATE $p1
+        ted order PLANT:SHARES:CREATE $p1
         ted notifier received
     } -cleanup {
         cleanup
@@ -129,7 +129,7 @@ rho  0.9
 
     test CREATE-3.1 {undo effects} -setup {
         setup
-        ted orderx PLANT:SHARES:CREATE $p1
+        ted order PLANT:SHARES:CREATE $p1
     } -body {
         ted notifier bind ::rdb <plants_shares>
         flunky undo
@@ -145,14 +145,14 @@ rho  0.9
     # PLANT:SHARES:DELETE
 
     test DELETE-1.1 {required parms} -body {
-        ted orderx -reject PLANT:SHARES:DELETE {}
+        ted order -reject PLANT:SHARES:DELETE {}
     } -result {
         id {required value}
     }
 
     
     test DELETE-1.2 {unknown id} -body {
-        ted orderx -reject PLANT:SHARES:DELETE id {NONESUCH NONESUCH}
+        ted order -reject PLANT:SHARES:DELETE id {NONESUCH NONESUCH}
     } -result {
         id {Invalid plant ID "NONESUCH NONESUCH".}
     }
@@ -160,10 +160,10 @@ rho  0.9
 
     test DELETE-2.1 {Effects} -setup {
         setup
-        ted orderx PLANT:SHARES:CREATE $p1
+        ted order PLANT:SHARES:CREATE $p1
     } -body {
         ted notifier bind ::rdb <plants_shares>
-        ted orderx PLANT:SHARES:DELETE id {NB1 JOE}
+        ted order PLANT:SHARES:DELETE id {NB1 JOE}
         ted notifier received
     } -cleanup {
         cleanup
@@ -174,8 +174,8 @@ rho  0.9
 
     test DELETE-3.1 {Undo effects} -setup {
         setup
-        ted orderx PLANT:SHARES:CREATE $p1
-        ted orderx PLANT:SHARES:DELETE id {NB1 JOE}
+        ted order PLANT:SHARES:CREATE $p1
+        ted order PLANT:SHARES:DELETE id {NB1 JOE}
     } -body {
         ted notifier bind ::rdb <plants_shares>
         flunky undo
@@ -191,16 +191,16 @@ rho  0.9
     # PLANT:SHARES:UPDATE
 
     test UPDATE-1.1 {required parms} -body {
-        ted orderx -reject PLANT:SHARES:UPDATE {}
+        ted order -reject PLANT:SHARES:UPDATE {}
     } -result {
         id {required value}
     }
 
     test UPDATE-1.2 {invalid id} -setup {
         setup
-        ted orderx PLANT:SHARES:CREATE $p1
+        ted order PLANT:SHARES:CREATE $p1
     } -body {
-        ted orderx -reject PLANT:SHARES:UPDATE id {FOO JOE}
+        ted order -reject PLANT:SHARES:UPDATE id {FOO JOE}
     } -cleanup {
         cleanup
     } -result {
@@ -209,9 +209,9 @@ rho  0.9
 
     test UPDATE-2.1 {record is updated} -setup {
         setup
-        ted orderx PLANT:SHARES:CREATE $p1
+        ted order PLANT:SHARES:CREATE $p1
     } -body {
-        ted orderx PLANT:SHARES:UPDATE {
+        ted order PLANT:SHARES:UPDATE {
             id        {NB1 JOE}
             rho       0.5
             num       3
@@ -229,10 +229,10 @@ rho  0.5
 
     test UPDATE-2.2 {table monitor event} -setup {
         setup
-        ted orderx PLANT:SHARES:CREATE $p1
+        ted order PLANT:SHARES:CREATE $p1
     } -body {
         ted notifier bind ::rdb <plants_shares>
-        ted orderx PLANT:SHARES:UPDATE id {NB1 JOE} rho 0.5
+        ted order PLANT:SHARES:UPDATE id {NB1 JOE} rho 0.5
         ted notifier received
     } -cleanup {
         cleanup
@@ -242,8 +242,8 @@ rho  0.5
 
     test UPDATE-3.1 {undo undoes the change} -setup {
         setup
-        ted orderx PLANT:SHARES:CREATE $p1
-        ted orderx PLANT:SHARES:UPDATE id {NB1 JOE} rho 0.5
+        ted order PLANT:SHARES:CREATE $p1
+        ted order PLANT:SHARES:UPDATE id {NB1 JOE} rho 0.5
     } -body {
         ted notifier bind ::rdb <plants_shares>
         flunky undo
@@ -258,26 +258,26 @@ rho  0.5
     # PLANT:SHARES:UPDATE:MULTI
 
     test UPDATE:MULTI-1.1 {required parms} -body {
-        ted orderx -reject PLANT:SHARES:UPDATE:MULTI {}
+        ted order -reject PLANT:SHARES:UPDATE:MULTI {}
     } -result {
         ids {required value}
     }
     
 
     test UPDATE:MULTI-1.2 {invalid ids} -body {
-        ted orderx -reject PLANT:SHARES:UPDATE:MULTI ids NONESUCH
+        ted order -reject PLANT:SHARES:UPDATE:MULTI ids NONESUCH
     } -result {
         ids {Invalid plant ID "NONESUCH".}
     }
 
     test UPDATE:MULTI-2.1 {one record of several is updated} -setup {
         setup
-        ted orderx PLANT:SHARES:CREATE $p1
-        ted orderx PLANT:SHARES:CREATE $p2
+        ted order PLANT:SHARES:CREATE $p1
+        ted order PLANT:SHARES:CREATE $p2
     } -body {
         ted notifier bind ::rdb <plants_shares>
 
-        ted orderx PLANT:SHARES:UPDATE:MULTI {
+        ted order PLANT:SHARES:UPDATE:MULTI {
             ids          {{NB1 JOE}}
             rho          0.5
             num          3
@@ -293,12 +293,12 @@ rho  0.5
 
     test UPDATE:MULTI-2.2 {several records are updated} -setup {
         setup
-        ted orderx PLANT:SHARES:CREATE $p1
-        ted orderx PLANT:SHARES:CREATE $p2
+        ted order PLANT:SHARES:CREATE $p1
+        ted order PLANT:SHARES:CREATE $p2
     } -body {
         ted notifier bind ::rdb <plants_shares>
 
-        ted orderx PLANT:SHARES:UPDATE:MULTI {
+        ted order PLANT:SHARES:UPDATE:MULTI {
             ids          {{NB1 JOE} {NB1 BOB}}
             rho          0.5
             num          1
@@ -314,9 +314,9 @@ rho  0.5
 
     test UPDATE:MULTI-3.1 {undo effects} -setup {
         setup
-        ted orderx PLANT:SHARES:CREATE $p1
-        ted orderx PLANT:SHARES:CREATE $p2
-        ted orderx PLANT:SHARES:UPDATE:MULTI {
+        ted order PLANT:SHARES:CREATE $p1
+        ted order PLANT:SHARES:CREATE $p2
+        ted order PLANT:SHARES:UPDATE:MULTI {
             ids          {{NB1 JOE} {NB1 BOB}}
             rho          0.5
             num          1

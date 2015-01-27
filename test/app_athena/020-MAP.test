@@ -48,19 +48,19 @@ namespace eval ::athena_test::tests:: {
     # MAP:IMPORT:FILE
 
     test MAP:IMPORT:FILE-1.1 {filename is required} -body {
-        ted orderx -reject MAP:IMPORT:FILE {}
+        ted order -reject MAP:IMPORT:FILE {}
     } -result {
         filename {required value}
     }
     
     test MAP:IMPORT:FILE-1.2 {filename is bad} -constraints tk -body {
-        ted orderx -reject MAP:IMPORT:FILE filename nosuchfile.png
+        ted order -reject MAP:IMPORT:FILE filename nosuchfile.png
     } -result {
         filename {Error, file not found: "nosuchfile.png"}
     }
 
     test MAP:IMPORT:FILE-2.1 {map loaded} -constraints tk -body {
-        ted orderx MAP:IMPORT:FILE filename map.png
+        ted order MAP:IMPORT:FILE filename map.png
 
         rdb onecolumn {SELECT filename FROM maps WHERE id=1}
     } -cleanup {
@@ -69,7 +69,7 @@ namespace eval ::athena_test::tests:: {
 
     test MAP:IMPORT:FILE-2.2 {<MapChanged> sent} -constraints tk -body {
         ted notifier bind ::map <MapChanged>
-        ted orderx MAP:IMPORT:FILE filename map.png
+        ted order MAP:IMPORT:FILE filename map.png
         ted notifier received
     } -cleanup {
         cleanup
@@ -78,14 +78,14 @@ namespace eval ::athena_test::tests:: {
     }
 
     test MAP:IMPORT:FILE:3.1 {undo resets map} -constraints tk -setup {
-        ted orderx MAP:IMPORT:FILE filename map.png
+        ted order MAP:IMPORT:FILE filename map.png
     } -body {
         flunky undo
         rdb onecolumn {SELECT filename FROM maps WHERE id=1}
     } -result {}
 
     test MAP:IMPORT:FILE:3.2 {undo sends <MapChanged>} -constraints tk -setup {
-        ted orderx MAP:IMPORT:FILE filename map.png
+        ted order MAP:IMPORT:FILE filename map.png
     } -body {
         ted notifier bind ::map <MapChanged>
         flunky undo

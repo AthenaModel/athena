@@ -83,7 +83,7 @@ namespace eval ::athena_test::tests:: {
     # on-going, and resolution.
     
     proc absit {etype resolver {inception 1}} {
-        ted orderx ABSIT:CREATE \
+        ted order ABSIT:CREATE \
             n         NB1 \
             stype     $etype \
             coverage  1.0 \

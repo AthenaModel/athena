@@ -54,7 +54,6 @@ snit::widget appwin {
     component reloader              ;# timeout(n) that reloads content
     component editmenu              ;# The Edit menu
     component viewmenu              ;# The View menu
-    component bookmenu              ;# The Bookmarks menu
     component toolbar               ;# The main toolbar
     component simtools              ;# The simulation controls
     component cli                   ;# The cli(n) pane
@@ -416,15 +415,6 @@ snit::widget appwin {
             }
         }
 
-        bookmarks {
-            label   "Bookmarks"
-            vistype bookmarks
-            parent  ""
-            script  {
-                bookmarkbrowser %W
-            }
-        }
-
         scripts {
             label "Scripts"
             vistype scripts
@@ -459,7 +449,6 @@ snit::widget appwin {
     # scenario   - Visible in scenario mode
     # simulation - Visible in simulation mode
     # orders     - Order tabs; visible in -dev mode or on request.
-    # bookmarks  - Bookmarks Browser; visible on request
     # slog       - Scrolling log; visible in -dev mode, on request, or
     #              on error.
     # scripts    - Scripts editor tab; visible in -dev mode or on request.
@@ -471,7 +460,6 @@ snit::widget appwin {
         scenario    1
         simulation  0
         orders      0
-        bookmarks   0
         slog        0
         scripts     0
         cli         0
@@ -702,27 +690,6 @@ snit::widget appwin {
 
         # The rest of the view menu is added later.
 
-
-        # Bookmarks menu
-        set bookmenu [menu $menubar.bookmark \
-            -postcommand [mymethod BookmarkMenuPostCmd]]
-
-        $menubar add cascade \
-            -label     "Bookmarks"   \
-            -underline 0             \
-            -menu      $bookmenu
-
-        $bookmenu add command \
-            -label "Bookmark This Page..." \
-            -underline 0 \
-            -command [mymethod BookmarkThisPage] 
-
-        $bookmenu add command \
-            -label "Show All Bookmarks..." \
-            -underline 0 \
-            -command [mymethod tab view bookmarks] 
-
-        $bookmenu add separator
 
         # Orders menu
         set ordersmenu [menu $menubar.orders]
@@ -1401,11 +1368,6 @@ snit::widget appwin {
         $viewmenu add separator
 
         $viewmenu add checkbutton                   \
-            -label    "Bookmarks"                   \
-            -variable [myvar visibility(bookmarks)] \
-            -command  [mymethod ToggleHiddenTab bookmarks]
-
-        $viewmenu add checkbutton                   \
             -label    "Scripts Editor"              \
             -variable [myvar visibility(scripts)]   \
             -command  [mymethod ToggleHiddenTab scripts]
@@ -1493,42 +1455,6 @@ snit::widget appwin {
     }
     
    
-    #-------------------------------------------------------------------
-    # Bookmarks Management
-
-    # BookmarkMenuPostCmd
-    #
-    # Populates the lower half of the Bookmarks menu
-
-    method BookmarkMenuPostCmd {} {
-        # FIRST, delete the bookmarks
-        $bookmenu delete 3 end
-
-        # NEXT, add the bookmarks
-        rdb eval {
-            SELECT url, title FROM bookmarks
-            ORDER BY rank ASC
-        } {
-            $bookmenu add command \
-                -label $title \
-                -command [list app show $url]
-        }
-    }
-
-    # BookmarkThisPage
-    #
-    # Pops up the BOOKMARK:CREATE dialog so that the user can bookmark
-    # the current detail browser page.
-
-    method BookmarkThisPage {} {
-        set detail [$self tab win detail]
-
-        order enter BOOKMARK:CREATE \
-            url   [$detail url]     \
-            title [$detail title]
-    }
-
-
     #-------------------------------------------------------------------
     # CLI history
 
