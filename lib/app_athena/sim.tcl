@@ -90,7 +90,7 @@ snit::type sim {
         set info(changed)  0
         set info(stoptime) 0
 
-        order state $info(state)
+        flunky state $info(state)
 
         simclock configure \
             -week0 $constants(startdate) \
@@ -500,7 +500,7 @@ snit::type sim {
         # and TickWork will do the rest.  Otherwise, this is coming from a
         # GUI event, outside TickWork; just set the state to paused.
 
-        if {[order state] eq "TACTIC"} {
+        if {[flunky state] eq "TACTIC"} {
             set info(stoptime) [simclock now]
         } elseif {$info(state) eq "RUNNING"} {
             set info(stoptime) 0

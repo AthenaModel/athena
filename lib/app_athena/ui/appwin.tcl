@@ -700,8 +700,8 @@ snit::widget appwin {
         $ordersmenu add cascade -label "Simulation" \
             -underline 0 -menu $submenu
         
-        $self AddOrderX $submenu SIM:STARTDATE
-        $self AddOrderX $submenu SIM:STARTTICK
+        $self AddOrder $submenu SIM:STARTDATE
+        $self AddOrder $submenu SIM:STARTTICK
         
         cond::availablex control \
             [menuitem $submenu command [myorders title SIM:REBASE]... \
@@ -713,123 +713,123 @@ snit::widget appwin {
         $ordersmenu add cascade -label "Unit" \
             -underline 0 -menu $submenu
         
-        $self AddOrderX $submenu UNIT:MOVE
+        $self AddOrder $submenu UNIT:MOVE
 
         # Orders/Situation
         set submenu [menu $ordersmenu.sit]
         $ordersmenu add cascade -label "Situation" \
             -underline 0 -menu $submenu
         
-        $self AddOrderX $submenu ABSIT:CREATE
-        $self AddOrderX $submenu ABSIT:MOVE
-        $self AddOrderX $submenu ABSIT:DELETE
-        $self AddOrderX $submenu ABSIT:RESOLVE
-        $self AddOrderX $submenu ABSIT:UPDATE
+        $self AddOrder $submenu ABSIT:CREATE
+        $self AddOrder $submenu ABSIT:MOVE
+        $self AddOrder $submenu ABSIT:DELETE
+        $self AddOrder $submenu ABSIT:RESOLVE
+        $self AddOrder $submenu ABSIT:UPDATE
 
         # Orders/Magic Attitude Drivers
         set submenu [menu $ordersmenu.mad]
         $ordersmenu add cascade -label "Magic Attitude Driver" \
             -underline 0 -menu $submenu
 
-        $self AddOrderX $submenu MAD:CREATE
-        $self AddOrderX $submenu MAD:UPDATE
-        $self AddOrderX $submenu MAD:DELETE
+        $self AddOrder $submenu MAD:CREATE
+        $self AddOrder $submenu MAD:UPDATE
+        $self AddOrder $submenu MAD:DELETE
 
-        $self AddOrderX $submenu MAD:HREL
-        $self AddOrderX $submenu MAD:VREL
-        $self AddOrderX $submenu MAD:SAT
-        $self AddOrderX $submenu MAD:COOP
+        $self AddOrder $submenu MAD:HREL
+        $self AddOrder $submenu MAD:VREL
+        $self AddOrder $submenu MAD:SAT
+        $self AddOrder $submenu MAD:COOP
 
         # Orders/Actors
         set submenu [menu $ordersmenu.actor]
         $ordersmenu add cascade -label "Actors" \
             -underline 0 -menu $submenu
         
-        $self AddOrderX $submenu ACTOR:CREATE
-        $self AddOrderX $submenu ACTOR:UPDATE
-        $self AddOrderX $submenu ACTOR:INCOME
-        $self AddOrderX $submenu ACTOR:SUPPORTS
-        $self AddOrderX $submenu ACTOR:DELETE
+        $self AddOrder $submenu ACTOR:CREATE
+        $self AddOrder $submenu ACTOR:UPDATE
+        $self AddOrder $submenu ACTOR:INCOME
+        $self AddOrder $submenu ACTOR:SUPPORTS
+        $self AddOrder $submenu ACTOR:DELETE
 
         # Orders/Civilian Group
         set submenu [menu $ordersmenu.civgroup]
         $ordersmenu add cascade -label "Civilian Group" \
             -underline 0 -menu $submenu
         
-        $self AddOrderX $submenu CIVGROUP:CREATE
-        $self AddOrderX $submenu CIVGROUP:UPDATE
-        $self AddOrderX $submenu CIVGROUP:DELETE
+        $self AddOrder $submenu CIVGROUP:CREATE
+        $self AddOrder $submenu CIVGROUP:UPDATE
+        $self AddOrder $submenu CIVGROUP:DELETE
 
         # Orders/Force Group
         set submenu [menu $ordersmenu.frcgroup]
         $ordersmenu add cascade -label "Force Group" \
             -underline 0 -menu $submenu
         
-        $self AddOrderX $submenu FRCGROUP:CREATE
-        $self AddOrderX $submenu FRCGROUP:UPDATE
-        $self AddOrderX $submenu FRCGROUP:DELETE
+        $self AddOrder $submenu FRCGROUP:CREATE
+        $self AddOrder $submenu FRCGROUP:UPDATE
+        $self AddOrder $submenu FRCGROUP:DELETE
 
         # Orders/Org Group
         set submenu [menu $ordersmenu.orggroup]
         $ordersmenu add cascade -label "Org Group" \
             -underline 0 -menu $submenu
         
-        $self AddOrderX $submenu ORGGROUP:CREATE
-        $self AddOrderX $submenu ORGGROUP:UPDATE
-        $self AddOrderX $submenu ORGGROUP:DELETE
+        $self AddOrder $submenu ORGGROUP:CREATE
+        $self AddOrder $submenu ORGGROUP:UPDATE
+        $self AddOrder $submenu ORGGROUP:DELETE
 
         # Orders/Neighborhood Menu
         set submenu [menu $ordersmenu.nbhood]
         $ordersmenu add cascade -label "Neighborhood" \
             -underline 0 -menu $submenu
         
-        $self AddOrderX $submenu NBHOOD:CREATE
-        $self AddOrderX $submenu NBHOOD:UPDATE
-        $self AddOrderX $submenu NBHOOD:LOWER
-        $self AddOrderX $submenu NBHOOD:RAISE
-        $self AddOrderX $submenu NBHOOD:DELETE
-        $self AddOrderX $submenu NBREL:UPDATE
+        $self AddOrder $submenu NBHOOD:CREATE
+        $self AddOrder $submenu NBHOOD:UPDATE
+        $self AddOrder $submenu NBHOOD:LOWER
+        $self AddOrder $submenu NBHOOD:RAISE
+        $self AddOrder $submenu NBHOOD:DELETE
+        $self AddOrder $submenu NBREL:UPDATE
 
         # Orders/Horz. Relationship Menu
         set submenu [menu $ordersmenu.hrel]
         $ordersmenu add cascade -label "Horz. Relationship" \
             -underline 0 -menu $submenu
         
-        $self AddOrderX $submenu HREL:OVERRIDE
-        $self AddOrderX $submenu HREL:RESTORE
-        $self AddOrderX $submenu MAD:HREL
+        $self AddOrder $submenu HREL:OVERRIDE
+        $self AddOrder $submenu HREL:RESTORE
+        $self AddOrder $submenu MAD:HREL
     
         # Orders/Vert. Relationship Menu
         set submenu [menu $ordersmenu.vrel]
         $ordersmenu add cascade -label "Vert. Relationship" \
             -underline 0 -menu $submenu
         
-        $self AddOrderX $submenu VREL:OVERRIDE
-        $self AddOrderX $submenu VREL:RESTORE
-        $self AddOrderX $submenu MAD:VREL
+        $self AddOrder $submenu VREL:OVERRIDE
+        $self AddOrder $submenu VREL:RESTORE
+        $self AddOrder $submenu MAD:VREL
     
         # Orders/Satisfaction Menu
         set submenu [menu $ordersmenu.sat]
         $ordersmenu add cascade -label "Satisfaction" \
             -underline 0 -menu $submenu
         
-        $self AddOrderX $submenu SAT:UPDATE
-        $self AddOrderX $submenu MAD:SAT
+        $self AddOrder $submenu SAT:UPDATE
+        $self AddOrder $submenu MAD:SAT
 
         # Orders/Cooperation Menu
         set submenu [menu $ordersmenu.coop]
         $ordersmenu add cascade -label "Cooperation" \
             -underline 0 -menu $submenu
         
-        $self AddOrderX $submenu COOP:UPDATE
-        $self AddOrderX $submenu MAD:COOP
+        $self AddOrder $submenu COOP:UPDATE
+        $self AddOrder $submenu MAD:COOP
 
         # Orders/Comm. Asset Package Menu
         set submenu [menu $ordersmenu.cap]
         $ordersmenu add cascade -label "Comm. Asset Package" \
             -underline 2 -menu $submenu
 
-        $self AddOrderX $submenu {
+        $self AddOrder $submenu {
             CAP:CREATE
             CAP:UPDATE
             CAP:DELETE
@@ -842,8 +842,8 @@ snit::widget appwin {
         $ordersmenu add cascade -label "Economics" \
             -underline 0 -menu $submenu
         
-        $self AddOrderX $submenu ECON:UPDATE:REMRATE
-        $self AddOrderX $submenu ECON:CGE:UPDATE
+        $self AddOrder $submenu ECON:UPDATE:REMRATE
+        $self AddOrder $submenu ECON:CGE:UPDATE
 
         cond::availablex control \
             [menuitem $submenu command [myorders title ECON:UPDATE:HIST]... \
@@ -928,23 +928,7 @@ snit::widget appwin {
     #
     # Adds menu items for the orders
 
-    method AddOrderFoo {mnu orders} {
-        foreach order $orders {
-            cond::available control \
-                [menuitem $mnu command [order title $order]... \
-                     -command [list order enter $order]]    \
-                order $order
-        }
-    }
-
-    # AddOrderX mnu orders
-    #
-    # mnu    - A pull-down menu
-    # orders - A list of order names
-    #
-    # Adds menu items for the orders
-
-    method AddOrderX {mnu orders} {
+    method AddOrder {mnu orders} {
         foreach order $orders {
             set cls [flunky class $order]
             cond::availablex control \

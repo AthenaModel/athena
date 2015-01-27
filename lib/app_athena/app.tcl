@@ -224,12 +224,6 @@ snit::type app {
         map           init
         view          init
         cif           init
-        order         init \
-            -subject      ::order                \
-            -rdb          ::rdb                  \
-            -usedtable    entities               \
-            -logcmd       ::log                  \
-            -ordercmd     [myproc AddOrderToCIF]
         athena_flunky create ::flunky
         bsys          init
         scenario      init
@@ -256,70 +250,9 @@ snit::type app {
         myagent register rdb \
             [rdbserver %AUTO% -rdb ::rdb]
 
-        # NEXT, define order interfaces
-
-        # app: For internal orders.  No tracing, and the app has to
-        # do the error handling.
-        order interface configure app
-
-        # gui: For user orders from the GUI
-        order interface configure gui \
-            -checkstate  yes                           \
-            -trace       yes                           \
-            -errorcmd    [myproc UnexpectedOrderError]
-
-        # cli: For user orders from the CLI
-        order interface add cli \
-            -checkstate  yes                            \
-            -trace       yes                            \
-            -rejectcmd   [myproc FormatRejectionForCLI] \
-            -errorcmd    [myproc UnexpectedOrderError]
-
-        # raw: Like CLI, but with no special rejection formatting.
-        # Used by "send" executive command.
-        order interface add raw \
-            -checkstate  yes    \
-            -trace       yes
-
-        # tactic: Like raw, but does not trace; used by "send"
-        # when the order state is TACTIC.
-        order interface add tactic \
-            -checkstate  yes
-
-        # wizard: Orders from wizards, used for editing internal
-        # wizard state.  Not traced, because they don't edit the
-        # scenario.
-        order interface add wizard \
-            -checkstate  yes       \
-            -trace       no        \
-            -transaction no
-
-        # test: For orders from the test suite.  No special handling
-        # for unexpected errors, and no transactions, so that errors
-        # remain in place.
-        order interface add test \
-            -checkstate  yes     \
-            -trace       yes     \
-            -transaction no
-
-        # NEXT, initialize the order dialog manager if we are in
-        # GUI mode
-        if {[app tkloaded]} {
-            orderdialog init \
-                -parent    [list app topwin]           \
-                -appname   "Athena [kiteinfo version]" \
-                -helpcmd   [list app help]             \
-                -refreshon {
-                    ::cif <Update>
-                    ::sim <Tick>
-                    ::sim <DbSyncB>
-                }
-        }
 
         # NEXT, bind components together
-        notifier bind ::sim <State> ::order  {::order state [::sim state]}
         notifier bind ::sim <State> ::flunky {::flunky state [::sim state]}
-        notifier bind ::app <Puck>  ::order  {::order puck}
         notifier bind ::app <Puck>  ::orderx_dialog  {::orderx_dialog puck}
 
         # NEXT, create state controllers, to enable and disable
@@ -424,20 +357,6 @@ snit::type app {
 
     typemethod tkloaded {} {
         return $::tkLoaded
-    }
-
-    # AddOrderToCIF interface name parmdict undoScript ?redoScript?
-    #
-    # interface  - The interface by which the order was sent
-    # name       - The order name
-    # parmdict   - The order parameters
-    # undoScript - The order's undo script, or "" if not undoable.
-    # redoScript - The order's redo helper script, or "" if none.
-    #
-    # Adds accepted orders to the CIF.
-
-    proc AddOrderToCIF {interface name parmdict undoScript {redoScript ""}} {
-        cif add $name $parmdict $undoScript $redoScript
     }
 
     # UnexpectedOrderError name errmsg
@@ -1009,10 +928,10 @@ snit::type app {
         if {[regexp {^order/([A-Za-z0-9:]+)$} $parts(path) dummy order]} {
             set order [string toupper $order]
 
-            if {[order exists $order]} {
+            if {[myorders exists $order]} {
                 set parms [split $parts(query) "=+"]
                 if {[catch {
-                    order enter $order {*}$parms
+                    app enter $order $parms
                 } result]} {
                     $type GuiUrlError $uri $result
                 }

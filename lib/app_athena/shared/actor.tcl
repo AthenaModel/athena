@@ -652,7 +652,7 @@ myorders define ACTOR:INCOME {
     meta form {
         rcc "Select Actor:" -for a
         dbkey a -table gui_actors -keys a \
-            -loadcmd {::orderdialog keyload a *} 
+            -loadcmd {$order_ keyload a *} 
 
         selector atype -invisible yes {
             case INCOME "Actor gets weekly income from local economy" {
@@ -733,7 +733,7 @@ myorders define ACTOR:SUPPORTS {
     meta form {
         rcc "Select Actor:" -for a
         dbkey a -table gui_actors -keys a \
-            -loadcmd {::orderdialog keyload a *} 
+            -loadcmd {$order_ keyload a *} 
         
         rcc "Supports:" -for supports
         enum supports -listcmd {ptype a+self+none names}

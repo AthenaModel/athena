@@ -566,19 +566,30 @@ oo::define ::wintel::simevent {
 # is not generally used.
 
 myorders define EVENT:STATE {
-    meta title      "Set Event State"
+    meta title "Set Event State"
+
     meta sendstates PREP
-    meta parmlist   {event_id state}
+
+    meta form {
+        label "Event ID:" -for event_id
+        text event_id -context yes
+
+        rc "State:" -for state
+        text state
+    }
+
 
     method _validate {} {
-        my prepare event_id -required          -with {::wintel::pot valclass ::wintel::simevent}
-        my prepare state    -required -tolower -type ebeanstate
-    }
 
-    method _execute {{flunky ""}} {
-        set event [::wintel::pot get $parms(event_id)]
-        my setundo [$event update_ {state} [array get parms]]
-    }
+    # FIRST, prepare and validate the parameters
+    my prepare event_id -required          -with {::wintel::pot valclass ::wintel::simevent}
+    my prepare state    -required -tolower -type ebeanstate
+    my returnOnError    -final
+
+    set event [::wintel::pot get $parms(event_id)]
+
+    # NEXT, update the event.
+    my setundo [$event update_ {state} [array get parms]]
 }
 
 

@@ -156,7 +156,7 @@ snit::widget ::wnbhood::wizwin {
             return
         }
 
-        cif transaction "Ingest $num Neighborhoods" {
+        flunky transaction "Ingest $num Neighborhoods" {
             dict for {name data} $ndict {
                 lassign $data refpt poly
                 set id "N[format "%03d" $ctr]"
