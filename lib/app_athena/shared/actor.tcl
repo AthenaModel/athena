@@ -543,7 +543,7 @@ myorders define ACTOR:UPDATE {
     }
 
     meta form {
-        ;# Use explicit width so that long labels don't wrap.  Ugh!
+        # Use explicit width so that long labels don't wrap.  Ugh!
         rc "Select Actor:" -for a -width 2in
         c
         dbkey a -table gui_actors -keys a \
@@ -704,7 +704,8 @@ myorders define ACTOR:INCOME {
 
     method _execute {{flunky ""}} {
         # FIRST, fill in the empty parameters
-        array set parms {
+        array set fullparms [array get parms]
+        array set fullparms {
             auto_maintain {}
             longname      {}
             supports      {}
@@ -713,7 +714,7 @@ myorders define ACTOR:INCOME {
         }
     
         # NEXT, modify the actor
-        my setundo [actor mutate update [array get parms]]
+        my setundo [actor mutate update [array get fullparms]]
     }
 }
 
@@ -746,7 +747,8 @@ myorders define ACTOR:SUPPORTS {
 
     method _execute {{flunky ""}} {
         # FIRST, fill in the empty parameters
-        array set parms {
+        array set fullparms [array get parms]
+        array set fullparms {
             longname         {}
             atype            {}
             auto_maintain    {}
@@ -762,7 +764,7 @@ myorders define ACTOR:SUPPORTS {
         }
     
         # NEXT, modify the actor
-        my setundo [actor mutate update [array get parms]]
+        my setundo [actor mutate update [array get fullparms]]
     }
 }
 

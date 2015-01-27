@@ -57,13 +57,9 @@ CREATE TEMPORARY VIEW gui_cif AS
 SELECT id                                            AS id,
        time                                          AS tick,
        timestr(time)                                 AS week,
-       kind                                          AS kind,
        name                                          AS name,
        narrative                                     AS narrative,
-       parmdict                                      AS parmdict,
-       undo                                          AS undo,
-       CASE WHEN kind != 'order' OR undo != '' 
-       THEN 'Yes' ELSE 'No' END AS canUndo
+       parmdict                                      AS parmdict
 FROM cif
 ORDER BY id DESC;
 

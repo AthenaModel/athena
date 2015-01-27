@@ -52,7 +52,7 @@ snit::type exporter {
         rdb eval {
             SELECT time,name,parmdict
             FROM cif
-            WHERE kind == 'order' AND name != 'SIM:UNLOCK'
+            WHERE name != 'SIM:UNLOCK'
             ORDER BY id
         } {
             # SIM:RUN requires special handling.
@@ -110,9 +110,14 @@ snit::type exporter {
             # non-default values.
             set cmd [list send $name]
 
-            dict for {parm value} [order prune $name $parmdict] {
+            set o [flunky make $name]
+            $o setdict $parmdict
+
+            dict for {parm value} [$o prune] {
                 lappend cmd -$parm $value
             }
+
+            $o destroy
 
             puts $f $cmd
         }

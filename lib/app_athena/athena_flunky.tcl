@@ -85,6 +85,14 @@ oo::class create athena_flunky {
         return $result
     }
 
+    # _onExecute order
+    #
+    # Adds the order to the CIF
+
+    method _onExecute {order} {
+        my AddToCIF $order
+    }
+
     # undo
     #
     # Wraps the order_flunky "undo" method.  Adds RDB transactions
@@ -98,6 +106,24 @@ oo::class create athena_flunky {
         return
     }
 
+
+    # _onUndo order
+    #
+    # Removes the top order from the CIF
+
+    method _onUndo {order} {
+        set maxid [rdb onecolumn {
+            SELECT max(id) FROM cif
+        }]
+
+
+        rdb eval {
+            DELETE FROM cif
+            WHERE id = $maxid
+        }
+    }
+
+
     # redo
     #
     # Wraps the order_flunky "redo" method.  Adds RDB transactions
@@ -110,7 +136,31 @@ oo::class create athena_flunky {
 
         return
     }
-    
+
+    # _onRedo order
+    #
+    # Adds the order to the CIF
+
+    method _onRedo {order} {
+        my AddToCIF $order
+    }
+
+    # AddToCIF order
+    #
+    # Adds the order to the CIF.
+
+    method AddToCIF {order} {
+        set now [simclock now]
+
+        set name      [$order name]
+        set narrative [$order narrative]
+        set parmdict  [$order getdict]
+
+        rdb eval {
+            INSERT INTO cif(time,name,narrative,parmdict)
+            VALUES($now, $name, $narrative, $parmdict);
+        }
+    }
 }
 
 
