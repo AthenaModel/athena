@@ -153,7 +153,7 @@ snit::widgetadaptor civgroupbrowser {
 
     method AddEntity {} {
         # FIRST, Pop up the dialog
-        order enter CIVGROUP:CREATE
+        app enter CIVGROUP:CREATE
     }
 
 
@@ -165,7 +165,7 @@ snit::widgetadaptor civgroupbrowser {
         # FIRST, there should be only one selected.
         set id [lindex [$hull uid curselection] 0]
 
-        order enter CIVGROUP:UPDATE g $id
+        app enter CIVGROUP:UPDATE g $id
     }
 
     # DeleteSelected
@@ -177,7 +177,7 @@ snit::widgetadaptor civgroupbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Pop up the dialog, and select this entity
-        order send gui CIVGROUP:DELETE g $id
+        flunky senddict gui CIVGROUP:DELETE [list g $id]
     }
 }
 

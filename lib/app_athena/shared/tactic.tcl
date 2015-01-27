@@ -204,7 +204,7 @@ oo::objdefine tactic {
     # copysets  - A list of tactic copysets from [$bean copydata].
     #
     # Pastes the tactics into the given block.  This call should be
-    # wrapped by [cif startblock]/[cif endblock] calls.  These are
+    # wrapped by [flunky transaction] calls.  This is
     # not included in [paste] itself, because pasting tactics can be
     # done as part of a larger paste (i.e., pasting blocks).
 
@@ -218,12 +218,12 @@ oo::objdefine tactic {
 
             # NEXT, create the tactic with default settings
             set tactic_id \
-                [order send gui BLOCK:TACTIC:ADD \
-                    block_id $block_id typename $tname]
+                [flunky senddict gui BLOCK:TACTIC:ADD \
+                    [list block_id $block_id typename $tname]]
 
             # NEXT, update the tactic with the right data.
-            order send gui TACTIC:$tname tactic_id $tactic_id \
-                {*}$tdict
+            flunky senddict gui TACTIC:$tname \
+                [list tactic_id $tactic_id {*}$tdict]
         }
     }
 
@@ -237,7 +237,7 @@ oo::objdefine tactic {
     method GetOrderParmsFromCopySet {tname copyset} {
         set pdict [dict create]
 
-        foreach parm [order parms TACTIC:$tname] {
+        foreach parm [myorders parms TACTIC:$tname] {
             if {$parm eq "tactic_id" || $parm eq "name"} {
                 continue
             }
@@ -820,32 +820,24 @@ oo::define tactic {
 
 # TACTIC:STATE
 #
-# Sets a tactic's state to normal or disabled.  The order dialog
-# is not generally used.
+# Sets a tactic's state to normal or disabled.
 
-order define TACTIC:STATE {
-    title "Set Tactic State"
+myorders define TACTIC:STATE {
+    meta title      "Set Tactic State"
+    meta sendstates PREP
+    meta parmlist   { tactic_id state }
 
-    options -sendstates PREP
-
-    form {
-        label "Tactic ID:" -for tactic_id
-        text tactic_id -context yes
-
-        rc "State:" -for state
-        text state
+    method _validate {} {
+        my prepare tactic_id -required -with {::strategy valclass ::tactic}
+        my prepare state     -required -tolower -type ebeanstate
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare tactic_id -required          -with {::strategy valclass ::tactic}
-    prepare state     -required -tolower -type ebeanstate
-    returnOnError -final
 
-    set tactic [pot get $parms(tactic_id)]
-
-    # NEXT, update the block, clearing the execution status
-    setundo [$tactic update_ {state} [array get parms]]
+    method _execute {{flunky ""}} {
+        set tactic [pot get $parms(tactic_id)]
+        my setundo [$tactic update_ {state} [array get parms]]
+    }
 }
+
 
 
 

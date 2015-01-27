@@ -87,7 +87,6 @@ namespace eval ::athena_test::tests:: {
         name       T*
         num        1
         parent     *
-        percent    0
         pot        ::pot
         state      invalid
     }

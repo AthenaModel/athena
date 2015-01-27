@@ -720,7 +720,7 @@ snit::type autogen {
             set parms(supports) "SELF"
             set parms(cash_on_hand) "500B"
 
-            order send cli ACTOR:CREATE [array get parms]
+            flunky senddict normal ACTOR:CREATE [array get parms]
         }
     }
 
@@ -781,7 +781,7 @@ snit::type autogen {
             # NEXT, set the controlling actor
             set parms(controller) [lindex $actors $k]
 
-            order send cli NBHOOD:CREATE [array get parms]
+            flunky senddict normal NBHOOD:CREATE [array get parms]
             
             # NEXT, increase the actor counter, unless we
             # need to go back to the first actor
@@ -812,7 +812,7 @@ snit::type autogen {
         }
 
         set parms(proximity) "FAR"
-        order send cli NBREL:UPDATE:MULTI [array get parms]
+        flunky senddict normal NBREL:UPDATE:MULTI [array get parms]
 
         # NEXT, if the user only requested two neighborhoods we
         # are done
@@ -841,7 +841,7 @@ snit::type autogen {
 
         set parms(proximity) "NEAR"
 
-        order send cli NBREL:UPDATE:MULTI [array get parms]
+        flunky senddict normal NBREL:UPDATE:MULTI [array get parms]
     }
 
     # Civgroups num 
@@ -903,7 +903,7 @@ snit::type autogen {
                     set parms(housing) AT_HOME
                 }
 
-                order send cli CIVGROUP:CREATE [array get parms]
+                flunky senddict normal CIVGROUP:CREATE [array get parms]
             }
         }
     }
@@ -925,7 +925,7 @@ snit::type autogen {
 
         # NEXT, have that actors support no one
         set parms(supports) NONE
-        order send cli ACTOR:UPDATE [array get parms]
+        flunky senddict normal ACTOR:UPDATE [array get parms]
 
         # NEXT, no longer need the "supports" parm
         unset parms(supports)
@@ -942,7 +942,7 @@ snit::type autogen {
             set parms(base_personnel) 100000
             set parms(cost) "1K"
 
-            order send cli ORGGROUP:CREATE [array get parms]
+            flunky senddict normal ORGGROUP:CREATE [array get parms]
 
             incr orgtype
             
@@ -988,7 +988,7 @@ snit::type autogen {
             set parms(base_personnel) 100000
             set parms(cost)           "1K"
 
-            order send cli FRCGROUP:CREATE [array get parms]
+            flunky senddict normal FRCGROUP:CREATE [array get parms]
 
             incr frctype
             incr j
@@ -1023,24 +1023,24 @@ snit::type autogen {
     typemethod BSystem {num} {
         # FIRST, create the requested topics
         for {set i 1} {$i <= $num} {incr i} {
-            order send cli BSYS:TOPIC:ADD tid $i
+            flunky senddict normal BSYS:TOPIC:ADD [list tid $i]
         }
 
         # FIRST, create a belief system for each actor and group.
         set sids [list]
 
         foreach a [actor names] {
-            set sid [order send cli BSYS:SYSTEM:ADD]
-            order send cli BSYS:SYSTEM:UPDATE \
-                sid $sid name "Actor $a's Beliefs"
+            set sid [flunky senddict normal BSYS:SYSTEM:ADD]
+            flunky senddict normal BSYS:SYSTEM:UPDATE \
+                [list sid $sid name "Actor $a's Beliefs"]
 
             lappend sids $sid
         }
 
         foreach g [civgroup names] {
-            set sid [order send cli BSYS:SYSTEM:ADD]
-            order send cli BSYS:SYSTEM:UPDATE \
-                sid $sid name "Group $g's Beliefs"
+            set sid [flunky senddict normal BSYS:SYSTEM:ADD]
+            flunky senddict normal BSYS:SYSTEM:UPDATE \
+                [list sid $sid name "Group $g's Beliefs"]
 
             lappend sids $sid
         }
@@ -1062,7 +1062,7 @@ snit::type autogen {
                 # NEXT, set position/emphasis pair 
                 lassign [lindex $pelist $idx] parms(position) parms(emphasis)
 
-                order send cli BSYS:BELIEF:UPDATE [array get parms]
+                flunky senddict normal BSYS:BELIEF:UPDATE [array get parms]
 
                 # NEXT, go to next position/emphasis pair
                 incr idx
@@ -1256,10 +1256,11 @@ snit::type autogen {
     # agents strategy. The ID of the block is returned
 
     typemethod AddBlock {agent args} {
-        set bid [order send cli STRATEGY:BLOCK:ADD agent $agent]
+        set bid [flunky send normal STRATEGY:BLOCK:ADD -agent $agent]
 
         if {[llength $args] > 0} {
-            order send cli BLOCK:UPDATE block_id $bid {*}$args
+            flunky senddict normal BLOCK:UPDATE \
+                [list block_id $bid {*}$args]
         }
 
         return [pot get $bid]
@@ -1276,11 +1277,12 @@ snit::type autogen {
     # proper arguments.
 
     typemethod AddTactic {ttype block args} {
-        set tid [order send cli BLOCK:TACTIC:ADD \
-            block_id [$block id] \
-            typename $ttype]
+        set tid [flunky send normal BLOCK:TACTIC:ADD \
+                    -block_id [$block id] \
+                    -typename $ttype]
 
-        order send cli TACTIC:${ttype} tactic_id $tid {*}$args
+        flunky senddict normal TACTIC:${ttype} \
+            [list tactic_id $tid {*}$args]
 
     }
 }

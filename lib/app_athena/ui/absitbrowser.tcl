@@ -209,7 +209,7 @@ snit::widgetadaptor absitbrowser {
 
     method AddEntity {} {
         # FIRST, Pop up the dialog
-        order enter ABSIT:CREATE
+        app enter ABSIT:CREATE
     }
 
     # EditSelected
@@ -221,7 +221,7 @@ snit::widgetadaptor absitbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Pop up the order dialog.
-        order enter ABSIT:UPDATE s $id
+        app enter ABSIT:UPDATE s $id
     }
 
 
@@ -234,7 +234,7 @@ snit::widgetadaptor absitbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Pop up the order dialog.
-        order enter ABSIT:RESOLVE s $id
+        app enter ABSIT:RESOLVE s $id
     }
 
 
@@ -247,7 +247,7 @@ snit::widgetadaptor absitbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Send the delete order.
-        order send gui ABSIT:DELETE s $id
+        flunky senddict gui ABSIT:DELETE [list s $id]
     }
 
 }

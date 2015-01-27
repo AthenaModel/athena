@@ -192,9 +192,9 @@ snit::widgetadaptor coopbrowser {
         set ids [$hull uid curselection]
 
         if {[llength $ids] == 1} {
-            order enter COOP:UPDATE id [lindex $ids 0]
+            app enter COOP:UPDATE id [lindex $ids 0]
         } else {
-            order enter COOP:UPDATE:MULTI ids $ids
+            app enter COOP:UPDATE:MULTI ids $ids
         }
     }
 }

@@ -514,7 +514,7 @@ snit::widget wmswin {
         }
 
         # NEXT, send the order
-        order send gui MAP:IMPORT:DATA [array get parms]
+        flunky senddict gui MAP:IMPORT:DATA [array get parms]
 
         # NEXT, if this is from the "send and close" button, withdraw the
         # window.

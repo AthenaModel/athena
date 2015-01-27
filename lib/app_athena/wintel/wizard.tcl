@@ -285,7 +285,7 @@ snit::type ::wintel::wizard {
     typemethod saveEvents {} {
         set num [llength [simevent normals]]
 
-        cif transaction "Ingest $num Intel Events" {
+        flunky transaction "Ingest $num Intel Events" {
             foreach id [simevent normals] {
                 if {[::wintel::pot has $id]} {
                     set e [::wintel::pot get $id]

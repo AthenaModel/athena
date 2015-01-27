@@ -132,7 +132,7 @@ oo::objdefine condition {
     # copysets  - A list of condition copysets from [$bean copydata].
     #
     # Pastes the conditions into the given block.  This call should be
-    # wrapped by [cif startblock]/[cif endblock] calls.  These are
+    # wrapped by [flunky transaction]s.  This is
     # not included in [paste] itself, because pasting conditions can be
     # done as part of a larger paste (i.e., pasting blocks).
 
@@ -146,12 +146,12 @@ oo::objdefine condition {
 
             # NEXT, create the condition with default settings
             set condition_id \
-                [order send gui BLOCK:CONDITION:ADD \
-                    block_id $block_id typename $cname]
+                [flunky senddict gui BLOCK:CONDITION:ADD \
+                    [list block_id $block_id typename $cname]]
 
             # NEXT, update the condition with the right data.
-            order send gui CONDITION:$cname condition_id $condition_id \
-                {*}$cdict
+            flunky senddict gui CONDITION:$cname \
+                [list condition_id $condition_id {*}$cdict]
         }
     }
 
@@ -165,7 +165,7 @@ oo::objdefine condition {
     method GetOrderParmsFromCopySet {cname copyset} {
         set pdict [dict create]
 
-        foreach parm [order parms CONDITION:$cname] {
+        foreach parm [myorders parms CONDITION:$cname] {
             if {$parm eq "condition_id" || $parm eq "name"} {
                 continue
             }
@@ -552,28 +552,20 @@ oo::define condition {
 # Sets a condition's state to normal or disabled.  The order dialog
 # is not generally used.
 
-order define CONDITION:STATE {
-    title "Set Condition State"
+myorders define CONDITION:STATE {
+    meta title      "Set Condition State"
+    meta sendstates PREP
+    meta parmlist   {condition_id state}
 
-    options -sendstates PREP
-
-    form {
-        label "Condition ID:" -for condition_id
-        text condition_id -context yes
-
-        rc "State:" -for state
-        text state
+    method _validate {} {
+        my prepare condition_id -required -with {::strategy valclass ::condition}
+        my prepare state        -required -tolower -type ebeanstate
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare condition_id -required          -with {::strategy valclass ::condition}
-    prepare state        -required -tolower -type ebeanstate
-    returnOnError -final
 
-    set cond [pot get $parms(condition_id)]
-
-    # NEXT, update the block
-    setundo [$cond update_ {state} [array get parms]]
+    method _execute {{flunky ""}} {
+        set cond [pot get $parms(condition_id)]
+        my setundo [$cond update_ {state} [array get parms]]
+    }
 }
 
 

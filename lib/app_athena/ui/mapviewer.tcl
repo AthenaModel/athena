@@ -447,22 +447,22 @@ snit::widget mapviewer {
                  -style   Toolbutton                            \
                  -image   [list ${type}::icon::nbpoly           \
                                disabled ${type}::icon::nbpolyd] \
-                 -command [list order enter NBHOOD:CREATE]]     \
+                 -command [list app enter NBHOOD:CREATE]]     \
             order NBHOOD:CREATE
 
         DynamicHelp::add $win.vbar.nbhood \
-            -text [order title NBHOOD:CREATE]
+            -text [myorders title NBHOOD:CREATE]
 
         cond::available control \
             [ttk::button $win.vbar.newabsit                                  \
                  -style   Toolbutton                                         \
                  -image   [list ${type}::icon::abpoly                       \
                                disabled ${type}::icon::abpolyd]             \
-                 -command [list order enter ABSIT:CREATE]] \
+                 -command [list app enter ABSIT:CREATE]] \
             order ABSIT:CREATE
 
         DynamicHelp::add $win.vbar.newabsit \
-            -text [order title ABSIT:CREATE]
+            -text [myorders title ABSIT:CREATE]
 
         pack $win.vbar.sep       -side top -fill x -pady 2
         pack $win.vbar.nbhood    -side top -fill x -padx 2
@@ -1030,7 +1030,7 @@ snit::widget mapviewer {
     # Pops up the create absit dialog with this location filled in.
 
     method NbhoodCreateAbsitHere {} {
-        order enter ABSIT:CREATE location $nbhoods(transref)
+        app enter ABSIT:CREATE location $nbhoods(transref)
     }
 
 
@@ -1039,7 +1039,7 @@ snit::widget mapviewer {
     # Brings the transient neighborhood to the front
 
     method NbhoodBringToFront {} {
-        order send gui NBHOOD:RAISE [list n $nbhoods(trans)]
+        flunky senddict gui NBHOOD:RAISE [list n $nbhoods(trans)]
     }
 
 
@@ -1048,7 +1048,7 @@ snit::widget mapviewer {
     # Sends the transient neighborhood to the back
 
     method NbhoodSendToBack {} {
-        order send gui NBHOOD:LOWER [list n $nbhoods(trans)]
+        flunky senddict gui NBHOOD:LOWER [list n $nbhoods(trans)]
     }
 
     #-------------------------------------------------------------------
@@ -1327,9 +1327,9 @@ snit::widget mapviewer {
         switch -exact $icons(itype-$cid) {
             unit {
                 if {[catch {
-                    order send gui UNIT:MOVE             \
+                    flunky senddict gui UNIT:MOVE [list  \
                         u        $icons(sid-$cid)        \
-                        location [$canvas icon ref $cid]
+                        location [$canvas icon ref $cid]]
                 }]} {
                     $self UnitDrawSingle $icons(sid-$cid)
                 }
@@ -1337,9 +1337,9 @@ snit::widget mapviewer {
 
             situation {
                 if {[catch {
-                    order send gui ABSIT:MOVE \
-                        s        $icons(sid-$cid)                 \
-                        location [$canvas icon ref $cid]
+                    flunky senddict gui ABSIT:MOVE [list \
+                        s        $icons(sid-$cid)        \
+                        location [$canvas icon ref $cid]]
                 }]} {
                     $self AbsitDrawSingle $icons(sid-$cid)
                 }
@@ -1621,7 +1621,7 @@ snit::widget mapviewer {
     # Pops up the "Update Abstract Situation" dialog for this unit
 
     method UpdateAbsit {} {
-        order enter ABSIT:UPDATE s $icons(context)
+        app enter ABSIT:UPDATE s $icons(context)
     }
 
     #-------------------------------------------------------------------

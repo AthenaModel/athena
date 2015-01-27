@@ -1,8 +1,8 @@
 # TODO.md - Athena TODO List
 
 - Write cellide manpage.
-- Start working through the existing orders, looking for things to figure
-  out
-  - E.g., gofers.
-- Revise wintel to use its own order infrastructure.
+- After all orders are converted:
+-   Add "monitor" flag to athena_flunky; if off, no RDB monitoring.
+-   Update "call" executive command to disable monitoring temporarily
+    and send <DbSync> after.
 

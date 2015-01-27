@@ -228,7 +228,7 @@ namespace eval ::athena_test::tests:: {
     } -cleanup {
         cleanup
     } -result {
-        lfp {subsistence agriculture requires labor force % = 0}
+        lfp {Subsistence agriculture requires labor force % = 0}
     }
 
     test CREATE-1.15 {invalid housing} -setup {
@@ -252,7 +252,7 @@ namespace eval ::athena_test::tests:: {
     } -cleanup {
         cleanup
     } -result {
-        housing {subsistence agriculture can only be done "at home"}
+        housing {Subsistence agriculture can only be done "at home"}
     }
 
     test CREATE-1.17 {invalid hist_flag} -setup {
@@ -344,7 +344,7 @@ upc        0.0
         ted order CIVGROUP:CREATE $sunn
     } -body {
         ted notifier bind ::rdb <civgroups>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -387,7 +387,7 @@ upc        0.0
         ted order CIVGROUP:DELETE g SHIA
     } -body {
         ted notifier bind ::rdb <civgroups>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -509,7 +509,7 @@ upc        0.0
     } -cleanup {
         cleanup
     } -result {
-        lfp {subsistence agriculture requires labor force % = 0}
+        lfp {Subsistence agriculture requires labor force % = 0}
     }
 
     test UPDATE-1.13 {invalid housing} -setup {
@@ -530,7 +530,7 @@ upc        0.0
     } -cleanup {
         cleanup
     } -result {
-        housing {subsistence agriculture can only be done "at home"}
+        housing {Subsistence agriculture can only be done "at home"}
     }
 
     test UPDATE-1.15 {invalid hist_flag} -setup {
@@ -616,7 +616,7 @@ upc        10.0
         }
     } -body {
         ted notifier bind ::rdb <civgroups>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

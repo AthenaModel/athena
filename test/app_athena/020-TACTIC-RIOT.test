@@ -129,7 +129,7 @@ namespace eval ::athena_test::tests:: {
     } -cleanup {
         cleanup
     } -match dictglob -result {
-        coverage   0.75
+        coverage   .75
         execstatus NONE
         faildict   {}
         id         *
@@ -159,7 +159,7 @@ namespace eval ::athena_test::tests:: {
             n         NB1
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

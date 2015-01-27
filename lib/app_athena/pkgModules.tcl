@@ -58,6 +58,11 @@ namespace eval ::app_athena:: {
     variable library [file dirname [info script]]
 }
 
+# Used to define and query orders.
+::projectlib::order_set create ::myorders ::athena_order 
+source [file join $::app_athena::library athena_order.tcl ]
+source [file join $::app_athena::library athena_flunky.tcl]
+
 #-----------------------------------------------------------------------
 # Load app_athena(n) modules
 
@@ -68,7 +73,6 @@ source [file join $::app_athena::library scenario.tcl     ]
 source [file join $::app_athena::library sim.tcl          ]
 source [file join $::app_athena::library engine.tcl       ]
 source [file join $::app_athena::library log.tcl          ]
-source [file join $::app_athena::library cif.tcl          ]
 source [file join $::app_athena::library map.tcl          ]
 source [file join $::app_athena::library sanity.tcl       ]
 source [file join $::app_athena::library axdb.tcl         ]

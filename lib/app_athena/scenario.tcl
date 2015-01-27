@@ -39,7 +39,6 @@ snit::type scenario {
         activity_gtype
         actors
         beans
-        bookmarks
         cap_kg
         cap_kn
         caps
@@ -82,7 +81,6 @@ snit::type scenario {
     typevariable nonSnapshotTables {
         snapshots
         maps
-        bookmarks
         hist_control
         hist_coop
         hist_econ
@@ -140,7 +138,6 @@ snit::type scenario {
 
         # NEXT, monitor tables.
         rdb monitor add actors        {a}
-        rdb monitor add bookmarks     {bookmark_id}
         rdb monitor add caps          {k}
         rdb monitor add cap_kn        {k n}
         rdb monitor add cap_kg        {k g}

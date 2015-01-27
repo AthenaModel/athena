@@ -94,7 +94,7 @@ namespace eval ::athena_test::tests:: {
         ted order STRATEGY:BLOCK:ADD agent SYSTEM
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -166,7 +166,7 @@ namespace eval ::athena_test::tests:: {
         set B2 [ted addblock SYSTEM]
         ted order STRATEGY:BLOCK:DELETE ids [list [$B1 id] [$B2 id]]
     } -body {
-        cif undo -test
+        flunky undo
         llength [$S1 blocks]
     } -cleanup {
         cleanup
@@ -179,7 +179,7 @@ namespace eval ::athena_test::tests:: {
         ted order STRATEGY:BLOCK:DELETE ids [list [$B1 id] [$B2 id]]
     } -body {
         ted notifier bind ::strategy <blocks>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -260,7 +260,7 @@ namespace eval ::athena_test::tests:: {
         ted order STRATEGY:BLOCK:MOVE block_id [$B2 id] where top
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

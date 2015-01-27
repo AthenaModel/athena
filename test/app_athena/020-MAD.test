@@ -194,7 +194,7 @@ mad_id narrative      cause  s   p   q
         ted order MAD:CREATE $m1
     } -body {
         ted notifier bind ::rdb <mads>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -253,7 +253,7 @@ mad_id narrative      cause  s   p   q
         ted order MAD:DELETE mad_id    1
     } -body {
         ted notifier bind ::rdb <mads>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -365,7 +365,7 @@ mad_id narrative     cause s   p   q
         ted order MAD:UPDATE mad_id    1 narrative "MAD the FIRST"
     } -body {
         ted notifier bind ::rdb <mads>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

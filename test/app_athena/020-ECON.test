@@ -110,7 +110,7 @@ namespace eval ::athena_test::tests:: {
         }
     } -body {
         ted notifier bind ::econ <SamUpdate>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -172,7 +172,7 @@ namespace eval ::athena_test::tests:: {
         }
     } -body {
         ted notifier bind ::econ <SamUpdate>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -260,7 +260,7 @@ namespace eval ::athena_test::tests:: {
         }
     } -body {
         ted notifier bind ::econ <CgeUpdate>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -317,7 +317,7 @@ namespace eval ::athena_test::tests:: {
         ted order ECON:UPDATE:REMRATE val 5.0
     } -body {
         ted notifier bind ::econ <CgeUpdate>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -370,7 +370,7 @@ namespace eval ::athena_test::tests:: {
     test UPDATE:HIST-3.1 {undo undoes the change} -setup {
         ted order ECON:UPDATE:HIST hist_flag 1 base_gdp 1T
     } -body {
-        cif undo -test
+        flunky undo
         set pdict [::econ hist]
         dict with pdict {
             expr {$base_gdp == 200000000000.0}

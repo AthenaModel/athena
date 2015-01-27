@@ -52,7 +52,7 @@ snit::type exporter {
         rdb eval {
             SELECT time,name,parmdict
             FROM cif
-            WHERE kind == 'order' AND name != 'SIM:UNLOCK'
+            WHERE name != 'SIM:UNLOCK'
             ORDER BY id
         } {
             # SIM:RUN requires special handling.
@@ -110,9 +110,14 @@ snit::type exporter {
             # non-default values.
             set cmd [list send $name]
 
-            dict for {parm value} [order prune $name $parmdict] {
+            set o [flunky make $name]
+            $o setdict $parmdict
+
+            dict for {parm value} [$o prune] {
                 lappend cmd -$parm $value
             }
+
+            $o destroy
 
             puts $f $cmd
         }
@@ -350,10 +355,6 @@ snit::type exporter {
             }
         }
 
-        # NEXT, Bookmarks
-        SectionHeader $f "Bookmarks"
-        FromRDB $f BOOKMARK:CREATE {SELECT * FROM bookmarks}
-
         # NEXT, Scripts
         SectionHeader $f "Executive Scripts"
         ExportScripts $f
@@ -406,7 +407,7 @@ snit::type exporter {
 
     proc FromParms {f order args} {
         # FIRST, get the parameters we care about.
-        set parms [order parms $order]
+        set parms [myorders parms $order]
 
         # NEXT, extract the available parameters from the args.
         dict for {parm value} $args {
@@ -431,7 +432,7 @@ snit::type exporter {
 
     proc FromRDB {f order query {exceptions ""}} {
         # FIRST, get the parameters we care about.
-        set parms [order parms $order]
+        set parms [myorders parms $order]
 
         foreach exception $exceptions {
             ldelete parms $exception
@@ -490,7 +491,7 @@ snit::type exporter {
     # Returns a dictionary of order parameter options.
     
     proc FromBean {order idvar bean} {
-        set parms [order parms $order]
+        set parms [myorders parms $order]
         ldelete parms $idvar
 
         set view [$bean view]

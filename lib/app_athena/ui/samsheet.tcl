@@ -768,7 +768,7 @@ snit::widget samsheet {
         set new [::marsutil::moneyscan $new]
 
         # NEXT, send the order to the econ model
-        order send gui ECON:SAM:UPDATE id $cell val $new
+        flunky senddict gui ECON:SAM:UPDATE [list id $cell val $new]
     }
 
     # GlobalChanged cell new
@@ -782,7 +782,7 @@ snit::widget samsheet {
     # The new value is sent to the order processor.
 
     method GlobalChanged {cell new} {
-        order send gui ECON:SAM:GLOBAL id $cell val $new
+        flunky senddict gui ECON:SAM:GLOBAL [list id $cell val $new]
     }
 
     # SamUpdate index value

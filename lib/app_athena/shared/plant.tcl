@@ -887,12 +887,14 @@ snit::type plant {
 # Creates an allocation of shares of GOODS production plants for an
 # agent in a neighborhood.
 
-order define PLANT:SHARES:CREATE {
-    title "Allocate GOODS Production Capacity Shares"
+myorders define PLANT:SHARES:CREATE {
+    meta title "Allocate GOODS Production Capacity Shares"
 
-    options -sendstates PREP
+    meta parmlist {a n {rho 1.0} {num 1}}
 
-    form {
+    meta sendstates PREP
+
+    meta form {
         rcc "Owning Agent:" -for a
         agent a 
 
@@ -905,64 +907,72 @@ order define PLANT:SHARES:CREATE {
         rcc "Shares:" -for num
         text num -defvalue 1
     }
-} {
 
-    prepare a      -toupper -required -type agent
-    prepare n      -toupper -required -type {nbhood local}
-    prepare rho    -toupper           -type rfraction
-    prepare num    -toupper           -type ipositive
 
-    returnOnError
-
-    # Cross check n 
-    validate n {
-        if {[plant actorOwnsShares $parms(n) $parms(a)]} {
-            reject n \
-                "Agent $parms(a) already ownes a share of the plants in $parms(n)"
+    method _validate {} {
+        my prepare a      -toupper -required -type agent
+        my prepare n      -toupper -required -type {nbhood local}
+        my prepare rho    -toupper           -type rfraction
+        my prepare num    -toupper           -type ipositive
+    
+        my returnOnError
+    
+        # Cross check n 
+        my checkon n {
+            if {[plant actorOwnsShares $parms(n) $parms(a)]} {
+                my reject n \
+                    "Agent $parms(a) already ownes a share of the plants in $parms(n)"
+            }
         }
     }
 
-    returnOnError -final
-
-    setundo [plant mutate create [array get parms]]
+    method _execute {{flunky ""}} {
+        my setundo [plant mutate create [array get parms]]
+    }
 }
 
 # PLANT:SHARES:DELETE
 #
 # Removes an allocation of shares from the database
 
-order define PLANT:SHARES:DELETE {
-    title "Delete Production Capacity Shares"
+myorders define PLANT:SHARES:DELETE {
+    meta title "Delete Production Capacity Shares"
 
-    options -sendstates PREP
+    meta sendstates PREP
+    
+    meta parmlist {id}
 
-    form {
+    meta form {
         rcc "Record ID:" -for id
         plant id -context yes
     }
-} {
 
-    prepare id -toupper -required -type plant
 
-    returnOnError -final
+    method _validate {} {
+        my prepare id -toupper -required -type plant
+    }
 
-    setundo [plant mutate delete $parms(id)]
+    method _execute {{flunky ""}} {
+        my setundo [plant mutate delete $parms(id)]
+    }
 }
 
 # PLANT:SHARES:UPDATE
 #
 # Updates an existing allocation of shares for an agent in a neighborhood
 
-order define PLANT:SHARES:UPDATE {
-    title "Update Production Capacity Shares"
+myorders define PLANT:SHARES:UPDATE {
+    meta title "Update Production Capacity Shares"
 
-    options -sendstates PREP
+    meta sendstates PREP
     
-    form {
+    meta parmlist {id rho num}
+
+    meta form {
         rcc "ID:" -for id
-        key id -context yes -table gui_plants_shares \
+        dbkey id -context yes -table gui_plants_shares \
             -keys {n a} \
-            -loadcmd {orderdialog keyload id {rho num}}
+            -loadcmd {$order_ keyload id {rho num}}
 
         rcc "Initial Repair Frac:" -for rho
         frac rho 
@@ -970,17 +980,19 @@ order define PLANT:SHARES:UPDATE {
         rcc "Shares:" -for num
         text num
     }
-} {
 
-    prepare id  -required -type plant
-    prepare rho -toupper  -type rfraction
-    prepare num -toupper  -type iquantity
 
-    returnOnError -final
+    method _validate {} {
+        my prepare id  -required -type plant
+        my prepare rho -toupper  -type rfraction
+        my prepare num -toupper  -type iquantity
+    }
 
-    set undo [list]
-    lappend undo [plant mutate update [array get parms]]
-    setundo [join $undo \n]
+    method _execute {{flunky ""}} {
+        set undo [list]
+        lappend undo [plant mutate update [array get parms]]
+        my setundo [join $undo \n]
+    }
 }
 
 # PLANT:SHARES:UPDATE:MULTI
@@ -988,15 +1000,17 @@ order define PLANT:SHARES:UPDATE {
 # Updates multiple allocations of shares for a list of agent/neighborhood
 # pairs.
 
-order define PLANT:SHARES:UPDATE:MULTI {
-    title "Update Production Capacity Shares"
+myorders define PLANT:SHARES:UPDATE:MULTI {
+    meta title "Update Production Capacity Shares"
 
-    options -sendstates PREP
+    meta sendstates PREP
+
+    meta parmlist {ids rho num}
     
-    form {
+    meta form {
         rcc "IDs:" -for ids
-        multi ids -context yes -key id -table gui_plants_shares \
-            -loadcmd {orderdialog multiload ids *}
+        dbmulti ids -context yes -key id -table gui_plants_shares \
+            -loadcmd {$order_ multiload ids *}
 
         rcc "Initial Repair Frac:" -for rho
         frac rho 
@@ -1004,17 +1018,19 @@ order define PLANT:SHARES:UPDATE:MULTI {
         rcc "Shares:" -for num
         text num
     }
-} {
 
-    prepare ids -required -listof plant
-    prepare rho -toupper -type rfraction
-    prepare num -toupper -type iquantity
 
-    returnOnError -final
-
-    foreach parms(id) $parms(ids) {
-        lappend undo [plant mutate update [array get parms]]
+    method _validate {} {
+        my prepare ids -required -listof plant
+        my prepare rho -toupper -type rfraction
+        my prepare num -toupper -type iquantity
     }
 
-    setundo [join $undo \n]
+    method _execute {{flunky ""}} {
+        foreach parms(id) $parms(ids) {
+            lappend undo [plant mutate update [array get parms]]
+        }
+
+        my setundo [join $undo \n]
+    }
 }

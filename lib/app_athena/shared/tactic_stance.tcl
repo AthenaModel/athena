@@ -224,12 +224,12 @@ tactic define STANCE "Adopt a Stance" {actor} -onlock {
 #
 # Updates a STANCE tactic.
 
-order define TACTIC:STANCE {
-    title "Tactic: Force Group Stance"
+myorders define TACTIC:STANCE {
+    meta title      "Tactic: Force Group Stance"
+    meta sendstates PREP
+    meta parmlist   {tactic_id name f mode glist nlist drel}
 
-    options -sendstates PREP
-
-    form {
+    meta form {
         rcc "Tactic ID" -for tactic_id
         text tactic_id -context yes \
             -loadcmd {beanload}
@@ -256,26 +256,29 @@ order define TACTIC:STANCE {
         rcc "Designated Rel.:" -for drel
         rel drel -showsymbols yes
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare tactic_id -required -with {::strategy valclass tactic::STANCE}
-    returnOnError
 
-    set tactic [pot get $parms(tactic_id)]
 
-    prepare name -toupper -with [list $tactic valName]
-    prepare f    -toupper
-    prepare mode -toupper -selector
-    prepare drel -toupper -num -type qaffinity
-    prepare glist
-    prepare nlist
+    method _validate {} {
+        # FIRST, prepare and validate the parameters
+        my prepare tactic_id -required -with {::strategy valclass tactic::STANCE}
+        my returnOnError
 
-    returnOnError -final
+        set tactic [pot get $parms(tactic_id)]
 
-    # NEXT, create the tactic
-    setundo [$tactic update_ {
-        name f mode drel glist nlist
-    } [array get parms]]
+        my prepare name -toupper -with [list $tactic valName]
+        my prepare f    -toupper
+        my prepare mode -toupper -selector
+        my prepare drel -toupper -num -type qaffinity
+        my prepare glist
+        my prepare nlist
+    }
+
+    method _execute {{flunky ""}} {
+        set tactic [pot get $parms(tactic_id)]
+        my setundo [$tactic update_ {
+            name f mode drel glist nlist
+        } [array get parms]]
+    }
 }
 
 

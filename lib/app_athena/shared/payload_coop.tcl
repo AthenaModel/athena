@@ -56,12 +56,14 @@ payload type define COOP {g mag} {
 #
 # Creates a new COOP payload.
 
-order define PAYLOAD:COOP:CREATE {
-    title "Create Payload: Cooperation"
+myorders define PAYLOAD:COOP:CREATE {
+    meta title "Create Payload: Cooperation"
 
-    options -sendstates PREP
+    meta sendstates PREP
 
-    form {
+    meta parmlist {iom_id longname g mag}
+
+    meta form {
         rcc "Message ID:" -for iom_id
         text iom_id -context yes
 
@@ -75,34 +77,35 @@ order define PAYLOAD:COOP:CREATE {
         mag mag
         label "points of change"
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare iom_id   -toupper   -required -type iom
-    prepare g        -toupper   -required -type frcgroup
-    prepare mag -num -toupper   -required -type qmag
 
-    returnOnError -final
 
-    # NEXT, put payload_type in the parmdict
-    set parms(payload_type) COOP
+    method _validate {} {
+        my prepare iom_id   -toupper   -required -type iom
+        my prepare g        -toupper   -required -type frcgroup
+        my prepare mag -num -toupper   -required -type qmag
+    }
 
-    # NEXT, create the payload
-    setundo [payload mutate create [array get parms]]
+    method _execute {{flunky ""}} {
+        set parms(payload_type) COOP
+        my setundo [payload mutate create [array get parms]]
+    }
 }
 
 # PAYLOAD:COOP:UPDATE
 #
 # Updates existing COOP payload.
 
-order define PAYLOAD:COOP:UPDATE {
-    title "Update Payload: Cooperation"
-    options -sendstates PREP 
+myorders define PAYLOAD:COOP:UPDATE {
+    meta title "Update Payload: Cooperation"
+    meta sendstates PREP 
 
-    form {
+    meta parmlist {id longname g mag}
+
+    meta form {
         rcc "Payload:" -for id
-        key id -context yes -table gui_payloads_COOP \
+        dbkey id -context yes -table gui_payloads_COOP \
             -keys {iom_id payload_num} \
-            -loadcmd {orderdialog keyload id {g mag}}
+            -loadcmd {$order_ keyload id {g mag}}
 
         rcc "Description:" -for longname
         disp longname -width 60
@@ -114,16 +117,17 @@ order define PAYLOAD:COOP:UPDATE {
         mag mag
         label "points of change"
     }
-} {
-    # FIRST, prepare the parameters
-    prepare id         -required -type payload
-    prepare g          -toupper  -type frcgroup
-    prepare mag   -num -toupper  -type qmag
 
-    returnOnError -final
 
-    # NEXT, modify the payload
-    setundo [payload mutate update [array get parms]]
+    method _validate {} {
+        my prepare id         -required -type payload
+        my prepare g          -toupper  -type frcgroup
+        my prepare mag   -num -toupper  -type qmag
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [payload mutate update [array get parms]]
+    }
 }
 
 

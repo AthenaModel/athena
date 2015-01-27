@@ -165,9 +165,8 @@ where each event list has the syntax "<i>subject event args...</i>".<p>
 <defitem "ted order" {ted order ?-reject? <i>name parmdict</i>}>
 
 Sends the order with the specified <i>name</i> and <i>parmdict</i>,
-using the <b>test</b> order interface. (The <b>test</b> interfaces
-works just like the <b>gui</b> interface, but disables interactive
-prompts.)  By default, the order is expected to be successful; if
+using the <b>normal</b> order mode.  By default, the order is expected 
+to be successful; if
 <b>-reject</b> is specified, the order should be rejected, i.e.,
 should have an error code of REJECT.  If so, <iref ted order>
 returns a pretty-printed REJECT dictionary; otherwise, the rejection
@@ -179,13 +178,6 @@ doesn't follow the protocol.  On any other kind of error,
 Pretty-prints a dictionary, with keys and values in left-justified
 parallel columns, indented to look nice in the <b>-result</b> of a
 test.<p>
-
-<defitem "ted schedule" {ted schedule ?-reject? <i>timespec name parmdict</i>}>
-
-Schedules the order with the specified <i>name</i> and <i>parmdict</i>
-to be executed at the <i>timespec</i>.  In short, this wraps
-<xref order(sim) "order schedule"> in the same way that
-<iref ted order> wraps <xref order(sim) "order send">.<p>
 
 <defitem "ted query" {ted query <i>sql</i>}>
 

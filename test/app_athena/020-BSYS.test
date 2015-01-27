@@ -74,7 +74,7 @@ namespace eval ::athena_test::tests:: {
         bsys playbox get
     } -cleanup {
         cleanup
-    } -result {gamma 0.25}
+    } -result {gamma .25}
 
     test PLAYBOX:UPDATE-2.2 {playbox is updated} -body {
         ted notifier bind ::bsys <playbox>
@@ -91,7 +91,7 @@ namespace eval ::athena_test::tests:: {
         ted order BSYS:PLAYBOX:UPDATE gamma 0.25
     } -body {
         ted notifier bind ::bsys <playbox>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -137,7 +137,7 @@ namespace eval ::athena_test::tests:: {
     test SYSTEM:ADD-2.3 {notifications} -body {
         ted notifier bind ::bsys <system>
         ted order BSYS:SYSTEM:ADD {}
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -197,7 +197,7 @@ namespace eval ::athena_test::tests:: {
     } -cleanup {
         cleanup
     } -match dict -result {
-        commonality 0.5
+        commonality .5
         name        FRED
     }
 
@@ -208,7 +208,7 @@ namespace eval ::athena_test::tests:: {
         ted order BSYS:SYSTEM:UPDATE sid $sid \
             name        FRED  \
             commonality 0.5
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -284,7 +284,7 @@ namespace eval ::athena_test::tests:: {
     test SYSTEM:DELETE-2.2 {notifications} -body {
         ted notifier bind ::bsys <system>
         ted order BSYS:SYSTEM:ADD {}
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -347,7 +347,7 @@ namespace eval ::athena_test::tests:: {
     test TOPIC:ADD-2.3 {effects} -body {
         ted notifier bind ::bsys <topic>
         ted order BSYS:TOPIC:ADD
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -399,7 +399,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         ted notifier bind ::bsys <topic>
         ted order BSYS:TOPIC:DELETE tid $tid
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -473,7 +473,7 @@ namespace eval ::athena_test::tests:: {
         ted notifier bind ::bsys <topic>
         ted order BSYS:TOPIC:UPDATE \
             tid $tid name "New Title" affinity no
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -556,8 +556,8 @@ namespace eval ::athena_test::tests:: {
     } -cleanup {
         cleanup
     } -match dict -result {
-        emphasis 0.2
-        position 0.1
+        emphasis .2
+        position .1
     }
 
     test BELIEF:UPDATE-2.2 {symbols are OK} -setup {
@@ -582,7 +582,7 @@ namespace eval ::athena_test::tests:: {
         ted notifier bind ::bsys <belief>
         ted order BSYS:BELIEF:UPDATE \
             bid [list $sid $tid] position 0.1 emphasis 0.2
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

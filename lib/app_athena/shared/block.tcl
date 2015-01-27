@@ -30,7 +30,7 @@ oo::objdefine block {
     #
     # Pastes the blocks into the given strategy, pasting tactics and
     # conditions recursively.  This call should be
-    # wrapped by [cif startblock]/[cif endblock] calls.  These are
+    # wrapped in [flunky transaction].  This is
     # not included in [paste] itself, because pasting blocks could be
     # done as part of a larger paste.
 
@@ -41,10 +41,12 @@ oo::objdefine block {
             set bdict [my GetOrderParmsFromCopySet $copyset]
 
             # NEXT, create the block with default settings
-            set block_id [order send gui STRATEGY:BLOCK:ADD agent $agent]
+            set block_id [flunky senddict gui STRATEGY:BLOCK:ADD \
+                                [list agent $agent]]
 
             # NEXT, update the block with the right data.
-            order send gui BLOCK:UPDATE block_id $block_id {*}$bdict
+            dict set bdict block_id $block_id
+            flunky senddict gui BLOCK:UPDATE $bdict
 
             # NEXT, paste the conditions and tactics
             condition paste $block_id [dict get $copyset conditions]
@@ -61,7 +63,7 @@ oo::objdefine block {
     method GetOrderParmsFromCopySet {copyset} {
         set pdict [dict create]
 
-        foreach parm [order parms BLOCK:UPDATE] {
+        foreach parm [myorders parms BLOCK:UPDATE] {
             if {$parm eq "block_id" || $parm eq "name"} {
                 continue
             }
@@ -1048,12 +1050,15 @@ oo::define block {
 #
 # Updates a block's own data.
 
-order define BLOCK:UPDATE {
-    title "Update Strategy Block"
+myorders define BLOCK:UPDATE {
+    meta title      "Update Strategy Block"
+    meta sendstates PREP
+    meta parmlist {
+        block_id onlock once name intent
+        tmode t1 t2 cmode emode
+    }
 
-    options -sendstates PREP
-
-    form {
+    meta form {
         rc "Block ID:" -for block_id
         text block_id -context yes \
             -loadcmd {beanload}
@@ -1104,180 +1109,151 @@ order define BLOCK:UPDATE {
         rc "Given available resources, execute " -for emode
         enumlong emode -dictcmd {eexecmode asdict longname}
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare block_id -required -toupper -with {::strategy valclass ::block}
-    returnOnError
 
-    set block [pot get $parms(block_id)]
 
-    prepare name     -toupper  -with [list $block valName]
-    prepare intent
-    prepare tmode    -toupper  -selector
-    prepare t1       -toupper  -type {simclock timespec}
-    prepare t2       -toupper  -type {simclock timespec}
-    prepare cmode    -toupper  -type eanyall
-    prepare emode    -toupper  -type eexecmode
-    prepare once               -type boolean
-    prepare onlock             -type boolean
+    method _validate {} {
+        my prepare block_id -required -toupper -with {::strategy valclass ::block}
+        my returnOnError
 
-    returnOnError
+        set block [pot get $parms(block_id)]
 
-    # NEXT, do cross-checks
-    fillparms parms [$block view]
+        my prepare name     -toupper  -with [list $block valName]
+        my prepare intent
+        my prepare tmode    -toupper  -selector
+        my prepare t1       -toupper  -type {simclock timespec}
+        my prepare t2       -toupper  -type {simclock timespec}
+        my prepare cmode    -toupper  -type eanyall
+        my prepare emode    -toupper  -type eexecmode
+        my prepare once               -type boolean
+        my prepare onlock             -type boolean
 
-    if {$parms(tmode) ne "ALWAYS" && $parms(t1) eq ""} {
-        reject t1 "Week not specified."
-    }
+        my returnOnError
 
-    returnOnError -final
+        # NEXT, do cross-checks
+        fillparms parms [$block view]
 
-    if {$parms(tmode) eq "DURING"} {
-        if {$parms(t2) eq ""} {
-            reject t2 "Week not specified."
-        } elseif {$parms(t2) < $parms(t1)} {
-            reject t1 "End week must be no earlier than start week."
+        if {$parms(tmode) ne "ALWAYS" && $parms(t1) eq ""} {
+            my reject t1 "Week not specified."
+        }
+
+        my returnOnError
+
+        if {$parms(tmode) eq "DURING"} {
+            if {$parms(t2) eq ""} {
+                my reject t2 "Week not specified."
+            } elseif {$parms(t2) < $parms(t1)} {
+                my reject t1 "End week must be no earlier than start week."
+            }
         }
     }
 
-    returnOnError -final
+    method _execute {{flunky ""}} {
+        set block [pot get $parms(block_id)]
 
-    # NEXT, update the block.
-    set undo [$block update_ {
-        name intent tmode t1 t2 cmode emode once onlock
-    } [array get parms]]
-
-    # NEXT, save the undo script; we're successful.
-    setundo $undo
+        my setundo [$block update_ {
+            name intent tmode t1 t2 cmode emode once onlock
+        } [array get parms]]
+    }
 }
 
 # BLOCK:STATE
 #
-# Sets a block's state to normal or disabled.  The order dialog
-# is not generally used.
+# Sets a block's state to normal or disabled. 
 
-order define BLOCK:STATE {
-    title "Set Strategy Block State"
+myorders define BLOCK:STATE {
+    meta title      "Set Strategy Block State"
+    meta sendstates PREP
+    meta parmlist   { block_id state }
 
-    options -sendstates PREP
-
-    form {
-        label "Block ID:" -for block_id
-        text block_id -context yes
-
-        rc "State:" -for state
-        text state
+    method _validate {} {
+        my prepare block_id -required -toupper -with {::strategy valclass ::block}
+        my prepare state    -required -tolower -type ebeanstate
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare block_id -required -toupper -with {::strategy valclass ::block}
-    prepare state    -required -tolower -type ebeanstate
-    returnOnError -final
 
-    set block [pot get $parms(block_id)]
+    method _execute {{flunky ""}} {
+        set block [pot get $parms(block_id)]
 
-    # NEXT, update the block
-    setundo [$block update_ {state} [array get parms]]
+        my setundo [$block update_ {state} [array get parms]]
+    }
 }
 
 # BLOCK:TACTIC:ADD
 #
 # Adds a tactic of a given type to the block.  The tactic is empty, and
 # needs to be initialized by the analyst.
-#
-# The order dialog is not generally used.
 
-order define BLOCK:TACTIC:ADD {
-    title "Add Tactic to Block"
+myorders define BLOCK:TACTIC:ADD {
+    variable tactic_id  ;# Saved on first execution for redo
 
-    options -sendstates PREP
+    meta title      "Add Tactic to Block"
+    meta sendstates PREP
+    meta parmlist   { block_id typename }
 
-    form {
-        label "Block ID:" -for block_id
-        text block_id -context yes
-
-        rcc "Tactic Type:" -for typename
-        text typename
+    method _validate {} {
+        my prepare block_id -required -toupper -with  {::strategy valclass ::block}
+        my prepare typename -required -toupper -oneof [tactic typenames]
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare block_id -required -toupper -with  {::strategy valclass ::block}
-    prepare typename -required -toupper -oneof [tactic typenames]
 
-    returnOnError -final
+    method _execute {{flunky ""}} {
+        set block [pot get $parms(block_id)]
 
-    # NEXT, add the tactic
-    set block [pot get $parms(block_id)]
+        if {[info exists tactic_id]} {
+            pot setnextid $tactic_id
+        }
 
-    setundo [$block addtactic_ $parms(typename)]
+        my setundo [$block addtactic_ $parms(typename)]
 
-    set tactic [$block tactics end]
+        set tactic_id [lindex [$block tactic_ids] end]
 
-    setredo [list pot setnextid [$tactic id]]
-
-    return [$tactic id]
+        return $tactic_id
+    }
 }
 
 # BLOCK:TACTIC:DELETE
 #
 # Deletes a tactic or tactics from a block. 
-#
-# The order dialog is not generally used.
 
-order define BLOCK:TACTIC:DELETE {
-    title "Delete Tactic(s) from Block"
+myorders define BLOCK:TACTIC:DELETE {
+    meta title      "Delete Tactic(s) from Block"
+    meta sendstates PREP
+    meta parmlist   { ids }
 
-    options -sendstates PREP
-
-    form {
-        text ids
+    method _validate {} {
+        my prepare ids -required -toupper -listwith {::strategy valclass ::tactic}
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare ids   -required -toupper -listwith {::strategy valclass ::tactic}
-    returnOnError -final
 
-    # NEXT, delete the tactics
-    set undo [list]
-    foreach tid $parms(ids) {
-        set tactic [pot get $tid]
-        set block [$tactic block]
-        lappend undo [$block deletetactic_ $tid]
-    }
+    method _execute {{flunky ""}} {
+        set undo [list]
+        foreach tid $parms(ids) {
+            set tactic [pot get $tid]
+            set block [$tactic block]
+            lappend undo [$block deletetactic_ $tid]
+        }
     
-    setundo [join [lreverse $undo] "\n"]
+        my setundo [join [lreverse $undo] "\n"]
+    }
 }
 
 # BLOCK:TACTIC:MOVE
 #
 # Moves a tactic within a strategy block.
-#
-# The order dialog is not usually used.
 
-order define BLOCK:TACTIC:MOVE {
-    title "Move Tactic Within Block"
+myorders define BLOCK:TACTIC:MOVE {
+    meta title      "Move Tactic Within Block"
+    meta sendstates PREP
+    meta parmlist   { tactic_id where }
 
-    options -sendstates PREP
-
-    form {
-        rcc "Tactic ID:" -for tactic_id
-        text tactic_id -context yes
-
-        rcc "Where:" -for where
-        enumlong where -dict {emoveitem asdict longname}
+    method _validate {} {
+        my prepare tactic_id -required -toupper -with {::strategy valclass ::tactic}
+        my prepare where     -required -type emoveitem
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare tactic_id -required -toupper -with {::strategy valclass ::tactic}
-    prepare where     -required -type emoveitem
 
-    returnOnError -final
+    method _execute {{flunky ""}} {
+        set tactic [pot get $parms(tactic_id)]
+        set block [$tactic block]
 
-    # NEXT, move the block
-    set tactic [pot get $parms(tactic_id)]
-    set block [$tactic block]
-
-    setundo [$block movetactic_ $parms(tactic_id) $parms(where)]
+        my setundo [$block movetactic_ $parms(tactic_id) $parms(where)]
+    }
 }
 
 
@@ -1285,38 +1261,32 @@ order define BLOCK:TACTIC:MOVE {
 #
 # Adds a condition of a given type to the block.  The condition is empty, and
 # needs to be initialized by the analyst.
-#
-# The order dialog is not generally used.
 
-order define BLOCK:CONDITION:ADD {
-    title "Add Condition to Block"
+myorders define BLOCK:CONDITION:ADD {
+    variable cond_id   ;# Saved on first execution for redo
 
-    options -sendstates PREP
+    meta title      "Add Condition to Block"
+    meta sendstates PREP
+    meta parmlist   { block_id typename }
 
-    form {
-        label "Block ID:" -for block_id
-        text block_id -context yes
-
-        rcc "Condition Type:" -for typename
-        text typename
+    method _validate {} {
+        my prepare block_id -required -toupper -with {::strategy valclass ::block}
+        my prepare typename -required -toupper -oneof [condition typenames]
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare block_id -required -toupper -with {::strategy valclass ::block}
-    prepare typename -required -toupper -oneof [condition typenames]
 
-    returnOnError -final
+    method _execute {{flunky ""}} {
+        set block [pot get $parms(block_id)]
 
-    # NEXT, add the condition
-    set block [pot get $parms(block_id)]
+        if {[info exists cond_id]} {
+            pot setnextid $cond_id
+        }
 
-    setundo [$block addcondition_ $parms(typename)]
+        my setundo [$block addcondition_ $parms(typename)]
 
-    set cond [$block conditions end]
+        set cond_id [lindex [$block condition_ids] end]
 
-    setredo [list pot setnextid [$cond id]]
-
-    return [$cond id]
+        return $cond_id
+    }
 }
 
 # BLOCK:CONDITION:DELETE
@@ -1325,30 +1295,26 @@ order define BLOCK:CONDITION:ADD {
 #
 # The order dialog is not generally used.
 
-order define BLOCK:CONDITION:DELETE {
-    title "Delete Condition from Block"
+myorders define BLOCK:CONDITION:DELETE {
+    meta title      "Delete Condition from Block"
+    meta sendstates PREP
+    meta parmlist   { ids }
 
-    options -sendstates PREP
-
-    form {
-        text ids
+    method _validate {} {
+        my prepare ids -required -toupper -listwith {::strategy valclass ::condition}
     }
-} {
-    prepare ids   -required -toupper -listwith {::strategy valclass ::condition}
-    returnOnError -final
 
-    # NEXT, delete the conditions
-    set undo [list]
-    foreach tid $parms(ids) {
-        set condition [pot get $tid]
-        set block [$condition block]
-        lappend undo [$block deletecondition_ $tid]
-    }
+    method _execute {{flunky ""}} {
+        set undo [list]
+
+        foreach tid $parms(ids) {
+            set condition [pot get $tid]
+            set block [$condition block]
+            lappend undo [$block deletecondition_ $tid]
+        }
     
-    setundo [join [lreverse $undo] "\n"]
+        my setundo [join [lreverse $undo] "\n"]
+    }
 }
-
-
-
 
 

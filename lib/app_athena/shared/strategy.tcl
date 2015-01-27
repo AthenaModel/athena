@@ -710,90 +710,108 @@ oo::define strategy {
 #
 # Adds a new strategy block to an agent's strategy.
 
-order define STRATEGY:BLOCK:ADD {
-    title "Add Block to Strategy"
+myorders define STRATEGY:BLOCK:ADD {
+    variable block_id  ;# Saved on first execution for redo
 
-    options -sendstates PREP
+    meta title "Add Block to Strategy"
 
-    form {
+    meta sendstates PREP
+
+    meta defaults {
+        agent ""
+    }
+
+    meta form {
         rcc "Agent:" -for agent
         text agent -context yes
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare agent  -toupper -required -type agent
 
-    returnOnError -final
+    method _validate {} {
+        my prepare agent  -toupper -required -type agent
+    }
 
-    # NEXT, create the block
-    set s [strategy getname $parms(agent)]
+    method _execute {{flunky ""}} {
+        set s [strategy getname $parms(agent)]
 
-    setundo [$s addblock_]
+        if {[info exists block_id]} {
+            pot setnextid $block_id
+        }
 
-    # NEXT, return the new block's ID
-    set block [$s blocks end]
+        my setundo [$s addblock_]
 
-    setredo [list pot setnextid [$block id]]
-    return [$block id]
+        # NEXT, return the new block's ID
+        set block_id [lindex [$s block_ids] end]
+
+        return $block_id
+    }
 }
 
 # STRATEGY:BLOCK:DELETE
 #
 # Deletes a strategy block from an agent's strategy.
 
-order define STRATEGY:BLOCK:DELETE {
-    title "Delete Block from Strategy"
+myorders define STRATEGY:BLOCK:DELETE {
+    meta title "Delete Block from Strategy"
 
-    options -sendstates PREP
+    meta sendstates PREP
 
-    form {
+    meta defaults {
+        ids ""
+    }
+
+    meta form {
         text ids -context yes
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare ids -required -listwith {::strategy valclass ::block}
 
-    returnOnError -final
-
-    # NEXT, delete the block(s)
-    set undo [list]
-    foreach bid $parms(ids) {
-        set block [pot get $bid]
-        set s [$block strategy]
-        lappend undo [$s deleteblock_ $bid]
+    method _validate {} {
+        my prepare ids -required -listwith {::strategy valclass ::block}
     }
+
+    method _execute {{flunky ""}} {
+        set undo [list]
+        foreach bid $parms(ids) {
+            set block [pot get $bid]
+            set s [$block strategy]
+            lappend undo [$s deleteblock_ $bid]
+        }
     
-    setundo [join [lreverse $undo] "\n"]
+        my setundo [join [lreverse $undo] "\n"]
+    }
 }
 
 # STRATEGY:BLOCK:MOVE
 #
 # Moves a strategy block in an agent's strategy.
 
-order define STRATEGY:BLOCK:MOVE {
-    title "Move Block in Strategy"
+myorders define STRATEGY:BLOCK:MOVE {
+    meta title "Move Block in Strategy"
 
-    options -sendstates PREP
+    meta sendstates PREP
 
-    form {
+    meta defaults {
+        block_id ""
+        where    ""
+    }
+
+    meta form {
         rcc "Block ID:" -for block_id
         text block_id -context yes
 
         rcc "Where:" -for where
         enumlong where -dict {emoveitem asdict longname}
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare block_id -required -with {::strategy valclass ::block}
-    prepare where    -required -type emoveitem
 
-    returnOnError -final
 
-    # NEXT, move the block
-    set block [pot get $parms(block_id)]
-    set s [$block strategy]
+    method _validate {} {
+        my prepare block_id -required -with {::strategy valclass ::block}
+        my prepare where    -required -type emoveitem
+    }
 
-    setundo [$s moveblock_ $parms(block_id) $parms(where)]
+    method _execute {{flunky ""}} {
+        set block [pot get $parms(block_id)]
+        set s [$block strategy]
+        my setundo [$s moveblock_ $parms(block_id) $parms(where)]
+    }
 }
 
 

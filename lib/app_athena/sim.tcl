@@ -90,7 +90,7 @@ snit::type sim {
         set info(changed)  0
         set info(stoptime) 0
 
-        order state $info(state)
+        flunky state $info(state)
 
         simclock configure \
             -week0 $constants(startdate) \
@@ -500,7 +500,7 @@ snit::type sim {
         # and TickWork will do the rest.  Otherwise, this is coming from a
         # GUI event, outside TickWork; just set the state to paused.
 
-        if {[order state] eq "TACTIC"} {
+        if {[flunky state] eq "TACTIC"} {
             set info(stoptime) [simclock now]
         } elseif {$info(state) eq "RUNNING"} {
             set info(stoptime) 0
@@ -651,127 +651,119 @@ snit::type sim {
 # SIM:STARTDATE
 #
 # Sets the calendar week corresponding to t=0.
-#
-# TBD: It would be nice if the startdate field was pre-populated with the
-# current start date.  This would require adding an "-entercmd" as an
-# order option; on "order enter" it would get the parms and values passed
-# by the application, and would return the parms and values to populate
-# the dialog with.
 
-order define SIM:STARTDATE {
-    title "Set Start Date"
-    options -sendstates PREP
+myorders define SIM:STARTDATE {
+    meta title      "Set Start Date"
+    meta sendstates PREP
+    meta parmlist   {startdate}
 
-    form {
+    meta form {
         rcc "Start Date:" -for startdate
         text startdate
     }
-} {
-    # FIRST, prepare the parameters
-    prepare startdate -toupper -required -type week
 
-    returnOnError -final
+    method _validate {} {
+        my prepare startdate -toupper -required -type week
+    }
 
-    # NEXT, set the start date
-    lappend undo [sim mutate startdate $parms(startdate)]
-
-    setundo [join $undo \n]
+    method _execute {{flunky ""}} {
+        my setundo [sim mutate startdate $parms(startdate)]
+    }
 }
 
 # SIM:STARTTICK
 #
 # Sets the integer time tick at which the simulation will be locked.
 
-order define SIM:STARTTICK {
-    title "Set Start Tick"
-    options -sendstates PREP
+myorders define SIM:STARTTICK {
+    meta title      "Set Start Tick"
+    meta sendstates PREP
+    meta parmlist   {starttick}
 
-    form {
+    meta form {
         rcc "Start Tick:" -for starttick
         text starttick
     }
-} {
-    # FIRST, prepare the parameters
-    prepare starttick -toupper -required -type iquantity
 
-    returnOnError -final
 
-    # NEXT, set the start tick
-    lappend undo [sim mutate starttick $parms(starttick)]
+    method _validate {} {
+        my prepare starttick -toupper -required -type iquantity
+    }
 
-    setundo [join $undo \n]
+    method _execute {{flunky ""}} {
+        my setundo [sim mutate starttick $parms(starttick)]
+    }
 }
 
 # SIM:LOCK
 #
 # Locks scenario preparation and transitions from PREP to PAUSED.
 
-order define SIM:LOCK {
-    title "Lock Scenario Preparation"
-    options \
-        -sendstates {PREP} \
-        -monitor    no
-} {
-    # FIRST, do the on-lock sanity check.
-    set sev [sanity onlock check]
+myorders define SIM:LOCK {
+    meta title      "Lock Scenario Preparation"
+    meta sendstates PREP
+    meta monitor    off
+    meta parmlist   {}
 
-    if {$sev eq "ERROR"} {
-        app show my://app/sanity/onlock
+    method _validate {} {
+        # FIRST, do the on-lock sanity check.
+        set sev [sanity onlock check]
 
-        reject * {
-            The on-lock sanity check failed with one or more errors; 
-            time cannot advance.  Fix the error, and try again.
-            Please see the On-lock Sanity Check Report in the 
-            Detail Browser for details.
-        }
+        if {$sev eq "ERROR"} {
+            app show my://app/sanity/onlock
 
-        returnOnError
-    }
-
-    if {$sev eq "WARNING"} {
-        app show my://app/sanity/onlock
-
-        if {[sender] eq "gui"} {
-            set answer \
-                [messagebox popup \
-                     -title         "On-lock Sanity Check Failed"    \
-                     -icon          warning                          \
-                     -buttons       {ok "Continue" cancel "Cancel"}  \
-                     -default       cancel                           \
-                     -ignoretag     onlock_check_failed              \
-                     -ignoredefault ok                               \
-                     -parent        [app topwin]                     \
-                     -message       [normalize {
-                     The on-lock sanity check failed with warnings; 
-                     one or more simulation objects are invalid.  See the 
-                     Detail Browser for details.  Press "Cancel" and
-                     fix the problems, or press "Continue" to 
-                     go ahead and lock the scenario, in which 
-                     case the invalid simulation objects will be 
-                     ignored as the simulation runs.
-                 }]]
-
-            if {$answer eq "cancel"} {
-                # Don't do anything.
-                return
-            }
-        } else {
-            reject * {
+            my reject * {
                 The on-lock sanity check failed with one or more errors; 
                 time cannot advance.  Fix the error, and try again.
-                Please use the Athena GUI to lock the scenario and see 
-                the On-lock Sanity Check Report in the Detail Browser 
-                for details.
+                Please see the On-lock Sanity Check Report in the 
+                Detail Browser for details.
+            }
+
+            my returnOnError
+        }
+
+        if {$sev eq "WARNING"} {
+            app show my://app/sanity/onlock
+
+            if {[my mode] eq "gui"} {
+                set answer \
+                    [messagebox popup \
+                         -title         "On-lock Sanity Check Failed"    \
+                         -icon          warning                          \
+                         -buttons       {ok "Continue" cancel "Cancel"}  \
+                         -default       my cancel                           \
+                         -ignoretag     onlock_check_failed              \
+                         -ignoredefault ok                               \
+                         -parent        [app topwin]                     \
+                         -message       [normalize {
+                         The on-lock sanity check failed with warnings; 
+                         one or more simulation objects are invalid.  See the 
+                         Detail Browser for details.  Press "Cancel" and
+                         fix the problems, or press "Continue" to 
+                         go ahead and lock the scenario, in which 
+                         case the invalid simulation objects will be 
+                         ignored as the simulation runs.
+                     }]]
+
+                if {$answer eq "cancel"} {
+                    # Don't do anything.
+                    return
+                }
+            } else {
+                my reject * {
+                    The on-lock sanity check failed with one or more errors; 
+                    time cannot advance.  Fix the error, and try again.
+                    Please use the Athena GUI to lock the scenario and see 
+                    the On-lock Sanity Check Report in the Detail Browser 
+                    for details.
+                }
             }
         }
     }
 
-    returnOnError -final
-
-    # NEXT, lock scenario prep.
-    lappend undo [sim mutate lock]
-
-    setundo [join $undo \n]
+    method _execute {{flunky ""}} {
+        my setundo [sim mutate lock]
+    }
 }
 
 
@@ -780,18 +772,19 @@ order define SIM:LOCK {
 # Unlocks the scenario, returning to the PREP state as it was before any
 # simulation was done.
 
-order define SIM:UNLOCK {
-    title "Unlock Scenario Preparation"
-    options \
-        -sendstates {PAUSED} \
-        -monitor    no
-} {
-    returnOnError -final
+myorders define SIM:UNLOCK {
+    meta title      "Unlock Scenario Preparation"
+    meta sendstates PAUSED
+    meta monitor    off
+    meta parmlist   {}
 
-    # NEXT, unlock scenario prep.
-    lappend undo [sim mutate unlock]
+    method _validate {} {
+        # Nothing to validate
+    }
 
-    setundo [join $undo \n]
+    method _execute {{flunky ""}} {
+        my setundo [sim mutate unlock]
+    }
 }
 
 # SIM:REBASE
@@ -799,39 +792,43 @@ order define SIM:UNLOCK {
 # Unlocks the scenario and returns to the PREP state, first saving the
 # current simulation state as a new base scenario.
 
-order define SIM:REBASE {
-    title "Rebase Simulation"
-    options \
-        -sendstates PAUSED \
-        -monitor    no
-} {
-    returnOnError -final
-    
-    # NEXT, make sure the user knows what he is getting into.
-    if {[sender] eq "gui"} {
-        set answer [messagebox popup \
-                        -title         "Are you sure?"                  \
-                        -icon          warning                          \
-                        -buttons       {ok "Rebase" cancel "Cancel"}    \
-                        -default       cancel                           \
-                        -ignoretag     SIM:REBASE                   \
-                        -ignoredefault ok                               \
-                        -parent        [app topwin]                     \
-                        -message       [normalize {
-                            By pressing "Rebase" you will be creating a
-                            new scenario based on the current simulation
-                            state.  This action cannot be undone, so be
-                            sure to save the old scenario before you do
-                            this.
-                        }]]
+myorders define SIM:REBASE {
+    meta title      "Rebase Simulation"
+    meta sendstates PAUSED
+    meta monitor    off
+    meta parmlist   {}
 
-        if {$answer eq "cancel"} {
-            cancel
-        }
+    method _validate {} {
+        # Nothing to validate
     }
 
-    # NEXT, rebase the scenario; this is not undoable.
-    sim mutate rebase
+    method _execute {{flunky ""}} {
+        # NEXT, make sure the user knows what he is getting into.
+        if {[my mode] eq "gui"} {
+            set answer [messagebox popup \
+                            -title         "Are you sure?"                  \
+                            -icon          warning                          \
+                            -buttons       {ok "Rebase" cancel "Cancel"}    \
+                            -default       my cancel                           \
+                            -ignoretag     SIM:REBASE                   \
+                            -ignoredefault ok                               \
+                            -parent        [app topwin]                     \
+                            -message       [normalize {
+                                By pressing "Rebase" you will be creating a
+                                new scenario based on the current simulation
+                                state.  This action cannot be undone, so be
+                                sure to save the old scenario before you do
+                                this.
+                            }]]
+
+            if {$answer eq "cancel"} {
+                my cancel
+            }
+        }
+
+        # NEXT, rebase the scenario; this is not undoable.
+        sim mutate rebase
+    }
 }
 
 
@@ -839,52 +836,53 @@ order define SIM:REBASE {
 #
 # Starts the simulation going.
 
-order define SIM:RUN {
-    title "Run Simulation"
-    options \
-        -sendstates {PAUSED} \
-        -monitor    no
+myorders define SIM:RUN {
+    meta title      "Run Simulation"
+    meta sendstates PAUSED
+    meta monitor    off
+    meta parmlist   {weeks block}
 
-    form {
+    meta form {
         rcc "Weeks to Run:" -for weeks
         text weeks
 
         rcc "Block?" -for block
-        yesno block -defvalue 0
+        enumlong block -dict {1 Yes 0 No} -defvalue 0
     }
-} {
-    # FIRST, prepare the parameters
-    prepare weeks -toupper -type iticks
-    prepare block -toupper -type boolean
 
-    returnOnError
 
-    # NEXT, if block is yes, then weeks must be greater than 0
-    validate block {
-        if {$parms(block) && ($parms(weeks) eq "" || $parms(weeks) == 0)} {
-            reject block "Cannot block without specifying the weeks to run"
+    method _validate {} {
+        my prepare weeks -toupper -type iticks
+        my prepare block -toupper -type boolean
+
+        my returnOnError
+
+        my checkon block {
+            if {$parms(block) && ($parms(weeks) eq "" || $parms(weeks) == 0)} {
+                my reject block "Cannot block without specifying the weeks to run"
+            }
+
+            if {![app tkloaded] && !$parms(block)} {
+                my reject block "Must be YES when Athena is in non-GUI mode"
+            }
+        }
+    }
+
+    method _execute {{flunky ""}} {
+        if {$parms(block) eq ""} {
+            set parms(block) 0
         }
 
-        if {![app tkloaded] && !$parms(block)} {
-            reject block "Must be YES when Athena is in non-GUI mode"
+        # NEXT, start the simulation and return the undo script. 
+        # There is an assumption that a tick is exactly one week.
+        if {$parms(weeks) eq "" || $parms(weeks) == 0} {
+            lappend undo [sim mutate run]
+        } else {
+            lappend undo [sim mutate run -ticks $parms(weeks) -block $parms(block)]
         }
+
+        my setundo [join $undo \n]
     }
-
-    returnOnError -final
-
-    if {$parms(block) eq ""} {
-        set parms(block) 0
-    }
-
-    # NEXT, start the simulation and return the undo script. 
-    # There is an assumption that a tick is exactly one week.
-    if {$parms(weeks) eq "" || $parms(weeks) == 0} {
-        lappend undo [sim mutate run]
-    } else {
-        lappend undo [sim mutate run -ticks $parms(weeks) -block $parms(block)]
-    }
-
-    setundo [join $undo \n]
 }
 
 
@@ -893,16 +891,19 @@ order define SIM:RUN {
 # Pauses the simulation.  It's an error if the simulation is not
 # running.
 
-order define SIM:PAUSE {
-    title "Pause Simulation"
-    options -sendstates {RUNNING TACTIC}
-} {
-    returnOnError -final
+myorders define SIM:PAUSE {
+    meta title      "Pause Simulation"
+    meta sendstates {RUNNING TACTIC}
+    meta parmlist   {}
 
-    # FIRST, pause the simulation and return the undo script
-    lappend undo [sim mutate pause]
 
-    setundo [join $undo \n]
+    method _validate {} {
+        # Nothing to validate
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [sim mutate pause]
+    }
 }
 
 

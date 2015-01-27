@@ -37,7 +37,6 @@ snit::type ted {
         activity_nga
         actors
         beans
-        bookmarks
         caps
         cap_access
         cap_kn
@@ -86,8 +85,6 @@ snit::type ted {
 
     # cleanupModules -- list of modules that need to be resync'd
     # after a test.
-    #
-    # TBD: Why don't we dbsync cif?  Should we "sim dbsync" instead?
 
     typevariable cleanupModules {
         nbhood
@@ -712,7 +709,6 @@ snit::type ted {
     # * Deletes all records from the $cleanupTables
     # * Clears the SQLITE_SEQUENCE table
     # * Resyncs the $cleanupModules with the RDB
-    # * Clears the CIF
     # * Resets the parms
     
     typemethod cleanup {} {
@@ -742,7 +738,7 @@ snit::type ted {
             {*}$module dbsync
         }
 
-        cif             clear
+        flunky          reset
         parm            reset
         bsys            clear
         econ            reset
@@ -808,68 +804,10 @@ snit::type ted {
     # parmdict   The order's parameter dictionary, as a single
     #            argument or as multiple arguments.
     #
-    # Sends the order as the test client, and returns the result.
-    # If "-reject" is used, expects the order to be rejected.
-
-    typemethod order {args} {
-        # FIRST, is -reject specified?
-        if {[lindex $args 0] eq "-reject"} {
-            lshift args
-            set rejectFlag 1
-        } else {
-            set rejectFlag 0
-        }
-
-        # NEXT, get the order name
-        set order [lshift args]
-
-        require {$order ne ""} "No order specified!"
-
-        # NEXT, get the parm dict
-        if {[llength $args] == 1} {
-            set parmdict [lindex $args 0]
-        } else {
-            set parmdict $args
-        }
-
-        # NEXT, send the order
-        if {$rejectFlag} {
-            set code [catch {
-                order send test $order $parmdict
-            } result opts]
-
-            if {$code} {
-                if {[dict get $opts -errorcode] eq "REJECT"} {
-
-                    set    results "\n"
-                    foreach {parm error} $result {
-                        append results "        $parm [list $error]\n" 
-                    }
-                    append results "    "
-                    
-                    return $results
-                } else {
-                    return {*}$opts $result
-                }
-            } else {
-                return -code error "Expected rejection, got ok"
-            }
-        } else {
-            # Normal case; let nature take its course
-            return [order send test $order $parmdict]
-        }
-    }
-
-    # orderx ?-reject? name parmdict
-    #
-    # name       A simulation order
-    # parmdict   The order's parameter dictionary, as a single
-    #            argument or as multiple arguments.
-    #
     # Sends the order in normal mode with transactions off, and returns 
     # the result. If "-reject" is used, expects the order to be rejected.
 
-    typemethod orderx {args} {
+    typemethod order {args} {
         # FIRST, is -reject specified?
         if {[lindex $args 0] eq "-reject"} {
             lshift args
@@ -1065,7 +1003,7 @@ snit::type ted {
 
         set pdict [dict create]
 
-        foreach parm [order parms $order] {
+        foreach parm [myorders parms $order] {
             dict set pdict $parm [dict get $tdict $parm]
         }
 
@@ -1089,7 +1027,7 @@ snit::type ted {
 
         set pdict [dict create]
 
-        foreach parm [order parms $order] {
+        foreach parm [myorders parms $order] {
             dict set pdict $parm [dict get $cdict $parm]
         }
 

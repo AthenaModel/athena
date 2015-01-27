@@ -459,11 +459,11 @@ snit::widget cursebrowser {
 
         # NEXT, it's a curse or an inject.
         if {"curse" in [$citree item tag names $id]} {
-            order enter CURSE:UPDATE curse_id $oid
+            app enter CURSE:UPDATE curse_id $oid
         } else {
             set curse_id [inject get $oid curse_id]
             set longname [curse get $curse_id longname]
-            order enter INJECT:$otype:UPDATE id $oid longname $longname
+            app enter INJECT:$otype:UPDATE id $oid longname $longname
         }
     }
 
@@ -472,7 +472,7 @@ snit::widget cursebrowser {
     # Allows the user to create a new CURSE.
     
     method AddCURSE {} {
-        order enter CURSE:CREATE 
+        app enter CURSE:CREATE 
     }
 
 
@@ -493,9 +493,11 @@ snit::widget cursebrowser {
             set state [curse get $oid state]
 
             if {$state eq "normal"} {
-                order send gui CURSE:STATE curse_id $oid state disabled
+                flunky senddict gui CURSE:STATE \
+                    [list curse_id $oid state disabled]
             } elseif {$state eq "disabled"} {
-                order send gui CURSE:STATE curse_id $oid state normal
+                flunky senddict gui CURSE:STATE \
+                    [list curse_id $oid state normal]
             } else {
                 # Do nothing (this should never happen anyway)
             }
@@ -503,9 +505,9 @@ snit::widget cursebrowser {
             set state [inject get $oid state]
 
             if {$state eq "normal"} {
-                order send gui INJECT:STATE id $oid state disabled
+                flunky senddict gui INJECT:STATE [list id $oid state disabled]
             } elseif {$state eq "disabled"} {
-                order send gui INJECT:STATE id $oid state normal
+                flunky senddict gui INJECT:STATE [list id $oid state normal]
             } else {
                 # Do nothing (this should never happen anyway)
             }
@@ -534,11 +536,11 @@ snit::widget cursebrowser {
 
         # NEXT, it's a curse or an inject.
         if {"curse" in [$citree item tag names $id]} {
-            order send gui CURSE:DELETE \
-                curse_id [$citree item text $id {tag id}]
+            flunky senddict gui CURSE:DELETE \
+                [list curse_id [$citree item text $id {tag id}]]
         } else {
-            order send gui INJECT:DELETE \
-                id [$citree item text $id {tag id}]
+            flunky senddict gui INJECT:DELETE \
+                [list id [$citree item text $id {tag id}]]
         }
     }
 
@@ -598,7 +600,7 @@ snit::widget cursebrowser {
             }
 
             # Get title, and remove the "Create inject: " prefix
-            set title [order title $order]
+            set title [myorders title $order]
             set ndx [string first ":" $title]
             set title [string range $title $ndx+2 end]
             dict set odict $title $order
@@ -632,7 +634,7 @@ snit::widget cursebrowser {
                        "]]
 
         if {$title ne ""} {
-            order enter [dict get $odict $title] \
+            app enter [dict get $odict $title] \
                 curse_id $curse_id longname $longname
         }
     }

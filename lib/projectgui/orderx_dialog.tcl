@@ -734,7 +734,7 @@ snit::widget ::projectgui::orderx_dialog {
             set msg \
 "Cannot enter $options(-order) dialog, context parm(s) missing: [join $missing {, }]"
             $self Close
-            throw $msg
+            error $msg
         }
 
         # NEXT, fill in the data

@@ -198,9 +198,9 @@ snit::widgetadaptor satbrowser {
         if {[llength $ids] == 1} {
             set id [lindex $ids 0]
 
-            order enter SAT:UPDATE id $id
+            app enter SAT:UPDATE id $id
         } else {
-            order enter SAT:UPDATE:MULTI ids $ids
+            app enter SAT:UPDATE:MULTI ids $ids
         }
     }
 }

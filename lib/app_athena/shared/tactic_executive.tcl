@@ -61,8 +61,8 @@ tactic define EXECUTIVE "Executive Command" {actor system} -onlock {
         # FIRST, set the order state to TACTIC, so that
         # relevant orders can be executed.
 
-        set oldState [order state]
-        order state TACTIC
+        set oldState [flunky state]
+        flunky state TACTIC
             
         # NEXT, create a savepoint, so that we can back out
         # the command's changes on error.
@@ -80,7 +80,7 @@ tactic define EXECUTIVE "Executive Command" {actor system} -onlock {
             rdb eval {ROLLBACK TO executive}
 
             # NEXT, restore the old order state
-            order state $oldState
+            flunky state $oldState
 
             # NEXT, log failure.
             sigevent log error tactic "
@@ -100,7 +100,7 @@ tactic define EXECUTIVE "Executive Command" {actor system} -onlock {
         rdb eval {RELEASE executive}
 
         # NEXT, restore the old order state
-        order state $oldState
+        flunky state $oldState
 
         # NEXT, log success
         sigevent log 1 tactic "
@@ -116,12 +116,12 @@ tactic define EXECUTIVE "Executive Command" {actor system} -onlock {
 #
 # Updates the tactic's parameters
 
-order define TACTIC:EXECUTIVE {
-    title "Tactic: Executive Command"
+myorders define TACTIC:EXECUTIVE {
+    meta title      "Tactic: Executive Command"
+    meta sendstates PREP
+    meta parmlist   {tactic_id name command}
 
-    options -sendstates PREP
-
-    form {
+    meta form {
         rcc "Tactic ID:" -for tactic_id
         text tactic_id -context yes \
             -loadcmd {beanload}
@@ -132,20 +132,23 @@ order define TACTIC:EXECUTIVE {
         rcc "Command:" -for command
         text command -width 80
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare tactic_id -required -with {::strategy valclass tactic::EXECUTIVE}
-    prepare command             -type tclscript
-    returnOnError 
 
-    set tactic [pot get $parms(tactic_id)]
 
-    prepare name  -toupper  -with [list $tactic valName]
+    method _validate {} {
+        # FIRST, prepare and validate the parameters
+        my prepare tactic_id -required -with {::strategy valclass tactic::EXECUTIVE}
+        my prepare command             -type tclscript
+        my returnOnError 
 
-    returnOnError -final
+        set tactic [pot get $parms(tactic_id)]
 
-    # NEXT, update the block
-    setundo [$tactic update_ {name command} [array get parms]]
+        my prepare name  -toupper  -with [list $tactic valName]
+    }
+
+    method _execute {{flunky ""}} {
+        set tactic [pot get $parms(tactic_id)]
+        my setundo [$tactic update_ {name command} [array get parms]]
+    }
 }
 
 

@@ -89,11 +89,12 @@ tactic define VIOLENCE "Violence Event" {system actor} {
 #
 # Creates/Updates VIOLENCE tactic.
 
-order define TACTIC:VIOLENCE {
-    title "Tactic: Violence Event"
-    options -sendstates PREP
+myorders define TACTIC:VIOLENCE {
+    meta title      "Tactic: Violence Event"
+    meta sendstates PREP
+    meta parmlist {tactic_id name n coverage}
 
-    form {
+    meta form {
         rcc "Tactic ID" -for tactic_id
         text tactic_id -context yes \
             -loadcmd {beanload}
@@ -108,34 +109,34 @@ order define TACTIC:VIOLENCE {
         frac coverage
     }
 
-} {
-    # FIRST, prepare the parameters
-    prepare tactic_id  -required -with {::strategy valclass tactic::VIOLENCE}
-    returnOnError
+    method _validate {} {
+        # FIRST, prepare the parameters
+        my prepare tactic_id  -required -with {::strategy valclass tactic::VIOLENCE}
+        my returnOnError
 
-    set tactic [pot get $parms(tactic_id)]
+        set tactic [pot get $parms(tactic_id)]
 
-    # Validation of initially invalid items or contingent items
-    # takes place on sanity check.
-    prepare name      -toupper   -with [list $tactic valName]
-    prepare n         -toupper
-    prepare coverage  -num       -type rfraction
+        # Validation of initially invalid items or contingent items
+        # takes place on sanity check.
+        my prepare name      -toupper   -with [list $tactic valName]
+        my prepare n         -toupper
+        my prepare coverage  -num       -type rfraction
 
-    returnOnError
+        my returnOnError
 
-    validate coverage {
-        if {$parms(coverage) == 0.0} {
-            reject coverage "Coverage must be greater than 0."
+        my checkon coverage {
+            if {$parms(coverage) == 0.0} {
+                my reject coverage "Coverage must be greater than 0."
+            }
         }
     }
 
-    returnOnError -final
-
-
-    # NEXT, modify the tactic
-    setundo [$tactic update_ {
-        name n coverage
-    } [array get parms]]
+    method _execute {{flunky ""}} {
+        set tactic [pot get $parms(tactic_id)]
+        my setundo [$tactic update_ {
+            name n coverage
+        } [array get parms]]
+    }
 }
 
 

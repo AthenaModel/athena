@@ -70,12 +70,23 @@ inject type define VREL {g a mag} {
 #
 # Creates a new VREL inject.
 
-order define INJECT:VREL:CREATE {
-    title "Create Inject: Vertical Relationship"
+myorders define INJECT:VREL:CREATE {
+    meta title "Create Inject: Vertical Relationship"
 
-    options -sendstates PREP
+    meta sendstates PREP
 
-    form {
+    meta parmlist {
+        curse_id
+        longname
+        {mode transient}
+        {gtype NEW}
+        g
+        {atype NEW}
+        a
+        mag
+    }
+
+    meta form {
         rcc "CURSE ID:" -for curse_id
         text curse_id -context yes
 
@@ -117,44 +128,54 @@ order define INJECT:VREL:CREATE {
         mag mag
         label "points of change"
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare curse_id -toupper   -required -type curse
-    prepare mode     -tolower   -required -type einputmode
-    prepare gtype    -toupper   -required -selector
-    prepare atype    -toupper   -required -selector
-    prepare g        -toupper   -required -type roleid
-    prepare a        -toupper   -required -type roleid
-    prepare mag -num -toupper   -required -type qmag
- 
-    validate a {
-        if {$parms(g) eq $parms(a)} {
-            reject a "Inject requires two distinct roles"
+
+
+    method _validate {} {
+        my prepare curse_id -toupper   -required -type curse
+        my prepare mode     -tolower   -required -type einputmode
+        my prepare gtype    -toupper   -required -selector
+        my prepare atype    -toupper   -required -selector
+        my prepare g        -toupper   -required -type roleid
+        my prepare a        -toupper   -required -type roleid
+        my prepare mag -num -toupper   -required -type qmag
+     
+        my checkon a {
+            if {$parms(g) eq $parms(a)} {
+                my reject a "Inject requires two distinct roles"
+            }
         }
     }
 
-    returnOnError -final
-
-    # NEXT, put inject_type in the parmdict
-    set parms(inject_type) VREL
-
-    # NEXT, create the inject
-    setundo [inject mutate create [array get parms]]
+    method _execute {{flunky ""}} {
+        set parms(inject_type) VREL
+        my setundo [inject mutate create [array get parms]]
+    }
 }
 
 # INJECT:VREL:UPDATE
 #
 # Updates existing VREL inject.
 
-order define INJECT:VREL:UPDATE {
-    title "Update Inject: Vertical Relationship"
-    options -sendstates PREP 
+myorders define INJECT:VREL:UPDATE {
+    meta title "Update Inject: Vertical Relationship"
+    meta sendstates PREP 
 
-    form {
+    meta parmlist {
+        id
+        longname
+        mode
+        {gtype EXISTING}
+        g
+        {atype EXISTING}
+        a
+        mag
+    }
+
+    meta form {
         rcc "Inject:" -for id
-        key id -context yes -table gui_injects_VREL \
+        dbkey id -context yes -table gui_injects_VREL \
             -keys {curse_id inject_num} \
-            -loadcmd {orderdialog keyload id {g a mode mag}}
+            -loadcmd {$order_ keyload id {g a mode mag}}
 
         rcc "Description:" -for longname -span 4
         disp longname -width 60
@@ -194,20 +215,21 @@ order define INJECT:VREL:UPDATE {
         mag mag
         label "points of change"
     }
-} {
-    # FIRST, prepare the parameters
-    prepare id    -required           -type inject
-    prepare mode            -tolower  -type  einputmode
-    prepare gtype           -toupper  -selector
-    prepare atype           -toupper  -selector
-    prepare g               -toupper  -type roleid
-    prepare a               -toupper  -type roleid
-    prepare mag   -num      -toupper  -type qmag
 
-    returnOnError -final
 
-    # NEXT, modify the inject
-    setundo [inject mutate update [array get parms]]
+    method _validate {} {
+        my prepare id    -required           -type inject
+        my prepare mode            -tolower  -type  einputmode
+        my prepare gtype           -toupper  -selector
+        my prepare atype           -toupper  -selector
+        my prepare g               -toupper  -type roleid
+        my prepare a               -toupper  -type roleid
+        my prepare mag   -num      -toupper  -type qmag
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [inject mutate update [array get parms]]
+    }
 }
 
 

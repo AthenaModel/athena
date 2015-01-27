@@ -289,11 +289,12 @@ tactic define FUNDENI \
 #
 # Updates a FUNDENI tactic.
 
-order define TACTIC:FUNDENI {
-    title "Tactic: Fund ENI Services"
-    options -sendstates PREP
+myorders define TACTIC:FUNDENI {
+    meta title      "Tactic: Fund ENI Services"
+    meta sendstates PREP
+    meta parmlist {tactic_id name glist mode amount percent cmode los}
 
-    form {
+    meta form {
         rcc "Tactic ID" -for tactic_id
         text tactic_id -context yes \
             -loadcmd {beanload}
@@ -344,43 +345,45 @@ order define TACTIC:FUNDENI {
                 label "% of SLOS"
             }
         }
-
-    }
-} {
-    prepare tactic_id -required -with {::strategy valclass tactic::FUNDENI}
-    returnOnError
-
-    set tactic [pot get $parms(tactic_id)]
-
-    # FIRST, prepare and validate the parameters
-    prepare name    -toupper -with [list $tactic valName]
-    prepare glist   
-    prepare mode    -toupper -selector
-    prepare cmode   -toupper -selector
-    prepare amount  -type money
-    prepare percent -type rpercent
-    prepare los     -type rpercent
- 
-    returnOnError 
-
-    fillparms parms [$tactic view]
-
-    if {$parms(mode) ne "PERCENT" && 
-        $parms(mode) ne "ALL"     &&
-        $parms(amount) == 0.0} {
-            reject amount "You must specify an amount > 0.0"
     }
 
-    if {$parms(mode) eq "PERCENT" && $parms(percent) == 0.0} {
-        reject percent "You must specify a percent > 0.0"
+
+    method _validate {} {
+        my prepare tactic_id -required -with {::strategy valclass tactic::FUNDENI}
+        my returnOnError
+
+        set tactic [pot get $parms(tactic_id)]
+
+        # FIRST, prepare and validate the parameters
+        my prepare name    -toupper -with [list $tactic valName]
+        my prepare glist   
+        my prepare mode    -toupper -selector
+        my prepare cmode   -toupper -selector
+        my prepare amount  -type money
+        my prepare percent -type rpercent
+        my prepare los     -type rpercent
+     
+        my returnOnError 
+
+        fillparms parms [$tactic view]
+
+        if {$parms(mode) ne "PERCENT" && 
+            $parms(mode) ne "ALL"     &&
+            $parms(amount) == 0.0} {
+                my reject amount "You must specify an amount > 0.0"
+        }
+
+        if {$parms(mode) eq "PERCENT" && $parms(percent) == 0.0} {
+            my reject percent "You must specify a percent > 0.0"
+        }
     }
 
-    returnOnError -final
-
-    # NEXT, create the tactic
-    setundo [$tactic update_ {
-        name glist cmode mode amount percent los
-    } [array get parms]]
+    method _execute {{flunky ""}} {
+        set tactic [pot get $parms(tactic_id)]
+        my setundo [$tactic update_ {
+            name glist cmode mode amount percent los
+        } [array get parms]]
+    }
 }
 
 

@@ -183,7 +183,7 @@ snit::widget capbrowser {
     # Called when the user presses the "Add CAP" button.
 
     method CapAddEntity {} {
-        order enter CAP:CREATE
+        app enter CAP:CREATE
     }
 
     # CapEditSelected
@@ -206,9 +206,9 @@ snit::widget capbrowser {
         if {[llength $ids] == 1} {
             set id [lindex $ids 0]
 
-            order enter $root k $id
+            app enter $root k $id
         } else {
-            order enter ${root}:MULTI ids $ids
+            app enter ${root}:MULTI ids $ids
         }
     }
 
@@ -221,7 +221,7 @@ snit::widget capbrowser {
         set id [lindex [$caps uid curselection] 0]
 
         # NEXT, Pop up the dialog, and select this entity
-        order send gui CAP:DELETE k $id
+        flunky senddict gui CAP:DELETE [list k $id]
     }
 
     # CapSelectionChanged
@@ -319,9 +319,9 @@ snit::widget capbrowser {
         set ids [$nbcov uid curselection]
 
         if {[llength $ids] == 1} {
-            order enter CAP:NBCOV:SET id [lindex $ids 0]
+            app enter CAP:NBCOV:SET id [lindex $ids 0]
         } else {
-            order enter CAP:NBCOV:SET:MULTI ids $ids
+            app enter CAP:NBCOV:SET:MULTI ids $ids
         }
     }
 
@@ -415,9 +415,9 @@ snit::widget capbrowser {
         set ids [$capcov uid curselection]
 
         if {[llength $ids] == 1} {
-            order enter CAP:PEN:SET id [lindex $ids 0]
+            app enter CAP:PEN:SET id [lindex $ids 0]
         } else {
-            order enter CAP:PEN:SET:MULTI ids $ids
+            app enter CAP:PEN:SET:MULTI ids $ids
         }
     }
 }

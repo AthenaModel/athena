@@ -297,9 +297,9 @@ snit::widgetadaptor vrelbrowser {
         set ids [$hull uid curselection]
 
         if {[llength $ids] == 1} {
-            order enter VREL:OVERRIDE id [lindex $ids 0]
+            app enter VREL:OVERRIDE id [lindex $ids 0]
         } else {
-            order enter VREL:OVERRIDE:MULTI ids $ids
+            app enter VREL:OVERRIDE:MULTI ids $ids
         }
     }
 
@@ -312,7 +312,7 @@ snit::widgetadaptor vrelbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Pop up the dialog, and select this entity
-        order send gui VREL:RESTORE id $id
+        flunky senddict gui VREL:RESTORE [list id $id]
     }
 }
 

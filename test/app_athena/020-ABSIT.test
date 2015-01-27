@@ -204,7 +204,7 @@ location   *
         ted order ABSIT:CREATE $s1
     } -body {
         ted notifier bind ::rdb <absits>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -263,7 +263,7 @@ location   *
         ted order ABSIT:DELETE s 1
     } -body {
         ted notifier bind ::rdb <absits>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -428,7 +428,7 @@ location   *
         }
     } -body {
         ted notifier bind ::rdb <absits>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -516,7 +516,7 @@ s location
         }
     } -body {
         ted notifier bind ::rdb <absits>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -627,7 +627,7 @@ location   *
         ted order ABSIT:RESOLVE s 1 resolver BLUE
     } -body {
         ted notifier bind ::rdb <absits>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

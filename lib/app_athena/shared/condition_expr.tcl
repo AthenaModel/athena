@@ -78,12 +78,12 @@ condition define EXPR "Boolean Expression" {
 #
 # Updates the condition's parameters
 
-order define CONDITION:EXPR {
-    title "Condition: Expr Numbers"
+myorders define CONDITION:EXPR {
+    meta title      "Condition: Boolean Expression"
+    meta sendstates PREP
+    meta parmlist   {condition_id name expression}
 
-    options -sendstates PREP
-
-    form {
+    meta form {
         rcc "Condition ID:" -for condition_id
         text condition_id -context yes \
             -loadcmd {beanload}
@@ -101,21 +101,27 @@ order define CONDITION:EXPR {
         rcc "Expression:" -for expression
         expr expression
     }
-} {
-    prepare condition_id -required -with {::strategy valclass condition::EXPR}
-    returnOnError
 
-    set cond [pot get $parms(condition_id)]
 
-    # In the GUI, give detailed feedback on errors.  From other sources,
-    # the sanity check will catch it.
-    prepare name       -toupper -with [list $cond valName]
-    prepare expression -oncheck -type {executive expr}
+    method _validate {} {
+        my prepare condition_id -required -with {::strategy valclass condition::EXPR}
+        my returnOnError
 
-    returnOnError -final
+        set cond [pot get $parms(condition_id)]
 
-    # NEXT, update the block
-    setundo [$cond update_ {name expression} [array get parms]]
+        my prepare name -toupper -with [list $cond valName]
+
+        if {[my mode] eq "gui"} {
+            # In the GUI, give detailed feedback on errors.  From other sources,
+            # the sanity check will catch it.
+            my prepare expression -oncheck -type {executive expr}
+        }
+    }
+
+    method _execute {{flunky ""}} {
+        set cond [pot get $parms(condition_id)]
+        my setundo [$cond update_ {name expression} [array get parms]]
+    }
 }
 
 

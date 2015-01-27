@@ -111,7 +111,7 @@ namespace eval ::athena_test::tests:: {
         ted order PAYLOAD:DELETE id {IOM1 1}
     } -body {
         ted notifier bind ::rdb <payloads>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -158,7 +158,7 @@ namespace eval ::athena_test::tests:: {
         ted order PAYLOAD:STATE id {IOM1 1} state disabled
     } -body {
         ted notifier bind ::rdb <payloads>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

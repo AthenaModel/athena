@@ -1804,12 +1804,21 @@ snit::type econ {
 # Updates historical values from rebased economic inputs including
 # not using historical values at all.
 
-order define ECON:UPDATE:HIST {
-    title "Update Rebased Economic Inputs"
+myorders define ECON:UPDATE:HIST {
+    meta title "Update Rebased Economic Inputs"
 
-    options -sendstates {PREP}
+    meta sendstates {PREP}
 
-    form {
+    meta parmlist {
+        {hist_flag 0}
+        {rem 0}
+        {rem_rate 0}
+        {base_consumers 160M}
+        {base_ur 4}
+        {base_gdp 200B}
+    }
+
+    meta form {
         rcc "Start Mode:" -for hist_flag 
         selector hist_flag -defvalue 0 {
             case 0 "New Scenario" {}
@@ -1833,111 +1842,133 @@ order define ECON:UPDATE:HIST {
             }
         }
     }
-} {
-    prepare hist_flag -num -required -type snit::boolean
-    prepare rem            -toupper  -type money
-    prepare rem_rate       -toupper  -type snit::double 
-    prepare base_consumers -toupper  -type money 
-    prepare base_ur        -toupper  -type snit::double
-    prepare base_gdp       -toupper  -type money 
 
-    returnOnError -final
 
-    setundo [econ mutate hist [array get parms]]
+    method _validate {} {
+        my prepare hist_flag -num -required -type snit::boolean
+        my prepare rem            -toupper  -type money
+        my prepare rem_rate       -toupper  -type snit::double 
+        my prepare base_consumers -toupper  -type money 
+        my prepare base_ur        -toupper  -type snit::double
+        my prepare base_gdp       -toupper  -type money 
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [econ mutate hist [array get parms]]
+    }
 }
 
 # ECON:SAM:UPDATE 
 #
 # Updates a single cell in the Social Accounting Matrix (SAM)
 
-order define ECON:SAM:UPDATE {
-    title "Update SAM Cell Value"
-    options -sendstates {PREP} 
+myorders define ECON:SAM:UPDATE {
+    meta title "Update SAM Cell Value"
+    meta sendstates {PREP} 
 
-    form {
+    meta parmlist {id val}
+    
+    meta form {
         rcc "Cell ID:" -for id
         text id
 
         rcc "Value:" -for val
         text val
     }
-} {
-    prepare id           -required -type {ptype sam}
-    prepare val -toupper -required -type money
 
-    returnOnError -final
 
-    setundo [econ mutate samcell [array get parms]]
+    method _validate {} {
+        my prepare id           -required -type {ptype sam}
+        my prepare val -toupper -required -type money
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [econ mutate samcell [array get parms]]
+    }
 }
 
 # ECON:SAM:GLOBAL
 #
 # Updates a cell but with less restrictive validation
 
-order define ECON:SAM:GLOBAL {
-    title "Update SAM Global Value"
-    options -sendstates {PREP}
+myorders define ECON:SAM:GLOBAL {
+    meta title "Update SAM Global Value"
+    meta sendstates {PREP}
 
-    form {
+    meta parmlist {id val}
+
+    meta form {
         rcc "Cell ID:" -for id
         text id
 
         rcc "Value:" -for val
         text val
     }
-} {
-    prepare id           -required -type {ptype sam}
-    prepare val -toupper -required -type snit::double
 
-    returnOnError -final
 
-    setundo [econ mutate samcell [array get parms]]
+    method _validate {} {
+        my prepare id           -required -type {ptype sam}
+        my prepare val -toupper -required -type snit::double
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [econ mutate samcell [array get parms]]
+    }
 }
  
 # ECON:CGE:UPDATE 
 #
 # Updates a single cell in the CGE
 
-order define ECON:CGE:UPDATE {
-    title "Update CGE Cell Value"
-    options -sendstates {PAUSED TACTIC}
+myorders define ECON:CGE:UPDATE {
+    meta title "Update CGE Cell Value"
+    meta sendstates {PAUSED TACTIC}
 
-    form {
+    meta parmlist {id val}
+
+    meta form {
         rcc "Cell ID:" -for id
         text id
 
         rcc "Value:" -for val
         text val
     }
-} {
-    prepare id           -required -type {ptype cge}
-    prepare val -toupper -required -type money
 
-    returnOnError -final
 
-    setundo [econ mutate cgecell [array get parms]]
+    method _validate {} {
+        my prepare id           -required -type {ptype cge}
+        my prepare val -toupper -required -type money
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [econ mutate cgecell [array get parms]]
+    }
 }
 
 # ECON:UPDATE:REMRATE
 #
 # Updates the change rate for remittances
 
-order define ECON:UPDATE:REMRATE {
-    title "Update Remittance Change Rate"
-    options -sendstates {PAUSED TACTIC}
+myorders define ECON:UPDATE:REMRATE {
+    meta title "Update Remittance Change Rate"
+    meta sendstates {PAUSED TACTIC}
 
-    form {
+    meta parmlist {val}
+
+    meta form {
         rcc "Value:" -for val
         text val
         label "%"
     }
-} {
-    prepare val -toupper -required -type snit::double
 
-    returnOnError -final
 
-    set parms(id) "Global::REMChangeRate"
+    method _validate {} {
+        my prepare val -toupper -required -type snit::double
+    }
 
-    setundo [econ mutate cgecell [array get parms]]
+    method _execute {{flunky ""}} {
+        set parms(id) "Global::REMChangeRate"
+        my setundo [econ mutate cgecell [array get parms]]
+    }
 }
 

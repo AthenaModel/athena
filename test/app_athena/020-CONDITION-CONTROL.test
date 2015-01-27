@@ -188,7 +188,7 @@ namespace eval ::athena_test::tests:: {
         ted order CONDITION:CONTROL condition_id [$C1 id] a JOE
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

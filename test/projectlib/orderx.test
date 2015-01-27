@@ -93,16 +93,24 @@ myorders define MY:VALIDATE {
     meta defaults { x "" }
 
     method _validate {} { 
-        my variable parms
         my checkon x {
             snit::integer validate $parms(x)
         }
     }
 
+    method copyparms {} {
+        my variable parmdict
+        array set parms $parmdict
+    }
+
     method preparex {value args} {
-        my set x ""
-        my valid
         my set x $value
+
+        my variable errdict
+        my variable parmdict
+        array unset errdict
+        array set parms $parmdict
+
         return [my prepare x {*}$args]
     }
 
@@ -668,7 +676,6 @@ test prepare-1.1 {-toupper} -setup {
     setup MY:VALIDATE
 } -body {
     ord preparex lower -toupper
-    ord get x
 } -cleanup {
     cleanup
 } -result {LOWER}
@@ -677,7 +684,6 @@ test prepare-2.1 {-tolower} -setup {
     setup MY:VALIDATE
 } -body {
     ord preparex UPPER -tolower
-    ord get x
 } -cleanup {
     cleanup
 } -result {upper}
@@ -686,7 +692,6 @@ test prepare-3.1 {-normalize} -setup {
     setup MY:VALIDATE
 } -body {
     ord preparex " My    input   string " -normalize
-    ord get x
 } -cleanup {
     cleanup
 } -result {My input string}
@@ -695,7 +700,6 @@ test prepare-4.1 {-num} -setup {
     setup MY:VALIDATE
 } -body {
     ord preparex 0089 -num
-    ord get x
 } -cleanup {
     cleanup
 } -result {89}
@@ -704,7 +708,6 @@ test prepare-5.1 {-required, value present} -setup {
     setup MY:VALIDATE
 } -body {
     ord preparex 5 -required
-    ord get x
 } -cleanup {
     cleanup
 } -result {5}
@@ -722,7 +725,6 @@ test prepare-6.1 {-type, good value} -setup {
     setup MY:VALIDATE
 } -body {
     ord preparex 5 -type snit::integer
-    ord get x
 } -cleanup {
     cleanup
 } -result {5}
@@ -740,7 +742,6 @@ test prepare-7.1 {-listof, good value} -setup {
     setup MY:VALIDATE
 } -body {
     ord preparex {5 6 7} -listof snit::integer
-    ord get x
 } -cleanup {
     cleanup
 } -result {5 6 7}
@@ -758,7 +759,6 @@ test prepare-8.1 {-oneof, good value} -setup {
     setup MY:VALIDATE
 } -body {
     ord preparex 5 -oneof {4 5 6}
-    ord get x
 } -cleanup {
     cleanup
 } -result {5}
@@ -776,7 +776,6 @@ test prepare-9.1 {-someof, good value} -setup {
     setup MY:VALIDATE
 } -body {
     ord preparex {4 6} -someof {4 5 6}
-    ord get x
 } -cleanup {
     cleanup
 } -result {4 6}
@@ -795,7 +794,6 @@ test prepare-10.1 {-with, good value} -setup {
     setup MY:VALIDATE
 } -body {
     ord preparex 5 -with {snit::integer validate}
-    ord get x
 } -cleanup {
     cleanup
 } -result {5}
@@ -813,7 +811,6 @@ test prepare-11.1 {-listwith, good value} -setup {
     setup MY:VALIDATE
 } -body {
     ord preparex {4 5 6} -listwith {snit::integer validate}
-    ord get x
 } -cleanup {
     cleanup
 } -result {4 5 6}
@@ -836,6 +833,7 @@ test badparm-1.1 {missing value} -setup {
     setup MY:VALIDATE
 } -body {
     ord set x ""
+    ord copyparms
     ord mybadparm x
 } -cleanup {
     cleanup

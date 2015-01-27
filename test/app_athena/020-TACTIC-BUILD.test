@@ -149,7 +149,6 @@ namespace eval ::athena_test::tests:: {
         name       T*
         num        1
         parent     *
-        percent    0
         pot        ::pot
         state      normal
     }
@@ -173,7 +172,6 @@ namespace eval ::athena_test::tests:: {
         name       T*
         num        10
         parent     *
-        percent    0
         pot        ::pot
         state      normal
     }
@@ -196,7 +194,7 @@ namespace eval ::athena_test::tests:: {
         ted order TACTIC:BUILD tactic_id [$T1 id] n NB1 mode CASH amount 10000
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

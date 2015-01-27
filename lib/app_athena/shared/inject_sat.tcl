@@ -61,12 +61,22 @@ inject type define SAT {g c mag} {
 #
 # Creates a new SAT inject.
 
-order define INJECT:SAT:CREATE {
-    title "Create Inject: Satisfaction"
+myorders define INJECT:SAT:CREATE {
+    meta title "Create Inject: Satisfaction"
 
-    options -sendstates PREP
+    meta sendstates PREP
 
-    form {
+    meta parmlist {
+        curse_id
+        longname
+        {mode transient}
+        {gtype NEW}
+        g
+        c
+        mag
+    }
+
+    meta form {
         rcc "CURSE ID:" -for curse_id
         text curse_id -context yes
 
@@ -97,37 +107,46 @@ order define INJECT:SAT:CREATE {
         mag mag
         label "points of change"
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare curse_id   -toupper   -required -type curse
-    prepare mode       -tolower   -required -type einputmode
-    prepare gtype      -toupper   -required -selector
-    prepare g          -toupper   -required -type roleid
-    prepare c          -toupper   -required -type econcern
-    prepare mag -num   -toupper   -required -type qmag
 
-    returnOnError -final
 
-    # NEXT, put inject_type in the parmdict
-    set parms(inject_type) SAT
+    method _validate {} {
+        my prepare curse_id   -toupper   -required -type curse
+        my prepare mode       -tolower   -required -type einputmode
+        my prepare gtype      -toupper   -required -selector
+        my prepare g          -toupper   -required -type roleid
+        my prepare c          -toupper   -required -type econcern
+        my prepare mag -num   -toupper   -required -type qmag
+    }
 
-    # NEXT, create the inject
-    setundo [inject mutate create [array get parms]]
+    method _execute {{flunky ""}} {
+        set parms(inject_type) SAT
+        my setundo [inject mutate create [array get parms]]
+    }
 }
 
 # INJECT:SAT:UPDATE
 #
 # Updates existing SAT inject.
 
-order define INJECT:SAT:UPDATE {
-    title "Update Inject: Satisfaction"
-    options -sendstates PREP 
+myorders define INJECT:SAT:UPDATE {
+    meta title "Update Inject: Satisfaction"
+    meta sendstates PREP 
 
-    form {
+    meta parmlist {
+        id
+        longname
+        mode
+        {gtype EXISTING}
+        g
+        c
+        mag
+    }
+
+    meta form {
         rcc "Inject:" -for id
-        key id -context yes -table gui_injects_SAT \
+        dbkey id -context yes -table gui_injects_SAT \
             -keys {curse_id inject_num} \
-            -loadcmd {orderdialog keyload id {g c mode mag}}
+            -loadcmd {$order_ keyload id {g c mode mag}}
 
         rcc "Description:" -for longname -span 4
         disp longname -width 60
@@ -156,20 +175,20 @@ order define INJECT:SAT:UPDATE {
         mag mag
         label "points of change"
     }
-} {
-    # FIRST, prepare the parameters
-    prepare id    -required           -type  inject
-    prepare mode            -tolower  -type  einputmode
-    prepare gtype           -toupper  -selector
-    prepare g               -toupper  -type  roleid
-    prepare c               -toupper  -type  econcern
-    prepare mag   -num      -toupper  -type  qmag
 
 
-    returnOnError -final
+    method _validate {} {
+        my prepare id    -required           -type  inject
+        my prepare mode            -tolower  -type  einputmode
+        my prepare gtype           -toupper  -selector
+        my prepare g               -toupper  -type  roleid
+        my prepare c               -toupper  -type  econcern
+        my prepare mag   -num      -toupper  -type  qmag
+    }
 
-    # NEXT, modify the inject
-    setundo [inject mutate update [array get parms]]
+    method _execute {{flunky ""}} {
+        my setundo [inject mutate update [array get parms]]
+    }
 }
 
 

@@ -175,6 +175,7 @@ oo::class create ::projectlib::order_flunky {
         try {
             set execMode $mode
             set result [$mycopy execute [self]]
+            my _onExecute $mycopy
         } trap CANCEL {result} {
             # The order was cancelled; destroy our copy.
             $mycopy destroy
@@ -192,6 +193,15 @@ oo::class create ::projectlib::order_flunky {
         }
 
         return $result
+    }
+
+    # _myExecute order
+    #
+    # Called just after the order is first executed.  This is a hook for the
+    # application's use.
+
+    method _onExecute {order} {
+        # Nothing to do
     }
 
     # send mode name options...
@@ -297,13 +307,13 @@ oo::class create ::projectlib::order_flunky {
     #
     # mode      - Execution mode, gui|normal|private
     # name      - The order name, as defined in the oset.
-    # options   - The order's parameters, as a dictionary.
+    # parmdict  - The order's parameters, if any, as a dictionary
     #
     # Creates an order object, sets its parameters, and executes it
     # if possible.  Throws REJECTED with an error dictionary 
     # if the order isn't valid.
 
-    method senddict {mode name parmdict} {
+    method senddict {mode name {parmdict ""}} {
         require {$mode in {gui normal private}} "Invalid mode: \"$mode\""
         $oset validate $name
 
@@ -559,14 +569,25 @@ oo::class create ::projectlib::order_flunky {
         if {[my IsTrans $item]} {
             foreach order [lreverse [lrange $item 1 end]] {
                 $order undo
+                my _onUndo $order
             }
         } else {
-            $item undo            
+            $item undo    
+            my _onUndo $item
         }
 
         lpush redoStack $item
         notifier send [self] <Sync>
         return
+    }
+
+    # _onUndo order
+    #
+    # Called just after the order is undone.  This is a hook for the
+    # application's use.
+
+    method _onUndo {order} {
+        # Nothing to do
     }
 
     # redo
@@ -586,9 +607,11 @@ oo::class create ::projectlib::order_flunky {
         if {[my IsTrans $item]} {
             foreach order [lrange $item 1 end] {
                 $order execute
+                my _onRedo $order
             }
         } else {
-            $item execute    
+            $item execute
+            my _onRedo $item
         }
 
         # We know it can undone, because it wouldn't be on the redo
@@ -598,6 +621,14 @@ oo::class create ::projectlib::order_flunky {
         return
     }
 
+    # _onRedo order
+    #
+    # Called just after the order is redone.  This is a hook for the
+    # application's use.
+
+    method _onRedo {order} {
+        # Nothing to do
+    }
 
 
     # UndoPushNew item

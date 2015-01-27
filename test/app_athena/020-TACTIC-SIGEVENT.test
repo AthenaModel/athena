@@ -135,7 +135,7 @@ namespace eval ::athena_test::tests:: {
         ted order TACTIC:SIGEVENT tactic_id [$T1 id] msg "Hello"
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

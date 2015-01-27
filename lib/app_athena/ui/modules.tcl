@@ -29,7 +29,6 @@ namespace eval ::app_athena_ui:: {
 source [file join $::app_athena_ui::library activitybrowser.tcl    ]
 source [file join $::app_athena_ui::library actorbrowser.tcl       ]
 source [file join $::app_athena_ui::library appwin.tcl             ]
-source [file join $::app_athena_ui::library bookmarkbrowser.tcl    ]
 source [file join $::app_athena_ui::library bsysbrowser.tcl        ]
 source [file join $::app_athena_ui::library civgroupbrowser.tcl    ]
 source [file join $::app_athena_ui::library capbrowser.tcl         ]

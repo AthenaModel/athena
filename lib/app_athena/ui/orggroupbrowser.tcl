@@ -147,7 +147,7 @@ snit::widgetadaptor orggroupbrowser {
 
     method AddEntity {} {
         # FIRST, Pop up the dialog
-        order enter ORGGROUP:CREATE
+        app enter ORGGROUP:CREATE
     }
 
 
@@ -161,9 +161,9 @@ snit::widgetadaptor orggroupbrowser {
         if {[llength $ids] == 1} {
             set id [lindex $ids 0]
 
-            order enter ORGGROUP:UPDATE g $id
+            app enter ORGGROUP:UPDATE g $id
         } else {
-            order enter ORGGROUP:UPDATE:MULTI ids $ids
+            app enter ORGGROUP:UPDATE:MULTI ids $ids
         }
     }
 
@@ -177,7 +177,7 @@ snit::widgetadaptor orggroupbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Send the order
-        order send gui ORGGROUP:DELETE g $id
+        flunky senddict gui ORGGROUP:DELETE [list g $id]
     }
 }
 
