@@ -204,7 +204,7 @@ oo::objdefine tactic {
     # copysets  - A list of tactic copysets from [$bean copydata].
     #
     # Pastes the tactics into the given block.  This call should be
-    # wrapped by [cif startblock]/[cif endblock] calls.  These are
+    # wrapped by [flunky transaction] calls.  This is
     # not included in [paste] itself, because pasting tactics can be
     # done as part of a larger paste (i.e., pasting blocks).
 

@@ -223,7 +223,6 @@ snit::type app {
         parm          init master
         map           init
         view          init
-        cif           init
         athena_flunky create ::flunky
         bsys          init
         scenario      init
@@ -824,9 +823,9 @@ snit::type app {
             -master    [app topwin]                \
             -helpcmd   [list app help]             \
             -refreshon {
-                ::cif <Update>
-                ::sim <Tick>
-                ::sim <DbSyncB>
+                ::flunky <Sync>
+                ::sim    <Tick>
+                ::sim    <DbSyncB>
             }
     }
 

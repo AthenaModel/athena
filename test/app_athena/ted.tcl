@@ -85,8 +85,6 @@ snit::type ted {
 
     # cleanupModules -- list of modules that need to be resync'd
     # after a test.
-    #
-    # TBD: Why don't we dbsync cif?  Should we "sim dbsync" instead?
 
     typevariable cleanupModules {
         nbhood
@@ -711,7 +709,6 @@ snit::type ted {
     # * Deletes all records from the $cleanupTables
     # * Clears the SQLITE_SEQUENCE table
     # * Resyncs the $cleanupModules with the RDB
-    # * Clears the CIF
     # * Resets the parms
     
     typemethod cleanup {} {
@@ -741,7 +738,7 @@ snit::type ted {
             {*}$module dbsync
         }
 
-        cif             clear
+        flunky          reset
         parm            reset
         bsys            clear
         econ            reset

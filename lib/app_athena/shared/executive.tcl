@@ -2650,7 +2650,7 @@ snit::type executive {
     # If possible, redoes the last undone order.
 
     proc redo {} {
-        set title [cif redotext]
+        set title [flunky redotext]
 
         if {$title eq ""} {
             return "Nothing to redo."

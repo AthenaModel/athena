@@ -30,7 +30,7 @@ oo::objdefine block {
     #
     # Pastes the blocks into the given strategy, pasting tactics and
     # conditions recursively.  This call should be
-    # wrapped by [cif startblock]/[cif endblock] calls.  These are
+    # wrapped in [flunky transaction].  This is
     # not included in [paste] itself, because pasting blocks could be
     # done as part of a larger paste.
 

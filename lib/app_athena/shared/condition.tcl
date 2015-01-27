@@ -132,7 +132,7 @@ oo::objdefine condition {
     # copysets  - A list of condition copysets from [$bean copydata].
     #
     # Pastes the conditions into the given block.  This call should be
-    # wrapped by [cif startblock]/[cif endblock] calls.  These are
+    # wrapped by [flunky transaction]s.  This is
     # not included in [paste] itself, because pasting conditions can be
     # done as part of a larger paste (i.e., pasting blocks).
 
