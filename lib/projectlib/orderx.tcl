@@ -31,7 +31,12 @@ oo::class create ::projectlib::orderx {
 
     variable orderState
 
-    # parms: Array of order parameter values by name.
+    # parmdict: Dictionary of order parameter inputs, by name.
+    variable parmdict
+
+    # parms: Array of validated order parameter values by name.
+    # This array is for use by _validate and _execute, and may 
+    # contain any desired values required by mutators.
     variable parms
 
     # errdict: Dictionary of error values (INVALID); otherwise empty.
@@ -47,14 +52,19 @@ oo::class create ::projectlib::orderx {
     #-------------------------------------------------------------------
     # Constructor/Destructor
 
-    # constructor ?parmdict?
+    # constructor ?parmdict_?
 
-    constructor {{parmdict ""}} {
+    constructor {{parmdict_ ""}} {
         set orderState CHANGED
         set errdict    [dict create]
         set undoScript ""
         set mode       private
-        array set parms [dict merge [my defaults] $parmdict]
+        set parmdict   [dict create]
+
+        foreach {key value} [my defaults] {
+            dict set parmdict $key $value
+        }
+        my setdict $parmdict_
     }
 
     #-------------------------------------------------------------------
@@ -65,7 +75,7 @@ oo::class create ::projectlib::orderx {
     # Retrieves the object's parameter values as a dictionary.
 
     method getdict {} {
-        array get parms
+        return $parmdict
     }
 
     # get var
@@ -75,7 +85,7 @@ oo::class create ::projectlib::orderx {
     # Retrieves the value.
 
     method get {name} {
-        return $parms($name)
+        return [dict get $parmdict $name]
     }
 
     # setdict dict
@@ -103,14 +113,14 @@ oo::class create ::projectlib::orderx {
         require {$orderState ne "EXECUTED"} \
             "Cannot modify an executed order."
 
-        if {![info exists parms($name)]} {
+        if {![dict exists $parmdict $name]} {
             error "Unknown parameter: \"$name\""
         }
 
         set value [string trim $value]
 
-        if {$parms($name) ne $value} {
-            set parms($name) $value
+        if {[my get $name] ne $value} {
+            dict set parmdict $name $value
             set orderState CHANGED
         }
 
@@ -248,7 +258,7 @@ oo::class create ::projectlib::orderx {
     # Returns the names of the order's parameters
 
     method parms {} {
-        return [dict keys [my defaults]]
+        return [dict keys $parmdict]
     }
 
     # prune
@@ -259,8 +269,8 @@ oo::class create ::projectlib::orderx {
     method prune {} {
         set result [dict create]
         dict for {parm value} [my defaults] {
-            if {$parms($parm) ne $value} {
-                dict set result $parm $parms($parm)
+            if {[my get $parm] ne $value} {
+                dict set result $parm [my get $parm]
             }
         }
 
@@ -289,6 +299,7 @@ oo::class create ::projectlib::orderx {
 
         set errdict [dict create]
 
+        array set parms $parmdict
         my _validate
 
         if {[dict size $errdict] == 0} {
@@ -525,6 +536,8 @@ oo::class create ::projectlib::orderx {
                 }
             }
         }
+
+        return $parms($parm)
     }
 
     # badparm parm

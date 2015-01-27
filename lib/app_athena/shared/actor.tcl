@@ -704,8 +704,7 @@ myorders define ACTOR:INCOME {
 
     method _execute {{flunky ""}} {
         # FIRST, fill in the empty parameters
-        array set fullparms [array get parms]
-        array set fullparms {
+        array set parms {
             auto_maintain {}
             longname      {}
             supports      {}
@@ -714,7 +713,7 @@ myorders define ACTOR:INCOME {
         }
     
         # NEXT, modify the actor
-        my setundo [actor mutate update [array get fullparms]]
+        my setundo [actor mutate update [array get parms]]
     }
 }
 
@@ -747,8 +746,7 @@ myorders define ACTOR:SUPPORTS {
 
     method _execute {{flunky ""}} {
         # FIRST, fill in the empty parameters
-        array set fullparms [array get parms]
-        array set fullparms {
+        array set parms {
             longname         {}
             atype            {}
             auto_maintain    {}
@@ -764,7 +762,7 @@ myorders define ACTOR:SUPPORTS {
         }
     
         # NEXT, modify the actor
-        my setundo [actor mutate update [array get fullparms]]
+        my setundo [actor mutate update [array get parms]]
     }
 }
 
