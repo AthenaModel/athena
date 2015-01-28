@@ -35,6 +35,24 @@ production.<p>
 serves to capture the preliminary design and to record decisions made in
 discussions with the Web Athena developers.<p>
 
+<section overview.cloud "Cloud Assumptions">
+
+Arachne makes the following assumptions about its run-time environment when
+run as part of the "Web Athena" back end:<p>
+
+<ul>
+<li> Arachne runs on a cloud node, with an instance of Arachne for each
+     user session.
+<li> The node runs 64-bit Linux (this is negotiable).
+<li> Arachne is invoked by the back end software on need.
+<li> Arachne communicates with the back end software by means of its 
+     command line and RESTful HTTP interface.
+<li> Arachne is insulated from the outside network by the enclosing back
+     end software (so as to minimize potential security issues).
+<li> The enclosing software handles file management, i.e., archiving of 
+     Athena scenario results.
+</ul>
+
 <section overview.name "Why Arachne?">
 
 In Greek myth, Arachne was so skilled at spinning thread that she beat
