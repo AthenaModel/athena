@@ -8,7 +8,7 @@
 # DESCRIPTION:
 #    app_athena(n): Athena Order Flunky Adaptor
 #
-#    This class subclasses and adapts ::projectlib::order_flunky, providing
+#    This class subclasses and adapts ::marsutil::order_flunky, providing
 #    additional features for use by Athena (e.g., RDB transactions and
 #    monitoring)
 #-----------------------------------------------------------------------
@@ -17,7 +17,7 @@
 # Athena Order Flunky Adaptor
 
 oo::class create athena_flunky {
-    superclass ::projectlib::order_flunky
+    superclass ::marsutil::order_flunky
 
     #-------------------------------------------------------------------
     # Instance Variables

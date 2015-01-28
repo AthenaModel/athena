@@ -8,7 +8,7 @@
 # DESCRIPTION:
 #    app_athena(n): Athena Order Adaptor
 #
-#    This class subclasses and adapts ::projectlib::orderx, providing
+#    This class subclasses and adapts ::marsutil::order, providing
 #    additional features for use by Athena order classes.
 #-----------------------------------------------------------------------
 
@@ -16,7 +16,7 @@
 # Athena Order Adaptor
 
 oo::class create athena_order {
-    superclass ::projectlib::orderx
+    superclass ::marsutil::order
 
     #-------------------------------------------------------------------
     # Instance Variables

@@ -59,7 +59,7 @@ namespace eval ::app_athena:: {
 }
 
 # Used to define and query orders.
-::projectlib::order_set create ::myorders ::athena_order 
+::marsutil::order_set create ::myorders ::athena_order 
 source [file join $::app_athena::library athena_order.tcl ]
 source [file join $::app_athena::library athena_flunky.tcl]
 

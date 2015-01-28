@@ -497,7 +497,7 @@ snit::widget mapviewer {
         notifier bind ::sim      <Tick>        $self [mymethod dbsync]
         notifier bind ::map      <MapChanged>  $self [mymethod dbsync]
         notifier bind ::order    <OrderEntry>  $self [mymethod OrderEntry]
-        notifier bind ::projectgui::orderx_dialog <OrderEntry>  \
+        notifier bind ::projectgui::order_dialog <OrderEntry>  \
             $self [mymethod OrderEntry]
         notifier bind ::rdb      <nbhoods>     $self [mymethod EntityNbhood]
         notifier bind ::nbhood   <Stack>       $self [mymethod NbhoodStack]
