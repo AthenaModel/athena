@@ -2,6 +2,47 @@
 
 <h2>Build Notes</h2>
 
+<h3>Build 6.3.0a4, 28 January 2015</h3>
+
+This build contains a very significant number of changes related to the
+re-architecture of Athena for use as a web application running in the cloud
+to support Corps level COA analysis.  Specifically, Athena had to be changed
+to allow for multiple instances of scenarios. Which means each instance needs 
+it's own order processing and own set of scenario objects including instances
+of strategies for each actor in each scenario.  These changes will make it
+possible (along with others yet to be done) for the Athena application to 
+run as a library with, for example, a browser-based front end controlling it.  
+Another change of note is the addition of user defined block, tactic and
+condition names that can be used in orders instead of numeric IDs, which is
+cumbersome for the user.  There is quite a few bug fixes as well.<p>
+
+<ul>
+<li> Issue #63: Mars Order Processor integration
+<li> Issue #62: New Order Infrastructure, plus updated orders 
+<li> Issue #61: Paste of blocks, tactics and conditions not undoable
+<li> Issue #60: Add history tables 
+<li> Issue #57: Strategy names can now be used in orders
+<li> Issue #56: New order infrastructure 
+<li> Issue #55: Strategy IDs composed of actor, block, condition and tactic names
+<li> Issue #52: TRAFFIC simevent refactor 
+<li> Issue #50: DEPLOY tactic bgerror: attempt to deploy 0 personnel
+<li> Issue #49: SERVICE tactic refactor 
+<li> Issue #47: Remove PRESENCE activity and NOWATER, POWEROUT and TRAFFIC absits.
+<li> Issue #46: Neighborhood Wizard test data button broken
+<li> Issue #45: Update intel wizard to use bean pot
+<li> Issue #43: Beanpot class 
+<li> Issue #42: Removal of the transient attrition tables from AAM 
+<li> Issue #41: -block parm in SIM:RUN should always be YES in non-GUI mode
+<li> Issue #40: Storing transient attrition data 
+<li> Issue #37: Strategy object names are transient
+<li> Issue #36: Bean IDs are persistent
+<li> Issue #35: Default mapimage 
+<li> Issue #33: Remove default map image 
+<li> Issue #32: -batch option should not be valid
+<li> Issue #14: min security not updated after simulation initialization
+<li> Issue #1: message box bgerror
+</ul><p>
+
 <h3>Build 6.3.0a3, 19 November 2014</h3>
 
 This build contains updated rule sets for the Abstract Infrastructure services
