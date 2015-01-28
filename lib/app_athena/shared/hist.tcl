@@ -61,27 +61,29 @@ snit::type hist {
                 DELETE FROM hist_pop;
                 DELETE FROM hist_npop;
                 DELETE FROM hist_flow;
+                DELETE FROM hist_activity_nga;
             }
         } else {
             rdb eval {
-                DELETE FROM hist_sat        WHERE t > $t;
-                DELETE FROM hist_mood       WHERE t > $t;
-                DELETE FROM hist_nbmood     WHERE t > $t;
-                DELETE FROM hist_coop       WHERE t > $t;
-                DELETE FROM hist_nbcoop     WHERE t > $t;
-                DELETE FROM hist_econ       WHERE t > $t;
-                DELETE FROM hist_econ_i     WHERE t > $t;
-                DELETE FROM hist_econ_ij    WHERE t > $t;
-                DELETE FROM hist_control    WHERE t > $t;
-                DELETE FROM hist_security   WHERE t > $t;
-                DELETE FROM hist_service_sg WHERE t > $t;
-                DELETE FROM hist_support    WHERE t > $t;
-                DELETE FROM hist_volatility WHERE t > $t;
-                DELETE FROM hist_hrel       WHERE t > $t;
-                DELETE FROM hist_vrel       WHERE t > $t;
-                DELETE FROM hist_pop        WHERE t > $t;
-                DELETE FROM hist_npop       WHERE t > $t;
-                DELETE FROM hist_flow       WHERE t > $t;
+                DELETE FROM hist_sat          WHERE t > $t;
+                DELETE FROM hist_mood         WHERE t > $t;
+                DELETE FROM hist_nbmood       WHERE t > $t;
+                DELETE FROM hist_coop         WHERE t > $t;
+                DELETE FROM hist_nbcoop       WHERE t > $t;
+                DELETE FROM hist_econ         WHERE t > $t;
+                DELETE FROM hist_econ_i       WHERE t > $t;
+                DELETE FROM hist_econ_ij      WHERE t > $t;
+                DELETE FROM hist_control      WHERE t > $t;
+                DELETE FROM hist_security     WHERE t > $t;
+                DELETE FROM hist_service_sg   WHERE t > $t;
+                DELETE FROM hist_support      WHERE t > $t;
+                DELETE FROM hist_volatility   WHERE t > $t;
+                DELETE FROM hist_hrel         WHERE t > $t;
+                DELETE FROM hist_vrel         WHERE t > $t;
+                DELETE FROM hist_pop          WHERE t > $t;
+                DELETE FROM hist_npop         WHERE t > $t;
+                DELETE FROM hist_flow         WHERE t > $t;
+                DELETE FROM hist_activity_nga WHERE t > $t;
             }
         }
     }
@@ -202,6 +204,16 @@ snit::type hist {
                        funding, actual, expected, expectf, needs
                 FROM service_sg
             }
+        }
+
+        if {[parm get hist.activity]} {
+            rdb eval {
+                INSERT INTO hist_activity_nga(t,n,g,a,security_flag,can_do,
+                                              nominal,effective,coverage)
+                SELECT now(), n, g, a, security_flag, can_do, nominal,
+                       effective, coverage
+                FROM activity_nga WHERE nominal > 0
+            }            
         }
     }
 

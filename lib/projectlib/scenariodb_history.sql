@@ -242,6 +242,23 @@ CREATE TABLE hist_service_sg (
     PRIMARY KEY (case_id,t,g,s)
 );
 
+CREATE TABLE hist_activity_nga (
+    -- History: activity.nga (activity by nbhood and group)
+    case_id INTEGER DEFAULT 0,
+
+    t        INTEGER,
+    n        TEXT,
+    g        TEXT,
+    a        TEXT,
+    security_flag INTEGER,
+    can_do        INTEGER,
+    nominal       INTEGER,
+    effective     INTEGER,
+    coverage      DOUBLE,
+    
+    PRIMARY KEY (case_id,t,n,g,a)
+);
+
 
 ------------------------------------------------------------------------
 -- End of File

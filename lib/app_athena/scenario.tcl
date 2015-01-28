@@ -81,6 +81,7 @@ snit::type scenario {
     typevariable nonSnapshotTables {
         snapshots
         maps
+        hist_activity_nga
         hist_control
         hist_coop
         hist_econ

@@ -1438,6 +1438,11 @@ snit::type ::projectlib::parmdb {
             at each timestep.
         }
 
+        $ps define hist.activity ::snit::boolean on {
+            If on, Athena will save, each week, the activities of groups
+            by neighborhood to the hist_activity_nga table.
+        }        
+
         $ps define hist.control ::snit::boolean on {
             If on, Athena will save, each week, the actor in control of each
             neighborhood to the hist_control table.
