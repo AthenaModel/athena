@@ -31,7 +31,7 @@ package require snit 2.3
 package require Img 1.4.1
 package require Tkhtml 3.0
 package require projectlib
-package require marsgui 3.0.8
+package require marsgui 3.0.9
 # -kite-require-end
 
 #-----------------------------------------------------------------------
@@ -60,4 +60,3 @@ source [file join $::projectgui::library rolemapfield.tcl    ]
 source [file join $::projectgui::library sorter.tcl          ]
 source [file join $::projectgui::library sorterbin.tcl       ]
 source [file join $::projectgui::library wizman.tcl          ]
-source [file join $::projectgui::library orderx_dialog.tcl   ]

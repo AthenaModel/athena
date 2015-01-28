@@ -252,7 +252,7 @@ snit::type app {
 
         # NEXT, bind components together
         notifier bind ::sim <State> ::flunky {::flunky state [::sim state]}
-        notifier bind ::app <Puck>  ::orderx_dialog  {::orderx_dialog puck}
+        notifier bind ::app <Puck>  ::order_dialog  {::order_dialog puck}
 
         # NEXT, create state controllers, to enable and disable
         # GUI components as application state changes.
@@ -814,7 +814,7 @@ snit::type app {
 
         set order [string toupper $order]
 
-        orderx_dialog enter \
+        order_dialog enter \
             -resources [dict create db_ ::rdb]     \
             -parmdict  $parmdict                   \
             -appname   "Athena [kiteinfo version]" \

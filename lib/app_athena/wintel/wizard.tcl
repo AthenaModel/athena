@@ -111,7 +111,7 @@ snit::type ::wintel::wizard {
 
         set order [string toupper $order]
 
-        orderx_dialog enter \
+        order_dialog enter \
             -resources [dict create db_ ::wintel::wdb] \
             -parmdict  $parmdict                       \
             -appname   "Athena Intel Ingestor"         \

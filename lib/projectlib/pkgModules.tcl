@@ -34,9 +34,9 @@ package require fileutil 1.14
 package require tls 1.6
 package require tdom 0.8
 package require struct::set 2.2
-package require kiteutils 0.4.3
-package require marsutil 3.0.8
-package require simlib 3.0.8
+package require kiteutils 0.4.4
+package require marsutil 3.0.9
+package require simlib 3.0.9
 # -kite-require-end
 
 package require kiteinfo
@@ -57,7 +57,6 @@ namespace eval ::projectlib:: {
 #-----------------------------------------------------------------------
 # Modules
 
-source [file join $::projectlib::library projmisc.tcl       ]
 source [file join $::projectlib::library osdir.tcl          ]
 source [file join $::projectlib::library domparser.tcl      ]
 source [file join $::projectlib::library enumx.tcl          ]
@@ -86,7 +85,6 @@ source [file join $::projectlib::library experimentdb.tcl   ]
 source [file join $::projectlib::library gofer.tcl          ]
 source [file join $::projectlib::library field_types.tcl    ]
 source [file join $::projectlib::library rolemap.tcl        ]
-source [file join $::projectlib::library oohelpers.tcl      ]
 source [file join $::projectlib::library beanpot.tcl        ]
 source [file join $::projectlib::library bean.tcl           ]
 source [file join $::projectlib::library clipboardx.tcl     ]
@@ -94,9 +92,4 @@ source [file join $::projectlib::library httpagent.tcl      ]
 source [file join $::projectlib::library httpagentsim.tcl   ]
 source [file join $::projectlib::library wmsclient.tcl      ]
 source [file join $::projectlib::library wfsclient.tcl      ]
-
-# orderx prototype
-source [file join $::projectlib::library orderx.tcl         ]
-source [file join $::projectlib::library order_set.tcl      ]
-source [file join $::projectlib::library order_flunky.tcl   ]
 

@@ -27,7 +27,7 @@ namespace eval ::wintel:: {
 
 # Order Set for this window alone
 
-projectlib::order_set create ::wintel::orders
+::marsutil::order_set create ::wintel::orders
 
 # Non-GUI modules
 source [file join $::wintel::library wizard.tcl            ]
