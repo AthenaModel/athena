@@ -21,7 +21,6 @@ tactic define BUILD "Build Infrastructure" {actor} {
     variable mode    ;# Spending mode: CASH or EFFORT
     variable num     ;# Number of plants to build
     variable amount  ;# Amount of money to spend depending on mode
-    variable percent ;# Percent of money to spend if mode is PERCENT
     variable n       ;# Nbhood in which to build plants
     variable done    ;# A flag indicating the build is complete
 
@@ -39,7 +38,6 @@ tactic define BUILD "Build Infrastructure" {actor} {
         set mode    CASH
         set amount  0
         set num     1
-        set percent 0
         set n       {}  
         set done    0
 
@@ -75,7 +73,6 @@ tactic define BUILD "Build Infrastructure" {actor} {
     method narrative {} {
         set s(n)       [link make nbhood $n]
         set s(amount)  "\$[commafmt $amount]"
-        set s(percent) [format %.1f%% $percent]
         set s(num)     [expr {$num == 1 ? "1 plant" : "$num plants"}]
 
         switch -exact -- $mode {
@@ -167,14 +164,18 @@ tactic define BUILD "Build Infrastructure" {actor} {
 #
 # Updates existing BUILD tactic.
 
-order define TACTIC:BUILD {
-    title "Tactic: Build Infrastructure"
-    options -sendstates PREP
+myorders define TACTIC:BUILD {
+    meta title      "Tactic: Build Infrastructure"
+    meta sendstates PREP
+    meta parmlist   {tactic_id name n mode num amount}
 
-    form {
+    meta form {
         rcc "Tactic ID" -for tactic_id
         text tactic_id -context yes \
             -loadcmd {beanload}
+
+        rcc "Name:" -for name
+        text name -width 20
 
         rcc "Nbhood:" -for n 
         localn n
@@ -194,39 +195,39 @@ order define TACTIC:BUILD {
             }
         }
     }
-} {
-    # FIRST, prepare the parameters
-    prepare tactic_id  -required -type tactic::BUILD
-    returnOnError
 
-    set tactic [tactic get $parms(tactic_id)]
 
-    prepare n
-    prepare mode    -toupper  -selector
-    prepare amount  -type money
-    prepare percent -type rpercent
-    prepare num     -type iquantity
+    method _validate {} {
+        # FIRST, prepare the parameters
+        my prepare tactic_id  -required -with {::strategy valclass tactic::BUILD}
+        my returnOnError
 
-    returnOnError
+        set tactic [pot get $parms(tactic_id)]
 
-    # NEXT, check cross-constraints
-    fillparms parms [$tactic view]
+        my prepare name    -toupper  -with [list $tactic valName]
+        my prepare n
+        my prepare mode    -toupper  -selector
+        my prepare amount  -type money
+        my prepare num     -type iquantity
 
-    if {$parms(num) == 0} {
-        reject num "You must specify a number of plants > 0."
+        my returnOnError
+
+        # NEXT, check cross-constraints
+        fillparms parms [$tactic view]
+
+        if {$parms(num) == 0} {
+            my reject num "You must specify a number of plants > 0."
+        }
     }
 
-    if {$parms(mode) eq "PERCENT" && $parms(percent) == 0.0} {
-        reject percent "You must specify a percentage of cash > 0.0"
+    method _execute {{flunky ""}} {
+        set tactic [pot get $parms(tactic_id)]
+        my setundo [$tactic update_ {
+            name n mode amount num
+        } [array get parms]]
     }
-
-    returnOnError -final
-
-    # NEXT, update the tactic, saving the undo script
-    setundo [$tactic update_ {
-        n mode amount num percent
-    } [array get parms]]
 }
+
 
 
 

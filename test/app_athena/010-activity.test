@@ -80,7 +80,7 @@ namespace eval ::athena_test::tests:: {
         activity withcov frc validate NONESUCH
     } -returnCodes {
         error
-    } -result {Invalid activity, should be one of: CHKPOINT, COERCION, CONSTRUCT, CRIME, CURFEW, EDU, EMPLOY, GUARD, INDUSTRY, INFRA, LAWENF, MEDICAL, PATROL, PRESENCE, PSYOP, RELIEF}
+    } -result {Invalid activity, should be one of: CHKPOINT, COERCION, CONSTRUCT, CRIME, CURFEW, EDU, EMPLOY, GUARD, INDUSTRY, INFRA, LAWENF, MEDICAL, PATROL, PSYOP, RELIEF}
 
     test withcov-2.2 {ORG - Invalid name} -body {
         activity withcov org validate NONESUCH

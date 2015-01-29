@@ -125,11 +125,11 @@ tactic define SUPPORT "Support Actor" {actor} -onlock {
     # owning agent (because a is represented by SELF)
 
     typemethod allButMe {tactic_id} {
-        if {![tactic exists $tactic_id]} {
+        if {![pot has $tactic_id]} {
             return [list]
         }
 
-        set tactic [tactic get $tactic_id]
+        set tactic [pot get $tactic_id]
 
         set list [list SELF NONE {*}[actor names]]
 
@@ -146,14 +146,18 @@ tactic define SUPPORT "Support Actor" {actor} -onlock {
 #
 # Updates existing SUPPORT tactic.
 
-order define TACTIC:SUPPORT {
-    title "Tactic: Support Actor"
-    options -sendstates PREP
+myorders define TACTIC:SUPPORT {
+    meta title      "Tactic: Support Actor"
+    meta sendstates PREP
+    meta parmlist   {tactic_id name a nlist}
 
-    form {
+    meta form {
         rcc "Tactic ID" -for tactic_id
         text tactic_id -context yes \
             -loadcmd {beanload}
+
+        rcc "Name:" -for name
+        text name -width 20
 
         rcc "Support Actor:" -for a
         enum a -listcmd {tactic::SUPPORT allButMe $tactic_id}
@@ -161,25 +165,29 @@ order define TACTIC:SUPPORT {
         rcc "In Neighborhoods:" -for nlist
         gofer nlist -typename gofer::NBHOODS
     }
-} {
-    # FIRST, prepare the parameters
-    prepare tactic_id  -required -type tactic::SUPPORT
-    prepare a          -toupper
-    prepare nlist
- 
-    # Error checking for a and nlist is done by the SanityCheck 
-    # routine.
 
-    returnOnError -final
 
-    # NEXT, update the tactic, saving the undo script, and clearing
-    # historical state data.
-    set tactic [tactic get $parms(tactic_id)]
-    set undo [$tactic update_ {a nlist} [array get parms]]
+    method _validate {} {
+        # FIRST, prepare the parameters
+        my prepare tactic_id  -required -with {::strategy valclass tactic::SUPPORT}
+        my returnOnError
 
-    # NEXT, save the undo script
-    setundo $undo
+        set tactic [pot get $parms(tactic_id)]
+
+        my prepare name    -toupper   -with [list $tactic valName]
+        my prepare a       -toupper
+        my prepare nlist
+     
+        # Error checking for a and nlist is done by the SanityCheck 
+        # routine.
+    }
+
+    method _execute {{flunky ""}} {
+        set tactic [pot get $parms(tactic_id)]
+        my setundo [$tactic update_ {name a nlist} [array get parms]]
+    }
 }
+
 
 
 

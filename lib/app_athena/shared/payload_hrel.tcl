@@ -56,12 +56,14 @@ payload type define HREL {g mag} {
 #
 # Creates a new HREL payload.
 
-order define PAYLOAD:HREL:CREATE {
-    title "Create Payload: Horizontal Relationship"
+myorders define PAYLOAD:HREL:CREATE {
+    meta title "Create Payload: Horizontal Relationship"
 
-    options -sendstates PREP
+    meta sendstates PREP
 
-    form {
+    meta parmlist {iom_id longname g mag}
+
+    meta form {
         rcc "Message ID:" -for iom_id
         text iom_id -context yes
 
@@ -75,34 +77,36 @@ order define PAYLOAD:HREL:CREATE {
         mag mag
         label "points of change"
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare iom_id   -toupper   -required -type iom
-    prepare g        -toupper   -required -type group
-    prepare mag -num -toupper   -required -type qmag
 
-    returnOnError -final
 
-    # NEXT, put payload_type in the parmdict
-    set parms(payload_type) HREL
+    method _validate {} {
+        my prepare iom_id   -toupper   -required -type iom
+        my prepare g        -toupper   -required -type group
+        my prepare mag -num -toupper   -required -type qmag
+    }
 
-    # NEXT, create the payload
-    setundo [payload mutate create [array get parms]]
+    method _execute {{flunky ""}} {
+        set parms(payload_type) HREL
+    
+        my setundo [payload mutate create [array get parms]]
+    }
 }
 
 # PAYLOAD:HREL:UPDATE
 #
 # Updates existing HREL payload.
 
-order define PAYLOAD:HREL:UPDATE {
-    title "Update Payload: Horizontal Relationship"
-    options -sendstates PREP 
+myorders define PAYLOAD:HREL:UPDATE {
+    meta title "Update Payload: Horizontal Relationship"
+    meta sendstates PREP 
 
-    form {
+    meta parmlist {id longname g mag}
+
+    meta form {
         rcc "Payload:" -for id
-        key id -context yes -table gui_payloads_HREL \
+        dbkey id -context yes -table gui_payloads_HREL \
             -keys {iom_id payload_num} \
-            -loadcmd {orderdialog keyload id {g mag}}
+            -loadcmd {$order_ keyload id {g mag}}
 
         rcc "Description:" -for longname
         disp longname -width 60
@@ -114,16 +118,17 @@ order define PAYLOAD:HREL:UPDATE {
         mag mag
         label "points of change"
     }
-} {
-    # FIRST, prepare the parameters
-    prepare id         -required -type payload
-    prepare g          -toupper  -type group
-    prepare mag   -num -toupper  -type qmag
 
-    returnOnError -final
 
-    # NEXT, modify the payload
-    setundo [payload mutate update [array get parms]]
+    method _validate {} {
+        my prepare id         -required -type payload
+        my prepare g          -toupper  -type group
+        my prepare mag   -num -toupper  -type qmag
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [payload mutate update [array get parms]]
+    }
 }
 
 

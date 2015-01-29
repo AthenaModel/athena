@@ -93,36 +93,39 @@ snit::type nbrel {
 # Updates existing neighborhood relationships
 
 
-order define NBREL:UPDATE {
-    title "Update Neighborhood Relationship"
-    options -sendstates PREP
+myorders define NBREL:UPDATE {
+    meta title "Update Neighborhood Relationship"
+    meta sendstates PREP
 
-    form {
+    meta parmlist {id proximity}
+
+    meta form {
         rcc "Neighborhood:" -for id
-        key id -table gui_nbrel_mn -keys {m n} -labels {"Of" "With"} \
-            -loadcmd {orderdialog keyload id *}
+        dbkey id -table gui_nbrel_mn -keys {m n} -labels {"Of" "With"} \
+            -loadcmd {$order_ keyload id *}
 
         rcc "Proximity:" -for proximity
         enum proximity -listcmd {ptype prox-HERE names}
     }
-} {
-    # FIRST, prepare the parameters
-    prepare id            -toupper  -required -type nbrel
-    prepare proximity     -toupper            -type {ptype prox-HERE}
 
-    returnOnError
 
-    # NEXT, can't change relationship of a neighborhood with itself
-    lassign $parms(id) m n
-
-    if {$m eq $n} {
-        reject id "Cannot change the relationship of a neighborhood to itself."
+    method _validate {} {
+        my prepare id            -toupper  -required -type nbrel
+        my prepare proximity     -toupper            -type {ptype prox-HERE}
+    
+        my returnOnError
+    
+        # NEXT, can't change relationship of a neighborhood with itself
+        lassign $parms(id) m n
+    
+        if {$m eq $n} {
+            my reject id "Cannot change the relationship of a neighborhood to itself."
+        }
     }
 
-    returnOnError -final
-
-    # NEXT, modify the curve
-    setundo [nbrel mutate update [array get parms]]
+    method _execute {{flunky ""}} {
+        my setundo [nbrel mutate update [array get parms]]
+    }
 }
 
 
@@ -130,45 +133,48 @@ order define NBREL:UPDATE {
 #
 # Updates multiple existing neighborhood relationships
 
-order define NBREL:UPDATE:MULTI {
-    title "Update Multiple Neighborhood Relationships"
-    options -sendstates PREP
+myorders define NBREL:UPDATE:MULTI {
+    meta title "Update Multiple Neighborhood Relationships"
+    meta sendstates PREP
 
-    form {
+    meta parmlist {ids proximity}
+
+    meta form {
         rcc "IDs:" -for ids
-        multi ids -table gui_nbrel_mn -key id \
-            -loadcmd {orderdialog multiload ids *}
+        dbmulti ids -table gui_nbrel_mn -key id \
+            -loadcmd {$order_ multiload ids *}
 
         rcc "Proximity:" -for proximity
         enum proximity -listcmd {ptype prox-HERE names}
     }
-} {
-    # FIRST, prepare the parameters
-    prepare ids           -toupper  -required -listof nbrel
-    prepare proximity     -toupper            -type {ptype prox-HERE}
 
-    returnOnError
 
-    # NEXT, make sure that m != n.
-    foreach id $parms(ids) {
-        lassign $id m n
-            
-        if {$m eq $n} {
-            reject ids \
-                "Cannot change the relationship of a neighborhood to itself."
+    method _validate {} {
+        my prepare ids           -toupper  -required -listof nbrel
+        my prepare proximity     -toupper            -type {ptype prox-HERE}
+    
+        my returnOnError
+    
+        # NEXT, make sure that m != n.
+        foreach id $parms(ids) {
+            lassign $id m n
+                
+            if {$m eq $n} {
+                my reject ids \
+                    "Cannot change the relationship of a neighborhood to itself."
+            }
         }
     }
 
-    returnOnError -final
-
-    # NEXT, modify the curves
-    set undo [list]
-
-    foreach parms(id) $parms(ids) {
-        lappend undo [nbrel mutate update [array get parms]]
+    method _execute {{flunky ""}} {
+        set undo [list]
+    
+        foreach parms(id) $parms(ids) {
+            lappend undo [nbrel mutate update [array get parms]]
+        }
+    
+        my setundo [join $undo \n]
     }
-
-    setundo [join $undo \n]
 }
 
 

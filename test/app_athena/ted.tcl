@@ -36,9 +36,7 @@ snit::type ted {
     typevariable cleanupTables {
         activity_nga
         actors
-        attrit_nf
-        attrit_nfg
-        bookmarks
+        beans
         caps
         cap_access
         cap_kn
@@ -63,7 +61,6 @@ snit::type ted {
         income_a
         ioms
         mads
-        magic_attrit
         nbhoods
         nbrel_mn
         orggroups
@@ -88,8 +85,6 @@ snit::type ted {
 
     # cleanupModules -- list of modules that need to be resync'd
     # after a test.
-    #
-    # TBD: Why don't we dbsync cif?  Should we "sim dbsync" instead?
 
     typevariable cleanupModules {
         nbhood
@@ -173,7 +168,8 @@ snit::type ted {
         DefineEntities
 
         # NEXT, Define Constraints
-        ::tcltest::testConstraint tk $::tkLoaded
+        ::tcltest::testConstraint tk    $::tkLoaded
+        ::tcltest::testConstraint notk  [expr !$::tkLoaded]
 
         # NEXT, define custom match algorithms.
         ::tcltest::customMatch dict     [mytypemethod MatchDict]
@@ -713,7 +709,6 @@ snit::type ted {
     # * Deletes all records from the $cleanupTables
     # * Clears the SQLITE_SEQUENCE table
     # * Resyncs the $cleanupModules with the RDB
-    # * Clears the CIF
     # * Resets the parms
     
     typemethod cleanup {} {
@@ -743,13 +738,14 @@ snit::type ted {
             {*}$module dbsync
         }
 
-        cif             clear
+        flunky          reset
         parm            reset
         bsys            clear
         econ            reset
         simclock        reset
         aram            clear
-        bean            reset
+        pot             reset
+        aam             reset
         strategy        init
         driver::abevent reset
     }
@@ -808,8 +804,8 @@ snit::type ted {
     # parmdict   The order's parameter dictionary, as a single
     #            argument or as multiple arguments.
     #
-    # Sends the order as the test client, and returns the result.
-    # If "-reject" is used, expects the order to be rejected.
+    # Sends the order in normal mode with transactions off, and returns 
+    # the result. If "-reject" is used, expects the order to be rejected.
 
     typemethod order {args} {
         # FIRST, is -reject specified?
@@ -833,30 +829,35 @@ snit::type ted {
         }
 
         # NEXT, send the order
-        if {$rejectFlag} {
-            set code [catch {
-                order send test $order $parmdict
-            } result opts]
+        try {
+            flunky transactions off
+            if {$rejectFlag} {
+                set code [catch {
+                    flunky senddict normal $order $parmdict
+                } result opts]
 
-            if {$code} {
-                if {[dict get $opts -errorcode] eq "REJECT"} {
+                if {$code} {
+                    if {[dict get $opts -errorcode] eq "REJECT"} {
 
-                    set    results "\n"
-                    foreach {parm error} $result {
-                        append results "        $parm [list $error]\n" 
+                        set    results "\n"
+                        foreach {parm error} $result {
+                            append results "        $parm [list $error]\n" 
+                        }
+                        append results "    "
+                        
+                        return $results
+                    } else {
+                        return {*}$opts $result
                     }
-                    append results "    "
-                    
-                    return $results
                 } else {
-                    return {*}$opts $result
+                    return -code error "Expected rejection, got ok"
                 }
+
             } else {
-                return -code error "Expected rejection, got ok"
+                flunky senddict normal $order $parmdict
             }
-        } else {
-            # Normal case; let nature take its course
-            return [order send test $order $parmdict]
+        } finally {
+            flunky transactions on
         }
     }
 
@@ -899,7 +900,7 @@ snit::type ted {
             ted order BLOCK:UPDATE block_id $bid {*}$args
         }
 
-        return [block get $bid]
+        return [pot get $bid]
     }
 
     # addcondition block typename ?parm value...?
@@ -918,7 +919,7 @@ snit::type ted {
             ted order CONDITION:${typename} condition_id $cid {*}$args
         }
 
-        return [condition get $cid]
+        return [pot get $cid]
     }
 
     # addtactic block typename ?parm value...?
@@ -937,7 +938,7 @@ snit::type ted {
             ted order TACTIC:${typename} tactic_id $tid {*}$args
         }
 
-        return [tactic get $tid]
+        return [pot get $tid]
     }
 
     # deploy n g personnel
@@ -1002,7 +1003,7 @@ snit::type ted {
 
         set pdict [dict create]
 
-        foreach parm [order parms $order] {
+        foreach parm [myorders parms $order] {
             dict set pdict $parm [dict get $tdict $parm]
         }
 
@@ -1026,7 +1027,7 @@ snit::type ted {
 
         set pdict [dict create]
 
-        foreach parm [order parms $order] {
+        foreach parm [myorders parms $order] {
             dict set pdict $parm [dict get $cdict $parm]
         }
 

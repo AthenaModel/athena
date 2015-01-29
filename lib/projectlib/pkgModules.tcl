@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide projectlib 6.3.0a4
+package provide projectlib 6.3.0a5
 # -kite-provide-end
 
 #-----------------------------------------------------------------------
@@ -34,15 +34,17 @@ package require fileutil 1.14
 package require tls 1.6
 package require tdom 0.8
 package require struct::set 2.2
-package require kiteutils 0.4.3
-package require marsutil 3.0.4
-package require simlib 3.0.4
+package require kiteutils 0.4.5
+package require marsutil 3.0.9
+package require simlib 3.0.9
 # -kite-require-end
 
 package require kiteinfo
 
 #-----------------------------------------------------------------------
 # Namespace definition
+
+catch {rename echo ""} ;# tkcon
 
 namespace import ::kiteutils::*
 namespace import ::marsutil::* 
@@ -83,11 +85,11 @@ source [file join $::projectlib::library experimentdb.tcl   ]
 source [file join $::projectlib::library gofer.tcl          ]
 source [file join $::projectlib::library field_types.tcl    ]
 source [file join $::projectlib::library rolemap.tcl        ]
-source [file join $::projectlib::library oohelpers.tcl      ]
-source [file join $::projectlib::library beanclass.tcl      ]
+source [file join $::projectlib::library beanpot.tcl        ]
 source [file join $::projectlib::library bean.tcl           ]
 source [file join $::projectlib::library clipboardx.tcl     ]
 source [file join $::projectlib::library httpagent.tcl      ]
 source [file join $::projectlib::library httpagentsim.tcl   ]
 source [file join $::projectlib::library wmsclient.tcl      ]
 source [file join $::projectlib::library wfsclient.tcl      ]
+

@@ -136,14 +136,18 @@ tactic define ABSIT "Abstract Situation" {system actor} -onlock {
 #
 # Creates/Updates ABSIT tactic.
 
-order define TACTIC:ABSIT {
-    title "Tactic: Abstract Situation"
-    options -sendstates PREP
+myorders define TACTIC:ABSIT {
+    meta title      "Tactic: Abstract Situation"
+    meta sendstates PREP
+    meta parmlist {tactic_id name n stype coverage resolver duration}
 
-    form {
+    meta form {
         rcc "Tactic ID" -for tactic_id
         text tactic_id -context yes \
             -loadcmd {beanload}
+
+        rcc "Name:" -for name
+        text name -width 20
 
         rcc "Neighborhood:" -for n
         nbhood n
@@ -162,37 +166,40 @@ order define TACTIC:ABSIT {
         label "weeks"
     }
 
-} {
-    # FIRST, prepare the parameters
-    prepare tactic_id  -required -type tactic::ABSIT
-    returnOnError
 
-    set tactic [tactic get $parms(tactic_id)]
 
-    # Validation of initially invalid items or contingent items
-    # takes place on sanity check.
-    prepare n         -toupper
-    prepare stype     -toupper
-    prepare coverage  -num       -type rfraction
-    prepare resolver  -toupper
-    prepare duration  -num       -type iticks
+    method _validate {} {
+        my prepare tactic_id  -required -with {::strategy valclass tactic::ABSIT}
+        my returnOnError
 
-    returnOnError
+        set tactic [pot get $parms(tactic_id)]
 
-    validate coverage {
-        if {$parms(coverage) == 0.0} {
-            reject coverage "Coverage must be greater than 0."
+        # Validation of initially invalid items or contingent items
+        # takes place on sanity check.
+        my prepare name      -toupper   -with [list $tactic valName]
+        my prepare n         -toupper
+        my prepare stype     -toupper
+        my prepare coverage  -num       -type rfraction
+        my prepare resolver  -toupper
+        my prepare duration  -num       -type iticks
+
+        my returnOnError
+
+        my checkon coverage {
+            if {$parms(coverage) == 0.0} {
+                my reject coverage "Coverage must be greater than 0."
+            }
         }
     }
 
-    returnOnError -final
-
-
-    # NEXT, modify the tactic
-    setundo [$tactic update_ {
-        n stype coverage inception resolver duration
-    } [array get parms]]
+    method _execute {{flunky ""}} {
+        set tactic [pot get $parms(tactic_id)]
+        my setundo [$tactic update_ {
+            name n stype coverage inception resolver duration
+        } [array get parms]]
+    }
 }
+
 
 
 

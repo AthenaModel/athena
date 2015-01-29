@@ -49,6 +49,7 @@ order CONDITION:COMPARE "Condition: Compare Numbers" {
 
     <parmlist>
     <condition_ parm condition_id -required>
+    <condition_ parm name -optional>
     <condition_compare parms -optional -tags update>
     </parmlist>
 }
@@ -59,6 +60,7 @@ order CONDITION:CONTROL "Condition: Control of Neighborhoods" {
 
     <parmlist>
     <condition_ parm condition_id -required>
+    <condition_ parm name -optional>
     <condition_control parms -optional -tags update>
     </parmlist>
 }
@@ -69,6 +71,7 @@ order CONDITION:EXPR "Condition: Boolean Expression" {
 
     <parmlist>
     <condition_ parm condition_id -required>
+    <condition_ parm name -optional>
     <condition_expr parms -optional -tags update>
     </parmlist>
 }

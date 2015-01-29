@@ -4,6 +4,8 @@
 
 <ul>
   <li> <xref athena(1)>: The Athena simulation.
+  <li> <link "arachne.html" "Arachne">: Athena Web/Batch Back End
+       Interface Specification.
   <li> <xref athena_batch(1)>: Athena batch mode.
   <li> <link "build_notes.html" "Build Notes">: Details of each
        Athena build.

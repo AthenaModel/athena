@@ -98,6 +98,28 @@ namespace eval ::athena_test::tests:: {
         mode {invalid value "FOO", should be one of: ALL, EXACT, UPTO, PERCENT, EXCESS}
     }
 
+    test TACTIC:DEPOSIT-1.5 {invalid name} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:DEPOSIT tactic_id [$T1 id] name 1234
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Identifiers begin with a letter and contain only letters and digits.}
+    }
+
+    test TACTIC:DEPOSIT-1.6 {duplicate name} -setup {
+        setup
+        set T2 [ted addtactic $B1 ABSIT]
+    } -body {
+        ted order -reject TACTIC:DEPOSIT tactic_id [$T1 id] \
+            name [$T2 get name]
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Name already exists: "T2"}
+    }
+
     test TACTIC:DEPOSIT-2.1 {tactic updated: ALL} -setup {
         setup
     } -body {
@@ -114,8 +136,10 @@ namespace eval ::athena_test::tests:: {
         faildict   {}
         id         *
         mode       ALL
-        parent     ::bean::block*
+        name       T*
+        parent     *
         percent    0.0
+        pot        ::pot
         state      normal
     }
 
@@ -136,8 +160,10 @@ namespace eval ::athena_test::tests:: {
         faildict   {}
         id         *
         mode       EXACT
-        parent     ::bean::block*
+        name       T*
+        parent     *
         percent    0.0
+        pot        ::pot
         state      normal
     }
 
@@ -158,8 +184,10 @@ namespace eval ::athena_test::tests:: {
         faildict   {}
         id         *
         mode       UPTO
-        parent     ::bean::block*
+        name       T*
+        parent     *
         percent    0.0
+        pot        ::pot
         state      normal
     }
 
@@ -180,8 +208,10 @@ namespace eval ::athena_test::tests:: {
         faildict   {}
         id         *
         mode       PERCENT
-        parent     ::bean::block*
+        name       T*
+        parent     *
         percent    10.0
+        pot        ::pot
         state      normal
     }
 
@@ -202,8 +232,10 @@ namespace eval ::athena_test::tests:: {
         faildict   {}
         id         *
         mode       EXCESS
-        parent     ::bean::block*
+        name       T*
+        parent     *
         percent    0.0
+        pot        ::pot
         state      normal
     }
 
@@ -222,7 +254,7 @@ namespace eval ::athena_test::tests:: {
         ted order TACTIC:DEPOSIT tactic_id [$T1 id] mode EXACT amount 10.0
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

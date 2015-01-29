@@ -1,12 +1,9 @@
 # TODO.md - Athena TODO List
 
-* Verify that 'athena_test all' runs successfully.  DONE
-* Make app_athena/all_tests.test run all tests. DONE
-* Document ted somewhere. DONE
-* Build the on-line help. DONE.
-* Add source and docs distributions. DONE.
-* Update [package requires] in all man pages. DONE
-* Cleanup osdir. DONE
-* Use standard app loader scripts. DONE
-* Verify that mods work. DONE
-* Write cellide manpage.
+- Write cellide manpage.
+- After all orders are converted:
+-   Add "monitor" flag to athena_flunky; if off, no RDB monitoring.
+-   Update "call" executive command to disable monitoring temporarily
+    and send <DbSync> after.
+-   Retrieve orderx.svg, update, save in Mars.
+

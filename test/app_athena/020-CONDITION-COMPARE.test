@@ -86,6 +86,28 @@ namespace eval ::athena_test::tests:: {
         comp {invalid value "NONESUCH", should be one of: EQ,*}
     }
 
+    test CONDITION:COMPARE-1.4 {invalid name} -setup {
+        setup
+    } -body {
+        ted order -reject CONDITION:COMPARE condition_id [$C1 id] name 1234
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Identifiers begin with a letter and contain only letters and digits.}
+    }
+
+    test CONDITION:COMPARE-1.5 {duplicate name} -setup {
+        setup
+        set C2 [ted addcondition $B1 COMPARE]
+    } -body {
+        ted order -reject CONDITION:COMPARE condition_id [$C1 id] \
+            name [$C2 get name]
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Name already exists as condition: "C2"}
+    }
+
     test CONDITION:COMPARE-2.1 {condition updated} -setup {
         setup
     } -body {
@@ -102,7 +124,9 @@ namespace eval ::athena_test::tests:: {
         comp    GT
         id      *
         metflag {}
-        parent  ::bean::block*
+        name    C*
+        parent  *
+        pot     ::pot
         state   normal
         x       {_type NUMBER _rule BY_VALUE raw_value 5.0}
         y       {_type NUMBER _rule BY_VALUE raw_value 10.0}
@@ -119,7 +143,9 @@ namespace eval ::athena_test::tests:: {
         comp    EQ
         id      *
         metflag {}
-        parent  ::bean::block*
+        name    C*
+        parent  *
+        pot     ::pot
         state   invalid
         x       NONESUCH
         y       {_type NUMBER _rule BY_VALUE raw_value 0}
@@ -140,7 +166,7 @@ namespace eval ::athena_test::tests:: {
         ted order CONDITION:COMPARE condition_id [$C1 id] comp LT
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

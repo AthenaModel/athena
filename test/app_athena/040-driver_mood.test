@@ -58,7 +58,6 @@ namespace eval ::athena_test::tests:: {
     proc setup {delta} {
         # FIRST, other rule sets shouldn't muddy the waters.
         parm set dam.CONSUMP.active no
-        parm set dam.PRESENCE.active no
         parm set dam.UNEMP.active no
         parm set dam.ENI.active no
         parm set dam.ENERGY.active no

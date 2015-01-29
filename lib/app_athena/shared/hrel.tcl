@@ -187,37 +187,48 @@ snit::type hrel {
 #
 # Deletes existing relationship override
 
-order define HREL:RESTORE {
-    title "Restore Baseline Horizontal Relationship"
-    options \
-        -sendstates PREP
+myorders define HREL:RESTORE {
+    meta title "Restore Baseline Horizontal Relationship"
+    meta sendstates PREP
 
-    form {
+    meta parmlist {id}
+
+    meta form {
         # Form not used in dialog.
-        key id -table gui_hrel_view -keys {f g} -labels {Of With}
+        dbkey id -table gui_hrel_view -keys {f g} -labels {Of With}
     }
-} {
-    # FIRST, prepare the parameters
-    prepare id       -toupper  -required -type hrel
 
-    returnOnError -final
 
-    # NEXT, delete the record
-    setundo [hrel mutate delete $parms(id)]
+    method _validate {} {
+        # FIRST, prepare the parameters
+        my prepare id  -toupper  -required -type hrel
+    }
+
+    method _execute {{flunky ""}} {
+        # NEXT, delete the record
+        my setundo [hrel mutate delete $parms(id)]
+    }
 }
 
 # HREL:OVERRIDE
 #
 # Updates existing override
 
-order define HREL:OVERRIDE {
-    title "Override Baseline Horizontal Relationship"
-    options -sendstates PREP
+myorders define HREL:OVERRIDE {
+    meta title "Override Baseline Horizontal Relationship"
+    meta sendstates PREP
 
-    form {
+    meta parmlist {
+        id 
+        base 
+        {hist_flag 0}
+        current
+    }
+
+    meta form {
         rcc "Groups:" -for id
-        key id -table gui_hrel_view -keys {f g} -labels {Of With} \
-            -loadcmd {orderdialog keyload id *}
+        dbkey id -table gui_hrel_view -keys {f g} -labels {Of With} \
+            -loadcmd {$order_ keyload id *}
 
         rcc "Baseline:" -for base
         rel base
@@ -231,20 +242,22 @@ order define HREL:OVERRIDE {
             }
         }
     }
-} {
-    # FIRST, prepare the parameters
-    prepare id        -toupper  -required -type hrel
-    prepare base      -toupper  -num      -type qaffinity
-    prepare hist_flag           -num      -type snit::boolean
-    prepare current   -toupper  -num      -type qaffinity 
 
-    returnOnError -final
 
-    # NEXT, modify the curve
-    if {[hrel exists $parms(id)]} {
-        setundo [hrel mutate update [array get parms]]
-    } else {
-        setundo [hrel mutate create [array get parms]]
+    method _validate {} {
+        # FIRST, prepare the parameters
+        my prepare id        -toupper  -required -type hrel
+        my prepare base      -toupper  -num      -type qaffinity
+        my prepare hist_flag           -num      -type snit::boolean
+        my prepare current   -toupper  -num      -type qaffinity 
+    }
+
+    method _execute {{flunky ""}} {
+        if {[hrel exists $parms(id)]} {
+            my setundo [hrel mutate update [array get parms]]
+        } else {
+            my setundo [hrel mutate create [array get parms]]
+        }
     }
 }
 
@@ -253,14 +266,21 @@ order define HREL:OVERRIDE {
 #
 # Updates multiple existing relationship overrides
 
-order define HREL:OVERRIDE:MULTI {
-    title "Override Multiple Baseline Horizontal Relationships"
-    options -sendstates PREP 
+myorders define HREL:OVERRIDE:MULTI {
+    meta title "Override Multiple Baseline Horizontal Relationships"
+    meta sendstates PREP 
+    
+    meta parmlist {
+        ids 
+        base
+        {hist_flag 0}
+        current
+    }
 
-    form {
+    meta form {
         rcc "IDs:" -for ids
-        multi ids -table gui_hrel_view -key id \
-            -loadcmd {orderdialog multiload ids *}
+        dbmulti ids -table gui_hrel_view -key id \
+            -loadcmd {$order_ multiload ids *}
 
         rcc "Baseline:" -for base
         rel base
@@ -274,28 +294,29 @@ order define HREL:OVERRIDE:MULTI {
             }
         }
     }
-} {
-    # FIRST, prepare the parameters
-    prepare ids       -toupper  -required -listof hrel
-    prepare base      -toupper  -num      -type qaffinity
-    prepare hist_flag           -num      -type snit::boolean
-    prepare current   -toupper  -num      -type qaffinity 
-
-    returnOnError -final
 
 
-    # NEXT, modify the records
-    set undo [list]
-
-    foreach parms(id) $parms(ids) {
-        if {[hrel exists $parms(id)]} {
-            lappend undo [hrel mutate update [array get parms]]
-        } else {
-            lappend undo [hrel mutate create [array get parms]]
-        }
+    method _validate {} {
+        # FIRST, prepare the parameters
+        my prepare ids       -toupper  -required -listof hrel
+        my prepare base      -toupper  -num      -type qaffinity
+        my prepare hist_flag           -num      -type snit::boolean
+        my prepare current   -toupper  -num      -type qaffinity 
     }
 
-    setundo [join $undo \n]
+    method _execute {{flunky ""}} {
+        set undo [list]
+    
+        foreach parms(id) $parms(ids) {
+            if {[hrel exists $parms(id)]} {
+                lappend undo [hrel mutate update [array get parms]]
+            } else {
+                lappend undo [hrel mutate create [array get parms]]
+            }
+        }
+    
+        my setundo [join $undo \n]
+    }
 }
 
 

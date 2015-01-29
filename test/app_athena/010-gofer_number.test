@@ -442,10 +442,10 @@ namespace eval ::athena_test::tests:: {
     test COVERAGE-1.1 {construct, valid} -setup {
         setup
     } -body {
-        ::gofer::NUMBER::COVERAGE construct BLUE PRESENCE NB1
+        ::gofer::NUMBER::COVERAGE construct BLUE PSYOP NB1
     } -cleanup {
         cleanup
-    } -result {g BLUE activity PRESENCE n NB1}
+    } -result {g BLUE activity PSYOP n NB1}
 
     test COVERAGE-2.1 {validate, valid} -setup {
         setup

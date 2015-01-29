@@ -38,10 +38,10 @@
     residents are affected, but those living by subsistence agriculture
     will be affected more than others.<p>
 
-    Note that DROUGHT is distinct from the NOWATER abstract situation,
-    which reflects a water supply that has been disabled by enemy action,
-    and also from the BADWATER abstract situation, which reflects a 
-    water supply that has been contaminated.
+    Note that DROUGHT is distinct from the level of potable WATER service
+    provided, which reflects a water supply that may have been compromised 
+    by some means, and also from the BADWATER abstract situation, which 
+    reflects a water supply that has been contaminated.
 } {
     #-------------------------------------------------------------------
     # Instance Variables
@@ -99,14 +99,19 @@
 #
 # Updates existing DROUGHT event.
 
-order define SIMEVENT:DROUGHT {
-    title "Event: Drought in Neighborhood"
-    options -sendstates WIZARD
+::wintel::orders define SIMEVENT:DROUGHT {
+    meta title "Event: Drought in Neighborhood"
 
-    form {
+    meta defaults {
+        event_id ""
+        duration ""
+        coverage ""
+    }
+
+    meta form {
         rcc "Event ID" -for event_id
         text event_id -context yes \
-            -loadcmd {beanload}
+            -loadcmd {::wintel::wizard beanload}
 
         rcc "Duration:" -for duration
         text duration -defvalue 1
@@ -116,23 +121,21 @@ order define SIMEVENT:DROUGHT {
         posfrac coverage
         label "Fraction of neighborhood"
     }
-} {
-    # FIRST, prepare the parameters
-    prepare event_id  -required -type ::wintel::simevent::DROUGHT
-    prepare duration  -num      -type ipositive
-    prepare coverage  -num      -type rposfrac
- 
-    returnOnError -final
+    
+    method _validate {} {
+        my prepare event_id  -required -with {::wintel::pot valclass ::wintel::simevent::DROUGHT}
+        my prepare duration  -num      -type ipositive
+        my prepare coverage  -num      -type rposfrac
+    }
 
-    # NEXT, update the event.
-    set e [::wintel::simevent get $parms(event_id)]
-    $e update_ {duration coverage} [array get parms]
+    method _execute {{flunky ""}} {
+        set e [::wintel::pot get $parms(event_id)]
+        $e update_ {duration coverage} [array get parms]
 
-    return
+        return
+    }
+
 }
-
-
-
 
 
 

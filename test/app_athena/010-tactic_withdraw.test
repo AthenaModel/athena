@@ -73,8 +73,10 @@ namespace eval ::athena_test::tests:: {
         faildict   {}
         id         *
         mode       ALL
-        parent     ::bean::block*
+        name       T*
+        parent     *
         percent    0.0
+        pot        ::pot
         state      normal
     }
 

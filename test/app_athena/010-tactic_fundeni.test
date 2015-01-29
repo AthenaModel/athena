@@ -96,8 +96,10 @@ namespace eval ::athena_test::tests:: {
         id         *
         los        100.0
         mode       ALL
-        parent     ::bean::block*
+        name       T*
+        parent     *
         percent    0.0
+        pot        ::pot
         state      invalid
     }
 

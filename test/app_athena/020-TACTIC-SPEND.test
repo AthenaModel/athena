@@ -180,6 +180,28 @@ namespace eval ::athena_test::tests:: {
         goods {At least one sector must have a positive share.}
     }
 
+    test TACTIC:SPEND-1.13 {invalid name} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:SPEND tactic_id [$T1 id] name 1234
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Identifiers begin with a letter and contain only letters and digits.}
+    }
+
+    test TACTIC:SPEND-1.14 {duplicate name} -setup {
+        setup
+        set T2 [ted addtactic $B1 ABSIT]
+    } -body {
+        ted order -reject TACTIC:SPEND tactic_id [$T1 id] \
+            name [$T2 get name]
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Name already exists: "T2"}
+    }
+
     test TACTIC:SPEND-2.1 {tactic updated, mode EXACT} -setup {
         setup
     } -body {
@@ -200,9 +222,11 @@ namespace eval ::athena_test::tests:: {
         goods      10
         id         *
         mode       EXACT
-        parent     ::bean::block*
+        name       T*
+        parent     *
         percent    0.0
         pop        1
+        pot        ::pot
         region     1
         state      normal
         world      1
@@ -228,9 +252,11 @@ namespace eval ::athena_test::tests:: {
         goods      10
         id         *
         mode       UPTO
-        parent     ::bean::block*
+        name       T*
+        parent     *
         percent    0.0
         pop        1
+        pot        ::pot
         region     1
         state      normal
         world      1
@@ -256,9 +282,11 @@ namespace eval ::athena_test::tests:: {
         goods      10
         id         *
         mode       PERCENT
-        parent     ::bean::block*
+        name       T*
+        parent     *
         percent    10.0
         pop        1
+        pot        ::pot
         region     1
         state      normal
         world      1
@@ -284,9 +312,11 @@ namespace eval ::athena_test::tests:: {
         goods      10
         id         *
         mode       EXCESS
-        parent     ::bean::block*
+        name       T*
+        parent     *
         percent    0.0
         pop        1
+        pot        ::pot
         region     1
         state      normal
         world      1
@@ -307,7 +337,7 @@ namespace eval ::athena_test::tests:: {
         ted order TACTIC:SPEND tactic_id [$T1 id] amount 10.0
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

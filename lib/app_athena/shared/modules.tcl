@@ -30,6 +30,7 @@ namespace eval ::app_athena_shared:: {
 source [file join $::app_athena_shared::library field_types.tcl        ]
 
 # NEXT, define the remaining modules in alphabetical order.
+
 source [file join $::app_athena_shared::library aam.tcl                ]
 source [file join $::app_athena_shared::library activity.tcl           ]
 source [file join $::app_athena_shared::library actor.tcl              ]
@@ -66,7 +67,6 @@ source [file join $::app_athena_shared::library appserver_topics.tcl   ]
 source [file join $::app_athena_shared::library apptypes.tcl           ]
 source [file join $::app_athena_shared::library autogen.tcl            ]
 source [file join $::app_athena_shared::library block.tcl              ]
-source [file join $::app_athena_shared::library bookmark.tcl           ]
 source [file join $::app_athena_shared::library bsys.tcl               ]
 source [file join $::app_athena_shared::library cap.tcl                ]
 source [file join $::app_athena_shared::library cash.tcl               ]
@@ -176,8 +176,4 @@ source [file join $::app_athena_shared::library tactic_withdraw.tcl    ]
 source [file join $::app_athena_shared::library unit.tcl               ]
 source [file join $::app_athena_shared::library view.tcl               ]
 source [file join $::app_athena_shared::library vrel.tcl               ]
-
-
-
-
 

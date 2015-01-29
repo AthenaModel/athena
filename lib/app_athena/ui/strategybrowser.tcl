@@ -304,7 +304,7 @@ snit::widget strategybrowser {
 
     method StrategyBlocks {op strategy_id block_id} {
         # FIRST, if it's not our strategy we don't care.
-        set s [strategy get $strategy_id]
+        set s [pot get $strategy_id]
 
         if {$info(agent) eq "" || $info(agent) ne [$s agent]} {
             return
@@ -689,13 +689,14 @@ snit::widget strategybrowser {
         install blist using beanbrowser $pane          \
             -beancmd        ""                         \
             -columnsorting 0                           \
-            -titlecolumns  2                           \
+            -titlecolumns  3                          \
             -displaycmd    [mymethod BListDisplay]     \
             -selectioncmd  [mymethod BListSelection]   \
             -cutcopycmd    [mymethod BListCutCopy]     \
             -pastecmd      [mymethod BListPaste]       \
             -layout [string map [list %D $::app::derivedfg] {
                 { id              "ID"                              }
+                { fullname        "Name"     -width 10              }
                 { statusicon      "Exec"     -align center          }
                 { state           "State"    -width 8               }
                 { intent          "Intent"   -width 30 -wrap yes    }
@@ -864,7 +865,7 @@ snit::widget strategybrowser {
         set id [lindex [$blist uid curselection] 0]
 
         if {$id ne ""} {
-            set newBlock [block get $id]
+            set newBlock [pot get $id]
         } else {
             set newBlock ""
         }
@@ -899,7 +900,7 @@ snit::widget strategybrowser {
         set data [list]
 
         foreach id $ids {
-            set bean [block get $id]
+            set bean [pot get $id]
             lappend copyData [$bean copydata]
         }
 
@@ -908,7 +909,7 @@ snit::widget strategybrowser {
 
         # NEXT, if the mode is cut delete the items.
         if {$mode eq "cut"} {
-            order send gui STRATEGY:BLOCK:DELETE ids $ids
+            flunky senddict gui STRATEGY:BLOCK:DELETE [ids $ids]
         }
 
         # NEXT, notify the user:
@@ -943,7 +944,7 @@ snit::widget strategybrowser {
         }
 
         # NEXT, begin an undo block
-        cif transaction "Paste Block(s)" {
+        flunky transaction "Paste Block(s)" {
             block paste $info(agent) $copysets
         }
 
@@ -960,7 +961,7 @@ snit::widget strategybrowser {
         set id [lindex [$blist uid curselection] 0]
 
         # NEXT, allow editing.
-        order enter BLOCK:UPDATE block_id $id
+        app enter BLOCK:UPDATE block_id $id
     }
 
     # BListAdd
@@ -968,7 +969,8 @@ snit::widget strategybrowser {
     # Creates a new block and adds it to the strategy.
     
     method BListAdd {} {
-        set block_id [order send gui STRATEGY:BLOCK:ADD agent $info(agent)]
+        set block_id [flunky senddict gui STRATEGY:BLOCK:ADD \
+                        [list agent $info(agent)]]
 
         $blist uid select $block_id
         $self BListEdit
@@ -986,7 +988,8 @@ snit::widget strategybrowser {
         set id [lindex [$blist uid curselection] 0]
 
         # NEXT, Change its priority.
-        order send gui STRATEGY:BLOCK:MOVE block_id $id where $where
+        flunky senddict gui STRATEGY:BLOCK:MOVE \
+            [list block_id $id where $where]
     }
 
 
@@ -1000,13 +1003,13 @@ snit::widget strategybrowser {
         set id [lindex [$blist uid curselection] 0]
 
         # NEXT, get the block's state
-        set block [block get $id]
+        set block [pot get $id]
         set state [$block state]
 
         if {$state eq "disabled"} {
-            order send gui BLOCK:STATE block_id $id state normal
+            flunky senddict gui BLOCK:STATE [list block_id $id state normal]
         } else {
-            order send gui BLOCK:STATE block_id $id state disabled
+            flunky senddict gui BLOCK:STATE [list block_id $id state disabled]
         }
     }
 
@@ -1034,7 +1037,8 @@ snit::widget strategybrowser {
     # Deletes the selected block(s).
 
     method BListDelete {} {
-        order send gui STRATEGY:BLOCK:DELETE ids [$blist uid curselection]
+        flunky senddict gui STRATEGY:BLOCK:DELETE \
+            [list ids [$blist uid curselection]]
     }
 
     #-------------------------------------------------------------------
@@ -1156,7 +1160,7 @@ snit::widget strategybrowser {
         install ctab using beanbrowser $pane          \
             -beancmd        ""                        \
             -columnsorting 0                          \
-            -titlecolumns  2                          \
+            -titlecolumns  3                          \
             -height        5                          \
             -displaycmd    [mymethod CTabDisplay]     \
             -selectioncmd  [mymethod CTabSelection]   \
@@ -1164,6 +1168,7 @@ snit::widget strategybrowser {
             -pastecmd      [mymethod CTabPaste]       \
             -layout [string map [list %D $::app::derivedfg] {
                 { id              "ID"                               }
+                { fullname        "Name"      -width 10              }
                 { statusicon      "Flag"                             }
                 { state           "State"     -width 8               }
                 { narrative       "Narrative" -width 60 -wrap yes    }
@@ -1310,7 +1315,7 @@ snit::widget strategybrowser {
         set data [list]
 
         foreach id $ids {
-            set bean [condition get $id]
+            set bean [pot get $id]
             lappend copyData [$bean copydata]
         }
 
@@ -1319,7 +1324,7 @@ snit::widget strategybrowser {
 
         # NEXT, if the mode is cut delete the items.
         if {$mode eq "cut"} {
-            order send gui BLOCK:CONDITION:DELETE ids $ids
+            flunky senddict gui BLOCK:CONDITION:DELETE [list ids $ids]
         }
 
         # NEXT, notify the user:
@@ -1354,7 +1359,7 @@ snit::widget strategybrowser {
         }
 
         # NEXT, begin an undo block
-        cif transaction "Paste Condition(s)" {
+        flunky transaction "Paste Condition(s)" {
             condition paste [$info(block) id] $copysets
         }
 
@@ -1386,9 +1391,9 @@ snit::widget strategybrowser {
     
     method CTabAdd {typename} {
         # FIRST, create the condition.
-        set condition_id [order send gui BLOCK:CONDITION:ADD \
-            block_id [$info(block) id] \
-            typename $typename]
+        set condition_id [flunky senddict gui BLOCK:CONDITION:ADD \
+            [list block_id [$info(block) id] \
+                typename $typename]]
 
         # NEXT, force a reload of the list, so that we can select
         # the new condition.  Select it, and popup the edit dialog.
@@ -1405,10 +1410,10 @@ snit::widget strategybrowser {
     method CTabEdit {} {
         # FIRST, there should be only one selected.
         set id [lindex [$ctab uid curselection] 0]
-        set cond [condition get $id]
+        set cond [pot get $id]
 
         # NEXT, allow editing.
-        order enter CONDITION:[$cond typename] condition_id $id
+        app enter CONDITION:[$cond typename] condition_id $id
     }
 
     # CTabState
@@ -1421,13 +1426,13 @@ snit::widget strategybrowser {
         set id [lindex [$ctab uid curselection] 0]
 
         # NEXT, get the condition's state
-        set cond [condition get $id]
+        set cond [pot get $id]
         set state [$cond state]
 
         if {$state eq "disabled"} {
-            order send gui CONDITION:STATE condition_id $id state normal
+            flunky send gui CONDITION:STATE -condition_id $id -state normal
         } else {
-            order send gui CONDITION:STATE condition_id $id state disabled
+            flunky send gui CONDITION:STATE -condition_id $id -state disabled
         }
     }
 
@@ -1439,7 +1444,8 @@ snit::widget strategybrowser {
 
     method CTabDelete {} {
         # FIRST, delete all selected conditions.
-        order send gui BLOCK:CONDITION:DELETE ids [$ctab uid curselection]
+        flunky senddict gui BLOCK:CONDITION:DELETE \
+            [list ids [$ctab uid curselection]]
     }
 
     #-------------------------------------------------------------------
@@ -1456,7 +1462,7 @@ snit::widget strategybrowser {
         install ttab using beanbrowser $pane          \
             -beancmd       ""                         \
             -columnsorting 0                          \
-            -titlecolumns  2                          \
+            -titlecolumns  3                          \
             -height        5                          \
             -displaycmd    [mymethod TTabDisplay]     \
             -selectioncmd  [mymethod TTabSelection]   \
@@ -1464,6 +1470,7 @@ snit::widget strategybrowser {
             -pastecmd      [mymethod TTabPaste]       \
             -layout [string map [list %D $::app::derivedfg] {
                 { id              "ID"                               }
+                { fullname        "Name"      -width 10              }
                 { statusicon      "Exec"      -align center          }
                 { state           "State"     -width 8               }
                 { narrative       "Narrative" -width 60 -wrap yes    }
@@ -1658,7 +1665,7 @@ snit::widget strategybrowser {
         set data [list]
 
         foreach id $ids {
-            set bean [tactic get $id]
+            set bean [pot get $id]
             lappend copyData [$bean copydata]
         }
 
@@ -1667,7 +1674,7 @@ snit::widget strategybrowser {
 
         # NEXT, if the mode is cut delete the items.
         if {$mode eq "cut"} {
-            order send gui BLOCK:TACTIC:DELETE ids $ids
+            flunky senddict gui BLOCK:TACTIC:DELETE [list ids $ids]
         }
 
         # NEXT, notify the user:
@@ -1702,7 +1709,7 @@ snit::widget strategybrowser {
         }
 
         # NEXT, begin an undo block
-        cif transaction "Paste Tactic(s)" {
+        flunky transaction "Paste Tactic(s)" {
             tactic paste [$info(block) id] $copysets
         }
 
@@ -1740,9 +1747,9 @@ snit::widget strategybrowser {
     
     method TTabAdd {typename} {
         # FIRST, create the tactic.
-        set tactic_id [order send gui BLOCK:TACTIC:ADD \
-            block_id [$info(block) id] \
-            typename $typename]
+        set tactic_id [flunky senddict gui BLOCK:TACTIC:ADD \
+            [list block_id [$info(block) id] \
+                typename $typename]]
 
         # NEXT, force a reload of the list, so that we can select
         # the new tactic.  Select it, and popup the edit dialog.
@@ -1760,10 +1767,10 @@ snit::widget strategybrowser {
         # FIRST, there should be only one selected.
         set id [lindex [$ttab uid curselection] 0]
 
-        set tactic [tactic get $id]
+        set tactic [pot get $id]
 
         # NEXT, allow editing.
-        order enter TACTIC:[$tactic typename] tactic_id $id
+        app enter TACTIC:[$tactic typename] tactic_id $id
     }
 
 
@@ -1777,13 +1784,13 @@ snit::widget strategybrowser {
         set id [lindex [$ttab uid curselection] 0]
 
         # NEXT, get the tactic's state
-        set tactic [tactic get $id]
+        set tactic [pot get $id]
         set state [$tactic state]
 
         if {$state eq "disabled"} {
-            order send gui TACTIC:STATE tactic_id $id state normal
+            flunky send gui TACTIC:STATE -tactic_id $id -state normal
         } else {
-            order send gui TACTIC:STATE tactic_id $id state disabled
+            flunky send gui TACTIC:STATE -tactic_id $id -state disabled
         }
     }
 
@@ -1798,7 +1805,7 @@ snit::widget strategybrowser {
         set id [lindex [$ttab uid curselection] 0]
 
         # NEXT, Change its priority.
-        order send gui BLOCK:TACTIC:MOVE tactic_id $id where $where
+        flunky send gui BLOCK:TACTIC:MOVE -tactic_id $id -where $where
     }
 
 
@@ -1810,7 +1817,7 @@ snit::widget strategybrowser {
 
     method TTabDelete {} {
         # FIRST, delete all selected tactics.
-        order send gui BLOCK:TACTIC:DELETE ids [$ttab uid curselection]
+        flunky send gui BLOCK:TACTIC:DELETE -ids [$ttab uid curselection]
     }
 
     #-------------------------------------------------------------------
@@ -1837,9 +1844,9 @@ snit::widget strategybrowser {
         }
 
         # NEXT, set the block's parameter.
-        order send gui BLOCK:UPDATE \
-            block_id  [$info(block) id] \
-            $name     $value
+        flunky send gui BLOCK:UPDATE \
+            -block_id  [$info(block) id] \
+            -$name     $value
     }
 
     

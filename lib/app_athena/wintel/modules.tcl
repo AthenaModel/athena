@@ -25,6 +25,10 @@ namespace eval ::wintel:: {
 
 # NEXT, define the remaining modules in alphabetical order.
 
+# Order Set for this window alone
+
+::marsutil::order_set create ::wintel::orders
+
 # Non-GUI modules
 source [file join $::wintel::library wizard.tcl            ]
 source [file join $::wintel::library wizdb.tcl             ]
@@ -39,7 +43,7 @@ source [file join $::wintel::library simevent_drought.tcl  ]
 source [file join $::wintel::library simevent_explosion.tcl]
 source [file join $::wintel::library simevent_flood.tcl    ]
 source [file join $::wintel::library simevent_riot.tcl     ]
-source [file join $::wintel::library simevent_traffic.tcl  ]
+source [file join $::wintel::library simevent_transport.tcl]
 source [file join $::wintel::library simevent_violence.tcl ]
 
 # GUI modules

@@ -193,14 +193,18 @@ tactic define MOBILIZE "Mobilize Personnel" {actor} {
 # has to check that anyway, it's OK; it simply means that the pasted
 # tactic's state will be "invalid" to begin with.
 
-order define TACTIC:MOBILIZE {
-    title "Tactic: Mobilize Personnel"
-    options -sendstates PREP
+myorders define TACTIC:MOBILIZE {
+    meta title      "Tactic: Mobilize Personnel"
+    meta sendstates PREP
+    meta parmlist {tactic_id name g mode personnel percent}
 
-    form {
+    meta form {
         rcc "Tactic ID" -for tactic_id
         text tactic_id -context yes \
             -loadcmd {beanload}
+
+        rcc "Name:" -for name
+        text name -width 20
 
         rcc "Group:" -for g
         enum g -listcmd {tactic groupsOwnedByAgent $tactic_id}
@@ -229,51 +233,54 @@ order define TACTIC:MOBILIZE {
             }
         }
     }
-} {
-    # FIRST, prepare the parameters
-    prepare tactic_id  -required -type tactic::MOBILIZE
-    prepare g          -toupper  -type  ident
-    prepare mode       -toupper  -selector
-    prepare personnel  -num      -type  iquantity
-    prepare percent    -num      -type  rpercent
 
-    returnOnError
 
-    # NEXT, get the tactic and do cross checks.
-    set tactic [tactic get $parms(tactic_id)]
+    method _validate {} {
+        # FIRST, prepare the parameters
+        my prepare tactic_id  -required -with {::strategy valclass tactic::MOBILIZE}
+        my returnOnError
 
-    fillparms parms [$tactic getdict]
+        set tactic [pot get $parms(tactic_id)]
 
-    switch -exact -- $parms(mode) {
-        ADD    -
-        UPTO   -
-        ENSURE {
-            if {$parms(personnel) == 0} {
-                reject personnel "Mode requires personnel greater than 0."
+        my prepare name       -toupper  -with [list $tactic valName]
+        my prepare g          -toupper  -type  ident
+        my prepare mode       -toupper  -selector
+        my prepare personnel  -num      -type  iquantity
+        my prepare percent    -num      -type  rpercent
+
+        my returnOnError
+
+        fillparms parms [$tactic getdict]
+
+        switch -exact -- $parms(mode) {
+            ADD    -
+            UPTO   -
+            ENSURE {
+                if {$parms(personnel) == 0} {
+                    my reject personnel "Mode requires personnel greater than 0."
+                }
             }
-        }
 
-        PERCENT {
-            if {$parms(percent) == 0.0} {
-                reject percent "Mode requires a percentage greater than 0.0%."
+            PERCENT {
+                if {$parms(percent) == 0.0} {
+                    my reject percent "Mode requires a percentage greater than 0.0%."
+                }
             }
-        }
 
-        default {
-            error "Unexpected mode: \"$parms(mode)\""
+            default {
+                error "Unexpected mode: \"$parms(mode)\""
+            }
         }
     }
 
-    returnOnError -final
-
-    # NEXT, update the tactic, saving the undo script
-    set undo [$tactic update_ {g mode personnel percent} [array get parms]]
-
-    # NEXT, modify the tactic
-    setundo $undo
-
-    return
+    method _execute {{flunky ""}} {
+        set tactic [pot get $parms(tactic_id)]
+        my setundo [$tactic update_ {
+            name g mode personnel percent
+        } [array get parms]]
+    }
 }
+
 
 
 

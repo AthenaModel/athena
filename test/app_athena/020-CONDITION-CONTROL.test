@@ -105,6 +105,28 @@ namespace eval ::athena_test::tests:: {
         anyall {invalid value "NONESUCH", should be one of: ANY, ALL}
     }
 
+    test CONDITION:CONTROL-1.6 {invalid name} -setup {
+        setup
+    } -body {
+        ted order -reject CONDITION:CONTROL condition_id [$C1 id] name 1234
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Identifiers begin with a letter and contain only letters and digits.}
+    }
+
+    test CONDITION:CONTROL-1.7 {duplicate name} -setup {
+        setup
+        set C2 [ted addcondition $B1 COMPARE]
+    } -body {
+        ted order -reject CONDITION:CONTROL condition_id [$C1 id] \
+            name [$C2 get name]
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Name already exists as condition: "C2"}
+    }
+
     test CONDITION:CONTROL-2.1 {condition updated} -setup {
         setup
     } -body {
@@ -123,8 +145,10 @@ namespace eval ::athena_test::tests:: {
         anyall  ANY
         id      *
         metflag {}
+        name    C*
         nlist   {_type NBHOODS _rule BY_VALUE nlist {NB1 NB2}}
-        parent  ::bean::block*
+        parent  *
+        pot     ::pot
         sense   DOESNT
         state   normal
     }
@@ -141,8 +165,10 @@ namespace eval ::athena_test::tests:: {
         anyall  ALL
         id      *
         metflag {}
+        name    C*
         nlist   NONESUCH
-        parent  ::bean::block*
+        parent  *
+        pot     ::pot
         sense   DOES
         state   invalid
     }
@@ -162,7 +188,7 @@ namespace eval ::athena_test::tests:: {
         ted order CONDITION:CONTROL condition_id [$C1 id] a JOE
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

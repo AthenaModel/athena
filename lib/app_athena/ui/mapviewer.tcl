@@ -263,6 +263,25 @@ snit::widget mapviewer {
         zoom        "100%"
     }
 
+    # Default map data array; used when no map image is loaded
+    # The default map is a matrix of plus signs used as map markers
+    #
+    # width   - width  of the default canvas
+    # height  - height of the default canvas
+    # dx      - deltax between map markers
+    # dy      - deltay between map markers
+    # color   - color of map markers
+    # ll      - line length of map markers
+
+    variable dmap -array {
+        width    1000
+        height   1000
+        dx       40
+        dy       40
+        color    #B2B2B2
+        ll       2
+    }
+
     #-------------------------------------------------------------------
     # Constructor
 
@@ -428,22 +447,22 @@ snit::widget mapviewer {
                  -style   Toolbutton                            \
                  -image   [list ${type}::icon::nbpoly           \
                                disabled ${type}::icon::nbpolyd] \
-                 -command [list order enter NBHOOD:CREATE]]     \
+                 -command [list app enter NBHOOD:CREATE]]     \
             order NBHOOD:CREATE
 
         DynamicHelp::add $win.vbar.nbhood \
-            -text [order title NBHOOD:CREATE]
+            -text [myorders title NBHOOD:CREATE]
 
         cond::available control \
             [ttk::button $win.vbar.newabsit                                  \
                  -style   Toolbutton                                         \
                  -image   [list ${type}::icon::abpoly                       \
                                disabled ${type}::icon::abpolyd]             \
-                 -command [list order enter ABSIT:CREATE]] \
+                 -command [list app enter ABSIT:CREATE]] \
             order ABSIT:CREATE
 
         DynamicHelp::add $win.vbar.newabsit \
-            -text [order title ABSIT:CREATE]
+            -text [myorders title ABSIT:CREATE]
 
         pack $win.vbar.sep       -side top -fill x -pady 2
         pack $win.vbar.nbhood    -side top -fill x -padx 2
@@ -478,6 +497,8 @@ snit::widget mapviewer {
         notifier bind ::sim      <Tick>        $self [mymethod dbsync]
         notifier bind ::map      <MapChanged>  $self [mymethod dbsync]
         notifier bind ::order    <OrderEntry>  $self [mymethod OrderEntry]
+        notifier bind ::projectgui::order_dialog <OrderEntry>  \
+            $self [mymethod OrderEntry]
         notifier bind ::rdb      <nbhoods>     $self [mymethod EntityNbhood]
         notifier bind ::nbhood   <Stack>       $self [mymethod NbhoodStack]
         notifier bind ::rdb      <units>       $self [mymethod EntityUnit]
@@ -522,6 +543,9 @@ snit::widget mapviewer {
     method ZoomBoxSet {} {
         scan $view(zoom) "%d" factor
         $canvas zoom $factor
+        if {[map image] eq ""} {
+            $self DefaultMap $factor
+        }
     }
 
     # FillBoxPost
@@ -645,12 +669,23 @@ snit::widget mapviewer {
     # Clears the map; and redraws the scenario features
 
     method dbsync {} {
-        # FIRST, get the current map and projection
-        $canvas configure -map        [map image]
+        # FIRST, get the current projection
         $canvas configure -projection [map projection]
+        $canvas configure -map ""
 
         # NEXT, clear the canvas
         $canvas clear
+
+        # NEXT, either load the map image or set default
+        set img [map image]
+        if {$img ne ""} {
+            $canvas configure -map $img
+            $canvas refresh
+        } else { 
+            scan $view(zoom) "%d" factor
+            $self DefaultMap $factor
+        }
+
         $self IconDeleteAll
 
         # NEXT, update the set of fill tags
@@ -717,6 +752,46 @@ snit::widget mapviewer {
         return
     }
     
+    #-------------------------------------------------------------------
+    # DefaultMap
+    #
+    # zoom   - the current zoom factor of the map viewer
+    #
+    # This method is called if there's no map image data to display on
+    # the mapcanvas(n).  It set's the default map image as a 
+    # matrix of plus signs
+
+    method DefaultMap {zoom} {
+        let frac {double($zoom/100.0)}
+
+        # FIRST, load up the data from the default background array
+        # and scale it according to zoom factor
+        let px    {int($dmap(width)  * $frac)}
+        let py    {int($dmap(height) * $frac)}
+        let dx    {int($dmap(dx)     * $frac)}
+        let dy    {int($dmap(dy)     * $frac)}
+        let len   {int($dmap(ll)     * $frac)}
+
+        set color $dmap(color)
+
+        # NEXT, create the plus signs as canvas line objects and make
+        # sure they are at the bottom of the display stack
+        for {set x $dx} {$x < $px} {incr x $dx} {
+            for {set y $dy} {$y < $py} {incr y $dy} {
+                # Horizontal part
+                let x1 {$x-$len}
+                let x2 {$x+$len+1}
+                set l [$canvas create line $x1 $y $x2 $y -fill $color]
+                $canvas lower $l all
+
+                # Vertical part
+                let y1 {$y-$len}
+                let y2 {$y+$len+1}
+                set l [$canvas create line $x $y1 $x $y2 -fill $color]
+                $canvas lower $l all
+            }
+        }
+    }
 
     #===================================================================
     # Neighborhood Display and Behavior
@@ -955,7 +1030,7 @@ snit::widget mapviewer {
     # Pops up the create absit dialog with this location filled in.
 
     method NbhoodCreateAbsitHere {} {
-        order enter ABSIT:CREATE location $nbhoods(transref)
+        app enter ABSIT:CREATE location $nbhoods(transref)
     }
 
 
@@ -964,7 +1039,7 @@ snit::widget mapviewer {
     # Brings the transient neighborhood to the front
 
     method NbhoodBringToFront {} {
-        order send gui NBHOOD:RAISE [list n $nbhoods(trans)]
+        flunky senddict gui NBHOOD:RAISE [list n $nbhoods(trans)]
     }
 
 
@@ -973,7 +1048,7 @@ snit::widget mapviewer {
     # Sends the transient neighborhood to the back
 
     method NbhoodSendToBack {} {
-        order send gui NBHOOD:LOWER [list n $nbhoods(trans)]
+        flunky senddict gui NBHOOD:LOWER [list n $nbhoods(trans)]
     }
 
     #-------------------------------------------------------------------
@@ -1252,9 +1327,9 @@ snit::widget mapviewer {
         switch -exact $icons(itype-$cid) {
             unit {
                 if {[catch {
-                    order send gui UNIT:MOVE             \
+                    flunky senddict gui UNIT:MOVE [list  \
                         u        $icons(sid-$cid)        \
-                        location [$canvas icon ref $cid]
+                        location [$canvas icon ref $cid]]
                 }]} {
                     $self UnitDrawSingle $icons(sid-$cid)
                 }
@@ -1262,9 +1337,9 @@ snit::widget mapviewer {
 
             situation {
                 if {[catch {
-                    order send gui ABSIT:MOVE \
-                        s        $icons(sid-$cid)                 \
-                        location [$canvas icon ref $cid]
+                    flunky senddict gui ABSIT:MOVE [list \
+                        s        $icons(sid-$cid)        \
+                        location [$canvas icon ref $cid]]
                 }]} {
                     $self AbsitDrawSingle $icons(sid-$cid)
                 }
@@ -1546,7 +1621,7 @@ snit::widget mapviewer {
     # Pops up the "Update Abstract Situation" dialog for this unit
 
     method UpdateAbsit {} {
-        order enter ABSIT:UPDATE s $icons(context)
+        app enter ABSIT:UPDATE s $icons(context)
     }
 
     #-------------------------------------------------------------------

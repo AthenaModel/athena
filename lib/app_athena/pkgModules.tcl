@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide app_athena 6.3.0a4
+package provide app_athena 6.3.0a5
 # -kite-provide-end
 
 #-----------------------------------------------------------------------
@@ -35,7 +35,7 @@ set ::tkLoaded [expr {[info command tk] ne ""}]
 
 # -kite-require-start ADD EXTERNAL DEPENDENCIES
 package require projectlib
-package require -exact athena 6.3.0a4
+package require -exact athena 6.3.0a5
 
 namespace import ::projectlib::*
 namespace import ::athena::*
@@ -57,19 +57,23 @@ namespace eval ::app_athena:: {
     variable library [file dirname [info script]]
 }
 
+# Used to define and query orders.
+::marsutil::order_set create ::myorders ::athena_order 
+source [file join $::app_athena::library athena_order.tcl ]
+source [file join $::app_athena::library athena_flunky.tcl]
+
 #-----------------------------------------------------------------------
 # Load app_athena(n) modules
 
-source [file join $::app_athena::library main.tcl     ]
-source [file join $::app_athena::library mod.tcl      ]
-source [file join $::app_athena::library app.tcl      ]
-source [file join $::app_athena::library sim.tcl      ]
-source [file join $::app_athena::library engine.tcl   ]
-source [file join $::app_athena::library log.tcl      ]
-source [file join $::app_athena::library cif.tcl      ]
-source [file join $::app_athena::library map.tcl      ]
-source [file join $::app_athena::library sanity.tcl   ]
-source [file join $::app_athena::library axdb.tcl     ]
+source [file join $::app_athena::library main.tcl         ]
+source [file join $::app_athena::library mod.tcl          ]
+source [file join $::app_athena::library app.tcl          ]
+source [file join $::app_athena::library sim.tcl          ]
+source [file join $::app_athena::library engine.tcl       ]
+source [file join $::app_athena::library log.tcl          ]
+source [file join $::app_athena::library map.tcl          ]
+source [file join $::app_athena::library sanity.tcl       ]
+source [file join $::app_athena::library axdb.tcl         ]
 
 #-----------------------------------------------------------------------
 # Load app_athena(n) subpackages

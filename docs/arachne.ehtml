@@ -1,0 +1,161 @@
+<document "Arachne Interface Specification">
+
+<b NOTE:> This is a preliminary specification; the Arachne executable
+does not yet exist.<p>
+
+<hrule>
+
+<contents>
+
+<hrule>
+
+<preface changelog "Change Log">
+
+<changelog>
+
+<change 1/28/2015 Update will>
+Preliminary draft
+</change>
+</changelog>
+
+<hrule>
+
+<section overview "Overview">
+
+Arachne is a version of Athena intended to run as part of a web back-end in
+the cloud.  It is a non-GUI version intended to run in batch mode, given
+scripts; it also includes a web server that provides a RESTful interface
+to Athena's run-time data.<p>
+
+The purpose of this document is to specify Arachne's command-line and
+RESTful interface as an aid to web developers using Arachne in 
+production.<p>
+
+<b NOTE:> Arachne is still in development; therefore this document also 
+serves to capture the preliminary design and to record decisions made in
+discussions with the Web Athena developers.<p>
+
+<section overview.cloud "Cloud Assumptions">
+
+Arachne makes the following assumptions about its run-time environment when
+run as part of the "Web Athena" back end:<p>
+
+<ul>
+<li> Arachne runs on a cloud node, with an instance of Arachne for each
+     user session.
+<li> The node runs 64-bit Linux (this is negotiable).
+<li> Arachne is invoked by the back end software on need.
+<li> Arachne communicates with the back end software by means of its 
+     command line and RESTful HTTP interface.
+<li> Arachne is insulated from the outside network by the enclosing back
+     end software (so as to minimize potential security issues).
+<li> The enclosing software handles file management, i.e., archiving of 
+     Athena scenario results.
+</ul>
+
+<section overview.name "Why Arachne?">
+
+In Greek myth, Arachne was so skilled at spinning thread that she beat
+Athena in a fair contest.  In retaliation, Athena turned Arachne into a 
+spider.  Arachne is therefore Athena's web-spinner.<p>
+
+<section cmdline "Command Line Interface">
+
+<b TBD>: This is, of course, quite preliminary.<p>
+
+Arachne is installed as a Linux executable called <b><tt arachne></b>.
+It can run as a simple batch-mode version of Athena, or as an interactive
+application with a RESTful web interface.<p>
+
+To run Arachne with its RESTful interface, specify the HTTP <tt -port>
+and (optionally) <tt -public> and <tt -heartbeatfile>.  Arachne will 
+load any <tt -scenario> and execute any <tt -script>, and then wait for 
+instructions via HTTP.<p>
+
+To run Arachne as a batch-mode application, specify the <tt -scenario>
+and <tt -script> but do not specify any <tt -port>.  The RESTful interface
+will not be initialize; instead, Arachne will load the <tt -scenario> and
+run the <tt -script> and the halt.<p>
+
+Arachne takes the following command-line options:<p>
+
+<deflist options>
+
+<def {-heartbeatfile <i filepath>}>
+
+While Arachne waits for HTTP requests, it writes the current time in seconds
+to named <i filepath> once a second, as a heartbeat.  This allows the 
+enclosing web application to be sure that it is alive.<p>
+
+<b TBD>: Wally Atkins suggested that this was required.  We may want to
+output more or better information to the heartbeat file than just a clock
+time.<p>
+
+
+<def {-public}>
+
+By default, Arachne only accepts HTTP requests from the local host.  If
+this option is given, Arachne will accept HTTP requests from other hosts.<p>
+
+<def {-port <i portid>}>
+
+Specifies the port ID at which Arachne should listen for HTTP requests.<p>
+
+The <xref restapi> is only enabled if a port is specified.<p>
+
+<def {-scenario <i filepath>}>
+
+Specifies the path to an Athena scenario (.adb) file to load at start-up.
+It is usual to begin with a base scenario and then run excursions from it
+via the RESTful API, although this can also be scripted.<p>
+
+<def {-script <i filepath>}>
+
+Specifies the path to an Athena script (.tcl) file to load at start-up.
+Any <tt -scenario> is loaded first.<p> 
+
+</deflist options>
+
+<section restapi "RESTful API">
+
+When Arachne is run with the <tt -port> command line option, it will 
+initialize its RESTful HTTP interface, which can be accessed at 
+<tt>http://127.0.0.1:<i portid></tt> or 
+<tt>https://127.0.0.1:<i portid></tt>.  <b QUESTION>: Would we ever not 
+use https?  
+
+By default, the HTTP interface can only be accessed from the local host.
+If the <tt -public> option is given, then the HTTP interface
+can be accessed from other hosts on the network.<p>
+
+The set of URLs and HTTP operations supported by Arachne is <b TBD>, but
+will certainly allow:<p>
+
+<ul>
+<li> Controlling scenario execution.
+<li> Retrieving overall status information.
+<li> Sending Athena executive scripts to Arachne.
+<li> Sending Athena orders to Arachne (possibly as scripts)
+<li> Requesting run-time results from Arachne
+<li> Comparing two scenarios (or one scenario at different times) to
+     determine significant deltas.
+<li> Requesting explanations of significant deltas in terms of 
+     chains of causality. 
+</ul> 
+
+Most requests will be GET requests; scripts will likely be sent using POST,
+and if orders are sent as URLs with the parameter values embedded in the 
+URL, as from an HTML form, I would expect them to be sent using PUT.<p>
+
+<section script "Athena Script Commands">
+
+<b TBD>: It's likely that the web interface will interact with the Athena
+executive; thus, the executive commands are part of the interface 
+specification.  It isn't clear whether they should be documented here
+or in a separate document.  At present, they are documented in the on-line
+help, which is useful but perhaps not the right place.  The challenge, then,
+is to manage to document them once only yet still make them useful.<p>
+
+</document>
+
+

@@ -155,7 +155,7 @@ snit::widgetadaptor actorbrowser {
 
     method AddEntity {} {
         # FIRST, Pop up the dialog
-        order enter ACTOR:CREATE
+        app enter ACTOR:CREATE
     }
 
 
@@ -168,7 +168,7 @@ snit::widgetadaptor actorbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Pop up the dialog, and select this entity
-        order enter ACTOR:UPDATE a $id
+        app enter ACTOR:UPDATE a $id
     }
 
     # DeleteSelected
@@ -180,7 +180,7 @@ snit::widgetadaptor actorbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Delete the entity
-        order send gui ACTOR:DELETE a $id
+        flunky senddict gui ACTOR:DELETE [list a $id]
     }
 }
 

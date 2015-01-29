@@ -83,7 +83,7 @@ namespace eval ::athena_test::tests:: {
         ted order PARM:IMPORT filename \
             [file join [temporaryDirectory] temp.parmdb]
 
-        cif undo
+        flunky undo
         set b [parm get dam.absit.nominalCoverage]
 
         expr {$a == $b}
@@ -110,7 +110,7 @@ namespace eval ::athena_test::tests:: {
         set a [parm get dam.absit.nominalCoverage]
 
         ted order PARM:RESET
-        cif undo
+        flunky undo
 
         set b [parm get dam.absit.nominalCoverage]
 
@@ -161,7 +161,7 @@ namespace eval ::athena_test::tests:: {
         set a [parm get dam.absit.nominalCoverage]
 
         ted order PARM:SET parm dam.absit.nominalCoverage value 0.2
-        cif undo
+        flunky undo
 
         set b [parm get dam.absit.nominalCoverage]
 

@@ -95,6 +95,28 @@ namespace eval ::athena_test::tests:: {
         drel {invalid value "1.1", should be a real number in range -1.0, 1.0, or one of: SUPPORT, LIKE, INDIFF, DISLIKE, OPPOSE}
     }
 
+    test TACTIC:STANCE-1.5 {invalid name} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:STANCE tactic_id [$T1 id] name 1234
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Identifiers begin with a letter and contain only letters and digits.}
+    }
+
+    test TACTIC:STANCE-1.6 {duplicate name} -setup {
+        setup
+        set T2 [ted addtactic $B1 ABSIT]
+    } -body {
+        ted order -reject TACTIC:STANCE tactic_id [$T1 id] \
+            name [$T2 get name]
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Name already exists: "T2"}
+    }
+
     test TACTIC:STANCE-2.1 {tactic is created: GROUP} -setup {
         setup
     } -body {
@@ -113,8 +135,10 @@ namespace eval ::athena_test::tests:: {
         glist      {_type GROUPS _rule BY_VALUE raw_value {BRIT USAID}}
         id         *
         mode       BY_GROUP
+        name       T*
         nlist      {_type NBHOODS _rule {}}
-        parent     ::bean::block*
+        parent     *
+        pot        ::pot
         state      normal
     }
 
@@ -137,8 +161,10 @@ namespace eval ::athena_test::tests:: {
         glist      {_type GROUPS _rule {}}
         id         *
         mode       BY_NBHOOD
+        name       T*
         nlist      {_type NBHOODS _rule BY_VALUE nlist {NB1 NB2}}
-        parent     ::bean::block*
+        parent     *
+        pot        ::pot
         state      normal
     }
 
@@ -162,7 +188,7 @@ namespace eval ::athena_test::tests:: {
             glist [gofer construct GROUPS BY_VALUE {BRIT USAID}] 
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

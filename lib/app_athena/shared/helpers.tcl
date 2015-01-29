@@ -12,6 +12,7 @@
 #
 #-----------------------------------------------------------------------
 
+
 # beanload idict id ?view?
 #
 # idict    - A dynaform(n) field's item metadata dictionary
@@ -25,7 +26,7 @@
 # the default view, as that is what will be copied.
 
 proc beanload {idict id {view ""}} {
-    return [bean view $id $view]
+    return [pot view $id $view]
 }
 
 # fillparms parmsVar parmdict
@@ -63,25 +64,6 @@ proc optdict2parmdict {dict} {
         }
 
         dict set result $key $value
-    }
-
-    return $result
-}
-
-# lmap list x body
-#
-# list   - A list of things
-# var    - A variable to take on values from the list.
-# body   - A body to return a new value given $var
-#
-# Returns a list of values computed by calling body for each value
-# in the list.
-
-proc lmap {list var body} {
-    set result [list]
-
-    foreach $var $list {
-        lappend result [eval $body]
     }
 
     return $result

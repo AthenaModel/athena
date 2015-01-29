@@ -113,12 +113,6 @@ tab "Detail" {
     Athena will usually reload the displayed page when data changes.)
     </topic>
 
-    <topic [image button_plus]>
-    Bookmark the current page.  Bookmarks appear on the 
-    <cref /menu/bookmarks> and can be edited on the
-    <tab Bookmarks>.
-    </topic>
-
     <topic [image control_addressbar]>
     The address bar; enter a page's URL here to go straight to that page.
     </topic>
@@ -224,6 +218,7 @@ page /tab/strategy blocks "Blocks List" {
     <parmlist Column Description>
 
     <block_ parm id         -label "ID">
+    <block_ parm name       -label "Name">
     <block_ parm execstatus -label "Exec">
     <block_ parm state      -label "State">
     <block_ parm intent     -label "Intent">
@@ -326,31 +321,15 @@ page /tab/strategy conditions "Conditions Subtab" {
 
     <topiclist Column Description>
 
-    <topic "ID">
-    The condition ID, an integer number that uniquely
-    identifies the condition.  It is assigned automatically when the
-    condition is created.
-    </topic>
+    <condition_ parm id        -label "ID">
+    <condition_ parm name      -label "Name">
+    <condition_ parm state     -label "State">
+    <condition_ parm narrative -label "Narrative">
+    <condition_ parm typename  -label "Type">
 
     <topic "Flag">
     The condition's "met" flag, represented as one of the following
     icons: TBD.
-    </topic>
-
-    <topic "State">
-    The condition's state, one of <b>normal</b>, <b>disabled</b>, or 
-    <b>invalid</b>.  A condition is <b>invalid</b> if it fails its
-    sanity check.  Invalid conditions must be fixed or 
-    disabled before the scenario can be locked.
-    <b>Disabled</b> conditions
-    are ignored when the owning agent's strategy is executed.
-    </topic>
-
-    <topic "Narrative">
-    A narrative description of the condition and its parameters.
-    </topic>
-
-    <topic "Type"> The condition type.<p>
     </topic>
 
     </topiclist>
@@ -400,32 +379,16 @@ page /tab/strategy tactics "Tactics Subtab" {
 
     <topiclist Column Description>
 
-    <topic "ID">
-    The tactic ID, an integer number that uniquely
-    identifies the tactic.  It is assigned automatically when the
-    tactic is created.
-    </topic>
+    <tactic_ parm id        -label "ID">
+    <tactic_ parm name      -label "Name">
+    <tactic_ parm state     -label "State">
+    <tactic_ parm narrative -label "Narrative">
+    <tactic_ parm typename  -label "Type">
 
     <topic "Exec">
     The tactic's execution status, represented as one of the following
     icons: TBD.  On failures, see the Overview Subtab for just what
     went wrong.
-    </topic>
-
-    <topic "State">
-    The tactic's state, one of <b>normal</b>, <b>disabled</b>, or 
-    <b>invalid</b>.  A tactic is <b>invalid</b> if it fails its
-    sanity check.  Invalid tactics must be fixed or 
-    disabled before the scenario can be locked.
-    <b>Disabled</b> tactics
-    are ignored when the owning agent's strategy is executed.
-    </topic>
-
-    <topic "Narrative">
-    A narrative description of the tactic and its parameters.
-    </topic>
-
-    <topic "Type"> The tactic type.<p>
     </topic>
 
     </topiclist>
@@ -977,12 +940,11 @@ tab "Physical/Activity" {
     <b>Simulation Mode Only.</b><p>
 
     This tab shows the coverage of the various activities assigned to
-    units in the neighborhoods of the playbox.  All force units
-    contribute to the <b>PRESENCE</b> activity of their group; in addition,
-    group personnel can be assigned activities via the
-    <cref /object/tactic/assign>.  This browser is populated only
-    after Athena leaves <term prep>.  The browser controls are
-    described <seebelow controls>; the data fields are as follows:<p>
+    units in the neighborhoods of the playbox. Group personnel can be 
+    assigned activities via the <cref /object/tactic/assign>.  This 
+    browser is populated only after Athena leaves <term prep>.  The 
+    browser controls are described <seebelow controls>; the data fields
+    are as follows:<p>
 
     <topiclist Column Description>
 
@@ -991,11 +953,10 @@ tab "Physical/Activity" {
     <topic "Group">The ID of the force or organization 
     group.</topic>
     
-    <topic "Activity">An activity assigned to units of the group, or
-    <b>PRESENCE</b> for force groups. If the activity has a 
-    coverage greater than 0.0 it will engender an activity situation,
-    resulting in a variety of attitude effects; see the
-    <i>Athena Rules Document</i> for details.
+    <topic "Activity">An activity assigned to units of the group. If 
+    the activity has a coverage greater than 0.0 it will engender an 
+    activity situation, resulting in a variety of attitude effects; 
+    see the <i>Athena Rules Document</i> for details.
     </topic>
 
     <topic "Coverage">The coverage of the activity, as a number
@@ -3124,70 +3085,6 @@ tab "Orders" {
     <topiclist Control Description>
     <control.filterbox>
     <control.headers>
-    </topiclist>
-}
-
-
-#=======================================================================
-
-tab "Bookmarks" {
-    <b>This tab can be made visible by selecting the
-    <menu "View/Bookmarks"> menu item.</b><p>
-
-    This tab shows the bookmarks the user has created to 
-    <cref /tab/detail "Detail Browser"> pages.  Bookmarks appear
-    on the menu in the same order as they appear on this tab.
-    The controls are
-    described <seebelow controls>; the data fields are as follows:<p>
-
-    <topiclist Column Description>
-
-    <topic "Title">The bookmark's title, as it appears on the
-    <cref /menu/bookmarks>.
-    </topic>
-
-    <topic "URL">The URL of the bookmarked page.
-    </topic>
-    </topiclist>
-
-    <b><anchor controls "Browser Controls:"></b>  The browser's
-    toolbar contains the following controls:<p>
-
-    <topiclist Control Description>
-    <topic "Go">
-    Displays the selected bookmark in the
-    <cref /tab/detail "Detail Browser">.
-    </topic>
-
-    <topic [image button_plus]>
-    Creates a new bookmark to the URL of the user's choice.
-    </topic>
-
-    <topic [image button_pencil]>
-    Pops up the update dialog for the selected bookmark.
-    </topic>
-
-    <topic [image button_totop]>
-    Raises the selected bookmark to the top of the list.
-    </topic>
-
-    <topic [image button_raise]>
-    Moves the selected bookmark up one slot in the list.
-    </topic>
-
-    <topic [image button_lower]>
-    Moves the selected bookmark down one slot in the list.
-    </topic>
-
-    <topic [image button_tobottom]>
-    Lowers the selected bookmark to the bottom of the list.
-    </topic>
-
-    <topic [image button_trash]>
-    Deletes the selected bookmark.
-    </topic>
-
-    <control.filterbox>
     </topiclist>
 }
 

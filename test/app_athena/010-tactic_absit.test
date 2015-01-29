@@ -80,7 +80,9 @@ namespace eval ::athena_test::tests:: {
         faildict   {}
         id         *
         n          {}
-        parent     ::bean::block*
+        name       T*
+        parent     *
+        pot        ::pot
         resolver   NONE
         state      invalid
         stype      {}
@@ -252,12 +254,12 @@ rduration  2
             -duration 2
     } -body {
         $T1 execute
-        $T1 configure -stype NOWATER
+        $T1 configure -stype BADWATER
         $T1 execute
         rdb eval {SELECT n, stype FROM absits ORDER BY n, stype}
     } -cleanup {
         cleanup
-    } -result {NB1 COMMOUT NB1 NOWATER}
+    } -result {NB1 BADWATER NB1 COMMOUT}
 
     #-------------------------------------------------------------------
     # Cleanup

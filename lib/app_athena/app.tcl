@@ -55,9 +55,6 @@ snit::type app {
     #
     # Application options.  These are set in a variety of ways.
     #
-    # -batch           - If 1, athena_batch(1) is running; otherwise,
-    #                    athena(1) is running.
-    #
     # -ignoreuser      - If 1, ignore user preferences, etc.
     #                    Used for testing.
     #
@@ -76,7 +73,6 @@ snit::type app {
     #                    path-munging.
 
     typevariable opts -array {
-        -batch      0
         -dev        0
         -ignoreuser 0
         -script     {}
@@ -121,7 +117,6 @@ snit::type app {
             set opt [lshift argv]
 
             switch -exact -- $opt {
-                -batch      -
                 -dev        -
                 -ignoreuser {
                     set opts($opt) 1
@@ -137,7 +132,16 @@ snit::type app {
                 }
                 
                 default {
-                    app exit "Unknown option: \"$opt\"\n[app usage]"
+                    # Generate error message for users that are accustomed
+                    # to the -batch option in previous versions of Athena
+                    if {$opt eq "-batch"} {
+                        set errmsg "\"-batch\" is invalid, use athena_batch "
+                        append errmsg "instead.\nSee the athena_batch(1) "
+                        append errmsg "documentation for more information."
+                    } else {
+                        set errmsg "Unknown option: \"$opt\"\n[app usage]"
+                    }
+                    app exit $errmsg
                 }
             }
         }
@@ -176,7 +180,7 @@ snit::type app {
         }
 
         # NEXT, create the preferences directory.
-        if {!$opts(-batch) && !$opts(-ignoreuser)} {
+        if {[app tkloaded] && !$opts(-ignoreuser)} {
             if {[catch {prefsdir init} result]} {
                 app exit {
                     |<--
@@ -198,7 +202,7 @@ snit::type app {
         # NEXT, initialize and load the user preferences
         prefs init
         
-        if {!$opts(-ignoreuser) && !$opts(-batch)} {
+        if {[app tkloaded] && !$opts(-ignoreuser)} {
             prefs load
         }
 
@@ -219,18 +223,13 @@ snit::type app {
         parm      init master
         map       init
         view      init
-        cif       init
-        order     init \
-            -subject      ::order                \
-            -rdb          ::rdb                  \
-            -usedtable    entities               \
-            -logcmd       ::log                  \
-            -ordercmd     [myproc AddOrderToCIF]
         bsys      init
+        athena_flunky create ::flunky
         MakeAthena ::adb
         nbhood    init
         sim       init
         axdb      init
+        beanpot       ::pot -rdb ::rdb
         strategy  init
 
         coverage_model init
@@ -239,7 +238,7 @@ snit::type app {
         # 
         # TODO: bean should be registered within athena; wintel is 
         # application specific.  Need to allow for that.
-        athena register ::projectlib::bean
+        athena register ::pot
         athena register ::wintel::wizard
 
         # NEXT, register my:// servers with myagent.
@@ -253,69 +252,10 @@ snit::type app {
         myagent register rdb \
             [rdbserver %AUTO% -rdb ::rdb]
 
-        # NEXT, define order interfaces
-
-        # app: For internal orders.  No tracing, and the app has to
-        # do the error handling.
-        order interface configure app
-
-        # gui: For user orders from the GUI
-        order interface configure gui \
-            -checkstate  yes                           \
-            -trace       yes                           \
-            -errorcmd    [myproc UnexpectedOrderError]
-
-        # cli: For user orders from the CLI
-        order interface add cli \
-            -checkstate  yes                            \
-            -trace       yes                            \
-            -rejectcmd   [myproc FormatRejectionForCLI] \
-            -errorcmd    [myproc UnexpectedOrderError]
-
-        # raw: Like CLI, but with no special rejection formatting.
-        # Used by "send" executive command.
-        order interface add raw \
-            -checkstate  yes    \
-            -trace       yes
-
-        # tactic: Like raw, but does not trace; used by "send"
-        # when the order state is TACTIC.
-        order interface add tactic \
-            -checkstate  yes
-
-        # wizard: Orders from wizards, used for editing internal
-        # wizard state.  Not traced, because they don't edit the
-        # scenario.
-        order interface add wizard \
-            -checkstate  yes       \
-            -trace       no        \
-            -transaction no
-
-        # test: For orders from the test suite.  No special handling
-        # for unexpected errors, and no transactions, so that errors
-        # remain in place.
-        order interface add test \
-            -checkstate  yes     \
-            -trace       yes     \
-            -transaction no
-
-        # NEXT, initialize the order dialog manager if we are in
-        # GUI mode
-        if {[app tkloaded]} {
-            orderdialog init \
-                -parent    [list app topwin]           \
-                -appname   "Athena [kiteinfo version]" \
-                -helpcmd   [list app help]             \
-                -refreshon {
-                    ::cif <Update>
-                    ::sim <Tick>
-                    ::sim <DbSyncB>
-                }
-        }
 
         # NEXT, bind components together
-        notifier bind ::sim <State> ::order {::order state [::sim state]}
-        notifier bind ::app <Puck>  ::order {::order puck}
+        notifier bind ::sim <State> ::flunky {::flunky state [::sim state]}
+        notifier bind ::app <Puck>  ::order_dialog  {::order_dialog puck}
 
         # NEXT, create state controllers, to enable and disable
         # GUI components as application state changes.
@@ -324,7 +264,7 @@ snit::type app {
         # NEXT, Create the main window, and register it as a saveable.
         # It does not, in fact, contain any scenario data; but this allows
         # us to capture the user's "session" as part of the scenario file.
-        # No main window in batch mode.
+        # No main window in non-GUI mode.
 
         if {[app tkloaded]} {
             wm withdraw .
@@ -335,8 +275,8 @@ snit::type app {
         # NEXT, log that we're up.
         log normal app "Athena [kiteinfo version]"
         
-        # NEXT, if we're in batch mode print that we are up
-        if {$opts(-batch)} {
+        # NEXT, if we're in non-GUI mode print that we are up
+        if {![app tkloaded]} {
             puts [format "%-25s %s" "Athena version:"        [kiteinfo version]]
             puts [format "%-25s %s" "Application directory:" [appdir join]]
             puts [format "%-25s %s" "Working directory:"     [workdir join]]
@@ -407,100 +347,21 @@ snit::type app {
             }
         }
 
-        # NEXT, if we're in batch mode, exit; we're done.
-        if {$opts(-batch)} {
-            app exit
-        }
-
-        # NEXT, if there's a URL, load it.
-        if {$opts(-url) ne ""} {
+        # NEXT, if there's a URL and we're in GUI mode, load it.
+        if {$opts(-url) ne "" && [app tkloaded]} {
             app show [string map {% /} $opts(-url)]
         }
     }
 
     # tkloaded
     #
-    # Returns the value of the -batch option for other modules to
-    # use as needed.
+    # Returns the value of the tkLoaded flag for other modules to use
 
     typemethod tkloaded {} {
         return $::tkLoaded
     }
 
-    # AddOrderToCIF interface name parmdict undoScript ?redoScript?
-    #
-    # interface  - The interface by which the order was sent
-    # name       - The order name
-    # parmdict   - The order parameters
-    # undoScript - The order's undo script, or "" if not undoable.
-    # redoScript - The order's redo helper script, or "" if none.
-    #
-    # Adds accepted orders to the CIF.
-
-    proc AddOrderToCIF {interface name parmdict undoScript {redoScript ""}} {
-        cif add $name $parmdict $undoScript $redoScript
-    }
-
-    # UnexpectedOrderError name errmsg
-    #
-    # name    - The order name
-    # errmsg  - The error message
-    # einfo   - Error info (the stack trace)
-    #
-    # Handles unexpected order errors.
-
-    proc UnexpectedOrderError {name errmsg einfo} {
-        log error app "Unexpected error in $name:\n$errmsg"
-        log error app "Stack Trace:\n$einfo"
-
-        app showlog
-
-        app error {
-            |<--
-            $name
-
-            There was an unexpected error during the 
-            handling of this order.  The scenario has 
-            been rolled back to its previous state, so 
-            the application data  should not be 
-            corrupted.  However:
-
-            * You should probably save the scenario under
-              a new name, just in case.
-
-            * The error has been logged in detail.  Please
-              contact JPL to get the problem fixed.
-        }
-
-        if {[sim state] eq "RUNNING"} {
-            sim mutate pause
-        }
-
-        sim dbsync
-
-        return "Unexpected error while handling order."
-    }
-
-    # FormatRejectionForCLI errdict
-    #
-    # errdict     A REJECT error dictionary
-    #
-    # Formats the rejection error dictionary for display at the console.
     
-    proc FormatRejectionForCLI {errdict} {
-        if {[dict exists $errdict *]} {
-            lappend out [dict get $errdict *]
-        }
-
-        dict for {parm msg} $errdict {
-            if {$parm ne "*"} {
-                lappend out "$parm: $msg"
-            }
-        }
-
-        return [join $out \n]
-    }
-
     # CreateStateControllers
     #
     # Creates a family of statecontroller(n) objects to manage
@@ -564,9 +425,9 @@ snit::type app {
         # Objdict:   order   THE:ORDER:NAME
 
         statecontroller ::cond::available -events {
-            ::order <State>
+            ::flunky <Sync>
         } -condition {
-            [::order available $order]
+            [::flunky available $order]
         }
 
         # One browser entry is selected.  The
@@ -585,9 +446,9 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableSingle -events {
-            ::order <State>
+            ::flunky <Sync>
         } -condition {
-            [::order available $order]                &&
+            [::flunky available $order]                &&
             [llength [$browser curselection]] == 1
         }
 
@@ -598,9 +459,9 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableMulti -events {
-            ::order <State>
+            ::flunky <Sync>
         } -condition {
-            [::order available $order]              &&
+            [::flunky available $order]              &&
             [llength [$browser curselection]] > 0
         }
 
@@ -611,9 +472,9 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableCanDelete -events {
-            ::order <State>
+            ::flunky <Sync>
         } -condition {
-            [::order available $order] &&
+            [::flunky available $order] &&
             [$browser candelete]
         }
 
@@ -624,9 +485,9 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableCanUpdate -events {
-            ::order <State>
+            ::flunky <Sync>
         } -condition {
-            [::order available $order] &&
+            [::flunky available $order] &&
             [$browser canupdate]
         }
 
@@ -637,19 +498,20 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableCanResolve -events {
-            ::order <State>
+            ::flunky <Sync>
         } -condition {
-            [::order available $order] &&
+            [::flunky available $order] &&
             [$browser canresolve]
         }
     }
 
     # usage
     #
-    # Returns the application's command-line syntax.
+    # Returns the application's command-line syntax based on whether
+    # in GUI mode or non-GUI mode
     
     typemethod usage {} {
-        if {$opts(-batch)} {
+        if {![app tkloaded]} {
             set usage \
                 "Usage: athena_batch ?options...? ?scenario.adb?\n\n"
         } else {
@@ -662,16 +524,16 @@ snit::type app {
             "                    the scenario file (if any).\n"         \
             "-ignoreuser         Ignore preference settings.\n"
 
-        if {!$opts(-batch)} {
+        if {![app tkloaded]} {
+            append usage \
+                "\nSee athena_batch(1) for more information.\n"
+        } else {
             append usage \
             "-dev                Turns on all developer tools (e.g.,\n" \
             "                    the CLI and scrolling log)\n"          \
             "-url url            Load the URL in the detail browser.\n" \
             "                    '%' is replaced with '/'.\n"           \
             "\nSee athena(1) for more information.\n"
-        } else {
-            append usage \
-                "\nSee athena_batch(1) for more information.\n"
         }
 
         return $usage
@@ -749,7 +611,7 @@ snit::type app {
     typemethod error {text} {
         set text [uplevel 1 [list tsubst $text]]
 
-        if {$opts(-batch)} {
+        if {![app tkloaded]} {
             # Uplevel, so that [app exit] can expand the text.
             uplevel 1 [list app exit $text]
         } else {
@@ -791,7 +653,7 @@ snit::type app {
         if {$text ne ""} {
             set text [uplevel 1 [list tsubst $text]]
 
-            if {!$opts(-batch)} {
+            if {[app tkloaded]} {
                 app DisplayExitText $text
             } else {
                 set f [open "error.log" w]
@@ -803,7 +665,7 @@ snit::type app {
         }
 
         # NEXT, save the CLI history, if any.
-        if {!$opts(-ignoreuser) && !$opts(-batch) && [winfo exists .main]} {
+        if {!$opts(-ignoreuser) && [app tkloaded] && [winfo exists .main]} {
             .main savehistory
         }
 
@@ -879,6 +741,38 @@ snit::type app {
         return [$topwin {*}$args]
     }
 
+    # enter order ?parm value...?
+    # enter order ?parmdict?
+    #
+    # order     - The name of an order
+    # parmdict  - Initial parameter settings
+    #
+    # Pops up the order dialog for the named order given the parameters.
+
+    typemethod enter {order args} {
+        if {[llength $args] == 1} {
+            set parmdict [lindex $args 0]
+        } else {
+            set parmdict $args
+        }
+
+        set order [string toupper $order]
+
+        order_dialog enter \
+            -resources [dict create db_ ::rdb]     \
+            -parmdict  $parmdict                   \
+            -appname   "Athena [kiteinfo version]" \
+            -flunky    ::flunky                    \
+            -order     $order                      \
+            -master    [app topwin]                \
+            -helpcmd   [list app help]             \
+            -refreshon {
+                ::flunky <Sync>
+                ::sim    <Tick>
+                ::sim    <DbSyncB>
+            }
+    }
+
     # show uri
     #
     # uri - A URI for some application resource
@@ -936,10 +830,10 @@ snit::type app {
         if {[regexp {^order/([A-Za-z0-9:]+)$} $parts(path) dummy order]} {
             set order [string toupper $order]
 
-            if {[order exists $order]} {
+            if {[myorders exists $order]} {
                 set parms [split $parts(query) "=+"]
                 if {[catch {
-                    order enter $order {*}$parms
+                    app enter $order $parms
                 } result]} {
                     $type GuiUrlError $uri $result
                 }
@@ -1212,7 +1106,7 @@ proc bgerror {msg} {
         }
     }
 
-    if {$app::opts(-batch)} {
+    if {![app tkloaded]} {
         # app exit subst's in the caller's context
         app exit {$msg\n\nStack Trace:\n$bgErrorInfo\n$trace}
     } elseif {[winfo exists .main]} {

@@ -431,12 +431,14 @@ snit::type iom {
 #
 # Creates a new IOM
 
-order define IOM:CREATE {
-    title "Create Info Ops Message"
+myorders define IOM:CREATE {
+    meta title "Create Info Ops Message"
     
-    options -sendstates PREP
+    meta sendstates PREP
 
-    form {
+    meta parmlist {iom_id longname hook_id}
+
+    meta form {
         rcc "Message ID:" -for iom_id
         text iom_id
 
@@ -446,69 +448,72 @@ order define IOM:CREATE {
         rcc "Semantic Hook:" -for hook_id
         enumlong hook_id -dictcmd {::hook namedict} -showkeys yes
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare iom_id      -toupper   -required -unused -type ident
-    prepare longname    -normalize
-    prepare hook_id     -toupper                     -type hook
 
-    returnOnError -final
 
-    # NEXT, If longname is "", defaults to ID.
-    if {$parms(longname) eq ""} {
-        set parms(longname) $parms(iom_id)
+    method _validate {} {
+        my prepare iom_id    -toupper   -required -type ident
+        my unused iom_id
+        my prepare longname  -normalize
+        my prepare hook_id   -toupper             -type hook
     }
 
-    # NEXT, create the message.
-    lappend undo [iom mutate create [array get parms]]
+    method _execute {{flunky ""}} {
+        if {$parms(longname) eq ""} {
+            set parms(longname) $parms(iom_id)
+        }
 
-    setundo [join $undo \n]
+        lappend undo [iom mutate create [array get parms]]
+        my setundo [join $undo \n]
+    }
 }
 
 # IOM:DELETE
 #
 # Deletes an IOM and its payloads.
 
-order define IOM:DELETE {
-    title "Delete Info Ops Message"
-    options -sendstates PREP
+myorders define IOM:DELETE {
+    meta title "Delete Info Ops Message"
+    meta sendstates PREP
 
-    form {
+    meta parmlist {iom_id}
+
+    meta form {
         rcc "Message ID:" -for iom_id
-        key iom_id -table ioms -keys iom_id
+        dbkey iom_id -table ioms -keys iom_id
     }
-} {
-    # FIRST, prepare the parameters
-    prepare iom_id -toupper -required -type iom
 
-    returnOnError -final
 
-    # NEXT, make sure the user knows what he is getting into.
+    method _validate {} {
+        my prepare iom_id -toupper -required -type iom
+    }
 
-    if {[sender] eq "gui"} {
-        set answer [messagebox popup \
-                        -title         "Are you sure?"                  \
-                        -icon          warning                          \
-                        -buttons       {ok "Delete it" cancel "Cancel"} \
-                        -default       cancel                           \
-                        -onclose       cancel                           \
-                        -ignoretag     IOM:DELETE                       \
-                        -ignoredefault ok                               \
-                        -parent        [app topwin]                     \
-                        -message       [normalize {
-                            Are you sure you really want to delete this 
-                            Info Ops Message, along with all of its payloads?
-                        }]]
-
-        if {$answer eq "cancel"} {
-            cancel
+    method _execute {{flunky ""}} {
+        if {[my mode] eq "gui"} {
+            set answer [messagebox popup \
+                            -title         "Are you sure?"                  \
+                            -icon          warning                          \
+                            -buttons       {ok "Delete it" cancel "Cancel"} \
+                            -default       cancel                           \
+                            -onclose       cancel                           \
+                            -ignoretag     [my name]                        \
+                            -ignoredefault ok                               \
+                            -parent        [app topwin]                     \
+                            -message       [normalize {
+                                Are you sure you really want to delete this 
+                                Info Ops Message, along with all of its 
+                                payloads?
+                            }]]
+    
+            if {$answer eq "cancel"} {
+                my cancel
+            }
         }
+    
+        # NEXT, Delete the record and dependent entities
+        lappend undo [iom mutate delete $parms(iom_id)]
+    
+        my setundo [join $undo \n]
     }
-
-    # NEXT, Delete the record and dependent entities
-    lappend undo [iom mutate delete $parms(iom_id)]
-
-    setundo [join $undo \n]
 }
 
 
@@ -516,14 +521,16 @@ order define IOM:DELETE {
 #
 # Updates an existing IOM.
 
-order define IOM:UPDATE {
-    title "Update Info Ops Message"
-    options -sendstates PREP
+myorders define IOM:UPDATE {
+    meta title "Update Info Ops Message"
+    meta sendstates PREP
 
-    form {
+    meta parmlist {iom_id longname hook_id}
+
+    meta form {
         rcc "Message ID" -for iom_id
-        key iom_id -table ioms -keys iom_id \
-            -loadcmd {orderdialog keyload iom_id *}
+        dbkey iom_id -table ioms -keys iom_id \
+            -loadcmd {$order_ keyload iom_id *}
 
         rcc "Description:" -for longname
         text longname -width 60
@@ -531,16 +538,17 @@ order define IOM:UPDATE {
         rcc "Semantic Hook:" -for hook_id
         enumlong hook_id -dictcmd {::hook namedict} -showkeys yes
     }
-} {
-    # FIRST, prepare the parameters
-    prepare iom_id      -toupper   -required -type iom
-    prepare longname    -normalize
-    prepare hook_id     -toupper             -type hook
 
-    returnOnError -final
 
-    # NEXT, modify the message.
-    setundo [iom mutate update [array get parms]]
+    method _validate {} {
+        my prepare iom_id      -toupper   -required -type iom
+        my prepare longname    -normalize
+        my prepare hook_id     -toupper             -type hook
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [iom mutate update [array get parms]]
+    }
 }
 
 
@@ -549,23 +557,27 @@ order define IOM:UPDATE {
 # Sets a iom's state.  Note that this order isn't intended
 # for use with a dialog.
 
-order define IOM:STATE {
-    title "Set IOM State"
+myorders define IOM:STATE {
+    meta title "Set IOM State"
 
-    options -sendstates PREP 
+    meta sendstates PREP 
 
-    form {
+    meta parmlist {iom_id state}
+
+    meta form {
         # Not used for dialog.
-        key iom_id -table ioms -keys iom_id
+        dbkey iom_id -table ioms -keys iom_id
         text state
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare iom_id -required          -type iom
-    prepare state  -required -tolower -type eiom_state
 
-    returnOnError -final
 
-    setundo [iom mutate state $parms(iom_id) $parms(state)]
+    method _validate {} {
+        my prepare iom_id -required          -type iom
+        my prepare state  -required -tolower -type eiom_state
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [iom mutate state $parms(iom_id) $parms(state)]
+    }
 }
 

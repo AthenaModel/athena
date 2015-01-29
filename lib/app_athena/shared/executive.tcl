@@ -356,6 +356,9 @@ snit::type executive {
         $interp smartalias {absit last} 0 0 {} \
             [myproc last_absit]
 
+        # enter
+        $interp smartalias enter 1 - {order ?parm value...?} \
+            [myproc enter]
         
         # errtrace
         $interp smartalias errtrace 0 0 {} \
@@ -2025,7 +2028,7 @@ snit::type executive {
     # plus -state.
 
     typemethod {block add} {agent args} {
-        cif transaction "block add..." {
+        flunky transaction "block add..." {
             set block_id [send STRATEGY:BLOCK:ADD -agent $agent]
             BlockConfigure $block_id $args
         }
@@ -2049,10 +2052,10 @@ snit::type executive {
             set block_id [last_bean ::block]
         }
 
-        block validate $block_id
+        pot valclass block $block_id
 
         # NEXT, get the block data
-        set block [block get $block_id]
+        set block [pot get $block_id]
 
         set dict [parmdict2optdict [$block view cget]]
 
@@ -2082,7 +2085,7 @@ snit::type executive {
         }
 
         # NEXT, configure it
-        cif transaction "block configure..." {
+        flunky transaction "block configure..." {
             BlockConfigure $block_id $args
         }
     }
@@ -2122,7 +2125,7 @@ snit::type executive {
         }
 
         # NEXT, create the condition
-        cif transaction "condition add..." {
+        flunky transaction "condition add..." {
             set condition_id [send BLOCK:CONDITION:ADD \
                                     -block_id $block_id \
                                     -typename $typename]
@@ -2145,10 +2148,10 @@ snit::type executive {
             set condition_id [last_bean ::condition]
         }
 
-        condition validate $condition_id
+        pot valclass condition $condition_id
 
         # NEXT, get the condition data
-        set condition [condition get $condition_id]
+        set condition [pot get $condition_id]
 
         set dict [parmdict2optdict [$condition view cget]]
 
@@ -2177,10 +2180,10 @@ snit::type executive {
             set condition_id [last_bean ::condition]
         }
 
-        condition validate $condition_id
+        pot valclass ::condition $condition_id
 
         # NEXT, configure it
-        cif transaction "condition configure..." {
+        flunky transaction "condition configure..." {
             ConditionConfigure $condition_id $args
         }
     }
@@ -2194,7 +2197,7 @@ snit::type executive {
     # CONDITION:UPDATE send options plus -state.
 
     proc ConditionConfigure {condition_id opts} {
-        set c [condition get $condition_id]
+        set c [pot get $condition_id]
 
         set state [from opts -state ""]
 
@@ -2309,7 +2312,7 @@ snit::type executive {
     # the given bean class, or "" if none.
 
     proc last_bean {cls} {
-        set last [lindex [$cls ids] end]
+        set last [lindex [pot ids $cls] end]
 
         if {$last eq ""} {
             set kind [namespace tail $cls]
@@ -2428,11 +2431,12 @@ snit::type executive {
         return
     }
     
+
     # send order ?option value...?
     #
-    # order     The name of an order(sim) order.
-    # option    One of order's parameter names, prefixed with "-"
-    # value     The parameter's value
+    # order  - The name of an order.
+    # option - One of the order's parameter names, prefixed with "-"
+    # value  - The parameter's value
     #
     # This routine provides a convenient way to enter orders from
     # the command line or a script.  The order name is converted
@@ -2440,94 +2444,36 @@ snit::type executive {
     # and a parameter dictionary is created.  The order is sent.
     # Any error message is pretty-printed.
     #
-    # Usually the order is sent using the "raw" interface; if the
+    # Usually the order is sent using the "normal" mode; if the
     # order state is TACTIC, meaning that the order is sent by an
     # EXECUTIVE tactic script, the order is sent using the 
-    # "tactic" interface.  That way the order state is checked but
+    # "private" mode.  That way the order state is checked but
     # the order is not CIF'd.
 
     proc send {order args} {
-        # FIRST, build the parameter dictionary, validating the
-        # parameter names as we go.
         set order [string toupper $order]
 
-        order validate $order
-
-        # NEXT, build the parameter dictionary, validating the
-        # parameter names as we go.
-        set parms [order parms $order]
-        set pdict [dict create]
-
-        while {[llength $args] > 0} {
-            set opt [lshift args]
-
-            set parm [string range $opt 1 end]
-
-            if {![string match "-*" $opt] ||
-                $parm ni $parms
-            } {
-                error "unknown option: $opt"
-            }
-
-            if {[llength $args] == 0} {
-                error "missing value for option $opt"
-            }
-
-            dict set pdict $parm [lshift args]
-        }
-
-        # NEXT, fill in default values.
-        set userParms [dict keys $pdict]
-
-        # NEXT, determine the order interface.
-        if {[order state] eq "TACTIC"} {
-            set interface tactic
+        # NEXT, determine the order mode.
+        if {[flunky state] eq "TACTIC"} {
+            flunky send private $order {*}$args
         } else {
-            set interface raw
+            flunky send normal $order {*}$args
         }
-
-        # NEXT, send the order, and handle errors.
-        if {[catch {
-            order send $interface $order $pdict
-        } result eopts]} {
-            if {[dict get $eopts -errorcode] ne "REJECT"} {
-                # Rethrow
-                return {*}$eopts $result
-            }
-
-            set wid [lmaxlen [dict keys $pdict]]
-
-            set text "$order rejected:\n"
-
-            # FIRST, add the parms in error.
-            dict for {parm msg} $result {
-                append text [format "-%-*s   %s\n" $wid $parm $msg]
-            }
-
-            # NEXT, add the defaulted parms
-            set defaulted [list]
-            dict for {parm value} $pdict {
-                if {$parm ni $userParms &&
-                    ![dict exists $result $parm]
-                } {
-                    lappend defaulted $parm
-                }
-            }
-
-            if {[llength $defaulted] > 0} {
-                append text "\nDefaulted Parameters:\n"
-                dict for {parm value} $pdict {
-                    if {$parm in $defaulted} {
-                        append text [format "-%-*s   %s\n" $wid $parm $value]
-                    }
-                }
-            }
-
-            return -code error -errorcode REJECT $text
-        }
-
-        return $result
     }
+
+    # enter order ?parm value...?
+    #
+    # order   - The name of an order.
+    # parm    - One of order's parameter names
+    # value   - The parameter's value
+    #
+    # This routine pops up an order dialog from the command line.  It is
+    # intended for debugging rather than end-user use.
+
+    proc enter {order args} {
+        app enter $order $args
+    }
+
 
     # show url
     #
@@ -2574,7 +2520,7 @@ snit::type executive {
         }
 
         # NEXT, create the tactic
-        cif transaction "tactic add..." {
+        flunky transaction "tactic add..." {
             set tactic_id [send BLOCK:TACTIC:ADD \
                                     -block_id $block_id \
                                     -typename $typename]
@@ -2597,10 +2543,10 @@ snit::type executive {
             set tactic_id [last_bean ::tactic]
         }
 
-        tactic validate $tactic_id
+        pot valclass tactic $tactic_id
 
         # NEXT, get the tactic data
-        set tactic [tactic get $tactic_id]
+        set tactic [pot get $tactic_id]
 
         set dict [parmdict2optdict [$tactic view cget]]
 
@@ -2629,10 +2575,10 @@ snit::type executive {
             set tactic_id [last_bean ::tactic]
         }
 
-        tactic validate $tactic_id
+        pot valclass tactic $tactic_id
 
         # NEXT, configure it
-        cif transaction "tactic configure..." {
+        flunky transaction "tactic configure..." {
             TacticConfigure $tactic_id $args
         }
     }
@@ -2646,7 +2592,7 @@ snit::type executive {
     # TACTIC:UPDATE send options plus -state.
 
     proc TacticConfigure {tactic_id opts} {
-        set c [tactic get $tactic_id]
+        set c [pot get $tactic_id]
 
         set state [from opts -state ""]
 
@@ -2690,13 +2636,13 @@ snit::type executive {
     # If possible, undoes the order on the top of the stack.
 
     proc undo {} {
-        set title [cif canundo]
+        set title [flunky undotext]
 
         if {$title eq ""} {
             return "Nothing to undo."
         }
 
-        cif undo -test
+        flunky undo
 
         return "Undone: $title"
     }
@@ -2706,13 +2652,13 @@ snit::type executive {
     # If possible, redoes the last undone order.
 
     proc redo {} {
-        set title [cif canredo]
+        set title [flunky redotext]
 
         if {$title eq ""} {
             return "Nothing to redo."
         }
 
-        cif redo
+        flunky redo
 
         return "Redone: $title"
     }

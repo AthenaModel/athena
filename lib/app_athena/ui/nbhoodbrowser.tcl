@@ -166,9 +166,9 @@ snit::widgetadaptor nbhoodbrowser {
         if {[llength $ids] == 1} {
             set id [lindex $ids 0]
 
-            order enter NBHOOD:UPDATE n $id
+            app enter NBHOOD:UPDATE n $id
         } else {
-            order enter NBHOOD:UPDATE:MULTI ids $ids
+            app enter NBHOOD:UPDATE:MULTI ids $ids
         }
     }
 
@@ -182,7 +182,7 @@ snit::widgetadaptor nbhoodbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, bring it to the front.
-        order send gui NBHOOD:RAISE [list n $id]
+        flunky senddict gui NBHOOD:RAISE [list n $id]
     }
 
 
@@ -195,7 +195,7 @@ snit::widgetadaptor nbhoodbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, bring it to the front.
-        order send gui NBHOOD:LOWER [list n $id]
+        flunky senddict gui NBHOOD:LOWER [list n $id]
     }
 
 
@@ -208,7 +208,7 @@ snit::widgetadaptor nbhoodbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Send the order.
-        order send gui NBHOOD:DELETE n $id
+        flunky senddict gui NBHOOD:DELETE [list n $id]
     }
 }
 

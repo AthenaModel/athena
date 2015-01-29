@@ -184,7 +184,7 @@ appserver module PARMDB {
                     ht td left {
                         if {[parm islocked $parm]} {
                             ht image ::marsgui::icon::locked
-                        } elseif {![order cansend PARM:SET]} {
+                        } elseif {![flunky available PARM:SET]} {
                             ht image ::marsgui::icon::pencil22d
                         } else {
                             ht putln "<a href=\"gui:/order/PARM:SET?parm=$parm\">"

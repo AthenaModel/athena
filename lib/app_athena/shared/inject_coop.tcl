@@ -70,12 +70,23 @@ inject type define COOP {f g mag} {
 #
 # Creates a new COOP inject.
 
-order define INJECT:COOP:CREATE {
-    title "Create Inject: Cooperation"
+myorders define INJECT:COOP:CREATE {
+    meta title "Create Inject: Cooperation"
 
-    options -sendstates PREP
+    meta sendstates PREP
 
-    form {
+    meta parmlist {
+        curse_id
+        longname
+        {mode transient}
+        {ftype NEW}
+        f
+        {gtype NEW}
+        g
+        mag
+    }
+
+    meta form {
         rcc "CURSE ID:" -for curse_id
         text curse_id -context yes
 
@@ -117,44 +128,55 @@ order define INJECT:COOP:CREATE {
         mag mag
         label "points of change"
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare curse_id -toupper  -required -type curse
-    prepare mode     -tolower  -required -type einputmode
-    prepare ftype    -toupper  -required -selector
-    prepare gtype    -toupper  -required -selector
-    prepare f        -toupper  -required -type roleid
-    prepare g        -toupper  -required -type roleid
-    prepare mag -num -toupper  -required -type qmag
 
-    validate g {
-        if {$parms(f) eq $parms(g)} {
-            reject g "Inject requires two distinct roles"
+
+    method _validate {} {
+        my prepare curse_id -toupper  -required -type curse
+        my prepare mode     -tolower  -required -type einputmode
+        my prepare ftype    -toupper  -required -selector
+        my prepare gtype    -toupper  -required -selector
+        my prepare f        -toupper  -required -type roleid
+        my prepare g        -toupper  -required -type roleid
+        my prepare mag -num -toupper  -required -type qmag
+    
+        my checkon g {
+            if {$parms(f) eq $parms(g)} {
+                my reject g "Inject requires two distinct roles"
+            }
         }
     }
 
-    returnOnError -final
-
-    # NEXT, put inject_type in the parmdict
-    set parms(inject_type) COOP
-
-    # NEXT, create the inject
-    setundo [inject mutate create [array get parms]]
+    method _execute {{flunky ""}} {
+        set parms(inject_type) COOP
+    
+        my setundo [inject mutate create [array get parms]]
+    }
 }
 
 # INJECT:COOP:UPDATE
 #
 # Updates existing COOP inject.
 
-order define INJECT:COOP:UPDATE {
-    title "Update Inject: Cooperation"
-    options -sendstates PREP
+myorders define INJECT:COOP:UPDATE {
+    meta title "Update Inject: Cooperation"
+    meta sendstates PREP
 
-    form {
+    meta parmlist {
+        id
+        longname
+        mode
+        {ftype EXISTING}
+        f
+        {gtype EXISTING}
+        g
+        mag
+    }
+
+    meta form {
         rcc "Inject:" -for id
-        key id -context yes -table gui_injects_COOP \
+        dbkey id -context yes -table gui_injects_COOP \
             -keys {curse_id inject_num} \
-            -loadcmd {orderdialog keyload id {f g mag mode}}
+            -loadcmd {$order_ keyload id {f g mag mode}}
 
         rcc "Description:" -for longname -span 4
         disp longname -width 60
@@ -194,26 +216,27 @@ order define INJECT:COOP:UPDATE {
         mag mag
         label "points of change"
     }
-} {
-    # FIRST, prepare the parameters
-    prepare id  -required           -type inject
-    prepare mode          -tolower  -type einputmode
-    prepare ftype         -toupper  -selector
-    prepare gtype         -toupper  -selector
-    prepare f             -toupper  -type roleid
-    prepare g             -toupper  -type roleid
-    prepare mag -num      -toupper  -type qmag
 
-    validate g {
-        if {$parms(f) eq $parms(g)} {
-            reject g "Inject requires two distinct roles"
+
+    method _validate {} {
+        my prepare id  -required           -type inject
+        my prepare mode          -tolower  -type einputmode
+        my prepare ftype         -toupper  -selector
+        my prepare gtype         -toupper  -selector
+        my prepare f             -toupper  -type roleid
+        my prepare g             -toupper  -type roleid
+        my prepare mag -num      -toupper  -type qmag
+    
+        my checkon g {
+            if {$parms(f) eq $parms(g)} {
+                my reject g "Inject requires two distinct roles"
+            }
         }
     }
 
-    returnOnError -final
-
-    # NEXT, modify the inject
-    setundo [inject mutate update [array get parms]]
+    method _execute {{flunky ""}} {
+        my setundo [inject mutate update [array get parms]]
+    }
 }
 
 

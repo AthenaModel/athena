@@ -120,14 +120,18 @@ tactic define DAMAGE "Damage Infrastructure" {system} {
 #
 # Updates existing DAMAGE tactic.
 
-order define TACTIC:DAMAGE {
-    title "Tactic: Damage Infrastructure"
-    options -sendstates PREP
+myorders define TACTIC:DAMAGE {
+    meta title      "Tactic: Damage Infrastructure"
+    meta sendstates PREP
+    meta parmlist   {tactic_id name a n percent}
 
-    form {
+    meta form {
         rcc "Tactic ID" -for tactic_id
         text tactic_id -context yes \
             -loadcmd {beanload}
+
+        rcc "Name:" -for name
+        text name -width 20
 
         rcc "Actor:" -for a
         actor a
@@ -138,22 +142,27 @@ order define TACTIC:DAMAGE {
         rcc "Repair Level:" -for percent
         percent percent
     }
-} {
-    # FIRST, prepare the parameters
-    prepare tactic_id  -required -type tactic::DAMAGE
-    returnOnError
 
-    set tactic [tactic get $parms(tactic_id)]
 
-    prepare n
-    prepare a
-    prepare percent -type ipercent
+    method _validate {} {
+        # FIRST, prepare the parameters
+        my prepare tactic_id  -required -with {::strategy valclass tactic::DAMAGE}
+        my returnOnError
 
-    returnOnError -final
+        set tactic [pot get $parms(tactic_id)]
 
-    # NEXT, update the tactic, saving the undo script
-    setundo [$tactic update_ {n a percent} [array get parms]]
+        my prepare name    -toupper  -with [list $tactic valName]
+        my prepare n
+        my prepare a
+        my prepare percent -type ipercent
+    }
+
+    method _execute {{flunky ""}} {
+        set tactic [pot get $parms(tactic_id)]
+        my setundo [$tactic update_ {name n a percent} [array get parms]]
+    }
 }
+
 
 
 

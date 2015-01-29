@@ -201,10 +201,6 @@ menu "View" {
     <childlinks>
 }
 
-menuitem "View/Bookmarks" {
-    Selecting this time shows or hides the <tab Bookmarks>.
-}
-
 menuitem "View/Order History" {
     Selecting this item shows or hides the <tab Orders>.
 }
@@ -220,29 +216,6 @@ menuitem "View/Scripts Editor" {
 menuitem "View/Command Line" {
     Selecting this item shows or hides the <term cli>.
 }
-
-#=======================================================================
-# Bookmarks Menu
-
-menu "Bookmarks" {
-    This menu allows the user to create and access 
-    <cref /tab/detail "Detail Browser"> bookmarks.
-    All existing bookmarks are appended to the end of the menu.
-
-    <childlinks>
-}
-
-menuitem "Bookmarks/Bookmark This Page..." {
-    Pops up the <cref /order/bookmark/create> order dialog, allowing
-    the user to create a bookmark to the page currently displayed in the
-    <cref /tab/detail "Detail Browser">.
-}
-
-menuitem "Bookmarks/Show All Bookmarks..." {
-    Opens the <tab Bookmarks>, where the user can create, rename, delete, 
-    and re-order his bookmarks.
-}
-
 
 #=======================================================================
 # Orders Menu

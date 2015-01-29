@@ -181,6 +181,28 @@ namespace eval ::athena_test::tests:: {
         level {You must specify a capacity level > 0.0}
     }
 
+    test TACTIC:MAINTAIN-1.13 {invalid name} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:MAINTAIN tactic_id [$T1 id] name 1234
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Identifiers begin with a letter and contain only letters and digits.}
+    }
+
+    test TACTIC:MAINTAIN-1.14 {duplicate name} -setup {
+        setup
+        set T2 [ted addtactic $B1 ABSIT]
+    } -body {
+        ted order -reject TACTIC:MAINTAIN tactic_id [$T1 id] \
+            name [$T2 get name]
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Name already exists: "T2"}
+    }
+
     test TACTIC:MAINTAIN-2.1 {tactic is created} -setup {
         setup
     } -body {
@@ -192,14 +214,16 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -match dictglob -result {
         amount     100000
-        fmode      ALL
         execstatus NONE
         faildict   {}
+        fmode      ALL
         id         *
         level      0.0
+        name       T*
         nlist      {_type NBHOODS _rule BY_VALUE nlist {NB1 NB2}}
-        parent     ::bean::block*
+        parent     *
         percent    100
+        pot        ::pot
         rmode      FULL
         state      normal
     }
@@ -215,14 +239,16 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -match dictglob -result {
         amount     100000
-        fmode      ALL
         execstatus NONE
         faildict   {}
+        fmode      ALL
         id         *
         level      90.0
+        name       T*
         nlist      {_type NBHOODS _rule BY_VALUE nlist {NB1 NB2}}
-        parent     ::bean::block*
+        parent     *
         percent    100
+        pot        ::pot
         rmode      UPTO
         state      normal
     }
@@ -238,14 +264,16 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -match dictglob -result {
         amount     100000
-        fmode      PERCENT
         execstatus NONE
         faildict   {}
+        fmode      PERCENT
         id         *
         level      90.0
+        name       T*
         nlist      {_type NBHOODS _rule BY_VALUE nlist {NB1 NB2}}
-        parent     ::bean::block*
+        parent     *
         percent    100
+        pot        ::pot
         rmode      UPTO
         state      normal
     }
@@ -261,14 +289,16 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -match dictglob -result {
         amount     100000
-        fmode      EXACT
         execstatus NONE
         faildict   {}
+        fmode      EXACT
         id         *
         level      90.0
+        name       T*
         nlist      {_type NBHOODS _rule BY_VALUE nlist {NB1 NB2}}
-        parent     ::bean::block*
+        parent     *
         percent    100
+        pot        ::pot
         rmode      UPTO
         state      normal
     }
@@ -295,7 +325,7 @@ namespace eval ::athena_test::tests:: {
             amount 10000
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

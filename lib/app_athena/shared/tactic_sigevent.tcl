@@ -65,30 +65,40 @@ tactic define SIGEVENT "Log Significant Event" {system actor} {
 #
 # Updates the tactic's parameters
 
-order define TACTIC:SIGEVENT {
-    title "Tactic: Log Significant Event"
+myorders define TACTIC:SIGEVENT {
+    meta title      "Tactic: Log Significant Event"
+    meta sendstates PREP
+    meta parmlist   {tactic_id name msg}
 
-    options -sendstates PREP
-
-    form {
+    meta form {
         rcc "Tactic ID:" -for tactic_id
         text tactic_id -context yes \
             -loadcmd {beanload}
 
+        rcc "Name:" -for name
+        text name -width 20
+
         rcc "Message:" -for msg
         text msg -width 40
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare tactic_id -required -type tactic::SIGEVENT
-    prepare msg        
-    returnOnError -final
 
-    set tactic [tactic get $parms(tactic_id)]
+    method _validate {} {
+        # FIRST, prepare and validate the parameters
+        my prepare tactic_id -required -with {::strategy valclass tactic::SIGEVENT}
+        my returnOnError
 
-    # NEXT, update the block
-    setundo [$tactic update_ {msg} [array get parms]]
+        set tactic [pot get $parms(tactic_id)]
+
+        my prepare name      -toupper   -with [list $tactic valName]
+        my prepare msg        
+    }
+
+    method _execute {{flunky ""}} {
+        set tactic [pot get $parms(tactic_id)]
+        my setundo [$tactic update_ {name msg} [array get parms]]
+    }
 }
+
 
 
 

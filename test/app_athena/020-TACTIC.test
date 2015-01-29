@@ -36,14 +36,13 @@ namespace eval ::athena_test::tests:: {
 
     # Set up for tests
 
-    set S1 ::strategy::SYSTEM
-
     proc setup {} {
         ted create SHIA
         variable S1
         variable B1
         variable T1
         ted order STRATEGY:BLOCK:ADD agent SYSTEM
+        set S1 [strategy getname SYSTEM]
         lassign [$S1 blocks] B1
         ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename SIGEVENT
         lassign [$B1 tactics] T1
@@ -114,7 +113,7 @@ namespace eval ::athena_test::tests:: {
         ted order TACTIC:STATE tactic_id [$T1 id] state disabled
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

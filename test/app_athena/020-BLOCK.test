@@ -40,12 +40,12 @@ namespace eval ::athena_test::tests:: {
 
     # Set up for tests
 
-    set S1 ::strategy::SYSTEM
 
     proc setup {} {
         variable S1
         variable B1
         ted order STRATEGY:BLOCK:ADD agent SYSTEM
+        set S1 [strategy getname SYSTEM]
         lassign [$S1 blocks] B1
     }
 
@@ -180,6 +180,31 @@ namespace eval ::athena_test::tests:: {
         t1 {End week must be no earlier than start week.}
     }
 
+    test BLOCK:UPDATE-1.14 {invalid name} -setup {
+        setup
+    } -body {
+        ted order -reject BLOCK:UPDATE block_id [$B1 id] \
+            name 1234
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Identifiers begin with a letter and contain only letters and digits.}
+    }
+
+    test BLOCK:UPDATE-1.15 {duplicate name} -setup {
+        setup
+        ted order STRATEGY:BLOCK:ADD agent SYSTEM
+        set S [strategy getname SYSTEM]
+        lassign [$S blocks end] B2
+    } -body {
+        ted order -reject BLOCK:UPDATE block_id [$B1 id] \
+            name [$B2 get name]
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Name already exists: "B2"}
+    }
+
     test BLOCK:UPDATE-2.1 {block updated} -setup {
         setup
 
@@ -201,7 +226,7 @@ namespace eval ::athena_test::tests:: {
         ted pdict [$B1 getdict]
     } -cleanup {
         cleanup
-    } -match glob -result {
+    } -match dictglob -result {
         cmode      ANY
         execstatus NONE
         state      normal
@@ -213,8 +238,10 @@ namespace eval ::athena_test::tests:: {
         t1         5
         onlock     1
         t2         10
-        parent     ::strategy::SYSTEM
+        name       B*
+        parent     *
         intent     {New intent}
+        pot        ::pot
         tactics    {}
         exectime   {}
     }
@@ -234,7 +261,7 @@ namespace eval ::athena_test::tests:: {
         ted order BLOCK:UPDATE block_id [$B1 id] intent "New intent"
     } -body {
         ted notifier bind ::block <update>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -299,7 +326,7 @@ namespace eval ::athena_test::tests:: {
         ted order BLOCK:STATE block_id [$B1 id] state disabled
     } -body {
         ted notifier bind ::block <update>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -347,7 +374,7 @@ namespace eval ::athena_test::tests:: {
         $B1 tactics
     } -cleanup {
         cleanup
-    } -match glob -result {::bean::SIGEVENT*}
+    } -match glob -result {::pot::SIGEVENT*}
 
     test BLOCK:TACTIC:ADD-2.2 {notifier event} -setup {
         setup
@@ -364,7 +391,7 @@ namespace eval ::athena_test::tests:: {
         ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename SIGEVENT
     } -body {
         ted notifier bind ::block <tactics>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -410,7 +437,7 @@ namespace eval ::athena_test::tests:: {
         $B1 tactics
     } -cleanup {
         cleanup
-    } -match glob -result {::bean::DEPLOY*}
+    } -match glob -result {::pot::DEPLOY*}
 
     test BLOCK:TACTIC:DELETE-2.2 {two deleted} -setup {
         btd_setup
@@ -436,18 +463,18 @@ namespace eval ::athena_test::tests:: {
         btd_setup
         ted order BLOCK:TACTIC:DELETE ids [list [$T1 id] [$T2 id]]
     } -body {
-        cif undo -test
+        flunky undo
         $B1 tactics
     } -cleanup {
         cleanup
-    } -match glob -result {::bean::SIGEVENT* ::bean::DEPLOY*}
+    } -match glob -result {::pot::SIGEVENT* ::pot::DEPLOY*}
  
     test BLOCK:TACTIC:DELETE-2.5 {undo notifier event} -setup {
         btd_setup
         ted order BLOCK:TACTIC:DELETE ids [list [$T1 id] [$T2 id]]
     } -body {
         ted notifier bind ::block <tactics>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -526,7 +553,7 @@ namespace eval ::athena_test::tests:: {
         ted order BLOCK:TACTIC:MOVE tactic_id [$T2 id] where top
     } -body {
         ted notifier bind ::block <tactics>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -574,7 +601,7 @@ namespace eval ::athena_test::tests:: {
         $B1 conditions
     } -cleanup {
         cleanup
-    } -match glob -result {::bean::EXPR*}
+    } -match glob -result {::pot::EXPR*}
 
     test BLOCK:CONDITION:ADD-2.2 {notifier event} -setup {
         setup
@@ -591,7 +618,7 @@ namespace eval ::athena_test::tests:: {
         ted order BLOCK:CONDITION:ADD block_id [$B1 id] typename EXPR
     } -body {
         ted notifier bind ::block <conditions>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -637,7 +664,7 @@ namespace eval ::athena_test::tests:: {
         $B1 conditions
     } -cleanup {
         cleanup
-    } -match glob -result {::bean::COMPARE*}
+    } -match glob -result {::pot::COMPARE*}
 
     test BLOCK:CONDITION:DELETE-2.2 {two deleted} -setup {
         bcd_setup
@@ -666,18 +693,18 @@ namespace eval ::athena_test::tests:: {
         bcd_setup
         ted order BLOCK:CONDITION:DELETE ids [list [$C1 id] [$C2 id]]
     } -body {
-        cif undo -test
+        flunky undo
         $B1 conditions
     } -cleanup {
         cleanup
-    } -match glob -result {::bean::EXPR* ::bean::COMPARE*}
+    } -match glob -result {::pot::EXPR* ::pot::COMPARE*}
 
     test BLOCK:CONDITION:DELETE-2.5 {undo notifier event} -setup {
         bcd_setup
         ted order BLOCK:CONDITION:DELETE ids [list [$C1 id] [$C2 id]]
     } -body {
         ted notifier bind ::block <conditions>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

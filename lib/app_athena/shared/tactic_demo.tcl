@@ -95,14 +95,18 @@ tactic define DEMO "Demonstration Event" {system actor} {
 #
 # Creates/Updates DEMO tactic.
 
-order define TACTIC:DEMO {
-    title "Tactic: Demo Event"
-    options -sendstates PREP
+myorders define TACTIC:DEMO {
+    meta title      "Tactic: Demo Event"
+    meta sendstates PREP
+    meta parmlist   {tactic_id name n g coverage}
 
-    form {
+    meta form {
         rcc "Tactic ID" -for tactic_id
         text tactic_id -context yes \
             -loadcmd {beanload}
+
+        rcc "Name:" -for name
+        text name -width 20
 
         rcc "Neighborhood:" -for n
         nbhood n
@@ -114,35 +118,37 @@ order define TACTIC:DEMO {
         frac coverage
     }
 
-} {
-    # FIRST, prepare the parameters
-    prepare tactic_id  -required -type tactic::DEMO
-    returnOnError
+    method _validate {} {
+        # FIRST, prepare the parameters
+        my prepare tactic_id  -required -with {::strategy valclass tactic::DEMO}
+        my returnOnError
 
-    set tactic [tactic get $parms(tactic_id)]
+        set tactic [pot get $parms(tactic_id)]
 
-    # Validation of initially invalid items or contingent items
-    # takes place on sanity check.
-    prepare n         -toupper
-    prepare g         -toupper
-    prepare coverage  -num       -type rfraction
+        # Validation of initially invalid items or contingent items
+        # takes place on sanity check.
+        my prepare name      -toupper   -with [list $tactic valName]
+        my prepare n         -toupper
+        my prepare g         -toupper
+        my prepare coverage  -num       -type rfraction
 
-    returnOnError
+        my returnOnError
 
-    validate coverage {
-        if {$parms(coverage) == 0.0} {
-            reject coverage "Coverage must be greater than 0."
+        my checkon coverage {
+            if {$parms(coverage) == 0.0} {
+                my reject coverage "Coverage must be greater than 0."
+            }
         }
     }
 
-    returnOnError -final
-
-
-    # NEXT, modify the tactic
-    setundo [$tactic update_ {
-        n g coverage
-    } [array get parms]]
+    method _execute {{flunky ""}} {
+        set tactic [pot get $parms(tactic_id)]
+        my setundo [$tactic update_ {
+            name n g coverage
+        } [array get parms]]
+    }
 }
+
 
 
 

@@ -156,7 +156,7 @@ snit::widget ::wnbhood::wizwin {
             return
         }
 
-        cif transaction "Ingest $num Neighborhoods" {
+        flunky transaction "Ingest $num Neighborhoods" {
             dict for {name data} $ndict {
                 lassign $data refpt poly
                 set id "N[format "%03d" $ctr]"
@@ -169,7 +169,7 @@ snit::widget ::wnbhood::wizwin {
                 set parms(polygon)    $poly
                 set parms(controller) ""
 
-                order send gui NBHOOD:CREATE:RAW [array get parms]
+                flunky senddict gui NBHOOD:CREATE:RAW [array get parms]
 
                 incr ctr
             }

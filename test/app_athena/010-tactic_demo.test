@@ -80,7 +80,9 @@ namespace eval ::athena_test::tests:: {
         g          {}
         id         *
         n          {}
-        parent     ::bean::block*
+        name       T*
+        parent     *
+        pot        ::pot
         state      invalid
     }
 

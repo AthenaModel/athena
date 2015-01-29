@@ -36,8 +36,6 @@ snit::widgetadaptor ordersentbrowser {
         { id        "ID"         -sortmode integer   }
         { tick      "Week"       -sortmode integer   }
         { week      "Date"                           }
-        { canUndo   "Undo?"                          }
-        { kind      "Kind"                           }
         { narrative "Narrative"  -width 50 -wrap yes }
         { name      "Order"                          }
         { parmdict  "Parameters" -width 70 -wrap yes }
@@ -59,9 +57,9 @@ snit::widgetadaptor ordersentbrowser {
             -uid          id                          \
             -titlecolumns 3                           \
             -reloadon {
-                ::sim <DbSyncB>
-                ::sim <Tick>
-                ::cif <Update>
+                ::sim    <DbSyncB>
+                ::sim    <Tick>
+                ::flunky <Sync>
             } -layout [string map [list %D $::app::derivedfg] $layout]
 
         # NEXT, get the options.

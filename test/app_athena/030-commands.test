@@ -70,7 +70,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         set id [ted sendex block add JOE]
-        [block get $id] get intent
+        [pot get $id] get intent
     } -cleanup {
         cleanup
     } -result {}
@@ -79,7 +79,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         set id [ted sendex block add JOE -intent "New Block"]
-        [block get $id] get intent
+        [pot get $id] get intent
     } -cleanup {
         cleanup
     } -result {New Block}
@@ -88,7 +88,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         set id [ted sendex block add JOE -state disabled]
-        [block get $id] get state
+        [pot get $id] get state
     } -cleanup {
         cleanup
     } -result {disabled}
@@ -142,11 +142,13 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -match dictglob -result {
         -agent      JOE
-        -block_id   3
+        -block_id   *
         -cmode      ALL
         -conditions {}
         -emode      ALL
+        -fullname   JOE/B*
         -intent     A
+        -name       B*
         -once       0
         -onlock     0
         -state      normal
@@ -226,7 +228,7 @@ namespace eval ::athena_test::tests:: {
         set B1 [ted addblock JOE]
     } -body {
         set id [ted sendex condition add [$B1 id] EXPR]
-        [condition get $id] get metflag
+        [pot get $id] get metflag
     } -cleanup {
         cleanup
     } -result {}
@@ -236,7 +238,7 @@ namespace eval ::athena_test::tests:: {
         set B1 [ted addblock JOE]
     } -body {
         set id [ted sendex condition add [$B1 id] EXPR -expression "1 + 1 == 2"]
-        [condition get $id] get expression
+        [pot get $id] get expression
     } -cleanup {
         cleanup
     } -result {1 + 1 == 2}
@@ -246,7 +248,7 @@ namespace eval ::athena_test::tests:: {
         set B1 [ted addblock JOE]
     } -body {
         set id [ted sendex condition add [$B1 id] EXPR -state disabled]
-        [condition get $id] get state
+        [pot get $id] get state
     } -cleanup {
         cleanup
     } -result {disabled}
@@ -317,10 +319,12 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -match dictglob -result {
         -agent        JOE
-        -condition_id 4
+        -condition_id *
         -expression   {1 + 1 == 2}
+        -fullname     JOE/B*/C*
+        -name         C*
         -narrative    {Expression: 1 + 1 == 2}
-        -parent       3
+        -parent       *
         -state        normal
         -typename     EXPR
     }
@@ -467,7 +471,7 @@ namespace eval ::athena_test::tests:: {
         set B1 [ted addblock JOE]
     } -body {
         set id [ted sendex tactic add [$B1 id] SIGEVENT]
-        [tactic get $id] get msg
+        [pot get $id] get msg
     } -cleanup {
         cleanup
     } -result {}
@@ -477,7 +481,7 @@ namespace eval ::athena_test::tests:: {
         set B1 [ted addblock JOE]
     } -body {
         set id [ted sendex tactic add [$B1 id] SIGEVENT -msg "1 + 1 == 2"]
-        [tactic get $id] get msg
+        [pot get $id] get msg
     } -cleanup {
         cleanup
     } -result {1 + 1 == 2}
@@ -487,7 +491,7 @@ namespace eval ::athena_test::tests:: {
         set B1 [ted addblock JOE]
     } -body {
         set id [ted sendex tactic add [$B1 id] SIGEVENT -state disabled]
-        [tactic get $id] get state
+        [pot get $id] get state
     } -cleanup {
         cleanup
     } -result {disabled}
@@ -558,11 +562,13 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -match dictglob -result {
         -agent     JOE
+        -fullname  JOE/B*/T*
         -msg       {1 + 1 == 2}
+        -name      T*
         -narrative {Logs "1 + 1 == 2" to the sigevents log}
-        -parent    3
+        -parent    *
         -state     normal
-        -tactic_id 4
+        -tactic_id *
         -typename  SIGEVENT
     }
 
@@ -930,10 +936,10 @@ namespace eval ::athena_test::tests:: {
         ted sendex autogen actors
         ted sendex autogen nbhoods
         ted sendex autogen frcgroups
-        set a [llength [::strategy::A00 blocks]]
+        set a [llength [[strategy getname A00] blocks]]
     } -body {
         ted sendex autogen assign A00 
-        set b [llength [::strategy::A00 blocks]]]
+        set b [llength [[strategy getname A00] blocks]]]
         expr {$b > $a}
     } -cleanup {
         cleanup
@@ -1041,9 +1047,9 @@ namespace eval ::athena_test::tests:: {
         autogen nbhoods
         autogen frcgroups
     } -body {
-        set a [llength [::strategy::A00 blocks]]
+        set a [llength [[strategy getname A00] blocks]]
         ted sendex autogen strategy
-        set b [llength [::strategy::A00 blocks]]
+        set b [llength [[strategy getname A00] blocks]]
         list $a $b
     } -cleanup {
         cleanup

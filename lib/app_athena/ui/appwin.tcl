@@ -54,7 +54,6 @@ snit::widget appwin {
     component reloader              ;# timeout(n) that reloads content
     component editmenu              ;# The Edit menu
     component viewmenu              ;# The View menu
-    component bookmenu              ;# The Bookmarks menu
     component toolbar               ;# The main toolbar
     component simtools              ;# The simulation controls
     component cli                   ;# The cli(n) pane
@@ -416,15 +415,6 @@ snit::widget appwin {
             }
         }
 
-        bookmarks {
-            label   "Bookmarks"
-            vistype bookmarks
-            parent  ""
-            script  {
-                bookmarkbrowser %W
-            }
-        }
-
         scripts {
             label "Scripts"
             vistype scripts
@@ -459,7 +449,6 @@ snit::widget appwin {
     # scenario   - Visible in scenario mode
     # simulation - Visible in simulation mode
     # orders     - Order tabs; visible in -dev mode or on request.
-    # bookmarks  - Bookmarks Browser; visible on request
     # slog       - Scrolling log; visible in -dev mode, on request, or
     #              on error.
     # scripts    - Scripts editor tab; visible in -dev mode or on request.
@@ -471,7 +460,6 @@ snit::widget appwin {
         scenario    1
         simulation  0
         orders      0
-        bookmarks   0
         slog        0
         scripts     0
         cli         0
@@ -703,27 +691,6 @@ snit::widget appwin {
         # The rest of the view menu is added later.
 
 
-        # Bookmarks menu
-        set bookmenu [menu $menubar.bookmark \
-            -postcommand [mymethod BookmarkMenuPostCmd]]
-
-        $menubar add cascade \
-            -label     "Bookmarks"   \
-            -underline 0             \
-            -menu      $bookmenu
-
-        $bookmenu add command \
-            -label "Bookmark This Page..." \
-            -underline 0 \
-            -command [mymethod BookmarkThisPage] 
-
-        $bookmenu add command \
-            -label "Show All Bookmarks..." \
-            -underline 0 \
-            -command [mymethod tab view bookmarks] 
-
-        $bookmenu add separator
-
         # Orders menu
         set ordersmenu [menu $menubar.orders]
         $menubar add cascade -label "Orders" -underline 0 -menu $ordersmenu
@@ -737,8 +704,8 @@ snit::widget appwin {
         $self AddOrder $submenu SIM:STARTTICK
         
         cond::available control \
-            [menuitem $submenu command [order title SIM:REBASE]... \
-                -command [list order send gui SIM:REBASE]]    \
+            [menuitem $submenu command [myorders title SIM:REBASE]... \
+                -command [list flunky send gui SIM:REBASE]]    \
                 order SIM:REBASE
 
         # Orders/Unit
@@ -879,8 +846,8 @@ snit::widget appwin {
         $self AddOrder $submenu ECON:CGE:UPDATE
 
         cond::available control \
-            [menuitem $submenu command [order title ECON:UPDATE:HIST]... \
-            -command {order enter ECON:UPDATE:HIST [econ hist]}]    \
+            [menuitem $submenu command [myorders title ECON:UPDATE:HIST]... \
+            -command {app enter ECON:UPDATE:HIST [econ hist]}]    \
             order ECON:UPDATE:HIST
 
         # Wizard menu
@@ -963,9 +930,10 @@ snit::widget appwin {
 
     method AddOrder {mnu orders} {
         foreach order $orders {
+            set cls [flunky class $order]
             cond::available control \
-                [menuitem $mnu command [order title $order]... \
-                     -command [list order enter $order]]    \
+                [menuitem $mnu command [$cls title]... \
+                     -command [list app enter $order]]    \
                 order $order
         }
     }
@@ -1384,11 +1352,6 @@ snit::widget appwin {
         $viewmenu add separator
 
         $viewmenu add checkbutton                   \
-            -label    "Bookmarks"                   \
-            -variable [myvar visibility(bookmarks)] \
-            -command  [mymethod ToggleHiddenTab bookmarks]
-
-        $viewmenu add checkbutton                   \
             -label    "Scripts Editor"              \
             -variable [myvar visibility(scripts)]   \
             -command  [mymethod ToggleHiddenTab scripts]
@@ -1476,42 +1439,6 @@ snit::widget appwin {
     }
     
    
-    #-------------------------------------------------------------------
-    # Bookmarks Management
-
-    # BookmarkMenuPostCmd
-    #
-    # Populates the lower half of the Bookmarks menu
-
-    method BookmarkMenuPostCmd {} {
-        # FIRST, delete the bookmarks
-        $bookmenu delete 3 end
-
-        # NEXT, add the bookmarks
-        rdb eval {
-            SELECT url, title FROM bookmarks
-            ORDER BY rank ASC
-        } {
-            $bookmenu add command \
-                -label $title \
-                -command [list app show $url]
-        }
-    }
-
-    # BookmarkThisPage
-    #
-    # Pops up the BOOKMARK:CREATE dialog so that the user can bookmark
-    # the current detail browser page.
-
-    method BookmarkThisPage {} {
-        set detail [$self tab win detail]
-
-        order enter BOOKMARK:CREATE \
-            url   [$detail url]     \
-            title [$detail title]
-    }
-
-
     #-------------------------------------------------------------------
     # CLI history
 
@@ -1794,7 +1721,7 @@ snit::widget appwin {
 
         # NEXT, Import the map
         if {[catch {
-            order send gui MAP:IMPORT:FILE [list filename $filename]
+            flunky senddict gui MAP:IMPORT:FILE [list filename $filename]
         } result]} {
             app error {
                 |<--
@@ -1825,9 +1752,9 @@ snit::widget appwin {
             return
         }
 
-        # NEXT, Import the map
+        # NEXT, Import the parmdb file
         if {[catch {
-            order send gui PARM:IMPORT [list filename $filename]
+            flunky senddict gui PARM:IMPORT [list filename $filename]
         } result]} {
             app error {
                 |<--
@@ -1873,7 +1800,12 @@ snit::widget appwin {
     # Verifies that the user has saved data before exiting.
 
     method FileExit {} {
-        # FIRST, Allow the user to save unsaved data.
+        # FIRST, check for modal dialogs, this is a problem on Linux
+        if {[grab current] ne ""} {
+            return
+        }
+
+        # NEXT, Allow the user to save unsaved data.
         if {![$self SaveUnsavedData]} {
             return
         }
@@ -1937,12 +1869,12 @@ snit::widget appwin {
 
     method PostEditMenu {} {
         # Undo item
-        set title [cif canundo]
+        set text [flunky undotext]
 
-        if {$title ne ""} {
+        if {$text ne ""} {
             $editmenu entryconfigure 0 \
                 -state normal          \
-                -label "Undo $title"
+                -label $text
         } else {
             $editmenu entryconfigure 0 \
                 -state disabled        \
@@ -1950,12 +1882,12 @@ snit::widget appwin {
         }
 
         # Redo item
-        set title [cif canredo]
+        set text [flunky redotext]
 
-        if {$title ne ""} {
+        if {$text ne ""} {
             $editmenu entryconfigure 1 \
                 -state normal          \
-                -label "Redo $title"
+                -label $text
         } else {
             $editmenu entryconfigure 1 \
                 -state disabled        \
@@ -1968,8 +1900,8 @@ snit::widget appwin {
     # Undoes the top order on the undo stack, if any.
 
     method EditUndo {} {
-        if {[cif canundo] ne ""} {
-            cif undo
+        if {[flunky canundo]} {
+            flunky undo
         }
     }
 
@@ -1978,8 +1910,8 @@ snit::widget appwin {
     # Redoes the last undone order if any.
 
     method EditRedo {} {
-        if {[cif canredo] ne ""} {
-            cif redo
+        if {[flunky canredo]} {
+            flunky redo
         }
     }
 
@@ -1992,10 +1924,10 @@ snit::widget appwin {
 
     method RunPause {} {
         if {[sim state] eq "RUNNING"} {
-            order send gui SIM:PAUSE
+            flunky send gui SIM:PAUSE
         } else {
-            order send gui SIM:RUN \
-                weeks [dict get $durations [$simtools.duration get]]
+            flunky send gui SIM:RUN \
+                -weeks [dict get $durations [$simtools.duration get]]
         }
     }
 
@@ -2024,7 +1956,7 @@ snit::widget appwin {
                 return
             }
 
-            order send gui SIM:LOCK
+            flunky send gui SIM:LOCK
             return
         }
 
@@ -2048,7 +1980,7 @@ snit::widget appwin {
                         }]]
 
         if {$answer eq "ok"} {
-            order send gui SIM:UNLOCK
+            flunky send gui SIM:UNLOCK
         }
     }
 

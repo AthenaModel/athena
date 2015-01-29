@@ -83,7 +83,9 @@ namespace eval ::athena_test::tests:: {
         id         *
         mode       NBHOOD
         n          {}
-        parent     ::bean::block*
+        name       T*
+        parent     *
+        pot        ::pot
         state      invalid
     }
 
@@ -244,19 +246,14 @@ namespace eval ::athena_test::tests:: {
     #-------------------------------------------------------------------
     # execute
 
-    test execute-1.1 {sets up casualties} -setup {
+    test execute-1.1 {execution always works} -setup {
         setup
         $T1 configure -mode NBHOOD -n NB1 -g1 BLUE -g2 ALQ
     } -body {
         $T1 execute
-        ted query {SELECT * FROM magic_attrit}
     } -cleanup {
         cleanup
-    } -match glob -result {
-id mode   n   f casualties g1   g2  
--- ------ --- - ---------- ---- --- 
-1  NBHOOD NB1   1          BLUE ALQ 
-    }
+    } -result {{g1 BLUE g2 ALQ mode NBHOOD f {} n NB1 casualties 1}}
 
     #-------------------------------------------------------------------
     # Cleanup

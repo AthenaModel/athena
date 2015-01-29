@@ -76,8 +76,10 @@ namespace eval ::athena_test::tests:: {
         glist      {_type GROUPS _rule {}}
         id         *
         mode       BY_GROUP
+        name       T*
         nlist      {_type NBHOODS _rule {}}
-        parent     ::bean::block*
+        parent     *
+        pot        ::pot
         state      invalid
     }
 

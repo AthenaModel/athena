@@ -169,15 +169,15 @@ snit::widget ::wintel::wizevents {
     # Creates the event list widget.
 
     method MakeEventList {w} {
-        install elist using databrowser $win.elist        \
-            -sourcecmd    [list ::wintel::simevent ids]   \
-            -dictcmd      [list ::bean view]              \
-            -selectmode   browse                          \
-            -height       15                              \
-            -width        80                              \
-            -filterbox    no                              \
-            -displaycmd   [mymethod EListDisplay]         \
-            -selectioncmd [mymethod EListSelection]       \
+        install elist using databrowser $win.elist          \
+            -sourcecmd    [list ::wintel::pot ids ::wintel::simevent] \
+            -dictcmd      [list ::wintel::pot view]                   \
+            -selectmode   browse                            \
+            -height       15                                \
+            -width        80                                \
+            -filterbox    no                                \
+            -displaycmd   [mymethod EListDisplay]           \
+            -selectioncmd [mymethod EListSelection]         \
             -layout {
                 { id        "Obj ID"    -sortmode integer }
                 { num       "Number"    -sortmode integer }
@@ -231,7 +231,7 @@ snit::widget ::wintel::wizevents {
         if {$id eq ""} {
             $detail set $helptext
         } else {
-            set e [simevent get $id]
+            set e [::wintel::pot get $id]
             $detail set [$e htmltext]
         }
     }
@@ -248,7 +248,7 @@ snit::widget ::wintel::wizevents {
         }
 
         set id [lindex [$elist uid curselection]]
-        set e [simevent get $id]
+        set e [::wintel::pot get $id]
 
         if {[$e canedit]} {
             return normal
@@ -283,10 +283,10 @@ snit::widget ::wintel::wizevents {
         }
 
         # NEXT, get the event.
-        set e [simevent get $id]
+        set e [::wintel::pot get $id]
 
         # NEXT, pop up the order.
-        order enter SIMEVENT:[$e typename] event_id $id
+        wizard enter SIMEVENT:[$e typename] event_id $id
     }
 
     # EListToggle
@@ -302,7 +302,7 @@ snit::widget ::wintel::wizevents {
         }
 
         # NEXT, get the event's state.
-        set e [simevent get $id]
+        set e [::wintel::pot get $id]
         set state [$e state]
 
         if {$state eq "disabled"} {

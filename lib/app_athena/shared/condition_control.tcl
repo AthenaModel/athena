@@ -116,15 +116,25 @@ condition define CONTROL "Control of Neighborhoods" {
 #
 # Updates the condition's parameters
 
-order define CONDITION:CONTROL {
-    title "Condition: Control of Neighborhoods"
+myorders define CONDITION:CONTROL {
+    meta title      "Condition: Control of Neighborhoods"
+    meta sendstates PREP
+    meta parmlist {
+        condition_id
+        name
+        a
+        sense
+        anyall
+        nlist
+    }
 
-    options -sendstates PREP
-
-    form {
+    meta form {
         rcc "Condition ID:" -for condition_id
         text condition_id -context yes \
             -loadcmd {beanload}
+
+        rcc "Name:" -for name
+        text name -width 20
 
         rc "" -span 2
         label {
@@ -145,20 +155,27 @@ order define CONDITION:CONTROL {
         rc "" -span 2
         gofer nlist -typename gofer::NBHOODS
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare condition_id -required -type condition::CONTROL
-    prepare a      -toupper -type actor
-    prepare sense  -toupper -type edoes
-    prepare anyall -toupper -type eanyall                
-    prepare nlist                      
-    returnOnError -final
 
-    set cond [condition get $parms(condition_id)]
 
-    # NEXT, update the block
-    setundo [$cond update_ {a sense anyall nlist} [array get parms]]
+    method _validate {} {
+        my prepare condition_id -required -with {::strategy valclass condition::CONTROL}
+        my returnOnError
+
+        set cond [pot get $parms(condition_id)]
+
+        my prepare name   -toupper -with [list $cond valName]
+        my prepare a      -toupper -type actor
+        my prepare sense  -toupper -type edoes
+        my prepare anyall -toupper -type eanyall                
+        my prepare nlist                      
+    }
+
+    method _execute {{flunky ""}} {
+        set cond [pot get $parms(condition_id)]
+        my setundo [$cond update_ {name a sense anyall nlist} [array get parms]]
+    }
 }
+
 
 
 

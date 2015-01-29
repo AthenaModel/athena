@@ -22,7 +22,9 @@
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
-beanclass create ::wintel::simevent
+oo::class create ::wintel::simevent {
+    superclass ::projectlib::bean
+}
 
 # NEXT, define class methods
 oo::objdefine ::wintel::simevent {
@@ -44,7 +46,7 @@ oo::objdefine ::wintel::simevent {
         set fullname ::wintel::simevent::$typename
         lappend types $fullname
 
-        beanclass create $fullname {
+        oo::class create $fullname {
             superclass ::wintel::simevent
         }
 
@@ -143,8 +145,8 @@ oo::objdefine ::wintel::simevent {
     method normals {} {
         set result [list]
 
-        foreach id [my ids] {
-            if {[[my get $id] state] eq "normal"} {
+        foreach id [::wintel::pot ids] {
+            if {[[::wintel::pot get $id] state] eq "normal"} {
                 lappend result $id
             }
         }
@@ -170,8 +172,8 @@ oo::objdefine ::wintel::simevent {
 
         # NEXT, assign numbers
         set i 0
-        foreach id [my ids] {
-            set e [my get $id]
+        foreach id [::wintel::pot ids] {
+            set e [::wintel::pot get $id]
             $e set num $inum-[incr i]
         }
     }
@@ -190,13 +192,13 @@ oo::objdefine ::wintel::simevent {
         " row {
             # FIRST, create a new event.
             set etype [my type $typename]
-            set e [$etype new {*}$row(optlist)]
+            set e [::wintel::pot new $etype {*}$row(optlist)]
 
             # NEXT, if it can extend the previous event,
             # extend the previous event.
             if {$lastEvent ne "" && [$lastEvent canmerge $e]} {
                 $lastEvent merge $e
-                bean uncreate $e  ;# Reuses $e's bean ID
+                ::wintel::pot uncreate $e  ;# Reuses $e's bean ID
             } else {
                 set lastEvent $e
             }
@@ -219,6 +221,7 @@ oo::define ::wintel::simevent {
     variable week       ;# The start week, as a week(n) string.
     variable t          ;# The start week, as a sim week integer.
     variable coverage   ;# The neighborhood coverage fraction
+    variable deltap     ;# The change in actual level of service
     variable duration   ;# The duration in weeks.
     variable cidlist    ;# The message ID list: messages that drove this
                          # event.
@@ -236,6 +239,7 @@ oo::define ::wintel::simevent {
         set week     ""
         set t        ""
         set coverage 0.5
+        set deltap   -10.0
         set duration 1
         set cidlist  [list]
 
@@ -445,8 +449,8 @@ oo::define ::wintel::simevent {
     #
     # Sends the order and its parameters to the scenario.
 
-    method send {args} {
-        return [order send gui {*}$args]
+    method send {order args} {
+        return [flunky senddict gui $order $args]
     }
 
     # block agent ?dur?
@@ -561,28 +565,20 @@ oo::define ::wintel::simevent {
 # Sets a event's state to normal or disabled.  The order dialog
 # is not generally used.
 
-order define EVENT:STATE {
-    title "Set Event State"
+myorders define EVENT:STATE {
+    meta title      "Set Event State"
+    meta sendstates PREP
+    meta parmlist   {event_id state}
 
-    options -sendstates PREP
-
-    form {
-        label "Event ID:" -for event_id
-        text event_id -context yes
-
-        rc "State:" -for state
-        text state
+    method _validate {} {
+        my prepare event_id -required          -with {::wintel::pot valclass ::wintel::simevent}
+        my prepare state    -required -tolower -type ebeanstate
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare event_id -required          -type event
-    prepare state    -required -tolower -type ebeanstate
-    returnOnError    -final
 
-    set event [event get $parms(event_id)]
-
-    # NEXT, update the event.
-    setundo [$event update_ {state} [array get parms]]
+    method _execute {{flunky ""}} {
+        set event [::wintel::pot get $parms(event_id)]
+        my setundo [$event update_ {state} [array get parms]]
+    }
 }
 
 

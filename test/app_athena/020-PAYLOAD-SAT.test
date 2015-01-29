@@ -141,7 +141,7 @@ mag           5.0
         ted order PAYLOAD:SAT:CREATE $P1
     } -body {
         ted notifier bind ::rdb <payloads>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -244,7 +244,7 @@ mag           10.0
         ted order PAYLOAD:SAT:UPDATE id {IOM2 1} c AUT
     } -body {
         ted notifier bind ::rdb <payloads>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

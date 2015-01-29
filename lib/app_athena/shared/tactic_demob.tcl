@@ -150,14 +150,18 @@ tactic define DEMOB "Demobilize Personnel" {actor} {
 #
 # Updates existing DEMOB tactic.
 
-order define TACTIC:DEMOB {
-    title "Tactic: Demobilize Personnel"
-    options -sendstates PREP
+myorders define TACTIC:DEMOB {
+    meta title      "Tactic: Demobilize Personnel"
+    meta sendstates PREP
+    meta parmlist   {tactic_id name g mode personnel percent}
 
-    form {
+    meta form {
         rcc "Tactic ID" -for tactic_id
         text tactic_id -context yes \
             -loadcmd {beanload}
+
+        rcc "Name:" -for name
+        text name -width 20
 
         rcc "Group:" -for g
         enum g -listcmd {tactic groupsOwnedByAgent $tactic_id}
@@ -183,52 +187,55 @@ order define TACTIC:DEMOB {
             }
         }
     }
-} {
-    # FIRST, prepare the parameters
-    prepare tactic_id  -required -type tactic::DEMOB
-    prepare g          -toupper  -type ident
-    prepare mode       -toupper  -selector
-    prepare personnel  -num      -type iquantity
-    prepare percent    -num      -type rpercent
 
-    returnOnError
 
-    # NEXT, get the tactic and do cross-checks
-    set tactic [tactic get $parms(tactic_id)]
+    method _validate {} {
+        # FIRST, prepare the parameters
+        my prepare tactic_id  -required -with {::strategy valclass tactic::DEMOB}
+        my returnOnError
 
-    fillparms parms [$tactic getdict]
+        set tactic [pot get $parms(tactic_id)]
 
-    switch -exact -- $parms(mode) {
-        ALL {
-            # No checks to do
-        }
+        my prepare name       -toupper  -with [list $tactic valName]
+        my prepare g          -toupper  -type ident
+        my prepare mode       -toupper  -selector
+        my prepare personnel  -num      -type iquantity
+        my prepare percent    -num      -type rpercent
 
-        SOME   -
-        EXCESS {
-            if {$parms(personnel) == 0} {
-                reject personnel "Mode requires personnel greater than 0."
+        my returnOnError
+
+        fillparms parms [$tactic getdict]
+
+        switch -exact -- $parms(mode) {
+            ALL {
+                # No checks to do
             }
-        }
 
-        PERCENT {
-            if {$parms(percent) == 0.0} {
-                reject percent "Mode requires a percentage greater than 0.0%."
+            SOME   -
+            EXCESS {
+                if {$parms(personnel) == 0} {
+                    my reject personnel "Mode requires personnel greater than 0."
+                }
             }
-        }
 
-        default {
-            error "Unexpected mode: \"$parms(mode)\""
+            PERCENT {
+                if {$parms(percent) == 0.0} {
+                    my reject percent "Mode requires a percentage greater than 0.0%."
+                }
+            }
+
+            default {
+                error "Unexpected mode: \"$parms(mode)\""
+            }
         }
     }
 
-    returnOnError -final
-
-    # NEXT, update the tactic, saving the undo script
-    set undo [$tactic update_ {g mode personnel percent} [array get parms]]
-
-    # NEXT, modify the tactic
-    setundo $undo
+    method _execute {{flunky ""}} {
+        set tactic [pot get $parms(tactic_id)]
+        my setundo [$tactic update_ {name g mode personnel percent} [array get parms]]
+    }
 }
+
 
 
 

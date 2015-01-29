@@ -270,16 +270,18 @@ tactic define BROADCAST "Broadcast an Info Ops Message" {actor} -onlock {
 #
 # Updates a BROADCAST tactic.
 
-order define TACTIC:BROADCAST {
-    title "Tactic: Broadcast IOM"
+myorders define TACTIC:BROADCAST {
+    meta title      "Tactic: Broadcast IOM"
+    meta sendstates PREP
+    meta parmlist   {tactic_id name cap a iom cost}
 
-    options \
-        -sendstates PREP
-
-    form {
+    meta form {
         rcc "Tactic ID:" -for tactic_id
         text tactic_id -context yes \
             -loadcmd {beanload}
+
+        rcc "Name:" -for name
+        text name -width 20
 
         rcc "CAP:" -for cap
         cap cap
@@ -294,27 +296,31 @@ order define TACTIC:BROADCAST {
         text cost
         label "$/week"
     }
-} {
-    # FIRST, there must be a tactic ID
-    prepare tactic_id  -required -type tactic::BROADCAST
-    returnOnError
 
-    # NEXT, get the tactic
-    set tactic [tactic get $parms(tactic_id)]
 
-    # NEXT, the parameters
-    prepare cap      -toupper   
-    prepare a        -toupper  
-    prepare iom      -toupper   
-    prepare cost     -toupper -type money
+    method _validate {} {
+        # FIRST, there must be a tactic ID
+        my prepare tactic_id  -required -with {::strategy valclass tactic::BROADCAST}
+        my returnOnError
 
-    returnOnError -final
+        # NEXT, get the tactic
+        set tactic [pot get $parms(tactic_id)]
 
-    fillparms parms [$tactic view]
+        # NEXT, the parameters
+        my prepare name     -toupper   -with [list $tactic valName]
+        my prepare cap      -toupper   
+        my prepare a        -toupper  
+        my prepare iom      -toupper   
+        my prepare cost     -toupper -type money
+    }
 
-    # NEXT, create the tactic
-    setundo [$tactic update_ {cap a iom cost} [array get parms]]
+    method _execute {{flunky ""}} {
+        set tactic [pot get $parms(tactic_id)]
+        fillparms parms [$tactic view]
+        my setundo [$tactic update_ {name cap a iom cost} [array get parms]]
+    }
 }
+
 
 
 

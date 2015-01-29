@@ -1,0 +1,820 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    beanpot.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Tcltest test suite for projectlib(n) beanpot(n).
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+
+# Import tcltest(n)
+namespace import ::tcltest::*
+
+ 
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+source ../../lib/projectlib/pkgModules.tcl
+namespace import ::projectlib::*
+
+#-------------------------------------------------------------------
+# Set up the test environment
+
+scenariodb ::rdb
+rdb open :memory:
+rdb clear
+
+beanpot ::pot \
+    -rdb ::rdb
+
+proc setup {} {
+    rdb clear
+    pot reset
+}
+
+proc cleanup {} {
+    pot reset
+    rdb clear
+
+    ::marsutil::notifier forget ::
+    set notifications [list]
+}
+
+proc setupNotifier {subject event} {
+    variable notifications
+    set notifications [list]
+    ::marsutil::notifier bind $subject $event :: \
+        [list ::handleNotification $subject $event]
+}
+
+proc handleNotification {args} {
+    variable notifications
+
+    lappend notifications "    $args"
+}
+
+proc getNotifications {} {
+    variable notifications
+    pprint "[join $notifications \n]\n"
+}
+
+
+proc pprint {text} { 
+    return "\n$text"
+}
+
+
+oo::class create pet {
+    superclass ::projectlib::bean
+    variable name
+    variable color
+
+    constructor {} {
+        next
+
+        set name ""
+        set color ""
+    }
+
+    method say {text} {
+        return "$name ([self]): $text"
+    }
+
+    # Override subject, so that we get notifier events.
+    method subject {} {
+        return "::pet"
+    }
+}
+
+oo::class create dog {
+    superclass ::pet
+
+    variable breed
+
+    constructor {{dict {}}} {
+        next
+
+        set breed "mutt"
+        my setdict $dict
+    }
+}
+
+oo::class create cat {
+    superclass ::pet
+
+    variable tail
+
+    constructor {{dict {}}} {
+        next
+
+        set tail yes  ;# Cat has a tail?
+
+        my setdict $dict
+    }
+}
+
+oo::class create wagger {
+    superclass ::dog
+
+    beanslot tail
+
+    constructor {{dict {}}} {
+        next
+        set tail ""
+        my setdict $dict
+    }
+
+    method addtail {newTail} {
+        set tail [$newTail id]
+    }
+
+    method wag {} {
+        my say "Wagging tail [[my tail 0] id], of length [[my tail 0] get length]"
+    }
+
+}
+
+oo::class create tail {
+    superclass ::projectlib::bean
+
+    variable parent
+    variable length
+
+    constructor {{dict {}}} {
+        next
+        set parent ""
+        set length medium
+        my setdict $dict
+    }
+}
+
+oo::class create blocklist {
+    superclass ::projectlib::bean
+
+    variable blocks
+
+    constructor {} {
+        next
+        set blocks [list]
+    }
+}
+
+#-----------------------------------------------------------------------
+# Creation
+
+test creation-1.1 {beanpot: default options} -body {
+    beanpot mypot
+    list [mypot cget -rdb] [mypot cget -dbid]
+} -cleanup {
+    mypot destroy
+} -result {{} pot}
+
+test creation-1.2 {can create two with distinct options} -body {
+    beanpot mypot1 -rdb ::rdb -dbid pot1
+    beanpot mypot2 -rdb ::rdb -dbid pot2
+    set a "ok"
+} -cleanup {
+    mypot1 destroy
+    mypot2 destroy
+} -result {ok}
+
+test creation-1.3 {cannot create two with same options} -body {
+    beanpot mypot1 -rdb ::rdb -dbid mypot
+    beanpot mypot2 -rdb ::rdb -dbid mypot
+    set a "ok"
+} -returnCodes {
+    error
+} -cleanup {
+    mypot1 destroy
+} -result {Error in constructor: There exist two ::projectlib::beanpot objects for (::rdb/mypot).}
+
+#-------------------------------------------------------------------
+# new
+
+test new-1.1 {"new" names} -body {
+    list \
+        [pot new bean] \
+        [pot new dog]  \
+        [pot new cat]
+} -cleanup {
+    cleanup    
+} -result {::pot::bean1 ::pot::dog2 ::pot::cat3}
+
+test new-1.2 {object created} -body {
+    set fido [pot new dog]
+    info command $fido
+} -cleanup {
+    cleanup    
+} -result {::pot::dog1}
+
+test new-1.3 {pot and ID set} -body {
+    set fido [pot new dog]
+    list [$fido get pot] [$fido get id]
+} -cleanup {
+    cleanup    
+} -result {::pot 1}
+
+#-------------------------------------------------------------------
+# ids
+
+test ids-1.1 {No ids initially} -body {
+    pot ids
+} -cleanup {
+    cleanup
+} -result {}
+
+test ids-1.2 {List of existing IDs} -body {
+    pot new pet
+    pot new pet
+    pot new pet
+    pot ids
+} -cleanup {
+    cleanup
+} -result {1 2 3}
+
+test ids-2.1 {subclasses have ids too} -body {
+    pot new bean
+    pot new pet
+    pot new dog 
+    pot ids pet
+
+    # result includes only pets (including subclasses)
+} -cleanup {
+    cleanup
+} -result {2 3}
+
+#-------------------------------------------------------------------
+# lastid
+
+test lastid-1.1 {equals id of newest bean} -body {
+    pot new pet
+    set a [pot lastid]
+    pot new pet
+    set b [pot lastid]
+    pot new pet
+    set c [pot lastid]
+    expr {[pot ids] eq [list $a $b $c]}
+} -cleanup {
+    cleanup
+} -result {1}
+
+#-------------------------------------------------------------------
+# nextid
+
+test nextid-1.1 {one more than id of newest bean} -body {
+    set a [pot nextid]
+    pot new pet
+    set b [pot nextid]
+    pot new pet
+    set c [pot nextid]
+    pot new pet
+    expr {[pot ids] eq [list $a $b $c]}
+} -cleanup {
+    cleanup
+} -result {1}
+
+#-------------------------------------------------------------------
+# setnextid
+
+test setnextid-1.1 {can set nextid} -body {
+    pot setnextid 10
+    pot new pet
+    pot new pet
+    pot new pet
+    pot ids
+} -cleanup {
+    cleanup
+} -result {10 11 12}
+
+#-------------------------------------------------------------------
+# has
+
+test has-1.1 {Pot does not contain ID} -body {
+    pot new pet
+    pot new pet
+    pot has 0
+} -cleanup {
+    cleanup
+} -result {0}
+
+test has-1.2 {Pot has ID} -body {
+    pot new pet
+    pot new pet
+    pot has 2
+} -cleanup {
+    cleanup
+} -result {1}
+
+#-------------------------------------------------------------------
+# hasa
+
+test hasa-1.1 {ID does not exist} -body {
+    pot new dog
+    pot new cat
+    pot hasa ::dog 500
+} -cleanup {
+    cleanup
+} -result {0}
+
+test hasa-1.2 {pot hasa dog with ID} -body {
+    set p1 [pot new dog]
+    set p2 [pot new cat]
+    list [pot hasa dog [$p1 id]] [pot hasa dog [$p2 id]]
+} -cleanup {
+    cleanup
+} -result {1 0}
+
+test hasa-1.3 {pot hasa pet with ID} -body {
+    set p1 [pot new dog]
+    set p2 [pot new cat]
+    list [pot hasa pet [$p1 id]] [pot hasa pet [$p2 id]]
+} -cleanup {
+    cleanup
+} -result {1 1}
+
+#-------------------------------------------------------------------
+# validate
+
+test validate-1.1 {not a bean id} -body {
+    pot validate NONESUCH
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Invalid object ID: "NONESUCH"}
+
+test validate-1.2 {is a bean id} -body {
+    set fido [pot new pet]
+    set id [pot validate [$fido id]]
+    expr {$id == [$fido id]}
+} -cleanup {
+    cleanup
+} -result {1}
+
+#-------------------------------------------------------------------
+# valclass
+
+test valclass-1.1 {not a bean id} -body {
+    pot valclass pet 500
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {Invalid pet ID: "500"}
+
+test valclass-1.2 {not a pet id} -body {
+    set bean1 [pot new bean]
+    pot valclass pet [$bean1 id]
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -match glob -result {Invalid pet ID: "*"}
+
+test valclass-1.3 {got a pet id} -body {
+    set bean [pot new pet]
+    set id [$bean id]
+    set result [pot valclass pet $id]
+    expr {$result == $id}
+} -cleanup {
+    cleanup
+} -result {1}
+
+test valclass-1.3 {subclasses are OK} -body {
+    set bean [pot new dog]
+    set id [$bean id]
+    set result [pot valclass pet $id]
+    expr {$result == $id}
+} -cleanup {
+    cleanup
+} -result {1}
+
+
+
+#-------------------------------------------------------------------
+# get
+
+test get-1.1 {no such ID} -body {
+    set fido [pot new pet]
+    set spot [pot new pet]
+    pot get 3
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {::pot contains no bean with ID 3}
+
+test get-1.2 {got it} -body {
+    set fido [pot new pet]
+    set spot [pot new pet]
+    expr {$spot eq [pot get 2]}
+} -cleanup {
+    cleanup
+} -result {1}
+
+#-------------------------------------------------------------------
+# view
+
+test view-1.1 {retrieves view given ID} -body {
+    set fido [pot new dog]
+    $fido set name "Fido"
+    $fido set color "Brown"
+
+    expr {[pot view [$fido id]] eq [$fido view]}
+} -cleanup {
+    cleanup
+} -result {1}
+
+test view-1.2 {can specify view name} -body {
+    set fido [pot new dog]
+    $fido set name "Fido"
+    $fido set color "Brown"
+
+    expr {[pot view [$fido id] myview] eq [$fido view myview]}
+} -cleanup {
+    cleanup
+} -result {1}
+
+
+#-------------------------------------------------------------------
+# dump
+
+test dump-1.1 {dumps all beans} -setup {
+    set spot [pot new pet]
+    $spot set name "Spot"
+    set fido [pot new pet]
+    $fido set name "Fido"
+    pot new dog
+    pot new cat
+    pot new bean
+} -body {
+    pprint [pot dump]
+} -cleanup {
+    cleanup
+} -result {
+1 (::pet/::pot::pet1): id 1 name Spot pot ::pot color {}
+2 (::pet/::pot::pet2): id 2 name Fido pot ::pot color {}
+3 (::dog/::pot::dog3): id 3 name {} breed mutt pot ::pot color {}
+4 (::cat/::pot::cat4): id 4 name {} tail yes pot ::pot color {}
+5 (::projectlib::bean/::pot::bean5): id 5 pot ::pot
+}
+
+#-------------------------------------------------------------------
+# delete/undelete
+#
+# Effects on the [pot changed] flag are tested below, under
+# "changed".
+
+test delete-1.1 {can delete one; no cascade} -body {
+    set d1 [pot new dog]
+    set d2 [pot new dog]
+    set d3 [pot new dog]
+
+    set cmd [pot get 2]
+    pot delete 2
+    list [pot ids] [info commands $cmd]
+} -cleanup {
+    cleanup
+} -result {{1 3} {}}
+
+test delete-1.2 {can restore one; no cascade} -body {
+    set d1 [pot new dog]
+    set d2 [pot new dog]
+    set d3 [pot new dog]
+
+    $d2 set color "Brown"
+
+    set a [pot dump]
+    set delset [pot delete 2]
+    pot undelete $delset
+    set b [pot dump]
+
+    expr {$a eq $b}
+} -cleanup {
+    cleanup
+} -result {1}
+
+test delete-2.1 {delete with cascade} -body {
+    set spot [pot new pet]
+    set skipper [pot new wagger]
+    $skipper addtail [pot new tail]
+
+    # Delete both skipper and his tail
+    pot delete 2
+    pot ids
+} -cleanup {
+    cleanup
+} -result {1}
+
+test delete-2.2 {undelete with cascade} -body {
+    set spot [pot new pet]
+    set skipper [pot new wagger]
+    $skipper addtail [pot new tail]
+
+    set a [pot dump]
+
+    # Delete both skipper and his tail
+    set delset [pot delete 2]
+    pot undelete $delset
+    set b [pot dump]
+    
+    expr {$a eq $b}
+} -cleanup {
+    cleanup
+} -result {1}
+
+#-------------------------------------------------------------------
+# checkpoint
+#
+# Effects on the [pot changed] flag are tested below, under
+# "changed".
+
+test checkpoint-1.1 {can't checkpoint if -rdb is not set.} -setup {
+    beanpot mypot
+} -body {
+    mypot checkpoint
+} -returnCodes {
+    error
+} -cleanup {
+    mypot destroy
+} -result {Cannot checkpoint; -rdb is not set}
+
+
+test checkpoint-1.2 {empty checkpoint string} -body {
+    pot checkpoint
+} -cleanup {
+    cleanup
+} -result {}
+
+test checkpoint-1.3 {beans table is cleared} -setup {
+    setup
+    rdb eval {INSERT INTO beans(dbid,id) VALUES('pot',100)}
+} -body {
+    pot checkpoint
+    rdb onecolumn {SELECT count(id) FROM beans}
+} -cleanup {
+    cleanup
+} -result {0}
+
+test checkpoint-1.4 {checkpoint populates beans table} -setup {
+    setup
+    set p1 [pot new pet]
+    set p2 [pot new pet]
+    $p1 set name p1
+    $p2 set name p2
+} -body {
+    pot checkpoint
+    pprint [rdb query {SELECT * FROM beans} -mode list]
+} -cleanup {
+    cleanup
+} -result {
+dbid        pot
+id          1
+bean_class  ::pet
+bean_dict   id 1 name p1 pot ::pot color {}
+
+dbid        pot
+id          2
+bean_class  ::pet
+bean_dict   id 2 name p2 pot ::pot color {}
+}
+
+#-------------------------------------------------------------------
+# restore
+#
+# Effects on the [pot changed] flag are tested below, under
+# "changed".
+
+
+test restore-1.1 {restore empty checkpoint} -setup {
+    setup
+} -body {
+    set a [pot dump]
+    set checkpoint [pot checkpoint]
+
+    pot new dog
+
+    pot restore $checkpoint
+    set b [pot dump]
+
+    expr {$a eq $b}
+} -cleanup {
+    cleanup
+} -result {1}
+
+test restore-1.2 {restore real checkpoint} -setup {
+    setup
+} -body {
+    set d1 [pot new dog]
+    set d2 [pot new dog]
+    set d3 [pot new dog]
+
+    set a [pot dump]
+    set checkpoint [pot checkpoint]
+
+    $d2 destroy
+    pot new dog
+    pot new cat
+
+    pot restore $checkpoint
+    set b [pot dump]
+
+    expr {$a eq $b}
+} -cleanup {
+    cleanup
+} -result {1}
+
+#-------------------------------------------------------------------
+# changed
+
+test changed-1.1 {unchanged initially} -body {
+    pot changed
+} -cleanup {
+    cleanup
+} -result {0}
+
+test changed-1.2 {set on bean create} -body {
+    pot new dog
+    pot changed
+} -cleanup {
+    cleanup
+} -result {1}
+
+test changed-1.3 {unset on pot reset} -body {
+    pot new dog
+    set a [pot changed]
+
+    pot reset
+    set b [pot changed]
+
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {1 0}
+
+test changed-1.4 {unchanged by checkpoint} -body {
+    set fido [pot new dog]
+    set a [pot changed]
+
+    pot checkpoint
+    set b [pot changed]
+
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {1 1}
+
+test changed-1.5 {cleared by checkpoint -saved} -body {
+    set fido [pot new dog]
+    set a [pot changed]
+
+    pot checkpoint -saved
+    set b [pot changed]
+
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {1 0}
+
+test changed-1.6 {set by restore} -body {
+    set fido [pot new dog]
+    set cp [pot checkpoint -saved]
+    set a [pot changed]
+
+    pot restore $cp
+    set b [pot changed]
+
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {0 1}
+
+test changed-1.7 {cleared by restore -saved} -body {
+    set fido [pot new dog]
+    set cp [pot checkpoint -saved]
+    set a [pot changed]
+
+    pot restore $cp -saved
+    set b [pot changed]
+
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {0 0}
+
+
+test changed-1.8 {set on [$bean set]} -body {
+    set fido [pot new dog]
+    pot checkpoint -saved
+    set a [pot changed]
+
+    $fido set name "Fido"
+    set b [pot changed]
+
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {0 1}
+
+test changed-1.9 {set on pot delete} -body {
+    set fido [pot new dog]
+    pot checkpoint -saved
+    set a [pot changed]
+
+    pot delete [$fido id]
+    set b [pot changed]
+
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {0 1}
+
+test changed-1.10 {set on pot undelete} -body {
+    set fido [pot new dog]
+    set delset [pot delete [$fido id]]
+    pot checkpoint -saved
+    set a [pot changed]
+
+    pot undelete $delset
+    set b [pot changed]
+
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {0 1}
+
+test changed-1.11 {set on lappend} -body {
+    set blist [pot new blocklist]
+    pot checkpoint -saved
+    set a [pot changed]
+
+    $blist lappend blocks a b c
+    set b [pot changed]
+
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {0 1}
+
+test changed-1.12 {set on ldelete} -body {
+    set blist [pot new blocklist]
+    $blist lappend blocks a b c
+    pot checkpoint -saved
+    set a [pot changed]
+
+    $blist ldelete blocks b
+    set b [pot changed]
+
+    list $a $b
+} -cleanup {
+    cleanup
+} -result {0 1}
+
+#-------------------------------------------------------------------
+# uncreate
+
+test uncreate-1.1 {destroys the bean} -body {
+    set bean [pot new pet]
+    pot uncreate $bean
+    info commands $bean
+} -cleanup {
+    cleanup
+} -result {}
+
+test uncreate-1.2 {decrements the ID counter} -body {
+    set bean [pot new pet]
+    set id1 [$bean id]
+    pot uncreate $bean
+    set id2 [[pot new pet] id]
+
+    expr {$id1 == $id2}
+} -cleanup {
+    cleanup
+} -result {1}
+
+test uncreate-1.3 {fails if not most recent bean} -body {
+    set bean [pot new pet]
+    pot new pet
+    pot uncreate $bean
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {not most recent bean: "::pot::pet1"}
+
+#-------------------------------------------------------------------
+# Cleanup
+
+cleanupTests

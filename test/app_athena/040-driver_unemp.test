@@ -78,7 +78,6 @@ namespace eval ::athena_test::tests:: {
     
     proc setup {} {
         # FIRST, other rule sets shouldn't muddy the waters.
-        parm set dam.PRESENCE.active no
         parm set dam.ENI.active no
         parm set dam.CONSUMP.active no
         rdb eval {DELETE FROM drivers}

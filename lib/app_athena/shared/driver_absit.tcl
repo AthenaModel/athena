@@ -686,45 +686,6 @@ driver::absit define MINEFIELD {
 }
 
 
-
-#-------------------------------------------------------------------
-# Rule Set: NOWATER: No Water Supply
-#
-# Abstract Situation: The local water supply is non-functional;
-# no water is available.
- 
-driver::absit define NOWATER {
-    typemethod ruleset {fdict} {
-        dict with fdict {}
-
-        set flist [demog gIn $n]
-
-        dam rule NOWATER-1-1 $fdict {
-           $state eq "ONGOING" && $inception
-        } {
-            satinput $flist $coverage \
-                AUT XXL-    \
-                QOL XXXXL-
-        }
-
-        dam rule NOWATER-1-2 $fdict {
-           $state eq "ONGOING" && !$inception
-        } {
-            satinput $flist $coverage \
-                AUT L-     \
-                QOL XXXL-
-        }
-
-        dam rule NOWATER-2-1 $fdict {
-            $state eq "RESOLVED" && [resolverIsLocal $resolver]
-        } {
-            satinput $flist $coverage  \
-                AUT M+
-        }
-    }
-}
-
-
 #-------------------------------------------------------------------
 # Rule Set: ORDNANCE: Unexploded Ordnance
 #
@@ -806,45 +767,6 @@ driver::absit define PIPELINE {
     }
 }
 
-
-
-#-------------------------------------------------------------------
-# Rule Set: POWEROUT: Power Outage
-#
-# Abstract Situation: Electrical power is off in the local area.
- 
-driver::absit define POWEROUT {
-    typemethod ruleset {fdict} {
-        dict with fdict {}
-
-        set flist [demog gIn $n]
-
-        dam rule POWEROUT-1-1 $fdict {
-           $state eq "ONGOING" && $inception
-        } {
-            satinput $flist $coverage \
-                AUT L-   \
-                SFT M-   \
-                QOL XXL-
-        }
-
-        dam rule POWEROUT-1-2 $fdict {
-           $state eq "ONGOING" && !$inception
-        } {
-            satinput $flist $coverage \
-                AUT M-   \
-                SFT S-   \
-                QOL L-
-        }
-
-        dam rule POWEROUT-2-1 $fdict {
-            $state eq "RESOLVED" && [resolverIsLocal $resolver]
-        } {
-            satinput $flist $coverage  \
-                AUT L+
-        }
-    }
-}
 
 #-------------------------------------------------------------------
 # Rule Set: REFINERY: Oil Refinery Fire
@@ -961,35 +883,6 @@ driver::absit define SEWAGE {
         } {
             satinput $flist $coverage  \
                 AUT S+
-        }
-    }
-}
-
-#-------------------------------------------------------------------
-# Rule Set: TRAFFIC: Traffic Congestion
-#
-# Abstract Situation: Traffic Congestion in streets
-    
-driver::absit define TRAFFIC {
-    typemethod ruleset {fdict} {
-        dict with fdict {}
-
-        set flist [demog gIn $n]
-
-        dam rule TRAFFIC-1-1 $fdict {
-           $state eq "ONGOING" && $inception
-        } {
-            satinput $flist $coverage \
-                AUT S-    \
-                QOL S-
-        }
-
-        dam rule TRAFFIC-1-2 $fdict {
-           $state eq "ONGOING" && !$inception
-        } {
-            satinput $flist $coverage \
-                AUT S-    \
-                QOL S-
         }
     }
 }

@@ -88,38 +88,35 @@
 # EVENT:* orders
 
 # SIMEVENT:ACCIDENT
-#
-# Updates existing ACCIDENT event.
 
-order define SIMEVENT:ACCIDENT {
-    title "Event: Accident in Neighborhood"
-    options -sendstates WIZARD
+::wintel::orders define SIMEVENT:ACCIDENT {
+    meta title "Event: Accident in Neighborhood"
 
-    form {
+    meta defaults {
+        event_id ""
+        coverage ""
+    }
+
+    meta form {
         rcc "Event ID" -for event_id
         text event_id -context yes \
-            -loadcmd {beanload}
+            -loadcmd {::wintel::wizard beanload}
 
         rcc "Coverage:" -for coverage
         posfrac coverage
         label "Fraction of neighborhood"
     }
-} {
-    # FIRST, prepare the parameters
-    prepare event_id  -required -type ::wintel::simevent::ACCIDENT
-    prepare coverage  -num      -type rposfrac
- 
-    returnOnError -final
+    
+    method _validate {} {
+        my prepare event_id  -required \
+            -with {::wintel::pot valclass ::wintel::simevent::ACCIDENT}
+        my prepare coverage  -num      -type rposfrac   
+    }
 
-    # NEXT, update the event.
-    set e [::wintel::simevent get $parms(event_id)]
-    $e update_ {coverage} [array get parms]
+    method _execute {{flunky ""}} {
+        set e [::wintel::pot get $parms(event_id)]
+        $e update_ {coverage} [array get parms]
 
-    return
+        return
+    }
 }
-
-
-
-
-
-

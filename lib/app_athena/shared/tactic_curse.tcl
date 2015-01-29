@@ -235,14 +235,18 @@ tactic define CURSE "Cause a CURSE" {system} {
 #
 # Creates/Updates CURSE tactic.
 
-order define TACTIC:CURSE {
-    title "Tactic: CURSE"
-    options -sendstates PREP
+myorders define TACTIC:CURSE {
+    meta title      "Tactic: CURSE"
+    meta sendstates PREP
+    meta parmlist   {tactic_id name curse roles}
 
-    form {
+    meta form {
         rcc "Tactic ID" -for tactic_id
         text tactic_id -context yes \
             -loadcmd {beanload}
+
+        rcc "Name:" -for name
+        text name -width 20
 
         rcc "CURSE" -for curse
         curse curse
@@ -250,22 +254,27 @@ order define TACTIC:CURSE {
         rc "" -for roles -span 2
         roles roles -rolespeccmd {curse rolespec $curse}
     }
-} {
-    # FIRST, prepare the parameters
-    prepare tactic_id  -required -type tactic::CURSE
-    returnOnError
 
-    set tactic [tactic get $parms(tactic_id)]
 
-    # All validation takes place on sanity check
-    prepare curse -toupper
-    prepare roles
+    method _validate {} {
+        # FIRST, prepare the parameters
+        my prepare tactic_id  -required -with {::strategy valclass tactic::CURSE}
+        my returnOnError
 
-    returnOnError -final
+        set tactic [pot get $parms(tactic_id)]
 
-    # NEXT, modify the tactic
-    setundo [$tactic update_ {curse roles} [array get parms]]
+        # More validation takes place on sanity check
+        my prepare name  -toupper   -with [list $tactic valName]
+        my prepare curse -toupper
+        my prepare roles
+    }
+
+    method _execute {{flunky ""}} {
+        set tactic [pot get $parms(tactic_id)]
+        my setundo [$tactic update_ {name curse roles} [array get parms]]
+    }
 }
+
 
 
 

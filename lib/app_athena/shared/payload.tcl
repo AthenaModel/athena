@@ -516,24 +516,27 @@ snit::type payload {
 #
 # Deletes an existing payload, of whatever type.
 
-order define PAYLOAD:DELETE {
+myorders define PAYLOAD:DELETE {
     # This order dialog isn't usually used.
 
-    title "Delete Payload"
-    options -sendstates PREP
+    meta title "Delete Payload"
+    meta sendstates PREP
 
-    form {
+    meta parmlist {id}
+
+    meta form {
         rcc "Payload ID:" -for id
         payload id -context yes
     }
-} {
-    # FIRST, prepare the parameters
-    prepare id -toupper -required -type payload
 
-    returnOnError -final
 
-    # NEXT, Delete the payload and dependent entities
-    setundo [payload mutate delete $parms(id)]
+    method _validate {} {
+        my prepare id -toupper -required -type payload
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [payload mutate delete $parms(id)]
+    }
 }
 
 # PAYLOAD:STATE
@@ -541,25 +544,29 @@ order define PAYLOAD:DELETE {
 # Sets a payload's state.  Note that this order isn't intended
 # for use with a dialog.
 
-order define PAYLOAD:STATE {
-    title "Set Payload State"
+myorders define PAYLOAD:STATE {
+    meta title "Set Payload State"
 
-    options -sendstates PREP
+    meta sendstates PREP
+    
+    meta parmlist {id state}
 
-    form {
+    meta form {
         rcc "Payload ID:" -for id
         payload id -context yes
 
         rcc "State:" -for state
         text state
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare id     -required          -type payload
-    prepare state  -required -tolower -type epayload_state
 
-    returnOnError -final
 
-    setundo [payload mutate state $parms(id) $parms(state)]
+    method _validate {} {
+        my prepare id     -required          -type payload
+        my prepare state  -required -tolower -type epayload_state
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [payload mutate state $parms(id) $parms(state)]
+    }
 }
 

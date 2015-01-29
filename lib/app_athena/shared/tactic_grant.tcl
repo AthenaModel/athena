@@ -109,11 +109,11 @@ tactic define GRANT "Grant Access to CAP" {actor} -onlock {
     # Returns a namedict of CAPs owned by the tactic's agent.
     
     typemethod capsOwnedBy {tactic_id} {
-        if {![tactic exists $tactic_id]} {
+        if {![pot has $tactic_id]} {
             return [list]
         }
 
-        set tactic [tactic get $tactic_id]
+        set tactic [pot get $tactic_id]
         set owner  [$tactic agent]
 
         return [rdb eval {
@@ -133,14 +133,18 @@ tactic define GRANT "Grant Access to CAP" {actor} -onlock {
 #
 # Updates existing GRANT tactic.
 
-order define TACTIC:GRANT {
-    title "Tactic: Grant Access to CAP"
-    options -sendstates PREP
+myorders define TACTIC:GRANT {
+    meta title      "Tactic: Grant Access to CAP"
+    meta sendstates PREP
+    meta parmlist   {tactic_id name klist alist}
 
-    form {
+    meta form {
         rcc "Tactic ID" -for tactic_id
         text tactic_id -context yes \
             -loadcmd {beanload}
+
+        rcc "Name:" -for name
+        text name -width 20
 
         rcc "CAP List:" -for klist
         enumlonglist klist \
@@ -151,25 +155,29 @@ order define TACTIC:GRANT {
         rcc "Actor List:" -for alist
         gofer alist -typename gofer::ACTORS
     }
-} {
-    # FIRST, prepare the parameters
-    prepare tactic_id  -required -type tactic::GRANT
-    prepare klist      -toupper
-    prepare alist
- 
-    # Error checking for klist and alist is done by the SanityCheck 
-    # routine.
 
-    returnOnError -final
 
-    # NEXT, update the tactic, saving the undo script, and clearing
-    # historical state data.
-    set tactic [tactic get $parms(tactic_id)]
-    set undo [$tactic update_ {klist alist} [array get parms]]
+    method _validate {} {
+        # FIRST, prepare the parameters
+        my prepare tactic_id  -required -with {::strategy valclass tactic::GRANT}
+        my returnOnError
 
-    # NEXT, save the undo script
-    setundo $undo
+        set tactic [pot get $parms(tactic_id)]
+
+        my prepare name      -toupper  -with [list $tactic valName]
+        my prepare klist     -toupper
+        my prepare alist
+     
+        # Error checking for klist and alist is done by the SanityCheck 
+        # routine.
+    }
+
+    method _execute {{flunky ""}} {
+        set tactic [pot get $parms(tactic_id)]
+        my setundo [$tactic update_ {name klist alist} [array get parms]]
+    }
 }
+
 
 
 

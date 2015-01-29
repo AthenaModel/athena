@@ -44,12 +44,14 @@ payload type define SAT {c mag} {
 #
 # Creates a new SAT payload.
 
-order define PAYLOAD:SAT:CREATE {
-    title "Create Payload: Satisfaction"
+myorders define PAYLOAD:SAT:CREATE {
+    meta title "Create Payload: Satisfaction"
 
-    options -sendstates PREP
+    meta sendstates PREP
 
-    form {
+    meta parmlist {iom_id longname c mag}
+
+    meta form {
         rcc "Message ID:" -for iom_id
         text iom_id -context yes
 
@@ -63,34 +65,36 @@ order define PAYLOAD:SAT:CREATE {
         mag mag
         label "points of change"
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare iom_id   -toupper   -required -type iom
-    prepare c        -toupper   -required -type econcern
-    prepare mag -num -toupper   -required -type qmag
 
-    returnOnError -final
 
-    # NEXT, put payload_type in the parmdict
-    set parms(payload_type) SAT
+    method _validate {} {
+        my prepare iom_id   -toupper   -required -type iom
+        my prepare c        -toupper   -required -type econcern
+        my prepare mag -num -toupper   -required -type qmag
+    }
 
-    # NEXT, create the payload
-    setundo [payload mutate create [array get parms]]
+    method _execute {{flunky ""}} {
+        set parms(payload_type) SAT
+    
+        my setundo [payload mutate create [array get parms]]
+    }
 }
 
 # PAYLOAD:SAT:UPDATE
 #
 # Updates existing SAT payload.
 
-order define PAYLOAD:SAT:UPDATE {
-    title "Update Payload: Satisfaction"
-    options -sendstates PREP 
+myorders define PAYLOAD:SAT:UPDATE {
+    meta title "Update Payload: Satisfaction"
+    meta sendstates PREP 
 
-    form {
+    meta parmlist {id longname c mag}
+
+    meta form {
         rcc "Payload:" -for id
-        key id -context yes -table gui_payloads_SAT \
+        dbkey id -context yes -table gui_payloads_SAT \
             -keys {iom_id payload_num} \
-            -loadcmd {orderdialog keyload id {c mag}}
+            -loadcmd {$order_ keyload id {c mag}}
 
         rcc "Description:" -for longname
         disp longname -width 60
@@ -102,16 +106,17 @@ order define PAYLOAD:SAT:UPDATE {
         mag mag
         label "points of change"
     }
-} {
-    # FIRST, prepare the parameters
-    prepare id         -required -type payload
-    prepare c          -toupper  -type econcern
-    prepare mag   -num -toupper  -type qmag
 
-    returnOnError -final
 
-    # NEXT, modify the payload
-    setundo [payload mutate update [array get parms]]
+    method _validate {} {
+        my prepare id         -required -type payload
+        my prepare c          -toupper  -type econcern
+        my prepare mag   -num -toupper  -type qmag
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [payload mutate update [array get parms]]
+    }
 }
 
 

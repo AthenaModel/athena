@@ -213,14 +213,21 @@ tactic define SPEND "Spend Cash-On-Hand" {actor} -onlock {
 #
 # Updates existing SPEND tactic.
 
-order define TACTIC:SPEND {
-    title "Tactic: Spend Money"
-    options -sendstates PREP
+myorders define TACTIC:SPEND {
+    meta title      "Tactic: Spend Money"
+    meta sendstates PREP
+    meta parmlist {
+        tactic_id name mode amount percent
+        goods black pop region world
+    }
 
-    form {
+    meta form {
         rcc "Tactic ID" -for tactic_id
         text tactic_id -context yes \
             -loadcmd {beanload}
+
+        rcc "Name:" -for name
+        text name -width 20
 
         rcc "Mode:"   -for mode
         selector mode {
@@ -268,56 +275,59 @@ order define TACTIC:SPEND {
         text world
         label "share(s)"        
     }
-} {
-    # FIRST, prepare the parameters
-    prepare tactic_id  -required -type tactic::SPEND
-    prepare mode       -toupper  -selector
-    prepare amount     -toupper  -type money
-    prepare percent    -toupper  -type rpercent
-    prepare goods      -num      -type iquantity
-    prepare black      -num      -type iquantity
-    prepare pop        -num      -type iquantity
-    prepare region     -num      -type iquantity
-    prepare world      -num      -type iquantity
 
-    returnOnError
 
-    # NEXT, get the tactic
-    set tactic [tactic get $parms(tactic_id)]
+    method _validate {} {
+        # FIRST, prepare the parameters
+        my prepare tactic_id  -required -with {::strategy valclass tactic::SPEND}
+        my returnOnError
 
-    # NEXT, check cross-constraints
-    fillparms parms [$tactic view]
+        set tactic [pot get $parms(tactic_id)]
 
-    if {$parms(mode) ne "PERCENT" && 
-        $parms(mode) ne "ALL"     &&
-        $parms(amount) == 0.0} {
-            reject amount "You must specify an amount > 0.0"
+        my prepare name       -toupper  -with [list $tactic valName]
+        my prepare mode       -toupper  -selector
+        my prepare amount     -toupper  -type money
+        my prepare percent    -toupper  -type rpercent
+        my prepare goods      -num      -type iquantity
+        my prepare black      -num      -type iquantity
+        my prepare pop        -num      -type iquantity
+        my prepare region     -num      -type iquantity
+        my prepare world      -num      -type iquantity
+
+        my returnOnError
+
+        # NEXT, check cross-constraints
+        fillparms parms [$tactic view]
+
+        if {$parms(mode) ne "PERCENT" && 
+            $parms(mode) ne "ALL"     &&
+            $parms(amount) == 0.0} {
+                my reject amount "You must specify an amount > 0.0"
+        }
+
+        if {$parms(mode) eq "PERCENT" && $parms(percent) == 0.0} {
+            my reject percent "You must specify a percent > 0.0"
+        }
+
+        # At least one sector must get a positive share
+        let total {
+            $parms(goods) + $parms(black) + $parms(pop) + $parms(region) + 
+            $parms(world)
+        }
+        
+        if {$total == 0} {
+            my reject goods "At least one sector must have a positive share."
+        }
     }
 
-    if {$parms(mode) eq "PERCENT" && $parms(percent) == 0.0} {
-        reject percent "You must specify a percent > 0.0"
+    method _execute {{flunky ""}} {
+        set tactic [pot get $parms(tactic_id)]
+        my setundo [$tactic update_ {
+            name mode amount percent goods black pop region world
+        } [array get parms]]
     }
-
-    # At least one sector must get a positive share
-    let total {
-        $parms(goods) + $parms(black) + $parms(pop) + $parms(region) + 
-        $parms(world)
-    }
-    
-    if {$total == 0} {
-        reject goods "At least one sector must have a positive share."
-    }
-
-    returnOnError -final
-
-    # NEXT, update the tactic, saving the undo script
-    set undo [$tactic update_ {
-        mode amount percent goods black pop region world
-    } [array get parms]]
-
-    # NEXT, modify the tactic
-    setundo $undo
 }
+
 
 
 

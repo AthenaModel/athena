@@ -93,14 +93,19 @@
 #
 # Updates existing FLOOD event.
 
-order define SIMEVENT:FLOOD {
-    title "Event: Flooding in Neighborhood"
-    options -sendstates WIZARD
+::wintel::orders define SIMEVENT:FLOOD {
+    meta title "Event: Flooding in Neighborhood"
 
-    form {
+    meta defaults {
+        event_id ""
+        duration ""
+        coverage ""
+    }
+
+    meta form {
         rcc "Event ID" -for event_id
         text event_id -context yes \
-            -loadcmd {beanload}
+            -loadcmd {::wintel::wizard beanload}
 
         rcc "Duration:" -for duration
         text duration -defvalue 1
@@ -110,23 +115,18 @@ order define SIMEVENT:FLOOD {
         posfrac coverage
         label "Fraction of neighborhood"
     }
-} {
-    # FIRST, prepare the parameters
-    prepare event_id  -required -type ::wintel::simevent::FLOOD
-    prepare duration  -num      -type ipositive
-    prepare coverage  -num      -type rposfrac
- 
-    returnOnError -final
+    
+    method _validate {} {
+        my prepare event_id  -required \
+            -with {::wintel::pot valclass ::wintel::simevent::FLOOD}
+        my prepare duration  -num      -type ipositive
+        my prepare coverage  -num      -type rposfrac
+    }
 
-    # NEXT, update the event.
-    set e [::wintel::simevent get $parms(event_id)]
-    $e update_ {duration coverage} [array get parms]
+    method _execute {{flunky ""}} {
+        set e [::wintel::pot get $parms(event_id)]
+        $e update_ {duration coverage} [array get parms]
 
-    return
+        return
+    }
 }
-
-
-
-
-
-

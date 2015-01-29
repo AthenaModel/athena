@@ -159,7 +159,7 @@ snit::widgetadaptor madbrowser {
 
     method AddEntity {} {
         # FIRST, Pop up the dialog
-        order enter MAD:CREATE
+        app enter MAD:CREATE
     }
 
     # EditSelected
@@ -171,7 +171,7 @@ snit::widgetadaptor madbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Pop up the order dialog.
-        order enter MAD:UPDATE mad_id $id
+        app enter MAD:UPDATE mad_id $id
     }
 
 
@@ -184,7 +184,7 @@ snit::widgetadaptor madbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Send the delete order.
-        order send gui MAD:DELETE mad_id $id
+        flunky senddict normal MAD:DELETE [list mad_id $id]
     }
 
 }

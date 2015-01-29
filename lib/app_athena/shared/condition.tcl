@@ -18,7 +18,9 @@
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
-beanclass create condition
+oo::class create condition {
+    superclass ::projectlib::bean
+}
 
 # NEXT, define class methods
 #
@@ -41,7 +43,7 @@ oo::objdefine condition {
         set fullname ::condition::$typename
         lappend types $fullname
 
-        beanclass create $fullname {
+        oo::class create $fullname {
             superclass ::condition
         }
 
@@ -130,7 +132,7 @@ oo::objdefine condition {
     # copysets  - A list of condition copysets from [$bean copydata].
     #
     # Pastes the conditions into the given block.  This call should be
-    # wrapped by [cif startblock]/[cif endblock] calls.  These are
+    # wrapped by [flunky transaction]s.  This is
     # not included in [paste] itself, because pasting conditions can be
     # done as part of a larger paste (i.e., pasting blocks).
 
@@ -144,12 +146,12 @@ oo::objdefine condition {
 
             # NEXT, create the condition with default settings
             set condition_id \
-                [order send gui BLOCK:CONDITION:ADD \
-                    block_id $block_id typename $cname]
+                [flunky senddict gui BLOCK:CONDITION:ADD \
+                    [list block_id $block_id typename $cname]]
 
             # NEXT, update the condition with the right data.
-            order send gui CONDITION:$cname condition_id $condition_id \
-                {*}$cdict
+            flunky senddict gui CONDITION:$cname \
+                [list condition_id $condition_id {*}$cdict]
         }
     }
 
@@ -163,8 +165,8 @@ oo::objdefine condition {
     method GetOrderParmsFromCopySet {cname copyset} {
         set pdict [dict create]
 
-        foreach parm [order parms CONDITION:$cname] {
-            if {$parm eq "condition_id"} {
+        foreach parm [myorders parms CONDITION:$cname] {
+            if {$parm eq "condition_id" || $parm eq "name"} {
                 continue
             }
 
@@ -181,11 +183,12 @@ oo::define condition {
     #-------------------------------------------------------------------
     # Instance Variables
 
-    variable parent   ;# The condition's owning block
+    variable parent   ;# The bean ID of the condition's owning block
                        # TBD: in the long run, it won't always be a block.
     variable state    ;# The condition's state
     variable metflag  ;# 1 if condition is met, 0 if it is unmet, 
                        # or "" if the result is unknown
+    variable name     ;# Condition name; can be set by user
     
     #-------------------------------------------------------------------
     # Constructor
@@ -195,6 +198,7 @@ oo::define condition {
         set parent  ""
         set state   normal
         set metflag ""
+        set name    ""
     }
 
     #-------------------------------------------------------------------
@@ -211,6 +215,14 @@ oo::define condition {
     }
 
 
+    # fullname
+    #
+    # The fully qualified name of the condition
+
+    method fullname {} {
+        return "[[my block] fullname]/[my get name]"
+    }
+
     # typename
     #
     # Returns the condition's typename
@@ -225,7 +237,7 @@ oo::define condition {
     # owns this condition.
 
     method agent {} {
-        return [$parent agent]
+        return [[[my pot] get $parent] agent]
     }
     
     # strategy 
@@ -233,7 +245,7 @@ oo::define condition {
     # Returns the strategy that owns the block that owns this condition.
 
     method strategy {} {
-        return [$parent strategy]
+        return [[[my pot] get $parent] strategy]
     }
 
     # block
@@ -241,7 +253,7 @@ oo::define condition {
     # Returns the block that owns this condition.
 
     method block {} {
-        return $parent
+        return [[my pot] get $parent]
     }
 
     # state
@@ -301,6 +313,7 @@ oo::define condition {
         dict set vdict agent      [my agent]
         dict set vdict typename   [my typename]
         dict set vdict statusicon [my statusicon]
+        dict set vdict fullname   [my fullname]
 
         if {$view eq "html"} {
             dict set vdict narrative [link html [my narrative]]
@@ -312,9 +325,10 @@ oo::define condition {
         # NEXT, translate and trim for cget view
         if {$view eq "cget"} {
             dict set vdict condition_id [my id]
-            dict set vdict parent       [[my get parent] id]
+            dict set vdict parent       [my get parent]
 
             set vdict [dict remove $vdict {*}{
+                pot
                 id
                 metflag
                 statusicon
@@ -488,6 +502,46 @@ oo::define condition {
 
         next
     }
+
+    #----------------------------------------------------------------
+    # Order Helpers
+    #
+    
+    # valName name 
+    #
+    # name  - a name for a tactic
+    #
+    # This validator checks to make sure that the name is an 
+    # identifier AND does not already exist in the set of conditions
+    # owned by this conditions parent.
+
+    method valName {name} {
+        # FIRST, name must be an identifier
+        ident validate $name
+
+        # NEXT, check names of all conditions owned by the parent
+        # skipping over the condition we are checking. Throw INVALID
+        # on first match.
+        foreach condition [[my block] conditions] {
+            if {[$condition get id] == [my get id]} {
+                continue
+            }
+
+            if {$name eq [$condition get name]} {
+                throw INVALID "Name already exists as condition: \"$name\""
+            }
+        }
+
+        # NEXT, check all tactics owned by the parent. Throw INVALID
+        # on first match
+        foreach tactic [[my block] tactics] {
+            if {$name eq [$tactic get name]} {
+                throw INVALID "Name already exists as tactic: \"$name\""
+            }
+        }
+
+        return $name
+    }
 }
 
 #-----------------------------------------------------------------------
@@ -498,29 +552,22 @@ oo::define condition {
 # Sets a condition's state to normal or disabled.  The order dialog
 # is not generally used.
 
-order define CONDITION:STATE {
-    title "Set Condition State"
+myorders define CONDITION:STATE {
+    meta title      "Set Condition State"
+    meta sendstates PREP
+    meta parmlist   {condition_id state}
 
-    options -sendstates PREP
-
-    form {
-        label "Condition ID:" -for condition_id
-        text condition_id -context yes
-
-        rc "State:" -for state
-        text state
+    method _validate {} {
+        my prepare condition_id -required -with {::strategy valclass ::condition}
+        my prepare state        -required -tolower -type ebeanstate
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare condition_id -required          -type condition
-    prepare state        -required -tolower -type ebeanstate
-    returnOnError -final
 
-    set cond [condition get $parms(condition_id)]
-
-    # NEXT, update the block
-    setundo [$cond update_ {state} [array get parms]]
+    method _execute {{flunky ""}} {
+        set cond [pot get $parms(condition_id)]
+        my setundo [$cond update_ {state} [array get parms]]
+    }
 }
+
 
 
 

@@ -137,9 +137,9 @@ snit::widgetadaptor nbrelbrowser {
         set ids [$hull uid curselection]
 
         if {[llength $ids] == 1} {
-            order enter NBREL:UPDATE id [lindex $ids 0]
+            app enter NBREL:UPDATE id [lindex $ids 0]
         } else {
-            order enter NBREL:UPDATE:MULTI ids $ids
+            app enter NBREL:UPDATE:MULTI ids $ids
         }
     }
 }

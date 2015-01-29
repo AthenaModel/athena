@@ -614,11 +614,20 @@ snit::type absit {
 #
 # Creates new absits.
 
-order define ABSIT:CREATE {
-    title "Create Abstract Situation"
-    options -sendstates {PREP PAUSED TACTIC}
+myorders define ABSIT:CREATE {
+    meta title "Create Abstract Situation"
+    meta sendstates {PREP PAUSED TACTIC}
 
-    form {
+    meta defaults {
+        n         ""
+        stype     ""
+        coverage  1.0
+        inception 1
+        resolver  NONE
+        rduration ""
+    }
+
+    meta form {
         rcc "Neighborhood:" -for n
         nbhood n
 
@@ -640,41 +649,46 @@ order define ABSIT:CREATE {
         label "weeks"
     }
 
-    parmtags n nbhood
-} {
-    # FIRST, prepare and validate the parameters
-    prepare n         -toupper   -required -type nbhood
-    prepare stype     -toupper   -required -type eabsit
-    prepare coverage  -num       -required -type rfraction
-    prepare inception -toupper   -required -type boolean
-    prepare resolver  -toupper   -required -type {ptype g+none}
-    prepare rduration -num                 -type iticks
-
-    returnOnError
-
-    # NEXT, additional validation steps.
-
-    validate coverage {
-        if {$parms(coverage) == 0.0} {
-            reject coverage "Coverage must be greater than 0."
-        }
+    meta parmtags {
+        n nbhood
     }
 
-    returnOnError
+    method _validate {} {
 
-    validate stype {
-        if {[absit existsInNbhood $parms(n) $parms(stype)]} {
-            reject stype \
-                "An absit of this type already exists in this neighborhood."
-        }
-    }
-
-    returnOnError -final
-
-    # NEXT, create the situation.
-    lappend undo [absit mutate create [array get parms]]
+        # FIRST, prepare and validate the parameters
+        my prepare n         -toupper   -required -type nbhood
+        my prepare stype     -toupper   -required -type eabsit
+        my prepare coverage  -num       -required -type rfraction
+        my prepare inception -toupper   -required -type boolean
+        my prepare resolver  -toupper   -required -type {ptype g+none}
+        my prepare rduration -num                 -type iticks
     
-    setundo [join $undo \n]
+        my returnOnError
+    
+        # NEXT, additional validation steps.
+    
+        my checkon coverage {
+            if {$parms(coverage) == 0.0} {
+                my reject coverage "Coverage must be greater than 0."
+            }
+        }
+    
+        my returnOnError
+    
+        my checkon stype {
+            if {[absit existsInNbhood $parms(n) $parms(stype)]} {
+                my reject stype \
+                    "An absit of this type already exists in this neighborhood."
+            }
+        }
+    }
+
+    method _execute {{flunky ""}} {
+        # NEXT, create the situation.
+        lappend undo [absit mutate create [array get parms]]
+    
+        my setundo [join $undo \n]
+    }
 }
 
 
@@ -682,49 +696,58 @@ order define ABSIT:CREATE {
 #
 # Deletes an absit.
 
-order define ABSIT:DELETE {
-    title "Delete Abstract Situation"
-    options -sendstates {PREP PAUSED}
+myorders define ABSIT:DELETE {
+    meta title "Delete Abstract Situation"
+    meta sendstates {PREP PAUSED}
 
-    form {
+    meta defaults {
+        s ""
+    }
+
+    meta form {
         rcc "Situation:" -for s
-        key s -table gui_absits_initial -keys s -dispcols longid
+        dbkey s -table gui_absits_initial -keys s -dispcols longid
     }
 
-    parmtags s situation
-} {
-    # FIRST, prepare the parameters
-    prepare s -required -type {absit initial}
-
-    returnOnError -final
-
-    # NEXT, make sure the user knows what he is getting into.
-
-    if {[sender] eq "gui"} {
-        set answer [messagebox popup \
-                        -title         "Are you sure?"                  \
-                        -icon          warning                          \
-                        -buttons       {ok "Delete it" cancel "Cancel"} \
-                        -default       cancel                           \
-                        -onclose       cancel                           \
-                        -ignoretag     ABSIT:DELETE   \
-                        -ignoredefault ok                               \
-                        -parent        [app topwin]                     \
-                        -message       [normalize {
-                            Are you sure you
-                            really want to delete this situation?
-                        }]]
-
-        if {$answer eq "cancel"} {
-            cancel
-        }
+    meta parmtags {
+        s situation
     }
 
 
-    # NEXT, delete the situation.
-    lappend undo [absit mutate delete $parms(s)]
+    method _validate {} {
+        # FIRST, prepare the parameters
+        my prepare s -required -type {absit initial}
+    }
+
+    method _execute {{flunky ""}} {
+
+
+        # NEXT, make sure the user knows what he is getting into.
     
-    setundo [join $undo \n]
+        if {[my mode] eq "gui"} {
+            set answer [messagebox popup \
+                            -title         "Are you sure?"                  \
+                            -icon          warning                          \
+                            -buttons       {ok "Delete it" cancel "Cancel"} \
+                            -default       cancel                           \
+                            -onclose       cancel                           \
+                            -ignoretag     [my name]                        \
+                            -ignoredefault ok                               \
+                            -parent        [app topwin]                     \
+                            -message       [normalize {
+                                Are you sure you
+                                really want to delete this situation?
+                            }]]
+    
+            if {$answer eq "cancel"} {
+                my cancel
+            }
+        }
+
+        # NEXT, delete the situation.
+        lappend undo [absit mutate delete $parms(s)]
+        my setundo [join $undo \n]
+    }
 }
 
 
@@ -732,14 +755,24 @@ order define ABSIT:DELETE {
 #
 # Updates existing absits.
 
-order define ABSIT:UPDATE {
-    title "Update Abstract Situation"
-    options -sendstates {PREP PAUSED TACTIC} 
+myorders define ABSIT:UPDATE {
+    meta title "Update Abstract Situation"
+    meta sendstates {PREP PAUSED TACTIC} 
 
-    form {
+    meta defaults {
+        s         ""
+        n         ""
+        stype     ""
+        coverage  ""
+        inception ""
+        resolver  ""
+        rduration ""
+    }
+
+    meta form {
         rcc "Situation:" -for s
-        key s -table gui_absits_initial -keys s -dispcols longid \
-            -loadcmd {orderdialog keyload s *}
+        dbkey s -table gui_absits_initial -keys s -dispcols longid \
+            -loadcmd {$order_ keyload s *}
 
         rcc "Neighborhood:" -for n
         nbhood n
@@ -761,45 +794,48 @@ order define ABSIT:UPDATE {
         label "weeks"
     }
 
-    parmtags s situation
-    parmtags n nbhood
-} {
-    # FIRST, check the situation
-    prepare s                    -required -type {absit initial}
+    meta parmtags {
+        s situation
+        n nbhood
+    }
 
-    returnOnError
+    method _validate {} {
 
-    set stype [absit get $parms(s) stype]
+        # FIRST, check the situation
+        my prepare s                    -required -type {absit initial}
+    
+        my returnOnError
+    
+        set stype [absit get $parms(s) stype]
+    
+        # NEXT, prepare the remaining parameters
+        my prepare n         -toupper  -type nbhood 
+        my prepare stype     -toupper  -type eabsit
+        my prepare coverage  -num      -type rfraction
+        my prepare inception -toupper  -type boolean
+        my prepare resolver  -toupper  -type {ptype g+none}
+        my prepare rduration -num      -type iticks
+    
+        my returnOnError
+    
+        # NEXT, validate the other parameters.
+        my checkon stype {
+            if {[absit existsInNbhood $parms(n) $parms(stype)]} {
+                my reject stype \
+                    "An absit of this type already exists in this neighborhood."
+            }
+        }
 
-    # NEXT, prepare the remaining parameters
-    prepare n         -toupper  -type nbhood 
-    prepare stype     -toupper  -type eabsit -oldvalue $stype
-    prepare coverage  -num      -type rfraction
-    prepare inception -toupper  -type boolean
-    prepare resolver  -toupper  -type {ptype g+none}
-    prepare rduration -num      -type iticks
-
-    returnOnError
-
-    # NEXT, validate the other parameters.
-    validate stype {
-        if {[absit existsInNbhood $parms(n) $parms(stype)]} {
-            reject stype \
-                "An absit of this type already exists in this neighborhood."
+        my checkon coverage {
+            if {$parms(coverage) == 0.0} {
+                my reject coverage "Coverage must be greater than 0."
+            }
         }
     }
 
-
-    validate coverage {
-        if {$parms(coverage) == 0.0} {
-            reject coverage "Coverage must be greater than 0."
-        }
+    method _execute {{flunky ""}} {
+        my setundo [absit mutate update [array get parms]]
     }
-
-    returnOnError -final
-
-    # NEXT, modify the group
-    setundo [absit mutate update [array get parms]]
 }
 
 
@@ -807,12 +843,16 @@ order define ABSIT:UPDATE {
 #
 # Moves an existing absit.
 
-order define ABSIT:MOVE {
-    title "Move Abstract Situation"
-    options \
-        -sendstates {PREP PAUSED}
+myorders define ABSIT:MOVE {
+    meta title "Move Abstract Situation"
+    meta sendstates {PREP PAUSED}
 
-    form {
+    meta defaults {
+        s ""
+        location ""
+    }
+
+    meta form {
         rcc "Situation:" -for s
         key s -table gui_absits -keys s -dispcols longid
 
@@ -820,33 +860,40 @@ order define ABSIT:MOVE {
         text location
     }
 
-    parmtags s situation
-    parmtags location nbpoint
-} {
-    # FIRST, check the situation
-    prepare s                    -required -type absit
-
-    returnOnError
-
-    # NEXT, prepare the remaining parameters
-    prepare location  -toupper  -required -type refpoint 
-
-    returnOnError
-
-    # NEXT, validate the other parameters.  
-
-    validate location {
-        set n [nbhood find {*}$parms(location)]
-
-        if {$n ne [absit get $parms(s) n]} {
-            reject location "Cannot remove situation from its neighborhood"
-        }
+    meta parmtags {
+        s situation
+        location nbpoint
     }
 
-    returnOnError -final
 
-    # NEXT, modify the group
-    setundo [absit mutate move [array get parms]]
+    method _validate {} {
+
+        # FIRST, check the situation
+        my prepare s                    -required -type absit
+    
+        my returnOnError
+    
+        # NEXT, prepare the remaining parameters
+        my prepare location  -toupper  -required -type refpoint 
+    
+        my returnOnError
+    
+        # NEXT, validate the other parameters.  
+    
+        my checkon location {
+            set n [nbhood find {*}$parms(location)]
+    
+            if {$n ne [absit get $parms(s) n]} {
+                my reject location \
+                    "Cannot remove situation from its neighborhood"
+            }
+        }
+
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [absit mutate move [array get parms]]
+    }
 }
 
 
@@ -854,31 +901,39 @@ order define ABSIT:MOVE {
 #
 # Resolves an absit.
 
-order define ABSIT:RESOLVE {
-    title "Resolve Abstract Situation"
-    options -sendstates {PREP PAUSED TACTIC}
+myorders define ABSIT:RESOLVE {
+    meta title "Resolve Abstract Situation"
+    meta sendstates {PREP PAUSED TACTIC}
 
-    form {
+    meta defaults {
+        s        ""
+        resolver ""
+    }
+
+    meta form {
         rcc "Situation:" -for s
-        key s -table gui_absits -keys s -dispcols longid \
-            -loadcmd {orderdialog keyload s *}
+        dbkey s -table gui_absits -keys s -dispcols longid \
+            -loadcmd {$order_ keyload s *}
 
         rcc "Resolved By:" -for resolver
         enum resolver -listcmd {ptype g+none names}
     }
 
-    parmtags s situation
-} {
-    # FIRST, prepare the parameters
-    prepare s         -required -type {absit live}
-    prepare resolver  -toupper  -type {ptype g+none}
+    meta parmtags {
+        s situation
+    }
 
-    returnOnError -final
+    method _validate {} {
+        # FIRST, prepare the parameters
+        my prepare s         -required -type {absit live}
+        my prepare resolver  -toupper  -type {ptype g+none}
+    }
 
-    # NEXT, resolve the situation.
-    lappend undo [absit mutate resolve [array get parms]]
-    
-    setundo [join $undo \n]
+    method _execute {{flunky ""}} {
+        lappend undo [absit mutate resolve [array get parms]]
+        
+        my setundo [join $undo \n]
+    }
 }
 
 

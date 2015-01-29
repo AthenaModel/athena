@@ -28,17 +28,17 @@ CREATE TABLE saveables (
 );
 
 CREATE TABLE beans (
-    -- Beans Table: Saves all bean(n) objects.
+    -- Beans Table: Saves all bean(n) objects, by beanpot.
     --
-    -- Note that bean(n) is a saveable; the bean data is saved to this
-    -- table as part of [bean checkpoint] and restored as part of 
-    -- [bean restore].  DO NOT QUERY THIS TABLE AT RUN-TIME, AS THE
+    -- Note that a beanpot is a saveable; the bean data is saved to this
+    -- table as part of [$pot checkpoint] and restored as part of 
+    -- [$pot restore].  DO NOT QUERY THIS TABLE AT RUN-TIME, AS THE
     -- DATA MAY BE OBSOLETE.  IT IS ONLY GUARANTEED TO BE RIGHT IN THE
     -- .adb!
 
+    dbid        TEXT,     -- The bean pot's ID in the app.
     id          INTEGER,  -- The bean's unique ID
     bean_class  TEXT,     -- The bean's beanclass, e.g., ::tactic
-    bean_object TEXT,     -- The bean's object name, e.g., ::bean::block7
     bean_dict   TEXT      -- Dictionary of the bean's instance vars
 );
 
@@ -63,17 +63,13 @@ CREATE TABLE snapshots (
 
 
 CREATE TABLE cif (
-    -- Critical Input Table: Saves user orders and (temporarily) any
-    -- undo information.
+    -- Critical Input Table: Saves the history of user orders.
 
     -- Unique ID; used for ordering
     id        INTEGER PRIMARY KEY,
 
     -- Simulation time at which the order was entered.
     time      INTEGER DEFAULT 0,
-
-    -- Kind of entry: order | start | end
-    kind      TEXT default 'order',
 
     -- Order name
     name      TEXT default '',
@@ -82,13 +78,7 @@ CREATE TABLE cif (
     narrative TEXT default '',
 
     -- Parameter Dictionary
-    parmdict  TEXT default '',
-
-    -- Undo Script, or ''
-    undo      TEXT DEFAULT '',
-
-    -- Redo Helper Script, or ''
-    redo      TEXT DEFAULT ''
+    parmdict  TEXT default ''
 );
 
 CREATE INDEX cif_index ON cif(time,id);
@@ -157,17 +147,6 @@ CREATE TABLE maps (
 
     -- Map data: a BLOB of data in "jpeg" format.
     data      BLOB
-);
-
-------------------------------------------------------------------------
--- BOOKMARKS
-
-CREATE TABLE bookmarks (
-    -- Detail Browser bookmarks.
-    bookmark_id INTEGER PRIMARY KEY,
-    url         TEXT,
-    title       TEXT,
-    rank        INTEGER  -- Used to order bookmarks in Bookmarks Manager
 );
 
 ------------------------------------------------------------------------

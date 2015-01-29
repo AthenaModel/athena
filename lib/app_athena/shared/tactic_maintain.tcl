@@ -335,14 +335,18 @@ tactic define MAINTAIN "Maintain Infrastructure" {actor} {
 #
 # Updates existing MAINTAIN tactic.
 
-order define TACTIC:MAINTAIN {
-    title "Tactic: Maintain Infrastructure"
-    options -sendstates PREP
+myorders define TACTIC:MAINTAIN {
+    meta title      "Tactic: Maintain Infrastructure"
+    meta sendstates PREP
+    meta parmlist   {tactic_id name nlist fmode amount percent rmode level}
 
-    form {
+    meta form {
         rcc "Tactic ID" -for tactic_id
         text tactic_id -context yes \
             -loadcmd {beanload}
+
+        rcc "Name:" -for name
+        text name -width 20
 
         rcc "Nbhoods:" -for nlist -span 4 
         gofer nlist -typename gofer::NBHOODS
@@ -375,40 +379,45 @@ order define TACTIC:MAINTAIN {
             }
         }
     }
-} {
-    # FIRST, prepare the parameters
-    prepare tactic_id  -required -type tactic::MAINTAIN
-    returnOnError
 
-    set tactic [tactic get $parms(tactic_id)]
 
-    prepare nlist
-    prepare rmode   -toupper  -selector
-    prepare fmode   -toupper  -selector
-    prepare amount  -type money
-    prepare level   -type rpercent
-    prepare percent -type rpercent
+    method _validate {} {
+        # FIRST, prepare the parameters
+        my prepare tactic_id  -required -with {::strategy valclass tactic::MAINTAIN}
+        my returnOnError
 
-    returnOnError
+        set tactic [pot get $parms(tactic_id)]
 
-    # NEXT, check cross-constraints
-    fillparms parms [$tactic view]
+        my prepare name    -toupper  -with [list $tactic valName]
+        my prepare nlist
+        my prepare rmode   -toupper  -selector
+        my prepare fmode   -toupper  -selector
+        my prepare amount  -type money
+        my prepare level   -type rpercent
+        my prepare percent -type rpercent
 
-    if {$parms(rmode) eq "UPTO" && $parms(level) == 0.0} {
-        reject level "You must specify a capacity level > 0.0"
+        my returnOnError
+
+        # NEXT, check cross-constraints
+        fillparms parms [$tactic view]
+
+        if {$parms(rmode) eq "UPTO" && $parms(level) == 0.0} {
+            my reject level "You must specify a capacity level > 0.0"
+        }
+
+        if {$parms(fmode) eq "PERCENT" && $parms(percent) == 0.0} {
+            my reject percent "You must specify a percentage of cash > 0.0"
+        }
     }
 
-    if {$parms(fmode) eq "PERCENT" && $parms(percent) == 0.0} {
-        reject percent "You must specify a percentage of cash > 0.0"
+    method _execute {{flunky ""}} {
+        set tactic [pot get $parms(tactic_id)]
+        my setundo [$tactic update_ {
+            name nlist rmode amount fmode level percent
+        } [array get parms]]
     }
-
-    returnOnError -final
-
-    # NEXT, update the tactic, saving the undo script
-    setundo [$tactic update_ {
-        nlist rmode amount fmode level percent
-    } [array get parms]]
 }
+
 
 
 

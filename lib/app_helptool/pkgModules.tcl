@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide app_helptool 6.3.0a4
+package provide app_helptool 6.3.0a5
 # -kite-provide-end
 
 #-----------------------------------------------------------------------
@@ -28,7 +28,7 @@ package provide app_helptool 6.3.0a4
 package require projectlib
 
 # -kite-require-start ADD EXTERNAL DEPENDENCIES
-package require kitedocs 0.4.3
+package require kitedocs 0.4.5
 package require Img 1.4.1
 # -kite-require-end
 

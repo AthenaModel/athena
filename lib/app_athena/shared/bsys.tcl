@@ -466,26 +466,28 @@ snit::type bsys {
 # Updates playbox-wide parameters
 
 
-order define BSYS:PLAYBOX:UPDATE {
-    title "Update Playbox-wide Belief System Parameters"
+myorders define BSYS:PLAYBOX:UPDATE {
+    meta title "Update Playbox-wide Belief System Parameters"
 
-    options -sendstates PREP
+    meta sendstates PREP
 
-    form {
+    meta parmlist {gamma}
+
+    meta form {
         # NOTE: dialog is not used
         rcc "Gamma:" -for gamma
         text gamma
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare gamma -required -num -type ::simlib::rmagnitude
 
-    returnOnError -final
 
-    # NEXT, save the parameter value.
-    setundo [bsys mutate update playbox "" [array get parms]]
+    method _validate {} {
+        my prepare gamma -required -num -type ::simlib::rmagnitude
+    }
 
-    return
+    method _execute {{flunky ""}} {
+        my setundo [bsys mutate update playbox "" [array get parms]]
+        return
+    }    
 }
 
 
@@ -494,37 +496,41 @@ order define BSYS:PLAYBOX:UPDATE {
 # Adds a new belief system with default settings.  Returns new
 # system ID.
 
-order define BSYS:SYSTEM:ADD {
-    title "Add New Belief System"
+myorders define BSYS:SYSTEM:ADD {
+    meta title "Add New Belief System"
 
-    options -sendstates PREP
+    meta sendstates PREP
 
-    form {
+    meta parmlist {sid}
+
+    meta form {
         # Note: the form is not used.
         rcc "SID:" -for sid
         text sid
     }
-} {
-    prepare sid -num -type ::marsutil::count
-    returnOnError
 
-    validate sid {
-        if {$parms(sid) in [bsys system ids]} {
-            reject sid \
-                "Belief system ID is already in use: \"$parms(sid)\""
+
+    method _validate {} {
+        my prepare sid -num -type ::marsutil::count
+        my returnOnError
+
+        my checkon sid {
+            if {$parms(sid) in [bsys system ids]} {
+                my reject sid \
+                    "Belief system ID is already in use: \"$parms(sid)\""
+            }
         }
     }
 
-    returnOnError -final
+    method _execute {{flunky ""}} {
+        lassign [::bsys mutate add system $parms(sid)] sid undoScript
 
-    # NEXT, save the parameter value.
-    lassign [::bsys mutate add system $parms(sid)] sid undoScript
+        my setundo $undoScript
 
-    setundo $undoScript
-
-    # NOTE: The sid is optional in the order, so we need to return
-    # the ID actually used.
-    return $sid
+        # NOTE: The sid is optional in the order, so we need to return
+        # the ID actually used.
+        return $sid
+    }
 }
 
 
@@ -532,12 +538,14 @@ order define BSYS:SYSTEM:ADD {
 #
 # Updates system parameters
 
-order define BSYS:SYSTEM:UPDATE {
-    title "Update Belief System Metadata"
+myorders define BSYS:SYSTEM:UPDATE {
+    meta title "Update Belief System Metadata"
 
-    options -sendstates PREP
+    meta sendstates PREP
 
-    form {
+    meta parmlist {sid name commonality}
+
+    meta form {
         rcc "System ID:" -for sid
         text sid -context yes \
             -loadcmd {bsys::viewload system}
@@ -551,108 +559,108 @@ order define BSYS:SYSTEM:UPDATE {
             -showsymbols no        \
             -resetvalue  1.0 
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare sid          -toupper -required -type {bsys editable}
-    prepare name
-    prepare commonality  -num               -type ::simlib::rfraction
 
-    returnOnError
 
-    validate name {
-        set oldID [bsys system id $parms(name)]
-        if {$oldID ne "" && $oldID ne $parms(sid)} {
-            reject name \
-                "name is in use by another system: \"$parms(name)\""
+    method _validate {} {
+        my prepare sid          -toupper -required -type {bsys editable}
+        my prepare name
+        my prepare commonality  -num               -type ::simlib::rfraction
+
+        my returnOnError
+
+        my checkon name {
+            set oldID [bsys system id $parms(name)]
+            if {$oldID ne "" && $oldID ne $parms(sid)} {
+                my reject name \
+                    "name is in use by another system: \"$parms(name)\""
+            }
         }
     }
 
-    returnOnError -final
-
-    # NEXT, save the parameter value.
-    setundo [bsys mutate update system $parms(sid) [array get parms]]
-
-    return
+    method _execute {{flunky ""}} {
+        my setundo [bsys mutate update system $parms(sid) [array get parms]]
+        return
+    }
 }
 
 # BSYS:SYSTEM:DELETE
 #
 # Deletes a belief system.
 
-order define BSYS:SYSTEM:DELETE {
-    title "Delete Belief System"
-    options \
-        -sendstates PREP
+myorders define BSYS:SYSTEM:DELETE {
+    meta title "Delete Belief System"
+    meta sendstates PREP
 
-    form { 
+    meta parmlist {sid}
+
+    meta form { 
         # TBD: Form isn't used.
         rcc "System ID:" -for sid
         text sid -context yes
     }
-} {
-    # FIRST, prepare the parameters
-    prepare sid -required -type {bsys editable}
-
-    returnOnError
-
-    set inUse [bsys system inuse $parms(sid)]
 
 
-    if {$inUse && [sender] eq "gui" } {
-        set message [normalize "
-            The selected belief system is in use by 
-            at least one actor or group; see the belief system's
-            detail browser page for a complete list.  The
-            system cannot be deleted while it is in use.
-        "]
+    method _validate {} {
+        my prepare sid -required -type {bsys editable}
 
-        messagebox popup \
-            -title   "System is in use"  \
-            -icon    error               \
-            -buttons {cancel "Cancel"}   \
-            -default cancel              \
-            -parent  [app topwin]        \
-            -message $message
+        my returnOnError
 
-        cancel
-    }
+        set inUse [bsys system inuse $parms(sid)]
 
-    validate sid {
-        if {$inUse} {
-            reject sid \
-                "System is in use by an actor or group: \"$parms(sid)\""
+
+        if {$inUse && [my mode] eq "gui" } {
+            set message [normalize "
+                The selected belief system is in use by 
+                at least one actor or group; see the belief system's
+                detail browser page for a complete list.  The
+                system cannot be deleted while it is in use.
+            "]
+
+            messagebox popup \
+                -title   "System is in use"  \
+                -icon    error               \
+                -buttons {cancel "Cancel"}   \
+                -default cancel              \
+                -parent  [app topwin]        \
+                -message $message
+
+            my cancel
+        }
+
+        my checkon sid {
+            if {$inUse} {
+                my reject sid \
+                    "System is in use by an actor or group: \"$parms(sid)\""
+            }
         }
     }
 
-    returnOnError -final
+    method _execute {{flunky ""}} {
+        if {[my mode] eq "gui"} {
+            set answer [messagebox popup \
+                            -title         "Are you sure?"                  \
+                            -icon          warning                          \
+                            -buttons       {ok "Delete it" cancel "Cancel"} \
+                            -default       cancel                           \
+                            -onclose       cancel                           \
+                            -ignoretag     [my name]                        \
+                            -ignoredefault ok                               \
+                            -parent        [app topwin]                     \
+                            -message       [normalize {
+                                Are you sure you really want to delete this 
+                                belief system and all of the beliefs it
+                                contains?
+                            }]]
 
-    # NEXT, make sure the user knows what he is getting into.
-
-    if {[sender] eq "gui"} {
-        set answer [messagebox popup \
-                        -title         "Are you sure?"                  \
-                        -icon          warning                          \
-                        -buttons       {ok "Delete it" cancel "Cancel"} \
-                        -default       cancel                           \
-                        -onclose       cancel                           \
-                        -ignoretag     BSYS:SYSTEM:DELETE               \
-                        -ignoredefault ok                               \
-                        -parent        [app topwin]                     \
-                        -message       [normalize {
-                            Are you sure you really want to delete this 
-                            belief system and all of the beliefs it
-                            contains?
-                        }]]
-
-        if {$answer eq "cancel"} {
-            cancel
+            if {$answer eq "cancel"} {
+                my cancel
+            }
         }
+
+        # NEXT, Delete the system.
+        my setundo [bsys mutate delete system $parms(sid)]
+        return
     }
-
-    # NEXT, Delete the system.
-    setundo [bsys mutate delete system $parms(sid)]
-
-    return
 }
 
 # BSYS:TOPIC:ADD
@@ -660,49 +668,55 @@ order define BSYS:SYSTEM:DELETE {
 # Adds a new topic with default settings.  Returns new
 # topic's ID.
 
-order define BSYS:TOPIC:ADD {
-    title "Add New Belief Topic"
+myorders define BSYS:TOPIC:ADD {
+    meta title "Add New Belief Topic"
 
-    options -sendstates PREP
+    meta sendstates PREP
 
-    form {
+    meta parmlist {tid}
+
+    meta form {
         # NOTE: dialog is not used
         rcc "TID:" -for tid
         text tid
     }
-} {
-    prepare tid -num -type ::marsutil::count
-    returnOnError
 
-    validate tid {
-        if {$parms(tid) in [bsys topic ids]} {
-            reject tid \
-                "Topic ID is already in use: \"$parms(tid)\""
+
+    method _validate {} {
+        my prepare tid -num -type ::marsutil::count
+        my returnOnError
+
+        my checkon tid {
+            if {$parms(tid) in [bsys topic ids]} {
+                my reject tid \
+                    "Topic ID is already in use: \"$parms(tid)\""
+            }
         }
     }
 
-    returnOnError -final
+    method _execute {{flunky ""}} {
+        lassign [::bsys mutate add topic $parms(tid)] tid undoScript
 
-    # NEXT, save the parameter value.
-    lassign [::bsys mutate add topic $parms(tid)] tid undoScript
+        my setundo $undoScript
 
-    setundo $undoScript
-
-    # NOTE: The ID is optional in the order, so we need to return
-    # the ID actually used.
-    return $tid
+        # NOTE: The ID is optional in the order, so we need to return
+        # the ID actually used.
+        return $tid
+    }
 }
 
 # BSYS:TOPIC:UPDATE
 #
 # Updates topic metadata
 
-order define BSYS:TOPIC:UPDATE {
-    title "Update Topic Metadata"
+myorders define BSYS:TOPIC:UPDATE {
+    meta title "Update Topic Metadata"
 
-    options -sendstates PREP
+    meta sendstates PREP
 
-    form {
+    meta parmlist {tid name affinity}
+
+    meta form {
         rcc "Topic ID:" -for tid
         text tid -context yes \
             -loadcmd {bsys::viewload topic}
@@ -713,108 +727,107 @@ order define BSYS:TOPIC:UPDATE {
         rcc "Affects Affinity?" -for affinity
         yesno affinity 
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare tid          -toupper -required -type {bsys topic}
-    prepare name
-    prepare affinity     -toupper           -type boolean
 
-    returnOnError
 
-    validate name {
-        set oldID [bsys topic id $parms(name)]
-        if {$oldID ne "" && $oldID ne $parms(tid)} {
-            reject name \
-                "name is in use by another topic: \"$parms(name)\""
+    method _validate {} {
+        my prepare tid          -toupper -required -type {bsys topic}
+        my prepare name
+        my prepare affinity     -toupper           -type boolean
+
+        my returnOnError
+
+        my checkon name {
+            set oldID [bsys topic id $parms(name)]
+            if {$oldID ne "" && $oldID ne $parms(tid)} {
+                my reject name \
+                    "name is in use by another topic: \"$parms(name)\""
+            }
         }
     }
 
-    returnOnError -final
-
-    # NEXT, save the parameter value.
-    setundo [bsys mutate update topic $parms(tid) [array get parms]]
-
-    return
+    method _execute {{flunky ""}} {
+        my setundo [bsys mutate update topic $parms(tid) [array get parms]]
+        return
+    }
 }
 
 # BSYS:TOPIC:DELETE
 #
 # Deletes a belief topic.
 
-order define BSYS:TOPIC:DELETE {
-    title "Delete Belief Topic"
-    options \
-        -sendstates PREP
+myorders define BSYS:TOPIC:DELETE {
+    meta title "Delete Belief Topic"
+    meta sendstates PREP
 
-    form { 
+    meta parmlist {tid}
+
+    meta form { 
         # TBD: Form isn't used.
         rcc "Topic ID:" -for tid
         text tid -context yes
     }
-} {
-    # FIRST, prepare the parameters
-    prepare tid -required -type {bsys topic}
 
-    returnOnError
 
-    set inUse [bsys topic inuse $parms(tid)]
+    method _validate {} {
+        my prepare tid -required -type {bsys topic}
 
-    if {$inUse && [sender] eq "gui" } {
-        set message [normalize "
-            The selected topic is in use by 
-            at least one semantic hook; see the topic's
-            detail browser page for a complete list.  The
-            topic cannot be deleted while it is in use.
-        "]
+        my returnOnError
 
-        messagebox popup \
-            -title   "Topic is in use"  \
-            -icon    error               \
-            -buttons {cancel "Cancel"}   \
-            -default cancel              \
-            -parent  [app topwin]        \
-            -message $message
+        set inUse [bsys topic inuse $parms(tid)]
 
-        cancel
-    }
+        if {$inUse && [my mode] eq "gui" } {
+            set message [normalize "
+                The selected topic is in use by 
+                at least one semantic hook; see the topic's
+                detail browser page for a complete list.  The
+                topic cannot be deleted while it is in use.
+            "]
 
-    validate tid {
-        if {$inUse} {
-            reject tid \
-                "Topic is in use by a semantic hook: \"$parms(tid)\""
+            messagebox popup \
+                -title   "Topic is in use"  \
+                -icon    error               \
+                -buttons {cancel "Cancel"}   \
+                -default cancel              \
+                -parent  [app topwin]        \
+                -message $message
+
+            my cancel
+        }
+
+        my checkon tid {
+            if {$inUse} {
+                my reject tid \
+                    "Topic is in use by a semantic hook: \"$parms(tid)\""
+            }
         }
     }
 
+    method _execute {{flunky ""}} {
+        if {[my mode] eq "gui"} {
+            set answer [messagebox popup \
+                            -title         "Are you sure?"                  \
+                            -icon          warning                          \
+                            -buttons       {ok "Delete it" cancel "Cancel"} \
+                            -default       cancel                           \
+                            -onclose       cancel                           \
+                            -ignoretag     [my name]                        \
+                            -ignoredefault ok                               \
+                            -parent        [app topwin]                     \
+                            -message       [normalize {
+                                Are you sure you really want to delete this 
+                                belief topic and all of the beliefs that
+                                depend on it?
+                            }]]
 
-    returnOnError -final
-
-    # NEXT, make sure the user knows what he is getting into.
-
-    if {[sender] eq "gui"} {
-        set answer [messagebox popup \
-                        -title         "Are you sure?"                  \
-                        -icon          warning                          \
-                        -buttons       {ok "Delete it" cancel "Cancel"} \
-                        -default       cancel                           \
-                        -onclose       cancel                           \
-                        -ignoretag     BSYS:TOPIC:DELETE               \
-                        -ignoredefault ok                               \
-                        -parent        [app topwin]                     \
-                        -message       [normalize {
-                            Are you sure you really want to delete this 
-                            belief topic and all of the beliefs that
-                            depend on it?
-                        }]]
-
-        if {$answer eq "cancel"} {
-            cancel
+            if {$answer eq "cancel"} {
+                my cancel
+            }
         }
+
+        # NEXT, Delete the topic.
+        my setundo [bsys mutate delete topic $parms(tid)]
+        return
     }
-
-    # NEXT, Delete the topic.
-    setundo [bsys mutate delete topic $parms(tid)]
-
-    return
 }
 
 
@@ -822,11 +835,13 @@ order define BSYS:TOPIC:DELETE {
 #
 # Updates an existing belief.
 
-order define BSYS:BELIEF:UPDATE {
-    title "Update Belief"
-    options -sendstates PREP
+myorders define BSYS:BELIEF:UPDATE {
+    meta title "Update Belief"
+    meta sendstates PREP
 
-    form {
+    meta parmlist {bid system topic position emphasis}
+
+    meta form {
         text bid \
             -invisible yes    \
             -loadcmd  {bsys::viewload belief}
@@ -844,18 +859,18 @@ order define BSYS:BELIEF:UPDATE {
         enumlong emphasis -dictcmd {::simlib::qemphasis namedict}
 
     }
-} {
-    # FIRST, prepare the parameters
-    prepare bid       -toupper -required -type {bsys belief}
-    prepare position  -num -type qposition
-    prepare emphasis  -num -type qemphasis
 
-    returnOnError -final
 
-    # NEXT, modify the belief.
-    setundo [bsys mutate update belief $parms(bid) [array get parms]]
+    method _validate {} {
+        my prepare bid       -toupper -required -type {bsys belief}
+        my prepare position  -num -type qposition
+        my prepare emphasis  -num -type qemphasis
+    }
 
-    return
+    method _execute {{flunky ""}} {
+        my setundo [bsys mutate update belief $parms(bid) [array get parms]]
+        return
+    }
 }
 
 

@@ -19,7 +19,9 @@
 #-----------------------------------------------------------------------
 
 # FIRST, create the class
-beanclass create strategy
+oo::class create strategy {
+    superclass ::projectlib::bean
+}
 
 # NEXT, define class members
 oo::objdefine strategy {
@@ -28,6 +30,7 @@ oo::objdefine strategy {
 
     variable locking   ;# Flag: 1 if locking the scenario, 0 otherwise.
     variable acting    ;# Name of the acting agent, or "" if none.
+    variable cache     ;# Array, strategy bean ID by agent name.
     
     #-------------------------------------------------------------------
     # Initialization
@@ -37,14 +40,32 @@ oo::objdefine strategy {
     # Initializes strategy execution on new scenario.
 
     method init {} {
-        # FIRST, create strategies for predefined agents.
+        # FIRST, initialize class data.
+        set locking 0
+        set acting  ""
+        array unset cache
+
+        # NEXT, create strategies for predefined agents.
         foreach agent [agent system names] {
             log normal strategy "Creating strategy for agent $agent"
             my create_ $agent
         }
 
-        # NEXT, initialize class data.
-        set locking 0
+        # NEXT, update cache on dbsync
+        notifier bind ::sim <DbSyncA> [self] [mymethod Recache]
+    }
+
+    # Recache
+    #
+    # Recache strategies by agent name.
+
+    method Recache {} {
+        array unset cache
+
+        foreach id [pot ids strategy] {
+            set s [pot get $id]
+            set cache([$s agent]) $id 
+        }
     }
 
     # rebase
@@ -66,6 +87,128 @@ oo::objdefine strategy {
                 $block reset
             }
         }
+    }
+
+    #----------------------------------------------------------------------
+    # Validators
+
+    # valclass cls id
+    #
+    # cls   - A block, tactic or condition class or subclass
+    # id    - Possibly, an id in the beanpot(n) or a full name of an
+    #         existing strategy bean
+    #
+    # Throws an error with an errorcode of INVALID if this is not either
+    # a numeric id belonging to a bean of the given class or the full
+    # name of a strategy bean.
+
+    method valclass {cls id} {
+        # FIRST, grab the short name of the class
+        set short [namespace tail $cls]
+
+        # NEXT, check id against bean IDs of this class
+        set bean_ids [pot ids $cls]
+        if {$id in $bean_ids} {
+            return $id
+        }
+
+        set retval [strategy nameToId $id]
+
+        # NEXT, if there is no mapping from name to id, throw INVALID
+        if {$retval eq ""} {
+            throw INVALID "Invalid $short ID: \"$id\""
+        }
+
+        # NEXT, if the ID belongs to a bean of the wrong class, throw 
+        # INVALID
+        if {![pot hasa $cls $retval]} {
+            throw INVALID "Invalid $short ID: \"$id\""
+        }
+
+        return $retval
+    }
+
+    #-------------------------------------------------------------------
+    # Helper methods
+
+    # nameToId name
+    #
+    # name    - Possibly a full name for a strategy bean
+    #
+    # This method traverses the supplied full name and tries to find
+    # the appropriate ID that corresponds to the name. For example, a full
+    # name of the form:
+    #
+    #     GOV/B1/T1
+    #
+    # will find the bean ID of the first tactic in the first block owned
+    # by the GOV agent and return it (assuming default names are used).
+    # If a bean ID cannot be found, the empty string is returned.
+
+    method nameToId {name} {
+        # FIRST, no name then no id
+        if {$name eq ""} {
+            return ""
+        }
+
+        # NEXT, get individual names, expect <= 3 path elements
+        set path [split $name "/"]
+        if {[llength $path] > 3} {
+            return ""
+        }
+
+        # NEXT, assign names to specific variable. Variable may be
+        # empty
+        lassign $path agent bname tcname
+
+        # NEXT, make sure agent exists
+        if {$agent ni [agent names]} {
+            return ""
+        }
+
+        # NEXT, no block name, return agent name
+        if {$bname eq ""} {
+            return $agent
+        }
+
+        set s [strategy getname $agent]
+        set block_id ""
+
+        # NEXT, look for a match on block name
+        foreach block [$s blocks] {
+            if {[$block get name] eq $bname} {
+                set block_id [$block id]
+            }
+        }
+
+        # NEXT, no block found, no id
+        if {$block_id eq ""} {
+            return ""
+        }
+
+        # NEXT, if only block specified, return block ID
+        if {$tcname eq ""} {
+            return $block_id
+        }
+
+        set block [pot get $block_id]
+
+        # NEXT, see if the name is a tactic, return ID of first match
+        foreach tactic [$block tactics] {
+            if {[$tactic get name] eq $tcname} {
+                return [$tactic get id]
+            }
+        }
+
+        # NEXT, see if the name is a condition, return ID of first match
+        foreach cond [$block conditions] {
+            if {[$cond get name] eq $tcname} {
+                return $cond_id
+            }
+        }
+
+        # NEXT, if we get here there's no matches, no ID
+        return ""
     }
 
     #-------------------------------------------------------------------
@@ -168,6 +311,7 @@ oo::objdefine strategy {
         profile 1 tactic::STANCE reset
 
         profile 1 unit reset
+        profile 1 service reset
 
         # NEXT, execute each agent's strategy.
 
@@ -344,13 +488,16 @@ oo::objdefine strategy {
     # Gets the name of the strategy object for the given agent.
 
     method getname {agent} {
-        return "::strategy::$agent"
+        if {![info exists cache($agent)]} {
+            return ""
+        }
+        
+        return [pot get $cache($agent)]
     }
     
 
     #-------------------------------------------------------------------
     # Mutators
-    
 
     # create_ agent
     # 
@@ -360,10 +507,10 @@ oo::objdefine strategy {
     # mutator is used on creation of an agent entity (i.e., an actor).
 
     method create_ {agent} {
-        set s [my getname $agent]
-        strategy create $s $agent
+        set s [pot new strategy $agent]
+        set cache($agent) [$s id]
 
-        return [list bean delete [$s id]]
+        return [list pot delete [$s id]]
     }
 
     # delete_ agent
@@ -376,7 +523,7 @@ oo::objdefine strategy {
     method delete_ {agent} {
         set s [my getname $agent]
 
-        return [list bean undelete [bean delete [$s id]]]        
+        return [list pot undelete [pot delete [$s id]]]        
     }
 }
 
@@ -417,36 +564,36 @@ oo::define strategy {
         return $agent
     }
 
-    # blocks ?idx?
-    #
-    # idx   - Optionally, a lindex index
-    #
-    # Returns a list of the strategy's blocks in priority order.
-    # If the idx is given, returns the selected block.
-
-    method blocks {{idx ""}} {
-        if {$idx eq ""} {
-            return $blocks
-        } else {
-            return [lindex $blocks $idx]
-        }
-    }
-
     # block_ids
     #
     # Returns a list of the IDs of the blocks owned by this strategy,
     # in priority order.
-    #
-    # TBD: Should probably be a [bean] command for this.
 
     method block_ids {} {
-        set result [list]
+        return $blocks
+    }
 
-        foreach block $blocks {
-            lappend result [$block id]
+    # next_block_name
+    #
+    # Returns the next default block name based upon existing names.
+    # If blocks of the form 'Bn' already exist, where 'n' is an integer, 
+    # then 'Bn+1' is returned, otherwise 'B1' is returned.
+
+    method next_block_name {} {
+        # FIRST, default n is 1
+        set n 1
+        set bnum ""
+
+        # NEXT, go through the blocks in this strategy and pull
+        # out the ones that have the pattern "Bn".
+        foreach block [my blocks] {
+            set bname [$block get name]
+            if {[regexp {^B(\d+)$} $bname dummy bnum]} {
+               let n {max($bnum+1, $n)}
+            }
         }
 
-        return $result
+        return "B$n"
     }
 
     # state
@@ -457,7 +604,7 @@ oo::define strategy {
     # only if it contains invalid blocks.
     
     method state {} {
-        foreach block $blocks {
+        foreach block [my blocks] {
             if {[$block state] eq "invalid"} {
                 return "invalid"
             }
@@ -480,7 +627,7 @@ oo::define strategy {
     method check {} {
         set result [dict create]
 
-        foreach block $blocks {
+        foreach block [my blocks] {
             if {[$block state] eq "disabled"} {
                 continue
             }
@@ -506,9 +653,20 @@ oo::define strategy {
         # NEXT, try to execute each block.  The coffer will
         # keep track of resources as execution proceeds.  Each block
         # will remember its execution status.
-        foreach block $blocks {
+        foreach block [my blocks] {
             $block execute $coffer
         }
+    }
+
+    # onAddBean_ slot bean_id
+    #
+    # Figures out the next default name to use for a new block
+    # and sets it
+
+    method onAddBean_ {slot bean_id} {
+        set block [::pot get $bean_id]
+        $block configure -name [my next_block_name]
+        next $slot $bean_id
     }
 
     #-------------------------------------------------------------------
@@ -552,89 +710,108 @@ oo::define strategy {
 #
 # Adds a new strategy block to an agent's strategy.
 
-order define STRATEGY:BLOCK:ADD {
-    title "Add Block to Strategy"
+myorders define STRATEGY:BLOCK:ADD {
+    variable block_id  ;# Saved on first execution for redo
 
-    options -sendstates PREP
+    meta title "Add Block to Strategy"
 
-    form {
+    meta sendstates PREP
+
+    meta defaults {
+        agent ""
+    }
+
+    meta form {
         rcc "Agent:" -for agent
         text agent -context yes
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare agent  -toupper -required -type agent
 
-    returnOnError -final
+    method _validate {} {
+        my prepare agent  -toupper -required -type agent
+    }
 
-    # NEXT, create the block
-    set s [strategy getname $parms(agent)]
+    method _execute {{flunky ""}} {
+        set s [strategy getname $parms(agent)]
 
-    setundo [$s addblock_]
+        if {[info exists block_id]} {
+            pot setnextid $block_id
+        }
 
-    # NEXT, return the new block's ID
-    set block [lindex [$s blocks] end]
+        my setundo [$s addblock_]
 
-    setredo [list bean setnextid [$block id]]
-    return [$block id]
+        # NEXT, return the new block's ID
+        set block_id [lindex [$s block_ids] end]
+
+        return $block_id
+    }
 }
 
 # STRATEGY:BLOCK:DELETE
 #
 # Deletes a strategy block from an agent's strategy.
 
-order define STRATEGY:BLOCK:DELETE {
-    title "Delete Block from Strategy"
+myorders define STRATEGY:BLOCK:DELETE {
+    meta title "Delete Block from Strategy"
 
-    options -sendstates PREP
+    meta sendstates PREP
 
-    form {
+    meta defaults {
+        ids ""
+    }
+
+    meta form {
         text ids -context yes
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare ids -required -listof ::block
 
-    returnOnError -final
-
-    # NEXT, delete the block(s)
-    set undo [list]
-    foreach bid $parms(ids) {
-        set block [block get $bid]
-        set s [$block strategy]
-        lappend undo [$s deleteblock_ $bid]
+    method _validate {} {
+        my prepare ids -required -listwith {::strategy valclass ::block}
     }
+
+    method _execute {{flunky ""}} {
+        set undo [list]
+        foreach bid $parms(ids) {
+            set block [pot get $bid]
+            set s [$block strategy]
+            lappend undo [$s deleteblock_ $bid]
+        }
     
-    setundo [join [lreverse $undo] "\n"]
+        my setundo [join [lreverse $undo] "\n"]
+    }
 }
 
 # STRATEGY:BLOCK:MOVE
 #
 # Moves a strategy block in an agent's strategy.
 
-order define STRATEGY:BLOCK:MOVE {
-    title "Move Block in Strategy"
+myorders define STRATEGY:BLOCK:MOVE {
+    meta title "Move Block in Strategy"
 
-    options -sendstates PREP
+    meta sendstates PREP
 
-    form {
+    meta defaults {
+        block_id ""
+        where    ""
+    }
+
+    meta form {
         rcc "Block ID:" -for block_id
         text block_id -context yes
 
         rcc "Where:" -for where
         enumlong where -dict {emoveitem asdict longname}
     }
-} {
-    # FIRST, prepare and validate the parameters
-    prepare block_id -required -type ::block
-    prepare where    -required -type emoveitem
 
-    returnOnError -final
 
-    # NEXT, move the block
-    set block [block get $parms(block_id)]
-    set s [$block strategy]
+    method _validate {} {
+        my prepare block_id -required -with {::strategy valclass ::block}
+        my prepare where    -required -type emoveitem
+    }
 
-    setundo [$s moveblock_ $parms(block_id) $parms(where)]
+    method _execute {{flunky ""}} {
+        set block [pot get $parms(block_id)]
+        set s [$block strategy]
+        my setundo [$s moveblock_ $parms(block_id) $parms(where)]
+    }
 }
+
 

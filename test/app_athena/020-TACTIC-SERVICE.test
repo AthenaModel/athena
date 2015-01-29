@@ -115,6 +115,51 @@ namespace eval ::athena_test::tests:: {
         los {invalid value "10.0", should be a real number in range 0.0, 1.0}
     }
 
+    test TACTIC:SERVICE-1.7 {invalid mode} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:SERVICE tactic_id [$T1 id] mode NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        mode {invalid value "NONESUCH", should be one of: EXACT, RDELTA, EDELTA, ADELTA}
+    }
+
+    test TACTIC:SERVICE-1.8 {invalid deltap} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:SERVICE \
+            tactic_id [$T1 id] \
+            mode RDELTA        \
+            deltap -999
+    } -cleanup {
+        cleanup
+    } -result {
+        deltap {invalid value "-999", should be a real number no less than -100.0}
+    }
+
+    test TACTIC:SERVICE-1.9 {invalid name} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:SERVICE tactic_id [$T1 id] name 1234
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Identifiers begin with a letter and contain only letters and digits.}
+    }
+
+    test TACTIC:SERVICE-1.10 {duplicate name} -setup {
+        setup
+        set T2 [ted addtactic $B1 ABSIT]
+    } -body {
+        ted order -reject TACTIC:SERVICE tactic_id [$T1 id] \
+            name [$T2 get name]
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Name already exists: "T2"}
+    }
+
     test TACTIC:SERVICE-2.1 {tactic valid} -setup {
         setup
     } -body {
@@ -128,12 +173,16 @@ namespace eval ::athena_test::tests:: {
     } -cleanup {
         cleanup
     } -match dictglob -result {
+        deltap     0.0
         execstatus NONE
         faildict   {}
         id         *
-        los        0.75
+        los        .75
+        mode       EXACT
+        name       T*
         nlist      {_type NBHOODS _rule BY_VALUE nlist {NB1 NB2}}
-        parent     ::bean::block*
+        parent     *
+        pot        ::pot
         s          ENERGY
         state      normal
     }
@@ -161,7 +210,7 @@ namespace eval ::athena_test::tests:: {
             los       0.75
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

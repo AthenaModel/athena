@@ -200,14 +200,18 @@ tactic define ATTRIT "Magic Attrition" {system} {
 #
 # Creates/Updates ATTRIT tactic.
 
-order define TACTIC:ATTRIT {
-    title "Tactic: Magic Attrition"
-    options -sendstates PREP
+myorders define TACTIC:ATTRIT {
+    meta title      "Tactic: Magic Attrition"
+    meta sendstates PREP
+    meta parmlist   {tactic_id name mode casualties n g1 g2 f}
 
-    form {
+    meta form {
         rcc "Tactic ID" -for tactic_id
         text tactic_id -context yes \
             -loadcmd {beanload}
+
+        rcc "Name:" -for name
+        text name -width 20
 
         rcc "Attrition Mode:" -for mode
         selector mode {
@@ -247,47 +251,53 @@ order define TACTIC:ATTRIT {
         text casualties -defvalue 1
     }
 
-} {
-    # FIRST, prepare the parameters
-    prepare tactic_id  -required -type tactic::ATTRIT
-    returnOnError
 
-    set tactic [tactic get $parms(tactic_id)]
 
-    # All validation takes place on sanity check
-    prepare mode       -toupper -selector
-    prepare casualties -num     -type iquantity
-    prepare n          -toupper
-    prepare f          -toupper
-    prepare g1         -toupper
-    prepare g2         -toupper
+    method _validate {} {
+        # FIRST, prepare the parameters
+        my prepare tactic_id  -required -with {::strategy valclass tactic::ATTRIT}
+        my returnOnError
 
-    returnOnError -final
+        set tactic [pot get $parms(tactic_id)]
 
-    fillparms parms [$tactic view]
-
-    if {$parms(g1) eq ""} {set parms(g1) "NONE"}
-    if {$parms(g2) eq ""} {set parms(g2) "NONE"}
-
-    # NEXT, if mode is GROUP and f not CIV clear out g1 
-    if {$parms(mode) eq "GROUP" && $parms(f) ni [civgroup names]} {
-        set parms(g1) "NONE"
+        # All validation takes place on sanity check
+        my prepare name       -toupper -with [list $tactic valName]
+        my prepare mode       -toupper -selector
+        my prepare casualties -num     -type iquantity
+        my prepare n          -toupper
+        my prepare f          -toupper
+        my prepare g1         -toupper
+        my prepare g2         -toupper
     }
 
-    if {$parms(g1) eq "NONE"} {
-        set parms(g2) "NONE"
-    }
+    method _execute {{flunky ""}} {
+        set tactic [pot get $parms(tactic_id)]
+        fillparms parms [$tactic view]
 
-    # NEXT, g1 != g2
-    if {$parms(g1) eq $parms(g2)} {
-        set parms(g2) "NONE"
-    }
+        if {$parms(g1) eq ""} {set parms(g1) "NONE"}
+        if {$parms(g2) eq ""} {set parms(g2) "NONE"}
 
-    # NEXT, modify the tactic
-    setundo [$tactic update_ {
-        mode casualties n f g1 g2
-    } [array get parms]]
+        # NEXT, if mode is GROUP and f not CIV clear out g1 
+        if {$parms(mode) eq "GROUP" && $parms(f) ni [civgroup names]} {
+            set parms(g1) "NONE"
+        }
+
+        if {$parms(g1) eq "NONE"} {
+            set parms(g2) "NONE"
+        }
+
+        # NEXT, g1 != g2
+        if {$parms(g1) eq $parms(g2)} {
+            set parms(g2) "NONE"
+        }
+
+        # NEXT, modify the tactic
+        my setundo [$tactic update_ {
+            name mode casualties n f g1 g2
+        } [array get parms]]
+    }
 }
+
 
 
 

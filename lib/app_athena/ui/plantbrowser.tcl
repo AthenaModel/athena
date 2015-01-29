@@ -203,7 +203,7 @@ snit::widgetadaptor plantbrowser {
     # for an agent
 
     method AddOwnership {} {
-        order enter PLANT:SHARES:CREATE
+        app enter PLANT:SHARES:CREATE
     }
 
     # EditSelected
@@ -216,9 +216,9 @@ snit::widgetadaptor plantbrowser {
         if {[llength $ids] == 1} {
             set id [lindex $ids 0]
 
-            order enter PLANT:SHARES:UPDATE id $id
+            app enter PLANT:SHARES:UPDATE id $id
         } else {
-            order enter PLANT:SHARES:UPDATE:MULTI ids $ids
+            app enter PLANT:SHARES:UPDATE:MULTI ids $ids
         }
     }
 
@@ -229,7 +229,7 @@ snit::widgetadaptor plantbrowser {
     method DeleteSelected {} {
         set id [lindex [$hull uid curselection] 0]
 
-        order send gui PLANT:SHARES:DELETE id $id
+        flunky senddict gui PLANT:SHARES:DELETE [list id $id]
     }
 }
 

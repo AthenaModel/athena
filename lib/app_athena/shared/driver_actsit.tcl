@@ -317,41 +317,6 @@ driver::actsit define DISPLACED {
 }
 
 #===================================================================
-# Explicit Force Situations
-#
-# The following rule sets are for situations which do not depend
-# on the unit's stated ACTIVITY.
-
-#-------------------------------------------------------------------
-# Rule Set: PRESENCE:  Mere Presence of Force Units
-#
-# Activity Situation: This rule set determines the effect of the 
-# presence of force units on the local population.
-#
-# TBD: This rule set is currently disabled.  In current use it has
-# been shown to be too strong; moreover, it is focussed on foreign
-# forces, and causes problems when used with local forces (i.e.,
-# police).  We need to reconsider it.
-
-driver::actsit define PRESENCE {
-    typemethod ruleset {fdict} {
-        dict with fdict {}
-        log detail PRESENCE $fdict
-
-        dam rule PRESENCE-1-1 $fdict {
-            $coverage > 0.0
-        } {
-            satinput $flist $g $coverage "" \
-                AUT quad XXS+ \
-                SFT quad XXS+ \
-                QOL quad XXS+
-
-            coopinput $flist $g $coverage quad XXS+
-        }
-    }
-}
-
-#===================================================================
 # Force and Organization Activity Situations
 #
 # The following rule sets are for situations which depend

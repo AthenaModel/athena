@@ -134,7 +134,7 @@ NB2 NB2 HERE
         }
     } -body {
         ted notifier bind ::rdb <nbrel_mn>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -250,7 +250,7 @@ NB2 NB2 HERE
         }
     } -body {
         ted notifier bind ::rdb <nbrel_mn>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

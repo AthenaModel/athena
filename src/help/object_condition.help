@@ -29,15 +29,29 @@ object condition_ {
 
     # The condition ID for the object page
     attribute id "Condition ID" {
-        The condition ID, an integer number that uniquely
-        identifies the condition.
+        The condition ID, an integer number or the condition's user
+        defined name that uniquely identifies the condition.  In orders,
+        the parameter name is <i>condition_id</i>.
     } -tags {object}
 
     # The condition ID for the order pages.
     attribute condition_id "Condition ID" {
-        The condition ID, an integer number that uniquely
-        identifies the condition.
+        The condition ID, an integer number or a user defined name
+        the uniquely identifies the condition.  It is assigned automatically
+        when the condition is created.
     } -tags {cget}
+
+    attribute name "Name" {
+        The condition name, a string identifier that, along with the owning
+        actor's ID and parent block name, can be used to uniquely identify 
+        this condition in orders.  In order to guarantee uniqueness, this name 
+        cannot be the same as the name of a tactic or condition already owned 
+        by the parent block.  For example, if actor GOV has a block named 
+        BLOCK1 and that block has a condition named COND1, then the 
+        <i>condition_id</i> can be specified as <i>GOV/BLOCK1/COND1</i> 
+        in orders and Athena will convert the name to the condition integer 
+        ID automatically.
+    } -tags {object cget}
 
     attribute agent "Agent" {
         The ID of the <term agent> to whose strategy this
@@ -95,7 +109,7 @@ object condition_compare {
         using the <cref /gofer/number>s. <p>
     }
 
-    include condition_ -attrs {id typename agent state}
+    include condition_ -attrs {id name typename agent state}
 
     attribute x "X Value" {
         The X value in the comparison, chosen by rule using the
@@ -140,7 +154,7 @@ object condition_control {
         is assumed to be unmet.
     }
 
-    include condition_ -attrs {id typename agent state}
+    include condition_ -attrs {id name typename agent state}
 
     attribute a "Actor" {
         The actor who does or does not control the neighborhoods.
@@ -203,7 +217,7 @@ object condition_expr {
         either fix the error or disable the condition.
     }
 
-    include condition_ -attrs {id typename agent state}
+    include condition_ -attrs {id name typename agent state}
 
     attribute expression "Expression" {
         A boolean expression with Tcl syntax to be evaluated by the

@@ -100,7 +100,9 @@ namespace eval ::athena_test::tests:: {
         expression {1 == 1}
         id         *
         metflag    {}
-        parent     ::bean::block*
+        name       C*
+        parent     *
+        pot        ::pot
         state      normal
     }
     
@@ -153,7 +155,9 @@ namespace eval ::athena_test::tests:: {
         expression {}
         id         *
         metflag    {}
-        parent     ::bean::block*
+        name       C*
+        parent     *
+        pot        ::pot
         state      invalid
     }
 
@@ -185,10 +189,10 @@ namespace eval ::athena_test::tests:: {
     test strategy-1.1 {can retrieve owning strategy} -setup {
         setup
     } -body {
-        $C1 strategy
+        expr {[$C1 strategy] eq [strategy getname SYSTEM]}
     } -cleanup {
         cleanup
-    } -result {::strategy::SYSTEM}
+    } -result {1}
     
     #-------------------------------------------------------------------
     # block
@@ -199,7 +203,7 @@ namespace eval ::athena_test::tests:: {
         $C1 block
     } -cleanup {
         cleanup
-    } -match glob -result {::bean::block*}
+    } -match glob -result {::pot::block*}
     
     #-------------------------------------------------------------------
     # state
@@ -235,10 +239,13 @@ namespace eval ::athena_test::tests:: {
     } -match dictglob -result {
         agent      SYSTEM
         expression {1 == 1}
+        fullname   SYSTEM/B*/C*
         id         *
         metflag    {}
+        name       C*
         narrative  {Expression: 1 == 1}
-        parent     ::bean::block*
+        parent     *
+        pot        ::pot
         state      normal
         statusicon ::projectgui::icon::dash13
         typename   EXPR
@@ -254,10 +261,13 @@ namespace eval ::athena_test::tests:: {
     } -match dictglob -result {
         agent      SYSTEM
         expression {1 == 1}
+        fullname   SYSTEM/B*/C*
         id         *
         metflag    {}
+        name       C*
         narrative  {Expression: 1 == 1}
-        parent     ::bean::block*
+        parent     *
+        pot        ::pot
         state      normal
         statusicon ::projectgui::icon::dash13
         typename   EXPR
@@ -274,8 +284,10 @@ namespace eval ::athena_test::tests:: {
         agent        SYSTEM
         condition_id *
         expression   {1 == 1}
+        fullname     SYSTEM/B*/C*
+        name         C*
         narrative    {Expression: 1 == 1}
-        parent       4
+        parent       *
         state        normal
         typename     EXPR
     }

@@ -71,8 +71,10 @@ namespace eval ::athena_test::tests:: {
         execstatus NONE
         faildict   {}
         id         *
+        name       T*
         nlist      {_type NBHOODS _rule {}}
-        parent     ::bean::block*
+        parent     *
+        pot        ::pot
         state      invalid
     }
 

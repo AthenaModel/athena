@@ -289,9 +289,9 @@ snit::widgetadaptor hrelbrowser {
         set ids [$hull uid curselection]
 
         if {[llength $ids] == 1} {
-            order enter HREL:OVERRIDE id [lindex $ids 0]
+            app enter HREL:OVERRIDE id [lindex $ids 0]
         } else {
-            order enter HREL:OVERRIDE:MULTI ids $ids
+            app enter HREL:OVERRIDE:MULTI ids $ids
         }
     }
 
@@ -304,7 +304,7 @@ snit::widgetadaptor hrelbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Pop up the dialog, and select this entity
-        order send gui HREL:RESTORE id $id
+        flunky senddict gui HREL:RESTORE [list id $id]
     }
 }
 

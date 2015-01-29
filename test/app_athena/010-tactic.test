@@ -114,7 +114,9 @@ namespace eval ::athena_test::tests:: {
         faildict   {}
         id         *
         msg        {my message}
-        parent     ::bean::block*
+        name       T*
+        parent     *
+        pot        ::pot
         state      normal
     }
     
@@ -193,7 +195,9 @@ namespace eval ::athena_test::tests:: {
         faildict   {}
         id         *
         msg        {}
-        parent     ::bean::block*
+        name       T*
+        parent     *
+        pot        ::pot
         state      normal
     }
 
@@ -225,10 +229,10 @@ namespace eval ::athena_test::tests:: {
     test strategy-1.1 {can retrieve owning strategy} -setup {
         setup
     } -body {
-        $T1 strategy
+        expr {[$T1 strategy] eq [strategy getname SYSTEM]}
     } -cleanup {
         cleanup
-    } -result {::strategy::SYSTEM}
+    } -result {1}
     
     #-------------------------------------------------------------------
     # block
@@ -239,7 +243,7 @@ namespace eval ::athena_test::tests:: {
         $T1 block
     } -cleanup {
         cleanup
-    } -match glob -result {::bean::block*}
+    } -match glob -result {::pot::block*}
     
     #-------------------------------------------------------------------
     # state
@@ -296,13 +300,16 @@ namespace eval ::athena_test::tests:: {
         execstatus NONE
         faildict   {}
         failures   {}
+        fullname   JOE/B*/T*
         g          BLUE
         id         *
         mode       ALL
+        name       T*
         narrative  {Demobilize all of group BLUE's undeployed personnel.}
-        parent     ::bean::block*
+        parent     8
         percent    0
         personnel  0
+        pot        ::pot
         state      normal
         statusicon ::projectgui::icon::dash13
         typename   DEMOB
@@ -320,13 +327,16 @@ namespace eval ::athena_test::tests:: {
         execstatus NONE
         faildict   {}
         failures   {}
+        fullname   JOE/B*/T*
         g          BLUE
         id         *
         mode       ALL
+        name       T*
         narrative  {Demobilize all of group <a href="my://app/group/BLUE">BLUE</a>'s undeployed personnel.}
-        parent     ::bean::block*
+        parent     *
         percent    0
         personnel  0
+        pot        ::pot
         state      normal
         statusicon ::projectgui::icon::dash13
         typename   DEMOB
@@ -341,14 +351,16 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -match dictglob -result {
         agent     JOE
+        fullname  JOE/B*/T*
         g         BLUE
         mode      ALL
+        name      T*
         narrative {Demobilize all of group BLUE's undeployed personnel.}
-        parent    8
+        parent    *
         percent   0
         personnel 0
         state     normal
-        tactic_id *
+        tactic_id 10
         typename  DEMOB
     }
     

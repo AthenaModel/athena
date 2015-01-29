@@ -174,14 +174,18 @@ tactic define FUND "Fund Another Actor" {actor} {
 #
 # Updates existing FUND tactic.
 
-order define TACTIC:FUND {
-    title "Tactic: Fund Actor"
-    options -sendstates PREP
+myorders define TACTIC:FUND {
+    meta title      "Tactic: Fund Actor"
+    meta sendstates PREP
+    meta parmlist {tactic_id name a mode amount percent}
 
-    form {
+    meta form {
         rcc "Tactic ID" -for tactic_id
         text tactic_id -context yes \
             -loadcmd {beanload}
+
+        rcc "Name:" -for name
+        text name -width 20
 
         rcc "Actor:" -for a
         enum a -listcmd {tactic allAgentsBut $tactic_id}
@@ -212,35 +216,42 @@ order define TACTIC:FUND {
             }
         }
     }
-} {
-    prepare tactic_id -required -type tactic::FUND
-    returnOnError
 
-    set tactic [tactic get $parms(tactic_id)]
 
-    # FIRST, prepare and validate the parameters
-    prepare a        -toupper 
-    prepare amount   -toupper   -type   money
-    prepare percent  -toupper   -type   rpercent
+    method _validate {} {
+        my prepare tactic_id -required -with {::strategy valclass tactic::FUND}
+        my returnOnError
 
-    returnOnError
+        set tactic [pot get $parms(tactic_id)]
 
-    fillparms parms [$tactic view]
+        # FIRST, prepare and validate the parameters
+        my prepare name     -toupper   -with [list $tactic valName]
+        my prepare a        -toupper 
+        my prepare amount   -toupper   -type   money
+        my prepare percent  -toupper   -type   rpercent
 
-    if {$parms(mode) ne "PERCENT" && 
-        $parms(mode) ne "ALL"     &&
-        $parms(amount) == 0.0} {
-            reject amount "You must specify an amount > 0.0"
+        my returnOnError
+
+        fillparms parms [$tactic view]
+
+        if {$parms(mode) ne "PERCENT" && 
+            $parms(mode) ne "ALL"     &&
+            $parms(amount) == 0.0} {
+                my reject amount "You must specify an amount > 0.0"
+        }
+
+        if {$parms(mode) eq "PERCENT" && $parms(percent) == 0.0} {
+            my reject percent "You must specify a percent > 0.0"
+        }
     }
 
-    if {$parms(mode) eq "PERCENT" && $parms(percent) == 0.0} {
-        reject percent "You must specify a percent > 0.0"
+    method _execute {{flunky ""}} {
+        set tactic [pot get $parms(tactic_id)]
+        my setundo [$tactic update_ {
+            name a mode amount percent
+        } [array get parms]]
     }
-
-    returnOnError -final
-
-    # NEXT, upeate the tactic
-    setundo [$tactic update_ {a mode amount percent} [array get parms]]
 }
+
 
 

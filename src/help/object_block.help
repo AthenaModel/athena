@@ -32,18 +32,28 @@ object block_ {
 
     # The block ID for the object page
     attribute id "Block ID" {
-        The block ID, an integer number that uniquely
-        identifies the block.    It is assigned automatically when the
-        block is created.In orders, the parameter name is
+        The block ID, an integer number or the block's user defined name
+        that uniquely identifies the block.  It is assigned automatically
+        when the block is created.  In orders, the parameter name is
         <i>block_id</i>.
     } -tags {object browser}
 
     # The block ID for the order pages
     attribute block_id "Block ID" {
-        The block ID, an integer number that uniquely
-        identifies the block.  It is assigned automatically when the
-        block is created.
+        The block ID, an integer number or the block's user defined name
+        that uniquely identifies the block.  It is assigned automatically
+        when the block is created. 
     } -tags {cget}
+
+    attribute name "Name" {
+        The block name, a string identifier that, along with the owning
+        actor's ID, can be used to uniquely identify this block in orders.
+        In order to guarantee uniqueness, this name cannot be the same as
+        the name of a block already owned by the actor.  For example, if
+        actor GOV has a block named BLOCK1, then the <i>block_id</i> can
+        be specified as <i>GOV/BLOCK1</i> in orders and Athena will convert 
+        the name to the block integer ID automatically.
+    } -tags {object update browser configure cget}
 
     attribute agent "Agent" {
         The name of the <term agent> to whose 

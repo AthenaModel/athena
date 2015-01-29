@@ -140,12 +140,14 @@ namespace eval ::athena_test::tests:: {
         last_tick  {}
         max        0
         min        0
+        name       T*
         nlist      {_type NBHOODS _rule {}}
         nmode      BY_POP
-        parent     ::bean::block*
+        parent     *
         percent    0
         personnel  0
         pmode      ALL
+        pot        ::pot
         redeploy   0
         state      invalid
     }

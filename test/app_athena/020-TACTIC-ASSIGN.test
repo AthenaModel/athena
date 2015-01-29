@@ -188,6 +188,28 @@ namespace eval ::athena_test::tests:: {
         max {For pmode PERCENT, percent must be positive.}
     }
 
+    test TACTIC:ASSIGN-1.14 {invalid name} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:ASSIGN tactic_id [$T1 id] name 1234
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Identifiers begin with a letter and contain only letters and digits.}
+    }
+
+    test TACTIC:ASSIGN-1.15 {duplicate name} -setup {
+        setup
+        set T2 [ted addtactic $B1 ABSIT]
+    } -body {
+        ted order -reject TACTIC:ASSIGN tactic_id [$T1 id] \
+            name [$T2 get name]
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Name already exists: "T2"}
+    }
+
     test TACTIC:ASSIGN-2.1 {tactic updated, still invalid} -setup {
         setup
     } -body {
@@ -213,10 +235,12 @@ namespace eval ::athena_test::tests:: {
         max        2
         min        1
         n          NB1
-        parent     ::bean::block*
+        name       T*
+        parent     *
         percent    5.0
         personnel  1000
         pmode      SOME
+        pot        ::pot
         state      invalid
     }
 
@@ -246,10 +270,12 @@ namespace eval ::athena_test::tests:: {
         max        2
         min        1
         n          NB1
-        parent     ::bean::block*
+        name       T*
+        parent     *
         percent    5.0
         personnel  1000
         pmode      SOME
+        pot        ::pot
         state      normal
     }
 
@@ -278,7 +304,7 @@ namespace eval ::athena_test::tests:: {
             pmode     SOME
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

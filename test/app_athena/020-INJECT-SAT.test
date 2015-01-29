@@ -139,7 +139,7 @@ mag         5.0
         ted order INJECT:SAT:CREATE $I1
     } -body {
         ted notifier bind ::rdb <curse_injects>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -233,7 +233,7 @@ mag         10.0
         ted order INJECT:SAT:UPDATE id {C2 1} g BLUE
     } -body {
         ted notifier bind ::rdb <curse_injects>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

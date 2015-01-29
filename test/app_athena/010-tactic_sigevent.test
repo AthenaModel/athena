@@ -66,7 +66,9 @@ namespace eval ::athena_test::tests:: {
         faildict   {}
         id         *
         msg        {}
-        parent     ::bean::block*
+        name       T*
+        parent     *
+        pot        ::pot
         state      normal
     }
 

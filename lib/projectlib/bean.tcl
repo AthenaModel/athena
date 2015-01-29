@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    projectlib(1): Beans
+#    projectlib(n): Beans
 #
 #    A bean is a TclOO object that can be checkpointed.  All bean classes
 #    should be defined using beanclass(n), and should subclass bean(n),
@@ -34,13 +34,14 @@ proc oo::define::beanslot {slot} {
     # FIRST, get the name of the class we're defining.
     set cls [namespace which [lindex [info level -1] 1]]
 
-    # NEXT, Is this class really a bean class?
-    if {[info object class $cls] ne "::projectlib::beanclass"} {
-        error "tried to define beanslot on $cls, which is not a bean class"
-    }
-
     # NEXT, Define the slot as a normal variable
     oo::define $cls variable $slot
+
+    # NEXT, add a slot method for the slot that returns the list of 
+    # bean commands.
+    oo::define $cls method $slot {{idx ""}} [format {
+        return [my SlotAccessor %s $idx]
+    } $slot]
 
     # NEXT, add it to this class's list of bean slots.
     namespace upvar [info object namespace ::projectlib::bean] slots slots
@@ -61,7 +62,7 @@ proc oo::define::beanslot {slot} {
 # Since the bean class has class methods, it is convenient to build it
 # up in stages.  First, we create the bare class.
 
-::projectlib::beanclass create ::projectlib::bean 
+oo::class create ::projectlib::bean 
 
 #-----------------------------------------------------------------------
 # bean: class members
@@ -71,274 +72,24 @@ proc oo::define::beanslot {slot} {
 
 oo::objdefine ::projectlib::bean {
     #-------------------------------------------------------------------
-    # Checkpointed Type Variables
-    
-    variable beans      ;# Dictionary of bean object by ID
-    variable pendingId  ;# The next ID to assign, if > [my lastid]
+    # Type Variables
 
-    #-------------------------------------------------------------------
-    # Uncheckpointed Type Variables
-
-    variable slots      ;# Dictionary of beanslots by beanclass.
-                         # Does not include superclasses.
-    variable changed    ;# If true, there are unsaved beans.
-    variable restoring  ;# If true, we are in [bean restore].
-    variable deleting   ;# If true, we are in [bean delete].
-    variable deletions  ;# Dict of deleted beans, accumulated during [bean delete]
-    variable onchange   ;# Command to call on change.
-    variable rdb        ;# RDB object, for checkpoint/restore.
+    # Dictionary of beanslot names by beanclass.
+    # Does not include superclasses.
+    variable slots      
     
     #-------------------------------------------------------------------
-    # Initialization
+    # Public Type Methods
 
     # init
     #
-    # Initializes the class object; this happens immediately.  This
-    # is also called on reset.
+    # Initializes the class object; this happens immediately.
 
-    method init {{reset 0}} {
-        if {!$reset} {
-            namespace import ::marsutil::*
-            set slots [dict create]
-        }
+    method init {} {
+        namespace import ::marsutil::*
 
-        set beans [dict create]
-        set pendingId 0
-        set changed 0
-        set restoring 0
-        set deleting 0
-        set deletions [dict create]
-
-        # onchange isn't bean data; it's part of the glue code.  So
-        # don't clear it on reset.
-        if {![info exists onchange]} {
-            set onchange {}
-        }
-
-        # rdb isn't bean data; it's part of the glue code.  So
-        # don't clear it on reset.
-        if {![info exists rdb]} {
-            set rdb {}
-        }
-    }
-
-    # configure option value ...
-    #
-    # option   - A bean(n) class option
-    # value    - The option value
-    #
-    # Saves or clears the option values.
-
-    method configure {args} {
-        while {[llength $args] > 0} {
-            set opt [lshift args]
-
-            switch -exact -- $opt {
-                -onchange {
-                    set onchange [lshift args] 
-                }
-
-                -rdb {
-                    set rdb [lshift args]
-                }
-
-                default {
-                    error "Unknown option: \"$opt\""
-                }
-            }
-        }
-
-        return
-    }
-
-    # cget option
-    #
-    # option - A bean(n) class option
-    #
-    # Returns the option's value.
-
-    method cget {option} {
-        switch -exact -- $option {
-            -onchange { return $onchange }
-            -rdb      { return $rdb      }
-
-            default {
-                error "Unknown option: \"$opt\""
-            }
-        }
-    }
-
-
-    
-
-    #-------------------------------------------------------------------
-    # Private Methods
-    #
-    # These methods are used by bean instances; they are not for use by
-    # outside 
-
-    # register bean
-    #
-    # bean - A bean that is being created
-    #
-    # Registers the new bean, assigning it an ID, which is returned.
-    # This routine is intended for use only by instances of bean.
-    #
-    # NOTE: [bean restore] re-creates checkpointed objects by calling
-    # their constructors; this will ultimately result in a call to
-    # this routine.  In this case only, we do not want to assign
-    # a new ID; the old ID will be put back after the object is created.
-
-    method register {bean} {
-        if {$restoring} {
-            return ""
-        } else {
-            my markchanged
-            set id [my nextid]
-            dict set beans $id $bean
-            return $id
-        }
-    }
-
-    # unregister id
-    #
-    # id  - A bean ID
-    #
-    # Unregisters the bean; it can no longer be looked up or checkpointed.
-    # This routine is intended for use only by instances of bean.
-    #
-    # If we are deleting a bean, save this bean's data.
-
-    method unregister {id} {
-        if {$deleting} {
-            if {[dict exists $beans $id]} {
-                dict set deletions $id [my Serialize [dict get $beans $id]]
-            }
-        }
-        dict unset beans $id
-        my markchanged
-        return
-    }
-
-    # uncreate bean
-    #
-    # bean - The bean to uncreate
-    #
-    # Undoes the creation of a bean, which must be the most recently 
-    # created bean.
-
-    method uncreate {bean} {
-        require {[$bean id] == [my lastid]} "not most recent bean: \"$bean\""
-
-        $bean destroy
-    }
-
-    #-------------------------------------------------------------------
-    # beanclass methods
-    #
-    # NOTE: These methods override the [beanclass] class methods of the
-    # same name, and provide the basic implementation of these operations
-    # for all bean classes.  In other beanclasses, the [beanclass] class
-    # methods call these, and limit the results to those of the appropriate
-    # class.
-
-    # get id
-    #
-    # id   - A bean ID
-    #
-    # Returns a bean object given its ID.
-
-    method get {id} {
-        if {![dict exists $beans $id]} {
-            error "No such bean: $id"
-        }
-
-        return [dict get $beans $id]
-    }
-
-    # exists id
-    #
-    # id  - A bean ID
-    #
-    # Returns 1 if the bean exists, and 0 otherwise.
-
-    method exists {id} {
-        return [dict exists $beans $id]
-    }
-
-    # ids
-    #
-    # Returns a list of valid bean IDs
-
-    method ids {} {
-        return [lsort -integer [dict keys $beans]]
-    }
-
-
-    
-    #-------------------------------------------------------------------
-    # Public Methods
-    
-    # lastid 
-    #
-    # Returns the ID of the most recently created bean, or 0 if 
-    # there are no beans.
-
-    method lastid {} {
-        if {[dict size $beans] > 0} {
-            tcl::mathfunc::max {*}[dict keys $beans]        
-        } else {
-            return 0
-        }
-    }
-
-    # nextid
-    #
-    # Returns the ID of the next bean to create.
-
-    method nextid {} {
-        return [expr {max($pendingId,[my lastid] + 1)}]
-    }
-    
-    # setnextid nid
-    #
-    # nid   - The next ID to assign.
-    #
-    # Sets the next id to assign.  This is for use in 
-    # order setredo scripts, to ensure that orders yield the same IDs
-    # on redo.
-
-    method setnextid {nid} {
-        set pendingId $nid
-    }
-
-    # dump
-    #
-    # Dumps all beans
-
-    method dump {} {
-        set result ""
-        foreach id [my ids] {
-            set bean [dict get $beans $id]
-            append result \
-                "$id ([info object class $bean]/$bean): [$bean getdict]\n"
-        }
-        return $result
-    }
-
-    # reset
-    #
-    # Destroys all beans, and resets the class.
-
-    method reset {} {
-        foreach bean [dict values $beans] {
-            # Only destroy it if it exists
-            if {[info object isa object $bean]} {
-                $bean destroy
-            }
-        }
-
-        my init 1
+        # Prepare for the definition of slots by subclasses.
+        set slots [dict create]
     }
 
     # getslots cls
@@ -362,251 +113,6 @@ oo::objdefine ::projectlib::bean {
 
         return $result
     }
-
-    # view id ?view?
-    #
-    # id     - A bean's ID
-    # view   - Optionally, a view name
-    #
-    # Given a bean ID, returns a view dictionary.  Returns the empty
-    # dictionary if the bean doesn't exist.
-
-    method view {id {view ""}} {
-        if {![my exists $id]} {
-            return [dict create]
-        }
-
-        set bean [my get $id]
-        return [$bean view $view]
-    }
-
-    #-------------------------------------------------------------------
-    # Checkpoint/Restore
-
-    # Serialize bean
-    #
-    # bean - A bean object
-    #
-    # Serializes the bean, so that it can be saved in a checkpoint
-    # or undelete string.  The serialized form is a list,
-    #
-    #    <class> <object> <dict>
-
-    method Serialize {bean} {
-        list [info object class $bean] $bean [$bean getdict]
-    }
-
-    # SerializeAll
-    #
-    # Serializes all beans, and returns the string.
-
-    method SerializeAll {} {
-        set result [dict create]
-        dict for {id bean} $beans {
-            dict set result $id [my Serialize $bean]
-        }
-
-        return $result
-    }
-
-    # SaveBeansToRDB
-    #
-    # Saves all beans to the beans table on checkpoint.
-
-    method SaveBeansToRDB {} {
-        $rdb eval {
-            DELETE FROM beans;
-        }
-
-        foreach {id bean_object} $beans {
-            set bean_class [info object class $bean_object]
-            set bean_dict [$bean_object getdict]
-
-            $rdb eval {
-                INSERT INTO beans(id, bean_class, bean_object, bean_dict)
-                VALUES($id, $bean_class, $bean_object, $bean_dict)
-            }
-        }
-    }
-
-    # Deserialize id blist
-    #
-    # id    - The bean's ID
-    # blist - A serialized bean
-    #
-    # Deserializes the bean: recreates the object, sets its state, and
-    # registers it.
-
-    method Deserialize {id blist} { 
-        lassign $blist bcls bean bdict
-
-        # FIRST, Recreate the bean with its original name and
-        # class.  Because we are "restoring", it will not be
-        # registered automatically.
-        $bcls create $bean
-
-        # NEXT, restore its data.
-        set ns [info object namespace $bean]
-
-        dict for {var value} $bdict {
-            set ${ns}::$var $value
-        }
-
-        # NEXT, register it.
-        dict set beans $id $bean
-    }
-
-
-    # changed
-    #
-    # Returns 1 if there are unsaved beans, and 0 otherwise.  
-
-    method changed {} {
-        return $changed
-    }
-
-    # markchanged
-    #
-    # Sets the changed flag.  This is for use by bean code that
-    # changes bean internals.  Note that [$bean set] calls this
-    # automatically.
-
-    method markchanged {} {
-        set changed 1
-        callwith $onchange
-    }
-
-
-    # checkpoint ?-saved?
-    #
-    # Returns a string that contains the state of all registered beans.
-    # It can be used to restore them by calling [bean restore].  If -saved
-    # is given, the object's unsaved changes flag is cleared.
-
-    method checkpoint {{flag ""}} {
-        set data [dict create]
-        
-        if {$rdb eq ""} {
-            dict set data beans [my SerializeAll]
-        } else {
-            my SaveBeansToRDB
-        }
-
-        if {$flag eq "-saved"} {
-            set changed 0
-        }
-
-        return $data
-    }
-
-
-    # restore checkpoint ?-saved?
-    #
-    # checkpoint - A string returned by [bean checkpoint]
-    #
-    # Restores all checkpointed beans; all other registered beans will 
-    # be deleted.
-    #
-    # By default, this command will leave the changed flag set; if
-    # -saved is given, the flag will be cleared.
-
-    method restore {checkpoint {flag ""}} {
-        # FIRST, destroy all registered beans.  Note that the
-        # beans might have been destroyed with their owners.
-        foreach bean [dict values $beans] {
-            if {[info object isa object $bean]} {
-                $bean destroy
-            }
-        }
-
-        # NEXT, clear the beans dictionary (this shouldn't strictly
-        # be necessary)
-        set beans [dict create]
-
-        # NEXT, restore the checkpoint
-        set restoring 1
-
-        try {
-            if {$rdb eq ""} {
-                dict for {id blist} [dict get $checkpoint beans] {
-                    my Deserialize $id $blist
-                }
-            } else {
-                $rdb eval {
-                    SELECT * FROM beans
-                    ORDER BY id
-                } {
-                    set blist [list $bean_class $bean_object $bean_dict]
-                    my Deserialize $id $blist
-                }
-            }
-        } finally {
-            set restoring 0
-        }
-
-        my markchanged ;# Always, so that onchange gets called
-
-        if {$flag eq "-saved"} {
-            set changed 0
-        }
-
-        return
-    }
-
-    #-------------------------------------------------------------------
-    # delete/undelete
-
-    # delete id
-    #
-    # id   - A bean ID
-    #
-    # Deletes (destroys) a bean given its ID, returning a deleteSet 
-    # string that can be used to undelete it and its dependents.
-    #
-    # Sets the changed flag implicitly (because [bean unregister] is 
-    # called).
-
-    method delete {id} {
-        if {![my exists $id]} {
-            error "no such bean: \"$id\""
-        }
-
-        set deletions [dict create]
-        set deleting 1
-
-        try {
-            set bean [my get $id]
-            $bean destroy
-        } finally {
-            set deleting 0
-        }
-
-        set result $deletions
-        set deletions [dict create]
-
-        return $result
-    }
-
-    # undelete deleteSet
-    #
-    # deleteSet  - A delete set string returned by [delete]
-    #
-    # Under normal "undo" conditions, undoes the full set of bean deletions
-    # caused by calling [bean delete $id].  Sets the changed flag.
-
-    method undelete {deleteSet} {
-        set restoring 1
-
-        try {
-            dict for {id blist} $deleteSet {
-                my Deserialize $id $blist
-            }
-        } finally {
-            set restoring 0
-        }
-
-        my markchanged
-    }
 }
 
 #-----------------------------------------------------------------------
@@ -621,18 +127,22 @@ oo::define ::projectlib::bean {
     #-------------------------------------------------------------------
     # Instance Variables
 
-    variable id    ;# Every bean has a unique numeric ID
+    variable pot   ;# Every bean is created in a bean pot
+    variable id    ;# Every bean has a unique numeric ID in its pot
     
     #-------------------------------------------------------------------
     # Constructor/Destructor
     
     # constructor
     #
-    # Creates a new bean.  Unless we are restoring a checkpoint, the
-    # bean will be assigned an ID; see [bean register] for more.
+    # Creates a new bean.  Note that a beans should always be created
+    # using a beanpot(n) object's new method; this method assigns the
+    # bean's pot and ID.
 
     constructor {} {
-        set id [[self class] register [self]]
+        # A pot-less bean has no pot or ID.
+        set pot ""
+        set id ""
     }
 
     # destructor
@@ -640,8 +150,10 @@ oo::define ::projectlib::bean {
     # Unregisters the bean
 
     destructor {
-        my destroyslots {*}[my getslots]
-        [self class] unregister $id
+        if {$pot ne ""} {
+            my destroyslots {*}[my getslots]
+            $pot forget $id
+        }
     }
 
     # destroyslots beanslot...
@@ -663,16 +175,20 @@ oo::define ::projectlib::bean {
 
     unexport destroyslots
     method destroyslots {args} {
+        if {$pot eq ""} {
+            return
+        }
+        
         foreach slot $args {
             # Skip the slot if it hasn't been initialized yet.
             if {![info exists [self namespace]::$slot]} {
                 continue
             }
 
-            foreach bean [my get $slot] {
+            foreach bean_id [my get $slot] {
                 # Only destroy it if it exists
-                if {[info object isa object $bean]} {
-                    $bean destroy
+                if {[$pot has $bean_id]} {
+                    [$pot get $bean_id] destroy
                 }
             }
         }
@@ -680,6 +196,14 @@ oo::define ::projectlib::bean {
 
     #-------------------------------------------------------------------
     # Instance Methods
+
+    # pot
+    #
+    # Returns the bean's pot.
+
+    method pot {} {
+        return $pot
+    }
 
     # id
     #
@@ -732,11 +256,22 @@ oo::define ::projectlib::bean {
     # setdict dict
     #
     # Sets the object's state as a dictionary.  No validation is done,
-    # but the variables must already exist.
+    # but the variables must already exist.  "pot" and "id" cannot be set.
 
     method setdict {dict} {
         dict for {key value} $dict {
             my set $key $value
+        }
+    }
+
+    # SetDict dict
+    #
+    # Sets the object's state as a dictionary.  All variables are allowed.
+    # This is used in "undo" routines to restore state.
+
+    method SetDict {dict} {
+        dict for {key value} $dict {
+            set [self namespace]::$key $value
         }
     }
 
@@ -753,11 +288,13 @@ oo::define ::projectlib::bean {
             error "unknown instance variable: \"$var\""
         }
 
-        if {$var eq "id" && $id ne "" && $id ne $value} {
-            error "cannot change bean ID"
+        if {$var in {pot id}} {
+            error "cannot set the bean's \"$var\" attribute."
         }
 
-        [self class] markchanged
+        if {$pot ne ""} {
+            $pot markchanged
+        }
 
         set [self namespace]::$var $value
     }
@@ -829,14 +366,17 @@ oo::define ::projectlib::bean {
     # only those beans owned directly by this bean.
     #
     # Note: this bean is not included.
+    #
+    # TBD: This routine appears to be unused.  We might wish to 
+    # remove it.
 
     method getowned {{mode -deep}} {
         # FIRST, handle shallow mode immediately
         if {$mode eq "-shallow"} {
             set result [list]
 
-            foreach var [my getslots] {
-                lappend result {*}[my get $var]
+            foreach slot [my getslots] {
+                lappend result {*}[my $slot]
             }
 
             return $result
@@ -875,6 +415,30 @@ oo::define ::projectlib::bean {
     }
 
     #-------------------------------------------------------------------
+    # Slot Support
+
+    # SlotAccessor slot ?idx?
+    #
+    # idx - Optionally, a lindex index.
+    #
+    # Returns all or one entries from the slot, converting the slot
+    # ids to bean commands.
+
+    method SlotAccessor {slot {idx ""}} {
+        if {$idx eq ""} {
+            return [lmap bean_id [my get $slot] { $pot get $bean_id }]
+        } else {
+            set bean_id [lindex [my get $slot] $idx]
+            if {$bean_id ne ""} {
+                return [$pot get $bean_id]
+            } else {
+                return ""
+            }
+        }
+    }
+    
+
+    #-------------------------------------------------------------------
     # Copy/Paste Support
 
     # copydata
@@ -896,7 +460,7 @@ oo::define ::projectlib::bean {
         foreach slot [my getslots] {
             dict set cdict $slot [list]
 
-            foreach bean [my get $slot] {
+            foreach bean [my $slot] {
                 dict lappend cdict $slot [$bean copydata]
             }
         }
@@ -907,7 +471,7 @@ oo::define ::projectlib::bean {
     # GetShallowCopy
     #
     # Returns a copy dict for this object, a dictionary containing all
-    # state that can be copied and pasted.  This excludes the id,
+    # state that can be copied and pasted.  This excludes the pot and id,
     # since a new object will have its own, and its parent (if any), as the
     # new object's parent will be set on paste.  It includes a new
     # key, "class_", the leaf class.
@@ -918,7 +482,7 @@ oo::define ::projectlib::bean {
     # the internal data.
 
     method GetShallowCopy {} {
-        set dict [dict remove [my view] id parent]
+        set dict [dict remove [my view] pot id parent]
         dict set dict class_ [info object class [self]]
 
         return $dict
@@ -955,9 +519,9 @@ oo::define ::projectlib::bean {
         set undodict [my getdict]
 
         # NEXT, add the new bean to the slot
-        set bean [$cls new]
-        my lappend $slot $bean
-        $bean configure -parent [self]
+        set bean [$pot new $cls]
+        my lappend $slot [$bean id]
+        $bean configure -parent [my id]
 
         # NEXT, do activities on add to slot
         my onAddBean_ $slot [$bean id]
@@ -998,11 +562,12 @@ oo::define ::projectlib::bean {
     # if the subject is defined.
 
     method UndoAddBean {slot bean undodict} {
-        my setdict $undodict
+        my SetDict $undodict
         set bean_id [$bean id]
 
-        # Put the id counter back to what it was
-        [self class] uncreate $bean
+        # Uncreate the bean, verifying that it really is the most recent
+        # in the pot.
+        $pot uncreate $bean
 
         if {[my subject] ne ""} {
             ::marsutil::notifier send \
@@ -1029,9 +594,9 @@ oo::define ::projectlib::bean {
 
         # NEXT, delete the bean from the slot and from memory,
         # saving the delete set.
-        set bean [[self class] get $bean_id]
-        my ldelete $slot $bean
-        set delset [[self class] delete $bean_id]
+        set bean [$pot get $bean_id]
+        my ldelete $slot $bean_id
+        set delset [$pot delete $bean_id]
 
         # NEXT, do other activities on delete.
         my onDeleteBean_ $slot $bean_id
@@ -1070,8 +635,8 @@ oo::define ::projectlib::bean {
     # bean's state.
 
     method UndoDeleteBean {slot bean_id undodict delset} {
-        my setdict $undodict
-        [self class] undelete $delset
+        my SetDict $undodict
+        $pot undelete $delset
 
         # NEXT, send the ::marsutil::notifier event.
         if {[my subject] ne ""} {
@@ -1098,19 +663,16 @@ oo::define ::projectlib::bean {
         # FIRST, save the bean's previous state.
         set undodict [my getdict]
 
-        # NEXT, get the bean to move.
-        set bean [[self class] get $bean_id]
-
         # NEXT, move the bean in its slot.
-        my set $slot [::projectlib::emoveitem move $where [my get $slot] $bean]
+        my set $slot [::projectlib::emoveitem move $where [my get $slot] $bean_id]
 
         # NEXT, do activities on move
-        my onMoveBean_ $slot [$bean id]
+        my onMoveBean_ $slot $bean_id
 
         # NEXT, do notifications
         if {[my subject] ne ""} {
             ::marsutil::notifier send \
-                [my subject] <$slot> move [my id] [$bean id]
+                [my subject] <$slot> move [my id] $bean_id
         }
 
         ::marsutil::notifier send ::projectlib::bean <Monitor>
@@ -1139,7 +701,7 @@ oo::define ::projectlib::bean {
     # Undoes the movement of a bean in a slot, sending out notifications.
 
     method UndoMoveBean {slot bean_id undodict} {
-        my setdict $undodict
+        my SetDict $undodict
 
         if {[my subject] ne ""} {
             ::marsutil::notifier send [my subject] <$slot> move [my id] $bean_id
@@ -1215,7 +777,7 @@ oo::define ::projectlib::bean {
     # Restores the bean's state dictionary.
 
     method UndoUpdate {udict} {
-        my setdict $udict
+        my SetDict $udict
 
         if {[my subject] ne ""} {
             ::marsutil::notifier send [my subject] <update> [my id]

@@ -100,17 +100,22 @@ snit::type sat {
 # Orders: SAT:*
 
 # SAT:UPDATE
-#
-# Updates existing curves
+myorders define SAT:UPDATE {
+    meta title "Update Baseline Satisfaction"
+    meta sendstates PREP 
 
-order define SAT:UPDATE {
-    title "Update Baseline Satisfaction"
-    options -sendstates PREP 
+    meta defaults {
+        id        ""
+        base      ""
+        saliency  ""
+        hist_flag 0
+        current   ""
+    }
 
-    form {
+    meta form {
         rcc "Curve:" -for id
-        key id -table gui_sat_view -keys {g c} -labels {"Grp" "Con"} \
-            -loadcmd {orderdialog keyload id *}
+        dbkey id -table gui_sat_view -keys {g c} -labels {"Grp" "Con"} \
+            -loadcmd {$order_ keyload id *}
 
         rcc "Baseline:" -for base
         sat base
@@ -127,34 +132,38 @@ order define SAT:UPDATE {
             }
         }
     }
-} {
-    # FIRST, prepare the parameters
-    prepare id        -toupper  -required -type ::sat
 
-    prepare base      -num -toupper -type qsat
-    prepare saliency  -num -toupper -type qsaliency
-    prepare hist_flag -num          -type snit::boolean
-    prepare current   -num -toupper -type qsat 
+    method _validate {} {
+        my prepare id        -toupper  -required -type ::sat
+        my prepare base      -num -toupper -type qsat
+        my prepare saliency  -num -toupper -type qsaliency
+        my prepare hist_flag -num          -type snit::boolean
+        my prepare current   -num -toupper -type qsat 
+    }
 
-    returnOnError -final
-
-    # NEXT, modify the curve
-    setundo [sat mutate update [array get parms]]
+    method _execute {{flunky ""}} {
+        my setundo [sat mutate update [array get parms]]
+    }
 }
 
 
 # SAT:UPDATE:MULTI
-#
-# Updates multiple existing curves
+myorders define SAT:UPDATE:MULTI {
+    meta title "Update Baseline Satisfaction (Multi)"
+    meta sendstates PREP
 
-order define SAT:UPDATE:MULTI {
-    title "Update Baseline Satisfaction (Multi)"
-    options -sendstates PREP
+    meta defaults {
+        ids       ""
+        base      ""
+        saliency  ""
+        hist_flag 0
+        current   ""
+    }
 
-    form {
+    meta form {
         rcc "Curves:" -for id
-        multi ids -table gui_sat_view -key id \
-            -loadcmd {orderdialog multiload ids *}
+        dbmulti ids -table gui_sat_view -key id \
+            -loadcmd {$order_ multiload ids *}
 
         rcc "Baseline:" -for base
         sat base
@@ -171,26 +180,23 @@ order define SAT:UPDATE:MULTI {
             }
         }
     }
-} {
-    # FIRST, prepare the parameters
-    prepare ids       -toupper  -required -listof sat
 
-    prepare base      -num -toupper -type qsat
-    prepare saliency  -num -toupper -type qsaliency
-    prepare hist_flag -num          -type snit::boolean
-    prepare current   -num -toupper -type qsat 
-
-    returnOnError -final
-
-
-    # NEXT, modify the curves
-    set undo [list]
-
-    foreach parms(id) $parms(ids) {
-        lappend undo [sat mutate update [array get parms]]
+    method _validate {} {
+        my prepare ids       -toupper  -required -listof sat
+        my prepare base      -num -toupper -type qsat
+        my prepare saliency  -num -toupper -type qsaliency
+        my prepare hist_flag -num          -type snit::boolean
+        my prepare current   -num -toupper -type qsat 
     }
 
-    setundo [join $undo \n]
+    method _execute {{flunky ""}} {
+        set undo [list]
+
+        foreach parms(id) $parms(ids) {
+            lappend undo [sat mutate update [array get parms]]
+        }
+
+        my setundo [join $undo \n]
+        return
+    }
 }
-
-

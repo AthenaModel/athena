@@ -36,14 +36,13 @@ namespace eval ::athena_test::tests:: {
 
     # Set up for tests
 
-    set S1 ::strategy::SYSTEM
-
     proc setup {} {
         ted create NB1
         variable S1
         variable B1
         variable T1
         ted order STRATEGY:BLOCK:ADD agent SYSTEM
+        set S1 [strategy getname SYSTEM]
         lassign [$S1 blocks] B1
         ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename EXECUTIVE
         lassign [$B1 tactics] T1
@@ -89,6 +88,28 @@ namespace eval ::athena_test::tests:: {
         command {Script is incomplete; check braces and quotes.}
     }
 
+    test TACTIC:EXECUTIVE-1.4 {invalid name} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:EXECUTIVE tactic_id [$T1 id] name 1234
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Identifiers begin with a letter and contain only letters and digits.}
+    }
+
+    test TACTIC:EXECUTIVE-1.5 {duplicate name} -setup {
+        setup
+        set T2 [ted addtactic $B1 ABSIT]
+    } -body {
+        ted order -reject TACTIC:EXECUTIVE tactic_id [$T1 id] \
+            name [$T2 get name]
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Name already exists: "T2"}
+    }
+
     test TACTIC:EXECUTIVE-2.1 {tactic updated} -setup {
         setup
     } -body {
@@ -103,8 +124,10 @@ namespace eval ::athena_test::tests:: {
         command    Hello
         execstatus NONE
         faildict   {}
-        id         *
-        parent     ::bean::block*
+        id         3
+        name       T1
+        parent     2
+        pot        ::pot
         state      normal
     }
 
@@ -123,7 +146,7 @@ namespace eval ::athena_test::tests:: {
         ted order TACTIC:EXECUTIVE tactic_id [$T1 id] command "Hello"
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

@@ -430,9 +430,9 @@ snit::widget hookbrowser {
 
         # NEXT, it's a hook or a topic.
         if {"hook" in [$htree item tag names $id]} {
-            order enter HOOK:UPDATE hook_id $oid
+            app enter HOOK:UPDATE hook_id $oid
         } else {
-            order enter HOOK:TOPIC:UPDATE id $oid
+            app enter HOOK:TOPIC:UPDATE id $oid
         }
     }
 
@@ -441,7 +441,7 @@ snit::widget hookbrowser {
     # Allows the user to create a new semantic hook.
     
     method AddHook {} {
-        order enter HOOK:CREATE 
+        app enter HOOK:CREATE 
     }
 
 
@@ -461,9 +461,9 @@ snit::widget hookbrowser {
         set state [hook topic get $id state]
 
         if {$state eq "normal"} {
-            order send gui HOOK:TOPIC:STATE id $id state disabled
+            flunky senddict gui HOOK:TOPIC:STATE [list id $id state disabled]
         } elseif {$state eq "disabled"} {
-            order send gui HOOK:TOPIC:STATE id $id state normal
+            flunky senddict gui HOOK:TOPIC:STATE [list id $id state normal]
         } else {
             # Do nothing (this should never happen anyway)
         }
@@ -481,11 +481,11 @@ snit::widget hookbrowser {
 
         # NEXT, it's a hook or a topic.
         if {"hook" in [$htree item tag names $id]} {
-            order send gui HOOK:DELETE \
-                hook_id [$htree item text $id {tag id}]
+            flunky senddict gui HOOK:DELETE \
+                [list hook_id [$htree item text $id {tag id}]]
         } else {
-            order send gui HOOK:TOPIC:DELETE \
-                id [$htree item text $id {tag id}]
+            flunky senddict gui HOOK:TOPIC:DELETE \
+                [list id [$htree item text $id {tag id}]]
         }
     }
 
@@ -539,7 +539,7 @@ snit::widget hookbrowser {
 
         set longname [hook get $hook_id longname]
 
-        order enter HOOK:TOPIC:CREATE hook_id $hook_id longname $longname
+        app enter HOOK:TOPIC:CREATE hook_id $hook_id longname $longname
     }
 
     # DrawTopic tdataVar

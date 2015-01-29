@@ -187,7 +187,7 @@ SUNN SFT 0.0  1.0      0         0.0
         }
     } -body {
         ted notifier bind ::rdb <sat_gc>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -352,7 +352,7 @@ SUNN SFT 0.0  1.0      0         0.0
         }
     } -body {
         ted notifier bind ::rdb <sat_gc>
-        cif undo -test
+        flunky undo
         ted notifier received
     } -cleanup {
         cleanup

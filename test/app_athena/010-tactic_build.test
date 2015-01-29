@@ -84,9 +84,10 @@ namespace eval ::athena_test::tests:: {
         id         *
         mode       CASH
         n          {}
+        name       T*
         num        1
-        parent     ::bean::block*
-        percent    0
+        parent     *
+        pot        ::pot
         state      invalid
     }
 
