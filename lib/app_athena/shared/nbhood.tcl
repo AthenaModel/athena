@@ -868,8 +868,8 @@ myorders define NBHOOD:DELETE {
                             -title         "Are you sure?"                  \
                             -icon          warning                          \
                             -buttons       {ok "Delete it" cancel "Cancel"} \
-                            -default       my cancel                           \
-                            -onclose       my cancel                           \
+                            -default       cancel                           \
+                            -onclose       cancel                           \
                             -ignoretag     NBHOOD:DELETE                    \
                             -ignoredefault ok                               \
                             -parent        [app topwin]                     \

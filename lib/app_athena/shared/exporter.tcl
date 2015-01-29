@@ -197,11 +197,12 @@ snit::type exporter {
 
         # NEXT, Map Data and Projection
         SectionHeader $f "Map and Projection"
-        set imgdata [[map image] data -format jpeg]
-        set projtype [rdb onecolumn {SELECT projtype FROM maps}]
-        set pdict [ProjDict $projtype]
-
-        MakeSend $f MAP:IMPORT:DATA data $imgdata proj [dict get $pdict]
+        if {[map image] ne ""} {
+            set imgdata [[map image] data -format jpeg]
+            set projtype [rdb onecolumn {SELECT projtype FROM maps}]
+            set pdict [ProjDict $projtype]
+            MakeSend $f MAP:IMPORT:DATA data $imgdata proj [dict get $pdict]
+        }
 
         # NEXT, Belief Systems
         SectionHeader $f "Belief Systems"
