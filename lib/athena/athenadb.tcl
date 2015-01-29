@@ -210,6 +210,12 @@ snit::type ::athena::athenadb {
         $self CreateRDB
         install pot using beanpot ${selfns}::pot -rdb $rdb
 
+        # NEXT, Make these components globally available.
+        # TBD: These will go away once the transition to library code
+        # is complete.
+        interp alias {} ::rdb {} $rdb
+        interp alias {} ::pot {} $pot
+
         # NEXT, either load the named file or create an empty database.
         if {$filename ne ""} {
             try {
@@ -232,11 +238,6 @@ snit::type ::athena::athenadb {
             parm checkpoint -saved
         }
 
-        # NEXT, Make these components globally available.
-        # TBD: These will go away once the transition to library code
-        # is complete.
-        interp alias {} ::rdb {} $rdb
-        interp alias {} ::pot {} $pot
 
 
         # NEXT, finish up

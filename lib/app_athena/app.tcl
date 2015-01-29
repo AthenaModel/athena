@@ -928,7 +928,6 @@ snit::type app {
             ::adb destroy
             MakeAthena ::adb $filename
         } trap {SCENARIO OPEN} {result} {
-
             app error {
                 |<--
                 Could not open scenario
