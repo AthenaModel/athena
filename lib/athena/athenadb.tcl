@@ -224,14 +224,6 @@ snit::type ::athena::athenadb {
         } else {
             set info(adbfile) ""
 
-            # NEXT, load the blank map, but only if we have a GUI
-            # TODO: Take this out once Dave has changed the blank map
-            # handling.
-            if {[app tkloaded]} {
-                map load [file join $::app_athena::library blank.png]
-            }
-
-
             # Initialize external packages
             bsys clear
             parm reset
@@ -272,7 +264,6 @@ snit::type ::athena::athenadb {
             -clock      ::simclock \
             -explaincmd [mymethod ExplainCmd] \
             -subject    $options(-subject)
-        bean configure -rdb $rdb
 
         # NEXT, for now, alias it into the global namespace.
         interp alias {} ::rdb {} $rdb
@@ -300,7 +291,6 @@ snit::type ::athena::athenadb {
         $rdb monitor add curse_injects {curse_id inject_num}
         $rdb monitor add ioms          {iom_id}
         $rdb monitor add mads          {mad_id}
-        $rdb monitor add magic_attrit  {id}
         $rdb monitor add nbhoods       {n}
         $rdb monitor add nbrel_mn      {m n}
         $rdb monitor add orggroups     {g}
@@ -383,7 +373,7 @@ snit::type ::athena::athenadb {
         $rdb destroy
 
         # NEXT, reset other modules not yet owned by this object.
-        bean reset
+        ::pot reset
         catch {sim new}
     }
 
