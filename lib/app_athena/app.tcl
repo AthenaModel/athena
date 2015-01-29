@@ -225,7 +225,6 @@ snit::type app {
         view      init
         bsys      init
         athena_flunky create ::flunky
-        beanpot   ::pot -rdb ::rdb
         MakeAthena ::adb
         nbhood    init
         sim       init

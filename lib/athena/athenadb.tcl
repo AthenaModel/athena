@@ -153,7 +153,8 @@ snit::type ::athena::athenadb {
     #-------------------------------------------------------------------
     # Components
     
-    component rdb ;# The scenario's sqldatabase component
+    component rdb                ;# The scenario's sqldatabase component
+    component pot -public yes    ;# beanpot(n)
 
     #-------------------------------------------------------------------
     # Options
@@ -205,8 +206,9 @@ snit::type ::athena::athenadb {
 
         $self configurelist $args
 
-        # NEXT, create the RDB component.
+        # NEXT, create the RDB and other components.
         $self CreateRDB
+        install pot using beanpot ${selfns}::pot -rdb $rdb
 
         # NEXT, either load the named file or create an empty database.
         if {$filename ne ""} {
@@ -229,6 +231,13 @@ snit::type ::athena::athenadb {
             parm reset
             parm checkpoint -saved
         }
+
+        # NEXT, Make these components globally available.
+        # TBD: These will go away once the transition to library code
+        # is complete.
+        interp alias {} ::rdb {} $rdb
+        interp alias {} ::pot {} $pot
+
 
         # NEXT, finish up
         $self DefineTempSchema
@@ -264,9 +273,6 @@ snit::type ::athena::athenadb {
             -clock      ::simclock \
             -explaincmd [mymethod ExplainCmd] \
             -subject    $options(-subject)
-
-        # NEXT, for now, alias it into the global namespace.
-        interp alias {} ::rdb {} $rdb
 
         # NEXT, register SQL sections
         $rdb register ::service
@@ -373,7 +379,6 @@ snit::type ::athena::athenadb {
         $rdb destroy
 
         # NEXT, reset other modules not yet owned by this object.
-        ::pot reset
         catch {sim new}
     }
 
