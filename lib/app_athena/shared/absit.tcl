@@ -614,7 +614,7 @@ snit::type absit {
 #
 # Creates new absits.
 
-myorders define ABSIT:CREATE {
+::athena::orders define ABSIT:CREATE {
     meta title "Create Abstract Situation"
     meta sendstates {PREP PAUSED TACTIC}
 
@@ -696,7 +696,7 @@ myorders define ABSIT:CREATE {
 #
 # Deletes an absit.
 
-myorders define ABSIT:DELETE {
+::athena::orders define ABSIT:DELETE {
     meta title "Delete Abstract Situation"
     meta sendstates {PREP PAUSED}
 
@@ -755,7 +755,7 @@ myorders define ABSIT:DELETE {
 #
 # Updates existing absits.
 
-myorders define ABSIT:UPDATE {
+::athena::orders define ABSIT:UPDATE {
     meta title "Update Abstract Situation"
     meta sendstates {PREP PAUSED TACTIC} 
 
@@ -843,7 +843,7 @@ myorders define ABSIT:UPDATE {
 #
 # Moves an existing absit.
 
-myorders define ABSIT:MOVE {
+::athena::orders define ABSIT:MOVE {
     meta title "Move Abstract Situation"
     meta sendstates {PREP PAUSED}
 
@@ -901,7 +901,7 @@ myorders define ABSIT:MOVE {
 #
 # Resolves an absit.
 
-myorders define ABSIT:RESOLVE {
+::athena::orders define ABSIT:RESOLVE {
     meta title "Resolve Abstract Situation"
     meta sendstates {PREP PAUSED TACTIC}
 

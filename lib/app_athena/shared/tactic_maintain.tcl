@@ -335,7 +335,7 @@ tactic define MAINTAIN "Maintain Infrastructure" {actor} {
 #
 # Updates existing MAINTAIN tactic.
 
-myorders define TACTIC:MAINTAIN {
+::athena::orders define TACTIC:MAINTAIN {
     meta title      "Tactic: Maintain Infrastructure"
     meta sendstates PREP
     meta parmlist   {tactic_id name nlist fmode amount percent rmode level}

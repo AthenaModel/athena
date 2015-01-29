@@ -237,7 +237,7 @@ oo::objdefine tactic {
     method GetOrderParmsFromCopySet {tname copyset} {
         set pdict [dict create]
 
-        foreach parm [myorders parms TACTIC:$tname] {
+        foreach parm [::athena::orders parms TACTIC:$tname] {
             if {$parm eq "tactic_id" || $parm eq "name"} {
                 continue
             }
@@ -822,7 +822,7 @@ oo::define tactic {
 #
 # Sets a tactic's state to normal or disabled.
 
-myorders define TACTIC:STATE {
+::athena::orders define TACTIC:STATE {
     meta title      "Set Tactic State"
     meta sendstates PREP
     meta parmlist   { tactic_id state }

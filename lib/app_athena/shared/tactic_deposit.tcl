@@ -152,7 +152,7 @@ tactic define DEPOSIT "Deposit Money" {actor} {
 #
 # Updates existing DEPOSIT tactic.
 
-myorders define TACTIC:DEPOSIT {
+::athena::orders define TACTIC:DEPOSIT {
     meta title      "Tactic: Deposit Money"
     meta sendstates PREP
     meta parmlist   {tactic_id name mode amount percent}

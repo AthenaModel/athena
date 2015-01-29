@@ -165,7 +165,7 @@ oo::objdefine condition {
     method GetOrderParmsFromCopySet {cname copyset} {
         set pdict [dict create]
 
-        foreach parm [myorders parms CONDITION:$cname] {
+        foreach parm [::athena::orders parms CONDITION:$cname] {
             if {$parm eq "condition_id" || $parm eq "name"} {
                 continue
             }
@@ -552,7 +552,7 @@ oo::define condition {
 # Sets a condition's state to normal or disabled.  The order dialog
 # is not generally used.
 
-myorders define CONDITION:STATE {
+::athena::orders define CONDITION:STATE {
     meta title      "Set Condition State"
     meta sendstates PREP
     meta parmlist   {condition_id state}

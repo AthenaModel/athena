@@ -200,7 +200,7 @@ tactic define ATTRIT "Magic Attrition" {system} {
 #
 # Creates/Updates ATTRIT tactic.
 
-myorders define TACTIC:ATTRIT {
+::athena::orders define TACTIC:ATTRIT {
     meta title      "Tactic: Magic Attrition"
     meta sendstates PREP
     meta parmlist   {tactic_id name mode casualties n g1 g2 f}

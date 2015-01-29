@@ -136,7 +136,7 @@ tactic define ABSIT "Abstract Situation" {system actor} -onlock {
 #
 # Creates/Updates ABSIT tactic.
 
-myorders define TACTIC:ABSIT {
+::athena::orders define TACTIC:ABSIT {
     meta title      "Tactic: Abstract Situation"
     meta sendstates PREP
     meta parmlist {tactic_id name n stype coverage resolver duration}

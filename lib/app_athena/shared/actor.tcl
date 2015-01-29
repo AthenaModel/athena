@@ -341,7 +341,7 @@ snit::type actor {
 #
 # Creates new actors.
 
-myorders define ACTOR:CREATE {
+::athena::orders define ACTOR:CREATE {
     meta title "Create Actor"
 
     meta sendstates PREP
@@ -469,7 +469,7 @@ myorders define ACTOR:CREATE {
 
 # ACTOR:DELETE
 
-myorders define ACTOR:DELETE {
+::athena::orders define ACTOR:DELETE {
     meta title "Delete Actor"
     meta sendstates PREP
 
@@ -520,7 +520,7 @@ myorders define ACTOR:DELETE {
 #
 # Updates existing actors.
 
-myorders define ACTOR:UPDATE {
+::athena::orders define ACTOR:UPDATE {
     meta title "Update Actor"
     meta sendstates PREP
 
@@ -633,7 +633,7 @@ myorders define ACTOR:UPDATE {
 # Updates existing actor's income or budget.  Does not
 # allow changing the actor's type.
 
-myorders define ACTOR:INCOME {
+::athena::orders define ACTOR:INCOME {
     meta title "Update Actor Income"
     meta sendstates {PREP PAUSED TACTIC}
 
@@ -721,7 +721,7 @@ myorders define ACTOR:INCOME {
 #
 # Updates existing actor's "supports" attribute.
 
-myorders define ACTOR:SUPPORTS {
+::athena::orders define ACTOR:SUPPORTS {
     meta title "Update Actor Supports"
     meta sendstates {PREP PAUSED TACTICS}
 

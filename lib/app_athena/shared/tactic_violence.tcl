@@ -89,7 +89,7 @@ tactic define VIOLENCE "Violence Event" {system actor} {
 #
 # Creates/Updates VIOLENCE tactic.
 
-myorders define TACTIC:VIOLENCE {
+::athena::orders define TACTIC:VIOLENCE {
     meta title      "Tactic: Violence Event"
     meta sendstates PREP
     meta parmlist {tactic_id name n coverage}

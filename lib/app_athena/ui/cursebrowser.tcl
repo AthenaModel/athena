@@ -600,7 +600,7 @@ snit::widget cursebrowser {
             }
 
             # Get title, and remove the "Create inject: " prefix
-            set title [myorders title $order]
+            set title [::athena::orders title $order]
             set ndx [string first ":" $title]
             set title [string range $title $ndx+2 end]
             dict set odict $title $order

@@ -150,7 +150,7 @@ tactic define DEMOB "Demobilize Personnel" {actor} {
 #
 # Updates existing DEMOB tactic.
 
-myorders define TACTIC:DEMOB {
+::athena::orders define TACTIC:DEMOB {
     meta title      "Tactic: Demobilize Personnel"
     meta sendstates PREP
     meta parmlist   {tactic_id name g mode personnel percent}

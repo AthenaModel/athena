@@ -836,7 +836,7 @@ snit::type inject {
 #
 # Deletes an existing inject, of whatever type.
 
-myorders define INJECT:DELETE {
+::athena::orders define INJECT:DELETE {
     # This order dialog isn't usually used.
 
     meta title "Delete Inject"
@@ -864,7 +864,7 @@ myorders define INJECT:DELETE {
 # Sets a injects's state.  Note that this order isn't intended
 # for use with a dialog.
 
-myorders define INJECT:STATE {
+::athena::orders define INJECT:STATE {
     meta title "Set Inject State"
 
     meta sendstates {PREP PAUSED}

@@ -778,7 +778,7 @@ tactic define DEPLOY "Deploy Personnel" {actor} -onlock {
 #
 # Updates existing DEPLOY tactic.
 
-myorders define TACTIC:DEPLOY {
+::athena::orders define TACTIC:DEPLOY {
     meta title      "Tactic: Deploy Personnel"
     meta sendstates PREP
     meta parmlist {

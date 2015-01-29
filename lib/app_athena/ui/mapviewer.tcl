@@ -451,7 +451,7 @@ snit::widget mapviewer {
             order NBHOOD:CREATE
 
         DynamicHelp::add $win.vbar.nbhood \
-            -text [myorders title NBHOOD:CREATE]
+            -text [::athena::orders title NBHOOD:CREATE]
 
         cond::available control \
             [ttk::button $win.vbar.newabsit                                  \
@@ -462,7 +462,7 @@ snit::widget mapviewer {
             order ABSIT:CREATE
 
         DynamicHelp::add $win.vbar.newabsit \
-            -text [myorders title ABSIT:CREATE]
+            -text [::athena::orders title ABSIT:CREATE]
 
         pack $win.vbar.sep       -side top -fill x -pady 2
         pack $win.vbar.nbhood    -side top -fill x -padx 2

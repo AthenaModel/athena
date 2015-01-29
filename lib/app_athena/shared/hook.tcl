@@ -474,7 +474,7 @@ snit::type hook {
 #
 # Creates new semantic hooks.
 
-myorders define HOOK:CREATE {
+::athena::orders define HOOK:CREATE {
     meta title "Create Semantic Hook"
 
     meta sendstates PREP
@@ -512,7 +512,7 @@ myorders define HOOK:CREATE {
 #
 # Deletes semantic hooks
 
-myorders define HOOK:DELETE {
+::athena::orders define HOOK:DELETE {
     meta title "Delete Semantic Hook"
     meta sendstates PREP
 
@@ -559,7 +559,7 @@ myorders define HOOK:DELETE {
 #
 # Updates existing semantic hooks.
 
-myorders define HOOK:UPDATE {
+::athena::orders define HOOK:UPDATE {
     meta title "Update Semantic Hook"
     meta sendstates PREP
 
@@ -592,7 +592,7 @@ myorders define HOOK:UPDATE {
 #
 # Creates a new semantic hook/topic pair
 
-myorders define HOOK:TOPIC:CREATE {
+::athena::orders define HOOK:TOPIC:CREATE {
     meta title "Create Semantic Hook Topic"
 
     meta sendstates PREP
@@ -640,7 +640,7 @@ myorders define HOOK:TOPIC:CREATE {
 #
 # Removes a semantic hook topic from the database
 
-myorders define HOOK:TOPIC:DELETE {
+::athena::orders define HOOK:TOPIC:DELETE {
     meta title "Delete Semantic Hook Topic"
 
     meta sendstates PREP
@@ -669,7 +669,7 @@ myorders define HOOK:TOPIC:DELETE {
 #
 # Updates an existing hook/topic pair
 
-myorders define HOOK:TOPIC:UPDATE {
+::athena::orders define HOOK:TOPIC:UPDATE {
     meta title "Update Semantic Hook Topic"
 
     meta sendstates PREP 
@@ -705,7 +705,7 @@ myorders define HOOK:TOPIC:UPDATE {
 #
 # Updates the state of a hook topic
 
-myorders define HOOK:TOPIC:STATE {
+::athena::orders define HOOK:TOPIC:STATE {
     meta title "Set Semantic Hook State"
 
     meta sendstates {PREP}

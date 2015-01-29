@@ -223,7 +223,7 @@ namespace eval ::athena_test::tests:: {
         nlist      {_type NBHOODS _rule BY_VALUE nlist {NB1 NB2}}
         parent     *
         percent    100
-        pot        ::pot
+        pot        *::pot
         rmode      FULL
         state      normal
     }
@@ -248,7 +248,7 @@ namespace eval ::athena_test::tests:: {
         nlist      {_type NBHOODS _rule BY_VALUE nlist {NB1 NB2}}
         parent     *
         percent    100
-        pot        ::pot
+        pot        *::pot
         rmode      UPTO
         state      normal
     }
@@ -273,7 +273,7 @@ namespace eval ::athena_test::tests:: {
         nlist      {_type NBHOODS _rule BY_VALUE nlist {NB1 NB2}}
         parent     *
         percent    100
-        pot        ::pot
+        pot        *::pot
         rmode      UPTO
         state      normal
     }
@@ -298,7 +298,7 @@ namespace eval ::athena_test::tests:: {
         nlist      {_type NBHOODS _rule BY_VALUE nlist {NB1 NB2}}
         parent     *
         percent    100
-        pot        ::pot
+        pot        *::pot
         rmode      UPTO
         state      normal
     }

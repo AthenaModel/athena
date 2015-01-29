@@ -57,10 +57,6 @@ namespace eval ::app_athena:: {
     variable library [file dirname [info script]]
 }
 
-# Used to define and query orders.
-::marsutil::order_set create ::myorders ::athena_order 
-source [file join $::app_athena::library athena_order.tcl ]
-source [file join $::app_athena::library athena_flunky.tcl]
 
 #-----------------------------------------------------------------------
 # Load app_athena(n) modules

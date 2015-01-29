@@ -704,7 +704,7 @@ snit::widget appwin {
         $self AddOrder $submenu SIM:STARTTICK
         
         cond::available control \
-            [menuitem $submenu command [myorders title SIM:REBASE]... \
+            [menuitem $submenu command [::athena::orders title SIM:REBASE]... \
                 -command [list flunky send gui SIM:REBASE]]    \
                 order SIM:REBASE
 
@@ -846,7 +846,7 @@ snit::widget appwin {
         $self AddOrder $submenu ECON:CGE:UPDATE
 
         cond::available control \
-            [menuitem $submenu command [myorders title ECON:UPDATE:HIST]... \
+            [menuitem $submenu command [::athena::orders title ECON:UPDATE:HIST]... \
             -command {app enter ECON:UPDATE:HIST [econ hist]}]    \
             order ECON:UPDATE:HIST
 

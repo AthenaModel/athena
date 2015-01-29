@@ -44,7 +44,7 @@ payload type define SAT {c mag} {
 #
 # Creates a new SAT payload.
 
-myorders define PAYLOAD:SAT:CREATE {
+::athena::orders define PAYLOAD:SAT:CREATE {
     meta title "Create Payload: Satisfaction"
 
     meta sendstates PREP
@@ -84,7 +84,7 @@ myorders define PAYLOAD:SAT:CREATE {
 #
 # Updates existing SAT payload.
 
-myorders define PAYLOAD:SAT:UPDATE {
+::athena::orders define PAYLOAD:SAT:UPDATE {
     meta title "Update Payload: Satisfaction"
     meta sendstates PREP 
 

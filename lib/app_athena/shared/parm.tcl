@@ -263,7 +263,7 @@ snit::type parm {
 #
 # Imports the contents of a parmdb file into the scenario.
 
-myorders define PARM:IMPORT {
+::athena::orders define PARM:IMPORT {
     meta title "Import Parameter File"
 
     meta sendstates {PREP PAUSED}
@@ -307,7 +307,7 @@ myorders define PARM:IMPORT {
 #
 # Imports the contents of a parmdb file into the scenario.
 
-myorders define PARM:RESET {
+::athena::orders define PARM:RESET {
     meta title "Reset Parameters to Defaults"
 
     meta sendstates {PREP PAUSED}
@@ -331,7 +331,7 @@ myorders define PARM:RESET {
 #
 # Sets the value of a parameter.
 
-myorders define PARM:SET {
+::athena::orders define PARM:SET {
     meta title "Set Parameter Value"
 
     meta sendstates {PREP PAUSED}

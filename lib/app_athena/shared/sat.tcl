@@ -100,7 +100,7 @@ snit::type sat {
 # Orders: SAT:*
 
 # SAT:UPDATE
-myorders define SAT:UPDATE {
+::athena::orders define SAT:UPDATE {
     meta title "Update Baseline Satisfaction"
     meta sendstates PREP 
 
@@ -148,7 +148,7 @@ myorders define SAT:UPDATE {
 
 
 # SAT:UPDATE:MULTI
-myorders define SAT:UPDATE:MULTI {
+::athena::orders define SAT:UPDATE:MULTI {
     meta title "Update Baseline Satisfaction (Multi)"
     meta sendstates PREP
 

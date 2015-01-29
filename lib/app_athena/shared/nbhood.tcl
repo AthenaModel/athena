@@ -528,7 +528,7 @@ snit::type nbhood {
 #
 # Creates new neighborhoods.
 
-myorders define NBHOOD:CREATE {
+::athena::orders define NBHOOD:CREATE {
     meta title "Create Neighborhood"
     meta sendstates PREP
 
@@ -579,7 +579,7 @@ myorders define NBHOOD:CREATE {
     }
 
     method _validate {} {
-        my variable rdb
+        my variable adb
 
         # FIRST, prepare the parameters
         my prepare n             -toupper            -required -type ident
@@ -601,7 +601,7 @@ myorders define NBHOOD:CREATE {
         # Must be unique.
 
         my checkon polygon {
-            if {[$rdb exists {
+            if {[$adb exists {
                 SELECT n FROM nbhoods
                 WHERE polygon = $parms(polygon)
             }]} {
@@ -614,7 +614,7 @@ myorders define NBHOOD:CREATE {
         # Must be unique
 
         my checkon refpoint {
-            if {[$rdb exists {
+            if {[$adb exists {
                 SELECT n FROM nbhoods
                 WHERE refpoint = $parms(refpoint)
             }]} {
@@ -660,7 +660,7 @@ myorders define NBHOOD:CREATE {
 #
 # Creates new neighborhoods from raw lat/long data.
 
-myorders define NBHOOD:CREATE:RAW {
+::athena::orders define NBHOOD:CREATE:RAW {
     meta title "Create Neighborhood From Raw Data"
     meta sendstates PREP
 
@@ -711,7 +711,7 @@ myorders define NBHOOD:CREATE:RAW {
     }
 
     method _validate {} {
-        my variable rdb
+        my variable adb
 
         # FIRST, prepare the parameters
         my prepare n             -required -toupper  -type ident
@@ -764,7 +764,7 @@ myorders define NBHOOD:CREATE:RAW {
 
         # Must be unique.
         my checkon polygon {
-            if {[$rdb exists {
+            if {[$adb exists {
                 SELECT n FROM nbhoods
                 WHERE polygon = $parms(polygon)
             }]} {
@@ -786,7 +786,7 @@ myorders define NBHOOD:CREATE:RAW {
     
         # Must be unique
         my checkon refpoint {
-            if {[$rdb exists {
+            if {[$adb exists {
                 SELECT n FROM nbhoods
                 WHERE refpoint = $parms(refpoint)
             }]} {
@@ -845,7 +845,7 @@ myorders define NBHOOD:CREATE:RAW {
 
 # NBHOOD:DELETE
 
-myorders define NBHOOD:DELETE {
+::athena::orders define NBHOOD:DELETE {
     meta title "Delete Neighborhood"
     meta sendstates PREP
 
@@ -894,7 +894,7 @@ myorders define NBHOOD:DELETE {
 
 # NBHOOD:LOWER
 
-myorders define NBHOOD:LOWER {
+::athena::orders define NBHOOD:LOWER {
     meta title "Lower Neighborhood"
     meta sendstates PREP
 
@@ -922,7 +922,7 @@ myorders define NBHOOD:LOWER {
 
 # NBHOOD:RAISE
 
-myorders define NBHOOD:RAISE {
+::athena::orders define NBHOOD:RAISE {
     meta title "Raise Neighborhood"
     meta sendstates PREP
 
@@ -951,7 +951,7 @@ myorders define NBHOOD:RAISE {
 #
 # Updates existing neighborhoods.
 
-myorders define NBHOOD:UPDATE {
+::athena::orders define NBHOOD:UPDATE {
     meta title "Update Neighborhood"
     meta sendstates PREP
 
@@ -1003,7 +1003,7 @@ myorders define NBHOOD:UPDATE {
     }
 
     method _validate {} {
-        my variable rdb
+        my variable adb
         
         # FIRST, prepare the parameters
         my prepare n            -toupper   -required -type nbhood
@@ -1024,7 +1024,7 @@ myorders define NBHOOD:UPDATE {
         # Must be unique
 
         my checkon polygon {
-            $rdb eval {
+            $adb eval {
                 SELECT n FROM nbhoods
                 WHERE polygon = $parms(polygon)
             } {
@@ -1040,7 +1040,7 @@ myorders define NBHOOD:UPDATE {
         # Must be unique
 
         my checkon refpoint {
-            $rdb eval {
+            $adb eval {
                 SELECT n FROM nbhoods
                 WHERE refpoint = $parms(refpoint)
             } {
@@ -1054,7 +1054,7 @@ myorders define NBHOOD:UPDATE {
         my returnOnError
 
         # NEXT, is the refpoint in the polygon?
-        $rdb eval {SELECT refpoint, polygon FROM nbhoods WHERE n = $parms(n)} {}
+        $adb eval {SELECT refpoint, polygon FROM nbhoods WHERE n = $parms(n)} {}
 
         if {$parms(refpoint) ne ""} {
             set refpoint $parms(refpoint)
@@ -1088,7 +1088,7 @@ myorders define NBHOOD:UPDATE {
 #
 # Updates multiple neighborhoods.
 
-myorders define NBHOOD:UPDATE:MULTI {
+::athena::orders define NBHOOD:UPDATE:MULTI {
     meta title "Update Multiple Neighborhoods"
     meta sendstates PREP
 
@@ -1119,8 +1119,6 @@ myorders define NBHOOD:UPDATE:MULTI {
     }
 
     method _validate {} {
-        my variable rdb
-
         # FIRST, prepare the parameters
         my prepare ids          -toupper -required -listof nbhood
         my prepare local        -toupper           -type   boolean

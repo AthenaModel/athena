@@ -183,7 +183,7 @@ snit::type vrel {
 #
 # Deletes existing relationship override
 
-myorders define VREL:RESTORE {
+::athena::orders define VREL:RESTORE {
     meta title "Restore Baseline Vertical Relationship"
     meta sendstates PREP
     
@@ -208,7 +208,7 @@ myorders define VREL:RESTORE {
 #
 # Updates existing override
 
-myorders define VREL:OVERRIDE {
+::athena::orders define VREL:OVERRIDE {
     meta title "Override Baseline Vertical Relationship"
     meta sendstates PREP 
 
@@ -259,7 +259,7 @@ myorders define VREL:OVERRIDE {
 #
 # Updates multiple existing relationship overrides
 
-myorders define VREL:OVERRIDE:MULTI {
+::athena::orders define VREL:OVERRIDE:MULTI {
     meta title "Override Multiple Baseline Vertical Relationships"
     meta sendstates PREP
 

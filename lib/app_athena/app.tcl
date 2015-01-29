@@ -224,7 +224,6 @@ snit::type app {
         map       init
         view      init
         bsys      init
-        athena_flunky create ::flunky
         MakeAthena ::adb
         nbhood    init
         sim       init
@@ -829,7 +828,7 @@ snit::type app {
         if {[regexp {^order/([A-Za-z0-9:]+)$} $parts(path) dummy order]} {
             set order [string toupper $order]
 
-            if {[myorders exists $order]} {
+            if {[::athena::orders exists $order]} {
                 set parms [split $parts(query) "=+"]
                 if {[catch {
                     app enter $order $parms

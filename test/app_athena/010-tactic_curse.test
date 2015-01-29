@@ -194,7 +194,7 @@ namespace eval ::athena_test::tests:: {
         id         *
         name       T*
         parent     *
-        pot        ::pot
+        pot        *::pot
         roles      *
         state      normal
     }

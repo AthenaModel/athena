@@ -220,7 +220,7 @@ tactic define FLOW "Flow Personnel" {system} {
 #
 # Updates existing FLOW tactic.
 
-myorders define TACTIC:FLOW {
+::athena::orders define TACTIC:FLOW {
     meta title      "Tactic: Flow Personnel"
     meta sendstates PREP
     meta parmlist   {tactic_id name f g mode percent personnel}

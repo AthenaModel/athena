@@ -78,7 +78,7 @@ condition define EXPR "Boolean Expression" {
 #
 # Updates the condition's parameters
 
-myorders define CONDITION:EXPR {
+::athena::orders define CONDITION:EXPR {
     meta title      "Condition: Boolean Expression"
     meta sendstates PREP
     meta parmlist   {condition_id name expression}

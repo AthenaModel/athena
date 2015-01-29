@@ -116,7 +116,7 @@ namespace eval ::athena_test::tests:: {
         msg        {my message}
         name       T*
         parent     *
-        pot        ::pot
+        pot        *::pot
         state      normal
     }
     
@@ -197,7 +197,7 @@ namespace eval ::athena_test::tests:: {
         msg        {}
         name       T*
         parent     *
-        pot        ::pot
+        pot        *::pot
         state      normal
     }
 
@@ -243,7 +243,7 @@ namespace eval ::athena_test::tests:: {
         $T1 block
     } -cleanup {
         cleanup
-    } -match glob -result {::pot::block*}
+    } -match glob -result {*::pot::block*}
     
     #-------------------------------------------------------------------
     # state
@@ -309,7 +309,7 @@ namespace eval ::athena_test::tests:: {
         parent     8
         percent    0
         personnel  0
-        pot        ::pot
+        pot        *::pot
         state      normal
         statusicon ::projectgui::icon::dash13
         typename   DEMOB
@@ -336,7 +336,7 @@ namespace eval ::athena_test::tests:: {
         parent     *
         percent    0
         personnel  0
-        pot        ::pot
+        pot        *::pot
         state      normal
         statusicon ::projectgui::icon::dash13
         typename   DEMOB

@@ -289,7 +289,7 @@ tactic define FUNDENI \
 #
 # Updates a FUNDENI tactic.
 
-myorders define TACTIC:FUNDENI {
+::athena::orders define TACTIC:FUNDENI {
     meta title      "Tactic: Fund ENI Services"
     meta sendstates PREP
     meta parmlist {tactic_id name glist mode amount percent cmode los}

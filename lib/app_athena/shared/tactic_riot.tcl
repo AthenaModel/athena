@@ -89,7 +89,7 @@ tactic define RIOT "Riot Event" {system actor} {
 #
 # Creates/Updates RIOT tactic.
 
-myorders define TACTIC:RIOT {
+::athena::orders define TACTIC:RIOT {
     meta title      "Tactic: Riot Event"
     meta sendstates PREP
     meta parmlist   {tactic_id name n coverage}

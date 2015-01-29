@@ -70,7 +70,7 @@ inject type define VREL {g a mag} {
 #
 # Creates a new VREL inject.
 
-myorders define INJECT:VREL:CREATE {
+::athena::orders define INJECT:VREL:CREATE {
     meta title "Create Inject: Vertical Relationship"
 
     meta sendstates PREP
@@ -156,7 +156,7 @@ myorders define INJECT:VREL:CREATE {
 #
 # Updates existing VREL inject.
 
-myorders define INJECT:VREL:UPDATE {
+::athena::orders define INJECT:VREL:UPDATE {
     meta title "Update Inject: Vertical Relationship"
     meta sendstates PREP 
 

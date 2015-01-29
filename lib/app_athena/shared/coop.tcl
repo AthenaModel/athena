@@ -109,7 +109,7 @@ snit::type coop {
 #
 # Updates existing cooperations
 
-myorders define COOP:UPDATE {
+::athena::orders define COOP:UPDATE {
     meta title "Update Initial Cooperation"
     meta sendstates PREP 
 
@@ -156,7 +156,7 @@ myorders define COOP:UPDATE {
 #
 # Updates multiple existing cooperations
 
-myorders define COOP:UPDATE:MULTI {
+::athena::orders define COOP:UPDATE:MULTI {
     meta title "Update Baseline Cooperation (Multi)"
     meta sendstates PREP
  

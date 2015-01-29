@@ -56,7 +56,7 @@ payload type define HREL {g mag} {
 #
 # Creates a new HREL payload.
 
-myorders define PAYLOAD:HREL:CREATE {
+::athena::orders define PAYLOAD:HREL:CREATE {
     meta title "Create Payload: Horizontal Relationship"
 
     meta sendstates PREP
@@ -96,7 +96,7 @@ myorders define PAYLOAD:HREL:CREATE {
 #
 # Updates existing HREL payload.
 
-myorders define PAYLOAD:HREL:UPDATE {
+::athena::orders define PAYLOAD:HREL:UPDATE {
     meta title "Update Payload: Horizontal Relationship"
     meta sendstates PREP 
 

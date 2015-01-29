@@ -270,7 +270,7 @@ tactic define BROADCAST "Broadcast an Info Ops Message" {actor} -onlock {
 #
 # Updates a BROADCAST tactic.
 
-myorders define TACTIC:BROADCAST {
+::athena::orders define TACTIC:BROADCAST {
     meta title      "Tactic: Broadcast IOM"
     meta sendstates PREP
     meta parmlist   {tactic_id name cap a iom cost}

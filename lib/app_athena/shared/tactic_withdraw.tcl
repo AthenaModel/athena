@@ -153,7 +153,7 @@ tactic define WITHDRAW "Withdraw Money" {actor} {
 #
 # Updates existing WITHDRAW tactic.
 
-myorders define TACTIC:WITHDRAW {
+::athena::orders define TACTIC:WITHDRAW {
     meta title      "Tactic: Withdraw Money"
     meta sendstates PREP
     meta parmlist   {tactic_id name mode amount percent}

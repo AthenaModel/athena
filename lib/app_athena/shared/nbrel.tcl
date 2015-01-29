@@ -93,7 +93,7 @@ snit::type nbrel {
 # Updates existing neighborhood relationships
 
 
-myorders define NBREL:UPDATE {
+::athena::orders define NBREL:UPDATE {
     meta title "Update Neighborhood Relationship"
     meta sendstates PREP
 
@@ -133,7 +133,7 @@ myorders define NBREL:UPDATE {
 #
 # Updates multiple existing neighborhood relationships
 
-myorders define NBREL:UPDATE:MULTI {
+::athena::orders define NBREL:UPDATE:MULTI {
     meta title "Update Multiple Neighborhood Relationships"
     meta sendstates PREP
 

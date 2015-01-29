@@ -357,7 +357,7 @@ snit::type unit {
 #
 # Moves an existing unit.
 
-myorders define UNIT:MOVE {
+::athena::orders define UNIT:MOVE {
     meta title "Move Unit"
     meta sendstates {PREP PAUSED}
 

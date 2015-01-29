@@ -63,7 +63,7 @@ oo::objdefine block {
     method GetOrderParmsFromCopySet {copyset} {
         set pdict [dict create]
 
-        foreach parm [myorders parms BLOCK:UPDATE] {
+        foreach parm [::athena::orders parms BLOCK:UPDATE] {
             if {$parm eq "block_id" || $parm eq "name"} {
                 continue
             }
@@ -1050,7 +1050,7 @@ oo::define block {
 #
 # Updates a block's own data.
 
-myorders define BLOCK:UPDATE {
+::athena::orders define BLOCK:UPDATE {
     meta title      "Update Strategy Block"
     meta sendstates PREP
     meta parmlist {
@@ -1160,7 +1160,7 @@ myorders define BLOCK:UPDATE {
 #
 # Sets a block's state to normal or disabled. 
 
-myorders define BLOCK:STATE {
+::athena::orders define BLOCK:STATE {
     meta title      "Set Strategy Block State"
     meta sendstates PREP
     meta parmlist   { block_id state }
@@ -1182,7 +1182,7 @@ myorders define BLOCK:STATE {
 # Adds a tactic of a given type to the block.  The tactic is empty, and
 # needs to be initialized by the analyst.
 
-myorders define BLOCK:TACTIC:ADD {
+::athena::orders define BLOCK:TACTIC:ADD {
     variable tactic_id  ;# Saved on first execution for redo
 
     meta title      "Add Tactic to Block"
@@ -1213,7 +1213,7 @@ myorders define BLOCK:TACTIC:ADD {
 #
 # Deletes a tactic or tactics from a block. 
 
-myorders define BLOCK:TACTIC:DELETE {
+::athena::orders define BLOCK:TACTIC:DELETE {
     meta title      "Delete Tactic(s) from Block"
     meta sendstates PREP
     meta parmlist   { ids }
@@ -1238,7 +1238,7 @@ myorders define BLOCK:TACTIC:DELETE {
 #
 # Moves a tactic within a strategy block.
 
-myorders define BLOCK:TACTIC:MOVE {
+::athena::orders define BLOCK:TACTIC:MOVE {
     meta title      "Move Tactic Within Block"
     meta sendstates PREP
     meta parmlist   { tactic_id where }
@@ -1262,7 +1262,7 @@ myorders define BLOCK:TACTIC:MOVE {
 # Adds a condition of a given type to the block.  The condition is empty, and
 # needs to be initialized by the analyst.
 
-myorders define BLOCK:CONDITION:ADD {
+::athena::orders define BLOCK:CONDITION:ADD {
     variable cond_id   ;# Saved on first execution for redo
 
     meta title      "Add Condition to Block"
@@ -1295,7 +1295,7 @@ myorders define BLOCK:CONDITION:ADD {
 #
 # The order dialog is not generally used.
 
-myorders define BLOCK:CONDITION:DELETE {
+::athena::orders define BLOCK:CONDITION:DELETE {
     meta title      "Delete Condition from Block"
     meta sendstates PREP
     meta parmlist   { ids }

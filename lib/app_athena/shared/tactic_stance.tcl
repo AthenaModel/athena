@@ -224,7 +224,7 @@ tactic define STANCE "Adopt a Stance" {actor} -onlock {
 #
 # Updates a STANCE tactic.
 
-myorders define TACTIC:STANCE {
+::athena::orders define TACTIC:STANCE {
     meta title      "Tactic: Force Group Stance"
     meta sendstates PREP
     meta parmlist   {tactic_id name f mode glist nlist drel}

@@ -363,9 +363,7 @@ snit::type civgroup {
 # Orders: CIVGROUP:*
 
 # CIVGROUP:CREATE
-myorders define CIVGROUP:CREATE {
-    superclass ::athena_order
-
+::athena::orders define CIVGROUP:CREATE {
     meta title      "Create Civilian Group"
     meta sendstates {PREP}
     meta parmlist   {
@@ -484,7 +482,7 @@ myorders define CIVGROUP:CREATE {
 }
 
 # CIVGROUP:DELETE
-myorders define CIVGROUP:DELETE {
+::athena::orders define CIVGROUP:DELETE {
     meta title      "Delete Civilian Group"
     meta sendstates PREP
 
@@ -540,7 +538,7 @@ myorders define CIVGROUP:DELETE {
 }
 
 # CIVGROUP:UPDATE
-myorders define CIVGROUP:UPDATE {
+::athena::orders define CIVGROUP:UPDATE {
     meta title      "Update Civilian Group"
     meta sendstates PREP
     meta parmlist   {

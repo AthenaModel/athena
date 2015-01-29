@@ -2,25 +2,37 @@
 # TITLE:
 #    athena_flunky.tcl
 #
+# PROJECT:
+#   athena - Athena Regional Stability Simulation
+#
 # AUTHOR:
 #    Will Duquette
 #
 # DESCRIPTION:
-#    app_athena(n): Athena Order Flunky Adaptor
+#    athena(n): Athena Order Flunky Adaptor
 #
 #    This class subclasses and adapts ::marsutil::order_flunky, providing
 #    additional features for use by Athena (e.g., RDB transactions and
 #    monitoring)
+#
+# TBD:
+#    * Get ::rdb access from athenadb in some way.
+#    * Pass $adb to orders on make, not ::rdb (some orders will need to
+#      be updated).
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
 # Athena Order Flunky Adaptor
 
-oo::class create athena_flunky {
+oo::class create ::athena::athena_flunky {
     superclass ::marsutil::order_flunky
 
     #-------------------------------------------------------------------
     # Instance Variables
+
+    # adb - The athenadb(n) handle
+
+    variable adb
 
     # transMode - if "transaction", orders are executed within an RDB 
     # transaction; if "script", they are not.  The default is 
@@ -31,8 +43,14 @@ oo::class create athena_flunky {
     #-------------------------------------------------------------------
     # Constructor
 
-    constructor {} {
-        next ::myorders
+    # constructor adb_
+    #
+    # adb_   - The athenadb(n) instance of which this is a component.
+
+    constructor {adb_} {
+        next ::athena::orders
+
+        set adb       $adb_
         set transMode transaction
     }
     
@@ -65,7 +83,7 @@ oo::class create athena_flunky {
     # Ensures that the order is created with the RDB name.
 
     method make {name args} {
-        next $name ::rdb {*}$args
+        next $name $adb {*}$args
     }
 
     # execute mode order

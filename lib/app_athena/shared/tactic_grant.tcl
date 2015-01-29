@@ -133,7 +133,7 @@ tactic define GRANT "Grant Access to CAP" {actor} -onlock {
 #
 # Updates existing GRANT tactic.
 
-myorders define TACTIC:GRANT {
+::athena::orders define TACTIC:GRANT {
     meta title      "Tactic: Grant Access to CAP"
     meta sendstates PREP
     meta parmlist   {tactic_id name klist alist}

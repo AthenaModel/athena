@@ -116,7 +116,7 @@ tactic define EXECUTIVE "Executive Command" {actor system} -onlock {
 #
 # Updates the tactic's parameters
 
-myorders define TACTIC:EXECUTIVE {
+::athena::orders define TACTIC:EXECUTIVE {
     meta title      "Tactic: Executive Command"
     meta sendstates PREP
     meta parmlist   {tactic_id name command}

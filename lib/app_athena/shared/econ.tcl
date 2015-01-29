@@ -1804,7 +1804,7 @@ snit::type econ {
 # Updates historical values from rebased economic inputs including
 # not using historical values at all.
 
-myorders define ECON:UPDATE:HIST {
+::athena::orders define ECON:UPDATE:HIST {
     meta title "Update Rebased Economic Inputs"
 
     meta sendstates {PREP}
@@ -1862,7 +1862,7 @@ myorders define ECON:UPDATE:HIST {
 #
 # Updates a single cell in the Social Accounting Matrix (SAM)
 
-myorders define ECON:SAM:UPDATE {
+::athena::orders define ECON:SAM:UPDATE {
     meta title "Update SAM Cell Value"
     meta sendstates {PREP} 
 
@@ -1891,7 +1891,7 @@ myorders define ECON:SAM:UPDATE {
 #
 # Updates a cell but with less restrictive validation
 
-myorders define ECON:SAM:GLOBAL {
+::athena::orders define ECON:SAM:GLOBAL {
     meta title "Update SAM Global Value"
     meta sendstates {PREP}
 
@@ -1920,7 +1920,7 @@ myorders define ECON:SAM:GLOBAL {
 #
 # Updates a single cell in the CGE
 
-myorders define ECON:CGE:UPDATE {
+::athena::orders define ECON:CGE:UPDATE {
     meta title "Update CGE Cell Value"
     meta sendstates {PAUSED TACTIC}
 
@@ -1949,7 +1949,7 @@ myorders define ECON:CGE:UPDATE {
 #
 # Updates the change rate for remittances
 
-myorders define ECON:UPDATE:REMRATE {
+::athena::orders define ECON:UPDATE:REMRATE {
     meta title "Update Remittance Change Rate"
     meta sendstates {PAUSED TACTIC}
 

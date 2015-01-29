@@ -153,8 +153,9 @@ snit::type ::athena::athenadb {
     #-------------------------------------------------------------------
     # Components
     
-    component rdb                ;# The scenario's sqldatabase component
-    component pot -public yes    ;# beanpot(n)
+    component rdb                 ;# The scenario's sqldatabase component
+    component pot    -public yes  ;# beanpot(n)
+    component flunky -public yes  ;# athena_flunky(n)
 
     #-------------------------------------------------------------------
     # Options
@@ -208,13 +209,17 @@ snit::type ::athena::athenadb {
 
         # NEXT, create the RDB and other components.
         $self CreateRDB
-        install pot using beanpot ${selfns}::pot -rdb $rdb
+        install pot    using \
+            beanpot ${selfns}::pot -rdb $rdb
+        install flunky using \
+            athena_flunky create ${selfns}::flunky $self
 
         # NEXT, Make these components globally available.
         # TBD: These will go away once the transition to library code
         # is complete.
-        interp alias {} ::rdb {} $rdb
-        interp alias {} ::pot {} $pot
+        interp alias {} ::rdb    {} $rdb
+        interp alias {} ::pot    {} $pot
+        interp alias {} ::flunky {} $flunky
 
         # NEXT, either load the named file or create an empty database.
         if {$filename ne ""} {
@@ -389,6 +394,7 @@ snit::type ::athena::athenadb {
     # RDB
 
     delegate method eval            to rdb as eval
+    delegate method exists          to rdb as exists
     delegate method onecolumn       to rdb as onecolumn
     delegate method query           to rdb as query
     delegate method {rdb safeeval}  to rdb as safeeval

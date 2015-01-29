@@ -89,7 +89,7 @@ tactic define ACCIDENT "Accident Event" {system actor} {
 #
 # Creates/Updates ACCIDENT tactic.
 
-myorders define TACTIC:ACCIDENT {
+::athena::orders define TACTIC:ACCIDENT {
     meta title      "Tactic: Accident Event"
     meta sendstates PREP
     meta parmlist   {tactic_id name n coverage}

@@ -61,7 +61,7 @@ inject type define SAT {g c mag} {
 #
 # Creates a new SAT inject.
 
-myorders define INJECT:SAT:CREATE {
+::athena::orders define INJECT:SAT:CREATE {
     meta title "Create Inject: Satisfaction"
 
     meta sendstates PREP
@@ -128,7 +128,7 @@ myorders define INJECT:SAT:CREATE {
 #
 # Updates existing SAT inject.
 
-myorders define INJECT:SAT:UPDATE {
+::athena::orders define INJECT:SAT:UPDATE {
     meta title "Update Inject: Satisfaction"
     meta sendstates PREP 
 

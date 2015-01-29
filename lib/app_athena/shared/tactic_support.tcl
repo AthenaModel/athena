@@ -146,7 +146,7 @@ tactic define SUPPORT "Support Actor" {actor} -onlock {
 #
 # Updates existing SUPPORT tactic.
 
-myorders define TACTIC:SUPPORT {
+::athena::orders define TACTIC:SUPPORT {
     meta title      "Tactic: Support Actor"
     meta sendstates PREP
     meta parmlist   {tactic_id name a nlist}

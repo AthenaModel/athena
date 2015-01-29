@@ -65,7 +65,7 @@ tactic define SIGEVENT "Log Significant Event" {system actor} {
 #
 # Updates the tactic's parameters
 
-myorders define TACTIC:SIGEVENT {
+::athena::orders define TACTIC:SIGEVENT {
     meta title      "Tactic: Log Significant Event"
     meta sendstates PREP
     meta parmlist   {tactic_id name msg}

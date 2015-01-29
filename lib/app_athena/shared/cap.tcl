@@ -517,7 +517,7 @@ snit::type cap {
 #
 # Creates new CAPs.
 
-myorders define CAP:CREATE {
+::athena::orders define CAP:CREATE {
     meta title "Create Comm. Asset Package"
     
     meta sendstates PREP 
@@ -580,7 +580,7 @@ myorders define CAP:CREATE {
 
 # CAP:DELETE
 
-myorders define CAP:DELETE {
+::athena::orders define CAP:DELETE {
     meta title "Delete Comm. Asset Package"
     meta sendstates PREP
 
@@ -631,7 +631,7 @@ myorders define CAP:DELETE {
 #
 # Updates existing CAPs.
 
-myorders define CAP:UPDATE {
+::athena::orders define CAP:UPDATE {
     meta title "Update Comm. Asset Package"
     meta sendstates PREP 
 
@@ -683,7 +683,7 @@ myorders define CAP:UPDATE {
 #
 # Updates multiple CAPs.
 
-myorders define CAP:UPDATE:MULTI {
+::athena::orders define CAP:UPDATE:MULTI {
     meta title "Update Multiple CAPs"
     meta sendstates PREP
 
@@ -736,7 +736,7 @@ myorders define CAP:UPDATE:MULTI {
 #
 # Updates the capacity of an existing CAP.
 
-myorders define CAP:CAPACITY {
+::athena::orders define CAP:CAPACITY {
     meta title "Set CAP Capacity"
     meta sendstates {PREP PAUSED TACTIC}
 
@@ -777,7 +777,7 @@ myorders define CAP:CAPACITY {
 #
 # Updates capacity for multiple CAPs.
 
-myorders define CAP:CAPACITY:MULTI {
+::athena::orders define CAP:CAPACITY:MULTI {
     meta title "Set Multiple CAP Capacities"
     meta sendstates {PREP PAUSED TACTIC}
 
@@ -820,7 +820,7 @@ myorders define CAP:CAPACITY:MULTI {
 #
 # Sets nbcov for k,n
 
-myorders define CAP:NBCOV:SET {
+::athena::orders define CAP:NBCOV:SET {
     meta title "Set CAP Neighborhood Coverage"
     meta sendstates {PREP PAUSED TACTIC}
 
@@ -862,7 +862,7 @@ myorders define CAP:NBCOV:SET {
 #
 # Updates nbcov for multiple k,n
 
-myorders define CAP:NBCOV:SET:MULTI {
+::athena::orders define CAP:NBCOV:SET:MULTI {
     meta title "Set Multiple CAP Neighborhood Coverages"
     meta sendstates {PREP PAUSED TACTIC}
 
@@ -909,7 +909,7 @@ myorders define CAP:NBCOV:SET:MULTI {
 #
 # Sets pen for k,n
 
-myorders define CAP:PEN:SET {
+::athena::orders define CAP:PEN:SET {
     meta title "Set CAP Group Penetration"
     meta sendstates {PREP PAUSED TACTIC}
 
@@ -951,7 +951,7 @@ myorders define CAP:PEN:SET {
 #
 # Updates pen for multiple k,g
 
-myorders define CAP:PEN:SET:MULTI {
+::athena::orders define CAP:PEN:SET:MULTI {
     meta title "Set Multiple CAP Group Penetrations"
     meta sendstates {PREP PAUSED TACTIC}
 

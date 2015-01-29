@@ -164,7 +164,7 @@ tactic define BUILD "Build Infrastructure" {actor} {
 #
 # Updates existing BUILD tactic.
 
-myorders define TACTIC:BUILD {
+::athena::orders define TACTIC:BUILD {
     meta title      "Tactic: Build Infrastructure"
     meta sendstates PREP
     meta parmlist   {tactic_id name n mode num amount}

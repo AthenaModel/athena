@@ -174,7 +174,7 @@ tactic define FUND "Fund Another Actor" {actor} {
 #
 # Updates existing FUND tactic.
 
-myorders define TACTIC:FUND {
+::athena::orders define TACTIC:FUND {
     meta title      "Tactic: Fund Actor"
     meta sendstates PREP
     meta parmlist {tactic_id name a mode amount percent}

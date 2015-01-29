@@ -175,7 +175,7 @@ tactic define SERVICE "Update Level of Service" {system actor} -onlock {
 #
 # Creates/Updates SERVICE tactic.
 
-myorders define TACTIC:SERVICE {
+::athena::orders define TACTIC:SERVICE {
     meta title      "Tactic: Update Level of Service"
     meta sendstates PREP
     meta parmlist   {tactic_id name nlist s mode los deltap}

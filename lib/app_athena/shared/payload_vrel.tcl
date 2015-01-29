@@ -56,7 +56,7 @@ payload type define VREL {a mag} {
 #
 # Creates a new VREL payload.
 
-myorders define PAYLOAD:VREL:CREATE {
+::athena::orders define PAYLOAD:VREL:CREATE {
     meta title "Create Payload: Vertical Relationship"
 
     meta sendstates PREP
@@ -96,7 +96,7 @@ myorders define PAYLOAD:VREL:CREATE {
 #
 # Updates existing VREL payload.
 
-myorders define PAYLOAD:VREL:UPDATE {
+::athena::orders define PAYLOAD:VREL:UPDATE {
     meta title "Update Payload: Vertical Relationship"
     meta sendstates PREP 
 

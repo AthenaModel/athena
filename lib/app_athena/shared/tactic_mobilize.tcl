@@ -193,7 +193,7 @@ tactic define MOBILIZE "Mobilize Personnel" {actor} {
 # has to check that anyway, it's OK; it simply means that the pasted
 # tactic's state will be "invalid" to begin with.
 
-myorders define TACTIC:MOBILIZE {
+::athena::orders define TACTIC:MOBILIZE {
     meta title      "Tactic: Mobilize Personnel"
     meta sendstates PREP
     meta parmlist {tactic_id name g mode personnel percent}

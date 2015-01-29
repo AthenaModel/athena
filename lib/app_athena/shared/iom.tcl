@@ -431,7 +431,7 @@ snit::type iom {
 #
 # Creates a new IOM
 
-myorders define IOM:CREATE {
+::athena::orders define IOM:CREATE {
     meta title "Create Info Ops Message"
     
     meta sendstates PREP
@@ -471,7 +471,7 @@ myorders define IOM:CREATE {
 #
 # Deletes an IOM and its payloads.
 
-myorders define IOM:DELETE {
+::athena::orders define IOM:DELETE {
     meta title "Delete Info Ops Message"
     meta sendstates PREP
 
@@ -521,7 +521,7 @@ myorders define IOM:DELETE {
 #
 # Updates an existing IOM.
 
-myorders define IOM:UPDATE {
+::athena::orders define IOM:UPDATE {
     meta title "Update Info Ops Message"
     meta sendstates PREP
 
@@ -557,7 +557,7 @@ myorders define IOM:UPDATE {
 # Sets a iom's state.  Note that this order isn't intended
 # for use with a dialog.
 
-myorders define IOM:STATE {
+::athena::orders define IOM:STATE {
     meta title "Set IOM State"
 
     meta sendstates PREP 

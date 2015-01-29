@@ -653,7 +653,7 @@ snit::type sim {
 #
 # Sets the calendar week corresponding to t=0.
 
-myorders define SIM:STARTDATE {
+::athena::orders define SIM:STARTDATE {
     meta title      "Set Start Date"
     meta sendstates PREP
     meta parmlist   {startdate}
@@ -676,7 +676,7 @@ myorders define SIM:STARTDATE {
 #
 # Sets the integer time tick at which the simulation will be locked.
 
-myorders define SIM:STARTTICK {
+::athena::orders define SIM:STARTTICK {
     meta title      "Set Start Tick"
     meta sendstates PREP
     meta parmlist   {starttick}
@@ -700,7 +700,7 @@ myorders define SIM:STARTTICK {
 #
 # Locks scenario preparation and transitions from PREP to PAUSED.
 
-myorders define SIM:LOCK {
+::athena::orders define SIM:LOCK {
     meta title      "Lock Scenario Preparation"
     meta sendstates PREP
     meta monitor    off
@@ -773,7 +773,7 @@ myorders define SIM:LOCK {
 # Unlocks the scenario, returning to the PREP state as it was before any
 # simulation was done.
 
-myorders define SIM:UNLOCK {
+::athena::orders define SIM:UNLOCK {
     meta title      "Unlock Scenario Preparation"
     meta sendstates PAUSED
     meta monitor    off
@@ -793,7 +793,7 @@ myorders define SIM:UNLOCK {
 # Unlocks the scenario and returns to the PREP state, first saving the
 # current simulation state as a new base scenario.
 
-myorders define SIM:REBASE {
+::athena::orders define SIM:REBASE {
     meta title      "Rebase Simulation"
     meta sendstates PAUSED
     meta monitor    off
@@ -837,7 +837,7 @@ myorders define SIM:REBASE {
 #
 # Starts the simulation going.
 
-myorders define SIM:RUN {
+::athena::orders define SIM:RUN {
     meta title      "Run Simulation"
     meta sendstates PAUSED
     meta monitor    off
@@ -892,7 +892,7 @@ myorders define SIM:RUN {
 # Pauses the simulation.  It's an error if the simulation is not
 # running.
 
-myorders define SIM:PAUSE {
+::athena::orders define SIM:PAUSE {
     meta title      "Pause Simulation"
     meta sendstates {RUNNING TACTIC}
     meta parmlist   {}

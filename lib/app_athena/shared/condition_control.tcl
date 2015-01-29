@@ -116,7 +116,7 @@ condition define CONTROL "Control of Neighborhoods" {
 #
 # Updates the condition's parameters
 
-myorders define CONDITION:CONTROL {
+::athena::orders define CONDITION:CONTROL {
     meta title      "Condition: Control of Neighborhoods"
     meta sendstates PREP
     meta parmlist {

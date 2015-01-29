@@ -70,7 +70,7 @@ inject type define HREL {f g mag} {
 #
 # Creates a new HREL inject.
 
-myorders define INJECT:HREL:CREATE {
+::athena::orders define INJECT:HREL:CREATE {
     meta title "Create Inject: Horizontal Relationship"
 
     meta sendstates PREP
@@ -156,7 +156,7 @@ myorders define INJECT:HREL:CREATE {
 #
 # Updates existing HREL inject.
 
-myorders define INJECT:HREL:UPDATE {
+::athena::orders define INJECT:HREL:UPDATE {
     meta title "Update Inject: Horizontal Relationship"
     meta sendstates PREP 
 

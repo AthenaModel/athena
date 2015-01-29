@@ -241,7 +241,7 @@ namespace eval ::athena_test::tests:: {
         name       B*
         parent     *
         intent     {New intent}
-        pot        ::pot
+        pot        *::pot
         tactics    {}
         exectime   {}
     }
@@ -374,7 +374,7 @@ namespace eval ::athena_test::tests:: {
         $B1 tactics
     } -cleanup {
         cleanup
-    } -match glob -result {::pot::SIGEVENT*}
+    } -match glob -result {*::pot::SIGEVENT*}
 
     test BLOCK:TACTIC:ADD-2.2 {notifier event} -setup {
         setup
@@ -437,7 +437,7 @@ namespace eval ::athena_test::tests:: {
         $B1 tactics
     } -cleanup {
         cleanup
-    } -match glob -result {::pot::DEPLOY*}
+    } -match glob -result {*::pot::DEPLOY*}
 
     test BLOCK:TACTIC:DELETE-2.2 {two deleted} -setup {
         btd_setup
@@ -467,7 +467,7 @@ namespace eval ::athena_test::tests:: {
         $B1 tactics
     } -cleanup {
         cleanup
-    } -match glob -result {::pot::SIGEVENT* ::pot::DEPLOY*}
+    } -match glob -result {*::pot::SIGEVENT* *::pot::DEPLOY*}
  
     test BLOCK:TACTIC:DELETE-2.5 {undo notifier event} -setup {
         btd_setup
@@ -601,7 +601,7 @@ namespace eval ::athena_test::tests:: {
         $B1 conditions
     } -cleanup {
         cleanup
-    } -match glob -result {::pot::EXPR*}
+    } -match glob -result {*::pot::EXPR*}
 
     test BLOCK:CONDITION:ADD-2.2 {notifier event} -setup {
         setup
@@ -664,7 +664,7 @@ namespace eval ::athena_test::tests:: {
         $B1 conditions
     } -cleanup {
         cleanup
-    } -match glob -result {::pot::COMPARE*}
+    } -match glob -result {*::pot::COMPARE*}
 
     test BLOCK:CONDITION:DELETE-2.2 {two deleted} -setup {
         bcd_setup
@@ -697,7 +697,7 @@ namespace eval ::athena_test::tests:: {
         $B1 conditions
     } -cleanup {
         cleanup
-    } -match glob -result {::pot::EXPR* ::pot::COMPARE*}
+    } -match glob -result {*::pot::EXPR* *::pot::COMPARE*}
 
     test BLOCK:CONDITION:DELETE-2.5 {undo notifier event} -setup {
         bcd_setup

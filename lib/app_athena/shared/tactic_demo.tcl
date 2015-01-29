@@ -95,7 +95,7 @@ tactic define DEMO "Demonstration Event" {system actor} {
 #
 # Creates/Updates DEMO tactic.
 
-myorders define TACTIC:DEMO {
+::athena::orders define TACTIC:DEMO {
     meta title      "Tactic: Demo Event"
     meta sendstates PREP
     meta parmlist   {tactic_id name n g coverage}

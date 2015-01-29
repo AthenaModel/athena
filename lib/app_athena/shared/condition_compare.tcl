@@ -74,7 +74,7 @@ condition define COMPARE "Compare Numbers" {
 #
 # Updates the condition's parameters
 
-myorders define CONDITION:COMPARE {
+::athena::orders define CONDITION:COMPARE {
     meta title      "Condition: Compare Numbers"
     meta sendstates PREP
     meta parmlist   {condition_id name x comp y}

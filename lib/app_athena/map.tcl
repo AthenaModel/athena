@@ -418,7 +418,7 @@ snit::type map {
 #
 # Imports a map from a file into the scenario
 
-myorders define MAP:IMPORT:FILE {
+::athena::orders define MAP:IMPORT:FILE {
     meta title "Import Map From File"
     meta sendstates {PREP PAUSED}
 
@@ -459,7 +459,7 @@ myorders define MAP:IMPORT:FILE {
 #
 # Imports map data into the scenario
 
-myorders define MAP:IMPORT:DATA {
+::athena::orders define MAP:IMPORT:DATA {
     meta title "Import Map As Data"
     meta sendstates {PREP}
 

@@ -41,5 +41,10 @@ namespace eval ::athena:: {
 #-----------------------------------------------------------------------
 # Modules
 
-source [file join $::athena::library athena.tcl  ]
-source [file join $::athena::library athenadb.tcl]
+# Used to define and query orders.
+::marsutil::order_set create ::athena::orders ::athena::athena_order 
+
+source [file join $::athena::library athena.tcl       ]
+source [file join $::athena::library athenadb.tcl     ]
+source [file join $::athena::library athena_order.tcl ]
+source [file join $::athena::library athena_flunky.tcl]

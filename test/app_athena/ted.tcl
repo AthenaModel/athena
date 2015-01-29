@@ -1003,7 +1003,7 @@ snit::type ted {
 
         set pdict [dict create]
 
-        foreach parm [myorders parms $order] {
+        foreach parm [::athena::orders parms $order] {
             dict set pdict $parm [dict get $tdict $parm]
         }
 
@@ -1027,7 +1027,7 @@ snit::type ted {
 
         set pdict [dict create]
 
-        foreach parm [myorders parms $order] {
+        foreach parm [::athena::orders parms $order] {
             dict set pdict $parm [dict get $cdict $parm]
         }
 

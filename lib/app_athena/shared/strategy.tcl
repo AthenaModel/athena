@@ -710,7 +710,7 @@ oo::define strategy {
 #
 # Adds a new strategy block to an agent's strategy.
 
-myorders define STRATEGY:BLOCK:ADD {
+::athena::orders define STRATEGY:BLOCK:ADD {
     variable block_id  ;# Saved on first execution for redo
 
     meta title "Add Block to Strategy"
@@ -750,7 +750,7 @@ myorders define STRATEGY:BLOCK:ADD {
 #
 # Deletes a strategy block from an agent's strategy.
 
-myorders define STRATEGY:BLOCK:DELETE {
+::athena::orders define STRATEGY:BLOCK:DELETE {
     meta title "Delete Block from Strategy"
 
     meta sendstates PREP
@@ -783,7 +783,7 @@ myorders define STRATEGY:BLOCK:DELETE {
 #
 # Moves a strategy block in an agent's strategy.
 
-myorders define STRATEGY:BLOCK:MOVE {
+::athena::orders define STRATEGY:BLOCK:MOVE {
     meta title "Move Block in Strategy"
 
     meta sendstates PREP

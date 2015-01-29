@@ -175,7 +175,7 @@ snit::type orggroup {
 #
 # Creates new organization groups.
 
-myorders define ORGGROUP:CREATE {
+::athena::orders define ORGGROUP:CREATE {
     meta title "Create Organization Group"
     meta sendstates PREP
 
@@ -243,7 +243,7 @@ myorders define ORGGROUP:CREATE {
 
 # ORGGROUP:DELETE
 
-myorders define ORGGROUP:DELETE {
+::athena::orders define ORGGROUP:DELETE {
     meta title "Delete Organization Group"
     meta sendstates PREP
 
@@ -293,7 +293,7 @@ myorders define ORGGROUP:DELETE {
 #
 # Updates existing groups.
 
-myorders define ORGGROUP:UPDATE {
+::athena::orders define ORGGROUP:UPDATE {
     meta title "Update Organization Group"
     meta sendstates PREP
 
@@ -358,7 +358,7 @@ myorders define ORGGROUP:UPDATE {
 #
 # Updates multiple groups.
 
-myorders define ORGGROUP:UPDATE:MULTI {
+::athena::orders define ORGGROUP:UPDATE:MULTI {
     meta title "Update Multiple Organization Groups"
     meta sendstates PREP
     meta parmlist {

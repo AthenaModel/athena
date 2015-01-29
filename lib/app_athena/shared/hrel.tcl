@@ -187,7 +187,7 @@ snit::type hrel {
 #
 # Deletes existing relationship override
 
-myorders define HREL:RESTORE {
+::athena::orders define HREL:RESTORE {
     meta title "Restore Baseline Horizontal Relationship"
     meta sendstates PREP
 
@@ -214,7 +214,7 @@ myorders define HREL:RESTORE {
 #
 # Updates existing override
 
-myorders define HREL:OVERRIDE {
+::athena::orders define HREL:OVERRIDE {
     meta title "Override Baseline Horizontal Relationship"
     meta sendstates PREP
 
@@ -266,7 +266,7 @@ myorders define HREL:OVERRIDE {
 #
 # Updates multiple existing relationship overrides
 
-myorders define HREL:OVERRIDE:MULTI {
+::athena::orders define HREL:OVERRIDE:MULTI {
     meta title "Override Multiple Baseline Horizontal Relationships"
     meta sendstates PREP 
     

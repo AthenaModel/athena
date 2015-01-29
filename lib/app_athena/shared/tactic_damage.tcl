@@ -120,7 +120,7 @@ tactic define DAMAGE "Damage Infrastructure" {system} {
 #
 # Updates existing DAMAGE tactic.
 
-myorders define TACTIC:DAMAGE {
+::athena::orders define TACTIC:DAMAGE {
     meta title      "Tactic: Damage Infrastructure"
     meta sendstates PREP
     meta parmlist   {tactic_id name a n percent}

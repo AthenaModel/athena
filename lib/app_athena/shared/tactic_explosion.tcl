@@ -89,7 +89,7 @@ tactic define EXPLOSION "Explosion Event" {system actor} {
 #
 # Creates/Updates EXPLOSION tactic.
 
-myorders define TACTIC:EXPLOSION {
+::athena::orders define TACTIC:EXPLOSION {
     meta title      "Tactic: Explosion Event"
     meta sendstates PREP
     meta parmlist {tactic_id name n coverage}

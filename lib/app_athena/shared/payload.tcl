@@ -516,7 +516,7 @@ snit::type payload {
 #
 # Deletes an existing payload, of whatever type.
 
-myorders define PAYLOAD:DELETE {
+::athena::orders define PAYLOAD:DELETE {
     # This order dialog isn't usually used.
 
     meta title "Delete Payload"
@@ -544,7 +544,7 @@ myorders define PAYLOAD:DELETE {
 # Sets a payload's state.  Note that this order isn't intended
 # for use with a dialog.
 
-myorders define PAYLOAD:STATE {
+::athena::orders define PAYLOAD:STATE {
     meta title "Set Payload State"
 
     meta sendstates PREP

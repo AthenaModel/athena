@@ -565,7 +565,7 @@ oo::define ::wintel::simevent {
 # Sets a event's state to normal or disabled.  The order dialog
 # is not generally used.
 
-myorders define EVENT:STATE {
+::wintel::orders define EVENT:STATE {
     meta title      "Set Event State"
     meta sendstates PREP
     meta parmlist   {event_id state}

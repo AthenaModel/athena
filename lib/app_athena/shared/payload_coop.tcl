@@ -56,7 +56,7 @@ payload type define COOP {g mag} {
 #
 # Creates a new COOP payload.
 
-myorders define PAYLOAD:COOP:CREATE {
+::athena::orders define PAYLOAD:COOP:CREATE {
     meta title "Create Payload: Cooperation"
 
     meta sendstates PREP
@@ -95,7 +95,7 @@ myorders define PAYLOAD:COOP:CREATE {
 #
 # Updates existing COOP payload.
 
-myorders define PAYLOAD:COOP:UPDATE {
+::athena::orders define PAYLOAD:COOP:UPDATE {
     meta title "Update Payload: Cooperation"
     meta sendstates PREP 
 

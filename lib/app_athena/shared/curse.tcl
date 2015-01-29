@@ -523,7 +523,7 @@ snit::type curse {
 #
 # Creates a new CURSE
 
-myorders define CURSE:CREATE {
+::athena::orders define CURSE:CREATE {
     meta title "Create CURSE"
     
     meta sendstates PREP
@@ -584,7 +584,7 @@ myorders define CURSE:CREATE {
 #
 # Deletes a CURSE and its inputs.
 
-myorders define CURSE:DELETE {
+::athena::orders define CURSE:DELETE {
     meta title "Delete CURSE"
     meta sendstates PREP
 
@@ -633,7 +633,7 @@ myorders define CURSE:DELETE {
 #
 # Updates an existing CURSE.
 
-myorders define CURSE:UPDATE {
+::athena::orders define CURSE:UPDATE {
     meta title "Update CURSE"
     meta sendstates PREP
 
@@ -689,7 +689,7 @@ myorders define CURSE:UPDATE {
 # Sets a CURSE's state.  Note that this order isn't intended
 # for use with a dialog.
 
-myorders define CURSE:STATE {
+::athena::orders define CURSE:STATE {
     meta title "Set CURSE State"
 
     meta sendstates PREP 

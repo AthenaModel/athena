@@ -114,7 +114,7 @@ namespace eval ::athena_test::tests:: {
         once       1
         onlock     0
         parent     3
-        pot        ::pot
+        pot        *::pot
         state      normal
         t1         10
         t2         {}
@@ -185,7 +185,7 @@ namespace eval ::athena_test::tests:: {
         once       0
         onlock     0
         parent     1
-        pot        ::pot
+        pot        *::pot
         state      normal
         t1         {}
         t2         {}
@@ -212,7 +212,7 @@ namespace eval ::athena_test::tests:: {
         once       0
         onlock     0
         parent     {}
-        pot        ::pot
+        pot        *::pot
         state      normal
         t1         {}
         t2         {}
@@ -277,7 +277,7 @@ namespace eval ::athena_test::tests:: {
         once            0
         onlock          0
         parent          *
-        pot             ::pot
+        pot             *::pot
         pretty_exectime -
         pretty_once     No
         pretty_onlock   No
@@ -311,7 +311,7 @@ namespace eval ::athena_test::tests:: {
         once            0
         onlock          0
         parent          *
-        pot             ::pot
+        pot             *::pot
         pretty_exectime 2012W06
         pretty_once     No
         pretty_onlock   No
@@ -381,7 +381,7 @@ namespace eval ::athena_test::tests:: {
         name       B*
         parent     1
         intent     {}
-        pot        ::pot
+        pot        *::pot
         tactics    {}
         exectime   {}
     }
@@ -396,7 +396,7 @@ namespace eval ::athena_test::tests:: {
         $B1 tactics
     } -cleanup {
         cleanup
-    } -match glob -result {::pot::SIGEVENT*}
+    } -match glob -result {*::pot::SIGEVENT*}
 
     test addtactic-1.2 {can be undone} -setup {
         setup
@@ -515,7 +515,7 @@ namespace eval ::athena_test::tests:: {
         $B1 conditions
     } -cleanup {
         cleanup
-    } -match glob -result {::pot::EXPR*}
+    } -match glob -result {*::pot::EXPR*}
 
     test addcondition-1.2 {can be undone} -setup {
         setup
@@ -651,7 +651,7 @@ namespace eval ::athena_test::tests:: {
         $B1 check
     } -cleanup {
         cleanup
-    } -match glob -result {tactics {*EXECUTIVE* {command *} ::pot::EXECUTIVE* {command *}}}
+    } -match glob -result {tactics {*EXECUTIVE* {command *} *::pot::EXECUTIVE* {command *}}}
 
     #-------------------------------------------------------------------
     # timestring

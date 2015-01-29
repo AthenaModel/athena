@@ -466,7 +466,7 @@ snit::type bsys {
 # Updates playbox-wide parameters
 
 
-myorders define BSYS:PLAYBOX:UPDATE {
+::athena::orders define BSYS:PLAYBOX:UPDATE {
     meta title "Update Playbox-wide Belief System Parameters"
 
     meta sendstates PREP
@@ -496,7 +496,7 @@ myorders define BSYS:PLAYBOX:UPDATE {
 # Adds a new belief system with default settings.  Returns new
 # system ID.
 
-myorders define BSYS:SYSTEM:ADD {
+::athena::orders define BSYS:SYSTEM:ADD {
     meta title "Add New Belief System"
 
     meta sendstates PREP
@@ -538,7 +538,7 @@ myorders define BSYS:SYSTEM:ADD {
 #
 # Updates system parameters
 
-myorders define BSYS:SYSTEM:UPDATE {
+::athena::orders define BSYS:SYSTEM:UPDATE {
     meta title "Update Belief System Metadata"
 
     meta sendstates PREP
@@ -587,7 +587,7 @@ myorders define BSYS:SYSTEM:UPDATE {
 #
 # Deletes a belief system.
 
-myorders define BSYS:SYSTEM:DELETE {
+::athena::orders define BSYS:SYSTEM:DELETE {
     meta title "Delete Belief System"
     meta sendstates PREP
 
@@ -668,7 +668,7 @@ myorders define BSYS:SYSTEM:DELETE {
 # Adds a new topic with default settings.  Returns new
 # topic's ID.
 
-myorders define BSYS:TOPIC:ADD {
+::athena::orders define BSYS:TOPIC:ADD {
     meta title "Add New Belief Topic"
 
     meta sendstates PREP
@@ -709,7 +709,7 @@ myorders define BSYS:TOPIC:ADD {
 #
 # Updates topic metadata
 
-myorders define BSYS:TOPIC:UPDATE {
+::athena::orders define BSYS:TOPIC:UPDATE {
     meta title "Update Topic Metadata"
 
     meta sendstates PREP
@@ -755,7 +755,7 @@ myorders define BSYS:TOPIC:UPDATE {
 #
 # Deletes a belief topic.
 
-myorders define BSYS:TOPIC:DELETE {
+::athena::orders define BSYS:TOPIC:DELETE {
     meta title "Delete Belief Topic"
     meta sendstates PREP
 
@@ -835,7 +835,7 @@ myorders define BSYS:TOPIC:DELETE {
 #
 # Updates an existing belief.
 
-myorders define BSYS:BELIEF:UPDATE {
+::athena::orders define BSYS:BELIEF:UPDATE {
     meta title "Update Belief"
     meta sendstates PREP
 

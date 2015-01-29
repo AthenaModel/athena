@@ -235,7 +235,7 @@ tactic define CURSE "Cause a CURSE" {system} {
 #
 # Creates/Updates CURSE tactic.
 
-myorders define TACTIC:CURSE {
+::athena::orders define TACTIC:CURSE {
     meta title      "Tactic: CURSE"
     meta sendstates PREP
     meta parmlist   {tactic_id name curse roles}

@@ -437,7 +437,7 @@ tactic define ASSIGN "Assign Personnel" {actor} -onlock {
 #
 # Updates existing ASSIGN tactic.
 
-myorders define TACTIC:ASSIGN {
+::athena::orders define TACTIC:ASSIGN {
     meta title      "Tactic: Assign Personnel"
     meta sendstates PREP
     meta parmlist   {

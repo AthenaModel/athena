@@ -139,7 +139,7 @@ namespace eval ::athena_test::tests:: {
         name       T*
         parent     *
         percent    0.0
-        pot        ::pot
+        pot        *::pot
         state      normal
     }
 
@@ -163,7 +163,7 @@ namespace eval ::athena_test::tests:: {
         name       T*
         parent     *
         percent    0.0
-        pot        ::pot
+        pot        *::pot
         state      normal
     }
 
@@ -187,7 +187,7 @@ namespace eval ::athena_test::tests:: {
         name       T*
         parent     *
         percent    0.0
-        pot        ::pot
+        pot        *::pot
         state      normal
     }
 
@@ -211,7 +211,7 @@ namespace eval ::athena_test::tests:: {
         name       T*
         parent     *
         percent    10.0
-        pot        ::pot
+        pot        *::pot
         state      normal
     }
 
@@ -235,7 +235,7 @@ namespace eval ::athena_test::tests:: {
         name       T*
         parent     *
         percent    0.0
-        pot        ::pot
+        pot        *::pot
         state      normal
     }
 

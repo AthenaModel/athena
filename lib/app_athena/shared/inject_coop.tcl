@@ -70,7 +70,7 @@ inject type define COOP {f g mag} {
 #
 # Creates a new COOP inject.
 
-myorders define INJECT:COOP:CREATE {
+::athena::orders define INJECT:COOP:CREATE {
     meta title "Create Inject: Cooperation"
 
     meta sendstates PREP
@@ -157,7 +157,7 @@ myorders define INJECT:COOP:CREATE {
 #
 # Updates existing COOP inject.
 
-myorders define INJECT:COOP:UPDATE {
+::athena::orders define INJECT:COOP:UPDATE {
     meta title "Update Inject: Cooperation"
     meta sendstates PREP
 

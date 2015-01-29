@@ -240,7 +240,7 @@ namespace eval ::athena_test::tests:: {
         percent    5.0
         personnel  1000
         pmode      SOME
-        pot        ::pot
+        pot        *::pot
         state      invalid
     }
 
@@ -275,7 +275,7 @@ namespace eval ::athena_test::tests:: {
         percent    5.0
         personnel  1000
         pmode      SOME
-        pot        ::pot
+        pot        *::pot
         state      normal
     }
 

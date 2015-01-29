@@ -149,7 +149,7 @@ namespace eval ::athena_test::tests:: {
         name       T*
         num        1
         parent     *
-        pot        ::pot
+        pot        *::pot
         state      normal
     }
 
@@ -172,7 +172,7 @@ namespace eval ::athena_test::tests:: {
         name       T*
         num        10
         parent     *
-        pot        ::pot
+        pot        *::pot
         state      normal
     }
 

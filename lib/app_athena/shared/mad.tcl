@@ -360,7 +360,7 @@ snit::type mad {
 #
 # Creates a new MAD.
 
-myorders define MAD:CREATE {
+::athena::orders define MAD:CREATE {
     meta title "Create Magic Attitude Driver"
 
     meta sendstates {PREP PAUSED TACTIC}
@@ -411,7 +411,7 @@ myorders define MAD:CREATE {
 #
 # Deletes a MAD in the initial state
 
-myorders define MAD:DELETE {
+::athena::orders define MAD:DELETE {
     meta title "Delete Magic Attitude Driver"
     meta sendstates {PREP PAUSED}
 
@@ -462,7 +462,7 @@ myorders define MAD:DELETE {
 #
 # Updates an existing mad's description
 
-myorders define MAD:UPDATE {
+::athena::orders define MAD:UPDATE {
     meta title "Update Magic Attitude Driver"
     meta sendstates {PREP PAUSED TACTIC}
 
@@ -513,7 +513,7 @@ myorders define MAD:UPDATE {
 #
 # Enters a magic horizontal relationship input.
 
-myorders define MAD:HREL {
+::athena::orders define MAD:HREL {
     meta title "Magic Horizontal Relationship Input"
     meta sendstates {PAUSED TACTIC}
 
@@ -565,7 +565,7 @@ myorders define MAD:HREL {
 #
 # Enters a magic vertical relationship input.
 
-myorders define MAD:VREL {
+::athena::orders define MAD:VREL {
     meta title "Magic Vertical Relationship Input"
     meta sendstates {PAUSED TACTIC}
 
@@ -609,7 +609,7 @@ myorders define MAD:VREL {
 #
 # Enters a magic satisfaction input.
 
-myorders define MAD:SAT {
+::athena::orders define MAD:SAT {
     meta title "Magic Satisfaction Input"
     meta sendstates {PAUSED TACTIC}
 
@@ -654,7 +654,7 @@ myorders define MAD:SAT {
 #
 # Enters a magic cooperation input.
 
-myorders define MAD:COOP {
+::athena::orders define MAD:COOP {
     meta title "Magic Cooperation Input"
     meta sendstates {PAUSED TACTIC}
 

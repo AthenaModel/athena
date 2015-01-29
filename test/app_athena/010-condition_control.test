@@ -86,7 +86,7 @@ namespace eval ::athena_test::tests:: {
         name    C*
         nlist   {_type NBHOODS _rule {}}
         parent  *
-        pot     ::pot
+        pot     *::pot
         sense   DOES
         state   invalid
     }

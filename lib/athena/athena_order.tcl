@@ -2,11 +2,14 @@
 # TITLE:
 #    athena_order.tcl
 #
+# PROJECT:
+#   athena - Athena Regional Stability Simulation
+#
 # AUTHOR:
 #    Will Duquette
 #
 # DESCRIPTION:
-#    app_athena(n): Athena Order Adaptor
+#    athena(n): Athena Order Adaptor
 #
 #    This class subclasses and adapts ::marsutil::order, providing
 #    additional features for use by Athena order classes.
@@ -15,14 +18,14 @@
 #-----------------------------------------------------------------------
 # Athena Order Adaptor
 
-oo::class create athena_order {
+oo::class create ::athena::athena_order {
     superclass ::marsutil::order
 
     #-------------------------------------------------------------------
     # Instance Variables
 
     # rdb - Set automatically as an example.
-    variable rdb
+    variable adb
 
     # parms - brought into scope from parent.
     variable parms
@@ -30,16 +33,13 @@ oo::class create athena_order {
     #-------------------------------------------------------------------
     # Constructor
 
-    # constructor rdb_ ?parmdict?
+    # constructor adb_ ?parmdict?
     #
-    # rdb_       - The RDB in used by the application
-    # parmdict  - A dictionary of initial parameter values
-    #
-    # The rdb is set here as an example of how to do it, and to test
-    # the framework.
+    # adb_       - The athenadb(n) in use
+    # parmdict   - A dictionary of initial parameter values
 
-    constructor {rdb_ {parmdict ""}} {
-        set rdb $rdb_
+    constructor {adb_ {parmdict ""}} {
+        set adb $adb_
 
         next $parmdict
     }
@@ -73,7 +73,7 @@ oo::class create athena_order {
         }
 
         # NEXT, retrieve the record.
-        $rdb eval "
+        $adb eval "
             SELECT [join $fields ,] FROM $table
             WHERE $key=\$value
         " row {
@@ -125,13 +125,13 @@ oo::class create athena_order {
             SELECT [join $fields ,] FROM $table WHERE $keycol=\$key
         "
 
-        $rdb eval $query prev {}
+        $adb eval $query prev {}
         unset prev(*)
 
         # NEXT, retrieve the remaining entities, looking for
         # mismatches
         foreach key $keyvals {
-            $rdb eval $query current {}
+            $adb eval $query current {}
 
             foreach field $fields {
                 if {$prev($field) ne $current($field)} {
@@ -161,7 +161,7 @@ oo::class create athena_order {
         my checkon $parm {
             set name $parms($parm)
 
-            if {[rdb exists {
+            if {[$adb exists {
                 SELECT id FROM entities WHERE id=$name
             }]} {
                 my reject $parm "An entity with this ID already exists"

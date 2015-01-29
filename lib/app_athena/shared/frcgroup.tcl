@@ -238,7 +238,7 @@ snit::type frcgroup {
 #
 # Creates new force groups.
 
-myorders define FRCGROUP:CREATE {
+::athena::orders define FRCGROUP:CREATE {
     meta title "Create Force Group"
     
     meta sendstates PREP
@@ -325,7 +325,7 @@ myorders define FRCGROUP:CREATE {
 
 # FRCGROUP:DELETE
 
-myorders define FRCGROUP:DELETE {
+::athena::orders define FRCGROUP:DELETE {
     meta title "Delete Force Group"
     meta sendstates PREP
 
@@ -386,7 +386,7 @@ myorders define FRCGROUP:DELETE {
 #
 # Updates existing groups.
 
-myorders define FRCGROUP:UPDATE {
+::athena::orders define FRCGROUP:UPDATE {
     meta title "Update Force Group"
     meta sendstates PREP
 
@@ -465,7 +465,7 @@ myorders define FRCGROUP:UPDATE {
 #
 # Updates multiple groups.
 
-myorders define FRCGROUP:UPDATE:MULTI {
+::athena::orders define FRCGROUP:UPDATE:MULTI {
     meta title "Update Multiple Force Groups"
     meta sendstates PREP
 

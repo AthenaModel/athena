@@ -213,7 +213,7 @@ tactic define SPEND "Spend Cash-On-Hand" {actor} -onlock {
 #
 # Updates existing SPEND tactic.
 
-myorders define TACTIC:SPEND {
+::athena::orders define TACTIC:SPEND {
     meta title      "Tactic: Spend Money"
     meta sendstates PREP
     meta parmlist {
