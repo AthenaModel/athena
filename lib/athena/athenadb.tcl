@@ -702,7 +702,7 @@ snit::type ::athena::athenadb {
 
     #===================================================================
     # SQL Functions
-    #dsf
+    #
     # TODO: Some should be application specific.
     
 

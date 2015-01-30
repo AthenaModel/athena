@@ -43,6 +43,7 @@ namespace eval ::athena_test::tests:: {
 
     proc cleanup {} {
         flunky transactions on
+        flunky monitor on
     }
 
     #-------------------------------------------------------------------
