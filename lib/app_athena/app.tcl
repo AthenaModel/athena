@@ -233,10 +233,12 @@ snit::type app {
         coverage_model init
 
         # NEXT, register other saveables
-        # 
-        # TODO: bean should be registered within athena; wintel is 
-        # application specific.  Need to allow for that.
+        # TODO: saveables need to be per instance of athena, once they
+        # are all internal.
         athena register ::pot
+ 
+        # TODO: wintel is application specific.  Need to allow for that,
+        # somehow.
         athena register ::wintel::wizard
 
         # NEXT, register my:// servers with myagent.

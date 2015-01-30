@@ -48,9 +48,8 @@ snit::type ::athena::athena {
 
     component adb ;# The scenario's athenadb component
 
-    # TODO: Ultimately, scenariodb(n) will be merged into athenadb(n),
-    # and this component will be merged into adb.
-    component rdb ;# The scenario's sqldatabase component
+    
+    component rdb ;# Read-only RDB handle
 
     #-------------------------------------------------------------------
     # Options
@@ -95,6 +94,11 @@ snit::type ::athena::athena {
         set rdb [$adb rdb component]
     } 
 
+    destructor {
+        $adb close
+        $adb destroy
+    }
+
     #-------------------------------------------------------------------
     # Delegated commands
 
@@ -107,12 +111,9 @@ snit::type ::athena::athena {
 
     # RDB
     #
-    # TODO: probably, only safeeval and safequery should be exposed,
-    # along with safeonecolumn (that doesn't yet exist).  But we need
-    # to make sure that safeeval supports variables.
-    #
-    # QUESTION: athena and athenadb could each open their own handles;
-    # athena(n)'s could simply be read-only.  Good idea?
+    # At present, these are delegated to the real RDB.  Ultimately
+    # we will want to create a read-only RDB handle and delegate to
+    # that.
     delegate method eval            to rdb as eval
     delegate method onecolumn       to rdb as onecolumn
     delegate method query           to rdb as query
