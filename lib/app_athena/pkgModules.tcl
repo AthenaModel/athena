@@ -86,7 +86,6 @@ source [file join $::app_athena::library shared modules.tcl]
 if {$::tkLoaded} {
     source [file join $::app_athena::library ui      modules.tcl]
     source [file join $::app_athena::library wnbhood modules.tcl]
-    source [file join $::app_athena::library wintel  modules.tcl]
 }
 
 

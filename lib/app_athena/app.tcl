@@ -236,7 +236,6 @@ snit::type app {
 
         # NEXT, register other saveables
         scenario register ::pot
-        scenario register ::wintel::wizard
 
         # NEXT, register my:// servers with myagent.
         appserver init
