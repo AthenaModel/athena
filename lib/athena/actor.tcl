@@ -6,16 +6,36 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Actor Manager
+#    athena(n): Actor Manager
 #
 #    This module is responsible for managing political actors and operations
 #    upon them.  As such, it is a type ensemble.
 #
+# TBD:
+#    * Global entities in use: ::strategy, ::bsys, ::ptype, ::app
+#      * Need a way to elevate Are You Sure messages to app gui.
+#
 #-----------------------------------------------------------------------
 
-snit::type actor {
-    # Make it a singleton
-    pragma -hasinstances no
+snit::type ::athena::actor {
+    #-------------------------------------------------------------------
+    # Components
+
+    component adb ;# The athenadb(n) instance
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    # constructor adb_
+    #
+    # adb_    - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of actor.
+
+    constructor {adb_} {
+        set adb $adb_
+    }
+    
 
     #-------------------------------------------------------------------
     # Queries
@@ -28,8 +48,8 @@ snit::type actor {
     #
     # Returns the list of actor names
 
-    typemethod names {} {
-        set names [rdb eval {
+    method names {} {
+        set names [$adb eval {
             SELECT a FROM actors
         }]
     }
@@ -39,8 +59,8 @@ snit::type actor {
     #
     # Returns the dict of actor names/longnames
 
-    typemethod namedict {} {
-        return [rdb eval {
+    method namedict {} {
+        return [$adb eval {
             SELECT a, longname FROM actors
         }]
     }
@@ -51,8 +71,8 @@ snit::type actor {
     #
     # Validates an actor short name
 
-    typemethod validate {a} {
-        set names [$type names]
+    method validate {a} {
+        set names [$self names]
 
         if {$a ni $names} {
             set nameString [join $names ", "]
@@ -63,8 +83,7 @@ snit::type actor {
                 set msg "none are defined"
             }
 
-            return -code error -errorcode INVALID \
-                "Invalid actor, $msg"
+            throw INVALID "Invalid actor, $msg"
         }
 
         return $a
@@ -78,9 +97,9 @@ snit::type actor {
     # Retrieves a row dictionary, or a particular column value, from
     # actors.
 
-    typemethod get {a {parm ""}} {
+    method get {a {parm ""}} {
         # FIRST, get the data
-        rdb eval {SELECT * FROM actors WHERE a=$a} row {
+        $adb eval {SELECT * FROM actors WHERE a=$a} row {
             if {$parm ne ""} {
                 return $row($parm)
             } else {
@@ -98,8 +117,8 @@ snit::type actor {
     #
     # Returns a list of the force groups owned by the actor.
     
-    typemethod frcgroups {a} {
-        rdb eval {SELECT g FROM frcgroups_view WHERE a=$a}
+    method frcgroups {a} {
+        $adb eval {SELECT g FROM frcgroups_view WHERE a=$a}
     }
 
     # income a
@@ -110,8 +129,8 @@ snit::type actor {
     # the income is from income_a, if available, or from the income_*
     # inputs.  For BUDGET actors, the income is as budgeted.
 
-    typemethod income {a} {
-        return [rdb onecolumn {
+    method income {a} {
+        return [$adb onecolumn {
             SELECT income FROM actors_view WHERE a=$a
         }]
     }
@@ -146,12 +165,12 @@ snit::type actor {
     # Creates an actor given the parms, which are presumed to be
     # valid.
 
-    typemethod {mutate create} {parmdict} {
+    method {mutate create} {parmdict} {
         # FIRST, prepare to undo.
         set undo [list]
 
         # NEXT, clear irrelevant fields.
-        set parmdict [ClearIrrelevantFields $parmdict]
+        set parmdict [$self ClearIrrelevantFields $parmdict]
         
         # NEXT, create the actor.
         dict with parmdict {
@@ -161,7 +180,7 @@ snit::type actor {
             }
 
             # FIRST, Put the actor in the database
-            rdb eval {
+            $adb eval {
                 INSERT INTO 
                 actors(a,  
                        longname,
@@ -199,7 +218,7 @@ snit::type actor {
             lappend undo [strategy create_ $a]
 
             # NEXT, Return undo command.
-            lappend undo [list rdb delete actors "a='$a'"]
+            lappend undo [list $adb delete actors "a='$a'"]
 
             return [join $undo \n]
         }
@@ -211,21 +230,21 @@ snit::type actor {
     #
     # Deletes the actor.
 
-    typemethod {mutate delete} {a} {
+    method {mutate delete} {a} {
         set undo [list]
 
         # FIRST, get the undo information
-        set gdata [rdb grab \
+        set gdata [$adb grab \
                        groups    {a=$a}                   \
                        caps      {owner=$a}               \
                        actors    {a != $a AND supports=$a}]
         
-        set adata [rdb delete -grab actors {a=$a}]
+        set adata [$adb delete -grab actors {a=$a}]
 
         
         # NEXT, delete the related entities
         lappend undo [strategy delete_ $a]
-        lappend undo [list rdb ungrab [concat $adata $gdata]]
+        lappend undo [list $adb ungrab [concat $adata $gdata]]
 
         return [join $undo \n]
     }
@@ -253,14 +272,14 @@ snit::type actor {
     # Updates a actor given the parms, which are presumed to be
     # valid.
 
-    typemethod {mutate update} {parmdict} {
+    method {mutate update} {parmdict} {
         # FIRST, clear irrelevant fields.
-        set parmdict [ClearIrrelevantFields $parmdict]
+        set parmdict [$self ClearIrrelevantFields $parmdict]
         
         # NEXT, save the changes.
         dict with parmdict {
             # FIRST, get the undo information
-            set data [rdb grab actors {a=$a}]
+            set data [$adb grab actors {a=$a}]
 
             # NEXT, handle SELF
             if {$supports eq "SELF"} {
@@ -268,7 +287,7 @@ snit::type actor {
             }
 
             # NEXT, Update the actor
-            rdb eval {
+            $adb eval {
                 UPDATE actors
                 SET longname      = nonempty($longname,      longname),
                     bsid          = nonempty($bsid,          bsid),
@@ -290,7 +309,7 @@ snit::type actor {
             } {}
 
             # NEXT, Return the undo command
-            return [list rdb ungrab $data]
+            return [list $adb ungrab $data]
         }
     }
 
@@ -300,7 +319,7 @@ snit::type actor {
     #
     # Clears fields to zero if they are irrelevant for the funding
     # type.
-    proc ClearIrrelevantFields {parmdict} {
+    method ClearIrrelevantFields {parmdict} {
         if {![dict exists $parmdict atype]} {
             dict set parmdict atype ""
         }
@@ -312,7 +331,7 @@ snit::type actor {
         dict with parmdict {       
             # FIRST, if atype is empty retrieve it.
             if {$atype eq ""} {
-                set atype [actor get $a atype]
+                set atype [$self get $a atype]
             }
             
             # NEXT, fix up the fields based on funding type.
@@ -342,26 +361,27 @@ snit::type actor {
 # Creates new actors.
 
 ::athena::orders define ACTOR:CREATE {
-    meta title "Create Actor"
+    variable adb
 
+    meta title      "Create Actor"
     meta sendstates PREP
 
-    meta defaults {
-        a                ""
-        longname         ""
-        bsid             1
-        supports         SELF
-        auto_maintain    0
-        atype            INCOME
-        cash_reserve     0
-        cash_on_hand     0
-        income_goods     0
-        shares_black_nr  0
-        income_black_tax 0
-        income_pop       0
-        income_graft     0
-        income_world     0
-        budget           0
+    meta parmlist {
+        a
+        longname
+        {bsid             1}
+        {supports         SELF}
+        {auto_maintain    0}
+        {atype            INCOME}
+        {cash_reserve     0}
+        {cash_on_hand     0}
+        {income_goods     0}
+        {shares_black_nr  0}
+        {income_black_tax 0}
+        {income_pop       0}
+        {income_graft     0}
+        {income_world     0}
+        {budget           0}
     }
 
     meta form {
@@ -426,8 +446,6 @@ snit::type actor {
 
 
     method _validate {} {
-
-        # FIRST, prepare and validate the parameters
         my prepare a                -toupper -required -type ident
         my unused a
         my prepare longname         -normalize
@@ -463,19 +481,18 @@ snit::type actor {
         }
         
         # NEXT, create the actor
-        my setundo [actor mutate create [array get parms]]
+        my setundo [$adb actor mutate create [array get parms]]
     }
 }
 
 # ACTOR:DELETE
 
 ::athena::orders define ACTOR:DELETE {
-    meta title "Delete Actor"
-    meta sendstates PREP
+    variable adb
 
-    meta defaults {
-        a ""
-    }
+    meta title      "Delete Actor"
+    meta sendstates PREP
+    meta parmlist   {a}
 
     meta form {
         rcc "Actor:" -for a
@@ -484,7 +501,7 @@ snit::type actor {
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare a -toupper -required -type actor
+        my prepare a -toupper -required -type [list $adb actor]
     }
 
     method _execute {{flunky ""}} {
@@ -512,7 +529,7 @@ snit::type actor {
         # NEXT, Delete the actor and dependent entities
         lappend undo 
     
-        my setundo [actor mutate delete $parms(a)]
+        my setundo [$adb actor mutate delete $parms(a)]
     }
 }
 
@@ -521,25 +538,15 @@ snit::type actor {
 # Updates existing actors.
 
 ::athena::orders define ACTOR:UPDATE {
-    meta title "Update Actor"
+    variable adb
+
+    meta title      "Update Actor"
     meta sendstates PREP
 
-    meta defaults {
-        a                ""
-        longname         ""
-        bsid             ""
-        supports         ""
-        auto_maintain    ""
-        atype            ""
-        cash_reserve     ""
-        cash_on_hand     ""
-        income_goods     ""
-        shares_black_nr  ""
-        income_black_tax ""
-        income_pop       ""
-        income_graft     ""
-        income_world     ""
-        budget           ""
+    meta parmlist {
+        a longname bsid supports auto_maintain atype cash_reserve cash_on_hand
+        income_goods shares_black_nr income_black_tax income_pop income_graft
+        income_world budget
     }
 
     meta form {
@@ -606,7 +613,7 @@ snit::type actor {
 
 
     method _validate {} {
-        my prepare a                -toupper   -required -type actor
+        my prepare a                -toupper   -required -type [list $adb actor]
         my prepare longname         -normalize
         my prepare bsid             -num               -type {bsys system}
         my prepare supports         -toupper           -type {ptype a+self+none}
@@ -624,7 +631,7 @@ snit::type actor {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [actor mutate update [array get parms]]
+        my setundo [$adb actor mutate update [array get parms]]
     }
 }
 
@@ -634,19 +641,14 @@ snit::type actor {
 # allow changing the actor's type.
 
 ::athena::orders define ACTOR:INCOME {
-    meta title "Update Actor Income"
+    variable adb
+
+    meta title      "Update Actor Income"
     meta sendstates {PREP PAUSED TACTIC}
 
-    meta defaults {
-        a                ""
-        atype            ""
-        income_goods     ""
-        shares_black_nr  ""
-        income_black_tax ""
-        income_pop       ""
-        income_graft     ""
-        income_world     ""
-        budget           ""
+    meta parmlist {
+        a atype income_goods shares_black_nr income_black_tax income_pop
+        income_graft income_world budget
     }
 
     meta form {
@@ -690,9 +692,7 @@ snit::type actor {
 
 
     method _validate {} {
-        set parms(atype) ""
-        
-        my prepare a                -toupper   -required -type actor
+        my prepare a                -toupper   -required -type [list $adb actor]
         my prepare income_goods     -toupper             -type money
         my prepare shares_black_nr  -num                 -type iquantity
         my prepare income_black_tax -toupper             -type money
@@ -705,6 +705,7 @@ snit::type actor {
     method _execute {{flunky ""}} {
         # FIRST, fill in the empty parameters
         array set parms {
+            atype         {}
             auto_maintain {}
             longname      {}
             supports      {}
@@ -713,7 +714,7 @@ snit::type actor {
         }
     
         # NEXT, modify the actor
-        my setundo [actor mutate update [array get parms]]
+        my setundo [$adb actor mutate update [array get parms]]
     }
 }
 
@@ -722,13 +723,12 @@ snit::type actor {
 # Updates existing actor's "supports" attribute.
 
 ::athena::orders define ACTOR:SUPPORTS {
-    meta title "Update Actor Supports"
+    variable adb
+
+    meta title      "Update Actor Supports"
     meta sendstates {PREP PAUSED TACTICS}
 
-    meta defaults {
-        a        ""
-        supports ""
-    }
+    meta parmlist {a supports}
 
     meta form {
         rcc "Select Actor:" -for a
@@ -740,8 +740,8 @@ snit::type actor {
     }
 
     method _validate {} {
-        my prepare a            -toupper   -required -type actor
-        my prepare supports     -toupper   -required -type {ptype a+self+none}
+        my prepare a         -toupper -required -type [list $adb actor]
+        my prepare supports  -toupper -required -type {ptype a+self+none}
     }
 
     method _execute {{flunky ""}} {
@@ -762,7 +762,7 @@ snit::type actor {
         }
     
         # NEXT, modify the actor
-        my setundo [actor mutate update [array get parms]]
+        my setundo [$adb actor mutate update [array get parms]]
     }
 }
 

@@ -755,7 +755,7 @@ snit::type app {
         set order [string toupper $order]
 
         order_dialog enter \
-            -resources [dict create db_ ::rdb]     \
+            -resources [dict create adb_ [::adb athenadb] db_ ::rdb] \
             -parmdict  $parmdict                   \
             -appname   "Athena [kiteinfo version]" \
             -flunky    ::flunky                    \

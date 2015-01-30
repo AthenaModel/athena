@@ -95,7 +95,7 @@ snit::type ::athena::athena {
     } 
 
     destructor {
-        $adb destroy
+        catch {$adb destroy}
     }
 
     #-------------------------------------------------------------------
@@ -116,5 +116,17 @@ snit::type ::athena::athena {
     delegate method eval            to rdb as eval
     delegate method onecolumn       to rdb as onecolumn
     delegate method query           to rdb as query
+
+    #-------------------------------------------------------------------
+    # Public Methods
+
+    # athenadb
+    #
+    # Returns the athenadb(n) handle.
+
+    method athenadb {} {
+        return $adb
+    }
+    
 }
 

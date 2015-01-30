@@ -153,9 +153,10 @@ snit::type ::athena::athenadb {
     #-------------------------------------------------------------------
     # Components
     
-    component rdb                 ;# The scenario's sqldatabase component
-    component pot    -public yes  ;# beanpot(n)
-    component flunky -public yes  ;# athena_flunky(n)
+    component rdb                       ;# writable sqldatabase handle
+    component pot     -public pot       ;# beanpot(n)
+    component flunky  -public flunky    ;# athena_flunky(n)
+    component actor   -public actor     ;# actor manager
 
     #-------------------------------------------------------------------
     # Options
@@ -209,10 +210,9 @@ snit::type ::athena::athenadb {
 
         # NEXT, create the RDB and other components.
         $self CreateRDB
-        install pot    using \
-            beanpot ${selfns}::pot -rdb $rdb
-        install flunky using \
-            athena_flunky create ${selfns}::flunky $self
+        install pot    using beanpot ${selfns}::pot -rdb $rdb
+        install flunky using ::athena::athena_flunky create ${selfns}::flunky $self
+        install actor  using ::athena::actor ${selfns}::actor $self
 
         # NEXT, Make these components globally available.
         # TBD: These will go away once the transition to library code
@@ -220,6 +220,7 @@ snit::type ::athena::athenadb {
         interp alias {} ::rdb    {} $rdb
         interp alias {} ::pot    {} $pot
         interp alias {} ::flunky {} $flunky
+        interp alias {} ::actor  {} $actor
 
         # NEXT, either load the named file or create an empty database.
         if {$filename ne ""} {
@@ -395,10 +396,13 @@ snit::type ::athena::athenadb {
     # RDB
 
     delegate method eval            to rdb as eval
+    delegate method delete          to rdb as delete
     delegate method exists          to rdb as exists
+    delegate method grab            to rdb as grab
+    delegate method monitor         to rdb as monitor
     delegate method onecolumn       to rdb as onecolumn
     delegate method query           to rdb as query
-    delegate method monitor         to rdb as monitor
+    delegate method ungrab          to rdb as ungrab
     
 
     #-------------------------------------------------------------------

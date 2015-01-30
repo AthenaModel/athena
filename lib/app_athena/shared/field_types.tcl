@@ -17,9 +17,6 @@
 #-----------------------------------------------------------------------
 # Aliases
 
-# actor: pick an actor by name.
-dynaform fieldtype alias actor enum -listcmd {::actor names}
-
 # actorlist: pick a list of actors by name
 dynaform fieldtype alias actorlist enumlonglist \
     -showkeys yes \
@@ -112,9 +109,6 @@ dynaform fieldtype alias plant key \
 # key: key fields should get -db automatically.
 dynaform fieldtype alias key key -db ::rdb
 
-# longname: text field of standard width for longnames.
-dynaform fieldtype alias longname text -width 30
-
 # mad: Magic Attitude Driver ID
 dynaform fieldtype alias mad key \
     -db       ::rdb     \
@@ -190,11 +184,5 @@ dynaform fieldtype alias sal range \
     -datatype    ::qsaliency \
     -showsymbols yes         \
     -resetvalue  1.0 
-
-# yesno: Boolean entry field, compatible with [boolean]
-dynaform fieldtype alias yesno enumlong -dict {
-    1 Yes
-    0 No 
-}
 
 

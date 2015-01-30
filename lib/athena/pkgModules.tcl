@@ -48,3 +48,6 @@ source [file join $::athena::library athena.tcl       ]
 source [file join $::athena::library athenadb.tcl     ]
 source [file join $::athena::library athena_order.tcl ]
 source [file join $::athena::library athena_flunky.tcl]
+source [file join $::athena::library dynatypes.tcl    ]
+
+source [file join $::athena::library actor.tcl        ]
