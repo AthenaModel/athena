@@ -859,11 +859,6 @@ snit::widget appwin {
                  -underline 0                         \
                  -command   [list wnbhood::wizard invoke]]
 
-        cond::simIsPrep control \
-            [menuitem $wizmenu command "Intel Ingestion..." \
-                 -underline 0                         \
-                 -command   [list wintel::wizard invoke]]
-
         # Help menu
         set helpmenu [menu $menubar.helpmenu]
         $menubar add cascade -label "Help" -underline 0 -menu $helpmenu

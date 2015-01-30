@@ -237,10 +237,6 @@ snit::type app {
         # are all internal.
         athena register ::pot
  
-        # TODO: wintel is application specific.  Need to allow for that,
-        # somehow.
-        athena register ::wintel::wizard
-
         # NEXT, register my:// servers with myagent.
         appserver init
 

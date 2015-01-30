@@ -820,7 +820,9 @@ snit::type absit {
     
         # NEXT, validate the other parameters.
         my checkon stype {
-            if {[absit existsInNbhood $parms(n) $parms(stype)]} {
+            if {$parms(stype) ne $stype &&
+                [absit existsInNbhood $parms(n) $parms(stype)]
+            } {
                 my reject stype \
                     "An absit of this type already exists in this neighborhood."
             }
