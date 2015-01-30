@@ -80,7 +80,7 @@ oo::class create ::athena::athena_flunky {
 
     # make name args
     #
-    # Ensures that the order is created with the RDB name.
+    # Ensures that the order is created with the athenadb instance.
 
     method make {name args} {
         next $name $adb {*}$args
@@ -93,7 +93,7 @@ oo::class create ::athena::athena_flunky {
 
     method execute {mode order} {
         if {[$order monitor]} {
-            rdb monitor $transMode {
+            $adb monitor $transMode {
                 set result [next $mode $order]
             }
         } else {
@@ -117,7 +117,7 @@ oo::class create ::athena::athena_flunky {
     # and monitoring.
 
     method undo {} {
-        rdb monitor $transMode {
+        $adb monitor $transMode {
             next
         }
 
@@ -130,12 +130,12 @@ oo::class create ::athena::athena_flunky {
     # Removes the top order from the CIF
 
     method _onUndo {order} {
-        set maxid [rdb onecolumn {
+        set maxid [$adb onecolumn {
             SELECT max(id) FROM cif
         }]
 
 
-        rdb eval {
+        $adb eval {
             DELETE FROM cif
             WHERE id = $maxid
         }
@@ -148,7 +148,7 @@ oo::class create ::athena::athena_flunky {
     # and monitoring.
 
     method redo {} {
-        rdb monitor $transMode {
+        $adb monitor $transMode {
             next
         }
 
@@ -174,7 +174,7 @@ oo::class create ::athena::athena_flunky {
         set narrative [$order narrative]
         set parmdict  [$order getdict]
 
-        rdb eval {
+        $adb eval {
             INSERT INTO cif(time,name,narrative,parmdict)
             VALUES($now, $name, $narrative, $parmdict);
         }
