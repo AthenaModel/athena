@@ -382,6 +382,7 @@ snit::type ::athena::athenadb {
 
     destructor {
         # FIRST, close and destroy the RDB.
+        $rdb close
         $rdb destroy
 
         # NEXT, reset other modules not yet owned by this object.

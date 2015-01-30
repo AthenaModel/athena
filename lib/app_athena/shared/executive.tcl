@@ -136,7 +136,13 @@ snit::type executive {
                 append script ".tcl"
             }
 
-            uplevel 1 [list source [file join [pwd] $script]]
+            try {
+                monitor off
+                uplevel 1 [list source [file join [pwd] $script]]
+            } finally {
+                monitor on
+                super sim dbsync
+            }
         }
 
         $interp proc select {args} {
@@ -419,6 +425,10 @@ snit::type executive {
         # log
         $interp smartalias log 1 1 {message} \
             [myproc LogCmd]
+
+        # monitor
+        $interp smartalias monitor 0 1 {?flag?} \
+            [list ::flunky monitor]
 
         # nbfill
         $interp smartalias nbfill 1 1 {varname} \

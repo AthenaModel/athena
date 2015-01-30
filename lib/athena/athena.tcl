@@ -95,7 +95,6 @@ snit::type ::athena::athena {
     } 
 
     destructor {
-        $adb close
         $adb destroy
     }
 

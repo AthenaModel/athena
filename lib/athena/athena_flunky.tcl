@@ -15,10 +15,6 @@
 #    additional features for use by Athena (e.g., RDB transactions and
 #    monitoring)
 #
-# TBD:
-#    * Get ::rdb access from athenadb in some way.
-#    * Pass $adb to orders on make, not ::rdb (some orders will need to
-#      be updated).
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
@@ -40,6 +36,11 @@ oo::class create ::athena::athena_flunky {
 
     variable transMode
 
+    # monitorFlag - if 1, we do RDB monitoring on order execution, undo,
+    # and redo, and if 0 we don't.
+
+    variable monitorFlag
+
     #-------------------------------------------------------------------
     # Constructor
 
@@ -50,15 +51,28 @@ oo::class create ::athena::athena_flunky {
     constructor {adb_} {
         next ::athena::orders
 
-        set adb       $adb_
-        set transMode transaction
+        set adb         $adb_
+        set transMode   transaction
+        set monitorFlag 1
     }
     
     
     #-------------------------------------------------------------------
     # Configuration
+
+    # monitor ?flag?
     #
-    # TBD: Consider mixin options modules.
+    # flag - on, off, or any boolean.
+    #
+    # Sets and returns the monitor flag.
+
+    method monitor {{flag ""}} {
+        if {$flag ne ""} {
+            set monitorFlag $flag
+        }
+
+        return [expr {$monitorFlag ? 1 : 0}]
+    }
 
     # transactions ?flag?
     #
@@ -92,7 +106,7 @@ oo::class create ::athena::athena_flunky {
     # and monitoring (unless the order isn't monitored).
 
     method execute {mode order} {
-        if {[$order monitor]} {
+        if {[$order monitor] && $monitorFlag} {
             $adb monitor $transMode {
                 set result [next $mode $order]
             }
@@ -117,7 +131,11 @@ oo::class create ::athena::athena_flunky {
     # and monitoring.
 
     method undo {} {
-        $adb monitor $transMode {
+        if {$monitorFlag} {
+            $adb monitor $transMode {
+                next
+            }
+        } else {
             next
         }
 
@@ -148,7 +166,11 @@ oo::class create ::athena::athena_flunky {
     # and monitoring.
 
     method redo {} {
-        $adb monitor $transMode {
+        if {$monitorFlag} {
+            $adb monitor $transMode {
+                next
+            }
+        } else {
             next
         }
 
