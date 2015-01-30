@@ -13,7 +13,7 @@
 #    dialogs are defined.
 #
 # TBD:
-#    * Global dependencies: none at the moment
+#    * Global dependencies: nbhood
 #
 #-----------------------------------------------------------------------
 
@@ -23,8 +23,18 @@
 # actor: pick an actor by name.
 dynaform fieldtype alias actor enum -listcmd {$adb_ actor names}
 
+# civgroup: Pick a CIV group by name; long names shown.
+dynaform fieldtype alias civgroup enumlong \
+    -showkeys yes \
+    -dictcmd  {$adb_ civgroup namedict}
+
 # longname: text field of standard width for longnames.
 dynaform fieldtype alias longname text -width 30
+
+# nbhood: Pick a neighborhood by name
+dynaform fieldtype alias nbhood enumlong \
+    -showkeys yes \
+    -dictcmd  {::nbhood namedict}
 
 # yesno: Boolean entry field, compatible with [boolean]
 dynaform fieldtype alias yesno enumlong -dict {

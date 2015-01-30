@@ -6,16 +6,35 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Civilian Group Manager
+#    athena(n): Civilian Group Manager
 #
 #    This module is responsible for managing civilian groups and operations
-#    upon them.  As such, it is a type ensemble.
+#    upon them.
+#
+# TBD: Global refs: $adb, civgroup, bsys, absit
 #
 #-----------------------------------------------------------------------
 
-snit::type civgroup {
-    # Make it a singleton
-    pragma -hasinstances no
+snit::type ::athena::civgroup {
+    #-------------------------------------------------------------------
+    # Components
+
+    component adb ;# The athenadb(n) instance
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    # constructor adb_
+    #
+    # adb_    - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of the type.
+
+    constructor {adb_} {
+        set adb $adb_
+    }
+
+
 
     #-------------------------------------------------------------------
     # Queries
@@ -28,8 +47,8 @@ snit::type civgroup {
     #
     # Returns the list of civgroup names
 
-    typemethod names {} {
-        return [rdb eval {
+    method names {} {
+        return [$adb eval {
             SELECT g FROM civgroups_view
         }]
     }
@@ -39,8 +58,8 @@ snit::type civgroup {
     #
     # Returns ID/longname dictionary
 
-    typemethod namedict {} {
-        return [rdb eval {
+    method namedict {} {
+        return [$adb eval {
             SELECT g, longname FROM civgroups_view ORDER BY g
         }]
     }
@@ -51,9 +70,9 @@ snit::type civgroup {
     #
     # Validates a civilian group short name
 
-    typemethod validate {g} {
-        if {![rdb exists {SELECT g FROM civgroups_view WHERE g=$g}]} {
-            set names [join [civgroup names] ", "]
+    method validate {g} {
+        if {![$adb exists {SELECT g FROM civgroups_view WHERE g=$g}]} {
+            set names [join [$self names] ", "]
 
             if {$names ne ""} {
                 set msg "should be one of: $names"
@@ -73,8 +92,8 @@ snit::type civgroup {
     # Returns the list of civgroup names for groups living
     # in local neighborhoods.
 
-    typemethod {local names} {} {
-        return [rdb eval {
+    method {local names} {} {
+        return [$adb eval {
             SELECT g FROM local_civgroups
         }]
     }
@@ -84,8 +103,8 @@ snit::type civgroup {
     #
     # Returns ID/longname dictionary for local civgroups.
 
-    typemethod {local namedict} {} {
-        return [rdb eval {
+    method {local namedict} {} {
+        return [$adb eval {
             SELECT g, longname FROM local_civgroups ORDER BY g
         }]
     }
@@ -96,9 +115,9 @@ snit::type civgroup {
     #
     # Validates a local civgroup short name
 
-    typemethod {local validate} {g} {
-        if {![rdb exists {SELECT g FROM local_civgroups WHERE g=$g}]} {
-            set names [join [civgroup local names] ", "]
+    method {local validate} {g} {
+        if {![$adb exists {SELECT g FROM local_civgroups WHERE g=$g}]} {
+            set names [join [$self local names] ", "]
 
             if {$names ne ""} {
                 set msg "should be one of: $names"
@@ -120,8 +139,8 @@ snit::type civgroup {
     #
     # Returns 1 if g resides in n, and 0 otherwise.
 
-    typemethod gInN {g n} {
-        rdb exists {
+    method gInN {g n} {
+        $adb exists {
             SELECT * FROM civgroups WHERE g=$g AND n=$n
         }
     }
@@ -132,8 +151,8 @@ snit::type civgroup {
     #
     # Returns a list of the civ groups that reside in the neighborhood.
 
-    typemethod gIn {n} {
-        rdb eval {
+    method gIn {n} {
+        $adb eval {
             SELECT g FROM civgroups WHERE n=$n
             ORDER BY g
         }
@@ -152,9 +171,9 @@ snit::type civgroup {
     #   g    - A group in the neighborhood
     #   parm - A civgroups column name
 
-    typemethod getg {g {parm ""}} {
+    method getg {g {parm ""}} {
         # FIRST, get the data
-        rdb eval {SELECT * FROM civgroups_view WHERE g=$g} row {
+        $adb eval {SELECT * FROM civgroups_view WHERE g=$g} row {
             if {$parm ne ""} {
                 return $row($parm)
             } else {
@@ -173,7 +192,7 @@ snit::type civgroup {
     #
     # Throws INVALID if the civgroup parameters are inconsistent.
 
-    typemethod {check lfp/sa_flag} {lfp sa_flag} {
+    method {check lfp/sa_flag} {lfp sa_flag} {
         if {$sa_flag && $lfp != 0} {
             throw INVALID "Subsistence agriculture requires labor force % = 0"
         }
@@ -186,7 +205,7 @@ snit::type civgroup {
     #
     # Throws INVALID if the civgroup parameters are inconsistent.
 
-    typemethod {check housing/sa_flag} {housing sa_flag} {
+    method {check housing/sa_flag} {housing sa_flag} {
         if {$sa_flag && $housing ne "AT_HOME"} {
             throw INVALID {Subsistence agriculture can only be done "at home"}
         }
@@ -224,7 +243,7 @@ snit::type civgroup {
     #
     # NOTE: If sa_flag is true, then lfp is necessarily 0.
 
-    typemethod {mutate create} {parmdict} {
+    method {mutate create} {parmdict} {
         # FIRST, bring the dictionary entries into scope.
         dict with parmdict {}
 
@@ -237,7 +256,7 @@ snit::type civgroup {
         }
 
         # NEXT, Put the group in the database
-        rdb eval {
+        $adb eval {
             INSERT INTO
             groups(g, longname, color, demeanor, gtype, bsid)
             VALUES($g,
@@ -267,7 +286,7 @@ snit::type civgroup {
         }
 
         # NEXT, Return undo command.
-        return [mytypemethod UndoCreate $g]
+        return [mymethod UndoCreate $g]
 }
 
     # UndoCreate g
@@ -276,8 +295,8 @@ snit::type civgroup {
     #
     # Undoes creation of the group.
 
-    typemethod UndoCreate {g} {
-        rdb delete groups {g=$g} civgroups {g=$g}
+    method UndoCreate {g} {
+        $adb delete groups {g=$g} civgroups {g=$g}
     }
 
     # mutate delete g
@@ -286,22 +305,22 @@ snit::type civgroup {
     #
     # Deletes the group.
 
-    typemethod {mutate delete} {g} {
+    method {mutate delete} {g} {
         # FIRST, delete the group, grabbing the undo information
-        set data [rdb delete -grab groups {g=$g} civgroups {g=$g}]
+        set data [$adb delete -grab groups {g=$g} civgroups {g=$g}]
 
         # NEXT, Return the undo script
-        return [mytypemethod UndoDelete $data]
+        return [mymethod UndoDelete $data]
     }
 
     # UndoDelete data
     #
-    # data - An RDB grab data set
+    # data - An $adb grab data set
     #
-    # Restores the data into the RDB.
+    # Restores the data into the $adb.
 
-    typemethod UndoDelete {data} {
-        rdb ungrab $data
+    method UndoDelete {data} {
+        $adb ungrab $data
     }
 
 
@@ -326,13 +345,13 @@ snit::type civgroup {
     # Updates a civgroup given the parms, which are presumed to be
     # valid.
 
-    typemethod {mutate update} {parmdict} {
+    method {mutate update} {parmdict} {
         dict with parmdict {
             # FIRST, get the undo information
-            set data [rdb grab groups {g=$g} civgroups {g=$g}]
+            set data [$adb grab groups {g=$g} civgroups {g=$g}]
 
             # NEXT, Update the group
-            rdb eval {
+            $adb eval {
                 UPDATE groups
                 SET longname  = nonempty($longname, longname),
                     color     = nonempty($color,    color),
@@ -354,7 +373,7 @@ snit::type civgroup {
             } {}
 
             # NEXT, Return the undo command
-            return [list rdb ungrab $data]
+            return [list $adb ungrab $data]
         }
     }
 }
@@ -364,6 +383,8 @@ snit::type civgroup {
 
 # CIVGROUP:CREATE
 ::athena::orders define CIVGROUP:CREATE {
+    variable adb
+
     meta title      "Create Civilian Group"
     meta sendstates {PREP}
     meta parmlist   {
@@ -477,12 +498,14 @@ snit::type civgroup {
         }
 
         # NEXT, create the group and dependent entities
-        my setundo [civgroup mutate create [array get parms]]
+        my setundo [$adb civgroup mutate create [array get parms]]
     }
 }
 
 # CIVGROUP:DELETE
 ::athena::orders define CIVGROUP:DELETE {
+    variable adb
+
     meta title      "Delete Civilian Group"
     meta sendstates PREP
 
@@ -503,7 +526,7 @@ snit::type civgroup {
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare g -toupper -required -type civgroup
+        my prepare g -toupper -required -type [list $adb civgroup]
     }
 
     method _execute {{flunky ""}} {
@@ -529,7 +552,7 @@ snit::type civgroup {
         }
 
         # NEXT, Delete the group and dependent entities
-        lappend undo [civgroup mutate delete $parms(g)]
+        lappend undo [$adb civgroup mutate delete $parms(g)]
         lappend undo [absit mutate reconcile]
 
         my setundo [join $undo \n]
@@ -539,6 +562,8 @@ snit::type civgroup {
 
 # CIVGROUP:UPDATE
 ::athena::orders define CIVGROUP:UPDATE {
+    variable adb
+
     meta title      "Update Civilian Group"
     meta sendstates PREP
     meta parmlist   {
@@ -606,7 +631,7 @@ snit::type civgroup {
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare g         -toupper   -required -type civgroup
+        my prepare g         -toupper   -required -type [list $adb civgroup]
         my prepare longname  -normalize
         my prepare n         -toupper   -type nbhood
         my prepare bsid      -num       -type {bsys system}
@@ -625,23 +650,23 @@ snit::type civgroup {
         # NEXT, do cross validation
     
         # TBD: this works, but probably ought to be done by the class.
-        # fillparms should be an orderx class helper, and the class should
-        # provide a method that calls [civgroup getg]
+        # fillparms should be an order class helper, and the class should
+        # provide a method that calls [$adb civgroup getg]
 
-        fillparms parms [civgroup getg $parms(g)]
+        fillparms parms [$adb civgroup getg $parms(g)]
 
         my checkon lfp {
-            civgroup check lfp/sa_flag $parms(lfp) $parms(sa_flag)
+            $adb civgroup check lfp/sa_flag $parms(lfp) $parms(sa_flag)
         }
 
         my checkon housing {
-            civgroup check housing/sa_flag $parms(housing) $parms(sa_flag)
+            $adb civgroup check housing/sa_flag $parms(housing) $parms(sa_flag)
         }
     }
 
 
     method _execute {{flunky ""}} {
-        my setundo [civgroup mutate update [array get parms]]
+        my setundo [$adb civgroup mutate update [array get parms]]
     }
 }
 

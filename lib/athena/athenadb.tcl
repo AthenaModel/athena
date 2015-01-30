@@ -153,10 +153,11 @@ snit::type ::athena::athenadb {
     #-------------------------------------------------------------------
     # Components
     
-    component rdb                       ;# writable sqldatabase handle
-    component pot     -public pot       ;# beanpot(n)
-    component flunky  -public flunky    ;# athena_flunky(n)
-    component actor   -public actor     ;# actor manager
+    component rdb                        ;# writable sqldatabase handle
+    component pot      -public pot       ;# beanpot(n)
+    component flunky   -public flunky    ;# athena_flunky(n)
+    component actor    -public actor     ;# actor manager
+    component civgroup -public civgroup  ;# civgroup manager
 
     #-------------------------------------------------------------------
     # Options
@@ -210,17 +211,19 @@ snit::type ::athena::athenadb {
 
         # NEXT, create the RDB and other components.
         $self CreateRDB
-        install pot    using beanpot ${selfns}::pot -rdb $rdb
-        install flunky using ::athena::athena_flunky create ${selfns}::flunky $self
-        install actor  using ::athena::actor ${selfns}::actor $self
+        install pot      using beanpot ${selfns}::pot -rdb $rdb
+        install flunky   using ::athena::athena_flunky create ${selfns}::flunky $self
+        install actor    using ::athena::actor ${selfns}::actor $self
+        install civgroup using ::athena::civgroup ${selfns}::civgroup $self
 
         # NEXT, Make these components globally available.
         # TBD: These will go away once the transition to library code
         # is complete.
-        interp alias {} ::rdb    {} $rdb
-        interp alias {} ::pot    {} $pot
-        interp alias {} ::flunky {} $flunky
-        interp alias {} ::actor  {} $actor
+        interp alias {} ::rdb      {} $rdb
+        interp alias {} ::pot      {} $pot
+        interp alias {} ::flunky   {} $flunky
+        interp alias {} ::actor    {} $actor
+        interp alias {} ::civgroup {} $civgroup
 
         # NEXT, either load the named file or create an empty database.
         if {$filename ne ""} {

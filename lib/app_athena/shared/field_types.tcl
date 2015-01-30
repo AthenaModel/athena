@@ -31,11 +31,6 @@ dynaform fieldtype alias cap enumlong \
     -showkeys yes \
     -dictcmd  {::cap namedict}
 
-# civgroup: Pick a CIV group by name; long names shown.
-dynaform fieldtype alias civgroup enumlong \
-    -showkeys yes \
-    -dictcmd  {::civgroup namedict}
-
 # civlist: Pick a list of CIV groups; long names shown.
 dynaform fieldtype alias civlist enumlonglist \
     -showkeys yes \
@@ -128,11 +123,6 @@ dynaform fieldtype alias mag range \
 
 # multi: multi fields should get -db automatically.
 dynaform fieldtype alias multi multi -db ::rdb
-
-# nbhood: Pick a neighborhood by name
-dynaform fieldtype alias nbhood enumlong \
-    -showkeys yes \
-    -dictcmd  {::nbhood namedict}
 
 # localn: Pick a local neighborhood by name
 dynaform fieldtype alias localn enumlong \

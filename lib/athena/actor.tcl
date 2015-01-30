@@ -30,7 +30,7 @@ snit::type ::athena::actor {
     #
     # adb_    - The athenadb(n) that owns this instance.
     #
-    # Initializes instances of actor.
+    # Initializes instances of the type.
 
     constructor {adb_} {
         set adb $adb_

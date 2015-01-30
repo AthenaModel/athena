@@ -5,6 +5,6 @@
     - app_athena tests to test/athena.
     - Include ted.tcl.
     - Will any app_athena tests remain?
-- Update athena(n) man page.
-- Update athenadb(n) man page.
+- Subclass order_set to set "variable adb" in all orders?
+
 
