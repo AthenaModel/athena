@@ -51,6 +51,7 @@ source [file join $::athena::library athena_flunky.tcl]
 source [file join $::athena::library dynatypes.tcl    ]
 
 # Editable Entities
+source [file join $::athena::library absit.tcl        ]
 source [file join $::athena::library actor.tcl        ]
 source [file join $::athena::library civgroup.tcl     ]
 source [file join $::athena::library frcgroup.tcl     ]

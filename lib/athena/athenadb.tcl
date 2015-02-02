@@ -159,6 +159,7 @@ snit::type ::athena::athenadb {
     component flunky   -public flunky    ;# athena_flunky(n)
 
     # Editable Entities
+    component absit    -public absit     ;# absit manager
     component actor    -public actor     ;# actor manager
     component civgroup -public civgroup  ;# civgroup manager
     component frcgroup -public frcgroup  ;# frcgroup manager
@@ -220,6 +221,7 @@ snit::type ::athena::athenadb {
         install flunky   using ::athena::athena_flunky create ${selfns}::flunky $self
 
         $self MakeComponents \
+            absit            \
             actor            \
             civgroup         \
             frcgroup         \
@@ -420,14 +422,15 @@ snit::type ::athena::athenadb {
 
     # RDB
 
-    delegate method eval            to rdb as eval
-    delegate method delete          to rdb as delete
-    delegate method exists          to rdb as exists
-    delegate method grab            to rdb as grab
-    delegate method monitor         to rdb as monitor
-    delegate method onecolumn       to rdb as onecolumn
-    delegate method query           to rdb as query
-    delegate method ungrab          to rdb as ungrab
+    delegate method eval              to rdb as eval
+    delegate method delete            to rdb as delete
+    delegate method exists            to rdb as exists
+    delegate method grab              to rdb as grab
+    delegate method last_insert_rowid to rdb as last_insert_rowid
+    delegate method monitor           to rdb as monitor
+    delegate method onecolumn         to rdb as onecolumn
+    delegate method query             to rdb as query
+    delegate method ungrab            to rdb as ungrab
     
 
     #-------------------------------------------------------------------

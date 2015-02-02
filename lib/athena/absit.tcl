@@ -6,35 +6,34 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1) Abstract Situation module
+#    athena(n) Abstract Situation module
 #
-#    This module defines a singleton, "absit", which is used to
+#    This module defines a type, "absit", which is used to
 #    manage the collection of abstract situation objects, or absits.
-#    Absits are situations; see situation(sim) for additional details.
 #
-#    Entities defined in this file:
-#
-#    absit      -- The absit ensemble
-#    absitType  -- The type for the absit objects.
-#
-#    A single snit::type could do both jobs--but at the expense
-#    of accidentally creating an absit object if an incorrect absit
-#    method name is used.
-#
-#    * Absits are created, updated, and deleted via the "mutate *" 
-#      commands and the ABSIT:* orders.
-#
-#    * This module calls the absit rule on "absit assess", which is 
-#      done as part of the time advance.
+# TBD: Global references: simclock, driver::absit, nbhood,
+# parmdb, sim, ptype, refpoint
 #
 #-----------------------------------------------------------------------
 
-#-----------------------------------------------------------------------
-# absit singleton
+snit::type ::athena::absit {
+    #-------------------------------------------------------------------
+    # Components
 
-snit::type absit {
-    # Make it an ensemble
-    pragma -hasinstances 0
+    component adb ;# The athenadb(n) instance
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    # constructor adb_
+    #
+    # adb_    - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of the type.
+
+    constructor {adb_} {
+        set adb $adb_
+    }
 
     #-------------------------------------------------------------------
     # Scenario Control
@@ -44,21 +43,21 @@ snit::type absit {
     # Create a new scenario prep baseline based on the current simulation
     # state.
     
-    typemethod rebase {} {
+    method rebase {} {
         # FIRST, Delete all absits that have ended.
-        foreach s [rdb eval {
+        foreach s [$adb eval {
             SELECT s FROM absits WHERE state == 'RESOLVED'
         }] {
-            rdb eval {
+            $adb eval {
                 DELETE FROM absits WHERE s=$s;
             }
         }
 
         # NEXT, clean up remaining absits
-        foreach {s ts} [rdb eval {
+        foreach {s ts} [$adb eval {
             SELECT s, ts FROM absits WHERE state != 'INITIAL'
         }] {
-            rdb eval {
+            $adb eval {
                 UPDATE absits
                 SET state='INITIAL',
                     ts=now(),
@@ -75,12 +74,10 @@ snit::type absit {
     # assess
     #
     # Calls the DAM rule sets for each situation requiring assessment.
-    #
-    # TBD: Make this [absit tick]
 
-    typemethod assess {} {
+    method assess {} {
         # FIRST, delete absits that were resolved during past ticks.
-        rdb eval {
+        $adb eval {
             DELETE FROM absits
             WHERE state == 'RESOLVED' AND tr < now()
         }
@@ -90,15 +87,15 @@ snit::type absit {
         # time has been reached are now RESOLVED.
         set now [simclock now]
 
-        foreach {s state rduration tr} [rdb eval {
+        foreach {s state rduration tr} [$adb eval {
             SELECT s, state, rduration, tr FROM absits
         }] {
             # FIRST, put it in the correct state.
             if {$state eq "INITIAL"} {
                 # FIRST, set the state
-                rdb eval {UPDATE absits SET state='ONGOING' WHERE s=$s}
+                $adb eval {UPDATE absits SET state='ONGOING' WHERE s=$s}
             } elseif {$rduration > 0 && $tr == $now} {
-                rdb eval {UPDATE absits SET state='RESOLVED' WHERE s=$s}
+                $adb eval {UPDATE absits SET state='RESOLVED' WHERE s=$s}
             }
         }
 
@@ -106,7 +103,7 @@ snit::type absit {
         driver::absit assess
 
         # NEXT, clear all inception flags.
-        rdb eval {UPDATE absits SET inception=0}
+        $adb eval {UPDATE absits SET inception=0}
     }
 
     #-------------------------------------------------------------------
@@ -120,9 +117,9 @@ snit::type absit {
     # Retrieves a row dictionary, or a particular column value, from
     # absits.
 
-    typemethod get {s {parm ""}} {
+    method get {s {parm ""}} {
         # FIRST, get the data
-        rdb eval {SELECT * FROM absits WHERE s=$s} row {
+        $adb eval {SELECT * FROM absits WHERE s=$s} row {
             if {$parm ne ""} {
                 return $row($parm)
             } else {
@@ -145,15 +142,15 @@ snit::type absit {
     # specified type already present in n, and 0 otherwise.  Otherwise,
     # returns a list of the absit types that exist in n.
 
-    typemethod existsInNbhood {n {stype ""}} {
+    method existsInNbhood {n {stype ""}} {
         if {$stype eq ""} {
-            return [rdb eval {
+            return [$adb eval {
                 SELECT stype FROM absits
                 WHERE n     =  $n
                 AND   state != 'RESOLVED'
             }]
         } else {
-            return [rdb exists {
+            return [$adb exists {
                 SELECT stype FROM absits
                 WHERE n     =  $n
                 AND   state != 'RESOLVED'
@@ -170,9 +167,9 @@ snit::type absit {
     # Returns a list of the absits which do not exist in this
     # neighborhood.
 
-    typemethod absentFromNbhood {n} {
+    method absentFromNbhood {n} {
         # TBD: Consider writing an lsetdiff routine
-        set present [$type existsInNbhood $n]
+        set present [$self existsInNbhood $n]
 
         set absent [list]
 
@@ -190,8 +187,8 @@ snit::type absit {
     #
     # List of absit IDs.
 
-    typemethod names {} {
-        return [rdb eval {
+    method names {} {
+        return [$adb eval {
             SELECT s FROM absits
         }]
     }
@@ -203,8 +200,8 @@ snit::type absit {
     #
     # Verifies that s is an absit.
 
-    typemethod validate {s} {
-        if {$s ni [$type names]} {
+    method validate {s} {
+        if {$s ni [$self names]} {
             return -code error -errorcode INVALID \
                 "Invalid abstract situation ID: \"$s\""
         }
@@ -216,8 +213,8 @@ snit::type absit {
     #
     # List of IDs of absits in the INITIAL state.
 
-    typemethod {initial names} {} {
-        return [rdb eval {
+    method {initial names} {} {
+        return [$adb eval {
             SELECT s FROM absits
             WHERE state = 'INITIAL'
         }]
@@ -230,9 +227,9 @@ snit::type absit {
     #
     # Verifies that s is in the INITIAL state
 
-    typemethod {initial validate} {s} {
-        if {$s ni [$type initial names]} {
-            if {$s in [$type live names]} {
+    method {initial validate} {s} {
+        if {$s ni [$self initial names]} {
+            if {$s in [$self live names]} {
                 return -code error -errorcode INVALID \
                     "operation is invalid; time has passed."
             } else {
@@ -248,8 +245,8 @@ snit::type absit {
     #
     # List of IDs of absits that are still "live"
 
-    typemethod {live names} {} {
-        return [rdb eval {
+    method {live names} {} {
+        return [$adb eval {
             SELECT s FROM absits WHERE state != 'RESOLVED'
         }]
     }
@@ -261,8 +258,8 @@ snit::type absit {
     #
     # Verifies that s is still "live"
 
-    typemethod {live validate} {s} {
-        if {$s ni [$type live names]} {
+    method {live validate} {s} {
+        if {$s ni [$self live names]} {
             return -code error -errorcode INVALID \
                 "not a \"live\" situation: \"$s\"."
         }
@@ -295,11 +292,11 @@ snit::type absit {
     # and go, an absit's neighborhood really can change; and this needs
     # to be updated at that time.  This routine handles this.
 
-    typemethod {mutate reconcile} {} {
+    method {mutate reconcile} {} {
         set undo [list]
 
         # FIRST, set resolver to NONE if resolver doesn't exist.
-        rdb eval {
+        $adb eval {
             SELECT *
             FROM absits LEFT OUTER JOIN groups 
             ON (absits.resolver = groups.g)
@@ -308,25 +305,25 @@ snit::type absit {
         } row {
             set row(resolver) NONE
 
-            lappend undo [$type mutate update [array get row]]
+            lappend undo [$self mutate update [array get row]]
         }
 
         # NEXT, update location for all absits that are out of their
         # neighborhoods.
-        foreach {s n location} [rdb eval {
+        foreach {s n location} [$adb eval {
             SELECT s, n, location FROM absits
         }] { 
             set nloc [nbhood find {*}$location]
 
             if {$nloc ne $n} {
-                set newloc [$type PickLocation $s $n]
+                set newloc [$self PickLocation $s $n]
 
-                rdb eval {
+                $adb eval {
                     UPDATE absits SET location=$newloc
                     WHERE s=$s;
                 }
 
-                lappend undo [mytypemethod RestoreLocation $s $location]
+                lappend undo [mymethod RestoreLocation $s $location]
             }
         }
 
@@ -341,9 +338,9 @@ snit::type absit {
     # 
     # Sets the absit's location.
 
-    typemethod RestoreLocation {s location} {
+    method RestoreLocation {s location} {
         # FIRST, save it
-        rdb eval { UPDATE absits SET location=$location WHERE s=$s; }
+        $adb eval { UPDATE absits SET location=$location WHERE s=$s; }
     }
 
 
@@ -362,7 +359,7 @@ snit::type absit {
     # Creates an absit given the parms, which are presumed to be
     # valid.
 
-    typemethod {mutate create} {parmdict} {
+    method {mutate create} {parmdict} {
         dict with parmdict {}
 
         # FIRST, get the remaining attribute values
@@ -393,7 +390,7 @@ snit::type absit {
             set tr ""
         }
 
-        rdb eval {
+        $adb eval {
             INSERT INTO 
             absits(stype, location, n, coverage, inception, 
                    state, ts, resolver, rduration, tr)
@@ -402,13 +399,13 @@ snit::type absit {
                    nullif($tr,''))
         }
 
-        set s [rdb last_insert_rowid]
+        set s [$adb last_insert_rowid]
 
         # NEXT, inform all clients about the new object.
-        log detail absit "$s: created for $n,$stype,$coverage"
+        $adb log detail "absit $s: created for $n,$stype,$coverage"
 
         # NEXT, Return the undo command
-        return [mytypemethod mutate delete $s]
+        return [mymethod mutate delete $s]
     }
 
     # mutate delete s
@@ -418,12 +415,12 @@ snit::type absit {
     # Deletes the situation.  This should be done only if the
     # situation is in the INITIAL state.
 
-    typemethod {mutate delete} {s} {
+    method {mutate delete} {s} {
         # FIRST, delete the records, grabbing the undo information
-        set data [rdb delete -grab absits {s=$s}]
+        set data [$adb delete -grab absits {s=$s}]
 
         # NEXT, Return the undo script
-        return [list rdb ungrab $data]
+        return [list $adb ungrab $data]
     }
 
     # mutate update parmdict
@@ -441,27 +438,27 @@ snit::type absit {
     # Updates a situation given the parms, which are presumed to be
     # valid.  The situation must be in state INITIAL.
 
-    typemethod {mutate update} {parmdict} {
+    method {mutate update} {parmdict} {
         dict with parmdict {}
 
         # FIRST, get the undo information
-        set data [rdb grab absits {s=$s}]
+        set data [$adb grab absits {s=$s}]
 
         # NEXT, get the new neighborhood if the location changed.
         if {$n ne ""} {
-            set location [$type PickLocation $s $n]
+            set location [$self PickLocation $s $n]
         }
 
         # NEXT, update duration.
         if {$rduration ne ""} {
-            set ts [$type get $s ts]
+            set ts [$self get $s ts]
             let tr {$ts + $rduration}
         } else {
             set tr ""
         }
 
         # NEXT, update the situation
-        rdb eval {
+        $adb eval {
             UPDATE absits
             SET stype     = nonempty($stype,     stype),
                 location  = nonempty($location,  location),
@@ -475,7 +472,7 @@ snit::type absit {
         }
 
         # NEXT, Return the undo command
-        return [list rdb ungrab $data] 
+        return [list $adb ungrab $data] 
     }
 
 
@@ -490,14 +487,14 @@ snit::type absit {
     # Updates a situation given the parms, which are presumed to be
     # valid.
 
-    typemethod {mutate move} {parmdict} {
+    method {mutate move} {parmdict} {
         dict with parmdict {}
 
         # FIRST, get the undo information
-        set data [rdb grab absits {s=$s}]
+        set data [$adb grab absits {s=$s}]
 
         # NEXT, update the situation
-        rdb eval {
+        $adb eval {
             UPDATE absits
             SET stype     = nonempty($stype,     stype),
                 location  = nonempty($location,  location)
@@ -505,7 +502,7 @@ snit::type absit {
         }
 
         # NEXT, Return the undo command
-        return [list rdb ungrab $data] 
+        return [list $adb ungrab $data] 
     }
 
     # mutate resolve parmdict
@@ -518,14 +515,14 @@ snit::type absit {
     #
     # Resolves the situation, assigning credit where credit is due.
 
-    typemethod {mutate resolve} {parmdict} {
+    method {mutate resolve} {parmdict} {
         dict with parmdict {}
 
         # FIRST, get the undo information
-        set data [rdb grab absits {s=$s}]
+        set data [$adb grab absits {s=$s}]
 
         # NEXT, update the situation
-        rdb eval {
+        $adb eval {
             UPDATE absits
             SET state     = 'RESOLVED',
                 resolver  = nonempty($resolver, resolver),
@@ -535,7 +532,7 @@ snit::type absit {
         }
 
         # NEXT, Return the undo script
-        return [list rdb ungrab $data] 
+        return [list $adb ungrab $data] 
     }
 
     # PickLocation s n
@@ -543,9 +540,9 @@ snit::type absit {
     # Finds a location for s in n, returning s's current location
     # if possible.
 
-    typemethod PickLocation {s n} {
+    method PickLocation {s n} {
         # FIRST, get the old location and neighborhood.
-        array set old [absit get $s]
+        array set old [$self get $s]
 
         set oldN [nbhood find {*}$old(location)]
 
@@ -566,9 +563,9 @@ snit::type absit {
     # Returns a list of the absit types that are not represented in 
     # the neighborhood.
 
-    typemethod AbsentTypes {n} {
+    method AbsentTypes {n} {
         if {$n ne ""} {
-            return [$type absentFromNbhood $n]
+            return [$self absentFromNbhood $n]
         }
 
         return [list]
@@ -582,12 +579,12 @@ snit::type absit {
     # the neighborhood containing the situation, plus the situation's
     # own type.
 
-    typemethod AbsentTypesBySit {s} {
+    method AbsentTypesBySit {s} {
         if {$s ne ""} {
-            set n [absit get $s n]
+            set n [$self get $s n]
 
-            set stypes [$type absentFromNbhood $n]
-            lappend stypes [absit get $s stype]
+            set stypes [$self absentFromNbhood $n]
+            lappend stypes [$self get $s stype]
 
             return [lsort $stypes]
         }
@@ -599,7 +596,7 @@ snit::type absit {
     #
     # Returns the default duration for the situation type.
 
-    typemethod DefaultDuration {fdict stype} {
+    method DefaultDuration {fdict stype} {
         if {$stype eq ""} {
             return {}
         }
@@ -618,13 +615,13 @@ snit::type absit {
     meta title "Create Abstract Situation"
     meta sendstates {PREP PAUSED TACTIC}
 
-    meta defaults {
-        n         ""
-        stype     ""
-        coverage  1.0
-        inception 1
-        resolver  NONE
-        rduration ""
+    meta parmlist {
+        n
+        stype
+        {coverage  1.0 }
+        {inception 1   }
+        {resolver  NONE}
+        rduration
     }
 
     meta form {
@@ -632,8 +629,8 @@ snit::type absit {
         nbhood n
 
         rcc "Type:" -for stype
-        enum stype -listcmd {absit AbsentTypes $n} \
-            -loadcmd {absit DefaultDuration}
+        enum stype -listcmd {$adb_ absit AbsentTypes $n} \
+                   -loadcmd {$adb_ absit DefaultDuration}
 
         rcc "Coverage:" -for coverage
         frac coverage -defvalue 1.0
@@ -654,7 +651,6 @@ snit::type absit {
     }
 
     method _validate {} {
-
         # FIRST, prepare and validate the parameters
         my prepare n         -toupper   -required -type nbhood
         my prepare stype     -toupper   -required -type eabsit
@@ -676,7 +672,7 @@ snit::type absit {
         my returnOnError
     
         my checkon stype {
-            if {[absit existsInNbhood $parms(n) $parms(stype)]} {
+            if {[$adb absit existsInNbhood $parms(n) $parms(stype)]} {
                 my reject stype \
                     "An absit of this type already exists in this neighborhood."
             }
@@ -685,7 +681,7 @@ snit::type absit {
 
     method _execute {{flunky ""}} {
         # NEXT, create the situation.
-        lappend undo [absit mutate create [array get parms]]
+        lappend undo [$adb absit mutate create [array get parms]]
     
         my setundo [join $undo \n]
     }
@@ -697,12 +693,9 @@ snit::type absit {
 # Deletes an absit.
 
 ::athena::orders define ABSIT:DELETE {
-    meta title "Delete Abstract Situation"
+    meta title      "Delete Abstract Situation"
     meta sendstates {PREP PAUSED}
-
-    meta defaults {
-        s ""
-    }
+    meta parmlist   {s}
 
     meta form {
         rcc "Situation:" -for s
@@ -715,15 +708,11 @@ snit::type absit {
 
 
     method _validate {} {
-        # FIRST, prepare the parameters
-        my prepare s -required -type {absit initial}
+        my prepare s -required -type [list $adb absit initial]
     }
 
     method _execute {{flunky ""}} {
-
-
         # NEXT, make sure the user knows what he is getting into.
-    
         if {[my mode] eq "gui"} {
             set answer [messagebox popup \
                             -title         "Are you sure?"                  \
@@ -745,7 +734,7 @@ snit::type absit {
         }
 
         # NEXT, delete the situation.
-        lappend undo [absit mutate delete $parms(s)]
+        lappend undo [$adb absit mutate delete $parms(s)]
         my setundo [join $undo \n]
     }
 }
@@ -756,17 +745,10 @@ snit::type absit {
 # Updates existing absits.
 
 ::athena::orders define ABSIT:UPDATE {
-    meta title "Update Abstract Situation"
+    meta title      "Update Abstract Situation"
     meta sendstates {PREP PAUSED TACTIC} 
-
-    meta defaults {
-        s         ""
-        n         ""
-        stype     ""
-        coverage  ""
-        inception ""
-        resolver  ""
-        rduration ""
+    meta parmlist {
+        s n stype coverage inception resolver rduration
     }
 
     meta form {
@@ -778,7 +760,7 @@ snit::type absit {
         nbhood n
 
         rcc "Type:" -for stype
-        enum stype -listcmd {absit AbsentTypesBySit $s}
+        enum stype -listcmd {$adb_ absit AbsentTypesBySit $s}
 
         rcc "Coverage:" -for coverage
         frac coverage
@@ -802,11 +784,11 @@ snit::type absit {
     method _validate {} {
 
         # FIRST, check the situation
-        my prepare s                    -required -type {absit initial}
+        my prepare s  -required -type [list $adb absit initial]
     
         my returnOnError
     
-        set stype [absit get $parms(s) stype]
+        set stype [$adb absit get $parms(s) stype]
     
         # NEXT, prepare the remaining parameters
         my prepare n         -toupper  -type nbhood 
@@ -821,7 +803,7 @@ snit::type absit {
         # NEXT, validate the other parameters.
         my checkon stype {
             if {$parms(stype) ne $stype &&
-                [absit existsInNbhood $parms(n) $parms(stype)]
+                [$adb absit existsInNbhood $parms(n) $parms(stype)]
             } {
                 my reject stype \
                     "An absit of this type already exists in this neighborhood."
@@ -836,7 +818,7 @@ snit::type absit {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [absit mutate update [array get parms]]
+        my setundo [$adb absit mutate update [array get parms]]
     }
 }
 
@@ -846,32 +828,17 @@ snit::type absit {
 # Moves an existing absit.
 
 ::athena::orders define ABSIT:MOVE {
-    meta title "Move Abstract Situation"
+    meta title      "Move Abstract Situation"
     meta sendstates {PREP PAUSED}
-
-    meta defaults {
-        s ""
-        location ""
-    }
-
-    meta form {
-        rcc "Situation:" -for s
-        key s -table gui_absits -keys s -dispcols longid
-
-        rcc "Location:" -for location
-        text location
-    }
+    meta parmlist   {s location}
 
     meta parmtags {
         s situation
         location nbpoint
     }
 
-
     method _validate {} {
-
-        # FIRST, check the situation
-        my prepare s                    -required -type absit
+        my prepare s  -required -type [list $adb absit]
     
         my returnOnError
     
@@ -885,7 +852,7 @@ snit::type absit {
         my checkon location {
             set n [nbhood find {*}$parms(location)]
     
-            if {$n ne [absit get $parms(s) n]} {
+            if {$n ne [$adb absit get $parms(s) n]} {
                 my reject location \
                     "Cannot remove situation from its neighborhood"
             }
@@ -894,7 +861,7 @@ snit::type absit {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [absit mutate move [array get parms]]
+        my setundo [$adb absit mutate move [array get parms]]
     }
 }
 
@@ -927,12 +894,12 @@ snit::type absit {
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare s         -required -type {absit live}
+        my prepare s         -required -type [list $adb absit live]
         my prepare resolver  -toupper  -type {ptype g+none}
     }
 
     method _execute {{flunky ""}} {
-        lappend undo [absit mutate resolve [array get parms]]
+        lappend undo [$adb absit mutate resolve [array get parms]]
         
         my setundo [join $undo \n]
     }

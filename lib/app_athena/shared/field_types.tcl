@@ -62,9 +62,6 @@ dynaform fieldtype alias curse enum -listcmd {::curse names}
 # expr: A text field for editing expressions.
 dynaform fieldtype alias expr text -width 60
 
-# frac: Fraction, 0.0 to 1.0
-dynaform fieldtype alias frac range -datatype ::rfraction
-
 # frclist: Pick from a list of force groups; longname shown
 dynaform fieldtype alias frclist enumlonglist \
     -showkeys yes \

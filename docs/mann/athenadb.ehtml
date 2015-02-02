@@ -98,6 +98,11 @@ database, returning 1 if the result set contains at least one row,
 and 0 otherwise.  The arguments are as for the standard SQLite3
 <tt exists> subcommand.<p>
 
+<defitem last_insert_rowid {<i adb> last_insert_rowid}>
+
+Returns the last row ID (or integer primary key) inserted into any
+table in the scenario's SQL RDB.<p>
+
 <defitem log {<i adb> log <i level message>}>
 
 Given a <tt -logcmd>, logs the <i message> at the given <i level>,

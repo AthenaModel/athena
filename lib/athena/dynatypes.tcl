@@ -28,6 +28,9 @@ dynaform fieldtype alias civgroup enumlong \
     -showkeys yes \
     -dictcmd  {$adb_ civgroup namedict}
 
+# frac: Fraction, 0.0 to 1.0
+dynaform fieldtype alias frac range -datatype ::rfraction
+
 # frcgroup: Pick a force group by name.
 dynaform fieldtype alias frcgroup enum -listcmd {$adb_ frcgroup names}
 

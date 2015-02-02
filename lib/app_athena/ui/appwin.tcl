@@ -721,7 +721,6 @@ snit::widget appwin {
             -underline 0 -menu $submenu
         
         $self AddOrder $submenu ABSIT:CREATE
-        $self AddOrder $submenu ABSIT:MOVE
         $self AddOrder $submenu ABSIT:DELETE
         $self AddOrder $submenu ABSIT:RESOLVE
         $self AddOrder $submenu ABSIT:UPDATE
