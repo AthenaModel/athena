@@ -39,6 +39,9 @@ dynaform fieldtype alias nbhood enumlong \
     -showkeys yes \
     -dictcmd  {::nbhood namedict}
 
+# orggroup: Pick an ORG group by name.
+dynaform fieldtype alias orggroup enum -listcmd {$adb_ orggroup names}
+
 # yesno: Boolean entry field, compatible with [boolean]
 dynaform fieldtype alias yesno enumlong -dict {
     1 Yes

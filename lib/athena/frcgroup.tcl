@@ -9,9 +9,9 @@
 #    athena(n): Force Group Manager
 #
 #    This module is responsible for managing force groups and operations
-#    upon them.  As such, it is a type ensemble.
+#    upon them.
 #
-# TBD: Global refs: actor, absit
+# TBD: Global refs: absit
 #
 #-----------------------------------------------------------------------
 

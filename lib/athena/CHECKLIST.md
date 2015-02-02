@@ -22,10 +22,10 @@ from app_athena(n) to athena(n).  See lib/athena/actor.tcl for an example.
   - [x] "$adb mymodule" in order method bodies.
   - [x] "$adb_ mymodule" in dynaform field callbacks.
 - [x] Replace "meta defaults" with "meta parmlist" in orders.
+- [] Update any global references for modules that already exist in athena(n).
 - [x] In athenadb.tcl, parallel to the entries for "actor":
   - [x] Add "component mymodule -public mymodule"
   - [x] Add "mymodule" to the MakeComponents call in the constructor
-- [x] Update any global references for modules that already exist in athena(n).
 - [x] Try to invoke athena.tcl.  You might get dynaform errors.
   - [x] Move field types from shared/field_types.tcl to athena/dynatypes.tcl
         as needed.

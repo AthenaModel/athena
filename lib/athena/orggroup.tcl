@@ -6,16 +6,34 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Organization Group Manager
+#    athena(n): Organization Group Manager
 #
-#    This module is responsible for managing organization groups and operations
-#    upon them.  As such, it is a type ensemble.
+#    This module is responsible for managing organization groups and 
+#    operations upon them.
+#
+# TBD: Global references: absit
 #
 #-----------------------------------------------------------------------
 
-snit::type orggroup {
-    # Make it a singleton
-    pragma -hasinstances no
+snit::type ::athena::orggroup {
+    #-------------------------------------------------------------------
+    # Components
+
+    component adb ;# The athenadb(n) instance
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    # constructor adb_
+    #
+    # adb_    - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of the type.
+
+    constructor {adb_} {
+        set adb $adb_
+    }
+
 
     #-------------------------------------------------------------------
     # Queries
@@ -28,8 +46,8 @@ snit::type orggroup {
     #
     # Returns the list of neighborhood names
 
-    typemethod names {} {
-        set names [rdb eval {
+    method names {} {
+        set names [$adb eval {
             SELECT g FROM orggroups 
         }]
     }
@@ -41,9 +59,9 @@ snit::type orggroup {
     #
     # Validates a organization group short name
 
-    typemethod validate {g} {
-        if {![rdb exists {SELECT g FROM orggroups WHERE g=$g}]} {
-            set names [join [orggroup names] ", "]
+    method validate {g} {
+        if {![$adb exists {SELECT g FROM orggroups WHERE g=$g}]} {
+            set names [join [$adb orggroup names] ", "]
 
             if {$names ne ""} {
                 set msg "should be one of: $names"
@@ -86,10 +104,10 @@ snit::type orggroup {
     # Creating a organization group requires adding entries to the groups and
     # orggroups tables.
 
-    typemethod {mutate create} {parmdict} {
+    method {mutate create} {parmdict} {
         dict with parmdict {
             # FIRST, Put the group in the database
-            rdb eval {
+            $adb eval {
                 INSERT INTO 
                 groups(g, longname, a, color, demeanor, cost, gtype)
                 VALUES($g,
@@ -107,7 +125,7 @@ snit::type orggroup {
             }
 
             # NEXT, Return the undo command
-            return [mytypemethod mutate delete $g]
+            return [mymethod mutate delete $g]
         }
     }
 
@@ -118,12 +136,12 @@ snit::type orggroup {
     #
     # Deletes the group, including all references.
 
-    typemethod {mutate delete} {g} {
+    method {mutate delete} {g} {
         # FIRST, delete the records, grabbing the undo information
-        set data [rdb delete -grab groups {g=$g} orggroups {g=$g}]
+        set data [$adb delete -grab groups {g=$g} orggroups {g=$g}]
 
         # NEXT, Return the undo script
-        return [list rdb ungrab $data]
+        return [list $adb ungrab $data]
     }
 
     # mutate update parmdict
@@ -141,16 +159,16 @@ snit::type orggroup {
     # Updates a orggroup given the parms, which are presumed to be
     # valid.
 
-    typemethod {mutate update} {parmdict} {
+    method {mutate update} {parmdict} {
         dict with parmdict {
             # FIRST, get the undo information
-            set data [rdb grab groups {g=$g} orggroups {g=$g}]
+            set data [$adb grab groups {g=$g} orggroups {g=$g}]
 
             # NEXT, Update the group
-            rdb eval {
+            $adb eval {
                 UPDATE groups
                 SET longname   = nonempty($longname,     longname),
-                    a      = coalesce(nullif($a,''), a),
+                    a          = coalesce(nullif($a,''), a),
                     color      = nonempty($color,        color),
                     demeanor   = nonempty($demeanor,     demeanor),
                     cost       = nonempty($cost,         cost)
@@ -163,7 +181,7 @@ snit::type orggroup {
             } {}
 
             # NEXT, Return the undo command
-            return [list rdb ungrab $data]
+            return [list $adb ungrab $data]
         }
     }
 }
@@ -222,7 +240,7 @@ snit::type orggroup {
         my prepare g              -toupper   -required -type ident
         my unused g
         my prepare longname       -normalize
-        my prepare a              -toupper             -type actor
+        my prepare a              -toupper             -type [list $adb actor]
         my prepare color          -tolower   -required -type hexcolor
         my prepare orgtype        -toupper   -required -type eorgtype
         my prepare base_personnel -num       -required -type iquantity
@@ -235,7 +253,7 @@ snit::type orggroup {
             set parms(longname) $parms(g)
         }
     
-        lappend undo [orggroup mutate create [array get parms]]
+        lappend undo [$adb orggroup mutate create [array get parms]]
         
         my setundo [join $undo \n]
     }
@@ -256,7 +274,7 @@ snit::type orggroup {
 
 
     method _validate {} {
-        my prepare g -toupper -required -type orggroup
+        my prepare g -toupper -required -type [list $adb orggroup]
     }
 
     method _execute {{flunky ""}} {
@@ -281,7 +299,7 @@ snit::type orggroup {
             }
         }
 
-        lappend undo [orggroup mutate delete $parms(g)]
+        lappend undo [$adb orggroup mutate delete $parms(g)]
         lappend undo [absit mutate reconcile]
         
         my setundo [join $undo \n]
@@ -338,8 +356,8 @@ snit::type orggroup {
 
 
     method _validate {} {
-        my prepare g              -toupper   -required -type orggroup
-        my prepare a              -toupper   -type actor
+        my prepare g -required    -toupper   -type [list $adb orggroup]
+        my prepare a              -toupper   -type [list $adb actor]
         my prepare longname       -normalize 
         my prepare color          -tolower   -type hexcolor
         my prepare orgtype        -toupper   -type eorgtype
@@ -349,7 +367,7 @@ snit::type orggroup {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [orggroup mutate update [array get parms]]
+        my setundo [$adb orggroup mutate update [array get parms]]
     }
 }
 
@@ -398,13 +416,13 @@ snit::type orggroup {
 
 
     method _validate {} {
-        my prepare ids            -toupper  -required -listof orggroup
-        my prepare a              -toupper            -type   actor
-        my prepare color          -tolower            -type   hexcolor
-        my prepare orgtype        -toupper            -type   eorgtype
-        my prepare base_personnel -num                -type   iquantity
-        my prepare demeanor       -toupper            -type   edemeanor
-        my prepare cost           -toupper            -type   money
+        my prepare ids  -required -toupper -listof [list $adb orggroup]
+        my prepare a              -toupper -type   [list $adb actor]
+        my prepare color          -tolower -type   hexcolor
+        my prepare orgtype        -toupper -type   eorgtype
+        my prepare base_personnel -num     -type   iquantity
+        my prepare demeanor       -toupper -type   edemeanor
+        my prepare cost           -toupper -type   money
     }
 
     method _execute {{flunky ""}} {
@@ -413,7 +431,7 @@ snit::type orggroup {
     
         set undo [list]
         foreach parms(g) $parms(ids) {
-            lappend undo [orggroup mutate update [array get parms]]
+            lappend undo [$adb orggroup mutate update [array get parms]]
         }
     
         my setundo [join $undo \n]

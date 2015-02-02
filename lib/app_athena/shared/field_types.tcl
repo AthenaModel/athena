@@ -92,12 +92,6 @@ dynaform fieldtype alias inject key \
     -table gui_injects  \
     -keys  {curse_id inject_num}
 
-# plant: Pick a plant by its ID.
-dynaform fieldtype alias plant key \
-    -db    ::rdb        \
-    -table gui_plants_na  \
-    -keys  {n a}
-
 # key: key fields should get -db automatically.
 dynaform fieldtype alias key key -db ::rdb
 
@@ -132,9 +126,6 @@ dynaform fieldtype alias nlist enumlonglist \
     -width    30  \
     -dictcmd  {::nbhood namedict}
 
-# orggroup: Pick an ORG group by name.
-dynaform fieldtype alias orggroup enum -listcmd {::orggroup names}
-
 # payload: Pick a payload by its ID.
 dynaform fieldtype alias payload key \
     -db    ::rdb        \
@@ -143,6 +134,12 @@ dynaform fieldtype alias payload key \
 
 # percent: Pick a percentage.
 dynaform fieldtype alias percent range -datatype ::ipercent
+
+# plant: Pick a plant by its ID.
+dynaform fieldtype alias plant key \
+    -db    ::rdb        \
+    -table gui_plants_na  \
+    -keys  {n a}
 
 # posfrac: Fraction, 0.01 to 1.0
 dynaform fieldtype alias posfrac range \
