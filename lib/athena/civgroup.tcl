@@ -383,8 +383,6 @@ snit::type ::athena::civgroup {
 
 # CIVGROUP:CREATE
 ::athena::orders define CIVGROUP:CREATE {
-    variable adb
-
     meta title      "Create Civilian Group"
     meta sendstates {PREP}
     meta parmlist   {
@@ -504,8 +502,6 @@ snit::type ::athena::civgroup {
 
 # CIVGROUP:DELETE
 ::athena::orders define CIVGROUP:DELETE {
-    variable adb
-
     meta title      "Delete Civilian Group"
     meta sendstates PREP
 
@@ -562,8 +558,6 @@ snit::type ::athena::civgroup {
 
 # CIVGROUP:UPDATE
 ::athena::orders define CIVGROUP:UPDATE {
-    variable adb
-
     meta title      "Update Civilian Group"
     meta sendstates PREP
     meta parmlist   {

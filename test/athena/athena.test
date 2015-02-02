@@ -53,7 +53,7 @@ proc cleanup {} {
 test dummy-1.1 {Dummy} -setup {
     setup
 } -body {
-    set result 0
+    set result 1
 } -cleanup {
     cleanup
 } -result {1}

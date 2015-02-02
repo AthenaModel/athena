@@ -42,7 +42,7 @@ namespace eval ::athena:: {
 # Modules
 
 # Used to define and query orders.
-::marsutil::order_set create ::athena::orders ::athena::athena_order 
+::marsutil::order_set create ::athena::orders ::athena::athena_order {adb}
 
 source [file join $::athena::library athena.tcl       ]
 source [file join $::athena::library athenadb.tcl     ]
@@ -53,3 +53,4 @@ source [file join $::athena::library dynatypes.tcl    ]
 # Editable Entities
 source [file join $::athena::library actor.tcl        ]
 source [file join $::athena::library civgroup.tcl     ]
+source [file join $::athena::library frcgroup.tcl     ]

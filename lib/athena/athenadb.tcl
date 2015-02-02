@@ -153,11 +153,15 @@ snit::type ::athena::athenadb {
     #-------------------------------------------------------------------
     # Components
     
+    # Resources
     component rdb                        ;# writable sqldatabase handle
     component pot      -public pot       ;# beanpot(n)
     component flunky   -public flunky    ;# athena_flunky(n)
+
+    # Editable Entities
     component actor    -public actor     ;# actor manager
     component civgroup -public civgroup  ;# civgroup manager
+    component frcgroup -public frcgroup  ;# frcgroup manager
 
     #-------------------------------------------------------------------
     # Options
@@ -213,8 +217,11 @@ snit::type ::athena::athenadb {
         $self CreateRDB
         install pot      using beanpot ${selfns}::pot -rdb $rdb
         install flunky   using ::athena::athena_flunky create ${selfns}::flunky $self
-        install actor    using ::athena::actor ${selfns}::actor $self
-        install civgroup using ::athena::civgroup ${selfns}::civgroup $self
+
+        $self MakeComponents \
+            actor            \
+            civgroup         \
+            frcgroup
 
         # NEXT, Make these components globally available.
         # TBD: These will go away once the transition to library code
@@ -222,8 +229,6 @@ snit::type ::athena::athenadb {
         interp alias {} ::rdb      {} $rdb
         interp alias {} ::pot      {} $pot
         interp alias {} ::flunky   {} $flunky
-        interp alias {} ::actor    {} $actor
-        interp alias {} ::civgroup {} $civgroup
 
         # NEXT, either load the named file or create an empty database.
         if {$filename ne ""} {
@@ -247,14 +252,29 @@ snit::type ::athena::athenadb {
             parm checkpoint -saved
         }
 
-
-
         # NEXT, finish up
         $self DefineTempSchema
         executive reset
 
         $rdb marksaved
     } 
+
+    # MakeComponents component...
+    #
+    # component...  - A list of component names.
+    #
+    # Creates instances for a list of components, all of which take one
+    # constructor argument, the athenadb(n) instance.  For now, also
+    # defines global entry points.
+
+    method MakeComponents {args} {
+        foreach name $args {
+            install $name using ::athena::${name} ${selfns}::$name $self
+
+            # TBD: The alias will go away once the conversion is complete.
+            interp alias {} ::${name} {} [set $name]
+        }
+    }
 
     # CreateRDB
     #

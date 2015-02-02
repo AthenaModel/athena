@@ -65,9 +65,6 @@ dynaform fieldtype alias expr text -width 60
 # frac: Fraction, 0.0 to 1.0
 dynaform fieldtype alias frac range -datatype ::rfraction
 
-# frcgroup: Pick a force group by name.
-dynaform fieldtype alias frcgroup enum -listcmd {::frcgroup names}
-
 # frclist: Pick from a list of force groups; longname shown
 dynaform fieldtype alias frclist enumlonglist \
     -showkeys yes \

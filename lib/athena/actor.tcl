@@ -361,8 +361,6 @@ snit::type ::athena::actor {
 # Creates new actors.
 
 ::athena::orders define ACTOR:CREATE {
-    variable adb
-
     meta title      "Create Actor"
     meta sendstates PREP
 
@@ -488,8 +486,6 @@ snit::type ::athena::actor {
 # ACTOR:DELETE
 
 ::athena::orders define ACTOR:DELETE {
-    variable adb
-
     meta title      "Delete Actor"
     meta sendstates PREP
     meta parmlist   {a}
@@ -538,8 +534,6 @@ snit::type ::athena::actor {
 # Updates existing actors.
 
 ::athena::orders define ACTOR:UPDATE {
-    variable adb
-
     meta title      "Update Actor"
     meta sendstates PREP
 
@@ -641,8 +635,6 @@ snit::type ::athena::actor {
 # allow changing the actor's type.
 
 ::athena::orders define ACTOR:INCOME {
-    variable adb
-
     meta title      "Update Actor Income"
     meta sendstates {PREP PAUSED TACTIC}
 
@@ -723,8 +715,6 @@ snit::type ::athena::actor {
 # Updates existing actor's "supports" attribute.
 
 ::athena::orders define ACTOR:SUPPORTS {
-    variable adb
-
     meta title      "Update Actor Supports"
     meta sendstates {PREP PAUSED TACTICS}
 

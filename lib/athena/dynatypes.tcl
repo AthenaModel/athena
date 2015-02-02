@@ -28,6 +28,9 @@ dynaform fieldtype alias civgroup enumlong \
     -showkeys yes \
     -dictcmd  {$adb_ civgroup namedict}
 
+# frcgroup: Pick a force group by name.
+dynaform fieldtype alias frcgroup enum -listcmd {$adb_ frcgroup names}
+
 # longname: text field of standard width for longnames.
 dynaform fieldtype alias longname text -width 30
 
