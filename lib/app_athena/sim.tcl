@@ -131,6 +131,9 @@ snit::type sim {
         # NEXT, reset the strategy module.
         strategy init
 
+        # NEXT, reset map to default
+        map init
+
         # NEXT, set the simulation status
         set info(changed) 0
         set info(state)   PREP
