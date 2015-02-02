@@ -653,7 +653,7 @@ snit::type ted {
     #
     # name     The name of an entity
     #
-    # Calls "$module mutate create" for each named entity.
+    # Calls "$module mutate create" or "$module create" for each named entity.
 
     typemethod create {args} {
         foreach name $args {
@@ -664,7 +664,13 @@ snit::type ted {
                 $type create {*}$parents
 
                 # NEXT, create the requested entity
-                {*}$module mutate create $parmdict
+                if {$module in {
+                    ::actor ::absit ::civgroup ::frcgroup ::orggroup
+                }} {
+                    {*}$module create $parmdict
+                } else {
+                    {*}$module mutate create $parmdict
+                }
 
                 lappend createdEntities $name
             }
@@ -685,7 +691,7 @@ snit::type ted {
             parm set econ.gdpExp 0
             parm set econ.empExp 0
         }
-        absit mutate reconcile
+        absit reconcile
         ted order SIM:LOCK
     }
 

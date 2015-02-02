@@ -128,7 +128,7 @@ tactic define ABSIT "Abstract Situation" {system actor} -onlock {
         set p(resolver)  $resolver
         set p(rduration) $duration
 
-        absit mutate create [array get p]
+        absit create [array get p]
     }
 }
 

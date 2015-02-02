@@ -143,7 +143,7 @@ snit::type ::athena::actor {
     # a script of one or more commands that will undo the change.  When
     # change cannot be undone, the mutator returns the empty string.
 
-    # mutate create parmdict
+    # create parmdict
     #
     # parmdict     A dictionary of actor parms
     #
@@ -165,7 +165,7 @@ snit::type ::athena::actor {
     # Creates an actor given the parms, which are presumed to be
     # valid.
 
-    method {mutate create} {parmdict} {
+    method create {parmdict} {
         # FIRST, prepare to undo.
         set undo [list]
 
@@ -224,13 +224,13 @@ snit::type ::athena::actor {
         }
     }
 
-    # mutate delete a
+    # delete a
     #
     # a     An actor short name
     #
     # Deletes the actor.
 
-    method {mutate delete} {a} {
+    method delete {a} {
         set undo [list]
 
         # FIRST, get the undo information
@@ -250,7 +250,7 @@ snit::type ::athena::actor {
     }
 
 
-    # mutate update parmdict
+    # update parmdict
     #
     # parmdict     A dictionary of actor parms
     #
@@ -272,7 +272,7 @@ snit::type ::athena::actor {
     # Updates a actor given the parms, which are presumed to be
     # valid.
 
-    method {mutate update} {parmdict} {
+    method update {parmdict} {
         # FIRST, clear irrelevant fields.
         set parmdict [$self ClearIrrelevantFields $parmdict]
         
@@ -479,7 +479,7 @@ snit::type ::athena::actor {
         }
         
         # NEXT, create the actor
-        my setundo [$adb actor mutate create [array get parms]]
+        my setundo [$adb actor create [array get parms]]
     }
 }
 
@@ -525,7 +525,7 @@ snit::type ::athena::actor {
         # NEXT, Delete the actor and dependent entities
         lappend undo 
     
-        my setundo [$adb actor mutate delete $parms(a)]
+        my setundo [$adb actor delete $parms(a)]
     }
 }
 
@@ -625,7 +625,7 @@ snit::type ::athena::actor {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [$adb actor mutate update [array get parms]]
+        my setundo [$adb actor update [array get parms]]
     }
 }
 
@@ -706,7 +706,7 @@ snit::type ::athena::actor {
         }
     
         # NEXT, modify the actor
-        my setundo [$adb actor mutate update [array get parms]]
+        my setundo [$adb actor update [array get parms]]
     }
 }
 
@@ -752,7 +752,7 @@ snit::type ::athena::actor {
         }
     
         # NEXT, modify the actor
-        my setundo [$adb actor mutate update [array get parms]]
+        my setundo [$adb actor update [array get parms]]
     }
 }
 

@@ -276,7 +276,7 @@ snit::type ::athena::absit {
     # a script of one or more commands that will undo the change.  When
     # change cannot be undone, the mutator returns the empty string.
 
-    # mutate reconcile
+    # reconcile
     #
     # Updates absits as neighborhoods and groups change:
     #
@@ -292,7 +292,7 @@ snit::type ::athena::absit {
     # and go, an absit's neighborhood really can change; and this needs
     # to be updated at that time.  This routine handles this.
 
-    method {mutate reconcile} {} {
+    method reconcile {} {
         set undo [list]
 
         # FIRST, set resolver to NONE if resolver doesn't exist.
@@ -305,7 +305,7 @@ snit::type ::athena::absit {
         } row {
             set row(resolver) NONE
 
-            lappend undo [$self mutate update [array get row]]
+            lappend undo [$self update [array get row]]
         }
 
         # NEXT, update location for all absits that are out of their
@@ -345,7 +345,7 @@ snit::type ::athena::absit {
 
 
 
-    # mutate create parmdict
+    # create parmdict
     #
     # parmdict     A dictionary of absit parms
     #
@@ -359,7 +359,7 @@ snit::type ::athena::absit {
     # Creates an absit given the parms, which are presumed to be
     # valid.
 
-    method {mutate create} {parmdict} {
+    method create {parmdict} {
         dict with parmdict {}
 
         # FIRST, get the remaining attribute values
@@ -405,17 +405,17 @@ snit::type ::athena::absit {
         $adb log detail "absit $s: created for $n,$stype,$coverage"
 
         # NEXT, Return the undo command
-        return [mymethod mutate delete $s]
+        return [mymethod delete $s]
     }
 
-    # mutate delete s
+    # delete s
     #
     # s     A situation ID
     #
     # Deletes the situation.  This should be done only if the
     # situation is in the INITIAL state.
 
-    method {mutate delete} {s} {
+    method delete {s} {
         # FIRST, delete the records, grabbing the undo information
         set data [$adb delete -grab absits {s=$s}]
 
@@ -423,7 +423,7 @@ snit::type ::athena::absit {
         return [list $adb ungrab $data]
     }
 
-    # mutate update parmdict
+    # update parmdict
     #
     # parmdict     A dictionary of entity parms
     #
@@ -438,7 +438,7 @@ snit::type ::athena::absit {
     # Updates a situation given the parms, which are presumed to be
     # valid.  The situation must be in state INITIAL.
 
-    method {mutate update} {parmdict} {
+    method update {parmdict} {
         dict with parmdict {}
 
         # FIRST, get the undo information
@@ -476,7 +476,7 @@ snit::type ::athena::absit {
     }
 
 
-    # mutate move parmdict
+    # move parmdict
     #
     # parmdict     A dictionary of entity parms
     #
@@ -487,7 +487,7 @@ snit::type ::athena::absit {
     # Updates a situation given the parms, which are presumed to be
     # valid.
 
-    method {mutate move} {parmdict} {
+    method move {parmdict} {
         dict with parmdict {}
 
         # FIRST, get the undo information
@@ -505,7 +505,7 @@ snit::type ::athena::absit {
         return [list $adb ungrab $data] 
     }
 
-    # mutate resolve parmdict
+    # resolve parmdict
     #
     # parmdict     A dictionary of order parms
     #
@@ -515,7 +515,7 @@ snit::type ::athena::absit {
     #
     # Resolves the situation, assigning credit where credit is due.
 
-    method {mutate resolve} {parmdict} {
+    method resolve {parmdict} {
         dict with parmdict {}
 
         # FIRST, get the undo information
@@ -681,7 +681,7 @@ snit::type ::athena::absit {
 
     method _execute {{flunky ""}} {
         # NEXT, create the situation.
-        lappend undo [$adb absit mutate create [array get parms]]
+        lappend undo [$adb absit create [array get parms]]
     
         my setundo [join $undo \n]
     }
@@ -734,7 +734,7 @@ snit::type ::athena::absit {
         }
 
         # NEXT, delete the situation.
-        lappend undo [$adb absit mutate delete $parms(s)]
+        lappend undo [$adb absit delete $parms(s)]
         my setundo [join $undo \n]
     }
 }
@@ -818,7 +818,7 @@ snit::type ::athena::absit {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [$adb absit mutate update [array get parms]]
+        my setundo [$adb absit update [array get parms]]
     }
 }
 
@@ -861,7 +861,7 @@ snit::type ::athena::absit {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [$adb absit mutate move [array get parms]]
+        my setundo [$adb absit move [array get parms]]
     }
 }
 
@@ -899,7 +899,7 @@ snit::type ::athena::absit {
     }
 
     method _execute {{flunky ""}} {
-        lappend undo [$adb absit mutate resolve [array get parms]]
+        lappend undo [$adb absit resolve [array get parms]]
         
         my setundo [join $undo \n]
     }

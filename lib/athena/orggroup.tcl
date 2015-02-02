@@ -85,7 +85,7 @@ snit::type ::athena::orggroup {
     # a script of one or more commands that will undo the change.  When
     # change cannot be undone, the mutator returns the empty string.
 
-    # mutate create parmdict
+    # create parmdict
     #
     # parmdict     A dictionary of group parms
     #
@@ -104,7 +104,7 @@ snit::type ::athena::orggroup {
     # Creating a organization group requires adding entries to the groups and
     # orggroups tables.
 
-    method {mutate create} {parmdict} {
+    method create {parmdict} {
         dict with parmdict {
             # FIRST, Put the group in the database
             $adb eval {
@@ -125,18 +125,18 @@ snit::type ::athena::orggroup {
             }
 
             # NEXT, Return the undo command
-            return [mymethod mutate delete $g]
+            return [mymethod delete $g]
         }
     }
 
 
-    # mutate delete g
+    # delete g
     #
     # g     A group short name
     #
     # Deletes the group, including all references.
 
-    method {mutate delete} {g} {
+    method delete {g} {
         # FIRST, delete the records, grabbing the undo information
         set data [$adb delete -grab groups {g=$g} orggroups {g=$g}]
 
@@ -144,7 +144,7 @@ snit::type ::athena::orggroup {
         return [list $adb ungrab $data]
     }
 
-    # mutate update parmdict
+    # update parmdict
     #
     # parmdict     A dictionary of group parms
     #
@@ -159,7 +159,7 @@ snit::type ::athena::orggroup {
     # Updates a orggroup given the parms, which are presumed to be
     # valid.
 
-    method {mutate update} {parmdict} {
+    method update {parmdict} {
         dict with parmdict {
             # FIRST, get the undo information
             set data [$adb grab groups {g=$g} orggroups {g=$g}]
@@ -253,7 +253,7 @@ snit::type ::athena::orggroup {
             set parms(longname) $parms(g)
         }
     
-        lappend undo [$adb orggroup mutate create [array get parms]]
+        lappend undo [$adb orggroup create [array get parms]]
         
         my setundo [join $undo \n]
     }
@@ -299,8 +299,8 @@ snit::type ::athena::orggroup {
             }
         }
 
-        lappend undo [$adb orggroup mutate delete $parms(g)]
-        lappend undo [absit mutate reconcile]
+        lappend undo [$adb orggroup delete $parms(g)]
+        lappend undo [absit reconcile]
         
         my setundo [join $undo \n]
     }
@@ -367,7 +367,7 @@ snit::type ::athena::orggroup {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [$adb orggroup mutate update [array get parms]]
+        my setundo [$adb orggroup update [array get parms]]
     }
 }
 
@@ -431,7 +431,7 @@ snit::type ::athena::orggroup {
     
         set undo [list]
         foreach parms(g) $parms(ids) {
-            lappend undo [$adb orggroup mutate update [array get parms]]
+            lappend undo [$adb orggroup update [array get parms]]
         }
     
         my setundo [join $undo \n]

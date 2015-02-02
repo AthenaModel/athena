@@ -50,7 +50,7 @@ namespace eval ::athena_test::tests:: {
     test create-1.1 {orggroup is created} -setup {
         ted create JOE
     } -body {
-        orggroup mutate create [ted entity USAID]
+        orggroup create [ted entity USAID]
         ted querylist {SELECT * FROM orggroups_view}
     } -cleanup {
         cleanup
@@ -70,7 +70,7 @@ base_personnel  1000
     test create-1.2 {a can be empty, yields NULL} -setup {
         ted create JOE
     } -body {
-        orggroup mutate create [dict merge [ted entity USAID] {a ""}]
+        orggroup create [dict merge [ted entity USAID] {a ""}]
         ted querylist {SELECT * FROM orggroups_view}
     } -cleanup {
         cleanup
@@ -89,8 +89,8 @@ base_personnel  1000
 
     test create-2.1 {undo deletes the orggroup} -setup {
         ted create JOE
-        orggroup mutate create [ted entity USAID]
-        set undo [orggroup mutate create [ted entity HAL]]
+        orggroup create [ted entity USAID]
+        set undo [orggroup create [ted entity HAL]]
     } -body {
         {*}$undo
         rdb eval {SELECT g FROM orggroups_view}
@@ -104,7 +104,7 @@ base_personnel  1000
     test delete-1.1 {Group is deleted} -setup {
         ted create USAID HAL
     } -body {
-        orggroup mutate delete USAID
+        orggroup delete USAID
 
         # Is USAID gone?
         rdb eval {SELECT g FROM orggroups_view}
@@ -115,7 +115,7 @@ base_personnel  1000
 
     test delete-2.1 {Undo restores group} -setup {
         ted create USAID
-        set undo [orggroup mutate delete USAID]
+        set undo [orggroup delete USAID]
     } -body {
         {*}$undo
         ted querylist {SELECT * FROM orggroups_view}
@@ -140,7 +140,7 @@ base_personnel  1000
         ted order HREL:OVERRIDE id {USAID BRIT}
         ted order HREL:OVERRIDE id {BRIT USAID}
     } -body {
-        orggroup mutate delete USAID
+        orggroup delete USAID
 
         rdb eval {SELECT f,g FROM hrel_fg ORDER BY f,g}
     } -cleanup {
@@ -152,7 +152,7 @@ base_personnel  1000
         ted order HREL:OVERRIDE id {USAID BRIT}
         ted order HREL:OVERRIDE id {BRIT USAID}
 
-        set undo [orggroup mutate delete USAID]
+        set undo [orggroup delete USAID]
     } -body {
         namespace eval :: $undo
 
@@ -165,7 +165,7 @@ base_personnel  1000
         ted create JOE USAID
         ted order VREL:OVERRIDE id {USAID JOE}
     } -body {
-        orggroup mutate delete USAID
+        orggroup delete USAID
 
         rdb eval {SELECT g,a FROM vrel_ga ORDER BY g,a}
     } -cleanup {
@@ -176,7 +176,7 @@ base_personnel  1000
         ted create JOE USAID
         ted order VREL:OVERRIDE id {USAID JOE}
 
-        set undo [orggroup mutate delete USAID]
+        set undo [orggroup delete USAID]
     } -body {
         namespace eval :: $undo
 
@@ -192,7 +192,7 @@ base_personnel  1000
     test update-1.1 {orggroup is updated} -setup {
         ted create BOB USAID
     } -body {
-        orggroup mutate update {
+        orggroup update {
             g              USAID
             longname       "Red Cross"
             a              BOB
@@ -224,7 +224,7 @@ base_personnel  1000
     } -body {
         set a [ted query {SELECT * FROM orggroups_view}]
 
-        orggroup mutate update [ted entity USAID]
+        orggroup update [ted entity USAID]
 
         set b [ted query {SELECT * FROM orggroups_view}]
 
@@ -239,7 +239,7 @@ base_personnel  1000
     } -body {
         set a [ted query {SELECT * FROM orggroups_view}]
 
-        orggroup mutate update  {
+        orggroup update  {
             g              USAID
             longname       ""
             a              ""
@@ -263,7 +263,7 @@ base_personnel  1000
 
         set a [ted query {SELECT * FROM orggroups_view}]
 
-        set undo [orggroup mutate update {
+        set undo [orggroup update {
             g              USAID
             longname       "Red Cross"
             a              ""

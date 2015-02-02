@@ -50,7 +50,7 @@ namespace eval ::athena_test::tests:: {
     test create-1.1 {frcgroup is created} -setup {
         ted create JOE
     } -body {
-        frcgroup mutate create [ted entity BLUE]
+        frcgroup create [ted entity BLUE]
         ted querylist {SELECT * FROM frcgroups_view}
     } -cleanup {
         cleanup
@@ -72,7 +72,7 @@ local           0
     test create-1.2 {a can be empty, yields NULL} -setup {
         ted create JOE
     } -body {
-        frcgroup mutate create [dict merge [ted entity BLUE] {a ""}]
+        frcgroup create [dict merge [ted entity BLUE] {a ""}]
         ted querylist {SELECT * FROM frcgroups_view}
     } -cleanup {
         cleanup
@@ -94,8 +94,8 @@ local           0
 
     test create-2.1 {undo deletes the frcgroup} -setup {
         ted create JOE
-        frcgroup mutate create [ted entity BLUE]
-        set undo [frcgroup mutate create [ted entity BRIT]]
+        frcgroup create [ted entity BLUE]
+        set undo [frcgroup create [ted entity BRIT]]
     } -body {
         {*}$undo
         rdb eval {SELECT g FROM frcgroups_view}
@@ -107,7 +107,7 @@ local           0
     test create-3.1 {coop curves are created} -setup {
         ted create JOE SHIA
     } -body {
-        frcgroup mutate create [ted entity BLUE]
+        frcgroup create [ted entity BLUE]
         rdb eval {SELECT f,g FROM coop_fg ORDER BY f,g}
     } -cleanup {
         cleanup
@@ -116,7 +116,7 @@ local           0
     test create-3.2 {undo deletes the coop curves} -setup {
         ted create JOE SHIA
     } -body {
-        set undo [frcgroup mutate create [ted entity BLUE]]
+        set undo [frcgroup create [ted entity BLUE]]
 
         namespace eval :: $undo
         rdb eval {SELECT f,g FROM coop_fg ORDER BY f,g}
@@ -130,7 +130,7 @@ local           0
     test delete-1.1 {Group is deleted} -setup {
         ted create BLUE BRIT
     } -body {
-        frcgroup mutate delete BLUE
+        frcgroup delete BLUE
 
         # Is BLUE gone?
         rdb eval {SELECT g FROM frcgroups_view}
@@ -140,7 +140,7 @@ local           0
 
     test delete-1.2 {Undo restores group} -setup {
         ted create BLUE
-        set undo [frcgroup mutate delete BLUE]
+        set undo [frcgroup delete BLUE]
     } -body {
         {*}$undo
         ted querylist {SELECT * FROM frcgroups_view}
@@ -164,7 +164,7 @@ local           0
     test delete-2.1 {coop curves are deleted} -setup {
         ted create BLUE SHIA
     } -body {
-        frcgroup mutate delete BLUE
+        frcgroup delete BLUE
 
         rdb eval {SELECT f,g FROM coop_fg ORDER BY f,g}
     } -cleanup {
@@ -173,7 +173,7 @@ local           0
 
     test delete-2.2 {Undo restores coop curves} -setup {
         ted create BLUE SHIA
-        set undo [frcgroup mutate delete BLUE]
+        set undo [frcgroup delete BLUE]
     } -body {
         namespace eval :: $undo
         rdb eval {SELECT f,g FROM coop_fg ORDER BY f,g}
@@ -187,7 +187,7 @@ local           0
         ted order HREL:OVERRIDE id {BLUE BRIT}
         ted order HREL:OVERRIDE id {BRIT BLUE}
     } -body {
-        frcgroup mutate delete BLUE
+        frcgroup delete BLUE
 
         rdb eval {SELECT f,g FROM hrel_fg ORDER BY f,g}
     } -cleanup {
@@ -199,7 +199,7 @@ local           0
         ted order HREL:OVERRIDE id {BLUE BRIT}
         ted order HREL:OVERRIDE id {BRIT BLUE}
 
-        set undo [frcgroup mutate delete BLUE]
+        set undo [frcgroup delete BLUE]
     } -body {
         namespace eval :: $undo
 
@@ -212,7 +212,7 @@ local           0
         ted create JOE BLUE
         ted order VREL:OVERRIDE id {BLUE JOE}
     } -body {
-        frcgroup mutate delete BLUE
+        frcgroup delete BLUE
 
         rdb eval {SELECT g,a FROM vrel_ga ORDER BY g,a}
     } -cleanup {
@@ -223,7 +223,7 @@ local           0
         ted create JOE BLUE
         ted order VREL:OVERRIDE id {BLUE JOE}
 
-        set undo [frcgroup mutate delete BLUE]
+        set undo [frcgroup delete BLUE]
     } -body {
         namespace eval :: $undo
 
@@ -239,7 +239,7 @@ local           0
     test update-1.1 {frcgroup is updated} -setup {
         ted create BOB BLUE
     } -body {
-        frcgroup mutate update {
+        frcgroup update {
             g            BLUE
             a            BOB
             longname     "Blue Angels"
@@ -275,7 +275,7 @@ local           1
     } -body {
         set a [ted query {SELECT * FROM frcgroups_view}]
 
-        frcgroup mutate update [ted entity BLUE]
+        frcgroup update [ted entity BLUE]
 
         set b [ted query {SELECT * FROM frcgroups_view}]
 
@@ -290,7 +290,7 @@ local           1
     } -body {
         set a [ted query {SELECT * FROM frcgroups_view}]
 
-        frcgroup mutate update  {
+        frcgroup update  {
             g            BLUE
             longname     ""
             a            ""
@@ -316,7 +316,7 @@ local           1
 
         set a [ted query {SELECT * FROM frcgroups_view}]
 
-        set undo [frcgroup mutate update {
+        set undo [frcgroup update {
             g            BLUE
             longname     "Blue Angels"
             a            ""

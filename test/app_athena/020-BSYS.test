@@ -250,7 +250,7 @@ namespace eval ::athena_test::tests:: {
     test SYSTEM:DELETE-1.4 {can't delete if in use by actor} -setup {
         ted create JOE
         ted order BSYS:SYSTEM:ADD sid 2
-        actor mutate update {a JOE bsid 2}
+        actor update {a JOE bsid 2}
     } -body {
         ted order -reject BSYS:SYSTEM:DELETE sid 2
     } -cleanup {
@@ -262,7 +262,7 @@ namespace eval ::athena_test::tests:: {
     test SYSTEM:DELETE-1.5 {can't delete if in use by group} -setup {
         ted create SHIA
         ted order BSYS:SYSTEM:ADD sid 2
-        civgroup mutate update {g SHIA bsid 2}
+        civgroup update {g SHIA bsid 2}
     } -body {
         ted order -reject BSYS:SYSTEM:DELETE sid 2
     } -cleanup {

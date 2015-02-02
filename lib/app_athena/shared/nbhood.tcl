@@ -362,7 +362,7 @@ snit::type nbhood {
             SELECT g FROM civgroups
             WHERE n=$n
         }] {
-            lappend undo [civgroup mutate delete $g]
+            lappend undo [civgroup delete $g]
         }
 
         # NEXT, update the $geo module
@@ -650,7 +650,7 @@ snit::type nbhood {
 
         # NEXT, create the neighborhood and dependent entities
         lappend undo [nbhood mutate create [array get parms]]
-        lappend undo [absit mutate reconcile]
+        lappend undo [absit reconcile]
 
         my setundo [join $undo \n]
     }
@@ -836,7 +836,7 @@ snit::type nbhood {
 
         # NEXT, create the neighborhood and dependent entities
         lappend undo [nbhood mutate create [array get parms]]
-        lappend undo [absit mutate reconcile]
+        lappend undo [absit reconcile]
 
         my setundo [join $undo \n]
     }
@@ -886,7 +886,7 @@ snit::type nbhood {
 
         # NEXT, delete the neighborhood and dependent entities
         lappend undo [nbhood mutate delete $parms(n)]
-        lappend undo [absit mutate reconcile]
+        lappend undo [absit reconcile]
 
         my setundo [join $undo \n]
     }
@@ -914,7 +914,7 @@ snit::type nbhood {
 
     method _execute {{flunky ""}} {
         lappend undo [nbhood mutate lower $parms(n)]
-        lappend undo [absit mutate reconcile]
+        lappend undo [absit reconcile]
 
         my setundo [join $undo \n]
     }
@@ -941,7 +941,7 @@ snit::type nbhood {
 
     method _execute {{flunky ""}} {
         lappend undo [nbhood mutate raise $parms(n)]
-        lappend undo [absit mutate reconcile]
+        lappend undo [absit reconcile]
 
         my setundo [join $undo \n]
     }
@@ -1078,7 +1078,7 @@ snit::type nbhood {
 
         # NEXT, modify the neighborhood
         lappend undo [nbhood mutate update [array get parms]]
-        lappend undo [absit mutate reconcile]
+        lappend undo [absit reconcile]
 
         my setundo [join $undo \n]
     }
@@ -1140,7 +1140,7 @@ snit::type nbhood {
             lappend undo [nbhood mutate update [array get parms]]
         }
 
-        lappend undo [absit mutate reconcile]
+        lappend undo [absit reconcile]
 
         my setundo [join $undo \n]
     }

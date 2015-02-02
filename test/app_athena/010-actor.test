@@ -48,7 +48,7 @@ namespace eval ::athena_test::tests:: {
     # mutate create
 
     test create-1.1 {actor is created} -body {
-        actor mutate create [ted entity JOE]
+        actor create [ted entity JOE]
         ted querylist {SELECT * FROM actors}
     } -cleanup {
         cleanup
@@ -71,7 +71,7 @@ budget            0.0
     }
 
     test create-1.3 {supports=NONE => NULL} -body {
-        actor mutate create [dict merge [ted entity JOE] {supports NONE}]
+        actor create [dict merge [ted entity JOE] {supports NONE}]
         ted querylist {SELECT * FROM actors}
     } -cleanup {
         cleanup
@@ -94,7 +94,7 @@ budget            0.0
     }
 
     test create-1.4 {Strategy created} -body {
-        actor mutate create [ted entity JOE]
+        actor create [ted entity JOE]
         info object isa object [strategy getname JOE]
     } -cleanup {
         cleanup
@@ -102,8 +102,8 @@ budget            0.0
 
 
     test create-2.1 {undo deletes the actor} -setup {
-        actor mutate create [ted entity JOE]
-        set undo [actor mutate create [ted entity BOB]]
+        actor create [ted entity JOE]
+        set undo [actor create [ted entity BOB]]
     } -body {
         namespace eval :: $undo
         rdb eval {SELECT a FROM actors}
@@ -112,7 +112,7 @@ budget            0.0
     } -result {JOE}
 
     test create-2.3 {undo deletes the strategy} -setup {
-        set undo [actor mutate create [ted entity JOE]]
+        set undo [actor create [ted entity JOE]]
     } -body {
         namespace eval :: $undo
         info object isa object ::strategy::JOE
@@ -126,7 +126,7 @@ budget            0.0
     test delete-1.1 {Actor is deleted} -setup {
         ted create JOE BOB
     } -body {
-        actor mutate delete JOE
+        actor delete JOE
 
         # Is JOE gone?
         rdb eval {SELECT a FROM actors}
@@ -136,7 +136,7 @@ budget            0.0
 
     test delete-2.1 {Undo restores actor} -setup {
         ted create JOE
-        set undo [actor mutate delete JOE]
+        set undo [actor delete JOE]
     } -body {
         namespace eval :: $undo
         ted querylist {SELECT * FROM actors}
@@ -163,7 +163,7 @@ budget            0.0
     test delete-4.1 {groups.a set to NULL} -setup {
         ted create JOE BLUE USAID
     } -body {
-        actor mutate delete JOE
+        actor delete JOE
 
         rdb eval {SELECT g,a FROM groups}
     } -cleanup {
@@ -175,7 +175,7 @@ budget            0.0
     } -body {
         set a [rdb eval {SELECT g,a FROM groups}]
 
-        set undo [actor mutate delete JOE]
+        set undo [actor delete JOE]
         namespace eval :: $undo
 
         set b [rdb eval {SELECT g,a FROM groups}]
@@ -191,7 +191,7 @@ budget            0.0
         ted create JOE
     } -body {
         set a [info object isa object [strategy getname JOE]]
-        actor mutate delete JOE
+        actor delete JOE
         set b [info object isa object ::strategy::JOE]
 
         list $a $b
@@ -201,7 +201,7 @@ budget            0.0
 
     test delete-7.2 {Undo restores strategy} -setup {
         ted create JOE
-        set undo [actor mutate delete JOE]
+        set undo [actor delete JOE]
     } -body {
         namespace eval :: $undo
         info object isa object [strategy getname JOE]
@@ -215,7 +215,7 @@ budget            0.0
             UPDATE actors SET supports = 'BOB' WHERE a = 'JOE'
         }
     } -body {
-        actor mutate delete BOB
+        actor delete BOB
 
         rdb onecolumn {SELECT supports FROM actors WHERE a='JOE'}
     } -cleanup {
@@ -230,7 +230,7 @@ budget            0.0
     } -body {
         set a [rdb eval {SELECT a,supports FROM actors}]
 
-        set undo [actor mutate delete BOB]
+        set undo [actor delete BOB]
         namespace eval :: $undo
 
         set b [rdb eval {SELECT a,supports FROM actors}]
@@ -244,7 +244,7 @@ budget            0.0
         ted create JOE SHIA
         ted order VREL:OVERRIDE id {SHIA JOE}
     } -body {
-        actor mutate delete JOE
+        actor delete JOE
 
         rdb eval {SELECT g,a FROM vrel_ga ORDER BY g,a}
     } -cleanup {
@@ -255,7 +255,7 @@ budget            0.0
         ted create JOE SHIA
         ted order VREL:OVERRIDE id {SHIA JOE}
 
-        set undo [actor mutate delete JOE]
+        set undo [actor delete JOE]
     } -body {
         namespace eval :: $undo
 
@@ -267,7 +267,7 @@ budget            0.0
     test delete-10.1 {caps.owner is set to NULL} -setup {
         ted create JOE CBS
     } -body {
-        actor mutate delete JOE
+        actor delete JOE
         rdb eval {SELECT k,owner FROM caps}
     } -cleanup {
         cleanup
@@ -278,7 +278,7 @@ budget            0.0
     } -body {
         set a [rdb eval {SELECT owner FROM caps}]
 
-        set undo [actor mutate delete JOE]
+        set undo [actor delete JOE]
         namespace eval :: $undo
 
         set b [rdb eval {SELECT owner FROM caps}]
@@ -297,7 +297,7 @@ budget            0.0
     } -body {
         # NOTE: Because the atype changes, the
         # INPUT-atype-specific columns are zeroed.
-        actor mutate update {
+        actor update {
             a                JOE
             longname         "Joe the Actress"
             bsid             2
@@ -341,7 +341,7 @@ budget            10.0
     } -body {
         set a [ted querylist {SELECT * FROM actors}]
 
-        actor mutate update  {
+        actor update  {
             a                JOE
             longname         ""
             bsid             ""
@@ -372,7 +372,7 @@ budget            10.0
 
         set a [ted querylist {SELECT * FROM actors}]
 
-        set undo [actor mutate update {
+        set undo [actor update {
             a                JOE
             longname         "Joe the Actress"
             supports         BOB
@@ -487,7 +487,7 @@ budget            10.0
     test income-1.1 {get actor income, no income_a} -setup {
         ted create JOE
 
-        actor mutate update {
+        actor update {
             a                JOE
             supports         ""
             atype            ""
@@ -521,7 +521,7 @@ budget            10.0
     test income-1.3 {get actor income, budget} -setup {
         ted create JOE
 
-        actor mutate update {
+        actor update {
             a                JOE
             supports         ""
             atype            BUDGET

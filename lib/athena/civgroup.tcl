@@ -219,7 +219,7 @@ snit::type ::athena::civgroup {
     # a script of one or more commands that will undo the change.  When
     # change cannot be undone, the mutator returns the empty string.
 
-    # mutate create parmdict
+    # create parmdict
     #
     # parmdict     A dictionary of group parms
     #
@@ -243,7 +243,7 @@ snit::type ::athena::civgroup {
     #
     # NOTE: If sa_flag is true, then lfp is necessarily 0.
 
-    method {mutate create} {parmdict} {
+    method create {parmdict} {
         # FIRST, bring the dictionary entries into scope.
         dict with parmdict {}
 
@@ -299,13 +299,13 @@ snit::type ::athena::civgroup {
         $adb delete groups {g=$g} civgroups {g=$g}
     }
 
-    # mutate delete g
+    # delete g
     #
     # g     A group short name
     #
     # Deletes the group.
 
-    method {mutate delete} {g} {
+    method delete {g} {
         # FIRST, delete the group, grabbing the undo information
         set data [$adb delete -grab groups {g=$g} civgroups {g=$g}]
 
@@ -324,7 +324,7 @@ snit::type ::athena::civgroup {
     }
 
 
-    # mutate update parmdict
+    # update parmdict
     #
     # parmdict     A dictionary of group parms
     #
@@ -345,7 +345,7 @@ snit::type ::athena::civgroup {
     # Updates a civgroup given the parms, which are presumed to be
     # valid.
 
-    method {mutate update} {parmdict} {
+    method update {parmdict} {
         dict with parmdict {
             # FIRST, get the undo information
             set data [$adb grab groups {g=$g} civgroups {g=$g}]
@@ -496,7 +496,7 @@ snit::type ::athena::civgroup {
         }
 
         # NEXT, create the group and dependent entities
-        my setundo [$adb civgroup mutate create [array get parms]]
+        my setundo [$adb civgroup create [array get parms]]
     }
 }
 
@@ -548,8 +548,8 @@ snit::type ::athena::civgroup {
         }
 
         # NEXT, Delete the group and dependent entities
-        lappend undo [$adb civgroup mutate delete $parms(g)]
-        lappend undo [absit mutate reconcile]
+        lappend undo [$adb civgroup delete $parms(g)]
+        lappend undo [absit reconcile]
 
         my setundo [join $undo \n]
 
@@ -660,7 +660,7 @@ snit::type ::athena::civgroup {
 
 
     method _execute {{flunky ""}} {
-        my setundo [$adb civgroup mutate update [array get parms]]
+        my setundo [$adb civgroup update [array get parms]]
     }
 }
 

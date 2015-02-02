@@ -131,7 +131,7 @@ snit::type ::athena::frcgroup {
     # a script of one or more commands that will undo the change.  When
     # change cannot be undone, the mutator returns the empty string.
 
-    # mutate create parmdict
+    # create parmdict
     #
     # parmdict     A dictionary of group parms
     #
@@ -152,7 +152,7 @@ snit::type ::athena::frcgroup {
     # Creating a force group requires adding entries to the groups and
     # frcgroups tables.
 
-    method {mutate create} {parmdict} {
+    method create {parmdict} {
         # FIRST, bring the parameters into scope.
         dict with parmdict {}
 
@@ -181,16 +181,16 @@ snit::type ::athena::frcgroup {
         }
 
         # NEXT, Return the undo command
-        return [mymethod mutate delete $g]
+        return [mymethod delete $g]
     }
 
-    # mutate delete g
+    # delete g
     #
     # g     A group short name
     #
     # Deletes the group, including all references.
 
-    method {mutate delete} {g} {
+    method delete {g} {
         # FIRST, Delete the group, grabbing the undo information
         set data [$adb delete -grab groups {g=$g} frcgroups {g=$g}]
 
@@ -198,7 +198,7 @@ snit::type ::athena::frcgroup {
         return [list $adb ungrab $data]
     }
 
-    # mutate update parmdict
+    # update parmdict
     #
     # parmdict     A dictionary of group parms
     #
@@ -216,7 +216,7 @@ snit::type ::athena::frcgroup {
     # Updates a frcgroup given the parms, which are presumed to be
     # valid.
 
-    method {mutate update} {parmdict} {
+    method update {parmdict} {
         # FIRST, bring the parameters into scope.
         dict with parmdict {}
 
@@ -332,7 +332,7 @@ snit::type ::athena::frcgroup {
         }
     
         # NEXT, create the group and dependent entities
-        lappend undo [$adb frcgroup mutate create [array get parms]]
+        lappend undo [$adb frcgroup create [array get parms]]
     
         my setundo [join $undo \n]
     }
@@ -387,8 +387,8 @@ snit::type ::athena::frcgroup {
         }
 
         # NEXT, Delete the group and dependent entities
-        lappend undo [$adb frcgroup mutate delete $parms(g)]
-        lappend undo [absit mutate reconcile]
+        lappend undo [$adb frcgroup delete $parms(g)]
+        lappend undo [absit reconcile]
     
         my setundo [join $undo \n]
     }
@@ -460,7 +460,7 @@ snit::type ::athena::frcgroup {
     method _execute {{flunky ""}} {
         # NEXT, modify the group.
         set undo [list]
-        lappend undo [$adb frcgroup mutate update [array get parms]]
+        lappend undo [$adb frcgroup update [array get parms]]
     
         my setundo [join $undo \n]
     }
@@ -531,7 +531,7 @@ snit::type ::athena::frcgroup {
         set undo [list]
     
         foreach parms(g) $parms(ids) {
-            lappend undo [$adb frcgroup mutate update [array get parms]]
+            lappend undo [$adb frcgroup update [array get parms]]
         }
 
         my setundo [join $undo \n]
