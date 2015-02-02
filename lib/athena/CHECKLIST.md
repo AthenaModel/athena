@@ -36,4 +36,4 @@ from app_athena(n) to athena(n).  See lib/athena/actor.tcl for an example.
 - [x] Try "athena.tcl -script scenarios/Nangahar_geo.adb".  Fix problems.
 - [x] Try editing the entity type interactively; verify that you can
       create and update.
-- [ ] Verify that the full app_athena test suite runs.
+- [x] Verify that the full app_athena test suite runs.

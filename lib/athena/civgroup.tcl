@@ -11,7 +11,7 @@
 #    This module is responsible for managing civilian groups and operations
 #    upon them.
 #
-# TBD: Global refs: $adb, civgroup, bsys, absit
+# TBD: Global refs: bsys, absit
 #
 #-----------------------------------------------------------------------
 
