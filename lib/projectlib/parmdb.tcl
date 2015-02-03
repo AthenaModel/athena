@@ -104,6 +104,260 @@ snit::type ::projectlib::parmdb {
             remain.
         }
 
+        # NEXT, Athena Attrition model (AAM) parameters
+        $ps subset aam {
+            Athena Attrition model (AAM) parameters.
+        }
+
+        $ps define aam.combatTimeHours ::projectlib::iquantity 40 {
+            The maximum time, in hours, two force groups will actively remain
+             in combat during the course of a week.
+        }
+
+        $ps define aam.detectionGain ::projectlib::rgain 1.0 {
+            The detection gain applied to force groups that may
+            become engaged in combat. This parameter only effects the 
+            ability of a force group to detect another force group 
+            that is actively trying to hide.
+        }
+
+        $ps subset aam.FRC {
+            Parameters for force groups engaged in combat.
+        }
+
+        $ps subset aam.FRC.forcetype {
+            For units belonging to force groups, this set of dials
+            determines the contribution to the computation of effective force
+            each person in the unit has based on the group's force type.  
+            Must be no less than 0.        
+        }
+
+        foreach {name value} {
+            REGULAR       25
+            PARAMILITARY  15
+            POLICE        10
+            IRREGULAR     20
+            CRIMINAL       8
+        } {
+            $ps define aam.FRC.forcetype.$name ::projectlib::rgain $value "
+                This dial determines the contribution each
+                person in a unit has for the purpose of computing the effective
+                force of a unit in combat, where that unit belongs to an
+                force group of force type $name.
+                Must be no less than 0.
+            "
+        }
+
+        $ps subset aam.FRC.discipline {
+            For units belonging to force groups, this set of dials
+            determines the contribution to effective force based on
+            the groups discipline due to training.
+        }
+
+        foreach {name value} {
+            PROFICIENT 1.0
+            FULL       0.9
+            PARTIAL    0.7
+            NONE       0.4
+        } {
+            $ps define aam.FRC.discipline.$name ::simlib::rfraction $value "
+                Dial that determines a force group's level of discipline
+                given a training level of $name. This factor is a component
+                of effective force of a unit beloning to a force group.
+                It is a number between 0.0 and 1.0.
+            "
+        }
+
+        $ps subset aam.FRC.demeanor {
+            For units belonging to a force group, this set of dials
+            determines the contribution of the groups demeanor to
+            its effective force.
+        }
+
+        foreach {name value} {
+            APATHETIC  0.3
+            AVERAGE    1.0
+            AGGRESSIVE 1.5
+        } {
+            $ps define aam.FRC.demeanor.$name ::projectlib::rgain $value "
+                Dial that determines the effect of $name demeanor
+                on a group's effective force.  Must be no less than 0; 
+                set to 1.0 if demeanor should have no effect.
+            "
+        }
+
+        $ps subset aam.FRC.equiplevel {
+            For units belonging to a force group, this set of dials
+            determines the contribution of the groups equipment level
+            to its effective force.
+        }
+
+        foreach {name value} {
+            POOR 0.5
+            FAIR 0.8
+            GOOD 1.0
+            BEST 1.5
+        } {
+            $ps define aam.FRC.equiplevel.$name ::projectlib::rgain $value "
+                Dial that determines the effect of a group having a $name level
+                of equipment present in units.  Must be no less than 0;
+                set to 1.0 if equipment level should have no effect.
+            "
+        }
+
+        $ps subset aam.FRC.civconcern {
+            For units belonging to a force group, this set of dials
+            determines how concern for civilian casualties effects 
+            a force groups ability to cause attrition to a force group
+            with which they are in combat.
+        }
+
+        foreach {name value} {
+            NONE   1.0
+            LOW    0.9
+            MEDIUM 0.75
+            HIGH   0.5
+        } {
+            $ps define aam.FRC.civconcern.$name ::simlib::rfraction $value "
+                Dial that determines the effect of a force group that has a 
+                concern for civilian casualties of $name to cause attrition to
+                a force group that it is actively fighting.  Set to 1.0, the
+                concern for civilian casualties has no effect.
+            "
+        }
+
+        $ps subset aam.FRC.urbcas {
+            For units belonging to a force group, how the urbanization of
+            a neighborhood effects the number of casualties it suffers due
+            to attrition from units with which they are in combat.
+
+        }      
+
+        foreach urb [eurbanization names] {
+            $ps define aam.FRC.urbcas.$urb ::projectlib::rgain 1.0 "
+                For units in a force group fighting in a neighborhood
+                with an urbanization of $urb, a gain on the number of "
+        }          
+
+        $ps subset aam.visibility {
+            Parameters that effect the visiblity of force group units engaged
+            in combat.
+        }
+
+        $ps define aam.visibility.coverage ::simlib::coverage {
+            10.0 1000
+        } {
+            The parameters (c, d) that determine the
+            coverage fraction function for the visiblity of a hiding
+            force group unit.  Coverage depends on the asset density, which 
+            is the number of personnel in the unit.  If the density is 0, 
+            the coverage is 0 and visiblity is 0.  The coverage fraction 
+            increases to 2/3 when density is c.  Essentially, the more
+            personnel in a hiding unit, the more of those personnel are apt 
+            to be detected.  This parameter only applies to force groups
+            that have been ordered to hide.
+        }
+
+        foreach urb [eurbanization names] {
+            $ps define aam.visibility.$urb ::simlib::rfraction 1.0 "
+                For units in a force group hiding in a neighborhood with
+                an urbanzation of $urb, the fraction of that unit that
+                is visible.  If set to 0.0, units in force groups will not
+                suffer attrition.
+            "
+        }
+
+        $ps setdefault aam.visibility.ISOLATED 1.0
+        $ps setdefault aam.visibility.RURAL    1.0
+        $ps setdefault aam.visibility.SUBURBAN 0.9
+        $ps setdefault aam.visibility.URBAN    0.5
+
+        $ps subset aam.civcas {
+            Parameters that effect the number of casualties taken by 
+            civilian groups in neighborhoods that have force groups
+            in combat with each other.
+        }
+
+        foreach urb [eurbanization names] {
+            $ps define aam.civcas.$urb ::simlib::rfraction 1.0 "
+                For civilian groups in a neighborhood with an urbanization
+                of $urb, a multiplier that effects the number of casualties
+                suffered by the groups in that neighborhood.
+            "
+        }
+
+        $ps setdefault aam.civcas.ISOLATED 0.3
+        $ps setdefault aam.civcas.RURAL    0.3
+        $ps setdefault aam.civcas.SUBURBAN 0.8
+        $ps setdefault aam.civcas.URBAN    1.0
+
+        $ps subset aam.civcas.forcetype {
+            Parameters that effect the number of casualties taken by
+            civlian groups in neighborhoods that have force groups 
+            in combat with each other based on the force type of the
+            force groups.
+        }
+
+        foreach {name value} {
+            REGULAR      1.0
+            PARAMILITARY 1.25
+            POLICE       1.0
+            IRREGULAR    1.5
+            CRIMINAL     2.0
+        } {
+            $ps define aam.civcas.forcetype.$name ::projectlib::rgain $value "
+                This multiplier acts as a gain on civilian casualties for when
+                there is a force group that has a type of $name in combat in
+                a neighborhood.  Set to 0.0, force groups of this force type will
+                not cause civilian casualties.
+            "
+        }
+
+        $ps subset aam.civcas.discipline {
+            Parameters that effect the number of casualties taken by
+            civlian groups in neighborhoods that have force groups 
+            in combat with each other based on the discipline of the
+            force groups.
+        }
+
+        foreach {name value} {
+            PROFICIENT 0.9
+            FULL       1.0
+            PARTIAL    1.4
+            NONE       2.0
+        } {
+            $ps define aam.civcas.discipline.$name ::projectlib::rgain $value "
+                This multiplier acts as a gain on civilian casualties for when
+                there is a force group that has a training level of $name in 
+                combat in a neighborhood.  Set to 0.0, force groups with this 
+                level of training will not cause civilian casualties.
+            "
+        }
+
+        $ps subset aam.lc {
+            The set of Lanchester coefficients that are the base rate of one force
+            groups units attrition of another force group based on the posture of
+            the groups in combat.
+        }
+
+        foreach posture {ATTACK DEFEND WITHDRAW} {
+            $ps subset aam.lc.$posture {
+                The set of Lanchester coefficients that are the base rate of a
+                force group with a posture of $posture fighting against another
+                force group.
+            }
+        }
+
+        foreach fposture {ATTACK DEFEND WITHDRAW} {
+            foreach gposture {ATTACK DEFEND WITHDRAW} {
+                $ps define aam.lc.$fposture.$gposture ::simlib::rfraction 0.0 "
+                    The Lanchester coefficient for a unit with a posture of 
+                    $fposture in combat against a unit with a posture of $gposture.
+                    Set to 0.0, there will be no attrition.
+                "
+            }
+        }
+
         # absit.* parameters
         $ps subset absit {
             Environmental situation parameters, by absit type.
