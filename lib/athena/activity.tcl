@@ -6,16 +6,33 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Unit Activity module
+#    athena(n): Unit Activity module
 #
 #    This module is responsible for defining and validating the
 #    different categories of unit activities.
 #
+# TBD: Global ref: group
+#
 #-----------------------------------------------------------------------
 
-snit::type activity {
-    # Make it a singleton
-    pragma -hasinstances no
+snit::type ::athena::activity {
+    #-------------------------------------------------------------------
+    # Components
+
+    component adb ;# The athenadb(n) instance
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    # constructor adb_
+    #
+    # adb_    - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of the type.
+
+    constructor {adb_} {
+        set adb $adb_
+    }
 
     #-------------------------------------------------------------------
     # Queries
@@ -27,8 +44,8 @@ snit::type activity {
     #
     # Returns the list of all activity names
 
-    typemethod names {} {
-        set names [rdb eval {
+    method names {} {
+        set names [$adb eval {
             SELECT a FROM activity
         }]
     }
@@ -40,9 +57,9 @@ snit::type activity {
     #
     # Validates an activity ID
 
-    typemethod validate {a} {
-        if {![rdb exists {SELECT a FROM activity WHERE a=$a}]} {
-            set names [join [activity names] ", "]
+    method validate {a} {
+        if {![$adb exists {SELECT a FROM activity WHERE a=$a}]} {
+            set names [join [$self names] ", "]
 
             return -code error -errorcode INVALID \
                 "Invalid activity, should be one of: $names"
@@ -55,8 +72,8 @@ snit::type activity {
     #
     # Returns the list of activities assignable to force units
 
-    typemethod {frc names} {} {
-        set names [rdb eval {
+    method {frc names} {} {
+        set names [$adb eval {
             SELECT a FROM activity_gtype
             WHERE gtype='FRC' AND assignable
         }]
@@ -69,9 +86,9 @@ snit::type activity {
     #
     # Validates an activity ID as assignable to force units
 
-    typemethod {frc validate} {a} {
-        if {$a ni [activity frc names]} {
-            set names [join [activity frc names] ", "]
+    method {frc validate} {a} {
+        if {$a ni [$self frc names]} {
+            set names [join [$self frc names] ", "]
 
             return -code error -errorcode INVALID \
                 "Invalid activity, should be one of: $names"
@@ -85,8 +102,8 @@ snit::type activity {
     #
     # Returns the list of activities assignable to organization units
 
-    typemethod {org names} {} {
-        set names [rdb eval {
+    method {org names} {} {
+        set names [$adb eval {
             SELECT a FROM activity_gtype
             WHERE gtype='ORG' AND assignable
         }]
@@ -99,9 +116,9 @@ snit::type activity {
     #
     # Validates an activity ID as assignable to org units
 
-    typemethod {org validate} {a} {
-        if {$a ni [activity org names]} {
-            set names [join [activity org names] ", "]
+    method {org validate} {a} {
+        if {$a ni [$self org names]} {
+            set names [join [$self org names] ", "]
 
             return -code error -errorcode INVALID \
                 "Invalid activity, should be one of: $names"
@@ -115,15 +132,15 @@ snit::type activity {
     #
     # Returns the list of schedulable activities
 
-    typemethod {asched names} {{g ""}} {
+    method {asched names} {{g ""}} {
         if {$g eq ""} {
-            set names [rdb eval {
+            set names [$adb eval {
                 SELECT DISTINCT a FROM activity_gtype
                 WHERE assignable
             }]
         } else {
             set gtype [group gtype $g]
-            set names [rdb eval {
+            set names [$adb eval {
                 SELECT DISTINCT a FROM activity_gtype
                 WHERE assignable AND gtype=$gtype
             }]
@@ -137,9 +154,9 @@ snit::type activity {
     #
     # Validates a schedulable activity ID
 
-    typemethod {asched validate} {a} {
-        if {$a ni [activity asched names]} {
-            set names [join [activity asched names] ", "]
+    method {asched validate} {a} {
+        if {$a ni [$self asched names]} {
+            set names [join [$self asched names] ", "]
 
             return -code error -errorcode INVALID \
                 "Invalid activity, should be one of: $names"
@@ -153,8 +170,8 @@ snit::type activity {
     #
     # Returns the list of activities for group type gtype, minus NONE.
 
-    typemethod {withcov names} {gtype} {
-        set names [rdb eval {
+    method {withcov names} {gtype} {
+        set names [$adb eval {
             SELECT DISTINCT a FROM activity_gtype
             WHERE gtype=$gtype AND a!='NONE'
         }]
@@ -164,9 +181,9 @@ snit::type activity {
     #
     # Validates an implicit/explicit activity ID for a frc group
 
-    typemethod {withcov frc validate} {a} {
-        if {$a ni [activity withcov names FRC]} {
-            set names [join [activity withcov names FRC] ", "]
+    method {withcov frc validate} {a} {
+        if {$a ni [$self withcov names FRC]} {
+            set names [join [$self withcov names FRC] ", "]
 
             return -code error -errorcode INVALID \
                 "Invalid activity, should be one of: $names"
@@ -179,9 +196,9 @@ snit::type activity {
     #
     # Validates an implicit/explicit activity ID for a org group
 
-    typemethod {withcov org validate} {a} {
-        if {$a ni [activity withcov names ORG]} {
-            set names [join [activity withcov names ORG] ", "]
+    method {withcov org validate} {a} {
+        if {$a ni [$self withcov names ORG]} {
+            set names [join [$self withcov names ORG] ", "]
 
             return -code error -errorcode INVALID \
                 "Invalid activity, should be one of: $names"
@@ -197,12 +214,12 @@ snit::type activity {
     #
     # Verifies that a can be assigned to g.
 
-    typemethod check {g a} {
+    method check {g a} {
         set gtype [group gtype $g]
 
         switch -exact -- $gtype {
-            FRC     { set names [activity frc names] }
-            ORG     { set names [activity org names] }
+            FRC     { set names [$self frc names] }
+            ORG     { set names [$self org names] }
             default { error "Unexpected gtype: \"$gtype\""   }
         }
 

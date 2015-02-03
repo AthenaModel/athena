@@ -167,6 +167,11 @@ snit::type ::athena::athenadb {
     component nbhood   -public nbhood    ;# nbhood manager
     component orggroup -public orggroup  ;# orggroup manager
 
+    # Other Entities
+    component activity -public activity  ;# activity manager
+    component agent    -public agent     ;# agent manager
+
+
     #-------------------------------------------------------------------
     # Options
 
@@ -224,6 +229,7 @@ snit::type ::athena::athenadb {
 
         $self MakeComponents \
             absit            \
+            activity         \
             actor            \
             agent            \
             civgroup         \

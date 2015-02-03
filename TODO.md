@@ -24,6 +24,8 @@
   - actor, civgroup
 - driver::absit
   - absit
+- group
+  - activity
 - nbhood
   - absit
 - notifier bind

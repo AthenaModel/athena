@@ -59,5 +59,6 @@ source [file join $::athena::library nbhood.tcl       ]
 source [file join $::athena::library orggroup.tcl     ]
 
 # Non-Editable Entities
+source [file join $::athena::library activity.tcl     ]
 source [file join $::athena::library agent.tcl        ]
 
