@@ -100,13 +100,13 @@ namespace eval ::athena_test::tests:: {
         setup
         ted order INJECT:COOP:CREATE $I1
     } -body {
-        ted notifier bind ::rdb <curse_injects>
+        ted notifier bind ::adb <curse_injects>
         ted order INJECT:DELETE id {C1 1}
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <curse_injects> delete {C1 1}}
+        {::adb <curse_injects> delete {C1 1}}
     }
 
 
@@ -115,13 +115,13 @@ namespace eval ::athena_test::tests:: {
         ted order INJECT:COOP:CREATE $I1
         ted order INJECT:DELETE id {C1 1}
     } -body {
-        ted notifier bind ::rdb <curse_injects>
+        ted notifier bind ::adb <curse_injects>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <curse_injects> update {C1 1}}
+        {::adb <curse_injects> update {C1 1}}
     }
 
 
@@ -147,13 +147,13 @@ namespace eval ::athena_test::tests:: {
         setup
         ted order INJECT:COOP:CREATE $I1
     } -body {
-        ted notifier bind ::rdb <curse_injects>
+        ted notifier bind ::adb <curse_injects>
         ted order INJECT:STATE id {C1 1} state disabled
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <curse_injects> update {C1 1}}
+        {::adb <curse_injects> update {C1 1}}
     }
 
 
@@ -162,13 +162,13 @@ namespace eval ::athena_test::tests:: {
         ted order INJECT:COOP:CREATE $I1
         ted order INJECT:STATE id {C1 1} state disabled
     } -body {
-        ted notifier bind ::rdb <curse_injects>
+        ted notifier bind ::adb <curse_injects>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <curse_injects> update {C1 1}}
+        {::adb <curse_injects> update {C1 1}}
     }
 
     #-------------------------------------------------------------------

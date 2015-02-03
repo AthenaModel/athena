@@ -145,13 +145,13 @@ BLUE JOE 0.0  0         0.0
     test OVERRIDE-2.3 {table monitor event on creation} -setup {
         setup
     } -body {
-        ted notifier bind ::rdb <vrel_ga>
+        ted notifier bind ::adb <vrel_ga>
         ted order VREL:OVERRIDE id {SHIA JOE} base 0.5
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <vrel_ga> update {SHIA JOE}}
+        {::adb <vrel_ga> update {SHIA JOE}}
     }
 
 
@@ -163,13 +163,13 @@ BLUE JOE 0.0  0         0.0
             base   0.5
         }
     } -body {
-        ted notifier bind ::rdb <vrel_ga>
+        ted notifier bind ::adb <vrel_ga>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <vrel_ga> delete {SHIA JOE}}
+        {::adb <vrel_ga> delete {SHIA JOE}}
     }
 
 
@@ -200,13 +200,13 @@ SHIA JOE 0.5  1         0.6
         setup
         ted order VREL:OVERRIDE {id {SHIA JOE}}
     } -body {
-        ted notifier bind ::rdb <vrel_ga>
+        ted notifier bind ::adb <vrel_ga>
         ted order VREL:OVERRIDE id {SHIA JOE} base 0.5
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <vrel_ga> update {SHIA JOE}}
+        {::adb <vrel_ga> update {SHIA JOE}}
     }
 
 
@@ -219,13 +219,13 @@ SHIA JOE 0.5  1         0.6
             base   0.5
         }
     } -body {
-        ted notifier bind ::rdb <vrel_ga>
+        ted notifier bind ::adb <vrel_ga>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <vrel_ga> update {SHIA JOE}}
+        {::adb <vrel_ga> update {SHIA JOE}}
     }
 
     #-------------------------------------------------------------------
@@ -262,13 +262,13 @@ SHIA JOE 0.5  1         0.6
         setup
         ted order VREL:OVERRIDE {id {BLUE JOE}}
     } -body {
-        ted notifier bind ::rdb <vrel_ga>
+        ted notifier bind ::adb <vrel_ga>
         ted order VREL:RESTORE id {BLUE JOE}
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <vrel_ga> delete {BLUE JOE}}
+        {::adb <vrel_ga> delete {BLUE JOE}}
     }
 
 
@@ -277,19 +277,19 @@ SHIA JOE 0.5  1         0.6
         ted order VREL:OVERRIDE {id {BLUE JOE}}
         ted order VREL:RESTORE {id {BLUE JOE}}
     } -body {
-        ted notifier bind ::rdb <vrel_ga>
+        ted notifier bind ::adb <vrel_ga>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <vrel_ga> update {BLUE JOE}}
+        {::adb <vrel_ga> update {BLUE JOE}}
     }
 
     test RESTORE-3.1 {OK if there's no override} -setup {
         setup
     } -body {
-        ted notifier bind ::rdb <vrel_ga>
+        ted notifier bind ::adb <vrel_ga>
         ted order VREL:RESTORE id {BLUE JOE}
         ted notifier received
     } -cleanup {
@@ -301,7 +301,7 @@ SHIA JOE 0.5  1         0.6
         setup
         ted order VREL:RESTORE {id {BLUE JOE}}
     } -body {
-        ted notifier bind ::rdb <vrel_ga>
+        ted notifier bind ::adb <vrel_ga>
         flunky undo
         ted notifier received
     } -cleanup {
@@ -384,7 +384,7 @@ SHIA JOE 0.5  1         0.6
     test OVERRIDE:MULTI-2.1 {create new overrides} -setup {
         setup
     } -body {
-        ted notifier bind ::rdb <vrel_ga>
+        ted notifier bind ::adb <vrel_ga>
 
         ted order VREL:OVERRIDE:MULTI {
             ids        {{SHIA JOE} {BLUE JOE}}
@@ -397,8 +397,8 @@ SHIA JOE 0.5  1         0.6
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <vrel_ga> update {SHIA JOE}}
-        {::rdb <vrel_ga> update {BLUE JOE}}
+        {::adb <vrel_ga> update {SHIA JOE}}
+        {::adb <vrel_ga> update {BLUE JOE}}
     }
 
     test OVERRIDE:MULTI-2.2 {undo undoes the change} -setup {
@@ -410,14 +410,14 @@ SHIA JOE 0.5  1         0.6
             current    0.6
         }
     } -body {
-        ted notifier bind ::rdb <vrel_ga>
+        ted notifier bind ::adb <vrel_ga>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <vrel_ga> delete {SHIA JOE}}
-        {::rdb <vrel_ga> delete {BLUE JOE}}
+        {::adb <vrel_ga> delete {SHIA JOE}}
+        {::adb <vrel_ga> delete {BLUE JOE}}
     }
 
     # Update existing overrides
@@ -426,7 +426,7 @@ SHIA JOE 0.5  1         0.6
         ted order VREL:OVERRIDE {id {BLUE JOE}}
         ted order VREL:OVERRIDE {id {SHIA JOE}}
     } -body {
-        ted notifier bind ::rdb <vrel_ga>
+        ted notifier bind ::adb <vrel_ga>
         ted order VREL:OVERRIDE:MULTI {
             ids        {{SHIA JOE} {BLUE JOE}}
             base       0.5
@@ -437,8 +437,8 @@ SHIA JOE 0.5  1         0.6
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <vrel_ga> update {SHIA JOE}}
-        {::rdb <vrel_ga> update {BLUE JOE}}
+        {::adb <vrel_ga> update {SHIA JOE}}
+        {::adb <vrel_ga> update {BLUE JOE}}
     }
 
     test OVERRIDE:MULTI-3.2 {undo undoes the change} -setup {
@@ -453,14 +453,14 @@ SHIA JOE 0.5  1         0.6
             current    0.6
         }
     } -body {
-        ted notifier bind ::rdb <vrel_ga>
+        ted notifier bind ::adb <vrel_ga>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <vrel_ga> update {SHIA JOE}}
-        {::rdb <vrel_ga> update {BLUE JOE}}
+        {::adb <vrel_ga> update {SHIA JOE}}
+        {::adb <vrel_ga> update {BLUE JOE}}
     }
 
 

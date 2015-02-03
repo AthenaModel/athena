@@ -124,13 +124,13 @@ mag         5.0
     test CREATE-2.2 {Effects} -setup {
         setup
     } -body {
-        ted notifier bind ::rdb <curse_injects>
+        ted notifier bind ::adb <curse_injects>
         ted order INJECT:SAT:CREATE $I1
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <curse_injects> update {C1 1}}
+        {::adb <curse_injects> update {C1 1}}
     }
 
 
@@ -138,13 +138,13 @@ mag         5.0
         setup
         ted order INJECT:SAT:CREATE $I1
     } -body {
-        ted notifier bind ::rdb <curse_injects>
+        ted notifier bind ::adb <curse_injects>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <curse_injects> delete {C1 1}}
+        {::adb <curse_injects> delete {C1 1}}
     }
 
     #-------------------------------------------------------------------
@@ -217,14 +217,14 @@ mag         10.0
         setup
         ted order INJECT:SAT:CREATE $I2
     } -body {
-        ted notifier bind ::rdb <curse_injects>
+        ted notifier bind ::adb <curse_injects>
         ted order INJECT:SAT:UPDATE id {C2 1} g BLUE
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <curse_injects> update {C2 1}}
-        {::rdb <curse_injects> update {C2 1}}
+        {::adb <curse_injects> update {C2 1}}
+        {::adb <curse_injects> update {C2 1}}
     }
 
 
@@ -232,13 +232,13 @@ mag         10.0
         setup_update_sat
         ted order INJECT:SAT:UPDATE id {C2 1} g BLUE
     } -body {
-        ted notifier bind ::rdb <curse_injects>
+        ted notifier bind ::adb <curse_injects>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <curse_injects> update {C2 1}}
+        {::adb <curse_injects> update {C2 1}}
     }
 
 

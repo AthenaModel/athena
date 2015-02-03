@@ -123,13 +123,13 @@ SUNN BLUE 50.0 BASELINE   50.0
     test UPDATE-2.2 {<coop_fg> update} -setup {
         setup
     } -body {
-        ted notifier bind ::rdb <coop_fg>
+        ted notifier bind ::adb <coop_fg>
         ted order COOP:UPDATE id {SHIA BLUE} base 50.0
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <coop_fg> update {SHIA BLUE}}
+        {::adb <coop_fg> update {SHIA BLUE}}
     }
 
 
@@ -141,13 +141,13 @@ SUNN BLUE 50.0 BASELINE   50.0
             base    40.0
         }
     } -body {
-        ted notifier bind ::rdb <coop_fg>
+        ted notifier bind ::adb <coop_fg>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <coop_fg> update {SHIA BLUE}}
+        {::adb <coop_fg> update {SHIA BLUE}}
     }
 
     #-------------------------------------------------------------------
@@ -212,7 +212,7 @@ SUNN BLUE 50.0 BASELINE   50.0
     test UPDATE:MULTI-2.1 {one cooperation of several is updated} -setup {
         setup
     } -body {
-        ted notifier bind ::rdb <coop_fg>
+        ted notifier bind ::adb <coop_fg>
 
         ted order COOP:UPDATE:MULTI {
             ids         {{SHIA BLUE}}
@@ -225,14 +225,14 @@ SUNN BLUE 50.0 BASELINE   50.0
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <coop_fg> update {SHIA BLUE}}
+        {::adb <coop_fg> update {SHIA BLUE}}
     }
 
 
     test UPDATE:MULTI-2.2 {several cooperations are updated} -setup {
         setup
     } -body {
-        ted notifier bind ::rdb <coop_fg>
+        ted notifier bind ::adb <coop_fg>
         ted order COOP:UPDATE:MULTI {
             ids         {{SHIA BLUE} {SUNN BLUE}} 
             base        40.0
@@ -243,8 +243,8 @@ SUNN BLUE 50.0 BASELINE   50.0
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <coop_fg> update {SHIA BLUE}}
-        {::rdb <coop_fg> update {SUNN BLUE}}
+        {::adb <coop_fg> update {SHIA BLUE}}
+        {::adb <coop_fg> update {SUNN BLUE}}
     }
 
 
@@ -258,14 +258,14 @@ SUNN BLUE 50.0 BASELINE   50.0
             natural     70.0
         }
     } -body {
-        ted notifier bind ::rdb <coop_fg>
+        ted notifier bind ::adb <coop_fg>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <coop_fg> update {SHIA BLUE}}
-        {::rdb <coop_fg> update {SUNN BLUE}}
+        {::adb <coop_fg> update {SHIA BLUE}}
+        {::adb <coop_fg> update {SUNN BLUE}}
     }
 
 

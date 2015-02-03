@@ -118,13 +118,13 @@ BLUE/NB1 101 101
     test MOVE-2.2 {table monitor event} -setup {
         setup
     } -body {
-        ted notifier bind ::rdb <units>
+        ted notifier bind ::adb <units>
         ted order UNIT:MOVE u BLUE/NB1 location B01B01
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <units> update BLUE/NB1}
+        {::adb <units> update BLUE/NB1}
     }
 
 
@@ -132,13 +132,13 @@ BLUE/NB1 101 101
         setup        
         ted order UNIT:MOVE u BLUE/NB1 location B01B01
     } -body {
-        ted notifier bind ::rdb <units>
+        ted notifier bind ::adb <units>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <units> update BLUE/NB1}
+        {::adb <units> update BLUE/NB1}
     }
 
 

@@ -329,13 +329,13 @@ upc        0.0
 
     test CREATE-2.5 {effects} -body {
         ted create NB1
-        ted notifier bind ::rdb <civgroups>
+        ted notifier bind ::adb <civgroups>
         ted order CIVGROUP:CREATE $sunn
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <civgroups> update SUNN}
+        {::adb <civgroups> update SUNN}
     }
 
 
@@ -343,13 +343,13 @@ upc        0.0
         ted create NB1
         ted order CIVGROUP:CREATE $sunn
     } -body {
-        ted notifier bind ::rdb <civgroups>
+        ted notifier bind ::adb <civgroups>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <civgroups> delete SUNN}
+        {::adb <civgroups> delete SUNN}
     }
 
     #-------------------------------------------------------------------
@@ -372,13 +372,13 @@ upc        0.0
     test DELETE-2.1 {Effects} -setup {
         ted create NB1 SHIA
     } -body {
-        ted notifier bind ::rdb <civgroups>
+        ted notifier bind ::adb <civgroups>
         ted order CIVGROUP:DELETE g SHIA
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <civgroups> delete SHIA}
+        {::adb <civgroups> delete SHIA}
     }
 
 
@@ -386,13 +386,13 @@ upc        0.0
         ted create NB1 SHIA
         ted order CIVGROUP:DELETE g SHIA
     } -body {
-        ted notifier bind ::rdb <civgroups>
+        ted notifier bind ::adb <civgroups>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <civgroups> update SHIA}
+        {::adb <civgroups> update SHIA}
     }
 
     #-------------------------------------------------------------------
@@ -597,13 +597,13 @@ upc        10.0
     test UPDATE-2.2 {table monitor event} -setup {
         ted create NB1 SHIA
     } -body {
-        ted notifier bind ::rdb <civgroups>
+        ted notifier bind ::adb <civgroups>
         ted order CIVGROUP:UPDATE g SHIA longname "Shia Folk"
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <civgroups> update SHIA}
+        {::adb <civgroups> update SHIA}
     }
 
 
@@ -615,13 +615,13 @@ upc        10.0
             color        "#ff0000"
         }
     } -body {
-        ted notifier bind ::rdb <civgroups>
+        ted notifier bind ::adb <civgroups>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <civgroups> update SHIA}
+        {::adb <civgroups> update SHIA}
     }
 
 

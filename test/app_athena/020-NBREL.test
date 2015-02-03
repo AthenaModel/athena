@@ -115,13 +115,13 @@ NB2 NB2 HERE
     test UPDATE-2.2 {table monitor event} -setup {
         setup
     } -body {
-        ted notifier bind ::rdb <nbrel_mn>
+        ted notifier bind ::adb <nbrel_mn>
         ted order NBREL:UPDATE id {NB1 NB2}
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <nbrel_mn> update {NB1 NB2}}
+        {::adb <nbrel_mn> update {NB1 NB2}}
     }
 
 
@@ -133,13 +133,13 @@ NB2 NB2 HERE
             proximity     NEAR
         }
     } -body {
-        ted notifier bind ::rdb <nbrel_mn>
+        ted notifier bind ::adb <nbrel_mn>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <nbrel_mn> update {NB1 NB2}}
+        {::adb <nbrel_mn> update {NB1 NB2}}
     }
 
     #-------------------------------------------------------------------
@@ -207,7 +207,7 @@ NB2 NB2 HERE
     test UPDATE:MULTI-2.1 {one nbrel of several is updated} -setup {
         setup
     } -body {
-        ted notifier bind ::rdb <nbrel_mn>
+        ted notifier bind ::adb <nbrel_mn>
 
         ted order NBREL:UPDATE:MULTI {
             ids           {{NB1 NB2}}
@@ -218,14 +218,14 @@ NB2 NB2 HERE
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <nbrel_mn> update {NB1 NB2}}
+        {::adb <nbrel_mn> update {NB1 NB2}}
     }
 
 
     test UPDATE:MULTI-2.2 {several are updated} -setup {
         setup
     } -body {
-        ted notifier bind ::rdb <nbrel_mn>
+        ted notifier bind ::adb <nbrel_mn>
 
         ted order NBREL:UPDATE:MULTI {
             ids           {{NB1 NB2} {NB2 NB1}}
@@ -236,8 +236,8 @@ NB2 NB2 HERE
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <nbrel_mn> update {NB1 NB2}}
-        {::rdb <nbrel_mn> update {NB2 NB1}}
+        {::adb <nbrel_mn> update {NB1 NB2}}
+        {::adb <nbrel_mn> update {NB2 NB1}}
     }
 
 
@@ -249,14 +249,14 @@ NB2 NB2 HERE
             proximity     NEAR
         }
     } -body {
-        ted notifier bind ::rdb <nbrel_mn>
+        ted notifier bind ::adb <nbrel_mn>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <nbrel_mn> update {NB1 NB2}}
-        {::rdb <nbrel_mn> update {NB2 NB1}}
+        {::adb <nbrel_mn> update {NB1 NB2}}
+        {::adb <nbrel_mn> update {NB2 NB1}}
     }
 
 

@@ -122,13 +122,13 @@ state     normal
     test CREATE-2.3 {Effects} -setup {
         setup
     } -body {
-        ted notifier bind ::rdb <curses>
+        ted notifier bind ::adb <curses>
         ted order CURSE:CREATE $c1
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <curses> update C1}
+        {::adb <curses> update C1}
     }
 
 
@@ -136,13 +136,13 @@ state     normal
         setup
         ted order CURSE:CREATE $c1
     } -body {
-        ted notifier bind ::rdb <curses>
+        ted notifier bind ::adb <curses>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <curses> delete C1}
+        {::adb <curses> delete C1}
     }
 
 
@@ -166,13 +166,13 @@ state     normal
     test DELETE-2.1 {Effects} -setup {
         ted order CURSE:CREATE $c1
     } -body {
-        ted notifier bind ::rdb <curses>
+        ted notifier bind ::adb <curses>
         ted order CURSE:DELETE curse_id C1
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <curses> delete C1}
+        {::adb <curses> delete C1}
     }
 
 
@@ -180,13 +180,13 @@ state     normal
         ted order CURSE:CREATE $c1
         ted order CURSE:DELETE curse_id C1
     } -body {
-        ted notifier bind ::rdb <curses>
+        ted notifier bind ::adb <curses>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <curses> update C1}
+        {::adb <curses> update C1}
     }
 
 
@@ -224,13 +224,13 @@ state     normal
     test UPDATE-2.2 {table monitor event} -setup {
         ted order CURSE:CREATE $c1
     } -body {
-        ted notifier bind ::rdb <curses>
+        ted notifier bind ::adb <curses>
         ted order CURSE:UPDATE curse_id C1 longname "New Name"
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <curses> update C1}
+        {::adb <curses> update C1}
     }
 
 
@@ -241,13 +241,13 @@ state     normal
             longname "New Name"
         }
     } -body {
-        ted notifier bind ::rdb <curses>
+        ted notifier bind ::adb <curses>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <curses> update C1}
+        {::adb <curses> update C1}
     }
 
     #-------------------------------------------------------------------
@@ -272,13 +272,13 @@ state     normal
         setup
         ted order CURSE:CREATE $c1
     } -body {
-        ted notifier bind ::rdb <curses>
+        ted notifier bind ::adb <curses>
         ted order CURSE:STATE curse_id C1 state disabled
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <curses> update C1}
+        {::adb <curses> update C1}
     }
 
 
@@ -287,13 +287,13 @@ state     normal
         ted order CURSE:CREATE $c1
         ted order CURSE:STATE curse_id C1 state disabled
     } -body {
-        ted notifier bind ::rdb <curses>
+        ted notifier bind ::adb <curses>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <curses> update C1}
+        {::adb <curses> update C1}
     }
 
     #-------------------------------------------------------------------

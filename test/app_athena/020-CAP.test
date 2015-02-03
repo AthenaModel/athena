@@ -177,17 +177,17 @@ cost      1000.0
     test CREATE-2.3 {Effects} -setup {
         setup
     } -body {
-        ted notifier bind ::rdb <caps>
-        ted notifier bind ::rdb <cap_kn>
-        ted notifier bind ::rdb <cap_kg>
+        ted notifier bind ::adb <caps>
+        ted notifier bind ::adb <cap_kn>
+        ted notifier bind ::adb <cap_kg>
         ted order CAP:CREATE $cbs
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <caps> update CBS}
-        {::rdb <cap_kn> update {CBS NB1}}
-        {::rdb <cap_kg> update {CBS SHIA}}
+        {::adb <caps> update CBS}
+        {::adb <cap_kn> update {CBS NB1}}
+        {::adb <cap_kg> update {CBS SHIA}}
     }
 
 
@@ -195,17 +195,17 @@ cost      1000.0
         setup
         ted order CAP:CREATE $cbs
     } -body {
-        ted notifier bind ::rdb <caps>
-        ted notifier bind ::rdb <cap_kn>
-        ted notifier bind ::rdb <cap_kg>
+        ted notifier bind ::adb <caps>
+        ted notifier bind ::adb <cap_kn>
+        ted notifier bind ::adb <cap_kg>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <cap_kg> delete {CBS SHIA}}
-        {::rdb <cap_kn> delete {CBS NB1}}
-        {::rdb <caps> delete CBS}
+        {::adb <cap_kg> delete {CBS SHIA}}
+        {::adb <cap_kn> delete {CBS NB1}}
+        {::adb <caps> delete CBS}
     }
 
 
@@ -229,17 +229,17 @@ cost      1000.0
     test DELETE-2.1 {Effects} -setup {
         ted create CBS
     } -body {
-        ted notifier bind ::rdb <caps>
-        ted notifier bind ::rdb <cap_kn>
-        ted notifier bind ::rdb <cap_kg>
+        ted notifier bind ::adb <caps>
+        ted notifier bind ::adb <cap_kn>
+        ted notifier bind ::adb <cap_kg>
         ted order CAP:DELETE k CBS
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <cap_kg> delete {CBS SHIA}}
-        {::rdb <cap_kn> delete {CBS NB1}}
-        {::rdb <caps> delete CBS}
+        {::adb <cap_kg> delete {CBS SHIA}}
+        {::adb <cap_kn> delete {CBS NB1}}
+        {::adb <caps> delete CBS}
     }
 
 
@@ -247,17 +247,17 @@ cost      1000.0
         ted create CBS
         ted order CAP:DELETE k CBS
     } -body {
-        ted notifier bind ::rdb <caps>
-        ted notifier bind ::rdb <cap_kn>
-        ted notifier bind ::rdb <cap_kg>
+        ted notifier bind ::adb <caps>
+        ted notifier bind ::adb <cap_kn>
+        ted notifier bind ::adb <cap_kg>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <caps> update CBS}
-        {::rdb <cap_kg> update {CBS SHIA}}
-        {::rdb <cap_kn> update {CBS NB1}}
+        {::adb <caps> update CBS}
+        {::adb <cap_kg> update {CBS SHIA}}
+        {::adb <cap_kn> update {CBS NB1}}
     }
 
 
@@ -326,13 +326,13 @@ cost      400.0
     test UPDATE-2.2 {table monitor event} -setup {
         ted create CBS
     } -body {
-        ted notifier bind ::rdb <caps>
+        ted notifier bind ::adb <caps>
         ted order CAP:UPDATE k CBS longname "New Name"
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <caps> update CBS}
+        {::adb <caps> update CBS}
     }
 
 
@@ -346,13 +346,13 @@ cost      400.0
             cost         400.0
         }
     } -body {
-        ted notifier bind ::rdb <caps>
+        ted notifier bind ::adb <caps>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <caps> update CBS}
+        {::adb <caps> update CBS}
     }
 
     #-------------------------------------------------------------------
@@ -397,7 +397,7 @@ cost      400.0
     test UPDATE:MULTI-2.1 {one group of several is updated} -setup {
         ted create BOB CBS CNN
     } -body {
-        ted notifier bind ::rdb <caps>
+        ted notifier bind ::adb <caps>
 
         ted order CAP:UPDATE:MULTI {
             ids         CBS 
@@ -410,14 +410,14 @@ cost      400.0
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <caps> update CBS}
+        {::adb <caps> update CBS}
     }
 
 
     test UPDATE:MULTI-2.2 {several groups are updated} -setup {
         ted create BOB CBS CNN
     } -body {
-        ted notifier bind ::rdb <caps>
+        ted notifier bind ::adb <caps>
 
         ted order CAP:UPDATE:MULTI {
             ids         {CBS CNN}
@@ -430,8 +430,8 @@ cost      400.0
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <caps> update CBS}
-        {::rdb <caps> update CNN}
+        {::adb <caps> update CBS}
+        {::adb <caps> update CNN}
     }
 
     test UPDATE:MULTI-3.1 {undo effects} -setup {
@@ -443,14 +443,14 @@ cost      400.0
             cost         400.0
         }
     } -body {
-        ted notifier bind ::rdb <caps>
+        ted notifier bind ::adb <caps>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <caps> update CBS}
-        {::rdb <caps> update CNN}
+        {::adb <caps> update CBS}
+        {::adb <caps> update CNN}
     }
 
     #-------------------------------------------------------------------
@@ -492,13 +492,13 @@ cost      1000.0
     test CAPACITY-2.2 {table monitor event} -setup {
         ted create CBS
     } -body {
-        ted notifier bind ::rdb <caps>
+        ted notifier bind ::adb <caps>
         ted order CAP:CAPACITY k CBS capacity 0.5
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <caps> update CBS}
+        {::adb <caps> update CBS}
     }
 
 
@@ -506,13 +506,13 @@ cost      1000.0
         ted create BOB CBS
         ted order CAP:CAPACITY k CBS capacity 0.5
     } -body {
-        ted notifier bind ::rdb <caps>
+        ted notifier bind ::adb <caps>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <caps> update CBS}
+        {::adb <caps> update CBS}
     }
 
     #-------------------------------------------------------------------
@@ -557,7 +557,7 @@ cost      1000.0
     test CAPACITY:MULTI-2.1 {one cap of several is updated} -setup {
         ted create BOB CBS CNN
     } -body {
-        ted notifier bind ::rdb <caps>
+        ted notifier bind ::adb <caps>
 
         ted order CAP:CAPACITY:MULTI ids CBS capacity 0.5
 
@@ -565,14 +565,14 @@ cost      1000.0
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <caps> update CBS}
+        {::adb <caps> update CBS}
     }
 
 
     test CAPACITY:MULTI-2.2 {several groups are updated} -setup {
         ted create BOB CBS CNN
     } -body {
-        ted notifier bind ::rdb <caps>
+        ted notifier bind ::adb <caps>
 
         ted order CAP:CAPACITY:MULTI ids {CBS CNN} capacity 0.5
 
@@ -580,22 +580,22 @@ cost      1000.0
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <caps> update CBS}
-        {::rdb <caps> update CNN}
+        {::adb <caps> update CBS}
+        {::adb <caps> update CNN}
     }
 
     test CAPACITY:MULTI-3.1 {undo effects} -setup {
         ted create CBS CNN
         ted order CAP:CAPACITY:MULTI ids {CBS CNN} capacity 0.5
     } -body {
-        ted notifier bind ::rdb <caps>
+        ted notifier bind ::adb <caps>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <caps> update CBS}
-        {::rdb <caps> update CNN}
+        {::adb <caps> update CBS}
+        {::adb <caps> update CNN}
     }
 
     #-------------------------------------------------------------------
@@ -649,13 +649,13 @@ CBS NB2 0.5
         setup
         ted create CBS
     } -body {
-        ted notifier bind ::rdb <cap_kn>
+        ted notifier bind ::adb <cap_kn>
         ted order CAP:NBCOV:SET id {CBS NB2} nbcov 0.5
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <cap_kn> update {CBS NB2}}
+        {::adb <cap_kn> update {CBS NB2}}
     }
 
 
@@ -664,13 +664,13 @@ CBS NB2 0.5
         ted create CBS
         ted order CAP:NBCOV:SET id {CBS NB2} nbcov 0.5
     } -body {
-        ted notifier bind ::rdb <cap_kn>
+        ted notifier bind ::adb <cap_kn>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <cap_kn> delete {CBS NB2}}
+        {::adb <cap_kn> delete {CBS NB2}}
     }
 
 
@@ -699,13 +699,13 @@ CBS NB2 0.7
         ted create CBS
         ted order CAP:NBCOV:SET id {CBS NB2} nbcov 0.5
     } -body {
-        ted notifier bind ::rdb <cap_kn>
+        ted notifier bind ::adb <cap_kn>
         ted order CAP:NBCOV:SET id {CBS NB2} nbcov 0.7
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <cap_kn> update {CBS NB2}}
+        {::adb <cap_kn> update {CBS NB2}}
     }
 
 
@@ -715,13 +715,13 @@ CBS NB2 0.7
         ted order CAP:NBCOV:SET id {CBS NB2} nbcov 0.5
         ted order CAP:NBCOV:SET id {CBS NB2} nbcov 0.7
     } -body {
-        ted notifier bind ::rdb <cap_kn>
+        ted notifier bind ::adb <cap_kn>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <cap_kn> update {CBS NB2}}
+        {::adb <cap_kn> update {CBS NB2}}
     }
 
     # 4.*: Zero existing cap_kn
@@ -748,13 +748,13 @@ CBS NB1 1.0
         ted create CBS
         ted order CAP:NBCOV:SET id {CBS NB2} nbcov 0.5
     } -body {
-        ted notifier bind ::rdb <cap_kn>
+        ted notifier bind ::adb <cap_kn>
         ted order CAP:NBCOV:SET id {CBS NB2} nbcov 0.0
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <cap_kn> delete {CBS NB2}}
+        {::adb <cap_kn> delete {CBS NB2}}
     }
 
 
@@ -764,13 +764,13 @@ CBS NB1 1.0
         ted order CAP:NBCOV:SET id {CBS NB2} nbcov 0.5
         ted order CAP:NBCOV:SET id {CBS NB2} nbcov 0.0
     } -body {
-        ted notifier bind ::rdb <cap_kn>
+        ted notifier bind ::adb <cap_kn>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <cap_kn> update {CBS NB2}}
+        {::adb <cap_kn> update {CBS NB2}}
     }
 
     #-------------------------------------------------------------------
@@ -830,7 +830,7 @@ CBS NB1 1.0
         setup
         ted create CBS
     } -body {
-        ted notifier bind ::rdb <cap_kn>
+        ted notifier bind ::adb <cap_kn>
 
         ted order CAP:NBCOV:SET:MULTI \
             ids {{CBS NB2} {CBS NB1}} nbcov 0.5
@@ -839,8 +839,8 @@ CBS NB1 1.0
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <cap_kn> update {CBS NB2}}
-        {::rdb <cap_kn> update {CBS NB1}}
+        {::adb <cap_kn> update {CBS NB2}}
+        {::adb <cap_kn> update {CBS NB1}}
     }
 
     test NBCOV:SET:MULTI-2.2 {undo undoes the change} -setup {
@@ -849,14 +849,14 @@ CBS NB1 1.0
         ted order CAP:NBCOV:SET:MULTI \
             ids {{CBS NB2} {CBS NB1}} nbcov  0.5
     } -body {
-        ted notifier bind ::rdb <cap_kn>
+        ted notifier bind ::adb <cap_kn>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <cap_kn> delete {CBS NB2}}
-        {::rdb <cap_kn> update {CBS NB1}}
+        {::adb <cap_kn> delete {CBS NB2}}
+        {::adb <cap_kn> update {CBS NB1}}
     }
 
     #-------------------------------------------------------------------
@@ -910,13 +910,13 @@ CBS SUNN 0.5
         setup
         ted create CBS
     } -body {
-        ted notifier bind ::rdb <cap_kg>
+        ted notifier bind ::adb <cap_kg>
         ted order CAP:PEN:SET id {CBS SUNN} pen 0.5
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <cap_kg> update {CBS SUNN}}
+        {::adb <cap_kg> update {CBS SUNN}}
     }
 
 
@@ -925,13 +925,13 @@ CBS SUNN 0.5
         ted create CBS
         ted order CAP:PEN:SET id {CBS SUNN} pen 0.5
     } -body {
-        ted notifier bind ::rdb <cap_kg>
+        ted notifier bind ::adb <cap_kg>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <cap_kg> delete {CBS SUNN}}
+        {::adb <cap_kg> delete {CBS SUNN}}
     }
 
 
@@ -960,13 +960,13 @@ CBS SUNN 0.7
         ted create CBS
         ted order CAP:PEN:SET id {CBS SUNN} pen 0.5
     } -body {
-        ted notifier bind ::rdb <cap_kg>
+        ted notifier bind ::adb <cap_kg>
         ted order CAP:PEN:SET id {CBS SUNN} pen 0.7
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <cap_kg> update {CBS SUNN}}
+        {::adb <cap_kg> update {CBS SUNN}}
     }
 
 
@@ -976,13 +976,13 @@ CBS SUNN 0.7
         ted order CAP:PEN:SET id {CBS SUNN} pen 0.5
         ted order CAP:PEN:SET id {CBS SUNN} pen 0.7
     } -body {
-        ted notifier bind ::rdb <cap_kg>
+        ted notifier bind ::adb <cap_kg>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <cap_kg> update {CBS SUNN}}
+        {::adb <cap_kg> update {CBS SUNN}}
     }
 
     # 4.*: Zero existing cap_kg
@@ -1009,13 +1009,13 @@ CBS SHIA 1.0
         ted create CBS
         ted order CAP:PEN:SET id {CBS SUNN} pen 0.5
     } -body {
-        ted notifier bind ::rdb <cap_kg>
+        ted notifier bind ::adb <cap_kg>
         ted order CAP:PEN:SET id {CBS SUNN} pen 0.0
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <cap_kg> delete {CBS SUNN}}
+        {::adb <cap_kg> delete {CBS SUNN}}
     }
 
 
@@ -1025,13 +1025,13 @@ CBS SHIA 1.0
         ted order CAP:PEN:SET id {CBS SUNN} pen 0.5
         ted order CAP:PEN:SET id {CBS SUNN} pen 0.0
     } -body {
-        ted notifier bind ::rdb <cap_kg>
+        ted notifier bind ::adb <cap_kg>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <cap_kg> update {CBS SUNN}}
+        {::adb <cap_kg> update {CBS SUNN}}
     }
 
     #-------------------------------------------------------------------
@@ -1091,7 +1091,7 @@ CBS SHIA 1.0
         setup
         ted create CBS
     } -body {
-        ted notifier bind ::rdb <cap_kg>
+        ted notifier bind ::adb <cap_kg>
 
         ted order CAP:PEN:SET:MULTI \
             ids {{CBS SUNN} {CBS SHIA}} pen 0.5
@@ -1100,8 +1100,8 @@ CBS SHIA 1.0
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <cap_kg> update {CBS SUNN}}
-        {::rdb <cap_kg> update {CBS SHIA}}
+        {::adb <cap_kg> update {CBS SUNN}}
+        {::adb <cap_kg> update {CBS SHIA}}
     }
 
     test PEN:SET:MULTI-2.2 {undo undoes the change} -setup {
@@ -1110,14 +1110,14 @@ CBS SHIA 1.0
         ted order CAP:PEN:SET:MULTI \
             ids {{CBS SUNN} {CBS SHIA}} pen  0.5
     } -body {
-        ted notifier bind ::rdb <cap_kg>
+        ted notifier bind ::adb <cap_kg>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <cap_kg> delete {CBS SUNN}}
-        {::rdb <cap_kg> update {CBS SHIA}}
+        {::adb <cap_kg> delete {CBS SUNN}}
+        {::adb <cap_kg> update {CBS SHIA}}
     }
 
     #-------------------------------------------------------------------

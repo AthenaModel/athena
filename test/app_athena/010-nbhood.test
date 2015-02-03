@@ -371,13 +371,13 @@ OV1 1              NB1
     test lower-1.2 {<Stack>} -setup {
         ted create NB1 OV1
     } -body {
-        ted notifier bind ::rdb.nbhood <Stack>
+        ted notifier bind ::adb.nbhood <Stack>
         nbhood lower OV1
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb.nbhood <Stack>}
+        {::adb.nbhood <Stack>}
     }
 
 
@@ -418,13 +418,13 @@ OV1 1              NB1
     test raise-1.2 {<Stack>} -setup {
         ted create NB1 OV1
     } -body {
-        ted notifier bind ::rdb.nbhood <Stack>
+        ted notifier bind ::adb.nbhood <Stack>
         nbhood raise NB1
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb.nbhood <Stack>}
+        {::adb.nbhood <Stack>}
     }
 
 

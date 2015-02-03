@@ -161,6 +161,7 @@ snit::type ::athena::athenadb {
     # Editable Entities
     component absit    -public absit     ;# absit manager
     component actor    -public actor     ;# actor manager
+    component agent    -public agent     ;# agent manager
     component civgroup -public civgroup  ;# civgroup manager
     component frcgroup -public frcgroup  ;# frcgroup manager
     component nbhood   -public nbhood    ;# nbhood manager
@@ -224,6 +225,7 @@ snit::type ::athena::athenadb {
         $self MakeComponents \
             absit            \
             actor            \
+            agent            \
             civgroup         \
             frcgroup         \
             nbhood           \

@@ -180,26 +180,26 @@ mad_id narrative      cause  s   p   q
 
 
     test CREATE-2.2 {Effects} -body {
-        ted notifier bind ::rdb <mads>
+        ted notifier bind ::adb <mads>
         ted order MAD:CREATE $m1
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <mads> update 1}
+        {::adb <mads> update 1}
     }
 
 
     test CREATE-3.1 {undo effects} -setup {
         ted order MAD:CREATE $m1
     } -body {
-        ted notifier bind ::rdb <mads>
+        ted notifier bind ::adb <mads>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <mads> delete 1}
+        {::adb <mads> delete 1}
     }
 
 
@@ -237,13 +237,13 @@ mad_id narrative      cause  s   p   q
         ted create BLUE
         ted order MAD:CREATE $m1     ;# 1
     } -body {
-        ted notifier bind ::rdb <mads>
+        ted notifier bind ::adb <mads>
         ted order MAD:DELETE mad_id    1
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <mads> delete 1}
+        {::adb <mads> delete 1}
     }
 
 
@@ -252,13 +252,13 @@ mad_id narrative      cause  s   p   q
         ted order MAD:CREATE $m1    ;# 1
         ted order MAD:DELETE mad_id    1
     } -body {
-        ted notifier bind ::rdb <mads>
+        ted notifier bind ::adb <mads>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <mads> update 1}
+        {::adb <mads> update 1}
     }
 
 
@@ -350,13 +350,13 @@ mad_id narrative     cause s   p   q
     test UPDATE-2.2 {table monitor event} -setup {
         ted order MAD:CREATE $m1   ;# 1
     } -body {
-        ted notifier bind ::rdb <mads>
+        ted notifier bind ::adb <mads>
         ted order MAD:UPDATE mad_id    1 narrative "MAD the FIRST"
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <mads> update 1}
+        {::adb <mads> update 1}
     }
 
 
@@ -364,13 +364,13 @@ mad_id narrative     cause s   p   q
         ted order MAD:CREATE $m1    ;# 1
         ted order MAD:UPDATE mad_id    1 narrative "MAD the FIRST"
     } -body {
-        ted notifier bind ::rdb <mads>
+        ted notifier bind ::adb <mads>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <mads> update 1}
+        {::adb <mads> update 1}
     }
 
 

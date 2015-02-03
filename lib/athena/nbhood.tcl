@@ -12,15 +12,12 @@
 #    upon them.
 #
 # TBD: 
-#    * Global references: notifier send, ptype, refpoint, app/messagebox, 
+#    * Global references: notifier bind, ptype, refpoint, app/messagebox, 
 #      sim
 #    * notifier bind ::sim <DbSyncA>
 #      * This seems like the wrong mechanism.  athenadb(n) will know when
 #        something resyncable has happened; seems like it should directly
 #        call the affected modules.
-#    * notifier send ::nbhood <Stack>
-#      * I'd like to get rid of this; mapviewer should do the work based
-#        just on the ::rdb events.
 #
 #-----------------------------------------------------------------------
 

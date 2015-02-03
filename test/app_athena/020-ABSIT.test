@@ -189,13 +189,13 @@ location   *
     test CREATE-2.2 {Effects} -setup {
         ted create NB1 BLUE
     } -body {
-        ted notifier bind ::rdb <absits>
+        ted notifier bind ::adb <absits>
         ted order ABSIT:CREATE $s1
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <absits> update 1}
+        {::adb <absits> update 1}
     }
 
 
@@ -203,13 +203,13 @@ location   *
         ted create NB1 BLUE
         ted order ABSIT:CREATE $s1
     } -body {
-        ted notifier bind ::rdb <absits>
+        ted notifier bind ::adb <absits>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <absits> delete 1}
+        {::adb <absits> delete 1}
     }
 
 
@@ -247,13 +247,13 @@ location   *
         ted create NB1 BLUE
         ted order ABSIT:CREATE $s1
     } -body {
-        ted notifier bind ::rdb <absits>
+        ted notifier bind ::adb <absits>
         ted order ABSIT:DELETE s 1
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <absits> delete 1}
+        {::adb <absits> delete 1}
     }
 
 
@@ -262,13 +262,13 @@ location   *
         ted order ABSIT:CREATE $s1
         ted order ABSIT:DELETE s 1
     } -body {
-        ted notifier bind ::rdb <absits>
+        ted notifier bind ::adb <absits>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <absits> update 1}
+        {::adb <absits> update 1}
     }
 
 
@@ -408,13 +408,13 @@ location   *
         ted create NB1 BLUE
         ted order ABSIT:CREATE $s1
     } -body {
-        ted notifier bind ::rdb <absits>
+        ted notifier bind ::adb <absits>
         ted order ABSIT:UPDATE s 1 stype COMMOUT
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <absits> update 1}
+        {::adb <absits> update 1}
     }
 
 
@@ -427,13 +427,13 @@ location   *
             inception NO
         }
     } -body {
-        ted notifier bind ::rdb <absits>
+        ted notifier bind ::adb <absits>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <absits> update 1}
+        {::adb <absits> update 1}
     }
 
 
@@ -497,13 +497,13 @@ s location
         ted create NB1 BLUE
         ted order ABSIT:CREATE $s1
     } -body {
-        ted notifier bind ::rdb <absits>
+        ted notifier bind ::adb <absits>
         ted order ABSIT:MOVE s 1 location B01B01
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <absits> update 1}
+        {::adb <absits> update 1}
     }
 
 
@@ -515,13 +515,13 @@ s location
             location  B01B01
         }
     } -body {
-        ted notifier bind ::rdb <absits>
+        ted notifier bind ::adb <absits>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <absits> update 1}
+        {::adb <absits> update 1}
     }
 
 
@@ -611,13 +611,13 @@ location   *
         ted create NB1 BLUE
         ted order ABSIT:CREATE $s1
     } -body {
-        ted notifier bind ::rdb <absits>
+        ted notifier bind ::adb <absits>
         ted order ABSIT:RESOLVE s 1
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <absits> update 1}
+        {::adb <absits> update 1}
     }
 
 
@@ -626,13 +626,13 @@ location   *
         ted order ABSIT:CREATE $s1
         ted order ABSIT:RESOLVE s 1 resolver BLUE
     } -body {
-        ted notifier bind ::rdb <absits>
+        ted notifier bind ::adb <absits>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <absits> update 1}
+        {::adb <absits> update 1}
     }
 
     #-------------------------------------------------------------------

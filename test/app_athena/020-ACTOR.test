@@ -292,26 +292,26 @@ budget            0.0
     } -result {1}
 
     test CREATE-2.3 {effects} -body {
-        ted notifier bind ::rdb <actors>
+        ted notifier bind ::adb <actors>
         ted order ACTOR:CREATE $joe
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <actors> update JOE}
+        {::adb <actors> update JOE}
     }
 
 
     test CREATE-3.1 {effects are undone} -setup {
         ted order ACTOR:CREATE $joe
     } -body {
-        ted notifier bind ::rdb <actors>
+        ted notifier bind ::adb <actors>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <actors> delete JOE}
+        {::adb <actors> delete JOE}
     }
 
     #-------------------------------------------------------------------
@@ -334,13 +334,13 @@ budget            0.0
     test DELETE-2.1 {Effects} -setup {
         ted create JOE
     } -body {
-        ted notifier bind ::rdb <actors>
+        ted notifier bind ::adb <actors>
         ted order ACTOR:DELETE a JOE
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <actors> delete JOE}
+        {::adb <actors> delete JOE}
     }
 
 
@@ -348,13 +348,13 @@ budget            0.0
         ted create JOE
         ted order ACTOR:DELETE a JOE
     } -body {
-        ted notifier bind ::rdb <actors>
+        ted notifier bind ::adb <actors>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <actors> update JOE}
+        {::adb <actors> update JOE}
     }
 
     #-------------------------------------------------------------------
@@ -551,13 +551,13 @@ budget            0.0
     test UPDATE-2.2 {table monitor event} -setup {
         ted create JOE
     } -body {
-        ted notifier bind ::rdb <actors>
+        ted notifier bind ::adb <actors>
         ted order ACTOR:UPDATE a JOE longname "Joe the Actress"
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <actors> update JOE}
+        {::adb <actors> update JOE}
     }
 
 
@@ -568,13 +568,13 @@ budget            0.0
             longname     "Joe the Actress"
         }
     } -body {
-        ted notifier bind ::rdb <actors>
+        ted notifier bind ::adb <actors>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <actors> update JOE}
+        {::adb <actors> update JOE}
     }
 
     #-------------------------------------------------------------------
@@ -722,13 +722,13 @@ budget            0.0
     test INCOME-2.4 {table monitor event} -setup {
         ted create JOE
     } -body {
-        ted notifier bind ::rdb <actors>
+        ted notifier bind ::adb <actors>
         ted order ACTOR:INCOME a JOE income_goods 5
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <actors> update JOE}
+        {::adb <actors> update JOE}
     }
 
 
@@ -739,13 +739,13 @@ budget            0.0
             income_goods 5
         }
     } -body {
-        ted notifier bind ::rdb <actors>
+        ted notifier bind ::adb <actors>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <actors> update JOE}
+        {::adb <actors> update JOE}
     }
 
     #-------------------------------------------------------------------
@@ -793,13 +793,13 @@ BOB BOB
     test SUPPORTS-2.2 {table monitor event} -setup {
         ted create JOE
     } -body {
-        ted notifier bind ::rdb <actors>
+        ted notifier bind ::adb <actors>
         ted order ACTOR:SUPPORTS a JOE supports NONE
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <actors> update JOE}
+        {::adb <actors> update JOE}
     }
 
 
@@ -810,13 +810,13 @@ BOB BOB
             supports     BOB
         }
     } -body {
-        ted notifier bind ::rdb <actors>
+        ted notifier bind ::adb <actors>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <actors> update JOE}
+        {::adb <actors> update JOE}
     }
 
     #-------------------------------------------------------------------

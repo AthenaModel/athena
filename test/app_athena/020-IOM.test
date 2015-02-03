@@ -119,13 +119,13 @@ state     normal
     test CREATE-2.3 {Effects} -setup {
         setup
     } -body {
-        ted notifier bind ::rdb <ioms>
+        ted notifier bind ::adb <ioms>
         ted order IOM:CREATE $m1
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <ioms> update M1}
+        {::adb <ioms> update M1}
     }
 
 
@@ -133,13 +133,13 @@ state     normal
         setup
         ted order IOM:CREATE $m1
     } -body {
-        ted notifier bind ::rdb <ioms>
+        ted notifier bind ::adb <ioms>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <ioms> delete M1}
+        {::adb <ioms> delete M1}
     }
 
 
@@ -163,13 +163,13 @@ state     normal
     test DELETE-2.1 {Effects} -setup {
         ted order IOM:CREATE $m1
     } -body {
-        ted notifier bind ::rdb <ioms>
+        ted notifier bind ::adb <ioms>
         ted order IOM:DELETE iom_id M1
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <ioms> delete M1}
+        {::adb <ioms> delete M1}
     }
 
 
@@ -177,13 +177,13 @@ state     normal
         ted order IOM:CREATE $m1
         ted order IOM:DELETE iom_id M1
     } -body {
-        ted notifier bind ::rdb <ioms>
+        ted notifier bind ::adb <ioms>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <ioms> update M1}
+        {::adb <ioms> update M1}
     }
 
 
@@ -219,13 +219,13 @@ state     normal
     test UPDATE-2.2 {table monitor event} -setup {
         ted order IOM:CREATE $m1
     } -body {
-        ted notifier bind ::rdb <ioms>
+        ted notifier bind ::adb <ioms>
         ted order IOM:UPDATE iom_id M1 longname "New Name"
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <ioms> update M1}
+        {::adb <ioms> update M1}
     }
 
 
@@ -236,13 +236,13 @@ state     normal
             longname "New Name"
         }
     } -body {
-        ted notifier bind ::rdb <ioms>
+        ted notifier bind ::adb <ioms>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <ioms> update M1}
+        {::adb <ioms> update M1}
     }
 
     #-------------------------------------------------------------------
@@ -267,13 +267,13 @@ state     normal
         setup
         ted order IOM:CREATE $m1
     } -body {
-        ted notifier bind ::rdb <ioms>
+        ted notifier bind ::adb <ioms>
         ted order IOM:STATE iom_id M1 state disabled
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <ioms> update M1}
+        {::adb <ioms> update M1}
     }
 
 
@@ -282,13 +282,13 @@ state     normal
         ted order IOM:CREATE $m1
         ted order IOM:STATE iom_id M1 state disabled
     } -body {
-        ted notifier bind ::rdb <ioms>
+        ted notifier bind ::adb <ioms>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <ioms> update M1}
+        {::adb <ioms> update M1}
     }
 
     #-------------------------------------------------------------------

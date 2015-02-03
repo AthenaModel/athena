@@ -118,7 +118,7 @@ snit::type ::athena::athena {
     delegate method onecolumn       to rdb as onecolumn
     delegate method query           to rdb as query
     delegate method safequery       to rdb as safequery
-    delegate method saveeval        to rdb as safeeval
+    delegate method safeeval        to rdb as safeeval
 
     #-------------------------------------------------------------------
     # Public Methods

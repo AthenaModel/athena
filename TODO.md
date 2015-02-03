@@ -26,7 +26,7 @@
   - absit
 - nbhood
   - absit
-- notifier send
+- notifier bind
   - nbhood
 - parmdb
   - absit
@@ -39,6 +39,8 @@
 - simclock
   - absit, athenadb
 - strategy
-  - actor
+  - actor, agent
+- tactic
+  - agent
 
 

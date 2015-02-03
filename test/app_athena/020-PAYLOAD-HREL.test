@@ -126,13 +126,13 @@ mag           5.0
     test CREATE-2.2 {Effects} -setup {
         setup
     } -body {
-        ted notifier bind ::rdb <payloads>
+        ted notifier bind ::adb <payloads>
         ted order PAYLOAD:HREL:CREATE $P1
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <payloads> update {IOM1 1}}
+        {::adb <payloads> update {IOM1 1}}
     }
 
 
@@ -140,13 +140,13 @@ mag           5.0
         setup
         ted order PAYLOAD:HREL:CREATE $P1
     } -body {
-        ted notifier bind ::rdb <payloads>
+        ted notifier bind ::adb <payloads>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <payloads> delete {IOM1 1}}
+        {::adb <payloads> delete {IOM1 1}}
     }
 
     #-------------------------------------------------------------------
@@ -228,14 +228,14 @@ mag           10.0
         setup
         ted order PAYLOAD:HREL:CREATE $P2
     } -body {
-        ted notifier bind ::rdb <payloads>
+        ted notifier bind ::adb <payloads>
         ted order PAYLOAD:HREL:UPDATE id {IOM2 1} g BLUE
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <payloads> update {IOM2 1}}
-        {::rdb <payloads> update {IOM2 1}}
+        {::adb <payloads> update {IOM2 1}}
+        {::adb <payloads> update {IOM2 1}}
     }
 
 
@@ -243,13 +243,13 @@ mag           10.0
         setup_update_hrel
         ted order PAYLOAD:HREL:UPDATE id {IOM2 1} g BLUE
     } -body {
-        ted notifier bind ::rdb <payloads>
+        ted notifier bind ::adb <payloads>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <payloads> update {IOM2 1}}
+        {::adb <payloads> update {IOM2 1}}
     }
 
 

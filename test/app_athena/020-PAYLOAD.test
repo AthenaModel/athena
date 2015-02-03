@@ -95,13 +95,13 @@ namespace eval ::athena_test::tests:: {
         setup
         ted order PAYLOAD:COOP:CREATE $P1
     } -body {
-        ted notifier bind ::rdb <payloads>
+        ted notifier bind ::adb <payloads>
         ted order PAYLOAD:DELETE id {IOM1 1}
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <payloads> delete {IOM1 1}}
+        {::adb <payloads> delete {IOM1 1}}
     }
 
 
@@ -110,13 +110,13 @@ namespace eval ::athena_test::tests:: {
         ted order PAYLOAD:COOP:CREATE $P1
         ted order PAYLOAD:DELETE id {IOM1 1}
     } -body {
-        ted notifier bind ::rdb <payloads>
+        ted notifier bind ::adb <payloads>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <payloads> update {IOM1 1}}
+        {::adb <payloads> update {IOM1 1}}
     }
 
 
@@ -142,13 +142,13 @@ namespace eval ::athena_test::tests:: {
         setup
         ted order PAYLOAD:COOP:CREATE $P1
     } -body {
-        ted notifier bind ::rdb <payloads>
+        ted notifier bind ::adb <payloads>
         ted order PAYLOAD:STATE id {IOM1 1} state disabled
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <payloads> update {IOM1 1}}
+        {::adb <payloads> update {IOM1 1}}
     }
 
 
@@ -157,13 +157,13 @@ namespace eval ::athena_test::tests:: {
         ted order PAYLOAD:COOP:CREATE $P1
         ted order PAYLOAD:STATE id {IOM1 1} state disabled
     } -body {
-        ted notifier bind ::rdb <payloads>
+        ted notifier bind ::adb <payloads>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <payloads> update {IOM1 1}}
+        {::adb <payloads> update {IOM1 1}}
     }
 
     #-------------------------------------------------------------------
