@@ -402,7 +402,7 @@ snit::type ::athena::absit {
         set s [$adb last_insert_rowid]
 
         # NEXT, inform all clients about the new object.
-        $adb log detail "absit $s: created for $n,$stype,$coverage"
+        $adb log detail absit "absit $s: created for $n,$stype,$coverage"
 
         # NEXT, Return the undo command
         return [mymethod delete $s]

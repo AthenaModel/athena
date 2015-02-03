@@ -409,7 +409,7 @@ snit::widget appwin {
                     -format        {
                         {week 7 yes}
                         {v    7 yes}
-                        {c    9 yes}
+                        {c    14 yes}
                         {m    0 yes}
                     }
             }

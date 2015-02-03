@@ -727,10 +727,10 @@ snit::type ::athena::athenadb {
     #
     # These methods are defined for use by components.
 
-    method log {level message} {
-        callwith $options(-logcmd)              \
-            $level                              \
-            [namespace tail $options(-subject)] \
+    method log {level component message} {
+        callwith $options(-logcmd)                         \
+            $level                                         \
+            [namespace tail $options(-subject)].$component \
             $message
     }
     
