@@ -2,6 +2,7 @@
 
 - Write cellide manpage.
 - Problems
+  - bsys uses mam(n), which is a singleton.  Arggh!
   - "athena.tcl foo.adb" problem when foo.adb is not found
     - Pops up messagebox; press "OK", and messagebox doesn't go away.
       - It's not responsive; it just isn't gone.
@@ -19,7 +20,7 @@
 # Global Resources in use in athena(n)
 
 - app/messagebox
-  - absit, actor, civgroup, frcgroup, nbhood, orggroup
+  - absit, actor, cap, civgroup, frcgroup, nbhood, orggroup
 - bsys
   - actor, civgroup
 - driver::absit

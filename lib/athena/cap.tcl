@@ -6,25 +6,42 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Communications Asset Package (CAP) manager.
+#    athena(n): Communications Asset Package (CAP) manager.
 #
 #    This module is responsible for managing CAPs and the operations
-#    upon them.  As such, it is a type ensemble.
+#    upon them.
+#
+# TBD: Global refs: app/messagebox
 #
 #-----------------------------------------------------------------------
 
-snit::type cap {
-    # Make it a singleton
-    pragma -hasinstances no
+snit::type ::athena::cap {
+    #-------------------------------------------------------------------
+    # Components
+
+    component adb ;# The athenadb(n) instance
 
     #-------------------------------------------------------------------
-    # Type Variables
+    # Constructor
+
+    # constructor adb_
+    #
+    # adb_    - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of the type.
+
+    constructor {adb_} {
+        set adb $adb_
+    }
+
+    #-------------------------------------------------------------------
+    # Variables
     
     # access array: Array of access lists by CAP.  This array is used
-    # transiently between [cap access load]/[cap access save] to record
+    # transiently between [$adb cap access load]/[$adb cap access save] to record
     # who is being given access.
 
-    typevariable access -array {}
+    variable access -array {}
 
 
     #-------------------------------------------------------------------
@@ -38,8 +55,8 @@ snit::type cap {
     #
     # Returns the list of CAP names
 
-    typemethod names {} {
-        return [rdb eval {
+    method names {} {
+        return [$adb eval {
             SELECT k FROM caps 
         }]
     }
@@ -48,8 +65,8 @@ snit::type cap {
     #
     # Returns the ID/longname dictionary.
 
-    typemethod namedict {} {
-        return [rdb eval {
+    method namedict {} {
+        return [$adb eval {
             SELECT k, longname FROM caps ORDER BY k
         }]
     }
@@ -59,8 +76,8 @@ snit::type cap {
     #
     # Returns the list of CAP long names
 
-    typemethod longnames {} {
-        return [rdb eval {
+    method longnames {} {
+        return [$adb eval {
             SELECT k || ': ' || longname FROM caps
         }]
     }
@@ -71,9 +88,9 @@ snit::type cap {
     #
     # Validates a CAP short name
 
-    typemethod validate {k} {
-        if {![rdb exists {SELECT k FROM caps WHERE k=$k}]} {
-            set names [join [cap names] ", "]
+    method validate {k} {
+        if {![$adb exists {SELECT k FROM caps WHERE k=$k}]} {
+            set names [join [$adb cap names] ", "]
 
             if {$names ne ""} {
                 set msg "should be one of: $names"
@@ -94,8 +111,8 @@ snit::type cap {
     #
     # Returns 1 if there's such a CAP, and 0 otherwise.
 
-    typemethod exists {k} {
-        rdb exists {
+    method exists {k} {
+        $adb exists {
             SELECT * FROM caps WHERE k=$k
         }
     }
@@ -108,9 +125,9 @@ snit::type cap {
     # Retrieves a row dictionary, or a particular column value, from
     # caps.
 
-    typemethod get {k {parm ""}} {
+    method get {k {parm ""}} {
         # FIRST, get the data
-        rdb eval {
+        $adb eval {
             SELECT * FROM caps 
             WHERE k=$k
         } row {
@@ -132,7 +149,7 @@ snit::type cap {
     #
     # Returns 1 if a has access to k, and 0 otherwise.
 
-    typemethod hasaccess {k a} {
+    method hasaccess {k a} {
         expr {[info exists access($k)] && $a in $access($k)}
     }
     
@@ -142,11 +159,11 @@ snit::type cap {
     #
     # Throws INVALID if id doesn't name a cap_kn_view record.
 
-    typemethod {nbcov validate} {id} {
+    method {nbcov validate} {id} {
         lassign $id k n
 
-        set k [cap validate $k]
-        set n [nbhood validate $n]
+        set k [$adb cap validate $k]
+        set n [$adb nbhood validate $n]
 
         return [list $k $n]
     }
@@ -157,10 +174,10 @@ snit::type cap {
     #
     # Returns 1 if there's a record, and 0 otherwise.
 
-    typemethod {nbcov exists} {id} {
+    method {nbcov exists} {id} {
         lassign $id k n
 
-        rdb exists {
+        $adb exists {
             SELECT * FROM cap_kn WHERE k=$k AND n=$n
         }
     }
@@ -172,11 +189,11 @@ snit::type cap {
     #
     # Throws INVALID if id doesn't name a cap_kg_view record.
 
-    typemethod {pen validate} {id} {
+    method {pen validate} {id} {
         lassign $id k g
 
-        set k [cap validate $k]
-        set g [civgroup validate $g]
+        set k [$adb cap validate $k]
+        set g [$adb civgroup validate $g]
 
         return [list $k $g]
     }
@@ -187,10 +204,10 @@ snit::type cap {
     #
     # Returns 1 if there's a record, and 0 otherwise.
 
-    typemethod {pen exists} {id} {
+    method {pen exists} {id} {
         lassign $id k g
 
-        rdb exists {
+        $adb exists {
             SELECT * FROM cap_kg WHERE k=$k AND g=$g
         }
     }
@@ -205,12 +222,12 @@ snit::type cap {
     # Initializes the working_cap_access table at the beginning of strategy 
     # execution.  By default, only the CAP actor has access.
 
-    typemethod {access load} {} {
+    method {access load} {} {
         # FIRST, clear the access list; then give each owner access to his
         # CAPs.
         array unset access
         
-        array set access [rdb eval {
+        array set access [$adb eval {
             SELECT k, owner FROM caps
         }]
     }
@@ -224,7 +241,7 @@ snit::type cap {
     # The access thus granted will be saved to the caps_access
     # table by [access save].
 
-    typemethod {access grant} {klist alist} {
+    method {access grant} {klist alist} {
         foreach k $klist {
             foreach a $alist {
                 ladd access($k) $a
@@ -242,12 +259,12 @@ snit::type cap {
     # end of the time step, and by conditions at the subsequent
     # strategy execution.
 
-    typemethod {access save} {} {
-        rdb eval {DELETE FROM cap_access}
+    method {access save} {} {
+        $adb eval {DELETE FROM cap_access}
 
         foreach k [array names access] {
             foreach a $access($k) {
-                rdb eval {INSERT INTO cap_access(k,a) VALUES($k,$a)}
+                $adb eval {INSERT INTO cap_access(k,a) VALUES($k,$a)}
             }
         }
     }
@@ -260,7 +277,7 @@ snit::type cap {
     # a script of one or more commands that will undo the change.  When
     # change cannot be undone, the mutator returns the empty string.
 
-    # mutate create parmdict
+    # create parmdict
     #
     # parmdict  - A dictionary of CAP parms
     #
@@ -276,10 +293,10 @@ snit::type cap {
     # valid.  Creating a CAP requires adding entries to the caps, 
     # cap_kn, and cap_kg tables.
 
-    typemethod {mutate create} {parmdict} {
+    method create {parmdict} {
         dict with parmdict {
             # FIRST, Put the CAP in the database
-            rdb eval {
+            $adb eval {
                 INSERT INTO caps(k, longname, owner, capacity, cost)
                 VALUES($k, 
                        $longname, 
@@ -291,7 +308,7 @@ snit::type cap {
             # NEXT, add the covered neighborhoods.  Coverage defaults to
             # 1.0.
             foreach n $nlist {
-                rdb eval {
+                $adb eval {
                     INSERT INTO cap_kn(k,n) VALUES($k,$n);
                 }
             }
@@ -299,31 +316,31 @@ snit::type cap {
             # NEXT, add the group penetrations.  Penetration defaults to
             # 1.0.
             foreach g $glist {
-                rdb eval {
+                $adb eval {
                     INSERT INTO cap_kg(k,g) VALUES($k,$g);
                 }
             }
 
             # NEXT, Return the undo command
-            return [mytypemethod mutate delete $k]
+            return [mymethod delete $k]
         }
     }
 
-    # mutate delete k
+    # delete k
     #
     # k   - A CAP short name
     #
     # Deletes the CAP, including all references.
 
-    typemethod {mutate delete} {k} {
+    method delete {k} {
         # FIRST, Delete the CAP, grabbing the undo information
-        set data [rdb delete -grab caps {k=$k}]
+        set data [$adb delete -grab caps {k=$k}]
         
         # NEXT, Return the undo script
-        return [list rdb ungrab $data]
+        return [list $adb ungrab $data]
     }
 
-    # mutate update parmdict
+    # update parmdict
     #
     # parmdict   - A dictionary of CAP parms
     #
@@ -336,13 +353,13 @@ snit::type cap {
     # Updates a cap given the parms, which are presumed to be
     # valid.
 
-    typemethod {mutate update} {parmdict} {
+    method update {parmdict} {
         dict with parmdict {
             # FIRST, grab the CAP data that might change.
-            set data [rdb grab caps {k=$k}]
+            set data [$adb grab caps {k=$k}]
 
             # NEXT, Update the CAP
-            rdb eval {
+            $adb eval {
                 UPDATE caps
                 SET longname   = nonempty($longname,     longname),
                     owner      = nonempty($owner,        owner),
@@ -352,11 +369,11 @@ snit::type cap {
             } 
 
             # NEXT, Return the undo command
-            return [list rdb ungrab $data]
+            return [list $adb ungrab $data]
         }
     }
 
-    # mutate nbcov create parmdict
+    # nbcov create parmdict
     #
     # parmdict  - A dictionary of cap_kn parms
     #
@@ -366,7 +383,7 @@ snit::type cap {
     # Creates an nbcov record given the parms, which are presumed to be
     # valid.
 
-    typemethod {mutate nbcov create} {parmdict} {
+    method {nbcov create} {parmdict} {
         dict with parmdict {
             lassign $id k n
 
@@ -376,35 +393,35 @@ snit::type cap {
             }
 
             # NEXT, Put the record into the database
-            rdb eval {
+            $adb eval {
                 INSERT INTO 
                 cap_kn(k,n,nbcov)
                 VALUES($k, $n, $nbcov);
             }
 
             # NEXT, Return the undo command
-            return [list rdb delete cap_kn "k='$k' AND n='$n'"]
+            return [list $adb delete cap_kn "k='$k' AND n='$n'"]
         }
     }
 
-    # mutate nbcov delete id
+    # nbcov delete id
     #
     # id   - list {k n}
     #
     # Deletes the override.
 
-    typemethod {mutate nbcov delete} {id} {
+    method {nbcov delete} {id} {
         lassign $id k n
 
         # FIRST, delete the records, grabbing the undo information
-        set data [rdb delete -grab cap_kn {k=$k AND n=$n}]
+        set data [$adb delete -grab cap_kn {k=$k AND n=$n}]
 
         # NEXT, Return the undo script
-        return [list rdb ungrab $data]
+        return [list $adb ungrab $data]
     }
 
 
-    # mutate nbcov update parmdict
+    # nbcov update parmdict
     #
     # parmdict   - A dictionary of cap_kn parms
     #
@@ -414,26 +431,26 @@ snit::type cap {
     # Updates a cap_kn given the parms, which are presumed to be
     # valid.
 
-    typemethod {mutate nbcov update} {parmdict} {
+    method {nbcov update} {parmdict} {
         dict with parmdict {
             lassign $id k n
 
             # FIRST, grab the data that might change.
-            set data [rdb grab cap_kn {k=$k AND n=$n}]
+            set data [$adb grab cap_kn {k=$k AND n=$n}]
 
             # NEXT, Update the cap_kn
-            rdb eval {
+            $adb eval {
                 UPDATE cap_kn
                 SET nbcov = nonempty($nbcov, nbcov)
                 WHERE k=$k AND n=$n
             } 
 
             # NEXT, Return the undo command
-            return [list rdb ungrab $data]
+            return [list $adb ungrab $data]
         }
     }
 
-    # mutate pen create parmdict
+    # pen create parmdict
     #
     # parmdict  - A dictionary of cap_kg parms
     #
@@ -443,7 +460,7 @@ snit::type cap {
     # Creates a pen record given the parms, which are presumed to be
     # valid.
 
-    typemethod {mutate pen create} {parmdict} {
+    method {pen create} {parmdict} {
         dict with parmdict {
             lassign $id k g
 
@@ -453,34 +470,34 @@ snit::type cap {
             }
 
             # NEXT, Put the record into the database
-            rdb eval {
+            $adb eval {
                 INSERT INTO 
                 cap_kg(k,g,pen)
                 VALUES($k, $g, $pen);
             }
 
             # NEXT, Return the undo command
-            return [list rdb delete cap_kg "k='$k' AND g='$g'"]
+            return [list $adb delete cap_kg "k='$k' AND g='$g'"]
         }
     }
 
-    # mutate pen delete id
+    # pen delete id
     #
     # id   - list {k g}
     #
     # Deletes the override.
 
-    typemethod {mutate pen delete} {id} {
+    method {pen delete} {id} {
         lassign $id k g
 
         # FIRST, delete the records, grabbing the undo information
-        set data [rdb delete -grab cap_kg {k=$k AND g=$g}]
+        set data [$adb delete -grab cap_kg {k=$k AND g=$g}]
 
         # NEXT, Return the undo script
-        return [list rdb ungrab $data]
+        return [list $adb ungrab $data]
     }
 
-    # mutate pen update parmdict
+    # pen update parmdict
     #
     # parmdict   - A dictionary of cap_kg parms
     #
@@ -490,22 +507,22 @@ snit::type cap {
     # Updates a cap_kg given the parms, which are presumed to be
     # valid.
 
-    typemethod {mutate pen update} {parmdict} {
+    method {pen update} {parmdict} {
         dict with parmdict {
             lassign $id k g
 
             # FIRST, grab the data that might change.
-            set data [rdb grab cap_kg {k=$k AND g=$g}]
+            set data [$adb grab cap_kg {k=$k AND g=$g}]
 
             # NEXT, Update the cap_kg
-            rdb eval {
+            $adb eval {
                 UPDATE cap_kg
                 SET pen = nonempty($pen, pen)
                 WHERE k=$k AND g=$g;
             } 
 
             # NEXT, Return the undo command
-            return [list rdb ungrab $data]
+            return [list $adb ungrab $data]
         }
     }
 }    
@@ -561,18 +578,18 @@ snit::type cap {
         my prepare k           -toupper   -required -type ident
         my unused k
         my prepare longname    -normalize
-        my prepare owner       -toupper   -required -type actor
+        my prepare owner       -toupper   -required -type [list $adb actor]
         my prepare capacity    -num       -required -type rfraction
         my prepare cost        -toupper   -required -type money
-        my prepare nlist       -toupper             -listof nbhood
-        my prepare glist       -toupper             -listof civgroup
+        my prepare nlist       -toupper             -listof [list $adb nbhood]
+        my prepare glist       -toupper             -listof [list $adb civgroup]
     }
 
     method _execute {{flunky ""}} {
         if {$parms(longname) eq ""} {
             set parms(longname) $parms(k)
         }
-        lappend undo [cap mutate create [array get parms]]
+        lappend undo [$adb cap create [array get parms]]
     
         my setundo [join $undo \n]
     }
@@ -585,13 +602,6 @@ snit::type cap {
     meta sendstates PREP
 
     meta parmlist {k}
-
-    meta form {
-        # This form is not usually used.
-        rcc "CAP:" -for k
-        cap k
-    }
-
 
     method _validate {} {
         my prepare k -toupper -required -type cap
@@ -620,7 +630,7 @@ snit::type cap {
         }
     
         # NEXT, Delete the CAP and dependent entities
-        lappend undo [cap mutate delete $parms(k)]
+        lappend undo [$adb cap delete $parms(k)]
     
         my setundo [join $undo \n]
     }
@@ -664,16 +674,16 @@ snit::type cap {
 
 
     method _validate {} {
-        my prepare k           -toupper   -required -type cap
+        my prepare k           -toupper   -required -type [list $adb cap]
         my prepare longname    -normalize
-        my prepare owner       -toupper             -type actor
+        my prepare owner       -toupper             -type [list $adb actor]
         my prepare capacity    -num                 -type rfraction
         my prepare cost        -toupper             -type money
     }
 
     method _execute {{flunky ""}} {
         set undo [list]
-        lappend undo [cap mutate update [array get parms]]
+        lappend undo [$adb cap update [array get parms]]
     
         my setundo [join $undo \n]
     }
@@ -712,8 +722,8 @@ snit::type cap {
 
 
     method _validate {} {
-        my prepare ids         -toupper  -required -listof cap
-        my prepare owner       -toupper            -type   actor
+        my prepare ids         -toupper  -required -listof [list $adb cap]
+        my prepare owner       -toupper            -type   [list $adb actor]
         my prepare capacity    -num                -type   rfraction
         my prepare cost        -toupper            -type   money
     }
@@ -725,7 +735,7 @@ snit::type cap {
         set undo [list]
     
         foreach parms(k) $parms(ids) {
-            lappend undo [cap mutate update [array get parms]]
+            lappend undo [$adb cap update [array get parms]]
         }
     
         my setundo [join $undo \n]
@@ -756,7 +766,7 @@ snit::type cap {
 
 
     method _validate {} {
-        my prepare k           -toupper   -required -type cap
+        my prepare k           -toupper   -required -type [list $adb cap]
         my prepare capacity    -num                 -type rfraction
     }
 
@@ -767,7 +777,7 @@ snit::type cap {
         set parms(cost)     ""
     
         set undo [list]
-        lappend undo [cap mutate update [array get parms]]
+        lappend undo [$adb cap update [array get parms]]
     
         my setundo [join $undo \n]
     }
@@ -797,7 +807,7 @@ snit::type cap {
 
 
     method _validate {} {
-        my prepare ids         -toupper  -required -listof cap
+        my prepare ids         -toupper  -required -listof [list $adb cap]
         my prepare capacity    -num                -type   rfraction
     }
 
@@ -808,7 +818,7 @@ snit::type cap {
         set undo [list]
     
         foreach parms(k) $parms(ids) {
-            lappend undo [cap mutate update [array get parms]]
+            lappend undo [$adb cap update [array get parms]]
         }
     
         my setundo [join $undo \n]
@@ -840,19 +850,19 @@ snit::type cap {
 
 
     method _validate {} {
-        my prepare id       -toupper  -required -type {cap nbcov}
+        my prepare id       -toupper  -required -type [list $adb cap nbcov]
         my prepare nbcov    -num                -type rfraction
     }
 
     method _execute {{flunky ""}} {
-        if {[cap nbcov exists $parms(id)]} {
+        if {[$adb cap nbcov exists $parms(id)]} {
             if {$parms(nbcov) > 0.0} {
-                my setundo [cap mutate nbcov update [array get parms]]
+                my setundo [$adb cap nbcov update [array get parms]]
             } else {
-                my setundo [cap mutate nbcov delete $parms(id)]
+                my setundo [$adb cap nbcov delete $parms(id)]
             }
         } else {
-            my setundo [cap mutate nbcov create [array get parms]]
+            my setundo [$adb cap nbcov create [array get parms]]
         }
     }
 }
@@ -882,7 +892,7 @@ snit::type cap {
 
 
     method _validate {} {
-        my prepare ids      -toupper  -required -listof {cap nbcov}
+        my prepare ids      -toupper  -required -listof [list $adb cap nbcov]
         my prepare nbcov    -num                -type rfraction
     }
 
@@ -890,14 +900,14 @@ snit::type cap {
         set undo [list]
     
         foreach parms(id) $parms(ids) {
-            if {[cap nbcov exists $parms(id)]} {
+            if {[$adb cap nbcov exists $parms(id)]} {
                 if {$parms(nbcov) > 0.0} {
-                    lappend undo [cap mutate nbcov update [array get parms]]
+                    lappend undo [$adb cap nbcov update [array get parms]]
                 } else {
-                    lappend undo [cap mutate nbcov delete $parms(id)]
+                    lappend undo [$adb cap nbcov delete $parms(id)]
                 }
             } else {
-                lappend undo [cap mutate nbcov create [array get parms]]
+                lappend undo [$adb cap nbcov create [array get parms]]
             }
         }
 
@@ -929,19 +939,19 @@ snit::type cap {
 
 
     method _validate {} {
-        my prepare id     -toupper  -required -type {cap pen}
+        my prepare id     -toupper  -required -type [list $adb cap pen]
         my prepare pen    -num                -type rfraction
     }
 
     method _execute {{flunky ""}} {
-        if {[cap pen exists $parms(id)]} {
+        if {[$adb cap pen exists $parms(id)]} {
             if {$parms(pen) > 0.0} {
-                my setundo [cap mutate pen update [array get parms]]
+                my setundo [$adb cap pen update [array get parms]]
             } else {
-                my setundo [cap mutate pen delete $parms(id)]
+                my setundo [$adb cap pen delete $parms(id)]
             }
         } else {
-            my setundo [cap mutate pen create [array get parms]]
+            my setundo [$adb cap pen create [array get parms]]
         }
     }
 }
@@ -971,7 +981,7 @@ snit::type cap {
 
 
     method _validate {} {
-        my prepare ids  -toupper  -required -listof {cap pen}
+        my prepare ids  -toupper  -required -listof [list $adb cap pen]
         my prepare pen  -num                -type rfraction
     }
 
@@ -979,14 +989,14 @@ snit::type cap {
         set undo [list]
     
         foreach parms(id) $parms(ids) {
-            if {[cap pen exists $parms(id)]} {
+            if {[$adb cap pen exists $parms(id)]} {
                 if {$parms(pen) > 0.0} {
-                    lappend undo [cap mutate pen update [array get parms]]
+                    lappend undo [$adb cap pen update [array get parms]]
                 } else {
-                    lappend undo [cap mutate pen delete $parms(id)]
+                    lappend undo [$adb cap pen delete $parms(id)]
                 }
             } else {
-                lappend undo [cap mutate pen create [array get parms]]
+                lappend undo [$adb cap pen create [array get parms]]
             }
         }
     

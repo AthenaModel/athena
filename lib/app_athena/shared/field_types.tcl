@@ -23,19 +23,10 @@ dynaform fieldtype alias actorlist enumlonglist \
     -width    30  \
     -dictcmd {::actor namedict}
 
-# agent: pick an agent by name.
-dynaform fieldtype alias agent enum -listcmd {::agent names}
-
 # cap: Pick a cap by name.
 dynaform fieldtype alias cap enumlong \
     -showkeys yes \
     -dictcmd  {::cap namedict}
-
-# civlist: Pick a list of CIV groups; long names shown.
-dynaform fieldtype alias civlist enumlonglist \
-    -showkeys yes \
-    -width    30  \
-    -dictcmd  {::civgroup namedict}
 
 # comparator: An ecomparator value
 dynaform fieldtype alias comparator enumlong \
@@ -108,11 +99,6 @@ dynaform fieldtype alias localn enumlong \
     -showkeys yes \
     -dictcmd {::nbhood local namedict}
 
-# nlist: Pick a neighborhood from a list; long names shown.
-dynaform fieldtype alias nlist enumlonglist \
-    -showkeys yes \
-    -width    30  \
-    -dictcmd  {::nbhood namedict}
 
 # payload: Pick a payload by its ID.
 dynaform fieldtype alias payload dbkey \

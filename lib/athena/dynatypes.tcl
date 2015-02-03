@@ -13,7 +13,7 @@
 #    dialogs are defined.
 #
 # TBD:
-#    * Global dependencies: nbhood
+#    * Global dependencies: none
 #
 #-----------------------------------------------------------------------
 
@@ -23,9 +23,18 @@
 # actor: pick an actor by name.
 dynaform fieldtype alias actor enum -listcmd {$adb_ actor names}
 
+# agent: pick an agent by name.
+dynaform fieldtype alias agent enum -listcmd {$adb_ agent names}
+
 # civgroup: Pick a CIV group by name; long names shown.
 dynaform fieldtype alias civgroup enumlong \
     -showkeys yes \
+    -dictcmd  {$adb_ civgroup namedict}
+
+# civlist: Pick a list of CIV groups; long names shown.
+dynaform fieldtype alias civlist enumlonglist \
+    -showkeys yes \
+    -width    30  \
     -dictcmd  {$adb_ civgroup namedict}
 
 # frac: Fraction, 0.0 to 1.0
@@ -41,6 +50,13 @@ dynaform fieldtype alias longname text -width 30
 dynaform fieldtype alias nbhood enumlong \
     -showkeys yes \
     -dictcmd  {$adb_ nbhood namedict}
+
+# nlist: Pick a neighborhood from a list; long names shown.
+dynaform fieldtype alias nlist enumlonglist \
+    -showkeys yes \
+    -width    30  \
+    -dictcmd  {$adb_ nbhood namedict}
+
 
 # orggroup: Pick an ORG group by name.
 dynaform fieldtype alias orggroup enum -listcmd {$adb_ orggroup names}
