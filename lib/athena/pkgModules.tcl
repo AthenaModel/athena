@@ -57,3 +57,7 @@ source [file join $::athena::library civgroup.tcl     ]
 source [file join $::athena::library frcgroup.tcl     ]
 source [file join $::athena::library nbhood.tcl       ]
 source [file join $::athena::library orggroup.tcl     ]
+
+# Non-Editable Entities
+source [file join $::athena::library agent.tcl        ]
+

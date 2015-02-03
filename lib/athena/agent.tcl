@@ -6,17 +6,34 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Agent Manager
+#    athena(n): Agent Manager
 #
 #    This module is responsible for managing agents and operations
 #    upon them.  An agent is an entity that can own and execute a
 #    strategy, i.e., can have goals, tactics, and conditions.
 #
+# TBD: Global refs: strategy, tactic
+#
 #-----------------------------------------------------------------------
 
-snit::type agent {
-    # Make it a singleton
-    pragma -hasinstances no
+snit::type ::athena::agent {
+    #-------------------------------------------------------------------
+    # Components
+
+    component adb ;# The athenadb(n) instance
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    # constructor adb_
+    #
+    # adb_    - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of the type.
+
+    constructor {adb_} {
+        set adb $adb_
+    }
 
     #-------------------------------------------------------------------
     # Queries
@@ -29,8 +46,8 @@ snit::type agent {
     #
     # Returns the list of agent names
 
-    typemethod names {} {
-        set names [rdb eval {
+    method names {} {
+        set names [$adb eval {
             SELECT agent_id FROM agents
         }]
     }
@@ -42,8 +59,8 @@ snit::type agent {
     #
     # Validates an agent ID
 
-    typemethod validate {agent_id} {
-        set names [$type names]
+    method validate {agent_id} {
+        set names [$self names]
 
         if {$agent_id ni $names} {
             set nameString [join $names ", "]
@@ -65,8 +82,8 @@ snit::type agent {
     #
     # Returns the list of system agent names
 
-    typemethod {system names} {} {
-        set names [rdb eval {
+    method {system names} {} {
+        set names [$adb eval {
             SELECT agent_id FROM agents WHERE agent_type = 'system'
         }]
     }
@@ -78,8 +95,8 @@ snit::type agent {
     #
     # Validates a system agent ID
 
-    typemethod {system validate} {agent_id} {
-        set names [$type system names]
+    method {system validate} {agent_id} {
+        set names [$self system names]
 
         if {$agent_id ni $names} {
             set nameString [join $names ", "]
@@ -103,8 +120,8 @@ snit::type agent {
     #
     # Retrieves the type of the agent, or ""
 
-    typemethod type {agent_id} {
-        rdb eval {SELECT agent_type FROM agents WHERE agent_id=$agent_id}
+    method type {agent_id} {
+        $adb eval {SELECT agent_type FROM agents WHERE agent_id=$agent_id}
     }
 
     # stats agent_id
@@ -112,7 +129,7 @@ snit::type agent {
     # Returns a dictionary of agent strategy statistics: the number
     # of blocks, conditions, and tactics in the agent's strategy.
 
-    typemethod stats {agent_id} {
+    method stats {agent_id} {
         set result [dict create blocks 0 conditions 0 tactics 0]
         set s [strategy getname $agent_id]
 
@@ -137,10 +154,10 @@ snit::type agent {
     # Returns a list of the names of the tactic types that are valid for this 
     # agent.
 
-    typemethod tactictypes {agent_id} {
+    method tactictypes {agent_id} {
         # FIRST, get the tactic types that are valid for the agent type.
         set result [list]
-        set atype [agent type $agent_id]
+        set atype [$self type $agent_id]
 
         foreach name [tactic typenames $atype] {
             # FIRST, skip special cases.

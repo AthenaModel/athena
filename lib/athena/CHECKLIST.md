@@ -40,7 +40,7 @@ from app_athena(n) to athena(n).  See lib/athena/actor.tcl for an example.
         dynatypes.tcl header comment.
   - [x] If any of the types in dynatypes reference mymodule, update the
         reference to `$adb_ mymodule`.
-- [x] Try "athena.tcl -script scenarios/Nangahar_geo.adb".  Fix problems.
-- [x] Try editing the entity type interactively; verify that you can
+- [] Try "athena.tcl -script scenarios/Nangahar_geo.adb".  Fix problems.
+- [] Try editing the entity type interactively; verify that you can
       create and update.
-- [x] Verify that the full app_athena test suite runs.
+- [] Verify that the full app_athena test suite runs.
