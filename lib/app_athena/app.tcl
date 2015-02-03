@@ -227,7 +227,6 @@ snit::type app {
         MakeAthena ::adb
         sim       init
         axdb      init
-        strategy  init
 
         coverage_model init
 

@@ -253,6 +253,7 @@ snit::type ::athena::athenadb {
             set info(adbfile) ""
 
             # Initialize external packages
+            strategy init
             bsys clear
             parm reset
             parm checkpoint -saved
