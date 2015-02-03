@@ -473,7 +473,7 @@ snit::type ::athena::nbhood {
         $self dbsync
         
         # NEXT, notify the GUI of the change.
-        notifier send ::nbhood <Stack>
+        $adb notify nbhood <Stack>
 
         # NEXT, set the undo information
         return [mymethod RestackNbhoods $old]

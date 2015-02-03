@@ -498,12 +498,14 @@ snit::widget mapviewer {
         notifier bind ::map      <MapChanged>  $self [mymethod dbsync]
         notifier bind ::marsgui::order_dialog <OrderEntry>  \
             $self [mymethod OrderEntry]
-        notifier bind ::rdb      <nbhoods>     $self [mymethod EntityNbhood]
-        notifier bind ::nbhood   <Stack>       $self [mymethod NbhoodStack]
-        notifier bind ::rdb      <units>       $self [mymethod EntityUnit]
-        notifier bind ::rdb      <absits>      $self [mymethod EntityAbsit]
-        notifier bind ::rdb      <groups>      $self [mymethod EntityGroup]
-        notifier bind ::rdb      <econ_n>      $self [mymethod EntityEcon]
+        notifier bind ::rdb        <nbhoods>   $self [mymethod EntityNbhood]
+        
+        # TBD: Should be ::adb.nbhood
+        notifier bind ::rdb.nbhood <Stack>     $self [mymethod NbhoodStack]
+        notifier bind ::rdb        <units>     $self [mymethod EntityUnit]
+        notifier bind ::rdb        <absits>    $self [mymethod EntityAbsit]
+        notifier bind ::rdb        <groups>    $self [mymethod EntityGroup]
+        notifier bind ::rdb        <econ_n>    $self [mymethod EntityEcon]
 
         # NEXT, draw everything for the current map, whatever it is.
         $self dbsync

@@ -727,12 +727,34 @@ snit::type ::athena::athenadb {
     #
     # These methods are defined for use by components.
 
+    # log level component message
+    #
+    # level       - The log level
+    # component   - The athenadb(n) component name, e.g., "flunky"
+    # message     - The log message
+    #
+    # Writes the message to the scrolling log, prefixing the component
+    # with "$subject.".
+
     method log {level component message} {
         callwith $options(-logcmd)                         \
             $level                                         \
             [namespace tail $options(-subject)].$component \
             $message
     }
+
+    # notify component event args...
+    #
+    # component   - The athenadb(n) component name, e.g., "flunky"
+    # event       - The notifier(n) event name.
+    # args        - Event arguments
+    #
+    # Sends the event, using subject "$options(-subject).$component"
+    
+    method notify {component event args} {
+        notifier send $options(-subject).$component $event {*}$args
+    }
+
     
 
     #===================================================================
