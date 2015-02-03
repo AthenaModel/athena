@@ -1,6 +1,11 @@
 # TODO.md - Athena TODO List
 
 - Write cellide manpage.
+- Problems
+  - Open elitia scenario, File/New get bgerror in strategybrowser.
+  - flunky <Sync> is no longer being received, because the subject is wrong.
+  - Orders are not being logged.
+  - Right-Click/Control-Click isn't working on OSX.
 - Move editable entities to athena(n)
 - Move model modules to athena(n)
 - Move relevant projtypes to athena(n)
