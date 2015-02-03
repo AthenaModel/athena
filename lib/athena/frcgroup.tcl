@@ -11,7 +11,7 @@
 #    This module is responsible for managing force groups and operations
 #    upon them.
 #
-# TBD: Global refs: absit
+# TBD: Global refs: app/messagebox
 #
 #-----------------------------------------------------------------------
 
@@ -388,7 +388,7 @@ snit::type ::athena::frcgroup {
 
         # NEXT, Delete the group and dependent entities
         lappend undo [$adb frcgroup delete $parms(g)]
-        lappend undo [absit reconcile]
+        lappend undo [$adb absit reconcile]
     
         my setundo [join $undo \n]
     }

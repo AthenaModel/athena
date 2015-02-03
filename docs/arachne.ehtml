@@ -13,6 +13,14 @@ does not yet exist.<p>
 
 <changelog>
 
+<change 2/3/2015 Update will>
+<ul>
+<li> Arachne assumes all incoming HTTP requests use "https".
+     (<xref restapi>).
+<li> Added <tt -heartbeat>, <tt -heartbeaturl> options.
+</ul>
+</change>
+
 <change 1/28/2015 Update will>
 Preliminary draft
 </change>
@@ -81,16 +89,22 @@ Arachne takes the following command-line options:<p>
 
 <deflist options>
 
+<def {-heartbeat <i seconds>}>
+
+Specifies the number of seconds between heartbeats.<p>
+
 <def {-heartbeatfile <i filepath>}>
 
-While Arachne waits for HTTP requests, it writes the current time in seconds
-to named <i filepath> once a second, as a heartbeat.  This allows the 
+If given, and if Arachne is listening for HTTP requests, it will write the 
+current time in seconds to the named <i filepath> approximately every 
+<tt -heartbeat> seconds.  This allows the enclosing web application to be 
+sure that it is alive.<p>
+
+<def {-heartbeaturl <i url>}>
+
+If given, and if Arachne is listening for HTTP requests, it will GET the
+specified URL approximately every <tt -heartbeat> seconds.  This allows the 
 enclosing web application to be sure that it is alive.<p>
-
-<b TBD>: Wally Atkins suggested that this was required.  We may want to
-output more or better information to the heartbeat file than just a clock
-time.<p>
-
 
 <def {-public}>
 
@@ -120,9 +134,7 @@ Any <tt -scenario> is loaded first.<p>
 
 When Arachne is run with the <tt -port> command line option, it will 
 initialize its RESTful HTTP interface, which can be accessed at 
-<tt>http://127.0.0.1:<i portid></tt> or 
-<tt>https://127.0.0.1:<i portid></tt>.  <b QUESTION>: Would we ever not 
-use https?  
+<tt>https://127.0.0.1:<i portid></tt>.<p>  
 
 By default, the HTTP interface can only be accessed from the local host.
 If the <tt -public> option is given, then the HTTP interface

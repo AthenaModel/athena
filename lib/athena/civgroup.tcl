@@ -11,7 +11,7 @@
 #    This module is responsible for managing civilian groups and operations
 #    upon them.
 #
-# TBD: Global refs: bsys, absit
+# TBD: Global refs: bsys, app/messagebox
 #
 #-----------------------------------------------------------------------
 
@@ -549,7 +549,7 @@ snit::type ::athena::civgroup {
 
         # NEXT, Delete the group and dependent entities
         lappend undo [$adb civgroup delete $parms(g)]
-        lappend undo [absit reconcile]
+        lappend undo [$adb absit reconcile]
 
         my setundo [join $undo \n]
 

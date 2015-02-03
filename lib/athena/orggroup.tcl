@@ -11,7 +11,7 @@
 #    This module is responsible for managing organization groups and 
 #    operations upon them.
 #
-# TBD: Global references: absit
+# TBD: Global references: app/messagebox
 #
 #-----------------------------------------------------------------------
 
@@ -300,7 +300,7 @@ snit::type ::athena::orggroup {
         }
 
         lappend undo [$adb orggroup delete $parms(g)]
-        lappend undo [absit reconcile]
+        lappend undo [$adb absit reconcile]
         
         my setundo [join $undo \n]
     }
