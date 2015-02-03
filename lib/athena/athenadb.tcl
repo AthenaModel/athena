@@ -555,7 +555,7 @@ snit::type ::athena::athenadb {
             if {[llength [info commands [lindex $saveable 0]]] != 0} {
                 {*}$saveable restore $checkpoint $option
             } else {
-                $self log warning \
+                $self log warning "" \
                     "Unknown saveable found in checkpoint: \"$saveable\""
             }
         }
@@ -587,7 +587,7 @@ snit::type ::athena::athenadb {
         }
 
         # NEXT, log the size.
-        $self log normal "snapshot saved: [string length $snapshot] bytes"
+        $self log normal "" "snapshot saved: [string length $snapshot] bytes"
     }
 
     # GrabAllBut exclude
@@ -638,7 +638,7 @@ snit::type ::athena::athenadb {
         }]
 
         # NEXT, import it.
-        $self log normal \
+        $self log normal "" \
             "Loading on-lock snapshot: [string length $snapshot] bytes"
 
         $rdb transaction {
@@ -737,10 +737,13 @@ snit::type ::athena::athenadb {
     # with "$subject.".
 
     method log {level component message} {
-        callwith $options(-logcmd)                         \
-            $level                                         \
-            [namespace tail $options(-subject)].$component \
-            $message
+        set name [namespace tail $options(-subject)]
+
+        if {$component ne ""} {
+            append name ".$component"
+        }
+
+        callwith $options(-logcmd) $level $name $message
     }
 
     # notify component event args...

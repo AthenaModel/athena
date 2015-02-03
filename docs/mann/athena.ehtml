@@ -181,6 +181,11 @@ Returns 1 if there is unsaved scenario data, and 0 otherwise.<p>
 athena(n) defines many SQL functions for use in database queries.  The
 functions are TBD.<p>
 
+<section "NOTIFIER EVENTS">
+
+<b TBD>: This section should document all notifier events sent by
+athena(n).<p>
+
 <section AUTHOR>
 
 Will Duquette<p>

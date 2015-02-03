@@ -57,9 +57,9 @@ snit::widgetadaptor ordersentbrowser {
             -uid          id                          \
             -titlecolumns 3                           \
             -reloadon {
-                ::sim    <DbSyncB>
-                ::sim    <Tick>
-                ::flunky <Sync>
+                ::sim        <DbSyncB>
+                ::sim        <Tick>
+                ::rdb.flunky <Sync>
             } -layout [string map [list %D $::app::derivedfg] $layout]
 
         # NEXT, get the options.

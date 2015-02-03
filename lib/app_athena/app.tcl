@@ -419,7 +419,7 @@ snit::type app {
         # Objdict:   order   THE:ORDER:NAME
 
         statecontroller ::cond::available -events {
-            ::flunky <Sync>
+            ::rdb.flunky <Sync>
         } -condition {
             [::flunky available $order]
         }
@@ -440,7 +440,7 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableSingle -events {
-            ::flunky <Sync>
+            ::rdb.flunky <Sync>
         } -condition {
             [::flunky available $order]                &&
             [llength [$browser curselection]] == 1
@@ -453,7 +453,7 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableMulti -events {
-            ::flunky <Sync>
+            ::rdb.flunky <Sync>
         } -condition {
             [::flunky available $order]              &&
             [llength [$browser curselection]] > 0
@@ -466,7 +466,7 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableCanDelete -events {
-            ::flunky <Sync>
+            ::rdb.flunky <Sync>
         } -condition {
             [::flunky available $order] &&
             [$browser candelete]
@@ -479,7 +479,7 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableCanUpdate -events {
-            ::flunky <Sync>
+            ::rdb.flunky <Sync>
         } -condition {
             [::flunky available $order] &&
             [$browser canupdate]
@@ -492,7 +492,7 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableCanResolve -events {
-            ::flunky <Sync>
+            ::rdb.flunky <Sync>
         } -condition {
             [::flunky available $order] &&
             [$browser canresolve]
@@ -761,9 +761,9 @@ snit::type app {
             -master    [app topwin]                \
             -helpcmd   [list app help]             \
             -refreshon {
-                ::flunky <Sync>
-                ::sim    <Tick>
-                ::sim    <DbSyncB>
+                ::rdb.flunky <Sync>
+                ::sim        <Tick>
+                ::sim        <DbSyncB>
             }
     }
 
@@ -923,6 +923,10 @@ snit::type app {
             ::adb destroy
             MakeAthena ::adb $filename
         } trap {SCENARIO OPEN} {result} {
+            # At least have an empty scenario.
+            MakeAthena ::adb
+            
+            # Report the error
             app error {
                 |<--
                 Could not open scenario
@@ -931,10 +935,6 @@ snit::type app {
 
                 $result
             }
-
-            # At least have an empty scenario.
-            MakeAthena ::adb
-
             return
         }
 

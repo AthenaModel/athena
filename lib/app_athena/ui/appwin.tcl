@@ -1171,7 +1171,6 @@ snit::widget appwin {
     # Sets the window title given the mode, the current scenario, etc.
 
     method SetWindowTitle {} {
-        # FIRST, get the file name.
         set dbfile [file tail [adb adbfile]]
 
         if {$dbfile eq ""} {
@@ -2030,6 +2029,8 @@ snit::widget appwin {
     # their own).
 
     method ReloadContent {} {
+        # FIRST, make sure we have data.
+
         # FIRST, set the window title
         $self SetWindowTitle
 
@@ -2167,7 +2168,7 @@ snit::widget appwin {
 
     method error {text} {
         set text [uplevel 1 [list tsubst $text]]
-
+puts "appwin error from $win; [winfo ismapped $win]"
         messagebox popup      \
             -message    $text \
             -icon       error \

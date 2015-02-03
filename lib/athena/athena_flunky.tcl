@@ -92,6 +92,19 @@ oo::class create ::athena::athena_flunky {
     #-------------------------------------------------------------------
     # order_flunky(n) tweaks
 
+    # state ?newState?
+    #
+    # newState - A new simulation state, e.g., PAUSED.
+    #
+    # Sets/queries the simulation state.
+
+    method state {{newState ""}} {
+        set result [next $newState]
+        $adb notify flunky <Sync>
+
+        return $result
+    }    
+
     # make name args
     #
     # Ensures that the order is created with the athenadb instance.
@@ -148,7 +161,6 @@ oo::class create ::athena::athena_flunky {
     # Removes the top order from the CIF
 
     method _onUndo {order} {
-        $adb log normal flunky "Undo: [$order name] [$order getdict]"
         set maxid [$adb onecolumn {
             SELECT max(id) FROM cif
         }]
@@ -158,6 +170,8 @@ oo::class create ::athena::athena_flunky {
             DELETE FROM cif
             WHERE id = $maxid
         }
+        $adb log normal flunky "Undo: [$order name] [$order getdict]"
+        $adb notify flunky <Sync>
     }
 
 
@@ -203,6 +217,7 @@ oo::class create ::athena::athena_flunky {
         }
 
         $adb log normal flunky "Order: $name $parmdict"
+        $adb notify flunky <Sync>
     }
 }
 

@@ -565,13 +565,13 @@ OV1 Over     1              NB1
         ted order NBHOOD:CREATE $nb1
         ted order NBHOOD:CREATE $overnb1
     } -body {
-        ted notifier bind ::nbhood <Stack>
+        ted notifier bind ::rdb.nbhood <Stack>
         ted order NBHOOD:LOWER n OV1
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::nbhood <Stack>}
+        {::rdb.nbhood <Stack>}
     }
 
     test LOWER-3.1 {Undo} -setup {
@@ -624,13 +624,13 @@ OV1 Over     1              NB1
         ted order NBHOOD:CREATE $nb1
         ted order NBHOOD:CREATE $overnb1
     } -body {
-        ted notifier bind ::nbhood <Stack>
+        ted notifier bind ::rdb.nbhood <Stack>
         ted order NBHOOD:RAISE n NB1
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::nbhood <Stack>}
+        {::rdb.nbhood <Stack>}
     }
 
     test RAISE-3.1 {Undo} -setup {
