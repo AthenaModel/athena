@@ -41,12 +41,6 @@ dynaform fieldtype alias concernlist enumlonglist \
     -width 30     \
     -dictcmd {econcern deflist}
 
-# coop: Pick a cooperation level
-dynaform fieldtype alias coop range \
-    -datatype    ::qcooperation     \
-    -showsymbols yes                \
-    -resetvalue  50
-
 # curse: pick a curse by name.
 dynaform fieldtype alias curse enum -listcmd {::curse names}
 

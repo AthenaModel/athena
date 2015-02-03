@@ -7,7 +7,7 @@ from app_athena(n) to athena(n).  See lib/athena/actor.tcl for an example.
       the pkgModule files.
 - [x] Update header comment to reference athena(n); review and edit
       description as needed.
-- [x] Scan the module, and list global references (e.g., ::rdb, ::actor) 
+- [x] Scan the module, and list global references (e.g., ::$adb, ::actor) 
       in a "TBD" header comment for later cleanup, and in TODO.md.
 - [x] Define the module as "snit type ::athena::mymodule".
 - [x] Remove the singleton pragma
@@ -24,23 +24,23 @@ from app_athena(n) to athena(n).  See lib/athena/actor.tcl for an example.
   - [x] "$adb mymodule" in order method bodies.
   - [x] "$adb_ mymodule" in dynaform field callbacks.
 - [x] Update any global references for modules that already exist in athena(n).
-- [] Remove "mutate" keyword.
+- [x] Remove "mutate" keyword.
   - [x] From module
-  - [x] From *.test
+  - [] From *.test
   - [x] From ted.tcl/create
   - [x] From project
 - [x] Replace "meta defaults" with "meta parmlist" in orders.
 - [x] In athenadb.tcl, parallel to the entries for "actor":
   - [x] Add "component mymodule -public mymodule"
   - [x] Add "mymodule" to the MakeComponents call in the constructor
-- [x] Try to invoke athena.tcl.  You might get dynaform errors.
+- [] Try to invoke athena.tcl.  You might get dynaform errors.
   - []x Move field types from shared/field_types.tcl to athena/dynatypes.tcl
         as needed.
-  - [x] If moved types reference global resources, list them in the 
+  - [] If moved types reference global resources, list them in the 
         dynatypes.tcl header comment.
-  - [x] If any of the types in dynatypes reference mymodule, update the
+  - [] If any of the types in dynatypes reference mymodule, update the
         reference to `$adb_ mymodule`.
-- [x] Try "athena.tcl -script scenarios/Nangahar_geo.adb".  Fix problems.
+- [] Try "athena.tcl -script scenarios/Nangahar_geo.adb".  Fix problems.
 - [] Try editing the entity type interactively; verify that you can
       create and update.
 - [] Verify that the full app_athena test suite runs.

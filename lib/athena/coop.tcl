@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Cooperation Manager
+#    athena(n): Cooperation Manager
 #
 #    This module is responsible for managing initial baseline 
 #    cooperation records as groups come and ago, and for allowing the 
@@ -22,9 +22,24 @@
 #
 #-----------------------------------------------------------------------
 
-snit::type coop {
-    # Make it a singleton
-    pragma -hasinstances no
+snit::type ::athena::coop {
+    #-------------------------------------------------------------------
+    # Components
+
+    component adb ;# The athenadb(n) instance
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    # constructor adb_
+    #
+    # adb_    - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of the type.
+
+    constructor {adb_} {
+        set adb $adb_
+    }
 
     #-------------------------------------------------------------------
     # Queries
@@ -36,11 +51,11 @@ snit::type coop {
     # Throws INVALID if there's no cooperation for the 
     # specified combination.
 
-    typemethod validate {id} {
+    method validate {id} {
         lassign $id f g
 
-        set f [civgroup validate $f]
-        set g [frcgroup validate $g]
+        set f [$adb civgroup validate $f]
+        set g [$adb frcgroup validate $g]
 
         return [list $f $g]
     }
@@ -52,8 +67,8 @@ snit::type coop {
     #
     # Returns 1 if cooperation is tracked between f and g.
 
-    typemethod exists {f g} {
-        rdb exists {
+    method exists {f g} {
+        $adb exists {
             SELECT * FROM coop_fg WHERE f=$f AND g=$g
         }
     }
@@ -67,7 +82,7 @@ snit::type coop {
     # change cannot be undone, the mutator returns the empty string.
 
 
-    # mutate update parmdict
+    # update parmdict
     #
     # parmdict     A dictionary of group parms
     #
@@ -79,16 +94,16 @@ snit::type coop {
     # Updates a cooperation given the parms, which are presumed to be
     # valid.
 
-    typemethod {mutate update} {parmdict} {
+    method update {parmdict} {
         # FIRST, use the dict
         dict with parmdict {}
         lassign $id f g
 
         # NEXT, get the undo information
-        set data [rdb grab coop_fg {f=$f AND g=$g}]
+        set data [$adb grab coop_fg {f=$f AND g=$g}]
 
         # NEXT, Update the group
-        rdb eval {
+        $adb eval {
             UPDATE coop_fg
             SET base       = nonempty($base,        base),
                 regress_to = nonempty($regress_to,  regress_to),
@@ -97,7 +112,7 @@ snit::type coop {
         } {}
 
         # NEXT, Return the undo command
-        return [list rdb ungrab $data]
+        return [list $adb ungrab $data]
     }
 }
 
@@ -140,14 +155,14 @@ snit::type coop {
 
 
     method _validate {} {
-        my prepare id         -toupper  -required -type coop
+        my prepare id         -toupper  -required -type [list $adb coop]
         my prepare base       -toupper  -num      -type qcooperation
         my prepare regress_to -toupper  -selector
         my prepare natural    -toupper  -num      -type qcooperation
     }
 
     method _execute {{flunky ""}} {
-        my setundo [coop mutate update [array get parms]]
+        my setundo [$adb coop update [array get parms]]
     }
 }
 
@@ -186,8 +201,8 @@ snit::type coop {
     }
 
     method _validate {} {
-        my prepare ids     -toupper  -required -listof coop
-        my prepare base    -toupper  -num      -type qcooperation
+        my prepare ids        -toupper  -required -listof [list $adb coop]
+        my prepare base       -toupper  -num      -type qcooperation
         my prepare regress_to -toupper  -selector
         my prepare natural    -toupper  -num      -type qcooperation
     }
@@ -196,7 +211,7 @@ snit::type coop {
         set undo [list]
 
         foreach parms(id) $parms(ids) {
-            lappend undo [coop mutate update [array get parms]]
+            lappend undo [$adb coop update [array get parms]]
         }
 
         my setundo [join $undo \n]

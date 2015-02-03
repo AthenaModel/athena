@@ -50,7 +50,7 @@ namespace eval ::athena_test::tests:: {
     test update-1.1 {coop is updated} -setup {
         ted create NB1 BLUE SHIA
     } -body {
-        coop mutate update {
+        coop update {
             id         {SHIA BLUE}
             base       40.0
             regress_to BASELINE
@@ -70,7 +70,7 @@ SHIA BLUE 40.0 BASELINE   50.0
     test update-1.2 {coop is updated} -setup {
         ted create NB1 BLUE SHIA
     } -body {
-        coop mutate update {
+        coop update {
             id         {SHIA BLUE}
             base       40.0
             regress_to NATURAL
@@ -91,7 +91,7 @@ SHIA BLUE 40.0 NATURAL    70.0
     } -body {
         set a [ted query {SELECT * FROM coop_fg}]
 
-        coop mutate update  {
+        coop update  {
             id         {SHIA BLUE}
             base       ""
             regress_to ""
@@ -112,7 +112,7 @@ SHIA BLUE 40.0 NATURAL    70.0
 
         set a [ted query {SELECT * FROM coop_fg}]
 
-        set undo [coop mutate update {
+        set undo [coop update {
             id         {SHIA BLUE}
             base       40.0
             regress_to BASELINE

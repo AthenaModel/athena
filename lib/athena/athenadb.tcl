@@ -164,6 +164,7 @@ snit::type ::athena::athenadb {
     component agent    -public agent     ;# agent manager
     component cap      -public cap       ;# cap manager
     component civgroup -public civgroup  ;# civgroup manager
+    component coop     -public coop      ;# cooperation manager
     component frcgroup -public frcgroup  ;# frcgroup manager
     component nbhood   -public nbhood    ;# nbhood manager
     component orggroup -public orggroup  ;# orggroup manager
@@ -235,6 +236,7 @@ snit::type ::athena::athenadb {
             agent            \
             cap              \
             civgroup         \
+            coop             \
             frcgroup         \
             nbhood           \
             orggroup
