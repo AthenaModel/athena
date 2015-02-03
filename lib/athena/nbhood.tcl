@@ -6,35 +6,43 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Neighborhood Manager
+#    athena(n): Neighborhood Manager
 #
 #    This module is responsible for managing neighborhoods and operations
-#    upon them.  As such, it is a type ensemble.
+#    upon them.
+#
+# TBD: Global references: notifier send, ptype, 
+#      refpoint, app/messagebox, sim
 #
 #-----------------------------------------------------------------------
 
-snit::type nbhood {
-    # Make it a singleton
-    pragma -hasinstances no
+snit::type ::athena::nbhood {
+    #-------------------------------------------------------------------
+    # Components
+
+    component adb ;# The athenadb(n) instance
+    component geo ;# A geoset, for polygon computations
 
     #-------------------------------------------------------------------
-    # Type Components
+    # Constructor
 
-    typecomponent geo   ;# A geoset, for polygon computations
+    # constructor adb_
+    #
+    # adb_    - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of the type.
 
-    #-------------------------------------------------------------------
-    # Initialization
-
-    typemethod init {} {
-        log detail nbhood "init"
-
-        # FIRST, create the geoset
-        set geo [geoset ${type}::geo]
+    constructor {adb_} {
+        # FIRST, save/create components
+        set adb $adb_
+        install geo using geoset ${selfns}::geo
 
         # NEXT, register to receive dbsync events.
-        notifier bind ::sim <DbSyncA> $type [mytypemethod dbsync]
+        notifier bind ::sim <DbSyncA> $self [mymethod dbsync]
+    }
 
-        log detail nbhood "init complete"
+    destructor {
+        notifier forget $self
     }
 
     #-------------------------------------------------------------------
@@ -45,11 +53,11 @@ snit::type nbhood {
     # Refreshes the geoset with the current neighborhood data from
     # the database.
     
-    typemethod dbsync {} {
+    method dbsync {} {
         # FIRST, populate the geoset
         $geo clear
 
-        rdb eval {
+        $adb eval {
             SELECT n, polygon FROM nbhoods
             ORDER BY stacking_order
         } {
@@ -59,20 +67,19 @@ snit::type nbhood {
         }
 
         # NEXT, update the obscured_by fields
-        $type SetObscuredBy
+        $self SetObscuredBy
     }
 
     #-------------------------------------------------------------------
     # Delegated methods
 
-    delegate typemethod bbox to geo
+    delegate method bbox to geo
 
     #-------------------------------------------------------------------
     # Queries
     #
     # These routines query information about the entities; they are
     # not allowed to modify them.
-
 
     # find mx my
     #
@@ -81,7 +88,7 @@ snit::type nbhood {
     # Returns the short name of the neighborhood which contains the
     # coordinates, or the empty string.
 
-    typemethod find {mx my} {
+    method find {mx my} {
         return [$geo find [list $mx $my] nbhood]
     }
 
@@ -93,7 +100,7 @@ snit::type nbhood {
     # If it fails after ten tries, returns the neighborhood's 
     # reference point.
 
-    typemethod randloc {n} {
+    method randloc {n} {
         # FIRST, get the neighborhood polygon's bounding box
         foreach {x1 y1 x2 y2} [$geo bbox $n] {}
 
@@ -107,13 +114,13 @@ snit::type nbhood {
             # into account)?
             set pt [list $x $y]
 
-            if {[geo find $pt] eq $n} {
+            if {[$geo find $pt] eq $n} {
                 return $pt
             }
         }
 
         # Didn't find one; just return the refpoint.
-        return [rdb onecolumn {
+        return [$adb onecolumn {
             SELECT refpoint FROM nbhoods
             WHERE n=$n
         }]
@@ -123,8 +130,8 @@ snit::type nbhood {
     #
     # Returns the list of neighborhood names
 
-    typemethod names {} {
-        return [rdb eval {
+    method names {} {
+        return [$adb eval {
             SELECT n FROM nbhoods ORDER BY n
         }]
     }
@@ -133,8 +140,8 @@ snit::type nbhood {
     #
     # Returns the full name of the neighborhood: "$longname ($n)"
 
-    typemethod fullname {n} {
-        return "[$type get $n longname] ($n)"
+    method fullname {n} {
+        return "[$self get $n longname] ($n)"
     }
 
     # get n ?parm?
@@ -144,9 +151,9 @@ snit::type nbhood {
     # Returns the neighborhood's data dictionary; or the specific
     # parameter, if given.
 
-    typemethod get {n {parm ""}} {
+    method get {n {parm ""}} {
         # FIRST, get the data
-        rdb eval {SELECT * FROM nbhoods WHERE n=$n} row {
+        $adb eval {SELECT * FROM nbhoods WHERE n=$n} row {
             if {$parm ne ""} {
                 return $row($parm)
             } else {
@@ -162,8 +169,8 @@ snit::type nbhood {
     #
     # Returns ID/longname dictionary
 
-    typemethod namedict {} {
-        return [rdb eval {
+    method namedict {} {
+        return [$adb eval {
             SELECT n, longname FROM nbhoods ORDER BY n
         }]
     }
@@ -174,9 +181,9 @@ snit::type nbhood {
     #
     # Validates a neighborhood short name
 
-    typemethod validate {n} {
-        if {![rdb exists {SELECT n FROM nbhoods WHERE n=$n}]} {
-            set names [join [nbhood names] ", "]
+    method validate {n} {
+        if {![$adb exists {SELECT n FROM nbhoods WHERE n=$n}]} {
+            set names [join [$self names] ", "]
 
             if {$names ne ""} {
                 set msg "should be one of: $names"
@@ -195,8 +202,8 @@ snit::type nbhood {
     #
     # Returns the list of nbhoods that have the local flag set
 
-    typemethod {local names} {} {
-        return [rdb eval {
+    method {local names} {} {
+        return [$adb eval {
             SELECT n FROM local_nbhoods ORDER BY n
         }]
     }
@@ -205,8 +212,8 @@ snit::type nbhood {
     #
     # Returns ID/longname dictionary for local nbhoods
 
-    typemethod {local namedict} {} {
-        return [rdb eval {
+    method {local namedict} {} {
+        return [$adb eval {
             SELECT n, longname FROM local_nbhoods ORDER BY n
         }]
     }
@@ -217,9 +224,9 @@ snit::type nbhood {
     #
     # Validates a local nbhood short name
 
-    typemethod {local validate} {n} {
-        if {![rdb exists {SELECT n FROM local_nbhoods WHERE n=$n}]} {
-            set names [join [nbhood local names] ", "]
+    method {local validate} {n} {
+        if {![$adb exists {SELECT n FROM local_nbhoods WHERE n=$n}]} {
+            set names [join [$self local names] ", "]
 
             if {$names ne ""} {
                 set msg "should be one of: $names"
@@ -246,8 +253,8 @@ snit::type nbhood {
     # the neighborhood that changed and only looked at overlapping
     # neighborhoods.
 
-    typemethod SetObscuredBy {} {
-        rdb eval {
+    method SetObscuredBy {} {
+        $adb eval {
             SELECT n, refpoint, obscured_by FROM nbhoods
         } {
             set in [$geo find $refpoint nbhood]
@@ -257,7 +264,7 @@ snit::type nbhood {
             }
 
             if {$in ne $obscured_by} {
-                rdb eval {
+                $adb eval {
                     UPDATE nbhoods
                     SET obscured_by=$in
                     WHERE n=$n
@@ -276,7 +283,7 @@ snit::type nbhood {
     # change cannot be undone, the mutator returns the empty string.
 
 
-    # mutate create parmdict
+    # create parmdict
     #
     # parmdict     A dictionary of neighborhood parms
     #
@@ -293,10 +300,10 @@ snit::type nbhood {
     # valid.  When validity checks are needed, use the NBHOOD:CREATE
     # order.
 
-    typemethod {mutate create} {parmdict} {
+    method create {parmdict} {
         dict with parmdict {
             # FIRST, Put the neighborhood in the database
-            rdb eval {
+            $adb eval {
                 INSERT INTO nbhoods(n,longname,local,urbanization,
                                     controller,pcf,refpoint,
                                     polygon)
@@ -322,10 +329,10 @@ snit::type nbhood {
             } {}
 
             # NEXT, set the stacking order
-            rdb eval {
+            $adb eval {
                 SELECT COALESCE(MAX(stacking_order)+1, 1) AS top FROM nbhoods
             } {
-                rdb eval {
+                $adb eval {
                     UPDATE nbhoods
                     SET stacking_order=$top
                     WHERE n=$n;
@@ -337,32 +344,32 @@ snit::type nbhood {
 
             # NEXT, recompute the obscured_by field; this nbhood might
             # have obscured some other neighborhood's refpoint.
-            $type SetObscuredBy
+            $self SetObscuredBy
 
             # NEXT, Set the undo command
-            return [mytypemethod mutate delete $n]
+            return [mymethod delete $n]
         }
     }
 
-    # mutate delete n
+    # delete n
     #
     # n     A neighborhood short name
     #
     # Deletes the neighborhood, including all references.
 
-    typemethod {mutate delete} {n} {
+    method delete {n} {
         # FIRST, get this neighborhood's undo information and
         # delete the relevant records.
-        set data [rdb delete -grab nbhoods {n=$n}]
-        lappend undo [mytypemethod UndoDelete $data]
+        set data [$adb delete -grab nbhoods {n=$n}]
+        lappend undo [mymethod UndoDelete $data]
 
         # NEXT, delete all CIV groups that depend on this
         # neighborhood.
-        foreach g [rdb eval {
+        foreach g [$adb eval {
             SELECT g FROM civgroups
             WHERE n=$n
         }] {
-            lappend undo [civgroup delete $g]
+            lappend undo [$adb civgroup delete $g]
         }
 
         # NEXT, update the $geo module
@@ -370,7 +377,7 @@ snit::type nbhood {
 
         # NEXT, recompute the obscured_by field; this nbhood might
         # have obscured some other neighborhood's refpoint.
-        $type SetObscuredBy
+        $self SetObscuredBy
 
         # NEXT, return aggregate undo script.
         return [join $undo \n]
@@ -382,24 +389,24 @@ snit::type nbhood {
     #
     # Restores a neighborhood.
 
-    typemethod UndoDelete {grabData} {
+    method UndoDelete {grabData} {
         # FIRST, restore the database rows
-        rdb ungrab $grabData
+        $adb ungrab $grabData
 
-        # NEXT, resync with the RDB: this will update the geoset and the 
+        # NEXT, resync with the $adb: this will update the geoset and the 
         # stacking order, as well as the econ_n changes.
-        $type dbsync
+        $self dbsync
     }
 
-    # mutate lower n
+    # lower n
     #
     # n     A neighborhood short name
     #
     # Sends the neighborhood to the bottom of the stacking order.
 
-    typemethod {mutate lower} {n} {
+    method lower {n} {
         # FIRST, reorder the neighborhoods
-        set oldNames [rdb eval {
+        set oldNames [$adb eval {
             SELECT n FROM nbhoods 
             ORDER BY stacking_order
         }]
@@ -408,18 +415,18 @@ snit::type nbhood {
         ldelete names $n
         set names [linsert $names 0 $n]
 
-        return [$type RestackNbhoods $names $oldNames]
+        return [$self RestackNbhoods $names $oldNames]
     }
 
-    # mutate raise n
+    # raise n
     #
     # n     A neighborhood short name
     #
     # Brings the neighborhood to the top of the stacking order.
 
-    typemethod {mutate raise} {n} {
+    method raise {n} {
         # FIRST, reorder the neighborhoods
-        set oldNames [rdb eval {
+        set oldNames [$adb eval {
             SELECT n FROM nbhoods 
             ORDER BY stacking_order
         }]
@@ -429,7 +436,7 @@ snit::type nbhood {
         ldelete names $n
         lappend names $n
 
-        return [$type RestackNbhoods $names $oldNames]
+        return [$self RestackNbhoods $names $oldNames]
     }
   
     # RestackNbhoods new ?old?
@@ -440,14 +447,14 @@ snit::type nbhood {
     #
     # Sets the stacking_order according to the order of the names.
 
-    typemethod RestackNbhoods {new {old ""}} {
+    method RestackNbhoods {new {old ""}} {
         # FIRST, set the stacking_order
         set i 0
 
         foreach name $new {
             incr i
 
-            rdb eval {
+            $adb eval {
                 UPDATE nbhoods
                 SET stacking_order=$i
                 WHERE n=$name
@@ -455,16 +462,16 @@ snit::type nbhood {
         }
 
         # NEXT, refresh the geoset and set the "obscured_by" field
-        $type dbsync
+        $self dbsync
         
         # NEXT, notify the GUI of the change.
         notifier send ::nbhood <Stack>
 
         # NEXT, set the undo information
-        return [mytypemethod RestackNbhoods $old]
+        return [mymethod RestackNbhoods $old]
     }
 
-    # mutate update parmdict
+    # update parmdict
     #
     # parmdict     A dictionary of neighborhood parms
     #
@@ -481,10 +488,10 @@ snit::type nbhood {
     # valid.  When validity checks are needed, use the NBHOOD:UPDATE
     # order.
 
-    typemethod {mutate update} {parmdict} {
+    method update {parmdict} {
         dict with parmdict {
             # FIRST, get the undo information
-            rdb eval {
+            $adb eval {
                 SELECT *
                 FROM nbhoods
                 WHERE n=$n
@@ -496,7 +503,7 @@ snit::type nbhood {
             }
 
             # NEXT, Put the neighborhood in the database
-            rdb eval {
+            $adb eval {
                 UPDATE nbhoods
                 SET longname     = nonempty($longname,     longname),
                     local        = nonempty($local,        local),
@@ -512,11 +519,11 @@ snit::type nbhood {
 
             # NEXT, if the polygon has changed update the geoset, etc.
             if {$polygon ne ""} {
-                $type dbsync
+                $self dbsync
             }
 
             # NEXT, Set the undo command
-            return [mytypemethod mutate update [array get row]]
+            return [mymethod update [array get row]]
         }
     }
 }
@@ -529,18 +536,17 @@ snit::type nbhood {
 # Creates new neighborhoods.
 
 ::athena::orders define NBHOOD:CREATE {
-    meta title "Create Neighborhood"
+    meta title      "Create Neighborhood"
     meta sendstates PREP
-
-    meta defaults {
-        n            ""
-        longname     ""
-        local        1
-        pcf          1.0
-        urbanization URBAN
-        controller   NONE
-        refpoint     ""
-        polygon      ""
+    meta parmlist   {
+        n
+        longname
+        {local        1}
+        {pcf          1.0}
+        {urbanization URBAN}
+        {controller   NONE}
+        refpoint
+        polygon
     }
 
     meta form {
@@ -649,8 +655,8 @@ snit::type nbhood {
         }
 
         # NEXT, create the neighborhood and dependent entities
-        lappend undo [nbhood mutate create [array get parms]]
-        lappend undo [absit reconcile]
+        lappend undo [$adb nbhood create [array get parms]]
+        lappend undo [$adb absit reconcile]
 
         my setundo [join $undo \n]
     }
@@ -661,18 +667,17 @@ snit::type nbhood {
 # Creates new neighborhoods from raw lat/long data.
 
 ::athena::orders define NBHOOD:CREATE:RAW {
-    meta title "Create Neighborhood From Raw Data"
+    meta title      "Create Neighborhood From Raw Data"
     meta sendstates PREP
-
-    meta defaults {
-        n            ""
-        longname     ""
-        local        1
-        pcf          1.0
-        urbanization URBAN
-        controller   NONE
-        refpoint     ""
-        polygon      ""
+    meta parmlist {
+        n
+        longname
+        {local        1}
+        {pcf          1.0}
+        {urbanization URBAN}
+        {controller   NONE}
+        refpoint
+        polygon
     }
     
     meta form {
@@ -835,8 +840,8 @@ snit::type nbhood {
         }
 
         # NEXT, create the neighborhood and dependent entities
-        lappend undo [nbhood mutate create [array get parms]]
-        lappend undo [absit reconcile]
+        lappend undo [$adb nbhood create [array get parms]]
+        lappend undo [$adb absit reconcile]
 
         my setundo [join $undo \n]
     }
@@ -846,12 +851,9 @@ snit::type nbhood {
 # NBHOOD:DELETE
 
 ::athena::orders define NBHOOD:DELETE {
-    meta title "Delete Neighborhood"
+    meta title      "Delete Neighborhood"
     meta sendstates PREP
-
-    meta defaults {
-        n            ""
-    }
+    meta parmlist   {n}
     
     meta form {
         rcc "Neighborhood:" -for n
@@ -885,8 +887,8 @@ snit::type nbhood {
         }
 
         # NEXT, delete the neighborhood and dependent entities
-        lappend undo [nbhood mutate delete $parms(n)]
-        lappend undo [absit reconcile]
+        lappend undo [$adb nbhood delete $parms(n)]
+        lappend undo [$adb absit reconcile]
 
         my setundo [join $undo \n]
     }
@@ -895,13 +897,9 @@ snit::type nbhood {
 # NBHOOD:LOWER
 
 ::athena::orders define NBHOOD:LOWER {
-    meta title "Lower Neighborhood"
+    meta title      "Lower Neighborhood"
     meta sendstates PREP
-
-    meta defaults {
-        n            ""
-    }
-    
+    meta parmlist   {n}
 
     meta form {
         rcc "Neighborhood:" -for n
@@ -913,8 +911,8 @@ snit::type nbhood {
     }
 
     method _execute {{flunky ""}} {
-        lappend undo [nbhood mutate lower $parms(n)]
-        lappend undo [absit reconcile]
+        lappend undo [$adb nbhood lower $parms(n)]
+        lappend undo [$adb absit reconcile]
 
         my setundo [join $undo \n]
     }
@@ -925,10 +923,7 @@ snit::type nbhood {
 ::athena::orders define NBHOOD:RAISE {
     meta title "Raise Neighborhood"
     meta sendstates PREP
-
-    meta defaults {
-        n            ""
-    }
+    meta parmlist   {n}
     
     meta form {
         rcc "Neighborhood:" -for n
@@ -940,8 +935,8 @@ snit::type nbhood {
     }
 
     method _execute {{flunky ""}} {
-        lappend undo [nbhood mutate raise $parms(n)]
-        lappend undo [absit reconcile]
+        lappend undo [$adb nbhood raise $parms(n)]
+        lappend undo [$adb absit reconcile]
 
         my setundo [join $undo \n]
     }
@@ -952,18 +947,10 @@ snit::type nbhood {
 # Updates existing neighborhoods.
 
 ::athena::orders define NBHOOD:UPDATE {
-    meta title "Update Neighborhood"
+    meta title      "Update Neighborhood"
     meta sendstates PREP
-
-    meta defaults {
-        n            ""
-        longname     ""
-        local        ""
-        pcf          ""
-        urbanization ""
-        controller   ""
-        refpoint     ""
-        polygon      ""
+    meta parmlist {
+        n longname local pcf urbanization controller refpoint polygon
     }
     
     meta form {
@@ -1006,7 +993,7 @@ snit::type nbhood {
         my variable adb
         
         # FIRST, prepare the parameters
-        my prepare n            -toupper   -required -type nbhood
+        my prepare n            -toupper   -required -type [list $adb nbhood]
         my prepare longname     -normalize
         my prepare local        -toupper             -type boolean
         my prepare urbanization -toupper             -type eurbanization
@@ -1077,8 +1064,8 @@ snit::type nbhood {
         }
 
         # NEXT, modify the neighborhood
-        lappend undo [nbhood mutate update [array get parms]]
-        lappend undo [absit reconcile]
+        lappend undo [$adb nbhood update [array get parms]]
+        lappend undo [$adb absit reconcile]
 
         my setundo [join $undo \n]
     }
@@ -1089,16 +1076,9 @@ snit::type nbhood {
 # Updates multiple neighborhoods.
 
 ::athena::orders define NBHOOD:UPDATE:MULTI {
-    meta title "Update Multiple Neighborhoods"
+    meta title      "Update Multiple Neighborhoods"
     meta sendstates PREP
-
-    meta defaults {
-        ids          ""
-        local        ""
-        urbanization ""
-        controller   ""
-        pcf          ""
-    }
+    meta parmlist   {ids local urbanization controller pcf}
     
     meta form {
         rcc "Neighborhoods:" -for ids
@@ -1120,7 +1100,7 @@ snit::type nbhood {
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare ids          -toupper -required -listof nbhood
+        my prepare ids          -toupper -required -listof [list $adb nbhood]
         my prepare local        -toupper           -type   boolean
         my prepare urbanization -toupper           -type   eurbanization
         my prepare controller   -toupper           -type   {ptype a+none}
@@ -1137,10 +1117,10 @@ snit::type nbhood {
         set undo [list]
 
         foreach parms(n) $parms(ids) {
-            lappend undo [nbhood mutate update [array get parms]]
+            lappend undo [$adb nbhood update [array get parms]]
         }
 
-        lappend undo [absit reconcile]
+        lappend undo [$adb absit reconcile]
 
         my setundo [join $undo \n]
     }

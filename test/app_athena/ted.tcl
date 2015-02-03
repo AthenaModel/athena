@@ -83,13 +83,6 @@ snit::type ted {
         working_deployment
     }
 
-    # cleanupModules -- list of modules that need to be resync'd
-    # after a test.
-
-    typevariable cleanupModules {
-        nbhood
-    }
-
     #-------------------------------------------------------------------
     # Type Variables
 
@@ -665,7 +658,7 @@ snit::type ted {
 
                 # NEXT, create the requested entity
                 if {$module in {
-                    ::actor ::absit ::civgroup ::frcgroup ::orggroup
+                    ::actor ::absit ::civgroup ::frcgroup ::nbhood ::orggroup
                 }} {
                     {*}$module create $parmdict
                 } else {
@@ -730,6 +723,8 @@ snit::type ted {
             sim restart
         }
 
+        # TBD: Could we simply do "app new" here?
+
         foreach table $cleanupTables {
             rdb eval "DELETE FROM $table;" 
         }
@@ -740,10 +735,7 @@ snit::type ted {
             rdb eval {DELETE FROM main.sqlite_sequence}
         }
 
-        foreach module $cleanupModules {
-            {*}$module dbsync
-        }
-
+        [::adb athenadb] nbhood dbsync
         flunky          reset
         parm            reset
         bsys            clear

@@ -11,7 +11,7 @@
 #    This module defines a type, "absit", which is used to
 #    manage the collection of abstract situation objects, or absits.
 #
-# TBD: Global references: simclock, driver::absit, nbhood,
+# TBD: Global references: simclock, driver::absit,
 # parmdb, sim, ptype, refpoint
 #
 #-----------------------------------------------------------------------
@@ -313,7 +313,7 @@ snit::type ::athena::absit {
         foreach {s n location} [$adb eval {
             SELECT s, n, location FROM absits
         }] { 
-            set nloc [nbhood find {*}$location]
+            set nloc [$adb nbhood find {*}$location]
 
             if {$nloc ne $n} {
                 set newloc [$self PickLocation $s $n]
@@ -363,7 +363,7 @@ snit::type ::athena::absit {
         dict with parmdict {}
 
         # FIRST, get the remaining attribute values
-        set location [nbhood randloc $n]
+        set location [$adb nbhood randloc $n]
 
         if {$rduration eq ""} {
             set rduration [parmdb get absit.$stype.duration]
@@ -544,10 +544,10 @@ snit::type ::athena::absit {
         # FIRST, get the old location and neighborhood.
         array set old [$self get $s]
 
-        set oldN [nbhood find {*}$old(location)]
+        set oldN [$adb nbhood find {*}$old(location)]
 
         if {$oldN ne $n} {
-            return [nbhood randloc $n]
+            return [$adb nbhood randloc $n]
         } else {
             return $old(location)
         }
@@ -652,7 +652,7 @@ snit::type ::athena::absit {
 
     method _validate {} {
         # FIRST, prepare and validate the parameters
-        my prepare n         -toupper   -required -type nbhood
+        my prepare n         -toupper   -required -type [list $adb nbhood]
         my prepare stype     -toupper   -required -type eabsit
         my prepare coverage  -num       -required -type rfraction
         my prepare inception -toupper   -required -type boolean
@@ -791,7 +791,7 @@ snit::type ::athena::absit {
         set stype [$adb absit get $parms(s) stype]
     
         # NEXT, prepare the remaining parameters
-        my prepare n         -toupper  -type nbhood 
+        my prepare n         -toupper  -type [list $adb nbhood] 
         my prepare stype     -toupper  -type eabsit
         my prepare coverage  -num      -type rfraction
         my prepare inception -toupper  -type boolean
@@ -850,7 +850,7 @@ snit::type ::athena::absit {
         # NEXT, validate the other parameters.  
     
         my checkon location {
-            set n [nbhood find {*}$parms(location)]
+            set n [$adb nbhood find {*}$parms(location)]
     
             if {$n ne [$adb absit get $parms(s) n]} {
                 my reject location \

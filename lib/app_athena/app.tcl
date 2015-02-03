@@ -225,7 +225,6 @@ snit::type app {
         view      init
         bsys      init
         MakeAthena ::adb
-        nbhood    init
         sim       init
         axdb      init
         strategy  init

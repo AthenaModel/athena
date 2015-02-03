@@ -163,7 +163,8 @@ snit::type ::athena::athenadb {
     component actor    -public actor     ;# actor manager
     component civgroup -public civgroup  ;# civgroup manager
     component frcgroup -public frcgroup  ;# frcgroup manager
-    component orggroup -public orggroup  ;# frcgroup manager
+    component nbhood   -public nbhood    ;# nbhood manager
+    component orggroup -public orggroup  ;# orggroup manager
 
     #-------------------------------------------------------------------
     # Options
@@ -225,6 +226,7 @@ snit::type ::athena::athenadb {
             actor            \
             civgroup         \
             frcgroup         \
+            nbhood           \
             orggroup
 
         # NEXT, Make these components globally available.

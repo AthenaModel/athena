@@ -12,19 +12,21 @@
 # Global Resources in use in athena(n)
 
 - app/messagebox
-  - absit, actor, civgroup, frcgroup, orggroup
+  - absit, actor, civgroup, frcgroup, nbhood, orggroup
 - bsys
   - actor, civgroup
 - driver::absit
   - absit
 - nbhood
-  - absit, dynatypes
+  - absit
+- notifier send
+  - nbhood
 - parmdb
   - absit
-- ptype
-  - absit, actor
+- ptype - Should go in athena_order.tcl? (But no hierarchical methods!)
+  - absit, actor, nbhood
 - refpoint
-  - absit
+  - absit, nbhood
 - sim
   - absit
 - simclock

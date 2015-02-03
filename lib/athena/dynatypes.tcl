@@ -40,7 +40,7 @@ dynaform fieldtype alias longname text -width 30
 # nbhood: Pick a neighborhood by name
 dynaform fieldtype alias nbhood enumlong \
     -showkeys yes \
-    -dictcmd  {::nbhood namedict}
+    -dictcmd  {$adb_ nbhood namedict}
 
 # orggroup: Pick an ORG group by name.
 dynaform fieldtype alias orggroup enum -listcmd {$adb_ orggroup names}

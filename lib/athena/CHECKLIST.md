@@ -8,19 +8,26 @@ from app_athena(n) to athena(n).  See lib/athena/actor.tcl for an example.
 - [x] Update header comment to reference athena(n); review and edit
       description as needed.
 - [x] Scan the module, and list global references (e.g., ::rdb, ::actor) 
-      in a "TBD" header comment for later cleanup.
+      in a "TBD" header comment for later cleanup, and in TODO.md.
 - [x] Define the module as "snit type ::athena::mymodule".
 - [x] Remove the singleton pragma
 - [x] Add a component, "adb"
 - [x] Add a constructor taking "adb_" as the argument, and saving it to
       "adb": `set adb $adb_`
+- [x] Replace "typecomponent" with "component"
+  - [x] Update creation of any typecomponent
 - [x] Replace "typevariable" with "variable"
-- [x] Replace "method" with "method"
+- [x] Replace "typemethod" with "method"
 - [x] Replace references to "rdb" with "$adb".
 - [x] Replace references to "mymodule" or "$type" with:
   - [x] "$self" in snit::type method bodies
   - [x] "$adb mymodule" in order method bodies.
   - [x] "$adb_ mymodule" in dynaform field callbacks.
+- [x] Remove "mutate" keyword.
+  - [x] From module
+  - [x] From *.test
+  - [x] From ted.tcl/create
+  - [x] From project
 - [x] Replace "meta defaults" with "meta parmlist" in orders.
 - [x] Update any global references for modules that already exist in athena(n).
 - [x] In athenadb.tcl, parallel to the entries for "actor":
@@ -36,4 +43,4 @@ from app_athena(n) to athena(n).  See lib/athena/actor.tcl for an example.
 - [x] Try "athena.tcl -script scenarios/Nangahar_geo.adb".  Fix problems.
 - [x] Try editing the entity type interactively; verify that you can
       create and update.
-- [ ] Verify that the full app_athena test suite runs.
+- [x] Verify that the full app_athena test suite runs.
