@@ -37,7 +37,7 @@ snit::widgetadaptor plantbrowser {
     #    -view     - The view name.
     #    -reloadon - The default reload events 
     #
-    # Reload on ::rdb <plants_shares>
+    # Reload on ::adb <plants_shares>
     #
 
     # %D is replaced with the color for derived columns.
@@ -53,7 +53,7 @@ snit::widgetadaptor plantbrowser {
             }
             -reloadon {
                 ::sim <DbSyncB>
-                ::rdb <plants_shares>
+                ::adb <plants_shares>
             }
         }
         simulation {
@@ -84,7 +84,7 @@ snit::widgetadaptor plantbrowser {
     constructor {args} {
         # FIRST, Install the hull
         installhull using sqlbrowser                  \
-            -db           ::rdb                       \
+            -db           ::adb                       \
             -uid          id                          \
             -titlecolumns 2                           \
             -selectioncmd [mymethod SelectionChanged] \
@@ -165,9 +165,9 @@ snit::widgetadaptor plantbrowser {
         $hull configure {*}[ModeOptions $mode]
 
         if {$mode eq "scenario"} {
-            notifier bind ::rdb <plants_shares> $self [mymethod uid]
+            notifier bind ::adb <plants_shares> $self [mymethod uid]
         } else {
-            notifier bind ::rdb <plants_shares> $self ""
+            notifier bind ::adb <plants_shares> $self ""
         }
     }
 

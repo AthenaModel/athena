@@ -82,8 +82,8 @@ snit::widget hookbrowser {
         # Reload individual entities when they
         # are updated or deleted.
 
-        notifier bind ::rdb <hooks>       $self [mymethod MonHooks]
-        notifier bind ::rdb <hook_topics> $self [mymethod MonTopics]
+        notifier bind ::adb <hooks>       $self [mymethod MonHooks]
+        notifier bind ::adb <hook_topics> $self [mymethod MonTopics]
 
         # NEXT, schedule the first reload
         $self reload

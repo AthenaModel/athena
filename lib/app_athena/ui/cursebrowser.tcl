@@ -87,8 +87,8 @@ snit::widget cursebrowser {
         # Reload individual entities when they
         # are updated or deleted.
 
-        notifier bind ::rdb <curses>        $self [mymethod MonCURSEs]
-        notifier bind ::rdb <curse_injects> $self [mymethod MonInjects]
+        notifier bind ::adb <curses>        $self [mymethod MonCURSEs]
+        notifier bind ::adb <curse_injects> $self [mymethod MonInjects]
 
         # NEXT, schedule the first reload
         $self reload

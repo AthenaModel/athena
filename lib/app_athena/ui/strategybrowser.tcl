@@ -235,7 +235,7 @@ snit::widget strategybrowser {
         # When the set of actors changes, the list of names in the alist
         # can change.
 
-        notifier bind ::rdb <actors>  $self [mymethod RdbActors]
+        notifier bind ::adb <actors>  $self [mymethod RdbActors]
 
         # strategy UPDATES
         #
@@ -611,7 +611,7 @@ snit::widget strategybrowser {
             -relief       flat                        \
             -borderwidth  1                           \
             -stripeheight 0                           \
-            -db           ::rdb                       \
+            -db           ::adb                       \
             -view         agents                      \
             -uid          agent_id                    \
             -filterbox    off                         \

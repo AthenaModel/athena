@@ -56,7 +56,7 @@ snit::widgetadaptor econpopbrowser {
     constructor {args} {
         # FIRST, Install the hull
         installhull using sqlbrowser                  \
-            -db           ::rdb                       \
+            -db           ::adb                       \
             -view         gui_econ_n                  \
             -uid          id                          \
             -titlecolumns 1                           \
@@ -70,8 +70,8 @@ snit::widgetadaptor econpopbrowser {
         $self configurelist $args
 
         # NEXT, Respond to simulation updates
-        notifier bind ::rdb <econ_n>  $self [mymethod uid]
-        notifier bind ::rdb <nbhoods> $self [mymethod uid]
+        notifier bind ::adb <econ_n>  $self [mymethod uid]
+        notifier bind ::adb <nbhoods> $self [mymethod uid]
     }
 
     #-------------------------------------------------------------------

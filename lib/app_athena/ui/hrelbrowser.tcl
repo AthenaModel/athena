@@ -57,9 +57,9 @@ snit::widgetadaptor hrelbrowser {
                 {override "OV"           -hide 1        }
             }
             -reloadon {
-                ::rdb <groups>
+                ::adb <groups>
                 ::sim <DbSyncB>
-                ::rdb <civgroups>
+                ::adb <civgroups>
             }
         }
         simulation {
@@ -97,7 +97,7 @@ snit::widgetadaptor hrelbrowser {
     constructor {args} {
         # FIRST, Install the hull
         installhull using sqlbrowser                  \
-            -db           ::rdb                       \
+            -db           ::adb                       \
             -uid          id                          \
             -titlecolumns 2                           \
             -selectioncmd [mymethod SelectionChanged] \
@@ -226,10 +226,10 @@ snit::widgetadaptor hrelbrowser {
         $hull configure {*}[ModeOptions $mode]
 
         if {$mode eq "scenario"} {
-            notifier bind ::rdb <hrel_fg> $self [mymethod uid]
+            notifier bind ::adb <hrel_fg> $self [mymethod uid]
             notifier bind ::mad <Hrel>    $self ""
         } else {
-            notifier bind ::rdb <hrel_fg> $self ""
+            notifier bind ::adb <hrel_fg> $self ""
             notifier bind ::mad <Hrel>    $self [mymethod uid]
         }
     }

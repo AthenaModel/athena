@@ -49,15 +49,15 @@ snit::widgetadaptor demogbrowser {
     constructor {args} {
         # FIRST, Install the hull
         installhull using sqlbrowser                  \
-            -db           ::rdb                       \
+            -db           ::adb                       \
             -view         gui_civgroups               \
             -uid          id                          \
             -titlecolumns 1                           \
             -reloadon {
                 ::sim <DbSyncB>
                 ::demog <Update>
-                ::rdb <nbhoods>
-                ::rdb <civgroups>
+                ::adb <nbhoods>
+                ::adb <civgroups>
             } -layout [string map [list %D $::app::derivedfg] $layout]
 
         # NEXT, get the options.

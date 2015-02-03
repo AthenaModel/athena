@@ -52,7 +52,7 @@ snit::widgetadaptor absitbrowser {
     constructor {args} {
         # FIRST, Install the hull
         installhull using sqlbrowser                  \
-            -db           ::rdb                       \
+            -db           ::adb                       \
             -view         gui_absits                  \
             -uid          id                          \
             -titlecolumns 1                           \
@@ -118,7 +118,7 @@ snit::widgetadaptor absitbrowser {
         pack $resolvebtn -side right
 
         # NEXT, update individual entities when they change.
-        notifier bind ::rdb <absits> $self [mymethod uid]
+        notifier bind ::adb <absits> $self [mymethod uid]
     }
 
     destructor {

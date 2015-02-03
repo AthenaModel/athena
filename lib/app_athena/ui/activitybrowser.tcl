@@ -50,7 +50,7 @@ snit::widgetadaptor activitybrowser {
     constructor {args} {
         # FIRST, Install the hull
         installhull using sqlbrowser              \
-            -db                 ::rdb             \
+            -db                 ::adb             \
             -view               gui_activity_nga  \
             -uid                id                \
             -titlecolumns       3                 \

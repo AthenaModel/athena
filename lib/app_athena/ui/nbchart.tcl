@@ -118,10 +118,10 @@ snit::widgetadaptor nbchart {
         notifier bind ::sim   <Tick>    $win [mymethod UpdateEvent]
         notifier bind ::sim   <DbSyncB> $win [mymethod UpdateEvent]
         notifier bind ::demog <Update>  $win [mymethod UpdateEvent]
-        notifier bind ::rdb   <nbhoods> $win [mymethod UpdateEvent]
-        notifier bind ::rdb   <econ_n>  $win [mymethod UpdateEvent]
-        notifier bind ::rdb   <sat_gc>  $win [mymethod UpdateEvent]
-        notifier bind ::rdb   <coop_fg> $win [mymethod UpdateEvent]
+        notifier bind ::adb   <nbhoods> $win [mymethod UpdateEvent]
+        notifier bind ::adb   <econ_n>  $win [mymethod UpdateEvent]
+        notifier bind ::adb   <sat_gc>  $win [mymethod UpdateEvent]
+        notifier bind ::adb   <coop_fg> $win [mymethod UpdateEvent]
 
         # NEXT, draw the chart.
         $lu update

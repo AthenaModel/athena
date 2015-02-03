@@ -66,7 +66,7 @@ snit::widget detailbrowser {
             -reloadon {
                 ::sim <DbSyncB>             
                 ::sim <Tick>                
-                ::rdb <Monitor>             
+                ::adb <Monitor>             
                 ::parm <Update>             
                 ::projectlib::bean <Monitor>
             }

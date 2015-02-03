@@ -56,7 +56,7 @@ snit::widgetadaptor orggroupbrowser {
     constructor {args} {
         # FIRST, Install the hull
         installhull using sqlbrowser                  \
-            -db           ::rdb                       \
+            -db           ::adb                       \
             -view         gui_orggroups               \
             -uid          id                          \
             -titlecolumns 1                           \
@@ -106,8 +106,8 @@ snit::widgetadaptor orggroupbrowser {
         pack $deletebtn -side right
 
         # NEXT, update individual entities when they change.
-        notifier bind ::rdb <groups>    $self [mymethod uid]
-        notifier bind ::rdb <orggroups> $self [mymethod uid]
+        notifier bind ::adb <groups>    $self [mymethod uid]
+        notifier bind ::adb <orggroups> $self [mymethod uid]
     }
 
     #-------------------------------------------------------------------

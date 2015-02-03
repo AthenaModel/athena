@@ -54,7 +54,7 @@ snit::widgetadaptor econexpbrowser {
     constructor {args} {
         # FIRST, Install the hull
         installhull using sqlbrowser                  \
-            -db           ::rdb                       \
+            -db           ::adb                       \
             -view         gui_econ_exp_now_a          \
             -uid          id                          \
             -titlecolumns 1                           \

@@ -65,9 +65,9 @@ snit::widgetadaptor vrelbrowser {
                 {override "OV"           -hide 1        }
             }
             -reloadon {
-                ::rdb <actors>
-                ::rdb <civgroups>
-                ::rdb <groups>
+                ::adb <actors>
+                ::adb <civgroups>
+                ::adb <groups>
                 ::sim <DbSyncB>
             }
         }
@@ -106,7 +106,7 @@ snit::widgetadaptor vrelbrowser {
     constructor {args} {
         # FIRST, Install the hull
         installhull using sqlbrowser                  \
-            -db           ::rdb                       \
+            -db           ::adb                       \
             -uid          id                          \
             -titlecolumns 2                           \
             -selectioncmd [mymethod SelectionChanged] \
@@ -235,10 +235,10 @@ snit::widgetadaptor vrelbrowser {
         $hull configure {*}[ModeOptions $mode]
 
         if {$mode eq "scenario"} {
-            notifier bind ::rdb <vrel_ga> $self [mymethod uid]
+            notifier bind ::adb <vrel_ga> $self [mymethod uid]
             notifier bind ::mad <Vrel>    $self ""
         } else {
-            notifier bind ::rdb <vrel_ga> $self ""
+            notifier bind ::adb <vrel_ga> $self ""
             notifier bind ::mad <Vrel>    $self [mymethod uid]
         }
     }

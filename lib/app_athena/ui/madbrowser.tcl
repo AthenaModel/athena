@@ -53,7 +53,7 @@ snit::widgetadaptor madbrowser {
     constructor {args} {
         # FIRST, Install the hull
         installhull using sqlbrowser                  \
-            -db           ::rdb                       \
+            -db           ::adb                       \
             -view         gui_mads                    \
             -uid          mad_id                      \
             -titlecolumns 1                           \
@@ -61,7 +61,7 @@ snit::widgetadaptor madbrowser {
             -reloadon {
                 ::sim <DbSyncB>
                 ::sim <Tick>
-                ::rdb <drivers>
+                ::adb <drivers>
             } -layout [string map [list %D $::app::derivedfg] $layout]
 
         # NEXT, get the options.
@@ -104,7 +104,7 @@ snit::widgetadaptor madbrowser {
         pack $deletebtn  -side right
 
         # NEXT, update individual entities when they change.
-        notifier bind ::rdb <mads>    $self [mymethod uid]
+        notifier bind ::adb <mads>    $self [mymethod uid]
     }
 
     destructor {
