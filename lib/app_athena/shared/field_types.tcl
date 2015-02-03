@@ -78,23 +78,17 @@ dynaform fieldtype alias grouplist enumlonglist \
     -dictcmd  {::group namedict}
 
 # hook: Pick a hook ID
-dynaform fieldtype alias hook key \
-    -db    ::rdb \
+dynaform fieldtype alias hook dbkey \
     -table hooks \
     -keys  hook_id
 
 # inject: Pick an inject by its ID.
-dynaform fieldtype alias inject key \
-    -db    ::rdb        \
+dynaform fieldtype alias inject dbkey \
     -table gui_injects  \
     -keys  {curse_id inject_num}
 
-# key: key fields should get -db automatically.
-dynaform fieldtype alias key key -db ::rdb
-
 # mad: Magic Attitude Driver ID
-dynaform fieldtype alias mad key \
-    -db       ::rdb     \
+dynaform fieldtype alias mad dbkey \
     -table    gui_mads  \
     -keys     mad_id    \
     -dispcols longid    \
@@ -109,9 +103,6 @@ dynaform fieldtype alias mag range \
     -min         -40.0  \
     -max         40.0
 
-# multi: multi fields should get -db automatically.
-dynaform fieldtype alias multi multi -db ::rdb
-
 # localn: Pick a local neighborhood by name
 dynaform fieldtype alias localn enumlong \
     -showkeys yes \
@@ -124,8 +115,7 @@ dynaform fieldtype alias nlist enumlonglist \
     -dictcmd  {::nbhood namedict}
 
 # payload: Pick a payload by its ID.
-dynaform fieldtype alias payload key \
-    -db    ::rdb        \
+dynaform fieldtype alias payload dbkey \
     -table gui_payloads \
     -keys  {iom_id payload_num}
 
@@ -133,8 +123,7 @@ dynaform fieldtype alias payload key \
 dynaform fieldtype alias percent range -datatype ::ipercent
 
 # plant: Pick a plant by its ID.
-dynaform fieldtype alias plant key \
-    -db    ::rdb        \
+dynaform fieldtype alias plant dbkey \
     -table gui_plants_na  \
     -keys  {n a}
 

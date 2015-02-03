@@ -244,7 +244,7 @@ snit::type app {
                  -helpdb    [appdir join docs athena.helpdb] \
                  -headercmd [mytypemethod HelpHeader]]
         myagent register rdb \
-            [rdbserver %AUTO% -rdb ::rdb]
+            [rdbserver %AUTO% -rdb ::adb]
 
 
         # NEXT, bind components together
@@ -419,7 +419,7 @@ snit::type app {
         # Objdict:   order   THE:ORDER:NAME
 
         statecontroller ::cond::available -events {
-            ::rdb.flunky <Sync>
+            ::adb.flunky <Sync>
         } -condition {
             [::flunky available $order]
         }
@@ -440,7 +440,7 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableSingle -events {
-            ::rdb.flunky <Sync>
+            ::adb.flunky <Sync>
         } -condition {
             [::flunky available $order]                &&
             [llength [$browser curselection]] == 1
@@ -453,7 +453,7 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableMulti -events {
-            ::rdb.flunky <Sync>
+            ::adb.flunky <Sync>
         } -condition {
             [::flunky available $order]              &&
             [llength [$browser curselection]] > 0
@@ -466,7 +466,7 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableCanDelete -events {
-            ::rdb.flunky <Sync>
+            ::adb.flunky <Sync>
         } -condition {
             [::flunky available $order] &&
             [$browser candelete]
@@ -479,7 +479,7 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableCanUpdate -events {
-            ::rdb.flunky <Sync>
+            ::adb.flunky <Sync>
         } -condition {
             [::flunky available $order] &&
             [$browser canupdate]
@@ -492,7 +492,7 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableCanResolve -events {
-            ::rdb.flunky <Sync>
+            ::adb.flunky <Sync>
         } -condition {
             [::flunky available $order] &&
             [$browser canresolve]
@@ -753,7 +753,7 @@ snit::type app {
         set order [string toupper $order]
 
         order_dialog enter \
-            -resources [dict create adb_ [::adb athenadb] db_ ::rdb] \
+            -resources [dict create adb_ [::adb athenadb] db_ ::adb] \
             -parmdict  $parmdict                   \
             -appname   "Athena [kiteinfo version]" \
             -flunky    ::flunky                    \
@@ -761,7 +761,7 @@ snit::type app {
             -master    [app topwin]                \
             -helpcmd   [list app help]             \
             -refreshon {
-                ::rdb.flunky <Sync>
+                ::adb.flunky <Sync>
                 ::sim        <Tick>
                 ::sim        <DbSyncB>
             }
@@ -1025,7 +1025,7 @@ snit::type app {
         athena create $name \
             -adbfile $filename \
             -logcmd  ::log     \
-            -subject ::rdb
+            -subject ::adb
     }
 }
 

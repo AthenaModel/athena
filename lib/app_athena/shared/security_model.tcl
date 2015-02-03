@@ -31,11 +31,6 @@ snit::type security_model {
     # Initialization method
 
     typemethod start {} {
-        # FIRST, check requirements
-        require {[info commands ::log]  ne ""} "log is not defined."
-        require {[info commands ::rdb]  ne ""} "rdb is not defined."
-
-        # NEXT, Initialize the RDB tables used.
         rdb eval {
             DELETE FROM force_n;
             

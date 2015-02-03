@@ -9,8 +9,6 @@
     - Works OK from within app.
   - Right-Click/Control-Click isn't working on OSX.
 - Move editable entities to athena(n)
-- athena(n)'s ::adb -subject should be "::adb", not "::rdb".
-  - Also "::adb.*" instead of "::rdb.*"
 - Move model modules to athena(n)
 - Move relevant projtypes to athena(n)
 - When app_athena no longer needs to be loaded to test athena(n):

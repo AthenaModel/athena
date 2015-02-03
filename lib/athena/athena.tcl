@@ -114,8 +114,11 @@ snit::type ::athena::athena {
     # we will want to create a read-only RDB handle and delegate to
     # that.
     delegate method eval            to rdb as eval
+    delegate method exists          to rdb as exists
     delegate method onecolumn       to rdb as onecolumn
     delegate method query           to rdb as query
+    delegate method safequery       to rdb as safequery
+    delegate method saveeval        to rdb as safeeval
 
     #-------------------------------------------------------------------
     # Public Methods

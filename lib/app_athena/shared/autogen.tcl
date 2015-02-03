@@ -23,12 +23,6 @@ snit::type autogen {
     pragma -hastypedestroy 0 -hasinstances 0
 
     #-------------------------------------------------------------------
-    # Type Components
-
-    typecomponent rdb    ;# The runtime database
-
-
-    #-------------------------------------------------------------------
     # Type Variables
 
     # info array
@@ -37,15 +31,6 @@ snit::type autogen {
 
     typevariable info -array {
         aidx 0
-    }
-
-    #-------------------------------------------------------------------
-    # Type Constructor
-
-    typeconstructor {
-        # Set the rdb typecomponent
-
-        set rdb ::rdb
     }
 
     # scenario args

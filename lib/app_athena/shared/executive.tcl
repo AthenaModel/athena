@@ -502,19 +502,19 @@ snit::type executive {
 
         # rdb eval
         $interp smartalias {rdb eval}  1 1 {sql} \
-            [list ::rdb safeeval]
+            [list ::adb safeeval]
 
         # rdb query
         $interp smartalias {rdb query} 1 - {sql ?option value...?} \
-            [list ::rdb safequery]
+            [list ::adb safequery]
 
         # rdb schema
         $interp smartalias {rdb schema} 0 1 {?table?} \
-            [list ::rdb schema]
+            [list ::adb schema]
 
         # rdb tables
         $interp smartalias {rdb tables} 0 0 {} \
-            [list ::rdb tables]
+            [list ::adb tables]
 
         # redo
         $interp smartalias redo 0 0 {} \
