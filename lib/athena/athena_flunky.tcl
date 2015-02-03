@@ -148,6 +148,7 @@ oo::class create ::athena::athena_flunky {
     # Removes the top order from the CIF
 
     method _onUndo {order} {
+        $adb log normal "Undo: [$order name] [$order getdict]"
         set maxid [$adb onecolumn {
             SELECT max(id) FROM cif
         }]
@@ -200,6 +201,8 @@ oo::class create ::athena::athena_flunky {
             INSERT INTO cif(time,name,narrative,parmdict)
             VALUES($now, $name, $narrative, $parmdict);
         }
+
+        $adb log normal "Order: $name $parmdict"
     }
 }
 

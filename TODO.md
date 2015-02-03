@@ -2,15 +2,10 @@
 
 - Write cellide manpage.
 - Problems
-  - Open elitia scenario, File/New get bgerror in strategybrowser.
-    - Doesn't happen on master
-    - Also happens if you just start Athena, then do File/New.
-    - Doesn't happen on File/Open.
   - flunky <Sync> is no longer being received, because the subject is wrong.
-  - Orders are not being logged.
-    - Also true on master
   - Right-Click/Control-Click isn't working on OSX.
 - Move editable entities to athena(n)
+- athena(n)'s ::adb -subject should be "::adb", not "::rdb".
 - Move model modules to athena(n)
 - Move relevant projtypes to athena(n)
 - When app_athena no longer needs to be loaded to test athena(n):
