@@ -118,16 +118,5 @@ dynaform fieldtype alias roles rolemap \
     -liststripe 1 \
     -listwidth  20
 
-# sat: Pick a satisfaction level
-dynaform fieldtype alias sat range \
-    -datatype    ::qsat \
-    -showsymbols yes    \
-    -resetvalue  0.0
-
-# sal: Pick a saliency
-dynaform fieldtype alias sal range \
-    -datatype    ::qsaliency \
-    -showsymbols yes         \
-    -resetvalue  1.0 
 
 

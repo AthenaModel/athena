@@ -34,16 +34,16 @@ from app_athena(n) to athena(n).  See lib/athena/actor.tcl for an example.
 - [x] In athenadb.tcl, parallel to the entries for "actor":
   - [x] Add "component mymodule -public mymodule"
   - [x] Add "mymodule" to the MakeComponents call in the constructor
-- [] Try to invoke athena.tcl.  You might get dynaform errors.
-  - [] Move field types from shared/field_types.tcl to athena/dynatypes.tcl
+- [x] Try to invoke athena.tcl.  You might get dynaform errors.
+  - [x] Move field types from shared/field_types.tcl to athena/dynatypes.tcl
         as needed.
-  - [] If moved types reference global resources, list them in the 
+  - [x] If moved types reference global resources, list them in the 
         dynatypes.tcl header comment.
-  - [] If any of the types in dynatypes reference mymodule, update the
+  - [x] If any of the types in dynatypes reference mymodule, update the
         reference to `$adb_ mymodule`.
-- [] Try "athena.tcl -script scenarios/Nangahar_geo.adb".  Fix problems.
-- [] Try editing the entity type interactively; verify that you can
+- [x] Try "athena.tcl -script scenarios/Nangahar_geo.adb".  Fix problems.
+- [x] Try editing the entity type interactively; verify that you can
       create and update.
-- [] Verify that the full app_athena test suite runs.
-- [] Update any notifier sends to athena(n) standard, and update the 
+- [x] Verify that the full app_athena test suite runs.
+- [x] Update any notifier sends to athena(n) standard, and update the 
      UI accordingly.

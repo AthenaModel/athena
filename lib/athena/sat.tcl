@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Satisfaction Curve Inputs Manager
+#    athena(n): Satisfaction Curve Inputs Manager
 #
 #    This module is responsible for managing the scenario's satisfaction
 #    curve inputs as CIV groups come and ago, and for allowing the analyst
@@ -15,9 +15,24 @@
 #
 #-----------------------------------------------------------------------
 
-snit::type sat {
-    # Make it a singleton
-    pragma -hasinstances no
+snit::type ::athena::sat {
+    #-------------------------------------------------------------------
+    # Components
+
+    component adb ;# The athenadb(n) instance
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    # constructor adb_
+    #
+    # adb_    - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of the type.
+
+    constructor {adb_} {
+        set adb $adb_
+    }
 
     #-------------------------------------------------------------------
     # Queries
@@ -29,10 +44,10 @@ snit::type sat {
     # Throws INVALID if there's no satisfaction level for the 
     # specified combination.
 
-    typemethod validate {id} {
+    method validate {id} {
         lassign $id g c
 
-        set g [civgroup validate $g]
+        set g [$adb civgroup validate $g]
         set c [econcern validate $c]
 
         return [list $g $c]
@@ -45,8 +60,8 @@ snit::type sat {
     #
     # Returns 1 if there is such a satisfaction curve, and 0 otherwise.
 
-    typemethod exists {g c} {
-        rdb exists {
+    method exists {g c} {
+        $adb exists {
             SELECT * FROM sat_gc WHERE g=$g AND c=$c
         }
     }
@@ -59,7 +74,7 @@ snit::type sat {
     # a script of one or more commands that will undo the change.  When
     # change cannot be undone, the mutator returns the empty string.
 
-    # mutate update parmdict
+    # update parmdict
     #
     # parmdict     A dictionary of group parms
     #
@@ -72,16 +87,16 @@ snit::type sat {
     # Updates a satisfaction level given the parms, which are presumed to be
     # valid.
 
-    typemethod {mutate update} {parmdict} {
+    method update {parmdict} {
         # FIRST, use the dict
         dict with parmdict {
             lassign $id g c
 
             # FIRST, get the undo information
-            set data [rdb grab sat_gc {g=$g AND c=$c}]
+            set data [$adb grab sat_gc {g=$g AND c=$c}]
 
             # NEXT, Update the group
-            rdb eval {
+            $adb eval {
                 UPDATE sat_gc
                 SET base      = nonempty($base,      base),
                     saliency  = nonempty($saliency,  saliency),
@@ -91,7 +106,7 @@ snit::type sat {
             } {}
 
             # NEXT, Return the undo command
-            return [list rdb ungrab $data]
+            return [list $adb ungrab $data]
         }
     }
 }
@@ -101,15 +116,14 @@ snit::type sat {
 
 # SAT:UPDATE
 ::athena::orders define SAT:UPDATE {
-    meta title "Update Baseline Satisfaction"
+    meta title      "Update Baseline Satisfaction"
     meta sendstates PREP 
-
-    meta defaults {
-        id        ""
-        base      ""
-        saliency  ""
-        hist_flag 0
-        current   ""
+    meta parmlist {
+        id 
+        base 
+        saliency
+        {hist_flag 0} 
+        current
     }
 
     meta form {
@@ -134,7 +148,7 @@ snit::type sat {
     }
 
     method _validate {} {
-        my prepare id        -toupper  -required -type ::sat
+        my prepare id        -toupper  -required -type [list $adb sat]
         my prepare base      -num -toupper -type qsat
         my prepare saliency  -num -toupper -type qsaliency
         my prepare hist_flag -num          -type snit::boolean
@@ -142,7 +156,7 @@ snit::type sat {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [sat mutate update [array get parms]]
+        my setundo [$adb sat update [array get parms]]
     }
 }
 
@@ -182,7 +196,7 @@ snit::type sat {
     }
 
     method _validate {} {
-        my prepare ids       -toupper  -required -listof sat
+        my prepare ids       -toupper  -required -listof [list $adb sat]
         my prepare base      -num -toupper -type qsat
         my prepare saliency  -num -toupper -type qsaliency
         my prepare hist_flag -num          -type snit::boolean
@@ -193,7 +207,7 @@ snit::type sat {
         set undo [list]
 
         foreach parms(id) $parms(ids) {
-            lappend undo [sat mutate update [array get parms]]
+            lappend undo [$adb sat update [array get parms]]
         }
 
         my setundo [join $undo \n]
