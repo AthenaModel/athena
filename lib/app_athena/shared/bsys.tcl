@@ -57,7 +57,7 @@ snit::type bsys {
 
         # FIRST, initialize the mam typecomponent variable so that
         # delegation will work:
-        set mam ::simlib::mam
+        set mam [::simlib::mam ${type}::mam]
 
         # NEXT, register this module as a saveable
         scenario register $type
@@ -71,7 +71,7 @@ snit::type bsys {
     # default "Neutral" belief system.
 
     typemethod clear {} {
-        mam clear
+        $mam clear
 
         array set info $defaultInfo
 
@@ -393,7 +393,7 @@ snit::type bsys {
     #
     # etype    - system | topic
     # id       - ID of the entity
-    # undoData - Undo returned by [mam $entity delete]
+    # undoData - Undo returned by [$mam $entity delete]
     #
     # Undoes the deletion of the entity.
 
