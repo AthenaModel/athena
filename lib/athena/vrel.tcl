@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Vertical Relationship Manager
+#    athena(n): Vertical Relationship Manager
 #
 #    By default, the initial baseline vertical group relationships (base)
 #    are computed from belief systems by the bsys module, an
@@ -32,13 +32,29 @@
 #    This module concerns itself only with the scenario inputs.  For
 #    the dynamic relationship values, see URAM.
 #
+# TBD: Global refs: group, actor, $adb, vrel
+#
 #-----------------------------------------------------------------------
 
-snit::type vrel {
-    # Make it a singleton
-    pragma -hasinstances no
+snit::type ::athena::vrel {
+    #-------------------------------------------------------------------
+    # Components
 
-  
+    component adb ;# The athenadb(n) instance
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    # constructor adb_
+    #
+    # adb_    - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of the type.
+
+    constructor {adb_} {
+        set adb $adb_
+    }
+
     #-------------------------------------------------------------------
     # Queries
 
@@ -48,11 +64,11 @@ snit::type vrel {
     #
     # Throws INVALID if id doesn't name an overrideable relationship.
 
-    typemethod validate {id} {
+    method validate {id} {
         lassign $id g a
 
         set g [group validate $g]
-        set a [actor validate $a]
+        set a [$adb actor validate $a]
 
         return [list $g $a]
     }
@@ -64,10 +80,10 @@ snit::type vrel {
     # Returns 1 if there's an overridden relationship 
     # between g and a, and 0 otherwise.
 
-    typemethod exists {id} {
+    method exists {id} {
         lassign $id g a
 
-        rdb exists {
+        $adb exists {
             SELECT * FROM vrel_ga WHERE g=$g AND a=$a
         }
     }
@@ -81,7 +97,7 @@ snit::type vrel {
     # change cannot be undone, the mutator returns the empty string.
 
 
-    # mutate create parmdict
+    # create parmdict
     #
     # parmdict  - A dictionary of vrel parms
     #
@@ -93,7 +109,7 @@ snit::type vrel {
     # Creates a relationship record given the parms, which are presumed to be
     # valid.
 
-    typemethod {mutate create} {parmdict} {
+    method create {parmdict} {
         dict with parmdict {
             lassign $id g a
 
@@ -111,36 +127,36 @@ snit::type vrel {
             }
 
             # NEXT, Put the group in the database
-            rdb eval {
+            $adb eval {
                 INSERT INTO 
                 vrel_ga(g, a, base, hist_flag, current)
                 VALUES($g, $a, $base, $hist_flag, $current);
             }
 
             # NEXT, Return the undo command
-            return [list rdb delete vrel_ga "g='$g' AND a='$a'"]
+            return [list $adb delete vrel_ga "g='$g' AND a='$a'"]
         }
     }
 
 
-    # mutate delete id
+    # delete id
     #
     # id   - list {g a}
     #
     # Deletes the relationship override.
 
-    typemethod {mutate delete} {id} {
+    method delete {id} {
         lassign $id g a
 
         # FIRST, delete the records, grabbing the undo information
-        set data [rdb delete -grab vrel_ga {g=$g AND a=$a}]
+        set data [$adb delete -grab vrel_ga {g=$g AND a=$a}]
 
         # NEXT, Return the undo script
-        return [list rdb ungrab $data]
+        return [list $adb ungrab $data]
     }
 
 
-    # mutate update parmdict
+    # update parmdict
     #
     # parmdict  - A dictionary og aroup parms
     #
@@ -152,16 +168,16 @@ snit::type vrel {
     # Updates a relationship given the parms, which are presumed to be
     # valid.
 
-    typemethod {mutate update} {parmdict} {
+    method update {parmdict} {
         # FIRST, use the dict
         dict with parmdict {
             lassign $id g a
 
             # FIRST, get the undo information
-            set data [rdb grab vrel_ga {g=$g AND a=$a}]
+            set data [$adb grab vrel_ga {g=$g AND a=$a}]
 
             # NEXT, Update the group
-            rdb eval {
+            $adb eval {
                 UPDATE vrel_ga
                 SET base      = nonempty($base,      base),
                     hist_flag = nonempty($hist_flag, hist_flag),
@@ -170,7 +186,7 @@ snit::type vrel {
             } {}
 
             # NEXT, Return the undo command
-            return [list rdb ungrab $data]
+            return [list $adb ungrab $data]
         }
     }
 }
@@ -184,23 +200,16 @@ snit::type vrel {
 # Deletes existing relationship override
 
 ::athena::orders define VREL:RESTORE {
-    meta title "Restore Baseline Vertical Relationship"
+    meta title      "Restore Baseline Vertical Relationship"
     meta sendstates PREP
-    
-    meta parmlist {id}
-
-    meta form {
-        # Form not used in dialog.
-        dbkey id -table gui_vrel_view -keys {g a} -labels {Of With}
-    }
-
+    meta parmlist   {id}
 
     method _validate {} {
-        my prepare id       -toupper  -required -type vrel
+        my prepare id       -toupper  -required -type [list $adb vrel]
     }
 
     method _execute {{flunky ""}} {
-        my setundo [vrel mutate delete $parms(id)]
+        my setundo [$adb vrel delete $parms(id)]
     }
 }
 
@@ -209,9 +218,8 @@ snit::type vrel {
 # Updates existing override
 
 ::athena::orders define VREL:OVERRIDE {
-    meta title "Override Baseline Vertical Relationship"
+    meta title      "Override Baseline Vertical Relationship"
     meta sendstates PREP 
-
     meta parmlist {
         id
         base
@@ -237,9 +245,8 @@ snit::type vrel {
         }
     }
 
-
     method _validate {} {
-        my prepare id        -toupper  -required -type vrel
+        my prepare id        -toupper  -required -type [list $adb vrel]
         my prepare base -num -toupper            -type qaffinity
         my prepare hist_flag           -num      -type snit::boolean
         my prepare current   -toupper  -num      -type qaffinity 
@@ -247,9 +254,9 @@ snit::type vrel {
 
     method _execute {{flunky ""}} {
         if {[vrel exists $parms(id)]} {
-            my setundo [vrel mutate update [array get parms]]
+            my setundo [$adb vrel update [array get parms]]
         } else {
-            my setundo [vrel mutate create [array get parms]]
+            my setundo [$adb vrel create [array get parms]]
         }
     }
 }
@@ -260,9 +267,8 @@ snit::type vrel {
 # Updates multiple existing relationship overrides
 
 ::athena::orders define VREL:OVERRIDE:MULTI {
-    meta title "Override Multiple Baseline Vertical Relationships"
+    meta title      "Override Multiple Baseline Vertical Relationships"
     meta sendstates PREP
-
     meta parmlist {
         ids
         base
@@ -288,9 +294,8 @@ snit::type vrel {
         }
     }
 
-
     method _validate {} {
-        my prepare ids       -toupper  -required -listof vrel
+        my prepare ids       -toupper  -required -listof [list $adb vrel]
         my prepare base -num -toupper            -type qaffinity
         my prepare hist_flag           -num      -type snit::boolean
         my prepare current   -toupper  -num      -type qaffinity 
@@ -301,9 +306,9 @@ snit::type vrel {
     
         foreach parms(id) $parms(ids) {
             if {[vrel exists $parms(id)]} {
-                lappend undo [vrel mutate update [array get parms]]
+                lappend undo [$adb vrel update [array get parms]]
             } else {
-                lappend undo [vrel mutate create [array get parms]]
+                lappend undo [$adb vrel create [array get parms]]
             }
         }
 

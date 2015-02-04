@@ -162,5 +162,4 @@ source [file join $::app_athena_shared::library tactic_violence.tcl    ]
 source [file join $::app_athena_shared::library tactic_withdraw.tcl    ]
 source [file join $::app_athena_shared::library unit.tcl               ]
 source [file join $::app_athena_shared::library view.tcl               ]
-source [file join $::app_athena_shared::library vrel.tcl               ]
 

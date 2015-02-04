@@ -171,6 +171,7 @@ snit::type ::athena::athenadb {
     component nbhood   -public nbhood    ;# nbhood manager
     component orggroup -public orggroup  ;# orggroup manager
     component sat      -public sat       ;# satisfaction manager
+    component vrel     -public vrel      ;# vert. rel. manager
 
     # Other Entities
     component activity -public activity  ;# activity manager
@@ -245,7 +246,8 @@ snit::type ::athena::athenadb {
             hrel             \
             nbhood           \
             orggroup         \
-            sat
+            sat              \
+            vrel
 
         # NEXT, Make these components globally available.
         # TBD: These will go away once the transition to library code
