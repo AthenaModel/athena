@@ -38,14 +38,14 @@ namespace eval ::kiteinfo:: {
         apps {athena athena_batch cellide helptool}
         local-fileutil 0
         dists {install-%platform src docs}
-        reqver-kitedocs 0.4.4
+        reqver-kitedocs 0.4.5
         icon-athena_batch {}
         local-textutil::adjust 0
         force-helptool 0
         local-tablelist 0
         local-treectrl 0
         icon-athena {}
-        reqver-kiteutils 0.4.4
+        reqver-kiteutils 0.4.5
         reqver-fileutil 1.14
         url-docs/mag.docx https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20140826.docx
         local-marsutil 1

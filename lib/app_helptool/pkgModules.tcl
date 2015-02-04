@@ -28,7 +28,7 @@ package provide app_helptool 6.3.0a4
 package require projectlib
 
 # -kite-require-start ADD EXTERNAL DEPENDENCIES
-package require kitedocs 0.4.4
+package require kitedocs 0.4.5
 package require Img 1.4.1
 # -kite-require-end
 
