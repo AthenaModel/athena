@@ -112,11 +112,6 @@ dynaform fieldtype alias posfrac range \
     -datatype   ::rposfrac             \
     -resolution 0.01
 
-# rel: Relationship value
-dynaform fieldtype alias rel range \
-    -datatype   ::qaffinity \
-    -resolution 0.1
-
 # roles: Pick one or more roles to group(s) mapping
 dynaform fieldtype alias roles rolemap \
     -listheight 6 \

@@ -63,9 +63,13 @@ dynaform fieldtype alias nlist enumlonglist \
     -width    30  \
     -dictcmd  {$adb_ nbhood namedict}
 
-
 # orggroup: Pick an ORG group by name.
 dynaform fieldtype alias orggroup enum -listcmd {$adb_ orggroup names}
+
+# rel: Relationship value
+dynaform fieldtype alias rel range \
+    -datatype   ::qaffinity \
+    -resolution 0.1
 
 # yesno: Boolean entry field, compatible with [boolean]
 dynaform fieldtype alias yesno enumlong -dict {

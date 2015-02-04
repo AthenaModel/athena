@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Horizontal Relationship Manager
+#    athena(n): Horizontal Relationship Manager
 #
 #    By default, the initial baseline horizontal relationships (hrel)
 #    are computed from belief systems by the bsys module, an
@@ -32,11 +32,28 @@
 #    This module concerns itself only with the scenario inputs.  For
 #    the dynamic relationship values, see URAM.
 #
+# TBD: Global refs: group
+#
 #-----------------------------------------------------------------------
 
-snit::type hrel {
-    # Make it a singleton
-    pragma -hasinstances no
+snit::type ::athena::hrel {
+    #-------------------------------------------------------------------
+    # Components
+
+    component adb ;# The athenadb(n) instance
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    # constructor adb_
+    #
+    # adb_    - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of the type.
+
+    constructor {adb_} {
+        set adb $adb_
+    }
 
     #-------------------------------------------------------------------
     # Queries
@@ -47,7 +64,7 @@ snit::type hrel {
     #
     # Throws INVALID if id doesn't name an overrideable relationship.
 
-    typemethod validate {id} {
+    method validate {id} {
         lassign $id f g
 
         set f [group validate $f]
@@ -68,10 +85,10 @@ snit::type hrel {
     # Returns 1 if there's an overridden relationship 
     # between f and g, and 0 otherwise.
 
-    typemethod exists {id} {
+    method exists {id} {
         lassign $id f g
 
-        rdb exists {
+        $adb exists {
             SELECT * FROM hrel_fg WHERE f=$f AND g=$g
         }
     }
@@ -85,7 +102,7 @@ snit::type hrel {
     # change cannot be undone, the mutator returns the empty string.
 
 
-    # mutate create parmdict
+    # create parmdict
     #
     # parmdict  - A dictionary of hrel parms
     #
@@ -97,7 +114,7 @@ snit::type hrel {
     # Creates a relationship record given the parms, which are presumed to be
     # valid.
 
-    typemethod {mutate create} {parmdict} {
+    method create {parmdict} {
         dict with parmdict {
             lassign $id f g
 
@@ -115,36 +132,36 @@ snit::type hrel {
             }
 
             # NEXT, Put the group in the database
-            rdb eval {
+            $adb eval {
                 INSERT INTO 
                 hrel_fg(f, g, base, hist_flag, current)
                 VALUES($f, $g, $base, $hist_flag, $current);
             }
 
             # NEXT, Return the undo command
-            return [list rdb delete hrel_fg "f='$f' AND g='$g'"]
+            return [list $adb delete hrel_fg "f='$f' AND g='$g'"]
         }
     }
 
 
-    # mutate delete id
+    # delete id
     #
     # id   - list {f g}
     #
     # Deletes the relationship override.
 
-    typemethod {mutate delete} {id} {
+    method delete {id} {
         lassign $id f g
 
         # FIRST, delete the records, grabbing the undo information
-        set data [rdb delete -grab hrel_fg {f=$f AND g=$g}]
+        set data [$adb delete -grab hrel_fg {f=$f AND g=$g}]
 
         # NEXT, Return the undo script
-        return [list rdb ungrab $data]
+        return [list $adb ungrab $data]
     }
 
 
-    # mutate update parmdict
+    # update parmdict
     #
     # parmdict  - A dictionary of group parms
     #
@@ -156,16 +173,16 @@ snit::type hrel {
     # Updates a baseline relationship override given the parms, which
     # are presumed to be valid.
 
-    typemethod {mutate update} {parmdict} {
+    method update {parmdict} {
         # FIRST, use the dict
         dict with parmdict {
             lassign $id f g
 
             # FIRST, get the undo information
-            set data [rdb grab hrel_fg {f=$f AND g=$g}]
+            set data [$adb grab hrel_fg {f=$f AND g=$g}]
 
             # NEXT, Update the group
-            rdb eval {
+            $adb eval {
                 UPDATE hrel_fg
                 SET base      = nonempty($base,      base),
                     hist_flag = nonempty($hist_flag, hist_flag),
@@ -174,7 +191,7 @@ snit::type hrel {
             } {}
 
             # NEXT, Return the undo command
-            return [list rdb ungrab $data]
+            return [list $adb ungrab $data]
         }
     }
 }
@@ -188,25 +205,18 @@ snit::type hrel {
 # Deletes existing relationship override
 
 ::athena::orders define HREL:RESTORE {
-    meta title "Restore Baseline Horizontal Relationship"
+    meta title      "Restore Baseline Horizontal Relationship"
     meta sendstates PREP
-
-    meta parmlist {id}
-
-    meta form {
-        # Form not used in dialog.
-        dbkey id -table gui_hrel_view -keys {f g} -labels {Of With}
-    }
-
+    meta parmlist   {id}
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare id  -toupper  -required -type hrel
+        my prepare id  -toupper  -required -type [list $adb hrel]
     }
 
     method _execute {{flunky ""}} {
         # NEXT, delete the record
-        my setundo [hrel mutate delete $parms(id)]
+        my setundo [$adb hrel delete $parms(id)]
     }
 }
 
@@ -215,9 +225,8 @@ snit::type hrel {
 # Updates existing override
 
 ::athena::orders define HREL:OVERRIDE {
-    meta title "Override Baseline Horizontal Relationship"
+    meta title      "Override Baseline Horizontal Relationship"
     meta sendstates PREP
-
     meta parmlist {
         id 
         base 
@@ -246,17 +255,17 @@ snit::type hrel {
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare id        -toupper  -required -type hrel
+        my prepare id        -toupper  -required -type [list $adb hrel]
         my prepare base      -toupper  -num      -type qaffinity
         my prepare hist_flag           -num      -type snit::boolean
         my prepare current   -toupper  -num      -type qaffinity 
     }
 
     method _execute {{flunky ""}} {
-        if {[hrel exists $parms(id)]} {
-            my setundo [hrel mutate update [array get parms]]
+        if {[$adb hrel exists $parms(id)]} {
+            my setundo [$adb hrel update [array get parms]]
         } else {
-            my setundo [hrel mutate create [array get parms]]
+            my setundo [$adb hrel create [array get parms]]
         }
     }
 }
@@ -267,9 +276,8 @@ snit::type hrel {
 # Updates multiple existing relationship overrides
 
 ::athena::orders define HREL:OVERRIDE:MULTI {
-    meta title "Override Multiple Baseline Horizontal Relationships"
+    meta title      "Override Multiple Baseline Horizontal Relationships"
     meta sendstates PREP 
-    
     meta parmlist {
         ids 
         base
@@ -298,7 +306,7 @@ snit::type hrel {
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare ids       -toupper  -required -listof hrel
+        my prepare ids       -toupper  -required -listof [list $adb hrel]
         my prepare base      -toupper  -num      -type qaffinity
         my prepare hist_flag           -num      -type snit::boolean
         my prepare current   -toupper  -num      -type qaffinity 
@@ -308,10 +316,10 @@ snit::type hrel {
         set undo [list]
     
         foreach parms(id) $parms(ids) {
-            if {[hrel exists $parms(id)]} {
-                lappend undo [hrel mutate update [array get parms]]
+            if {[$adb hrel exists $parms(id)]} {
+                lappend undo [$adb hrel update [array get parms]]
             } else {
-                lappend undo [hrel mutate create [array get parms]]
+                lappend undo [$adb hrel create [array get parms]]
             }
         }
     

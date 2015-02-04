@@ -19,7 +19,7 @@
 - driver::absit
   - absit
 - group
-  - activity
+  - activity, hrel
 - nbhood
   - absit
 - notifier bind
