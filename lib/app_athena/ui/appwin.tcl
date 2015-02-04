@@ -2168,7 +2168,7 @@ snit::widget appwin {
 
     method error {text} {
         set text [uplevel 1 [list tsubst $text]]
-puts "appwin error from $win; [winfo ismapped $win]"
+
         messagebox popup      \
             -message    $text \
             -icon       error \

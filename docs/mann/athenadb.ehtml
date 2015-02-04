@@ -114,6 +114,32 @@ This command is identical to the <xref mars:sqldocument(n)> object's
 <xref mars:sqldocument(n) monitor> subcommand, allowing the control
 of automatic monitoring of database changes.<p>
 
+<defitem notify {<i adb> notify <i component event> ?<i args...>?}>
+
+Sends a <xref mars:notifier(n)> <i event> for the library.  If the
+<i component> is the empty string, then it is sent for the library
+as a whole, and the subject of the event is the value of the <tt -subject>
+option (defaulting to the <xref athena(n)> object name).<p>
+
+Otherwise, the <i component> should be the name of a subcomponent of
+the library (i.e., the "flunky"); in this case, the event is sent for
+the component, and the subject of the event is 
+"<tt><i subject>.<i component></tt>", where <i subject> is the value
+of the <tt -subject> option and the <i component> is as given.<p>
+
+Suppose, for example the <tt -subject> is "<tt ::adb>".  Then:
+
+<ul>
+<li> RDB monitoring events are sent as "<tt ::adb>".
+<li> Neighborhood <tag Stack> events are sent as 
+     "<tt ::adb.nbhood>".
+<li> Order flunky <tag Sync> events are sent as 
+     "<tt ::adb.flunky>".
+</ul>
+
+The full set of events sent by <xref athena(n)>/athenadb(n) is documented
+in <xref athena(n)>.<p>
+
 <defitem onecolumn {<i adb> onecolumn <i query>}>
 
 Evaluates an SQL <i query> with respect to the scenario's run-time 
