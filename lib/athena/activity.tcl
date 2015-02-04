@@ -11,8 +11,6 @@
 #    This module is responsible for defining and validating the
 #    different categories of unit activities.
 #
-# TBD: Global ref: group
-#
 #-----------------------------------------------------------------------
 
 snit::type ::athena::activity {
@@ -139,7 +137,7 @@ snit::type ::athena::activity {
                 WHERE assignable
             }]
         } else {
-            set gtype [group gtype $g]
+            set gtype [$adb group gtype $g]
             set names [$adb eval {
                 SELECT DISTINCT a FROM activity_gtype
                 WHERE assignable AND gtype=$gtype
@@ -215,7 +213,7 @@ snit::type ::athena::activity {
     # Verifies that a can be assigned to g.
 
     method check {g a} {
-        set gtype [group gtype $g]
+        set gtype [$adb group gtype $g]
 
         switch -exact -- $gtype {
             FRC     { set names [$self frc names] }

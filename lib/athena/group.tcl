@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Group Manager
+#    athena(n): Group Manager
 #
 #    This module is responsible for managing groups in general.
 #    Most of the relevant code is in the frcgroup, orggroup, and civgroup
@@ -14,9 +14,24 @@
 #
 #-----------------------------------------------------------------------
 
-snit::type group {
-    # Make it a singleton
-    pragma -hasinstances no
+snit::type ::athena::group {
+    #-------------------------------------------------------------------
+    # Components
+
+    component adb ;# The athenadb(n) instance
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    # constructor adb_
+    #
+    # adb_    - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of the type.
+
+    constructor {adb_} {
+        set adb $adb_
+    }
 
     #-------------------------------------------------------------------
     # Queries
@@ -29,8 +44,8 @@ snit::type group {
     #
     # Returns the list of neighborhood names
 
-    typemethod names {} {
-        set names [rdb eval {
+    method names {} {
+        set names [$adb eval {
             SELECT g FROM groups 
             ORDER BY g
         }]
@@ -40,8 +55,8 @@ snit::type group {
     #
     # Returns ID/longname dictionary
 
-    typemethod namedict {} {
-        return [rdb eval {
+    method namedict {} {
+        return [$adb eval {
             SELECT g, longname FROM groups ORDER BY g
         }]
     }
@@ -52,9 +67,9 @@ snit::type group {
     #
     # Validates a group short name
 
-    typemethod validate {g} {
-        if {![rdb exists {SELECT g FROM groups WHERE g=$g}]} {
-            set names [join [group names] ", "]
+    method validate {g} {
+        if {![$adb exists {SELECT g FROM groups WHERE g=$g}]} {
+            set names [join [$self names] ", "]
 
             if {$names ne ""} {
                 set msg "should be one of: $names"
@@ -75,8 +90,8 @@ snit::type group {
     #
     # Returns the group's type, CIV, ORG, or FRC.
 
-    typemethod gtype {g} {
-        return [rdb onecolumn {
+    method gtype {g} {
+        return [$adb onecolumn {
             SELECT gtype FROM groups WHERE g=$g
         }]
     }
@@ -91,13 +106,13 @@ snit::type group {
     # or if it is a FRC group with the local flag set.  Ultimately,
     # "local" should probably be an attribute of all groups.
 
-    typemethod isLocal {g} {
-        set gtype [$type gtype $g]
+    method isLocal {g} {
+        set gtype [$self gtype $g]
 
         if {$gtype eq "CIV"} {
             return 1
         } elseif {$gtype eq "FRC"} {
-            return [rdb eval {
+            return [$adb eval {
                 SELECT local FROM frcgroups WHERE g=$g
             }]
         } else {
@@ -111,8 +126,8 @@ snit::type group {
     #
     # Returns a list of the force/org groups owned by actor a.
 
-    typemethod ownedby {a} {
-        return [rdb eval {
+    method ownedby {a} {
+        return [$adb eval {
             SELECT g FROM agroups
             WHERE a=$a
         }]
@@ -124,8 +139,8 @@ snit::type group {
     #
     # Returns a list of the owner of the force or org group, or "" if none.
 
-    typemethod owner {g} {
-        return [rdb onecolumn {
+    method owner {g} {
+        return [$adb onecolumn {
             SELECT a FROM agroups
             WHERE g=$g
         }]
@@ -137,8 +152,8 @@ snit::type group {
     #
     # Returns the group's belief system ID.
 
-    typemethod bsid {g} {
-        return [rdb onecolumn {
+    method bsid {g} {
+        return [$adb onecolumn {
             SELECT bsid FROM groups_bsid_view WHERE g=$g
         }]
     }
@@ -151,8 +166,8 @@ snit::type group {
     # Returns the maintenance cost per person for the given force
     # or organization group.
 
-    typemethod maintPerPerson {g} {
-        return [rdb onecolumn {
+    method maintPerPerson {g} {
+        return [$adb onecolumn {
             SELECT cost FROM agroups WHERE g=$g
         }]
     }
@@ -163,8 +178,8 @@ snit::type group {
     #
     # Returns a list of all groups other than those in glist.
 
-    typemethod otherthan {glist} {
-        return [rdb eval "
+    method otherthan {glist} {
+        return [$adb eval "
             SELECT g FROM groups
             WHERE g NOT IN ('[join $glist {','}]')
         "]
@@ -177,8 +192,8 @@ snit::type group {
     # Returns a dict of group ID/longname pairs other than those 
     # in glist.
 
-    typemethod otherthandict {glist} {
-        return [rdb eval "
+    method otherthandict {glist} {
+        return [$adb eval "
             SELECT g, longname FROM groups
             WHERE g NOT IN ('[join $glist {','}]')
         "]

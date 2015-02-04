@@ -167,6 +167,7 @@ snit::type ::athena::athenadb {
     component civgroup -public civgroup  ;# civgroup manager
     component coop     -public coop      ;# cooperation manager
     component frcgroup -public frcgroup  ;# frcgroup manager
+    component group    -public group     ;# group manager
     component hrel     -public hrel      ;# horiz. rel. manager
     component nbhood   -public nbhood    ;# nbhood manager
     component orggroup -public orggroup  ;# orggroup manager
@@ -243,6 +244,7 @@ snit::type ::athena::athenadb {
             civgroup         \
             coop             \
             frcgroup         \
+            group            \
             hrel             \
             nbhood           \
             orggroup         \

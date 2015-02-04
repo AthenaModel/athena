@@ -67,8 +67,8 @@ snit::type ::athena::hrel {
     method validate {id} {
         lassign $id f g
 
-        set f [group validate $f]
-        set g [group validate $g]
+        set f [$adb group validate $f]
+        set g [$adb group validate $g]
 
         if {$f eq $g} {
             return -code error -errorcode INVALID \

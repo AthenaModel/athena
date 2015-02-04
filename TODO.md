@@ -18,8 +18,6 @@
   - bsys
 - driver::absit
   - absit
-- group
-  - activity, hrel, vrel
 - nbhood
   - absit
 - notifier bind

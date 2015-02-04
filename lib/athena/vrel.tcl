@@ -67,7 +67,7 @@ snit::type ::athena::vrel {
     method validate {id} {
         lassign $id g a
 
-        set g [group validate $g]
+        set g [$adb group validate $g]
         set a [$adb actor validate $a]
 
         return [list $g $a]
