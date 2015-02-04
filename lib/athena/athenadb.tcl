@@ -166,6 +166,7 @@ snit::type ::athena::athenadb {
     component cap      -public cap       ;# cap manager
     component civgroup -public civgroup  ;# civgroup manager
     component coop     -public coop      ;# cooperation manager
+    component curse    -public curse     ;# curse manager
     component frcgroup -public frcgroup  ;# frcgroup manager
     component group    -public group     ;# group manager
     component hrel     -public hrel      ;# horiz. rel. manager
@@ -243,6 +244,7 @@ snit::type ::athena::athenadb {
             cap              \
             civgroup         \
             coop             \
+            curse            \
             frcgroup         \
             group            \
             hrel             \

@@ -6,17 +6,36 @@
 #    Dave Hanks
 #
 # DESCRIPTION:
-#    athena_sim(1): Complex User-defined Role-based Situation and
-#                   Events (CURSE) manager
+#    athena(n): Complex User-defined Role-based Situation and
+#               Events (CURSE) manager
 #
 #    This module is responsible for managing messages and the operations
-#    upon them.  As such, it is a type ensemble.
+#    upon them.
+#
+# TBD: Global refs: ::gofer::GROUPS, ::gofer::ACTORS,
+# gofer::CIVGROUPS, gofer::FRCGROUPS, inject,
+# app/messagebox
 #
 #-----------------------------------------------------------------------
 
-snit::type curse {
-    # Make it a singleton
-    pragma -hasinstances no
+snit::type ::athena::curse {
+    #-------------------------------------------------------------------
+    # Components
+
+    component adb ;# The athenadb(n) instance
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    # constructor adb_
+    #
+    # adb_    - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of the type.
+
+    constructor {adb_} {
+        set adb $adb_
+    }
 
     #-------------------------------------------------------------------
     # Queries
@@ -28,8 +47,8 @@ snit::type curse {
     #
     # Returns the list of CURSE IDs
 
-    typemethod names {} {
-        return [rdb eval {
+    method names {} {
+        return [$adb eval {
             SELECT curse_id FROM curses 
         }]
     }
@@ -38,8 +57,8 @@ snit::type curse {
     #
     # Returns the list of CURSE long names
 
-    typemethod longnames {} {
-        return [rdb eval {
+    method longnames {} {
+        return [$adb eval {
             SELECT curse_id || ': ' || longname FROM curses 
         }]
     }
@@ -49,11 +68,11 @@ snit::type curse {
     # Returns a string description for the CURSE or an
     # appropriate message if there's something wrong
 
-    typemethod narrative {curse_id} {
+    method narrative {curse_id} {
         set narr "??? (???)"
 
-        if {[curse exists $curse_id]} {
-            set narr [curse get $curse_id longname]
+        if {[$self exists $curse_id]} {
+            set narr [$self get $curse_id longname]
             append narr " ($curse_id)"
         }
 
@@ -67,11 +86,11 @@ snit::type curse {
     #
     # Validates a CURSE ID
 
-    typemethod validate {curse_id} {
-        if {![rdb exists {
+    method validate {curse_id} {
+        if {![$adb exists {
             SELECT * FROM curses WHERE curse_id = $curse_id
         }]} {
-            set names [join [curse names] ", "]
+            set names [join [$self names] ", "]
 
             if {$names ne ""} {
                 set msg "should be one of: $names"
@@ -92,8 +111,8 @@ snit::type curse {
     #
     # Returns 1 if there's such a curse, and 0 otherwise.
 
-    typemethod exists {curse_id} {
-        rdb exists {
+    method exists {curse_id} {
+        $adb exists {
             SELECT * FROM curses WHERE curse_id=$curse_id
         }
     }
@@ -110,9 +129,9 @@ snit::type curse {
     # base table.  But we need the narrative, which is computed
     # dynamically.
 
-    typemethod get {curse_id {parm ""}} {
+    method get {curse_id {parm ""}} {
         # FIRST, get the data
-        rdb eval {
+        $adb eval {
             SELECT * FROM gui_curses 
             WHERE curse_id=$curse_id
         } row {
@@ -131,8 +150,8 @@ snit::type curse {
     #
     # Returns the list of CURSE IDs with state=normal
 
-    typemethod {normal names} {} {
-        return [rdb eval {
+    method {normal names} {} {
+        return [$adb eval {
             SELECT curse_id FROM curses WHERE state='normal'
         }]
     }
@@ -141,8 +160,8 @@ snit::type curse {
     #
     # Returns the list of CURSE ID/long name pairs with state=normal
 
-    typemethod {normal namedict} {} {
-        return [rdb eval {
+    method {normal namedict} {} {
+        return [$adb eval {
             SELECT curse_id, longname FROM curses WHERE state='normal'
             ORDER BY curse_id
         }]
@@ -151,8 +170,8 @@ snit::type curse {
     #
     # Returns the list of CURSE long names with state=normal
 
-    typemethod {normal longnames} {} {
-        return [rdb eval {
+    method {normal longnames} {} {
+        return [$adb eval {
             SELECT curse_id || ': ' || longname FROM curses
             WHERE state='normal'
         }]
@@ -164,8 +183,8 @@ snit::type curse {
     #
     # Validates a CURSE ID, and ensures that state=normal
 
-    typemethod {normal validate} {curse_id} {
-        set names [curse normal names]
+    method {normal validate} {curse_id} {
+        set names [$self normal names]
 
         if {$curse_id ni $names} {
             if {$names ne ""} {
@@ -188,18 +207,18 @@ snit::type curse {
     #
     # Returns a list of recognized rolenames given a CURSE ID
 
-    typemethod rolenames {curse_id} {
-        set roles [rdb eval {
+    method rolenames {curse_id} {
+        set roles [$adb eval {
             SELECT DISTINCT f FROM curse_injects
             WHERE f != '' AND curse_id=$curse_id
         }]
 
-        lmerge roles [rdb eval {
+        lmerge roles [$adb eval {
             SELECT DISTINCT g FROM curse_injects
             WHERE g != '' AND curse_id=$curse_id
         }]
 
-        lmerge roles [rdb eval {
+        lmerge roles [$adb eval {
             SELECT DISTINCT a FROM curse_injects
             WHERE a != '' AND curse_id=$curse_id
         }]
@@ -215,7 +234,7 @@ snit::type curse {
     # to be used by the caller to fill in data for a set of
     # CURSE injects associated with the given CURSE. 
 
-    typemethod rolespec {curse_id} {
+    method rolespec {curse_id} {
         # FIRST, if there's no curse specified, then nothing to
         # return
         if {$curse_id eq ""} {
@@ -229,7 +248,7 @@ snit::type curse {
         # with this curse
         # HREL is the least restrictive, any group can belong to the
         # roles defined
-        rdb eval {
+        $adb eval {
             SELECT * FROM curse_injects 
             WHERE curse_id=$curse_id
             AND inject_type='HREL'
@@ -239,7 +258,7 @@ snit::type curse {
         }
 
         # VREL is not any more restrictive group wise
-        rdb eval {
+        $adb eval {
             SELECT * FROM curse_injects
             WHERE curse_id=$curse_id
             AND inject_type='VREL'
@@ -251,7 +270,7 @@ snit::type curse {
         # SAT restricts the group role to *only* civilians. If an HREL or
         # VREL inject has this role, then those injects will only be able
         # to contain civilian groups
-        rdb eval {
+        $adb eval {
             SELECT * FROM curse_injects
             WHERE curse_id=$curse_id
             AND inject_type='SAT'
@@ -262,7 +281,7 @@ snit::type curse {
         # COOP restricts one role to civilians only and the other role to
         # forces only. Like SAT, if these roles appear in HREL or VREL, then
         # they will be restricted to the same groups
-        rdb eval {
+        $adb eval {
             SELECT * FROM curse_injects
             WHERE curse_id=$curse_id
             AND inject_type='COOP'
@@ -285,19 +304,19 @@ snit::type curse {
     # for inclusion into an HTML page.  Returns an esanity value, either
     # OK or WARNING.
 
-    typemethod checker {{ht ""}} {
+    method checker {{ht ""}} {
         # FIRST, do the inject check.
         set psev [inject checker $ht]
         assert {$psev ne "ERROR"}
 
-        set edict [$type DoSanityCheck]
+        set edict [$self DoSanityCheck]
 
         if {$psev eq "OK" && [dict size $edict] == 0} {
             return OK
         }
 
         if {$ht ne ""} {
-            $type DoSanityReport $ht $edict
+            $self DoSanityReport $ht $edict
         }
         
         return WARNING
@@ -316,14 +335,14 @@ snit::type curse {
     # Returns the dictionary, which will be empty if there were no
     # errors.
 
-    typemethod DoSanityCheck {} {
+    method DoSanityCheck {} {
         # FIRST, create the empty error dictionary.
         set edict [dict create]
 
         # NEXT, clear the invalid states, since we're going to 
         # recompute them.
 
-        rdb eval {
+        $adb eval {
             UPDATE curses
             SET state = 'normal'
             WHERE state = 'invalid';
@@ -333,7 +352,7 @@ snit::type curse {
         set badlist [list]
 
         # CURSEs with no valid injects
-        rdb eval {
+        $adb eval {
             SELECT C.curse_id           AS curse_id, 
                    count(I.inject_num)  AS num
             FROM curses AS C
@@ -349,14 +368,14 @@ snit::type curse {
 
         # NEXT, mark the bad CURSEs invalid.
         foreach curse_id $badlist {
-            rdb eval {
+            $adb eval {
                 UPDATE curses
                 SET state = 'invalid'
                 WHERE curse_id=$curse_id
             }
         }
 
-        notifier send ::curse <Check>
+        $adb notify curse <Check>
 
         return $edict
     }
@@ -370,7 +389,7 @@ snit::type curse {
     # Writes HTML text of the results of the sanity check to the ht
     # buffer.  This routine assumes that there are errors.
 
-    typemethod DoSanityReport {ht edict} {
+    method DoSanityReport {ht edict} {
         # FIRST, Build the report
         $ht subtitle "CURSE Constraints"
 
@@ -385,7 +404,7 @@ snit::type curse {
         $ht para
 
         dict for {curse_id msglist} $edict {
-            array set cdata [curse get $curse_id]
+            array set cdata [$self get $curse_id]
 
             $ht ul
             $ht li 
@@ -411,7 +430,7 @@ snit::type curse {
     # a script of one or more commands that will undo the change.  When
     # change cannot be undone, the mutator returns the empty string.
 
-    # mutate create parmdict
+    # create parmdict
     #
     # parmdict  - A dictionary of CURSE parms
     #
@@ -422,10 +441,10 @@ snit::type curse {
     # Creates a CURSE given the parms, which are presumed to be
     # valid. 
 
-    typemethod {mutate create} {parmdict} {
+    method create {parmdict} {
         dict with parmdict {
             # FIRST, Put the CURSE in the database
-            rdb eval {
+            $adb eval {
                 INSERT INTO 
                 curses(curse_id, 
                        longname,
@@ -442,25 +461,25 @@ snit::type curse {
             }
 
             # NEXT, Return the undo command
-            return [list rdb delete curses "curse_id='$curse_id'"]
+            return [list $adb delete curses "curse_id='$curse_id'"]
         }
     }
 
-    # mutate delete curse_id
+    # delete curse_id
     #
     # curse_id   - A CURSE ID
     #
     # Deletes the CURSE, including all references.
 
-    typemethod {mutate delete} {curse_id} {
+    method delete {curse_id} {
         # FIRST, Delete the CURSE, grabbing the undo information
-        set data [rdb delete -grab curses {curse_id=$curse_id}]
+        set data [$adb delete -grab curses {curse_id=$curse_id}]
         
         # NEXT, Return the undo script
-        return [list rdb ungrab $data]
+        return [list $adb ungrab $data]
     }
 
-    # mutate update parmdict
+    # update parmdict
     #
     # parmdict   - A dictionary of CURSE parms
     #
@@ -471,13 +490,13 @@ snit::type curse {
     # Updates a CURSE given the parms, which are presumed to be
     # valid.  
 
-    typemethod {mutate update} {parmdict} {
+    method update {parmdict} {
         dict with parmdict {
             # FIRST, grab the data that might change.
-            set data [rdb grab curses {curse_id=$curse_id}]
+            set data [$adb grab curses {curse_id=$curse_id}]
 
             # NEXT, Update the record
-            rdb eval {
+            $adb eval {
                 UPDATE curses
                 SET longname = nonempty($longname, longname),
                     cause    = nonempty($cause,    cause),
@@ -488,30 +507,30 @@ snit::type curse {
             } 
 
             # NEXT, Return the undo command
-            return [list rdb ungrab $data]
+            return [list $adb ungrab $data]
         }
     }
 
-    # mutate state curse_id state
+    # state curse_id state
     #
     # curse_id - The CURSE's ID
     # state    - The CURSE's new ecurse_state
     #
     # Updates a CURSE's state.
 
-    typemethod {mutate state} {curse_id state} {
+    method state {curse_id state} {
         # FIRST, get the undo information
-        set data [rdb grab curses {curse_id=$curse_id}]
+        set data [$adb grab curses {curse_id=$curse_id}]
 
         # NEXT, Update the iom.
-        rdb eval {
+        $adb eval {
             UPDATE curses
             SET state = $state
             WHERE curse_id=$curse_id
         }
 
         # NEXT, Return the undo command
-        return [list rdb ungrab $data]
+        return [list $adb ungrab $data]
     }
 
 }    
@@ -524,10 +543,8 @@ snit::type curse {
 # Creates a new CURSE
 
 ::athena::orders define CURSE:CREATE {
-    meta title "Create CURSE"
-    
+    meta title      "Create CURSE"
     meta sendstates PREP
-
     meta parmlist {
         curse_id
         longname
@@ -574,7 +591,7 @@ snit::type curse {
         }
 
         # NEXT, create the message.
-        lappend undo [curse mutate create [array get parms]]
+        lappend undo [$adb curse create [array get parms]]
 
         my setundo [join $undo \n]
     }
@@ -585,19 +602,17 @@ snit::type curse {
 # Deletes a CURSE and its inputs.
 
 ::athena::orders define CURSE:DELETE {
-    meta title "Delete CURSE"
+    meta title      "Delete CURSE"
     meta sendstates PREP
+    meta parmlist  {curse_id}
 
     meta form {
         rcc "CURSE ID:" -for curse_id
         dbkey curse_id -table curses -keys curse_id
     }
 
-    meta parmlist {curse_id}
-
-
     method _validate {} {
-        my prepare curse_id -toupper -required -type curse 
+        my prepare curse_id -toupper -required -type [list $adb curse] 
     }
 
     method _execute {{flunky ""}} {
@@ -622,7 +637,7 @@ snit::type curse {
         }
 
         # NEXT, Delete the record and dependent entities
-        lappend undo [curse mutate delete $parms(curse_id)]
+        lappend undo [$adb curse delete $parms(curse_id)]
 
         my setundo [join $undo \n]
     }
@@ -634,17 +649,9 @@ snit::type curse {
 # Updates an existing CURSE.
 
 ::athena::orders define CURSE:UPDATE {
-    meta title "Update CURSE"
+    meta title      "Update CURSE"
     meta sendstates PREP
-
-    meta parmlist {
-        curse_id
-        longname
-        cause
-        s
-        p
-        q
-    }
+    meta parmlist   {curse_id longname cause s p q}
 
     meta form {
         rcc "CURSE ID" -for curse_id
@@ -665,12 +672,10 @@ snit::type curse {
 
         rcc "Far Factor:" -for q
         frac q
-
     }
 
-
     method _validate {} {
-        my prepare curse_id  -toupper   -required -type curse
+        my prepare curse_id  -toupper   -required -type [list $adb curse]
         my prepare longname  -normalize
         my prepare cause     -toupper             -type {ptype ecause+unique}
         my prepare s         -num                 -type rfraction
@@ -679,7 +684,7 @@ snit::type curse {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [curse mutate update [array get parms]]
+        my setundo [$adb curse update [array get parms]]
     }
 }
 
@@ -690,26 +695,17 @@ snit::type curse {
 # for use with a dialog.
 
 ::athena::orders define CURSE:STATE {
-    meta title "Set CURSE State"
-
+    meta title      "Set CURSE State"
     meta sendstates PREP 
-
-    meta parmlist {curse_id state}
-
-    meta form {
-        # Not used for dialog.
-        dbkey curse_id -table curses -keys curse_id
-        text state
-    }
-
+    meta parmlist   {curse_id state}
 
     method _validate {} {
-        my prepare curse_id -required -toupper -type curse
+        my prepare curse_id -required -toupper -type [list $adb curse]
         my prepare state    -required -tolower -type ecurse_state
     }
 
     method _execute {{flunky ""}} {
-        my setundo [curse mutate state $parms(curse_id) $parms(state)]
+        my setundo [$adb curse state $parms(curse_id) $parms(state)]
     }
 }
 

@@ -80,9 +80,9 @@ snit::widget cursebrowser {
         bind $win <Map> [mymethod MapWindow]
 
         # Reload the content on various notifier events.
-        notifier bind ::sim     <DbSyncB>     $self [mymethod ReloadOnEvent]
-        notifier bind ::sim     <Tick>        $self [mymethod ReloadOnEvent]
-        notifier bind ::curse   <Check>       $self [mymethod ReloadOnEvent]
+        notifier bind ::sim       <DbSyncB>   $self [mymethod ReloadOnEvent]
+        notifier bind ::sim       <Tick>      $self [mymethod ReloadOnEvent]
+        notifier bind ::adb.curse <Check>     $self [mymethod ReloadOnEvent]
 
         # Reload individual entities when they
         # are updated or deleted.

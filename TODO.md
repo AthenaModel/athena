@@ -13,11 +13,21 @@
 # Global Resources in use in athena(n)
 
 - app/messagebox
-  - absit, actor, bsys, cap, civgroup, frcgroup, nbhood, orggroup
+  - absit, actor, bsys, cap, civgroup, curse, frcgroup, nbhood, orggroup
 - athena register
   - bsys
 - driver::absit
   - absit
+- ::gofer::ACTORS
+  - curse
+- ::gofer::CIVGROUPS
+  - curse
+- ::gofer::FRCGROUPS
+  - curse
+- ::gofer::GROUPS
+  - curse
+- inject
+  - curse
 - nbhood
   - absit
 - notifier bind
