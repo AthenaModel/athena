@@ -6,93 +6,98 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    app_sim(n) Belief Systems
+#    athena(n): Belief Systems
 #
 #    This module wraps the mam(n) object that contains and 
 #    computes Athena's belief systems, and also defines the relevant
 #    orders.
 #
+# TBD: Global refs: athena register, app/messagebox
+#
 #-----------------------------------------------------------------------
 
-#-----------------------------------------------------------------------
-# bsys ensemble
+snit::type ::athena::bsys {
+    #-------------------------------------------------------------------
+    # Components
 
-snit::type bsys {
-    pragma -hastypedestroy 0 -hasinstances 0
+    component adb       ;# The athenadb(n) instance
+    component mam       ;# The mam module
 
     #-------------------------------------------------------------------
-    # Type Components
-
-    typecomponent mam       ;# The mam module
-
-    #-------------------------------------------------------------------
-    # Type Variables
-
+    # Variables
 
     # info - Checkpointed data
     #
     #  system-counter  - ID counter for system entities.
     #  topic-counter   - ID counter for topic entities.
 
-    typevariable info -array { }
+    variable info -array { }
 
     # defaultInfo - Default info() content.
 
-    typevariable defaultInfo {
+    variable defaultInfo {
         system-counter 0
         topic-counter  0
     }
 
     #-------------------------------------------------------------------
-    # Singleton Initializer
+    # Constructor
 
-    # init
+    # constructor adb_
     #
-    # Initializes the module from a software point of view.
-    # On scenario lock, the "start" typemethod initializes the
-    # module from a simulation point of view.
+    # adb_    - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of the type.
 
-    typemethod init {} {
-        log normal bsys "init"
+    constructor {adb_} {
+        # FIRST, save the athenadb instance.
+        set adb $adb_
 
-        # FIRST, initialize the mam typecomponent variable so that
+        # NEXT, initialize the mam typecomponent variable so that
         # delegation will work:
-        set mam [::simlib::mam ${type}::mam]
+        install mam using ::simlib::mam ${selfns}::mam
+
+        # NEXT, clear the relevant data.
+        $self clear
 
         # NEXT, register this module as a saveable
-        athena register $type
+        # TBD: This will work only as long as the instance is
+        # aliased to ::bsys
+        athena register $self
 
-        log normal bsys "init complete"
     }
+
+    #-------------------------------------------------------------------
+    # Public Methods
 
     # clear
     #
     # Clears the belief system data, and reinitializes it with the
     # default "Neutral" belief system.
 
-    typemethod clear {} {
+    method clear {} {
         $mam clear
 
         array set info $defaultInfo
 
         set info(system-counter) 1
         $mam system add $info(system-counter)
-        $type system configure $info(system-counter) -name "Neutral"
+        $self system configure $info(system-counter) -name "Neutral"
     }
 
     # start
     #
     # Ensures that affinities have been computed on scenario lock.
 
-    typemethod start {} {
-        $type compute
+    method start {} {
+        $self compute
     }
 
     # compute
     #
     # Forces a recalc.
 
-    typemethod compute {} {
+    method compute {} {
         $mam compute
     }
 
@@ -104,7 +109,7 @@ snit::type bsys {
     # Returns a checkpoint of the non-RDB simulation data.  If 
     # -saved is specified, the data is marked unchanged.
 
-    typemethod checkpoint {{option ""}} {
+    method checkpoint {{option ""}} {
         dict set checkpoint info [array get info]
         dict set checkpoint mam  [$mam checkpoint $option]
 
@@ -113,15 +118,15 @@ snit::type bsys {
 
     # restore checkpoint ?-saved?
     #
-    # checkpoint - A string returned by the checkpoint typemethod
+    # checkpoint - A string returned by the checkpoint method
     #
     # Restores the non-RDB state of the module to that contained
     # in the checkpoint.  If -saved is specified, the data is marked
     # unchanged.
     
-    typemethod restore {checkpoint {option ""}} {
+    method restore {checkpoint {option ""}} {
         # FIRST, restore the checkpoint data
-        $type clear
+        $self clear
         array set info [dict get $checkpoint info]
 
         $mam restore [dict get $checkpoint mam]
@@ -130,14 +135,14 @@ snit::type bsys {
 
 
     #-------------------------------------------------------------------
-    # Public Typemethods
+    # Public methods
 
 
-    delegate typemethod {playbox *} to mam using {%c playbox %m}
-    delegate typemethod {system *}  to mam using {%c system %m}
-    delegate typemethod {topic *}   to mam using {%c topic %m}
-    delegate typemethod {belief *}  to mam using {%c belief %m}
-    delegate typemethod *           to mam
+    delegate method {playbox *} to mam using {%c playbox %m}
+    delegate method {system *}  to mam using {%c system %m}
+    delegate method {topic *}   to mam using {%c topic %m}
+    delegate method {belief *}  to mam using {%c belief %m}
+    delegate method *           to mam
 
     # system validate sid
     #
@@ -145,7 +150,7 @@ snit::type bsys {
     #
     # Validates the system ID.
 
-    typemethod {system validate} {sid} {
+    method {system validate} {sid} {
         if {![$mam system exists $sid]} {
             return -code error -errorcode INVALID \
                 "Invalid belief system ID"
@@ -160,8 +165,8 @@ snit::type bsys {
     #
     # Returns 1 if the system is in use, and 0 otherwise.
 
-    typemethod {system inuse} {sid} {
-        return [rdb exists {
+    method {system inuse} {sid} {
+        return [$adb exists {
             SELECT a FROM actors WHERE bsid=$sid
             UNION
             SELECT g FROM groups WHERE bsid=$sid
@@ -174,7 +179,7 @@ snit::type bsys {
     #
     # Validates the system ID as an editable system ID.
 
-    typemethod {editable validate} {sid} {
+    method {editable validate} {sid} {
         if {![$mam system exists $sid]} {
             return -code error -errorcode INVALID \
                 "Invalid belief system ID"
@@ -195,7 +200,7 @@ snit::type bsys {
     #
     # Validates the topic ID.
 
-    typemethod {topic validate} {tid} {
+    method {topic validate} {tid} {
         if {![$mam topic exists $tid]} {
             return -code error -errorcode INVALID \
                 "Invalid topic ID"
@@ -210,8 +215,8 @@ snit::type bsys {
     #
     # Returns 1 if the topic is in use, and 0 otherwise.
 
-    typemethod {topic inuse} {tid} {
-        return [rdb exists {
+    method {topic inuse} {tid} {
+        return [$adb exists {
             SELECT topic_id FROM hook_topics WHERE topic_id=$tid
         }]
     }
@@ -223,11 +228,11 @@ snit::type bsys {
     #
     # Validates the belief ID.
 
-    typemethod {belief validate} {bid} {
+    method {belief validate} {bid} {
         lassign $bid sid tid
 
-        $type editable validate $sid
-        $type topic validate $tid
+        $self editable validate $sid
+        $self topic validate $tid
 
         return $bid
     }
@@ -238,7 +243,7 @@ snit::type bsys {
     #
     # Returns 1 if the belief has its default value, and 0 otherwise.
 
-    typemethod {belief isdefault} {bid} {
+    method {belief isdefault} {bid} {
         set dict [$mam belief get {*}$bid]
 
         dict with dict {
@@ -257,7 +262,7 @@ snit::type bsys {
     #
     # Returns the bsid's name.
 
-    proc bsysname {bsid} {
+    method bsysname {bsid} {
         return "[$mam system get $bsid name] ($bsid)"
     }
 
@@ -267,27 +272,14 @@ snit::type bsys {
     #
     # Returns the topic's name.
 
-    proc topicname {tid} {
+    method topicname {tid} {
         return [$mam topic get $tid name]
     }
-
-    # affinity bsid1 bsid2
-    #
-    # bsid1  - A belief system ID
-    # bsid2  - A belief system ID
-    #
-    # Returns affinity of bsid1 for bsid2.
-
-    proc affinity {bsid1 bsid2} {
-        return [$mam affinity $bsid1 $bsid2]
-    }
-
-    
 
     #-------------------------------------------------------------------
     # Mutators
 
-    # mutate add etype id
+    # add etype id
     #
     # etype  - system | topic
     # id     - The entity ID, or "" to assign a new one.
@@ -295,7 +287,7 @@ snit::type bsys {
     # Adds an entity of the given type, and returns a list
     # of two items: the assigned ID, and the undo script.
 
-    typemethod {mutate add} {etype id} {
+    method add {etype id} {
         set oldCounter $info($etype-counter)
 
         if {$id eq ""} {
@@ -306,9 +298,9 @@ snit::type bsys {
 
         $mam $etype add $id
 
-        notifier send ::bsys <$etype> add $id
+        $adb notify bsys <$etype> add $id
 
-        return [list $id [mytypemethod UndoAdd $etype $oldCounter $id]]
+        return [list $id [mymethod UndoAdd $etype $oldCounter $id]]
     }
 
     # UndoAdd etype oldCounter id 
@@ -319,14 +311,14 @@ snit::type bsys {
     #
     # Undoes the add of the entity.
 
-    typemethod UndoAdd {etype oldCounter id} {
+    method UndoAdd {etype oldCounter id} {
         $mam $etype delete $id
         set info($etype-counter) $oldCounter
 
-        notifier send ::bsys <$etype> delete $id
+        $adb notify bsys <$etype> delete $id
     }
 
-    # mutate update etype id pdict
+    # update etype id pdict
     #
     # etype    - playbox | system | topic | belief
     # id       - The etype ID
@@ -336,7 +328,7 @@ snit::type bsys {
     # new parameters.  For playbox, the id is "" and for
     # belief the id is "$sid $tid".
 
-    typemethod {mutate update} {etype id pdict} {
+    method update {etype id pdict} {
         set undoData [$mam $etype get {*}$id]
 
         dict for {parm value} $undoData {
@@ -355,9 +347,9 @@ snit::type bsys {
             $mam $etype set {*}$id $parm $value
         }
 
-        notifier send ::bsys <$etype> update $id
+        $adb notify bsys <$etype> update $id
 
-        return [mytypemethod UndoUpdate $etype $id $undoData]
+        return [mymethod UndoUpdate $etype $id $undoData]
     }
 
     # UndoUpdate etype id undoData 
@@ -368,25 +360,25 @@ snit::type bsys {
     #
     # Undoes the update of the entity.
 
-    typemethod UndoUpdate {etype id undoData} {
+    method UndoUpdate {etype id undoData} {
         $mam $etype set {*}$id $undoData
 
-        notifier send ::bsys <$etype> update $id
+        $adb notify bsys <$etype> update $id
     }
     
-    # mutate delete etype id
+    # delete etype id
     #
     # etype  - system | topic
     # id     - The etype's ID
     #
     # Deletes the entity, and returns the undo script.
 
-    typemethod {mutate delete} {etype id} {
+    method delete {etype id} {
         set undoData [$mam $etype delete $id]
 
-        notifier send ::bsys <$etype> delete $id
+        $adb notify bsys <$etype> delete $id
 
-        return [mytypemethod UndoDelete $etype $id $undoData]
+        return [mymethod UndoDelete $etype $id $undoData]
     }
 
     # UndoDelete etype id undoData 
@@ -397,10 +389,10 @@ snit::type bsys {
     #
     # Undoes the deletion of the entity.
 
-    typemethod UndoDelete {etype id undoData} {
+    method UndoDelete {etype id undoData} {
         $mam $etype undelete $undoData
 
-        notifier send ::bsys <$etype> add $id
+        $adb notify bsys <$etype> add $id
     }
 
 
@@ -415,7 +407,7 @@ snit::type bsys {
     #
     # Generic ID field -loadcmd callback for mam entities.
 
-    proc viewload {etype idict id} {
+    method viewload {etype idict id} {
         if {$id eq ""} {
             return [dict create]
         }
@@ -431,7 +423,7 @@ snit::type bsys {
     #
     # Returns the belief system's name for display
 
-    proc system4bid {bid} {
+    method system4bid {bid} {
         lassign $bid sid tid
 
         if {![$mam system exists $sid]} {
@@ -447,7 +439,7 @@ snit::type bsys {
     #
     # Returns the topic name for display
 
-    proc topic4bid {bid} {
+    method topic4bid {bid} {
         lassign $bid sid tid
 
         if {![$mam topic exists $tid]} {
@@ -467,25 +459,16 @@ snit::type bsys {
 
 
 ::athena::orders define BSYS:PLAYBOX:UPDATE {
-    meta title "Update Playbox-wide Belief System Parameters"
-
+    meta title      "Update Playbox-wide Belief System Parameters"
     meta sendstates PREP
-
-    meta parmlist {gamma}
-
-    meta form {
-        # NOTE: dialog is not used
-        rcc "Gamma:" -for gamma
-        text gamma
-    }
-
+    meta parmlist   {gamma}
 
     method _validate {} {
         my prepare gamma -required -num -type ::simlib::rmagnitude
     }
 
     method _execute {{flunky ""}} {
-        my setundo [bsys mutate update playbox "" [array get parms]]
+        my setundo [$adb bsys update playbox "" [array get parms]]
         return
     }    
 }
@@ -497,25 +480,16 @@ snit::type bsys {
 # system ID.
 
 ::athena::orders define BSYS:SYSTEM:ADD {
-    meta title "Add New Belief System"
-
+    meta title      "Add New Belief System"
     meta sendstates PREP
-
-    meta parmlist {sid}
-
-    meta form {
-        # Note: the form is not used.
-        rcc "SID:" -for sid
-        text sid
-    }
-
+    meta parmlist   {sid}
 
     method _validate {} {
         my prepare sid -num -type ::marsutil::count
         my returnOnError
 
         my checkon sid {
-            if {$parms(sid) in [bsys system ids]} {
+            if {$parms(sid) in [$adb bsys system ids]} {
                 my reject sid \
                     "Belief system ID is already in use: \"$parms(sid)\""
             }
@@ -523,7 +497,7 @@ snit::type bsys {
     }
 
     method _execute {{flunky ""}} {
-        lassign [::bsys mutate add system $parms(sid)] sid undoScript
+        lassign [$adb bsys add system $parms(sid)] sid undoScript
 
         my setundo $undoScript
 
@@ -539,16 +513,14 @@ snit::type bsys {
 # Updates system parameters
 
 ::athena::orders define BSYS:SYSTEM:UPDATE {
-    meta title "Update Belief System Metadata"
-
+    meta title      "Update Belief System Metadata"
     meta sendstates PREP
-
-    meta parmlist {sid name commonality}
+    meta parmlist   {sid name commonality}
 
     meta form {
         rcc "System ID:" -for sid
         text sid -context yes \
-            -loadcmd {bsys::viewload system}
+            -loadcmd {$adb_ bsys viewload system}
 
         rcc "Name:" -for name
         text name
@@ -562,14 +534,14 @@ snit::type bsys {
 
 
     method _validate {} {
-        my prepare sid          -toupper -required -type {bsys editable}
+        my prepare sid -toupper -required -type [list $adb bsys editable]
         my prepare name
-        my prepare commonality  -num               -type ::simlib::rfraction
+        my prepare commonality  -num      -type ::simlib::rfraction
 
         my returnOnError
 
         my checkon name {
-            set oldID [bsys system id $parms(name)]
+            set oldID [$adb bsys system id $parms(name)]
             if {$oldID ne "" && $oldID ne $parms(sid)} {
                 my reject name \
                     "name is in use by another system: \"$parms(name)\""
@@ -578,7 +550,7 @@ snit::type bsys {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [bsys mutate update system $parms(sid) [array get parms]]
+        my setundo [$adb bsys update system $parms(sid) [array get parms]]
         return
     }
 }
@@ -588,24 +560,16 @@ snit::type bsys {
 # Deletes a belief system.
 
 ::athena::orders define BSYS:SYSTEM:DELETE {
-    meta title "Delete Belief System"
+    meta title      "Delete Belief System"
     meta sendstates PREP
-
-    meta parmlist {sid}
-
-    meta form { 
-        # TBD: Form isn't used.
-        rcc "System ID:" -for sid
-        text sid -context yes
-    }
-
+    meta parmlist   {sid}
 
     method _validate {} {
-        my prepare sid -required -type {bsys editable}
+        my prepare sid -required -type [list $adb bsys editable]
 
         my returnOnError
 
-        set inUse [bsys system inuse $parms(sid)]
+        set inUse [$adb bsys system inuse $parms(sid)]
 
 
         if {$inUse && [my mode] eq "gui" } {
@@ -658,7 +622,7 @@ snit::type bsys {
         }
 
         # NEXT, Delete the system.
-        my setundo [bsys mutate delete system $parms(sid)]
+        my setundo [$adb bsys delete system $parms(sid)]
         return
     }
 }
@@ -669,25 +633,16 @@ snit::type bsys {
 # topic's ID.
 
 ::athena::orders define BSYS:TOPIC:ADD {
-    meta title "Add New Belief Topic"
-
+    meta title      "Add New Belief Topic"
     meta sendstates PREP
-
-    meta parmlist {tid}
-
-    meta form {
-        # NOTE: dialog is not used
-        rcc "TID:" -for tid
-        text tid
-    }
-
+    meta parmlist   {tid}
 
     method _validate {} {
         my prepare tid -num -type ::marsutil::count
         my returnOnError
 
         my checkon tid {
-            if {$parms(tid) in [bsys topic ids]} {
+            if {$parms(tid) in [$adb bsys topic ids]} {
                 my reject tid \
                     "Topic ID is already in use: \"$parms(tid)\""
             }
@@ -695,7 +650,7 @@ snit::type bsys {
     }
 
     method _execute {{flunky ""}} {
-        lassign [::bsys mutate add topic $parms(tid)] tid undoScript
+        lassign [$adb bsys add topic $parms(tid)] tid undoScript
 
         my setundo $undoScript
 
@@ -710,16 +665,14 @@ snit::type bsys {
 # Updates topic metadata
 
 ::athena::orders define BSYS:TOPIC:UPDATE {
-    meta title "Update Topic Metadata"
-
+    meta title      "Update Topic Metadata"
     meta sendstates PREP
-
-    meta parmlist {tid name affinity}
+    meta parmlist   {tid name affinity}
 
     meta form {
         rcc "Topic ID:" -for tid
         text tid -context yes \
-            -loadcmd {bsys::viewload topic}
+            -loadcmd {$adb_ bsys viewload topic}
 
         rcc "Name:" -for name
         text name -width 30
@@ -730,14 +683,14 @@ snit::type bsys {
 
 
     method _validate {} {
-        my prepare tid          -toupper -required -type {bsys topic}
+        my prepare tid -toupper -required -type [list $adb bsys topic]
         my prepare name
-        my prepare affinity     -toupper           -type boolean
+        my prepare affinity -toupper -type boolean
 
         my returnOnError
 
         my checkon name {
-            set oldID [bsys topic id $parms(name)]
+            set oldID [$adb bsys topic id $parms(name)]
             if {$oldID ne "" && $oldID ne $parms(tid)} {
                 my reject name \
                     "name is in use by another topic: \"$parms(name)\""
@@ -746,7 +699,7 @@ snit::type bsys {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [bsys mutate update topic $parms(tid) [array get parms]]
+        my setundo [$adb bsys update topic $parms(tid) [array get parms]]
         return
     }
 }
@@ -756,24 +709,16 @@ snit::type bsys {
 # Deletes a belief topic.
 
 ::athena::orders define BSYS:TOPIC:DELETE {
-    meta title "Delete Belief Topic"
+    meta title      "Delete Belief Topic"
     meta sendstates PREP
-
-    meta parmlist {tid}
-
-    meta form { 
-        # TBD: Form isn't used.
-        rcc "Topic ID:" -for tid
-        text tid -context yes
-    }
-
+    meta parmlist   {tid}
 
     method _validate {} {
-        my prepare tid -required -type {bsys topic}
+        my prepare tid -required -type [list $adb bsys topic]
 
         my returnOnError
 
-        set inUse [bsys topic inuse $parms(tid)]
+        set inUse [$adb bsys topic inuse $parms(tid)]
 
         if {$inUse && [my mode] eq "gui" } {
             set message [normalize "
@@ -825,7 +770,7 @@ snit::type bsys {
         }
 
         # NEXT, Delete the topic.
-        my setundo [bsys mutate delete topic $parms(tid)]
+        my setundo [$adb bsys delete topic $parms(tid)]
         return
     }
 }
@@ -836,39 +781,36 @@ snit::type bsys {
 # Updates an existing belief.
 
 ::athena::orders define BSYS:BELIEF:UPDATE {
-    meta title "Update Belief"
+    meta title      "Update Belief"
     meta sendstates PREP
-
-    meta parmlist {bid system topic position emphasis}
+    meta parmlist   {bid system topic position emphasis}
 
     meta form {
         text bid \
             -invisible yes    \
-            -loadcmd  {bsys::viewload belief}
+            -loadcmd  {$adb_ bsys viewload belief}
 
         rcc "Belief System:" -for system
-        disp system -width 30 -textcmd {::bsys::system4bid $bid}
+        disp system -width 30 -textcmd {$adb_ bsys system4bid $bid}
 
         rcc "Belief Topic:" -for topic
-        disp topic -width 30 -textcmd {::bsys::topic4bid $bid}
+        disp topic -width 30 -textcmd {$adb_ bsys topic4bid $bid}
 
         rcc "Position:" -for position
         enumlong position -dictcmd {::simlib::qposition namedict}
 
         rcc "Emphasis is On:" -for emphasis
         enumlong emphasis -dictcmd {::simlib::qemphasis namedict}
-
     }
 
-
     method _validate {} {
-        my prepare bid       -toupper -required -type {bsys belief}
+        my prepare bid  -toupper -required -type [list $adb bsys belief]
         my prepare position  -num -type qposition
         my prepare emphasis  -num -type qemphasis
     }
 
     method _execute {{flunky ""}} {
-        my setundo [bsys mutate update belief $parms(bid) [array get parms]]
+        my setundo [$adb bsys update belief $parms(bid) [array get parms]]
         return
     }
 }

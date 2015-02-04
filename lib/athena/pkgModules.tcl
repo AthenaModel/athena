@@ -53,6 +53,7 @@ source [file join $::athena::library dynatypes.tcl    ]
 # Editable Entities
 source [file join $::athena::library absit.tcl        ]
 source [file join $::athena::library actor.tcl        ]
+source [file join $::athena::library bsys.tcl         ]
 source [file join $::athena::library cap.tcl          ]
 source [file join $::athena::library civgroup.tcl     ]
 source [file join $::athena::library coop.tcl         ]

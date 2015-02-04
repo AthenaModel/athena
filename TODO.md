@@ -1,8 +1,6 @@
 # TODO.md - Athena TODO List
 
 - Write cellide manpage.
-- Problems
-  - bsys uses mam(n), which is a singleton.  Arggh!
 - Move editable entities to athena(n)
 - Move model modules to athena(n)
 - Move relevant projtypes to athena(n)
@@ -15,9 +13,9 @@
 # Global Resources in use in athena(n)
 
 - app/messagebox
-  - absit, actor, cap, civgroup, frcgroup, nbhood, orggroup
-- bsys
-  - actor, civgroup
+  - absit, actor, bsys, cap, civgroup, frcgroup, nbhood, orggroup
+- athena register
+  - bsys
 - driver::absit
   - absit
 - group

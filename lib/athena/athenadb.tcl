@@ -162,6 +162,7 @@ snit::type ::athena::athenadb {
     component absit    -public absit     ;# absit manager
     component actor    -public actor     ;# actor manager
     component agent    -public agent     ;# agent manager
+    component bsys     -public bsys      ;# belief system manager
     component cap      -public cap       ;# cap manager
     component civgroup -public civgroup  ;# civgroup manager
     component coop     -public coop      ;# cooperation manager
@@ -234,6 +235,7 @@ snit::type ::athena::athenadb {
             activity         \
             actor            \
             agent            \
+            bsys             \
             cap              \
             civgroup         \
             coop             \
@@ -266,7 +268,6 @@ snit::type ::athena::athenadb {
 
             # Initialize external packages
             strategy init
-            bsys clear
             parm reset
             parm checkpoint -saved
         }
@@ -382,9 +383,9 @@ snit::type ::athena::athenadb {
         $rdb function firing_narrative     [mymethod FiringNarrative]
         $rdb function elink                [myproc EntityLink]
         $rdb function yesno                [myproc YesNo]
-        $rdb function bsysname             ::bsys::bsysname
-        $rdb function topicname            ::bsys::topicname
-        $rdb function affinity             ::bsys::affinity
+        $rdb function bsysname             [list $bsys bsysname]
+        $rdb function topicname            [list $bsys topicname]
+        $rdb function affinity             [list $bsys affinity]
         $rdb function qposition            [myproc QPosition]
         $rdb function hook_narrative       ::hook::hook_narrative
         $rdb function service              [mymethod Service]

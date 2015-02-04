@@ -180,35 +180,35 @@ namespace eval ::athena_test::tests:: {
     } -result {0}
 
     #-------------------------------------------------------------------
-    # mutate add
+    # add
 
-    test mutate_add-1.1 {Adds a system, assigning an ID} -body {
+    test add-1.1 {Adds a system, assigning an ID} -body {
         set a [bsys system ids]
-        bsys mutate add system ""
+        bsys add system ""
         set b [bsys system ids]
         list $a $b
     } -cleanup {
         cleanup
     } -result {1 {1 2}}
 
-    test mutate_add-1.2 {Adds a system, specifying an ID} -body {
+    test add-1.2 {Adds a system, specifying an ID} -body {
         set a [bsys system ids]
-        bsys mutate add system 5
+        bsys add system 5
         set b [bsys system ids]
         list $a $b
     } -cleanup {
         cleanup
     } -result {1 {1 5}}
 
-    test mutate_add-1.3 {Returns ID, undo script} -body {
-        bsys mutate add system 5
+    test add-1.3 {Returns ID, undo script} -body {
+        bsys add system 5
     } -cleanup {
         cleanup
-    } -result {5 {::bsys UndoAdd system 1 5}}
+    } -match glob -result {5 {:*bsys* UndoAdd system 1 5}}
 
-    test mutate_add-1.4 {Undoes adding a system} -setup {
+    test add-1.4 {Undoes adding a system} -setup {
         set a [bsys system ids]
-        lassign [bsys mutate add system 5] sid undo
+        lassign [bsys add system 5] sid undo
     } -body {
         namespace eval :: $undo
         set b [bsys system ids]
@@ -217,33 +217,33 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -result {1}
 
-    test mutate_add-2.1 {adds a topic} -body {
+    test add-2.1 {adds a topic} -body {
         set a [bsys topic ids]
-        bsys mutate add topic ""
+        bsys add topic ""
         set b [bsys topic ids]
         list $a $b
     } -cleanup {
         cleanup
     } -result {{} 1}
   
-    test mutate_add-2.2 {Adds a topic, specifying an ID} -body {
+    test add-2.2 {Adds a topic, specifying an ID} -body {
         set a [bsys topic ids]
-        bsys mutate add topic 5
+        bsys add topic 5
         set b [bsys topic ids]
         list $a $b
     } -cleanup {
         cleanup
     } -result {{} 5}
 
-    test mutate_add-2.3 {Returns ID, undo script} -body {
-        bsys mutate add topic 5
+    test add-2.3 {Returns ID, undo script} -body {
+        bsys add topic 5
     } -cleanup {
         cleanup
-    } -result {5 {::bsys UndoAdd topic 0 5}}
+    } -match glob -result {5 {*bsys* UndoAdd topic 0 5}}
 
-    test mutate_add-2.4 {Undoes adding a topic} -setup {
+    test add-2.4 {Undoes adding a topic} -setup {
         set a [bsys topic ids]
-        lassign [bsys mutate add topic ""] tid undo
+        lassign [bsys add topic ""] tid undo
     } -body {
         namespace eval :: $undo
         set b [bsys topic ids]
@@ -252,26 +252,26 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -result {1}
 
-    test mutate_add-3.1 {Sends notifications} -setup {
-        ted notifier bind ::bsys <topic>
+    test add-3.1 {Sends notifications} -setup {
+        ted notifier bind ::adb.bsys <topic>
     } -body {
-        lassign [bsys mutate add topic 1] tid undo
+        lassign [bsys add topic 1] tid undo
         namespace eval :: $undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::bsys <topic> add 1}
-        {::bsys <topic> delete 1}
+        {::adb.bsys <topic> add 1}
+        {::adb.bsys <topic> delete 1}
     }
    
     #-------------------------------------------------------------------
-    # mutate update
+    # update
 
-    test mutate_update-1.1 {Updates an entity} -setup {
-        bsys mutate add topic 1
+    test update-1.1 {Updates an entity} -setup {
+        bsys add topic 1
     } -body {
-        bsys mutate update topic 1 {name Fred affinity 0}
+        bsys update topic 1 {name Fred affinity 0}
         ted pdicts [bsys topic get 1]
     } -cleanup {
         cleanup
@@ -281,10 +281,10 @@ namespace eval ::athena_test::tests:: {
         relevance 1.0
     }
 
-    test mutate_update-1.2 {Ignores unknown attributes} -setup {
-        bsys mutate add topic 1
+    test update-1.2 {Ignores unknown attributes} -setup {
+        bsys add topic 1
     } -body {
-        bsys mutate update topic 1 {name Fred nonesuch 1}
+        bsys update topic 1 {name Fred nonesuch 1}
         ted pdicts [bsys topic get 1]
     } -cleanup {
         cleanup
@@ -294,10 +294,10 @@ namespace eval ::athena_test::tests:: {
         relevance 1.0
     }
 
-    test mutate_update-2.1 {Can be undone} -setup {
-        bsys mutate add topic 1
+    test update-2.1 {Can be undone} -setup {
+        bsys add topic 1
         set a [bsys topic get 1]
-        set undo [bsys mutate update topic 1 {name Fred nonesuch 1}]
+        set undo [bsys update topic 1 {name Fred nonesuch 1}]
     } -body {
         namespace eval :: $undo
         set b [bsys topic get 1]
@@ -306,42 +306,42 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -result {1}
 
-    test mutate_update-3.1 {Sends notifications} -setup {
-        bsys mutate add topic 1
-        ted notifier bind ::bsys <topic>
+    test update-3.1 {Sends notifications} -setup {
+        bsys add topic 1
+        ted notifier bind ::adb.bsys <topic>
     } -body {
-        set undo [bsys mutate update topic 1 {name Fred nonesuch 1}]
+        set undo [bsys update topic 1 {name Fred nonesuch 1}]
         namespace eval :: $undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::bsys <topic> update 1}
-        {::bsys <topic> update 1}
+        {::adb.bsys <topic> update 1}
+        {::adb.bsys <topic> update 1}
     }
 
     #-------------------------------------------------------------------
-    # mutate delete
+    # delete
 
-    test mutate_delete-1.1 {Deletes an entity} -setup {
-        bsys mutate add topic 1
-        bsys mutate add topic 2
+    test delete-1.1 {Deletes an entity} -setup {
+        bsys add topic 1
+        bsys add topic 2
     } -body {
         set a [bsys topic ids]
-        bsys mutate delete topic 1
+        bsys delete topic 1
         set b [bsys topic ids]
         list $a $b
     } -cleanup {
         cleanup
     } -result {{1 2} 2}
 
-    test mutate_delete-2.1 {Undo restores the entity} -setup {
-        bsys mutate add topic 1
-        bsys mutate add topic 2
+    test delete-2.1 {Undo restores the entity} -setup {
+        bsys add topic 1
+        bsys add topic 2
         bsys topic configure 1 -name "Fred" -affinity 0
     } -body {
         set a [bsys topic get 1]
-        set undo [bsys mutate delete topic 1]
+        set undo [bsys delete topic 1]
         namespace eval :: $undo
         set b [bsys topic get 1]
         expr {$a eq $b}
@@ -349,46 +349,38 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -result {1}
 
-    test mutate_delete-3.1 {Sends notifications} -setup {
-        bsys mutate add topic 1
-        ted notifier bind ::bsys <topic>
+    test delete-3.1 {Sends notifications} -setup {
+        bsys add topic 1
+        ted notifier bind ::adb.bsys <topic>
     } -body {
-        set undo [bsys mutate delete topic 1]
+        set undo [bsys delete topic 1]
         namespace eval :: $undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::bsys <topic> delete 1}
-        {::bsys <topic> add 1}
+        {::adb.bsys <topic> delete 1}
+        {::adb.bsys <topic> add 1}
     }
 
     #-------------------------------------------------------------------
     # SQL Function Procs
 
     test bsysname-1.1 {Retrieves belief system name} -body {
-        ::bsys::bsysname 1
+        bsys bsysname 1
     } -cleanup {
         cleanup
     } -result {Neutral (1)}
 
     test topicname-1.1 {Retrieves belief topic name} -setup {
-        bsys mutate add topic 1
+        bsys add topic 1
         bsys topic configure 1 -name "Test Topic"
     } -body {
-        ::bsys::topicname 1
+        bsys topicname 1
     } -cleanup {
         cleanup
     } -result {Test Topic}
     
-    test affinity-1.1 {Retrieves affinities} -setup {
-        bsys mutate add topic 1
-    } -body {
-        ::bsys::affinity 1 1
-    } -cleanup {
-        cleanup
-    } -result {1.0}
-
     #-------------------------------------------------------------------
     # Cleanup
 

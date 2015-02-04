@@ -223,7 +223,6 @@ snit::type app {
         parm      init master
         map       init
         view      init
-        bsys      init
         MakeAthena ::adb
         sim       init
         axdb      init

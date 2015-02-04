@@ -12,7 +12,7 @@
 #    upon them.  As such, it is a type ensemble.
 #
 # TBD:
-#    * Global entities in use: ::strategy, ::bsys, ::ptype, ::app
+#    * Global entities in use: ::strategy, ::ptype, ::app
 #      * Need a way to elevate Are You Sure messages to app gui.
 #
 #-----------------------------------------------------------------------
@@ -390,7 +390,7 @@ snit::type ::athena::actor {
         longname longname
 
         rcc "Belief System:" -for bsid
-        enumlong bsid -dictcmd {::bsys system namedict} -showkeys yes \
+        enumlong bsid -dictcmd {$adb_ bsys system namedict} -showkeys yes \
             -defvalue 1
 
         rcc "Supports:" -for supports
@@ -447,7 +447,7 @@ snit::type ::athena::actor {
         my prepare a                -toupper -required -type ident
         my unused a
         my prepare longname         -normalize
-        my prepare bsid             -num               -type {bsys system}
+        my prepare bsid             -num               -type [list $adb bsys system]
         my prepare supports         -toupper           -type {ptype a+self+none}
         my prepare auto_maintain    -toupper           -type boolean 
         my prepare atype            -toupper           -selector
@@ -554,7 +554,7 @@ snit::type ::athena::actor {
         longname longname
 
         rcc "Belief System:" -for bsid
-        enumlong bsid -dictcmd {::bsys system namedict} -showkeys yes \
+        enumlong bsid -dictcmd {$adb_ bsys system namedict} -showkeys yes \
 
         rcc "Supports:" -for supports
         enum supports -listcmd {ptype a+self+none names}
@@ -609,7 +609,7 @@ snit::type ::athena::actor {
     method _validate {} {
         my prepare a                -toupper   -required -type [list $adb actor]
         my prepare longname         -normalize
-        my prepare bsid             -num               -type {bsys system}
+        my prepare bsid             -num               -type [list $adb bsys system]
         my prepare supports         -toupper           -type {ptype a+self+none}
         my prepare auto_maintain    -toupper           -type boolean 
         my prepare atype            -toupper           -selector

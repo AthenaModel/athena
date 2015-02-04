@@ -11,7 +11,7 @@
 #    This module is responsible for managing civilian groups and operations
 #    upon them.
 #
-# TBD: Global refs: bsys, app/messagebox
+# TBD: Global refs: app/messagebox
 #
 #-----------------------------------------------------------------------
 
@@ -412,7 +412,7 @@ snit::type ::athena::civgroup {
         nbhood n
 
         rcc "Belief System:" -for bsid
-        enumlong bsid -dictcmd {::bsys system namedict} -showkeys yes \
+        enumlong bsid -dictcmd {$adb_ bsys system namedict} -showkeys yes \
             -defvalue 1
 
         rcc "Color:" -for color
@@ -461,7 +461,7 @@ snit::type ::athena::civgroup {
         my unused g
         my prepare longname  -normalize
         my prepare n         -toupper   -required -type nbhood
-        my prepare bsid      -num                 -type {bsys system}
+        my prepare bsid      -num                 -type [list $adb bsys system]
         my prepare color     -tolower   -required -type hexcolor
         my prepare demeanor  -toupper   -required -type edemeanor
         my prepare basepop   -num       -required -type iquantity
@@ -588,7 +588,7 @@ snit::type ::athena::civgroup {
         nbhood n
 
         rcc "Belief System:" -for bsid
-        enumlong bsid -dictcmd {::bsys system namedict} -showkeys yes
+        enumlong bsid -dictcmd {$adb_ bsys system namedict} -showkeys yes
 
         rcc "Color:" -for color
         color color
@@ -628,7 +628,7 @@ snit::type ::athena::civgroup {
         my prepare g         -toupper   -required -type [list $adb civgroup]
         my prepare longname  -normalize
         my prepare n         -toupper   -type nbhood
-        my prepare bsid      -num       -type {bsys system}
+        my prepare bsid      -num       -type [list $adb bsys system]
         my prepare color     -tolower   -type hexcolor
         my prepare demeanor  -toupper   -type edemeanor
         my prepare basepop   -num       -type iquantity
