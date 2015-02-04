@@ -59,7 +59,6 @@ source [file join $::athena::library civgroup.tcl     ]
 source [file join $::athena::library coop.tcl         ]
 source [file join $::athena::library curse.tcl        ]
 source [file join $::athena::library frcgroup.tcl     ]
-source [file join $::athena::library group.tcl        ]
 source [file join $::athena::library hrel.tcl         ]
 source [file join $::athena::library nbhood.tcl       ]
 source [file join $::athena::library orggroup.tcl     ]
@@ -69,4 +68,8 @@ source [file join $::athena::library vrel.tcl         ]
 # Non-Editable Entities
 source [file join $::athena::library activity.tcl     ]
 source [file join $::athena::library agent.tcl        ]
+source [file join $::athena::library group.tcl        ]
+
+# Tactic APIs
+source [file join $::athena::library control.tcl      ]
 

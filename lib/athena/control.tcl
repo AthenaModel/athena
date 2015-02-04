@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Neighborhood Control API
+#    athena(n): Neighborhood Control API
 #
 #    This module is part of the political model.  It provides the
 #    API for tactics that affect political support and neighborhood
@@ -14,17 +14,35 @@
 #
 #-----------------------------------------------------------------------
 
-snit::type control {
-    # Make it a singleton
-    pragma -hasinstances no
+snit::type ::athena::control {
+    #-------------------------------------------------------------------
+    # Components
 
+    component adb ;# The athenadb(n) instance
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    # constructor adb_
+    #
+    # adb_    - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of the type.
+
+    constructor {adb_} {
+        set adb $adb_
+    }
+
+    #-------------------------------------------------------------------
+    # Public Methods
+    
     # load
     #
     # Loads every actors' default supports into working_supports
     # for use during strategy execution.
 
-    typemethod load {} {
-        rdb eval {
+    method load {} {
+        $adb eval {
             DELETE FROM working_supports;
 
             INSERT INTO working_supports(n, a, supports)
@@ -38,7 +56,7 @@ snit::type control {
     # b        - An actor a supports, or NULL
     # nlist    - List of neighborhoods in which a supports b
 
-    typemethod support {a b nlist} {
+    method support {a b nlist} {
         # FIRST, handle SELF
         if {$b eq "SELF"} {
             set b $a
@@ -48,7 +66,7 @@ snit::type control {
         set inClause "IN ('[join $nlist ',']')"
 
         # NEXT, update the working supports list
-        rdb eval "
+        $adb eval "
             UPDATE working_supports
             SET supports = nullif(\$b,'NONE')
             WHERE a = \$a AND n $inClause
@@ -60,8 +78,8 @@ snit::type control {
     # Save the actor supports back into the supports table, replacing
     # the previous values.
 
-    typemethod save {} {
-        rdb eval {
+    method save {} {
+        $adb eval {
             DELETE FROM supports_na;
 
             INSERT INTO supports_na(n, a, supports)

@@ -168,7 +168,6 @@ snit::type ::athena::athenadb {
     component coop     -public coop      ;# cooperation manager
     component curse    -public curse     ;# curse manager
     component frcgroup -public frcgroup  ;# frcgroup manager
-    component group    -public group     ;# group manager
     component hrel     -public hrel      ;# horiz. rel. manager
     component nbhood   -public nbhood    ;# nbhood manager
     component orggroup -public orggroup  ;# orggroup manager
@@ -178,7 +177,10 @@ snit::type ::athena::athenadb {
     # Other Entities
     component activity -public activity  ;# activity manager
     component agent    -public agent     ;# agent manager
+    component group    -public group     ;# group manager
 
+    # Tactic APIs
+    component control  -public control   ;# nbhood control API
 
     #-------------------------------------------------------------------
     # Options
@@ -244,6 +246,7 @@ snit::type ::athena::athenadb {
             cap              \
             civgroup         \
             coop             \
+            control          \
             curse            \
             frcgroup         \
             group            \

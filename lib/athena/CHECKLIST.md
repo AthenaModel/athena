@@ -20,30 +20,30 @@ from app_athena(n) to athena(n).  See lib/athena/actor.tcl for an example.
 - [x] Replace "typemethod" with "method"
 - [x] Replace references to "rdb" with "$adb".
 - [x] Replace references to "mymodule" or "$type" with:
-  - [x] "$self" in snit::type method bodies
-  - [x] "$adb mymodule" in order method bodies.
-  - [x] "$adb_ mymodule" in dynaform field callbacks.
-- [x] Update any global references for modules that already exist in athena(n).
-- [x] Update any global references in modules that already exist in athena(n).
-- [x] Remove "mutate" keyword.
-  - [x] From module
-  - [x] From *.test
-  - [x] From ted.tcl/create
-  - [x] From project
-- [x] Replace "meta defaults" with "meta parmlist" in orders.
-- [x] In athenadb.tcl, parallel to the entries for "actor":
-  - [x] Add "component mymodule -public mymodule"
-  - [x] Add "mymodule" to the MakeComponents call in the constructor
-- [x] Try to invoke athena.tcl.  You might get dynaform errors.
-  - [x] Move field types from shared/field_types.tcl to athena/dynatypes.tcl
+  - [] "$self" in snit::type method bodies
+  - [] "$adb mymodule" in order method bodies.
+  - [] "$adb_ mymodule" in dynaform field callbacks.
+- [] Update any global references for modules that already exist in athena(n).
+- [] Update any global references in modules that already exist in athena(n).
+- [] Remove "mutate" keyword.
+  - [] From module
+  - [] From *.test
+  - [] From ted.tcl/create
+  - [] From project
+- [] Replace "meta defaults" with "meta parmlist" in orders.
+- [] In athenadb.tcl, parallel to the entries for "actor":
+  - [] Add "component mymodule -public mymodule"
+  - [] Add "mymodule" to the MakeComponents call in the constructor
+- [] Try to invoke athena.tcl.  You might get dynaform errors.
+  - [] Move field types from shared/field_types.tcl to athena/dynatypes.tcl
         as needed.
-  - [x] If moved types reference global resources, list them in the 
+  - [] If moved types reference global resources, list them in the 
         dynatypes.tcl header comment.
-  - [x] If any of the types in dynatypes reference mymodule, update the
+  - [] If any of the types in dynatypes reference mymodule, update the
         reference to `$adb_ mymodule`.
-- [x] Try "athena.tcl -script scenarios/Nangahar_geo.adb".  Fix problems.
-- [x] Try editing the entity type interactively; verify that you can
+- [] Try "athena.tcl -script scenarios/Nangahar_geo.adb".  Fix problems.
+- [] Try editing the entity type interactively; verify that you can
       create and update.
-- [x] Verify that the full app_athena test suite runs.
-- [x] Update any notifier sends to athena(n) standard, and update the 
+- [] Verify that the full app_athena test suite runs.
+- [] Update any notifier sends to athena(n) standard, and update the 
      UI accordingly.
