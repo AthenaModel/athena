@@ -145,7 +145,7 @@ namespace eval ::kiteinfo:: {
         reqver-Marsbin 3.0.9
         local-kiteutils 1
         local-textutil::expander 0
-        version 6.3.0a4
+        version 6.3.0a5
         reqver-Img 1.4.1
     }
 
