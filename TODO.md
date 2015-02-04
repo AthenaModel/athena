@@ -43,7 +43,7 @@
 - simclock
   - absit, athenadb
 - strategy
-  - actor, agent
+  - actor, agent, cash
 - tactic
   - agent
 

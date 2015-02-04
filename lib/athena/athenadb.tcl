@@ -180,6 +180,7 @@ snit::type ::athena::athenadb {
     component group    -public group     ;# group manager
 
     # Tactic APIs
+    component cash     -public cash      ;# cash/spending API
     component control  -public control   ;# nbhood control API
 
     #-------------------------------------------------------------------
@@ -244,6 +245,7 @@ snit::type ::athena::athenadb {
             agent            \
             bsys             \
             cap              \
+            cash             \
             civgroup         \
             coop             \
             control          \

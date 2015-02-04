@@ -6,24 +6,40 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Cash Management
+#    athena(n): Cash Management
 #
 #    This module is responsible for managing an actor's cash during
 #    strategy execution.  It should only be used during the duration
 #    of [strategy tock], or to set up for tactic tests in the test suite.
 #
+# TBD: Global refs: strategy
 #-----------------------------------------------------------------------
 
-snit::type cash {
-    # Make it a singleton
-    pragma -hasinstances no
+snit::type ::athena::cash {
+    #-------------------------------------------------------------------
+    # Components
+
+    component adb ;# The athenadb(n) instance
 
     #-------------------------------------------------------------------
-    # Type Variables
+    # Constructor
+
+    # constructor adb_
+    #
+    # adb_    - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of the type.
+
+    constructor {adb_} {
+        set adb $adb_
+    }
+
+    #-------------------------------------------------------------------
+    # Variables
 
     # Total expenditures on the various sectors, to be given to the
     # Economics model
-    typevariable allocations -array {
+    variable allocations -array {
         goods  0.0
         black  0.0
         pop    0.0
@@ -40,9 +56,9 @@ snit::type cash {
     # Sets up the expenditures table in preparation for on-lock strategy 
     # execution 
 
-    typemethod start {} {
+    method start {} {
         # FIRST, initialize expenditures table
-        rdb eval {
+        $adb eval {
             DELETE FROM expenditures;
             INSERT INTO expenditures(a) SELECT a FROM actors;
         }
@@ -53,18 +69,18 @@ snit::type cash {
     # Loads every actor's cash balances into working_cash for use during
     # strategy execution, and (except on lock) gives the actor his income.
 
-    typemethod load {} {
+    method load {} {
         # FIRST, clear expenditures
-        $type reset
+        $self reset
         
         # NEXT, load up the working cash table, giving the actor his income.
         # Note that for BUDGET actors, actors_view.income IS the actor's
         # budget.
-        rdb eval {
+        $adb eval {
             DELETE FROM working_cash;
         }
 
-        rdb eval {
+        $adb eval {
             SELECT a, 
                    cash_reserve, 
                    income, 
@@ -73,7 +89,7 @@ snit::type cash {
         } {
             let cash_on_hand { $cash_on_hand + $income }
 
-            rdb eval {
+            $adb eval {
                 INSERT INTO working_cash(a, cash_reserve, income, cash_on_hand)
                 VALUES($a, $cash_reserve, $income, $cash_on_hand)
             }
@@ -89,14 +105,14 @@ snit::type cash {
     # They won't usually touch their cash_reserve, but if they do we
     # preserve it.
 
-    typemethod save {} {
+    method save {} {
         # FIRST, we should not be locking the scenario
         assert {![strategy locking]}
 
-        rdb eval {
+        $adb eval {
             SELECT a, cash_reserve, cash_on_hand, gifts FROM working_cash
         } {
-            rdb eval {
+            $adb eval {
                 UPDATE actors
                 SET cash_reserve = $cash_reserve,
                     cash_on_hand = $cash_on_hand + $gifts
@@ -110,7 +126,7 @@ snit::type cash {
             }
         }
 
-        rdb eval {
+        $adb eval {
             DELETE FROM working_cash
         }
     }
@@ -119,14 +135,14 @@ snit::type cash {
     #
     # Clear cash expenditures 
 
-    typemethod reset {} {
+    method reset {} {
         # FIRST, clear the sector allocations
         foreach sector [array names allocations] {
             set allocations($sector) 0.0
         }
         
         # NEXT, initialize the actors' expenditures table.
-        rdb eval {
+        $adb eval {
             UPDATE expenditures 
             SET goods = 0, black  = 0, pop   = 0,
                 actor = 0, region = 0, world = 0;
@@ -145,9 +161,9 @@ snit::type cash {
     # Retrieves a row dictionary, or a particular column value, from
     # working_cash
 
-    typemethod get {a {parm ""}} {
+    method get {a {parm ""}} {
         # FIRST, get the data
-        rdb eval {SELECT * FROM working_cash WHERE a=$a} row {
+        $adb eval {SELECT * FROM working_cash WHERE a=$a} row {
             if {$parm ne ""} {
                 return $row($parm)
             } else {
@@ -167,11 +183,11 @@ snit::type cash {
     # actor, then it's the working cash-on-hand; otherwise, it's the
     # actor's cash-on-hand prior to strategy execution.
 
-    typemethod onhand {a} {
+    method onhand {a} {
         if {$a eq [strategy acting]} {
-            return [cash get $a cash_on_hand]
+            return [$self get $a cash_on_hand]
         } else {
-            return [actor get $a cash_on_hand]
+            return [$adb actor get $a cash_on_hand]
         }
     }
 
@@ -183,11 +199,11 @@ snit::type cash {
     # actor, then it's the working cash-reserve; otherwise, it's the
     # actor's cash-reserve prior to strategy execution.
 
-    typemethod reserve {a} {
+    method reserve {a} {
         if {$a eq [strategy acting]} {
-            return [cash get $a cash_reserve]
+            return [$self get $a cash_reserve]
         } else {
-            return [actor get $a cash_reserve]
+            return [$adb actor get $a cash_reserve]
         }
     }
 
@@ -207,7 +223,7 @@ snit::type cash {
     # actually deducted.  If the eclass is not NONE, then the expenditure 
     # is allocated to the sectors.
 
-    typemethod spend {a eclass dollars} {
+    method spend {a eclass dollars} {
         # FIRST, if strategy is locking only allocate the money to
         # the expenditure class as a baseline, and then we are done.
         if {[strategy locking]} {
@@ -220,33 +236,33 @@ snit::type cash {
                 set dollars 0.0
             }
 
-            rdb eval {
+            $adb eval {
                 UPDATE working_cash
                 SET cash_on_hand = cash_on_hand - $dollars
                 WHERE a=$a
             }
 
-            $type AllocateByClass $a $eclass $dollars
+            $self AllocateByClass $a $eclass $dollars
 
             return 1
         }
 
         # NEXT, can he afford it
-        set cash_on_hand [cash get $a cash_on_hand]
+        set cash_on_hand [$self get $a cash_on_hand]
 
         if {$dollars > $cash_on_hand} {
             return 0
         }
 
         # NEXT, expend it.
-        rdb eval {
+        $adb eval {
             UPDATE working_cash 
             SET cash_on_hand = cash_on_hand - $dollars
             WHERE a=$a
         }
 
         # NEXT, allocate the money to the expenditure class
-        $type AllocateByClass $a $eclass $dollars
+        $self AllocateByClass $a $eclass $dollars
 
         return 1
     }
@@ -264,7 +280,7 @@ snit::type cash {
     # according to the profile, which is a dictionary of sectors and
     # fractions.
 
-    typemethod spendon {a dollars profile} {
+    method spendon {a dollars profile} {
         # FIRST, if strategy is locking, then the tactic needs to
         # execute.
         if {[strategy locking]} {
@@ -277,33 +293,33 @@ snit::type cash {
                 set dollars 0
             }
 
-            rdb eval {
+            $adb eval {
                 UPDATE working_cash
                 SET cash_on_hand = cash_on_hand - $dollars
                 WHERE a=$a
             }
 
-            $type Allocate $a $profile $dollars
+            $self Allocate $a $profile $dollars
 
             return 1
         }
 
         # NEXT, can he afford it
-        set cash_on_hand [cash get $a cash_on_hand]
+        set cash_on_hand [$self get $a cash_on_hand]
     
         if {$dollars > $cash_on_hand} {
             return 0
         }
     
         # NEXT, expend it.
-        rdb eval {
+        $adb eval {
             UPDATE working_cash 
             SET cash_on_hand = cash_on_hand - $dollars
             WHERE a=$a
          }
 
         # NEXT, allocate the money to the expenditure class
-        $type Allocate $a $profile $dollars
+        $self Allocate $a $profile $dollars
 
         return 1
     }
@@ -317,16 +333,16 @@ snit::type cash {
     # Refunds dollars to the actor's cash on hand.  If the eclass is
     # not NONE, then the dollars are removed from the sector allocations.
 
-    typemethod refund {a eclass dollars} {
+    method refund {a eclass dollars} {
         # FIRST, give him the money back.
-        rdb eval {
+        $adb eval {
             UPDATE working_cash 
             SET cash_on_hand = cash_on_hand + $dollars
             WHERE a=$a
         }
 
         # NEXT, the money no longer flows into the other sectors.
-        $type AllocateByClass $a $eclass [expr {-1.0*$dollars}]
+        $self AllocateByClass $a $eclass [expr {-1.0*$dollars}]
     }
 
     # Allocate a profile dollars
@@ -340,7 +356,7 @@ snit::type cash {
     # the sectors.  In any case, the dollars are allocated according
     # to the profile.
 
-    typemethod Allocate {a profile dollars} {
+    method Allocate {a profile dollars} {
         # FIRST, determine the total number of shares for this expenditure
         # profile
         set denom 0.0
@@ -360,7 +376,7 @@ snit::type cash {
             let amount {$frac*$dollars}
             let allocations($sector) {$allocations($sector) + $amount}
             
-            rdb eval "
+            $adb eval "
                 UPDATE expenditures
                 SET $sector = $sector + \$amount,
                     tot_$sector = tot_$sector + \$amount
@@ -382,7 +398,7 @@ snit::type cash {
     # 
     # If the eclass is NONE, this call is a no-op.
 
-    typemethod AllocateByClass {a eclass dollars} {
+    method AllocateByClass {a eclass dollars} {
         # FIRST, if we don't care we don't care.
         if {$eclass eq "NONE"} {
             return
@@ -395,14 +411,14 @@ snit::type cash {
         }
 
         # NEXT, allocate it.
-        $type Allocate $a $profile $dollars
+        $self Allocate $a $profile $dollars
     }
 
     # allocations
     #
     # Returns a dictionary of the expenditures by sector.
 
-    typemethod allocations {} {
+    method allocations {} {
         return [array get allocations]
     }
 
@@ -414,14 +430,14 @@ snit::type cash {
     # Moves dollars from cash_on_hand to cash_reserve, if there's
     # sufficient funds.  Returns 1 on success and 0 on failure.
 
-    typemethod deposit {a dollars} {
-        set cash_on_hand [cash get $a cash_on_hand]
+    method deposit {a dollars} {
+        set cash_on_hand [$self get $a cash_on_hand]
 
         if {$dollars > $cash_on_hand} {
             return 0
         }
 
-        rdb eval {
+        $adb eval {
             UPDATE working_cash
             SET cash_reserve = cash_reserve + $dollars,
                 cash_on_hand = cash_on_hand - $dollars
@@ -440,10 +456,10 @@ snit::type cash {
     # worry about whether there are sufficient funds or not;
     # cash_reserve is allowed to go negative.
 
-    typemethod withdraw {a dollars} {
-        set cash_reserve [cash get $a cash_reserve]
+    method withdraw {a dollars} {
+        set cash_reserve [$self get $a cash_reserve]
 
-        rdb eval {
+        $adb eval {
             UPDATE working_cash 
             SET cash_reserve = cash_reserve - $dollars,
                 cash_on_hand = cash_on_hand + $dollars
@@ -469,16 +485,16 @@ snit::type cash {
     # must appear as an expenditure to the actor sector by the 
     # funding actor.
 
-    typemethod give {owner a dollars} {
-        rdb eval {
+    method give {owner a dollars} {
+        $adb eval {
             UPDATE working_cash 
             SET gifts = gifts + $dollars
             WHERE a=$a
         }
         
-        if {[actor get $owner atype] eq "BUDGET" &&
-            [actor get $a     atype] eq "INCOME"} {
-                rdb eval {
+        if {[$adb actor get $owner atype] eq "BUDGET" &&
+            [$adb actor get $a     atype] eq "INCOME"} {
+                $adb eval {
                     UPDATE expenditures
                     SET actor=actor+$dollars,
                         tot_actor=tot_actor+$dollars
