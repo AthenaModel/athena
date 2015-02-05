@@ -38,7 +38,7 @@ snit::type map {
 
         # FIRST, there's no map yet.
         set mapimage   ""
-        set projection [mapref %AUTO%]
+        set projection [maprect %AUTO%]
 
         # NEXT, register to receive dbsync events if there is a GUI
         if {[app tkloaded]} {

@@ -85,10 +85,10 @@ send ACTOR:SUPPORTS -a EPP -supports SELF
 #-----------------------------------------------------------------
 # Base Entities: Neighborhoods
 
-send NBHOOD:CREATE -n CITY -longname {Capital City} -local YES -pcf { 1.0} -urbanization URBAN -controller GOV -refpoint F47E12 -polygon {F63D50 E76E06 F55E88 G31E58}
-send NBHOOD:CREATE -n EL -longname Elitia -local YES -pcf { 1.0} -urbanization RURAL -controller GOV -refpoint E62D58 -polygon {D14D58 F17C28 F63D50 E76E06 F55E88 E20F39}
-send NBHOOD:CREATE -n PE -longname Peonia -local YES -pcf { 1.0} -urbanization RURAL -controller GOV -refpoint G21D98 -polygon {F17C28 F63D50 G31E58 H69E28 H57D10 G51C22}
-send NBHOOD:CREATE -n IN -longname Incognitia -local NO -pcf { 0.0} -urbanization RURAL -controller NONE -refpoint D75C54 -polygon {D14D58 C59C34 E80B25 F17C28}
+send NBHOOD:CREATE -n CITY -longname {Capital City} -local YES -pcf { 1.0} -urbanization URBAN -controller GOV -refpoint 38TNL8520188993 -polygon {38TNM5042915758 38TPM4232815661 38TPL3404250197 38TNL4582553998}
+send NBHOOD:CREATE -n EL -longname Elitia -local YES -pcf { 1.0} -urbanization RURAL -controller GOV -refpoint 38TPL7604885303 -polygon {38TPM4232815661 38TQM4307507697 38TQK3834390612 38TNL8468203274 38TPL3404250197}
+send NBHOOD:CREATE -n PE -longname Peonia -local YES -pcf { 1.0} -urbanization RURAL -controller GOV -refpoint 38TNL5764723441 -polygon {38TNL4582553998 38TNL0862002796 38TNK9116028747 38TNL8468203274 38TPL3404250197}
+send NBHOOD:CREATE -n IN -longname Incognitia -local NO -pcf { 0.0} -urbanization RURAL -controller NONE -refpoint 38TPK5236867484 -polygon {38TNL8468203274 38TQK3834390612 38SQK2677118249 38TNK9116028747}
 send NBREL:UPDATE -id {EL CITY} -proximity NEAR
 send NBREL:UPDATE -id {CITY EL} -proximity FAR
 send NBREL:UPDATE -id {PE CITY} -proximity REMOTE

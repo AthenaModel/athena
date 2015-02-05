@@ -46,8 +46,8 @@ namespace eval ::athena_test::tests:: {
         urbanization URBAN
         controller   NONE
         pcf          1.0
-        refpoint     B00B00
-        polygon      {A80A80 B20A80 B00B20}
+        refpoint     31NBB774105
+        polygon      {31NAA6600000000 31NAC6622421366 31NCC8878721095 31NCA8871900000}
     }
 
     set overnb1 {
@@ -57,8 +57,8 @@ namespace eval ::athena_test::tests:: {
         urbanization SUBURBAN
         controller   NONE
         pcf          1.0
-        refpoint     B01B01
-        polygon      {A81A81 B21A81 B01B21}
+        refpoint     31NCB3312565853
+        polygon      {31NAA6600000000 31NAE6683142736 31NFE1101142195 31NFA1128100000}
     }
 
     set nb2 {
@@ -68,8 +68,8 @@ namespace eval ::athena_test::tests:: {
         urbanization RURAL
         controller   NONE
         pcf          1.0
-        refpoint     D00D00
-        polygon      {C80C80 D20C80 D00D20}
+        refpoint     {31NGF2175353002}
+        polygon      {31NFE1101142195 31NFG1067563306 32NJM6784264114 32NJK6683142736}
     }
 
     set nl1 {
@@ -79,8 +79,8 @@ namespace eval ::athena_test::tests:: {
         urbanization RURAL
         controller   NONE
         pcf          1.0
-        refpoint     D00D00
-        polygon      {C80C80 D20C80 D00D20}
+        refpoint     {32PQT1852916707}
+        polygon      {32PPS0960105579 32PPU0886426751 33PSP7328528333 33PSM7107106909}
     }
 
     set rawnb1 {
@@ -171,10 +171,10 @@ namespace eval ::athena_test::tests:: {
 
     test CREATE-1.8 {polygon: invalid map ref} -body {
         ted order -reject NBHOOD:CREATE [dict merge $nb1 {
-            polygon {A80A80 B20A80 Z99Z99 B00B20}
+            polygon {32PPS0960105579 32PPU0886426751 Z99Z99 33PSM7107106909}
         }]
     } -result {
-        polygon {point "Z99Z99" is not a map reference string}
+        polygon {invalid MGRS coordinate: "Z99Z99"}
     }
 
     test CREATE-1.9 {polygon: duplicate polygon} -setup {
@@ -194,7 +194,7 @@ namespace eval ::athena_test::tests:: {
             refpoint X99X99
         }]
     } -result {
-        refpoint {not a map reference string}
+        refpoint {invalid MGRS coordinate: "X99X99"}
     }
 
 
@@ -212,7 +212,7 @@ namespace eval ::athena_test::tests:: {
 
     test CREATE-1.12 {refpoint not in polygon} -body {
         ted order -reject NBHOOD:CREATE [dict merge $nb1 {
-            refpoint A00A00
+            refpoint 31NGF2175353002
         }]
     } -result {
         refpoint {not in polygon}
@@ -234,15 +234,15 @@ namespace eval ::athena_test::tests:: {
         ted querylist "SELECT $parms FROM nbhoods"
     } -cleanup {
         cleanup
-    } -result {
+    } -match glob -result {
 n             NB1
 longname      Here
 local         1
 urbanization  URBAN
 controller    
 pcf           1.0
-refpoint      100 100
-polygon       80 80 120 80 100 120
+refpoint      *
+polygon       *
     }
 
     test CREATE-2.2 {nbhood is created, controller is given} -setup {
@@ -253,15 +253,15 @@ polygon       80 80 120 80 100 120
         ted querylist "SELECT $parms FROM nbhoods"
     } -cleanup {
         cleanup
-    } -result {
+    } -match glob -result {
 n             NB1
 longname      Here
 local         1
 urbanization  URBAN
 controller    JOE
 pcf           1.0
-refpoint      100 100
-polygon       80 80 120 80 100 120
+refpoint      *
+polygon       *
     }
 
     test CREATE-2.3 {longname defaults to ID} -body {
@@ -695,11 +695,11 @@ OV1 Over     2
     } -body {
         ted order -reject NBHOOD:UPDATE           \
             n       NB1                          \
-            polygon {A80A80 B20A80 Z99Z99 B00B20}
+            polygon {31NFE1101142195 31NFG1067563306 Z99Z99 32NJK6683142736}
     } -cleanup {
         cleanup
     } -result {
-        polygon {point "Z99Z99" is not a map reference string}
+        polygon {invalid MGRS coordinate: "Z99Z99"}
     }
 
     test UPDATE-1.7 {polygon: duplicate polygon} -setup {
@@ -724,7 +724,7 @@ OV1 Over     2
     } -cleanup {
         cleanup
     } -result {
-        refpoint {not a map reference string}
+        refpoint {invalid MGRS coordinate: "X99X99"}
     }
 
     test UPDATE-1.9 {refpoint: duplicate refpoint} -setup {
@@ -745,7 +745,7 @@ OV1 Over     2
     } -body {
         ted order -reject NBHOOD:UPDATE \
             n        NB1               \
-            refpoint A00A00
+            refpoint 31NGF2175353002
     } -cleanup {
         cleanup
     } -result {
@@ -773,23 +773,23 @@ OV1 Over     2
             urbanization RURAL
             controller   JOE
             pcf          0.5
-            refpoint     A05A05
-            polygon      {A00A00 A10A00 A10A10 A00A10}
+            refpoint     31NCB3312565853
+            polygon      {31NAA6600000000 31NAE6683142736 31NFE1101142195 31NFA1128100000}
         }
 
         set parms [join [dict keys $nb1] ","]
         ted querylist "SELECT $parms FROM nbhoods"
     } -cleanup {
         cleanup
-    } -result {
+    } -match glob -result {
 n             NB1
 longname      Not Here
 local         0
 urbanization  RURAL
 controller    JOE
 pcf           0.0
-refpoint      5 5
-polygon       0 0 10 0 10 10 0 10
+refpoint      1.5*
+polygon       0.0*
     }
 
 
