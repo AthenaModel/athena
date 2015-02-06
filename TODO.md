@@ -1,6 +1,6 @@
 # TODO.md - Athena TODO List
 
-- Write cellide manpage.
+- Modify strategybrowser to use paster for pasting blocks
 - Move editable entities to athena(n)
 - Move model modules to athena(n)
 - Move relevant projtypes to athena(n)
@@ -9,6 +9,7 @@
   - app_athena tests to test/athena.
   - Include ted.tcl.
   - Will any app_athena tests remain?
+- Write cellide manpage.
 
 # Global Resources in use in athena(n)
 

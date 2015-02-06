@@ -144,6 +144,23 @@ oo::class create ::athena::athena_order {
         return [array get prev]
     }
 
+    # beanload idict id ?view?
+    #
+    # idict    - A dynaform(n) field's item metadata dictionary
+    # id       - A bean ID
+    # view     - Optionally, a bean view name.  Defaults to "".
+    #
+    # This command is intended for use as a dynaform(n) -loadcmd, to
+    # load a bean's data into a dynaview using a specific bean view.
+    #
+    # Note: a pastable bean's normal UPDATE method should always use
+    # the default view, as that is what will be copied.
+
+    method beanload {idict id {view ""}} {
+        return [$adb pot view $id $view]
+    }
+
+
     
     #-------------------------------------------------------------------
     # Validation Helper Methods
