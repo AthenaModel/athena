@@ -70,7 +70,8 @@ namespace eval ::athena_test::tests:: {
     }
     
     test MOVE-1.2 {invalid unit} -body {
-        ted order -reject UNIT:MOVE u U1 location A00A00
+        set loc [latlong tomgrs {1 1}]
+        ted order -reject UNIT:MOVE u U1 location $loc
     } -cleanup {
         cleanup
     } -result {
@@ -85,14 +86,15 @@ namespace eval ::athena_test::tests:: {
     } -cleanup {
         cleanup
     } -result {
-        location {not a map reference string}
+        location {invalid MGRS coordinate: "NONESUCH"}
     }
 
 
     test MOVE-1.4 {location not in neighborhood} -setup {
         setup
     } -body {
-        ted order -reject UNIT:MOVE u BLUE/NB1 location A00A00
+        set loc [latlong tomgrs {4 4}]
+        ted order -reject UNIT:MOVE u BLUE/NB1 location $loc 
     } -cleanup {
         cleanup
     } -result {
@@ -103,23 +105,28 @@ namespace eval ::athena_test::tests:: {
     test MOVE-2.1 {unit is moved} -setup {
         setup
     } -body {
-        ted order UNIT:MOVE u BLUE/NB1 location B01B01
+        set loc [latlong tomgrs {1.1 1.1}]
+        ted order UNIT:MOVE u BLUE/NB1 location $loc
 
-        ted query {SELECT u,location FROM units WHERE u='BLUE/NB1'}
+        set newloc [latlong tomgrs \
+            [rdb onecolumn {SELECT location FROM units WHERE u='BLUE/NB1'}]]
+        expr {$loc == $newloc}
     } -cleanup {
         cleanup
-    } -result {
-u        location 
--------- -------- 
-BLUE/NB1 101 101  
-    }
+    } -result {1}
 
 
     test MOVE-2.2 {table monitor event} -setup {
         setup
     } -body {
+<<<<<<< HEAD
         ted notifier bind ::adb <units>
         ted order UNIT:MOVE u BLUE/NB1 location B01B01
+=======
+        ted notifier bind ::rdb <units>
+        set loc [latlong tomgrs {1.1 1.1}]
+        ted order UNIT:MOVE u BLUE/NB1 location $loc
+>>>>>>> master
         ted notifier received
     } -cleanup {
         cleanup
@@ -129,8 +136,9 @@ BLUE/NB1 101 101
 
 
     test MOVE-3.1 {undo undoes the change} -setup {
-        setup        
-        ted order UNIT:MOVE u BLUE/NB1 location B01B01
+        setup
+        set loc [latlong tomgrs {1.1 1.1}]        
+        ted order UNIT:MOVE u BLUE/NB1 location $loc
     } -body {
         ted notifier bind ::adb <units>
         flunky undo

@@ -197,8 +197,8 @@ snit::type ted {
             controller   NONE
             vtygain      1.0
             pcf          1.0
-            refpoint     {100 100}
-            polygon      {80 80 120 80 100 120}
+            refpoint     {1 1}
+            polygon      {0 0 2 0 2 2 0 2}
         }
 
         defentity OV1 ::nbhood {
@@ -209,8 +209,8 @@ snit::type ted {
             controller   NONE
             vtygain      1.0
             pcf          1.0
-            refpoint     {101 101}
-            polygon      {81 81 121 81 101 121}
+            refpoint     {1.5 1.5}
+            polygon      {0 0 4 0 4 4 0 4}
         }
 
         defentity NB2 ::nbhood {
@@ -221,8 +221,8 @@ snit::type ted {
             controller   NONE
             vtygain      1.0
             pcf          1.0
-            refpoint     {300 300}
-            polygon      {280 280 320 280 300 320}
+            refpoint     {5 5}
+            polygon      {4 4 6 4 6 6 4 6}
         }
 
 
@@ -234,8 +234,8 @@ snit::type ted {
             controller   NONE
             vtygain      1.0
             pcf          1.0
-            refpoint     {500 500}
-            polygon      {400 400 400 800 800 800 800 400}
+            refpoint     {7 7}
+            polygon      {6 6 8 6 8 8 6 8}
         }
 
         defentity NB4 ::nbhood {
@@ -246,8 +246,8 @@ snit::type ted {
             controller   NONE
             vtygain      1.0
             pcf          1.0
-            refpoint     {700 700}
-            polygon      {600 600 600 800 800 800 800 600}
+            refpoint     {9 9}
+            polygon      {8 8 10 8 10 10 8 10}
         }
 
         defentity NL1 ::nbhood {
@@ -258,8 +258,8 @@ snit::type ted {
             controller   NONE
             vtygain      1.0
             pcf          1.0
-            refpoint     {800 800}
-            polygon      {600 600 600 800 800 800 800 600}
+            refpoint     {11 11}
+            polygon      {10 10 12 10 12 12 10 12}
         }
 
         # Actors

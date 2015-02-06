@@ -38,7 +38,7 @@ snit::type map {
 
         # FIRST, there's no map yet.
         set mapimage   ""
-        set projection [mapref %AUTO%]
+        set projection [maprect %AUTO%]
 
         # NEXT, register to receive dbsync events if there is a GUI
         if {[app tkloaded]} {
@@ -128,6 +128,10 @@ snit::type map {
             # Rectangular projection, grab corners
             lappend proj_opts -minlat $minlat -minlon $minlon
             lappend proj_opts -maxlat $maxlat -maxlon $maxlon
+        } else {
+            # Use defaults
+            lappend proj_opts -minlat 38.0 -minlon 45.0
+            lappend proj_opts -maxlat 42.0 -maxlon 51.0
         }
 
         # NEXT, set the map in the rdb and load it
@@ -154,34 +158,23 @@ snit::type map {
             error "Could not open the specified file as a map image"
         }
         
-        # NEXT, default map type is mapref(n)
-        set projtype REF
-        set proj_opts [list]
-
         # NEXT, get the image data
         set tail [file tail $filename]
         set data [$img data -format jpeg]
         set width [image width $img]
         set height [image height $img]
 
+        # NEXT, set default geo locations for corners of image
+        set minlon 45.0
+        set maxlat 42.0
+        set maxlon 51.0
+        set minlat 38.0
+
         # NEXT, try to load any projection metadata. For now only
         # GeoTIFF with GEOGRAPHIC model types are recognized.
         if {[catch {
             set mdata [dict create {*}[marsutil::geotiff read $filename]]
             if {[dict get $mdata modeltype] eq "GEOGRAPHIC"} {
-                set projtype RECT
-            } else {
-                log detail map "Projection type not recognized in $tail, using default."
-            }
-        } result]} {
-            log detail map "Could not read GeoTIFF info from $tail: $result"
-        }
-
-        # NEXT compute projection information
-        switch -exact -- $projtype  {
-            REF {}
-
-            RECT {
                 # Extract tiepoints and scaling from projection metadata
                 set tiepoints [dict get $mdata tiepoints]
                 set pscale    [dict get $mdata pscale]
@@ -191,21 +184,22 @@ snit::type map {
                 set maxlat [lindex $tiepoints 4]
                 let maxlon {$minlon + $width* [lindex $pscale 0]}
                 let minlat {$maxlat - $height*[lindex $pscale 1]}
-
-                # Set projection options
-                lappend proj_opts -minlat $minlat -minlon $minlon
-                lappend proj_opts -maxlat $maxlat -maxlon $maxlon
+            } else {
+                log detail map \
+                    "Projection type not recognized in $tail, using defaults."
             }
-
-            default {
-                error "Unrecognized projection type: \"$projtype\"."
-            }
+        } result]} {
+            log detail map "Could not read GeoTIFF info from $tail: $result"
         }
+
+        # NEXT, set projection options
+        lappend proj_opts -minlat $minlat -minlon $minlon
+        lappend proj_opts -maxlat $maxlat -maxlon $maxlon
 
         rdb eval {
             INSERT OR REPLACE
             INTO maps(id,filename,width,height,projtype,proj_opts,data)
-            VALUES(1,$tail,$width,$height,$projtype,$proj_opts,$data);
+            VALUES(1,$tail,$width,$height,'RECT',$proj_opts,$data);
         }
 
         image delete $img
@@ -317,7 +311,7 @@ snit::type map {
         set mapimage   ""
 
         # NEXT, default projection
-        set projection [mapref %AUTO%]
+        set projection [maprect %AUTO%]
 
         log normal app "Using Default Map"
         app puts "Using Default Map"

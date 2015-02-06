@@ -458,15 +458,15 @@ location   *
     } -cleanup {
         cleanup
     } -result {
-        location {not a map reference string}
+        location {invalid MGRS coordinate: "NONESUCH"}
     }
 
-    test MOVE-1.4 {location is out of neighborhood} -setup {
+    test MOVE-1.3 {location is out of neighborhood} -setup {
         ted create NB1 BLUE
         ted order ABSIT:CREATE $s1
         rdb eval {UPDATE absits SET state='ONGOING' WHERE s=1}
     } -body {
-        ted order -reject ABSIT:MOVE s 1 location A00A00
+        ted order -reject ABSIT:MOVE s 1 location 38TNM000000
     } -cleanup {
         cleanup
     } -result {
@@ -477,28 +477,30 @@ location   *
     test MOVE-2.1 {absit is updated} -setup {
         ted create NB1 BLUE
         ted order ABSIT:CREATE $s1
+        set loc [latlong tomgrs [nbhood get NB1 refpoint]]
     } -body {
-        ted order ABSIT:MOVE {
-            s         1 
-            location  B01B01
-        }
+        ted order ABSIT:MOVE s 1 location $loc
 
-        ted query {SELECT s, location FROM absits}
+        set newloc [latlong tomgrs \
+            [rdb onecolumn {SELECT location FROM absits}]]
+        expr {$loc == $newloc}
     } -cleanup {
         cleanup
-    } -result {
-s location 
-- -------- 
-1 101 101  
-    }
+    } -result {1}
 
 
     test MOVE-2.2 {table monitor event} -setup {
         ted create NB1 BLUE
         ted order ABSIT:CREATE $s1
+        set loc [latlong tomgrs [nbhood randloc NB1]]
     } -body {
+<<<<<<< HEAD
         ted notifier bind ::adb <absits>
         ted order ABSIT:MOVE s 1 location B01B01
+=======
+        ted notifier bind ::rdb <absits>
+        ted order ABSIT:MOVE s 1 location $loc
+>>>>>>> master
         ted notifier received
     } -cleanup {
         cleanup
@@ -510,10 +512,8 @@ s location
     test MOVE-3.1 {undo undoes the change} -setup {
         ted create NB1 BLUE
         ted order ABSIT:CREATE $s1
-        ted order ABSIT:MOVE {
-            s         1 
-            location  B01B01
-        }
+        set loc [latlong tomgrs [nbhood randloc NB1]]
+        ted order ABSIT:MOVE s 1 location  $loc
     } -body {
         ted notifier bind ::adb <absits>
         flunky undo
