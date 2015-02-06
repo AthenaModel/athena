@@ -86,7 +86,7 @@ condition define EXPR "Boolean Expression" {
     meta form {
         rcc "Condition ID:" -for condition_id
         text condition_id -context yes \
-            -loadcmd {beanload}
+            -loadcmd {$order_ beanload}
 
         rcc "Name:" -for name
         text name -width 20

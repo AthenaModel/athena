@@ -144,7 +144,7 @@ tactic define ABSIT "Abstract Situation" {system actor} -onlock {
     meta form {
         rcc "Tactic ID" -for tactic_id
         text tactic_id -context yes \
-            -loadcmd {beanload}
+            -loadcmd {$order_ beanload}
 
         rcc "Name:" -for name
         text name -width 20

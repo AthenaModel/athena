@@ -1061,7 +1061,7 @@ oo::define block {
     meta form {
         rc "Block ID:" -for block_id
         text block_id -context yes \
-            -loadcmd {beanload}
+            -loadcmd {$order_ beanload}
 
         label "&nbsp;&nbsp;"
         check onlock -text "On Lock?"

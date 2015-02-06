@@ -208,7 +208,7 @@ tactic define ATTRIT "Magic Attrition" {system} {
     meta form {
         rcc "Tactic ID" -for tactic_id
         text tactic_id -context yes \
-            -loadcmd {beanload}
+            -loadcmd {$order_ beanload}
 
         rcc "Name:" -for name
         text name -width 20
