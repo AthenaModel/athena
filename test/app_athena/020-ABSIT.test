@@ -494,13 +494,8 @@ location   *
         ted order ABSIT:CREATE $s1
         set loc [latlong tomgrs [nbhood randloc NB1]]
     } -body {
-<<<<<<< HEAD
         ted notifier bind ::adb <absits>
-        ted order ABSIT:MOVE s 1 location B01B01
-=======
-        ted notifier bind ::rdb <absits>
         ted order ABSIT:MOVE s 1 location $loc
->>>>>>> master
         ted notifier received
     } -cleanup {
         cleanup
