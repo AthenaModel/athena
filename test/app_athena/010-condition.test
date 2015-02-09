@@ -83,44 +83,6 @@ namespace eval ::athena_test::tests:: {
         list [expr {$a == $b}] $c
     } -result {1 {EXPR: Boolean Expression}}
 
-    #-------------------------------------------------------------------
-    # paste
-
-    test paste-1.1 {can paste one condition} -setup {
-        setup
-        $C1 configure -expression "1 == 1"
-    } -body {
-        set copyset [$C1 copydata]
-        condition paste [$B2 id] [list $copyset]
-        set C2 [$B2 conditions 0]
-        ted pdicts [$C2 getdict]
-    } -cleanup {
-        cleanup
-    } -match dictglob -result {
-        expression {1 == 1}
-        id         *
-        metflag    {}
-        name       C*
-        parent     *
-        pot        *::pot
-        state      normal
-    }
-    
-    test paste-1.2 {can paste multiple conditions} -setup {
-        setup
-        $C1 configure -expression "1 == 1"
-        set C2 [ted addcondition $B1 EXPR]
-        $C2 configure -expression "2 == 2"
-    } -body {
-        set copysets [list [$C1 copydata] [$C2 copydata]]
-        condition paste [$B2 id] $copysets
-        set C3 [$B2 conditions 0]
-        set C4 [$B2 conditions 1]
-        list [$C3 get expression] [$C4 get expression]
-    } -cleanup {
-        cleanup
-    } -result {{1 == 1} {2 == 2}}
-
     #===================================================================
     # condition::<type> class methods
 

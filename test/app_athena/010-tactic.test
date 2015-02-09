@@ -97,45 +97,6 @@ namespace eval ::athena_test::tests:: {
     } -result {1}
 
     #-------------------------------------------------------------------
-    # paste
-
-    test paste-1.1 {can paste one tactic} -setup {
-        setup
-        $T1 configure -msg "my message"
-    } -body {
-        set copyset [$T1 copydata]
-        tactic paste [$B2 id] [list $copyset]
-        set T2 [$B2 tactics 0]
-        ted pdicts [$T2 getdict]
-    } -cleanup {
-        cleanup
-    } -match dictglob -result {
-        execstatus NONE
-        faildict   {}
-        id         *
-        msg        {my message}
-        name       T*
-        parent     *
-        pot        *::pot
-        state      normal
-    }
-    
-    test paste-1.2 {can paste multiple tactics} -setup {
-        setup
-        $T1 configure -msg "my message"
-        $T2 configure -command "my command"
-    } -body {
-        set copysets [list [$T1 copydata] [$T2 copydata]]
-        tactic paste [$B2 id] $copysets
-        set T3 [$B2 tactics 0]
-        set T4 [$B2 tactics 1]
-        list [$T3 get msg] [$T4 get command]
-    } -cleanup {
-        cleanup
-    } -result {{my message} {my command}}
-
-
-    #-------------------------------------------------------------------
     # groupsOwnedByAgent
 
     test groupsOwnedByAgent-1.1 {returns nothing for unknown tactic} -body {

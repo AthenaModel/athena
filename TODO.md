@@ -1,6 +1,6 @@
 # TODO.md - Athena TODO List
 
-- Modify strategybrowser to use paster for pasting blocks
+- Add paste entries to athenadb(n), athena(n) man pages.
 - Move editable entities to athena(n)
 - Move model modules to athena(n)
 - Move relevant projtypes to athena(n)
