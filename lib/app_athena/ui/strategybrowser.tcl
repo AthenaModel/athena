@@ -943,10 +943,8 @@ snit::widget strategybrowser {
             return
         }
 
-        # NEXT, begin an undo block
-        flunky transaction "Paste Block(s)" {
-            block paste $info(agent) $copysets
-        }
+        # NEXT, paste!
+        adb paste block $info(agent) $copysets
 
         app puts "Pasted [llength $copysets] item(s)"
     }
@@ -1358,10 +1356,8 @@ snit::widget strategybrowser {
             return
         }
 
-        # NEXT, begin an undo block
-        flunky transaction "Paste Condition(s)" {
-            condition paste [$info(block) id] $copysets
-        }
+        # NEXT, paste!
+        adb paste condition [$info(block) id] $copysets
 
         app puts "Pasted [llength $copysets] item(s)"
     }
@@ -1708,10 +1704,8 @@ snit::widget strategybrowser {
             return
         }
 
-        # NEXT, begin an undo block
-        flunky transaction "Paste Tactic(s)" {
-            tactic paste [$info(block) id] $copysets
-        }
+        # NEXT, paste!
+        adb paste tactic [$info(block) id] $copysets
 
         app puts "Pasted [llength $copysets] item(s)"
     }

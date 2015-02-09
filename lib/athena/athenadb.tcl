@@ -157,6 +157,7 @@ snit::type ::athena::athenadb {
     component rdb                        ;# writable sqldatabase handle
     component pot      -public pot       ;# beanpot(n)
     component flunky   -public flunky    ;# athena_flunky(n)
+    component paster   -public paste     ;# paste manager
 
     # Editable Entities
     component absit    -public absit     ;# absit manager
@@ -245,6 +246,9 @@ snit::type ::athena::athenadb {
         # NEXT, create the order flunky for processing order input and
         # handling undo/redo.
         install flunky using ::athena::athena_flunky create ${selfns}::flunky $self
+
+        # NEXT, support pasting of objects.
+        install paster using ::athena::paster create ${selfns}::paster $self
 
         # NEXT, make standard components.  These are modules that were
         # singletons when Athena was a monolithic app.  They are now

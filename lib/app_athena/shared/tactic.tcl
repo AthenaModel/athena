@@ -194,61 +194,7 @@ oo::objdefine tactic {
 
         return $result
     }
-
-    #-------------------------------------------------------------------
-    # Pasting of Tactics
-
-    # paste block copysets
-    #
-    # block_id  - The ID of the block to receive the tactics
-    # copysets  - A list of tactic copysets from [$bean copydata].
-    #
-    # Pastes the tactics into the given block.  This call should be
-    # wrapped by [flunky transaction] calls.  This is
-    # not included in [paste] itself, because pasting tactics can be
-    # done as part of a larger paste (i.e., pasting blocks).
-
-    method paste {block_id copysets} {
-        # FIRST, paste the copied tactics into the block
-        foreach copyset $copysets {
-            # FIRST, get the tactic data
-            set cls   [dict get $copyset class_]
-            set tname [$cls typename]
-            set tdict [my GetOrderParmsFromCopySet $tname $copyset]
-
-            # NEXT, create the tactic with default settings
-            set tactic_id \
-                [flunky senddict gui BLOCK:TACTIC:ADD \
-                    [list block_id $block_id typename $tname]]
-
-            # NEXT, update the tactic with the right data.
-            flunky senddict gui TACTIC:$tname \
-                [list tactic_id $tactic_id {*}$tdict]
-        }
-    }
-
-    # GetOrderParmsFromCopySet tname copyset
-    #
-    # tname   - The tactic type name
-    # copyset - The copyset from [$bean copydata]
-    #
-    # Pulls out the required parameters from the copyset.
-
-    method GetOrderParmsFromCopySet {tname copyset} {
-        set pdict [dict create]
-
-        foreach parm [::athena::orders parms TACTIC:$tname] {
-            if {$parm eq "tactic_id" || $parm eq "name"} {
-                continue
-            }
-
-            dict set pdict $parm [dict get $copyset $parm]
-        }
-
-        return $pdict
-    }
     
-
     #-------------------------------------------------------------------
     # Order Helpers
 

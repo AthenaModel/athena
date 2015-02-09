@@ -16,68 +16,7 @@
 # FIRST, create the class
 oo::class create block {
     superclass ::projectlib::bean
-}
 
-# NEXT, define class methods
-oo::objdefine block {
-    #-------------------------------------------------------------------
-    # Pasting of blocks
-
-    # paste agent copysets
-    #
-    # agent     - The agent whose strategy will receive the blocks
-    # copysets  - A list of block copysets from [$bean copydata].
-    #
-    # Pastes the blocks into the given strategy, pasting tactics and
-    # conditions recursively.  This call should be
-    # wrapped in [flunky transaction].  This is
-    # not included in [paste] itself, because pasting blocks could be
-    # done as part of a larger paste.
-
-    method paste {agent copysets} {
-        # FIRST, paste the copied blocks into the agent's strategy
-        foreach copyset $copysets {
-            # FIRST, get the block data
-            set bdict [my GetOrderParmsFromCopySet $copyset]
-
-            # NEXT, create the block with default settings
-            set block_id [flunky senddict gui STRATEGY:BLOCK:ADD \
-                                [list agent $agent]]
-
-            # NEXT, update the block with the right data.
-            dict set bdict block_id $block_id
-            flunky senddict gui BLOCK:UPDATE $bdict
-
-            # NEXT, paste the conditions and tactics
-            condition paste $block_id [dict get $copyset conditions]
-            tactic paste    $block_id [dict get $copyset tactics]
-        }
-    }
-
-    # GetOrderParmsFromCopySet copyset
-    #
-    # copyset - The copyset from [$bean copydata]
-    #
-    # Pulls out the required parameters from the copyset.
-
-    method GetOrderParmsFromCopySet {copyset} {
-        set pdict [dict create]
-
-        foreach parm [::athena::orders parms BLOCK:UPDATE] {
-            if {$parm eq "block_id" || $parm eq "name"} {
-                continue
-            }
-
-            dict set pdict $parm [dict get $copyset $parm]
-        }
-
-        return $pdict
-    }
-}
-
-
-# NEXT, define instance methods
-oo::define block {
     #-------------------------------------------------------------------
     # Instance Variables
 
