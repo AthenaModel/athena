@@ -233,11 +233,23 @@ snit::type ::athena::athenadb {
 
         $self configurelist $args
 
-        # NEXT, create the RDB and other components.
+        # NEXT, create the RDB and configure it for use.
         $self CreateRDB
-        install pot      using beanpot ${selfns}::pot -rdb $rdb
-        install flunky   using ::athena::athena_flunky create ${selfns}::flunky $self
 
+        # NEXT, create the beanpot for creating and managing the Athena's
+        # bean objects.  The beanpot will receive the athenadb(n) handle,
+        # and use it to access the RDB; and it will be available to 
+        # individual beans as needed via the beanpot's "db" method.
+        install pot using beanpot ${selfns}::pot -rdb $self
+
+        # NEXT, create the order flunky for processing order input and
+        # handling undo/redo.
+        install flunky using ::athena::athena_flunky create ${selfns}::flunky $self
+
+        # NEXT, make standard components.  These are modules that were
+        # singletons when Athena was a monolithic app.  They are now
+        # types/classes with instances; each instance takes one argument,
+        # the athenadb(n) handle.
         $self MakeComponents \
             absit            \
             activity         \
