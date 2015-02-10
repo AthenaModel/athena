@@ -79,7 +79,7 @@ namespace eval ::athena_test::tests:: {
             set T1 [ted addtactic $B1 BROADCAST]
         }
 
-        tactic::BROADCAST reset
+        broadcast reset
     }
 
     # Clean up after a test
@@ -88,7 +88,7 @@ namespace eval ::athena_test::tests:: {
         variable coffer
         $coffer destroy
         ted cleanup
-        tactic::BROADCAST reset
+        broadcast reset
     }
 
 

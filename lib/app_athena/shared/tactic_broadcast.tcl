@@ -24,61 +24,6 @@
 
 tactic define BROADCAST "Broadcast an Info Ops Message" {actor} -onlock {
     #-------------------------------------------------------------------
-    # Typemethods
-    # 
-    # These typemethods are used to accumulate the broadcast of IOMs by
-    # actors; the effects of the broadcasts are all applied at once.
-
-    # reset
-    # 
-    # Clears any pending broadcasts.  This command is for use at the
-    # beginning of strategy execution, to make sure that there are no
-    # pending broadcasts hanging around to cause trouble.
-    #
-    # Note that the [assess] typemethod should always leave the list
-    # empty; nevertheless, it is better to be sure.
-
-    typemethod reset {} {
-        my variable pending
-        set pending [list]
-    }
-
-    # broadcast tactic
-    #
-    # tactic   - A BROADCAST tactic object
-    #
-    # Marks this tactic for attempted broadcast at the end of 
-    # strategy execution.
-
-    typemethod broadcast {tactic} {
-        my variable pending
-        lappend pending $tactic
-    }
-
-    # assess
-    #
-    # Assesses the attitude effects of all pending broadcasts by
-    # calling the IOM rule set for each pending broadcast.
-    #
-    # This command is called at the end of strategy execution, once
-    # all actors have made their decisions and CAP access is clear.
-
-    typemethod assess {} {
-        my variable pending
-
-        # FIRST, assess each of the pending broadcasts
-        foreach tactic $pending {
-            $tactic assess
-        }
-
-
-        # NEXT, clear the list.
-        my reset
-
-        return
-    }
-
-    #-------------------------------------------------------------------
     # Instance Variables
 
     variable cap    ;# A Communication Asset Package
@@ -201,7 +146,7 @@ tactic define BROADCAST "Broadcast an Info Ops Message" {actor} -onlock {
 
         # NEXT, Save the broadcast.  It can't take effect yet,
         # as CAP access might be changed by other tactics.
-        tactic::BROADCAST broadcast [self]
+        broadcast mark [self]
     }
 
     # assess

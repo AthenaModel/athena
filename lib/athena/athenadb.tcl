@@ -182,6 +182,7 @@ snit::type ::athena::athenadb {
     component group    -public group     ;# group manager
 
     # Tactic APIs
+    component broadcast -public broadcast ;# IOM broadcast API
     component cash      -public cash      ;# cash/spending API
     component control   -public control   ;# nbhood control API
     component personnel -public personnel ;# personnel laydown API
@@ -261,6 +262,7 @@ snit::type ::athena::athenadb {
             activity         \
             actor            \
             agent            \
+            broadcast        \
             bsys             \
             cap              \
             cash             \
