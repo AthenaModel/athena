@@ -237,6 +237,7 @@ snit::widget mapviewer {
         mode      ""
         ordertags {}
         loc       ""
+        check     OK
     }
 
     # View array; used for values that control the view
@@ -321,6 +322,13 @@ snit::widget mapviewer {
         # Horizontal tool bar
         ttk::frame $win.hbar
 
+        # Nbhood boundary check 
+        ttk::label $win.hbar.check \
+            -textvariable [myvar info(check)] \
+            -justify      left                \
+            -anchor       w                   \
+            -width        35 
+        
         # MapLoc
         ttk::label $win.hbar.loc \
             -textvariable [myvar info(loc)] \
@@ -427,6 +435,7 @@ snit::widget mapviewer {
         pack $win.hbar.civ      -side right -padx 1
         pack $win.hbar.absit    -side right -padx 5
         pack $win.hbar.loc      -side right -padx 5
+        pack $win.hbar.check    -side left 
 
         # Separators
         ttk::separator $win.sep1
@@ -851,6 +860,9 @@ snit::widget mapviewer {
 
         # NEXT, fill them, or not.
         $self NbhoodFill
+
+        # NEXT, check that neighborhoods fit inside map area
+        $self NbhoodCheck
     }
 
 
@@ -882,6 +894,20 @@ snit::widget mapviewer {
         set nbhoods(id-$n) $id
     }
 
+    # NbhoodCheck
+    #
+    # Checks to see that all neighborhood boundaries fit within the
+    # defined map area
+
+    method NbhoodCheck {} {
+        if {![map compatible]} {
+            set info(check) "Neighborhood(s) extend beyond map"
+            $win.hbar.check configure -foreground red
+        } else {
+            set info(check) ""
+            $win.hbar.check configure -foreground ""
+        }
+    }
 
     # NbhoodFill
     #
