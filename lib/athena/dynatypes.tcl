@@ -37,11 +37,18 @@ dynaform fieldtype alias civlist enumlonglist \
     -width    30  \
     -dictcmd  {$adb_ civgroup namedict}
 
+# comparator: An ecomparator value
+dynaform fieldtype alias comparator enumlong \
+    -dictcmd {ecomparator deflist}
+
 # coop: Pick a cooperation level
 dynaform fieldtype alias coop range \
     -datatype    ::qcooperation     \
     -showsymbols yes                \
     -resetvalue  50
+
+# expr: A text field for editing expressions.
+dynaform fieldtype alias expr text -width 60
 
 # frac: Fraction, 0.0 to 1.0
 dynaform fieldtype alias frac range -datatype ::rfraction

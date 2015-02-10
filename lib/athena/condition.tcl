@@ -152,6 +152,14 @@ oo::define ::athena::condition {
     #
     # These methods will rarely if ever be overridden by subclasses.
     
+    # adb
+    #
+    # Returns the scenario athenadb(n) handle.
+
+    method adb {} {
+        return [[my pot] cget -rdb]
+    }
+
     # subject
     #
     # Set subject for notifier events.  It's the athenadb(n) subject

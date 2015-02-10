@@ -20,14 +20,11 @@
   - bsys
 - driver::absit
   - absit
-- ::gofer::ACTORS
+- executive
+  - condition_expr
+- ::gofer*
   - curse
-- ::gofer::CIVGROUPS
-  - curse
-- ::gofer::FRCGROUPS
-  - curse
-- ::gofer::GROUPS
-  - curse
+  - condition_compare, condition_control
 - inject
   - curse
 - nbhood
@@ -40,12 +37,14 @@
   - absit, actor, nbhood
 - refpoint
   - absit, nbhood
+- sigevent
+  - condition_expr
 - sim
   - absit
 - simclock
   - absit, athenadb, block
 - strategy
-  - actor, agent, block, cash
+  - actor, agent, block, cash, condition_*
 - tactic
   - agent, block
 

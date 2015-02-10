@@ -6,7 +6,9 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Mark II Condition, COMPARE
+#    athena(n): Mark II Condition, COMPARE
+#
+# TBD: Global refs: gofer*, strategy
 #
 #-----------------------------------------------------------------------
 
@@ -107,7 +109,7 @@
         my prepare condition_id -required -with {::strategy valclass ::athena::condition::COMPARE}
         my returnOnError
 
-        set cond [pot get $parms(condition_id)]
+        set cond [$adb pot get $parms(condition_id)]
 
         my prepare name         -toupper  -with [list $cond valName]
         my prepare x                      
@@ -116,7 +118,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set cond [pot get $parms(condition_id)]
+        set cond [$adb pot get $parms(condition_id)]
         my setundo [$cond update_ {name x comp y} [array get parms]]\
     }
 }
