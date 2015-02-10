@@ -1,6 +1,7 @@
 # TODO.md - Athena TODO List
 
-- Add paste entries to athenadb(n), athena(n) man pages.
+- Add all component entries to athenadb(n).
+  - Or, come up with a plan for which ones are documented and which aren't.
 - Move editable entities to athena(n)
 - Move model modules to athena(n)
 - Move relevant projtypes to athena(n)
@@ -19,14 +20,11 @@
   - bsys
 - driver::absit
   - absit
-- ::gofer::ACTORS
+- executive
+  - condition_expr
+- ::gofer*
   - curse
-- ::gofer::CIVGROUPS
-  - curse
-- ::gofer::FRCGROUPS
-  - curse
-- ::gofer::GROUPS
-  - curse
+  - condition_compare, condition_control
 - inject
   - curse
 - nbhood
@@ -39,13 +37,15 @@
   - absit, actor, nbhood
 - refpoint
   - absit, nbhood
+- sigevent
+  - condition_expr
 - sim
   - absit
 - simclock
-  - absit, athenadb
+  - absit, athenadb, block
 - strategy
-  - actor, agent, cash
+  - actor, agent, block, cash, condition_*
 - tactic
-  - agent
+  - agent, block
 
 

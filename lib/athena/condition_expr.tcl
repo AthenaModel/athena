@@ -6,12 +6,13 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Mark II Condition, EXPR
+#    athena(n): Mark II Condition, EXPR
 #
+# TBD: Global refs: executive, strategy, sigevent
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
-condition define EXPR "Boolean Expression" {
+::athena::condition define EXPR "Boolean Expression" {
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -104,10 +105,10 @@ condition define EXPR "Boolean Expression" {
 
 
     method _validate {} {
-        my prepare condition_id -required -with {::strategy valclass condition::EXPR}
+        my prepare condition_id -required -with {::strategy valclass ::athena::condition::EXPR}
         my returnOnError
 
-        set cond [pot get $parms(condition_id)]
+        set cond [$adb pot get $parms(condition_id)]
 
         my prepare name -toupper -with [list $cond valName]
 
@@ -119,7 +120,7 @@ condition define EXPR "Boolean Expression" {
     }
 
     method _execute {{flunky ""}} {
-        set cond [pot get $parms(condition_id)]
+        set cond [$adb pot get $parms(condition_id)]
         my setundo [$cond update_ {name expression} [array get parms]]
     }
 }

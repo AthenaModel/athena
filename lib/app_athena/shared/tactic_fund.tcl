@@ -188,7 +188,7 @@ tactic define FUND "Fund Another Actor" {actor} {
         text name -width 20
 
         rcc "Actor:" -for a
-        enum a -listcmd {tactic allAgentsBut $tactic_id}
+        enum a -listcmd {$order_ allAgentsBut $tactic_id}
 
         rcc "Mode:"   -for mode
         selector mode {

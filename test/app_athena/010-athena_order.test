@@ -41,7 +41,7 @@ namespace eval ::athena_test::tests:: {
     proc setup {name} {
         variable order
         set order [flunky make $name]
-        ted create NB1 NB2 BLUE BRIT SUNN SHIA KURD
+        ted create JOE BOB NB1 NB2 BLUE BRIT SUNN SHIA KURD
     }
 
     proc cleanup {} {
@@ -127,6 +127,46 @@ namespace eval ::athena_test::tests:: {
     # unused
 
     # This is tested in use for most *:CREATE orders.
+
+    #-------------------------------------------------------------------
+    # allAgentsBut
+
+    test allAgentsBut-1.1 {returns nothing for unknown tactic} -setup {
+        setup TACTIC:STATE
+    } -body {
+        $order allAgentsBut NONESUCH
+    } -result {}
+
+    test allAgentsBut-1.2 {returns all but owning agent} -setup {
+        setup TACTIC:STATE
+        set B1 [ted addblock JOE]
+        set T1 [ted addtactic $B1 SIGEVENT]
+    } -body {
+        $order allAgentsBut [$T1 id]
+    } -cleanup {
+        cleanup
+    } -result {BOB}
+
+    #-------------------------------------------------------------------
+    # groupsOwnedByAgent
+
+    test groupsOwnedByAgent-1.1 {returns nothing for unknown tactic} -setup {
+        setup TACTIC:STATE
+    } -body {
+        $order groupsOwnedByAgent NONESUCH
+    } -result {}
+
+    test groupsOwnedByAgent-1.2 {returns groups for owning agent} -setup {
+        setup TACTIC:STATE
+        set B1 [ted addblock JOE]
+        set T1 [ted addtactic $B1 SIGEVENT]
+    } -body {
+        $order groupsOwnedByAgent [$T1 id]
+    } -cleanup {
+        cleanup
+    } -result {BLUE BRIT}
+
+    
 
 
     #-------------------------------------------------------------------

@@ -194,61 +194,6 @@ oo::objdefine tactic {
 
         return $result
     }
-    
-    #-------------------------------------------------------------------
-    # Order Helpers
-
-    # groupsOwnedByAgent id
-    #
-    # id   - A tactic ID
-    #
-    # Returns a list of force and organization groups owned by the 
-    # agent who owns the given tactic.  This is for use in order
-    # dynaforms where the user must choose an owned group.
-
-    method groupsOwnedByAgent {id} {
-        if {[pot has $id]} {
-            set tactic [pot get $id]
-            return [group ownedby [$tactic agent]]
-        } else {
-            return [list]
-        }
-    }
-
-    # frcgroupsOwnedByAgent id
-    #
-    # id   - A tactic ID
-    #
-    # Returns a list of force groups owned by the 
-    # agent who owns the given tactic.  This is for use in order
-    # dynaforms where the user must choose an owned group.
-
-    method frcgroupsOwnedByAgent {id} {
-        if {[pot has $id]} {
-            set tactic [pot get $id]
-            return [frcgroup ownedby [$tactic agent]]
-        } else {
-            return [list]
-        }
-    }
-
-    # allAgentsBut id
-    #
-    # id  - A tactic ID
-    #
-    # Returns a list of agents except the one that owns the 
-    # given tactic.
-
-    method allAgentsBut {id} {
-        if {[pot has $id]} {
-            set tactic [pot get $id]
-            set alist [actor names]
-            return [ldelete alist [$tactic agent]]
-        } else {
-            return [list]
-        }
-    }
-
 }
 
 

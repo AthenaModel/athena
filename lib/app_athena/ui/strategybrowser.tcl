@@ -250,13 +250,13 @@ snit::widget strategybrowser {
         # ignored unless the block matches info(block).
 
         # Update to block metadata
-        notifier bind ::block <update>  $self [mymethod BlockUpdate]
+        notifier bind ::adb.block <update>  $self [mymethod BlockUpdate]
 
         # Update to block conditions slot
-        notifier bind ::block <conditions> $self [mymethod BlockConditions]
+        notifier bind ::adb.block <conditions> $self [mymethod BlockConditions]
 
         # Update to block tactics slot
-        notifier bind ::block <tactics> $self [mymethod BlockTactics]
+        notifier bind ::adb.block <tactics> $self [mymethod BlockTactics]
 
         # TACTIC AND CONDITION UPDATES
         #
@@ -269,7 +269,7 @@ snit::widget strategybrowser {
         # a change to the block, and is handled there.
 
         notifier bind ::tactic    <update> $self [list $ttab uid update]
-        notifier bind ::condition <update> $self [list $ctab uid update]
+        notifier bind ::adb.condition <update> $self [list $ctab uid update]
 
     }
 
@@ -350,7 +350,7 @@ snit::widget strategybrowser {
     #
     # id    - A block ID
     #
-    # Called on "::block <update> $id", which indicates that the block's
+    # Called on "::adb.block <update> $id", which indicates that the block's
     # metadata has been updated.
 
     method BlockUpdate {id} {
@@ -381,7 +381,7 @@ snit::widget strategybrowser {
     # block_id     - A block ID
     # condition_id - A condition ID
     #
-    # Called on "::block <conditions>", which indicates that a condition
+    # Called on "::adb.block <conditions>", which indicates that a condition
     # has been added or deleted to the block's conditions slot.
 
     method BlockConditions {op block_id condition_id} {
@@ -404,7 +404,7 @@ snit::widget strategybrowser {
     # block_id   - A block ID
     # tactic_id  - A tactic ID
     #
-    # Called on "::block <tactics>", which indicates that a tactic
+    # Called on "::adb.block <tactics>", which indicates that a tactic
     # has been added or deleted to the block's tactics slot.
 
     method BlockTactics {op block_id tactic_id} {
@@ -905,7 +905,7 @@ snit::widget strategybrowser {
         }
 
         clipboardx clear
-        clipboardx set ::block $copyData
+        clipboardx set ::athena::block $copyData
 
         # NEXT, if the mode is cut delete the items.
         if {$mode eq "cut"} {
@@ -936,7 +936,7 @@ snit::widget strategybrowser {
         }
 
         # NEXT, get the blocks from the clipboard, if any.
-        set copysets [clipboardx get ::block]
+        set copysets [clipboardx get ::athena::block]
 
         if {[llength $copysets] == 0} {
             bell
@@ -1318,7 +1318,7 @@ snit::widget strategybrowser {
         }
 
         clipboardx clear
-        clipboardx set ::condition $copyData
+        clipboardx set ::athena::condition $copyData
 
         # NEXT, if the mode is cut delete the items.
         if {$mode eq "cut"} {
@@ -1349,7 +1349,7 @@ snit::widget strategybrowser {
         }
 
         # NEXT, get the conditions from the clipboard, if any.
-        set copysets [clipboardx get ::condition]
+        set copysets [clipboardx get ::athena::condition]
 
         if {[llength $copysets] == 0} {
             bell
@@ -1372,7 +1372,7 @@ snit::widget strategybrowser {
         menu $mnu
         $ct_addbtn configure -menu $mnu
 
-        dict for {ctype title} [condition typedict] {
+        dict for {ctype title} [::athena::condition typedict] {
             $mnu add command \
                 -label   $title \
                 -command [mymethod CTabAdd [$ctype typename]]

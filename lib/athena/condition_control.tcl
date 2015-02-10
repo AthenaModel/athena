@@ -6,14 +6,16 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Mark II Condition, CONTROL
+#    athena(n): Mark II Condition, CONTROL
 #
 #    Does actor $a control all of the neighborhoods in $nlist?
+#
+# TBD: Global refs: gofer*, strategy
 #
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
-condition define CONTROL "Control of Neighborhoods" {
+::athena::condition define CONTROL "Control of Neighborhoods" {
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -57,7 +59,7 @@ condition define CONTROL "Control of Neighborhoods" {
     method SanityCheck {errdict} {
         if {$a eq ""} {
             dict set errdict a "No actor selected."
-        } elseif {$a ni [actor names]} {
+        } elseif {$a ni [[my adb] actor names]} {
             dict set errdict a "No such actor: \"$a\"."
         }
 
@@ -82,7 +84,7 @@ condition define CONTROL "Control of Neighborhoods" {
 
         # NEXT, count the number of neighborhoods in the set that the
         # actor controls.
-        set nbhoodsControlled [rdb onecolumn " 
+        set nbhoodsControlled [[my adb] onecolumn " 
             SELECT count(n) FROM control_n
             WHERE n IN ('[join $nbhoods ',']')
             AND controller = \$a
@@ -158,20 +160,20 @@ condition define CONTROL "Control of Neighborhoods" {
 
 
     method _validate {} {
-        my prepare condition_id -required -with {::strategy valclass condition::CONTROL}
+        my prepare condition_id -required -with {::strategy valclass ::athena::condition::CONTROL}
         my returnOnError
 
-        set cond [pot get $parms(condition_id)]
+        set cond [$adb pot get $parms(condition_id)]
 
         my prepare name   -toupper -with [list $cond valName]
-        my prepare a      -toupper -type actor
+        my prepare a      -toupper -type [list $adb actor]
         my prepare sense  -toupper -type edoes
         my prepare anyall -toupper -type eanyall                
         my prepare nlist                      
     }
 
     method _execute {{flunky ""}} {
-        set cond [pot get $parms(condition_id)]
+        set cond [$adb pot get $parms(condition_id)]
         my setundo [$cond update_ {name a sense anyall nlist} [array get parms]]
     }
 }

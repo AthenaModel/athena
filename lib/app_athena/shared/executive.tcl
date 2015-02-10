@@ -317,7 +317,7 @@ snit::type executive {
             [mytypemethod block configure]
 
         $interp smartalias {block last} 0 0 {} \
-            [myproc last_bean ::block]
+            [myproc last_bean ::athena::block]
 
         # condition
         $interp ensemble condition
@@ -333,7 +333,7 @@ snit::type executive {
             [mytypemethod condition configure]
 
         $interp smartalias {condition last} 0 0 {} \
-            [myproc last_bean ::condition]
+            [myproc last_bean ::athena::condition]
 
 
         # clear
@@ -391,11 +391,11 @@ snit::type executive {
 
         # last block
         $interp smartalias {last block} 0 0 {} \
-            [myproc last_bean ::block]
+            [myproc last_bean ::athena::block]
 
         # last condition
         $interp smartalias {last condition} 0 0 {} \
-            [myproc last_bean ::condition]
+            [myproc last_bean ::athena::condition]
 
         # last absit
         $interp smartalias {last absit} 0 0 {} \
@@ -2059,10 +2059,10 @@ snit::type executive {
     typemethod {block cget} {block_id {opt ""}} {
         # FIRST, get the block_id
         if {$block_id eq "-"} {
-            set block_id [last_bean ::block]
+            set block_id [last_bean ::athena::block]
         }
 
-        pot valclass block $block_id
+        pot valclass ::athena::block $block_id
 
         # NEXT, get the block data
         set block [pot get $block_id]
@@ -2091,7 +2091,7 @@ snit::type executive {
     typemethod {block configure} {block_id args} {
         # FIRST, get the block_id
         if {$block_id eq "-"} {
-            set block_id [last_bean ::block]
+            set block_id [last_bean ::athena::block]
         }
 
         # NEXT, configure it
@@ -2131,7 +2131,7 @@ snit::type executive {
     typemethod {condition add} {block_id typename args} {
         # FIRST, get the block_id
         if {$block_id eq "-"} {
-            set block_id [last_bean ::block]
+            set block_id [last_bean ::athena::block]
         }
 
         # NEXT, create the condition
@@ -2155,10 +2155,10 @@ snit::type executive {
     typemethod {condition cget} {condition_id {opt ""}} {
         # FIRST, get the condition_id
         if {$condition_id eq "-"} {
-            set condition_id [last_bean ::condition]
+            set condition_id [last_bean ::athena::condition]
         }
 
-        pot valclass condition $condition_id
+        pot valclass ::athena::condition $condition_id
 
         # NEXT, get the condition data
         set condition [pot get $condition_id]
@@ -2187,10 +2187,10 @@ snit::type executive {
     typemethod {condition configure} {condition_id args} {
         # FIRST, get the condition_id
         if {$condition_id eq "-"} {
-            set condition_id [last_bean ::condition]
+            set condition_id [last_bean ::athena::condition]
         }
 
-        pot valclass ::condition $condition_id
+        pot valclass ::athena::condition $condition_id
 
         # NEXT, configure it
         flunky transaction "condition configure..." {
@@ -2526,7 +2526,7 @@ snit::type executive {
     typemethod {tactic add} {block_id typename args} {
         # FIRST, get the block_id
         if {$block_id eq "-"} {
-            set block_id [last_bean ::block]
+            set block_id [last_bean ::athena::block]
         }
 
         # NEXT, create the tactic

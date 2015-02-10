@@ -96,22 +96,6 @@ namespace eval ::athena_test::tests:: {
         expr {$a ne $b}
     } -result {1}
 
-    #-------------------------------------------------------------------
-    # groupsOwnedByAgent
-
-    test groupsOwnedByAgent-1.1 {returns nothing for unknown tactic} -body {
-        tactic groupsOwnedByAgent NONESUCH
-    } -result {}
-
-    test groupsOwnedByAgent-1.2 {returns groups for owning agent} -setup {
-        setup
-    } -body {
-        tactic groupsOwnedByAgent [$TJOE id]
-    } -cleanup {
-        cleanup
-    } -result {BLUE BRIT}
-
-    
     
     #===================================================================
     # tactic::<type> class methods

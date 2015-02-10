@@ -453,7 +453,7 @@ tactic define ASSIGN "Assign Personnel" {actor} -onlock {
         text name -width 20
 
         rcc "Group:" -for g
-        enum g -listcmd {tactic groupsOwnedByAgent $tactic_id}
+        enum g -listcmd {$order_ groupsOwnedByAgent $tactic_id}
 
         rcc "Neighborhood:" -for n
         nbhood n

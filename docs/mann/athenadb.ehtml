@@ -145,6 +145,33 @@ in <xref athena(n)>.<p>
 Evaluates an SQL <i query> with respect to the scenario's run-time 
 database, returning only the first column.<p>
 
+<defitem paste {<i adb> paste <i subcommand> ?<i args...>?}>
+
+Pastes copied items into scenario, where the subcommand determines the 
+kind of item to paste.  In each case, the paste is done as a sequence of 
+grouped orders, and will be undone and redone as a group.<p>
+
+The available subcommands are as follows:<p>
+
+<deflist paste>
+
+<defitem "paste block" {<i adb> paste block <i agent copysets>}>
+
+Pastes <i copysets>, a list of copied strategy blocks, into the strategy
+owned by the named <i agent>.<p>
+
+<defitem "paste condition" {<i adb> paste condition <i block_id copysets>}>
+
+Pastes <i copysets>, a list of copied conditions, into the strategy block
+with the given <i block_id>.<p>
+
+<defitem "paste tactic" {<i adb> paste tactic <i block_id copysets>}>
+
+Pastes <i copysets>, a list of copied tactics, into the strategy block
+with the given <i block_id>.<p>
+
+</deflist paste>
+
 <defitem query {<i adb> query <i query> ?<i options...>?}>
 
 Evaluates an SQL <i query> with respect to the scenario's run-time 

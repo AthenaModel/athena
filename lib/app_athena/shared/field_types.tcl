@@ -28,10 +28,6 @@ dynaform fieldtype alias cap enumlong \
     -showkeys yes \
     -dictcmd  {::cap namedict}
 
-# comparator: An ecomparator value
-dynaform fieldtype alias comparator enumlong \
-    -dictcmd {ecomparator deflist}
-
 # concern: An econcern value
 dynaform fieldtype alias concern enum \
     -listcmd {econcern names}
@@ -44,8 +40,6 @@ dynaform fieldtype alias concernlist enumlonglist \
 # curse: pick a curse by name.
 dynaform fieldtype alias curse enum -listcmd {::curse names}
 
-# expr: A text field for editing expressions.
-dynaform fieldtype alias expr text -width 60
 
 # frclist: Pick from a list of force groups; longname shown
 dynaform fieldtype alias frclist enumlonglist \

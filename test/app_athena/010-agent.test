@@ -110,7 +110,7 @@ namespace eval ::athena_test::tests:: {
     } -result {SYSTEM}
 
     #-------------------------------------------------------------------
-    # type
+    # get
 
     test get-1.1 {get SYSTEM type} -body {
         agent type SYSTEM
@@ -124,6 +124,33 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -result {actor}
 
+    #-------------------------------------------------------------------
+    # tactictypes 
+
+    test tactictypes-1.1 {tactics for SYSTEM type} -body {
+        agent tactictypes SYSTEM
+    } -result {ABSIT ACCIDENT ATTRIT CURSE DAMAGE DEMO EXECUTIVE EXPLOSION FLOW RIOT SERVICE SIGEVENT VIOLENCE}
+
+    test tactictypes-1.2 {tactics for normal actor} -setup {
+        ted create JOE
+    } -body {
+        agent tactictypes JOE
+    } -cleanup {
+        cleanup
+    } -result {ABSIT ACCIDENT ASSIGN BROADCAST BUILD DEMO DEMOB DEPLOY DEPOSIT EXECUTIVE EXPLOSION FUND FUNDENI GRANT MAINTAIN MOBILIZE RIOT SERVICE SIGEVENT SPEND STANCE SUPPORT VIOLENCE WITHDRAW}
+
+    test tactictypes-1.3 {tactics for auto_maintain actor} -setup {
+        ted create JOE
+        rdb eval {
+            UPDATE actors SET auto_maintain=1
+        }
+    } -body {
+        set list [agent tactictypes JOE]
+
+        expr {"MAINTAIN" ni $list}
+    } -cleanup {
+        cleanup
+    } -result {1}
 
     #-------------------------------------------------------------------
     # Cleanup
