@@ -6,15 +6,17 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Strategy Blocks
+#    athena(n): Strategy Blocks
 #
 #    An agent's strategy determines his actions.  It consists of a number
 #    of blocks, each of which contains zero or more conditions and tactics.
 #
+# TBD: Global refs: simclock, strategy, tactic, condition
+#
 #-----------------------------------------------------------------------
 
 # FIRST, create the class
-oo::class create block {
+oo::class create ::athena::block {
     superclass ::projectlib::bean
 
     #-------------------------------------------------------------------
@@ -77,10 +79,12 @@ oo::class create block {
 
     # subject
     #
-    # Set subject for notifier events.
+    # Set subject for notifier events.  It's the athenadb(n) subject
+    # plus ".block".
 
     method subject {} {
-        return "::block"
+        set adb [[my pot] cget -rdb]
+        return "[$adb cget -subject].block"
     }
 
     # fullname
@@ -870,13 +874,13 @@ oo::class create block {
 
         # NEXT, determine default name based on class of bean 
         set next_name ""
-        if {[pot hasa ::tactic $bean_id]} {
+        if {[[my pot] hasa ::tactic $bean_id]} {
             set next_name [my next_tactic_name]
-        } elseif {[pot hasa ::condition $bean_id]} {
+        } elseif {[[my pot] hasa ::condition $bean_id]} {
             set next_name [my next_condition_name]
         }
 
-        [pot get $bean_id] configure -name $next_name
+        [[my pot] get $bean_id] configure -name $next_name
 
         next $slot $bean_id   ;# Do notifications
     }
@@ -966,7 +970,7 @@ oo::class create block {
         # owned by the parent skipping over the block we 
         # are checking
         set parent [my get parent]
-        foreach block [[pot get $parent] blocks] {
+        foreach block [[[my pot] get $parent] blocks] {
             if {[$block get id] == [my get id]} {
                 continue
             }
@@ -1051,10 +1055,10 @@ oo::class create block {
 
 
     method _validate {} {
-        my prepare block_id -required -toupper -with {::strategy valclass ::block}
+        my prepare block_id -required -toupper -with {::strategy valclass ::athena::block}
         my returnOnError
 
-        set block [pot get $parms(block_id)]
+        set block [$adb pot get $parms(block_id)]
 
         my prepare name     -toupper  -with [list $block valName]
         my prepare intent
@@ -1087,7 +1091,7 @@ oo::class create block {
     }
 
     method _execute {{flunky ""}} {
-        set block [pot get $parms(block_id)]
+        set block [$adb pot get $parms(block_id)]
 
         my setundo [$block update_ {
             name intent tmode t1 t2 cmode emode once onlock
@@ -1105,12 +1109,12 @@ oo::class create block {
     meta parmlist   { block_id state }
 
     method _validate {} {
-        my prepare block_id -required -toupper -with {::strategy valclass ::block}
+        my prepare block_id -required -toupper -with {::strategy valclass ::athena::block}
         my prepare state    -required -tolower -type ebeanstate
     }
 
     method _execute {{flunky ""}} {
-        set block [pot get $parms(block_id)]
+        set block [$adb pot get $parms(block_id)]
 
         my setundo [$block update_ {state} [array get parms]]
     }
@@ -1129,15 +1133,15 @@ oo::class create block {
     meta parmlist   { block_id typename }
 
     method _validate {} {
-        my prepare block_id -required -toupper -with  {::strategy valclass ::block}
+        my prepare block_id -required -toupper -with  {::strategy valclass ::athena::block}
         my prepare typename -required -toupper -oneof [tactic typenames]
     }
 
     method _execute {{flunky ""}} {
-        set block [pot get $parms(block_id)]
+        set block [$adb pot get $parms(block_id)]
 
         if {[info exists tactic_id]} {
-            pot setnextid $tactic_id
+            $adb pot setnextid $tactic_id
         }
 
         my setundo [$block addtactic_ $parms(typename)]
@@ -1164,7 +1168,7 @@ oo::class create block {
     method _execute {{flunky ""}} {
         set undo [list]
         foreach tid $parms(ids) {
-            set tactic [pot get $tid]
+            set tactic [$adb pot get $tid]
             set block [$tactic block]
             lappend undo [$block deletetactic_ $tid]
         }
@@ -1188,7 +1192,7 @@ oo::class create block {
     }
 
     method _execute {{flunky ""}} {
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
         set block [$tactic block]
 
         my setundo [$block movetactic_ $parms(tactic_id) $parms(where)]
@@ -1209,15 +1213,15 @@ oo::class create block {
     meta parmlist   { block_id typename }
 
     method _validate {} {
-        my prepare block_id -required -toupper -with {::strategy valclass ::block}
+        my prepare block_id -required -toupper -with {::strategy valclass ::athena::block}
         my prepare typename -required -toupper -oneof [condition typenames]
     }
 
     method _execute {{flunky ""}} {
-        set block [pot get $parms(block_id)]
+        set block [$adb pot get $parms(block_id)]
 
         if {[info exists cond_id]} {
-            pot setnextid $cond_id
+            $adb pot setnextid $cond_id
         }
 
         my setundo [$block addcondition_ $parms(typename)]
@@ -1247,7 +1251,7 @@ oo::class create block {
         set undo [list]
 
         foreach tid $parms(ids) {
-            set condition [pot get $tid]
+            set condition [$adb pot get $tid]
             set block [$condition block]
             lappend undo [$block deletecondition_ $tid]
         }

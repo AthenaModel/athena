@@ -54,6 +54,7 @@ source [file join $::athena::library paster.tcl       ]
 # Editable Entities
 source [file join $::athena::library absit.tcl        ]
 source [file join $::athena::library actor.tcl        ]
+source [file join $::athena::library block.tcl        ]
 source [file join $::athena::library bsys.tcl         ]
 source [file join $::athena::library cap.tcl          ]
 source [file join $::athena::library civgroup.tcl     ]

@@ -1,6 +1,5 @@
 # TODO.md - Athena TODO List
 
-- Add test for [agent tactictypes] to 010-agent.tcl.
 - Add all component entries to athenadb(n).
   - Or, come up with a plan for which ones are documented and which aren't.
 - Move editable entities to athena(n)
@@ -19,6 +18,8 @@
   - absit, actor, bsys, cap, civgroup, curse, frcgroup, nbhood, orggroup
 - athena register
   - bsys
+- condition
+  - block
 - driver::absit
   - absit
 - ::gofer::ACTORS
@@ -44,10 +45,10 @@
 - sim
   - absit
 - simclock
-  - absit, athenadb
+  - absit, athenadb, block
 - strategy
-  - actor, agent, cash
+  - actor, agent, block, cash
 - tactic
-  - agent
+  - agent, block
 
 

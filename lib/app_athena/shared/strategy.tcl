@@ -678,7 +678,7 @@ oo::define strategy {
     # list.
 
     method addblock_ {} {
-        return [my addbean_ blocks ::block]
+        return [my addbean_ blocks ::athena::block]
     }
 
     # deleteblock_ block_id
@@ -764,7 +764,7 @@ oo::define strategy {
     }
 
     method _validate {} {
-        my prepare ids -required -listwith {::strategy valclass ::block}
+        my prepare ids -required -listwith {::strategy valclass ::athena::block}
     }
 
     method _execute {{flunky ""}} {
@@ -803,7 +803,7 @@ oo::define strategy {
 
 
     method _validate {} {
-        my prepare block_id -required -with {::strategy valclass ::block}
+        my prepare block_id -required -with {::strategy valclass ::athena::block}
         my prepare where    -required -type emoveitem
     }
 

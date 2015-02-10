@@ -249,23 +249,23 @@ namespace eval ::athena_test::tests:: {
     test BLOCK:UPDATE-2.2 {notifier event} -setup {
         setup
     } -body {
-        ted notifier bind ::block <update>
+        ted notifier bind ::adb.block <update>
         ted order BLOCK:UPDATE block_id [$B1 id] intent "New intent"
         ted notifier received
     } -cleanup {
         cleanup
-    } -match glob -result {*{::block <update> *}*}
+    } -match glob -result {*{::adb.block <update> *}*}
 
     test BLOCK:UPDATE-2.3 {undo notifier event} -setup {
         setup
         ted order BLOCK:UPDATE block_id [$B1 id] intent "New intent"
     } -body {
-        ted notifier bind ::block <update>
+        ted notifier bind ::adb.block <update>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
-    } -match glob -result {*{::block <update> *}*}
+    } -match glob -result {*{::adb.block <update> *}*}
 
     #-------------------------------------------------------------------
     # BLOCK:STATE
@@ -314,23 +314,23 @@ namespace eval ::athena_test::tests:: {
     test BLOCK:STATE-2.2 {notifier event} -setup {
         setup
     } -body {
-        ted notifier bind ::block <update>
+        ted notifier bind ::adb.block <update>
         ted order BLOCK:STATE block_id [$B1 id] state disabled
         ted notifier received
     } -cleanup {
         cleanup
-    } -match glob -result {*{::block <update> *}*}
+    } -match glob -result {*{::adb.block <update> *}*}
 
     test BLOCK:STATE-2.3 {undo notifier event} -setup {
         setup
         ted order BLOCK:STATE block_id [$B1 id] state disabled
     } -body {
-        ted notifier bind ::block <update>
+        ted notifier bind ::adb.block <update>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
-    } -match glob -result {*{::block <update> *}*}
+    } -match glob -result {*{::adb.block <update> *}*}
  
     #-------------------------------------------------------------------
     # BLOCK:TACTIC:ADD
@@ -379,23 +379,23 @@ namespace eval ::athena_test::tests:: {
     test BLOCK:TACTIC:ADD-2.2 {notifier event} -setup {
         setup
     } -body {
-        ted notifier bind ::block <tactics>
+        ted notifier bind ::adb.block <tactics>
         ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename SIGEVENT
         ted notifier received
     } -cleanup {
         cleanup
-    } -match glob -result {*{::block <tactics> *}*}
+    } -match glob -result {*{::adb.block <tactics> *}*}
 
     test BLOCK:TACTIC:ADD-2.3 {undo notifier event} -setup {
         setup
         ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename SIGEVENT
     } -body {
-        ted notifier bind ::block <tactics>
+        ted notifier bind ::adb.block <tactics>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
-    } -match glob -result {*{::block <tactics> *}*}
+    } -match glob -result {*{::adb.block <tactics> *}*}
  
     #-------------------------------------------------------------------
     # BLOCK:TACTIC:DELETE
@@ -452,12 +452,12 @@ namespace eval ::athena_test::tests:: {
     test BLOCK:TACTIC:DELETE-2.3 {notifier event} -setup {
         btd_setup
     } -body {
-        ted notifier bind ::block <tactics>
+        ted notifier bind ::adb.block <tactics>
         ted order BLOCK:TACTIC:DELETE ids [$T1 id]
         ted notifier received
     } -cleanup {
         cleanup
-    } -match glob -result {*{::block <tactics> *}*}
+    } -match glob -result {*{::adb.block <tactics> *}*}
 
     test BLOCK:TACTIC:DELETE-2.4 {undoes all deletions} -setup {
         btd_setup
@@ -473,14 +473,14 @@ namespace eval ::athena_test::tests:: {
         btd_setup
         ted order BLOCK:TACTIC:DELETE ids [list [$T1 id] [$T2 id]]
     } -body {
-        ted notifier bind ::block <tactics>
+        ted notifier bind ::adb.block <tactics>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -match glob -result {
-        {::block <tactics> add * *}
-        {::block <tactics> add * *}
+        {::adb.block <tactics> add * *}
+        {::adb.block <tactics> add * *}
     }
 
     #-------------------------------------------------------------------
@@ -539,12 +539,12 @@ namespace eval ::athena_test::tests:: {
         ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename SIGEVENT
         ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename SIGEVENT
     } -body {
-        ted notifier bind ::block <tactics>
+        ted notifier bind ::adb.block <tactics>
         ted order BLOCK:TACTIC:MOVE tactic_id [$T2 id] where top
         ted notifier received
     } -cleanup {
         cleanup
-    } -match glob -result {*{::block <tactics> *}*}
+    } -match glob -result {*{::adb.block <tactics> *}*}
 
     test BLOCK:TACTIC:MOVE-2.3 {undo notifier event} -setup {
         setup
@@ -552,12 +552,12 @@ namespace eval ::athena_test::tests:: {
         ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename SIGEVENT
         ted order BLOCK:TACTIC:MOVE tactic_id [$T2 id] where top
     } -body {
-        ted notifier bind ::block <tactics>
+        ted notifier bind ::adb.block <tactics>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
-    } -match glob -result {*{::block <tactics> *}*}
+    } -match glob -result {*{::adb.block <tactics> *}*}
 
     #-------------------------------------------------------------------
     # BLOCK:CONDITION:ADD
@@ -606,23 +606,23 @@ namespace eval ::athena_test::tests:: {
     test BLOCK:CONDITION:ADD-2.2 {notifier event} -setup {
         setup
     } -body {
-        ted notifier bind ::block <conditions>
+        ted notifier bind ::adb.block <conditions>
         ted order BLOCK:CONDITION:ADD block_id [$B1 id] typename EXPR
         ted notifier received
     } -cleanup {
         cleanup
-    } -match glob -result {*{::block <conditions> *}*}
+    } -match glob -result {*{::adb.block <conditions> *}*}
 
     test BLOCK:CONDITION:ADD-2.3 {undo notifier event} -setup {
         setup
         ted order BLOCK:CONDITION:ADD block_id [$B1 id] typename EXPR
     } -body {
-        ted notifier bind ::block <conditions>
+        ted notifier bind ::adb.block <conditions>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
-    } -match glob -result {*{::block <conditions> *}*}
+    } -match glob -result {*{::adb.block <conditions> *}*}
  
     #-------------------------------------------------------------------
     # BLOCK:CONDITION:DELETE
@@ -679,14 +679,14 @@ namespace eval ::athena_test::tests:: {
     test BLOCK:CONDITION:DELETE-2.3 {notifier event} -setup {
         bcd_setup
     } -body {
-        ted notifier bind ::block <conditions>
+        ted notifier bind ::adb.block <conditions>
         ted order BLOCK:CONDITION:DELETE ids [list [$C1 id] [$C2 id]]
         ted notifier received
     } -cleanup {
         cleanup
     } -match glob -result {
-        {::block <conditions> delete * *}
-        {::block <conditions> delete * *}
+        {::adb.block <conditions> delete * *}
+        {::adb.block <conditions> delete * *}
     }
 
     test BLOCK:CONDITION:DELETE-2.4 {undone} -setup {
@@ -703,14 +703,14 @@ namespace eval ::athena_test::tests:: {
         bcd_setup
         ted order BLOCK:CONDITION:DELETE ids [list [$C1 id] [$C2 id]]
     } -body {
-        ted notifier bind ::block <conditions>
+        ted notifier bind ::adb.block <conditions>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -match glob -result {
-        {::block <conditions> add * *}
-        {::block <conditions> add * *}
+        {::adb.block <conditions> add * *}
+        {::adb.block <conditions> add * *}
     }
  
 

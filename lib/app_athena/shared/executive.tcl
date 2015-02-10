@@ -317,7 +317,7 @@ snit::type executive {
             [mytypemethod block configure]
 
         $interp smartalias {block last} 0 0 {} \
-            [myproc last_bean ::block]
+            [myproc last_bean ::athena::block]
 
         # condition
         $interp ensemble condition
@@ -391,7 +391,7 @@ snit::type executive {
 
         # last block
         $interp smartalias {last block} 0 0 {} \
-            [myproc last_bean ::block]
+            [myproc last_bean ::athena::block]
 
         # last condition
         $interp smartalias {last condition} 0 0 {} \
@@ -2059,10 +2059,10 @@ snit::type executive {
     typemethod {block cget} {block_id {opt ""}} {
         # FIRST, get the block_id
         if {$block_id eq "-"} {
-            set block_id [last_bean ::block]
+            set block_id [last_bean ::athena::block]
         }
 
-        pot valclass block $block_id
+        pot valclass ::athena::block $block_id
 
         # NEXT, get the block data
         set block [pot get $block_id]
@@ -2091,7 +2091,7 @@ snit::type executive {
     typemethod {block configure} {block_id args} {
         # FIRST, get the block_id
         if {$block_id eq "-"} {
-            set block_id [last_bean ::block]
+            set block_id [last_bean ::athena::block]
         }
 
         # NEXT, configure it
@@ -2131,7 +2131,7 @@ snit::type executive {
     typemethod {condition add} {block_id typename args} {
         # FIRST, get the block_id
         if {$block_id eq "-"} {
-            set block_id [last_bean ::block]
+            set block_id [last_bean ::athena::block]
         }
 
         # NEXT, create the condition
@@ -2526,7 +2526,7 @@ snit::type executive {
     typemethod {tactic add} {block_id typename args} {
         # FIRST, get the block_id
         if {$block_id eq "-"} {
-            set block_id [last_bean ::block]
+            set block_id [last_bean ::athena::block]
         }
 
         # NEXT, create the tactic

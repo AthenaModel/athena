@@ -118,7 +118,7 @@ namespace eval ::athena_test::tests:: {
 
     test constructor-1.2 {can set options} -setup {
         setup
-        set B1 [pot new block -cmode ANY -intent "My block"]
+        set B1 [pot new ::athena::block -cmode ANY -intent "My block"]
     } -body {
         ted pdicts [$B1 getdict]
     } -cleanup {
