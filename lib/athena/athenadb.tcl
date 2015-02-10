@@ -155,34 +155,35 @@ snit::type ::athena::athenadb {
     
     # Resources
     component rdb                        ;# writable sqldatabase handle
-    component pot      -public pot       ;# beanpot(n)
-    component flunky   -public flunky    ;# athena_flunky(n)
-    component paster   -public paste     ;# paste manager
+    component pot       -public pot       ;# beanpot(n)
+    component flunky    -public flunky    ;# athena_flunky(n)
+    component paster    -public paste     ;# paste manager
 
     # Editable Entities
-    component absit    -public absit     ;# absit manager
-    component actor    -public actor     ;# actor manager
-    component agent    -public agent     ;# agent manager
-    component bsys     -public bsys      ;# belief system manager
-    component cap      -public cap       ;# cap manager
-    component civgroup -public civgroup  ;# civgroup manager
-    component coop     -public coop      ;# cooperation manager
-    component curse    -public curse     ;# curse manager
-    component frcgroup -public frcgroup  ;# frcgroup manager
-    component hrel     -public hrel      ;# horiz. rel. manager
-    component nbhood   -public nbhood    ;# nbhood manager
-    component orggroup -public orggroup  ;# orggroup manager
-    component sat      -public sat       ;# satisfaction manager
-    component vrel     -public vrel      ;# vert. rel. manager
+    component absit     -public absit     ;# absit manager
+    component actor     -public actor     ;# actor manager
+    component agent     -public agent     ;# agent manager
+    component bsys      -public bsys      ;# belief system manager
+    component cap       -public cap       ;# cap manager
+    component civgroup  -public civgroup  ;# civgroup manager
+    component coop      -public coop      ;# cooperation manager
+    component curse     -public curse     ;# curse manager
+    component frcgroup  -public frcgroup  ;# frcgroup manager
+    component hrel      -public hrel      ;# horiz. rel. manager
+    component nbhood    -public nbhood    ;# nbhood manager
+    component orggroup  -public orggroup  ;# orggroup manager
+    component sat       -public sat       ;# satisfaction manager
+    component vrel      -public vrel      ;# vert. rel. manager
 
     # Other Entities
-    component activity -public activity  ;# activity manager
-    component agent    -public agent     ;# agent manager
-    component group    -public group     ;# group manager
+    component activity  -public activity  ;# activity manager
+    component agent     -public agent     ;# agent manager
+    component group     -public group     ;# group manager
 
     # Tactic APIs
-    component cash     -public cash      ;# cash/spending API
-    component control  -public control   ;# nbhood control API
+    component cash      -public cash      ;# cash/spending API
+    component control   -public control   ;# nbhood control API
+    component personnel -public personnel ;# personnel laydown API
 
     #-------------------------------------------------------------------
     # Options
@@ -271,6 +272,7 @@ snit::type ::athena::athenadb {
             hrel             \
             nbhood           \
             orggroup         \
+            personnel        \
             sat              \
             vrel
 

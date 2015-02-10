@@ -79,4 +79,5 @@ source [file join $::athena::library group.tcl            ]
 # Tactic APIs
 source [file join $::athena::library cash.tcl             ]
 source [file join $::athena::library control.tcl          ]
+source [file join $::athena::library personnel.tcl        ]
 
