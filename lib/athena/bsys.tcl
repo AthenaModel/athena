@@ -63,7 +63,7 @@ snit::type ::athena::bsys {
         # NEXT, register this module as a saveable
         # TBD: This will work only as long as the instance is
         # aliased to ::bsys
-        athena register $self
+        athena register ::bsys
 
     }
 
