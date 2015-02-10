@@ -164,7 +164,7 @@ tactic define DEMOB "Demobilize Personnel" {actor} {
         text name -width 20
 
         rcc "Group:" -for g
-        enum g -listcmd {tactic groupsOwnedByAgent $tactic_id}
+        enum g -listcmd {$order_ groupsOwnedByAgent $tactic_id}
 
         rcc "Mode:" -for mode
         selector mode {

@@ -163,7 +163,7 @@ snit::type ::athena::agent {
             # FIRST, skip special cases.
             if {$name  eq "MAINTAIN"                && 
                 $atype eq "actor"                   &&
-                [actor get $agent_id auto_maintain]
+                [$adb actor get $agent_id auto_maintain]
             } {
                 continue
             }

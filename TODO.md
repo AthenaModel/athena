@@ -1,6 +1,6 @@
 # TODO.md - Athena TODO List
 
-- Add paste entries to athenadb(n), athena(n) man pages.
+- Add test for [agent tactictypes] to 010-agent.tcl.
 - Add all component entries to athenadb(n).
   - Or, come up with a plan for which ones are documented and which aren't.
 - Move editable entities to athena(n)

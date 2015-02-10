@@ -794,7 +794,7 @@ tactic define DEPLOY "Deploy Personnel" {actor} -onlock {
         text name -width 20
 
         rcc "Group:" -for g
-        enum g -listcmd {tactic groupsOwnedByAgent $tactic_id}
+        enum g -listcmd {$order_ groupsOwnedByAgent $tactic_id}
 
         rcc "Personnel Mode:" -for pmode
         selector pmode {

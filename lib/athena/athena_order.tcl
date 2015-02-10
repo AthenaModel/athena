@@ -160,7 +160,42 @@ oo::class create ::athena::athena_order {
         return [$adb pot view $id $view]
     }
 
+    #-------------------------------------------------------------------
+    # Tactic Form Helpers
+    
+    # groupsOwnedByAgent id
+    #
+    # id   - A tactic ID
+    #
+    # Returns a list of force and organization groups owned by the 
+    # agent who owns the given tactic.  This is for use in order
+    # dynaforms where the user must choose an owned group.
 
+    method groupsOwnedByAgent {id} {
+        if {[$adb pot has $id]} {
+            set tactic [$adb pot get $id]
+            return [$adb group ownedby [$tactic agent]]
+        } else {
+            return [list]
+        }
+    }
+
+    # allAgentsBut id
+    #
+    # id  - A tactic ID
+    #
+    # Returns a list of agents except the one that owns the 
+    # given tactic.
+
+    method allAgentsBut {id} {
+        if {[$adb pot has $id]} {
+            set tactic [$adb pot get $id]
+            set alist [$adb actor names]
+            return [ldelete alist [$tactic agent]]
+        } else {
+            return [list]
+        }
+    }
     
     #-------------------------------------------------------------------
     # Validation Helper Methods
