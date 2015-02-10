@@ -1,7 +1,5 @@
 # TODO.md - Athena TODO List
 
-- Problems
-  - Can't save elitia and reload.
 - Add all component entries to athenadb(n).
   - Or, come up with a plan for which ones are documented and which aren't.
 - Move editable entities to athena(n)
