@@ -1,12 +1,12 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#   athena.tcl
+#   athenadb.tcl
 #
 # PROJECT:
 #   athena - Athena Regional Stability Simulation
 #
 # DESCRIPTION:
-#   athena(n) Package: Private Scenario Object
+#   athenadb(n) Package: Private Scenario Object
 #
 #   This type is the main *private* entry point into the athena(n) library.
 #   Instances of athenadb(n) define entire scenarios, and can be saved
@@ -154,7 +154,7 @@ snit::type ::athena::athenadb {
     # Components
     
     # Resources
-    component rdb                        ;# writable sqldatabase handle
+    component rdb                         ;# writable sqldatabase handle
     component pot       -public pot       ;# beanpot(n)
     component flunky    -public flunky    ;# athena_flunky(n)
     component paster    -public paste     ;# paste manager
@@ -176,9 +176,10 @@ snit::type ::athena::athenadb {
     component vrel      -public vrel      ;# vert. rel. manager
 
     # Other Entities
-    component activity  -public activity  ;# activity manager
-    component agent     -public agent     ;# agent manager
-    component group     -public group     ;# group manager
+    component activity -public activity  ;# activity manager
+    component agent    -public agent     ;# agent manager
+    component demog    -public demog     ;# demographics manager
+    component group    -public group     ;# group manager
 
     # Tactic APIs
     component cash      -public cash      ;# cash/spending API
@@ -267,6 +268,7 @@ snit::type ::athena::athenadb {
             coop             \
             control          \
             curse            \
+            demog            \
             frcgroup         \
             group            \
             hrel             \

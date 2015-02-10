@@ -65,9 +65,9 @@ snit::widgetadaptor nbhoodbrowser {
             -titlecolumns 1                           \
             -selectioncmd [mymethod SelectionChanged] \
             -reloadon {
-                ::sim <DbSyncB>
-                ::sim <Tick>
-                ::demog <Update>
+                ::sim       <DbSyncB>
+                ::sim       <Tick>
+                ::adb.demog <Update>
             } -layout [string map [list %D $::app::derivedfg] $layout]
 
         # NEXT, get the options.
