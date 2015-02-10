@@ -524,7 +524,7 @@ namespace eval ::athena_test::tests:: {
         $B1 addcondition_ EXPR
         $B1 addcondition_ EXPR
 
-        set a [pot ids condition]
+        set a [pot ids ::athena::condition]
         set b [$B1 condition_ids]
 
         expr {$a eq $b}

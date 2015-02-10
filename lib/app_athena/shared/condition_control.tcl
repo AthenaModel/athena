@@ -13,7 +13,7 @@
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
-condition define CONTROL "Control of Neighborhoods" {
+::athena::condition define CONTROL "Control of Neighborhoods" {
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -158,7 +158,7 @@ condition define CONTROL "Control of Neighborhoods" {
 
 
     method _validate {} {
-        my prepare condition_id -required -with {::strategy valclass condition::CONTROL}
+        my prepare condition_id -required -with {::strategy valclass ::athena::condition::CONTROL}
         my returnOnError
 
         set cond [pot get $parms(condition_id)]

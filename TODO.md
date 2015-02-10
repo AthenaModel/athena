@@ -18,8 +18,6 @@
   - absit, actor, bsys, cap, civgroup, curse, frcgroup, nbhood, orggroup
 - athena register
   - bsys
-- condition
-  - block
 - driver::absit
   - absit
 - ::gofer::ACTORS

@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Mark II Conditions
+#    athena(n): Mark II Conditions
 #
 #    A condition is an bean that represents a boolean proposition
 #    regarding the state of the simulation.  It can be evaluated to 
@@ -15,18 +15,17 @@
 #    Athena uses many different kinds of condition.  This module
 #    defines a base class for condition types.
 #
+# TBD: Global Refs: link, strategy
+#
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
-oo::class create condition {
+oo::class create ::athena::condition {
     superclass ::projectlib::bean
 }
 
 # NEXT, define class methods
-#
-# TBD: This is essentially the same as tactic; can we refactor this
-# somehow?
-oo::objdefine condition {
+oo::objdefine ::athena::condition {
     # List of defined condition types
     variable types
 
@@ -40,11 +39,11 @@ oo::objdefine condition {
 
     method define {typename title script} {
         # FIRST, create the new type
-        set fullname ::condition::$typename
+        set fullname ::athena::condition::$typename
         lappend types $fullname
 
         oo::class create $fullname {
-            superclass ::condition
+            superclass ::athena::condition
         }
 
         # NEXT, define the instance members.
@@ -92,7 +91,7 @@ oo::objdefine condition {
     # Returns the actual type object given the typename.
 
     method type {typename} {
-        return ::condition::$typename
+        return ::athena::condition::$typename
     }
 
     # typedict
@@ -126,7 +125,7 @@ oo::objdefine condition {
 
 
 # NEXT, define instance methods
-oo::define condition {
+oo::define ::athena::condition {
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -155,10 +154,12 @@ oo::define condition {
     
     # subject
     #
-    # Set subject for notifier events.
+    # Set subject for notifier events.  It's the athenadb(n) subject
+    # plus ".condition".
 
     method subject {} {
-        return "::condition"
+        set adb [[my pot] cget -rdb]
+        return "[$adb cget -subject].condition"
     }
 
 
@@ -505,12 +506,12 @@ oo::define condition {
     meta parmlist   {condition_id state}
 
     method _validate {} {
-        my prepare condition_id -required -with {::strategy valclass ::condition}
+        my prepare condition_id -required -with {::strategy valclass ::athena::condition}
         my prepare state        -required -tolower -type ebeanstate
     }
 
     method _execute {{flunky ""}} {
-        set cond [pot get $parms(condition_id)]
+        set cond [$adb pot get $parms(condition_id)]
         my setundo [$cond update_ {state} [array get parms]]
     }
 }

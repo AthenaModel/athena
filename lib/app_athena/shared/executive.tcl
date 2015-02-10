@@ -333,7 +333,7 @@ snit::type executive {
             [mytypemethod condition configure]
 
         $interp smartalias {condition last} 0 0 {} \
-            [myproc last_bean ::condition]
+            [myproc last_bean ::athena::condition]
 
 
         # clear
@@ -395,7 +395,7 @@ snit::type executive {
 
         # last condition
         $interp smartalias {last condition} 0 0 {} \
-            [myproc last_bean ::condition]
+            [myproc last_bean ::athena::condition]
 
         # last absit
         $interp smartalias {last absit} 0 0 {} \
@@ -2155,10 +2155,10 @@ snit::type executive {
     typemethod {condition cget} {condition_id {opt ""}} {
         # FIRST, get the condition_id
         if {$condition_id eq "-"} {
-            set condition_id [last_bean ::condition]
+            set condition_id [last_bean ::athena::condition]
         }
 
-        pot valclass condition $condition_id
+        pot valclass ::athena::condition $condition_id
 
         # NEXT, get the condition data
         set condition [pot get $condition_id]
@@ -2187,10 +2187,10 @@ snit::type executive {
     typemethod {condition configure} {condition_id args} {
         # FIRST, get the condition_id
         if {$condition_id eq "-"} {
-            set condition_id [last_bean ::condition]
+            set condition_id [last_bean ::athena::condition]
         }
 
-        pot valclass ::condition $condition_id
+        pot valclass ::athena::condition $condition_id
 
         # NEXT, configure it
         flunky transaction "condition configure..." {

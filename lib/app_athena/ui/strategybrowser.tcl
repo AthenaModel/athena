@@ -269,7 +269,7 @@ snit::widget strategybrowser {
         # a change to the block, and is handled there.
 
         notifier bind ::tactic    <update> $self [list $ttab uid update]
-        notifier bind ::condition <update> $self [list $ctab uid update]
+        notifier bind ::adb.condition <update> $self [list $ctab uid update]
 
     }
 
@@ -1318,7 +1318,7 @@ snit::widget strategybrowser {
         }
 
         clipboardx clear
-        clipboardx set ::condition $copyData
+        clipboardx set ::athena::condition $copyData
 
         # NEXT, if the mode is cut delete the items.
         if {$mode eq "cut"} {
@@ -1349,7 +1349,7 @@ snit::widget strategybrowser {
         }
 
         # NEXT, get the conditions from the clipboard, if any.
-        set copysets [clipboardx get ::condition]
+        set copysets [clipboardx get ::athena::condition]
 
         if {[llength $copysets] == 0} {
             bell
@@ -1372,7 +1372,7 @@ snit::widget strategybrowser {
         menu $mnu
         $ct_addbtn configure -menu $mnu
 
-        dict for {ctype title} [condition typedict] {
+        dict for {ctype title} [::athena::condition typedict] {
             $mnu add command \
                 -label   $title \
                 -command [mymethod CTabAdd [$ctype typename]]

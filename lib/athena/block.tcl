@@ -11,7 +11,7 @@
 #    An agent's strategy determines his actions.  It consists of a number
 #    of blocks, each of which contains zero or more conditions and tactics.
 #
-# TBD: Global refs: simclock, strategy, tactic, condition
+# TBD: Global refs: simclock, strategy, tactic
 #
 #-----------------------------------------------------------------------
 
@@ -876,7 +876,7 @@ oo::class create ::athena::block {
         set next_name ""
         if {[[my pot] hasa ::tactic $bean_id]} {
             set next_name [my next_tactic_name]
-        } elseif {[[my pot] hasa ::condition $bean_id]} {
+        } elseif {[[my pot] hasa ::athena::condition $bean_id]} {
             set next_name [my next_condition_name]
         }
 
@@ -904,7 +904,7 @@ oo::class create ::athena::block {
     # execution data.
 
     method addcondition_ {typename} {
-        return [my addbean_ conditions [condition type $typename]]
+        return [my addbean_ conditions [::athena::condition type $typename]]
     }
 
     # deletecondition_ condition_id 
@@ -1214,7 +1214,7 @@ oo::class create ::athena::block {
 
     method _validate {} {
         my prepare block_id -required -toupper -with {::strategy valclass ::athena::block}
-        my prepare typename -required -toupper -oneof [condition typenames]
+        my prepare typename -required -toupper -oneof [::athena::condition typenames]
     }
 
     method _execute {{flunky ""}} {
@@ -1244,7 +1244,7 @@ oo::class create ::athena::block {
     meta parmlist   { ids }
 
     method _validate {} {
-        my prepare ids -required -toupper -listwith {::strategy valclass ::condition}
+        my prepare ids -required -toupper -listwith {::strategy valclass ::athena::condition}
     }
 
     method _execute {{flunky ""}} {

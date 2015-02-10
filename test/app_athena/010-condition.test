@@ -61,14 +61,14 @@ namespace eval ::athena_test::tests:: {
     #===================================================================
     # condition class methods
     #
-    # [condition define] is tested implicitly.
+    # [::athena::condition define] is tested implicitly.
 
     #-------------------------------------------------------------------
     # type
 
     test type-1.1 {return type given type name} -body {
-        condition type EXPR
-    } -result {::condition::EXPR}
+        ::athena::condition type EXPR
+    } -result {::athena::condition::EXPR}
     
 
     #-------------------------------------------------------------------
@@ -76,9 +76,9 @@ namespace eval ::athena_test::tests:: {
 
     test typedict-1.1 {lists types and titles} -body {
         # Spot check
-        set a [llength [condition types]]
-        set b [dict size [condition typedict]]
-        set c [dict get [condition typedict] ::condition::EXPR]
+        set a [llength [::athena::condition types]]
+        set b [dict size [::athena::condition typedict]]
+        set c [dict get [::athena::condition typedict] ::athena::condition::EXPR]
         
         list [expr {$a == $b}] $c
     } -result {1 {EXPR: Boolean Expression}}
@@ -90,14 +90,14 @@ namespace eval ::athena_test::tests:: {
     # ctype's typename
 
     test ctype_typename-1.1 {return type's name} -body {
-        condition::EXPR typename
+        ::athena::condition::EXPR typename
     } -result {EXPR}
     
     #-------------------------------------------------------------------
     # ctype's title
 
     test ctype_title-1.1 {return type's title} -body {
-        condition::EXPR title
+        ::athena::condition::EXPR title
     } -result {Boolean Expression}
     
     #===================================================================

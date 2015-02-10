@@ -11,7 +11,7 @@
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
-condition define EXPR "Boolean Expression" {
+::athena::condition define EXPR "Boolean Expression" {
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -104,7 +104,7 @@ condition define EXPR "Boolean Expression" {
 
 
     method _validate {} {
-        my prepare condition_id -required -with {::strategy valclass condition::EXPR}
+        my prepare condition_id -required -with {::strategy valclass ::athena::condition::EXPR}
         my returnOnError
 
         set cond [pot get $parms(condition_id)]
