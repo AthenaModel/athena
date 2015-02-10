@@ -6,11 +6,12 @@
 #   Will Duquette
 #
 # DESCRIPTION:
-#   athena(n): Personnel Manager
+#   athena(n) Tactic API: Personnel Manager
 #
 #   This module is responsible for managing the deployment of 
 #   FRC and ORG personnel in neighborhoods and the assignment of
-#   activities to deployed personnel.
+#   activities to deployed personnel, and the flow of population
+#   from one civilian group to another, during strategy execution.
 #
 # TBD: Global refs: unit, parm, sigevent
 #
@@ -21,6 +22,13 @@ snit::type ::athena::personnel {
     # Components
 
     component adb ;# The athenadb(n) instance
+
+    #-------------------------------------------------------------------
+    # Instance Variables
+
+    # Pending population flows (transient)
+    variable pendingFlows {}
+    
 
     #-------------------------------------------------------------------
     # Constructor
@@ -69,6 +77,7 @@ snit::type ::athena::personnel {
     # Populates the working tables for strategy execution.
 
     method load {} {
+        # FIRST, prepare the working tables for force/org personnel.
         $adb eval {
             DELETE FROM working_personnel;
             INSERT INTO working_personnel(g,personnel,available)
@@ -83,6 +92,9 @@ snit::type ::athena::personnel {
             CREATE TEMP TABLE working_deploy_tng AS SELECT * FROM deploy_tng;
             DELETE FROM deploy_tng;
         }
+
+        # NEXT, prepare to receive civilian population flows
+        set pendingFlows [list]
     }
 
     # deploy tactic_id n g personnel
@@ -238,6 +250,26 @@ snit::type ::athena::personnel {
         return [unit assign $tactic_id $g $n $a $personnel]
     }
 
+    # flow f g delta
+    #
+    # f          - The source group
+    # g          - The destination group
+    # personnel  - The number of people to move
+    #
+    # Saves the pending flow until later.
+
+    method flow {f g delta} {
+        lappend pendingFlows $f $g $delta
+    }
+
+    # pendingFlows
+    #
+    # Returns the list of pending flows.
+
+    method pendingFlows {} {
+        return $pendingFlows
+    }
+
     # save
     #
     # Saves the working data back to the persistent tables.  In particular,
@@ -275,6 +307,13 @@ snit::type ::athena::personnel {
             INSERT INTO deploy_ng(n,g,personnel,unassigned)
             SELECT n,g,personnel,unassigned FROM working_deployment;
         }
+
+        # NEXT, save pending civilian flows
+        foreach {f g delta} $pendingFlows {
+            $adb demog flow $f $g $delta
+        }
+
+        set pendingFlows [list]
     }
 
     # LogDeploymentChanges

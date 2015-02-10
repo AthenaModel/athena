@@ -210,7 +210,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         $T1 execute
 
-        tactic::FLOW pending
+        personnel pendingFlows
     } -cleanup {
         cleanup
     } -result {SHIA KURD 1000}
@@ -223,7 +223,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         $T1 execute
 
-        tactic::FLOW pending
+        personnel pendingFlows
     } -cleanup {
         cleanup
     } -result {SHIA KURD 19.230769230769234}
@@ -236,7 +236,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         $T1 execute
 
-        tactic::FLOW pending
+        personnel pendingFlows
     } -cleanup {
         cleanup
     } -result {SHIA KURD 400}
@@ -249,7 +249,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         $T1 execute
 
-        tactic::FLOW pending
+        personnel pendingFlows
     } -cleanup {
         cleanup
     } -result {SHIA KURD 1000}
@@ -262,7 +262,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         $T1 execute
 
-        tactic::FLOW pending
+        personnel pendingFlows
     } -cleanup {
         cleanup
     } -result {SHIA KURD 600}
@@ -275,15 +275,11 @@ namespace eval ::athena_test::tests:: {
     } -body {
         $T1 execute
 
-        tactic::FLOW pending
+        personnel pendingFlows
     } -cleanup {
         cleanup
     } -result {}
-
-    #-------------------------------------------------------------------
-    # TBD: should really test [tactic::FLOW save] and [tactic::FLOW reset]
     
-
     #-------------------------------------------------------------------
     # Cleanup
 
