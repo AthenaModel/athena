@@ -1,6 +1,8 @@
 # TODO.md - Athena TODO List
 
 - Add paste entries to athenadb(n), athena(n) man pages.
+- Add all component entries to athenadb(n).
+  - Or, come up with a plan for which ones are documented and which aren't.
 - Move editable entities to athena(n)
 - Move model modules to athena(n)
 - Move relevant projtypes to athena(n)
