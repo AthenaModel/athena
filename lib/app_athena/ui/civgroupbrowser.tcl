@@ -67,7 +67,7 @@ snit::widgetadaptor civgroupbrowser {
             -reloadon {
                 ::sim <DbSyncB>
                 ::sim <Tick>
-                ::demog <Update>
+                ::adb.demog <Update>
             } -layout [string map [list %D $::app::derivedfg] $layout]
 
         # NEXT, get the options.

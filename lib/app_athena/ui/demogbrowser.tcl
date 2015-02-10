@@ -54,10 +54,10 @@ snit::widgetadaptor demogbrowser {
             -uid          id                          \
             -titlecolumns 1                           \
             -reloadon {
-                ::sim <DbSyncB>
-                ::demog <Update>
-                ::adb <nbhoods>
-                ::adb <civgroups>
+                ::sim       <DbSyncB>
+                ::adb.demog <Update>
+                ::adb       <nbhoods>
+                ::adb       <civgroups>
             } -layout [string map [list %D $::app::derivedfg] $layout]
 
         # NEXT, get the options.

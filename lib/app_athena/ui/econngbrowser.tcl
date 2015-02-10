@@ -50,7 +50,7 @@ snit::widgetadaptor econngbrowser {
             }
             -reloadon {
                 ::sim <DbSyncB>
-                ::demog <Update>
+                ::adb.demog <Update>
                 ::adb <nbhoods>
                 ::adb <groups>
                 ::adb <civgroups>
@@ -70,7 +70,7 @@ snit::widgetadaptor econngbrowser {
             }
             -reloadon {
                 ::sim <DbSyncB>
-                ::demog <Update>
+                ::adb.demog <Update>
                 ::adb <nbhoods>
                 ::adb <groups>
                 ::adb <civgroups>

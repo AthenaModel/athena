@@ -178,6 +178,7 @@ snit::type ::athena::athenadb {
     # Other Entities
     component activity -public activity  ;# activity manager
     component agent    -public agent     ;# agent manager
+    component demog    -public demog     ;# demographics manager
     component group    -public group     ;# group manager
 
     # Tactic APIs
@@ -266,6 +267,7 @@ snit::type ::athena::athenadb {
             coop             \
             control          \
             curse            \
+            demog            \
             frcgroup         \
             group            \
             hrel             \

@@ -69,6 +69,7 @@ source [file join $::athena::library vrel.tcl         ]
 # Non-Editable Entities
 source [file join $::athena::library activity.tcl     ]
 source [file join $::athena::library agent.tcl        ]
+source [file join $::athena::library demog.tcl        ]
 source [file join $::athena::library group.tcl        ]
 
 # Tactic APIs

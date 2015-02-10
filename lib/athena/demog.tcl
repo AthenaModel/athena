@@ -1,10 +1,17 @@
 #-----------------------------------------------------------------------
 # FILE: demog.tcl
 #
-#   Athena Demographics Model singleton
+#   Athena Demographics Model
 #
 # PACKAGE:
-#   app_sim(n) -- athena_sim(1) implementation package
+#   athena(n): Demographics Manager
+#
+#   This module is responsible for computing demographics for neighborhoods
+#   and neighborhood groups.  The data is stored in the demog_g, demog_n,
+#   and demog_local tables.  Entries in the demog_n and demog_g tables
+#   are created and deleted by the nbhood and civgroup modules respectively,
+#   as neighborhoods and civilian groups come and go.  The (single)
+#   entry in the demog_local table is created/replaced on <analyze pop>.
 #
 # PROJECT:
 #   Athena S&RO Simulation
@@ -12,25 +19,19 @@
 # AUTHOR:
 #    Will Duquette
 #
-#-----------------------------------------------------------------------
-
-#-----------------------------------------------------------------------
-# demog
-#
-# athena_sim(1): Demographic Model, main module.
-#
-# This module is responsible for computing demographics for neighborhoods
-# and neighborhood groups.  The data is stored in the demog_g, demog_n,
-# and demog_local tables.  Entries in the demog_n and demog_g tables
-# are created and deleted by nbhood(sim) and civgroups(sim) respectively,
-# as neighborhoods and civilian groups come and go.  The (single)
-# entry in the demog_local table is created/replaced on <analyze pop>.
+# TBD:
+#    * Global entities in use: ::econ, ::sim, ::parmdb
 #
 #-----------------------------------------------------------------------
 
-snit::type demog {
-    # Make it a singleton
-    pragma -hasinstances no
+#-----------------------------------------------------------------------
+
+snit::type ::athena::demog {
+
+    #-------------------------------------------------------------------
+    # Components 
+
+    component adb  ;# The athenadb(n) instance
 
     #-------------------------------------------------------------------
     # Non-Checkpointed Variables
@@ -38,17 +39,24 @@ snit::type demog {
     # This variable is used to keep track of unused labor force by
     # neighborhood. It's used when unemployment is disaggregated
 
-    typevariable lfremain -array {}
+    variable lfremain -array {}
 
     # This variable is used to keep track of jobs remaining by 
     # neighborhood. It's used when unemployment is disaggregated
 
-    typevariable jobsremain -array {}
+    variable jobsremain -array {}
 
     # This variable keeps track of the number of iterations of the
     # unemployment disaggregation algorithm given a priority level
 
-    typevariable iter
+    variable iter
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    constructor {adb_} {
+        set adb $adb_
+    }
 
     #-------------------------------------------------------------------
     # Scenario Control
@@ -57,10 +65,10 @@ snit::type demog {
     #
     # Computes population statistics at scenario lock.
 
-    typemethod start {} {
+    method start {} {
         # FIRST, populate the demog_g and demog_n tables.
 
-        rdb eval {
+        $adb eval {
             INSERT INTO demog_g(g,real_pop,population,upc)
             SELECT g, 
                    basepop, 
@@ -73,7 +81,7 @@ snit::type demog {
         }
 
         # NEXT, do the initial population analysis
-        $type stats
+        $self stats
     }
     
 
@@ -87,13 +95,13 @@ snit::type demog {
     #
     # This routine can be called at any time after scenario lock.
 
-    typemethod stats {} {
-        $type ComputePopG
-        $type ComputePopN
-        $type ComputePopLocal
+    method stats {} {
+        $self ComputePopG
+        $self ComputePopN
+        $self ComputePopLocal
 
         # Notify the GUI that demographics may have changed.
-        notifier send $type <Update>
+        $adb notify demog <Update>
 
         return
     }
@@ -102,7 +110,7 @@ snit::type demog {
     #
     # Computes the population statistics for each civilian group.
 
-    typemethod ComputePopG {} {
+    method ComputePopG {} {
         # FIRST, compute the breakdown for all groups.
         foreach {g population sa_flag lfp} [rdb eval {
             SELECT g, population, sa_flag, lfp
@@ -118,7 +126,7 @@ snit::type demog {
                 let labor_force {round($lfp * $consumers/100.0)}
             }
 
-            rdb eval {
+            $adb eval {
                 UPDATE demog_g
                 SET subsistence = $subsistence,
                     consumers   = $consumers,
@@ -133,10 +141,10 @@ snit::type demog {
     # Computes the population statistics and labor force for each
     # neighborhood.
 
-    typemethod ComputePopN {} {
+    method ComputePopN {} {
         # FIRST, compute neighborhood population, consumers, and
         # labor force given the neighborhood groups.
-        rdb eval {
+        $adb eval {
             SELECT n,
                    total(population)  AS population,
                    total(subsistence) AS subsistence,
@@ -146,7 +154,7 @@ snit::type demog {
             JOIN civgroups USING (g)
             GROUP BY n
         } {
-            rdb eval {
+            $adb eval {
                 UPDATE demog_n
                 SET population  = $population,
                     subsistence = $subsistence,
@@ -169,7 +177,7 @@ snit::type demog {
              SELECT n,labor_force FROM demog_n
         }] {
             let jobs {$labor_force * (1.0 - ($defaultUR / 100.0))}
-            rdb eval {
+           $adb eval {
                 UPDATE econ_n
                 SET jobs=$jobs
                 WHERE n=$n
@@ -182,11 +190,11 @@ snit::type demog {
     # Computes the population statistics and labor force for the
     # local region of interest.
 
-    typemethod ComputePopLocal {} {
+    method ComputePopLocal {} {
         # FIRST, compute and save the total population and
         # labor force in the local region.
 
-        rdb eval {
+        $adb eval {
             DELETE FROM demog_local;
 
             INSERT INTO demog_local
@@ -206,7 +214,7 @@ snit::type demog {
     # Computes the adjustment to each civilian group's population
     # based on its change rate.
 
-    typemethod growth {} {
+    method growth {} {
         foreach {g real_pop pop_cr} [rdb eval {
             SELECT g, real_pop, pop_cr
             FROM civgroups JOIN demog_g USING (g)
@@ -217,7 +225,7 @@ snit::type demog {
             # weekly fraction.  Thus, we divide by 100*52.
             let delta {$real_pop * $pop_cr/5200.0}
             log detail demog "Group $g's population changes by $delta"
-            demog adjust $g $delta
+            $self adjust $g $delta
         }
     }
 
@@ -229,18 +237,18 @@ snit::type demog {
     #
     # Computes the effects of the economy on the population.
 
-    typemethod econstats {} {
+    method econstats {} {
         # FIRST, compute the statistics
-        $type ComputeUnemployment
-        $type ComputeNbhoodEconStats
-        $type ComputeGroupEmployment
-        $type ComputeGroupConsumption
-        $type ComputeExpectedGroupConsumption
-        $type ComputeGroupPoverty
+        $self ComputeUnemployment
+        $self ComputeNbhoodEconStats
+        $self ComputeGroupEmployment
+        $self ComputeGroupConsumption
+        $self ComputeExpectedGroupConsumption
+        $self ComputeGroupPoverty
 
 
         # NEXT, Notify the GUI that demographics may have changed.
-        notifier send $type <Update>
+        $adb notify demog <Update>
 
         return
     }
@@ -250,7 +258,7 @@ snit::type demog {
     # Returns the number of workers geographically unemployed (are too
     # far from where the work is)
 
-    typemethod geounemp {} {
+    method geounemp {} {
         # FIRST, no econ model, no geo-unemployment
         if {[econ state] eq "DISABLED"} {
             return 0
@@ -275,7 +283,7 @@ snit::type demog {
     #
     # Compute the group employment statistics for each group.
     
-    typemethod ComputeGroupEmployment {} {
+    method ComputeGroupEmployment {} {
         # FIRST, get the unemployment rate and the Unemployment
         # Factor Z-curve.
         set zuaf [parmdb get demog.Zuaf]
@@ -330,7 +338,7 @@ snit::type demog {
             }
 
             # Save results
-            rdb eval {
+            $adb eval {
                 UPDATE demog_g
                 SET employed   = $employed,
                     unemployed = $unemployed,
@@ -346,9 +354,9 @@ snit::type demog {
     #
     # Computes the actual consumption of goods by each group.
     
-    typemethod ComputeGroupConsumption {} {
+    method ComputeGroupConsumption {} {
         # FIRST, clear the values;
-        rdb eval {
+        $adb eval {
             UPDATE demog_g
             SET tc   = 0,
                 aloc = 0,
@@ -390,7 +398,7 @@ snit::type demog {
 
             let rloc {[parm get demog.consump.RGPC.$urbanization]/52.0}
             
-            rdb eval {
+           $adb eval {
                 UPDATE demog_g
                 SET tc   = $tc,
                     aloc = $aloc,
@@ -404,10 +412,10 @@ snit::type demog {
     #
     # Update the expected level of consumption of goods for all groups.
     
-    typemethod ComputeExpectedGroupConsumption {} {
+    method ComputeExpectedGroupConsumption {} {
         # FIRST, if the economic model is disabled, we're done.
         if {[econ state] eq "DISABLED"} {
-            rdb eval {
+            $adb eval {
                 UPDATE demog_g
                 SET eloc = 0;
             }
@@ -418,7 +426,7 @@ snit::type demog {
         # NEXT, on lock the expected consumption is just the actual
         # consumption.
         if {[simclock delta] == 0} {
-            rdb eval {
+           $adb eval {
                 UPDATE demog_g
                 SET eloc = aloc;
             }
@@ -445,7 +453,7 @@ snit::type demog {
                 let eloc {$eloc + $alphaE*($aloc - $eloc)}
             }
         
-            rdb eval {
+           $adb eval {
                 UPDATE demog_g
                 SET eloc = $eloc
                 WHERE g = $g
@@ -458,9 +466,9 @@ snit::type demog {
     # Computes each group's poverty fraction given the group's consumption
     # and the regional Gini coefficient.
     
-    typemethod ComputeGroupPoverty {} {
+    method ComputeGroupPoverty {} {
         # FIRST, clear the values.
-        rdb eval {
+       $adb eval {
             UPDATE demog_g
             SET povfrac = 0;
         }
@@ -496,7 +504,7 @@ snit::type demog {
                 # NEXT, round to two decimal places
                 set povfrac [format %.2f [expr {min(1.0, $povfrac)}]]
                 
-                rdb eval {
+                $adb eval {
                     UPDATE demog_g
                     SET povfrac = $povfrac
                     WHERE g = $g
@@ -530,7 +538,7 @@ snit::type demog {
     #    jobOffers(n,m)        - job offers by nbhood n to labor in nbhood m
     #    jobsFilled(n,m)       - jobs filled in nbhood n by labor in nbhood m
 
-    typemethod AllocateJobsByPriority {prio} {
+    method AllocateJobsByPriority {prio} {
         # FIRST, initialize labor force available to each neighborhood 
         # and job offers made to each neighborhood
         foreach n [array names lfremain] {
@@ -661,12 +669,12 @@ snit::type demog {
     # a plant is a function of neighborhood proximity.  The maximum proximity
     # a worker will take a job is controlled by a model parameter.
 
-    typemethod ComputeUnemployment {} {
+    method ComputeUnemployment {} {
         # FIRST, extract jobs and labor force available. Those in turbulence
         # are not considered part of the labor force
         set TurFrac [parm get demog.turFrac]
 
-        rdb eval {
+        $adb eval {
             SELECT E.n           AS n,
                    E.jobs        AS jobs, 
                    D.labor_force AS LF 
@@ -693,7 +701,7 @@ snit::type demog {
             if {[eproximity le $prox $max]} {
                 while {$morework} {
                     incr iter
-                    set morework [$type AllocateJobsByPriority $prox]
+                    set morework [$self AllocateJobsByPriority $prox]
 
                     # If we haven't finished by 1000 iterations, something
                     # is completely hosed.
@@ -715,7 +723,7 @@ snit::type demog {
     #
     # Computes the neighborhood's economic statistics.
  
-    typemethod ComputeNbhoodEconStats {} {
+    method ComputeNbhoodEconStats {} {
         # FIRST, compute neighborhood statistics based upon the disaggregated
         # unemployment
         set zuaf [parmdb get demog.Zuaf]
@@ -751,7 +759,7 @@ snit::type demog {
             }
 
             # Save results
-            rdb eval {
+           $adb eval {
                 UPDATE demog_n
                 SET unemployed = $unemployed,
                     ur         = $ur,
@@ -774,9 +782,9 @@ snit::type demog {
     # Retrieves a row dictionary, or a particular column value, from
     # demog_g.
 
-    typemethod getg {g {parm ""}} {
+    method getg {g {parm ""}} {
         # FIRST, get the data
-        rdb eval {SELECT * FROM demog_g WHERE g=$g} row {
+       $adb eval {SELECT * FROM demog_g WHERE g=$g} row {
             if {$parm ne ""} {
                 return $row($parm)
             } else {
@@ -797,9 +805,9 @@ snit::type demog {
     # Retrieves a row dictionary, or a particular column value, from
     # demog_n.
 
-    typemethod getn {n {parm ""}} {
+    method getn {n {parm ""}} {
         # FIRST, get the data
-        rdb eval {SELECT * FROM demog_n WHERE n=$n} row {
+       $adb eval {SELECT * FROM demog_n WHERE n=$n} row {
             if {$parm ne ""} {
                 return $row($parm)
             } else {
@@ -818,9 +826,9 @@ snit::type demog {
     # Retrieves a row dictionary, or a particular column value, from
     # demog_local.
 
-    typemethod getlocal {{parm ""}} {
+    method getlocal {{parm ""}} {
         # FIRST, get the data
-        rdb eval {
+       $adb eval {
             SELECT * FROM demog_local LIMIT 1
         } row {
             if {$parm ne ""} {
@@ -841,7 +849,7 @@ snit::type demog {
     # Returns a list of the NON-EMPTY civ groups that reside
     # in the neighborhood.
 
-    typemethod gIn {n} {
+    method gIn {n} {
         if {[sim state] eq "PREP"} {
             return [rdb eval {
                 SELECT g FROM civgroups WHERE n=$n AND basepop > 0 ORDER BY g
@@ -864,7 +872,7 @@ snit::type demog {
     # Returns a list of the NON-EMPTY subsistence agriculture
     # that reside in the neighborhood.
 
-    typemethod saIn {n} {
+    method saIn {n} {
         if {[sim state] eq "PREP"} {
             return [rdb eval {
                 SELECT g FROM civgroups 
@@ -889,7 +897,7 @@ snit::type demog {
     # Returns a list of the NON-EMPTY non-subsistence agriculture
     # that reside in the neighborhood.
 
-    typemethod nonSaIn {n} {
+    method nonSaIn {n} {
         if {[sim state] eq "PREP"} {
             return [rdb eval {
                 SELECT g FROM civgroups 
@@ -914,7 +922,7 @@ snit::type demog {
     # Returns the total population of the neighborhoods in the
     # list.
 
-    typemethod pop {nbhoods} {
+    method pop {nbhoods} {
         set total [rdb onecolumn "
             SELECT total(population)
             FROM demog_n
@@ -932,9 +940,9 @@ snit::type demog {
     # fractional share each neighborhood has of the total population
     # of the neighborhoods.
 
-    typemethod shares {nbhoods} {
+    method shares {nbhoods} {
         # FIRST, get the total population.
-        set total [demog pop $nbhoods]
+        set total [$self pop $nbhoods]
 
         # NEXT, handle a set of empty neighborhoods.
         if {$total == 0.0} {
@@ -973,8 +981,8 @@ snit::type demog {
     # Note that this routine doesn't recompute all of the breakdowns
     # and roll-ups; call [demog stats] as needed.
 
-    typemethod adjust {g delta} {
-        set real_pop [$type getg $g real_pop]
+    method adjust {g delta} {
+        set real_pop [$self getg $g real_pop]
 
         let real_pop {max(0.0, $real_pop + $delta)}
 
@@ -985,7 +993,7 @@ snit::type demog {
 
         let population {floor(round($real_pop))}
 
-        rdb eval {
+       $adb eval {
             UPDATE demog_g
             SET population = $population,
                 real_pop   = $real_pop
@@ -1002,18 +1010,18 @@ snit::type demog {
     # Flows up to delta people from group f to group g.  The
     # delta can include fractional flows.
 
-    typemethod flow {f g delta} {
+    method flow {f g delta} {
         # FIRST, Make sure delta's not too big.
-        set fpop [demog getg $f population]
+        set fpop [$self getg $f population]
         let delta {min($fpop, $delta)}
 
         # NEXT, Adjust the two groups
-        demog adjust $f -$delta
-        demog adjust $g $delta
+        $self adjust $f -$delta
+        $self adjust $g $delta
 
         # NEXT, Record the change
         if {[parm get hist.pop]} {
-            rdb eval {
+           $adb eval {
                 INSERT OR IGNORE INTO hist_flow(t,f,g)
                 VALUES(now(), $f, $g);
 
@@ -1031,14 +1039,14 @@ snit::type demog {
     #
     # Attrits a civilian group's population.  Note that it doesn't
     # recompute all of the breakdowns and roll-ups; call
-    # [demog stats] as needed.  Casualties never have a fractional
+    # [$self stats] as needed.  Casualties never have a fractional
     # part.
     #
     # TBD: This routine could be simplified
 
-    typemethod attrit {g casualties} {
+    method attrit {g casualties} {
         # FIRST, get the undo information
-        rdb eval {
+       $adb eval {
             SELECT population,attrition FROM demog_g
             WHERE g=$g
         } {}
@@ -1049,7 +1057,7 @@ snit::type demog {
         set undoing 0
 
         # NEXT, Update the group
-        rdb eval {
+       $adb eval {
             UPDATE demog_g
             SET attrition = attrition + $casualties,
                 population = population - $casualties,
