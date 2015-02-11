@@ -318,6 +318,8 @@ snit::type ::athena::athenadb {
         executive reset
 
         $rdb marksaved
+
+        $self notify "" <Create>
     } 
 
     # MakeComponents component...
@@ -472,6 +474,8 @@ snit::type ::athena::athenadb {
 
         # NEXT, reset other modules not yet owned by this object.
         catch {sim new}
+        
+        $self notify "" <Destroy>
     }
 
     #-------------------------------------------------------------------
