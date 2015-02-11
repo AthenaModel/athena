@@ -97,33 +97,6 @@ tactic define GRANT "Grant Access to CAP" {actor} -onlock {
             [andlist CAP $klist] to [andlist actor $actors].
         " [my agent] {*}$klist {*}$actors
     }
-
-    #-------------------------------------------------------------------
-    # Order Helper Typemethods
-
-
-    # capsOwnedBy tactic_id
-    #
-    # tactic_id     - A GRANT tactic id
-    #
-    # Returns a namedict of CAPs owned by the tactic's agent.
-    
-    typemethod capsOwnedBy {tactic_id} {
-        if {![pot has $tactic_id]} {
-            return [list]
-        }
-
-        set tactic [pot get $tactic_id]
-        set owner  [$tactic agent]
-
-        return [rdb eval {
-            SELECT k,longname FROM caps
-            WHERE owner=$owner
-            ORDER BY k
-        }]
-    }
-
-
 }
 
 #-----------------------------------------------------------------------
@@ -148,7 +121,7 @@ tactic define GRANT "Grant Access to CAP" {actor} -onlock {
 
         rcc "CAP List:" -for klist
         enumlonglist klist \
-            -dictcmd {tactic::GRANT capsOwnedBy $tactic_id} \
+            -dictcmd {$order_ capsOwnedBy $tactic_id} \
             -width   40 \
             -height  8
 

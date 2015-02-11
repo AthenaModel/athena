@@ -231,6 +231,27 @@ oo::class create ::athena::athena_order {
         return ""
     }
 
+    # capsOwnedBy tactic_id
+    #
+    # tactic_id     - A GRANT tactic id
+    #
+    # Returns a namedict of CAPs owned by the tactic's agent.
+    
+    method capsOwnedBy {tactic_id} {
+        if {![$adb pot has $tactic_id]} {
+            return [list]
+        }
+
+        set tactic [$adb pot get $tactic_id]
+        set owner  [$tactic agent]
+
+        return [$adb eval {
+            SELECT k,longname FROM caps
+            WHERE owner=$owner
+            ORDER BY k
+        }]
+    }
+
 
     #-------------------------------------------------------------------
     # Validation Helper Methods
