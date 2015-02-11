@@ -56,6 +56,11 @@ dynaform fieldtype alias frac range -datatype ::rfraction
 # frcgroup: Pick a force group by name.
 dynaform fieldtype alias frcgroup enum -listcmd {$adb_ frcgroup names}
 
+# hook: Pick a hook ID
+dynaform fieldtype alias hook dbkey \
+    -table hooks \
+    -keys  hook_id
+
 # longname: text field of standard width for longnames.
 dynaform fieldtype alias longname text -width 30
 

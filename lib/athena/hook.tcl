@@ -6,20 +6,38 @@
 #    Dave Hanks
 #
 # DESCRIPTION:
-#    athena_sim(1): Semantic Hook Manager
+#    athena(n): Semantic Hook Manager
 #
 #    This module is responsible for managing semantic hooks and
 #    the operations on them. As such, it is a type ensemble.
 #    Semantic hooks are sent as part tactics that employ information
 #    operations.
 #
+# TBD:
+#    * Global entities in use: bsys
+#    * Need a way to elevate Are you sure messagebox popups to app gui.
+#
 #-----------------------------------------------------------------------
 
-snit::type hook {
-    # Make it a singleton
-    pragma -hasinstances no
+snit::type ::athena::hook {
+    #-------------------------------------------------------------------
+    # Components
 
+    component adb   ;# athenadb(n) component
 
+    #-------------------------------------------------------------------
+    # Constructor
+
+    # constructor adb_
+    #
+    # adb_   - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of this type
+    
+    constructor {adb_} {
+        set adb $adb_
+    }
+    
     #-------------------------------------------------------------------
     # Queries
     #
@@ -31,8 +49,8 @@ snit::type hook {
     # Returns a list of hook short names, also known as the
     # hook ID.
 
-    typemethod names {} {
-        set names [rdb eval {
+    method names {} {
+        set names [$adb eval {
             SELECT hook_id FROM hooks ORDER BY hook_id
         }]
     }
@@ -41,8 +59,8 @@ snit::type hook {
     #
     # Returns the shortname/longname dictionary.
 
-    typemethod namedict {} {
-        return [rdb eval {
+    method namedict {} {
+        return [$adb eval {
             SELECT hook_id, longname FROM hooks ORDER BY hook_id
         }]
     }
@@ -55,9 +73,9 @@ snit::type hook {
     # Retrieves a row dictionary, or a particular column value from
     # hooks.
 
-    typemethod get {hook_id {parm ""}} {
+    method get {hook_id {parm ""}} {
         # FIRST, get the data
-        rdb eval {SELECT * FROM gui_hooks WHERE hook_id=$hook_id} row {
+        $adb eval {SELECT * FROM gui_hooks WHERE hook_id=$hook_id} row {
             if {$parm ne ""} {
                 return $row($parm)
             } else {
@@ -77,8 +95,8 @@ snit::type hook {
     # for the semantic hook with the supplied ID. Only "normal"
     # hook_topics are included.
 
-    typemethod getdict {hook_id} {
-        array set data [rdb eval {
+    method getdict {hook_id} {
+        array set data [$adb eval {
             SELECT topic_id, position
             FROM hook_topics
             WHERE hook_id=$hook_id AND state='normal'
@@ -94,8 +112,8 @@ snit::type hook {
     #
     # Validates a hook ID
 
-    typemethod validate {hook_id} {
-        set ids [rdb eval {SELECT hook_id FROM hooks}]
+    method validate {hook_id} {
+        set ids [$adb eval {SELECT hook_id FROM hooks}]
 
         if {$hook_id ni $ids} {
             set valid [join $ids ", "]
@@ -119,16 +137,16 @@ snit::type hook {
     #
     # Validates a hook/topic pair  
 
-    typemethod {topic validate} {id} {
+    method {topic validate} {id} {
         lassign $id hook_id topic_id
 
         # FIRST, see if the individual IDs are okay
-        set hook_id  [hook validate $hook_id]
-        set topic_id [bsys topic validate $topic_id]
+        set hook_id  [$self validate $hook_id]
+        set topic_id [$adb bsys topic validate $topic_id]
 
         # NEXT, check that they exist together in the hook_topics 
         # table
-        set ids [rdb eval {SELECT id FROM hook_topics_view}]
+        set ids [$adb eval {SELECT id FROM hook_topics_view}]
 
         if {$id ni $ids} {
             set valid [join $ids ", "]
@@ -152,11 +170,11 @@ snit::type hook {
     #
     # Returns 1 if the pair exists, 0 otherwise
 
-    typemethod {topic exists} {id} {
+    method {topic exists} {id} {
         lassign $id hook_id topic_id
 
         # FIRST, see if we have an instance of one
-        set exists [rdb exists {
+        set exists [$adb exists {
             SELECT * FROM hook_topics
             WHERE hook_id=$hook_id AND topic_id=$topic_id
         }]
@@ -172,12 +190,12 @@ snit::type hook {
     # Retrieves a row dictionary, or a particular column value from
     # hook_topics 
 
-    typemethod {topic get} {id {parm ""}} {
+    method {topic get} {id {parm ""}} {
         # FIRST, assign the ids to the appropriate columns
         lassign $id hook_id topic_id
 
         # NEXT, get the data
-        rdb eval {
+        $adb eval {
             SELECT * FROM gui_hook_topics 
             WHERE hook_id=$hook_id AND topic_id=$topic_id
         } row {
@@ -200,7 +218,7 @@ snit::type hook {
     # a script of one or more commands that will undo the change.  When
     # change cannot be undone, the mutator returns the empty string.
 
-    # mutate create parmdict
+    # create parmdict
     #
     # parmdict     A dictionary of hook parms
     #
@@ -210,10 +228,10 @@ snit::type hook {
     # Creates a semantic hook given the parms, which are presumed to be
     # valid.
 
-    typemethod {mutate create} {parmdict} {
+    method create {parmdict} {
         dict with parmdict {
             # FIRST, Put the hook in the database
-            rdb eval {
+            $adb eval {
                 INSERT INTO 
                 hooks(hook_id,  
                       longname)
@@ -222,28 +240,28 @@ snit::type hook {
             }
 
             # NEXT, Return undo command.
-            return [mytypemethod mutate delete $hook_id]
+            return [mymethod delete $hook_id]
         }
     }
 
-    # mutate delete hook_id
+    # delete hook_id
     #
     # hook_id     A semantic hook ID
     #
     # Deletes the semantic hook.
 
-    typemethod {mutate delete} {hook_id} {
+    method delete {hook_id} {
         # FIRST, get undo information
-        set mdata [rdb grab ioms {hook_id=$hook_id}]
+        set mdata [$adb grab ioms {hook_id=$hook_id}]
 
         # NEXT, remove it from the database
-        set hdata [rdb delete -grab hooks {hook_id=$hook_id}]
+        set hdata [$adb delete -grab hooks {hook_id=$hook_id}]
 
         # NEXT, return the undo script
-        return [list rdb ungrab [concat $hdata $mdata]]
+        return [list $adb ungrab [concat $hdata $mdata]]
     }
 
-    # mutate update parmdict
+    # update parmdict
     #
     # parmdict     A dictionary of semantic hook parms
     #
@@ -253,25 +271,25 @@ snit::type hook {
     # Updates a semantic hook given the parms, which are presumed to be
     # valid.
 
-    typemethod {mutate update} {parmdict} {
+    method update {parmdict} {
         dict with parmdict {
             # FIRST, get the undo information
-            set data [rdb grab hooks {hook_id=$hook_id}]
+            set data [$adb grab hooks {hook_id=$hook_id}]
 
             # NEXT, Update the hook
-            rdb eval {
+            $adb eval {
                 UPDATE hooks
                 SET longname = nonempty($longname, longname)
                 WHERE hook_id=$hook_id;
             } {}
 
             # NEXT, Return the undo command
-            return [list rdb ungrab $data]
+            return [list $adb ungrab $data]
         }
     }
 
 
-    # mutate topic create parmdict
+    # topic create parmdict
     #
     # parmdict     A dictionary of hook/topic parms
     #
@@ -282,10 +300,10 @@ snit::type hook {
     # Creates a hook/topic record upon which a semantic hook takes a 
     # position. Used as part of an Info Ops Message (IOM).
 
-    typemethod {mutate topic create} {parmdict} {
+    method {topic create} {parmdict} {
         dict with parmdict {
 
-            rdb eval {
+            $adb eval {
                 INSERT INTO 
                 hook_topics(hook_id,
                             topic_id,
@@ -296,11 +314,11 @@ snit::type hook {
             }
             
             return \
-                [mytypemethod mutate topic delete [list $hook_id $topic_id]]
+                [mymethod topic delete [list $hook_id $topic_id]]
         }
     }
 
-    # mutate topic update parmdict
+    # topic update parmdict
     #
     # parmdict    A dictionary of hook/topic parms
     #
@@ -310,14 +328,14 @@ snit::type hook {
     # Updates the database with the supplied hook/topic pair to have the
     # provided position on the topic.
 
-    typemethod {mutate topic update} {parmdict} {
+    method {topic update} {parmdict} {
         dict with parmdict {
             lassign $id hook_id topic_id
 
-            set tdata [rdb grab \
+            set tdata [$adb grab \
                 hook_topics {hook_id=$hook_id AND topic_id=$topic_id}]
 
-            rdb eval {
+            $adb eval {
                 UPDATE hook_topics
                 SET position   = nonempty($position,  position)
                 WHERE hook_id=$hook_id AND topic_id=$topic_id
@@ -325,32 +343,32 @@ snit::type hook {
 
             # NEXT, grab the hook undo information should this
             # topic go away
-            set hdata [rdb grab hooks {hook_id=$hook_id}]
+            set hdata [$adb grab hooks {hook_id=$hook_id}]
             
-            return [list rdb ungrab [concat $tdata $hdata]]
+            return [list $adb ungrab [concat $tdata $hdata]]
         }
     }
 
-    # mutate topic delete id
+    # topic delete id
     # 
     # id    The unique identifier for the hook/topic pair
     #
     # Removes the record from the database that contains the supplied
     # hook/topic pair
 
-    typemethod {mutate topic delete} {id} {
+    method {topic delete} {id} {
         lassign $id hook_id topic_id
 
         # FIRST, grab the undo information
-        set tdata [rdb delete \
+        set tdata [$adb delete \
             -grab hook_topics {hook_id=$hook_id AND topic_id=$topic_id}]
 
-        set hdata [rdb grab hooks {hook_id=$hook_id}]
+        set hdata [$adb grab hooks {hook_id=$hook_id}]
 
-        return [list rdb ungrab [concat $tdata $hdata]]
+        return [list $adb ungrab [concat $tdata $hdata]]
     }
 
-    # mutate topic state id state
+    # topic state id state
     #
     # id      The unique identifier for the hook/topic pair
     # state   The state of the hook topic: normal
@@ -358,22 +376,22 @@ snit::type hook {
     # Sets the state of the hook topic to one of:
     #    normal, disabled, invalid
 
-    typemethod {mutate topic state} {id state} {
+    method {topic state} {id state} {
         lassign $id hook_id topic_id
 
         # FIRST, grab the undo information
-        set tdata [rdb grab \
+        set tdata [$adb grab \
             hook_topics {hook_id=$hook_id AND topic_id=$topic_id}]
 
-        set hdata [rdb grab hooks {hook_id=$hook_id}]
+        set hdata [$adb grab hooks {hook_id=$hook_id}]
 
-        rdb eval {
+        $adb eval {
             UPDATE hook_topics
             SET state=$state
             WHERE hook_id=$hook_id AND topic_id=$topic_id
         }
 
-        return [list rdb ungrab [concat $tdata $hdata]]
+        return [list $adb ungrab [concat $tdata $hdata]]
     }
 
 
@@ -387,9 +405,9 @@ snit::type hook {
     # This method recomputes the user friendly narrative for a semantic
     # hook.
     
-    proc hook_narrative {hook_id} {
-        # FIRST, get the longname of this hook from the rdb
-        set longname [rdb onecolumn {
+    method hook_narrative {hook_id} {
+        # FIRST, get the longname of this hook from the $adb
+        set longname [$adb onecolumn {
             SELECT longname FROM hooks 
             WHERE hook_id=$hook_id
         }]
@@ -400,7 +418,7 @@ snit::type hook {
         set narr "$longname: "
 
         # NEXT, grab all positions on this topic and build the narrative
-        set positions [rdb eval {
+        set positions [$adb eval {
             SELECT narrative FROM gui_hook_topics 
             WHERE hook_id=$hook_id
             AND   state='normal'
@@ -429,14 +447,14 @@ snit::type hook {
     # Returns an id/name dictionary of the belief system topics not 
     # currently used by this hook.
 
-    typemethod UnusedTopics {hook_id} {
+    method UnusedTopics {hook_id} {
         # FIRST, get the topic IDs used by this hook.
 
         # FIRST, get the topic id/name dictionary for all topics.
-        set ndict [bsys topic namedict]
+        set ndict [$adb bsys topic namedict]
 
         # NEXT, remove the ones that have already been used.
-        rdb eval {
+        $adb eval {
             SELECT topic_id FROM hook_topics
             WHERE hook_id=$hook_id
         } {
@@ -453,8 +471,8 @@ snit::type hook {
     #
     # This method returns the position as a symbol.
 
-    typemethod LoadPosition {idict id} {
-        set pos [rdb onecolumn {
+    method LoadPosition {idict id} {
+        set pos [$adb onecolumn {
             SELECT position FROM gui_hook_topics
             WHERE id=$id
         }]
@@ -504,7 +522,7 @@ snit::type hook {
             set parms(longname) $parms(hook_id)
         }
 
-        my setundo [hook mutate create [array get parms]]
+        my setundo [$adb hook create [array get parms]]
     }
 }
 
@@ -550,7 +568,7 @@ snit::type hook {
             }
         }
 
-        my setundo [hook mutate delete $parms(hook_id)]
+        my setundo [$adb hook delete $parms(hook_id)]
     }
 }
 
@@ -584,7 +602,7 @@ snit::type hook {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [hook mutate update [array get parms]]
+        my setundo [$adb hook update [array get parms]]
     }
 }
 
@@ -612,7 +630,7 @@ snit::type hook {
         disp longname -width 40
 
         rcc "Topic ID:" -for topic_id
-        enumlong topic_id -dictcmd {hook UnusedTopics $hook_id} -showkeys 1
+        enumlong topic_id -dictcmd {$adb_ hook UnusedTopics $hook_id} -showkeys 1
         
         rcc "Position:" -for position
         enumlong position -dictcmd {qposition namedict}
@@ -626,13 +644,13 @@ snit::type hook {
 
         my returnOnError 
 
-        if {[hook topic exists [list $parms(hook_id) $parms(topic_id)]]} {
+        if {[$adb hook topic exists [list $parms(hook_id) $parms(topic_id)]]} {
             my reject topic_id "Hook/Topic pair already exists"
         }
     }
 
     method _execute {{flunky ""}} {
-        my setundo [hook mutate topic create [array get parms]]
+        my setundo [$adb hook topic create [array get parms]]
     }
 }
 
@@ -661,7 +679,7 @@ snit::type hook {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [hook mutate topic delete $parms(id)]
+        my setundo [$adb hook topic delete $parms(id)]
     }
 }
 
@@ -683,7 +701,7 @@ snit::type hook {
         rcc "Hook/Topic:" -for id
         dbkey id -table gui_hook_topics -keys {hook_id topic_id} \
             -labels {"Of" "On"} \
-            -loadcmd {hook LoadPosition}
+            -loadcmd {$adb_ hook LoadPosition}
 
         rcc "Position:" -for position
         enumlong position -dictcmd {qposition namedict}
@@ -696,7 +714,7 @@ snit::type hook {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [hook mutate topic update [array get parms]]
+        my setundo [$adb hook topic update [array get parms]]
     }
 }
 
@@ -727,7 +745,7 @@ snit::type hook {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [hook mutate topic state $parms(id) $parms(state)]
+        my setundo [$adb hook topic state $parms(id) $parms(state)]
     }
 }
 
