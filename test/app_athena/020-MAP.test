@@ -100,6 +100,94 @@ namespace eval ::athena_test::tests:: {
     }
 
     #-------------------------------------------------------------------
+    # MAP:GEOREF
+
+    test MAP:GEOREF-1.1 {no parms} -constraints tk -body {
+        ted order -reject MAP:GEOREF
+    } -result {
+        ulat {required value}
+        ulong {required value}
+        llat {required value}
+        llong {required value}
+    }
+
+    test MAP:GEOREF-1.2 {invalid parms} -constraints tk -body {
+        ted order -reject MAP:GEOREF ulat  NONESUCH \
+                                     ulong NONESUCH \
+                                     llat  NONESUCH \
+                                     llong NONESUCH
+    } -result {
+        ulat {expected floating-point number but got "NONESUCH"}
+        ulong {expected floating-point number but got "NONESUCH"}
+        llat {expected floating-point number but got "NONESUCH"}
+        llong {expected floating-point number but got "NONESUCH"}
+    }
+
+    test MAP:GEOREF-1.3 {latitude out of range} -constraints tk -body {
+        ted order -reject MAP:GEOREF ulat 91 ulong 0 llat -91 llong 1
+    } -result {
+        ulat {invalid latitude, should be -90.0 to 90.0 degrees: "91.0"}
+        llat {invalid latitude, should be -90.0 to 90.0 degrees: "-91.0"}
+    }
+
+    test MAP:GEOREF-1.4 {longitude out of range} -constraints tk -body {
+        ted order -reject MAP:GEOREF ulat 0 ulong 361 llat -1 llong -181
+    } -result {
+        ulong {invalid longitude, should be -180.0 to 360.0 degrees: "361.0"}
+        llong {invalid longitude, should be -180.0 to 360.0 degrees: "-181.0"}
+    }
+
+    test MAP:GEOREF-1.5 {upper lat < lower lat} -constraints tk -body {
+        ted order -reject MAP:GEOREF ulat 33 ulong -118 llat 34 llong -117
+    } -result {
+        llat {Latitude of lower point must be < latitude of upper point}
+    }
+
+    test MAP:GEOREF-1.6 {upper lon > lower lon} -constraints tk -body {
+        ted order -reject MAP:GEOREF ulat 33 ulong -118 llat 32 llong -119
+    } -result {
+        llong {Longitude of lower point must be > longitude of upper point}
+    }
+
+    test MAP:GEOREF-2.1 {geolocations change} -constraints tk -body {
+        ted order MAP:GEOREF ulat 33 ulong -118 llat 32 llong -117
+        rdb onecolumn {SELECT proj_opts FROM maps WHERE id=1}
+    } -cleanup {
+        cleanup
+    } -result {-minlat 32 -minlon -118 -maxlat 33 -maxlon -117}
+
+    test MAP:GEOREF-2.2 {<MapChanged> sent} -constraints tk -body {
+        ted notifier bind ::map <MapChanged>
+        ted order MAP:GEOREF ulat 33 ulong -118 llat 32 llong -117
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::map <MapChanged>}
+    }
+
+    test MAP:GEOREF-3.1 {undo resets geolocations} -constraints tk -setup {
+        ted order MAP:GEOREF ulat 33 ulong -118 llat 32 llong -117
+     } -body {
+       flunky undo
+       rdb onecolumn {SELECT proj_opts FROM maps WHERE id=1}    
+    } -cleanup {
+        cleanup 
+    } -result {}
+
+    test MAP:GEOREF-3.2 {Undo sends <MapChanged>} -constraints tk -setup {
+        ted order MAP:GEOREF ulat 33 ulong -118 llat 32 llong -117    
+    } -body {
+        ted notifier bind ::map <MapChanged>
+        flunky undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::map <MapChanged>}
+    }
+
+    #-------------------------------------------------------------------
     # Cleanup
 
     cleanupTests

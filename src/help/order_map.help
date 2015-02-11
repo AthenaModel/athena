@@ -72,4 +72,37 @@ order MAP:IMPORT+DATA "Import Map As Data" {
     that purpose.
 }
 
+#-----------------------------------------------------------------------
+
+order MAP:GEOREF "Geo-reference Map Image" {
+    <parmlist>
+
+    <parm ulat  "Upper Left Latitude">
+    <b>Required.</b> The decimal latitude of the upper left corner of the 
+    map image.
+    </parm>
+
+    <parm ulong  "Upper Left Longitude">
+    <b>Required.</b> The decimal longitude of the upper left corner of the
+    map image.
+    </parm>
+
+    <parm llat  "Lower Right Latitude">
+    <b>Required.</b> The decimal latitude of the lower right corner of the 
+    map image.
+    </parm>
+
+    <parm llong  "Lower Right Longitude">
+    <b>Required.</b> The decimal longitude of the lower right corner of the 
+    map image.
+    </parm>
+
+    </parmlist>
+
+    This order allows an arbitrary map background to be assigned
+    geo-locations.  It is assumed that the map background conforms to 
+    the Military Grid Reference System (MGRS).  The width of the map image
+    is used to determine the longitudinal pixel width and the height is
+    used to determined the latitudinal pixel height. 
+}
 

@@ -604,7 +604,9 @@ snit::widget appwin {
         cond::simIsPrep control                  \
             [menuitem $mnu command "Import Map From WMS..."    \
                  -underline 5                         \
-                 -command   [mymethod WmsImportMap]] 
+                 -command   [mymethod WmsImportMap]]
+
+        $self AddOrder $mnu MAP:GEOREF
 
         $mnu add separator
 
