@@ -479,7 +479,7 @@ snit::type map {
 #
 # Allows arbitrary lat/long points to be assigned to a map image
 
-myorders define MAP:GEOREF {
+::athena::orders define MAP:GEOREF {
     meta title "Geo-reference Map Image"
     meta sendstates {PREP PAUSED}
 
