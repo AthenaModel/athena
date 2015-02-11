@@ -115,28 +115,6 @@ tactic define SUPPORT "Support Actor" {actor} -onlock {
             in [join $ntext {, }]
         " [my agent] {*}$logIds
     }
-
-    #-------------------------------------------------------------------
-    # Order Helper Typemethods
-
-    # allButMe tactic_id
-    #
-    # Returns a list of SELF, NONE, and all actor names but the
-    # owning agent (because a is represented by SELF)
-
-    typemethod allButMe {tactic_id} {
-        if {![pot has $tactic_id]} {
-            return [list]
-        }
-
-        set tactic [pot get $tactic_id]
-
-        set list [list SELF NONE {*}[actor names]]
-
-        ldelete list [$tactic agent]
-
-        return $list
-    }
 }
 
 #-----------------------------------------------------------------------
@@ -160,7 +138,7 @@ tactic define SUPPORT "Support Actor" {actor} -onlock {
         text name -width 20
 
         rcc "Support Actor:" -for a
-        enum a -listcmd {tactic::SUPPORT allButMe $tactic_id}
+        enum a -listcmd {$order_ agents+SelfNone $tactic_id}
 
         rcc "In Neighborhoods:" -for nlist
         gofer nlist -typename gofer::NBHOODS

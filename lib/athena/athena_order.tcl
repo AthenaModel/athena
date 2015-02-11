@@ -197,6 +197,23 @@ oo::class create ::athena::athena_order {
         }
     }
     
+    # agents+SelfNone id
+    #
+    # id  - A tactic ID
+    #
+    # Returns a list of agents except the one that owns the 
+    # given tactic, plus SELF and NONE
+
+    method agents+SelfNone {id} {
+        if {[$adb pot has $id]} {
+            set tactic [$adb pot get $id]
+            set alist [linsert [$adb actor names] 0 SELF NONE]
+            return [ldelete alist [$tactic agent]]
+        } else {
+            return [list]
+        }
+    }
+
     #-------------------------------------------------------------------
     # Validation Helper Methods
 
