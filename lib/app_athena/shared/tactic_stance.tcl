@@ -22,21 +22,6 @@
 
 tactic define STANCE "Adopt a Stance" {actor} -onlock {
     #-------------------------------------------------------------------
-    # Typemethods
-
-    # reset
-    #
-    # Clears the stance_* tables prior to the beginning of strategy
-    # execution.
-
-    typemethod reset {} {
-        rdb eval {
-            DELETE FROM stance_fg;
-            DELETE FROM stance_nfg;
-        }
-    }
-
-    #-------------------------------------------------------------------
     # Instance Variables
 
     # Editable Parameters
@@ -155,10 +140,7 @@ tactic define STANCE "Adopt a Stance" {actor} -onlock {
             if {$g ni $gIgnored} {
                 lappend gSet $g
 
-                rdb eval {
-                    INSERT OR IGNORE INTO stance_fg(f,g,stance)
-                    VALUES($f,$g,$drel)
-                }
+                stance setfg $f $g $drel
             }
         }
 

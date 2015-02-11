@@ -307,7 +307,7 @@ oo::objdefine strategy {
         # TBD: Replace these as appropriate as the tactic types are defined.
         profile 1 driver::abevent reset
         profile 1 broadcast reset
-        profile 1 tactic::STANCE reset
+        profile 1 stance reset
 
         profile 1 unit reset
         profile 1 service reset

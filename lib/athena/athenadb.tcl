@@ -160,33 +160,34 @@ snit::type ::athena::athenadb {
     component paster    -public paste     ;# paste manager
 
     # Editable Entities
-    component absit    -public absit     ;# absit manager
-    component actor    -public actor     ;# actor manager
-    component agent    -public agent     ;# agent manager
-    component bsys     -public bsys      ;# belief system manager
-    component cap      -public cap       ;# cap manager
-    component civgroup -public civgroup  ;# civgroup manager
-    component coop     -public coop      ;# cooperation manager
-    component curse    -public curse     ;# curse manager
-    component econ     -public econ      ;# econ manager
-    component frcgroup -public frcgroup  ;# frcgroup manager
-    component hrel     -public hrel      ;# horiz. rel. manager
-    component nbhood   -public nbhood    ;# nbhood manager
-    component orggroup -public orggroup  ;# orggroup manager
-    component sat      -public sat       ;# satisfaction manager
-    component vrel     -public vrel      ;# vert. rel. manager
+    component absit     -public absit     ;# absit manager
+    component actor     -public actor     ;# actor manager
+    component agent     -public agent     ;# agent manager
+    component bsys      -public bsys      ;# belief system manager
+    component cap       -public cap       ;# cap manager
+    component civgroup  -public civgroup  ;# civgroup manager
+    component coop      -public coop      ;# cooperation manager
+    component curse     -public curse     ;# curse manager
+    component econ      -public econ      ;# econ manager
+    component frcgroup  -public frcgroup  ;# frcgroup manager
+    component hrel      -public hrel      ;# horiz. rel. manager
+    component nbhood    -public nbhood    ;# nbhood manager
+    component orggroup  -public orggroup  ;# orggroup manager
+    component sat       -public sat       ;# satisfaction manager
+    component vrel      -public vrel      ;# vert. rel. manager
 
     # Other Entities
-    component activity -public activity  ;# activity manager
-    component agent    -public agent     ;# agent manager
-    component demog    -public demog     ;# demographics manager
-    component group    -public group     ;# group manager
+    component activity  -public activity  ;# activity manager
+    component agent     -public agent     ;# agent manager
+    component demog     -public demog     ;# demographics manager
+    component group     -public group     ;# group manager
 
     # Tactic APIs
     component broadcast -public broadcast ;# IOM broadcast API
     component cash      -public cash      ;# cash/spending API
     component control   -public control   ;# nbhood control API
     component personnel -public personnel ;# personnel laydown API
+    component stance    -public stance    ;# stance API
 
     #-------------------------------------------------------------------
     # Options
@@ -280,6 +281,7 @@ snit::type ::athena::athenadb {
             orggroup         \
             personnel        \
             sat              \
+            stance           \
             vrel
 
         # NEXT, Make these components globally available.
