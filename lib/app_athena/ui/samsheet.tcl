@@ -179,7 +179,7 @@ snit::widget samsheet {
             "Balancing Flows" BAL]
 
         # NEXT, get a copy of the sam and solve it
-        set sam [econ sam 1]
+        set sam [econ getsam 1]
         $sam solve
 
         htmlframe $win.h \
@@ -210,11 +210,11 @@ snit::widget samsheet {
         grid columnconfigure $win 0 -weight 1
 
         # NEXT, prepare for updates.
-        notifier bind ::sim  <DbSyncB>     $self [mymethod SyncSheet]
-        notifier bind ::sim  <Tick>        $self [mymethod refresh]
-        notifier bind ::sim  <State>       $self [mymethod SimState]
-        notifier bind ::econ <SamUpdate>   $self [mymethod SamUpdate]
-        notifier bind ::econ <SyncSheet>   $self [mymethod SyncSheet]
+        notifier bind ::sim      <DbSyncB>    $self [mymethod SyncSheet]
+        notifier bind ::sim      <Tick>       $self [mymethod refresh]
+        notifier bind ::sim      <State>      $self [mymethod SimState]
+        notifier bind ::adb.econ <SamUpdate>  $self [mymethod SamUpdate]
+        notifier bind ::adb.econ <SyncSheet>  $self [mymethod SyncSheet]
 
         # NEXT, populate the HTML frame based on view
         $self DisplayCurrentView
@@ -880,7 +880,7 @@ snit::widget samsheet {
     # the cmsheet(n) objects are refreshed.
 
     method SyncSheet {} {
-        $sam set [[econ sam] get]
+        $sam set [[econ getsam] get]
         $sam solve
         $self refresh
     }

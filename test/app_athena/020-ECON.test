@@ -90,7 +90,7 @@ namespace eval ::athena_test::tests:: {
     test SAM:UPDATE-2.2 {monitor cell update event} -setup {
         setup
     } -body {
-        ted notifier bind ::econ <SamUpdate>
+        ted notifier bind ::adb.econ <SamUpdate>
         ted order ECON:SAM:UPDATE id BX.world.world val 10000
         ted notifier received
     } -cleanup {
@@ -98,7 +98,7 @@ namespace eval ::athena_test::tests:: {
         [econ getsam] reset
         [econ getsam] solve
     } -result {
-        {::econ <SamUpdate> BX.world.world 10000.0}
+        {::adb.econ <SamUpdate> BX.world.world 10000.0}
     }
 
     test SAM:UPDATE-3.1 {undo undoes the change} -setup {
@@ -109,7 +109,7 @@ namespace eval ::athena_test::tests:: {
             val 100000
         }
     } -body {
-        ted notifier bind ::econ <SamUpdate>
+        ted notifier bind ::adb.econ <SamUpdate>
         flunky undo
         ted notifier received
     } -cleanup {
@@ -117,7 +117,7 @@ namespace eval ::athena_test::tests:: {
         [econ getsam] reset
         [econ getsam] solve
     } -result {
-        {::econ <SamUpdate> BX.world.world 0.0}
+        {::adb.econ <SamUpdate> BX.world.world 0.0}
     }
 
     #-------------------------------------------------------------------
@@ -152,7 +152,7 @@ namespace eval ::athena_test::tests:: {
     test SAM:GLOBAL-2.2 {monitor cell update event} -setup {
         setup
     } -body {
-        ted notifier bind ::econ <SamUpdate>
+        ted notifier bind ::adb.econ <SamUpdate>
         ted order ECON:SAM:GLOBAL id BaseUR val 10
         ted notifier received
     } -cleanup {
@@ -160,7 +160,7 @@ namespace eval ::athena_test::tests:: {
         [econ getsam] reset
         [econ getsam] solve
     } -result {
-        {::econ <SamUpdate> BaseUR 10}
+        {::adb.econ <SamUpdate> BaseUR 10}
     }
 
     test SAM:GLOBAL-3.1 {undo undoes the change} -setup {
@@ -171,7 +171,7 @@ namespace eval ::athena_test::tests:: {
             val 20
         }
     } -body {
-        ted notifier bind ::econ <SamUpdate>
+        ted notifier bind ::adb.econ <SamUpdate>
         flunky undo
         ted notifier received
     } -cleanup {
@@ -179,7 +179,7 @@ namespace eval ::athena_test::tests:: {
         [econ getsam] reset
         [econ getsam] solve
     } -result {
-        {::econ <SamUpdate> BaseUR 10.0}
+        {::adb.econ <SamUpdate> BaseUR 10.0}
     }
 
     #-------------------------------------------------------------------
@@ -239,14 +239,14 @@ namespace eval ::athena_test::tests:: {
         ted create BLUE SHIA KURD
         ted lock
     } -body {
-        ted notifier bind ::econ <CgeUpdate>
+        ted notifier bind ::adb.econ <CgeUpdate>
         ted order ECON:CGE:UPDATE id BPF.world.black val 10000
         ted notifier received
     } -cleanup {
         cleanup
         [econ getcge] reset
     } -result {
-        {::econ <CgeUpdate>}
+        {::adb.econ <CgeUpdate>}
     }
 
     test CGE:UPDATE-3.1 {undo undoes the change} -setup {
@@ -259,14 +259,14 @@ namespace eval ::athena_test::tests:: {
             val 100000
         }
     } -body {
-        ted notifier bind ::econ <CgeUpdate>
+        ted notifier bind ::adb.econ <CgeUpdate>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
         [econ getcge] reset
     } -result {
-        {::econ <CgeUpdate>}
+        {::adb.econ <CgeUpdate>}
     }
 
     #-------------------------------------------------------------------
@@ -299,14 +299,14 @@ namespace eval ::athena_test::tests:: {
         ted create BLUE SHIA KURD
         ted lock
     } -body {
-        ted notifier bind ::econ <CgeUpdate>
+        ted notifier bind ::adb.econ <CgeUpdate>
         ted order ECON:UPDATE:REMRATE val 5.0
         ted notifier received
     } -cleanup {
         cleanup
         [econ getcge] reset
     } -result {
-        {::econ <CgeUpdate>}
+        {::adb.econ <CgeUpdate>}
     }
 
     test UPDATE:REMRATE-3.1 {undo undoes the change} -setup {
@@ -316,14 +316,14 @@ namespace eval ::athena_test::tests:: {
 
         ted order ECON:UPDATE:REMRATE val 5.0
     } -body {
-        ted notifier bind ::econ <CgeUpdate>
+        ted notifier bind ::adb.econ <CgeUpdate>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
         [econ getcge] reset
     } -result {
-        {::econ <CgeUpdate>}
+        {::adb.econ <CgeUpdate>}
     }
 
     #-------------------------------------------------------------------

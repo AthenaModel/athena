@@ -51,7 +51,7 @@ namespace eval ::athena_test::tests:: {
             val 100M
         }
 
-        dict get [[econ sam] get] BX.world.world
+        dict get [[econ getsam] get] BX.world.world
     } -cleanup {
         cleanup
     } -result {100M}
@@ -59,7 +59,7 @@ namespace eval ::athena_test::tests:: {
     test samupdate-2.1 {undo undoes the change} -setup {
         ted create NB1 NB2
     } -body {
-        set a [dict get [[econ sam] get] BX.world.world]
+        set a [dict get [[econ getsam] get] BX.world.world]
 
         set undo [econ samcell {
             id BX.world.world
@@ -68,7 +68,7 @@ namespace eval ::athena_test::tests:: {
 
         eval $undo
 
-        set b [dict get [[econ sam] get] BX.world.world]
+        set b [dict get [[econ getsam] get] BX.world.world]
 
         expr {$a eq $b}
     } -cleanup {
@@ -83,7 +83,7 @@ namespace eval ::athena_test::tests:: {
             val 100M
         }
 
-        dict get [[econ cge] get] BPF.world.black
+        dict get [[econ getcge] get] BPF.world.black
     } -cleanup {
         cleanup
     } -result {100M}
@@ -91,7 +91,7 @@ namespace eval ::athena_test::tests:: {
     test cgeupdate-2.1 {undo undoes the change} -setup {
         ted create NB1 NB2
     } -body {
-        set a [dict get [[econ cge] get] BPF.world.black]
+        set a [dict get [[econ getcge] get] BPF.world.black]
 
         set undo [econ cgecell {
             id BPF.world.black
@@ -100,7 +100,7 @@ namespace eval ::athena_test::tests:: {
 
         eval $undo
 
-        set b [dict get [[econ cge] get] BPF.world.black]
+        set b [dict get [[econ getcge] get] BPF.world.black]
 
         expr {$a eq $b}
     } -cleanup {

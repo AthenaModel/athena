@@ -468,14 +468,14 @@ snit::type ::athena::athenadb {
     # are not yet owned by scenario.
 
     destructor {
+        $self notify "" <Destroy>
+
         # FIRST, close and destroy the RDB.
         $rdb close
         $rdb destroy
 
         # NEXT, reset other modules not yet owned by this object.
         catch {sim new}
-
-        $self notify "" <Destroy>
     }
 
     #-------------------------------------------------------------------

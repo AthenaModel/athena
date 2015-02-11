@@ -119,7 +119,7 @@ snit::type ::athena::econ {
     #
     # When the econ object is destroyed the SAM and CGE components need
     # to be destroyed.
-    
+
     destructor {
         $sam destroy
         $cge destroy
@@ -328,8 +328,21 @@ snit::type ::athena::econ {
     #-----------------------------------------------------------------------
     # Interface to SAM and CGE
 
-    method getsam {} {
-        return $sam
+    method getsam {{copy 0}} {
+        # FIRST, create a copy of the SAM
+        if {$copy} {
+            set samcopy [cellmodel %AUTO%  \
+                         -epsilon 0.000001 \
+                         -maxiters 1]
+
+            $samcopy load \
+                [readfile \
+                    [file join $::app_athena_shared::library sam6x6.cm]]
+
+            return $samcopy
+        }
+
+        return $sam    
     }
 
     method setsam {args} {
@@ -356,7 +369,7 @@ snit::type ::athena::econ {
             error "Cannot enable econ model, must be in scenario prep."
         }
         set info(state) [eeconstate validate $state]
-        notifier send ::econ <State> 
+        $adb notify econ <State> 
     }
 
     # state
@@ -511,7 +524,7 @@ snit::type ::athena::econ {
 
     method reset {} {
         $sam reset
-        set result [sam solve]
+        set result [$sam solve]
 
         if {$result ne "ok"} {
             log warning econ "Failed to reset SAM"
@@ -523,7 +536,7 @@ snit::type ::athena::econ {
         # NEXT, no longer using any historical values
         set histdata(hist_flag) 0
 
-        notifier send ::econ <SyncSheet> 
+        $adb notify econ <SyncSheet> 
     }
 
     # PrepareSAM
@@ -767,7 +780,7 @@ snit::type ::athena::econ {
         }
 
         # NEXT, notify the GUI to sync to the latest data
-        notifier send ::econ <SyncSheet> 
+        $adb notify econ <SyncSheet> 
 
         return 1
     }
@@ -1525,39 +1538,6 @@ snit::type ::athena::econ {
         cge dump $page
     }
 
-    # sam
-    #
-    # Returns either a copy of the SAM or the SAM read in during 
-    # initialization. The GUI uses a copy of the SAM for it's
-    # purposes.
-
-    method sam {{copy {0}}} {
-        # FIRST, create the SAM
-        if {$copy} {
-            set samcopy [cellmodel samcopy \
-                         -epsilon 0.000001 \
-                         -maxiters 1       \
-                         -tracecmd [mymethod TraceSAM]]
-
-            samcopy load \
-                [readfile \
-                    [file join $::app_athena_shared::library sam6x6.cm]]
-
-            return $samcopy
-        }
-
-        return $sam
-    }
-
-    # cge
-    #
-    # Returns the cellmodel object for the CGE, for use by 
-    # browsers.
-
-    method cge {} {
-        return $cge
-    }
-
     # getstart
     #
     # Returns a dictionary of the starting values for the CGE cells.
@@ -1593,7 +1573,7 @@ snit::type ::athena::econ {
             # cell has been updated
             sam set [list $id $val]
             sam solve
-            notifier send ::econ <SamUpdate> $id $val
+            $adb notify econ <SamUpdate> $id $val
 
             # NEXT, return the undo command
             return [list $self samcell [list id $id val $oldval]]
@@ -1620,7 +1600,7 @@ snit::type ::athena::econ {
             cge set [list $id $val]
             cge solve In Out
 
-            notifier send ::econ <CgeUpdate>
+            $adb notify econ <CgeUpdate>
 
             # NEXT, return the undo command
             return [list $self cgecell [list id $id val $oldval]]
