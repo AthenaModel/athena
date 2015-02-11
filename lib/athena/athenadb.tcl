@@ -170,6 +170,7 @@ snit::type ::athena::athenadb {
     component curse     -public curse     ;# curse manager
     component econ      -public econ      ;# econ manager
     component frcgroup  -public frcgroup  ;# frcgroup manager
+    component hook      -public hook      ;# semantic hook manager
     component hrel      -public hrel      ;# horiz. rel. manager
     component nbhood    -public nbhood    ;# nbhood manager
     component orggroup  -public orggroup  ;# orggroup manager
@@ -276,6 +277,7 @@ snit::type ::athena::athenadb {
             econ             \
             frcgroup         \
             group            \
+            hook             \
             hrel             \
             nbhood           \
             orggroup         \
@@ -430,7 +432,7 @@ snit::type ::athena::athenadb {
         $rdb function topicname            [list $bsys topicname]
         $rdb function affinity             [list $bsys affinity]
         $rdb function qposition            [myproc QPosition]
-        $rdb function hook_narrative       ::hook::hook_narrative
+        $rdb function hook_narrative       [list $hook hook_narrative]
         $rdb function service              [mymethod Service]
 
         # NEXT, define the GUI Views

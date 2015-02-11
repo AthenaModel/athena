@@ -44,11 +44,6 @@ dynaform fieldtype alias grouplist enumlonglist \
     -width    30  \
     -dictcmd  {::group namedict}
 
-# hook: Pick a hook ID
-dynaform fieldtype alias hook dbkey \
-    -table hooks \
-    -keys  hook_id
-
 # inject: Pick an inject by its ID.
 dynaform fieldtype alias inject dbkey \
     -table gui_injects  \

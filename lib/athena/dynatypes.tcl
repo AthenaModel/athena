@@ -67,11 +67,15 @@ dynaform fieldtype alias frcgroup enum -listcmd {$adb_ frcgroup names}
 # group: Pick a group by name.
 dynaform fieldtype alias group enum -listcmd {$adb_ group names}
 
+# hook: Pick a hook ID
+dynaform fieldtype alias hook dbkey \
+    -table hooks \
+    -keys  hook_id
+
 # localn: Pick a local neighborhood by name
 dynaform fieldtype alias localn enumlong \
     -showkeys yes \
     -dictcmd {$adb_ nbhood local namedict}
-
 
 # longname: text field of standard width for longnames.
 dynaform fieldtype alias longname text -width 30
