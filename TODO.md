@@ -31,14 +31,14 @@
   - absit
 - notifier bind
   - nbhood
-- parmdb
-  - absit
+- parm, parmdb
+  - absit, personnel
 - ptype - Should go in athena_order.tcl? (But no hierarchical methods!)
   - absit, actor, nbhood
 - refpoint
   - absit, nbhood
 - sigevent
-  - condition_expr
+  - condition_expr, personnel
 - sim
   - absit
 - simclock
@@ -47,5 +47,7 @@
   - actor, agent, block, cash, condition_*
 - tactic
   - agent, block
+- unit
+  - personnel
 
 

@@ -1,12 +1,12 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#   athena.tcl
+#   athenadb.tcl
 #
 # PROJECT:
 #   athena - Athena Regional Stability Simulation
 #
 # DESCRIPTION:
-#   athena(n) Package: Private Scenario Object
+#   athenadb(n) Package: Private Scenario Object
 #
 #   This type is the main *private* entry point into the athena(n) library.
 #   Instances of athenadb(n) define entire scenarios, and can be saved
@@ -154,10 +154,10 @@ snit::type ::athena::athenadb {
     # Components
     
     # Resources
-    component rdb                        ;# writable sqldatabase handle
-    component pot      -public pot       ;# beanpot(n)
-    component flunky   -public flunky    ;# athena_flunky(n)
-    component paster   -public paste     ;# paste manager
+    component rdb                         ;# writable sqldatabase handle
+    component pot       -public pot       ;# beanpot(n)
+    component flunky    -public flunky    ;# athena_flunky(n)
+    component paster    -public paste     ;# paste manager
 
     # Editable Entities
     component absit    -public absit     ;# absit manager
@@ -183,8 +183,10 @@ snit::type ::athena::athenadb {
     component group    -public group     ;# group manager
 
     # Tactic APIs
-    component cash     -public cash      ;# cash/spending API
-    component control  -public control   ;# nbhood control API
+    component broadcast -public broadcast ;# IOM broadcast API
+    component cash      -public cash      ;# cash/spending API
+    component control   -public control   ;# nbhood control API
+    component personnel -public personnel ;# personnel laydown API
 
     #-------------------------------------------------------------------
     # Options
@@ -261,6 +263,7 @@ snit::type ::athena::athenadb {
             activity         \
             actor            \
             agent            \
+            broadcast        \
             bsys             \
             cap              \
             cash             \
@@ -275,6 +278,7 @@ snit::type ::athena::athenadb {
             hrel             \
             nbhood           \
             orggroup         \
+            personnel        \
             sat              \
             vrel
 

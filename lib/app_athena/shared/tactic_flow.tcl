@@ -200,7 +200,7 @@ tactic define FLOW "Flow Personnel" {system} {
         }
 
         # NEXT, add the adjustment to the pending list.
-        tactic::FLOW flow $f $g $delta
+        personnel flow $f $g $delta
         
         # NEXT, log the changes.
         set m [civgroup getg $f n]

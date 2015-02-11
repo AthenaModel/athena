@@ -306,8 +306,7 @@ oo::objdefine strategy {
 
         # TBD: Replace these as appropriate as the tactic types are defined.
         profile 1 driver::abevent reset
-        profile 1 tactic::BROADCAST reset
-        profile 1 tactic::FLOW reset
+        profile 1 broadcast reset
         profile 1 tactic::STANCE reset
 
         profile 1 unit reset
@@ -330,7 +329,6 @@ oo::objdefine strategy {
         }
 
         profile 1 personnel save
-        profile 1 tactic::FLOW save
         profile 1 service_eni save
         profile 1 plant save
         profile 1 cap access save
@@ -339,7 +337,7 @@ oo::objdefine strategy {
         profile 1 unit makebase
 
         # NEXT, assess all requested IOM broadcasts
-        profile 1 tactic::BROADCAST assess
+        profile 1 broadcast assess
     }
 
 

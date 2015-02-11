@@ -6,17 +6,42 @@
 #   Will Duquette
 #
 # DESCRIPTION:
-#   athena_sim(1): Personnel Manager
+#   athena(n) Tactic API: Personnel Manager
 #
 #   This module is responsible for managing the deployment of 
 #   FRC and ORG personnel in neighborhoods and the assignment of
-#   activities to deployed personnel.
+#   activities to deployed personnel, and the flow of population
+#   from one civilian group to another, during strategy execution.
+#
+# TBD: Global refs: unit, parm, sigevent
 #
 #-----------------------------------------------------------------------
 
-snit::type personnel {
-    # Make it a singleton
-    pragma -hasinstances no
+snit::type ::athena::personnel {
+    #-------------------------------------------------------------------
+    # Components
+
+    component adb ;# The athenadb(n) instance
+
+    #-------------------------------------------------------------------
+    # Instance Variables
+
+    # Pending population flows (transient)
+    variable pendingFlows {}
+    
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    # constructor adb_
+    #
+    # adb_    - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of the type.
+
+    constructor {adb_} {
+        set adb $adb_
+    }
 
     #-------------------------------------------------------------------
     # Simulation 
@@ -27,10 +52,10 @@ snit::type personnel {
     # simulation starts.  It populates the personnel_g and deploy_ng
     # tables.
 
-    typemethod start {} {
+    method start {} {
         # FIRST, populate the personnel_g and deploy_ng tables from
         # the status quo FRC/ORG deployments.
-        rdb eval {
+        $adb eval {
             -- Populate personnel_g table.
             INSERT INTO personnel_g(g,personnel)
             SELECT g, base_personnel
@@ -51,8 +76,9 @@ snit::type personnel {
     #
     # Populates the working tables for strategy execution.
 
-    typemethod load {} {
-        rdb eval {
+    method load {} {
+        # FIRST, prepare the working tables for force/org personnel.
+        $adb eval {
             DELETE FROM working_personnel;
             INSERT INTO working_personnel(g,personnel,available)
             SELECT g, personnel, personnel FROM personnel_g;
@@ -66,6 +92,9 @@ snit::type personnel {
             CREATE TEMP TABLE working_deploy_tng AS SELECT * FROM deploy_tng;
             DELETE FROM deploy_tng;
         }
+
+        # NEXT, prepare to receive civilian population flows
+        set pendingFlows [list]
     }
 
     # deploy tactic_id n g personnel
@@ -78,8 +107,8 @@ snit::type personnel {
     # This routine is called by the DEPLOY tactic.  It deploys the
     # requested number of available FRC or ORG personnel.
 
-    typemethod deploy {tactic_id n g personnel} {
-        set available [rdb onecolumn {
+    method deploy {tactic_id n g personnel} {
+        set available [$adb onecolumn {
             SELECT available FROM working_personnel WHERE g=$g
         }]
 
@@ -89,7 +118,7 @@ snit::type personnel {
         require {$personnel <= $available} \
             "Insufficient personnel available: $personnel > $available"
 
-        rdb eval {
+        $adb eval {
             UPDATE working_personnel
             SET available = available - $personnel
             WHERE g=$g;
@@ -110,8 +139,8 @@ snit::type personnel {
     #
     # Retrieves the number of personnel in the playbox.
 
-    typemethod inplaybox {g} {
-        rdb onecolumn {SELECT personnel FROM working_personnel WHERE g=$g}
+    method inplaybox {g} {
+        $adb onecolumn {SELECT personnel FROM working_personnel WHERE g=$g}
     }
 
     # available g
@@ -120,8 +149,8 @@ snit::type personnel {
     #
     # Retrieves the number of personnel available for deployment.
 
-    typemethod available {g} {
-        rdb eval {
+    method available {g} {
+        $adb eval {
             SELECT available FROM working_personnel WHERE g=$g
         } {
             return $available
@@ -138,8 +167,8 @@ snit::type personnel {
     # Retrieves the number of unassigned personnel from group g in 
     # neighborhood n.
 
-    typemethod unassigned {n g} {
-        rdb eval {
+    method unassigned {n g} {
+        $adb eval {
             SELECT unassigned FROM working_deployment 
             WHERE n=$n AND g=$g
         } {
@@ -158,15 +187,15 @@ snit::type personnel {
     #
     # Demobilizes the specified number of undeployed personnel.
 
-    typemethod demob {g personnel} {
-        set available [rdb onecolumn {
+    method demob {g personnel} {
+        set available [$adb onecolumn {
             SELECT available FROM working_personnel WHERE g=$g
         }]
 
         require {$personnel <= $available} \
             "Insufficient personnel available: $personnel > $available"
 
-        rdb eval {
+        $adb eval {
             UPDATE working_personnel
             SET available = available - $personnel,
                 personnel = personnel - $personnel
@@ -181,8 +210,8 @@ snit::type personnel {
     #
     # Mobilizes the specified number of new personnel.
 
-    typemethod mobilize {g personnel} {
-        rdb eval {
+    method mobilize {g personnel} {
+        $adb eval {
             UPDATE working_personnel
             SET available = available + $personnel,
                 personnel = personnel + $personnel
@@ -203,15 +232,15 @@ snit::type personnel {
     # "unassigned" count.  If there's no unit already existing, 
     # creates it.  Otherwise, updates the unit's personnel.
 
-    typemethod assign {tactic_id g n a personnel} {
+    method assign {tactic_id g n a personnel} {
         # FIRST, ensure that enough personnel remain.
-        set unassigned [$type unassigned $n $g]
+        set unassigned [$self unassigned $n $g]
 
         require {$personnel <= $unassigned} \
             "Insufficient unassigned personnel: $personnel > $unassigned"
         
         # NEXT, allocate the personnel.
-        rdb eval {
+        $adb eval {
             UPDATE working_deployment
             SET unassigned = unassigned - $personnel
             WHERE n=$n AND g=$g
@@ -219,6 +248,26 @@ snit::type personnel {
 
         # NEXT, assign the tactic unit to this activity.
         return [unit assign $tactic_id $g $n $a $personnel]
+    }
+
+    # flow f g delta
+    #
+    # f          - The source group
+    # g          - The destination group
+    # personnel  - The number of people to move
+    #
+    # Saves the pending flow until later.
+
+    method flow {f g delta} {
+        lappend pendingFlows $f $g $delta
+    }
+
+    # pendingFlows
+    #
+    # Returns the list of pending flows.
+
+    method pendingFlows {} {
+        return $pendingFlows
     }
 
     # save
@@ -229,13 +278,13 @@ snit::type personnel {
     # * Undeployed troops are demobilized (if strategy.autoDemob is set)
     # * Force levels and deployments are saved.
 
-    typemethod save {} {
+    method save {} {
         # FIRST, log all changed deployments.
-        $type LogDeploymentChanges
+        $self LogDeploymentChanges
 
         # NEXT, Demobilize undeployed troops
         if {[parm get strategy.autoDemob]} {
-            foreach {g available a} [rdb eval {
+            foreach {g available a} [$adb eval {
                 SELECT g, available, a 
                 FROM working_personnel
                 JOIN agroups USING (g) 
@@ -244,12 +293,12 @@ snit::type personnel {
                 sigevent log warning strategy "
                     Demobilizing $available undeployed {group:$g} personnel.
                 " $g $a
-                personnel demob $g $available
+                $self demob $g $available
             }
         }
 
         # NEXT, save data back to the persistent tables
-        rdb eval {
+        $adb eval {
             DELETE FROM personnel_g;
             INSERT INTO personnel_g(g,personnel)
             SELECT g,personnel FROM working_personnel;
@@ -258,14 +307,21 @@ snit::type personnel {
             INSERT INTO deploy_ng(n,g,personnel,unassigned)
             SELECT n,g,personnel,unassigned FROM working_deployment;
         }
+
+        # NEXT, save pending civilian flows
+        foreach {f g delta} $pendingFlows {
+            $adb demog flow $f $g $delta
+        }
+
+        set pendingFlows [list]
     }
 
     # LogDeploymentChanges
     #
     # Logs all deployment changes.
 
-    typemethod LogDeploymentChanges {} {
-        rdb eval {
+    method LogDeploymentChanges {} {
+        $adb eval {
             SELECT OLD.n                         AS n,
                    OLD.g                         AS g,
                    OLD.personnel                 AS old,
@@ -312,9 +368,9 @@ snit::type personnel {
     # Updates deploy_ng and personnel_g given the casualties.  If
     # casualties is negative, personnel are returned.
 
-    typemethod attrit {n g casualties} {
+    method attrit {n g casualties} {
         # FIRST, get the undo information
-        set deployed [rdb onecolumn {
+        set deployed [$adb onecolumn {
             SELECT personnel FROM deploy_ng
             WHERE n=$n AND g=$g
         }]
@@ -331,7 +387,7 @@ snit::type personnel {
         let undoCasualties {-$casualties}
         
         # NEXT, Update the group
-        rdb eval {
+        $adb eval {
             UPDATE deploy_ng
             SET personnel = personnel - $casualties
             WHERE n=$n AND g=$g;
