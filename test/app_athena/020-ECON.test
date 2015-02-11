@@ -95,8 +95,8 @@ namespace eval ::athena_test::tests:: {
         ted notifier received
     } -cleanup {
         cleanup
-        ::econ::sam reset
-        ::econ::sam solve
+        [econ getsam] reset
+        [econ getsam] solve
     } -result {
         {::econ <SamUpdate> BX.world.world 10000.0}
     }
@@ -114,8 +114,8 @@ namespace eval ::athena_test::tests:: {
         ted notifier received
     } -cleanup {
         cleanup
-        ::econ::sam reset
-        ::econ::sam solve
+        [econ getsam] reset
+        [econ getsam] solve
     } -result {
         {::econ <SamUpdate> BX.world.world 0.0}
     }
@@ -157,8 +157,8 @@ namespace eval ::athena_test::tests:: {
         ted notifier received
     } -cleanup {
         cleanup
-        ::econ::sam reset
-        ::econ::sam solve
+        [econ getsam] reset
+        [econ getsam] solve
     } -result {
         {::econ <SamUpdate> BaseUR 10}
     }
@@ -176,8 +176,8 @@ namespace eval ::athena_test::tests:: {
         ted notifier received
     } -cleanup {
         cleanup
-        ::econ::sam reset
-        ::econ::sam solve
+        [econ getsam] reset
+        [econ getsam] solve
     } -result {
         {::econ <SamUpdate> BaseUR 10.0}
     }
@@ -244,7 +244,7 @@ namespace eval ::athena_test::tests:: {
         ted notifier received
     } -cleanup {
         cleanup
-        ::econ::cge reset
+        [econ getcge] reset
     } -result {
         {::econ <CgeUpdate>}
     }
@@ -264,7 +264,7 @@ namespace eval ::athena_test::tests:: {
         ted notifier received
     } -cleanup {
         cleanup
-        ::econ::cge reset
+        [econ getcge] reset
     } -result {
         {::econ <CgeUpdate>}
     }
@@ -304,7 +304,7 @@ namespace eval ::athena_test::tests:: {
         ted notifier received
     } -cleanup {
         cleanup
-        ::econ::cge reset
+        [econ getcge] reset
     } -result {
         {::econ <CgeUpdate>}
     }
@@ -321,7 +321,7 @@ namespace eval ::athena_test::tests:: {
         ted notifier received
     } -cleanup {
         cleanup
-        ::econ::cge reset
+        [econ getcge] reset
     } -result {
         {::econ <CgeUpdate>}
     }
@@ -371,7 +371,7 @@ namespace eval ::athena_test::tests:: {
         ted order ECON:UPDATE:HIST hist_flag 1 base_gdp 1T
     } -body {
         flunky undo
-        set pdict [::econ hist]
+        set pdict [econ gethist]
         dict with pdict {
             expr {$base_gdp == 200000000000.0}
         }

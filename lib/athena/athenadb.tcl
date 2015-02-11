@@ -168,6 +168,7 @@ snit::type ::athena::athenadb {
     component civgroup -public civgroup  ;# civgroup manager
     component coop     -public coop      ;# cooperation manager
     component curse    -public curse     ;# curse manager
+    component econ     -public econ      ;# econ manager
     component frcgroup -public frcgroup  ;# frcgroup manager
     component hrel     -public hrel      ;# horiz. rel. manager
     component nbhood   -public nbhood    ;# nbhood manager
@@ -268,6 +269,7 @@ snit::type ::athena::athenadb {
             control          \
             curse            \
             demog            \
+            econ             \
             frcgroup         \
             group            \
             hrel             \

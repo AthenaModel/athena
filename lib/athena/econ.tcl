@@ -1,10 +1,20 @@
 #-----------------------------------------------------------------------
 # FILE: econ.tcl
 #
-#   Athena Economics Model singleton
+#   Athena Economics Model
 #
 # PACKAGE:
-#   app_sim(n) -- athena_sim(1) implementation package
+#   athena(n) -- Economics Model Manager
+#
+#   This module is responsible for computing the economics of the
+#   region for this scenario.  The three primary entry points are:
+#   <init>, to be called at start-up; <calibrate>, which calibrates the 
+#   model when the simulation leaves the PREP state and enters time 0, 
+#   and <advance>, to be called when time is advanced for the economic model.
+#
+# CREATION/DELETION:
+#    econ_n records are created explicitly by the neighborhood manager as 
+#    neighborhoods are created, and are deleted by cascading delete.
 #
 # PROJECT:
 #   Athena S&RO Simulation
@@ -13,50 +23,29 @@
 #    Will Duquette
 #    Dave Hanks
 #
+# TBD:
+#    Global entities: parmdb, sim, demog, cash, plant, app
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
 # Module: econ
 #
-# This module is responsible for computing the economics of the
-# region for this scenario.  The three primary entry points are:
-# <init>, to be called at start-up; <calibrate>, which calibrates the 
-# model when the simulation leaves the PREP state and enters time 0, 
-# and <advance>, to be called when time is advanced for the economic model.
-#
-# CREATION/DELETION:
-#    econ_n records are created explicitly by nbhood(sim) as 
-#    neighborhoods are created, and are deleted by cascading delete.
 
-snit::type econ {
-    # Make it a singleton
-    pragma -hasinstances no
+snit::type ::athena::econ {
 
     #-------------------------------------------------------------------
-    # Type Components
+    # Components
 
-    # Type Component: cge
-    #
-    # This is the cellmodel(n) instance containing the CGE model.
-
-    typecomponent cge
-
-    # Type Component: sam
-    #
-    # This is the cellmodel(n) instance containing the SAM model.
-
-    typecomponent sam
+    component adb  ;# athenadb(n) instance
+    component cge  ;# cellmodel(n) instance containing the CGE model
+    component sam  ;# cellmodel(n) instance containing the SAM model
 
     #-------------------------------------------------------------------
-    # Non-Checkpointed Type Variables
+    # Non-Checkpointed Variables
 
-    # Type Variable: info
-    #
-    # Miscellaneous non-checkpointed scalar values.
-    #
-    # changed - 1 if there is unsaved data, and 0 otherwise.
+    # Miscellaneous non-checkpointed scalar values
 
-    typevariable info -array {
+    variable info -array {
         changed   0
         status    ok
         state     DISABLED
@@ -67,24 +56,24 @@ snit::type econ {
     #-------------------------------------------------------------------
     # Checkpointed Type Variables
 
-    # Type Variable: startdict
-    #
-    # Dictionary of initial CGE cell values, as of "econ start".
+    variable startdict {}  ;# dict of CGE cell values, as of "econ start"
 
-    typevariable startdict {}
-
-    # Type Variable: histdata
-    #
     # Historical data that must be used in case of start from a
     # rebase
-
-    typevariable histdata -array {
+    variable histdata -array {
         hist_flag       0
         rem             0
         rem_rate        0
         base_consumers  0
         base_ur         0
         base_gdp        0
+    }
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    constructor {adb_} {
+        set adb $adb_
     }
 
     #-------------------------------------------------------------------
@@ -98,21 +87,21 @@ snit::type econ {
     # for inclusion indo an HTML page. Returns an esanity value, either
     # OK or WARNING.
 
-    typemethod checker {{ht ""}} {
+    method checker {{ht ""}} {
         # FIRST, if econ is disabled, always return OK
         if {$info(state) eq "DISABLED"} {
             return OK
         }
 
         # NEXT, perform the checks and return status
-        set edict [$type DoSanityCheck]
+        set edict [$self DoSanityCheck]
 
         if {[dict size $edict] == 0} {
             return OK
         }
 
         if {$ht ne ""} {
-            $type DoSanityReport $ht $edict
+            $self DoSanityReport $ht $edict
         }
 
         return ERROR
@@ -125,8 +114,9 @@ snit::type econ {
     # that just doesn't make sense. Problems are reported back in a
     # dict, if there are any.
 
-    typemethod DoSanityCheck {} {
+    method DoSanityCheck {} {
         set edict [dict create]
+
 
         array set cells [$sam get]
 
@@ -234,7 +224,8 @@ snit::type econ {
                 "Net Rev. in the black sector is negative. Either the feedstock price is too high or the unit price is too low."
         }
 
-        notifier send ::econ <Check>
+        $adb notify econ <Check>
+
         return $edict
     }
 
@@ -246,7 +237,7 @@ snit::type econ {
     # This method takes any errors from the sanity check and formats
     # them for output to the htools buffer.
 
-    typemethod DoSanityReport {ht edict} {
+    method DoSanityReport {ht edict} {
         $ht subtitle "Econ Model Warnings/Errors"
 
         $ht putln "Certain cells in the SAM have problems. This is likely "
@@ -269,7 +260,7 @@ snit::type econ {
     #
     # Initializes the module before the simulation first starts to run.
 
-    typemethod init {} {
+    method init {} {
         log normal econ "init"
 
         # FIRST, default state is DISABLED
@@ -279,17 +270,17 @@ snit::type econ {
         set sam [cellmodel sam \
                      -epsilon 0.000001 \
                      -maxiters 1       \
-                     -failcmd  [mytypemethod CellModelFailure] \
-                     -tracecmd [mytypemethod TraceSAM]]
+                     -failcmd  [mymethod CellModelFailure] \
+                     -tracecmd [mymethod TraceSAM]]
 
-        sam load \
+        $sam load \
             [readfile [file join $::app_athena_shared::library sam6x6.cm]]
 
         log detail econ "Read SAM from [file join $::app_athena_shared::library sam6x6.cm]"
 
-        require {[sam sane]} "The econ model's SAM is not sane."
+        require {[$sam sane]} "The econ model's SAM is not sane."
 
-        set result [sam solve]
+        set result [$sam solve]
 
         # NEXT, handle failures.
         if {$result ne "ok"} {
@@ -301,13 +292,13 @@ snit::type econ {
         set cge [cellmodel cge \
                      -epsilon  0.000001 \
                      -maxiters 1000     \
-                     -failcmd  [mytypemethod CellModelFailure] \
-                     -tracecmd [mytypemethod TraceCGE]]
-        cge load [readfile [file join $::app_athena_shared::library cge6x6.cm]]
+                     -failcmd  [mymethod CellModelFailure] \
+                     -tracecmd [mymethod TraceCGE]]
+        $cge load [readfile [file join $::app_athena_shared::library cge6x6.cm]]
 
         log detail econ "Read CGE from [file join $::app_athena_shared::library cge6x6.cm]"
         
-        require {[cge sane]} "The econ model's CGE (cge6x6.cm) is not sane."
+        require {[$cge sane]} "The econ model's CGE (cge6x6.cm) is not sane."
 
         # NEXT, register this type as a saveable
         athena register ::econ
@@ -321,7 +312,7 @@ snit::type econ {
     # This method sets the state of the econ model to "DISABLED" if the
     # simulation state is in PREP
 
-    typemethod disable {} {
+    method disable {} {
         assert {[sim state] eq "PREP"}
         set info(state) "DISABLED"
         set info(changed) 1
@@ -332,10 +323,29 @@ snit::type econ {
     # This method sets the state of the econ model to "ENABLED" if the
     # simulation state is in PREP
 
-    typemethod enable {} {
+    method enable {} {
         assert {[sim state] eq "PREP"}
         set info(state) "ENABLED"
         set info(changed) 1
+    }
+
+    #-----------------------------------------------------------------------
+    # Interface to SAM and CGE
+
+    method getsam {} {
+        return $sam
+    }
+
+    method setsam {args} {
+        $sam set {*}$args
+    }
+
+    method getcge {} {
+        return $cge
+    }
+
+    method setcge {args} {
+        $cge set {*}$args
     }
 
     # setstate
@@ -345,7 +355,7 @@ snit::type econ {
     # sending a notifier event for the UI to update. This method is
     # used when the CGE or SAM fail to converge for some reason.
 
-    typemethod setstate {state} {
+    method setstate {state} {
         if {[sim state] ne "PREP" && $state eq "ENABLED"} {
             error "Cannot enable econ model, must be in scenario prep."
         }
@@ -358,7 +368,7 @@ snit::type econ {
     # Returns the current state of the econ model, one of "ENABLED" or
     # "DISABLED"
 
-    typemethod state {} {
+    method state {} {
         return $info(state)
     }
 
@@ -370,7 +380,7 @@ snit::type econ {
     # the econ model providing some insight if there has been a failure
     # for some reason.
 
-    typemethod report {ht} {
+    method report {ht} {
         # FIRST, if everything is fine, not much to report
         if {$info(status) eq "ok"} {
             if {$info(state) eq "ENABLED"} {
@@ -451,7 +461,7 @@ snit::type econ {
     # The cellmodel(n) -tracecmd for the cell model components.  It simply
     # logs arguments.
 
-    typemethod TraceCGE {args} {
+    method TraceCGE {args} {
         if {[lindex $args 0] eq "converge"} {
             log detail econ "cge solve trace: $args"
         } else {
@@ -464,7 +474,7 @@ snit::type econ {
     # The cellmodel(n) -tracecmd for the cell model components.  It simply
     # logs arguments.
 
-    typemethod TraceSAM {args} {
+    method TraceSAM {args} {
         if {[lindex $args 0] eq "converge"} {
             log detail econ "sam solve trace: $args"
         } else {
@@ -482,7 +492,7 @@ snit::type econ {
     # initialization file that can be used with mars_cmtool(1) to 
     # further analyze any problems.
 
-    typemethod CellModelFailure {cm msg page} {
+    method CellModelFailure {cm msg page} {
         # FIRST, log the warning
         log warning econ "Cell model ailed to solve: $msg $page"
         
@@ -503,7 +513,7 @@ snit::type econ {
     # Resets the econ model to the initial state for both the SAM
     # and the CGE and notifies the GUI
 
-    typemethod reset {} {
+    method reset {} {
         $sam reset
         set result [sam solve]
 
@@ -526,7 +536,7 @@ snit::type econ {
     # actor data.  It also sets pertinent historical data in the SAM
     # if need be (ie. starting from a rebase).
 
-    typemethod PrepareSAM {} {
+    method PrepareSAM {} {
         # FIRST, check and convert the parm that controls whether
         # remittances are taxable.  The SAM requires the flag to
         # be in canonical form.
@@ -557,13 +567,13 @@ snit::type econ {
     # a graft fraction based upon the amount of Foreign Aid for the Region,
     # the FAR cell (which is the same as the BX.region.world cell).
 
-    typemethod SAMActorsSector {} {
+    method SAMActorsSector {} {
         # FIRST, get the cells from the SAM
         array set sdata [$sam get]
 
         # NEXT, determine the ratio of actual consumers to the BaseConsumers
         # specified in the SAM, we will scale the income to this factor
-        array set data [demog getlocal]
+        array set data [$adb demog getlocal]
         let scalef {$data(consumers)/$sdata(BaseConsumers)}
 
         # NEXT, override scale factor if the hist flag is set, this is to
@@ -584,7 +594,7 @@ snit::type econ {
         # handled differently. Revenue from the region is the graft that
         # is received. Income is multiplied by 52 weeks since the user 
         # specifies income in weeks, but the SAM and CGE have it in years
-        rdb eval {
+        $adb eval {
             SELECT total(income_goods)     AS ig,
                    total(income_pop)       AS ip,
                    total(income_black_tax) AS ibt,
@@ -601,7 +611,7 @@ snit::type econ {
 
         # NEXT, the expenditures made by budget actors are accounted for as
         # revenue from the world since budget actors have no income
-        set budgetXaw [rdb onecolumn {
+        set budgetXaw [$adb onecolumn {
             SELECT total(goods + black  + pop +
                          actor + region + world)
             FROM expenditures AS E
@@ -618,10 +628,10 @@ snit::type econ {
         # by actors. If this is zero, then no actor is getting any income
         # from the black market net revenues
         set totalBNRShares \
-            [rdb onecolumn {SELECT total(shares_black_nr) FROM actors_view;}]
+            [$adb onecolumn {SELECT total(shares_black_nr) FROM actors_view;}]
 
         # NEXT, get the baseline expenditures from the cash module
-        array set exp [cash allocations]
+        array set exp [$adb cash allocations]
 
         let Xwa {$exp(world)  * 52.0}
         let Xra {$exp(region) * 52.0}
@@ -646,7 +656,7 @@ snit::type econ {
         # initial income. NOTE: mulitiplication by 52 because amounts in
         # the SAM are in years and actors in Athena get income in
         # weeks.
-        rdb eval {
+        $adb eval {
             SELECT * FROM actors
             WHERE atype = 'INCOME'
         } data {
@@ -698,7 +708,7 @@ snit::type econ {
             }
 
             # NEXT, set this actors rates and initial income
-            rdb eval {
+            $adb eval {
                 UPDATE income_a 
                 SET t_goods      = $t_goods,
                     t_black      = $t_black,
@@ -736,7 +746,7 @@ snit::type econ {
 
         # NEXT, compute the composite graft fraction
         set graft_frac \
-            [rdb onecolumn {SELECT total(graft_region) FROM income_a;}]
+            [$adb onecolumn {SELECT total(graft_region) FROM income_a;}]
 
         $sam set [list graft $graft_frac]
 
@@ -756,7 +766,7 @@ snit::type econ {
         # NEXT, handle failures.
         if {$info(status) ne "ok"} {
             log warning econ "Failed to initialize SAM"
-            $type SamError "SAM Error"
+            $self SamError "SAM Error"
             return 0
         }
 
@@ -771,7 +781,7 @@ snit::type econ {
     # Updates the actors sector in the SAM and then initializes the CGE
     # from the SAM
 
-    typemethod InitCGEFromSAM {} {
+    method InitCGEFromSAM {} {
 
         # NEXT, get sectors and data from the SAM
         set sectors  [$sam index i]
@@ -892,7 +902,7 @@ snit::type econ {
     #
     # Returns 1 if the economy is "ok" and 0 otherwise.
 
-    typemethod ok {} {
+    method ok {} {
         return [expr {$info(status) eq "ok"}]
     }
 
@@ -901,17 +911,17 @@ snit::type econ {
     # Calibrates the CGE.  This is done when the simulation leaves
     # the PREP state and enters time 0.
 
-    typemethod start {} {
+    method start {} {
         log normal econ "start"
 
         # FIRST, clear out and initialize actor income tables.
-        rdb eval {DELETE FROM income_a;}
+        $adb eval {DELETE FROM income_a;}
 
-        rdb eval {
+        $adb eval {
             SELECT a FROM actors
             WHERE atype='INCOME'
         } {
-            rdb eval {
+            $adb eval {
                 INSERT INTO income_a(a, income)
                 VALUES($a, 0.0);
             }
@@ -922,19 +932,19 @@ snit::type econ {
             cge reset
 
             # NEXT, prepare the SAM with actor data
-            $type PrepareSAM
+            $self PrepareSAM
 
             # NEXT, compute the actors sector in the SAM, return if 
             # there is a problem
-            if {![$type SAMActorsSector]} {
+            if {![$self SAMActorsSector]} {
                 return
             }
 
             # NEXT, initialize the CGE from the SAM
-            $type InitCGEFromSAM
+            $self InitCGEFromSAM
 
             # NEXT, calibrate the CGE
-            $type analyze -calibrate
+            $self analyze -calibrate
 
             set startdict [$cge get]
 
@@ -950,11 +960,11 @@ snit::type econ {
     # Updates the CGE at each econ tock.  Returns 1 if the CGE
     # converged, and 0 otherwise.
 
-    typemethod tock {} {
+    method tock {} {
         log normal econ "tock"
 
         if {$info(state) eq "ENABLED"} {
-            $type analyze
+            $self analyze
 
             log normal econ "tock complete"
         } else {
@@ -982,12 +992,12 @@ snit::type econ {
     # Returns 1 on success, and 0 otherwise.
     #
 
-    typemethod analyze {{opt ""}} {
+    method analyze {{opt ""}} {
         log detail econ "analyze $opt"
 
         # FIRST, get labor and consumer security factors
-        set LSF [$type ComputeLaborSecurityFactor]
-        set CSF [$type ComputeConsumerSecurityFactor]
+        set LSF [$self ComputeLaborSecurityFactor]
+        set CSF [$self ComputeConsumerSecurityFactor]
 
         # NEXT, SAM data
         array set samdata [$sam get]
@@ -995,7 +1005,7 @@ snit::type econ {
         # NEXT, calibrate if requested.
         if {$opt eq "-calibrate"} {
             # FIRST, demographics
-            array set demdata [demog getlocal]
+            array set demdata [$adb demog getlocal]
 
             # NEXT, some globals. These only need to get set during
             # calibration
@@ -1054,7 +1064,7 @@ snit::type econ {
 
             # NEXT, actors expenditures. Multiplication by 52 because the
             # CGE has money flows in years.
-            array set exp [cash allocations]
+            array set exp [$adb cash allocations]
 
             let Xwa {$exp(world)  * 52.0}
             let Xra {$exp(region) * 52.0}
@@ -1106,7 +1116,7 @@ snit::type econ {
             # NEXT, handle failures.
             if {$info(status) ne "ok"} {
                 log warning econ "Failed to calibrate: $info(page)"
-                $type CgeError "CGE Calibration Error"
+                $self CgeError "CGE Calibration Error"
                 return 0
             }
 
@@ -1114,11 +1124,11 @@ snit::type econ {
             array set out [cge get Out -bare]
             set CAPgoods $out(BQS.goods)
 
-            foreach n [nbhood names] {
+            foreach n [$adb nbhood names] {
                 set cap0 [plant capacity n $n]
                 let jobs0 {$out(BQS.pop) * $cap0 / $CAPgoods}
                 
-                rdb eval {
+                $adb eval {
                     UPDATE econ_n
                     SET cap0  = $cap0,
                         cap   = $cap0,
@@ -1132,8 +1142,8 @@ snit::type econ {
         # NEXT, Recompute In through Out
 
         # Set the input parameters
-        array set demdata [demog getlocal]
-        array set exp  [cash allocations]
+        array set demdata [$adb demog getlocal]
+        array set exp  [$adb cash allocations]
 
         # NEXT, multiply expenditures by 52 since the CGE money flows are
         # in years, but actors expenses are weekly
@@ -1150,14 +1160,14 @@ snit::type econ {
         }
 
         # NEXT, get geo-unemployment from the demographics model 
-        set GU [demog geounemp]
+        set GU [$adb demog geounemp]
 
         # NEXT, subsisters are members of the population that are not
         # consumers
         let subsisters {$demdata(population) - $demdata(consumers)}
 
         # NEXT, compute an updated value for REM
-        set REM [$type ComputeREM]
+        set REM [$self ComputeREM]
 
         cge set [list \
                      In::Consumers  $demdata(consumers)     \
@@ -1202,7 +1212,7 @@ snit::type econ {
         # NEXT, handle failures
         if {$info(status) ne "ok"} {
             log warning econ "Economic analysis failed"
-            $type CgeError "CGE Solution Error"
+            $self CgeError "CGE Solution Error"
             return 0
         }
 
@@ -1214,11 +1224,11 @@ snit::type econ {
             # Jobs comes from the capacity constrained M page
             array set data [cge get M -bare]
 
-            foreach n [nbhood local names] {
+            foreach n [$adb nbhood local names] {
                 set cap [plant capacity n $n]
                 let jobs {floor($data(QS.pop) * $cap / $CAPgoods)}
                 
-                rdb eval {
+                $adb eval {
                     UPDATE econ_n
                     SET cap  = $cap,
                         jobs = $jobs
@@ -1233,7 +1243,7 @@ snit::type econ {
         # based on a week.
         array set out [$cge get Out -bare]
         
-        foreach {actor tg tb tp tw gr cut} [rdb eval {                   
+        foreach {actor tg tb tp tw gr cut} [$adb eval {                   
                 SELECT a, t_goods, t_black, t_pop,
                        t_world, graft_region, cut_black 
                 FROM income_a
@@ -1255,7 +1265,7 @@ snit::type econ {
             }
 
             # NEXT, update the actor incomes
-            rdb eval {
+            $adb eval {
                 UPDATE income_a
                 SET income       = $inc_total,
                     inc_goods    = $inc_goods,
@@ -1270,7 +1280,7 @@ snit::type econ {
 
         # NEXT, actors sector revenues from potentially new income
         # rates, these will be used in the next time step
-        rdb eval {
+        $adb eval {
             SELECT total(inc_goods)    * 52.0 AS Xag,
                    total(inc_black_t + 
                          inc_black_nr) * 52.0 AS Xab,
@@ -1282,7 +1292,7 @@ snit::type econ {
 
         # NEXT, the expenditures made by budget actors are accounted for as
         # revenue from the world since budget actors have no income
-        set budgetXaw [rdb onecolumn {
+        set budgetXaw [$adb onecolumn {
             SELECT total(goods + black  + pop +
                          actor + region + world)
             FROM expenditures AS E
@@ -1309,9 +1319,9 @@ snit::type econ {
     # Computes the labor security factor given the security of
     # each local neighborhood group.
 
-    typemethod ComputeLaborSecurityFactor {} {
+    method ComputeLaborSecurityFactor {} {
         # FIRST, get the total number of workers
-        set totalLabor [rdb onecolumn {
+        set totalLabor [$adb onecolumn {
             SELECT labor_force FROM demog_local
         }]
 
@@ -1324,7 +1334,7 @@ snit::type econ {
 
         set numerator 0.0
 
-        rdb eval {
+        $adb eval {
             SELECT labor_force,
                    security
             FROM demog_g
@@ -1350,9 +1360,9 @@ snit::type econ {
     # Computes the consumer security factor given the security of
     # each local neighborhood group.
 
-    typemethod ComputeConsumerSecurityFactor {} {
+    method ComputeConsumerSecurityFactor {} {
         # FIRST get the total number of consumers
-        set totalCons [rdb onecolumn {
+        set totalCons [$adb onecolumn {
             SELECT consumers FROM demog_local
         }]
 
@@ -1366,7 +1376,7 @@ snit::type econ {
 
         set numerator 0.0
 
-        rdb eval {
+        $adb eval {
             SELECT consumers, 
                    security
             FROM demog_g
@@ -1393,7 +1403,7 @@ snit::type econ {
     # Given the global remittance change rate in the CGE
     # compute a new value for remittances and return it.
 
-    typemethod ComputeREM {} {
+    method ComputeREM {} {
         array set cgeGlobals [$cge get Global -bare]
         array set cgeInputs  [$cge get In -bare]
 
@@ -1418,12 +1428,12 @@ snit::type econ {
     # This method pops up a dialog to inform the user that because the CGE
     # has failed to solve the econ model is disabled.
 
-    typemethod CgeError {title} {
+    method CgeError {title} {
         append msg "Failure in the econ model caused it to be disabled."
         append msg "\nSee the detail browser for more information."
 
         # FIRST, disable the econ model.
-        econ setstate DISABLED
+        $self setstate DISABLED
 
         # NEXT, if the app in in GUI mode, inform the user about
         # the failure. The on-tick sanity check will also fail
@@ -1448,12 +1458,12 @@ snit::type econ {
     # This method pops up a dialog to inform the user that because the CGE
     # has failed to solve the econ model is disabled.
 
-    typemethod SamError {title} {
+    method SamError {title} {
         append msg "Failure in the econ model caused it to be disabled."
         append msg "\nSee the detail browser for more information."
 
         # FIRST, disable the econ model
-        econ setstate DISABLED
+        $self setstate DISABLED
 
         # NEXT, if the app in in GUI mode, inform the user about the
         # failure. The on-lock sanity check will also fail.
@@ -1482,15 +1492,15 @@ snit::type econ {
     # - get
     # - value
 
-    delegate typemethod get   to cge
-    delegate typemethod value to cge
-    delegate typemethod eval  to cge
+    delegate method get   to cge
+    delegate method value to cge
+    delegate method eval  to cge
 
     # samcells
     #
     # Returns the names of all cells found in the SAM
 
-    typemethod samcells {} {
+    method samcells {} {
         return [$sam cells]
     }
 
@@ -1498,7 +1508,7 @@ snit::type econ {
     #
     # Returns the names of all the cells found in the CGE
 
-    typemethod cgecells {} {
+    method cgecells {} {
         return [$cge cells]
     }
 
@@ -1507,7 +1517,7 @@ snit::type econ {
     # Dumps the cell values and formulas for one or all pages.  If 
     # no _page_ is specified, only the *out* page is included.
 
-    typemethod dump {{page Out}} {
+    method dump {{page Out}} {
         set pages [linsert [cge pages] 0 all]
 
         if {$page ni $pages} {
@@ -1525,13 +1535,13 @@ snit::type econ {
     # initialization. The GUI uses a copy of the SAM for it's
     # purposes.
 
-    typemethod sam {{copy {0}}} {
+    method sam {{copy {0}}} {
         # FIRST, create the SAM
         if {$copy} {
             set samcopy [cellmodel samcopy \
                          -epsilon 0.000001 \
                          -maxiters 1       \
-                         -tracecmd [mytypemethod TraceSAM]]
+                         -tracecmd [mymethod TraceSAM]]
 
             samcopy load \
                 [readfile \
@@ -1548,7 +1558,7 @@ snit::type econ {
     # Returns the cellmodel object for the CGE, for use by 
     # browsers.
 
-    typemethod cge {} {
+    method cge {} {
         return $cge
     }
 
@@ -1556,7 +1566,7 @@ snit::type econ {
     #
     # Returns a dictionary of the starting values for the CGE cells.
 
-    typemethod getstart {} {
+    method getstart {} {
         return $startdict
     }
 
@@ -1568,7 +1578,7 @@ snit::type econ {
     # a script of one or more commands that will undo the change.  When
     # change cannot be undone, the mutator returns the empty string.
 
-    # mutate samcell parmdict
+    # samcell parmdict
     #
     # parmdict   A dictionary of order parms
     #
@@ -1578,7 +1588,7 @@ snit::type econ {
     # Updates the SAM cell model given the parms, which are presumed to be 
     # valid
 
-    typemethod {mutate samcell} {parmdict} {
+    method samcell {parmdict} {
         dict with parmdict {
             # FIRST, get the old value, this is for undo
             set oldval [dict get [sam get] $id]
@@ -1590,11 +1600,11 @@ snit::type econ {
             notifier send ::econ <SamUpdate> $id $val
 
             # NEXT, return the undo command
-            return [list econ mutate samcell [list id $id val $oldval]]
+            return [list $self samcell [list id $id val $oldval]]
         }
     }
 
-    # mutate cgecell parmdict
+    # cgecell parmdict
     #
     # parmdict   A dictionary of order parms
     #
@@ -1604,7 +1614,7 @@ snit::type econ {
     # Updates the CGE cell model given the parms, which are presumed to be 
     # valid
 
-    typemethod {mutate cgecell} {parmdict} {
+    method cgecell {parmdict} {
         dict with parmdict {
             # FIRST, get the old value, this is for undo
             set oldval [dict get [cge get] $id]
@@ -1617,11 +1627,11 @@ snit::type econ {
             notifier send ::econ <CgeUpdate>
 
             # NEXT, return the undo command
-            return [list econ mutate cgecell [list id $id val $oldval]]
+            return [list $self cgecell [list id $id val $oldval]]
         }
     }
 
-    # mutate hist parmdict
+    # hist parmdict
     #
     # parmdict   A dictionary of order parms
     #
@@ -1637,7 +1647,7 @@ snit::type econ {
     # be valid. Returns a command to restore to the previous state of 
     # the history data.
 
-    typemethod {mutate hist} {parmdict} {
+    method hist {parmdict} {
         # FIRST, get undo dict
         set udict [dict create {*}[array get histdata]]
 
@@ -1652,14 +1662,14 @@ snit::type econ {
         }
 
         # NEXT, return undo information
-        return [list econ mutate hist $udict]
+        return [list $self hist $udict]
     }
 
-    # hist 
+    # gethist 
     #
     # Returns a dictionary of the historical data 
 
-    typemethod hist {} {
+    method gethist {} {
         return [dict create {*}[array get histdata]]
     }
 
@@ -1670,7 +1680,7 @@ snit::type econ {
     # set up a calibration of the CGE on start to match the state
     # of the CGE from a rebased scenario. 
 
-    typemethod rebase {} {
+    method rebase {} {
         # FIRST, set the history flag
         set histdata(hist_flag) 1
 
@@ -1691,7 +1701,7 @@ snit::type econ {
         set histdata(base_ur)    $cgedata(M::UR)
         set histdata(base_gdp)   $cgedata(M::GDP)
         set histdata(base_consumers)  \
-            [rdb onecolumn {
+            [$adb onecolumn {
                 SELECT sum(basepop) FROM civgroups WHERE sa_flag=0;
             }]
     }
@@ -1700,7 +1710,7 @@ snit::type econ {
     #
     # Returns a dictionary of SAM inputs that have non-default values.
 
-    typemethod samparms {} {
+    method samparms {} {
         set result [dict create]
 
         foreach cell [$sam cells] {
@@ -1729,7 +1739,7 @@ snit::type econ {
     # -saved is specified, the data is marked unchanged.
     #
 
-    typemethod checkpoint {{option ""}} {
+    method checkpoint {{option ""}} {
         if {$option eq "-saved"} {
             set info(changed) 0
         }
@@ -1750,9 +1760,9 @@ snit::type econ {
     # Syntax:
     #   restore _checkpoint_ ?-saved?
     #
-    #   checkpoint - A string returned by the checkpoint typemethod
+    #   checkpoint - A string returned by the checkpoint method
     
-    typemethod restore {checkpoint {option ""}} {
+    method restore {checkpoint {option ""}} {
         # FIRST, restore the checkpoint data
         sam set [dict get $checkpoint sam]
         cge set [dict get $checkpoint cge]
@@ -1777,7 +1787,7 @@ snit::type econ {
     # Syntax:
     #   changed
 
-    typemethod changed {} {
+    method changed {} {
         return $info(changed)
     }
 
@@ -1854,7 +1864,7 @@ snit::type econ {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [econ mutate hist [array get parms]]
+        my setundo [$adb econ hist [array get parms]]
     }
 }
 
@@ -1883,7 +1893,7 @@ snit::type econ {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [econ mutate samcell [array get parms]]
+        my setundo [$adb econ samcell [array get parms]]
     }
 }
 
@@ -1912,7 +1922,7 @@ snit::type econ {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [econ mutate samcell [array get parms]]
+        my setundo [$adb econ samcell [array get parms]]
     }
 }
  
@@ -1941,7 +1951,7 @@ snit::type econ {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [econ mutate cgecell [array get parms]]
+        my setundo [$adb econ cgecell [array get parms]]
     }
 }
 
@@ -1968,7 +1978,7 @@ snit::type econ {
 
     method _execute {{flunky ""}} {
         set parms(id) "Global::REMChangeRate"
-        my setundo [econ mutate cgecell [array get parms]]
+        my setundo [$adb econ cgecell [array get parms]]
     }
 }
 

@@ -169,7 +169,7 @@ snit::type ::athena::demog {
         # NOTE: the econ model will compute the jobs in the econ_n table
         # if it is enabled
         set defaultUR 0.0
-        if {[econ state] eq "DISABLED"} {
+        if {[$adb econ state] eq "DISABLED"} {
             set defaultUR [parm get demog.playboxUR]
         }
 
@@ -260,13 +260,13 @@ snit::type ::athena::demog {
 
     method geounemp {} {
         # FIRST, no econ model, no geo-unemployment
-        if {[econ state] eq "DISABLED"} {
+        if {[$adb econ state] eq "DISABLED"} {
             return 0
         }
 
         # NEXT, grab the CGE M page unemployment and the disaggregated
         # unemployment
-        array set data [econ get M -bare]
+        array set data [$adb econ get M -bare]
 
         set cgeUnemp $data(Unemp)
 
@@ -364,7 +364,7 @@ snit::type ::athena::demog {
         }
         
         # NEXT, if the economic model is disabled, that's all we'll do.
-        if {[econ state] eq "DISABLED"} {
+        if {[$adb econ state] eq "DISABLED"} {
             return            
         }
         
@@ -374,7 +374,7 @@ snit::type ::athena::demog {
         }]
 
         # NEXT, disaggregate the consumption of goods to the groups.         
-        set QD [econ value Out::QD.goods.pop]
+        set QD [$adb econ value Out::QD.goods.pop]
         
         foreach {g employed consumers urbanization} [rdb eval {
             SELECT D.g            AS g,
@@ -414,7 +414,7 @@ snit::type ::athena::demog {
     
     method ComputeExpectedGroupConsumption {} {
         # FIRST, if the economic model is disabled, we're done.
-        if {[econ state] eq "DISABLED"} {
+        if {[$adb econ state] eq "DISABLED"} {
             $adb eval {
                 UPDATE demog_g
                 SET eloc = 0;
@@ -474,7 +474,7 @@ snit::type ::athena::demog {
         }
         
         # NEXT, if the economic model is disabled we're done.
-        if {[econ state] eq "DISABLED"} {
+        if {[$adb econ state] eq "DISABLED"} {
             return            
         }
     

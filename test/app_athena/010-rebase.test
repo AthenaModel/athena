@@ -299,12 +299,12 @@ SHIA JOE 0.9  1         0.0
     test save-1.9 {econ data} -setup {
         ted create JOE BLUE SHIA
         econ setstate ENABLED
-        econ::sam set [list REMChangeRate 10.0]
+        econ setsam [list REMChangeRate 10.0]
         ted lock
         ted step
     } -body {
         rebase save
-        set hdict [::econ hist]
+        set hdict [econ gethist]
         dict with hdict {
             expr {$rem_rate == 10.0}
         }

@@ -39,9 +39,10 @@ namespace eval ::athena_test::tests:: {
     # Clean up after a test
 
     proc cleanup {} {
-        array unset parms
-        ted notifier forget
-        app new
+        ted cleanup
+        #array unset parms
+        #ted notifier forget
+        #app new
     }
 
     #-------------------------------------------------------------------
