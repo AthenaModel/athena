@@ -407,27 +407,6 @@ tactic define ASSIGN "Assign Personnel" {actor} -onlock {
         " [my agent] $n $g
 
     }
-
-    #-------------------------------------------------------------------
-    # Order Helpers
-    
-    # activitiesFor g
-    #
-    # g  - A force or organization group
-    #
-    # Returns a list of the valid activities for this group.
-
-    typemethod activitiesFor {g} {
-        if {$g ne ""} {
-            set gtype [string tolower [group gtype $g]]
-            if {$gtype ne ""} {
-                return [::activity $gtype names]
-            }
-        }
-
-        return ""
-    }
-
 }
 
 #-----------------------------------------------------------------------
@@ -459,7 +438,7 @@ tactic define ASSIGN "Assign Personnel" {actor} -onlock {
         nbhood n
 
         rcc "Activity:" -for activity
-        enum activity -listcmd {tactic::ASSIGN activitiesFor $g}
+        enum activity -listcmd {$order_ activitiesFor $g}
 
         rcc "Personnel Mode:" -for pmode
         selector pmode {

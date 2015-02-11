@@ -214,6 +214,24 @@ oo::class create ::athena::athena_order {
         }
     }
 
+    # activitiesFor g
+    #
+    # g  - A force or organization group
+    #
+    # Returns a list of the valid activities for this group.
+
+    method activitiesFor {g} {
+        if {$g ne ""} {
+            set gtype [string tolower [$adb group gtype $g]]
+            if {$gtype ne ""} {
+                return [$adb activity $gtype names]
+            }
+        }
+
+        return ""
+    }
+
+
     #-------------------------------------------------------------------
     # Validation Helper Methods
 

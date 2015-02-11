@@ -129,6 +129,23 @@ namespace eval ::athena_test::tests:: {
     # This is tested in use for most *:CREATE orders.
 
     #-------------------------------------------------------------------
+    # activitiesFor
+
+    test activitiesFor-1.1 {returns nothing for unknown group} -setup {
+        setup TACTIC:ASSIGN
+    } -body {
+        $order activitiesFor NONESUCH
+    } -result {}
+
+    test activitiesFor-1.2 {list of activities} -setup {
+        setup TACTIC:ASSIGN
+    } -body {
+        $order activitiesFor BLUE
+    } -cleanup {
+        cleanup
+    } -result {CHKPOINT COERCION CONSTRUCT CRIME CURFEW EDU EMPLOY GUARD INDUSTRY INFRA LAWENF MEDICAL PATROL PSYOP RELIEF}
+
+    #-------------------------------------------------------------------
     # allAgentsBut
 
     test allAgentsBut-1.1 {returns nothing for unknown tactic} -setup {
