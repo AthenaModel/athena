@@ -474,7 +474,7 @@ snit::type ::athena::athenadb {
 
         # NEXT, reset other modules not yet owned by this object.
         catch {sim new}
-        
+
         $self notify "" <Destroy>
     }
 
@@ -813,7 +813,13 @@ snit::type ::athena::athenadb {
     # Sends the event, using subject "$options(-subject).$component"
     
     method notify {component event args} {
-        notifier send $options(-subject).$component $event {*}$args
+        set subject $options(-subject)
+
+        if {$component ne ""} {
+            append subject ".$component"
+        }
+
+        notifier send $subject $event {*}$args
     }
 
     
