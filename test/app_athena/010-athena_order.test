@@ -185,6 +185,25 @@ namespace eval ::athena_test::tests:: {
     } -result {SELF NONE BOB}
 
     #-------------------------------------------------------------------
+    # frcgroupsOwnedByAgent
+
+    test frcgroupsOwnedByAgent-1.1 {returns nothing for unknown tactic} -setup {
+        setup TACTIC:STANCE
+    } -body {
+        $order groupsOwnedByAgent NONESUCH
+    } -result {}
+
+    test frcgroupsOwnedByAgent-1.2 {returns groups for owning agent} -setup {
+        setup TACTIC:STANCE
+        set B1 [ted addblock JOE]
+        set T1 [ted addtactic $B1 SIGEVENT]
+    } -body {
+        $order frcgroupsOwnedByAgent [$T1 id]
+    } -cleanup {
+        cleanup
+    } -result {BLUE BRIT}
+
+    #-------------------------------------------------------------------
     # groupsOwnedByAgent
 
     test groupsOwnedByAgent-1.1 {returns nothing for unknown tactic} -setup {

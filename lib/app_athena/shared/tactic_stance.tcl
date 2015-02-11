@@ -179,27 +179,6 @@ tactic define STANCE "Adopt a Stance" {actor} -onlock {
 
         return 
     }
-
-    #--------------------------------------------------------------------
-    # Order Helper Typemethods
-
-    # frcgrpsOwnedBy   tactic_id
-    #
-    # tactic_id   - A STANCE tactic id
-    #
-    # Returns a list of FRC groups owned by the actor who has the STANCE
-    # tactic with the supplied id.
-
-    typemethod frcgrpsOwnedBy {tactic_id} {
-        if {![pot has $tactic_id]} {
-            return [list]
-        }
-
-        set tactic [pot get $tactic_id]
-        set owner [$tactic agent]
-
-        return [frcgroup ownedby $owner]
-    }
 }
 
 # TACTIC:STANCE
@@ -220,7 +199,7 @@ tactic define STANCE "Adopt a Stance" {actor} -onlock {
         text name -width 20
 
         rcc "Force Group:" -for f
-        enum f -listcmd {tactic::STANCE frcgrpsOwnedBy $tactic_id}
+        enum f -listcmd {$order_ frcgroupsOwnedByAgent $tactic_id}
 
         rcc "Mode:" -for mode
         selector mode {

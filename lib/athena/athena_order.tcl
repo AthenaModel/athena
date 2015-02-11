@@ -180,6 +180,23 @@ oo::class create ::athena::athena_order {
         }
     }
 
+    # frcgroupsOwnedByAgent id
+    #
+    # id   - A tactic ID
+    #
+    # Returns a list of force and organization groups owned by the 
+    # agent who owns the given tactic.  This is for use in order
+    # dynaforms where the user must choose an owned group.
+
+    method frcgroupsOwnedByAgent {id} {
+        if {[$adb pot has $id]} {
+            set tactic [$adb pot get $id]
+            return [$adb frcgroup ownedby [$tactic agent]]
+        } else {
+            return [list]
+        }
+    }
+
     # allAgentsBut id
     #
     # id  - A tactic ID
