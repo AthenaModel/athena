@@ -74,6 +74,55 @@ snit::type ::athena::econ {
 
     constructor {adb_} {
         set adb $adb_
+
+        # FIRST, default state is DISABLED
+        set info(state) "DISABLED"
+
+        # NEXT, create the SAM
+        set sam [cellmodel sam \
+                     -epsilon 0.000001 \
+                     -maxiters 1       \
+                     -failcmd  [mymethod CellModelFailure] \
+                     -tracecmd [mymethod TraceSAM]]
+
+        $sam load \
+            [readfile [file join $::app_athena_shared::library sam6x6.cm]]
+
+        log detail econ "Read SAM from [file join $::app_athena_shared::library sam6x6.cm]"
+
+        require {[$sam sane]} "The econ model's SAM is not sane."
+
+        set result [$sam solve]
+
+        # NEXT, handle failures.
+        if {$result ne "ok"} {
+            error "Failed to solve SAM model."
+        }
+
+        # NEXT, create the CGE.
+        set cge [cellmodel cge \
+                     -epsilon  0.000001 \
+                     -maxiters 1000     \
+                     -failcmd  [mymethod CellModelFailure] \
+                     -tracecmd [mymethod TraceCGE]]
+        $cge load [readfile [file join $::app_athena_shared::library cge6x6.cm]]
+
+        log detail econ "Read CGE from [file join $::app_athena_shared::library cge6x6.cm]"
+        
+        require {[$cge sane]} "The econ model's CGE (cge6x6.cm) is not sane."
+
+        # NEXT, register this type as a saveable
+        athena register ::econ
+    }
+
+    # destructor
+    #
+    # When the econ object is destroyed the SAM and CGE components need
+    # to be destroyed.
+    
+    destructor {
+        $sam destroy
+        $cge destroy
     }
 
     #-------------------------------------------------------------------
@@ -252,59 +301,6 @@ snit::type ::athena::econ {
         }
 
         return
-    }
-
-    # Initialization
-
-    # init
-    #
-    # Initializes the module before the simulation first starts to run.
-
-    method init {} {
-        log normal econ "init"
-
-        # FIRST, default state is DISABLED
-        set info(state) "DISABLED"
-
-        # NEXT, create the SAM
-        set sam [cellmodel sam \
-                     -epsilon 0.000001 \
-                     -maxiters 1       \
-                     -failcmd  [mymethod CellModelFailure] \
-                     -tracecmd [mymethod TraceSAM]]
-
-        $sam load \
-            [readfile [file join $::app_athena_shared::library sam6x6.cm]]
-
-        log detail econ "Read SAM from [file join $::app_athena_shared::library sam6x6.cm]"
-
-        require {[$sam sane]} "The econ model's SAM is not sane."
-
-        set result [$sam solve]
-
-        # NEXT, handle failures.
-        if {$result ne "ok"} {
-            log warning econ "Failed to solve SAM"
-            error "Failed to solve SAM model."
-        }
-
-        # NEXT, create the CGE.
-        set cge [cellmodel cge \
-                     -epsilon  0.000001 \
-                     -maxiters 1000     \
-                     -failcmd  [mymethod CellModelFailure] \
-                     -tracecmd [mymethod TraceCGE]]
-        $cge load [readfile [file join $::app_athena_shared::library cge6x6.cm]]
-
-        log detail econ "Read CGE from [file join $::app_athena_shared::library cge6x6.cm]"
-        
-        require {[$cge sane]} "The econ model's CGE (cge6x6.cm) is not sane."
-
-        # NEXT, register this type as a saveable
-        athena register ::econ
-
-        # NEXT, Econ is up.
-        log normal econ "init complete"
     }
 
     # disable
