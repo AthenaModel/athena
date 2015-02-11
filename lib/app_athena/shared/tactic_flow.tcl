@@ -16,62 +16,6 @@
 # FIRST, create the class.
 tactic define FLOW "Flow Personnel" {system} {
     #-------------------------------------------------------------------
-    # Typemethods
-    #
-    # These type methods are used to accumulate the population flows;
-    # they will all be applied at once.
-
-    # reset
-    #
-    # Clears the list of pending flows prior to the beginning of
-    # strategy execution.
-    
-    typemethod reset {} {
-        my variable pending
-
-        set pending [list]
-    }
-
-    # flow f g delta
-    #
-    # f          - The source group
-    # g          - The destination group
-    # personnel  - The number of people to move
-    #
-    # Saves the pending flow until later.
-
-    typemethod flow {f g delta} {
-        my variable pending
-
-        lappend pending $f $g $delta
-    }
-
-    
-    # save
-    #
-    # Adjusts civilian population according to the pending flows.
-    
-    typemethod save {} {
-        my variable pending
-
-        foreach {f g delta} $pending {
-            demog flow $f $g $delta
-        }
-
-        my reset
-    }
-
-    # pending
-    #
-    # Return pending flows.
-
-    typemethod pending {} {
-        my variable pending
-
-        return $pending
-    }
-
-    #-------------------------------------------------------------------
     # Instance Variables
 
     variable f           ;# The source civilian group
