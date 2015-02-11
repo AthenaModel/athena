@@ -65,16 +65,20 @@ snit::type map {
             image delete $mapimage
             set mapimage ""
 
-            # NEXT, destroy projection it's about to be created again
-            $projection destroy
         }
-
+        
         # NEXT, load the new map.
         rdb eval {
             SELECT width,height,projtype,proj_opts,data 
             FROM maps WHERE id=1
         } {
-            set mapimage [image create photo -format jpeg -data $data]
+            # May not have an image
+            if {$data ne ""} {
+                set mapimage [image create photo -format jpeg -data $data]                
+            }
+
+            # NEXT, destroy projection it's about to be created again
+            $projection destroy
 
             set projection [[eprojtype as proj $projtype] %AUTO% \
                                           -width $width          \
@@ -242,7 +246,7 @@ snit::type map {
                 binary scan $row(data) H* row(data)
             }
 
-            set undo [mytypemethod UndoImport [array get row]]
+            set undo [mytypemethod UndoMap [array get row]]
         }
 
         # NEXT, try to load it into the RDB
@@ -288,7 +292,7 @@ snit::type map {
                 binary scan $row(data) H* row(data)
             }
 
-            set undo [mytypemethod UndoImport [array get row]]
+            set undo [mytypemethod UndoMap [array get row]]
         }
 
         $type data $parmdict
@@ -300,6 +304,64 @@ snit::type map {
         return $undo
     }
 
+    # corners parmdict
+    #
+    # parmdict    A dictionary of parameters to set lat/long coords for
+    #             the corners of a map image
+    #
+    #   ulat      Latitude of upper left hand point
+    #   ulong     Longitude of upper left hand point
+    #   llat      Latitude of lower right hand point
+    #   llong     Longitude of lower right hand point
+
+    typemethod corners {parmdict} {
+        dict with parmdict {}
+
+        # FIRST, grab the image width and height, there may not be
+        # a map in the rdb
+        lassign [map box] dummy dummy width height
+        set filename ""
+        set data     ""
+
+        # NEXT, determine undo script based on whether a map currently
+        # exists
+        if {![rdb exists {SELECT * FROM maps WHERE id=1}]} {
+            set undo [mytypemethod UndoToDefault]
+        } else {
+            rdb eval {
+                SELECT * FROM maps WHERE id=1
+            } row {                
+                unset row(*)
+            }
+
+            # NEXT, grab the data from the rdb to override defaults
+            set width    $row(width)
+            set height   $row(height)
+            set filename $row(filename)
+            set data     $row(data)
+
+            # NEXT, the undo script expects hex digits
+            binary scan $row(data) H* row(data)
+            set undo [mytypemethod UndoMap [array get row]]
+        }
+
+        # NEXT, fill in the projection information and update the
+        # rdb
+        lappend proj_opts -minlat $llat -minlon $ulong
+        lappend proj_opts -maxlat $ulat -maxlon $llong
+
+        rdb eval {
+            INSERT OR REPLACE
+            INTO maps(id,filename,width,height,projtype,proj_opts,data)
+            VALUES(1,$filename,$width,$height,'RECT',$proj_opts,$data);
+        }
+
+        $type DbSync
+
+        notifier send $type <MapChanged> 
+        return $undo      
+    }
+
     # UndoToDefault
     #
     # Undoes an import and sets back to default
@@ -307,8 +369,11 @@ snit::type map {
     typemethod UndoToDefault {} {
         # FIRST, blank everything out
         rdb eval {DELETE FROM maps;}
-        image delete $mapimage
-        set mapimage   ""
+
+        if {$mapimage ne ""} {
+            image delete $mapimage
+            set mapimage   ""
+        }
 
         # NEXT, default projection
         set projection [maprect %AUTO%]
@@ -320,13 +385,13 @@ snit::type map {
         notifier send $type <MapChanged>
     }
 
-    # UndoImport dict
+    # UndoMap dict
     #
     # dict    A dictionary of map parameters
     # 
     # Undoes a previous import
 
-    typemethod UndoImport {dict} {
+    typemethod UndoMap {dict} {
         # FIRST, restore the data
         dict for {key value} $dict {
             # FIRST, decode the image data
@@ -357,13 +422,27 @@ snit::type map {
 
     # compatible pdict
     #
-    # pdict   - dictionary of projection information, exact structure 
-    #           depends on projection type
+    # pdict   - optional dictionary of projection information
     #
     # This method checks to see if the data in the supplied projection
-    # dictionary is compatible with the current laydown of neighborhoods.
+    # dictionary is compatible with the current laydown of neighborhoods. If 
+    # no dictionary is supplied then the current projection is used to 
+    # determine if any neighborhoods are outside the bounds of the map.
+    #
+    # TBD: may support different projection types in the future. For now
+    # only rectangular projection is recognized
 
-    typemethod compatible {pdict} {
+    typemethod compatible {{pdict ""}} {
+        if {$pdict eq ""} {
+            set pdict [dict create]
+            dict set pdict minlat [[map projection] cget -minlat]
+            dict set pdict minlon [[map projection] cget -minlon]
+            dict set pdict maxlat [[map projection] cget -maxlat]
+            dict set pdict maxlon [[map projection] cget -maxlon]
+
+            dict set pdict ptype RECT
+        }
+
         dict with pdict {}
 
         # FIRST, if there are no neighborhoods, then it's always compatible
@@ -371,20 +450,8 @@ snit::type map {
             return 1
         }
 
-        # NEXT, if twe are changing projection types, then it's not 
-        # compatible. Note: This could change in the future.
-        set currptype [rdb onecolumn {SELECT projtype FROM maps WHERE id=1}]
-        if {$currptype ne $ptype} {
-            return 0
-        }
-
         # NEXT, projection type specific checks
         switch -exact -- $ptype {
-            REF {
-                # Nothing to be done
-                return 1
-            }
-
             RECT {
                 # Make sure the bounding box that contains the existing
                 # neighborhoods fit's in the bounding box of the 
@@ -407,6 +474,63 @@ snit::type map {
 
 #-------------------------------------------------------------------
 # Orders: MAP:*
+
+# MAP:GEOREF
+#
+# Allows arbitrary lat/long points to be assigned to a map image
+
+myorders define MAP:GEOREF {
+    meta title "Geo-reference Map Image"
+    meta sendstates {PREP PAUSED}
+
+    meta parmlist {
+        ulat 
+        ulong 
+        llat 
+        llong
+    }
+
+    meta form {
+        rcc "Upper Left Lat:" -for ulat
+        text ulat
+
+        rcc "Upper Left Long:" -for ulong
+        text ulong
+
+        rcc "Lower Right Lat:" -for llat
+        text llat
+
+        rcc "Lower Right Long:" -for llong
+        text llong
+    }
+
+    method _validate {} {
+        my prepare ulat  -num -required -type latpt
+        my prepare ulong -num -required -type longpt
+        my prepare llat  -num -required -type latpt
+        my prepare llong -num -required -type longpt
+
+        my returnOnError
+
+        my checkon llat {
+            if {$parms(llat) >= $parms(ulat)} {
+                my reject llat \
+                    "Latitude of lower point must be < latitude of upper point"
+            }
+        }
+
+        my checkon llong {
+            if {$parms(llong) <= $parms(ulong)} {
+                my reject llong \
+            "Longitude of lower point must be > longitude of upper point"
+            }
+        }
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [map corners [array get parms]]
+    }
+}
 
 # MAP:IMPORT:FILE
 #

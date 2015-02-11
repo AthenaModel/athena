@@ -59,6 +59,8 @@ namespace eval ::projectlib:: {
         ipercent         \
         ipositive        \
         iquantity        \
+        latpt            \
+        longpt           \
         leabsit          \
         money            \
         polygon          \
@@ -970,6 +972,30 @@ snit::type ::projectlib::unitname {
     }
 }
 
+snit::type ::projectlib::latpt {
+    pragma -hasinstances no
+
+    typemethod validate {value} {
+        if {[catch {latlong validate [list $value 0.0]} result]} {
+            return -code error -errorcode INVALID $result
+        }
+
+        return $value
+    }
+}
+
+snit::type ::projectlib::longpt {
+    pragma -hasinstances no
+
+    typemethod validate {value} {
+        if {[catch {latlong validate [list 0.0 $value]} result]} {
+            return -code error -errorcode INVALID $result
+        }
+
+        return $value 
+    }
+}
+
 snit::type ::projectlib::projection {
     # Make it a singleton
     pragma -hasinstances no
@@ -1016,10 +1042,6 @@ snit::type ::projectlib::projection {
                 
         # Projection specific checks
         switch -exact -- [dict get $value ptype] {
-            REF {
-                # Only requires width and height
-            }
-
             RECT {
                 if {![dict exists $value minlon]} {
                     lappend errmsg "Missing \"minlon\" key."
