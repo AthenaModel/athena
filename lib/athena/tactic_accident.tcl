@@ -1,26 +1,26 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#    tactic_explosion.tcl
+#    tactic_accident.tcl
 #
 # AUTHOR:
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Mark II Tactic, EXPLOSION event
+#    athena(n): Mark II Tactic, ACCIDENT event
 #
-#    This module implements the EXPLOSION tactic. 
+#    This module implements the ACCIDENT tactic. 
 #
 #-----------------------------------------------------------------------
 
 #-------------------------------------------------------------------
-# Tactic: EXPLOSION
+# Tactic: ACCIDENT
 
-::athena::tactic define EXPLOSION "Explosion Event" {system actor} {
+::athena::tactic define ACCIDENT "Accident Event" {system actor} {
     #-------------------------------------------------------------------
     # Instance Variables
 
     # Editable Parameters
-    variable n          ;# Neighborhood in which to create explosion
+    variable n          ;# Neighborhood in which to create accident
     variable coverage   ;# Coverage fraction
 
     #-------------------------------------------------------------------
@@ -48,7 +48,7 @@
     method SanityCheck {errdict} {
         if {$n eq ""} {
             dict set errdict n "No neighborhood selected."
-        } elseif {$n ni [nbhood names]} {
+        } elseif {$n ni [[my adb] nbhood names]} {
             dict set errdict n "No such neighborhood: \"$n\"."
         }
 
@@ -61,7 +61,7 @@
         set s(n)        [link make nbhood $n]
         set s(coverage) [format "%.2f" $coverage]
 
-        set narr "EXPLOSION abstract event in $s(n) "
+        set narr "ACCIDENT abstract event in $s(n) "
         append narr "(cov=$s(coverage))."
         
         return $narr
@@ -76,23 +76,23 @@
         # NEXT, log execution
         set objects [list $owner $n]
 
-        set msg "EXPLOSION([my id]): [my narrative]"
+        set msg "ACCIDENT([my id]): [my narrative]"
 
         sigevent log 2 tactic $msg {*}$objects
 
-        # NEXT, create the explosion.
-        driver::abevent create EXPLOSION $n $coverage
+        # NEXT, create the accident.
+        driver::abevent create ACCIDENT $n $coverage
     }
 }
 
-# TACTIC:EXPLOSION
+# TACTIC:ACCIDENT
 #
-# Creates/Updates EXPLOSION tactic.
+# Creates/Updates ACCIDENT tactic.
 
-::athena::orders define TACTIC:EXPLOSION {
-    meta title      "Tactic: Explosion Event"
+::athena::orders define TACTIC:ACCIDENT {
+    meta title      "Tactic: Accident Event"
     meta sendstates PREP
-    meta parmlist {tactic_id name n coverage}
+    meta parmlist   {tactic_id name n coverage}
 
     meta form {
         rcc "Tactic ID" -for tactic_id
@@ -110,11 +110,10 @@
     }
 
     method _validate {} {
-        # FIRST, prepare the parameters
-        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::EXPLOSION}
+        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::ACCIDENT}
         my returnOnError
 
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
 
         # Validation of initially invalid items or contingent items
         # takes place on sanity check.
@@ -132,7 +131,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
         my setundo [$tactic update_ {
             name n coverage
         } [array get parms]]

@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Mark II Tactic, GRANT
+#    athena(n): Mark II Tactic, GRANT
 #
 #    This module implements the GRANT tactic, which grants 
 #    actors access to CAPs.  By default, only a CAP's owner has
@@ -55,7 +55,7 @@
             dict set errdict klist "No CAPs selected."
         } else {
             foreach cap $klist {
-                if {$cap ni [cap names] || 
+                if {$cap ni [[my adb] cap names] || 
                     [cap get $cap owner] ne [my agent]
                 } {
                     dict set errdict klist \
@@ -89,7 +89,7 @@
         ldelete actors [my agent]
 
         if {[llength $actors] > 0} {
-            cap access grant $klist $actors
+            [my adb] cap access grant $klist $actors
         }
 
         sigevent log 2 tactic "
@@ -135,7 +135,7 @@
         my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::GRANT}
         my returnOnError
 
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
 
         my prepare name      -toupper  -with [list $tactic valName]
         my prepare klist     -toupper
@@ -146,7 +146,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
         my setundo [$tactic update_ {name klist alist} [array get parms]]
     }
 }

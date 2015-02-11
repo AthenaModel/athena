@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Mark II Tactic, SUPPORT
+#    athena(n): Mark II Tactic, SUPPORT
 #
 #    This module implements the SUPPORT tactic, which allows an
 #    actor to give political support to another actor in one or more
@@ -90,7 +90,7 @@
         }
 
         # FIRST, support a in the neighborhoods.
-        control support [my agent] $a $nbhoods
+        [my adb] control support [my agent] $a $nbhoods
 
         # NEXT, log what happened.
         set logIds $nbhoods
@@ -150,7 +150,7 @@
         my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::SUPPORT}
         my returnOnError
 
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
 
         my prepare name    -toupper   -with [list $tactic valName]
         my prepare a       -toupper
@@ -161,7 +161,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
         my setundo [$tactic update_ {name a nlist} [array get parms]]
     }
 }

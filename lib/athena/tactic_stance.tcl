@@ -7,7 +7,7 @@
 #    Dave Hanks
 #
 # DESCRIPTION:
-#    athena_sim(1): Mark II Tactic STANCE
+#    athena(n): Mark II Tactic STANCE
 #
 #    This module implements the STANCE tactic, which allows an
 #    actor to tell his force groups to adopt a particular stance
@@ -58,7 +58,7 @@
         if {$f eq ""} {
             dict set errdict f \
                 "No group selected."
-        } elseif {$f ni [group ownedby [my agent]]} {
+        } elseif {$f ni [[my adb] group ownedby [my agent]]} {
             dict set errdict f \
                 "[my agent] does not own a group called \"$f\"."
         }
@@ -127,7 +127,7 @@
         }
 
         # NEXT, determine which groups to ignore.
-        set gIgnored [rdb eval "
+        set gIgnored [[my adb] eval "
             SELECT g 
             FROM stance_fg
             WHERE f=\$f AND g IN ('[join $groups ',']')
@@ -224,7 +224,7 @@
         my prepare tactic_id -required -with {::strategy valclass ::athena::tactic::STANCE}
         my returnOnError
 
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
 
         my prepare name -toupper -with [list $tactic valName]
         my prepare f    -toupper
@@ -235,7 +235,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
         my setundo [$tactic update_ {
             name f mode drel glist nlist
         } [array get parms]]

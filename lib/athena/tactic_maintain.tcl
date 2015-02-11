@@ -6,7 +6,7 @@
 #    Dave Hanks
 #
 # DESCRIPTION:
-#    athena_sim(1): Mark II Tactic, MAINTAIN
+#    athena(n): Mark II Tactic, MAINTAIN
 #
 #    A MAINTAIN tactic spends cash-on-hand to maintain goods sector 
 #    production infrastructure
@@ -67,7 +67,7 @@
         # owner must not be automatically maintaining infrastructure
         set owner [my agent]
 
-        if {$owner ne "SYSTEM" && [actor get $owner auto_maintain]} {
+        if {$owner ne "SYSTEM" && [[my adb] actor get $owner auto_maintain]} {
             set errmsg "$owner has auto maintenance enabled."
             dict set errdict owner $errmsg
         }
@@ -301,7 +301,7 @@
     method execute {} {
         set owner [my agent]
 
-        cash spend $owner MAINTAIN $trans(amount)
+        [my adb] cash spend $owner MAINTAIN $trans(amount)
 
         set nbhoods [gofer::NBHOODS eval $nlist]
         set ntext   [gofer::NBHOODS narrative $nlist]
@@ -386,7 +386,7 @@
         my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::MAINTAIN}
         my returnOnError
 
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
 
         my prepare name    -toupper  -with [list $tactic valName]
         my prepare nlist
@@ -411,7 +411,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
         my setundo [$tactic update_ {
             name nlist rmode amount fmode level percent
         } [array get parms]]

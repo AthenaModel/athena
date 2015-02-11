@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Mark II Tactic, ABSIT creation
+#    athena(n): Mark II Tactic, ABSIT creation
 #
 #    This module implements the ABSIT tactic. 
 #
@@ -54,7 +54,7 @@
     method SanityCheck {errdict} {
         if {$n eq ""} {
             dict set errdict n "No neighborhood selected."
-        } elseif {$n ni [nbhood names]} {
+        } elseif {$n ni [[my adb] nbhood names]} {
             dict set errdict n "No such neighborhood: \"$n\"."
         }
 
@@ -64,7 +64,7 @@
             dict set errdict stype "No such abstraction situation type: \"$stype\"."
         }
 
-        if {$resolver ne "NONE" && $resolver ni [frcgroup names]} {
+        if {$resolver ne "NONE" && $resolver ni [[my adb] frcgroup names]} {
             dict set errdict resolver "No such FRC group: \"$resolver\"."
         }
 
@@ -103,7 +103,7 @@
 
         # FIRST, is there already an absit of this type in n? If so,
         # there's nothing to do.
-        if {[absit existsInNbhood $n $stype]} {
+        if {[[my adb] absit existsInNbhood $n $stype]} {
             sigevent log 2 tactic "
                 ABSIT([my id]):  Absit of type $stype already exists in $s(n).
             " $owner $n
@@ -128,7 +128,7 @@
         set p(resolver)  $resolver
         set p(rduration) $duration
 
-        absit create [array get p]
+        [my adb] absit create [array get p]
     }
 }
 
@@ -153,7 +153,7 @@
         nbhood n
 
         rcc "Type:" -for stype
-        enum stype -listcmd {absit AbsentTypes $n}
+        enum stype -listcmd {$adb_ absit AbsentTypes $n}
 
         rcc "Coverage:" -for coverage
         frac coverage
@@ -172,7 +172,7 @@
         my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::ABSIT}
         my returnOnError
 
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
 
         # Validation of initially invalid items or contingent items
         # takes place on sanity check.
@@ -193,7 +193,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
         my setundo [$tactic update_ {
             name n stype coverage inception resolver duration
         } [array get parms]]

@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Mark II Tactic, SPEND
+#    athena(n): Mark II Tactic, SPEND
 #
 #    A SPEND tactic spends cash-on-hand to particular economic sectors.
 #
@@ -282,7 +282,7 @@
         my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::SPEND}
         my returnOnError
 
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
 
         my prepare name       -toupper  -with [list $tactic valName]
         my prepare mode       -toupper  -selector
@@ -321,7 +321,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
         my setundo [$tactic update_ {
             name mode amount percent goods black pop region world
         } [array get parms]]

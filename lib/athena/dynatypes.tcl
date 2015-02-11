@@ -26,6 +26,11 @@ dynaform fieldtype alias actor enum -listcmd {$adb_ actor names}
 # agent: pick an agent by name.
 dynaform fieldtype alias agent enum -listcmd {$adb_ agent names}
 
+# cap: Pick a cap by name.
+dynaform fieldtype alias cap enumlong \
+    -showkeys yes \
+    -dictcmd  {$adb_ cap namedict}
+
 # civgroup: Pick a CIV group by name; long names shown.
 dynaform fieldtype alias civgroup enumlong \
     -showkeys yes \
@@ -36,6 +41,9 @@ dynaform fieldtype alias civlist enumlonglist \
     -showkeys yes \
     -width    30  \
     -dictcmd  {$adb_ civgroup namedict}
+
+# curse: pick a curse by name.
+dynaform fieldtype alias curse enum -listcmd {::curse names}
 
 # comparator: An ecomparator value
 dynaform fieldtype alias comparator enumlong \
@@ -56,6 +64,15 @@ dynaform fieldtype alias frac range -datatype ::rfraction
 # frcgroup: Pick a force group by name.
 dynaform fieldtype alias frcgroup enum -listcmd {$adb_ frcgroup names}
 
+# group: Pick a group by name.
+dynaform fieldtype alias group enum -listcmd {$adb_ group names}
+
+# localn: Pick a local neighborhood by name
+dynaform fieldtype alias localn enumlong \
+    -showkeys yes \
+    -dictcmd {$adb_ nbhood local namedict}
+
+
 # longname: text field of standard width for longnames.
 dynaform fieldtype alias longname text -width 30
 
@@ -73,10 +90,19 @@ dynaform fieldtype alias nlist enumlonglist \
 # orggroup: Pick an ORG group by name.
 dynaform fieldtype alias orggroup enum -listcmd {$adb_ orggroup names}
 
+# percent: Pick a percentage.
+dynaform fieldtype alias percent range -datatype ::ipercent
+
 # rel: Relationship value
 dynaform fieldtype alias rel range \
     -datatype   ::qaffinity \
     -resolution 0.1
+
+# roles: Pick one or more roles to group(s) mapping
+dynaform fieldtype alias roles rolemap \
+    -listheight 6 \
+    -liststripe 1 \
+    -listwidth  20
 
 # sat: Pick a satisfaction level
 dynaform fieldtype alias sat range \

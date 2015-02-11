@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Mark II Tactic, RIOT event
+#    athena(n): Mark II Tactic, RIOT event
 #
 #    This module implements the RIOT tactic. 
 #
@@ -48,7 +48,7 @@
     method SanityCheck {errdict} {
         if {$n eq ""} {
             dict set errdict n "No neighborhood selected."
-        } elseif {$n ni [nbhood names]} {
+        } elseif {$n ni [[my adb] nbhood names]} {
             dict set errdict n "No such neighborhood: \"$n\"."
         }
 
@@ -116,7 +116,7 @@
         my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::RIOT}
         my returnOnError
 
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
 
         # Validation of initially invalid items or contingent items
         # takes place on sanity check.
@@ -134,7 +134,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
         my setundo [$tactic update_ {
             name n coverage
         } [array get parms]]

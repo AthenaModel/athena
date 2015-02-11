@@ -6,7 +6,7 @@
 #    Dave Hanks
 #
 # DESCRIPTION:
-#    athena_sim(1): Mark II Tactic, DAMAGE
+#    athena(n): Mark II Tactic, DAMAGE
 #
 #    A DAMAGE tactic, available only to the SYSTEM agent, sets
 #    the average repair level of goods production infrastructure owned
@@ -48,16 +48,16 @@
         # Actor
         if {$a eq ""} {
             dict set errdict a "No actor selected."
-        } elseif {$a ni [agent names]} {
+        } elseif {$a ni [[my adb] agent names]} {
             dict set errdict a "No such actor: \"$a\"."
         }
 
         # Neighborhood
         if {$n eq ""} {
             dict set errdict n "No neighborhood selected."
-        } elseif {$n ni [nbhood names]} {
+        } elseif {$n ni [[my adb] nbhood names]} {
             dict set errdict n "No such neighborhood: \"$n\"."
-        } elseif {$n ni [nbhood local names]} {
+        } elseif {$n ni [[my adb] nbhood local names]} {
             dict set errdict n "Neighborhood \"$n\" is not local, should be."
         }
 
@@ -105,7 +105,7 @@
         let newRho {$percent/100.0}
 
         # NEXT, update average repair level in the plants_na table
-        rdb eval {
+        [my adb] eval {
             UPDATE plants_na
             SET rho=$newRho
             WHERE n=$n AND a=$a
@@ -149,7 +149,7 @@
         my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::DAMAGE}
         my returnOnError
 
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
 
         my prepare name    -toupper  -with [list $tactic valName]
         my prepare n
@@ -158,7 +158,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
         my setundo [$tactic update_ {name n a percent} [array get parms]]
     }
 }

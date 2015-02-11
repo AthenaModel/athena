@@ -6,7 +6,7 @@
 #    Dave Hanks
 #
 # DESCRIPTION:
-#    athena_sim(1): Mark II Tactic, BUILD
+#    athena(n): Mark II Tactic, BUILD
 #
 #    A BUILD tactic spends cash-on-hand to build new goods sector
 #    production infrastructure
@@ -56,9 +56,9 @@
         # Neighborhood
         if {$n eq ""} {
             dict set errdict n "No neighborhood selected."
-        } elseif {$n ni [nbhood names]} {
+        } elseif {$n ni [[my adb] nbhood names]} {
             dict set errdict n "No such neighborhood: \"$n\"."
-        } elseif {$n ni [nbhood local names]} {
+        } elseif {$n ni [[my adb] nbhood local names]} {
             dict set errdict n "Neighborhood \"$n\" is not local, should be."
         }
 
@@ -134,7 +134,7 @@
     method execute {} {
         set owner [my agent]
 
-        cash spend $owner BUILD $trans(amount)
+        [my adb] cash spend $owner BUILD $trans(amount)
 
         lassign [plant build $n $owner $trans(amount)] old new
 
@@ -202,7 +202,7 @@
         my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::BUILD}
         my returnOnError
 
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
 
         my prepare name    -toupper  -with [list $tactic valName]
         my prepare n
@@ -221,7 +221,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
         my setundo [$tactic update_ {
             name n mode amount num
         } [array get parms]]

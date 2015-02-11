@@ -1,27 +1,27 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#    tactic_deposit.tcl
+#    tactic_withdraw.tcl
 #
 # AUTHOR:
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Mark II Tactic, DEPOSIT
+#    athena(n): Mark II Tactic, WITHDRAW
 #
-#    A DEPOSIT tactic deposits money from cash-on-hand to cash-reserve.
+#    A WITHDRAW tactic transfers money from cash-reserver to cash-on-hand.
 #
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
-::athena::tactic define DEPOSIT "Deposit Money" {actor} {
+::athena::tactic define WITHDRAW "Withdraw Money" {actor} {
     #-------------------------------------------------------------------
     # Instance Variables
 
-    variable mode    ;# ALL, EXACT, UPTO, PERCENT or EXCESS
-    variable amount  ;# Amount of money to deposit, based on mode
-    variable percent ;# Percent of money to deposit if mode is PERCENT
+    variable mode    ;# ALL, EXACT, UPTO, PERCENT or BORROW
+    variable amount  ;# Amount of money to withdraw
+    variable percent ;# Percent of money to withdraw if mode is PERCENT
 
-    # Transient Data
+    # Transient data
     variable trans
 
     #-------------------------------------------------------------------
@@ -52,23 +52,23 @@
 
         switch -exact -- $mode {
             ALL {
-                return "Deposit all cash-on-hand to cash reserve."
+                return "Withdraw all money from cash reserve."
             }
 
             EXACT {
-                return "Deposit \$$amt to cash reserve."
+                return "Withdraw \$$amt from cash reserve."
             }
 
             UPTO {
-                return "Deposit up to \$$amt of cash-on-hand to cash reserve."
+                return "Withdraw up to \$$amt from cash reserve."
             }
 
             PERCENT {
-                return "Deposit $percent% of cash-on-hand to cash reserve."
+                return "Withdraw $percent% of cash reserve."
             }
 
-            EXCESS {
-                return "Deposit any cash-on-hand over \$$amt to cash reserve."
+            BORROW {
+                return "Withdraw \$$amt from cash reserve, borrowing if necessary."
             }
 
             default {
@@ -82,78 +82,79 @@
     # coffer  - A coffer object with the owning agent's current
     #           resources
     #
-    # Obligates the money to be deposited based on mode 
+    # Obligates the money to be withdrawn.  Note that cash_reserve is
+    # allowed to go negative.
     #
-    # NOTE: DEPOSIT never executes on lock.
+    # NOTE: WITHDRAW never executes on lock.
 
     method ObligateResources {coffer} {
         assert {[strategy ontick]}
-        
-        # FIRST, retrieve relevant data.
-        set cash [$coffer cash]
-        set deposit 0.0
 
-        # NEXT, depending on mode, try to obligate money
+        # FIRST, retrieve the current reserve amount
+        let cash_reserve [$coffer reserve]
+        set withdrawal 0.0
+
+        # NEXT, depending on mode, try to withdraw money
         switch -exact -- $mode {
             ALL {
-                if {$cash > 0.0} {
-                    set deposit $cash
+                if {$cash_reserve > 0.0} {
+                    set withdrawal $cash_reserve
                 }
             }
 
             EXACT {
-                # This is the only one than could give rise to an error
-                if {[my InsufficientCash $cash $amount]} {
+                # This is the only one that can fail
+                if {[my InsufficientCash $cash_reserve $amount]} {
                     return
                 }
-                set deposit $amount
+
+                set withdrawal $amount
             }
 
             UPTO {
-                let deposit {max(0.0, min($cash, $amount))}
+                let withdrawal {max(0.0, min($cash_reserve, $amount))}
             }
 
             PERCENT {
-                if {$cash > 0.0} {
-                    let deposit {double($percent/100.0) * $cash}
+                if {$cash_reserve > 0.0} {
+                    let withdrawal {double($percent/100.0) * $cash_reserve}
                 }
             }
 
-            EXCESS {
-                let deposit {max(0.0, $cash-$amount)}
+            BORROW {
+                set withdrawal $amount
             }
 
             default {
                 error "Invalid mode: \"$mode\""
             }
-
         }
 
-        # NEXT, get the actual amount to deposit.
-        set trans(amount) $deposit
+        # NEXT, get the actual amount of the withdrawal
+        set trans(amount) $withdrawal
 
-        # NEXT, obligate it.
-        $coffer deposit $trans(amount)
+        # NEXT, obligate it
+        $coffer withdraw $trans(amount)
     }
 
     method execute {} {
-        cash deposit [my agent] $trans(amount)
+        [my adb] cash withdraw [my agent] $trans(amount)
 
         sigevent log 2 tactic "
-            DEPOSIT: [my agent] deposits \$[moneyfmt $trans(amount)] to reserve.
+            WITHDRAW: [my agent] withdraws \$[moneyfmt $trans(amount)] from reserve.
         " [my agent]
     }
 }
 
 #-----------------------------------------------------------------------
-# TACTIC:DEPOSIT order
+# TACTIC:* orders
 
-# TACTIC:DEPOSIT
+# TACTIC:WITHDRAW
 #
-# Updates existing DEPOSIT tactic.
+# Updates existing WITHDRAW tactic.
 
-::athena::orders define TACTIC:DEPOSIT {
-    meta title      "Tactic: Deposit Money"
+::athena::orders define TACTIC:WITHDRAW {
+    meta title      "Tactic: Withdraw Money"
     meta sendstates PREP
     meta parmlist   {tactic_id name mode amount percent}
 
@@ -167,25 +168,25 @@
 
         rcc "Mode:"   -for mode
         selector mode {
-            case ALL "Deposit all remaining cash-on-hand" {}
+            case ALL "Withdraw all available money from cash reserve" {}
 
-            case EXACT "Deposit exactly this much cash-on-hand" {
+            case EXACT "Withdraw exactly this much from cash reserve" {
                 rcc "Amount:" -for amount
                 text amount
             }
 
-            case UPTO "Deposit up to this much of cash-on-hand" {
+            case UPTO "Withdraw up to this much from cash reserve" {
                 rcc "Amount:" -for amount
                 text amount
             }
 
-            case PERCENT "Deposit this percentage of cash-on-hand" {
+            case PERCENT "Withdraw this percentage of cash reserve" {
                 rcc "Percent:" -for percent
                 text percent
                 label "%"
             }
 
-            case EXCESS "Deposit cash-on-hand in excess of given amount" {
+            case BORROW "Withdraw from cash reserve, borrowing if necessary" {
                 rcc "Amount:" -for amount
                 text amount
             }
@@ -195,22 +196,24 @@
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::DEPOSIT}
+        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::WITHDRAW}
+
+        my returnOnError
+
+        # NEXT, get the tactic
+        set tactic [$adb pot get $parms(tactic_id)]
+
+        my prepare name    -toupper -with [list $tactic valName]
+        my prepare mode    -toupper -selector
+        my prepare amount  -toupper -type money
+        my prepare percent -toupper -type rpercent
+
         my returnOnError 
-        
-        set tactic [pot get $parms(tactic_id)]
 
-        my prepare name       -toupper  -with [list $tactic valName]
-        my prepare mode       -toupper  -selector
-        my prepare amount     -toupper  -type money
-        my prepare percent    -toupper  -type rpercent
-
-        my returnOnError 
-
-        # NEXT, do the cross checks
+        # NEXT, do cross checks
         fillparms parms [$tactic view]
 
-        if {$parms(mode) ne "PERCENT" && 
+        if {$parms(mode) ne "PERCENT" &&
             $parms(mode) ne "ALL"     &&
             $parms(amount) == 0.0} {
                 my reject amount "You must specify an amount > 0.0"
@@ -222,10 +225,8 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [pot get $parms(tactic_id)]
-        my setundo [$tactic update_ {
-            name mode amount percent
-        } [array get parms]]
+        set tactic [$adb pot get $parms(tactic_id)]
+        my setundo [$tactic update_ {name mode amount percent} [array get parms]]
     }
 }
 

@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Mark II Tactic, DEMOB
+#    athena(n): Mark II Tactic, DEMOB
 #
 #    A DEMOB tactic demobilizes force or organization group personnel,
 #    moving them out of the playbox.
@@ -53,7 +53,7 @@
     method SanityCheck {errdict} {
         if {$g eq ""} {
             dict set errdict g "No group selected."
-        } elseif {$g ni [group ownedby [my agent]]} {
+        } elseif {$g ni [[my adb] group ownedby [my agent]]} {
             dict set errdict g \
                 "[my agent] does not own a group called \"$g\"."
         }
@@ -133,7 +133,7 @@
         # ALL, PERCENT, and EXCESS work on a best efforts basis; they
         # can succeed with 0 troops. 
         if {$trans(personnel) > 0} {
-            personnel demob $g $trans(personnel)
+            [my adb] personnel demob $g $trans(personnel)
         }
 
         sigevent log 1 tactic "
@@ -194,7 +194,7 @@
         my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::DEMOB}
         my returnOnError
 
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
 
         my prepare name       -toupper  -with [list $tactic valName]
         my prepare g          -toupper  -type ident
@@ -231,7 +231,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
         my setundo [$tactic update_ {name g mode personnel percent} [array get parms]]
     }
 }

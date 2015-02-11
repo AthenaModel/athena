@@ -6,7 +6,7 @@
 #    Dave Hanks
 #
 # DESCRIPTION:
-#    athena_sim(1): Mark II Tactic, FUND
+#    athena(n): Mark II Tactic, FUND
 #
 #    A FUND tactic gives some amount of funds to another actor.
 #
@@ -56,7 +56,7 @@
         # FIRST, check that the actor exists
         if {$a eq ""} {
             dict set errdict a "No actor selected."
-        } elseif {$a ni [actor names]} {
+        } elseif {$a ni [[my adb] actor names]} {
             dict set errdict a "No such actor: \"$a\"."
         }
 
@@ -158,10 +158,10 @@
 
     method execute {} {
         # FIRST, Consume the money, if we can.
-        cash spend [my agent] NONE $trans(amount)
+        [my adb] cash spend [my agent] NONE $trans(amount)
 
         # NEXT, give the money to the other actor.
-        cash give [my agent] $a $trans(amount)
+        [my adb] cash give [my agent] $a $trans(amount)
            
         sigevent log 2 tactic "
             FUND: Actor {actor: [my agent]} funds {actor:$a}
@@ -222,7 +222,7 @@
         my prepare tactic_id -required -with {::strategy valclass ::athena::tactic::FUND}
         my returnOnError
 
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
 
         # FIRST, prepare and validate the parameters
         my prepare name     -toupper   -with [list $tactic valName]
@@ -246,7 +246,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
         my setundo [$tactic update_ {
             name a mode amount percent
         } [array get parms]]

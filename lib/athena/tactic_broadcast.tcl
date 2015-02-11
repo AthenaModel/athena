@@ -7,7 +7,7 @@
 #    Dave Hanks
 #
 # DESCRIPTION:
-#    athena_sim(1): Mark II Tactic, BROADCAST tactic
+#    athena(n): Mark II Tactic, BROADCAST tactic
 #
 #    This module implements the BROADCAST tactic, which broadcasts 
 #    an Info Ops Message (IOM) via a particular Communications Asset
@@ -60,7 +60,7 @@
         # cap
         if {$cap eq ""} {
             dict set errdict cap "No CAP selected."
-        } elseif {$cap ni [cap names]} {
+        } elseif {$cap ni [[my adb] cap names]} {
             dict set errdict cap "No such CAP: \"$cap\"."
         }
 
@@ -85,7 +85,7 @@
         }
 
         # NEXT, does the IOM have any valid payloads?
-        if {$gotIOM && ![rdb onecolumn { 
+        if {$gotIOM && ![[my adb]  onecolumn { 
             SELECT count(payload_num) FROM payloads
             WHERE iom_id=$iom AND state='normal'
         }]} {
@@ -93,7 +93,7 @@
         }
 
         # NEXT, does the IOM's hook have any valid topics?
-        if {$gotIOM && ![rdb onecolumn { 
+        if {$gotIOM && ![[my adb]  onecolumn { 
             SELECT count(HT.topic_id) 
             FROM hook_topics AS HT
             JOIN ioms AS I USING (hook_id)
@@ -142,11 +142,11 @@
 
     method execute {} {
         # FIRST, spend the cash
-        cash spend [my agent] BROADCAST $trans(cost)
+        [my adb] cash spend [my agent] BROADCAST $trans(cost)
 
         # NEXT, Save the broadcast.  It can't take effect yet,
         # as CAP access might be changed by other tactics.
-        broadcast mark [self]
+        [my adb] broadcast mark [self]
     }
 
     # assess
@@ -157,7 +157,7 @@
     method assess {} {
         # FIRST, does the owner have access to the CAP?
         # If not, refund his money; we're through here.
-        if {![cap hasaccess $cap [my agent]]} {
+        if {![[my adb] cap hasaccess $cap [my agent]]} {
             my set execstatus FAIL_RESOURCES
             my Fail CAP "Failed during execution: [my agent] has no access to CAP $cap."
             cash refund [my agent] BROADCAST $trans(cost) 
@@ -187,7 +187,7 @@
         }
 
         lappend tags \
-            [rdb eval {SELECT hook_id FROM ioms WHERE iom_id=$iom}]
+            [[my adb] rdb eval {SELECT hook_id FROM ioms WHERE iom_id=$iom}]
         lappend tags {*}[rdb eval {
             SELECT g,n FROM capcov 
             WHERE k=$cap AND capcov > 0.0
@@ -249,7 +249,7 @@
         my returnOnError
 
         # NEXT, get the tactic
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
 
         # NEXT, the parameters
         my prepare name     -toupper   -with [list $tactic valName]
@@ -260,7 +260,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
         fillparms parms [$tactic view]
         my setundo [$tactic update_ {name cap a iom cost} [array get parms]]
     }

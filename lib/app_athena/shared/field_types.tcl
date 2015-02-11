@@ -23,11 +23,6 @@ dynaform fieldtype alias actorlist enumlonglist \
     -width    30  \
     -dictcmd {::actor namedict}
 
-# cap: Pick a cap by name.
-dynaform fieldtype alias cap enumlong \
-    -showkeys yes \
-    -dictcmd  {::cap namedict}
-
 # concern: An econcern value
 dynaform fieldtype alias concern enum \
     -listcmd {econcern names}
@@ -37,18 +32,11 @@ dynaform fieldtype alias concernlist enumlonglist \
     -width 30     \
     -dictcmd {econcern deflist}
 
-# curse: pick a curse by name.
-dynaform fieldtype alias curse enum -listcmd {::curse names}
-
-
 # frclist: Pick from a list of force groups; longname shown
 dynaform fieldtype alias frclist enumlonglist \
     -showkeys yes \
     -width    30  \
     -dictcmd {::frcgroup namedict}
-
-# group: Pick a group by name.
-dynaform fieldtype alias group enum -listcmd {::group names}
 
 # grouplist: Pick a list of groups; longname shown
 dynaform fieldtype alias grouplist enumlonglist \
@@ -82,19 +70,11 @@ dynaform fieldtype alias mag range \
     -min         -40.0  \
     -max         40.0
 
-# localn: Pick a local neighborhood by name
-dynaform fieldtype alias localn enumlong \
-    -showkeys yes \
-    -dictcmd {::nbhood local namedict}
-
 
 # payload: Pick a payload by its ID.
 dynaform fieldtype alias payload dbkey \
     -table gui_payloads \
     -keys  {iom_id payload_num}
-
-# percent: Pick a percentage.
-dynaform fieldtype alias percent range -datatype ::ipercent
 
 # plant: Pick a plant by its ID.
 dynaform fieldtype alias plant dbkey \
@@ -106,11 +86,6 @@ dynaform fieldtype alias posfrac range \
     -datatype   ::rposfrac             \
     -resolution 0.01
 
-# roles: Pick one or more roles to group(s) mapping
-dynaform fieldtype alias roles rolemap \
-    -listheight 6 \
-    -liststripe 1 \
-    -listwidth  20
 
 
 

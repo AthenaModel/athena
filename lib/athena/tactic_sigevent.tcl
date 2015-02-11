@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Mark II Tactic, SIGEVENT
+#    athena(n): Mark II Tactic, SIGEVENT
 #
 #    A SIGEVENT tactic writes a message to the sigevents log.
 #
@@ -87,14 +87,14 @@
         my prepare tactic_id -required -with {::strategy valclass ::athena::tactic::SIGEVENT}
         my returnOnError
 
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
 
         my prepare name      -toupper   -with [list $tactic valName]
         my prepare msg        
     }
 
     method _execute {{flunky ""}} {
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
         my setundo [$tactic update_ {name msg} [array get parms]]
     }
 }

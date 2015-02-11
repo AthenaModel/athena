@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Mark II Tactic, FUNDENI
+#    athena(n): Mark II Tactic, FUNDENI
 #
 #    The FUNDENI tactic funds Essential Non-Infrastructure services 
 #    aimed at particular groups.  The services are funded for the 
@@ -225,7 +225,7 @@
         # NEXT, try to fund the service.  This will fail if
         # all of the groups are empty.
         if {![service_eni fundeni $owner $trans(amount) $trans(glist)]} {
-            cash refund $owner FUNDENI $trans(amount)
+            [my adb] cash refund $owner FUNDENI $trans(amount)
             sigevent log 2 tactic "
                 FUNDENI: Actor {actor:$owner} could not fund
                 \$[moneyfmt $trans(amount)] worth of Essential 
@@ -273,7 +273,7 @@
 
         set minSupport [parm get service.ENI.minSupport]
 
-        rdb eval "
+        [my adb] eval "
             SELECT g 
             FROM local_civgroups
             JOIN influence_na USING (n)
@@ -352,7 +352,7 @@
         my prepare tactic_id -required -with {::strategy valclass ::athena::tactic::FUNDENI}
         my returnOnError
 
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
 
         # FIRST, prepare and validate the parameters
         my prepare name    -toupper -with [list $tactic valName]
@@ -379,7 +379,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
         my setundo [$tactic update_ {
             name glist cmode mode amount percent los
         } [array get parms]]

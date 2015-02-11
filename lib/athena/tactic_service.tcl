@@ -6,7 +6,7 @@
 #    Dave Hanks
 #
 # DESCRIPTION:
-#    athena_sim(1): Mark II Tactic, SERVICE tactic
+#    athena(n): Mark II Tactic, SERVICE tactic
 #
 #    This module implements the SERVICE tactic. 
 #
@@ -229,7 +229,7 @@
         my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::SERVICE}
         my returnOnError
 
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
 
         # Validation of initially invalid items or contingent items
         # takes place on sanity check.
@@ -242,7 +242,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
         my setundo [$tactic update_ {
             name nlist s los mode deltap
         } [array get parms]]

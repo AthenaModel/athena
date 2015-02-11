@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Mark II Tactic, DEPLOY
+#    athena(n): Mark II Tactic, DEPLOY
 #
 #    A DEPLOY tactic deploys force or organization group personnel into
 #    neighborhoods, without or without redeployment.
@@ -117,7 +117,7 @@
         # Check g
         if {$g eq ""} {
             dict set errdict g "No group selected."
-        } elseif {$g ni [group ownedby [my agent]]} {
+        } elseif {$g ni [[my adb] group ownedby [my agent]]} {
             dict set errdict g \
                 "[my agent] does not own a group called \"$g\"."
         }
@@ -258,7 +258,7 @@
         set cash      [$coffer cash]
 
         # NEXT, what did the old deployment look like?
-        rdb eval {
+        [my adb] eval {
             SELECT total(personnel) AS troops
            FROM working_deploy_tng
            WHERE tactic_id = $tactic_id
@@ -290,7 +290,7 @@
 
         # NEXT, deploy the troops just as they were from the previous
         # week.
-        set trans(deployment) [rdb eval {
+        set trans(deployment) [[my adb]  eval {
             SELECT n, personnel 
             FROM working_deploy_tng
             WHERE tactic_id=$tactic_id
@@ -320,7 +320,7 @@
     # Returns the cost of deploying the specified number of troops.
 
     method TroopCost {troops} {
-        return [expr {$troops * [group maintPerPerson $g]}]
+        return [expr {$troops * [[my adb] group maintPerPerson $g]}]
     }
 
     # TroopsFor coffer cash
@@ -332,7 +332,7 @@
     # given the cash available.
 
     method TroopsFor {coffer cash} {
-        set costPerPerson [group maintPerPerson $g]
+        set costPerPerson [[my adb] group maintPerPerson $g]
 
         if {$costPerPerson == 0.0} {
             return [$coffer troops $g undeployed]
@@ -411,7 +411,7 @@
 
         # NEXT, if nmode is BY_POP, filter out empty neighborhoods now.
         if {$nmode eq "BY_POP" && [llength $nbhoods] > 0} {
-            set nbhoods [rdb eval "
+            set nbhoods [[my adb]  eval "
                 SELECT n FROM demog_n
                 WHERE population > 0
                 AND n IN ('[join $nbhoods ',']')
@@ -441,7 +441,7 @@
         # FIRST, retrieve relevant data.
         set available     [$coffer troops $g undeployed]
         set cash          [$coffer cash]
-        set costPerPerson [group maintPerPerson $g]
+        set costPerPerson [[my adb] group maintPerPerson $g]
 
 
         # NEXT, if no troops are available, then we've done what we
@@ -661,7 +661,7 @@
 
     method AllocateByPop {troops} {
         # FIRST, get the population profile for the neighborhoods.
-        array set share [demog shares $trans(nbhoods)]
+        array set share [[my adb] demog shares $trans(nbhoods)]
 
         # NEXT, the first n-1 nbhoods get their share; the nth gets
         # whatever remains.
@@ -725,7 +725,7 @@
         my set last_tick [simclock now]
 
         # NEXT, Pay the deployment cost, which might be zero.
-        cash spend [my agent] DEPLOY $trans(cost)
+        [my adb] cash spend [my agent] DEPLOY $trans(cost)
 
         # NEXT, if the deployment is empty, log that.
         if {[dict size $trans(deployment)] == 0} {
@@ -750,7 +750,7 @@
         # NEXT, deploy the troops and log the deployments.
         dict for {n ntroops} $trans(deployment) {
             if {$ntroops > 0} {
-                personnel deploy [my id] $n $g $ntroops
+                [my adb] personnel deploy [my id] $n $g $ntroops
             }
 
             if {$trans(old)} {
@@ -845,7 +845,7 @@
         my returnOnError
 
         # NEXT, get the tactic
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
 
         my prepare name       -toupper  -with [list $tactic valName]
         my prepare g                    
@@ -884,7 +884,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
         my setundo [$tactic update_ {
             name g pmode personnel min max percent nlist nmode redeploy
         } [array get parms]]

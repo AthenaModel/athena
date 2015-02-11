@@ -4,9 +4,10 @@
 #
 # AUTHOR:
 #    Dave Hanks
+#    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Mark II Tactic, Cause magic attrition
+#    athena(n): Mark II Tactic, Cause magic attrition
 #
 #    This module implements the CURSE tactic. 
 #
@@ -61,7 +62,7 @@
     method SanityCheck {errdict} {
         if {$n eq ""} {
             dict set errdict n "No neighborhood selected."
-        } elseif {$n ni [nbhood names]} {
+        } elseif {$n ni [[my adb] nbhood names]} {
             dict set errdict n "No such neighborhood: \"$n\"."
         }
 
@@ -73,7 +74,7 @@
             GROUP {
                 if {$f eq ""} {
                     dict set errdict f "No group selected."
-                } elseif {$f ni [group names]} {
+                } elseif {$f ni [[my adb] group names]} {
                     dict set errdict f "No such group: \"$f\"."
                 }
             }
@@ -83,11 +84,11 @@
             }
         }
 
-        if {$g1 ne "NONE" && $g1 ni [frcgroup names]} {
+        if {$g1 ne "NONE" && $g1 ni [[my adb] frcgroup names]} {
             dict set errdict g1 "No such FRC group: \"$g1\"."
         }
 
-        if {$g2 ne "NONE" && $g2 ni [frcgroup names]} {
+        if {$g2 ne "NONE" && $g2 ni [[my adb] frcgroup names]} {
              dict set errdict g2 "No such FRC group: \"$g2\"."
         }
 
@@ -140,7 +141,7 @@
 
         # FIRST, is f in n?  If not, there's nothing to do.
         if {$mode eq "GROUP"} {
-            set groupsInN [rdb eval {
+            set groupsInN [[my adb] eval {
                 SELECT DISTINCT g
                 FROM units
                 WHERE n=$n
@@ -258,7 +259,7 @@
         my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::ATTRIT}
         my returnOnError
 
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
 
         # All validation takes place on sanity check
         my prepare name       -toupper -with [list $tactic valName]
@@ -271,14 +272,14 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
         fillparms parms [$tactic view]
 
         if {$parms(g1) eq ""} {set parms(g1) "NONE"}
         if {$parms(g2) eq ""} {set parms(g2) "NONE"}
 
         # NEXT, if mode is GROUP and f not CIV clear out g1 
-        if {$parms(mode) eq "GROUP" && $parms(f) ni [civgroup names]} {
+        if {$parms(mode) eq "GROUP" && $parms(f) ni [$adb civgroup names]} {
             set parms(g1) "NONE"
         }
 

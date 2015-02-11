@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Mark II Tactic, ASSIGN
+#    athena(n): Mark II Tactic, ASSIGN
 #
 #    An ASSIGN tactic assigns deployed force or organization personnel
 #    to perform particular activities in a neighborhood.
@@ -69,7 +69,7 @@
         # Check g
         if {$g eq ""} {
             dict set errdict g "No group selected."
-        } elseif {$g ni [group ownedby [my agent]]} {
+        } elseif {$g ni [[my adb] group ownedby [my agent]]} {
             dict set errdict g \
                 "[my agent] does not own a force group called \"$g\"."
         }
@@ -78,7 +78,7 @@
         if {[llength $n] == 0} {
             dict set errdict n \
                 "No neighborhood selected."
-        } elseif {$n ni [nbhood names]} {
+        } elseif {$n ni [[my adb] nbhood names]} {
             dict set errdict n \
                 "No such neighborhood: \"$n\"."
         }
@@ -86,7 +86,7 @@
         # Check activity
         if {$activity eq ""} {
             dict set errdict activity "No activity selected."
-        } elseif {[catch {activity check $g $activity}]} {
+        } elseif {[catch {[my adb] activity check $g $activity}]} {
             dict set errdict activity \
                 "Invalid activity for selected group: \"$activity\"." 
         }
@@ -355,7 +355,7 @@
     # Returns the cost per person for the chosen activity.
 
     method CostPerPerson {} {
-        set gtype [group gtype $g]
+        set gtype [[my adb] group gtype $g]
         return [money validate [parm get activity.$gtype.$activity.cost]]
     }
 
@@ -398,8 +398,8 @@
     method execute {} {
         # FIRST, Pay the assignment cost and assign the troops.  Note
         # that the assignment might be empty.
-        personnel assign [my id] $g $n $activity $trans(personnel)
-        cash spend [my agent] ASSIGN $trans(cost)
+        [my adb] personnel assign [my id] $g $n $activity $trans(personnel)
+        [my adb] cash spend [my agent] ASSIGN $trans(cost)
 
         sigevent log 2 tactic "
             ASSIGN: Actor {actor:[my agent]} assigns $trans(personnel) {group:$g} 
@@ -477,12 +477,12 @@
         my returnOnError
 
         # NEXT, get the tactic
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
 
         my prepare name       -toupper  -with [list $tactic valName]
         my prepare g          -toupper  -type ident
         my prepare n          -toupper  -type ident
-        my prepare activity   -toupper  -type {activity asched}
+        my prepare activity   -toupper  -type [list $adb activity asched]
         my prepare pmode      -toupper  -selector
         my prepare personnel  -num      -type iquantity
         my prepare min        -num      -type iquantity
@@ -516,7 +516,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
         my setundo [$tactic update_ {
             name g n activity pmode personnel min max percent
         } [array get parms]]

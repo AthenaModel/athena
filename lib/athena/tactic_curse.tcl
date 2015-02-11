@@ -6,7 +6,7 @@
 #    Dave Hanks
 #
 # DESCRIPTION:
-#    athena_sim(1): Mark II Tactic, Complex User-defined Role-based 
+#    athena(n): Mark II Tactic, Complex User-defined Role-based 
 #                   Situation and Events (CURSE)
 #
 #    This module implements the CURSE tactic. 
@@ -141,7 +141,7 @@
         set fdict [dict create]
         dict set fdict curse_id $curse
 
-        rdb eval {
+        [my adb]  eval {
             SELECT * FROM curse_injects
             WHERE curse_id=$curse AND state='normal'
         } idata {
@@ -261,7 +261,7 @@
         my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::CURSE}
         my returnOnError
 
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
 
         # More validation takes place on sanity check
         my prepare name  -toupper   -with [list $tactic valName]
@@ -270,7 +270,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
         my setundo [$tactic update_ {name curse roles} [array get parms]]
     }
 }

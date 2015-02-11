@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Mark II Tactic, FLOW
+#    athena(n): Mark II Tactic, FLOW
 #
 #    A FLOW tactic flows civilian personnel from one group to another.
 #    This is a SYSTEM tactic; it never executes on lock.
@@ -52,14 +52,14 @@
     method SanityCheck {errdict} {
         if {$f eq ""} {
             dict set errdict f "No group selected."
-        } elseif {$f ni [civgroup names]} {
+        } elseif {$f ni [[my adb] civgroup names]} {
             dict set errdict f \
                 "No such civilian group: \"$f\"."
         }
 
         if {$g eq ""} {
             dict set errdict g "No group selected."
-        } elseif {$g ni [civgroup names]} {
+        } elseif {$g ni [[my adb] civgroup names]} {
             dict set errdict g \
                 "No such civilian group: \"$g\"."
         }
@@ -99,7 +99,7 @@
 
     method execute {} {
         # FIRST, get the current population of group f.
-        set population [demog getg $f population]
+        set population [[my adb] demog getg $f population]
         
         
         # NEXT, determine the number of people to move.
@@ -144,7 +144,7 @@
         }
 
         # NEXT, add the adjustment to the pending list.
-        personnel flow $f $g $delta
+        [my adb] personnel flow $f $g $delta
         
         # NEXT, log the changes.
         set m [civgroup getg $f n]
@@ -178,10 +178,10 @@
         text name -width 20
 
         rcc "Source Group:" -for f
-        enum f -listcmd {civgroup names}
+        enum f -listcmd {$adb civgroup names}
 
         rcc "Destination Group:" -for g
-        enum g -listcmd {lexcept [civgroup names] $f}
+        enum g -listcmd {lexcept [$adb civgroup names] $f}
 
         rcc "Mode:" -for mode
         selector mode {
@@ -211,7 +211,7 @@
         my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::FLOW}
         my returnOnError
 
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
 
         my prepare name       -toupper  -with [list $tactic valName]
         my prepare f          -toupper  -type ident
@@ -250,7 +250,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
         my setundo [$tactic update_ {
             name f g mode personnel percent
         } [array get parms]]

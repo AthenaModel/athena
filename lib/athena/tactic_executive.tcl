@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Mark II Tactic, EXECUTIVE
+#    athena(n): Mark II Tactic, EXECUTIVE
 #
 #    An EXECUTIVE tactic executes a single Athena executive command.
 #
@@ -62,11 +62,11 @@
         # relevant orders can be executed.
 
         set oldState [flunky state]
-        flunky state TACTIC
+        [my adb] flunky state TACTIC
             
         # NEXT, create a savepoint, so that we can back out
         # the command's changes on error.
-        rdb eval {SAVEPOINT executive}  
+        [my adb] eval {SAVEPOINT executive}  
 
         # NEXT, attempt to run the user's command.
         if {[catch {
@@ -77,10 +77,10 @@
             # FIRST, roll back any changes made by the script; 
             # it threw an error, and we don't want any garbage
             # left behind.
-            rdb eval {ROLLBACK TO executive}
+            [my adb] eval {ROLLBACK TO executive}
 
             # NEXT, restore the old order state
-            flunky state $oldState
+            [my adb] flunky state $oldState
 
             # NEXT, log failure.
             sigevent log error tactic "
@@ -97,10 +97,10 @@
 
         # NEXT, release the savepoint; the script ran without
         # error.
-        rdb eval {RELEASE executive}
+        [my adb] eval {RELEASE executive}
 
         # NEXT, restore the old order state
-        flunky state $oldState
+        [my adb] flunky state $oldState
 
         # NEXT, log success
         sigevent log 1 tactic "
@@ -140,13 +140,13 @@
         my prepare command             -type tclscript
         my returnOnError 
 
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
 
         my prepare name  -toupper  -with [list $tactic valName]
     }
 
     method _execute {{flunky ""}} {
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
         my setundo [$tactic update_ {name command} [array get parms]]
     }
 }

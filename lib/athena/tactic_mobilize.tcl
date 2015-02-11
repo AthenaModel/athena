@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Mark II Tactic, MOBILIZE
+#    athena(n): Mark II Tactic, MOBILIZE
 #
 #    A MOBILIZE tactic mobilizes force or organization group personnel,
 #    moving new personnel into the playbox.
@@ -70,7 +70,7 @@
     method SanityCheck {errdict} {
         if {$g eq ""} {
             dict set errdict g "No group selected."
-        } elseif {$g ni [group ownedby [my agent]]} {
+        } elseif {$g ni [[my adb] group ownedby [my agent]]} {
             dict set errdict g \
                 "[my agent] does not own a group called \"$g\"."
         }
@@ -131,7 +131,7 @@
     method ObligateResources {coffer} {
         assert {[strategy ontick]}
 
-        set mobilized [$coffer troops $g mobilized]
+        set mobilized  [$coffer troops $g mobilized]
         set undeployed [$coffer troops $g undeployed]
 
         switch -exact -- $mode {
@@ -240,7 +240,7 @@
         my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::MOBILIZE}
         my returnOnError
 
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
 
         my prepare name       -toupper  -with [list $tactic valName]
         my prepare g          -toupper  -type  ident
@@ -274,7 +274,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
         my setundo [$tactic update_ {
             name g mode personnel percent
         } [array get parms]]
