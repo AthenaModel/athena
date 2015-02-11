@@ -159,7 +159,7 @@ snit::type ::athena::agent {
         set result [list]
         set atype [$self type $agent_id]
 
-        foreach name [tactic typenames $atype] {
+        foreach name [::athena::tactic typenames $atype] {
             # FIRST, skip special cases.
             if {$name  eq "MAINTAIN"                && 
                 $atype eq "actor"                   &&

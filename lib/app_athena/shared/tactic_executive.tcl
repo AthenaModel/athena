@@ -13,7 +13,7 @@
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
-tactic define EXECUTIVE "Executive Command" {actor system} -onlock {
+::athena::tactic define EXECUTIVE "Executive Command" {actor system} -onlock {
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -136,7 +136,7 @@ tactic define EXECUTIVE "Executive Command" {actor system} -onlock {
 
     method _validate {} {
         # FIRST, prepare and validate the parameters
-        my prepare tactic_id -required -with {::strategy valclass tactic::EXECUTIVE}
+        my prepare tactic_id -required -with {::strategy valclass ::athena::tactic::EXECUTIVE}
         my prepare command             -type tclscript
         my returnOnError 
 

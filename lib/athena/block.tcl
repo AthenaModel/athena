@@ -874,7 +874,7 @@ oo::class create ::athena::block {
 
         # NEXT, determine default name based on class of bean 
         set next_name ""
-        if {[[my pot] hasa ::tactic $bean_id]} {
+        if {[[my pot] hasa ::athena::tactic $bean_id]} {
             set next_name [my next_tactic_name]
         } elseif {[[my pot] hasa ::athena::condition $bean_id]} {
             set next_name [my next_condition_name]
@@ -926,7 +926,7 @@ oo::class create ::athena::block {
     # execution data.
 
     method addtactic_ {typename} {
-        return [my addbean_ tactics [tactic type $typename]]
+        return [my addbean_ tactics [::athena::tactic type $typename]]
     }
 
     # deletetactic_ tactic_id 
@@ -1134,7 +1134,7 @@ oo::class create ::athena::block {
 
     method _validate {} {
         my prepare block_id -required -toupper -with  {::strategy valclass ::athena::block}
-        my prepare typename -required -toupper -oneof [tactic typenames]
+        my prepare typename -required -toupper -oneof [::athena::tactic typenames]
     }
 
     method _execute {{flunky ""}} {
@@ -1162,7 +1162,7 @@ oo::class create ::athena::block {
     meta parmlist   { ids }
 
     method _validate {} {
-        my prepare ids -required -toupper -listwith {::strategy valclass ::tactic}
+        my prepare ids -required -toupper -listwith {::strategy valclass ::athena::tactic}
     }
 
     method _execute {{flunky ""}} {
@@ -1187,7 +1187,7 @@ oo::class create ::athena::block {
     meta parmlist   { tactic_id where }
 
     method _validate {} {
-        my prepare tactic_id -required -toupper -with {::strategy valclass ::tactic}
+        my prepare tactic_id -required -toupper -with {::strategy valclass ::athena::tactic}
         my prepare where     -required -type emoveitem
     }
 

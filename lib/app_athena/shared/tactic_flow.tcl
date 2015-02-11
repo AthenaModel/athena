@@ -14,7 +14,7 @@
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
-tactic define FLOW "Flow Personnel" {system} {
+::athena::tactic define FLOW "Flow Personnel" {system} {
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -208,7 +208,7 @@ tactic define FLOW "Flow Personnel" {system} {
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare tactic_id  -required -with {::strategy valclass tactic::FLOW}
+        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::FLOW}
         my returnOnError
 
         set tactic [pot get $parms(tactic_id)]

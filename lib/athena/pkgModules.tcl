@@ -70,6 +70,7 @@ source [file join $::athena::library hrel.tcl             ]
 source [file join $::athena::library nbhood.tcl           ]
 source [file join $::athena::library orggroup.tcl         ]
 source [file join $::athena::library sat.tcl              ]
+source [file join $::athena::library tactic.tcl           ]
 source [file join $::athena::library vrel.tcl             ]
 
 # Non-Editable Entities

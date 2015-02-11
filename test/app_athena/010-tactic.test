@@ -69,30 +69,30 @@ namespace eval ::athena_test::tests:: {
     #===================================================================
     # tactic class methods
     #
-    # [tactic define] is tested implicitly.
+    # [::athena::tactic define] is tested implicitly.
 
     #-------------------------------------------------------------------
     # type
 
     test type-1.1 {return type given type name} -body {
-        tactic type SIGEVENT
-    } -result {::tactic::SIGEVENT}
+        ::athena::tactic type SIGEVENT
+    } -result {::athena::tactic::SIGEVENT}
     
     #-------------------------------------------------------------------
     # typedict
 
     test typedict-1.1 {lists types and titles} -body {
         # Spot check
-        set a [llength [tactic types]]
-        set b [dict size [tactic typedict]]
-        set c [dict get [tactic typedict] ::tactic::SIGEVENT]
+        set a [llength [::athena::tactic types]]
+        set b [dict size [::athena::tactic typedict]]
+        set c [dict get [::athena::tactic typedict] ::athena::tactic::SIGEVENT]
         
         list [expr {$a == $b}] $c
     } -result {1 {SIGEVENT: Log Significant Event}}
 
     test typedict-1.2 {lists by agent type} -body {
-        set a [tactic typedict system]
-        set b [tactic typedict actor]
+        set a [::athena::tactic typedict system]
+        set b [::athena::tactic typedict actor]
         expr {$a ne $b}
     } -result {1}
 
@@ -104,21 +104,21 @@ namespace eval ::athena_test::tests:: {
     # ttype's typename
 
     test ttype_typename-1.1 {return type's name} -body {
-        tactic::SIGEVENT typename
+        ::athena::tactic::SIGEVENT typename
     } -result {SIGEVENT}
     
     #-------------------------------------------------------------------
     # ttype's title
 
     test ttype_title-1.1 {return type's title} -body {
-        tactic::SIGEVENT title
+        ::athena::tactic::SIGEVENT title
     } -result {Log Significant Event}
     
     #-------------------------------------------------------------------
     # ttype's onlock
 
     test ttype_onlock-1.1 {return type's onlock} -body {
-        tactic::SIGEVENT onlock
+        ::athena::tactic::SIGEVENT onlock
     } -result {0}
     
 

@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Mark II Tactic, SIGEVENT
+#    athena(n): Mark II Tactic
 #
 #    A tactic is a bean that represents an action taken by an agent.
 #    Tactics consume assets (money, personnel), and are contained by
@@ -34,12 +34,12 @@
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
-oo::class create tactic {
+oo::class create ::athena::tactic {
     superclass ::projectlib::bean
 }
 
 # NEXT, define class methods
-oo::objdefine tactic {
+oo::objdefine ::athena::tactic {
     # List of defined tactic types
     variable types
 
@@ -82,11 +82,11 @@ oo::objdefine tactic {
         }
 
         # NEXT, create the new type
-        set fullname ::tactic::$typename
+        set fullname ::athena::tactic::$typename
         lappend types $fullname
 
         oo::class create $fullname {
-            superclass ::tactic
+            superclass ::athena::tactic
         }
 
         # NEXT, define the instance members.
@@ -150,7 +150,7 @@ oo::objdefine tactic {
     # Returns the actual type object given the typename.
 
     method type {typename} {
-        return ::tactic::$typename
+        return ::athena::tactic::$typename
     }
 
     # typedict ?agent_type?
@@ -198,7 +198,7 @@ oo::objdefine tactic {
 
 
 # NEXT, define instance methods
-oo::define tactic {
+oo::define ::athena::tactic {
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -231,14 +231,23 @@ oo::define tactic {
     #
     # These methods will rarely if ever be overridden by subclasses.
 
-    # subject
+    # adb
     #
-    # Set subject for notifier events.
+    # Returns the scenario athenadb(n) handle.
 
-    method subject {} {
-        return "::tactic"
+    method adb {} {
+        return [[my pot] cget -rdb]
     }
 
+    # subject
+    #
+    # Set subject for notifier events.  It's the athenadb(n) subject
+    # plus ".tactic".
+
+    method subject {} {
+        set adb [[my pot] cget -rdb]
+        return "[$adb cget -subject].tactic"
+    }
 
     # fullname
     #
@@ -569,7 +578,7 @@ oo::define tactic {
 
     method SanityCheck {errdict} {
         # Check the agent type.
-        set atype [agent type [my agent]]
+        set atype [[my adb] agent type [my agent]]
         set validAtypes [[info object class [self object]] atypes]
 
 
@@ -719,12 +728,12 @@ oo::define tactic {
     meta parmlist   { tactic_id state }
 
     method _validate {} {
-        my prepare tactic_id -required -with {::strategy valclass ::tactic}
+        my prepare tactic_id -required -with {::strategy valclass ::athena::tactic}
         my prepare state     -required -tolower -type ebeanstate
     }
 
     method _execute {{flunky ""}} {
-        set tactic [pot get $parms(tactic_id)]
+        set tactic [$adb pot get $parms(tactic_id)]
         my setundo [$tactic update_ {state} [array get parms]]
     }
 }

@@ -15,7 +15,7 @@
 #-------------------------------------------------------------------
 # Tactic: ACCIDENT
 
-tactic define ACCIDENT "Accident Event" {system actor} {
+::athena::tactic define ACCIDENT "Accident Event" {system actor} {
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -110,7 +110,7 @@ tactic define ACCIDENT "Accident Event" {system actor} {
     }
 
     method _validate {} {
-        my prepare tactic_id  -required -with {::strategy valclass tactic::ACCIDENT}
+        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::ACCIDENT}
         my returnOnError
 
         set tactic [pot get $parms(tactic_id)]

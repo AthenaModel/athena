@@ -17,7 +17,7 @@
 #-------------------------------------------------------------------
 # Tactic: FUNDENI
 
-tactic define FUNDENI \
+::athena::tactic define FUNDENI \
     "Fund Essential Non-Infrastructure Services" {actor} -onlock {
     #-------------------------------------------------------------------
     # Instance Variables 
@@ -349,7 +349,7 @@ tactic define FUNDENI \
 
 
     method _validate {} {
-        my prepare tactic_id -required -with {::strategy valclass tactic::FUNDENI}
+        my prepare tactic_id -required -with {::strategy valclass ::athena::tactic::FUNDENI}
         my returnOnError
 
         set tactic [pot get $parms(tactic_id)]

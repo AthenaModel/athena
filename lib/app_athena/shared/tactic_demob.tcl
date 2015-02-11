@@ -14,7 +14,7 @@
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
-tactic define DEMOB "Demobilize Personnel" {actor} {
+::athena::tactic define DEMOB "Demobilize Personnel" {actor} {
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -191,7 +191,7 @@ tactic define DEMOB "Demobilize Personnel" {actor} {
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare tactic_id  -required -with {::strategy valclass tactic::DEMOB}
+        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::DEMOB}
         my returnOnError
 
         set tactic [pot get $parms(tactic_id)]

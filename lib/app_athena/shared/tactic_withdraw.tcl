@@ -13,7 +13,7 @@
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
-tactic define WITHDRAW "Withdraw Money" {actor} {
+::athena::tactic define WITHDRAW "Withdraw Money" {actor} {
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -196,7 +196,7 @@ tactic define WITHDRAW "Withdraw Money" {actor} {
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare tactic_id  -required -with {::strategy valclass tactic::WITHDRAW}
+        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::WITHDRAW}
 
         my returnOnError
 

@@ -13,7 +13,7 @@
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
-tactic define SIGEVENT "Log Significant Event" {system actor} {
+::athena::tactic define SIGEVENT "Log Significant Event" {system actor} {
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -84,7 +84,7 @@ tactic define SIGEVENT "Log Significant Event" {system actor} {
 
     method _validate {} {
         # FIRST, prepare and validate the parameters
-        my prepare tactic_id -required -with {::strategy valclass tactic::SIGEVENT}
+        my prepare tactic_id -required -with {::strategy valclass ::athena::tactic::SIGEVENT}
         my returnOnError
 
         set tactic [pot get $parms(tactic_id)]

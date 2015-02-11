@@ -85,7 +85,7 @@ namespace eval ::athena_test::tests:: {
     test constructor-1.2 {can set options} -setup {
         setup
     } -body {
-        set T1 [tactic::MOBILIZE new -parent DUMMY]
+        set T1 [::athena::tactic::MOBILIZE new -parent DUMMY]
         $T1 get parent
     } -cleanup {
         cleanup

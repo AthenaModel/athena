@@ -15,7 +15,7 @@
 #-------------------------------------------------------------------
 # Tactic: RIOT
 
-tactic define RIOT "Riot Event" {system actor} {
+::athena::tactic define RIOT "Riot Event" {system actor} {
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -113,7 +113,7 @@ tactic define RIOT "Riot Event" {system actor} {
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare tactic_id  -required -with {::strategy valclass tactic::RIOT}
+        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::RIOT}
         my returnOnError
 
         set tactic [pot get $parms(tactic_id)]

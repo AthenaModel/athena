@@ -31,7 +31,7 @@
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
-tactic define DEPLOY "Deploy Personnel" {actor} -onlock {
+::athena::tactic define DEPLOY "Deploy Personnel" {actor} -onlock {
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -841,7 +841,7 @@ tactic define DEPLOY "Deploy Personnel" {actor} -onlock {
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare tactic_id  -required -with {::strategy valclass tactic::DEPLOY}
+        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::DEPLOY}
         my returnOnError
 
         # NEXT, get the tactic

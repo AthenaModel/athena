@@ -14,7 +14,7 @@
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
-tactic define MAINTAIN "Maintain Infrastructure" {actor} {
+::athena::tactic define MAINTAIN "Maintain Infrastructure" {actor} {
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -383,7 +383,7 @@ tactic define MAINTAIN "Maintain Infrastructure" {actor} {
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare tactic_id  -required -with {::strategy valclass tactic::MAINTAIN}
+        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::MAINTAIN}
         my returnOnError
 
         set tactic [pot get $parms(tactic_id)]

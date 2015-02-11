@@ -407,7 +407,7 @@ snit::type executive {
 
         # last tactic
         $interp smartalias {last tactic} 0 0 {} \
-            [myproc last_bean ::tactic]
+            [myproc last_bean ::athena::tactic]
 
         # last_mad
         $interp smartalias last_mad 0 0 {} \
@@ -597,7 +597,7 @@ snit::type executive {
             [mytypemethod tactic configure]
 
         $interp smartalias {tactic last} 0 0 {} \
-            [myproc last_bean ::tactic]
+            [myproc last_bean ::athena::tactic]
 
         # tofile
         $interp smartalias tofile 3 3 {filename extension text} \
@@ -2550,10 +2550,10 @@ snit::type executive {
     typemethod {tactic cget} {tactic_id {opt ""}} {
         # FIRST, get the tactic_id
         if {$tactic_id eq "-"} {
-            set tactic_id [last_bean ::tactic]
+            set tactic_id [last_bean ::athena::tactic]
         }
 
-        pot valclass tactic $tactic_id
+        pot valclass ::athena::tactic $tactic_id
 
         # NEXT, get the tactic data
         set tactic [pot get $tactic_id]
@@ -2582,10 +2582,10 @@ snit::type executive {
     typemethod {tactic configure} {tactic_id args} {
         # FIRST, get the tactic_id
         if {$tactic_id eq "-"} {
-            set tactic_id [last_bean ::tactic]
+            set tactic_id [last_bean ::athena::tactic]
         }
 
-        pot valclass tactic $tactic_id
+        pot valclass ::athena::tactic $tactic_id
 
         # NEXT, configure it
         flunky transaction "tactic configure..." {

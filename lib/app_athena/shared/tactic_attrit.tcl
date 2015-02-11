@@ -15,7 +15,7 @@
 #-------------------------------------------------------------------
 # Tactic: ATTRIT
 
-tactic define ATTRIT "Magic Attrition" {system} {
+::athena::tactic define ATTRIT "Magic Attrition" {system} {
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -255,7 +255,7 @@ tactic define ATTRIT "Magic Attrition" {system} {
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare tactic_id  -required -with {::strategy valclass tactic::ATTRIT}
+        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::ATTRIT}
         my returnOnError
 
         set tactic [pot get $parms(tactic_id)]

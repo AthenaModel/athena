@@ -13,7 +13,7 @@
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
-tactic define DEPOSIT "Deposit Money" {actor} {
+::athena::tactic define DEPOSIT "Deposit Money" {actor} {
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -195,7 +195,7 @@ tactic define DEPOSIT "Deposit Money" {actor} {
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare tactic_id  -required -with {::strategy valclass tactic::DEPOSIT}
+        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::DEPOSIT}
         my returnOnError 
         
         set tactic [pot get $parms(tactic_id)]

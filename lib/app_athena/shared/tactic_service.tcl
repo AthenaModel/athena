@@ -15,7 +15,7 @@
 #-------------------------------------------------------------------
 # Tactic: SERVICE
 
-tactic define SERVICE "Update Level of Service" {system actor} -onlock {
+::athena::tactic define SERVICE "Update Level of Service" {system actor} -onlock {
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -226,7 +226,7 @@ tactic define SERVICE "Update Level of Service" {system actor} -onlock {
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare tactic_id  -required -with {::strategy valclass tactic::SERVICE}
+        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::SERVICE}
         my returnOnError
 
         set tactic [pot get $parms(tactic_id)]

@@ -15,7 +15,7 @@
 #-------------------------------------------------------------------
 # Tactic: FUND
 
-tactic define FUND "Fund Another Actor" {actor} {
+::athena::tactic define FUND "Fund Another Actor" {actor} {
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -219,7 +219,7 @@ tactic define FUND "Fund Another Actor" {actor} {
 
 
     method _validate {} {
-        my prepare tactic_id -required -with {::strategy valclass tactic::FUND}
+        my prepare tactic_id -required -with {::strategy valclass ::athena::tactic::FUND}
         my returnOnError
 
         set tactic [pot get $parms(tactic_id)]

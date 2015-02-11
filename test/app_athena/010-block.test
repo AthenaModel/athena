@@ -542,7 +542,7 @@ namespace eval ::athena_test::tests:: {
         $B1 addtactic_ SIGEVENT
         $B1 addtactic_ SIGEVENT
 
-        set a [pot ids tactic]
+        set a [pot ids ::athena::tactic]
         set b [$B1 tactic_ids]
 
         expr {$a eq $b}

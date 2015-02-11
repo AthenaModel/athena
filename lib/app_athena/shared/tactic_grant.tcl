@@ -17,7 +17,7 @@
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
-tactic define GRANT "Grant Access to CAP" {actor} -onlock {
+::athena::tactic define GRANT "Grant Access to CAP" {actor} -onlock {
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -132,7 +132,7 @@ tactic define GRANT "Grant Access to CAP" {actor} -onlock {
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare tactic_id  -required -with {::strategy valclass tactic::GRANT}
+        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::GRANT}
         my returnOnError
 
         set tactic [pot get $parms(tactic_id)]

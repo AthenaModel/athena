@@ -16,7 +16,7 @@
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
-tactic define SUPPORT "Support Actor" {actor} -onlock {
+::athena::tactic define SUPPORT "Support Actor" {actor} -onlock {
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -147,7 +147,7 @@ tactic define SUPPORT "Support Actor" {actor} -onlock {
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare tactic_id  -required -with {::strategy valclass tactic::SUPPORT}
+        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::SUPPORT}
         my returnOnError
 
         set tactic [pot get $parms(tactic_id)]

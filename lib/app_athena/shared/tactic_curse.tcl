@@ -16,7 +16,7 @@
 #-------------------------------------------------------------------
 # Tactic: CURSE
 
-tactic define CURSE "Cause a CURSE" {system} {
+::athena::tactic define CURSE "Cause a CURSE" {system} {
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -258,7 +258,7 @@ tactic define CURSE "Cause a CURSE" {system} {
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare tactic_id  -required -with {::strategy valclass tactic::CURSE}
+        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::CURSE}
         my returnOnError
 
         set tactic [pot get $parms(tactic_id)]

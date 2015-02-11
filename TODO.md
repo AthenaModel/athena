@@ -45,8 +45,6 @@
   - absit, athenadb, block
 - strategy
   - actor, agent, block, cash, condition_*
-- tactic
-  - agent, block
 - unit
   - personnel
 

@@ -20,7 +20,7 @@
 #-------------------------------------------------------------------
 # Tactic: STANCE
 
-tactic define STANCE "Adopt a Stance" {actor} -onlock {
+::athena::tactic define STANCE "Adopt a Stance" {actor} -onlock {
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -221,7 +221,7 @@ tactic define STANCE "Adopt a Stance" {actor} -onlock {
 
     method _validate {} {
         # FIRST, prepare and validate the parameters
-        my prepare tactic_id -required -with {::strategy valclass tactic::STANCE}
+        my prepare tactic_id -required -with {::strategy valclass ::athena::tactic::STANCE}
         my returnOnError
 
         set tactic [pot get $parms(tactic_id)]

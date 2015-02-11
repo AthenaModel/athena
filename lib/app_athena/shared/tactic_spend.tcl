@@ -13,7 +13,7 @@
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
-tactic define SPEND "Spend Cash-On-Hand" {actor} -onlock {
+::athena::tactic define SPEND "Spend Cash-On-Hand" {actor} -onlock {
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -279,7 +279,7 @@ tactic define SPEND "Spend Cash-On-Hand" {actor} -onlock {
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare tactic_id  -required -with {::strategy valclass tactic::SPEND}
+        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::SPEND}
         my returnOnError
 
         set tactic [pot get $parms(tactic_id)]

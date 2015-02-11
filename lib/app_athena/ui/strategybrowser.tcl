@@ -268,7 +268,7 @@ snit::widget strategybrowser {
         # OK, because adding or deleting a tactic or condition is properly
         # a change to the block, and is handled there.
 
-        notifier bind ::tactic    <update> $self [list $ttab uid update]
+        notifier bind ::adb.tactic    <update> $self [list $ttab uid update]
         notifier bind ::adb.condition <update> $self [list $ctab uid update]
 
     }
@@ -1666,7 +1666,7 @@ snit::widget strategybrowser {
         }
 
         clipboardx clear
-        clipboardx set ::tactic $copyData
+        clipboardx set ::athena::tactic $copyData
 
         # NEXT, if the mode is cut delete the items.
         if {$mode eq "cut"} {
@@ -1697,7 +1697,7 @@ snit::widget strategybrowser {
         }
 
         # NEXT, get the tactics from the clipboard, if any.
-        set copysets [clipboardx get ::tactic]
+        set copysets [clipboardx get ::athena::tactic]
 
         if {[llength $copysets] == 0} {
             bell
@@ -1725,7 +1725,7 @@ snit::widget strategybrowser {
 
         $tt_addbtn configure -menu $mnu
 
-        foreach ttype [tactic types] {
+        foreach ttype [::athena::tactic types] {
             cond::predicate control \
                 [menuitem $mnu command [$ttype title] \
                     -command [mymethod TTabAdd [$ttype typename]]] \

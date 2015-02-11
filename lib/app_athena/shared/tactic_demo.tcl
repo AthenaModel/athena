@@ -15,7 +15,7 @@
 #-------------------------------------------------------------------
 # Tactic: DEMO
 
-tactic define DEMO "Demonstration Event" {system actor} {
+::athena::tactic define DEMO "Demonstration Event" {system actor} {
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -120,7 +120,7 @@ tactic define DEMO "Demonstration Event" {system actor} {
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare tactic_id  -required -with {::strategy valclass tactic::DEMO}
+        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::DEMO}
         my returnOnError
 
         set tactic [pot get $parms(tactic_id)]

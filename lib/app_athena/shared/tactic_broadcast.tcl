@@ -22,7 +22,7 @@
 #-------------------------------------------------------------------
 # Tactic: BROADCAST
 
-tactic define BROADCAST "Broadcast an Info Ops Message" {actor} -onlock {
+::athena::tactic define BROADCAST "Broadcast an Info Ops Message" {actor} -onlock {
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -245,7 +245,7 @@ tactic define BROADCAST "Broadcast an Info Ops Message" {actor} -onlock {
 
     method _validate {} {
         # FIRST, there must be a tactic ID
-        my prepare tactic_id  -required -with {::strategy valclass tactic::BROADCAST}
+        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::BROADCAST}
         my returnOnError
 
         # NEXT, get the tactic

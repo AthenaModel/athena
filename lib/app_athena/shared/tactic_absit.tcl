@@ -15,7 +15,7 @@
 #-------------------------------------------------------------------
 # Tactic: ABSIT
 
-tactic define ABSIT "Abstract Situation" {system actor} -onlock {
+::athena::tactic define ABSIT "Abstract Situation" {system actor} -onlock {
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -169,7 +169,7 @@ tactic define ABSIT "Abstract Situation" {system actor} -onlock {
 
 
     method _validate {} {
-        my prepare tactic_id  -required -with {::strategy valclass tactic::ABSIT}
+        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::ABSIT}
         my returnOnError
 
         set tactic [pot get $parms(tactic_id)]

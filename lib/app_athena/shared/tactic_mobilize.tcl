@@ -14,7 +14,7 @@
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
-tactic define MOBILIZE "Mobilize Personnel" {actor} {
+::athena::tactic define MOBILIZE "Mobilize Personnel" {actor} {
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -237,7 +237,7 @@ tactic define MOBILIZE "Mobilize Personnel" {actor} {
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare tactic_id  -required -with {::strategy valclass tactic::MOBILIZE}
+        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::MOBILIZE}
         my returnOnError
 
         set tactic [pot get $parms(tactic_id)]
