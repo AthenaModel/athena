@@ -210,8 +210,32 @@ functions are TBD.<p>
 
 <section "NOTIFIER EVENTS">
 
+athena(n) and its subcomponents send <xref notifier(n)> events.  Top-level
+events are sent by the <tt -subject> indicated when the instance is created.
+Individual subcomponents can also send events; in this case, the 
+<xref notifier(n)> subject is "<i subject>.<i component>".  If the 
+<tt -subject> is "<tt ::adb>", for example, the order flunky component
+sends events as "<tt ::adb.flunky>".<p>
+
 <b TBD>: This section should document all notifier events sent by
-athena(n).<p>
+athena(n), including those by subcomponents.<p>
+
+<deflist events>
+
+<defitem Create {<i subject> <tag Create>}>
+
+The athena(n) instance sends this event on creation, after it is fully
+initialized.  This is useful when an application reuses the same 
+<tt -subject> for successive scenarios, as it allows GUI modules to 
+initialize themselves.<p>
+
+<defitem Destroy {<i subject> <tag Destroy>}>
+
+The athena(n) instance sends this event when it is destroyed.  This allows
+client modules to clean up references to the object and its subcomponents.
+<p>
+
+</deflist>
 
 <section AUTHOR>
 
