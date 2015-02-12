@@ -174,6 +174,7 @@ snit::type ::athena::athenadb {
     component hrel      -public hrel      ;# horiz. rel. manager
     component iom       -public iom       ;# IOM manager
     component nbhood    -public nbhood    ;# nbhood manager
+    component nbrel     -public nbrel     ;# nbhood rel. manager
     component orggroup  -public orggroup  ;# orggroup manager
     component sat       -public sat       ;# satisfaction manager
     component strategy  -public strategy  ;# strategy manager
@@ -285,6 +286,7 @@ snit::type ::athena::athenadb {
             hrel                        \
             iom                         \
             nbhood                      \
+            nbrel                       \
             orggroup                    \
             personnel                   \
             sat                         \

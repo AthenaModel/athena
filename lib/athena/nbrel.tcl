@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Neighborhood Relationship Manager
+#    athenan(n): Neighborhood Relationship Manager
 #
 #    This module is responsible for managing relationships between
 #    neighborhoods (proximity and effects delay), and for allowing the 
@@ -14,14 +14,32 @@
 #    These relationships come and go as neighborhoods come and go.
 #
 # CREATION/DELETION:
-#    nbrel_mn records are created by nbhood(sim) as neighborhoods
+#    nbrel_mn records are created by nbhood(n) as neighborhoods
 #    are created, and deleted by cascading delete.
+#
+# TBD:
+#    * Global entities in use: nbhood
 #
 #-----------------------------------------------------------------------
 
-snit::type nbrel {
-    # Make it a singleton
-    pragma -hasinstances no
+snit::type ::athena::nbrel {
+    #-------------------------------------------------------------------
+    # Components
+
+    component adb ;# The athenadb(n) instance
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    # constructor adb_
+    #
+    # adb_    - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of this type
+
+    constructor {adb_} {
+        set adb $adb_
+    }
 
     #-------------------------------------------------------------------
     # Queries
@@ -33,11 +51,11 @@ snit::type nbrel {
     # Throws INVALID if there's no neighborhood relationship for the 
     # specified combination.
 
-    typemethod validate {id} {
+    method validate {id} {
         lassign $id m n
 
-        set m [nbhood validate $m]
-        set n [nbhood validate $n]
+        set m [$adb nbhood validate $m]
+        set n [$adb nbhood validate $n]
 
         # No need to check for existence of the record in nbrel_mn; 
         # there are relationships for every pair of neighborhoods.
@@ -53,7 +71,7 @@ snit::type nbrel {
     # a script of one or more commands that will undo the change.  When
     # change cannot be undone, the mutator returns the empty string.
 
-    # mutate update parmdict
+    # update parmdict
     #
     # parmdict     A dictionary of group parms
     #
@@ -63,23 +81,23 @@ snit::type nbrel {
     # Updates a neighborhood relationship given the parms, which are 
     # presumed to be valid.
 
-    typemethod {mutate update} {parmdict} {
+    method update {parmdict} {
         # FIRST, use the dict
         dict with parmdict {
             lassign $id m n
 
             # FIRST, get the undo information
-            set data [rdb grab nbrel_mn {m=$m AND n=$n}]
+            set data [$adb grab nbrel_mn {m=$m AND n=$n}]
 
             # NEXT, Update the group
-            rdb eval {
+            $adb eval {
                 UPDATE nbrel_mn
-                SET proximity     = nonempty($proximity,     proximity)
+                SET proximity = nonempty($proximity, proximity)
                 WHERE m=$m AND n=$n
             }
 
             # NEXT, Return the undo command
-            return [list rdb ungrab $data]
+            return [list $adb ungrab $data]
         }
     }
 }
@@ -124,7 +142,7 @@ snit::type nbrel {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [nbrel mutate update [array get parms]]
+        my setundo [nbrel update [array get parms]]
     }
 }
 
@@ -170,7 +188,7 @@ snit::type nbrel {
         set undo [list]
     
         foreach parms(id) $parms(ids) {
-            lappend undo [nbrel mutate update [array get parms]]
+            lappend undo [nbrel update [array get parms]]
         }
     
         my setundo [join $undo \n]
