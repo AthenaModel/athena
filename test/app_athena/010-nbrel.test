@@ -45,13 +45,13 @@ namespace eval ::athena_test::tests:: {
 
 
     #-------------------------------------------------------------------
-    # mutate update
+    # update
 
 
     test update-1.1 {nbrel is updated} -setup {
         ted create NB1 NB2
     } -body {
-        nbrel mutate update {
+        nbrel update {
             id            {NB1 NB2}
             proximity     NEAR
         }
@@ -76,11 +76,11 @@ NB2 NB2 HERE
             proximity     NEAR
         }
 
-        nbrel mutate update $parmdict
+        nbrel update $parmdict
     } -body {
         set a [ted query {SELECT * FROM nbrel_mn}]
         
-        nbrel mutate update $parmdict
+        nbrel update $parmdict
 
         set b [ted query {SELECT * FROM nbrel_mn}]
 
@@ -95,7 +95,7 @@ NB2 NB2 HERE
     } -body {
         set a [ted query {SELECT * FROM nbrel_mn}]
 
-        nbrel mutate update  {
+        nbrel update  {
             id            {NB1 NB2}
             proximity     ""
         }
@@ -115,7 +115,7 @@ NB2 NB2 HERE
 
         set a [ted query {SELECT * FROM nbrel_mn ORDER BY m,n}]
 
-        set undo [nbrel mutate update {
+        set undo [nbrel update {
             id            {NB1 NB2}
             proximity     NEAR
         }]

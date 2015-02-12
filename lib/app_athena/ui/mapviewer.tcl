@@ -864,7 +864,7 @@ snit::widget mapviewer {
         $self NbhoodFill
 
         # NEXT, check that neighborhoods fit inside map area
-        $self NbhoodCheck
+        $self NbhoodBoundsCheck
     }
 
 
@@ -896,12 +896,12 @@ snit::widget mapviewer {
         set nbhoods(id-$n) $id
     }
 
-    # NbhoodCheck
+    # NbhoodBoundsCheck
     #
     # Checks to see that all neighborhood boundaries fit within the
     # defined map area
 
-    method NbhoodCheck {} {
+    method NbhoodBoundsCheck {} {
         if {![map compatible]} {
             set info(check) "Neighborhood(s) extend beyond map"
             $win.hbar.check configure -foreground red
@@ -1142,6 +1142,9 @@ snit::widget mapviewer {
 
         # NEXT, show refpoints obscured by the change
         $self NbhoodShowObscured
+
+        # NEXT, check for nbhoods outside map boundaries
+        $self NbhoodBoundsCheck
     }
 
     method {EntityNbhood delete} {n} {
@@ -1155,6 +1158,9 @@ snit::widget mapviewer {
 
         # NEXT, show refpoints revealed by the change
         $self NbhoodShowObscured
+
+        # NEXT, check for nbhoods outside map boundaries
+        $self NbhoodBoundsCheck
     }
       
 
