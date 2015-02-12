@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Coffer Class
+#    athena(n): Coffer Class
 #
 #    A coffer contains the levels of all of an agent's resources, and tracks
 #    them during strategy execution.  Its purpose is solely to support
@@ -34,13 +34,16 @@
 #    personnel and cash-on-hand need to allow any amount on-lock, but
 #    not actually draw down the amount below 0.
 #
+# TBD: Global refs: strategy
+#
 #-----------------------------------------------------------------------
 
 # FIRST, create the class
-oo::class create coffer {
+oo::class create ::athena::coffer {
     #-------------------------------------------------------------------
     # Instance variables
     
+    variable adb        ;# The athenadb(n) handle
     variable cash       ;# Cash-on-hand
     variable reserve    ;# Cash-reserve
     variable troops     ;# dict $g -> {mobilized, undeployed, $n} -> $troops
@@ -49,8 +52,9 @@ oo::class create coffer {
     #-------------------------------------------------------------------
     # Constructor
 
-    # constructor ?agent?
+    # constructor adb ?agent?
     #
+    # adb   - The athenadb(n) handle
     # agent - The agent whose coffer this is.
     #
     # Initializes the instance variables; if agent is given, loads the
@@ -60,8 +64,9 @@ oo::class create coffer {
     # the agent's strategy execution, before any mobilization or deployment
     # changes and before any infrastructure maintenance are done.
 
-    constructor {{agent ""}} {
+    constructor {adb_ {agent ""}} {
         # FIRST, initialize the instance variables
+        set adb     $adb_
         set cash    0.0
         set reserve 0.0
         set troops  [dict create]
@@ -74,7 +79,7 @@ oo::class create coffer {
         # NEXT, load the agent's cash resources.
         # NOTE: Apparently cash_on_hand can be zero on-lock, according
         # to a comment by DRH.
-        rdb eval {
+        $adb eval {
             SELECT max(0.0,cash_on_hand) AS cash,
                    max(0.0,cash_reserve) AS reserve
             FROM working_cash
@@ -85,7 +90,7 @@ oo::class create coffer {
         }
 
         # NEXT, load the agent's undeployed personnel
-        rdb eval {
+        $adb eval {
             SELECT g, 
                    personnel AS mobilized, 
                    available
@@ -98,7 +103,7 @@ oo::class create coffer {
         }
 
         # NEXT, initialize agent's infrastructure repair levels
-        rdb eval {
+        $adb eval {
             SELECT n, rho
             FROM plants_na
             WHERE a = $agent

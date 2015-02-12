@@ -110,6 +110,7 @@ source [file join $::athena::library group.tcl            ]
 # Tactic APIs
 source [file join $::athena::library broadcast.tcl        ]
 source [file join $::athena::library cash.tcl             ]
+source [file join $::athena::library coffer.tcl           ]
 source [file join $::athena::library control.tcl          ]
 source [file join $::athena::library personnel.tcl        ]
 source [file join $::athena::library stance.tcl           ]
