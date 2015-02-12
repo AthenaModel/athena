@@ -6,16 +6,34 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Info Operations Message (IOM) manager
+#    athena(n): Info Operations Message (IOM) manager
 #
 #    This module is responsible for managing messages and the operations
 #    upon them.  As such, it is a type ensemble.
 #
+# TBD:
+#    * Global entities in use: payload
+#
 #-----------------------------------------------------------------------
 
-snit::type iom {
-    # Make it a singleton
-    pragma -hasinstances no
+snit::type ::athena::iom {
+    #-------------------------------------------------------------------
+    # Components
+
+    component adb ;# The athenadb(n) instance
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    # constructor adb_
+    #
+    # adb_      - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of this type
+
+    constructor {adb_} {
+        set adb $adb_
+    }
 
     #-------------------------------------------------------------------
     # Queries
@@ -27,8 +45,8 @@ snit::type iom {
     #
     # Returns the list of IOM IDs
 
-    typemethod names {} {
-        return [rdb eval {
+    method names {} {
+        return [$adb eval {
             SELECT iom_id FROM ioms 
         }]
     }
@@ -37,8 +55,8 @@ snit::type iom {
     #
     # Returns the list of IOM long names
 
-    typemethod longnames {} {
-        return [rdb eval {
+    method longnames {} {
+        return [$adb eval {
             SELECT iom_id || ': ' || longname FROM ioms 
         }]
     }
@@ -49,11 +67,11 @@ snit::type iom {
     #
     # Validates an IOM ID
 
-    typemethod validate {iom_id} {
-        if {![rdb exists {
+    method validate {iom_id} {
+        if {![$adb exists {
             SELECT * FROM ioms WHERE iom_id = $iom_id
         }]} {
-            set names [join [iom names] ", "]
+            set names [join [$self names] ", "]
 
             if {$names ne ""} {
                 set msg "should be one of: $names"
@@ -74,8 +92,8 @@ snit::type iom {
     #
     # Returns 1 if there's such a message, and 0 otherwise.
 
-    typemethod exists {iom_id} {
-        rdb exists {
+    method exists {iom_id} {
+        $adb exists {
             SELECT * FROM ioms WHERE iom_id=$iom_id
         }
     }
@@ -92,9 +110,9 @@ snit::type iom {
     # base table.  But we need the narrative, which is computed
     # dynamically.
 
-    typemethod get {iom_id {parm ""}} {
+    method get {iom_id {parm ""}} {
         # FIRST, get the data
-        rdb eval {
+        $adb eval {
             SELECT * FROM gui_ioms 
             WHERE iom_id=$iom_id
         } row {
@@ -113,8 +131,8 @@ snit::type iom {
     #
     # Returns the list of IOM IDs with state=normal
 
-    typemethod {normal names} {} {
-        return [rdb eval {
+    method {normal names} {} {
+        return [$adb eval {
             SELECT iom_id FROM ioms WHERE state='normal'
         }]
     }
@@ -123,8 +141,8 @@ snit::type iom {
     #
     # Returns the list of IOM ID/long name pairs with state=normal
 
-    typemethod {normal namedict} {} {
-        return [rdb eval {
+    method {normal namedict} {} {
+        return [$adb eval {
             SELECT iom_id, longname FROM ioms WHERE state='normal'
             ORDER BY iom_id
         }]
@@ -133,8 +151,8 @@ snit::type iom {
     #
     # Returns the list of IOM long names with state=normal
 
-    typemethod {normal longnames} {} {
-        return [rdb eval {
+    method {normal longnames} {} {
+        return [$adb eval {
             SELECT iom_id || ': ' || longname FROM ioms
             WHERE state='normal'
         }]
@@ -146,8 +164,8 @@ snit::type iom {
     #
     # Validates an IOM ID, and ensures that state=normal
 
-    typemethod {normal validate} {iom_id} {
-        set names [iom normal names]
+    method {normal validate} {iom_id} {
+        set names [$self normal names]
 
         if {$iom_id ni $names} {
             if {$names ne ""} {
@@ -174,19 +192,19 @@ snit::type iom {
     # for inclusion into an HTML page.  Returns an esanity value, either
     # OK or WARNING.
 
-    typemethod checker {{ht ""}} {
+    method checker {{ht ""}} {
         # FIRST, do the payload check.
         set psev [payload checker $ht]
         assert {$psev ne "ERROR"}
 
-        set edict [$type DoSanityCheck]
+        set edict [$self DoSanityCheck]
 
         if {$psev eq "OK" && [dict size $edict] == 0} {
             return OK
         }
 
         if {$ht ne ""} {
-            $type DoSanityReport $ht $edict
+            $self DoSanityReport $ht $edict
         }
         
         return WARNING
@@ -205,14 +223,14 @@ snit::type iom {
     # Returns the dictionary, which will be empty if there were no
     # errors.
 
-    typemethod DoSanityCheck {} {
+    method DoSanityCheck {} {
         # FIRST, create the empty error dictionary.
         set edict [dict create]
 
         # NEXT, clear the invalid states, since we're going to 
         # recompute them.
 
-        rdb eval {
+        $adb eval {
             UPDATE ioms
             SET state = 'normal'
             WHERE state = 'invalid';
@@ -222,7 +240,7 @@ snit::type iom {
         set badlist [list]
 
         # IOMs with no valid payloads
-        rdb eval {
+        $adb eval {
             SELECT I.iom_id             AS iom_id, 
                    count(P.payload_num) AS num
             FROM ioms AS I
@@ -237,7 +255,7 @@ snit::type iom {
         }
 
         # IOMs with no hook
-        rdb eval {
+        $adb eval {
             SELECT iom_id
             FROM ioms 
             WHERE hook_id IS NULL
@@ -247,7 +265,7 @@ snit::type iom {
         }
 
         # IOMs with hooks with no valid hook_topics
-        rdb eval {
+        $adb eval {
             SELECT iom_id, count(topic_id) AS num
             FROM ioms AS I
             LEFT OUTER JOIN hook_topics AS HT 
@@ -265,14 +283,14 @@ snit::type iom {
 
         # NEXT, mark the bad IOMs invalid.
         foreach iom_id $badlist {
-            rdb eval {
+            $adb eval {
                 UPDATE ioms
                 SET state = 'invalid'
                 WHERE iom_id=$iom_id
             }
         }
 
-        notifier send ::iom <Check>
+        $adb notify iom <Check>
 
         return $edict
     }
@@ -286,7 +304,7 @@ snit::type iom {
     # Writes HTML text of the results of the sanity check to the ht
     # buffer.  This routine assumes that there are errors.
 
-    typemethod DoSanityReport {ht edict} {
+    method DoSanityReport {ht edict} {
         # FIRST, Build the report
         $ht subtitle "IOM Constraints"
 
@@ -301,7 +319,7 @@ snit::type iom {
         $ht para
 
         dict for {iom_id msglist} $edict {
-            array set idata [iom get $iom_id]
+            array set idata [$self get $iom_id]
 
             $ht ul
             $ht li 
@@ -327,7 +345,7 @@ snit::type iom {
     # a script of one or more commands that will undo the change.  When
     # change cannot be undone, the mutator returns the empty string.
 
-    # mutate create parmdict
+    # create parmdict
     #
     # parmdict  - A dictionary of IOM parms
     #
@@ -339,10 +357,10 @@ snit::type iom {
     # valid.  Note that you can't change the payload's state, which
     # has its own mutator.
 
-    typemethod {mutate create} {parmdict} {
+    method create {parmdict} {
         dict with parmdict {
             # FIRST, Put the IOM in the database
-            rdb eval {
+            $adb eval {
                 INSERT INTO 
                 ioms(iom_id, 
                      longname,
@@ -353,25 +371,25 @@ snit::type iom {
             }
 
             # NEXT, Return the undo command
-            return [list rdb delete ioms "iom_id='$iom_id'"]
+            return [list $adb delete ioms "iom_id='$iom_id'"]
         }
     }
 
-    # mutate delete iom_id
+    # delete iom_id
     #
     # iom_id   - An IOM ID
     #
     # Deletes the message, including all references.
 
-    typemethod {mutate delete} {iom_id} {
+    method delete {iom_id} {
         # FIRST, Delete the IOM, grabbing the undo information
-        set data [rdb delete -grab ioms {iom_id=$iom_id}]
+        set data [$adb delete -grab ioms {iom_id=$iom_id}]
         
         # NEXT, Return the undo script
-        return [list rdb ungrab $data]
+        return [list $adb ungrab $data]
     }
 
-    # mutate update parmdict
+    # update parmdict
     #
     # parmdict   - A dictionary of IOM parms
     #
@@ -382,13 +400,13 @@ snit::type iom {
     # Updates an IOM given the parms, which are presumed to be
     # valid.  An empty hook_id remains NULL.
 
-    typemethod {mutate update} {parmdict} {
+    method update {parmdict} {
         dict with parmdict {
             # FIRST, grab the data that might change.
-            set data [rdb grab ioms {iom_id=$iom_id}]
+            set data [$adb grab ioms {iom_id=$iom_id}]
 
             # NEXT, Update the record
-            rdb eval {
+            $adb eval {
                 UPDATE ioms
                 SET longname = nonempty($longname, longname),
                     hook_id  = nullif(nonempty($hook_id, hook_id), '')
@@ -396,30 +414,30 @@ snit::type iom {
             } 
 
             # NEXT, Return the undo command
-            return [list rdb ungrab $data]
+            return [list $adb ungrab $data]
         }
     }
 
-    # mutate state iom_id state
+    # state iom_id state
     #
     # iom_id - The IOM's ID
     # state  - The iom's new eiom_state
     #
     # Updates a iom's state.
 
-    typemethod {mutate state} {iom_id state} {
+    method state {iom_id state} {
         # FIRST, get the undo information
-        set data [rdb grab ioms {iom_id=$iom_id}]
+        set data [$adb grab ioms {iom_id=$iom_id}]
 
         # NEXT, Update the iom.
-        rdb eval {
+        $adb eval {
             UPDATE ioms
             SET state = $state
             WHERE iom_id=$iom_id
         }
 
         # NEXT, Return the undo command
-        return [list rdb ungrab $data]
+        return [list $adb ungrab $data]
     }
 
 }    
@@ -462,7 +480,7 @@ snit::type iom {
             set parms(longname) $parms(iom_id)
         }
 
-        lappend undo [iom mutate create [array get parms]]
+        lappend undo [$adb iom create [array get parms]]
         my setundo [join $undo \n]
     }
 }
@@ -510,7 +528,7 @@ snit::type iom {
         }
     
         # NEXT, Delete the record and dependent entities
-        lappend undo [iom mutate delete $parms(iom_id)]
+        lappend undo [$adb iom delete $parms(iom_id)]
     
         my setundo [join $undo \n]
     }
@@ -547,7 +565,7 @@ snit::type iom {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [iom mutate update [array get parms]]
+        my setundo [$adb iom update [array get parms]]
     }
 }
 
@@ -577,7 +595,7 @@ snit::type iom {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [iom mutate state $parms(iom_id) $parms(state)]
+        my setundo [$adb iom state $parms(iom_id) $parms(state)]
     }
 }
 

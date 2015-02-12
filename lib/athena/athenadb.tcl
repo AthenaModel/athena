@@ -172,6 +172,7 @@ snit::type ::athena::athenadb {
     component frcgroup  -public frcgroup  ;# frcgroup manager
     component hook      -public hook      ;# semantic hook manager
     component hrel      -public hrel      ;# horiz. rel. manager
+    component iom       -public iom       ;# IOM manager
     component nbhood    -public nbhood    ;# nbhood manager
     component orggroup  -public orggroup  ;# orggroup manager
     component sat       -public sat       ;# satisfaction manager
@@ -279,6 +280,7 @@ snit::type ::athena::athenadb {
             group            \
             hook             \
             hrel             \
+            iom              \
             nbhood           \
             orggroup         \
             personnel        \

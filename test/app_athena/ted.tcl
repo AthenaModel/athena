@@ -660,7 +660,7 @@ snit::type ted {
                 # NEXT, create the requested entity
                 if {$module in {
                     ::actor ::absit ::cap ::civgroup ::frcgroup ::nbhood 
-                    ::orggroup ::hook 
+                    ::orggroup ::hook ::iom
                 }} {
                     {*}$module create $parmdict
                 } else {
