@@ -306,7 +306,7 @@ snit::type ::athena::curse {
 
     method checker {{ht ""}} {
         # FIRST, do the inject check.
-        set psev [inject checker $ht]
+        set psev [$adb inject checker $ht]
         assert {$psev ne "ERROR"}
 
         set edict [$self DoSanityCheck]

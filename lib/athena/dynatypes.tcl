@@ -42,6 +42,10 @@ dynaform fieldtype alias civlist enumlonglist \
     -width    30  \
     -dictcmd  {$adb_ civgroup namedict}
 
+# concern: An econcern value
+dynaform fieldtype alias concern enum \
+    -listcmd {econcern names}
+
 # curse: pick a curse by name.
 dynaform fieldtype alias curse enum -listcmd {::curse names}
 
@@ -72,6 +76,11 @@ dynaform fieldtype alias hook dbkey \
     -table hooks \
     -keys  hook_id
 
+# inject: Pick an inject by its ID.
+dynaform fieldtype alias inject dbkey \
+    -table gui_injects  \
+    -keys  {curse_id inject_num}
+
 # localn: Pick a local neighborhood by name
 dynaform fieldtype alias localn enumlong \
     -showkeys yes \
@@ -79,6 +88,15 @@ dynaform fieldtype alias localn enumlong \
 
 # longname: text field of standard width for longnames.
 dynaform fieldtype alias longname text -width 30
+
+# mag: qmag(n) values
+dynaform fieldtype alias mag range \
+    -datatype    ::qmag \
+    -showsymbols yes    \
+    -resetvalue  0.0    \
+    -resolution  0.5    \
+    -min         -40.0  \
+    -max         40.0
 
 # nbhood: Pick a neighborhood by name
 dynaform fieldtype alias nbhood enumlong \

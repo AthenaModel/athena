@@ -23,10 +23,6 @@ dynaform fieldtype alias actorlist enumlonglist \
     -width    30  \
     -dictcmd {::actor namedict}
 
-# concern: An econcern value
-dynaform fieldtype alias concern enum \
-    -listcmd {econcern names}
-
 dynaform fieldtype alias concernlist enumlonglist \
     -showkeys yes \
     -width 30     \
@@ -44,27 +40,12 @@ dynaform fieldtype alias grouplist enumlonglist \
     -width    30  \
     -dictcmd  {::group namedict}
 
-# inject: Pick an inject by its ID.
-dynaform fieldtype alias inject dbkey \
-    -table gui_injects  \
-    -keys  {curse_id inject_num}
-
 # mad: Magic Attitude Driver ID
 dynaform fieldtype alias mad dbkey \
     -table    gui_mads  \
     -keys     mad_id    \
     -dispcols longid    \
     -widths   40
-
-# mag: qmag(n) values
-dynaform fieldtype alias mag range \
-    -datatype    ::qmag \
-    -showsymbols yes    \
-    -resetvalue  0.0    \
-    -resolution  0.5    \
-    -min         -40.0  \
-    -max         40.0
-
 
 # payload: Pick a payload by its ID.
 dynaform fieldtype alias payload dbkey \

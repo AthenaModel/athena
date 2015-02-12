@@ -172,7 +172,8 @@ snit::type ::athena::athenadb {
     component frcgroup  -public frcgroup  ;# frcgroup manager
     component hook      -public hook      ;# semantic hook manager
     component hrel      -public hrel      ;# horiz. rel. manager
-    component iom       -public iom       ;# IOM manager
+    component iom       -public iom       ;# iom manager
+    component inject    -public inject    ;# curse inject manager
     component nbhood    -public nbhood    ;# nbhood manager
     component nbrel     -public nbrel     ;# nbhood rel. manager
     component orggroup  -public orggroup  ;# orggroup manager
@@ -281,6 +282,7 @@ snit::type ::athena::athenadb {
             group            \
             hook             \
             hrel             \
+            inject           \
             iom              \
             nbhood           \
             nbrel            \

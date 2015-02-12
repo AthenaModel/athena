@@ -52,17 +52,790 @@ namespace eval ::athena_test::tests:: {
         mag          2.0
     }
 
+    set I3 {
+        curse_id     C1
+        mode         transient
+        g            @C1
+        c            SFT
+        mag          1.0
+    }
+
+    set I4 {
+        curse_id     C2
+        mode         transient
+        g            @C1
+        c            SFT
+        mag          M+ 
+    }
+
+    set I5 {
+        curse_id     C1
+        mode         transient
+        g            @C1
+        a            @A2
+        mag          1.0
+    }
+
+    set I6 {
+        curse_id     C2
+        mode         transient
+        g            @C1
+        a            @A2
+        mag          M+ 
+    }
+
+    set BAD1 {
+        curse_id    C2
+        mode         transient
+        g            @C1
+        a            @C1
+        mag          M+ 
+    }
+
     # Setup
     proc setup {} {
         ted order CURSE:CREATE curse_id C1
         ted order CURSE:CREATE curse_id C2
     }
 
+    proc setup_update_sat {} {
+        variable I4
+        setup
+        ted order INJECT:SAT:CREATE $I4
+    }
+
+    proc setup_update_coop {} {
+        variable I2
+        setup
+        ted order INJECT:COOP:CREATE $I2
+    }
+
+    proc setup_update_hrel {} {
+        variable I2
+        setup
+        ted order INJECT:HREL:CREATE $I2
+    }
+
+    proc setup_update_vrel {} {
+        variable I6
+        setup
+        ted order INJECT:VREL:CREATE $I6
+    }
 
     # Clean up after a test
     proc cleanup {} {
         # Clean up the test environment
         ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # INJECT:COOP:CREATE
+
+    test COOP:CREATE-1.1 {required parms} -body {
+        ted order -reject INJECT:COOP:CREATE {}
+    } -result {
+        curse_id {required value}
+        f {required value}
+        g {required value}
+        mag {required value}
+    }
+
+    test COOP:CREATE-1.2 {curse_id is unknown} -setup {
+        setup
+    } -body {
+        ted order -reject INJECT:COOP:CREATE {*}$I1 curse_id NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        curse_id {Invalid CURSE, should be one of: C1, C2}
+    }
+
+    test COOP:CREATE-1.3 {mag is invalid} -setup {
+        setup
+    } -body {
+        ted order -reject INJECT:COOP:CREATE {*}$I1 mag NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        mag {invalid value "NONESUCH", should be a real number in range -100.0, 100.0, or one of: XXXXL+, XXXL+, XXL+, XL+, L+, M+, S+, XS+, XXS+, XXXS+, ZERO, XXXS-, XXS-, XS-, S-, M-, L-, XL-, XXL-, XXXL-, XXXXL-}
+    }
+
+    test COOP:CREATE-2.1 {inject is created} -setup {
+        setup
+    } -body {
+        ted order INJECT:COOP:CREATE $I2
+
+        ted querylist {SELECT * FROM gui_injects_COOP}
+    } -cleanup {
+        cleanup
+    } -result {
+id          C2 1
+curse_id    C2
+inject_num  1
+mode        transient
+longmode    transient
+narrative   Change cooperation of civilians in @C1 with forces in @F1 by 2.0 points (XS+).
+state       normal
+f           @C1
+g           @F1
+mag         2.0
+    }
+
+    test COOP:CREATE-2.2 {inject is created with existing roles} -setup {
+        setup
+        ted order INJECT:COOP:CREATE $I1
+    } -body {
+        ted order INJECT:COOP:CREATE {*}$I2 ftype EXISTING gtype EXISTING
+
+        ted querylist {SELECT * FROM gui_injects_COOP}
+    } -cleanup {
+        cleanup
+    } -result {
+id          C1 1
+curse_id    C1
+inject_num  1
+mode        transient
+longmode    transient
+narrative   Change cooperation of civilians in @C1 with forces in @F1 by 1.0 points (XXXS+).
+state       normal
+f           @C1
+g           @F1
+mag         1.0
+
+id          C2 1
+curse_id    C2
+inject_num  1
+mode        transient
+longmode    transient
+narrative   Change cooperation of civilians in @C1 with forces in @F1 by 2.0 points (XS+).
+state       normal
+f           @C1
+g           @F1
+mag         2.0
+    }
+
+    test COOP:CREATE-2.3 {Effects} -setup {
+        setup
+    } -body {
+        ted notifier bind ::adb <curse_injects>
+        ted order INJECT:COOP:CREATE $I1
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::adb <curse_injects> update {C1 1}}
+    }
+
+
+    test COOP:CREATE-3.1 {undo effects} -setup {
+        setup
+        ted order INJECT:COOP:CREATE $I1
+    } -body {
+        ted notifier bind ::adb <curse_injects>
+        flunky undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::adb <curse_injects> delete {C1 1}}
+    }
+
+    #-------------------------------------------------------------------
+    # INJECT:COOP:UPDATE
+
+    test COOP:UPDATE-1.1 {required parms} -body {
+        ted order -reject INJECT:COOP:UPDATE {}
+    } -result {
+        id {required value}
+    }
+    
+    test COOP:UPDATE-1.2 {CURSE in id is unknown} -setup {
+        setup_update_coop
+    } -body {
+        ted order -reject INJECT:COOP:UPDATE id {NONESUCH 1}
+    } -cleanup {
+        cleanup
+    } -result {
+        id {Invalid CURSE, should be one of: C1, C2}
+    }
+
+    test COOP:UPDATE-1.3 {inject number in id is unknown} -setup {
+        setup_update_coop
+    } -body {
+        ted order -reject INJECT:COOP:UPDATE id {C1 NONESUCH}
+    } -cleanup {
+        cleanup
+    } -result {
+        id {Invalid inject "C1 NONESUCH", no injects are defined for this CURSE}
+    }
+
+    test COOP:UPDATE-1.4 {mag is invalid} -setup {
+        setup_update_coop
+    } -body {
+        ted order -reject INJECT:COOP:UPDATE id {C2 1} mag NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        mag {invalid value "NONESUCH", should be a real number in range -100.0, 100.0, or one of: XXXXL+, XXXL+, XXL+, XL+, L+, M+, S+, XS+, XXS+, XXXS+, ZERO, XXXS-, XXS-, XS-, S-, M-, L-, XL-, XXL-, XXXL-, XXXXL-}
+    }
+
+    test COOP:UPDATE-2.1 {inject is updated} -setup {
+        setup_update_coop
+    } -body {
+        ted order INJECT:COOP:UPDATE id {C2 1} f @C9 g @F9 mag 10.0
+
+        ted querylist {SELECT * FROM gui_injects_COOP}
+    } -cleanup {
+        cleanup
+    } -result {
+id          C2 1
+curse_id    C2
+inject_num  1
+mode        transient
+longmode    transient
+narrative   Change cooperation of civilians in @C9 with forces in @F9 by 10.0 points (XL+).
+state       normal
+f           @C9
+g           @F9
+mag         10.0
+    }
+
+    test COOP:UPDATE-2.2 {Effects} -setup {
+        setup
+        ted order INJECT:COOP:CREATE $I2
+    } -body {
+        ted notifier bind ::adb <curse_injects>
+        ted order INJECT:COOP:UPDATE id {C2 1} g BLUE
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::adb <curse_injects> update {C2 1}}
+        {::adb <curse_injects> update {C2 1}}
+    }
+
+
+    test COOP:UPDATE-3.1 {undo effects} -setup {
+        setup_update_coop
+        ted order INJECT:COOP:UPDATE id {C2 1} g BLUE
+    } -body {
+        ted notifier bind ::adb <curse_injects>
+        flunky undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::adb <curse_injects> update {C2 1}}
+    }
+
+    #-------------------------------------------------------------------
+    # INJECT:HREL:CREATE
+
+    test HREL:CREATE-1.1 {required parms} -body {
+        ted order -reject INJECT:HREL:CREATE {}
+    } -result {
+        curse_id {required value}
+        f {required value}
+        g {required value}
+        mag {required value}
+    }
+
+    test HREL:CREATE-1.2 {curse_id is unknown} -setup {
+        setup
+    } -body {
+        ted order -reject INJECT:HREL:CREATE {*}$I1 curse_id NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        curse_id {Invalid CURSE, should be one of: C1, C2}
+    }
+
+    test HREL:CREATE-1.3 {mag is invalid} -setup {
+        setup
+    } -body {
+        ted order -reject INJECT:HREL:CREATE {*}$I1 mag NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        mag {invalid value "NONESUCH", should be a real number in range -100.0, 100.0, or one of: XXXXL+, XXXL+, XXL+, XL+, L+, M+, S+, XS+, XXS+, XXXS+, ZERO, XXXS-, XXS-, XS-, S-, M-, L-, XL-, XXL-, XXXL-, XXXXL-}
+    }
+
+    test HREL:CREATE-2.1 {inject is created} -setup {
+        setup
+    } -body {
+        ted order INJECT:HREL:CREATE $I2
+
+        ted querylist {SELECT * FROM gui_injects_HREL}
+    } -cleanup {
+        cleanup
+    } -result {
+id          C2 1
+curse_id    C2
+inject_num  1
+mode        transient
+longmode    transient
+narrative   Change horizontal relationships of groups in @C1 with groups in @F1 by 2.0 points (XS+).
+state       normal
+f           @C1
+g           @F1
+mag         2.0
+    }
+
+    test HREL:CREATE-2.2 {Effects} -setup {
+        setup
+    } -body {
+        ted notifier bind ::adb <curse_injects>
+        ted order INJECT:HREL:CREATE $I1
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::adb <curse_injects> update {C1 1}}
+    }
+
+
+    test HREL:CREATE-3.1 {undo effects} -setup {
+        setup
+        ted order INJECT:HREL:CREATE $I1
+    } -body {
+        ted notifier bind ::adb <curse_injects>
+        flunky undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::adb <curse_injects> delete {C1 1}}
+    }
+
+    #-------------------------------------------------------------------
+    # INJECT:HREL:UPDATE
+
+    test HREL:UPDATE-1.1 {required parms} -body {
+        ted order -reject INJECT:HREL:UPDATE {}
+    } -result {
+        id {required value}
+    }
+    
+    test HREL:UPDATE-1.2 {CURSE in id is unknown} -setup {
+        setup_update_hrel
+    } -body {
+        ted order -reject INJECT:HREL:UPDATE id {NONESUCH 1}
+    } -cleanup {
+        cleanup
+    } -result {
+        id {Invalid CURSE, should be one of: C1, C2}
+    }
+
+    test HREL:UPDATE-1.3 {inject number in id is unknown} -setup {
+        setup_update_hrel
+    } -body {
+        ted order -reject INJECT:HREL:UPDATE id {C1 NONESUCH}
+    } -cleanup {
+        cleanup
+    } -result {
+        id {Invalid inject "C1 NONESUCH", no injects are defined for this CURSE}
+    }
+
+    test HREL:UPDATE-1.4 {mag is invalid} -setup {
+        setup_update_hrel
+    } -body {
+        ted order -reject INJECT:HREL:UPDATE id {C2 1} mag NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        mag {invalid value "NONESUCH", should be a real number in range -100.0, 100.0, or one of: XXXXL+, XXXL+, XXL+, XL+, L+, M+, S+, XS+, XXS+, XXXS+, ZERO, XXXS-, XXS-, XS-, S-, M-, L-, XL-, XXL-, XXXL-, XXXXL-}
+    }
+
+    test HREL:UPDATE-2.1 {inject is updated} -setup {
+        setup_update_hrel
+    } -body {
+        ted order INJECT:HREL:UPDATE id {C2 1} f @C9 g @F9 mag 10.0
+
+        ted querylist {SELECT * FROM gui_injects_HREL}
+    } -cleanup {
+        cleanup
+    } -result {
+id          C2 1
+curse_id    C2
+inject_num  1
+mode        transient
+longmode    transient
+narrative   Change horizontal relationships of groups in @C9 with groups in @F9 by 10.0 points (XL+).
+state       normal
+f           @C9
+g           @F9
+mag         10.0
+    }
+
+    test HREL:UPDATE-2.2 {Effects} -setup {
+        setup
+        ted order INJECT:HREL:CREATE $I2
+    } -body {
+        ted notifier bind ::adb <curse_injects>
+        ted order INJECT:HREL:UPDATE id {C2 1} g BLUE
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::adb <curse_injects> update {C2 1}}
+        {::adb <curse_injects> update {C2 1}}
+    }
+
+
+    test HREL:UPDATE-3.1 {undo effects} -setup {
+        setup_update_hrel
+        ted order INJECT:HREL:UPDATE id {C2 1} g BLUE
+    } -body {
+        ted notifier bind ::adb <curse_injects>
+        flunky undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::adb <curse_injects> update {C2 1}}
+    }
+
+    #-------------------------------------------------------------------
+    # INJECT:SAT:CREATE
+
+    test SAT:CREATE-1.1 {required parms} -body {
+        ted order -reject INJECT:SAT:CREATE {}
+    } -result {
+        curse_id {required value}
+        g {required value}
+        c {required value}
+        mag {required value}
+    }
+
+    test SAT:CREATE-1.2 {curse_id is unknown} -setup {
+        setup
+    } -body {
+        ted order -reject INJECT:SAT:CREATE {*}$I3 curse_id NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        curse_id {Invalid CURSE, should be one of: C1, C2}
+    }
+
+    test SAT:CREATE-1.3 {mag is invalid} -setup {
+        setup
+    } -body {
+        ted order -reject INJECT:SAT:CREATE {*}$I3 mag NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        mag {invalid value "NONESUCH", should be a real number in range -100.0, 100.0, or one of: XXXXL+, XXXL+, XXL+, XL+, L+, M+, S+, XS+, XXS+, XXXS+, ZERO, XXXS-, XXS-, XS-, S-, M-, L-, XL-, XXL-, XXXL-, XXXXL-}
+    }
+
+    test SAT:CREATE-2.1 {inject is created} -setup {
+        setup
+    } -body {
+        ted order INJECT:SAT:CREATE $I4
+
+        ted querylist {SELECT * FROM gui_injects_SAT}
+    } -cleanup {
+        cleanup
+    } -result {
+id          C2 1
+curse_id    C2
+inject_num  1
+mode        transient
+longmode    transient
+narrative   Change satisfaction of civilians in @C1 with SFT by 5.0 points (M+).
+state       normal
+g           @C1
+c           SFT
+mag         5.0
+    }
+
+    test SAT:CREATE-2.2 {Effects} -setup {
+        setup
+    } -body {
+        ted notifier bind ::adb <curse_injects>
+        ted order INJECT:SAT:CREATE $I3
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::adb <curse_injects> update {C1 1}}
+    }
+
+
+    test SAT:CREATE-3.1 {undo effects} -setup {
+        setup
+        ted order INJECT:SAT:CREATE $I3
+    } -body {
+        ted notifier bind ::adb <curse_injects>
+        flunky undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::adb <curse_injects> delete {C1 1}}
+    }
+
+    #-------------------------------------------------------------------
+    # INJECT:SAT:UPDATE
+
+    test SAT:UPDATE-1.1 {required parms} -body {
+        ted order -reject INJECT:SAT:UPDATE {}
+    } -result {
+        id {required value}
+    }
+    
+    test SAT:UPDATE-1.2 {CURSE in id is unknown} -setup {
+        setup_update_sat
+    } -body {
+        ted order -reject INJECT:SAT:UPDATE id {NONESUCH 1}
+    } -cleanup {
+        cleanup
+    } -result {
+        id {Invalid CURSE, should be one of: C1, C2}
+    }
+
+    test SAT:UPDATE-1.3 {inject number in id is unknown} -setup {
+        setup_update_sat
+    } -body {
+        ted order -reject INJECT:SAT:UPDATE id {C1 NONESUCH}
+    } -cleanup {
+        cleanup
+    } -result {
+        id {Invalid inject "C1 NONESUCH", no injects are defined for this CURSE}
+    }
+
+    test SAT:UPDATE-1.4 {mag is invalid} -setup {
+        setup_update_sat
+    } -body {
+        ted order -reject INJECT:SAT:UPDATE id {C2 1} mag NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        mag {invalid value "NONESUCH", should be a real number in range -100.0, 100.0, or one of: XXXXL+, XXXL+, XXL+, XL+, L+, M+, S+, XS+, XXS+, XXXS+, ZERO, XXXS-, XXS-, XS-, S-, M-, L-, XL-, XXL-, XXXL-, XXXXL-}
+    }
+
+    test SAT:UPDATE-2.1 {inject is updated} -setup {
+        setup_update_sat
+    } -body {
+        ted order INJECT:SAT:UPDATE id {C2 1} g @C9 c AUT mag 10.0
+
+        ted querylist {SELECT * FROM gui_injects_SAT}
+    } -cleanup {
+        cleanup
+    } -result {
+id          C2 1
+curse_id    C2
+inject_num  1
+mode        transient
+longmode    transient
+narrative   Change satisfaction of civilians in @C9 with AUT by 10.0 points (XL+).
+state       normal
+g           @C9
+c           AUT
+mag         10.0
+    }
+
+    test SAT:UPDATE-2.2 {Effects} -setup {
+        setup
+        ted order INJECT:SAT:CREATE $I4
+    } -body {
+        ted notifier bind ::adb <curse_injects>
+        ted order INJECT:SAT:UPDATE id {C2 1} g BLUE
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::adb <curse_injects> update {C2 1}}
+        {::adb <curse_injects> update {C2 1}}
+    }
+
+    test SAT:UPDATE-3.1 {undo effects} -setup {
+        setup_update_sat
+        ted order INJECT:SAT:UPDATE id {C2 1} g BLUE
+    } -body {
+        ted notifier bind ::adb <curse_injects>
+        flunky undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::adb <curse_injects> update {C2 1}}
+    }
+
+    #-------------------------------------------------------------------
+    # INJECT:VREL:CREATE
+
+    test VREL:CREATE-1.1 {required parms} -body {
+        ted order -reject INJECT:VREL:CREATE {}
+    } -result {
+        curse_id {required value}
+        g {required value}
+        a {required value}
+        mag {required value}
+    }
+
+    test VREL:CREATE-1.2 {curse_id is unknown} -setup {
+        setup
+    } -body {
+        ted order -reject INJECT:VREL:CREATE {*}$I5 curse_id NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        curse_id {Invalid CURSE, should be one of: C1, C2}
+    }
+
+    test VREL:CREATE-1.3 {mag is invalid} -setup {
+        setup
+    } -body {
+        ted order -reject INJECT:VREL:CREATE {*}$I5 mag NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        mag {invalid value "NONESUCH", should be a real number in range -100.0, 100.0, or one of: XXXXL+, XXXL+, XXL+, XL+, L+, M+, S+, XS+, XXS+, XXXS+, ZERO, XXXS-, XXS-, XS-, S-, M-, L-, XL-, XXL-, XXXL-, XXXXL-}
+    }
+
+    test VREL:CREATE-1.4 {duplicate role} -setup {
+        setup
+    } -body {
+        ted order -reject INJECT:VREL:CREATE $BAD1
+    } -cleanup {
+        cleanup
+    } -result {
+        a {Inject requires two distinct roles}
+    }
+
+    test VREL:CREATE-2.1 {inject is created} -setup {
+        setup
+    } -body {
+        ted order INJECT:VREL:CREATE $I6
+
+        ted querylist {SELECT * FROM gui_injects_VREL}
+    } -cleanup {
+        cleanup
+    } -result {
+id          C2 1
+curse_id    C2
+inject_num  1
+mode        transient
+longmode    transient
+narrative   Change vertical relationships of groups in role @C1 with actors in role @A2 by 5.0 points (M+).
+state       normal
+g           @C1
+a           @A2
+mag         5.0
+    }
+
+    test VREL:CREATE-2.2 {Effects} -setup {
+        setup
+    } -body {
+        ted notifier bind ::adb <curse_injects>
+        ted order INJECT:VREL:CREATE $I5
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::adb <curse_injects> update {C1 1}}
+    }
+
+
+    test VREL:CREATE-3.1 {undo effects} -setup {
+        setup
+        ted order INJECT:VREL:CREATE $I5
+    } -body {
+        ted notifier bind ::adb <curse_injects>
+        flunky undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::adb <curse_injects> delete {C1 1}}
+    }
+
+    #-------------------------------------------------------------------
+    # INJECT:VREL:UPDATE
+
+    test VREL:UPDATE-1.1 {required parms} -body {
+        ted order -reject INJECT:VREL:UPDATE {}
+    } -result {
+        id {required value}
+    }
+    
+    test VREL:UPDATE-1.2 {CURSE in id is unknown} -setup {
+        setup_update_vrel
+    } -body {
+        ted order -reject INJECT:VREL:UPDATE id {NONESUCH 1}
+    } -cleanup {
+        cleanup
+    } -result {
+        id {Invalid CURSE, should be one of: C1, C2}
+    }
+
+    test VREL:UPDATE-1.3 {inject number in id is unknown} -setup {
+        setup_update_vrel
+    } -body {
+        ted order -reject INJECT:VREL:UPDATE id {C1 NONESUCH}
+    } -cleanup {
+        cleanup
+    } -result {
+        id {Invalid inject "C1 NONESUCH", no injects are defined for this CURSE}
+    }
+
+    test VREL:UPDATE-1.4 {mag is invalid} -setup {
+        setup_update_vrel
+    } -body {
+        ted order -reject INJECT:VREL:UPDATE id {C2 1} mag NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        mag {invalid value "NONESUCH", should be a real number in range -100.0, 100.0, or one of: XXXXL+, XXXL+, XXL+, XL+, L+, M+, S+, XS+, XXS+, XXXS+, ZERO, XXXS-, XXS-, XS-, S-, M-, L-, XL-, XXL-, XXXL-, XXXXL-}
+    }
+
+    test VREL:UPDATE-2.1 {inject is updated} -setup {
+        setup_update_vrel
+    } -body {
+        ted order INJECT:VREL:UPDATE id {C2 1} g @C9 a @F9 mag 10.0
+
+        ted querylist {SELECT * FROM gui_injects_VREL}
+    } -cleanup {
+        cleanup
+    } -result {
+id          C2 1
+curse_id    C2
+inject_num  1
+mode        transient
+longmode    transient
+narrative   Change vertical relationships of groups in role @C9 with actors in role @F9 by 10.0 points (XL+).
+state       normal
+g           @C9
+a           @F9
+mag         10.0
+    }
+
+    test VREL:UPDATE-2.2 {Effects} -setup {
+        setup
+        ted order INJECT:VREL:CREATE $I6
+    } -body {
+        ted notifier bind ::adb <curse_injects>
+        ted order INJECT:VREL:UPDATE id {C2 1} g BLUE
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::adb <curse_injects> update {C2 1}}
+        {::adb <curse_injects> update {C2 1}}
+    }
+
+
+    test VREL:UPDATE-3.1 {undo effects} -setup {
+        setup_update_vrel
+        ted order INJECT:VREL:UPDATE id {C2 1} g BLUE
+    } -body {
+        ted notifier bind ::adb <curse_injects>
+        flunky undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::adb <curse_injects> update {C2 1}}
     }
 
     #-------------------------------------------------------------------

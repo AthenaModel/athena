@@ -156,7 +156,7 @@ state     normal
         setup
         curse create $c1
         curse create $c2
-        inject mutate create $i1
+        inject create $i1
     } -body {
         curse delete C1
 
@@ -172,7 +172,7 @@ state     normal
         setup
         curse create $c1
         curse create $c2
-        inject mutate create $i1
+        inject create $i1
         
         set undo [curse delete C1]
     } -body {
