@@ -86,7 +86,7 @@ snit::type ::athena::econ {
                      -tracecmd [mymethod TraceSAM]]
 
         $sam load \
-            [readfile [file join $::app_athena_shared::library sam6x6.cm]]
+            [readfile [file join $::athena::library sam6x6.cm]]
 
         log detail econ "Read SAM from [file join $::app_athena_shared::library sam6x6.cm]"
 
@@ -105,7 +105,7 @@ snit::type ::athena::econ {
                      -maxiters 1000     \
                      -failcmd  [mymethod CellModelFailure] \
                      -tracecmd [mymethod TraceCGE]]
-        $cge load [readfile [file join $::app_athena_shared::library cge6x6.cm]]
+        $cge load [readfile [file join $::athena::library cge6x6.cm]]
 
         log detail econ "Read CGE from [file join $::app_athena_shared::library cge6x6.cm]"
         
@@ -337,7 +337,7 @@ snit::type ::athena::econ {
 
             $samcopy load \
                 [readfile \
-                    [file join $::app_athena_shared::library sam6x6.cm]]
+                    [file join $::athena::library sam6x6.cm]]
 
             return $samcopy
         }
