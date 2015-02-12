@@ -13,7 +13,7 @@
 #    dialogs are defined.
 #
 # TBD:
-#    * Global dependencies: none
+#    * Global dependencies: curse
 #
 #-----------------------------------------------------------------------
 
@@ -47,7 +47,7 @@ dynaform fieldtype alias concern enum \
     -listcmd {econcern names}
 
 # curse: pick a curse by name.
-dynaform fieldtype alias curse enum -listcmd {::curse names}
+dynaform fieldtype alias curse enum -listcmd {$adb curse names}
 
 # comparator: An ecomparator value
 dynaform fieldtype alias comparator enumlong \

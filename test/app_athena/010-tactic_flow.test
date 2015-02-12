@@ -45,7 +45,7 @@ namespace eval ::athena_test::tests:: {
         set B1 [ted addblock SYSTEM]
         set T1 [ted addtactic $B1 FLOW]
 
-        set coffer [::athena::coffer new ::adb SYSTEM]
+        set coffer [::athena::coffer new [::adb athenadb] SYSTEM]
     }
 
     # Clean up after a test

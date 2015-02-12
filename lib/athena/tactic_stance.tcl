@@ -156,7 +156,7 @@
                 higher-priority tactics.
             "
 
-            sigevent log 2 tactic $msg [my agent] {*}$logIds
+            [my adb] sigevent log 2 tactic $msg [my agent] {*}$logIds
 
             return 
         }
@@ -175,7 +175,7 @@
             "
         }
 
-        sigevent log 2 tactic $msg [my agent] {*}$logIds
+        [my adb] sigevent log 2 tactic $msg [my agent] {*}$logIds
 
         return 
     }
@@ -221,7 +221,8 @@
 
     method _validate {} {
         # FIRST, prepare and validate the parameters
-        my prepare tactic_id -required -with {::strategy valclass ::athena::tactic::STANCE}
+        my prepare tactic_id -required \
+            -with [list $adb strategy valclass ::athena::tactic::STANCE]
         my returnOnError
 
         set tactic [$adb pot get $parms(tactic_id)]

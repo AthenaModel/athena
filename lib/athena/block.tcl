@@ -11,7 +11,7 @@
 #    An agent's strategy determines his actions.  It consists of a number
 #    of blocks, each of which contains zero or more conditions and tactics.
 #
-# TBD: Global refs: simclock, strategy, tactic
+# TBD: Global refs: simclock
 #
 #-----------------------------------------------------------------------
 
@@ -76,6 +76,14 @@ oo::class create ::athena::block {
     
     #-------------------------------------------------------------------
     # Queries
+
+    # adb
+    #
+    # Returns the athenadb(n) handle.
+
+    method adb {} {
+        return [[my pot] cget -rdb]
+    }
 
     # subject
     #
@@ -696,7 +704,7 @@ oo::class create ::athena::block {
         }
 
         # NEXT, block eligibility is different on lock than on tick.
-        if {[strategy locking]} {
+        if {[[my adb] strategy locking]} {
             # FIRST, skip if the block's not done on lock.
             if {!$onlock} {
                 my set execstatus SKIP_LOCK
@@ -800,7 +808,7 @@ oo::class create ::athena::block {
             }
 
             # NEXT, skip tactics that don't execute on lock.
-            if {[strategy locking]} {
+            if {[[my adb] strategy locking]} {
                 set ttype [info object class $tactic]
                 if {![$ttype onlock]} {
                     $tactic set execstatus SKIP_LOCK
@@ -1055,7 +1063,7 @@ oo::class create ::athena::block {
 
 
     method _validate {} {
-        my prepare block_id -required -toupper -with {::strategy valclass ::athena::block}
+        my prepare block_id -required -toupper -with [list $adb strategy valclass ::athena::block]
         my returnOnError
 
         set block [$adb pot get $parms(block_id)]
@@ -1109,7 +1117,7 @@ oo::class create ::athena::block {
     meta parmlist   { block_id state }
 
     method _validate {} {
-        my prepare block_id -required -toupper -with {::strategy valclass ::athena::block}
+        my prepare block_id -required -toupper -with [list $adb strategy valclass ::athena::block]
         my prepare state    -required -tolower -type ebeanstate
     }
 
@@ -1133,7 +1141,7 @@ oo::class create ::athena::block {
     meta parmlist   { block_id typename }
 
     method _validate {} {
-        my prepare block_id -required -toupper -with  {::strategy valclass ::athena::block}
+        my prepare block_id -required -toupper -with  [list $adb strategy valclass ::athena::block]
         my prepare typename -required -toupper -oneof [::athena::tactic typenames]
     }
 
@@ -1162,7 +1170,7 @@ oo::class create ::athena::block {
     meta parmlist   { ids }
 
     method _validate {} {
-        my prepare ids -required -toupper -listwith {::strategy valclass ::athena::tactic}
+        my prepare ids -required -toupper -listwith [list $adb strategy valclass ::athena::tactic]
     }
 
     method _execute {{flunky ""}} {
@@ -1187,7 +1195,7 @@ oo::class create ::athena::block {
     meta parmlist   { tactic_id where }
 
     method _validate {} {
-        my prepare tactic_id -required -toupper -with {::strategy valclass ::athena::tactic}
+        my prepare tactic_id -required -toupper -with [list $adb strategy valclass ::athena::tactic]
         my prepare where     -required -type emoveitem
     }
 
@@ -1213,7 +1221,7 @@ oo::class create ::athena::block {
     meta parmlist   { block_id typename }
 
     method _validate {} {
-        my prepare block_id -required -toupper -with {::strategy valclass ::athena::block}
+        my prepare block_id -required -toupper -with [list $adb strategy valclass ::athena::block]
         my prepare typename -required -toupper -oneof [::athena::condition typenames]
     }
 
@@ -1244,7 +1252,7 @@ oo::class create ::athena::block {
     meta parmlist   { ids }
 
     method _validate {} {
-        my prepare ids -required -toupper -listwith {::strategy valclass ::athena::condition}
+        my prepare ids -required -toupper -listwith [list $adb strategy valclass ::athena::condition]
     }
 
     method _execute {{flunky ""}} {

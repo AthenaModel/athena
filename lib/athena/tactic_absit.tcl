@@ -104,7 +104,7 @@
         # FIRST, is there already an absit of this type in n? If so,
         # there's nothing to do.
         if {[[my adb] absit existsInNbhood $n $stype]} {
-            sigevent log 2 tactic "
+            [my adb] sigevent log 2 tactic "
                 ABSIT([my id]):  Absit of type $stype already exists in $s(n).
             " $owner $n
             return 1
@@ -118,7 +118,7 @@
 
         set msg "ABSIT([my id]): [my narrative]"
 
-        sigevent log 2 tactic $msg {*}$objects
+        [my adb] sigevent log 2 tactic $msg {*}$objects
 
         # NEXT, create the absit.
         set p(n)         $n
@@ -169,7 +169,8 @@
 
 
     method _validate {} {
-        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::ABSIT}
+        my prepare tactic_id  -required \
+            -with [list $adb strategy valclass ::athena::tactic::ABSIT]
         my returnOnError
 
         set tactic [$adb pot get $parms(tactic_id)]

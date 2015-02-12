@@ -139,14 +139,14 @@
         lassign [plant build $n $owner $trans(amount)] old new
 
         if {$mode eq "EFFORT"} {
-            sigevent log 2 tactic "
+            [my adb] sigevent log 2 tactic "
                 BUILD: Actor {actor:$owner} spends
                 \$[moneyfmt $trans(amount)] in an effort to 
                 construct $num infrastructure plant(s) in $n. 
                 $old plant(s) were worked on, $new plant(s) started.
             " $owner $n
         } elseif {$mode eq "CASH"} {
-            sigevent log 2 tactic "
+            [my adb] sigevent log 2 tactic "
                 BUILD: Actor {actor:$owner} spends
                 \$[moneyfmt $trans(amount)] in an effort to 
                 construct as much infrastructure plant(s) in $n as possible. 
@@ -199,7 +199,8 @@
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::BUILD}
+        my prepare tactic_id  -required \
+            -with [list $adb strategy valclass ::athena::tactic::BUILD]
         my returnOnError
 
         set tactic [$adb pot get $parms(tactic_id)]

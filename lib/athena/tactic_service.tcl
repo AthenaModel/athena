@@ -136,7 +136,7 @@
         if {[llength $ngood] > 0} {
             set objects [concat $owner $ngood]
             set msg "SERVICE([my id]): [my narrative]"
-            sigevent log 2 tactic $msg {*}$objects
+            [my adb] sigevent log 2 tactic $msg {*}$objects
         }
 
         if {[llength $nbad] > 0} {
@@ -144,7 +144,7 @@
             set msg "SERVICE([my id]): "
             append msg "LOS already set by higher priority tactic(s) in " 
             append msg "these nbhoods: $nbad."
-            sigevent log 2 tactic $msg {*}$objects
+            [my adb] sigevent log 2 tactic $msg {*}$objects
         }
 
         # NEXT, if no nbhoods can be modified we are done
@@ -226,7 +226,8 @@
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::SERVICE}
+        my prepare tactic_id  -required \
+            -with [list $adb strategy valclass ::athena::tactic::SERVICE]
         my returnOnError
 
         set tactic [$adb pot get $parms(tactic_id)]

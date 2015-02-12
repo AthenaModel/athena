@@ -92,7 +92,7 @@
             [my adb] cap access grant $klist $actors
         }
 
-        sigevent log 2 tactic "
+        [my adb] sigevent log 2 tactic "
             GRANT: Actor {actor:[my agent]} grants access to
             [andlist CAP $klist] to [andlist actor $actors].
         " [my agent] {*}$klist {*}$actors
@@ -132,7 +132,8 @@
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::GRANT}
+        my prepare tactic_id  -required \
+            -with [list $adb strategy valclass ::athena::tactic::GRANT]
         my returnOnError
 
         set tactic [$adb pot get $parms(tactic_id)]

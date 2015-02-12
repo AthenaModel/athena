@@ -154,7 +154,7 @@
     method execute {} {
         cash spendon [my agent] $trans(amount) [my GetProfile]
 
-        sigevent log 2 tactic "
+        [my adb] sigevent log 2 tactic "
             SPEND: Actor {actor:[my agent]} spends $trans(amount)
             on [my GetPercentages]
         " [my agent]
@@ -279,7 +279,8 @@
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::SPEND}
+        my prepare tactic_id  -required \
+            -with [list $adb strategy valclass ::athena::tactic::SPEND]
         my returnOnError
 
         set tactic [$adb pot get $parms(tactic_id)]

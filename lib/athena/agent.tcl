@@ -12,8 +12,6 @@
 #    upon them.  An agent is an entity that can own and execute a
 #    strategy, i.e., can have goals, tactics, and conditions.
 #
-# TBD: Global refs: strategy, tactic
-#
 #-----------------------------------------------------------------------
 
 snit::type ::athena::agent {
@@ -131,7 +129,7 @@ snit::type ::athena::agent {
 
     method stats {agent_id} {
         set result [dict create blocks 0 conditions 0 tactics 0]
-        set s [strategy getname $agent_id]
+        set s [$adb strategy getname $agent_id]
 
         dict set result blocks [llength [$s blocks]]
 

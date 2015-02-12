@@ -78,7 +78,7 @@
 
         set msg "RIOT([my id]): [my narrative]"
 
-        sigevent log 2 tactic $msg {*}$objects
+        [my adb] sigevent log 2 tactic $msg {*}$objects
 
         # NEXT, create the riot.
         driver::abevent create RIOT $n $coverage
@@ -113,7 +113,8 @@
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::RIOT}
+        my prepare tactic_id  -required \
+            -with [list $adb strategy valclass ::athena::tactic::RIOT]
         my returnOnError
 
         set tactic [$adb pot get $parms(tactic_id)]

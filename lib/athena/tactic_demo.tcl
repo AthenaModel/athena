@@ -84,7 +84,7 @@
 
         set msg "DEMO([my id]): [my narrative]"
 
-        sigevent log 2 tactic $msg {*}$objects
+        [my adb] sigevent log 2 tactic $msg {*}$objects
 
         # NEXT, create the demo.
         driver::abevent create DEMO $n $coverage g $g
@@ -120,7 +120,8 @@
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::DEMO}
+        my prepare tactic_id  -required \
+            -with [list $adb strategy valclass ::athena::tactic::DEMO]
         my returnOnError
 
         set tactic [$adb pot get $parms(tactic_id)]

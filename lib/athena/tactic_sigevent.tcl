@@ -54,7 +54,7 @@
         } else {
             set output "*NULL*"
         }
-        sigevent log 1 tactic "SIGEVENT: $output" [my agent]
+        [my adb] sigevent log 1 tactic "SIGEVENT: $output" [my agent]
     }
 }
 
@@ -84,7 +84,8 @@
 
     method _validate {} {
         # FIRST, prepare and validate the parameters
-        my prepare tactic_id -required -with {::strategy valclass ::athena::tactic::SIGEVENT}
+        my prepare tactic_id -required \
+            -with [list $adb strategy valclass ::athena::tactic::SIGEVENT]
         my returnOnError
 
         set tactic [$adb pot get $parms(tactic_id)]

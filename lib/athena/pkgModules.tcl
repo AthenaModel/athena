@@ -50,6 +50,7 @@ source [file join $::athena::library athena_order.tcl     ]
 source [file join $::athena::library athena_flunky.tcl    ]
 source [file join $::athena::library dynatypes.tcl        ]
 source [file join $::athena::library paster.tcl           ]
+source [file join $::athena::library sigevent.tcl         ]
 
 # Editable Entities
 source [file join $::athena::library absit.tcl            ]
@@ -74,6 +75,7 @@ source [file join $::athena::library nbhood.tcl           ]
 source [file join $::athena::library nbrel.tcl            ]
 source [file join $::athena::library orggroup.tcl         ]
 source [file join $::athena::library sat.tcl              ]
+source [file join $::athena::library strategy.tcl         ]
 source [file join $::athena::library tactic.tcl           ]
 source [file join $::athena::library tactic_absit.tcl     ]
 source [file join $::athena::library tactic_accident.tcl  ]
@@ -103,6 +105,7 @@ source [file join $::athena::library tactic_stance.tcl    ]
 source [file join $::athena::library tactic_support.tcl   ]
 source [file join $::athena::library tactic_violence.tcl  ]
 source [file join $::athena::library tactic_withdraw.tcl  ]
+source [file join $::athena::library unit.tcl             ]
 source [file join $::athena::library vrel.tcl             ]
 
 # Non-Editable Entities

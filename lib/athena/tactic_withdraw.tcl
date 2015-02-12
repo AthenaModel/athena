@@ -88,7 +88,7 @@
     # NOTE: WITHDRAW never executes on lock.
 
     method ObligateResources {coffer} {
-        assert {[strategy ontick]}
+        assert {[[my adb] strategy ontick]}
 
         # FIRST, retrieve the current reserve amount
         let cash_reserve [$coffer reserve]
@@ -140,7 +140,7 @@
     method execute {} {
         [my adb] cash withdraw [my agent] $trans(amount)
 
-        sigevent log 2 tactic "
+        [my adb] sigevent log 2 tactic "
             WITHDRAW: [my agent] withdraws \$[moneyfmt $trans(amount)] from reserve.
         " [my agent]
     }
@@ -196,7 +196,8 @@
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::WITHDRAW}
+        my prepare tactic_id  -required \
+            -with [list $adb strategy valclass ::athena::tactic::WITHDRAW]
 
         my returnOnError
 

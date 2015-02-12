@@ -110,7 +110,7 @@
             lappend ntext "{nbhood:$n}"
         }
 
-        sigevent log 2 tactic "
+        [my adb] sigevent log 2 tactic "
             SUPPORT: Actor {actor:[my agent]} supports $supports 
             in [join $ntext {, }]
         " [my agent] {*}$logIds
@@ -147,7 +147,8 @@
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::SUPPORT}
+        my prepare tactic_id  -required \
+            -with [list $adb strategy valclass ::athena::tactic::SUPPORT]
         my returnOnError
 
         set tactic [$adb pot get $parms(tactic_id)]

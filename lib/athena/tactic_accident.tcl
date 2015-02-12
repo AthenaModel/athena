@@ -78,7 +78,7 @@
 
         set msg "ACCIDENT([my id]): [my narrative]"
 
-        sigevent log 2 tactic $msg {*}$objects
+        [my adb] sigevent log 2 tactic $msg {*}$objects
 
         # NEXT, create the accident.
         driver::abevent create ACCIDENT $n $coverage
@@ -110,7 +110,8 @@
     }
 
     method _validate {} {
-        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::ACCIDENT}
+        my prepare tactic_id  -required \
+            -with [list $adb strategy valclass ::athena::tactic::ACCIDENT]
         my returnOnError
 
         set tactic [$adb pot get $parms(tactic_id)]

@@ -8,7 +8,7 @@
 # DESCRIPTION:
 #    athena(n): Mark II Condition, EXPR
 #
-# TBD: Global refs: executive, strategy, sigevent
+# TBD: Global refs: executive, sigevent
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
@@ -57,7 +57,7 @@
         } result eopts]} {
             # FAILURE
 
-            sigevent log error tactic "
+            [my adb] sigevent log error tactic "
                 EXPR condition: In [my agent]'s strategy, 
                 failed to evaluate expression {$expression}: $result
             " [my agent]
@@ -105,7 +105,7 @@
 
 
     method _validate {} {
-        my prepare condition_id -required -with {::strategy valclass ::athena::condition::EXPR}
+        my prepare condition_id -required -with [list $adb strategy valclass ::athena::condition::EXPR]
         my returnOnError
 
         set cond [$adb pot get $parms(condition_id)]

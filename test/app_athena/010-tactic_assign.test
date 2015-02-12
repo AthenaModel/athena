@@ -62,7 +62,7 @@ namespace eval ::athena_test::tests:: {
         cash load
         personnel start
         personnel load
-        set coffer [::athena::coffer new ::adb JOE]
+        set coffer [::athena::coffer new [::adb athenadb] JOE]
     }
 
     # Set the cost of the PATROL activity

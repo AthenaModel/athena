@@ -288,7 +288,7 @@ snit::type aam {
           "Unit $u takes $casualties casualties, leaving $personnel personnel"
             
         # NEXT, update the unit.
-        unit mutate personnel $u $personnel
+        unit personnel $u $personnel
 
         # NEXT, if this is a CIV unit, attrit the unit's
         # group.

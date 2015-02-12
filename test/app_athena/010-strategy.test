@@ -58,14 +58,9 @@ namespace eval ::athena_test::tests:: {
     
 
     #-------------------------------------------------------------------
-    # strategy init
+    # strategy initialization
 
-    test strategy_init-1.1 {creates predefined agent strategies} -body {
-        # init is called automatically when the application is initialized.
-        info class instances ::strategy 
-    } -match glob -result {*::pot::strategy1}
-
-    test strategy_init-1.2 {locking is initialized} -body {
+    test strategy_init-1.1 {locking is initialized} -body {
         # init is called automatically when the application is initialized.
         strategy locking
     } -result {0}
@@ -139,7 +134,7 @@ namespace eval ::athena_test::tests:: {
             [$s agent]
     } -cleanup {
         cleanup
-    } -result {::strategy DUMMY}
+    } -result {::athena::strategy DUMMY}
 
     #-------------------------------------------------------------------
     # start

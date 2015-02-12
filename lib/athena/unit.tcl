@@ -6,16 +6,33 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Unit Manager
+#    athena(n): Unit Manager
 #
 #    This module is responsible for managing units of all kinds, and 
 #    operations upon them.  As such, it is a type ensemble.
 #
+# TBD: Global refs: $adb, $adb pot, unit, $self, nbhood, group
+#
 #-----------------------------------------------------------------------
 
-snit::type unit {
-    # Make it a singleton
-    pragma -hasinstances no
+snit::type ::athena::unit {
+    #-------------------------------------------------------------------
+    # Components
+
+    component adb ;# The athenadb(n) instance
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    # constructor adb_
+    #
+    # adb_    - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of the type.
+
+    constructor {adb_} {
+        set adb $adb_
+    }
 
     #-------------------------------------------------------------------
     # Queries
@@ -28,8 +45,8 @@ snit::type unit {
     #
     # Returns the list of unit names
 
-    typemethod names {} {
-        rdb eval {SELECT u FROM units}
+    method names {} {
+        $adb eval {SELECT u FROM units}
     }
 
 
@@ -39,8 +56,8 @@ snit::type unit {
     #
     # Validates a unit name
 
-    typemethod validate {u} {
-        if {![rdb exists {SELECT u FROM units WHERE u=$u}]} {
+    method validate {u} {
+        if {![$adb exists {SELECT u FROM units WHERE u=$u}]} {
             return -code error -errorcode INVALID \
                 "Invalid unit name: \"$u\""
         }
@@ -57,11 +74,11 @@ snit::type unit {
     # Retrieves a unit dictionary, or a particular parm value.
     # This is for use when dealing with one single unit, e.g., in
     # an order routine; when dealing with many units in a loop, always
-    # use rdb eval.
+    # use $adb eval.
 
-    typemethod get {u {parm ""}} {
+    method get {u {parm ""}} {
         # FIRST, get the unit
-        rdb eval {SELECT * FROM units WHERE u=$u} row {
+        $adb eval {SELECT * FROM units WHERE u=$u} row {
             if {$parm ne ""} {
                 return $row($parm)
             } else {
@@ -93,22 +110,22 @@ snit::type unit {
     #
     # NOTE: This routine is called at the *beginning* of strategy execution.
 
-    typemethod reset {} {
+    method reset {} {
         # FIRST, delete all units associated with tactics that no longer
         # exist.
 
-        rdb eval {
+        $adb eval {
             SELECT u, tactic_id
             FROM units
             WHERE tactic_id > 0
         } {
-            if {![pot hasa ::athena::tactic $tactic_id]} {
-                unit delete $u
+            if {![$adb pot hasa ::athena::tactic $tactic_id]} {
+                $self delete $u
             }
         }
 
         # NEXT, deactivate all of the remaining units.
-        rdb eval {
+        $adb eval {
             UPDATE units
             SET personnel = 0,
                 active    = 0
@@ -123,22 +140,22 @@ snit::type unit {
     # NOTE: This routine is called at the *end* of strategy execution
     # to create base units for all unassigned personnel.
 
-    typemethod makebase {} {
+    method makebase {} {
         # FIRST, make base units for all FRC and ORG personnel
-        rdb eval {
+        $adb eval {
             SELECT n, g, unassigned 
             FROM deploy_ng
             WHERE personnel > 0
         } {
-            $type PositionBaseUnit $n $g $unassigned
+            $self PositionBaseUnit $n $g $unassigned
         }
         
         # NEXT, make base units for the civilians
-        rdb eval {
+        $adb eval {
             SELECT g, n, population
             FROM demog_g JOIN civgroups USING (g)
         } {
-            $type PositionBaseUnit $n $g $population
+            $self PositionBaseUnit $n $g $population
         }
     }
 
@@ -151,21 +168,21 @@ snit::type unit {
     # Creates a base unit with these parameters if one doesn't already
     # exist, Otherwise, assigns it the specified number of personnel.
 
-    typemethod PositionBaseUnit {n g personnel} {
+    method PositionBaseUnit {n g personnel} {
         # FIRST, does the desired unit already exist?
         set u [format "%s/%s" $g $n]
  
-        if {[rdb exists {SELECT u FROM units WHERE u=$u}]} {
-            unit personnel $u $personnel
+        if {[$adb exists {SELECT u FROM units WHERE u=$u}]} {
+            $self personnel $u $personnel
         } else {
             # FIRST, generate a random location in n
-            set location [nbhood randloc $n]
+            set location [$adb nbhood randloc $n]
 
             # NEXT, retrieve the group type
-            set gtype [group gtype $g]
+            set gtype [$adb group gtype $g]
 
             # NEXT, save the unit in the database.
-            rdb eval {
+            $adb eval {
                 INSERT INTO units(u,active,n,g,gtype,a,
                                   personnel,location)
                 VALUES($u,
@@ -201,21 +218,21 @@ snit::type unit {
     #
     # Returns the unit name.
 
-    typemethod assign {tactic_id g n a personnel} {
+    method assign {tactic_id g n a personnel} {
         # FIRST, try to retrieve the unit data.
         set unit(u) ""
 
-        rdb eval {SELECT * FROM units WHERE tactic_id=$tactic_id} unit {}
+        $adb eval {SELECT * FROM units WHERE tactic_id=$tactic_id} unit {}
 
         # NEXT, create it or update it.
         if {$unit(u) eq ""} {
             # FIRST, Compute required fields.
             set unit(u)  [format "UT%04d" $tactic_id]
-            set location [nbhood randloc $n]
-            set gtype    [group gtype $g]
+            set location [$adb nbhood randloc $n]
+            set gtype    [$adb group gtype $g]
 
             # NEXT, save the unit in the database.
-            rdb eval {
+            $adb eval {
                 INSERT INTO units(u,tactic_id,active,n,g,gtype,a,
                                   personnel,location)
                 VALUES($unit(u),
@@ -230,16 +247,16 @@ snit::type unit {
             }
         } else {
             # FIRST, the group type might have changed.
-            set gtype [group gtype $g]
+            set gtype [$adb group gtype $g]
 
             # NEXT, the neighborhood might have changed.  If so,
             # pick a random location in the new neighborhood.
-            if {[nbhood find {*}$unit(location)] ne $n} {
-                set unit(location) [nbhood randloc $n]
+            if {[$adb nbhood find {*}$unit(location)] ne $n} {
+                set unit(location) [$adb nbhood randloc $n]
             }
 
             # NEXT, update the unit
-            rdb eval {
+            $adb eval {
                 UPDATE units
                 SET active    = 1,
                     n         = $n,
@@ -263,8 +280,8 @@ snit::type unit {
     #
     # Sets the unit's personnel and marks the unit active.
 
-    typemethod personnel {u personnel} {
-        rdb eval {
+    method personnel {u personnel} {
+        $adb eval {
             UPDATE units
             SET   personnel = $personnel,
                   active    = 1
@@ -281,8 +298,8 @@ snit::type unit {
     #
     # Deletes the unit altogether.
 
-    typemethod delete {u} {
-        rdb delete units {u=$u}
+    method delete {u} {
+        $adb delete units {u=$u}
         return
     }
 
@@ -295,7 +312,7 @@ snit::type unit {
     # a change cannot be undone, the mutator returns the empty string.
 
 
-    # mutate move u location
+    # move u location
     #
     # u              The unit's ID
     # location       A new location (map coords) or ""
@@ -303,25 +320,25 @@ snit::type unit {
     # Moves a unit given the parms, which are presumed to be
     # valid.
 
-    typemethod {mutate move} {u location} {
+    method move {u location} {
         # FIRST, get the undo information
-        rdb eval {
+        $adb eval {
             SELECT location AS oldLocation FROM units
             WHERE u=$u
         } {}
 
         # NEXT, Update the unit
-        rdb eval {
+        $adb eval {
             UPDATE units
             SET location = $location
             WHERE u=$u
         }
 
         # NEXT, Return the undo command
-        return [mytypemethod mutate move $u $oldLocation]
+        return [mymethod move $u $oldLocation]
     }
 
-    # mutate personnel u personnel
+    # personnel u personnel
     #
     # u              The unit's ID
     # personnel      The new number of personnel
@@ -330,15 +347,15 @@ snit::type unit {
     # valid, and marks the unit active.  This is used only by the ATTRIT:*
     # orders.
 
-    typemethod {mutate personnel} {u personnel} {
+    method personnel {u personnel} {
         # FIRST, get the undo information
-        rdb eval {
+        $adb eval {
             SELECT personnel AS oldPersonnel FROM units
             WHERE u=$u
         } {}
 
         # NEXT, Update the unit
-        rdb eval {
+        $adb eval {
             UPDATE units
             SET   personnel = $personnel,
                   active    = 1
@@ -346,7 +363,7 @@ snit::type unit {
         }
 
         # NEXT, Return the undo command
-        return [mytypemethod mutate personnel $u $oldPersonnel]
+        return [mymethod personnel $u $oldPersonnel]
     }
 }
 
@@ -358,10 +375,9 @@ snit::type unit {
 # Moves an existing unit.
 
 ::athena::orders define UNIT:MOVE {
-    meta title "Move Unit"
+    meta title      "Move Unit"
     meta sendstates {PREP PAUSED}
-
-    meta parmlist {u location}
+    meta parmlist   {u location}
 
     meta form {
         rcc "Unit" -for u
@@ -383,16 +399,16 @@ snit::type unit {
         my returnOnError
     
         my checkon location {
-            set n [nbhood find {*}$parms(location)]
+            set n [$adb nbhood find {*}$parms(location)]
     
-            if {$n ne [unit get $parms(u) n]} {
+            if {$n ne [$adb unit get $parms(u) n]} {
                 my reject location "Cannot remove unit from its neighborhood"
             }
         }
     }
 
     method _execute {{flunky ""}} {
-        lappend undo [unit mutate move $parms(u) $parms(location)]
+        lappend undo [$adb unit move $parms(u) $parms(location)]
     
         my setundo [join $undo \n]
     }

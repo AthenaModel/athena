@@ -12,7 +12,7 @@
 #    upon them.  As such, it is a type ensemble.
 #
 # TBD:
-#    * Global entities in use: ::strategy, ::ptype, ::app
+#    * Global entities in use: ::ptype, ::app
 #      * Need a way to elevate Are You Sure messages to app gui.
 #
 #-----------------------------------------------------------------------
@@ -215,7 +215,7 @@ snit::type ::athena::actor {
             }
 
             # NEXT, create the related entities
-            lappend undo [strategy create_ $a]
+            lappend undo [$adb strategy create_ $a]
 
             # NEXT, Return undo command.
             lappend undo [list $adb delete actors "a='$a'"]
@@ -243,7 +243,7 @@ snit::type ::athena::actor {
 
         
         # NEXT, delete the related entities
-        lappend undo [strategy delete_ $a]
+        lappend undo [$adb strategy delete_ $a]
         lappend undo [list $adb ungrab [concat $adata $gdata]]
 
         return [join $undo \n]

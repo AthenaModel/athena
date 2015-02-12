@@ -184,7 +184,7 @@ USAID/NB2 0         0
         setup
         unit makebase
     } -body {
-        unit mutate move BLUE/NB1 {2 2}
+        unit move BLUE/NB1 {2 2}
 
         ted query {SELECT u, location FROM units WHERE u='BLUE/NB1'}
     } -cleanup {
@@ -202,7 +202,7 @@ BLUE/NB1 2 2
     } -body {
 
         set a [unit get BLUE/NB1 location]
-        set undo [unit mutate move BLUE/NB1 {3 3}]
+        set undo [unit move BLUE/NB1 {3 3}]
         namespace eval :: $undo
         set b [unit get BLUE/NB1 location]
 
@@ -220,7 +220,7 @@ BLUE/NB1 2 2
         setup
         unit makebase
     } -body {
-        unit mutate personnel BLUE/NB1 3
+        unit personnel BLUE/NB1 3
 
         ted query {SELECT u,personnel FROM units WHERE active ORDER BY u}
     } -cleanup {
@@ -239,7 +239,7 @@ USAID/NB2 100
         unit makebase
         unit reset
     } -body {
-        unit mutate personnel BLUE/NB1 3
+        unit personnel BLUE/NB1 3
 
         ted query {SELECT u,personnel,active FROM units ORDER BY u}
     } -cleanup {
@@ -259,7 +259,7 @@ USAID/NB2 0         0
 
         set a [unit get BLUE/NB1 personnel]
 
-        set undo [unit mutate personnel BLUE/NB1 25]
+        set undo [unit personnel BLUE/NB1 25]
 
         namespace eval :: $undo
 

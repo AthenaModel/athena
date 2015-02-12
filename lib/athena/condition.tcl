@@ -15,8 +15,6 @@
 #    Athena uses many different kinds of condition.  This module
 #    defines a base class for condition types.
 #
-# TBD: Global Refs: link, strategy
-#
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
@@ -514,7 +512,7 @@ oo::define ::athena::condition {
     meta parmlist   {condition_id state}
 
     method _validate {} {
-        my prepare condition_id -required -with {::strategy valclass ::athena::condition}
+        my prepare condition_id -required -with [list $adb strategy valclass ::athena::condition]
         my prepare state        -required -tolower -type ebeanstate
     }
 

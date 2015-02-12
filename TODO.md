@@ -19,13 +19,14 @@
 - app/messagebox
   - absit, actor, bsys, cap, civgroup, curse, frcgroup, nbhood, orggroup
 - athena register
-  - bsys
+  - bsys, econ
 - curse
   - dynatypes, tactic_curse
 - driver::absit
   - absit
 - driver::abevent
-  - tactic_accident, tactic_demo, tactic_explosion, tactic_riot, tactic_violence
+  - strategy, tactic_accident, tactic_demo, tactic_explosion, tactic_riot, 
+    tactic_violence
 - driver::CURSE
   - tactic_curse
 - driver::IOM
@@ -46,24 +47,20 @@
 - parm, parmdb
   - absit, personnel, tactic_fundeni, tactic_maintain
 - plant
-  - tactic_build, tactic_damage, tactic_maintain
+  - strategy, tactic_build, tactic_damage, tactic_maintain
 - ptype - Should go in athena_order.tcl? (But no hierarchical methods!)
   - absit, actor, nbhood, tactic_*.tcl
 - refpoint
   - absit, nbhood
 - service
-  - tactic_service
+  - strategy, tactic_service
 - service_eni
-  - tactic_fundeni
+  - strategy, tactic_fundeni
 - sigevent
   - condition_expr, personnel, tactic_*.tcl
 - sim
   - absit
 - simclock
   - absit, athenadb, block
-- strategy
-  - actor, agent, block, cash, coffer, condition_*, tactic_*
-- unit
-  - personnel
 
 

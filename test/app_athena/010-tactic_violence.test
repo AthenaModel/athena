@@ -54,7 +54,7 @@ namespace eval ::athena_test::tests:: {
         # NEXT, prepare for obligation
         personnel start
         personnel load
-        set coffer [::athena::coffer new ::adb JOE]
+        set coffer [::athena::coffer new [::adb athenadb] JOE]
     }
 
     proc cleanup {} {

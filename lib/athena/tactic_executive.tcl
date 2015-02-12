@@ -83,7 +83,7 @@
             [my adb] flunky state $oldState
 
             # NEXT, log failure.
-            sigevent log error tactic "
+            [my adb] sigevent log error tactic "
                 EXECUTIVE: Failed to execute command {$command}: $result
             " [my agent]
 
@@ -103,7 +103,7 @@
         [my adb] flunky state $oldState
 
         # NEXT, log success
-        sigevent log 1 tactic "
+        [my adb] sigevent log 1 tactic "
             EXECUTIVE: $command
         " [my agent]
     }
@@ -136,7 +136,8 @@
 
     method _validate {} {
         # FIRST, prepare and validate the parameters
-        my prepare tactic_id -required -with {::strategy valclass ::athena::tactic::EXECUTIVE}
+        my prepare tactic_id -required \
+            -with [list $adb strategy valclass ::athena::tactic::EXECUTIVE]
         my prepare command             -type tclscript
         my returnOnError 
 

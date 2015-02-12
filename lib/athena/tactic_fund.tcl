@@ -107,7 +107,7 @@
     # NOTE: FUND never executes on lock.
 
     method ObligateResources {coffer} {
-        assert {[strategy ontick]}
+        assert {[[my adb] strategy ontick]}
 
         # FIRST, retrieve relevant data.
         set cash [$coffer cash]
@@ -163,7 +163,7 @@
         # NEXT, give the money to the other actor.
         [my adb] cash give [my agent] $a $trans(amount)
            
-        sigevent log 2 tactic "
+        [my adb] sigevent log 2 tactic "
             FUND: Actor {actor: [my agent]} funds {actor:$a}
             with \$[moneyfmt $trans(amount)]/week.
         " [my agent] $a
@@ -219,7 +219,8 @@
 
 
     method _validate {} {
-        my prepare tactic_id -required -with {::strategy valclass ::athena::tactic::FUND}
+        my prepare tactic_id -required \
+            -with [list $adb strategy valclass ::athena::tactic::FUND]
         my returnOnError
 
         set tactic [$adb pot get $parms(tactic_id)]
