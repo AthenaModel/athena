@@ -148,7 +148,7 @@
             }]
 
             if {$f ni $groupsInN} {
-                sigevent log 2 tactic "
+                [my adb] sigevent log 2 tactic "
                     ATTRIT: No magic attrition; group $s(f) is not in $s(n).
                 " $owner $n
 
@@ -184,7 +184,7 @@
         append msg "."
 
         # NEXT log it and schedule the attrition in AAM
-        sigevent log 2 tactic $msg $owner {*}$objects
+        [my adb] sigevent log 2 tactic $msg $owner {*}$objects
 
         set p(mode)       $mode
         set p(casualties) $casualties

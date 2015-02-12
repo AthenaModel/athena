@@ -136,7 +136,7 @@
             [my adb] personnel demob $g $trans(personnel)
         }
 
-        sigevent log 1 tactic "
+        [my adb] sigevent log 1 tactic "
             DEMOB: Actor {actor:[my agent]} demobilizes $trans(personnel)
             {group:$g} personnel.
         " [my agent] $g

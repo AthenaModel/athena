@@ -57,7 +57,7 @@
         } result eopts]} {
             # FAILURE
 
-            sigevent log error tactic "
+            [my adb] sigevent log error tactic "
                 EXPR condition: In [my agent]'s strategy, 
                 failed to evaluate expression {$expression}: $result
             " [my agent]

@@ -78,7 +78,7 @@
 
         set msg "VIOLENCE([my id]): [my narrative]"
 
-        sigevent log 2 tactic $msg {*}$objects
+        [my adb] sigevent log 2 tactic $msg {*}$objects
 
         # NEXT, create the violence.
         driver::abevent create VIOLENCE $n $coverage

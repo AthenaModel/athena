@@ -197,7 +197,7 @@
 
         # NEXT, if there's no one to fund quick exit
         if {[llength $trans(glist)] == 0} {
-            sigevent log 2 tactic "
+            [my adb] sigevent log 2 tactic "
                 FUNDENI: Actor {actor:$owner} could not fund
                 \$[moneyfmt $trans(amount)] worth of Essential 
                 Non-Infrastructure services, because there are no
@@ -226,7 +226,7 @@
         # all of the groups are empty.
         if {![service_eni fundeni $owner $trans(amount) $trans(glist)]} {
             [my adb] cash refund $owner FUNDENI $trans(amount)
-            sigevent log 2 tactic "
+            [my adb] sigevent log 2 tactic "
                 FUNDENI: Actor {actor:$owner} could not fund
                 \$[moneyfmt $trans(amount)] worth of Essential 
                 Non-Infrastructure services to $gtext, because 
@@ -244,7 +244,7 @@
 
 
         # TBD: Do I need to include neighborhoods in here?
-        sigevent log 2 tactic "
+        [my adb] sigevent log 2 tactic "
             FUNDENI: Actor {actor:$owner} funds \$[moneyfmt $trans(amount)]
             worth of Essential Non-Infrastructure services to
             $gtext.

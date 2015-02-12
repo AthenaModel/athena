@@ -163,7 +163,7 @@
         # NEXT, give the money to the other actor.
         [my adb] cash give [my agent] $a $trans(amount)
            
-        sigevent log 2 tactic "
+        [my adb] sigevent log 2 tactic "
             FUND: Actor {actor: [my agent]} funds {actor:$a}
             with \$[moneyfmt $trans(amount)]/week.
         " [my agent] $a

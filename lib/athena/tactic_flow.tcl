@@ -150,7 +150,7 @@
         set m [civgroup getg $f n]
         set n [civgroup getg $g n]
         
-        sigevent log 2 tactic "
+        [my adb] sigevent log 2 tactic "
             FLOW: $delta people moved from {group:$f} in {nbhood:$m}
             to {group:$g} in {nbhood:$n}
         " $f $g $m $n

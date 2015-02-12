@@ -163,7 +163,7 @@
             cash refund [my agent] BROADCAST $trans(cost) 
 
             # NEXT, log the event
-            sigevent log 2 tactic "
+            [my adb] sigevent log 2 tactic "
                 BROADCAST: Actor {actor:[my agent]} failed to broadcast
                 IOM {iom:$iom} via CAP {cap:$cap}: access denied. 
             " [my agent] $iom $cap
@@ -201,7 +201,7 @@
         dict set rdict asource $asource
 
         # NEXT, log the event
-        sigevent log 2 tactic "
+        [my adb] sigevent log 2 tactic "
             BROADCAST: Actor {actor:[my agent]} broadcast
             IOM {iom:$iom} via CAP {cap:$cap}$attribution. 
         " {*}$tags

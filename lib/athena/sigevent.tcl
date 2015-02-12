@@ -6,16 +6,31 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Significant Event Manager
+#    athena(n): Significant Event Manager
 #
 #    This module allows other modules to log significant simulation
 #    events, so that they can later be displayed to the user.
 #
 #-----------------------------------------------------------------------
 
-snit::type sigevent {
-    # Make it a singleton
-    pragma -hasinstances no
+snit::type ::athena::sigevent {
+    #-------------------------------------------------------------------
+    # Components
+
+    component adb ;# The athenadb(n) instance
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    # constructor adb_
+    #
+    # adb_    - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of the type.
+
+    constructor {adb_} {
+        set adb $adb_
+    }
 
     #-------------------------------------------------------------------
     # Public Methods
@@ -27,8 +42,8 @@ snit::type sigevent {
     # Removes "future history" from the sigevents tables when going
     # backwards in time.
 
-    typemethod purge {t} {
-        rdb eval {
+    method purge {t} {
+        $adb eval {
             DELETE FROM sigevents WHERE t >= $t;
         }
     }
@@ -50,7 +65,7 @@ snit::type sigevent {
     #
     # These can be translated into HTML links on output.
 
-    typemethod log {level component narrative args} {
+    method log {level component narrative args} {
         # FIRST, translate the level
         if {$level eq "error"} {
             set level -1
@@ -61,16 +76,16 @@ snit::type sigevent {
         # NEXT, save it.
         set narrative [normalize $narrative]
 
-        rdb eval {
+        $adb eval {
             INSERT INTO sigevents(t,level,component,narrative)
             VALUES(now(), $level, $component, $narrative);
         }
 
-        set id [rdb last_insert_rowid]
+        set id [$adb last_insert_rowid]
 
         foreach tag $args {
             # Use "OR IGNORE" in case the same tag is given twice.
-            rdb eval {
+            $adb eval {
                 INSERT OR IGNORE INTO sigevent_tags(event_id, tag)
                 VALUES($id,$tag)
             }

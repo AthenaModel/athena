@@ -78,7 +78,7 @@
 
         set msg "RIOT([my id]): [my narrative]"
 
-        sigevent log 2 tactic $msg {*}$objects
+        [my adb] sigevent log 2 tactic $msg {*}$objects
 
         # NEXT, create the riot.
         driver::abevent create RIOT $n $coverage

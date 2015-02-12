@@ -76,7 +76,7 @@
     method execute {} {
         # FIRST, if no infrastructure to damage trivially exit
         if {![plant exists [list $n $a]]} {
-            sigevent log 2 tactic "
+            [my adb] sigevent log 2 tactic "
                 DAMAGE: No infrastructure is affected since {actor:$a} does
                 not own any infrastructure in {nbhood:$n}
             "
@@ -91,12 +91,12 @@
         set s(percent) [format %.1f%% $percent]
 
         if {$percent < $current} {
-            sigevent log 2 tactic "
+            [my adb] sigevent log 2 tactic "
                 DAMAGE: Infrastructure owned by {actor:$a} in {nbhood:$n} 
                 repair level reduced from $s(current) to $s(percent).
             " $a $n
         } else {
-            sigevent log 2 tactic "
+            [my adb] sigevent log 2 tactic "
                 DAMAGE: Infrastructure owned by {actor:$a} in {nbhood:$n} 
                 repair level increased from $s(current) to $s(percent).
             " $a $n

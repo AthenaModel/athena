@@ -156,7 +156,7 @@
                 higher-priority tactics.
             "
 
-            sigevent log 2 tactic $msg [my agent] {*}$logIds
+            [my adb] sigevent log 2 tactic $msg [my agent] {*}$logIds
 
             return 
         }
@@ -175,7 +175,7 @@
             "
         }
 
-        sigevent log 2 tactic $msg [my agent] {*}$logIds
+        [my adb] sigevent log 2 tactic $msg [my agent] {*}$logIds
 
         return 
     }

@@ -92,7 +92,7 @@
             [my adb] cap access grant $klist $actors
         }
 
-        sigevent log 2 tactic "
+        [my adb] sigevent log 2 tactic "
             GRANT: Actor {actor:[my agent]} grants access to
             [andlist CAP $klist] to [andlist actor $actors].
         " [my agent] {*}$klist {*}$actors

@@ -84,7 +84,7 @@
 
         set msg "DEMO([my id]): [my narrative]"
 
-        sigevent log 2 tactic $msg {*}$objects
+        [my adb] sigevent log 2 tactic $msg {*}$objects
 
         # NEXT, create the demo.
         driver::abevent create DEMO $n $coverage g $g

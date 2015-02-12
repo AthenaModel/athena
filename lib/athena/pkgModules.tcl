@@ -50,6 +50,7 @@ source [file join $::athena::library athena_order.tcl     ]
 source [file join $::athena::library athena_flunky.tcl    ]
 source [file join $::athena::library dynatypes.tcl        ]
 source [file join $::athena::library paster.tcl           ]
+source [file join $::athena::library sigevent.tcl         ]
 
 # Editable Entities
 source [file join $::athena::library absit.tcl            ]

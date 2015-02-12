@@ -741,7 +741,7 @@
                 "
             }
 
-            sigevent log 2 tactic "DEPLOY([my id]): $message" \
+            [my adb] sigevent log 2 tactic "DEPLOY([my id]): $message" \
                 [my agent] $g
 
             return
@@ -765,7 +765,7 @@
                 "
             }
 
-            sigevent log 2 tactic "DEPLOY([my id]): $message" \
+            [my adb] sigevent log 2 tactic "DEPLOY([my id]): $message" \
                 [my agent] $g $n
         }
     }

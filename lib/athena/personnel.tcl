@@ -290,7 +290,7 @@ snit::type ::athena::personnel {
                 JOIN agroups USING (g) 
                 WHERE available > 0
             }] {
-                sigevent log warning strategy "
+                $adb sigevent log warning strategy "
                     Demobilizing $available undeployed {group:$g} personnel.
                 " $g $a
                 $self demob $g $available
@@ -335,7 +335,7 @@ snit::type ::athena::personnel {
             ORDER BY g, delta ASC
         } {
             if {$new == 0 && $old > 0} {
-                sigevent log 1 strategy "
+                $adb sigevent log 1 strategy "
                     Actor {actor:$a} withdrew all $old {group:$g} 
                     personnel from {nbhood:$n}.
                 " $a $g $n
@@ -344,14 +344,14 @@ snit::type ::athena::personnel {
             }
 
             if {$delta > 0} {
-                sigevent log 1 strategy "
+                $adb sigevent log 1 strategy "
                     Actor {actor:$a} added $delta {group:$g} personnel 
                     to {nbhood:$n}, for a total of $new personnel.
                 " $a $g $n
             } elseif {$delta < 0} {
                 let delta {-$delta}
 
-                sigevent log 1 strategy "
+                $adb sigevent log 1 strategy "
                     Actor {actor:$a} withdrew $delta {group:$g} personnel 
                     from {nbhood:$n} for a total of $new personnel.
                 " $a $g $n

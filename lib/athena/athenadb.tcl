@@ -177,6 +177,7 @@ snit::type ::athena::athenadb {
     component nbrel     -public nbrel     ;# nbhood rel. manager
     component orggroup  -public orggroup  ;# orggroup manager
     component sat       -public sat       ;# satisfaction manager
+    component sigevent  -public sigevent  ;# Sig. Events manager
     component strategy  -public strategy  ;# strategy manager
     component unit      -public unit      ;# unit manager
     component vrel      -public vrel      ;# vert. rel. manager
@@ -291,6 +292,7 @@ snit::type ::athena::athenadb {
             orggroup                    \
             personnel                   \
             sat                         \
+            sigevent                    \
             {strategy strategy_manager} \
             stance                      \
             unit                        \
@@ -758,7 +760,7 @@ snit::type ::athena::athenadb {
         # NEXT, purge history.  (Do this second, in case the modules
         # needed the history to do their work.)
         $self snapshot purge
-        sigevent purge 0
+        $sigevent purge 0
 
         # NEXT, update the clock
         simclock configure -tick0 [simclock now]

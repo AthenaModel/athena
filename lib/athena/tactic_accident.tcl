@@ -78,7 +78,7 @@
 
         set msg "ACCIDENT([my id]): [my narrative]"
 
-        sigevent log 2 tactic $msg {*}$objects
+        [my adb] sigevent log 2 tactic $msg {*}$objects
 
         # NEXT, create the accident.
         driver::abevent create ACCIDENT $n $coverage

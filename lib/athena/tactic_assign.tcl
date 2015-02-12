@@ -401,7 +401,7 @@
         [my adb] personnel assign [my id] $g $n $activity $trans(personnel)
         [my adb] cash spend [my agent] ASSIGN $trans(cost)
 
-        sigevent log 2 tactic "
+        [my adb] sigevent log 2 tactic "
             ASSIGN: Actor {actor:[my agent]} assigns $trans(personnel) {group:$g} 
             personnel to $activity in {nbhood:$n}
         " [my agent] $n $g

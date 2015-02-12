@@ -54,7 +54,7 @@
         } else {
             set output "*NULL*"
         }
-        sigevent log 1 tactic "SIGEVENT: $output" [my agent]
+        [my adb] sigevent log 1 tactic "SIGEVENT: $output" [my agent]
     }
 }
 

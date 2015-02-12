@@ -83,7 +83,7 @@
             [my adb] flunky state $oldState
 
             # NEXT, log failure.
-            sigevent log error tactic "
+            [my adb] sigevent log error tactic "
                 EXECUTIVE: Failed to execute command {$command}: $result
             " [my agent]
 
@@ -103,7 +103,7 @@
         [my adb] flunky state $oldState
 
         # NEXT, log success
-        sigevent log 1 tactic "
+        [my adb] sigevent log 1 tactic "
             EXECUTIVE: $command
         " [my agent]
     }

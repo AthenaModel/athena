@@ -307,7 +307,7 @@
         set ntext   [gofer::NBHOODS narrative $nlist]
 
         if {$trans(repaired)} {
-            sigevent log 2 tactic "
+            [my adb] sigevent log 2 tactic "
                 MAINTAIN: Actor {actor:$owner} spends
                 \$[moneyfmt $trans(amount)] since any
                 infrastructure owned in $ntext have already 
@@ -315,7 +315,7 @@
             " $owner {*}$nbhoods
 
         } else {
-            sigevent log 2 tactic "
+            [my adb] sigevent log 2 tactic "
                 MAINTAIN: Actor {actor:$owner} spends
                 \$[moneyfmt $trans(amount)] to maintain any 
                 infrastructure owned in $ntext.

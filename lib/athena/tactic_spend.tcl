@@ -154,7 +154,7 @@
     method execute {} {
         cash spendon [my agent] $trans(amount) [my GetProfile]
 
-        sigevent log 2 tactic "
+        [my adb] sigevent log 2 tactic "
             SPEND: Actor {actor:[my agent]} spends $trans(amount)
             on [my GetPercentages]
         " [my agent]

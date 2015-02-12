@@ -110,7 +110,7 @@
             lappend ntext "{nbhood:$n}"
         }
 
-        sigevent log 2 tactic "
+        [my adb] sigevent log 2 tactic "
             SUPPORT: Actor {actor:[my agent]} supports $supports 
             in [join $ntext {, }]
         " [my agent] {*}$logIds

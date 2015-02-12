@@ -78,7 +78,7 @@
 
         set msg "EXPLOSION([my id]): [my narrative]"
 
-        sigevent log 2 tactic $msg {*}$objects
+        [my adb] sigevent log 2 tactic $msg {*}$objects
 
         # NEXT, create the explosion.
         driver::abevent create EXPLOSION $n $coverage

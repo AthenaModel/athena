@@ -139,7 +139,7 @@
     method execute {} {
         [my adb] cash deposit [my agent] $trans(amount)
 
-        sigevent log 2 tactic "
+        [my adb] sigevent log 2 tactic "
             DEPOSIT: [my agent] deposits \$[moneyfmt $trans(amount)] to reserve.
         " [my agent]
     }

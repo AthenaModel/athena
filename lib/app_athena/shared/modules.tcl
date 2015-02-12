@@ -113,6 +113,5 @@ source [file join $::app_athena_shared::library security_model.tcl     ]
 source [file join $::app_athena_shared::library service.tcl            ]
 source [file join $::app_athena_shared::library service_eni.tcl        ]
 source [file join $::app_athena_shared::library service_ais.tcl        ]
-source [file join $::app_athena_shared::library sigevent.tcl           ]
 source [file join $::app_athena_shared::library view.tcl               ]
 

@@ -172,7 +172,7 @@
             personnel mobilize $g $trans(personnel)
         }
 
-        sigevent log 1 tactic "
+        [my adb] sigevent log 1 tactic "
             MOBILIZE: Actor {actor:[my agent]} mobilizes $trans(personnel) 
             new {group:$g} personnel.
         " [my agent] $g
