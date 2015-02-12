@@ -10,9 +10,9 @@
 #
 #    This module is responsible for managing an actor's cash during
 #    strategy execution.  It should only be used during the duration
-#    of [strategy tock], or to set up for tactic tests in the test suite.
+#    of [$adb strategy tock], or to set up for tactic tests in the test 
+#    suite.
 #
-# TBD: Global refs: strategy
 #-----------------------------------------------------------------------
 
 snit::type ::athena::cash {
@@ -107,7 +107,7 @@ snit::type ::athena::cash {
 
     method save {} {
         # FIRST, we should not be locking the scenario
-        assert {![strategy locking]}
+        assert {![$adb strategy locking]}
 
         $adb eval {
             SELECT a, cash_reserve, cash_on_hand, gifts FROM working_cash
@@ -184,7 +184,7 @@ snit::type ::athena::cash {
     # actor's cash-on-hand prior to strategy execution.
 
     method onhand {a} {
-        if {$a eq [strategy acting]} {
+        if {$a eq [$adb strategy acting]} {
             return [$self get $a cash_on_hand]
         } else {
             return [$adb actor get $a cash_on_hand]
@@ -200,7 +200,7 @@ snit::type ::athena::cash {
     # actor's cash-reserve prior to strategy execution.
 
     method reserve {a} {
-        if {$a eq [strategy acting]} {
+        if {$a eq [$adb strategy acting]} {
             return [$self get $a cash_reserve]
         } else {
             return [$adb actor get $a cash_reserve]
@@ -226,7 +226,7 @@ snit::type ::athena::cash {
     method spend {a eclass dollars} {
         # FIRST, if strategy is locking only allocate the money to
         # the expenditure class as a baseline, and then we are done.
-        if {[strategy locking]} {
+        if {[$adb strategy locking]} {
 
             # NEXT, if dollars is negative, which can happen on lock,
             # then nothing is expended from working cash. But the tactic 
@@ -283,7 +283,7 @@ snit::type ::athena::cash {
     method spendon {a dollars profile} {
         # FIRST, if strategy is locking, then the tactic needs to
         # execute.
-        if {[strategy locking]} {
+        if {[$adb strategy locking]} {
 
             # NEXT, if dollars is negative, which can happen on lock,
             # then nothing is expended from working cash. But the tactic 

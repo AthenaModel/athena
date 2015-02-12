@@ -107,7 +107,7 @@
     # NOTE: FUND never executes on lock.
 
     method ObligateResources {coffer} {
-        assert {[strategy ontick]}
+        assert {[[my adb] strategy ontick]}
 
         # FIRST, retrieve relevant data.
         set cash [$coffer cash]
@@ -219,7 +219,8 @@
 
 
     method _validate {} {
-        my prepare tactic_id -required -with {::strategy valclass ::athena::tactic::FUND}
+        my prepare tactic_id -required \
+            -with [list $adb strategy valclass ::athena::tactic::FUND]
         my returnOnError
 
         set tactic [$adb pot get $parms(tactic_id)]

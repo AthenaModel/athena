@@ -136,7 +136,8 @@
 
     method _validate {} {
         # FIRST, prepare and validate the parameters
-        my prepare tactic_id -required -with {::strategy valclass ::athena::tactic::EXECUTIVE}
+        my prepare tactic_id -required \
+            -with [list $adb strategy valclass ::athena::tactic::EXECUTIVE]
         my prepare command             -type tclscript
         my returnOnError 
 

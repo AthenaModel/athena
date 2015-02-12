@@ -127,12 +127,6 @@ snit::type sim {
             -week0 $constants(startdate) \
             -tick0 $constants(starttick)
 
-        # NEXT, reset the econ model
-        econ reset
-
-        # NEXT, reset the strategy module.
-        strategy init
-
         # NEXT, reset the map to default.
         map init
 

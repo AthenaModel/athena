@@ -34,8 +34,6 @@
 #    personnel and cash-on-hand need to allow any amount on-lock, but
 #    not actually draw down the amount below 0.
 #
-# TBD: Global refs: strategy
-#
 #-----------------------------------------------------------------------
 
 # FIRST, create the class
@@ -199,7 +197,7 @@ oo::class create ::athena::coffer {
     # the cash be available.
 
     method spend {amount} {
-        if {[strategy ontick]} {
+        if {[$adb strategy ontick]} {
             require {$amount <= $cash} "insufficient cash"
         }
 
@@ -216,7 +214,7 @@ oo::class create ::athena::coffer {
     # cash-reserve.
 
     method deposit {amount} {
-        assert {[strategy ontick]}
+        assert {[$adb strategy ontick]}
 
         my spend $amount
         let reserve {$reserve + $amount}
@@ -231,7 +229,7 @@ oo::class create ::athena::coffer {
     # negative.
 
     method withdraw {amount} {
-        assert {[strategy ontick]}
+        assert {[$adb strategy ontick]}
 
         let cash {$cash + $amount}
         let reserve {$reserve - $amount}
@@ -246,7 +244,7 @@ oo::class create ::athena::coffer {
     # undeployed personnel.
 
     method demobilize {g personnel} {
-        assert {[strategy ontick]}
+        assert {[$adb strategy ontick]}
 
         set undeployed [my troops $g undeployed]
         require {$personnel <= $undeployed} "insufficient personnel"
@@ -267,7 +265,7 @@ oo::class create ::athena::coffer {
     # undeployed personnel.
 
     method mobilize {g personnel} {
-        assert {[strategy ontick]}
+        assert {[$adb strategy ontick]}
 
         set undeployed [my troops $g undeployed]
 
@@ -290,7 +288,7 @@ oo::class create ::athena::coffer {
         set undeployed [my troops $g undeployed]
         set deployed   [my troops $g $n]
 
-        if {[strategy ontick]} {
+        if {[$adb strategy ontick]} {
             require {$personnel <= $undeployed} "insufficient personnel"
         }
 
@@ -316,7 +314,7 @@ oo::class create ::athena::coffer {
     method assign {g n personnel} {
         set unassigned [my troops $g $n]
 
-        if {[strategy ontick]} {
+        if {[$adb strategy ontick]} {
             require {$personnel <= $unassigned} "insufficient personnel"
         }
 

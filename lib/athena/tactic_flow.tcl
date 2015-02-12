@@ -178,10 +178,10 @@
         text name -width 20
 
         rcc "Source Group:" -for f
-        enum f -listcmd {$adb civgroup names}
+        enum f -listcmd {[my adb] civgroup names}
 
         rcc "Destination Group:" -for g
-        enum g -listcmd {lexcept [$adb civgroup names] $f}
+        enum g -listcmd {lexcept [[my adb] civgroup names] $f}
 
         rcc "Mode:" -for mode
         selector mode {
@@ -208,7 +208,8 @@
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::FLOW}
+        my prepare tactic_id  -required \
+            -with [list $adb strategy valclass ::athena::tactic::FLOW]
         my returnOnError
 
         set tactic [$adb pot get $parms(tactic_id)]

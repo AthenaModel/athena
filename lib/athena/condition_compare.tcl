@@ -8,7 +8,7 @@
 # DESCRIPTION:
 #    athena(n): Mark II Condition, COMPARE
 #
-# TBD: Global refs: gofer*, strategy
+# TBD: Global refs: gofer*
 #
 #-----------------------------------------------------------------------
 
@@ -106,7 +106,7 @@
 
 
     method _validate {} {
-        my prepare condition_id -required -with {::strategy valclass ::athena::condition::COMPARE}
+        my prepare condition_id -required -with [list $adb strategy valclass ::athena::condition::COMPARE]
         my returnOnError
 
         set cond [$adb pot get $parms(condition_id)]

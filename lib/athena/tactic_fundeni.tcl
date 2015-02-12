@@ -349,7 +349,8 @@
 
 
     method _validate {} {
-        my prepare tactic_id -required -with {::strategy valclass ::athena::tactic::FUNDENI}
+        my prepare tactic_id -required \
+            -with [list $adb strategy valclass ::athena::tactic::FUNDENI]
         my returnOnError
 
         set tactic [$adb pot get $parms(tactic_id)]

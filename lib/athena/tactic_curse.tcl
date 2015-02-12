@@ -141,7 +141,7 @@
         set fdict [dict create]
         dict set fdict curse_id $curse
 
-        [my adb]  eval {
+        [my adb] eval {
             SELECT * FROM curse_injects
             WHERE curse_id=$curse AND state='normal'
         } idata {
@@ -258,7 +258,8 @@
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::CURSE}
+        my prepare tactic_id  -required \
+            -with [list $adb strategy valclass ::athena::tactic::CURSE]
         my returnOnError
 
         set tactic [$adb pot get $parms(tactic_id)]

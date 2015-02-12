@@ -88,7 +88,7 @@
     # NOTE: DEMOB never executes on lock.
 
     method ObligateResources {coffer} {
-        assert {[strategy ontick]}
+        assert {[[my adb] strategy ontick]}
         
         # FIRST, get the amount to demobilize.
         set undeployed [$coffer troops $g undeployed]
@@ -191,7 +191,8 @@
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::DEMOB}
+        my prepare tactic_id  -required \
+            -with [list $adb strategy valclass ::athena::tactic::DEMOB]
         my returnOnError
 
         set tactic [$adb pot get $parms(tactic_id)]

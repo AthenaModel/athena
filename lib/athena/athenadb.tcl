@@ -176,12 +176,12 @@ snit::type ::athena::athenadb {
     component nbhood    -public nbhood    ;# nbhood manager
     component orggroup  -public orggroup  ;# orggroup manager
     component sat       -public sat       ;# satisfaction manager
+    component strategy  -public strategy  ;# strategy manager
     component vrel      -public vrel      ;# vert. rel. manager
 
     # Other Entities
     component activity  -public activity  ;# activity manager
     component agent     -public agent     ;# agent manager
-    component demog     -public demog     ;# demographics manager
     component group     -public group     ;# group manager
 
     # Tactic APIs
@@ -190,6 +190,9 @@ snit::type ::athena::athenadb {
     component control   -public control   ;# nbhood control API
     component personnel -public personnel ;# personnel laydown API
     component stance    -public stance    ;# stance API
+
+    # Models
+    component demog     -public demog     ;# demographics manager
 
     #-------------------------------------------------------------------
     # Options
@@ -261,31 +264,32 @@ snit::type ::athena::athenadb {
         # singletons when Athena was a monolithic app.  They are now
         # types/classes with instances; each instance takes one argument,
         # the athenadb(n) handle.
-        $self MakeComponents \
-            absit            \
-            activity         \
-            actor            \
-            agent            \
-            broadcast        \
-            bsys             \
-            cap              \
-            cash             \
-            civgroup         \
-            coop             \
-            control          \
-            curse            \
-            demog            \
-            econ             \
-            frcgroup         \
-            group            \
-            hook             \
-            hrel             \
-            iom              \
-            nbhood           \
-            orggroup         \
-            personnel        \
-            sat              \
-            stance           \
+        $self MakeComponents            \
+            absit                       \
+            activity                    \
+            actor                       \
+            agent                       \
+            broadcast                   \
+            bsys                        \
+            cap                         \
+            cash                        \
+            civgroup                    \
+            coop                        \
+            control                     \
+            curse                       \
+            demog                       \
+            econ                        \
+            frcgroup                    \
+            group                       \
+            hook                        \
+            hrel                        \
+            iom                         \
+            nbhood                      \
+            orggroup                    \
+            personnel                   \
+            sat                         \
+            {strategy strategy_manager} \
+            stance                      \
             vrel
 
         # NEXT, Make these components globally available.
@@ -312,7 +316,6 @@ snit::type ::athena::athenadb {
             set info(adbfile) ""
 
             # Initialize external packages
-            strategy init
             parm reset
             parm checkpoint -saved
         }
@@ -335,11 +338,18 @@ snit::type ::athena::athenadb {
     # defines global entry points.
 
     method MakeComponents {args} {
-        foreach name $args {
-            install $name using ::athena::${name} ${selfns}::$name $self
+        foreach pair $args {
+            lassign $pair comp module
+
+            if {$module eq ""} {
+                set module $comp
+            }
+
+
+            install $comp using ::athena::${module} ${selfns}::$comp $self
 
             # TBD: The alias will go away once the conversion is complete.
-            interp alias {} ::${name} {} [set $name]
+            interp alias {} ::${comp} {} [set $comp]
         }
     }
 
@@ -807,6 +817,33 @@ snit::type ::athena::athenadb {
 
         callwith $options(-logcmd) $level $name $message
     }
+
+    # profile ?depth? command ?args...?
+    #
+    # Calls the command once using [time], in the caller's context,
+    # and logs the outcome, returning the command's return value.
+    # In other words, you can stick "$adb profile" before any command name
+    # and profile that call without changing code or adding new routines.
+    #
+    # If the depth is given, it must be an integer; that many "*" characters
+    # are added to the beginning of the log message.
+
+    method profile {args} {
+        if {[string is integer -strict [lindex $args 0]]} {
+            set prefix "[string repeat * [lshift args]] "
+        } else {
+            set prefix ""
+        }
+
+        set msec [lindex [time {
+            set result [uplevel 1 $args]
+        } 1] 0]
+
+        $self log detail app "${prefix}profile [list $args] $msec"
+
+        return $result
+    }
+
 
     # notify component event args...
     #

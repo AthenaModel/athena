@@ -53,7 +53,7 @@ namespace eval ::athena_test::tests:: {
         plant start
         cash load
 
-        set coffer [::athena::coffer new ::adb JOE]
+        set coffer [::athena::coffer new [::adb athenadb] JOE]
 
         set B1 [ted addblock JOE]
         set T1 [ted addtactic $B1 MAINTAIN]

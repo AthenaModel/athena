@@ -6,53 +6,84 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Strategy Class
+#    athena(n): Strategy Class
 #
 #    An agent's strategy determines his actions.  It consists of a number
 #    of blocks, each of which contains zero or more conditions and tactics.
 #
 #    Strategy objects are typically named after their owning agents,
-#    i.e., ::strategy::<agent>; however, this is not required.  The
+#    i.e., ...::<agent>; however, this is not required.  The
 #    SYSTEM agent's strategy is created as part of the scenario; actor
 #    strategies are created and destroyed with the actor.
 #
+#    This module defines the following objects:
+#
+#    * strategy_manager, used to manage strategy execution; it is 
+#      exposed by athenadb(n) as its "strategy" subcommand.
+#    * ::athena::strategy, the strategy bean.
+#    * The various ::strategy::* orders.
+#
+# TBD: Global refs: sim, driver::abevent, plant, service, service_eni,
+#      unit
+#
 #-----------------------------------------------------------------------
 
-# FIRST, create the class
-oo::class create strategy {
-    superclass ::projectlib::bean
-}
+#-----------------------------------------------------------------------
+# Strategy Manager
 
-# NEXT, define class members
-oo::objdefine strategy {
+snit::type ::athena::strategy_manager {
     #-------------------------------------------------------------------
-    # Transient Class Variables
+    # Components
 
-    variable locking   ;# Flag: 1 if locking the scenario, 0 otherwise.
-    variable acting    ;# Name of the acting agent, or "" if none.
-    variable cache     ;# Array, strategy bean ID by agent name.
-    
+    component adb ;# The athenadb(n) instance
+
     #-------------------------------------------------------------------
-    # Initialization
-    
-    # init
+    # Transient Instance Variables
+
+    variable locking  0          ;# Flag: 1 if locking the scenario, 0 otherwise.
+    variable acting   ""         ;# Name of the acting agent, or "" if none.
+    variable cache    -array {}  ;# Array, strategy bean ID by agent name.
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    # constructor adb_
     #
-    # Initializes strategy execution on new scenario.
+    # adb_    - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of the type.
 
-    method init {} {
-        # FIRST, initialize class data.
-        set locking 0
-        set acting  ""
+    constructor {adb_} {
+        # FIRST, save the adb.
+        set adb $adb_
+
+        # NEXT, initialize variables and create predefined
+        # agents.
+        $self reset
+
+        # NEXT, update cache on dbsync
+        notifier bind ::sim <DbSyncA> $self [mymethod Recache]
+    }
+
+    destructor {
+        notifier forget $self
+    }
+
+    # reset
+    #
+    # Resets transient strategy variables.
+
+    method reset {} {
+        # FIRST, initialize variables
+        set locking  0   
+        set acting   ""  
         array unset cache
 
         # NEXT, create strategies for predefined agents.
-        foreach agent [agent system names] {
-            log normal strategy "Creating strategy for agent $agent"
-            my create_ $agent
+        foreach agent [$adb agent system names] {
+            $adb log normal strategy "Creating strategy for agent $agent"
+            $self create_ $agent
         }
-
-        # NEXT, update cache on dbsync
-        notifier bind ::sim <DbSyncA> [self] [mymethod Recache]
     }
 
     # Recache
@@ -62,8 +93,8 @@ oo::objdefine strategy {
     method Recache {} {
         array unset cache
 
-        foreach id [pot ids strategy] {
-            set s [pot get $id]
+        foreach id [$adb pot ids ::athena::strategy] {
+            set s [$adb pot get $id]
             set cache([$s agent]) $id 
         }
     }
@@ -74,8 +105,8 @@ oo::objdefine strategy {
     # Clear block and tactic execution data.
 
     method rebase {} {
-        foreach a [agent names] {
-            set s [strategy getname $a]
+        foreach a [$adb agent names] {
+            set s [$self getname $a]
 
             foreach block [$s blocks] {
                 if {[$block execstatus] eq "SUCCESS"} {
@@ -107,12 +138,12 @@ oo::objdefine strategy {
         set short [namespace tail $cls]
 
         # NEXT, check id against bean IDs of this class
-        set bean_ids [pot ids $cls]
+        set bean_ids [$adb pot ids $cls]
         if {$id in $bean_ids} {
             return $id
         }
 
-        set retval [strategy nameToId $id]
+        set retval [$self nameToId $id]
 
         # NEXT, if there is no mapping from name to id, throw INVALID
         if {$retval eq ""} {
@@ -121,7 +152,7 @@ oo::objdefine strategy {
 
         # NEXT, if the ID belongs to a bean of the wrong class, throw 
         # INVALID
-        if {![pot hasa $cls $retval]} {
+        if {![$adb pot hasa $cls $retval]} {
             throw INVALID "Invalid $short ID: \"$id\""
         }
 
@@ -162,7 +193,7 @@ oo::objdefine strategy {
         lassign $path agent bname tcname
 
         # NEXT, make sure agent exists
-        if {$agent ni [agent names]} {
+        if {$agent ni [$adb agent names]} {
             return ""
         }
 
@@ -171,13 +202,14 @@ oo::objdefine strategy {
             return $agent
         }
 
-        set s [strategy getname $agent]
+        set s [$self getname $agent]
         set block_id ""
 
         # NEXT, look for a match on block name
         foreach block [$s blocks] {
             if {[$block get name] eq $bname} {
                 set block_id [$block id]
+                break
             }
         }
 
@@ -191,7 +223,7 @@ oo::objdefine strategy {
             return $block_id
         }
 
-        set block [pot get $block_id]
+        set block [$adb pot get $block_id]
 
         # NEXT, see if the name is a tactic, return ID of first match
         foreach tactic [$block tactics] {
@@ -221,9 +253,9 @@ oo::objdefine strategy {
     # the paused state
 
     method start {} {
-        my locking 1
-        my DoTock $locking
-        my locking 0
+        $self locking 1
+        $self DoTock $locking
+        $self locking 0
     }
 
     # tock
@@ -232,8 +264,8 @@ oo::objdefine strategy {
     # time
 
     method tock {} {
-        my locking 0
-        my DoTock $locking
+        $self locking 0
+        $self DoTock $locking
     }
 
     # locking ?flag?
@@ -297,47 +329,44 @@ oo::objdefine strategy {
         # FIRST, Set up working tables.  This includes giving
         # the actors their incomes, unless we are locking, in which
         # case no cash moves
-        profile 1 control load
-        profile 1 cash load
-        profile 1 personnel load
-        profile 1 service_eni load
-        profile 1 plant load
-        profile 1 cap access load
-
-        # TBD: Replace these as appropriate as the tactic types are defined.
-        profile 1 driver::abevent reset
-        profile 1 broadcast reset
-        profile 1 stance reset
-
-        profile 1 unit reset
-        profile 1 service reset
+        $adb profile 1 $adb control load
+        $adb profile 1 $adb cash load
+        $adb profile 1 $adb personnel load
+        $adb profile 1 service_eni load
+        $adb profile 1 plant load
+        $adb profile 1 $adb cap access load
+        $adb profile 1 driver::abevent reset
+        $adb profile 1 $adb broadcast reset
+        $adb profile 1 $adb stance reset
+        $adb profile 1 unit reset
+        $adb profile 1 service reset
 
         # NEXT, execute each agent's strategy.
 
-        foreach acting [agent names] {
-            [my getname $acting] execute
+        foreach acting [$adb agent names] {
+            [$self getname $acting] execute
         } 
 
         set acting ""
 
         # NEXT, save working data. If we are on lock, no cash has been used
         # so we don't want to save it
-        profile 1 control save
+        $adb profile 1 $adb control save
 
         if {!$onlock} {
-            profile 1 cash save
+            $adb profile 1 $adb cash save
         }
 
-        profile 1 personnel save
-        profile 1 service_eni save
-        profile 1 plant save
-        profile 1 cap access save
+        $adb profile 1 $adb personnel save
+        $adb profile 1 service_eni save
+        $adb profile 1 plant save
+        $adb profile 1 $adb cap access save
 
         # NEXT, populate base units for all groups.
-        profile 1 unit makebase
+        $adb profile 1 unit makebase
 
         # NEXT, assess all requested IOM broadcasts
-        profile 1 broadcast assess
+        $adb profile 1 $adb broadcast assess
     }
 
 
@@ -354,8 +383,8 @@ oo::objdefine strategy {
     method check {} {
         set flag 0
 
-        foreach agent [agent names] {
-            set s [strategy getname $agent]
+        foreach agent [$adb agent names] {
+            set s [$self getname $agent]
 
             if {[dict size [$s check]] > 0} {
                 set flag 1
@@ -363,7 +392,7 @@ oo::objdefine strategy {
         }
 
         # NEXT, notify the application that a check has been done.
-        notifier send ::strategy <Check>
+        $adb notify strategy <Check>
 
         return $flag
     }
@@ -382,8 +411,8 @@ oo::objdefine strategy {
 
         set result [dict create]
 
-        foreach agent [agent names] {
-            set s [strategy getname $agent]
+        foreach agent [$adb agent names] {
+            set s [$self getname $agent]
 
             set scheck [$s check]
 
@@ -393,7 +422,7 @@ oo::objdefine strategy {
         }
 
         # NEXT, notify the application that a check has been done.
-        notifier send ::strategy <Check>
+        $adb notify strategy <Check>
 
         # NEXT, if no problems were found, we're OK.
         if {[dict size $result] == 0} {
@@ -402,7 +431,7 @@ oo::objdefine strategy {
 
         # NEXT, create a report if request.
         if {$ht ne ""} {
-            my DoSanityReport $ht $result
+            $self DoSanityReport $ht $result
         }
 
         # NEXT, strategy sanity check failures are now errors; the
@@ -441,12 +470,12 @@ oo::objdefine strategy {
 
                 $ht ul {
                     if {[dict exists $bdict conditions]} {
-                        my DoReportEntry $ht "Condition" \
+                        $self DoReportEntry $ht "Condition" \
                             [dict get $bdict conditions]
                     }
 
                     if {[dict exists $bdict tactics]} {
-                        my DoReportEntry $ht "Tactic" \
+                        $self DoReportEntry $ht "Tactic" \
                             [dict get $bdict tactics]
                     }
                 }
@@ -490,7 +519,7 @@ oo::objdefine strategy {
             return ""
         }
         
-        return [pot get $cache($agent)]
+        return [$adb pot get $cache($agent)]
     }
     
 
@@ -505,10 +534,10 @@ oo::objdefine strategy {
     # mutator is used on creation of an agent entity (i.e., an actor).
 
     method create_ {agent} {
-        set s [pot new strategy $agent]
+        set s [$adb pot new ::athena::strategy $agent]
         set cache($agent) [$s id]
 
-        return [list pot delete [$s id]]
+        return [list $adb pot delete [$s id]]
     }
 
     # delete_ agent
@@ -519,14 +548,18 @@ oo::objdefine strategy {
     # This mutator is used on deletion of an agent entity (i.e., an actor).
 
     method delete_ {agent} {
-        set s [my getname $agent]
+        set s [$self getname $agent]
 
-        return [list pot undelete [pot delete [$s id]]]        
+        return [list $adb pot undelete [$adb pot delete [$s id]]]        
     }
 }
 
-# NEXT, define instance members
-oo::define strategy {
+#-----------------------------------------------------------------------
+# Bean Class
+
+oo::class create ::athena::strategy {
+    superclass ::projectlib::bean
+
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -546,12 +579,22 @@ oo::define strategy {
     #-------------------------------------------------------------------
     # Public Methods
 
+    # adb
+    #
+    # Returns the scenario athenadb(n) handle.
+
+    method adb {} {
+        return [[my pot] cget -rdb]
+    }
+
     # subject
     #
-    # Set the subject, so that notifications are sent.
+    # Set subject for notifier events.  It's the athenadb(n) subject
+    # plus ".strategy".
 
     method subject {} {
-        return "::strategy"
+        set adb [[my pot] cget -rdb]
+        return "[$adb cget -subject].strategy"
     }
 
     # agent
@@ -646,7 +689,7 @@ oo::define strategy {
 
     method execute {} {
         # FIRST, get a coffer of this agent's resources.
-        set coffer [::athena::coffer new ::adb [my agent]]
+        set coffer [::athena::coffer new [my adb] [my agent]]
 
         # NEXT, try to execute each block.  The coffer will
         # keep track of resources as execution proceeds.  Each block
@@ -662,7 +705,7 @@ oo::define strategy {
     # and sets it
 
     method onAddBean_ {slot bean_id} {
-        set block [::pot get $bean_id]
+        set block [[my pot] get $bean_id]
         $block configure -name [my next_block_name]
         next $slot $bean_id
     }
@@ -711,28 +754,19 @@ oo::define strategy {
 ::athena::orders define STRATEGY:BLOCK:ADD {
     variable block_id  ;# Saved on first execution for redo
 
-    meta title "Add Block to Strategy"
-
+    meta title      "Add Block to Strategy"
     meta sendstates PREP
-
-    meta defaults {
-        agent ""
-    }
-
-    meta form {
-        rcc "Agent:" -for agent
-        text agent -context yes
-    }
+    meta parmlist  {agent}
 
     method _validate {} {
-        my prepare agent  -toupper -required -type agent
+        my prepare agent  -toupper -required -type [list $adb agent]
     }
 
     method _execute {{flunky ""}} {
-        set s [strategy getname $parms(agent)]
+        set s [$adb strategy getname $parms(agent)]
 
         if {[info exists block_id]} {
-            pot setnextid $block_id
+            $adb pot setnextid $block_id
         }
 
         my setundo [$s addblock_]
@@ -749,26 +783,18 @@ oo::define strategy {
 # Deletes a strategy block from an agent's strategy.
 
 ::athena::orders define STRATEGY:BLOCK:DELETE {
-    meta title "Delete Block from Strategy"
-
+    meta title      "Delete Block from Strategy"
     meta sendstates PREP
-
-    meta defaults {
-        ids ""
-    }
-
-    meta form {
-        text ids -context yes
-    }
+    meta parmlist   {ids}
 
     method _validate {} {
-        my prepare ids -required -listwith {::strategy valclass ::athena::block}
+        my prepare ids -required -listwith [list $adb strategy valclass ::athena::block]
     }
 
     method _execute {{flunky ""}} {
         set undo [list]
         foreach bid $parms(ids) {
-            set block [pot get $bid]
+            set block [$adb pot get $bid]
             set s [$block strategy]
             lappend undo [$s deleteblock_ $bid]
         }
@@ -782,31 +808,17 @@ oo::define strategy {
 # Moves a strategy block in an agent's strategy.
 
 ::athena::orders define STRATEGY:BLOCK:MOVE {
-    meta title "Move Block in Strategy"
-
+    meta title      "Move Block in Strategy"
     meta sendstates PREP
-
-    meta defaults {
-        block_id ""
-        where    ""
-    }
-
-    meta form {
-        rcc "Block ID:" -for block_id
-        text block_id -context yes
-
-        rcc "Where:" -for where
-        enumlong where -dict {emoveitem asdict longname}
-    }
-
+    meta parmlist   {block_id where}
 
     method _validate {} {
-        my prepare block_id -required -with {::strategy valclass ::athena::block}
+        my prepare block_id -required -with [list $adb strategy valclass ::athena::block]
         my prepare where    -required -type emoveitem
     }
 
     method _execute {{flunky ""}} {
-        set block [pot get $parms(block_id)]
+        set block [$adb pot get $parms(block_id)]
         set s [$block strategy]
         my setundo [$s moveblock_ $parms(block_id) $parms(where)]
     }

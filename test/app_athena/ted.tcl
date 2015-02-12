@@ -717,6 +717,8 @@ snit::type ted {
 
         ted notifier forget
 
+        # This is what we used to do to clean up after a test.
+        # Instead, we just do [app new].
         if {[sim state] eq "RUNNING"} {
             sim mutate pause
         }
@@ -746,8 +748,8 @@ snit::type ted {
         aram            clear
         pot             reset
         aam             reset
-        strategy        init
         driver::abevent reset
+        strategy        reset
     }
 
     # sendex ?-error? command...

@@ -66,7 +66,7 @@ namespace eval ::athena_test::tests:: {
     test constructor-1.1 {default state} -setup {
         setup
     } -body {
-        ::athena::coffer create coff ::adb
+        ::athena::coffer create coff [::adb athenadb]
         ted sortdict [coff getdict]
     } -cleanup {
         cleanup
@@ -80,7 +80,7 @@ namespace eval ::athena_test::tests:: {
     test constructor-1.2 {create with actor} -setup {
         setup
     } -body {
-        ::athena::coffer create coff ::adb JOE
+        ::athena::coffer create coff [::adb athenadb] JOE
         ted sortdict [coff getdict]
     } -cleanup {
         cleanup
@@ -102,7 +102,7 @@ namespace eval ::athena_test::tests:: {
     test setdict-1.1 {restores state} -setup {
         setup
     } -body {
-        ::athena::coffer create coff ::adb
+        ::athena::coffer create coff [::adb athenadb]
         coff setdict {cash 1 reserve 2 troops DUMMY plants DUMMY}
         coff getdict
     } -cleanup {
@@ -115,7 +115,7 @@ namespace eval ::athena_test::tests:: {
     test cash-1.1 {retrieves cash-on-hand} -setup {
         setup
     } -body {
-        ::athena::coffer create coff ::adb JOE
+        ::athena::coffer create coff [::adb athenadb] JOE
         coff cash
     } -cleanup {
         cleanup
@@ -127,7 +127,7 @@ namespace eval ::athena_test::tests:: {
     test reserve-1.1 {retrieves cash-reserve} -setup {
         setup
     } -body {
-        ::athena::coffer create coff ::adb JOE
+        ::athena::coffer create coff [::adb athenadb] JOE
         coff reserve
     } -cleanup {
         cleanup
@@ -140,7 +140,7 @@ namespace eval ::athena_test::tests:: {
     test troops-1.1 {retrieves troop levels} -setup {
         setup
     } -body {
-        ::athena::coffer create coff ::adb JOE
+        ::athena::coffer create coff [::adb athenadb] JOE
         coff troops BLUE undeployed
     } -cleanup {
         cleanup
@@ -149,7 +149,7 @@ namespace eval ::athena_test::tests:: {
     test troops-1.2 {0 if no troops are in location} -setup {
         setup
     } -body {
-        ::athena::coffer create coff ::adb JOE
+        ::athena::coffer create coff [::adb athenadb] JOE
         coff troops BLUE NB1
     } -cleanup {
         cleanup
@@ -161,7 +161,7 @@ namespace eval ::athena_test::tests:: {
     test plants-1.1 {retrieve plant repair levels} -setup {
         setup
     } -body {
-        ::athena::coffer create coff ::adb JOE
+        ::athena::coffer create coff [::adb athenadb] JOE
         coff plants NB1
     } -cleanup {
         cleanup
@@ -173,7 +173,7 @@ namespace eval ::athena_test::tests:: {
     test spend-1.1 {deducts cash from cash-on-hand} -setup {
         setup
     } -body {
-        ::athena::coffer create coff ::adb JOE
+        ::athena::coffer create coff [::adb athenadb] JOE
         coff spend 100.0
         coff cash
     } -cleanup {
@@ -183,7 +183,7 @@ namespace eval ::athena_test::tests:: {
     test spend-1.2 {insufficient cash on tick} -setup {
         setup
     } -body {
-        ::athena::coffer create coff ::adb JOE
+        ::athena::coffer create coff [::adb athenadb] JOE
         coff spend [expr {[coff cash] + 10.0}]
     } -returnCodes {
         error
@@ -196,7 +196,7 @@ namespace eval ::athena_test::tests:: {
         strategy locking 1
     } -body {
         # No error on lock, but balance doesn't go negative.
-        ::athena::coffer create coff ::adb JOE
+        ::athena::coffer create coff [::adb athenadb] JOE
         coff spend [expr {[coff cash] + 10.0}]
         coff cash
     } -cleanup {
@@ -209,7 +209,7 @@ namespace eval ::athena_test::tests:: {
     test deposit-1.1 {transfers cash-on-hand to reserve} -setup {
         setup
     } -body {
-        ::athena::coffer create coff ::adb JOE
+        ::athena::coffer create coff [::adb athenadb] JOE
         coff deposit 100.0
         list [coff cash] [coff reserve]
     } -cleanup {
@@ -219,7 +219,7 @@ namespace eval ::athena_test::tests:: {
     test deposit-1.2 {insufficient cash} -setup {
         setup
     } -body {
-        ::athena::coffer create coff ::adb JOE
+        ::athena::coffer create coff [::adb athenadb] JOE
         coff deposit 10001.0
     } -returnCodes {
         error
@@ -233,7 +233,7 @@ namespace eval ::athena_test::tests:: {
     test withdraw-1.1 {transfers reserve to cash-on-hand} -setup {
         setup
     } -body {
-        ::athena::coffer create coff ::adb JOE
+        ::athena::coffer create coff [::adb athenadb] JOE
         coff withdraw 100.0
         list [coff cash] [coff reserve]
     } -cleanup {
@@ -243,7 +243,7 @@ namespace eval ::athena_test::tests:: {
     test withdraw-1.2 {reserve can be negative} -setup {
         setup
     } -body {
-        ::athena::coffer create coff ::adb JOE
+        ::athena::coffer create coff [::adb athenadb] JOE
         coff withdraw 400000.0
         list [coff cash] [coff reserve]
     } -cleanup {
@@ -256,7 +256,7 @@ namespace eval ::athena_test::tests:: {
     test demobilize-1.1 {removes personnel from mobilized, undeployed} -setup {
         setup
     } -body {
-        ::athena::coffer create coff ::adb JOE
+        ::athena::coffer create coff [::adb athenadb] JOE
         set a [coff troops BLUE mobilized]
         set b [coff troops BLUE undeployed]
         coff demobilize BLUE 100
@@ -270,7 +270,7 @@ namespace eval ::athena_test::tests:: {
     test demobilize-1.2 {insufficient personnel} -setup {
         setup
     } -body {
-        ::athena::coffer create coff ::adb JOE
+        ::athena::coffer create coff [::adb athenadb] JOE
         coff demobilize BLUE 6000
     } -returnCodes {
         error
@@ -281,7 +281,7 @@ namespace eval ::athena_test::tests:: {
     test demobilize-1.3 {can demobilize all} -setup {
         setup
     } -body {
-        ::athena::coffer create coff ::adb JOE
+        ::athena::coffer create coff [::adb athenadb] JOE
         set a [coff troops BLUE undeployed]
         coff demobilize BLUE $a
         set b [coff troops BLUE undeployed]
@@ -297,7 +297,7 @@ namespace eval ::athena_test::tests:: {
     test mobilize-1.1 {adds personnel to mobilized, undeployed} -setup {
         setup
     } -body {
-        ::athena::coffer create coff ::adb JOE
+        ::athena::coffer create coff [::adb athenadb] JOE
         set a [coff troops BLUE mobilized]
         set b [coff troops BLUE undeployed]
         coff mobilize BLUE 100
@@ -314,7 +314,7 @@ namespace eval ::athena_test::tests:: {
     test deploy-1.1 {deploys undeployed personnel to neighborhood} -setup {
         setup
     } -body {
-        ::athena::coffer create coff ::adb JOE
+        ::athena::coffer create coff [::adb athenadb] JOE
         set a [coff troops BLUE undeployed]
         set b [coff troops BLUE NB1]
         coff deploy BLUE NB1 100
@@ -328,7 +328,7 @@ namespace eval ::athena_test::tests:: {
     test deploy-1.2 {insufficient personnel on tick} -setup {
         setup
     } -body {
-        ::athena::coffer create coff ::adb JOE
+        ::athena::coffer create coff [::adb athenadb] JOE
         coff deploy BLUE NB1 [expr {[coff troops BLUE undeployed] + 100}]
     } -returnCodes {
         error
@@ -340,7 +340,7 @@ namespace eval ::athena_test::tests:: {
         setup
         strategy locking 1
     } -body {
-        ::athena::coffer create coff ::adb JOE
+        ::athena::coffer create coff [::adb athenadb] JOE
         coff deploy BLUE NB1 [expr {[coff troops BLUE undeployed] + 100}]
         coff troops BLUE undeployed
     } -cleanup {
@@ -353,7 +353,7 @@ namespace eval ::athena_test::tests:: {
     test assign-1.1 {assigns unassigned personnel in neighborhood} -setup {
         setup
     } -body {
-        ::athena::coffer create coff ::adb JOE
+        ::athena::coffer create coff [::adb athenadb] JOE
         coff deploy BLUE NB1 2500
         set a [coff troops BLUE NB1]
         coff assign BLUE NB1 100
@@ -365,7 +365,7 @@ namespace eval ::athena_test::tests:: {
 
     test assign-1.2 {insufficient personnel on tick} -setup {
         setup
-        ::athena::coffer create coff ::adb JOE
+        ::athena::coffer create coff [::adb athenadb] JOE
         coff deploy BLUE NB1 2500
     } -body {
         coff assign BLUE NB1 [expr {[coff troops BLUE NB1] + 100}]
@@ -379,7 +379,7 @@ namespace eval ::athena_test::tests:: {
     test assign-1.3 {insufficient personnel on lock} -setup {
         setup
         strategy locking 1
-        ::athena::coffer create coff ::adb JOE
+        ::athena::coffer create coff [::adb athenadb] JOE
         coff deploy BLUE NB1 2500
     } -body {
         coff assign BLUE NB1 [expr {[coff troops BLUE NB1] + 100}]
@@ -395,7 +395,7 @@ namespace eval ::athena_test::tests:: {
     test repair-1.1 {set repair level in neighborhood} -setup {
         setup
     } -body {
-        ::athena::coffer create coff ::adb JOE
+        ::athena::coffer create coff [::adb athenadb] JOE
         coff repair NB1 0.1
         coff plants NB1
     } -cleanup {

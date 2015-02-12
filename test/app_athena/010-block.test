@@ -65,7 +65,7 @@ namespace eval ::athena_test::tests:: {
         ted lock
         cash load
         personnel load
-        set coffer [::athena::coffer new ::adb JOE]
+        set coffer [::athena::coffer new [::adb athenadb] JOE]
 
         # NEXT, enable the blocks again.
         $B1   configure -state normal

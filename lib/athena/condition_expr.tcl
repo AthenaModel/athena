@@ -8,7 +8,7 @@
 # DESCRIPTION:
 #    athena(n): Mark II Condition, EXPR
 #
-# TBD: Global refs: executive, strategy, sigevent
+# TBD: Global refs: executive, sigevent
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
@@ -105,7 +105,7 @@
 
 
     method _validate {} {
-        my prepare condition_id -required -with {::strategy valclass ::athena::condition::EXPR}
+        my prepare condition_id -required -with [list $adb strategy valclass ::athena::condition::EXPR]
         my returnOnError
 
         set cond [$adb pot get $parms(condition_id)]

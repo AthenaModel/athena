@@ -226,9 +226,9 @@ snit::widget strategybrowser {
         # and so the browser's data is reloaded from scratch.  A
         # lazyupdater(n) is used to guarantee that the data is reloaded only
         # once, at the last possible moment.
-        notifier bind ::sim      <DbSyncB> $self [mymethod ReloadNow]
-        notifier bind ::sim      <Tick>    $self [mymethod ReloadOnEvent]
-        notifier bind ::strategy <Check>   $self [mymethod ReloadOnEvent]
+        notifier bind ::sim          <DbSyncB> $self [mymethod ReloadNow]
+        notifier bind ::sim          <Tick>    $self [mymethod ReloadOnEvent]
+        notifier bind ::adb.strategy <Check>   $self [mymethod ReloadOnEvent]
 
         # ACTOR UPDATES
         #
@@ -242,7 +242,7 @@ snit::widget strategybrowser {
         # When blocks are added to or removed from or moved within the 
         # current strategy, update the bmenu.
 
-        notifier bind ::strategy <blocks>  $self [mymethod StrategyBlocks]
+        notifier bind ::adb.strategy <blocks>  $self [mymethod StrategyBlocks]
 
         # BLOCK UPDATES
         #

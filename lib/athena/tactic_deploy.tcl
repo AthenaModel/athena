@@ -234,7 +234,7 @@
     # If none of these things are true, we have an existing deployment.
 
     method IsExistingDeployment {} {
-        if {[strategy locking]
+        if {[[my adb] strategy locking]
             || $redeploy
             || $last_tick eq ""
             || $last_tick < [simclock now] - 1
@@ -411,7 +411,7 @@
 
         # NEXT, if nmode is BY_POP, filter out empty neighborhoods now.
         if {$nmode eq "BY_POP" && [llength $nbhoods] > 0} {
-            set nbhoods [[my adb]  eval "
+            set nbhoods [[my adb] eval "
                 SELECT n FROM demog_n
                 WHERE population > 0
                 AND n IN ('[join $nbhoods ',']')
@@ -453,7 +453,7 @@
         # NEXT, How many troops can we afford? All of them if we
         # are locking or they are free.  Otherwise, it depends
         # on the cost per person.
-        if {[strategy locking] || $costPerPerson == 0.0} {
+        if {[[my adb] strategy locking] || $costPerPerson == 0.0} {
             set troops $available
         } else {
             # FIRST, compute the number of troops we can afford.
@@ -523,7 +523,7 @@
         # and the maximum quantity of troops we can afford.
         set minCost          [my TroopCost $min]
 
-        if {[strategy locking]} {
+        if {[[my adb] strategy locking]} {
             set affordableTroops $max
         } else {
             set affordableTroops [my TroopsFor $coffer $cash]
@@ -841,7 +841,8 @@
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::DEPLOY}
+        my prepare tactic_id  -required \
+            -with [list $adb strategy valclass ::athena::tactic::DEPLOY]
         my returnOnError
 
         # NEXT, get the tactic

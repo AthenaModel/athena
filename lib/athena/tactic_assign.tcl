@@ -230,7 +230,7 @@
         # and the maximum quantity of troops we can afford.
         set minCost [my TroopCost $min]
 
-        if {[strategy locking]} {
+        if {[[my adb] strategy locking]} {
             set affordableTroops $max
         } else {
             set affordableTroops [my TroopsFor $coffer $cash]
@@ -473,7 +473,8 @@
 
     method _validate {} {
         # FIRST, prepare the parameters
-        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::ASSIGN}
+        my prepare tactic_id  -required \
+            -with [list $adb strategy valclass ::athena::tactic::ASSIGN]
         my returnOnError
 
         # NEXT, get the tactic

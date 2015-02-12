@@ -85,7 +85,7 @@
         }
 
         # NEXT, does the IOM have any valid payloads?
-        if {$gotIOM && ![[my adb]  onecolumn { 
+        if {$gotIOM && ![[my adb] onecolumn { 
             SELECT count(payload_num) FROM payloads
             WHERE iom_id=$iom AND state='normal'
         }]} {
@@ -93,7 +93,7 @@
         }
 
         # NEXT, does the IOM's hook have any valid topics?
-        if {$gotIOM && ![[my adb]  onecolumn { 
+        if {$gotIOM && ![[my adb] onecolumn { 
             SELECT count(HT.topic_id) 
             FROM hook_topics AS HT
             JOIN ioms AS I USING (hook_id)
@@ -187,8 +187,8 @@
         }
 
         lappend tags \
-            [[my adb] rdb eval {SELECT hook_id FROM ioms WHERE iom_id=$iom}]
-        lappend tags {*}[rdb eval {
+            [[my adb] eval {SELECT hook_id FROM ioms WHERE iom_id=$iom}]
+        lappend tags {*}[[my adb] eval {
             SELECT g,n FROM capcov 
             WHERE k=$cap AND capcov > 0.0
         }]
@@ -245,7 +245,8 @@
 
     method _validate {} {
         # FIRST, there must be a tactic ID
-        my prepare tactic_id  -required -with {::strategy valclass ::athena::tactic::BROADCAST}
+        my prepare tactic_id  -required \
+            -with [list $adb strategy valclass ::athena::tactic::BROADCAST]
         my returnOnError
 
         # NEXT, get the tactic

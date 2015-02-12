@@ -10,7 +10,7 @@
 #
 #    Does actor $a control all of the neighborhoods in $nlist?
 #
-# TBD: Global refs: gofer*, strategy
+# TBD: Global refs: gofer*
 #
 #-----------------------------------------------------------------------
 
@@ -160,7 +160,7 @@
 
 
     method _validate {} {
-        my prepare condition_id -required -with {::strategy valclass ::athena::condition::CONTROL}
+        my prepare condition_id -required -with [list $adb strategy valclass ::athena::condition::CONTROL]
         my returnOnError
 
         set cond [$adb pot get $parms(condition_id)]

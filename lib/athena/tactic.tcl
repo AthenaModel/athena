@@ -728,7 +728,8 @@ oo::define ::athena::tactic {
     meta parmlist   { tactic_id state }
 
     method _validate {} {
-        my prepare tactic_id -required -with {::strategy valclass ::athena::tactic}
+        my prepare tactic_id -required \
+            -with [list $adb strategy valclass ::athena::tactic]
         my prepare state     -required -tolower -type ebeanstate
     }
 
