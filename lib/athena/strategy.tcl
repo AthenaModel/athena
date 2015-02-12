@@ -23,8 +23,7 @@
 #    * ::athena::strategy, the strategy bean.
 #    * The various ::strategy::* orders.
 #
-# TBD: Global refs: sim, driver::abevent, plant, service, service_eni,
-#      unit
+# TBD: Global refs: sim, driver::abevent, plant, service, service_eni
 #
 #-----------------------------------------------------------------------
 
@@ -338,7 +337,7 @@ snit::type ::athena::strategy_manager {
         $adb profile 1 driver::abevent reset
         $adb profile 1 $adb broadcast reset
         $adb profile 1 $adb stance reset
-        $adb profile 1 unit reset
+        $adb profile 1 $adb unit reset
         $adb profile 1 service reset
 
         # NEXT, execute each agent's strategy.
@@ -363,7 +362,7 @@ snit::type ::athena::strategy_manager {
         $adb profile 1 $adb cap access save
 
         # NEXT, populate base units for all groups.
-        $adb profile 1 unit makebase
+        $adb profile 1 $adb unit makebase
 
         # NEXT, assess all requested IOM broadcasts
         $adb profile 1 $adb broadcast assess

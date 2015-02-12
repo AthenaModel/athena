@@ -13,7 +13,7 @@
 #   activities to deployed personnel, and the flow of population
 #   from one civilian group to another, during strategy execution.
 #
-# TBD: Global refs: unit, parm, sigevent
+# TBD: Global refs: parm, sigevent
 #
 #-----------------------------------------------------------------------
 
@@ -69,7 +69,7 @@ snit::type ::athena::personnel {
         }
 
         # NEXT, make the base units.
-        unit makebase
+        $adb unit makebase
     }
 
     # load
@@ -247,7 +247,7 @@ snit::type ::athena::personnel {
         }
 
         # NEXT, assign the tactic unit to this activity.
-        return [unit assign $tactic_id $g $n $a $personnel]
+        return [$adb unit assign $tactic_id $g $n $a $personnel]
     }
 
     # flow f g delta

@@ -178,6 +178,7 @@ snit::type ::athena::athenadb {
     component orggroup  -public orggroup  ;# orggroup manager
     component sat       -public sat       ;# satisfaction manager
     component strategy  -public strategy  ;# strategy manager
+    component unit      -public unit      ;# unit manager
     component vrel      -public vrel      ;# vert. rel. manager
 
     # Other Entities
@@ -292,6 +293,7 @@ snit::type ::athena::athenadb {
             sat                         \
             {strategy strategy_manager} \
             stance                      \
+            unit                        \
             vrel
 
         # NEXT, Make these components globally available.

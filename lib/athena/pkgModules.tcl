@@ -103,6 +103,7 @@ source [file join $::athena::library tactic_stance.tcl    ]
 source [file join $::athena::library tactic_support.tcl   ]
 source [file join $::athena::library tactic_violence.tcl  ]
 source [file join $::athena::library tactic_withdraw.tcl  ]
+source [file join $::athena::library unit.tcl             ]
 source [file join $::athena::library vrel.tcl             ]
 
 # Non-Editable Entities

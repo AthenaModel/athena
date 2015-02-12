@@ -62,7 +62,5 @@
   - absit
 - simclock
   - absit, athenadb, block
-- unit
-  - personnel, strategy
 
 
