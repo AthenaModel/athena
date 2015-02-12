@@ -62,7 +62,7 @@
 - simclock
   - absit, athenadb, block
 - strategy
-  - actor, agent, block, cash, condition_*, tactic_*
+  - actor, agent, block, cash, coffer, condition_*, tactic_*
 - unit
   - personnel
 

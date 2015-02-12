@@ -646,7 +646,7 @@ oo::define strategy {
 
     method execute {} {
         # FIRST, get a coffer of this agent's resources.
-        set coffer [coffer new [my agent]]
+        set coffer [::athena::coffer new ::adb [my agent]]
 
         # NEXT, try to execute each block.  The coffer will
         # keep track of resources as execution proceeds.  Each block

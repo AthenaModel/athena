@@ -43,7 +43,7 @@ namespace eval ::athena_test::tests:: {
         variable coffer
         ted create JOE BOB NB1 NB2 BLUE BRIT SHIA SUNN KURD
         cash load
-        set coffer [coffer new JOE]
+        set coffer [::athena::coffer new ::adb JOE]
 
 
         set B1 [ted addblock JOE]

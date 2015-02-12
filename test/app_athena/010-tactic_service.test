@@ -55,7 +55,7 @@ namespace eval ::athena_test::tests:: {
         personnel start
         personnel load
         service reset
-        set coffer [coffer new JOE]
+        set coffer [::athena::coffer new ::adb JOE]
     }
 
     proc cleanup {} {

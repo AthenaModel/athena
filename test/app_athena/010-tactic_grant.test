@@ -43,7 +43,7 @@ namespace eval ::athena_test::tests:: {
         variable coffer
         ted create JOE BOB CBS NBC ABC CNN FOX PBS
         cap access load
-        set coffer [coffer new JOE]
+        set coffer [::athena::coffer new ::adb JOE]
 
         set B1 [ted addblock JOE]
         set T1 [ted addtactic $B1 GRANT]

@@ -88,7 +88,7 @@ namespace eval ::athena_test::tests:: {
 
         cash load
         personnel load
-        set coffer [coffer new JOE]
+        set coffer [::athena::coffer new ::adb JOE]
     }
 
     # Set the maintenance cost for BLUE, in $/person deployed

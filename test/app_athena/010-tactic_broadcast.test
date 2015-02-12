@@ -46,7 +46,7 @@ namespace eval ::athena_test::tests:: {
         ted create JOE BOB CBS CNN IOM1 IOM2 BLUE
 
         cash load
-        set coffer [coffer new JOE]
+        set coffer [::athena::coffer new ::adb JOE]
 
         set T1 {
             cap         CBS
