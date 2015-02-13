@@ -138,7 +138,7 @@ oo::class create ::athena::ruleset_CIVCAS {
         dict with fdict {}
 
         # FIRST, compute the casualty multiplier
-        set zsat [parm get dam.CIVCAS.Zsat]
+        set zsat [my parm dam.CIVCAS.Zsat]
         set mult [zcurve eval $zsat $casualties]
         dict set fdict mult $mult
             
@@ -164,7 +164,7 @@ oo::class create ::athena::ruleset_CIVCAS {
         dict with fdict {}
 
         # FIRST, compute the casualty multiplier
-        set zsat [parm get dam.CIVCAS.Zcoop]
+        set zsat [my parm dam.CIVCAS.Zcoop]
         set cmult [zcurve eval $zsat $casualties]
         set rmult [rmf enmore [hrel.fg $f $g]]
         let mult {$cmult * $rmult}

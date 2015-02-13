@@ -20,10 +20,28 @@ snit::type ::athena::ruleset_manager {
     # List of rule set names
     typevariable rulesetNames {
         ACCIDENT
+        BADFOOD
+        BADWATER
         CIVCAS
+        COMMOUT
+        CULSITE
         DEMO 
+        DISASTER
+        DISEASE
+        DROUGHT
+        EPIDEMIC
         EXPLOSION
+        FOODSHRT
+        FUELSHRT
+        GARBAGE
+        INDSPILL
+        MINEFIELD
+        ORDNANCE
+        PIPELINE
+        REFINERY
+        RELSITE
         RIOT
+        SEWAGE
         VIOLENCE
     }
 

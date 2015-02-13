@@ -39,7 +39,7 @@ oo::class create ::athena::ruleset_abevent {
         }
 
         set n [dict get $fdict n]
-        if {[[my adb] demog getn $n population] == 0} {
+        if {[my demog getn $n population] == 0} {
             [my adb] log normal [my name] \
                 "skipping, nbhood $n is empty."
             return
@@ -118,7 +118,7 @@ oo::class create ::athena::ruleset_abevent {
     method satinput {flist cov pt args} {
         assert {[llength $args] != 0 && [llength $args] % 2 == 0}
 
-        set nomCov [parm get dam.abevent.nominalCoverage]
+        set nomCov [my parm dam.abevent.nominalCoverage]
         let mult   {$cov/$nomCov}
 
         set result [list]
@@ -176,7 +176,7 @@ oo::class create ::athena::ruleset_ACCIDENT {
     method ruleset {fdict} {
         dict with fdict {}
 
-        set flist [[my adb] demog gIn $n]
+        set flist [my demog gIn $n]
 
         my rule ACCIDENT-1-1 $fdict {true} {
             my satinput $flist $coverage T \
@@ -271,7 +271,7 @@ oo::class create ::athena::ruleset_EXPLOSION {
     method ruleset {fdict} {
         dict with fdict {}
 
-        set flist [[my adb] demog gIn $n]
+        set flist [my demog gIn $n]
 
         my rule EXPLOSION-1-1 $fdict {true} {
             my satinput $flist $coverage P \
@@ -294,7 +294,7 @@ oo::class create ::athena::ruleset_RIOT {
     method ruleset {fdict} {
         dict with fdict {}
 
-        set flist [[my adb] demog gIn $n]
+        set flist [my demog gIn $n]
 
         my rule RIOT-1-1 $fdict {true} {
             my satinput $flist $coverage P \
@@ -319,7 +319,7 @@ oo::class create ::athena::ruleset_VIOLENCE {
     method ruleset {fdict} {
         dict with fdict {}
 
-        set flist [[my adb] demog gIn $n]
+        set flist [my demog gIn $n]
 
         my rule VIOLENCE-1-1 $fdict {true} {
             my satinput $flist $coverage P \

@@ -247,7 +247,7 @@ CIVCAS-2-1 SUNN BLUE
     test sigline-1.1 {sigline output} -setup {
         setup
     } -body {
-        driver::CIVCAS sigline SHIA 
+        ruleset CIVCAS sigline SHIA 
     } -cleanup {
         cleanup
     } -result {Casualties to group SHIA}
@@ -259,7 +259,7 @@ CIVCAS-2-1 SUNN BLUE
     test narrative-1.1 {narrative output: CIVCAS-1} -setup {
         setup
     } -body {
-        driver::CIVCAS narrative {
+        ruleset CIVCAS narrative {
             dtype      CIVCAS
             f          SHIA
             casualties 100
@@ -271,7 +271,7 @@ CIVCAS-2-1 SUNN BLUE
     test narrative-1.2 {narrative output: CIVCAS-2} -setup {
         setup
     } -body {
-        driver::CIVCAS narrative {
+        ruleset CIVCAS narrative {
             dtype      CIVCAS
             f          SHIA
             g          BLUE
@@ -287,7 +287,7 @@ CIVCAS-2-1 SUNN BLUE
     test detail-1.1 {detail, CIVCAS-1} -setup {
         setup
     } -body {
-        driver::CIVCAS detail {
+        ruleset CIVCAS detail {
             dtype      CIVCAS
             f          SHIA
             casualties 100
@@ -307,7 +307,7 @@ The Z-curve multiplier is <i>mult</i>=2.00.<p>
     test detail-1.2 {detail, CIVCAS-2} -setup {
         setup
     } -body {
-        driver::CIVCAS detail {
+        ruleset CIVCAS detail {
             dtype      CIVCAS
             f          SHIA
             g          BLUE

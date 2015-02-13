@@ -79,7 +79,7 @@ oo::class create ::athena::ruleset {
     # Returns 1 if this rule set is active and 0 otherwise.
 
     method isactive {} {
-        return [parm get dam.[my name].active]
+        return [my parm dam.[my name].active]
     }
 
     # signature fdict
@@ -363,6 +363,43 @@ oo::class create ::athena::ruleset {
             }
         }
     }
+
+    #-------------------------------------------------------------------
+    # Other Helpers
+
+    # parm name
+    #
+    # Retrieves a parmdb parameter.
+
+    method parm {name} {
+        parm get $name
+    }
+
+    # demog args...
+    #
+    # Easy access to demog.
+
+    method demog {args} {
+        return [[my adb] demog {*}$args]
+    }
+
+    # mag* multiplier mag
+    #
+    # multiplier    A numeric multiplier
+    # mag           A qmag(n) value
+    #
+    # Returns the numeric value of mag times the multiplier.
+
+    method mag* {multiplier mag} {
+        set result [expr {$multiplier * [qmag value $mag]}]
+
+        if {$result == -0.0} {
+            set result 0.0
+        }
+
+        return $result
+    }
+
 }
 
 

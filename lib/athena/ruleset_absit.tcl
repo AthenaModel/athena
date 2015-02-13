@@ -1,113 +1,79 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#   driver_absit.tcl
+#   ruleset_absit.tcl
 #
 # AUTHOR:
 #   Will Duquette
 #
 # DESCRIPTION:
-#   Athena Driver Assessment Model (DAM): Abstract Situations
+#   athena(n): Abstract Situation rule sets
+#
+# FIRING DICTIONARY:
+#   dtype     - Driver type (i.e., rule set name)
+#   s         - Situation ID
+#   state     - Situation state
+#   n         - Neighborhood
+#   inception - Inception flag, 1 or 0
+#   coverage  - Coverage fraction
+#   resolver  - Resolving group
+
 #
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-# driver::absit: Family ensemble
+# ruleset_absit: absit rule set base class
 
-snit::type driver::absit {
-    # Make it an ensemble
-    pragma -hasinstances 0
+oo::class create ::athena::ruleset_absit {
+    superclass ::athena::ruleset
+
+    meta sigparms {state n}
 
     #-------------------------------------------------------------------
-    # Public Typemethods
+    # Public methods
 
-    # assess
+    # assess fdict
     #
-    # Assesses the existing absits by running their rule sets.
+    # Assesses an absit given its firing dictionary.
     
-    typemethod assess {} {
-        rdb eval {
-            SELECT * FROM absits ORDER BY s
-        } sit {
-            set dtype $sit(stype)
+    method assess {fdict} {
+        if {![my isactive]} {
+            [my adb] log warning [my name] "driver type has been deactivated"
+            return
+        }
 
-            if {![dam isactive $dtype]} {
-                log warning $dtype \
-                    "driver type has been deactivated"
-                return
-            }
+        set n [dict get $fdict n]
 
-            if {[demog getn $sit(n) population] == 0} {
-                log normal $dtype \
-                    "skipping, nbhood $sit(n) is empty."
-                return
-            }
+        if {[my demog getn $n population] == 0} {
+            [my adb] log normal [my name] \
+                "skipping, nbhood $n is empty."
+            return
+        }
 
-            # Set up the rule set firing dictionary
-            set fdict [dict create]
-            dict set fdict dtype     $dtype
-            dict set fdict s         $sit(s)
-            dict set fdict state     $sit(state)
-            dict set fdict n         $sit(n)
-            dict set fdict inception $sit(inception)
-            dict set fdict coverage  $sit(coverage)
-            dict set fdict resolver  $sit(resolver)
-
-            bgcatch {
-                log detail $dtype $fdict
-                driver::$dtype ruleset $fdict
-            }
+        bgcatch {
+            [my adb] log detail [my name] $fdict
+            my ruleset $fdict
         }
     }
 
-    #-------------------------------------------------------------------
-    # Situation definition
-
-    # define name defscript
-    #
-    # name        - The situation driver type name
-    # defscript   - The definition script
-    #
-    # Defines a single situation driver type.  All required public
-    # subcommands are defined automatically.  The driver type must
-    # define the "ruleset" subcommand containing the actual rule set.
-    #
-    # Note that rule sets can make use of procs defined in the
-    # driver::absit namespace.
-
-    typemethod define {name defscript} {
-        # FIRST, define the shared definitions
-        set footer "
-            delegate typemethod sigline   using {driver::absit %m $name}
-            delegate typemethod narrative using {driver::absit %m}
-            delegate typemethod detail    using {driver::absit %m}
-
-            typeconstructor {
-                namespace path ::driver::absit::
-            }
-        "
-
-        driver type define $name {state n} "$defscript\n$footer" 
-    }
 
     #-------------------------------------------------------------------
-    # Narrative Type Methods
+    # Narrative Methods
 
-    # sigline dtype signature
+    # sigline signature
     #
-    # dtype     - The driver type
     # signature - The driver signature, {state n}
     #
     # Returns a one-line description of the driver given its signature
     # values.
 
-    typemethod sigline {dtype signature} {
+    method sigline {signature} {
         lassign $signature state n
-        return "$dtype [string tolower $state] in $n"
+        return "[my name] [string tolower $state] in $n"
     }
 
     # narrative fdict
     #
-    # fdict - Firing dictionary; see [assess], above.
+    # fdict - Firing dictionary; see above.
     #
     # Produces a one-line narrative text string for a given rule firing.
     #
@@ -116,12 +82,12 @@ snit::type driver::absit {
     # will never be used.  It wasn't also so, however, so we include
     # the case here and in [detail] in case the rules change.
 
-    typemethod narrative {fdict} {
+    method narrative {fdict} {
         dict with fdict {}
 
         set pcov [string trim [percent $coverage]]
 
-        set start "$dtype [string tolower $state]"
+        set start "[my name] [string tolower $state]"
         set end   "in {nbhood:$n}"
 
         if {$state eq "ONGOING"} {
@@ -140,12 +106,12 @@ snit::type driver::absit {
     #
     # Produces a narrative HTML paragraph including all fdict information.
 
-    typemethod detail {fdict ht} {
+    method detail {fdict ht} {
         dict with fdict {}
 
         set pcov [string trim [percent $coverage]]
 
-        $ht putln "An abstract situation of type $dtype"
+        $ht putln "An abstract situation of type [my name]"
 
         if {$state eq "ONGOING"} {
             if {$inception} {
@@ -178,8 +144,8 @@ snit::type driver::absit {
     # g    A group
     #
     # Returns 1 if g is known and local, and 0 otherwise.
-    proc resolverIsLocal {g} {
-        expr {$g ne "" && [group isLocal $g]}
+    method resolverIsLocal {g} {
+        expr {$g ne "" && [[my adb] group isLocal $g]}
     }
 
     # satinput flist cov con mag ?con mag...?
@@ -191,18 +157,18 @@ snit::type driver::absit {
     #
     # Enters satisfaction inputs for flist and cov.
 
-    proc satinput {flist cov args} {
+    method satinput {flist cov args} {
         assert {[llength $args] != 0 && [llength $args] % 2 == 0}
 
-        set nomCov [parmdb get dam.absit.nominalCoverage]
+        set nomCov [my parm dam.absit.nominalCoverage]
         let mult   {$cov/$nomCov}
 
         set result [list]
         foreach {con mag} $args {
-            lappend result $con [mag* $mult $mag]
+            lappend result $con [my mag* $mult $mag]
         }
 
-        dam sat T $flist {*}$result
+        my sat T $flist {*}$result
     }
 }
 
@@ -213,34 +179,37 @@ snit::type driver::absit {
 # Abstract Situation: The local food supply has been contaminated.
 
 
-driver::absit define BADFOOD {
-    typemethod ruleset {fdict} {
+oo::class create ::athena::ruleset_BADFOOD {
+    superclass ::athena::ruleset_absit
+    meta name BADFOOD
+
+    method ruleset {fdict} {
         dict with fdict {}
 
-        set flist [demog gIn $n]
+        set flist [my demog gIn $n]
 
-        dam rule BADFOOD-1-1 $fdict {
+        my rule BADFOOD-1-1 $fdict {
            $state eq "ONGOING" && $inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 AUT M-    \
                 SFT XXXS- \
                 QOL XXL-
         }
 
-        dam rule BADFOOD-1-2 $fdict {
+        my rule BADFOOD-1-2 $fdict {
            $state eq "ONGOING" && !$inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 AUT M-    \
                 SFT XXXS- \
                 QOL L-
         }
 
-        dam rule BADFOOD-2-1 $fdict {
-            $state eq "RESOLVED" && [resolverIsLocal $resolver]
+        my rule BADFOOD-2-1 $fdict {
+            $state eq "RESOLVED" && [my resolverIsLocal $resolver]
         } {
-            satinput $flist $coverage  \
+            my satinput $flist $coverage  \
                 AUT S+
         }
     }
@@ -251,34 +220,37 @@ driver::absit define BADFOOD {
 #
 # Abstract Situation: The local water supply has been contaminated.
  
-driver::absit define BADWATER {
-    typemethod ruleset {fdict} {
+oo::class create ::athena::ruleset_BADWATER {
+    superclass ::athena::ruleset_absit
+    meta name BADWATER
+
+    method ruleset {fdict} {
         dict with fdict {}
 
-        set flist [demog gIn $n]
+        set flist [my demog gIn $n]
 
-        dam rule BADWATER-1-1 $fdict {
+        my rule BADWATER-1-1 $fdict {
            $state eq "ONGOING" && $inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 AUT M-    \
                 SFT XXXS- \
                 QOL XXL-
         }
 
-        dam rule BADWATER-1-2 $fdict {
+        my rule BADWATER-1-2 $fdict {
            $state eq "ONGOING" && !$inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 AUT M-    \
                 SFT XXXS- \
                 QOL L-
         }
 
-        dam rule BADWATER-2-1 $fdict {
-            $state eq "RESOLVED" && [resolverIsLocal $resolver]
+        my rule BADWATER-2-1 $fdict {
+            $state eq "RESOLVED" && [my resolverIsLocal $resolver]
         } {
-            satinput $flist $coverage  \
+            my satinput $flist $coverage  \
                 AUT S+
         }
     }
@@ -290,25 +262,28 @@ driver::absit define BADWATER {
 # Abstract Situation: Communications are out in the neighborhood.
  
     
-driver::absit define COMMOUT {
-    typemethod ruleset {fdict} {
+oo::class create ::athena::ruleset_COMMOUT {
+    superclass ::athena::ruleset_absit
+    meta name COMMOUT
+
+    method ruleset {fdict} {
         dict with fdict {}
 
-        set flist [demog gIn $n]
+        set flist [my demog gIn $n]
 
-        dam rule COMMOUT-1-1 $fdict {
+        my rule COMMOUT-1-1 $fdict {
            $state eq "ONGOING" && $inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 SFT L-    \
                 CUL M-    \
                 QOL XXL-
         }
 
-        dam rule COMMOUT-1-2 $fdict {
+        my rule COMMOUT-1-2 $fdict {
            $state eq "ONGOING" && !$inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 SFT S-    \
                 CUL S-    \
                 QOL XL-
@@ -323,24 +298,27 @@ driver::absit define COMMOUT {
 # Abstract Situation: A cultural site or artifact is
 # damaged, presumably due to kinetic action.
     
-driver::absit define CULSITE {
-    typemethod ruleset {fdict} {
+oo::class create ::athena::ruleset_CULSITE {
+    superclass ::athena::ruleset_absit
+    meta name CULSITE
+
+    method ruleset {fdict} {
         dict with fdict {}
 
-        set flist [demog gIn $n]
+        set flist [my demog gIn $n]
 
-        dam rule CULSITE-1-1 $fdict {
+        my rule CULSITE-1-1 $fdict {
            $state eq "ONGOING" && $inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 CUL XXXXL- \
                 QOL XXXS-
         }
 
-        dam rule CULSITE-1-2 $fdict {
+        my rule CULSITE-1-2 $fdict {
            $state eq "ONGOING" && !$inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 CUL XL-
         }
     }
@@ -351,32 +329,35 @@ driver::absit define CULSITE {
 #
 # Abstract Situation: Disaster
     
-driver::absit define DISASTER {
-    typemethod ruleset {fdict} {
+oo::class create ::athena::ruleset_DISASTER {
+    superclass ::athena::ruleset_absit
+    meta name DISASTER
+
+    method ruleset {fdict} {
         dict with fdict {}
 
-        set flist [demog gIn $n]
+        set flist [my demog gIn $n]
 
-        dam rule DISASTER-1-1 $fdict {
+        my rule DISASTER-1-1 $fdict {
            $state eq "ONGOING" && $inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 SFT XXL-   \
                 QOL XXXXL-
         }
 
-        dam rule DISASTER-1-2 $fdict {
+        my rule DISASTER-1-2 $fdict {
            $state eq "ONGOING" && !$inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 SFT L-    \
                 QOL XXL-
         }
 
-        dam rule DISASTER-2-1 $fdict {
-            $state eq "RESOLVED" && [resolverIsLocal $resolver]
+        my rule DISASTER-2-1 $fdict {
+            $state eq "RESOLVED" && [my resolverIsLocal $resolver]
         } {
-            satinput $flist $coverage  \
+            my satinput $flist $coverage  \
                 AUT S+
         }
     }
@@ -388,34 +369,37 @@ driver::absit define DISASTER {
 #
 # Abstract Situation: General disease due to unhealthy conditions.
     
-driver::absit define DISEASE {
-    typemethod ruleset {fdict} {
+oo::class create ::athena::ruleset_DISEASE {
+    superclass ::athena::ruleset_absit
+    meta name DISEASE
+
+    method ruleset {fdict} {
         dict with fdict {}
 
-        set flist [demog gIn $n]
+        set flist [my demog gIn $n]
 
-        dam rule DISEASE-1-1 $fdict {
+        my rule DISEASE-1-1 $fdict {
            $state eq "ONGOING" && $inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 AUT L-    \
                 SFT XXL-  \
                 QOL XXXL-
         }
 
-        dam rule DISEASE-1-2 $fdict {
+        my rule DISEASE-1-2 $fdict {
            $state eq "ONGOING" && !$inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 AUT S-    \
                 SFT L-    \
                 QOL XL-
         }
 
-        dam rule DISEASE-2-1 $fdict {
-            $state eq "RESOLVED" && [resolverIsLocal $resolver]
+        my rule DISEASE-2-1 $fdict {
+            $state eq "RESOLVED" && [my resolverIsLocal $resolver]
         } {
-            satinput $flist $coverage  \
+            my satinput $flist $coverage  \
                 AUT L+
         }
     }
@@ -426,25 +410,28 @@ driver::absit define DISEASE {
 #
 # Abstract Situation: Long-term Drought.
     
-driver::absit define DROUGHT {
-    typemethod ruleset {fdict} {
+oo::class create ::athena::ruleset_DROUGHT {
+    superclass ::athena::ruleset_absit
+    meta name DROUGHT
+
+    method ruleset {fdict} {
         dict with fdict {}
 
-        set sa    [demog saIn $n]
-        set nonsa [demog nonSaIn $n]
+        set sa    [my demog saIn $n]
+        set nonsa [my demog nonSaIn $n]
 
-        dam rule DROUGHT-1-1 $fdict {
+        my rule DROUGHT-1-1 $fdict {
            $state eq "ONGOING" && [llength $nonsa] > 0
         } {
-            satinput $nonsa $coverage \
+            my satinput $nonsa $coverage \
                 AUT XS-   \
                 QOL XS-
         }
 
-        dam rule DROUGHT-1-2 $fdict {
+        my rule DROUGHT-1-2 $fdict {
            $state eq "ONGOING" && [llength $sa] > 0
         } {
-            satinput $sa $coverage \
+            my satinput $sa $coverage \
                 AUT L-    \
                 SFT XS-   \
                 QOL L-
@@ -458,34 +445,37 @@ driver::absit define DROUGHT {
 #
 # Abstract Situation: Epidemic disease
  
-driver::absit define EPIDEMIC {
-    typemethod ruleset {fdict} {
+oo::class create ::athena::ruleset_EPIDEMIC {
+    superclass ::athena::ruleset_absit
+    meta name EPIDEMIC
+
+    method ruleset {fdict} {
         dict with fdict {}
 
-        set flist [demog gIn $n]
+        set flist [my demog gIn $n]
 
-        dam rule EPIDEMIC-1-1 $fdict {
+        my rule EPIDEMIC-1-1 $fdict {
            $state eq "ONGOING" && $inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 AUT XXL-   \
                 SFT XL-    \
                 QOL XXXXL-
         }
 
-        dam rule EPIDEMIC-1-2 $fdict {
+        my rule EPIDEMIC-1-2 $fdict {
            $state eq "ONGOING" && !$inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 AUT L-    \
                 SFT L-    \
                 QOL XXL-
         }
 
-        dam rule EPIDEMIC-2-1 $fdict {
-            $state eq "RESOLVED" && [resolverIsLocal $resolver]
+        my rule EPIDEMIC-2-1 $fdict {
+            $state eq "RESOLVED" && [my resolverIsLocal $resolver]
         } {
-            satinput $flist $coverage  \
+            my satinput $flist $coverage  \
                 AUT M+
         }
     }
@@ -497,32 +487,35 @@ driver::absit define EPIDEMIC {
 #
 # Abstract Situation: There is a food shortage in the neighborhood.
  
-driver::absit define FOODSHRT {
-    typemethod ruleset {fdict} {
+oo::class create ::athena::ruleset_FOODSHRT {
+    superclass ::athena::ruleset_absit
+    meta name FOODSHRT
+
+    method ruleset {fdict} {
         dict with fdict {}
 
-        set flist [demog gIn $n]
+        set flist [my demog gIn $n]
 
-        dam rule FOODSHRT-1-1 $fdict {
+        my rule FOODSHRT-1-1 $fdict {
            $state eq "ONGOING" && $inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 AUT M-  \
                 QOL XL-
         }
 
-        dam rule FOODSHRT-1-2 $fdict {
+        my rule FOODSHRT-1-2 $fdict {
            $state eq "ONGOING" && !$inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 AUT M-  \
                 QOL L-
         }
 
-        dam rule FOODSHRT-2-1 $fdict {
-            $state eq "RESOLVED" && [resolverIsLocal $resolver]
+        my rule FOODSHRT-2-1 $fdict {
+            $state eq "RESOLVED" && [my resolverIsLocal $resolver]
         } {
-            satinput $flist $coverage  \
+            my satinput $flist $coverage  \
                 AUT L+
         }
     }
@@ -534,32 +527,35 @@ driver::absit define FOODSHRT {
 #
 # Abstract Situation: There is a fuel shortage in the neighborhood.
  
-driver::absit define FUELSHRT {
-    typemethod ruleset {fdict} {
+oo::class create ::athena::ruleset_FUELSHRT {
+    superclass ::athena::ruleset_absit
+    meta name FUELSHRT
+
+    method ruleset {fdict} {
         dict with fdict {}
 
-        set flist [demog gIn $n]
+        set flist [my demog gIn $n]
 
-        dam rule FUELSHRT-1-1 $fdict {
+        my rule FUELSHRT-1-1 $fdict {
            $state eq "ONGOING" && $inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 AUT M-           \
                 QOL XXXL-
         }
 
-        dam rule FUELSHRT-1-2 $fdict {
+        my rule FUELSHRT-1-2 $fdict {
            $state eq "ONGOING" && !$inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 AUT M-  \
                 QOL XL-
         }
 
-        dam rule FUELSHRT-2-1 $fdict {
-            $state eq "RESOLVED" && [resolverIsLocal $resolver]
+        my rule FUELSHRT-2-1 $fdict {
+            $state eq "RESOLVED" && [my resolverIsLocal $resolver]
         } {
-            satinput $flist $coverage  \
+            my satinput $flist $coverage  \
                 AUT S+
         }
     }
@@ -571,34 +567,37 @@ driver::absit define FUELSHRT {
 #
 # Abstract Situation: Garbage is piling up in the streets.
  
-driver::absit define GARBAGE {
-    typemethod ruleset {fdict} {
+oo::class create ::athena::ruleset_GARBAGE {
+    superclass ::athena::ruleset_absit
+    meta name GARBAGE
+
+    method ruleset {fdict} {
         dict with fdict {}
 
-        set flist [demog gIn $n]
+        set flist [my demog gIn $n]
 
-        dam rule GARBAGE-1-1 $fdict {
+        my rule GARBAGE-1-1 $fdict {
            $state eq "ONGOING" && $inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 AUT L-   \
                 SFT XL-  \
                 QOL XL-
         }
 
-        dam rule GARBAGE-1-2 $fdict {
+        my rule GARBAGE-1-2 $fdict {
            $state eq "ONGOING" && !$inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 AUT M-   \
                 SFT M-   \
                 QOL L-
         }
 
-        dam rule GARBAGE-2-1 $fdict {
-            $state eq "RESOLVED" && [resolverIsLocal $resolver]
+        my rule GARBAGE-2-1 $fdict {
+            $state eq "RESOLVED" && [my resolverIsLocal $resolver]
         } {
-            satinput $flist $coverage  \
+            my satinput $flist $coverage  \
                 AUT S+
         }
     }
@@ -612,34 +611,37 @@ driver::absit define GARBAGE {
 # Abstract Situation: Damage to an industrial facility has released
 # possibly toxic substances into the surrounding area.
  
-driver::absit define INDSPILL {
-    typemethod ruleset {fdict} {
+oo::class create ::athena::ruleset_INDSPILL {
+    superclass ::athena::ruleset_absit
+    meta name INDSPILL
+
+    method ruleset {fdict} {
         dict with fdict {}
 
-        set flist [demog gIn $n]
+        set flist [my demog gIn $n]
 
-        dam rule INDSPILL-1-1 $fdict {
+        my rule INDSPILL-1-1 $fdict {
            $state eq "ONGOING" && $inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 AUT M-   \
                 SFT XL-  \
                 QOL XXL-
         }
 
-        dam rule INDSPILL-1-2 $fdict {
+        my rule INDSPILL-1-2 $fdict {
            $state eq "ONGOING" && !$inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 AUT M-   \
                 SFT S-   \
                 QOL L-
         }
 
-        dam rule INDSPILL-2-1 $fdict {
-            $state eq "RESOLVED" && [resolverIsLocal $resolver]
+        my rule INDSPILL-2-1 $fdict {
+            $state eq "RESOLVED" && [my resolverIsLocal $resolver]
         } {
-            satinput $flist $coverage  \
+            my satinput $flist $coverage  \
                 AUT M+
         }
     }
@@ -652,34 +654,37 @@ driver::absit define INDSPILL {
 # Abstract Situation: The residents of this neighborhood know that
 # there is a minefield in the neighborhood.
  
-driver::absit define MINEFIELD {
-    typemethod ruleset {fdict} {
+oo::class create ::athena::ruleset_MINEFIELD {
+    superclass ::athena::ruleset_absit
+    meta name MINEFIELD
+
+    method ruleset {fdict} {
         dict with fdict {}
 
-        set flist [demog gIn $n]
+        set flist [my demog gIn $n]
 
-        dam rule MINEFIELD-1-1 $fdict {
+        my rule MINEFIELD-1-1 $fdict {
            $state eq "ONGOING" && $inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 AUT XXL-    \
                 SFT XXXXL-  \
                 QOL XXXXL-
         }
 
-        dam rule MINEFIELD-1-2 $fdict {
+        my rule MINEFIELD-1-2 $fdict {
            $state eq "ONGOING" && !$inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 AUT L-    \
                 SFT XXL-  \
                 QOL XXL-
         }
 
-        dam rule MINEFIELD-2-1 $fdict {
-            $state eq "RESOLVED" && [resolverIsLocal $resolver]
+        my rule MINEFIELD-2-1 $fdict {
+            $state eq "RESOLVED" && [my resolverIsLocal $resolver]
         } {
-            satinput $flist $coverage  \
+            my satinput $flist $coverage  \
                 AUT XXL+
         }
     }
@@ -693,34 +698,37 @@ driver::absit define MINEFIELD {
 # there is unexploded ordnance (probably from cluster munitions)
 # in the neighborhood.
  
-driver::absit define ORDNANCE {
-    typemethod ruleset {fdict} {
+oo::class create ::athena::ruleset_ORDNANCE {
+    superclass ::athena::ruleset_absit
+    meta name ORDNANCE
+
+    method ruleset {fdict} {
         dict with fdict {}
 
-        set flist [demog gIn $n]
+        set flist [my demog gIn $n]
 
-        dam rule ORDNANCE-1-1 $fdict {
+        my rule ORDNANCE-1-1 $fdict {
            $state eq "ONGOING" && $inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 AUT XL-    \
                 SFT XXXXL- \
                 QOL XXXL-
         }
 
-        dam rule ORDNANCE-1-2 $fdict {
+        my rule ORDNANCE-1-2 $fdict {
            $state eq "ONGOING" && !$inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 AUT L-   \
                 SFT XXL- \
                 QOL XXL-
         }
 
-        dam rule ORDNANCE-2-1 $fdict {
-            $state eq "RESOLVED" && [resolverIsLocal $resolver]
+        my rule ORDNANCE-2-1 $fdict {
+            $state eq "RESOLVED" && [my resolverIsLocal $resolver]
         } {
-            satinput $flist $coverage  \
+            my satinput $flist $coverage  \
                 AUT S+
         }
     }
@@ -734,34 +742,37 @@ driver::absit define ORDNANCE {
 # Abstract Situation: Damage to an oil pipeline has caused to catch
 # fire.
  
-driver::absit define PIPELINE {
-    typemethod ruleset {fdict} {
+oo::class create ::athena::ruleset_PIPELINE {
+    superclass ::athena::ruleset_absit
+    meta name PIPELINE
+
+    method ruleset {fdict} {
         dict with fdict {}
 
-        set flist [demog gIn $n]
+        set flist [my demog gIn $n]
 
-        dam rule PIPELINE-1-1 $fdict {
+        my rule PIPELINE-1-1 $fdict {
            $state eq "ONGOING" && $inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 AUT L-     \
                 SFT S-     \
                 QOL XXXXL-
         }
 
-        dam rule PIPELINE-1-2 $fdict {
+        my rule PIPELINE-1-2 $fdict {
            $state eq "ONGOING" && !$inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 AUT M-     \
                 SFT XXS-   \
                 QOL XXL-
         }
 
-        dam rule PIPELINE-2-1 $fdict {
-            $state eq "RESOLVED" && [resolverIsLocal $resolver]
+        my rule PIPELINE-2-1 $fdict {
+            $state eq "RESOLVED" && [my resolverIsLocal $resolver]
         } {
-            satinput $flist $coverage  \
+            my satinput $flist $coverage  \
                 AUT S+
         }
     }
@@ -774,34 +785,37 @@ driver::absit define PIPELINE {
 # Abstract Situation: Damage to an oil refinery has caused it to
 # catch fire.
  
-driver::absit define REFINERY {
-    typemethod ruleset {fdict} {
+oo::class create ::athena::ruleset_REFINERY {
+    superclass ::athena::ruleset_absit
+    meta name REFINERY
+
+    method ruleset {fdict} {
         dict with fdict {}
 
-        set flist [demog gIn $n]
+        set flist [my demog gIn $n]
 
-        dam rule REFINERY-1-1 $fdict {
+        my rule REFINERY-1-1 $fdict {
            $state eq "ONGOING" && $inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 AUT XXL-   \
                 SFT L-     \
                 QOL XXXXL-
         }
 
-        dam rule REFINERY-1-2 $fdict {
+        my rule REFINERY-1-2 $fdict {
            $state eq "ONGOING" && !$inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 AUT L-   \
                 SFT M-   \
                 QOL XXL-
         }
 
-        dam rule REFINERY-2-1 $fdict {
-            $state eq "RESOLVED" && [resolverIsLocal $resolver]
+        my rule REFINERY-2-1 $fdict {
+            $state eq "RESOLVED" && [my resolverIsLocal $resolver]
         } {
-            satinput $flist $coverage  \
+            my satinput $flist $coverage  \
                 AUT XL+
         }
     }
@@ -815,36 +829,39 @@ driver::absit define REFINERY {
 # Abstract Situation: A religious site or artifact is
 # damaged, presumably due to kinetic action.
  
-driver::absit define RELSITE {
-    typemethod ruleset {fdict} {
+oo::class create ::athena::ruleset_RELSITE {
+    superclass ::athena::ruleset_absit
+    meta name RELSITE
+
+    method ruleset {fdict} {
         dict with fdict {}
 
-        set flist [demog gIn $n]
+        set flist [my demog gIn $n]
 
-        dam rule RELSITE-1-1 $fdict {
+        my rule RELSITE-1-1 $fdict {
            $state eq "ONGOING" && $inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 AUT M-    \
                 SFT XL-   \
                 CUL XXXL- \
                 QOL L-
         }
 
-        dam rule RELSITE-1-2 $fdict {
+        my rule RELSITE-1-2 $fdict {
            $state eq "ONGOING" && !$inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 AUT S-   \
                 SFT S-   \
                 CUL XL-  \
                 QOL XS-
         }
 
-        dam rule RELSITE-2-1 $fdict {
-            $state eq "RESOLVED" && [resolverIsLocal $resolver]
+        my rule RELSITE-2-1 $fdict {
+            $state eq "RESOLVED" && [my resolverIsLocal $resolver]
         } {
-            satinput $flist $coverage  \
+            my satinput $flist $coverage  \
                 AUT M+
         }
     }
@@ -856,32 +873,35 @@ driver::absit define RELSITE {
 #
 # Abstract Situation: Sewage is pooling in the streets.
  
-driver::absit define SEWAGE {
-    typemethod ruleset {fdict} {
+oo::class create ::athena::ruleset_SEWAGE {
+    superclass ::athena::ruleset_absit
+    meta name SEWAGE
+
+    method ruleset {fdict} {
         dict with fdict {}
 
-        set flist [demog gIn $n]
+        set flist [my demog gIn $n]
 
-        dam rule SEWAGE-1-1 $fdict {
+        my rule SEWAGE-1-1 $fdict {
            $state eq "ONGOING" && $inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 AUT L-    \
                 QOL XXXL-
         }
 
-        dam rule SEWAGE-1-2 $fdict {
+        my rule SEWAGE-1-2 $fdict {
            $state eq "ONGOING" && !$inception
         } {
-            satinput $flist $coverage \
+            my satinput $flist $coverage \
                 AUT M-    \
                 QOL XL-
         }
 
-        dam rule SEWAGE-2-1 $fdict {
-            $state eq "RESOLVED" && [resolverIsLocal $resolver]
+        my rule SEWAGE-2-1 $fdict {
+            $state eq "RESOLVED" && [my resolverIsLocal $resolver]
         } {
-            satinput $flist $coverage  \
+            my satinput $flist $coverage  \
                 AUT S+
         }
     }

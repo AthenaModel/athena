@@ -100,7 +100,24 @@ snit::type ::athena::absit {
         }
 
         # NEXT, assess all absits.
-        driver::absit assess
+        rdb eval {
+            SELECT * FROM absits ORDER BY s
+        } sit {
+            set dtype $sit(stype)
+
+            # Set up the rule set firing dictionary
+            set fdict [dict create]
+            dict set fdict dtype     $dtype
+            dict set fdict s         $sit(s)
+            dict set fdict state     $sit(state)
+            dict set fdict n         $sit(n)
+            dict set fdict inception $sit(inception)
+            dict set fdict coverage  $sit(coverage)
+            dict set fdict resolver  $sit(resolver)
+
+            # Assess
+            $adb ruleset $dtype assess $fdict
+        }
 
         # NEXT, clear all inception flags.
         $adb eval {UPDATE absits SET inception=0}
