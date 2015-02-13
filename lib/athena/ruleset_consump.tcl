@@ -1,87 +1,45 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#    driver_consump.tcl
+#    ruleset_consump.tcl
 #
 # AUTHOR:
 #    Will Duquette
 #
 # DESCRIPTION:
-#   Athena Driver Assessment Model (DAM): CONSUMP rules
+#   athena(n): CONSUMP rule set
 #
-#    ::demsit_rules is a singleton object implemented as a snit::type.
+# FIRING DICTIONARY:
+#   g       - The group consuming goods
+#   n       - The group's neighborhood
+#   a       - The neighborhood's controlling actor
+#   povf    - The poverty factor
+#   expectf - The expectations factor
 #
 #-----------------------------------------------------------------------
 
-#-----------------------------------------------------------------------
-# CONSUMP
-
-driver type define CONSUMP {g} {
-    #-------------------------------------------------------------------
-    # Public Typemethods
-
-    # assess
-    #
-    # Assesses any existing CONSUMP situations, which it finds for
-    # itself.
+oo::class create ::athena::ruleset_CONSUMP {
+    superclass ::athena::ruleset
     
-    typemethod assess {} {
-        set dtype CONSUMP
+    meta name     "CONSUMP"
+    meta sigparms {g}
 
+    # assess fdict
+    #
+    # fdict  - The firing dictionary; see above.
+    #
+    # Assesses the consumption situation indicated by the fdict.
+
+    method assess {fdict} {
         # FIRST, skip if the rule set is inactive.
-        if {![dam isactive CONSUMP]} {
-            log warning CONSUMP \
+        if {![my isactive]} {
+            [my adb] log warning [my name] \
                 "driver type has been deactivated"
             return
         }
-        
-        # NEXT, look for and assess consumption
-        rdb eval {
-            SELECT G.g, G.aloc, G.eloc, G.povfrac, C.n, N.controller AS a
-            FROM demog_g AS G
-            JOIN civgroups AS C USING (g)
-            JOIN control_n AS N USING (n)
-            WHERE consumers > 0
-        } row {
-            # FIRST, get the data.
-            unset -nocomplain row(*)
-            set fdict [array get row]
-            dict set fdict dtype $dtype
-            dict with fdict {}
             
-            # NEXT, get the expectations factor gain
-            set ge [parm get demog.consump.expectfGain]
-            
-            # NEXT, if econ is disabled, pull parmdb parameters for the
-            # rule set otherwise compute the expectations factor
-            # NOTE: when econ is enabled, povfrac comes from demog_g
-            if {[econ state] eq "DISABLED"} {
-                set urb \
-                    [rdb onecolumn {
-                        SELECT urbanization FROM nbhoods WHERE n=$n
-                    }]
-
-                set expectf [parm get dam.CONSUMP.expectf.$urb]
-                set povfrac [parm get dam.CONSUMP.povfrac.$urb]
-                dict set fdict povfrac $povfrac
-                let expectf {$ge*$expectf}
-            } else {
-                let expectf {$ge*min(1.0, ($aloc - $eloc)/max(1.0, $eloc))}
-            }
-            
-            # NEXT, round to one decimal place
-            dict set fdict expectf [format "%.1f" $expectf]
-            
-            # NEXT, compute the poverty factor, again rounding it to two
-            # decimal places.
-            set Zpovf [parm get demog.consump.Zpovf]
-            set povf [zcurve eval $Zpovf $povfrac]
-            
-            dict set fdict povf [format "%.2f" $povf]
-            
-            bgcatch {
-                log detail $dtype $fdict
-                $type ruleset $fdict
-            }
+        bgcatch {
+            [my adb] log detail [my name] $fdict
+            my ruleset $fdict
         }
     }
 
@@ -92,7 +50,7 @@ driver type define CONSUMP {g} {
     # Returns a one-line description of the driver given its signature
     # values.
 
-    typemethod sigline {signature} {
+    method sigline {signature} {
         set g $signature
         return "Group $g's consumption of goods"
     }
@@ -103,7 +61,7 @@ driver type define CONSUMP {g} {
     #
     # Produces a one-line narrative text string for a given rule firing
 
-    typemethod narrative {fdict} {
+    method narrative {fdict} {
         dict with fdict {}
         set expectf [format %.1f $expectf]
         set povf [format %.1f $povf]
@@ -118,7 +76,7 @@ driver type define CONSUMP {g} {
     #
     # Produces a narrative HTML paragraph including all fdict information.
 
-    typemethod detail {fdict ht} {
+    method detail {fdict ht} {
         dict with fdict {}
 
         set povfrac [string trim [percent $povfrac]]
@@ -168,28 +126,28 @@ driver type define CONSUMP {g} {
     # Demographic Situation: unemployment is affecting a neighborhood
     # group
 
-    typemethod ruleset {fdict} {
+    method ruleset {fdict} {
         dict with fdict {}
 
-        dam rule CONSUMP-1-1 $fdict {
+        my rule CONSUMP-1-1 $fdict {
             $expectf != 0.0 || $povf > 0.0
         } {
-            dam sat T $g AUT [expr {[mag* $expectf S+] + [mag* $povf S-]}]
-            dam sat T $g QOL [expr {[mag* $expectf M+] + [mag* $povf M-]}]
+            my sat T $g AUT [expr {[my mag* $expectf S+] + [my mag* $povf S-]}]
+            my sat T $g QOL [expr {[my mag* $expectf M+] + [my mag* $povf M-]}]
         }
         
-        dam rule CONSUMP-2-1 $fdict {
+        my rule CONSUMP-2-1 $fdict {
             $a ne "" && $expectf >= 0.0 && $povf > 0.0
         } {
-            dam vrel T $g $a [mag* $povf S-]
+            my vrel T $g $a [my mag* $povf S-]
         }
         
-        dam rule CONSUMP-2-2 $fdict {
+        my rule CONSUMP-2-2 $fdict {
             $a ne "" && $expectf < 0.0 && $povf > 0.0
         } {
             # Note: mag symbol for expectf is positive, but result will
             # be negative.
-            dam vrel T $g $a [expr {[mag* $expectf L+] + [mag* $povf S-]}]
+            my vrel T $g $a [expr {[my mag* $expectf L+] + [my mag* $povf S-]}]
         }
     }
 }

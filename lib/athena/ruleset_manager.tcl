@@ -27,6 +27,7 @@ snit::type ::athena::ruleset_manager {
         COERCION
         COMMOUT
         CONSTRUCT
+        CONSUMP
         CRIME
         CULSITE
         CURFEW
