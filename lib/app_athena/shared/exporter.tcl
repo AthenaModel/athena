@@ -337,10 +337,6 @@ snit::type exporter {
             SELECT * FROM gui_payloads WHERE state != 'normal'
         }
 
-        # NEXT, MADs
-        SectionHeader $f "Magic Attitude Drivers (MADs)"
-        FromRDB $f MAD:CREATE {SELECT * FROM mads}
-
         # NEXT, Strategies
         foreach agent [agent names] {
             SectionHeader $f "Strategy: $agent"

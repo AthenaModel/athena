@@ -62,7 +62,6 @@ snit::type ::athena::athenadb {
         hooks
         hrel_fg
         ioms
-        mads
         maps
         nbhoods
         nbrel_mn
@@ -415,7 +414,6 @@ snit::type ::athena::athenadb {
         $rdb monitor add hrel_fg       {f g}
         $rdb monitor add curse_injects {curse_id inject_num}
         $rdb monitor add ioms          {iom_id}
-        $rdb monitor add mads          {mad_id}
         $rdb monitor add nbhoods       {n}
         $rdb monitor add nbrel_mn      {m n}
         $rdb monitor add orggroups     {g}

@@ -40,13 +40,6 @@ dynaform fieldtype alias grouplist enumlonglist \
     -width    30  \
     -dictcmd  {::group namedict}
 
-# mad: Magic Attitude Driver ID
-dynaform fieldtype alias mad dbkey \
-    -table    gui_mads  \
-    -keys     mad_id    \
-    -dispcols longid    \
-    -widths   40
-
 # payload: Pick a payload by its ID.
 dynaform fieldtype alias payload dbkey \
     -table gui_payloads \

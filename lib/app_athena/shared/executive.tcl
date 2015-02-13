@@ -401,17 +401,9 @@ snit::type executive {
         $interp smartalias {last absit} 0 0 {} \
             [myproc last_absit]
 
-        # last mad
-        $interp smartalias {last mad} 0 0 {} \
-            [myproc last_mad]
-
         # last tactic
         $interp smartalias {last tactic} 0 0 {} \
             [myproc last_bean ::athena::tactic]
-
-        # last_mad
-        $interp smartalias last_mad 0 0 {} \
-            [myproc last_mad]
 
         # load
         # TBD: Will need to access executive's $adb
@@ -2344,20 +2336,6 @@ snit::type executive {
         }
 
         error "last absit: no absits have been created."
-    }
-
-    # last_mad
-    #
-    # Returns the ID of the most recently created MAD.
-
-    proc last_mad {} {
-        rdb eval {
-            SELECT mad_id FROM mads ORDER BY mad_id DESC LIMIT 1;
-        } {
-            return $mad_id
-        }
-
-        error "last mad: no MADs have been created."
     }
 
     # lock

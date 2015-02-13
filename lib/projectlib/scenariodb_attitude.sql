@@ -243,29 +243,6 @@ CREATE TABLE drivers (
 
 CREATE INDEX drivers_signature_index ON drivers(dtype,signature);
 
--- Magic inputs to URAM are associated with MADs for causality purposes.
--- A MAD is similar to an event or situation.
-
-CREATE TABLE mads (
-   -- MAD ID
-   mad_id        INTEGER PRIMARY KEY,
-
-   -- Narrative Text
-   narrative     TEXT DEFAULT '',
-   
-   -- Cause: an ecause(n) value, or NULL
-   cause         TEXT DEFAULT '',
-
-   -- Here Factor (s), a real fraction (0.0 to 1.0)
-   s             DOUBLE DEFAULT 1.0,
-
-   -- Near Factor (p), a real fraction (0.0 to 1.0)
-   p             DOUBLE DEFAULT 0.0,
-
-   -- Near Factor (q), a real fraction (0.0 to 1.0)
-   q             DOUBLE DEFAULT 0.0
-);
-
 CREATE TABLE curses (
     -- The curses table holds data associated with every CURSE
     -- defined by the user. The curse_injects table then references

@@ -289,35 +289,6 @@ SELECT driver_id                                        AS driver_id,
        link('my://app/driver/' || driver_id, driver_id) AS link
 FROM drivers;
 
-
-------------------------------------------------------------------------
--- MAGIC ATTITUDE DRIVER VIEWS 
-
--- gui_mads: All magic attitude drivers
-CREATE TEMPORARY VIEW gui_mads AS
-SELECT M.mad_id                                   AS mad_id,
-       M.mad_id || ' - ' || M.narrative           AS longid,
-       M.narrative                                AS narrative,
-       M.cause                                    AS cause,
-       format('%5.3f',M.s)                        AS s,
-       format('%5.3f',M.p)                        AS p,
-       format('%5.3f',M.q)                        AS q,
-       D.driver_id                                AS driver_id,
-       pair(M.narrative, M.mad_id)                AS fancy,
-       'my://app/mad/' || mad_id                  AS url,
-       link('my://app/mad/' || mad_id, mad_id)    AS link,
-       link('my://app/mad/' || mad_id, narrative) AS longlink,
-       count(firing_id)                           AS count
-FROM mads AS M
-LEFT OUTER JOIN drivers AS D ON (dtype='MAGIC' AND signature=mad_id)
-LEFT OUTER JOIN rule_firings USING (driver_id)
-GROUP BY mad_id;
-
--- A gui_mads subview: MADs for which no inputs have yet been given 
--- to URAM.
-CREATE TEMPORARY VIEW gui_mads_initial AS
-SELECT * FROM gui_mads WHERE driver_id IS NULL;
-
 -----------------------------------------------------------------------
 -- RULE FIRING VIEWS
 

@@ -268,11 +268,6 @@ snit::type ::projectlib::typewrapper {
 
     LAWENF-1-1    "Force is enforcing the law"
 
-    MAGIC-1-1     "Magic Horizontal Relationship Input"
-    MAGIC-2-1     "Magic Vertical Relationship Input"
-    MAGIC-3-1     "Magic Satisfaction Input"
-    MAGIC-4-1     "Magic Cooperation Input"
-
     MEDICAL-1-1   "Force is providing health care"
     MEDICAL-2-1   "ORG is providing health care"
 
@@ -364,7 +359,6 @@ snit::type ::projectlib::typewrapper {
     INFRA     "Support Infrastructure"
     IOM       "Info Ops Message"
     LAWENF    "Law Enforcement"
-    MAGIC     "Magic Attitude Inputs"
     MEDICAL   "Healthcare"
     MINEFIELD "Minefield"
     MOOD      "Civilian Mood Changes"
@@ -415,7 +409,7 @@ snit::type ::projectlib::typewrapper {
     INFRA     "Support Infrastructure"
     IOM       "Info Ops Message"
     LAWENF    "Law Enforcement"
-    MAGIC     "Magic Input"
+    MAGIC     "Magic"
     MEDICAL   "Healthcare"
     MOOD      "Mood"
     ORDNANCE  "Unexploded Ordnance/Minefield"

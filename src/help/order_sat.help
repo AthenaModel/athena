@@ -19,9 +19,7 @@ page /order sat "Satisfaction Orders" {
     Athena models the satisfaction of civilian groups with respect
     to a variety of
     concerns.  This family of orders are used to manipulate the
-    initial baseline satisfaction levels and related parameters.  
-    (Use the <cref /order/mad/sat> to adjust or otherwise influence the 
-    levels during simulation.)<p>
+    initial baseline satisfaction levels and related parameters.  <p>
 
     The full set of orders is as follows:<p>
 
@@ -80,9 +78,6 @@ order SAT:UPDATE "Update Baseline Satisfaction" {
     <b><term prep> Only.</b>  This order updates the initial baseline
     satisfaction level of one group with a concern; this can only be done
     during the Scenario Preparation phase.<p>
-
-    (Use the <cref /order/mad> to adjust or otherwise influence the 
-    levels during simulation.)
 }
 
 
@@ -141,9 +136,6 @@ order SAT:UPDATE+MULTI "Update Baseline Satisfaction (Multi)" {
     <b><term prep> Only.</b>  This order updates two or more initial
     baseline satisfaction levels, as selected in the GUI; this can only 
     be done during the Scenario Preparation phase.<p>
-
-    (Use the <cref /order/mad> to adjust or otherwise influence the 
-    levels during simulation.)
 }
 
 

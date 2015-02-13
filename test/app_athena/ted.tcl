@@ -60,7 +60,6 @@ snit::type ted {
         hrel_fg
         income_a
         ioms
-        mads
         maps
         nbhoods
         nbrel_mn

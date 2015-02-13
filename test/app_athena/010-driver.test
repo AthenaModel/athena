@@ -14,6 +14,9 @@
 #    Note: the driver type definition calls are adequately tested by the
 #    040-* rule sets and will not be tested here.
 #
+# TBD: This actually tests ruleset_manager.tcl, which has replaced
+# driver.tcl.
+#
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
@@ -52,16 +55,16 @@ namespace eval ::athena_test::tests:: {
     # getid
 
     test getid-1.1 {Drivers can be created} -body {
-        driver getid {dtype MAGIC mad_id 1}
-        driver getid {dtype PATROL n NB1 g BLUE}
+        ruleset getid ACCIDENT {n NB1}
+        ruleset getid PATROL {n NB1 g BLUE}
 
         ted querylist {SELECT * FROM drivers}
     } -cleanup {
         cleanup
     } -result {
 driver_id  1000
-dtype      MAGIC
-signature  1
+dtype      ACCIDENT
+signature  NB1
 
 driver_id  1001
 dtype      PATROL
@@ -69,14 +72,14 @@ signature  NB1 BLUE
     }
 
     test getid-1.2 {Returns driver ID} -body {
-        driver getid {dtype MAGIC mad_id 1}
+        ruleset getid ACCIDENT {n NB1}
     } -cleanup {
         cleanup
     } -result {1000}
 
     test getid-1.3 {Retrieves existing id} -body {
-        set a [driver getid {dtype MAGIC mad_id 1}]
-        set b [driver getid {dtype MAGIC mad_id 1}]
+        set a [ruleset getid ACCIDENT {n NB1}]
+        set b [ruleset getid ACCIDENT {n NB1}]
         expr {$a == $b}
     } -cleanup {
         cleanup
@@ -86,40 +89,23 @@ signature  NB1 BLUE
     # get
 
     test get-1.1 {Retrieves existing id} -setup {
-        set a [driver getid {dtype MAGIC mad_id 1}]
+        set a [ruleset getid ACCIDENT {n NB1}]
     } -body {
-        set b [driver get MAGIC 1]
+        set b [ruleset get ACCIDENT NB1]
         expr {$a == $b}
     } -cleanup {
         cleanup
     } -result {1}
 
     test get-1.2 {Returns "" if no such driver} -setup {
-        driver getid {dtype MAGIC mad_id 1}
+        ruleset getid ACCIDENT {n NB1}
     } -body {
-        driver get MAGIC 2
+        ruleset get RIOT NB1
     } -cleanup {
         cleanup
     } -result {}
 
 
-    
-
-    #-------------------------------------------------------------------
-    # call
-
-    test call-1.1 {can call driver methods} -body {
-        driver call narrative {
-            dtype     PATROL 
-            n         NB1 
-            g         BLUE 
-            a         PATROL
-            personnel 100
-            coverage  0.5
-        }
-    } -cleanup {
-        cleanup
-    } -result {{group:BLUE} PATROL in {nbhood:NB1} (50%)}
     
 
     #-------------------------------------------------------------------

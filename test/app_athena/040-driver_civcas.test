@@ -62,7 +62,6 @@ namespace eval ::athena_test::tests:: {
         parm set dam.WATER.active no
         parm set dam.TRANSPORT.active no
         rdb eval {DELETE FROM drivers}
-        rdb eval {DELETE FROM mads}
         
         # NEXT, create the entities
         ted create JOE BOB NB1 BLUE BRIT SHIA SUNN

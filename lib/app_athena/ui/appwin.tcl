@@ -727,20 +727,6 @@ snit::widget appwin {
         $self AddOrder $submenu ABSIT:RESOLVE
         $self AddOrder $submenu ABSIT:UPDATE
 
-        # Orders/Magic Attitude Drivers
-        set submenu [menu $ordersmenu.mad]
-        $ordersmenu add cascade -label "Magic Attitude Driver" \
-            -underline 0 -menu $submenu
-
-        $self AddOrder $submenu MAD:CREATE
-        $self AddOrder $submenu MAD:UPDATE
-        $self AddOrder $submenu MAD:DELETE
-
-        $self AddOrder $submenu MAD:HREL
-        $self AddOrder $submenu MAD:VREL
-        $self AddOrder $submenu MAD:SAT
-        $self AddOrder $submenu MAD:COOP
-
         # Orders/Actors
         set submenu [menu $ordersmenu.actor]
         $ordersmenu add cascade -label "Actors" \
@@ -798,7 +784,6 @@ snit::widget appwin {
         
         $self AddOrder $submenu HREL:OVERRIDE
         $self AddOrder $submenu HREL:RESTORE
-        $self AddOrder $submenu MAD:HREL
     
         # Orders/Vert. Relationship Menu
         set submenu [menu $ordersmenu.vrel]
@@ -807,7 +792,6 @@ snit::widget appwin {
         
         $self AddOrder $submenu VREL:OVERRIDE
         $self AddOrder $submenu VREL:RESTORE
-        $self AddOrder $submenu MAD:VREL
     
         # Orders/Satisfaction Menu
         set submenu [menu $ordersmenu.sat]
@@ -815,7 +799,6 @@ snit::widget appwin {
             -underline 0 -menu $submenu
         
         $self AddOrder $submenu SAT:UPDATE
-        $self AddOrder $submenu MAD:SAT
 
         # Orders/Cooperation Menu
         set submenu [menu $ordersmenu.coop]
@@ -823,7 +806,6 @@ snit::widget appwin {
             -underline 0 -menu $submenu
         
         $self AddOrder $submenu COOP:UPDATE
-        $self AddOrder $submenu MAD:COOP
 
         # Orders/Comm. Asset Package Menu
         set submenu [menu $ordersmenu.cap]
