@@ -400,6 +400,80 @@ oo::class create ::athena::ruleset {
         return $result
     }
 
+    # mag+ stops mag
+    #
+    # stops      Some number of "stops"
+    # mag        A qmag symbol
+    #
+    # Returns the symbolic value of mag, moved up or down the specified
+    # number of stops, or 0.  I.e., XL +1 stop is XXL; XL -1 stop is L.  
+    # Stopping up or down never changes the sign.  Stopping down from
+    # from XXXS returns 0; stopping up from XXXXL returns the value
+    # of XXXXL.
+
+    method mag+ {stops mag} {
+        set symbols [qmag names]
+        set index [qmag index $mag]
+
+        if {$index <= 9} {
+            # Sign is positive; 0 is XXXXL+, 9 is XXXS+
+
+            let index {$index - $stops}
+
+            if {$index < 0} {
+                return [lindex $symbols 0]
+            } elseif {$index > 9} {
+                return 0
+            } else {
+                return [lindex $symbols $index]
+            }
+        } else {
+            # Sign is negative; 10 is XXXS-, 19 is XXXXL-
+
+            let index {$index + $stops}
+
+            if {$index > 19} {
+                return [lindex $symbols 19]
+            } elseif {$index < 10} {
+                return 0
+            } else {
+                return [lindex $symbols $index]
+            }
+        }
+
+
+        expr {$stops * [qmag value $mag]}
+    }
+
+
+    # hrel.fg f g
+    #
+    # f    A group
+    # g    Another group
+    #
+    # Returns the relationship of f with g.
+
+    method hrel.fg {f g} {
+        set hrel [[my adb] eval {
+            SELECT hrel FROM uram_hrel
+            WHERE f=$f AND g=$g
+        }]
+
+        return $hrel
+    }
+
+    # vrel.ga g a
+    #
+    # g - A civ group
+    # a - An actor
+    #
+    # Returns the vertical relationship between the group and the 
+    # actor.
+
+    method vrel.ga {g a} {
+        [my adb] onecolumn {SELECT vrel FROM uram_vrel WHERE g=$g AND a=$a}
+    }
+
 }
 
 

@@ -130,5 +130,6 @@ source [file join $::athena::library demog.tcl            ]
 source [file join $::athena::library ruleset.tcl          ]
 source [file join $::athena::library ruleset_abevent.tcl  ]
 source [file join $::athena::library ruleset_absit.tcl    ]
+source [file join $::athena::library ruleset_actsit.tcl   ]
 source [file join $::athena::library ruleset_civcas.tcl   ]
 

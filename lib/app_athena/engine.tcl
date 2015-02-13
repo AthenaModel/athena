@@ -94,7 +94,7 @@ snit::type engine {
         profile absit assess
         profile nbstat analyze
         profile control_model analyze
-        profile driver::actsit assess
+        profile activity assess
         profile service_eni assess
         profile service_ais assess
         set econOK [econ tock]
@@ -159,7 +159,7 @@ snit::type engine {
         profile nbstat analyze
         profile driver::MOOD assess
         profile control_model analyze
-        profile driver::actsit assess
+        profile activity assess
         profile service_eni assess
         profile service_ais assess
         profile abevent assess

@@ -22,23 +22,38 @@ snit::type ::athena::ruleset_manager {
         ACCIDENT
         BADFOOD
         BADWATER
+        CHKPOINT
         CIVCAS
+        COERCION
         COMMOUT
+        CONSTRUCT
+        CRIME
         CULSITE
+        CURFEW
         DEMO 
         DISASTER
         DISEASE
         DROUGHT
+        EDU
+        EMPLOY
         EPIDEMIC
         EXPLOSION
         FOODSHRT
         FUELSHRT
         GARBAGE
+        GUARD
         INDSPILL
+        INDUSTRY
+        INFRA
+        LAWENF
+        MEDICAL
         MINEFIELD
         ORDNANCE
+        PATROL
         PIPELINE
+        PSYOP
         REFINERY
+        RELIEF
         RELSITE
         RIOT
         SEWAGE

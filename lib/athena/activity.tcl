@@ -33,6 +33,40 @@ snit::type ::athena::activity {
     }
 
     #-------------------------------------------------------------------
+    # Assessment
+
+    # assess
+    #
+    # Assesses the attitude effects of all activity situations.
+
+    method assess {} {
+        # FIRST, find the activities with coverage greater than 0.
+        $adb eval {
+            SELECT A.a          AS dtype,
+                   n            AS n,
+                   g            AS g,
+                   gtype        AS gtype,
+                   effective    AS personnel,
+                   coverage     AS coverage
+            FROM activity_nga AS A
+            JOIN groups USING (g)
+            WHERE coverage > 0.0
+        } {
+            set fdict [dict create]
+            dict set fdict dtype     $dtype
+            dict set fdict n         $n
+            dict set fdict g         $g
+            dict set fdict gtype     $gtype
+            dict set fdict personnel $personnel
+            dict set fdict coverage  $coverage
+            dict set fdict flist     [$adb demog gIn $n]
+
+            $adb ruleset $dtype assess $fdict
+        }
+    }
+    
+
+    #-------------------------------------------------------------------
     # Queries
     #
     # These routines query information about the entities; they are
