@@ -158,6 +158,7 @@ snit::type ::athena::athenadb {
     component pot       -public pot       ;# beanpot(n)
     component flunky    -public flunky    ;# athena_flunky(n)
     component paster    -public paste     ;# paste manager
+    component ruleset   -public ruleset   ;# rule set manager
 
     # Editable Entities
     component absit     -public absit     ;# absit manager
@@ -189,6 +190,7 @@ snit::type ::athena::athenadb {
     component group     -public group     ;# group manager
 
     # Tactic APIs
+    component abevent   -public abevent   ;# Abstract event API
     component broadcast -public broadcast ;# IOM broadcast API
     component cash      -public cash      ;# cash/spending API
     component control   -public control   ;# nbhood control API
@@ -229,7 +231,6 @@ snit::type ::athena::athenadb {
         adbfile ""
     }
     
-
     #-------------------------------------------------------------------
     # Constructor/Destructor
 
@@ -270,6 +271,7 @@ snit::type ::athena::athenadb {
         # the athenadb(n) handle.
 
         $self MakeComponents            \
+            abevent                     \
             absit                       \
             activity                    \
             actor                       \
@@ -294,6 +296,7 @@ snit::type ::athena::athenadb {
             nbrel                       \
             orggroup                    \
             personnel                   \
+            {ruleset  ruleset_manager}  \
             sat                         \
             sigevent                    \
             {strategy strategy_manager} \

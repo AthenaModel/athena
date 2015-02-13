@@ -23,7 +23,7 @@
 #    * ::athena::strategy, the strategy bean.
 #    * The various ::strategy::* orders.
 #
-# TBD: Global refs: sim, driver::abevent, plant, service, service_eni
+# TBD: Global refs: sim, plant, service, service_eni
 #
 #-----------------------------------------------------------------------
 
@@ -334,7 +334,7 @@ snit::type ::athena::strategy_manager {
         $adb profile 1 service_eni load
         $adb profile 1 plant load
         $adb profile 1 $adb cap access load
-        $adb profile 1 driver::abevent reset
+        $adb profile 1 $adb abevent reset
         $adb profile 1 $adb broadcast reset
         $adb profile 1 $adb stance reset
         $adb profile 1 $adb unit reset

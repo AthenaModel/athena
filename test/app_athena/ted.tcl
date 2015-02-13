@@ -739,17 +739,17 @@ snit::type ted {
             rdb eval {DELETE FROM main.sqlite_sequence}
         }
 
-        [::adb athenadb] nbhood dbsync
-        flunky          reset
-        parm            reset
-        bsys            clear
-        econ            reset
-        simclock        reset
-        aram            clear
-        pot             reset
-        aam             reset
-        driver::abevent reset
-        strategy        reset
+        nbhood   dbsync
+        flunky   reset
+        parm     reset
+        bsys     clear
+        econ     reset
+        simclock reset
+        aram     clear
+        pot      reset
+        aam      reset
+        abevent  reset
+        strategy reset
     }
 
     # sendex ?-error? command...

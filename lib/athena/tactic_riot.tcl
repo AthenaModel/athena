@@ -81,7 +81,7 @@
         [my adb] sigevent log 2 tactic $msg {*}$objects
 
         # NEXT, create the riot.
-        driver::abevent create RIOT $n $coverage
+        [my adb] abevent add RIOT $n $coverage
     }
 }
 

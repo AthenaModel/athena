@@ -50,6 +50,7 @@ source [file join $::athena::library athena_order.tcl     ]
 source [file join $::athena::library athena_flunky.tcl    ]
 source [file join $::athena::library dynatypes.tcl        ]
 source [file join $::athena::library paster.tcl           ]
+source [file join $::athena::library ruleset_manager.tcl  ]
 source [file join $::athena::library sigevent.tcl         ]
 
 # Editable Entities
@@ -114,6 +115,7 @@ source [file join $::athena::library agent.tcl            ]
 source [file join $::athena::library group.tcl            ]
 
 # Tactic APIs
+source [file join $::athena::library abevent.tcl          ]
 source [file join $::athena::library broadcast.tcl        ]
 source [file join $::athena::library cash.tcl             ]
 source [file join $::athena::library coffer.tcl           ]
@@ -123,4 +125,9 @@ source [file join $::athena::library stance.tcl           ]
 
 # Models
 source [file join $::athena::library demog.tcl            ]
+
+# Rulesets
+source [file join $::athena::library ruleset.tcl          ]
+source [file join $::athena::library ruleset_abevent.tcl  ]
+source [file join $::athena::library ruleset_civcas.tcl   ]
 

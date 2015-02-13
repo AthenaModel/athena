@@ -87,7 +87,7 @@
         [my adb] sigevent log 2 tactic $msg {*}$objects
 
         # NEXT, create the demo.
-        driver::abevent create DEMO $n $coverage g $g
+        [my adb] abevent add DEMO $n $coverage g $g
     }
 }
 

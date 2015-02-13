@@ -81,7 +81,7 @@
         [my adb] sigevent log 2 tactic $msg {*}$objects
 
         # NEXT, create the violence.
-        driver::abevent create VIOLENCE $n $coverage
+        [my adb] abevent add VIOLENCE $n $coverage
     }
 }
 

@@ -81,7 +81,7 @@
         [my adb] sigevent log 2 tactic $msg {*}$objects
 
         # NEXT, create the accident.
-        driver::abevent create ACCIDENT $n $coverage
+        [my adb] abevent add ACCIDENT $n $coverage
     }
 }
 

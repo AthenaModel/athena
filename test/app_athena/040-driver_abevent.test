@@ -75,13 +75,13 @@ namespace eval ::athena_test::tests:: {
         ted lock
     }
 
-    # abevent dtype args...
+    # mkevent dtype args...
     #
     # Creates an abstract event and then assesses it.
 
-    proc abevent {dtype args} {
-        driver::abevent create $dtype NB1 0.5 {*}$args
-        driver::abevent assess
+    proc mkevent {dtype args} {
+        abevent add $dtype NB1 0.5 {*}$args
+        abevent assess
     }
         
     # inputs
@@ -128,7 +128,7 @@ namespace eval ::athena_test::tests:: {
     test sigline-1.1 {sigline text} -setup {
         # none needed
     } -body {
-        driver::ACCIDENT sigline {NB1}
+        ruleset ACCIDENT sigline {NB1}
     } -cleanup {
         cleanup
     } -result {ACCIDENT in NB1}
@@ -143,7 +143,7 @@ namespace eval ::athena_test::tests:: {
     test narrative-1.1 {narrative text} -setup {
         # none needed
     } -body {
-        driver::ACCIDENT narrative {
+        ruleset ACCIDENT narrative {
             dtype       ACCIDENT
             n           NB1
             coverage    0.5
@@ -168,7 +168,7 @@ namespace eval ::athena_test::tests:: {
             coverage    0.5
         }
 
-        driver::ACCIDENT detail $fdict [namespace current]::ht
+        ruleset ACCIDENT detail $fdict [namespace current]::ht
         pprint [ht get]
     } -cleanup {
         cleanup
@@ -186,7 +186,7 @@ has occurred in neighborhood
     test ACCIDENT-1.1 {firing} -setup {
         setup 
     } -body {
-        abevent ACCIDENT
+        mkevent ACCIDENT
         ted querylist {SELECT * FROM rule_firings}
     } -cleanup {
         cleanup
@@ -202,7 +202,7 @@ fdict      dtype ACCIDENT n NB1 coverage 0.5
     test ACCIDENT-1.2 {inputs} -setup {
         setup
     } -body {
-        abevent ACCIDENT       
+        mkevent ACCIDENT       
         inputs
     } -cleanup {
         cleanup
@@ -219,7 +219,7 @@ t rule         aut cul qol sft
     test DEMO-1.1 {firing} -setup {
         setup 
     } -body {
-        abevent DEMO g SHIA
+        mkevent DEMO g SHIA
         ted querylist {SELECT * FROM rule_firings}
     } -cleanup {
         cleanup
@@ -242,7 +242,7 @@ fdict      dtype DEMO n NB1 coverage 0.5 g SHIA
     test DEMO-1.2 {inputs} -setup {
         setup
     } -body {
-        abevent DEMO g SHIA    
+        mkevent DEMO g SHIA    
         inputs
     } -cleanup {
         cleanup
@@ -259,7 +259,7 @@ t rule     aut   cul   qol   sft
     test DEMO-2.1 {sigline text} -setup {
         # none needed
     } -body {
-        driver::DEMO sigline {NB1 SHIA}
+        ruleset DEMO sigline {NB1 SHIA}
     } -cleanup {
         cleanup
     } -result {DEMO by SHIA in NB1}
@@ -267,7 +267,7 @@ t rule     aut   cul   qol   sft
     test DEMO-2.2 {narrative text} -setup {
         # none needed
     } -body {
-        driver::DEMO narrative {
+        ruleset DEMO narrative {
             dtype       DEMO
             n           NB1
             coverage    0.5
@@ -287,7 +287,7 @@ t rule     aut   cul   qol   sft
             g           SHIA
         }
 
-        driver::DEMO detail $fdict [namespace current]::ht
+        ruleset DEMO detail $fdict [namespace current]::ht
         pprint [ht get]
     } -cleanup {
         cleanup
@@ -304,7 +304,7 @@ is demonstrating in neighborhood
     test EXPLOSION-1.1 {firing} -setup {
         setup 
     } -body {
-        abevent EXPLOSION
+        mkevent EXPLOSION
         ted querylist {SELECT * FROM rule_firings}
     } -cleanup {
         cleanup
@@ -320,7 +320,7 @@ fdict      dtype EXPLOSION n NB1 coverage 0.5
     test EXPLOSION-1.2 {inputs} -setup {
         setup
     } -body {
-        abevent EXPLOSION       
+        mkevent EXPLOSION       
         inputs
     } -cleanup {
         cleanup
@@ -337,7 +337,7 @@ t rule          aut        cul qol sft
     test RIOT-1.1 {firing} -setup {
         setup 
     } -body {
-        abevent RIOT
+        mkevent RIOT
         ted querylist {SELECT * FROM rule_firings}
     } -cleanup {
         cleanup
@@ -353,7 +353,7 @@ fdict      dtype RIOT n NB1 coverage 0.5
     test RIOT-1.2 {inputs} -setup {
         setup
     } -body {
-        abevent RIOT       
+        mkevent RIOT       
         inputs
     } -cleanup {
         cleanup
@@ -372,7 +372,7 @@ t rule     aut        cul qol        sft
     test VIOLENCE-1.1 {firing} -setup {
         setup 
     } -body {
-        abevent VIOLENCE
+        mkevent VIOLENCE
         ted querylist {SELECT * FROM rule_firings}
     } -cleanup {
         cleanup
@@ -388,7 +388,7 @@ fdict      dtype VIOLENCE n NB1 coverage 0.5
     test VIOLENCE-1.2 {inputs} -setup {
         setup
     } -body {
-        abevent VIOLENCE       
+        mkevent VIOLENCE       
         inputs
     } -cleanup {
         cleanup

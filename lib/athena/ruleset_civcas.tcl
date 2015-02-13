@@ -1,21 +1,26 @@
 #------------------------------------------------------------------------
 # TITLE:
-#    driver_civcas.tcl
+#    ruleset_civcas.tcl
 #
 # AUTHOR:
 #    Will Duquette
 #
 # DESCRIPTION:
-#    Athena Driver Assessment Model (DAM): CIVCAS
+#    athena(n): CIVCAS ruleset
 #
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
 # CIVCAS
 
-driver type define CIVCAS {f} {
+oo::class create ::athena::ruleset_CIVCAS {
+    superclass ::athena::ruleset
+    
+    meta name     "CIVCAS"
+    meta sigparms {f}
+
     #-------------------------------------------------------------------
-    # Public Typemethods
+    # Public methods
 
     # assess sdict cdict
     #
@@ -29,9 +34,9 @@ driver type define CIVCAS {f} {
     #
     # Assess all civilian casualties for the current week.
 
-    typemethod assess {sdict cdict} {
-        if {![dam isactive CIVCAS]} {
-            log warning CIVCAS "driver type has been deactivated"
+    method assess {sdict cdict} {
+        if {![my isactive]} {
+            $notify log warning CIVCAS "driver type has been deactivated"
             return
         }
 
@@ -42,7 +47,7 @@ driver type define CIVCAS {f} {
             set parms(f)          $key
             set parms(casualties) $value
 
-            $type ruleset1 [array get parms]
+            my ruleset1 [array get parms]
         }
 
         # NET coop effects
@@ -51,7 +56,7 @@ driver type define CIVCAS {f} {
             set parms(g)          [lindex $key 1]
             set parms(casualties) $value
 
-            $type ruleset2 [array get parms]
+            my ruleset2 [array get parms]
         }
     }
 
@@ -65,7 +70,7 @@ driver type define CIVCAS {f} {
     # Returns a one-line description of the driver given its signature
     # values.
 
-    typemethod sigline {signature} {
+    method sigline {signature} {
         return "Casualties to group $signature"
     }
 
@@ -75,7 +80,7 @@ driver type define CIVCAS {f} {
     #
     # Produces a one-line narrative text string for a given rule firing
 
-    typemethod narrative {fdict} {
+    method narrative {fdict} {
         dict with fdict {}
 
         set narrative "{group:$f} took $casualties casualties"
@@ -94,7 +99,7 @@ driver type define CIVCAS {f} {
     #
     # Produces a narrative HTML paragraph including all fdict information.
 
-    typemethod detail {fdict ht} {
+    method detail {fdict ht} {
         dict with fdict {}
 
         $ht putln "Civilian group "
@@ -129,20 +134,20 @@ driver type define CIVCAS {f} {
     #    f          - The civilian group taking attrition.
     #    casualties - The total number of casualties during the week.
 
-    typemethod ruleset1 {fdict} {
+    method ruleset1 {fdict} {
         dict with fdict {}
 
         # FIRST, compute the casualty multiplier
-        set zsat [parmdb get dam.CIVCAS.Zsat]
+        set zsat [parm get dam.CIVCAS.Zsat]
         set mult [zcurve eval $zsat $casualties]
         dict set fdict mult $mult
             
         # NEXT, The rule fires trivially
-        dam rule CIVCAS-1-1 $fdict {1} {
-            dam sat P $f \
-                AUT [mag* $mult L-]  \
-                SFT [mag* $mult XL-] \
-                QOL [mag* $mult L-]
+        my rule CIVCAS-1-1 $fdict {1} {
+            my sat P $f \
+               AUT [mag* $mult L-]  \
+               SFT [mag* $mult XL-] \
+               QOL [mag* $mult L-]
         }
     }
 
@@ -155,11 +160,11 @@ driver type define CIVCAS {f} {
     #    casualties - The total number of casualties during the week
     #                 in which g is involved.
 
-    typemethod ruleset2 {fdict} {
+    method ruleset2 {fdict} {
         dict with fdict {}
 
         # FIRST, compute the casualty multiplier
-        set zsat [parmdb get dam.CIVCAS.Zcoop]
+        set zsat [parm get dam.CIVCAS.Zcoop]
         set cmult [zcurve eval $zsat $casualties]
         set rmult [rmf enmore [hrel.fg $f $g]]
         let mult {$cmult * $rmult}
@@ -167,8 +172,8 @@ driver type define CIVCAS {f} {
         dict set fdict mult $cmult
         
         # NEXT, The rule fires trivially
-        dam rule CIVCAS-2-1 $fdict {1} {
-            dam coop P $f $g [mag* $mult M-]
+        my rule CIVCAS-2-1 $fdict {1} {
+            my coop P $f $g [mag* $mult M-]
         }
     }
 }

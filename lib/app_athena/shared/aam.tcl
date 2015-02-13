@@ -68,7 +68,7 @@ snit::type aam {
 
         # NEXT, assess the attitude implications of all attrition for
         # this tick.
-        driver::CIVCAS assess $sdict $cdict
+        ruleset CIVCAS assess $sdict $cdict
 
         # NEXT, clear the saved data for this tick; we're done.
         set alist ""

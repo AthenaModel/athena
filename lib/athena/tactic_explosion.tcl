@@ -81,7 +81,7 @@
         [my adb] sigevent log 2 tactic $msg {*}$objects
 
         # NEXT, create the explosion.
-        driver::abevent create EXPLOSION $n $coverage
+        [my adb] abevent add EXPLOSION $n $coverage
     }
 }
 
