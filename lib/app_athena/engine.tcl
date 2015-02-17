@@ -107,7 +107,7 @@ snit::type engine {
             profile econ tock
         }
 
-        profile demog assess
+        profile ruleset CONSUMP assess
 
         # NEXT, set natural attitude levels for those attitudes whose
         # natural level varies with time.
@@ -178,7 +178,7 @@ snit::type engine {
         }
 
         # NEXT, assess econ-dependent drivers.
-        profile demog assess
+        profile ruleset CONSUMP assess
         profile control_model assess
 
         # NEXT, advance URAM, first giving it the latest population data

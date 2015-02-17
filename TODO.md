@@ -1,7 +1,5 @@
 # TODO.md - Athena TODO List
 
-- Move mag*, hrel.fg, etc., helpers into ruleset.tcl as helper methods.
-  - Make other helpers as well, to avoid direct calls to [my adb].
 - Add all component entries to athenadb(n).
   - Or, come up with a plan for which ones are documented and which aren't.
 - Move editable entities to athena(n)
