@@ -1,19 +1,23 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#    driver_unemp.tcl
+#    ruleset_unemp.tcl
 #
 # AUTHOR:
 #    Will Duquette
 #
 # DESCRIPTION:
-#   Athena Driver Assessment Model (DAM): UNEMP rules
+#   athena(n): UNEMP rule set
+#
+# FIRING DICTIONARY:
 #
 #-----------------------------------------------------------------------
 
-#-----------------------------------------------------------------------
-# UNEMP
+oo::class create ::athena::ruleset_UNEMP {
+    superclass ::athena::ruleset
+    
+    meta name     "UNEMP"
+    meta sigparms {n g}
 
-driver type define UNEMP {n g} {
     #-------------------------------------------------------------------
     # Public Typemethods
 
@@ -22,18 +26,16 @@ driver type define UNEMP {n g} {
     # Assesses any existing UNEMP situations, which it finds for
     # itself.
     
-    typemethod assess {} {
-        set dtype UNEMP
-
+    method assess {} {
         # FIRST, skip if the rule set is inactive.
-        if {![dam isactive UNEMP]} {
-            log warning UNEMP \
+        if {![my isactive]} {
+            [my adb] log warning [my name] \
                 "driver type has been deactivated"
             return
         }
         
         # NEXT, look for and assess unemployment
-        rdb eval {
+        [my adb] eval {
             SELECT n, g, nuaf AS uaf, nupc AS upc
             FROM demog_context
             WHERE population > 0
@@ -41,12 +43,12 @@ driver type define UNEMP {n g} {
         } row {
             unset -nocomplain row(*)
             set fdict [array get row]
-            dict set fdict dtype $dtype
+            dict set fdict dtype [my name]
             dict with fdict {}
             
             bgcatch {
-                log detail $dtype $fdict
-                $type ruleset $fdict
+                [my adb] log detail [my name] $fdict
+                my ruleset $fdict
             }
         }
     }
@@ -58,7 +60,7 @@ driver type define UNEMP {n g} {
     # Returns a one-line description of the driver given its signature
     # values.
 
-    typemethod sigline {signature} {
+    method sigline {signature} {
         lassign $signature n g
         return "Effect of $n unemployment on $g"
     }
@@ -69,7 +71,7 @@ driver type define UNEMP {n g} {
     #
     # Produces a one-line narrative text string for a given rule firing
 
-    typemethod narrative {fdict} {
+    method narrative {fdict} {
         dict with fdict {}
 
         return "Unemployment in {nbhood:$n} affects {group:$g}"
@@ -82,7 +84,7 @@ driver type define UNEMP {n g} {
     #
     # Produces a narrative HTML paragraph including all fdict information.
 
-    typemethod detail {fdict ht} {
+    method detail {fdict ht} {
         dict with fdict {}
 
         set upc [format %.1f $upc]
@@ -103,14 +105,14 @@ driver type define UNEMP {n g} {
     # Demographic Situation: unemployment is affecting a neighborhood
     # group
 
-    typemethod ruleset {fdict} {
+    method ruleset {fdict} {
         dict with fdict {}
 
-        dam rule UNEMP-1-1 $fdict {
+        my rule UNEMP-1-1 $fdict {
             $uaf > 0.0
         } {
-            dam sat T $g SFT [mag* $uaf M-]
-            dam sat T $g AUT [mag* $uaf S-]
+            my sat T $g SFT [mag* $uaf M-]
+            my sat T $g AUT [mag* $uaf S-]
         }
     }
 }

@@ -111,7 +111,7 @@ namespace eval ::athena_test::tests:: {
         }
         
         # NEXT, execute the rule set.
-        driver::UNEMP assess
+        ruleset UNEMP assess
     }
     
     # Clean up after a test
@@ -166,7 +166,7 @@ UNEMP-1-1 SUNN AUT
     test sigline-1.1 {sigline output} -setup {
         setup
     } -body {
-        driver::UNEMP sigline "NB1 SHIA" 
+        ruleset UNEMP sigline "NB1 SHIA" 
     } -cleanup {
         cleanup
     } -result {Effect of NB1 unemployment on SHIA}
@@ -178,7 +178,7 @@ UNEMP-1-1 SUNN AUT
     test narrative-1.1 {narrative output} -setup {
         setup
     } -body {
-        driver::UNEMP narrative {
+        ruleset UNEMP narrative {
             dtype      UNEMP
             n          NB1
             g          SHIA
@@ -196,7 +196,7 @@ UNEMP-1-1 SUNN AUT
     test detail-1.1 {detail, UNEMP-1} -setup {
         setup
     } -body {
-        driver::UNEMP detail {
+        ruleset UNEMP detail {
             dtype      UNEMP
             n          NB1
             g          SHIA

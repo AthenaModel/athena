@@ -136,4 +136,5 @@ source [file join $::athena::library ruleset_civcas.tcl   ]
 source [file join $::athena::library ruleset_consump.tcl  ]
 source [file join $::athena::library ruleset_control.tcl  ]
 source [file join $::athena::library ruleset_curse.tcl    ]
+source [file join $::athena::library ruleset_unemp.tcl    ]
 

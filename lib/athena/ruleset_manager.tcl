@@ -60,6 +60,7 @@ snit::type ::athena::ruleset_manager {
         RELSITE
         RIOT
         SEWAGE
+        UNEMP
         VIOLENCE
     }
 
