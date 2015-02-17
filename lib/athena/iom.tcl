@@ -194,7 +194,7 @@ snit::type ::athena::iom {
 
     method checker {{ht ""}} {
         # FIRST, do the payload check.
-        set psev [payload checker $ht]
+        set psev [$adb payload checker $ht]
         assert {$psev ne "ERROR"}
 
         set edict [$self DoSanityCheck]

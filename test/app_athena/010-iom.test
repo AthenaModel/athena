@@ -154,7 +154,7 @@ state     normal
         setup
         iom create $m1
         iom create $m2
-        payload mutate create $p1
+        payload create $p1
     } -body {
         iom delete M1
 
@@ -170,7 +170,7 @@ state     normal
         setup
         iom create $m1
         iom create $m2
-        payload mutate create $p1
+        payload create $p1
         
         set undo [iom delete M1]
     } -body {

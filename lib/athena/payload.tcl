@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Payload Manager
+#    athena(n): Payload Manager
 #
 #    This module is responsible for managing payloads and operations
 #    upon them.  As such, it is a type ensemble.
@@ -23,14 +23,25 @@
 #    * Each payload type has its own CREATE and UPDATE orders; the 
 #      DELETE and STATE orders are common to all.
 #
-#    * scenario(sim) defines a view for each payload type,
+#    * scenario(n) defines a view for each payload type,
 #      payloads_<type>.
+#
+# PARAMETER MAPPING:
+#
+#  COOP Payloads:    HREL Payloads:  SAT Payloads:   VREL Payloads:
+#    g    <= g         g   <= g        c   <= c        a   <= a
+#    mag  <= mag       mag <= mag      mag <= mag      mag <= mag
+# 
+# TBD:
+#    * Global entities in use: iom, frcgroup, group, actor
+#
 #
 #-----------------------------------------------------------------------
 
-snit::type payload {
-    # Make it a singleton
-    pragma -hasinstances no
+snit::type ::athena::payload {
+    #-------------------------------------------------------------------
+    # Components
+    component  adb;# The athenadb(n) Instance
 
     #===================================================================
     # Lookup tables
@@ -40,7 +51,7 @@ snit::type payload {
     # input parmdict with this to get a parmdict with the full set of
     # parameters.
 
-    typevariable optParms {
+    variable optParms {
         mag      ""
         a        ""
         c        ""
@@ -58,51 +69,20 @@ snit::type payload {
     # names         - List of the names of the payload types.
     # parms-$ttype  - List of the optional parms used by the payload type.
 
-    typevariable tinfo -array {
-        names {}
+    variable tinfo -array {
+        names {COOP HREL SAT VREL}
+    }
+
+    constructor {adb_} {
+        set adb $adb_
     }
 
     # type names
     #
     # Returns the payload type names.
     
-    typemethod {type names} {} {
+    method {type names} {} {
         return [lsort $tinfo(names)]
-    }
-
-    # type parms ttype
-    #
-    # Returns a list of the names of the optional parameters used by
-    # the payload.
-    
-    typemethod {type parms} {ttype} {
-        return $tinfo(parms-$ttype)
-    }
-
-    # type define name optparms defscript
-    #
-    # name        - The payload name
-    # optparms    - List of optional parameters used by this payload type.
-    # defscript   - The definition script (a snit::type script)
-    #
-    # Defines payload::$name as a type ensemble given the typemethods
-    # defined in the defscript.  See payload(i) for documentation of the
-    # expected typemethods.
-
-    typemethod {type define} {name optparms defscript} {
-        # FIRST, define the type.
-        set header {
-            # Make it a singleton
-            pragma -hasinstances no
-
-            typemethod check {pdict} { return }
-        }
-
-        snit::type ${type}::${name} "$header\n$defscript"
-
-        # NEXT, save the type metadata
-        ladd tinfo(names) $name
-        set tinfo(parms-$name) $optparms
     }
     
     #-------------------------------------------------------------------
@@ -119,15 +99,15 @@ snit::type payload {
     # Note: This checker is called from [iom checker], not from
     # [sanity *].
 
-    typemethod checker {{ht ""}} {
-        set edict [$type DoSanityCheck]
+    method checker {{ht ""}} {
+        set edict [$self DoSanityCheck]
 
         if {[dict size $edict] == 0} {
             return OK
         }
 
         if {$ht ne ""} {
-            $type DoSanityReport $ht $edict
+            $self DoSanityReport $ht $edict
         }
 
         return WARNING
@@ -142,14 +122,14 @@ snit::type payload {
     # Returns the dictionary, which will be empty if there were no
     # errors.
 
-    typemethod DoSanityCheck {} {
+    method DoSanityCheck {} {
         # FIRST, create the empty error dictionary.
         set edict [dict create]
 
         # NEXT, clear the invalid states, since we're going to 
         # recompute them.
 
-        rdb eval {
+        $adb eval {
             UPDATE payloads
             SET state = 'normal'
             WHERE state = 'invalid';
@@ -158,10 +138,11 @@ snit::type payload {
         # NEXT, identify the invalid payloads.
         set badlist [list]
 
-        rdb eval {
+        $adb eval {
             SELECT * FROM payloads
         } row {
-            set result [payload call check [array get row]]
+            set ptype [string tolower $row(payload_type)]
+            set result [$self $ptype check [array get row]]
 
             if {$result ne ""} {
                 dict set edict $row(iom_id) $row(payload_num) $result
@@ -171,7 +152,7 @@ snit::type payload {
 
         # NEXT, mark the bad payloads invalid.
         foreach {iom_id payload_num} $badlist {
-            rdb eval {
+            $adb eval {
                 UPDATE payloads
                 SET state = 'invalid'
                 WHERE iom_id=$iom_id AND payload_num=$payload_num 
@@ -192,7 +173,7 @@ snit::type payload {
     # Writes HTML text of the results of the sanity check to the ht
     # buffer.  This routine assumes that there are errors.
 
-    typemethod DoSanityReport {ht edict} {
+    method DoSanityReport {ht edict} {
         # FIRST, Build the report
         $ht subtitle "IOM Payload Constraints"
 
@@ -207,13 +188,13 @@ snit::type payload {
         $ht para
 
         dict for {iom_id idict} $edict {
-            array set idata [iom get $iom_id]
+            array set idata [$adb iom get $iom_id]
 
             $ht putln "<b>IOM $iom_id: $idata(longname)</b>"
             $ht ul
 
             dict for {payload_num errmsg} $idict {
-                set pdict [payload get [list $iom_id $payload_num]]
+                set pdict [$self get [list $iom_id $payload_num]]
 
                 dict with pdict {
                     $ht li
@@ -228,7 +209,6 @@ snit::type payload {
 
         return
     }
-
 
     #===================================================================
     # payload Instance: Modification and Query Interace
@@ -246,13 +226,13 @@ snit::type payload {
     #
     # Validates a payload ID
 
-    typemethod validate {id} {
+    method validate {id} {
         lassign $id iom_id payload_num
 
-        iom validate $iom_id
+        $adb iom validate $iom_id
 
-        if {![payload exists $id]} {
-            set nums [rdb eval {
+        if {![$self exists $id]} {
+            set nums [$adb eval {
                 SELECT payload_num FROM payloads
                 WHERE iom_id=$iom_id
                 ORDER BY payload_num
@@ -277,10 +257,10 @@ snit::type payload {
     #
     # Returns 1 if the payload exists, and 0 otherwise.
 
-    typemethod exists {id} {
+    method exists {id} {
         lassign $id iom_id payload_num
 
-        return [rdb exists {
+        return [$adb exists {
             SELECT * FROM payloads 
             WHERE iom_id=$iom_id AND payload_num=$payload_num
         }]
@@ -294,11 +274,11 @@ snit::type payload {
     # Retrieves a row dictionary, or a particular column value, from
     # payloads.
 
-    typemethod get {id {parm ""}} {
+    method get {id {parm ""}} {
         lassign $id iom_id payload_num
 
         # FIRST, get the data
-        rdb eval {
+        $adb eval {
             SELECT * FROM payloads 
             WHERE iom_id=$iom_id AND payload_num=$payload_num
         } row {
@@ -321,7 +301,7 @@ snit::type payload {
     # a script of one or more commands that will undo the change.  When
     # change cannot be undone, the mutator returns the empty string.
 
-    # mutate create parmdict
+    # create parmdict
     #
     # parmdict     A dictionary of payload parms
     #
@@ -335,24 +315,25 @@ snit::type payload {
     # Creates a payload given the parms, which are presumed to be
     # valid.
 
-    typemethod {mutate create} {parmdict} {
+    method create {parmdict} {
         # FIRST, make sure the parm dict is complete
         set parmdict [dict merge $optParms $parmdict]
 
         # NEXT, compute the narrative string.
-        set narrative [$type call narrative $parmdict]
+        set ptype [string tolower [dict get $parmdict payload_type]]
+        set narrative [$self $ptype narrative $parmdict]
 
         # NEXT, put the payload in the database.
         dict with parmdict {
             # FIRST, get the payload number for this IOM.
-            rdb eval {
+            $adb eval {
                 SELECT coalesce(max(payload_num)+1,1) AS payload_num
                 FROM payloads
                 WHERE iom_id=$iom_id
             } {}
 
             # NEXT, Put the payload in the database
-            rdb eval {
+            $adb eval {
                 INSERT INTO 
                 payloads(iom_id, payload_num, payload_type, narrative,
                          a,
@@ -367,12 +348,12 @@ snit::type payload {
             }
 
             # NEXT, Return undo command.
-            return [list rdb delete payloads \
+            return [list $adb delete payloads \
                 "iom_id='$iom_id' AND payload_num=$payload_num"]
         }
     }
 
-    # mutate delete id
+    # delete id
     #
     # id     a payload ID, {iom_id payload_num}
     #
@@ -380,18 +361,18 @@ snit::type payload {
     # gap in the priority order, but doesn't change the order of
     # the remaining payloads; hence, we don't need to worry about it.
 
-    typemethod {mutate delete} {id} {
+    method delete {id} {
         lassign $id iom_id payload_num
 
         # FIRST, get the undo information
-        set data [rdb delete -grab payloads \
+        set data [$adb delete -grab payloads \
             {iom_id=$iom_id AND payload_num=$payload_num}]
 
         # NEXT, Return the undo script
-        return [list rdb ungrab $data]
+        return [list $adb ungrab $data]
     }
 
-    # mutate update parmdict
+    # update parmdict
     #
     # parmdict     A dictionary of payload parms
     #
@@ -405,7 +386,7 @@ snit::type payload {
     # valid.  Note that you can't change the payload's IOM or
     # type, and the state is set by a different mutator.
 
-    typemethod {mutate update} {parmdict} {
+    method update {parmdict} {
         # FIRST, make sure the parm dict is complete
         set parmdict [dict merge $optParms $parmdict]
 
@@ -414,14 +395,14 @@ snit::type payload {
             lassign $id iom_id payload_num
 
             # FIRST, get the undo information
-            set data [rdb grab payloads \
+            set data [$adb grab payloads \
                 {iom_id=$iom_id AND payload_num=$payload_num}]
 
             # NEXT, Update the payload.  The nullif(nonempty()) pattern
             # is so that the old value of the column will be used
             # if the input is empty, and that empty columns will be
             # NULL rather than "".
-            rdb eval {
+            $adb eval {
                 UPDATE payloads
                 SET a       = nullif(nonempty($a,   a),     ''),
                     c       = nullif(nonempty($c,   c),     ''),
@@ -431,43 +412,44 @@ snit::type payload {
             } {}
 
             # NEXT, compute and set the narrative
-            set pdict [$type get $id]
-            set narrative [$type call narrative $pdict]
+            set pdict [$self get $id]
+            set ptype [string tolower [dict get $pdict payload_type]]
+            set narrative [$self $ptype narrative $pdict]
 
-            rdb eval {
+            $adb eval {
                 UPDATE payloads
                 SET    narrative = $narrative
                 WHERE iom_id=$iom_id AND payload_num=$payload_num
             }
 
             # NEXT, Return the undo command
-            return [list rdb ungrab $data]
+            return [list $adb ungrab $data]
         }
     }
 
-    # mutate state id state
+    # state id state
     #
     # id     - The payload's ID, {iom_id payload_num}
     # state  - The payload's new epayload_state
     #
     # Updates a payload's state.
 
-    typemethod {mutate state} {id state} {
+    method state {id state} {
         lassign $id iom_id payload_num
 
         # FIRST, get the undo information
-        set data [rdb grab payloads \
+        set data [$adb grab payloads \
             {iom_id=$iom_id AND payload_num=$payload_num}]
 
         # NEXT, Update the payload.
-        rdb eval {
+        $adb eval {
             UPDATE payloads
             SET state = $state
             WHERE iom_id=$iom_id AND payload_num=$payload_num
         }
 
         # NEXT, Return the undo command
-        return [list rdb ungrab $data]
+        return [list $adb ungrab $data]
     }
 
     #-------------------------------------------------------------------
@@ -481,7 +463,7 @@ snit::type payload {
     # This is a convenience command that calls the relevant subcommand
     # for the payload.
 
-    typemethod call {op pdict args} {
+    method call {op pdict args} {
         [dict get $pdict payload_type] $op $pdict {*}$args
     }
 
@@ -495,16 +477,112 @@ snit::type payload {
     #
     # Throws an error if the payload doesn't have the desired type.
 
-    typemethod RequireType {payload_type id} {
+    method RequireType {payload_type id} {
         lassign $id iom_id payload_num
         
-        if {[rdb onecolumn {
+        if {[$adb onecolumn {
             SELECT payload_type FROM payloads 
             WHERE iom_id=$iom_id AND payload_num=$payload_num
         }] ne $payload_type} {
             return -code error -errorcode INVALID \
                 "payload \"$id\" is not a $payload_type payload"
         }
+    }
+    #-------------------------------------------------------------------
+    # coop subcommands
+    #
+    # See the payload(i) man page for the signature and general
+    # description of each subcommand.
+
+    method {coop narrative} {pdict} {
+        dict with pdict {
+            set points [format "%.1f" $mag]
+            set symbol [qmag name $mag]
+            return "Change cooperation with $g by $points points ($symbol)."
+        }
+    }
+
+    method {coop check} {pdict} {
+        set errors [list]
+
+        dict with pdict {
+            if {$g ni [$adb frcgroup names]} {
+                lappend errors "Force group $g no longer exists."
+            }
+        }
+
+        return [join $errors "  "]
+    }
+
+    #-------------------------------------------------------------------
+    # hrel subcommands
+    #
+    # See the payload(i) man page for the signature and general
+    # description of each subcommand.
+
+    method {hrel narrative} {pdict} {
+        dict with pdict {
+            set points [format "%.1f" $mag]
+            set symbol [qmag name $mag]
+            return "Change horizontal relationships with $g by $points points ($symbol)."
+        }
+    }
+
+    method {hrel check} {pdict} {
+        set errors [list]
+
+        dict with pdict {
+            if {$g ni [$adb group names]} {
+                lappend errors "Group $g no longer exists."
+            }
+        }
+
+        return [join $errors "  "]
+    }
+
+    #-------------------------------------------------------------------
+    # sat subcommands
+    #
+    # See the payload(i) man page for the signature and general
+    # description of each subcommand.
+
+    method {sat narrative} {pdict} {
+        dict with pdict {
+            set points [format "%.1f" $mag]
+            set symbol [qmag name $mag]
+            return "Change satisfaction with $c by $points points ($symbol)."
+        }
+    }
+
+    method {sat check} {pdict} {
+        # Trivially returns
+        return {}
+    }
+
+    #-------------------------------------------------------------------
+    # vrel subcommands
+    #
+    # See the payload(i) man page for the signature and general
+    # description of each subcommand.
+
+    method {vrel narrative} {pdict} {
+        dict with pdict {
+            set points [format "%.1f" $mag]
+            set symbol [qmag name $mag]
+            return "Change vertical relationships with $a by $points points ($symbol)."
+        }
+    }
+
+    method {vrel check} {pdict} {
+        set errors [list]
+
+        dict with pdict {
+            if {$a ni [$adb actor names]} {
+                lappend errors "Actor $a no longer exists."
+            }
+        }
+
+        return [join $errors "  "]
     }
 }
 
@@ -535,7 +613,7 @@ snit::type payload {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [payload mutate delete $parms(id)]
+        my setundo [$adb payload delete $parms(id)]
     }
 }
 
@@ -566,7 +644,322 @@ snit::type payload {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [payload mutate state $parms(id) $parms(state)]
+        my setundo [$adb payload state $parms(id) $parms(state)]
+    }
+}
+
+# PAYLOAD:COOP:CREATE
+#
+# Creates a new COOP payload.
+
+::athena::orders define PAYLOAD:COOP:CREATE {
+    meta title "Create Payload: Cooperation"
+
+    meta sendstates PREP
+
+    meta parmlist {iom_id longname g mag}
+
+    meta form {
+        rcc "Message ID:" -for iom_id
+        text iom_id -context yes
+
+        rcc "Description:" -for longname
+        disp longname -width 60
+
+        rcc "With Force Group:" -for g
+        frcgroup g
+
+        rcc "Magnitude:" -for mag
+        mag mag
+        label "points of change"
+    }
+
+
+    method _validate {} {
+        my prepare iom_id   -toupper   -required -type iom
+        my prepare g        -toupper   -required -type frcgroup
+        my prepare mag -num -toupper   -required -type qmag
+    }
+
+    method _execute {{flunky ""}} {
+        set parms(payload_type) COOP
+        my setundo [$adb payload create [array get parms]]
+    }
+}
+
+# PAYLOAD:COOP:UPDATE
+#
+# Updates existing COOP payload.
+
+::athena::orders define PAYLOAD:COOP:UPDATE {
+    meta title "Update Payload: Cooperation"
+    meta sendstates PREP 
+
+    meta parmlist {id longname g mag}
+
+    meta form {
+        rcc "Payload:" -for id
+        dbkey id -context yes -table gui_payloads_COOP \
+            -keys {iom_id payload_num} \
+            -loadcmd {$order_ keyload id {g mag}}
+
+        rcc "Description:" -for longname
+        disp longname -width 60
+
+        rcc "With Force Group:" -for g
+        frcgroup g
+
+        rcc "Magnitude:" -for mag
+        mag mag
+        label "points of change"
+    }
+
+
+    method _validate {} {
+        my prepare id         -required -type payload
+        my prepare g          -toupper  -type frcgroup
+        my prepare mag   -num -toupper  -type qmag
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [$adb payload update [array get parms]]
+    }
+}
+
+# PAYLOAD:HREL:CREATE
+#
+# Creates a new HREL payload.
+
+::athena::orders define PAYLOAD:HREL:CREATE {
+    meta title "Create Payload: Horizontal Relationship"
+
+    meta sendstates PREP
+
+    meta parmlist {iom_id longname g mag}
+
+    meta form {
+        rcc "Message ID:" -for iom_id
+        text iom_id -context yes
+
+        rcc "Description:" -for longname
+        disp longname -width 60
+
+        rcc "With Group:" -for g
+        group g
+
+        rcc "Magnitude:" -for mag
+        mag mag
+        label "points of change"
+    }
+
+
+    method _validate {} {
+        my prepare iom_id   -toupper   -required -type iom
+        my prepare g        -toupper   -required -type group
+        my prepare mag -num -toupper   -required -type qmag
+    }
+
+    method _execute {{flunky ""}} {
+        set parms(payload_type) HREL
+    
+        my setundo [$adb payload create [array get parms]]
+    }
+}
+
+# PAYLOAD:HREL:UPDATE
+#
+# Updates existing HREL payload.
+
+::athena::orders define PAYLOAD:HREL:UPDATE {
+    meta title "Update Payload: Horizontal Relationship"
+    meta sendstates PREP 
+
+    meta parmlist {id longname g mag}
+
+    meta form {
+        rcc "Payload:" -for id
+        dbkey id -context yes -table gui_payloads_HREL \
+            -keys {iom_id payload_num} \
+            -loadcmd {$order_ keyload id {g mag}}
+
+        rcc "Description:" -for longname
+        disp longname -width 60
+
+        rcc "With Group:" -for g
+        group g
+
+        rcc "Magnitude:" -for mag
+        mag mag
+        label "points of change"
+    }
+
+
+    method _validate {} {
+        my prepare id         -required -type payload
+        my prepare g          -toupper  -type group
+        my prepare mag   -num -toupper  -type qmag
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [$adb payload update [array get parms]]
+    }
+}
+
+# PAYLOAD:SAT:CREATE
+#
+# Creates a new SAT payload.
+
+::athena::orders define PAYLOAD:SAT:CREATE {
+    meta title "Create Payload: Satisfaction"
+
+    meta sendstates PREP
+
+    meta parmlist {iom_id longname c mag}
+
+    meta form {
+        rcc "Message ID:" -for iom_id
+        text iom_id -context yes
+
+        rcc "Description:" -for longname
+        disp longname -width 60
+
+        rcc "With Concern:" -for c
+        concern c
+
+        rcc "Magnitude:" -for mag
+        mag mag
+        label "points of change"
+    }
+
+
+    method _validate {} {
+        my prepare iom_id   -toupper   -required -type iom
+        my prepare c        -toupper   -required -type econcern
+        my prepare mag -num -toupper   -required -type qmag
+    }
+
+    method _execute {{flunky ""}} {
+        set parms(payload_type) SAT
+    
+        my setundo [$adb payload create [array get parms]]
+    }
+}
+
+# PAYLOAD:SAT:UPDATE
+#
+# Updates existing SAT payload.
+
+::athena::orders define PAYLOAD:SAT:UPDATE {
+    meta title "Update Payload: Satisfaction"
+    meta sendstates PREP 
+
+    meta parmlist {id longname c mag}
+
+    meta form {
+        rcc "Payload:" -for id
+        dbkey id -context yes -table gui_payloads_SAT \
+            -keys {iom_id payload_num} \
+            -loadcmd {$order_ keyload id {c mag}}
+
+        rcc "Description:" -for longname
+        disp longname -width 60
+
+        rcc "With Concern:" -for c
+        concern c
+
+        rcc "Magnitude:" -for mag
+        mag mag
+        label "points of change"
+    }
+
+
+    method _validate {} {
+        my prepare id         -required -type payload
+        my prepare c          -toupper  -type econcern
+        my prepare mag   -num -toupper  -type qmag
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [$adb payload update [array get parms]]
+    }
+}
+
+# PAYLOAD:VREL:CREATE
+#
+# Creates a new VREL payload.
+
+::athena::orders define PAYLOAD:VREL:CREATE {
+    meta title "Create Payload: Vertical Relationship"
+
+    meta sendstates PREP
+
+    meta parmlist {iom_id longname a mag}
+
+    meta form {
+        rcc "Message ID:" -for iom_id
+        text iom_id -context yes
+
+        rcc "Description:" -for longname
+        disp longname -width 60
+
+        rcc "With Actor:" -for a
+        actor a
+
+        rcc "Magnitude:" -for mag
+        mag mag
+        label "points of change"
+    }
+
+
+    method _validate {} {
+        my prepare iom_id   -toupper   -required -type iom
+        my prepare a        -toupper   -required -type actor
+        my prepare mag -num -toupper   -required -type qmag
+    }
+
+    method _execute {{flunky ""}} {
+        set parms(payload_type) VREL
+    
+        my setundo [$adb payload create [array get parms]]
+    }
+}
+
+# PAYLOAD:VREL:UPDATE
+#
+# Updates existing VREL payload.
+
+::athena::orders define PAYLOAD:VREL:UPDATE {
+    meta title "Update Payload: Vertical Relationship"
+    meta sendstates PREP 
+
+    meta parmlist {id longname a mag}
+
+    meta form {
+        rcc "Payload:" -for id
+        dbkey id -context yes -table gui_payloads_VREL \
+            -keys {iom_id payload_num} \
+            -loadcmd {$order_ keyload id {a mag}}
+
+        rcc "Description:" -for longname
+        disp longname -width 60
+
+        rcc "With Actor:" -for a
+        actor a
+
+        rcc "Magnitude:" -for mag
+        mag mag
+        label "points of change"
+    }
+
+
+    method _validate {} {
+        my prepare id         -required -type payload
+        my prepare a          -toupper  -type actor
+        my prepare mag  -num  -toupper  -type qmag
+    }
+
+    method _execute {{flunky ""}} {
+        my setundo [$adb payload update [array get parms]]
     }
 }
 

@@ -40,11 +40,6 @@ dynaform fieldtype alias grouplist enumlonglist \
     -width    30  \
     -dictcmd  {::group namedict}
 
-# payload: Pick a payload by its ID.
-dynaform fieldtype alias payload dbkey \
-    -table gui_payloads \
-    -keys  {iom_id payload_num}
-
 # plant: Pick a plant by its ID.
 dynaform fieldtype alias plant dbkey \
     -table gui_plants_na  \

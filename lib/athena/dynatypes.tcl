@@ -112,6 +112,11 @@ dynaform fieldtype alias nlist enumlonglist \
 # orggroup: Pick an ORG group by name.
 dynaform fieldtype alias orggroup enum -listcmd {$adb_ orggroup names}
 
+# payload: Pick a payload by its ID.
+dynaform fieldtype alias payload dbkey \
+    -table gui_payloads \
+    -keys  {iom_id payload_num}
+
 # percent: Pick a percentage.
 dynaform fieldtype alias percent range -datatype ::ipercent
 
