@@ -1,26 +1,34 @@
 #------------------------------------------------------------------------
 # TITLE:
-#    driver_control.tcl
+#    ruleset_control.tcl
 #
 # AUTHOR:
 #    Will Duquette
 #
 # DESCRIPTION:
-#   Athena Driver Assessment Model (DAM): CONTROL rules
+#   athena(n): CONTROL ruleset
+#
+# FIRING DICTIONARY:
+#
+#   n - The neighborhood in which control shifted.
+#   a - The actor that lost control, or "" if none.
+#   b - The actor that gained control, or "" if none.
 #
 #-----------------------------------------------------------------------
 
-#-----------------------------------------------------------------------
-# control_rules
+oo::class create ::athena::ruleset_CONTROL {
+    superclass ::athena::ruleset
+    
+    meta name     "CONTROL"
+    meta sigparms {n}
 
-driver type define CONTROL {n} {
     #-------------------------------------------------------------------
     # Look-up tables
 
     # C11sat -- satisfaction magnitude dict for CONTROL-1-1.  Key
     # is abs(Vdelta), value is unsigned qmag(n).  
 
-    typevariable C11sat {
+    meta c11sat {
         1.4 XXXL
         1.0 XXL
         0.6 L
@@ -31,7 +39,7 @@ driver type define CONTROL {n} {
     # with force groups owned by actor a for CONTROL-1-1.  Key is
     # vrel.fa, value is qmag(n).
 
-    typevariable C11acoop -array {
+    metadict c11acoop {
         SUPPORT S+
         LIKE    0
         INDIFF  S-
@@ -43,7 +51,7 @@ driver type define CONTROL {n} {
     # with force groups owned by actor b for CONTROL-1-1.  Key is
     # vrel.fb, value is qmag(n).
 
-    typevariable C11bcoop -array {
+    metadict c11bcoop {
         SUPPORT L+
         LIKE    M+
         INDIFF  S+
@@ -54,7 +62,7 @@ driver type define CONTROL {n} {
     # C11sat -- effect on civgroup f's satisfaction for CONTROL-1-2
     # Key is vrel.fa, value is qmag(n).
 
-    typevariable C12sat -array {
+    metadict c12sat {
         SUPPORT XXL-
         LIKE    XL-
         INDIFF  S-
@@ -66,7 +74,7 @@ driver type define CONTROL {n} {
     # force groups for CONTROL-1-2
     # Key is vrel.fa, value is qmag(n).
 
-    typevariable C12acoop -array {
+    metadict c12acoop {
         SUPPORT XL+
         LIKE    L+
         INDIFF  S-
@@ -78,7 +86,7 @@ driver type define CONTROL {n} {
     # other actor c's force groups for CONTROL-1-2
     # Key is vrel.fa, value is qmag(n).
 
-    typevariable C12ccoop -array {
+    metadict c12ccoop {
         SUPPORT L+
         LIKE    M+
         INDIFF  S+
@@ -89,7 +97,7 @@ driver type define CONTROL {n} {
     # C13sat -- effect on civgroup f's satisfaction for CONTROL-1-3
     # Key is vrel.fa, value is qmag(n).
 
-    typevariable C13sat -array {
+    metadict c13sat {
         SUPPORT XXL+
         LIKE    XL+
         INDIFF  S+
@@ -101,7 +109,7 @@ driver type define CONTROL {n} {
     # force groups for CONTROL-1-3
     # Key is vrel.fa, value is qmag(n).
 
-    typevariable C13bcoop -array {
+    metadict c13bcoop {
         SUPPORT L+
         LIKE    M+
         INDIFF  S+
@@ -113,7 +121,7 @@ driver type define CONTROL {n} {
     # given vrel.ga,<case> where case is G (gained control), L (lost 
     # control), or N (neither).
     
-    typevariable C21 -array {
+    metadict c21 {
         SUPPORT,G  L+
         LIKE,G     M+
         INDIFF,G   0
@@ -149,29 +157,26 @@ driver type define CONTROL {n} {
     #
     # Assesses the satisfaction and cooperation implications of the event.
 
-    typemethod assess {fdict} {
-        set dtype CONTROL
-        dict set fdict dtype $dtype
-
-        if {![dam isactive $dtype]} {
-            log warning $dtype \
+    method assess {fdict} {
+        if {![my isactive]} {
+            [my adb] log warning [my name] \
                 "driver type has been deactivated"
             return
         }
 
+        dict set fdict dtype [my name]
         dict with fdict {}
         
         # Skip if the neighborhood is empty.
-        if {[demog getn $n population] == 0} {
-            log normal $dtype \
-                "skipping, nbhood $n is empty." 
+        if {[my demog getn $n population] == 0} {
+            [my adb] log normal [my name] "skipping, nbhood $n is empty."
             return
         }
         
         bgcatch {
-            log detail $dtype $fdict
-            $type ruleset1 $fdict
-            $type ruleset2 $fdict
+            [my adb] log detail [my name] $fdict
+            my ruleset1 $fdict
+            my ruleset2 $fdict
         }
     }
 
@@ -185,7 +190,7 @@ driver type define CONTROL {n} {
     # Returns a one-line description of the driver given its signature
     # values.
 
-    typemethod sigline {signature} {
+    method sigline {signature} {
         set n $signature
         return "Shift in control of nbhood $n"
     }
@@ -196,7 +201,7 @@ driver type define CONTROL {n} {
     #
     # Produces a one-line narrative text string for a given rule firing
 
-    typemethod narrative {fdict} {
+    method narrative {fdict} {
         dict with fdict {}
 
         if {$a eq ""} {
@@ -221,7 +226,7 @@ driver type define CONTROL {n} {
     #
     # Produces a narrative HTML paragraph including all fdict information.
 
-    typemethod detail {fdict ht} {
+    method detail {fdict ht} {
         dict with fdict {}
 
         if {$b ne ""} {
@@ -256,22 +261,22 @@ driver type define CONTROL {n} {
     # and cooperation effects, and CONTROL-2 handles the vertical
     # relationship effects.
 
-    typemethod ruleset1 {fdict} {
+    method ruleset1 {fdict} {
         dict with fdict {}
 
-        set flist [demog gIn $n]
+        set flist [my demog gIn $n]
 
         # CONTROL-1-1
         #
         # If Actor b has taken control of nbhood n from Actor a,
         # Then for each CIV pgroup f in the neighborhood
-        dam rule CONTROL-1-1 $fdict {
+        my rule CONTROL-1-1 $fdict {
             $a ne "" && $b ne ""
         } {
             foreach f $flist {
                 # FIRST, get the vertical relationships
-                set Vfa [vrel.ga $f $a]
-                set Vfb [vrel.ga $f $b]
+                set Vfa [my vrel.ga $f $a]
+                set Vfb [my vrel.ga $f $b]
 
                 # NEXT, get the satisfaction effects.
                 let Vdelta {$Vfb - $Vfa}
@@ -286,23 +291,23 @@ driver type define CONTROL {n} {
 
                 set mag 0
 
-                dict for {bound sym} $C11sat {
+                dict for {bound sym} [my c11sat] {
                     if {$bound < abs($Vdelta)} {
                         set mag $sym$sign
                         break
                     }
                 }
                 
-                dam sat P $f AUT $mag [format "DV=%+4.1f" $Vdelta]
+                my sat P $f AUT $mag [format "DV=%+4.1f" $Vdelta]
 
                 # NEXT, get the cooperation effects with a's troops
                 set Vfa [qaffinity name $Vfa]
                 set Vfb [qaffinity name $Vfb]
 
-                dam coop P $f [actor frcgroups $a] \
-                    $C11acoop($Vfa) "a's group, V.fa=$Vfa"
-                dam coop P $f [actor frcgroups $b] \
-                    $C11bcoop($Vfb) "b's group, V.fb=$Vfb"
+                my coop P $f [my actor frcgroups $a] \
+                    [my c11acoop $Vfa] "a's group, V.fa=$Vfa"
+                my coop P $f [my actor frcgroups $b] \
+                    [my c11bcoop $Vfb] "b's group, V.fb=$Vfb"
             }
         }
 
@@ -311,30 +316,30 @@ driver type define CONTROL {n} {
         # If Actor a has lost control of nbhood n, which is now
         # in chaos,
         # Then for each CIV pgroup f in the neighborhood
-        dam rule CONTROL-1-2 $fdict {
+        my rule CONTROL-1-2 $fdict {
             $a ne "" && $b eq ""
         } {
             foreach f $flist {
                 # FIRST, get the vertical relationships
-                set Vsym [qaffinity name [vrel.ga $f $a]]
+                set Vsym [qaffinity name [my vrel.ga $f $a]]
 
-                dam sat P $f AUT $C12sat($Vsym) "V.fa=$Vsym"
+                my sat P $f AUT [my c12sat $Vsym] "V.fa=$Vsym"
 
                 # NEXT, get the cooperation effects with each
                 # actor's troops
-                foreach actor [actor names] {
-                    set glist [actor frcgroups $actor]
+                foreach actor [my actor names] {
+                    set glist [my actor frcgroups $actor]
 
                     if {$actor eq $a} {
-                        set mag $C12acoop($Vsym)
+                        set mag [my c12acoop $Vsym]
                         set note "a's group, V.fa=$Vsym"
                     } else {
-                        set Vc [qaffinity name [vrel.ga $f $actor]]
-                        set mag $C12ccoop($Vc)
+                        set Vc [qaffinity name [my vrel.ga $f $actor]]
+                        set mag [my c12ccoop $Vc]
                         set note "c's group, V.fc=$Vc"
                     }
 
-                    dam coop P $f $glist $mag $note
+                    my coop P $f $glist $mag $note
                 }
             }
         }
@@ -344,36 +349,36 @@ driver type define CONTROL {n} {
         # If Actor b has gained control of nbhood n, which was previously
         # in chaos,
         # Then for each CIV pgroup f in the neighborhood
-        dam rule CONTROL-1-3 $fdict {
+        my rule CONTROL-1-3 $fdict {
             $a eq "" && $b ne ""
         } {
             foreach f $flist {
                 # FIRST, get the vertical relationships
-                set Vsym [qaffinity name [vrel.ga $f $b]]
+                set Vsym [qaffinity name [my vrel.ga $f $b]]
 
-                dam sat P $f AUT $C13sat($Vsym) "V.fb=$Vsym"
+                my sat P $f AUT [my c13sat $Vsym] "V.fb=$Vsym"
 
                 # NEXT, get the cooperation effects with actor b's
                 # troops.
-                set glist [actor frcgroups $b]
-                set mag $C13bcoop($Vsym)
-                dam coop P $f $glist $mag "b's group, V.fb=$Vsym"
+                set glist [my actor frcgroups $b]
+                set mag [my c13bcoop $Vsym]
+                my coop P $f $glist $mag "b's group, V.fb=$Vsym"
             }
         }
     }
 
-    typemethod ruleset2 {fdict} {
+    method ruleset2 {fdict} {
         set ag [dict get $fdict b]
         set al [dict get $fdict a]
 
-        set glist [demog gIn [dict get $fdict n]]
-        set alist [actor names]
+        set glist [my demog gIn [dict get $fdict n]]
+        set alist [my actor names]
 
-        dam rule CONTROL-2-1 $fdict {1} {
+        my rule CONTROL-2-1 $fdict {1} {
             foreach g $glist {
                 foreach a $alist {
                     # FIRST, get the vertical relationship
-                    set Vga [qaffinity name [vrel.ga $g $a]]
+                    set Vga [qaffinity name [my vrel.ga $g $a]]
 
                     # NEXT, did actor a lose, gain, or neither?
                     if {$a eq $al} {
@@ -388,7 +393,7 @@ driver type define CONTROL {n} {
                     }
 
                     # NEXT, enter the vrel input
-                    dam vrel P $g $a $C21($Vga,$case) $note
+                    my vrel P $g $a [my c21 $Vga,$case] $note
                 }
             }
         }

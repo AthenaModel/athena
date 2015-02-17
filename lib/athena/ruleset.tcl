@@ -375,6 +375,13 @@ oo::class create ::athena::ruleset {
         parm get $name
     }
 
+    # actor args...
+    #
+    # Easy access to demog.
+
+    method actor {args} {
+        return [[my adb] actor {*}$args]
+    }
     # demog args...
     #
     # Easy access to demog.

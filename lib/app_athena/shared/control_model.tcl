@@ -369,7 +369,7 @@ snit::type control_model {
         # TBD: This vrel change is unique; no other drivers do this
         # kind of thing.  But we should probably move it to the 
         # driver_control module anyway.
-        set driver_id [driver getid [list dtype CONTROL n $n]]
+        set driver_id [ruleset getid CONTROL [list n $n]]
 
         # NEXT, set the vrel baseline to the current level for 
         # all non-empty civ groups in n.
@@ -392,7 +392,7 @@ snit::type control_model {
         dict set fdict a $cOld
         dict set fdict b $cNew
 
-        driver::CONTROL assess $fdict
+        ruleset CONTROL assess $fdict
     }
 
 
