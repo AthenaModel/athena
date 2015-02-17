@@ -377,11 +377,20 @@ oo::class create ::athena::ruleset {
 
     # actor args...
     #
-    # Easy access to demog.
+    # Easy access to actor.
 
     method actor {args} {
         return [[my adb] actor {*}$args]
     }
+
+    # civgroup args...
+    #
+    # Easy access to civgroup.
+
+    method civgroup {args} {
+        return [[my adb] civgroup {*}$args]
+    }
+
     # demog args...
     #
     # Easy access to demog.

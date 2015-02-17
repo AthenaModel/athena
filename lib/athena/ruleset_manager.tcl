@@ -29,6 +29,7 @@ snit::type ::athena::ruleset_manager {
         CONSTRUCT
         CONSUMP
         CONTROL
+        CURSE
         CRIME
         CULSITE
         CURFEW

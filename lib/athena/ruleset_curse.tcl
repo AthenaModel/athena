@@ -1,20 +1,37 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#   driver_curse.tcl
+#   ruleset_curse.tcl
 #
 # AUTHOR:
 #   Dave Hanks
 #
 # DESCRIPTION:
-#    Athena Complex User-defined Role-based Situations and Events (CURSE)
-#    module: CURSE
+#    athena(n): CURSE rule set
 #
+# FIRING DICTIONARY:
+#    dtype     -> CURSE
+#    curse_id  -> CURSE ID
+#    cause     -> The cause, or UNIQUE for a unique cause
+#    s         -> Here factor
+#    p         -> Near factor
+#    q         -> Far factor
+#    injects   => dictionary of injects
+#              -> inject_num  -> ID of inject
+#              -> inject_type -> COOP | HREL | SAT | VREL
+#              -> mode        -> P | T
+#              -> mag         -> Magnitude (numeric)
+#              -> f           -> groups  (if COOP or HREL)
+#              -> g           -> groups  (all inject types)
+#              -> c           -> concern (if SAT)
+#              -> a           -> actors  (if VREL)
 #-----------------------------------------------------------------------
 
-#-----------------------------------------------------------------------
-# CURSE 
+oo::class create ::athena::ruleset_CURSE {
+    superclass ::athena::ruleset
+    
+    meta name     "CURSE"
+    meta sigparms {curse_id}
 
-driver type define CURSE {curse_id} {
     #-------------------------------------------------------------------
     # Public Type Methods
 
@@ -24,17 +41,15 @@ driver type define CURSE {curse_id} {
     #
     # Assesses a particular CURSE.
 
-    typemethod assess {fdict} {
+    method assess {fdict} {
         # FIRST, see if the CURSE driver is deactivated
-        set dtype CURSE
-
-        if {![dam isactive $dtype]} {
-            log warning $dtype "driver type has been deactivated"
+        if {![my isactive]} {
+            log warning [my name] "driver type has been deactivated"
             return
         }
         
         # NEXT, set the driver type in the dictionary
-        dict set fdict dtype $dtype
+        dict set fdict dtype [my name]
 
         # NEXT, go through the injects checking for any zero population
         # civilian groups
@@ -44,8 +59,8 @@ driver type define CURSE {curse_id} {
                 switch -exact -- $inject_type {
                     HREL {
                         # Pare out any zero pop CIV groups
-                        set flist [$type GroupsWithPop $f]
-                        set glist [$type GroupsWithPop $g]
+                        set flist [my GroupsWithPop $f]
+                        set glist [my GroupsWithPop $g]
 
                         if {[llength $flist] == 0 ||
                             [llength $glist] == 0} {
@@ -58,7 +73,7 @@ driver type define CURSE {curse_id} {
 
                     VREL {
                         # Pare out any zero pop CIV groups
-                        set glist [$type GroupsWithPop $g]
+                        set glist [my GroupsWithPop $g]
 
                         if {[llength $glist] == 0} {
                             continue
@@ -69,7 +84,7 @@ driver type define CURSE {curse_id} {
 
                     COOP {
                         # Pare out any zero pop CIV groups, g is FRC grps
-                        set flist [$type GroupsWithPop $f]
+                        set flist [my GroupsWithPop $f]
 
                         if {[llength $flist] == 0} {
                             continue
@@ -80,7 +95,7 @@ driver type define CURSE {curse_id} {
 
                     SAT {
                         # Pare out any zero pop CIV groups
-                        set glist [$type GroupsWithPop $g]
+                        set glist [my GroupsWithPop $g]
 
                         if {[llength $glist] == 0} {
                             continue
@@ -93,8 +108,10 @@ driver type define CURSE {curse_id} {
         }
 
         # NEXT, fire the ruleset
-        log detail $dtype $fdict
-        $type ruleset $fdict
+        bgcatch {
+            [my adb] log detail [my name] $fdict
+            my ruleset $fdict            
+        }
     }
 
     #--------------------------------------------------------------------
@@ -112,12 +129,12 @@ driver type define CURSE {curse_id} {
     #
     # The new list is returned (perhaps unchanged, perhaps empty).
 
-    typemethod GroupsWithPop {grps} {
+    method GroupsWithPop {grps} {
         set glist [list]
         foreach grp $grps {
-            if {$grp ni [civgroup names]} {
+            if {$grp ni [my civgroup names]} {
                 lappend glist $grp
-            } elseif {[demog getg $grp population]} {
+            } elseif {[my demog getg $grp population]} {
                 lappend glist $grp
             }
         }
@@ -135,9 +152,9 @@ driver type define CURSE {curse_id} {
     # Returns a one-line description of the driver given its signature
     # values.
 
-    typemethod sigline {signature} {
+    method sigline {signature} {
         # The signature is the curse_id
-        return [rdb onecolumn {
+        return [[my adb] onecolumn {
             SELECT longname FROM curses WHERE curse_id=$signature
         }]
     }
@@ -148,7 +165,7 @@ driver type define CURSE {curse_id} {
     #
     # Produces a one-line narrative text string for a given rule firing
 
-    typemethod narrative {fdict} {
+    method narrative {fdict} {
         dict with fdict {}
 
         set narr [list]
@@ -190,11 +207,11 @@ driver type define CURSE {curse_id} {
     #
     # Produces a narrative HTML paragraph including all fdict information.
 
-    typemethod detail {fdict ht} {
+    method detail {fdict ht} {
         dict with fdict {}
 
         # FIRST, load the mad data.
-        rdb eval {
+        [my adb] eval {
             SELECT * FROM curses WHERE curse_id=$curse_id
         } curse {}
 
@@ -209,28 +226,13 @@ driver type define CURSE {curse_id} {
 
     # fdict - Nested dictionary containing CURSE data
     #
-    #   dtype     -> CURSE
-    #   curse_id  -> CURSE ID
-    #   cause     -> The cause, or UNIQUE for a unique cause
-    #   s         -> Here factor
-    #   p         -> Near factor
-    #   q         -> Far factor
-    #   injects   => dictionary of injects
-    #             -> inject_num  -> ID of inject
-    #             -> inject_type -> COOP | HREL | SAT | VREL
-    #             -> mode        -> P | T
-    #             -> mag         -> Magnitude (numeric)
-    #             -> f           -> groups  (if COOP or HREL)
-    #             -> g           -> groups  (all inject types)
-    #             -> c           -> concern (if SAT)
-    #             -> a           -> actors  (if VREL)
     #
     # Executes the rule set for the magic input
 
-    typemethod ruleset {fdict} {
+    method ruleset {fdict} {
         dict with fdict {}
 
-        rdb eval {
+        [my adb] eval {
             SELECT * FROM curses WHERE curse_id=$curse_id
         } data {}
 
@@ -247,14 +249,14 @@ driver type define CURSE {curse_id} {
             -q     $data(q)
 
         # Rule fires trivially
-        dam rule CURSE-1-1 $fdict {*}$opts {1} {
+        my rule CURSE-1-1 $fdict {*}$opts {1} {
             dict for {id idict} [dict get $fdict injects] {
                 dict with idict {
                     switch -exact -- $inject_type {
-                        COOP { dam coop $mode $f $g $mag }
-                        HREL { dam hrel $mode $f $g $mag }
-                        SAT  { dam sat  $mode $g $c $mag }
-                        VREL { dam vrel $mode $g $a $mag }
+                        COOP { my coop $mode $f $g $mag }
+                        HREL { my hrel $mode $f $g $mag }
+                        SAT  { my sat  $mode $g $c $mag }
+                        VREL { my vrel $mode $g $a $mag }
                     }
                 }
             }

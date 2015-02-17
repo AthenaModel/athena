@@ -227,7 +227,7 @@
             return
         }
 
-        driver::CURSE assess $fdict
+        ruleset CURSE assess $fdict
     }
 }
 

@@ -215,7 +215,7 @@ CURSE-1-1 coop  SUNN BLUE
     test sigline-1.1 {sigline output} -setup {
         setup
     } -body {
-        driver::CURSE sigline "C5" 
+        ruleset CURSE sigline "C5" 
     } -cleanup {
         cleanup
     } -result {C5}
@@ -227,7 +227,7 @@ CURSE-1-1 coop  SUNN BLUE
     test narrative-1.1 {narrative output, HREL} -setup {
         setup
     } -body {
-        driver::CURSE narrative {
+        ruleset CURSE narrative {
             curse_id   C1
             injects    {
                 1 {
@@ -246,7 +246,7 @@ CURSE-1-1 coop  SUNN BLUE
     test narrative-1.2 {narrative output, VREL} -setup {
         setup
     } -body {
-        driver::CURSE narrative {
+        ruleset CURSE narrative {
             curse_id   C1
             injects    {
                 1 {
@@ -265,7 +265,7 @@ CURSE-1-1 coop  SUNN BLUE
     test narrative-1.3 {narrative output, SAT} -setup {
         setup
     } -body {
-        driver::CURSE narrative {
+        ruleset CURSE narrative {
             curse_id   C1
             injects    {
                 1 {
@@ -284,7 +284,7 @@ CURSE-1-1 coop  SUNN BLUE
     test narrative-1.4 {narrative output, COOP} -setup {
         setup
     } -body {
-        driver::CURSE narrative {
+        ruleset CURSE narrative {
             curse_id   C1
             injects    {
                 1 {
@@ -303,7 +303,7 @@ CURSE-1-1 coop  SUNN BLUE
     test narrative-1.5 {narrative output, multiple injects} -setup {
         setup
     } -body {
-        driver::CURSE narrative {
+        ruleset CURSE narrative {
             curse_id   C1
             injects    {
                 1 {
@@ -347,7 +347,7 @@ CURSE-1-1 coop  SUNN BLUE
     test detail-1.1 {detail, C5} -setup {
         setup
     } -body {
-        driver::CURSE detail {
+        ruleset CURSE detail {
             curse_id C5
         } [namespace current]::ht
 
