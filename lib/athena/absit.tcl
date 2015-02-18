@@ -11,7 +11,7 @@
 #    This module defines a type, "absit", which is used to
 #    manage the collection of abstract situation objects, or absits.
 #
-# TBD: Global references: simclock, driver::absit,
+# TBD: Global references: simclock
 # parmdb, sim, ptype, refpoint
 #
 #-----------------------------------------------------------------------

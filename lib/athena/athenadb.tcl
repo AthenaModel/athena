@@ -926,7 +926,7 @@ snit::type ::athena::athenadb {
     # Returns the driver's signature line.
 
     method Sigline {dtype signature} {
-        driver::$dtype sigline $signature
+        $ruleset $dtype sigline $signature
     }
 
     # FiringNarrative fdict
@@ -936,7 +936,8 @@ snit::type ::athena::athenadb {
     # Returns the rule firing's narrative string.
 
     method FiringNarrative {fdict} {
-        driver call narrative $fdict
+        set dtype [dict get $fdict dtype]
+        $ruleset $dtype narrative $fdict
     }
 
     # EntityLink etype name
