@@ -66,7 +66,7 @@
 - sigevent
   - condition_expr, personnel, tactic_*.tcl
 - sim
-  - absit
+  - absit, ruleset_iom.tcl
 - simclock
   - absit, athenadb, block
 

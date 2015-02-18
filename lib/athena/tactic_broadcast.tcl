@@ -207,7 +207,7 @@
         " {*}$tags
 
         # NEXT, assess the broadcast.
-        driver::IOM assess $rdict
+        ruleset IOM assess $rdict
     }
 }
 

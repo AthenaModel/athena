@@ -49,6 +49,7 @@ snit::type ::athena::ruleset_manager {
         INDSPILL
         INDUSTRY
         INFRA
+        IOM
         LAWENF
         MEDICAL
         MINEFIELD

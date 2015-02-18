@@ -45,9 +45,6 @@ snit::type engine {
 
         athena register [list ::aram saveable]
 
-        # NEXT, initialize the simulation modules
-        driver::IOM init
-
         log normal engine "init complete"
     }
 

@@ -1,91 +1,99 @@
 #------------------------------------------------------------------------
 # TITLE:
-#    iom_rules.tcl
+#    ruleset_iom.tcl
 #
 # AUTHOR:
 #    Will Duquette
 #
 # DESCRIPTION:
-#    Athena Driver Assessment Model (DAM): IOM
+#    athena(n): IOM rule set
+#
+# FIRING DICTIONARY:
+#    Relevant BROADCAST tactic parameters:
+#
+#       tsource    - The actor who executed the BROADCAST tactic
+#       cap        - The CAP by which the IOM was broadcast.
+#       asource    - The attributed source (actor) of the message, or ""
+#                    if none.
+#       iom        - The IOM being broadcast
+#
+#    To these are added the following:
+#
+#       f          - The influenced group
+#       capcov     - The CAP coverage
+#       adjcov     - The scaled CAP coverage
+#       resonance  - The resonance of the IOM with f
+#       regard     - The regard of f for the attributed source.
+#       accept     - The acceptability of the message from the given source.
+#
+# TBD: Global refs: sim
 #
 #-----------------------------------------------------------------------
 
-#-----------------------------------------------------------------------
-# IOM
+oo::class create ::athena::ruleset_IOM {
+    superclass ::athena::ruleset
+    
+    meta name     "IOM"
+    meta sigparms {tsource iom}
 
-driver type define IOM {tsource iom} {
     #-------------------------------------------------------------------
-    # Public Type Variables
+    # Instance Variables
 
     # resonanceCache: iom,f,asource -> resonance 
-    typevariable resonanceCache -array {}
+    variable resonanceCache
 
     # pdictCache: iom -> payload_id -> payload dict
-    typevariable pdictCache -array {}
+    variable pdictCache
 
     #-------------------------------------------------------------------
-    # Public Typemethods
+    # Constructor
 
-    # init
-    #
-    # Initializes this driver type.  There are caches that must be
-    # cleared on scenario unlock.
-
-    typemethod init {} {
-        notifier bind ::sim <State> $type [mytypemethod ClearCaches]
+    constructor {adb_} {
+        next $adb_
+        notifier bind ::sim <State> [self] [mymethod ClearCaches]    
     }
 
+    destructor {
+        notifier forget [self]
+    }
+    
     # ClearCaches
     #
     # Clear the driver caches when we return to PREP.
 
-    typemethod ClearCaches {} {
+    method ClearCaches {} {
         if {[sim state] eq "PREP"} {
             array unset resonanceCache
             array unset pdictCache
         }
     }
 
+    #-------------------------------------------------------------------
+    # Public Methods
+
     # assess fdict
     #
-    # fdict  - Dictionary of relevant BROADCAST tactic parameters:
-    #
-    #   tsource    - The actor who executed the BROADCAST tactic
-    #   cap        - The CAP by which the IOM was broadcast.
-    #   asource    - The attributed source (actor) of the message, or ""
-    #                if none.
-    #   iom        - The IOM being broadcast
-    #
-    # To these will be added the following:
-    #
-    #   f          - The influenced group
-    #   capcov     - The CAP coverage
-    #   adjcov     - The scaled CAP coverage
-    #   resonance  - The resonance of the IOM with f
-    #   regard     - The regard of f for the attributed source.
-    #   accept     - The acceptability of the message from the given source.
+    # fdict  - firing dictionary.
     #
     # Calls the IOM rule set to assess the attitude effects of the 
     # broadcasted IOM's payloads.
 
-    typemethod assess {fdict} {
-        set dtype IOM
-
-        if {![dam isactive $dtype]} {
-            log warning $dtype "driver type has been deactivated"
+    method assess {fdict} {
+        if {![my isactive]} {
+            log warning [my name] "driver type has been deactivated"
             return
         }
 
         # FIRST, unpack the data
         array set data $fdict
-        set data(dtype) $dtype
+        set data(dtype) [my name]
 
         # NEXT, get the model parameters we need.
-        set nomCapCov [parm get dam.IOM.nominalCAPcov]
+        set nomCapCov [my parm dam.IOM.nominalCAPcov]
 
         # NEXT, determine the covered groups, and the CAPcov for each.
         # Skip empty civilian groups.
-        rdb eval {
+        [my adb] eval {
             SELECT C.g      AS f,
                    C.capcov AS capcov
             FROM capcov AS C
@@ -100,11 +108,11 @@ driver type define IOM {tsource iom} {
 
             # NEXT, compute the resonance of the IOM with group f.
             set data(resonance) \
-                [ComputeResonance $data(iom) $data(f) $data(asource)]
+                [my ComputeResonance $data(iom) $data(f) $data(asource)]
 
             # NEXT, compute the regard of group f for the attributed 
             # source.
-            set data(regard) [ComputeRegard $data(f) $data(asource)] 
+            set data(regard) [my ComputeRegard $data(f) $data(asource)] 
 
             # NEXT, compute the acceptability, which is the product
             # of the resonance and the regard.
@@ -114,8 +122,8 @@ driver type define IOM {tsource iom} {
             set fdict [array get data]
 
             bgcatch {
-                log detail $dtype $fdict
-                $type ruleset $fdict
+                [my adb] log detail [my name] $fdict
+                my ruleset $fdict
             }
         }
     }
@@ -127,14 +135,14 @@ driver type define IOM {tsource iom} {
     # Retrieves a dictionary of payload data by payload_id for the given
     # IOM.  Note that this data is fixed after scenario lock.
 
-    typemethod payloads {iom_id} {
+    method payloads {iom_id} {
         if {[info exists pdictCache($iom_id)]} {
             return $pdictCache($iom_id)
         }
 
         set pdict [dict create]
 
-        rdb eval {
+        [my adb] eval {
             SELECT * FROM payloads
             WHERE iom_id = $iom_id AND state='normal'
             ORDER BY payload_num
@@ -159,30 +167,30 @@ driver type define IOM {tsource iom} {
     # the entity commonality of the attributed source, as passed through
     # the Zresonance curve.
     
-    proc ComputeResonance {iom f asource} {
+    method ComputeResonance {iom f asource} {
         # FIRST, return it if we already have it.
         if {[info exists resonanceCache($iom,$f,$asource)]} {
             return $resonanceCache($iom,$f,$asource)
         }
 
         # FIRST, get the semantic hook
-        set hook [hook getdict [iom get $iom hook_id]]
+        set hook [my hook getdict [my iom get $iom hook_id]]
 
         # NEXT, get the entity commonality
         if {$asource eq ""} {
             set theta 1.0
         } else {
-            set absid [actor get $asource bsid]
-            set theta [bsys system cget $absid -commonality]
+            set absid [my actor get $asource bsid]
+            set theta [my bsys system cget $absid -commonality]
         }
 
         # NEXT, compute the congruence of the hook with the group's
         # belief system.
-        set fbsid [group bsid $f]
-        set congruence [bsys congruence $fbsid $theta $hook]
+        set fbsid [my group bsid $f]
+        set congruence [my bsys congruence $fbsid $theta $hook]
 
         # NEXT, compute the resonance
-        set Zresonance [parm get dam.IOM.Zresonance]
+        set Zresonance [my parm dam.IOM.Zresonance]
 
         set result [zcurve eval $Zresonance $congruence]
         set resonanceCache($iom,$f,$asource) $result
@@ -199,7 +207,7 @@ driver type define IOM {tsource iom} {
     # vertical relationship between the two.  If the source is anonymous, 
     # assume a regard of 1.0.
     
-    proc ComputeRegard {f asource} {
+    method ComputeRegard {f asource} {
         if {$asource eq ""} {
             return 1.0
         } else {
@@ -217,7 +225,7 @@ driver type define IOM {tsource iom} {
     # Returns a one-line description of the driver given its signature
     # values.
 
-    typemethod sigline {signature} {
+    method sigline {signature} {
         lassign $signature tsource iom
 
         return "Broadcast of $iom by $tsource"
@@ -229,7 +237,7 @@ driver type define IOM {tsource iom} {
     #
     # Produces a one-line narrative text string for a given rule firing
 
-    typemethod narrative {fdict} {
+    method narrative {fdict} {
         dict with fdict {}
 
         return "{actor:$tsource} broadcasts {iom:$iom} to {group:$f} via {cap:$cap}"
@@ -242,7 +250,7 @@ driver type define IOM {tsource iom} {
     #
     # Produces a narrative HTML paragraph including all fdict information.
 
-    typemethod detail {fdict ht} {
+    method detail {fdict ht} {
         dict with fdict {}
 
         $ht putln "Actor "
@@ -293,11 +301,11 @@ driver type define IOM {tsource iom} {
     #
     # Assesses the effect of the IOM on a particular civilian group f.
 
-    typemethod ruleset {fdict} {
+    method ruleset {fdict} {
         dict with fdict {}
 
         # FIRST, retrieve the payload data
-        set pdict [$type payloads $iom]
+        set pdict [my payloads $iom]
        
         # NEXT, get the final factor.
         set factor [expr {$adjcov*$accept}]
@@ -306,17 +314,17 @@ driver type define IOM {tsource iom} {
         #
         # Actor tsource has sent an IOM with a factor that affects
         # CIV group g.
-        dam rule IOM-1-1 $fdict -s 0.0 {
+        my rule IOM-1-1 $fdict -s 0.0 {
             $factor > 0.01
         } {
             dict for {num prec} $pdict {
                 dict with prec {
                     set fmag [expr {$factor * $mag }]
                     switch -exact -- $payload_type {
-                        COOP { dam coop T $f $g $fmag }
-                        HREL { dam hrel T $f $g $fmag }
-                        SAT  { dam sat  T $f $c $fmag }
-                        VREL { dam vrel T $f $a $fmag }
+                        COOP { my coop T $f $g $fmag }
+                        HREL { my hrel T $f $g $fmag }
+                        SAT  { my sat  T $f $c $fmag }
+                        VREL { my vrel T $f $a $fmag }
                         default {
                             error "Unexpected payload type: \"$payload_type\""
                         }

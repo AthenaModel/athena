@@ -383,6 +383,14 @@ oo::class create ::athena::ruleset {
         return [[my adb] actor {*}$args]
     }
 
+    # bsys args...
+    #
+    # Easy access to bsys.
+
+    method bsys {args} {
+        return [[my adb] bsys {*}$args]
+    }
+
     # civgroup args...
     #
     # Easy access to civgroup.
@@ -397,6 +405,30 @@ oo::class create ::athena::ruleset {
 
     method demog {args} {
         return [[my adb] demog {*}$args]
+    }
+
+    # group args...
+    #
+    # Easy access to group.
+
+    method group {args} {
+        return [[my adb] group {*}$args]
+    }
+
+    # hook args...
+    #
+    # Easy access to hook.
+
+    method hook {args} {
+        return [[my adb] hook {*}$args]
+    }
+
+    # iom args...
+    #
+    # Easy access to iom.
+
+    method iom {args} {
+        return [[my adb] iom {*}$args]
     }
 
     # mag* multiplier mag
