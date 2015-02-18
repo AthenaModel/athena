@@ -17,6 +17,13 @@
 #-----------------------------------------------------------------------
 
 ::athena::ruleset define CONTROL {n} {
+    metadict rulename {
+        CONTROL-1-1   "Neighborhood sees shift in control"
+        CONTROL-1-2   "Neighborhood is now in chaos."
+        CONTROL-1-3   "Neighborhood is no longer in chaos."
+        CONTROL-2-1   "Neighborhood sees shift in control"
+    }
+
     #-------------------------------------------------------------------
     # Look-up tables
 

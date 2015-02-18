@@ -307,9 +307,11 @@ appserver module firing {
         ht page "Rule Firing: $id"
         ht title "Rule Firing: $id" 
 
+        set ruleTitle [ruleset $data(ruleset) rulename $data(rule)]
+
         ht record {
             ht field "Rule:" {
-                ht put "<b>$data(rule)</b> -- [edamrule longname $data(rule)]"
+                ht put "<b>$data(rule)</b> -- $ruleTitle"
             }
             ht field "Detail:" {
                 ht put $data(narrative)

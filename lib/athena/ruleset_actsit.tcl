@@ -235,7 +235,7 @@ oo::class create ::athena::ruleset_actsit {
 ::athena::ruleset define CHKPOINT {n g} {
     superclass ::athena::ruleset_actsit
 
-    metadict rules {
+    metadict rulename {
         CHKPOINT-1-1  "Force is manning checkpoints"
     }
 
@@ -281,7 +281,7 @@ oo::class create ::athena::ruleset_actsit {
 ::athena::ruleset define CONSTRUCT {n g} {
     superclass ::athena::ruleset_actsit
 
-    metadict rules {
+    metadict rulename {
         CONSTRUCT-1-1  "Force is doing construction work"
         CONSTRUCT-2-1  "ORG is doing construction work"
     }
@@ -326,7 +326,7 @@ oo::class create ::athena::ruleset_actsit {
 ::athena::ruleset define COERCION {n g} {
     superclass ::athena::ruleset_actsit
 
-    metadict rules {
+    metadict rulename {
         COERCION-1-1  "Force is coercing local civilians"
     }
 
@@ -357,7 +357,7 @@ oo::class create ::athena::ruleset_actsit {
 ::athena::ruleset define CRIME {n g} {
     superclass ::athena::ruleset_actsit
 
-    metadict rules {
+    metadict rulename {
         CRIME-1-1     "Force is engaging in criminal activities"
     }
 
@@ -384,7 +384,7 @@ oo::class create ::athena::ruleset_actsit {
 ::athena::ruleset define CURFEW {n g} {
     superclass ::athena::ruleset_actsit
 
-    metadict rules {
+    metadict rulename {
         CURFEW-1-1    "Force is enforcing a curfew"
     }
 
@@ -431,7 +431,7 @@ oo::class create ::athena::ruleset_actsit {
 ::athena::ruleset define EDU {n g} {
     superclass ::athena::ruleset_actsit
 
-    metadict rules {
+    metadict rulename {
         EDU-1-1       "Force is providing schools"
         EDU-2-1       "ORG is providing schools"
     }
@@ -473,7 +473,7 @@ oo::class create ::athena::ruleset_actsit {
 ::athena::ruleset define EMPLOY {n g} {
     superclass ::athena::ruleset_actsit
 
-    metadict rules {
+    metadict rulename {
         EMPLOY-1-1    "Force is providing employment"
         EMPLOY-2-1    "ORG is providing employment"
     }
@@ -515,7 +515,7 @@ oo::class create ::athena::ruleset_actsit {
 ::athena::ruleset define GUARD {n g} {
     superclass ::athena::ruleset_actsit
 
-    metadict rules {
+    metadict rulename {
         GUARD-1-1     "Force is guarding"
     }
 
@@ -546,7 +546,7 @@ oo::class create ::athena::ruleset_actsit {
 ::athena::ruleset define INDUSTRY {n g} {
     superclass ::athena::ruleset_actsit
 
-    metadict rules {
+    metadict rulename {
         INDUSTRY-1-1  "Force is aiding industry"
         INDUSTRY-2-1  "ORG is aiding industry"
     }
@@ -588,7 +588,7 @@ oo::class create ::athena::ruleset_actsit {
 ::athena::ruleset define INFRA {n g} {
     superclass ::athena::ruleset_actsit
 
-    metadict rules {
+    metadict rulename {
         INFRA-1-1     "Force is improving infrastructure"
         INFRA-2-1     "ORG is improving infrastructure"
     }
@@ -630,7 +630,7 @@ oo::class create ::athena::ruleset_actsit {
 ::athena::ruleset define LAWENF {n g} {
     superclass ::athena::ruleset_actsit
 
-    metadict rules {
+    metadict rulename {
         LAWENF-1-1    "Force is enforcing the law"
     }
 
@@ -658,7 +658,7 @@ oo::class create ::athena::ruleset_actsit {
 ::athena::ruleset define MEDICAL {n g} {
     superclass ::athena::ruleset_actsit
 
-    metadict rules {
+    metadict rulename {
         MEDICAL-1-1   "Force is providing health care"
         MEDICAL-2-1   "ORG is providing health care"
     }
@@ -699,7 +699,7 @@ oo::class create ::athena::ruleset_actsit {
 ::athena::ruleset define PATROL {n g} {
     superclass ::athena::ruleset_actsit
 
-    metadict rules {
+    metadict rulename {
         PATROL-1-1    "Force is patrolling"
     }
 
@@ -729,7 +729,7 @@ oo::class create ::athena::ruleset_actsit {
 ::athena::ruleset define PSYOP {n g} {
     superclass ::athena::ruleset_actsit
 
-    metadict rules {
+    metadict rulename {
         PSYOP-1-1     "Force is doing PSYOP"
     }
 
@@ -774,7 +774,7 @@ oo::class create ::athena::ruleset_actsit {
 ::athena::ruleset define RELIEF {n g} {
     superclass ::athena::ruleset_actsit
 
-    metadict rules {
+    metadict rulename {
         RELIEF-1-1    "Force is providing humanitarian relief"
         RELIEF-2-1    "ORG is providing humanitarian relief"
     }

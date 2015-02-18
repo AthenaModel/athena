@@ -13,6 +13,10 @@
 #-----------------------------------------------------------------------
 
 ::athena::ruleset define UNEMP {n g} {
+    metadict rulename {
+        UNEMP-1-1    "Group is suffering from unemployment"
+    }
+
     #-------------------------------------------------------------------
     # Public Typemethods
 

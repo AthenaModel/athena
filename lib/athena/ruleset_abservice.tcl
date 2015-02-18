@@ -192,7 +192,7 @@ oo::class create ::athena::ruleset_abservice {
 ::athena::ruleset define ENERGY {g} {
     superclass ::athena::ruleset_abservice
 
-    metadict rules {
+    metadict rulename {
         ENERGY-1-1    "Energy services are less than required"
         ENERGY-1-2    "Energy services are less than expected"
         ENERGY-1-3    "Energy services are as expected"
@@ -270,7 +270,7 @@ oo::class create ::athena::ruleset_abservice {
 ::athena::ruleset define WATER {g} {
     superclass ::athena::ruleset_abservice
 
-    metadict rules {
+    metadict rulename {
         WATER-1-1    "Access to potable water is less than required"
         WATER-1-2    "Access to potable water is less than expected"
         WATER-1-3    "Access to potable water is as expected"
@@ -348,7 +348,7 @@ oo::class create ::athena::ruleset_abservice {
 ::athena::ruleset define TRANSPORT {g} {
     superclass ::athena::ruleset_abservice
     
-    metadict rules {
+    metadict rulename {
         TRANSPORT-1-1 "Transportation services are less than required"
         TRANSPORT-1-2 "Transportation services are less than expected"
         TRANSPORT-1-3 "Transportation services are as expected"

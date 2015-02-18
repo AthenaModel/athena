@@ -18,6 +18,12 @@
 #-----------------------------------------------------------------------
 
 ::athena::ruleset define CONSUMP {g} {
+    metadict rulename {
+        CONSUMP-1-1   "Effect of Consumption on Satisfaction"
+        CONSUMP-2-1   "Consumption no worse than expected"
+        CONSUMP-2-2   "Consumption worse than expected"
+    }
+    
     # assess
     #
     # Assesses all consumption situations.

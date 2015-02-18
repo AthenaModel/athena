@@ -27,6 +27,10 @@
 #-----------------------------------------------------------------------
 
 ::athena::ruleset define CURSE {curse_id} {
+    metadict rulename {
+        CURSE-1-1     "CURSE Injects"
+    }
+    
     #-------------------------------------------------------------------
     # Public Type Methods
 

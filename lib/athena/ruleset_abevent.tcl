@@ -169,7 +169,7 @@ oo::class create ::athena::ruleset_abevent {
 ::athena::ruleset define ACCIDENT {n} {
     superclass ::athena::ruleset_abevent
 
-    metadict rules {
+    metadict rulename {
         ACCIDENT-1.1  "Accident occurs in neighborhood"
     }
 
@@ -196,7 +196,7 @@ oo::class create ::athena::ruleset_abevent {
 ::athena::ruleset define DEMO {n g} {
     superclass ::athena::ruleset_abevent
 
-    metadict rules {
+    metadict rulename {
         DEMO-1.1  "Civilians demonstrate in support of cause"
         DEMO-1.2  "Civilians oppose cause of demonstration"
     }
@@ -268,7 +268,7 @@ oo::class create ::athena::ruleset_abevent {
 ::athena::ruleset define EXPLOSION {n} {
     superclass ::athena::ruleset_abevent
 
-    metadict rules {
+    metadict rulename {
         EXPLOSION-1.1 "Explosion in neighborhood"
     }
 
@@ -293,7 +293,7 @@ oo::class create ::athena::ruleset_abevent {
 ::athena::ruleset define RIOT {n} {
     superclass ::athena::ruleset_abevent
 
-    metadict rules {
+    metadict rulename {
         RIOT-1-1 "Riot in neighborhood"
     }
 
@@ -320,7 +320,7 @@ oo::class create ::athena::ruleset_abevent {
 ::athena::ruleset define VIOLENCE {n} {
     superclass ::athena::ruleset_abevent
 
-    metadict rules {
+    metadict rulename {
         VIOLENCE-1-1 "Random violence in neighborhood"
     }
 

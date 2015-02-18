@@ -21,6 +21,11 @@
 #-----------------------------------------------------------------------
 
 ::athena::ruleset define MOOD {} {
+    metadict rulename {
+        MOOD-1-1      "Mood is much worse"
+        MOOD-1-2      "Mood is much better"
+    }
+    
     #-------------------------------------------------------------------
     # Public Methods
 

@@ -11,6 +11,11 @@
 #-----------------------------------------------------------------------
 
 ::athena::ruleset define CIVCAS {f} {
+    metadict rulename {
+        CIVCAS-1-1    "Civilian casualties taken"
+        CIVCAS-2-1    "Civilian casualties taken from force group"
+    }
+    
     #-------------------------------------------------------------------
     # Public methods
 

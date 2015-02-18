@@ -31,6 +31,10 @@
 #-----------------------------------------------------------------------
 
 ::athena::ruleset define IOM {tsource iom} {
+    metadict rulename {
+        IOM-1-1       "Info Ops Message"
+    }
+
     #-------------------------------------------------------------------
     # Instance Variables
 

@@ -180,7 +180,7 @@ oo::class create ::athena::ruleset_absit {
 ::athena::ruleset define BADFOOD {state n} {
     superclass ::athena::ruleset_absit
 
-    metadict rules {
+    metadict rulename {
         BADFOOD-1-1   "Food supply begins to be contaminated"
         BADFOOD-1-2   "Food supply continues to be contaminated"
         BADFOOD-2-1   "Food contamination is resolved by locals"
@@ -226,7 +226,7 @@ oo::class create ::athena::ruleset_absit {
 ::athena::ruleset define BADWATER {state n} {
     superclass ::athena::ruleset_absit
 
-    metadict rules {
+    metadict rulename {
         BADWATER-1-1  "Water supply begins to be contaminated"
         BADWATER-1-2  "Water supply continues to be contaminated"
         BADWATER-2-1  "Water contamination is resolved by locals"
@@ -273,7 +273,7 @@ oo::class create ::athena::ruleset_absit {
 ::athena::ruleset define COMMOUT {state n} {
     superclass ::athena::ruleset_absit
 
-    metadict rules {
+    metadict rulename {
         COMMOUT-1-1   "Communications go out"
         COMMOUT-1-2   "Communications remain out"
     }
@@ -313,7 +313,7 @@ oo::class create ::athena::ruleset_absit {
 ::athena::ruleset define CULSITE {state n} {
     superclass ::athena::ruleset_absit
 
-    metadict rules {
+    metadict rulename {
         CULSITE-1-1   "A cultural site is damaged"
         CULSITE-1-2   "Damage has not been resolved"
     }
@@ -348,7 +348,7 @@ oo::class create ::athena::ruleset_absit {
 ::athena::ruleset define DISASTER {state n} {
     superclass ::athena::ruleset_absit
 
-    metadict rules {
+    metadict rulename {
         DISASTER-1-1  "Disaster occurred in the neighborhood"
         DISASTER-1-2  "Disaster continues"
         DISASTER-2-1  "Disaster resolved by locals"
@@ -393,7 +393,7 @@ oo::class create ::athena::ruleset_absit {
 ::athena::ruleset define DISEASE {state n} {
     superclass ::athena::ruleset_absit
 
-    metadict rules {
+    metadict rulename {
         DISEASE-1-1   "Unhealthy conditions begin to cause disease"
         DISEASE-1-2   "Unhealthy conditions continue to cause disease"
         DISEASE-2-1   "Unhealthy conditions are resolved by locals"
@@ -439,7 +439,7 @@ oo::class create ::athena::ruleset_absit {
 ::athena::ruleset define DROUGHT {state n} {
     superclass ::athena::ruleset_absit
 
-    metadict rules {
+    metadict rulename {
         DROUGHT-1-1   "Long-term drought affects non-subsistence population"
         DROUGHT-1-2   "Long-term drought affects subsistence population"
     }
@@ -478,7 +478,7 @@ oo::class create ::athena::ruleset_absit {
 ::athena::ruleset define EPIDEMIC {state n} {
     superclass ::athena::ruleset_absit
 
-    metadict rules {
+    metadict rulename {
         EPIDEMIC-1-1  "Epidemic begins to spread"
         EPIDEMIC-1-2  "Epidemic continues to spread"
         EPIDEMIC-2-1  "Spread of epidemic is halted by locals"
@@ -525,7 +525,7 @@ oo::class create ::athena::ruleset_absit {
 ::athena::ruleset define FOODSHRT {state n} {
     superclass ::athena::ruleset_absit
 
-    metadict rules {
+    metadict rulename {
         FOODSHRT-1-1  "Food begins to run short"
         FOODSHRT-1-2  "Food continues to run short"
         FOODSHRT-2-1  "Food shortage is ended by locals"
@@ -570,7 +570,7 @@ oo::class create ::athena::ruleset_absit {
 ::athena::ruleset define FUELSHRT {state n} {
     superclass ::athena::ruleset_absit
 
-    metadict rules {
+    metadict rulename {
         FUELSHRT-1-1  "Fuel begins to run short"
         FUELSHRT-1-2  "Fuel continues to be in short supply"
         FUELSHRT-2-1  "Fuel shortage is ended by locals"
@@ -615,7 +615,7 @@ oo::class create ::athena::ruleset_absit {
 ::athena::ruleset define GARBAGE {state n} {
     superclass ::athena::ruleset_absit
 
-    metadict rules {
+    metadict rulename {
         GARBAGE-1-1   "Garbage begins to accumulate"
         GARBAGE-1-2   "Garbage is piled in the streets"
         GARBAGE-2-1   "Garbage is cleaned up by locals"
@@ -664,7 +664,7 @@ oo::class create ::athena::ruleset_absit {
 ::athena::ruleset define INDSPILL {state n} {
     superclass ::athena::ruleset_absit
 
-    metadict rules {
+    metadict rulename {
         INDSPILL-1-1  "Industrial spill occurs"
         INDSPILL-1-2  "Industrial spill has not been cleaned up"
         INDSPILL-2-1  "Industrial spill is cleaned up by locals"
@@ -712,7 +712,7 @@ oo::class create ::athena::ruleset_absit {
 ::athena::ruleset define MINEFIELD {state n} {
     superclass ::athena::ruleset_absit
 
-    metadict rules {
+    metadict rulename {
         MINEFIELD-1-1 "Minefield is placed"
         MINEFIELD-1-2 "Minefield remains"
         MINEFIELD-2-1 "Minefield is cleared by locals"
@@ -761,7 +761,7 @@ oo::class create ::athena::ruleset_absit {
 ::athena::ruleset define ORDNANCE {state n} {
     superclass ::athena::ruleset_absit
 
-    metadict rules {
+    metadict rulename {
         ORDNANCE-1-1  "Unexploded ordnance is found"
         ORDNANCE-1-2  "Unexploded ordnance remains"
         ORDNANCE-2-1  "Unexploded ordnance is removed by locals"
@@ -810,7 +810,7 @@ oo::class create ::athena::ruleset_absit {
 ::athena::ruleset define PIPELINE {state n} {
     superclass ::athena::ruleset_absit
 
-    metadict rules {
+    metadict rulename {
         PIPELINE-1-1  "Oil pipeline catches fire"
         PIPELINE-1-2  "Oil pipeline is still burning"
         PIPELINE-2-1  "Oil pipeline fire is extinguished by locals"
@@ -858,7 +858,7 @@ oo::class create ::athena::ruleset_absit {
 ::athena::ruleset define REFINERY {state n} {
     superclass ::athena::ruleset_absit
 
-    metadict rules {
+    metadict rulename {
         REFINERY-1-1  "Oil refinery catches fire"
         REFINERY-1-2  "Oil refinery is still burning"
         REFINERY-2-1  "Oil refinery fire is extinguished by locals"
@@ -907,7 +907,7 @@ oo::class create ::athena::ruleset_absit {
 ::athena::ruleset define RELSITE {state n} {
     superclass ::athena::ruleset_absit
 
-    metadict rules {
+    metadict rulename {
         RELSITE-1-1   "A religious site is damaged"
         RELSITE-1-2   "Damage has not been resolved"
         RELSITE-2-1   "Damage is resolved by locals"
@@ -956,7 +956,7 @@ oo::class create ::athena::ruleset_absit {
 ::athena::ruleset define SEWAGE {state n} {
     superclass ::athena::ruleset_absit
 
-    metadict rules {
+    metadict rulename {
         SEWAGE-1-1    "Sewage begins to pool in the streets"
         SEWAGE-1-2    "Sewage has pooled in the streets"
         SEWAGE-2-1    "Sewage is cleaned up by locals"
