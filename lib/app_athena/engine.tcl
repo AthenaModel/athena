@@ -92,8 +92,7 @@ snit::type engine {
         profile nbstat analyze
         profile control_model analyze
         profile activity assess
-        profile service_eni assess
-        profile service_ais assess
+        profile service assess
         set econOK [econ tock]
 
         # NEXT, if the econ tock is okay, we compute the demographics model
@@ -157,8 +156,7 @@ snit::type engine {
         profile ruleset MOOD assess
         profile control_model analyze
         profile activity assess
-        profile service_eni assess
-        profile service_ais assess
+        profile service assess
         profile abevent assess
 
         # NEXT, do attrition and recompute demog stats, since groups

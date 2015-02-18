@@ -199,6 +199,7 @@ snit::type ::athena::athenadb {
 
     # Models
     component demog     -public demog     ;# demographics manager
+    component service   -public service   ;# services manager
 
     #-------------------------------------------------------------------
     # Options
@@ -299,6 +300,7 @@ snit::type ::athena::athenadb {
             personnel                   \
             {ruleset  ruleset_manager}  \
             sat                         \
+            service                     \
             sigevent                    \
             {strategy strategy_manager} \
             stance                      \
@@ -393,9 +395,6 @@ snit::type ::athena::athenadb {
             -clock      ::simclock \
             -explaincmd [mymethod ExplainCmd] \
             -subject    $options(-subject)
-
-        # NEXT, register SQL sections
-        $rdb register ::service
 
         # NEXT, monitor tables.
         $rdb monitor add actors        {a}
@@ -985,15 +984,15 @@ snit::type ::athena::athenadb {
 
     # Service  service which urb
     #
-    # service    - an eabservice(n) value
+    # svc        - an eabservice(n) value
     # which      - either 'ACTUAL' or 'REQUIRED'
     # urb        - an eurbanization(n) value
     #
     # Returns the proper parmdb parameter value for an abstract
     # infrastructure service based on urbanization and type of LOS
 
-    method Service {service which urb} {
-        return [parm get service.$service.$which.$urb]
+    method Service {svc which urb} {
+        return [parm get service.$svc.$which.$urb]
     }
 
 

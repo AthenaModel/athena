@@ -56,8 +56,8 @@ namespace eval ::athena_test::tests:: {
         }
 
         service start
-        service_eni load
-        service_eni save
+        service load
+        service save
         cash load
 
         set coffer [::athena::coffer new [::adb athenadb] JOE]

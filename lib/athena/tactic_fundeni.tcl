@@ -120,7 +120,7 @@
         set trans(glist) [my groupsInSupportingNbhoods [my agent] $list]
 
         # NEXT, if spending is capped we need to get that amount
-        set cap [service_eni fundlevel $los $trans(glist)]
+        set cap [[my adb] service fundlevel $los $trans(glist)]
 
         set funds 0.0
 
@@ -224,7 +224,7 @@
         
         # NEXT, try to fund the service.  This will fail if
         # all of the groups are empty.
-        if {![service_eni fundeni $owner $trans(amount) $trans(glist)]} {
+        if {![[my adb] service fundeni $owner $trans(amount) $trans(glist)]} {
             [my adb] cash refund $owner FUNDENI $trans(amount)
             [my adb] sigevent log 2 tactic "
                 FUNDENI: Actor {actor:$owner} could not fund

@@ -125,7 +125,7 @@
         # NEXT, determine which nbhoods get a new LOS and which don't
         # because they've already been updated
         foreach n $nbhoods {
-            if {[service changed $n $s]} {
+            if {[[my adb] service changed $n $s]} {
                 lappend nbad $n
             } else {
                 lappend ngood $n
@@ -156,14 +156,14 @@
         switch -exact -- $mode {
             EXACT {
                 # All nbhoods receive the same LOS
-                service actual $ngood $s $los
+                [my adb] service actual $ngood $s $los
             }
             
             RDELTA - 
             EDELTA -
             ADELTA {
                 # Change service in nbhoods by some delta
-                service delta $mode $ngood $s $frac
+                [my adb] service delta $mode $ngood $s $frac
             }
 
             default {error "Unknown mode: \"$mode\""}

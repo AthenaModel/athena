@@ -126,6 +126,7 @@ source [file join $::athena::library stance.tcl           ]
 
 # Models
 source [file join $::athena::library demog.tcl            ]
+source [file join $::athena::library service.tcl          ]
 
 # Rulesets
 source [file join $::athena::library ruleset.tcl          ]

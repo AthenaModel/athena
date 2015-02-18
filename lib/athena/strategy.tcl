@@ -331,14 +331,14 @@ snit::type ::athena::strategy_manager {
         $adb profile 1 $adb control load
         $adb profile 1 $adb cash load
         $adb profile 1 $adb personnel load
-        $adb profile 1 service_eni load
+        $adb profile 1 $adb service load
         $adb profile 1 plant load
         $adb profile 1 $adb cap access load
         $adb profile 1 $adb abevent reset
         $adb profile 1 $adb broadcast reset
         $adb profile 1 $adb stance reset
         $adb profile 1 $adb unit reset
-        $adb profile 1 service reset
+        $adb profile 1 $adb service reset
 
         # NEXT, execute each agent's strategy.
 
@@ -357,7 +357,7 @@ snit::type ::athena::strategy_manager {
         }
 
         $adb profile 1 $adb personnel save
-        $adb profile 1 service_eni save
+        $adb profile 1 $adb service save
         $adb profile 1 plant save
         $adb profile 1 $adb cap access save
 
