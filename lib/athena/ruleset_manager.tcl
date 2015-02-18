@@ -53,6 +53,7 @@ snit::type ::athena::ruleset_manager {
         LAWENF
         MEDICAL
         MINEFIELD
+        MOOD
         ORDNANCE
         PATROL
         PIPELINE

@@ -493,6 +493,18 @@ oo::class create ::athena::ruleset {
         expr {$stops * [qmag value $mag]}
     }
 
+    # mag/ factor mag
+    #
+    # factor   - A numeric value
+    # mag      - A magnitude symbol
+    #
+    # Divides |factor| by the value of the magnitude symbol.
+    # We use the absolute value so that the magnitude symbol controls
+    # the sign.
+
+    method mag/ {factor mag} {
+        expr {abs($factor) / [qmag value $mag]}
+    }
 
     # hrel.fg f g
     #

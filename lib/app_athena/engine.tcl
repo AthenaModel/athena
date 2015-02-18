@@ -105,6 +105,7 @@ snit::type engine {
         }
 
         profile ruleset CONSUMP assess
+        profile ruleset UNEMP assess
 
         # NEXT, set natural attitude levels for those attitudes whose
         # natural level varies with time.
@@ -153,7 +154,7 @@ snit::type engine {
         # NEXT, do analysis and assessment
         profile absit assess
         profile nbstat analyze
-        profile driver::MOOD assess
+        profile ruleset MOOD assess
         profile control_model analyze
         profile activity assess
         profile service_eni assess
@@ -176,6 +177,7 @@ snit::type engine {
 
         # NEXT, assess econ-dependent drivers.
         profile ruleset CONSUMP assess
+        profile ruleset UNEMP assess
         profile control_model assess
 
         # NEXT, advance URAM, first giving it the latest population data

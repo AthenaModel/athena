@@ -1,21 +1,33 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#    driver_mood.tcl
+#    ruleset_mood.tcl
 #
 # AUTHOR:
 #    Will Duquette
 #
 # DESCRIPTION:
-#    app_sim(n): Driver Assessment Model, MOOD driver
+#    athena(n): MOOD Rule Set
+#
+# FIRING DICTIONARY:
+#    dtype      - MOOD
+#    g          - The civilian group
+#    n          - The group's neighborhood
+#    controller - Actor in control of n
+#    moodNow    - The group's mood right now
+#    moodThen   - The group's mood at time tc
+#    delta      - The difference between the two
+#    tc         - When control of n last shifted
 #
 #-----------------------------------------------------------------------
 
-#-----------------------------------------------------------------------
-# MOOD
+oo::class create ::athena::ruleset_MOOD {
+    superclass ::athena::ruleset
+    
+    meta name     "MOOD"
+    meta sigparms {}
 
-driver type define MOOD {} {    
     #-------------------------------------------------------------------
-    # Public Typemethods
+    # Public Methods
 
     # assess 
     #
@@ -23,18 +35,18 @@ driver type define MOOD {} {
     # control shift in the group's neighborhood; triggers the MOOD
     # rule set, if the mode has changed sufficiently.
     
-    typemethod assess {} {
+    method assess {} {
         # FIRST, if the rule set is inactive, skip it.
-        if {![parmdb get dam.MOOD.active]} {
-            log warning MOOD \
+        if {![my parm dam.MOOD.active]} {
+            [my adb] log warning MOOD \
                 "driver type has been deactivated"
             return
         }
 
         # NEXT, look for groups for which the rule set should fire.
-        set threshold [parm get dam.MOOD.threshold]
+        set threshold [my parm dam.MOOD.threshold]
 
-        rdb eval {
+        [my adb] eval {
             SELECT 'MOOD'             AS dtype,
                    G.g                AS g,
                    G.n                AS n,
@@ -53,8 +65,11 @@ driver type define MOOD {} {
         } row {
             unset -nocomplain row(*)
 
+            set fdict [array get row]
+
             bgcatch {
-                $type ruleset [array get row]
+                [my adb] log detail [my name] $fdict 
+                my ruleset $fdict
             }
         }
     }
@@ -69,7 +84,7 @@ driver type define MOOD {} {
     # Returns a one-line description of the driver given its signature
     # values.
 
-    typemethod sigline {signature} {
+    method sigline {signature} {
         # In this case, all MOOD firings share a single driver.
         return "Effects of changes to CIV Group MOOD"
     }
@@ -80,7 +95,7 @@ driver type define MOOD {} {
     #
     # Produces a one-line narrative text string for a given rule firing
 
-    typemethod narrative {fdict} {
+    method narrative {fdict} {
         dict with fdict {}
 
         return "{group:$g}'s mood changed by [format %.1f $delta]"
@@ -93,13 +108,13 @@ driver type define MOOD {} {
     #
     # Produces a narrative HTML paragraph including all fdict information.
 
-    typemethod detail {fdict ht} {
+    method detail {fdict ht} {
         dict with fdict {}
 
         $ht putln "Civilian group "
         $ht link my://app/group/$g $g's
         $ht putln "mood has changed by more than "
-        $ht put "[parm get dam.MOOD.threshold] points"
+        $ht put "[my parm dam.MOOD.threshold] points"
         $ht putln "since the last shift in the control of"
         $ht putln "neighborhood "
         $ht link my://app/nbhood/$n $n
@@ -136,56 +151,37 @@ driver type define MOOD {} {
     #
     # Assesses changes in vertical relationships due to group mood.
 
-    typemethod ruleset {fdict} {
+    method ruleset {fdict} {
         dict with fdict {}
-        log detail MOOD $fdict
 
         # We already know that delta exceeds the threshold; all
         # we care about now is the sign.
 
-        dam rule MOOD-1-1 $fdict {
+        my rule MOOD-1-1 $fdict {
             $delta < 0.0
         } {
             foreach a [actor names] {
                 if {$a eq $controller} {
-                    dam vrel T $g $a [mag/ $delta S-] "has control"
+                    my vrel T $g $a [my mag/ $delta S-] "has control"
                 } else {
-                    dam vrel T $g $a [mag/ $delta L+] "no control"
+                    my vrel T $g $a [my mag/ $delta L+] "no control"
                 }
             }
         }
 
-        dam rule MOOD-1-2 $fdict {
+        my rule MOOD-1-2 $fdict {
             $delta > 0.0
         } {
             foreach a [actor names] {
                 if {$a eq $controller} {
-                    dam vrel T $g $a [mag/ $delta S+] "has control"
+                    my vrel T $g $a [my mag/ $delta S+] "has control"
                 } else {
-                    dam vrel T $g $a [mag/ $delta L-] "no control"
+                    my vrel T $g $a [my mag/ $delta L-] "no control"
                 }
             }
         }
     }
 
-    #-------------------------------------------------------------------
-    # Utility methods
-
-    # mag/ factor mag
-    #
-    # factor   - A numeric value
-    # mag      - A magnitude symbol
-    #
-    # NOTE: This is here, rather than in helpers.tcl, because it's
-    # peculiar to this module.
-    #
-    # Divides |factor| by the value of the magnitude symbol.
-    # We use the absolute value so that the magnitude symbol controls
-    # the sign.
-
-    proc mag/ {factor mag} {
-        expr {abs($factor) / [qmag value $mag]}
-    }
 }
 
 

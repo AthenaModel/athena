@@ -192,7 +192,7 @@ MOOD-1-2 SHIA JOE  has control
     test sigline-1.1 {sigline output} -setup {
         # None Needed
     } -body {
-        driver::MOOD sigline {}
+        ruleset MOOD sigline {}
     } -cleanup {
         cleanup
     } -result {Effects of changes to CIV Group MOOD}
@@ -202,7 +202,7 @@ MOOD-1-2 SHIA JOE  has control
     # narrative
 
     test narrative-1.1 {narrative output} -body {
-        driver::MOOD narrative {
+        ruleset MOOD narrative {
             g       SHIA
             delta   50.0
         } 
@@ -216,7 +216,7 @@ MOOD-1-2 SHIA JOE  has control
     test detail-1.1 {MOOD detail, controller exists} -setup {
         # None needed
     } -body {
-        driver::MOOD detail {
+        ruleset MOOD detail {
             dtype       MOOD
             g           SHIA
             n           N1
@@ -245,7 +245,7 @@ since 2000W11.<p>
     test detail-1.2 {MOOD detail, no controller} -setup {
         # None needed
     } -body {
-        driver::MOOD detail {
+        ruleset MOOD detail {
             dtype       MOOD
             g           SHIA
             n           N1
