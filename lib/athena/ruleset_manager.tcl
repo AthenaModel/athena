@@ -39,6 +39,7 @@ snit::type ::athena::ruleset_manager {
         DROUGHT
         EDU
         EMPLOY
+        ENERGY
         ENI
         EPIDEMIC
         EXPLOSION
@@ -63,8 +64,10 @@ snit::type ::athena::ruleset_manager {
         RELSITE
         RIOT
         SEWAGE
+        TRANSPORT
         UNEMP
         VIOLENCE
+        WATER
     }
 
     # Initial driver ID.  This is set to 1000 so as to be higher than

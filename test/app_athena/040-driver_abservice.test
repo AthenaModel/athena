@@ -1015,7 +1015,7 @@ TRANSPORT-1-4 SUNN JOE
     test sigline-1.1 {ENERGY sigline output} -setup {
         setup
     } -body {
-        driver::ENERGY sigline SHIA 
+        ruleset ENERGY sigline SHIA 
     } -cleanup {
         cleanup
     } -result {Provision of ENERGY services to SHIA}
@@ -1023,7 +1023,7 @@ TRANSPORT-1-4 SUNN JOE
     test sigline-1.2 {WATER sigline output} -setup {
         setup
     } -body {
-        driver::WATER sigline SHIA 
+        ruleset WATER sigline SHIA 
     } -cleanup {
         cleanup
     } -result {Provision of WATER services to SHIA}
@@ -1031,7 +1031,7 @@ TRANSPORT-1-4 SUNN JOE
     test sigline-1.3 {TRANSPORT sigline output} -setup {
         setup
     } -body {
-        driver::TRANSPORT sigline SHIA 
+        ruleset TRANSPORT sigline SHIA 
     } -cleanup {
         cleanup
     } -result {Provision of TRANSPORT services to SHIA}
@@ -1042,8 +1042,7 @@ TRANSPORT-1-4 SUNN JOE
     test narrative-1.1 {ENERGY narrative output} -setup {
         setup
     } -body {
-        driver::ENERGY narrative {
-            dtype      ENERGY
+        ruleset ENERGY narrative {
             g          SHIA
             case       E-
         } 
@@ -1054,8 +1053,7 @@ TRANSPORT-1-4 SUNN JOE
     test narrative-1.2 {WATER narrative output} -setup {
         setup
     } -body {
-        driver::WATER narrative {
-            dtype      WATER
+        ruleset WATER narrative {
             g          SHIA
             case       E-
         } 
@@ -1066,14 +1064,13 @@ TRANSPORT-1-4 SUNN JOE
     test narrative-1.3 {TRANSPORT narrative output} -setup {
         setup
     } -body {
-        driver::TRANSPORT narrative {
-            dtype      WATER
+        ruleset TRANSPORT narrative {
             g          SHIA
             case       E-
         } 
     } -cleanup {
         cleanup
-    } -result {{group:SHIA} receives WATER services (case E-)}
+    } -result {{group:SHIA} receives TRANSPORT services (case E-)}
 
     #-------------------------------------------------------------------
     # detail
@@ -1081,7 +1078,7 @@ TRANSPORT-1-4 SUNN JOE
     test detail-1.1 {ENERGY detail} -setup {
         setup
     } -body {
-        driver::ENERGY detail {
+        ruleset ENERGY detail {
             g          SHIA
             a          JOE
             actual     0.8
@@ -1122,7 +1119,7 @@ These values led to the following rule set inputs:<p>
     test detail-1.2 {WATER detail} -setup {
         setup
     } -body {
-        driver::WATER detail {
+        ruleset WATER detail {
             g          SHIA
             a          JOE
             actual     0.8
@@ -1163,7 +1160,7 @@ These values led to the following rule set inputs:<p>
     test detail-1.3 {TRANSPORT detail} -setup {
         setup
     } -body {
-        driver::TRANSPORT detail {
+        ruleset TRANSPORT detail {
             g          SHIA
             a          JOE
             actual     0.8

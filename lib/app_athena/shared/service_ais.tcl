@@ -28,7 +28,12 @@ snit::type service_ais {
     typemethod assess {} {
         $type LogLOSChanges 
         $type ComputeFactors 
-        profile 1 driver::abservice assess
+        # TBD: when service module is moved to athena(n) this can become
+        # ruleset abservice assess (or something similar) and that 
+        # method can loop over the abstract services.
+        foreach s [eabservice names] {
+            profile 1 ruleset $s assess
+        }
     }
 
     # ComputeFactors

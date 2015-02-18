@@ -1,63 +1,54 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#    driver_abservice.tcl
+#    ruleset_abservice.tcl
 #
 # AUTHOR:
 #    Dave Hanks
 #
 # DESCRIPTION:
-#    Athena Driver Assessment Model (DAM): 
-#    Abstract Infrastructure Services
+#    athena(n): Abstract Infrastructure Services ruleset
+#
+# FIRING DICTIONARY:
+#    dtype       - The driver type (ENERGY, WATER, etc...)
+#    g           - The civilian group receiving the services
+#    actual      - The actual level of service (ALOS)
+#    required    - The required level of service (RLOS)
+#    expected    - The expected level of service (ELOS)
+#    expectf     - The expectations factor
+#    needs       - The needs factor
+#    case        - The case: E+, E, E-, R-
+#
+# Four possible cases of ALOS:
+#    R-  - ALOS is less than required.
+#    E-  - ALOS is at least the required amount, but less than
+#          expected.
+#    E   - ALOS is approximately the same as expected
+#    E+  - ALOS is more than expected.
 #
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
 # abservice
 
-snit::type driver::abservice {
-    pragma -hasinstances 0
-    #-------------------------------------------------------------------
-    # Look-up tables
+oo::class create ::athena::ruleset_abservice {
+    superclass ::athena::ruleset
 
-    # case: R-, E-, E, E+
-    #
-    #   R-  - actual LOS is less than required.
-    #   E-  - actual LOS is at least the required amount, but less than
-    #         expected.
-    #   E   - actual LOS is approximately the same as expected
-    #   E+  - actual LOS is more than expected.
-    #
-
-    typevariable vmags -array {
-        E+  XL+
-        E   L+
-        E-  M-
-        R-  L-
-    }
-
+    meta sigparms {g}
 
     #-------------------------------------------------------------------
-    # Public Typemethods
+    # Public Methods
 
     # assess
     #
     # Monitors the level of service provided to civilian groups.  The
     # rule firing dictionary contains the following data:
     #
-    #   dtype       - The driver type (ENERGY, WATER, etc...)
-    #   g           - The civilian group receiving the services
-    #   actual      - The actual level of service (ALOS)
-    #   required    - The required level of service (RLOS)
-    #   expected    - The expected level of service (ELOS)
-    #   expectf     - The expectations factor
-    #   needs       - The needs factor
-    #   case        - The case: E+, E, E-, R-
-    
-    typemethod assess {} {
-        set slist [eabservice names]
+
+    method assess {} {
+        set s [my name]
 
         # NEXT, call the abstract services rule sets.
-        rdb eval "
+        [my adb] eval "
             SELECT s          AS dtype,
                    controller AS a,
                    g          AS g, 
@@ -70,7 +61,7 @@ snit::type driver::abservice {
             JOIN demog_g USING (g)
             JOIN service_sg USING (g)
             JOIN control_n ON (local_civgroups.n = control_n.n)
-            WHERE s IN ('[join $slist ',']')
+            WHERE s='$s'
             AND   demog_g.population > 0
             ORDER BY g
         " gdata {
@@ -80,31 +71,18 @@ snit::type driver::abservice {
 
             set fdict [array get gdata]
 
-            if {![dam isactive $dtype]} {
+            if {![my isactive]} {
                 log warning $dtype "driver type has been deactivated"
                 continue
             }
 
             bgcatch {
-                log detail $dtype $fdict
-                driver::$dtype ruleset $fdict
+                [my adb] log detail $dtype $fdict
+                my ruleset $fdict
             }
         }
     }
 
-    typemethod define {name defscript} {
-        set footer "
-            delegate typemethod sigline   using {driver::abservice %m $name}
-            delegate typemethod narrative using {driver::abservice %m}
-            delegate typemethod detail    using {driver::abservice %m}
-
-            typeconstructor {
-                namespace path ::driver::abservice::
-            }
-        "
-
-        driver type define $name {g} "$defscript\n$footer" 
-    }
     #-------------------------------------------------------------------
     # Narrative Type Methods
 
@@ -115,9 +93,9 @@ snit::type driver::abservice {
     # Returns a one-line description of the driver given its signature
     # values.
 
-    typemethod sigline {dtype signature} {
+    method sigline {signature} {
         set g $signature
-        return "Provision of $dtype services to $g"
+        return "Provision of [my name] services to $g"
     }
 
     # narrative fdict
@@ -126,10 +104,10 @@ snit::type driver::abservice {
     #
     # Produces a one-line narrative text string for a given rule firing
 
-    typemethod narrative {fdict} {
+    method narrative {fdict} {
         dict with fdict {}
 
-        return "{group:$g} receives $dtype services (case $case)"
+        return "{group:$g} receives [my name] services (case $case)"
     }
     
     # detail fdict 
@@ -139,7 +117,7 @@ snit::type driver::abservice {
     #
     # Produces a narrative HTML paragraph including all fdict information.
 
-    typemethod detail {fdict ht} {
+    method detail {fdict ht} {
         dict with fdict {}
 
         $ht putln "Civilian group\n"
@@ -181,7 +159,7 @@ snit::type driver::abservice {
     }
 
     #-------------------------------------------------------------------
-    # Helper Routines
+    # Helper Methods
     
     # GetCase fdict
     #
@@ -190,7 +168,7 @@ snit::type driver::abservice {
     # Returns the case symbol, E+, E, E-, R-, for the provision
     # of service to the group.
     
-    proc GetCase {fdict} {
+    method GetCase {fdict} {
         dict with fdict {}
         # FIRST, get the delta parameter
         set delta [parmdb get service.$dtype.delta]
@@ -213,46 +191,49 @@ snit::type driver::abservice {
 #
 # Service Situation: effect of provision/non-provision of service
 # on a civilian group.
+oo::class create ::athena::ruleset_ENERGY {
+    superclass ::athena::ruleset_abservice
 
-driver::abservice define ENERGY {
-    typemethod ruleset {fdict} {
+    meta name ENERGY
+
+    method ruleset {fdict} {
         dict with fdict {}
         
         # FIRST, get some data
-        set case [GetCase $fdict]
+        set case [my GetCase $fdict]
 
         dict set fdict case $case
         
         # ENERGY-1: Satisfaction Effects
-        dam rule ENERGY-1-1 $fdict {
+        my rule ENERGY-1-1 $fdict {
             $case eq "R-"
         } {
             # While ENERGY is less than required for CIV group g
             # Then for group g
-            dam sat T $g \
-                AUT [expr {[mag* $expectf XXS+] + [mag* $needs XXS-]}] \
-                QOL [expr {[mag* $expectf XXS+] + [mag* $needs XXS-]}]
+            my sat T $g \
+                AUT [expr {[my mag* $expectf XXS+] + [my mag* $needs XXS-]}] \
+                QOL [expr {[my mag* $expectf XXS+] + [my mag* $needs XXS-]}]
 
             if {$a ne ""} {
-                dam vrel T $g $a L-
+                my vrel T $g $a L-
             }
         }
 
-        dam rule ENERGY-1-2 $fdict {
+        my rule ENERGY-1-2 $fdict {
             $case eq "E-"
         } {
             # While ENERGY is less than expected for CIV group g
             # Then for group g
-            dam sat T $g \
-                AUT [mag* $expectf XXS+] \
-                QOL [mag* $expectf XXS+]
+            my sat T $g \
+                AUT [my mag* $expectf XXS+] \
+                QOL [my mag* $expectf XXS+]
 
             if {$a ne ""} {
-                dam vrel T $g $a M-
+                my vrel T $g $a M-
             }
         }
 
-        dam rule ENERGY-1-3 $fdict {
+        my rule ENERGY-1-3 $fdict {
             $case eq "E"
         } {
             # While ENERGY is as expected for CIV group g
@@ -261,17 +242,17 @@ driver::abservice define ENERGY {
             # Nothing
         }
 
-        dam rule ENERGY-1-4 $fdict {
+        my rule ENERGY-1-4 $fdict {
             $case eq "E+"
         } {
             # While ENERGY is better than expected for CIV group g
             # Then for group g
-            dam sat T $g \
-                AUT [mag* $expectf XXS+] \
-                QOL [mag* $expectf XXS+]
+            my sat T $g \
+                AUT [my mag* $expectf XXS+] \
+                QOL [my mag* $expectf XXS+]
 
             if {$a ne ""} {
-                dam vrel T $g $a XL+
+                my vrel T $g $a XL+
             }
         }
     }
@@ -283,45 +264,49 @@ driver::abservice define ENERGY {
 # Service Situation: effect of provision/non-provision of service
 # on a civilian group.
 
-driver::abservice define WATER {
-    typemethod ruleset {fdict} {
+oo::class create ::athena::ruleset_WATER {
+    superclass ::athena::ruleset_abservice
+
+    meta name WATER
+
+    method ruleset {fdict} {
         dict with fdict {}
         
         # FIRST, get some data
-        set case [GetCase $fdict]
+        set case [my GetCase $fdict]
 
         dict set fdict case $case
         
         # WATER-1: Satisfaction Effects
-        dam rule WATER-1-1 $fdict {
+        my rule WATER-1-1 $fdict {
             $case eq "R-"
         } {
             # While WATER is less than required for CIV group g
             # Then for group g
-            dam sat T $g \
-                AUT [expr {[mag* $expectf XS+] + [mag* $needs XS-]}] \
-                QOL [expr {[mag* $expectf L+]  + [mag* $needs L-]}]
+            my sat T $g \
+                AUT [expr {[my mag* $expectf XS+] + [my mag* $needs XS-]}] \
+                QOL [expr {[my mag* $expectf L+]  + [my mag* $needs L-]}]
 
             if {$a ne ""} {
-                dam vrel T $g $a L-
+                my vrel T $g $a L-
             }
         }
 
-        dam rule WATER-1-2 $fdict {
+        my rule WATER-1-2 $fdict {
             $case eq "E-"
         } {
             # While WATER is less than expected for CIV group g
             # Then for group g
-            dam sat T $g \
-                AUT [mag* $expectf XXS+] \
-                QOL [mag* $expectf XS+]
+            my sat T $g \
+                AUT [my mag* $expectf XXS+] \
+                QOL [my mag* $expectf XS+]
 
             if {$a ne ""} {
-                dam vrel T $g $a M-
+                my vrel T $g $a M-
             }
         }
 
-        dam rule WATER-1-3 $fdict {
+        my rule WATER-1-3 $fdict {
             $case eq "E"
         } {
             # While WATER is as expected for CIV group g
@@ -330,17 +315,17 @@ driver::abservice define WATER {
             # Nothing
         }
 
-        dam rule WATER-1-4 $fdict {
+        my rule WATER-1-4 $fdict {
             $case eq "E+"
         } {
             # While WATER is better than expected for CIV group g
             # Then for group g
-            dam sat T $g \
-                AUT [mag* $expectf XXS+] \
-                QOL [mag* $expectf XXS+]
+            my sat T $g \
+                AUT [my mag* $expectf XXS+] \
+                QOL [my mag* $expectf XXS+]
 
             if {$a ne ""} {
-                dam vrel T $g $a XL+
+                my vrel T $g $a XL+
             }
         }
     }
@@ -352,45 +337,49 @@ driver::abservice define WATER {
 # Service Situation: effect of provision/non-provision of service
 # on a civilian group.
 
-driver::abservice define TRANSPORT {
-    typemethod ruleset {fdict} {
+oo::class create ::athena::ruleset_TRANSPORT {
+    superclass ::athena::ruleset_abservice
+
+    meta name TRANSPORT
+    
+    method ruleset {fdict} {
         dict with fdict {}
         
         # FIRST, get some data
-        set case [GetCase $fdict]
+        set case [my GetCase $fdict]
 
         dict set fdict case $case
         
         # TRANSPORT-1: Satisfaction Effects
-        dam rule TRANSPORT-1-1 $fdict {
+        my rule TRANSPORT-1-1 $fdict {
             $case eq "R-"
         } {
             # While TRANSPORT is less than required for CIV group g
             # Then for group g
-            dam sat T $g \
-                AUT [expr {[mag* $expectf XXS+] + [mag* $needs XXS-]}] \
-                QOL [expr {[mag* $expectf XXS+] + [mag* $needs XXS-]}]
+            my sat T $g \
+                AUT [expr {[my mag* $expectf XXS+] + [my mag* $needs XXS-]}] \
+                QOL [expr {[my mag* $expectf XXS+] + [my mag* $needs XXS-]}]
 
             if {$a ne ""} {
-                dam vrel T $g $a L-
+                my vrel T $g $a L-
             }
         }
 
-        dam rule TRANSPORT-1-2 $fdict {
+        my rule TRANSPORT-1-2 $fdict {
             $case eq "E-"
         } {
             # While TRANSPORT is less than expected for CIV group g
             # Then for group g
-            dam sat T $g \
-                AUT [mag* $expectf XXS+] \
-                QOL [mag* $expectf XXS+]
+            my sat T $g \
+                AUT [my mag* $expectf XXS+] \
+                QOL [my mag* $expectf XXS+]
 
             if {$a ne ""} {
-                dam vrel T $g $a M-
+                my vrel T $g $a M-
             }
         }
 
-        dam rule TRANSPORT-1-3 $fdict {
+        my rule TRANSPORT-1-3 $fdict {
             $case eq "E"
         } {
             # While TRANSPORT is as expected for CIV group g
@@ -399,17 +388,17 @@ driver::abservice define TRANSPORT {
             # Nothing 
         }
 
-        dam rule TRANSPORT-1-4 $fdict {
+        my rule TRANSPORT-1-4 $fdict {
             $case eq "E+"
         } {
             # While TRANSPORT is better than expected for CIV group g
             # Then for group g
-            dam sat T $g \
-                AUT [mag* $expectf XS+] \
-                QOL [mag* $expectf XS+]
+            my sat T $g \
+                AUT [my mag* $expectf XS+] \
+                QOL [my mag* $expectf XS+]
 
             if {$a ne ""} {
-                dam vrel T $g $a XL+
+                my vrel T $g $a XL+
             }
         }
     }
