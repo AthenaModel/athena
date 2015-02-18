@@ -26,12 +26,7 @@
 #              -> a           -> actors  (if VREL)
 #-----------------------------------------------------------------------
 
-oo::class create ::athena::ruleset_CURSE {
-    superclass ::athena::ruleset
-    
-    meta name     "CURSE"
-    meta sigparms {curse_id}
-
+::athena::ruleset define CURSE {curse_id} {
     #-------------------------------------------------------------------
     # Public Type Methods
 

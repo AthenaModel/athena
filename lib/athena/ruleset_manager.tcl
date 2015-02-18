@@ -14,62 +14,6 @@
 #-----------------------------------------------------------------------
 
 snit::type ::athena::ruleset_manager {
-    #-------------------------------------------------------------------
-    # Look-up Tables
-
-    # List of rule set names
-    typevariable rulesetNames {
-        ACCIDENT
-        BADFOOD
-        BADWATER
-        CHKPOINT
-        CIVCAS
-        COERCION
-        COMMOUT
-        CONSTRUCT
-        CONSUMP
-        CONTROL
-        CURSE
-        CRIME
-        CULSITE
-        CURFEW
-        DEMO 
-        DISASTER
-        DISEASE
-        DROUGHT
-        EDU
-        EMPLOY
-        ENERGY
-        ENI
-        EPIDEMIC
-        EXPLOSION
-        FOODSHRT
-        FUELSHRT
-        GARBAGE
-        GUARD
-        INDSPILL
-        INDUSTRY
-        INFRA
-        IOM
-        LAWENF
-        MEDICAL
-        MINEFIELD
-        MOOD
-        ORDNANCE
-        PATROL
-        PIPELINE
-        PSYOP
-        REFINERY
-        RELIEF
-        RELSITE
-        RIOT
-        SEWAGE
-        TRANSPORT
-        UNEMP
-        VIOLENCE
-        WATER
-    }
-
     # Initial driver ID.  This is set to 1000 so as to be higher than
     # a standard cause's numeric ID, so that numeric driver IDs can be 
     # used as numeric cause IDs.  There are fewer than 100 standard causes;
@@ -119,7 +63,7 @@ snit::type ::athena::ruleset_manager {
     # Returns the list of rule set names
 
     method names {} {
-        return $rulesetNames
+        return [::athena::ruleset names]
     }
 
     # call setname args
@@ -149,7 +93,7 @@ snit::type ::athena::ruleset_manager {
             return $cache($setname)
         }
 
-        require {$setname in $rulesetNames} "Unknown ruleset: \"$setname\""
+        require {$setname in [$self names]} "Unknown ruleset: \"$setname\""
 
         set cache($setname) \
             [::athena::ruleset_$setname create ${selfns}::$setname $adb]

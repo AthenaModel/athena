@@ -26,8 +26,6 @@
 oo::class create ::athena::ruleset_absit {
     superclass ::athena::ruleset
 
-    meta sigparms {state n}
-
     #-------------------------------------------------------------------
     # Public methods
 
@@ -179,9 +177,14 @@ oo::class create ::athena::ruleset_absit {
 # Abstract Situation: The local food supply has been contaminated.
 
 
-oo::class create ::athena::ruleset_BADFOOD {
+::athena::ruleset define BADFOOD {state n} {
     superclass ::athena::ruleset_absit
-    meta name BADFOOD
+
+    metadict rules {
+        BADFOOD-1-1   "Food supply begins to be contaminated"
+        BADFOOD-1-2   "Food supply continues to be contaminated"
+        BADFOOD-2-1   "Food contamination is resolved by locals"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}
@@ -220,9 +223,14 @@ oo::class create ::athena::ruleset_BADFOOD {
 #
 # Abstract Situation: The local water supply has been contaminated.
  
-oo::class create ::athena::ruleset_BADWATER {
+::athena::ruleset define BADWATER {state n} {
     superclass ::athena::ruleset_absit
-    meta name BADWATER
+
+    metadict rules {
+        BADWATER-1-1  "Water supply begins to be contaminated"
+        BADWATER-1-2  "Water supply continues to be contaminated"
+        BADWATER-2-1  "Water contamination is resolved by locals"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}
@@ -262,9 +270,13 @@ oo::class create ::athena::ruleset_BADWATER {
 # Abstract Situation: Communications are out in the neighborhood.
  
     
-oo::class create ::athena::ruleset_COMMOUT {
+::athena::ruleset define COMMOUT {state n} {
     superclass ::athena::ruleset_absit
-    meta name COMMOUT
+
+    metadict rules {
+        COMMOUT-1-1   "Communications go out"
+        COMMOUT-1-2   "Communications remain out"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}
@@ -298,9 +310,13 @@ oo::class create ::athena::ruleset_COMMOUT {
 # Abstract Situation: A cultural site or artifact is
 # damaged, presumably due to kinetic action.
     
-oo::class create ::athena::ruleset_CULSITE {
+::athena::ruleset define CULSITE {state n} {
     superclass ::athena::ruleset_absit
-    meta name CULSITE
+
+    metadict rules {
+        CULSITE-1-1   "A cultural site is damaged"
+        CULSITE-1-2   "Damage has not been resolved"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}
@@ -329,9 +345,14 @@ oo::class create ::athena::ruleset_CULSITE {
 #
 # Abstract Situation: Disaster
     
-oo::class create ::athena::ruleset_DISASTER {
+::athena::ruleset define DISASTER {state n} {
     superclass ::athena::ruleset_absit
-    meta name DISASTER
+
+    metadict rules {
+        DISASTER-1-1  "Disaster occurred in the neighborhood"
+        DISASTER-1-2  "Disaster continues"
+        DISASTER-2-1  "Disaster resolved by locals"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}
@@ -369,9 +390,14 @@ oo::class create ::athena::ruleset_DISASTER {
 #
 # Abstract Situation: General disease due to unhealthy conditions.
     
-oo::class create ::athena::ruleset_DISEASE {
+::athena::ruleset define DISEASE {state n} {
     superclass ::athena::ruleset_absit
-    meta name DISEASE
+
+    metadict rules {
+        DISEASE-1-1   "Unhealthy conditions begin to cause disease"
+        DISEASE-1-2   "Unhealthy conditions continue to cause disease"
+        DISEASE-2-1   "Unhealthy conditions are resolved by locals"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}
@@ -410,9 +436,13 @@ oo::class create ::athena::ruleset_DISEASE {
 #
 # Abstract Situation: Long-term Drought.
     
-oo::class create ::athena::ruleset_DROUGHT {
+::athena::ruleset define DROUGHT {state n} {
     superclass ::athena::ruleset_absit
-    meta name DROUGHT
+
+    metadict rules {
+        DROUGHT-1-1   "Long-term drought affects non-subsistence population"
+        DROUGHT-1-2   "Long-term drought affects subsistence population"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}
@@ -445,9 +475,14 @@ oo::class create ::athena::ruleset_DROUGHT {
 #
 # Abstract Situation: Epidemic disease
  
-oo::class create ::athena::ruleset_EPIDEMIC {
+::athena::ruleset define EPIDEMIC {state n} {
     superclass ::athena::ruleset_absit
-    meta name EPIDEMIC
+
+    metadict rules {
+        EPIDEMIC-1-1  "Epidemic begins to spread"
+        EPIDEMIC-1-2  "Epidemic continues to spread"
+        EPIDEMIC-2-1  "Spread of epidemic is halted by locals"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}
@@ -487,9 +522,14 @@ oo::class create ::athena::ruleset_EPIDEMIC {
 #
 # Abstract Situation: There is a food shortage in the neighborhood.
  
-oo::class create ::athena::ruleset_FOODSHRT {
+::athena::ruleset define FOODSHRT {state n} {
     superclass ::athena::ruleset_absit
-    meta name FOODSHRT
+
+    metadict rules {
+        FOODSHRT-1-1  "Food begins to run short"
+        FOODSHRT-1-2  "Food continues to run short"
+        FOODSHRT-2-1  "Food shortage is ended by locals"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}
@@ -527,9 +567,14 @@ oo::class create ::athena::ruleset_FOODSHRT {
 #
 # Abstract Situation: There is a fuel shortage in the neighborhood.
  
-oo::class create ::athena::ruleset_FUELSHRT {
+::athena::ruleset define FUELSHRT {state n} {
     superclass ::athena::ruleset_absit
-    meta name FUELSHRT
+
+    metadict rules {
+        FUELSHRT-1-1  "Fuel begins to run short"
+        FUELSHRT-1-2  "Fuel continues to be in short supply"
+        FUELSHRT-2-1  "Fuel shortage is ended by locals"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}
@@ -567,9 +612,14 @@ oo::class create ::athena::ruleset_FUELSHRT {
 #
 # Abstract Situation: Garbage is piling up in the streets.
  
-oo::class create ::athena::ruleset_GARBAGE {
+::athena::ruleset define GARBAGE {state n} {
     superclass ::athena::ruleset_absit
-    meta name GARBAGE
+
+    metadict rules {
+        GARBAGE-1-1   "Garbage begins to accumulate"
+        GARBAGE-1-2   "Garbage is piled in the streets"
+        GARBAGE-2-1   "Garbage is cleaned up by locals"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}
@@ -611,9 +661,14 @@ oo::class create ::athena::ruleset_GARBAGE {
 # Abstract Situation: Damage to an industrial facility has released
 # possibly toxic substances into the surrounding area.
  
-oo::class create ::athena::ruleset_INDSPILL {
+::athena::ruleset define INDSPILL {state n} {
     superclass ::athena::ruleset_absit
-    meta name INDSPILL
+
+    metadict rules {
+        INDSPILL-1-1  "Industrial spill occurs"
+        INDSPILL-1-2  "Industrial spill has not been cleaned up"
+        INDSPILL-2-1  "Industrial spill is cleaned up by locals"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}
@@ -654,9 +709,14 @@ oo::class create ::athena::ruleset_INDSPILL {
 # Abstract Situation: The residents of this neighborhood know that
 # there is a minefield in the neighborhood.
  
-oo::class create ::athena::ruleset_MINEFIELD {
+::athena::ruleset define MINEFIELD {state n} {
     superclass ::athena::ruleset_absit
-    meta name MINEFIELD
+
+    metadict rules {
+        MINEFIELD-1-1 "Minefield is placed"
+        MINEFIELD-1-2 "Minefield remains"
+        MINEFIELD-2-1 "Minefield is cleared by locals"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}
@@ -698,9 +758,14 @@ oo::class create ::athena::ruleset_MINEFIELD {
 # there is unexploded ordnance (probably from cluster munitions)
 # in the neighborhood.
  
-oo::class create ::athena::ruleset_ORDNANCE {
+::athena::ruleset define ORDNANCE {state n} {
     superclass ::athena::ruleset_absit
-    meta name ORDNANCE
+
+    metadict rules {
+        ORDNANCE-1-1  "Unexploded ordnance is found"
+        ORDNANCE-1-2  "Unexploded ordnance remains"
+        ORDNANCE-2-1  "Unexploded ordnance is removed by locals"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}
@@ -742,9 +807,14 @@ oo::class create ::athena::ruleset_ORDNANCE {
 # Abstract Situation: Damage to an oil pipeline has caused to catch
 # fire.
  
-oo::class create ::athena::ruleset_PIPELINE {
+::athena::ruleset define PIPELINE {state n} {
     superclass ::athena::ruleset_absit
-    meta name PIPELINE
+
+    metadict rules {
+        PIPELINE-1-1  "Oil pipeline catches fire"
+        PIPELINE-1-2  "Oil pipeline is still burning"
+        PIPELINE-2-1  "Oil pipeline fire is extinguished by locals"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}
@@ -785,9 +855,14 @@ oo::class create ::athena::ruleset_PIPELINE {
 # Abstract Situation: Damage to an oil refinery has caused it to
 # catch fire.
  
-oo::class create ::athena::ruleset_REFINERY {
+::athena::ruleset define REFINERY {state n} {
     superclass ::athena::ruleset_absit
-    meta name REFINERY
+
+    metadict rules {
+        REFINERY-1-1  "Oil refinery catches fire"
+        REFINERY-1-2  "Oil refinery is still burning"
+        REFINERY-2-1  "Oil refinery fire is extinguished by locals"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}
@@ -829,9 +904,14 @@ oo::class create ::athena::ruleset_REFINERY {
 # Abstract Situation: A religious site or artifact is
 # damaged, presumably due to kinetic action.
  
-oo::class create ::athena::ruleset_RELSITE {
+::athena::ruleset define RELSITE {state n} {
     superclass ::athena::ruleset_absit
-    meta name RELSITE
+
+    metadict rules {
+        RELSITE-1-1   "A religious site is damaged"
+        RELSITE-1-2   "Damage has not been resolved"
+        RELSITE-2-1   "Damage is resolved by locals"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}
@@ -873,9 +953,14 @@ oo::class create ::athena::ruleset_RELSITE {
 #
 # Abstract Situation: Sewage is pooling in the streets.
  
-oo::class create ::athena::ruleset_SEWAGE {
+::athena::ruleset define SEWAGE {state n} {
     superclass ::athena::ruleset_absit
-    meta name SEWAGE
+
+    metadict rules {
+        SEWAGE-1-1    "Sewage begins to pool in the streets"
+        SEWAGE-1-2    "Sewage has pooled in the streets"
+        SEWAGE-2-1    "Sewage is cleaned up by locals"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}

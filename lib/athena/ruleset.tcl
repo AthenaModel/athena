@@ -18,13 +18,68 @@
 # META PARAMETERS:
 #    Rule sets must define the following meta parameters:
 #
-#    name - The rule set name
+#    name     - The rule set name
+#    sigparms - The signature parameters in the firing dictionary
+#
+#    The above are defined automatically by [::athena::ruleset define].
+#
+#    rules    - A metadict of rule names and title strings.
 #
 # TBD: global refs: parm, aram
 #
 #-----------------------------------------------------------------------
 
-oo::class create ::athena::ruleset {
+# FIRST, create the class
+oo::class create ::athena::ruleset
+
+# NEXT, define class methods
+oo::objdefine ::athena::ruleset {
+    # Dictionary of rule set classes by rule set name.
+    variable rulesets
+
+    # define setname script
+    #
+    # setname  - The rule set name
+    # script   - The rule set's oo::define script
+    #
+    # Defines a new rule set.
+
+    method define {setname sigparms script} {
+        # FIRST, create the new type
+        set fullname ::athena::ruleset_$setname
+        dict set rulesets $setname $fullname
+
+        oo::class create $fullname {
+            superclass ::athena::ruleset
+        }
+
+        # NEXT, define the instance members.
+        oo::define $fullname meta name $setname
+        oo::define $fullname meta sigparms $sigparms
+        oo::define $fullname $script
+    }
+
+    # names
+    #
+    # Returns a list of the available rule sets
+
+    method names {} {
+        return [lsort [dict keys $rulesets]]
+    }
+
+    # getclass setname
+    #
+    # setname  - A rule set name
+    #
+    # Returns the class name.
+
+    method getclass {setname} {
+        return [dict get $rulesets $setname]
+    }
+}
+
+# NEXT, define instance methods.
+oo::define ::athena::ruleset {
     #-------------------------------------------------------------------
     # Instance Variables
 

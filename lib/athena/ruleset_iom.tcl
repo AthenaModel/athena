@@ -30,12 +30,7 @@
 #
 #-----------------------------------------------------------------------
 
-oo::class create ::athena::ruleset_IOM {
-    superclass ::athena::ruleset
-    
-    meta name     "IOM"
-    meta sigparms {tsource iom}
-
+::athena::ruleset define IOM {tsource iom} {
     #-------------------------------------------------------------------
     # Instance Variables
 

@@ -23,8 +23,6 @@
 oo::class create ::athena::ruleset_abevent {
     superclass ::athena::ruleset
 
-    meta sigparms {n}
-
     #-------------------------------------------------------------------
     # Public Methods
 
@@ -168,10 +166,12 @@ oo::class create ::athena::ruleset_abevent {
 #
 # Abstract Event: A small disaster in a neighborhood.
 
-oo::class create ::athena::ruleset_ACCIDENT {
+::athena::ruleset define ACCIDENT {n} {
     superclass ::athena::ruleset_abevent
 
-    meta name ACCIDENT
+    metadict rules {
+        ACCIDENT-1.1  "Accident occurs in neighborhood"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}
@@ -193,11 +193,13 @@ oo::class create ::athena::ruleset_ACCIDENT {
 # This event is more complex than the others, and provides its own
 # sigline, narrative, and detail methods.
 
-oo::class create ::athena::ruleset_DEMO {
+::athena::ruleset define DEMO {n g} {
     superclass ::athena::ruleset_abevent
 
-    meta name     DEMO
-    meta sigparms {n g}    
+    metadict rules {
+        DEMO-1.1  "Civilians demonstrate in support of cause"
+        DEMO-1.2  "Civilians oppose cause of demonstration"
+    }
 
     method sigline {signature} {
         lassign $signature n g
@@ -263,10 +265,12 @@ oo::class create ::athena::ruleset_DEMO {
 #
 # Abstract Event: A large explosion or series of explosions
 
-oo::class create ::athena::ruleset_EXPLOSION {
+::athena::ruleset define EXPLOSION {n} {
     superclass ::athena::ruleset_abevent
 
-    meta name EXPLOSION
+    metadict rules {
+        EXPLOSION-1.1 "Explosion in neighborhood"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}
@@ -286,10 +290,12 @@ oo::class create ::athena::ruleset_EXPLOSION {
 #
 # Abstract Event: A riot in a neighborhood.
 
-oo::class create ::athena::ruleset_RIOT {
+::athena::ruleset define RIOT {n} {
     superclass ::athena::ruleset_abevent
 
-    meta name RIOT
+    metadict rules {
+        RIOT-1-1 "Riot in neighborhood"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}
@@ -311,10 +317,12 @@ oo::class create ::athena::ruleset_RIOT {
 #
 # Abstract Event: Random violence in a neighborhood.
 
-oo::class create ::athena::ruleset_VIOLENCE {
+::athena::ruleset define VIOLENCE {n} {
     superclass ::athena::ruleset_abevent
 
-    meta name VIOLENCE
+    metadict rules {
+        VIOLENCE-1-1 "Random violence in neighborhood"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}

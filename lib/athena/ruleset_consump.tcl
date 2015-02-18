@@ -17,12 +17,7 @@
 #
 #-----------------------------------------------------------------------
 
-oo::class create ::athena::ruleset_CONSUMP {
-    superclass ::athena::ruleset
-    
-    meta name     "CONSUMP"
-    meta sigparms {g}
-
+::athena::ruleset define CONSUMP {g} {
     # assess
     #
     # Assesses all consumption situations.

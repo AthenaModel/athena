@@ -21,12 +21,7 @@
 #
 #-----------------------------------------------------------------------
 
-oo::class create ::athena::ruleset_ENI {
-    superclass ::athena::ruleset
-    
-    meta name     "ENI"
-    meta sigparms {g}
-
+::athena::ruleset define ENI {g} {
     #-------------------------------------------------------------------
     # Look-up tables
 

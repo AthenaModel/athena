@@ -20,12 +20,7 @@
 #
 #-----------------------------------------------------------------------
 
-oo::class create ::athena::ruleset_MOOD {
-    superclass ::athena::ruleset
-    
-    meta name     "MOOD"
-    meta sigparms {}
-
+::athena::ruleset define MOOD {} {
     #-------------------------------------------------------------------
     # Public Methods
 

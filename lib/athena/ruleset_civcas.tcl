@@ -10,15 +10,7 @@
 #
 #-----------------------------------------------------------------------
 
-#-----------------------------------------------------------------------
-# CIVCAS
-
-oo::class create ::athena::ruleset_CIVCAS {
-    superclass ::athena::ruleset
-    
-    meta name     "CIVCAS"
-    meta sigparms {f}
-
+::athena::ruleset define CIVCAS {f} {
     #-------------------------------------------------------------------
     # Public methods
 

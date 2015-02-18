@@ -99,7 +99,7 @@ appserver module firing {
         set vars(ruleset) [string trim [string toupper $(1)]]
 
         if {$vars(ruleset) ne ""} {
-            if {$vars(ruleset) ni [edamruleset names]} {
+            if {$vars(ruleset) ni [::athena::ruleset names]} {
                 throw NOTFOUND "Unknown rule set: \"$vars(ruleset)\""
             }
 

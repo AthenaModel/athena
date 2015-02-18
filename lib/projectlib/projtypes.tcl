@@ -324,6 +324,9 @@ snit::type ::projectlib::typewrapper {
 }
 
 # DAM Rule Sets
+#
+# TBD: this enum is now used only by parmdb.tcl to provide the rule set
+# names for dam.$ruleset.*.  Once that is gone, remove it.
 ::marsutil::enum ::projectlib::edamruleset {
     ACCIDENT  "Accident"
     BADFOOD   "Contaminated Food Supply"

@@ -16,12 +16,7 @@
 #
 #-----------------------------------------------------------------------
 
-oo::class create ::athena::ruleset_CONTROL {
-    superclass ::athena::ruleset
-    
-    meta name     "CONTROL"
-    meta sigparms {n}
-
+::athena::ruleset define CONTROL {n} {
     #-------------------------------------------------------------------
     # Look-up tables
 

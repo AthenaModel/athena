@@ -12,12 +12,7 @@
 #
 #-----------------------------------------------------------------------
 
-oo::class create ::athena::ruleset_UNEMP {
-    superclass ::athena::ruleset
-    
-    meta name     "UNEMP"
-    meta sigparms {n g}
-
+::athena::ruleset define UNEMP {n g} {
     #-------------------------------------------------------------------
     # Public Typemethods
 
