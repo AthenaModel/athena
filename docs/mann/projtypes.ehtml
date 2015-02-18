@@ -109,22 +109,6 @@ for a catalog of condition types, with descriptions.<p>
 
 <fromproject {projectlib::econdition_type html}>
 
-
-<defitem edamrule {edamrule <i>subcommand</i> ?<i>args</i>?}>
-
-An <xref mars:enum(n)> type, enumerating the names and descriptions
-of all Athena Driver Assessment rules.<p>
-
-<fromproject {projectlib::edamrule html}>
-
-
-<defitem edamruleset {edamruleset <i>subcommand</i> ?<i>args</i>?}>
-
-An <xref mars:enum(n)> type, enumerating the names and descriptions
-of all Athena Driver Assessment rule sets.<p>
-
-<fromproject {projectlib::edamruleset html}>
-
 <defitem edemeanor {edemeanor <i>subcommand</i> ?<i>args</i>?}>
 
 An <xref mars:enum(n)> type, representing neighborhood group

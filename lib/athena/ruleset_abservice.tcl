@@ -33,8 +33,6 @@
 oo::class create ::athena::ruleset_abservice {
     superclass ::athena::ruleset
 
-    meta sigparms {g}
-
     #-------------------------------------------------------------------
     # Public Methods
 
@@ -191,10 +189,15 @@ oo::class create ::athena::ruleset_abservice {
 #
 # Service Situation: effect of provision/non-provision of service
 # on a civilian group.
-oo::class create ::athena::ruleset_ENERGY {
+::athena::ruleset define ENERGY {g} {
     superclass ::athena::ruleset_abservice
 
-    meta name ENERGY
+    metadict rulename {
+        ENERGY-1-1    "Energy services are less than required"
+        ENERGY-1-2    "Energy services are less than expected"
+        ENERGY-1-3    "Energy services are as expected"
+        ENERGY-1-4    "Energy services are better than expected"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}
@@ -264,10 +267,15 @@ oo::class create ::athena::ruleset_ENERGY {
 # Service Situation: effect of provision/non-provision of service
 # on a civilian group.
 
-oo::class create ::athena::ruleset_WATER {
+::athena::ruleset define WATER {g} {
     superclass ::athena::ruleset_abservice
 
-    meta name WATER
+    metadict rulename {
+        WATER-1-1    "Access to potable water is less than required"
+        WATER-1-2    "Access to potable water is less than expected"
+        WATER-1-3    "Access to potable water is as expected"
+        WATER-1-4    "Access to potable water is better than expected"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}
@@ -337,11 +345,16 @@ oo::class create ::athena::ruleset_WATER {
 # Service Situation: effect of provision/non-provision of service
 # on a civilian group.
 
-oo::class create ::athena::ruleset_TRANSPORT {
+::athena::ruleset define TRANSPORT {g} {
     superclass ::athena::ruleset_abservice
-
-    meta name TRANSPORT
     
+    metadict rulename {
+        TRANSPORT-1-1 "Transportation services are less than required"
+        TRANSPORT-1-2 "Transportation services are less than expected"
+        TRANSPORT-1-3 "Transportation services are as expected"
+        TRANSPORT-1-4 "Transportation services are better than expected"
+    }
+
     method ruleset {fdict} {
         dict with fdict {}
         

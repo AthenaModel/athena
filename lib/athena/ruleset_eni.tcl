@@ -21,11 +21,13 @@
 #
 #-----------------------------------------------------------------------
 
-oo::class create ::athena::ruleset_ENI {
-    superclass ::athena::ruleset
-    
-    meta name     "ENI"
-    meta sigparms {g}
+::athena::ruleset define ENI {g} {
+    metadict rulename {
+        ENI-1-1       "ENI Services are less than required"
+        ENI-1-2       "ENI Services are less than expected"
+        ENI-1-3       "ENI Services are as expected"
+        ENI-1-4       "ENI Services are better than expected"
+    }
 
     #-------------------------------------------------------------------
     # Look-up tables

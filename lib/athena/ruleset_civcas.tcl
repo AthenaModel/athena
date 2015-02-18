@@ -10,15 +10,12 @@
 #
 #-----------------------------------------------------------------------
 
-#-----------------------------------------------------------------------
-# CIVCAS
-
-oo::class create ::athena::ruleset_CIVCAS {
-    superclass ::athena::ruleset
+::athena::ruleset define CIVCAS {f} {
+    metadict rulename {
+        CIVCAS-1-1    "Civilian casualties taken"
+        CIVCAS-2-1    "Civilian casualties taken from force group"
+    }
     
-    meta name     "CIVCAS"
-    meta sigparms {f}
-
     #-------------------------------------------------------------------
     # Public methods
 

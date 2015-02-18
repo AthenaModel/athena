@@ -29,8 +29,6 @@
 oo::class create ::athena::ruleset_actsit {
     superclass ::athena::ruleset
 
-    meta sigparms {n g}
-
     #------------------------------------------------------------------
     # Public Methods
 
@@ -234,9 +232,12 @@ oo::class create ::athena::ruleset_actsit {
 # Activity Situation: Units belonging to a force group are 
 # operating checkpoints in a neighborhood.
 
-oo::class create ::athena::ruleset_CHKPOINT {
+::athena::ruleset define CHKPOINT {n g} {
     superclass ::athena::ruleset_actsit
-    meta name CHKPOINT
+
+    metadict rulename {
+        CHKPOINT-1-1  "Force is manning checkpoints"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}
@@ -277,9 +278,13 @@ oo::class create ::athena::ruleset_CHKPOINT {
 # Activity Situation: Units belonging to a group are 
 # doing CONSTRUCT in a neighborhood.
 
-oo::class create ::athena::ruleset_CONSTRUCT {
+::athena::ruleset define CONSTRUCT {n g} {
     superclass ::athena::ruleset_actsit
-    meta name CONSTRUCT
+
+    metadict rulename {
+        CONSTRUCT-1-1  "Force is doing construction work"
+        CONSTRUCT-2-1  "ORG is doing construction work"
+    }
 
     method ruleset {fdict} {
         my checkMitigation fdict
@@ -318,9 +323,12 @@ oo::class create ::athena::ruleset_CONSTRUCT {
 # coercing local civilians to cooperate with them through threats
 # of violence.
 
-oo::class create ::athena::ruleset_COERCION {
+::athena::ruleset define COERCION {n g} {
     superclass ::athena::ruleset_actsit
-    meta name COERCION
+
+    metadict rulename {
+        COERCION-1-1  "Force is coercing local civilians"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}
@@ -346,9 +354,12 @@ oo::class create ::athena::ruleset_COERCION {
 # Activity Situation: Units belonging to a force group are 
 # engaging in criminal activities in a neighborhood.
 
-oo::class create ::athena::ruleset_CRIME {
+::athena::ruleset define CRIME {n g} {
     superclass ::athena::ruleset_actsit
-    meta name CRIME
+
+    metadict rulename {
+        CRIME-1-1     "Force is engaging in criminal activities"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}
@@ -370,9 +381,12 @@ oo::class create ::athena::ruleset_CRIME {
 # Activity Situation: Units belonging to a force group are 
 # enforcing a curfew in a neighborhood.
 
-oo::class create ::athena::ruleset_CURFEW {
+::athena::ruleset define CURFEW {n g} {
     superclass ::athena::ruleset_actsit
-    meta name CURFEW
+
+    metadict rulename {
+        CURFEW-1-1    "Force is enforcing a curfew"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}
@@ -414,9 +428,13 @@ oo::class create ::athena::ruleset_CURFEW {
 # Activity Situation: Units belonging to a group are 
 # doing EDU in a neighborhood.
 
-oo::class create ::athena::ruleset_EDU {
+::athena::ruleset define EDU {n g} {
     superclass ::athena::ruleset_actsit
-    meta name EDU
+
+    metadict rulename {
+        EDU-1-1       "Force is providing schools"
+        EDU-2-1       "ORG is providing schools"
+    }
 
     method ruleset {fdict} {
         my checkMitigation fdict
@@ -452,9 +470,13 @@ oo::class create ::athena::ruleset_EDU {
 # Activity Situation: Units belonging to a group are 
 # doing EMPLOY in a neighborhood.
 
-oo::class create ::athena::ruleset_EMPLOY {
+::athena::ruleset define EMPLOY {n g} {
     superclass ::athena::ruleset_actsit
-    meta name EMPLOY
+
+    metadict rulename {
+        EMPLOY-1-1    "Force is providing employment"
+        EMPLOY-2-1    "ORG is providing employment"
+    }
 
     method ruleset {fdict} {
         my checkMitigation fdict
@@ -490,9 +512,12 @@ oo::class create ::athena::ruleset_EMPLOY {
 # Activity Situation: Units belonging to a force group are 
 # guarding sites in a neighborhood.
 
-oo::class create ::athena::ruleset_GUARD {
+::athena::ruleset define GUARD {n g} {
     superclass ::athena::ruleset_actsit
-    meta name GUARD
+
+    metadict rulename {
+        GUARD-1-1     "Force is guarding"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}
@@ -518,9 +543,13 @@ oo::class create ::athena::ruleset_GUARD {
 # Activity Situation: Units belonging to a group are 
 # doing INDUSTRY in a neighborhood.
 
-oo::class create ::athena::ruleset_INDUSTRY {
+::athena::ruleset define INDUSTRY {n g} {
     superclass ::athena::ruleset_actsit
-    meta name INDUSTRY
+
+    metadict rulename {
+        INDUSTRY-1-1  "Force is aiding industry"
+        INDUSTRY-2-1  "ORG is aiding industry"
+    }
 
     method ruleset {fdict} {
         my checkMitigation fdict
@@ -556,9 +585,13 @@ oo::class create ::athena::ruleset_INDUSTRY {
 # Activity Situation: Units belonging to a group are 
 # doing INFRA in a neighborhood.
 
-oo::class create ::athena::ruleset_INFRA {
+::athena::ruleset define INFRA {n g} {
     superclass ::athena::ruleset_actsit
-    meta name INFRA
+
+    metadict rulename {
+        INFRA-1-1     "Force is improving infrastructure"
+        INFRA-2-1     "ORG is improving infrastructure"
+    }
 
     method ruleset {fdict} {
         my checkMitigation fdict
@@ -594,9 +627,12 @@ oo::class create ::athena::ruleset_INFRA {
 # Activity Situation: Units belonging to a force group are 
 # enforcing the law in a neighborhood.
 
-oo::class create ::athena::ruleset_LAWENF {
+::athena::ruleset define LAWENF {n g} {
     superclass ::athena::ruleset_actsit
-    meta name LAWENF
+
+    metadict rulename {
+        LAWENF-1-1    "Force is enforcing the law"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}
@@ -619,9 +655,13 @@ oo::class create ::athena::ruleset_LAWENF {
 # Activity Situation: Units belonging to a group are 
 # doing MEDICAL in a neighborhood.
 
-oo::class create ::athena::ruleset_MEDICAL {
+::athena::ruleset define MEDICAL {n g} {
     superclass ::athena::ruleset_actsit
-    meta name MEDICAL
+
+    metadict rulename {
+        MEDICAL-1-1   "Force is providing health care"
+        MEDICAL-2-1   "ORG is providing health care"
+    }
 
     method ruleset {fdict} {
         my checkMitigation fdict
@@ -656,9 +696,12 @@ oo::class create ::athena::ruleset_MEDICAL {
 # Activity Situation: Units belonging to a force group are 
 # patrolling a neighborhood.
 
-oo::class create ::athena::ruleset_PATROL {
+::athena::ruleset define PATROL {n g} {
     superclass ::athena::ruleset_actsit
-    meta name PATROL
+
+    metadict rulename {
+        PATROL-1-1    "Force is patrolling"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}
@@ -683,9 +726,12 @@ oo::class create ::athena::ruleset_PATROL {
 # Activity Situation: Units belonging to a force group are 
 # doing PSYOP in a neighborhood.
 
-oo::class create ::athena::ruleset_PSYOP {
+::athena::ruleset define PSYOP {n g} {
     superclass ::athena::ruleset_actsit
-    meta name PSYOP
+
+    metadict rulename {
+        PSYOP-1-1     "Force is doing PSYOP"
+    }
 
     method ruleset {fdict} {
         dict with fdict {}
@@ -725,9 +771,13 @@ oo::class create ::athena::ruleset_PSYOP {
 # Activity Situation: Units belonging to a group are 
 # providing humanitarian relief in a neighborhood.
 
-oo::class create ::athena::ruleset_RELIEF {
+::athena::ruleset define RELIEF {n g} {
     superclass ::athena::ruleset_actsit
-    meta name RELIEF
+
+    metadict rulename {
+        RELIEF-1-1    "Force is providing humanitarian relief"
+        RELIEF-2-1    "ORG is providing humanitarian relief"
+    }
 
     method ruleset {fdict} {
         my checkMitigation fdict

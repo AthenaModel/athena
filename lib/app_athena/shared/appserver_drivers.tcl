@@ -88,7 +88,7 @@ appserver module DRIVERS {
         set dtype [string trim [string toupper $(1)]]
 
         if {$dtype ne ""} {
-            if {$dtype ni [edamruleset names]} {
+            if {$dtype ni [::athena::ruleset names]} {
                 throw NOTFOUND "Unknown driver type: \"$dtype\""
             }
 

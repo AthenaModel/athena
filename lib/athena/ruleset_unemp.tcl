@@ -12,11 +12,10 @@
 #
 #-----------------------------------------------------------------------
 
-oo::class create ::athena::ruleset_UNEMP {
-    superclass ::athena::ruleset
-    
-    meta name     "UNEMP"
-    meta sigparms {n g}
+::athena::ruleset define UNEMP {n g} {
+    metadict rulename {
+        UNEMP-1-1    "Group is suffering from unemployment"
+    }
 
     #-------------------------------------------------------------------
     # Public Typemethods

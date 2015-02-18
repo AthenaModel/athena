@@ -17,12 +17,13 @@
 #
 #-----------------------------------------------------------------------
 
-oo::class create ::athena::ruleset_CONSUMP {
-    superclass ::athena::ruleset
+::athena::ruleset define CONSUMP {g} {
+    metadict rulename {
+        CONSUMP-1-1   "Effect of Consumption on Satisfaction"
+        CONSUMP-2-1   "Consumption no worse than expected"
+        CONSUMP-2-2   "Consumption worse than expected"
+    }
     
-    meta name     "CONSUMP"
-    meta sigparms {g}
-
     # assess
     #
     # Assesses all consumption situations.
