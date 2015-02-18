@@ -1,5 +1,10 @@
 # TODO.md - Athena TODO List
 
+- Fix up 040-driver_ENI.
+  - Used old-style tactics.
+  - Expects to edit tactics while paused.
+  - Need to set up all tactics initially, with times, so that different
+    values are used.
 - Add all component entries to athenadb(n).
   - Or, come up with a plan for which ones are documented and which aren't.
 - Move editable entities to athena(n)

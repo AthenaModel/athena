@@ -66,9 +66,10 @@ namespace eval ::athena_test::tests:: {
         # NEXT, create the entities
         ted create JOE BOB NB1 BLUE SHIA SUNN
 
-        # NEXT, JOE is the controller of neighborhood N1.
+        # NEXT, JOE is the controller of neighborhood N1, and has
+        # sufficient funds.
         ted order NBHOOD:UPDATE n NB1 controller JOE
-
+        ted order ACTOR:UPDATE a JOE cash_on_hand 10000.0
     }
     
     # fundeni a amount
@@ -78,23 +79,30 @@ namespace eval ::athena_test::tests:: {
     #
     # Creates a FUNDENI tactic for the actor to fund SHIA and SUNN.
 
-    proc fundeni {a amount} {
-        set amount [moneyscan $amount]
+    proc fundeni {a lockAmount t1Amount} {
+        set lockAmount [moneyscan $lockAmount]
+        set t1Amount   [moneyscan $t1Amount]
 
-        if {$amount == 0.0} {
-            return
+
+        if {$lockAmount > 0.0} {
+            # Create a block that executes only on lock.
+            set blk [ted addblock $a onlock yes tmode AFTER t1 100]
+            ted addtactic $blk FUNDENI \
+                glist   [gofer construct CIVGROUPS BY_VALUE {SHIA SUNN}] \
+                mode    EXACT               \
+                amount  $lockAmount         \
+                cmode   UNCAPPED
         }
 
-        foreach tid [tactic ids] {
-            ted order TACTIC:DELETE tactic_id $tid
+        if {$t1Amount > 0.0} {
+            # Create a block that doesn't execute on lock.
+            set blk [ted addblock $a onlock no]
+            ted addtactic $blk FUNDENI \
+                glist   [gofer construct CIVGROUPS BY_VALUE {SHIA SUNN}] \
+                mode    EXACT               \
+                amount  $t1Amount           \
+                cmode   UNCAPPED
         }
-
-        ted order TACTIC:FUNDENI:CREATE \
-            owner   $a                  \
-            glist   {SHIA SUNN}         \
-            x1      $amount             \
-            on_lock YES                 \
-            once    NO
     }
 
     # lock
@@ -190,12 +198,11 @@ ENI-1-1 SUNN BOB credit=N, no control
 ENI-1-1 SUNN JOE credit=N, has control 
     }
 
-    test assess-2.1 {Rule 1-2 fires} -constraints tbd -setup {
+    test assess-2.1 {Rule 1-2 fires} -setup {
         setup
     } -body {
-        fundeni JOE 600
+        fundeni JOE 600 500
         lock
-        fundeni JOE 500
         ted step
 
         ted querylist {
@@ -219,12 +226,11 @@ rule       ENI-1-2
 fdict      controller JOE required 0.6 expected 0.71875 actual 0.625 needs 0.0 expectf -0.1875 g SUNN dtype ENI case E-
     }
     
-    test assess-2.2 {Rule 1-2 satisfaction} -constraints tbd -setup {
+    test assess-2.2 {Rule 1-2 satisfaction} -setup {
         setup
     } -body {
-        fundeni JOE 600
+        fundeni JOE 600 500
         lock
-        fundeni JOE 500
         ted step
 
         ted query {
@@ -243,12 +249,11 @@ ENI-1-2 SUNN AUT
 ENI-1-2 SUNN QOL 
     }
 
-    test assess-2.3 {Rule 1-2 vrel} -constraints tbd -setup {
+    test assess-2.3 {Rule 1-2 vrel}  -setup {
         setup
     } -body {
-        fundeni JOE 600
+        fundeni JOE 600 500
         lock
-        fundeni JOE 500
         ted step
 
         ted query {
@@ -267,12 +272,11 @@ ENI-1-2 SUNN BOB credit=N, no control
 ENI-1-2 SUNN JOE credit=M, has control 
     }
 
-    test assess-3.1 {Rule 1-3 fires} -constraints tbd -setup {
+    test assess-3.1 {Rule 1-3 fires}  -setup {
         setup
     } -body {
-        fundeni JOE 600
+        fundeni JOE 600 600
         lock
-        fundeni JOE 600
         ted step
 
         ted querylist {
@@ -296,12 +300,11 @@ rule       ENI-1-3
 fdict      controller JOE required 0.6 expected 0.75 actual 0.75 needs 0.0 expectf 0.0 g SUNN dtype ENI case E
     }
     
-    test assess-3.2 {Rule 1-3 satisfaction} -constraints tbd -setup {
+    test assess-3.2 {Rule 1-3 satisfaction} -setup {
         setup
     } -body {
-        fundeni JOE 600
+        fundeni JOE 600 600
         lock
-        fundeni JOE 600
         ted step
 
         # No satisfaction effects when expectations are met
@@ -314,12 +317,11 @@ fdict      controller JOE required 0.6 expected 0.75 actual 0.75 needs 0.0 expec
         cleanup
     } -result {0}
 
-    test assess-3.3 {Rule 1-3 vrel} -constraints tbd -setup {
+    test assess-3.3 {Rule 1-3 vrel} -setup {
         setup
     } -body {
-        fundeni JOE 600
+        fundeni JOE 600 600
         lock
-        fundeni JOE 600
         ted step
 
         ted query {
@@ -338,12 +340,11 @@ ENI-1-3 SUNN BOB credit=N, no control
 ENI-1-3 SUNN JOE credit=M, has control 
     }
 
-    test assess-4.1 {Rule 1-4 fires} -constraints tbd -setup {
+    test assess-4.1 {Rule 1-4 fires} -setup {
         setup
     } -body {
-        fundeni JOE 600
+        fundeni JOE 600 800
         lock
-        fundeni JOE 800
         ted step
 
         ted querylist {
@@ -367,12 +368,11 @@ rule       ENI-1-4
 fdict      controller JOE required 0.6 expected 0.875 actual 1.0 needs 0.0 expectf 0.25 g SUNN dtype ENI case E+
     }
     
-    test assess-4.2 {Rule 1-4 satisfaction} -constraints tbd -setup {
+    test assess-4.2 {Rule 1-4 satisfaction} -setup {
         setup
     } -body {
-        fundeni JOE 600
+        fundeni JOE 600 800
         lock
-        fundeni JOE 800
         ted step
 
         ted query {
@@ -391,12 +391,11 @@ ENI-1-4 SUNN AUT
 ENI-1-4 SUNN QOL 
     }
 
-    test assess-4.3 {Rule 1-4 vrel} -constraints tbd -setup {
+    test assess-4.3 {Rule 1-4 vrel} -setup {
         setup
     } -body {
-        fundeni JOE 600
+        fundeni JOE 600 800
         lock
-        fundeni JOE 800
         ted step
 
         ted query {
@@ -421,7 +420,7 @@ ENI-1-4 SUNN JOE credit=M, has control
     test sigline-1.1 {sigline output} -setup {
         setup
     } -body {
-        driver::ENI sigline SHIA 
+        ruleset ENI sigline SHIA 
     } -cleanup {
         cleanup
     } -result {Provision of ENI services to SHIA}
@@ -433,7 +432,7 @@ ENI-1-4 SUNN JOE credit=M, has control
     test narrative-1.1 {narrative output} -setup {
         setup
     } -body {
-        driver::ENI narrative {
+        ruleset ENI narrative {
             dtype      ENI
             g          SHIA
             case       E-
@@ -449,7 +448,7 @@ ENI-1-4 SUNN JOE credit=M, has control
     test detail-1.1 {detail, controller} -setup {
         setup
     } -body {
-        driver::ENI detail {
+        ruleset ENI detail {
             dtype      ENI
             g          SHIA
             actual     0.8
@@ -488,7 +487,7 @@ actor <a href="my://app/actor/JOE">JOE</a>.<p>
     test detail-1.2 {detail, no controller} -setup {
         setup
     } -body {
-        driver::ENI detail {
+        ruleset ENI detail {
             dtype      ENI
             g          SHIA
             actual     0.7

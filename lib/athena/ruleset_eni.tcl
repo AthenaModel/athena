@@ -1,19 +1,32 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#    driver_eni.tcl
+#    ruleset_eni.tcl
 #
 # AUTHOR:
 #    Will Duquette
 #
 # DESCRIPTION:
-#    Athena Driver Assessment Model (DAM): ENI
+#    athena(n): ENI rule set
+#
+# FIRING DICTIONARY:
+#    dtype       - The driver type (ENI)
+#    g           - The civilian group receiving the services
+#    actual      - The actual level of service (ALOS)
+#    required    - The required level of service (RLOS)
+#    expected    - The expected level of service (ELOS)
+#    expectf     - The expectations factor
+#    needs       - The needs factor
+#    controller  - The actor controlling g's neighborhood
+#    case        - The case: E+, E, E-, R-
 #
 #-----------------------------------------------------------------------
 
-#-----------------------------------------------------------------------
-# ENI
+oo::class create ::athena::ruleset_ENI {
+    superclass ::athena::ruleset
+    
+    meta name     "ENI"
+    meta sigparms {g}
 
-driver type define ENI {g} {
     #-------------------------------------------------------------------
     # Look-up tables
 
@@ -38,7 +51,7 @@ driver type define ENI {g} {
     #   S   - Actor has contributed Some of the total
     #   M   - Actor has contributed Most of the total
 
-    typevariable vmags -array {
+    metadict vmags {
         C,E+,M  XL+
         C,E+,S  XL+
         C,E+,N  XL+
@@ -73,35 +86,23 @@ driver type define ENI {g} {
     }
 
 
-   
     #-------------------------------------------------------------------
-    # Public Typemethods
+    # Public Methods
 
     # assess
     #
-    # Monitors the level of service provided to civilian groups.  The
-    # rule firing dictionary contains the following data:
+    # Monitors the level of service provided to civilian groups. 
     #
-    #   dtype       - The driver type (ENI)
-    #   g           - The civilian group receiving the services
-    #   actual      - The actual level of service (ALOS)
-    #   required    - The required level of service (RLOS)
-    #   expected    - The expected level of service (ELOS)
-    #   expectf     - The expectations factor
-    #   needs       - The needs factor
-    #   controller  - The actor controlling g's neighborhood
-    #   case        - The case: E+, E, E-, R-
     
-    typemethod assess {} {
-        set dtype ENI
-
-        if {![dam isactive $dtype]} {
-            log warning $dtype "driver type has been deactivated"
+    method assess {} {
+        if {![my isactive]} {
+            log warning [my name] "driver type has been deactivated"
             return
         }
 
         # NEXT, call the ENI rule set.
-        rdb eval {
+        set dtype [my name]
+        [my adb] eval {
             SELECT g, actual, required, expected, expectf, needs, controller
             FROM local_civgroups 
             JOIN demog_g USING (g)
@@ -113,11 +114,11 @@ driver type define ENI {g} {
             unset -nocomplain gdata(*)
 
             set fdict [array get gdata]
-            dict set fdict dtype $dtype
+            dict set fdict dtype [my name]
 
             bgcatch {
-                log detail $dtype $fdict
-                $type ruleset $fdict
+                [my adb] log detail [my name] $fdict
+                my ruleset $fdict
             }
         }
     }
@@ -132,18 +133,18 @@ driver type define ENI {g} {
     # Returns a one-line description of the driver given its signature
     # values.
 
-    typemethod sigline {signature} {
+    method sigline {signature} {
         set g $signature
         return "Provision of ENI services to $g"
     }
 
     # narrative fdict
     #
-    # fdict - Firing dictionary; see rulesets, below.
+    # fdict - Firing dictionary/
     #
     # Produces a one-line narrative text string for a given rule firing
 
-    typemethod narrative {fdict} {
+    method narrative {fdict} {
         dict with fdict {}
 
         return "{group:$g} receives ENI services (case $case)"
@@ -156,7 +157,7 @@ driver type define ENI {g} {
     #
     # Produces a narrative HTML paragraph including all fdict information.
 
-    typemethod detail {fdict ht} {
+    method detail {fdict ht} {
         dict with fdict {}
 
         $ht putln "Civilian group\n"
@@ -204,59 +205,59 @@ driver type define ENI {g} {
     # Service Situation: effect of provision/non-provision of service
     # on a civilian group.
 
-    typemethod ruleset {fdict} {
+    method ruleset {fdict} {
         dict with fdict {}
         
         # FIRST, get some data
-        set case [GetCase $fdict]
-        set cdict [GetCreditDict $g]
+        set case [my GetCase $fdict]
+        set cdict [my GetCreditDict $g]
 
         dict set fdict case $case
         
         # ENI-1: Satisfaction Effects
-        dam rule ENI-1-1 $fdict {
+        my rule ENI-1-1 $fdict {
             $case eq "R-"
         } {
             # While ENI is less than required for CIV group g
             # Then for group g
-            dam sat T $g \
-                AUT [expr {[mag* $expectf XXS+] + [mag* $needs XXS-]}] \
-                QOL [expr {[mag* $expectf XXS+] + [mag* $needs XXS-]}]
+            my sat T $g \
+                AUT [expr {[my mag* $expectf XXS+] + [my mag* $needs XXS-]}] \
+                QOL [expr {[my mag* $expectf XXS+] + [my mag* $needs XXS-]}]
 
             # And for g with each actor a
             dict for {a credit} $cdict {
                 if {$a eq $controller} {
-                    dam vrel T $g $a $vmags(C,R-,$credit) \
+                    my vrel T $g $a [my vmags C,R-,$credit] \
                         "credit=$credit, has control"
                 } else {
-                    dam vrel T $g $a $vmags(NC,R-,$credit) \
+                    my vrel T $g $a [my vmags NC,R-,$credit] \
                         "credit=$credit, no control"
                 }
             }
         }
 
-        dam rule ENI-1-2 $fdict {
+        my rule ENI-1-2 $fdict {
             $case eq "E-"
         } {
             # While ENI is less than expected for CIV group g
             # Then for group g
-            dam sat T $g \
-                AUT [mag* $expectf XXS+] \
-                QOL [mag* $expectf XXS+]
+            my sat T $g \
+                AUT [my mag* $expectf XXS+] \
+                QOL [my mag* $expectf XXS+]
 
             # And for g with each actor a
             dict for {a credit} $cdict {
                 if {$a eq $controller} {
-                    dam vrel T $g $a $vmags(C,E-,$credit) \
+                    my vrel T $g $a [my vmags C,E-,$credit] \
                         "credit=$credit, has control"
                 } else {
-                    dam vrel T $g $a $vmags(NC,E-,$credit) \
+                    my vrel T $g $a [my vmags NC,E-,$credit] \
                         "credit=$credit, no control"
                 }
             }
         }
 
-        dam rule ENI-1-3 $fdict {
+        my rule ENI-1-3 $fdict {
             $case eq "E"
         } {
             # While ENI is as expected for CIV group g
@@ -267,31 +268,31 @@ driver type define ENI {g} {
             # And for g with each actor a
             dict for {a credit} $cdict {
                 if {$a eq $controller} {
-                    dam vrel T $g $a $vmags(C,E,$credit) \
+                    my vrel T $g $a [my vmags C,E,$credit] \
                         "credit=$credit, has control"
                 } else {
-                    dam vrel T $g $a $vmags(NC,E,$credit) \
+                    my vrel T $g $a [my vmags NC,E,$credit] \
                         "credit=$credit, no control"
                 }
             }
         }
 
-        dam rule ENI-1-4 $fdict {
+        my rule ENI-1-4 $fdict {
             $case eq "E+"
         } {
             # While ENI is better than expected for CIV group g
             # Then for group g
-            dam sat T $g \
-                AUT [mag* $expectf XXS+] \
-                QOL [mag* $expectf XXS+]
+            my sat T $g \
+                AUT [my mag* $expectf XXS+] \
+                QOL [my mag* $expectf XXS+]
 
             # And for g with each actor a
             dict for {a credit} $cdict {
                 if {$a eq $controller} {
-                    dam vrel T $g $a $vmags(C,E+,$credit) \
+                    my vrel T $g $a [my vmags C,E+,$credit] \
                         "credit=$credit, has control"
                 } else {
-                    dam vrel T $g $a $vmags(NC,E+,$credit) \
+                    my vrel T $g $a [my vmags NC,E+,$credit] \
                         "credit=$credit, no control"
                 }
             }
@@ -308,9 +309,9 @@ driver type define ENI {g} {
     # Returns the case symbol, E+, E, E-, R-, for the provision
     # of service to the group.
     
-    proc GetCase {fdict} {
+    method GetCase {fdict} {
         # FIRST, get the delta parameter
-        set delta [parmdb get service.ENI.delta]
+        set delta [my parm service.ENI.delta]
 
         # NEXT, compute the case
         dict with fdict {
@@ -332,10 +333,10 @@ driver type define ENI {g} {
     #
     # Gets the credit symbol by actor.
     
-    proc GetCreditDict {g} {
+    method GetCreditDict {g} {
         set cdict [dict create]
 
-        rdb eval {
+        [my adb] eval {
             SELECT a, credit
             FROM service_ga WHERE g=$g
         } {
@@ -344,7 +345,6 @@ driver type define ENI {g} {
 
         return $cdict
     }
-
 }
 
 

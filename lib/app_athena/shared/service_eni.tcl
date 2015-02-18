@@ -36,7 +36,7 @@ snit::type service_eni {
     typemethod assess {} {
         profile 1 $type ComputeCredit
 
-        profile 1 driver::ENI assess
+        profile 1 ruleset ENI assess
     }
 
     # ComputeCredit

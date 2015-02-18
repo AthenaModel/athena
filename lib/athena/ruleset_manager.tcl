@@ -39,6 +39,7 @@ snit::type ::athena::ruleset_manager {
         DROUGHT
         EDU
         EMPLOY
+        ENI
         EPIDEMIC
         EXPLOSION
         FOODSHRT
