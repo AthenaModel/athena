@@ -324,7 +324,8 @@ appserver module firing {
 
         ht para
 
-        driver call detail $data(fdict) [namespace origin ht]
+        set ruleset [dict get $data(fdict) dtype]
+        ruleset $ruleset detail $data(fdict) [namespace origin ht]
 
         ht para
 
