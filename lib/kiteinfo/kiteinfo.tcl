@@ -27,7 +27,6 @@ namespace eval ::kiteinfo:: {
         local-Img 0
         local-kitedocs 1
         reqver-tdom 0.8
-        force-athena_batch 0
         exclude-helptool {}
         reqver-comm 4.6
         local-Tktable 0
@@ -35,24 +34,21 @@ namespace eval ::kiteinfo:: {
         exclude-cellide {}
         xfiles {docs/aag.docx docs/aug.docx docs/rules.pptx docs/mag.docx}
         local-Tkhtml 0
-        apps {athena athena_batch cellide helptool}
+        apps {athena cellide helptool}
         local-fileutil 0
         dists {install-%platform src docs}
-        reqver-kitedocs 0.4.5
-        icon-athena_batch {}
+        reqver-kitedocs 0.4.6
         local-textutil::adjust 0
         force-helptool 0
         local-tablelist 0
         local-treectrl 0
         icon-athena {}
-        reqver-kiteutils 0.4.5
+        reqver-kiteutils 0.4.6
         reqver-fileutil 1.14
         url-docs/mag.docx https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20140826.docx
         local-marsutil 1
-        exclude-athena_batch {}
-        reqver-marsgui 3.0.11
+        reqver-marsgui 3.0.12
         reqver-uri 1.2
-        apptype-athena_batch exe
         distpat-install-%platform {
     LICENSE
     README.md
@@ -60,14 +56,13 @@ namespace eval ::kiteinfo:: {
     docs/*.html
     docs/*.png
     docs/man1/athena.html
-    docs/man1/athena_batch.html
     docs/man1/cellide.html
     docs/athena.helpdb
     docs/*.docx
     docs/*.pptx
 }
-        reqver-textutil::adjust 0.7
         gui-cellide 1
+        reqver-textutil::adjust 0.7
         url-docs/rules.pptx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/rules-20141010.pptx
         reqver-tls 1.6
         icon-helptool {}
@@ -78,16 +73,14 @@ namespace eval ::kiteinfo:: {
         local-uri 0
         reqver-BWidget 1.9
         apptype-cellide exe
-        reqver-marsutil 3.0.11
+        reqver-marsutil 3.0.12
         local-tls 0
         provides athena
         description {Athena Regional Stability Simulation}
-        gui-athena_batch 0
         local-BWidget 0
         apptype-helptool kit
         reqver-sqlite3 3.8.5
         local-ctext 0
-        reqver-textutil::expander 1.3
         shell {
     catch {rename echo ""}
     package require projectlib
@@ -95,13 +88,14 @@ namespace eval ::kiteinfo:: {
 }
         icon-cellide {}
         reqver-snit 2.3
+        reqver-textutil::expander 1.3
         name athena
         gui-athena 1
         url-docs/aag.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aag-20141010.docx
         force-athena 0
         local-sqlite3 0
-        reqver-tablelist 5.11
         force-cellide 0
+        reqver-tablelist 5.11
         distpat-docs {
     docs/*.html
     docs/*.png
@@ -113,7 +107,7 @@ namespace eval ::kiteinfo:: {
         reqver-struct::set 2.2
         exclude-athena {}
         gui-helptool 1
-        reqver-simlib 3.0.11
+        reqver-simlib 3.0.12
         binary-athena 0
         local-struct::set 0
         distpat-src {
@@ -143,10 +137,10 @@ namespace eval ::kiteinfo:: {
         srcs help
         local-tdom 0
         local-comm 0
-        reqver-Marsbin 3.0.11
+        reqver-Marsbin 3.0.12
         local-kiteutils 1
-        local-textutil::expander 0
         version 6.3.0a5
+        local-textutil::expander 0
         reqver-Img 1.4.1
     }
 

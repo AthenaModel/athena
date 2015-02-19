@@ -2,6 +2,29 @@
 
 <h2>Build Notes</h2>
 
+<h3>Build 6.3.0a5, 19 February 2015</h3>
+
+This build contains a whole host of architectural changes to many modules
+in Athena (Issue #64 below).  This continues our effort to have many instances
+of Athena running as a library.  These changes require a significant amount of 
+regression testing be done to ensure that the architectural changes are 
+transparent to the user. There are also a number of bug fixes.<p>
+
+<ul>
+<li> Issue #87: New map(n) order to assign geo-locations to arbitrary image
+<li> Issue #79: Default map in Athena's map module should use geo-references
+<li> Issue #78: bsys creates instance of mam(n).
+<li> Issue #75: image "" doesn't exist bgerror
+<li> Issue #71: New parmdb(5) parameters for AAM.
+<li> Issue #70: Remove Intel Ingestion Wizard
+<li> Issue #69: Update Absit order dialog does not accept current absit type
+<li> Issue #68: bgerror: invalid command name "::map::maprect1"
+<li> Issue #67: export script.tcl command returns error
+<li> Issue #66: Deleting a neighborhood causes a bgerror
+<li> Issue #65: User is unable to draw neighborhood maps 
+<li> Issue #64: Scenario object 
+</ul><p>
+
 <h3>Build 6.3.0a4, 28 January 2015</h3>
 
 This build contains a very significant number of changes related to the

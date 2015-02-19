@@ -432,10 +432,9 @@ term driver "driver" {
 
     Examples of drivers include casualties to 
     <term civgroup>s, the activities of <term frcgroup> in <term nbhood>s, 
-    <term absit>s, <term demsit>s, <term iom>s, 
-    and <term mad>s.<p>
+    <term absit>s, <term demsit>s and <term iom>s.<p> 
 
-    <b>2.</b> A <term mad>.<p>
+    <b>2.</b> A <term curse>.<p>
 
     <b>3.</b> A <term uram> driver ID.
 }
@@ -608,7 +607,7 @@ term hrel "horizontal relationship" {
     relationship with every other group equal to its affinity with
     that group.  Horizontal relationships can vary over time in response
     to <term attitude> <term driver>s, and specifically in response
-    to <term iom>s and <term mad>s.<p>
+    to <term iom>s and <term inject>s.<p>
 
     The initial relationship can be overridden on the 
     <tab Social/Hrel>, using the 
@@ -706,6 +705,13 @@ term loglevel "log level" {
     Note that <b>debug</b> messages are only written to the log when
     enabled by the developer.  By default, the <tab Log> shows
     <b>normal</b> messages of severity <b>normal</b> and above.
+}
+
+#-----------------------------------------------------------------------
+
+term mapref "map reference string" {
+    A map reference string is a valid Military Grid Reference string (MGRS) 
+    that represents a point on the scenario's map.  
 }
 
 #-----------------------------------------------------------------------

@@ -30,9 +30,9 @@ package require snit 2.3
 package require sqlite3 3.8.5
 package require ctext 3.3
 
-package require marsutil 3.0.11
-package require marsgui 3.0.11
-package require simlib 3.0.11
+package require marsutil 3.0.12
+package require marsgui 3.0.12
+package require simlib 3.0.12
 
 package require projectlib
 package require projectgui
