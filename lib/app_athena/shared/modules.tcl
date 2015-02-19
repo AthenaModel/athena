@@ -31,7 +31,6 @@ source [file join $::app_athena_shared::library field_types.tcl        ]
 
 # NEXT, define the remaining modules in alphabetical order.
 
-source [file join $::app_athena_shared::library aam.tcl                ]
 source [file join $::app_athena_shared::library appserver.tcl          ]
 source [file join $::app_athena_shared::library appserver_actor.tcl    ]
 source [file join $::app_athena_shared::library appserver_agent.tcl    ]

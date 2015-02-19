@@ -6,9 +6,9 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Athena Attrition Model
+#    athena(n): Athena Attrition Model manager
 #
-#    This module is responsible for computing and applying attritions
+#    This module is responsible for computing and applying attrition
 #    to units and neighborhood groups.
 #
 #    As attrition tactics execute, a list of attrition dictionaries
@@ -21,26 +21,45 @@
 #    The satisfaction and cooperation dictionaries are entirely 
 #    transient. They only exist for the purpose of storing the data 
 #    needed by the CIVCAS rule set.  The dictionaries are created, 
-#    used and deleted within the assess typemethod.
+#    used and deleted within the assess method.
+#
+# Global references: demog, unit, group, personnel, ptype
 #
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
 # Module Singleton
 
-snit::type aam {
-    # Make it a singleton
-    pragma -hasinstances no
+snit::type ::athena::aam {
+    #-------------------------------------------------------------------
+    # Components
 
-    typevariable alist {} ;# list of attrition dictionaries
+    component adb  ;# the athenadb(n) instance
 
-    typevariable sdict    ;# dict used to assess SAT effects
-    typevariable cdict    ;# dict used to assess COOP effects
+    #-------------------------------------------------------------------
+    # Constructor
+
+    # constructor adb_
+    #
+    # adb_    - The athenadb(n) that owns this instance
+    #
+    # Initializes instances of this type
+
+    constructor {adb_} {
+        set adb $adb_
+    }
+
+    #------------------------------------------------------------------
+    # Variables
+
+    variable alist {} ;# list of attrition dictionaries
+    variable sdict    ;# dict used to assess SAT effects
+    variable cdict    ;# dict used to assess COOP effects
 
     #-------------------------------------------------------------------
     # reset
 
-    typemethod reset {} {
+    method reset {} {
         set alist ""
         set sdict ""
         set cdict ""
@@ -54,7 +73,7 @@ snit::type aam {
     # This routine is to be called every tick to do the 
     # attrition assessment.
 
-    typemethod assess {} {
+    method assess {} {
         log normal aam "assess"
 
         # FIRST, create SAT and COOP dicts to hold transient data
@@ -64,11 +83,11 @@ snit::type aam {
         # NEXT, Apply all saved magic attrition. This updates 
         # units and deployments, and accumulates all civilian 
         # attrition as input to the CIVCAS rule set.
-        $type ApplyAttrition
+        $self ApplyAttrition
 
         # NEXT, assess the attitude implications of all attrition for
         # this tick.
-        ruleset CIVCAS assess $sdict $cdict
+        $adb ruleset CIVCAS assess $sdict $cdict
 
         # NEXT, clear the saved data for this tick; we're done.
         set alist ""
@@ -96,7 +115,7 @@ snit::type aam {
     #
     # g1 and g2 are used only for attrition to a civilian group
 
-    typemethod attrit {parmdict} {
+    method attrit {parmdict} {
         lappend alist $parmdict
     }
 
@@ -108,17 +127,17 @@ snit::type aam {
     # Applies the attrition from magic attrition and then that
     # accumulated by the normal attrition algorithms.
 
-    typemethod ApplyAttrition {} {
+    method ApplyAttrition {} {
         # FIRST, apply the magic attrition
         foreach adict $alist {
             dict with adict {}
             switch -exact -- $mode {
                 NBHOOD {
-                    $type AttritNbhood $n $casualties $g1 $g2
+                    $self AttritNbhood $n $casualties $g1 $g2
                 }
 
                 GROUP {
-                    $type AttritGroup $n $f $casualties $g1 $g2
+                    $self AttritGroup $n $f $casualties $g1 $g2
                 }
 
                 default {error "Unrecognized attrition mode: \"$mode\""}
@@ -146,11 +165,11 @@ snit::type aam {
     #
     # g1 and g2 are used only for attrition to a civilian group.
 
-    typemethod AttritGroup {n f casualties g1 g2} {
+    method AttritGroup {n f casualties g1 g2} {
         log normal aam "AttritGroup $n $f $casualties $g1 $g2"
 
         # FIRST, determine the set of units to attrit.
-        rdb eval {
+        $adb eval {
             UPDATE units
             SET attrit_flag = 0;
 
@@ -162,11 +181,11 @@ snit::type aam {
         }
 
         # NEXT, attrit the units
-        $type AttritUnits $casualties $g1 $g2
+        $self AttritUnits $casualties $g1 $g2
 
         # NEXT, attrit FRC/ORG deployments.
-        if {[group gtype $f] in {FRC ORG}} {
-            $type AttritDeployments $n $f $casualties
+        if {[$adb group gtype $f] in {FRC ORG}} {
+            $self AttritDeployments $n $f $casualties
         }
     }
 
@@ -183,12 +202,12 @@ snit::type aam {
     # by the specified number of casualties (all of which are kills).
     # Units are attrited in proportion to their size.
 
-    typemethod AttritNbhood {n casualties g1 g2} {
+    method AttritNbhood {n casualties g1 g2} {
         log normal aam "AttritNbhood $n $casualties $g1 $g2"
 
         # FIRST, determine the set of units to attrit (all
         # the CIV units in the neighborhood).
-        rdb eval {
+        $adb eval {
             UPDATE units
             SET attrit_flag = 0;
 
@@ -200,7 +219,7 @@ snit::type aam {
         }
 
         # NEXT, attrit the units
-        $type AttritUnits $casualties $g1 $g2
+        $self AttritUnits $casualties $g1 $g2
     }
 
     # AttritUnits casualties g1 g2
@@ -214,9 +233,9 @@ snit::type aam {
     # all casualites are inflicted or the units have no personnel.
     # The actual work is performed by AttritUnit.
 
-    typemethod AttritUnits {casualties g1 g2} {
+    method AttritUnits {casualties g1 g2} {
         # FIRST, determine the number of personnel in the attrited units
-        set total [rdb eval {
+        set total [$adb eval {
             SELECT total(personnel) FROM units
             WHERE attrit_flag
         }]
@@ -236,7 +255,7 @@ snit::type aam {
         # NEXT, apply attrition to the units, in order of size.
         set remaining $actual
 
-        rdb eval {
+        $adb eval {
             SELECT u                                   AS u,
                    g                                   AS g,
                    gtype                               AS gtype,
@@ -260,7 +279,7 @@ snit::type aam {
             set row(g2)         $g2
             set row(casualties) $take
 
-            $type AttritUnit [array get row]
+            $self AttritUnit [array get row]
 
             # NEXT, we might have finished early
             if {$remaining == 0} {
@@ -278,7 +297,7 @@ snit::type aam {
     # the unit's staffing pool.  This is the fundamental attrition
     # routine; the others all flow down to this.
  
-    typemethod AttritUnit {parmdict} {
+    method AttritUnit {parmdict} {
         dict with parmdict {}
 
         # FIRST, log the attrition
@@ -288,20 +307,20 @@ snit::type aam {
           "Unit $u takes $casualties casualties, leaving $personnel personnel"
             
         # NEXT, update the unit.
-        unit personnel $u $personnel
+        $adb unit personnel $u $personnel
 
         # NEXT, if this is a CIV unit, attrit the unit's
         # group.
         if {$gtype eq "CIV"} {
             # FIRST, attrit the group 
-            demog attrit $g $casualties
+            $adb demog attrit $g $casualties
 
             # NEXT, save the attrition for attitude assessment
-            $type SaveCivAttrition $parmdict
+            $self SaveCivAttrition $parmdict
         } else {
             # FIRST, It's a force or org unit.  Attrit its pool in
             # its neighborhood.
-            personnel attrit $n $g $casualties
+            $adb personnel attrit $n $g $casualties
         }
 
         return
@@ -323,9 +342,9 @@ snit::type aam {
     # This routine removes casualties from this table, so that the 
     # attrited troop levels can inform the next round of deployments.
 
-    typemethod AttritDeployments {n g casualties} {
+    method AttritDeployments {n g casualties} {
         # FIRST, determine the number of personnel in the attrited units
-        set total [rdb eval {
+        set total [$adb eval {
             SELECT total(personnel) FROM deploy_tng
             WHERE n=$n AND g=$g
         }]
@@ -340,7 +359,7 @@ snit::type aam {
         # NEXT, apply attrition to the tactics, in order of size.
         set remaining $actual
 
-        foreach {tactic_id personnel share} [rdb eval {
+        foreach {tactic_id personnel share} [$adb eval {
             SELECT tactic_id,
                    personnel,
                    $actual*(CAST (personnel AS REAL)/$total) AS share
@@ -356,7 +375,7 @@ snit::type aam {
             let take {entier(min($personnel, $kills))}
 
             # NEXT, attrit the tactic's deployment.
-            rdb eval {
+            $adb eval {
                 UPDATE deploy_tng
                 SET personnel = personnel - $take
                 WHERE tactic_id = $tactic_id AND n = $n AND g = $g
@@ -381,7 +400,7 @@ snit::type aam {
     #
     # Accumulates the attrition for later attitude assessment.
 
-    typemethod SaveCivAttrition {parmdict} {
+    method SaveCivAttrition {parmdict} {
         dict with parmdict {}
 
         # FIRST, accumulate by CIV group for SAT effects
@@ -426,7 +445,7 @@ snit::type aam {
     #
     # TBD: Should go in tactic_attrit.tcl
 
-    typemethod AllButG1 {g1} {
+    method AllButG1 {g1} {
         set groups [ptype frcg+none names]
         ldelete groups $g1
 

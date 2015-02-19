@@ -193,7 +193,7 @@
         set p(g1)         [expr {$g1   ne "NONE"   ? $g1 : ""}]
         set p(g2)         [expr {$g2   ne "NONE"   ? $g2 : ""}]
 
-        aam attrit [array get p]
+        [my adb] aam attrit [array get p]
     }
 }
 

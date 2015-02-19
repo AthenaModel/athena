@@ -125,6 +125,7 @@ source [file join $::athena::library personnel.tcl        ]
 source [file join $::athena::library stance.tcl           ]
 
 # Models
+source [file join $::athena::library aam.tcl              ]
 source [file join $::athena::library demog.tcl            ]
 source [file join $::athena::library service.tcl          ]
 

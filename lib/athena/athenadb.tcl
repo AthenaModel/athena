@@ -198,6 +198,7 @@ snit::type ::athena::athenadb {
     component stance    -public stance    ;# stance API
 
     # Models
+    component aam       -public aam       ;# Athena attrition model 
     component demog     -public demog     ;# demographics manager
     component service   -public service   ;# services manager
 
@@ -272,6 +273,7 @@ snit::type ::athena::athenadb {
         # the athenadb(n) handle.
 
         $self MakeComponents            \
+            aam                         \
             abevent                     \
             absit                       \
             activity                    \
