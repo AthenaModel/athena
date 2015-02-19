@@ -80,8 +80,8 @@ namespace eval ::athena_test::tests:: {
         # FIRST, other rule sets shouldn't muddy the waters.
         parm set dam.ENI.active no
         parm set dam.CONSUMP.active no
+        parm set dam.UNEMP.active no
         rdb eval {DELETE FROM drivers}
-        rdb eval {DELETE FROM mads}
         
         # NEXT, create the entities
         ted create JOE BOB DAVE NB1 NB2 TAL SHIA SUNN KURD
@@ -122,7 +122,7 @@ namespace eval ::athena_test::tests:: {
             WHERE g = 'SHIA'
         }
     
-        driver::CONSUMP assess
+        ruleset CONSUMP assess
     }
     
     # Clean up after a test
@@ -288,7 +288,7 @@ CONSUMP-2-2 SHIA JOE
     test sigline-1.1 {sigline output} -setup {
         setup
     } -body {
-        driver::CONSUMP sigline SHIA 
+        ruleset CONSUMP sigline SHIA 
     } -cleanup {
         cleanup
     } -result {Group SHIA's consumption of goods}
@@ -300,7 +300,7 @@ CONSUMP-2-2 SHIA JOE
     test narrative-1.1 {narrative output} -setup {
         setup
     } -body {
-        driver::CONSUMP narrative {
+        ruleset CONSUMP narrative {
             dtype      CONSUMP
             g          SHIA
             aloc       10.5
@@ -322,7 +322,7 @@ CONSUMP-2-2 SHIA JOE
     test detail-1.1 {detail, nbhood has controller} -setup {
         setup
     } -body {
-        driver::CONSUMP detail {
+        ruleset CONSUMP detail {
             dtype      CONSUMP
             g          SHIA
             aloc       10.5
@@ -358,7 +358,7 @@ These conditions lead to the following rule set inputs:<p>
     test detail-1.2 {detail, nbhood has no controller} -setup {
         setup
     } -body {
-        driver::CONSUMP detail {
+        ruleset CONSUMP detail {
             dtype      CONSUMP
             g          SHIA
             aloc       10.5

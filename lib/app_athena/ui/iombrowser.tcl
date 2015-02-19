@@ -79,15 +79,15 @@ snit::widget iombrowser {
         # Reload the content on various notifier events.
         notifier bind ::sim     <DbSyncB>     $self [mymethod ReloadOnEvent]
         notifier bind ::sim     <Tick>        $self [mymethod ReloadOnEvent]
-        notifier bind ::iom     <Check>       $self [mymethod ReloadOnEvent]
-        notifier bind ::rdb     <hooks>       $self [mymethod ReloadOnEvent]
-        notifier bind ::rdb     <hook_topics> $self [mymethod ReloadOnEvent]
+        notifier bind ::adb.iom <Check>       $self [mymethod ReloadOnEvent]
+        notifier bind ::adb     <hooks>       $self [mymethod ReloadOnEvent]
+        notifier bind ::adb     <hook_topics> $self [mymethod ReloadOnEvent]
 
         # Reload individual entities when they
         # are updated or deleted.
 
-        notifier bind ::rdb <ioms>        $self [mymethod MonIOMs]
-        notifier bind ::rdb <payloads>    $self [mymethod MonPayloads]
+        notifier bind ::adb <ioms>        $self [mymethod MonIOMs]
+        notifier bind ::adb <payloads>    $self [mymethod MonPayloads]
 
         # NEXT, schedule the first reload
         $self reload
@@ -584,7 +584,7 @@ snit::widget iombrowser {
             }
 
             # Get title, and remove the "Create payload: " prefix
-            set title [myorders title $order]
+            set title [::athena::orders title $order]
             set ndx [string first ":" $title]
             set title [string range $title $ndx+2 end]
             dict set odict $title $order

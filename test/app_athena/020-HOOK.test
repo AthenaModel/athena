@@ -88,26 +88,26 @@ longname  Foo is good
 
     test CREATE-2.2 {Effects} -setup {
     } -body {
-        ted notifier bind ::rdb <hooks>
+        ted notifier bind ::adb <hooks>
         ted order HOOK:CREATE $h1
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <hooks> update FOO}
+        {::adb <hooks> update FOO}
     }
 
 
     test CREATE-3.1 {undo effects} -setup {
         ted order HOOK:CREATE $h1
     } -body {
-        ted notifier bind ::rdb <hooks>
+        ted notifier bind ::adb <hooks>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <hooks> delete FOO}
+        {::adb <hooks> delete FOO}
     }
 
 
@@ -172,13 +172,13 @@ position  0.9
         mktopic
         ted order HOOK:CREATE $h1
     } -body {
-        ted notifier bind ::rdb <hook_topics>
+        ted notifier bind ::adb <hook_topics>
         ted order HOOK:TOPIC:CREATE $t1
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <hook_topics> update {FOO 1}}
+        {::adb <hook_topics> update {FOO 1}}
     }
 
 
@@ -187,13 +187,13 @@ position  0.9
         ted order HOOK:CREATE $h1
         ted order HOOK:TOPIC:CREATE $t1
     } -body {
-        ted notifier bind ::rdb <hook_topics>
+        ted notifier bind ::adb <hook_topics>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <hook_topics> delete {FOO 1}}
+        {::adb <hook_topics> delete {FOO 1}}
     }
 
     #-------------------------------------------------------------------
@@ -216,13 +216,13 @@ position  0.9
     test DELETE-2.1 {Effects} -setup {
         ted order HOOK:CREATE $h1
     } -body {
-        ted notifier bind ::rdb <hooks>
+        ted notifier bind ::adb <hooks>
         ted order HOOK:DELETE hook_id FOO
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <hooks> delete FOO}
+        {::adb <hooks> delete FOO}
     }
 
 
@@ -230,13 +230,13 @@ position  0.9
         ted order HOOK:CREATE $h1
         ted order HOOK:DELETE hook_id FOO
     } -body {
-        ted notifier bind ::rdb <hooks>
+        ted notifier bind ::adb <hooks>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <hooks> update FOO}
+        {::adb <hooks> update FOO}
     }
 
     #-------------------------------------------------------------------
@@ -269,13 +269,13 @@ position  0.9
         ted order HOOK:CREATE $h1
         ted order HOOK:TOPIC:CREATE $t1
     } -body {
-        ted notifier bind ::rdb <hook_topics>
+        ted notifier bind ::adb <hook_topics>
         ted order HOOK:TOPIC:DELETE id {FOO 1}
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <hook_topics> delete {FOO 1}}
+        {::adb <hook_topics> delete {FOO 1}}
     }
 
     test TOPIC:DELETE-3.1 {Undo effects} -setup {
@@ -284,13 +284,13 @@ position  0.9
         ted order HOOK:TOPIC:CREATE $t1
         ted order HOOK:TOPIC:DELETE id {FOO 1}
     } -body {
-        ted notifier bind ::rdb <hook_topics>
+        ted notifier bind ::adb <hook_topics>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <hook_topics> update {FOO 1}}
+        {::adb <hook_topics> update {FOO 1}}
     }
 
 
@@ -327,13 +327,13 @@ longname  Foo is still good
     test UPDATE-2.2 {table monitor event} -setup {
         ted order HOOK:CREATE $h1
     } -body {
-        ted notifier bind ::rdb <hooks>
+        ted notifier bind ::adb <hooks>
         ted order HOOK:UPDATE hook_id FOO longname "Foo is still good"
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <hooks> update FOO}
+        {::adb <hooks> update FOO}
     }
 
 
@@ -344,13 +344,13 @@ longname  Foo is still good
             longname  "Foo is still good"
         }
     } -body {
-        ted notifier bind ::rdb <hooks>
+        ted notifier bind ::adb <hooks>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <hooks> update FOO}
+        {::adb <hooks> update FOO}
     }
 
     #----------------------------------------------------------------
@@ -416,13 +416,13 @@ position  0.0
         ted order HOOK:CREATE $h1
         ted order HOOK:TOPIC:CREATE $t1
     } -body {
-        ted notifier bind ::rdb <hook_topics>
+        ted notifier bind ::adb <hook_topics>
         ted order HOOK:TOPIC:UPDATE {id {FOO 1} position 0.3}
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <hook_topics> update {FOO 1}}
+        {::adb <hook_topics> update {FOO 1}}
     }
 
     test TOPIC:UPDATE-3.1 {undo undoes the change} -setup {
@@ -431,13 +431,13 @@ position  0.0
         ted order HOOK:TOPIC:CREATE $t1
         ted order HOOK:TOPIC:UPDATE {id {FOO 1} position 0.3}
     } -body {
-        ted notifier bind ::rdb <hook_topics>
+        ted notifier bind ::adb <hook_topics>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <hook_topics> update {FOO 1}}
+        {::adb <hook_topics> update {FOO 1}}
     }
 
     #-------------------------------------------------------------------

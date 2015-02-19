@@ -58,7 +58,7 @@ snit::widgetadaptor civgroupbrowser {
     constructor {args} {
         # FIRST, Install the hull
         installhull using sqlbrowser                  \
-            -db           ::rdb                       \
+            -db           ::adb                       \
             -view         gui_civgroups               \
             -uid          id                          \
             -titlecolumns 1                           \
@@ -67,7 +67,7 @@ snit::widgetadaptor civgroupbrowser {
             -reloadon {
                 ::sim <DbSyncB>
                 ::sim <Tick>
-                ::demog <Update>
+                ::adb.demog <Update>
             } -layout [string map [list %D $::app::derivedfg] $layout]
 
         # NEXT, get the options.
@@ -106,8 +106,8 @@ snit::widgetadaptor civgroupbrowser {
         pack $deletebtn -side right
 
         # NEXT, update individual entities when they change.
-       notifier bind ::rdb <groups>    $self [mymethod uid]
-       notifier bind ::rdb <civgroups> $self [mymethod uid]
+       notifier bind ::adb <groups>    $self [mymethod uid]
+       notifier bind ::adb <civgroups> $self [mymethod uid]
     }
 
     destructor {

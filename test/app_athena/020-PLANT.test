@@ -118,26 +118,26 @@ rho  0.9
     test CREATE-2.2 {Effects} -setup {
         setup
     } -body {
-        ted notifier bind ::rdb <plants_shares>
+        ted notifier bind ::adb <plants_shares>
         ted order PLANT:SHARES:CREATE $p1
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <plants_shares> update {NB1 JOE}}
+        {::adb <plants_shares> update {NB1 JOE}}
     }
 
     test CREATE-3.1 {undo effects} -setup {
         setup
         ted order PLANT:SHARES:CREATE $p1
     } -body {
-        ted notifier bind ::rdb <plants_shares>
+        ted notifier bind ::adb <plants_shares>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <plants_shares> delete {NB1 JOE}}
+        {::adb <plants_shares> delete {NB1 JOE}}
     }
 
 
@@ -162,13 +162,13 @@ rho  0.9
         setup
         ted order PLANT:SHARES:CREATE $p1
     } -body {
-        ted notifier bind ::rdb <plants_shares>
+        ted notifier bind ::adb <plants_shares>
         ted order PLANT:SHARES:DELETE id {NB1 JOE}
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <plants_shares> delete {NB1 JOE}}
+        {::adb <plants_shares> delete {NB1 JOE}}
     }
 
 
@@ -177,13 +177,13 @@ rho  0.9
         ted order PLANT:SHARES:CREATE $p1
         ted order PLANT:SHARES:DELETE id {NB1 JOE}
     } -body {
-        ted notifier bind ::rdb <plants_shares>
+        ted notifier bind ::adb <plants_shares>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <plants_shares> update {NB1 JOE}}
+        {::adb <plants_shares> update {NB1 JOE}}
     }
 
 
@@ -231,13 +231,13 @@ rho  0.5
         setup
         ted order PLANT:SHARES:CREATE $p1
     } -body {
-        ted notifier bind ::rdb <plants_shares>
+        ted notifier bind ::adb <plants_shares>
         ted order PLANT:SHARES:UPDATE id {NB1 JOE} rho 0.5
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <plants_shares> update {NB1 JOE}}
+        {::adb <plants_shares> update {NB1 JOE}}
     }
 
     test UPDATE-3.1 {undo undoes the change} -setup {
@@ -245,13 +245,13 @@ rho  0.5
         ted order PLANT:SHARES:CREATE $p1
         ted order PLANT:SHARES:UPDATE id {NB1 JOE} rho 0.5
     } -body {
-        ted notifier bind ::rdb <plants_shares>
+        ted notifier bind ::adb <plants_shares>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <plants_shares> update {NB1 JOE}}
+        {::adb <plants_shares> update {NB1 JOE}}
     }
 
     #-------------------------------------------------------------------
@@ -275,7 +275,7 @@ rho  0.5
         ted order PLANT:SHARES:CREATE $p1
         ted order PLANT:SHARES:CREATE $p2
     } -body {
-        ted notifier bind ::rdb <plants_shares>
+        ted notifier bind ::adb <plants_shares>
 
         ted order PLANT:SHARES:UPDATE:MULTI {
             ids          {{NB1 JOE}}
@@ -287,7 +287,7 @@ rho  0.5
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <plants_shares> update {NB1 JOE}}
+        {::adb <plants_shares> update {NB1 JOE}}
     }
 
 
@@ -296,7 +296,7 @@ rho  0.5
         ted order PLANT:SHARES:CREATE $p1
         ted order PLANT:SHARES:CREATE $p2
     } -body {
-        ted notifier bind ::rdb <plants_shares>
+        ted notifier bind ::adb <plants_shares>
 
         ted order PLANT:SHARES:UPDATE:MULTI {
             ids          {{NB1 JOE} {NB1 BOB}}
@@ -308,8 +308,8 @@ rho  0.5
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <plants_shares> update {NB1 JOE}}
-        {::rdb <plants_shares> update {NB1 BOB}}
+        {::adb <plants_shares> update {NB1 JOE}}
+        {::adb <plants_shares> update {NB1 BOB}}
     }
 
     test UPDATE:MULTI-3.1 {undo effects} -setup {
@@ -322,14 +322,14 @@ rho  0.5
             num          1
         }
     } -body {
-        ted notifier bind ::rdb <plants_shares>
+        ted notifier bind ::adb <plants_shares>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <plants_shares> update {NB1 JOE}}
-        {::rdb <plants_shares> update {NB1 BOB}}
+        {::adb <plants_shares> update {NB1 JOE}}
+        {::adb <plants_shares> update {NB1 BOB}}
     }
 
     #-------------------------------------------------------------------

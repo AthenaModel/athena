@@ -43,7 +43,8 @@ snit::type ::projectlib::beanpot {
 
     # -rdb  rdb
     #
-    # The handle of the sqlite3 database into which the pot will be saved.
+    # The handle of the sqlite3 database (or some equivalent object)
+    # into which the pot will be saved.
     option -rdb \
         -readonly yes
 
@@ -195,7 +196,7 @@ snit::type ::projectlib::beanpot {
 
     #-------------------------------------------------------------------
     # Queries
-    
+
     # get id
     #
     # Retrieves an object given a bean ID.  Throws an error if the

@@ -127,7 +127,7 @@ namespace eval ::athena_test::tests:: {
         id         3
         name       T1
         parent     2
-        pot        ::pot
+        pot        *::pot
         state      normal
     }
 

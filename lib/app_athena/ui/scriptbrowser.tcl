@@ -340,7 +340,7 @@ snit::widget scriptbrowser {
             -relief        flat                         \
             -borderwidth   1                            \
             -stripeheight  0                            \
-            -db            ::rdb                        \
+            -db            ::adb                        \
             -view          gui_scripts                  \
             -uid           name                         \
             -filterbox     off                          \

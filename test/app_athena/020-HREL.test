@@ -164,13 +164,13 @@ SHIA SUNN 0.0  0         0.0
     test OVERRIDE-2.4 {table monitor event on creation} -setup {
         setup
     } -body {
-        ted notifier bind ::rdb <hrel_fg>
+        ted notifier bind ::adb <hrel_fg>
         ted order HREL:OVERRIDE id {SHIA BLUE} base 0.5
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <hrel_fg> update {SHIA BLUE}}
+        {::adb <hrel_fg> update {SHIA BLUE}}
     }
 
 
@@ -182,13 +182,13 @@ SHIA SUNN 0.0  0         0.0
             base   0.5
         }
     } -body {
-        ted notifier bind ::rdb <hrel_fg>
+        ted notifier bind ::adb <hrel_fg>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <hrel_fg> delete {SHIA BLUE}}
+        {::adb <hrel_fg> delete {SHIA BLUE}}
     }
 
 
@@ -219,13 +219,13 @@ SHIA BLUE 0.5  1         0.6
         setup
         ted order HREL:OVERRIDE {id {SHIA BLUE}}
     } -body {
-        ted notifier bind ::rdb <hrel_fg>
+        ted notifier bind ::adb <hrel_fg>
         ted order HREL:OVERRIDE id {SHIA BLUE} base 0.5
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <hrel_fg> update {SHIA BLUE}}
+        {::adb <hrel_fg> update {SHIA BLUE}}
     }
 
 
@@ -238,13 +238,13 @@ SHIA BLUE 0.5  1         0.6
             base   0.5
         }
     } -body {
-        ted notifier bind ::rdb <hrel_fg>
+        ted notifier bind ::adb <hrel_fg>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <hrel_fg> update {SHIA BLUE}}
+        {::adb <hrel_fg> update {SHIA BLUE}}
     }
 
     #-------------------------------------------------------------------
@@ -281,13 +281,13 @@ SHIA BLUE 0.5  1         0.6
         setup
         ted order HREL:OVERRIDE {id {SHIA SUNN}}
     } -body {
-        ted notifier bind ::rdb <hrel_fg>
+        ted notifier bind ::adb <hrel_fg>
         ted order HREL:RESTORE id {SHIA SUNN}
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <hrel_fg> delete {SHIA SUNN}}
+        {::adb <hrel_fg> delete {SHIA SUNN}}
     }
 
 
@@ -296,19 +296,19 @@ SHIA BLUE 0.5  1         0.6
         ted order HREL:OVERRIDE {id {SHIA SUNN}}
         ted order HREL:RESTORE {id {SHIA SUNN}}
     } -body {
-        ted notifier bind ::rdb <hrel_fg>
+        ted notifier bind ::adb <hrel_fg>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <hrel_fg> update {SHIA SUNN}}
+        {::adb <hrel_fg> update {SHIA SUNN}}
     }
 
     test DELETE-3.1 {OK if there's no override} -setup {
         setup
     } -body {
-        ted notifier bind ::rdb <hrel_fg>
+        ted notifier bind ::adb <hrel_fg>
         ted order HREL:RESTORE id {SHIA SUNN}
         ted notifier received
     } -cleanup {
@@ -320,7 +320,7 @@ SHIA BLUE 0.5  1         0.6
         setup
         ted order HREL:RESTORE {id {SHIA SUNN}}
     } -body {
-        ted notifier bind ::rdb <hrel_fg>
+        ted notifier bind ::adb <hrel_fg>
         flunky undo
         ted notifier received
     } -cleanup {
@@ -416,7 +416,7 @@ SHIA BLUE 0.5  1         0.6
     test UPDATE:MULTI-2.1 {create new overrides} -setup {
         setup
     } -body {
-        ted notifier bind ::rdb <hrel_fg>
+        ted notifier bind ::adb <hrel_fg>
 
         ted order HREL:OVERRIDE:MULTI {
             ids        {{SHIA BLUE} {BLUE SUNN}}
@@ -429,8 +429,8 @@ SHIA BLUE 0.5  1         0.6
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <hrel_fg> update {SHIA BLUE}}
-        {::rdb <hrel_fg> update {BLUE SUNN}}
+        {::adb <hrel_fg> update {SHIA BLUE}}
+        {::adb <hrel_fg> update {BLUE SUNN}}
     }
 
     test UPDATE:MULTI-2.2 {undo undoes the change} -setup {
@@ -442,14 +442,14 @@ SHIA BLUE 0.5  1         0.6
             current    0.0
         }
     } -body {
-        ted notifier bind ::rdb <hrel_fg>
+        ted notifier bind ::adb <hrel_fg>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <hrel_fg> delete {SHIA BLUE}}
-        {::rdb <hrel_fg> delete {SHIA SUNN}}
+        {::adb <hrel_fg> delete {SHIA BLUE}}
+        {::adb <hrel_fg> delete {SHIA SUNN}}
     }
 
     # Update existing overrides
@@ -458,7 +458,7 @@ SHIA BLUE 0.5  1         0.6
         ted order HREL:OVERRIDE {id {SHIA SUNN}}
         ted order HREL:OVERRIDE {id {SHIA BLUE}}
     } -body {
-        ted notifier bind ::rdb <hrel_fg>
+        ted notifier bind ::adb <hrel_fg>
         ted order HREL:OVERRIDE:MULTI {
             ids        {{SHIA BLUE} {SHIA SUNN}} 
             base       0.5
@@ -469,8 +469,8 @@ SHIA BLUE 0.5  1         0.6
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <hrel_fg> update {SHIA BLUE}}
-        {::rdb <hrel_fg> update {SHIA SUNN}}
+        {::adb <hrel_fg> update {SHIA BLUE}}
+        {::adb <hrel_fg> update {SHIA SUNN}}
     }
 
     test UPDATE:MULTI-3.2 {undo undoes the change} -setup {
@@ -485,14 +485,14 @@ SHIA BLUE 0.5  1         0.6
             current    0.0
         }
     } -body {
-        ted notifier bind ::rdb <hrel_fg>
+        ted notifier bind ::adb <hrel_fg>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <hrel_fg> update {SHIA BLUE}}
-        {::rdb <hrel_fg> update {SHIA SUNN}}
+        {::adb <hrel_fg> update {SHIA BLUE}}
+        {::adb <hrel_fg> update {SHIA SUNN}}
     }
 
 

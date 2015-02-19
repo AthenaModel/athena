@@ -54,7 +54,7 @@ namespace eval ::athena_test::tests:: {
         # NEXT, prepare for obligation
         personnel start
         personnel load
-        set coffer [coffer new JOE]
+        set coffer [::athena::coffer new [::adb athenadb] JOE]
     }
 
     proc cleanup {} {
@@ -82,14 +82,14 @@ namespace eval ::athena_test::tests:: {
         n          {}
         name       T*
         parent     *
-        pot        ::pot
+        pot        *::pot
         state      invalid
     }
 
     test constructor-1.2 {can set options} -setup {
         setup
     } -body {
-        set T1 [tactic::DEMO new -parent DUMMY]
+        set T1 [::athena::tactic::DEMO new -parent DUMMY]
         $T1 get parent
     } -cleanup {
         cleanup
@@ -187,7 +187,7 @@ namespace eval ::athena_test::tests:: {
             -coverage 0.75
     } -body {
         $T1 execute
-        ted pdicts [lindex [::driver::abevent pending] 0]
+        ted pdicts [lindex [abevent pending] 0]
     } -cleanup {
         cleanup
     } -match dict -result {
@@ -206,7 +206,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         $T1 execute
         $T1 execute
-        llength [::driver::abevent pending]
+        llength [abevent pending]
     } -cleanup {
         cleanup
     } -result {2}

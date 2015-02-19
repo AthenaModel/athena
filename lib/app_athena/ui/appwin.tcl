@@ -409,7 +409,7 @@ snit::widget appwin {
                     -format        {
                         {week 7 yes}
                         {v    7 yes}
-                        {c    9 yes}
+                        {c    14 yes}
                         {m    0 yes}
                     }
             }
@@ -706,7 +706,7 @@ snit::widget appwin {
         $self AddOrder $submenu SIM:STARTTICK
         
         cond::available control \
-            [menuitem $submenu command [myorders title SIM:REBASE]... \
+            [menuitem $submenu command [::athena::orders title SIM:REBASE]... \
                 -command [list flunky send gui SIM:REBASE]]    \
                 order SIM:REBASE
 
@@ -723,24 +723,9 @@ snit::widget appwin {
             -underline 0 -menu $submenu
         
         $self AddOrder $submenu ABSIT:CREATE
-        $self AddOrder $submenu ABSIT:MOVE
         $self AddOrder $submenu ABSIT:DELETE
         $self AddOrder $submenu ABSIT:RESOLVE
         $self AddOrder $submenu ABSIT:UPDATE
-
-        # Orders/Magic Attitude Drivers
-        set submenu [menu $ordersmenu.mad]
-        $ordersmenu add cascade -label "Magic Attitude Driver" \
-            -underline 0 -menu $submenu
-
-        $self AddOrder $submenu MAD:CREATE
-        $self AddOrder $submenu MAD:UPDATE
-        $self AddOrder $submenu MAD:DELETE
-
-        $self AddOrder $submenu MAD:HREL
-        $self AddOrder $submenu MAD:VREL
-        $self AddOrder $submenu MAD:SAT
-        $self AddOrder $submenu MAD:COOP
 
         # Orders/Actors
         set submenu [menu $ordersmenu.actor]
@@ -799,7 +784,6 @@ snit::widget appwin {
         
         $self AddOrder $submenu HREL:OVERRIDE
         $self AddOrder $submenu HREL:RESTORE
-        $self AddOrder $submenu MAD:HREL
     
         # Orders/Vert. Relationship Menu
         set submenu [menu $ordersmenu.vrel]
@@ -808,7 +792,6 @@ snit::widget appwin {
         
         $self AddOrder $submenu VREL:OVERRIDE
         $self AddOrder $submenu VREL:RESTORE
-        $self AddOrder $submenu MAD:VREL
     
         # Orders/Satisfaction Menu
         set submenu [menu $ordersmenu.sat]
@@ -816,7 +799,6 @@ snit::widget appwin {
             -underline 0 -menu $submenu
         
         $self AddOrder $submenu SAT:UPDATE
-        $self AddOrder $submenu MAD:SAT
 
         # Orders/Cooperation Menu
         set submenu [menu $ordersmenu.coop]
@@ -824,7 +806,6 @@ snit::widget appwin {
             -underline 0 -menu $submenu
         
         $self AddOrder $submenu COOP:UPDATE
-        $self AddOrder $submenu MAD:COOP
 
         # Orders/Comm. Asset Package Menu
         set submenu [menu $ordersmenu.cap]
@@ -848,7 +829,7 @@ snit::widget appwin {
         $self AddOrder $submenu ECON:CGE:UPDATE
 
         cond::available control \
-            [menuitem $submenu command [myorders title ECON:UPDATE:HIST]... \
+            [menuitem $submenu command [::athena::orders title ECON:UPDATE:HIST]... \
             -command {app enter ECON:UPDATE:HIST [econ hist]}]    \
             order ECON:UPDATE:HIST
 
@@ -1174,8 +1155,7 @@ snit::widget appwin {
     # Sets the window title given the mode, the current scenario, etc.
 
     method SetWindowTitle {} {
-        # FIRST, get the file name.
-        set dbfile [file tail [scenario dbfile]]
+        set dbfile [file tail [adb adbfile]]
 
         if {$dbfile eq ""} {
             set dbfile "Untitled"
@@ -1487,7 +1467,7 @@ snit::widget appwin {
         }
 
         # NEXT, create the new scenario
-        scenario new
+        app new
     }
 
     # FileOpen
@@ -1521,7 +1501,7 @@ snit::widget appwin {
         }
 
         # NEXT, Open the requested scenario.
-        scenario open $filename
+        app open $filename
     }
 
     # FileSaveAs
@@ -1549,17 +1529,17 @@ snit::widget appwin {
 
         # NEXT, If none, they cancelled.
         if {$filename eq ""} {
-            return 0
+            return
         }
 
         # NEXT, Save the scenario using this name
-        return [scenario save $filename]
+        app save $filename
     }
 
     # FileSave
     #
     # Saves the scenario to the current file, making a backup
-    # copy.  Returns 1 on success and 0 on failure.
+    # copy.
 
     method FileSave {} {
         # FIRST, we can only save a scenario if we're not RUNNING.
@@ -1570,12 +1550,14 @@ snit::widget appwin {
         }
 
         # FIRST, if no file name is known, do a SaveAs.
-        if {[scenario dbfile] eq ""} {
-            return [$self FileSaveAs]
+        if {[adb adbfile] eq ""} {
+            $self FileSaveAs
         }
 
         # NEXT, Save the scenario to the current file.
-        return [scenario save]
+        app save
+
+        return
     }
 
     # FileExportAs
@@ -1816,13 +1798,13 @@ snit::widget appwin {
     # cancelled.
 
     method SaveUnsavedData {} {
-        if {[scenario unsaved]} {
+        if {[adb unsaved]} {
             # FIRST, deiconify the window, this gives the message box
             # a parent to popup over.
             wm deiconify $win
 
             # NEXT, popup the message box for the user
-            set name [file tail [scenario dbfile]]
+            set name [file tail [adb adbfile]]
 
             set message [tsubst {
                 |<--
@@ -2031,6 +2013,8 @@ snit::widget appwin {
     # their own).
 
     method ReloadContent {} {
+        # FIRST, make sure we have data.
+
         # FIRST, set the window title
         $self SetWindowTitle
 

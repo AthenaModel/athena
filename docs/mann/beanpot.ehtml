@@ -101,8 +101,11 @@ The valid options are as follows:<p>
 <defopt {-rdb <i rdb>}>
 
 Gives the name of the run-time database (RDB), an 
-<xref scenariodb(n)> instance.  Checkpoints and restores will be done
-relative to this RDB.<p>
+<xref scenariodb(n)> instance (or equivalent) Checkpoints and restores 
+will be done relative to this RDB.  Note that in larger applications,
+the <i rdb> is often an object that wraps the actual RDB handle and 
+provides other services; it may be used as such by the beans in the
+pot.<p>
 
 If the <tt -rdb> is not set, the bean pot cannot be checkpointed or 
 restored.<p>

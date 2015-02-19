@@ -68,7 +68,7 @@ snit::type aam {
 
         # NEXT, assess the attitude implications of all attrition for
         # this tick.
-        driver::CIVCAS assess $sdict $cdict
+        ruleset CIVCAS assess $sdict $cdict
 
         # NEXT, clear the saved data for this tick; we're done.
         set alist ""
@@ -288,7 +288,7 @@ snit::type aam {
           "Unit $u takes $casualties casualties, leaving $personnel personnel"
             
         # NEXT, update the unit.
-        unit mutate personnel $u $personnel
+        unit personnel $u $personnel
 
         # NEXT, if this is a CIV unit, attrit the unit's
         # group.

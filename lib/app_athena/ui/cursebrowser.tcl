@@ -80,15 +80,15 @@ snit::widget cursebrowser {
         bind $win <Map> [mymethod MapWindow]
 
         # Reload the content on various notifier events.
-        notifier bind ::sim     <DbSyncB>     $self [mymethod ReloadOnEvent]
-        notifier bind ::sim     <Tick>        $self [mymethod ReloadOnEvent]
-        notifier bind ::curse   <Check>       $self [mymethod ReloadOnEvent]
+        notifier bind ::sim       <DbSyncB>   $self [mymethod ReloadOnEvent]
+        notifier bind ::sim       <Tick>      $self [mymethod ReloadOnEvent]
+        notifier bind ::adb.curse <Check>     $self [mymethod ReloadOnEvent]
 
         # Reload individual entities when they
         # are updated or deleted.
 
-        notifier bind ::rdb <curses>        $self [mymethod MonCURSEs]
-        notifier bind ::rdb <curse_injects> $self [mymethod MonInjects]
+        notifier bind ::adb <curses>        $self [mymethod MonCURSEs]
+        notifier bind ::adb <curse_injects> $self [mymethod MonInjects]
 
         # NEXT, schedule the first reload
         $self reload
@@ -600,7 +600,7 @@ snit::widget cursebrowser {
             }
 
             # Get title, and remove the "Create inject: " prefix
-            set title [myorders title $order]
+            set title [::athena::orders title $order]
             set ndx [string first ":" $title]
             set title [string range $title $ndx+2 end]
             dict set odict $title $order

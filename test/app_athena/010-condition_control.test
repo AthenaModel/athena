@@ -86,7 +86,7 @@ namespace eval ::athena_test::tests:: {
         name    C*
         nlist   {_type NBHOODS _rule {}}
         parent  *
-        pot     ::pot
+        pot     *::pot
         sense   DOES
         state   invalid
     }
@@ -94,7 +94,7 @@ namespace eval ::athena_test::tests:: {
     test constructor-1.2 {can set options} -setup {
         setup
     } -body {
-        set C1 [condition::CONTROL new -parent DUMMY]
+        set C1 [::athena::condition::CONTROL new -parent DUMMY]
         $C1 get parent
     } -cleanup {
         cleanup

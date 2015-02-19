@@ -61,14 +61,14 @@ namespace eval ::athena_test::tests:: {
     #===================================================================
     # condition class methods
     #
-    # [condition define] is tested implicitly.
+    # [::athena::condition define] is tested implicitly.
 
     #-------------------------------------------------------------------
     # type
 
     test type-1.1 {return type given type name} -body {
-        condition type EXPR
-    } -result {::condition::EXPR}
+        ::athena::condition type EXPR
+    } -result {::athena::condition::EXPR}
     
 
     #-------------------------------------------------------------------
@@ -76,50 +76,12 @@ namespace eval ::athena_test::tests:: {
 
     test typedict-1.1 {lists types and titles} -body {
         # Spot check
-        set a [llength [condition types]]
-        set b [dict size [condition typedict]]
-        set c [dict get [condition typedict] ::condition::EXPR]
+        set a [llength [::athena::condition types]]
+        set b [dict size [::athena::condition typedict]]
+        set c [dict get [::athena::condition typedict] ::athena::condition::EXPR]
         
         list [expr {$a == $b}] $c
     } -result {1 {EXPR: Boolean Expression}}
-
-    #-------------------------------------------------------------------
-    # paste
-
-    test paste-1.1 {can paste one condition} -setup {
-        setup
-        $C1 configure -expression "1 == 1"
-    } -body {
-        set copyset [$C1 copydata]
-        condition paste [$B2 id] [list $copyset]
-        set C2 [$B2 conditions 0]
-        ted pdicts [$C2 getdict]
-    } -cleanup {
-        cleanup
-    } -match dictglob -result {
-        expression {1 == 1}
-        id         *
-        metflag    {}
-        name       C*
-        parent     *
-        pot        ::pot
-        state      normal
-    }
-    
-    test paste-1.2 {can paste multiple conditions} -setup {
-        setup
-        $C1 configure -expression "1 == 1"
-        set C2 [ted addcondition $B1 EXPR]
-        $C2 configure -expression "2 == 2"
-    } -body {
-        set copysets [list [$C1 copydata] [$C2 copydata]]
-        condition paste [$B2 id] $copysets
-        set C3 [$B2 conditions 0]
-        set C4 [$B2 conditions 1]
-        list [$C3 get expression] [$C4 get expression]
-    } -cleanup {
-        cleanup
-    } -result {{1 == 1} {2 == 2}}
 
     #===================================================================
     # condition::<type> class methods
@@ -128,14 +90,14 @@ namespace eval ::athena_test::tests:: {
     # ctype's typename
 
     test ctype_typename-1.1 {return type's name} -body {
-        condition::EXPR typename
+        ::athena::condition::EXPR typename
     } -result {EXPR}
     
     #-------------------------------------------------------------------
     # ctype's title
 
     test ctype_title-1.1 {return type's title} -body {
-        condition::EXPR title
+        ::athena::condition::EXPR title
     } -result {Boolean Expression}
     
     #===================================================================
@@ -157,7 +119,7 @@ namespace eval ::athena_test::tests:: {
         metflag    {}
         name       C*
         parent     *
-        pot        ::pot
+        pot        *::pot
         state      invalid
     }
 
@@ -203,7 +165,7 @@ namespace eval ::athena_test::tests:: {
         $C1 block
     } -cleanup {
         cleanup
-    } -match glob -result {::pot::block*}
+    } -match glob -result {*::pot::block*}
     
     #-------------------------------------------------------------------
     # state
@@ -245,7 +207,7 @@ namespace eval ::athena_test::tests:: {
         name       C*
         narrative  {Expression: 1 == 1}
         parent     *
-        pot        ::pot
+        pot        *::pot
         state      normal
         statusicon ::projectgui::icon::dash13
         typename   EXPR
@@ -267,7 +229,7 @@ namespace eval ::athena_test::tests:: {
         name       C*
         narrative  {Expression: 1 == 1}
         parent     *
-        pot        ::pot
+        pot        *::pot
         state      normal
         statusicon ::projectgui::icon::dash13
         typename   EXPR

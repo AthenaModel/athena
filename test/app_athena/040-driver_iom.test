@@ -58,8 +58,10 @@ namespace eval ::athena_test::tests:: {
         parm set dam.ENI.active no
         parm set dam.CONSUMP.active no
         parm set dam.UNEMP.active no
+        parm set dam.ENERGY.active no
+        parm set dam.TRANSPORT.active no
+        parm set dam.WATER.active no
         rdb eval {DELETE FROM drivers}
-        rdb eval {DELETE FROM mads}
         
         # NEXT, create the entities
         ted create JOE BOB NB1 SHIA SUNN BLUE IOM1 HOOK1 CBS PBS
@@ -109,14 +111,12 @@ namespace eval ::athena_test::tests:: {
     # Creates the BROADCAST tactic, and locks the scenario.
 
     proc broadcast {owner iom cap a} {
-        ted order TACTIC:BROADCAST:CREATE \
-            owner       $owner \
+        set blk [ted addblock $owner onlock yes]
+        ted addtactic $blk BROADCAST \
             cap         $cap   \
             a           $a     \
             iom         $iom   \
-            x1          0      \
-            on_lock     YES    \
-            once        NO
+            cost        0 
 
         ted lock
     }
@@ -131,7 +131,7 @@ namespace eval ::athena_test::tests:: {
     #-------------------------------------------------------------------
     # assess
     
-    test assess-1.1 {Rule 1-1 fires} -constraints tbd -setup {
+    test assess-1.1 {Rule 1-1 fires} \-setup {
         setup
     } -body {
         broadcast JOE IOM1 CBS BOB
@@ -150,7 +150,7 @@ rule       IOM-1-1
 fdict      accept 0.390625 capcov 0.8 cap CBS regard 0.390625 iom IOM1 tsource JOE resonance 1.0 f SHIA dtype IOM asource BOB adjcov 1.2121212121212122
     }
     
-    test assess-1.2 {Rule 1-1 inputs} -constraints tbd -setup {
+    test assess-1.2 {Rule 1-1 inputs} -setup {
         setup
     } -body {
         broadcast JOE IOM1 CBS BOB
@@ -176,7 +176,7 @@ IOM-1-1 vrel       SHIA     JOE
     test sigline-1.1 {sigline output} -setup {
         setup
     } -body {
-        driver::IOM sigline "JOE IOM1" 
+        ruleset IOM sigline "JOE IOM1" 
     } -cleanup {
         cleanup
     } -result {Broadcast of IOM1 by JOE}
@@ -188,7 +188,7 @@ IOM-1-1 vrel       SHIA     JOE
     test narrative-1.1 {narrative output} -setup {
         setup
     } -body {
-        driver::IOM narrative {
+        ruleset IOM narrative {
             dtype      IOM
             tsource    JOE
             cap        CBS
@@ -208,7 +208,7 @@ IOM-1-1 vrel       SHIA     JOE
     } -body {
         # Note: the numeric parameters are in the correct range,
         # but no attempt has been made to make them sensible.
-        driver::IOM detail {
+        ruleset IOM detail {
             dtype      IOM
             tsource    JOE
             cap        CBS

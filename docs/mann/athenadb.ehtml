@@ -1,0 +1,286 @@
+<manpage {athena(n) athenadb(n)} "Athena Internal Scenario Type">
+
+<section SYNOPSIS>
+
+<pre>
+package require athena <version>
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+athenadb(n) is a Snit type whose instances represent entire Athena
+scenarios.  It is the main type in the <xref athena(n)> library; 
+creating an instance of athenadb(n) creates all of the other objects 
+required by a scenario.  It is also a utility object for all objects in 
+the scenario; it passes itself to all objects it creates, and they use it 
+as the primary means of accessing other objects.<p>
+
+athenadb(n) is a <b private> type, to be used only within the library code.
+Note that <xref athena(n)>, the public interface to the library, is a thin
+wrapper around athenadb(n), providing only the public operations.<p>
+
+<section "COMMANDS">
+
+This module defines the following commands:<p>
+
+<deflist commands>
+
+<defitem "athenadb create" {athenadb create <i name> <i filename> ?<i options...>?}>
+
+Creates a new instance of athenadb(n) called <i name>, which becomes a 
+Tcl command defined in the current scope; <iref athenadb create> returns
+the fully-qualified form of the name.<p>
+
+If the <i filename> isn't the empty string, it specifies the name of 
+an <tt .adb> scenario file to load.  If the named file cannot be loaded, 
+athenadb(n) will throw "<tt SCENARIO OPEN>".<p>
+
+The following options may be used:<p>
+
+<deflist options>
+
+<defopt {-logcmd <i command>}>
+
+Specifies the name of a <xref mars:logger(n)> object used to log the 
+object's activities.  The last component of the <tt -subject> name 
+is used as the log "component".<p>
+
+<defopt {-subject <i name>}>
+
+Specifies the subject <i name> used for any <xref mars:notifier(n)>
+events sent by the object.  By default, the <i name> defaults to the
+object's fully-qualified command name.<p>
+
+For example, 
+athenadb(n) wraps an <xref mars:sqldocument(n)> object used to contain
+the scenario's run-time database (RDB).  When monitoring is enabled, the
+RDB can generate <xref mars:notifier(n)> events as tables are updated.<p>
+
+</deflist options>
+
+
+<defitem "athenadb register" {athenadb register <i saveable>}>
+
+Registers the name of an <xref mars:saveable(i)> command with Athena,
+so that the command's data will be loaded and restored with the scenario
+data.<p>
+
+<b TODO>: Once all registered modules are part of the library, this must
+become a private instance method; athenadb(n) will register all modules
+as part of its initialization.<p>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+Each athenadb(n) instance has the following subcommands:<p>
+
+<deflist instance>
+
+<defitem adbfile {<i adb> adbfile}>
+
+Returns the name of the <tt .adb> file loaded on creation, if any, or
+the <tt .adb> file name last used for saving, or "" if no <tt .adb> file
+has ever been loaded or saved.<p>
+
+<defitem eval {<i adb> eval <i query> ?<i args...>?}>
+
+Evaluates an SQL <i query> with respect to the scenario's run-time 
+database.  The arguments are as for the standard SQLite3 <tt eval>
+subcommand.<p>
+
+<defitem exists {<i adb> exists <i query>}>
+
+Evaluates an SQL <i query> with respect to the scenario's run-time 
+database, returning 1 if the result set contains at least one row,
+and 0 otherwise.  The arguments are as for the standard SQLite3
+<tt exists> subcommand.<p>
+
+<defitem last_insert_rowid {<i adb> last_insert_rowid}>
+
+Returns the last row ID (or integer primary key) inserted into any
+table in the scenario's SQL RDB.<p>
+
+<defitem log {<i adb> log <i level message>}>
+
+Given a <tt -logcmd>, logs the <i message> at the given <i level>,
+e.g., "warning".<p>
+
+<defitem monitor {<i adb> monitor <i args...>}>
+
+This command is identical to the <xref mars:sqldocument(n)> object's
+<xref mars:sqldocument(n) monitor> subcommand, allowing the control
+of automatic monitoring of database changes.<p>
+
+<defitem notify {<i adb> notify <i component event> ?<i args...>?}>
+
+Sends a <xref mars:notifier(n)> <i event> for the library.  If the
+<i component> is the empty string, then it is sent for the library
+as a whole, and the subject of the event is the value of the <tt -subject>
+option (defaulting to the <xref athena(n)> object name).<p>
+
+Otherwise, the <i component> should be the name of a subcomponent of
+the library (i.e., the "flunky"); in this case, the event is sent for
+the component, and the subject of the event is 
+"<tt><i subject>.<i component></tt>", where <i subject> is the value
+of the <tt -subject> option and the <i component> is as given.<p>
+
+Suppose, for example the <tt -subject> is "<tt ::adb>".  Then:
+
+<ul>
+<li> RDB monitoring events are sent as "<tt ::adb>".
+<li> Neighborhood <tag Stack> events are sent as 
+     "<tt ::adb.nbhood>".
+<li> Order flunky <tag Sync> events are sent as 
+     "<tt ::adb.flunky>".
+</ul>
+
+The full set of events sent by <xref athena(n)>/athenadb(n) is documented
+in <xref athena(n)>.<p>
+
+<defitem onecolumn {<i adb> onecolumn <i query>}>
+
+Evaluates an SQL <i query> with respect to the scenario's run-time 
+database, returning only the first column.<p>
+
+<defitem paste {<i adb> paste <i subcommand> ?<i args...>?}>
+
+Pastes copied items into scenario, where the subcommand determines the 
+kind of item to paste.  In each case, the paste is done as a sequence of 
+grouped orders, and will be undone and redone as a group.<p>
+
+The available subcommands are as follows:<p>
+
+<deflist paste>
+
+<defitem "paste block" {<i adb> paste block <i agent copysets>}>
+
+Pastes <i copysets>, a list of copied strategy blocks, into the strategy
+owned by the named <i agent>.<p>
+
+<defitem "paste condition" {<i adb> paste condition <i block_id copysets>}>
+
+Pastes <i copysets>, a list of copied conditions, into the strategy block
+with the given <i block_id>.<p>
+
+<defitem "paste tactic" {<i adb> paste tactic <i block_id copysets>}>
+
+Pastes <i copysets>, a list of copied tactics, into the strategy block
+with the given <i block_id>.<p>
+
+</deflist paste>
+
+<defitem profile {<i adb> profile ?<i depth>? <i command...>}>
+
+Calls the command once using <tt time>, in the caller's context,
+and the logs the outcome, returning the commands return value.
+In other words, you can prefix any statement with 
+"<tt><i adb> profile</tt>" and profile that call without changing code
+or adding new routines.<p>
+
+If the <i depth> is given, it must be an integer; that many "*" characters
+are added to the beginning of the log message.  This is useful when 
+profiling calls within another profiled call.<p>
+
+<defitem query {<i adb> query <i query> ?<i options...>?}>
+
+Evaluates an SQL <i query> with respect to the scenario's run-time 
+database, and returns the result set as a formatted string.  The 
+<i query> can contain any valid SQL statements understood by SQLite3,
+but in practice it will be a single statemet that returns a result 
+set (i.e., <tt SELECT> or certain <tt PRAGMA> statements).<p>
+
+The following options may be used:<p>
+
+<deflist query>
+
+<defopt {-mode mc|list|csv}>
+
+Specifies the output mode; the default is <b>mc</b>, multicolumn.<p>
+
+When <tt -mode> is <b>mc</b>, each record is output on a single
+line.  Fields are formatted in columns, with the field name as the
+column header.<p>
+
+When <tt -mode> is <b>list</b>, the output is a list of records.
+Each record is output on multiple lines, with (nominally) one line
+per field.  Each line consists of the field name and value; the
+record's field names are values are formatted neatly in parallel columns.<p>
+
+When <tt -mode> is <b>csv</b>, the output is in CSV (comma-separated value)
+format, one record per line, beginning with a header record of column labels.
+Non-numeric values are enclosed in double-quotes.<p>
+
+<defopt {-labels <i>list</i>}>
+
+Normally <iref query> uses the column names found in the query to
+label the fields in the output.  If specified, the value of
+<b>-labels</b> is a list of labels to be used instead.<p>
+
+<defopt {-maxcolwidth <i>chars</i>}>
+
+Sets the maximum column width, in characters, when <tt -mode> is
+<b>mc</b>; the default is 30.  All
+data values longer than this will be truncated with "...".<p>
+
+If <b>-maxcolwidth</b> is set to 0 then values will not be
+truncated.<p>
+
+<defopt {-headercols <i>num</i>}>
+
+Sets the number of header columns.  When <tt -mode> is <b>mc</b>,
+repeated values in a column are skipped.  That is, if a column
+contains identical values in consecutive rows, the column will be
+blank in all but the first of the rows.  Defaults to "0".<p>
+
+</deflist query>
+
+<defitem "rdb component" {<i adb> rdb component}>
+
+Returns the fully-qualified name of the instance's RDB handle, for direct
+use by the wrapping <xref athena(n)> object.<p>
+
+<b TODO>: At present, this is the same RDB handle used by athenadb(n) 
+itself; ultimately, it will be a read-only SQLite3 handle accessing the
+same RDB file and providing the same functions and temporary schema 
+items.  This will allow <xref athena(n)> to provide safe access to 
+clients.<p>
+
+
+<defitem rebase {<i adb> rebase}>
+
+Given a scenario with time advanced, this command converts it into a
+scenario with the same data at time 0.  This is experimental.<p>
+
+<defitem save {<i adb> save ?<i filename>?}>
+
+Saves the scenario to disk as an <tt .adb> file called <i filename>,
+adding the "<tt .adb>" extension if necessary.  On failure, throws
+"<tt SCENARIO SAVE>".<p>
+
+<defitem unsaved {<i adb> unsaved}>
+
+Returns 1 if there is unsaved scenario data, and 0 otherwise.<p>
+
+</deflist instance>
+
+<section FUNCTIONS>
+
+athena(n) defines many SQL functions for use in database queries.  The
+functions are TBD.<p>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+New package derived from Athena internals.<p>
+
+</manpage>
+
+
+
+

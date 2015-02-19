@@ -59,15 +59,15 @@ snit::widgetadaptor nbhoodbrowser {
     constructor {args} {
         # FIRST, Install the hull
         installhull using sqlbrowser                  \
-            -db           ::rdb                       \
+            -db           ::adb                       \
             -view         gui_nbhoods                 \
             -uid          id                          \
             -titlecolumns 1                           \
             -selectioncmd [mymethod SelectionChanged] \
             -reloadon {
-                ::sim <DbSyncB>
-                ::sim <Tick>
-                ::demog <Update>
+                ::sim       <DbSyncB>
+                ::sim       <Tick>
+                ::adb.demog <Update>
             } -layout [string map [list %D $::app::derivedfg] $layout]
 
         # NEXT, get the options.
@@ -125,7 +125,7 @@ snit::widgetadaptor nbhoodbrowser {
         pack $deletebtn -side right
 
         # NEXT, Respond to simulation updates
-        notifier bind ::rdb <nbhoods> $self [mymethod uid]
+        notifier bind ::adb <nbhoods> $self [mymethod uid]
     }
 
     #-------------------------------------------------------------------

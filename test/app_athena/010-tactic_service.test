@@ -55,7 +55,7 @@ namespace eval ::athena_test::tests:: {
         personnel start
         personnel load
         service reset
-        set coffer [coffer new JOE]
+        set coffer [::athena::coffer new [::adb athenadb] JOE]
     }
 
     proc cleanup {} {
@@ -84,7 +84,7 @@ namespace eval ::athena_test::tests:: {
         name       T*
         nlist      {_type NBHOODS _rule {}}
         parent     *
-        pot        ::pot
+        pot        *::pot
         s          ENERGY
         state      invalid
     }
@@ -92,7 +92,7 @@ namespace eval ::athena_test::tests:: {
     test constructor-1.2 {can set options} -setup {
         setup
     } -body {
-        set T1 [tactic::SERVICE new -parent DUMMY]
+        set T1 [::athena::tactic::SERVICE new -parent DUMMY]
         $T1 get parent
     } -cleanup {
         cleanup

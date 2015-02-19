@@ -1,0 +1,252 @@
+<manpage {athena(n)} "Athena Scenario Type">
+
+<section SYNOPSIS>
+
+<pre>
+package require athena <version>
+namespace import ::athena::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+athena(n) is the primary public interface for the athena(n) package.
+athena(n) is a Snit type whose instances represent entire Athena
+scenarios.  To create a new scenario, possibly loading an <tt .adb> file,
+create an instance of athena(n).<p>
+
+<section "Relationship with athenadb(n)">
+
+athena(n) is a thin wrapper around <xref athenadb(n)>, which is the true
+main object in the package.  <xref athenadb(n)> also provides services to 
+internal modules that aren't appropriate for use by clients.<p>
+
+<section "COMMANDS">
+
+This module defines the following commands:<p>
+
+<deflist commands>
+
+<defitem "athena create" {athena create <i name> ?<i options...>?}>
+
+Creates a new instance of athena(n) called <i name>, which becomes a 
+Tcl command defined in the current scope; <iref athena create> returns
+the fully-qualified form of the name.<p>
+
+The following options may be used:<p>
+
+<deflist options>
+
+<defopt {-adbfile <i filename>}>
+
+If the <i filename> isn't the empty string, it specifies the name of 
+an <tt .adb> scenario file to load.  If the named file cannot be loaded, 
+athena(n) will throw "<tt SCENARIO OPEN>".<p>
+
+Note that this option is read-only after the object is created.<p>
+
+<defopt {-logcmd <i command>}>
+
+Specifies the name of a <xref mars:logger(n)> object used to log the 
+object's activities.  The last component of the <tt -subject> name 
+is used as the log "component".<p>
+
+<defopt {-subject <i name>}>
+
+Specifies the subject <i name> used for any <xref mars:notifier(n)>
+events sent by the object.  By default, the <i name> defaults to the
+object's fully-qualified command name.<p>
+
+For example, 
+athena(n) wraps an <xref mars:sqldocument(n)> object used to contain
+the scenario's run-time database (RDB).  When monitoring is enabled, the
+RDB can generate <xref mars:notifier(n)> events as tables are updated.<p>
+
+</deflist options>
+
+
+<defitem "athena register" {athena register <i saveable>}>
+
+Registers the name of an <xref mars:saveable(i)> command with Athena,
+so that the command's data will be loaded and restored with the scenario
+data.<p>
+
+<b TBD:> Once all registered modules have been integrated into 
+athena(n), this typemethod will go away.<p>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+Each athena(n) instance has the following subcommands:<p>
+
+<deflist instance>
+
+<defitem adbfile {<i adb> adbfile}>
+
+Returns the name of the <tt .adb> file loaded on creation, if any, or
+the <tt .adb> file name last used for saving, or "" if no <tt .adb> file
+has ever been loaded or saved.<p>
+
+<defitem eval {<i adb> eval <i query> ?<i args...>?}>
+
+Evaluates an SQL <i query> with respect to the scenario's run-time 
+database.  The arguments are as for the standard SQLite3 <tt eval>
+subcommand.<p>
+
+<b TODO>: Ultimately, this will be a safe read-only operation.<p>
+
+<defitem onecolumn {<i adb> onecolumn <i query>}>
+
+Evaluates an SQL <i query> with respect to the scenario's run-time 
+database, returning only the first column.<p>
+
+<b TODO>: Ultimately, this will be a safe read-only operation.<p>
+
+<defitem paste {<i adb> paste <i subcommand> ?<i args...>?}>
+
+Pastes copied items into scenario, where the subcommand determines the 
+kind of item to paste.  In each case, the paste is done as a sequence of 
+grouped orders, and will be undone and redone as a group.<p>
+
+The available subcommands are as follows:<p>
+
+<deflist paste>
+
+<defitem "paste block" {<i adb> paste block <i agent copysets>}>
+
+Pastes <i copysets>, a list of copied strategy blocks, into the strategy
+owned by the named <i agent>.<p>
+
+<defitem "paste condition" {<i adb> paste condition <i block_id copysets>}>
+
+Pastes <i copysets>, a list of copied conditions, into the strategy block
+with the given <i block_id>.<p>
+
+<defitem "paste tactic" {<i adb> paste tactic <i block_id copysets>}>
+
+Pastes <i copysets>, a list of copied tactics, into the strategy block
+with the given <i block_id>.<p>
+
+</deflist paste>
+
+<defitem query {<i adb> query <i query> ?<i options...>?}>
+
+Evaluates an SQL <i query> with respect to the scenario's run-time 
+database, and returns the result set as a formatted string.  The 
+<i query> can contain any valid SQL statements understood by SQLite3,
+but in practice it will be a single statemet that returns a result 
+set (i.e., <tt SELECT> or certain <tt PRAGMA> statements).<p>
+
+<b TODO>: Ultimately, this will be a safe read-only operation.<p>
+
+The following options may be used:<p>
+
+<deflist query>
+
+<defopt {-mode mc|list|csv}>
+
+Specifies the output mode; the default is <b>mc</b>, multicolumn.<p>
+
+When <tt -mode> is <b>mc</b>, each record is output on a single
+line.  Fields are formatted in columns, with the field name as the
+column header.<p>
+
+When <tt -mode> is <b>list</b>, the output is a list of records.
+Each record is output on multiple lines, with (nominally) one line
+per field.  Each line consists of the field name and value; the
+record's field names are values are formatted neatly in parallel columns.<p>
+
+When <tt -mode> is <b>csv</b>, the output is in CSV (comma-separated value)
+format, one record per line, beginning with a header record of column labels.
+Non-numeric values are enclosed in double-quotes.<p>
+
+<defopt {-labels <i>list</i>}>
+
+Normally <iref query> uses the column names found in the query to
+label the fields in the output.  If specified, the value of
+<b>-labels</b> is a list of labels to be used instead.<p>
+
+<defopt {-maxcolwidth <i>chars</i>}>
+
+Sets the maximum column width, in characters, when <tt -mode> is
+<b>mc</b>; the default is 30.  All
+data values longer than this will be truncated with "...".<p>
+
+If <b>-maxcolwidth</b> is set to 0 then values will not be
+truncated.<p>
+
+<defopt {-headercols <i>num</i>}>
+
+Sets the number of header columns.  When <tt -mode> is <b>mc</b>,
+repeated values in a column are skipped.  That is, if a column
+contains identical values in consecutive rows, the column will be
+blank in all but the first of the rows.  Defaults to "0".<p>
+
+</deflist query>
+
+<defitem rebase {<i adb> rebase}>
+
+Given a scenario with time advanced, this command converts it into a
+scenario with the same data at time 0.  This is experimental.<p>
+
+<defitem save {<i adb> save ?<i filename>?}>
+
+Saves the scenario to disk as an <tt .adb> file called <i filename>,
+adding the "<tt .adb>" extension if necessary.  On failure, throws
+"<tt SCENARIO SAVE>".<p>
+
+<defitem unsaved {<i adb> unsaved}>
+
+Returns 1 if there is unsaved scenario data, and 0 otherwise.<p>
+
+</deflist instance>
+
+<section FUNCTIONS>
+
+athena(n) defines many SQL functions for use in database queries.  The
+functions are TBD.<p>
+
+<section "NOTIFIER EVENTS">
+
+athena(n) and its subcomponents send <xref notifier(n)> events.  Top-level
+events are sent by the <tt -subject> indicated when the instance is created.
+Individual subcomponents can also send events; in this case, the 
+<xref notifier(n)> subject is "<i subject>.<i component>".  If the 
+<tt -subject> is "<tt ::adb>", for example, the order flunky component
+sends events as "<tt ::adb.flunky>".<p>
+
+<b TBD>: This section should document all notifier events sent by
+athena(n), including those by subcomponents.<p>
+
+<deflist events>
+
+<defitem Create {<i subject> <tag Create>}>
+
+The athena(n) instance sends this event on creation, after it is fully
+initialized.  This is useful when an application reuses the same 
+<tt -subject> for successive scenarios, as it allows GUI modules to 
+initialize themselves.<p>
+
+<defitem Destroy {<i subject> <tag Destroy>}>
+
+The athena(n) instance sends this event when it is destroyed.  This allows
+client modules to clean up references to the object and its subcomponents.
+<p>
+
+</deflist>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+New package derived from Athena internals.<p>
+
+</manpage>
+
+
+
+

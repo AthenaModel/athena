@@ -52,14 +52,14 @@ snit::widgetadaptor ordersentbrowser {
     constructor {args} {
         # FIRST, Install the hull
         installhull using sqlbrowser                  \
-            -db           ::rdb                       \
+            -db           ::adb                       \
             -view         gui_cif                     \
             -uid          id                          \
             -titlecolumns 3                           \
             -reloadon {
-                ::sim    <DbSyncB>
-                ::sim    <Tick>
-                ::flunky <Sync>
+                ::sim        <DbSyncB>
+                ::sim        <Tick>
+                ::adb.flunky <Sync>
             } -layout [string map [list %D $::app::derivedfg] $layout]
 
         # NEXT, get the options.

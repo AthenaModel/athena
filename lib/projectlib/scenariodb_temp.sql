@@ -71,6 +71,17 @@ CREATE TEMPORARY TABLE abservice (
 );
 
 --------------------------------------------------------------------
+-- Saturation/Required Service funding levels
+
+CREATE TEMPORARY TABLE sr_service (
+    g            TEXT,              -- Group name
+    req_funding  REAL DEFAULT 0.0,  -- Required Funding Level $/week
+    sat_funding  REAL DEFAULT 0.0,  -- Saturation Funding Level $/week
+
+    PRIMARY KEY (g)
+);
+
+--------------------------------------------------------------------
 -- Strategy Tock Working Tables
 
 -- Actor's Working Cash

@@ -116,7 +116,7 @@ namespace eval ::athena_test::tests:: {
         msg        Hello
         name       T*
         parent     *
-        pot        ::pot
+        pot        *::pot
         state      normal
     }
 

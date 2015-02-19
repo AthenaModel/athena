@@ -136,7 +136,13 @@ snit::type executive {
                 append script ".tcl"
             }
 
-            uplevel 1 [list source [file join [pwd] $script]]
+            try {
+                monitor off
+                uplevel 1 [list source [file join [pwd] $script]]
+            } finally {
+                monitor on
+                super sim dbsync
+            }
         }
 
         $interp proc select {args} {
@@ -311,7 +317,7 @@ snit::type executive {
             [mytypemethod block configure]
 
         $interp smartalias {block last} 0 0 {} \
-            [myproc last_bean ::block]
+            [myproc last_bean ::athena::block]
 
         # condition
         $interp ensemble condition
@@ -327,7 +333,7 @@ snit::type executive {
             [mytypemethod condition configure]
 
         $interp smartalias {condition last} 0 0 {} \
-            [myproc last_bean ::condition]
+            [myproc last_bean ::athena::condition]
 
 
         # clear
@@ -385,31 +391,24 @@ snit::type executive {
 
         # last block
         $interp smartalias {last block} 0 0 {} \
-            [myproc last_bean ::block]
+            [myproc last_bean ::athena::block]
 
         # last condition
         $interp smartalias {last condition} 0 0 {} \
-            [myproc last_bean ::condition]
+            [myproc last_bean ::athena::condition]
 
         # last absit
         $interp smartalias {last absit} 0 0 {} \
             [myproc last_absit]
 
-        # last mad
-        $interp smartalias {last mad} 0 0 {} \
-            [myproc last_mad]
-
         # last tactic
         $interp smartalias {last tactic} 0 0 {} \
-            [myproc last_bean ::tactic]
-
-        # last_mad
-        $interp smartalias last_mad 0 0 {} \
-            [myproc last_mad]
+            [myproc last_bean ::athena::tactic]
 
         # load
+        # TBD: Will need to access executive's $adb
         $interp smartalias load 1 1 {filename} \
-            [list scenario open]
+            [list app open]
 
         # lock
         $interp smartalias lock 0 0 {} \
@@ -419,13 +418,18 @@ snit::type executive {
         $interp smartalias log 1 1 {message} \
             [myproc LogCmd]
 
+        # monitor
+        $interp smartalias monitor 0 1 {?flag?} \
+            [list ::flunky monitor]
+
         # nbfill
         $interp smartalias nbfill 1 1 {varname} \
             [list .main nbfill]
 
         # new
+        # TBD: Will need to access executive's $adb
         $interp smartalias new 0 0 {} \
-            [list scenario new]
+            [list app new]
 
         # parm
         $interp ensemble parm
@@ -490,19 +494,19 @@ snit::type executive {
 
         # rdb eval
         $interp smartalias {rdb eval}  1 1 {sql} \
-            [list ::rdb safeeval]
+            [list ::adb safeeval]
 
         # rdb query
         $interp smartalias {rdb query} 1 - {sql ?option value...?} \
-            [list ::rdb safequery]
+            [list ::adb safequery]
 
         # rdb schema
         $interp smartalias {rdb schema} 0 1 {?table?} \
-            [list ::rdb schema]
+            [list ::adb schema]
 
         # rdb tables
         $interp smartalias {rdb tables} 0 0 {} \
-            [list ::rdb tables]
+            [list ::adb tables]
 
         # redo
         $interp smartalias redo 0 0 {} \
@@ -585,7 +589,7 @@ snit::type executive {
             [mytypemethod tactic configure]
 
         $interp smartalias {tactic last} 0 0 {} \
-            [myproc last_bean ::tactic]
+            [myproc last_bean ::athena::tactic]
 
         # tofile
         $interp smartalias tofile 3 3 {filename extension text} \
@@ -2047,10 +2051,10 @@ snit::type executive {
     typemethod {block cget} {block_id {opt ""}} {
         # FIRST, get the block_id
         if {$block_id eq "-"} {
-            set block_id [last_bean ::block]
+            set block_id [last_bean ::athena::block]
         }
 
-        pot valclass block $block_id
+        pot valclass ::athena::block $block_id
 
         # NEXT, get the block data
         set block [pot get $block_id]
@@ -2079,7 +2083,7 @@ snit::type executive {
     typemethod {block configure} {block_id args} {
         # FIRST, get the block_id
         if {$block_id eq "-"} {
-            set block_id [last_bean ::block]
+            set block_id [last_bean ::athena::block]
         }
 
         # NEXT, configure it
@@ -2119,7 +2123,7 @@ snit::type executive {
     typemethod {condition add} {block_id typename args} {
         # FIRST, get the block_id
         if {$block_id eq "-"} {
-            set block_id [last_bean ::block]
+            set block_id [last_bean ::athena::block]
         }
 
         # NEXT, create the condition
@@ -2143,10 +2147,10 @@ snit::type executive {
     typemethod {condition cget} {condition_id {opt ""}} {
         # FIRST, get the condition_id
         if {$condition_id eq "-"} {
-            set condition_id [last_bean ::condition]
+            set condition_id [last_bean ::athena::condition]
         }
 
-        pot valclass condition $condition_id
+        pot valclass ::athena::condition $condition_id
 
         # NEXT, get the condition data
         set condition [pot get $condition_id]
@@ -2175,10 +2179,10 @@ snit::type executive {
     typemethod {condition configure} {condition_id args} {
         # FIRST, get the condition_id
         if {$condition_id eq "-"} {
-            set condition_id [last_bean ::condition]
+            set condition_id [last_bean ::athena::condition]
         }
 
-        pot valclass ::condition $condition_id
+        pot valclass ::athena::condition $condition_id
 
         # NEXT, configure it
         flunky transaction "condition configure..." {
@@ -2334,20 +2338,6 @@ snit::type executive {
         error "last absit: no absits have been created."
     }
 
-    # last_mad
-    #
-    # Returns the ID of the most recently created MAD.
-
-    proc last_mad {} {
-        rdb eval {
-            SELECT mad_id FROM mads ORDER BY mad_id DESC LIMIT 1;
-        } {
-            return $mad_id
-        }
-
-        error "last mad: no MADs have been created."
-    }
-
     # lock
     #
     # Locks the scenario.
@@ -2421,11 +2411,11 @@ snit::type executive {
     #
     # Saves the scenario using the name.  Errors are handled by
     # [app error].
+    #
+    # TBD: Will need to access executive's $adb
 
     proc save {filename} {
-        scenario save $filename
-
-        # Don't let [scenario save]'s return value pass through.
+        app save $filename
         return
     }
     
@@ -2514,7 +2504,7 @@ snit::type executive {
     typemethod {tactic add} {block_id typename args} {
         # FIRST, get the block_id
         if {$block_id eq "-"} {
-            set block_id [last_bean ::block]
+            set block_id [last_bean ::athena::block]
         }
 
         # NEXT, create the tactic
@@ -2538,10 +2528,10 @@ snit::type executive {
     typemethod {tactic cget} {tactic_id {opt ""}} {
         # FIRST, get the tactic_id
         if {$tactic_id eq "-"} {
-            set tactic_id [last_bean ::tactic]
+            set tactic_id [last_bean ::athena::tactic]
         }
 
-        pot valclass tactic $tactic_id
+        pot valclass ::athena::tactic $tactic_id
 
         # NEXT, get the tactic data
         set tactic [pot get $tactic_id]
@@ -2570,10 +2560,10 @@ snit::type executive {
     typemethod {tactic configure} {tactic_id args} {
         # FIRST, get the tactic_id
         if {$tactic_id eq "-"} {
-            set tactic_id [last_bean ::tactic]
+            set tactic_id [last_bean ::athena::tactic]
         }
 
-        pot valclass tactic $tactic_id
+        pot valclass ::athena::tactic $tactic_id
 
         # NEXT, configure it
         flunky transaction "tactic configure..." {

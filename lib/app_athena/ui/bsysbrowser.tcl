@@ -154,10 +154,10 @@ snit::widget bsysbrowser {
         notifier bind ::sim <DbSyncB> $self [mymethod ReloadNow]
         notifier bind ::sim <State>   $self [mymethod ReloadNow]
 
-        notifier bind ::bsys <playbox> $self [mymethod Mon_Playbox] 
-        notifier bind ::bsys <system>  $self [mymethod Mon_System] 
-        notifier bind ::bsys <topic>   $self [mymethod Mon_Topic] 
-        notifier bind ::bsys <belief>  $self [mymethod Mon_Belief] 
+        notifier bind ::adb.bsys <playbox> $self [mymethod Mon_Playbox] 
+        notifier bind ::adb.bsys <system>  $self [mymethod Mon_System] 
+        notifier bind ::adb.bsys <topic>   $self [mymethod Mon_Topic] 
+        notifier bind ::adb.bsys <belief>  $self [mymethod Mon_Belief] 
     }
 
     # Mon_Playbox op id

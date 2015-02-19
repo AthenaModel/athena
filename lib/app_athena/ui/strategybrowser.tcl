@@ -226,23 +226,23 @@ snit::widget strategybrowser {
         # and so the browser's data is reloaded from scratch.  A
         # lazyupdater(n) is used to guarantee that the data is reloaded only
         # once, at the last possible moment.
-        notifier bind ::sim      <DbSyncB> $self [mymethod ReloadNow]
-        notifier bind ::sim      <Tick>    $self [mymethod ReloadOnEvent]
-        notifier bind ::strategy <Check>   $self [mymethod ReloadOnEvent]
+        notifier bind ::sim          <DbSyncB> $self [mymethod ReloadNow]
+        notifier bind ::sim          <Tick>    $self [mymethod ReloadOnEvent]
+        notifier bind ::adb.strategy <Check>   $self [mymethod ReloadOnEvent]
 
         # ACTOR UPDATES
         #
         # When the set of actors changes, the list of names in the alist
         # can change.
 
-        notifier bind ::rdb <actors>  $self [mymethod RdbActors]
+        notifier bind ::adb <actors>  $self [mymethod RdbActors]
 
         # strategy UPDATES
         #
         # When blocks are added to or removed from or moved within the 
         # current strategy, update the bmenu.
 
-        notifier bind ::strategy <blocks>  $self [mymethod StrategyBlocks]
+        notifier bind ::adb.strategy <blocks>  $self [mymethod StrategyBlocks]
 
         # BLOCK UPDATES
         #
@@ -250,13 +250,13 @@ snit::widget strategybrowser {
         # ignored unless the block matches info(block).
 
         # Update to block metadata
-        notifier bind ::block <update>  $self [mymethod BlockUpdate]
+        notifier bind ::adb.block <update>  $self [mymethod BlockUpdate]
 
         # Update to block conditions slot
-        notifier bind ::block <conditions> $self [mymethod BlockConditions]
+        notifier bind ::adb.block <conditions> $self [mymethod BlockConditions]
 
         # Update to block tactics slot
-        notifier bind ::block <tactics> $self [mymethod BlockTactics]
+        notifier bind ::adb.block <tactics> $self [mymethod BlockTactics]
 
         # TACTIC AND CONDITION UPDATES
         #
@@ -268,8 +268,8 @@ snit::widget strategybrowser {
         # OK, because adding or deleting a tactic or condition is properly
         # a change to the block, and is handled there.
 
-        notifier bind ::tactic    <update> $self [list $ttab uid update]
-        notifier bind ::condition <update> $self [list $ctab uid update]
+        notifier bind ::adb.tactic    <update> $self [list $ttab uid update]
+        notifier bind ::adb.condition <update> $self [list $ctab uid update]
 
     }
 
@@ -350,7 +350,7 @@ snit::widget strategybrowser {
     #
     # id    - A block ID
     #
-    # Called on "::block <update> $id", which indicates that the block's
+    # Called on "::adb.block <update> $id", which indicates that the block's
     # metadata has been updated.
 
     method BlockUpdate {id} {
@@ -381,7 +381,7 @@ snit::widget strategybrowser {
     # block_id     - A block ID
     # condition_id - A condition ID
     #
-    # Called on "::block <conditions>", which indicates that a condition
+    # Called on "::adb.block <conditions>", which indicates that a condition
     # has been added or deleted to the block's conditions slot.
 
     method BlockConditions {op block_id condition_id} {
@@ -404,7 +404,7 @@ snit::widget strategybrowser {
     # block_id   - A block ID
     # tactic_id  - A tactic ID
     #
-    # Called on "::block <tactics>", which indicates that a tactic
+    # Called on "::adb.block <tactics>", which indicates that a tactic
     # has been added or deleted to the block's tactics slot.
 
     method BlockTactics {op block_id tactic_id} {
@@ -611,7 +611,7 @@ snit::widget strategybrowser {
             -relief       flat                        \
             -borderwidth  1                           \
             -stripeheight 0                           \
-            -db           ::rdb                       \
+            -db           ::adb                       \
             -view         agents                      \
             -uid          agent_id                    \
             -filterbox    off                         \
@@ -905,7 +905,7 @@ snit::widget strategybrowser {
         }
 
         clipboardx clear
-        clipboardx set ::block $copyData
+        clipboardx set ::athena::block $copyData
 
         # NEXT, if the mode is cut delete the items.
         if {$mode eq "cut"} {
@@ -936,17 +936,15 @@ snit::widget strategybrowser {
         }
 
         # NEXT, get the blocks from the clipboard, if any.
-        set copysets [clipboardx get ::block]
+        set copysets [clipboardx get ::athena::block]
 
         if {[llength $copysets] == 0} {
             bell
             return
         }
 
-        # NEXT, begin an undo block
-        flunky transaction "Paste Block(s)" {
-            block paste $info(agent) $copysets
-        }
+        # NEXT, paste!
+        adb paste block $info(agent) $copysets
 
         app puts "Pasted [llength $copysets] item(s)"
     }
@@ -1320,7 +1318,7 @@ snit::widget strategybrowser {
         }
 
         clipboardx clear
-        clipboardx set ::condition $copyData
+        clipboardx set ::athena::condition $copyData
 
         # NEXT, if the mode is cut delete the items.
         if {$mode eq "cut"} {
@@ -1351,17 +1349,15 @@ snit::widget strategybrowser {
         }
 
         # NEXT, get the conditions from the clipboard, if any.
-        set copysets [clipboardx get ::condition]
+        set copysets [clipboardx get ::athena::condition]
 
         if {[llength $copysets] == 0} {
             bell
             return
         }
 
-        # NEXT, begin an undo block
-        flunky transaction "Paste Condition(s)" {
-            condition paste [$info(block) id] $copysets
-        }
+        # NEXT, paste!
+        adb paste condition [$info(block) id] $copysets
 
         app puts "Pasted [llength $copysets] item(s)"
     }
@@ -1376,7 +1372,7 @@ snit::widget strategybrowser {
         menu $mnu
         $ct_addbtn configure -menu $mnu
 
-        dict for {ctype title} [condition typedict] {
+        dict for {ctype title} [::athena::condition typedict] {
             $mnu add command \
                 -label   $title \
                 -command [mymethod CTabAdd [$ctype typename]]
@@ -1670,7 +1666,7 @@ snit::widget strategybrowser {
         }
 
         clipboardx clear
-        clipboardx set ::tactic $copyData
+        clipboardx set ::athena::tactic $copyData
 
         # NEXT, if the mode is cut delete the items.
         if {$mode eq "cut"} {
@@ -1701,17 +1697,15 @@ snit::widget strategybrowser {
         }
 
         # NEXT, get the tactics from the clipboard, if any.
-        set copysets [clipboardx get ::tactic]
+        set copysets [clipboardx get ::athena::tactic]
 
         if {[llength $copysets] == 0} {
             bell
             return
         }
 
-        # NEXT, begin an undo block
-        flunky transaction "Paste Tactic(s)" {
-            tactic paste [$info(block) id] $copysets
-        }
+        # NEXT, paste!
+        adb paste tactic [$info(block) id] $copysets
 
         app puts "Pasted [llength $copysets] item(s)"
     }
@@ -1731,7 +1725,7 @@ snit::widget strategybrowser {
 
         $tt_addbtn configure -menu $mnu
 
-        foreach ttype [tactic types] {
+        foreach ttype [::athena::tactic types] {
             cond::predicate control \
                 [menuitem $mnu command [$ttype title] \
                     -command [mymethod TTabAdd [$ttype typename]]] \

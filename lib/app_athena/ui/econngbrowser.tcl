@@ -50,10 +50,10 @@ snit::widgetadaptor econngbrowser {
             }
             -reloadon {
                 ::sim <DbSyncB>
-                ::demog <Update>
-                ::rdb <nbhoods>
-                ::rdb <groups>
-                ::rdb <civgroups>
+                ::adb.demog <Update>
+                ::adb <nbhoods>
+                ::adb <groups>
+                ::adb <civgroups>
             }
         }
         econ_disabled {
@@ -70,10 +70,10 @@ snit::widgetadaptor econngbrowser {
             }
             -reloadon {
                 ::sim <DbSyncB>
-                ::demog <Update>
-                ::rdb <nbhoods>
-                ::rdb <groups>
-                ::rdb <civgroups>
+                ::adb.demog <Update>
+                ::adb <nbhoods>
+                ::adb <groups>
+                ::adb <civgroups>
             }
         }
     }
@@ -84,7 +84,7 @@ snit::widgetadaptor econngbrowser {
     constructor {args} {
         # FIRST, Install the hull
         installhull using sqlbrowser                  \
-            -db           ::rdb                       \
+            -db           ::adb                       \
             -view         gui_econ_g                  \
             -uid          id                          \
             -titlecolumns 1                           \

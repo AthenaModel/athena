@@ -77,7 +77,7 @@ snit::widgetadaptor actorbrowser {
     constructor {args} {
         # FIRST, Install the hull
         installhull using sqlbrowser                  \
-            -db           ::rdb                       \
+            -db           ::adb                       \
             -view         gui_actors                  \
             -uid          id                          \
             -titlecolumns 1                           \
@@ -123,7 +123,7 @@ snit::widgetadaptor actorbrowser {
         pack $deletebtn -side right
 
         # NEXT, update individual entities when they change.
-       notifier bind ::rdb <actors> $self [mymethod uid]
+       notifier bind ::adb <actors> $self [mymethod uid]
     }
 
     destructor {

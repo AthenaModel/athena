@@ -194,7 +194,7 @@ namespace eval ::athena_test::tests:: {
         id         *
         name       T*
         parent     *
-        pot        ::pot
+        pot        *::pot
         roles      *
         state      normal
     }
@@ -202,7 +202,7 @@ namespace eval ::athena_test::tests:: {
     test constructor-1.2 {can set options} -setup {
         setup
     } -body {
-        set T1 [tactic::CURSE new -curse DUMMY]
+        set T1 [::athena::tactic::CURSE new -curse DUMMY]
         $T1 get curse
     } -cleanup {
         cleanup

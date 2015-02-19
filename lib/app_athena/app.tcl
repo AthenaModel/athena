@@ -219,24 +219,21 @@ snit::type app {
 
         # NEXT, Create the working scenario RDB and initialize simulation
         # components
-        executive     init
-        parm          init master
-        map           init
-        view          init
-        athena_flunky create ::flunky
-        bsys          init
-        scenario      init
-        nbhood        init
-        sim           init
-        axdb          init
-        beanpot       ::pot -rdb ::rdb
-        strategy      init
+        executive init
+        parm      init master
+        map       init
+        view      init
+        MakeAthena ::adb
+        sim       init
+        axdb      init
 
         coverage_model init
 
         # NEXT, register other saveables
-        scenario register ::pot
-
+        # TODO: saveables need to be per instance of athena, once they
+        # are all internal.
+        athena register ::pot
+ 
         # NEXT, register my:// servers with myagent.
         appserver init
 
@@ -246,7 +243,7 @@ snit::type app {
                  -helpdb    [appdir join docs athena.helpdb] \
                  -headercmd [mytypemethod HelpHeader]]
         myagent register rdb \
-            [rdbserver %AUTO% -rdb ::rdb]
+            [rdbserver %AUTO% -rdb ::adb]
 
 
         # NEXT, bind components together
@@ -265,7 +262,7 @@ snit::type app {
         if {[app tkloaded]} {
             wm withdraw .
             appwin .main -dev $opts(-dev)
-            scenario register .main
+            athena register .main
         }
 
         # NEXT, log that we're up.
@@ -281,7 +278,7 @@ snit::type app {
         # NEXT, if a scenario file is specified on the command line,
         # open it.
         if {[llength $argv] == 1} {
-            scenario open [file normalize [lindex $argv 0]]
+            app open [file normalize [lindex $argv 0]]
         } else {
             # This makes sure that the notifier events are sent that
             # initialize the user interface.
@@ -357,66 +354,7 @@ snit::type app {
         return $::tkLoaded
     }
 
-    # UnexpectedOrderError name errmsg
-    #
-    # name    - The order name
-    # errmsg  - The error message
-    # einfo   - Error info (the stack trace)
-    #
-    # Handles unexpected order errors.
-
-    proc UnexpectedOrderError {name errmsg einfo} {
-        log error app "Unexpected error in $name:\n$errmsg"
-        log error app "Stack Trace:\n$einfo"
-
-        app showlog
-
-        app error {
-            |<--
-            $name
-
-            There was an unexpected error during the 
-            handling of this order.  The scenario has 
-            been rolled back to its previous state, so 
-            the application data  should not be 
-            corrupted.  However:
-
-            * You should probably save the scenario under
-              a new name, just in case.
-
-            * The error has been logged in detail.  Please
-              contact JPL to get the problem fixed.
-        }
-
-        if {[sim state] eq "RUNNING"} {
-            sim mutate pause
-        }
-
-        sim dbsync
-
-        return "Unexpected error while handling order."
-    }
-
-    # FormatRejectionForCLI errdict
-    #
-    # errdict     A REJECT error dictionary
-    #
-    # Formats the rejection error dictionary for display at the console.
     
-    proc FormatRejectionForCLI {errdict} {
-        if {[dict exists $errdict *]} {
-            lappend out [dict get $errdict *]
-        }
-
-        dict for {parm msg} $errdict {
-            if {$parm ne "*"} {
-                lappend out "$parm: $msg"
-            }
-        }
-
-        return [join $out \n]
-    }
-
     # CreateStateControllers
     #
     # Creates a family of statecontroller(n) objects to manage
@@ -480,7 +418,7 @@ snit::type app {
         # Objdict:   order   THE:ORDER:NAME
 
         statecontroller ::cond::available -events {
-            ::flunky <Sync>
+            ::adb.flunky <Sync>
         } -condition {
             [::flunky available $order]
         }
@@ -501,7 +439,7 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableSingle -events {
-            ::flunky <Sync>
+            ::adb.flunky <Sync>
         } -condition {
             [::flunky available $order]                &&
             [llength [$browser curselection]] == 1
@@ -514,7 +452,7 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableMulti -events {
-            ::flunky <Sync>
+            ::adb.flunky <Sync>
         } -condition {
             [::flunky available $order]              &&
             [llength [$browser curselection]] > 0
@@ -527,7 +465,7 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableCanDelete -events {
-            ::flunky <Sync>
+            ::adb.flunky <Sync>
         } -condition {
             [::flunky available $order] &&
             [$browser candelete]
@@ -540,7 +478,7 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableCanUpdate -events {
-            ::flunky <Sync>
+            ::adb.flunky <Sync>
         } -condition {
             [::flunky available $order] &&
             [$browser canupdate]
@@ -553,7 +491,7 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableCanResolve -events {
-            ::flunky <Sync>
+            ::adb.flunky <Sync>
         } -condition {
             [::flunky available $order] &&
             [$browser canresolve]
@@ -814,7 +752,7 @@ snit::type app {
         set order [string toupper $order]
 
         order_dialog enter \
-            -resources [dict create db_ ::rdb]     \
+            -resources [dict create adb_ [::adb athenadb] db_ ::adb] \
             -parmdict  $parmdict                   \
             -appname   "Athena [kiteinfo version]" \
             -flunky    ::flunky                    \
@@ -822,9 +760,9 @@ snit::type app {
             -master    [app topwin]                \
             -helpcmd   [list app help]             \
             -refreshon {
-                ::flunky <Sync>
-                ::sim    <Tick>
-                ::sim    <DbSyncB>
+                ::adb.flunky <Sync>
+                ::sim        <Tick>
+                ::sim        <DbSyncB>
             }
     }
 
@@ -885,7 +823,7 @@ snit::type app {
         if {[regexp {^order/([A-Za-z0-9:]+)$} $parts(path) dummy order]} {
             set order [string toupper $order]
 
-            if {[myorders exists $order]} {
+            if {[::athena::orders exists $order]} {
                 set parms [split $parts(query) "=+"]
                 if {[catch {
                     app enter $order $parms
@@ -933,7 +871,161 @@ snit::type app {
             $message
         }
     }
+
+    #-------------------------------------------------------------------
+    # Scenario Management
+    #
+    # These are the routines to be used by the rest of the application
+    # to manage the scenario as a whole.  They delegate the bulk of
+    # the work to the scenario object, providing only the application's
+    # policy and error handling glue.
+
+    # new
+    #
+    # Creates a new scenario, throwing away unsaved changes.
+
+    typemethod new {} {
+        require {[sim stable]} "A new scenario cannot be created in this state."
+
+        # FIRST, unlock the scenario if it is locked; this
+        # will reinitialize modules like URAM.
+        if {[sim state] ne "PREP"} {
+            sim mutate unlock
+        }
+
+        # NEXT, create a new, blank scenario
+        ::adb destroy
+        MakeAthena ::adb
+
+        # NEXT, log it.
+        log newlog new
+        log normal scenario "New Scenario: Untitled"
+
+        app puts "New scenario created"
+
+        # NEXT, Resync the app with the RDB.
+        sim dbsync
+    }
+
+    # open filename
+    #
+    # filename - The name of the .adb file to open.
+    #
+    # Opens and loads an existing scenario, throwing away unsaved 
+    # changes.
     
+    typemethod open {filename} {
+        require {[sim stable]} "A new scenario cannot be opened in this state."
+
+        # FIRST, try to open the scenario.
+        try {
+            ::adb destroy
+            MakeAthena ::adb $filename
+        } trap {SCENARIO OPEN} {result} {
+            # At least have an empty scenario.
+            MakeAthena ::adb
+            
+            # Report the error
+            app error {
+                |<--
+                Could not open scenario
+
+                    $filename
+
+                $result
+            }
+            return
+        }
+
+        # NEXT, set the current working directory to the scenario
+        # file location.
+        catch {cd [file dirname [file normalize $filename]]}
+
+        # NEXT, log it.
+        log newlog open
+        log normal scenario "Open Scenario: $filename"
+
+        app puts "Opened Scenario [file tail $filename]"
+
+        # NEXT, Resync the app with the RDB.
+        sim dbsync
+    }
+
+    # save ?filename?
+    #
+    # filename - A new file name
+    #
+    # Saves the current scenario using the existing name.
+
+    typemethod save {{filename ""}} {
+        require {[sim stable]} "The scenario cannot be saved in this state."
+
+        # FIRST, notify the simulation that we're saving, so other
+        # modules can prepare.
+        notifier send ::scenario <Saving>
+
+        # NEXT, save the scenario to disk.
+        try {
+            adb save $filename
+        } trap {SCENARIO SAVE} {result eopts} {
+            log warning scenario "Could not save: $result"
+            log error scenario [dict get $eopts -errorinfo]
+            app error {
+                |<--
+                Could not save as
+
+                    $filename
+
+                $result
+            }
+
+            return
+        }
+
+        # NEXT, set the current working directory to the scenario
+        # file location.
+        catch {cd [file dirname [file normalize $filename]]}
+
+        # NEXT, log it.
+        if {$filename ne ""} {
+            log newlog saveas
+        }
+
+        log normal scenario "Save Scenario: [adb adbfile]"
+
+        app puts "Saved Scenario [file tail [adb adbfile]]"
+
+        notifier send $type <ScenarioSaved>
+
+        return
+    }
+
+    # revert
+    #
+    # Revert the current scenario to its last save (or to the 
+    # default initial scenario if there is none).
+
+    typemethod revert {} {
+        if {[adb adbfile] ne ""} {
+            app open [adb adbfile]
+        } else {
+            app new
+        }
+    }
+
+    # MakeAthena name ?filename?
+    #
+    # name     - The command name
+    # filename - An .adb file name, or ""
+    #
+    # Creates the ::adb object.
+
+    proc MakeAthena {name {filename ""}} {
+        athena create $name \
+            -adbfile $filename \
+            -logcmd  ::log     \
+            -subject ::adb
+    }
 }
 
 

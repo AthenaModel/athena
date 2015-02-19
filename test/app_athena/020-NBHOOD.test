@@ -281,27 +281,27 @@ polygon       *
     } -result {0.0}
 
     test CREATE-2.5 {Effects} -body {
-        ted notifier bind ::rdb <nbhoods>
+        ted notifier bind ::adb <nbhoods>
         ted order NBHOOD:CREATE $nb1
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <nbhoods> update NB1}
-        {::rdb <nbhoods> update NB1}
+        {::adb <nbhoods> update NB1}
+        {::adb <nbhoods> update NB1}
     }
 
 
     test CREATE-3.1 {undo effects} -setup {
         ted order NBHOOD:CREATE $nb1
     } -body {
-        ted notifier bind ::rdb <nbhoods>
+        ted notifier bind ::adb <nbhoods>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <nbhoods> delete NB1}
+        {::adb <nbhoods> delete NB1}
     }
 
     #-------------------------------------------------------------------
@@ -465,27 +465,27 @@ local         1
     } -result {RAW1}
 
     test CREATE_RAW-2.4 {Effects} -body {
-        ted notifier bind ::rdb <nbhoods>
+        ted notifier bind ::adb <nbhoods>
         ted order NBHOOD:CREATE:RAW $rawnb1
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <nbhoods> update RAW1}
-        {::rdb <nbhoods> update RAW1}
+        {::adb <nbhoods> update RAW1}
+        {::adb <nbhoods> update RAW1}
     }
 
 
     test CREATE_RAW-3.1 {undo effects} -setup {
         ted order NBHOOD:CREATE:RAW $rawnb1
     } -body {
-        ted notifier bind ::rdb <nbhoods>
+        ted notifier bind ::adb <nbhoods>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <nbhoods> delete RAW1}
+        {::adb <nbhoods> delete RAW1}
     }
 
 
@@ -507,13 +507,13 @@ local         1
     test DELETE-2.1 {Effects} -setup {
         ted create NB1
     } -body {
-        ted notifier bind ::rdb <nbhoods>
+        ted notifier bind ::adb <nbhoods>
         ted order NBHOOD:DELETE n NB1
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <nbhoods> delete NB1}
+        {::adb <nbhoods> delete NB1}
     }
 
 
@@ -521,13 +521,13 @@ local         1
         ted create NB1
         ted order NBHOOD:DELETE n NB1
     } -body {
-        ted notifier bind ::rdb <nbhoods>
+        ted notifier bind ::adb <nbhoods>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <nbhoods> update NB1}
+        {::adb <nbhoods> update NB1}
     }
 
 
@@ -565,13 +565,13 @@ OV1 Over     1              NB1
         ted order NBHOOD:CREATE $nb1
         ted order NBHOOD:CREATE $overnb1
     } -body {
-        ted notifier bind ::nbhood <Stack>
+        ted notifier bind ::adb.nbhood <Stack>
         ted order NBHOOD:LOWER n OV1
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::nbhood <Stack>}
+        {::adb.nbhood <Stack>}
     }
 
     test LOWER-3.1 {Undo} -setup {
@@ -624,13 +624,13 @@ OV1 Over     1              NB1
         ted order NBHOOD:CREATE $nb1
         ted order NBHOOD:CREATE $overnb1
     } -body {
-        ted notifier bind ::nbhood <Stack>
+        ted notifier bind ::adb.nbhood <Stack>
         ted order NBHOOD:RAISE n NB1
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::nbhood <Stack>}
+        {::adb.nbhood <Stack>}
     }
 
     test RAISE-3.1 {Undo} -setup {
@@ -796,13 +796,13 @@ polygon       0.0*
     test UPDATE-2.2 {table monitor event} -setup {
         ted order NBHOOD:CREATE $nb1
     } -body {
-        ted notifier bind ::rdb <nbhoods>
+        ted notifier bind ::adb <nbhoods>
         ted order NBHOOD:UPDATE n NB1 longname "Not Here"
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <nbhoods> update NB1}
+        {::adb <nbhoods> update NB1}
     }
 
 
@@ -810,13 +810,13 @@ polygon       0.0*
         ted order NBHOOD:CREATE $nb1
         ted order NBHOOD:UPDATE [dict merge $overnb1 {n NB1}]
     } -body {
-        ted notifier bind ::rdb <nbhoods>
+        ted notifier bind ::adb <nbhoods>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <nbhoods> update NB1}
+        {::adb <nbhoods> update NB1}
     }
 
     #-------------------------------------------------------------------
@@ -872,27 +872,27 @@ polygon       0.0*
         ted order NBHOOD:CREATE $nb1
         ted order NBHOOD:CREATE $nb2
     } -body {
-        ted notifier bind ::rdb <nbhoods>
+        ted notifier bind ::adb <nbhoods>
         ted order NBHOOD:UPDATE:MULTI ids NB1 urbanization SUBURBAN
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <nbhoods> update NB1}
+        {::adb <nbhoods> update NB1}
     }
 
     test UPDATE:MULTI-2.2 {several nbhoods are updated} -setup {
         ted order NBHOOD:CREATE $nb1
         ted order NBHOOD:CREATE $nb2
     } -body {
-        ted notifier bind ::rdb <nbhoods>
+        ted notifier bind ::adb <nbhoods>
         ted order NBHOOD:UPDATE:MULTI ids {NB1 NB2} urbanization SUBURBAN
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <nbhoods> update NB1}
-        {::rdb <nbhoods> update NB2}
+        {::adb <nbhoods> update NB1}
+        {::adb <nbhoods> update NB2}
     }
 
 
@@ -901,14 +901,14 @@ polygon       0.0*
         ted order NBHOOD:CREATE $nb2
         ted order NBHOOD:UPDATE:MULTI ids {NB1 NB2} urbanization SUBURBAN
     } -body {
-        ted notifier bind ::rdb <nbhoods>
+        ted notifier bind ::adb <nbhoods>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <nbhoods> update NB1}
-        {::rdb <nbhoods> update NB2}
+        {::adb <nbhoods> update NB1}
+        {::adb <nbhoods> update NB2}
     }
 
 

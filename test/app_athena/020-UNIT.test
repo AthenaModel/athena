@@ -119,14 +119,14 @@ namespace eval ::athena_test::tests:: {
     test MOVE-2.2 {table monitor event} -setup {
         setup
     } -body {
-        ted notifier bind ::rdb <units>
+        ted notifier bind ::adb <units>
         set loc [latlong tomgrs {1.1 1.1}]
         ted order UNIT:MOVE u BLUE/NB1 location $loc
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <units> update BLUE/NB1}
+        {::adb <units> update BLUE/NB1}
     }
 
 
@@ -135,13 +135,13 @@ namespace eval ::athena_test::tests:: {
         set loc [latlong tomgrs {1.1 1.1}]        
         ted order UNIT:MOVE u BLUE/NB1 location $loc
     } -body {
-        ted notifier bind ::rdb <units>
+        ted notifier bind ::adb <units>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <units> update BLUE/NB1}
+        {::adb <units> update BLUE/NB1}
     }
 
 

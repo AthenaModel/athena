@@ -77,26 +77,26 @@ namespace eval ::athena_test::tests:: {
     } -result {gamma .25}
 
     test PLAYBOX:UPDATE-2.2 {playbox is updated} -body {
-        ted notifier bind ::bsys <playbox>
+        ted notifier bind ::adb.bsys <playbox>
         ted order BSYS:PLAYBOX:UPDATE gamma 0.25
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::bsys <playbox> update {}}
+        {::adb.bsys <playbox> update {}}
     }
 
 
     test PLAYBOX:UPDATE-3.1 {undo effects} -setup {
         ted order BSYS:PLAYBOX:UPDATE gamma 0.25
     } -body {
-        ted notifier bind ::bsys <playbox>
+        ted notifier bind ::adb.bsys <playbox>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::bsys <playbox> update {}}
+        {::adb.bsys <playbox> update {}}
     }
 
     #-------------------------------------------------------------------
@@ -135,15 +135,15 @@ namespace eval ::athena_test::tests:: {
     } -result {5}
 
     test SYSTEM:ADD-2.3 {notifications} -body {
-        ted notifier bind ::bsys <system>
+        ted notifier bind ::adb.bsys <system>
         ted order BSYS:SYSTEM:ADD {}
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::bsys <system> add 2}
-        {::bsys <system> delete 2}
+        {::adb.bsys <system> add 2}
+        {::adb.bsys <system> delete 2}
     }
 
     #-------------------------------------------------------------------
@@ -204,7 +204,7 @@ namespace eval ::athena_test::tests:: {
     test SYSTEM:UPDATE-2.2 {notifications} -setup {
         set sid [ted order BSYS:SYSTEM:ADD {}]
     } -body {
-        ted notifier bind ::bsys <system>
+        ted notifier bind ::adb.bsys <system>
         ted order BSYS:SYSTEM:UPDATE sid $sid \
             name        FRED  \
             commonality 0.5
@@ -213,8 +213,8 @@ namespace eval ::athena_test::tests:: {
     } -cleanup {
         cleanup
     } -result {
-        {::bsys <system> update 2}
-        {::bsys <system> update 2}
+        {::adb.bsys <system> update 2}
+        {::adb.bsys <system> update 2}
     }
 
     test SYSTEM:UPDATE-2.3 {can rename with same name} -setup {
@@ -250,7 +250,7 @@ namespace eval ::athena_test::tests:: {
     test SYSTEM:DELETE-1.4 {can't delete if in use by actor} -setup {
         ted create JOE
         ted order BSYS:SYSTEM:ADD sid 2
-        actor mutate update {a JOE bsid 2}
+        actor update {a JOE bsid 2}
     } -body {
         ted order -reject BSYS:SYSTEM:DELETE sid 2
     } -cleanup {
@@ -262,7 +262,7 @@ namespace eval ::athena_test::tests:: {
     test SYSTEM:DELETE-1.5 {can't delete if in use by group} -setup {
         ted create SHIA
         ted order BSYS:SYSTEM:ADD sid 2
-        civgroup mutate update {g SHIA bsid 2}
+        civgroup update {g SHIA bsid 2}
     } -body {
         ted order -reject BSYS:SYSTEM:DELETE sid 2
     } -cleanup {
@@ -282,15 +282,15 @@ namespace eval ::athena_test::tests:: {
     } -result {1}
 
     test SYSTEM:DELETE-2.2 {notifications} -body {
-        ted notifier bind ::bsys <system>
+        ted notifier bind ::adb.bsys <system>
         ted order BSYS:SYSTEM:ADD {}
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::bsys <system> add 2}
-        {::bsys <system> delete 2}
+        {::adb.bsys <system> add 2}
+        {::adb.bsys <system> delete 2}
     }
 
 
@@ -345,15 +345,15 @@ namespace eval ::athena_test::tests:: {
 
 
     test TOPIC:ADD-2.3 {effects} -body {
-        ted notifier bind ::bsys <topic>
+        ted notifier bind ::adb.bsys <topic>
         ted order BSYS:TOPIC:ADD
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::bsys <topic> add 1}
-        {::bsys <topic> delete 1}
+        {::adb.bsys <topic> add 1}
+        {::adb.bsys <topic> delete 1}
     }
 
     #-------------------------------------------------------------------
@@ -375,12 +375,12 @@ namespace eval ::athena_test::tests:: {
     test TOPIC:DELETE-1.3 {can't delete if in use by a hook} -setup {
         ted create JOE
         ted order BSYS:TOPIC:ADD tid 1
-        hook mutate create {
+        hook create {
             hook_id H1
             longname H1
             narrative H1
         }
-        hook mutate topic create {
+        hook topic create {
             hook_id H1
             topic_id 1
             position 0.0
@@ -397,15 +397,15 @@ namespace eval ::athena_test::tests:: {
     test TOPIC:DELETE-2.1 {Effects} -setup {
         set tid [ted order BSYS:TOPIC:ADD]
     } -body {
-        ted notifier bind ::bsys <topic>
+        ted notifier bind ::adb.bsys <topic>
         ted order BSYS:TOPIC:DELETE tid $tid
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::bsys <topic> delete 1}
-        {::bsys <topic> add 1}
+        {::adb.bsys <topic> delete 1}
+        {::adb.bsys <topic> add 1}
     }
 
     #-------------------------------------------------------------------
@@ -470,7 +470,7 @@ namespace eval ::athena_test::tests:: {
     test TOPIC:UPDATE-2.3 {notifications} -setup {
         set tid [ted order BSYS:TOPIC:ADD]
     } -body {
-        ted notifier bind ::bsys <topic>
+        ted notifier bind ::adb.bsys <topic>
         ted order BSYS:TOPIC:UPDATE \
             tid $tid name "New Title" affinity no
         flunky undo
@@ -478,8 +478,8 @@ namespace eval ::athena_test::tests:: {
     } -cleanup {
         cleanup
     } -result {
-        {::bsys <topic> update 1}
-        {::bsys <topic> update 1}
+        {::adb.bsys <topic> update 1}
+        {::adb.bsys <topic> update 1}
     }
 
     test TOPIC:UPDATE-2.3 {can rename with same name} -setup {
@@ -579,7 +579,7 @@ namespace eval ::athena_test::tests:: {
         set sid [ted order BSYS:SYSTEM:ADD {}]
         set tid [ted order BSYS:TOPIC:ADD]
     } -body {
-        ted notifier bind ::bsys <belief>
+        ted notifier bind ::adb.bsys <belief>
         ted order BSYS:BELIEF:UPDATE \
             bid [list $sid $tid] position 0.1 emphasis 0.2
         flunky undo
@@ -587,8 +587,8 @@ namespace eval ::athena_test::tests:: {
     } -cleanup {
         cleanup
     } -result {
-        {::bsys <belief> update {2 1}}
-        {::bsys <belief> update {2 1}}
+        {::adb.bsys <belief> update {2 1}}
+        {::adb.bsys <belief> update {2 1}}
     }
     #-------------------------------------------------------------------
     # Cleanup

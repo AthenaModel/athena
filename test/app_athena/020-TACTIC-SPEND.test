@@ -226,7 +226,7 @@ namespace eval ::athena_test::tests:: {
         parent     *
         percent    0.0
         pop        1
-        pot        ::pot
+        pot        *::pot
         region     1
         state      normal
         world      1
@@ -256,7 +256,7 @@ namespace eval ::athena_test::tests:: {
         parent     *
         percent    0.0
         pop        1
-        pot        ::pot
+        pot        *::pot
         region     1
         state      normal
         world      1
@@ -286,7 +286,7 @@ namespace eval ::athena_test::tests:: {
         parent     *
         percent    10.0
         pop        1
-        pot        ::pot
+        pot        *::pot
         region     1
         state      normal
         world      1
@@ -316,7 +316,7 @@ namespace eval ::athena_test::tests:: {
         parent     *
         percent    0.0
         pop        1
-        pot        ::pot
+        pot        *::pot
         region     1
         state      normal
         world      1

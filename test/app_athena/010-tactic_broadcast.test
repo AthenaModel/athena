@@ -46,7 +46,7 @@ namespace eval ::athena_test::tests:: {
         ted create JOE BOB CBS CNN IOM1 IOM2 BLUE
 
         cash load
-        set coffer [coffer new JOE]
+        set coffer [::athena::coffer new [::adb athenadb] JOE]
 
         set T1 {
             cap         CBS
@@ -59,14 +59,14 @@ namespace eval ::athena_test::tests:: {
         bsys topic add 1
         bsys topic configure 1 -name TBD
 
-        payload mutate create {
+        payload create {
             iom_id       IOM1
             payload_type COOP 
             g            BLUE
             mag          1.0
         }
 
-        hook mutate topic create [dict create \
+        hook topic create [dict create \
             hook_id  HOOK1 \
             topic_id 1     \
             position 0.9]
@@ -79,7 +79,7 @@ namespace eval ::athena_test::tests:: {
             set T1 [ted addtactic $B1 BROADCAST]
         }
 
-        tactic::BROADCAST reset
+        broadcast reset
     }
 
     # Clean up after a test
@@ -88,7 +88,7 @@ namespace eval ::athena_test::tests:: {
         variable coffer
         $coffer destroy
         ted cleanup
-        tactic::BROADCAST reset
+        broadcast reset
     }
 
 
@@ -110,7 +110,7 @@ namespace eval ::athena_test::tests:: {
         iom        {}
         name       T*
         parent     *
-        pot        ::pot
+        pot        *::pot
         state      invalid
     }
 
@@ -131,7 +131,7 @@ namespace eval ::athena_test::tests:: {
         iom        IOM1
         name       T*
         parent     *
-        pot        ::pot
+        pot        *::pot
         state      invalid
     }
 

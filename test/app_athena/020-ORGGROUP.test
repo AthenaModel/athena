@@ -206,13 +206,13 @@ base_personnel  1000
     test CREATE-2.3 {Effects} -setup {
         ted create JOE
     } -body {
-        ted notifier bind ::rdb <orggroups>
+        ted notifier bind ::adb <orggroups>
         ted order ORGGROUP:CREATE $usaid
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <orggroups> update USAID}
+        {::adb <orggroups> update USAID}
     }
 
 
@@ -220,13 +220,13 @@ base_personnel  1000
         ted create JOE
         ted order ORGGROUP:CREATE $usaid
     } -body {
-        ted notifier bind ::rdb <orggroups>
+        ted notifier bind ::adb <orggroups>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <orggroups> delete USAID}
+        {::adb <orggroups> delete USAID}
     }
 
 
@@ -250,13 +250,13 @@ base_personnel  1000
     test DELETE-2.1 {Effects} -setup {
         ted create USAID
     } -body {
-        ted notifier bind ::rdb <orggroups>
+        ted notifier bind ::adb <orggroups>
         ted order ORGGROUP:DELETE g USAID
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <orggroups> delete USAID}
+        {::adb <orggroups> delete USAID}
     }
 
 
@@ -264,13 +264,13 @@ base_personnel  1000
         ted create USAID
         ted order ORGGROUP:DELETE g USAID
     } -body {
-        ted notifier bind ::rdb <orggroups>
+        ted notifier bind ::adb <orggroups>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <orggroups> update USAID}
+        {::adb <orggroups> update USAID}
     }
 
 
@@ -369,13 +369,13 @@ base_personnel  1000
     test UPDATE-2.2 {table monitor event} -setup {
         ted create USAID
     } -body {
-        ted notifier bind ::rdb <orggroups>
+        ted notifier bind ::adb <orggroups>
         ted order ORGGROUP:UPDATE g USAID longname "Red Cross"
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <orggroups> update USAID}
+        {::adb <orggroups> update USAID}
     }
 
 
@@ -387,13 +387,13 @@ base_personnel  1000
             color          "#ff0000"
         }
     } -body {
-        ted notifier bind ::rdb <orggroups>
+        ted notifier bind ::adb <orggroups>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <orggroups> update USAID}
+        {::adb <orggroups> update USAID}
     }
 
     #-------------------------------------------------------------------
@@ -481,7 +481,7 @@ base_personnel  1000
     test UPDATE:MULTI-2.1 {one orggroup of several is updated} -setup {
         ted create USAID HAL
     } -body {
-        ted notifier bind ::rdb <orggroups>
+        ted notifier bind ::adb <orggroups>
 
         ted order ORGGROUP:UPDATE:MULTI {
             ids            USAID 
@@ -493,13 +493,13 @@ base_personnel  1000
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <orggroups> update USAID}
+        {::adb <orggroups> update USAID}
     }
 
     test UPDATE:MULTI-2.2 {several orggroups are updated} -setup {
         ted create USAID HAL
     } -body {
-        ted notifier bind ::rdb <orggroups>
+        ted notifier bind ::adb <orggroups>
 
         ted order ORGGROUP:UPDATE:MULTI {
             ids            {USAID HAL}
@@ -511,8 +511,8 @@ base_personnel  1000
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <orggroups> update USAID}
-        {::rdb <orggroups> update HAL}
+        {::adb <orggroups> update USAID}
+        {::adb <orggroups> update HAL}
     }
 
 
@@ -521,14 +521,14 @@ base_personnel  1000
         ted order ORGGROUP:UPDATE:MULTI \
             ids {USAID HAL} color "#ff0000"
     } -body {
-        ted notifier bind ::rdb <orggroups>
+        ted notifier bind ::adb <orggroups>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <orggroups> update USAID}
-        {::rdb <orggroups> update HAL}
+        {::adb <orggroups> update USAID}
+        {::adb <orggroups> update HAL}
     }
 
 

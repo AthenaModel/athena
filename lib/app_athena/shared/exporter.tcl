@@ -95,7 +95,7 @@ snit::type exporter {
         set f [open $scriptFile w]
 
         # NEXT, write a header
-        puts $f "# Exporting [scenario dbfile] from history"
+        puts $f "# Exporting [adb adbfile] from history"
         puts $f "# Exported @ [clock format [clock seconds]]"
         puts $f "# Written by Athena version [version]"
 
@@ -177,7 +177,7 @@ snit::type exporter {
 
     proc ExportFromData {f} {
         # FIRST, write header.
-        puts $f "# Exporting [scenario dbfile] from current data"
+        puts $f "# Exporting [adb adbfile] from current data"
         puts $f "# Exported @ [clock format [clock seconds]]"
         puts $f "# Written by Athena version [version]"
         puts $f "#"
@@ -337,10 +337,6 @@ snit::type exporter {
             SELECT * FROM gui_payloads WHERE state != 'normal'
         }
 
-        # NEXT, MADs
-        SectionHeader $f "Magic Attitude Drivers (MADs)"
-        FromRDB $f MAD:CREATE {SELECT * FROM mads}
-
         # NEXT, Strategies
         foreach agent [agent names] {
             SectionHeader $f "Strategy: $agent"
@@ -408,7 +404,7 @@ snit::type exporter {
 
     proc FromParms {f order args} {
         # FIRST, get the parameters we care about.
-        set parms [myorders parms $order]
+        set parms [::athena::orders parms $order]
 
         # NEXT, extract the available parameters from the args.
         dict for {parm value} $args {
@@ -433,7 +429,7 @@ snit::type exporter {
 
     proc FromRDB {f order query {exceptions ""}} {
         # FIRST, get the parameters we care about.
-        set parms [myorders parms $order]
+        set parms [::athena::orders parms $order]
 
         foreach exception $exceptions {
             ldelete parms $exception
@@ -492,7 +488,7 @@ snit::type exporter {
     # Returns a dictionary of order parameter options.
     
     proc FromBean {order idvar bean} {
-        set parms [myorders parms $order]
+        set parms [::athena::orders parms $order]
         ldelete parms $idvar
 
         set view [$bean view]

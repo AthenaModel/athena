@@ -9,18 +9,7 @@
 An Info Operations Message (IOM) payload is an action attached to an
 IOM that affects one or more attitudes, e.g., satisfaction levels or
 relationships. Each payload type is defined by a Snit type
-ensemble within the ::payload:: namespace, and is created using the
-payload(sim) "type define" subcommand.  For example, the COOP
-payload is defined by code that looks like
-
-<pre>
-payload type define COOP {g mag} {
-    # Definition script
-}
-</pre>
-
-resulting in a type ensemble called <code>payload::COOP</code>.  The
-definition script is simply a Snit type ensemble definition script.<p>
+ensemble within the ::payload:: namespace.
 
 Every payload ensemble must implement the subcommands defined
 in this interface; it may also define other commands as needed.<p>

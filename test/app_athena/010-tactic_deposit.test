@@ -43,7 +43,7 @@ namespace eval ::athena_test::tests:: {
         variable coffer
         ted create JOE BOB NB1 NB2 BLUE BRIT SHIA SUNN KURD
         cash load
-        set coffer [coffer new JOE]
+        set coffer [::athena::coffer new [::adb athenadb] JOE]
 
 
         set B1 [ted addblock JOE]
@@ -76,14 +76,14 @@ namespace eval ::athena_test::tests:: {
         name       T*
         parent     *
         percent    0.0
-        pot        ::pot
+        pot        *::pot
         state      normal
     }
 
      test constructor-1.2 {can set options} -setup {
         setup
     } -body {
-        set T1 [tactic::DEPOSIT new -parent DUMMY]
+        set T1 [::athena::tactic::DEPOSIT new -parent DUMMY]
         $T1 get parent
     } -cleanup {
         cleanup

@@ -47,7 +47,7 @@ snit::widgetadaptor nbrelbrowser {
     constructor {args} {
         # FIRST, Install the hull
         installhull using sqlbrowser                  \
-            -db           ::rdb                       \
+            -db           ::adb                       \
             -view         gui_nbrel_mn                \
             -uid          id                          \
             -titlecolumns 2                           \
@@ -74,7 +74,7 @@ snit::widgetadaptor nbrelbrowser {
         pack $editbtn   -side left
 
         # NEXT, update individual entities when they change.
-        notifier bind ::rdb <nbrel_mn> $self [mymethod uid]
+        notifier bind ::adb <nbrel_mn> $self [mymethod uid]
     }
 
     #-------------------------------------------------------------------

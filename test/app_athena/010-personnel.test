@@ -44,7 +44,7 @@ namespace eval ::athena_test::tests:: {
     }
 
     proc setup {} {
-        ted create NB1 NB2 BLUE BRIT HAL
+        ted create NB1 NB2 BLUE BRIT HAL SHIA SUNN KURD
     }
 
     #-------------------------------------------------------------------
@@ -120,6 +120,16 @@ NB2 BLUE 0         0
 NB2 BRIT 0         0          
 NB2 HAL  0         0          
     }
+
+    test load-1.3 {clears pending flows} -setup {
+        setup
+        personnel start
+    } -body {
+        personnel load
+        personnel pendingFlows
+    } -cleanup {
+        cleanup
+    } -result {}
 
 
     #-------------------------------------------------------------------
@@ -228,6 +238,23 @@ HAL  2000      2000
     }
 
     #-------------------------------------------------------------------
+    # flow
+
+    test flow-1.1 {saves population flow} -setup {
+        setup
+        personnel start
+        personnel load
+    } -body {
+        personnel flow SHIA SUNN 6000
+        personnel flow SHIA KURD 7000
+
+        personnel pendingFlows
+    } -cleanup {
+        cleanup
+    } -result {SHIA SUNN 6000 SHIA KURD 7000}
+
+
+    #-------------------------------------------------------------------
     # save
 
     test save-1.1 {Logs changed deployments} -setup {
@@ -288,6 +315,25 @@ g    personnel
 BLUE 2000      
 BRIT 0         
 HAL  0         
+    }
+
+    test save-1.4 {Saves pending flows} -setup {
+        setup
+        ted lock
+        personnel load
+        personnel flow SHIA SUNN 1000
+    } -body {
+        personnel save
+
+        ted query {SELECT g, population FROM demog_g}
+    } -cleanup {
+        cleanup
+    } -result {
+g    population 
+---- ---------- 
+SHIA 0          
+SUNN 2000       
+KURD 1000       
     }
 
     #-------------------------------------------------------------------

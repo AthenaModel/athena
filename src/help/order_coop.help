@@ -21,9 +21,7 @@ page /order coop "Cooperation Orders" {
     in the TRAC HUMINT methodology: the likelihood that a member of
     the civilian group will give intelligence to a member of the force
     group.  This family of orders are used to manipulate the
-    initial baseline cooperation levels between various groups.  (Use the
-    <cref /order/mad/coop> to adjust or otherwise influence the 
-    cooperation levels during simulation.)<p>
+    initial baseline cooperation levels between various groups.<p>
 
     The full set of orders is as follows:<p>
 
@@ -67,9 +65,6 @@ order COOP:UPDATE "Update Initial Cooperation" {
     <b><term prep> Only.</b>  This order updates the initial baseline
     cooperation level of one group with another; this can only be done
     during the Scenario Preparation phase.<p>
-
-    (Use the <cref /order/mad> to adjust or otherwise influence the 
-    cooperation levels during simulation.)
 }
 
 #-----------------------------------------------------------------------
@@ -110,9 +105,6 @@ order COOP:UPDATE+MULTI "Update Initial Cooperation (Multi)" {
     <b><term prep> Only.</b>  This order updates the initial baseline
     cooperation level for two or more cooperation curves, as selected 
     in the GUI.<p>
-
-    (Use the <cref /order/mad> to adjust or otherwise influence the 
-    cooperation levels during simulation.)
 }
 
 

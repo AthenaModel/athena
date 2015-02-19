@@ -887,7 +887,7 @@ snit::type plant {
 # Creates an allocation of shares of GOODS production plants for an
 # agent in a neighborhood.
 
-myorders define PLANT:SHARES:CREATE {
+::athena::orders define PLANT:SHARES:CREATE {
     meta title "Allocate GOODS Production Capacity Shares"
 
     meta parmlist {a n {rho 1.0} {num 1}}
@@ -935,7 +935,7 @@ myorders define PLANT:SHARES:CREATE {
 #
 # Removes an allocation of shares from the database
 
-myorders define PLANT:SHARES:DELETE {
+::athena::orders define PLANT:SHARES:DELETE {
     meta title "Delete Production Capacity Shares"
 
     meta sendstates PREP
@@ -961,7 +961,7 @@ myorders define PLANT:SHARES:DELETE {
 #
 # Updates an existing allocation of shares for an agent in a neighborhood
 
-myorders define PLANT:SHARES:UPDATE {
+::athena::orders define PLANT:SHARES:UPDATE {
     meta title "Update Production Capacity Shares"
 
     meta sendstates PREP
@@ -1000,7 +1000,7 @@ myorders define PLANT:SHARES:UPDATE {
 # Updates multiple allocations of shares for a list of agent/neighborhood
 # pairs.
 
-myorders define PLANT:SHARES:UPDATE:MULTI {
+::athena::orders define PLANT:SHARES:UPDATE:MULTI {
     meta title "Update Production Capacity Shares"
 
     meta sendstates PREP

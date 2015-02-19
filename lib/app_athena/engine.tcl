@@ -43,11 +43,7 @@ snit::type engine {
             -logcomponent "aram"
 
 
-        scenario register [list ::aram saveable]
-
-        # NEXT, initialize the simulation modules
-        econ init ;# TBD: Proxy needed, but not a simple forwarding proxy.
-        driver::IOM init
+        athena register [list ::aram saveable]
 
         log normal engine "init complete"
     }
@@ -95,9 +91,8 @@ snit::type engine {
         profile absit assess
         profile nbstat analyze
         profile control_model analyze
-        profile driver::actsit assess
-        profile service_eni assess
-        profile service_ais assess
+        profile activity assess
+        profile service assess
         set econOK [econ tock]
 
         # NEXT, if the econ tock is okay, we compute the demographics model
@@ -108,8 +103,8 @@ snit::type engine {
             profile econ tock
         }
 
-        profile driver::CONSUMP assess
-        profile driver::UNEMP assess
+        profile ruleset CONSUMP assess
+        profile ruleset UNEMP assess
 
         # NEXT, set natural attitude levels for those attitudes whose
         # natural level varies with time.
@@ -158,12 +153,11 @@ snit::type engine {
         # NEXT, do analysis and assessment
         profile absit assess
         profile nbstat analyze
-        profile driver::MOOD assess
+        profile ruleset MOOD assess
         profile control_model analyze
-        profile driver::actsit assess
-        profile service_eni assess
-        profile service_ais assess
-        profile driver::abevent assess
+        profile activity assess
+        profile service assess
+        profile abevent assess
 
         # NEXT, do attrition and recompute demog stats, since groups
         # might have lost personnel
@@ -180,8 +174,8 @@ snit::type engine {
         }
 
         # NEXT, assess econ-dependent drivers.
-        profile driver::CONSUMP assess
-        profile driver::UNEMP assess
+        profile ruleset CONSUMP assess
+        profile ruleset UNEMP assess
         profile control_model assess
 
         # NEXT, advance URAM, first giving it the latest population data

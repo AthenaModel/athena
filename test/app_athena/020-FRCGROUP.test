@@ -235,13 +235,13 @@ local           0
     test CREATE-2.3 {Effects} -setup {
         ted create JOE
     } -body {
-        ted notifier bind ::rdb <frcgroups>
+        ted notifier bind ::adb <frcgroups>
         ted order FRCGROUP:CREATE $blue
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <frcgroups> update BLUE}
+        {::adb <frcgroups> update BLUE}
     }
 
 
@@ -249,13 +249,13 @@ local           0
         ted create JOE
         ted order FRCGROUP:CREATE $blue
     } -body {
-        ted notifier bind ::rdb <frcgroups>
+        ted notifier bind ::adb <frcgroups>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <frcgroups> delete BLUE}
+        {::adb <frcgroups> delete BLUE}
     }
 
 
@@ -279,13 +279,13 @@ local           0
     test DELETE-2.1 {Effects} -setup {
         ted create BLUE
     } -body {
-        ted notifier bind ::rdb <frcgroups>
+        ted notifier bind ::adb <frcgroups>
         ted order FRCGROUP:DELETE g BLUE
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <frcgroups> delete BLUE}
+        {::adb <frcgroups> delete BLUE}
     }
 
 
@@ -293,13 +293,13 @@ local           0
         ted create BLUE
         ted order FRCGROUP:DELETE g BLUE
     } -body {
-        ted notifier bind ::rdb <frcgroups>
+        ted notifier bind ::adb <frcgroups>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <frcgroups> update BLUE}
+        {::adb <frcgroups> update BLUE}
     }
 
 
@@ -435,13 +435,13 @@ local           1
     test UPDATE-2.2 {table monitor event} -setup {
         ted create BLUE
     } -body {
-        ted notifier bind ::rdb <frcgroups>
+        ted notifier bind ::adb <frcgroups>
         ted order FRCGROUP:UPDATE g BLUE longname "Blue Angels"
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <frcgroups> update BLUE}
+        {::adb <frcgroups> update BLUE}
     }
 
 
@@ -460,13 +460,13 @@ local           1
             local          yes
         }
     } -body {
-        ted notifier bind ::rdb <frcgroups>
+        ted notifier bind ::adb <frcgroups>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <frcgroups> update BLUE}
+        {::adb <frcgroups> update BLUE}
     }
 
     #-------------------------------------------------------------------
@@ -586,7 +586,7 @@ local           1
     test UPDATE:MULTI-2.1 {one group of several is updated} -setup {
         ted create BOB BLUE BRIT
     } -body {
-        ted notifier bind ::rdb <frcgroups>
+        ted notifier bind ::adb <frcgroups>
 
         ted order FRCGROUP:UPDATE:MULTI {
             ids            BLUE 
@@ -604,14 +604,14 @@ local           1
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <frcgroups> update BLUE}
+        {::adb <frcgroups> update BLUE}
     }
 
 
     test UPDATE:MULTI-2.2 {several groups are updated} -setup {
         ted create BOB BLUE BRIT
     } -body {
-        ted notifier bind ::rdb <frcgroups>
+        ted notifier bind ::adb <frcgroups>
 
         ted order FRCGROUP:UPDATE:MULTI {
             ids            {BLUE BRIT}
@@ -629,8 +629,8 @@ local           1
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <frcgroups> update BLUE}
-        {::rdb <frcgroups> update BRIT}
+        {::adb <frcgroups> update BLUE}
+        {::adb <frcgroups> update BRIT}
     }
 
 
@@ -642,14 +642,14 @@ local           1
             color     "#ff0000"
         }
     } -body {
-        ted notifier bind ::rdb <frcgroups>
+        ted notifier bind ::adb <frcgroups>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <frcgroups> update BLUE}
-        {::rdb <frcgroups> update BRIT}
+        {::adb <frcgroups> update BLUE}
+        {::adb <frcgroups> update BRIT}
     }
 
     #-------------------------------------------------------------------

@@ -41,7 +41,8 @@ namespace eval ::athena_test::tests:: {
     proc setup {name} {
         variable order
         set order [flunky make $name]
-        ted create NB1 NB2 BLUE BRIT SUNN SHIA KURD
+        ted create JOE BOB NB1 NB2 BLUE BRIT SUNN SHIA KURD \
+            CBS NBC CNN
     }
 
     proc cleanup {} {
@@ -127,6 +128,120 @@ namespace eval ::athena_test::tests:: {
     # unused
 
     # This is tested in use for most *:CREATE orders.
+
+    #-------------------------------------------------------------------
+    # activitiesFor
+
+    test activitiesFor-1.1 {returns nothing for unknown group} -setup {
+        setup TACTIC:ASSIGN
+    } -body {
+        $order activitiesFor NONESUCH
+    } -result {}
+
+    test activitiesFor-1.2 {list of activities} -setup {
+        setup TACTIC:ASSIGN
+    } -body {
+        $order activitiesFor BLUE
+    } -cleanup {
+        cleanup
+    } -result {CHKPOINT COERCION CONSTRUCT CRIME CURFEW EDU EMPLOY GUARD INDUSTRY INFRA LAWENF MEDICAL PATROL PSYOP RELIEF}
+
+    #-------------------------------------------------------------------
+    # allAgentsBut
+
+    test allAgentsBut-1.1 {returns nothing for unknown tactic} -setup {
+        setup TACTIC:STATE
+    } -body {
+        $order allAgentsBut NONESUCH
+    } -result {}
+
+    test allAgentsBut-1.2 {returns all but owning agent} -setup {
+        setup TACTIC:STATE
+        set B1 [ted addblock JOE]
+        set T1 [ted addtactic $B1 SIGEVENT]
+    } -body {
+        $order allAgentsBut [$T1 id]
+    } -cleanup {
+        cleanup
+    } -result {BOB}
+
+    #-------------------------------------------------------------------
+    # agents+SelfNone
+
+    test agents+SelfNone-1.1 {returns nothing for unknown tactic} -setup {
+        setup TACTIC:STATE
+    } -body {
+        $order agents+SelfNone NONESUCH
+    } -result {}
+
+    test agents+SelfNone-1.2 {returns all but owning agent} -setup {
+        setup TACTIC:STATE
+        set B1 [ted addblock JOE]
+        set T1 [ted addtactic $B1 SIGEVENT]
+    } -body {
+        $order agents+SelfNone [$T1 id]
+    } -cleanup {
+        cleanup
+    } -result {SELF NONE BOB}
+
+    #-------------------------------------------------------------------
+    # frcgroupsOwnedByAgent
+
+    test frcgroupsOwnedByAgent-1.1 {returns nothing for unknown tactic} -setup {
+        setup TACTIC:STANCE
+    } -body {
+        $order groupsOwnedByAgent NONESUCH
+    } -result {}
+
+    test frcgroupsOwnedByAgent-1.2 {returns groups for owning agent} -setup {
+        setup TACTIC:STANCE
+        set B1 [ted addblock JOE]
+        set T1 [ted addtactic $B1 SIGEVENT]
+    } -body {
+        $order frcgroupsOwnedByAgent [$T1 id]
+    } -cleanup {
+        cleanup
+    } -result {BLUE BRIT}
+
+    #-------------------------------------------------------------------
+    # groupsOwnedByAgent
+
+    test groupsOwnedByAgent-1.1 {returns nothing for unknown tactic} -setup {
+        setup TACTIC:STATE
+    } -body {
+        $order groupsOwnedByAgent NONESUCH
+    } -result {}
+
+    test groupsOwnedByAgent-1.2 {returns groups for owning agent} -setup {
+        setup TACTIC:STATE
+        set B1 [ted addblock JOE]
+        set T1 [ted addtactic $B1 SIGEVENT]
+    } -body {
+        $order groupsOwnedByAgent [$T1 id]
+    } -cleanup {
+        cleanup
+    } -result {BLUE BRIT}
+
+    #-------------------------------------------------------------------
+    # capsOwnedBy
+
+    test capsOwnedBy-1.1 {returns nothing for unknown tactic} -setup {
+        setup TACTIC:GRANT
+    } -body {
+        $order capsOwnedBy NONESUCH
+    } -result {}
+
+    test capsOwnedBy-1.2 {returns groups for owning agent} -setup {
+        setup TACTIC:GRANT
+        set B1 [ted addblock JOE]
+        set T1 [ted addtactic $B1 GRANT]
+
+    } -body {
+        $order capsOwnedBy [$T1 id]
+    } -cleanup {
+        cleanup
+    } -result {CBS {Columbia Broadcasting System} NBC {National Broadcasting Corp.}}
+    
 
 
     #-------------------------------------------------------------------

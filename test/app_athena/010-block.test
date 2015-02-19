@@ -65,7 +65,7 @@ namespace eval ::athena_test::tests:: {
         ted lock
         cash load
         personnel load
-        set coffer [coffer new JOE]
+        set coffer [::athena::coffer new [::adb athenadb] JOE]
 
         # NEXT, enable the blocks again.
         $B1   configure -state normal
@@ -86,83 +86,6 @@ namespace eval ::athena_test::tests:: {
     proc lasttactic {block} {
         return [lindex [$block tactics] end]
     }
-
-    #===================================================================
-    # block class subcommands
-
-    #-------------------------------------------------------------------
-    # paste
-    
-    test paste-1.1 {block's metadata is pasted} -setup {
-        setup
-        $B1 configure -tmode BEFORE -t1 10 -cmode ANY -once 1
-    } -body {
-        block paste BOB [list [$B1 copydata]]
-        set B2 [[strategy getname BOB] blocks 0]
-        ted pdicts [$B2 getdict]
-    } -cleanup {
-        cleanup
-    } -match dictglob -result {
-        cmode      ANY
-        conditions {}
-        emode      ALL
-        execstatus NONE
-        exectime   {}
-        id         *
-        intent     {}
-        name       B*
-        once       1
-        onlock     0
-        parent     3
-        pot        ::pot
-        state      normal
-        t1         10
-        t2         {}
-        tactics    {}
-        tmode      BEFORE
-    }
-
-    test paste-1.2 {block's conditions are pasted} -setup {
-        setup
-        ted addcondition $B1 EXPR expression {1 == 1}
-        ted addcondition $B1 EXPR expression {2 == 2}
-    } -body {
-        block paste BOB [list [$B1 copydata]]
-        set B2 [[strategy getname BOB] blocks 0]
-        lassign [$B2 conditions] C1 C2
-        list [$C1 get expression] [$C2 get expression]
-    } -cleanup {
-        cleanup
-    } -result {{1 == 1} {2 == 2}}
-
-    test paste-1.3 {block's tactics are pasted} -setup {
-        setup
-        ted addtactic $B1 SIGEVENT msg {message 1}
-        ted addtactic $B1 SIGEVENT msg {message 2}
-    } -body {
-        block paste BOB [list [$B1 copydata]]
-        set B2 [[strategy getname BOB] blocks 0]
-        lassign [$B2 tactics] T1 T2
-        list [$T1 get msg] [$T2 get msg]
-    } -cleanup {
-        cleanup
-    } -result {{message 1} {message 2}}
-
-    test paste-1.4 {can paste multiple blocks} -setup {
-        setup
-        $B1 configure -tmode BEFORE -t1 10
-        set B2 [ted addblock JOE]
-        $B2 configure -tmode AFTER -t1 20
-    } -body {
-        block paste BOB [list [$B1 copydata] [$B2 copydata]]
-        lassign [[strategy getname BOB] blocks] B3 B4
-        list [$B3 get tmode] [$B4 get tmode]
-    } -cleanup {
-        cleanup
-    } -result {BEFORE AFTER}
-
-    #===================================================================
-    # block instance subcommands
     
     #-------------------------------------------------------------------
     # constructor
@@ -185,7 +108,7 @@ namespace eval ::athena_test::tests:: {
         once       0
         onlock     0
         parent     1
-        pot        ::pot
+        pot        *::pot
         state      normal
         t1         {}
         t2         {}
@@ -195,7 +118,7 @@ namespace eval ::athena_test::tests:: {
 
     test constructor-1.2 {can set options} -setup {
         setup
-        set B1 [pot new block -cmode ANY -intent "My block"]
+        set B1 [pot new ::athena::block -cmode ANY -intent "My block"]
     } -body {
         ted pdicts [$B1 getdict]
     } -cleanup {
@@ -212,7 +135,7 @@ namespace eval ::athena_test::tests:: {
         once       0
         onlock     0
         parent     {}
-        pot        ::pot
+        pot        *::pot
         state      normal
         t1         {}
         t2         {}
@@ -277,7 +200,7 @@ namespace eval ::athena_test::tests:: {
         once            0
         onlock          0
         parent          *
-        pot             ::pot
+        pot             *::pot
         pretty_exectime -
         pretty_once     No
         pretty_onlock   No
@@ -311,7 +234,7 @@ namespace eval ::athena_test::tests:: {
         once            0
         onlock          0
         parent          *
-        pot             ::pot
+        pot             *::pot
         pretty_exectime 2012W06
         pretty_once     No
         pretty_onlock   No
@@ -381,7 +304,7 @@ namespace eval ::athena_test::tests:: {
         name       B*
         parent     1
         intent     {}
-        pot        ::pot
+        pot        *::pot
         tactics    {}
         exectime   {}
     }
@@ -396,7 +319,7 @@ namespace eval ::athena_test::tests:: {
         $B1 tactics
     } -cleanup {
         cleanup
-    } -match glob -result {::pot::SIGEVENT*}
+    } -match glob -result {*::pot::SIGEVENT*}
 
     test addtactic-1.2 {can be undone} -setup {
         setup
@@ -515,7 +438,7 @@ namespace eval ::athena_test::tests:: {
         $B1 conditions
     } -cleanup {
         cleanup
-    } -match glob -result {::pot::EXPR*}
+    } -match glob -result {*::pot::EXPR*}
 
     test addcondition-1.2 {can be undone} -setup {
         setup
@@ -601,7 +524,7 @@ namespace eval ::athena_test::tests:: {
         $B1 addcondition_ EXPR
         $B1 addcondition_ EXPR
 
-        set a [pot ids condition]
+        set a [pot ids ::athena::condition]
         set b [$B1 condition_ids]
 
         expr {$a eq $b}
@@ -619,7 +542,7 @@ namespace eval ::athena_test::tests:: {
         $B1 addtactic_ SIGEVENT
         $B1 addtactic_ SIGEVENT
 
-        set a [pot ids tactic]
+        set a [pot ids ::athena::tactic]
         set b [$B1 tactic_ids]
 
         expr {$a eq $b}
@@ -651,7 +574,7 @@ namespace eval ::athena_test::tests:: {
         $B1 check
     } -cleanup {
         cleanup
-    } -match glob -result {tactics {*EXECUTIVE* {command *} ::pot::EXECUTIVE* {command *}}}
+    } -match glob -result {tactics {*EXECUTIVE* {command *} *::pot::EXECUTIVE* {command *}}}
 
     #-------------------------------------------------------------------
     # timestring

@@ -45,7 +45,7 @@ namespace eval ::athena_test::tests:: {
         set B1 [ted addblock SYSTEM]
         set T1 [ted addtactic $B1 FLOW]
 
-        set coffer [coffer new SYSTEM]
+        set coffer [::athena::coffer new [::adb athenadb] SYSTEM]
     }
 
     # Clean up after a test
@@ -76,14 +76,14 @@ namespace eval ::athena_test::tests:: {
         parent     *
         percent    0
         personnel  0
-        pot        ::pot
+        pot        *::pot
         state      invalid
     }
 
     test constructor-1.2 {can set options} -setup {
         setup
     } -body {
-        set T1 [tactic::FLOW new -parent DUMMY]
+        set T1 [::athena::tactic::FLOW new -parent DUMMY]
         $T1 get parent
     } -cleanup {
         cleanup
@@ -210,7 +210,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         $T1 execute
 
-        tactic::FLOW pending
+        personnel pendingFlows
     } -cleanup {
         cleanup
     } -result {SHIA KURD 1000}
@@ -223,7 +223,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         $T1 execute
 
-        tactic::FLOW pending
+        personnel pendingFlows
     } -cleanup {
         cleanup
     } -result {SHIA KURD 19.230769230769234}
@@ -236,7 +236,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         $T1 execute
 
-        tactic::FLOW pending
+        personnel pendingFlows
     } -cleanup {
         cleanup
     } -result {SHIA KURD 400}
@@ -249,7 +249,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         $T1 execute
 
-        tactic::FLOW pending
+        personnel pendingFlows
     } -cleanup {
         cleanup
     } -result {SHIA KURD 1000}
@@ -262,7 +262,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         $T1 execute
 
-        tactic::FLOW pending
+        personnel pendingFlows
     } -cleanup {
         cleanup
     } -result {SHIA KURD 600}
@@ -275,15 +275,11 @@ namespace eval ::athena_test::tests:: {
     } -body {
         $T1 execute
 
-        tactic::FLOW pending
+        personnel pendingFlows
     } -cleanup {
         cleanup
     } -result {}
-
-    #-------------------------------------------------------------------
-    # TBD: should really test [tactic::FLOW save] and [tactic::FLOW reset]
     
-
     #-------------------------------------------------------------------
     # Cleanup
 

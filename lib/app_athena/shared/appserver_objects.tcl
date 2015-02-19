@@ -119,11 +119,6 @@ appserver module OBJECTS {
             listIcon ::projectgui::icon::blueheart12
         }
 
-        /mads {
-            label    "Magic Attitude Drivers"
-            listIcon ::projectgui::icon::blueheart12
-        }
-
         /drivers {
             label    "Drivers"
             listIcon ::projectgui::icon::blackheart12
@@ -183,7 +178,6 @@ appserver module OBJECTS {
             /groups/org
             /plants
             /curses
-            /mads
             /drivers
             /firings
             /contribs

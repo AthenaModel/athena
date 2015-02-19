@@ -18,9 +18,9 @@
 #   * The user sends SIM:REBASE, usually via the Orders menu.
 #   * SIM:REBASE calls [sim mutate rebase], which handles the simulation
 #     control issues.
-#   * [sim mutate rebase] calls [scenario rebase], which handles the
+#   * [sim mutate rebase] calls [adb rebase], which handles the
 #     scenario issues, e.g., purging history and so forth.
-#   * [scenario rebase] calls [rebase save] to actually save the 
+#   * [adb rebase] calls [rebase save] to actually save the 
 #     required state to the scenario tables.
 #
 #-----------------------------------------------------------------------

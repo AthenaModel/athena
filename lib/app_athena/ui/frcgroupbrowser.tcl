@@ -58,7 +58,7 @@ snit::widgetadaptor frcgroupbrowser {
     constructor {args} {
         # FIRST, Install the hull
         installhull using sqlbrowser                  \
-            -db           ::rdb                       \
+            -db           ::adb                       \
             -view         gui_frcgroups               \
             -uid          id                          \
             -titlecolumns 1                           \
@@ -108,8 +108,8 @@ snit::widgetadaptor frcgroupbrowser {
         pack $deletebtn -side right
 
         # NEXT, update individual entities when they change.
-        notifier bind ::rdb <groups>    $self [mymethod uid]
-        notifier bind ::rdb <frcgroups> $self [mymethod uid]
+        notifier bind ::adb <groups>    $self [mymethod uid]
+        notifier bind ::adb <frcgroups> $self [mymethod uid]
     }
 
     destructor {

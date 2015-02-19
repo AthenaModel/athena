@@ -62,7 +62,7 @@ namespace eval ::athena_test::tests:: {
         cash load
         personnel start
         personnel load
-        set coffer [coffer new JOE]
+        set coffer [::athena::coffer new [::adb athenadb] JOE]
     }
 
     # Set the cost of the PATROL activity
@@ -108,14 +108,14 @@ namespace eval ::athena_test::tests:: {
         percent    0.0
         personnel  0
         pmode      ALL
-        pot        ::pot
+        pot        *::pot
         state      invalid
     }
 
     test constructor-1.2 {can set options} -setup {
         setup
     } -body {
-        set T1 [tactic::ASSIGN new -parent DUMMY]
+        set T1 [::athena::tactic::ASSIGN new -parent DUMMY]
         $T1 get parent
     } -cleanup {
         cleanup

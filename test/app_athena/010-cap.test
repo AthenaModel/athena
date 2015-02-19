@@ -55,7 +55,7 @@ namespace eval ::athena_test::tests:: {
     test create-1.1 {cap is created} -setup {
         setup
     } -body {
-        cap mutate create [ted entity CBS]
+        cap create [ted entity CBS]
         ted querylist {SELECT * FROM caps}
     } -cleanup {
         cleanup
@@ -70,7 +70,7 @@ cost      1000.0
     test create-1.2 {owner can be empty, yields NULL} -setup {
         setup
     } -body {
-        cap mutate create [dict merge [ted entity CBS] {owner ""}]
+        cap create [dict merge [ted entity CBS] {owner ""}]
         ted querylist {SELECT * FROM caps}
     } -cleanup {
         cleanup
@@ -84,8 +84,8 @@ cost      1000.0
 
     test create-2.1 {undo deletes the cap} -setup {
         setup
-        cap mutate create [ted entity CBS]
-        set undo [cap mutate create [ted entity CNN]]
+        cap create [ted entity CBS]
+        set undo [cap create [ted entity CNN]]
     } -body {
         namespace eval :: $undo
         rdb eval {SELECT k FROM caps}
@@ -97,8 +97,8 @@ cost      1000.0
     test create-3.1 {cap_kn records created} -setup {
         setup
     } -body {
-        cap mutate create [ted entity CBS]
-        cap mutate create [ted entity CNN]
+        cap create [ted entity CBS]
+        cap create [ted entity CNN]
         ted querylist {SELECT * FROM cap_kn}
     } -cleanup {
         cleanup
@@ -118,8 +118,8 @@ nbcov  1.0
 
     test create-3.2 {undo deletes the cap_kn} -setup {
         setup
-        cap mutate create [ted entity CBS]
-        set undo [cap mutate create [ted entity CNN]]
+        cap create [ted entity CBS]
+        set undo [cap create [ted entity CNN]]
     } -body {
         namespace eval :: $undo
         rdb eval {SELECT k,n FROM cap_kn}
@@ -130,8 +130,8 @@ nbcov  1.0
     test create-4.1 {cap_kg records created} -setup {
         setup
     } -body {
-        cap mutate create [ted entity CBS]
-        cap mutate create [ted entity CNN]
+        cap create [ted entity CBS]
+        cap create [ted entity CNN]
         ted querylist {SELECT * FROM cap_kg}
     } -cleanup {
         cleanup
@@ -151,8 +151,8 @@ pen  1.0
 
     test create-4.2 {undo deletes the cap_kg} -setup {
         setup
-        cap mutate create [ted entity CBS]
-        set undo [cap mutate create [ted entity CNN]]
+        cap create [ted entity CBS]
+        set undo [cap create [ted entity CNN]]
     } -body {
         namespace eval :: $undo
         rdb eval {SELECT k,g FROM cap_kg}
@@ -166,7 +166,7 @@ pen  1.0
     test delete-1.1 {CAP is deleted} -setup {
         ted create CBS CNN
     } -body {
-        cap mutate delete CBS
+        cap delete CBS
 
         # Is CBS gone?
         rdb eval {SELECT k FROM caps}
@@ -176,7 +176,7 @@ pen  1.0
 
     test delete-1.2 {Undo restores CAP} -setup {
         ted create CBS CNN
-        set undo [cap mutate delete CBS]
+        set undo [cap delete CBS]
     } -body {
         namespace eval :: $undo
         ted querylist {SELECT * FROM caps ORDER BY k}
@@ -199,7 +199,7 @@ cost      500.0
     test delete-2.1 {cap_kn records are deleted} -setup {
         ted create CBS CNN
     } -body {
-        cap mutate delete CBS
+        cap delete CBS
 
         rdb eval {SELECT k,n FROM cap_kn ORDER BY k,n}
     } -cleanup {
@@ -208,7 +208,7 @@ cost      500.0
 
     test delete-2.2 {Undo restores cap_kn records} -setup {
         ted create CBS CNN
-        set undo [cap mutate delete CBS]
+        set undo [cap delete CBS]
     } -body {
         namespace eval :: $undo
         rdb eval {SELECT k,n FROM cap_kn ORDER BY k,n}
@@ -219,7 +219,7 @@ cost      500.0
     test delete-3.1 {cap_kg records are deleted} -setup {
         ted create CBS CNN
     } -body {
-        cap mutate delete CBS
+        cap delete CBS
 
         rdb eval {SELECT k,g FROM cap_kg ORDER BY k,g}
     } -cleanup {
@@ -228,7 +228,7 @@ cost      500.0
     
     test delete-3.2 {Undo restores cap_kg records} -setup {
         ted create CBS CNN
-        set undo [cap mutate delete CBS]
+        set undo [cap delete CBS]
     } -body {
         namespace eval :: $undo
         rdb eval {SELECT k,g FROM cap_kg ORDER BY k,g}
@@ -243,7 +243,7 @@ cost      500.0
     test update-1.1 {cap is updated} -setup {
         ted create CBS BOB
     } -body {
-        cap mutate update {
+        cap update {
             k            CBS
             longname     "Warsim 2000"
             owner        BOB
@@ -268,7 +268,7 @@ cost      10.0
     } -body {
         set a [ted query {SELECT * FROM caps}]
 
-        cap mutate update [ted entity CBS]
+        cap update [ted entity CBS]
 
         set b [ted query {SELECT * FROM caps}]
 
@@ -283,7 +283,7 @@ cost      10.0
     } -body {
         set a [ted query {SELECT * FROM caps}]
 
-        cap mutate update  {
+        cap update  {
             k            CBS
             longname     ""
             owner        ""
@@ -304,7 +304,7 @@ cost      10.0
     } -body {
         set a [ted query {SELECT * FROM caps}]
 
-        set undo [cap mutate update {
+        set undo [cap update {
             k            CBS
             owner        BOB
             longname     "Warsim 2000"
@@ -327,9 +327,9 @@ cost      10.0
 
     test nbcov_create-1.1 {record is created} -setup {
         setup
-        cap mutate create [ted entity CBS]
+        cap create [ted entity CBS]
     } -body {
-        cap mutate nbcov create {id {CBS NB2} nbcov 0.5}
+        cap nbcov create {id {CBS NB2} nbcov 0.5}
         ted query {SELECT * FROM cap_kn}
     } -cleanup {
         cleanup
@@ -342,8 +342,8 @@ CBS NB2 0.5
 
     test nbcov_create-2.1 {undo deletes the record} -setup {
         setup
-        cap mutate create [ted entity CBS]
-        set undo [cap mutate nbcov create {id {CBS NB2} nbcov 0.5}]
+        cap create [ted entity CBS]
+        set undo [cap nbcov create {id {CBS NB2} nbcov 0.5}]
     } -body {
         namespace eval :: $undo
         rdb eval {SELECT k,n FROM cap_kn}
@@ -357,9 +357,9 @@ CBS NB2 0.5
 
     test nbcov_delete-1.1 {record is deleted} -setup {
         ted create CBS CNN
-        cap mutate nbcov create {id {CBS NB2} nbcov 0.5}
+        cap nbcov create {id {CBS NB2} nbcov 0.5}
     } -body {
-        cap mutate nbcov delete {CBS NB1}
+        cap nbcov delete {CBS NB1}
 
         # Is CBS NB1 gone?
         rdb eval {SELECT k,n FROM cap_kn ORDER BY k,n}
@@ -369,8 +369,8 @@ CBS NB2 0.5
 
     test nbcov_delete-1.2 {Undo restores record} -setup {
         ted create CBS CNN
-        cap mutate nbcov create {id {CBS NB2} nbcov 0.5}
-        set undo [cap mutate nbcov delete {CBS NB1}]
+        cap nbcov create {id {CBS NB2} nbcov 0.5}
+        set undo [cap nbcov delete {CBS NB1}]
     } -body {
         namespace eval :: $undo
         ted query {SELECT * FROM cap_kn ORDER BY k,n}
@@ -391,7 +391,7 @@ CNN NB2 1.0
     test nbcov_update-1.1 {record is updated} -setup {
         ted create CBS BOB
     } -body {
-        cap mutate nbcov update {
+        cap nbcov update {
             id      {CBS NB1}
             nbcov   0.5
         }
@@ -410,7 +410,7 @@ CBS NB1 0.5
     } -body {
         set a [ted query {SELECT * FROM cap_kn}]
 
-        cap mutate nbcov update {
+        cap nbcov update {
             id      {CBS NB1}
             nbcov   1.0
         }
@@ -428,7 +428,7 @@ CBS NB1 0.5
     } -body {
         set a [ted query {SELECT * FROM cap_kn}]
 
-        cap mutate nbcov update {
+        cap nbcov update {
             id      {CBS NB1}
             nbcov   ""
         }
@@ -446,7 +446,7 @@ CBS NB1 0.5
     } -body {
         set a [ted query {SELECT * FROM cap_kn}]
 
-        set undo [cap mutate nbcov update {
+        set undo [cap nbcov update {
             id      {CBS NB1}
             nbcov   0.5
         }]
@@ -465,9 +465,9 @@ CBS NB1 0.5
 
     test pen_create-1.1 {record is created} -setup {
         setup
-        cap mutate create [ted entity CBS]
+        cap create [ted entity CBS]
     } -body {
-        cap mutate pen create {id {CBS SUNN} pen 0.5}
+        cap pen create {id {CBS SUNN} pen 0.5}
         ted query {SELECT * FROM cap_kg}
     } -cleanup {
         cleanup
@@ -480,8 +480,8 @@ CBS SUNN 0.5
 
     test pen_create-2.1 {undo deletes the record} -setup {
         setup
-        cap mutate create [ted entity CBS]
-        set undo [cap mutate pen create {id {CBS SUNN} pen 0.5}]
+        cap create [ted entity CBS]
+        set undo [cap pen create {id {CBS SUNN} pen 0.5}]
     } -body {
         namespace eval :: $undo
         rdb eval {SELECT k,g FROM cap_kg}
@@ -495,9 +495,9 @@ CBS SUNN 0.5
 
     test pen_delete-1.1 {record is deleted} -setup {
         ted create CBS CNN
-        cap mutate pen create {id {CBS SUNN} pen 0.5}
+        cap pen create {id {CBS SUNN} pen 0.5}
     } -body {
-        cap mutate pen delete {CBS SHIA}
+        cap pen delete {CBS SHIA}
 
         # Is CBS SHIA gone?
         rdb eval {SELECT k,g FROM cap_kg ORDER BY k, g}
@@ -507,8 +507,8 @@ CBS SUNN 0.5
 
     test pen_delete-1.2 {Undo restores record} -setup {
         ted create CBS CNN
-        cap mutate pen create {id {CBS SUNN} pen 0.5}
-        set undo [cap mutate pen delete {CBS SHIA}]
+        cap pen create {id {CBS SUNN} pen 0.5}
+        set undo [cap pen delete {CBS SHIA}]
     } -body {
         namespace eval :: $undo
         ted query {SELECT * FROM cap_kg ORDER BY k,g}
@@ -529,7 +529,7 @@ CNN SUNN 1.0
     test pen_update-1.1 {record is updated} -setup {
         ted create CBS BOB
     } -body {
-        cap mutate pen update {
+        cap pen update {
             id    {CBS SHIA}
             pen   0.5
         }
@@ -548,7 +548,7 @@ CBS SHIA 0.5
     } -body {
         set a [ted query {SELECT * FROM cap_kg}]
 
-        cap mutate pen update {
+        cap pen update {
             id   {CBS SHIA}
             pen  1.0
         }
@@ -566,7 +566,7 @@ CBS SHIA 0.5
     } -body {
         set a [ted query {SELECT * FROM cap_kg}]
 
-        cap mutate pen update {
+        cap pen update {
             id   {CBS SHIA}
             pen  ""
         }
@@ -584,7 +584,7 @@ CBS SHIA 0.5
     } -body {
         set a [ted query {SELECT * FROM cap_kg}]
 
-        set undo [cap mutate pen update {
+        set undo [cap pen update {
             id   {CBS SHIA}
             pen  0.5
         }]

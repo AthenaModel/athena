@@ -165,13 +165,13 @@ SUNN SFT 0.0  1.0      0         0.0
     test UPDATE-2.2 {table monitor event} -setup {
         setup
     } -body {
-        ted notifier bind ::rdb <sat_gc>
+        ted notifier bind ::adb <sat_gc>
         ted order SAT:UPDATE id {SHIA SFT} base 4.0
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <sat_gc> update {SHIA SFT}}
+        {::adb <sat_gc> update {SHIA SFT}}
     }
 
 
@@ -186,13 +186,13 @@ SUNN SFT 0.0  1.0      0         0.0
             current        75.0
         }
     } -body {
-        ted notifier bind ::rdb <sat_gc>
+        ted notifier bind ::adb <sat_gc>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <sat_gc> update {SHIA SFT}}
+        {::adb <sat_gc> update {SHIA SFT}}
     }
 
     #-------------------------------------------------------------------
@@ -307,7 +307,7 @@ SUNN SFT 0.0  1.0      0         0.0
     test UPDATE:MULTI-2.1 {one curve of several is updated} -setup {
         setup
     } -body {
-        ted notifier bind ::rdb <sat_gc>
+        ted notifier bind ::adb <sat_gc>
 
         ted order SAT:UPDATE:MULTI {
             ids       {{SHIA SFT}}
@@ -321,14 +321,14 @@ SUNN SFT 0.0  1.0      0         0.0
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <sat_gc> update {SHIA SFT}}
+        {::adb <sat_gc> update {SHIA SFT}}
     }
 
 
     test UPDATE:MULTI-2.2 {several curves are updated} -setup {
         setup
     } -body {
-        ted notifier bind ::rdb <sat_gc>
+        ted notifier bind ::adb <sat_gc>
         ted order SAT:UPDATE:MULTI {
             ids   {{SHIA SFT} {SHIA CUL}} 
             base  4.0
@@ -337,8 +337,8 @@ SUNN SFT 0.0  1.0      0         0.0
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <sat_gc> update {SHIA SFT}}
-        {::rdb <sat_gc> update {SHIA CUL}}
+        {::adb <sat_gc> update {SHIA SFT}}
+        {::adb <sat_gc> update {SHIA CUL}}
     }
 
 
@@ -351,14 +351,14 @@ SUNN SFT 0.0  1.0      0         0.0
             saliency   VI
         }
     } -body {
-        ted notifier bind ::rdb <sat_gc>
+        ted notifier bind ::adb <sat_gc>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::rdb <sat_gc> update {SHIA SFT}}
-        {::rdb <sat_gc> update {SHIA CUL}}
+        {::adb <sat_gc> update {SHIA SFT}}
+        {::adb <sat_gc> update {SHIA CUL}}
     }
 
 

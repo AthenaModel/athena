@@ -67,7 +67,7 @@ namespace eval ::athena_test::tests {
 
     test create-1.1 {Hook is created} -setup {
     } -body {
-        hook mutate create $h1
+        hook create $h1
 
         ted querylist {SELECT * FROM hooks}
     } -cleanup {
@@ -78,7 +78,7 @@ longname  Puppies are good
     }
 
     test create-1.2 {Undo deletes the hook} -setup {
-        set undo [hook mutate create $h1]
+        set undo [hook create $h1]
     } -body {
         {*}$undo
         rdb query {SELECT hook_id FROM hooks}
@@ -90,21 +90,21 @@ longname  Puppies are good
     # Semantic hook update
 
     test update-1.1 {Hook is updated} -setup {
-        hook mutate create $h1
+        hook create $h1
     } -body {
         set parms(hook_id) [rdb onecolumn {SELECT hook_id FROM hooks}]
         set parms(longname) "Puppies are evil"
-        hook mutate update [array get parms]
+        hook update [array get parms]
         rdb onecolumn {SELECT longname FROM hooks}
     } -cleanup {
         cleanup
     } -result {Puppies are evil}
 
     test update-1.2 {Hook update is undone} -setup {
-        hook mutate create $h1
+        hook create $h1
         set parms(hook_id) [rdb onecolumn {SELECT hook_id FROM hooks}]
         set parms(longname) "Puppies are evil"
-        set undo [hook mutate update [array get parms]]
+        set undo [hook update [array get parms]]
     } -body {
         {*}$undo
         rdb onecolumn {SELECT longname FROM hooks}
@@ -116,19 +116,19 @@ longname  Puppies are good
     # Semantic hook delete
 
     test delete-1.1 {Hook is deleted} -setup {
-        hook mutate create $h1
+        hook create $h1
     } -body {
         set hook_id [rdb onecolumn {SELECT hook_id FROM hooks}]
-        hook mutate delete $hook_id
+        hook delete $hook_id
         rdb query {SELECT * FROM hooks}
     } -cleanup {
         cleanup
     } -result {}
 
     test delete-1.2 {Hook deletion is undone} -setup {
-        hook mutate create $h1
+        hook create $h1
         set hook_id [rdb onecolumn {SELECT hook_id FROM hooks}]
-        set undo [hook mutate delete $hook_id]
+        set undo [hook delete $hook_id]
     } -body {
         {*}$undo
         ted querylist {SELECT * FROM hooks}
@@ -140,12 +140,12 @@ longname  Puppies are good
     }
 
     test delete-1.3 {IOM reflects hook delete} -setup {
-        hook mutate create $h1
-        iom mutate create $m1
+        hook create $h1
+        iom create $m1
     } -body {
         set a [ted querylist {SELECT * FROM ioms}]
         set hook_id [rdb onecolumn {SELECT hook_id FROM hooks}]
-        hook mutate delete $hook_id
+        hook delete $hook_id
         set b [ted querylist {SELECT * FROM ioms}]
         return $a$b
     } -cleanup {
@@ -163,10 +163,10 @@ state     normal
     }
 
     test delete-1.4 {Undo restores hook in ioms} -setup {
-        hook mutate create $h1
-        iom mutate create $m1
+        hook create $h1
+        iom create $m1
         set hook_id [rdb onecolumn {SELECT hook_id FROM hooks}]
-        set undo [hook mutate delete $hook_id]
+        set undo [hook delete $hook_id]
     } -body {
         namespace eval :: $undo
         expr {[rdb onecolumn {SELECT hook_id FROM ioms}] == $hook_id}
@@ -179,9 +179,9 @@ state     normal
 
     test createtopic-1.1 {Hook topic is created} -setup {
         mktopic
-        hook mutate create $h1
+        hook create $h1
     } -body {
-        hook mutate topic create $t1
+        hook topic create $t1
         ted querylist {SELECT * FROM hook_topics}
     } -cleanup {
         cleanup
@@ -194,8 +194,8 @@ position  0.9
 
     test createtopic-1.2 {Undo deletes the hook topic} -setup {
         mktopic
-        hook mutate create $h1
-        set undo [hook mutate topic create $t1]
+        hook create $h1
+        set undo [hook topic create $t1]
     } -body {
         {*}$undo
         rdb eval {SELECT id FROM hook_topics_view}
@@ -208,12 +208,12 @@ position  0.9
 
     test updatetopic-1.1 {Hook topic is updated} -setup {
         mktopic
-        hook mutate create $h1
-        hook mutate topic create $t1
+        hook create $h1
+        hook topic create $t1
     } -body {
         set parms(id) [rdb onecolumn {SELECT id FROM hook_topics_view}]
         set parms(position) 0.0
-        hook mutate topic update [array get parms]
+        hook topic update [array get parms]
         rdb onecolumn {SELECT position FROM hook_topics}
     } -cleanup {
         cleanup
@@ -221,11 +221,11 @@ position  0.9
 
     test updatetopic-1.2 {Hook topic update is undone} -setup {
         mktopic
-        hook mutate create $h1
-        hook mutate topic create $t1
+        hook create $h1
+        hook topic create $t1
         set parms(id) [rdb onecolumn {SELECT id FROM hook_topics_view}]
         set parms(position) 0.0
-        set undo [hook mutate topic update [array get parms]]
+        set undo [hook topic update [array get parms]]
     } -body {
         {*}$undo
         rdb onecolumn {SELECT position FROM hook_topics}
@@ -238,12 +238,12 @@ position  0.9
 
     test state-1.1 {Hook is changed to disabled} -setup {
         mktopic
-        hook mutate create $h1
-        hook mutate topic create $t1
+        hook create $h1
+        hook topic create $t1
     } -body {
         set id [rdb onecolumn {SELECT id FROM hook_topics_view}]
         set state "disabled"
-        hook mutate topic state $id $state
+        hook topic state $id $state
         rdb onecolumn {SELECT state FROM hook_topics}
     } -cleanup {
         cleanup
@@ -251,11 +251,11 @@ position  0.9
 
     test state-1.2 {Undo hook is changed to disabled} -setup {
         mktopic
-        hook mutate create $h1
-        hook mutate topic create $t1
+        hook create $h1
+        hook topic create $t1
         set id [rdb onecolumn {SELECT id FROM hook_topics_view}]
         set state "disabled"
-        set undo [hook mutate topic state $id $state]
+        set undo [hook topic state $id $state]
     } -body {
         {*}$undo
         rdb onecolumn {SELECT state FROM hook_topics}
@@ -269,11 +269,11 @@ position  0.9
 
     test deletetopic-1.1 {Hook topic is deleted} -setup {
         mktopic
-        hook mutate create $h1
-        hook mutate topic create $t1
+        hook create $h1
+        hook topic create $t1
     } -body {
         set id [rdb onecolumn {SELECT id FROM hook_topics_view}]
-        hook mutate topic delete $id
+        hook topic delete $id
         rdb query {SELECT * FROM hook_topics}
     } -cleanup {
         cleanup
@@ -281,10 +281,10 @@ position  0.9
 
     test deletetopic-1.2 {Hook deletion is undone} -setup {
         mktopic
-        hook mutate create $h1
-        hook mutate topic create $t1
+        hook create $h1
+        hook topic create $t1
         set id [rdb onecolumn {SELECT id FROM hook_topics_view}]
-        set undo [hook mutate topic delete $id]
+        set undo [hook topic delete $id]
     } -body {
         {*}$undo
         ted querylist {SELECT * FROM hook_topics}
@@ -302,7 +302,7 @@ position  0.9
 
     # names
     test names-1.1 {Hook module returns short names} -setup {
-        hook mutate create $h1
+        hook create $h1
     } -body {
         set names [rdb onecolumn {SELECT hook_id FROM hooks}]
         expr {[hook names] eq $names}
@@ -312,7 +312,7 @@ position  0.9
 
     # get
     test get-1.1 {Get all hook data} -setup {
-        hook mutate create $h1
+        hook create $h1
     } -body {
         set id [rdb onecolumn {SELECT hook_id FROM hooks}]
         ted pdicts [hook get $id]
@@ -329,7 +329,7 @@ position  0.9
     }
 
     test get-1.2 {Get an attribute} -setup {
-        hook mutate create $h1
+        hook create $h1
     } -body {
         hook get PUPG "longname"
     } -cleanup {
@@ -338,7 +338,7 @@ position  0.9
 
     # validate
     test validate-1.1 {Hook is valid} -setup {
-        hook mutate create $h1
+        hook create $h1
     } -body {
         set id [rdb onecolumn {SELECT hook_id FROM hooks}]
         expr {[hook validate $id] == $id}
@@ -347,7 +347,7 @@ position  0.9
     } -result {1}
     
     test validate-1.2 {Hook is invalid} -setup {
-        hook mutate create $h1
+        hook create $h1
     } -body {
         hook validate "FOO"
     } -returnCodes {
@@ -358,8 +358,8 @@ position  0.9
         
     test validate-1.3 {Hook topic is valid} -setup {
         mktopic
-        hook mutate create $h1
-        hook mutate topic create $t1
+        hook create $h1
+        hook topic create $t1
     } -body {
         set id [rdb onecolumn {SELECT id FROM hook_topics_view}]
         expr {[hook topic validate $id] == $id}
@@ -377,7 +377,7 @@ position  0.9
     } -result {Invalid hook ID, none are defined}
 
     test validate-1.5 {Hook topic is invalid; topic id} -setup {
-        hook mutate create $h1
+        hook create $h1
     } -body {
         set hook_id [rdb onecolumn {SELECT hook_id FROM hooks}]
         hook topic validate [list $hook_id FOO]
@@ -390,8 +390,8 @@ position  0.9
     # topic exists
     test topic_exists-1.1 {Hook topic exists} -setup {
         mktopic
-        hook mutate create $h1
-        hook mutate topic create $t1
+        hook create $h1
+        hook topic create $t1
     } -body {
         set id [rdb onecolumn {SELECT id FROM hook_topics_view}]
         hook topic exists $id
@@ -407,8 +407,8 @@ position  0.9
     # topic get
     test topic_get-1.1 {Get all data} -setup {
         mktopic
-        hook mutate create $h1
-        hook mutate topic create $t1
+        hook create $h1
+        hook topic create $t1
     } -body {
         set id [rdb onecolumn {SELECT id FROM hook_topics_view}]
         ted pdicts [hook topic get $id]
@@ -428,8 +428,8 @@ position  0.9
 
     test topic_get-1.2 {Get one field} -setup {
         mktopic
-        hook mutate create $h1
-        hook mutate topic create $t1
+        hook create $h1
+        hook topic create $t1
     } -body {
         set id [rdb onecolumn {SELECT id FROM hook_topics_view}]
         hook topic get $id "position"
@@ -446,8 +446,8 @@ position  0.9
 
     test getdict-1.2 {dict is returned} -setup {
         mktopic
-        hook mutate create $h1
-        hook mutate topic create $t1
+        hook create $h1
+        hook topic create $t1
     } -body {
         set hook_id [rdb onecolumn {SELECT hook_id FROM hooks}]
         hook getdict $hook_id

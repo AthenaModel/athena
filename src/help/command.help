@@ -1361,34 +1361,11 @@ command "last absit" {
 
 #-----------------------------------------------------------------------
 
-command "last mad" {
-    <syntax>
-    
-    Returns the ID of the most recently created 
-    <term mad>.
-}
-
-#-----------------------------------------------------------------------
-
 command "last tactic" {
     <syntax>
     
     Returns the ID of the most recently created 
     <term tactic>.
-}
-
-#=======================================================================
-# last_mad command
-
-command "last_mad" {
-    <syntax>
-
-    <b>Deprecated.  Use <cref /command/last/mad> instead.</b>
-    Returns the ID of the most recently created Magic Attitude
-    Driver (MAD).  A script can create a MAD by 
-    <cref /command/send>ing the <cref /order/mad/create> order,
-    and then retrieve the ID of the new MAD using this command, for use
-    when sending other <cref /order/mad> orders.
 }
 
 #=======================================================================

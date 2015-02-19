@@ -38,7 +38,7 @@ snit::widgetadaptor satbrowser {
     #    -view     - The view name.
     #    -reloadon - The default reload events 
     #
-    # Reload on ::rdb <civgroups> because changes to basepop will affect the
+    # Reload on ::adb <civgroups> because changes to basepop will affect the
     # rows to display.
     #
     # Reload on ::parm <Update>: ???.  I'm not sure why we're doing this.
@@ -56,7 +56,7 @@ snit::widgetadaptor satbrowser {
             }
             -reloadon {
                 ::sim <DbSyncB>
-                ::rdb <civgroups>
+                ::adb <civgroups>
             }
         }
         simulation {
@@ -93,7 +93,7 @@ snit::widgetadaptor satbrowser {
         # a transition to or from basepop = 0 will affect the rows to
         # display.
         installhull using sqlbrowser                  \
-            -db           ::rdb                       \
+            -db           ::adb                       \
             -uid          id                          \
             -titlecolumns 2                           \
             -selectioncmd [mymethod SelectionChanged] \
@@ -154,10 +154,10 @@ snit::widgetadaptor satbrowser {
         $hull configure {*}[ModeOptions $mode]
 
         if {$mode eq "scenario"} {
-            notifier bind ::rdb <sat_gc> $self [mymethod uid]
+            notifier bind ::adb <sat_gc> $self [mymethod uid]
             notifier bind ::mad <Sat>    $self ""
         } else {
-            notifier bind ::rdb <sat_gc> $self ""
+            notifier bind ::adb <sat_gc> $self ""
             notifier bind ::mad <Sat>    $self [mymethod uid]
         }
     }

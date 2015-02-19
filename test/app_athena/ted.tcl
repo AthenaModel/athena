@@ -60,7 +60,7 @@ snit::type ted {
         hrel_fg
         income_a
         ioms
-        mads
+        maps
         nbhoods
         nbrel_mn
         orggroups
@@ -81,13 +81,6 @@ snit::type ted {
         working_cash
         working_personnel
         working_deployment
-    }
-
-    # cleanupModules -- list of modules that need to be resync'd
-    # after a test.
-
-    typevariable cleanupModules {
-        nbhood
     }
 
     #-------------------------------------------------------------------
@@ -653,7 +646,7 @@ snit::type ted {
     #
     # name     The name of an entity
     #
-    # Calls "$module mutate create" for each named entity.
+    # Calls "$module mutate create" or "$module create" for each named entity.
 
     typemethod create {args} {
         foreach name $args {
@@ -664,7 +657,14 @@ snit::type ted {
                 $type create {*}$parents
 
                 # NEXT, create the requested entity
-                {*}$module mutate create $parmdict
+                if {$module in {
+                    ::actor ::absit ::cap ::civgroup ::frcgroup ::nbhood 
+                    ::orggroup ::hook ::iom
+                }} {
+                    {*}$module create $parmdict
+                } else {
+                    {*}$module mutate create $parmdict
+                }
 
                 lappend createdEntities $name
             }
@@ -685,7 +685,7 @@ snit::type ted {
             parm set econ.gdpExp 0
             parm set econ.empExp 0
         }
-        absit mutate reconcile
+        absit reconcile
         ted order SIM:LOCK
     }
 
@@ -716,6 +716,8 @@ snit::type ted {
 
         ted notifier forget
 
+        # This is what we used to do to clean up after a test.
+        # Instead, we just do [app new].
         if {[sim state] eq "RUNNING"} {
             sim mutate pause
         }
@@ -723,6 +725,8 @@ snit::type ted {
         if {[sim state] eq "PAUSED"} {
             sim restart
         }
+
+        # TBD: Could we simply do "app new" here?
 
         foreach table $cleanupTables {
             rdb eval "DELETE FROM $table;" 
@@ -734,20 +738,17 @@ snit::type ted {
             rdb eval {DELETE FROM main.sqlite_sequence}
         }
 
-        foreach module $cleanupModules {
-            {*}$module dbsync
-        }
-
-        flunky          reset
-        parm            reset
-        bsys            clear
-        econ            reset
-        simclock        reset
-        aram            clear
-        pot             reset
-        aam             reset
-        strategy        init
-        driver::abevent reset
+        nbhood   dbsync
+        flunky   reset
+        parm     reset
+        bsys     clear
+        econ     reset
+        simclock reset
+        aram     clear
+        pot      reset
+        aam      reset
+        abevent  reset
+        strategy reset
     }
 
     # sendex ?-error? command...
@@ -1003,7 +1004,7 @@ snit::type ted {
 
         set pdict [dict create]
 
-        foreach parm [myorders parms $order] {
+        foreach parm [::athena::orders parms $order] {
             dict set pdict $parm [dict get $tdict $parm]
         }
 
@@ -1027,7 +1028,7 @@ snit::type ted {
 
         set pdict [dict create]
 
-        foreach parm [myorders parms $order] {
+        foreach parm [::athena::orders parms $order] {
             dict set pdict $parm [dict get $cdict $parm]
         }
 

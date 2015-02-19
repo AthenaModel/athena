@@ -1,0 +1,65 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    athena.test
+#
+# PROJECT:
+#    athena - Athena Regional Stability Simulation
+#
+# DESCRIPTION:
+#    athena(n) test suite for athena.tcl
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+
+namespace import ::tcltest::test
+ 
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+source ../../lib/athena/pkgModules.tcl
+namespace import ::athena::*
+
+#-------------------------------------------------------------------
+# Setup
+
+# setup
+#
+# Set up for tests
+
+proc setup {} {
+    # TBD
+}
+
+# cleanup
+#
+# Cleans up after a test.
+
+proc cleanup {} {
+    # TBD
+}
+
+
+#-------------------------------------------------------------------
+# dummy
+
+test dummy-1.1 {Dummy} -setup {
+    setup
+} -body {
+    set result 1
+} -cleanup {
+    cleanup
+} -result {1}
+
+
+#-------------------------------------------------------------------
+# Cleanup
+
+tcltest::cleanupTests

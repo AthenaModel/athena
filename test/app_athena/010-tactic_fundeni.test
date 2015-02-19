@@ -56,11 +56,11 @@ namespace eval ::athena_test::tests:: {
         }
 
         service start
-        service_eni load
-        service_eni save
+        service load
+        service save
         cash load
 
-        set coffer [coffer new JOE]
+        set coffer [::athena::coffer new [::adb athenadb] JOE]
 
         set B1 [ted addblock JOE]
         set T1 [ted addtactic $B1 FUNDENI]
@@ -99,14 +99,14 @@ namespace eval ::athena_test::tests:: {
         name       T*
         parent     *
         percent    0.0
-        pot        ::pot
+        pot        *::pot
         state      invalid
     }
 
     test constructor-1.2 {can set options} -setup {
         setup
     } -body {
-        set T1 [tactic::FUNDENI new -parent DUMMY]
+        set T1 [::athena::tactic::FUNDENI new -parent DUMMY]
         $T1 get parent
     } -cleanup {
         cleanup

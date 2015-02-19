@@ -356,7 +356,7 @@ term cooperation "cooperation" {
     Athena creates the required cooperation curves automatically as 
     groups are created.  The cooperation between groups
     is viewed and modified on the <tab Information/Cooperation>
-    using the <cref /order/coop> and <cref /order/mad/coop>.  
+    using the <cref /order/coop>.  
     Cooperation can
     also be changed by <term driver>s that trigger Athena's
     <term damrules>.
@@ -706,47 +706,6 @@ term loglevel "log level" {
     Note that <b>debug</b> messages are only written to the log when
     enabled by the developer.  By default, the <tab Log> shows
     <b>normal</b> messages of severity <b>normal</b> and above.
-}
-
-#-----------------------------------------------------------------------
-
-term mad "magic attitude driver" {
-    A <i>magic attitude driver</i> (MAD) is a "magic" 
-    <term driver> (<term event> or <term situation>) 
-    defined by the user; it
-    affects attitudes in any way the user determines, via the 
-    <cref /order/mad>.<p>
-}
-
-
-#-----------------------------------------------------------------------
-
-term mapref "map reference string" {
-    A map reference string is a six-character string that represents
-    a point on the scenario's map.  It has the form
-    <b><i>AnnAnn</i></b> where <i>A</i> is a letter from "A" to "K"
-    (excluding "I") and <i>n</i> is a digit, "0" to "9".<p>
-
-    <h2>Background</h2>
-
-    Athena is designed to use any map image the analyst may have on
-    hand, from a high-quality scan of a printed map to a snapshot of a
-    map hand-drawn on a piece of paper.  Consequently, Athena cannot
-    use geographic coordinates, as it cannot assume that maps are
-    properly geo-referenced.<p>
-
-    Instead, Athena uses X,Y coordinates in the range 0 to 999 for
-    both axes.  The origin is at the upper left; positive X runs from
-    left to right and positive Y from top to bottom.<p>
-
-    These numeric X,Y coordinates are used internally; for input and
-    output they are converted to the form shown above.  For example,
-    the location (123,456) has reference string "B23E56".<p>
-
-    Note that X and Y coordinates are scaled identically.  The lower
-    right corner of a map 1000 pixels wide by 500 pixels high would
-    have numeric map coordinates (999,499) and map reference string
-    "K99E99".
 }
 
 #-----------------------------------------------------------------------

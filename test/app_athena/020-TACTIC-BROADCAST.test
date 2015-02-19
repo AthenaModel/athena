@@ -141,7 +141,7 @@ namespace eval ::athena_test::tests:: {
         iom        IOM1
         name       T*
         parent     *
-        pot        ::pot
+        pot        *::pot
         state      invalid
     }
 

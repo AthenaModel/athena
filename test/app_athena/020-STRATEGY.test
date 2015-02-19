@@ -77,7 +77,7 @@ namespace eval ::athena_test::tests:: {
         $S1 blocks
     } -cleanup {
         cleanup
-    } -match glob -result {::pot::block*}
+    } -match glob -result {*::pot::block*}
 
     test BLOCK:ADD-2.2 {notifier event} -setup {
         setup
@@ -150,14 +150,14 @@ namespace eval ::athena_test::tests:: {
         set B1 [ted addblock SYSTEM]
         set B2 [ted addblock SYSTEM]
     } -body {
-        ted notifier bind ::strategy <blocks>
+        ted notifier bind ::adb.strategy <blocks>
         ted order STRATEGY:BLOCK:DELETE ids [list [$B1 id] [$B2 id]]
         ted notifier received
     } -cleanup {
         cleanup
     } -match glob -result {
-        {::strategy <blocks> delete * *}
-        {::strategy <blocks> delete * *}
+        {::adb.strategy <blocks> delete * *}
+        {::adb.strategy <blocks> delete * *}
     }
 
     test BLOCK:DELETE-2.4 {undoes deletion} -setup {
@@ -178,14 +178,14 @@ namespace eval ::athena_test::tests:: {
         set B2 [ted addblock SYSTEM]
         ted order STRATEGY:BLOCK:DELETE ids [list [$B1 id] [$B2 id]]
     } -body {
-        ted notifier bind ::strategy <blocks>
+        ted notifier bind ::adb.strategy <blocks>
         flunky undo
         ted notifier received
     } -cleanup {
         cleanup
     } -match glob -result {
-        {::strategy <blocks> add * *}
-        {::strategy <blocks> add * *}
+        {::adb.strategy <blocks> add * *}
+        {::adb.strategy <blocks> add * *}
     }
 
     #-------------------------------------------------------------------

@@ -53,7 +53,7 @@ namespace eval ::athena_test::tests:: {
         plant start
         cash load
 
-        set coffer [coffer new JOE]
+        set coffer [::athena::coffer new [::adb athenadb] JOE]
 
         set B1 [ted addblock JOE]
         set T1 [ted addtactic $B1 MAINTAIN]
@@ -89,7 +89,7 @@ namespace eval ::athena_test::tests:: {
         nlist      {_type NBHOODS _rule {}}
         parent     *
         percent    100
-        pot        ::pot
+        pot        *::pot
         rmode      FULL
         state      invalid
     }
@@ -97,7 +97,7 @@ namespace eval ::athena_test::tests:: {
     test constructor-1.2 {can set options} -setup {
         setup
     } -body {
-        set T1 [tactic::MAINTAIN new -parent DUMMY]
+        set T1 [::athena::tactic::MAINTAIN new -parent DUMMY]
         $T1 get parent
     } -cleanup {
         cleanup

@@ -104,7 +104,7 @@ snit::type appserver {
 
         # NEXT, create the buffer for generating HTML.
         htools ${type}::ht \
-            -rdb       ::rdb              \
+            -rdb       ::adb              \
             -footercmd [myproc FooterCmd]
 
         # NEXT, register resource types from submodules.

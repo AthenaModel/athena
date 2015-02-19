@@ -479,7 +479,7 @@ snit::type map {
 #
 # Allows arbitrary lat/long points to be assigned to a map image
 
-myorders define MAP:GEOREF {
+::athena::orders define MAP:GEOREF {
     meta title "Geo-reference Map Image"
     meta sendstates {PREP PAUSED}
 
@@ -536,7 +536,7 @@ myorders define MAP:GEOREF {
 #
 # Imports a map from a file into the scenario
 
-myorders define MAP:IMPORT:FILE {
+::athena::orders define MAP:IMPORT:FILE {
     meta title "Import Map From File"
     meta sendstates {PREP PAUSED}
 
@@ -577,7 +577,7 @@ myorders define MAP:IMPORT:FILE {
 #
 # Imports map data into the scenario
 
-myorders define MAP:IMPORT:DATA {
+::athena::orders define MAP:IMPORT:DATA {
     meta title "Import Map As Data"
     meta sendstates {PREP}
 

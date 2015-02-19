@@ -130,7 +130,7 @@ snit::widget capbrowser {
         install caps using sqlbrowser $pane              \
             -height   8                                  \
             -width    30                                 \
-            -db       ::rdb                              \
+            -db       ::adb                              \
             -view     gui_caps                           \
             -uid      id                                 \
             -titlecolumns 1                              \
@@ -175,7 +175,7 @@ snit::widget capbrowser {
         pack $cdeletebtn -side right
 
         # NEXT, update individual entities when they change.
-        notifier bind ::rdb <caps> $self [list $caps uid]
+        notifier bind ::adb <caps> $self [list $caps uid]
     }
 
     # CapAddEntity
@@ -266,14 +266,14 @@ snit::widget capbrowser {
         install nbcov using sqlbrowser $pane                 \
             -height       20                                 \
             -width        40                                 \
-            -db           ::rdb                              \
+            -db           ::adb                              \
             -view         gui_cap_kn_nonzero                 \
             -uid          id                                 \
             -filterbox    off                                \
             -titlecolumns 2                                  \
             -selectioncmd [mymethod NbcovSelectionChanged]   \
             -reloadon {
-                ::rdb <caps>
+                ::adb <caps>
                 ::sim <DbSyncB>
             } -views {
                 gui_cap_kn         "All"
@@ -296,7 +296,7 @@ snit::widget capbrowser {
         pack $nceditbtn  -side left
 
         # NEXT, bind to rdb updates to the appropriate table
-        notifier bind ::rdb <cap_kn> $self [list $nbcov uid]
+        notifier bind ::adb <cap_kn> $self [list $nbcov uid]
     }
 
     # NbcovSelectionChaged 
@@ -339,7 +339,7 @@ snit::widget capbrowser {
         install capcov using sqlbrowser $pane               \
             -height 20                                      \
             -width  40                                      \
-            -db     ::rdb                                   \
+            -db     ::adb                                   \
             -view   gui_capcov_nonzero                      \
             -uid    id                                      \
             -titlecolumns 4                                 \
@@ -347,8 +347,8 @@ snit::widget capbrowser {
             -selectioncmd [mymethod CapcovSelectionChanged] \
             -displaycmd   [mymethod CapcovDataDisplay]      \
             -reloadon {
-                ::rdb <caps>
-                ::rdb <cap_kn>
+                ::adb <caps>
+                ::adb <cap_kn>
                 ::sim <DbSyncB>
             } -views {
                 gui_capcov         "All"
@@ -370,7 +370,7 @@ snit::widget capbrowser {
 
         pack $cceditbtn   -side left
 
-        notifier bind ::rdb <cap_kg> $self [list $capcov uid]
+        notifier bind ::adb <cap_kg> $self [list $capcov uid]
     }
 
 

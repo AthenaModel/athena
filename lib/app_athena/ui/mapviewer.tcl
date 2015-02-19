@@ -460,7 +460,7 @@ snit::widget mapviewer {
             order NBHOOD:CREATE
 
         DynamicHelp::add $win.vbar.nbhood \
-            -text [myorders title NBHOOD:CREATE]
+            -text [::athena::orders title NBHOOD:CREATE]
 
         cond::available control \
             [ttk::button $win.vbar.newabsit                                  \
@@ -471,7 +471,7 @@ snit::widget mapviewer {
             order ABSIT:CREATE
 
         DynamicHelp::add $win.vbar.newabsit \
-            -text [myorders title ABSIT:CREATE]
+            -text [::athena::orders title ABSIT:CREATE]
 
         pack $win.vbar.sep       -side top -fill x -pady 2
         pack $win.vbar.nbhood    -side top -fill x -padx 2
@@ -507,12 +507,14 @@ snit::widget mapviewer {
         notifier bind ::map      <MapChanged>  $self [mymethod dbsync]
         notifier bind ::marsgui::order_dialog <OrderEntry>  \
             $self [mymethod OrderEntry]
-        notifier bind ::rdb      <nbhoods>     $self [mymethod EntityNbhood]
-        notifier bind ::nbhood   <Stack>       $self [mymethod NbhoodStack]
-        notifier bind ::rdb      <units>       $self [mymethod EntityUnit]
-        notifier bind ::rdb      <absits>      $self [mymethod EntityAbsit]
-        notifier bind ::rdb      <groups>      $self [mymethod EntityGroup]
-        notifier bind ::rdb      <econ_n>      $self [mymethod EntityEcon]
+        notifier bind ::adb        <nbhoods>   $self [mymethod EntityNbhood]
+        
+        # TBD: Should be ::adb.nbhood
+        notifier bind ::adb.nbhood <Stack>     $self [mymethod NbhoodStack]
+        notifier bind ::adb        <units>     $self [mymethod EntityUnit]
+        notifier bind ::adb        <absits>    $self [mymethod EntityAbsit]
+        notifier bind ::adb        <groups>    $self [mymethod EntityGroup]
+        notifier bind ::adb        <econ_n>    $self [mymethod EntityEcon]
 
         # NEXT, draw everything for the current map, whatever it is.
         $self dbsync
@@ -862,7 +864,7 @@ snit::widget mapviewer {
         $self NbhoodFill
 
         # NEXT, check that neighborhoods fit inside map area
-        $self NbhoodCheck
+        $self NbhoodBoundsCheck
     }
 
 
@@ -894,12 +896,12 @@ snit::widget mapviewer {
         set nbhoods(id-$n) $id
     }
 
-    # NbhoodCheck
+    # NbhoodBoundsCheck
     #
     # Checks to see that all neighborhood boundaries fit within the
     # defined map area
 
-    method NbhoodCheck {} {
+    method NbhoodBoundsCheck {} {
         if {![map compatible]} {
             set info(check) "Neighborhood(s) extend beyond map"
             $win.hbar.check configure -foreground red
@@ -1140,6 +1142,9 @@ snit::widget mapviewer {
 
         # NEXT, show refpoints obscured by the change
         $self NbhoodShowObscured
+
+        # NEXT, check for nbhoods outside map boundaries
+        $self NbhoodBoundsCheck
     }
 
     method {EntityNbhood delete} {n} {
@@ -1153,6 +1158,9 @@ snit::widget mapviewer {
 
         # NEXT, show refpoints revealed by the change
         $self NbhoodShowObscured
+
+        # NEXT, check for nbhoods outside map boundaries
+        $self NbhoodBoundsCheck
     }
       
 

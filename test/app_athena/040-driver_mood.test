@@ -64,27 +64,31 @@ namespace eval ::athena_test::tests:: {
         parm set dam.WATER.active no
         parm set dam.TRANSPORT.active no
         rdb eval {DELETE FROM drivers}
-        rdb eval {DELETE FROM mads}
         
         # NEXT, create the entities
         ted create JOE BOB DAVE NB1 NB2 BLUE BRIT TAL SHIA SUNN KURD
         
         # NEXT, give JOE control of NB1.
         ted order NBHOOD:UPDATE n NB1 controller JOE
-        
-        # NEXT, lock, so can do magic inputs to affect mood.
-        ted lock
-        
-        # NEXT, add an input of the relevant kind.
-        ted order MAD:CREATE narrative "Mood Test" \
+
+        # NEXT, add a CURSE of the relevant kind.
+        ted order CURSE:CREATE curse_id MOODTEST longname "Mood Test" \
             cause UNIQUE s 0.0 p 0.0 q 0.0
-        set madId [ted sendex last_mad]
         foreach c {AUT CUL QOL SFT} {
-            ted order MAD:SAT mad_id $madId mode persistent \
-                g SHIA c $c mag $delta
+            ted order INJECT:SAT:CREATE curse_id MOODTEST \
+                longname "Inject $c" \
+                mode     persistent  \
+                g        @CIV        \
+                c        $c          \
+                mag      $delta
         }
-        
-        # NEXT, take a step, so that the inputs will do their thing.
+        set B1 [ted addblock SYSTEM]
+
+        set roles [list @CIV [gofer construct CIVGROUPS BY_VALUE SHIA]]
+        set T1 [ted addtactic $B1 CURSE curse MOODTEST roles $roles]
+
+        # NEXT, lock and step so that the curse can fire.
+        ted lock
         ted step
     }
 
@@ -109,7 +113,7 @@ namespace eval ::athena_test::tests:: {
     } -cleanup {
         cleanup
     } -result {
-firing_id  5
+firing_id  3
 t          2
 driver_id  1001
 ruleset    MOOD
@@ -152,7 +156,7 @@ MOOD-1-1 SHIA JOE  has control
     } -cleanup {
         cleanup
     } -result {
-firing_id  5
+firing_id  3
 t          2
 driver_id  1001
 ruleset    MOOD
@@ -188,7 +192,7 @@ MOOD-1-2 SHIA JOE  has control
     test sigline-1.1 {sigline output} -setup {
         # None Needed
     } -body {
-        driver::MOOD sigline {}
+        ruleset MOOD sigline {}
     } -cleanup {
         cleanup
     } -result {Effects of changes to CIV Group MOOD}
@@ -198,7 +202,7 @@ MOOD-1-2 SHIA JOE  has control
     # narrative
 
     test narrative-1.1 {narrative output} -body {
-        driver::MOOD narrative {
+        ruleset MOOD narrative {
             g       SHIA
             delta   50.0
         } 
@@ -212,7 +216,7 @@ MOOD-1-2 SHIA JOE  has control
     test detail-1.1 {MOOD detail, controller exists} -setup {
         # None needed
     } -body {
-        driver::MOOD detail {
+        ruleset MOOD detail {
             dtype       MOOD
             g           SHIA
             n           N1
@@ -241,7 +245,7 @@ since 2000W11.<p>
     test detail-1.2 {MOOD detail, no controller} -setup {
         # None needed
     } -body {
-        driver::MOOD detail {
+        ruleset MOOD detail {
             dtype       MOOD
             g           SHIA
             n           N1

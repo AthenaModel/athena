@@ -88,7 +88,7 @@ namespace eval ::athena_test::tests:: {
 
         cash load
         personnel load
-        set coffer [coffer new JOE]
+        set coffer [::athena::coffer new [::adb athenadb] JOE]
     }
 
     # Set the maintenance cost for BLUE, in $/person deployed
@@ -147,7 +147,7 @@ namespace eval ::athena_test::tests:: {
         percent    0
         personnel  0
         pmode      ALL
-        pot        ::pot
+        pot        *::pot
         redeploy   0
         state      invalid
     }
@@ -155,7 +155,7 @@ namespace eval ::athena_test::tests:: {
     test constructor-1.2 {can set options} -setup {
         setup
     } -body {
-        set T1 [tactic::DEPLOY new -parent DUMMY]
+        set T1 [::athena::tactic::DEPLOY new -parent DUMMY]
         $T1 get parent
     } -cleanup {
         cleanup

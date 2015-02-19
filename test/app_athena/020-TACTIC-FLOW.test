@@ -191,7 +191,7 @@ namespace eval ::athena_test::tests:: {
         parent     *
         percent    5.0
         personnel  1000
-        pot        ::pot
+        pot        *::pot
         state      normal
     }
 

@@ -139,7 +139,7 @@ snit::widget cgesheet {
             "Calibrated Values from Base SAM"               Cal]
 
         # NEXT, Get the CGE.
-        set cge [econ cge]
+        set cge [econ getcge]
 
         # NEXT, the frame for the htmlframe and scroll bar
         ttk::frame $win.frm

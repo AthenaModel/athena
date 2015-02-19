@@ -68,7 +68,7 @@ namespace eval ::athena_test::tests:: {
         metflag {}
         name    C*
         parent  *
-        pot     ::pot
+        pot     *::pot
         state   normal
         x       {_type NUMBER _rule BY_VALUE raw_value 0}
         y       {_type NUMBER _rule BY_VALUE raw_value 0}
@@ -77,7 +77,7 @@ namespace eval ::athena_test::tests:: {
     test constructor-1.2 {can set options} -setup {
         setup
     } -body {
-        set C1 [condition::COMPARE new -parent DUMMY]
+        set C1 [::athena::condition::COMPARE new -parent DUMMY]
         $C1 get parent
     } -cleanup {
         cleanup
