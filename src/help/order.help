@@ -113,7 +113,6 @@ include order_frcgroup.help
 include order_hrel.help
 include order_inject.help
 include order_iom.help
-include order_mad.help
 include order_map.help
 include order_parm.help       ;# Sort as "Model Parameter"
 include order_plant.help

@@ -584,11 +584,9 @@ object tactic_curse {
         Role-based Situation and Event (or CURSE) to be executed with
         all of it's injects.  Injects associated with a CURSE cause
         changes to one or more of: Horizontal relationships, Vertical
-        relationships, Satisfaction and Cooperation.  Injects are similar
-        to <term mad>s in that the changes to attitude are identical to 
-        magic changes.  CURSEs are meant to be used when the effects of 
-        something not already explictly modeled in Athena needs to be 
-        injected into the simulation.
+        relationships, Satisfaction and Cooperation.  CURSEs are meant 
+        to be used when the effects of something not already explictly 
+        modeled in Athena needs to be injected into the simulation.
     }
 
     include tactic_ -attrs id
