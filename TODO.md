@@ -1,12 +1,15 @@
 # TODO.md - Athena TODO List
 
-- Fix up 040-driver_ENI.
-  - Used old-style tactics.
-  - Expects to edit tactics while paused.
-  - Need to set up all tactics initially, with times, so that different
-    values are used.
-- Add all component entries to athenadb(n).
+- Finish gofer work:
+  - Convert remaining gofers and test
+  - Test gofer.tcl, gofer_type.tcl, gofer_rule.tcl
+  - Get the goferx field type working.
+  - Update man pages (insofar as that's necessary)
+  - Update and test gofer executive command, per writeup in help.
+  - Update remaining code to use "adb gofer TYPE" instead of "::gofer::TYPE".
+- Document all component entries in athenadb(n).
   - Or, come up with a plan for which ones are documented and which aren't.
+- Document athena(n)
 - Move editable entities to athena(n)
 - Move model modules to athena(n)
 - Move relevant projtypes to athena(n)
@@ -59,7 +62,7 @@
 - plant
   - strategy, tactic_build, tactic_damage, tactic_maintain
 - ptype - Should go in athena_order.tcl? (But no hierarchical methods!)
-  - absit, actor, nbhood, tactic_*.tcl
+  - absit, actor, gofer_actors.tcl, nbhood, tactic_*.tcl
 - refpoint
   - absit, nbhood
 - service

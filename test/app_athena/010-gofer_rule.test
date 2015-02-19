@@ -1,0 +1,385 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-gofer_rule.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    gofer_rule tests.
+#
+#    This test suite tests the gofer_rule class.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    proc setup {} {
+        variable rule
+
+        ted create NB1 NB2 JOE BOB BLUE BRIT SUNN SHIA KURD
+
+        set rule [::athena::gofer_rule new [adb athenadb]]
+    }
+
+    proc cleanup {} {
+        variable rule
+        catch {$rule destroy}
+        ted cleanup
+    }
+
+    proc valgood {value} {
+        return [string toupper $value]
+    }
+
+    proc valbad {value} {
+        error "Invalid value: \"$value\""
+    }
+
+    #-------------------------------------------------------------------
+    # make
+
+    test make-1.1 {fails by default} -setup {
+        setup
+    } -body {
+        $rule make NONESUCH
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -match glob -result {*: make method not overridden}
+
+    
+    #-------------------------------------------------------------------
+    # validate
+
+    test validate-1.1 {fails by default} -setup {
+        setup
+    } -body {
+        $rule validate NONESUCH
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -match glob -result {*: validate method not overridden}
+
+    #-------------------------------------------------------------------
+    # narrative
+
+    test narrative-1.1 {fails by default} -setup {
+        setup
+    } -body {
+        $rule narrative NONESUCH -brief
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -match glob -result {*: narrative method not overridden}
+    
+    #-------------------------------------------------------------------
+    # eval
+
+    test eval-1.1 {fails by default} -setup {
+        setup
+    } -body {
+        $rule eval NONESUCH
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -match glob -result {*: eval method not overridden}
+
+    
+    #-------------------------------------------------------------------
+    # val_list
+    
+    test val_list-1.1 {canonicalizes when valid} -setup {
+        setup
+    } -body {
+        $rule val_list "items" [namespace current]::valgood {a b c}  
+    } -cleanup {
+        cleanup
+    } -result {A B C}
+    
+    test val_list-1.2 {no items} -setup {
+        setup
+    } -body {
+        $rule val_list "items" [namespace current]::valgood {}
+    } -returnCodes {
+        error 
+    } -cleanup {
+        cleanup
+    } -result {No items selected}
+    
+    test val_list-1.3 {bad item} -setup {
+        setup
+    } -body {
+        $rule val_list "items" [namespace current]::valbad {a b c}
+    } -returnCodes {
+        error 
+    } -cleanup {
+        cleanup
+    } -result {Invalid value: "a"}
+    
+    #-------------------------------------------------------------------
+    # val_elist
+    
+    test val_elist-1.1 {returns valid items} -setup {
+        setup
+    } -body {
+        $rule val_elist actor "actors" {JOE BOB}  
+    } -cleanup {
+        cleanup
+    } -result {JOE BOB}
+    
+    test val_elist-1.2 {no items} -setup {
+        setup
+    } -body {
+        $rule val_elist orggroup "items" {}
+    } -returnCodes {
+        error 
+    } -cleanup {
+        cleanup
+    } -result {No items selected}
+    
+    test val_elist-1.3 {bad item} -setup {
+        setup
+    } -body {
+        $rule val_elist actor "items" {a b c}
+    } -returnCodes {
+        error 
+    } -cleanup {
+        cleanup
+    } -result {Invalid actor, should be one of: BOB, JOE}
+
+    #-------------------------------------------------------------------
+    # val_anyall_glist
+
+    test val_anyall_glist-1.1 {validate, valid} -setup {
+        setup
+    } -body {
+        $rule val_anyall_glist {anyall any glist {SHIA SUNN}}
+    } -cleanup {
+        cleanup
+    } -result {anyall ANY glist {SHIA SUNN}}
+
+    test val_anyall_glist-1.2 {validate, invalid anyall} -setup {
+        setup
+    } -body {
+        $rule val_anyall_glist {anyall NONESUCH glist SHIA}
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -match glob -result {invalid value "NONESUCH", should be one of: ANY, ALL}
+
+    test val_anyall_glist-1.3 {validate, invalid glist} -setup {
+        setup
+    } -body {
+        $rule val_anyall_glist {anyall ANY glist {SHIA NONESUCH}}
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -match glob -result {Invalid group*}
+
+    test val_anyall_glist-1.4 {validate, invalid glist given type} -setup {
+        setup
+    } -body {
+        $rule val_anyall_glist {anyall ANY glist {SHIA BLUE}} frcgroup
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -match glob -result {Invalid force group*}
+
+    #-------------------------------------------------------------------
+    # val_anyall_nlist
+    
+    test val_anyall_nlist-1.1 {validate, valid} -setup {
+        setup
+    } -body {
+        $rule val_anyall_nlist {anyall any nlist {NB1 NB2}}
+    } -cleanup {
+        cleanup
+    } -result {anyall ANY nlist {NB1 NB2}}
+
+    test val_anyall_nlist-1.2 {validate, invalid anyall} -setup {
+        setup
+    } -body {
+        $rule val_anyall_nlist {anyall NONESUCH nlist NB1}
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -match glob -result {invalid value "NONESUCH", should be one of: ANY, ALL}
+
+    test val_anyall_nlist-1.3 {validate, invalid nlist} -setup {
+        setup
+    } -body {
+        $rule val_anyall_nlist {anyall ANY nlist {NB1 NONESUCH}}
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -match glob -result {Invalid neighborhood*}
+    
+    #-------------------------------------------------------------------
+    # nar_list
+    
+    test nar_list-1.1 {single with single noun} -setup {
+        setup
+    } -body {
+        $rule nar_list "item" "items" a  
+    } -cleanup {
+        cleanup
+    } -result {item a}
+    
+    test nar_list-1.2 {single with no noun} -setup {
+        setup
+    } -body {
+        $rule nar_list "" "items" a  
+    } -cleanup {
+        cleanup
+    } -result {a}
+
+    test nar_list-1.3 {multiple, no -brief} -setup {
+        setup
+    } -body {
+        $rule nar_list "item" "items" {a b c d e f g h i j}  
+    } -cleanup {
+        cleanup
+    } -result {items (a, b, c, d, e, f, g, h, i, j)}
+
+    test nar_list-1.4 {multiple, -brief} -setup {
+        setup
+    } -body {
+        $rule nar_list "item" "items" {a b c d e f g h i j} -brief 
+    } -cleanup {
+        cleanup
+    } -result {items (a, b, c, d, e, f, g, h, ...)}
+    
+
+    #-------------------------------------------------------------------
+    # nar_anyall_glist
+
+
+    test nar_anyall_glist-1.1 {narrative, one group} -setup {
+        setup
+    } -body {
+        $rule nar_anyall_glist {anyall ANY glist SHIA}
+    } -cleanup {
+        cleanup
+    } -result {group SHIA}
+
+    test nar_anyall_glist-1.2 {narrative, any, several groups} -setup {
+        setup
+    } -body {
+        $rule nar_anyall_glist {
+            anyall ANY
+            glist {SHIA SUNN}
+        }
+    } -cleanup {
+        cleanup
+    } -result {any of these groups (SHIA, SUNN)}
+    
+    test nar_anyall_glist-1.3 {narrative, all, several groups} -setup {
+        setup
+    } -body {
+        $rule nar_anyall_glist {
+            anyall ALL
+            glist {SHIA SUNN}
+        }
+    } -cleanup {
+        cleanup
+    } -result {all of these groups (SHIA, SUNN)}
+
+    test nar_anyall_glist-1.4 {narrative, -brief} -setup {
+        setup
+    } -body {
+        $rule nar_anyall_glist {
+            anyall ANY
+            glist {A B C D E F G H I J}
+        } -brief
+    } -cleanup {
+        cleanup
+    } -result {any of these groups (A, B, C, D, E, F, G, H, ...)}
+
+    #-------------------------------------------------------------------
+    # nar_anyall_nlist
+
+    test nar_anyall_nlist-2.1 {narrative, one neighborhood} -setup {
+        setup
+    } -body {
+        $rule nar_anyall_nlist {anyall ANY nlist NB1}
+    } -cleanup {
+        cleanup
+    } -result {neighborhood NB1}
+
+    test nar_anyall_nlist-2.2 {narrative, any, several neighborhoods} -setup {
+        setup
+    } -body {
+        $rule nar_anyall_nlist {
+            anyall ANY
+            nlist {NB1 NB2}
+        }
+    } -cleanup {
+        cleanup
+    } -result {any of these neighborhoods (NB1, NB2)}
+    
+    test nar_anyall_nlist-2.3 {narrative, all, several neighborhoods} -setup {
+        setup
+    } -body {
+        $rule nar_anyall_nlist {
+            anyall ALL
+            nlist {NB1 NB2}
+        }
+    } -cleanup {
+        cleanup
+    } -result {all of these neighborhoods (NB1, NB2)}
+
+    test nar_anyall_nlist-2.4 {narrative, -brief} -setup {
+        setup
+    } -body {
+        $rule nar_anyall_nlist {
+            anyall ANY
+            nlist {A B C D E F G H I J}
+        } -brief
+    } -cleanup {
+        cleanup
+    } -result {any of these neighborhoods (A, B, C, D, E, F, G, H, ...)}
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+

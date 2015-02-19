@@ -54,10 +54,10 @@ namespace eval ::athena_test::tests:: {
     #-------------------------------------------------------------------
     # Rule: BY_VALUE
 
-    test BY_VALUE-1.1 {construct, valid} -setup {
+    test BY_VALUE-1.1 {make, valid} -setup {
         setup
     } -body {
-        ::gofer::ACTORS::BY_VALUE construct {BOB JOE}
+        adb gofer ACTORS BY_VALUE make {BOB JOE}
     } -cleanup {
         cleanup
     } -result {raw_value {BOB JOE}}
@@ -65,7 +65,7 @@ namespace eval ::athena_test::tests:: {
     test BY_VALUE-2.1 {validate, valid} -setup {
         setup
     } -body {
-        ::gofer::ACTORS::BY_VALUE validate {raw_value {BOB JOE}}
+        adb gofer ACTORS BY_VALUE validate {raw_value {BOB JOE}}
     } -cleanup {
         cleanup
     } -result {raw_value {BOB JOE}}
@@ -73,7 +73,7 @@ namespace eval ::athena_test::tests:: {
     test BY_VALUE-2.2 {validate, invalid} -setup {
         setup
     } -body {
-        ::gofer::ACTORS::BY_VALUE validate {raw_value {BOB NONESUCH}}
+        adb gofer ACTORS BY_VALUE validate {raw_value {BOB NONESUCH}}
     } -returnCodes {
         error
     } -cleanup {
@@ -81,13 +81,13 @@ namespace eval ::athena_test::tests:: {
     } -match glob -result {Invalid actor*}
 
     test BY_VALUE-3.1 {narrative} -body {
-        ::gofer::ACTORS::BY_VALUE narrative {raw_value BOB}
+        adb gofer ACTORS BY_VALUE narrative {raw_value BOB}
     } -result {actor BOB}
 
     test BY_VALUE-4.1 {eval} -setup {
         setup
     } -body {
-        ::gofer::ACTORS::BY_VALUE eval {raw_value {BOB JOE}}
+        adb gofer ACTORS BY_VALUE eval {raw_value {BOB JOE}}
     } -cleanup {
         cleanup
     } -result {BOB JOE}
@@ -95,10 +95,10 @@ namespace eval ::athena_test::tests:: {
     #-------------------------------------------------------------------
     # Rule: CONTROLLING
 
-    test CONTROLLING-1.1 {construct} -setup {
+    test CONTROLLING-1.1 {make} -setup {
         setup
     } -body {
-        ::gofer::ACTORS::CONTROLLING construct {NB1 NB2}
+        adb gofer ACTORS CONTROLLING make {NB1 NB2}
     } -cleanup {
         cleanup
     } -result {nlist {NB1 NB2}}
@@ -106,13 +106,13 @@ namespace eval ::athena_test::tests:: {
     test CONTROLLING-2.1 {validate} -setup {
         setup
     } -body {
-        ::gofer::ACTORS::CONTROLLING validate {nlist {NB1 NB2}}
+        adb gofer ACTORS CONTROLLING validate {nlist {NB1 NB2}}
     } -cleanup {
         cleanup
     } -result {nlist {NB1 NB2}}
 
     test CONTROLLING-3.1 {narrative} -body {
-        ::gofer::ACTORS::CONTROLLING narrative {nlist NB1}
+        adb gofer ACTORS CONTROLLING narrative {nlist NB1}
     } -match glob -result {actors who are in control of *}
 
     proc setupControlling {} {
@@ -128,7 +128,7 @@ namespace eval ::athena_test::tests:: {
     test CONTROLLING-4.1 {eval, one} -setup {
         setupControlling 
     } -body {
-        ::gofer::ACTORS::CONTROLLING eval {nlist NB1}
+        adb gofer ACTORS CONTROLLING eval {nlist NB1}
     } -cleanup {
         cleanup
     } -result {JOE}
@@ -136,7 +136,7 @@ namespace eval ::athena_test::tests:: {
     test CONTROLLING-4.2 {eval, multi} -setup {
         setupControlling 
     } -body {
-        ::gofer::ACTORS::CONTROLLING eval {nlist {NB1 NB2}}
+        adb gofer ACTORS CONTROLLING eval {nlist {NB1 NB2}}
     } -cleanup {
         cleanup
     } -result {BOB JOE}
@@ -144,10 +144,10 @@ namespace eval ::athena_test::tests:: {
     #-------------------------------------------------------------------
     # Rule: INFLUENCE_IN
 
-    test INFLUENCE_IN-1.1 {construct} -setup {
+    test INFLUENCE_IN-1.1 {make} -setup {
         setup
     } -body {
-        ::gofer::ACTORS::INFLUENCE_IN construct any {NB1 NB2}
+        adb gofer ACTORS INFLUENCE_IN make any {NB1 NB2}
     } -cleanup {
         cleanup
     } -result {anyall ANY nlist {NB1 NB2}}
@@ -155,13 +155,13 @@ namespace eval ::athena_test::tests:: {
     test INFLUENCE_IN-2.1 {validate} -setup {
         setup
     } -body {
-        ::gofer::ACTORS::INFLUENCE_IN validate {anyall any nlist {NB1 NB2}}
+        adb gofer ACTORS INFLUENCE_IN validate {anyall any nlist {NB1 NB2}}
     } -cleanup {
         cleanup
     } -result {anyall ANY nlist {NB1 NB2}}
 
     test INFLUENCE_IN-3.1 {narrative} -body {
-        ::gofer::ACTORS::INFLUENCE_IN narrative {anyall ANY nlist NB1}
+        adb gofer ACTORS INFLUENCE_IN narrative {anyall ANY nlist NB1}
     } -match glob -result {actors who have influence in *}
 
     proc setupInfluenceIn {dict} {
@@ -179,7 +179,7 @@ namespace eval ::athena_test::tests:: {
             NB2 BOB
         }
     } -body {
-        ::gofer::ACTORS::INFLUENCE_IN eval {anyall ANY nlist NB1}
+        adb gofer ACTORS INFLUENCE_IN eval {anyall ANY nlist NB1}
     } -cleanup {
         cleanup
     } -result {JOE}
@@ -190,7 +190,7 @@ namespace eval ::athena_test::tests:: {
             NB2 BOB
         }
     } -body {
-        ::gofer::ACTORS::INFLUENCE_IN eval {anyall ANY nlist {NB1 NB2}}
+        adb gofer ACTORS INFLUENCE_IN eval {anyall ANY nlist {NB1 NB2}}
     } -cleanup {
         cleanup
     } -result {BOB JOE}
@@ -201,7 +201,7 @@ namespace eval ::athena_test::tests:: {
             NB2 BOB
         }
     } -body {
-        ::gofer::ACTORS::INFLUENCE_IN eval {anyall ALL nlist {NB1 NB2}}
+        adb gofer ACTORS INFLUENCE_IN eval {anyall ALL nlist {NB1 NB2}}
     } -cleanup {
         cleanup
     } -result {}
@@ -209,10 +209,10 @@ namespace eval ::athena_test::tests:: {
     #-------------------------------------------------------------------
     # Rule: OWNING
 
-    test OWNING-1.1 {construct} -setup {
+    test OWNING-1.1 {make} -setup {
         setup
     } -body {
-        ::gofer::ACTORS::OWNING construct {BRIT BLUE}
+        adb gofer ACTORS OWNING make {BRIT BLUE}
     } -cleanup {
         cleanup
     } -result {glist {BRIT BLUE}}
@@ -220,19 +220,19 @@ namespace eval ::athena_test::tests:: {
     test OWNING-2.1 {validate} -setup {
         setup
     } -body {
-        ::gofer::ACTORS::OWNING validate {glist {BRIT BLUE}}
+        adb gofer ACTORS OWNING validate {glist {BRIT BLUE}}
     } -cleanup {
         cleanup
     } -result {glist {BRIT BLUE}}
 
     test OWNING-3.1 {narrative} -body {
-        ::gofer::ACTORS::OWNING narrative {glist BRIT}
+        adb gofer ACTORS OWNING narrative {glist BRIT}
     } -match glob -result {actors who own *}
 
     test OWNING-4.1 {eval, one} -setup {
         setup
     } -body {
-        ::gofer::ACTORS::OWNING eval {glist BLUE}
+        adb gofer ACTORS OWNING eval {glist BLUE}
     } -cleanup {
         cleanup
     } -result {JOE}
@@ -240,7 +240,7 @@ namespace eval ::athena_test::tests:: {
     test OWNING-4.2 {eval, org group} -setup {
         setup
     } -body {
-        ::gofer::ACTORS::OWNING eval {glist USAID}
+        adb gofer ACTORS OWNING eval {glist USAID}
     } -cleanup {
         cleanup
     } -result {JOE}
@@ -248,7 +248,7 @@ namespace eval ::athena_test::tests:: {
     test OWNING-4.3 {eval, multiple} -setup {
         setup
     } -body {
-        ::gofer::ACTORS::OWNING eval {glist {BLUE TAL}}
+        adb gofer ACTORS OWNING eval {glist {BLUE TAL}}
     } -cleanup {
         cleanup
     } -result {JOE BOB}
@@ -256,10 +256,10 @@ namespace eval ::athena_test::tests:: {
     #-------------------------------------------------------------------
     # Rule: SUPPORTED_BY
 
-    test SUPPORTED_BY-1.1 {construct} -setup {
+    test SUPPORTED_BY-1.1 {make} -setup {
         setup
     } -body {
-        ::gofer::ACTORS::SUPPORTED_BY construct any {BRIT BLUE}
+        adb gofer ACTORS SUPPORTED_BY make any {BRIT BLUE}
     } -cleanup {
         cleanup
     } -result {anyall ANY glist {BRIT BLUE}}
@@ -267,13 +267,13 @@ namespace eval ::athena_test::tests:: {
     test SUPPORTED_BY-2.1 {validate} -setup {
         setup
     } -body {
-        ::gofer::ACTORS::SUPPORTED_BY validate {anyall any glist {BRIT BLUE}}
+        adb gofer ACTORS SUPPORTED_BY validate {anyall any glist {BRIT BLUE}}
     } -cleanup {
         cleanup
     } -result {anyall ANY glist {BRIT BLUE}}
 
     test SUPPORTED_BY-3.1 {narrative} -body {
-        ::gofer::ACTORS::SUPPORTED_BY narrative {anyall ANY glist BRIT}
+        adb gofer ACTORS SUPPORTED_BY narrative {anyall ANY glist BRIT}
     } -match glob -result {actors who are actively supported by *}
 
     proc setupSupportedBy {} {
@@ -297,7 +297,7 @@ namespace eval ::athena_test::tests:: {
     test SUPPORTED_BY-4.1 {eval, one} -setup {
         setupSupportedBy
     } -body {
-        ::gofer::ACTORS::SUPPORTED_BY eval {anyall ANY glist BLUE}
+        adb gofer ACTORS SUPPORTED_BY eval {anyall ANY glist BLUE}
     } -cleanup {
         cleanup
     } -result {BOB JOE}
@@ -305,7 +305,7 @@ namespace eval ::athena_test::tests:: {
     test SUPPORTED_BY-4.2 {eval, any} -setup {
         setupSupportedBy
     } -body {
-        ::gofer::ACTORS::SUPPORTED_BY eval {anyall ANY glist {BRIT TAL}}
+        adb gofer ACTORS SUPPORTED_BY eval {anyall ANY glist {BRIT TAL}}
     } -cleanup {
         cleanup
     } -result {BOB JOE}
@@ -313,7 +313,7 @@ namespace eval ::athena_test::tests:: {
     test SUPPORTED_BY-4.3 {eval, all} -setup {
         setupSupportedBy
     } -body {
-        ::gofer::ACTORS::SUPPORTED_BY eval {anyall ALL glist {BLUE BRIT}}
+        adb gofer ACTORS SUPPORTED_BY eval {anyall ALL glist {BLUE BRIT}}
     } -cleanup {
         cleanup
     } -result {JOE}
@@ -321,10 +321,10 @@ namespace eval ::athena_test::tests:: {
     #-------------------------------------------------------------------
     # Rule: LIKED_BY_GROUP
 
-    test LIKED_BY_GROUP-1.1 {construct} -setup {
+    test LIKED_BY_GROUP-1.1 {make} -setup {
         setup
     } -body {
-        ::gofer::ACTORS::LIKED_BY_GROUP construct any {BRIT BLUE}
+        adb gofer ACTORS LIKED_BY_GROUP make any {BRIT BLUE}
     } -cleanup {
         cleanup
     } -result {anyall ANY glist {BRIT BLUE}}
@@ -332,13 +332,13 @@ namespace eval ::athena_test::tests:: {
     test LIKED_BY_GROUP-2.1 {validate} -setup {
         setup
     } -body {
-        ::gofer::ACTORS::LIKED_BY_GROUP validate {anyall any glist {BRIT BLUE}}
+        adb gofer ACTORS LIKED_BY_GROUP validate {anyall any glist {BRIT BLUE}}
     } -cleanup {
         cleanup
     } -result {anyall ANY glist {BRIT BLUE}}
 
     test LIKED_BY_GROUP-3.1 {narrative} -body {
-        ::gofer::ACTORS::LIKED_BY_GROUP narrative {anyall ANY glist BRIT}
+        adb gofer ACTORS LIKED_BY_GROUP narrative {anyall ANY glist BRIT}
     } -match glob -result {actors who are liked by *}
 
     proc setupLikedBy {} {
@@ -356,7 +356,7 @@ namespace eval ::athena_test::tests:: {
     test LIKED_BY_GROUP-4.1 {eval, one} -setup {
         setupLikedBy
     } -body {
-        ::gofer::ACTORS::LIKED_BY_GROUP eval {anyall ANY glist BLUE}
+        adb gofer ACTORS LIKED_BY_GROUP eval {anyall ANY glist BLUE}
     } -cleanup {
         cleanup
     } -result {BOB JOE}
@@ -364,7 +364,7 @@ namespace eval ::athena_test::tests:: {
     test LIKED_BY_GROUP-4.2 {eval, any} -setup {
         setupLikedBy
     } -body {
-        ::gofer::ACTORS::LIKED_BY_GROUP eval {anyall ANY glist {BRIT TAL}}
+        adb gofer ACTORS LIKED_BY_GROUP eval {anyall ANY glist {BRIT TAL}}
     } -cleanup {
         cleanup
     } -result {BOB JOE}
@@ -372,7 +372,7 @@ namespace eval ::athena_test::tests:: {
     test LIKED_BY_GROUP-4.3 {eval, all} -setup {
         setupLikedBy
     } -body {
-        ::gofer::ACTORS::LIKED_BY_GROUP eval {anyall ALL glist {BLUE BRIT}}
+        adb gofer ACTORS LIKED_BY_GROUP eval {anyall ALL glist {BLUE BRIT}}
     } -cleanup {
         cleanup
     } -result {JOE}
@@ -380,10 +380,10 @@ namespace eval ::athena_test::tests:: {
     #-------------------------------------------------------------------
     # Rule: DISLIKED_BY_GROUP
 
-    test DISLIKED_BY_GROUP-1.1 {construct} -setup {
+    test DISLIKED_BY_GROUP-1.1 {make} -setup {
         setup
     } -body {
-        ::gofer::ACTORS::DISLIKED_BY_GROUP construct any {BRIT BLUE}
+        adb gofer ACTORS DISLIKED_BY_GROUP make any {BRIT BLUE}
     } -cleanup {
         cleanup
     } -result {anyall ANY glist {BRIT BLUE}}
@@ -391,13 +391,13 @@ namespace eval ::athena_test::tests:: {
     test DISLIKED_BY_GROUP-2.1 {validate} -setup {
         setup
     } -body {
-        ::gofer::ACTORS::DISLIKED_BY_GROUP validate {anyall any glist {BRIT BLUE}}
+        adb gofer ACTORS DISLIKED_BY_GROUP validate {anyall any glist {BRIT BLUE}}
     } -cleanup {
         cleanup
     } -result {anyall ANY glist {BRIT BLUE}}
 
     test DISLIKED_BY_GROUP-3.1 {narrative} -body {
-        ::gofer::ACTORS::DISLIKED_BY_GROUP narrative {anyall ANY glist BRIT}
+        adb gofer ACTORS DISLIKED_BY_GROUP narrative {anyall ANY glist BRIT}
     } -match glob -result {actors who are disliked by *}
 
     proc setupDislikedBy {} {
@@ -415,7 +415,7 @@ namespace eval ::athena_test::tests:: {
     test DISLIKED_BY_GROUP-4.1 {eval, one} -setup {
         setupDislikedBy
     } -body {
-        ::gofer::ACTORS::DISLIKED_BY_GROUP eval {anyall ANY glist BLUE}
+        adb gofer ACTORS DISLIKED_BY_GROUP eval {anyall ANY glist BLUE}
     } -cleanup {
         cleanup
     } -result {BOB JOE}
@@ -423,7 +423,7 @@ namespace eval ::athena_test::tests:: {
     test DISLIKED_BY_GROUP-4.2 {eval, any} -setup {
         setupDislikedBy
     } -body {
-        ::gofer::ACTORS::DISLIKED_BY_GROUP eval {anyall ANY glist {BRIT TAL}}
+        adb gofer ACTORS DISLIKED_BY_GROUP eval {anyall ANY glist {BRIT TAL}}
     } -cleanup {
         cleanup
     } -result {BOB JOE}
@@ -431,7 +431,7 @@ namespace eval ::athena_test::tests:: {
     test DISLIKED_BY_GROUP-4.3 {eval, all} -setup {
         setupDislikedBy
     } -body {
-        ::gofer::ACTORS::DISLIKED_BY_GROUP eval {anyall ALL glist {BLUE BRIT}}
+        adb gofer ACTORS DISLIKED_BY_GROUP eval {anyall ALL glist {BLUE BRIT}}
     } -cleanup {
         cleanup
     } -result {JOE}

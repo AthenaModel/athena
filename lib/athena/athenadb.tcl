@@ -156,6 +156,7 @@ snit::type ::athena::athenadb {
     component rdb                         ;# writable sqldatabase handle
     component pot       -public pot       ;# beanpot(n)
     component flunky    -public flunky    ;# athena_flunky(n)
+    component gofer     -public gofer     ;# gofer
     component paster    -public paste     ;# paste manager
     component ruleset   -public ruleset   ;# rule set manager
 
@@ -262,6 +263,9 @@ snit::type ::athena::athenadb {
         # NEXT, create the order flunky for processing order input and
         # handling undo/redo.
         install flunky using ::athena::athena_flunky create ${selfns}::flunky $self
+
+        # NEXT, create the gofer for retrieving data.
+        install gofer using ::athena::goferx create ${selfns}::gofer $self
 
         # NEXT, support pasting of objects.
         install paster using ::athena::paster create ${selfns}::paster $self
