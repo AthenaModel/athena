@@ -250,4 +250,29 @@ oo::class create ::athena::gofer_rule {
         return "$result"
     }
 
+    #-------------------------------------------------------------------
+    # Other helpers
+
+    # nonempty glist
+    #
+    # glist   - A list of groups
+    #
+    # Returns the list, filtering out empty civilian groups.
+
+    method nonempty {glist} {
+        array set pop [$adb eval {
+            SELECT g, population FROM gui_civgroups
+        }]
+
+        set result [list]
+        foreach g $glist {
+            if {[info exists pop($g)] && $pop($g) > 0} {
+                lappend result $g
+            }
+        }
+
+        return $result
+    }
+    
+
 }
