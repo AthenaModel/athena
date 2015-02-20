@@ -17,12 +17,13 @@ snit::type ::athena::gofer_type {
     #-------------------------------------------------------------------
     # Instance Variables
 
-    variable adb   ;# The athenadb(n) object
-    variable name  ;# The type name
-    variable noun  ;# The noun for the returned item or items
-    variable form  ;# Name of the type's dynaform.
+    variable adb       ;# The athenadb(n) object
+    variable name      ;# The type name
+    variable noun      ;# The noun for the returned item or items
+    variable form      ;# Name of the type's dynaform.
 
-    variable rules ;# Dictionary of rule instances by rule name.
+    variable rulenames ;# List of rule names in order of definition.
+    variable rules     ;# Array of rule instances by rule name.
 
     #-------------------------------------------------------------------
     # Constructor
@@ -45,6 +46,8 @@ snit::type ::athena::gofer_type {
         set form $form_
 
         # NEXT, create the rules.
+        set rulenames [dict keys $ruledict_]
+
         dict for {rule cls} $ruledict_ {
             set rules($rule) [$cls new $adb_ $self $rule]
         }
@@ -124,7 +127,7 @@ snit::type ::athena::gofer_type {
     # Returns the names of this type's rules.
 
     method rules {} {
-        return [array names rules]
+        return $rulenames
     }
 
     # keys rule
