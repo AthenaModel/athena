@@ -71,7 +71,6 @@ source [file join $::athena::library coop.tcl             ]
 source [file join $::athena::library curse.tcl            ]
 source [file join $::athena::library econ.tcl             ]
 source [file join $::athena::library frcgroup.tcl         ]
-source [file join $::athena::library gofer_actors.tcl     ]
 source [file join $::athena::library hrel.tcl             ]
 source [file join $::athena::library hook.tcl             ]
 source [file join $::athena::library inject.tcl           ]
@@ -118,6 +117,10 @@ source [file join $::athena::library vrel.tcl             ]
 source [file join $::athena::library activity.tcl         ]
 source [file join $::athena::library agent.tcl            ]
 source [file join $::athena::library group.tcl            ]
+
+# Gofer Types
+source [file join $::athena::library gofer_actors.tcl     ]
+source [file join $::athena::library gofer_civgroups.tcl  ]
 
 # Tactic APIs
 source [file join $::athena::library abevent.tcl          ]

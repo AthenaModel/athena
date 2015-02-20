@@ -339,13 +339,19 @@ enumx create ::athena::gofer::CIVGROUPS::ebygroups {
     byactors   awhich alist
     bygroups   hwhich hlist
 } {
-    variable defaultValues {
-        base       ALL     glist {}
-        where      IGNORE  nlist {}
-        livingby   IGNORE
-        mood       IGNORE
-        byactors   IGNORE  awhich ALL alist {}
-        bygroups   IGNORE  hwhich ALL hlist {}
+    variable defaultValues 
+
+    constructor {adb_ gtype_ rule_} {
+        next $adb_ $gtype_ $rule_
+
+        set defaultValues {
+            base       ALL     glist {}
+            where      IGNORE  nlist {}
+            livingby   IGNORE
+            mood       IGNORE
+            byactors   IGNORE  awhich ALL alist {}
+            bygroups   IGNORE  hwhich ALL hlist {}
+        }
     }
 
     # make option value ...
@@ -389,7 +395,7 @@ enumx create ::athena::gofer::CIVGROUPS::ebygroups {
         }
 
         # where
-        set where [ewhere validate $where]
+        set where [::athena::gofer::CIVGROUPS::ewhere validate $where]
         dict set gdict where $where
 
         # nlist
