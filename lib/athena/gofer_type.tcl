@@ -111,6 +111,7 @@ snit::type ::athena::gofer_type {
 
     method testform {} {
         dynabox popup \
+            -resources   [dict create adb_ $adb]     \
             -formtype    $form                       \
             -parent      .main                       \
             -validatecmd [mymethod TestformValidate] \

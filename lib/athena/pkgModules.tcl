@@ -155,3 +155,7 @@ source [file join $::athena::library ruleset_iom.tcl      ]
 source [file join $::athena::library ruleset_mood.tcl     ]
 source [file join $::athena::library ruleset_unemp.tcl    ]
 
+# Tk Code (loaded only if Tk is already present)
+if {[info command tk] ne ""} {
+    source [file join $::athena::library gofer_field.tcl  ]
+}

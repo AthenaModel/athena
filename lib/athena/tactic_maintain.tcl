@@ -349,7 +349,7 @@
         text name -width 20
 
         rcc "Nbhoods:" -for nlist -span 4 
-        gofer nlist -typename gofer::NBHOODS
+        gofer nlist -typename NBHOODS
 
         rcc "Funding Mode:" -for fmode
         selector fmode {

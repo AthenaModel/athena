@@ -95,13 +95,13 @@
         }
 
         rcc "X Value:" -for x
-        gofer x -typename gofer::NUMBER
+        gofer x -typename NUMBER
 
         rcc "Is:" -for comp
         comparator comp
 
         rcc "Y Value:" -for y
-        gofer y -typename gofer::NUMBER
+        gofer y -typename NUMBER
     }
 
 

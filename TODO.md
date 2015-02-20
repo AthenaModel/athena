@@ -1,7 +1,6 @@
 # TODO.md - Athena TODO List
 
 - Finish gofer work:
-  - Make sure gofer rules list in the order defined for each type.
   - Get the goferx field type working.
   - Update man pages (insofar as that's necessary)
   - Update and test gofer executive command, per writeup in help.

@@ -205,12 +205,12 @@
         selector mode {
             case BY_GROUP "By Group" {
                 rcc "Groups:" -for glist
-                gofer glist -typename gofer::GROUPS
+                gofer glist -typename GROUPS
             }
 
             case BY_NBHOOD "By Neighborhood" {
                 rcc "Neighborhoods:" -for nlist
-                gofer nlist -typename gofer::NBHOODS
+                gofer nlist -typename NBHOODS
             }
         }
 

@@ -9,6 +9,7 @@ app helptool -apptype kit -gui
 
 # Provided Libraries
 provide athena
+provide athenagui
 
 # Compiled Directories
 src help

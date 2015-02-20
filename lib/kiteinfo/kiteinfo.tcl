@@ -43,6 +43,7 @@ namespace eval ::kiteinfo:: {
         local-tablelist 0
         local-treectrl 0
         icon-athena {}
+        binary-athenagui 0
         reqver-kiteutils 0.4.6
         reqver-fileutil 1.14
         url-docs/mag.docx https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20140826.docx
@@ -75,7 +76,7 @@ namespace eval ::kiteinfo:: {
         apptype-cellide exe
         reqver-marsutil 3.0.12
         local-tls 0
-        provides athena
+        provides {athena athenagui}
         description {Athena Regional Stability Simulation}
         local-BWidget 0
         apptype-helptool kit

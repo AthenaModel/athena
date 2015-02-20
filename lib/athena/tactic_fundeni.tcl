@@ -305,7 +305,7 @@
         rc "Fund ENI For:" -span 2 
 
         rcc "Groups:" -for glist -span 3
-        gofer glist -typename gofer::CIVGROUPS
+        gofer glist -typename CIVGROUPS
 
         rcc "Amount:"   -for mode
         selector mode {

@@ -155,7 +155,7 @@
 
         rc "These neighborhoods:" -for nlist -span 2
         rc "" -span 2
-        gofer nlist -typename gofer::NBHOODS
+        gofer nlist -typename NBHOODS
     }
 
 

@@ -126,7 +126,7 @@
             -height  8
 
         rcc "Actor List:" -for alist
-        gofer alist -typename gofer::ACTORS
+        gofer alist -typename ACTORS
     }
 
 

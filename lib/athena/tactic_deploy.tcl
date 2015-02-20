@@ -826,7 +826,7 @@
         }
 
         rcc "In Neighborhoods:" -for nlist
-        gofer nlist -typename gofer::NBHOODS
+        gofer nlist -typename NBHOODS
 
         rcc "Allocation:" -for nmode
         selector nmode {

@@ -141,7 +141,7 @@
         enum a -listcmd {$order_ agents+SelfNone $tactic_id}
 
         rcc "In Neighborhoods:" -for nlist
-        gofer nlist -typename gofer::NBHOODS
+        gofer nlist -typename NBHOODS
     }
 
 

@@ -189,7 +189,7 @@
         text name -width 20
 
         rcc "Neighborhoods:" -for nlist -span 3
-        gofer nlist -typename gofer::NBHOODS
+        gofer nlist -typename NBHOODS
 
         rcc "Service:" -for s 
         enum s -listcmd {eabservice names} -defvalue ENERGY
