@@ -142,11 +142,11 @@
             rc
             rc "The horizontal relationship of group"
             rc
-            enumlong f -showkeys yes -dictcmd {::group namedict}
+            enumlong f -showkeys yes -dictcmd {$adb_ group namedict}
 
             rc "with group"
             rc
-            enumlong g -showkeys yes -dictcmd {::group namedict}
+            enumlong g -showkeys yes -dictcmd {$adb_ group namedict}
         }
 
         case INCOME "income(a,...)" {
@@ -431,7 +431,7 @@
             rc
             rc "Security of group"
             rc
-            enumlong g -showkeys yes -dictcmd {::group namedict}
+            enumlong g -showkeys yes -dictcmd {$adb_ group namedict}
 
             rc "in neighborhood"
             rc
@@ -457,7 +457,7 @@
             
             rc "by group"
             rc
-            enumlong g -showkeys yes -dictcmd {::group namedict}
+            enumlong g -showkeys yes -dictcmd {$adb_ group namedict}
             
             rc "in neighborhood"
             rc
@@ -476,7 +476,7 @@
             rc
             rc "The vertical relationship of group"
             rc
-            enumlong g -showkeys yes -dictcmd {::group namedict}
+            enumlong g -showkeys yes -dictcmd {$adb_ group namedict}
 
             rc "with actor"
             rc

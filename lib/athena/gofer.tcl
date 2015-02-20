@@ -128,11 +128,12 @@ snit::type ::athena::goferx {
     #
     # typename   - The type to receive the new rule
     # rulename   - The new rule's name
-    # class      - A gofer_rule object.
+    # srctype    - The type from which the rule is copied
+    # srcrule    - The specific rule to copy.
     #
-    # Defines a new rule using an existing gofer_rule(i) class.
+    # Defines a new rule using an existing gofer_rule.
 
-    typemethod rulefrom {typename rulename class} {
+    typemethod rulefrom {typename rulename srctype srcrule} {
         # FIRST, get the names
         set typename [string toupper $typename]
         set rulename [string toupper $rulename]
@@ -142,7 +143,8 @@ snit::type ::athena::goferx {
         identifier validate $rulename
 
         # NEXT, save it.
-        dict set rules($typename) rules $rulename $class        
+        dict set rules($typename) rules $rulename \
+            ::athena::gofer::${srctype}::{$srcrule}        
     }
 
     #===================================================================

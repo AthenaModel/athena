@@ -26,7 +26,7 @@
         case BY_VALUE "By name" {
             rc "Select groups from the following list:"
             rc
-            enumlonglist raw_value -dictcmd {::group namedict} \
+            enumlonglist raw_value -dictcmd {$adb_ group namedict} \
                 -width 30 -height 10 
         }
         
@@ -83,7 +83,7 @@
             label " the following groups:"
 
             rc
-            enumlonglist glist -dictcmd {::group namedict} \
+            enumlonglist glist -dictcmd {$adb_ group namedict} \
                 -width 30 -height 10
 
             rc {
@@ -99,7 +99,7 @@
             label " the following groups:"
 
             rc
-            enumlonglist glist -dictcmd {::group namedict} \
+            enumlonglist glist -dictcmd {$adb_ group namedict} \
                 -width 30 -height 10
 
             rc {
@@ -115,7 +115,7 @@
             label " the following groups:"
 
             rc
-            enumlonglist glist -dictcmd {::group namedict} \
+            enumlonglist glist -dictcmd {$adb_ group namedict} \
                 -width 30 -height 10
 
             rc {
@@ -131,7 +131,7 @@
             label " the following groups:"
 
             rc
-            enumlonglist glist -dictcmd {::group namedict} \
+            enumlonglist glist -dictcmd {$adb_ group namedict} \
                 -width 30 -height 10
 
             rc {
@@ -241,7 +241,7 @@
             label " the following groups:"
 
             rc
-            enumlonglist glist -dictcmd {::group namedict} \
+            enumlonglist glist -dictcmd {$adb_ group namedict} \
                 -width 30 -height 10
 
             rc {
@@ -257,7 +257,7 @@
             label " the following groups:"
 
             rc
-            enumlonglist glist -dictcmd {::group namedict} \
+            enumlonglist glist -dictcmd {$adb_ group namedict} \
                 -width 30 -height 10
 
             rc {
@@ -273,7 +273,7 @@
             label " the following groups:"
 
             rc
-            enumlonglist glist -dictcmd {::group namedict} \
+            enumlonglist glist -dictcmd {$adb_ group namedict} \
                 -width 30 -height 10
 
             rc {
@@ -289,7 +289,7 @@
             label " the following groups:"
 
             rc
-            enumlonglist glist -dictcmd {::group namedict} \
+            enumlonglist glist -dictcmd {$adb_ group namedict} \
                 -width 30 -height 10
 
             rc {
@@ -380,7 +380,7 @@
             label " the following groups:"
 
             rc
-            enumlonglist glist -dictcmd {::group namedict} \
+            enumlonglist glist -dictcmd {$adb_ group namedict} \
                 -width 30 -height 10
 
             rc {
@@ -396,7 +396,7 @@
             label " the following groups:"
 
             rc
-            enumlonglist glist -dictcmd {::group namedict} \
+            enumlonglist glist -dictcmd {$adb_ group namedict} \
                 -width 30 -height 10
 
             rc {
@@ -412,7 +412,7 @@
             label " the following groups:"
 
             rc
-            enumlonglist glist -dictcmd {::group namedict} \
+            enumlonglist glist -dictcmd {$adb_ group namedict} \
                 -width 30 -height 10
 
             rc {
@@ -428,7 +428,7 @@
             label " the following groups:"
 
             rc
-            enumlonglist glist -dictcmd {::group namedict} \
+            enumlonglist glist -dictcmd {$adb_ group namedict} \
                 -width 30 -height 10
 
             rc {
@@ -440,11 +440,6 @@
 
     }
 }
-
-#-----------------------------------------------------------------------
-# Helper Commands
-
-# TBD
 
 #-----------------------------------------------------------------------
 # Gofer Rules
@@ -656,29 +651,29 @@
 #-----------------------------------------------------------------------
 # Civgroup Rules
 
-::athena::goferx rulefrom GROUPS CIV_RESIDENT_IN        ::gofer::CIVGROUPS::RESIDENT_IN
-::athena::goferx rulefrom GROUPS CIV_NOT_RESIDENT_IN    ::gofer::CIVGROUPS::NOT_RESIDENT_IN
-::athena::goferx rulefrom GROUPS CIV_MOOD_IS_GOOD       ::gofer::CIVGROUPS::MOOD_IS_GOOD
-::athena::goferx rulefrom GROUPS CIV_MOOD_IS_BAD        ::gofer::CIVGROUPS::MOOD_IS_BAD
-::athena::goferx rulefrom GROUPS CIV_MOOD_IS_AMBIVALENT ::gofer::CIVGROUPS::MOOD_IS_AMBIVALENT
-::athena::goferx rulefrom GROUPS CIV_SUPPORTING_ACTOR   ::gofer::CIVGROUPS::SUPPORTING_ACTOR
-::athena::goferx rulefrom GROUPS CIV_LIKING_ACTOR       ::gofer::CIVGROUPS::LIKING_ACTOR
-::athena::goferx rulefrom GROUPS CIV_DISLIKING_ACTOR    ::gofer::CIVGROUPS::DISLIKING_ACTOR
-::athena::goferx rulefrom GROUPS CIV_LIKING_GROUP       ::gofer::CIVGROUPS::LIKING_GROUP
-::athena::goferx rulefrom GROUPS CIV_DISLIKING_GROUP    ::gofer::CIVGROUPS::DISLIKING_GROUP
-::athena::goferx rulefrom GROUPS CIV_LIKED_BY_GROUP     ::gofer::CIVGROUPS::LIKED_BY_GROUP
-::athena::goferx rulefrom GROUPS CIV_DISLIKED_BY_GROUP  ::gofer::CIVGROUPS::DISLIKED_BY_GROUP
+::athena::goferx rulefrom GROUPS CIV_RESIDENT_IN        CIVGROUPS RESIDENT_IN
+::athena::goferx rulefrom GROUPS CIV_NOT_RESIDENT_IN    CIVGROUPS NOT_RESIDENT_IN
+::athena::goferx rulefrom GROUPS CIV_MOOD_IS_GOOD       CIVGROUPS MOOD_IS_GOOD
+::athena::goferx rulefrom GROUPS CIV_MOOD_IS_BAD        CIVGROUPS MOOD_IS_BAD
+::athena::goferx rulefrom GROUPS CIV_MOOD_IS_AMBIVALENT CIVGROUPS MOOD_IS_AMBIVALENT
+::athena::goferx rulefrom GROUPS CIV_SUPPORTING_ACTOR   CIVGROUPS SUPPORTING_ACTOR
+::athena::goferx rulefrom GROUPS CIV_LIKING_ACTOR       CIVGROUPS LIKING_ACTOR
+::athena::goferx rulefrom GROUPS CIV_DISLIKING_ACTOR    CIVGROUPS DISLIKING_ACTOR
+::athena::goferx rulefrom GROUPS CIV_LIKING_GROUP       CIVGROUPS LIKING_GROUP
+::athena::goferx rulefrom GROUPS CIV_DISLIKING_GROUP    CIVGROUPS DISLIKING_GROUP
+::athena::goferx rulefrom GROUPS CIV_LIKED_BY_GROUP     CIVGROUPS LIKED_BY_GROUP
+::athena::goferx rulefrom GROUPS CIV_DISLIKED_BY_GROUP  CIVGROUPS DISLIKED_BY_GROUP
 
 #-----------------------------------------------------------------------
 # Frcgroup Rules
 
-::athena::goferx rulefrom GROUPS FRC_OWNED_BY           ::gofer::FRCGROUPS::OWNED_BY
-::athena::goferx rulefrom GROUPS FRC_DEPLOYED_TO        ::gofer::FRCGROUPS::DEPLOYED_TO
-::athena::goferx rulefrom GROUPS FRC_NOT_DEPLOYED_TO    ::gofer::FRCGROUPS::NOT_DEPLOYED_TO
-::athena::goferx rulefrom GROUPS FRC_SUPPORTING_ACTOR   ::gofer::FRCGROUPS::SUPPORTING_ACTOR
-::athena::goferx rulefrom GROUPS FRC_LIKING_ACTOR       ::gofer::FRCGROUPS::LIKING_ACTOR
-::athena::goferx rulefrom GROUPS FRC_DISLIKING_ACTOR    ::gofer::FRCGROUPS::DISLIKING_ACTOR
-::athena::goferx rulefrom GROUPS FRC_LIKING_GROUP       ::gofer::FRCGROUPS::LIKING_GROUP
-::athena::goferx rulefrom GROUPS FRC_DISLIKING_GROUP    ::gofer::FRCGROUPS::DISLIKING_GROUP
-::athena::goferx rulefrom GROUPS FRC_LIKED_BY_GROUP     ::gofer::FRCGROUPS::LIKED_BY_GROUP
-::athena::goferx rulefrom GROUPS FRC_DISLIKED_BY_GROUP  ::gofer::FRCGROUPS::DISLIKED_BY_GROUP
+::athena::goferx rulefrom GROUPS FRC_OWNED_BY           FRCGROUPS OWNED_BY
+::athena::goferx rulefrom GROUPS FRC_DEPLOYED_TO        FRCGROUPS DEPLOYED_TO
+::athena::goferx rulefrom GROUPS FRC_NOT_DEPLOYED_TO    FRCGROUPS NOT_DEPLOYED_TO
+::athena::goferx rulefrom GROUPS FRC_SUPPORTING_ACTOR   FRCGROUPS SUPPORTING_ACTOR
+::athena::goferx rulefrom GROUPS FRC_LIKING_ACTOR       FRCGROUPS LIKING_ACTOR
+::athena::goferx rulefrom GROUPS FRC_DISLIKING_ACTOR    FRCGROUPS DISLIKING_ACTOR
+::athena::goferx rulefrom GROUPS FRC_LIKING_GROUP       FRCGROUPS LIKING_GROUP
+::athena::goferx rulefrom GROUPS FRC_DISLIKING_GROUP    FRCGROUPS DISLIKING_GROUP
+::athena::goferx rulefrom GROUPS FRC_LIKED_BY_GROUP     FRCGROUPS LIKED_BY_GROUP
+::athena::goferx rulefrom GROUPS FRC_DISLIKED_BY_GROUP  FRCGROUPS DISLIKED_BY_GROUP
