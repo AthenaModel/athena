@@ -124,7 +124,7 @@ snit::type ::athena::gofer_type {
     # Returns the names of this type's rules.
 
     method rules {} {
-        return [lsort [array names rules]]
+        return [array names rules]
     }
 
     # keys rule

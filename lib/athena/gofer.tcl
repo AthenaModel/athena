@@ -143,8 +143,8 @@ snit::type ::athena::goferx {
         identifier validate $rulename
 
         # NEXT, save it.
-        dict set rules($typename) rules $rulename \
-            ::athena::gofer::${srctype}::{$srcrule}        
+        dict set typedefs($typename) rules $rulename \
+            ::athena::gofer::${srctype}::${srcrule}        
     }
 
     #===================================================================
