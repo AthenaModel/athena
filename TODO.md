@@ -45,7 +45,7 @@
 - driver::IOM
   - tactic_broadcast
 - executive
-  - condition_expr, tactic_executive
+  - condition_expr, gofer_number, tactic_executive
 - ::gofer*
   - curse
   - condition_compare, condition_control, tactic_*
@@ -60,9 +60,9 @@
 - parm, parmdb
   - absit, personnel, ruleset, tactic_fundeni, tactic_maintain
 - plant
-  - strategy, tactic_build, tactic_damage, tactic_maintain
+  - gofer_number, strategy, tactic_build, tactic_damage, tactic_maintain
 - ptype - Should go in athena_order.tcl? (But no hierarchical methods!)
-  - absit, actor, gofer_actors.tcl, nbhood, tactic_*.tcl
+  - absit, actor, gofer_actors.tcl, gofer_number.tcl, nbhood, tactic_*.tcl
 - refpoint
   - absit, nbhood
 - service

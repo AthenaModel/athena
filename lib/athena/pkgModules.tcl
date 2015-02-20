@@ -124,6 +124,7 @@ source [file join $::athena::library gofer_civgroups.tcl  ]
 source [file join $::athena::library gofer_frcgroups.tcl  ]
 source [file join $::athena::library gofer_groups.tcl     ]
 source [file join $::athena::library gofer_nbhoods.tcl    ]
+source [file join $::athena::library gofer_number.tcl     ]
 
 # Tactic APIs
 source [file join $::athena::library abevent.tcl          ]

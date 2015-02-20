@@ -6,15 +6,14 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    Number gofer
-#    
-#    gofer::NUMBER: A number, floating-or-integer, produced according to
-#    one of various rules
-
+#    athena(n): Number gofer, a number, floating-or-integer, produced 
+#    according to one of various rules
+#
+# TBD: Global ref: ptype, executive, sim
+#
 #-----------------------------------------------------------------------
-# gofer::NUMBER
 
-::athena::goferx define NUMBER "" {
+::athena::goferx define NUMBER value {
     rc "" -width 3in -span 3
     label {
         Enter a rule for retrieving a particular number.
@@ -52,7 +51,7 @@
             rc
             rc "The total number of plants owned by agent"
             rc
-            enum a -listcmd {::agent names}
+            enum a -listcmd {$adb_ agent names}
         }
 
         case ASSIGNED "assigned(g,activity,n)" {
@@ -64,7 +63,7 @@
 
             rc "assigned to do activity"
             rc
-            enum activity -listcmd {::activity asched names $g}
+            enum activity -listcmd {$adb_ activity asched names $g}
 
             rc "in neighborhood"
             rc
@@ -75,7 +74,7 @@
             rc
             rc "Consumers belonging to civilian group(s)"
             rc
-            enumlonglist glist -showkeys yes -dictcmd {::civgroup namedict} \
+            enumlonglist glist -showkeys yes -dictcmd {$adb_ civgroup namedict} \
                 -width 30 -height 10
         }
 
@@ -83,7 +82,7 @@
             rc
             rc "Cooperation of civilian group"
             rc
-            enumlong f -showkeys yes -dictcmd {::civgroup namedict}
+            enumlong f -showkeys yes -dictcmd {$adb_ civgroup namedict}
 
             rc "with force group"
             rc
@@ -98,7 +97,7 @@
 
             rc "assigned to activity"
             rc
-            enum activity -listcmd {::activity withcov names [group gtype $g]}
+            enum activity -listcmd {$adb_ activity withcov names [$adb group gtype $g]}
 
             rc "in neighborhood"
             rc
@@ -129,7 +128,7 @@
             rc
             rc "The total output capacity of all goods production plants given an agent"
             rc
-            enum a -listcmd {::agent names}
+            enum a -listcmd {$adb_ agent names}
         }
 
         case GOODS_IDLE "goodsidle()" {
@@ -243,7 +242,7 @@
             rc
             rc "Mood of civilian group"
             rc
-            enumlong g -showkeys yes -dictcmd {::civgroup namedict}
+            enumlong g -showkeys yes -dictcmd {$adb_ civgroup namedict}
         }
 
         case NBCONSUMERS "nbconsumers(n,...)" {
@@ -376,7 +375,7 @@
             rc
             rc "The total number of plants owned by agent"
             rc
-            enum a -listcmd {::agent names}
+            enum a -listcmd {$adb_ agent names}
 
             rc "in neighborhood"
             rc
@@ -387,7 +386,7 @@
             rc
             rc "Population of civilian group(s) in playbox"
             rc
-            enumlonglist glist -showkeys yes -dictcmd {::civgroup namedict} \
+            enumlonglist glist -showkeys yes -dictcmd {$adb_ civgroup namedict} \
                 -width 30 -height 10
         }
 
@@ -413,7 +412,7 @@
             rc
             rc "Satisfaction of civilian group"
             rc
-            enumlong g -showkeys yes -dictcmd {::civgroup namedict}
+            enumlong g -showkeys yes -dictcmd {$adb_ civgroup namedict}
 
             rc "with concern"
             rc
@@ -424,7 +423,7 @@
             rc
             rc "Security of civilian group"
             rc
-            enumlong g -showkeys yes -dictcmd {::civgroup namedict}         
+            enumlong g -showkeys yes -dictcmd {$adb_ civgroup namedict}         
         }
 
         case SECURITY "security(g,n)" {
@@ -446,7 +445,7 @@
             
             rc "by group"
             rc
-            enumlong g -showkeys yes -dictcmd {::civgroup namedict}
+            enumlong g -showkeys yes -dictcmd {$adb_ civgroup namedict}
         }
 
         case SUPPORT "support(a,g,n)" {
@@ -468,7 +467,7 @@
             rc
             rc "Unemployment rate for civilian group(s)"
             rc
-            enumlonglist glist -showkeys yes -dictcmd {::civgroup namedict} \
+            enumlonglist glist -showkeys yes -dictcmd {$adb_ civgroup namedict} \
                 -width 30 -height 10
         }
 
@@ -487,7 +486,7 @@
             rc
             rc "Workers belonging to civilian group(s)"
             rc
-            enumlonglist glist -showkeys yes -dictcmd {::civgroup namedict} \
+            enumlonglist glist -showkeys yes -dictcmd {$adb_ civgroup namedict} \
                 -width 30 -height 10
         }
     }
@@ -584,10 +583,10 @@
     method eval {gdict} {
         dict with gdict {}
         
-        return [format %.2f [bsys affinity [getbsid $x] [getbsid $y]]]
+        return [format %.2f [$adb bsys affinity [my getbsid $x] [my getbsid $y]]]
     }
 
-    proc getbsid {e} {
+    method getbsid {e} {
         $adb eval {
             SELECT bsid FROM actors WHERE a=$e
         } {
@@ -617,7 +616,7 @@
         dict with gdict {}
 
         dict create \
-            a [agent validate [string toupper $a]]
+            a [$adb agent validate [string toupper $a]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -664,7 +663,7 @@
             activity check [string toupper $g] [string toupper $activity]
         }
 
-        dict set valid n [nbhood validate [string toupper $n]]
+        dict set valid n [$adb nbhood validate [string toupper $n]]
 
         return $valid
     }
@@ -700,7 +699,7 @@
     method validate {gdict} {
         dict with gdict {}
         dict create glist \
-            [listval civgroups {civgroup validate} [string toupper $glist]]
+            [my val_elist civgroup "civ groups" [string toupper $glist]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -744,8 +743,8 @@
         dict with gdict {}
 
         dict create \
-            f [civgroup validate [string toupper $f]] \
-            g [frcgroup validate [string toupper $g]]
+            f [$adb civgroup validate [string toupper $f]] \
+            g [$adb frcgroup validate [string toupper $g]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -784,7 +783,7 @@
         dict set valid g [::ptype fog validate [string toupper $g]]
         dict set valid activity [string toupper $activity]
 
-        set gtype [group gtype [string toupper $g]]
+        set gtype [$adb group gtype [string toupper $g]]
 
         if {$gtype eq "FRC"} {
             activity withcov frc validate [string toupper $activity]
@@ -792,7 +791,7 @@
             activity withcov org validate [string toupper $activity]
         }
 
-        dict set valid n [nbhood validate [string toupper $n]]
+        dict set valid n [$adb nbhood validate [string toupper $n]]
 
         return $valid
     }
@@ -829,7 +828,7 @@
         dict with gdict {}
         dict create \
             g [ptype fog validate [string toupper $g]] \
-            nlist [listval nbhoods {nbhood validate} [string toupper $nlist]]
+            nlist [my val_elist nbhood "neighborhoods" [string toupper $nlist]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -879,10 +878,10 @@
     }
 
     method eval {gdict} {
-        if {[econ state] eq "DISABLED"} {
+        if {[$adb econ state] eq "DISABLED"} {
             return 0.00
         } else {
-            return [format %.2f [econ value Out::DGDP]]
+            return [format %.2f [$adb econ value Out::DGDP]]
         }
     }
 }
@@ -900,7 +899,7 @@
         dict with gdict {}
 
         dict create \
-            a [agent validate [string toupper $a]]
+            a [$adb agent validate [string toupper $a]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -942,10 +941,10 @@
     }
 
     method eval {gdict} {
-        if {[econ state] eq "DISABLED"} {
+        if {[$adb econ state] eq "DISABLED"} {
             return 0.00
         } else {
-            return [format %.2f [econ value Out::IDLECAP.goods]]
+            return [format %.2f [$adb econ value Out::IDLECAP.goods]]
         }
     }
 }
@@ -963,8 +962,8 @@
         dict with gdict {}
 
         dict create \
-            f [group validate [string toupper $f]] \
-            g [group validate [string toupper $g]]
+            f [$adb group validate [string toupper $f]] \
+            g [$adb group validate [string toupper $g]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -998,7 +997,7 @@
     method validate {gdict} {
         dict with gdict {}
         dict create alist \
-            [listval actors {actor validate} [string toupper $alist]]
+            [my val_elist actor "actors" [string toupper $alist]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -1041,7 +1040,7 @@
     method validate {gdict} {
         dict with gdict {}
         dict create alist \
-            [listval actors {actor validate} [string toupper $alist]]
+            [my val_elist actor "actors" [string toupper $alist]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -1096,7 +1095,7 @@
     method validate {gdict} {
         dict with gdict {}
         dict create alist \
-            [listval actors {actor validate} [string toupper $alist]]
+            [my val_elist actor "actors" [string toupper $alist]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -1139,7 +1138,7 @@
     method validate {gdict} {
         dict with gdict {}
         dict create alist \
-            [listval actors {actor validate} [string toupper $alist]]
+            [my val_elist actor "actors" [string toupper $alist]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -1182,7 +1181,7 @@
     method validate {gdict} {
         dict with gdict {}
         dict create alist \
-            [listval actors {actor validate} [string toupper $alist]]
+            [my val_elist actor "actors" [string toupper $alist]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -1225,7 +1224,7 @@
     method validate {gdict} {
         dict with gdict {}
         dict create alist \
-            [listval actors {actor validate} [string toupper $alist]]
+            [my val_elist actor "actors" [string toupper $alist]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -1269,8 +1268,8 @@
         dict with gdict {}
 
         dict create \
-            a [actor validate [string toupper $a]] \
-            n [nbhood validate [string toupper $n]]
+            a [$adb actor validate [string toupper $a]] \
+            n [$adb nbhood validate [string toupper $n]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -1475,7 +1474,7 @@
     method validate {gdict} {
         dict with gdict {}
         dict create \
-            glist [listval fogs {::ptype fog validate} [string toupper $glist]]
+            glist [my val_list groups {::ptype fog validate} [string toupper $glist]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -1518,7 +1517,7 @@
     method validate {gdict} {
         dict with gdict {}
 
-        dict create g [civgroup validate [string toupper $g]]
+        dict create g [$adb civgroup validate [string toupper $g]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -1552,7 +1551,7 @@
     method validate {gdict} {
         dict with gdict {}
         dict create nlist \
-            [listval nbhoods {nbhood validate} [string toupper $nlist]]
+            [my val_elist nbhood "neighborhoods" [string toupper $nlist]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -1596,8 +1595,8 @@
         dict with gdict {}
 
         dict create \
-            n [nbhood validate [string toupper $n]] \
-            g [frcgroup validate [string toupper $g]]
+            n [$adb nbhood validate [string toupper $n]] \
+            g [$adb frcgroup validate [string toupper $g]]
 
     }
 
@@ -1633,7 +1632,7 @@
         dict with gdict {}
 
         dict create \
-            n [nbhood validate [string toupper $n]]
+            n [$adb nbhood validate [string toupper $n]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -1667,7 +1666,7 @@
     method validate {gdict} {
         dict with gdict {}
 
-        dict create n [nbhood validate [string toupper $n]]
+        dict create n [$adb nbhood validate [string toupper $n]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -1702,7 +1701,7 @@
         dict with gdict {}
 
         dict create \
-            n [nbhood validate [string toupper $n]]
+            n [$adb nbhood validate [string toupper $n]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -1736,7 +1735,7 @@
     method validate {gdict} {
         dict with gdict {}
         dict create nlist \
-            [listval nbhoods {nbhood validate} [string toupper $nlist]]
+            [my val_elist nbhood "neighborhoods" [string toupper $nlist]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -1780,8 +1779,8 @@
         dict with gdict {}
 
         dict create \
-            a [actor validate [string toupper $a]] \
-            n [nbhood validate [string toupper $n]]
+            a [$adb actor validate [string toupper $a]] \
+            n [$adb nbhood validate [string toupper $n]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -1815,7 +1814,7 @@
     method validate {gdict} {
         dict with gdict {}
         dict create nlist \
-            [listval nbhoods {nbhood validate} [string toupper $nlist]]
+            [my val_elist nbhood "neighborhoods" [string toupper $nlist]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -1885,7 +1884,7 @@
     method validate {gdict} {
         dict with gdict {}
         dict create nlist \
-            [listval nbhoods {nbhood validate} [string toupper $nlist]]
+            [my val_elist nbhood "neighborhoods" [string toupper $nlist]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -1929,7 +1928,7 @@
         dict with gdict {}
 
         dict create \
-            a [actor validate [string toupper $a]]
+            a [$adb actor validate [string toupper $a]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -1939,7 +1938,7 @@
     }
 
     method eval {gdict} {
-        if {[econ state] eq "DISABLED"} {
+        if {[$adb econ state] eq "DISABLED"} {
             # IF econ disabled return 0.00
             return 0.00
         } elseif {![sim locked]} {
@@ -1948,7 +1947,7 @@
         } else {
             dict with gdict {}
             
-            set onhand [cash onhand $a]
+            set onhand [$adb cash onhand $a]
             
             if {$onhand == ""} {
                 set onhand 0.00
@@ -2206,7 +2205,7 @@
     method validate {gdict} {
         dict with gdict {}
         dict create alist \
-            [listval actors {actor validate} [string toupper $alist]]
+            [my val_elist actor "actors" [string toupper $alist]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -2229,7 +2228,7 @@
             WHERE controller IN $inClause
         "]
 
-        set total [llength [nbhood names]]
+        set total [llength [$adb nbhood names]]
 
         if {$total == 0.0} {
             return 0.0
@@ -2252,8 +2251,8 @@
         dict with gdict {}
 
         dict create \
-            a [agent validate [string toupper $a]] \
-            n [nbhood validate [string toupper $n]]
+            a [$adb agent validate [string toupper $a]] \
+            n [$adb nbhood validate [string toupper $n]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -2287,7 +2286,7 @@
     method validate {gdict} {
         dict with gdict {}
         dict create glist \
-            [listval civgroups {civgroup validate} [string toupper $glist]]
+            [my val_elist civgroup "civ groups" [string toupper $glist]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -2331,8 +2330,8 @@
         dict with gdict {}
 
         dict create \
-            a [actor validate [string toupper $a]] \
-            n [nbhood validate [string toupper $n]]
+            a [$adb actor validate [string toupper $a]] \
+            n [$adb nbhood validate [string toupper $n]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -2367,7 +2366,7 @@
         dict with gdict {}
 
         dict create \
-            a [actor validate [string toupper $a]]
+            a [$adb actor validate [string toupper $a]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -2377,7 +2376,7 @@
     }
 
     method eval {gdict} {
-        if {[econ state] eq "DISABLED"} {
+        if {[$adb econ state] eq "DISABLED"} {
             # IF econ disabled return 0.00
             return 0.00
         } elseif {![sim locked]} {
@@ -2386,7 +2385,7 @@
         } else {
             dict with gdict {}
             
-            set reserve [cash reserve $a]
+            set reserve [$adb cash reserve $a]
             
             if {$reserve == ""} {
                 set reserve 0.00
@@ -2411,7 +2410,7 @@
         dict with gdict {}
 
         dict create \
-            g [civgroup validate [string toupper $g]] \
+            g [$adb civgroup validate [string toupper $g]] \
             c [econcern validate [string toupper $c]]
 
     }
@@ -2449,7 +2448,7 @@
         dict with gdict {}
 
         dict create \
-            g [civgroup validate [string toupper $g]]
+            g [$adb civgroup validate [string toupper $g]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -2487,8 +2486,8 @@
         dict with gdict {}
 
         dict create \
-            g [group validate [string toupper $g]] \
-            n [nbhood validate [string toupper $n]]
+            g [$adb group validate [string toupper $g]] \
+            n [$adb nbhood validate [string toupper $n]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -2523,8 +2522,8 @@
         dict with gdict {}
 
         dict create \
-            a [actor validate [string toupper $a]] \
-            g [civgroup validate [string toupper $g]]
+            a [$adb actor validate [string toupper $a]] \
+            g [$adb civgroup validate [string toupper $g]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -2559,9 +2558,9 @@
         dict with gdict {}
 
         dict create \
-            a [actor validate [string toupper $a]] \
-            g [group validate [string toupper $g]] \
-            n [nbhood validate [string toupper $n]]
+            a [$adb actor validate [string toupper $a]] \
+            g [$adb group validate [string toupper $g]] \
+            n [$adb nbhood validate [string toupper $n]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -2595,7 +2594,7 @@
     method validate {gdict} {
         dict with gdict {}
         dict create glist \
-            [listval civgroups {civgroup validate} [string toupper $glist]]
+            [my val_elist civgroup "civ groups" [string toupper $glist]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -2664,8 +2663,8 @@
         dict with gdict {}
 
         dict create \
-            g [group validate [string toupper $g]] \
-            a [actor validate [string toupper $a]]
+            g [$adb group validate [string toupper $g]] \
+            a [$adb actor validate [string toupper $a]]
     }
 
     method narrative {gdict {opt ""}} {
@@ -2699,7 +2698,7 @@
     method validate {gdict} {
         dict with gdict {}
         dict create glist \
-            [listval civgroups {civgroup validate} [string toupper $glist]]
+            [my val_elist civgroup "civ groups" [string toupper $glist]]
     }
 
     method narrative {gdict {opt ""}} {
