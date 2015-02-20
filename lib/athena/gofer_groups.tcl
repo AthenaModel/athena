@@ -36,7 +36,7 @@
             label " the following actors:"
 
             rc
-            enumlonglist alist -dictcmd {::actor namedict} \
+            enumlonglist alist -dictcmd {$adb_ actor namedict} \
                 -width 30 -height 10
 
             rc {
@@ -51,7 +51,7 @@
             label " the following actors:"
 
             rc
-            enumlonglist alist -dictcmd {::actor namedict} \
+            enumlonglist alist -dictcmd {$adb_ actor namedict} \
                 -width 30 -height 10
 
             rc {
@@ -67,7 +67,7 @@
             label " the following actors:"
 
             rc
-            enumlonglist alist -dictcmd {::actor namedict} \
+            enumlonglist alist -dictcmd {$adb_ actor namedict} \
                 -width 30 -height 10
 
             rc {
@@ -148,7 +148,7 @@
                 following neighborhoods:
             }
             rc
-            enumlonglist nlist -dictcmd {::nbhood namedict} \
+            enumlonglist nlist -dictcmd {$adb_ nbhood namedict} \
                 -width 30 -height 10
         }
 
@@ -157,7 +157,7 @@
         case CIV_NOT_RESIDENT_IN "Civilian Groups, Not Resident in Neighborhood(s)" {
             rc "Select civilian groups that do not reside in any of the following neighborhoods:"
             rc
-            enumlonglist nlist -dictcmd {::nbhood namedict} \
+            enumlonglist nlist -dictcmd {$adb_ nbhood namedict} \
                 -width 30 -height 10
         }
 
@@ -194,7 +194,7 @@
             label " the following actors:"
 
             rc
-            enumlonglist alist -dictcmd {::actor namedict} \
+            enumlonglist alist -dictcmd {$adb_ actor namedict} \
                 -width 30 -height 10
 
             rc {
@@ -209,7 +209,7 @@
             label " the following actors:"
 
             rc
-            enumlonglist alist -dictcmd {::actor namedict} \
+            enumlonglist alist -dictcmd {$adb_ actor namedict} \
                 -width 30 -height 10
 
             rc {
@@ -225,7 +225,7 @@
             label " the following actors:"
 
             rc
-            enumlonglist alist -dictcmd {::actor namedict} \
+            enumlonglist alist -dictcmd {$adb_ actor namedict} \
                 -width 30 -height 10
 
             rc {
@@ -303,7 +303,7 @@
             rc "Select force groups that are owned by any of the following actors:"
 
             rc
-            enumlonglist alist -dictcmd {::actor namedict} \
+            enumlonglist alist -dictcmd {$adb_ actor namedict} \
                 -width 30 -height 10
         }
 
@@ -313,7 +313,7 @@
             label " the following neighborhoods:"
 
             rc
-            enumlonglist nlist -dictcmd {::nbhood namedict} \
+            enumlonglist nlist -dictcmd {$adb_ nbhood namedict} \
                 -width 30 -height 10
         }
 
@@ -323,7 +323,7 @@
             label " the following neighborhoods:"
 
             rc
-            enumlonglist nlist -dictcmd {::nbhood namedict} \
+            enumlonglist nlist -dictcmd {$adb_ nbhood namedict} \
                 -width 30 -height 10
         }
 
@@ -333,7 +333,7 @@
             label " the following actors:"
 
             rc
-            enumlonglist alist -dictcmd {::actor namedict} \
+            enumlonglist alist -dictcmd {$adb_ actor namedict} \
                 -width 30 -height 10
 
             rc {
@@ -348,7 +348,7 @@
             label " the following actors:"
 
             rc
-            enumlonglist alist -dictcmd {::actor namedict} \
+            enumlonglist alist -dictcmd {$adb_ actor namedict} \
                 -width 30 -height 10
 
             rc {
@@ -364,7 +364,7 @@
             label " the following actors:"
 
             rc
-            enumlonglist alist -dictcmd {::actor namedict} \
+            enumlonglist alist -dictcmd {$adb_ actor namedict} \
                 -width 30 -height 10
 
             rc {
@@ -455,7 +455,7 @@
 
 ::athena::goferx rule GROUPS BY_VALUE {raw_value} {
     method make {raw_value} {
-        return [$type validate [dict create raw_value $raw_value]]
+        return [my validate [dict create raw_value $raw_value]]
     }
 
     method validate {gdict} {
@@ -485,7 +485,7 @@
 
 ::athena::goferx rule GROUPS SUPPORTING_ACTOR {anyall alist} {
     method make {anyall alist} {
-        return [$type validate [dict create anyall $anyall alist $alist]]
+        return [my validate [dict create anyall $anyall alist $alist]]
     }
 
     method validate {gdict} {
@@ -510,7 +510,7 @@
 
 ::athena::goferx rule GROUPS LIKING_ACTOR {anyall alist} {
     method make {anyall alist} {
-        return [$type validate [dict create anyall $anyall alist $alist]]
+        return [my validate [dict create anyall $anyall alist $alist]]
     }
 
     method validate {gdict} {
@@ -535,7 +535,7 @@
 
 ::athena::goferx rule GROUPS DISLIKING_ACTOR {anyall alist} {
     method make {anyall alist} {
-        return [$type validate [dict create anyall $anyall alist $alist]]
+        return [my validate [dict create anyall $anyall alist $alist]]
     }
 
     method validate {gdict} {
@@ -560,7 +560,7 @@
 
 ::athena::goferx rule GROUPS LIKING_GROUP {anyall glist} {
     method make {anyall glist} {
-        return [$type validate [dict create anyall $anyall glist $glist]]
+        return [my validate [dict create anyall $anyall glist $glist]]
     }
 
     method validate {gdict} { 
@@ -585,7 +585,7 @@
 
 ::athena::goferx rule GROUPS DISLIKING_GROUP {anyall glist} {
     method make {anyall glist} {
-        return [$type validate [dict create anyall $anyall glist $glist]]
+        return [my validate [dict create anyall $anyall glist $glist]]
     }
 
     method validate {gdict} { 
@@ -610,7 +610,7 @@
 
 ::athena::goferx rule GROUPS LIKED_BY_GROUP {anyall glist} {
     method make {anyall glist} {
-        return [$type validate [dict create anyall $anyall glist $glist]]
+        return [my validate [dict create anyall $anyall glist $glist]]
     }
 
     method validate {gdict} { 
@@ -635,7 +635,7 @@
 
 ::athena::goferx rule GROUPS DISLIKED_BY_GROUP {anyall glist} {
     method make {anyall glist} {
-        return [$type validate [dict create anyall $anyall glist $glist]]
+        return [my validate [dict create anyall $anyall glist $glist]]
     }
 
     method validate {gdict} { 

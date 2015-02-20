@@ -68,7 +68,7 @@
 
             rc "in neighborhood"
             rc
-            enumlong n -showkeys yes -dictcmd {::nbhood namedict}
+            enumlong n -showkeys yes -dictcmd {$adb_ nbhood namedict}
         }
 
         case GROUP_CONSUMERS "consumers(g,...)" {
@@ -87,7 +87,7 @@
 
             rc "with force group"
             rc
-            enumlong g -showkeys yes -dictcmd {::frcgroup namedict}
+            enumlong g -showkeys yes -dictcmd {$adb_ frcgroup namedict}
         }
 
         case COVERAGE "coverage(g,activity,n)" {
@@ -102,7 +102,7 @@
 
             rc "in neighborhood"
             rc
-            enumlong n -showkeys yes -dictcmd {::nbhood namedict}
+            enumlong n -showkeys yes -dictcmd {$adb_ nbhood namedict}
         }
 
         case DEPLOYED "deployed(g,n,...)" {
@@ -114,7 +114,7 @@
             rc
             rc "deployed in neighborhood(s)"
             rc
-            enumlonglist nlist -showkeys yes -dictcmd {::nbhood namedict} \
+            enumlonglist nlist -showkeys yes -dictcmd {$adb_ nbhood namedict} \
                 -width 30 -height 10
         }
 
@@ -153,7 +153,7 @@
             rc
             rc "The total income for actor(s)"
             rc
-            enumlonglist alist -showkeys yes -dictcmd {::actor namedict} \
+            enumlonglist alist -showkeys yes -dictcmd {$adb_ actor namedict} \
                 -width 30 -height 10
         }
 
@@ -161,7 +161,7 @@
             rc
             rc "The income from the black market sector for actor(s)"
             rc
-            enumlonglist alist -showkeys yes -dictcmd {::actor namedict} \
+            enumlonglist alist -showkeys yes -dictcmd {$adb_ actor namedict} \
                 -width 30 -height 10
         }
 
@@ -169,7 +169,7 @@
             rc
             rc "The total income for actor(s)"
             rc
-            enumlonglist alist -showkeys yes -dictcmd {::actor namedict} \
+            enumlonglist alist -showkeys yes -dictcmd {$adb_ actor namedict} \
                 -width 30 -height 10
         }
 
@@ -177,7 +177,7 @@
             rc
             rc "The total income for actor(s)"
             rc
-            enumlonglist alist -showkeys yes -dictcmd {::actor namedict} \
+            enumlonglist alist -showkeys yes -dictcmd {$adb_ actor namedict} \
                 -width 30 -height 10
         }
 
@@ -185,7 +185,7 @@
             rc
             rc "The total income for actor(s)"
             rc
-            enumlonglist alist -showkeys yes -dictcmd {::actor namedict} \
+            enumlonglist alist -showkeys yes -dictcmd {$adb_ actor namedict} \
                 -width 30 -height 10
         }
 
@@ -193,7 +193,7 @@
             rc
             rc "The total income for actor(s)"
             rc
-            enumlonglist alist -showkeys yes -dictcmd {::actor namedict} \
+            enumlonglist alist -showkeys yes -dictcmd {$adb_ actor namedict} \
                 -width 30 -height 10
         }
 
@@ -201,11 +201,11 @@
             rc
             rc "Influence of actor"
             rc
-            enumlong a -showkeys yes -dictcmd {::actor namedict}
+            enumlong a -showkeys yes -dictcmd {$adb_ actor namedict}
 
             rc "in neighborhood"
             rc
-            enumlong n -showkeys yes -dictcmd {::nbhood namedict}
+            enumlong n -showkeys yes -dictcmd {$adb_ nbhood namedict}
         }
 
         case LOCAL_CONSUMERS "local_consumers()" {
@@ -250,7 +250,7 @@
             rc
             rc "Consumers resident in neighborhood(s)"
             rc
-            enumlonglist nlist -showkeys yes -dictcmd {::nbhood namedict} \
+            enumlonglist nlist -showkeys yes -dictcmd {$adb_ nbhood namedict} \
                 -width 30 -height 10
         }
 
@@ -258,39 +258,39 @@
             rc
             rc "Cooperation of neighborhood"
             rc
-            enumlong n -showkeys yes -dictcmd {::nbhood namedict}
+            enumlong n -showkeys yes -dictcmd {$adb_ nbhood namedict}
 
             rc "with force group"
             rc
-            enumlong g -showkeys yes -dictcmd {::frcgroup namedict}
+            enumlong g -showkeys yes -dictcmd {$adb_ frcgroup namedict}
         }
 
         case NB_GOODS_CAP "nbgoodscap(n)" {
             rc
             rc "The total output capacity of all goods production plants in neighborhood"
             rc
-            enumlong n -showkeys yes -dictcmd {::nbhood namedict}
+            enumlong n -showkeys yes -dictcmd {$adb_ nbhood namedict}
         }
 
         case NBMOOD "nbmood(n)" {
             rc
             rc "Mood of neighborhood"
             rc
-            enumlong n -showkeys yes -dictcmd {::nbhood namedict}
+            enumlong n -showkeys yes -dictcmd {$adb_ nbhood namedict}
         }
 
         case NB_PLANTS "nbplants(n)" {
             rc
             rc "The total number of plants in neighborhood"
             rc
-            enumlong n -showkeys yes -dictcmd {::nbhood namedict}
+            enumlong n -showkeys yes -dictcmd {$adb_ nbhood namedict}
         }
 
         case NBPOPULATION "nbpop(n,...)" {
             rc
             rc "Civilian population in neighborhood(s)"
             rc
-            enumlonglist nlist -showkeys yes -dictcmd {::nbhood namedict} \
+            enumlonglist nlist -showkeys yes -dictcmd {$adb_ nbhood namedict} \
                 -width 30 -height 10
         }
 
@@ -298,18 +298,18 @@
             rc
             rc "Support of actor"
             rc
-            enumlong a -showkeys yes -dictcmd {::actor namedict}
+            enumlong a -showkeys yes -dictcmd {$adb_ actor namedict}
             
             rc "in neighborhood"
             rc
-            enumlong n -showkeys yes -dictcmd {::nbhood namedict}    
+            enumlong n -showkeys yes -dictcmd {$adb_ nbhood namedict}    
         }
 
         case NB_UNEMPLOYMENT_RATE "nbunemp(n,...)" {
             rc
             rc "Unemployment rate for neighborhood(s)"
             rc
-            enumlonglist nlist -showkeys yes -dictcmd {::nbhood namedict} \
+            enumlonglist nlist -showkeys yes -dictcmd {$adb_ nbhood namedict} \
                 -width 30 -height 10
         }
 
@@ -317,7 +317,7 @@
             rc
             rc "Workers resident in neighborhood(s)"
             rc
-            enumlonglist nlist -showkeys yes -dictcmd {::nbhood namedict} \
+            enumlonglist nlist -showkeys yes -dictcmd {$adb_ nbhood namedict} \
                 -width 30 -height 10
         }
 
@@ -325,7 +325,7 @@
             rc
             rc "The cash on hand of actor a"
             rc
-            enumlong a -showkeys yes -dictcmd {::actor namedict}
+            enumlong a -showkeys yes -dictcmd {$adb_ actor namedict}
         }
 
         case PLAYBOX_CONSUMERS "pbconsumers()" {
@@ -368,7 +368,7 @@
             rc 
             rc "Percentage of neighborhood controlled by these actors"
             rc
-            enumlonglist alist -showkeys yes -dictcmd {::actor namedict} \
+            enumlonglist alist -showkeys yes -dictcmd {$adb_ actor namedict} \
                 -width 30 -height 10
         }
 
@@ -380,7 +380,7 @@
 
             rc "in neighborhood"
             rc
-            enumlong n -showkeys yes -dictcmd {::nbhood namedict}
+            enumlong n -showkeys yes -dictcmd {$adb_ nbhood namedict}
         }
 
         case GROUP_POPULATION "pop(g,...)" {
@@ -395,18 +395,18 @@
             rc
             rc "The current level of repair for plants owned by actor"
             rc
-            enumlong a -showkeys yes -dictcmd {::actor namedict}
+            enumlong a -showkeys yes -dictcmd {$adb_ actor namedict}
 
             rc "in neighborhood"
             rc
-            enumlong n -showkeys yes -dictcmd {::nbhood namedict}
+            enumlong n -showkeys yes -dictcmd {$adb_ nbhood namedict}
         }
 
         case CASH_RESERVE "reserve(a)" {
             rc
             rc "The cash reserve of actor a"
             rc
-            enumlong a -showkeys yes -dictcmd {::actor namedict}
+            enumlong a -showkeys yes -dictcmd {$adb_ actor namedict}
         }
 
         case SAT "sat(g,c)" {
@@ -435,14 +435,14 @@
 
             rc "in neighborhood"
             rc
-            enumlong n -showkeys yes -dictcmd {::nbhood namedict}            
+            enumlong n -showkeys yes -dictcmd {$adb_ nbhood namedict}            
         }
 
         case SUPPORT_CIV "support(a,g)" {
             rc
             rc "Support for actor"
             rc
-            enumlong a -showkeys yes -dictcmd {::actor namedict}
+            enumlong a -showkeys yes -dictcmd {$adb_ actor namedict}
             
             rc "by group"
             rc
@@ -453,7 +453,7 @@
             rc
             rc "Support for actor"
             rc
-            enumlong a -showkeys yes -dictcmd {::actor namedict}
+            enumlong a -showkeys yes -dictcmd {$adb_ actor namedict}
             
             rc "by group"
             rc
@@ -461,7 +461,7 @@
             
             rc "in neighborhood"
             rc
-            enumlong n -showkeys yes -dictcmd {::nbhood namedict}    
+            enumlong n -showkeys yes -dictcmd {$adb_ nbhood namedict}    
         }
 
         case GROUP_UNEMPLOYMENT_RATE "unemp(g,...)" {
@@ -480,7 +480,7 @@
 
             rc "with actor"
             rc
-            enumlong a -showkeys yes -dictcmd {::actor namedict}
+            enumlong a -showkeys yes -dictcmd {$adb_ actor namedict}
         }
 
         case GROUP_WORKERS "workers(g,...)" {
@@ -507,7 +507,7 @@
 
 ::athena::goferx rule NUMBER BY_VALUE {raw_value} {
     method make {raw_value} {
-        return [$type validate [dict create raw_value $raw_value]]
+        return [my validate [dict create raw_value $raw_value]]
     }
 
     method validate {gdict} {
@@ -535,7 +535,7 @@
 
 ::athena::goferx rule NUMBER EXPR {expr_value} {
     method make {expr_value} {
-        return [$type validate [dict create expr_value $expr_value]]
+        return [my validate [dict create expr_value $expr_value]]
     }
 
     method validate {gdict} {
@@ -563,7 +563,7 @@
 
 ::athena::goferx rule NUMBER AFFINITY {x y} {
     method make {x y} {
-        return [$type validate [dict create x $x y $y]]
+        return [my validate [dict create x $x y $y]]
     }
 
     method validate {gdict} {
@@ -610,7 +610,7 @@
 
 ::athena::goferx rule NUMBER AGENT_PLANTS {a} {
     method make {a} {
-        return [$type validate [dict create a $a]]
+        return [my validate [dict create a $a]]
     }
 
     method validate {gdict} {
@@ -645,7 +645,7 @@
 
 ::athena::goferx rule NUMBER ASSIGNED {g activity n} {
     method make {g activity n} {
-        return [$type validate [dict create g $g activity $activity n $n]]
+        return [my validate [dict create g $g activity $activity n $n]]
     }
 
     method validate {gdict} {
@@ -694,7 +694,7 @@
 
 ::athena::goferx rule NUMBER GROUP_CONSUMERS {glist} {
     method make {glist} {
-        return [$type validate [dict create glist $glist]]
+        return [my validate [dict create glist $glist]]
     }
 
     method validate {gdict} {
@@ -737,7 +737,7 @@
 
 ::athena::goferx rule NUMBER COOP {f g} {
     method make {f g} {
-        return [$type validate [dict create f $f g $g]]
+        return [my validate [dict create f $f g $g]]
     }
 
     method validate {gdict} {
@@ -773,7 +773,7 @@
 
 ::athena::goferx rule NUMBER COVERAGE {g activity n} {
     method make {g activity n} {
-        return [$type validate [dict create g $g activity $activity n $n]]
+        return [my validate [dict create g $g activity $activity n $n]]
     }
 
     method validate {gdict} {
@@ -822,7 +822,7 @@
 
 ::athena::goferx rule NUMBER DEPLOYED {g nlist} {
     method make {g nlist} {
-        return [$type validate [dict create g $g nlist $nlist]]
+        return [my validate [dict create g $g nlist $nlist]]
     }
 
     method validate {gdict} {
@@ -867,7 +867,7 @@
 
 ::athena::goferx rule NUMBER GDP {} {
     method make {} {
-        return [$type validate [dict create]]
+        return [my validate [dict create]]
     }
 
     method validate {gdict} {
@@ -893,7 +893,7 @@
 
 ::athena::goferx rule NUMBER GOODS_CAP {a} {
     method make {a} {
-        return [$type validate [dict create a $a]]
+        return [my validate [dict create a $a]]
     }
 
     method validate {gdict} {
@@ -928,7 +928,7 @@
 
 ::athena::goferx rule NUMBER GOODS_IDLE {} {
     method make {} {
-        return [$type validate [dict create]]
+        return [my validate [dict create]]
     }
 
     method validate {gdict} {
@@ -956,7 +956,7 @@
 
 ::athena::goferx rule NUMBER HREL {f g} {
     method make {f g} {
-        return [$type validate [dict create f $f g $g]]
+        return [my validate [dict create f $f g $g]]
     }
 
     method validate {gdict} {
@@ -992,7 +992,7 @@
 
 ::athena::goferx rule NUMBER INCOME {alist} {
     method make {alist} {
-        return [$type validate [dict create alist $alist]]
+        return [my validate [dict create alist $alist]]
     }
 
     method validate {gdict} {
@@ -1035,7 +1035,7 @@
 
 ::athena::goferx rule NUMBER INCOME_BLACK {alist} {
     method make {alist} {
-        return [$type validate [dict create alist $alist]]
+        return [my validate [dict create alist $alist]]
     }
 
     method validate {gdict} {
@@ -1090,7 +1090,7 @@
 
 ::athena::goferx rule NUMBER INCOME_GOODS {alist} {
     method make {alist} {
-        return [$type validate [dict create alist $alist]]
+        return [my validate [dict create alist $alist]]
     }
 
     method validate {gdict} {
@@ -1133,7 +1133,7 @@
 
 ::athena::goferx rule NUMBER INCOME_POP {alist} {
     method make {alist} {
-        return [$type validate [dict create alist $alist]]
+        return [my validate [dict create alist $alist]]
     }
 
     method validate {gdict} {
@@ -1176,7 +1176,7 @@
 
 ::athena::goferx rule NUMBER INCOME_REGION {alist} {
     method make {alist} {
-        return [$type validate [dict create alist $alist]]
+        return [my validate [dict create alist $alist]]
     }
 
     method validate {gdict} {
@@ -1219,7 +1219,7 @@
 
 ::athena::goferx rule NUMBER INCOME_WORLD {alist} {
     method make {alist} {
-        return [$type validate [dict create alist $alist]]
+        return [my validate [dict create alist $alist]]
     }
 
     method validate {gdict} {
@@ -1262,7 +1262,7 @@
 
 ::athena::goferx rule NUMBER INFLUENCE {a n} {
     method make {a n} {
-        return [$type validate [dict create a $a n $n]]
+        return [my validate [dict create a $a n $n]]
     }
 
     method validate {gdict} {
@@ -1298,7 +1298,7 @@
 
 ::athena::goferx rule NUMBER LOCAL_CONSUMERS {} {
     method make {} {
-        return [$type validate [dict create]]
+        return [my validate [dict create]]
     }
 
     method validate {gdict} {
@@ -1334,7 +1334,7 @@
 
 ::athena::goferx rule NUMBER LOCAL_POPULATION {} {
     method make {} {
-        return [$type validate [dict create]]
+        return [my validate [dict create]]
     }
 
     method validate {gdict} {
@@ -1370,7 +1370,7 @@
 
 ::athena::goferx rule NUMBER LOCAL_UNEMPLOYMENT_RATE {} {
     method make {} {
-        return [$type validate [dict create]]
+        return [my validate [dict create]]
     }
 
     method validate {gdict} {
@@ -1433,7 +1433,7 @@
 
 ::athena::goferx rule NUMBER LOCAL_WORKERS {} {
     method make {} {
-        return [$type validate [dict create]]
+        return [my validate [dict create]]
     }
 
     method validate {gdict} {
@@ -1469,7 +1469,7 @@
 
 ::athena::goferx rule NUMBER MOBILIZED {glist} {
     method make {glist} {
-        return [$type validate [dict create glist $glist]]
+        return [my validate [dict create glist $glist]]
     }
 
     method validate {gdict} {
@@ -1512,7 +1512,7 @@
 
 ::athena::goferx rule NUMBER MOOD {g} {
     method make {g} {
-        return [$type validate [dict create g $g]]
+        return [my validate [dict create g $g]]
     }
 
     method validate {gdict} {
@@ -1546,7 +1546,7 @@
 
 ::athena::goferx rule NUMBER NBCONSUMERS {nlist} {
     method make {nlist} {
-        return [$type validate [dict create nlist $nlist]]
+        return [my validate [dict create nlist $nlist]]
     }
 
     method validate {gdict} {
@@ -1589,7 +1589,7 @@
 
 ::athena::goferx rule NUMBER NBCOOP {n g} {
     method make {n g} {
-        return [$type validate [dict create n $n g $g]]
+        return [my validate [dict create n $n g $g]]
     }
 
     method validate {gdict} {
@@ -1626,7 +1626,7 @@
 
 ::athena::goferx rule NUMBER NB_GOODS_CAP {n} {
     method make {n} {
-        return [$type validate [dict create n $n]]
+        return [my validate [dict create n $n]]
     }
 
     method validate {gdict} {
@@ -1661,7 +1661,7 @@
 
 ::athena::goferx rule NUMBER NBMOOD {n} {
     method make {n} {
-        return [$type validate [dict create n $n]]
+        return [my validate [dict create n $n]]
     }
 
     method validate {gdict} {
@@ -1695,7 +1695,7 @@
 
 ::athena::goferx rule NUMBER NB_PLANTS {n} {
     method make {n} {
-        return [$type validate [dict create n $n]]
+        return [my validate [dict create n $n]]
     }
 
     method validate {gdict} {
@@ -1730,7 +1730,7 @@
 
 ::athena::goferx rule NUMBER NBPOPULATION {nlist} {
     method make {nlist} {
-        return [$type validate [dict create nlist $nlist]]
+        return [my validate [dict create nlist $nlist]]
     }
 
     method validate {gdict} {
@@ -1773,7 +1773,7 @@
 
 ::athena::goferx rule NUMBER NBSUPPORT {a n} {
     method make {a n} {
-        return [$type validate [dict create a $a n $n]]
+        return [my validate [dict create a $a n $n]]
     }
 
     method validate {gdict} {
@@ -1809,7 +1809,7 @@
 
 ::athena::goferx rule NUMBER NB_UNEMPLOYMENT_RATE {nlist} {
     method make {nlist} {
-        return [$type validate [dict create nlist $nlist]]
+        return [my validate [dict create nlist $nlist]]
     }
 
     method validate {gdict} {
@@ -1879,7 +1879,7 @@
 
 ::athena::goferx rule NUMBER NBWORKERS {nlist} {
     method make {nlist} {
-        return [$type validate [dict create nlist $nlist]]
+        return [my validate [dict create nlist $nlist]]
     }
 
     method validate {gdict} {
@@ -1922,7 +1922,7 @@
 
 ::athena::goferx rule NUMBER CASH_ON_HAND {a} {
     method make {a} {
-        return [$type validate [dict create a $a]]
+        return [my validate [dict create a $a]]
     }
 
     method validate {gdict} {
@@ -1965,7 +1965,7 @@
 
 ::athena::goferx rule NUMBER PLAYBOX_CONSUMERS {} {
     method make {} {
-        return [$type validate [dict create]]
+        return [my validate [dict create]]
     }
 
     method validate {gdict} {
@@ -2001,7 +2001,7 @@
 
 ::athena::goferx rule NUMBER PLAYBOX_GOODS_CAP {} {
     method make {} {
-        return [$type validate [dict create]]
+        return [my validate [dict create]]
     }
 
     method validate {gdict} {
@@ -2033,7 +2033,7 @@
 
 ::athena::goferx rule NUMBER PLAYBOX_PLANTS {} {
     method make {} {
-        return [$type validate [dict create]]
+        return [my validate [dict create]]
     }
 
     method validate {gdict} {
@@ -2065,7 +2065,7 @@
 
 ::athena::goferx rule NUMBER PLAYBOX_POPULATION {} {
     method make {} {
-        return [$type validate [dict create]]
+        return [my validate [dict create]]
     }
 
     method validate {gdict} {
@@ -2101,7 +2101,7 @@
 
 ::athena::goferx rule NUMBER PLAYBOX_UNEMPLOYMENT_RATE {} {
     method make {} {
-        return [$type validate [dict create]]
+        return [my validate [dict create]]
     }
 
     method validate {gdict} {
@@ -2164,7 +2164,7 @@
 
 ::athena::goferx rule NUMBER PLAYBOX_WORKERS {} {
     method make {} {
-        return [$type validate [dict create]]
+        return [my validate [dict create]]
     }
 
     method validate {gdict} {
@@ -2200,7 +2200,7 @@
 
 ::athena::goferx rule NUMBER PCTCONTROL {alist} {
     method make {alist} {
-        return [$type validate [dict create alist $alist]]
+        return [my validate [dict create alist $alist]]
     }
 
     method validate {gdict} {
@@ -2245,7 +2245,7 @@
 
 ::athena::goferx rule NUMBER PLANTS {a n} {
     method make {a n} {
-        return [$type validate [dict create a $a n $n]]
+        return [my validate [dict create a $a n $n]]
     }
 
     method validate {gdict} {
@@ -2281,7 +2281,7 @@
 
 ::athena::goferx rule NUMBER GROUP_POPULATION {glist} {
     method make {glist} {
-        return [$type validate [dict create glist $glist]]
+        return [my validate [dict create glist $glist]]
     }
 
     method validate {gdict} {
@@ -2324,7 +2324,7 @@
 
 ::athena::goferx rule NUMBER REPAIR {a n} {
     method make {a n} {
-        return [$type validate [dict create a $a n $n]]
+        return [my validate [dict create a $a n $n]]
     }
 
     method validate {gdict} {
@@ -2360,7 +2360,7 @@
 
 ::athena::goferx rule NUMBER CASH_RESERVE {a} {
     method make {a} {
-        return [$type validate [dict create a $a]]
+        return [my validate [dict create a $a]]
     }
 
     method validate {gdict} {
@@ -2404,7 +2404,7 @@
 
 ::athena::goferx rule NUMBER SAT {g c} {
     method make {g c} {
-        return [$type validate [dict create g $g c $c]]
+        return [my validate [dict create g $g c $c]]
     }
 
     method validate {gdict} {
@@ -2442,7 +2442,7 @@
 
 ::athena::goferx rule NUMBER SECURITY_CIV {g} {
     method make {g} {
-        return [$type validate [dict create g $g]]
+        return [my validate [dict create g $g]]
     }
 
     method validate {gdict} {
@@ -2480,7 +2480,7 @@
 
 ::athena::goferx rule NUMBER SECURITY {g n} {
     method make {g n} {
-        return [$type validate [dict create g $g n $n]]
+        return [my validate [dict create g $g n $n]]
     }
 
     method validate {gdict} {
@@ -2516,7 +2516,7 @@
 
 ::athena::goferx rule NUMBER SUPPORT_CIV {a g} {
     method make {a g} {
-        return [$type validate [dict create a $a g $g]]
+        return [my validate [dict create a $a g $g]]
     }
 
     method validate {gdict} {
@@ -2552,7 +2552,7 @@
 
 ::athena::goferx rule NUMBER SUPPORT {a g n} {
     method make {a g n} {
-        return [$type validate [dict create a $a g $g n $n]]
+        return [my validate [dict create a $a g $g n $n]]
     }
 
     method validate {gdict} {
@@ -2589,7 +2589,7 @@
 
 ::athena::goferx rule NUMBER GROUP_UNEMPLOYMENT_RATE {glist} {
     method make {glist} {
-        return [$type validate [dict create glist $glist]]
+        return [my validate [dict create glist $glist]]
     }
 
     method validate {gdict} {
@@ -2657,7 +2657,7 @@
 
 ::athena::goferx rule NUMBER VREL {g a} {
     method make {g a} {
-        return [$type validate [dict create g $g a $a]]
+        return [my validate [dict create g $g a $a]]
     }
 
     method validate {gdict} {
@@ -2693,7 +2693,7 @@
 
 ::athena::goferx rule NUMBER GROUP_WORKERS {glist} {
     method make {glist} {
-        return [$type validate [dict create glist $glist]]
+        return [my validate [dict create glist $glist]]
     }
 
     method validate {gdict} {

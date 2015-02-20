@@ -26,7 +26,7 @@
         case BY_VALUE "By name" {
             rc "Select neighborhoods from the following list:"
             rc
-            enumlonglist nlist -dictcmd {::nbhood namedict} \
+            enumlonglist nlist -dictcmd {$adb_ nbhood namedict} \
                 -width 30 -height 10 
         }
 
@@ -37,7 +37,7 @@
             }
 
             rc
-            enumlonglist alist -dictcmd {::actor namedict} \
+            enumlonglist alist -dictcmd {$adb_ actor namedict} \
                 -width 30 -height 10
         }
 
@@ -48,7 +48,7 @@
             }
 
             rc
-            enumlonglist alist -dictcmd {::actor namedict} \
+            enumlonglist alist -dictcmd {$adb_ actor namedict} \
                 -width 30 -height 10
         }
 
@@ -58,7 +58,7 @@
             label " the following force groups are deployed:"
 
             rc
-            enumlonglist glist -dictcmd {::frcgroup namedict} \
+            enumlonglist glist -dictcmd {$adb_ frcgroup namedict} \
                 -width 30 -height 10
         }
 
@@ -69,7 +69,7 @@
             }
 
             rc
-            enumlonglist glist -dictcmd {::frcgroup namedict} \
+            enumlonglist glist -dictcmd {$adb_ frcgroup namedict} \
                 -width 30 -height 10
         }
     }
@@ -89,7 +89,7 @@
 
 ::athena::goferx rule NBHOODS BY_VALUE {nlist} {
     method make {nlist} {
-        return [$type validate [dict create nlist $nlist]]
+        return [my validate [dict create nlist $nlist]]
     }
 
     method validate {gdict} {
@@ -118,7 +118,7 @@
 
 ::athena::goferx rule NBHOODS CONTROLLED_BY {alist} {
     method make {alist} {
-        return [$type validate [dict create alist $alist]]
+        return [my validate [dict create alist $alist]]
     }
 
     method validate {gdict} {
@@ -152,7 +152,7 @@
 
 ::athena::goferx rule NBHOODS NOT_CONTROLLED_BY {alist} {
     method make {alist} {
-        return [$type validate [dict create alist $alist]]
+        return [my validate [dict create alist $alist]]
     }
 
     method validate {gdict} {
@@ -187,7 +187,7 @@
 
 ::athena::goferx rule NBHOODS WITH_DEPLOYMENT {anyall glist} {
     method make {anyall glist} {
-        return [$type validate [dict create anyall $anyall glist $glist]]
+        return [my validate [dict create anyall $anyall glist $glist]]
     }
 
     method validate {gdict} { 
@@ -229,7 +229,7 @@
 
 ::athena::goferx rule NBHOODS WITHOUT_DEPLOYMENT {glist} {
     method make {glist} {
-        return [$type validate [dict create glist $glist]]
+        return [my validate [dict create glist $glist]]
     }
 
     method validate {gdict} { 
