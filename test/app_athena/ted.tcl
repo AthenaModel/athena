@@ -689,6 +689,15 @@ snit::type ted {
         ted order SIM:LOCK
     }
 
+    # unlock
+    #
+    # Unlocks the scenario.
+
+    typemethod unlock {} {
+        ted order SIM:UNLOCK
+    }
+
+
     # step
     #
     # Steps time forward by one week, locking the scenario if need be.

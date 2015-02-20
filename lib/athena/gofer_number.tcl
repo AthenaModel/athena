@@ -506,23 +506,23 @@
 # Some number chosen by the user.
 
 ::athena::goferx rule NUMBER BY_VALUE {raw_value} {
-    typemethod construct {raw_value} {
+    method make {raw_value} {
         return [$type validate [dict create raw_value $raw_value]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         dict create raw_value [snit::double validate $raw_value]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return "$raw_value"
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         return $raw_value
@@ -534,23 +534,23 @@
 # An TCL expression chosen by the user.
 
 ::athena::goferx rule NUMBER EXPR {expr_value} {
-    typemethod construct {expr_value} {
+    method make {expr_value} {
         return [$type validate [dict create expr_value $expr_value]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         dict create expr_value [executive expr validate $expr_value]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return "$expr_value"
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         return [executive eval [list expr $expr_value]]
@@ -562,11 +562,11 @@
 # affinity(x,y)
 
 ::athena::goferx rule NUMBER AFFINITY {x y} {
-    typemethod construct {x y} {
+    method make {x y} {
         return [$type validate [dict create x $x y $y]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         dict create \
@@ -575,26 +575,26 @@
 
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {affinity("%s","%s")} $x $y]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
         
         return [format %.2f [bsys affinity [getbsid $x] [getbsid $y]]]
     }
 
     proc getbsid {e} {
-        rdb eval {
+        $adb eval {
             SELECT bsid FROM actors WHERE a=$e
         } {
             return $bsid
         }
 
-        rdb eval {
+        $adb eval {
             SELECT bsid FROM groups_bsid_view WHERE g=$e
         } {
             return $bsid
@@ -609,24 +609,24 @@
 # aplants(a)
 
 ::athena::goferx rule NUMBER AGENT_PLANTS {a} {
-    typemethod construct {a} {
+    method make {a} {
         return [$type validate [dict create a $a]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         dict create \
             a [agent validate [string toupper $a]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {aplants("%s")} $a]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         set plants [plant number a $a]
@@ -644,11 +644,11 @@
 # assigned(g,activity,n)
 
 ::athena::goferx rule NUMBER ASSIGNED {g activity n} {
-    typemethod construct {g activity n} {
+    method make {g activity n} {
         return [$type validate [dict create g $g activity $activity n $n]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         set valid [dict create]
@@ -669,16 +669,16 @@
         return $valid
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {assigned("%s","%s","%s")} $g $activity $n]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
-        rdb eval {
+        $adb eval {
             SELECT total(personnel) AS assigned FROM units WHERE n=$n AND g=$g AND a=$activity
         } {
             return [format %.0f $assigned]
@@ -693,23 +693,23 @@
 # consumers(g,...)
 
 ::athena::goferx rule NUMBER GROUP_CONSUMERS {glist} {
-    typemethod construct {glist} {
+    method make {glist} {
         return [$type validate [dict create glist $glist]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
         dict create glist \
             [listval civgroups {civgroup validate} [string toupper $glist]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {consumers("%s")} [join $glist \",\"]]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         # FIRST, create the inClause.
@@ -717,7 +717,7 @@
 
         # NEXT, query the total of consumers belonging to
         # groups in the list.
-        set count [rdb onecolumn "
+        set count [$adb onecolumn "
             SELECT sum(consumers) 
             FROM demog_g
             WHERE g IN $inClause
@@ -736,11 +736,11 @@
 # coop(f,g)
 
 ::athena::goferx rule NUMBER COOP {f g} {
-    typemethod construct {f g} {
+    method make {f g} {
         return [$type validate [dict create f $f g $g]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         dict create \
@@ -748,16 +748,16 @@
             g [frcgroup validate [string toupper $g]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {coop("%s","%s")} $f $g]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
-        rdb eval {
+        $adb eval {
             SELECT coop FROM uram_coop WHERE f=$f AND g=$g
         } {
             return [format %.1f $coop]
@@ -772,11 +772,11 @@
 # coverage(g,activity,n)
 
 ::athena::goferx rule NUMBER COVERAGE {g activity n} {
-    typemethod construct {g activity n} {
+    method make {g activity n} {
         return [$type validate [dict create g $g activity $activity n $n]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         set valid [dict create]
@@ -797,16 +797,16 @@
         return $valid
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {coverage("%s","%s","%s")} $g $activity $n]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
-        rdb eval {
+        $adb eval {
             SELECT coverage FROM activity_nga WHERE n=$n AND g=$g AND a=$activity
         } {
             return [format %.1f $coverage]
@@ -821,24 +821,24 @@
 # deployed(g,n,...)
 
 ::athena::goferx rule NUMBER DEPLOYED {g nlist} {
-    typemethod construct {g nlist} {
+    method make {g nlist} {
         return [$type validate [dict create g $g nlist $nlist]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
         dict create \
             g [ptype fog validate [string toupper $g]] \
             nlist [listval nbhoods {nbhood validate} [string toupper $nlist]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {deployed("%s","%s")} $g [join $nlist \",\"]]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         # FIRST, create the inClause.
@@ -846,7 +846,7 @@
 
         # NEXT, query the total of deployed belonging to
         # the group in the nbhoods in the nbhood list.
-        set count [rdb onecolumn "
+        set count [$adb onecolumn "
             SELECT sum(personnel) 
             FROM deploy_ng
             WHERE g='$g'
@@ -866,19 +866,19 @@
 # gdp()
 
 ::athena::goferx rule NUMBER GDP {} {
-    typemethod construct {} {
+    method make {} {
         return [$type validate [dict create]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict create
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         return "gdp()"
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         if {[econ state] eq "DISABLED"} {
             return 0.00
         } else {
@@ -892,24 +892,24 @@
 # goodscap(a)
 
 ::athena::goferx rule NUMBER GOODS_CAP {a} {
-    typemethod construct {a} {
+    method make {a} {
         return [$type validate [dict create a $a]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         dict create \
             a [agent validate [string toupper $a]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {goodscap("%s")} $a]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         set goodscap [plant capacity a $a]
@@ -927,21 +927,21 @@
 # goodsidle()
 
 ::athena::goferx rule NUMBER GOODS_IDLE {} {
-    typemethod construct {} {
+    method make {} {
         return [$type validate [dict create]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict create
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return "goodsidle()"
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         if {[econ state] eq "DISABLED"} {
             return 0.00
         } else {
@@ -955,11 +955,11 @@
 # hrel(f,g)
 
 ::athena::goferx rule NUMBER HREL {f g} {
-    typemethod construct {f g} {
+    method make {f g} {
         return [$type validate [dict create f $f g $g]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         dict create \
@@ -967,16 +967,16 @@
             g [group validate [string toupper $g]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {hrel("%s","%s")} $f $g]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
-        rdb eval {
+        $adb eval {
             SELECT hrel FROM uram_hrel WHERE f=$f AND g=$g AND tracked
         } {
             return [format %.1f $hrel]
@@ -991,23 +991,23 @@
 # income(a,...)
 
 ::athena::goferx rule NUMBER INCOME {alist} {
-    typemethod construct {alist} {
+    method make {alist} {
         return [$type validate [dict create alist $alist]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
         dict create alist \
             [listval actors {actor validate} [string toupper $alist]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {income("%s")} [join $alist \",\"]]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         # FIRST, create the inClause.
@@ -1015,7 +1015,7 @@
 
         # NEXT, query the total income belonging to
         # actor(s) in the list.
-        set count [rdb onecolumn "
+        set count [$adb onecolumn "
             SELECT sum(income) 
             FROM income_a
             WHERE a IN $inClause
@@ -1034,23 +1034,23 @@
 # income_black(a,...)
 
 ::athena::goferx rule NUMBER INCOME_BLACK {alist} {
-    typemethod construct {alist} {
+    method make {alist} {
         return [$type validate [dict create alist $alist]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
         dict create alist \
             [listval actors {actor validate} [string toupper $alist]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {income_black("%s")} [join $alist \",\"]]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         # FIRST, create the inClause.
@@ -1058,7 +1058,7 @@
 
         # NEXT, query the total inc_black_t belonging to
         # actor(s) in the list.
-        set countt [rdb onecolumn "
+        set countt [$adb onecolumn "
             SELECT sum(inc_black_t) 
             FROM income_a
             WHERE a IN $inClause
@@ -1070,7 +1070,7 @@
 
         # NEXT, query the total inc_black_nr belonging to
         # actor(s) in the list.
-        set countnr [rdb onecolumn "
+        set countnr [$adb onecolumn "
             SELECT sum(inc_black_nr)
             FROM income_a
             WHERE a IN $inClause
@@ -1089,23 +1089,23 @@
 # income_goods(a,...)
 
 ::athena::goferx rule NUMBER INCOME_GOODS {alist} {
-    typemethod construct {alist} {
+    method make {alist} {
         return [$type validate [dict create alist $alist]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
         dict create alist \
             [listval actors {actor validate} [string toupper $alist]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {income_goods("%s")} [join $alist \",\"]]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         # FIRST, create the inClause.
@@ -1113,7 +1113,7 @@
 
         # NEXT, query the total inc_goods belonging to
         # actor(s) in the list.
-        set count [rdb onecolumn "
+        set count [$adb onecolumn "
             SELECT sum(inc_goods) 
             FROM income_a
             WHERE a IN $inClause
@@ -1132,23 +1132,23 @@
 # income_pop(a,...)
 
 ::athena::goferx rule NUMBER INCOME_POP {alist} {
-    typemethod construct {alist} {
+    method make {alist} {
         return [$type validate [dict create alist $alist]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
         dict create alist \
             [listval actors {actor validate} [string toupper $alist]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {income_pop("%s")} [join $alist \",\"]]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         # FIRST, create the inClause.
@@ -1156,7 +1156,7 @@
 
         # NEXT, query the total inc_pop belonging to
         # actor(s) in the list.
-        set count [rdb onecolumn "
+        set count [$adb onecolumn "
             SELECT sum(inc_pop) 
             FROM income_a
             WHERE a IN $inClause
@@ -1175,23 +1175,23 @@
 # income_region(a,...)
 
 ::athena::goferx rule NUMBER INCOME_REGION {alist} {
-    typemethod construct {alist} {
+    method make {alist} {
         return [$type validate [dict create alist $alist]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
         dict create alist \
             [listval actors {actor validate} [string toupper $alist]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {income_region("%s")} [join $alist \",\"]]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         # FIRST, create the inClause.
@@ -1199,7 +1199,7 @@
 
         # NEXT, query the total inc_region belonging to
         # actor(s) in the list.
-        set count [rdb onecolumn "
+        set count [$adb onecolumn "
             SELECT sum(inc_region) 
             FROM income_a
             WHERE a IN $inClause
@@ -1218,23 +1218,23 @@
 # income_world(a,...)
 
 ::athena::goferx rule NUMBER INCOME_WORLD {alist} {
-    typemethod construct {alist} {
+    method make {alist} {
         return [$type validate [dict create alist $alist]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
         dict create alist \
             [listval actors {actor validate} [string toupper $alist]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {income_world("%s")} [join $alist \",\"]]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         # FIRST, create the inClause.
@@ -1242,7 +1242,7 @@
 
         # NEXT, query the total inc_world belonging to
         # actor(s) in the list.
-        set count [rdb onecolumn "
+        set count [$adb onecolumn "
             SELECT sum(inc_world) 
             FROM income_a
             WHERE a IN $inClause
@@ -1261,11 +1261,11 @@
 # influence(a,n)
 
 ::athena::goferx rule NUMBER INFLUENCE {a n} {
-    typemethod construct {a n} {
+    method make {a n} {
         return [$type validate [dict create a $a n $n]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         dict create \
@@ -1273,16 +1273,16 @@
             n [nbhood validate [string toupper $n]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {influence("%s","%s")} $a $n]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
-        rdb eval {
+        $adb eval {
             SELECT influence FROM influence_na WHERE n=$n AND a=$a
         } {
             return [format %.2f $influence]
@@ -1297,25 +1297,25 @@
 # local_consumers()
 
 ::athena::goferx rule NUMBER LOCAL_CONSUMERS {} {
-    typemethod construct {} {
+    method make {} {
         return [$type validate [dict create]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict create
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return "local_consumers()"
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         # NEXT, query the total of consumers
-        set count [rdb onecolumn "
+        set count [$adb onecolumn "
             SELECT consumers
             FROM demog_local
         "]
@@ -1333,25 +1333,25 @@
 # local_pop()
 
 ::athena::goferx rule NUMBER LOCAL_POPULATION {} {
-    typemethod construct {} {
+    method make {} {
         return [$type validate [dict create]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict create
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return "local_pop()"
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         # NEXT, query the total of population
-        set count [rdb onecolumn "
+        set count [$adb onecolumn "
             SELECT population
             FROM demog_local
         "]
@@ -1369,26 +1369,26 @@
 # local_unemp()
 
 ::athena::goferx rule NUMBER LOCAL_UNEMPLOYMENT_RATE {} {
-    typemethod construct {} {
+    method make {} {
         return [$type validate [dict create]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict create
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return "local_unemp()"
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
         
         # NEXT, query the total of unemployed ppl belonging
         # to ALL nbhoods JOINED with nbhoods that are local
-        set unemp [rdb onecolumn "
+        set unemp [$adb onecolumn "
             SELECT sum(demog_n.unemployed)
             FROM demog_n INNER JOIN nbhoods
             ON demog_n.n = nbhoods.n
@@ -1406,7 +1406,7 @@
 
         # NEXT, query the total number of the labor force belonging
         # to ALL nbhoods JOINED with nbhoods that are local
-        set labfrc [rdb onecolumn "
+        set labfrc [$adb onecolumn "
             SELECT sum(demog_n.labor_force)
             FROM demog_n INNER JOIN nbhoods
             ON demog_n.n = nbhoods.n
@@ -1432,25 +1432,25 @@
 # local_workers()
 
 ::athena::goferx rule NUMBER LOCAL_WORKERS {} {
-    typemethod construct {} {
+    method make {} {
         return [$type validate [dict create]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict create
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return "local_workers()"
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         # NEXT, query the total of workers
-        set count [rdb onecolumn "
+        set count [$adb onecolumn "
             SELECT labor_force
             FROM demog_local
         "]
@@ -1468,23 +1468,23 @@
 # mobilized(g,...)
 
 ::athena::goferx rule NUMBER MOBILIZED {glist} {
-    typemethod construct {glist} {
+    method make {glist} {
         return [$type validate [dict create glist $glist]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
         dict create \
             glist [listval fogs {::ptype fog validate} [string toupper $glist]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {mobilized("%s")} [join $glist \",\"]]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         # FIRST, create the inClause.
@@ -1492,7 +1492,7 @@
 
         # NEXT, query the total of mobilized belonging to
         # the group in the nbhoods in the nbhood list.
-        set count [rdb onecolumn "
+        set count [$adb onecolumn "
             SELECT sum(personnel) 
             FROM personnel_g
             WHERE g IN $inClause
@@ -1511,26 +1511,26 @@
 # mood(g)
 
 ::athena::goferx rule NUMBER MOOD {g} {
-    typemethod construct {g} {
+    method make {g} {
         return [$type validate [dict create g $g]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         dict create g [civgroup validate [string toupper $g]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {mood("%s")} $g]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
-        rdb eval {
+        $adb eval {
             SELECT mood FROM uram_mood WHERE g=$g
         } {
             return [format %.1f $mood]
@@ -1545,23 +1545,23 @@
 # nbconsumers(n,...)
 
 ::athena::goferx rule NUMBER NBCONSUMERS {nlist} {
-    typemethod construct {nlist} {
+    method make {nlist} {
         return [$type validate [dict create nlist $nlist]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
         dict create nlist \
             [listval nbhoods {nbhood validate} [string toupper $nlist]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {nbconsumers("%s")} [join $nlist \",\"]]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         # FIRST, create the inClause.
@@ -1569,7 +1569,7 @@
 
         # NEXT, query the total of consumers residing in
         # nbhoods in the list.
-        set count [rdb onecolumn "
+        set count [$adb onecolumn "
             SELECT sum(consumers) 
             FROM demog_n
             WHERE n IN $inClause
@@ -1588,11 +1588,11 @@
 # nbcoop(n,g)
 
 ::athena::goferx rule NUMBER NBCOOP {n g} {
-    typemethod construct {n g} {
+    method make {n g} {
         return [$type validate [dict create n $n g $g]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         dict create \
@@ -1601,16 +1601,16 @@
 
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {nbcoop("%s","%s")} $n $g]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
-        rdb eval {
+        $adb eval {
             SELECT nbcoop FROM uram_nbcoop WHERE n=$n AND g=$g
         } {
             return [format %.1f $nbcoop]
@@ -1625,24 +1625,24 @@
 # nbgoodscap(n)
 
 ::athena::goferx rule NUMBER NB_GOODS_CAP {n} {
-    typemethod construct {n} {
+    method make {n} {
         return [$type validate [dict create n $n]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         dict create \
             n [nbhood validate [string toupper $n]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {nbgoodscap("%s")} $n]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         set goodscap [plant capacity n $n]
@@ -1660,26 +1660,26 @@
 # nbmood(n)
 
 ::athena::goferx rule NUMBER NBMOOD {n} {
-    typemethod construct {n} {
+    method make {n} {
         return [$type validate [dict create n $n]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         dict create n [nbhood validate [string toupper $n]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {nbmood("%s")} $n]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
-        rdb eval {
+        $adb eval {
             SELECT nbmood FROM uram_n WHERE n=$n
         } {
             return [format %.1f $nbmood]
@@ -1694,24 +1694,24 @@
 # nbplants(n)
 
 ::athena::goferx rule NUMBER NB_PLANTS {n} {
-    typemethod construct {n} {
+    method make {n} {
         return [$type validate [dict create n $n]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         dict create \
             n [nbhood validate [string toupper $n]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {nbplants("%s")} $n]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         set nbplants [plant number n $n]
@@ -1729,23 +1729,23 @@
 # nbpop(n,...)
 
 ::athena::goferx rule NUMBER NBPOPULATION {nlist} {
-    typemethod construct {nlist} {
+    method make {nlist} {
         return [$type validate [dict create nlist $nlist]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
         dict create nlist \
             [listval nbhoods {nbhood validate} [string toupper $nlist]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {nbpop("%s")} [join $nlist \",\"]]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         # FIRST, create the inClause.
@@ -1753,7 +1753,7 @@
 
         # NEXT, query the total of population residing in
         # nbhoods in the list.
-        set count [rdb onecolumn "
+        set count [$adb onecolumn "
             SELECT sum(population) 
             FROM demog_n
             WHERE n IN $inClause
@@ -1772,11 +1772,11 @@
 # nbsupport(a,n)
 
 ::athena::goferx rule NUMBER NBSUPPORT {a n} {
-    typemethod construct {a n} {
+    method make {a n} {
         return [$type validate [dict create a $a n $n]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         dict create \
@@ -1784,16 +1784,16 @@
             n [nbhood validate [string toupper $n]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {nbsupport("%s","%s")} $a $n]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
-        rdb eval {
+        $adb eval {
             SELECT support FROM influence_na WHERE n=$n AND a=$a
         } {
             return [format %.2f $support]
@@ -1808,23 +1808,23 @@
 # nbunemp(n,...)
 
 ::athena::goferx rule NUMBER NB_UNEMPLOYMENT_RATE {nlist} {
-    typemethod construct {nlist} {
+    method make {nlist} {
         return [$type validate [dict create nlist $nlist]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
         dict create nlist \
             [listval nbhoods {nbhood validate} [string toupper $nlist]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {nbunemp("%s")} [join $nlist \",\"]]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
         
         # FIRST, create the inClause.
@@ -1832,7 +1832,7 @@
         
         # NEXT, query the total of unemployed ppl belonging
         # to nbhoods in the list JOINED with nbhoods that are local
-        set unemp [rdb onecolumn "
+        set unemp [$adb onecolumn "
             SELECT sum(demog_n.unemployed) 
             FROM demog_n INNER JOIN nbhoods
             ON demog_n.n = nbhoods.n
@@ -1851,7 +1851,7 @@
 
         # NEXT, query the total number of the labor force belonging
         # to nbhoods in the list JOINED with nbhoods that are local
-        set labfrc [rdb onecolumn "
+        set labfrc [$adb onecolumn "
             SELECT sum(demog_n.labor_force)
             FROM demog_n INNER JOIN nbhoods
             ON demog_n.n = nbhoods.n
@@ -1878,23 +1878,23 @@
 # nbworkers(n,...)
 
 ::athena::goferx rule NUMBER NBWORKERS {nlist} {
-    typemethod construct {nlist} {
+    method make {nlist} {
         return [$type validate [dict create nlist $nlist]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
         dict create nlist \
             [listval nbhoods {nbhood validate} [string toupper $nlist]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {nbworkers("%s")} [join $nlist \",\"]]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         # FIRST, create the inClause.
@@ -1902,7 +1902,7 @@
 
         # NEXT, query the total of workers residing in
         # nbhoods in the list.
-        set count [rdb onecolumn "
+        set count [$adb onecolumn "
             SELECT sum(labor_force) 
             FROM demog_n
             WHERE n IN $inClause
@@ -1921,24 +1921,24 @@
 # onhand(a)
 
 ::athena::goferx rule NUMBER CASH_ON_HAND {a} {
-    typemethod construct {a} {
+    method make {a} {
         return [$type validate [dict create a $a]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         dict create \
             a [actor validate [string toupper $a]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {onhand("%s")} $a]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         if {[econ state] eq "DISABLED"} {
             # IF econ disabled return 0.00
             return 0.00
@@ -1964,25 +1964,25 @@
 # pbconsumers()
 
 ::athena::goferx rule NUMBER PLAYBOX_CONSUMERS {} {
-    typemethod construct {} {
+    method make {} {
         return [$type validate [dict create]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict create
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return "pbconsumers()"
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         # NEXT, query the total of consumers
-        set count [rdb onecolumn "
+        set count [$adb onecolumn "
             SELECT sum(consumers)
             FROM demog_local
         "]
@@ -2000,21 +2000,21 @@
 # pbgoodscap()
 
 ::athena::goferx rule NUMBER PLAYBOX_GOODS_CAP {} {
-    typemethod construct {} {
+    method make {} {
         return [$type validate [dict create]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict create
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return "pbgoodscap()"
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         set goodscap [plant capacity total]
@@ -2032,21 +2032,21 @@
 # pbplants()
 
 ::athena::goferx rule NUMBER PLAYBOX_PLANTS {} {
-    typemethod construct {} {
+    method make {} {
         return [$type validate [dict create]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict create
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return "pbplants()"
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         set plants [plant number total]
@@ -2064,25 +2064,25 @@
 # pbpop()
 
 ::athena::goferx rule NUMBER PLAYBOX_POPULATION {} {
-    typemethod construct {} {
+    method make {} {
         return [$type validate [dict create]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict create
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return "pbpop()"
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         # NEXT, query the total of population
-        set count [rdb onecolumn "
+        set count [$adb onecolumn "
             SELECT sum(population)
             FROM demog_n
         "]
@@ -2100,26 +2100,26 @@
 # pbunemp()
 
 ::athena::goferx rule NUMBER PLAYBOX_UNEMPLOYMENT_RATE {} {
-    typemethod construct {} {
+    method make {} {
         return [$type validate [dict create]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict create
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return "pbunemp()"
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
         
         # NEXT, query the total of unemployed ppl belonging
         # to ALL nbhoods JOINED with nbhoods that are local
-        set unemp [rdb onecolumn "
+        set unemp [$adb onecolumn "
             SELECT sum(demog_n.unemployed)
             FROM demog_n INNER JOIN nbhoods
             ON demog_n.n = nbhoods.n
@@ -2137,7 +2137,7 @@
 
         # NEXT, query the total number of the labor force belonging
         # to ALL nbhoods JOINED with nbhoods that are local
-        set labfrc [rdb onecolumn "
+        set labfrc [$adb onecolumn "
             SELECT sum(demog_n.labor_force)
             FROM demog_n INNER JOIN nbhoods
             ON demog_n.n = nbhoods.n
@@ -2163,25 +2163,25 @@
 # pbworkers()
 
 ::athena::goferx rule NUMBER PLAYBOX_WORKERS {} {
-    typemethod construct {} {
+    method make {} {
         return [$type validate [dict create]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict create
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return "pbworkers()"
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         # NEXT, query the total of workers
-        set count [rdb onecolumn "
+        set count [$adb onecolumn "
             SELECT sum(labor_force)
             FROM demog_local
         "]
@@ -2199,23 +2199,23 @@
 # pctcontrol(a,...)
 
 ::athena::goferx rule NUMBER PCTCONTROL {alist} {
-    typemethod construct {alist} {
+    method make {alist} {
         return [$type validate [dict create alist $alist]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
         dict create alist \
             [listval actors {actor validate} [string toupper $alist]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {pctcontrol("%s")} [join $alist \",\"]]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         # FIRST, create the inClause.
@@ -2223,7 +2223,7 @@
 
         # NEXT, query the number of neighborhoods controlled by
         # actors in the list.
-        set count [rdb onecolumn "
+        set count [$adb onecolumn "
             SELECT count(n) 
             FROM control_n
             WHERE controller IN $inClause
@@ -2244,11 +2244,11 @@
 # plants(a,n)
 
 ::athena::goferx rule NUMBER PLANTS {a n} {
-    typemethod construct {a n} {
+    method make {a n} {
         return [$type validate [dict create a $a n $n]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         dict create \
@@ -2256,13 +2256,13 @@
             n [nbhood validate [string toupper $n]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {plants("%s","%s")} $a $n]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         set plants [plant get "$n $a" num]
@@ -2280,23 +2280,23 @@
 # pop(g,...)
 
 ::athena::goferx rule NUMBER GROUP_POPULATION {glist} {
-    typemethod construct {glist} {
+    method make {glist} {
         return [$type validate [dict create glist $glist]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
         dict create glist \
             [listval civgroups {civgroup validate} [string toupper $glist]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {pop("%s")} [join $glist \",\"]]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         # FIRST, create the inClause.
@@ -2304,7 +2304,7 @@
 
         # NEXT, query the total of population belonging to
         # groups in the list.
-        set count [rdb onecolumn "
+        set count [$adb onecolumn "
             SELECT SUM(population) 
             FROM demog_g
             WHERE g IN $inClause
@@ -2323,11 +2323,11 @@
 # repair(a,n)
 
 ::athena::goferx rule NUMBER REPAIR {a n} {
-    typemethod construct {a n} {
+    method make {a n} {
         return [$type validate [dict create a $a n $n]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         dict create \
@@ -2335,13 +2335,13 @@
             n [nbhood validate [string toupper $n]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {repair("%s","%s")} $a $n]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         set repair [plant get "$n $a" rho]
@@ -2359,24 +2359,24 @@
 # reserve(a)
 
 ::athena::goferx rule NUMBER CASH_RESERVE {a} {
-    typemethod construct {a} {
+    method make {a} {
         return [$type validate [dict create a $a]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         dict create \
             a [actor validate [string toupper $a]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {reserve("%s")} $a]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         if {[econ state] eq "DISABLED"} {
             # IF econ disabled return 0.00
             return 0.00
@@ -2403,11 +2403,11 @@
 # sat(g,c)
 
 ::athena::goferx rule NUMBER SAT {g c} {
-    typemethod construct {g c} {
+    method make {g c} {
         return [$type validate [dict create g $g c $c]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         dict create \
@@ -2416,16 +2416,16 @@
 
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {sat("%s","%s")} $g $c]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
-        rdb eval {
+        $adb eval {
             SELECT sat FROM uram_sat WHERE g=$g AND c=$c
         } {
             return [format %.1f $sat]
@@ -2441,30 +2441,30 @@
 # security(g)
 
 ::athena::goferx rule NUMBER SECURITY_CIV {g} {
-    typemethod construct {g} {
+    method make {g} {
         return [$type validate [dict create g $g]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         dict create \
             g [civgroup validate [string toupper $g]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {security("%s")} $g]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
-        set n [rdb eval {
+        set n [$adb eval {
             SELECT n FROM civgroups WHERE g=$g
         }]
-        rdb eval {
+        $adb eval {
             SELECT security FROM force_ng WHERE n=$n AND g=$g
         } {
             return $security
@@ -2479,11 +2479,11 @@
 # security(g,n)
 
 ::athena::goferx rule NUMBER SECURITY {g n} {
-    typemethod construct {g n} {
+    method make {g n} {
         return [$type validate [dict create g $g n $n]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         dict create \
@@ -2491,16 +2491,16 @@
             n [nbhood validate [string toupper $n]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {security("%s","%s")} $g $n]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
-        rdb eval {
+        $adb eval {
             SELECT security FROM force_ng WHERE n=$n AND g=$g
         } {
             return $security
@@ -2515,11 +2515,11 @@
 # support(a,g)
 
 ::athena::goferx rule NUMBER SUPPORT_CIV {a g} {
-    typemethod construct {a g} {
+    method make {a g} {
         return [$type validate [dict create a $a g $g]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         dict create \
@@ -2527,16 +2527,16 @@
             g [civgroup validate [string toupper $g]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {support("%s","%s")} $a $g]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
-        rdb eval {
+        $adb eval {
             SELECT support FROM support_nga WHERE g=$g AND a=$a
         } {
             return [format %.2f $support]
@@ -2551,11 +2551,11 @@
 # support(a,g,n)
 
 ::athena::goferx rule NUMBER SUPPORT {a g n} {
-    typemethod construct {a g n} {
+    method make {a g n} {
         return [$type validate [dict create a $a g $g n $n]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         dict create \
@@ -2564,16 +2564,16 @@
             n [nbhood validate [string toupper $n]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {support("%s","%s","%s")} $a $g $n]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
-        rdb eval {
+        $adb eval {
             SELECT support FROM support_nga WHERE n=$n AND g=$g AND a=$a
         } {
             return [format %.2f $support]
@@ -2588,23 +2588,23 @@
 # unemp(g,...)
 
 ::athena::goferx rule NUMBER GROUP_UNEMPLOYMENT_RATE {glist} {
-    typemethod construct {glist} {
+    method make {glist} {
         return [$type validate [dict create glist $glist]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
         dict create glist \
             [listval civgroups {civgroup validate} [string toupper $glist]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {unemp("%s")} [join $glist \",\"]]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
         
         # FIRST, create the inClause.
@@ -2612,7 +2612,7 @@
         
         # NEXT, query the total number of unemployed ppl belonging
         # to groups in the list JOINED with local_civgroups
-        set unemp [rdb onecolumn "
+        set unemp [$adb onecolumn "
             SELECT sum(demog_g.unemployed)
             FROM demog_g INNER JOIN local_civgroups
             ON demog_g.g = local_civgroups.g
@@ -2630,7 +2630,7 @@
         
         # NEXT, query the total number of the labor force belonging
         # to groups in the list JOINED with local_civgroups
-        set labfrc [rdb onecolumn "
+        set labfrc [$adb onecolumn "
             SELECT sum(demog_g.labor_force)
             FROM demog_g INNER JOIN local_civgroups
             ON demog_g.g = local_civgroups.g
@@ -2656,11 +2656,11 @@
 # vrel(g,a)
 
 ::athena::goferx rule NUMBER VREL {g a} {
-    typemethod construct {g a} {
+    method make {g a} {
         return [$type validate [dict create g $g a $a]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         dict create \
@@ -2668,16 +2668,16 @@
             a [actor validate [string toupper $a]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {vrel("%s","%s")} $g $a]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
-        rdb eval {
+        $adb eval {
             SELECT vrel FROM uram_vrel WHERE g=$g AND a=$a AND tracked
         } {
             return [format %.1f $vrel]
@@ -2692,23 +2692,23 @@
 # workers(g,...)
 
 ::athena::goferx rule NUMBER GROUP_WORKERS {glist} {
-    typemethod construct {glist} {
+    method make {glist} {
         return [$type validate [dict create glist $glist]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
         dict create glist \
             [listval civgroups {civgroup validate} [string toupper $glist]]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [format {workers("%s")} [join $glist \",\"]]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         # FIRST, create the inClause.
@@ -2716,7 +2716,7 @@
 
         # NEXT, query the total of workers belonging to
         # groups in the list.
-        set count [rdb onecolumn "
+        set count [$adb onecolumn "
             SELECT sum(labor_force) 
             FROM demog_g
             WHERE g IN $inClause

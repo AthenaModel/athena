@@ -214,6 +214,17 @@ snit::type ::athena::goferx {
 
     delegate method * using {%s call %m}
 
+    # gtype typename
+    #
+    # typename - A gofer type name
+    #
+    # Returns the actual gofer type object.
+
+    method gtype {typename} {
+        set typename [string toupper $typename]
+        return $types(typename)
+    }
+
     # call typename args...
     #
     # typename   - A gofer type name
@@ -384,5 +395,10 @@ snit::type ::athena::goferx {
         return $typename
     }
 }
+
+
+
+
+
 
 

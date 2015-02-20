@@ -454,24 +454,24 @@
 # Some set of groups chosen by the user.
 
 ::athena::goferx rule GROUPS BY_VALUE {raw_value} {
-    typemethod construct {raw_value} {
+    method make {raw_value} {
         return [$type validate [dict create raw_value $raw_value]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         dict create raw_value \
-            [listval "groups" {group validate} $raw_value]
+            [my val_elist group "groups" $raw_value]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [listnar "group" "these groups" $raw_value $opt]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         return $raw_value
@@ -484,22 +484,22 @@
 # security) to contribute to the actor's support.
 
 ::athena::goferx rule GROUPS SUPPORTING_ACTOR {anyall alist} {
-    typemethod construct {anyall alist} {
+    method make {anyall alist} {
         return [$type validate [dict create anyall $anyall alist $alist]]
     }
 
-    typemethod validate {gdict} {
-        return [anyall_alist validate $gdict]
+    method validate {gdict} {
+        return [my val_anyall_alist $gdict]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set result "groups that actively support "
-        append result [::gofer::anyall_alist narrative $gdict $opt]
+        append result [::my nar_anyall_alist $gdict $opt]
         return "$result"
     }
 
-    typemethod eval {gdict} {
-        return [anyall_alist supportingActor "" $gdict]
+    method eval {gdict} {
+        return [my anyall_alist_supportingActor "" $gdict]
     }
 }
 
@@ -509,22 +509,22 @@
 # relationship with any or all of a set of actors.
 
 ::athena::goferx rule GROUPS LIKING_ACTOR {anyall alist} {
-    typemethod construct {anyall alist} {
+    method make {anyall alist} {
         return [$type validate [dict create anyall $anyall alist $alist]]
     }
 
-    typemethod validate {gdict} {
-        return [anyall_alist validate $gdict]
+    method validate {gdict} {
+        return [my val_anyall_alist $gdict]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set result "groups that like "
-        append result [::gofer::anyall_alist narrative $gdict $opt]
+        append result [::my nar_anyall_alist $gdict $opt]
         return "$result"
     }
 
-    typemethod eval {gdict} {
-        return [anyall_alist likingActor "" $gdict]
+    method eval {gdict} {
+        return [my anyall_alist_likingActor "" $gdict]
     }
 }
 
@@ -534,22 +534,22 @@
 # relationship with any or all of a set of actors.
 
 ::athena::goferx rule GROUPS DISLIKING_ACTOR {anyall alist} {
-    typemethod construct {anyall alist} {
+    method make {anyall alist} {
         return [$type validate [dict create anyall $anyall alist $alist]]
     }
 
-    typemethod validate {gdict} {
-        return [anyall_alist validate $gdict]
+    method validate {gdict} {
+        return [my val_anyall_alist $gdict]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set result "groups that dislike "
-        append result [::gofer::anyall_alist narrative $gdict $opt]
+        append result [::my nar_anyall_alist $gdict $opt]
         return "$result"
     }
 
-    typemethod eval {gdict} {
-        return [anyall_alist dislikingActor "" $gdict]
+    method eval {gdict} {
+        return [my anyall_alist_dislikingActor "" $gdict]
     }
 }
 
@@ -559,22 +559,22 @@
 # relationship with any or all of a set of groups.
 
 ::athena::goferx rule GROUPS LIKING_GROUP {anyall glist} {
-    typemethod construct {anyall glist} {
+    method make {anyall glist} {
         return [$type validate [dict create anyall $anyall glist $glist]]
     }
 
-    typemethod validate {gdict} { 
-        return [anyall_glist validate $gdict] 
+    method validate {gdict} { 
+        return [my val_anyall_glist $gdict] 
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set result "groups that like "
-        append result [anyall_glist narrative $gdict $opt]
+        append result [my nar_anyall_glist $gdict $opt]
         return "$result"
     }
 
-    typemethod eval {gdict} {
-        return [anyall_glist likingGroup "" $gdict]
+    method eval {gdict} {
+        return [my anyall_glist_likingGroup "" $gdict]
     }
 }
 
@@ -584,22 +584,22 @@
 # relationship with any or all of a set of groups.
 
 ::athena::goferx rule GROUPS DISLIKING_GROUP {anyall glist} {
-    typemethod construct {anyall glist} {
+    method make {anyall glist} {
         return [$type validate [dict create anyall $anyall glist $glist]]
     }
 
-    typemethod validate {gdict} { 
-        return [anyall_glist validate $gdict] 
+    method validate {gdict} { 
+        return [my val_anyall_glist $gdict] 
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set result "groups that dislike "
-        append result [anyall_glist narrative $gdict $opt]
+        append result [my nar_anyall_glist $gdict $opt]
         return "$result"
     }
 
-    typemethod eval {gdict} {
-        return [anyall_glist dislikingGroup "" $gdict]
+    method eval {gdict} {
+        return [my anyall_glist_dislikingGroup "" $gdict]
     }
 }
 
@@ -609,22 +609,22 @@
 # (LIKE or SUPPORT) horizontal relationship.
 
 ::athena::goferx rule GROUPS LIKED_BY_GROUP {anyall glist} {
-    typemethod construct {anyall glist} {
+    method make {anyall glist} {
         return [$type validate [dict create anyall $anyall glist $glist]]
     }
 
-    typemethod validate {gdict} { 
-        return [anyall_glist validate $gdict] 
+    method validate {gdict} { 
+        return [my val_anyall_glist $gdict] 
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set result "groups that are liked by "
-        append result [anyall_glist narrative $gdict $opt]
+        append result [my nar_anyall_glist $gdict $opt]
         return "$result"
     }
 
-    typemethod eval {gdict} {
-        return [anyall_glist likedByGroup "" $gdict]
+    method eval {gdict} {
+        return [my anyall_glist_likedByGroup "" $gdict]
     }
 }
 
@@ -634,22 +634,22 @@
 # (DISLIKE or OPPOSE) horizontal relationship.
 
 ::athena::goferx rule GROUPS DISLIKED_BY_GROUP {anyall glist} {
-    typemethod construct {anyall glist} {
+    method make {anyall glist} {
         return [$type validate [dict create anyall $anyall glist $glist]]
     }
 
-    typemethod validate {gdict} { 
-        return [anyall_glist validate $gdict] 
+    method validate {gdict} { 
+        return [my val_anyall_glist $gdict] 
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set result "groups that are disliked by "
-        append result [anyall_glist narrative $gdict $opt]
+        append result [my nar_anyall_glist $gdict $opt]
         return "$result"
     }
 
-    typemethod eval {gdict} {
-        return [anyall_glist dislikedByGroup "" $gdict]
+    method eval {gdict} {
+        return [my anyall_glist_dislikedByGroup "" $gdict]
     }
 }
 

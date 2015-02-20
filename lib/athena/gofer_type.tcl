@@ -46,7 +46,7 @@ snit::type ::athena::gofer_type {
 
         # NEXT, create the rules.
         dict for {rule cls} $ruledict_ {
-            set rules($rule) [$cls new $adb_]
+            set rules($rule) [$cls new $adb_ $self $rule]
         }
     }
 
@@ -54,6 +54,17 @@ snit::type ::athena::gofer_type {
     # Public Methods
 
     delegate method * using {%s call %m}
+
+    # rule rulename
+    #
+    # rulename - A gofer rule name
+    #
+    # Returns the actual gofer rule object.
+
+    method rule {rulename} {
+        set rulename [string toupper $rulename]
+        return $rules($rulename)
+    }
 
     # call rulename args...
     #

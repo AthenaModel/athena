@@ -46,7 +46,7 @@
 
             rcc "Residing:"
             enumlong where -defvalue IGNORE \
-                -dictcmd {::gofer::CIVGROUPS::ewhere asdict longname}
+                -dictcmd {::athena::gofer::CIVGROUPS::ewhere asdict longname}
          
             when {$where ne "IGNORE"} {
                 rcc ""
@@ -57,15 +57,15 @@
 
             rcc "Living&nbsp;By:"
             enumlong livingby -defvalue IGNORE \
-                -dictcmd {::gofer::CIVGROUPS::elivingby asdict longname}
+                -dictcmd {::athena::gofer::CIVGROUPS::elivingby asdict longname}
 
             rcc "With&nbsp;Mood:"
             enumlong mood -defvalue IGNORE \
-                -dictcmd {::gofer::CIVGROUPS::emood asdict longname}
+                -dictcmd {::athena::gofer::CIVGROUPS::emood asdict longname}
 
             rcc "By&nbsp;Actors:"
             enumlong byactors -defvalue IGNORE \
-                -dictcmd {::gofer::CIVGROUPS::ebyactors asdict longname}
+                -dictcmd {::athena::gofer::CIVGROUPS::ebyactors asdict longname}
 
             when {$byactors ne "IGNORE"} {
                 label " "
@@ -79,7 +79,7 @@
 
             rcc "By&nbsp;Groups:"
             enumlong bygroups -defvalue IGNORE \
-                -dictcmd {::gofer::CIVGROUPS::ebygroups asdict longname}
+                -dictcmd {::athena::gofer::CIVGROUPS::ebygroups asdict longname}
 
             when {$bygroups ne "IGNORE"} {
                 label " "
@@ -249,10 +249,8 @@
 #-------------------------------------------------------------------
 # Enumerations
 
-# TBD: Rename
-
 # Filter Enum: where does a civgroup live?
-enumx create ::gofer::CIVGROUPS::ewhere {
+enumx create ::athena::gofer::CIVGROUPS::ewhere {
     IGNORE  {longname "Ignore"}
     IN      {longname "In These Neighborhoods"}
     NOTIN   {longname "Not In These Neighborhoods"}
@@ -260,14 +258,14 @@ enumx create ::gofer::CIVGROUPS::ewhere {
 
 # Filter Enum: does a civgroup live by subsistence agriculture or
 # by the cash economy?
-enumx create ::gofer::CIVGROUPS::elivingby {
+enumx create ::athena::gofer::CIVGROUPS::elivingby {
     IGNORE  {longname "Ignore"}
     SA      {longname "Subsistence Agriculture"}
     CASH    {longname "Cash Economy"}
 }
 
 # Filter Enum: what is a civgroup's mood?
-enumx create ::gofer::CIVGROUPS::emood {
+enumx create ::athena::gofer::CIVGROUPS::emood {
     IGNORE     {longname "Ignore"}
     GOOD       {longname "Satisfied or better"}
     AMBIVALENT {longname "Ambivalent"}
@@ -276,7 +274,7 @@ enumx create ::gofer::CIVGROUPS::emood {
 
 # Filter Enum: what is a civgroup's relation to a set of actors?
 
-enumx create ::gofer::CIVGROUPS::ebyactors {
+enumx create ::athena::gofer::CIVGROUPS::ebyactors {
     IGNORE      {longname "Ignore"}
     SUPPORTING  {longname "Supporting"}
     LIKING      {longname "Liking"}
@@ -285,7 +283,7 @@ enumx create ::gofer::CIVGROUPS::ebyactors {
 
 # Filter Enum: what is a civgroup's relation to a set of groups?
 
-enumx create ::gofer::CIVGROUPS::ebygroups {
+enumx create ::athena::gofer::CIVGROUPS::ebygroups {
     IGNORE      {longname "Ignore"}
     LIKING      {longname "Liking"}
     DISLIKING   {longname "Disliking"}
@@ -293,73 +291,7 @@ enumx create ::gofer::CIVGROUPS::ebygroups {
     DISLIKED_BY {longname "Disliked by"}
 }
 
-#-----------------------------------------------------------------------
-# Helper Commands
 
-# TBD: Define a gofer_civgroup_rule base class, or add to gofer_rule.
-
-
-
-# filterby glistVar filterlist
-#
-# glistVar   - A variable containing a list of civilian groups
-# filterlist - Another list of civilian groups
-# 
-# Computes the intersection of the two lists, and saves it back
-# to glistVar.
-
-proc ::gofer::CIVGROUPS::filterby {glistVar filterlist} {
-    upvar 1 $glistVar glist
-
-    set glist [struct::set intersect $glist $filterlist]
-}
-
-# groupsIn nlist
-#
-# Returns the groups present in a list of neighborhoods.
-
-proc gofer::CIVGROUPS$adb_ groupsIn {nlist} {
-    set out [list]
-    foreach n $nlist {
-        lappend out {*}[demog gIn $n]
-    }
-
-    return $out
-}
-
-# groupsNotIn nlist
-#
-# Returns the groups not resident in a list of neighborhoods.
-
-proc gofer::CIVGROUPS$adb_ groupsNotIn {nlist} {
-    set out [civgroup names]
-    foreach n $nlist {
-        foreach g [demog gIn $n] {
-            ldelete out $g
-        }
-    }
-    return $out
-}
-
-# selectorValidate rule field value
-#
-# rule   - The gofer::CIVGROUPS rule
-# field  - The selector field within that rule
-# value  - The selector value
-#
-# Validates a selector value.
-
-proc gofer::CIVGROUPS::selectorValidate {rule field value} {
-    set dform [gofer::CIVGROUPS dynaform]
-    set value [string toupper $value]
-    set values [dynaform cases $dform $field [list _rule $rule]]
-
-    if {$value ni $values} {
-        error "Invalid \"$field\" value: \"$value\""
-    }
-
-    return $value
-}
 
 #-----------------------------------------------------------------------
 # Gofer Rules
@@ -369,7 +301,7 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
 # Some set of civilian groups chosen by the user.
 
 ::athena::goferx rule CIVGROUPS BY_VALUE {raw_value} {
-    method construct {raw_value} {
+    method make {raw_value} {
         return [my validate [dict create raw_value $raw_value]]
     }
 
@@ -416,11 +348,11 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
         bygroups   IGNORE  hwhich ALL hlist {}
     }
 
-    # construct option value ...
+    # make option value ...
     #
     # Option names are attribute names with "-".
 
-    method construct {args} {
+    method make {args} {
         set pdict [dict create]
 
         while {[llength $args] > 0} {
@@ -445,13 +377,13 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
         dict with gdict {}
 
         # base
-        set base [selectorValidate MEGA base $base]
+        set base [my val_selector base $base]
         dict set gdict base $base
 
         # glist
         if {$base eq "THESE"} {
             dict set gdict glist \
-                [listval "groups" {civgroup validate} $glist]
+                [my val_elist civgroup "groups" $glist]
         } else {
             dict set gdict glist [list]
         }
@@ -463,19 +395,21 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
         # nlist
         if {$where ne "IGNORE"} {
             dict set gdict nlist \
-                [listval "neighborhoods" {nbhood validate} $nlist]
+                [my val_elist nbhood "neighborhoods" $nlist]
         } else {
             dict set gdict nlist [list]
         }
 
         # livingby
-        dict set gdict livingby [elivingby validate $livingby]
+        dict set gdict livingby \
+            [::athena::gofer::CIVGROUPS::elivingby validate $livingby]
 
         # mood
-        dict set gdict mood [emood validate $mood]
+        dict set gdict mood [::athena::gofer::CIVGROUPS::emood validate $mood]
 
         # byactors
-        set byactors [ebyactors validate $byactors]
+        set byactors \
+            [::athena::gofer::CIVGROUPS::ebyactors validate $byactors]
         dict set gdict byactors $byactors
 
         # awhich
@@ -488,13 +422,13 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
         # alist
         if {$byactors ne "IGNORE"} {
             dict set gdict alist \
-                [listval "actors" {actor validate} $alist]
+                [my val_elist actor "actors" $alist]
         } else {
             dict set gdict alist [list]
         }
 
         # bygroups
-        set bygroups [ebygroups validate $bygroups]
+        set bygroups [::athena::gofer::CIVGROUPS::ebygroups validate $bygroups]
         dict set gdict bygroups $bygroups
 
         # hwhich
@@ -507,7 +441,7 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
         # hlist
         if {$bygroups ne "IGNORE"} {
             dict set gdict hlist \
-                [listval "groups" {group validate} $hlist]
+                [my val_elist group "groups" $hlist]
         } else {
             dict set gdict hlist [list]
         }
@@ -571,7 +505,7 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
                 set clause "disliking "
             }
 
-            append clause [gofer::anyall_alist narrative $adict -brief]
+            append clause [my nar_anyall_alist $adict -brief]
     
             lappend clauses $clause
         }
@@ -590,7 +524,7 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
                 set clause "disliked by "
             }
 
-            append clause [gofer::anyall_glist narrative $hdict -brief]
+            append clause [my nar_anyall_glist $hdict -brief]
     
             lappend clauses $clause
         }
@@ -609,26 +543,26 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
 
         # base, glist
         if {$base eq "ALL"} {
-            set result [my nonempty [civgroup names]]
+            set result [my nonempty [$adb civgroup names]]
         } else {
             set result [my nonempty $glist]
         }
 
         # where, nlist
         if {$where eq "IN"} {
-            filterby result [groupsIn $nlist]
+            my filterby result [my groupsIn $nlist]
         } elseif {$where eq "NOTIN"} {
-            filterby result [groupsNotIn $nlist]]
+            my filterby result [my groupsNotIn $nlist]]
         } 
 
         # livingby
 
         if {$livingby eq "SA"} {
-            filterby result [rdb eval {
+            my filterby result [$adb eval {
                 SELECT * FROM civgroups WHERE sa_flag
             }]
         } elseif {$livingby eq "CASH"} {
-            filterby result [rdb eval {
+            my filterby result [$adb eval {
                 SELECT * FROM civgroups WHERE NOT sa_flag
             }]
         }
@@ -636,17 +570,17 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
         # mood
 
         if {$mood eq "GOOD"} {
-            filterby result [rdb eval {
+            my filterby result [$adb eval {
                 SELECT g FROM uram_mood
                 WHERE mood >= 20.0
             }]
         } elseif {$mood eq "AMBIVALENT"} {
-            filterby result [rdb eval {
+            my filterby result [$adb eval {
                 SELECT g FROM uram_mood
                 WHERE mood > -20.0 AND mood < 20.0
             }]
         } elseif {$mood eq "BAD"} {
-            filterby result [rdb eval {
+            my filterby result [$adb eval {
                 SELECT g FROM uram_mood
                 WHERE mood <= -20.0
             }]
@@ -660,16 +594,16 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
             }
 
             SUPPORTING {
-                filterby result [anyall_alist supportingActor CIV $adict]
+                my filterby result [my anyall_alist_supportingActor CIV $adict]
             }
 
             LIKING {
-                filterby result [anyall_alist likingActor CIV $adict]
+                my filterby result [my anyall_alist_likingActor CIV $adict]
 
             }
             
             DISLIKING {
-                filterby result [anyall_alist dislikingActor CIV $adict]
+                my filterby result [my anyall_alist_dislikingActor CIV $adict]
             }
 
             default { error "Unknown byactors value" }
@@ -683,20 +617,20 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
             }
 
             LIKING {
-                filterby result [anyall_glist likingGroup CIV $hdict]
+                my filterby result [my anyall_glist_likingGroup CIV $hdict]
 
             }
             
             DISLIKING {
-                filterby result [anyall_glist dislikingGroup CIV $hdict]
+                my filterby result [my anyall_glist_dislikingGroup CIV $hdict]
             }
 
             LIKED_BY {
-                filterby result [anyall_glist likedbyGroup CIV $hdict]
+                my filterby result [my anyall_glist_likedbyGroup CIV $hdict]
             }
 
             DISLIKED_BY {
-                filterby result [anyall_glist dislikedbyGroup CIV $hdict]
+                my filterby result [my anyall_glist_dislikedbyGroup CIV $hdict]
             }
 
             default { error "Unknown bygroups value" }
@@ -711,7 +645,7 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
 # Non-empty civilian groups resident in some set of neighborhoods.
 
 ::athena::goferx rule CIVGROUPS RESIDENT_IN {nlist} {
-    method construct {nlist} {
+    method make {nlist} {
         return [my validate [dict create nlist $nlist]]
     }
 
@@ -719,7 +653,7 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
         dict with gdict {}
 
         dict create nlist \
-            [listval "neighborhoods" {nbhood validate} $nlist]
+            [my val_elist nbhood "neighborhoods" $nlist]
     }
 
     method narrative {gdict {opt ""}} {
@@ -733,7 +667,7 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
     method eval {gdict} {
         dict with gdict {}
 
-        return [my nonempty [groupsIn $nlist]]
+        return [my nonempty [my groupsIn $nlist]]
     }
 
 }
@@ -745,7 +679,7 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
 # Non-empty civilian groups not resident in any of some set of neighborhoods.
 
 ::athena::goferx rule CIVGROUPS NOT_RESIDENT_IN {nlist} {
-    method construct {nlist} {
+    method make {nlist} {
         return [my validate [dict create nlist $nlist]]
     }
 
@@ -753,7 +687,7 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
         dict with gdict {}
 
         dict create nlist \
-            [listval "neighborhoods" {nbhood validate} $nlist]
+            [my val_elist nbhood "neighborhoods" $nlist]
     }
 
     method narrative {gdict {opt ""}} {
@@ -767,7 +701,7 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
     method eval {gdict} {
         dict with gdict {}
 
-        return [my nonempty [groupsNotIn $nlist]]
+        return [my nonempty [my groupsNotIn $nlist]]
     }
 
 }
@@ -781,7 +715,7 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
         return [dict create]
     }
 
-    method construct {} {
+    method make {} {
         return [my validate {}]
     }
 
@@ -790,7 +724,7 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
     }
 
     method eval {gdict} {
-        return [my nonempty [rdb eval {
+        return [my nonempty [$adb eval {
             SELECT g FROM uram_mood
             WHERE mood >= 20.0
         }]]
@@ -806,7 +740,7 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
         return [dict create]
     }
 
-    method construct {} {
+    method make {} {
         return [my validate {}]
     }
 
@@ -815,7 +749,7 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
     }
 
     method eval {gdict} {
-        return [my nonempty [rdb eval {
+        return [my nonempty [$adb eval {
             SELECT g FROM uram_mood
             WHERE mood <= -20.0
         }]]
@@ -831,7 +765,7 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
         return [dict create]
     }
 
-    method construct {} {
+    method make {} {
         return [my validate {}]
     }
 
@@ -840,7 +774,7 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
     }
 
     method eval {gdict} {
-        return [my nonempty [rdb eval {
+        return [my nonempty [$adb eval {
             SELECT g FROM uram_mood
             WHERE mood > -20.0 AND mood < 20.0
         }]]
@@ -853,22 +787,22 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
 # security) to contribute to the actor's support.
 
 ::athena::goferx rule CIVGROUPS SUPPORTING_ACTOR {anyall alist} {
-    method construct {anyall alist} {
+    method make {anyall alist} {
         return [my validate [dict create anyall $anyall alist $alist]]
     }
 
     method validate {gdict} { 
-        return [anyall_alist validate $gdict] 
+        return [my val_anyall_alist $gdict] 
     }
 
     method narrative {gdict {opt ""}} {
         set result "civilian groups that actively support "
-        append result [anyall_alist narrative $gdict $opt]
+        append result [my nar_anyall_alist $gdict $opt]
         return "$result"
     }
 
     method eval {gdict} {
-        return [my nonempty [anyall_alist supportingActor CIV $gdict]]
+        return [my nonempty [my anyall_alist_supportingActor CIV $gdict]]
     }
 }
 
@@ -878,22 +812,22 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
 # relationship with any or all of a set of actors.
 
 ::athena::goferx rule CIVGROUPS LIKING_ACTOR {anyall alist} {
-    method construct {anyall alist} {
+    method make {anyall alist} {
         return [my validate [dict create anyall $anyall alist $alist]]
     }
 
     method validate {gdict} { 
-        return [anyall_alist validate $gdict] 
+        return [my val_anyall_alist $gdict] 
     }
 
     method narrative {gdict {opt ""}} {
         set result "civilian groups that like "
-        append result [anyall_alist narrative $gdict $opt]
+        append result [my nar_anyall_alist $gdict $opt]
         return "$result"
     }
 
     method eval {gdict} {
-        return [my nonempty [anyall_alist likingActor CIV $gdict]]
+        return [my nonempty [my anyall_alist_likingActor CIV $gdict]]
     }
 }
 
@@ -903,22 +837,22 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
 # relationship with any or all of a set of actors.
 
 ::athena::goferx rule CIVGROUPS DISLIKING_ACTOR {anyall alist} {
-    method construct {anyall alist} {
+    method make {anyall alist} {
         return [my validate [dict create anyall $anyall alist $alist]]
     }
 
     method validate {gdict} { 
-        return [anyall_alist validate $gdict] 
+        return [my val_anyall_alist $gdict] 
     }
 
     method narrative {gdict {opt ""}} {
         set result "civilian groups that dislike "
-        append result [anyall_alist narrative $gdict $opt]
+        append result [my nar_anyall_alist $gdict $opt]
         return "$result"
     }
 
     method eval {gdict} {
-        return [my nonempty [anyall_alist dislikingActor CIV $gdict]]
+        return [my nonempty [my anyall_alist_dislikingActor CIV $gdict]]
     }
 }
 
@@ -928,22 +862,22 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
 # relationship with any or all of a set of groups.
 
 ::athena::goferx rule CIVGROUPS LIKING_GROUP {anyall glist} {
-    method construct {anyall glist} {
+    method make {anyall glist} {
         return [my validate [dict create anyall $anyall glist $glist]]
     }
 
     method validate {gdict} { 
-        return [anyall_glist validate $gdict] 
+        return [my val_anyall_glist $gdict] 
     }
 
     method narrative {gdict {opt ""}} {
         set result "civilian groups that like "
-        append result [anyall_glist narrative $gdict $opt]
+        append result [my nar_anyall_glist $gdict $opt]
         return "$result"
     }
 
     method eval {gdict} {
-        return [my nonempty [anyall_glist likingGroup CIV $gdict]]
+        return [my nonempty [my anyall_glist_likingGroup CIV $gdict]]
     }
 }
 
@@ -953,22 +887,22 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
 # relationship with any or all of a set of groups.
 
 ::athena::goferx rule CIVGROUPS DISLIKING_GROUP {anyall glist} {
-    method construct {anyall glist} {
+    method make {anyall glist} {
         return [my validate [dict create anyall $anyall glist $glist]]
     }
 
     method validate {gdict} { 
-        return [anyall_glist validate $gdict] 
+        return [my val_anyall_glist $gdict] 
     }
 
     method narrative {gdict {opt ""}} {
         set result "civilian groups that dislike "
-        append result [anyall_glist narrative $gdict $opt]
+        append result [my nar_anyall_glist $gdict $opt]
         return "$result"
     }
 
     method eval {gdict} {
-        return [my nonempty [anyall_glist dislikingGroup CIV $gdict]]
+        return [my nonempty [my anyall_glist_dislikingGroup CIV $gdict]]
     }
 }
 
@@ -978,22 +912,22 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
 # (LIKE or SUPPORT) horizontal relationship.
 
 ::athena::goferx rule CIVGROUPS LIKED_BY_GROUP {anyall glist} {
-    method construct {anyall glist} {
+    method make {anyall glist} {
         return [my validate [dict create anyall $anyall glist $glist]]
     }
 
     method validate {gdict} { 
-        return [anyall_glist validate $gdict] 
+        return [my val_anyall_glist $gdict] 
     }
 
     method narrative {gdict {opt ""}} {
         set result "civilian groups that are liked by "
-        append result [anyall_glist narrative $gdict $opt]
+        append result [my nar_anyall_glist $gdict $opt]
         return "$result"
     }
 
     method eval {gdict} {
-        return [my nonempty [anyall_glist likedByGroup CIV $gdict]]
+        return [my nonempty [my anyall_glist_likedByGroup CIV $gdict]]
     }
 }
 
@@ -1003,22 +937,22 @@ proc gofer::CIVGROUPS::selectorValidate {rule field value} {
 # (DISLIKE or OPPOSE) horizontal relationship.
 
 ::athena::goferx rule CIVGROUPS DISLIKED_BY_GROUP {anyall glist} {
-    method construct {anyall glist} {
+    method make {anyall glist} {
         return [my validate [dict create anyall $anyall glist $glist]]
     }
 
     method validate {gdict} { 
-        return [anyall_glist validate $gdict] 
+        return [my val_anyall_glist $gdict] 
     }
 
     method narrative {gdict {opt ""}} {
         set result "civilian groups that are disliked by "
-        append result [anyall_glist narrative $gdict $opt]
+        append result [my nar_anyall_glist $gdict $opt]
         return "$result"
     }
 
     method eval {gdict} {
-        return [my nonempty [anyall_glist dislikedByGroup CIV $gdict]]
+        return [my nonempty [my anyall_glist_dislikedByGroup CIV $gdict]]
     }
 }
 

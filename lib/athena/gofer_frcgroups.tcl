@@ -184,24 +184,24 @@
 # Some set of force groups chosen by the user.
 
 ::athena::goferx rule FRCGROUPS BY_VALUE {raw_value} {
-    typemethod construct {raw_value} {
+    method make {raw_value} {
         return [$type validate [dict create raw_value $raw_value]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         dict create raw_value \
             [listval "groups" {frcgroup validate} $raw_value]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [listnar "group" "these groups" $raw_value $opt]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         return $raw_value
@@ -215,18 +215,18 @@
 # with a group type.
 
 ::athena::goferx rule FRCGROUPS OWNED_BY {alist} {
-    typemethod construct {alist} {
+    method make {alist} {
         return [$type validate [dict create alist $alist]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         dict create alist \
-            [listval "actors" {actor validate} $alist]
+            [my val_elist actor "actors" $alist]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         set text [listnar "actor" "these actors" $alist $opt]
@@ -234,10 +234,10 @@
         return "force groups owned by $text"
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
-        return [rdb eval "
+        return [$adb eval "
             SELECT g FROM frcgroups_view
             WHERE a IN ('[join $alist {','}]')
         "]
@@ -250,21 +250,21 @@
 # Force groups who are deployed in any or all of a set of nbhoods.
 
 ::athena::goferx rule FRCGROUPS DEPLOYED_TO {anyall nlist} {
-    typemethod construct {anyall nlist} {
+    method make {anyall nlist} {
         return [$type validate [dict create anyall $anyall nlist $nlist]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         return [anyall_nlist validate $gdict]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set result "force groups that are deployed to "
         append result [::gofer::anyall_nlist narrative $gdict $opt]
         return "$result"
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         return [anyall_nlist deployedTo $gdict]
     }
 }
@@ -274,21 +274,21 @@
 # Force groups who are not deployed in any or all of a set of nbhoods.
 
 ::athena::goferx rule FRCGROUPS NOT_DEPLOYED_TO {anyall nlist} {
-    typemethod construct {anyall nlist} {
+    method make {anyall nlist} {
         return [$type validate [dict create anyall $anyall nlist $nlist]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         return [anyall_nlist validate $gdict]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set result "force groups that are not deployed to "
         append result [::gofer::anyall_nlist narrative $gdict $opt]
         return "$result"
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         return [anyall_nlist notDeployedTo $gdict]
     }
 }
@@ -300,22 +300,22 @@
 # security) to contribute to the actor's support.
 
 ::athena::goferx rule FRCGROUPS SUPPORTING_ACTOR {anyall alist} {
-    typemethod construct {anyall alist} {
+    method make {anyall alist} {
         return [$type validate [dict create anyall $anyall alist $alist]]
     }
 
-    typemethod validate {gdict} {
-        return [anyall_alist validate $gdict]
+    method validate {gdict} {
+        return [my val_anyall_alist $gdict]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set result "force groups that actively support "
-        append result [::gofer::anyall_alist narrative $gdict $opt]
+        append result [::my nar_anyall_alist $gdict $opt]
         return "$result"
     }
 
-    typemethod eval {gdict} {
-        return [anyall_alist supportingActor FRC $gdict]
+    method eval {gdict} {
+        return [my anyall_alist_supportingActor FRC $gdict]
     }
 }
 
@@ -325,22 +325,22 @@
 # relationship with any or all of a set of actors.
 
 ::athena::goferx rule FRCGROUPS LIKING_ACTOR {anyall alist} {
-    typemethod construct {anyall alist} {
+    method make {anyall alist} {
         return [$type validate [dict create anyall $anyall alist $alist]]
     }
 
-    typemethod validate {gdict} {
-        return [anyall_alist validate $gdict]
+    method validate {gdict} {
+        return [my val_anyall_alist $gdict]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set result "force groups that like "
-        append result [::gofer::anyall_alist narrative $gdict $opt]
+        append result [::my nar_anyall_alist $gdict $opt]
         return "$result"
     }
 
-    typemethod eval {gdict} {
-        return [anyall_alist likingActor FRC $gdict]
+    method eval {gdict} {
+        return [my anyall_alist_likingActor FRC $gdict]
     }
 }
 
@@ -350,22 +350,22 @@
 # relationship with any or all of a set of actors.
 
 ::athena::goferx rule FRCGROUPS DISLIKING_ACTOR {anyall alist} {
-    typemethod construct {anyall alist} {
+    method make {anyall alist} {
         return [$type validate [dict create anyall $anyall alist $alist]]
     }
 
-    typemethod validate {gdict} {
-        return [anyall_alist validate $gdict]
+    method validate {gdict} {
+        return [my val_anyall_alist $gdict]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set result "force groups that dislike "
-        append result [::gofer::anyall_alist narrative $gdict $opt]
+        append result [::my nar_anyall_alist $gdict $opt]
         return "$result"
     }
 
-    typemethod eval {gdict} {
-        return [anyall_alist dislikingActor FRC $gdict]
+    method eval {gdict} {
+        return [my anyall_alist_dislikingActor FRC $gdict]
     }
 }
 
@@ -375,22 +375,22 @@
 # relationship with any or all of a set of groups.
 
 ::athena::goferx rule FRCGROUPS LIKING_GROUP {anyall glist} {
-    typemethod construct {anyall glist} {
+    method make {anyall glist} {
         return [$type validate [dict create anyall $anyall glist $glist]]
     }
 
-    typemethod validate {gdict} { 
-        return [anyall_glist validate $gdict] 
+    method validate {gdict} { 
+        return [my val_anyall_glist $gdict] 
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set result "force groups that like "
-        append result [anyall_glist narrative $gdict $opt]
+        append result [my nar_anyall_glist $gdict $opt]
         return "$result"
     }
 
-    typemethod eval {gdict} {
-        return [anyall_glist likingGroup FRC $gdict]
+    method eval {gdict} {
+        return [my anyall_glist_likingGroup FRC $gdict]
     }
 }
 
@@ -400,22 +400,22 @@
 # relationship with any or all of a set of groups.
 
 ::athena::goferx rule FRCGROUPS DISLIKING_GROUP {anyall glist} {
-    typemethod construct {anyall glist} {
+    method make {anyall glist} {
         return [$type validate [dict create anyall $anyall glist $glist]]
     }
 
-    typemethod validate {gdict} { 
-        return [anyall_glist validate $gdict] 
+    method validate {gdict} { 
+        return [my val_anyall_glist $gdict] 
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set result "force groups that dislike "
-        append result [anyall_glist narrative $gdict $opt]
+        append result [my nar_anyall_glist $gdict $opt]
         return "$result"
     }
 
-    typemethod eval {gdict} {
-        return [anyall_glist dislikingGroup FRC $gdict]
+    method eval {gdict} {
+        return [my anyall_glist_dislikingGroup FRC $gdict]
     }
 }
 
@@ -425,22 +425,22 @@
 # (LIKE or SUPPORT) horizontal relationship.
 
 ::athena::goferx rule FRCGROUPS LIKED_BY_GROUP {anyall glist} {
-    typemethod construct {anyall glist} {
+    method make {anyall glist} {
         return [$type validate [dict create anyall $anyall glist $glist]]
     }
 
-    typemethod validate {gdict} { 
-        return [anyall_glist validate $gdict] 
+    method validate {gdict} { 
+        return [my val_anyall_glist $gdict] 
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set result "force groups that are liked by "
-        append result [anyall_glist narrative $gdict $opt]
+        append result [my nar_anyall_glist $gdict $opt]
         return "$result"
     }
 
-    typemethod eval {gdict} {
-        return [anyall_glist likedByGroup FRC $gdict]
+    method eval {gdict} {
+        return [my anyall_glist_likedByGroup FRC $gdict]
     }
 }
 
@@ -450,21 +450,21 @@
 # (DISLIKE or OPPOSE) horizontal relationship.
 
 ::athena::goferx rule FRCGROUPS DISLIKED_BY_GROUP {anyall glist} {
-    typemethod construct {anyall glist} {
+    method make {anyall glist} {
         return [$type validate [dict create anyall $anyall glist $glist]]
     }
 
-    typemethod validate {gdict} { 
-        return [anyall_glist validate $gdict] 
+    method validate {gdict} { 
+        return [my val_anyall_glist $gdict] 
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set result "force groups that are disliked by "
-        append result [anyall_glist narrative $gdict $opt]
+        append result [my nar_anyall_glist $gdict $opt]
         return "$result"
     }
 
-    typemethod eval {gdict} {
-        return [anyall_glist dislikedByGroup FRC $gdict]
+    method eval {gdict} {
+        return [my anyall_glist_dislikedByGroup FRC $gdict]
     }
 }

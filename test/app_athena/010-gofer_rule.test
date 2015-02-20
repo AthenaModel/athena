@@ -9,7 +9,8 @@
 # DESCRIPTION:
 #    gofer_rule tests.
 #
-#    This test suite tests the gofer_rule class.
+#    This test suite tests the gofer_rule class using the NULL type's
+#    BY_VALUE rule.
 #
 #-----------------------------------------------------------------------
 
@@ -36,19 +37,10 @@ namespace eval ::athena_test::tests:: {
     # Import tcltest(n)
     namespace import ::tcltest::*
 
-    proc setup {} {
-        variable rule
-
-        ted create NB1 NB2 JOE BOB BLUE BRIT SUNN SHIA KURD
-
-        set rule [::athena::gofer_rule new [adb athenadb]]
-    }
-
-    proc cleanup {} {
-        variable rule
-        catch {$rule destroy}
-        ted cleanup
-    }
+    # Create scenario objects; we'll use the same ones throughout the
+    # suite.  (The tested commands should not change the data.)
+    ted create NB1 NB2 JOE BOB BLUE BRIT TAL SHIA SUNN KURD
+    ted order CIVGROUP:CREATE g NOBODY n NB2 basepop 0
 
     proc valgood {value} {
         return [string toupper $value]
@@ -58,321 +50,738 @@ namespace eval ::athena_test::tests:: {
         error "Invalid value: \"$value\""
     }
 
+    set rule [adb gofer NULL rule BY_VALUE]
+
     #-------------------------------------------------------------------
     # make
 
-    test make-1.1 {fails by default} -setup {
-        setup
-    } -body {
+    test make-1.1 {fails by default} -body {
         $rule make NONESUCH
     } -returnCodes {
         error
-    } -cleanup {
-        cleanup
     } -match glob -result {*: make method not overridden}
 
     
     #-------------------------------------------------------------------
     # validate
 
-    test validate-1.1 {fails by default} -setup {
-        setup
-    } -body {
+    test validate-1.1 {fails by default} -body {
         $rule validate NONESUCH
     } -returnCodes {
         error
-    } -cleanup {
-        cleanup
     } -match glob -result {*: validate method not overridden}
 
     #-------------------------------------------------------------------
     # narrative
 
-    test narrative-1.1 {fails by default} -setup {
-        setup
-    } -body {
+    test narrative-1.1 {fails by default} -body {
         $rule narrative NONESUCH -brief
     } -returnCodes {
         error
-    } -cleanup {
-        cleanup
     } -match glob -result {*: narrative method not overridden}
     
     #-------------------------------------------------------------------
     # eval
 
-    test eval-1.1 {fails by default} -setup {
-        setup
-    } -body {
+    test eval-1.1 {fails by default} -body {
         $rule eval NONESUCH
     } -returnCodes {
         error
-    } -cleanup {
-        cleanup
     } -match glob -result {*: eval method not overridden}
 
     
     #-------------------------------------------------------------------
     # val_list
     
-    test val_list-1.1 {canonicalizes when valid} -setup {
-        setup
-    } -body {
+    test val_list-1.1 {canonicalizes when valid} -body {
         $rule val_list "items" [namespace current]::valgood {a b c}  
-    } -cleanup {
-        cleanup
     } -result {A B C}
     
-    test val_list-1.2 {no items} -setup {
-        setup
-    } -body {
+    test val_list-1.2 {no items} -body {
         $rule val_list "items" [namespace current]::valgood {}
     } -returnCodes {
         error 
-    } -cleanup {
-        cleanup
     } -result {No items selected}
     
-    test val_list-1.3 {bad item} -setup {
-        setup
-    } -body {
+    test val_list-1.3 {bad item} -body {
         $rule val_list "items" [namespace current]::valbad {a b c}
     } -returnCodes {
         error 
-    } -cleanup {
-        cleanup
     } -result {Invalid value: "a"}
     
     #-------------------------------------------------------------------
     # val_elist
     
-    test val_elist-1.1 {returns valid items} -setup {
-        setup
-    } -body {
+    test val_elist-1.1 {returns valid items} -body {
         $rule val_elist actor "actors" {JOE BOB}  
-    } -cleanup {
-        cleanup
     } -result {JOE BOB}
     
-    test val_elist-1.2 {no items} -setup {
-        setup
-    } -body {
+    test val_elist-1.2 {no items} -body {
         $rule val_elist orggroup "items" {}
     } -returnCodes {
         error 
-    } -cleanup {
-        cleanup
     } -result {No items selected}
     
-    test val_elist-1.3 {bad item} -setup {
-        setup
-    } -body {
+    test val_elist-1.3 {bad item} -body {
         $rule val_elist actor "items" {a b c}
     } -returnCodes {
         error 
-    } -cleanup {
-        cleanup
     } -result {Invalid actor, should be one of: BOB, JOE}
+
+    #-------------------------------------------------------------------
+    # val_anyall_alist
+
+    test val_anyall_alist-1.1 {validate, valid} -body {
+        $rule val_anyall_alist {anyall any alist {JOE BOB}}
+    } -result {anyall ANY alist {JOE BOB}}
+
+    test val_anyall_alist-1.2 {validate, invalid anyall} -body {
+        $rule val_anyall_alist {anyall NONESUCH alist JOE}
+    } -returnCodes {
+        error
+    } -match glob -result {invalid value "NONESUCH", should be one of: ANY, ALL}
+
+    test val_anyall_alist-1.3 {validate, invalid alist} -body {
+        $rule val_anyall_alist {anyall ANY alist {JOE NONESUCH}}
+    } -returnCodes {
+        error
+    } -match glob -result {Invalid actor*}
 
     #-------------------------------------------------------------------
     # val_anyall_glist
 
-    test val_anyall_glist-1.1 {validate, valid} -setup {
-        setup
-    } -body {
+    test val_anyall_glist-1.1 {validate, valid} -body {
         $rule val_anyall_glist {anyall any glist {SHIA SUNN}}
-    } -cleanup {
-        cleanup
     } -result {anyall ANY glist {SHIA SUNN}}
 
-    test val_anyall_glist-1.2 {validate, invalid anyall} -setup {
-        setup
-    } -body {
+    test val_anyall_glist-1.2 {validate, invalid anyall} -body {
         $rule val_anyall_glist {anyall NONESUCH glist SHIA}
     } -returnCodes {
         error
-    } -cleanup {
-        cleanup
     } -match glob -result {invalid value "NONESUCH", should be one of: ANY, ALL}
 
-    test val_anyall_glist-1.3 {validate, invalid glist} -setup {
-        setup
-    } -body {
+    test val_anyall_glist-1.3 {validate, invalid glist} -body {
         $rule val_anyall_glist {anyall ANY glist {SHIA NONESUCH}}
     } -returnCodes {
         error
-    } -cleanup {
-        cleanup
     } -match glob -result {Invalid group*}
 
-    test val_anyall_glist-1.4 {validate, invalid glist given type} -setup {
-        setup
-    } -body {
+    test val_anyall_glist-1.4 {validate, invalid glist given type} -body {
         $rule val_anyall_glist {anyall ANY glist {SHIA BLUE}} frcgroup
     } -returnCodes {
         error
-    } -cleanup {
-        cleanup
     } -match glob -result {Invalid force group*}
 
     #-------------------------------------------------------------------
     # val_anyall_nlist
     
-    test val_anyall_nlist-1.1 {validate, valid} -setup {
-        setup
-    } -body {
+    test val_anyall_nlist-1.1 {validate, valid} -body {
         $rule val_anyall_nlist {anyall any nlist {NB1 NB2}}
-    } -cleanup {
-        cleanup
     } -result {anyall ANY nlist {NB1 NB2}}
 
-    test val_anyall_nlist-1.2 {validate, invalid anyall} -setup {
-        setup
-    } -body {
+    test val_anyall_nlist-1.2 {validate, invalid anyall} -body {
         $rule val_anyall_nlist {anyall NONESUCH nlist NB1}
     } -returnCodes {
         error
-    } -cleanup {
-        cleanup
     } -match glob -result {invalid value "NONESUCH", should be one of: ANY, ALL}
 
-    test val_anyall_nlist-1.3 {validate, invalid nlist} -setup {
-        setup
-    } -body {
+    test val_anyall_nlist-1.3 {validate, invalid nlist} -body {
         $rule val_anyall_nlist {anyall ANY nlist {NB1 NONESUCH}}
     } -returnCodes {
         error
-    } -cleanup {
-        cleanup
     } -match glob -result {Invalid neighborhood*}
     
     #-------------------------------------------------------------------
     # nar_list
     
-    test nar_list-1.1 {single with single noun} -setup {
-        setup
-    } -body {
+    test nar_list-1.1 {single with single noun} -body {
         $rule nar_list "item" "items" a  
-    } -cleanup {
-        cleanup
     } -result {item a}
     
-    test nar_list-1.2 {single with no noun} -setup {
-        setup
-    } -body {
+    test nar_list-1.2 {single with no noun} -body {
         $rule nar_list "" "items" a  
-    } -cleanup {
-        cleanup
     } -result {a}
 
-    test nar_list-1.3 {multiple, no -brief} -setup {
-        setup
-    } -body {
+    test nar_list-1.3 {multiple, no -brief} -body {
         $rule nar_list "item" "items" {a b c d e f g h i j}  
-    } -cleanup {
-        cleanup
     } -result {items (a, b, c, d, e, f, g, h, i, j)}
 
-    test nar_list-1.4 {multiple, -brief} -setup {
-        setup
-    } -body {
+    test nar_list-1.4 {multiple, -brief} -body {
         $rule nar_list "item" "items" {a b c d e f g h i j} -brief 
-    } -cleanup {
-        cleanup
     } -result {items (a, b, c, d, e, f, g, h, ...)}
     
+    #-------------------------------------------------------------------
+    # nar_anyall_alist
+    
+    test nar_anyall_alist-1.1 {narrative, one actor} -body {
+        $rule nar_anyall_alist {anyall ANY alist JOE}
+    } -result {actor JOE}
+
+    test nar_anyall_alist-1.2 {narrative, any, several actors} -body {
+        $rule nar_anyall_alist {
+            anyall ANY
+            alist {JOE BOB}
+        }
+    } -result {any of these actors (JOE, BOB)}
+    
+    test nar_anyall_alist-1.3 {narrative, all, several actors} -body {
+        $rule nar_anyall_alist {
+            anyall ALL
+            alist {JOE BOB}
+        }
+    } -result {all of these actors (JOE, BOB)}
+
+    test nar_anyall_alist-1.4 {narrative, -brief} -body {
+        $rule nar_anyall_alist {
+            anyall ANY
+            alist {A B C D E F G H I J}
+        } -brief
+    } -result {any of these actors (A, B, C, D, E, F, G, H, ...)}
 
     #-------------------------------------------------------------------
     # nar_anyall_glist
 
-
-    test nar_anyall_glist-1.1 {narrative, one group} -setup {
-        setup
-    } -body {
+    test nar_anyall_glist-1.1 {narrative, one group} -body {
         $rule nar_anyall_glist {anyall ANY glist SHIA}
-    } -cleanup {
-        cleanup
     } -result {group SHIA}
 
-    test nar_anyall_glist-1.2 {narrative, any, several groups} -setup {
-        setup
-    } -body {
+    test nar_anyall_glist-1.2 {narrative, any, several groups} -body {
         $rule nar_anyall_glist {
             anyall ANY
             glist {SHIA SUNN}
         }
-    } -cleanup {
-        cleanup
     } -result {any of these groups (SHIA, SUNN)}
     
-    test nar_anyall_glist-1.3 {narrative, all, several groups} -setup {
-        setup
-    } -body {
+    test nar_anyall_glist-1.3 {narrative, all, several groups} -body {
         $rule nar_anyall_glist {
             anyall ALL
             glist {SHIA SUNN}
         }
-    } -cleanup {
-        cleanup
     } -result {all of these groups (SHIA, SUNN)}
 
-    test nar_anyall_glist-1.4 {narrative, -brief} -setup {
-        setup
-    } -body {
+    test nar_anyall_glist-1.4 {narrative, -brief} -body {
         $rule nar_anyall_glist {
             anyall ANY
             glist {A B C D E F G H I J}
         } -brief
-    } -cleanup {
-        cleanup
     } -result {any of these groups (A, B, C, D, E, F, G, H, ...)}
 
     #-------------------------------------------------------------------
     # nar_anyall_nlist
 
-    test nar_anyall_nlist-2.1 {narrative, one neighborhood} -setup {
-        setup
-    } -body {
+    test nar_anyall_nlist-2.1 {narrative, one neighborhood} -body {
         $rule nar_anyall_nlist {anyall ANY nlist NB1}
-    } -cleanup {
-        cleanup
     } -result {neighborhood NB1}
 
-    test nar_anyall_nlist-2.2 {narrative, any, several neighborhoods} -setup {
-        setup
-    } -body {
+    test nar_anyall_nlist-2.2 {narrative, any, several neighborhoods} -body {
         $rule nar_anyall_nlist {
             anyall ANY
             nlist {NB1 NB2}
         }
-    } -cleanup {
-        cleanup
     } -result {any of these neighborhoods (NB1, NB2)}
     
-    test nar_anyall_nlist-2.3 {narrative, all, several neighborhoods} -setup {
-        setup
-    } -body {
+    test nar_anyall_nlist-2.3 {narrative, all, several neighborhoods} -body {
         $rule nar_anyall_nlist {
             anyall ALL
             nlist {NB1 NB2}
         }
-    } -cleanup {
-        cleanup
     } -result {all of these neighborhoods (NB1, NB2)}
 
-    test nar_anyall_nlist-2.4 {narrative, -brief} -setup {
-        setup
-    } -body {
+    test nar_anyall_nlist-2.4 {narrative, -brief} -body {
         $rule nar_anyall_nlist {
             anyall ANY
             nlist {A B C D E F G H I J}
         } -brief
-    } -cleanup {
-        cleanup
     } -result {any of these neighborhoods (A, B, C, D, E, F, G, H, ...)}
 
     #-------------------------------------------------------------------
+    # filterby
+
+    test filterby-1.1 {computes intersection of lists} -body {
+        set mylist {A B C D E}
+        $rule filterby mylist {A C E G}
+    } -result {A C E}
+
+    test filterby-1.2 {var is empty} -body {
+        set mylist {}
+        $rule filterby mylist {A C E G}
+    } -result {}
+
+    test filterby-1.3 {list is empty} -body {
+        set mylist {A B C D E}
+        $rule filterby mylist {}
+    } -result {}
+    
+    #-------------------------------------------------------------------
+    # groupsIn
+
+    test groupsIn-1.1 {gets groups} -body {
+        $rule groupsIn NB1
+    } -result {SHIA SUNN}
+
+    #-------------------------------------------------------------------
+    # groupsNotIn
+
+    test groupsNotIn-1.1 {gets groups not in nbhoods} -body {
+        $rule groupsNotIn NB1
+    } -result {KURD NOBODY}
+
+    #-------------------------------------------------------------------
+    # nonempty
+
+    test nonempty-1.1 {removes empty civgroups} -body {
+        $rule nonempty {SUNN SHIA KURD NOBODY}
+    } -result {SUNN SHIA KURD}
+
+    #-------------------------------------------------------------------
+    # anyall_alist_supportingActor
+
+    proc setup_anyall_alist_SupportingActor {} {
+        foreach {g a support} {
+            SHIA BOB 0.3
+            SHIA JOE 0.3
+            SUNN BOB 0.0
+            SUNN JOE 0.3
+            BLUE BOB 0.3
+            BLUE JOE 0.0
+            BRIT BOB 0.0
+            BRIT JOE 0.0
+            TAL  BOB 0.0
+        } {
+            rdb eval {
+                INSERT INTO support_nga(n,g,a,support)
+                VALUES('NB1',$g,$a,$support)
+            }
+        }
+    }
+
+    test anyall_alist_supportingActor-1.1 {one actor} -setup {
+        setup_anyall_alist_SupportingActor
+    } -body {
+        $rule anyall_alist_supportingActor "" {anyall ANY alist BOB}
+    } -cleanup {
+        rdb eval {DELETE FROM support_nga}
+    } -result {BLUE SHIA}
+
+    test anyall_alist_supportingActor-1.2 {any of several actors} -setup {
+        setup_anyall_alist_SupportingActor
+    } -body {
+        $rule anyall_alist_supportingActor "" {anyall ANY alist {BOB JOE}}
+    } -cleanup {
+        rdb eval {DELETE FROM support_nga}
+    } -result {BLUE SHIA SUNN}
+
+    test anyall_alist_supportingActor-1.3 {all of several actors} -setup {
+        setup_anyall_alist_SupportingActor
+    } -body {
+        $rule anyall_alist_supportingActor "" {anyall ALL alist {BOB JOE}}
+    } -cleanup {
+        rdb eval {DELETE FROM support_nga}
+    } -result {SHIA}
+
+    test anyall_alist_supportingActor-1.4 {by group type} -setup {
+        setup_anyall_alist_SupportingActor
+    } -body {
+        $rule anyall_alist_supportingActor CIV {anyall ANY alist {BOB JOE}}
+    } -cleanup {
+        rdb eval {DELETE FROM support_nga}
+    } -result {SHIA SUNN}
+
+    #-------------------------------------------------------------------
+    # anyall_alist_likingActor
+
+    proc setup_anyall_alist_LikingActor {} {
+        ted lock
+        foreach {g a vrel} {
+            SHIA BOB 0.3
+            SHIA JOE 0.3
+            SUNN BOB 0.0
+            SUNN JOE 0.3
+            BLUE BOB 0.3
+            BLUE JOE 0.0
+            BRIT BOB 0.0
+            BRIT JOE 0.0
+            TAL  BOB 0.0
+        } {
+            aram vrel bset 1 $g $a $vrel
+        }
+        ted step
+    }
+
+    test anyall_alist_likingActor-1.1 {one actor} -setup {
+        setup_anyall_alist_LikingActor
+    } -body {
+        $rule anyall_alist_likingActor "" {anyall ANY alist BOB}
+    } -cleanup {
+        ted unlock
+    } -cleanup {
+        ted unlock
+    } -result {BLUE SHIA}
+
+    test anyall_alist_likingActor-1.2 {any of several actors} -setup {
+        setup_anyall_alist_LikingActor
+    } -body {
+        $rule anyall_alist_likingActor "" {anyall ANY alist {BOB JOE}}
+    } -cleanup {
+        ted unlock
+    } -result {BLUE SHIA SUNN}
+
+    test anyall_alist_likingActor-1.3 {all of several actors} -setup {
+        setup_anyall_alist_LikingActor
+    } -body {
+        $rule anyall_alist_likingActor "" {anyall ALL alist {BOB JOE}}
+    } -cleanup {
+        ted unlock
+    } -result {SHIA}
+
+    test anyall_alist_likingActor-1.4 {by group type} -setup {
+        setup_anyall_alist_LikingActor
+    } -body {
+        $rule anyall_alist_likingActor CIV {anyall ANY alist {BOB JOE}}
+    } -cleanup {
+        ted unlock
+    } -result {SHIA SUNN}
+
+    #-------------------------------------------------------------------
+    # anyall_alist_DislikingActor
+    
+
+    proc setup_anyall_alist_DislikingActor {} {
+        ted lock
+        foreach {g a vrel} {
+            SHIA BOB -0.3
+            SHIA JOE -0.3
+            SUNN BOB  0.0
+            SUNN JOE -0.3
+            BLUE BOB -0.3
+            BLUE JOE  0.0
+            BRIT BOB  0.0
+            BRIT JOE  0.0
+        } {
+            aram vrel bset 1 $g $a $vrel
+        }
+        ted step
+    }
+
+    test anyall_alist_dislikingActor-1.1 {one actor} -setup {
+        setup_anyall_alist_DislikingActor
+    } -body {
+        $rule anyall_alist_dislikingActor "" {anyall ANY alist BOB}
+    } -cleanup {
+        ted unlock
+    } -result {BLUE SHIA}
+
+    test anyall_alist_dislikingActor-1.2 {any of several actors} -setup {
+        setup_anyall_alist_DislikingActor
+    } -body {
+        $rule anyall_alist_dislikingActor "" {anyall ANY alist {BOB JOE}}
+    } -cleanup {
+        ted unlock
+    } -result {BLUE SHIA SUNN}
+
+    test anyall_alist_dislikingActor-1.3 {all of several actors} -setup {
+        setup_anyall_alist_DislikingActor
+    } -body {
+        $rule anyall_alist_dislikingActor "" {anyall ALL alist {BOB JOE}}
+    } -cleanup {
+        ted unlock
+    } -result {SHIA}
+
+    test anyall_alist_dislikingActor-1.4 {by group type} -setup {
+        setup_anyall_alist_DislikingActor
+    } -body {
+        $rule anyall_alist_dislikingActor CIV {anyall ANY alist {BOB JOE}}
+    } -cleanup {
+        ted unlock
+    } -result {SHIA SUNN}
+
+    #-------------------------------------------------------------------
+    # anyall_glist_likingGroup
+    
+    proc setupLikingGroup {} {
+        ted lock
+        aram hrel bset 1 SHIA KURD  0.3
+        aram hrel bset 1 SHIA SUNN  0.3
+        aram hrel bset 1 SUNN KURD  0.0
+        aram hrel bset 1 SUNN SHIA  0.3
+        aram hrel bset 1 BLUE KURD  0.3
+        aram hrel bset 1 BLUE SHIA  0.0
+        aram hrel bset 1 BRIT KURD  0.3
+        aram hrel bset 1 BRIT SHIA  0.3
+
+        ted step
+    }
+
+    test anyall_glist_likingGroup-1.1 {one group} -setup {
+        setupLikingGroup
+    } -body {
+        $rule anyall_glist_likingGroup "" {anyall ANY glist KURD}
+    } -cleanup {
+        ted unlock
+    } -result {BLUE BRIT KURD SHIA}
+
+    test anyall_glist_likingGroup-1.2 {any of several groups} -setup {
+        setupLikingGroup
+    } -body {
+        $rule anyall_glist_likingGroup "" {anyall ANY glist {KURD SHIA}}
+    } -cleanup {
+        ted unlock
+    } -result {BLUE BRIT KURD SHIA SUNN}
+
+    test anyall_glist_likingGroup-1.3 {all of several actors} -setup {
+        setupLikingGroup
+    } -body {
+        $rule anyall_glist_likingGroup "" {anyall ALL glist {KURD SHIA}}
+    } -cleanup {
+        ted unlock
+    } -result {BRIT SHIA}
+
+    test anyall_glist_likingGroup-1.4 {by group type} -setup {
+        setupLikingGroup
+    } -body {
+        $rule anyall_glist_likingGroup CIV {anyall ANY glist KURD}
+    } -cleanup {
+        ted unlock
+    } -result {KURD SHIA}
+
+    #-------------------------------------------------------------------
+    # anyall_glist_dislikingGroup
+
+    proc setupDislikingGroup {} {
+        ted lock
+        aram hrel bset 1 SHIA KURD -0.3
+        aram hrel bset 1 SHIA SUNN -0.3
+        aram hrel bset 1 SUNN KURD  0.0
+        aram hrel bset 1 SUNN SHIA -0.3
+        aram hrel bset 1 BLUE KURD -0.3
+        aram hrel bset 1 BLUE SHIA  0.0
+        aram hrel bset 1 BRIT KURD -0.3
+        aram hrel bset 1 BRIT SHIA -0.3
+
+        ted step
+    }
+
+    test anyall_glist_dislikingGroup-1.1 {one group} -setup {
+        setupDislikingGroup
+    } -body {
+        $rule anyall_glist_dislikingGroup "" {anyall ANY glist KURD}
+    } -cleanup {
+        ted unlock
+    } -result {BLUE BRIT SHIA}
+
+    test anyall_glist_dislikingGroup-1.2 {any of several groups} -setup {
+        setupDislikingGroup
+    } -body {
+        $rule anyall_glist_dislikingGroup "" {anyall ANY glist {KURD SHIA}}
+    } -cleanup {
+        ted unlock
+    } -result {BLUE BRIT SHIA SUNN}
+
+    test anyall_glist_dislikingGroup-1.3 {all of several actors} -setup {
+        setupDislikingGroup
+    } -body {
+        $rule anyall_glist_dislikingGroup "" {anyall ALL glist {KURD SHIA}}
+    } -cleanup {
+        ted unlock
+    } -result {BRIT}
+
+    test anyall_glist_dislikingGroup-1.4 {by group type} -setup {
+        setupDislikingGroup
+    } -body {
+        $rule anyall_glist_dislikingGroup CIV {anyall ANY glist KURD}
+    } -cleanup {
+        ted unlock
+    } -result {SHIA}
+
+    #-------------------------------------------------------------------
+    # anyall_glist_likedByGroup
+
+    proc setupLikedByGroup {} {
+        ted lock
+        aram hrel bset 1 KURD BLUE  0.3
+        aram hrel bset 1 KURD BRIT  0.3
+        aram hrel bset 1 KURD SHIA  0.3
+        aram hrel bset 1 KURD SUNN  0.0
+        aram hrel bset 1 SHIA BLUE  0.0
+        aram hrel bset 1 SHIA BRIT  0.3
+        aram hrel bset 1 SHIA KURD  0.0
+        aram hrel bset 1 SHIA SUNN  0.3
+
+        ted step
+    }
+
+    test anyall_glist_likedByGroup-1.1 {one group} -setup {
+        setupLikedByGroup
+    } -body {
+        $rule anyall_glist_likedByGroup "" {anyall ANY glist KURD}
+    } -cleanup {
+        ted unlock
+    } -result {BLUE BRIT KURD SHIA}
+
+    test anyall_glist_likedByGroup-1.2 {any of several groups} -setup {
+        setupLikedByGroup
+    } -body {
+        $rule anyall_glist_likedByGroup "" {anyall ANY glist {KURD SHIA}}
+    } -cleanup {
+        ted unlock
+    } -result {BLUE BRIT KURD SHIA SUNN}
+
+    test anyall_glist_likedByGroup-1.3 {all of several actors} -setup {
+        setupLikedByGroup
+    } -body {
+        $rule anyall_glist_likedByGroup "" {anyall ALL glist {KURD SHIA}}
+    } -cleanup {
+        ted unlock
+    } -result {BRIT SHIA}
+
+    test anyall_glist_likedByGroup-1.4 {by group type} -setup {
+        setupLikedByGroup
+    } -body {
+        $rule anyall_glist_likedByGroup CIV {anyall ANY glist KURD}
+    } -cleanup {
+        ted unlock
+    } -result {KURD SHIA}
+
+    #-------------------------------------------------------------------
+    # anyall_glist_dislikedByGroup
+
+    proc setupDislikedByGroup {} {
+        ted lock
+        aram hrel bset 1 KURD BLUE -0.3
+        aram hrel bset 1 KURD BRIT -0.3
+        aram hrel bset 1 KURD SHIA -0.3
+        aram hrel bset 1 KURD SUNN  0.0
+        aram hrel bset 1 SHIA BLUE  0.0
+        aram hrel bset 1 SHIA BRIT -0.3
+        aram hrel bset 1 SHIA KURD  0.0
+        aram hrel bset 1 SHIA SUNN -0.3
+
+        ted step
+    }
+
+    test anyall_glist_dislikedByGroup-1.1 {one group} -setup {
+        setupDislikedByGroup
+    } -body {
+        $rule anyall_glist_dislikedByGroup "" {anyall ANY glist KURD}
+    } -cleanup {
+        ted unlock
+    } -result {BLUE BRIT SHIA}
+
+    test anyall_glist_dislikedByGroup-1.2 {any of several groups} -setup {
+        setupDislikedByGroup
+    } -body {
+        $rule anyall_glist_dislikedByGroup "" {anyall ANY glist {KURD SHIA}}
+    } -cleanup {
+        ted unlock
+    } -result {BLUE BRIT SHIA SUNN}
+
+    test anyall_glist_dislikedByGroup-1.3 {all of several actors} -setup {
+        setupDislikedByGroup
+    } -body {
+        $rule anyall_glist_dislikedByGroup "" {anyall ALL glist {KURD SHIA}}
+    } -cleanup {
+        ted unlock
+    } -result {BRIT}
+
+    test anyall_glist_dislikedByGroup-1.4 {by group type} -setup {
+        setupDislikedByGroup
+    } -body {
+        $rule anyall_glist_dislikedByGroup CIV {anyall ANY glist KURD}
+    } -cleanup {
+        ted unlock
+    } -result {SHIA}
+
+    #-------------------------------------------------------------------
+    # anyall_nlist_deployedTo
+
+    proc setupDeployedTo {} {
+        foreach {n g personnel} {
+            NB1 BLUE 1
+            NB1 BRIT 1
+            NB2 BLUE 1
+            NB2 BRIT 0
+            NB1 TAL  0
+            NB2 TAL  1
+        } {
+            rdb eval {
+                INSERT INTO deploy_ng(n,g,personnel)
+                VALUES($n, $g, $personnel)
+            }
+        }
+    }
+
+    test anyall_nlist_deployedTo-1.1 {one neighborhood} -setup {
+        setupDeployedTo
+    } -body {
+        $rule anyall_nlist_deployedTo {anyall ANY nlist NB1}
+    } -cleanup {
+        rdb eval {DELETE FROM deploy_ng}
+    } -result {BLUE BRIT}
+
+    test anyall_nlist_deployedTo-1.2 {any of several neighborhoods} -setup {
+        setupDeployedTo
+    } -body {
+        $rule anyall_nlist_deployedTo {anyall ANY nlist {NB1 NB2}}
+    } -cleanup {
+        rdb eval {DELETE FROM deploy_ng}
+    } -result {BLUE BRIT TAL}
+
+    test anyall_nlist_deployedTo-1.3 {all of several neighborhoods} -setup {
+        setupDeployedTo
+    } -body {
+        $rule anyall_nlist_deployedTo {anyall ALL nlist {NB1 NB2}}
+    } -cleanup {
+        rdb eval {DELETE FROM deploy_ng}
+    } -result {BLUE}
+
+    #-------------------------------------------------------------------
+    # anyall_nlist_notDeployedTo
+
+    proc setupNotDeployedTo {} {
+        foreach {n g personnel} {
+            NB1 BLUE 0
+            NB1 BRIT 0
+            NB2 BLUE 0
+            NB2 BRIT 1
+            NB1 TAL  1
+            NB2 TAL  0
+        } {
+            rdb eval {
+                INSERT INTO deploy_ng(n,g,personnel)
+                VALUES($n, $g, $personnel)
+            }
+        }
+    }
+
+    test anyall_nlist_notDeployedTo-1.1 {one neighborhood} -setup {
+        setupNotDeployedTo
+    } -body {
+        $rule anyall_nlist_notDeployedTo {anyall ANY nlist NB1}
+    } -cleanup {
+        rdb eval {DELETE FROM deploy_ng}
+    } -result {BLUE BRIT}
+
+    test anyall_nlist_notDeployedTo-1.2 {any of several neighborhoods} -setup {
+        setupNotDeployedTo
+    } -body {
+        $rule anyall_nlist_notDeployedTo {anyall ANY nlist {NB1 NB2}}
+    } -cleanup {
+        rdb eval {DELETE FROM deploy_ng}
+    } -result {BLUE BRIT TAL}
+
+    test anyall_nlist_notDeployedTo-1.3 {all of several neighborhoods} -setup {
+        setupNotDeployedTo
+    } -body {
+        $rule anyall_nlist_notDeployedTo {anyall ALL nlist {NB1 NB2}}
+    } -cleanup {
+        rdb eval {DELETE FROM deploy_ng}
+    } -result {BLUE}
+    
+            
+    #-------------------------------------------------------------------
     # Cleanup
+
+    ted cleanup
 
     cleanupTests
 }

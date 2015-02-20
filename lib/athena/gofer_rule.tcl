@@ -22,18 +22,24 @@ oo::class create ::athena::gofer_rule {
     # Instance Variables
 
     variable adb          ;# The athenadb(n) handle
+    variable gtype        ;# The gofer type to which the rule belongs.
+    variable rule         ;# The rule's name
 
     #-------------------------------------------------------------------
     # Constructor
 
-    # constructor adb_
+    # constructor adb_ gtype_ rule_
     #
-    # adb   - The athenadb(n) handle
+    # adb_   - The athenadb(n) handle
+    # gtype_ - The gofer type to which the rule belongs.
+    # rule_  - The rule's name
     #
-    # Initializes the rule set.
+    # Initializes the rule.
 
-    constructor {adb_} {
-        set adb  $adb_
+    constructor {adb_ gtype_ rule_} {
+        set adb   $adb_
+        set gtype $gtype_
+        set rule  $rule_
     }
 
     #-------------------------------------------------------------------
@@ -105,6 +111,42 @@ oo::class create ::athena::gofer_rule {
 
         return $out
     }
+
+    # val_selector field value
+    #
+    # field  - The selector field within the rule's case.
+    # value  - The selector value
+    #
+    # Validates a selector value.
+
+    method val_selector {field value} {
+        set dform [$gtype dynaform]
+        set value [string toupper $value]
+        set values [dynaform cases $dform $field [list _rule $rule]]
+
+        if {$value ni $values} {
+            error "Invalid \"$field\" value: \"$value\""
+        }
+
+        return $value
+    }
+
+    # val_anyall_alist gdict
+    #
+    # gdict - A gdict with keys anyall, alist
+    #
+    # Validates a gdict that allows the user to specify any/all of 
+    # a list of actors.
+
+    method val_anyall_alist {gdict} {
+        dict with gdict {}
+
+        set result [dict create]
+
+        dict set result anyall [eanyall validate $anyall]
+        dict set result alist [my val_elist actor "actors" $alist]
+        return $result
+    }
    
     # val_anyall_glist gdict ?gtype?
     #
@@ -166,8 +208,6 @@ oo::class create ::athena::gofer_rule {
         return [join $list $delim]
     }
 
-    
-
     # nar_list snoun pnoun list ?-brief?
     #
     # snoun   - A singular noun, or ""
@@ -195,6 +235,32 @@ oo::class create ::athena::gofer_rule {
         }
 
         return $text
+    }
+
+    # nar_anyall_alist gdict ?opt?
+    #
+    # gdict - A gdict with keys anyall, alist
+    # opt   - Possibly "-brief"
+    #
+    # Produces part of a narrative string for the gdict:
+    #
+    #   actor <actor>
+    #   {any of|all of} these actors (<alist>)
+
+    method nar_anyall_alist {gdict {opt ""}} {
+        dict with gdict {}
+
+        if {[llength $alist] > 1} {
+            if {$anyall eq "ANY"} {
+                append result "any of "
+            } else {
+                append result "all of "
+            }
+        }
+
+        append result [my nar_list "actor" "these actors" $alist $opt]
+
+        return "$result"
     }
 
     # nar_anyall_glist gdict ?opt?
@@ -253,6 +319,47 @@ oo::class create ::athena::gofer_rule {
     #-------------------------------------------------------------------
     # Other helpers
 
+    # filterby listVar filterlist
+    #
+    # listVar   - A variable containing a list of items
+    # filterlist - Another list of items
+    # 
+    # Computes the intersection of the two lists, and saves it back
+    # to listVar.
+
+    method filterby {listVar filterlist} {
+        upvar 1 $listVar theList
+
+        set theList [struct::set intersect $theList $filterlist]
+    }
+
+    # groupsIn nlist
+    #
+    # Returns the civilian groups present in a list of neighborhoods.
+
+    method groupsIn {nlist} {
+        set out [list]
+        foreach n $nlist {
+            lappend out {*}[$adb demog gIn $n]
+        }
+
+        return $out
+    }
+
+    # groupsNotIn nlist
+    #
+    # Returns the groups not resident in a list of neighborhoods.
+
+    method groupsNotIn {nlist} {
+        set out [$adb civgroup names]
+        foreach n $nlist {
+            foreach g [$adb demog gIn $n] {
+                ldelete out $g
+            }
+        }
+        return $out
+    }
+
     # nonempty glist
     #
     # glist   - A list of groups
@@ -275,4 +382,342 @@ oo::class create ::athena::gofer_rule {
     }
     
 
+    # anyall_alist_supportingActor gtype gdict
+    #
+    # gtype  - A group type, or ""
+    # gdict  - A gdict with keys anyall, alist
+    #
+    # Finds all groups of the given type that support any or all actors
+    # in the list.
+    method anyall_alist_supportingActor {gtype gdict} {
+        # Get keys
+        set anyall [dict get $gdict anyall]
+        set alist  [dict get $gdict alist]
+
+        if {$anyall eq "ANY"} {
+            set num [expr {1}]
+        } else {
+            set num [llength $alist]
+        }
+
+        if {$gtype ne ""} {
+            set gtypeClause "AND gtype='$gtype'"
+        } else {
+            set gtypeClause ""
+        }
+ 
+        return [$adb eval "
+            SELECT g FROM (
+                SELECT g, count(support) AS num
+                FROM groups
+                JOIN support_nga USING (g)
+                WHERE support_nga.a IN ('[join $alist {','}]') 
+                AND support > 0
+                $gtypeClause
+                GROUP BY g 
+            ) WHERE num >= \$num 
+        "]
+    }
+
+    # anyall_alist_likingActor gtype gdict
+    #
+    # gtype  - A group type, or ""
+    # gdict  - A gdict with keys anyall, alist
+    #
+    # Finds all groups of the given type that "like" any or all actors
+    # in the list.
+    method anyall_alist_likingActor {gtype gdict} {
+        # Get keys
+        set anyall [dict get $gdict anyall]
+        set alist  [dict get $gdict alist]
+
+        if {$anyall eq "ANY"} {
+            set num [expr {1}]
+        } else {
+            set num [llength $alist]
+        }
+
+        if {$gtype ne ""} {
+            set gtypeClause "AND gtype='$gtype'"
+        } else {
+            set gtypeClause ""
+        }
+
+        return [$adb eval "
+            SELECT g FROM (
+                SELECT g, count(vrel) AS num
+                FROM groups
+                JOIN uram_vrel USING (g)
+                WHERE uram_vrel.a IN ('[join $alist {','}]') 
+                AND vrel >= 0.2
+                $gtypeClause
+                GROUP BY g 
+            ) WHERE num >= \$num 
+        "]
+    }
+
+    # anyall_alist_dislikingActor gtype gdict
+    #
+    # gtype  - A group type, or ""
+    # gdict  - A gdict with keys anyall, alist
+    #
+    # Finds all groups of the given type that "like" any or all actors
+    # in the list.
+    method anyall_alist_dislikingActor {gtype gdict} {
+        # Get keys
+        set anyall [dict get $gdict anyall]
+        set alist  [dict get $gdict alist]
+
+        if {$anyall eq "ANY"} {
+            set num [expr {1}]
+        } else {
+            set num [llength $alist]
+        }
+
+        if {$gtype ne ""} {
+            set gtypeClause "AND gtype='$gtype'"
+        } else {
+            set gtypeClause ""
+        }
+
+        return [$adb eval "
+            SELECT g FROM (
+                SELECT g, count(vrel) AS num
+                FROM groups
+                JOIN uram_vrel USING (g)
+                WHERE uram_vrel.a IN ('[join $alist {','}]') 
+                AND vrel <= -0.2
+                $gtypeClause
+                GROUP BY g 
+            ) WHERE num >= \$num 
+        "]
+    }
+
+    # anyall_glist_likingGroup gtype gdict
+    #
+    # gtype  - A group type, or ""
+    # gdict  - A gdict with keys anyall, glist
+    #
+    # Finds all groups of the given type that "like" any or all groups
+    # in the list.
+    method anyall_glist_likingGroup {gtype gdict} {
+        # Get keys
+        set anyall [dict get $gdict anyall]
+        set glist  [dict get $gdict glist]
+
+        if {$anyall eq "ANY"} {
+            set num [expr {1}]
+        } else {
+            set num [llength $glist]
+        }
+
+        if {$gtype ne ""} {
+            set gtypeClause "AND G.gtype='$gtype'"
+        } else {
+            set gtypeClause ""
+        }
+
+        return [$adb eval "
+            SELECT g FROM (
+                SELECT G.g AS g, count(U.hrel) AS num
+                FROM groups AS G
+                JOIN uram_hrel AS U ON (U.f = G.g)
+                WHERE U.g IN ('[join $glist {','}]') 
+                AND U.hrel >= 0.2
+                $gtypeClause
+                GROUP BY G.g 
+            ) WHERE num >= \$num 
+        "]
+    }
+
+    # anyall_glist_dislikingGroup gtype gdict
+    #
+    # gtype  - A group type, or ""
+    # gdict  - A gdict with keys anyall, glist
+    #
+    # Finds all groups of the given type that "dislike" any or all groups
+    # in the list.
+    method anyall_glist_dislikingGroup {gtype gdict} {
+        # Get keys
+        set anyall [dict get $gdict anyall]
+        set glist  [dict get $gdict glist]
+
+        if {$anyall eq "ANY"} {
+            set num [expr {1}]
+        } else {
+            set num [llength $glist]
+        }
+
+        if {$gtype ne ""} {
+            set gtypeClause "AND G.gtype='$gtype'"
+        } else {
+            set gtypeClause ""
+        }
+
+        return [$adb eval "
+            SELECT g FROM (
+                SELECT G.g AS g, count(U.hrel) AS num
+                FROM groups AS G
+                JOIN uram_hrel AS U ON (U.f = G.g)
+                WHERE U.f != U.g
+                AND U.g IN ('[join $glist {','}]') 
+                AND U.hrel <= -0.2
+                $gtypeClause
+                GROUP BY G.g 
+            ) WHERE num >= \$num 
+        "]
+    }
+
+    # anyall_glist_likedByGroup gtype gdict
+    #
+    # gtype  - A group type, or ""
+    # gdict  - A gdict with keys anyall, glist
+    #
+    # Finds all groups of the given type that are "liked" by any or all 
+    # groups in the list.
+
+    method anyall_glist_likedByGroup {gtype gdict} {
+        # Get keys
+        set anyall [dict get $gdict anyall]
+        set glist  [dict get $gdict glist]
+
+        if {$anyall eq "ANY"} {
+            set num [expr {1}]
+        } else {
+            set num [llength $glist]
+        }
+
+        if {$gtype ne ""} {
+            set gtypeClause "AND G.gtype='$gtype'"
+        } else {
+            set gtypeClause ""
+        }
+
+        return [$adb eval "
+            SELECT g FROM (
+                SELECT G.g AS g, count(U.hrel) AS num
+                FROM groups AS G
+                JOIN uram_hrel AS U USING (g)
+                WHERE U.f IN ('[join $glist {','}]') 
+                AND U.hrel >= 0.2
+                $gtypeClause
+                GROUP BY G.g 
+            ) WHERE num >= \$num 
+        "]
+    }
+
+    # anyall_glist_dislikedByGroup gtype gdict
+    #
+    # gtype  - A group type, or ""
+    # gdict  - A gdict with keys anyall, glist
+    #
+    # Finds all groups of the given type that are "disliked" by any or all 
+    # groups in the list.
+
+    method anyall_glist_dislikedByGroup {gtype gdict} {
+        # Get keys
+        set anyall [dict get $gdict anyall]
+        set glist  [dict get $gdict glist]
+
+        if {$anyall eq "ANY"} {
+            set num [expr {1}]
+        } else {
+            set num [llength $glist]
+        }
+
+        if {$gtype ne ""} {
+            set gtypeClause "AND G.gtype='$gtype'"
+        } else {
+            set gtypeClause ""
+        }
+
+        return [$adb eval "
+            SELECT g FROM (
+                SELECT G.g AS g, count(U.hrel) AS num
+                FROM groups AS G
+                JOIN uram_hrel AS U USING (g)
+                WHERE U.f != U.g
+                AND U.f IN ('[join $glist {','}]') 
+                AND U.hrel <= -0.2
+                $gtypeClause
+                GROUP BY G.g 
+            ) WHERE num >= \$num 
+        "]
+    }
+
+    # anyall_nlist_deployedTo gdict
+    #
+    # gdict  - A gdict with keys anyall, nlist
+    #
+    # Finds all force groups that are deployed to any or all of the given
+    # neighborhoods.
+
+    method anyall_nlist_deployedTo {gdict} {
+        # Get keys
+        set anyall [dict get $gdict anyall]
+        set nlist  [dict get $gdict nlist]
+
+        if {$anyall eq "ANY"} {
+            set num [expr {1}]
+        } else {
+            set num [llength $nlist]
+        }
+
+        return [$adb eval "
+            SELECT g FROM (
+                SELECT g, count(n) AS num
+                FROM frcgroups
+                JOIN deploy_ng USING (g)
+                WHERE personnel > 0
+                AND n in ('[join $nlist {','}]')
+                GROUP BY g 
+            ) WHERE num >= \$num 
+        "]
+    }
+
+    # anyall_nlist_notDeployedTo gdict
+    #
+    # gdict  - A gdict with keys anyall, nlist
+    #
+    # Finds all force groups that are not deployed in any or all of the given
+    # neighborhoods.
+    method anyall_nlist_notDeployedTo {gdict} {
+        # Get keys
+        set anyall [dict get $gdict anyall]
+        set nlist  [dict get $gdict nlist]
+
+        if {$anyall eq "ANY"} {
+            set num [expr {1}]
+        } else {
+            set num [llength $nlist]
+        }
+
+        return [$adb eval "
+            SELECT g FROM (
+                SELECT g, count(n) AS num
+                FROM frcgroups
+                JOIN deploy_ng USING (g)
+                WHERE personnel = 0
+                AND n in ('[join $nlist {','}]')
+                GROUP BY g 
+            ) WHERE num >= \$num 
+        "]
+    }
+
 }
+
+#-----------------------------------------------------------------------
+# Test type and rule
+#
+# The following type is used for testing basic gofer rule functionality.
+
+::athena::goferx define NULL none {
+    selector _rule {
+        case BY_VALUE "By name" {
+            text raw_value
+        }
+    }
+}
+
+::athena::goferx rule NULL BY_VALUE {raw_value} {}
+

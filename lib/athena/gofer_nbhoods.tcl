@@ -88,24 +88,24 @@
 # Some set of nbhoods chosen by the user.
 
 ::athena::goferx rule NBHOODS BY_VALUE {nlist} {
-    typemethod construct {nlist} {
+    method make {nlist} {
         return [$type validate [dict create nlist $nlist]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         dict create nlist \
-            [listval "neighborhoods" {nbhood validate} $nlist]
+            [my val_elist nbhood "neighborhoods" $nlist]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
         return [listnar "neighborhood" "these neighborhoods" $nlist $opt]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         return $nlist
@@ -117,27 +117,27 @@
 # Nbhoods that are controlled by any of a set of actors.
 
 ::athena::goferx rule NBHOODS CONTROLLED_BY {alist} {
-    typemethod construct {alist} {
+    method make {alist} {
         return [$type validate [dict create alist $alist]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         set alist  [dict get $gdict alist]
-        dict create alist [listval "actors" {actor validate} $alist]
+        dict create alist [my val_elist actor "actors" $alist]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set alist  [dict get $gdict alist]
         set text [listnar "actor" "any of these actors" $alist $opt]
         set result "neighborhoods controlled by $text"
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         # Get keys
         set alist  [dict get $gdict alist]
 
         # TBD: [nbhood controlled_by $alist]?
-        return [rdb eval "
+        return [$adb eval "
             SELECT DISTINCT n
             FROM control_n
             WHERE controller IN ('[join $alist {','}]')
@@ -151,26 +151,26 @@
 # Nbhoods that are not controlled by any of a set of actors.
 
 ::athena::goferx rule NBHOODS NOT_CONTROLLED_BY {alist} {
-    typemethod construct {alist} {
+    method make {alist} {
         return [$type validate [dict create alist $alist]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         set alist  [dict get $gdict alist]
-        dict create alist [listval "actors" {actor validate} $alist]
+        dict create alist [my val_elist actor "actors" $alist]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set alist  [dict get $gdict alist]
         set text [listnar "actor" "any of these actors" $alist $opt]
         set result "neighborhoods not controlled by $text"
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         # Get keys
         set alist  [dict get $gdict alist]
 
-        return [rdb eval "
+        return [$adb eval "
             SELECT DISTINCT n
             FROM control_n
             WHERE controller NOT IN ('[join $alist {','}]')
@@ -186,21 +186,21 @@
 # Nbhoods in which any or all of a set of force groups are deployed.
 
 ::athena::goferx rule NBHOODS WITH_DEPLOYMENT {anyall glist} {
-    typemethod construct {anyall glist} {
+    method make {anyall glist} {
         return [$type validate [dict create anyall $anyall glist $glist]]
     }
 
-    typemethod validate {gdict} { 
-        return [anyall_glist validate $gdict frcgroup] 
+    method validate {gdict} { 
+        return [my val_anyall_glist $gdict frcgroup] 
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set result "neighborhoods with deployments of "
-        append result [anyall_glist narrative $gdict $opt]
+        append result [my nar_anyall_glist $gdict $opt]
         return "$result"
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         # Get keys
         set anyall [dict get $gdict anyall]
         set glist  [dict get $gdict glist]
@@ -211,7 +211,7 @@
             set num [llength $glist]
         }
 
-        return [rdb eval "
+        return [$adb eval "
             SELECT n FROM (
                 SELECT n, count(g) AS num
                 FROM deploy_ng
@@ -228,29 +228,29 @@
 # Nbhoods in which none of a set of force groups are deployed.
 
 ::athena::goferx rule NBHOODS WITHOUT_DEPLOYMENT {glist} {
-    typemethod construct {glist} {
+    method make {glist} {
         return [$type validate [dict create glist $glist]]
     }
 
-    typemethod validate {gdict} { 
+    method validate {gdict} { 
         set glist  [dict get $gdict glist]
         dict create glist [listval "groups" {frcgroup validate} $glist]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set glist  [dict get $gdict glist]
         set text [listnar "group" "any of these groups" $glist $opt]
         set result "neighborhoods without deployments of $text"
         return "$result"
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         # Get keys
         set glist [dict get $gdict glist]
 
         set num [llength $glist]
 
-        return [rdb eval "
+        return [$adb eval "
             SELECT n FROM (
                 SELECT n, count(g) AS num
                 FROM deploy_ng
