@@ -102,7 +102,7 @@
     method narrative {gdict {opt ""}} {
         dict with gdict {}
 
-        return [listnar "neighborhood" "these neighborhoods" $nlist $opt]
+        return [my nar_list "neighborhood" "these neighborhoods" $nlist $opt]
     }
 
     method eval {gdict} {
@@ -128,7 +128,7 @@
 
     method narrative {gdict {opt ""}} {
         set alist  [dict get $gdict alist]
-        set text [listnar "actor" "any of these actors" $alist $opt]
+        set text [my nar_list "actor" "any of these actors" $alist $opt]
         set result "neighborhoods controlled by $text"
     }
 
@@ -162,7 +162,7 @@
 
     method narrative {gdict {opt ""}} {
         set alist  [dict get $gdict alist]
-        set text [listnar "actor" "any of these actors" $alist $opt]
+        set text [my nar_list "actor" "any of these actors" $alist $opt]
         set result "neighborhoods not controlled by $text"
     }
 
@@ -234,12 +234,12 @@
 
     method validate {gdict} { 
         set glist  [dict get $gdict glist]
-        dict create glist [listval "groups" {frcgroup validate} $glist]
+        dict create glist [my val_elist frcgroup "groups" $glist]
     }
 
     method narrative {gdict {opt ""}} {
         set glist  [dict get $gdict glist]
-        set text [listnar "group" "any of these groups" $glist $opt]
+        set text [my nar_list "group" "any of these groups" $glist $opt]
         set result "neighborhoods without deployments of $text"
         return "$result"
     }

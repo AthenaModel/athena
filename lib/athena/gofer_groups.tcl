@@ -468,7 +468,7 @@
     method narrative {gdict {opt ""}} {
         dict with gdict {}
 
-        return [listnar "group" "these groups" $raw_value $opt]
+        return [my nar_list "group" "these groups" $raw_value $opt]
     }
 
     method eval {gdict} {
@@ -494,7 +494,7 @@
 
     method narrative {gdict {opt ""}} {
         set result "groups that actively support "
-        append result [::my nar_anyall_alist $gdict $opt]
+        append result [my nar_anyall_alist $gdict $opt]
         return "$result"
     }
 
@@ -519,7 +519,7 @@
 
     method narrative {gdict {opt ""}} {
         set result "groups that like "
-        append result [::my nar_anyall_alist $gdict $opt]
+        append result [my nar_anyall_alist $gdict $opt]
         return "$result"
     }
 
@@ -544,7 +544,7 @@
 
     method narrative {gdict {opt ""}} {
         set result "groups that dislike "
-        append result [::my nar_anyall_alist $gdict $opt]
+        append result [my nar_anyall_alist $gdict $opt]
         return "$result"
     }
 
