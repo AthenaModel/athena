@@ -202,10 +202,10 @@ oo::define ::athena::ruleset {
 
         # NEXT, get the default option values
         set input(opts) [dict create]
-        dict set input(opts) -cause [parm get dam.$ruleset.cause]
+        dict set input(opts) -cause [$adb parm get dam.$ruleset.cause]
         dict set input(opts) -s     1.0
-        dict set input(opts) -p     [parm get dam.$ruleset.nearFactor]
-        dict set input(opts) -q     [parm get dam.$ruleset.farFactor]
+        dict set input(opts) -p     [$adb parm get dam.$ruleset.nearFactor]
+        dict set input(opts) -q     [$adb parm get dam.$ruleset.farFactor]
         
         # TBD: Could check validity...but this is not a user API
         foreach {opt val} $args {
@@ -258,7 +258,7 @@ oo::define ::athena::ruleset {
         array set opts $input(opts)
 
         # NEXT, get the input gain.
-        set gain [parm get attitude.HREL.gain]
+        set gain [$adb parm get attitude.HREL.gain]
         set mag [qmag value $mag]
         let gmag {$gain * $mag}
 
@@ -304,7 +304,7 @@ oo::define ::athena::ruleset {
         array set opts $input(opts)
 
         # NEXT, get the input gain.
-        set gain [parm get attitude.VREL.gain]
+        set gain [$adb parm get attitude.VREL.gain]
         set mag [qmag value $mag]
         let gmag {$gain * $mag}
 
@@ -355,7 +355,7 @@ oo::define ::athena::ruleset {
         array set opts $input(opts)
 
         # NEXT, get the input gain.
-        set gain [parm get attitude.SAT.gain]
+        set gain [$adb parm get attitude.SAT.gain]
 
         foreach g $glist {
             foreach {c mag} $args {
@@ -396,7 +396,7 @@ oo::define ::athena::ruleset {
         array set opts $input(opts)
 
         # NEXT, get the input gain.
-        set gain [parm get attitude.COOP.gain]
+        set gain [$adb parm get attitude.COOP.gain]
         set mag [qmag value $mag]
         let gmag {$gain * $mag}
 
@@ -427,7 +427,7 @@ oo::define ::athena::ruleset {
     # Retrieves a parmdb parameter.
 
     method parm {name} {
-        parm get $name
+        [my adb] parm get $name
     }
 
     # actor args...

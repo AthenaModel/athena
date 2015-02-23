@@ -6,65 +6,61 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1) model parameters
+#    athena(n): Model Parameters
 #
-#    The module delegates most of its function to parmdb(n).
+# TBD: Global refs: log, sim, athena register, 
 #
 #-----------------------------------------------------------------------
 
 #-------------------------------------------------------------------
 # parm
 
-snit::type parm {
-    # Make it a singleton
-    pragma -hasinstances 0
+snit::type ::athena::parm {
+    #-------------------------------------------------------------------
+    # Components
+
+    component adb ;# The athenadb(n) instance
 
     #-------------------------------------------------------------------
-    # Typecomponents
+    # Components
 
-    typecomponent ps ;# parmdb(n), really
+    component ps ;# parmdb(n), really
 
     #-------------------------------------------------------------------
-    # Public typemethods
+    # Constructor
 
-    delegate typemethod * to ps
-
-    # init mode
+    # constructor adb_
     #
-    # mode   - master or slave
+    # adb_    - The athenadb(n) that owns this instance.
     #
-    # Initializes the module as a master (in the App thread) or as
-    # a slave (in the Engine thread).
+    # Initializes instances of the type.
 
-    typemethod init {mode} {
-        # Don't initialize twice.
-        if {$ps ne ""} {
-            return
-        }
-
-        log detail parm "init $mode"
+    constructor {adb_} {
+        set adb $adb_
 
         # FIRST, initialize parmdb(n), and delegate to it.
-        parmdb init
-
+        # TBD: parmdb will be moved into this module.
         set ps ::projectlib::parmdb
+        $ps init
 
-        # NEXT, if master get connected with the other App thread
-        # entities.
 
-        if {$mode eq "master"} {
-            # Register to receive simulation state updates.
-            notifier bind ::sim <State> $type [mytypemethod SimState]
+        # Register to receive simulation state updates.
+        notifier bind ::sim <State> $self [mymethod SimState]
 
-            # Register this type as a saveable
-            athena register ::parm
-        } else {
-            # Slave
-            $type LockParms
-        }
-
-        log detail parm "init complete"
+        # Register this type as a saveable
+        # TBD: This will work only as long as the instance is
+        # aliased to ::parm
+        athena register ::parm
     }
+
+    destructor {
+        notifier forget $self
+    }
+
+    #-------------------------------------------------------------------
+    # Public methods
+
+    delegate method * to ps
 
     #-------------------------------------------------------------------
     # Event Handlers
@@ -74,11 +70,11 @@ snit::type parm {
     # This is called when the simulation state changes, e.g., from
     # PREP to RUNNING.  It locks and unlocks significant parameters.
 
-    typemethod SimState {} {
+    method SimState {} {
         if {[sim state] eq "PREP"} {
-            parmdb unlock *
+            $ps unlock *
         } else {
-            $type LockParms
+            $self LockParms
         }
     }
 
@@ -87,8 +83,8 @@ snit::type parm {
     # Locks parameters that shouldn't be changed once the simulation is
     # running.
 
-    typemethod LockParms {} {
-        parmdb lock econ.ticksPerTock
+    method LockParms {} {
+        $ps lock econ.ticksPerTock
     }
 
 
@@ -101,10 +97,10 @@ snit::type parm {
     #
     # Validates parm as a parameter name.  Returns the name.
 
-    typemethod validate {parm} {
-        set canonical [$type names $parm]
+    method validate {parm} {
+        set canonical [$self names $parm]
 
-        if {$canonical ni [$type names]} {
+        if {$canonical ni [$self names]} {
             return -code error -errorcode INVALID \
                 "Unknown model parameter: \"$parm\""
         }
@@ -117,17 +113,17 @@ snit::type parm {
     #
     # Returns a list of the parameters with non-default values.
 
-    typemethod nondefaults {{pattern ""}} {
+    method nondefaults {{pattern ""}} {
         if {$pattern eq ""} {
-            set parms [parm names]
+            set parms [$self names]
         } else {
-            set parms [parm names $pattern]
+            set parms [$self names $pattern]
         }
 
         set result [list]
 
         foreach parm $parms {
-            if {[parm get $parm] ne [parm getdefault $parm]} {
+            if {[$self get $parm] ne [$self getdefault $parm]} {
                 lappend result $parm
             }
         }
@@ -150,19 +146,17 @@ snit::type parm {
     # Attempts to import the parameter into the RDB.  This command is
     # undoable.
 
-    typemethod {mutate import} {filename} {
+    method {mutate import} {filename} {
         # FIRST, get the undo information
-        set undo [mytypemethod restore [$ps checkpoint]]
+        set undo [mymethod restore [$ps checkpoint]]
 
         # NEXT, try to load the parameters
         $ps load $filename
 
         # NEXT, log it.
-        log normal parm "Imported Parameters: $filename"
+        $adb log normal parm "Imported Parameters: $filename"
         
-        app puts "Imported Parameters: $filename"
-
-        notifier send $type <Update>
+        $adb notify parm <Update>
 
         # NEXT, Return the undo script
         return $undo
@@ -174,9 +168,9 @@ snit::type parm {
     # Resets the values to the current defaults, reading them from the
     # disk as necessary.
 
-    typemethod {mutate reset} {} {
+    method {mutate reset} {} {
         # FIRST, get the undo information
-        set undo [mytypemethod restore [$ps checkpoint]]
+        set undo [mymethod restore [$ps checkpoint]]
 
         # NEXT, get the names and values of any locked parameters
         set locked [$ps locked]
@@ -188,7 +182,7 @@ snit::type parm {
         $ps unlock *
 
         # NEXT, reset values to defaults.
-        $type reset
+        $self reset
 
         # NEXT, put the locked parameters back
         set unreset [list]
@@ -201,18 +195,7 @@ snit::type parm {
             $ps lock $parm
         }
 
-        # NEXT, log it.
-        if {[llength $unreset] == 0} {
-            log normal parm "Reset Parameters"
-            app puts        "Reset Parameters"
-        } else {
-            log normal warning \
-                "Reset Parameters, except for the following locked parameters\n[join $unreset \n]"
-
-            app puts "Reset Parameters (except for locked parameters, see log)"
-        }
-
-        notifier send $type <Update>
+        $adb notify $self <Update>
 
         # NEXT, Return the undo script
         return $undo
@@ -226,33 +209,17 @@ snit::type parm {
     #
     # Sets the value of the parameter, and returns an undo script
 
-    typemethod {mutate set} {parm value} {
+    method {mutate set} {parm value} {
         # FIRST, get the undo information
-        set undo [mytypemethod mutate set $parm [$ps get $parm]]
+        set undo [mymethod mutate set $parm [$ps get $parm]]
 
         # NEXT, try to set the parameter
         $ps set $parm $value
 
-        notifier send $type <Update>
+        $adb notify parm <Update>
 
         # NEXT, return the undo script
         return $undo
-    }
-
-    #-------------------------------------------------------------------
-    # Order helpers
-
-    # LoadValue idict parm
-    #
-    # idict - "parm" item definition dictionary
-    # parm  - Chosen parameter name
-    #
-    # Returns the value for the parameter.
-
-    proc LoadValue {idict parm} {
-        if {$parm ne ""} {
-            dict create value [parm get $parm]
-        }
     }
 }
 
@@ -264,19 +231,9 @@ snit::type parm {
 # Imports the contents of a parmdb file into the scenario.
 
 ::athena::orders define PARM:IMPORT {
-    meta title "Import Parameter File"
-
+    meta title      "Import Parameter File"
     meta sendstates {PREP PAUSED}
-
-    meta parmlist {filename}
-
-    # NOTE: Dialog is not usually used.  Could define a "filepicker"
-    # -editcmd or field type, though.
-    meta form {
-        rcc "Parameter File:" -for filename
-        text filename
-    }
-
+    meta parmlist   {filename}
 
     method _validate {} {
         my prepare filename -required 
@@ -294,7 +251,7 @@ snit::type parm {
     method _execute {{flunky ""}} {
         if {[catch {
             # In this case, simply try it.
-            my setundo [parm mutate import $parms(filename)]
+            my setundo [$adb parm mutate import $parms(filename)]
         } result]} {
             # TBD: what do we do here? bgerror for now
             error $result
@@ -308,16 +265,16 @@ snit::type parm {
 # Imports the contents of a parmdb file into the scenario.
 
 ::athena::orders define PARM:RESET {
-    meta title "Reset Parameters to Defaults"
-
+    meta title      "Reset Parameters to Defaults"
     meta sendstates {PREP PAUSED}
-    meta parmlist {}
+    meta parmlist   {}
+
     method _validate {} {}
 
     method _execute {{flunky ""}} {
         if {[catch {
             # In this case, simply try it.
-            my setundo [parm mutate reset]
+            my setundo [$adb parm mutate reset]
         } result]} {
             my reject * $result
         }
@@ -332,30 +289,41 @@ snit::type parm {
 # Sets the value of a parameter.
 
 ::athena::orders define PARM:SET {
-    meta title "Set Parameter Value"
-
+    meta title      "Set Parameter Value"
     meta sendstates {PREP PAUSED}
-
-    meta parmlist {parm value}
+    meta parmlist   {parm value}
 
     meta form {
         rcc "Parameter:" -for parm
         enum parm -listcmd {parm names} \
-            -loadcmd {parm::LoadValue}
+            -loadcmd {$order_ LoadValue}
 
         rcc "Value:" -for value
         text value -width 40
     }
 
+    # LoadValue idict parm
+    #
+    # idict - "parm" item definition dictionary
+    # parm  - Chosen parameter name
+    #
+    # Returns the value for the parameter.
+
+    method LoadValue {idict parm} {
+        if {$parm ne ""} {
+            dict create value [$adb parm get $parm]
+        }
+    }
+
 
     method _validate {} {
-        my prepare parm  -required  -type parm
+        my prepare parm  -required  -type [list $adb parm]
         my prepare value
 
         my returnOnError
 
         # NEXT, validate the value
-        set vtype [parm type $parms(parm)]
+        set vtype [$adb parm type $parms(parm)]
 
         if {[catch {$vtype validate $parms(value)} result]} {
             my reject value $result
@@ -363,6 +331,6 @@ snit::type parm {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [parm mutate set $parms(parm) $parms(value)]
+        my setundo [$adb parm mutate set $parms(parm) $parms(value)]
     }
 }

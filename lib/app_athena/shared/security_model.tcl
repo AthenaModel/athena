@@ -196,10 +196,10 @@ snit::type security_model {
             JOIN units USING (g)
             GROUP BY civgroups.n,civgroups.g
         } {
-            set a [parmdb get force.population]
-            set D [parmdb get force.demeanor.$demeanor]
+            set a [parm get force.population]
+            set D [parm get force.demeanor.$demeanor]
             
-            set b [parmdb get force.mood]
+            set b [parm get force.mood]
             let M {1.0 - $b*$mood/100.0}
 
             let pop_force {entier(ceil($a*$D*$M*$P))}
@@ -228,9 +228,9 @@ snit::type security_model {
             WHERE U.personnel > 0
             GROUP BY n, g, U.a
         } {
-            set D [parmdb get force.demeanor.$demeanor]
-            set E [parmdb get force.forcetype.$forcetype]
-            set A [parmdb get force.alpha.$a]
+            set D [parm get force.demeanor.$demeanor]
+            set E [parm get force.forcetype.$forcetype]
+            set A [parm get force.alpha.$a]
 
             let own_force_by_a {entier(ceil($A*$E*$D*$P))}
 
@@ -255,8 +255,8 @@ snit::type security_model {
             WHERE personnel > 0
             GROUP BY n, g 
         } {
-            set D [parmdb get force.demeanor.$demeanor]
-            set E [parmdb get force.orgtype.$orgtype]
+            set D [parm get force.demeanor.$demeanor]
+            set E [parm get force.orgtype.$orgtype]
             let own_force {entier(ceil($E*$D*$P))}
             
             rdb eval {
@@ -385,7 +385,7 @@ snit::type security_model {
         }
 
         # NEXT, get the proximity multiplier
-        set h [parmdb get force.proximity]
+        set h [parm get force.proximity]
 
         # NEXT, iterate over all pairs of nearby neighborhoods.
         rdb eval {
@@ -437,7 +437,7 @@ snit::type security_model {
         }
 
         # NEXT, get the proximity multiplier
-        set h [parmdb get force.proximity]
+        set h [parm get force.proximity]
 
         # NEXT, iterate over all pairs of nearby neighborhoods.
         rdb eval {
@@ -533,7 +533,7 @@ snit::type security_model {
 
     typemethod ComputeSecurity {} {
         # FIRST, get the volatility attenuator.
-        set v [parmdb get force.volatility]
+        set v [parm get force.volatility]
 
         rdb eval {
             SELECT n, g, pct_force, pct_enemy, personnel, volatility

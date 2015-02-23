@@ -141,7 +141,7 @@
 
         # NEXT, the maximum possible amount of repair that could be
         # performed in one tick
-        set rTime [parmdb get plant.repairtime]
+        set rTime [[my adb] parm get plant.repairtime]
         if {$rTime == 0.0} {
             set maxDeltaRho 1.0
         } else {

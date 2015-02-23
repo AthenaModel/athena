@@ -407,7 +407,7 @@ snit::type ::athena::cash {
         # NEXT, retrieve the profile.
         set profile [dict create]
         foreach sector [array names allocations] {
-            dict set profile $sector [parm get econ.shares.$eclass.$sector]
+            dict set profile $sector [$adb parm get econ.shares.$eclass.$sector]
         }
 
         # NEXT, allocate it.

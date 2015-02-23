@@ -355,7 +355,7 @@
 
     method CostPerPerson {} {
         set gtype [[my adb] group gtype $g]
-        return [money validate [parm get activity.$gtype.$activity.cost]]
+        return [money validate [[my adb] parm get activity.$gtype.$activity.cost]]
     }
 
 

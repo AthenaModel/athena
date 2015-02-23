@@ -270,7 +270,7 @@
         # NEXT, get the list of groups that reside in local neighborhoods in
         # which the owner has positive direct support
 
-        set minSupport [parm get service.ENI.minSupport]
+        set minSupport [[my adb] parm get service.ENI.minSupport]
 
         [my adb] eval "
             SELECT g 

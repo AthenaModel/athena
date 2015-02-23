@@ -383,7 +383,7 @@ snit::type ::athena::absit {
         set location [$adb nbhood randloc $n]
 
         if {$rduration eq ""} {
-            set rduration [parmdb get absit.$stype.duration]
+            set rduration [$adb parm get absit.$stype.duration]
         }
 
 
@@ -617,7 +617,7 @@ snit::type ::athena::absit {
         if {$stype eq ""} {
             return {}
         }
-        return [dict create rduration [parmdb get absit.$stype.duration]]
+        return [dict create rduration [$adb parm get absit.$stype.duration]]
     }
 }
 

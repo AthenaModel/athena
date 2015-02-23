@@ -534,7 +534,7 @@ snit::type sanity {
             }
         }
 
-        set limit [parmdb get econ.check.MinConsumerFrac]
+        set limit [parm get econ.check.MinConsumerFrac]
 
         if {
             $cells(In::Consumers) < $limit * $start(In::Consumers)
@@ -553,7 +553,7 @@ snit::type sanity {
             "
         }
 
-        set limit [parmdb get econ.check.MinLaborFrac]
+        set limit [parm get econ.check.MinLaborFrac]
 
         if {
             $cells(In::LF) < $limit * $start(In::LF)
@@ -573,7 +573,7 @@ snit::type sanity {
             "
         }
 
-        set limit [parmdb get econ.check.MaxUR]
+        set limit [parm get econ.check.MaxUR]
 
         if {$cells(Out::UR) > $limit} {
             set sev ERROR
@@ -589,7 +589,7 @@ snit::type sanity {
             "
         }
 
-        set limit [parmdb get econ.check.MinDgdpFrac]
+        set limit [parm get econ.check.MinDgdpFrac]
 
         if {
             $cells(Out::DGDP) < $limit * $start(Out::DGDP)
@@ -608,8 +608,8 @@ snit::type sanity {
             "
         }
 
-        set min [parmdb get econ.check.MinCPI]
-        set max [parmdb get econ.check.MaxCPI]
+        set min [parm get econ.check.MinCPI]
+        set max [parm get econ.check.MaxCPI]
 
         if {$cells(Out::CPI) < $min || 
             $cells(Out::CPI) > $max

@@ -136,7 +136,7 @@ snit::type coverage_model {
             WHERE gtype = 'FRC' AND a != 'NONE'
         } {
             set minFrcSecurity($a) \
-                [qsecurity value [parmdb get activity.FRC.$a.minSecurity]]
+                [qsecurity value [parm get activity.FRC.$a.minSecurity]]
         }
         
         # NEXT, clear security flags when security is too low
@@ -183,7 +183,7 @@ snit::type coverage_model {
         } {
             # security
             set minSecurity \
-                [qsecurity value [parmdb get \
+                [qsecurity value [parm get \
                     activity.ORG.$a.minSecurity.$orgtype]]
 
             set security [qsecurity strictvalue $security]
@@ -232,7 +232,7 @@ snit::type coverage_model {
             AND   effective > 0
         } {
             set cov [coverage eval \
-                         [parmdb get activity.$gtype.$a.coverage] \
+                         [parm get activity.$gtype.$a.coverage] \
                          $personnel                               \
                          $population]
 

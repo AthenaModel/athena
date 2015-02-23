@@ -170,7 +170,7 @@ snit::type ::athena::demog {
         # if it is enabled
         set defaultUR 0.0
         if {[$adb econ state] eq "DISABLED"} {
-            set defaultUR [parm get demog.playboxUR]
+            set defaultUR [$adb parm get demog.playboxUR]
         }
 
         foreach {n labor_force} [rdb eval {
@@ -286,7 +286,7 @@ snit::type ::athena::demog {
     method ComputeGroupEmployment {} {
         # FIRST, get the unemployment rate and the Unemployment
         # Factor Z-curve.
-        set zuaf [parmdb get demog.Zuaf]
+        set zuaf [$adb parm get demog.Zuaf]
 
         # NEXT, compute the group employment statistics
         foreach {n g population labor_force} [rdb eval {
@@ -396,7 +396,7 @@ snit::type ::athena::demog {
                 let aloc {$tc/$consumers}
             }
 
-            let rloc {[parm get demog.consump.RGPC.$urbanization]/52.0}
+            let rloc {[$adb parm get demog.consump.RGPC.$urbanization]/52.0}
             
            $adb eval {
                 UPDATE demog_g
@@ -436,8 +436,8 @@ snit::type ::athena::demog {
     
         # NEXT, compute the new expected consumption from the old,
         # along with the expectations factor.
-        set alphaA [parm get demog.consump.alphaA]
-        set alphaE [parm get demog.consump.alphaE]
+        set alphaA [$adb parm get demog.consump.alphaA]
+        set alphaE [$adb parm get demog.consump.alphaE]
     
         foreach {g aloc eloc} [rdb eval {
             SELECT g, aloc, eloc
@@ -481,7 +481,7 @@ snit::type ::athena::demog {
         # NEXT, if the Gini coefficient is 1.0 then effectively one
         # person has all of the income and no one else has anything.
         # Otherwise, compute the povfrac given the formula.
-        set gini [parm get demog.gini]
+        set gini [$adb parm get demog.gini]
         
         if {$gini == 1.0} {
             let povfrac 1.0
@@ -672,7 +672,7 @@ snit::type ::athena::demog {
     method ComputeUnemployment {} {
         # FIRST, extract jobs and labor force available. Those in turbulence
         # are not considered part of the labor force
-        set TurFrac [parm get demog.turFrac]
+        set TurFrac [$adb parm get demog.turFrac]
 
         $adb eval {
             SELECT E.n           AS n,
@@ -690,7 +690,7 @@ snit::type ::athena::demog {
         # disaggregate unemployment taking into account that
         # some folks are geographically unemployed (too far from 
         # where the jobs are)
-        set max [parmdb get demog.maxcommute]
+        set max [$adb parm get demog.maxcommute]
 
         foreach prox [eproximity names] {
             set morework 1
@@ -726,8 +726,8 @@ snit::type ::athena::demog {
     method ComputeNbhoodEconStats {} {
         # FIRST, compute neighborhood statistics based upon the disaggregated
         # unemployment
-        set zuaf [parmdb get demog.Zuaf]
-        set TurFrac [parm get demog.turFrac]
+        set zuaf [$adb parm get demog.Zuaf]
+        set TurFrac [$adb parm get demog.turFrac]
 
         foreach {n population labor_force} [rdb eval {
             SELECT n, population, labor_force
@@ -1020,7 +1020,7 @@ snit::type ::athena::demog {
         $self adjust $g $delta
 
         # NEXT, Record the change
-        if {[parm get hist.pop]} {
+        if {[$adb parm get hist.pop]} {
            $adb eval {
                 INSERT OR IGNORE INTO hist_flow(t,f,g)
                 VALUES(now(), $f, $g);

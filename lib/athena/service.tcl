@@ -101,8 +101,8 @@ snit::type ::athena::service {
             }
 
             # NEXT, defaults for actual, required and expected
-            set actual   [parm get service.$s.actual.$urb]
-            set required [parm get service.$s.required.$urb]
+            set actual   [$adb parm get service.$s.actual.$urb]
+            set required [$adb parm get service.$s.required.$urb]
 
             $adb eval {
                 UPDATE service_sg
@@ -270,9 +270,9 @@ snit::type ::athena::service {
         $adb eval $rdbQuery {
             if {$pop > 0} {
                 set Sr [money validate \
-                    [parm get service.ENI.saturationCost.$urb]]
+                    [$adb parm get service.ENI.saturationCost.$urb]]
                 let Sf {$pop * $Sr}
-                set Rr [parm get service.ENI.required.$urb]
+                set Rr [$adb parm get service.ENI.required.$urb]
                 let Rf {$Sf * $Rr}
             } else {
                 let Sf 0.0
@@ -417,7 +417,7 @@ snit::type ::athena::service {
             # and keep a running total of adjusted cost
             if {$pop > 0} {
                 set Sc     [money validate \
-                    [parm get service.ENI.saturationCost.$urb]]
+                    [$adb parm get service.ENI.saturationCost.$urb]]
                 let Acost  {$pop * $Sc}
                 let Atcost {$Atcost + $Acost}
 
@@ -540,8 +540,8 @@ snit::type ::athena::service {
         # NEXT, cache the needs and expectations factor gain values so
         # we do not need to keep hitting the parmdb
         foreach s $slist {
-            set parms(gainNeeds,$s)  [parm get service.$s.gainNeeds]
-            set parms(gainExpect,$s) [parm get service.$s.gainExpect]
+            set parms(gainNeeds,$s)  [$adb parm get service.$s.gainNeeds]
+            set parms(gainExpect,$s) [$adb parm get service.$s.gainExpect]
         }
 
         # NEXT, extract data from the RDB for abstract services
@@ -583,9 +583,9 @@ snit::type ::athena::service {
 
                 # Get the smoothing constant.
                 if {$parms(Ag) > $oldX} {
-                    set alpha [parm get service.$s.alphaA]
+                    set alpha [$adb parm get service.$s.alphaA]
                 } else {
-                    set alpha [parm get service.$s.alphaX]
+                    set alpha [$adb parm get service.$s.alphaX]
                 }
 
                 # Compute the expected value
@@ -617,8 +617,8 @@ snit::type ::athena::service {
     # exponential smoothing.
 
     method ComputeLOS {} {
-        set parms(gainNeeds)  [parm get service.ENI.gainNeeds]
-        set parms(gainExpect) [parm get service.ENI.gainExpect]
+        set parms(gainNeeds)  [$adb parm get service.ENI.gainNeeds]
+        set parms(gainExpect) [$adb parm get service.ENI.gainExpect]
 
         foreach {g n urb pop Fg oldX} [$adb eval {
             SELECT G.g                AS g,
@@ -648,10 +648,10 @@ snit::type ::athena::service {
 
                 # Compute the actual value
                 set Sr   [money validate \
-                    [parm get service.ENI.saturationCost.$urb]]
+                    [$adb parm get service.ENI.saturationCost.$urb]]
                 let parms(Pg) {$pop * $Sr}
-                set parms(Rg) [parm get service.ENI.required.$urb]
-                set beta [parm get service.ENI.beta.$urb]
+                set parms(Rg) [$adb parm get service.ENI.required.$urb]
+                set beta [$adb parm get service.ENI.beta.$urb]
 
                 let parms(Ag) {min(1.0,($parms(Fg)/$parms(Pg))**$beta)}
 
@@ -663,9 +663,9 @@ snit::type ::athena::service {
 
                 # Get the smoothing constant.
                 if {$parms(Ag) > $oldX} {
-                    set alpha [parm get service.ENI.alphaA]
+                    set alpha [$adb parm get service.ENI.alphaA]
                 } else {
-                    set alpha [parm get service.ENI.alphaX]
+                    set alpha [$adb parm get service.ENI.alphaX]
                 }
 
                 # Compute the expected value

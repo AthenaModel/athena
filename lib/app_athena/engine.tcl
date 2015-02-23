@@ -165,7 +165,7 @@ snit::type engine {
         profile demog stats
 
         # NEXT, update the economics.
-        if {[simclock now] % [parmdb get econ.ticksPerTock] == 0} {
+        if {[simclock now] % [parm get econ.ticksPerTock] == 0} {
             set econOK [profile econ tock]
 
             if {$econOK} {
@@ -192,7 +192,7 @@ snit::type engine {
         # NEXT, save the history for this tick.
         profile hist tick
 
-        if {[simclock now] % [parmdb get econ.ticksPerTock] == 0} {
+        if {[simclock now] % [parm get econ.ticksPerTock] == 0} {
             if {$econOK} {
                 profile hist econ
             }

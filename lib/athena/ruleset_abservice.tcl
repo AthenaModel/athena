@@ -169,7 +169,7 @@ oo::class create ::athena::ruleset_abservice {
     method GetCase {fdict} {
         dict with fdict {}
         # FIRST, get the delta parameter
-        set delta [parmdb get service.$dtype.delta]
+        set delta [[my adb] parm get service.$dtype.delta]
 
         # NEXT, compute the case
         if {$actual < $required} {

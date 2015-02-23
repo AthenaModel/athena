@@ -37,7 +37,7 @@ snit::widgetadaptor hrelbrowser {
     #    -view     - The view name.
     #    -reloadon - The default reload events 
     #
-    # Reload on ::parm <Update>: ???.  I'm not sure why we're doing this.
+    # Reload on ::adb.parm <Update>: ???.  I'm not sure why we're doing this.
 
     typevariable modes -array {
         scenario {
@@ -80,7 +80,7 @@ snit::widgetadaptor hrelbrowser {
             -reloadon {
                 ::sim <Tick>
                 ::sim <DbSyncB>
-                ::parm <Update>
+                ::adb.parm <Update>
             }
         }
     }

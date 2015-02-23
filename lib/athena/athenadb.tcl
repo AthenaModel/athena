@@ -157,6 +157,7 @@ snit::type ::athena::athenadb {
     component pot       -public pot       ;# beanpot(n)
     component flunky    -public flunky    ;# athena_flunky(n)
     component gofer     -public gofer     ;# gofer
+    component parm      -public parm      ;# model parameter DB
     component paster    -public paste     ;# paste manager
     component ruleset   -public ruleset   ;# rule set manager
 
@@ -303,6 +304,7 @@ snit::type ::athena::athenadb {
             nbhood                      \
             nbrel                       \
             orggroup                    \
+            parm                        \
             payload                     \
             plant                       \
             personnel                   \
@@ -337,10 +339,6 @@ snit::type ::athena::athenadb {
             set info(adbfile) $filename
         } else {
             set info(adbfile) ""
-
-            # Initialize external packages
-            parm reset
-            parm checkpoint -saved
         }
 
         # NEXT, finish up
@@ -922,7 +920,7 @@ snit::type ::athena::athenadb {
 
     method UramGamma {ctype} {
         # The [expr] converts it to a number.
-        return [expr [lindex [parm get uram.factors.$ctype] 1]]
+        return [expr [lindex [$adb parm get uram.factors.$ctype] 1]]
     }
 
     # Sigline dtype signature
@@ -1000,7 +998,7 @@ snit::type ::athena::athenadb {
     # infrastructure service based on urbanization and type of LOS
 
     method Service {svc which urb} {
-        return [parm get service.$svc.$which.$urb]
+        return [$adb parm get service.$svc.$which.$urb]
     }
 
 

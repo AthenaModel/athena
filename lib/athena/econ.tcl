@@ -171,7 +171,7 @@ snit::type ::athena::econ {
 
         let URfrac {$cells(BaseUR) / 100.0}
 
-        set turFrac [parmdb get demog.turFrac]
+        set turFrac [$adb parm get demog.turFrac]
 
         # FIRST, turbulence cannot be greater than the unemployment rate
         if {$URfrac < $turFrac} {
@@ -553,7 +553,7 @@ snit::type ::athena::econ {
         # TBD: should cellmodel(n) be changed to handle symbolic 
         # "yes" and "no"?
         sam set [list Flag.REMisTaxed \
-            [::projectlib::boolean validate [parm get econ.REMisTaxed]]]
+            [::projectlib::boolean validate [$adb parm get econ.REMisTaxed]]]
 
         # NEXT, if we have historical data to deal with, set that in 
         # the SAM. For now, just unemployment rate and the annual remittance
@@ -1021,11 +1021,11 @@ snit::type ::athena::econ {
             cge set [list Global::REMChangeRate $samdata(REMChangeRate)]
 
             # NEXT some calibration tuning parameters
-            cge set [list GDPExponent     [parm get econ.gdpExp]]
-            cge set [list EmpExponent     [parm get econ.empExp]]
-            cge set [list TurFrac         [parm get demog.turFrac]]
+            cge set [list GDPExponent     [$adb parm get econ.gdpExp]]
+            cge set [list EmpExponent     [$adb parm get econ.empExp]]
+            cge set [list TurFrac         [$adb parm get demog.turFrac]]
             cge set [list Flag.REMisTaxed \
-                [::projectlib::boolean validate [parm get econ.REMisTaxed]]]
+                [::projectlib::boolean validate [$adb parm get econ.REMisTaxed]]]
 
             # NEXT, the base unemployed
             let baseUnemp {$demdata(labor_force) * $samdata(BaseUR) / 100.0}
@@ -1354,7 +1354,7 @@ snit::type ::athena::econ {
             AND   nbhoods.local
         } {
             set security [qsecurity name $security]
-            set factor [parmdb get econ.secFactor.labor.$security]
+            set factor [$adb parm get econ.secFactor.labor.$security]
             let numerator {$numerator + $factor*$labor_force}
         }
 
@@ -1396,7 +1396,7 @@ snit::type ::athena::econ {
             AND   nbhoods.local
         } {
             set security [qsecurity name $security]
-            set factor   [parmdb get econ.secFactor.consumption.$security]
+            set factor   [$adb parm get econ.secFactor.consumption.$security]
             let numerator {$numerator + $factor*$consumers}
         }
 

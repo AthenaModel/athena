@@ -145,7 +145,7 @@ snit::type ::athena::plant {
 
         # FIRST, get the amount of goods each plant is capable of producing
         # at max capacity
-        set goodsPerPlant [money validate [parmdb get plant.bktsPerYear.goods]]
+        set goodsPerPlant [money validate [$adb parm get plant.bktsPerYear.goods]]
 
         # NEXT, get the calibrated values from the CGE for the quantity of
         # goods baskets and their price
@@ -155,7 +155,7 @@ snit::type ::athena::plant {
         # NEXT, adjust the the maximum number of goods baskets that could
         # possible be produced given that the initial capacity of the 
         # goods sector may be degraded
-        let initCapFrac {[parmdb get econ.initCapPct]/100.0}
+        let initCapFrac {[$adb parm get econ.initCapPct]/100.0}
         let maxBkts     {$QSgoods / $Pgoods / $initCapFrac}
         
         # NEXT, go through the neighborhoods laying down plants for each
@@ -341,7 +341,7 @@ snit::type ::athena::plant {
         }
 
         # NEXT, get the plant lifetime
-        set lt [parmdb get plant.lifetime]
+        set lt [$adb parm get plant.lifetime]
 
         # NEXT, if the lifetime is zero, degradation is disabled
         if {$lt == 0} {
@@ -393,8 +393,8 @@ snit::type ::athena::plant {
         }
 
         # NEXT, retrieve parms
-        set bCost [money validate [parmdb get plant.buildcost]]
-        set rFrac [parmdb get plant.repairfrac]
+        set bCost [money validate [$adb parm get plant.buildcost]]
+        set rFrac [$adb parm get plant.repairfrac]
 
         # NEXT, the amount of money spent per plant
         let cashPerPlant {$cash / $num}
@@ -438,8 +438,8 @@ snit::type ::athena::plant {
         }
 
         # NEXT, retrieve parms
-        set bCost [money validate [parmdb get plant.buildcost]]
-        set rFrac [parmdb get plant.repairfrac]
+        set bCost [money validate [$adb parm get plant.buildcost]]
+        set rFrac [$adb parm get plant.repairfrac]
 
         # NEXT, determine the cost of repairing one plant in this
         # neighborhood
@@ -509,8 +509,8 @@ snit::type ::athena::plant {
 
         # NEXT, retrieve relevant parameters and compute one weeks worth of
         # construction
-        set bCost [money validate [parmdb get plant.buildcost]]
-        set bTime [parmdb get plant.buildtime]
+        set bCost [money validate [$adb parm get plant.buildcost]]
+        set bTime [$adb parm get plant.buildtime]
 
         set bRate 1.0
         if {$bTime > 0.0} {
@@ -555,8 +555,8 @@ snit::type ::athena::plant {
         set newplants 0
 
         # NEXT, retrieve relevant parameters
-        set bCost [money validate [parmdb get plant.buildcost]]
-        set bTime [parmdb get plant.buildtime]
+        set bCost [money validate [$adb parm get plant.buildcost]]
+        set bTime [$adb parm get plant.buildtime]
 
         # NEXT, one weeks worth of construction
         set bRate 1.0
@@ -713,7 +713,7 @@ snit::type ::athena::plant {
     # Returns the total output capacity of all GOODS production plants
 
     method {capacity total} {} {
-        set goodsPerPlant [money validate [parmdb get plant.bktsPerYear.goods]]
+        set goodsPerPlant [money validate [$adb parm get plant.bktsPerYear.goods]]
 
         set totBkts [$adb onecolumn {
             SELECT total(num*rho) FROM plants_na
@@ -728,7 +728,7 @@ snit::type ::athena::plant {
     # a neighborhood
 
     method {capacity n} {n} {
-        set goodsPerPlant [money validate [parmdb get plant.bktsPerYear.goods]]
+        set goodsPerPlant [money validate [$adb parm get plant.bktsPerYear.goods]]
 
         set totBkts [$adb onecolumn {
             SELECT total(num*rho) FROM plants_na
@@ -744,7 +744,7 @@ snit::type ::athena::plant {
     # an agent
 
     method {capacity a} {a} {
-        set goodsPerPlant [money validate [parmdb get plant.bktsPerYear.goods]]
+        set goodsPerPlant [money validate [$adb parm get plant.bktsPerYear.goods]]
 
         set totBkts [$adb onecolumn {
             SELECT total(num*rho) FROM plants_na

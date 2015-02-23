@@ -283,7 +283,7 @@ snit::type ::athena::personnel {
         $self LogDeploymentChanges
 
         # NEXT, Demobilize undeployed troops
-        if {[parm get strategy.autoDemob]} {
+        if {[$adb parm get strategy.autoDemob]} {
             foreach {g available a} [$adb eval {
                 SELECT g, available, a 
                 FROM working_personnel

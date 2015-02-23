@@ -41,7 +41,7 @@ snit::widgetadaptor satbrowser {
     # Reload on ::adb <civgroups> because changes to basepop will affect the
     # rows to display.
     #
-    # Reload on ::parm <Update>: ???.  I'm not sure why we're doing this.
+    # Reload on ::adb.parm <Update>: ???.  I'm not sure why we're doing this.
 
     typevariable modes -array {
         scenario {
@@ -75,7 +75,7 @@ snit::widgetadaptor satbrowser {
             -reloadon {
                 ::sim <Tick>
                 ::sim <DbSyncB>
-                ::parm <Update>
+                ::adb.parm <Update>
             }
         }
     }

@@ -90,7 +90,7 @@ namespace eval ::athena_test::tests:: {
         parm mutate reset
     } -cleanup {
         cleanup
-    } -result {::parm restore {}}
+    } -match glob -result {*restore {}}
 
     #-------------------------------------------------------------------
     # mutate set
