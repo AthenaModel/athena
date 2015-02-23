@@ -31,9 +31,8 @@
     #-------------------------------------------------------------------
     # Constructor
 
-    constructor {args} {
-        # Initialize as tactic bean
-        next
+    constructor {pot_ args} {
+        next $pot_
 
         # Set mapping from mode name to mode character
         set modeChar(persistent) P

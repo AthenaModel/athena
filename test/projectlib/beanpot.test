@@ -81,8 +81,8 @@ oo::class create pet {
     variable name
     variable color
 
-    constructor {} {
-        next
+    constructor {pot_} {
+        next $pot_
 
         set name ""
         set color ""
@@ -103,8 +103,8 @@ oo::class create dog {
 
     variable breed
 
-    constructor {{dict {}}} {
-        next
+    constructor {pot_ {dict {}}} {
+        next $pot_
 
         set breed "mutt"
         my setdict $dict
@@ -116,8 +116,8 @@ oo::class create cat {
 
     variable tail
 
-    constructor {{dict {}}} {
-        next
+    constructor {pot_ {dict {}}} {
+        next $pot_
 
         set tail yes  ;# Cat has a tail?
 
@@ -130,8 +130,8 @@ oo::class create wagger {
 
     beanslot tail
 
-    constructor {{dict {}}} {
-        next
+    constructor {pot_ {dict {}}} {
+        next $pot_
         set tail ""
         my setdict $dict
     }
@@ -152,8 +152,8 @@ oo::class create tail {
     variable parent
     variable length
 
-    constructor {{dict {}}} {
-        next
+    constructor {pot_ {dict {}}} {
+        next $pot_
         set parent ""
         set length medium
         my setdict $dict
@@ -165,8 +165,8 @@ oo::class create blocklist {
 
     variable blocks
 
-    constructor {} {
-        next
+    constructor {pot_} {
+        next $pot_
         set blocks [list]
     }
 }

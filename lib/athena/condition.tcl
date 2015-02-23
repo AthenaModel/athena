@@ -137,8 +137,8 @@ oo::define ::athena::condition {
     #-------------------------------------------------------------------
     # Constructor
 
-    constructor {} {
-        next
+    constructor {pot_} {
+        next $pot_
         set parent  ""
         set state   normal
         set metflag ""

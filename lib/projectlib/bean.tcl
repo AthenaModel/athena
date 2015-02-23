@@ -133,15 +133,16 @@ oo::define ::projectlib::bean {
     #-------------------------------------------------------------------
     # Constructor/Destructor
     
-    # constructor
+    # constructor pot_
     #
-    # Creates a new bean.  Note that a beans should always be created
-    # using a beanpot(n) object's new method; this method assigns the
-    # bean's pot and ID.
+    # pot_  - The bean pot in which the bean was created, or ""
+    #
+    # Creates a new bean.  Note that a bean to be stored in a beanpot 
+    # should always be created using the beanpot(n) object's new method.
 
-    constructor {} {
+    constructor {pot_} {
         # A pot-less bean has no pot or ID.
-        set pot ""
+        set pot $pot_
         set id ""
     }
 

@@ -82,8 +82,8 @@ oo::class create pet {
     variable name
     variable color
 
-    constructor {} {
-        next
+    constructor {pot_} {
+        next $pot_
 
         set name ""
         set color ""
@@ -104,8 +104,8 @@ oo::class create dog {
 
     variable breed
 
-    constructor {{dict {}}} {
-        next
+    constructor {pot_ {dict {}}} {
+        next $pot_
 
         set breed "mutt"
         my setdict $dict
@@ -117,8 +117,8 @@ oo::class create cat {
 
     variable tail
 
-    constructor {{dict {}}} {
-        next
+    constructor {pot_ {dict {}}} {
+        next $pot_
 
         set tail yes  ;# Cat has a tail?
 
@@ -131,8 +131,8 @@ oo::class create wagger {
 
     beanslot tail
 
-    constructor {{dict {}}} {
-        next
+    constructor {pot_ {dict {}}} {
+        next $pot_
         set tail ""
         my setdict $dict
     }
@@ -153,8 +153,8 @@ oo::class create tail {
     variable parent
     variable length
 
-    constructor {{dict {}}} {
-        next
+    constructor {pot_ {dict {}}} {
+        next $pot_
         set parent ""
         set length medium
         my setdict $dict
@@ -167,8 +167,8 @@ oo::class create block {
     variable parent
     variable name
 
-    constructor {} {
-        next
+    constructor {pot_} {
+        next $pot_
         set parent ""
         set name ""
     }
@@ -181,8 +181,8 @@ oo::class create blocklist {
     beanslot blocks
     variable data
 
-    constructor {} {
-        next
+    constructor {pot_} {
+        next $pot_
         set parent ""
         set blocks [list]
         set data ""
@@ -222,8 +222,8 @@ oo::class create blocklist2 {
 
     beanslot moreblocks
 
-    constructor {} {
-        next
+    constructor {pot_} {
+        next $pot_
 
         set moreblocks [list]
     }
@@ -234,8 +234,8 @@ oo::class create trans {
     variable persistent
     variable trans
 
-    constructor {} {
-        next
+    constructor {pot_} {
+        next $pot_
         set persistent 1
 
         # trans is array-valued and hence transient
@@ -247,8 +247,8 @@ oo::class create viewbean {
     superclass ::projectlib::bean
     variable name
 
-    constructor {name_} {
-        next
+    constructor {pot_ name_} {
+        next $pot_ 
         set name $name_
     }
 
@@ -288,12 +288,12 @@ test bean_getslots-1.2 {got slots} -body {
 # Creation
 
 test creation-1.1 {can destroy potless bean without error} -body {
-    set fido [pet new]
+    set fido [pet new ""]
     $fido destroy
 } -result {}
 
 test creation-1.2 {potless bean} -body {
-    set fido [pet new]
+    set fido [pet new ""]
     list [$fido get pot] [$fido get id]
 } -cleanup {
     $fido destroy
@@ -597,7 +597,7 @@ test destroyslots-1.4 {uninitialized slots are ignored} -body {
     error
 } -cleanup {
     cleanup
-} -result {wrong # args: should be "blocklist create ::pot::blocklist1"}
+} -result {wrong # args: should be "blocklist create ::pot::blocklist1 pot_"}
 
 test destroyslots-1.5 {leaves the slot alone} -body {
     set blist [pot new blocklist]

@@ -36,9 +36,8 @@
     #------------------------------------------------------------------
     # Constructor
 
-    constructor {args} {
-        # Initialize as a tactic bean.
-        next
+    constructor {pot_ args} {
+        next $pot_
 
         # Initialize state variables
         set cap ""

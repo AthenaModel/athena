@@ -35,9 +35,8 @@
     #------------------------------------------------------------------
     # Constructor
 
-    constructor {args} {
-        # Initialize as tactic bean
-        next
+    constructor {pot_ args} {
+        next $pot_
 
         # Initialize state variables
         set mode    ALL

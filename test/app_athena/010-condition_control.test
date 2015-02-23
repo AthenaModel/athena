@@ -94,7 +94,7 @@ namespace eval ::athena_test::tests:: {
     test constructor-1.2 {can set options} -setup {
         setup
     } -body {
-        set C1 [::athena::condition::CONTROL new -parent DUMMY]
+        set C1 [pot new ::athena::condition::CONTROL -parent DUMMY]
         $C1 get parent
     } -cleanup {
         cleanup

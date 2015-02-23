@@ -568,9 +568,10 @@ oo::class create ::athena::strategy {
     #-------------------------------------------------------------------
     # Constructor/Destructor
 
-    # Note: bean constructors must not have required arguments.
-    constructor {{agent_ ""}} {
-        next
+    # Note: bean constructors must not have required arguments other
+    # than pot_.
+    constructor {pot_ {agent_ ""}} {
+        next $pot_
         set agent $agent_
         set blocks [list]
     }
