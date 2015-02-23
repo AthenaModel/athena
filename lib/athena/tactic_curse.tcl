@@ -31,9 +31,8 @@
     #-------------------------------------------------------------------
     # Constructor
 
-    constructor {args} {
-        # Initialize as tactic bean
-        next
+    constructor {pot_ args} {
+        next $pot_
 
         # Set mapping from mode name to mode character
         set modeChar(persistent) P
@@ -130,7 +129,7 @@
 
         foreach {role goferdict} $roles {
             append narr "$role = "
-            append narr [gofer narrative $goferdict]
+            append narr [[my adb] gofer narrative $goferdict]
             append narr ". "
         }
 
@@ -152,8 +151,8 @@
                 HREL {
                     # Change to horizontal relationships of group(s) in
                     # f with group(s) in g
-                    set parms(f)    [gofer eval [dict get $roles $idata(f)]]
-                    set parms(g)    [gofer eval [dict get $roles $idata(g)]]
+                    set parms(f)    [[my adb] gofer eval [dict get $roles $idata(f)]]
+                    set parms(g)    [[my adb] gofer eval [dict get $roles $idata(g)]]
                     set parms(mode) $modeChar($idata(mode))
                     set parms(mag)  $idata(mag)
 
@@ -167,8 +166,8 @@
                 VREL {
                     # Change to verticl relationships of group(s) in
                     # g with actor(s) in a
-                    set parms(g)    [gofer eval [dict get $roles $idata(g)]]
-                    set parms(a)    [gofer eval [dict get $roles $idata(a)]]
+                    set parms(g)    [[my adb] gofer eval [dict get $roles $idata(g)]]
+                    set parms(a)    [[my adb] gofer eval [dict get $roles $idata(a)]]
                     set parms(mode) $modeChar($idata(mode))
                     set parms(mag)  $idata(mag)
 
@@ -182,8 +181,8 @@
                 COOP {
                     # Change to cooperation of CIV group(s) in f
                     # with FRC group(s) in g
-                    set parms(f)    [gofer eval [dict get $roles $idata(f)]]
-                    set parms(g)    [gofer eval [dict get $roles $idata(g)]]
+                    set parms(f)    [[my adb] gofer eval [dict get $roles $idata(f)]]
+                    set parms(g)    [[my adb] gofer eval [dict get $roles $idata(g)]]
                     set parms(mode) $modeChar($idata(mode))
                     set parms(mag)  $idata(mag)
 
@@ -197,7 +196,7 @@
                 SAT {
                     # Change of satisfaction of CIV group(s) in g
                     # with concern c
-                    set parms(g)    [gofer eval [dict get $roles $idata(g)]]
+                    set parms(g)    [[my adb] gofer eval [dict get $roles $idata(g)]]
                     set parms(c)    $idata(c)
                     set parms(mode) $modeChar($idata(mode))
                     set parms(mag)  $idata(mag)

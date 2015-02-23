@@ -31,7 +31,7 @@ package require snit 2.3
 package require Img 1.4.1
 package require Tkhtml 3.0
 package require projectlib
-package require marsgui 3.0.12
+package require marsgui 3.0.13
 # -kite-require-end
 
 #-----------------------------------------------------------------------
@@ -49,7 +49,6 @@ namespace eval ::projectgui:: {
 source [file join $::projectgui::library toolbutton.tcl      ]
 source [file join $::projectgui::library beanbrowser.tcl     ]
 source [file join $::projectgui::library enumbutton.tcl      ]
-source [file join $::projectgui::library goferfield.tcl      ]
 source [file join $::projectgui::library icons.tcl           ]
 source [file join $::projectgui::library linktree.tcl        ]
 source [file join $::projectgui::library listbuttonfield.tcl ]

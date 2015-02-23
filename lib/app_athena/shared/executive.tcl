@@ -801,8 +801,8 @@ snit::type executive {
     # Returns the affinity of x for y.
 
     proc affinity {x y} {
-        set gdict [gofer construct NUMBER AFFINITY $x $y] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER AFFINITY $x $y] 
+        return [adb gofer eval $gdict]
     }
 
     # aplants a
@@ -812,8 +812,8 @@ snit::type executive {
     # Returns the total number of plants owned by agent a.
 
     proc aplants {a} {
-        set gdict [gofer construct NUMBER AGENT_PLANTS $a] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER AGENT_PLANTS $a] 
+        return [adb gofer eval $gdict]
     }
 
     # assigned g activity n
@@ -826,8 +826,8 @@ snit::type executive {
     # assigned to do the activity in nbhood n.
 
     proc assigned {g activity n} {
-        set gdict [gofer construct NUMBER ASSIGNED $g $activity $n] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER ASSIGNED $g $activity $n] 
+        return [adb gofer eval $gdict]
     }
 
     # consumers g ?g...?
@@ -840,8 +840,8 @@ snit::type executive {
         if {[llength $args]==1} {
             set args [lindex $args 0]
         }
-        set gdict [gofer construct NUMBER GROUP_CONSUMERS $args] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER GROUP_CONSUMERS $args] 
+        return [adb gofer eval $gdict]
     }
 
     # controls a n ?n...?
@@ -885,8 +885,8 @@ snit::type executive {
     # Returns the cooperation of f with g.
 
     proc coop {f g} {
-        set gdict [gofer construct NUMBER COOP $f $g] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER COOP $f $g] 
+        return [adb gofer eval $gdict]
     }
 
     # coverage g activity n
@@ -899,8 +899,8 @@ snit::type executive {
     # activity a in neighborhood n.
 
     proc coverage {g activity n} {
-        set gdict [gofer construct NUMBER COVERAGE $g $activity $n]
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER COVERAGE $g $activity $n]
+        return [adb gofer eval $gdict]
     }
 
     # deployed g n ?n...?
@@ -915,8 +915,8 @@ snit::type executive {
         if {[llength $args]==1} {
             set args [lindex $args 0]
         }
-        set gdict [gofer construct NUMBER DEPLOYED $g $args] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER DEPLOYED $g $args] 
+        return [adb gofer eval $gdict]
     }
 
     # gdp
@@ -925,8 +925,8 @@ snit::type executive {
     # It's an error if the economic model is disabled.
 
     proc gdp {} {
-        set gdict [gofer construct NUMBER GDP]
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER GDP]
+        return [adb gofer eval $gdict]
     }
 
     # goodscap a
@@ -937,8 +937,8 @@ snit::type executive {
     # plants owned by agent a.
 
     proc goodscap {a} {
-        set gdict [gofer construct NUMBER GOODS_CAP $a] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER GOODS_CAP $a] 
+        return [adb gofer eval $gdict]
     }
 
     # goodsidle
@@ -946,8 +946,8 @@ snit::type executive {
     # Returns the idle capacity for the playbox.
 
     proc goodsidle {} {
-        set gdict [gofer construct NUMBER GOODS_IDLE] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER GOODS_IDLE] 
+        return [adb gofer eval $gdict]
     }
 
     # hrel f g
@@ -958,8 +958,8 @@ snit::type executive {
     # Returns the horizontal relationship of f with g.
 
     proc hrel {f g} {
-        set gdict [gofer construct NUMBER HREL $f $g] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER HREL $f $g] 
+        return [adb gofer eval $gdict]
     }
 
     # income a ?a...?
@@ -972,8 +972,8 @@ snit::type executive {
         if {[llength $args]==1} {
             set args [lindex $args 0]
         }
-        set gdict [gofer construct NUMBER INCOME $args] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER INCOME $args] 
+        return [adb gofer eval $gdict]
     }
 
     # income_black a ?a...?
@@ -986,8 +986,8 @@ snit::type executive {
         if {[llength $args]==1} {
             set args [lindex $args 0]
         }
-        set gdict [gofer construct NUMBER INCOME_BLACK $args] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER INCOME_BLACK $args] 
+        return [adb gofer eval $gdict]
     }
 
     # income_goods a ?a...?
@@ -1000,8 +1000,8 @@ snit::type executive {
         if {[llength $args]==1} {
             set args [lindex $args 0]
         }
-        set gdict [gofer construct NUMBER INCOME_GOODS $args] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER INCOME_GOODS $args] 
+        return [adb gofer eval $gdict]
     }
 
     # income_pop a ?a...?
@@ -1014,8 +1014,8 @@ snit::type executive {
         if {[llength $args]==1} {
             set args [lindex $args 0]
         }
-        set gdict [gofer construct NUMBER INCOME_POP $args] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER INCOME_POP $args] 
+        return [adb gofer eval $gdict]
     }
 
     # income_region a ?a...?
@@ -1028,8 +1028,8 @@ snit::type executive {
         if {[llength $args]==1} {
             set args [lindex $args 0]
         }
-        set gdict [gofer construct NUMBER INCOME_REGION $args] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER INCOME_REGION $args] 
+        return [adb gofer eval $gdict]
     }
 
     # income_world a ?a...?
@@ -1042,8 +1042,8 @@ snit::type executive {
         if {[llength $args]==1} {
             set args [lindex $args 0]
         }
-        set gdict [gofer construct NUMBER INCOME_WORLD $args] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER INCOME_WORLD $args] 
+        return [adb gofer eval $gdict]
     }
 
     # influence a n
@@ -1054,8 +1054,8 @@ snit::type executive {
     # Returns the influence of a in n.
 
     proc influence {a n} {
-        set gdict [gofer construct NUMBER INFLUENCE $a $n] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER INFLUENCE $a $n] 
+        return [adb gofer eval $gdict]
     }
 
     # local_consumers 
@@ -1063,8 +1063,8 @@ snit::type executive {
     # Returns the consumers resident in local neighborhood(s) (all consumers).
 
     proc local_consumers {} {
-        set gdict [gofer construct NUMBER LOCAL_CONSUMERS] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER LOCAL_CONSUMERS] 
+        return [adb gofer eval $gdict]
     }
 
     # local_pop 
@@ -1072,8 +1072,8 @@ snit::type executive {
     # Returns the population of civilian groups in local neighborhood(s).
 
     proc local_pop {} {
-        set gdict [gofer construct NUMBER LOCAL_POPULATION] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER LOCAL_POPULATION] 
+        return [adb gofer eval $gdict]
     }
 
     # local_unemp 
@@ -1081,8 +1081,8 @@ snit::type executive {
     # Returns the unemployment rate in local neighborhood(s).
 
     proc local_unemp {} {
-        set gdict [gofer construct NUMBER LOCAL_UNEMPLOYMENT_RATE] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER LOCAL_UNEMPLOYMENT_RATE] 
+        return [adb gofer eval $gdict]
     }
 
     # local_workers 
@@ -1090,8 +1090,8 @@ snit::type executive {
     # Returns the workers resident in local neighborhood(s).
 
     proc local_workers {} {
-        set gdict [gofer construct NUMBER LOCAL_WORKERS] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER LOCAL_WORKERS] 
+        return [adb gofer eval $gdict]
     }
 
     # mobilized g ?g...?
@@ -1105,8 +1105,8 @@ snit::type executive {
         if {[llength $args]==1} {
             set args [lindex $args 0]
         }
-        set gdict [gofer construct NUMBER MOBILIZED $args] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER MOBILIZED $args] 
+        return [adb gofer eval $gdict]
     }
 
     # mood g
@@ -1116,8 +1116,8 @@ snit::type executive {
     # Returns the mood of group g.
 
     proc mood {g} {
-        set gdict [gofer construct NUMBER MOOD $g] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER MOOD $g] 
+        return [adb gofer eval $gdict]
     }
 
     # nbconsumers n ?n...?
@@ -1130,8 +1130,8 @@ snit::type executive {
         if {[llength $args]==1} {
             set args [lindex $args 0]
         }
-        set gdict [gofer construct NUMBER NBCONSUMERS $args] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER NBCONSUMERS $args] 
+        return [adb gofer eval $gdict]
     }
 
     # nbcoop n g
@@ -1142,8 +1142,8 @@ snit::type executive {
     # Returns the cooperation of n with g.
 
     proc nbcoop {n g} {
-        set gdict [gofer construct NUMBER NBCOOP $n $g] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER NBCOOP $n $g] 
+        return [adb gofer eval $gdict]
     }
 
     # nbgoodscap n
@@ -1154,8 +1154,8 @@ snit::type executive {
     # plants in a neighborhood n
 
     proc nbgoodscap {n} {
-        set gdict [gofer construct NUMBER NB_GOODS_CAP $n] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER NB_GOODS_CAP $n] 
+        return [adb gofer eval $gdict]
     }
 
     # nbmood n
@@ -1165,8 +1165,8 @@ snit::type executive {
     # Returns the mood of neighborhood n.
 
     proc nbmood {n} {
-        set gdict [gofer construct NUMBER NBMOOD $n] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER NBMOOD $n] 
+        return [adb gofer eval $gdict]
     }
 
     # nbplants n
@@ -1177,8 +1177,8 @@ snit::type executive {
     # neighborhood n.
 
     proc nbplants {n} {
-        set gdict [gofer construct NUMBER NB_PLANTS $n] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER NB_PLANTS $n] 
+        return [adb gofer eval $gdict]
     }
 
     # nbpop n ?n...?
@@ -1191,8 +1191,8 @@ snit::type executive {
         if {[llength $args]==1} {
             set args [lindex $args 0]
         }
-        set gdict [gofer construct NUMBER NBPOPULATION $args] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER NBPOPULATION $args] 
+        return [adb gofer eval $gdict]
     }
 
     # nbsupport a n
@@ -1203,9 +1203,9 @@ snit::type executive {
     # Returns the support of a in n.
 
     proc nbsupport {a n} {
-        set gdict [gofer construct NUMBER NBSUPPORT $a $n]
+        set gdict [adb gofer make NUMBER NBSUPPORT $a $n]
 
-        return [gofer::NUMBER eval $gdict]
+        return [adb gofer eval $gdict]
     }
 
     # nbunemp n ?n...?
@@ -1218,8 +1218,8 @@ snit::type executive {
         if {[llength $args]==1} {
             set args [lindex $args 0]
         }
-        set gdict [gofer construct NUMBER NB_UNEMPLOYMENT_RATE $args] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER NB_UNEMPLOYMENT_RATE $args] 
+        return [adb gofer eval $gdict]
     }
 
     # nbworkers n ?n...?
@@ -1232,8 +1232,8 @@ snit::type executive {
         if {[llength $args]==1} {
             set args [lindex $args 0]
         }
-        set gdict [gofer construct NUMBER NBWORKERS $args] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER NBWORKERS $args] 
+        return [adb gofer eval $gdict]
     }
 
     # onhand a
@@ -1243,8 +1243,8 @@ snit::type executive {
     # Returns the cash on hand of actor a.
 
     proc onhand {a} {
-        set gdict [gofer construct NUMBER CASH_ON_HAND $a] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER CASH_ON_HAND $a] 
+        return [adb gofer eval $gdict]
     }
 
     # pbconsumers 
@@ -1253,8 +1253,8 @@ snit::type executive {
     #  (same as local_consumers()).
 
     proc pbconsumers {} {
-        set gdict [gofer construct NUMBER PLAYBOX_CONSUMERS] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER PLAYBOX_CONSUMERS] 
+        return [adb gofer eval $gdict]
     }
 
     # pbgoodscap
@@ -1263,8 +1263,8 @@ snit::type executive {
     # plants in the playbox.
 
     proc pbgoodscap {} {
-        set gdict [gofer construct NUMBER PLAYBOX_GOODS_CAP] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER PLAYBOX_GOODS_CAP] 
+        return [adb gofer eval $gdict]
     }
 
     # pbplants
@@ -1273,8 +1273,8 @@ snit::type executive {
     # Returns the total number of plants in the playbox.
 
     proc pbplants {} {
-        set gdict [gofer construct NUMBER PLAYBOX_PLANTS] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER PLAYBOX_PLANTS] 
+        return [adb gofer eval $gdict]
     }
 
     # pbpop 
@@ -1282,8 +1282,8 @@ snit::type executive {
     # Returns the population of civilian groups in the playbox
 
     proc pbpop {} {
-        set gdict [gofer construct NUMBER PLAYBOX_POPULATION] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER PLAYBOX_POPULATION] 
+        return [adb gofer eval $gdict]
     }
 
     # pbunemp 
@@ -1291,8 +1291,8 @@ snit::type executive {
     # Returns the average unemployment rate in the playbox
 
     proc pbunemp {} {
-        set gdict [gofer construct NUMBER PLAYBOX_UNEMPLOYMENT_RATE] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER PLAYBOX_UNEMPLOYMENT_RATE] 
+        return [adb gofer eval $gdict]
     }
 
     # pbworkers 
@@ -1301,8 +1301,8 @@ snit::type executive {
     #  (same as local_workers()).
 
     proc pbworkers {} {
-        set gdict [gofer construct NUMBER PLAYBOX_WORKERS] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER PLAYBOX_WORKERS] 
+        return [adb gofer eval $gdict]
     }
 
     # pctcontrol a ?a...?
@@ -1313,8 +1313,8 @@ snit::type executive {
     # listed actors.
 
     proc pctcontrol {args} {
-        set gdict [gofer construct NUMBER PCTCONTROL $args] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER PCTCONTROL $args] 
+        return [adb gofer eval $gdict]
     }
 
     # plants a n
@@ -1326,8 +1326,8 @@ snit::type executive {
     # neighborhood n.
 
     proc plants {a n} {
-        set gdict [gofer construct NUMBER PLANTS $a $n]
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER PLANTS $a $n]
+        return [adb gofer eval $gdict]
     }
 
     # pop g ?g...?
@@ -1340,8 +1340,8 @@ snit::type executive {
         if {[llength $args]==1} {
             set args [lindex $args 0]
         }
-        set gdict [gofer construct NUMBER GROUP_POPULATION $args] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER GROUP_POPULATION $args] 
+        return [adb gofer eval $gdict]
     }
 
     # repair a n
@@ -1353,8 +1353,8 @@ snit::type executive {
     # neighborhood n.
 
     proc repair {a n} {
-        set gdict [gofer construct NUMBER REPAIR $a $n] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER REPAIR $a $n] 
+        return [adb gofer eval $gdict]
     }
 
     # reserve a
@@ -1364,8 +1364,8 @@ snit::type executive {
     # Returns the cash reserve of actor a.
 
     proc reserve {a} {
-        set gdict [gofer construct NUMBER CASH_RESERVE $a] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER CASH_RESERVE $a] 
+        return [adb gofer eval $gdict]
     }
 
     # sat g c
@@ -1376,8 +1376,8 @@ snit::type executive {
     # Returns the satisfaction of g with c
 
     proc sat {g c} {
-        set gdict [gofer construct NUMBER SAT $g $c] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER SAT $g $c] 
+        return [adb gofer eval $gdict]
     }
 
     # security g ?n?
@@ -1390,12 +1390,12 @@ snit::type executive {
 
    proc security {g {n ""}} {
         if {$n eq ""} {
-            set gdict [gofer construct NUMBER SECURITY_CIV $g]
+            set gdict [adb gofer make NUMBER SECURITY_CIV $g]
         } else {
-            set gdict [gofer construct NUMBER SECURITY $g $n]
+            set gdict [adb gofer make NUMBER SECURITY $g $n]
         }
 
-        return [gofer::NUMBER eval $gdict]
+        return [adb gofer eval $gdict]
     }
 
     # support a g ?n?
@@ -1409,12 +1409,12 @@ snit::type executive {
 
     proc support {a g {n ""}} {
         if {$n eq ""} {
-            set gdict [gofer construct NUMBER SUPPORT_CIV $a $g]
+            set gdict [adb gofer make NUMBER SUPPORT_CIV $a $g]
         } else {
-            set gdict [gofer construct NUMBER SUPPORT $a $g $n]
+            set gdict [adb gofer make NUMBER SUPPORT $a $g $n]
         }
 
-        return [gofer::NUMBER eval $gdict]
+        return [adb gofer eval $gdict]
     }
 
     # supports a b ?n...?
@@ -1521,8 +1521,8 @@ snit::type executive {
         if {[llength $args]==1} {
             set args [lindex $args 0]
         }
-        set gdict [gofer construct NUMBER GROUP_UNEMPLOYMENT_RATE $args] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER GROUP_UNEMPLOYMENT_RATE $args] 
+        return [adb gofer eval $gdict]
     }
 
     # volatility n
@@ -1551,8 +1551,8 @@ snit::type executive {
     # Returns the vertical relationship of g with a.
 
     proc vrel {g a} {
-        set gdict [gofer construct NUMBER VREL $g $a] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER VREL $g $a] 
+        return [adb gofer eval $gdict]
     }
 
     # workers g ?g...?
@@ -1565,8 +1565,8 @@ snit::type executive {
         if {[llength $args]==1} {
             set args [lindex $args 0]
         }
-        set gdict [gofer construct NUMBER GROUP_WORKERS $args] 
-        return [gofer::NUMBER eval $gdict]
+        set gdict [adb gofer make NUMBER GROUP_WORKERS $args] 
+        return [adb gofer eval $gdict]
     }
 
     #-------------------------------------------------------------------
@@ -1642,9 +1642,9 @@ snit::type executive {
 
     typemethod gofer {typeOrGdict {rulename ""} args} {
         if {$rulename ne ""} {
-            return [gofer construct $typeOrGdict $rulename {*}$args]
+            return [adb gofer make $typeOrGdict $rulename {*}$args]
         } else {
-            return [gofer eval [gofer validate $typeOrGdict]]
+            return [adb gofer eval [adb gofer validate $typeOrGdict]]
         }
     }
 

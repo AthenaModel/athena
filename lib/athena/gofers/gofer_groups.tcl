@@ -14,7 +14,7 @@
 #-----------------------------------------------------------------------
 # gofer::GROUPS
 
-gofer define GROUPS group {
+::athena::goferx define GROUPS group {
     rc "" -width 3in -span 3
     label {
         Enter a rule for selecting a set of groups.
@@ -26,7 +26,7 @@ gofer define GROUPS group {
         case BY_VALUE "By name" {
             rc "Select groups from the following list:"
             rc
-            enumlonglist raw_value -dictcmd {::group namedict} \
+            enumlonglist raw_value -dictcmd {$adb_ group namedict} \
                 -width 30 -height 10 
         }
         
@@ -36,7 +36,7 @@ gofer define GROUPS group {
             label " the following actors:"
 
             rc
-            enumlonglist alist -dictcmd {::actor namedict} \
+            enumlonglist alist -dictcmd {$adb_ actor namedict} \
                 -width 30 -height 10
 
             rc {
@@ -51,7 +51,7 @@ gofer define GROUPS group {
             label " the following actors:"
 
             rc
-            enumlonglist alist -dictcmd {::actor namedict} \
+            enumlonglist alist -dictcmd {$adb_ actor namedict} \
                 -width 30 -height 10
 
             rc {
@@ -67,7 +67,7 @@ gofer define GROUPS group {
             label " the following actors:"
 
             rc
-            enumlonglist alist -dictcmd {::actor namedict} \
+            enumlonglist alist -dictcmd {$adb_ actor namedict} \
                 -width 30 -height 10
 
             rc {
@@ -83,7 +83,7 @@ gofer define GROUPS group {
             label " the following groups:"
 
             rc
-            enumlonglist glist -dictcmd {::group namedict} \
+            enumlonglist glist -dictcmd {$adb_ group namedict} \
                 -width 30 -height 10
 
             rc {
@@ -99,7 +99,7 @@ gofer define GROUPS group {
             label " the following groups:"
 
             rc
-            enumlonglist glist -dictcmd {::group namedict} \
+            enumlonglist glist -dictcmd {$adb_ group namedict} \
                 -width 30 -height 10
 
             rc {
@@ -115,7 +115,7 @@ gofer define GROUPS group {
             label " the following groups:"
 
             rc
-            enumlonglist glist -dictcmd {::group namedict} \
+            enumlonglist glist -dictcmd {$adb_ group namedict} \
                 -width 30 -height 10
 
             rc {
@@ -131,7 +131,7 @@ gofer define GROUPS group {
             label " the following groups:"
 
             rc
-            enumlonglist glist -dictcmd {::group namedict} \
+            enumlonglist glist -dictcmd {$adb_ group namedict} \
                 -width 30 -height 10
 
             rc {
@@ -148,7 +148,7 @@ gofer define GROUPS group {
                 following neighborhoods:
             }
             rc
-            enumlonglist nlist -dictcmd {::nbhood namedict} \
+            enumlonglist nlist -dictcmd {$adb_ nbhood namedict} \
                 -width 30 -height 10
         }
 
@@ -157,7 +157,7 @@ gofer define GROUPS group {
         case CIV_NOT_RESIDENT_IN "Civilian Groups, Not Resident in Neighborhood(s)" {
             rc "Select civilian groups that do not reside in any of the following neighborhoods:"
             rc
-            enumlonglist nlist -dictcmd {::nbhood namedict} \
+            enumlonglist nlist -dictcmd {$adb_ nbhood namedict} \
                 -width 30 -height 10
         }
 
@@ -194,7 +194,7 @@ gofer define GROUPS group {
             label " the following actors:"
 
             rc
-            enumlonglist alist -dictcmd {::actor namedict} \
+            enumlonglist alist -dictcmd {$adb_ actor namedict} \
                 -width 30 -height 10
 
             rc {
@@ -209,7 +209,7 @@ gofer define GROUPS group {
             label " the following actors:"
 
             rc
-            enumlonglist alist -dictcmd {::actor namedict} \
+            enumlonglist alist -dictcmd {$adb_ actor namedict} \
                 -width 30 -height 10
 
             rc {
@@ -225,7 +225,7 @@ gofer define GROUPS group {
             label " the following actors:"
 
             rc
-            enumlonglist alist -dictcmd {::actor namedict} \
+            enumlonglist alist -dictcmd {$adb_ actor namedict} \
                 -width 30 -height 10
 
             rc {
@@ -241,7 +241,7 @@ gofer define GROUPS group {
             label " the following groups:"
 
             rc
-            enumlonglist glist -dictcmd {::group namedict} \
+            enumlonglist glist -dictcmd {$adb_ group namedict} \
                 -width 30 -height 10
 
             rc {
@@ -257,7 +257,7 @@ gofer define GROUPS group {
             label " the following groups:"
 
             rc
-            enumlonglist glist -dictcmd {::group namedict} \
+            enumlonglist glist -dictcmd {$adb_ group namedict} \
                 -width 30 -height 10
 
             rc {
@@ -273,7 +273,7 @@ gofer define GROUPS group {
             label " the following groups:"
 
             rc
-            enumlonglist glist -dictcmd {::group namedict} \
+            enumlonglist glist -dictcmd {$adb_ group namedict} \
                 -width 30 -height 10
 
             rc {
@@ -289,7 +289,7 @@ gofer define GROUPS group {
             label " the following groups:"
 
             rc
-            enumlonglist glist -dictcmd {::group namedict} \
+            enumlonglist glist -dictcmd {$adb_ group namedict} \
                 -width 30 -height 10
 
             rc {
@@ -303,7 +303,7 @@ gofer define GROUPS group {
             rc "Select force groups that are owned by any of the following actors:"
 
             rc
-            enumlonglist alist -dictcmd {::actor namedict} \
+            enumlonglist alist -dictcmd {$adb_ actor namedict} \
                 -width 30 -height 10
         }
 
@@ -313,7 +313,7 @@ gofer define GROUPS group {
             label " the following neighborhoods:"
 
             rc
-            enumlonglist nlist -dictcmd {::nbhood namedict} \
+            enumlonglist nlist -dictcmd {$adb_ nbhood namedict} \
                 -width 30 -height 10
         }
 
@@ -323,7 +323,7 @@ gofer define GROUPS group {
             label " the following neighborhoods:"
 
             rc
-            enumlonglist nlist -dictcmd {::nbhood namedict} \
+            enumlonglist nlist -dictcmd {$adb_ nbhood namedict} \
                 -width 30 -height 10
         }
 
@@ -333,7 +333,7 @@ gofer define GROUPS group {
             label " the following actors:"
 
             rc
-            enumlonglist alist -dictcmd {::actor namedict} \
+            enumlonglist alist -dictcmd {$adb_ actor namedict} \
                 -width 30 -height 10
 
             rc {
@@ -348,7 +348,7 @@ gofer define GROUPS group {
             label " the following actors:"
 
             rc
-            enumlonglist alist -dictcmd {::actor namedict} \
+            enumlonglist alist -dictcmd {$adb_ actor namedict} \
                 -width 30 -height 10
 
             rc {
@@ -364,7 +364,7 @@ gofer define GROUPS group {
             label " the following actors:"
 
             rc
-            enumlonglist alist -dictcmd {::actor namedict} \
+            enumlonglist alist -dictcmd {$adb_ actor namedict} \
                 -width 30 -height 10
 
             rc {
@@ -380,7 +380,7 @@ gofer define GROUPS group {
             label " the following groups:"
 
             rc
-            enumlonglist glist -dictcmd {::group namedict} \
+            enumlonglist glist -dictcmd {$adb_ group namedict} \
                 -width 30 -height 10
 
             rc {
@@ -396,7 +396,7 @@ gofer define GROUPS group {
             label " the following groups:"
 
             rc
-            enumlonglist glist -dictcmd {::group namedict} \
+            enumlonglist glist -dictcmd {$adb_ group namedict} \
                 -width 30 -height 10
 
             rc {
@@ -412,7 +412,7 @@ gofer define GROUPS group {
             label " the following groups:"
 
             rc
-            enumlonglist glist -dictcmd {::group namedict} \
+            enumlonglist glist -dictcmd {$adb_ group namedict} \
                 -width 30 -height 10
 
             rc {
@@ -428,7 +428,7 @@ gofer define GROUPS group {
             label " the following groups:"
 
             rc
-            enumlonglist glist -dictcmd {::group namedict} \
+            enumlonglist glist -dictcmd {$adb_ group namedict} \
                 -width 30 -height 10
 
             rc {
@@ -442,36 +442,31 @@ gofer define GROUPS group {
 }
 
 #-----------------------------------------------------------------------
-# Helper Commands
-
-# TBD
-
-#-----------------------------------------------------------------------
 # Gofer Rules
 
 # Rule: BY_VALUE
 #
 # Some set of groups chosen by the user.
 
-gofer rule GROUPS BY_VALUE {raw_value} {
-    typemethod construct {raw_value} {
-        return [$type validate [dict create raw_value $raw_value]]
+::athena::goferx rule GROUPS BY_VALUE {raw_value} {
+    method make {raw_value} {
+        return [my validate [dict create raw_value $raw_value]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         dict create raw_value \
-            [listval "groups" {group validate} $raw_value]
+            [my val_elist group "groups" $raw_value]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
-        return [listnar "group" "these groups" $raw_value $opt]
+        return [my nar_list "group" "these groups" $raw_value $opt]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         return $raw_value
@@ -483,23 +478,23 @@ gofer rule GROUPS BY_VALUE {raw_value} {
 # Groups who have the desire and ability (i.e.,
 # security) to contribute to the actor's support.
 
-gofer rule GROUPS SUPPORTING_ACTOR {anyall alist} {
-    typemethod construct {anyall alist} {
-        return [$type validate [dict create anyall $anyall alist $alist]]
+::athena::goferx rule GROUPS SUPPORTING_ACTOR {anyall alist} {
+    method make {anyall alist} {
+        return [my validate [dict create anyall $anyall alist $alist]]
     }
 
-    typemethod validate {gdict} {
-        return [anyall_alist validate $gdict]
+    method validate {gdict} {
+        return [my val_anyall_alist $gdict]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set result "groups that actively support "
-        append result [::gofer::anyall_alist narrative $gdict $opt]
+        append result [my nar_anyall_alist $gdict $opt]
         return "$result"
     }
 
-    typemethod eval {gdict} {
-        return [anyall_alist supportingActor "" $gdict]
+    method eval {gdict} {
+        return [my anyall_alist_supportingActor "" $gdict]
     }
 }
 
@@ -508,23 +503,23 @@ gofer rule GROUPS SUPPORTING_ACTOR {anyall alist} {
 # Groups who have a positive (LIKE or SUPPORT) vertical
 # relationship with any or all of a set of actors.
 
-gofer rule GROUPS LIKING_ACTOR {anyall alist} {
-    typemethod construct {anyall alist} {
-        return [$type validate [dict create anyall $anyall alist $alist]]
+::athena::goferx rule GROUPS LIKING_ACTOR {anyall alist} {
+    method make {anyall alist} {
+        return [my validate [dict create anyall $anyall alist $alist]]
     }
 
-    typemethod validate {gdict} {
-        return [anyall_alist validate $gdict]
+    method validate {gdict} {
+        return [my val_anyall_alist $gdict]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set result "groups that like "
-        append result [::gofer::anyall_alist narrative $gdict $opt]
+        append result [my nar_anyall_alist $gdict $opt]
         return "$result"
     }
 
-    typemethod eval {gdict} {
-        return [anyall_alist likingActor "" $gdict]
+    method eval {gdict} {
+        return [my anyall_alist_likingActor "" $gdict]
     }
 }
 
@@ -533,23 +528,23 @@ gofer rule GROUPS LIKING_ACTOR {anyall alist} {
 # Groups who have a negative (DISLIKE or OPPOSE) vertical
 # relationship with any or all of a set of actors.
 
-gofer rule GROUPS DISLIKING_ACTOR {anyall alist} {
-    typemethod construct {anyall alist} {
-        return [$type validate [dict create anyall $anyall alist $alist]]
+::athena::goferx rule GROUPS DISLIKING_ACTOR {anyall alist} {
+    method make {anyall alist} {
+        return [my validate [dict create anyall $anyall alist $alist]]
     }
 
-    typemethod validate {gdict} {
-        return [anyall_alist validate $gdict]
+    method validate {gdict} {
+        return [my val_anyall_alist $gdict]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set result "groups that dislike "
-        append result [::gofer::anyall_alist narrative $gdict $opt]
+        append result [my nar_anyall_alist $gdict $opt]
         return "$result"
     }
 
-    typemethod eval {gdict} {
-        return [anyall_alist dislikingActor "" $gdict]
+    method eval {gdict} {
+        return [my anyall_alist_dislikingActor "" $gdict]
     }
 }
 
@@ -558,23 +553,23 @@ gofer rule GROUPS DISLIKING_ACTOR {anyall alist} {
 # Groups who have a positive (LIKE or SUPPORT) horizontal
 # relationship with any or all of a set of groups.
 
-gofer rule GROUPS LIKING_GROUP {anyall glist} {
-    typemethod construct {anyall glist} {
-        return [$type validate [dict create anyall $anyall glist $glist]]
+::athena::goferx rule GROUPS LIKING_GROUP {anyall glist} {
+    method make {anyall glist} {
+        return [my validate [dict create anyall $anyall glist $glist]]
     }
 
-    typemethod validate {gdict} { 
-        return [anyall_glist validate $gdict] 
+    method validate {gdict} { 
+        return [my val_anyall_glist $gdict] 
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set result "groups that like "
-        append result [anyall_glist narrative $gdict $opt]
+        append result [my nar_anyall_glist $gdict $opt]
         return "$result"
     }
 
-    typemethod eval {gdict} {
-        return [anyall_glist likingGroup "" $gdict]
+    method eval {gdict} {
+        return [my anyall_glist_likingGroup "" $gdict]
     }
 }
 
@@ -583,23 +578,23 @@ gofer rule GROUPS LIKING_GROUP {anyall glist} {
 # Groups who have a negative (DISLIKE or OPPOSE) horizontal
 # relationship with any or all of a set of groups.
 
-gofer rule GROUPS DISLIKING_GROUP {anyall glist} {
-    typemethod construct {anyall glist} {
-        return [$type validate [dict create anyall $anyall glist $glist]]
+::athena::goferx rule GROUPS DISLIKING_GROUP {anyall glist} {
+    method make {anyall glist} {
+        return [my validate [dict create anyall $anyall glist $glist]]
     }
 
-    typemethod validate {gdict} { 
-        return [anyall_glist validate $gdict] 
+    method validate {gdict} { 
+        return [my val_anyall_glist $gdict] 
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set result "groups that dislike "
-        append result [anyall_glist narrative $gdict $opt]
+        append result [my nar_anyall_glist $gdict $opt]
         return "$result"
     }
 
-    typemethod eval {gdict} {
-        return [anyall_glist dislikingGroup "" $gdict]
+    method eval {gdict} {
+        return [my anyall_glist_dislikingGroup "" $gdict]
     }
 }
 
@@ -608,23 +603,23 @@ gofer rule GROUPS DISLIKING_GROUP {anyall glist} {
 # Groups for whom any or all of set of groups have a positive 
 # (LIKE or SUPPORT) horizontal relationship.
 
-gofer rule GROUPS LIKED_BY_GROUP {anyall glist} {
-    typemethod construct {anyall glist} {
-        return [$type validate [dict create anyall $anyall glist $glist]]
+::athena::goferx rule GROUPS LIKED_BY_GROUP {anyall glist} {
+    method make {anyall glist} {
+        return [my validate [dict create anyall $anyall glist $glist]]
     }
 
-    typemethod validate {gdict} { 
-        return [anyall_glist validate $gdict] 
+    method validate {gdict} { 
+        return [my val_anyall_glist $gdict] 
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set result "groups that are liked by "
-        append result [anyall_glist narrative $gdict $opt]
+        append result [my nar_anyall_glist $gdict $opt]
         return "$result"
     }
 
-    typemethod eval {gdict} {
-        return [anyall_glist likedByGroup "" $gdict]
+    method eval {gdict} {
+        return [my anyall_glist_likedByGroup "" $gdict]
     }
 }
 
@@ -633,52 +628,52 @@ gofer rule GROUPS LIKED_BY_GROUP {anyall glist} {
 # Groups for whom any or all of set of groups have a negative 
 # (DISLIKE or OPPOSE) horizontal relationship.
 
-gofer rule GROUPS DISLIKED_BY_GROUP {anyall glist} {
-    typemethod construct {anyall glist} {
-        return [$type validate [dict create anyall $anyall glist $glist]]
+::athena::goferx rule GROUPS DISLIKED_BY_GROUP {anyall glist} {
+    method make {anyall glist} {
+        return [my validate [dict create anyall $anyall glist $glist]]
     }
 
-    typemethod validate {gdict} { 
-        return [anyall_glist validate $gdict] 
+    method validate {gdict} { 
+        return [my val_anyall_glist $gdict] 
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set result "groups that are disliked by "
-        append result [anyall_glist narrative $gdict $opt]
+        append result [my nar_anyall_glist $gdict $opt]
         return "$result"
     }
 
-    typemethod eval {gdict} {
-        return [anyall_glist dislikedByGroup "" $gdict]
+    method eval {gdict} {
+        return [my anyall_glist_dislikedByGroup "" $gdict]
     }
 }
 
 #-----------------------------------------------------------------------
 # Civgroup Rules
 
-gofer rulefrom GROUPS CIV_RESIDENT_IN        ::gofer::CIVGROUPS::RESIDENT_IN
-gofer rulefrom GROUPS CIV_NOT_RESIDENT_IN    ::gofer::CIVGROUPS::NOT_RESIDENT_IN
-gofer rulefrom GROUPS CIV_MOOD_IS_GOOD       ::gofer::CIVGROUPS::MOOD_IS_GOOD
-gofer rulefrom GROUPS CIV_MOOD_IS_BAD        ::gofer::CIVGROUPS::MOOD_IS_BAD
-gofer rulefrom GROUPS CIV_MOOD_IS_AMBIVALENT ::gofer::CIVGROUPS::MOOD_IS_AMBIVALENT
-gofer rulefrom GROUPS CIV_SUPPORTING_ACTOR   ::gofer::CIVGROUPS::SUPPORTING_ACTOR
-gofer rulefrom GROUPS CIV_LIKING_ACTOR       ::gofer::CIVGROUPS::LIKING_ACTOR
-gofer rulefrom GROUPS CIV_DISLIKING_ACTOR    ::gofer::CIVGROUPS::DISLIKING_ACTOR
-gofer rulefrom GROUPS CIV_LIKING_GROUP       ::gofer::CIVGROUPS::LIKING_GROUP
-gofer rulefrom GROUPS CIV_DISLIKING_GROUP    ::gofer::CIVGROUPS::DISLIKING_GROUP
-gofer rulefrom GROUPS CIV_LIKED_BY_GROUP     ::gofer::CIVGROUPS::LIKED_BY_GROUP
-gofer rulefrom GROUPS CIV_DISLIKED_BY_GROUP  ::gofer::CIVGROUPS::DISLIKED_BY_GROUP
+::athena::goferx rulefrom GROUPS CIV_RESIDENT_IN        CIVGROUPS RESIDENT_IN
+::athena::goferx rulefrom GROUPS CIV_NOT_RESIDENT_IN    CIVGROUPS NOT_RESIDENT_IN
+::athena::goferx rulefrom GROUPS CIV_MOOD_IS_GOOD       CIVGROUPS MOOD_IS_GOOD
+::athena::goferx rulefrom GROUPS CIV_MOOD_IS_BAD        CIVGROUPS MOOD_IS_BAD
+::athena::goferx rulefrom GROUPS CIV_MOOD_IS_AMBIVALENT CIVGROUPS MOOD_IS_AMBIVALENT
+::athena::goferx rulefrom GROUPS CIV_SUPPORTING_ACTOR   CIVGROUPS SUPPORTING_ACTOR
+::athena::goferx rulefrom GROUPS CIV_LIKING_ACTOR       CIVGROUPS LIKING_ACTOR
+::athena::goferx rulefrom GROUPS CIV_DISLIKING_ACTOR    CIVGROUPS DISLIKING_ACTOR
+::athena::goferx rulefrom GROUPS CIV_LIKING_GROUP       CIVGROUPS LIKING_GROUP
+::athena::goferx rulefrom GROUPS CIV_DISLIKING_GROUP    CIVGROUPS DISLIKING_GROUP
+::athena::goferx rulefrom GROUPS CIV_LIKED_BY_GROUP     CIVGROUPS LIKED_BY_GROUP
+::athena::goferx rulefrom GROUPS CIV_DISLIKED_BY_GROUP  CIVGROUPS DISLIKED_BY_GROUP
 
 #-----------------------------------------------------------------------
 # Frcgroup Rules
 
-gofer rulefrom GROUPS FRC_OWNED_BY           ::gofer::FRCGROUPS::OWNED_BY
-gofer rulefrom GROUPS FRC_DEPLOYED_TO        ::gofer::FRCGROUPS::DEPLOYED_TO
-gofer rulefrom GROUPS FRC_NOT_DEPLOYED_TO    ::gofer::FRCGROUPS::NOT_DEPLOYED_TO
-gofer rulefrom GROUPS FRC_SUPPORTING_ACTOR   ::gofer::FRCGROUPS::SUPPORTING_ACTOR
-gofer rulefrom GROUPS FRC_LIKING_ACTOR       ::gofer::FRCGROUPS::LIKING_ACTOR
-gofer rulefrom GROUPS FRC_DISLIKING_ACTOR    ::gofer::FRCGROUPS::DISLIKING_ACTOR
-gofer rulefrom GROUPS FRC_LIKING_GROUP       ::gofer::FRCGROUPS::LIKING_GROUP
-gofer rulefrom GROUPS FRC_DISLIKING_GROUP    ::gofer::FRCGROUPS::DISLIKING_GROUP
-gofer rulefrom GROUPS FRC_LIKED_BY_GROUP     ::gofer::FRCGROUPS::LIKED_BY_GROUP
-gofer rulefrom GROUPS FRC_DISLIKED_BY_GROUP  ::gofer::FRCGROUPS::DISLIKED_BY_GROUP
+::athena::goferx rulefrom GROUPS FRC_OWNED_BY           FRCGROUPS OWNED_BY
+::athena::goferx rulefrom GROUPS FRC_DEPLOYED_TO        FRCGROUPS DEPLOYED_TO
+::athena::goferx rulefrom GROUPS FRC_NOT_DEPLOYED_TO    FRCGROUPS NOT_DEPLOYED_TO
+::athena::goferx rulefrom GROUPS FRC_SUPPORTING_ACTOR   FRCGROUPS SUPPORTING_ACTOR
+::athena::goferx rulefrom GROUPS FRC_LIKING_ACTOR       FRCGROUPS LIKING_ACTOR
+::athena::goferx rulefrom GROUPS FRC_DISLIKING_ACTOR    FRCGROUPS DISLIKING_ACTOR
+::athena::goferx rulefrom GROUPS FRC_LIKING_GROUP       FRCGROUPS LIKING_GROUP
+::athena::goferx rulefrom GROUPS FRC_DISLIKING_GROUP    FRCGROUPS DISLIKING_GROUP
+::athena::goferx rulefrom GROUPS FRC_LIKED_BY_GROUP     FRCGROUPS LIKED_BY_GROUP
+::athena::goferx rulefrom GROUPS FRC_DISLIKED_BY_GROUP  FRCGROUPS DISLIKED_BY_GROUP

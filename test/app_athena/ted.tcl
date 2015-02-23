@@ -689,6 +689,15 @@ snit::type ted {
         ted order SIM:LOCK
     }
 
+    # unlock
+    #
+    # Unlocks the scenario.
+
+    typemethod unlock {} {
+        ted order SIM:UNLOCK
+    }
+
+
     # step
     #
     # Steps time forward by one week, locking the scenario if need be.
@@ -959,14 +968,14 @@ snit::type ted {
             ted addtactic $block DEPLOY                          \
                 g         $g                                     \
                 pmode     ALL                                    \
-                nlist     [gofer construct NBHOODS BY_VALUE $n]  \
+                nlist     [adb gofer make NBHOODS BY_VALUE $n]  \
                 nmode     EQUAL
         } else {
             ted addtactic $block DEPLOY                          \
                 g         $g                                     \
                 pmode     SOME                                   \
                 personnel $personnel                             \
-                nlist     [gofer construct NBHOODS BY_VALUE $n]  \
+                nlist     [adb gofer make NBHOODS BY_VALUE $n]  \
                 nmode     EQUAL
         }
     }

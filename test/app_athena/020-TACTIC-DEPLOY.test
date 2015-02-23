@@ -266,7 +266,7 @@ namespace eval ::athena_test::tests:: {
             min       5         \
             max       10        \
             percent   15        \
-            nlist     [gofer construct NBHOODS BY_VALUE {NB1}] \
+            nlist     [adb gofer make NBHOODS BY_VALUE {NB1}] \
             nmode     EQUAL     \
             redeploy  yes
 

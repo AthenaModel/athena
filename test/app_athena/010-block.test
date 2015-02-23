@@ -838,7 +838,7 @@ namespace eval ::athena_test::tests:: {
         
         return [ted addtactic $BJOE DEPLOY \
             g         BLUE \
-            nlist     [gofer construct NBHOODS BY_VALUE NB1] \
+            nlist     [adb gofer make NBHOODS BY_VALUE NB1] \
             nmode     EQUAL \
             pmode     SOME  \
             personnel $personnel]

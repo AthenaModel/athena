@@ -104,7 +104,7 @@ namespace eval ::athena_test::tests:: {
         ted order TACTIC:SUPPORT \
             tactic_id [$T1 id]         \
             a     BOB        \
-            nlist [gofer construct NBHOODS BY_VALUE NB1]
+            nlist [adb gofer make NBHOODS BY_VALUE NB1]
 
         ted pdicts [$T1 getdict]
     } -cleanup {

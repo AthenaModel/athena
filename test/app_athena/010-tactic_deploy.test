@@ -64,7 +64,7 @@ namespace eval ::athena_test::tests:: {
         if {$mode in {valid prep}} {
             $T1 configure \
                 -g     BLUE \
-                -nlist [gofer construct NBHOODS BY_VALUE {NB1 NB2}]
+                -nlist [adb gofer make NBHOODS BY_VALUE {NB1 NB2}]
             assert {[$T1 check] eq ""}
         }
 
@@ -155,7 +155,7 @@ namespace eval ::athena_test::tests:: {
     test constructor-1.2 {can set options} -setup {
         setup
     } -body {
-        set T1 [::athena::tactic::DEPLOY new -parent DUMMY]
+        set T1 [pot new ::athena::tactic::DEPLOY -parent DUMMY]
         $T1 get parent
     } -cleanup {
         cleanup
@@ -174,7 +174,7 @@ namespace eval ::athena_test::tests:: {
 
     test narrative-1.2 {with g and nlist} -setup {
         setup
-        $T1 configure -g BLUE -nlist [gofer construct NBHOODS BY_VALUE NB1]
+        $T1 configure -g BLUE -nlist [adb gofer make NBHOODS BY_VALUE NB1]
     } -body {
         $T1 narrative
     } -cleanup {
@@ -253,7 +253,7 @@ namespace eval ::athena_test::tests:: {
     test check-1.2 {g doesn't exist or is owned by another actor} -setup {
         setup
     } -body {
-        $T1 configure -g NONESUCH -nlist [gofer construct NBHOODS BY_VALUE NB1]
+        $T1 configure -g NONESUCH -nlist [adb gofer make NBHOODS BY_VALUE NB1]
         ted pdicts [$T1 check]
     } -cleanup {
         cleanup
@@ -264,7 +264,7 @@ namespace eval ::athena_test::tests:: {
     test check-2.1 {Success} -setup {
         setup
     } -body {
-        $T1 configure -g BLUE -nlist [gofer construct NBHOODS BY_VALUE NB1]
+        $T1 configure -g BLUE -nlist [adb gofer make NBHOODS BY_VALUE NB1]
         $T1 check
     } -cleanup {
         cleanup
@@ -433,7 +433,7 @@ namespace eval ::athena_test::tests:: {
     test obligate-3.1 {nlist returns no neighborhoods} -setup {
         setup valid
     } -body {
-        $T1 configure -nlist [gofer construct NBHOODS WITH_DEPLOYMENT ALL BRIT]
+        $T1 configure -nlist [adb gofer make NBHOODS WITH_DEPLOYMENT ALL BRIT]
         $T1 obligate $coffer
         $T1 faildict
     } -cleanup {

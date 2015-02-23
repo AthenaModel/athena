@@ -10,8 +10,6 @@
 #
 #    Does actor $a control all of the neighborhoods in $nlist?
 #
-# TBD: Global refs: gofer*
-#
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
@@ -22,20 +20,19 @@
     variable a          ;# An actor
     variable sense      ;# edoes: DOES|DOESNT control
     variable anyall     ;# eanyall: ANY|ALL
-    variable nlist      ;# A gofer::NBHOODS value
+    variable nlist      ;# A NBHOODS gofer value
     
     #-------------------------------------------------------------------
     # Constructor
 
-    constructor {args} {
-        # Initialize as tactic bean.
-        next
+    constructor {pot_ args} {
+        next $pot_
 
         # Initialize state variables
         set a      ""
         set sense  DOES
         set anyall ALL
-        set nlist  [gofer::NBHOODS blank]
+        set nlist  [[my adb] gofer NBHOODS blank]
 
         # Initial state is invalid; no actor.
         my set state invalid
@@ -51,7 +48,7 @@
         set s(a)      [link make actor $a]
         set s(sense)  [string tolower [edoes as longname $sense]]
         set s(anyall) [string tolower [eanyall longname $anyall]]
-        set s(nlist)  [gofer::NBHOODS narrative $nlist]
+        set s(nlist)  [[my adb] gofer NBHOODS narrative $nlist]
 
         return "Actor $s(a) $s(sense) control $s(anyall) $s(nlist)."
     }
@@ -63,7 +60,7 @@
             dict set errdict a "No such actor: \"$a\"."
         }
 
-        if {[catch {gofer::NBHOODS validate $nlist} result]} {
+        if {[catch {[my adb] gofer NBHOODS validate $nlist} result]} {
             dict set errdict nlist $result
         }
 
@@ -72,7 +69,7 @@
 
     method Evaluate {} {
         # FIRST, get the neighborhoods
-        set nbhoods [gofer::NBHOODS eval $nlist]
+        set nbhoods [[my adb] gofer NBHOODS eval $nlist]
 
         # NEXT, if the neighborhood list is empty, then the actor doesn't
         # control the desired set of neighborhoods.
@@ -155,7 +152,7 @@
 
         rc "These neighborhoods:" -for nlist -span 2
         rc "" -span 2
-        gofer nlist -typename gofer::NBHOODS
+        gofer nlist -typename NBHOODS
     }
 
 

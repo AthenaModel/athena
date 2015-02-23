@@ -86,7 +86,7 @@ namespace eval ::athena_test::tests:: {
     test constructor-1.2 {can set options} -setup {
         setup
     } -body {
-        set T1 [::athena::tactic::STANCE new -parent DUMMY]
+        set T1 [pot new ::athena::tactic::STANCE -parent DUMMY]
         $T1 get parent
     } -cleanup {
         cleanup
@@ -108,7 +108,7 @@ namespace eval ::athena_test::tests:: {
         $T1 configure \
             -f BLUE   \
             -mode BY_GROUP \
-            -glist [gofer construct GROUPS BY_VALUE {SHIA SUNN}]
+            -glist [adb gofer make GROUPS BY_VALUE {SHIA SUNN}]
     } -body {
         $T1 narrative
     } -cleanup {
@@ -120,7 +120,7 @@ namespace eval ::athena_test::tests:: {
         $T1 configure \
             -f BLUE \
             -mode BY_NBHOOD \
-            -nlist [gofer construct NBHOODS BY_VALUE {NB1 NB2}]
+            -nlist [adb gofer make NBHOODS BY_VALUE {NB1 NB2}]
     } -body {
         $T1 narrative
     } -cleanup {
@@ -135,7 +135,7 @@ namespace eval ::athena_test::tests:: {
         $T1 configure \
             -f BLUE   \
             -mode BY_GROUP \
-            -glist [gofer construct GROUPS BY_VALUE {SHIA SUNN}]
+            -glist [adb gofer make GROUPS BY_VALUE {SHIA SUNN}]
         rdb eval {DELETE FROM frcgroups WHERE g='BLUE'}
     } -body {
         $T1 check
@@ -148,7 +148,7 @@ namespace eval ::athena_test::tests:: {
         $T1 configure \
             -f BLUE   \
             -mode BY_GROUP \
-            -glist [gofer construct GROUPS BY_VALUE {SHIA SUNN}]
+            -glist [adb gofer make GROUPS BY_VALUE {SHIA SUNN}]
         rdb eval {DELETE FROM groups WHERE g='SUNN'}
         rdb eval {DELETE FROM civgroups WHERE g='SUNN'}
     } -body {
@@ -162,7 +162,7 @@ namespace eval ::athena_test::tests:: {
         $T1 configure \
             -f BLUE \
             -mode BY_NBHOOD \
-            -nlist [gofer construct NBHOODS BY_VALUE {NB1 NB2}]
+            -nlist [adb gofer make NBHOODS BY_VALUE {NB1 NB2}]
         rdb eval {DELETE FROM nbhoods WHERE n='NB1'}
     } -body {
         $T1 check
@@ -178,7 +178,7 @@ namespace eval ::athena_test::tests:: {
         $T1 configure \
             -f BLUE   \
             -mode BY_GROUP \
-            -glist [gofer construct GROUPS BY_VALUE {SHIA SUNN}]
+            -glist [adb gofer make GROUPS BY_VALUE {SHIA SUNN}]
     } -body {
         $T1 execute
         ted query {SELECT * FROM stance_fg}
@@ -197,12 +197,12 @@ BLUE SUNN 0.0
         $T1 configure \
             -f BLUE   \
             -mode BY_GROUP \
-            -glist [gofer construct GROUPS BY_VALUE {SHIA SUNN}]
+            -glist [adb gofer make GROUPS BY_VALUE {SHIA SUNN}]
         $T2 configure \
             -f BLUE   \
             -mode BY_GROUP \
             -drel 0.5 \
-            -glist [gofer construct GROUPS BY_VALUE {SHIA SUNN}]
+            -glist [adb gofer make GROUPS BY_VALUE {SHIA SUNN}]
     } -body {
         $T1 execute
         $T2 execute
@@ -222,7 +222,7 @@ BLUE SUNN 0.0
             -f BLUE \
             -mode BY_NBHOOD \
             -drel 0.8 \
-            -nlist [gofer construct NBHOODS BY_VALUE {NB1 NB2}]
+            -nlist [adb gofer make NBHOODS BY_VALUE {NB1 NB2}]
     } -body {
         $T1 execute
         ted query {SELECT * FROM stance_fg}
@@ -242,7 +242,7 @@ BLUE KURD 0.8
             -f BLUE   \
             -mode BY_GROUP \
             -drel 0.6 \
-            -glist [gofer construct GROUPS BY_VALUE {SHIA SUNN}]
+            -glist [adb gofer make GROUPS BY_VALUE {SHIA SUNN}]
     } -body {
         $T1 execute 
         ted query {SELECT * FROM stance_fg}

@@ -44,7 +44,7 @@ oo::class create ::athena::block {
     #-------------------------------------------------------------------
     # Constructor/Destructor
 
-    # constructor ?option value...?
+    # constructor pot_ ?option value...?
     #
     # option  - An instance variable in option form, e.g., -tmode.
     #
@@ -52,8 +52,8 @@ oo::class create ::athena::block {
     #
     # Note: bean constructors must not have required arguments.
 
-    constructor {args} {
-        next
+    constructor {pot_ args} {
+        next $pot_
         set parent     ""
         set intent     ""
         set state      "normal"

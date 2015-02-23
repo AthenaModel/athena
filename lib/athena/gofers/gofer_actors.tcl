@@ -6,15 +6,15 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    Actors gofer
-#    
-#    gofer_actors: A list of actors produced according to 
+#    athena(n): ACTORS gofer - A list of actors produced according to 
 #    various rules
-
+#
+# TBD: Global refs: ptype
+#
 #-----------------------------------------------------------------------
-# gofer::ACTORS
 
-gofer define ACTORS actor {
+
+::athena::goferx define ACTORS actor {
     rc "" -width 3in -span 3
     label {
         Enter a rule for selecting a set of actors.
@@ -26,7 +26,7 @@ gofer define ACTORS actor {
         case BY_VALUE "By name" {
             rc "Select actors from the following list:"
             rc
-            enumlonglist raw_value -dictcmd {::actor namedict} \
+            enumlonglist raw_value -dictcmd {$adb_ actor namedict} \
                 -width 30 -height 10 
         }
 
@@ -37,7 +37,7 @@ gofer define ACTORS actor {
             }
 
             rc
-            enumlonglist nlist -dictcmd {::nbhood namedict} \
+            enumlonglist nlist -dictcmd {$adb_ nbhood namedict} \
                 -width 30 -height 10
         }
 
@@ -47,7 +47,7 @@ gofer define ACTORS actor {
             label " the following neighborhoods:"
 
             rc
-            enumlonglist nlist -dictcmd {::nbhood namedict} \
+            enumlonglist nlist -dictcmd {$adb_ nbhood namedict} \
                 -width 30 -height 10
         }
 
@@ -66,7 +66,7 @@ gofer define ACTORS actor {
             enumlong anyall -defvalue ANY -dictcmd {::eanyall deflist}
             label " the following groups:"
             rc
-            enumlonglist glist -dictcmd {::group namedict} \
+            enumlonglist glist -dictcmd {$adb_ group namedict} \
                 -width 30 -height 10 
 
             rc {
@@ -80,7 +80,7 @@ gofer define ACTORS actor {
             enumlong anyall -defvalue ANY -dictcmd {::eanyall deflist}
             label " the following groups:"
             rc
-            enumlonglist glist -dictcmd {::group namedict} \
+            enumlonglist glist -dictcmd {$adb_ group namedict} \
                 -width 30 -height 10 
 
             rc {
@@ -95,7 +95,7 @@ gofer define ACTORS actor {
             enumlong anyall -defvalue ANY -dictcmd {::eanyall deflist}
             label " the following groups:"
             rc
-            enumlonglist glist -dictcmd {::group namedict} \
+            enumlonglist glist -dictcmd {$adb_ group namedict} \
                 -width 30 -height 10 
 
             rc {
@@ -108,36 +108,31 @@ gofer define ACTORS actor {
 }
 
 #-----------------------------------------------------------------------
-# Helper Commands
-
-# TBD
-
-#-----------------------------------------------------------------------
 # Gofer Rules
 
 # Rule: BY_VALUE
 #
 # Some set of actors chosen by the user.
 
-gofer rule ACTORS BY_VALUE {raw_value} {
-    typemethod construct {raw_value} {
-        return [$type validate [dict create raw_value $raw_value]]
+::athena::goferx rule ACTORS BY_VALUE {raw_value} {
+    method make {raw_value} {
+        return [my validate [dict create raw_value $raw_value]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         dict with gdict {}
 
         dict create raw_value \
-            [listval "actors" {actor validate} $raw_value]
+            [my val_elist actor "actors" $raw_value]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         dict with gdict {}
 
-        return [listnar "actor" "these actors" $raw_value $opt]
+        return [my nar_list "actor" "these actors" $raw_value $opt]
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         dict with gdict {}
 
         return $raw_value
@@ -148,27 +143,27 @@ gofer rule ACTORS BY_VALUE {raw_value} {
 #
 # Actors who are in control of any of a set of nbhoods.
 
-gofer rule ACTORS CONTROLLING {nlist} {
-    typemethod construct {nlist} {
-        return [$type validate [dict create nlist $nlist]]
+::athena::goferx rule ACTORS CONTROLLING {nlist} {
+    method make {nlist} {
+        return [my validate [dict create nlist $nlist]]
     }
 
-    typemethod validate {gdict} {
+    method validate {gdict} {
         set nlist  [dict get $gdict nlist]
-        dict create nlist [listval "neighborhoods" {nbhood validate} $nlist]
+        dict create nlist [my val_elist nbhood "neighborhoods" $nlist]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set nlist  [dict get $gdict nlist]
-        set text [listnar "" "these neighborhoods" $nlist $opt]
+        set text [my nar_list "" "these neighborhoods" $nlist $opt]
         set result "actors who are in control of $text"
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         # Get keys
         set nlist  [dict get $gdict nlist]
 
-        return [rdb eval "
+        return [$adb eval "
             SELECT DISTINCT controller
             FROM control_n
             WHERE n in ('[join $nlist {','}]')
@@ -181,22 +176,22 @@ gofer rule ACTORS CONTROLLING {nlist} {
 #
 # Actors who have influence in any or all of a set of nbhoods.
 
-gofer rule ACTORS INFLUENCE_IN {anyall nlist} {
-    typemethod construct {anyall nlist} {
-        return [$type validate [dict create anyall $anyall nlist $nlist]]
+::athena::goferx rule ACTORS INFLUENCE_IN {anyall nlist} {
+    method make {anyall nlist} {
+        return [my validate [dict create anyall $anyall nlist $nlist]]
     }
 
-    typemethod validate {gdict} {
-        return [anyall_nlist validate $gdict]
+    method validate {gdict} {
+        return [my val_anyall_nlist $gdict]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set result "actors who have influence in "
-        append result [::gofer::anyall_nlist narrative $gdict $opt]
+        append result [my nar_anyall_nlist $gdict $opt]
         return "$result"
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         # Get keys
         set anyall [dict get $gdict anyall]
         set nlist  [dict get $gdict nlist]
@@ -207,7 +202,7 @@ gofer rule ACTORS INFLUENCE_IN {anyall nlist} {
             set num [llength $nlist]
         }
 
-        return [rdb eval "
+        return [$adb eval "
             SELECT a FROM (
                 SELECT a, count(n) AS num
                 FROM influence_na
@@ -223,29 +218,29 @@ gofer rule ACTORS INFLUENCE_IN {anyall nlist} {
 #
 # Actors who own any of a list of groups.
 
-gofer rule ACTORS OWNING {glist} {
-    typemethod construct {glist} {
-        return [$type validate [dict create glist $glist]]
+::athena::goferx rule ACTORS OWNING {glist} {
+    method make {glist} {
+        return [my validate [dict create glist $glist]]
     }
 
-    typemethod validate {gdict} { 
+    method validate {gdict} { 
         set glist [dict get $gdict glist]
 
-        dict create glist [listval "groups" {ptype fog validate} $glist]
+        dict create glist [my val_list "groups" {ptype fog validate} $glist]
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set glist [dict get $gdict glist]
 
-        set text [listnar "group" "these groups" $glist $opt]
+        set text [my nar_list "group" "these groups" $glist $opt]
 
         return "actors who own $text"
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         set glist [dict get $gdict glist]
 
-        return [rdb eval "
+        return [$adb eval "
             SELECT DISTINCT a FROM (
                 SELECT a FROM groups
                 WHERE g IN ('[join $glist {','}]')
@@ -259,22 +254,22 @@ gofer rule ACTORS OWNING {glist} {
 #
 # Actors who are actively supported by any or all of a list of groups.
 
-gofer rule ACTORS SUPPORTED_BY {anyall glist} {
-    typemethod construct {anyall glist} {
-        return [$type validate [dict create anyall $anyall glist $glist]]
+::athena::goferx rule ACTORS SUPPORTED_BY {anyall glist} {
+    method make {anyall glist} {
+        return [my validate [dict create anyall $anyall glist $glist]]
     }
 
-    typemethod validate {gdict} { 
-        return [anyall_glist validate $gdict] 
+    method validate {gdict} { 
+        return [my val_anyall_glist $gdict] 
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set result "actors who are actively supported by "
-        append result [anyall_glist narrative $gdict $opt]
+        append result [my nar_anyall_glist $gdict $opt]
         return "$result"
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         # Get keys
         set anyall [dict get $gdict anyall]
         set glist  [dict get $gdict glist]
@@ -285,7 +280,7 @@ gofer rule ACTORS SUPPORTED_BY {anyall glist} {
             set num [llength $glist]
         }
 
-        return [rdb eval "
+        return [$adb eval "
             SELECT a FROM (
                 SELECT a, count(support) AS num
                 FROM support_nga
@@ -301,22 +296,22 @@ gofer rule ACTORS SUPPORTED_BY {anyall glist} {
 #
 # Actors who are liked by any or all of a list of groups.
 
-gofer rule ACTORS LIKED_BY_GROUP {anyall glist} {
-    typemethod construct {anyall glist} {
-        return [$type validate [dict create anyall $anyall glist $glist]]
+::athena::goferx rule ACTORS LIKED_BY_GROUP {anyall glist} {
+    method make {anyall glist} {
+        return [my validate [dict create anyall $anyall glist $glist]]
     }
 
-    typemethod validate {gdict} { 
-        return [anyall_glist validate $gdict] 
+    method validate {gdict} { 
+        return [my val_anyall_glist $gdict] 
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set result "actors who are liked by "
-        append result [anyall_glist narrative $gdict $opt]
+        append result [my nar_anyall_glist $gdict $opt]
         return "$result"
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         # Get keys
         set anyall [dict get $gdict anyall]
         set glist  [dict get $gdict glist]
@@ -327,7 +322,7 @@ gofer rule ACTORS LIKED_BY_GROUP {anyall glist} {
             set num [llength $glist]
         }
 
-        return [rdb eval "
+        return [$adb eval "
             SELECT a FROM (
                 SELECT a, count(vrel) AS num
                 FROM uram_vrel
@@ -343,22 +338,22 @@ gofer rule ACTORS LIKED_BY_GROUP {anyall glist} {
 #
 # Actors who are disliked by any or all of a list of groups.
 
-gofer rule ACTORS DISLIKED_BY_GROUP {anyall glist} {
-    typemethod construct {anyall glist} {
-        return [$type validate [dict create anyall $anyall glist $glist]]
+::athena::goferx rule ACTORS DISLIKED_BY_GROUP {anyall glist} {
+    method make {anyall glist} {
+        return [my validate [dict create anyall $anyall glist $glist]]
     }
 
-    typemethod validate {gdict} { 
-        return [anyall_glist validate $gdict] 
+    method validate {gdict} { 
+        return [my val_anyall_glist $gdict] 
     }
 
-    typemethod narrative {gdict {opt ""}} {
+    method narrative {gdict {opt ""}} {
         set result "actors who are disliked by "
-        append result [anyall_glist narrative $gdict $opt]
+        append result [my nar_anyall_glist $gdict $opt]
         return "$result"
     }
 
-    typemethod eval {gdict} {
+    method eval {gdict} {
         # Get keys
         set anyall [dict get $gdict anyall]
         set glist  [dict get $gdict glist]
@@ -369,7 +364,7 @@ gofer rule ACTORS DISLIKED_BY_GROUP {anyall glist} {
             set num [llength $glist]
         }
 
-        return [rdb eval "
+        return [$adb eval "
             SELECT a FROM (
                 SELECT a, count(vrel) AS num
                 FROM uram_vrel

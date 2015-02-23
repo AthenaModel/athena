@@ -103,6 +103,7 @@ snit::type ::athena::athena {
 
     # ADB
     delegate method adbfile  to adb
+    delegate method gofer    to adb
     delegate method paste    to adb
     delegate method rebase   to adb
     delegate method save     to adb

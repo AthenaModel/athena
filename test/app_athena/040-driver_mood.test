@@ -84,7 +84,7 @@ namespace eval ::athena_test::tests:: {
         }
         set B1 [ted addblock SYSTEM]
 
-        set roles [list @CIV [gofer construct CIVGROUPS BY_VALUE SHIA]]
+        set roles [list @CIV [adb gofer make CIVGROUPS BY_VALUE SHIA]]
         set T1 [ted addtactic $B1 CURSE curse MOODTEST roles $roles]
 
         # NEXT, lock and step so that the curse can fire.

@@ -122,7 +122,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         ted order TACTIC:STANCE tactic_id [$T1 id] \
             f BLUE \
-            glist [gofer construct GROUPS BY_VALUE {BRIT USAID}] 
+            glist [adb gofer make GROUPS BY_VALUE {BRIT USAID}] 
 
         ted pdicts [$T1 getdict]
     } -cleanup {
@@ -148,7 +148,7 @@ namespace eval ::athena_test::tests:: {
         ted order TACTIC:STANCE tactic_id [$T1 id] \
             f BLUE \
             mode BY_NBHOOD \
-            nlist [gofer construct NBHOODS BY_VALUE {NB1 NB2}] 
+            nlist [adb gofer make NBHOODS BY_VALUE {NB1 NB2}] 
 
         ted pdicts [$T1 getdict]
     } -cleanup {
@@ -174,7 +174,7 @@ namespace eval ::athena_test::tests:: {
         ted notifier bind ::projectlib::bean <Monitor>
         ted order TACTIC:STANCE tactic_id [$T1 id] \
             f BLUE \
-            glist [gofer construct GROUPS BY_VALUE {BRIT USAID}] 
+            glist [adb gofer make GROUPS BY_VALUE {BRIT USAID}] 
         ted notifier received
 
     } -cleanup {
@@ -185,7 +185,7 @@ namespace eval ::athena_test::tests:: {
         setup
         ted order TACTIC:STANCE tactic_id [$T1 id] \
             f BLUE \
-            glist [gofer construct GROUPS BY_VALUE {BRIT USAID}] 
+            glist [adb gofer make GROUPS BY_VALUE {BRIT USAID}] 
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
         flunky undo

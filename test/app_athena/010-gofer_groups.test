@@ -54,10 +54,10 @@ namespace eval ::athena_test::tests:: {
     #-------------------------------------------------------------------
     # Rule: BY_VALUE
 
-    test BY_VALUE-1.1 {construct, valid} -setup {
+    test BY_VALUE-1.1 {make, valid} -setup {
         setup
     } -body {
-        ::gofer::GROUPS::BY_VALUE construct {BLUE BRIT}
+        adb gofer GROUPS BY_VALUE make {BLUE BRIT}
     } -cleanup {
         cleanup
     } -result {raw_value {BLUE BRIT}}
@@ -65,7 +65,7 @@ namespace eval ::athena_test::tests:: {
     test BY_VALUE-2.1 {validate, valid} -setup {
         setup
     } -body {
-        ::gofer::GROUPS::BY_VALUE validate {raw_value {BLUE BRIT}}
+        adb gofer GROUPS BY_VALUE validate {raw_value {BLUE BRIT}}
     } -cleanup {
         cleanup
     } -result {raw_value {BLUE BRIT}}
@@ -73,7 +73,7 @@ namespace eval ::athena_test::tests:: {
     test BY_VALUE-2.2 {validate, invalid} -setup {
         setup
     } -body {
-        ::gofer::GROUPS::BY_VALUE validate {raw_value {BLUE NONESUCH}}
+        adb gofer GROUPS BY_VALUE validate {raw_value {BLUE NONESUCH}}
     } -returnCodes {
         error
     } -cleanup {
@@ -81,13 +81,13 @@ namespace eval ::athena_test::tests:: {
     } -match glob -result {Invalid group*}
 
     test BY_VALUE-3.1 {narrative} -body {
-        ::gofer::GROUPS::BY_VALUE narrative {raw_value BLUE}
+        adb gofer GROUPS BY_VALUE narrative {raw_value BLUE}
     } -result {group BLUE}
 
     test BY_VALUE-4.1 {eval} -setup {
         setup
     } -body {
-        ::gofer::GROUPS::BY_VALUE eval {raw_value {BLUE BRIT}}
+        adb gofer GROUPS BY_VALUE eval {raw_value {BLUE BRIT}}
     } -cleanup {
         cleanup
     } -result {BLUE BRIT}
@@ -95,10 +95,10 @@ namespace eval ::athena_test::tests:: {
     #-------------------------------------------------------------------
     # Rule: SUPPORTING_ACTOR
 
-    test SUPPORTING_ACTOR-1.1 {construct} -setup {
+    test SUPPORTING_ACTOR-1.1 {make} -setup {
         setup
     } -body {
-        ::gofer::GROUPS::SUPPORTING_ACTOR construct any {JOE BOB}
+        adb gofer GROUPS SUPPORTING_ACTOR make any {JOE BOB}
     } -cleanup {
         cleanup
     } -result {anyall ANY alist {JOE BOB}}
@@ -106,13 +106,13 @@ namespace eval ::athena_test::tests:: {
     test SUPPORTING_ACTOR-2.1 {validate} -setup {
         setup
     } -body {
-        ::gofer::GROUPS::SUPPORTING_ACTOR validate {anyall any alist {JOE BOB}}
+        adb gofer GROUPS SUPPORTING_ACTOR validate {anyall any alist {JOE BOB}}
     } -cleanup {
         cleanup
     } -result {anyall ANY alist {JOE BOB}}
 
     test SUPPORTING_ACTOR-3.1 {narrative} -body {
-        ::gofer::GROUPS::SUPPORTING_ACTOR narrative {anyall ANY alist JOE}
+        adb gofer GROUPS SUPPORTING_ACTOR narrative {anyall ANY alist JOE}
     } -match glob -result {groups that actively support *}
 
     test SUPPORTING_ACTOR-4.1 {eval} -setup {
@@ -129,7 +129,7 @@ namespace eval ::athena_test::tests:: {
             }
         }
     } -body {
-        ::gofer::GROUPS::SUPPORTING_ACTOR eval {anyall ANY alist BOB}
+        adb gofer GROUPS SUPPORTING_ACTOR eval {anyall ANY alist BOB}
     } -cleanup {
         cleanup
     } -result {BRIT SHIA}
@@ -137,10 +137,10 @@ namespace eval ::athena_test::tests:: {
     #-------------------------------------------------------------------
     # Rule: LIKING_ACTOR
 
-    test LIKING_ACTOR-1.1 {construct} -setup {
+    test LIKING_ACTOR-1.1 {make} -setup {
         setup
     } -body {
-        ::gofer::GROUPS::LIKING_ACTOR construct any {JOE BOB}
+        adb gofer GROUPS LIKING_ACTOR make any {JOE BOB}
     } -cleanup {
         cleanup
     } -result {anyall ANY alist {JOE BOB}}
@@ -148,13 +148,13 @@ namespace eval ::athena_test::tests:: {
     test LIKING_ACTOR-2.1 {validate} -setup {
         setup
     } -body {
-        ::gofer::GROUPS::LIKING_ACTOR validate {anyall any alist {JOE BOB}}
+        adb gofer GROUPS LIKING_ACTOR validate {anyall any alist {JOE BOB}}
     } -cleanup {
         cleanup
     } -result {anyall ANY alist {JOE BOB}}
 
     test LIKING_ACTOR-3.1 {narrative} -body {
-        ::gofer::GROUPS::LIKING_ACTOR narrative {anyall ANY alist JOE}
+        adb gofer GROUPS LIKING_ACTOR narrative {anyall ANY alist JOE}
     } -match glob -result {groups that like *}
 
     test LIKING_ACTOR-4.1 {eval} -setup {
@@ -167,7 +167,7 @@ namespace eval ::athena_test::tests:: {
         aram vrel bset 1 TAL  BOB  0.0
         ted step
     } -body {
-        ::gofer::GROUPS::LIKING_ACTOR eval {anyall ANY alist BOB}
+        adb gofer GROUPS LIKING_ACTOR eval {anyall ANY alist BOB}
     } -cleanup {
         cleanup
     } -result {BRIT SHIA}
@@ -175,10 +175,10 @@ namespace eval ::athena_test::tests:: {
     #-------------------------------------------------------------------
     # Rule: DISLIKING_ACTOR
 
-    test DISLIKING_ACTOR-1.1 {construct} -setup {
+    test DISLIKING_ACTOR-1.1 {make} -setup {
         setup
     } -body {
-        ::gofer::GROUPS::DISLIKING_ACTOR construct any {JOE BOB}
+        adb gofer GROUPS DISLIKING_ACTOR make any {JOE BOB}
     } -cleanup {
         cleanup
     } -result {anyall ANY alist {JOE BOB}}
@@ -186,13 +186,13 @@ namespace eval ::athena_test::tests:: {
     test DISLIKING_ACTOR-2.1 {validate} -setup {
         setup
     } -body {
-        ::gofer::GROUPS::DISLIKING_ACTOR validate {anyall any alist {JOE BOB}}
+        adb gofer GROUPS DISLIKING_ACTOR validate {anyall any alist {JOE BOB}}
     } -cleanup {
         cleanup
     } -result {anyall ANY alist {JOE BOB}}
 
     test DISLIKING_ACTOR-3.1 {narrative} -body {
-        ::gofer::GROUPS::DISLIKING_ACTOR narrative {anyall ANY alist JOE}
+        adb gofer GROUPS DISLIKING_ACTOR narrative {anyall ANY alist JOE}
     } -match glob -result {groups that dislike *}
 
     test DISLIKING_ACTOR-4.1 {eval} -setup {
@@ -204,7 +204,7 @@ namespace eval ::athena_test::tests:: {
         aram vrel bset 1 SHIA BOB -0.3
         ted step
     } -body {
-        ::gofer::GROUPS::DISLIKING_ACTOR eval {anyall ANY alist BOB}
+        adb gofer GROUPS DISLIKING_ACTOR eval {anyall ANY alist BOB}
     } -cleanup {
         cleanup
     } -result {BRIT SHIA}
@@ -212,10 +212,10 @@ namespace eval ::athena_test::tests:: {
     #-------------------------------------------------------------------
     # Rule: LIKING_GROUP
 
-    test LIKING_GROUP-1.1 {construct} -setup {
+    test LIKING_GROUP-1.1 {make} -setup {
         setup
     } -body {
-        ::gofer::GROUPS::LIKING_GROUP construct any {SHIA SUNN}
+        adb gofer GROUPS LIKING_GROUP make any {SHIA SUNN}
     } -cleanup {
         cleanup
     } -result {anyall ANY glist {SHIA SUNN}}
@@ -223,13 +223,13 @@ namespace eval ::athena_test::tests:: {
     test LIKING_GROUP-2.1 {validate} -setup {
         setup
     } -body {
-        ::gofer::GROUPS::LIKING_GROUP validate {anyall any glist {SHIA SUNN}}
+        adb gofer GROUPS LIKING_GROUP validate {anyall any glist {SHIA SUNN}}
     } -cleanup {
         cleanup
     } -result {anyall ANY glist {SHIA SUNN}}
 
     test LIKING_GROUP-3.1 {narrative} -body {
-        ::gofer::GROUPS::LIKING_GROUP narrative {anyall ANY glist SHIA}
+        adb gofer GROUPS LIKING_GROUP narrative {anyall ANY glist SHIA}
     } -match glob -result {groups that like *}
 
     test LIKING_GROUP-4.1 {eval} -setup {
@@ -241,7 +241,7 @@ namespace eval ::athena_test::tests:: {
         aram hrel bset 1 SUNN SHIA  0.3
         ted step
     } -body {
-        ::gofer::GROUPS::LIKING_GROUP eval {anyall ANY glist SHIA}
+        adb gofer GROUPS LIKING_GROUP eval {anyall ANY glist SHIA}
     } -cleanup {
         cleanup
     } -result {BRIT SHIA SUNN}
@@ -249,10 +249,10 @@ namespace eval ::athena_test::tests:: {
     #-------------------------------------------------------------------
     # Rule: DISLIKING_GROUP
 
-    test DISLIKING_GROUP-1.1 {construct} -setup {
+    test DISLIKING_GROUP-1.1 {make} -setup {
         setup
     } -body {
-        ::gofer::GROUPS::DISLIKING_GROUP construct any {SHIA SUNN}
+        adb gofer GROUPS DISLIKING_GROUP make any {SHIA SUNN}
     } -cleanup {
         cleanup
     } -result {anyall ANY glist {SHIA SUNN}}
@@ -260,13 +260,13 @@ namespace eval ::athena_test::tests:: {
     test DISLIKING_GROUP-2.1 {validate} -setup {
         setup
     } -body {
-        ::gofer::GROUPS::DISLIKING_GROUP validate {anyall any glist {SHIA SUNN}}
+        adb gofer GROUPS DISLIKING_GROUP validate {anyall any glist {SHIA SUNN}}
     } -cleanup {
         cleanup
     } -result {anyall ANY glist {SHIA SUNN}}
 
     test DISLIKING_GROUP-3.1 {narrative} -body {
-        ::gofer::GROUPS::DISLIKING_GROUP narrative {anyall ANY glist SHIA}
+        adb gofer GROUPS DISLIKING_GROUP narrative {anyall ANY glist SHIA}
     } -match glob -result {groups that dislike *}
 
     test DISLIKING_GROUP-4.1 {eval} -setup {
@@ -278,7 +278,7 @@ namespace eval ::athena_test::tests:: {
         aram hrel bset 1 SUNN SHIA -0.3
         ted step
     } -body {
-        ::gofer::GROUPS::DISLIKING_GROUP eval {anyall ANY glist SHIA}
+        adb gofer GROUPS DISLIKING_GROUP eval {anyall ANY glist SHIA}
     } -cleanup {
         cleanup
     } -result {BRIT SUNN}
@@ -286,10 +286,10 @@ namespace eval ::athena_test::tests:: {
     #-------------------------------------------------------------------
     # Rule: LIKED_BY_GROUP
 
-    test LIKED_BY_GROUP-1.1 {construct} -setup {
+    test LIKED_BY_GROUP-1.1 {make} -setup {
         setup
     } -body {
-        ::gofer::GROUPS::LIKED_BY_GROUP construct any {BRIT BLUE}
+        adb gofer GROUPS LIKED_BY_GROUP make any {BRIT BLUE}
     } -cleanup {
         cleanup
     } -result {anyall ANY glist {BRIT BLUE}}
@@ -297,13 +297,13 @@ namespace eval ::athena_test::tests:: {
     test LIKED_BY_GROUP-2.1 {validate} -setup {
         setup
     } -body {
-        ::gofer::GROUPS::LIKED_BY_GROUP validate {anyall any glist {BRIT BLUE}}
+        adb gofer GROUPS LIKED_BY_GROUP validate {anyall any glist {BRIT BLUE}}
     } -cleanup {
         cleanup
     } -result {anyall ANY glist {BRIT BLUE}}
 
     test LIKED_BY_GROUP-3.1 {narrative} -body {
-        ::gofer::GROUPS::LIKED_BY_GROUP narrative {anyall ANY glist BRIT}
+        adb gofer GROUPS LIKED_BY_GROUP narrative {anyall ANY glist BRIT}
     } -match glob -result {groups that are liked by *}
 
     test LIKED_BY_GROUP-4.1 {eval} -setup {
@@ -315,7 +315,7 @@ namespace eval ::athena_test::tests:: {
         aram hrel bset 1 SHIA SUNN  0.3
         ted step
     } -body {
-        ::gofer::GROUPS::LIKED_BY_GROUP eval {anyall ANY glist SHIA}
+        adb gofer GROUPS LIKED_BY_GROUP eval {anyall ANY glist SHIA}
     } -cleanup {
         cleanup
     } -result {BLUE SHIA SUNN}
@@ -323,10 +323,10 @@ namespace eval ::athena_test::tests:: {
     #-------------------------------------------------------------------
     # Rule: DISLIKED_BY_GROUP
 
-    test DISLIKED_BY_GROUP-1.1 {construct} -setup {
+    test DISLIKED_BY_GROUP-1.1 {make} -setup {
         setup
     } -body {
-        ::gofer::GROUPS::DISLIKED_BY_GROUP construct any {BRIT BLUE}
+        adb gofer GROUPS DISLIKED_BY_GROUP make any {BRIT BLUE}
     } -cleanup {
         cleanup
     } -result {anyall ANY glist {BRIT BLUE}}
@@ -334,13 +334,13 @@ namespace eval ::athena_test::tests:: {
     test DISLIKED_BY_GROUP-2.1 {validate} -setup {
         setup
     } -body {
-        ::gofer::GROUPS::DISLIKED_BY_GROUP validate {anyall any glist {BRIT BLUE}}
+        adb gofer GROUPS DISLIKED_BY_GROUP validate {anyall any glist {BRIT BLUE}}
     } -cleanup {
         cleanup
     } -result {anyall ANY glist {BRIT BLUE}}
 
     test DISLIKED_BY_GROUP-3.1 {narrative} -body {
-        ::gofer::GROUPS::DISLIKED_BY_GROUP narrative {anyall ANY glist BRIT}
+        adb gofer GROUPS DISLIKED_BY_GROUP narrative {anyall ANY glist BRIT}
     } -match glob -result {groups that are disliked by *}
 
     test DISLIKED_BY_GROUP-4.1 {eval, one} -setup {
@@ -352,7 +352,7 @@ namespace eval ::athena_test::tests:: {
         aram hrel bset 1 SHIA SUNN -0.3
         ted step
     } -body {
-        ::gofer::GROUPS::DISLIKED_BY_GROUP eval {anyall ANY glist SHIA}
+        adb gofer GROUPS DISLIKED_BY_GROUP eval {anyall ANY glist SHIA}
     } -cleanup {
         cleanup
     } -result {BLUE SUNN}

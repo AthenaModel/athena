@@ -21,9 +21,8 @@
     #-------------------------------------------------------------------
     # Constructor
 
-    constructor {args} {
-        # FIRST, Initialize as a condition bean.
-        next
+    constructor {pot_ args} {
+        next $pot_
 
         # NEXT, Initialize state variables
         set expression ""

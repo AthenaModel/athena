@@ -27,7 +27,7 @@
     variable los     ;# Desired level of service to fund, as a percentage
     variable amount  ;# Amount of money to use for funding
     variable percent ;# Percent of money to use if mode is PERCENT
-    variable glist   ;# List if CIV groups to receive services
+    variable glist   ;# CIVGROUPS gofer value, groups to receive services
 
     # Transient data
     variable trans
@@ -35,9 +35,8 @@
     #------------------------------------------------------------------
     # Constructor
 
-    constructor {args} {
-        # Initialize as tactic bean
-        next
+    constructor {pot_ args} {
+        next $pot_
 
         # Initialize state variables
         set mode    ALL
@@ -45,7 +44,7 @@
         set los     100.0
         set amount  0.0
         set percent 0.0
-        set glist   [gofer::CIVGROUPS blank]
+        set glist   [[my adb] gofer CIVGROUPS blank]
 
         # Initial state is invalid (no glist)
         my set state invalid
@@ -62,7 +61,7 @@
 
     method SanityCheck {errdict} {
         # glist
-        if {[catch {gofer::CIVGROUPS validate $glist} result]} {
+        if {[catch {[my adb] gofer CIVGROUPS validate $glist} result]} {
             dict set errdict glist $result
         }
 
@@ -71,7 +70,7 @@
 
     method narrative {} {
 
-        set gtext [gofer::CIVGROUPS narrative $glist]
+        set gtext [[my adb] gofer CIVGROUPS narrative $glist]
         set atext [moneyfmt $amount]
         set ltext [format "%.1f%%" $los]
         set cnarr "The amount spent is not capped by the saturation LOS."
@@ -116,7 +115,7 @@
 
         # NEXT, filter out groups that do not provide enough direct support
         # to the tactic owner
-        set list [gofer::CIVGROUPS eval $glist]
+        set list [[my adb] gofer CIVGROUPS eval $glist]
         set trans(glist) [my groupsInSupportingNbhoods [my agent] $list]
 
         # NEXT, if spending is capped we need to get that amount
@@ -305,7 +304,7 @@
         rc "Fund ENI For:" -span 2 
 
         rcc "Groups:" -for glist -span 3
-        gofer glist -typename gofer::CIVGROUPS
+        gofer glist -typename CIVGROUPS
 
         rcc "Amount:"   -for mode
         selector mode {

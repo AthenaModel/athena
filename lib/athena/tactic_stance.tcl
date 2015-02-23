@@ -27,21 +27,20 @@
     # Editable Parameters
     variable mode      ;# BY_GROUP or BY_NBHOOD
     variable f         ;# A force group owned by the actor
-    variable nlist     ;# A gofer::NBHOODS value
-    variable glist     ;# A gofer::GROUPS value
+    variable nlist     ;# A NBHOODS gofer value
+    variable glist     ;# A GROUPS gofer value
     variable drel      ;# The designated relationship (aka STANCE)
 
     #-------------------------------------------------------------------
     # Constructor
-    constructor {args} {
-        # FIRST, Initialize as a tactic bean
-        next
+    constructor {pot_ args} {
+        next $pot_
 
         # NEXT, Initialize state variables
         set mode BY_GROUP
         set f    {}
-        set nlist [gofer::NBHOODS blank]
-        set glist [gofer::GROUPS blank]
+        set nlist [[my adb] gofer NBHOODS blank]
+        set glist [[my adb] gofer GROUPS blank]
         set drel  0.0
 
         # NEXT, Initial state is invalid (empty f, nlist and glist)
@@ -66,13 +65,13 @@
         # glist/nlist
         switch -exact -- $mode {
             BY_GROUP {
-                if {[catch {gofer::GROUPS validate $glist} result]} {
+                if {[catch {[my adb] gofer GROUPS validate $glist} result]} {
                     dict set errdict glist $result
                 } 
             }
 
             BY_NBHOOD {
-                if {[catch {gofer::NBHOODS validate $nlist} result]} {
+                if {[catch {[my adb] gofer NBHOODS validate $nlist} result]} {
                     dict set errdict nlist $result
                 }
             }
@@ -93,12 +92,12 @@
 
         switch -exact -- $mode {
             BY_GROUP {
-                append result [gofer::GROUPS narrative $glist]
+                append result [[my adb] gofer GROUPS narrative $glist]
             }
 
             BY_NBHOOD {
                 append result "the group(s) in "
-                append result [gofer::NBHOODS narrative $nlist]
+                append result [[my adb] gofer NBHOODS narrative $nlist]
             }
 
             default { error "Unknown mode: \"$mode\"" }
@@ -114,13 +113,13 @@
 
         # FIRST, get the groups.
         if {$mode eq "BY_NBHOOD"} {
-            set nbhoods [gofer eval $nlist]
+            set nbhoods [[my adb] gofer eval $nlist]
             set groups [list]
             foreach n $nbhoods {
                 set groups [concat $groups [civgroup gIn $n]]
             }
         } else {
-            set groups [gofer eval $glist]
+            set groups [[my adb] gofer eval $glist]
 
             # We can't set stance with $f
             ldelete groups $f
@@ -205,12 +204,12 @@
         selector mode {
             case BY_GROUP "By Group" {
                 rcc "Groups:" -for glist
-                gofer glist -typename gofer::GROUPS
+                gofer glist -typename GROUPS
             }
 
             case BY_NBHOOD "By Neighborhood" {
                 rcc "Neighborhoods:" -for nlist
-                gofer nlist -typename gofer::NBHOODS
+                gofer nlist -typename NBHOODS
             }
         }
 

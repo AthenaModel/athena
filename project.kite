@@ -9,6 +9,7 @@ app helptool -apptype kit -gui
 
 # Provided Libraries
 provide athena
+provide athenagui
 
 # Compiled Directories
 src help
@@ -33,10 +34,10 @@ require tdom 0.8
 require struct::set 2.2
 require kiteutils 0.4.6 -local
 require kitedocs 0.4.6 -local
-require marsutil 3.0.12 -local
-require marsgui 3.0.12 -local
-require simlib 3.0.12 -local
-require Marsbin 3.0.12 -local
+require marsutil 3.0.13 -local
+require marsgui 3.0.13 -local
+require simlib 3.0.13 -local
+require Marsbin 3.0.13 -local
 
 # External Files
 xfile docs/aag.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aag-20141010.docx

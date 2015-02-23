@@ -88,7 +88,7 @@ namespace eval ::athena_test::tests:: {
             # Create a block that executes only on lock.
             set blk [ted addblock $a onlock yes tmode AFTER t1 100]
             ted addtactic $blk FUNDENI \
-                glist   [gofer construct CIVGROUPS BY_VALUE {SHIA SUNN}] \
+                glist   [adb gofer make CIVGROUPS BY_VALUE {SHIA SUNN}] \
                 mode    EXACT               \
                 amount  $lockAmount         \
                 cmode   UNCAPPED
@@ -98,7 +98,7 @@ namespace eval ::athena_test::tests:: {
             # Create a block that doesn't execute on lock.
             set blk [ted addblock $a onlock no]
             ted addtactic $blk FUNDENI \
-                glist   [gofer construct CIVGROUPS BY_VALUE {SHIA SUNN}] \
+                glist   [adb gofer make CIVGROUPS BY_VALUE {SHIA SUNN}] \
                 mode    EXACT               \
                 amount  $t1Amount           \
                 cmode   UNCAPPED

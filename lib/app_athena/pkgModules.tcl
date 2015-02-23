@@ -44,8 +44,8 @@ namespace import ::athena::*
 if {$::tkLoaded} {
     package require ctext 3.3
     package require projectgui
+    namespace import projectgui::*
 
-    namespace import ::projectgui::*
 }
 
 # -kite-require-end

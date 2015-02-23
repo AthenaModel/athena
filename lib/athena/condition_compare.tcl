@@ -8,8 +8,6 @@
 # DESCRIPTION:
 #    athena(n): Mark II Condition, COMPARE
 #
-# TBD: Global refs: gofer*
-#
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
@@ -17,21 +15,20 @@
     #-------------------------------------------------------------------
     # Instance Variables
 
-    variable x          ;# A gofer::NUMBER value
+    variable x          ;# A NUMBER gofer value
     variable comp       ;# An ecomparator value
-    variable y          ;# A gofer::NUMBER value
+    variable y          ;# A NUMBER gofer value
     
     #-------------------------------------------------------------------
     # Constructor
 
-    constructor {args} {
-        # Initialize as tactic bean.
-        next
+    constructor {pot_ args} {
+        next $pot_
 
         # Initialize state variables
-        set x     [gofer construct NUMBER BY_VALUE 0]
+        set x     [[my adb] gofer make NUMBER BY_VALUE 0]
         set comp  EQ
-        set y     [gofer construct NUMBER BY_VALUE 0]
+        set y     [[my adb] gofer make NUMBER BY_VALUE 0]
 
         # Save the options
         my configure {*}$args
@@ -41,19 +38,19 @@
     # Operations
 
     method narrative {} {
-        set xt    [gofer::NUMBER narrative $x]
+        set xt    [[my adb] gofer NUMBER narrative $x]
         set compt [ecomparator longname $comp]
-        set yt    [gofer::NUMBER narrative $y]
+        set yt    [[my adb] gofer NUMBER narrative $y]
 
         return [normalize "Compare whether $xt is $compt $yt"]
     }
 
     method SanityCheck {errdict} {
-        if {[catch {gofer validate $x} result]} {
+        if {[catch {[my adb] gofer validate $x} result]} {
             dict set errdict x $result
         }
 
-        if {[catch {gofer validate $y} result]} {
+        if {[catch {[my adb] gofer validate $y} result]} {
             dict set errdict y $result
         }
 
@@ -61,8 +58,8 @@
     }
 
     method Evaluate {} {
-        set xval [gofer eval $x]
-        set yval [gofer eval $y]
+        set xval [[my adb] gofer eval $x]
+        set yval [[my adb] gofer eval $y]
 
         return [ecomparatorx compare $xval $comp $yval]
     }
@@ -95,13 +92,13 @@
         }
 
         rcc "X Value:" -for x
-        gofer x -typename gofer::NUMBER
+        gofer x -typename NUMBER
 
         rcc "Is:" -for comp
         comparator comp
 
         rcc "Y Value:" -for y
-        gofer y -typename gofer::NUMBER
+        gofer y -typename NUMBER
     }
 
 

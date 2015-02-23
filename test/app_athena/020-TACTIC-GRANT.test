@@ -104,7 +104,7 @@ namespace eval ::athena_test::tests:: {
         ted order TACTIC:GRANT \
             tactic_id [$T1 id]         \
             klist     {ABC CBS}        \
-            alist     [gofer construct ACTORS BY_VALUE BOB]
+            alist     [adb gofer make ACTORS BY_VALUE BOB]
 
         ted pdicts [$T1 getdict]
     } -cleanup {
@@ -127,7 +127,7 @@ namespace eval ::athena_test::tests:: {
         ted order TACTIC:GRANT \
             tactic_id [$T1 id]         \
             klist     {CNN FOX}        \
-            alist     [gofer construct ACTORS BY_VALUE BOB]
+            alist     [adb gofer make ACTORS BY_VALUE BOB]
 
         ted pdicts [$T1 getdict]
     } -cleanup {

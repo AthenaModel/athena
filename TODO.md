@@ -1,12 +1,8 @@
 # TODO.md - Athena TODO List
 
-- Fix up 040-driver_ENI.
-  - Used old-style tactics.
-  - Expects to edit tactics while paused.
-  - Need to set up all tactics initially, with times, so that different
-    values are used.
-- Add all component entries to athenadb(n).
+- Document all component entries in athenadb(n).
   - Or, come up with a plan for which ones are documented and which aren't.
+- Document athena(n)
 - Move editable entities to athena(n)
 - Move model modules to athena(n)
 - Move relevant projtypes to athena(n)
@@ -42,7 +38,7 @@
 - driver::IOM
   - tactic_broadcast
 - executive
-  - condition_expr, tactic_executive
+  - condition_expr, gofer_number, tactic_executive
 - ::gofer*
   - curse
   - condition_compare, condition_control, tactic_*
@@ -57,9 +53,9 @@
 - parm, parmdb
   - absit, personnel, ruleset, tactic_fundeni, tactic_maintain
 - plant
-  - strategy, tactic_build, tactic_damage, tactic_maintain
+  - gofer_number, strategy, tactic_build, tactic_damage, tactic_maintain
 - ptype - Should go in athena_order.tcl? (But no hierarchical methods!)
-  - absit, actor, nbhood, tactic_*.tcl
+  - absit, actor, gofer_actors.tcl, gofer_number.tcl, nbhood, tactic_*.tcl
 - refpoint
   - absit, nbhood
 - service

@@ -141,14 +141,10 @@ snit::type ::projectlib::beanpot {
         set bean ${self}::[namespace tail $beanclass]$id
 
         # NEXT, create the new object.
-        $beanclass create $bean {*}$args
+        $beanclass create $bean $self {*}$args
 
-        # NEXT, set its pot and ID.
-        #
-        # TBD: Since the pot and ID are embedded in the name, the
-        # bean could retrieve them from the name.
+        # NEXT, set its ID.
         set ns [info object namespace $bean]
-        set ${ns}::pot $self
         set ${ns}::id  $id
 
         # NEXT, remember it for lookup.
@@ -439,7 +435,7 @@ snit::type ::projectlib::beanpot {
 
         # FIRST, Recreate the bean with its original name and
         # class.
-        $bcls create $bean
+        $bcls create $bean $self
 
         # NEXT, restore its data.
         set ns [info object namespace $bean]
@@ -567,7 +563,7 @@ snit::type ::projectlib::beanpot {
         # class, naming it for use in this beanpot.  
 
         set bean ${self}::[namespace tail $cls]$id
-        $cls create $bean
+        $cls create $bean $self
 
         # NEXT, restore its data.
         set ns [info object namespace $bean]

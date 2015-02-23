@@ -42,7 +42,7 @@
     variable min         ;# UPTO: Minimum number of personnel.
     variable max         ;# UPTO: Maximum number of personnel.
     variable percent     ;# PERCENT: percentage of personnel remaining.
-    variable nlist       ;# gofer::NBHOODS value; nbhoods to deploy in
+    variable nlist       ;# NBHOODS gofer value; nbhoods to deploy in
     variable nmode       ;# EQUAL or BY_POP
     variable redeploy    ;# If true, each deployment is a new deployment.
 
@@ -63,13 +63,12 @@
     #-------------------------------------------------------------------
     # Constructor
 
-    constructor {args} {
-        # Initialize as tactic bean.
-        next
+    constructor {pot_ args} {
+        next $pot_
 
         # Initialize state variables
         set g              ""
-        set nlist          [gofer::NBHOODS blank]
+        set nlist          [[my adb] gofer NBHOODS blank]
         set nmode          BY_POP
         set pmode          ALL
         set personnel      0
@@ -123,7 +122,7 @@
         }
 
         # nlist
-        if {[catch {gofer::NBHOODS validate $nlist} result]} {
+        if {[catch {[my adb] gofer NBHOODS validate $nlist} result]} {
             dict set errdict nlist $result
         }
 
@@ -136,7 +135,7 @@
 
     method narrative {} {
         set s(g)     [link make group $g]
-        set s(nlist) [gofer::NBHOODS narrative $nlist]
+        set s(nlist) [[my adb] gofer NBHOODS narrative $nlist]
 
         if {$redeploy} {
             set s(redeploy) "as a new deployment"
@@ -403,7 +402,7 @@
 
     method GetNbhoods {} {
         # FIRST, get the neighborhoods
-        set nbhoods [gofer::NBHOODS eval $nlist]
+        set nbhoods [[my adb] gofer NBHOODS eval $nlist]
 
         if {[llength $nbhoods] == 0} {
             my Fail WARNING "Gofer retrieved no neighborhoods."
@@ -826,7 +825,7 @@
         }
 
         rcc "In Neighborhoods:" -for nlist
-        gofer nlist -typename gofer::NBHOODS
+        gofer nlist -typename NBHOODS
 
         rcc "Allocation:" -for nmode
         selector nmode {

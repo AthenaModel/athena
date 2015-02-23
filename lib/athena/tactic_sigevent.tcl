@@ -22,9 +22,8 @@
     #-------------------------------------------------------------------
     # Constructor
 
-    constructor {args} {
-        # FIRST, Initialize as tactic bean.
-        next
+    constructor {pot_ args} {
+        next $pot_
 
         # NEXT, Initialize state variables
         set msg ""
