@@ -154,11 +154,12 @@ snit::type ::athena::athenadb {
     
     # Resources
     component rdb                         ;# writable sqldatabase handle
-    component pot       -public pot       ;# beanpot(n)
+    component exporter  -public export    ;# exporter
     component flunky    -public flunky    ;# athena_flunky(n)
     component gofer     -public gofer     ;# gofer
     component parm      -public parm      ;# model parameter DB
     component paster    -public paste     ;# paste manager
+    component pot       -public pot       ;# beanpot(n)
     component ruleset   -public ruleset   ;# rule set manager
 
     # Editable Entities
@@ -295,6 +296,7 @@ snit::type ::athena::athenadb {
             curse                       \
             demog                       \
             econ                        \
+            exporter                    \
             frcgroup                    \
             group                       \
             hook                        \
@@ -880,7 +882,13 @@ snit::type ::athena::athenadb {
         notifier send $subject $event {*}$args
     }
 
-    
+    # version
+    #
+    # Returns the package version.
+
+    method version {} {
+        return [package present athena]
+    }
 
     #===================================================================
     # SQL Functions

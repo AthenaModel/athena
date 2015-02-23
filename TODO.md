@@ -1,5 +1,7 @@
 # TODO.md - Athena TODO List
 
+- athena(n) needs to know its version number.  [kite version] isn't good
+  enough.  A package needs to be able to introspect this.
 - Document all component entries in athenadb(n).
   - Or, come up with a plan for which ones are documented and which aren't.
 - Document athena(n)
@@ -38,7 +40,7 @@
 - driver::IOM
   - tactic_broadcast
 - executive
-  - condition_expr, gofer_number, tactic_executive
+  - condition_expr, exporter, gofer_number, tactic_executive
 - ::gofer*
   - curse
   - condition_compare, condition_control, tactic_*
@@ -46,12 +48,12 @@
   - tactic_broadcast
 - inject
   - curse, tactic_curse
+- map
+  - exporter
 - nbhood
   - absit
 - notifier bind
   - nbhood
-- parm, parmdb
-  - absit, personnel, ruleset, tactic_fundeni, tactic_maintain
 - plant
   - gofer_number, strategy, tactic_build, tactic_damage, tactic_maintain
 - ptype - Should go in athena_order.tcl? (But no hierarchical methods!)
@@ -67,6 +69,6 @@
 - sim
   - absit, parm, ruleset_iom.tcl
 - simclock
-  - absit, athenadb, block
+  - absit, athenadb, block, exporter
 
 

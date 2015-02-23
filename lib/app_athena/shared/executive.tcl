@@ -2288,7 +2288,7 @@ snit::type executive {
         # NEXT, if they want the -history export, that can be done
         # at any time.  Do it and return.
         if {$opts(-history)} {
-            exporter fromcif $fullname
+            adb export fromcif $fullname
 
             app puts "Exported scenario from history as $fullname."
             return
@@ -2299,7 +2299,7 @@ snit::type executive {
             error "Cannot export while the scenario is locked."
         }
 
-        exporter fromdata $fullname
+        adb export fromdata $fullname
 
         app puts "Exported scenario from current data as $fullname."
 

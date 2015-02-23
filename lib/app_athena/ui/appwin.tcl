@@ -1595,7 +1595,7 @@ snit::widget appwin {
 
 
         # NEXT, Save the scenario using this name
-        exporter fromdata $filename
+        adb export fromdata $filename
         app puts "Exported scenario from current data as $filename."
 
     }

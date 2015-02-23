@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Scenario Exporter
+#    athena(n): Scenario Exporter
 #
 #    This object is responsible for exporting the scenario as an 
 #    order script.  There are two flavors:
@@ -14,26 +14,34 @@
 #    * Normal export, which is a snapshot of the current scenario.
 #
 #    * History export, which exports the orders in the cif table
-#      (this is the class export mode).
+#      (this is the classic export mode).
+#
+# TBD: Global refs: executive, map, simclock
 #
 #-----------------------------------------------------------------------
 
-#-----------------------------------------------------------------------
-# exporter
+snit::type ::athena::exporter {
+    #-------------------------------------------------------------------
+    # Components
 
-snit::type exporter {
-    pragma -hasinstances no
-
+    component adb ;# The athenadb(n) instance
 
     #-------------------------------------------------------------------
-    # Instance Variables
+    # Constructor
 
-    # None yet
+    # constructor adb_
+    #
+    # adb_    - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of the type.
+
+    constructor {adb_} {
+        set adb $adb_
+    }
 
     #-------------------------------------------------------------------
     # Export from CIF
     
-
     # fromcif scriptFile
     #
     # scriptFile    Absolute file name to receive script.
@@ -42,14 +50,14 @@ snit::type exporter {
     # CIF.  "SIM:UNLOCK" is explicitly ignored, as it gets left
     # behind in the CIF on unlock, and would break scripts.
 
-    typemethod fromcif {scriptFile} {
+    method fromcif {scriptFile} {
         # FIRST, get a list of the order data.  Skip SIM:UNLOCK, and 
         # prepare to fix up SIM:RUN and SIM:PAUSE
         set orders [list]
         set lastRun(index) ""
         set lastRun(time)  ""
 
-        rdb eval {
+        $adb eval {
             SELECT time,name,parmdict
             FROM cif
             WHERE name != 'SIM:UNLOCK'
@@ -95,12 +103,17 @@ snit::type exporter {
         set f [open $scriptFile w]
 
         # NEXT, write a header
-        puts $f "# Exporting [adb adbfile] from history"
+        set adbfile [$adb adbfile]
+        if {$adbfile eq ""} {
+            set adbfile "unsaved scenario"
+        }
+
+        puts $f "# Exporting $adbfile from history"
         puts $f "# Exported @ [clock format [clock seconds]]"
-        puts $f "# Written by Athena version [version]"
+        puts $f "# Written by Athena version [$adb version]"
 
         # NEXT, save all of the scripts in sequence order
-        ExportScripts $f
+        $self ExportScripts $f
 
         # NEXT, turn the orders into commands, and save them.
         foreach entry $orders {
@@ -110,7 +123,7 @@ snit::type exporter {
             # non-default values.
             set cmd [list send $name]
 
-            set o [flunky make $name]
+            set o [$adb flunky make $name]
             $o setdict $parmdict
 
             dict for {parm value} [$o prune] {
@@ -124,7 +137,6 @@ snit::type exporter {
 
         close $f
 
-
         return
     }
 
@@ -134,7 +146,7 @@ snit::type exporter {
     #
     # Exports all executive scripts.
 
-    proc ExportScripts {f} {
+    method ExportScripts {f} {
         foreach name [executive script names] {
             puts $f [list script save $name [executive script get $name]]
             if {[executive script auto $name]} {
@@ -152,16 +164,15 @@ snit::type exporter {
     #
     # Creates a script that will recreate the current scenario.
 
-    typemethod fromdata {scriptFile} {
+    method fromdata {scriptFile} {
         # FIRST, open the file.  We'll throw an error on a bad file
         # name; that's OK.
-
         set f [open $scriptFile w]
 
         # NEXT, save the script, closing the file on error, which
         # will be rethrown automatically.
         try {
-            ExportFromData $f
+            $self ExportFromData $f
         } finally {
             catch {close $f}
         }
@@ -175,11 +186,16 @@ snit::type exporter {
     #
     # Exports the current scenario to the given file.
 
-    proc ExportFromData {f} {
+    method ExportFromData {f} {
         # FIRST, write header.
-        puts $f "# Exporting [adb adbfile] from current data"
+        set adbfile [$adb adbfile]
+        if {$adbfile eq ""} {
+            set adbfile "unsaved scenario"
+        }
+
+        puts $f "# Exporting $adbfile from current data"
         puts $f "# Exported @ [clock format [clock seconds]]"
-        puts $f "# Written by Athena version [version]"
+        puts $f "# Written by Athena version [$adb version]"
         puts $f "#"
         puts $f "# Note: if header has no commands following it, then"
         puts $f "# there was no data of that kind to export."
@@ -191,7 +207,7 @@ snit::type exporter {
 
         # NEXT, Model Parameters
         SectionHeader $f "Model Parameters"
-        foreach parm [parm nondefaults] {
+        foreach parm [$adb parm nondefaults] {
             MakeSend $f PARM:SET parm $parm value [parm get $parm]
         }
 
@@ -199,22 +215,22 @@ snit::type exporter {
         SectionHeader $f "Map and Projection"
         if {[map image] ne ""} {
             set imgdata [[map image] data -format jpeg]
-            set projtype [rdb onecolumn {SELECT projtype FROM maps}]
-            set pdict [ProjDict $projtype]
+            set projtype [$adb onecolumn {SELECT projtype FROM maps}]
+            set pdict [$self ProjDict $projtype]
             MakeSend $f MAP:IMPORT:DATA data $imgdata proj [dict get $pdict]
         }
 
         # NEXT, Belief Systems
         SectionHeader $f "Belief Systems"
-        FromParms $f BSYS:PLAYBOX:UPDATE gamma [bsys playbox cget -gamma]
+        FromParms $f BSYS:PLAYBOX:UPDATE gamma [$adb bsys playbox cget -gamma]
 
-        foreach tid [bsys topic ids] {
+        foreach tid [$adb bsys topic ids] {
             FromParms $f BSYS:TOPIC:ADD tid $tid
             FromParms $f BSYS:TOPIC:UPDATE tid $tid \
-                {*}[bsys topic get $tid]
+                {*}[$adb bsys topic get $tid]
         }
 
-        foreach sid [bsys system ids] {
+        foreach sid [$adb bsys system ids] {
             if {$sid == 1} {
                 continue
             }
@@ -222,15 +238,15 @@ snit::type exporter {
             puts $f ""
             FromParms $f BSYS:SYSTEM:ADD sid $sid
             FromParms $f BSYS:SYSTEM:UPDATE sid $sid \
-                {*}[bsys system get $sid]
+                {*}[$adb bsys system get $sid]
 
-            foreach tid [bsys topic ids] {
-                if {[bsys belief isdefault [list $sid $tid]]} {
+            foreach tid [$adb bsys topic ids] {
+                if {[$adb bsys belief isdefault [list $sid $tid]]} {
                     continue
                 } 
 
                 FromParms $f BSYS:BELIEF:UPDATE bid [list $sid $tid] \
-                    {*}[bsys belief get $sid $tid]
+                    {*}[$adb bsys belief get $sid $tid]
             }
         }
 
@@ -238,109 +254,111 @@ snit::type exporter {
         # link back to actors not yet created.
         SectionHeader $f "Base Entities: Actors"
 
-        FromRDB $f ACTOR:CREATE   {SELECT * FROM gui_actors} supports
-        FromRDB $f ACTOR:SUPPORTS {SELECT * FROM gui_actors}
+        $self FromRDB $f ACTOR:CREATE   {SELECT * FROM gui_actors} supports
+        $self FromRDB $f ACTOR:SUPPORTS {SELECT * FROM gui_actors}
 
         # NEXT, Neighborhoods
         SectionHeader $f "Base Entities: Neighborhoods"
 
-        FromRDB $f NBHOOD:CREATE {
+        $self FromRDB $f NBHOOD:CREATE {
             SELECT * FROM gui_nbhoods ORDER BY stacking_order
         }
 
-        FromRDB $f NBREL:UPDATE {SELECT * FROM gui_nbrel_mn}
+        $self FromRDB $f NBREL:UPDATE {SELECT * FROM gui_nbrel_mn}
 
         # NEXT, Civilian Groups
         SectionHeader $f "Base Entities: Civilian Groups"
-        FromRDB $f CIVGROUP:CREATE {SELECT * FROM gui_civgroups}
+        $self FromRDB $f CIVGROUP:CREATE {SELECT * FROM gui_civgroups}
 
         # NEXT, Force Groups
         SectionHeader $f "Base Entities: Force Groups"
-        FromRDB $f FRCGROUP:CREATE {SELECT * FROM gui_frcgroups}
+        $self FromRDB $f FRCGROUP:CREATE {SELECT * FROM gui_frcgroups}
 
         # NEXT, Organization Groups
         SectionHeader $f "Base Entities: Organization Groups"
-        FromRDB $f ORGGROUP:CREATE {SELECT * FROM gui_orggroups}
+        $self FromRDB $f ORGGROUP:CREATE {SELECT * FROM gui_orggroups}
 
         # NEXT, Attitudes
         SectionHeader $f "Attitudes"
-        FromRDB $f COOP:UPDATE   {SELECT * FROM gui_coop_override_view}
-        FromRDB $f HREL:OVERRIDE {SELECT * FROM gui_hrel_override_view}
-        FromRDB $f SAT:UPDATE    {SELECT * FROM gui_sat_override_view}
-        FromRDB $f VREL:OVERRIDE {SELECT * FROM gui_vrel_override_view}
+        $self FromRDB $f COOP:UPDATE   {SELECT * FROM gui_coop_override_view}
+        $self FromRDB $f HREL:OVERRIDE {SELECT * FROM gui_hrel_override_view}
+        $self FromRDB $f SAT:UPDATE    {SELECT * FROM gui_sat_override_view}
+        $self FromRDB $f VREL:OVERRIDE {SELECT * FROM gui_vrel_override_view}
 
         # NEXT, Absits
         SectionHeader $f "Abstract Situations"
-        FromRDB $f ABSIT:CREATE {SELECT * FROM gui_absits}
+        $self FromRDB $f ABSIT:CREATE {SELECT * FROM gui_absits}
 
         # NEXT, Economics
         SectionHeader $f "Economics: SAM Inputs"
 
-        dict for {cell value} [econ samparms] {
+        dict for {cell value} [$adb econ samparms] {
             MakeSend $f ECON:SAM:GLOBAL id $cell val $value
         }
 
         # NEXT, Plant Infrastructure
         SectionHeader $f "Plant Infrastructure:"
 
-        FromRDB $f PLANT:SHARES:CREATE {SELECT * FROM plants_shares}
+        $self FromRDB $f PLANT:SHARES:CREATE {SELECT * FROM plants_shares}
 
         # NEXT, CURSEs
         SectionHeader $f "CURSEs"
-        FromRDB $f CURSE:CREATE {SELECT * FROM curses}
-        FromRDB $f CURSE:STATE  {SELECT * FROM curses WHERE state != 'normal'}
+        $self FromRDB $f CURSE:CREATE {SELECT * FROM curses}
+        $self FromRDB $f CURSE:STATE  {SELECT * FROM curses WHERE state != 'normal'}
 
-        FromRDB $f INJECT:COOP:CREATE {
+        $self FromRDB $f INJECT:COOP:CREATE {
             SELECT * FROM curse_injects WHERE inject_type = 'COOP'
         } {longname ftype gtype}
 
-        FromRDB $f INJECT:HREL:CREATE {
+        $self FromRDB $f INJECT:HREL:CREATE {
             SELECT * FROM curse_injects WHERE inject_type = 'HREL'
         } {longname ftype gtype}
 
-        FromRDB $f INJECT:SAT:CREATE {
+        $self FromRDB $f INJECT:SAT:CREATE {
             SELECT * FROM curse_injects WHERE inject_type = 'SAT'
         } {longname gtype}
 
-        FromRDB $f INJECT:VREL:CREATE {
+        $self FromRDB $f INJECT:VREL:CREATE {
             SELECT * FROM curse_injects WHERE inject_type = 'VREL'
         } {longname gtype atype}
 
-        FromRDB $f INJECT:STATE {
+        $self FromRDB $f INJECT:STATE {
             SELECT * FROM gui_injects WHERE state != 'normal'
         }
 
         # NEXT, CAPs
         SectionHeader $f "Communication Asset Packages (CAPs)"
-        FromRDB $f CAP:CREATE    {SELECT * FROM caps} {nlist glist}
-        FromRDB $f CAP:NBCOV:SET {SELECT * FROM gui_cap_kn_nonzero}
-        FromRDB $f CAP:PEN:SET   {SELECT * FROM gui_capcov_nonzero}
+        $self FromRDB $f CAP:CREATE    {SELECT * FROM caps} {nlist glist}
+        $self FromRDB $f CAP:NBCOV:SET {SELECT * FROM gui_cap_kn_nonzero}
+        $self FromRDB $f CAP:PEN:SET   {SELECT * FROM gui_capcov_nonzero}
         
         # NEXT, Hooks
         SectionHeader $f "Semantic Hooks"
-        FromRDB $f HOOK:CREATE       {SELECT * FROM hooks}
-        FromRDB $f HOOK:TOPIC:CREATE {SELECT * FROM hook_topics} longname
-        FromRDB $f HOOK:TOPIC:STATE  {
+        $self FromRDB $f HOOK:CREATE       {SELECT * FROM hooks}
+        $self FromRDB $f HOOK:TOPIC:CREATE {SELECT * FROM hook_topics} longname
+        $self FromRDB $f HOOK:TOPIC:STATE  {
             SELECT * FROM gui_hook_topics WHERE state != 'normal'
         }
 
         # NEXT, IOMs
         SectionHeader $f "Information Operations Messages (IOMs)"
-        FromRDB $f IOM:CREATE {SELECT * FROM ioms}
-        FromRDB $f IOM:STATE  {SELECT * FROM ioms WHERE state != 'normal'}
+        $self FromRDB $f IOM:CREATE {SELECT * FROM ioms}
+        $self FromRDB $f IOM:STATE  {SELECT * FROM ioms WHERE state != 'normal'}
 
-        FromRDB $f PAYLOAD:COOP:CREATE {SELECT * FROM gui_payloads_COOP} longname
-        FromRDB $f PAYLOAD:HREL:CREATE {SELECT * FROM gui_payloads_HREL} longname
-        FromRDB $f PAYLOAD:SAT:CREATE  {SELECT * FROM gui_payloads_SAT}  longname
-        FromRDB $f PAYLOAD:VREL:CREATE {SELECT * FROM gui_payloads_VREL} longname
-        FromRDB $f PAYLOAD:STATE {
+        $self FromRDB $f PAYLOAD:COOP:CREATE {SELECT * FROM gui_payloads_COOP} longname
+        $self FromRDB $f PAYLOAD:HREL:CREATE {SELECT * FROM gui_payloads_HREL} longname
+        $self FromRDB $f PAYLOAD:SAT:CREATE  {SELECT * FROM gui_payloads_SAT}  longname
+        $self FromRDB $f PAYLOAD:VREL:CREATE {SELECT * FROM gui_payloads_VREL} longname
+        $self FromRDB $f PAYLOAD:STATE {
             SELECT * FROM gui_payloads WHERE state != 'normal'
         }
 
         # NEXT, Strategies
-        foreach agent [agent names] {
+        # TBD: Revise this code to use the normal orders with the 
+        # "fullnames" instead of numeric ids.
+        foreach agent [$adb agent names] {
             SectionHeader $f "Strategy: $agent"
-            set s [strategy getname $agent]
+            set s [$adb strategy getname $agent]
 
             foreach block [$s blocks] {
                 Block $f $block
@@ -354,12 +372,15 @@ snit::type exporter {
 
         # NEXT, Scripts
         SectionHeader $f "Executive Scripts"
-        ExportScripts $f
+        $self ExportScripts $f
 
         # NEXT, end script
         puts $f "\n# *** End of Script ***"
     }
 
+    #-------------------------------------------------------------------
+    # Formatting Helper Procs
+    
     # SectionHeader f text
     #
     # f       - File handle
@@ -415,68 +436,6 @@ snit::type exporter {
 
         # NEXT, make the order
         MakeSend $f $order {*}$args
-    }
-
-    # FromRDB f order query ?exceptions?
-    #
-    # f          - File handle
-    # order      - An order name
-    # query      - A query returning records matching the order
-    # exceptions - A list of order parameters to exclude from the order.
-    # 
-    # Writes an order for each entry in the view, excluding parameters 
-    # listed in exceptions.
-
-    proc FromRDB {f order query {exceptions ""}} {
-        # FIRST, get the parameters we care about.
-        set parms [::athena::orders parms $order]
-
-        foreach exception $exceptions {
-            ldelete parms $exception
-        }
-
-        # NEXT, output the send commands
-        rdb eval $query data {
-            unset -nocomplain $data(*)
-
-            # FIRST, Get the parameter dictionary
-            set parmdict [dict create]
-
-            foreach parm $parms {
-                dict set parmdict $parm $data($parm)
-            }
-
-            # NEXT, output the command.
-            MakeSend $f $order {*}$parmdict
-        }
-    }
-
-    # ProjDict projtype
-    #
-    # projtype   - a supported projection type
-    #
-    # Extracts and packages up projection information into a format
-    # expected by the order.
-
-    proc ProjDict {projtype} {
-        dict set pdict ptype $projtype
-
-        set proj [map projection]
-        dict set pdict width [$proj cget -width]
-        dict set pdict height [$proj cget -height]
-
-        switch -exact -- $projtype {
-            "RECT" {
-                dict set pdict minlon [$proj cget -minlon]
-                dict set pdict maxlon [$proj cget -maxlon]
-                dict set pdict minlat [$proj cget -minlat]
-                dict set pdict maxlat [$proj cget -maxlat]
-            }
-
-            default {}
-        }
-
-        return $pdict
     }
 
     # FromBean order idvar bean
@@ -543,5 +502,73 @@ snit::type exporter {
             puts $f "tactic add - [$t typename] $odict"
         }
     }
+
+    #-------------------------------------------------------------------
+    # Formatting Helper Methods
+    
+
+    # FromRDB f order query ?exceptions?
+    #
+    # f          - File handle
+    # order      - An order name
+    # query      - A query returning records matching the order
+    # exceptions - A list of order parameters to exclude from the order.
+    # 
+    # Writes an order for each entry in the view, excluding parameters 
+    # listed in exceptions.
+
+    method FromRDB {f order query {exceptions ""}} {
+        # FIRST, get the parameters we care about.
+        set parms [::athena::orders parms $order]
+
+        foreach exception $exceptions {
+            ldelete parms $exception
+        }
+
+        # NEXT, output the send commands
+        $adb eval $query data {
+            unset -nocomplain $data(*)
+
+            # FIRST, Get the parameter dictionary
+            set parmdict [dict create]
+
+            foreach parm $parms {
+                dict set parmdict $parm $data($parm)
+            }
+
+            # NEXT, output the command.
+            MakeSend $f $order {*}$parmdict
+        }
+    }
+
+    # ProjDict projtype
+    #
+    # projtype   - a supported projection type
+    #
+    # Extracts and packages up projection information into a format
+    # expected by the order.
+
+    method ProjDict {projtype} {
+        dict set pdict ptype $projtype
+
+        set proj [map projection]
+        dict set pdict width [$proj cget -width]
+        dict set pdict height [$proj cget -height]
+
+        switch -exact -- $projtype {
+            "RECT" {
+                dict set pdict minlon [$proj cget -minlon]
+                dict set pdict maxlon [$proj cget -maxlon]
+                dict set pdict minlat [$proj cget -minlat]
+                dict set pdict maxlat [$proj cget -maxlat]
+            }
+
+            default {}
+        }
+
+        return $pdict
+    }
+
+
 }
 

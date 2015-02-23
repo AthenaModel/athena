@@ -103,12 +103,14 @@ snit::type ::athena::athena {
 
     # ADB
     delegate method adbfile  to adb
+    delegate method export   to adb
     delegate method gofer    to adb
     delegate method paste    to adb
     delegate method rebase   to adb
     delegate method save     to adb
     delegate method snapshot to adb  ;# TODO: Remove when sim is merged.
     delegate method unsaved  to adb
+    delegate method version  to adb
 
     # RDB
     #
