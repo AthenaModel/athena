@@ -40,11 +40,6 @@ dynaform fieldtype alias grouplist enumlonglist \
     -width    30  \
     -dictcmd  {::group namedict}
 
-# plant: Pick a plant by its ID.
-dynaform fieldtype alias plant dbkey \
-    -table gui_plants_na  \
-    -keys  {n a}
-
 # posfrac: Fraction, 0.01 to 1.0
 dynaform fieldtype alias posfrac range \
     -datatype   ::rposfrac             \

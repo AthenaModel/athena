@@ -167,7 +167,7 @@
         # this actor and compute the amount and cost of repairs
         foreach n $trans(nlist) {
             # FIRST, the current level of repair at the start of the tick
-            set currRho [plant get [list $n $owner] rho]
+            set currRho [[my adb] plant get [list $n $owner] rho]
 
             # NEXT, the amount of repair is the difference between
             # the maximum and the current levl
@@ -201,7 +201,7 @@
                     
             # NEXT, determine the cost and bookkeep it, the actor may
             # not have enough money to pay for it all
-            set nCost [plant repaircost $n $owner $actualDeltaRho]
+            set nCost [[my adb] plant repaircost $n $owner $actualDeltaRho]
             dict set costProfile $n $nCost
             let totalCost {$totalCost + $nCost}
         }
@@ -248,7 +248,7 @@
             }
 
             # NEXT, the actual amount of repair done
-            set dRho [plant repairlevel $n $owner $spend]
+            set dRho [[my adb] plant repairlevel $n $owner $spend]
             dict set trans(repairs) $n $dRho
             $coffer repair $n $dRho
         }
@@ -323,7 +323,7 @@
         }
 
         foreach n [dict keys $trans(repairs)] {
-            plant repair $owner $n [dict get $trans(repairs) $n]
+            [my adb] plant repair $owner $n [dict get $trans(repairs) $n]
         }
     }
 }

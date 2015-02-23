@@ -159,7 +159,7 @@ snit::type ::athena::payload {
             }
         }
 
-        notifier send ::payload <Check>
+        $adb notify payload <Check>
 
         return $edict
     }

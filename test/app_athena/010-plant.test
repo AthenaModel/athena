@@ -65,8 +65,8 @@ namespace eval ::athena_test::tests:: {
         variable p2
         setup
         econ setstate ENABLED
-        plant mutate create $p1
-        plant mutate create $p2
+        plant create $p1
+        plant create $p2
         ted create BLUE
         ted lock
     }
@@ -77,8 +77,8 @@ namespace eval ::athena_test::tests:: {
     test create-1.1 {Plant share record is created} -setup {
         setup
     } -body {
-        plant mutate create $p1 
-        plant mutate create $p2
+        plant create $p1 
+        plant create $p2
 
         ted querylist {SELECT * FROM plants_shares}
     } -cleanup {
@@ -99,7 +99,7 @@ rho  0.8
     test create-1.2 {Plant share record created, rho can be set} -setup {
         setup
     } -body {
-        plant mutate create [dict merge $p1 [list rho 0.7]]
+        plant create [dict merge $p1 [list rho 0.7]]
 
         ted querylist {SELECT * FROM plants_shares}
     } -cleanup {
@@ -113,7 +113,7 @@ rho  0.7
 
     test create-2.1 {Undo deletes the entity} -setup {
         setup
-        set undo [plant mutate create $p1]
+        set undo [plant create $p1]
     } -body {
         {*}$undo
         rdb query {SELECT n FROM plants_shares}
@@ -127,10 +127,10 @@ rho  0.7
 
     test delete-1.1 {Record is deleted} -setup {
         setup
-        plant mutate create $p1
-        plant mutate create $p2
+        plant create $p1
+        plant create $p2
     } -body {
-        plant mutate delete {NB1 JOE}
+        plant delete {NB1 JOE}
 
         # Is 1 gone?
         rdb eval {SELECT n,a FROM plants_shares}
@@ -141,8 +141,8 @@ rho  0.7
 
     test delete-2.1 {Undo restores record} -setup {
         setup
-        plant mutate create $p1
-        set undo [plant mutate delete {NB1 JOE}]
+        plant create $p1
+        set undo [plant delete {NB1 JOE}]
     } -body {
         {*}$undo
         ted querylist {SELECT * FROM plants_shares}
@@ -162,9 +162,9 @@ rho  0.9
 
     test update-1.1 {record is updated} -setup {
         setup
-        plant mutate create $p1
+        plant create $p1
     } -body {
-        plant mutate update {
+        plant update {
             id {NB1 JOE}
             rho 0.5
         }
@@ -181,11 +181,11 @@ rho  0.5
 
     test update-1.2 {empty values are OK} -setup {
         setup
-        plant mutate create $p1
+        plant create $p1
     } -body {
         set a [ted query {SELECT * FROM plants_shares}]
 
-        plant mutate update  {
+        plant update  {
             id      [list NB1 JOE]
             rho     ""
             shares  ""
@@ -201,11 +201,11 @@ rho  0.5
 
     test update-2.1 {undo undoes the change} -setup {
         setup
-        plant mutate create $p1
+        plant create $p1
     } -body {
         set a [ted query {SELECT * FROM plants_shares}]
 
-        set undo [plant mutate update {
+        set undo [plant update {
             id        [list NB1 JOE]
             rho       0.5
             shares    3
@@ -472,8 +472,8 @@ rho  0.5
     test capacity-1.1 {total, by nbhood and by actor} -setup {
         setup
         econ setstate ENABLED
-        plant mutate create $p1
-        plant mutate create $p2
+        plant create $p1
+        plant create $p2
         ted create BLUE 
         ted lock
         rdb eval {UPDATE plants_na SET num=10}
@@ -490,8 +490,8 @@ rho  0.5
     test capacity-1.2 {summed by nbhood equals total} -setup {
         setup
         econ setstate ENABLED
-        plant mutate create $p1
-        plant mutate create $p2
+        plant create $p1
+        plant create $p2
         ted create BLUE 
         ted lock
     } -body {
@@ -508,8 +508,8 @@ rho  0.5
     test capacity-1.3 {summed by agent equals total} -setup {
         setup
         econ setstate ENABLED
-        plant mutate create $p1
-        plant mutate create $p2
+        plant create $p1
+        plant create $p2
         ted create BLUE 
         ted lock
     } -body {
@@ -529,8 +529,8 @@ rho  0.5
 
     test number-1.1 {total, by nbhood and by actor} -setup {
         setup
-        plant mutate create $p1
-        plant mutate create $p2
+        plant create $p1
+        plant create $p2
         ted create BLUE 
         ted lock
         rdb eval {UPDATE plants_na SET num=10}
@@ -546,8 +546,8 @@ rho  0.5
 
     test number-1.2 {summed by nbhood equals total} -setup {
         setup
-        plant mutate create $p1
-        plant mutate create $p2
+        plant create $p1
+        plant create $p2
         ted create BLUE 
         ted lock
     } -body {
@@ -561,8 +561,8 @@ rho  0.5
 
     test number-1.3 {summed by agent equals total} -setup {
         setup
-        plant mutate create $p1
-        plant mutate create $p2
+        plant create $p1
+        plant create $p2
         ted create BLUE 
         ted lock
     } -body {

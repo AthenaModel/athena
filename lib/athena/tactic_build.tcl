@@ -111,7 +111,7 @@
 
         switch -exact -- $mode {
             EFFORT {
-                set cost [plant buildcost $n $owner $num]
+                set cost [[my adb] plant buildcost $n $owner $num]
                 let spend {min($cost, $cash)}
             }
 
@@ -136,7 +136,7 @@
 
         [my adb] cash spend $owner BUILD $trans(amount)
 
-        lassign [plant build $n $owner $trans(amount)] old new
+        lassign [[my adb] plant build $n $owner $trans(amount)] old new
 
         if {$mode eq "EFFORT"} {
             [my adb] sigevent log 2 tactic "

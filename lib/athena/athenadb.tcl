@@ -178,6 +178,7 @@ snit::type ::athena::athenadb {
     component nbrel     -public nbrel     ;# nbhood rel. manager
     component orggroup  -public orggroup  ;# orggroup manager
     component payload   -public payload   ;# payload manager
+    component plant     -public plant     ;# goods plant manager
     component sat       -public sat       ;# satisfaction manager
     component sigevent  -public sigevent  ;# Sig. Events manager
     component strategy  -public strategy  ;# strategy manager
@@ -299,6 +300,7 @@ snit::type ::athena::athenadb {
             nbrel                       \
             orggroup                    \
             payload                     \
+            plant                       \
             personnel                   \
             {ruleset  ruleset_manager}  \
             sat                         \

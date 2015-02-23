@@ -332,7 +332,7 @@ snit::type ::athena::strategy_manager {
         $adb profile 1 $adb cash load
         $adb profile 1 $adb personnel load
         $adb profile 1 $adb service load
-        $adb profile 1 plant load
+        $adb profile 1 $adb plant load
         $adb profile 1 $adb cap access load
         $adb profile 1 $adb abevent reset
         $adb profile 1 $adb broadcast reset
@@ -358,7 +358,7 @@ snit::type ::athena::strategy_manager {
 
         $adb profile 1 $adb personnel save
         $adb profile 1 $adb service save
-        $adb profile 1 plant save
+        $adb profile 1 $adb plant save
         $adb profile 1 $adb cap access save
 
         # NEXT, populate base units for all groups.

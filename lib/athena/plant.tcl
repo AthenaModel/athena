@@ -1,23 +1,13 @@
 #-----------------------------------------------------------------------
 # FILE: plant.tcl
 #
-#   Athena Infrastructure Plant Model singleton
-#
 # PACKAGE:
-#   app_sim(n) -- athena_sim(1) implementation package
-#
-# PROJECT:
-#   Athena S&RO Simulation
 #
 # AUTHOR:
 #   Dave Hanks 
 #
-#-----------------------------------------------------------------------
-
-#-----------------------------------------------------------------------
-# plant 
-#
-# athena_sim(1): Infrastructure Plant Model, main module.
+# DESCRIPTION:
+#   athena(n): Goods Plant manager
 #
 # This module is responsible for allowing the user to specify the shares
 # each agent in Athena owns in each neighborhood and compute the number and
@@ -29,13 +19,35 @@
 # Note that plants owned by the SYSTEM agent are automatically kept at
 # their initial state of repair and do not need to be maintained.
 #
+# TBD:
+#    * Global entities in use: econ, money, actor
 #-----------------------------------------------------------------------
 
-snit::type plant {
-    # Make it a singleton
-    pragma -hasinstances no
+snit::type ::athena::plant {
+    #-------------------------------------------------------------------
+    # Components
 
-    typevariable optParms {
+    component adb ;# The athenadb(n) instance
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    # constructor adb_
+    #
+    # adb_   - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of this type
+
+    constructor {adb_} {
+        set adb $adb_
+    }
+
+    #-------------------------------------------------------------------
+    # Variables
+
+    # optional parms in update order
+
+    variable optParms {
         rho    ""
         shares ""
     }
@@ -47,18 +59,18 @@ snit::type plant {
     #
     # Computes the allocation of plants at scenario lock.
 
-    typemethod start {} {
+    method start {} {
         # FIRST, fill in any local neighborhoods that are not specified in the
         # shares table with the SYSTEM agent
-        set nbhoods [nbhood local names]
+        set nbhoods [$adb nbhood local names]
 
         foreach n $nbhoods {
-            if {[demog getn $n consumers] == 0} {
+            if {[$adb demog getn $n consumers] == 0} {
                 continue
             }
 
-            if {![rdb exists {SELECT * FROM plants_shares WHERE n=$n}]} {
-                rdb eval {
+            if {![$adb exists {SELECT * FROM plants_shares WHERE n=$n}]} {
+                $adb eval {
                     INSERT INTO plants_shares(n, a, num, rho)
                     VALUES($n, 'SYSTEM', 1, 1.0);
                 }
@@ -66,7 +78,7 @@ snit::type plant {
         }
 
         # NEXT, populate the plants_na table.
-        rdb eval {
+        $adb eval {
             INSERT INTO plants_na(n, a, rho)
             SELECT n, 
                    a,
@@ -75,8 +87,8 @@ snit::type plant {
         }
 
         # NEXT, laydown plants in neighborhoods
-        if {[econ state] eq "ENABLED"} {
-            $type LaydownPlants
+        if {[$adb econ state] eq "ENABLED"} {
+            $self LaydownPlants
         } else {
             log warning plant "econ is disabled"
         }
@@ -87,10 +99,10 @@ snit::type plant {
     # This method loads the current build levels into the working table
     # in anticipation of the execution of BUILD tactics.
 
-    typemethod load {} {
-        rdb eval {DELETE FROM working_build;}
+    method load {} {
+        $adb eval {DELETE FROM working_build;}
 
-        rdb eval {
+        $adb eval {
             SELECT n, a, levels FROM plants_build
         } {
             # Sort by build level, most completed first
@@ -102,7 +114,7 @@ snit::type plant {
                 lappend progress $level 0.0
             }
 
-            rdb eval {
+            $adb eval {
                 INSERT INTO working_build(n, a, progress)
                 VALUES($n, $a, $progress)
             }
@@ -117,14 +129,14 @@ snit::type plant {
     # will be more capacity than is needed because fractional plants
     # are not allowed.
 
-    typemethod LaydownPlants {} {
+    method LaydownPlants {} {
         # FIRST, compute adjusted population based on pcf
-        set adjpop [rdb onecolumn {SELECT total(nbpop*pcf) FROM plants_n_view}]
+        set adjpop [$adb onecolumn {SELECT total(nbpop*pcf) FROM plants_n_view}]
 
         set nbhoods [list]
 
         # NEXT, set the fraction of plants by nbhood
-        rdb eval {
+        $adb eval {
             SELECT n, pcf, nbpop FROM plants_n_view
         } row {
             let pfrac($row(n)) {$row(nbpop)*$row(pcf)/$adjpop}
@@ -137,8 +149,8 @@ snit::type plant {
 
         # NEXT, get the calibrated values from the CGE for the quantity of
         # goods baskets and their price
-        set QSgoods [dict get [econ get] Cal::QS.goods]
-        set Pgoods  [dict get [econ get] Cal::P.goods]
+        set QSgoods [dict get [$adb econ get] Cal::QS.goods]
+        set Pgoods  [dict get [$adb econ get] Cal::P.goods]
 
         # NEXT, adjust the the maximum number of goods baskets that could
         # possible be produced given that the initial capacity of the 
@@ -156,7 +168,7 @@ snit::type plant {
 
             # NEXT, compute the total shares of plants in the 
             # neighborhood for all agents
-            set tshares [rdb onecolumn {
+            set tshares [$adb onecolumn {
                 SELECT total(num) FROM plants_shares
                 WHERE n=$n
             }]
@@ -168,7 +180,7 @@ snit::type plant {
             # NEXT, go through each agent in the neighborhood assigning
             # the appropriate number of plants to each one based on 
             # shares and initial repair level
-            rdb eval {
+            $adb eval {
                 SELECT a, num, rho FROM plants_shares
                 WHERE n=$n
             } {
@@ -193,7 +205,7 @@ snit::type plant {
                     let adjRho {($plantsNA) / double($actualPlantsNA)}
                 }
 
-                rdb eval {
+                $adb eval {
                     UPDATE plants_na
                     SET num = $actualPlantsNA,
                         rho = $adjRho
@@ -212,10 +224,10 @@ snit::type plant {
     # added to the set of infrastructure that is actually producing
     # goods.
 
-    typemethod save {} {
+    method save {} {
         # FIRST, update the levels of construction in all plants being
         # worked on
-        rdb eval {
+        $adb eval {
             SELECT n, a, progress
             FROM working_build
         } {
@@ -234,7 +246,7 @@ snit::type plant {
 
             set num [llength $newlevels]
 
-            rdb eval {
+            $adb eval {
                 INSERT OR REPLACE INTO plants_build(n, a, levels, num)
                 VALUES($n, $a, $newlevels, $num)
             }
@@ -242,7 +254,7 @@ snit::type plant {
 
         # NEXT, add completed plants (if any) to the table of completed
         # plants; they will begin to produce goods
-        rdb eval {
+        $adb eval {
             SELECT n, a, levels FROM plants_build
         } {
             set newplant 0
@@ -258,7 +270,7 @@ snit::type plant {
 
             # This removes the completed plant from the set of plants
             # under construction
-            rdb eval {
+            $adb eval {
                 UPDATE plants_build
                 SET levels=$newlevels
                 WHERE n=$n AND a=$a
@@ -272,10 +284,10 @@ snit::type plant {
             # NEXT, add new plants to the set of completed plants and compute
             # average level of repair provided this actor already has plants
             # in the neighborhood
-            if {[rdb exists {SELECT * FROM plants_na WHERE n=$n AND a=$a}]} {
+            if {[$adb exists {SELECT * FROM plants_na WHERE n=$n AND a=$a}]} {
                 # NEXT, retrieve old data to compute new average repair
                 # level given new plants 
-                set oldVals [rdb eval {
+                set oldVals [$adb eval {
                     SELECT num,rho FROM plants_na
                     WHERE n=$n AND a=$a
                 }]
@@ -287,7 +299,7 @@ snit::type plant {
                 let newRho \
                     {($oldNum*$oldRho + $newplant)/($oldNum+$newplant)}
 
-                rdb eval {
+                $adb eval {
                     UPDATE plants_na
                     SET num=num+$newplant,
                         rho=$newRho
@@ -295,7 +307,7 @@ snit::type plant {
                 }
             } else {
                 # No plants yet, average level of repair is 1.0
-                rdb eval {
+                $adb eval {
                     INSERT INTO plants_na(n, a, num, rho)
                     VALUES($n, $a, $newplant, 1.0)
                 }
@@ -322,9 +334,9 @@ snit::type plant {
     # MAINTAIN tactic, they will produce less and less affecting the 
     # capacity of the goods sector.
 
-    typemethod degrade {} {
+    method degrade {} {
         # FIRST, if the econ model is disabled, do nothing
-        if {[econ state] eq "DISABLED"} {
+        if {[$adb econ state] eq "DISABLED"} {
             return
         }
 
@@ -343,11 +355,11 @@ snit::type plant {
         # NEXT, degrade repair levels for plants owned by actors
         # that do not have auto-maintenance enabled
         # NOTE: Plants owned by the SYSTEM do not degrade
-        rdb eval {
+        $adb eval {
             SELECT a FROM actors
             WHERE auto_maintain = 0
         } {
-            rdb eval {
+            $adb eval {
                 UPDATE plants_na
                 SET rho = max(rho - $deltaRho, 0.0)
                 WHERE a=$a AND num > 0
@@ -368,9 +380,9 @@ snit::type plant {
     # the repair level that would result from the expenditure of that
     # cash on repairs
     
-    typemethod repairlevel {n a cash} {
+    method repairlevel {n a cash} {
         # FIRST, get the number of plants
-        set num [rdb eval {
+        set num [$adb eval {
                      SELECT num
                      FROM plants_na
                      WHERE n=$n AND a=$a
@@ -399,24 +411,23 @@ snit::type plant {
     }
 
 
-    # repaircost n a lvl
+    # repaircost n a dRho
     #
     # n     - a neighborhood that contains GOODS production plants
     # a     - an actor that owns some plants in n
     # dRho  - the desired change in level of repair
     #
     # This method computes the cost to repair all the plants owned by
-    # actor a in neighborhood n for one weeks worth of repair or to the
-    # requested level of repair, whichever is smaller.
+    # actor a in neighborhood n for one weeks worth of repair.
 
-    typemethod repaircost {n a dRho} {
+    method repaircost {n a dRho} {
         # FIRST, if the desired change is zero, no cost 
         if {$dRho == 0} {
             return 0.0
         }
 
         # FIRST get the number of plants 
-        set num [rdb eval {
+        set num [$adb eval {
                       SELECT num 
                       FROM plants_na
                       WHERE n=$n AND a=$a
@@ -435,9 +446,7 @@ snit::type plant {
         let maxCostPerWk {$bCost * $rFrac * $dRho}
 
         # NEXT, multiply by number of plants to get total cost 
-        let totalCost {$maxCostPerWk * $num}
-
-        return $totalCost 
+        return [expr {$maxCostPerWk * $num}] 
     }
 
     # repair a nlist amount level 
@@ -447,14 +456,14 @@ snit::type plant {
     # dRho  - the change in level of repair for the plants
     #
 
-    typemethod repair {a n dRho} {
+    method repair {a n dRho} {
         # FIRST, if this actor has auto-maitenance enabled, nothing to do
-        if {[actor get $a auto_maintain]} {
+        if {[$adb actor get $a auto_maintain]} {
             return
         }
 
         # NEXT, change rho by the amount requested
-        rdb eval {
+        $adb eval {
             UPDATE plants_na
             SET rho = min(1.0,rho + $dRho)
             WHERE n=$n AND a=$a
@@ -475,11 +484,11 @@ snit::type plant {
     # other BUILD tactics and makes sure that not more than one weeks 
     # worth of work is costed for each plant to be worked on.
 
-    typemethod buildcost {n a num} {
+    method buildcost {n a num} {
         set cost 0.0
 
         # FIRST, extract the current progress
-        set progress [rdb onecolumn {
+        set progress [$adb onecolumn {
             SELECT progress FROM working_build
             WHERE n=$n AND a=$a
         }]
@@ -539,7 +548,7 @@ snit::type plant {
     # construction in the neighborhood.  Most completed plants are worked
     # on first. 
 
-    typemethod build {n a funds} {
+    method build {n a funds} {
         # FIRST, keep track of the number of existing plants worked on and
         # the number of new plants started
         set oldplants 0
@@ -556,7 +565,7 @@ snit::type plant {
         }
 
         # NEXT, retrieve the current level of progress on the plants
-        set progress [rdb onecolumn {
+        set progress [$adb onecolumn {
             SELECT progress FROM working_build
             WHERE n=$n AND a=$a
         }]
@@ -630,7 +639,7 @@ snit::type plant {
         }
 
         # NEXT, all funds expended, updated the working table
-        rdb eval {
+        $adb eval {
             INSERT OR REPLACE INTO working_build(n, a, progress)
             VALUES($n, $a, $newlevels)
         }
@@ -647,10 +656,10 @@ snit::type plant {
     # Returns the value of supplied parm from the requested record 
     # or a dictionary of parm/value pairs for the entire record.
 
-    typemethod get {id {parm ""}} {
+    method get {id {parm ""}} {
         lassign $id n a
 
-        rdb eval {
+        $adb eval {
             SELECT * FROM plants_na
             WHERE n=$n AND a=$a
         } row {
@@ -672,10 +681,10 @@ snit::type plant {
     #
     # Validates a neighborhood/agent pair corresponding to plant ownership
 
-    typemethod validate {id} {
+    method validate {id} {
         lassign $id n a
 
-        if {![rdb exists {SELECT * FROM plants_shares WHERE n=$n AND a=$a}]} {
+        if {![$adb exists {SELECT * FROM plants_shares WHERE n=$n AND a=$a}]} {
             return -code error -errorcode INVALID \
                 "Invalid plant ID \"$id\"."
         }
@@ -691,10 +700,10 @@ snit::type plant {
     # Returns 1 if there are plants owned by the supplied agent, 0
     # otherwise.
 
-    typemethod exists {id} {
+    method exists {id} {
         lassign $id n a
 
-        return [rdb exists {
+        return [$adb exists {
             SELECT * FROM plants_na WHERE n=$n AND a=$a
         }]
     }
@@ -703,10 +712,10 @@ snit::type plant {
     #
     # Returns the total output capacity of all GOODS production plants
 
-    typemethod {capacity total} {} {
+    method {capacity total} {} {
         set goodsPerPlant [money validate [parmdb get plant.bktsPerYear.goods]]
 
-        set totBkts [rdb onecolumn {
+        set totBkts [$adb onecolumn {
             SELECT total(num*rho) FROM plants_na
         }]
 
@@ -718,10 +727,10 @@ snit::type plant {
     # Returns the total output capacity of all GOODS production plants given
     # a neighborhood
 
-    typemethod {capacity n} {n} {
+    method {capacity n} {n} {
         set goodsPerPlant [money validate [parmdb get plant.bktsPerYear.goods]]
 
-        set totBkts [rdb onecolumn {
+        set totBkts [$adb onecolumn {
             SELECT total(num*rho) FROM plants_na
             WHERE n=$n
         }]
@@ -734,10 +743,10 @@ snit::type plant {
     # Returns the total output capacity of all GOODS production plants given
     # an agent
 
-    typemethod {capacity a} {a} {
+    method {capacity a} {a} {
         set goodsPerPlant [money validate [parmdb get plant.bktsPerYear.goods]]
 
-        set totBkts [rdb onecolumn {
+        set totBkts [$adb onecolumn {
             SELECT total(num*rho) FROM plants_na
             WHERE a=$a
         }]
@@ -749,8 +758,8 @@ snit::type plant {
     #
     # Returns the total number of plants in the playbox
 
-    typemethod {number total} {} {
-        return [rdb eval {SELECT total(num) FROM plants_na}]
+    method {number total} {} {
+        return [$adb eval {SELECT total(num) FROM plants_na}]
     }
 
     # number n
@@ -759,8 +768,8 @@ snit::type plant {
     #
     # Returns the total number of plants in the supplied neighborhood
 
-    typemethod {number n} {n} {
-        return [rdb eval {SELECT total(num) FROM plants_na WHERE n=$n}]
+    method {number n} {n} {
+        return [$adb eval {SELECT total(num) FROM plants_na WHERE n=$n}]
     }
 
     # number a
@@ -769,8 +778,8 @@ snit::type plant {
     #
     # Returns the total number of plants owned by the supplied agent
 
-    typemethod {number a} {a} {
-        return [rdb eval {SELECT total(num) FROM plants_na WHERE a=$a}]
+    method {number a} {a} {
+        return [$adb eval {SELECT total(num) FROM plants_na WHERE a=$a}]
     }
 
     #-----------------------------------------------------------------------
@@ -781,7 +790,7 @@ snit::type plant {
     # a script of one or more commands that will undo the change.  When
     # change cannot be undone, the mutator returns the empty string.
 
-    # mutate create parmdict
+    # create parmdict
     #
     # parmdict     A dictionary of plant shares parms
     #
@@ -792,35 +801,35 @@ snit::type plant {
     #    shares  The number of shares of plants that a should own in n
     #            when the scenario is locked
     #
-    # Creates a record in the rdb that will be used at scenario lock to 
+    # Creates a record in the $adb that will be used at scenario lock to 
     # determine the actual number of plants owned by a in n
     
-    typemethod {mutate create} {parmdict} {
+    method create {parmdict} {
         dict with parmdict {}
 
-        rdb eval {
+        $adb eval {
             INSERT INTO plants_shares(n, a, rho, num)
             VALUES($n, $a, $rho, $num);
         }
 
-        return [list rdb delete plants_shares "n='$n' AND a='$a'"]
+        return [list $adb delete plants_shares "n='$n' AND a='$a'"]
     }
 
-    # mutate delete id
+    # delete id
     #
     # id   A neighborhood/agent pair that corresponds to a plant shares
     #      record that should be deleted.
 
-    typemethod {mutate delete} {id} {
+    method delete {id} {
         lassign $id n a
 
-        set data [rdb delete -grab plants_shares \
+        set data [$adb delete -grab plants_shares \
             {n=$n AND a=$a}]
 
-        return [list rdb ungrab $data]
+        return [list $adb ungrab $data]
     }
 
-    # mutate update parmdict
+    # update parmdict
     #
     # parmdict   A dictionary of plant shares parameters
     #
@@ -831,30 +840,30 @@ snit::type plant {
     #
     # Updates a plant shares record in the database given the parms.
 
-    typemethod {mutate update} {parmdict} {
+    method update {parmdict} {
         set parmdict [dict merge $optParms $parmdict]
 
         dict with parmdict {}
 
         lassign $id n a
 
-        set data [rdb grab plants_shares {n=$n AND a=$a}]
+        set data [$adb grab plants_shares {n=$n AND a=$a}]
 
-        rdb eval {
+        $adb eval {
             UPDATE plants_shares
             SET rho = nullif(nonempty($rho, rho), ''),
                 num = nullif(nonempty($num, num), '')
             WHERE n=$n AND a=$a
         } {}
         
-        return [list rdb ungrab $data]
+        return [list $adb ungrab $data]
     }
 
     #---------------------------------------------------------------------
     # Order Helpers
 
-    typemethod actorOwnsShares {n a} {
-        return [rdb exists {
+    method actorOwnsShares {n a} {
+        return [$adb exists {
             SELECT * FROM plants_shares WHERE n=$n AND a=$a
         }]
     }
@@ -866,10 +875,10 @@ snit::type plant {
     # This method returns a list of neighborhoods that do not have any
     # ownership of plants by the agent already specified.
 
-    typemethod notAllocatedTo {a} {
-        set nballoc [rdb eval {SELECT n FROM plants_shares WHERE a = $a}]
+    method notAllocatedTo {a} {
+        set nballoc [$adb eval {SELECT n FROM plants_shares WHERE a = $a}]
 
-        set nbnotalloc [nbhood local names]
+        set nbnotalloc [$adb nbhood local names]
 
         foreach n $nballoc {
             ldelete nbnotalloc $n
@@ -899,7 +908,7 @@ snit::type plant {
         agent a 
 
         rcc "In Nbhood:" -for n
-        enum n -listcmd {::plant notAllocatedTo $a}
+        enum n -listcmd {$adb_ plant notAllocatedTo $a}
 
         rcc "Initial Repair Frac:" -for rho
         frac rho -defvalue 1.0
@@ -919,7 +928,7 @@ snit::type plant {
     
         # Cross check n 
         my checkon n {
-            if {[plant actorOwnsShares $parms(n) $parms(a)]} {
+            if {[$adb plant actorOwnsShares $parms(n) $parms(a)]} {
                 my reject n \
                     "Agent $parms(a) already ownes a share of the plants in $parms(n)"
             }
@@ -927,7 +936,7 @@ snit::type plant {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [plant mutate create [array get parms]]
+        my setundo [$adb plant create [array get parms]]
     }
 }
 
@@ -953,7 +962,7 @@ snit::type plant {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [plant mutate delete $parms(id)]
+        my setundo [$adb plant delete $parms(id)]
     }
 }
 
@@ -990,7 +999,7 @@ snit::type plant {
 
     method _execute {{flunky ""}} {
         set undo [list]
-        lappend undo [plant mutate update [array get parms]]
+        lappend undo [$adb plant update [array get parms]]
         my setundo [join $undo \n]
     }
 }
@@ -1027,8 +1036,10 @@ snit::type plant {
     }
 
     method _execute {{flunky ""}} {
+        set undo [list]
+        
         foreach parms(id) $parms(ids) {
-            lappend undo [plant mutate update [array get parms]]
+            lappend undo [$adb plant update [array get parms]]
         }
 
         my setundo [join $undo \n]

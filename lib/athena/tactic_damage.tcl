@@ -75,7 +75,7 @@
 
     method execute {} {
         # FIRST, if no infrastructure to damage trivially exit
-        if {![plant exists [list $n $a]]} {
+        if {![[my adb] plant exists [list $n $a]]} {
             [my adb] sigevent log 2 tactic "
                 DAMAGE: No infrastructure is affected since {actor:$a} does
                 not own any infrastructure in {nbhood:$n}
@@ -85,7 +85,7 @@
         }
 
         # NEXT, get current repair level
-        let current {100.0 * [plant get [list $n $a] rho]}
+        let current {100.0 * [[my adb] plant get [list $n $a] rho]}
 
         set s(current) [format %.1f%% $current]
         set s(percent) [format %.1f%% $percent]

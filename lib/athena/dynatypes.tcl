@@ -120,6 +120,11 @@ dynaform fieldtype alias payload dbkey \
 # percent: Pick a percentage.
 dynaform fieldtype alias percent range -datatype ::ipercent
 
+# plant: Pick a plant by its ID.
+dynaform fieldtype alias plant dbkey \
+    -table gui_plants_na  \
+    -keys  {n a}
+
 # rel: Relationship value
 dynaform fieldtype alias rel range \
     -datatype   ::qaffinity \

@@ -1134,7 +1134,7 @@ snit::type ::athena::econ {
             set CAPgoods $out(BQS.goods)
 
             foreach n [$adb nbhood names] {
-                set cap0 [plant capacity n $n]
+                set cap0 [$adb plant capacity n $n]
                 let jobs0 {$out(BQS.pop) * $cap0 / $CAPgoods}
                 
                 $adb eval {
@@ -1165,7 +1165,7 @@ snit::type ::athena::econ {
         # NEXT, if we are not calibrating, goods sector capacity comes
         # from the infrastructure model
         if {$opt ne "-calibrate"} {
-            set CAPgoods [plant capacity total]
+            set CAPgoods [$adb plant capacity total]
         }
 
         # NEXT, get geo-unemployment from the demographics model 
@@ -1234,7 +1234,7 @@ snit::type ::athena::econ {
             array set data [cge get M -bare]
 
             foreach n [$adb nbhood local names] {
-                set cap [plant capacity n $n]
+                set cap [$adb plant capacity n $n]
                 let jobs {floor($data(QS.pop) * $cap / $CAPgoods)}
                 
                 $adb eval {

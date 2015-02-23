@@ -162,7 +162,7 @@ snit::type ::athena::inject {
             }
         }
 
-        notifier send ::inject <Check>
+        $adb notify inject <Check>
 
         return $edict
     }
