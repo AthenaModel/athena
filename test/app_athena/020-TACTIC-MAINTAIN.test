@@ -207,7 +207,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         ted order TACTIC:MAINTAIN tactic_id [$T1 id] \
-            nlist [gofer construct NBHOODS BY_VALUE {NB1 NB2}]
+            nlist [adb gofer make NBHOODS BY_VALUE {NB1 NB2}]
 
         ted pdicts [$T1 getdict]
     } -cleanup {
@@ -232,7 +232,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         ted order TACTIC:MAINTAIN tactic_id [$T1 id] rmode UPTO level 90.0 \
-            nlist [gofer construct NBHOODS BY_VALUE {NB1 NB2}]
+            nlist [adb gofer make NBHOODS BY_VALUE {NB1 NB2}]
 
         ted pdicts [$T1 getdict]
     } -cleanup {
@@ -257,7 +257,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         ted order TACTIC:MAINTAIN tactic_id [$T1 id] rmode UPTO level 90.0 \
-            nlist [gofer construct NBHOODS BY_VALUE {NB1 NB2}] fmode PERCENT
+            nlist [adb gofer make NBHOODS BY_VALUE {NB1 NB2}] fmode PERCENT
 
         ted pdicts [$T1 getdict]
     } -cleanup {
@@ -282,7 +282,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         ted order TACTIC:MAINTAIN tactic_id [$T1 id] rmode UPTO level 90.0 \
-            nlist [gofer construct NBHOODS BY_VALUE {NB1 NB2}] fmode EXACT
+            nlist [adb gofer make NBHOODS BY_VALUE {NB1 NB2}] fmode EXACT
 
         ted pdicts [$T1 getdict]
     } -cleanup {
@@ -308,7 +308,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
         ted order TACTIC:MAINTAIN tactic_id [$T1 id] \
-            nlist [gofer construct NBHOODS BY_VALUE {NB1 NB2}] \
+            nlist [adb gofer make NBHOODS BY_VALUE {NB1 NB2}] \
             amount 10000
         ted notifier received
     } -cleanup {
@@ -321,7 +321,7 @@ namespace eval ::athena_test::tests:: {
     test TACTIC:MAINTAIN-3.1 {undo effects} -setup {
         setup
         ted order TACTIC:MAINTAIN tactic_id [$T1 id] \
-            nlist [gofer construct NBHOODS BY_VALUE {NB1 NB2}] \
+            nlist [adb gofer make NBHOODS BY_VALUE {NB1 NB2}] \
             amount 10000
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>

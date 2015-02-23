@@ -103,7 +103,7 @@ namespace eval ::athena_test::tests:: {
         setup
         $T1 configure \
             -a     BOB \
-            -nlist [gofer construct NBHOODS BY_VALUE {NB1 NB2}]
+            -nlist [adb gofer make NBHOODS BY_VALUE {NB1 NB2}]
     } -body {
         $T1 narrative
     } -cleanup {
@@ -129,7 +129,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         $T1 configure \
             -a     NONESUCH \
-            -nlist [gofer construct NBHOODS BY_VALUE NB1]
+            -nlist [adb gofer make NBHOODS BY_VALUE NB1]
         $T1 check
     } -cleanup {
         cleanup
@@ -152,7 +152,7 @@ namespace eval ::athena_test::tests:: {
         setup
         $T1 configure \
             -a     BOB \
-            -nlist [gofer construct NBHOODS BY_VALUE NB1]
+            -nlist [adb gofer make NBHOODS BY_VALUE NB1]
     } -body {
         $T1 check
     } -cleanup {
@@ -177,7 +177,7 @@ namespace eval ::athena_test::tests:: {
         setup
         $T1 configure \
             -a     BOB \
-            -nlist [gofer construct NBHOODS BY_VALUE NB1]
+            -nlist [adb gofer make NBHOODS BY_VALUE NB1]
     } -body {
         $T1 check
         $T1 obligate $coffer

@@ -1,10 +1,5 @@
 # TODO.md - Athena TODO List
 
-- Finish gofer work:
-  - Get the goferx field type working.
-  - Update man pages (insofar as that's necessary)
-  - Update and test gofer executive command, per writeup in help.
-  - Update remaining code to use "adb gofer TYPE" instead of "::gofer::TYPE".
 - Document all component entries in athenadb(n).
   - Or, come up with a plan for which ones are documented and which aren't.
 - Document athena(n)

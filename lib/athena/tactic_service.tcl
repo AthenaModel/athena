@@ -23,7 +23,7 @@
     variable s      ;# The abstract service to change ALOS
     variable mode   ;# One of: EXACT, RDELTA, EDELTA or ADELTA
     variable deltap ;# Delta pct up or down when mode is not EXACT
-    variable nlist  ;# A gofer::NBHOODS value
+    variable nlist  ;# A NBHOODS gofer value
     variable los    ;# Actual level of service
 
     #-------------------------------------------------------------------
@@ -33,7 +33,7 @@
         next $pot_
 
         # Initialize state variables
-        set nlist  [gofer::NBHOODS blank]
+        set nlist  [[my adb] gofer NBHOODS blank]
         set los    1.0
         set deltap 0.0
         set mode   EXACT
@@ -52,7 +52,7 @@
 
     method SanityCheck {errdict} {
         # nlist
-        if {[catch {gofer::NBHOODS validate $nlist} result]} {
+        if {[catch {[my adb] gofer NBHOODS validate $nlist} result]} {
             dict set errdict nlist $result
         }
 
@@ -105,7 +105,7 @@
             default {error "Unknown mode: \"$mode\""}
         }
 
-        append narr [gofer::NBHOODS narrative $nlist]
+        append narr [[my adb] gofer NBHOODS narrative $nlist]
         
         return $narr
     }
@@ -116,7 +116,7 @@
         set nbhoods {}
         let frac {$deltap / 100.0}
 
-        set nbhoods [gofer eval $nlist]
+        set nbhoods [[my adb] gofer eval $nlist]
 
         set ngood [list]
         set nbad  [list]

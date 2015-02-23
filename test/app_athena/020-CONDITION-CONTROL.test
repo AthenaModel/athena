@@ -135,7 +135,7 @@ namespace eval ::athena_test::tests:: {
             a      JOE  \
             sense  DOESNT \
             anyall ANY \
-            nlist  [gofer construct NBHOODS BY_VALUE {NB1 NB2}]
+            nlist  [adb gofer make NBHOODS BY_VALUE {NB1 NB2}]
 
         ted pdicts [$C1 getdict]
     } -cleanup {

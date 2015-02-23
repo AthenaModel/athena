@@ -23,7 +23,8 @@
     variable fmode   ;# Funding mode: ALL, EXACT, PERCENT
     variable amount  ;# Max amount of money to spend regardless of rmode
     variable percent ;# Percent of money to spend if mode is PERCENT
-    variable nlist   ;# List of nbhoods in which to maintain plants
+    variable nlist   ;# NBHOODS gofer value, list of nbhoods in which to 
+                      # maintain plants
 
     # Transient Data
     variable trans
@@ -41,7 +42,7 @@
         set level   0.0
         set amount  100000
         set percent 100
-        set nlist   [gofer::NBHOODS blank]
+        set nlist   [[my adb] gofer NBHOODS blank]
 
         my set state invalid
 
@@ -59,7 +60,7 @@
 
     method SanityCheck {errdict} {
         # nlist
-        if {[catch {gofer::NBHOODS validate $nlist} result]} {
+        if {[catch {[my adb] gofer NBHOODS validate $nlist} result]} {
             dict set errdict nlist $result
         }
 
@@ -75,7 +76,7 @@
     }
 
     method narrative {} {
-        set ntext [gofer::NBHOODS narrative $nlist]
+        set ntext [[my adb] gofer NBHOODS narrative $nlist]
         set atext [moneyfmt $amount]
         set ptext [format "%.1f%%" $percent]
         set ltext [format "%.1f%%" $level]
@@ -265,7 +266,7 @@
     }
  
     method GetNbhoods {} {
-        set nbhoods [gofer::NBHOODS eval $nlist]
+        set nbhoods [[my adb] gofer NBHOODS eval $nlist]
         set owner [my agent]
 
         if {[llength $nbhoods] == 0} {
@@ -302,8 +303,8 @@
 
         [my adb] cash spend $owner MAINTAIN $trans(amount)
 
-        set nbhoods [gofer::NBHOODS eval $nlist]
-        set ntext   [gofer::NBHOODS narrative $nlist]
+        set nbhoods [[my adb] gofer NBHOODS eval $nlist]
+        set ntext   [[my adb] gofer NBHOODS narrative $nlist]
 
         if {$trans(repaired)} {
             [my adb] sigevent log 2 tactic "

@@ -22,7 +22,7 @@
 
     # Editable Parameters
     variable a       ;# An actor, SELF, or NONE
-    variable nlist   ;# A gofer::NBHOODS value
+    variable nlist   ;# A NBHOODS gofer value
 
 
     #-------------------------------------------------------------------
@@ -33,7 +33,7 @@
 
         # NEXT, Initialize state variables
         set a     ""
-        set nlist [gofer::NBHOODS blank]
+        set nlist [[my adb] gofer NBHOODS blank]
 
         # NEXT, Initial state is invalid (empty a and nlist)
         my set state invalid
@@ -56,7 +56,7 @@
         }
 
         # nlist
-        if {[catch {gofer::NBHOODS validate $nlist} result]} {
+        if {[catch {[my adb] gofer NBHOODS validate $nlist} result]} {
             dict set errdict nlist $result
         }
 
@@ -73,7 +73,7 @@
             set s(a) "actor [link make actor $a]"
         }
 
-        set s(nlist) [gofer::NBHOODS narrative $nlist]
+        set s(nlist) [[my adb] gofer NBHOODS narrative $nlist]
 
         return "Support $s(a) in $s(nlist)."
     }
@@ -81,7 +81,7 @@
 
     method execute {} {
         # FIRST, get the neighborhoods.
-        set nbhoods [gofer::NBHOODS eval $nlist]
+        set nbhoods [[my adb] gofer NBHOODS eval $nlist]
 
         if {[llength $nbhoods] == 0} {
             # No neighborhoods to support

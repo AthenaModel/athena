@@ -49,7 +49,6 @@ namespace eval ::projectgui:: {
 source [file join $::projectgui::library toolbutton.tcl      ]
 source [file join $::projectgui::library beanbrowser.tcl     ]
 source [file join $::projectgui::library enumbutton.tcl      ]
-source [file join $::projectgui::library goferfield.tcl      ]
 source [file join $::projectgui::library icons.tcl           ]
 source [file join $::projectgui::library linktree.tcl        ]
 source [file join $::projectgui::library listbuttonfield.tcl ]

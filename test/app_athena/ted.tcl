@@ -968,14 +968,14 @@ snit::type ted {
             ted addtactic $block DEPLOY                          \
                 g         $g                                     \
                 pmode     ALL                                    \
-                nlist     [gofer construct NBHOODS BY_VALUE $n]  \
+                nlist     [adb gofer make NBHOODS BY_VALUE $n]  \
                 nmode     EQUAL
         } else {
             ted addtactic $block DEPLOY                          \
                 g         $g                                     \
                 pmode     SOME                                   \
                 personnel $personnel                             \
-                nlist     [gofer construct NBHOODS BY_VALUE $n]  \
+                nlist     [adb gofer make NBHOODS BY_VALUE $n]  \
                 nmode     EQUAL
         }
     }

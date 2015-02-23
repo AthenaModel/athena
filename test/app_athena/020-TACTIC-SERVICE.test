@@ -165,7 +165,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         ted order TACTIC:SERVICE \
             tactic_id [$T1 id]  \
-            nlist     [gofer construct NBHOODS BY_VALUE {NB1 NB2}] \
+            nlist     [adb gofer make NBHOODS BY_VALUE {NB1 NB2}] \
             s         ENERGY \
             los       0.75
 
@@ -193,7 +193,7 @@ namespace eval ::athena_test::tests:: {
         ted notifier bind ::projectlib::bean <Monitor>
         ted order TACTIC:SERVICE \
             tactic_id [$T1 id]  \
-            nlist     [gofer construct NBHOODS BY_VALUE {NB1 NB2}] \
+            nlist     [adb gofer make NBHOODS BY_VALUE {NB1 NB2}] \
             s         ENERGY \
             los       0.75
         ted notifier received
@@ -205,7 +205,7 @@ namespace eval ::athena_test::tests:: {
         setup
         ted order TACTIC:SERVICE \
             tactic_id [$T1 id]  \
-            nlist     [gofer construct NBHOODS BY_VALUE {NB1 NB2}] \
+            nlist     [adb gofer make NBHOODS BY_VALUE {NB1 NB2}] \
             s         ENERGY \
             los       0.75
     } -body {

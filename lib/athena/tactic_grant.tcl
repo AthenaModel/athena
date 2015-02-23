@@ -23,7 +23,7 @@
 
     # Editable Parameters
     variable klist       ;# A list of CAP IDs
-    variable alist       ;# A gofer::ACTORS value
+    variable alist       ;# An ACTORS gofer value
 
 
     #-------------------------------------------------------------------
@@ -34,7 +34,7 @@
 
         # NEXT, Initialize state variables
         set klist [list]
-        set alist [gofer::ACTORS blank]
+        set alist [[my adb] gofer ACTORS blank]
 
         # NEXT, Initial state is invalid (empty klist and alist)
         my set state invalid
@@ -65,7 +65,7 @@
         }
 
         # alist
-        if {[catch {gofer::ACTORS validate $alist} result]} {
+        if {[catch {[my adb] gofer ACTORS validate $alist} result]} {
             dict set errdict alist $result
         }
 
@@ -75,7 +75,7 @@
 
     method narrative {} {
         set s(klist) [andlist CAP $klist]
-        set s(alist) [gofer::ACTORS narrative $alist]
+        set s(alist) [[my adb] gofer ACTORS narrative $alist]
 
         return "Grant $s(alist) access to $s(klist)."
     }
@@ -84,7 +84,7 @@
     method execute {} {
         # FIRST, grant access to all actors but [my agent], who owns
         # the relevant CAPs to begin with.
-        set actors [gofer eval $alist]
+        set actors [[my adb] gofer eval $alist]
         ldelete actors [my agent]
 
         if {[llength $actors] > 0} {

@@ -113,9 +113,9 @@ namespace eval ::athena_test::tests:: {
     } -body {
         ted order CONDITION:COMPARE \
             condition_id [$C1 id] \
-            x            [gofer construct NUMBER BY_VALUE 5.0]  \
+            x            [adb gofer make NUMBER BY_VALUE 5.0]  \
             comp         gt                                     \
-            y            [gofer construct NUMBER BY_VALUE 10.0]
+            y            [adb gofer make NUMBER BY_VALUE 10.0]
 
         ted pdicts [$C1 getdict]
     } -cleanup {

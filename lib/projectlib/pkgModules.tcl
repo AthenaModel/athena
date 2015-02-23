@@ -91,5 +91,4 @@ source [file join $::projectlib::library httpagent.tcl      ]
 source [file join $::projectlib::library httpagentsim.tcl   ]
 source [file join $::projectlib::library wmsclient.tcl      ]
 source [file join $::projectlib::library wfsclient.tcl      ]
-source [file join $::projectlib::library gofer.tcl          ]
 

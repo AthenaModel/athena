@@ -293,7 +293,7 @@ snit::type ::athena::goferx {
 
     method narrative {gdict {opt ""}} {
         # FIRST, if we don't know its type return "???".
-        if {![gofer GotType $gdict]} {
+        if {![$type GotType $gdict]} {
             return "???"
         }
 

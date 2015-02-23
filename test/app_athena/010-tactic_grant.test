@@ -103,7 +103,7 @@ namespace eval ::athena_test::tests:: {
         setup
         $T1 configure \
             -klist {ABC CBS} \
-            -alist [gofer construct ACTORS BY_VALUE BOB]
+            -alist [adb gofer make ACTORS BY_VALUE BOB]
     } -body {
         $T1 narrative
     } -cleanup {
@@ -129,7 +129,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         $T1 configure \
             -klist {ABS CBC} \
-            -alist [gofer construct ACTORS BY_VALUE BOB]
+            -alist [adb gofer make ACTORS BY_VALUE BOB]
         $T1 check
     } -cleanup {
         cleanup
@@ -140,7 +140,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         $T1 configure \
             -klist {CNN FOX} \
-            -alist [gofer construct ACTORS BY_VALUE BOB]
+            -alist [adb gofer make ACTORS BY_VALUE BOB]
         $T1 check
     } -cleanup {
         cleanup
@@ -163,7 +163,7 @@ namespace eval ::athena_test::tests:: {
         setup
         $T1 configure \
             -klist {ABC CBS} \
-            -alist [gofer construct ACTORS BY_VALUE BOB]
+            -alist [adb gofer make ACTORS BY_VALUE BOB]
     } -body {
         $T1 check
     } -cleanup {
@@ -188,7 +188,7 @@ namespace eval ::athena_test::tests:: {
         setup
         $T1 configure \
             -klist {ABC CBS} \
-            -alist [gofer construct ACTORS BY_VALUE BOB]
+            -alist [adb gofer make ACTORS BY_VALUE BOB]
     } -body {
         $T1 obligate $coffer
         $T1 execute
