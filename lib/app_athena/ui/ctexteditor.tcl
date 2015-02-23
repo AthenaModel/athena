@@ -201,7 +201,7 @@ snit::widget ctexteditor {
         }
 
         $self hclass keyword   exec     #3300CC {
-            axdb lock log rdb save send sigevent unlock 
+            lock log rdb save send sigevent unlock 
         }
 
         $self hclass startchar var      #9900FF \$

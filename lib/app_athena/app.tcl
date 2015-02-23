@@ -224,8 +224,6 @@ snit::type app {
         view      init
         MakeAthena ::adb
         sim       init
-        axdb      init
-
         coverage_model init
 
         # NEXT, register other saveables

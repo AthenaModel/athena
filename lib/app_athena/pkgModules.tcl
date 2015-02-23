@@ -69,7 +69,6 @@ source [file join $::app_athena::library engine.tcl       ]
 source [file join $::app_athena::library log.tcl          ]
 source [file join $::app_athena::library map.tcl          ]
 source [file join $::app_athena::library sanity.tcl       ]
-source [file join $::app_athena::library axdb.tcl         ]
 
 #-----------------------------------------------------------------------
 # Load app_athena(n) subpackages

@@ -222,87 +222,6 @@ snit::type executive {
             {owner ?-group g? ?-nbhood n? ?-activity act?} \
             [list autogen assign]
 
-        # axdb 
-        $interp ensemble axdb
-
-        # axdb case
-        $interp ensemble {axdb case}
-
-        # axdb case add
-        $interp smartalias {axdb case add} 0 - {parm value...} \
-            [list axdb case add]
-
-        # axdb case dump
-        $interp smartalias {axdb case dump} 1 1 {id} \
-            [list axdb case dump]
-
-        # axdb case list
-        $interp smartalias {axdb case list} 0 0 {} \
-            [list axdb case list]
-
-        # axdb clear
-        $interp smartalias {axdb clear} 0 0 {} \
-            [list axdb clear]
-
-        # axdb close
-        $interp smartalias {axdb close} 0 0 {} \
-            [list axdb close]
-
-        # axdb create
-        $interp smartalias {axdb create} 1 1 {filename} \
-            [list axdb create]
-
-        # axdb csv
-        $interp smartalias {axdb csv} 1 - {query...} \
-            [myproc AxdbQuery csv ""]
-
-        # axdb csvfile
-        $interp smartalias {axdb csvfile} 1 - {filename query...} \
-            [myproc AxdbQuery csv]
-
-        # axdb open
-        $interp smartalias {axdb open} 1 1 {filename} \
-            [list axdb open]
-            
-        # axdb parm
-        $interp ensemble {axdb parm}
-
-        # axdb parm define
-        $interp smartalias {axdb parm define} 3 3 {name docstring script} \
-            [list axdb parm define]
-
-        # axdb parm dump
-        $interp smartalias {axdb parm dump} 0 1 {?name?} \
-            [list axdb parm dump]
-
-        # axdb parm list
-        $interp smartalias {axdb parm list} 0 0 {} \
-            [list axdb parm list]
-
-        # axdb parm names
-        $interp smartalias {axdb parm names} 0 0 {} \
-            [list axdb parm names]
-
-        # axdb prepare
-        $interp smartalias {axdb prepare} 1 1 {case_id} \
-            [list axdb prepare]
-
-        # axdb run
-        $interp smartalias {axdb run} 0 - {?option value...?} \
-            [list axdb run]
-
-        # axdb runcase
-        $interp smartalias {axdb runcase} 1 - {case_id ?option value...?} \
-            [list axdb runcase]
-
-        # axdb select
-        $interp smartalias {axdb select} 1 - {query...} \
-            [myproc AxdbQuery mc ""]
-
-        # axdb selectfile
-        $interp smartalias {axdb selectfile} 1 - {filename query...} \
-            [myproc AxdbQuery mc]
-
         # block
         $interp ensemble block
 
@@ -1991,33 +1910,6 @@ snit::type executive {
         }
 
         send SIM:RUN -weeks $weeks -block YES
-    }
-
-    # AxdbQuery mode filename query...
-    #
-    # mode      - query -mode
-    # filename  - Name of file to save result in, or ""
-    # query     - All of the select query, as arguments on the command line,
-    #             except the "SELECT" keyword.
-    #
-    # Handles the four [axdb] query subcommands.
-
-    proc AxdbQuery {mode filename args} {
-        set query "SELECT $args"
-
-        set result [axdb safequery $query -mode $mode]
-
-        if {$filename ne ""} {
-            if {$mode eq "csv"} {
-                set extension ".csv"
-            } else {
-                set extension ".txt"
-            }
-
-            return [tofile $filename $extension $result]
-        } else {
-            return $result
-        }
     }
 
     # block add agent ?option value...?
