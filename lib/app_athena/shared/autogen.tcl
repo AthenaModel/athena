@@ -1131,7 +1131,7 @@ snit::type autogen {
                 foreach a $opts(-actors) {
                     set block [autogen AddBlock $a onlock YES]
                     autogen AddTactic FUNDENI $block \
-                        glist  [gofer construct CIVGROUPS BY_VALUE $civgroups] \
+                        glist  [adb gofer make CIVGROUPS BY_VALUE $civgroups] \
                         mode   EXACT \
                         amount "1K"
                 }
@@ -1205,7 +1205,7 @@ snit::type autogen {
             autogen AddTactic DEPLOY $b \
                 pmode  "ALL" \
                 g      $g \
-                nlist  [gofer construct NBHOODS BY_VALUE \
+                nlist  [adb gofer make NBHOODS BY_VALUE \
                            [rdb eval {SELECT n FROM nbhoods}]]
 
             # NEXT determine the number of personnel per neighborhood to

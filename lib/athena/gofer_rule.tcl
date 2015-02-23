@@ -330,7 +330,17 @@ oo::class create ::athena::gofer_rule {
     method filterby {listVar filterlist} {
         upvar 1 $listVar theList
 
-        set theList [struct::set intersect $theList $filterlist]
+        set result [list]
+
+        foreach item $theList {
+            if {$item in $filterlist} {
+                lappend result $item
+            }
+        }
+
+        set theList $result
+
+        return $result
     }
 
     # groupsIn nlist

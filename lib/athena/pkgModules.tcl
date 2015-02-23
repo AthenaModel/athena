@@ -54,6 +54,7 @@ source [file join $::athena::library gofer_rule.tcl       ]
 source [file join $::athena::library gofer_type.tcl       ]
 source [file join $::athena::library paster.tcl           ]
 source [file join $::athena::library ruleset_manager.tcl  ]
+source [file join $::athena::library ruleset.tcl          ]
 source [file join $::athena::library sigevent.tcl         ]
 
 # Editable Entities
@@ -119,12 +120,12 @@ source [file join $::athena::library agent.tcl            ]
 source [file join $::athena::library group.tcl            ]
 
 # Gofer Types
-source [file join $::athena::library gofer_actors.tcl     ]
-source [file join $::athena::library gofer_civgroups.tcl  ]
-source [file join $::athena::library gofer_frcgroups.tcl  ]
-source [file join $::athena::library gofer_groups.tcl     ]
-source [file join $::athena::library gofer_nbhoods.tcl    ]
-source [file join $::athena::library gofer_number.tcl     ]
+source [file join $::athena::library gofers gofer_actors.tcl     ]
+source [file join $::athena::library gofers gofer_civgroups.tcl  ]
+source [file join $::athena::library gofers gofer_frcgroups.tcl  ]
+source [file join $::athena::library gofers gofer_groups.tcl     ]
+source [file join $::athena::library gofers gofer_nbhoods.tcl    ]
+source [file join $::athena::library gofers gofer_number.tcl     ]
 
 # Tactic APIs
 source [file join $::athena::library abevent.tcl          ]
@@ -141,7 +142,6 @@ source [file join $::athena::library demog.tcl            ]
 source [file join $::athena::library service.tcl          ]
 
 # Rulesets
-source [file join $::athena::library ruleset.tcl          ]
 source [file join $::athena::library ruleset_abevent.tcl  ]
 source [file join $::athena::library ruleset_abservice.tcl]
 source [file join $::athena::library ruleset_absit.tcl    ]
@@ -157,5 +157,5 @@ source [file join $::athena::library ruleset_unemp.tcl    ]
 
 # Tk Code (loaded only if Tk is already present)
 if {[info command tk] ne ""} {
-    source [file join $::athena::library gofer_field.tcl  ]
+    source [file join $::athena::library tk gofer_field.tcl  ]
 }
