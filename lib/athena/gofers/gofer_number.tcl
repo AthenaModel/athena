@@ -9,7 +9,7 @@
 #    athena(n): Number gofer, a number, floating-or-integer, produced 
 #    according to one of various rules
 #
-# TBD: Global ref: ptype, executive, sim
+# TBD: Global ref: ptype, sim
 #
 #-----------------------------------------------------------------------
 
@@ -540,7 +540,7 @@
     method validate {gdict} {
         dict with gdict {}
 
-        dict create expr_value [executive expr validate $expr_value]
+        dict create expr_value [$adb executive expr validate $expr_value]
     }
 
     method narrative {gdict {opt ""}} {
@@ -552,7 +552,7 @@
     method eval {gdict} {
         dict with gdict {}
 
-        return [executive eval [list expr $expr_value]]
+        return [$adb executive eval [list expr $expr_value]]
     }
 }
 

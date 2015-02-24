@@ -16,7 +16,7 @@
 #    * History export, which exports the orders in the cif table
 #      (this is the classic export mode).
 #
-# TBD: Global refs: executive, map, simclock
+# TBD: Global refs: map, simclock
 #
 #-----------------------------------------------------------------------
 
@@ -93,7 +93,9 @@ snit::type ::athena::exporter {
         }
 
         # NEXT, if there are no orders or scripts to save, do nothing.
-        if {[llength $orders] == 0 && [llength [executive script names]] == 0} {
+        if {[llength $orders] == 0 && 
+            [llength [$adb executive script names]] == 0
+        } {
             error "nothing to export"
         }
 
@@ -147,9 +149,9 @@ snit::type ::athena::exporter {
     # Exports all executive scripts.
 
     method ExportScripts {f} {
-        foreach name [executive script names] {
-            puts $f [list script save $name [executive script get $name]]
-            if {[executive script auto $name]} {
+        foreach name [$adb executive script names] {
+            puts $f [list script save $name [$adb executive script get $name]]
+            if {[$adb executive script auto $name]} {
                 puts $f [list script auto $name 1]
             }
         }

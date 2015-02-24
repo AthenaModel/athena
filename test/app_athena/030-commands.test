@@ -46,6 +46,10 @@ namespace eval ::athena_test::tests:: {
         ted cleanup
     }
 
+    proc pprint {text} {
+        return "\n$text    "
+    }
+
     #-------------------------------------------------------------------
     # block add
 
@@ -377,6 +381,20 @@ namespace eval ::athena_test::tests:: {
     } -result {2 + 2 == 4}
 
     #-------------------------------------------------------------------
+    # csv
+
+    test csv-1.1 {can csv from RDB} -setup {
+        setup
+    } -body {
+        pprint [ted sendex csv a,longname from actors]
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+"a","longname"
+"JOE","Joe the Actor"
+    }
+
+    #-------------------------------------------------------------------
     # last *
 
     test last-1.1 {last block: none} -setup {
@@ -444,6 +462,21 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -result {1}
 
+    #-------------------------------------------------------------------
+    # select
+
+    test select-1.1 {can select from RDB} -setup {
+        setup
+    } -body {
+        pprint [ted sendex select a from actors]
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+a   
+--- 
+JOE 
+    }
+    
 
     #-------------------------------------------------------------------
     # tactic add

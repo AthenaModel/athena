@@ -154,6 +154,7 @@ snit::type ::athena::athenadb {
     
     # Resources
     component rdb                         ;# writable sqldatabase handle
+    component executive -public executive ;# executive command processor
     component exporter  -public export    ;# exporter
     component flunky    -public flunky    ;# athena_flunky(n)
     component gofer     -public gofer     ;# gofer
@@ -299,6 +300,7 @@ snit::type ::athena::athenadb {
             demog                       \
             econ                        \
             exporter                    \
+            executive                   \
             frcgroup                    \
             group                       \
             hook                        \
@@ -347,7 +349,6 @@ snit::type ::athena::athenadb {
 
         # NEXT, finish up
         $self DefineTempSchema
-        executive reset
 
         $rdb marksaved
 
@@ -523,6 +524,10 @@ snit::type ::athena::athenadb {
     delegate method monitor           to rdb as monitor
     delegate method onecolumn         to rdb as onecolumn
     delegate method query             to rdb as query
+    delegate method safeeval          to rdb as safeeval
+    delegate method safequery         to rdb as safequery
+    delegate method schema            to rdb as schema
+    delegate method tables            to rdb as tables
     delegate method ungrab            to rdb as ungrab
     
 

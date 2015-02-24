@@ -69,7 +69,7 @@
 
         # NEXT, attempt to run the user's command.
         if {[catch {
-            executive eval $command
+            [my adb] executive eval $command
         } result eopts]} {
             # FAILURE 
 
@@ -86,7 +86,7 @@
                 EXECUTIVE: Failed to execute command {$command}: $result
             " [my agent]
 
-            executive errtrace
+            [my adb] executive errtrace
 
             # TBD: Report as sanity check failure
             return

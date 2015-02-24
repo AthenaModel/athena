@@ -8,7 +8,6 @@
 # DESCRIPTION:
 #    athena(n): Mark II Condition, EXPR
 #
-# TBD: Global refs: executive, sigevent
 #-----------------------------------------------------------------------
 
 # FIRST, create the class.
@@ -43,7 +42,7 @@
     method SanityCheck {errdict} {
         if {$expression eq ""} {
             dict set errdict expression "No expression has been specified"
-        } elseif {[catch {executive expr validate $expression} result]} {
+        } elseif {[catch {[my adb] executive expr validate $expression} result]} {
             dict set errdict expression $result
         }
 
@@ -52,7 +51,7 @@
 
     method Evaluate {} {
         if {[catch {
-            set flag [executive eval [list expr $expression]]
+            set flag [[my adb] executive eval [list expr $expression]]
         } result eopts]} {
             # FAILURE
 
@@ -114,7 +113,7 @@
         if {[my mode] eq "gui"} {
             # In the GUI, give detailed feedback on errors.  From other sources,
             # the sanity check will catch it.
-            my prepare expression -oncheck -type {executive expr}
+            my prepare expression -oncheck -type {$adb executive expr}
         }
     }
 
