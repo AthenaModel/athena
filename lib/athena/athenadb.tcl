@@ -480,16 +480,13 @@ snit::type ::athena::athenadb {
 
     # RdbEvalFile filename
     #
-    # filename   - An SQL file
+    # filename   - An SQL file in the sql/ subdirectory
     #
-    # Reads the file from the application library directory and
+    # Reads the file from the library's sql directory and
     # passes it to the RDB for evaluation.
-    #
-    # TODO:
-    #   * Consider adding evalfile as an sqldocument command.
 
     method RdbEvalFile {filename} {
-        $rdb eval [readfile [file join $::athena::library $filename]]
+        $rdb eval [readfile [file join $::athena::library sql $filename]]
     }
 
     # destructor
