@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    athena_sim(1): Neighborhood Control
+#    athena(n): Neighborhood Control manager
 #
 #    This module is part of the political model.  It is responsible for
 #    computing, at initialization and each tock, 
@@ -23,9 +23,24 @@
 #
 #-----------------------------------------------------------------------
 
-snit::type control_model {
-    # Make it a singleton
-    pragma -hasinstances no
+snit::type ::athena::control_model {
+    #-------------------------------------------------------------------
+    # Components
+
+    component adb ;# The athenadb(n) instance
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    # constructor adb_
+    #
+    # adb_    - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of this type
+
+    constructor {adb_} {
+        set adb $adb_
+    }
 
     #-------------------------------------------------------------------
     # Simulation Start
@@ -35,13 +50,13 @@ snit::type control_model {
     # This command is called when the scenario is locked to initialize
     # the model and populate the relevant tables.
 
-    typemethod start {} {
+    method start {} {
         log normal control_model "start"
 
         # FIRST, initialize the control tables
-        $type PopulateNbhoodControl
-        $type PopulateActorSupports
-        $type PopulateActorInfluence
+        $self PopulateNbhoodControl
+        $self PopulateActorSupports
+        $self PopulateActorInfluence
 
         log normal control_model "start complete"
     }
@@ -53,8 +68,8 @@ snit::type control_model {
     # populates the control_n table with that information.  Note
     # that "controller" is NULL if no actor controls the neighborhood.
 
-    typemethod PopulateNbhoodControl {} {
-        rdb eval {
+    method PopulateNbhoodControl {} {
+        $adb eval {
             INSERT INTO control_n(n, controller, since)
             SELECT n, controller, 0 FROM nbhoods
         }
@@ -66,8 +81,8 @@ snit::type control_model {
     # or no one.  This routine populates the supports_na table with the 
     # default supports from actors.
 
-    typemethod PopulateActorSupports {} {
-        rdb eval {
+    method PopulateActorSupports {} {
+        $adb eval {
             INSERT INTO supports_na(n, a, supports)
             SELECT n, a, supports
             FROM nbhoods JOIN actors
@@ -79,15 +94,15 @@ snit::type control_model {
     # Populates the influence_na table, and computes the
     # initial influence of each actor.
     
-    typemethod PopulateActorInfluence {} {
+    method PopulateActorInfluence {} {
         # FIRST, populate the influence_na table
-        rdb eval {
+        $adb eval {
             INSERT INTO influence_na(n, a)
             SELECT n, a FROM nbhoods JOIN actors
         }
 
         # NEXT, compute the actor's initial influence.
-        $type ComputeActorInfluence
+        $self ComputeActorInfluence
     }
 
 
@@ -101,10 +116,10 @@ snit::type control_model {
     #
     # Update influence.
 
-    typemethod analyze {} {
+    method analyze {} {
         # FIRST, Compute each actor's support and influence in each 
         # neighborhood.
-        $type ComputeActorInfluence
+        $self ComputeActorInfluence
     }
 
     # ComputeActorInfluence
@@ -112,9 +127,9 @@ snit::type control_model {
     # Computes the support for and influence of each actor in
     # each neighborhood.
 
-    typemethod ComputeActorInfluence {} {
+    method ComputeActorInfluence {} {
         # FIRST, set support and influence to 0.
-        rdb eval {
+        $adb eval {
             UPDATE influence_na
             SET direct_support = 0,
                 support        = 0,
@@ -124,7 +139,7 @@ snit::type control_model {
         }
 
         # NEXT, get the total number of personnel in each neighborhood.
-        array set tp [rdb eval {
+        array set tp [$adb eval {
             SELECT n, total(personnel)
             FROM force_ng
             GROUP BY n
@@ -132,11 +147,11 @@ snit::type control_model {
 
         # NEXT, add the support of each group in each neighborhood
         # to each actor's direct support
-        set minSupport [parm get control.support.min]
-        set vrelMin    [parm get control.support.vrelMin]
-        set Zsecurity  [parm get control.support.Zsecurity]
+        set minSupport [$adb parm get control.support.min]
+        set vrelMin    [$adb parm get control.support.vrelMin]
+        set Zsecurity  [$adb parm get control.support.Zsecurity]
 
-        foreach {n g personnel security a vrel} [rdb eval {
+        foreach {n g personnel security a vrel} [$adb eval {
             SELECT NG.n,
                    NG.g,
                    NG.personnel,
@@ -156,7 +171,7 @@ snit::type control_model {
                 set contrib 0.0
             }
 
-            rdb eval {
+            $adb eval {
                 UPDATE influence_na
                 SET direct_support = direct_support + $contrib
                 WHERE n=$n AND a=$a;
@@ -169,7 +184,7 @@ snit::type control_model {
 
         # NEXT, compute a's actual support, given the support relationships
         # in support_na.
-        foreach {n g a direct_support supports} [rdb eval {
+        foreach {n g a direct_support supports} [$adb eval {
             SELECT G.n                  AS n,
                    G.g                  AS g,
                    G.a                  AS a,
@@ -181,7 +196,7 @@ snit::type control_model {
         }] {
             # FIRST, update the supported actor's support from this group.
             # Also, update the actor's actual support.
-            rdb eval {
+            $adb eval {
                 UPDATE support_nga 
                 SET support = support + $direct_support
                 WHERE n=$n AND g=$g AND a=$supports;
@@ -194,7 +209,7 @@ snit::type control_model {
 
         # NEXT, compute the total support for each neighborhood.
         # Exclude actors with less than the minimum required support.
-        rdb eval {
+        $adb eval {
             SELECT n, total(support) AS denom
             FROM influence_na
             WHERE support >= $minSupport
@@ -208,7 +223,7 @@ snit::type control_model {
             set denom $nsupport($n)
 
             if {$denom > 0} {
-                rdb eval {
+                $adb eval {
                     UPDATE support_nga
                     SET influence = support/$denom
                     WHERE n=$n
@@ -220,7 +235,7 @@ snit::type control_model {
         # neighborhood.  The actor requires a minimum level of
         # support to have any influence.
 
-        rdb eval {
+        $adb eval {
             SELECT n, a, support FROM influence_na
         } {
             if {![info exists nsupport($n)] || $nsupport($n) == 0} {
@@ -234,16 +249,13 @@ snit::type control_model {
                 set influence [expr {double($support) / $nsupport($n)}]
             }
 
-            rdb eval {
+            $adb eval {
                 UPDATE influence_na
                 SET influence=$influence
                 WHERE n=$n AND a=$a
             }
         }
     }
-
-
-
 
 
     #-------------------------------------------------------------------
@@ -257,7 +269,7 @@ snit::type control_model {
     # Looks for shifts of control in all neighborhoods, and takes the
     # action that follows from that.
     
-    typemethod assess {} {
+    method assess {} {
         # FIRST, get the actor in control of each neighborhood,
         # and their influence, and then see if control has shifted
         # for that neighborhood.
@@ -265,7 +277,7 @@ snit::type control_model {
         # Note that a neighborhood can be in a state of chaos; the
         # controller will be NULL and his influence 0.0.
 
-        foreach {n controller influence} [rdb eval {
+        foreach {n controller influence} [$adb eval {
             SELECT C.n                        AS n,
                    C.controller               AS controller,
                    COALESCE(I.influence, 0.0) AS influence
@@ -273,7 +285,7 @@ snit::type control_model {
             LEFT OUTER JOIN influence_na AS I
             ON (I.n=C.n AND I.a=C.controller)
         }] {
-            $type DetectControlShift $n $controller $influence
+            $self DetectControlShift $n $controller $influence
         }
     }
 
@@ -285,10 +297,10 @@ snit::type control_model {
     # 
     # Determines whether there is a shift in control in the neighborhood.
 
-    typemethod DetectControlShift {n controller cInfluence} {
+    method DetectControlShift {n controller cInfluence} {
         # FIRST, get the actor with the most influence in the neighborhood,
         # and see how much it is.
-        rdb eval {
+        $adb eval {
             SELECT a         AS maxA,
                    influence AS maxInf
             FROM influence_na
@@ -309,8 +321,8 @@ snit::type control_model {
         # the control threshold, he's the new controller; control has
         # shifted.
 
-        if {$maxInf > [parm get control.threshold]} {
-            $type ShiftControl $n $maxA $controller
+        if {$maxInf > [$adb parm get control.threshold]} {
+            $self ShiftControl $n $maxA $controller
             return
         }
 
@@ -320,7 +332,7 @@ snit::type control_model {
         # control has shifted.
 
         if {$controller ne ""} {
-            $type ShiftControl $n "" $controller
+            $self ShiftControl $n "" $controller
             return
         }
 
@@ -337,28 +349,28 @@ snit::type control_model {
     #
     # Handles the shift in control from cOld to cNew in n.
     
-    typemethod ShiftControl {n cNew cOld} {
+    method ShiftControl {n cNew cOld} {
         log normal control_model "shift in $n to <$cNew> from <$cOld>"
 
         if {$cNew eq ""} {
-            sigevent log 1 control "
+            $adb sigevent log 1 control "
                 Actor {actor:$cOld} has lost control of {nbhood:$n}; 
                 no actor has control.
             " $n $cOld
         } elseif {$cOld eq ""} {
-            sigevent log 1 control "
+            $adb sigevent log 1 control "
                 Actor {actor:$cNew} has won control of {nbhood:$n}; 
                 no actor had been in control previously.
             " $n $cNew 
         } else {
-            sigevent log 1 control "
+            $adb sigevent log 1 control "
                 Actor {actor:$cNew} has won control of {nbhood:$n}
                 from {actor:$cOld}.
             " $n $cNew $cOld
         }
 
         # FIRST, update control_n.
-        rdb eval {
+        $adb eval {
             UPDATE control_n 
             SET controller = nullif($cNew,''),
                 since      = now()
@@ -369,11 +381,11 @@ snit::type control_model {
         # TBD: This vrel change is unique; no other drivers do this
         # kind of thing.  But we should probably move it to the 
         # driver_control module anyway.
-        set driver_id [ruleset getid CONTROL [list n $n]]
+        set driver_id [$adb ruleset getid CONTROL [list n $n]]
 
         # NEXT, set the vrel baseline to the current level for 
         # all non-empty civ groups in n.
-        foreach {g a vrel} [rdb eval {
+        foreach {g a vrel} [$adb eval {
             SELECT V.g,
             V.a,
             V.vrel
@@ -392,54 +404,7 @@ snit::type control_model {
         dict set fdict a $cOld
         dict set fdict b $cNew
 
-        ruleset CONTROL assess $fdict
+        $adb ruleset CONTROL assess $fdict
     }
-
-
-
-    #-------------------------------------------------------------------
-    # Helper Procs
-
-    # scale base delta...
-    #
-    # base   - A base value
-    # delta  - One or more numeric qmag(n) magnitude values
-    #
-    # Given a base value and one or more deltas expressed as numeric
-    # qmag(n) magnitudes (e.g., percentage changes from base to 
-    # extreme), scales the deltas, applies them to the base, and returns
-    # the new value.
-    #
-    # More specifically, the deltas are divided into positive and negative
-    # deltas.  Each set is totalled, scaled, and applied separately.
-
-    proc scale {base args} {
-        # FIRST, total up the deltas by sign.
-        set plus  0.0
-        set minus 0.0
-
-        foreach delta $args {
-            if {$delta >= 0} {
-                set plus [expr {min($plus + $delta, 100.0)}]
-            } else {
-                set minus [expr {max($minus + $delta, -100.0)}]
-            }
-        }
-
-        # NEXT, add the plusses and minuses
-        set result $base
-
-        if {$plus > 0.0} {
-            set result [expr {$result + abs($plus*(1.0 - $base)/100.0)}]
-        }
-
-        if {$minus < 0.0} {
-            set result [expr {$result - abs($minus*(1.0 + $base)/100.0)}]
-        }
-
-        return $result
-    }
-
-
 }
 

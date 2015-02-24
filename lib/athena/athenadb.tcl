@@ -202,9 +202,10 @@ snit::type ::athena::athenadb {
     component stance    -public stance    ;# stance API
 
     # Models
-    component aam       -public aam       ;# Athena attrition model 
-    component demog     -public demog     ;# demographics manager
-    component service   -public service   ;# services manager
+    component aam           -public aam           ;# Athena attrition model 
+    component control_model -public control_model ;# Athena attrition model 
+    component demog         -public demog         ;# demographics manager
+    component service       -public service       ;# services manager
 
     #-------------------------------------------------------------------
     # Options
@@ -293,6 +294,7 @@ snit::type ::athena::athenadb {
             civgroup                    \
             coop                        \
             control                     \
+            control_model               \
             curse                       \
             demog                       \
             econ                        \
