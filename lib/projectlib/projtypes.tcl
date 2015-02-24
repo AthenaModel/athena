@@ -71,7 +71,6 @@ namespace eval ::projectlib:: {
         rnomcoverage     \
         rnonneg          \
         roleid           \
-        rolemap          \
         rpercent         \
         rpercentpm       \
         rposfrac         \
@@ -1034,40 +1033,6 @@ snit::type ::projectlib::weight {
         }
 
         return $value
-    }
-}
-
-#-----------------------------------------------------------------------
-# Rolemap type
-#
-# A rolemap must be a list with a rolename mapping to a gofer dictionary.
-
-snit::type ::projectlib::rolemap {
-    # Singleton
-    pragma -hasinstances no
-
-    # validate value
-    #
-    # value    Possibly, a rolemap dictionary
-    #
-    # Returns an error on failure, the value on success
-
-    typemethod validate {value} {
-        if {[llength $value] == 0} {
-            return -code error -errorcode INVALID "$value: no data"
-        }
-
-        if {[catch {dict keys $value} result]} {
-            return -code error -errorcode INVALID "$value: not a dictionary"
-        }
-
-        set rmap [list]
-        foreach {role goferdict} $value {
-            set gdict [gofer validate $goferdict]
-            lappend rmap $role $gdict
-        }
-
-        return $rmap
     }
 }
 

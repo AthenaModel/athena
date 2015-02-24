@@ -28,14 +28,14 @@
 #-----------------------------------------------------------------------
 # Export public commands
 
-namespace eval ::projectgui:: {
+namespace eval ::athena:: {
     namespace export rolemapfield
 }
 
 #-------------------------------------------------------------------
 # rolemapfield
 
-snit::widget ::projectgui::rolemapfield {
+snit::widget ::athena::rolemapfield {
     hulltype ttk::frame
 
     #-------------------------------------------------------------------
@@ -50,6 +50,12 @@ snit::widget ::projectgui::rolemapfield {
     delegate option * to hull
 
     delegate option -state to form
+
+    # -adb adb
+    #
+    # The athenadb(n) object passed through to gofer fields.
+     
+    option -adb
 
     # -changecmd cmd
     #
@@ -114,13 +120,19 @@ snit::widget ::projectgui::rolemapfield {
     # Constructor
 
     constructor {args} {
-        # FIRST, create the components.  There's really only a form,
+        # FIRST, Register the gofer_field(n) type with marsgui form(n)
+        # NOTE: form(n) is used instead of dynaform(n) because the form(n)
+        # API allows for the managing of a matrix of label/fields on 
+        # the fly 
+        ::marsgui::form register gofer ::athena::gofer_field  
+
+        # NEXT, create the components.  There's really only a form,
         # that we'll populate when -rolespec changes.
         install form using form $win.form \
             -changecmd [mymethod FormChangeCmd]
 
         pack $form -side top -fill both -expand yes
-        
+
         # NEXT, configure options
         $self configurelist $args
     }        
@@ -141,7 +153,7 @@ snit::widget ::projectgui::rolemapfield {
         set fields [list]
 
         foreach {role value} [$form get] {
-            if {[catch {gofer validate $value} result]} {
+            if {[catch {$options(-adb) gofer validate $value} result]} {
                 lappend fields $role
             }
         }
@@ -165,7 +177,8 @@ snit::widget ::projectgui::rolemapfield {
         foreach {role gtype} $options(-rolespec) {
             # NEXT, create the textfield
             $form field create $role $role gofer \
-                -typename $gtype
+                -typename $gtype                 \
+                -adb $options(-adb)
         }
 
         # NEXT, layout the widget.
@@ -182,7 +195,6 @@ snit::widget ::projectgui::rolemapfield {
     delegate method set to form
 }
 
-# Register the goferfield(n) type with marsgui form(n)
-::marsgui::form register gofer ::projectgui::goferfield
+
 
 

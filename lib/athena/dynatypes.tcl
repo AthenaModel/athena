@@ -56,6 +56,57 @@
 }
 
 #-----------------------------------------------------------------------
+# rolemap field type
+
+::marsutil::dynaform fieldtype define rolemap {
+    typemethod resources {} {
+        return {adb_}
+    }
+
+    typemethod attributes {} {
+        return {
+            rolespeccmd 
+            textwidth
+            listheight
+            liststripe
+            listwidth
+        }
+    }
+
+    typemethod validate {idict} {
+        dict with idict {}
+        require {$rolespeccmd ne ""} \
+            "No role specification command given"
+    }
+
+    typemethod create {w idict rdict} {
+        set context [dict get $idict context]
+        set adb_    [dict get $rdict adb_]
+
+        ::athena::rolemapfield $w \
+            -state [expr {$context ? "disabled" : "normal"}] \
+            -adb $adb_                                       \
+            {*}[asoptions $idict textwidth listheight liststripe listwidth]
+    }
+
+    typemethod reconfigure {w idict vdict} {
+        # If the field has a -rolespeccmd, call it and apply the
+        # results (note that rolemapfield will properly do nothing
+        # if the resulting spec hasn't changed.)
+        dict with idict {}
+
+        if {$rolespeccmd ne ""} {
+            $w configure -rolespec [formcall $vdict $rolespeccmd] 
+        }
+    }
+
+    typemethod ready {w idict} {
+        return [expr {[llength [$w cget -rolespec]] > 0}]
+    }
+}
+
+
+#-----------------------------------------------------------------------
 # Aliases
 
 # actor: pick an actor by name.
@@ -85,7 +136,7 @@ dynaform fieldtype alias concern enum \
     -listcmd {econcern names}
 
 # curse: pick a curse by name.
-dynaform fieldtype alias curse enum -listcmd {$adb curse names}
+dynaform fieldtype alias curse enum -listcmd {$adb_ curse names}
 
 # comparator: An ecomparator value
 dynaform fieldtype alias comparator enumlong \

@@ -226,7 +226,7 @@ snit::type ::athena::curse {
         return $roles
     }
 
-    # rolespec curse_id
+    # rolespec get curse_id
     #
     # curse_id    ID of an existing CURSE
     #
@@ -234,7 +234,7 @@ snit::type ::athena::curse {
     # to be used by the caller to fill in data for a set of
     # CURSE injects associated with the given CURSE. 
 
-    method rolespec {curse_id} {
+    method {rolespec get} {curse_id} {
         # FIRST, if there's no curse specified, then nothing to
         # return
         if {$curse_id eq ""} {
@@ -253,8 +253,8 @@ snit::type ::athena::curse {
             WHERE curse_id=$curse_id
             AND inject_type='HREL'
         } row {
-            dict set roleSpec $row(f) ::gofer::GROUPS
-            dict set roleSpec $row(g) ::gofer::GROUPS
+            dict set roleSpec $row(f) GROUPS
+            dict set roleSpec $row(g) GROUPS
         }
 
         # VREL is not any more restrictive group wise
@@ -263,8 +263,8 @@ snit::type ::athena::curse {
             WHERE curse_id=$curse_id
             AND inject_type='VREL'
         } row {
-            dict set roleSpec $row(g) ::gofer::GROUPS
-            dict set roleSpec $row(a) ::gofer::ACTORS
+            dict set roleSpec $row(g) GROUPS
+            dict set roleSpec $row(a) ACTORS
         }
 
         # SAT restricts the group role to *only* civilians. If an HREL or
@@ -275,7 +275,7 @@ snit::type ::athena::curse {
             WHERE curse_id=$curse_id
             AND inject_type='SAT'
         } row {
-            dict set roleSpec $row(g) ::gofer::CIVGROUPS
+            dict set roleSpec $row(g) CIVGROUPS
         }
 
         # COOP restricts one role to civilians only and the other role to
@@ -286,11 +286,38 @@ snit::type ::athena::curse {
             WHERE curse_id=$curse_id
             AND inject_type='COOP'
         } row {
-            dict set roleSpec $row(f) ::gofer::CIVGROUPS
-            dict set roleSpec $row(g) ::gofer::FRCGROUPS
+            dict set roleSpec $row(f) CIVGROUPS
+            dict set roleSpec $row(g) FRCGROUPS
         }
 
         return $roleSpec
+    }
+
+    # rolespec validate value
+    #
+    # value    A dictionary of role name -> gofer dictionary pairs
+    #
+    # This method validiates that the supplied dictionary is
+    # a valid mapping of role names to gofer dictionaries.  Role
+    # names are strings and gofer dictionaries are validated by
+    # the gofer module.
+
+    method {rolespec validate} {value} {
+        if {[llength $value] == 0} {
+            return -code error -errorcode INVALID "$value: no data"
+        }
+
+        if {[catch {dict keys $value} result]} {
+            return -code error -errorcode INVALID "$value: not a dictionary"
+        }
+
+        set rspec [list]
+        foreach {role goferdict} $value {
+            set gdict [$adb gofer validate $goferdict]
+            lappend rspec $role $gdict
+        }
+
+        return $rspec
     }
 
     #-------------------------------------------------------------------

@@ -55,7 +55,7 @@
 
     method SanityCheck {errdict} {
         # FIRST check for existence of the CURSE
-        set exists [curse exists $curse]
+        set exists [[my adb] curse exists $curse]
 
         # NEXT, the curse this tactic uses may have been deleted, disabled,
         # or invalid
@@ -66,7 +66,7 @@
             dict set errdict curse \
                 "No such curse: \"$curse\"."
         } else {
-            set state [curse get $curse state]
+            set state [[my adb] curse get $curse state]
 
             if {$state ne "normal"} {
                 dict set errdict curse \
@@ -76,30 +76,30 @@
 
         # NEXT, it exists and is "normal", are the roles good?
         
-        # Make sure it is a rolemap
-        set isrolemap 0
+        # Make sure it is a valid rolespec
+        set valid 0
 
         if {[catch {
-            set roles [::projectlib::rolemap validate $roles]
+            set roles [[my adb] curse rolespec validate $roles]
         } result]} {
             dict set errdict roles $result
         } else {
-            set isrolemap 1
+            set valid 1
         }
 
-        if {$isrolemap && $exists && $state eq "normal"} {
+        if {$valid && $exists && $state eq "normal"} {
             set keys [dict keys $roles]
 
             set badr [list]
             # NEXT, roles this tactic uses may have been deleted
             foreach role $keys {
-                if {$role ni [curse rolenames $curse]} {
+                if {$role ni [[my adb] curse rolenames $curse]} {
                     lappend badr "Role $role no longer exists."
                 }
             }
 
             # NEXT, all roles must be accounted for
-            foreach role [curse rolenames $curse] {
+            foreach role [[my adb] curse rolenames $curse] {
                 if {$role ni $roles} {
                     lappend badr "Role $role is not defined."
                 }
@@ -109,8 +109,8 @@
             # the tactic
             foreach role $keys {
                 set gtype [dict get [dict get $roles $role] _type]
-                if {$role in [curse rolenames $curse] &&
-                    $gtype ne [inject roletype $curse $role]} {
+                if {$role in [[my adb] curse rolenames $curse] &&
+                    $gtype ne [[my adb] inject roletype $curse $role]} {
                     lappend badr "Role type of $role changed."
                 }
             }
@@ -251,7 +251,7 @@
         curse curse
 
         rc "" -for roles -span 2
-        roles roles -rolespeccmd {curse rolespec $curse}
+        roles roles -rolespeccmd {$adb_ curse rolespec get $curse}
     }
 
 
