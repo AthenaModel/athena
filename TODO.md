@@ -1,7 +1,6 @@
 # TODO.md - Athena TODO List
 
-- athena(n) needs to know its version number.  [kite version] isn't good
-  enough.  A package needs to be able to introspect this.
+- Move "executive script *" to script.tcl.
 - Document all component entries in athenadb(n).
   - Or, come up with a plan for which ones are documented and which aren't.
 - Document athena(n)
@@ -31,27 +30,16 @@
   - ruleset
 - athena register
   - bsys, econ
+- autogen
+  - executive
 - curse
   - dynatypes, tactic_curse
-- driver::absit
-  - absit
-- driver::CURSE
-  - tactic_curse
-- driver::IOM
-  - tactic_broadcast
-- executive
-  - condition_expr, exporter, gofer_number, tactic_executive
-- ::gofer*
-  - curse
-  - condition_compare, condition_control, tactic_*
 - iom
   - tactic_broadcast
 - inject
   - curse, tactic_curse
 - map
   - exporter
-- nbhood
-  - absit
 - notifier bind
   - nbhood
 - plant

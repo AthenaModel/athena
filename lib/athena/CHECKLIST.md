@@ -7,8 +7,6 @@ from app_athena(n) to athena(n).  See lib/athena/actor.tcl for an example.
       the pkgModule files.
 - [ ] Update header comment to reference athena(n); review and edit
       description as needed.
-- [ ] Scan the module, and list global references (e.g., ::$adb, ::actor) 
-      in a "TBD" header comment for later cleanup, and in TODO.md.
 - [ ] Define the module as "snit type ::athena::mymodule".
 - [ ] Remove the singleton pragma
 - [ ] Add a component, "adb"
@@ -23,6 +21,8 @@ from app_athena(n) to athena(n).  See lib/athena/actor.tcl for an example.
   - [ ] "$self" in snit::type method bodies
   - [ ] "$adb mymodule" in order method bodies.
   - [ ] "$adb_ mymodule" in dynaform field callbacks.
+- [ ] Scan the module, and list global references (e.g., ::$adb, ::actor) 
+      in a "TBD" header comment for later cleanup, and in TODO.md.
 - [ ] Update any global references for modules that already exist in athena(n).
 - [ ] Update any global references in modules that already exist in athena(n).
 - [ ] Remove "mutate" keyword.
