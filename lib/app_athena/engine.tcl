@@ -68,7 +68,14 @@ snit::type engine {
         profile demog start          ;# Computes population statistics
         profile personnel start      ;# Initial deployments and base units.
         profile service start        ;# Populates service tables.
-        profile nbstat start         ;# Computes initial security and coverage
+
+        # NEXT, security must go before coverage
+        profile security_model start ;# Computes initial security
+        profile coverage_model start ;# Computes initial coverage
+
+        profile security_model analyze 
+        profile coverage_model analyze 
+
         profile control_model start  ;# Computes initial support and influence
 
         # NEXT, Advance time to tick0.  What we get here is a pseudo-tick,
@@ -89,7 +96,11 @@ snit::type engine {
 
         profile demog stats
         profile absit assess
-        profile nbstat analyze
+
+        # NEXT, security must go before coverage
+        profile security_model analyze
+        profile coverage_model analyze
+
         profile control_model analyze
         profile activity assess
         profile service assess
@@ -152,7 +163,11 @@ snit::type engine {
 
         # NEXT, do analysis and assessment
         profile absit assess
-        profile nbstat analyze
+
+        # NEXT, security must go before coverage
+        profile security_model analyze
+        profile coverage_model analyze
+
         profile ruleset MOOD assess
         profile control_model analyze
         profile activity assess
@@ -188,7 +203,6 @@ snit::type engine {
         profile $type SetNaturalLevels
         profile aram advance [simclock now]
 
-
         # NEXT, save the history for this tick.
         profile hist tick
 
@@ -206,7 +220,8 @@ snit::type engine {
 
     typemethod analysis {} {
         profile demog stats
-        profile nbstat analyze
+        profile security_model analyze
+        profile coverage_model analyze
         profile control_model analyze
     }
 

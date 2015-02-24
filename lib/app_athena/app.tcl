@@ -224,7 +224,6 @@ snit::type app {
         view      init
         MakeAthena ::adb
         sim       init
-        coverage_model init
 
         # NEXT, register other saveables
         # TODO: saveables need to be per instance of athena, once they
