@@ -104,8 +104,17 @@ snit::type sim {
                         -repetition yes                    \
                         -command    {profile sim Tick}]
 
-        # NEXT, initialize the model engine.
-        $type engine init
+        # NEXT, initialize URAM.
+        profile uram ::aram \
+            -rdb          ::rdb                   \
+            -loadcmd      [mytypemethod LoadAram] \
+            -undo         on                      \
+            -logger       ::log                   \
+            -logcomponent "aram"
+        aram configure -undo off
+
+        athena register [list ::aram saveable]
+
 
         log normal sim "init complete"
     }
@@ -130,14 +139,6 @@ snit::type sim {
         # NEXT, set the simulation status
         set info(changed) 0
         set info(state)   PREP
-    }
-
-    # restart
-    #
-    # Reloads on-lock snapshot.
-
-    typemethod restart {} {
-        sim mutate unlock
     }
     
     #-------------------------------------------------------------------
@@ -251,13 +252,13 @@ snit::type sim {
     # the change cannot be undone, the mutator returns the empty string.
 
 
-    # mutate startdate startdate
+    # startdate startdate
     #
     # startdate   The date of t=0 as a week(n) string
     #
     # Sets the simclock's -week0 start date
 
-    typemethod {mutate startdate} {startdate} {
+    typemethod startdate {startdate} {
         set oldDate [simclock cget -week0]
 
         simclock configure -week0 $startdate
@@ -269,16 +270,16 @@ snit::type sim {
         notifier send $type <Time>
 
         # NEXT, set the undo command
-        return [mytypemethod mutate startdate $oldDate]
+        return [mytypemethod startdate $oldDate]
     }
 
-    # mutate starttick starttick
+    # starttick starttick
     #
     # starttick   The integer tick as of SIM:LOCK
     #
     # Sets the simclock's -tick0 start tick
 
-    typemethod {mutate starttick} {starttick} {
+    typemethod starttick {starttick} {
         set oldtick [simclock cget -tick0]
 
         simclock configure -tick0 $starttick
@@ -290,14 +291,14 @@ snit::type sim {
         notifier send $type <Time>
 
         # NEXT, set the undo command
-        return [mytypemethod mutate starttick $oldtick]
+        return [mytypemethod starttick $oldtick]
     }
 
-    # mutate lock
+    # lock
     #
     # Causes the simulation to transition from PREP to PAUSED.
 
-    typemethod {mutate lock} {} {
+    typemethod lock {} {
         assert {$info(state) eq "PREP"}
 
         # FIRST, Make sure that bsys has had a chance to compute
@@ -311,8 +312,8 @@ snit::type sim {
         # begin to work at this time.
         sigevent log 1 lock "Scenario locked; simulation begins"
 
-        # NEXT, start the engine
-        $type engine start
+        # NEXT, start the simulation
+        $type StartModels
 
         # NEXT, mark the time
         simclock mark set LOCK
@@ -328,12 +329,12 @@ snit::type sim {
         return ""
     }
 
-    # mutate unlock
+    # unlock
     #
     # Causes the simulation to transition from PAUSED
     # to PREP.
 
-    typemethod {mutate unlock} {} {
+    typemethod unlock {} {
         assert {$info(state) eq "PAUSED"}
 
         # FIRST, load the PREP snapshot
@@ -355,12 +356,12 @@ snit::type sim {
         return ""
     }
 
-    # mutate rebase
+    # rebase
     #
     # Causes the simulation to transition from PAUSED
     # to PREP, retaining the current simulation state.
 
-    typemethod {mutate rebase} {} {
+    typemethod rebase {} {
         assert {$info(state) eq "PAUSED"}
 
         # FIRST, save the current simulation state to the
@@ -381,14 +382,14 @@ snit::type sim {
         return ""
     }
 
-    # mutate run ?options...?
+    # run ?options...?
     #
     # -ticks ticks       Run until now + ticks
     # -until tick        Run until tick
     # -block flag        If true, block until run completed.
     #
     # Causes the simulation to run time forward until the specified
-    # time, or until "mutate pause" is called.
+    # time, or until "pause" is called.
     #
     # Time proceeds by ticks.  Normally, each tick is run in the 
     # context of the Tcl event loop, as controlled by a timeout(n) 
@@ -398,7 +399,7 @@ snit::type sim {
     # until the stoptime, and then returns.  Thus, -block requires
     # -ticks or -until.
 
-    typemethod {mutate run} {args} {
+    typemethod run {args} {
         assert {$info(state) eq "PAUSED"}
 
         # FIRST, clear the stop reason.
@@ -446,7 +447,7 @@ snit::type sim {
 
         # NEXT, we have been paused, and the user might have made
         # changes.  Run necessary analysis before the first tick.
-        $type engine analysis
+        $type RestartModels
 
         # NEXT, Either execute the first tick and schedule the next,
         # or run in blocking mode until the stop time.
@@ -483,11 +484,11 @@ snit::type sim {
         set info(stoptime) 0
     }
 
-    # mutate pause
+    # pause
     #
     # Pauses the simulation from running.
 
-    typemethod {mutate pause} {} {
+    typemethod {pause} {} {
         # FIRST, cancel the ticker, so that the next tick doesn't occur.
         $ticker cancel
 
@@ -507,112 +508,13 @@ snit::type sim {
     }
 
     #-------------------------------------------------------------------
-    # Tick
-
-    # Tick
-    #
-    # This command invokes TickWork to do the tick work, wrapped in an
-    # RDB transaction.
-
-    typemethod Tick {} {
-        if {[parm get sim.tickTransaction]} {
-            rdb transaction {
-                $type TickWork
-            }
-        } else {
-            $type TickWork
-        }
-    }
-
-    # TickWork
-    #
-    # This command is executed at each time tick.
-
-    typemethod TickWork {} {
-        # FIRST, tell the engine to do a tick.  Disable aram's undo
-        # capability so that we aren't saving undo info unnecessarily.
-        try {
-            aram configure -undo off
-            $type engine tick
-        } finally {
-            aram configure -undo on
-        }
-
-        # NEXT, pause if it's the pause time, or checks failed.
-        set stopping 0
-
-        if {[sanity ontick check] != "OK"} {
-            # NEXT, direct the user to the appropriate appserver page
-            # if we are in GUI mode
-            if {[app tkloaded]} {
-                app show my://app/sanity/ontick
-
-                if {[winfo exists .main]} {
-                    messagebox popup \
-                        -parent  [app topwin]         \
-                        -icon    error                \
-                        -title   "Simulation Stopped" \
-                        -message [normalize {
-                On-tick sanity check failed; simulation stopped.
-                Please see the On-Tick Sanity Check report for details.
-                        }]
-                }
-            }
-
-            set info(reason) FAILURE
-            set stopping 1
-        }
-
-        if {$info(stoptime) != 0 &&
-            [simclock now] >= $info(stoptime)
-        } {
-            log normal sim "Stop time reached"
-            set info(reason) "OK"
-            set stopping 1
-        }
-
-        if {$stopping} {
-            $type mutate pause
-        }
-
-        # NEXT, notify the application that the tick has occurred.
-        notifier send $type <Tick>
-    }
-
-    #-------------------------------------------------------------------
-    # Engine Routines
+    # Model Execution
     
-    # engine init
+    # StartModels
     #
-    # Initializes the engine and its submodules, to the extent that
-    # this can be done at application initialization.  True initialization
-    # happens when scenario preparation is locked, when 
-    # the simulation state moves from PREP to PAUSED.
+    # Initializes the models on simulation start.
 
-    typemethod {engine init} {} {
-        log normal sim "engine init"
-
-        # FIRST, create an instance of URAM and register it as a saveable
-        # TBD: wart needed.  Register only in main thread.
-        profile uram ::aram \
-            -rdb          ::rdb                   \
-            -loadcmd      [mytypemethod LoadAram] \
-            -undo         on                      \
-            -logger       ::log                   \
-            -logcomponent "aram"
-
-
-        athena register [list ::aram saveable]
-
-        log normal engine "init complete"
-    }
-
-
-    # engine start
-    #
-    # Engine activities on simulation start.
-
-    typemethod {engine start} {} {
+    typemethod StartModels {} {
         # FIRST, Set up the attitudes model: initialize URAM and relate all
         # existing MADs to URAM drivers.
         profile aram init -reload
@@ -690,12 +592,81 @@ snit::type sim {
     }
 
 
-    # engine tick
-    #
-    # This command is executed at each simulation time tick.
-    # A tick is one week long.
+    #-------------------------------------------------------------------
+    # Tick
 
-    typemethod {engine tick} {} {
+    # Tick
+    #
+    # This command invokes TickWork to do the tick work, wrapped in an
+    # RDB transaction.
+
+    typemethod Tick {} {
+        if {[parm get sim.tickTransaction]} {
+            rdb transaction {
+                $type TickWork
+            }
+        } else {
+            $type TickWork
+        }
+    }
+
+    # TickWork
+    #
+    # This command is executed at each time tick.
+
+    typemethod TickWork {} {
+        # FIRST, tell the engine to do a tick.  Disable aram's undo
+        # capability so that we aren't saving undo info unnecessarily.
+        $type TickModels
+
+        # NEXT, pause if it's the pause time, or checks failed.
+        set stopping 0
+
+        if {[sanity ontick check] != "OK"} {
+            # NEXT, direct the user to the appropriate appserver page
+            # if we are in GUI mode
+            if {[app tkloaded]} {
+                app show my://app/sanity/ontick
+
+                if {[winfo exists .main]} {
+                    messagebox popup \
+                        -parent  [app topwin]         \
+                        -icon    error                \
+                        -title   "Simulation Stopped" \
+                        -message [normalize {
+                On-tick sanity check failed; simulation stopped.
+                Please see the On-Tick Sanity Check report for details.
+                        }]
+                }
+            }
+
+            set info(reason) FAILURE
+            set stopping 1
+        }
+
+        if {$info(stoptime) != 0 &&
+            [simclock now] >= $info(stoptime)
+        } {
+            log normal sim "Stop time reached"
+            set info(reason) "OK"
+            set stopping 1
+        }
+
+        if {$stopping} {
+            $type pause
+        }
+
+        # NEXT, notify the application that the tick has occurred.
+        notifier send $type <Tick>
+    }
+
+
+    # TickModels
+    #
+    # This command is executed to update the models at each 
+    # simulation time tick.
+
+    typemethod TickModels {} {
         # FIRST, advance time by one tick.
         simclock tick
         notifier send ::sim <Time>
@@ -772,12 +743,12 @@ snit::type sim {
         }
     }
 
-    # engine analysis
+    # RestartModels
     #
     # Analysis to be done when restarting simulation, to update
     # data values used by strategy conditions.
 
-    typemethod {engine analysis} {} {
+    typemethod RestartModels {} {
         profile demog stats
         profile security_model analyze
         profile coverage_model analyze
@@ -960,7 +931,7 @@ snit::type sim {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [sim mutate startdate $parms(startdate)]
+        my setundo [sim startdate $parms(startdate)]
     }
 }
 
@@ -984,7 +955,7 @@ snit::type sim {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [sim mutate starttick $parms(starttick)]
+        my setundo [sim starttick $parms(starttick)]
     }
 }
 
@@ -1055,7 +1026,7 @@ snit::type sim {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [sim mutate lock]
+        my setundo [sim lock]
     }
 }
 
@@ -1076,7 +1047,7 @@ snit::type sim {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [sim mutate unlock]
+        my setundo [sim unlock]
     }
 }
 
@@ -1120,7 +1091,7 @@ snit::type sim {
         }
 
         # NEXT, rebase the scenario; this is not undoable.
-        sim mutate rebase
+        sim rebase
     }
 }
 
@@ -1169,9 +1140,9 @@ snit::type sim {
         # NEXT, start the simulation and return the undo script. 
         # There is an assumption that a tick is exactly one week.
         if {$parms(weeks) eq "" || $parms(weeks) == 0} {
-            lappend undo [sim mutate run]
+            lappend undo [sim run]
         } else {
-            lappend undo [sim mutate run -ticks $parms(weeks) -block $parms(block)]
+            lappend undo [sim run -ticks $parms(weeks) -block $parms(block)]
         }
 
         my setundo [join $undo \n]
@@ -1195,7 +1166,7 @@ snit::type sim {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [sim mutate pause]
+        my setundo [sim pause]
     }
 }
 

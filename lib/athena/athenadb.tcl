@@ -545,7 +545,7 @@ snit::type ::athena::athenadb {
         # FIRST, unlock the scenario if it is locked; this
         # will reinitialize modules like URAM.
         if {[sim state] ne "PREP"} {
-            sim mutate unlock
+            sim unlock
         }
 
         # NEXT, close the RDB if it's open

@@ -55,11 +55,11 @@ namespace eval ::athena_test::tests:: {
         simclock restore $clockdata
 
         if {[sim state] eq "RUNNING"} {
-            sim mutate pause
+            sim pause
         } 
 
         if {[sim state] eq "PAUSED"} {
-            sim restart
+            sim unlock
         }
 
         if {[simclock now] > 0} {

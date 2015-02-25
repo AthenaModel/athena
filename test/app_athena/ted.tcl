@@ -728,11 +728,11 @@ snit::type ted {
         # This is what we used to do to clean up after a test.
         # Instead, we just do [app new].
         if {[sim state] eq "RUNNING"} {
-            sim mutate pause
+            sim pause
         }
 
         if {[sim state] eq "PAUSED"} {
-            sim restart
+            sim unlock
         }
 
         # TBD: Could we simply do "app new" here?

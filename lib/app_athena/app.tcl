@@ -1066,8 +1066,7 @@ proc bgerror {msg} {
     log error app "Stack Trace:\n$bgErrorInfo"
 
     if {[sim state] eq "RUNNING"} {
-        # TBD: might need to send order?
-        sim mutate pause
+        sim pause
     }
 
     # Gather any error context we may have

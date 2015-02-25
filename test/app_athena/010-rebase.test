@@ -57,11 +57,11 @@ namespace eval ::athena_test::tests:: {
         simclock restore $clockdata
 
         if {[sim state] eq "RUNNING"} {
-            sim mutate pause
+            sim pause
         }
 
         if {[sim state] eq "PAUSED"} {
-            sim restart
+            sim unlock
         }
 
         ted cleanup
@@ -409,7 +409,7 @@ SHIA JOE 0.9  1         0.0
             set before($table) [grab {*}$tableRec]
         }
 
-        sim mutate rebase
+        sim rebase
         ted lock
 
         foreach tableRec $simTables {
