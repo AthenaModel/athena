@@ -7,38 +7,54 @@
 #    Dave Hanks
 #
 # DESCRIPTION:
-#    athena_sim(1) Simulation Module: Force & Security
+#    athena(n): Force & Security manager
 #
 #    This module contains code which analyzes the status of each
 #    neighborhood, including group force, neighborhood volatility, 
 #    and group security.  The results are used by the DAM rule sets, as
 #    well as by other modules.
 #
-#    ::security is a singleton object implemented as a snit::type.  To
-#    initialize it, call "::security init".  It can be re-initialized
-#    on demand.
-#
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
 # security
 
-snit::type security_model {
-    # Make it an ensemble
-    pragma -hastypedestroy 0 -hasinstances 0
+snit::type ::athena::security_model {
+    #-------------------------------------------------------------------
+    # Components
+
+    component adb ;# The athenadb(n) instance
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    # constructor adb_
+    #
+    # adb_    - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of this type
+
+    constructor {adb_} {
+        set adb $adb_
+    }
     
     #-------------------------------------------------------------------
-    # Initialization method
+    # Simulation start
 
-    typemethod start {} {
-        rdb eval {
+    # start
+    #
+    # This method is called when the scenario is locked to initialize
+    # the model and populate the relevant tables
+
+    method start {} {
+        $adb eval {
             DELETE FROM force_n;
             
             INSERT INTO force_n(n)
             SELECT n FROM nbhoods;
         }
 
-        rdb eval {
+        $adb eval {
             DELETE FROM force_civg;
 
             INSERT INTO force_civg(g)
@@ -46,7 +62,7 @@ snit::type security_model {
             FROM civgroups;
         }
 
-        rdb eval {
+        $adb eval {
             DELETE FROM force_ng;
 
             INSERT INTO force_ng(n,g)
@@ -64,22 +80,22 @@ snit::type security_model {
     # Analyzes neighborhood status, as of the present
     # time, given the current contents of the RDB.
 
-    typemethod analyze {} {
+    method analyze {} {
         # FIRST, compute the "force" values for each group in each 
         # neighborhood.
-        profile 2 $type ComputeCrimeSuppression
-        profile 2 $type ComputeCriminalFraction
-        profile 2 $type ComputeOwnForce
-        profile 2 $type ComputeLocalFriendsAndEnemies
-        profile 2 $type ComputeAllFriendsAndEnemies
-        profile 2 $type ComputeTotalForce
-        profile 2 $type ComputePercentForce
+        profile 2 $self ComputeCrimeSuppression
+        profile 2 $self ComputeCriminalFraction
+        profile 2 $self ComputeOwnForce
+        profile 2 $self ComputeLocalFriendsAndEnemies
+        profile 2 $self ComputeAllFriendsAndEnemies
+        profile 2 $self ComputeTotalForce
+        profile 2 $self ComputePercentForce
 
         # NEXT, compute the volatility for each neighborhood.
-        profile 2 $type ComputeVolatility
+        profile 2 $self ComputeVolatility
 
         # NEXT, compute the security for each group in each nbhood.
-        profile 2 $type ComputeSecurity
+        profile 2 $self ComputeSecurity
    }
 
 
@@ -88,15 +104,15 @@ snit::type security_model {
     # Computes suppression.n, the fraction of crime suppressed by 
     # current law enforcements in neighborhood n.
 
-    typemethod ComputeCrimeSuppression {} {
+    method ComputeCrimeSuppression {} {
         # FIRST, we're accumulating effective law enforcement personnel 
         # (LEP) by neighborhood.
-        foreach n [nbhood names] {
+        foreach n [$adb nbhood names] {
             set LEP($n) 0 
         }
 
         # NEXT, accumulate the LEP for each group in each neighborhood.
-        rdb eval {
+        $adb eval {
             SELECT U.n                AS n,
                    U.g                AS g,
                    U.a                AS a,
@@ -107,23 +123,23 @@ snit::type security_model {
             JOIN frcgroups AS G USING (g)
             GROUP BY U.a
         } {
-            set beta [parm get force.law.beta.$a]
-            set E    [parm get force.law.efficiency.$training]
-            set S    [parm get force.law.suitability.$forcetype]
+            set beta [$adb parm get force.law.beta.$a]
+            set E    [$adb parm get force.law.efficiency.$training]
+            set S    [$adb parm get force.law.suitability.$forcetype]
 
             set LEP($n) [expr {$LEP($n) + $beta*$E*$S*$P}]
         }
 
         # NEXT, for each neighborhood compute the suppression.
-        rdb eval {
+        $adb eval {
             SELECT n, urbanization, population
             FROM nbhoods JOIN demog_n USING (n)
         } {
-            set covfunc [parm get force.law.coverage.$urbanization]
+            set covfunc [$adb parm get force.law.coverage.$urbanization]
 
             set suppression [coverage eval $covfunc $LEP($n) $population]
 
-            rdb eval {
+            $adb eval {
                 UPDATE force_n
                 SET suppression=$suppression
                 WHERE n=$n
@@ -136,8 +152,8 @@ snit::type security_model {
     # Computes the nominal and actual criminal fraction for each
     # non-empty civilian group.
 
-    typemethod ComputeCriminalFraction {} {
-        rdb eval {
+    method ComputeCriminalFraction {} {
+        $adb eval {
             SELECT G.g                AS g,
                    G.n                AS n,
                    G.demeanor         AS demeanor,
@@ -148,8 +164,8 @@ snit::type security_model {
             JOIN demog_g AS DG ON (DG.g=G.g)
             WHERE DG.population > 0
         } {
-            set Zcrimfrac [parm get force.law.crimfrac.$demeanor]
-            set suppfrac [parm get force.law.suppfrac]
+            set Zcrimfrac [$adb parm get force.law.crimfrac.$demeanor]
+            set suppfrac [$adb parm get force.law.suppfrac]
 
             set nomCF [zcurve eval $Zcrimfrac $upc]
             set actCF [expr {
@@ -157,7 +173,7 @@ snit::type security_model {
                 (1.0 - $suppfrac)*$nomCF
             }]
 
-            rdb eval {
+            $adb eval {
                 UPDATE force_civg
                 SET nominal_cf = $nomCF,
                     actual_cf  = $actCF
@@ -171,8 +187,8 @@ snit::type security_model {
     # Compute Q.ng, each group g's "own force" in neighborhood n,
     # for all n and g.
 
-    typemethod ComputeOwnForce {} {
-        rdb eval {
+    method ComputeOwnForce {} {
+        $adb eval {
             UPDATE force_ng
             SET own_force     = 0,
                 crim_force    = 0,
@@ -185,7 +201,7 @@ snit::type security_model {
 
         # Population force.
 
-        rdb eval {
+        $adb eval {
             SELECT civgroups.n             AS n,
                    civgroups.g             AS g,
                    civgroups.demeanor      AS demeanor,
@@ -196,15 +212,15 @@ snit::type security_model {
             JOIN units USING (g)
             GROUP BY civgroups.n,civgroups.g
         } {
-            set a [parm get force.population]
-            set D [parm get force.demeanor.$demeanor]
+            set a [$adb parm get force.population]
+            set D [$adb parm get force.demeanor.$demeanor]
             
-            set b [parm get force.mood]
+            set b [$adb parm get force.mood]
             let M {1.0 - $b*$mood/100.0}
 
             let pop_force {entier(ceil($a*$D*$M*$P))}
 
-            rdb eval {
+            $adb eval {
                 UPDATE force_ng
                 SET own_force = $pop_force,
                     personnel = $P
@@ -216,7 +232,7 @@ snit::type security_model {
         # FRC Groups
 
         # We break down the group's personnel by activity.
-        rdb eval {
+        $adb eval {
             SELECT U.n                AS n,
                    U.g                AS g,
                    U.a                AS a,
@@ -228,13 +244,13 @@ snit::type security_model {
             WHERE U.personnel > 0
             GROUP BY n, g, U.a
         } {
-            set D [parm get force.demeanor.$demeanor]
-            set E [parm get force.forcetype.$forcetype]
-            set A [parm get force.alpha.$a]
+            set D [$adb parm get force.demeanor.$demeanor]
+            set E [$adb parm get force.forcetype.$forcetype]
+            set A [$adb parm get force.alpha.$a]
 
             let own_force_by_a {entier(ceil($A*$E*$D*$P))}
 
-            rdb eval {
+            $adb eval {
                 UPDATE force_ng
                 SET own_force = own_force + $own_force_by_a,
                     personnel = personnel + $P
@@ -245,7 +261,7 @@ snit::type security_model {
         #---------------------------------------------------------------
         # ORG Groups
 
-        rdb eval {
+        $adb eval {
             SELECT n,
                    g,
                    total(personnel) AS P,
@@ -255,11 +271,11 @@ snit::type security_model {
             WHERE personnel > 0
             GROUP BY n, g 
         } {
-            set D [parm get force.demeanor.$demeanor]
-            set E [parm get force.orgtype.$orgtype]
+            set D [$adb parm get force.demeanor.$demeanor]
+            set E [$adb parm get force.orgtype.$orgtype]
             let own_force {entier(ceil($E*$D*$P))}
             
-            rdb eval {
+            $adb eval {
                 UPDATE force_ng
                 SET own_force=$own_force,
                     personnel=$P
@@ -270,14 +286,14 @@ snit::type security_model {
         # NEXT, compute criminal vs. non-criminal force.
         # For non-civilian groups, it's just the own_force. For civilians,
         # it is more complicated.
-        rdb eval { UPDATE force_ng SET noncrim_force = own_force }
+        $adb eval { UPDATE force_ng SET noncrim_force = own_force }
 
-        foreach {n g actual_cf} [rdb eval {
+        foreach {n g actual_cf} [$adb eval {
             SELECT n, g, actual_cf
             FROM force_ng
             JOIN force_civg USING (g)
         }] {
-            rdb eval {
+            $adb eval {
                 UPDATE force_ng
                 SET crim_force    = $actual_cf * own_force,
                     noncrim_force = (1.0 - $actual_cf) * own_force
@@ -290,20 +306,20 @@ snit::type security_model {
     #
     # Computes LocalFriends.ng and LocalEnemies.ng for each n and g.
 
-    typemethod ComputeLocalFriendsAndEnemies {} {
+    method ComputeLocalFriendsAndEnemies {} {
         # FIRST, get parmdb values.
-        set crel [parm get force.law.crimrel]
+        set crel [$adb parm get force.law.crimrel]
 
         # NEXT, Get the discipline level for each force group.
-        rdb eval {
+        $adb eval {
             SELECT g, training FROM frcgroups
         } {
-            set disc($g) [parm get force.discipline.$training]
+            set disc($g) [$adb parm get force.discipline.$training]
         }
 
         # NEXT, prepare to accumulate the local force and local enemy
         # for each n,g
-        rdb eval {
+        $adb eval {
             SELECT n,g FROM force_ng
         } {
             set id [list $n $g]
@@ -315,7 +331,7 @@ snit::type security_model {
         # Note that for non-civilian groups, noncrim_force = own_force
         # and crim_force = 0.
 
-        rdb eval {
+        $adb eval {
             SELECT NF.n                         AS n,
                    NF.g                         AS f,
                    NF.noncrim_force             AS f_noncrim_force,
@@ -363,7 +379,7 @@ snit::type security_model {
             set force $local_force($id)
             set enemy $local_enemy($id)
             
-            rdb eval {
+            $adb eval {
                 UPDATE force_ng
                 SET local_force = $force,
                     local_enemy = $enemy
@@ -376,19 +392,19 @@ snit::type security_model {
     #
     # Computes Force.ng and Enemy.ng for each n and g.
 
-    typemethod ComputeAllFriendsAndEnemies {} {
+    method ComputeAllFriendsAndEnemies {} {
         # FIRST, initialize the accumulators
-        rdb eval {
+        $adb eval {
             UPDATE force_ng
             SET force = local_force,
                 enemy = local_enemy;
         }
 
         # NEXT, get the proximity multiplier
-        set h [parm get force.proximity]
+        set h [$adb parm get force.proximity]
 
         # NEXT, iterate over all pairs of nearby neighborhoods.
-        rdb eval {
+        $adb eval {
             SELECT nbrel_mn.m                AS m,
                    nbrel_mn.n                AS n,
                    mforce_ng.local_force     AS m_friends,
@@ -405,7 +421,7 @@ snit::type security_model {
             let friends {entier(ceil($h*$m_friends))}
             let enemies {entier(ceil($h*$m_enemies))}
 
-            rdb eval {
+            $adb eval {
                 UPDATE force_ng
                 SET force = force + $friends,
                     enemy = enemy + $enemies
@@ -418,18 +434,18 @@ snit::type security_model {
     #
     # Computes TotalForce.n.
 
-    typemethod ComputeTotalForce {} {
+    method ComputeTotalForce {} {
         # FIRST, initialize the accumulators
-        rdb eval {
+        $adb eval {
             UPDATE force_n
             SET total_force = 0;
         }
 
         # NEXT, get the force in each neighborhood
-        rdb eval {
+        $adb eval {
             SELECT n, g, own_force FROM force_ng
         } {
-            rdb eval {
+            $adb eval {
                 UPDATE force_n
                 SET total_force = total_force + $own_force
                 WHERE n = $n
@@ -437,10 +453,10 @@ snit::type security_model {
         }
 
         # NEXT, get the proximity multiplier
-        set h [parm get force.proximity]
+        set h [$adb parm get force.proximity]
 
         # NEXT, iterate over all pairs of nearby neighborhoods.
-        rdb eval {
+        $adb eval {
             SELECT nbrel_mn.n              AS n,
                    mforce_ng.own_force     AS m_own_force
             FROM nbrel_mn 
@@ -453,7 +469,7 @@ snit::type security_model {
         } {
             let force {entier(ceil($h*$m_own_force))}
 
-            rdb eval {
+            $adb eval {
                 UPDATE force_n
                 SET total_force = total_force + $force
                 WHERE n = $n
@@ -465,20 +481,20 @@ snit::type security_model {
     #
     # Computes %Force.ng, %Enemy.ng
 
-    typemethod ComputePercentForce {} {
-        rdb eval {
+    method ComputePercentForce {} {
+        $adb eval {
             SELECT n, total_force
             FROM force_n
         } {
             if {$total_force > 1.0} {
-                rdb eval {
+                $adb eval {
                     UPDATE force_ng
                     SET pct_force = 100*force/$total_force,
                         pct_enemy = 100*enemy/$total_force
                     WHERE n = $n
                 }
             } else {
-                rdb eval {
+                $adb eval {
                     UPDATE force_ng
                     SET pct_force = 0.0,
                         pct_enemy = 0.0
@@ -492,8 +508,8 @@ snit::type security_model {
     #
     # Computes Volatility.n
 
-    typemethod ComputeVolatility {} {
-        rdb eval {
+    method ComputeVolatility {} {
+        $adb eval {
             SELECT force_ng.n                   AS n,
                    total(enemy*force)           AS conflicts,
                    total_force                  AS total_force
@@ -517,7 +533,7 @@ snit::type security_model {
                 set volatility 0.0
             }
             
-            rdb eval {
+            $adb eval {
                 UPDATE force_n
                 SET volatility_gain    = 1.0,
                     nominal_volatility = $volatility,
@@ -531,11 +547,11 @@ snit::type security_model {
     #
     # Computes Security.ng
 
-    typemethod ComputeSecurity {} {
+    method ComputeSecurity {} {
         # FIRST, get the volatility attenuator.
-        set v [parm get force.volatility]
+        set v [$adb parm get force.volatility]
 
-        rdb eval {
+        $adb eval {
             SELECT n, g, pct_force, pct_enemy, personnel, volatility
             FROM force_ng AS NG
             JOIN force_n USING (n)
@@ -551,7 +567,7 @@ snit::type security_model {
                 let security {0}
             }
             
-            rdb eval {
+            $adb eval {
                 UPDATE force_ng
                 SET security = $security
                 WHERE n = $n AND g = $g

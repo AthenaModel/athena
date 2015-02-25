@@ -204,10 +204,11 @@ snit::type ::athena::athenadb {
 
     # Models
     component aam            -public aam            ;# Athena attrition model 
-    component control_model  -public control_model  ;# Athena attrition model 
-    component coverage_model -public coverage_model ;# Athena attrition model 
-    component demog          -public demog          ;# demographics manager
-    component service        -public service        ;# services manager
+    component control_model  -public control_model  ;# actor control model 
+    component coverage_model -public coverage_model ;# activity coverage model 
+    component demog          -public demog          ;# demographics model
+    component security_model -public security_model ;# security model 
+    component service        -public service        ;# services model
 
     #-------------------------------------------------------------------
     # Options
@@ -318,6 +319,7 @@ snit::type ::athena::athenadb {
             personnel                   \
             {ruleset  ruleset_manager}  \
             sat                         \
+            security_model              \
             service                     \
             sigevent                    \
             {strategy strategy_manager} \
