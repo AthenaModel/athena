@@ -48,7 +48,7 @@
             dict set idict width [expr {-$wid}]
         }
 
-        ::athena::gofer_field $w \
+        ::athena::goferfield $w \
             -state [expr {$context ? "disabled" : "normal"}] \
             -adb   $adb_                                     \
             {*}[asoptions $idict typename wraplength width]

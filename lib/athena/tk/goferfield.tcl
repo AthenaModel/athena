@@ -1,6 +1,6 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#    gofer_field.tcl
+#    goferfield.tcl
 #
 # AUTHOR:
 #    Will Duquette
@@ -8,7 +8,7 @@
 # DESCRIPTION:
 #    projectgui(n) package: Smart type data entry field
 #
-#    A gofer_field is a data entry field that displays the narrative for
+#    A goferfield is a data entry field that displays the narrative for
 #    a gofer type value, and has an Edit button popping up a dynabox for
 #    the gofer type.
 #-----------------------------------------------------------------------
@@ -17,13 +17,13 @@
 # Export public commands
 
 namespace eval ::athena:: {
-    namespace export gofer_field
+    namespace export goferfield
 }
 
 #-----------------------------------------------------------------------
-# gofer_field
+# goferfield
 
-snit::widget ::athena::gofer_field {
+snit::widget ::athena::goferfield {
     #-------------------------------------------------------------------
     # Components
 

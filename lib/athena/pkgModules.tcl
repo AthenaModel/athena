@@ -170,6 +170,6 @@ source [file join $::athena::library tactics tactic_withdraw.tcl     ]
 
 # Tk Code (loaded only if Tk is already present)
 if {[info command tk] ne ""} {
-    source [file join $::athena::library tk gofer_field.tcl          ]
+    source [file join $::athena::library tk goferfield.tcl           ]
     source [file join $::athena::library tk rolemapfield.tcl         ]
 }

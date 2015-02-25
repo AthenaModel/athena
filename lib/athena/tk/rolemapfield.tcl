@@ -120,11 +120,11 @@ snit::widget ::athena::rolemapfield {
     # Constructor
 
     constructor {args} {
-        # FIRST, Register the gofer_field(n) type with marsgui form(n)
+        # FIRST, Register the goferfield(n) type with marsgui form(n)
         # NOTE: form(n) is used instead of dynaform(n) because the form(n)
         # API allows for the managing of a matrix of label/fields on 
         # the fly 
-        ::marsgui::form register gofer ::athena::gofer_field  
+        ::marsgui::form register gofer ::athena::goferfield  
 
         # NEXT, create the components.  There's really only a form,
         # that we'll populate when -rolespec changes.
