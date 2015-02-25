@@ -618,6 +618,7 @@ snit::type ::athena::athenadb {
 
         # NEXT, restore the saveables
         $self RestoreSaveables -saved
+        $executive reset
 
         # NEXT, save the name.
         set info(adbfile) $filename
