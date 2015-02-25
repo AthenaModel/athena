@@ -234,7 +234,7 @@ snit::type ::athena::strategy_manager {
         # NEXT, see if the name is a condition, return ID of first match
         foreach cond [$block conditions] {
             if {[$cond get name] eq $tcname} {
-                return $cond_id
+                return [$cond get id]
             }
         }
 
