@@ -43,6 +43,7 @@ snit::type ::athena::nbhood {
         install geo using geoset ${selfns}::geo
 
         # NEXT, register to receive dbsync events.
+        # TBD: $adb dbsync should call this.
         notifier bind ::sim <DbSyncA> $self [mymethod dbsync]
     }
 
