@@ -104,18 +104,6 @@ snit::type sim {
                         -repetition yes                    \
                         -command    {profile sim Tick}]
 
-        # NEXT, initialize URAM.
-        profile uram ::aram \
-            -rdb          ::rdb                   \
-            -loadcmd      [mytypemethod LoadAram] \
-            -undo         on                      \
-            -logger       ::log                   \
-            -logcomponent "aram"
-        aram configure -undo off
-
-        athena register [list ::aram saveable]
-
-
         log normal sim "init complete"
     }
 
@@ -488,7 +476,7 @@ snit::type sim {
     #
     # Pauses the simulation from running.
 
-    typemethod {pause} {} {
+    typemethod pause {} {
         # FIRST, cancel the ticker, so that the next tick doesn't occur.
         $ticker cancel
 
@@ -615,8 +603,7 @@ snit::type sim {
     # This command is executed at each time tick.
 
     typemethod TickWork {} {
-        # FIRST, tell the engine to do a tick.  Disable aram's undo
-        # capability so that we aren't saving undo info unnecessarily.
+        # FIRST, tell the engine to do a tick.
         $type TickModels
 
         # NEXT, pause if it's the pause time, or checks failed.
@@ -755,76 +742,6 @@ snit::type sim {
         profile control_model analyze
     }
 
-    #-------------------------------------------------------------------
-    # URAM-related routines.
-    
-    # LoadAram uram
-    #
-    # Loads scenario data into URAM when it's initialized.
-
-    typemethod LoadAram {uram} {
-        $uram load causes {*}[ecause names]
-
-        $uram load actors {*}[rdb eval {
-            SELECT a FROM actors
-            ORDER BY a
-        }]
-
-        $uram load nbhoods {*}[rdb eval {
-            SELECT n FROM nbhoods
-            ORDER BY n
-        }]
-
-        # TBD: See about saving proximity in nbrel_mn in numeric form.
-        set data [list]
-        rdb eval {
-            SELECT m, n, proximity FROM nbrel_mn
-            ORDER BY m,n
-        } {
-            lappend data $m $n [eproximity index $proximity]
-        }
-        $uram load prox {*}$data
-
-        $uram load civg {*}[rdb eval {
-            SELECT g,n,basepop FROM civgroups_view
-            ORDER BY g
-        }]
-
-        $uram load otherg {*}[rdb eval {
-            SELECT g,gtype FROM groups
-            WHERE gtype != 'CIV'
-            ORDER BY g
-        }]
-
-        $uram load hrel {*}[rdb eval {
-            SELECT f, g, current, base, nat FROM gui_hrel_base_view
-            ORDER BY f, g
-        }]
-
-        $uram load vrel {*}[rdb eval {
-            SELECT g, a, current, base, nat FROM gui_vrel_base_view
-            ORDER BY g, a
-        }]
-
-        # Note: only SFT has a natural level, and it can't be computed
-        # until later.
-        $uram load sat {*}[rdb eval {
-            SELECT g, c, current, base, 0.0, saliency
-            FROM sat_gc
-            ORDER BY g, c
-        }]
-
-        # Note: COOP natural levels are not being computed yet.
-        $uram load coop {*}[rdb eval {
-            SELECT f, 
-                   g,
-                   base, 
-                   base, 
-                   CASE WHEN regress_to='BASELINE' THEN base ELSE natural END
-            FROM coop_fg
-            ORDER BY f, g
-        }]
-    }
 
     # SetNaturalLevels
     #

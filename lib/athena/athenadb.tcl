@@ -205,6 +205,7 @@ snit::type ::athena::athenadb {
 
     # Models
     component aam            -public aam            ;# Athena attrition model 
+    component aram           -public aram           ;# Athena URAM 
     component control_model  -public control_model  ;# actor control model 
     component coverage_model -public coverage_model ;# activity coverage model 
     component demog          -public demog          ;# demographics model
@@ -279,6 +280,15 @@ snit::type ::athena::athenadb {
         # NEXT, support pasting of objects.
         install paster using ::athena::paster create ${selfns}::paster $self
 
+        # NEXT, add aram.
+        install aram using uram ${selfns}::aram \
+            -rdb          $rdb                  \
+            -loadcmd      [mymethod LoadAram]   \
+            -undo         on                    \
+            -logger       [mymethod log]        \
+            -logcomponent "aram"
+        $aram configure -undo off
+
         # NEXT, make standard components.  These are modules that were
         # singletons when Athena was a monolithic app.  They are now
         # types/classes with instances; each instance takes one argument,
@@ -332,9 +342,14 @@ snit::type ::athena::athenadb {
         # NEXT, Make these components globally available.
         # TBD: These will go away once the transition to library code
         # is complete.
+        interp alias {} ::aram     {} $aram
         interp alias {} ::rdb      {} $rdb
         interp alias {} ::pot      {} $pot
         interp alias {} ::flunky   {} $flunky
+
+        # NEXT, register the ones that are saveables.  This will change
+        # when the transition to library code is complete.
+        $type register [list ::aram saveable]
 
         # NEXT, either load the named file or create an empty database.
         if {$filename ne ""} {
@@ -867,7 +882,7 @@ snit::type ::athena::athenadb {
         simclock configure -tick0 [simclock now]
 
         # NEXT, reinitialize modules that depend on the time.
-        aram clear
+        $aram clear
 
         # NEXT, purge simulation tables
         foreach table [$rdb tables] {
@@ -978,6 +993,77 @@ snit::type ::athena::athenadb {
         return [package present athena]
     }
 
+    #-------------------------------------------------------------------
+    # URAM-related routines.
+    
+    # LoadAram uram
+    #
+    # Loads scenario data into URAM when it's initialized.
+
+    method LoadAram {uram} {
+        $uram load causes {*}[ecause names]
+
+        $uram load actors {*}[$rdb eval {
+            SELECT a FROM actors
+            ORDER BY a
+        }]
+
+        $uram load nbhoods {*}[$rdb eval {
+            SELECT n FROM nbhoods
+            ORDER BY n
+        }]
+
+        # TBD: See about saving proximity in nbrel_mn in numeric form.
+        set data [list]
+        $rdb eval {
+            SELECT m, n, proximity FROM nbrel_mn
+            ORDER BY m,n
+        } {
+            lappend data $m $n [eproximity index $proximity]
+        }
+        $uram load prox {*}$data
+
+        $uram load civg {*}[$rdb eval {
+            SELECT g,n,basepop FROM civgroups_view
+            ORDER BY g
+        }]
+
+        $uram load otherg {*}[$rdb eval {
+            SELECT g,gtype FROM groups
+            WHERE gtype != 'CIV'
+            ORDER BY g
+        }]
+
+        $uram load hrel {*}[$rdb eval {
+            SELECT f, g, current, base, nat FROM gui_hrel_base_view
+            ORDER BY f, g
+        }]
+
+        $uram load vrel {*}[$rdb eval {
+            SELECT g, a, current, base, nat FROM gui_vrel_base_view
+            ORDER BY g, a
+        }]
+
+        # Note: only SFT has a natural level, and it can't be computed
+        # until later.
+        $uram load sat {*}[$rdb eval {
+            SELECT g, c, current, base, 0.0, saliency
+            FROM sat_gc
+            ORDER BY g, c
+        }]
+
+        # Note: COOP natural levels are not being computed yet.
+        $uram load coop {*}[$rdb eval {
+            SELECT f, 
+                   g,
+                   base, 
+                   base, 
+                   CASE WHEN regress_to='BASELINE' THEN base ELSE natural END
+            FROM coop_fg
+            ORDER BY f, g
+        }]
+    }
+
     #===================================================================
     # SQL Functions
     #
@@ -1016,7 +1102,7 @@ snit::type ::athena::athenadb {
 
     method UramGamma {ctype} {
         # The [expr] converts it to a number.
-        return [expr [lindex [$adb parm get uram.factors.$ctype] 1]]
+        return [expr [lindex [$parm get uram.factors.$ctype] 1]]
     }
 
     # Sigline dtype signature

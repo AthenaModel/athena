@@ -279,7 +279,7 @@ oo::define ::athena::ruleset {
                            $opts(-cause), $note)
                 }
             
-                aram hrel $abbrev($mode) $input(driver_id) $opts(-cause) \
+                [my adb] aram hrel $abbrev($mode) $input(driver_id) $opts(-cause) \
                     $f $g $gmag 
             }
         }
@@ -321,7 +321,7 @@ oo::define ::athena::ruleset {
                            $opts(-cause), $note)
                 }
                 
-                aram vrel $abbrev($mode) $input(driver_id) $opts(-cause) \
+                [my adb] aram vrel $abbrev($mode) $input(driver_id) $opts(-cause) \
                     $g $a $gmag 
             }
         }
@@ -372,7 +372,7 @@ oo::define ::athena::ruleset {
                            $opts(-s), $opts(-p), $opts(-q), $note)
                 }
                 
-                aram sat $abbrev($mode) $input(driver_id) $opts(-cause) \
+                [my adb] aram sat $abbrev($mode) $input(driver_id) $opts(-cause) \
                     $g $c $gmag -s $opts(-s) -p $opts(-p) -q $opts(-q)
             }
         }
@@ -413,7 +413,7 @@ oo::define ::athena::ruleset {
                            $opts(-s), $opts(-p), $opts(-q), $note)
                 }
                 
-                aram coop $abbrev($mode) $input(driver_id) $opts(-cause) \
+                [my adb] aram coop $abbrev($mode) $input(driver_id) $opts(-cause) \
                     $f $g $gmag -s $opts(-s) -p $opts(-p) -q $opts(-q)
             }
         }
