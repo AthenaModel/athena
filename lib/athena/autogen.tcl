@@ -6,7 +6,7 @@
 #    Dave Hanks
 #
 # DESCRIPTION:
-#    athena_sim(1): Autogen Ensemble
+#    athena(n): Scenario Auto-Generator 
 #
 #    This module manages automatic scenario generation.  It is
 #    responsible for all aspects of scenario generation generally used
@@ -14,13 +14,28 @@
 #    for load testing, unit testing or for use by the automated
 #    test suite.
 #
+# TBD: Global refs: app, sim, map
+#
 #-----------------------------------------------------------------------
 
-#-----------------------------------------------------------------------
-# autogen ensemble
+snit::type ::athena::autogen {
+    #-------------------------------------------------------------------
+    # Components
 
-snit::type autogen {
-    pragma -hastypedestroy 0 -hasinstances 0
+    component adb ;# The athenadb(n) instance
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    # constructor adb_
+    #
+    # adb_    - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of the type.
+
+    constructor {adb_} {
+        set adb $adb_
+    }
 
     #-------------------------------------------------------------------
     # Type Variables
@@ -29,7 +44,7 @@ snit::type autogen {
     #
     # aidx    activity index for ASSIGN tactics
 
-    typevariable info -array {
+    variable info -array {
         aidx 0
     }
 
@@ -49,7 +64,7 @@ snit::type autogen {
     # supplied. Default numbers are used for any argument that is
     # omitted.
 
-    typemethod scenario {args} {
+    method scenario {args} {
         require {[sim state] ne "RUNNING"} "The simulation is running."
 
         # FIRST, default options
@@ -151,16 +166,16 @@ snit::type autogen {
         app new
         
         # NEXT, create scenario entities, order matters
-        autogen Actors    $opts(-actors)
-        autogen Nbhoods   $opts(-nbhoods)   
-        autogen CivGroups $opts(-civgroups)
-        autogen OrgGroups $opts(-orggroups)
-        autogen FrcGroups $opts(-frcgroups)
-        autogen BSystem   $opts(-topics)
+        $self Actors    $opts(-actors)
+        $self Nbhoods   $opts(-nbhoods)   
+        $self CivGroups $opts(-civgroups)
+        $self OrgGroups $opts(-orggroups)
+        $self FrcGroups $opts(-frcgroups)
+        $self BSystem   $opts(-topics)
 
         # NEXT, if actor strategies are desired, create them
         if {$opts(-strategy)} {
-            autogen strategy
+            $self strategy
         }
     }
 
@@ -171,11 +186,11 @@ snit::type autogen {
     # This method will create the requested number of actors provided
     # all error checking passes.
 
-    typemethod actors {{num 3}} {
+    method actors {{num 3}} {
         require {[sim stable]} "The simulation is running or otherwise busy."
 
         # FIRST, no actors can exist currently
-        if {[llength [actor names]] > 0} {
+        if {[llength [$adb actor names]] > 0} {
             error "Actors already exist, must delete them first"
         }
 
@@ -188,7 +203,7 @@ snit::type autogen {
         }
 
         # NEXT, error checking passed, create the actors
-        autogen Actors $num
+        $self Actors $num
     }
 
     # nbhoods ?num?
@@ -198,15 +213,15 @@ snit::type autogen {
     # This method will create the requested number of nbhoods provided
     # all error checking passes.
 
-    typemethod nbhoods {{num 10}} {
+    method nbhoods {{num 10}} {
         require {[sim stable]} "The simulation is running or otherwise busy."
 
         # FIRST, no nbhoods can exists and we must already have actors
-        if {[llength [nbhood names]] > 0} {
+        if {[llength [$adb nbhood names]] > 0} {
             error "Nbhoods already exist, must delete them first"
         }
 
-        if {[llength [actor names]] == 0} {
+        if {[llength [$adb actor names]] == 0} {
             error "Must create actors first"
         }
 
@@ -223,7 +238,7 @@ snit::type autogen {
         }
 
         # NEXT, error checking passed, create the nbhoods
-        autogen Nbhoods $num
+        $self Nbhoods $num
     }
 
 
@@ -234,15 +249,15 @@ snit::type autogen {
     # This method will create the requested number of CIV groups in
     # each neighborhood provided all error checking passes.
 
-    typemethod civgroups {{num 6}} {
+    method civgroups {{num 6}} {
         require {[sim stable]} "The simulation is running or otherwise busy."
 
         # FIRST, there must already be neighborhoods and no CIV groups
-        if {[llength [nbhood names]] == 0} {
+        if {[llength [$adb nbhood names]] == 0} {
             error "Must create nbhoods first"
         }
 
-        if {[llength [civgroup names]] > 0} {
+        if {[llength [$adb civgroup names]] > 0} {
             error "CIV groups already exist, must delete them first"
         }
 
@@ -255,7 +270,7 @@ snit::type autogen {
         }
 
         # NEXT, error checking passed, create the CIV groups
-        autogen CivGroups $num
+        $self CivGroups $num
     }
 
     # orggroups ?num?
@@ -265,15 +280,15 @@ snit::type autogen {
     # This method will create the requested number of ORG groups
     # provided all error checking passes.
 
-    typemethod orggroups {{num 2}} {
+    method orggroups {{num 2}} {
         require {[sim stable]} "The simulation is running or otherwise busy."
 
         # FIRST, there can be no ORG groups and we must have actor(s)
-        if {[llength [orggroup names]] > 0} {
+        if {[llength [$adb orggroup names]] > 0} {
             error "ORG groups already exist, must delete them first"
         }
 
-        if {[llength [actor names]] == 0} {
+        if {[llength [$adb actor names]] == 0} {
             error "Must create actors first"
         }
 
@@ -286,7 +301,7 @@ snit::type autogen {
         }
 
         # NEXT, error checking passed, create the ORG groups
-        autogen OrgGroups $num
+        $self OrgGroups $num
     }
 
     # frcgroups ?num?
@@ -296,15 +311,15 @@ snit::type autogen {
     # This method will create the requested number of CIV groups
     # provided all error checking passes.
 
-    typemethod frcgroups {{num 3}} {
+    method frcgroups {{num 3}} {
         require {[sim stable]} "The simulation is running or otherwise busy."
 
         # FIRST, there must be no FRC groups and at least one actor
-        if {[llength [frcgroup names]] > 0} {
+        if {[llength [$adb frcgroup names]] > 0} {
             error "FRC groups already exist, must delete them first"
         }
 
-        if {[llength [actor names]] == 0} {
+        if {[llength [$adb actor names]] == 0} {
             error "Must create actors first"
         }
 
@@ -317,7 +332,7 @@ snit::type autogen {
         }
 
         # NEXT, error checking passed, create the FRC groups
-        autogen FrcGroups $num
+        $self FrcGroups $num
     }
 
     # bsystem ?num?
@@ -327,20 +342,20 @@ snit::type autogen {
     # This method will create a belief system with the requested number
     # of topics provided all error checking passes.
 
-    typemethod bsystem {{num 3}} {
+    method bsystem {{num 3}} {
         require {[sim stable]} "The simulation is running or otherwise busy."
 
         # FIRST, there must be no topics and we must have CIV groups and
         # actors defined
-        if {[llength [bsys topic ids]] > 0} {
+        if {[llength [$adb bsys topic ids]] > 0} {
             error "Belief system topics already exist, must delete them first"
         }
 
-        if {[llength [civgroup names]] == 0} {
+        if {[llength [$adb civgroup names]] == 0} {
             error "Must create CIV groups first"
         }
 
-        if {[llength [actor names]] == 0} {
+        if {[llength [$adb actor names]] == 0} {
             error "Must create actors first"
         }
 
@@ -353,7 +368,7 @@ snit::type autogen {
         }
 
         # NEXT, error checking passes, create the belief system
-        autogen BSystem $num
+        $self BSystem $num
     }
 
     # strategy
@@ -371,7 +386,7 @@ snit::type autogen {
     #    -orgact   ORG activities to consider when creating tactics or "ALL"
     #    -nbhoods  Neighborhoods to consider when creating tactics or "ALL"
 
-    typemethod strategy {args} {
+    method strategy {args} {
         require {[sim stable]} "The simulation is running or otherwise busy."
 
         # FIRST, default options
@@ -388,16 +403,16 @@ snit::type autogen {
 
         # NEXT, must have actors, nbhoods and and least one FRC 
         # or ORG group
-        if {[llength [actor names]] == 0} {
+        if {[llength [$adb actor names]] == 0} {
             error "Must create actors first"
         }
 
-        if {[llength [nbhood names]] == 0} {
+        if {[llength [$adb nbhood names]] == 0} {
             error "Must create nbhoods first"
         }
 
-        if {[llength [frcgroup names]] == 0 &&
-            [llength [orggroup names]] == 0} {
+        if {[llength [$adb frcgroup names]] == 0 &&
+            [llength [$adb orggroup names]] == 0} {
             error "Must have at least one FRC group or one ORG group"
         }
 
@@ -409,7 +424,7 @@ snit::type autogen {
                     set opts(-actors) [lshift args]
 
                     # NEXT, get the list of actors 
-                    set alist [actor names]
+                    set alist [$adb actor names]
 
                     if {$opts(-actors) ne "ALL"} {
                         foreach act $opts(-actors) {
@@ -423,7 +438,7 @@ snit::type autogen {
                 -civg {
                     set opts(-civgroups) [lshift args]
 
-                    set civg [civgroup names]
+                    set civg [$adb civgroup names]
 
                     if {$opts(-civgroups) ne "ALL"} {
                         foreach grp $opts(-civgroups) {
@@ -437,7 +452,7 @@ snit::type autogen {
                 -frcg {
                     set opts(-frcgroups) [lshift args]
 
-                    set frcg [frcgroup names]
+                    set frcg [$adb frcgroup names]
 
                     if {$opts(-frcgroups) ne "ALL"} {
                         foreach grp $opts(-frcgroups) {
@@ -451,7 +466,7 @@ snit::type autogen {
                 -orgg {
                     set opts(-orggroups) [lshift args]
                     
-                    set orgg [orggroup names]
+                    set orgg [$adb orggroup names]
 
                     if {$opts(-orggroups) ne "ALL"} {
                         foreach grp $opts(-orggroups) {
@@ -465,7 +480,7 @@ snit::type autogen {
                 -nbhoods {
                     set opts(-nbhoods) [lshift args]
 
-                    set nbhoods [nbhood names]
+                    set nbhoods [$adb nbhood names]
 
                     if {$opts(-nbhoods) ne "ALL"} {
                         foreach nb $opts(-nbhoods) {
@@ -479,7 +494,7 @@ snit::type autogen {
                 -frcact {
                     set opts(-frcact) [lshift args]
 
-                    set frcacts [activity frc names]
+                    set frcacts [$adb activity frc names]
 
                     if {$opts(-frcact) ne "ALL"} {
                         foreach act $opts(-frcact) {
@@ -493,7 +508,7 @@ snit::type autogen {
                 -orgact {
                     set opts(-orgact) [lshift args]
 
-                    set orgacts [activity org names]
+                    set orgacts [$adb activity org names]
 
                     if {$opts(-orgact) ne "ALL"} {
                         foreach act $opts(-orgact) {
@@ -511,7 +526,7 @@ snit::type autogen {
         }
 
         # NEXT, error checking passes, create strategies
-        autogen Strategy [array get opts]
+        $self Strategy [array get opts]
     }
 
     # assign owner args
@@ -530,7 +545,7 @@ snit::type autogen {
     # owned by the owner are assigned appropriate activities in turn
     # in each neighborhood.
 
-    typemethod assign {owner args} {
+    method assign {owner args} {
         # FIRST, default opts and parse args
         array set opts {
             -frcg    {}
@@ -542,16 +557,16 @@ snit::type autogen {
 
         # NEXT, must have actors, nbhoods and and least one FRC 
         # or ORG group
-        if {[llength [actor names]] == 0} {
+        if {[llength [$adb actor names]] == 0} {
             error "Must create actors first"
         }
 
-        if {[llength [nbhood names]] == 0} {
+        if {[llength [$adb nbhood names]] == 0} {
             error "Must create nbhoods first"
         }
 
-        if {[llength [frcgroup names]] == 0 &&
-            [llength [orggroup names]] == 0} {
+        if {[llength [$adb frcgroup names]] == 0 &&
+            [llength [$adb orggroup names]] == 0} {
             error "Must have at least one FRC group or one ORG group"
         }
 
@@ -587,16 +602,16 @@ snit::type autogen {
         }
 
         # NEXT, error checking
-        if {$owner ni [actor names]} {
+        if {$owner ni [$adb actor names]} {
                 error "Unrecognized actor: $owner"
         }
 
         if {$opts(-frcg) eq ""} {
-            set opts(-frcg) [frcgroup ownedby $owner] 
+            set opts(-frcg) [$adb frcgroup ownedby $owner] 
 
         } else {
             foreach g $opts(-frcg) {
-                if {$g ni [frcgroup names]} {
+                if {$g ni [$adb frcgroup names]} {
                     error "Unrecognized force group: $g"
                 }
             }
@@ -604,10 +619,10 @@ snit::type autogen {
 
         if {$opts(-orgg) eq ""} {
             set opts(-orgg) \
-                [rdb eval {SELECT g FROM orggroups_view WHERE a=$owner}]
+                [$adb eval {SELECT g FROM orggroups_view WHERE a=$owner}]
         } else {
             foreach g $opts(-orgg) {
-                if {$g ni [orggroup names]} {
+                if {$g ni [$adb orggroup names]} {
                     error "Unrecognized org group: $g"
                 }
             }
@@ -619,36 +634,36 @@ snit::type autogen {
 
         # NEXT, get appropriate nbhoods 
         if {$opts(-nbhoods) eq ""} {
-            set opts(-nbhoods) [nbhood names]
+            set opts(-nbhoods) [$adb nbhood names]
         } else {
             foreach n $opts(-nbhoods) {
-                if {$n ni [nbhood names]} {
+                if {$n ni [$adb nbhood names]} {
                     error "Unrecognized nbhood: $opts(-nbhood)"
                 }
             }
         }
 
         if {$opts(-frcact) eq ""} {
-            set opts(-frcact) [activity frc names]
+            set opts(-frcact) [$adb activity frc names]
         } else {
             foreach act $opts(-frcact) {
-                if {$act ni [activity frc names]} {
+                if {$act ni [$adb activity frc names]} {
                     error "$act is not a valid force activity"
                 }
             }
         }
 
         if {$opts(-orgact) eq ""} {
-            set opts(-orgact) [activity org names]
+            set opts(-orgact) [$adb activity org names]
         } else {
             foreach act $opts(-orgact) {
-                if {$act ni [activity org names]} {
+                if {$act ni [$adb activity org names]} {
                     error "$act is not a valid org activity"
                 }
             }
         }
 
-        set block [autogen AddBlock $owner]
+        set block [$self AddBlock $owner]
 
         set aidx 0
         # NEXT, create ASSIGN for force groups
@@ -657,7 +672,7 @@ snit::type autogen {
 
                 set act [lindex $opts(-frcact) $aidx]
                 # NEXT, create the tactic
-                autogen AddTactic ASSIGN $block \
+                $self AddTactic ASSIGN $block \
                     g          $g   \
                     n          $n   \
                     activity   $act \
@@ -676,7 +691,7 @@ snit::type autogen {
            foreach n $opts(-nbhoods) {
                set act [lindex $opts(-orgact) $aidx]
                # NEXT, create the tactic
-                autogen AddTactic ASSIGN $block \
+                $self AddTactic ASSIGN $block \
                     g          $g   \
                     n          $n   \
                     activity   $act \
@@ -699,13 +714,13 @@ snit::type autogen {
     # where nn is an integer from 0 to num - 1. Each actor supports
     # himself.
 
-    typemethod Actors {num} {
+    method Actors {num} {
         for {set i 0} {$i < $num} {incr i} {
             set parms(a) "A[format "%02d" $i]"
             set parms(supports) "SELF"
             set parms(cash_on_hand) "500B"
 
-            flunky senddict normal ACTOR:CREATE [array get parms]
+            $adb flunky senddict normal ACTOR:CREATE [array get parms]
         }
     }
 
@@ -720,9 +735,9 @@ snit::type autogen {
     # that have i +/- 1 from the current nbhood, and FAR for all
     # others. Proximity is symmetric.
 
-    typemethod Nbhoods {num} {
+    method Nbhoods {num} {
 
-        set actors [rdb eval {SELECT a FROM actors}]
+        set actors [$adb eval {SELECT a FROM actors}]
 
         set numa [llength $actors]
 
@@ -766,7 +781,7 @@ snit::type autogen {
             # NEXT, set the controlling actor
             set parms(controller) [lindex $actors $k]
 
-            flunky senddict normal NBHOOD:CREATE [array get parms]
+            $adb flunky senddict normal NBHOOD:CREATE [array get parms]
             
             # NEXT, increase the actor counter, unless we
             # need to go back to the first actor
@@ -797,7 +812,7 @@ snit::type autogen {
         }
 
         set parms(proximity) "FAR"
-        flunky senddict normal NBREL:UPDATE:MULTI [array get parms]
+        $adb flunky senddict normal NBREL:UPDATE:MULTI [array get parms]
 
         # NEXT, if the user only requested two neighborhoods we
         # are done
@@ -826,7 +841,7 @@ snit::type autogen {
 
         set parms(proximity) "NEAR"
 
-        flunky senddict normal NBREL:UPDATE:MULTI [array get parms]
+        $adb flunky senddict normal NBREL:UPDATE:MULTI [array get parms]
     }
 
     # Civgroups num 
@@ -840,8 +855,8 @@ snit::type autogen {
     # group is given no population. Every other group is a subsistence
     # agriculture group.
 
-    typemethod CivGroups {num} {
-        set nbhoods [rdb eval {SELECT n FROM nbhoods}]
+    method CivGroups {num} {
+        set nbhoods [$adb eval {SELECT n FROM nbhoods}]
 
         set numn [llength $nbhoods]
         set housing [ehousing names]
@@ -888,7 +903,7 @@ snit::type autogen {
                     set parms(housing) AT_HOME
                 }
 
-                flunky senddict normal CIVGROUP:CREATE [array get parms]
+                $adb flunky senddict normal CIVGROUP:CREATE [array get parms]
             }
         }
     }
@@ -903,14 +918,14 @@ snit::type autogen {
     # many ORG groups as there are types, all types will be represented.
     # Each group is given a base personnel of 10000.
 
-    typemethod OrgGroups {num} {
+    method OrgGroups {num} {
         # FIRST, identify owning actor, its the last one in the list of
         # actors
-        set parms(a) [lindex [rdb eval {SELECT a FROM actors}] end]
+        set parms(a) [lindex [$adb eval {SELECT a FROM actors}] end]
 
         # NEXT, have that actors support no one
         set parms(supports) NONE
-        flunky senddict normal ACTOR:UPDATE [array get parms]
+        $adb flunky senddict normal ACTOR:UPDATE [array get parms]
 
         # NEXT, no longer need the "supports" parm
         unset parms(supports)
@@ -927,7 +942,7 @@ snit::type autogen {
             set parms(base_personnel) 100000
             set parms(cost) "1K"
 
-            flunky senddict normal ORGGROUP:CREATE [array get parms]
+            $adb flunky senddict normal ORGGROUP:CREATE [array get parms]
 
             incr orgtype
             
@@ -951,9 +966,9 @@ snit::type autogen {
     # If there are at least as many force groups as there are force
     # group types, then at least one of each type is created.
 
-    typemethod FrcGroups {num} {
+    method FrcGroups {num} {
         # FIRST, get the list of actors
-        set actors [rdb eval {SELECT a FROM actors}]
+        set actors [$adb eval {SELECT a FROM actors}]
 
         set numa [llength $actors]
 
@@ -973,7 +988,7 @@ snit::type autogen {
             set parms(base_personnel) 100000
             set parms(cost)           "1K"
 
-            flunky senddict normal FRCGROUP:CREATE [array get parms]
+            $adb flunky senddict normal FRCGROUP:CREATE [array get parms]
 
             incr frctype
             incr j
@@ -1005,26 +1020,26 @@ snit::type autogen {
     # affinities between all entities are homogenous. If tension 
     # is desired, it's best to have three or five topics.
 
-    typemethod BSystem {num} {
+    method BSystem {num} {
         # FIRST, create the requested topics
         for {set i 1} {$i <= $num} {incr i} {
-            flunky senddict normal BSYS:TOPIC:ADD [list tid $i]
+            $adb flunky senddict normal BSYS:TOPIC:ADD [list tid $i]
         }
 
         # FIRST, create a belief system for each actor and group.
         set sids [list]
 
-        foreach a [actor names] {
-            set sid [flunky senddict normal BSYS:SYSTEM:ADD]
-            flunky senddict normal BSYS:SYSTEM:UPDATE \
+        foreach a [$adb actor names] {
+            set sid [$adb flunky senddict normal BSYS:SYSTEM:ADD]
+            $adb flunky senddict normal BSYS:SYSTEM:UPDATE \
                 [list sid $sid name "Actor $a's Beliefs"]
 
             lappend sids $sid
         }
 
-        foreach g [civgroup names] {
-            set sid [flunky senddict normal BSYS:SYSTEM:ADD]
-            flunky senddict normal BSYS:SYSTEM:UPDATE \
+        foreach g [$adb civgroup names] {
+            set sid [$adb flunky senddict normal BSYS:SYSTEM:ADD]
+            $adb flunky senddict normal BSYS:SYSTEM:UPDATE \
                 [list sid $sid name "Group $g's Beliefs"]
 
             lappend sids $sid
@@ -1047,7 +1062,7 @@ snit::type autogen {
                 # NEXT, set position/emphasis pair 
                 lassign [lindex $pelist $idx] parms(position) parms(emphasis)
 
-                flunky senddict normal BSYS:BELIEF:UPDATE [array get parms]
+                $adb flunky senddict normal BSYS:BELIEF:UPDATE [array get parms]
 
                 # NEXT, go to next position/emphasis pair
                 incr idx
@@ -1065,23 +1080,23 @@ snit::type autogen {
     # This method sets up a default set of tactics for each actor if 
     # the -strategy flag is set to 1
     
-    typemethod Strategy {args} {
+    method Strategy {args} {
         array set opts [lindex $args 0]
 
         if {$opts(-actors) eq "ALL"} {
-            set opts(-actors) [rdb eval {SELECT a FROM actors}]
+            set opts(-actors) [$adb eval {SELECT a FROM actors}]
         }
 
         if {$opts(-frcact) eq "ALL"} {
-            set opts(-frcact) [activity frc names]
+            set opts(-frcact) [$adb activity frc names]
         }
 
         if {$opts(-orgact) eq "ALL"} {
-            set opts(-orgact) [activity org names]
+            set opts(-orgact) [$adb activity org names]
         }
 
         if {$opts(-nbhoods) eq "ALL"} {
-            set opts(-nbhoods) [rdb eval {SELECT n FROM nbhoods}]
+            set opts(-nbhoods) [$adb eval {SELECT n FROM nbhoods}]
         }
 
         # NEXT, reset activity index
@@ -1091,14 +1106,14 @@ snit::type autogen {
         # the groups each actor owns
         if {"DEPLOY" in $opts(-tactics)} {
             foreach a $opts(-actors) {
-                set block [autogen AddBlock $a onlock YES]
+                set block [$self AddBlock $a onlock YES]
 
-                set frcgroups [rdb eval {
+                set frcgroups [$adb eval {
                     SELECT g FROM groups 
                     WHERE gtype='FRC' AND a=$a
                 }]
 
-                set orggroups [rdb eval {
+                set orggroups [$adb eval {
                     SELECT g FROM groups 
                     WHERE gtype='ORG' AND a=$a
                 }]
@@ -1107,20 +1122,20 @@ snit::type autogen {
                     set frcgroups $opts(-frcgroups)
                 }
 
-                autogen GroupStrategy \
+                $self GroupStrategy \
                     $block $frcgroups FRC $opts(-frcact) $opts(-nbhoods)
 
                 if {$opts(-orggroups) ne "ALL"} {
                     set orggroups $opts(-orggroups)
                 }
 
-                autogen GroupStrategy \
+                $self GroupStrategy \
                     $block $orggroups ORG $opts(-orgact) $opts(-nbhoods)
             }
         }
 
         if {"FUNDENI" in $opts(-tactics)} {
-            set civgroups [rdb eval {SELECT g FROM civgroups}]
+            set civgroups [$adb eval {SELECT g FROM civgroups}]
 
             if {$opts(-civgroups) ne "ALL"} {
                 set civgroups $opts(-civgroups)
@@ -1129,9 +1144,9 @@ snit::type autogen {
             # NEXT, if there are civgroups do FUNDENI
             if {[llength $civgroups] > 0} {
                 foreach a $opts(-actors) {
-                    set block [autogen AddBlock $a onlock YES]
-                    autogen AddTactic FUNDENI $block \
-                        glist  [adb gofer make CIVGROUPS BY_VALUE $civgroups] \
+                    set block [$self AddBlock $a onlock YES]
+                    $self AddTactic FUNDENI $block \
+                        glist  [$adb gofer make CIVGROUPS BY_VALUE $civgroups] \
                         mode   EXACT \
                         amount "1K"
                 }
@@ -1152,7 +1167,7 @@ snit::type autogen {
     # Activities are assigned in turn to each neighborood. The type 
     # of activities depend on whether gtype is FRC or ORG.
 
-    typemethod GroupStrategy {b groups gtype activities nbhoods} {
+    method GroupStrategy {b groups gtype activities nbhoods} {
 
         # FIRST, set the table name to look up the number of personnel
         set gtable "[string tolower $gtype]groups"
@@ -1161,7 +1176,7 @@ snit::type autogen {
         set a [$b agent]
 
         # NEXT, see if this actor owns any groups of this group type
-        set ownedgroups [rdb eval {
+        set ownedgroups [$adb eval {
             SELECT g FROM groups WHERE gtype=$gtype AND a=$a
         }]
 
@@ -1197,16 +1212,16 @@ snit::type autogen {
         # appropriate activities
         foreach g $usegroups {
             set pers \
-                [rdb eval "
+                [$adb eval "
                     SELECT base_personnel FROM $gtable
                     WHERE g = \$g
                 "]
 
-            autogen AddTactic DEPLOY $b \
+            $self AddTactic DEPLOY $b \
                 pmode  "ALL" \
                 g      $g \
-                nlist  [adb gofer make NBHOODS BY_VALUE \
-                           [rdb eval {SELECT n FROM nbhoods}]]
+                nlist  [$adb gofer make NBHOODS BY_VALUE \
+                           [$adb eval {SELECT n FROM nbhoods}]]
 
             # NEXT determine the number of personnel per neighborhood to
             # assign to an activity
@@ -1216,7 +1231,7 @@ snit::type autogen {
             foreach n $nbhoods {
                 set act [lindex $activities $info(aidx)]
 
-                autogen AddTactic ASSIGN $b \
+                $self AddTactic ASSIGN $b \
                     g          $g   \
                     n          $n   \
                     activity   $act \
@@ -1240,11 +1255,11 @@ snit::type autogen {
     # This method creates and adds a block to the supplied
     # agents strategy. The ID of the block is returned
 
-    typemethod AddBlock {agent args} {
-        set bid [flunky send normal STRATEGY:BLOCK:ADD -agent $agent]
+    method AddBlock {agent args} {
+        set bid [$adb flunky send normal STRATEGY:BLOCK:ADD -agent $agent]
 
         if {[llength $args] > 0} {
-            flunky senddict normal BLOCK:UPDATE \
+            $adb flunky senddict normal BLOCK:UPDATE \
                 [list block_id $bid {*}$args]
         }
 
@@ -1261,13 +1276,12 @@ snit::type autogen {
     # specified arguments.  The caller is responsible for supplying the
     # proper arguments.
 
-    typemethod AddTactic {ttype block args} {
-        set tid [flunky send normal BLOCK:TACTIC:ADD \
+    method AddTactic {ttype block args} {
+        set tid [$adb flunky send normal BLOCK:TACTIC:ADD \
                     -block_id [$block id] \
                     -typename $ttype]
 
-        flunky senddict normal TACTIC:${ttype} \
+        $adb flunky senddict normal TACTIC:${ttype} \
             [list tactic_id $tid {*}$args]
-
     }
 }

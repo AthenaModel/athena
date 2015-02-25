@@ -154,6 +154,7 @@ snit::type ::athena::athenadb {
     
     # Resources
     component rdb                         ;# writable sqldatabase handle
+    component autogen   -public autogen   ;# Scenario auto-generator
     component executive -public executive ;# executive command processor
     component exporter  -public export    ;# exporter
     component flunky    -public flunky    ;# athena_flunky(n)
@@ -290,6 +291,7 @@ snit::type ::athena::athenadb {
             activity                    \
             actor                       \
             agent                       \
+            autogen                     \
             broadcast                   \
             bsys                        \
             cap                         \

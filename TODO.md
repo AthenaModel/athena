@@ -25,7 +25,7 @@
 - aam
   - tactic_attrit
 - app/messagebox
-  - absit, actor, bsys, cap, civgroup, curse, frcgroup, nbhood, orggroup
+  - absit, actor, autogen, bsys, cap, civgroup, curse, frcgroup, nbhood, orggroup
 - aram
   - ruleset
 - athena register
@@ -39,11 +39,9 @@
 - inject
   - curse, tactic_curse
 - map
-  - exporter
+  - autogen, exporter
 - notifier bind
   - nbhood
-- plant
-  - gofer_number, strategy, tactic_build, tactic_damage, tactic_maintain
 - ptype - Should go in athena_order.tcl? (But no hierarchical methods!)
   - absit, actor, gofer_actors.tcl, gofer_number.tcl, nbhood, tactic_*.tcl
 - refpoint
@@ -55,7 +53,7 @@
 - sigevent
   - condition_expr, personnel, tactic_*.tcl
 - sim
-  - absit, parm, ruleset_iom.tcl
+  - absit, autogen, parm, ruleset_iom
 - simclock
   - absit, athenadb, block, exporter
 

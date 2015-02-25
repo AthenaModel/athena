@@ -12,7 +12,7 @@
 #    that provides safe command interpretation for user input, separate
 #    from the main interpreter.
 #
-# TBD: Global refs: autogen, sim, ptype, simclock, app puts
+# TBD: Global refs: sim, ptype, simclock, app puts
 #
 #-----------------------------------------------------------------------
 
@@ -1506,41 +1506,41 @@ snit::type ::athena::executive {
         # autogen scenario
         $interp smartalias {autogen scenario} 0 - \
             {?-nb n? ?-actors n? ?-frcg n? ?-civg n? ?-orgg n? ?-topics n?} \
-            [list autogen scenario]
+            [list $adb autogen scenario]
 
         # autogen actors
         $interp smartalias {autogen actors} 0 1 {?num?} \
-            [list autogen actors]
+            [list $adb autogen actors]
 
         # autogen nbhoods
         $interp smartalias {autogen nbhoods} 0 1 {?num?} \
-            [list autogen nbhoods]
+            [list $adb autogen nbhoods]
 
         # autogen civgroups
         $interp smartalias {autogen civgroups} 0 1 {?num?} \
-            [list autogen civgroups]
+            [list $adb autogen civgroups]
 
         # autogen orggroups
         $interp smartalias {autogen orggroups} 0 1 {?num?} \
-            [list autogen orggroups]
+            [list $adb autogen orggroups]
 
         # autogen frcgroups
         $interp smartalias {autogen frcgroups} 0 1 {?num?} \
-            [list autogen frcgroups]
+            [list $adb autogen frcgroups]
 
         # autogen bsystem 
         $interp smartalias {autogen bsystem} 0 1 {?num?} \
-            [list autogen bsystem]
+            [list $adb autogen bsystem]
 
         # autogen strategy
         $interp smartalias {autogen strategy} 0 - \
 {?-tactics tlist? ?-actors alist? ?-frcg glist? ?-civg glist? ?-orgg glist?} \
-            [list autogen strategy]
+            [list $adb autogen strategy]
 
         # autogen assign
         $interp smartalias {autogen assign} 1 - \
             {owner ?-group g? ?-nbhood n? ?-activity act?} \
-            [list autogen assign]
+            [list $adb autogen assign]
 
         # block
         $interp ensemble block
@@ -1624,11 +1624,6 @@ snit::type ::athena::executive {
         $interp smartalias {last tactic} 0 0 {} \
             [mymethod LastBean ::athena::tactic]
 
-        # load
-        # TBD: application/library hybrid.
-        $interp smartalias load 1 1 {filename} \
-            [list app open]
-
         # lock
         $interp smartalias lock 0 0 {} \
             [mymethod Lock]
@@ -1640,11 +1635,6 @@ snit::type ::athena::executive {
         # monitor
         $interp smartalias monitor 0 1 {?flag?} \
             [list $adb flunky monitor]
-
-        # new
-        # TBD: application/library hybrid
-        $interp smartalias new 0 0 {} \
-            [list app new]
 
         # parm
         $interp ensemble parm
@@ -1806,11 +1796,19 @@ snit::type ::athena::executive {
         # enter
         $interp smartalias enter 1 - {order ?parm value...?} \
             [mymethod Enter]
-        
+
+        # load
+        $interp smartalias load 1 1 {filename} \
+            [list app open]
+
         # nbfill
         # TBD: Application executive command
         $interp smartalias nbfill 1 1 {varname} \
             [list .main nbfill]
+
+        # new
+        $interp smartalias new 0 0 {} \
+            [list app new]
 
         # prefs
         # TBD: This whole ensemble is application-specific.

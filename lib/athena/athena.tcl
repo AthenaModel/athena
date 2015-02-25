@@ -103,6 +103,7 @@ snit::type ::athena::athena {
 
     # ADB
     delegate method adbfile   to adb
+    delegate method autogen   to adb
     delegate method executive to adb
     delegate method export    to adb
     delegate method gofer     to adb
