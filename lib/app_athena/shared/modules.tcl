@@ -26,11 +26,6 @@ namespace eval ::app_athena_shared:: {
 #-----------------------------------------------------------------------
 # Load app_athena_shared(n) modules
 
-# FIRST, load modules that must be defined before the rest.
-source [file join $::app_athena_shared::library field_types.tcl        ]
-
-# NEXT, define the remaining modules in alphabetical order.
-
 source [file join $::app_athena_shared::library appserver.tcl          ]
 source [file join $::app_athena_shared::library appserver_actor.tcl    ]
 source [file join $::app_athena_shared::library appserver_agent.tcl    ]
