@@ -336,27 +336,11 @@ snit::type ::athena::athenadb {
 
         # NEXT, either load the named file or create an empty database.
         if {$filename ne ""} {
-            try {
-                $rdb load $filename
-            } on error {result eopts} {
-                throw {SCENARIO OPEN} $result
-            }
-
-            # NEXT, restore the saveables
-            $self RestoreSaveables -saved
-
-            # NEXT, save the name.
-            set info(adbfile) $filename
+            $self load $filename
         } else {
             set info(adbfile) ""
+            $self FinishOpeningScenario
         }
-
-        # NEXT, finish up
-        $self DefineTempSchema
-
-        $rdb marksaved
-
-        $self notify "" <Create>
     } 
 
     # MakeComponents component...
@@ -440,12 +424,7 @@ snit::type ::athena::athenadb {
         $rdb monitor add vrel_ga       {g a}
 
         # NEXT, create the actual RDB file on the disk.
-        set rdbfile [fileutil::tempfile rdb]
-        $rdb open $rdbfile
-        $rdb clear
-
-        # NEXT, enable write-ahead logging on the RDB
-        $rdb eval { PRAGMA journal_mode = WAL; }
+        $self InitializeRDB
     }
 
     # DefineTempSchema
@@ -549,6 +528,104 @@ snit::type ::athena::athenadb {
     method ExplainCmd {query explanation} {
         $self log normal "EXPLAIN QUERY PLAN {$query}\n---\n$explanation"
     }
+
+    #-------------------------------------------------------------------
+    # Resetting the Scenario
+
+    # reset
+    #
+    # Resets the scenario to its empty state, i.e., turns it into a 
+    # "new" scenario.
+
+    method reset {} {
+        require {[sim stable]} "A new scenario cannot be created in this state."
+
+        # FIRST, unlock the scenario if it is locked; this
+        # will reinitialize modules like URAM.
+        if {[sim state] ne "PREP"} {
+            sim mutate unlock
+        }
+
+        # NEXT, close the RDB if it's open
+        if {[$rdb isopen]} {
+            $rdb close
+        }
+
+        # NEXT, Reset the scenario
+        $self InitializeRDB
+        $pot reset
+        $bsys clear
+        $parm reset
+        $parm checkpoint -saved
+        $econ reset
+        $strategy reset
+
+        set info(adbfile) ""
+
+        sim new
+
+        # NEXT, reset the executive, getting rid of any script
+        # definitions from the previous scenario.
+        # TBD: What about the running script?
+        $executive reset
+
+        $self FinishOpeningScenario
+    }
+
+    # InitializeRDB
+    #
+    # Initializes the RDB, opening a new RDB file on disk.
+
+    method InitializeRDB {} {
+        # FIRST, create the actual RDB file on the disk.
+        set rdbfile [fileutil::tempfile rdb]
+        $rdb open $rdbfile
+        $rdb clear
+
+        # NEXT, enable write-ahead logging on the RDB
+        $rdb eval { PRAGMA journal_mode = WAL; }
+    }
+
+    # FinishOpeningScenario
+    #
+    # Defines the temp schema, marks everything saved, and notifies
+    # the application.
+
+    method FinishOpeningScenario {} {
+        $self DefineTempSchema
+        $rdb marksaved
+        $self notify "" <Create>
+    }
+    
+    #-------------------------------------------------------------------
+    # Load a Scenario
+
+    # load filename
+    #
+    # filename  - An .adb file
+    #
+    # Loads the scenario data into the object, replacing what went
+    # before.
+
+    method load {filename} {
+        require {[sim stable]} "A new scenario cannot be opened in this state."
+
+        try {
+            $rdb load $filename
+        } on error {result eopts} {
+            throw {SCENARIO OPEN} $result
+        }
+
+        # NEXT, restore the saveables
+        $self RestoreSaveables -saved
+
+        # NEXT, save the name.
+        set info(adbfile) $filename
+
+        # NEXT, Finish Up
+        $self FinishOpeningScenario
+    }
+    
 
     #-------------------------------------------------------------------
     # Saving the Scenario

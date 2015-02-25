@@ -880,17 +880,8 @@ snit::type app {
     # Creates a new scenario, throwing away unsaved changes.
 
     typemethod new {} {
-        require {[sim stable]} "A new scenario cannot be created in this state."
-
-        # FIRST, unlock the scenario if it is locked; this
-        # will reinitialize modules like URAM.
-        if {[sim state] ne "PREP"} {
-            sim mutate unlock
-        }
-
         # NEXT, create a new, blank scenario
-        ::adb destroy
-        MakeAthena ::adb
+        ::adb reset
 
         # NEXT, log it.
         log newlog new
@@ -910,15 +901,12 @@ snit::type app {
     # changes.
     
     typemethod open {filename} {
-        require {[sim stable]} "A new scenario cannot be opened in this state."
-
         # FIRST, try to open the scenario.
         try {
-            ::adb destroy
-            MakeAthena ::adb $filename
+            ::adb load $filename
         } trap {SCENARIO OPEN} {result} {
             # At least have an empty scenario.
-            MakeAthena ::adb
+            ::adb reset
             
             # Report the error
             app error {
