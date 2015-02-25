@@ -177,10 +177,10 @@
         text name -width 20
 
         rcc "Source Group:" -for f
-        enum f -listcmd {[my adb] civgroup names}
+        enum f -listcmd {$adb_ civgroup names}
 
         rcc "Destination Group:" -for g
-        enum g -listcmd {lexcept [[my adb] civgroup names] $f}
+        enum g -listcmd {lexcept [$adb_ civgroup names] $f}
 
         rcc "Mode:" -for mode
         selector mode {
