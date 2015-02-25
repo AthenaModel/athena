@@ -1,6 +1,5 @@
 # TODO.md - Athena TODO List
 
-- Move "executive script *" to script.tcl.
 - Document all component entries in athenadb(n).
   - Or, come up with a plan for which ones are documented and which aren't.
 - Document athena(n)

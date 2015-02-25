@@ -1404,7 +1404,7 @@ snit::type ::projectlib::parmdb {
             "a" in the Athena Analyst Guide.)
         }
 
-        $ps define force.proximity ::projectlib::rgain 0.1 {
+        $ps define force.proximity ::projectlib::rgain 0.0 {
             Dial that controls the extent to which nearby
             neighborhoods contribute to a group's force in a neighborhood.
             This dial should be larger if neighborhoods are small, and
