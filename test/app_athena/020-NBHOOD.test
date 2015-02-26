@@ -174,7 +174,7 @@ namespace eval ::athena_test::tests:: {
             polygon {32PPS0960105579 32PPU0886426751 Z99Z99 33PSM7107106909}
         }]
     } -result {
-        polygon {invalid MGRS coordinate: "Z99Z99"}
+        polygon {Invalid MGRS string: "Z99Z99"}
     }
 
     test CREATE-1.9 {polygon: duplicate polygon} -setup {
@@ -194,7 +194,7 @@ namespace eval ::athena_test::tests:: {
             refpoint X99X99
         }]
     } -result {
-        refpoint {invalid MGRS coordinate: "X99X99"}
+        refpoint {Invalid MGRS string: "X99X99"}
     }
 
 
@@ -699,7 +699,7 @@ OV1 Over     2
     } -cleanup {
         cleanup
     } -result {
-        polygon {invalid MGRS coordinate: "Z99Z99"}
+        polygon {Invalid MGRS string: "Z99Z99"}
     }
 
     test UPDATE-1.7 {polygon: duplicate polygon} -setup {
@@ -724,7 +724,7 @@ OV1 Over     2
     } -cleanup {
         cleanup
     } -result {
-        refpoint {invalid MGRS coordinate: "X99X99"}
+        refpoint {Invalid MGRS string: "X99X99"}
     }
 
     test UPDATE-1.9 {refpoint: duplicate refpoint} -setup {

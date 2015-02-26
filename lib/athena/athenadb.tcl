@@ -180,6 +180,7 @@ snit::type ::athena::athenadb {
     component hrel      -public hrel      ;# horiz. rel. manager
     component iom       -public iom       ;# iom manager
     component inject    -public inject    ;# curse inject manager
+    component map       -public map       ;# map data manager
     component nbhood    -public nbhood    ;# nbhood manager
     component nbrel     -public nbrel     ;# nbhood rel. manager
     component orggroup  -public orggroup  ;# orggroup manager
@@ -323,6 +324,7 @@ snit::type ::athena::athenadb {
             hrel                        \
             inject                      \
             iom                         \
+            map                         \
             nbhood                      \
             nbrel                       \
             orggroup                    \
@@ -456,7 +458,7 @@ snit::type ::athena::athenadb {
         # TBD: qsecurity should be added to scenariodb(n).
         # TBD: moneyfmt should be added to sqldocument(n).
         $rdb function locked               [mymethod Locked]
-        $rdb function m2ref                [mymethod M2Ref]
+        $rdb function mgrs                 [mymethod Mgrs]
         $rdb function qsecurity            ::projectlib::qsecurity
         $rdb function moneyfmt             ::marsutil::moneyfmt
         $rdb function mklinks              [list ::link html]
@@ -1126,19 +1128,25 @@ snit::type ::athena::athenadb {
         expr {[$sim state] ne "PREP"}
     }
 
-    # M2Ref args
+    # Mgrs args
     #
     # args    map coordinates of one or more points as a flat list
     #
     # Returns a list of one or more map reference strings corrresponding
     # to the coords
 
-    method M2Ref {args} {
+    method Mgrs {args} {
+        set result [list]
+
         if {[llength $args] == 1} {
             set args [lindex $args 0]
         }
 
-        map m2ref {*}$args
+        foreach {lat lon} $args {
+            lappend result [latlong tomgrs [list $lat $lon]]
+        }
+
+        return $result
     }
 
     # UramGamma ctype

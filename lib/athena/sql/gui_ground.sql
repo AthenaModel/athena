@@ -73,7 +73,7 @@ SELECT u                                                AS id,
        gtype                                            AS gtype,
        a                                                AS a,
        personnel                                        AS personnel,
-       m2ref(location)                                  AS location
+       mgrs(location)                                   AS location
 FROM units
 WHERE active;
 
@@ -91,7 +91,7 @@ SELECT s                                              AS id,
        n                                              AS n,
        format('%6.4f',coverage)                       AS coverage,
        timestr(ts)                                    AS ts,
-       m2ref(location)                                AS location,
+       mgrs(location)                                 AS location,
        resolver                                       AS resolver,
        rduration                                      AS rduration,
        timestr(tr)                                    AS tr,

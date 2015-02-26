@@ -219,7 +219,6 @@ snit::type app {
 
         # NEXT, Create the working scenario RDB and initialize simulation
         # components
-        map       init
         view      init
         MakeAthena ::adb
 

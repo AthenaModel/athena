@@ -86,7 +86,7 @@ namespace eval ::athena_test::tests:: {
     } -cleanup {
         cleanup
     } -result {
-        location {invalid MGRS coordinate: "NONESUCH"}
+        location {Invalid MGRS string: "NONESUCH"}
     }
 
 

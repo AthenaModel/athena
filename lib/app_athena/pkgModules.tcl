@@ -65,7 +65,6 @@ source [file join $::app_athena::library main.tcl         ]
 source [file join $::app_athena::library mod.tcl          ]
 source [file join $::app_athena::library app.tcl          ]
 source [file join $::app_athena::library log.tcl          ]
-source [file join $::app_athena::library map.tcl          ]
 source [file join $::app_athena::library sanity.tcl       ]
 
 #-----------------------------------------------------------------------

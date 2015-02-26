@@ -221,6 +221,8 @@ snit::widget mapviewer {
     # Widget Components
 
     component canvas           ;# The mapcanvas(n)
+    component projection       ;# A projection(i) instance
+    component mapimage         ;# The map image
     component fillbox          ;# ComboBox of nbhood fill criteria
 
     #-------------------------------------------------------------------
@@ -502,19 +504,18 @@ snit::widget mapviewer {
         bind $canvas <<PolyComplete>> [mymethod PolyComplete %d]
 
         # NEXT, Subscribe to application notifier(n) events.
-        notifier bind ::adb      <Sync>     $self [mymethod dbsync]
-        notifier bind ::adb      <Tick>        $self [mymethod dbsync]
-        notifier bind ::map      <MapChanged>  $self [mymethod dbsync]
+        notifier bind ::adb        <Sync>       $self [mymethod dbsync]
+        notifier bind ::adb        <Tick>       $self [mymethod dbsync]
+        notifier bind ::adb.map    <MapChanged> $self [mymethod dbsync]
+        notifier bind ::adb        <nbhoods>    $self [mymethod EntityNbhood]
+        notifier bind ::adb.nbhood <Stack>      $self [mymethod NbhoodStack]
+        notifier bind ::adb        <units>      $self [mymethod EntityUnit]
+        notifier bind ::adb        <absits>     $self [mymethod EntityAbsit]
+        notifier bind ::adb        <groups>     $self [mymethod EntityGroup]
+        notifier bind ::adb        <econ_n>     $self [mymethod EntityEcon]
         notifier bind ::marsgui::order_dialog <OrderEntry>  \
             $self [mymethod OrderEntry]
-        notifier bind ::adb        <nbhoods>   $self [mymethod EntityNbhood]
         
-        # TBD: Should be ::adb.nbhood
-        notifier bind ::adb.nbhood <Stack>     $self [mymethod NbhoodStack]
-        notifier bind ::adb        <units>     $self [mymethod EntityUnit]
-        notifier bind ::adb        <absits>    $self [mymethod EntityAbsit]
-        notifier bind ::adb        <groups>    $self [mymethod EntityGroup]
-        notifier bind ::adb        <econ_n>    $self [mymethod EntityEcon]
 
         # NEXT, draw everything for the current map, whatever it is.
         $self dbsync
@@ -679,17 +680,49 @@ snit::widget mapviewer {
     # Clears the map; and redraws the scenario features
 
     method dbsync {} {
+        # FIRST, delete the old map image and projection
+        if {$mapimage ne ""} {
+            # FIRST, delete the image
+            image delete $mapimage
+            set mapimage ""
+        }
+
+        if {$projection ne ""} {
+            $projection destroy
+            set projection ""
+        }
+
+        # NEXT, load the map.
+        rdb eval {
+            SELECT width,height,projtype,llat,llon,ulat,ulon,data 
+            FROM maps WHERE id=1
+        } {
+            # May not have an image
+            if {$data ne ""} {
+                set mapimage [image create photo -format jpeg -data $data]                
+            }
+
+            # NEXT, create projection
+            set projection [maprect %AUTO% \
+                               -width $width -height $height \
+                               -minlat $llat -minlon $ulon   \
+                               -maxlat $ulat -maxlon $llon] 
+        }
+
+        if {$projection eq ""} {
+            set projection [maprect %AUTO%]
+        }
+
         # FIRST, get the current projection
-        $canvas configure -projection [map projection]
+        $canvas configure -projection $projection
         $canvas configure -map ""
 
         # NEXT, clear the canvas
         $canvas clear
 
         # NEXT, either load the map image or set default
-        set img [map image]
-        if {$img ne ""} {
-            $canvas configure -map $img
+        if {$mapimage ne ""} {
+            $canvas configure -map $mapimage
             $canvas refresh
         } else { 
             scan $view(zoom) "%d" factor
@@ -825,7 +858,6 @@ snit::widget mapviewer {
 
     variable nbhoods -array { }
 
-
     #-------------------------------------------------------------------
     # Neighborhood Display
 
@@ -895,6 +927,35 @@ snit::widget mapviewer {
         set nbhoods(n-$id) $n
         set nbhoods(id-$n) $id
     }
+    
+    # compatible pdict
+    #
+    # pdict   - optional dictionary of projection information
+    #
+    # This method checks to see if the data in the supplied projection
+    # dictionary is compatible with the current laydown of neighborhoods. If 
+    # no dictionary is supplied then the current projection is used to 
+    # determine if any neighborhoods are outside the bounds of the map.
+    #
+    # TBD: may support different projection types in the future. For now
+    # only rectangular projection is recognized
+
+    method Compatible {} {
+        # FIRST, if there are no neighborhoods, then it's always compatible
+        if {[llength [nbhood names]] == 0} {
+            return 1
+        }
+
+        # NEXT check projection bounds against nbhood bounding box
+        set minlat [$projection cget -minlat]
+        set minlon [$projection cget -minlon]
+        set maxlat [$projection cget -maxlat]
+        set maxlon [$projection cget -maxlon]
+
+        lassign [nbhood bbox] nminlat nminlon nmaxlat nmaxlon
+        return [expr {$nminlon > $minlon && $nminlat > $minlat &&
+                      $nmaxlat < $maxlat && $nmaxlon < $maxlon}]
+    }
 
     # NbhoodBoundsCheck
     #
@@ -902,7 +963,7 @@ snit::widget mapviewer {
     # defined map area
 
     method NbhoodBoundsCheck {} {
-        if {![map compatible]} {
+        if {![$self Compatible]} {
             set info(check) "Neighborhood(s) extend beyond map"
             $win.hbar.check configure -foreground red
         } else {
