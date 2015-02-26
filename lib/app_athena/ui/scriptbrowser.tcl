@@ -110,8 +110,8 @@ snit::widget scriptbrowser {
         bind $win <Map> [mymethod MapWindow]
 
         # Reload the content on various notifier events.
-        notifier bind ::sim           <DbSyncB> $self [mymethod ReloadOnEvent]
-        notifier bind ::sim           <State>   $self [mymethod ReloadOnEvent]
+        notifier bind ::adb           <Sync> $self [mymethod ReloadOnEvent]
+        notifier bind ::adb           <State>   $self [mymethod ReloadOnEvent]
         notifier bind ::adb.executive <Scripts> $self [mymethod MonScripts]
 
         # NEXT, schedule the first reload

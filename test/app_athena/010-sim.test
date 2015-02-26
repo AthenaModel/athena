@@ -76,9 +76,9 @@ namespace eval ::athena_test::tests:: {
     } -result {0 PREP 0 2012W01}
 
     #-------------------------------------------------------------------
-    # mutate startdate
+    # startdate
 
-    test mutate_startdate-1.1 {Sets the simclock's start date} -body {
+    test startdate-1.1 {Sets the simclock's start date} -body {
         sim startdate 2014W26
         simclock cget -week0
     } -cleanup {
@@ -86,25 +86,25 @@ namespace eval ::athena_test::tests:: {
     } -result {2014W26}
 
     
-    test mutate_startdate-1.2 {Sends <Time>} -body {
-        ted notifier bind ::sim <Time>
+    test startdate-1.2 {Sends <Time>} -body {
+        ted notifier bind ::adb <Time>
         sim startdate 2014W26
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::sim <Time>}
+        {::adb <Time>}
     }
 
 
-    test mutate_startdate-1.3 {Returns undo script} -body {
+    test startdate-1.3 {Returns undo script} -body {
         sim startdate 2014W26
     } -cleanup {
         cleanup
-    } -result {::sim startdate 2012W01}
+    } -match glob -result {* startdate 2012W01}
 
 
-    test mutate_startdate-1.4 {Sets "changed"} -body {
+    test startdate-1.4 {Sets "changed"} -body {
         sim startdate 2014W26
         sim changed
     } -cleanup {
@@ -112,9 +112,9 @@ namespace eval ::athena_test::tests:: {
     } -result {1}
 
     #-------------------------------------------------------------------
-    # mutate starttick
+    # starttick
 
-    test mutate_starttick-1.1 {Sets the simclock's start tick} -body {
+    test starttick-1.1 {Sets the simclock's start tick} -body {
         sim starttick 52
         simclock cget -tick0
     } -cleanup {
@@ -122,25 +122,25 @@ namespace eval ::athena_test::tests:: {
     } -result {52}
 
     
-    test mutate_starttick-1.2 {Sends <Time>} -body {
-        ted notifier bind ::sim <Time>
+    test starttick-1.2 {Sends <Time>} -body {
+        ted notifier bind ::adb <Time>
         sim starttick 52
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::sim <Time>}
+        {::adb <Time>}
     }
 
 
-    test mutate_starttick-1.3 {Returns undo script} -body {
+    test starttick-1.3 {Returns undo script} -body {
         sim starttick 52
     } -cleanup {
         cleanup
-    } -result {::sim starttick 0}
+    } -match glob -result {* starttick 0}
 
 
-    test mutate_starttick-1.4 {Sets "changed"} -body {
+    test starttick-1.4 {Sets "changed"} -body {
         sim starttick 52
         sim changed
     } -cleanup {
@@ -148,9 +148,9 @@ namespace eval ::athena_test::tests:: {
     } -result {1}
 
     #-------------------------------------------------------------------
-    # mutate lock
+    # lock
 
-    test mutate_lock-1.1 {lock sets state to PAUSED} -setup {
+    test lock-1.1 {lock sets state to PAUSED} -setup {
         ted create NB1 BLUE SHIA
         parm set econ.gdpExp 0
         parm set econ.empExp 0
@@ -163,7 +163,7 @@ namespace eval ::athena_test::tests:: {
     } -result {PAUSED}
 
 
-    test mutate_lock-1.2 {must be in PREP} -setup {
+    test lock-1.2 {must be in PREP} -setup {
         ted create NB1 BLUE SHIA
         parm set econ.gdpExp 0
         parm set econ.empExp 0
@@ -176,7 +176,7 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -result {Assertion failed: $info(state) eq "PREP"}
 
-    test mutate_lock-1.3 {Saves a PREP snapshot} -setup {
+    test lock-1.3 {Saves a PREP snapshot} -setup {
         ted create NB1 BLUE SHIA
         parm set econ.gdpExp 0
         parm set econ.empExp 0
@@ -188,7 +188,7 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -result {-1}
 
-    test mutate_lock-1.4 {Initializes URAM} -setup {
+    test lock-1.4 {Initializes URAM} -setup {
         ted create NB1 BLUE SHIA
         parm set econ.gdpExp 0
         parm set econ.empExp 0
@@ -201,10 +201,10 @@ namespace eval ::athena_test::tests:: {
     } -result {NB1}
 
     #-------------------------------------------------------------------
-    # mutate run/mutate pause
+    # run/pause
 
 
-    test mutate_runpause-1.1 {No stop time} -setup {
+    test runpause-1.1 {No stop time} -setup {
         ted create NB1 BLUE SHIA
         parm set econ.gdpExp 0
         parm set econ.empExp 0
@@ -217,7 +217,7 @@ namespace eval ::athena_test::tests:: {
     } -result {0}
 
     
-    test mutate_runpause-1.2 {Run for -ticks} -setup {
+    test runpause-1.2 {Run for -ticks} -setup {
         ted create NB1 BLUE SHIA
         parm set econ.gdpExp 0
         parm set econ.empExp 0
@@ -229,7 +229,7 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -result {5}
 
-    test mutate_runpause-1.3 {Run -until} -setup {
+    test runpause-1.3 {Run -until} -setup {
         ted create NB1 BLUE SHIA
         parm set econ.gdpExp 0
         parm set econ.empExp 0
@@ -241,7 +241,7 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -result {10}
 
-    test mutate_runpause-1.4 {Sets state to "RUNNING"} -setup {
+    test runpause-1.4 {Sets state to "RUNNING"} -setup {
         ted create NB1 BLUE SHIA
         parm set econ.gdpExp 0
         parm set econ.empExp 0
@@ -254,7 +254,7 @@ namespace eval ::athena_test::tests:: {
     } -result {RUNNING}
 
 
-    test mutate_runpause-1.5 {Can't run unless "PAUSED"} -setup {
+    test runpause-1.5 {Can't run unless "PAUSED"} -setup {
         ted create NB1 BLUE SHIA
         parm set econ.gdpExp 0
         parm set econ.empExp 0
@@ -269,23 +269,23 @@ namespace eval ::athena_test::tests:: {
     } -result {Assertion failed: $info(state) eq "PAUSED"}
 
 
-    test mutate_runpause-1.6 {Sends <State>} -setup {
+    test runpause-1.6 {Sends <State>} -setup {
         ted create NB1 BLUE SHIA
         parm set econ.gdpExp 0
         parm set econ.empExp 0
     } -body {
         sim lock
-        ted notifier bind ::sim <State>
+        ted notifier bind ::adb <State>
         sim run
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::sim <State>}
+        {::adb <State>}
     }
 
 
-    test mutate_runpause-1.7 {Returns undo script} -setup {
+    test runpause-1.7 {Returns undo script} -setup {
         ted create NB1 BLUE SHIA
         parm set econ.gdpExp 0
         parm set econ.empExp 0
@@ -297,7 +297,7 @@ namespace eval ::athena_test::tests:: {
     } -result {}
 
 
-    test mutate_runpause-2.1 {Pauses if running} -setup {
+    test runpause-2.1 {Pauses if running} -setup {
         ted create NB1 BLUE SHIA
         parm set econ.gdpExp 0
         parm set econ.empExp 0
@@ -312,24 +312,24 @@ namespace eval ::athena_test::tests:: {
     } -result {PAUSED}
 
 
-    test mutate_runpause-2.2 {Sends <State>} -setup {
+    test runpause-2.2 {Sends <State>} -setup {
         ted create NB1 BLUE SHIA
         parm set econ.gdpExp 0
         parm set econ.empExp 0
     } -body {
         sim lock
         sim run
-        ted notifier bind ::sim <State>
+        ted notifier bind ::adb <State>
         sim pause
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
-        {::sim <State>}
+        {::adb <State>}
     }
 
     
-    test mutate_runpause-2.3 {Returns undo script} -setup {
+    test runpause-2.3 {Returns undo script} -setup {
         ted create NB1 BLUE SHIA
     } -body {
         sim pause
@@ -338,7 +338,7 @@ namespace eval ::athena_test::tests:: {
     } -result {}
 
 
-    test mutate_runpause-2.4 {Runs for some number of ticks} -setup {
+    test runpause-2.4 {Runs for some number of ticks} -setup {
         ted create NB1 BLUE SHIA
         parm set econ.gdpExp 0
         parm set econ.empExp 0
@@ -351,9 +351,9 @@ namespace eval ::athena_test::tests:: {
     } -result {5 PAUSED}
 
     #-------------------------------------------------------------------
-    # mutate unlock
+    # unlock
 
-    test mutate_unlock-1.1 {Can't unlock in PREP} -body {
+    test unlock-1.1 {Can't unlock in PREP} -body {
         sim unlock
     } -returnCodes {
         error
@@ -361,7 +361,7 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -result {Assertion failed: $info(state) eq "PAUSED"}
 
-    test mutate_unlock-1.2 {Sets state to PREP} -setup {
+    test unlock-1.2 {Sets state to PREP} -setup {
         ted create NB1 BLUE SHIA
         parm set econ.gdpExp 0
         parm set econ.empExp 0
@@ -373,7 +373,7 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -result {PREP}
 
-    test mutate_unlock-1.3 {Purges snapshot} -setup {
+    test unlock-1.3 {Purges snapshot} -setup {
         ted create NB1 BLUE SHIA
         parm set econ.gdpExp 0
         parm set econ.empExp 0

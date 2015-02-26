@@ -513,10 +513,10 @@ snit::widget appwin {
         grid propagate $win off
 
         # NEXT, Prepare to receive notifier events.
-        notifier bind ::sim      <DbSyncB>       $self [mymethod reload]
+        notifier bind ::adb      <Sync>          $self [mymethod reload]
         notifier bind ::scenario <ScenarioSaved> $self [mymethod reload]
-        notifier bind ::sim      <State>         $self [mymethod SimState]
-        notifier bind ::sim      <Time>          $self [mymethod SimTime]
+        notifier bind ::adb      <State>         $self [mymethod SimState]
+        notifier bind ::adb      <Time>          $self [mymethod SimTime]
         notifier bind ::app      <Prefs>         $self [mymethod AppPrefs]
 
         # NEXT, Prepare to receive window events
@@ -707,7 +707,7 @@ snit::widget appwin {
         
         cond::available control \
             [menuitem $submenu command [::athena::orders title SIM:REBASE]... \
-                -command [list flunky send gui SIM:REBASE]]    \
+                -command [list app rebase]]    \
                 order SIM:REBASE
 
         # Orders/Unit
@@ -1916,24 +1916,7 @@ snit::widget appwin {
     method PrepLock {} {
         # FIRST, if we're in PREP then it's time to leave it.
         if {[sim state] eq "PREP"} {
-            if {[sanity onlock check] eq "ERROR"} {
-                app show my://app/sanity/onlock
-
-                messagebox popup \
-                    -parent  $win               \
-                    -icon    error              \
-                    -title   "Not ready to run" \
-                    -message [normalize {
-            The on-lock sanity check failed with one or more errors;
-            time cannot advance.  Fix the error, and try again.
-            Please see the On-lock Sanity Check Report in the 
-            Detail Browser for details.
-                    }]
-
-                return
-            }
-
-            flunky send gui SIM:LOCK
+            app lock
             return
         }
 
@@ -1957,7 +1940,7 @@ snit::widget appwin {
                         }]]
 
         if {$answer eq "ok"} {
-            flunky send gui SIM:UNLOCK
+            app unlock
         }
     }
 

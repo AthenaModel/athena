@@ -194,7 +194,7 @@ snit::type app {
         }
 
         # NEXT, open the debugging log.
-        log init 0
+        log init
 
         # NEXT, log any loaded mods
         mod logmods
@@ -222,7 +222,6 @@ snit::type app {
         map       init
         view      init
         MakeAthena ::adb
-        sim       init
 
         # NEXT, register other saveables
         # TODO: saveables need to be per instance of athena, once they
@@ -242,7 +241,6 @@ snit::type app {
 
 
         # NEXT, bind components together
-        notifier bind ::sim <State> ::flunky {::flunky state [::sim state]}
         notifier bind ::app <Puck>  ::order_dialog  {::order_dialog puck}
 
         # NEXT, create state controllers, to enable and disable
@@ -277,7 +275,7 @@ snit::type app {
         } else {
             # This makes sure that the notifier events are sent that
             # initialize the user interface.
-            sim dbsync
+            adb dbsync
         }
 
         # NEXT, if there's a script, execute it.
@@ -361,9 +359,9 @@ snit::type app {
         # Simulation state is PREP.
 
         statecontroller ::cond::simIsPrep -events {
-            ::sim <State>
+            ::adb <State>
         } -condition {
-            [::sim state] eq "PREP"
+            [::adb state] eq "PREP"
         }
 
         # browser predicate
@@ -374,18 +372,18 @@ snit::type app {
 
 
         statecontroller ::cond::simPrepPredicate -events {
-            ::sim <State>
+            ::adb <State>
         } -condition {
-            [::sim state] eq "PREP" &&
+            [::adb state] eq "PREP" &&
             [$browser {*}$predicate]
         }
 
         # Simulation state is not RUNNING or WIZARD
 
         statecontroller ::cond::simIsStable -events {
-            ::sim <State>
+            ::adb <State>
         } -condition {
-            [::sim stable]
+            [::adb stable]
         }
 
         # Simulation state is PREP or PAUSED
@@ -394,17 +392,17 @@ snit::type app {
         # that send orders valid in PREP and PAUSED.
 
         statecontroller ::cond::simPrepPaused -events {
-            ::sim <State>
+            ::adb <State>
         } -condition {
-            [::sim state] in {PREP PAUSED}
+            [::adb state] in {PREP PAUSED}
         }
 
         # Simulation state is PREP or PAUSED, plus browser predicate
 
         statecontroller ::cond::simPP_predicate -events {
-            ::sim <State>
+            ::adb <State>
         } -condition {
-            [::sim state] in {PREP PAUSED} &&
+            [::adb state] in {PREP PAUSED} &&
             [$browser {*}$predicate]
         }
 
@@ -657,9 +655,6 @@ snit::type app {
             .main savehistory
         }
 
-        # NEXT, release any threads
-        log release
-
         # NEXT, exit
         if {$text ne ""} {
             exit 1
@@ -756,8 +751,8 @@ snit::type app {
             -helpcmd   [list app help]             \
             -refreshon {
                 ::adb.flunky <Sync>
-                ::sim        <Tick>
-                ::sim        <DbSyncB>
+                ::adb        <Tick>
+                ::adb        <Sync>
             }
     }
 
@@ -890,7 +885,7 @@ snit::type app {
         app puts "New scenario created"
 
         # NEXT, Resync the app with the RDB.
-        sim dbsync
+        adb dbsync
     }
 
     # open filename
@@ -931,7 +926,7 @@ snit::type app {
         app puts "Opened Scenario [file tail $filename]"
 
         # NEXT, Resync the app with the RDB.
-        sim dbsync
+        adb dbsync
     }
 
     # save ?filename?
@@ -1008,6 +1003,92 @@ snit::type app {
             -adbfile $filename \
             -logcmd  ::log     \
             -subject ::adb
+    }
+
+    # lock
+    #
+    # Locks the scenario by sending SIM:LOCK; displays sanity check
+    # failures on rejection.
+
+    typemethod lock {} {
+        require {[adb state] eq "PREP"} \
+            "The scenario cannot be locked in this state."
+
+        set sev [sanity onlock check]
+ 
+        if {$sev eq "WARNING" && [app tkloaded]} {
+            app show my://app/sanity/onlock
+
+            set answer \
+                [messagebox popup \
+                     -title         "On-lock Sanity Check Failed"    \
+                     -icon          warning                          \
+                     -buttons       {ok "Continue" cancel "Cancel"}  \
+                     -default       my cancel                           \
+                     -ignoretag     onlock_check_failed              \
+                     -ignoredefault ok                               \
+                     -parent        [app topwin]                     \
+                     -message       [normalize {
+                     The on-lock sanity check failed with warnings; 
+                     one or more simulation objects are invalid.  See the 
+                     Detail Browser for details.  Press "Cancel" and
+                     fix the problems, or press "Continue" to 
+                     go ahead and lock the scenario, in which 
+                     case the invalid simulation objects will be 
+                     ignored as the simulation runs.
+                 }]]
+
+            if {$answer eq "cancel"} {
+                return
+            }
+        } elseif {$sev eq "ERROR"} {
+            app show my://app/sanity/onlock
+            return
+        }
+
+        adb lock
+    }
+
+    # unlock
+    #
+    # Unlocks the scenario.
+
+    typemethod unlock {} {
+        adb unlock
+    }
+
+    # rebase
+    #
+    # Rebases the app, unlocking it and returning it to the prep state.
+
+    typemethod rebase {} {
+        require {[adb state] eq "PAUSED"} \
+            "The scenario cannot be rebased in this state."
+
+        if {[app tkloaded]} {
+            set answer \
+                [messagebox popup \
+                    -title         "Are you sure?"                  \
+                    -icon          warning                          \
+                    -buttons       {ok "Rebase" cancel "Cancel"}    \
+                    -default       cancel                           \
+                    -ignoretag     SIM:REBASE                       \
+                    -ignoredefault ok                               \
+                    -parent        [app topwin]                     \
+                    -message       [normalize {
+                        By pressing "Rebase" you will be creating a
+                        new scenario based on the current simulation
+                        state.  This action cannot be undone, so be
+                        sure to save the old scenario before you do
+                        this.
+                    }]]
+
+            if {$answer eq "cancel"} {
+                return
+            }
+        }
+
+        adb rebase
     }
 }
 

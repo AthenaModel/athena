@@ -309,7 +309,7 @@ snit::type ::athena::econ {
     # simulation state is in PREP
 
     method disable {} {
-        assert {[sim state] eq "PREP"}
+        assert {[$adb state] eq "PREP"}
         set info(state) "DISABLED"
         set info(changed) 1
     }
@@ -320,7 +320,7 @@ snit::type ::athena::econ {
     # simulation state is in PREP
 
     method enable {} {
-        assert {[sim state] eq "PREP"}
+        assert {[$adb state] eq "PREP"}
         set info(state) "ENABLED"
         set info(changed) 1
     }
@@ -365,7 +365,7 @@ snit::type ::athena::econ {
     # used when the CGE or SAM fail to converge for some reason.
 
     method setstate {state} {
-        if {[sim state] ne "PREP" && $state eq "ENABLED"} {
+        if {[$adb state] ne "PREP" && $state eq "ENABLED"} {
             error "Cannot enable econ model, must be in scenario prep."
         }
         set info(state) [eeconstate validate $state]

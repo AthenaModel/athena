@@ -59,9 +59,6 @@ snit::type ::athena::strategy_manager {
         # NEXT, initialize variables and create predefined
         # agents.
         $self reset
-
-        # NEXT, update cache on dbsync
-        notifier bind ::sim <DbSyncA> $self [mymethod Recache]
     }
 
     destructor {
@@ -85,11 +82,11 @@ snit::type ::athena::strategy_manager {
         }
     }
 
-    # Recache
+    # dbsync
     #
-    # Recache strategies by agent name.
+    # Recache strategies by agent name on dbsync.
 
-    method Recache {} {
+    method dbsync {} {
         array unset cache
 
         foreach id [$adb pot ids ::athena::strategy] {

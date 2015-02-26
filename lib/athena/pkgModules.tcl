@@ -60,6 +60,7 @@ source [file join $::athena::library parm.tcl                        ]
 source [file join $::athena::library ruleset_manager.tcl             ]
 source [file join $::athena::library ruleset.tcl                     ]
 source [file join $::athena::library sigevent.tcl                    ]
+source [file join $::athena::library sim.tcl                         ]
 
 # Editable Entities
 source [file join $::athena::library absit.tcl                       ]

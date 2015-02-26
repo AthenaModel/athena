@@ -163,6 +163,7 @@ snit::type ::athena::athenadb {
     component paster    -public paste     ;# paste manager
     component pot       -public pot       ;# beanpot(n)
     component ruleset   -public ruleset   ;# rule set manager
+    component sim       -public sim       ;# Simulation Control
 
     # Editable Entities
     component absit     -public absit     ;# absit manager
@@ -334,6 +335,7 @@ snit::type ::athena::athenadb {
             security_model              \
             service                     \
             sigevent                    \
+            sim                         \
             {strategy strategy_manager} \
             stance                      \
             unit                        \
@@ -350,6 +352,7 @@ snit::type ::athena::athenadb {
         # NEXT, register the ones that are saveables.  This will change
         # when the transition to library code is complete.
         $type register [list ::aram saveable]
+        $type register ::sim
 
         # NEXT, either load the named file or create an empty database.
         if {$filename ne ""} {
@@ -506,16 +509,13 @@ snit::type ::athena::athenadb {
         # FIRST, close and destroy the RDB.
         $rdb close
         $rdb destroy
-
-        # NEXT, reset other modules not yet owned by this object.
-        catch {sim new}
     }
 
     #-------------------------------------------------------------------
     # Delegated commands
 
     # RDB
-
+    delegate method {rdb *}           to rdb
     delegate method eval              to rdb as eval
     delegate method delete            to rdb as delete
     delegate method exists            to rdb as exists
@@ -529,25 +529,17 @@ snit::type ::athena::athenadb {
     delegate method schema            to rdb as schema
     delegate method tables            to rdb as tables
     delegate method ungrab            to rdb as ungrab
+
+    # SIM
+    delegate method locked            to sim as locked
+    delegate method state             to sim as state
+    delegate method stable            to sim as stable
     
+    # FLUNKY
+    delegate method send              to flunky as send
 
     #-------------------------------------------------------------------
-    # Event Handlers
-
-
-    # ExplainCmd query explanation
-    #
-    # query       - An sql query
-    # explanation -  Result of calling EXPLAIN QUERY PLAN on the query.
-    #
-    # Logs the query and its explanation.
-
-    method ExplainCmd {query explanation} {
-        $self log normal "EXPLAIN QUERY PLAN {$query}\n---\n$explanation"
-    }
-
-    #-------------------------------------------------------------------
-    # Resetting the Scenario
+    # Scenario Control
 
     # reset
     #
@@ -555,12 +547,12 @@ snit::type ::athena::athenadb {
     # "new" scenario.
 
     method reset {} {
-        require {[sim stable]} "A new scenario cannot be created in this state."
+        require {[$sim stable]} "A new scenario cannot be created in this state."
 
         # FIRST, unlock the scenario if it is locked; this
         # will reinitialize modules like URAM.
-        if {[sim state] ne "PREP"} {
-            sim unlock
+        if {[$sim state] ne "PREP"} {
+            $sim unlock
         }
 
         # NEXT, close the RDB if it's open
@@ -569,6 +561,17 @@ snit::type ::athena::athenadb {
         }
 
         # NEXT, Reset the scenario
+        #
+        # TBD: Revise the saveable(i) interface, so that modules reset
+        # themselves if restored with an empty save string: and then be
+        # sure to restore every registered module.
+        # Also, use symbolic names in the saveables table, and relate
+        # them explicitly to the objects (not singletons) to receive
+        # the data.
+        #
+        # TBD: Remove .main from the saveables list.  Window flags should
+        # be saved as a pref, not as part of the scenario.
+
         $self InitializeRDB
         $pot reset
         $bsys clear
@@ -576,14 +579,15 @@ snit::type ::athena::athenadb {
         $parm checkpoint -saved
         $econ reset
         $strategy reset
+        $sim reset
 
         set info(adbfile) ""
 
-        sim new
-
         # NEXT, reset the executive, getting rid of any script
         # definitions from the previous scenario.
-        # TBD: What about the running script?
+        # Note that any script in progress will complete normally,
+        # but any changes to its interp state will be lost.  (This
+        # is OK.)
         $executive reset
 
         $self FinishOpeningScenario
@@ -614,9 +618,6 @@ snit::type ::athena::athenadb {
         $self notify "" <Create>
     }
     
-    #-------------------------------------------------------------------
-    # Load a Scenario
-
     # load filename
     #
     # filename  - An .adb file
@@ -625,7 +626,7 @@ snit::type ::athena::athenadb {
     # before.
 
     method load {filename} {
-        require {[sim stable]} "A new scenario cannot be opened in this state."
+        require {[$sim stable]} "A new scenario cannot be opened in this state."
 
         try {
             $rdb load $filename
@@ -644,10 +645,6 @@ snit::type ::athena::athenadb {
         $self FinishOpeningScenario
     }
     
-
-    #-------------------------------------------------------------------
-    # Saving the Scenario
-        
     # save ?filename?
     #
     # filename - Name for the new save file
@@ -755,11 +752,31 @@ snit::type ::athena::athenadb {
         }
     }
 
+    # dbsync
+    #
+    # Notify that application that everything has changed.
+    # Database synchronization occurs when the RDB changes out from under
+    # the application, i.e., brand new scenario is created or
+    # loaded.  All application modules must re-initialize themselves
+    # at this time.
+
+
+    method dbsync {} {
+        # Sync relevant models
+        $nbhood dbsync
+        $strategy dbsync
+
+        $self notify "" <PreSync>
+        $self notify "" <Sync>
+        $self notify "" <Time>
+        $self notify "" <State>
+
+    }
+    
+
+
     #-------------------------------------------------------------------
     # Snapshot management
-    #
-    # TBD: This code is essential, but private.  Once the sim module
-    # has been incorporated into athena(n), these should be renamed.
 
     # snapshot save
     #
@@ -915,6 +932,22 @@ snit::type ::athena::athenadb {
         return $rdb
     }
 
+    #-------------------------------------------------------------------
+    # Event Handlers
+
+
+    # ExplainCmd query explanation
+    #
+    # query       - An sql query
+    # explanation -  Result of calling EXPLAIN QUERY PLAN on the query.
+    #
+    # Logs the query and its explanation.
+
+    method ExplainCmd {query explanation} {
+        $self log normal "EXPLAIN QUERY PLAN {$query}\n---\n$explanation"
+    }
+
+
 
     #===================================================================
     # Helper API
@@ -964,6 +997,21 @@ snit::type ::athena::athenadb {
         $self log detail app "${prefix}profile [list $args] $msec"
 
         return $result
+    }
+
+    # cprofile ?depth? component ?args...?
+    #
+    # Profiles the command, which is a call to one of ADB's own 
+    # components.  Provided for convenience.
+
+    method cprofile {args} {
+        if {[string is integer -strict [lindex $args 0]]} {
+            set depth [list [lshift args]]
+        } else {
+            set depth ""
+        }
+
+        $self profile {*}$depth $self {*}$args
     }
 
 
@@ -1075,7 +1123,7 @@ snit::type ::athena::athenadb {
     # Returns 1 if the scenario is locked, and 0 otherwise.
 
     method Locked {} {
-        expr {[sim state] ne "PREP"}
+        expr {[$sim state] ne "PREP"}
     }
 
     # M2Ref args

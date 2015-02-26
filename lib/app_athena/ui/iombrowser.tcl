@@ -77,8 +77,8 @@ snit::widget iombrowser {
         bind $win <Map> [mymethod MapWindow]
 
         # Reload the content on various notifier events.
-        notifier bind ::sim     <DbSyncB>     $self [mymethod ReloadOnEvent]
-        notifier bind ::sim     <Tick>        $self [mymethod ReloadOnEvent]
+        notifier bind ::adb     <Sync>     $self [mymethod ReloadOnEvent]
+        notifier bind ::adb     <Tick>        $self [mymethod ReloadOnEvent]
         notifier bind ::adb.iom <Check>       $self [mymethod ReloadOnEvent]
         notifier bind ::adb     <hooks>       $self [mymethod ReloadOnEvent]
         notifier bind ::adb     <hook_topics> $self [mymethod ReloadOnEvent]

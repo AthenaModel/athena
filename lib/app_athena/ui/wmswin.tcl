@@ -121,7 +121,7 @@ snit::widget wmswin {
         $self CreateLayerSelectionWin
 
         # NEXT, react to simulation state changes
-        notifier bind ::sim <State> $win [mymethod StateChange]
+        notifier bind ::adb <State> $win [mymethod StateChange]
 
         # NEXT, get user prefs for URLs visited and connect
         # to the first one as the default

@@ -65,7 +65,7 @@ snit::widgetadaptor frcgroupbrowser {
             -selectioncmd [mymethod SelectionChanged] \
             -displaycmd   [mymethod DisplayData]      \
             -reloadon {
-                ::sim <DbSyncB>
+                ::adb <Sync>
             } -layout [string map [list %D $::app::derivedfg] $layout]
 
         # NEXT, get the options.

@@ -64,8 +64,8 @@ snit::widget detailbrowser {
             -searchcmd    [mymethod FormatSearchURL]  \
             -messagecmd   {app puts}                  \
             -reloadon {
-                ::sim <DbSyncB>             
-                ::sim <Tick>                
+                ::adb <Sync>             
+                ::adb <Tick>                
                 ::adb <Monitor>             
                 ::adb.parm <Update>             
                 ::projectlib::bean <Monitor>

@@ -104,15 +104,18 @@ snit::type ::athena::athena {
     # ADB
     delegate method adbfile   to adb
     delegate method autogen   to adb
+    delegate method dbsync    to adb
     delegate method executive to adb
     delegate method export    to adb
     delegate method gofer     to adb
     delegate method load      to adb
+    delegate method locked    to adb
     delegate method paste     to adb
-    delegate method rebase    to adb
     delegate method reset     to adb
     delegate method save      to adb
-    delegate method snapshot  to adb  ;# TODO: Remove when sim is merged.
+    delegate method send      to adb
+    delegate method stable    to adb
+    delegate method state     to adb
     delegate method unsaved   to adb
     delegate method version   to adb
 
@@ -139,5 +142,29 @@ snit::type ::athena::athena {
         return $adb
     }
     
+    # lock
+    # 
+    # Locks the scenario by sending SIM:LOCK.
+
+    method lock {} {
+        $adb send normal SIM:LOCK
+    }
+
+    # unlock
+    # 
+    # Unlocks the scenario by sending SIM:UNLOCK.
+
+    method unlock {} {
+        $adb send normal SIM:UNLOCK
+    }
+
+    # rebase
+    # 
+    # Rebases the scenario by sending SIM:REBASE.
+
+    method rebase {} {
+        $adb send normal SIM:REBASE
+    }
+
 }
 

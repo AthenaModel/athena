@@ -82,7 +82,7 @@ snit::widget econtrol {
             -hyperlinkcmd {::app show} \
             -messagecmd   {::app puts} \
             -reloadon {
-                ::sim <State>
+                ::adb <State>
             }
 
         grid $win.lbl     -row 0 -column 0 -padx 5 -sticky w
@@ -93,8 +93,8 @@ snit::widget econtrol {
         grid rowconfigure    $win 1 -weight 1
         grid columnconfigure $win 2 -weight 1
 
-        notifier bind ::sim  <DbSyncB> $self [mymethod EconState]
-        notifier bind ::sim  <State>   $self [mymethod SimState]
+        notifier bind ::adb  <Sync> $self [mymethod EconState]
+        notifier bind ::adb  <State>   $self [mymethod SimState]
         notifier bind ::econ <State>   $self [mymethod EconState]
 
         # NEXT, populate the HTML frame based on view

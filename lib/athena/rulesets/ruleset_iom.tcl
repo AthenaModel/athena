@@ -26,8 +26,6 @@
 #       regard     - The regard of f for the attributed source.
 #       accept     - The acceptability of the message from the given source.
 #
-# TBD: Global refs: sim
-#
 #-----------------------------------------------------------------------
 
 ::athena::ruleset define IOM {tsource iom} {
@@ -61,7 +59,7 @@
     # Clear the driver caches when we return to PREP.
 
     method ClearCaches {} {
-        if {[sim state] eq "PREP"} {
+        if {[$adb state] eq "PREP"} {
             array unset resonanceCache
             array unset pdictCache
         }

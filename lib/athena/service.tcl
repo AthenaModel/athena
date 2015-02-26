@@ -248,7 +248,7 @@ snit::type ::athena::service {
         }
 
         # NEXT, determine the correct database query based on state
-        if {[sim state] eq "PREP"} {
+        if {[$adb state] eq "PREP"} {
             set rdbQuery "
                 SELECT g            AS g,
                        urbanization AS urb,
@@ -353,7 +353,7 @@ snit::type ::athena::service {
         # recomputed and then retrieved from the sr_service table, 
         # otherwise it is retrieved from the service_sg table which 
         # is computed every tick
-        if {[sim state] eq "PREP"} {
+        if {[$adb state] eq "PREP"} {
             $self srservice
 
             set gclause "g IN ('[join $glist {','}]')"

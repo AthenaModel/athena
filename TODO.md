@@ -1,5 +1,8 @@
 # TODO.md - Athena TODO List
 
+- athena(n) needs to know whether it is running in an event loop or not.
+  Or, more specifically, whether non-blocking runs are allowed.
+  - Make this an option.
 - Document all component entries in athenadb(n).
   - Or, come up with a plan for which ones are documented and which aren't.
 - Document athena(n)
@@ -24,7 +27,8 @@
 - aam
   - tactic_attrit
 - app/messagebox
-  - absit, actor, autogen, bsys, cap, civgroup, curse, frcgroup, nbhood, orggroup
+  - absit, actor, autogen, bsys, cap, civgroup, curse, frcgroup, nbhood, 
+    orggroup, sim
 - aram
   - ruleset
 - athena register
@@ -43,17 +47,17 @@
   - nbhood
 - ptype - Should go in athena_order.tcl? (But no hierarchical methods!)
   - absit, actor, gofer_actors.tcl, gofer_number.tcl, nbhood, tactic_*.tcl
-- refpoint
-  - absit, nbhood
+- rebase
+  - sim
+- sanity
+  - sim
 - service
   - strategy, tactic_service
 - service_eni
   - strategy, tactic_fundeni
 - sigevent
   - condition_expr, personnel, tactic_*.tcl
-- sim
-  - absit, autogen, parm, ruleset_iom
 - simclock
-  - absit, athenadb, block, exporter
+  - absit, athenadb, block, exporter, sim
 
 

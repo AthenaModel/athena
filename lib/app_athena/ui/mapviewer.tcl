@@ -502,8 +502,8 @@ snit::widget mapviewer {
         bind $canvas <<PolyComplete>> [mymethod PolyComplete %d]
 
         # NEXT, Subscribe to application notifier(n) events.
-        notifier bind ::sim      <DbSyncB>     $self [mymethod dbsync]
-        notifier bind ::sim      <Tick>        $self [mymethod dbsync]
+        notifier bind ::adb      <Sync>     $self [mymethod dbsync]
+        notifier bind ::adb      <Tick>        $self [mymethod dbsync]
         notifier bind ::map      <MapChanged>  $self [mymethod dbsync]
         notifier bind ::marsgui::order_dialog <OrderEntry>  \
             $self [mymethod OrderEntry]

@@ -130,8 +130,8 @@ snit::widgetadaptor timechart {
         bind $win <<Context>> [mymethod ContextMenu %X %Y %d]
 
         # NEXT, bind to receive updates.
-        notifier bind ::sim <Tick>      $win [mymethod update]
-        notifier bind ::sim <DbSyncB>   $win [mymethod update]
+        notifier bind ::adb <Tick>      $win [mymethod update]
+        notifier bind ::adb <Sync>   $win [mymethod update]
 
         # NEXT, draw the chart.
         $lu update

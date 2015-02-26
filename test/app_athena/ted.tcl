@@ -703,7 +703,7 @@ snit::type ted {
     # Steps time forward by one week, locking the scenario if need be.
     
     typemethod step {} {
-        if {[sim state] eq "PREP"} {
+        if {[adb state] eq "PREP"} {
             ted lock
         }
         
@@ -727,15 +727,13 @@ snit::type ted {
 
         # This is what we used to do to clean up after a test.
         # Instead, we just do [app new].
-        if {[sim state] eq "RUNNING"} {
-            sim pause
+        if {[adb state] eq "RUNNING"} {
+            [adb athenadb] sim pause
         }
 
-        if {[sim state] eq "PAUSED"} {
-            sim unlock
+        if {[adb state] eq "PAUSED"} {
+            [adb athenadb] sim unlock
         }
-
-        # TBD: Could we simply do "app new" here?
 
         foreach table $cleanupTables {
             rdb eval "DELETE FROM $table;" 
@@ -747,6 +745,7 @@ snit::type ted {
             rdb eval {DELETE FROM main.sqlite_sequence}
         }
 
+        # Can we just do an "adb reset" here?
         nbhood   dbsync
         flunky   reset
         parm     reset

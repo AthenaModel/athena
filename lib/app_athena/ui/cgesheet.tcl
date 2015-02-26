@@ -170,8 +170,8 @@ snit::widget cgesheet {
         pack $win.frm                     -expand 1 -fill both
 
         # NEXT, prepare for updates.
-        notifier bind ::sim  <DbSyncB>   $self [mymethod refresh]
-        notifier bind ::sim  <Tick>      $self [mymethod refresh]
+        notifier bind ::adb  <Sync>   $self [mymethod refresh]
+        notifier bind ::adb  <Tick>      $self [mymethod refresh]
         notifier bind ::econ <CgeUpdate> $self [mymethod refresh]
 
         # NEXT, populate the HTML frame based on view

@@ -151,8 +151,8 @@ snit::widget bsysbrowser {
         # and so the browser's data is reloaded from scratch.  A
         # lazyupdater(n) is used to guarantee that the data is reloaded only
         # once, at the last possible moment.
-        notifier bind ::sim <DbSyncB> $self [mymethod ReloadNow]
-        notifier bind ::sim <State>   $self [mymethod ReloadNow]
+        notifier bind ::adb <Sync> $self [mymethod ReloadNow]
+        notifier bind ::adb <State>   $self [mymethod ReloadNow]
 
         notifier bind ::adb.bsys <playbox> $self [mymethod Mon_Playbox] 
         notifier bind ::adb.bsys <system>  $self [mymethod Mon_System] 
