@@ -736,14 +736,27 @@ snit::type ::athena::autogen {
     # others. Proximity is symmetric.
 
     method Nbhoods {num} {
-
+        # FIRST get all actors
         set actors [$adb eval {SELECT a FROM actors}]
-
         set numa [llength $actors]
 
-        # FIRST, get the map projection to map from canvas
-        # coordinates to map reference coordinates
-        set proj [map projection]
+        # NEXT, default map projection, may have options
+        # overridden
+        set proj [maprect %AUTO%]
+
+        # NEXT, get the map projection data from the rdb
+        # if it exists.
+        rdb eval {
+            SELECT * FROM maps WHERE id=1
+        } row {
+            $proj configure -width $row(width)   \
+                            -height $row(height) \
+                            -minlat $row(llat)   \
+                            -minlon $row(ulon)   \
+                            -maxlat $row(ulat)   \
+                            -maxlon $row(llon)  
+        }
+        
         set j -1
         set k 0
 

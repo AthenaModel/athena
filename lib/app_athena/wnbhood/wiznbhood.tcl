@@ -104,16 +104,16 @@ snit::widget ::wnbhood::wiznbhood {
         # FIRST, grab the map image and projection object from
         # the scenario.
         rdb eval {
-            SELECT width,height,projtype,proj_opts,data
+            SELECT width,height,projtype,ulat,ulon,llat,llon,data
             FROM maps WHERE id=1
 
         } {
             set mapimage [image create photo -format jpeg -data $data]
 
-            set proj [[eprojtype as proj $projtype] %AUTO% \
-                                       -width $width       \
-                                       -height $height     \
-                                       {*}$proj_opts]
+            set proj [maprect %AUTO% \
+                        -width $width -height $height \
+                        -minlat $llat -minlon $ulon   \
+                        -maxlat $ulat -maxlon $llon]
         }
 
         install nbchooser using nbchooser $w \

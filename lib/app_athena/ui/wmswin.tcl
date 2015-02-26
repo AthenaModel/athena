@@ -485,17 +485,16 @@ snit::widget wmswin {
         set parms(data) $imgdata
 
         # NEXT, extract map projection meta-data
-        set parms(proj) [dict create]
         set proj [$map cget -projection]
-        dict set parms(proj) ptype RECT
-        dict set parms(proj) minlon [$proj cget -minlon]
-        dict set parms(proj) maxlon [$proj cget -maxlon]
-        dict set parms(proj) minlat [$proj cget -minlat]
-        dict set parms(proj) maxlat [$proj cget -maxlat]
-        dict set parms(proj) width  [$proj cget -width]
-        dict set parms(proj) height [$proj cget -height]
+        set parms(projtype) RECT
+        set parms(llon)   [$proj cget -minlon]
+        set parms(ulon)   [$proj cget -maxlon]
+        set parms(llat)   [$proj cget -minlat]
+        set parms(ulat)   [$proj cget -maxlat]
+        set parms(width)  [$proj cget -width]
+        set parms(height) [$proj cget -height]
 
-        if {![map compatible $parms(proj)]} {
+        if {![$self MapCompatible]} {
             set answer [messagebox popup \
                            -title "Are you sure?"              \
                            -icon  warning                      \
@@ -521,6 +520,24 @@ snit::widget wmswin {
         if {$close} {
             wm withdraw $win
         }
+    }
+
+    method MapCompatible {} {
+        if {[llength [nbhood names]] == 0} {
+            return 1
+        }
+
+        set proj [$map cget -projection]
+        set minlon [$proj cget -minlon]
+        set maxlon [$proj cget -maxlon]
+        set minlat [$proj cget -minlat]
+        set maxlat [$proj cget -maxlat]
+
+        lassign [nbhood bbox] nminlat nminlon nmaxlat nmaxlon
+
+        return [expr {$nminlon > $minlon && $nminlat > $minlat &&
+                      $nmaxlat < $maxlat && $nmaxlon < $maxlon}]
+
     }
 
     # ButtonState state

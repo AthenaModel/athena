@@ -166,17 +166,11 @@ snit::widget ::wnbhood::nbchooser {
             -label "Deselect All Children" \
             -command [mymethod ChildrenState 0]
 
-        set projdata [rdb eval {SELECT proj_opts FROM maps WHERE id=1}]
-        foreach {opt val} {*}$projdata {
-            switch -exact -- $opt {
-                -minlat {set minlat $val}
-                -minlon {set minlon $val}
-                -maxlat {set maxlat $val}
-                -maxlon {set maxlon $val}
-                default {}
-            }
+        rdb eval {
+            SELECT ulat,ulon,llat,llon FROM maps WHERE id=1
+        } {
+            set pbbox [list $llat $ulon $ulat $llon]
         }
-        set pbbox [list $minlat $minlon $maxlat $maxlon]
     }
 
     destructor {

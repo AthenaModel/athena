@@ -221,10 +221,13 @@ enumx create eprojtype {
 
 snit::type refpoint {
     pragma -hasinstances no
-
-    typemethod validate {point} {
-        map ref validate $point
-        return [map ref2m $point]
+    typemethod validate {ref} {
+        if {[catch {
+            set point [latlong frommgrs $ref] 
+        } result]} {
+            throw INVALID $result
+        }
+        return $point
     }
 }
 
@@ -238,9 +241,15 @@ snit::type refpoly {
     pragma -hasinstances no
 
     typemethod validate {poly} {
-        map ref validate {*}$poly
-        set coords [map ref2m {*}$poly]
-        return polygon validate $coords
+        if {[catch {
+            foreach ref $poly {
+                lappend coords {*}[latlong frommgrs $ref]
+            }
+        } result]} {
+            throw INVALID $result
+        }
+
+        return [polygon validate $coords]
     }
 }
 

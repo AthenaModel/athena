@@ -135,15 +135,20 @@ CREATE TABLE maps (
     filename  TEXT,
 
     -- projection type eprojtype enumx(n)
-    projtype  INTEGER DEFAULT 'REF',
+    projtype  INTEGER DEFAULT 'RECT',
     
     -- Width and Height, in pixels
     width     INTEGER,
     height    INTEGER,
 
-    -- Projection options, used for maps that have projection 
-    -- metadata 
-    proj_opts TEXT DEFAULT '',
+    -- Projection information, corners of image
+    -- Upper right corner
+    ulat    DOUBLE, 
+    ulon    DOUBLE,
+
+    -- Lower left corner
+    llat    DOUBLE,
+    llon    DOUBLE,
 
     -- Map data: a BLOB of data in "jpeg" format.
     data      BLOB

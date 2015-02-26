@@ -127,9 +127,6 @@ snit::type sim {
             -week0 $constants(startdate) \
             -tick0 $constants(starttick)
 
-        # NEXT, reset the map to default.
-        map init
-
         # NEXT, set the simulation status
         set info(changed) 0
         set info(state)   PREP

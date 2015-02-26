@@ -215,12 +215,7 @@ snit::type ::athena::exporter {
 
         # NEXT, Map Data and Projection
         SectionHeader $f "Map and Projection"
-        if {[map image] ne ""} {
-            set imgdata [[map image] data -format jpeg]
-            set projtype [$adb onecolumn {SELECT projtype FROM maps}]
-            set pdict [$self ProjDict $projtype]
-            MakeSend $f MAP:IMPORT:DATA data $imgdata proj [dict get $pdict]
-        }
+        $self FromRDB $f MAP:IMPORT:DATA  {SELECT * FROM maps}
 
         # NEXT, Belief Systems
         SectionHeader $f "Belief Systems"
@@ -542,35 +537,5 @@ snit::type ::athena::exporter {
             MakeSend $f $order {*}$parmdict
         }
     }
-
-    # ProjDict projtype
-    #
-    # projtype   - a supported projection type
-    #
-    # Extracts and packages up projection information into a format
-    # expected by the order.
-
-    method ProjDict {projtype} {
-        dict set pdict ptype $projtype
-
-        set proj [map projection]
-        dict set pdict width [$proj cget -width]
-        dict set pdict height [$proj cget -height]
-
-        switch -exact -- $projtype {
-            "RECT" {
-                dict set pdict minlon [$proj cget -minlon]
-                dict set pdict maxlon [$proj cget -maxlon]
-                dict set pdict minlat [$proj cget -minlat]
-                dict set pdict maxlat [$proj cget -maxlat]
-            }
-
-            default {}
-        }
-
-        return $pdict
-    }
-
-
 }
 
