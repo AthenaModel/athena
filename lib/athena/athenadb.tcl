@@ -153,57 +153,58 @@ snit::type ::athena::athenadb {
     # Components
     
     # Resources
-    component rdb                         ;# writable sqldatabase handle
-    component autogen   -public autogen   ;# Scenario auto-generator
-    component executive -public executive ;# executive command processor
-    component exporter  -public export    ;# exporter
-    component flunky    -public flunky    ;# athena_flunky(n)
-    component gofer     -public gofer     ;# gofer
-    component parm      -public parm      ;# model parameter DB
-    component paster    -public paste     ;# paste manager
-    component pot       -public pot       ;# beanpot(n)
-    component ruleset   -public ruleset   ;# rule set manager
-    component sim       -public sim       ;# Simulation Control
-
+    component rdb                                   ;# writable sqldatabase handle
+    component autogen        -public autogen        ;# Scenario auto-generator
+    component executive      -public executive      ;# executive command processor
+    component exporter       -public export         ;# exporter
+    component flunky         -public flunky         ;# athena_flunky(n)
+    component gofer          -public gofer          ;# gofer
+    component parm           -public parm           ;# model parameter DB
+    component paster         -public paste          ;# paste manager
+    component pot            -public pot            ;# beanpot(n)
+    component ruleset        -public ruleset        ;# rule set manager
+    component sanity         -public sanity         ;# sanity checker
+    component sim            -public sim            ;# Simulation Control
+    
     # Editable Entities
-    component absit     -public absit     ;# absit manager
-    component actor     -public actor     ;# actor manager
-    component agent     -public agent     ;# agent manager
-    component bsys      -public bsys      ;# belief system manager
-    component cap       -public cap       ;# cap manager
-    component civgroup  -public civgroup  ;# civgroup manager
-    component coop      -public coop      ;# cooperation manager
-    component curse     -public curse     ;# curse manager
-    component econ      -public econ      ;# econ manager
-    component frcgroup  -public frcgroup  ;# frcgroup manager
-    component hook      -public hook      ;# semantic hook manager
-    component hrel      -public hrel      ;# horiz. rel. manager
-    component iom       -public iom       ;# iom manager
-    component inject    -public inject    ;# curse inject manager
-    component map       -public map       ;# map data manager
-    component nbhood    -public nbhood    ;# nbhood manager
-    component nbrel     -public nbrel     ;# nbhood rel. manager
-    component orggroup  -public orggroup  ;# orggroup manager
-    component payload   -public payload   ;# payload manager
-    component plant     -public plant     ;# goods plant manager
-    component sat       -public sat       ;# satisfaction manager
-    component sigevent  -public sigevent  ;# Sig. Events manager
-    component strategy  -public strategy  ;# strategy manager
-    component unit      -public unit      ;# unit manager
-    component vrel      -public vrel      ;# vert. rel. manager
+    component absit          -public absit          ;# absit manager
+    component actor          -public actor          ;# actor manager
+    component agent          -public agent          ;# agent manager
+    component bsys           -public bsys           ;# belief system manager
+    component cap            -public cap            ;# cap manager
+    component civgroup       -public civgroup       ;# civgroup manager
+    component coop           -public coop           ;# cooperation manager
+    component curse          -public curse          ;# curse manager
+    component econ           -public econ           ;# econ manager
+    component frcgroup       -public frcgroup       ;# frcgroup manager
+    component hook           -public hook           ;# semantic hook manager
+    component hrel           -public hrel           ;# horiz. rel. manager
+    component iom            -public iom            ;# iom manager
+    component inject         -public inject         ;# curse inject manager
+    component map            -public map            ;# map data manager
+    component nbhood         -public nbhood         ;# nbhood manager
+    component nbrel          -public nbrel          ;# nbhood rel. manager
+    component orggroup       -public orggroup       ;# orggroup manager
+    component payload        -public payload        ;# payload manager
+    component plant          -public plant          ;# goods plant manager
+    component sat            -public sat            ;# satisfaction manager
+    component sigevent       -public sigevent       ;# Sig. Events manager
+    component strategy       -public strategy       ;# strategy manager
+    component unit           -public unit           ;# unit manager
+    component vrel           -public vrel           ;# vert. rel. manager
 
     # Other Entities
-    component activity  -public activity  ;# activity manager
-    component agent     -public agent     ;# agent manager
-    component group     -public group     ;# group manager
+    component activity       -public activity       ;# activity manager
+    component agent          -public agent          ;# agent manager
+    component group          -public group          ;# group manager
 
     # Tactic APIs
-    component abevent   -public abevent   ;# Abstract event API
-    component broadcast -public broadcast ;# IOM broadcast API
-    component cash      -public cash      ;# cash/spending API
-    component control   -public control   ;# nbhood control API
-    component personnel -public personnel ;# personnel laydown API
-    component stance    -public stance    ;# stance API
+    component abevent        -public abevent        ;# Abstract event API
+    component broadcast      -public broadcast      ;# IOM broadcast API
+    component cash           -public cash           ;# cash/spending API
+    component control        -public control        ;# nbhood control API
+    component personnel      -public personnel      ;# personnel laydown API
+    component stance         -public stance         ;# stance API
 
     # Models
     component aam            -public aam            ;# Athena attrition model 
@@ -333,6 +334,7 @@ snit::type ::athena::athenadb {
             plant                       \
             personnel                   \
             {ruleset  ruleset_manager}  \
+            sanity                      \
             sat                         \
             security_model              \
             service                     \

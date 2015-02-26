@@ -6,21 +6,34 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    app_sim(n) Simulation Sanity Checks
+#    athena(n): Simulation Sanity Checks
 #
 #    This module defines the "onlock" sanity check, which determines
 #    whether the scenario can be locked, and the "ontick" sanity 
 #    check, which determines whether simulation execution can proceed.
 #
-#    NOTE: The strategy sanity check is performed by strategy(sim).
+#    NOTE: The strategy sanity check is performed by strategy.tcl.
 #
 #-----------------------------------------------------------------------
 
-#-----------------------------------------------------------------------
-# sanity ensemble
+snit::type ::athena::sanity {
+    #-------------------------------------------------------------------
+    # Components
 
-snit::type sanity {
-    pragma -hastypedestroy 0 -hasinstances 0
+    component adb ;# The athenadb(n) instance
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    # constructor adb_
+    #
+    # adb_    - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of the type.
+
+    constructor {adb_} {
+        set adb $adb_
+    }
 
     #-------------------------------------------------------------------
     # On-lock Sanity check
@@ -35,10 +48,10 @@ snit::type sanity {
     # WARNING - Problems were found and disabled; scenario can be locked.
     # ERROR   - Problems were found and must be fixed.
 
-    typemethod {onlock check} {} {
+    method {onlock check} {} {
         set ht [htools %AUTO%]
 
-        set sev [$type DoOnLockCheck $ht]
+        set sev [$self DoOnLockCheck $ht]
 
         $ht destroy
 
@@ -54,9 +67,9 @@ snit::type sanity {
     # presume that the buffer is already initialized and ready to
     # receive the data.
 
-    typemethod {onlock report} {ht} {
+    method {onlock report} {ht} {
         # FIRST, do a check and find out what kind of problems we have.
-        set severity [$type onlock check]
+        set severity [$self onlock check]
 
         # NEXT, put an appropriate message at the top of the page.  
         # If we are OK, there's no need to add anything else.
@@ -84,16 +97,16 @@ snit::type sanity {
         }
 
         # NEXT, redo the checks, recording all of the problems.
-        $type DoOnLockCheck $ht
+        $self DoOnLockCheck $ht
     }
 
     # onlock text
     #
     # Returns the onlock report text.
 
-    typemethod {onlock text} {} {
+    method {onlock text} {} {
         set ht [htools %AUTO%]
-        $type onlock report $ht
+        $self onlock report $ht
         set text [$ht get]
         $ht destroy
 
@@ -108,16 +121,16 @@ snit::type sanity {
     # indicating the status.  Any warnings or errors are written into
     # the buffer.
 
-    typemethod DoOnLockCheck {ht} {
+    method DoOnLockCheck {ht} {
         # FIRST, presume that the model is sane.
         set sev OK
 
         # NEXT, call each of the on-lock checkers
-        savemax sev [$type ScenarioOnLockChecker $ht] 
-        savemax sev [iom checker $ht] 
-        savemax sev [curse checker $ht]
-        savemax sev [strategy checker $ht] 
-        savemax sev [econ checker $ht]
+        savemax sev [$self ScenarioOnLockChecker $ht] 
+        savemax sev [$adb iom checker $ht] 
+        savemax sev [$adb curse checker $ht]
+        savemax sev [$adb strategy checker $ht] 
+        savemax sev [$adb econ checker $ht]
 
         # NEXT, return the severity
         return $sev
@@ -133,7 +146,7 @@ snit::type sanity {
     #
     # This routine detects only ERRORs, not WARNINGs.
 
-    typemethod ScenarioOnLockChecker {ht} {
+    method ScenarioOnLockChecker {ht} {
         # FIRST, presume that the model is sane.
         set sev OK
 
@@ -148,7 +161,7 @@ snit::type sanity {
         $ht dl
 
         # NEXT, Require at least one neighborhood:
-        if {[llength [nbhood names]] == 0} {
+        if {[llength [$adb nbhood names]] == 0} {
             set sev ERROR
 
             $ht dlitem "<b>Error: No neighborhoods are defined.</b>" {
@@ -159,7 +172,7 @@ snit::type sanity {
         }
 
         # NEXT, verify that neighborhoods are properly stacked
-        rdb eval {
+        $adb eval {
             SELECT n, obscured_by FROM nbhoods
             WHERE obscured_by != ''
         } {
@@ -174,7 +187,7 @@ snit::type sanity {
         }
 
         # NEXT, Require at least one force group
-        if {[llength [frcgroup names]] == 0} {
+        if {[llength [$adb frcgroup names]] == 0} {
             set sev ERROR
 
             $ht dlitem "<b>Error: No force groups are defined.</b>" {
@@ -185,7 +198,7 @@ snit::type sanity {
         }
 
         # NEXT, Require that each force group has an actor
-        set names [rdb eval {SELECT g FROM frcgroups_view WHERE a IS NULL}]
+        set names [$adb eval {SELECT g FROM frcgroups_view WHERE a IS NULL}]
 
         if {[llength $names] > 0} {
             set sev ERROR
@@ -200,7 +213,7 @@ snit::type sanity {
         }
 
         # NEXT, Require that each ORG group has an actor
-        set names [rdb eval {SELECT g FROM orggroups_view WHERE a IS NULL}]
+        set names [$adb eval {SELECT g FROM orggroups_view WHERE a IS NULL}]
 
         if {[llength $names] > 0} {
             set sev ERROR
@@ -215,7 +228,7 @@ snit::type sanity {
         }
 
         # NEXT, Require that each CAP has an actor
-        set names [rdb eval {SELECT k FROM caps WHERE owner IS NULL}]
+        set names [$adb eval {SELECT k FROM caps WHERE owner IS NULL}]
 
         if {[llength $names] > 0} {
             set sev ERROR
@@ -230,7 +243,7 @@ snit::type sanity {
         }
                 
         # NEXT, Require at least one civ group
-        if {[llength [civgroup names]] == 0} {
+        if {[llength [$adb civgroup names]] == 0} {
             set sev ERROR
 
             $ht dlitem "<b>Error: No civilian groups are defined.</b>" {
@@ -242,7 +255,7 @@ snit::type sanity {
         }
 
         # NEXT, require that there are people in the civ groups
-        set basepop [rdb eval {
+        set basepop [$adb eval {
             SELECT total(basepop) FROM civgroups
         }]
 
@@ -256,7 +269,7 @@ snit::type sanity {
         }
 
         # NEXT, collect data on groups and neighborhoods
-        rdb eval {
+        $adb eval {
             SELECT g,n FROM civgroups
         } {
             lappend gInN($n)  $g
@@ -265,7 +278,7 @@ snit::type sanity {
         # NEXT, Every neighborhood must have at least one group
         # TBD: Is this really required?  Can we insist, instead,
         # that at least one neighborhood must have a group?
-        foreach n [nbhood names] {
+        foreach n [$adb nbhood names] {
             if {![info exists gInN($n)]} {
                 set sev ERROR
 
@@ -284,7 +297,7 @@ snit::type sanity {
         # NEXT, there must be at least 1 local consumer; and hence, there
         # must be at least one local civ group with sa_flag=0.
 
-        if {![rdb exists {
+        if {![$adb exists {
             SELECT sa_flag 
             FROM civgroups JOIN nbhoods USING (n)
             WHERE local AND NOT sa_flag
@@ -304,9 +317,9 @@ snit::type sanity {
         # NEXT, there cannot be any GOODS production infrastructure allocated
         # to non-local neighborhoods
 
-        set localn [nbhood local names]
+        set localn [$adb nbhood local names]
 
-        rdb eval {
+        $adb eval {
             SELECT n, a FROM plants_shares
         } {
 
@@ -351,10 +364,10 @@ snit::type sanity {
     # WARNING - Problems were found and disabled; time can be advanced.
     # ERROR   - Serious problems were found; time cannot be advanced.
 
-    typemethod {ontick check} {} {
+    method {ontick check} {} {
         set ht [htools %AUTO%]
 
-        set flag [$type DoOnTickCheck $ht]
+        set flag [$self DoOnTickCheck $ht]
 
         $ht destroy
 
@@ -371,9 +384,9 @@ snit::type sanity {
     # presume that the buffer is already initialized and ready to
     # receive the data.
 
-    typemethod {ontick report} {ht} {
+    method {ontick report} {ht} {
         # FIRST, do a check and find out what kind of problems we have.
-        set severity [$type ontick check]
+        set severity [$self ontick check]
 
         # NEXT, put an appropriate message at the top of the page.  
         # If we are OK, there's no need to add anything else.
@@ -402,16 +415,16 @@ snit::type sanity {
 
         # NEXT, redo the checks, recording all of the problems.
         
-        $type DoOnTickCheck $ht
+        $self DoOnTickCheck $ht
     }
 
     # ontick text
     #
     # Returns the ontick report text.
 
-    typemethod {ontick text} {} {
+    method {ontick text} {} {
         set ht [htools %AUTO%]
-        $type ontick report $ht
+        $self ontick report $ht
         set text [$ht get]
         $ht destroy
 
@@ -426,12 +439,12 @@ snit::type sanity {
     # indicating the status.  Any warnings or errors are written into
     # the buffer.
 
-    typemethod DoOnTickCheck {ht} {
+    method DoOnTickCheck {ht} {
         # FIRST, presume that the model is sane.
         set sev OK
 
         # NEXT, call each of the on-lock checkers
-        savemax sev [$type EconOnTickChecker $ht] 
+        savemax sev [$self EconOnTickChecker $ht] 
 
         # NEXT, return the severity
         return $sev
@@ -446,10 +459,10 @@ snit::type sanity {
     #
     # TBD: This routine should probably live in econ.tcl.
 
-    typemethod EconOnTickChecker {ht} {
+    method EconOnTickChecker {ht} {
         # FIRST, if the econ model is disabled, there are no errors to
         # find.
-        if {[econ state] eq "DISABLED"} {
+        if {[$adb econ state] eq "DISABLED"} {
             return OK
         }
 
@@ -475,7 +488,7 @@ snit::type sanity {
         $ht dl
 
         # NEXT, Check econ CGE convergence.
-        if {![econ ok]} {
+        if {![$adb econ ok]} {
             set sev ERROR
 
             $ht dlitem "<b>Error: Economy: Diverged</b>" {
@@ -487,8 +500,8 @@ snit::type sanity {
         }
 
         # NEXT, check a variety of econ result constraints.
-        array set cells [econ get]
-        array set start [econ getstart]
+        array set cells [$adb econ get]
+        array set start [$adb econ getstart]
 
         if {$cells(Out::SUM.QS) == 0.0} {
             set sev ERROR
@@ -534,7 +547,7 @@ snit::type sanity {
             }
         }
 
-        set limit [parm get econ.check.MinConsumerFrac]
+        set limit [$adb parm get econ.check.MinConsumerFrac]
 
         if {
             $cells(In::Consumers) < $limit * $start(In::Consumers)
@@ -553,7 +566,7 @@ snit::type sanity {
             "
         }
 
-        set limit [parm get econ.check.MinLaborFrac]
+        set limit [$adb parm get econ.check.MinLaborFrac]
 
         if {
             $cells(In::LF) < $limit * $start(In::LF)
@@ -573,7 +586,7 @@ snit::type sanity {
             "
         }
 
-        set limit [parm get econ.check.MaxUR]
+        set limit [$adb parm get econ.check.MaxUR]
 
         if {$cells(Out::UR) > $limit} {
             set sev ERROR
@@ -589,7 +602,7 @@ snit::type sanity {
             "
         }
 
-        set limit [parm get econ.check.MinDgdpFrac]
+        set limit [$adb parm get econ.check.MinDgdpFrac]
 
         if {
             $cells(Out::DGDP) < $limit * $start(Out::DGDP)
@@ -608,8 +621,8 @@ snit::type sanity {
             "
         }
 
-        set min [parm get econ.check.MinCPI]
-        set max [parm get econ.check.MaxCPI]
+        set min [$adb parm get econ.check.MinCPI]
+        set max [$adb parm get econ.check.MaxCPI]
 
         if {$cells(Out::CPI) < $min || 
             $cells(Out::CPI) > $max

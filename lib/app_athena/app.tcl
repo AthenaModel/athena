@@ -1013,7 +1013,7 @@ snit::type app {
         require {[adb state] eq "PREP"} \
             "The scenario cannot be locked in this state."
 
-        set sev [sanity onlock check]
+        set sev [adb sanity onlock check]
  
         if {$sev eq "WARNING" && [app tkloaded]} {
             app show my://app/sanity/onlock

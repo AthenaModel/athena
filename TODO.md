@@ -1,8 +1,11 @@
 # TODO.md - Athena TODO List
 
+- Revise how the saveable registry works.
 - athena(n) needs to know whether it is running in an event loop or not.
   Or, more specifically, whether non-blocking runs are allowed.
   - Make this an option.
+  - Update SIM:RUN accordingly
+  - Add "adb run" and "adb pause" commands.
 - Document all component entries in athenadb(n).
   - Or, come up with a plan for which ones are documented and which aren't.
 - Document athena(n)
@@ -48,8 +51,6 @@
 - ptype - Should go in athena_order.tcl? (But no hierarchical methods!)
   - absit, actor, gofer_actors.tcl, gofer_number.tcl, nbhood, tactic_*.tcl
 - rebase
-  - sim
-- sanity
   - sim
 - service
   - strategy, tactic_service

@@ -575,7 +575,8 @@ snit::type ::athena::sim {
         # NEXT, pause if it's the pause time, or checks failed.
         set stopping 0
 
-        if {[sanity ontick check] != "OK"} {
+        if {[$adb sanity ontick check] != "OK"} {
+            # TBD: Need to handle this across library I/F.
             # NEXT, direct the user to the appropriate appserver page
             # if we are in GUI mode
             if {[app tkloaded]} {
@@ -856,7 +857,7 @@ snit::type ::athena::sim {
 
     method _validate {} {
         # FIRST, do the on-lock sanity check.
-        set sev [sanity onlock check]
+        set sev [$adb sanity onlock check]
 
         if {$sev in {"ERROR" "WARNING"}} {
             my reject * {
