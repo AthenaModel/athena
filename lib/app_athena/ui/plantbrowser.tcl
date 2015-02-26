@@ -52,7 +52,7 @@ snit::widgetadaptor plantbrowser {
                 { num "Shares of Goods\nPlants" -sortmode integer  }
             }
             -reloadon {
-                ::sim <DbSyncB>
+                ::adb <Sync>
                 ::adb <plants_shares>
             }
         }
@@ -65,8 +65,8 @@ snit::widgetadaptor plantbrowser {
                 { num "Number of Goods\nPlants" -sortmode integer  }
             }
             -reloadon {
-                ::sim <Tick>
-                ::sim <DbSyncB>
+                ::adb <Tick>
+                ::adb <Sync>
             }
         }
     }
@@ -129,7 +129,7 @@ snit::widgetadaptor plantbrowser {
         pack $deletebtn -side right
 
         # NEXT, set the mode when the simulation state changes.
-        notifier bind ::sim <State> $self [mymethod StateChange]
+        notifier bind ::adb <State> $self [mymethod StateChange]
 
         # NEXT, update individual entities when they change.
         $self SetMode scenario

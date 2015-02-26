@@ -57,8 +57,8 @@ snit::widgetadaptor ordersentbrowser {
             -uid          id                          \
             -titlecolumns 3                           \
             -reloadon {
-                ::sim        <DbSyncB>
-                ::sim        <Tick>
+                ::adb        <Sync>
+                ::adb        <Tick>
                 ::adb.flunky <Sync>
             } -layout [string map [list %D $::app::derivedfg] $layout]
 

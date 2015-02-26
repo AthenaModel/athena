@@ -60,8 +60,8 @@ snit::widgetadaptor securitybrowser {
             -uid          id                          \
             -titlecolumns 2                           \
             -reloadon {
-                ::sim <DbSyncB>
-                ::sim <Tick>
+                ::adb <Sync>
+                ::adb <Tick>
             } -layout [string map [list %D $::app::derivedfg] $layout]
 
         # FIRST, get the options.

@@ -54,8 +54,8 @@ snit::widgetadaptor nbcoopbrowser {
             -uid          id                          \
             -titlecolumns 2                           \
             -reloadon {
-                ::sim <DbSyncB>
-                ::sim <Tick>
+                ::adb <Sync>
+                ::adb <Tick>
                 ::adb <coop_fg>
             } -layout [string map [list %D $::app::derivedfg] $layout]
 

@@ -55,7 +55,7 @@ snit::widgetadaptor satbrowser {
                 { saliency "Saliency"  -sortmode real  }
             }
             -reloadon {
-                ::sim <DbSyncB>
+                ::adb <Sync>
                 ::adb <civgroups>
             }
         }
@@ -73,8 +73,8 @@ snit::widgetadaptor satbrowser {
                 { nat0     "Natural at T0"                 -foreground %D }
             }
             -reloadon {
-                ::sim <Tick>
-                ::sim <DbSyncB>
+                ::adb <Tick>
+                ::adb <Sync>
                 ::adb.parm <Update>
             }
         }
@@ -117,7 +117,7 @@ snit::widgetadaptor satbrowser {
         pack $editbtn   -side left
 
         # NEXT, set the mode when the simulation state changes.
-        notifier bind ::sim <State> $self [mymethod StateChange]
+        notifier bind ::adb <State> $self [mymethod StateChange]
 
         # NEXT, update individual entities when they change.
         $self SetMode scenario

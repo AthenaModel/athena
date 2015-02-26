@@ -12,7 +12,7 @@
 #    that provides safe command interpretation for user input, separate
 #    from the main interpreter.
 #
-# TBD: Global refs: sim, ptype, simclock, app puts
+# TBD: Global refs: ptype, simclock, app puts
 #
 #-----------------------------------------------------------------------
 
@@ -1896,7 +1896,7 @@ snit::type ::athena::executive {
     # scenario if necessary.
 
     method Advance {weeks} {
-        if {[sim state] eq "PREP"} {
+        if {[$adb state] eq "PREP"} {
             $self Lock
         }
 
@@ -2095,7 +2095,7 @@ snit::type ::athena::executive {
     # Syncs the UI with the scenario.
 
     method Dbsync {} {
-        sim dbsync
+        $adb dbsync
     }
 
 
@@ -2153,7 +2153,7 @@ snit::type ::athena::executive {
         }
 
         # NEXT, the normal export can only be done during PREP.
-        if {[sim locked]} {
+        if {[$adb locked]} {
             error "Cannot export while the scenario is locked."
         }
 

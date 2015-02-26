@@ -210,9 +210,9 @@ snit::widget samsheet {
         grid columnconfigure $win 0 -weight 1
 
         # NEXT, prepare for updates.
-        notifier bind ::sim      <DbSyncB>    $self [mymethod SyncSheet]
-        notifier bind ::sim      <Tick>       $self [mymethod refresh]
-        notifier bind ::sim      <State>      $self [mymethod SimState]
+        notifier bind ::adb      <Sync>    $self [mymethod SyncSheet]
+        notifier bind ::adb      <Tick>       $self [mymethod refresh]
+        notifier bind ::adb      <State>      $self [mymethod SimState]
         notifier bind ::adb.econ <SamUpdate>  $self [mymethod SamUpdate]
         notifier bind ::adb.econ <SyncSheet>  $self [mymethod SyncSheet]
 
@@ -875,7 +875,7 @@ snit::widget samsheet {
             
     # SyncSheet
     #
-    # This is called when a <DbSyncB> notifier is received. The SAM
+    # This is called when a <Sync> notifier is received. The SAM
     # data is copied from the econ module and the SAM solved before
     # the cmsheet(n) objects are refreshed.
 

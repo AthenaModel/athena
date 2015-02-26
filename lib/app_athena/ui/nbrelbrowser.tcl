@@ -53,7 +53,7 @@ snit::widgetadaptor nbrelbrowser {
             -titlecolumns 2                           \
             -selectioncmd [mymethod SelectionChanged] \
             -reloadon {
-                ::sim <DbSyncB>
+                ::adb <Sync>
             } -layout [string map [list %D $::app::derivedfg] $layout]
 
         # NEXT, get the options.

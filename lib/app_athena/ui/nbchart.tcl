@@ -115,8 +115,8 @@ snit::widgetadaptor nbchart {
         # NEXT, bind to receive updates.
         # TBD: Do we want a new notifier event, to indicate that
         # neighborhood data in general might have changed?
-        notifier bind ::sim       <Tick>    $win [mymethod UpdateEvent]
-        notifier bind ::sim       <DbSyncB> $win [mymethod UpdateEvent]
+        notifier bind ::adb       <Tick>    $win [mymethod UpdateEvent]
+        notifier bind ::adb       <Sync> $win [mymethod UpdateEvent]
         notifier bind ::adb.demog <Update>  $win [mymethod UpdateEvent]
         notifier bind ::adb       <nbhoods> $win [mymethod UpdateEvent]
         notifier bind ::adb       <econ_n>  $win [mymethod UpdateEvent]

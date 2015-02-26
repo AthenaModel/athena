@@ -632,7 +632,7 @@ snit::type view {
         log detail view "init"
 
         # FIRST, Flush the cache whenever the scenario is reloaded.
-        notifier bind ::sim <DbSyncA> ::view [mytypemethod FlushCache]
+        notifier bind ::adb <PreSync> ::view [mytypemethod FlushCache]
 
         # NEXT, the module is up.
         log detail view "init complete"

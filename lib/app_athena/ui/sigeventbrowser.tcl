@@ -40,8 +40,8 @@ snit::widgetadaptor sigeventbrowser {
             -hyperlinkcmd {::app show}         \
             -messagecmd   {::app puts}         \
             -reloadon {
-                ::sim <DbSyncB>
-                ::sim <Tick>
+                ::adb <Sync>
+                ::adb <Tick>
             }
 
         # NEXT, get the options.

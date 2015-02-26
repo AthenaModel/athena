@@ -50,7 +50,7 @@ snit::widgetadaptor demognbrowser {
             -uid          id                          \
             -titlecolumns 1                           \
             -reloadon {
-                ::sim <DbSyncB>
+                ::adb <Sync>
                 ::adb.demog <Update>
                 ::adb <nbhoods>
             } -layout [string map [list %D $::app::derivedfg] $layout]

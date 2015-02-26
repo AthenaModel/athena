@@ -14,10 +14,6 @@
 # TBD: 
 #    * Global references: notifier bind, ptype, refpoint, app/messagebox, 
 #      sim
-#    * notifier bind ::sim <DbSyncA>
-#      * This seems like the wrong mechanism.  athenadb(n) will know when
-#        something resyncable has happened; seems like it should directly
-#        call the affected modules.
 #
 #-----------------------------------------------------------------------
 
@@ -41,9 +37,6 @@ snit::type ::athena::nbhood {
         # FIRST, save/create components
         set adb $adb_
         install geo using geoset ${selfns}::geo
-
-        # NEXT, register to receive dbsync events.
-        notifier bind ::sim <DbSyncA> $self [mymethod dbsync]
     }
 
     destructor {

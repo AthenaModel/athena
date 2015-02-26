@@ -504,19 +504,18 @@ snit::widget mapviewer {
         bind $canvas <<PolyComplete>> [mymethod PolyComplete %d]
 
         # NEXT, Subscribe to application notifier(n) events.
-        notifier bind ::sim      <DbSyncB>     $self [mymethod dbsync]
-        notifier bind ::sim      <Tick>        $self [mymethod dbsync]
-        notifier bind ::adb.map  <MapChanged>  $self [mymethod dbsync]
+        notifier bind ::adb        <Sync>       $self [mymethod dbsync]
+        notifier bind ::adb        <Tick>       $self [mymethod dbsync]
+        notifier bind ::adb.map    <MapChanged> $self [mymethod dbsync]
+        notifier bind ::adb        <nbhoods>    $self [mymethod EntityNbhood]
+        notifier bind ::adb.nbhood <Stack>      $self [mymethod NbhoodStack]
+        notifier bind ::adb        <units>      $self [mymethod EntityUnit]
+        notifier bind ::adb        <absits>     $self [mymethod EntityAbsit]
+        notifier bind ::adb        <groups>     $self [mymethod EntityGroup]
+        notifier bind ::adb        <econ_n>     $self [mymethod EntityEcon]
         notifier bind ::marsgui::order_dialog <OrderEntry>  \
             $self [mymethod OrderEntry]
-        notifier bind ::adb        <nbhoods>   $self [mymethod EntityNbhood]
         
-        # TBD: Should be ::adb.nbhood
-        notifier bind ::adb.nbhood <Stack>     $self [mymethod NbhoodStack]
-        notifier bind ::adb        <units>     $self [mymethod EntityUnit]
-        notifier bind ::adb        <absits>    $self [mymethod EntityAbsit]
-        notifier bind ::adb        <groups>    $self [mymethod EntityGroup]
-        notifier bind ::adb        <econ_n>    $self [mymethod EntityEcon]
 
         # NEXT, draw everything for the current map, whatever it is.
         $self dbsync

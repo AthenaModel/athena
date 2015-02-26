@@ -14,7 +14,7 @@
 #    for load testing, unit testing or for use by the automated
 #    test suite.
 #
-# TBD: Global refs: app, sim, map
+# TBD: Global refs: app, map
 #
 #-----------------------------------------------------------------------
 
@@ -65,7 +65,7 @@ snit::type ::athena::autogen {
     # omitted.
 
     method scenario {args} {
-        require {[sim state] ne "RUNNING"} "The simulation is running."
+        require {[$adb state] ne "RUNNING"} "The simulation is running."
 
         # FIRST, default options
         array set opts {
@@ -187,7 +187,7 @@ snit::type ::athena::autogen {
     # all error checking passes.
 
     method actors {{num 3}} {
-        require {[sim stable]} "The simulation is running or otherwise busy."
+        require {[$adb stable]} "The simulation is running or otherwise busy."
 
         # FIRST, no actors can exist currently
         if {[llength [$adb actor names]] > 0} {
@@ -214,7 +214,7 @@ snit::type ::athena::autogen {
     # all error checking passes.
 
     method nbhoods {{num 10}} {
-        require {[sim stable]} "The simulation is running or otherwise busy."
+        require {[$adb stable]} "The simulation is running or otherwise busy."
 
         # FIRST, no nbhoods can exists and we must already have actors
         if {[llength [$adb nbhood names]] > 0} {
@@ -250,7 +250,7 @@ snit::type ::athena::autogen {
     # each neighborhood provided all error checking passes.
 
     method civgroups {{num 6}} {
-        require {[sim stable]} "The simulation is running or otherwise busy."
+        require {[$adb stable]} "The simulation is running or otherwise busy."
 
         # FIRST, there must already be neighborhoods and no CIV groups
         if {[llength [$adb nbhood names]] == 0} {
@@ -281,7 +281,7 @@ snit::type ::athena::autogen {
     # provided all error checking passes.
 
     method orggroups {{num 2}} {
-        require {[sim stable]} "The simulation is running or otherwise busy."
+        require {[$adb stable]} "The simulation is running or otherwise busy."
 
         # FIRST, there can be no ORG groups and we must have actor(s)
         if {[llength [$adb orggroup names]] > 0} {
@@ -312,7 +312,7 @@ snit::type ::athena::autogen {
     # provided all error checking passes.
 
     method frcgroups {{num 3}} {
-        require {[sim stable]} "The simulation is running or otherwise busy."
+        require {[$adb stable]} "The simulation is running or otherwise busy."
 
         # FIRST, there must be no FRC groups and at least one actor
         if {[llength [$adb frcgroup names]] > 0} {
@@ -343,7 +343,7 @@ snit::type ::athena::autogen {
     # of topics provided all error checking passes.
 
     method bsystem {{num 3}} {
-        require {[sim stable]} "The simulation is running or otherwise busy."
+        require {[$adb stable]} "The simulation is running or otherwise busy."
 
         # FIRST, there must be no topics and we must have CIV groups and
         # actors defined
@@ -387,7 +387,7 @@ snit::type ::athena::autogen {
     #    -nbhoods  Neighborhoods to consider when creating tactics or "ALL"
 
     method strategy {args} {
-        require {[sim stable]} "The simulation is running or otherwise busy."
+        require {[$adb stable]} "The simulation is running or otherwise busy."
 
         # FIRST, default options
         array set opts {

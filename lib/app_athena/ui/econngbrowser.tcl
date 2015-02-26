@@ -49,7 +49,7 @@ snit::widgetadaptor econngbrowser {
                 { povpct      "\nPoverty%"    -sortmode real    -foreground %D }
             }
             -reloadon {
-                ::sim <DbSyncB>
+                ::adb <Sync>
                 ::adb.demog <Update>
                 ::adb <nbhoods>
                 ::adb <groups>
@@ -69,7 +69,7 @@ snit::widgetadaptor econngbrowser {
                 { ur          "Unemp.\nRate%" -sortmode real    -foreground %D }
             }
             -reloadon {
-                ::sim <DbSyncB>
+                ::adb <Sync>
                 ::adb.demog <Update>
                 ::adb <nbhoods>
                 ::adb <groups>
@@ -91,7 +91,7 @@ snit::widgetadaptor econngbrowser {
             {*}[ModeOptions econ_disabled]
 
         notifier bind ::econ <State> $self [mymethod EconChange]
-        notifier bind ::sim  <State> $self [mymethod SimChange]
+        notifier bind ::adb  <State> $self [mymethod SimChange]
 
         # NEXT, get the options.
         $self configurelist $args

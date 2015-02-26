@@ -6,27 +6,25 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    app_sim(n) Simulation Ensemble
+#    athena(n): Simulation Control
 #
 #    This module manages the overall simulation, as distinct from the 
 #    the purely scenario-data oriented work done by scenario(sim).
 #
+# TBD: Global refs: simclock, sanity, app/messagebox, rebase
+#
 #-----------------------------------------------------------------------
 
-#-----------------------------------------------------------------------
-# sim ensemble
+snit::type ::athena::sim {
+    #-------------------------------------------------------------------
+    # Components
 
-snit::type sim {
-    pragma -hastypedestroy 0 -hasinstances 0
+    component adb       ;# The athenadb(n) instance
+    component ticker    ;# The timeout(n) instance that makes the
+                         # simulation go when running in an event loop.
 
     #-------------------------------------------------------------------
-    # Type Components
-
-    typecomponent ticker    ;# The timeout(n) instance that makes the
-                             # simulation go.
-
-    #-------------------------------------------------------------------
-    # Non-checkpointed Type Variables
+    # Non-checkpointed Instancd Variables
 
     # constants -- scalar array
     #
@@ -34,7 +32,7 @@ snit::type sim {
     # starttick - The initial simulation tick.
     # tickDelay - The delay between ticks
     
-    typevariable constants -array {
+    variable constants -array {
         startdate 2012W01
         starttick 0
         tickDelay 50
@@ -53,8 +51,7 @@ snit::type sim {
     #             FAILURE   - On-tick sanity check failure
     #             ""        - Abnormal
 
-
-    typevariable info -array {
+    variable info -array {
         changed    0
         state      PREP
         stoptime   0
@@ -65,62 +62,53 @@ snit::type sim {
     #
     #  buffer  - Buffer used to build up long strings.
 
-    typevariable trans -array {
+    variable trans -array {
         buffer {}
     }
 
     #-------------------------------------------------------------------
-    # Singleton Initializer
+    # Constructor
 
-    # init
+    # constructor adb_
     #
-    # Initializes the simulation proper, to the extent that this can
-    # be done at application initialization.  True initialization
-    # happens when scenario preparation is locked, when 
-    # the simulation state moves from PREP to PAUSED.
+    # adb_    - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of the type.
 
-    typemethod init {} {
-        log normal sim "init"
-
-        # FIRST, register with scenario(sim) as a saveable
-        athena register $type
+    constructor {adb_} {
+        # FIRST, save athenadb(n) handle
+        set adb $adb_
 
         # NEXT, set the simulation state
         set info(state)    PREP
         set info(changed)  0
         set info(stoptime) 0
 
-        flunky state $info(state)
+        $adb flunky state $info(state)
 
         simclock configure \
             -week0 $constants(startdate) \
             -tick0 $constants(starttick)
 
-        notifier send ::sim <Time>
+        $adb notify "" <Time>
 
         # NEXT, create the ticker
-        set ticker [timeout ${type}::ticker                \
-                        -interval   $constants(tickDelay) \
-                        -repetition yes                    \
-                        -command    {profile sim Tick}]
+        install ticker using timeout ${selfns}::ticker    \
+            -interval   $constants(tickDelay)             \
+            -repetition yes                               \
+            -command    [list $adb profile sim Tick]
 
-        # NEXT, initialize the model engine.
-        engine init
-
-        # NEXT, prepare to echo the engine's time updates.
-        notifier bind ::engine <Time> ::sim [list notifier send ::sim <Time>]
-
-        log normal sim "init complete"
     }
 
 
-    # new
+    #-------------------------------------------------------------------
+    # Public Methods
+
+    # reset
     #
     # Reinitializes the module when a new scenario is created.
-    #
-    # TODO: move to scenario destructor.
 
-    typemethod new {} {
+    method reset {} {
         # FIRST, configure the simclock.
         simclock reset
         simclock configure \
@@ -131,51 +119,17 @@ snit::type sim {
         set info(changed) 0
         set info(state)   PREP
     }
-
-    # restart
-    #
-    # Reloads on-lock snapshot.
-
-    typemethod restart {} {
-        sim mutate unlock
-    }
     
-    #-------------------------------------------------------------------
-    # RDB Synchronization
-
-    # dbsync
-    #
-    # Database synchronization occurs when the RDB changes out from under
-    # the application, i.e., brand new scenario is created or
-    # loaded.  All application modules must re-initialize themselves
-    # at this time.
-    #
-    # * Non-GUI modules subscribe to the <DbSyncA> event.
-    # * GUI modules subscribe to the <DbSyncB> event.
-    #
-    # This guarantees that the "model" is in a consistent state
-    # before the "view" is updated.
-
-    typemethod dbsync {} {
-        # FIRST, Sync the simulation
-        notifier send $type <DbSyncA>
-
-        # NEXT, Sync the GUI
-        notifier send $type <DbSyncB>
-        notifier send $type <Time>
-        notifier send $type <State>
-    }
-
     #-------------------------------------------------------------------
     # Queries
 
-    delegate typemethod now using {::simclock %m}
+    delegate method now using {::simclock %m}
 
     # state
     #
     # Returns the current simulation state
 
-    typemethod state {} {
+    method state {} {
         return $info(state)
     }
 
@@ -183,7 +137,7 @@ snit::type sim {
     #
     # Returns 1 if the simulation is locked, and 0 otherwise.
 
-    typemethod locked {} {
+    method locked {} {
         return [expr {$info(state) in {PAUSED RUNNING}}]
     }
 
@@ -192,7 +146,7 @@ snit::type sim {
     # Returns 1 if the simulation is "stable", with nothing in process.
     # I.e., the simulation is in either the PREP or PAUSED states.
 
-    typemethod stable {} {
+    method stable {} {
         return [expr {$info(state) in {PREP PAUSED}}]
     }
 
@@ -200,7 +154,7 @@ snit::type sim {
     #
     # Returns the current stop time in ticks
 
-    typemethod stoptime {} {
+    method stoptime {} {
         return $info(stoptime)
     }
 
@@ -213,7 +167,7 @@ snit::type sim {
     # ""       - No reason assigned, hence an unexpected error.
     #            Use [catch] to get these.
     
-    typemethod stopreason {} {
+    method stopreason {} {
         return $info(reason)
     }
 
@@ -227,14 +181,14 @@ snit::type sim {
     # By default, returns true if the sim state is WIZARD.  If the
     # flag is given, sets the sim state to WIZARD or to PREP, accordingly.
 
-    typemethod wizard {{flag ""}} {
+    method wizard {{flag ""}} {
         if {$flag ne ""} {
             assert {$info(state) in {PREP WIZARD}}
 
             if {$flag} {
-                $type SetState WIZARD
+                $self SetState WIZARD
             } else {
-                $type SetState PREP
+                $self SetState PREP
             }
         }
 
@@ -251,13 +205,13 @@ snit::type sim {
     # the change cannot be undone, the mutator returns the empty string.
 
 
-    # mutate startdate startdate
+    # startdate startdate
     #
     # startdate   The date of t=0 as a week(n) string
     #
-    # Sets the simclock's -week0 start date
+    # Sets the simclock's -week0 start date.
 
-    typemethod {mutate startdate} {startdate} {
+    method startdate {startdate} {
         set oldDate [simclock cget -week0]
 
         simclock configure -week0 $startdate
@@ -266,19 +220,19 @@ snit::type sim {
         set info(changed) 1
 
         # NEXT, notify the app
-        notifier send $type <Time>
+        $adb notify "" <Time>
 
         # NEXT, set the undo command
-        return [mytypemethod mutate startdate $oldDate]
+        return [mymethod startdate $oldDate]
     }
 
-    # mutate starttick starttick
+    # starttick starttick
     #
     # starttick   The integer tick as of SIM:LOCK
     #
     # Sets the simclock's -tick0 start tick
 
-    typemethod {mutate starttick} {starttick} {
+    method starttick {starttick} {
         set oldtick [simclock cget -tick0]
 
         simclock configure -tick0 $starttick
@@ -287,108 +241,109 @@ snit::type sim {
         set info(changed) 1
 
         # NEXT, notify the app
-        notifier send $type <Time>
+        $adb notify "" <Time>
 
         # NEXT, set the undo command
-        return [mytypemethod mutate starttick $oldtick]
+        return [mymethod starttick $oldtick]
     }
 
-    # mutate lock
+    # lock
     #
     # Causes the simulation to transition from PREP to PAUSED.
 
-    typemethod {mutate lock} {} {
+    method lock {} {
         assert {$info(state) eq "PREP"}
 
         # FIRST, Make sure that bsys has had a chance to compute
         # all of the affinities.
-        bsys start
+        $adb bsys start
 
         # NEXT, save an on-lock snapshot
-        adb snapshot save
+        $adb snapshot save
 
         # NEXT, do initial analyses, and initialize modules that
         # begin to work at this time.
-        sigevent log 1 lock "Scenario locked; simulation begins"
+        $adb sigevent log 1 lock "Scenario locked; simulation begins"
 
-        # NEXT, start the engine
-        engine start
+        # NEXT, start the simulation
+        $self StartModels
 
-        # NEXT, mark the time
+        # NEXT, mark the time: this supports time queries based on
+        # symbolic time names.
         simclock mark set LOCK
         simclock mark set RUN
 
         # NEXT, set the state to PAUSED
-        $type SetState PAUSED
+        $self SetState PAUSED
 
         # NEXT, resync the GUI, since much has changed.
-        notifier send $type <DbSyncB>
+        $adb dbsync
 
         # NEXT, return "", as this can't be undone.
         return ""
     }
 
-    # mutate unlock
+    # unlock
     #
     # Causes the simulation to transition from PAUSED
     # to PREP.
 
-    typemethod {mutate unlock} {} {
+    method unlock {} {
         assert {$info(state) eq "PAUSED"}
 
         # FIRST, load the PREP snapshot
-        adb snapshot load
-        adb snapshot purge
-        sigevent purge 0
+        $adb snapshot load
+        $adb snapshot purge
+        $adb sigevent purge 0
 
         # NEXT, set state
-        $type SetState PREP
+        $self SetState PREP
 
         # NEXT, log it.
-        log newlog prep
-        log normal sim "Unlocked Scenario Preparation"
+        $adb notify "" <Unlock>
+        $adb log normal sim "Unlocked Scenario Preparation"
 
-        # NEXT, resync the sim with the RDB
-        $type dbsync
+        # NEXT, resync the app with the RDB
+        $adb dbsync
 
         # NEXT, return "", as this can't be undone.
         return ""
     }
 
-    # mutate rebase
+    # rebase
     #
     # Causes the simulation to transition from PAUSED
     # to PREP, retaining the current simulation state.
 
-    typemethod {mutate rebase} {} {
+    method rebase {} {
         assert {$info(state) eq "PAUSED"}
 
         # FIRST, save the current simulation state to the
         # scenario tables
-        adb rebase
+        $adb rebase
 
         # NEXT, set state
-        $type SetState PREP
+        $self SetState PREP
 
         # NEXT, log it.
-        log newlog prep
-        log normal sim "Unlocked Scenario Preparation"
+        $adb notify "" <Unlock>
+        $adb log normal sim "Unlocked Scenario Preparation"
 
-        # NEXT, resync the sim with the RDB
-        $type dbsync
+        # NEXT, resync the app with the RDB
+        $adb dbsync
 
         # NEXT, return "", as this can't be undone.
         return ""
     }
 
-    # mutate run ?options...?
+    # run ?options...?
     #
     # -ticks ticks       Run until now + ticks
     # -until tick        Run until tick
     # -block flag        If true, block until run completed.
     #
     # Causes the simulation to run time forward until the specified
-    # time, or until "mutate pause" is called.
+    # time, or until "pause" is called.
     #
     # Time proceeds by ticks.  Normally, each tick is run in the 
     # context of the Tcl event loop, as controlled by a timeout(n) 
@@ -398,7 +353,7 @@ snit::type sim {
     # until the stoptime, and then returns.  Thus, -block requires
     # -ticks or -until.
 
-    typemethod {mutate run} {args} {
+    method run {args} {
         assert {$info(state) eq "PAUSED"}
 
         # FIRST, clear the stop reason.
@@ -439,20 +394,20 @@ snit::type sim {
 
         # NEXT, set the state to running.  This will initialize the
         # models, if need be.
-        $type SetState RUNNING
+        $self SetState RUNNING
 
         # NEXT, mark the start of the run.
         simclock mark set RUN 1
 
         # NEXT, we have been paused, and the user might have made
         # changes.  Run necessary analysis before the first tick.
-        engine analysis
+        $self RestartModels
 
         # NEXT, Either execute the first tick and schedule the next,
         # or run in blocking mode until the stop time.
         if {!$blocking} {
             # FIRST, run a tick immediately.
-            $type Tick
+            $self Tick
 
             # NEXT, if we didn't pause as a result of the first
             # tick, schedule the next one.
@@ -466,8 +421,8 @@ snit::type sim {
 
         # NEXT, handle a blocking run.  On error, set state to PAUSED
         # since it didn't get done automatically.
-        if {[catch {$type BlockingRun} result eopts]} {
-            $type SetState PAUSED
+        if {[catch {$self BlockingRun} result eopts]} {
+            $self SetState PAUSED
             return {*}$eopts $result
         }
 
@@ -475,19 +430,19 @@ snit::type sim {
         return ""
     }
 
-    typemethod BlockingRun {} {
+    method BlockingRun {} {
         while {$info(state) eq "RUNNING"} {
-            $type Tick
+            $self Tick
         }
 
         set info(stoptime) 0
     }
 
-    # mutate pause
+    # pause
     #
     # Pauses the simulation from running.
 
-    typemethod {mutate pause} {} {
+    method pause {} {
         # FIRST, cancel the ticker, so that the next tick doesn't occur.
         $ticker cancel
 
@@ -495,16 +450,101 @@ snit::type sim {
         # and TickWork will do the rest.  Otherwise, this is coming from a
         # GUI event, outside TickWork; just set the state to paused.
 
-        if {[flunky state] eq "TACTIC"} {
+        if {[$adb flunky state] eq "TACTIC"} {
             set info(stoptime) [simclock now]
         } elseif {$info(state) eq "RUNNING"} {
             set info(stoptime) 0
-            $type SetState PAUSED
+            $self SetState PAUSED
         }
 
         # NEXT, cannot be undone.
         return ""
     }
+
+    #-------------------------------------------------------------------
+    # Model Execution
+    
+    # StartModels
+    #
+    # Initializes the models on simulation start.
+
+    method StartModels {} {
+        # FIRST, Set up the attitudes model: initialize URAM and relate all
+        # existing MADs to URAM drivers.
+        $adb cprofile aram init -reload
+
+        # NEXT, prepare for an immediate rebase (silly though that would be
+        # to do).
+        rebase prepare
+
+        # NEXT, initialize all modules, and do basic analysis, in preparation
+        # for executing the on-lock tactics.
+
+        $adb cprofile demog start          ;# Computes population statistics
+        $adb cprofile personnel start      ;# Initial deployments and base units.
+        $adb cprofile service start        ;# Populates service tables.
+
+        # NEXT, security must go before coverage
+        $adb cprofile security_model start ;# Computes initial security
+        $adb cprofile coverage_model start ;# Computes initial coverage
+
+        $adb cprofile security_model analyze 
+        $adb cprofile coverage_model analyze 
+
+        $adb cprofile control_model start  ;# Computes initial support and influence
+
+        # NEXT, Advance time to tick0.  What we get here is a pseudo-tick,
+        # in which we execute the on-lock strategy and provide transient
+        # effects to URAM.
+
+        set t0 [simclock now]
+
+        $adb cprofile cash start           ;# Prepare cash for on-lock strategies
+        $adb cprofile strategy start       ;# Execute on-lock strategies
+        $adb cprofile econ start           ;# Initializes the econ model taking 
+                                                # into account on-lock strategies
+        $adb cprofile plant start          ;# Initializes the infrastructure model
+                                               ;# which depends on the econ model
+
+        # NEXT, do analysis and assessment, of transient effects only.
+        # There will be no attrition and no shifts in neighborhood control.
+
+        $adb cprofile demog stats
+        $adb cprofile absit assess
+
+        # NEXT, security must go before coverage
+        $adb cprofile security_model analyze
+        $adb cprofile coverage_model analyze
+
+        $adb cprofile control_model analyze
+        $adb cprofile activity assess
+        $adb cprofile service assess
+        set econOK [$adb econ tock]
+
+        # NEXT, if the econ tock is okay, we compute the demographics model
+        # econ stats and then run another econ tock with updated unemployment
+        # data
+        if {$econOK} {
+            $adb cprofile demog econstats
+            $adb cprofile econ tock
+        }
+
+        $adb cprofile ruleset CONSUMP assess
+        $adb cprofile ruleset UNEMP assess
+
+        # NEXT, set natural attitude levels for those attitudes whose
+        # natural level varies with time.
+        $self SetNaturalLevels
+
+        # NEXT, advance URAM to t0, applying the transient inputs
+        # entered above.
+        $adb cprofile aram advance $t0
+
+        # NEXT,  Save time 0 history!
+        $adb profile hist tick
+        $adb profile hist econ
+    }
+
 
     #-------------------------------------------------------------------
     # Tick
@@ -514,13 +554,13 @@ snit::type sim {
     # This command invokes TickWork to do the tick work, wrapped in an
     # RDB transaction.
 
-    typemethod Tick {} {
-        if {[parm get sim.tickTransaction]} {
-            rdb transaction {
-                $type TickWork
+    method Tick {} {
+        if {[$adb parm get sim.tickTransaction]} {
+            $adb rdb transaction {
+                $self TickWork
             }
         } else {
-            $type TickWork
+            $self TickWork
         }
     }
 
@@ -528,15 +568,9 @@ snit::type sim {
     #
     # This command is executed at each time tick.
 
-    typemethod TickWork {} {
-        # FIRST, tell the engine to do a tick.  Disable aram's undo
-        # capability so that we aren't saving undo info unnecessarily.
-        try {
-            aram configure -undo off
-            engine tick
-        } finally {
-            aram configure -undo on
-        }
+    method TickWork {} {
+        # FIRST, tell the engine to do a tick.
+        $self TickModels
 
         # NEXT, pause if it's the pause time, or checks failed.
         set stopping 0
@@ -566,17 +600,135 @@ snit::type sim {
         if {$info(stoptime) != 0 &&
             [simclock now] >= $info(stoptime)
         } {
-            log normal sim "Stop time reached"
+            $adb log normal sim "Stop time reached"
             set info(reason) "OK"
             set stopping 1
         }
 
         if {$stopping} {
-            $type mutate pause
+            $self pause
         }
 
         # NEXT, notify the application that the tick has occurred.
-        notifier send $type <Tick>
+        $adb notify "" <Tick>
+    }
+
+
+    # TickModels
+    #
+    # This command is executed to update the models at each 
+    # simulation time tick.
+
+    method TickModels {} {
+        # FIRST, advance time by one tick.
+        simclock tick
+        $adb notify "" <Time>
+        $adb log normal sim "Tick [simclock now]"
+
+        # NEXT, prepare for a rebase at the end of this tick.
+        rebase prepare
+
+        # NEXT, allow the population to grow or shrink
+        # according to its growth rate, and recompute 
+        # demographic statistics.
+        $adb cprofile demog growth
+        $adb cprofile demog stats
+        
+        # NEXT, GOODS production infrastructure plants may degrade 
+        $adb cprofile plant degrade
+
+        # NEXT, execute strategies; this changes the situation
+        # on the ground.  It may also schedule events to be executed
+        # immediately.  Recompute demog stats immediately, as the
+        # strategies might have moved population around.
+        $adb cprofile strategy tock
+        $adb cprofile demog stats
+
+        # NEXT, do analysis and assessment
+        $adb cprofile absit assess
+
+        # NEXT, security must go before coverage
+        $adb cprofile security_model analyze
+        $adb cprofile coverage_model analyze
+
+        $adb cprofile ruleset MOOD assess
+        $adb cprofile control_model analyze
+        $adb cprofile activity assess
+        $adb cprofile service assess
+        $adb cprofile abevent assess
+
+        # NEXT, do attrition and recompute demog stats, since groups
+        # might have lost personnel
+        $adb cprofile aam assess
+        $adb cprofile demog stats
+
+        # NEXT, update the economics.
+        if {[simclock now] % [$adb parm get econ.ticksPerTock] == 0} {
+            set econOK [$adb cprofile econ tock]
+
+            if {$econOK} {
+                $adb cprofile demog econstats
+            }
+        }
+
+        # NEXT, assess econ-dependent drivers.
+        $adb cprofile ruleset CONSUMP assess
+        $adb cprofile ruleset UNEMP assess
+        $adb cprofile control_model assess
+
+        # NEXT, advance URAM, first giving it the latest population data
+        # and natural attitude levels.
+        $adb aram update pop {*}[$adb eval {
+            SELECT g,population 
+            FROM demog_g
+        }]
+
+        $adb profile $self SetNaturalLevels
+        $adb cprofile aram advance [simclock now]
+
+        # NEXT, save the history for this tick.
+        $adb profile hist tick
+
+        if {[simclock now] % [$adb parm get econ.ticksPerTock] == 0} {
+            if {$econOK} {
+                $adb profile hist econ
+            }
+        }
+    }
+
+    # RestartModels
+    #
+    # Analysis to be done when restarting simulation, to update
+    # data values used by strategy conditions.
+
+    method RestartModels {} {
+        $adb cprofile demog stats
+        $adb cprofile security_model analyze
+        $adb cprofile coverage_model analyze
+        $adb cprofile control_model analyze
+    }
+
+
+    # SetNaturalLevels
+    #
+    # This routine sets the natural level for all attitude curves whose
+    # natural level changes over time.
+    
+    method SetNaturalLevels {} {
+        # Set the natural level for all SFT curves.
+        set Z [$adb parm get attitude.SFT.Znatural]
+
+        set values [list]
+
+        $adb eval {
+            SELECT g, security
+            FROM civgroups
+            JOIN force_ng USING (g,n)
+        } {
+            lappend values $g SFT [zcurve eval $Z $security]
+        }
+
+        $adb aram sat cset {*}$values
     }
 
     #-------------------------------------------------------------------
@@ -588,12 +740,14 @@ snit::type sim {
     #
     # Sets the current simulation state, and reports it as <State>.
 
-    typemethod SetState {state} {
+    method SetState {state} {
         # FIRST, transition to the new state.
         set info(state) $state
-        log normal sim "Simulation state is $info(state)"
+        $adb flunky state $state
 
-        notifier send $type <State>
+        $adb log normal sim "Simulation state is $info(state)"
+
+        $adb notify "" <State>
     }
 
     #-------------------------------------------------------------------
@@ -603,7 +757,7 @@ snit::type sim {
     #
     # Returns a checkpoint of the non-RDB simulation data.
 
-    typemethod checkpoint {{option ""}} {
+    method checkpoint {{option ""}} {
         assert {$info(state) in {PREP PAUSED}}
 
         if {$option eq "-saved"} {
@@ -620,9 +774,9 @@ snit::type sim {
 
     # restore checkpoint ?-saved?
     #
-    # checkpoint     A string returned by the checkpoint typemethod
+    # checkpoint     A string returned by the checkpoint method
     
-    typemethod restore {checkpoint {option ""}} {
+    method restore {checkpoint {option ""}} {
         # FIRST, restore the checkpoint data
         dict with checkpoint {
             simclock restore $clock
@@ -638,7 +792,7 @@ snit::type sim {
     #
     # Returns 1 if saveable(i) data has changed, and 0 otherwise.
 
-    typemethod changed {} {
+    method changed {} {
         return $info(changed)
     }
 }
@@ -662,7 +816,7 @@ snit::type sim {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [sim mutate startdate $parms(startdate)]
+        my setundo [$adb sim startdate $parms(startdate)]
     }
 }
 
@@ -686,7 +840,7 @@ snit::type sim {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [sim mutate starttick $parms(starttick)]
+        my setundo [$adb sim starttick $parms(starttick)]
     }
 }
 
@@ -704,9 +858,7 @@ snit::type sim {
         # FIRST, do the on-lock sanity check.
         set sev [sanity onlock check]
 
-        if {$sev eq "ERROR"} {
-            app show my://app/sanity/onlock
-
+        if {$sev in {"ERROR" "WARNING"}} {
             my reject * {
                 The on-lock sanity check failed with one or more errors; 
                 time cannot advance.  Fix the error, and try again.
@@ -716,48 +868,10 @@ snit::type sim {
 
             my returnOnError
         }
-
-        if {$sev eq "WARNING"} {
-            app show my://app/sanity/onlock
-
-            if {[my mode] eq "gui"} {
-                set answer \
-                    [messagebox popup \
-                         -title         "On-lock Sanity Check Failed"    \
-                         -icon          warning                          \
-                         -buttons       {ok "Continue" cancel "Cancel"}  \
-                         -default       my cancel                           \
-                         -ignoretag     onlock_check_failed              \
-                         -ignoredefault ok                               \
-                         -parent        [app topwin]                     \
-                         -message       [normalize {
-                         The on-lock sanity check failed with warnings; 
-                         one or more simulation objects are invalid.  See the 
-                         Detail Browser for details.  Press "Cancel" and
-                         fix the problems, or press "Continue" to 
-                         go ahead and lock the scenario, in which 
-                         case the invalid simulation objects will be 
-                         ignored as the simulation runs.
-                     }]]
-
-                if {$answer eq "cancel"} {
-                    # Don't do anything.
-                    return
-                }
-            } else {
-                my reject * {
-                    The on-lock sanity check failed with one or more errors; 
-                    time cannot advance.  Fix the error, and try again.
-                    Please use the Athena GUI to lock the scenario and see 
-                    the On-lock Sanity Check Report in the Detail Browser 
-                    for details.
-                }
-            }
-        }
     }
 
     method _execute {{flunky ""}} {
-        my setundo [sim mutate lock]
+        my setundo [$adb sim lock]
     }
 }
 
@@ -778,7 +892,7 @@ snit::type sim {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [sim mutate unlock]
+        my setundo [$adb sim unlock]
     }
 }
 
@@ -798,31 +912,7 @@ snit::type sim {
     }
 
     method _execute {{flunky ""}} {
-        # NEXT, make sure the user knows what he is getting into.
-        if {[my mode] eq "gui"} {
-            set answer [messagebox popup \
-                            -title         "Are you sure?"                  \
-                            -icon          warning                          \
-                            -buttons       {ok "Rebase" cancel "Cancel"}    \
-                            -default       my cancel                           \
-                            -ignoretag     SIM:REBASE                   \
-                            -ignoredefault ok                               \
-                            -parent        [app topwin]                     \
-                            -message       [normalize {
-                                By pressing "Rebase" you will be creating a
-                                new scenario based on the current simulation
-                                state.  This action cannot be undone, so be
-                                sure to save the old scenario before you do
-                                this.
-                            }]]
-
-            if {$answer eq "cancel"} {
-                my cancel
-            }
-        }
-
-        # NEXT, rebase the scenario; this is not undoable.
-        sim mutate rebase
+        $adb sim rebase
     }
 }
 
@@ -857,6 +947,8 @@ snit::type sim {
                 my reject block "Cannot block without specifying the weeks to run"
             }
 
+            # TBD: The library needs to know whether the event loop is 
+            # running or not.  If not, block automatically.
             if {![app tkloaded] && !$parms(block)} {
                 my reject block "Must be YES when Athena is in non-GUI mode"
             }
@@ -871,9 +963,9 @@ snit::type sim {
         # NEXT, start the simulation and return the undo script. 
         # There is an assumption that a tick is exactly one week.
         if {$parms(weeks) eq "" || $parms(weeks) == 0} {
-            lappend undo [sim mutate run]
+            lappend undo [$adb sim run]
         } else {
-            lappend undo [sim mutate run -ticks $parms(weeks) -block $parms(block)]
+            lappend undo [$adb sim run -ticks $parms(weeks) -block $parms(block)]
         }
 
         my setundo [join $undo \n]
@@ -897,7 +989,7 @@ snit::type sim {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [sim mutate pause]
+        my setundo [$adb sim pause]
     }
 }
 

@@ -65,8 +65,8 @@ snit::widgetadaptor civgroupbrowser {
             -selectioncmd [mymethod SelectionChanged] \
             -displaycmd   [mymethod DisplayData]      \
             -reloadon {
-                ::sim <DbSyncB>
-                ::sim <Tick>
+                ::adb <Sync>
+                ::adb <Tick>
                 ::adb.demog <Update>
             } -layout [string map [list %D $::app::derivedfg] $layout]
 

@@ -1941,7 +1941,7 @@
         if {[$adb econ state] eq "DISABLED"} {
             # IF econ disabled return 0.00
             return 0.00
-        } elseif {![sim locked]} {
+        } elseif {![$adb locked]} {
             # If the scenario is NOT locked, return 0.00
             return 0.00
         } else {
@@ -2379,7 +2379,7 @@
         if {[$adb econ state] eq "DISABLED"} {
             # IF econ disabled return 0.00
             return 0.00
-        } elseif {![sim locked]} {
+        } elseif {![$adb locked]} {
             # If the scenario is NOT locked, return 0.00
             return 0.00
         } else {

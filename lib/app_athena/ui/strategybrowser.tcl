@@ -226,8 +226,8 @@ snit::widget strategybrowser {
         # and so the browser's data is reloaded from scratch.  A
         # lazyupdater(n) is used to guarantee that the data is reloaded only
         # once, at the last possible moment.
-        notifier bind ::sim          <DbSyncB> $self [mymethod ReloadNow]
-        notifier bind ::sim          <Tick>    $self [mymethod ReloadOnEvent]
+        notifier bind ::adb          <Sync> $self [mymethod ReloadNow]
+        notifier bind ::adb          <Tick>    $self [mymethod ReloadOnEvent]
         notifier bind ::adb.strategy <Check>   $self [mymethod ReloadOnEvent]
 
         # ACTOR UPDATES

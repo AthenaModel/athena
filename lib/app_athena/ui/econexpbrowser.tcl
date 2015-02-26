@@ -59,8 +59,8 @@ snit::widgetadaptor econexpbrowser {
             -uid          id                          \
             -titlecolumns 1                           \
             -reloadon {
-                ::sim  <DbSyncB>
-                ::sim  <Tick>
+                ::adb  <Sync>
+                ::adb  <Tick>
             } -layout [string map [list %D $::app::derivedfg] $layout] \
             -views {
                 gui_econ_exp_now_a  "This Week"

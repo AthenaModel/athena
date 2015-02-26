@@ -850,7 +850,7 @@ snit::type ::athena::demog {
     # in the neighborhood.
 
     method gIn {n} {
-        if {[sim state] eq "PREP"} {
+        if {[$adb state] eq "PREP"} {
             return [rdb eval {
                 SELECT g FROM civgroups WHERE n=$n AND basepop > 0 ORDER BY g
             }]
@@ -873,7 +873,7 @@ snit::type ::athena::demog {
     # that reside in the neighborhood.
 
     method saIn {n} {
-        if {[sim state] eq "PREP"} {
+        if {[$adb state] eq "PREP"} {
             return [rdb eval {
                 SELECT g FROM civgroups 
                 WHERE n=$n AND basepop > 0 AND sa_flag 
@@ -898,7 +898,7 @@ snit::type ::athena::demog {
     # that reside in the neighborhood.
 
     method nonSaIn {n} {
-        if {[sim state] eq "PREP"} {
+        if {[$adb state] eq "PREP"} {
             return [rdb eval {
                 SELECT g FROM civgroups 
                 WHERE n=$n AND basepop > 0 AND NOT sa_flag 

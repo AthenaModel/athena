@@ -54,7 +54,7 @@ snit::widgetadaptor demogbrowser {
             -uid          id                          \
             -titlecolumns 1                           \
             -reloadon {
-                ::sim       <DbSyncB>
+                ::adb       <Sync>
                 ::adb.demog <Update>
                 ::adb       <nbhoods>
                 ::adb       <civgroups>

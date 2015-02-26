@@ -163,6 +163,7 @@ snit::type ::athena::athenadb {
     component paster    -public paste     ;# paste manager
     component pot       -public pot       ;# beanpot(n)
     component ruleset   -public ruleset   ;# rule set manager
+    component sim       -public sim       ;# Simulation Control
 
     # Editable Entities
     component absit     -public absit     ;# absit manager
@@ -206,6 +207,7 @@ snit::type ::athena::athenadb {
 
     # Models
     component aam            -public aam            ;# Athena attrition model 
+    component aram           -public aram           ;# Athena URAM 
     component control_model  -public control_model  ;# actor control model 
     component coverage_model -public coverage_model ;# activity coverage model 
     component demog          -public demog          ;# demographics model
@@ -280,6 +282,15 @@ snit::type ::athena::athenadb {
         # NEXT, support pasting of objects.
         install paster using ::athena::paster create ${selfns}::paster $self
 
+        # NEXT, add aram.
+        install aram using uram ${selfns}::aram \
+            -rdb          $rdb                  \
+            -loadcmd      [mymethod LoadAram]   \
+            -undo         on                    \
+            -logger       [mymethod log]        \
+            -logcomponent "aram"
+        $aram configure -undo off
+
         # NEXT, make standard components.  These are modules that were
         # singletons when Athena was a monolithic app.  They are now
         # types/classes with instances; each instance takes one argument,
@@ -326,6 +337,7 @@ snit::type ::athena::athenadb {
             security_model              \
             service                     \
             sigevent                    \
+            sim                         \
             {strategy strategy_manager} \
             stance                      \
             unit                        \
@@ -334,9 +346,15 @@ snit::type ::athena::athenadb {
         # NEXT, Make these components globally available.
         # TBD: These will go away once the transition to library code
         # is complete.
+        interp alias {} ::aram     {} $aram
         interp alias {} ::rdb      {} $rdb
         interp alias {} ::pot      {} $pot
         interp alias {} ::flunky   {} $flunky
+
+        # NEXT, register the ones that are saveables.  This will change
+        # when the transition to library code is complete.
+        $type register [list ::aram saveable]
+        $type register ::sim
 
         # NEXT, either load the named file or create an empty database.
         if {$filename ne ""} {
@@ -493,16 +511,13 @@ snit::type ::athena::athenadb {
         # FIRST, close and destroy the RDB.
         $rdb close
         $rdb destroy
-
-        # NEXT, reset other modules not yet owned by this object.
-        catch {sim new}
     }
 
     #-------------------------------------------------------------------
     # Delegated commands
 
     # RDB
-
+    delegate method {rdb *}           to rdb
     delegate method eval              to rdb as eval
     delegate method delete            to rdb as delete
     delegate method exists            to rdb as exists
@@ -516,25 +531,17 @@ snit::type ::athena::athenadb {
     delegate method schema            to rdb as schema
     delegate method tables            to rdb as tables
     delegate method ungrab            to rdb as ungrab
+
+    # SIM
+    delegate method locked            to sim as locked
+    delegate method state             to sim as state
+    delegate method stable            to sim as stable
     
+    # FLUNKY
+    delegate method send              to flunky as send
 
     #-------------------------------------------------------------------
-    # Event Handlers
-
-
-    # ExplainCmd query explanation
-    #
-    # query       - An sql query
-    # explanation -  Result of calling EXPLAIN QUERY PLAN on the query.
-    #
-    # Logs the query and its explanation.
-
-    method ExplainCmd {query explanation} {
-        $self log normal "EXPLAIN QUERY PLAN {$query}\n---\n$explanation"
-    }
-
-    #-------------------------------------------------------------------
-    # Resetting the Scenario
+    # Scenario Control
 
     # reset
     #
@@ -542,12 +549,12 @@ snit::type ::athena::athenadb {
     # "new" scenario.
 
     method reset {} {
-        require {[sim stable]} "A new scenario cannot be created in this state."
+        require {[$sim stable]} "A new scenario cannot be created in this state."
 
         # FIRST, unlock the scenario if it is locked; this
         # will reinitialize modules like URAM.
-        if {[sim state] ne "PREP"} {
-            sim mutate unlock
+        if {[$sim state] ne "PREP"} {
+            $sim unlock
         }
 
         # NEXT, close the RDB if it's open
@@ -556,6 +563,17 @@ snit::type ::athena::athenadb {
         }
 
         # NEXT, Reset the scenario
+        #
+        # TBD: Revise the saveable(i) interface, so that modules reset
+        # themselves if restored with an empty save string: and then be
+        # sure to restore every registered module.
+        # Also, use symbolic names in the saveables table, and relate
+        # them explicitly to the objects (not singletons) to receive
+        # the data.
+        #
+        # TBD: Remove .main from the saveables list.  Window flags should
+        # be saved as a pref, not as part of the scenario.
+
         $self InitializeRDB
         $pot reset
         $bsys clear
@@ -563,14 +581,15 @@ snit::type ::athena::athenadb {
         $parm checkpoint -saved
         $econ reset
         $strategy reset
+        $sim reset
 
         set info(adbfile) ""
 
-        sim new
-
         # NEXT, reset the executive, getting rid of any script
         # definitions from the previous scenario.
-        # TBD: What about the running script?
+        # Note that any script in progress will complete normally,
+        # but any changes to its interp state will be lost.  (This
+        # is OK.)
         $executive reset
 
         $self FinishOpeningScenario
@@ -601,9 +620,6 @@ snit::type ::athena::athenadb {
         $self notify "" <Create>
     }
     
-    #-------------------------------------------------------------------
-    # Load a Scenario
-
     # load filename
     #
     # filename  - An .adb file
@@ -612,7 +628,7 @@ snit::type ::athena::athenadb {
     # before.
 
     method load {filename} {
-        require {[sim stable]} "A new scenario cannot be opened in this state."
+        require {[$sim stable]} "A new scenario cannot be opened in this state."
 
         try {
             $rdb load $filename
@@ -631,10 +647,6 @@ snit::type ::athena::athenadb {
         $self FinishOpeningScenario
     }
     
-
-    #-------------------------------------------------------------------
-    # Saving the Scenario
-        
     # save ?filename?
     #
     # filename - Name for the new save file
@@ -742,11 +754,31 @@ snit::type ::athena::athenadb {
         }
     }
 
+    # dbsync
+    #
+    # Notify that application that everything has changed.
+    # Database synchronization occurs when the RDB changes out from under
+    # the application, i.e., brand new scenario is created or
+    # loaded.  All application modules must re-initialize themselves
+    # at this time.
+
+
+    method dbsync {} {
+        # Sync relevant models
+        $nbhood dbsync
+        $strategy dbsync
+
+        $self notify "" <PreSync>
+        $self notify "" <Sync>
+        $self notify "" <Time>
+        $self notify "" <State>
+
+    }
+    
+
+
     #-------------------------------------------------------------------
     # Snapshot management
-    #
-    # TBD: This code is essential, but private.  Once the sim module
-    # has been incorporated into athena(n), these should be renamed.
 
     # snapshot save
     #
@@ -869,7 +901,7 @@ snit::type ::athena::athenadb {
         simclock configure -tick0 [simclock now]
 
         # NEXT, reinitialize modules that depend on the time.
-        aram clear
+        $aram clear
 
         # NEXT, purge simulation tables
         foreach table [$rdb tables] {
@@ -901,6 +933,22 @@ snit::type ::athena::athenadb {
     method {rdb component} {} {
         return $rdb
     }
+
+    #-------------------------------------------------------------------
+    # Event Handlers
+
+
+    # ExplainCmd query explanation
+    #
+    # query       - An sql query
+    # explanation -  Result of calling EXPLAIN QUERY PLAN on the query.
+    #
+    # Logs the query and its explanation.
+
+    method ExplainCmd {query explanation} {
+        $self log normal "EXPLAIN QUERY PLAN {$query}\n---\n$explanation"
+    }
+
 
 
     #===================================================================
@@ -953,6 +1001,21 @@ snit::type ::athena::athenadb {
         return $result
     }
 
+    # cprofile ?depth? component ?args...?
+    #
+    # Profiles the command, which is a call to one of ADB's own 
+    # components.  Provided for convenience.
+
+    method cprofile {args} {
+        if {[string is integer -strict [lindex $args 0]]} {
+            set depth [list [lshift args]]
+        } else {
+            set depth ""
+        }
+
+        $self profile {*}$depth $self {*}$args
+    }
+
 
     # notify component event args...
     #
@@ -980,6 +1043,77 @@ snit::type ::athena::athenadb {
         return [package present athena]
     }
 
+    #-------------------------------------------------------------------
+    # URAM-related routines.
+    
+    # LoadAram uram
+    #
+    # Loads scenario data into URAM when it's initialized.
+
+    method LoadAram {uram} {
+        $uram load causes {*}[ecause names]
+
+        $uram load actors {*}[$rdb eval {
+            SELECT a FROM actors
+            ORDER BY a
+        }]
+
+        $uram load nbhoods {*}[$rdb eval {
+            SELECT n FROM nbhoods
+            ORDER BY n
+        }]
+
+        # TBD: See about saving proximity in nbrel_mn in numeric form.
+        set data [list]
+        $rdb eval {
+            SELECT m, n, proximity FROM nbrel_mn
+            ORDER BY m,n
+        } {
+            lappend data $m $n [eproximity index $proximity]
+        }
+        $uram load prox {*}$data
+
+        $uram load civg {*}[$rdb eval {
+            SELECT g,n,basepop FROM civgroups_view
+            ORDER BY g
+        }]
+
+        $uram load otherg {*}[$rdb eval {
+            SELECT g,gtype FROM groups
+            WHERE gtype != 'CIV'
+            ORDER BY g
+        }]
+
+        $uram load hrel {*}[$rdb eval {
+            SELECT f, g, current, base, nat FROM gui_hrel_base_view
+            ORDER BY f, g
+        }]
+
+        $uram load vrel {*}[$rdb eval {
+            SELECT g, a, current, base, nat FROM gui_vrel_base_view
+            ORDER BY g, a
+        }]
+
+        # Note: only SFT has a natural level, and it can't be computed
+        # until later.
+        $uram load sat {*}[$rdb eval {
+            SELECT g, c, current, base, 0.0, saliency
+            FROM sat_gc
+            ORDER BY g, c
+        }]
+
+        # Note: COOP natural levels are not being computed yet.
+        $uram load coop {*}[$rdb eval {
+            SELECT f, 
+                   g,
+                   base, 
+                   base, 
+                   CASE WHEN regress_to='BASELINE' THEN base ELSE natural END
+            FROM coop_fg
+            ORDER BY f, g
+        }]
+    }
+
     #===================================================================
     # SQL Functions
     #
@@ -991,7 +1125,7 @@ snit::type ::athena::athenadb {
     # Returns 1 if the scenario is locked, and 0 otherwise.
 
     method Locked {} {
-        expr {[sim state] ne "PREP"}
+        expr {[$sim state] ne "PREP"}
     }
 
     # Mgrs args
@@ -1024,7 +1158,7 @@ snit::type ::athena::athenadb {
 
     method UramGamma {ctype} {
         # The [expr] converts it to a number.
-        return [expr [lindex [$adb parm get uram.factors.$ctype] 1]]
+        return [expr [lindex [$parm get uram.factors.$ctype] 1]]
     }
 
     # Sigline dtype signature

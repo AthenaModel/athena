@@ -136,7 +136,7 @@ snit::widget capbrowser {
             -titlecolumns 1                              \
             -selectioncmd [mymethod CapSelectionChanged] \
             -reloadon {
-                ::sim <DbSyncB>
+                ::adb <Sync>
             } -layout [string map [list %D $::app::derivedfg] $caplayout]
 
 
@@ -274,7 +274,7 @@ snit::widget capbrowser {
             -selectioncmd [mymethod NbcovSelectionChanged]   \
             -reloadon {
                 ::adb <caps>
-                ::sim <DbSyncB>
+                ::adb <Sync>
             } -views {
                 gui_cap_kn         "All"
                 gui_cap_kn_nonzero "Non-Zero"
@@ -349,7 +349,7 @@ snit::widget capbrowser {
             -reloadon {
                 ::adb <caps>
                 ::adb <cap_kn>
-                ::sim <DbSyncB>
+                ::adb <Sync>
             } -views {
                 gui_capcov         "All"
                 gui_capcov_nonzero "Non-Zero"

@@ -8,7 +8,7 @@
 # DESCRIPTION:
 #    athena(n): Model Parameters
 #
-# TBD: Global refs: log, sim, athena register, 
+# TBD: Global refs: athena register, 
 #
 #-----------------------------------------------------------------------
 
@@ -71,7 +71,7 @@ snit::type ::athena::parm {
     # PREP to RUNNING.  It locks and unlocks significant parameters.
 
     method SimState {} {
-        if {[sim state] eq "PREP"} {
+        if {[$adb state] eq "PREP"} {
             $ps unlock *
         } else {
             $self LockParms

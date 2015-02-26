@@ -11,8 +11,7 @@
 #    This module defines a type, "absit", which is used to
 #    manage the collection of abstract situation objects, or absits.
 #
-# TBD: Global references: simclock
-# parmdb, sim, ptype, refpoint
+# TBD: Global references: simclock, ptype
 #
 #-----------------------------------------------------------------------
 
@@ -393,9 +392,9 @@ snit::type ::athena::absit {
         # by a tactic or by a scheduled order, it will be t, i.e., 
         # right now.
 
-        if {[sim state] eq "PREP"} {
+        if {[$adb state] eq "PREP"} {
             set ts [simclock cget -tick0]
-        } elseif {[sim state] eq "PAUSED"} {
+        } elseif {[$adb state] eq "PAUSED"} {
             set ts [simclock now 1]
         } else {
             set ts [simclock now]
