@@ -97,10 +97,10 @@
     method narrative {} {
         set narr ""
 
-        set s(n)  [link make nbhood $n]
-        set s(f)  [link make group $f]
-        set s(g1) [link make group $g1]
-        set s(g2) [link make group $g2]
+        set s(n)  [::athena::link make nbhood $n]
+        set s(f)  [::athena::link make group $f]
+        set s(g1) [::athena::link make group $g1]
+        set s(g2) [::athena::link make group $g2]
 
         switch -exact -- $mode {
             NBHOOD {
@@ -133,10 +133,10 @@
         set owner [my agent]
         set objects [list]
 
-        set s(n)  [link make nbhood $n]
-        set s(f)  [link make group $f]
-        set s(g1) [link make group $g1]
-        set s(g2) [link make group $g2]
+        set s(n)  [::athena::link make nbhood $n]
+        set s(f)  [::athena::link make group $f]
+        set s(g1) [::athena::link make group $g1]
+        set s(g2) [::athena::link make group $g2]
 
         # FIRST, is f in n?  If not, there's nothing to do.
         if {$mode eq "GROUP"} {

@@ -134,7 +134,7 @@
     # Returns a human-readable narrative string for this tactic.
 
     method narrative {} {
-        set s(g)     [link make group $g]
+        set s(g)     [::athena::link make group $g]
         set s(nlist) [[my adb] gofer NBHOODS narrative $nlist]
 
         if {$redeploy} {

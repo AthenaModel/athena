@@ -63,7 +63,7 @@
     }
 
     method narrative {} {
-        set s(a)       [link make actor $a]
+        set s(a)       [::athena::link make actor $a]
         set s(amount)  "\$[commafmt $amount]"
         set s(percent) [format %.1f%% $percent]
 

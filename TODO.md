@@ -1,6 +1,16 @@
 # TODO.md - Athena TODO List
 
 - Revise how the saveable registry works.
+- Generation of URLs:
+  - htools is configured with a dictionary of symbolic names and base URLs.
+  - The `$ht link` command will translate "%name/" at the beginning of a
+    URL to "$baseurl/".
+  - If the "name" is unknown, no link is created; just the link text is
+    put in the buffer.
+  - athena(n) gets the same dictionary, and delegates it to athenadb(n).
+  - athenadb(n) provides a factory method for creating configured htools
+    buffers.
+  - Code creating htools buffers get them from athenadb(n).
 - athena(n) needs to know whether it is running in an event loop or not.
   Or, more specifically, whether non-blocking runs are allowed.
   - Make this an option.

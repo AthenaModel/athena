@@ -70,7 +70,7 @@
         } elseif {$a eq "NONE"} {
             set s(a) "no one"
         } else {
-            set s(a) "actor [link make actor $a]"
+            set s(a) "actor [::athena::link make actor $a]"
         }
 
         set s(nlist) [[my adb] gofer NBHOODS narrative $nlist]

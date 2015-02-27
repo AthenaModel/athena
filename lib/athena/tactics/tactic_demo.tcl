@@ -65,8 +65,8 @@
     method narrative {} {
         set narr ""
 
-        set s(n)        [link make nbhood $n]
-        set s(g)        [link make group $g]
+        set s(n)        [::athena::link make nbhood $n]
+        set s(g)        [::athena::link make group $g]
         set s(coverage) [format "%.2f" $coverage]
 
         set narr "DEMO abstract event by $s(g) in $s(n) "

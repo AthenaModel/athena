@@ -84,7 +84,7 @@
 
 
     method narrative {} {
-        set fgrp [link make group $f]
+        set fgrp [::athena::link make group $f]
 
         append result \
             "Group $fgrp adopts a stance of [format %.2f $drel] " \

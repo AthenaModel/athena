@@ -74,8 +74,8 @@
         set narr ""
 
         set s(stype)    [expr {$stype ne "" ? $stype : "???"}]
-        set s(n)        [link make nbhood $n]
-        set s(resolver) [link make group $resolver]
+        set s(n)        [::athena::link make nbhood $n]
+        set s(resolver) [::athena::link make group $resolver]
         set s(coverage) [format "%.2f" $coverage]
 
         set narr "$s(stype) abstract situation in $s(n) "
@@ -96,8 +96,8 @@
         set owner [my agent]
         set objects [list]
 
-        set s(n)        [link make nbhood $n]
-        set s(resolver) [link make group $resolver]
+        set s(n)        [::athena::link make nbhood $n]
+        set s(resolver) [::athena::link make group $resolver]
         set s(coverage) [format "%.2f" $coverage]
 
         # FIRST, is there already an absit of this type in n? If so,

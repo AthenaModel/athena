@@ -70,7 +70,7 @@
     }
 
     method narrative {} {
-        set s(n)       [link make nbhood $n]
+        set s(n)       [::athena::link make nbhood $n]
         set s(amount)  "\$[commafmt $amount]"
         set s(num)     [expr {$num == 1 ? "1 plant" : "$num plants"}]
 

@@ -62,7 +62,7 @@
 
 
     method narrative {} {
-        set gtext [link make group $g]
+        set gtext [::athena::link make group $g]
 
         switch -exact -- $mode {
             ALL     { set ptext "all"                      }

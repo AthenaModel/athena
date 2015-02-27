@@ -68,8 +68,8 @@
 
 
     method narrative {} {
-        set s(f) [link make group $f]
-        set s(g) [link make group $g]
+        set s(f) [::athena::link make group $f]
+        set s(g) [::athena::link make group $g]
 
         switch -exact -- $mode {
             ALL { 

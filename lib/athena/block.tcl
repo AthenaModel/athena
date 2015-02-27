@@ -403,7 +403,7 @@ oo::class create ::athena::block {
         $ht para
 
         # NEXT, if we are locked show the execution status of this block.
-        if {[$adb locked]} {
+        if {[[my adb] locked]} {
             $ht putln "<b>Execution Status:</b> "
             $ht put [eexecstatus as btext [my execstatus]]
 

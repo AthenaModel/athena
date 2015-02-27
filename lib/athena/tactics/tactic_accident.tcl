@@ -57,7 +57,7 @@
     method narrative {} {
         set narr ""
 
-        set s(n)        [link make nbhood $n]
+        set s(n)        [::athena::link make nbhood $n]
         set s(coverage) [format "%.2f" $coverage]
 
         set narr "ACCIDENT abstract event in $s(n) "
@@ -69,7 +69,7 @@
     method execute {} {
         set owner [my agent]
 
-        set s(n)        [link make nbhood $n]
+        set s(n)        [::athena::link make nbhood $n]
         set s(coverage) [format "%.2f" $coverage]
 
         # NEXT, log execution

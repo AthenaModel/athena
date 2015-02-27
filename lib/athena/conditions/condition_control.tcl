@@ -45,7 +45,7 @@
     # Operations
 
     method narrative {} {
-        set s(a)      [link make actor $a]
+        set s(a)      [::athena::link make actor $a]
         set s(sense)  [string tolower [edoes as longname $sense]]
         set s(anyall) [string tolower [eanyall longname $anyall]]
         set s(nlist)  [[my adb] gofer NBHOODS narrative $nlist]

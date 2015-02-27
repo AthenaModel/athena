@@ -105,9 +105,9 @@
     }
 
     method narrative {} {
-        set s(cap) [link make cap $cap]
-        set s(a)   [link make actor $a]
-        set s(iom) [link make iom $iom]
+        set s(cap) [::athena::link make cap $cap]
+        set s(a)   [::athena::link make actor $a]
+        set s(iom) [::athena::link make iom $iom]
         set s(cost) "\$[commafmt $cost]"
 
         set text "Broadcast $s(iom) via $s(cap) with prep cost of $s(cost)"

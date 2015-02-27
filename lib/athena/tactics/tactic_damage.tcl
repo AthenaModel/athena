@@ -64,8 +64,8 @@
     }
 
     method narrative {} {
-        set s(n)       [link make nbhood $n]
-        set s(a)       [link make actor $a]
+        set s(n)       [::athena::link make nbhood $n]
+        set s(a)       [::athena::link make actor $a]
         set s(percent) [format %.1f%% $percent]
 
         return \

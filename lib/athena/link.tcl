@@ -20,7 +20,12 @@
 #
 #-----------------------------------------------------------------------
 
-snit::type link {
+namespace eval ::athena:: {
+    namespace export \
+        link
+}
+
+snit::type ::athena::link {
     # Make it a singleton
     pragma -hasinstances no
 

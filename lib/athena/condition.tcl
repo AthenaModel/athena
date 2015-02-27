@@ -270,10 +270,10 @@ oo::define ::athena::condition {
         dict set vdict fullname   [my fullname]
 
         if {$view eq "html"} {
-            dict set vdict narrative [link html [my narrative]]
+            dict set vdict narrative [::athena::link html [my narrative]]
         } else {
             # text, cget
-            dict set vdict narrative [link text [my narrative]]
+            dict set vdict narrative [::athena::link text [my narrative]]
         }
 
         # NEXT, translate and trim for cget view
