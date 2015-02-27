@@ -121,9 +121,14 @@ snit::type ::athena::bsys {
     method restore {checkpoint {option ""}} {
         # FIRST, restore the checkpoint data
         $self clear
-        array set info [dict get $checkpoint info]
 
-        $mam restore [dict get $checkpoint mam]
+        if {[dict exists $checkpoint info]} {
+            array set info [dict get $checkpoint info]
+        }
+
+        if {[dict exists $checkpoint mam]} {
+            $mam restore [dict get $checkpoint mam]
+        }
         return
     }
 

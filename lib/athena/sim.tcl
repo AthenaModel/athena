@@ -778,10 +778,13 @@ snit::type ::athena::sim {
     # checkpoint     A string returned by the checkpoint method
     
     method restore {checkpoint {option ""}} {
-        # FIRST, restore the checkpoint data
-        dict with checkpoint {
-            simclock restore $clock
-            set info(state) $state
+        set info(changed) 1
+
+        if {[dict size $checkpoint] > 0} {
+            dict with checkpoint {
+                simclock restore $clock
+                set info(state) $state
+            }
         }
 
         if {$option eq "-saved"} {

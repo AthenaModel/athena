@@ -1736,17 +1736,21 @@ snit::type ::athena::econ {
     #   checkpoint - A string returned by the checkpoint method
     
     method restore {checkpoint {option ""}} {
-        # FIRST, restore the checkpoint data
-        sam set [dict get $checkpoint sam]
-        cge set [dict get $checkpoint cge]
+        $self reset 
 
-        # NEXT, solve the SAM we need to have all computed values
-        # updated
-        sam solve
+        if {[dict size $checkpoint] > 0} {
+            # FIRST, restore the checkpoint data
+            sam set [dict get $checkpoint sam]
+            cge set [dict get $checkpoint cge]
 
-        set startdict [dict get $checkpoint startdict]
-        array set histdata [dict get $checkpoint histdata]
-        array set info [dict get $checkpoint info]
+            # NEXT, solve the SAM we need to have all computed values
+            # updated
+            sam solve
+
+            set startdict [dict get $checkpoint startdict]
+            array set histdata [dict get $checkpoint histdata]
+            array set info [dict get $checkpoint info]
+        }
 
         if {$option eq "-saved"} {
             set info(changed) 0

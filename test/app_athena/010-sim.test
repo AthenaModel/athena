@@ -467,7 +467,6 @@ namespace eval ::athena_test::tests:: {
         simclock advance 5
         sim pause
         sim startdate 2014W26
-        # TBD: Should schedule something in the event queue
     } -body {
         sim unlock
 

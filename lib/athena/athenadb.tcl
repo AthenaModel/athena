@@ -538,26 +538,10 @@ snit::type ::athena::athenadb {
             $rdb close
         }
 
-        # NEXT, Reset the scenario
-        #
-        # TBD: Revise the saveable(i) interface, so that modules reset
-        # themselves if restored with an empty save string: and then be
-        # sure to restore every registered module.
-        # Also, use symbolic names in the saveables table, and relate
-        # them explicitly to the objects (not singletons) to receive
-        # the data.
-        #
-        # TBD: Remove .main from the saveables list.  Window flags should
-        # be saved as a pref, not as part of the scenario.
-
+        # NEXT, Reset the scenario, restoring saveable from an empty RDB.
         $self InitializeRDB
-        $pot reset
-        $bsys clear
-        $parm reset
-        $parm checkpoint -saved
-        $econ reset
+        $self RestoreSaveables
         $strategy reset
-        $sim reset
 
         set info(adbfile) ""
 
