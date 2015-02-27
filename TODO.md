@@ -8,6 +8,7 @@
 - Move parmdb(n) into athena(n).
 - Check whether "adb reset" can replace all of the resets in "ted cleanup"
   - And if not, why not?
+- Figure out what to do about icon names in athena(n) HTML.
 - Generation of URLs:
   - htools is configured with a dictionary of symbolic names and base URLs.
   - The `$ht link` command will translate "%name/" at the beginning of a
