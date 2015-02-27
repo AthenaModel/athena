@@ -1,15 +1,13 @@
 # TODO.md - Athena TODO List
 
-- Revise how the saveable registry works.
+- Move relevant apptypes.tcl to athena(n).
+- Move relevant helpers.tcl to athena(n).
+- Remove global singleton names:
+  - Revise remaining app code to not use them.
+  - Remove all such aliases, and see what breaks.
+- Move parmdb(n) into athena(n).
 - Check whether "adb reset" can replace all of the resets in "ted cleanup"
   - And if not, why not?
-- Revise saveables to accept empty data, where necessary. 
-- Save appwin's old saveable data to prefs on exit.
-  - Just visibility flags, e.g., CLI, scrolling log, scripts editor,
-    order history.
-  - Define one pref for each.
-  - Set in constructor
-  - Save with CLI history.
 - Generation of URLs:
   - htools is configured with a dictionary of symbolic names and base URLs.
   - The `$ht link` command will translate "%name/" at the beginning of a
@@ -28,12 +26,6 @@
 - Document all component entries in athenadb(n).
   - Or, come up with a plan for which ones are documented and which aren't.
 - Document athena(n)
-- Move editable entities to athena(n)
-- Move model modules to athena(n)
-- Move relevant projtypes to athena(n)
-- Move parmdb/parm to athena(n)
-  - Make it use `::athena::ruleset names` intead of edamruleset, and
-    remove edamruleset.
 - Document all athena(n) notifier events in athena(n).
 - When app_athena no longer needs to be loaded to test athena(n):
   - app_athena tests to test/athena.

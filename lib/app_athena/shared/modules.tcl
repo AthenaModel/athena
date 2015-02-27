@@ -58,6 +58,5 @@ source [file join $::app_athena_shared::library apptypes.tcl           ]
 source [file join $::app_athena_shared::library gradient.tcl           ]
 source [file join $::app_athena_shared::library helpers.tcl            ]
 source [file join $::app_athena_shared::library ptype.tcl              ]
-source [file join $::app_athena_shared::library rebase.tcl             ]
 source [file join $::app_athena_shared::library view.tcl               ]
 

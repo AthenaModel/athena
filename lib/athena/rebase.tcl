@@ -6,12 +6,12 @@
 #   Will Duquette
 #
 # DESCRIPTION:
-#   athena_sim(1): Simulation Rebase Manager 
+#   athena(n): Simulation Rebase Manager 
 #
 #   Rebasing the simulation is the creation of a new scenario that when
 #   locked will be equivalent to the current state of the simulation.
 #   This module is responsible for updating the scenario data for this 
-#   purpose.  The process is as follows:
+#   purpose.  The methodess is as follows:
 #
 #   * Rebasing requires data from the previous time tick.  
 #     [rebase prepare] saves this data at the beginning of each [tick].
@@ -25,9 +25,24 @@
 #
 #-----------------------------------------------------------------------
 
-snit::type rebase {
-    # Make it a singleton
-    pragma -hasinstances no
+snit::type ::athena::rebase {
+    #-------------------------------------------------------------------
+    # Components
+
+    component adb ;# The athenadb(n) instance
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    # constructor adb_
+    #
+    # adb_    - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of the type.
+
+    constructor {adb_} {
+        set adb $adb_
+    }
 
     # prepare
     #
@@ -35,8 +50,8 @@ snit::type rebase {
     # to save data for the state of the simulation as of the start of
     # the tick, e.g., current satisfaction levels.
 
-    typemethod prepare {} {
-        rdb eval {
+    method prepare {} {
+        $adb eval {
             DELETE FROM rebase_sat;
             INSERT INTO rebase_sat(g, c, current)
             SELECT g, c, sat FROM uram_sat;
@@ -51,7 +66,7 @@ snit::type rebase {
         }
     }
     
-    # rebase
+    # save
     #
     # Save scenario prep data based on the current simulation
     # state.  For some modules, we do the rebasing effort right here,
@@ -59,35 +74,35 @@ snit::type rebase {
     # all in one place.  For others it's significantly tricky, and it's
     # better to have it with its source module.
     
-    typemethod save {} {
+    method save {} {
         # FIRST, do the tricky modules.
-        econ rebase
-        absit rebase
-        strategy rebase
+        $adb econ rebase
+        $adb absit rebase
+        $adb strategy rebase
 
         # NEXT, rebase the other scenario tables.
-        RebaseCivgroups
-        RebaseCooperation
-        RebaseFrcgroups
-        RebaseHorizontalRelationships
-        RebaseNeighborhoods        
-        RebaseOrggroups
-        RebaseSatisfaction
-        RebaseVerticalRelationships
+        $self RebaseCivgroups
+        $self RebaseCooperation
+        $self RebaseFrcgroups
+        $self RebaseHorizontalRelationships
+        $self RebaseNeighborhoods        
+        $self RebaseOrggroups
+        $self RebaseSatisfaction
+        $self RebaseVerticalRelationships
     }
 
     # RebaseCivgroups
     #
     # Save civgroups data on rebase.
 
-    proc RebaseCivgroups {} {
+    method RebaseCivgroups {} {
         # FIRST, set civilian group base population to the current
         # population.
-        rdb eval {
+        $adb eval {
             SELECT g, population, upc
             FROM demog_g
         } {
-            rdb eval {
+            $adb eval {
                 UPDATE civgroups
                 SET basepop   = $population,
                     hist_flag = 1,
@@ -101,12 +116,12 @@ snit::type rebase {
     #
     # Save coop_fg data on rebase.
 
-    proc RebaseCooperation {} {
+    method RebaseCooperation {} {
         # FIRST, set base to current values.
-        rdb eval {
+        $adb eval {
             SELECT f, g, bvalue, cvalue FROM uram_coop;
         } {
-            rdb eval {
+            $adb eval {
                 UPDATE coop_fg
                 SET base=$bvalue,
                     regress_to = 'NATURAL',
@@ -120,13 +135,13 @@ snit::type rebase {
     #
     # Save frcgroups data on rebase.
 
-    proc RebaseFrcgroups {} {
+    method RebaseFrcgroups {} {
         # FIRST, set force group base personnel to the current level.
-        rdb eval {
+        $adb eval {
             SELECT g, personnel
             FROM personnel_g
         } {
-            rdb eval {
+            $adb eval {
                 UPDATE frcgroups
                 SET base_personnel = $personnel
                 WHERE g=$g
@@ -138,9 +153,9 @@ snit::type rebase {
     #
     # Save HREL data on rebase.
 
-    proc RebaseHorizontalRelationships {} {
+    method RebaseHorizontalRelationships {} {
         # FIRST, set overrides to natural relationships
-        rdb eval {
+        $adb eval {
             DELETE FROM hrel_fg;
 
             INSERT INTO hrel_fg(f, g, base, hist_flag, current)
@@ -159,12 +174,12 @@ snit::type rebase {
     #
     # Save nbhoods data on rebase.
 
-    proc RebaseNeighborhoods {} {
+    method RebaseNeighborhoods {} {
         # FIRST, set nbhood controller to current controller.
-        rdb eval {
+        $adb eval {
             SELECT n, controller FROM control_n
         } {
-            rdb eval {
+            $adb eval {
                 UPDATE nbhoods 
                 SET controller=nullif($controller,'')
                 WHERE n=$n
@@ -176,13 +191,13 @@ snit::type rebase {
     #
     # Save orggroups data on rebase.
 
-    proc RebaseOrggroups {} {
+    method RebaseOrggroups {} {
         # FIRST, set org group base personnel to the current level.
-        rdb eval {
+        $adb eval {
             SELECT g, personnel
             FROM personnel_g
         } {
-            rdb eval {
+            $adb eval {
                 UPDATE orggroups
                 SET base_personnel = $personnel
                 WHERE g=$g
@@ -194,9 +209,9 @@ snit::type rebase {
     #
     # Save satisfaction data on rebase.
     
-    proc RebaseSatisfaction {} {
+    method RebaseSatisfaction {} {
         # FIRST, set base to current values.
-        rdb eval {
+        $adb eval {
             SELECT U.g       AS g, 
                    U.c       AS c, 
                    U.bvalue  AS bvalue,
@@ -204,7 +219,7 @@ snit::type rebase {
             FROM uram_sat AS U
             JOIN rebase_sat AS R USING (g,c)
         } {
-            rdb eval {
+            $adb eval {
                 UPDATE sat_gc
                 SET base      = $bvalue,
                     hist_flag = 1,
@@ -219,9 +234,9 @@ snit::type rebase {
     #
     # Save VREL data on rebase.
 
-    proc RebaseVerticalRelationships {} {
+    method RebaseVerticalRelationships {} {
         # FIRST, set overrides to current relationships
-        rdb eval {
+        $adb eval {
             DELETE FROM vrel_ga;
             
             INSERT INTO vrel_ga(g, a, base, hist_flag, current)

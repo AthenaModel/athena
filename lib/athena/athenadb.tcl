@@ -303,6 +303,7 @@ snit::type ::athena::athenadb {
             payload                     \
             plant                       \
             personnel                   \
+            rebase                      \
             {ruleset  ruleset_manager}  \
             sanity                      \
             sat                         \
@@ -853,10 +854,13 @@ snit::type ::athena::athenadb {
 
     #-------------------------------------------------------------------
     # Rebase Scenario
+
+    delegate method {rebase prepare} to rebase as prepare
     
-    method rebase {} {
+    method {rebase save} {} {
+
         # FIRST, allow all modules to rebase.
-        rebase save
+        $rebase save
         
         # NEXT, purge history.  (Do this second, in case the modules
         # needed the history to do their work.)

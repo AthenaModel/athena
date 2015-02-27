@@ -320,7 +320,7 @@ snit::type ::athena::sim {
 
         # FIRST, save the current simulation state to the
         # scenario tables
-        $adb rebase
+        $adb rebase save
 
         # NEXT, set state
         $self SetState PREP
@@ -475,7 +475,7 @@ snit::type ::athena::sim {
 
         # NEXT, prepare for an immediate rebase (silly though that would be
         # to do).
-        rebase prepare
+        $adb rebase prepare
 
         # NEXT, initialize all modules, and do basic analysis, in preparation
         # for executing the on-lock tactics.
@@ -627,7 +627,7 @@ snit::type ::athena::sim {
         $adb log normal sim "Tick [simclock now]"
 
         # NEXT, prepare for a rebase at the end of this tick.
-        rebase prepare
+        $adb rebase prepare
 
         # NEXT, allow the population to grow or shrink
         # according to its growth rate, and recompute 
