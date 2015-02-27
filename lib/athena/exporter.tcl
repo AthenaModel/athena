@@ -42,20 +42,34 @@ snit::type ::athena::exporter {
     #-------------------------------------------------------------------
     # Export from CIF
     
-    # fromcif scriptFile
+    # fromcif scriptFile mapflag
     #
     # scriptFile    Absolute file name to receive script.
+    # mapflag       If 0, no map image data is exported.
     #
     # Creates a script of "send" commands from the orders in the
     # CIF.  "SIM:UNLOCK" is explicitly ignored, as it gets left
-    # behind in the CIF on unlock, and would break scripts.
+    # behind in the CIF on unlock, and would break scripts. If the
+    # map flag is set to 0, MAP:IMPORT:* orders are changed to 
+    # MAP:GEOREF orders and only projection information is exported.
 
-    method fromcif {scriptFile} {
+    method fromcif {scriptFile mapflag} {
         # FIRST, get a list of the order data.  Skip SIM:UNLOCK, and 
         # prepare to fix up SIM:RUN and SIM:PAUSE
         set orders [list]
         set lastRun(index) ""
         set lastRun(time)  ""
+        set projdict       ""
+
+        if {!$mapflag && [$adb exists {SELECT * FROM maps}]} {
+            $adb eval {
+                SELECT ulat, ulon, llat, llon
+                FROM maps
+            } row {}
+
+            unset -nocomplain row(*)
+            set projdict [array get row]
+        }
 
         $adb eval {
             SELECT time,name,parmdict
@@ -85,6 +99,11 @@ snit::type ::athena::exporter {
 
                 # NEXT, the sim will stop running automatically now,
                 # so no PAUSE is needed.
+                continue
+            }
+
+            if {!$mapflag && [string first "MAP:IMPORT" $name 0] == 0} {
+                lappend orders [list "MAP:GEOREF" $projdict]
                 continue
             }
 
@@ -160,13 +179,14 @@ snit::type ::athena::exporter {
     #-------------------------------------------------------------------
     # Export from Current Data
 
-    # fromdata scriptFile
+    # fromdata scriptFile mapflag
     #
     # scriptFile  - Absolute file name to receive script
+    # mapflag     - if 0, no map image data is exported 
     #
     # Creates a script that will recreate the current scenario.
 
-    method fromdata {scriptFile} {
+    method fromdata {scriptFile mapflag} {
         # FIRST, open the file.  We'll throw an error on a bad file
         # name; that's OK.
         set f [open $scriptFile w]
@@ -174,7 +194,7 @@ snit::type ::athena::exporter {
         # NEXT, save the script, closing the file on error, which
         # will be rethrown automatically.
         try {
-            $self ExportFromData $f
+            $self ExportFromData $f $mapflag
         } finally {
             catch {close $f}
         }
@@ -182,13 +202,14 @@ snit::type ::athena::exporter {
         return
     }
     
-    # ExportFromData f
+    # ExportFromData f mapflag
     #
-    # f    - Output channel on which to write script
+    # f        - Output channel on which to write script
+    # mapflag  - If 0, only map projection is exported; no data
     #
     # Exports the current scenario to the given file.
 
-    method ExportFromData {f} {
+    method ExportFromData {f mapflag} {
         # FIRST, write header.
         set adbfile [$adb adbfile]
         if {$adbfile eq ""} {
@@ -214,8 +235,14 @@ snit::type ::athena::exporter {
         }
 
         # NEXT, Map Data and Projection
-        SectionHeader $f "Map and Projection"
-        $self FromRDB $f MAP:IMPORT:DATA  {SELECT * FROM maps}
+        if {$mapflag} {
+            SectionHeader $f "Map and Projection"
+            $self FromRDB $f MAP:IMPORT:DATA  {SELECT * FROM maps}
+        } else {
+            SectionHeader $f "Projection; No Map Exported"
+            $self FromRDB $f MAP:GEOREF {SELECT * FROM maps} \
+                {data width height}
+        }
 
         # NEXT, Belief Systems
         SectionHeader $f "Belief Systems"

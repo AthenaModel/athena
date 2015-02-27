@@ -1590,7 +1590,7 @@ snit::type ::athena::executive {
             [mymethod errtrace]
 
         # export
-        $interp smartalias export 1 2 {?-history? scriptFile} \
+        $interp smartalias export 1 3 {?-history? ?-map? scriptFile} \
             [mymethod Export]
 
         # extension
@@ -2118,6 +2118,7 @@ snit::type ::athena::executive {
         # FIRST, get the options.
         array set opts {
             -history 0
+            -map     0
         }
 
         set optargs [lrange $args 0 end-1]
@@ -2137,6 +2138,10 @@ snit::type ::athena::executive {
                     set opts(-history) 1
                 }
 
+                -map {
+                    set opts(-map) 1
+                } 
+
                 default {
                     error "unknown option "
                 }
@@ -2146,7 +2151,7 @@ snit::type ::athena::executive {
         # NEXT, if they want the -history export, that can be done
         # at any time.  Do it and return.
         if {$opts(-history)} {
-            $adb export fromcif $fullname
+            $adb export fromcif $fullname $opts(-map)
 
             app puts "Exported scenario from history as $fullname."
             return
@@ -2157,7 +2162,7 @@ snit::type ::athena::executive {
             error "Cannot export while the scenario is locked."
         }
 
-        $adb export fromdata $fullname
+        $adb export fromdata $fullname $opts(-map)
 
         app puts "Exported scenario from current data as $fullname."
 

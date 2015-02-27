@@ -900,7 +900,7 @@ command "errtrace" {
 # export command
 
 command "export" {
-    <syntax {?-history? <i>scriptFile</i>}>
+    <syntax {?-history? ?-map? <i>scriptFile</i>}>
 
     Exports the current scenario as an <term executive> script;
     execute the script in a new, empty scenario via the
@@ -909,14 +909,36 @@ command "export" {
 
     By default, the scenario must be exported while in 
     scenario preparation; the result will be a minimal script that
-    will reproduce essentially the same scenario, though some
+    will reproduce essentially the same scenario without, though some
     insignificant details (such as numeric object IDs) might be different.<p>
+
+    Also by default, the scenario will be exported without map image data
+    but will preserve the latitude and longitude locations and apply them
+    to Athena's default 1000x1000 pixel background. See the <code>-map</code>
+    option below for more.<p>
 
     If the <code>-history</code> option is given, then the script
     contains exactly the sequence of orders used to produce the current
     state of the program; this can be many times longer than the 
     minimal set.  However, it can also capture the application's state
     in simulation mode, after time has advanced.<p>
+
+    If the <code>-map</code> option is given without the <code>-history</code>
+    option, then the script will include the map image loaded as a long 
+    string of binary data making the exported
+    script portable across systems without the need to have the map file
+    that was orignally loaded present on target systems.  If the 
+    <code>-map</code> option is not given, then only the basic projection
+    information is exported whether the <code>-history</code> option is 
+    supplied or not.  If Athena is subsequently loaded with an
+    unexported map image the projection information is applied to Athena's 
+    default 1000x1000 map background image.  This may make neighborhoods 
+    appear distorted.<p>
+
+    If the <code>-map</code> option is given with the <code>-history</code>
+    option, then the exported script is a precise history of orders processed
+    including any dependencies on map image files previously loaded into 
+    Athena.<p>
 
     The script file will be saved in the current working directory.<p>
 }
