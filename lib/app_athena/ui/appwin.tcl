@@ -68,14 +68,6 @@ snit::widget appwin {
 
     delegate option * to hull
 
-    # -dev flag
-    #
-    # If true, display the development tabs.  Otherwise not.
-
-    option -dev \
-        -default  0   \
-        -readonly yes
-
     #-------------------------------------------------------------------
     # Instance variables
 
@@ -448,11 +440,11 @@ snit::widget appwin {
     # *          - Used to tag tabs that are always visible.
     # scenario   - Visible in scenario mode
     # simulation - Visible in simulation mode
-    # orders     - Order tabs; visible in -dev mode or on request.
-    # slog       - Scrolling log; visible in -dev mode, on request, or
+    # orders     - Order tabs; visible on request.
+    # slog       - Scrolling log; visible on request, or
     #              on error.
-    # scripts    - Scripts editor tab; visible in -dev mode or on request.
-    # cli        - Command-line Interface; visible in -dev mode or on
+    # scripts    - Scripts editor tab; visible on request.
+    # cli        - Command-line Interface; visible on
     #              request.
 
     variable visibility -array {
@@ -480,12 +472,6 @@ snit::widget appwin {
             -command    [mymethod ReloadContent]           \
             -interval   1                                  \
             -repetition no
-
-        # NEXT, enable the development tabs
-        set visibility(orders)  $options(-dev)
-        set visibility(slog)    $options(-dev)
-        set visibility(scripts) $options(-dev)
-        set visibility(cli)     $options(-dev)
 
         # NEXT, Exit the app when this window is closed.
         wm protocol $win WM_DELETE_WINDOW [mymethod FileExit]
@@ -530,6 +516,8 @@ snit::widget appwin {
 
         # NEXT, Reload content
         $self reload
+        $self LoadPrefs
+
     }
 
     destructor {
@@ -1055,9 +1043,6 @@ snit::widget appwin {
             -promptcmd [mymethod CliPrompt]     \
             -evalcmd   [list ::executive eval]
 
-        # Load the CLI command history
-        $self LoadCliHistory
-
         # NEXT, manage all of the components.
         grid $win.sep0     -sticky ew
         grid $toolbar      -sticky ew
@@ -1417,16 +1402,23 @@ snit::widget appwin {
     
    
     #-------------------------------------------------------------------
-    # CLI history
+    # Preferences
 
-    # SaveCliHistory
+    # saveprefs
     #
     # If there's a CLI, saves its command history to the preferences
-    # directory.
+    # directory.  Also, saves visibility flags.
 
-    method savehistory {} {
+    method saveprefs {} {
         assert {$cli ne ""}
 
+        # FIRST, save flags
+        prefs set appwin.cli     $visibility(cli)
+        prefs set appwin.orders  $visibility(orders)
+        prefs set appwin.scripts $visibility(scripts)
+        prefs set appwin.slog    $visibility(slog)
+
+        # NEXT, save cli history
         set f [open [prefsdir join history.cli] w]
 
         puts $f [$cli saveable checkpoint]
@@ -1434,16 +1426,45 @@ snit::widget appwin {
         close $f
     }
 
-    # LoadCliHistory
+    # LoadPrefs
     #
-    # If there's a CLI, and a history file, read its command history.
+    # Load the visibility flags and CLI history.
 
-    method LoadCliHistory {} {
+    method LoadPrefs {} {
+        # FIRST, load visiblity flags.
+        set visibility(cli)     [prefs get appwin.cli]
+        set visibility(orders)  [prefs get appwin.orders]
+        set visibility(scripts) [prefs get appwin.scripts]
+        set visibility(slog)    [prefs get appwin.slog]
+
+        $self MakeTabsVisible
+        $self ToggleCLI
+
+        # NEXT, load the CLI history.
         set histFile [prefsdir join history.cli]
         if {[file exists $histFile]} {
             $cli saveable restore [readfile $histFile]
         }
     }
+
+    # AppPrefs parm
+    #
+    # parm     Name of the preferences parm, or ""
+    #
+    # This routine is called when application preferences have changed.
+
+    method AppPrefs {parm} {
+        switch -glob -- $parm {
+            appwin.* {
+                $self LoadPrefs
+            }
+            cli.maxlines -
+            ""           {
+                $cli configure -maxlines [prefs get cli.maxlines]
+            }
+        }
+    }
+
 
 
     #-------------------------------------------------------------------
@@ -1533,7 +1554,7 @@ snit::widget appwin {
         }
 
         # NEXT, Save the scenario using this name
-        app save $filename
+        return [app save $filename]
     }
 
     # FileSave
@@ -1551,13 +1572,11 @@ snit::widget appwin {
 
         # FIRST, if no file name is known, do a SaveAs.
         if {[adb adbfile] eq ""} {
-            $self FileSaveAs
+            return [$self FileSaveAs]
         }
 
         # NEXT, Save the scenario to the current file.
-        app save
-
-        return
+        return [app save]
     }
 
     # FileExportAs
@@ -2099,20 +2118,6 @@ snit::widget appwin {
         set info(date) [simclock asString]
     }
 
-    # AppPrefs parm
-    #
-    # parm     Name of the preferences parm, or ""
-    #
-    # This routine is called when application preferences have changed.
-
-    method AppPrefs {parm} {
-        switch -exact -- $parm {
-            cli.maxlines -
-            ""           {
-                $cli configure -maxlines [prefs get cli.maxlines]
-            }
-        }
-    }
 
     #-------------------------------------------------------------------
     # Utility Methods
@@ -2162,46 +2167,6 @@ snit::widget appwin {
 
         $cli clear
     }
-
-    #-------------------------------------------------------------------
-    # saveable(i) interface
-    #
-    # TBD: This code is obsolete.  However, we might wish to retain
-    # the mode and visibility in the preferences.
-
-    # checkpoint ?-saved?
-    #
-    # Returns a checkpoint of the window state
-
-    method checkpoint {{option ""}} {
-        set checkpoint [dict create]
-        
-        dict set checkpoint mode           $info(mode)
-        dict set checkpoint visibility     [array get visibility]
-
-        return $checkpoint
-    }
-
-    # restore checkpoint ?-saved?
-    #
-    # checkpoint     A string returned by the checkpoint typemethod
-    
-    method restore {checkpoint {option ""}} {
-        # FIRST, restore the checkpoint data
-        set info(mode)           [dict get $checkpoint mode]
-        array set visibility     [dict get $checkpoint visibility]
-    }
-
-    # changed
-    #
-    # Returns 1 if saveable(i) data has changed, and 0 otherwise.
-    #
-    # Always returns 0, as this is just window state.
-
-    method changed {} {
-        return 0
-    }
-
 }
 
 

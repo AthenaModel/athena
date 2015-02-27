@@ -63,6 +63,28 @@ snit::type ::projectlib::prefs {
 
         # NEXT, define parameters
 
+        $ps subset appwin {
+            Parameters which affect the main window.
+        }
+
+        $ps define appwin.cli snit::boolean off {
+            If on, the Command Line Interface (CLI) is visible; 
+            otherwise not.
+        }
+
+        $ps define appwin.orders snit::boolean off {
+            If on, the Time/Orders tab is visible; otherwise not.
+        }
+
+        $ps define appwin.scripts snit::boolean off {
+            If on, the Scripts tab is visible; otherwise not.
+        }
+
+        $ps define appwin.slog snit::boolean off {
+            If on, the Time/Log tab is visible; otherwise not.
+        }
+
+
         $ps subset cli {
             Parameters which affect the Command Line Interface (CLI).
         }

@@ -65,15 +65,11 @@ snit::type app {
     #
     # athena(1) only:
     #
-    # -dev             - If 1, run in development mode (e.g., include 
-    #                    debugging log in appwin)
-    #
     # -url url         - A URL to load into the detail browser.
     #                    "%" is replaced with "/", to work around MSys
     #                    path-munging.
 
     typevariable opts -array {
-        -dev        0
         -ignoreuser 0
         -script     {}
         -scratch    {}
@@ -117,7 +113,6 @@ snit::type app {
             set opt [lshift argv]
 
             switch -exact -- $opt {
-                -dev        -
                 -ignoreuser {
                     set opts($opt) 1
                 }
@@ -245,7 +240,7 @@ snit::type app {
 
         if {[app tkloaded]} {
             wm withdraw .
-            appwin .main -dev $opts(-dev)
+            appwin .main
         }
 
         # NEXT, log that we're up.
@@ -505,8 +500,6 @@ snit::type app {
                 "\nSee athena_batch(1) for more information.\n"
         } else {
             append usage \
-            "-dev                Turns on all developer tools (e.g.,\n" \
-            "                    the CLI and scrolling log)\n"          \
             "-url url            Load the URL in the detail browser.\n" \
             "                    '%' is replaced with '/'.\n"           \
             "\nSee athena(1) for more information.\n"
@@ -640,9 +633,9 @@ snit::type app {
             }
         }
 
-        # NEXT, save the CLI history, if any.
+        # NEXT, save the main window prefs, if any.
         if {!$opts(-ignoreuser) && [app tkloaded] && [winfo exists .main]} {
-            .main savehistory
+            .main saveprefs
         }
 
         # NEXT, exit
@@ -947,7 +940,7 @@ snit::type app {
                 $result
             }
 
-            return
+            return 0
         }
 
         # NEXT, set the current working directory to the scenario
@@ -965,7 +958,7 @@ snit::type app {
 
         notifier send $type <ScenarioSaved>
 
-        return
+        return 1
     }
 
     # revert

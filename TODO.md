@@ -5,6 +5,11 @@
   - And if not, why not?
 - Revise saveables to accept empty data, where necessary. 
 - Save appwin's old saveable data to prefs on exit.
+  - Just visibility flags, e.g., CLI, scrolling log, scripts editor,
+    order history.
+  - Define one pref for each.
+  - Set in constructor
+  - Save with CLI history.
 - Generation of URLs:
   - htools is configured with a dictionary of symbolic names and base URLs.
   - The `$ht link` command will translate "%name/" at the beginning of a

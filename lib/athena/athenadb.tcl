@@ -591,6 +591,7 @@ snit::type ::athena::athenadb {
     method FinishOpeningScenario {} {
         $self DefineTempSchema
         $rdb marksaved
+        $flunky state [$self state]
         $self notify "" <Create>
     }
     
