@@ -12,7 +12,7 @@
 #    computes Athena's belief systems, and also defines the relevant
 #    orders.
 #
-# TBD: Global refs: athena register, app/messagebox
+# TBD: Global refs: app/messagebox
 #
 #-----------------------------------------------------------------------
 
@@ -59,12 +59,6 @@ snit::type ::athena::bsys {
 
         # NEXT, clear the relevant data.
         $self clear
-
-        # NEXT, register this module as a saveable
-        # TBD: This will work only as long as the instance is
-        # aliased to ::bsys
-        athena register ::bsys
-
     }
 
     #-------------------------------------------------------------------

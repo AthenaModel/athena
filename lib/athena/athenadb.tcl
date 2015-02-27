@@ -115,41 +115,6 @@ snit::type ::athena::athenadb {
     }
 
     #-------------------------------------------------------------------
-    # Type Variables
-    
-
-    # Info Array: most scalars are stored here
-    #
-    # saveable            List of saveables.
-
-    typevariable meta -array {
-        saveables {}
-    }
-
-
-    #-------------------------------------------------------------------
-    # Registration of saveable objects
-
-    # register saveable
-    #
-    # saveable     A saveable(i) command or command prefix
-    #
-    # Registers the saveable(i); its data will be included in
-    # the scenario and restored as appropriate.
-    #
-    # TODO: Ultimately, all registration will be done internally,
-    # and this can become a private helper method.
-
-    typemethod register {saveable} {
-        if {$saveable ni $meta(saveables)} {
-            lappend meta(saveables) $saveable
-        }
-    }
-
-    #===================================================================
-    # Instance Code
-
-    #-------------------------------------------------------------------
     # Components
     
     # Resources
@@ -240,10 +205,13 @@ snit::type ::athena::athenadb {
 
     # Scenario working info.
     #
-    # adbfile - The name of the related .adb file, or "" if none.
+    # adbfile   - The name of the related .adb file, or "" if none.
+    # saveables - Dictionary of saveable(i) objects by symbolic name.
+    #             The symbolic name is used in the RDB saveables table.
 
     variable info -array {
-        adbfile ""
+        adbfile   ""
+        saveables {}
     }
     
     #-------------------------------------------------------------------
@@ -355,8 +323,12 @@ snit::type ::athena::athenadb {
 
         # NEXT, register the ones that are saveables.  This will change
         # when the transition to library code is complete.
-        $type register [list ::aram saveable]
-        $type register ::sim
+        $self RegisterSaveable aram [list $aram saveable]
+        $self RegisterSaveable bsys $bsys
+        $self RegisterSaveable econ $econ
+        $self RegisterSaveable parm $parm
+        $self RegisterSaveable pot  $pot
+        $self RegisterSaveable sim  $sim
 
         # NEXT, either load the named file or create an empty database.
         if {$filename ne ""} {
@@ -704,8 +676,8 @@ snit::type ::athena::athenadb {
             return 1
         }
 
-        foreach saveable $meta(saveables) {
-            if {[{*}$saveable changed]} {
+        dict for {name command} $info(saveables) {
+            if {[{*}$command changed]} {
                 return 1
             }
         }
@@ -713,7 +685,15 @@ snit::type ::athena::athenadb {
         return 0
     }
 
+    # RegisterSaveable name command
+    #
+    # name    - A symbolic name for the saveable, to be used in the .adb
+    #           file.
+    # command - The component command.
 
+    method RegisterSaveable {name command} {
+        dict set info(saveables) $name $command
+    }
 
     # SaveSaveables ?-saved?
     #
@@ -721,19 +701,13 @@ snit::type ::athena::athenadb {
     # clearing the "changed" flag for all of the saveables.
 
     method SaveSaveables {{option ""}} {
-        foreach saveable $meta(saveables) {
-            # Forget and skip saveables that no longer exist
-            if {[llength [info commands [lindex $saveable 0]]] == 0} {
-                ldelete meta(saveables) $saveable
-                continue
-            }
-
-            set checkpoint [{*}$saveable checkpoint $option]
+        dict for {name command} $info(saveables) {
+            set checkpoint [{*}$command checkpoint $option]
 
             $rdb eval {
                 INSERT OR REPLACE
                 INTO saveables(saveable,checkpoint)
-                VALUES($saveable,$checkpoint)
+                VALUES($name,$checkpoint)
             }
         }
     }
@@ -742,17 +716,20 @@ snit::type ::athena::athenadb {
     #
     # Restore all saveable data from the checkpoint table, optionally
     # clearing the "changed" flag for all of the saveables.
+    #
+    # Note: This is different than the pattern prior to Athena 6.3:
+    # every registered saveable is restored whether there is data in
+    # the RDB or not.  Saveables must be able to reset themselves
+    # when there is no data.
 
     method RestoreSaveables {{option ""}} {
-        $rdb eval {
-            SELECT saveable,checkpoint FROM saveables
-        } {
-            if {[llength [info commands [lindex $saveable 0]]] != 0} {
-                {*}$saveable restore $checkpoint $option
-            } else {
-                $self log warning "" \
-                    "Unknown saveable found in checkpoint: \"$saveable\""
-            }
+        dict for {name command} $info(saveables) {
+            set checkpoint [$rdb onecolumn {
+                SELECT checkpoint FROM saveables
+                WHERE saveable = $name
+            }]
+
+            {*}$command restore $checkpoint $option
         }
     }
 

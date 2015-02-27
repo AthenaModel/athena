@@ -2165,6 +2165,9 @@ snit::widget appwin {
 
     #-------------------------------------------------------------------
     # saveable(i) interface
+    #
+    # TBD: This code is obsolete.  However, we might wish to retain
+    # the mode and visibility in the preferences.
 
     # checkpoint ?-saved?
     #

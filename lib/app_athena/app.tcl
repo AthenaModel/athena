@@ -222,11 +222,6 @@ snit::type app {
         view      init
         MakeAthena ::adb
 
-        # NEXT, register other saveables
-        # TODO: saveables need to be per instance of athena, once they
-        # are all internal.
-        athena register ::pot
- 
         # NEXT, register my:// servers with myagent.
         appserver init
 
@@ -246,15 +241,11 @@ snit::type app {
         # GUI components as application state changes.
         $type CreateStateControllers
         
-        # NEXT, Create the main window, and register it as a saveable.
-        # It does not, in fact, contain any scenario data; but this allows
-        # us to capture the user's "session" as part of the scenario file.
-        # No main window in non-GUI mode.
+        # NEXT, Create the main window.
 
         if {[app tkloaded]} {
             wm withdraw .
             appwin .main -dev $opts(-dev)
-            athena register .main
         }
 
         # NEXT, log that we're up.

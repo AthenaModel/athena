@@ -43,14 +43,9 @@ snit::type ::athena::parm {
         set ps ::projectlib::parmdb
         $ps init
 
-
         # Register to receive simulation state updates.
-        notifier bind ::sim <State> $self [mymethod SimState]
-
-        # Register this type as a saveable
-        # TBD: This will work only as long as the instance is
-        # aliased to ::parm
-        athena register ::parm
+        # We need a better way to do this.
+        notifier bind [$adb cget -subject] <State> $self [mymethod SimState]
     }
 
     destructor {

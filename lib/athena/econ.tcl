@@ -110,9 +110,6 @@ snit::type ::athena::econ {
         log detail econ "Read CGE from [file join $::app_athena_shared::library cge6x6.cm]"
         
         require {[$cge sane]} "The econ model's CGE (cge6x6.cm) is not sane."
-
-        # NEXT, register this type as a saveable
-        athena register ::econ
     }
 
     # destructor
