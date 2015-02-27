@@ -213,7 +213,7 @@
         my returnOnError
 
         # NEXT, check cross-constraints
-        fillparms parms [$tactic view]
+        ::athena::fillparms parms [$tactic view]
 
         if {$parms(num) == 0} {
             my reject num "You must specify a number of plants > 0."

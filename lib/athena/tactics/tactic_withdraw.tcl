@@ -211,7 +211,7 @@
         my returnOnError 
 
         # NEXT, do cross checks
-        fillparms parms [$tactic view]
+        ::athena::fillparms parms [$tactic view]
 
         if {$parms(mode) ne "PERCENT" &&
             $parms(mode) ne "ALL"     &&

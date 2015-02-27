@@ -273,7 +273,7 @@
 
     method _execute {{flunky ""}} {
         set tactic [$adb pot get $parms(tactic_id)]
-        fillparms parms [$tactic view]
+        ::athena::fillparms parms [$tactic view]
 
         if {$parms(g1) eq ""} {set parms(g1) "NONE"}
         if {$parms(g2) eq ""} {set parms(g2) "NONE"}

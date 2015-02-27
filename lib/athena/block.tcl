@@ -1081,7 +1081,7 @@ oo::class create ::athena::block {
         my returnOnError
 
         # NEXT, do cross-checks
-        fillparms parms [$block view]
+        ::athena::fillparms parms [$block view]
 
         if {$parms(tmode) ne "ALWAYS" && $parms(t1) eq ""} {
             my reject t1 "Week not specified."

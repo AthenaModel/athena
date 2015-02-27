@@ -232,7 +232,7 @@
 
         my returnOnError
 
-        fillparms parms [$tactic view]
+        ::athena::fillparms parms [$tactic view]
 
         if {$parms(mode) ne "PERCENT" && 
             $parms(mode) ne "ALL"     &&

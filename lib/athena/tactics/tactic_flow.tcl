@@ -180,7 +180,7 @@
         enum f -listcmd {$adb_ civgroup names}
 
         rcc "Destination Group:" -for g
-        enum g -listcmd {lexcept [$adb_ civgroup names] $f}
+        enum g -listcmd {::athena::lexcept [$adb_ civgroup names] $f}
 
         rcc "Mode:" -for mode
         selector mode {
@@ -222,7 +222,7 @@
 
         my returnOnError
 
-        fillparms parms [$tactic getdict]
+        ::athena::fillparms parms [$tactic getdict]
 
         switch -exact -- $parms(mode) {
             ALL {

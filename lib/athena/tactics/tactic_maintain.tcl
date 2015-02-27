@@ -400,7 +400,7 @@
         my returnOnError
 
         # NEXT, check cross-constraints
-        fillparms parms [$tactic view]
+        ::athena::fillparms parms [$tactic view]
 
         if {$parms(rmode) eq "UPTO" && $parms(level) == 0.0} {
             my reject level "You must specify a capacity level > 0.0"

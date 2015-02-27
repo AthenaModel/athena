@@ -204,7 +204,7 @@
 
         my returnOnError
 
-        fillparms parms [$tactic getdict]
+        ::athena::fillparms parms [$tactic getdict]
 
         switch -exact -- $parms(mode) {
             ALL {

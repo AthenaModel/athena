@@ -110,8 +110,8 @@
         my rule UNEMP-1-1 $fdict {
             $uaf > 0.0
         } {
-            my sat T $g SFT [mag* $uaf M-]
-            my sat T $g AUT [mag* $uaf S-]
+            my sat T $g SFT [my mag* $uaf M-]
+            my sat T $g AUT [my mag* $uaf S-]
         }
     }
 }

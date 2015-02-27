@@ -44,19 +44,19 @@ namespace eval ::athena_test::tests {
     # andlist 
 
     test andlist-1.1 {No items} -body {
-        andlist widget {}
+        ::athena::andlist widget {}
     } -result {widget ???}
 
     test andlist-1.2 {One item} -body {
-        andlist widget {A}
+        ::athena::andlist widget {A}
     } -result {widget A}
 
     test andlist-1.3 {Two items} -body {
-        andlist widget {A B}
+        ::athena::andlist widget {A B}
     } -result {widgets A and B}
     
     test andlist-1.4 {Three items} -body {
-        andlist widget {A B C}
+        ::athena::andlist widget {A B C}
     } -result {widgets A, B and C}
 
     #-----------------------------------------------------------------
@@ -70,7 +70,7 @@ namespace eval ::athena_test::tests {
         set parms(demeanor) ""
         set parms(NONESUCH) ""
 
-        fillparms parms [civgroup getg SHIA]
+        ::athena::fillparms parms [civgroup getg SHIA]
         ted pdict [array get parms]
 
         # Parms with values are unchanged.
@@ -87,14 +87,14 @@ namespace eval ::athena_test::tests {
     # optdict2parmdict
 
     test optdict2parmdict {converts to parmdict} -body {
-        optdict2parmdict {-first 1 -second 2 third 3}
+        ::athena::optdict2parmdict {-first 1 -second 2 third 3}
     } -result {first 1 second 2 third 3}
 
     #-------------------------------------------------------------------
     # parmdict2optdict
     
     test parmdict2optdict {converts to optdict} -body {
-        parmdict2optdict {-first 1 second 2 third 3}
+        ::athena::parmdict2optdict {-first 1 second 2 third 3}
     } -result {-first 1 -second 2 -third 3}
 
 

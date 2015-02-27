@@ -860,7 +860,7 @@
         my returnOnError
 
         # NEXT, do the cross checks
-        fillparms parms [$tactic view]
+        ::athena::fillparms parms [$tactic view]
 
         if {$parms(pmode) eq "SOME" && $parms(personnel) == 0} {
             my reject personnel "For pmode SOME, personnel must be positive."

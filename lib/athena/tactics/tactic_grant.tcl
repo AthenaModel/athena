@@ -74,7 +74,7 @@
     }
 
     method narrative {} {
-        set s(klist) [andlist CAP $klist]
+        set s(klist) [::athena::andlist CAP $klist]
         set s(alist) [[my adb] gofer ACTORS narrative $alist]
 
         return "Grant $s(alist) access to $s(klist)."
@@ -93,7 +93,7 @@
 
         [my adb] sigevent log 2 tactic "
             GRANT: Actor {actor:[my agent]} grants access to
-            [andlist CAP $klist] to [andlist actor $actors].
+            [::athena::andlist CAP $klist] to [::athena::andlist actor $actors].
         " [my agent] {*}$klist {*}$actors
     }
 }

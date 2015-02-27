@@ -121,7 +121,7 @@ oo::class create ::athena::ruleset_abevent {
 
         set result [list]
         foreach {con mag} $args {
-            lappend result $con [mag* $mult $mag]
+            lappend result $con [my mag* $mult $mag]
         }
 
         my sat $pt $flist {*}$result

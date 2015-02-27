@@ -261,7 +261,7 @@
 
     method _execute {{flunky ""}} {
         set tactic [$adb pot get $parms(tactic_id)]
-        fillparms parms [$tactic view]
+        ::athena::fillparms parms [$tactic view]
         my setundo [$tactic update_ {name cap a iom cost} [array get parms]]
     }
 }

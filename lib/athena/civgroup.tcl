@@ -640,12 +640,7 @@ snit::type ::athena::civgroup {
         my returnOnError
 
         # NEXT, do cross validation
-    
-        # TBD: this works, but probably ought to be done by the class.
-        # fillparms should be an order class helper, and the class should
-        # provide a method that calls [$adb civgroup getg]
-
-        fillparms parms [$adb civgroup getg $parms(g)]
+        ::athena::fillparms parms [$adb civgroup getg $parms(g)]
 
         my checkon lfp {
             $adb civgroup check lfp/sa_flag $parms(lfp) $parms(sa_flag)

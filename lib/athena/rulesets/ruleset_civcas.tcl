@@ -142,9 +142,9 @@
         # NEXT, The rule fires trivially
         my rule CIVCAS-1-1 $fdict {1} {
             my sat P $f \
-               AUT [mag* $mult L-]  \
-               SFT [mag* $mult XL-] \
-               QOL [mag* $mult L-]
+               AUT [my mag* $mult L-]  \
+               SFT [my mag* $mult XL-] \
+               QOL [my mag* $mult L-]
         }
     }
 
@@ -163,14 +163,14 @@
         # FIRST, compute the casualty multiplier
         set zsat [my parm dam.CIVCAS.Zcoop]
         set cmult [zcurve eval $zsat $casualties]
-        set rmult [rmf enmore [hrel.fg $f $g]]
+        set rmult [rmf enmore [my hrel.fg $f $g]]
         let mult {$cmult * $rmult}
 
         dict set fdict mult $cmult
         
         # NEXT, The rule fires trivially
         my rule CIVCAS-2-1 $fdict {1} {
-            my coop P $f $g [mag* $mult M-]
+            my coop P $f $g [my mag* $mult M-]
         }
     }
 }
