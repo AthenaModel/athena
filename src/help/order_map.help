@@ -55,16 +55,45 @@ order MAP:IMPORT+DATA "Import Map As Data" {
     <b>Required.</b> Binary data representing the image of a map.
     </parm>
 
-    <parm proj  "Projection Data">
-    <b>Optional.</b> Map projection data in the form of a dictionary
+    <parm projtype  "Projection Type">
+    <b>Required.</b> Map projection type. The only type recognized by
+    Athena at this time is RECT, which is an equirectangular projection
+    used by the MGRS.
+    </parm>
+
+    <parm width "Width">
+    <b>Required.</b> The width of the image in pixels.
+    </parm>
+
+    <parm height "Height">
+    <b>Required.</b> The height of the image in pixels.
+    </parm>
+
+    <parm ulat  "Upper Left Latitude">
+    <b>Required.</b> The decimal latitude of the upper left corner of the 
+    map image.
+    </parm>
+
+    <parm ulon  "Upper Left Longitude">
+    <b>Required.</b> The decimal longitude of the upper left corner of the
+    map image.
+    </parm>
+
+    <parm llat  "Lower Right Latitude">
+    <b>Required.</b> The decimal latitude of the lower right corner of the 
+    map image.
+    </parm>
+
+    <parm llon  "Lower Right Longitude">
+    <b>Required.</b> The decimal longitude of the lower right corner of the 
+    map image.
     </parm>
 
     </parmlist>
 
     Imports an image into the scenario for use as the map background,
     replacing any previous map image.  The image data is saved within
-    the scenario; it's not necessary to send the image file along with
-    the saved .adb file.<p>
+    the scenario.<p>
 
     This order is usually sent indirectly, using the
     <menu "File/Import Map From WMS..."> menu item.  However, Athena should
@@ -82,7 +111,7 @@ order MAP:GEOREF "Geo-reference Map Image" {
     map image.
     </parm>
 
-    <parm ulong  "Upper Left Longitude">
+    <parm ulon  "Upper Left Longitude">
     <b>Required.</b> The decimal longitude of the upper left corner of the
     map image.
     </parm>
@@ -92,7 +121,7 @@ order MAP:GEOREF "Geo-reference Map Image" {
     map image.
     </parm>
 
-    <parm llong  "Lower Right Longitude">
+    <parm llon  "Lower Right Longitude">
     <b>Required.</b> The decimal longitude of the lower right corner of the 
     map image.
     </parm>
@@ -101,7 +130,8 @@ order MAP:GEOREF "Geo-reference Map Image" {
 
     This order allows an arbitrary map background to be assigned
     geo-locations.  It is assumed that the map background conforms to 
-    the Military Grid Reference System (MGRS).  The width of the map image
+    the Military Grid Reference System (MGRS) and, thus, has an 
+    equirectangular projection.  The width of the existing map image
     is used to determine the longitudinal pixel width and the height is
     used to determined the latitudinal pixel height. 
 }

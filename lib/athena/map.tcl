@@ -207,17 +207,17 @@ snit::type ::athena::map {
         return $undo
     }
 
-    # corners parmdict
+    # georef parmdict
     #
     # parmdict    A dictionary of parameters to set lat/long coords for
     #             the corners of a map image
     #
-    #   ulat      Latitude of upper left hand point
-    #   ulong     Longitude of upper left hand point
-    #   llat      Latitude of lower right hand point
-    #   llong     Longitude of lower right hand point
+    #   ulat     Latitude of upper left hand point
+    #   ulon     Longitude of upper left hand point
+    #   llat     Latitude of lower right hand point
+    #   llon     Longitude of lower right hand point
 
-    method corners {parmdict} {
+    method georef {parmdict} {
         dict with parmdict {}
 
         # FIRST, default width and height, there may not be
@@ -368,7 +368,7 @@ snit::type ::athena::map {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [$adb map corners [array get parms]]
+        my setundo [$adb map georef [array get parms]]
     }
 }
 
@@ -441,12 +441,14 @@ snit::type ::athena::map {
     }
 
     method _validate {} {
-        my prepare data      -required
-        my prepare projtype  -required 
-        my prepare ulat -num -required -type latpt
-        my prepare ulon -num -required -type longpt
-        my prepare llat -num -required -type latpt
-        my prepare llon -num -required -type longpt
+        my prepare data        -required
+        my prepare projtype    -required 
+        my prepare width  -num -required -type ipositive
+        my prepare height -num -required -type ipositive
+        my prepare ulat   -num -required -type latpt
+        my prepare ulon   -num -required -type longpt
+        my prepare llat   -num -required -type latpt
+        my prepare llon   -num -required -type longpt
     }
 
     method _execute {{flunky ""}} {
