@@ -541,8 +541,8 @@ snit::type ::athena::sim {
         $adb cprofile aram advance $t0
 
         # NEXT,  Save time 0 history!
-        $adb profile hist tick
-        $adb profile hist econ
+        $adb cprofile hist tick
+        $adb cprofile hist econ
     }
 
 
@@ -688,11 +688,11 @@ snit::type ::athena::sim {
         $adb cprofile aram advance [simclock now]
 
         # NEXT, save the history for this tick.
-        $adb profile hist tick
+        $adb cprofile hist tick
 
         if {[simclock now] % [$adb parm get econ.ticksPerTock] == 0} {
             if {$econOK} {
-                $adb profile hist econ
+                $adb cprofile hist econ
             }
         }
     }

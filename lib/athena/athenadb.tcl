@@ -124,6 +124,7 @@ snit::type ::athena::athenadb {
     component exporter       -public export         ;# exporter
     component flunky         -public flunky         ;# athena_flunky(n)
     component gofer          -public gofer          ;# gofer
+    component hist           -public hist           ;# results history
     component parm           -public parm           ;# model parameter DB
     component paster         -public paste          ;# paste manager
     component pot            -public pot            ;# beanpot(n)
@@ -289,6 +290,7 @@ snit::type ::athena::athenadb {
             executive                   \
             frcgroup                    \
             group                       \
+            hist                        \
             hook                        \
             hrel                        \
             inject                      \
@@ -862,7 +864,7 @@ snit::type ::athena::athenadb {
         }
 
         # TODO: This should be part of grand scenario object.
-        hist purge -1
+        $hist purge -1
     }
 
     #-------------------------------------------------------------------

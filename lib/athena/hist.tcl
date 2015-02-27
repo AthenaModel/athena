@@ -1,18 +1,12 @@
 #-----------------------------------------------------------------------
-# FILE: hist.tcl
-#
-#   Athena History Module
-#
-# PACKAGE:
-#   app_sim(n) -- athena_sim(1) implementation package
-#
-# PROJECT:
-#   Athena S&RO Simulation
+# TITLE: 
+#    hist.tcl
 #
 # AUTHOR:
 #    Will Duquette
 #
 # DESCRIPTION:
+#   athena(n): Results history manager
 #
 # History is saved for t=0 on lock and for t > 0 at the end of each
 # time-step's activities.  [hist tick] saves all history that is
@@ -21,12 +15,27 @@
 #
 #-----------------------------------------------------------------------
 
-snit::type hist {
-    # Make it a singleton
-    pragma -hasinstances no
+snit::type ::athena::hist {
+    #-------------------------------------------------------------------
+    # Components
+
+    component adb  ;# The athenadb(n) instance
 
     #-------------------------------------------------------------------
-    # Public Type Methods
+    # Construcutor
+
+    # constructor adb_
+    #
+    # adb_    - The athenadb(n) that owns this instance.
+    #
+    # Initializes instances of this type.
+
+    constructor {adb_} {
+        set adb $adb_
+    }
+
+    #-------------------------------------------------------------------
+    # Public Methods
 
     # purge t
     #
@@ -40,9 +49,9 @@ snit::type hist {
     # time 0 history, by setting t to -1. NOTE: in the case of t = -1
     # its *much* quicker to leave out the WHERE clause
 
-    typemethod purge {t} {
+    method purge {t} {
         if {$t == -1} {
-            rdb eval {
+            $adb eval {
                 DELETE FROM hist_sat;
                 DELETE FROM hist_mood;
                 DELETE FROM hist_nbmood;
@@ -64,7 +73,7 @@ snit::type hist {
                 DELETE FROM hist_activity_nga;
             }
         } else {
-            rdb eval {
+            $adb eval {
                 DELETE FROM hist_sat          WHERE t > $t;
                 DELETE FROM hist_mood         WHERE t > $t;
                 DELETE FROM hist_nbmood       WHERE t > $t;
@@ -93,17 +102,17 @@ snit::type hist {
     # This method is called at each time tick, and preserves data values
     # that change tick-by-tick.  History data can be disabled.
 
-    typemethod tick {} {
-        if {[parm get hist.control]} {
-            rdb eval {
+    method tick {} {
+        if {[$adb parm get hist.control]} {
+            $adb eval {
                 INSERT INTO hist_control(t,n,a)
                 SELECT now(),n,controller
                 FROM control_n;
             }
         }
 
-        if {[parm get hist.coop]} {
-            rdb eval {
+        if {[$adb parm get hist.coop]} {
+            $adb eval {
                 INSERT INTO hist_coop(t,f,g,coop,base,nat)
                 SELECT now() AS t, f, g, coop, bvalue, cvalue
                 FROM uram_coop;
@@ -111,92 +120,92 @@ snit::type hist {
         }
 
         # We always save mood; it's needed by the MOOD rule set.
-        rdb eval {
+        $adb eval {
             INSERT INTO hist_mood(t,g,mood)
             SELECT now() AS t, g, mood
             FROM uram_mood;
         }
 
-        if {[parm get hist.nbcoop]} {
-            rdb eval {
+        if {[$adb parm get hist.nbcoop]} {
+            $adb eval {
                 INSERT INTO hist_nbcoop(t,n,g,nbcoop)
                 SELECT now() AS t, n, g, nbcoop
                 FROM uram_nbcoop;
             }
         }
 
-        if {[parm get hist.nbmood]} {
-            rdb eval {
+        if {[$adb parm get hist.nbmood]} {
+            $adb eval {
                 INSERT INTO hist_nbmood(t,n,nbmood)
                 SELECT now() AS t, n, nbmood
                 FROM uram_n;
             }
         }
 
-        if {[parm get hist.sat]} {
-            rdb eval {
+        if {[$adb parm get hist.sat]} {
+            $adb eval {
                 INSERT INTO hist_sat(t,g,c,sat,base,nat)
                 SELECT now() AS t, g, c, sat, bvalue, cvalue 
                 FROM uram_sat;
             }
         }
 
-        if {[parm get hist.security]} {
-            rdb eval {
+        if {[$adb parm get hist.security]} {
+            $adb eval {
                 INSERT INTO hist_security(t,n,g,security)
                 SELECT now(), n, g, security
                 FROM force_ng;
             }
         }
 
-        if {[parm get hist.support]} {
-            rdb eval {
+        if {[$adb parm get hist.support]} {
+            $adb eval {
                 INSERT INTO hist_support(t,n,a,direct_support,support,influence)
                 SELECT now(), n, a, direct_support, support, influence
                 FROM influence_na;
             }
         }
 
-        if {[parm get hist.volatility]} {
-            rdb eval {
+        if {[$adb parm get hist.volatility]} {
+            $adb eval {
                 INSERT INTO hist_volatility(t,n,volatility)
                 SELECT now(), n, volatility
                 FROM force_n;
             }
         }
 
-        if {[parm get hist.hrel]} {
-            rdb eval {
+        if {[$adb parm get hist.hrel]} {
+            $adb eval {
                 INSERT INTO hist_hrel(t,f,g,hrel,base,nat)
                 SELECT now(), f, g, hrel, bvalue, cvalue
                 FROM uram_hrel;
             }
         }
 
-        if {[parm get hist.vrel]} {
-            rdb eval {
+        if {[$adb parm get hist.vrel]} {
+            $adb eval {
                 INSERT INTO hist_vrel(t,g,a,vrel,base,nat)
                 SELECT now(), g, a, vrel, bvalue, cvalue
                 FROM uram_vrel;
             }
         }
     
-        if {[parm get hist.pop]} {
-            rdb eval {
+        if {[$adb parm get hist.pop]} {
+            $adb eval {
                 INSERT INTO hist_pop(t,g,population)
                 SELECT now(), g, population
                 FROM demog_g
             }
 
-            rdb eval {
+            $adb eval {
                 INSERT INTO hist_npop(t,n,population)
                 SELECT now(), n, population
                 FROM demog_n
             }
         }
 
-        if {[parm get hist.service]} {
-            rdb eval {
+        if {[$adb parm get hist.service]} {
+            $adb eval {
                 INSERT INTO hist_service_sg(t,s,g,saturation_funding,required,
                                            funding,actual,expected,expectf,
                                            needs)
@@ -206,8 +215,8 @@ snit::type hist {
             }
         }
 
-        if {[parm get hist.activity]} {
-            rdb eval {
+        if {[$adb parm get hist.activity]} {
+            $adb eval {
                 INSERT INTO hist_activity_nga(t,n,g,a,security_flag,can_do,
                                               nominal,effective,coverage)
                 SELECT now(), n, g, a, security_flag, can_do, nominal,
@@ -222,17 +231,17 @@ snit::type hist {
     # This method is called at each econ tock, and preserves data
     # values that change tock-by-tock.
 
-    typemethod econ {} {
+    method econ {} {
         # FIRST, if the econ model has been disabled we're done.
-        if {[econ state] eq "DISABLED"} {
+        if {[$adb econ state] eq "DISABLED"} {
             return
         }
 
         # NEXT, get the data and save it.
-        array set inputs  [econ get In  -bare]
-        array set outputs [econ get Out -bare]
+        array set inputs  [$adb econ get In  -bare]
+        array set outputs [$adb econ get Out -bare]
 
-        rdb eval {
+        $adb eval {
             -- hist_econ
             INSERT INTO hist_econ(t, consumers, subsisters, labor, 
                                   lsf, csf, rem, cpi, dgdp, ur)
@@ -244,7 +253,7 @@ snit::type hist {
 
         foreach i {goods pop black actors region world} {
             if {$i in {goods pop black}} {
-                rdb eval "
+                $adb eval "
                     -- hist_econ_i
                     INSERT INTO hist_econ_i(t, i, p, qs, rev)
                     VALUES(now(), upper(\$i), \$outputs(P.$i), 
@@ -253,7 +262,7 @@ snit::type hist {
             }
 
             foreach j {goods pop black actors region world} {
-                rdb eval "
+                $adb eval "
                     -- hist_econ_ij
                     INSERT INTO hist_econ_ij(t, i, j, x, qd)
                     VALUES(now(), upper(\$i), upper(\$j), 
