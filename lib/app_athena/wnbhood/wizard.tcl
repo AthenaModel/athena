@@ -121,7 +121,7 @@ snit::type ::wnbhood::wizard {
     # on.
 
     typemethod MapExists {} {
-        set projtype [rdb onecolumn {SELECT projtype FROM maps WHERE id=1}]
+        set projtype [adb onecolumn {SELECT projtype FROM maps WHERE id=1}]
 
         # Must be a rectangular projection
         if {$projtype ne "RECT"} {

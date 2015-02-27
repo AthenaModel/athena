@@ -86,7 +86,7 @@ snit::type ptype {
     }
 
     typemethod {fog namedict} {} {
-        rdb eval {
+        adb eval {
             SELECT g, longname
             FROM groups
             WHERE gtype IN ('FRC', 'ORG')
@@ -134,7 +134,7 @@ snit::type ptype {
     }
 
     typemethod {goa namedict} {} {
-        rdb eval {
+        adb eval {
             SELECT g as x, longname
             FROM groups
             UNION
@@ -216,7 +216,7 @@ snit::type ptype {
     # Concern names
 
     typemethod {c names} {} {
-        rdb eval {SELECT c FROM concerns}
+        adb eval {SELECT c FROM concerns}
     }
 
     typemethod {c validate} {value} {

@@ -167,14 +167,14 @@ appserver module NBHOOD {
         # Get the neighborhood
         set n [string toupper $(1)]
 
-        if {![rdb exists {SELECT * FROM nbhoods WHERE n=$n}]} {
+        if {![adb exists {SELECT * FROM nbhoods WHERE n=$n}]} {
             return -code error -errorcode NOTFOUND \
                 "Unknown entity: [dict get $udict url]."
         }
 
-        rdb eval {SELECT * FROM gui_nbhoods WHERE n=$n} data {}
-        rdb eval {SELECT * FROM econ_n_view WHERE n=$n} econ {}
-        rdb eval {
+        adb eval {SELECT * FROM gui_nbhoods WHERE n=$n} data {}
+        adb eval {SELECT * FROM econ_n_view WHERE n=$n} econ {}
+        adb eval {
             SELECT * FROM gui_actors  
             WHERE a=$data(controller)
         } cdata {}
@@ -206,7 +206,7 @@ appserver module NBHOOD {
         if {![locked]} {
             ht putln "Resident groups: "
 
-            ht linklist -default "None" [rdb eval {
+            ht linklist -default "None" [adb eval {
                 SELECT url, g
                 FROM gui_civgroups
                 WHERE n=$n
@@ -248,7 +248,7 @@ appserver module NBHOOD {
         
                 ht putln "The population belongs to the following groups: "
         
-                ht linklist -default "None" [rdb eval {
+                ht linklist -default "None" [adb eval {
                     SELECT url,g
                     FROM gui_civgroups
                     WHERE n=$n AND population > 0
@@ -282,7 +282,7 @@ appserver module NBHOOD {
     
             ht putln "Actors with forces in $n: "
     
-            ht linklist -default "None" [rdb eval {
+            ht linklist -default "None" [adb eval {
                 SELECT DISTINCT '/actor/' || a, a
                 FROM gui_agroups
                 JOIN force_ng USING (g)
@@ -294,7 +294,7 @@ appserver module NBHOOD {
     
             ht putln "Actors with influence in $n: "
     
-            ht linklist -default "None" [rdb eval {
+            ht linklist -default "None" [adb eval {
                 SELECT DISTINCT A.url, A.a
                 FROM influence_na AS I
                 JOIN gui_actors AS A USING (a)
@@ -311,7 +311,7 @@ appserver module NBHOOD {
                 "The following force and organization groups are" \
                 "active in $n: "
     
-            ht linklist -default "None" [rdb eval {
+            ht linklist -default "None" [adb eval {
                 SELECT G.url, G.g
                 FROM gui_agroups AS G
                 JOIN force_ng    AS F USING (g)
@@ -403,7 +403,7 @@ appserver module NBHOOD {
     
             ht para
     
-            rdb eval {
+            adb eval {
                 SELECT g,alink FROM gui_service_ga WHERE numeric_funding > 0.0
             } {
                 lappend funders($g) $alink
@@ -413,7 +413,7 @@ appserver module NBHOOD {
                 "Group" "Funding,<br>$/week" "Actual" "Required" "Expected" 
                 "Funding<br>Actors"
             } {
-                rdb eval {
+                adb eval {
                     SELECT g, longlink, funding, pct_required, 
                            pct_actual, pct_expected 
                     FROM gui_service_sg
@@ -519,7 +519,7 @@ appserver module NBHOOD {
         # CAP coverage
         ht subtitle "CAP Coverage" cap
         
-        set hascapcov [rdb eval {
+        set hascapcov [adb eval {
                            SELECT count(*) FROM capcov 
                            WHERE n=$n AND nbcov > 0.0
                        }]
@@ -588,7 +588,7 @@ appserver module NBHOOD {
     
                 set adjpop 0.0
     
-                rdb eval {
+                adb eval {
                     SELECT nbpop, pcf
                     FROM plants_n_view
                 } row {
@@ -602,7 +602,7 @@ appserver module NBHOOD {
                         "Consumers" "Prod. Capacity Factor"
                         "% of GOODS<br>Production Plants"
                     } {
-                        rdb eval {
+                        adb eval {
                             SELECT pcf            AS pcf,
                                    nbpop          AS nbpop 
                             FROM gui_plants_n
@@ -676,7 +676,7 @@ appserver module NBHOOD {
                     "Agent" "Total" "&lt 20%" "20%-40%" 
                     "40%-60%" "60%-80%" "&gt 80%" 
                 } {
-                    rdb eval {
+                    adb eval {
                         SELECT a, alink, levels, num
                         FROM gui_plants_build
                         WHERE n=$n

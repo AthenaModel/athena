@@ -185,7 +185,7 @@ snit::widget ::wnbhood::wizwin {
     method MaxNbhoodID {} {
         set num 0
         # FIRST, get the highest existing ID
-        rdb eval {
+        adb eval {
             SELECT n FROM nbhoods
         } {
             if {[string compare -length 1 "N" $n] == 0} {

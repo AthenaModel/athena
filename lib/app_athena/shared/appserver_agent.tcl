@@ -145,14 +145,14 @@ appserver module AGENT {
         set s [strategy getname $a]
 
         # NEXT, Begin the page
-        rdb eval {SELECT * FROM gui_agents WHERE agent_id=$a} data {}
+        adb eval {SELECT * FROM gui_agents WHERE agent_id=$a} data {}
 
         ht page "Agent: $a ($data(agent_type))"
         ht title "Agent: $a ($data(agent_type))" 
 
         if {$data(agent_type) eq "actor"} {
             ht putln "Agent $a is an actor; click "
-            ht link [rdb onecolumn {
+            ht link [adb onecolumn {
                 SELECT url FROM gui_actors
                 WHERE a=$a
             }] here
@@ -199,14 +199,14 @@ appserver module AGENT {
         set s [strategy getname $a]
 
         # NEXT, Begin the page
-        rdb eval {SELECT * FROM gui_agents WHERE agent_id=$a} data {}
+        adb eval {SELECT * FROM gui_agents WHERE agent_id=$a} data {}
 
         ht page "Agent: $a ($data(agent_type))"
         ht title "Agent: $a ($data(agent_type))" 
 
         if {$data(agent_type) eq "actor"} {
             ht putln "Agent $a is an actor; click "
-            ht link [rdb onecolumn {
+            ht link [adb onecolumn {
                 SELECT url FROM gui_actors
                 WHERE a=$a
             }] here

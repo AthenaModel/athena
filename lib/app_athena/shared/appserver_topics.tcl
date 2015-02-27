@@ -86,7 +86,7 @@ appserver module topic {
                 # FIRST, get data.
                 array set tdata [bsys topic view $tid]
 
-                set tdata(hc) [rdb eval {
+                set tdata(hc) [adb eval {
                     SELECT count(topic_id) FROM hook_topics
                     WHERE topic_id = $tid
                 }]

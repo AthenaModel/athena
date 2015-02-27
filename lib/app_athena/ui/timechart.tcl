@@ -226,7 +226,7 @@ snit::widgetadaptor timechart {
                 set vdict($varname) [view t get $varname]
                 set v [dict get $vdict($varname) view]
 
-                set data($varname) [rdb eval "
+                set data($varname) [adb eval "
                     SELECT t, x0 FROM $v $where ORDER BY t
                 "]
             }

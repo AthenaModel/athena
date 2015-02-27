@@ -385,7 +385,7 @@ snit::widget iombrowser {
         array unset p2item
 
         # NEXT, insert the ioms
-        rdb eval {
+        adb eval {
             SELECT * FROM gui_ioms ORDER BY iom_id
         } row {
             unset -nocomplain row(*)
@@ -393,7 +393,7 @@ snit::widget iombrowser {
         }
 
         # NEXT, insert the payloads
-        rdb eval {
+        adb eval {
             SELECT * FROM gui_payloads
             ORDER BY id;
         } row {

@@ -1,7 +1,7 @@
 # TODO.md - Athena TODO List
 
-- Move relevant apptypes.tcl to athena(n).
-- Move relevant helpers.tcl to athena(n).
+- Removing ::flunky:
+  - order_dialog wants a simple command, not a prefix.
 - Remove global singleton names:
   - Revise remaining app code to not use them.
   - Remove all such aliases, and see what breaks.

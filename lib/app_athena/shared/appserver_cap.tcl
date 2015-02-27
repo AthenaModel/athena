@@ -77,7 +77,7 @@ appserver module CAP {
             ht push
 
             ht table {"Name" "Owner" "Capacity" "Cost, $" "Accessible By"} {
-                rdb eval {
+                adb eval {
                     SELECT k             AS k,
                            longlink      AS longlink,
                            owner         AS owner,
@@ -88,11 +88,11 @@ appserver module CAP {
                     set alist [list]
 
                     # NEXT, owner first
-                    lappend alist [rdb onecolumn {
+                    lappend alist [adb onecolumn {
                         SELECT link FROM gui_actors WHERE a=$owner}]
 
                     # NEXT, everyone else in alphabetical order
-                    rdb eval {
+                    adb eval {
                         SELECT A.link AS alink
                         FROM gui_actors  AS A
                         JOIN cap_access  AS C ON (C.a == A.a)
@@ -176,7 +176,7 @@ appserver module CAP {
         # FIRST, get the CAP name and data.
         set k [string toupper $(1)]
 
-        rdb eval {SELECT * FROM gui_caps WHERE k=$k} data {}
+        adb eval {SELECT * FROM gui_caps WHERE k=$k} data {}
 
         # NEXT, Begin the page
         ht page "CAP: $k"
@@ -197,11 +197,11 @@ appserver module CAP {
             ht para
 
             # NEXT, grab the owner first
-            lappend alist [rdb onecolumn \
+            lappend alist [adb onecolumn \
                 {SELECT link FROM gui_actors WHERE a=$data(owner)}]
 
             # NEXT, the rest of the access list, excluding the owner
-            rdb eval {
+            adb eval {
                 SELECT A.link AS alink
                 FROM gui_actors  AS A
                 JOIN cap_access  AS C ON (C.a == A.a)
@@ -217,7 +217,7 @@ appserver module CAP {
         }
 
         ht subtitle "CAP Coverage" capcov
-        rdb eval {SELECT longname, capacity, cost FROM caps WHERE k=$k} data {}
+        adb eval {SELECT longname, capacity, cost FROM caps WHERE k=$k} data {}
 
         ht put "$data(fancy) has a capacity of $data(capacity) and a "
         ht put "cost of $data(cost) dollars. " 

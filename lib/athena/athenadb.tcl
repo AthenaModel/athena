@@ -214,7 +214,7 @@ snit::type ::athena::athenadb {
         adbfile   ""
         saveables {}
     }
-    
+
     #-------------------------------------------------------------------
     # Constructor/Destructor
 
@@ -319,10 +319,10 @@ snit::type ::athena::athenadb {
         # NEXT, Make these components globally available.
         # TBD: These will go away once the transition to library code
         # is complete.
-        interp alias {} ::aram     {} $aram
-        interp alias {} ::rdb      {} $rdb
-        interp alias {} ::pot      {} $pot
-        interp alias {} ::flunky   {} $flunky
+        interp alias {} ::aram   {} $aram
+        interp alias {} ::flunky {} $flunky
+        interp alias {} ::pot    {} $pot
+        interp alias {} ::rdb    {} $rdb
 
         # NEXT, register the ones that are saveables.  This will change
         # when the transition to library code is complete.

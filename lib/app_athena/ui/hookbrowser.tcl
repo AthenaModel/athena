@@ -369,7 +369,7 @@ snit::widget hookbrowser {
         array unset titem
 
         # NEXT, insert the hooks
-        rdb eval {
+        adb eval {
             SELECT * FROM hooks ORDER BY hook_id
         } row {
             unset -nocomplain row(*)
@@ -377,7 +377,7 @@ snit::widget hookbrowser {
         }
 
         # NEXT, insert the topics 
-        rdb eval {
+        adb eval {
             SELECT * FROM gui_hook_topics
             ORDER BY id;
         } row {

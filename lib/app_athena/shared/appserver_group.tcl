@@ -276,7 +276,7 @@ appserver module GROUPS {
         # Get the group
         set g [string toupper $(1)]
 
-        if {![rdb exists {SELECT * FROM groups WHERE g=$g}]} {
+        if {![adb exists {SELECT * FROM groups WHERE g=$g}]} {
             return -code error -errorcode NOTFOUND \
                 "Unknown entity: [dict get $udict url]."
         }
@@ -306,9 +306,9 @@ appserver module GROUPS {
         service srservice
 
         # NEXT, get the data about this group
-        rdb eval {SELECT * FROM gui_civgroups  WHERE g=$g}              data {}
-        rdb eval {SELECT * FROM gui_nbhoods    WHERE n=$data(n)}        nb   {}
-        rdb eval {SELECT * FROM gui_service_sg WHERE g=$g AND s='ENI'}  eni  {}
+        adb eval {SELECT * FROM gui_civgroups  WHERE g=$g}              data {}
+        adb eval {SELECT * FROM gui_nbhoods    WHERE n=$data(n)}        nb   {}
+        adb eval {SELECT * FROM gui_service_sg WHERE g=$g AND s='ENI'}  eni  {}
         
         # NEXT, begin the page.
         ht page "Civilian Group: $g"
@@ -419,7 +419,7 @@ appserver module GROUPS {
             ht para
 
             # Actors
-            set controller [rdb onecolumn {
+            set controller [adb onecolumn {
                 SELECT controller FROM control_n WHERE n=$data(n)
             }]
 
@@ -427,7 +427,7 @@ appserver module GROUPS {
                 ht putln "No actor is in control of $data(n)."
                 set vrel_c -1.0
             } else {
-                set vrel_c [rdb onecolumn {
+                set vrel_c [adb onecolumn {
                     SELECT vrel FROM gui_uram_vrel
                     WHERE g=$g AND a=$controller
                 }]
@@ -440,7 +440,7 @@ appserver module GROUPS {
                 ht put   ", who is in control of neighborhood $data(n)."
             }
 
-            rdb eval {
+            adb eval {
                 SELECT a,vrel FROM gui_uram_vrel
                 WHERE g=$g
                 ORDER BY vrel DESC
@@ -683,7 +683,7 @@ appserver module GROUPS {
             ht para
         }
         
-        set hascapcov [rdb eval {
+        set hascapcov [adb eval {
                            SELECT count(*) FROM capcov
                            WHERE g=$g
                            AND   capcov > 0.0
@@ -783,7 +783,7 @@ appserver module GROUPS {
     # Formats the summary page for force /group/{g}.
 
     proc FrcGroup:html {g} {
-        rdb eval {SELECT * FROM frcgroups_view WHERE g=$g} data {}
+        adb eval {SELECT * FROM frcgroups_view WHERE g=$g} data {}
 
         ht page "Force Group: $g"
         ht title "$data(longname) ($g)" "Force Group" 
@@ -833,7 +833,7 @@ appserver module GROUPS {
     # Formats the summary page for org /group/{g}.
 
     proc OrgGroup:html {g} {
-        rdb eval {SELECT * FROM orggroups_view WHERE g=$g} data {}
+        adb eval {SELECT * FROM orggroups_view WHERE g=$g} data {}
 
         ht page "Organization Group: $g"
         ht title "$data(longname) ($g)" "Organization Group" 

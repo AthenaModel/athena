@@ -397,7 +397,7 @@ snit::widget cursebrowser {
         array unset i2item
 
         # NEXT, insert the curses
-        rdb eval {
+        adb eval {
             SELECT * FROM gui_curses ORDER BY curse_id
         } row {
             unset -nocomplain row(*)
@@ -405,7 +405,7 @@ snit::widget cursebrowser {
         }
 
         # NEXT, insert the injects
-        rdb eval {
+        adb eval {
             SELECT * FROM gui_injects
             ORDER BY id;
         } row {

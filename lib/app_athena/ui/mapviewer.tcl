@@ -693,7 +693,7 @@ snit::widget mapviewer {
         }
 
         # NEXT, load the map.
-        rdb eval {
+        adb eval {
             SELECT width,height,projtype,llat,llon,ulat,ulon,data 
             FROM maps WHERE id=1
         } {
@@ -772,7 +772,7 @@ snit::widget mapviewer {
       "can't use variable as fill: no associated color gradient: \"$varname\""
         }
 
-        if {![rdb exists "SELECT * FROM $vdict(view)"]} {
+        if {![adb exists "SELECT * FROM $vdict(view)"]} {
             return -code error -errorcode INVALID \
                 "variable has no associated data in the database: \"$varname\""
         }
@@ -881,7 +881,7 @@ snit::widget mapviewer {
         array unset nbhoods
 
         # NEXT, add neighborhoods
-        rdb eval {
+        adb eval {
             SELECT n, refpoint, polygon 
             FROM nbhoods
             ORDER BY stacking_order
@@ -986,7 +986,7 @@ snit::widget mapviewer {
 
             array set vdict [view n get $view(filltag)]
 
-            array set data [rdb eval "SELECT n, x0 FROM $vdict(view)"]
+            array set data [adb eval "SELECT n, x0 FROM $vdict(view)"]
 
             set gradient [dict get $vdict(meta) $view(filltag) gradient]
         }
@@ -1015,7 +1015,7 @@ snit::widget mapviewer {
     # up the refpoint.
 
     method NbhoodShowObscured {} {
-        rdb eval {
+        adb eval {
             SELECT n,obscured_by FROM nbhoods
         } {
             if {$obscured_by ne ""} {
@@ -1190,7 +1190,7 @@ snit::widget mapviewer {
 
     method {EntityNbhood update} {n} {
         # FIRST, get the nbhood data we care about
-        rdb eval {SELECT refpoint, polygon FROM nbhoods WHERE n=$n} {}
+        adb eval {SELECT refpoint, polygon FROM nbhoods WHERE n=$n} {}
 
         # NEXT, if this is a new neighborhood, just draw it;
         # otherwise, update the refpoint and polygon
@@ -1462,7 +1462,7 @@ snit::widget mapviewer {
     # Clears and redraws all units
 
     method UnitDrawAll {} {
-        rdb eval {
+        adb eval {
             SELECT * FROM units_view
             WHERE active
         } row {
@@ -1537,7 +1537,7 @@ snit::widget mapviewer {
     # to be redrawn.
 
     method UnitDrawSingle {u} {
-        rdb eval {
+        adb eval {
             SELECT * FROM units_view
             WHERE u=$u
         } row {
@@ -1611,7 +1611,7 @@ snit::widget mapviewer {
     # Clears and redraws all absits
 
     method AbsitDrawAll {} {
-        rdb eval {
+        adb eval {
             SELECT * FROM absits
         } row {
             $self AbsitDraw [array get row]
@@ -1679,7 +1679,7 @@ snit::widget mapviewer {
 
     method AbsitDrawSingle {s} {
         # FIRST, draw it, if it's current.
-        rdb eval {
+        adb eval {
             SELECT * FROM absits
             WHERE s=$s
         } row {

@@ -190,7 +190,7 @@ snit::widgetadaptor hrelbrowser {
         set id [lindex [$self uid curselection] 0]
         lassign $id f g
 
-        set override [rdb onecolumn {
+        set override [adb onecolumn {
             SELECT override FROM gui_hrel_view WHERE f=$f AND g=$g
         }]
 

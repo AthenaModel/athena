@@ -199,7 +199,7 @@ snit::widgetadaptor vrelbrowser {
         set id [lindex [$self uid curselection] 0]
         lassign $id g a
 
-        set override [rdb onecolumn {
+        set override [adb onecolumn {
             SELECT override FROM gui_vrel_view WHERE g=$g AND a=$a
         }]
 

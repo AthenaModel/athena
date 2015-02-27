@@ -364,7 +364,7 @@ snit::type appserver {
         set result [dict create]
 
         dict with odict {
-            rdb eval "
+            adb eval "
                 SELECT url, fancy
                 FROM $table 
                 ORDER BY fancy

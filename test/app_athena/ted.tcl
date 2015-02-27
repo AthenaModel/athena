@@ -736,13 +736,13 @@ snit::type ted {
         }
 
         foreach table $cleanupTables {
-            rdb eval "DELETE FROM $table;" 
+            adb eval "DELETE FROM $table;" 
         }
 
         # So that automatically generated IDs start over at 1.
         # Note that SQLite adds this table as needed.
         catch {
-            rdb eval {DELETE FROM main.sqlite_sequence}
+            adb eval {DELETE FROM main.sqlite_sequence}
         }
 
         # Can we just do an "adb reset" here?
@@ -878,7 +878,7 @@ snit::type ted {
     # whitespace.
 
     typemethod query {sql} {
-        return "\n[rdb query $sql -maxcolwidth 80]    "
+        return "\n[adb query $sql -maxcolwidth 80]    "
     }
 
     # querylist sql
@@ -889,7 +889,7 @@ snit::type ted {
     # whitespace, returning -list output
 
     typemethod querylist {sql args} {
-        return "\n[rdb query $sql -mode list]    "
+        return "\n[adb query $sql -mode list]    "
     }
 
     #-------------------------------------------------------------------

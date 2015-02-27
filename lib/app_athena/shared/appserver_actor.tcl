@@ -106,13 +106,13 @@ appserver module ACTOR {
         # Accumulate data
         set a [string toupper $(1)]
 
-        if {![rdb exists {SELECT * FROM actors WHERE a=$a}]} {
+        if {![adb exists {SELECT * FROM actors WHERE a=$a}]} {
             return -code error -errorcode NOTFOUND \
                 "Unknown entity: [dict get $udict url]."
         }
 
         # Begin the page
-        rdb eval {SELECT * FROM gui_actors WHERE a=$a} data {}
+        adb eval {SELECT * FROM gui_actors WHERE a=$a} data {}
 
         ht page "Actor: $a"
         ht title $data(fancy) "Actor" 
@@ -136,7 +136,7 @@ appserver module ACTOR {
 
         ht putln "Groups owned: "
 
-        ht linklist -default "None" [rdb eval {
+        ht linklist -default "None" [adb eval {
             SELECT url, g FROM gui_agroups 
             WHERE a=$a
             ORDER BY g
@@ -211,7 +211,7 @@ appserver module ACTOR {
             ht putln [format %.2f [parm get control.support.min]].
             ht para
 
-            set supports [rdb onecolumn {
+            set supports [adb onecolumn {
                 SELECT supports_link FROM gui_actors
                 WHERE a=$a
             }]
@@ -329,7 +329,7 @@ appserver module ACTOR {
         ht subtitle "GOODS Plant Ownership" infra
 
         if {![locked]} {
-            set nbhoods [rdb eval {
+            set nbhoods [adb eval {
                 SELECT nlink FROM gui_plants_alloc
                 WHERE a=$a
             }]
@@ -360,7 +360,7 @@ appserver module ACTOR {
                 
                 ht para
             } else {
-                set nbhoods [rdb eval {
+                set nbhoods [adb eval {
                     SELECT nlink FROM gui_plants_na
                     WHERE a=$a
                 }]
@@ -373,7 +373,7 @@ appserver module ACTOR {
                 } else {
 
                     set nlist [join $nbhoods ", "]
-                    set num [rdb eval {
+                    set num [adb eval {
                         SELECT sum(num) FROM gui_plants_na
                         WHERE a=$a
                     }]

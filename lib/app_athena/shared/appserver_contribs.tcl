@@ -273,7 +273,7 @@ appserver module CONTRIBS {
         PutPlot hist.coop $start_ $end_ $vars
 
         # NEXT, Get the drivers for this time period.
-        aram contribs coop $f $g \
+        adb contribs coop $f $g \
             -start $start_       \
             -end   $end_
 
@@ -400,7 +400,7 @@ appserver module CONTRIBS {
         PutPlot hist.hrel $start_ $end_ $vars
 
         # NEXT, Get the drivers for this time period.
-        aram contribs hrel $f $g \
+        adb contribs hrel $f $g \
             -start $start_       \
             -end   $end_
 
@@ -513,7 +513,7 @@ appserver module CONTRIBS {
         PutPlot hist.sat $start_ $end_ $vars
 
         # NEXT, Get the drivers for this time period.
-        aram contribs mood $g \
+        adb contribs mood $g \
             -start $start_    \
             -end   $end_
 
@@ -631,7 +631,7 @@ appserver module CONTRIBS {
 
         # NEXT, insert the plot.
         set vars [list]
-        rdb eval {SELECT g AS f FROM civgroups WHERE n=$n} {
+        adb eval {SELECT g AS f FROM civgroups WHERE n=$n} {
             lappend vars coop.$f.$g
         }
 
@@ -653,7 +653,7 @@ appserver module CONTRIBS {
         PutPlot hist.nbcoop $start_ $end_ $vars
 
         # NEXT, Get the drivers for this time period.
-        aram contribs nbcoop $n $g \
+        adb contribs nbcoop $n $g \
             -start $start_       \
             -end   $end_
 
@@ -759,7 +759,7 @@ appserver module CONTRIBS {
 
         # NEXT, insert the plot.
         set vars [list] 
-        rdb eval {SELECT g FROM civgroups WHERE n=$n} {
+        adb eval {SELECT g FROM civgroups WHERE n=$n} {
             lappend vars mood.$g
         }
         lappend vars nbmood.$n
@@ -779,7 +779,7 @@ appserver module CONTRIBS {
         PutPlot hist.nbmood $start_ $end_ $vars
 
         # NEXT, Get the drivers for this time period.
-        aram contribs nbmood $n \
+        adb contribs nbmood $n \
             -start $start_    \
             -end   $end_
 
@@ -906,7 +906,7 @@ appserver module CONTRIBS {
         PutPlot hist.sat $start_ $end_ $vars
 
         # NEXT, Get the drivers for this time period.
-        aram contribs sat $g $c \
+        adb contribs sat $g $c \
             -start $start_      \
             -end   $end_
 
@@ -1033,7 +1033,7 @@ appserver module CONTRIBS {
         PutPlot hist.vrel $start_ $end_ $vars
 
         # NEXT, Get the drivers for this time period.
-        aram contribs vrel $g $a \
+        adb contribs vrel $g $a \
             -start $start_       \
             -end   $end_
 
@@ -1101,7 +1101,7 @@ appserver module CONTRIBS {
     # Returns the actor's long link.
 
     proc ActorLongLink {a} {
-        rdb onecolumn {
+        adb onecolumn {
             SELECT longlink FROM gui_actors WHERE a=$a
         }
     }
@@ -1113,7 +1113,7 @@ appserver module CONTRIBS {
     # Returns the group's long link.
 
     proc GroupLongLink {g} {
-        rdb onecolumn {
+        adb onecolumn {
             SELECT longlink FROM gui_groups WHERE g=$g
         }
     }
@@ -1125,7 +1125,7 @@ appserver module CONTRIBS {
     # Returns the nbhood's long link.
 
     proc NbhoodLongLink {n} {
-        rdb onecolumn {
+        adb onecolumn {
             SELECT longlink FROM gui_nbhoods WHERE n=$n
         }
     }
@@ -1212,19 +1212,19 @@ appserver module CONTRIBS {
             append query "LIMIT $top"
         }
 
-        rdb eval $query
+        adb eval $query
 
         # NEXT, get the total contribution to this curve in this
         # time window.
 
-        set totContrib [rdb onecolumn {
+        set totContrib [adb onecolumn {
             SELECT total(abs(contrib))
             FROM uram_contribs
         }]
 
         # NEXT, get the total contribution represented by the report.
 
-        set totReported [rdb onecolumn {
+        set totReported [adb onecolumn {
             SELECT total(abs(contrib)) 
             FROM temp_contribs
         }]

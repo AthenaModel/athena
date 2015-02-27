@@ -60,7 +60,7 @@ appserver module DRIVERS {
     proc /drivers:linkdict {udict matchArray} {
         set result [dict create]
 
-        rdb eval {
+        adb eval {
             SELECT DISTINCT dtype
             FROM drivers
             JOIN rule_firings USING (driver_id)
@@ -102,7 +102,7 @@ appserver module DRIVERS {
         ht title "Attitude Drivers ($label)"
 
         # NEXT, get summary statistics
-        rdb eval {
+        adb eval {
             DROP TABLE IF EXISTS temp_report_driver_contribs;
 
             CREATE TEMPORARY TABLE temp_report_driver_contribs AS
@@ -139,7 +139,7 @@ appserver module DRIVERS {
             -default "No drivers found." \
             -align   RLLRLL
 
-        rdb eval {
+        adb eval {
             DROP TABLE temp_report_driver_contribs;
         }
 
@@ -165,13 +165,13 @@ appserver module DRIVERS {
         # Accumulate data
         set id $(1)
 
-        if {![rdb exists {SELECT * FROM drivers WHERE driver_id=$id}]} {
+        if {![adb exists {SELECT * FROM drivers WHERE driver_id=$id}]} {
             return -code error -errorcode NOTFOUND \
                 "Unknown entity: [dict get $udict url]."
         }
 
         # Begin the page
-        rdb eval {SELECT * FROM gui_drivers WHERE driver_id=$id} data {}
+        adb eval {SELECT * FROM gui_drivers WHERE driver_id=$id} data {}
 
         ht page "Driver: $id"
         ht title "Driver: $id, $data(dtype) -- $data(sigline)"

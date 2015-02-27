@@ -742,7 +742,7 @@ snit::type view {
         set query [dict get $viewdef($domain,$vartype) query]
         set rtype [dict get $viewdef($domain,$vartype) rtype]
 
-        rdb eval "CREATE TEMPORARY VIEW $vid AS [subst $query]"
+        adb eval "CREATE TEMPORARY VIEW $vid AS [subst $query]"
 
         set vdict [dict create]
         dict set vdict view     $vid
@@ -825,7 +825,7 @@ snit::type view {
             FROM $joins
         "
 
-        rdb eval $sql
+        adb eval $sql
 
         # NEXT, save the view dict.
         set views($domain,$composite) $vdict

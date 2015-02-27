@@ -85,12 +85,12 @@ appserver module BSYSTEM {
                 # FIRST, get data.
                 array set sdata [bsys system view $sid]
 
-                set sdata(ac) [rdb onecolumn {
+                set sdata(ac) [adb onecolumn {
                     SELECT count(bsid) FROM actors
                     WHERE bsid = $sid
                 }]
 
-                set sdata(gc) [rdb onecolumn {
+                set sdata(gc) [adb onecolumn {
                     SELECT count(bsid) FROM groups_bsid_view
                     WHERE bsid = $sid
                 }]

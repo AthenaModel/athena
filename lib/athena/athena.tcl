@@ -105,23 +105,37 @@ snit::type ::athena::athena {
     # subcommands we really want to expose.
 
     # ADB
-    delegate method adbfile   to adb
-    delegate method autogen   to adb
-    delegate method dbsync    to adb
-    delegate method executive to adb
-    delegate method export    to adb
-    delegate method gofer     to adb
-    delegate method load      to adb
-    delegate method locked    to adb
-    delegate method paste     to adb
-    delegate method reset     to adb
-    delegate method sanity    to adb
-    delegate method save      to adb
-    delegate method send      to adb
-    delegate method stable    to adb
-    delegate method state     to adb
-    delegate method unsaved   to adb
-    delegate method version   to adb
+    delegate method adbfile              to adb
+    delegate method autogen              to adb
+    delegate method dbsync               to adb
+    delegate method executive            to adb
+    delegate method export               to adb
+    delegate method gofer                to adb
+    delegate method load                 to adb
+    delegate method locked               to adb
+    delegate method paste                to adb
+    delegate method reset                to adb
+    delegate method sanity               to adb
+    delegate method save                 to adb
+    delegate method {order available}    to adb as {flunky available}
+    delegate method {order canundo}      to adb as {flunky canundo}
+    delegate method {order canredo}      to adb as {flunky canredo}
+    delegate method {order class}        to adb as {flunky class}
+    delegate method {order redo}         to adb as {flunky redo}
+    delegate method {order redotext}     to adb as {flunky redotext}
+    delegate method {order send}         to adb as {flunky send}
+    delegate method {order senddict}     to adb as {flunky senddict}
+    delegate method {order transaction}  to adb as {flunky transaction}
+    delegate method {order undo}         to adb as {flunky undo}
+    delegate method {order undotext}     to adb as {flunky undotext}
+    delegate method stable               to adb
+    delegate method state                to adb
+    delegate method unsaved              to adb
+    delegate method version              to adb
+    delegate method contribs             to adb as {aram contribs}
+    delegate method {bean get}           to adb as {pot get}
+    delegate method {bean ids}           to adb as {pot ids}
+    delegate method {bean has}           to adb as {pot has}
 
     # RDB
     #

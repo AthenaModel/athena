@@ -1975,7 +1975,7 @@ snit::widget appwin {
     # Called when the user clicks on a unit icon.
 
     method Unit-1 {u} {
-        rdb eval {SELECT * FROM gui_units WHERE u=$u} row {
+        adb eval {SELECT * FROM gui_units WHERE u=$u} row {
             $self puts \
                 "Unit $u  at: $row(location)  group: $row(g)  activity: $row(a)  personnel: $row(personnel)"
         }
@@ -1988,7 +1988,7 @@ snit::widget appwin {
     # Called when the user clicks on an absit icon.
 
     method Absit-1 {s} {
-        rdb eval {SELECT * FROM gui_absits WHERE s=$s} row {
+        adb eval {SELECT * FROM gui_absits WHERE s=$s} row {
         $self puts \
             "Situation $s: $row(stype)  at: $row(location)  coverage: $row(coverage)"
         }
@@ -2001,7 +2001,7 @@ snit::widget appwin {
     # Called when the user clicks on a nbhood.
 
     method Nbhood-1 {n} {
-        rdb eval {SELECT longname FROM nbhoods WHERE n=$n} {}
+        adb eval {SELECT longname FROM nbhoods WHERE n=$n} {}
 
         $self puts "Neighborhood $n: $longname"
     }
