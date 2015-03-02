@@ -56,8 +56,6 @@ namespace eval ::athena_test::tests:: {
         }
 
         ted cleanup
-
-        assert {![aram initialized]}
     }
 
     #-------------------------------------------------------------------
@@ -183,7 +181,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         sim lock
 
-        rdb eval {SELECT tick FROM snapshots}
+        adb eval {SELECT tick FROM snapshots}
     } -cleanup {
         cleanup
     } -result {-1}
@@ -195,7 +193,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         sim lock
 
-        rdb onecolumn {SELECT n FROM uram_n}
+        adb onecolumn {SELECT n FROM uram_n}
     } -cleanup {
         cleanup
     } -result {NB1}
@@ -381,7 +379,7 @@ namespace eval ::athena_test::tests:: {
         sim run -ticks 1 -block yes
     } -body {
         sim unlock
-        rdb eval {SELECT tick FROM snapshots}
+        adb eval {SELECT tick FROM snapshots}
     } -cleanup {
         cleanup
     } -result {}

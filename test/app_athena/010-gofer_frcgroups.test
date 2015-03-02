@@ -153,7 +153,7 @@ namespace eval ::athena_test::tests:: {
             NB1 TAL  0
             NB2 TAL  1
         } {
-            rdb eval {
+            adb eval {
                 INSERT INTO deploy_ng(n,g,personnel)
                 VALUES($n, $g, $personnel)
             }
@@ -195,7 +195,7 @@ namespace eval ::athena_test::tests:: {
             NB1 TAL  1
             NB2 TAL  0
         } {
-            rdb eval {
+            adb eval {
                 INSERT INTO deploy_ng(n,g,personnel)
                 VALUES($n, $g, $personnel)
             }
@@ -238,7 +238,7 @@ namespace eval ::athena_test::tests:: {
             BLUE BOB 0.0
             SHIA BOB 0.3
         } {
-            rdb eval {
+            adb eval {
                 INSERT INTO support_nga(n,g,a,support)
                 VALUES('NB1',$g,$a,$support)
             }
@@ -275,11 +275,11 @@ namespace eval ::athena_test::tests:: {
     test LIKING_ACTOR-4.1 {eval} -setup {
         setup
         ted lock
-        aram vrel bset 1 BRIT BOB  0.3
-        aram vrel bset 1 BRIT JOE  0.3
-        aram vrel bset 1 BLUE BOB  0.0
-        aram vrel bset 1 SHIA BOB  0.3
-        aram vrel bset 1 TAL  BOB  0.0
+        ted vrel bset 1 BRIT BOB  0.3
+        ted vrel bset 1 BRIT JOE  0.3
+        ted vrel bset 1 BLUE BOB  0.0
+        ted vrel bset 1 SHIA BOB  0.3
+        ted vrel bset 1 TAL  BOB  0.0
         ted step
     } -body {
         adb gofer FRCGROUPS LIKING_ACTOR eval {anyall ANY alist BOB}
@@ -313,10 +313,10 @@ namespace eval ::athena_test::tests:: {
     test DISLIKING_ACTOR-4.1 {eval} -setup {
         setup
         ted lock
-        aram vrel bset 1 BRIT BOB -0.3
-        aram vrel bset 1 BRIT JOE -0.3
-        aram vrel bset 1 BLUE BOB  0.0
-        aram vrel bset 1 SHIA BOB -0.3
+        ted vrel bset 1 BRIT BOB -0.3
+        ted vrel bset 1 BRIT JOE -0.3
+        ted vrel bset 1 BLUE BOB  0.0
+        ted vrel bset 1 SHIA BOB -0.3
         ted step
     } -body {
         adb gofer FRCGROUPS DISLIKING_ACTOR eval {anyall ANY alist BOB}
@@ -350,10 +350,10 @@ namespace eval ::athena_test::tests:: {
     test LIKING_GROUP-4.1 {eval} -setup {
         setup
         ted lock
-        aram hrel bset 1 BRIT SHIA  0.3
-        aram hrel bset 1 BRIT SUNN  0.3
-        aram hrel bset 1 BLUE SHIA  0.0
-        aram hrel bset 1 SUNN SHIA  0.3
+        ted hrel bset 1 BRIT SHIA  0.3
+        ted hrel bset 1 BRIT SUNN  0.3
+        ted hrel bset 1 BLUE SHIA  0.0
+        ted hrel bset 1 SUNN SHIA  0.3
         ted step
     } -body {
         adb gofer FRCGROUPS LIKING_GROUP eval {anyall ANY glist SHIA}
@@ -387,10 +387,10 @@ namespace eval ::athena_test::tests:: {
     test DISLIKING_GROUP-4.1 {eval} -setup {
         setup
         ted lock
-        aram hrel bset 1 BRIT SHIA -0.3
-        aram hrel bset 1 BRIT SUNN -0.3
-        aram hrel bset 1 BLUE SHIA  0.0
-        aram hrel bset 1 SUNN SHIA -0.3
+        ted hrel bset 1 BRIT SHIA -0.3
+        ted hrel bset 1 BRIT SUNN -0.3
+        ted hrel bset 1 BLUE SHIA  0.0
+        ted hrel bset 1 SUNN SHIA -0.3
         ted step
     } -body {
         adb gofer FRCGROUPS DISLIKING_GROUP eval {anyall ANY glist SHIA}
@@ -424,10 +424,10 @@ namespace eval ::athena_test::tests:: {
     test LIKED_BY_GROUP-4.1 {eval} -setup {
         setup
         ted lock
-        aram hrel bset 1 SHIA BLUE  0.3
-        aram hrel bset 1 SHIA BRIT  0.0
-        aram hrel bset 1 KURD BLUE  0.3
-        aram hrel bset 1 SHIA SUNN  0.3
+        ted hrel bset 1 SHIA BLUE  0.3
+        ted hrel bset 1 SHIA BRIT  0.0
+        ted hrel bset 1 KURD BLUE  0.3
+        ted hrel bset 1 SHIA SUNN  0.3
         ted step
     } -body {
         adb gofer FRCGROUPS LIKED_BY_GROUP eval {anyall ANY glist SHIA}
@@ -461,10 +461,10 @@ namespace eval ::athena_test::tests:: {
     test DISLIKED_BY_GROUP-4.1 {eval, one} -setup {
         setup
         ted lock
-        aram hrel bset 1 SHIA BLUE -0.3
-        aram hrel bset 1 SHIA BRIT  0.0
-        aram hrel bset 1 KURD BLUE -0.3
-        aram hrel bset 1 SHIA SUNN -0.3
+        ted hrel bset 1 SHIA BLUE -0.3
+        ted hrel bset 1 SHIA BRIT  0.0
+        ted hrel bset 1 KURD BLUE -0.3
+        ted hrel bset 1 SHIA SUNN -0.3
         ted step
     } -body {
         adb gofer FRCGROUPS DISLIKED_BY_GROUP eval {anyall ANY glist SHIA}

@@ -67,8 +67,6 @@ namespace eval ::athena_test::tests:: {
         }
 
         ted cleanup
-
-        assert {![aram initialized]}
     }
 
     #-------------------------------------------------------------------

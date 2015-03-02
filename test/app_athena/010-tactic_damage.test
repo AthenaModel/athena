@@ -42,7 +42,7 @@ namespace eval ::athena_test::tests:: {
         variable T1
         ted create JOE BOB NB1 NB2 SHIA SUNN KURD BLUE
 
-        rdb eval {
+        adb eval {
             INSERT INTO plants_shares(n, a, num, rho)
             VALUES('NB1', 'JOE', 1, 0.9);
         }
@@ -129,7 +129,7 @@ namespace eval ::athena_test::tests:: {
         setup
         $T1 set n NB2
         $T1 set a BOB
-        rdb eval {DELETE FROM nbhoods WHERE n='NB2'}
+        adb eval {DELETE FROM nbhoods WHERE n='NB2'}
     } -body {
         $T1 check
     } -cleanup {
@@ -140,7 +140,7 @@ namespace eval ::athena_test::tests:: {
         setup
         $T1 set n NB2
         $T1 set a BOB
-        rdb eval {UPDATE nbhoods SET local=0 WHERE n='NB2'}
+        adb eval {UPDATE nbhoods SET local=0 WHERE n='NB2'}
     } -body {
         $T1 check
     } -cleanup {
@@ -151,7 +151,7 @@ namespace eval ::athena_test::tests:: {
         setup
         $T1 set n NB1
         $T1 set a JOE
-        rdb eval {DELETE FROM actors WHERE a='JOE'}
+        adb eval {DELETE FROM actors WHERE a='JOE'}
     } -body {
         $T1 check
     } -cleanup {
@@ -180,7 +180,7 @@ namespace eval ::athena_test::tests:: {
         $T1 set percent 80
     } -body {
         $T1 execute
-        rdb onecolumn {SELECT rho FROM plants_na WHERE n='NB1' AND a='JOE'}
+        adb onecolumn {SELECT rho FROM plants_na WHERE n='NB1' AND a='JOE'}
     } -cleanup {
         cleanup
     } -result {0.8}

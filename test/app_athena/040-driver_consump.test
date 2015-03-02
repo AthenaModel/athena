@@ -81,7 +81,7 @@ namespace eval ::athena_test::tests:: {
         parm set dam.ENI.active no
         parm set dam.CONSUMP.active no
         parm set dam.UNEMP.active no
-        rdb eval {DELETE FROM drivers}
+        adb eval {DELETE FROM drivers}
         
         # NEXT, create the entities
         ted create JOE BOB DAVE NB1 NB2 TAL SHIA SUNN KURD
@@ -107,7 +107,7 @@ namespace eval ::athena_test::tests:: {
         set aloc 1000.0
         let eloc {$emult * $aloc}
     
-        rdb eval {
+        adb eval {
             UPDATE control_n
             SET controller = nullif($controller, '')
             WHERE n = 'NB1';
@@ -215,7 +215,7 @@ fdict  a JOE povfrac 1.0 n NB1 eloc 1000.0 aloc 1000.0 g SHIA dtype CONSUMP expe
     } -body {
         consump 1.0 1.0
         
-        rdb eval {
+        adb eval {
             SELECT rule FROM rule_firings WHERE rule GLOB 'CONSUMP-*'
         }
     } -cleanup {
@@ -258,7 +258,7 @@ fdict  a JOE povfrac 1.0 n NB1 eloc 2000.0 aloc 1000.0 g SHIA dtype CONSUMP expe
     } -body {
         consump 2.0 1.0
         
-        rdb eval {
+        adb eval {
             SELECT rule FROM rule_firings WHERE rule GLOB 'CONSUMP-*'
         }
     } -cleanup {

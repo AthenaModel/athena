@@ -397,7 +397,7 @@ namespace eval ::athena_test::tests:: {
         ted lock 
 
         # NB1 has twice the population of NB2
-        rdb eval {SELECT n,personnel FROM deploy_ng WHERE g='BLUE'}
+        adb eval {SELECT n,personnel FROM deploy_ng WHERE g='BLUE'}
     } -cleanup {
         cleanup
     } -result {NB1 3333 NB2 1667}
@@ -408,7 +408,7 @@ namespace eval ::athena_test::tests:: {
         $T1 configure -nmode EQUAL
         ted lock 
 
-        rdb eval {SELECT n,personnel FROM deploy_ng WHERE g='BLUE'}
+        adb eval {SELECT n,personnel FROM deploy_ng WHERE g='BLUE'}
     } -cleanup {
         cleanup
     } -result {NB1 2500 NB2 2500}
@@ -442,7 +442,7 @@ namespace eval ::athena_test::tests:: {
 
     test obligate-3.2 {nlist returns empty neighborhoods} -setup {
         setup valid
-        rdb eval {UPDATE demog_n SET population=0}
+        adb eval {UPDATE demog_n SET population=0}
     } -body {
         $T1 obligate $coffer
         $T1 faildict
@@ -761,7 +761,7 @@ namespace eval ::athena_test::tests:: {
         setcash 10000.0
 
         # Make it look like all personnel have been attrited away
-        rdb eval {DELETE FROM working_deploy_tng}
+        adb eval {DELETE FROM working_deploy_tng}
     } -body {
         list \
             [$T1 obligate $coffer] \
@@ -822,7 +822,7 @@ namespace eval ::athena_test::tests:: {
         setup prep
     } -body {
         ted lock  ;# Executes T1
-        rdb eval {SELECT n, personnel FROM deploy_tng WHERE g='BLUE'}
+        adb eval {SELECT n, personnel FROM deploy_tng WHERE g='BLUE'}
     } -cleanup {
         cleanup
     } -match glob -result {NB1 3333 NB2 1667}
@@ -831,7 +831,7 @@ namespace eval ::athena_test::tests:: {
         setup prep
     } -body {
         ted lock ;# Executes T1
-        rdb onecolumn {SELECT cash_on_hand FROM working_cash WHERE a='JOE'}
+        adb onecolumn {SELECT cash_on_hand FROM working_cash WHERE a='JOE'}
     } -cleanup {
         cleanup
     } -result {5000.0}

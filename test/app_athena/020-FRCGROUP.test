@@ -227,7 +227,7 @@ local           0
     } -body {
         ted order FRCGROUP:CREATE [dict merge $blue {longname ""}]
 
-        rdb onecolumn {SELECT longname FROM frcgroups_view}
+        adb onecolumn {SELECT longname FROM frcgroups_view}
     } -cleanup {
         cleanup
     } -result {BLUE}

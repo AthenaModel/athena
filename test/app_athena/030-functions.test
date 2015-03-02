@@ -275,7 +275,7 @@ namespace eval ::athena_test::tests:: {
 
     test controls-2.2 {true when actor controls n} -setup {
         ted create NB1 JOE
-        rdb eval {
+        adb eval {
             INSERT INTO control_n(n,controller)
             VALUES('NB1','JOE')
         }
@@ -287,7 +287,7 @@ namespace eval ::athena_test::tests:: {
 
     test controls-2.3 {false when actor does not control n} -setup {
         ted create NB1 JOE BOB
-        rdb eval {
+        adb eval {
             INSERT INTO control_n(n,controller)
             VALUES('NB1','BOB')
         }
@@ -299,7 +299,7 @@ namespace eval ::athena_test::tests:: {
 
     test controls-2.4 {true, multiple neighborhoods} -setup {
         ted create NB1 NB2 JOE
-        rdb eval {
+        adb eval {
             INSERT INTO control_n(n,controller)
             VALUES('NB1','JOE');
             INSERT INTO control_n(n,controller)
@@ -313,7 +313,7 @@ namespace eval ::athena_test::tests:: {
 
     test controls-2.5 {false, multiple neighborhoods} -setup {
         ted create NB1 NB2 JOE BOB
-        rdb eval {
+        adb eval {
             INSERT INTO control_n(n,controller)
             VALUES('NB1','JOE');
             INSERT INTO control_n(n,controller)
@@ -1878,7 +1878,7 @@ namespace eval ::athena_test::tests:: {
     test pctcontrol-2.3 {Control by 1 actor} -setup {
         ted create JOE BOB NB1 NB2 BLUE SHIA SUNN KURD
         ted lock
-        rdb eval {
+        adb eval {
             UPDATE control_n SET controller='JOE' WHERE n='NB1'
         }
     } -body {
@@ -1890,7 +1890,7 @@ namespace eval ::athena_test::tests:: {
     test pctcontrol-2.4 {Control by 2 actor} -setup {
         ted create JOE BOB NB1 NB2 BLUE SHIA SUNN KURD
         ted lock
-        rdb eval {
+        adb eval {
             UPDATE control_n SET controller='JOE' WHERE n='NB1'
         }
     } -body {
@@ -1902,7 +1902,7 @@ namespace eval ::athena_test::tests:: {
     test pctcontrol-2.5 {Control by 2 actor, all neighborhoods} -setup {
         ted create JOE BOB NB1 NB2 BLUE SHIA SUNN KURD
         ted lock
-        rdb eval {
+        adb eval {
             UPDATE control_n SET controller='JOE' WHERE n='NB1';
             UPDATE control_n SET controller='BOB' WHERE n='NB2';
         }
@@ -2385,7 +2385,7 @@ namespace eval ::athena_test::tests:: {
 
     test troops-2.2 {get playbox data} -setup {
         ted create NB1 BLUE SUNN
-        rdb eval {
+        adb eval {
             INSERT INTO personnel_g(g,personnel)
             VALUES('BLUE',500);
         }
@@ -2397,7 +2397,7 @@ namespace eval ::athena_test::tests:: {
 
     test troops-2.3 {get nbhood data} -setup {
         ted create NB1 NB2 BLUE SUNN
-        rdb eval {
+        adb eval {
             INSERT INTO deploy_ng(n,g,personnel)
             VALUES('NB1','BLUE',200);
 
@@ -2412,7 +2412,7 @@ namespace eval ::athena_test::tests:: {
 
     test troops-2.4 {get multiple nbhood data} -setup {
         ted create NB1 NB2 BLUE SUNN
-        rdb eval {
+        adb eval {
             INSERT INTO deploy_ng(n,g,personnel)
             VALUES('NB1','BLUE',200);
 

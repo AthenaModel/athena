@@ -47,7 +47,7 @@ namespace eval ::athena_test::tests:: {
         ted create JOE BOB BLUE USAID NB1 NB2 SHIA SUNN KURD
         demog start
         service reset
-        rdb eval {
+        adb eval {
             UPDATE demog_g SET population=10000 WHERE g='SHIA';
             UPDATE demog_g SET population=20000 WHERE g='SUNN';
             UPDATE demog_g SET population=40000 WHERE g='KURD';
@@ -56,7 +56,7 @@ namespace eval ::athena_test::tests:: {
     
     proc setup_lock {} {
         ted create JOE BOB BLUE USAID NB1 NB2 SHIA SUNN KURD
-        rdb eval {
+        adb eval {
             UPDATE civgroups SET basepop=10000 WHERE g='SHIA';
             UPDATE civgroups SET basepop=20000 WHERE g='SUNN';
             UPDATE civgroups SET basepop=40000 WHERE g='KURD';
@@ -292,7 +292,7 @@ SUNN JOE 0.0
     } -body {
         service save
 
-        rdb eval {SELECT count(event_id) FROM sigevents}
+        adb eval {SELECT count(event_id) FROM sigevents}
     } -cleanup {
         cleanup
     } -result {3}

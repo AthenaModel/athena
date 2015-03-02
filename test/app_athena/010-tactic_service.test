@@ -194,7 +194,7 @@ namespace eval ::athena_test::tests:: {
         $T1 configure         \
             -nlist    [adb gofer make NBHOODS BY_VALUE {NB1 NB2}] \
             -s        ENERGY 
-        rdb eval {DELETE FROM nbhoods WHERE n='NB1'}
+        adb eval {DELETE FROM nbhoods WHERE n='NB1'}
     } -body {
         $T1 check
     } -cleanup {
@@ -275,7 +275,7 @@ new_actual s         g
     test execute-1.2 {updates service, RDELTA} -setup {
         setup
         service start
-        rdb eval {UPDATE service_sg SET required=0.25}
+        adb eval {UPDATE service_sg SET required=0.25}
         $T1 configure         \
             -nlist    [adb gofer make NBHOODS BY_VALUE {NB1 NB2}] \
             -s        ENERGY  \
@@ -306,7 +306,7 @@ new_actual s         g
     test execute-1.3 {updates service, EDELTA} -setup {
         setup
         service start
-        rdb eval {UPDATE service_sg SET expected=0.25}
+        adb eval {UPDATE service_sg SET expected=0.25}
         $T1 configure         \
             -nlist    [adb gofer make NBHOODS BY_VALUE {NB1 NB2}] \
             -s        ENERGY  \
@@ -338,7 +338,7 @@ new_actual s         g
     test execute-1.4 {updates service, ADELTA up} -setup {
         setup
         service start
-        rdb eval {UPDATE service_sg SET actual=0.5}
+        adb eval {UPDATE service_sg SET actual=0.5}
         $T1 configure         \
             -nlist    [adb gofer make NBHOODS BY_VALUE {NB1 NB2}] \
             -s        ENERGY  \
@@ -369,7 +369,7 @@ new_actual s         g
     test execute-1.5 {updates service, ADELTA down} -setup {
         setup
         service start
-        rdb eval {UPDATE service_sg SET actual=1.0}
+        adb eval {UPDATE service_sg SET actual=1.0}
         $T1 configure         \
             -nlist    [adb gofer make NBHOODS BY_VALUE {NB1 NB2}] \
             -s        ENERGY  \

@@ -395,7 +395,7 @@ snit::type ::athena::control_model {
             WHERE C.n=$n AND D.population > 0
         }] {
             # TBD: We might want a routine to do this in bulk.
-            aram vrel bset $driver_id $g $a $vrel
+            $adb aram vrel bset $driver_id $g $a $vrel
         }
 
 

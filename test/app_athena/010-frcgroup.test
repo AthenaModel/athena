@@ -98,7 +98,7 @@ local           0
         set undo [frcgroup create [ted entity BRIT]]
     } -body {
         {*}$undo
-        rdb eval {SELECT g FROM frcgroups_view}
+        adb eval {SELECT g FROM frcgroups_view}
     } -cleanup {
         cleanup
     } -result {BLUE}
@@ -108,7 +108,7 @@ local           0
         ted create JOE SHIA
     } -body {
         frcgroup create [ted entity BLUE]
-        rdb eval {SELECT f,g FROM coop_fg ORDER BY f,g}
+        adb eval {SELECT f,g FROM coop_fg ORDER BY f,g}
     } -cleanup {
         cleanup
     } -result {SHIA BLUE}
@@ -119,7 +119,7 @@ local           0
         set undo [frcgroup create [ted entity BLUE]]
 
         namespace eval :: $undo
-        rdb eval {SELECT f,g FROM coop_fg ORDER BY f,g}
+        adb eval {SELECT f,g FROM coop_fg ORDER BY f,g}
     } -cleanup {
         cleanup
     } -result {}
@@ -133,7 +133,7 @@ local           0
         frcgroup delete BLUE
 
         # Is BLUE gone?
-        rdb eval {SELECT g FROM frcgroups_view}
+        adb eval {SELECT g FROM frcgroups_view}
     } -cleanup {
         cleanup
     } -result {BRIT}
@@ -166,7 +166,7 @@ local           0
     } -body {
         frcgroup delete BLUE
 
-        rdb eval {SELECT f,g FROM coop_fg ORDER BY f,g}
+        adb eval {SELECT f,g FROM coop_fg ORDER BY f,g}
     } -cleanup {
         cleanup
     } -result {}
@@ -176,7 +176,7 @@ local           0
         set undo [frcgroup delete BLUE]
     } -body {
         namespace eval :: $undo
-        rdb eval {SELECT f,g FROM coop_fg ORDER BY f,g}
+        adb eval {SELECT f,g FROM coop_fg ORDER BY f,g}
     } -cleanup {
         cleanup
     } -result {SHIA BLUE}
@@ -189,7 +189,7 @@ local           0
     } -body {
         frcgroup delete BLUE
 
-        rdb eval {SELECT f,g FROM hrel_fg ORDER BY f,g}
+        adb eval {SELECT f,g FROM hrel_fg ORDER BY f,g}
     } -cleanup {
         cleanup
     } -result {}
@@ -203,7 +203,7 @@ local           0
     } -body {
         namespace eval :: $undo
 
-        rdb eval {SELECT f,g FROM hrel_fg ORDER BY f,g}
+        adb eval {SELECT f,g FROM hrel_fg ORDER BY f,g}
     } -cleanup {
         cleanup
     } -result {BLUE BRIT BRIT BLUE}
@@ -214,7 +214,7 @@ local           0
     } -body {
         frcgroup delete BLUE
 
-        rdb eval {SELECT g,a FROM vrel_ga ORDER BY g,a}
+        adb eval {SELECT g,a FROM vrel_ga ORDER BY g,a}
     } -cleanup {
         cleanup
     } -result {}
@@ -227,7 +227,7 @@ local           0
     } -body {
         namespace eval :: $undo
 
-        rdb eval {SELECT g,a FROM vrel_ga ORDER BY g,a}
+        adb eval {SELECT g,a FROM vrel_ga ORDER BY g,a}
     } -cleanup {
         cleanup
     } -result {BLUE JOE}

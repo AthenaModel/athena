@@ -278,7 +278,7 @@ budget            0.0
     test CREATE-2.2 {longname defaults to ID} -body {
         ted order ACTOR:CREATE [dict merge $joe {longname ""}]
         
-        rdb onecolumn {SELECT longname FROM actors}
+        adb onecolumn {SELECT longname FROM actors}
     } -cleanup {
         cleanup
     } -result {JOE}
@@ -286,7 +286,7 @@ budget            0.0
     test CREATE-2.3 {bsid defaults to 1} -body {
         ted order ACTOR:CREATE [dict merge $bob {bsid ""}]
         
-        rdb onecolumn {SELECT bsid FROM actors}
+        adb onecolumn {SELECT bsid FROM actors}
     } -cleanup {
         cleanup
     } -result {1}

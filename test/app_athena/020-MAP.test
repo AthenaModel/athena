@@ -60,7 +60,7 @@ namespace eval ::athena_test::tests:: {
     test MAP:IMPORT:FILE-2.1 {map loaded} -constraints tk -body {
         ted order MAP:IMPORT:FILE filename map.png
 
-        rdb onecolumn {SELECT filename FROM maps WHERE id=1}
+        adb onecolumn {SELECT filename FROM maps WHERE id=1}
     } -cleanup {
         cleanup
     } -result {map.png}
@@ -79,7 +79,7 @@ namespace eval ::athena_test::tests:: {
         ted order MAP:IMPORT:FILE filename map.png
     } -body {
         adb order undo
-        rdb onecolumn {SELECT filename FROM maps WHERE id=1}
+        adb onecolumn {SELECT filename FROM maps WHERE id=1}
     } -cleanup {
         cleanup
     } -result {}
@@ -178,7 +178,7 @@ data
         ted order MAP:GEOREF ulat 33 ulon -118 llat 32 llon -117
      } -body {
        adb order undo
-       rdb eval {SELECT count(*) FROM maps WHERE id=1}    
+       adb eval {SELECT count(*) FROM maps WHERE id=1}    
     } -cleanup {
         cleanup 
     } -result {0}

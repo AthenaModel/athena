@@ -74,7 +74,7 @@ SHIA BLUE 0.5  0         0.0
         set undo [hrel create $H1]
     } -body {
         namespace eval :: $undo
-        rdb eval {SELECT * FROM hrel_fg}
+        adb eval {SELECT * FROM hrel_fg}
     } -cleanup {
         cleanup
     } -result {}
@@ -89,7 +89,7 @@ SHIA BLUE 0.5  0         0.0
         hrel delete {SHIA BLUE}
 
         # Is SHIA gone?
-        rdb eval {SELECT f,g FROM hrel_fg}
+        adb eval {SELECT f,g FROM hrel_fg}
     } -cleanup {
         cleanup
     } -result {}

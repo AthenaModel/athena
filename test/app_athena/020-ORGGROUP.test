@@ -198,7 +198,7 @@ base_personnel  1000
     } -body {
         ted order ORGGROUP:CREATE [dict merge $usaid {longname ""}]
 
-        rdb onecolumn {SELECT longname FROM orggroups_view}
+        adb onecolumn {SELECT longname FROM orggroups_view}
     } -cleanup {
         cleanup
     } -result {USAID}

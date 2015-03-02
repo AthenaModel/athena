@@ -62,7 +62,7 @@ namespace eval ::athena_test::tests:: {
         parm set dam.WATER.active no
         parm set dam.TRANSPORT.active no
         parm set dam.MOOD.active no
-        rdb eval {DELETE FROM drivers}
+        adb eval {DELETE FROM drivers}
         
         # NEXT, create the entities
         ted create JOE BOB NB1 NB2 BLUE TAL SHIA SUNN KURD
@@ -101,19 +101,19 @@ namespace eval ::athena_test::tests:: {
     # Output the rule inputs from the current firings.
     
     proc inputs {} {
-        rdb eval {
+        adb eval {
             DROP TABLE IF EXISTS temp_inputs;
             CREATE TEMP TABLE temp_inputs AS
             SELECT DISTINCT t, rule, '' AS aut, '' AS cul, '' AS qol, '' AS sft
             FROM rule_firings
         }
         
-        rdb eval {
+        adb eval {
             SELECT F.t AS t, F.rule AS rule, I.g AS g, I.c AS c
             FROM rule_firings AS F
             JOIN rule_inputs  AS I USING (firing_id)
         } {
-            rdb eval "
+            adb eval "
                 UPDATE temp_inputs
                 SET $c = $c || \$g || ' '
                 WHERE t=\$t AND rule=\$rule
@@ -211,7 +211,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         mkabsit DISEASE TAL
         
-        set fdict [rdb onecolumn {
+        set fdict [adb onecolumn {
             SELECT fdict FROM rule_firings WHERE firing_id = 1
         }]
 
@@ -231,7 +231,7 @@ in neighborhood
     } -body {
         mkabsit DISEASE TAL
 
-        set fdict [rdb onecolumn {
+        set fdict [adb onecolumn {
             SELECT fdict FROM rule_firings WHERE firing_id = 2
         }]
 
@@ -251,7 +251,7 @@ in neighborhood
     } -body {
         mkabsit DISEASE TAL
 
-        set fdict [rdb onecolumn {
+        set fdict [adb onecolumn {
             SELECT fdict FROM rule_firings WHERE firing_id = 3
         }]
 
@@ -771,7 +771,7 @@ t rule        aut        cul qol        sft
     
     test DROUGHT-1.1 {firings, SA and non-SA} -setup {
         setup 
-        rdb eval {
+        adb eval {
             UPDATE civgroups
             SET sa_flag = 1
             WHERE g = 'SUNN'
@@ -817,7 +817,7 @@ fdict      dtype DROUGHT s 1 state ONGOING n NB1 inception 0 coverage 1.0 resolv
 
     test DROUGHT-1.2 {inputs: inception} -setup {
         setup
-        rdb eval {
+        adb eval {
             UPDATE civgroups
             SET sa_flag = 1
             WHERE g = 'SUNN'
@@ -838,7 +838,7 @@ t rule        aut   cul qol   sft
 
     test DROUGHT-1.3 {inputs: no inception} -setup {
         setup
-        rdb eval {
+        adb eval {
             UPDATE civgroups
             SET sa_flag = 1
             WHERE g = 'SUNN'

@@ -106,7 +106,7 @@ budget            0.0
         set undo [actor create [ted entity BOB]]
     } -body {
         namespace eval :: $undo
-        rdb eval {SELECT a FROM actors}
+        adb eval {SELECT a FROM actors}
     } -cleanup {
         cleanup
     } -result {JOE}
@@ -129,7 +129,7 @@ budget            0.0
         actor delete JOE
 
         # Is JOE gone?
-        rdb eval {SELECT a FROM actors}
+        adb eval {SELECT a FROM actors}
     } -cleanup {
         cleanup
     } -result {BOB}
@@ -165,7 +165,7 @@ budget            0.0
     } -body {
         actor delete JOE
 
-        rdb eval {SELECT g,a FROM groups}
+        adb eval {SELECT g,a FROM groups}
     } -cleanup {
         cleanup
     } -result {BLUE {} USAID {}}
@@ -173,12 +173,12 @@ budget            0.0
     test delete-4.2 {Undo restores groups.a} -setup {
         ted create JOE BLUE
     } -body {
-        set a [rdb eval {SELECT g,a FROM groups}]
+        set a [adb eval {SELECT g,a FROM groups}]
 
         set undo [actor delete JOE]
         namespace eval :: $undo
 
-        set b [rdb eval {SELECT g,a FROM groups}]
+        set b [adb eval {SELECT g,a FROM groups}]
 
         expr {$a eq $b}
     } -cleanup {
@@ -211,29 +211,29 @@ budget            0.0
 
     test delete-8.1 {actors.supports set to NULL} -setup {
         ted create JOE BOB
-        rdb eval {
+        adb eval {
             UPDATE actors SET supports = 'BOB' WHERE a = 'JOE'
         }
     } -body {
         actor delete BOB
 
-        rdb onecolumn {SELECT supports FROM actors WHERE a='JOE'}
+        adb onecolumn {SELECT supports FROM actors WHERE a='JOE'}
     } -cleanup {
         cleanup
     } -result {}
 
     test delete-8.2 {Undo restores actors.supports} -setup {
         ted create JOE BOB
-        rdb eval {
+        adb eval {
             UPDATE actors SET supports = 'BOB' WHERE a = 'JOE'
         }
     } -body {
-        set a [rdb eval {SELECT a,supports FROM actors}]
+        set a [adb eval {SELECT a,supports FROM actors}]
 
         set undo [actor delete BOB]
         namespace eval :: $undo
 
-        set b [rdb eval {SELECT a,supports FROM actors}]
+        set b [adb eval {SELECT a,supports FROM actors}]
 
         expr {$a eq $b}
     } -cleanup {
@@ -246,7 +246,7 @@ budget            0.0
     } -body {
         actor delete JOE
 
-        rdb eval {SELECT g,a FROM vrel_ga ORDER BY g,a}
+        adb eval {SELECT g,a FROM vrel_ga ORDER BY g,a}
     } -cleanup {
         cleanup
     } -result {}
@@ -259,7 +259,7 @@ budget            0.0
     } -body {
         namespace eval :: $undo
 
-        rdb eval {SELECT g,a FROM vrel_ga ORDER BY g,a}
+        adb eval {SELECT g,a FROM vrel_ga ORDER BY g,a}
     } -cleanup {
         cleanup
     } -result {SHIA JOE}
@@ -268,7 +268,7 @@ budget            0.0
         ted create JOE CBS
     } -body {
         actor delete JOE
-        rdb eval {SELECT k,owner FROM caps}
+        adb eval {SELECT k,owner FROM caps}
     } -cleanup {
         cleanup
     } -result {CBS {}}
@@ -276,12 +276,12 @@ budget            0.0
     test delete-10.2 {undo restores caps.owner} -setup {
         ted create JOE CBS
     } -body {
-        set a [rdb eval {SELECT owner FROM caps}]
+        set a [adb eval {SELECT owner FROM caps}]
 
         set undo [actor delete JOE]
         namespace eval :: $undo
 
-        set b [rdb eval {SELECT owner FROM caps}]
+        set b [adb eval {SELECT owner FROM caps}]
 
         expr {$a eq $b}
     } -cleanup {
@@ -509,7 +509,7 @@ budget            10.0
     test income-1.2 {get actor income, income_a} -setup {
         ted create JOE BOB
 
-        rdb eval {
+        adb eval {
             INSERT INTO income_a(a, income) VALUES('JOE',12345.0)
         }
     } -body {

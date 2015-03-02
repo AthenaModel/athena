@@ -44,7 +44,7 @@ namespace eval ::athena_test::tests:: {
         econ setstate ENABLED
         ted create JOE BOB NB1 NB2 SHIA SUNN KURD BLUE
 
-        rdb eval {
+        adb eval {
             INSERT INTO plants_shares(n, a, num, rho)
             VALUES('NB1', 'JOE', 1, 0.9);
         }
@@ -184,7 +184,7 @@ namespace eval ::athena_test::tests:: {
     test check-1.2 {check: n in nlist no longer exist} -setup {
         setup
         $T1 set nlist [adb gofer make NBHOODS BY_VALUE {NB1 NB2}]
-        rdb eval {DELETE FROM nbhoods WHERE n='NB2'}
+        adb eval {DELETE FROM nbhoods WHERE n='NB2'}
     } -body {
         $T1 check
     } -cleanup {
@@ -194,7 +194,7 @@ namespace eval ::athena_test::tests:: {
     test check-1.3 {check: owner has auto-maintain enabled} -setup {
         setup
         $T1 set nlist [adb gofer make NBHOODS BY_VALUE {NB1 NB2}]
-        rdb eval {UPDATE actors SET auto_maintain=1}
+        adb eval {UPDATE actors SET auto_maintain=1}
     } -body {
         $T1 check
     } -cleanup {

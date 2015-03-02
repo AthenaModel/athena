@@ -106,7 +106,7 @@ state     normal
         set undo [iom create $m2]
     } -body {
         namespace eval :: $undo
-        rdb eval {SELECT iom_id FROM ioms}
+        adb eval {SELECT iom_id FROM ioms}
     } -cleanup {
         cleanup
     } -result {M1}
@@ -123,7 +123,7 @@ state     normal
         iom delete M1
 
         # Is M1 gone?
-        rdb eval {SELECT iom_id FROM ioms}
+        adb eval {SELECT iom_id FROM ioms}
     } -cleanup {
         cleanup
     } -result {M2}
@@ -158,7 +158,7 @@ state     normal
     } -body {
         iom delete M1
 
-        rdb eval {
+        adb eval {
             SELECT iom_id,payload_num FROM payloads 
             ORDER BY iom_id,payload_num
         }
@@ -175,7 +175,7 @@ state     normal
         set undo [iom delete M1]
     } -body {
         namespace eval :: $undo
-        rdb eval {
+        adb eval {
             SELECT iom_id,payload_num FROM payloads 
             ORDER BY iom_id,payload_num
         }

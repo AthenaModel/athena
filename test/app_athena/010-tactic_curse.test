@@ -63,7 +63,7 @@ namespace eval ::athena_test::tests:: {
             mag      1.0
 
         # Verify that unused columns contain NULL
-        rdb nullvalue "@"
+        adb rdb nullvalue "@"
 
         set B1 [ted addblock SYSTEM]
         set T2 [ted addtactic $B1 CURSE {*}$T2]
@@ -154,7 +154,7 @@ namespace eval ::athena_test::tests:: {
             mag      1.0
 
         # Verify that unused columns contain NULL
-        rdb nullvalue "@"
+        adb rdb nullvalue "@"
 
         set B1 [ted addblock SYSTEM]
         set T1 [ted addtactic $B1 CURSE {*}$T1]
@@ -162,13 +162,13 @@ namespace eval ::athena_test::tests:: {
 
     proc execute_setup {} {
         setup
-        aram init
+        [adb athenadb] aram init
         demog start
     }
 
     proc empty_setup {} {
         esetup
-        aram init
+        [adb athenadb] aram init
         demog start
     }
 
@@ -176,7 +176,7 @@ namespace eval ::athena_test::tests:: {
 
     proc cleanup {} {
         # Clean up the test environment
-        rdb nullvalue ""
+        adb rdb nullvalue ""
         array unset parms
         ted cleanup
     }
@@ -246,7 +246,7 @@ namespace eval ::athena_test::tests:: {
 
     test check-2.1 {check: role no longer exists} -setup {
         setup
-        rdb eval {DELETE FROM curse_injects WHERE inject_type='VREL'}
+        adb eval {DELETE FROM curse_injects WHERE inject_type='VREL'}
     } -body {
         $T1 check
     } -cleanup {

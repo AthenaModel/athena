@@ -55,10 +55,10 @@ namespace eval ::athena_test::tests:: {
     # Set up control_n so that a controls the neighborhoods.
 
     proc setcontrol {args} {
-        rdb eval {DELETE FROM control_n}
+        adb eval {DELETE FROM control_n}
         foreach {a nlist} $args {
             foreach n $nlist {
-                rdb eval {INSERT INTO control_n(n,controller) VALUES($n,$a)}
+                adb eval {INSERT INTO control_n(n,controller) VALUES($n,$a)}
             }
         }
     }

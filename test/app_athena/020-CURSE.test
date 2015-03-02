@@ -114,7 +114,7 @@ state     normal
     } -body {
         ted order CURSE:CREATE {*}$c1 longname ""
 
-        rdb onecolumn {SELECT longname FROM curses}
+        adb onecolumn {SELECT longname FROM curses}
     } -cleanup {
         cleanup
     } -result {C1}

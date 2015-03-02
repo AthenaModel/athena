@@ -193,7 +193,7 @@ namespace eval ::athena_test::tests:: {
         $T1 obligate $coffer
         $T1 execute
         cap access save
-        rdb eval {SELECT k FROM cap_access WHERE a='BOB' ORDER BY k}
+        adb eval {SELECT k FROM cap_access WHERE a='BOB' ORDER BY k}
     } -cleanup {
         cleanup
     } -result {ABC CBS CNN FOX PBS}

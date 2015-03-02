@@ -272,7 +272,7 @@ HAL  2000      2000
 
         # Should be 6 messages: 3 deployments to NB1
         # and 3 demobilization of unused troops
-        rdb eval {SELECT count(event_id) FROM sigevents}
+        adb eval {SELECT count(event_id) FROM sigevents}
     } -cleanup {
         cleanup
     } -result {6}
@@ -413,11 +413,11 @@ NB2 HAL  0         0
     } -body {
         personnel attrit NB1 BLUE 150
 
-        set personnel [rdb onecolumn {
+        set personnel [adb onecolumn {
             SELECT personnel FROM personnel_g WHERE g='BLUE'
         }]
 
-        set deployed [rdb onecolumn {
+        set deployed [adb onecolumn {
             SELECT personnel FROM deploy_ng
             WHERE n='NB1' AND g='BLUE'
         }]

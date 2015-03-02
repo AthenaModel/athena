@@ -102,7 +102,7 @@ state     normal
         set undo [curse create $c2]
     } -body {
         namespace eval :: $undo
-        rdb eval {SELECT curse_id FROM curses}
+        adb eval {SELECT curse_id FROM curses}
     } -cleanup {
         cleanup
     } -result {C1}
@@ -119,7 +119,7 @@ state     normal
         curse delete C1
 
         # Is C1 gone?
-        rdb eval {SELECT curse_id FROM curses}
+        adb eval {SELECT curse_id FROM curses}
     } -cleanup {
         cleanup
     } -result {C2}
@@ -160,7 +160,7 @@ state     normal
     } -body {
         curse delete C1
 
-        rdb eval {
+        adb eval {
             SELECT curse_id,inject_num FROM curse_injects
             ORDER BY curse_id,inject_num
         }
@@ -177,7 +177,7 @@ state     normal
         set undo [curse delete C1]
     } -body {
         namespace eval :: $undo
-        rdb eval {
+        adb eval {
             SELECT curse_id,inject_num FROM curse_injects
             ORDER BY curse_id,inject_num
         }

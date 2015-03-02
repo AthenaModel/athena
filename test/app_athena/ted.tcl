@@ -898,6 +898,25 @@ snit::type ted {
     }
 
     #-------------------------------------------------------------------
+    # Attitude Helpers
+
+    typemethod coop {args} {
+        [adb athenadb] aram coop {*}$args
+    }
+
+    typemethod hrel {args} {
+        [adb athenadb] aram hrel {*}$args
+    }
+
+    typemethod sat {args} {
+        [adb athenadb] aram sat {*}$args
+    }
+
+    typemethod vrel {args} {
+        [adb athenadb] aram vrel {*}$args
+    }
+    
+    #-------------------------------------------------------------------
     # Strategy Helpers
 
     # newbean cls args

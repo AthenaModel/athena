@@ -115,7 +115,7 @@ namespace eval ::athena_test::tests:: {
         $C1 configure \
             -x [adb gofer make NUMBER COOP SHIA BLUE] \
             -y [adb gofer make NUMBER COOP SUNN BRIT]
-        rdb eval {
+        adb eval {
             DELETE FROM civgroups WHERE g ='SHIA';
             DELETE FROM frcgroups WHERE g ='BRIT';
         }

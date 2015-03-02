@@ -123,7 +123,7 @@ location   *
         ted lock
         absit create $s1
 
-        rdb eval {SELECT ts, tr FROM absits}
+        adb eval {SELECT ts, tr FROM absits}
     } -cleanup {
         cleanup
     } -result {1 2}
@@ -133,7 +133,7 @@ location   *
         set undo [absit create $s1]
     } -body {
         {*}$undo
-        rdb query {SELECT s FROM absits}
+        adb query {SELECT s FROM absits}
     } -cleanup {
         cleanup
     } -result {}
@@ -150,7 +150,7 @@ location   *
         absit delete 1
 
         # Is 1 gone?
-        rdb eval {SELECT s FROM absits}
+        adb eval {SELECT s FROM absits}
     } -cleanup {
         cleanup
     } -result {2}
@@ -358,7 +358,7 @@ location   *
     } -body {
         absit reconcile
 
-        rdb eval {SELECT resolver FROM absits}
+        adb eval {SELECT resolver FROM absits}
     } -cleanup {
         cleanup
     } -result {NONE}
@@ -551,7 +551,7 @@ location   *
         ted create NB1 BLUE
         absit create $s1
         absit create $s2
-        rdb eval {UPDATE absits SET state='ONGOING' WHERE s=2}
+        adb eval {UPDATE absits SET state='ONGOING' WHERE s=2}
     } -body {
         absit initial validate 2
     } -returnCodes {

@@ -64,7 +64,7 @@ namespace eval ::athena_test::tests:: {
         parm set dam.ENERGY.active no
         parm set dam.WATER.active no
         parm set dam.TRANSPORT.active no
-        rdb eval {DELETE FROM drivers}
+        adb eval {DELETE FROM drivers}
         
         # NEXT, create the entities
         ted create JOE BOB DAVE NB1 NB2 BLUE BRIT TAL SHIA SUNN KURD
@@ -74,7 +74,7 @@ namespace eval ::athena_test::tests:: {
         
         # NEXT, is BOB initially in control?
         if {$a ne ""} {
-            rdb eval {
+            adb eval {
                 UPDATE nbhoods
                 SET controller=$a
                 WHERE n='NB1'

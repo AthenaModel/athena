@@ -63,7 +63,7 @@ namespace eval ::athena_test::tests:: {
         parm set dam.ENERGY.active no
         parm set dam.WATER.active no
         parm set dam.TRANSPORT.active no
-        rdb eval {DELETE FROM drivers}
+        adb eval {DELETE FROM drivers}
         
         # NEXT, create the entities
         ted create JOE BOB NB1 NB2 BLUE BRIT HAL SHIA SUNN KURD
@@ -162,7 +162,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         assign CONSTRUCT 2000
         
-        set fdict [rdb onecolumn {SELECT fdict FROM rule_firings}]
+        set fdict [adb onecolumn {SELECT fdict FROM rule_firings}]
 
         ruleset CONSTRUCT detail $fdict [namespace current]::ht
         pprint [ht get]
@@ -185,7 +185,7 @@ Note: The coverage function is 20/1000
     } -body {
         assign CONSTRUCT 2000
         
-        set fdict [rdb onecolumn {SELECT fdict FROM rule_firings}]
+        set fdict [adb onecolumn {SELECT fdict FROM rule_firings}]
 
         ruleset CONSTRUCT detail $fdict [namespace current]::ht
         pprint [ht get]

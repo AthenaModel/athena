@@ -172,7 +172,7 @@ USAID/NB2 0         0
         unit delete BLUE/NB1
 
         # Is it gone?
-        rdb eval {SELECT u FROM units ORDER BY u}
+        adb eval {SELECT u FROM units ORDER BY u}
     } -cleanup {
         cleanup
     } -result {SHIA/NB1 USAID/NB2}

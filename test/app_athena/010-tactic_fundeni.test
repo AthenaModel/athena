@@ -44,7 +44,7 @@ namespace eval ::athena_test::tests:: {
         ted create JOE BOB NB1 NB2 SHIA SUNN KURD NO_ONE
 
         demog start
-        rdb eval {
+        adb eval {
             UPDATE demog_g SET population=10000 WHERE g='SHIA';
             UPDATE demog_g SET population=20000 WHERE g='SUNN';
             UPDATE demog_g SET population=40000 WHERE g='KURD';
@@ -190,7 +190,7 @@ namespace eval ::athena_test::tests:: {
     test check-1.2 {check: g in glist no longer exist} -setup {
         setup
         $T1 set glist [adb gofer make CIVGROUPS BY_VALUE {SHIA SUNN KURD}]
-        rdb eval {DELETE FROM civgroups WHERE g='SUNN'}
+        adb eval {DELETE FROM civgroups WHERE g='SUNN'}
     } -body {
         $T1 check
     } -cleanup {

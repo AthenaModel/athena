@@ -103,11 +103,11 @@ namespace eval ::athena_test::tests:: {
 
         personnel start
 
-        rdb eval { DELETE FROM units }
+        adb eval { DELETE FROM units }
 
         foreach unit $args {
             dict with units($unit) {
-                rdb eval {
+                adb eval {
                     INSERT INTO units(u,g,n,a,personnel)
                     VALUES($unit,$g,$n,'NONE',$personnel);
                 }

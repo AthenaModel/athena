@@ -41,7 +41,7 @@ namespace eval ::athena_test::tests:: {
     proc setup {} {
         ted create JOE BOB NB1 NB2 BLUE BRIT SHIA SUNN KURD
 
-        rdb eval {
+        adb eval {
             INSERT INTO plants_na(n, a, num, rho)
             VALUES('NB1', 'JOE', 2, 0.9);
         }

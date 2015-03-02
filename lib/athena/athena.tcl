@@ -141,12 +141,14 @@ snit::type ::athena::athena {
     delegate method {bean get}           to adb as {bean get}
     delegate method {bean has}           to adb as {bean has}
     delegate method {bean ids}           to adb as {bean ids}
+    delegate method {bean view}          to adb as {bean view}
 
     # RDB
     #
     # At present, these are delegated to the real RDB.  Ultimately
     # we will want to create a read-only RDB handle and delegate to
     # that.
+    delegate method {rdb nullvalue} to rdb as nullvalue
     delegate method eval            to rdb as eval
     delegate method exists          to rdb as exists
     delegate method onecolumn       to rdb as onecolumn

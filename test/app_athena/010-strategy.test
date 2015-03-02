@@ -217,7 +217,7 @@ namespace eval ::athena_test::tests:: {
 
         set a [$b1 execstatus]
         set b [$b2 execstatus]
-        set c [rdb onecolumn {
+        set c [adb onecolumn {
             SELECT narrative FROM sigevents WHERE component='tactic'
         }]
 

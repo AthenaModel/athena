@@ -51,7 +51,7 @@ namespace eval ::athena_test::tests:: {
 
     # Set actor's pre-strategy cash
     proc cashset {a reserve onhand} {
-        rdb eval {
+        adb eval {
             UPDATE actors 
             SET cash_reserve = $reserve,
                 cash_on_hand = $onhand
@@ -61,7 +61,7 @@ namespace eval ::athena_test::tests:: {
 
     # Set actor's working cash
     proc wcashset {a reserve onhand} {
-        rdb eval {
+        adb eval {
             UPDATE working_cash 
             SET cash_reserve = $reserve,
                 cash_on_hand = $onhand
@@ -108,7 +108,7 @@ BOB 150000.0     5000.0  5000.0       0.0
         let a { $joe(cash_on_hand) + [actor income JOE] }
 
         cash load
-        set b [rdb onecolumn {
+        set b [adb onecolumn {
             SELECT cash_on_hand FROM working_cash WHERE a='JOE'
         }]
 
@@ -615,7 +615,7 @@ BOB 150000.0     5000.0
         cash load
         cash spend WILL DEPLOY 5000
     } -body {
-        set a [rdb onecolumn {
+        set a [adb onecolumn {
             SELECT cash_on_hand FROM working_cash WHERE a='WILL'
         }]
         cash save

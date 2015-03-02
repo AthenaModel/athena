@@ -42,14 +42,14 @@ namespace eval ::athena_test::tests:: {
         ted create BLUE BRIT IOM1 IOM2
 
         # Verify that unused columns contain NULL
-        rdb nullvalue "@"
+        adb rdb nullvalue "@"
     }
 
     # Clean up after a test
 
     proc cleanup {} {
         # Clean up the test environment
-        rdb nullvalue ""
+        adb rdb nullvalue ""
         array unset parms
         ted cleanup
     }
@@ -112,7 +112,7 @@ mag           1.0
         set undo [payload create $P1]
     } -body {
         namespace eval :: $undo
-        rdb eval {SELECT * FROM payloads}
+        adb eval {SELECT * FROM payloads}
     } -cleanup {
         cleanup
     } -result {}
@@ -127,7 +127,7 @@ mag           1.0
     } -body {
         payload delete {IOM1 1}
 
-        rdb eval {SELECT iom_id,payload_num FROM payloads}
+        adb eval {SELECT iom_id,payload_num FROM payloads}
     } -cleanup {
         cleanup
     } -result {IOM2 1}
@@ -432,7 +432,7 @@ mag           2.0
     test check-1.1 {coop check: g no longer exists} -setup {
         setup
         payload create $P1
-        rdb eval {DELETE FROM frcgroups}
+        adb eval {DELETE FROM frcgroups}
     } -body {
         payload coop check [payload get {IOM1 1}]
     } -cleanup {
@@ -445,7 +445,7 @@ mag           2.0
     test check-1.2 {hrel check: g no longer exists} -setup {
         setup
         payload create $P1
-        rdb eval {DELETE FROM groups}
+        adb eval {DELETE FROM groups}
     } -body {
         payload hrel check [payload get {IOM1 1}]
     } -cleanup {
@@ -470,7 +470,7 @@ mag           2.0
     test check-1.4 {vrel check: a no longer exists} -setup {
         setup
         payload create $P4
-        rdb eval {DELETE FROM actors}
+        adb eval {DELETE FROM actors}
     } -body {
         payload vrel check [payload get {IOM1 1}]
     } -cleanup {

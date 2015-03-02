@@ -116,7 +116,7 @@ rho  0.7
         set undo [plant create $p1]
     } -body {
         {*}$undo
-        rdb query {SELECT n FROM plants_shares}
+        adb query {SELECT n FROM plants_shares}
     } -cleanup {
         cleanup
     } -result {}
@@ -133,7 +133,7 @@ rho  0.7
         plant delete {NB1 JOE}
 
         # Is 1 gone?
-        rdb eval {SELECT n,a FROM plants_shares}
+        adb eval {SELECT n,a FROM plants_shares}
     } -cleanup {
         cleanup
     } -result {NB1 BOB}
@@ -248,7 +248,7 @@ rho  0.5
     test start-1.1 {validate laydown of plants} -setup {
         execute_setup
     } -body {
-        rdb eval {SELECT n, a, num FROM plants_na}
+        adb eval {SELECT n, a, num FROM plants_na}
     } -cleanup {
         cleanup
     } -result {NB1 JOE 9 NB1 BOB 19}
@@ -259,7 +259,7 @@ rho  0.5
     test get-1.1 {valid parm} -setup {
         execute_setup
     } -body {
-        rdb eval {UPDATE plants_na SET num=9 WHERE n='NB1' AND a='JOE'}
+        adb eval {UPDATE plants_na SET num=9 WHERE n='NB1' AND a='JOE'}
         plant get [list NB1 JOE] num
     } -cleanup {
         cleanup
@@ -268,7 +268,7 @@ rho  0.5
     test get-1.2 {entire dict} -setup {
         execute_setup
     } -body {
-        rdb eval {
+        adb eval {
             UPDATE plants_na SET num=9, rho=0.445
             WHERE n='NB1' AND a='JOE'
         }
@@ -296,7 +296,7 @@ rho  0.5
 
     test repaircost-1.2 {plants owned} -setup {
         execute_setup
-        rdb eval {UPDATE plants_na SET num=7 WHERE n='NB1' AND a='JOE'}
+        adb eval {UPDATE plants_na SET num=7 WHERE n='NB1' AND a='JOE'}
     } -body {
         moneyfmt [plant repaircost NB1 JOE 1.0]
     } -cleanup {
@@ -305,7 +305,7 @@ rho  0.5
 
     test repaircost-1.3 {almost totally repaired} -setup {
         execute_setup
-        rdb eval {UPDATE plants_na SET num=7 WHERE n='NB1' AND a='JOE'}
+        adb eval {UPDATE plants_na SET num=7 WHERE n='NB1' AND a='JOE'}
     } -body {
         moneyfmt [plant repaircost NB1 JOE 0.01]
     } -cleanup {
@@ -319,9 +319,9 @@ rho  0.5
         execute_setup
     } -body {
         ted create DAVE
-        set a [rdb eval {SELECT total(rho) FROM plants_na}]
+        set a [adb eval {SELECT total(rho) FROM plants_na}]
         plant repair DAVE {NB1} 1.0
-        set b [rdb eval {SELECT total(rho) FROM plants_na}]
+        set b [adb eval {SELECT total(rho) FROM plants_na}]
 
         expr {$a==$b}
     } -cleanup {
@@ -331,9 +331,9 @@ rho  0.5
     test repair-1.2 {plants owned, plants repaired} -setup {
         execute_setup
     } -body {
-        set a [rdb eval {SELECT total(rho) FROM plants_na}]
+        set a [adb eval {SELECT total(rho) FROM plants_na}]
         plant repair JOE {NB1} 1.0
-        set b [rdb eval {SELECT total(rho) FROM plants_na}]
+        set b [adb eval {SELECT total(rho) FROM plants_na}]
 
         expr {$a<$b}
     } -cleanup {
@@ -345,9 +345,9 @@ rho  0.5
     test degrade-1.1 {plants degrade} -setup {
         execute_setup
     } -body {
-        set a [rdb eval {SELECT total(rho) FROM plants_na}]
+        set a [adb eval {SELECT total(rho) FROM plants_na}]
         plant degrade
-        set b [rdb eval {SELECT total(rho) FROM plants_na}]
+        set b [adb eval {SELECT total(rho) FROM plants_na}]
 
         expr {$a>$b}
     } -cleanup {
@@ -356,11 +356,11 @@ rho  0.5
 
     test degrade-1.2 {no degradation with auto-maintain enabled} -setup {
         execute_setup
-        rdb eval {UPDATE actors SET auto_maintain=1}
+        adb eval {UPDATE actors SET auto_maintain=1}
     } -body {
-        set a [rdb eval {SELECT total(rho) FROM plants_na}]
+        set a [adb eval {SELECT total(rho) FROM plants_na}]
         plant degrade
-        set b [rdb eval {SELECT total(rho) FROM plants_na}]
+        set b [adb eval {SELECT total(rho) FROM plants_na}]
         
         expr {$a==$b}
     } -cleanup {
@@ -371,9 +371,9 @@ rho  0.5
         execute_setup
         econ setstate DISABLED
     } -body {
-        set a [rdb eval {SELECT total(rho) FROM plants_na}]
+        set a [adb eval {SELECT total(rho) FROM plants_na}]
         plant degrade
-        set b [rdb eval {SELECT total(rho) FROM plants_na}]
+        set b [adb eval {SELECT total(rho) FROM plants_na}]
         
         expr {$a==$b}
     } -cleanup {
@@ -395,7 +395,7 @@ rho  0.5
     test buildcost-1.2 {some work already done} -setup {
         setup
         set costA [plant buildcost NB1 JOE 3]
-        rdb eval {
+        adb eval {
             INSERT INTO working_build(n, a, progress)
             VALUES('NB1','JOE','0.0 0.01 0.0 0.01 0.0 0.01');
         }
@@ -408,7 +408,7 @@ rho  0.5
 
     test buildcost-1.3 {no work needed} -setup {
         setup
-        rdb eval {
+        adb eval {
             INSERT INTO working_build(n, a, progress)
             VALUES('NB1','JOE','1.0 0.0 1.0 0.0 1.0 0.0');
         }
@@ -425,10 +425,10 @@ rho  0.5
     test build-1.1 {new construction} -setup {
         setup
     } -body {
-        set a [rdb onecolumn {SELECT progress FROM working_build 
+        set a [adb onecolumn {SELECT progress FROM working_build 
                          WHERE n='NB1' AND a='JOE'}]
         plant build NB1 JOE 1000000.0
-        set b [rdb onecolumn {SELECT progress FROM working_build 
+        set b [adb onecolumn {SELECT progress FROM working_build 
                          WHERE n='NB1' AND a='JOE'}]
         expr {[llength $b] > [llength $a]}
     } -cleanup {
@@ -439,10 +439,10 @@ rho  0.5
         setup
         plant build NB1 JOE 1000000.0
     } -body {
-        set a [rdb onecolumn {SELECT progress FROM working_build 
+        set a [adb onecolumn {SELECT progress FROM working_build 
                          WHERE n='NB1' AND a='JOE'}]
         plant build NB1 JOE 1000000.0
-        set b [rdb onecolumn {SELECT progress FROM working_build 
+        set b [adb onecolumn {SELECT progress FROM working_build 
                          WHERE n='NB1' AND a='JOE'}]
         expr {[llength $b] == [llength $a]}
     } -cleanup {
@@ -451,15 +451,15 @@ rho  0.5
 
     test build-1.3 {start new plants} -setup {
         setup
-        rdb eval {
+        adb eval {
             INSERT INTO working_build(n, a, progress)
             VALUES('NB1','JOE','1.0 0.0 1.0 0.0 1.0 0.0')
         }
     } -body {
-        set a [rdb onecolumn {SELECT progress FROM working_build 
+        set a [adb onecolumn {SELECT progress FROM working_build 
                          WHERE n='NB1' AND a='JOE'}]
         plant build NB1 JOE 1000000.0
-        set b [rdb onecolumn {SELECT progress FROM working_build 
+        set b [adb onecolumn {SELECT progress FROM working_build 
                          WHERE n='NB1' AND a='JOE'}]
         expr {[llength $a] < [llength $b]}
     } -cleanup {
@@ -476,7 +476,7 @@ rho  0.5
         plant create $p2
         ted create BLUE 
         ted lock
-        rdb eval {UPDATE plants_na SET num=10}
+        adb eval {UPDATE plants_na SET num=10}
     } -body {
         set a [moneyfmt [plant capacity total]]
         set b [moneyfmt [plant capacity n NB1]]
@@ -533,7 +533,7 @@ rho  0.5
         plant create $p2
         ted create BLUE 
         ted lock
-        rdb eval {UPDATE plants_na SET num=10}
+        adb eval {UPDATE plants_na SET num=10}
     } -body {
         set a [plant number total]
         set b [plant number n NB1]

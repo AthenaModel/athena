@@ -186,7 +186,7 @@ namespace eval ::athena_test::tests:: {
 
     test bsid-1.1 {group has own bsid} -setup {
         ted create BLUE
-        rdb eval {
+        adb eval {
             UPDATE groups SET bsid=5 WHERE g='BLUE'
         }
     } -body {
@@ -197,7 +197,7 @@ namespace eval ::athena_test::tests:: {
 
     test bsid-1.2 {group gets bsid from owner} -setup {
         ted create JOE BLUE
-        rdb eval {
+        adb eval {
             UPDATE actors SET bsid=7 WHERE a='JOE'
         }
     } -body {
@@ -208,7 +208,7 @@ namespace eval ::athena_test::tests:: {
 
     test bsid-1.3 {group gets default bsid} -setup {
         ted create JOE BLUE
-        rdb eval {
+        adb eval {
             UPDATE actors SET bsid=NULL WHERE a='JOE'
         }
     } -body {

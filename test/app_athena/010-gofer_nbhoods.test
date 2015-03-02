@@ -131,7 +131,7 @@ namespace eval ::athena_test::tests:: {
             NB1 JOE
             NB2 BOB
         } { 
-            rdb eval {INSERT INTO control_n(n,controller) VALUES($n,$a)}
+            adb eval {INSERT INTO control_n(n,controller) VALUES($n,$a)}
         }
     }
 
@@ -269,7 +269,7 @@ namespace eval ::athena_test::tests:: {
             NB4 TAL  1
             NB4 ALQ  1
         } { 
-            rdb eval {
+            adb eval {
                 INSERT OR REPLACE INTO deploy_ng(n,g,personnel) 
                 VALUES($n,$g,$personnel)
             }

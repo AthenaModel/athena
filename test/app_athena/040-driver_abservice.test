@@ -68,14 +68,14 @@ namespace eval ::athena_test::tests:: {
         parm set service.WATER.required.URBAN 0.5
         parm set service.TRANSPORT.actual.URBAN 0.5
         parm set service.TRANSPORT.required.URBAN 0.5
-        rdb eval {DELETE FROM drivers}
+        adb eval {DELETE FROM drivers}
         
         # NEXT, create the entities
         ted create JOE BOB NB1 BLUE SHIA SUNN
     }
 
     proc controller {a n} {
-        rdb eval {
+        adb eval {
             UPDATE control_n
             SET controller = $a
             WHERE n = $n
@@ -101,7 +101,7 @@ namespace eval ::athena_test::tests:: {
 
     proc lock {} {
         ted lock
-        rdb eval {
+        adb eval {
             DELETE FROM rule_firings;
             DELETE FROM rule_inputs;
             DELETE FROM drivers;
@@ -355,7 +355,7 @@ TRANSPORT-1-1 SUNN JOE
     } -body {
         lock
         service actual NB1 ENERGY 0.5
-        rdb eval {UPDATE service_sg SET expected=0.6}
+        adb eval {UPDATE service_sg SET expected=0.6}
         ted step
         ted querylist {
             SELECT * FROM rule_firings
@@ -384,7 +384,7 @@ fdict      required 0.5 a {} expected 0.575 actual 0.5 dtype ENERGY needs 0.0 ex
     } -body {
         lock
         service actual NB1 ENERGY 0.5
-        rdb eval {UPDATE service_sg SET expected=0.6}
+        adb eval {UPDATE service_sg SET expected=0.6}
         ted step
 
         ted query {
@@ -410,7 +410,7 @@ ENERGY-1-2 SUNN QOL
         lock
         controller JOE NB1
         service actual NB1 ENERGY 0.5
-        rdb eval {UPDATE service_sg SET expected=0.6}
+        adb eval {UPDATE service_sg SET expected=0.6}
         ted step
 
         ted query {
@@ -433,7 +433,7 @@ ENERGY-1-2 SUNN JOE
     } -body {
         lock
         service actual NB1 WATER 0.5
-        rdb eval {UPDATE service_sg SET expected=0.6}
+        adb eval {UPDATE service_sg SET expected=0.6}
         ted step
         ted querylist {
             SELECT * FROM rule_firings
@@ -462,7 +462,7 @@ fdict      required 0.5 a {} expected 0.575 actual 0.5 dtype WATER needs 0.0 exp
     } -body {
         lock
         service actual NB1 WATER 0.5
-        rdb eval {UPDATE service_sg SET expected=0.6}
+        adb eval {UPDATE service_sg SET expected=0.6}
         ted step
 
         ted query {
@@ -488,7 +488,7 @@ WATER-1-2 SUNN QOL
         lock
         controller JOE NB1
         service actual NB1 WATER 0.5
-        rdb eval {UPDATE service_sg SET expected=0.6}
+        adb eval {UPDATE service_sg SET expected=0.6}
         ted step
 
         ted query {
@@ -511,7 +511,7 @@ WATER-1-2 SUNN JOE
     } -body {
         lock
         service actual NB1 TRANSPORT 0.5
-        rdb eval {UPDATE service_sg SET expected=0.6}
+        adb eval {UPDATE service_sg SET expected=0.6}
         ted step
         ted querylist {
             SELECT * FROM rule_firings
@@ -540,7 +540,7 @@ fdict      required 0.5 a {} expected 0.575 actual 0.5 dtype TRANSPORT needs 0.0
     } -body {
         lock
         service actual NB1 TRANSPORT 0.5
-        rdb eval {UPDATE service_sg SET expected=0.6}
+        adb eval {UPDATE service_sg SET expected=0.6}
         ted step
 
         ted query {
@@ -566,7 +566,7 @@ TRANSPORT-1-2 SUNN QOL
         lock
         controller JOE NB1
         service actual NB1 TRANSPORT 0.5
-        rdb eval {UPDATE service_sg SET expected=0.6}
+        adb eval {UPDATE service_sg SET expected=0.6}
         ted step
 
         ted query {
@@ -621,7 +621,7 @@ fdict      required 0.5 a {} expected 0.5 actual 0.5 dtype ENERGY needs 0.0 expe
         ted step
 
         # No satisfaction effects when expectations are met
-        rdb eval {
+        adb eval {
             SELECT count(*)
             FROM rule_firings JOIN rule_inputs USING (firing_id)
             WHERE atype='sat'
@@ -640,7 +640,7 @@ fdict      required 0.5 a {} expected 0.5 actual 0.5 dtype ENERGY needs 0.0 expe
         ted step
 
         # No vrel effects when expectations are met
-        rdb eval {
+        adb eval {
             SELECT count(*)
             FROM rule_firings JOIN rule_inputs USING (firing_id)
             WHERE atype='vrel'
@@ -687,7 +687,7 @@ fdict      required 0.5 a {} expected 0.5 actual 0.5 dtype WATER needs 0.0 expec
         ted step
 
         # No satisfaction effects when expectations are met
-        rdb eval {
+        adb eval {
             SELECT count(*)
             FROM rule_firings JOIN rule_inputs USING (firing_id)
             WHERE atype='sat'
@@ -706,7 +706,7 @@ fdict      required 0.5 a {} expected 0.5 actual 0.5 dtype WATER needs 0.0 expec
         ted step
 
         # No vrel effects when expectations are met
-        rdb eval {
+        adb eval {
             SELECT count(*)
             FROM rule_firings JOIN rule_inputs USING (firing_id)
             WHERE atype='vrel'
@@ -753,7 +753,7 @@ fdict      required 0.5 a {} expected 0.5 actual 0.5 dtype TRANSPORT needs 0.0 e
         ted step
 
         # No satisfaction effects when expectations are met
-        rdb eval {
+        adb eval {
             SELECT count(*)
             FROM rule_firings JOIN rule_inputs USING (firing_id)
             WHERE atype='sat'
@@ -772,7 +772,7 @@ fdict      required 0.5 a {} expected 0.5 actual 0.5 dtype TRANSPORT needs 0.0 e
         ted step
 
         # No vrel effects when expectations are met
-        rdb eval {
+        adb eval {
             SELECT count(*)
             FROM rule_firings JOIN rule_inputs USING (firing_id)
             WHERE atype='vrel'

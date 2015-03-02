@@ -126,7 +126,7 @@ obscured_by
         namespace eval :: $undo
 
         # Is NB2 gone?
-        rdb eval {SELECT n FROM nbhoods}
+        adb eval {SELECT n FROM nbhoods}
     } -cleanup {
         cleanup
     } -result {NB1}
@@ -137,7 +137,7 @@ obscured_by
         set undo [nbhood create [ted entity OV1]]
     } -body {
         namespace eval :: $undo
-        rdb eval "SELECT n,obscured_by FROM nbhoods"
+        adb eval "SELECT n,obscured_by FROM nbhoods"
     } -cleanup {
         cleanup
     } -result {NB1 {}}
@@ -177,7 +177,7 @@ NB1 NB1 HERE
 
     test create-5.1 {econ_n records are created} -body {
         nbhood create [ted entity NB1]
-        rdb eval {SELECT n FROM econ_n}
+        adb eval {SELECT n FROM econ_n}
     } -cleanup {
         cleanup
     } -result {NB1}
@@ -189,7 +189,7 @@ NB1 NB1 HERE
         namespace eval :: $undo
 
         # Is NB2 gone?
-        rdb eval {SELECT n FROM econ_n}
+        adb eval {SELECT n FROM econ_n}
     } -cleanup {
         cleanup
     } -result {NB1}
@@ -204,7 +204,7 @@ NB1 NB1 HERE
         nbhood delete NB1
 
         # Is NB1 gone?
-        rdb eval {SELECT n FROM nbhoods}
+        adb eval {SELECT n FROM nbhoods}
     } -cleanup {
         cleanup
     } -result {NB2}
@@ -294,7 +294,7 @@ NB1 NB1 HERE
         ted create NB1 NB2
     } -body {
         nbhood delete NB2
-        rdb eval {SELECT n FROM econ_n}
+        adb eval {SELECT n FROM econ_n}
     } -cleanup {
         cleanup
     } -result {NB1}
@@ -304,7 +304,7 @@ NB1 NB1 HERE
         set undo [nbhood delete NB1]
     } -body {
         namespace eval :: $undo
-        rdb eval {SELECT n FROM econ_n ORDER BY n}
+        adb eval {SELECT n FROM econ_n ORDER BY n}
     } -cleanup {
         cleanup
     } -result {NB1}
@@ -314,7 +314,7 @@ NB1 NB1 HERE
         ted create NB1 SHIA
     } -body {
         nbhood delete NB1
-        rdb eval {SELECT g FROM civgroups}
+        adb eval {SELECT g FROM civgroups}
     } -cleanup {
         cleanup
     } -result {}
@@ -324,7 +324,7 @@ NB1 NB1 HERE
         set undo [nbhood delete NB1]
     } -body {
         namespace eval :: $undo
-        rdb eval {SELECT g FROM civgroups}
+        adb eval {SELECT g FROM civgroups}
     } -cleanup {
         cleanup
     } -result {SHIA}
@@ -333,7 +333,7 @@ NB1 NB1 HERE
         ted create CBS
     } -body {
         nbhood delete NB1
-        rdb eval {SELECT k,n FROM cap_kn}
+        adb eval {SELECT k,n FROM cap_kn}
     } -cleanup {
         cleanup
     } -result {}
@@ -343,7 +343,7 @@ NB1 NB1 HERE
         set undo [nbhood delete NB1]
     } -body {
         namespace eval :: $undo
-        rdb eval {SELECT k,n FROM cap_kn}
+        adb eval {SELECT k,n FROM cap_kn}
     } -cleanup {
         cleanup
     } -result {CBS NB1}

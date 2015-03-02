@@ -304,7 +304,7 @@ upc        0.0
         ted create NB1
         ted order CIVGROUP:CREATE {*}$shia longname ""
 
-        rdb onecolumn {SELECT longname FROM civgroups_view}
+        adb onecolumn {SELECT longname FROM civgroups_view}
     } -cleanup {
         cleanup
     } -result {SHIA}
@@ -313,7 +313,7 @@ upc        0.0
         ted create NB1
         ted order CIVGROUP:CREATE {*}$shia bsid ""
 
-        rdb onecolumn {SELECT bsid FROM civgroups_view}
+        adb onecolumn {SELECT bsid FROM civgroups_view}
     } -cleanup {
         cleanup
     } -result {1}
@@ -322,7 +322,7 @@ upc        0.0
         ted create NB1
         ted order CIVGROUP:CREATE {*}$shia basepop 0
 
-        rdb onecolumn {SELECT basepop FROM civgroups_view}
+        adb onecolumn {SELECT basepop FROM civgroups_view}
     } -cleanup {
         cleanup
     } -result {0}

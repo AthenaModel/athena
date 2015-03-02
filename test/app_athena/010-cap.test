@@ -88,7 +88,7 @@ cost      1000.0
         set undo [cap create [ted entity CNN]]
     } -body {
         namespace eval :: $undo
-        rdb eval {SELECT k FROM caps}
+        adb eval {SELECT k FROM caps}
     } -cleanup {
         cleanup
     } -result {CBS}
@@ -122,7 +122,7 @@ nbcov  1.0
         set undo [cap create [ted entity CNN]]
     } -body {
         namespace eval :: $undo
-        rdb eval {SELECT k,n FROM cap_kn}
+        adb eval {SELECT k,n FROM cap_kn}
     } -cleanup {
         cleanup
     } -result {CBS NB1}
@@ -155,7 +155,7 @@ pen  1.0
         set undo [cap create [ted entity CNN]]
     } -body {
         namespace eval :: $undo
-        rdb eval {SELECT k,g FROM cap_kg}
+        adb eval {SELECT k,g FROM cap_kg}
     } -cleanup {
         cleanup
     } -result {CBS SHIA}
@@ -169,7 +169,7 @@ pen  1.0
         cap delete CBS
 
         # Is CBS gone?
-        rdb eval {SELECT k FROM caps}
+        adb eval {SELECT k FROM caps}
     } -cleanup {
         cleanup
     } -result {CNN}
@@ -201,7 +201,7 @@ cost      500.0
     } -body {
         cap delete CBS
 
-        rdb eval {SELECT k,n FROM cap_kn ORDER BY k,n}
+        adb eval {SELECT k,n FROM cap_kn ORDER BY k,n}
     } -cleanup {
         cleanup
     } -result {CNN NB1 CNN NB2}
@@ -211,7 +211,7 @@ cost      500.0
         set undo [cap delete CBS]
     } -body {
         namespace eval :: $undo
-        rdb eval {SELECT k,n FROM cap_kn ORDER BY k,n}
+        adb eval {SELECT k,n FROM cap_kn ORDER BY k,n}
     } -cleanup {
         cleanup
     } -result {CBS NB1 CNN NB1 CNN NB2}
@@ -221,7 +221,7 @@ cost      500.0
     } -body {
         cap delete CBS
 
-        rdb eval {SELECT k,g FROM cap_kg ORDER BY k,g}
+        adb eval {SELECT k,g FROM cap_kg ORDER BY k,g}
     } -cleanup {
         cleanup
     } -result {CNN KURD CNN SUNN} 
@@ -231,7 +231,7 @@ cost      500.0
         set undo [cap delete CBS]
     } -body {
         namespace eval :: $undo
-        rdb eval {SELECT k,g FROM cap_kg ORDER BY k,g}
+        adb eval {SELECT k,g FROM cap_kg ORDER BY k,g}
     } -cleanup {
         cleanup
     } -result {CBS SHIA CNN KURD CNN SUNN}
@@ -346,7 +346,7 @@ CBS NB2 0.5
         set undo [cap nbcov create {id {CBS NB2} nbcov 0.5}]
     } -body {
         namespace eval :: $undo
-        rdb eval {SELECT k,n FROM cap_kn}
+        adb eval {SELECT k,n FROM cap_kn}
     } -cleanup {
         cleanup
     } -result {CBS NB1}
@@ -362,7 +362,7 @@ CBS NB2 0.5
         cap nbcov delete {CBS NB1}
 
         # Is CBS NB1 gone?
-        rdb eval {SELECT k,n FROM cap_kn ORDER BY k,n}
+        adb eval {SELECT k,n FROM cap_kn ORDER BY k,n}
     } -cleanup {
         cleanup
     } -result {CBS NB2 CNN NB1 CNN NB2}
@@ -484,7 +484,7 @@ CBS SUNN 0.5
         set undo [cap pen create {id {CBS SUNN} pen 0.5}]
     } -body {
         namespace eval :: $undo
-        rdb eval {SELECT k,g FROM cap_kg}
+        adb eval {SELECT k,g FROM cap_kg}
     } -cleanup {
         cleanup
     } -result {CBS SHIA}
@@ -500,7 +500,7 @@ CBS SUNN 0.5
         cap pen delete {CBS SHIA}
 
         # Is CBS SHIA gone?
-        rdb eval {SELECT k,g FROM cap_kg ORDER BY k, g}
+        adb eval {SELECT k,g FROM cap_kg ORDER BY k, g}
     } -cleanup {
         cleanup
     } -result {CBS SUNN CNN KURD CNN SUNN}

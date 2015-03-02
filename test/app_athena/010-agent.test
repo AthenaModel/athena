@@ -141,7 +141,7 @@ namespace eval ::athena_test::tests:: {
 
     test tactictypes-1.3 {tactics for auto_maintain actor} -setup {
         ted create JOE
-        rdb eval {
+        adb eval {
             UPDATE actors SET auto_maintain=1
         }
     } -body {

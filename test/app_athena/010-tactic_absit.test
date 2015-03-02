@@ -239,7 +239,7 @@ rduration  2
     } -body {
         $T1 execute
         $T1 execute
-        rdb eval {SELECT n, stype FROM absits}
+        adb eval {SELECT n, stype FROM absits}
     } -cleanup {
         cleanup
     } -result {NB1 COMMOUT}
@@ -256,7 +256,7 @@ rduration  2
         $T1 execute
         $T1 configure -stype BADWATER
         $T1 execute
-        rdb eval {SELECT n, stype FROM absits ORDER BY n, stype}
+        adb eval {SELECT n, stype FROM absits ORDER BY n, stype}
     } -cleanup {
         cleanup
     } -result {NB1 BADWATER NB1 COMMOUT}

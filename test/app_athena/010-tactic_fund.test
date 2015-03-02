@@ -192,7 +192,7 @@ namespace eval ::athena_test::tests:: {
         set a [$T1 obligate $coffer]
         set b [$coffer cash]
         $T1 execute
-        set c [rdb onecolumn {SELECT gifts FROM working_cash WHERE a='BOB'}]
+        set c [adb onecolumn {SELECT gifts FROM working_cash WHERE a='BOB'}]
 
         list $a $b $c
     } -cleanup {
@@ -207,7 +207,7 @@ namespace eval ::athena_test::tests:: {
         set a [$T1 obligate $coffer]
         set b [$coffer cash]
         $T1 execute
-        set c [rdb onecolumn {SELECT gifts FROM working_cash WHERE a='BOB'}]
+        set c [adb onecolumn {SELECT gifts FROM working_cash WHERE a='BOB'}]
 
         list $a $b $c
     } -cleanup {
@@ -233,7 +233,7 @@ namespace eval ::athena_test::tests:: {
         set a [$T1 obligate $coffer]
         set b [$coffer cash]
         $T1 execute
-        set c [rdb onecolumn {SELECT gifts FROM working_cash WHERE a='BOB'}]
+        set c [adb onecolumn {SELECT gifts FROM working_cash WHERE a='BOB'}]
 
         list $a $b $c
     } -cleanup {
@@ -248,7 +248,7 @@ namespace eval ::athena_test::tests:: {
         set a [$T1 obligate $coffer]
         set b [$coffer cash]
         $T1 execute
-        set c [rdb onecolumn {SELECT gifts FROM working_cash WHERE a='BOB'}]
+        set c [adb onecolumn {SELECT gifts FROM working_cash WHERE a='BOB'}]
 
         list $a $b $c
     } -cleanup {
@@ -263,7 +263,7 @@ namespace eval ::athena_test::tests:: {
         set a [$T1 obligate $coffer]
         set b [$coffer cash]
         $T1 execute
-        set c [rdb onecolumn {SELECT gifts FROM working_cash WHERE a='BOB'}]
+        set c [adb onecolumn {SELECT gifts FROM working_cash WHERE a='BOB'}]
 
         list $a $b $c
     } -cleanup {
@@ -278,7 +278,7 @@ namespace eval ::athena_test::tests:: {
         set a [$T1 obligate $coffer]
         set b [$coffer cash]
         $T1 execute
-        set c [rdb onecolumn {SELECT gifts FROM working_cash WHERE a='BOB'}]
+        set c [adb onecolumn {SELECT gifts FROM working_cash WHERE a='BOB'}]
 
         list $a $b $c
     } -cleanup {
@@ -293,7 +293,7 @@ namespace eval ::athena_test::tests:: {
         set a [$T1 obligate $coffer]
         set b [$coffer cash]
         $T1 execute
-        set c [rdb onecolumn {SELECT gifts FROM working_cash WHERE a='BOB'}]
+        set c [adb onecolumn {SELECT gifts FROM working_cash WHERE a='BOB'}]
 
         list $a $b $c
     } -cleanup {

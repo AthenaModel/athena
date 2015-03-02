@@ -81,7 +81,7 @@ longname  Puppies are good
         set undo [hook create $h1]
     } -body {
         {*}$undo
-        rdb query {SELECT hook_id FROM hooks}
+        adb query {SELECT hook_id FROM hooks}
     } -cleanup {
         cleanup
     } -result {}
@@ -92,22 +92,22 @@ longname  Puppies are good
     test update-1.1 {Hook is updated} -setup {
         hook create $h1
     } -body {
-        set parms(hook_id) [rdb onecolumn {SELECT hook_id FROM hooks}]
+        set parms(hook_id) [adb onecolumn {SELECT hook_id FROM hooks}]
         set parms(longname) "Puppies are evil"
         hook update [array get parms]
-        rdb onecolumn {SELECT longname FROM hooks}
+        adb onecolumn {SELECT longname FROM hooks}
     } -cleanup {
         cleanup
     } -result {Puppies are evil}
 
     test update-1.2 {Hook update is undone} -setup {
         hook create $h1
-        set parms(hook_id) [rdb onecolumn {SELECT hook_id FROM hooks}]
+        set parms(hook_id) [adb onecolumn {SELECT hook_id FROM hooks}]
         set parms(longname) "Puppies are evil"
         set undo [hook update [array get parms]]
     } -body {
         {*}$undo
-        rdb onecolumn {SELECT longname FROM hooks}
+        adb onecolumn {SELECT longname FROM hooks}
     } -cleanup {
         cleanup
     } -result {Puppies are good}
@@ -118,16 +118,16 @@ longname  Puppies are good
     test delete-1.1 {Hook is deleted} -setup {
         hook create $h1
     } -body {
-        set hook_id [rdb onecolumn {SELECT hook_id FROM hooks}]
+        set hook_id [adb onecolumn {SELECT hook_id FROM hooks}]
         hook delete $hook_id
-        rdb query {SELECT * FROM hooks}
+        adb query {SELECT * FROM hooks}
     } -cleanup {
         cleanup
     } -result {}
 
     test delete-1.2 {Hook deletion is undone} -setup {
         hook create $h1
-        set hook_id [rdb onecolumn {SELECT hook_id FROM hooks}]
+        set hook_id [adb onecolumn {SELECT hook_id FROM hooks}]
         set undo [hook delete $hook_id]
     } -body {
         {*}$undo
@@ -144,7 +144,7 @@ longname  Puppies are good
         iom create $m1
     } -body {
         set a [ted querylist {SELECT * FROM ioms}]
-        set hook_id [rdb onecolumn {SELECT hook_id FROM hooks}]
+        set hook_id [adb onecolumn {SELECT hook_id FROM hooks}]
         hook delete $hook_id
         set b [ted querylist {SELECT * FROM ioms}]
         return $a$b
@@ -165,11 +165,11 @@ state     normal
     test delete-1.4 {Undo restores hook in ioms} -setup {
         hook create $h1
         iom create $m1
-        set hook_id [rdb onecolumn {SELECT hook_id FROM hooks}]
+        set hook_id [adb onecolumn {SELECT hook_id FROM hooks}]
         set undo [hook delete $hook_id]
     } -body {
         namespace eval :: $undo
-        expr {[rdb onecolumn {SELECT hook_id FROM ioms}] == $hook_id}
+        expr {[adb onecolumn {SELECT hook_id FROM ioms}] == $hook_id}
     } -cleanup {
         cleanup
     } -result {1}
@@ -198,7 +198,7 @@ position  0.9
         set undo [hook topic create $t1]
     } -body {
         {*}$undo
-        rdb eval {SELECT id FROM hook_topics_view}
+        adb eval {SELECT id FROM hook_topics_view}
     } -cleanup {
         cleanup
     } -result {}
@@ -211,10 +211,10 @@ position  0.9
         hook create $h1
         hook topic create $t1
     } -body {
-        set parms(id) [rdb onecolumn {SELECT id FROM hook_topics_view}]
+        set parms(id) [adb onecolumn {SELECT id FROM hook_topics_view}]
         set parms(position) 0.0
         hook topic update [array get parms]
-        rdb onecolumn {SELECT position FROM hook_topics}
+        adb onecolumn {SELECT position FROM hook_topics}
     } -cleanup {
         cleanup
     } -result {0.0}
@@ -223,12 +223,12 @@ position  0.9
         mktopic
         hook create $h1
         hook topic create $t1
-        set parms(id) [rdb onecolumn {SELECT id FROM hook_topics_view}]
+        set parms(id) [adb onecolumn {SELECT id FROM hook_topics_view}]
         set parms(position) 0.0
         set undo [hook topic update [array get parms]]
     } -body {
         {*}$undo
-        rdb onecolumn {SELECT position FROM hook_topics}
+        adb onecolumn {SELECT position FROM hook_topics}
     } -cleanup {
         cleanup
     } -result {0.9}
@@ -241,10 +241,10 @@ position  0.9
         hook create $h1
         hook topic create $t1
     } -body {
-        set id [rdb onecolumn {SELECT id FROM hook_topics_view}]
+        set id [adb onecolumn {SELECT id FROM hook_topics_view}]
         set state "disabled"
         hook topic state $id $state
-        rdb onecolumn {SELECT state FROM hook_topics}
+        adb onecolumn {SELECT state FROM hook_topics}
     } -cleanup {
         cleanup
     } -result {disabled}
@@ -253,12 +253,12 @@ position  0.9
         mktopic
         hook create $h1
         hook topic create $t1
-        set id [rdb onecolumn {SELECT id FROM hook_topics_view}]
+        set id [adb onecolumn {SELECT id FROM hook_topics_view}]
         set state "disabled"
         set undo [hook topic state $id $state]
     } -body {
         {*}$undo
-        rdb onecolumn {SELECT state FROM hook_topics}
+        adb onecolumn {SELECT state FROM hook_topics}
     } -cleanup {
         cleanup
     } -result {normal}
@@ -272,9 +272,9 @@ position  0.9
         hook create $h1
         hook topic create $t1
     } -body {
-        set id [rdb onecolumn {SELECT id FROM hook_topics_view}]
+        set id [adb onecolumn {SELECT id FROM hook_topics_view}]
         hook topic delete $id
-        rdb query {SELECT * FROM hook_topics}
+        adb query {SELECT * FROM hook_topics}
     } -cleanup {
         cleanup
     } -result {}
@@ -283,7 +283,7 @@ position  0.9
         mktopic
         hook create $h1
         hook topic create $t1
-        set id [rdb onecolumn {SELECT id FROM hook_topics_view}]
+        set id [adb onecolumn {SELECT id FROM hook_topics_view}]
         set undo [hook topic delete $id]
     } -body {
         {*}$undo
@@ -304,7 +304,7 @@ position  0.9
     test names-1.1 {Hook module returns short names} -setup {
         hook create $h1
     } -body {
-        set names [rdb onecolumn {SELECT hook_id FROM hooks}]
+        set names [adb onecolumn {SELECT hook_id FROM hooks}]
         expr {[hook names] eq $names}
     } -cleanup {
         cleanup
@@ -314,7 +314,7 @@ position  0.9
     test get-1.1 {Get all hook data} -setup {
         hook create $h1
     } -body {
-        set id [rdb onecolumn {SELECT hook_id FROM hooks}]
+        set id [adb onecolumn {SELECT hook_id FROM hooks}]
         ted pdicts [hook get $id]
     } -cleanup {
         cleanup
@@ -340,7 +340,7 @@ position  0.9
     test validate-1.1 {Hook is valid} -setup {
         hook create $h1
     } -body {
-        set id [rdb onecolumn {SELECT hook_id FROM hooks}]
+        set id [adb onecolumn {SELECT hook_id FROM hooks}]
         expr {[hook validate $id] == $id}
     } -cleanup {
         cleanup
@@ -361,7 +361,7 @@ position  0.9
         hook create $h1
         hook topic create $t1
     } -body {
-        set id [rdb onecolumn {SELECT id FROM hook_topics_view}]
+        set id [adb onecolumn {SELECT id FROM hook_topics_view}]
         expr {[hook topic validate $id] == $id}
     } -cleanup {
         cleanup
@@ -379,7 +379,7 @@ position  0.9
     test validate-1.5 {Hook topic is invalid; topic id} -setup {
         hook create $h1
     } -body {
-        set hook_id [rdb onecolumn {SELECT hook_id FROM hooks}]
+        set hook_id [adb onecolumn {SELECT hook_id FROM hooks}]
         hook topic validate [list $hook_id FOO]
     } -returnCodes {
         error
@@ -393,7 +393,7 @@ position  0.9
         hook create $h1
         hook topic create $t1
     } -body {
-        set id [rdb onecolumn {SELECT id FROM hook_topics_view}]
+        set id [adb onecolumn {SELECT id FROM hook_topics_view}]
         hook topic exists $id
     } -cleanup {
         cleanup
@@ -410,7 +410,7 @@ position  0.9
         hook create $h1
         hook topic create $t1
     } -body {
-        set id [rdb onecolumn {SELECT id FROM hook_topics_view}]
+        set id [adb onecolumn {SELECT id FROM hook_topics_view}]
         ted pdicts [hook topic get $id]
     } -cleanup {
         cleanup
@@ -431,7 +431,7 @@ position  0.9
         hook create $h1
         hook topic create $t1
     } -body {
-        set id [rdb onecolumn {SELECT id FROM hook_topics_view}]
+        set id [adb onecolumn {SELECT id FROM hook_topics_view}]
         hook topic get $id "position"
     } -cleanup {
         cleanup
@@ -449,7 +449,7 @@ position  0.9
         hook create $h1
         hook topic create $t1
     } -body {
-        set hook_id [rdb onecolumn {SELECT hook_id FROM hooks}]
+        set hook_id [adb onecolumn {SELECT hook_id FROM hooks}]
         hook getdict $hook_id
     } -cleanup {
         cleanup

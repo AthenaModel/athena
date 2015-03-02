@@ -319,7 +319,6 @@ snit::type ::athena::athenadb {
         # NEXT, Make these components globally available.
         # TBD: These will go away once the transition to library code
         # is complete.
-        interp alias {} ::aram   {} $aram
         interp alias {} ::rdb    {} $rdb
 
         # NEXT, register the ones that are saveables.  This will change

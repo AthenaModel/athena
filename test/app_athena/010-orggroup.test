@@ -93,7 +93,7 @@ base_personnel  1000
         set undo [orggroup create [ted entity HAL]]
     } -body {
         {*}$undo
-        rdb eval {SELECT g FROM orggroups_view}
+        adb eval {SELECT g FROM orggroups_view}
     } -cleanup {
         cleanup
     } -result {USAID}
@@ -107,7 +107,7 @@ base_personnel  1000
         orggroup delete USAID
 
         # Is USAID gone?
-        rdb eval {SELECT g FROM orggroups_view}
+        adb eval {SELECT g FROM orggroups_view}
     } -cleanup {
         cleanup
     } -result {HAL}
@@ -142,7 +142,7 @@ base_personnel  1000
     } -body {
         orggroup delete USAID
 
-        rdb eval {SELECT f,g FROM hrel_fg ORDER BY f,g}
+        adb eval {SELECT f,g FROM hrel_fg ORDER BY f,g}
     } -cleanup {
         cleanup
     } -result {}
@@ -156,7 +156,7 @@ base_personnel  1000
     } -body {
         namespace eval :: $undo
 
-        rdb eval {SELECT f,g FROM hrel_fg ORDER BY f,g}
+        adb eval {SELECT f,g FROM hrel_fg ORDER BY f,g}
     } -cleanup {
         cleanup
     } -result {BRIT USAID USAID BRIT}
@@ -167,7 +167,7 @@ base_personnel  1000
     } -body {
         orggroup delete USAID
 
-        rdb eval {SELECT g,a FROM vrel_ga ORDER BY g,a}
+        adb eval {SELECT g,a FROM vrel_ga ORDER BY g,a}
     } -cleanup {
         cleanup
     } -result {}
@@ -180,7 +180,7 @@ base_personnel  1000
     } -body {
         namespace eval :: $undo
 
-        rdb eval {SELECT g,a FROM vrel_ga ORDER BY g,a}
+        adb eval {SELECT g,a FROM vrel_ga ORDER BY g,a}
     } -cleanup {
         cleanup
     } -result {USAID JOE}

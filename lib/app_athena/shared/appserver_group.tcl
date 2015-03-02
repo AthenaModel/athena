@@ -751,7 +751,7 @@ appserver module GROUPS {
             ht put   "at the present time are as follows:"
             ht para
 
-            aram contribs mood $g \
+            adb contribs mood $g \
                 -start [simclock now]
 
             ht query {

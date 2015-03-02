@@ -45,14 +45,14 @@ namespace eval ::athena_test::tests:: {
         ted order CURSE:CREATE curse_id C2
 
         # Verify that unused columns contain NULL
-        rdb nullvalue "@"
+        adb rdb nullvalue "@"
     }
 
     # Clean up after a test
 
     proc cleanup {} {
         # Clean up the test environment
-        rdb nullvalue ""
+        adb rdb nullvalue ""
         array unset parms
         ted cleanup
     }
@@ -159,7 +159,7 @@ mag          1.0
         set undo [inject create $I1]
     } -body {
         namespace eval :: $undo
-        rdb eval {SELECT * FROM curse_injects}
+        adb eval {SELECT * FROM curse_injects}
     } -cleanup {
         cleanup
     } -result {}
@@ -174,7 +174,7 @@ mag          1.0
     } -body {
         inject delete {C1 1}
 
-        rdb eval {SELECT curse_id,inject_num FROM curse_injects}
+        adb eval {SELECT curse_id,inject_num FROM curse_injects}
     } -cleanup {
         cleanup
     } -result {C2 1}

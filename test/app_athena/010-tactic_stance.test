@@ -136,7 +136,7 @@ namespace eval ::athena_test::tests:: {
             -f BLUE   \
             -mode BY_GROUP \
             -glist [adb gofer make GROUPS BY_VALUE {SHIA SUNN}]
-        rdb eval {DELETE FROM frcgroups WHERE g='BLUE'}
+        adb eval {DELETE FROM frcgroups WHERE g='BLUE'}
     } -body {
         $T1 check
     } -cleanup {
@@ -149,8 +149,8 @@ namespace eval ::athena_test::tests:: {
             -f BLUE   \
             -mode BY_GROUP \
             -glist [adb gofer make GROUPS BY_VALUE {SHIA SUNN}]
-        rdb eval {DELETE FROM groups WHERE g='SUNN'}
-        rdb eval {DELETE FROM civgroups WHERE g='SUNN'}
+        adb eval {DELETE FROM groups WHERE g='SUNN'}
+        adb eval {DELETE FROM civgroups WHERE g='SUNN'}
     } -body {
         $T1 check
     } -cleanup {
@@ -163,7 +163,7 @@ namespace eval ::athena_test::tests:: {
             -f BLUE \
             -mode BY_NBHOOD \
             -nlist [adb gofer make NBHOODS BY_VALUE {NB1 NB2}]
-        rdb eval {DELETE FROM nbhoods WHERE n='NB1'}
+        adb eval {DELETE FROM nbhoods WHERE n='NB1'}
     } -body {
         $T1 check
     } -cleanup {

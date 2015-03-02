@@ -75,7 +75,7 @@ SHIA JOE 0.5  0         0.0
         set undo [vrel create $V1]
     } -body {
         namespace eval :: $undo
-        rdb eval {SELECT * FROM vrel_ga}
+        adb eval {SELECT * FROM vrel_ga}
     } -cleanup {
         cleanup
     } -result {}
@@ -90,7 +90,7 @@ SHIA JOE 0.5  0         0.0
         vrel delete {SHIA JOE}
 
         # Is SHIA gone?
-        rdb eval {SELECT g,a FROM vrel_ga}
+        adb eval {SELECT g,a FROM vrel_ga}
     } -cleanup {
         cleanup
     } -result {}

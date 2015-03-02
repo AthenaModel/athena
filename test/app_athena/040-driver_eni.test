@@ -61,7 +61,7 @@ namespace eval ::athena_test::tests:: {
         parm set dam.ENERGY.active no
         parm set dam.WATER.active no
         parm set dam.TRANSPORT.active no
-        rdb eval {DELETE FROM drivers}
+        adb eval {DELETE FROM drivers}
         
         # NEXT, create the entities
         ted create JOE BOB NB1 BLUE SHIA SUNN
@@ -112,7 +112,7 @@ namespace eval ::athena_test::tests:: {
 
     proc lock {} {
         ted lock
-        rdb eval {
+        adb eval {
             DELETE FROM rule_firings;
             DELETE FROM rule_inputs;
             DELETE FROM drivers;
@@ -308,7 +308,7 @@ fdict      controller JOE required 0.6 expected 0.75 actual 0.75 needs 0.0 expec
         ted step
 
         # No satisfaction effects when expectations are met
-        rdb eval {
+        adb eval {
             SELECT count(*)
             FROM rule_firings JOIN rule_inputs USING (firing_id)
             WHERE atype='sat'

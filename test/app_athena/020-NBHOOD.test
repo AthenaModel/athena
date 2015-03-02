@@ -267,7 +267,7 @@ polygon       *
     test CREATE-2.3 {longname defaults to ID} -body {
         ted order NBHOOD:CREATE [dict merge $nb1 {longname ""}]
 
-        rdb onecolumn {SELECT longname FROM nbhoods}
+        adb onecolumn {SELECT longname FROM nbhoods}
     } -cleanup {
         cleanup
     } -result {NB1}
@@ -275,7 +275,7 @@ polygon       *
     test CREATE-2.4 {pcf defaults to 0.0 for non-local} -body {
         ted order NBHOOD:CREATE [dict merge $nl1 {longname ""}]
 
-        rdb onecolumn {SELECT pcf FROM nbhoods}
+        adb onecolumn {SELECT pcf FROM nbhoods}
     } -cleanup {
         cleanup
     } -result {0.0}
@@ -459,7 +459,7 @@ local         1
     test CREATE_RAW-2.3 {longname defaults to ID} -body {
         ted order NBHOOD:CREATE:RAW [dict merge $rawnb1 {longname ""}]
 
-        rdb onecolumn {SELECT longname FROM nbhoods}
+        adb onecolumn {SELECT longname FROM nbhoods}
     } -cleanup {
         cleanup
     } -result {RAW1}

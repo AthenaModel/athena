@@ -1308,7 +1308,7 @@ namespace eval ::athena_test::tests:: {
     test INFLUENCE-4.2 {eval, value available} -setup {
         setup
         # Set influence to 0.75
-        rdb eval {
+        adb eval {
             INSERT OR REPLACE INTO influence_na(n,a,influence)
             VALUES('NB1','JOE',0.75)
         }
@@ -1588,7 +1588,7 @@ namespace eval ::athena_test::tests:: {
         ted lock
         
     } -body {
-        rdb eval {UPDATE uram_civ_g SET mood=50.0}
+        adb eval {UPDATE uram_civ_g SET mood=50.0}
         adb gofer NUMBER MOOD eval {g SHIA}
     } -cleanup {
         cleanup
@@ -1799,7 +1799,7 @@ namespace eval ::athena_test::tests:: {
     test NBMOOD-4.1 {eval} -setup {
         setup
         ted lock
-        rdb eval {UPDATE uram_n SET nbmood=25.0 WHERE n='NB1'}
+        adb eval {UPDATE uram_n SET nbmood=25.0 WHERE n='NB1'}
         
     } -body {
         adb gofer NUMBER NBMOOD eval {n NB1}
@@ -2750,7 +2750,7 @@ namespace eval ::athena_test::tests:: {
         setup
         ted lock
     } -body {
-        rdb eval {UPDATE ucurve_curves_t SET a=25.0}
+        adb eval {UPDATE ucurve_curves_t SET a=25.0}
         adb gofer NUMBER SAT eval {g SHIA c SFT}
     } -cleanup {
         cleanup

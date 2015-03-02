@@ -169,7 +169,7 @@ NB2 1000       1000        0         0           0          0.0 0.0 0.0
     test getn-1.1 {can get all data} -setup {
         setup
         # Remove any dependancy on econ model
-        rdb eval {
+        adb eval {
             UPDATE demog_n SET uaf=0.0,upc=2.4,unemployed=48 WHERE n='NB1'
         }
     } -body {
@@ -238,7 +238,7 @@ NB2 1000       1000        0         0           0          0.0 0.0 0.0
 
     test shares-1.2 {get shares for empty neighborhoods} -setup {
         setup
-        rdb eval {UPDATE demog_n SET population = 0.0}
+        adb eval {UPDATE demog_n SET population = 0.0}
     } -body {
         demog shares {NB1 NB2}
     } -cleanup {
@@ -331,7 +331,7 @@ NB2 1000       1000        0         0           0          0.0 0.0 0.0
 
     test growth-1.1 {changes population size} -setup {
         setup
-        rdb eval {UPDATE civgroups SET pop_cr = 100.0}
+        adb eval {UPDATE civgroups SET pop_cr = 100.0}
     } -body {
         demog growth
         ted query {SELECT g, population, real_pop FROM demog_g}
@@ -347,7 +347,7 @@ KURD 1019       1019.2307692307693
     
     test growth-1.2 {can be negative} -setup {
         setup
-        rdb eval {UPDATE civgroups SET pop_cr = -100.0}
+        adb eval {UPDATE civgroups SET pop_cr = -100.0}
     } -body {
         demog growth
         ted query {SELECT g, population, real_pop FROM demog_g}
@@ -366,13 +366,13 @@ KURD 981        980.7692307692307
     # econstats
     test econstats-1.1 {More workers, more unemployment} -setup {
         setup
-        rdb eval {UPDATE demog_n SET labor_force = 2000 WHERE n='NB1'}
+        adb eval {UPDATE demog_n SET labor_force = 2000 WHERE n='NB1'}
         demog econstats
     } -body {
-        set a [rdb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
-        rdb eval {UPDATE demog_n SET labor_force = 3000 WHERE n='NB1'}
+        set a [adb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
+        adb eval {UPDATE demog_n SET labor_force = 3000 WHERE n='NB1'}
         demog econstats
-        set b [rdb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
+        set b [adb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
         expr {$a < $b}
     } -cleanup {
         cleanup
@@ -380,13 +380,13 @@ KURD 981        980.7692307692307
 
     test econstats-1.2 {Fewer workers, less unemployment} -setup {
         setup
-        rdb eval {UPDATE demog_n SET labor_force = 2000 WHERE n='NB1'}
+        adb eval {UPDATE demog_n SET labor_force = 2000 WHERE n='NB1'}
         demog econstats
     } -body {
-        set a [rdb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
-        rdb eval {UPDATE demog_n SET labor_force = 1000 WHERE n='NB1'}
+        set a [adb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
+        adb eval {UPDATE demog_n SET labor_force = 1000 WHERE n='NB1'}
         demog econstats
-        set b [rdb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
+        set b [adb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
         expr {$a > $b}
     } -cleanup {
         cleanup
@@ -397,14 +397,14 @@ KURD 981        980.7692307692307
 
         ted create JOE BOB BLUE USAID NB1 NB2 SHIA SUNN KURD 
         parmdb set demog.maxcommute NEAR
-        rdb eval {UPDATE nbrel_mn SET proximity='REMOTE'}
+        adb eval {UPDATE nbrel_mn SET proximity='REMOTE'}
         ted lock
     } -body {
-        set a [rdb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
+        set a [adb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
         # Make NB1 and NB2 NEAR to each other
-        rdb eval {UPDATE nbrel_mn SET proximity='NEAR'}
+        adb eval {UPDATE nbrel_mn SET proximity='NEAR'}
         demog econstats
-        set b [rdb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
+        set b [adb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
         expr {$a > $b}
     } -cleanup {
         cleanup
@@ -414,14 +414,14 @@ KURD 981        980.7692307692307
         econ setstate ENABLED
         ted create JOE BOB BLUE USAID NB1 NB2 SHIA SUNN KURD 
         parmdb set demog.maxcommute NEAR 
-        rdb eval {UPDATE nbrel_mn SET proximity='NEAR'}
+        adb eval {UPDATE nbrel_mn SET proximity='NEAR'}
         ted lock
     } -body {
-        set a [rdb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
+        set a [adb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
         # Make NB1 and NB2 FAR to each other
-        rdb eval {UPDATE nbrel_mn SET proximity='FAR'}
+        adb eval {UPDATE nbrel_mn SET proximity='FAR'}
         demog econstats
-        set b [rdb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
+        set b [adb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
         expr {$a < $b}
     } -cleanup {
         cleanup
@@ -449,7 +449,7 @@ KURD 981        980.7692307692307
 
     test gIn-2.1 {Skips empty groups, PREP} -setup {
         ted create NB1 NB2 BLUE SUNN SHIA KURD
-        rdb eval {UPDATE civgroups SET basepop = 0 WHERE g='SHIA'}
+        adb eval {UPDATE civgroups SET basepop = 0 WHERE g='SHIA'}
     } -body {
         lsort [demog gIn NB1]
     } -cleanup {
@@ -459,7 +459,7 @@ KURD 981        980.7692307692307
     test gIn-2.2 {Skips empty groups, lock} -setup {
         ted create NB1 NB2 BLUE SUNN SHIA KURD
         ted lock
-        rdb eval {UPDATE demog_g SET population = 0 WHERE g='SUNN'}
+        adb eval {UPDATE demog_g SET population = 0 WHERE g='SUNN'}
     } -body {
         lsort [demog gIn NB1]
     } -cleanup {
@@ -471,7 +471,7 @@ KURD 981        980.7692307692307
 
     test saIn-1.1 {SA Groups resident in n, PREP} -setup {
         ted create NB1 NB2 BLUE SUNN SHIA KURD
-        rdb eval {UPDATE civgroups SET sa_flag=1 WHERE g='SUNN'}
+        adb eval {UPDATE civgroups SET sa_flag=1 WHERE g='SUNN'}
     } -body {
         lsort [demog saIn NB1]
     } -cleanup {
@@ -480,7 +480,7 @@ KURD 981        980.7692307692307
     
     test saIn-1.2 {SA Groups resident in n, lock} -setup {
         ted create NB1 NB2 BLUE SUNN SHIA KURD
-        rdb eval {UPDATE civgroups SET sa_flag=1 WHERE g='SUNN'}
+        adb eval {UPDATE civgroups SET sa_flag=1 WHERE g='SUNN'}
         ted lock
     } -body {
         lsort [demog saIn NB1]
@@ -490,8 +490,8 @@ KURD 981        980.7692307692307
 
     test saIn-2.1 {Skips empty groups, PREP} -setup {
         ted create NB1 NB2 BLUE SUNN SHIA KURD
-        rdb eval {UPDATE civgroups SET sa_flag=1}
-        rdb eval {UPDATE civgroups SET basepop = 0 WHERE g='SUNN'}
+        adb eval {UPDATE civgroups SET sa_flag=1}
+        adb eval {UPDATE civgroups SET basepop = 0 WHERE g='SUNN'}
     } -body {
         lsort [demog saIn NB1]
     } -cleanup {
@@ -501,8 +501,8 @@ KURD 981        980.7692307692307
     test saIn-2.2 {Skips empty groups, lock} -setup {
         ted create NB1 NB2 BLUE SUNN SHIA KURD
         ted lock
-        rdb eval {UPDATE civgroups SET sa_flag=1}
-        rdb eval {UPDATE demog_g SET population = 0 WHERE g='SUNN'}
+        adb eval {UPDATE civgroups SET sa_flag=1}
+        adb eval {UPDATE demog_g SET population = 0 WHERE g='SUNN'}
     } -body {
         lsort [demog saIn NB1]
     } -cleanup {
@@ -514,7 +514,7 @@ KURD 981        980.7692307692307
 
     test nonSaIn-1.1 {SA Groups resident in n, PREP} -setup {
         ted create NB1 NB2 BLUE SUNN SHIA KURD
-        rdb eval {UPDATE civgroups SET sa_flag=1 WHERE g='SUNN'}
+        adb eval {UPDATE civgroups SET sa_flag=1 WHERE g='SUNN'}
     } -body {
         lsort [demog nonSaIn NB1]
     } -cleanup {
@@ -523,7 +523,7 @@ KURD 981        980.7692307692307
     
     test nonSaIn-1.2 {SA Groups resident in n, lock} -setup {
         ted create NB1 NB2 BLUE SUNN SHIA KURD
-        rdb eval {UPDATE civgroups SET sa_flag=1 WHERE g='SUNN'}
+        adb eval {UPDATE civgroups SET sa_flag=1 WHERE g='SUNN'}
         ted lock
     } -body {
         lsort [demog nonSaIn NB1]
@@ -533,7 +533,7 @@ KURD 981        980.7692307692307
 
     test nonSaIn-2.1 {Skips empty groups, PREP} -setup {
         ted create NB1 NB2 BLUE SUNN SHIA KURD
-        rdb eval {UPDATE civgroups SET basepop = 0 WHERE g='SUNN'}
+        adb eval {UPDATE civgroups SET basepop = 0 WHERE g='SUNN'}
     } -body {
         lsort [demog nonSaIn NB1]
     } -cleanup {
@@ -543,7 +543,7 @@ KURD 981        980.7692307692307
     test nonSaIn-2.2 {Skips empty groups, lock} -setup {
         ted create NB1 NB2 BLUE SUNN SHIA KURD
         ted lock
-        rdb eval {UPDATE demog_g SET population = 0 WHERE g='SUNN'}
+        adb eval {UPDATE demog_g SET population = 0 WHERE g='SUNN'}
     } -body {
         lsort [demog nonSaIn NB1]
     } -cleanup {

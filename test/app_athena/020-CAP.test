@@ -169,7 +169,7 @@ cost      1000.0
     } -body {
         ted order CAP:CREATE {*}$cbs longname ""
 
-        rdb onecolumn {SELECT longname FROM caps}
+        adb onecolumn {SELECT longname FROM caps}
     } -cleanup {
         cleanup
     } -result {CBS}
