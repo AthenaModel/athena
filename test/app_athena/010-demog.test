@@ -396,7 +396,7 @@ KURD 981        980.7692307692307
         econ setstate ENABLED
 
         ted create JOE BOB BLUE USAID NB1 NB2 SHIA SUNN KURD 
-        parmdb set demog.maxcommute NEAR
+        parm set demog.maxcommute NEAR
         rdb eval {UPDATE nbrel_mn SET proximity='REMOTE'}
         ted lock
     } -body {
@@ -413,7 +413,7 @@ KURD 981        980.7692307692307
     test econstats-1.4 {Workers won't travel, more unemployment} -setup {
         econ setstate ENABLED
         ted create JOE BOB BLUE USAID NB1 NB2 SHIA SUNN KURD 
-        parmdb set demog.maxcommute NEAR 
+        parm set demog.maxcommute NEAR 
         rdb eval {UPDATE nbrel_mn SET proximity='NEAR'}
         ted lock
     } -body {
