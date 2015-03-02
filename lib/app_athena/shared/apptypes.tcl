@@ -18,9 +18,12 @@
 # in view(sim).
 
 enum esector {
-    GOODS goods
-    POP   pop
-    ELSE  else
+    GOODS  goods
+    BLACK  black
+    POP    pop
+    ACTORS actors 
+    REGION region 
+    WORLD  world
 }
 
 # Top Items for contributions reports
