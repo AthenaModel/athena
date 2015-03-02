@@ -727,36 +727,41 @@ snit::type ted {
 
         # This is what we used to do to clean up after a test.
         # Instead, we just do [app new].
+
+        set adb [adb athenadb]
+
         if {[adb state] eq "RUNNING"} {
-            [adb athenadb] sim pause
+            $adb sim pause
         }
 
         if {[adb state] eq "PAUSED"} {
-            [adb athenadb] sim unlock
+            $adb sim unlock
         }
 
         foreach table $cleanupTables {
-            adb eval "DELETE FROM $table;" 
+            $adb eval "DELETE FROM $table;" 
         }
 
         # So that automatically generated IDs start over at 1.
         # Note that SQLite adds this table as needed.
         catch {
-            adb eval {DELETE FROM main.sqlite_sequence}
+            $adb eval {DELETE FROM main.sqlite_sequence}
         }
 
-        # Can we just do an "adb reset" here?
-        [adb athenadb] order reset
-        [adb athenadb] bean reset
-        nbhood   dbsync
-        parm     reset
-        bsys     clear
-        econ     reset
+        # Q: Can we just do an "adb reset" here?
+        # A: Tried it; it wasn't quite right, and seemed to be much
+        # slower.  More work is needed.
+        $adb order    reset
+        $adb bean     reset
+        $adb nbhood   dbsync
+        $adb parm     reset
+        $adb bsys     clear
+        $adb econ     reset
+        $adb aram     clear
+        $adb aam      reset
+        $adb abevent  reset
+        $adb strategy reset
         simclock reset
-        aram     clear
-        aam      reset
-        abevent  reset
-        strategy reset
     }
 
     # sendex ?-error? command...

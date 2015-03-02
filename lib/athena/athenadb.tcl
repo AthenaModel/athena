@@ -565,6 +565,11 @@ snit::type ::athena::athenadb {
         # is OK.)
         $executive reset
 
+        # NEXT, clear any old transient data out of modules.
+        $aram    clear
+        $aam     reset
+        $abevent reset
+
         $self FinishOpeningScenario
     }
 
