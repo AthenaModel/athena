@@ -123,13 +123,13 @@ snit::type ::athena::nbrel {
             -loadcmd {$order_ keyload id *}
 
         rcc "Proximity:" -for proximity
-        enum proximity -listcmd {ptype prox-HERE names}
+        enum proximity -listcmd {$adb_ ptype prox-HERE names}
     }
 
 
     method _validate {} {
         my prepare id            -toupper  -required -type nbrel
-        my prepare proximity     -toupper            -type {ptype prox-HERE}
+        my prepare proximity     -toupper            -type [list $adb ptype prox-HERE]
     
         my returnOnError
     
@@ -163,13 +163,13 @@ snit::type ::athena::nbrel {
             -loadcmd {$order_ multiload ids *}
 
         rcc "Proximity:" -for proximity
-        enum proximity -listcmd {ptype prox-HERE names}
+        enum proximity -listcmd {$adb_ ptype prox-HERE names}
     }
 
 
     method _validate {} {
         my prepare ids           -toupper  -required -listof nbrel
-        my prepare proximity     -toupper            -type {ptype prox-HERE}
+        my prepare proximity     -toupper            -type [list $adb ptype prox-HERE]
     
         my returnOnError
     

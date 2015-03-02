@@ -57,7 +57,7 @@
             }
 
             rc
-            enumlonglist glist -dictcmd {::ptype fog namedict} \
+            enumlonglist glist -dictcmd {$adb_ ptype fog namedict} \
                 -width 30 -height 10 
         }
 
@@ -226,7 +226,7 @@
     method validate {gdict} { 
         set glist [dict get $gdict glist]
 
-        dict create glist [my val_list "groups" {ptype fog validate} $glist]
+        dict create glist [my val_list "groups" [list $adb ptype fog validate] $glist]
     }
 
     method narrative {gdict {opt ""}} {

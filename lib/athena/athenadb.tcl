@@ -128,6 +128,7 @@ snit::type ::athena::athenadb {
     component parm           -public parm           ;# model parameter DB
     component paster         -public paste          ;# paste manager
     component pot            -public pot            ;# beanpot(n)
+    component ptype          -public ptype          ;# app level type validators
     component ruleset        -public ruleset        ;# rule set manager
     component sanity         -public sanity         ;# sanity checker
     component sim            -public sim            ;# Simulation Control
@@ -303,6 +304,7 @@ snit::type ::athena::athenadb {
             payload                     \
             plant                       \
             personnel                   \
+            ptype                       \
             rebase                      \
             {ruleset  ruleset_manager}  \
             sanity                      \

@@ -1331,7 +1331,7 @@ snit::type ::athena::executive {
     method Fn_supports {a b args} {
         # FIRST, handle the playbox case.
         set a [$adb actor validate [string toupper $a]]
-        set b [ptype a+self+none validate [string toupper $b]]
+        set b [$adb ptype a+self+none validate [string toupper $b]]
 
         if {$b eq $a} {
             set b SELF
@@ -1380,7 +1380,7 @@ snit::type ::athena::executive {
     # number of troops g has in those neighborhoods.
 
     method Fn_troops {g args} {
-        set g [ptype fog validate [string toupper $g]]
+        set g [$adb ptype fog validate [string toupper $g]]
 
         # FIRST, handle the playbox case
         if {[llength $args] == 0} {

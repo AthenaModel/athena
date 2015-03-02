@@ -66,7 +66,7 @@
         # a
         if {$a eq ""} {
             dict set errdict a "No actor selected."
-        } elseif {$a ni [ptype a+self+none names]} {
+        } elseif {$a ni [[my adb] ptype a+self+none names]} {
             dict set errdict a "No such actor: \"$a\"."
         }
 
@@ -231,7 +231,7 @@
         cap cap
         
         rcc "Attr. Source:" -for a
-        enum a -listcmd {ptype a+self+none names} -defvalue SELF
+        enum a -listcmd {$adb_ ptype a+self+none names} -defvalue SELF
 
         rcc "Message ID:" -for iom
         enumlong iom -showkeys yes -dictcmd {$adb iom normal namedict}

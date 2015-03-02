@@ -158,7 +158,7 @@
         frac coverage
 
         rcc "Resolver:" -for resolver
-        enum resolver -listcmd {ptype g+none names}
+        enum resolver -listcmd {$adb_ ptype g+none names}
 
         rcc "Duration:" -for duration
         text duration

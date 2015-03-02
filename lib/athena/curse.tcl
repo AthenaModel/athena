@@ -589,7 +589,7 @@ snit::type ::athena::curse {
         text longname -width 60
 
         rcc "Cause:" -for cause
-        enum cause -listcmd {ptype ecause+unique names} -defvalue UNIQUE
+        enum cause -listcmd {$adb_ ptype ecause+unique names} -defvalue UNIQUE
 
         rcc "Here Factor:" -for s
         frac s -defvalue 1.0
@@ -606,7 +606,7 @@ snit::type ::athena::curse {
         my prepare curse_id  -toupper   -required -type ident
         my unused curse_id
         my prepare longname  -normalize
-        my prepare cause     -toupper   -required -type {ptype ecause+unique}
+        my prepare cause     -toupper   -required -type [list $adb ptype ecause+unique]
         my prepare s         -num       -required -type rfraction
         my prepare p         -num       -required -type rfraction
         my prepare q         -num       -required -type rfraction
@@ -689,7 +689,7 @@ snit::type ::athena::curse {
         text longname -width 60
 
         rcc "Cause:" -for cause
-        enum cause -listcmd {ptype ecause+unique names}
+        enum cause -listcmd {$adb_ ptype ecause+unique names}
 
         rcc "Here Factor:" -for s
         frac s
@@ -704,7 +704,7 @@ snit::type ::athena::curse {
     method _validate {} {
         my prepare curse_id  -toupper   -required -type [list $adb curse]
         my prepare longname  -normalize
-        my prepare cause     -toupper             -type {ptype ecause+unique}
+        my prepare cause     -toupper             -type [list $adb ptype ecause+unique]
         my prepare s         -num                 -type rfraction
         my prepare p         -num                 -type rfraction
         my prepare q         -num                 -type rfraction

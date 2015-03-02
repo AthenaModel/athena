@@ -655,7 +655,7 @@ snit::type ::athena::absit {
         yesno inception -defvalue 1
 
         rcc "Resolver:" -for resolver
-        enum resolver -listcmd {ptype g+none names} -defvalue NONE
+        enum resolver -listcmd {$adb_ ptype g+none names} -defvalue NONE
 
         rcc "Duration:" -for rduration
         text rduration
@@ -672,7 +672,7 @@ snit::type ::athena::absit {
         my prepare stype     -toupper   -required -type eabsit
         my prepare coverage  -num       -required -type rfraction
         my prepare inception -toupper   -required -type boolean
-        my prepare resolver  -toupper   -required -type {ptype g+none}
+        my prepare resolver  -toupper   -required -type [list $adb ptype g+none]
         my prepare rduration -num                 -type iticks
     
         my returnOnError
@@ -785,7 +785,7 @@ snit::type ::athena::absit {
         yesno inception
 
         rcc "Resolver:" -for resolver
-        enum resolver -listcmd {ptype g+none names}
+        enum resolver -listcmd {$adb_ ptype g+none names}
 
         rcc "Duration:" -for duration
         text rduration
@@ -811,7 +811,7 @@ snit::type ::athena::absit {
         my prepare stype     -toupper  -type eabsit
         my prepare coverage  -num      -type rfraction
         my prepare inception -toupper  -type boolean
-        my prepare resolver  -toupper  -type {ptype g+none}
+        my prepare resolver  -toupper  -type [list $adb ptype g+none]
         my prepare rduration -num      -type iticks
     
         my returnOnError
@@ -901,7 +901,7 @@ snit::type ::athena::absit {
             -loadcmd {$order_ keyload s *}
 
         rcc "Resolved By:" -for resolver
-        enum resolver -listcmd {ptype g+none names}
+        enum resolver -listcmd {$adb_ ptype g+none names}
     }
 
     meta parmtags {
@@ -911,7 +911,7 @@ snit::type ::athena::absit {
     method _validate {} {
         # FIRST, prepare the parameters
         my prepare s         -required -type [list $adb absit live]
-        my prepare resolver  -toupper  -type {ptype g+none}
+        my prepare resolver  -toupper  -type [list $adb ptype g+none]
     }
 
     method _execute {{flunky ""}} {

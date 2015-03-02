@@ -56,6 +56,5 @@ source [file join $::app_athena_shared::library appserver_bsystems.tcl ]
 source [file join $::app_athena_shared::library appserver_topics.tcl   ]
 source [file join $::app_athena_shared::library apptypes.tcl           ]
 source [file join $::app_athena_shared::library gradient.tcl           ]
-source [file join $::app_athena_shared::library ptype.tcl              ]
 source [file join $::app_athena_shared::library view.tcl               ]
 
