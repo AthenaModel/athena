@@ -1276,7 +1276,7 @@ snit::type ::athena::autogen {
                 [list block_id $bid {*}$args]
         }
 
-        return [pot get $bid]
+        return [$adb bean get $bid]
     }
 
     # AddTactic ttype block args

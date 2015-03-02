@@ -1934,10 +1934,10 @@ snit::type ::athena::executive {
             set block_id [$self LastBean ::athena::block]
         }
 
-        $adb pot valclass ::athena::block $block_id
+        $adb bean valclass ::athena::block $block_id
 
         # NEXT, get the block data
-        set block [$adb pot get $block_id]
+        set block [$adb bean get $block_id]
 
         set dict [parmdict2optdict [$block view cget]]
 
@@ -2030,10 +2030,10 @@ snit::type ::athena::executive {
             set condition_id [$self LastBean ::athena::condition]
         }
 
-        $adb pot valclass ::athena::condition $condition_id
+        $adb bean valclass ::athena::condition $condition_id
 
         # NEXT, get the condition data
-        set condition [$adb pot get $condition_id]
+        set condition [$adb bean get $condition_id]
 
         set dict [parmdict2optdict [$condition view cget]]
 
@@ -2062,7 +2062,7 @@ snit::type ::athena::executive {
             set condition_id [$self LastBean ::athena::condition]
         }
 
-        $adb pot valclass ::athena::condition $condition_id
+        $adb bean valclass ::athena::condition $condition_id
 
         # NEXT, configure it
         $adb order transaction "condition configure..." {
@@ -2079,7 +2079,7 @@ snit::type ::athena::executive {
     # CONDITION:UPDATE send options plus -state.
 
     method ConditionUpdate {condition_id opts} {
-        set c [$adb pot get $condition_id]
+        set c [$adb bean get $condition_id]
 
         set state [from opts -state ""]
 
@@ -2220,7 +2220,7 @@ snit::type ::athena::executive {
     # the given bean class, or "" if none.
 
     method LastBean {cls} {
-        set last [lindex [$adb pot ids $cls] end]
+        set last [lindex [$adb bean ids $cls] end]
 
         if {$last eq ""} {
             set kind [namespace tail $cls]
@@ -2349,7 +2349,7 @@ snit::type ::athena::executive {
         set order [string toupper $order]
 
         # NEXT, determine the order mode.
-        if {[flunky state] eq "TACTIC"} {
+        if {[$adb state] eq "TACTIC"} {
             $adb order send private $order {*}$args
         } else {
             $adb order send normal $order {*}$args
@@ -2407,10 +2407,10 @@ snit::type ::athena::executive {
             set tactic_id [$self LastBean ::athena::tactic]
         }
 
-        $adb pot valclass ::athena::tactic $tactic_id
+        $adb bean valclass ::athena::tactic $tactic_id
 
         # NEXT, get the tactic data
-        set tactic [$adb pot get $tactic_id]
+        set tactic [$adb bean get $tactic_id]
 
         set dict [parmdict2optdict [$tactic view cget]]
 
@@ -2439,7 +2439,7 @@ snit::type ::athena::executive {
             set tactic_id [$self LastBean ::athena::tactic]
         }
 
-        $adb pot valclass ::athena::tactic $tactic_id
+        $adb bean valclass ::athena::tactic $tactic_id
 
         # NEXT, configure it
         $adb order transaction "tactic configure..." {
@@ -2456,7 +2456,7 @@ snit::type ::athena::executive {
     # TACTIC:UPDATE send options plus -state.
 
     method TacticUpdate {tactic_id opts} {
-        set c [$adb pot get $tactic_id]
+        set c [$adb bean get $tactic_id]
 
         set state [from opts -state ""]
 

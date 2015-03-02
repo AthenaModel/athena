@@ -106,7 +106,7 @@
         my prepare condition_id -required -with [list $adb strategy valclass ::athena::condition::COMPARE]
         my returnOnError
 
-        set cond [$adb pot get $parms(condition_id)]
+        set cond [$adb bean get $parms(condition_id)]
 
         my prepare name         -toupper  -with [list $cond valName]
         my prepare x                      
@@ -115,7 +115,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set cond [$adb pot get $parms(condition_id)]
+        set cond [$adb bean get $parms(condition_id)]
         my setundo [$cond update_ {name x comp y} [array get parms]]\
     }
 }

@@ -746,14 +746,14 @@ snit::type ted {
         }
 
         # Can we just do an "adb reset" here?
+        [adb athenadb] order reset
+        [adb athenadb] bean reset
         nbhood   dbsync
-        adb order   reset
         parm     reset
         bsys     clear
         econ     reset
         simclock reset
         aram     clear
-        pot      reset
         aam      reset
         abevent  reset
         strategy reset
@@ -895,6 +895,14 @@ snit::type ted {
     #-------------------------------------------------------------------
     # Strategy Helpers
 
+    # newbean cls args
+    #
+    # Creates a new bean within the scenario being tested.
+
+    typemethod newbean {cls args} {
+        [adb athenadb] bean new $cls {*}$args
+    }
+
     # addblock agent ?parm value...?
     #
     # agent  - An agent name
@@ -909,7 +917,7 @@ snit::type ted {
             ted order BLOCK:UPDATE block_id $bid {*}$args
         }
 
-        return [pot get $bid]
+        return [adb bean get $bid]
     }
 
     # addcondition block typename ?parm value...?
@@ -928,7 +936,7 @@ snit::type ted {
             ted order CONDITION:${typename} condition_id $cid {*}$args
         }
 
-        return [pot get $cid]
+        return [adb bean get $cid]
     }
 
     # addtactic block typename ?parm value...?
@@ -947,7 +955,7 @@ snit::type ted {
             ted order TACTIC:${typename} tactic_id $tid {*}$args
         }
 
-        return [pot get $tid]
+        return [adb bean get $tid]
     }
 
     # deploy n g personnel

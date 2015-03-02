@@ -249,7 +249,7 @@
         my returnOnError
 
         # NEXT, get the tactic
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
 
         # NEXT, the parameters
         my prepare name     -toupper   -with [list $tactic valName]
@@ -260,7 +260,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
         ::athena::fillparms parms [$tactic view]
         my setundo [$tactic update_ {name cap a iom cost} [array get parms]]
     }

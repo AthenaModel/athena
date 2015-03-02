@@ -261,7 +261,7 @@
             -with [list $adb strategy valclass ::athena::tactic::CURSE]
         my returnOnError
 
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
 
         # More validation takes place on sanity check
         my prepare name  -toupper   -with [list $tactic valName]
@@ -270,7 +270,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
         my setundo [$tactic update_ {name curse roles} [array get parms]]
     }
 }

@@ -140,13 +140,13 @@
         my prepare command             -type tclscript
         my returnOnError 
 
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
 
         my prepare name  -toupper  -with [list $tactic valName]
     }
 
     method _execute {{flunky ""}} {
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
         my setundo [$tactic update_ {name command} [array get parms]]
     }
 }

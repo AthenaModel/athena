@@ -97,7 +97,7 @@ namespace eval ::athena_test::tests:: {
     test constructor-1.2 {can set options} -setup {
         setup -valid
     } -body {
-        set T1 [pot new ::athena::tactic::FUND -a DUMMY]
+        set T1 [ted newbean ::athena::tactic::FUND -a DUMMY]
         $T1 get a
     } -cleanup {
         cleanup

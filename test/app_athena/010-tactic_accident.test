@@ -88,7 +88,7 @@ namespace eval ::athena_test::tests:: {
     test constructor-1.2 {can set options} -setup {
         setup
     } -body {
-        set T1 [pot new ::athena::tactic::ACCIDENT -parent DUMMY]
+        set T1 [ted newbean ::athena::tactic::ACCIDENT -parent DUMMY]
         $T1 get parent
     } -cleanup {
         cleanup

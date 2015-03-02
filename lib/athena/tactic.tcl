@@ -254,7 +254,7 @@ oo::define ::athena::tactic {
     # The fully qualified name of the tactic
 
     method fullname {} {
-        return "[[pot get [my get parent]] fullname]/[my get name]"
+        return "[[[my pot] get $parent] fullname]/$name"
     }
 
     # typename
@@ -734,7 +734,7 @@ oo::define ::athena::tactic {
     }
 
     method _execute {{flunky ""}} {
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
         my setundo [$tactic update_ {state} [array get parms]]
     }
 }

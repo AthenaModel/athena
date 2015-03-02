@@ -74,7 +74,7 @@ namespace eval ::athena_test::tests:: {
     test constructor-1.2 {can set options} -setup {
         setup
     } -body {
-        set C1 [pot new ::athena::condition::EXPR -parent DUMMY]
+        set C1 [ted newbean ::athena::condition::EXPR -parent DUMMY]
         $C1 get parent
     } -cleanup {
         cleanup

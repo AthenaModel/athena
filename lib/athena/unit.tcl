@@ -119,7 +119,7 @@ snit::type ::athena::unit {
             FROM units
             WHERE tactic_id > 0
         } {
-            if {![$adb pot hasa ::athena::tactic $tactic_id]} {
+            if {![$adb bean hasa ::athena::tactic $tactic_id]} {
                 $self delete $u
             }
         }

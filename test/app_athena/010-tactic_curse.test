@@ -202,7 +202,7 @@ namespace eval ::athena_test::tests:: {
     test constructor-1.2 {can set options} -setup {
         setup
     } -body {
-        set T1 [pot new ::athena::tactic::CURSE -curse DUMMY]
+        set T1 [ted newbean ::athena::tactic::CURSE -curse DUMMY]
         $T1 get curse
     } -cleanup {
         cleanup

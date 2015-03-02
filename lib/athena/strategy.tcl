@@ -89,8 +89,8 @@ snit::type ::athena::strategy_manager {
     method dbsync {} {
         array unset cache
 
-        foreach id [$adb pot ids ::athena::strategy] {
-            set s [$adb pot get $id]
+        foreach id [$adb bean ids ::athena::strategy] {
+            set s [$adb bean get $id]
             set cache([$s agent]) $id 
         }
     }
@@ -134,7 +134,7 @@ snit::type ::athena::strategy_manager {
         set short [namespace tail $cls]
 
         # NEXT, check id against bean IDs of this class
-        set bean_ids [$adb pot ids $cls]
+        set bean_ids [$adb bean ids $cls]
         if {$id in $bean_ids} {
             return $id
         }
@@ -148,7 +148,7 @@ snit::type ::athena::strategy_manager {
 
         # NEXT, if the ID belongs to a bean of the wrong class, throw 
         # INVALID
-        if {![$adb pot hasa $cls $retval]} {
+        if {![$adb bean hasa $cls $retval]} {
             throw INVALID "Invalid $short ID: \"$id\""
         }
 
@@ -219,7 +219,7 @@ snit::type ::athena::strategy_manager {
             return $block_id
         }
 
-        set block [$adb pot get $block_id]
+        set block [$adb bean get $block_id]
 
         # NEXT, see if the name is a tactic, return ID of first match
         foreach tactic [$block tactics] {
@@ -515,7 +515,7 @@ snit::type ::athena::strategy_manager {
             return ""
         }
         
-        return [$adb pot get $cache($agent)]
+        return [$adb bean get $cache($agent)]
     }
     
 
@@ -530,10 +530,10 @@ snit::type ::athena::strategy_manager {
     # mutator is used on creation of an agent entity (i.e., an actor).
 
     method create_ {agent} {
-        set s [$adb pot new ::athena::strategy $agent]
+        set s [$adb bean new ::athena::strategy $agent]
         set cache($agent) [$s id]
 
-        return [list $adb pot delete [$s id]]
+        return [list $adb bean delete [$s id]]
     }
 
     # delete_ agent
@@ -546,7 +546,7 @@ snit::type ::athena::strategy_manager {
     method delete_ {agent} {
         set s [$self getname $agent]
 
-        return [list $adb pot undelete [$adb pot delete [$s id]]]        
+        return [list $adb bean undelete [$adb bean delete [$s id]]]        
     }
 }
 
@@ -763,7 +763,7 @@ oo::class create ::athena::strategy {
         set s [$adb strategy getname $parms(agent)]
 
         if {[info exists block_id]} {
-            $adb pot setnextid $block_id
+            $adb bean setnextid $block_id
         }
 
         my setundo [$s addblock_]
@@ -791,7 +791,7 @@ oo::class create ::athena::strategy {
     method _execute {{flunky ""}} {
         set undo [list]
         foreach bid $parms(ids) {
-            set block [$adb pot get $bid]
+            set block [$adb bean get $bid]
             set s [$block strategy]
             lappend undo [$s deleteblock_ $bid]
         }
@@ -815,7 +815,7 @@ oo::class create ::athena::strategy {
     }
 
     method _execute {{flunky ""}} {
-        set block [$adb pot get $parms(block_id)]
+        set block [$adb bean get $parms(block_id)]
         set s [$block strategy]
         my setundo [$s moveblock_ $parms(block_id) $parms(where)]
     }

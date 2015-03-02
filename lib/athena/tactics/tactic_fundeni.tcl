@@ -352,7 +352,7 @@
             -with [list $adb strategy valclass ::athena::tactic::FUNDENI]
         my returnOnError
 
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
 
         # FIRST, prepare and validate the parameters
         my prepare name    -toupper -with [list $tactic valName]
@@ -379,7 +379,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
         my setundo [$tactic update_ {
             name glist cmode mode amount percent los
         } [array get parms]]

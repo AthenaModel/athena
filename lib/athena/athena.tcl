@@ -138,9 +138,9 @@ snit::type ::athena::athena {
     delegate method unsaved              to adb
     delegate method version              to adb
     delegate method contribs             to adb as {aram contribs}
-    delegate method {bean get}           to adb as {pot get}
-    delegate method {bean ids}           to adb as {pot ids}
-    delegate method {bean has}           to adb as {pot has}
+    delegate method {bean get}           to adb as {bean get}
+    delegate method {bean has}           to adb as {bean has}
+    delegate method {bean ids}           to adb as {bean ids}
 
     # RDB
     #

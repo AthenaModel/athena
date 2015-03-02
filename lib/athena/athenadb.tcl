@@ -127,7 +127,7 @@ snit::type ::athena::athenadb {
     component hist           -public hist           ;# results history
     component parm           -public parm           ;# model parameter DB
     component paster         -public paste          ;# paste manager
-    component pot            -public pot            ;# beanpot(n)
+    component pot            -public bean           ;# beanpot(n)
     component ruleset        -public ruleset        ;# rule set manager
     component sanity         -public sanity         ;# sanity checker
     component sim            -public sim            ;# Simulation Control
@@ -320,7 +320,6 @@ snit::type ::athena::athenadb {
         # TBD: These will go away once the transition to library code
         # is complete.
         interp alias {} ::aram   {} $aram
-        interp alias {} ::pot    {} $pot
         interp alias {} ::rdb    {} $rdb
 
         # NEXT, register the ones that are saveables.  This will change
