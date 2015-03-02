@@ -63,7 +63,7 @@ snit::type ::athena::stance {
     # see the WARNING in the file header for details.
 
     method reset {} {
-        rdb eval {
+        $adb eval {
             DELETE FROM stance_fg;
             DELETE FROM stance_nfg;
         }

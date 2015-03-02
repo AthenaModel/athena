@@ -235,7 +235,7 @@
         }
 
         # NEXT, get the related neighborhoods.
-        set nbhoods [rdb eval "
+        set nbhoods [[my adb] eval "
             SELECT DISTINCT n 
             FROM civgroups
             WHERE g IN ('[join $trans(glist) ',']')

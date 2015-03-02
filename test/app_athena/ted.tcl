@@ -728,39 +728,37 @@ snit::type ted {
         # This is what we used to do to clean up after a test.
         # Instead, we just do [app new].
 
-        set adb [adb athenadb]
-
-        if {[adb state] eq "RUNNING"} {
-            $adb sim pause
+        if {[tdb state] eq "RUNNING"} {
+            tdb sim pause
         }
 
-        if {[adb state] eq "PAUSED"} {
-            $adb sim unlock
+        if {[tdb state] eq "PAUSED"} {
+            tdb sim unlock
         }
 
         foreach table $cleanupTables {
-            $adb eval "DELETE FROM $table;" 
+            tdb eval "DELETE FROM $table;" 
         }
 
         # So that automatically generated IDs start over at 1.
         # Note that SQLite adds this table as needed.
         catch {
-            $adb eval {DELETE FROM main.sqlite_sequence}
+            tdb eval {DELETE FROM main.sqlite_sequence}
         }
 
-        # Q: Can we just do an "adb reset" here?
+        # Q: Can we just do an "tdb reset" here?
         # A: Tried it; it wasn't quite right, and seemed to be much
         # slower.  More work is needed.
-        $adb order    reset
-        $adb bean     reset
-        $adb nbhood   dbsync
-        $adb parm     reset
-        $adb bsys     clear
-        $adb econ     reset
-        $adb aram     clear
-        $adb aam      reset
-        $adb abevent  reset
-        $adb strategy reset
+        tdb order    reset
+        tdb bean     reset
+        tdb nbhood   dbsync
+        tdb parm     reset
+        tdb bsys     clear
+        tdb econ     reset
+        tdb aram     clear
+        tdb aam      reset
+        tdb abevent  reset
+        tdb strategy reset
         simclock reset
     }
 
@@ -901,19 +899,19 @@ snit::type ted {
     # Attitude Helpers
 
     typemethod coop {args} {
-        [adb athenadb] aram coop {*}$args
+        tdb aram coop {*}$args
     }
 
     typemethod hrel {args} {
-        [adb athenadb] aram hrel {*}$args
+        tdb aram hrel {*}$args
     }
 
     typemethod sat {args} {
-        [adb athenadb] aram sat {*}$args
+        tdb aram sat {*}$args
     }
 
     typemethod vrel {args} {
-        [adb athenadb] aram vrel {*}$args
+        tdb aram vrel {*}$args
     }
     
     #-------------------------------------------------------------------
@@ -924,7 +922,7 @@ snit::type ted {
     # Creates a new bean within the scenario being tested.
 
     typemethod newbean {cls args} {
-        [adb athenadb] bean new $cls {*}$args
+        tdb bean new $cls {*}$args
     }
 
     # addblock agent ?parm value...?
@@ -1430,4 +1428,12 @@ snit::type ted {
 }
 
 
+# tdb subcommand ?...?
+#
+# Calls the test scenario.
 
+proc tdb {args} {
+    set adb [adb athenadb]
+
+    uplevel 1 [list $adb {*}$args]
+}

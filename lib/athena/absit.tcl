@@ -99,7 +99,7 @@ snit::type ::athena::absit {
         }
 
         # NEXT, assess all absits.
-        rdb eval {
+        $adb eval {
             SELECT * FROM absits ORDER BY s
         } sit {
             set dtype $sit(stype)

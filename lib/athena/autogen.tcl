@@ -744,9 +744,9 @@ snit::type ::athena::autogen {
         # overridden
         set proj [maprect %AUTO%]
 
-        # NEXT, get the map projection data from the rdb
+        # NEXT, get the map projection data from the $adb
         # if it exists.
-        rdb eval {
+        $adb eval {
             SELECT * FROM maps WHERE id=1
         } row {
             $proj configure -width $row(width)   \

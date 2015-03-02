@@ -277,7 +277,7 @@
         # NEXT, filter out any neighborhoods that have no infrastructure
         # owned by the actor
         # NOTE: non-local neighborhoods will also get filtered out here.
-        set nbhoodsWithPlants [rdb eval {
+        set nbhoodsWithPlants [[my adb] eval {
             SELECT n FROM plants_na
             WHERE a = $owner
         }]
