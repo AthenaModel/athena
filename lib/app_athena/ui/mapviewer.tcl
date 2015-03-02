@@ -554,7 +554,7 @@ snit::widget mapviewer {
     method ZoomBoxSet {} {
         scan $view(zoom) "%d" factor
         $canvas zoom $factor
-        if {[map image] eq ""} {
+        if {$mapimage eq ""} {
             $self DefaultMap $factor
         }
     }
