@@ -80,8 +80,8 @@ namespace eval ::athena_test::tests:: {
     # Creates an abstract event and then assesses it.
 
     proc mkevent {dtype args} {
-        abevent add $dtype NB1 0.5 {*}$args
-        abevent assess
+        tdb abevent add $dtype NB1 0.5 {*}$args
+        tdb abevent assess
     }
         
     # inputs

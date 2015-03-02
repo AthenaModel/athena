@@ -268,7 +268,6 @@ snit::type ::athena::athenadb {
 
         $self MakeComponentsWithGlobal  \
             aam                         \
-            abevent                     \
             absit                       \
             activity                    \
             actor                       \
@@ -315,6 +314,9 @@ snit::type ::athena::athenadb {
             stance                      \
             unit                        \
             vrel
+
+        $self MakeComponents            \
+            abevent
 
         # NEXT, register the ones that are saveables.  This will change
         # when the transition to library code is complete.

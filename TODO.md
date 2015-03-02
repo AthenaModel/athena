@@ -1,7 +1,6 @@
 # TODO.md - Athena TODO List
 
-- Removing ::flunky:
-  - order_dialog wants a simple command, not a prefix.
+- Why is there no 010-abevent.test?
 - Remove global singleton names:
   - Revise remaining app code to not use them.
   - Remove all such aliases, and see what breaks.

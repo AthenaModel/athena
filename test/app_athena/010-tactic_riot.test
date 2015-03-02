@@ -172,7 +172,7 @@ namespace eval ::athena_test::tests:: {
             -coverage 0.75
     } -body {
         $T1 execute
-        ted pdicts [lindex [abevent pending] 0]
+        ted pdicts [lindex [tdb abevent pending] 0]
     } -cleanup {
         cleanup
     } -match dict -result {
@@ -189,7 +189,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         $T1 execute
         $T1 execute
-        llength [abevent pending]
+        llength [tdb abevent pending]
     } -cleanup {
         cleanup
     } -result {2}
