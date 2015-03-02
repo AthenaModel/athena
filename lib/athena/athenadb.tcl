@@ -266,7 +266,7 @@ snit::type ::athena::athenadb {
         # types/classes with instances; each instance takes one argument,
         # the athenadb(n) handle.
 
-        $self MakeComponents            \
+        $self MakeComponentsWithGlobal  \
             aam                         \
             abevent                     \
             absit                       \
@@ -286,8 +286,8 @@ snit::type ::athena::athenadb {
             curse                       \
             demog                       \
             econ                        \
-            exporter                    \
             executive                   \
+            exporter                    \
             frcgroup                    \
             group                       \
             hist                        \
@@ -347,8 +347,7 @@ snit::type ::athena::athenadb {
     # component...  - A list of component names.
     #
     # Creates instances for a list of components, all of which take one
-    # constructor argument, the athenadb(n) instance.  For now, also
-    # defines global entry points.
+    # constructor argument, the athenadb(n) instance.
 
     method MakeComponents {args} {
         foreach pair $args {
@@ -360,8 +359,23 @@ snit::type ::athena::athenadb {
 
 
             install $comp using ::athena::${module} ${selfns}::$comp $self
+        }
+    }
 
-            # TBD: The alias will go away once the conversion is complete.
+    # MakeComponentsWithGlobal component...
+    #
+    # component...  - A list of component names.
+    #
+    # Creates instances for a list of components, all of which take one
+    # constructor argument, the athenadb(n) instance.  Also
+    # defines global entry points.
+
+    method MakeComponentsWithGlobal {args} {
+        $self MakeComponents {*}$args
+
+        foreach pair $args {
+            lassign $pair comp module
+
             interp alias {} ::${comp} {} [set $comp]
         }
     }
@@ -1005,6 +1019,14 @@ snit::type ::athena::athenadb {
         notifier send $subject $event {*}$args
     }
 
+    # tkloaded
+    #
+    # Returns 1 if Tk is loaded, and 0 otherwise.
+
+    method tkloaded {} {
+        return [expr {[info command "tk"] ne ""}]
+    }
+
     # version
     #
     # Returns the package version.
@@ -1012,6 +1034,52 @@ snit::type ::athena::athenadb {
     method version {} {
         return [package present athena]
     }
+
+    #-------------------------------------------------------------------
+    # Order Dialog Entry
+
+    # enter options...
+    #
+    # -order        - Order name, e.g., MY:ORDER
+    # -parmdict     - Dictionary of initial parameter values
+    # -master       - Master window
+    # -appname      - Application name for dialog title
+    # -helpcmd      - Help command
+    #
+    # If tk is loaded, pops up an order dialog.
+
+    method enter {args} {
+        require {[$self tkloaded]} \
+            "Command unavailable; this is not a Tk app."
+
+        array set opts {
+            -order    ""
+            -parmdict {}
+            -master   ""
+            -appname  ""
+            -helpcmd  ""
+        }
+
+        foroption opt args -all {
+            -order    -
+            -parmdict -
+            -master   -
+            -appname  -
+            -helpcmd {
+                set opts($opt) [lshift args]
+            }
+        }
+
+        order_dialog enter \
+            -resources [dict create adb_ $self db_ $self] \
+            -flunky    $flunky                            \
+            -refreshon {
+                ::adb.flunky <Sync>
+                ::adb        <Tick>
+                ::adb        <Sync>
+            } {*}[array get opts]
+    }
+    
 
     #-------------------------------------------------------------------
     # URAM-related routines.

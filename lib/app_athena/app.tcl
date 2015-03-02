@@ -724,19 +724,12 @@ snit::type app {
 
         set order [string toupper $order]
 
-        order_dialog enter \
-            -resources [dict create adb_ [::adb athenadb] db_ ::adb] \
+        adb enter \
+            -order     $order                      \
             -parmdict  $parmdict                   \
             -appname   "Athena [kiteinfo version]" \
-            -flunky    ::flunky                    \
-            -order     $order                      \
             -master    [app topwin]                \
-            -helpcmd   [list app help]             \
-            -refreshon {
-                ::adb.flunky <Sync>
-                ::adb        <Tick>
-                ::adb        <Sync>
-            }
+            -helpcmd   [list app help]
     }
 
     # show uri
