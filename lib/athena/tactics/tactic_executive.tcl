@@ -60,8 +60,8 @@
         # FIRST, set the order state to TACTIC, so that
         # relevant orders can be executed.
 
-        set oldState [flunky state]
-        [my adb] flunky state TACTIC
+        set oldState [[my adb] order state]
+        [my adb] order state TACTIC
             
         # NEXT, create a savepoint, so that we can back out
         # the command's changes on error.
@@ -79,7 +79,7 @@
             [my adb] eval {ROLLBACK TO executive}
 
             # NEXT, restore the old order state
-            [my adb] flunky state $oldState
+            [my adb] order state $oldState
 
             # NEXT, log failure.
             [my adb] sigevent log error tactic "
@@ -99,7 +99,7 @@
         [my adb] eval {RELEASE executive}
 
         # NEXT, restore the old order state
-        [my adb] flunky state $oldState
+        [my adb] order state $oldState
 
         # NEXT, log success
         [my adb] sigevent log 1 tactic "

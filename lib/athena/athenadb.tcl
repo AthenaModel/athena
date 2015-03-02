@@ -122,7 +122,7 @@ snit::type ::athena::athenadb {
     component autogen        -public autogen        ;# Scenario auto-generator
     component executive      -public executive      ;# executive command processor
     component exporter       -public export         ;# exporter
-    component flunky         -public flunky         ;# athena_flunky(n)
+    component flunky         -public order          ;# athena_flunky(n)
     component gofer          -public gofer          ;# gofer
     component hist           -public hist           ;# results history
     component parm           -public parm           ;# model parameter DB

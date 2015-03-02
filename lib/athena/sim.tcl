@@ -84,7 +84,7 @@ snit::type ::athena::sim {
         set info(changed)  0
         set info(stoptime) 0
 
-        $adb flunky state $info(state)
+        $adb order state $info(state)
 
         simclock configure \
             -week0 $constants(startdate) \
@@ -450,7 +450,7 @@ snit::type ::athena::sim {
         # and TickWork will do the rest.  Otherwise, this is coming from a
         # GUI event, outside TickWork; just set the state to paused.
 
-        if {[$adb flunky state] eq "TACTIC"} {
+        if {[$adb order state] eq "TACTIC"} {
             set info(stoptime) [simclock now]
         } elseif {$info(state) eq "RUNNING"} {
             set info(stoptime) 0
@@ -744,7 +744,7 @@ snit::type ::athena::sim {
     method SetState {state} {
         # FIRST, transition to the new state.
         set info(state) $state
-        $adb flunky state $state
+        $adb order state $state
 
         $adb log normal sim "Simulation state is $info(state)"
 

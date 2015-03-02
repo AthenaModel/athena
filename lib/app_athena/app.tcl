@@ -396,9 +396,9 @@ snit::type app {
         # Objdict:   order   THE:ORDER:NAME
 
         statecontroller ::cond::available -events {
-            ::adb.flunky <Sync>
+            ::adb.order <Sync>
         } -condition {
-            [::flunky available $order]
+            [::adb order available $order]
         }
 
         # One browser entry is selected.  The
@@ -417,9 +417,9 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableSingle -events {
-            ::adb.flunky <Sync>
+            ::adb.order <Sync>
         } -condition {
-            [::flunky available $order]                &&
+            [::adb order available $order]                &&
             [llength [$browser curselection]] == 1
         }
 
@@ -430,9 +430,9 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableMulti -events {
-            ::adb.flunky <Sync>
+            ::adb.order <Sync>
         } -condition {
-            [::flunky available $order]              &&
+            [::adb order available $order]              &&
             [llength [$browser curselection]] > 0
         }
 
@@ -443,9 +443,9 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableCanDelete -events {
-            ::adb.flunky <Sync>
+            ::adb.order <Sync>
         } -condition {
-            [::flunky available $order] &&
+            [::adb order available $order] &&
             [$browser candelete]
         }
 
@@ -456,9 +456,9 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableCanUpdate -events {
-            ::adb.flunky <Sync>
+            ::adb.order <Sync>
         } -condition {
-            [::flunky available $order] &&
+            [::adb order available $order] &&
             [$browser canupdate]
         }
 
@@ -469,9 +469,9 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableCanResolve -events {
-            ::adb.flunky <Sync>
+            ::adb.order <Sync>
         } -condition {
-            [::flunky available $order] &&
+            [::adb order available $order] &&
             [$browser canresolve]
         }
     }
@@ -794,6 +794,7 @@ snit::type app {
                 if {[catch {
                     app enter $order $parms
                 } result]} {
+                    puts $::errorInfo
                     $type GuiUrlError $uri $result
                 }
             } else {

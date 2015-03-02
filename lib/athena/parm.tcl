@@ -291,20 +291,20 @@ snit::type ::athena::parm {
     meta form {
         rcc "Parameter:" -for parm
         enum parm -listcmd {parm names} \
-            -loadcmd {$order_ LoadValue}
+            -loadcmd {$order_ loadValue}
 
         rcc "Value:" -for value
         text value -width 40
     }
 
-    # LoadValue idict parm
+    # loadValue idict parm
     #
     # idict - "parm" item definition dictionary
     # parm  - Chosen parameter name
     #
     # Returns the value for the parameter.
 
-    method LoadValue {idict parm} {
+    method loadValue {idict parm} {
         if {$parm ne ""} {
             dict create value [$adb parm get $parm]
         }

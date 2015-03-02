@@ -720,7 +720,7 @@ snit::type ::athena::autogen {
             set parms(supports) "SELF"
             set parms(cash_on_hand) "500B"
 
-            $adb flunky senddict normal ACTOR:CREATE [array get parms]
+            $adb order senddict normal ACTOR:CREATE [array get parms]
         }
     }
 
@@ -794,7 +794,7 @@ snit::type ::athena::autogen {
             # NEXT, set the controlling actor
             set parms(controller) [lindex $actors $k]
 
-            $adb flunky senddict normal NBHOOD:CREATE [array get parms]
+            $adb order senddict normal NBHOOD:CREATE [array get parms]
             
             # NEXT, increase the actor counter, unless we
             # need to go back to the first actor
@@ -825,7 +825,7 @@ snit::type ::athena::autogen {
         }
 
         set parms(proximity) "FAR"
-        $adb flunky senddict normal NBREL:UPDATE:MULTI [array get parms]
+        $adb order senddict normal NBREL:UPDATE:MULTI [array get parms]
 
         # NEXT, if the user only requested two neighborhoods we
         # are done
@@ -854,7 +854,7 @@ snit::type ::athena::autogen {
 
         set parms(proximity) "NEAR"
 
-        $adb flunky senddict normal NBREL:UPDATE:MULTI [array get parms]
+        $adb order senddict normal NBREL:UPDATE:MULTI [array get parms]
     }
 
     # Civgroups num 
@@ -916,7 +916,7 @@ snit::type ::athena::autogen {
                     set parms(housing) AT_HOME
                 }
 
-                $adb flunky senddict normal CIVGROUP:CREATE [array get parms]
+                $adb order senddict normal CIVGROUP:CREATE [array get parms]
             }
         }
     }
@@ -938,7 +938,7 @@ snit::type ::athena::autogen {
 
         # NEXT, have that actors support no one
         set parms(supports) NONE
-        $adb flunky senddict normal ACTOR:UPDATE [array get parms]
+        $adb order senddict normal ACTOR:UPDATE [array get parms]
 
         # NEXT, no longer need the "supports" parm
         unset parms(supports)
@@ -955,7 +955,7 @@ snit::type ::athena::autogen {
             set parms(base_personnel) 100000
             set parms(cost) "1K"
 
-            $adb flunky senddict normal ORGGROUP:CREATE [array get parms]
+            $adb order senddict normal ORGGROUP:CREATE [array get parms]
 
             incr orgtype
             
@@ -1001,7 +1001,7 @@ snit::type ::athena::autogen {
             set parms(base_personnel) 100000
             set parms(cost)           "1K"
 
-            $adb flunky senddict normal FRCGROUP:CREATE [array get parms]
+            $adb order senddict normal FRCGROUP:CREATE [array get parms]
 
             incr frctype
             incr j
@@ -1036,23 +1036,23 @@ snit::type ::athena::autogen {
     method BSystem {num} {
         # FIRST, create the requested topics
         for {set i 1} {$i <= $num} {incr i} {
-            $adb flunky senddict normal BSYS:TOPIC:ADD [list tid $i]
+            $adb order senddict normal BSYS:TOPIC:ADD [list tid $i]
         }
 
         # FIRST, create a belief system for each actor and group.
         set sids [list]
 
         foreach a [$adb actor names] {
-            set sid [$adb flunky senddict normal BSYS:SYSTEM:ADD]
-            $adb flunky senddict normal BSYS:SYSTEM:UPDATE \
+            set sid [$adb order senddict normal BSYS:SYSTEM:ADD]
+            $adb order senddict normal BSYS:SYSTEM:UPDATE \
                 [list sid $sid name "Actor $a's Beliefs"]
 
             lappend sids $sid
         }
 
         foreach g [$adb civgroup names] {
-            set sid [$adb flunky senddict normal BSYS:SYSTEM:ADD]
-            $adb flunky senddict normal BSYS:SYSTEM:UPDATE \
+            set sid [$adb order senddict normal BSYS:SYSTEM:ADD]
+            $adb order senddict normal BSYS:SYSTEM:UPDATE \
                 [list sid $sid name "Group $g's Beliefs"]
 
             lappend sids $sid
@@ -1075,7 +1075,7 @@ snit::type ::athena::autogen {
                 # NEXT, set position/emphasis pair 
                 lassign [lindex $pelist $idx] parms(position) parms(emphasis)
 
-                $adb flunky senddict normal BSYS:BELIEF:UPDATE [array get parms]
+                $adb order senddict normal BSYS:BELIEF:UPDATE [array get parms]
 
                 # NEXT, go to next position/emphasis pair
                 incr idx
@@ -1269,10 +1269,10 @@ snit::type ::athena::autogen {
     # agents strategy. The ID of the block is returned
 
     method AddBlock {agent args} {
-        set bid [$adb flunky send normal STRATEGY:BLOCK:ADD -agent $agent]
+        set bid [$adb order send normal STRATEGY:BLOCK:ADD -agent $agent]
 
         if {[llength $args] > 0} {
-            $adb flunky senddict normal BLOCK:UPDATE \
+            $adb order senddict normal BLOCK:UPDATE \
                 [list block_id $bid {*}$args]
         }
 
@@ -1290,11 +1290,11 @@ snit::type ::athena::autogen {
     # proper arguments.
 
     method AddTactic {ttype block args} {
-        set tid [$adb flunky send normal BLOCK:TACTIC:ADD \
+        set tid [$adb order send normal BLOCK:TACTIC:ADD \
                     -block_id [$block id] \
                     -typename $ttype]
 
-        $adb flunky senddict normal TACTIC:${ttype} \
+        $adb order senddict normal TACTIC:${ttype} \
             [list tactic_id $tid {*}$args]
     }
 }
