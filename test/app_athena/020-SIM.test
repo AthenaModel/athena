@@ -111,7 +111,7 @@ namespace eval ::athena_test::tests:: {
 
     } -body {
         ted notifier bind ::adb <Time>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -159,7 +159,7 @@ namespace eval ::athena_test::tests:: {
 
     } -body {
         ted notifier bind ::adb <Time>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -300,7 +300,7 @@ namespace eval ::athena_test::tests:: {
     # SIM:PAUSE
 
     test PAUSE-1.1 {Not allowed in PREP} -body {
-        flunky available SIM:PAUSE
+        adb order available SIM:PAUSE
     } -cleanup {
         cleanup
     } -result {0}
@@ -324,7 +324,7 @@ namespace eval ::athena_test::tests:: {
         ted order SIM:RUN
         simclock tick
         ted order SIM:PAUSE
-        flunky available SIM:PAUSE
+        adb order available SIM:PAUSE
     } -cleanup {
         cleanup
     } -result {0}

@@ -481,9 +481,9 @@ snit::widget iombrowser {
             set state [iom get $oid state]
 
             if {$state eq "normal"} {
-                flunky senddict gui IOM:STATE [list iom_id $oid state disabled]
+                adb order senddict gui IOM:STATE [list iom_id $oid state disabled]
             } elseif {$state eq "disabled"} {
-                flunky senddict gui IOM:STATE [list iom_id $oid state normal]
+                adb order senddict gui IOM:STATE [list iom_id $oid state normal]
             } else {
                 # Do nothing (this should never happen anyway)
             }
@@ -491,9 +491,9 @@ snit::widget iombrowser {
             set state [payload get $oid state]
 
             if {$state eq "normal"} {
-                flunky senddict gui PAYLOAD:STATE [list id $oid state disabled]
+                adb order senddict gui PAYLOAD:STATE [list id $oid state disabled]
             } elseif {$state eq "disabled"} {
-                flunky senddict gui PAYLOAD:STATE [list id $oid state normal]
+                adb order senddict gui PAYLOAD:STATE [list id $oid state normal]
             } else {
                 # Do nothing (this should never happen anyway)
             }
@@ -522,10 +522,10 @@ snit::widget iombrowser {
 
         # NEXT, it's a iom or a payload.
         if {"iom" in [$iptree item tag names $id]} {
-            flunky senddict gui IOM:DELETE \
+            adb order senddict gui IOM:DELETE \
                 [list iom_id [$iptree item text $id {tag id}]]
         } else {
-            flunky senddict gui PAYLOAD:DELETE \
+            adb order senddict gui PAYLOAD:DELETE \
                 [list id [$iptree item text $id {tag id}]]
         }
     }

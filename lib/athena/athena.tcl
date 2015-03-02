@@ -118,17 +118,21 @@ snit::type ::athena::athena {
     delegate method reset                to adb
     delegate method sanity               to adb
     delegate method save                 to adb
-    delegate method {order available}    to adb as {flunky available}
-    delegate method {order canundo}      to adb as {flunky canundo}
-    delegate method {order canredo}      to adb as {flunky canredo}
-    delegate method {order class}        to adb as {flunky class}
-    delegate method {order redo}         to adb as {flunky redo}
-    delegate method {order redotext}     to adb as {flunky redotext}
-    delegate method {order send}         to adb as {flunky send}
-    delegate method {order senddict}     to adb as {flunky senddict}
-    delegate method {order transaction}  to adb as {flunky transaction}
-    delegate method {order undo}         to adb as {flunky undo}
-    delegate method {order undotext}     to adb as {flunky undotext}
+    delegate method {order available}    to adb as {order available}
+    delegate method {order canundo}      to adb as {order canundo}
+    delegate method {order canredo}      to adb as {order canredo}
+    delegate method {order class}        to adb as {order class}
+    delegate method {order make}         to adb as {order make}
+    delegate method {order monitor}      to adb as {order monitor}
+    delegate method {order redo}         to adb as {order redo}
+    delegate method {order redotext}     to adb as {order redotext}
+    delegate method {order reset}        to adb as {order reset}
+    delegate method {order send}         to adb as {order send}
+    delegate method {order senddict}     to adb as {order senddict}
+    delegate method {order transaction}  to adb as {order transaction}
+    delegate method {order transactions} to adb as {order transactions}
+    delegate method {order undo}         to adb as {order undo}
+    delegate method {order undotext}     to adb as {order undotext}
     delegate method stable               to adb
     delegate method state                to adb
     delegate method unsaved              to adb

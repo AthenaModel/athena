@@ -493,10 +493,10 @@ snit::widget cursebrowser {
             set state [curse get $oid state]
 
             if {$state eq "normal"} {
-                flunky senddict gui CURSE:STATE \
+                adb order senddict gui CURSE:STATE \
                     [list curse_id $oid state disabled]
             } elseif {$state eq "disabled"} {
-                flunky senddict gui CURSE:STATE \
+                adb order senddict gui CURSE:STATE \
                     [list curse_id $oid state normal]
             } else {
                 # Do nothing (this should never happen anyway)
@@ -505,9 +505,9 @@ snit::widget cursebrowser {
             set state [inject get $oid state]
 
             if {$state eq "normal"} {
-                flunky senddict gui INJECT:STATE [list id $oid state disabled]
+                adb order senddict gui INJECT:STATE [list id $oid state disabled]
             } elseif {$state eq "disabled"} {
-                flunky senddict gui INJECT:STATE [list id $oid state normal]
+                adb order senddict gui INJECT:STATE [list id $oid state normal]
             } else {
                 # Do nothing (this should never happen anyway)
             }
@@ -536,10 +536,10 @@ snit::widget cursebrowser {
 
         # NEXT, it's a curse or an inject.
         if {"curse" in [$citree item tag names $id]} {
-            flunky senddict gui CURSE:DELETE \
+            adb order senddict gui CURSE:DELETE \
                 [list curse_id [$citree item text $id {tag id}]]
         } else {
-            flunky senddict gui INJECT:DELETE \
+            adb order senddict gui INJECT:DELETE \
                 [list id [$citree item text $id {tag id}]]
         }
     }

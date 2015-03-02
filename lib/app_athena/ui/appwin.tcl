@@ -896,7 +896,7 @@ snit::widget appwin {
 
     method AddOrder {mnu orders} {
         foreach order $orders {
-            set cls [flunky class $order]
+            set cls [adb order class $order]
             cond::available control \
                 [menuitem $mnu command [$cls title]... \
                      -command [list app enter $order]]    \
@@ -1717,7 +1717,7 @@ snit::widget appwin {
 
         # NEXT, Import the map
         if {[catch {
-            flunky senddict gui MAP:IMPORT:FILE [list filename $filename]
+            adb order senddict gui MAP:IMPORT:FILE [list filename $filename]
         } result]} {
             app error {
                 |<--
@@ -1750,7 +1750,7 @@ snit::widget appwin {
 
         # NEXT, Import the parmdb file
         if {[catch {
-            flunky senddict gui PARM:IMPORT [list filename $filename]
+            adb order senddict gui PARM:IMPORT [list filename $filename]
         } result]} {
             app error {
                 |<--
@@ -1865,7 +1865,7 @@ snit::widget appwin {
 
     method PostEditMenu {} {
         # Undo item
-        set text [flunky undotext]
+        set text [adb order undotext]
 
         if {$text ne ""} {
             $editmenu entryconfigure 0 \
@@ -1878,7 +1878,7 @@ snit::widget appwin {
         }
 
         # Redo item
-        set text [flunky redotext]
+        set text [adb order redotext]
 
         if {$text ne ""} {
             $editmenu entryconfigure 1 \
@@ -1896,8 +1896,8 @@ snit::widget appwin {
     # Undoes the top order on the undo stack, if any.
 
     method EditUndo {} {
-        if {[flunky canundo]} {
-            flunky undo
+        if {[adb order canundo]} {
+            adb order undo
         }
     }
 
@@ -1906,8 +1906,8 @@ snit::widget appwin {
     # Redoes the last undone order if any.
 
     method EditRedo {} {
-        if {[flunky canredo]} {
-            flunky redo
+        if {[adb order canredo]} {
+            adb order redo
         }
     }
 
@@ -1920,9 +1920,9 @@ snit::widget appwin {
 
     method RunPause {} {
         if {[sim state] eq "RUNNING"} {
-            flunky send gui SIM:PAUSE
+            adb order send gui SIM:PAUSE
         } else {
-            flunky send gui SIM:RUN \
+            adb order send gui SIM:RUN \
                 -weeks [dict get $durations [$simtools.duration get]]
         }
     }

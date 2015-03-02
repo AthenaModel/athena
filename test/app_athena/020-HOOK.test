@@ -102,7 +102,7 @@ longname  Foo is good
         ted order HOOK:CREATE $h1
     } -body {
         ted notifier bind ::adb <hooks>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -188,7 +188,7 @@ position  0.9
         ted order HOOK:TOPIC:CREATE $t1
     } -body {
         ted notifier bind ::adb <hook_topics>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -231,7 +231,7 @@ position  0.9
         ted order HOOK:DELETE hook_id FOO
     } -body {
         ted notifier bind ::adb <hooks>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -285,7 +285,7 @@ position  0.9
         ted order HOOK:TOPIC:DELETE id {FOO 1}
     } -body {
         ted notifier bind ::adb <hook_topics>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -345,7 +345,7 @@ longname  Foo is still good
         }
     } -body {
         ted notifier bind ::adb <hooks>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -432,7 +432,7 @@ position  0.0
         ted order HOOK:TOPIC:UPDATE {id {FOO 1} position 0.3}
     } -body {
         ted notifier bind ::adb <hook_topics>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup

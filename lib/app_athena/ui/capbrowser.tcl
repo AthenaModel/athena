@@ -221,7 +221,7 @@ snit::widget capbrowser {
         set id [lindex [$caps uid curselection] 0]
 
         # NEXT, Pop up the dialog, and select this entity
-        flunky senddict gui CAP:DELETE [list k $id]
+        adb order senddict gui CAP:DELETE [list k $id]
     }
 
     # CapSelectionChanged

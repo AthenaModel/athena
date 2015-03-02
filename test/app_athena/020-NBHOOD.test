@@ -296,7 +296,7 @@ polygon       *
         ted order NBHOOD:CREATE $nb1
     } -body {
         ted notifier bind ::adb <nbhoods>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -480,7 +480,7 @@ local         1
         ted order NBHOOD:CREATE:RAW $rawnb1
     } -body {
         ted notifier bind ::adb <nbhoods>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -522,7 +522,7 @@ local         1
         ted order NBHOOD:DELETE n NB1
     } -body {
         ted notifier bind ::adb <nbhoods>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -579,7 +579,7 @@ OV1 Over     1              NB1
         ted order NBHOOD:CREATE $overnb1
     } -body {
         ted order NBHOOD:LOWER n OV1
-        flunky undo
+        adb order undo
         ted query {SELECT n,longname,stacking_order,obscured_by FROM nbhoods}
     } -cleanup {
         cleanup
@@ -638,7 +638,7 @@ OV1 Over     1              NB1
         ted order NBHOOD:CREATE $overnb1
     } -body {
         ted order NBHOOD:RAISE n NB1
-        flunky undo
+        adb order undo
         ted query {SELECT n,longname,stacking_order,obscured_by FROM nbhoods}
     } -cleanup {
         cleanup
@@ -811,7 +811,7 @@ polygon       0.0*
         ted order NBHOOD:UPDATE [dict merge $overnb1 {n NB1}]
     } -body {
         ted notifier bind ::adb <nbhoods>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -902,7 +902,7 @@ polygon       0.0*
         ted order NBHOOD:UPDATE:MULTI ids {NB1 NB2} urbanization SUBURBAN
     } -body {
         ted notifier bind ::adb <nbhoods>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup

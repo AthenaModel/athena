@@ -909,7 +909,7 @@ snit::widget strategybrowser {
 
         # NEXT, if the mode is cut delete the items.
         if {$mode eq "cut"} {
-            flunky senddict gui STRATEGY:BLOCK:DELETE [ids $ids]
+            adb order senddict gui STRATEGY:BLOCK:DELETE [ids $ids]
         }
 
         # NEXT, notify the user:
@@ -967,7 +967,7 @@ snit::widget strategybrowser {
     # Creates a new block and adds it to the strategy.
     
     method BListAdd {} {
-        set block_id [flunky senddict gui STRATEGY:BLOCK:ADD \
+        set block_id [adb order senddict gui STRATEGY:BLOCK:ADD \
                         [list agent $info(agent)]]
 
         $blist uid select $block_id
@@ -986,7 +986,7 @@ snit::widget strategybrowser {
         set id [lindex [$blist uid curselection] 0]
 
         # NEXT, Change its priority.
-        flunky senddict gui STRATEGY:BLOCK:MOVE \
+        adb order senddict gui STRATEGY:BLOCK:MOVE \
             [list block_id $id where $where]
     }
 
@@ -1005,9 +1005,9 @@ snit::widget strategybrowser {
         set state [$block state]
 
         if {$state eq "disabled"} {
-            flunky senddict gui BLOCK:STATE [list block_id $id state normal]
+            adb order senddict gui BLOCK:STATE [list block_id $id state normal]
         } else {
-            flunky senddict gui BLOCK:STATE [list block_id $id state disabled]
+            adb order senddict gui BLOCK:STATE [list block_id $id state disabled]
         }
     }
 
@@ -1035,7 +1035,7 @@ snit::widget strategybrowser {
     # Deletes the selected block(s).
 
     method BListDelete {} {
-        flunky senddict gui STRATEGY:BLOCK:DELETE \
+        adb order senddict gui STRATEGY:BLOCK:DELETE \
             [list ids [$blist uid curselection]]
     }
 
@@ -1322,7 +1322,7 @@ snit::widget strategybrowser {
 
         # NEXT, if the mode is cut delete the items.
         if {$mode eq "cut"} {
-            flunky senddict gui BLOCK:CONDITION:DELETE [list ids $ids]
+            adb order senddict gui BLOCK:CONDITION:DELETE [list ids $ids]
         }
 
         # NEXT, notify the user:
@@ -1387,7 +1387,7 @@ snit::widget strategybrowser {
     
     method CTabAdd {typename} {
         # FIRST, create the condition.
-        set condition_id [flunky senddict gui BLOCK:CONDITION:ADD \
+        set condition_id [adb order senddict gui BLOCK:CONDITION:ADD \
             [list block_id [$info(block) id] \
                 typename $typename]]
 
@@ -1426,9 +1426,9 @@ snit::widget strategybrowser {
         set state [$cond state]
 
         if {$state eq "disabled"} {
-            flunky send gui CONDITION:STATE -condition_id $id -state normal
+            adb order send gui CONDITION:STATE -condition_id $id -state normal
         } else {
-            flunky send gui CONDITION:STATE -condition_id $id -state disabled
+            adb order send gui CONDITION:STATE -condition_id $id -state disabled
         }
     }
 
@@ -1440,7 +1440,7 @@ snit::widget strategybrowser {
 
     method CTabDelete {} {
         # FIRST, delete all selected conditions.
-        flunky senddict gui BLOCK:CONDITION:DELETE \
+        adb order senddict gui BLOCK:CONDITION:DELETE \
             [list ids [$ctab uid curselection]]
     }
 
@@ -1670,7 +1670,7 @@ snit::widget strategybrowser {
 
         # NEXT, if the mode is cut delete the items.
         if {$mode eq "cut"} {
-            flunky senddict gui BLOCK:TACTIC:DELETE [list ids $ids]
+            adb order senddict gui BLOCK:TACTIC:DELETE [list ids $ids]
         }
 
         # NEXT, notify the user:
@@ -1741,7 +1741,7 @@ snit::widget strategybrowser {
     
     method TTabAdd {typename} {
         # FIRST, create the tactic.
-        set tactic_id [flunky senddict gui BLOCK:TACTIC:ADD \
+        set tactic_id [adb order senddict gui BLOCK:TACTIC:ADD \
             [list block_id [$info(block) id] \
                 typename $typename]]
 
@@ -1782,9 +1782,9 @@ snit::widget strategybrowser {
         set state [$tactic state]
 
         if {$state eq "disabled"} {
-            flunky send gui TACTIC:STATE -tactic_id $id -state normal
+            adb order send gui TACTIC:STATE -tactic_id $id -state normal
         } else {
-            flunky send gui TACTIC:STATE -tactic_id $id -state disabled
+            adb order send gui TACTIC:STATE -tactic_id $id -state disabled
         }
     }
 
@@ -1799,7 +1799,7 @@ snit::widget strategybrowser {
         set id [lindex [$ttab uid curselection] 0]
 
         # NEXT, Change its priority.
-        flunky send gui BLOCK:TACTIC:MOVE -tactic_id $id -where $where
+        adb order send gui BLOCK:TACTIC:MOVE -tactic_id $id -where $where
     }
 
 
@@ -1811,7 +1811,7 @@ snit::widget strategybrowser {
 
     method TTabDelete {} {
         # FIRST, delete all selected tactics.
-        flunky send gui BLOCK:TACTIC:DELETE -ids [$ttab uid curselection]
+        adb order send gui BLOCK:TACTIC:DELETE -ids [$ttab uid curselection]
     }
 
     #-------------------------------------------------------------------
@@ -1838,7 +1838,7 @@ snit::widget strategybrowser {
         }
 
         # NEXT, set the block's parameter.
-        flunky send gui BLOCK:UPDATE \
+        adb order send gui BLOCK:UPDATE \
             -block_id  [$info(block) id] \
             -$name     $value
     }

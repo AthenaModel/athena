@@ -91,7 +91,7 @@ namespace eval ::athena_test::tests:: {
         ted order BSYS:PLAYBOX:UPDATE gamma 0.25
     } -body {
         ted notifier bind ::adb.bsys <playbox>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -137,7 +137,7 @@ namespace eval ::athena_test::tests:: {
     test SYSTEM:ADD-2.3 {notifications} -body {
         ted notifier bind ::adb.bsys <system>
         ted order BSYS:SYSTEM:ADD {}
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -208,7 +208,7 @@ namespace eval ::athena_test::tests:: {
         ted order BSYS:SYSTEM:UPDATE sid $sid \
             name        FRED  \
             commonality 0.5
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -284,7 +284,7 @@ namespace eval ::athena_test::tests:: {
     test SYSTEM:DELETE-2.2 {notifications} -body {
         ted notifier bind ::adb.bsys <system>
         ted order BSYS:SYSTEM:ADD {}
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -347,7 +347,7 @@ namespace eval ::athena_test::tests:: {
     test TOPIC:ADD-2.3 {effects} -body {
         ted notifier bind ::adb.bsys <topic>
         ted order BSYS:TOPIC:ADD
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -399,7 +399,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         ted notifier bind ::adb.bsys <topic>
         ted order BSYS:TOPIC:DELETE tid $tid
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -473,7 +473,7 @@ namespace eval ::athena_test::tests:: {
         ted notifier bind ::adb.bsys <topic>
         ted order BSYS:TOPIC:UPDATE \
             tid $tid name "New Title" affinity no
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -582,7 +582,7 @@ namespace eval ::athena_test::tests:: {
         ted notifier bind ::adb.bsys <belief>
         ted order BSYS:BELIEF:UPDATE \
             bid [list $sid $tid] position 0.1 emphasis 0.2
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup

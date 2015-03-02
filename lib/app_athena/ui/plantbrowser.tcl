@@ -229,7 +229,7 @@ snit::widgetadaptor plantbrowser {
     method DeleteSelected {} {
         set id [lindex [$hull uid curselection] 0]
 
-        flunky senddict gui PLANT:SHARES:DELETE [list id $id]
+        adb order senddict gui PLANT:SHARES:DELETE [list id $id]
     }
 }
 

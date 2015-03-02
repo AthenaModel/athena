@@ -513,7 +513,7 @@ snit::widget wmswin {
         }
 
         # NEXT, send the order
-        flunky senddict gui MAP:IMPORT:DATA [array get parms]
+        adb order senddict gui MAP:IMPORT:DATA [array get parms]
 
         # NEXT, if this is from the "send and close" button, withdraw the
         # window.

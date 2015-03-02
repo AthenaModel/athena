@@ -747,7 +747,7 @@ snit::type ted {
 
         # Can we just do an "adb reset" here?
         nbhood   dbsync
-        flunky   reset
+        adb order   reset
         parm     reset
         bsys     clear
         econ     reset
@@ -839,10 +839,10 @@ snit::type ted {
 
         # NEXT, send the order
         try {
-            flunky transactions off
+            adb order transactions off
             if {$rejectFlag} {
                 set code [catch {
-                    flunky senddict normal $order $parmdict
+                    adb order senddict normal $order $parmdict
                 } result opts]
 
                 if {$code} {
@@ -863,10 +863,10 @@ snit::type ted {
                 }
 
             } else {
-                flunky senddict normal $order $parmdict
+                adb order senddict normal $order $parmdict
             }
         } finally {
-            flunky transactions on
+            adb order transactions on
         }
     }
 

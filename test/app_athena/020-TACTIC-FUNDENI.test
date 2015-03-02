@@ -363,7 +363,7 @@ namespace eval ::athena_test::tests:: {
             glist [adb gofer make CIVGROUPS BY_VALUE {SHIA SUNN KURD}]
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup

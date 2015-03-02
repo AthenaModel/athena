@@ -184,7 +184,7 @@ snit::widgetadaptor frcgroupbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Pop up the dialog, and select this entity
-        flunky senddict gui FRCGROUP:DELETE [list g $id]
+        adb order senddict gui FRCGROUP:DELETE [list g $id]
     }
 }
 

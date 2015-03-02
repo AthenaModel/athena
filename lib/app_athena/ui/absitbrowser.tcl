@@ -247,7 +247,7 @@ snit::widgetadaptor absitbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Send the delete order.
-        flunky senddict gui ABSIT:DELETE [list s $id]
+        adb order senddict gui ABSIT:DELETE [list s $id]
     }
 
 }

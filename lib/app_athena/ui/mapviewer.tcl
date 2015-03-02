@@ -1127,7 +1127,7 @@ snit::widget mapviewer {
     # Brings the transient neighborhood to the front
 
     method NbhoodBringToFront {} {
-        flunky senddict gui NBHOOD:RAISE [list n $nbhoods(trans)]
+        adb order senddict gui NBHOOD:RAISE [list n $nbhoods(trans)]
     }
 
 
@@ -1136,7 +1136,7 @@ snit::widget mapviewer {
     # Sends the transient neighborhood to the back
 
     method NbhoodSendToBack {} {
-        flunky senddict gui NBHOOD:LOWER [list n $nbhoods(trans)]
+        adb order senddict gui NBHOOD:LOWER [list n $nbhoods(trans)]
     }
 
     #-------------------------------------------------------------------
@@ -1421,7 +1421,7 @@ snit::widget mapviewer {
         switch -exact $icons(itype-$cid) {
             unit {
                 if {[catch {
-                    flunky senddict gui UNIT:MOVE [list  \
+                    adb order senddict gui UNIT:MOVE [list  \
                         u        $icons(sid-$cid)        \
                         location [$canvas icon ref $cid]]
                 }]} {
@@ -1431,7 +1431,7 @@ snit::widget mapviewer {
 
             situation {
                 if {[catch {
-                    flunky senddict gui ABSIT:MOVE [list \
+                    adb order senddict gui ABSIT:MOVE [list \
                         s        $icons(sid-$cid)        \
                         location [$canvas icon ref $cid]]
                 }]} {

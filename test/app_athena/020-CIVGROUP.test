@@ -344,7 +344,7 @@ upc        0.0
         ted order CIVGROUP:CREATE $sunn
     } -body {
         ted notifier bind ::adb <civgroups>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -387,7 +387,7 @@ upc        0.0
         ted order CIVGROUP:DELETE g SHIA
     } -body {
         ted notifier bind ::adb <civgroups>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -616,7 +616,7 @@ upc        10.0
         }
     } -body {
         ted notifier bind ::adb <civgroups>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup

@@ -304,7 +304,7 @@ namespace eval ::athena_test::tests:: {
             pmode     SOME
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup

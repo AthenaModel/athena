@@ -177,7 +177,7 @@ snit::widgetadaptor orggroupbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Send the order
-        flunky senddict gui ORGGROUP:DELETE [list g $id]
+        adb order senddict gui ORGGROUP:DELETE [list g $id]
     }
 }
 

@@ -159,7 +159,7 @@ namespace eval ::athena_test::tests:: {
             n         NB1
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup

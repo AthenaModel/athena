@@ -180,7 +180,7 @@ snit::widgetadaptor actorbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Delete the entity
-        flunky senddict gui ACTOR:DELETE [list a $id]
+        adb order senddict gui ACTOR:DELETE [list a $id]
     }
 }
 

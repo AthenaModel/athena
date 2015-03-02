@@ -461,9 +461,9 @@ snit::widget hookbrowser {
         set state [hook topic get $id state]
 
         if {$state eq "normal"} {
-            flunky senddict gui HOOK:TOPIC:STATE [list id $id state disabled]
+            adb order senddict gui HOOK:TOPIC:STATE [list id $id state disabled]
         } elseif {$state eq "disabled"} {
-            flunky senddict gui HOOK:TOPIC:STATE [list id $id state normal]
+            adb order senddict gui HOOK:TOPIC:STATE [list id $id state normal]
         } else {
             # Do nothing (this should never happen anyway)
         }
@@ -481,10 +481,10 @@ snit::widget hookbrowser {
 
         # NEXT, it's a hook or a topic.
         if {"hook" in [$htree item tag names $id]} {
-            flunky senddict gui HOOK:DELETE \
+            adb order senddict gui HOOK:DELETE \
                 [list hook_id [$htree item text $id {tag id}]]
         } else {
-            flunky senddict gui HOOK:TOPIC:DELETE \
+            adb order senddict gui HOOK:TOPIC:DELETE \
                 [list id [$htree item text $id {tag id}]]
         }
     }

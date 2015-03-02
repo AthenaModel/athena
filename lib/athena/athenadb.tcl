@@ -320,7 +320,6 @@ snit::type ::athena::athenadb {
         # TBD: These will go away once the transition to library code
         # is complete.
         interp alias {} ::aram   {} $aram
-        interp alias {} ::flunky {} $flunky
         interp alias {} ::pot    {} $pot
         interp alias {} ::rdb    {} $rdb
 

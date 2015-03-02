@@ -306,7 +306,7 @@ budget            0.0
         ted order ACTOR:CREATE $joe
     } -body {
         ted notifier bind ::adb <actors>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -349,7 +349,7 @@ budget            0.0
         ted order ACTOR:DELETE a JOE
     } -body {
         ted notifier bind ::adb <actors>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -569,7 +569,7 @@ budget            0.0
         }
     } -body {
         ted notifier bind ::adb <actors>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -740,7 +740,7 @@ budget            0.0
         }
     } -body {
         ted notifier bind ::adb <actors>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -811,7 +811,7 @@ BOB BOB
         }
     } -body {
         ted notifier bind ::adb <actors>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup

@@ -158,7 +158,7 @@ namespace eval ::athena_test::tests:: {
         ted order TACTIC:DAMAGE tactic_id [$T1 id] n NB1 a JOE percent 80
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup

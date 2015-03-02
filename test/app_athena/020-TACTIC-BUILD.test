@@ -194,7 +194,7 @@ namespace eval ::athena_test::tests:: {
         ted order TACTIC:BUILD tactic_id [$T1 id] n NB1 mode CASH amount 10000
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup

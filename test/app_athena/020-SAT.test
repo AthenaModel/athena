@@ -187,7 +187,7 @@ SUNN SFT 0.0  1.0      0         0.0
         }
     } -body {
         ted notifier bind ::adb <sat_gc>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -352,7 +352,7 @@ SUNN SFT 0.0  1.0      0         0.0
         }
     } -body {
         ted notifier bind ::adb <sat_gc>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup

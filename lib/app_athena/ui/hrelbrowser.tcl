@@ -304,7 +304,7 @@ snit::widgetadaptor hrelbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Pop up the dialog, and select this entity
-        flunky senddict gui HREL:RESTORE [list id $id]
+        adb order senddict gui HREL:RESTORE [list id $id]
     }
 }
 

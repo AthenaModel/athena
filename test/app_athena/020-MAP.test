@@ -78,7 +78,7 @@ namespace eval ::athena_test::tests:: {
     test MAP:IMPORT:FILE:3.1 {undo resets map} -constraints tk -setup {
         ted order MAP:IMPORT:FILE filename map.png
     } -body {
-        flunky undo
+        adb order undo
         rdb onecolumn {SELECT filename FROM maps WHERE id=1}
     } -cleanup {
         cleanup
@@ -88,7 +88,7 @@ namespace eval ::athena_test::tests:: {
         ted order MAP:IMPORT:FILE filename map.png
     } -body {
         ted notifier bind ::adb.map <MapChanged>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -177,7 +177,7 @@ data
     test MAP:GEOREF-3.1 {undo resets geolocations} -constraints tk -setup {
         ted order MAP:GEOREF ulat 33 ulon -118 llat 32 llon -117
      } -body {
-       flunky undo
+       adb order undo
        rdb eval {SELECT count(*) FROM maps WHERE id=1}    
     } -cleanup {
         cleanup 
@@ -187,7 +187,7 @@ data
         ted order MAP:GEOREF ulat 33 ulon -118 llat 32 llon -117    
     } -body {
         ted notifier bind ::adb.map <MapChanged>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
