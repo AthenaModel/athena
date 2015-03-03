@@ -1,5 +1,6 @@
 # TODO.md - Athena TODO List
 
+- Make sure that sim.tcl handles "restore {}" properly.  I don't think it does.
 - Why is there no 010-abevent.test?
 - Remove global singleton names:
   - Revise remaining app code to not use them.

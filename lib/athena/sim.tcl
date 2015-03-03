@@ -778,6 +778,7 @@ snit::type ::athena::sim {
     # checkpoint     A string returned by the checkpoint method
     
     method restore {checkpoint {option ""}} {
+        $self reset
         set info(changed) 1
 
         if {[dict size $checkpoint] > 0} {
