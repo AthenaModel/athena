@@ -42,7 +42,7 @@ namespace eval ::athena_test::tests:: {
     # Set up for the rebase comparison test.
     proc setup {} {
         econ setstate ENABLED
-        autogen scenario -nb 3
+        tdb autogen scenario -nb 3
         ted lock
         ted step
         ted step

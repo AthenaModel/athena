@@ -604,7 +604,7 @@ snit::type ::athena::cap {
     meta parmlist {k}
 
     method _validate {} {
-        my prepare k -toupper -required -type cap
+        my prepare k -toupper -required -type [list $adb cap]
     }
 
     method _execute {{flunky ""}} {

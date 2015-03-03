@@ -268,13 +268,9 @@ snit::type ::athena::athenadb {
 
         $self MakeComponentsWithGlobal  \
             aam                         \
-            activity                    \
             actor                       \
             agent                       \
-            autogen                     \
-            broadcast                   \
             bsys                        \
-            cap                         \
             cash                        \
             civgroup                    \
             coop                        \
@@ -317,6 +313,10 @@ snit::type ::athena::athenadb {
         $self MakeComponents            \
             abevent                     \
             absit                       \
+            activity                    \
+            autogen                     \
+            broadcast                   \
+            cap                         \
 
 
         # NEXT, register the ones that are saveables.  This will change

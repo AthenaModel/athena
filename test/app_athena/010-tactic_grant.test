@@ -42,7 +42,7 @@ namespace eval ::athena_test::tests:: {
         variable T1
         variable coffer
         ted create JOE BOB CBS NBC ABC CNN FOX PBS
-        cap access load
+        tdb cap access load
         set coffer [::athena::coffer new [::adb athenadb] JOE]
 
         set B1 [ted addblock JOE]
@@ -192,7 +192,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         $T1 obligate $coffer
         $T1 execute
-        cap access save
+        tdb cap access save
         adb eval {SELECT k FROM cap_access WHERE a='BOB' ORDER BY k}
     } -cleanup {
         cleanup

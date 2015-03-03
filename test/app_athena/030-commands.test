@@ -989,7 +989,7 @@ JOE
     } -result {Must create actors first}
 
     test autogen_strategy-1.2 {error, no nbhoods} -setup {
-        autogen actors
+        tdb autogen actors
     } -body {
         ted sendex -error autogen strategy
     } -cleanup {
@@ -997,8 +997,8 @@ JOE
     } -result {Must create nbhoods first}
 
     test autogen_strategy-1.3 {error, no force or org groups} -setup {
-        autogen actors
-        autogen nbhoods
+        tdb autogen actors
+        tdb autogen nbhoods
     } -body {
         ted sendex -error autogen strategy
     } -cleanup {
@@ -1006,9 +1006,9 @@ JOE
     } -result {Must have at least one FRC group or one ORG group}
 
     test autogen_strategy-1.4 {bad option, -actors} -setup {
-        autogen actors
-        autogen nbhoods
-        autogen frcgroups
+        tdb autogen actors
+        tdb autogen nbhoods
+        tdb autogen frcgroups
     } -body {
         ted sendex -error autogen strategy -actors NONESUCH
     } -cleanup {
@@ -1016,9 +1016,9 @@ JOE
     } -result {Unrecognized actor: NONESUCH}
 
     test autogen_strategy-1.5 {bad option, -civg} -setup {
-        autogen actors
-        autogen nbhoods
-        autogen frcgroups
+        tdb autogen actors
+        tdb autogen nbhoods
+        tdb autogen frcgroups
     } -body {
         ted sendex -error autogen strategy -civg NONESUCH
     } -cleanup {
@@ -1026,9 +1026,9 @@ JOE
     } -result {Unrecognized CIV group: NONESUCH}
 
     test autogen_strategy-1.6 {bad option, -frcg} -setup {
-        autogen actors
-        autogen nbhoods
-        autogen frcgroups
+        tdb autogen actors
+        tdb autogen nbhoods
+        tdb autogen frcgroups
     } -body {
         ted sendex -error autogen strategy -frcg NONESUCH
     } -cleanup {
@@ -1036,9 +1036,9 @@ JOE
     } -result {Unrecognized FRC group: NONESUCH}
 
     test autogen_strategy-1.7 {bad option, -orgg} -setup {
-        autogen actors
-        autogen nbhoods
-        autogen frcgroups
+        tdb autogen actors
+        tdb autogen nbhoods
+        tdb autogen frcgroups
     } -body {
         ted sendex -error autogen strategy -orgg NONESUCH
     } -cleanup {
@@ -1046,9 +1046,9 @@ JOE
     } -result {Unrecognized ORG group: NONESUCH}
 
     test autogen_strategy-1.8 {bad option, -nbhoods} -setup {
-        autogen actors
-        autogen nbhoods
-        autogen frcgroups
+        tdb autogen actors
+        tdb autogen nbhoods
+        tdb autogen frcgroups
     } -body {
         ted sendex -error autogen strategy -nbhoods NONESUCH
     } -cleanup {
@@ -1056,9 +1056,9 @@ JOE
     } -result {Unrecognized nbhood: NONESUCH}
 
     test autogen_strategy-1.9 {bad option, -frcact} -setup {
-        autogen actors
-        autogen nbhoods
-        autogen frcgroups
+        tdb autogen actors
+        tdb autogen nbhoods
+        tdb autogen frcgroups
     } -body {
         ted sendex -error autogen strategy -frcact NONESUCH
     } -cleanup {
@@ -1066,9 +1066,9 @@ JOE
     } -result {Unrecognized force activity: NONESUCH}
 
     test autogen_strategy-1.10 {bad option, -orgact} -setup {
-        autogen actors
-        autogen nbhoods
-        autogen frcgroups
+        tdb autogen actors
+        tdb autogen nbhoods
+        tdb autogen frcgroups
     } -body {
         ted sendex -error autogen strategy -orgact NONESUCH
     } -cleanup {
@@ -1076,9 +1076,9 @@ JOE
     } -result {Unrecognized org activity: NONESUCH}
 
     test autogen_strategy-2.0 {strategy created} -setup {
-        autogen actors
-        autogen nbhoods
-        autogen frcgroups
+        tdb autogen actors
+        tdb autogen nbhoods
+        tdb autogen frcgroups
     } -body {
         set a [llength [[strategy getname A00] blocks]]
         ted sendex autogen strategy

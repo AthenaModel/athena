@@ -660,7 +660,7 @@
             return -code error -errorcode INVALID \
                 "Invalid activity \"\"."
         } else {
-            activity check [string toupper $g] [string toupper $activity]
+            $adb activity check [string toupper $g] [string toupper $activity]
         }
 
         dict set valid n [$adb nbhood validate [string toupper $n]]
@@ -786,9 +786,9 @@
         set gtype [$adb group gtype [string toupper $g]]
 
         if {$gtype eq "FRC"} {
-            activity withcov frc validate [string toupper $activity]
+            $adb activity withcov frc validate [string toupper $activity]
         } elseif {$gtype eq "ORG"} {
-            activity withcov org validate [string toupper $activity]
+            $adb activity withcov org validate [string toupper $activity]
         }
 
         dict set valid n [$adb nbhood validate [string toupper $n]]

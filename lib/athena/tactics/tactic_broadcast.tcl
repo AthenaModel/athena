@@ -130,7 +130,7 @@
 
         # Total cost is prep cost plus cost to use CAP
         set cash [$coffer cash]
-        set trans(cost) [expr {$cost + [cap get $cap cost]}]
+        set trans(cost) [expr {$cost + [[my adb] cap get $cap cost]}]
 
         if {[my InsufficientCash $cash $trans(cost)]} {
             return

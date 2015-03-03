@@ -55,7 +55,7 @@
         } else {
             foreach cap $klist {
                 if {$cap ni [[my adb] cap names] || 
-                    [cap get $cap owner] ne [my agent]
+                    [[my adb] cap get $cap owner] ne [my agent]
                 } {
                     dict set errdict klist \
                     "[my agent] does not own a CAP called \"$cap\"."

@@ -79,7 +79,7 @@ namespace eval ::athena_test::tests:: {
             set T1 [ted addtactic $B1 BROADCAST]
         }
 
-        broadcast reset
+        tdb broadcast reset
     }
 
     # Clean up after a test
@@ -88,7 +88,7 @@ namespace eval ::athena_test::tests:: {
         variable coffer
         $coffer destroy
         ted cleanup
-        broadcast reset
+        tdb broadcast reset
     }
 
 
@@ -270,7 +270,7 @@ namespace eval ::athena_test::tests:: {
 
     test obligate-1.1 {CAP cost + prep cost} -setup {
         setup -valid
-        cap access load
+        tdb cap access load
     } -body {
         set a [$coffer cash]
         set b [$T1 obligate $coffer]
@@ -282,7 +282,7 @@ namespace eval ::athena_test::tests:: {
 
     test obligate-1.2 {obligate: insufficient funds} -setup {
         setup -valid
-        cap access load
+        tdb cap access load
     } -body {
         $T1 set cost 100000.0
         $T1 obligate $coffer
