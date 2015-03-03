@@ -139,7 +139,7 @@
             if {$g ni $gIgnored} {
                 lappend gSet $g
 
-                stance setfg $f $g $drel
+                [my adb] stance setfg $f $g $drel
             }
         }
 

@@ -286,18 +286,12 @@ snit::type ::athena::athenadb {
             parm                        \
             payload                     \
             plant                       \
-            rebase                      \
             {ruleset  ruleset_manager}  \
             sanity                      \
-            sat                         \
-            security_model              \
             service                     \
-            sigevent                    \
             sim                         \
             {strategy strategy_manager} \
-            stance                      \
             unit                        \
-            vrel
 
         $self MakeComponents            \
             abevent                     \
@@ -317,6 +311,12 @@ snit::type ::athena::athenadb {
             map                         \
             nbrel                       \
             personnel                   \
+            rebase                      \
+            sat                         \
+            security_model              \
+            sigevent                    \
+            stance                      \
+            vrel
 
 
         # NEXT, register the ones that are saveables.  This will change

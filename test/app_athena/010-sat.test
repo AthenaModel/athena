@@ -51,7 +51,7 @@ namespace eval ::athena_test::tests:: {
     test update-1.1 {sat is updated} -setup {
         ted create NB1 SHIA
     } -body {
-        sat update {
+        tdb sat update {
             id             {SHIA AUT}
             base           10.0
             saliency       0.5
@@ -77,7 +77,7 @@ SHIA SFT 0.0  1.0      0         0.0
     } -body {
         set a [ted query {SELECT * FROM sat_gc}]
 
-        sat update  {
+        tdb sat update  {
             id             {SHIA SFT}
             base           ""
             saliency       ""
@@ -99,7 +99,7 @@ SHIA SFT 0.0  1.0      0         0.0
 
         set a [ted query {SELECT * FROM sat_gc ORDER BY g,c}]
 
-        set undo [sat update {
+        set undo [tdb sat update {
             id          {SHIA SFT}
             base        10.0
             saliency    0.5
@@ -120,7 +120,7 @@ SHIA SFT 0.0  1.0      0         0.0
     # exists
 
     test exists-1.1 {sat does not exist} -body {
-        sat exists NONESUCH NONESUCH
+        tdb sat exists NONESUCH NONESUCH
     } -cleanup {
         cleanup
     } -result {0}
@@ -128,7 +128,7 @@ SHIA SFT 0.0  1.0      0         0.0
     test exists-1.2 {sat exists} -setup {
         ted create NB1 SHIA
     } -body {
-        sat exists SHIA SFT
+        tdb sat exists SHIA SFT
     } -cleanup {
         cleanup
     } -result {1}
@@ -140,7 +140,7 @@ SHIA SFT 0.0  1.0      0         0.0
     test validate-1.1 {invalid civgroup} -setup {
         ted create NB1 SHIA
     } -body {
-        sat validate {NONESUCH NONESUCH}
+        tdb sat validate {NONESUCH NONESUCH}
     } -returnCodes {
         error
     } -cleanup {
@@ -150,7 +150,7 @@ SHIA SFT 0.0  1.0      0         0.0
     test validate-1.2 {Invalid concern} -setup {
         ted create NB1 SHIA
     } -body {
-        sat validate {SHIA NONESUCH}
+        tdb sat validate {SHIA NONESUCH}
     } -returnCodes {
         error
     } -cleanup {
@@ -160,7 +160,7 @@ SHIA SFT 0.0  1.0      0         0.0
     test validate-2.1 {Valid group} -setup {
         ted create NB1 SHIA
     } -body {
-        sat validate {SHIA SFT}
+        tdb sat validate {SHIA SFT}
     } -cleanup {
         cleanup
     } -result {SHIA SFT}
