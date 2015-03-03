@@ -1865,7 +1865,7 @@ snit::type ::athena::econ {
 
 
     method _validate {} {
-        my prepare id           -required -type {ptype sam}
+        my prepare id           -required -type [list $adb ptype sam]
         my prepare val -toupper -required -type money
     }
 
@@ -1894,7 +1894,7 @@ snit::type ::athena::econ {
 
 
     method _validate {} {
-        my prepare id           -required -type {ptype sam}
+        my prepare id           -required -type [list $adb ptype sam]
         my prepare val -toupper -required -type snit::double
     }
 
@@ -1923,7 +1923,7 @@ snit::type ::athena::econ {
 
 
     method _validate {} {
-        my prepare id           -required -type {ptype cge}
+        my prepare id           -required -type [list $adb ptype cge]
         my prepare val -toupper -required -type money
     }
 

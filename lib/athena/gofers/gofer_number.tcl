@@ -40,11 +40,11 @@
             rc
             rc "Affinity of group or actor"
             rc
-            enumlong x -showkeys yes -dictcmd {::ptype goa namedict}
+            enumlong x -showkeys yes -dictcmd {$adb_ ptype goa namedict}
 
             rc "with group or actor"
             rc
-            enumlong y -showkeys yes -dictcmd {::ptype goa namedict}
+            enumlong y -showkeys yes -dictcmd {$adb_ ptype goa namedict}
         }
 
         case AGENT_PLANTS "aplants(a)" {
@@ -58,7 +58,7 @@
             rc
             rc "Number of personnel of force or org group "
             rc
-            enumlong g -showkeys yes -dictcmd {::ptype fog namedict}
+            enumlong g -showkeys yes -dictcmd {$adb_ ptype fog namedict}
 
 
             rc "assigned to do activity"
@@ -93,7 +93,7 @@
             rc
             rc "Coverage fraction for force or org group"
             rc
-            enumlong g -showkeys yes -dictcmd {::ptype fog namedict}
+            enumlong g -showkeys yes -dictcmd {$adb_ ptype fog namedict}
 
             rc "assigned to activity"
             rc
@@ -108,7 +108,7 @@
             rc
             rc "Personnel of force or org group"
             rc
-            enumlong g -showkeys yes -dictcmd {::ptype fog namedict}
+            enumlong g -showkeys yes -dictcmd {$adb_ ptype fog namedict}
 
             rc
             rc "deployed in neighborhood(s)"
@@ -235,7 +235,7 @@
             rc
             rc "Personnel mobilized in the playbox belonging to force or org group"
             rc
-            enumlonglist glist -showkeys yes -dictcmd {::ptype fog namedict}
+            enumlonglist glist -showkeys yes -dictcmd {$adb_ ptype fog namedict}
         }
 
         case MOOD "mood(g)" {
@@ -569,8 +569,8 @@
         dict with gdict {}
 
         dict create \
-            x [ptype goa validate [string toupper $x]] \
-            y [ptype goa validate [string toupper $y]]
+            x [$adb ptype goa validate [string toupper $x]] \
+            y [$adb ptype goa validate [string toupper $y]]
 
     }
 
@@ -652,7 +652,7 @@
 
         set valid [dict create]
 
-        dict set valid g [ptype fog validate [string toupper $g]]
+        dict set valid g [$adb ptype fog validate [string toupper $g]]
 
         dict set valid activity [string toupper $activity]
 
@@ -780,7 +780,7 @@
 
         set valid [dict create]
 
-        dict set valid g [::ptype fog validate [string toupper $g]]
+        dict set valid g [$adb ptype fog validate [string toupper $g]]
         dict set valid activity [string toupper $activity]
 
         set gtype [$adb group gtype [string toupper $g]]
@@ -827,7 +827,7 @@
     method validate {gdict} {
         dict with gdict {}
         dict create \
-            g [ptype fog validate [string toupper $g]] \
+            g [$adb ptype fog validate [string toupper $g]] \
             nlist [my val_elist nbhood "neighborhoods" [string toupper $nlist]]
     }
 
@@ -1474,7 +1474,7 @@
     method validate {gdict} {
         dict with gdict {}
         dict create \
-            glist [my val_list groups {::ptype fog validate} [string toupper $glist]]
+            glist [my val_list groups [list $adb ptype fog validate] [string toupper $glist]]
     }
 
     method narrative {gdict {opt ""}} {

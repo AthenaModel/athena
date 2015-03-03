@@ -220,11 +220,11 @@
                 nbhood n
 
                 rcc "Responsible Group:" -for g1
-                enum g1 -listcmd {ptype frcg+none names} -defvalue NONE
+                enum g1 -listcmd {$adb_ ptype frcg+none names} -defvalue NONE
 
                 when {$g1 ne "NONE"} {
                     rcc "Responsible Group 2:" -for g2
-                    enum g2 -listcmd {::aam AllButG1 $g1}
+                    enum g2 -listcmd {$adb_ aam AllButG1 $g1}
                 }
             }
 
@@ -237,11 +237,11 @@
 
                 when {$f in [::civgroup names]} {
                     rcc "Responsible Group:" -for g1
-                    enum g1 -listcmd {ptype frcg+none names} -defvalue NONE
+                    enum g1 -listcmd {$adb_ ptype frcg+none names} -defvalue NONE
 
                     when {$g1 ne "NONE"} {
                         rcc "Responsible Group 2:" -for g2
-                        enum g2 -listcmd {::aam AllButG1 $g1}
+                        enum g2 -listcmd {$adb_ aam AllButG1 $g1}
                     }
                 }
             }

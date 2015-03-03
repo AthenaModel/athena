@@ -1097,14 +1097,6 @@ snit::type view {
     # Validates {i} as a sector
     
     proc i {domain vartype i} {
-        ValidateIndex $domain $vartype i $i {econ sector validate $i}
-    }
-
-    # Proc: i
-    #
-    # Validates {i} as a sector
-    
-    proc i {domain vartype i} {
         ValidateIndex $domain $vartype i $i {esector validate $i}
     }
 

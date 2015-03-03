@@ -406,7 +406,7 @@ snit::type ::athena::actor {
             -defvalue 1
 
         rcc "Supports:" -for supports
-        enum supports -defvalue SELF -listcmd {ptype a+self+none names}
+        enum supports -defvalue SELF -listcmd {$adb_ ptype a+self+none names}
 
         rcc "Auto-maintain Infrastructure?" -for auto_maintain
         yesno auto_maintain -defvalue 0
@@ -460,7 +460,7 @@ snit::type ::athena::actor {
         my unused a
         my prepare longname         -normalize
         my prepare bsid             -num               -type [list $adb bsys system]
-        my prepare supports         -toupper           -type {ptype a+self+none}
+        my prepare supports         -toupper           -type [list $adb ptype a+self+none]
         my prepare auto_maintain    -toupper           -type boolean 
         my prepare atype            -toupper           -selector
         my prepare cash_reserve     -toupper           -type money
@@ -569,7 +569,7 @@ snit::type ::athena::actor {
         enumlong bsid -dictcmd {$adb_ bsys system namedict} -showkeys yes \
 
         rcc "Supports:" -for supports
-        enum supports -listcmd {ptype a+self+none names}
+        enum supports -listcmd {$adb_ ptype a+self+none names}
 
         rcc "Auto-maintain Infrastructure?" -for auto_maintain
         yesno auto_maintain 
@@ -622,7 +622,7 @@ snit::type ::athena::actor {
         my prepare a                -toupper   -required -type [list $adb actor]
         my prepare longname         -normalize
         my prepare bsid             -num               -type [list $adb bsys system]
-        my prepare supports         -toupper           -type {ptype a+self+none}
+        my prepare supports         -toupper           -type [list $adb ptype a+self+none]
         my prepare auto_maintain    -toupper           -type boolean 
         my prepare atype            -toupper           -selector
         my prepare cash_reserve     -toupper           -type money
@@ -738,12 +738,12 @@ snit::type ::athena::actor {
             -loadcmd {$order_ keyload a *} 
         
         rcc "Supports:" -for supports
-        enum supports -listcmd {ptype a+self+none names}
+        enum supports -listcmd {$adb_ ptype a+self+none names}
     }
 
     method _validate {} {
         my prepare a         -toupper -required -type [list $adb actor]
-        my prepare supports  -toupper -required -type {ptype a+self+none}
+        my prepare supports  -toupper -required -type [list $adb ptype a+self+none]
     }
 
     method _execute {{flunky ""}} {

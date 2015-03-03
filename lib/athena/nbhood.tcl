@@ -568,7 +568,7 @@ snit::type ::athena::nbhood {
         enum urbanization -listcmd {eurbanization names} -defvalue URBAN
 
         rcc "Controller:" -for controller
-        enum controller -listcmd {ptype a+none names} -defvalue NONE
+        enum controller -listcmd {$adb_ ptype a+none names} -defvalue NONE
 
         rcc "Reference Point:" -for refpoint
         text refpoint
@@ -591,7 +591,7 @@ snit::type ::athena::nbhood {
         my prepare longname      -normalize
         my prepare local         -toupper            -required -type boolean
         my prepare urbanization  -toupper            -required -type eurbanization
-        my prepare controller    -toupper            -required -type {ptype a+none}
+        my prepare controller    -toupper            -required -type [list $adb ptype a+none]
         my prepare pcf           -num                          -type rnonneg
         my prepare refpoint      -toupper            -required -type refpoint
         my prepare polygon       -normalize -toupper -required -type refpoly
@@ -699,7 +699,7 @@ snit::type ::athena::nbhood {
         enum urbanization -listcmd {eurbanization names} -defvalue URBAN
 
         rcc "Controller:" -for controller
-        enum controller -listcmd {ptype a+none names} -defvalue NONE
+        enum controller -listcmd {$adb_ ptype a+none names} -defvalue NONE
 
         rcc "Reference Point:" -for refpoint
         text refpoint
@@ -722,9 +722,9 @@ snit::type ::athena::nbhood {
         my prepare longname      -normalize
         my prepare refpoint      -required  
         my prepare polygon       -required           
-        my prepare local         -toupper            -type boolean
-        my prepare urbanization  -toupper            -type eurbanization
-        my prepare controller    -toupper            -type {ptype a+none}
+        my prepare local         -toupper            -required -type boolean
+        my prepare urbanization  -toupper            -required -type eurbanization
+        my prepare controller    -toupper            -required -type [list $adb ptype a+none]
         my prepare pcf           -num                -type rnonneg
 
         my returnOnError
@@ -973,7 +973,7 @@ snit::type ::athena::nbhood {
         enum urbanization -listcmd {eurbanization names}
 
         rcc "Controller:" -for controller
-        enum controller -listcmd {ptype a+none names}
+        enum controller -listcmd {$adb_ ptype a+none names}
 
         rcc "Reference Point:" -for refpoint
         text refpoint
@@ -995,7 +995,7 @@ snit::type ::athena::nbhood {
         my prepare longname     -normalize
         my prepare local        -toupper             -type boolean
         my prepare urbanization -toupper             -type eurbanization
-        my prepare controller   -toupper             -type {ptype a+none}
+        my prepare controller   -toupper             -type [list $adb ptype a+none]
         my prepare pcf          -num                 -type rnonneg
         my prepare refpoint     -toupper             -type refpoint
         my prepare polygon      -normalize -toupper  -type refpoly
@@ -1090,7 +1090,7 @@ snit::type ::athena::nbhood {
         enum urbanization -listcmd {eurbanization names}
 
         rcc "Controller:" -for controller
-        enum controller -listcmd {ptype a+none names}
+        enum controller -listcmd {$adb_ ptype a+none names}
 
         rcc "Prod. Capacity Factor:" -for pcf
         text pcf
@@ -1101,7 +1101,7 @@ snit::type ::athena::nbhood {
         my prepare ids          -toupper -required -listof [list $adb nbhood]
         my prepare local        -toupper           -type   boolean
         my prepare urbanization -toupper           -type   eurbanization
-        my prepare controller   -toupper           -type   {ptype a+none}
+        my prepare controller   -toupper           -type   [list $adb ptype a+none]
         my prepare pcf          -num               -type   rnonneg
     }
 

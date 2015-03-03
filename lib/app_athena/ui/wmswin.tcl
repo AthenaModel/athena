@@ -487,8 +487,8 @@ snit::widget wmswin {
         # NEXT, extract map projection meta-data
         set proj [$map cget -projection]
         set parms(projtype) RECT
-        set parms(llon)   [$proj cget -minlon]
-        set parms(ulon)   [$proj cget -maxlon]
+        set parms(ulon)   [$proj cget -minlon]
+        set parms(llon)   [$proj cget -maxlon]
         set parms(llat)   [$proj cget -minlat]
         set parms(ulat)   [$proj cget -maxlat]
         set parms(width)  [$proj cget -width]
@@ -522,11 +522,18 @@ snit::widget wmswin {
         }
     }
 
+    # MapCompatible
+    #
+    # Returns 1 if all neighborhoods that currently exist fit within
+    # the bounds of the projection, 0 otherwise.
+
     method MapCompatible {} {
+        # FIRST, no neighborhoods; all is good
         if {[llength [nbhood names]] == 0} {
             return 1
         }
 
+        # NEXT, check against projection
         set proj [$map cget -projection]
         set minlon [$proj cget -minlon]
         set maxlon [$proj cget -maxlon]

@@ -554,7 +554,7 @@ snit::widget mapviewer {
     method ZoomBoxSet {} {
         scan $view(zoom) "%d" factor
         $canvas zoom $factor
-        if {[map image] eq ""} {
+        if {$mapimage eq ""} {
             $self DefaultMap $factor
         }
     }
@@ -1176,12 +1176,6 @@ snit::widget mapviewer {
     #-------------------------------------------------------------------
     # Event Handlers: notifier(n)
 
-    # EntityNbhood delete n
-    #
-    # n     The neighborhood ID
-    #
-    # Delete the neighborhood from the mapcanvas.
-
     # EntityNbhood update n
     #
     # n     The neighborhood ID
@@ -1207,6 +1201,12 @@ snit::widget mapviewer {
         # NEXT, check for nbhoods outside map boundaries
         $self NbhoodBoundsCheck
     }
+
+    # EntityNbhood delete n
+    #
+    # n     The neighborhood ID
+    #
+    # Delete the neighborhood from the mapcanvas.
 
     method {EntityNbhood delete} {n} {
         # FIRST, delete it from the canvas
