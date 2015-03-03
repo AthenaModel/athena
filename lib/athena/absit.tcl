@@ -134,19 +134,19 @@ snit::type ::athena::absit {
     # absits.
 
     method get {s {parm ""}} {
-        # FIRST, get the data
-        $adb eval {SELECT * FROM absits WHERE s=$s} row {
-            if {$parm ne ""} {
-                return $row($parm)
-            } else {
-                unset row(*)
-                return [array get row]
-            }
-        }
-
-        return ""
+        return [dbget $adb absits s $s $parm]
     }
 
+    # view s ?tag?
+    #
+    # s     - A situation ID
+    # tag   - An optional view tag (ignored)
+    #
+    # Retrieves a view dictionary for the absit.
+
+    method view {s {tag ""}} {
+        return [dbget $adb gui_absits s $s]
+    }
 
 
     # existsInNbhood n ?stype?
@@ -209,6 +209,16 @@ snit::type ::athena::absit {
         }]
     }
 
+    # exists s
+    #
+    # s  - A situation ID
+    #
+    # Returns 1 if s is an absit and 0 otherwise.
+
+    method exists {s} {
+        return [dbexists $adb absits s $s]
+    }
+
 
     # validate s
     #
@@ -217,7 +227,7 @@ snit::type ::athena::absit {
     # Verifies that s is an absit.
 
     method validate {s} {
-        if {$s ni [$self names]} {
+        if {![$self exists $s]} {
             return -code error -errorcode INVALID \
                 "Invalid abstract situation ID: \"$s\""
         }
@@ -283,6 +293,25 @@ snit::type ::athena::absit {
         return $s
     }
 
+    # isinitial s
+    #
+    # s    - A situation ID
+    #
+    # Returns 1 if the situation is in the initial state, and 0 otherwise.
+
+    method isinitial {s} {
+        expr {[$self get $s state] eq "INITIAL"}
+    }
+
+    # islive s
+    #
+    # s    - A situation ID
+    #
+    # Returns 1 if the situation is in the live state, and 0 otherwise.
+
+    method islive {s} {
+        expr {[$self get $s state] ne "RESOLVED"}
+    }
 
     #-------------------------------------------------------------------
     # Mutators

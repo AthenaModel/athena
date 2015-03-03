@@ -105,6 +105,13 @@ snit::type ::athena::athena {
     # subcommands we really want to expose.
 
     # ADB
+    delegate method {absit exists}       to adb as {absit exists}
+    delegate method {absit get}          to adb as {absit get}
+    delegate method {absit isinitial}    to adb as {absit isinitial}
+    delegate method {absit islive}       to adb as {absit islive}
+    delegate method {absit names}        to adb as {absit names}
+    delegate method {absit validate}     to adb as {absit validate}
+    delegate method {absit view}         to adb as {absit view}
     delegate method adbfile              to adb
     delegate method autogen              to adb
     delegate method dbsync               to adb

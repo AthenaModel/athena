@@ -1353,7 +1353,7 @@ snit::widget mapviewer {
         set itype $icons(itype-$cid)
 
         if {$itype eq "situation"} {
-            return [expr {$sid in [absit initial names]}]
+            return [adb absit isinitial $sid]
         } else {
             return 1
         }

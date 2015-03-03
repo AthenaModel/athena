@@ -138,7 +138,7 @@ snit::widgetadaptor absitbrowser {
         if {[llength [$self uid curselection]] == 1} {
             set id [lindex [$self uid curselection] 0]
 
-            if {$id in [absit initial names]} {
+            if {[adb absit isinitial $id]} {
                 return 1
             }
         }
@@ -155,7 +155,7 @@ snit::widgetadaptor absitbrowser {
         if {[llength [$self uid curselection]] == 1} {
             set id [lindex [$self uid curselection] 0]
 
-            if {$id in [absit initial names]} {
+            if {[adb absit isinitial $id]} {
                 return 1
             }
         }
@@ -172,7 +172,7 @@ snit::widgetadaptor absitbrowser {
         if {[llength [$self uid curselection]] == 1} {
             set id [lindex [$self uid curselection] 0]
 
-            if {$id in [absit live names]} {
+            if {[adb absit islive $id]} {
                 return 1
             }
         }

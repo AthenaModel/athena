@@ -147,6 +147,9 @@ snit::type ted {
 
         app init [list -ignoreuser]
 
+        # NEXT, define ::tdb
+        interp alias {} ::tdb {} [::adb athenadb]
+
         puts "app_athena(n) initialized."
 
         # NEXT, initialize tcltest(n).
@@ -189,7 +192,7 @@ snit::type ted {
     proc DefineEntities {} {
 
         # Neighborhoods
-        defentity NB1 ::nbhood {
+        defentity NB1 nbhood {
             n            NB1
             longname     "Here"
             local        1
@@ -201,7 +204,7 @@ snit::type ted {
             polygon      {0 0 2 0 2 2 0 2}
         }
 
-        defentity OV1 ::nbhood {
+        defentity OV1 nbhood {
             n            OV1
             longname     "Over Here"
             local        1
@@ -213,7 +216,7 @@ snit::type ted {
             polygon      {0 0 4 0 4 4 0 4}
         }
 
-        defentity NB2 ::nbhood {
+        defentity NB2 nbhood {
             n            NB2
             longname     "There"
             local        1
@@ -226,7 +229,7 @@ snit::type ted {
         }
 
 
-        defentity NB3 ::nbhood {
+        defentity NB3 nbhood {
             n            NB3
             longname     "County"
             local        1
@@ -238,7 +241,7 @@ snit::type ted {
             polygon      {6 6 8 6 8 8 6 8}
         }
 
-        defentity NB4 ::nbhood {
+        defentity NB4 nbhood {
             n            NB4
             longname     "Town"
             local        1
@@ -250,7 +253,7 @@ snit::type ted {
             polygon      {8 8 10 8 10 10 8 10}
         }
 
-        defentity NL1 ::nbhood {
+        defentity NL1 nbhood {
             n            NL1
             longname     "Not Local"
             local        0
@@ -264,7 +267,7 @@ snit::type ted {
 
         # Actors
         
-        defentity JOE ::actor {
+        defentity JOE actor {
             a                JOE
             longname         "Joe the Actor"
             bsid             1
@@ -282,7 +285,7 @@ snit::type ted {
             budget           0
         }
 
-        defentity BOB ::actor {
+        defentity BOB actor {
             a                BOB
             longname         "Bob the Actor"
             bsid             1
@@ -300,7 +303,7 @@ snit::type ted {
             budget           0
         }
 
-        defentity DAVE ::actor {
+        defentity DAVE actor {
             a                DAVE
             longname         "Dave the Actor"
             bsid             1
@@ -318,7 +321,7 @@ snit::type ted {
             budget           0
         }
 
-        defentity BRIAN ::actor {
+        defentity BRIAN actor {
             a                BRIAN
             longname         "Brian the Actor"
             bsid             1
@@ -336,7 +339,7 @@ snit::type ted {
             budget           0
         }
 
-        defentity WILL ::actor {
+        defentity WILL actor {
             a                WILL
             longname         "Will the Actor"
             bsid             1
@@ -356,7 +359,7 @@ snit::type ted {
 
         # Civ Groups
         
-        defentity SHIA ::civgroup {
+        defentity SHIA civgroup {
             g         SHIA
             longname  "Shia"
             bsid      1
@@ -372,7 +375,7 @@ snit::type ted {
             upc       0.0
         } NB1
 
-        defentity SUNN ::civgroup {
+        defentity SUNN civgroup {
             g         SUNN
             longname  "Sunni"
             bsid      1
@@ -388,7 +391,7 @@ snit::type ted {
             upc       0.0
         } NB1
 
-        defentity KURD ::civgroup {
+        defentity KURD civgroup {
             g         KURD
             longname  "Kurd"
             bsid      1
@@ -404,7 +407,7 @@ snit::type ted {
             upc       0.0
         } NB2
 
-        defentity NO_ONE ::civgroup {
+        defentity NO_ONE civgroup {
             g         NO_ONE
             longname  "Nobody"
             bsid      1
@@ -420,7 +423,7 @@ snit::type ted {
             upc       0.0
         } NB2
 
-        defentity NOT_LOCALS ::civgroup {
+        defentity NOT_LOCALS civgroup {
             g         NOT_LOCALS
             longname  "Not Locals"
             bsid      1
@@ -438,7 +441,7 @@ snit::type ted {
 
         # Force Groups
 
-        defentity BLUE ::frcgroup {
+        defentity BLUE frcgroup {
             g              BLUE
             longname       "US Army"
             a              JOE
@@ -451,7 +454,7 @@ snit::type ted {
             local          0
         } JOE
 
-        defentity BRIT ::frcgroup {
+        defentity BRIT frcgroup {
             g              BRIT
             longname       "British Forces"
             a              JOE
@@ -464,7 +467,7 @@ snit::type ted {
             local          0
         } JOE
         
-        defentity ALQ ::frcgroup {
+        defentity ALQ frcgroup {
             g              ALQ
             longname       "Al Qaeda"
             a              BOB
@@ -477,7 +480,7 @@ snit::type ted {
             local          0
         } BOB
         
-        defentity TAL ::frcgroup {
+        defentity TAL frcgroup {
             g              TAL
             longname       "Taliban"
             a              BOB
@@ -492,7 +495,7 @@ snit::type ted {
         
         # Organization Groups
 
-        defentity USAID ::orggroup {
+        defentity USAID orggroup {
             g              USAID
             longname       "US Aid"
             a              JOE
@@ -503,7 +506,7 @@ snit::type ted {
             cost           0.0
         } JOE
 
-        defentity HAL ::orggroup {
+        defentity HAL orggroup {
             g              HAL
             longname       "Haliburton"
             a              JOE
@@ -515,7 +518,7 @@ snit::type ted {
         } JOE
 
         # Comm. Asset Packages
-        defentity CBS ::cap {
+        defentity CBS cap {
             k        CBS
             longname "Columbia Broadcasting System"
             owner    JOE
@@ -525,7 +528,7 @@ snit::type ted {
             glist    SHIA
         } JOE NB1 SHIA
 
-        defentity NBC ::cap {
+        defentity NBC cap {
             k        NBC
             longname "National Broadcasting Corp."
             owner    JOE
@@ -535,7 +538,7 @@ snit::type ted {
             glist    SHIA
         } JOE NB1 SHIA
 
-        defentity ABC ::cap {
+        defentity ABC cap {
             k        ABC
             longname "American Broadcasting Corp."
             owner    JOE
@@ -545,7 +548,7 @@ snit::type ted {
             glist    SHIA
         } JOE NB1 SHIA
 
-        defentity CNN ::cap {
+        defentity CNN cap {
             k        CNN
             longname "Cable News Network"
             owner    BOB
@@ -555,7 +558,7 @@ snit::type ted {
             glist    {SUNN KURD}
         } BOB NB1 NB2 SUNN KURD
     
-        defentity FOX ::cap {
+        defentity FOX cap {
             k        FOX
             longname "Fox News"
             owner    BOB
@@ -565,7 +568,7 @@ snit::type ted {
             glist    {SUNN KURD}
         } BOB NB1 NB2 SUNN KURD
 
-        defentity PBS ::cap {
+        defentity PBS cap {
             k        PBS
             longname "Public Broadcasting System"
             owner    BOB
@@ -576,24 +579,24 @@ snit::type ted {
         } JOE NB1 SHIA
 
         # Hooks
-        defentity HOOK1 ::hook {
+        defentity HOOK1 hook {
             hook_id  HOOK1
             longname "Hook One"
         }
 
-        defentity HOOK2 ::hook {
+        defentity HOOK2 hook {
             hook_id  HOOK2
             longname "Hook Two"
         }
 
         # IOMs 
-        defentity IOM1 ::iom {
+        defentity IOM1 iom {
             iom_id   IOM1
             longname "IOM One"
             hook_id  HOOK1
         } HOOK1
 
-        defentity IOM2 ::iom {
+        defentity IOM2 iom {
             iom_id   IOM2
             longname "IOM Two"
             hook_id  HOOK2
@@ -651,20 +654,13 @@ snit::type ted {
     typemethod create {args} {
         foreach name $args {
             if {$name ni $createdEntities} {
-                lassign $entities($name) module parmdict parents
+                lassign $entities($name) comp parmdict parents
 
                 # FIRST, Create any entities on which this entity depends
                 $type create {*}$parents
 
                 # NEXT, create the requested entity
-                if {$module in {
-                    ::actor ::absit ::cap ::civgroup ::frcgroup ::nbhood 
-                    ::orggroup ::hook ::iom
-                }} {
-                    {*}$module create $parmdict
-                } else {
-                    {*}$module mutate create $parmdict
-                }
+                tdb $comp create $parmdict
 
                 lappend createdEntities $name
             }
@@ -685,7 +681,7 @@ snit::type ted {
             parm set econ.gdpExp 0
             parm set econ.empExp 0
         }
-        absit reconcile
+        tdb absit reconcile
         ted order SIM:LOCK
     }
 
@@ -770,11 +766,6 @@ snit::type ted {
     # Executes the command in the Executive's client interpreter,
     # and returns the result.  If -error is specified, expects an error
     # returns the error message.
-    #
-    # Examples: The following calls are equivalent
-    #
-    #    ted sendex magic absit BADFOOD {1.0 1.0}
-    #    ted sendex {magic absit BADFOOD {1.0 1.0}} 
 
     typemethod sendex {args} {
         # FIRST, is -error specified?
@@ -1427,13 +1418,3 @@ snit::type ted {
 
 }
 
-
-# tdb subcommand ?...?
-#
-# Calls the test scenario.
-
-proc tdb {args} {
-    set adb [adb athenadb]
-
-    uplevel 1 [list $adb {*}$args]
-}

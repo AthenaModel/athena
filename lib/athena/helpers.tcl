@@ -166,3 +166,43 @@ proc ::athena::caller {} {
         return "*unknown*"
     }
 }
+
+# dbexists db table key value
+#
+# db    - Database handle
+# table - Table name
+# key   - Key column name
+# value - Key value
+#
+# Returns 1 if the row exists, and 0 otherwise.
+
+proc ::athena::dbexists {db table key value} {
+    return [$db exists "
+        SELECT $key FROM $table 
+        WHERE $key = \$value
+    "]
+}
+
+# dbget db table key value ?column?
+#
+# db     - Database handle
+# table  - Table name
+# key    - Key column name
+# value  - Key value
+# column - An optional column name
+#
+# If the row doesn't exist, returns "".  If it exists, returns the value
+# of the specified column, or the entire dictionary.
+
+proc ::athena::dbget {db table key value {column ""}} {
+    $db eval "SELECT * FROM $table WHERE $key=\$value" row {
+        if {$column ne ""} {
+            return $row($column)
+        } else {
+            unset row(*)
+            return [array get row]
+        }
+    }
+
+    return ""
+}
