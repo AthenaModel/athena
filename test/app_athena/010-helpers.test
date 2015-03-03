@@ -70,7 +70,7 @@ namespace eval ::athena_test::tests {
         set parms(demeanor) ""
         set parms(NONESUCH) ""
 
-        ::athena::fillparms parms [civgroup getg SHIA]
+        ::athena::fillparms parms [tdb civgroup get SHIA]
         ted pdict [array get parms]
 
         # Parms with values are unchanged.

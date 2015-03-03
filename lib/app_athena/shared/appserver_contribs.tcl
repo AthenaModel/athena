@@ -191,7 +191,7 @@ appserver module CONTRIBS {
         set f [string toupper $f]
         set g [string toupper $g]
 
-        if {$f ni [civgroup names]} {
+        if {![adb civgroup exists $f]} {
             set f "?"
         }
 
@@ -443,7 +443,7 @@ appserver module CONTRIBS {
         # NEXT, get the group
         set g [string toupper $g]
 
-        if {$g ni [civgroup names]} {
+        if {![adb civgroup exists $g]} {
             set g "?"
         }
 
@@ -825,7 +825,7 @@ appserver module CONTRIBS {
         set g [string toupper $g]
         set c [string toupper $c]
 
-        if {$g ni [civgroup names]} {
+        if {![adb civgroup exists $g]} {
             set g "?"
         }
 

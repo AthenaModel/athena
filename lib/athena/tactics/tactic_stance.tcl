@@ -116,7 +116,7 @@
             set nbhoods [[my adb] gofer eval $nlist]
             set groups [list]
             foreach n $nbhoods {
-                set groups [concat $groups [civgroup gIn $n]]
+                set groups [concat $groups [[my adb] civgroup gIn $n]]
             }
         } else {
             set groups [[my adb] gofer eval $glist]

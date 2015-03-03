@@ -7,7 +7,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    civgroup(sim) tests.
+#    tdb civgroup(sim) tests.
 #
 #    This test suite tests the gofer::CIVGROUPS type.
 #

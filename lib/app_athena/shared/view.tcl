@@ -1027,7 +1027,7 @@ snit::type view {
     # Validates {f g} for cooperation
     
     proc fg_coop {domain vartype f g} {
-        ValidateIndex $domain $vartype f $f {civgroup validate $f}
+        ValidateIndex $domain $vartype f $f {adb civgroup validate $f}
         ValidateIndex $domain $vartype g $g {frcgroup validate $g}
     }
 
@@ -1064,7 +1064,7 @@ snit::type view {
     # concern.
     
     proc gc {domain vartype g c} {
-        ValidateIndex $domain $vartype g $g {civgroup validate $g}
+        ValidateIndex $domain $vartype g $g {adb civgroup validate $g}
         ValidateIndex $domain $vartype c $c {ptype c validate $c}
     }
 
@@ -1081,7 +1081,7 @@ snit::type view {
     # Validates {g} as a satisfaction group
     
     proc g_sat {domain vartype g} {
-        ValidateIndex $domain $vartype g $g {civgroup validate $g}
+        ValidateIndex $domain $vartype g $g {adb civgroup validate $g}
     }
 
     # Proc: g_frc
@@ -1123,7 +1123,7 @@ snit::type view {
     # Validates {f g} for cooperation
     
     proc fg_coop {domain vartype f g} {
-        ValidateIndex $domain $vartype f $f {civgroup validate $f}
+        ValidateIndex $domain $vartype f $f {adb civgroup validate $f}
         ValidateIndex $domain $vartype g $g {frcgroup validate $g}
     }
 
@@ -1150,7 +1150,7 @@ snit::type view {
     # Validates {n g c} as a satisfaction curve
     
     proc gc_sat {domain vartype g c} {
-        ValidateIndex $domain $vartype g $g {civgroup validate $g}
+        ValidateIndex $domain $vartype g $g {adb civgroup validate $g}
         ValidateIndex $domain $vartype c $c {ptype c validate $c}
     }
 }

@@ -130,10 +130,10 @@ appserver module GROUPS {
         upvar 1 $matchArray ""
 
         switch -exact -- $(1) {
-            ""   { return [group names] }
-            civ  { return [civgroup names] }
-            frc  { return [frcgroup names] }
-            org  { return [orggroup names] }
+            ""   { return [adb group names] }
+            civ  { return [adb civgroup names] }
+            frc  { return [adb frcgroup names] }
+            org  { return [adb orggroup names] }
             default {
                 error "Unexpected group type: \"$(1)\""
             }

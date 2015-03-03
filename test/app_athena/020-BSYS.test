@@ -262,7 +262,7 @@ namespace eval ::athena_test::tests:: {
     test SYSTEM:DELETE-1.5 {can't delete if in use by group} -setup {
         ted create SHIA
         ted order BSYS:SYSTEM:ADD sid 2
-        civgroup update {g SHIA bsid 2}
+        tdb civgroup update {g SHIA bsid 2}
     } -body {
         ted order -reject BSYS:SYSTEM:DELETE sid 2
     } -cleanup {

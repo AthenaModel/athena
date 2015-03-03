@@ -148,6 +148,14 @@ snit::type ::athena::athena {
     delegate method {bsys topic validate}   to adb as {bsys topic validate}
     delegate method {bsys topic view}       to adb as {bsys topic view}
 
+    delegate method {civgroup exists}       to adb as {civgroup exists}
+    delegate method {civgroup get}          to adb as {civgroup get}
+    delegate method {civgroup local}        to adb as {civgroup local}
+    delegate method {civgroup namedict}     to adb as {civgroup namedict}
+    delegate method {civgroup names}        to adb as {civgroup names}
+    delegate method {civgroup validate}     to adb as {civgroup validate}
+    delegate method {civgroup view}         to adb as {civgroup view}
+
     delegate method contribs                to adb as {aram contribs}
     delegate method dbsync                  to adb
     delegate method enter                   to adb

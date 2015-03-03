@@ -278,6 +278,7 @@ snit::type ::athena::athenadb {
             bsys                        \
             cap                         \
             cash                        \
+            civgroup                    \
             coop                        \
             control                     \
             control_model               \
@@ -298,7 +299,6 @@ snit::type ::athena::athenadb {
 
         $self MakeComponentsWithGlobal  \
             aam                         \
-            civgroup                    \
             curse                       \
             econ                        \
             executive                   \

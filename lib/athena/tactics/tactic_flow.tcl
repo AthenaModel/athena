@@ -146,8 +146,8 @@
         [my adb] personnel flow $f $g $delta
         
         # NEXT, log the changes.
-        set m [civgroup getg $f n]
-        set n [civgroup getg $g n]
+        set m [[my adb] civgroup get $f n]
+        set n [[my adb] civgroup get $g n]
         
         [my adb] sigevent log 2 tactic "
             FLOW: $delta people moved from {group:$f} in {nbhood:$m}
