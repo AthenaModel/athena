@@ -722,9 +722,9 @@ snit::type ::athena::nbhood {
         my prepare longname      -normalize
         my prepare refpoint      -required  
         my prepare polygon       -required           
-        my prepare local         -toupper            -type boolean
-        my prepare urbanization  -toupper            -type eurbanization
-        my prepare controller    -toupper            -type [list $adb ptype a+none]
+        my prepare local         -toupper            -required -type boolean
+        my prepare urbanization  -toupper            -required -type eurbanization
+        my prepare controller    -toupper            -required -type [list $adb ptype a+none]
         my prepare pcf           -num                -type rnonneg
 
         my returnOnError

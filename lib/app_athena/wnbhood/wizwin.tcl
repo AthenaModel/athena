@@ -167,7 +167,7 @@ snit::widget ::wnbhood::wizwin {
                 set parms(refpoint)   $refpt
                 set parms(longname)   $name
                 set parms(polygon)    $poly
-                set parms(controller) ""
+                set parms(controller) NONE
 
                 flunky senddict gui NBHOOD:CREATE:RAW [array get parms]
 
