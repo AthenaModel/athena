@@ -127,12 +127,8 @@ snit::type ::athena::athenadb {
     component hist           -public hist           ;# results history
     component parm           -public parm           ;# model parameter DB
     component paster         -public paste          ;# paste manager
-<<<<<<< HEAD
     component pot            -public bean           ;# beanpot(n)
-=======
-    component pot            -public pot            ;# beanpot(n)
     component ptype          -public ptype          ;# app level type validators
->>>>>>> master
     component ruleset        -public ruleset        ;# rule set manager
     component sanity         -public sanity         ;# sanity checker
     component sim            -public sim            ;# Simulation Control

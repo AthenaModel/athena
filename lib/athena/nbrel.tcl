@@ -165,13 +165,8 @@ snit::type ::athena::nbrel {
 
 
     method _validate {} {
-<<<<<<< HEAD
         my prepare ids           -toupper  -required -listof [list $adb nbrel]
-        my prepare proximity     -toupper            -type {ptype prox-HERE}
-=======
-        my prepare ids           -toupper  -required -listof nbrel
         my prepare proximity     -toupper            -type [list $adb ptype prox-HERE]
->>>>>>> master
     
         my returnOnError
     

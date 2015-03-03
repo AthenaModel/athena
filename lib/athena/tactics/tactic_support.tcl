@@ -51,7 +51,7 @@
         # a
         if {$a eq ""} {
             dict set errdict a "No actor specified."
-        } elseif {$a ni [ptype a+self+none names]} {
+        } elseif {$a ni [[my adb] ptype a+self+none names]} {
             dict set errdict a "No such actor: \"$a\"."
         }
 
