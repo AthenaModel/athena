@@ -63,8 +63,8 @@ namespace eval ::athena_test::tests:: {
         # NEXT, lock everything and create the coffer
         econ setstate DISABLED
         ted lock
-        cash load
-        personnel load
+        tdb cash load
+        tdb personnel load
         set coffer [::athena::coffer new [::adb athenadb] JOE]
 
         # NEXT, enable the blocks again.

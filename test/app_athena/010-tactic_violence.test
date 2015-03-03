@@ -52,8 +52,8 @@ namespace eval ::athena_test::tests:: {
         set T1 [ted addtactic $B1 VIOLENCE]
 
         # NEXT, prepare for obligation
-        personnel start
-        personnel load
+        tdb personnel start
+        tdb personnel load
         set coffer [::athena::coffer new [::adb athenadb] JOE]
     }
 

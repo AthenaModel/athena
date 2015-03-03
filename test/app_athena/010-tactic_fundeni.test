@@ -43,7 +43,7 @@ namespace eval ::athena_test::tests:: {
         variable coffer
         ted create JOE BOB NB1 NB2 SHIA SUNN KURD NO_ONE
 
-        demog start
+        tdb demog start
         adb eval {
             UPDATE demog_g SET population=10000 WHERE g='SHIA';
             UPDATE demog_g SET population=20000 WHERE g='SUNN';
@@ -58,7 +58,7 @@ namespace eval ::athena_test::tests:: {
         service start
         service load
         service save
-        cash load
+        tdb cash load
 
         set coffer [::athena::coffer new [::adb athenadb] JOE]
 

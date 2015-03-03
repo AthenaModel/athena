@@ -46,10 +46,10 @@ namespace eval ::athena_test::tests:: {
             VALUES('NB1', 'JOE', 2, 0.9);
         }
 
-        personnel start
-        personnel load
+        tdb personnel start
+        tdb personnel load
         plant start
-        cash load
+        tdb cash load
     }
 
     # Clean up after a test

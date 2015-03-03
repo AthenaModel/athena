@@ -45,7 +45,7 @@ namespace eval ::athena_test::tests:: {
 
     proc setup {} {
         ted create JOE BOB BLUE USAID NB1 NB2 SHIA SUNN KURD
-        demog start
+        tdb demog start
         service reset
         adb eval {
             UPDATE demog_g SET population=10000 WHERE g='SHIA';

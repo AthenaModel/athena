@@ -101,7 +101,7 @@ namespace eval ::athena_test::tests:: {
     proc mkunits {args} {
         variable units
 
-        personnel start
+        tdb personnel start
 
         adb eval { DELETE FROM units }
 
@@ -217,7 +217,7 @@ HAL-NB1/0000   15
     } -body {
         aam attrit [list mode GROUP n NB1 f KURD casualties 20 g1 "" g2 ""]
         aam assess
-        demog stats
+        tdb demog stats
 
         # No error
         pprint_demog_g
@@ -236,7 +236,7 @@ KURD 0         1000
     } -body {
         aam attrit [list mode GROUP n NB1 f SHIA casualties 20 g1 "" g2 ""]
         aam assess
-        demog stats
+        tdb demog stats
 
         pprint_demog_g
     } -cleanup {
@@ -255,7 +255,7 @@ SUNN 0         1000
     } -body {
         aam attrit [list mode GROUP n NB1 f SHIA casualties 2000 g1 "" g2 ""]
         aam assess
-        demog stats
+        tdb demog stats
 
         pprint_demog_g
     } -cleanup {
@@ -314,7 +314,7 @@ SUNN/NB1 1000
         # Attriting an empty civilian group causes no problems.
         aam attrit [list mode GROUP n NB1 f SHIA casualties 2000 g1 "" g2 ""]
         aam assess
-        demog stats
+        tdb demog stats
 
         pprint_demog_g
     } -cleanup {
@@ -367,7 +367,7 @@ NB1 BRIT 200
     } -body {
         aam attrit [list mode NBHOOD n NB1 casualties 20 g1 "" g2 ""]
         aam assess
-        demog stats
+        tdb demog stats
 
         pprint_demog_g
     } -cleanup {
@@ -386,7 +386,7 @@ SUNN 10        990
     } -body {
         aam attrit [list mode NBHOOD n NB1 casualties 3000  g1 "" g2 ""]
         aam assess
-        demog stats
+        tdb demog stats
 
         pprint_demog_g
     } -cleanup {
@@ -405,7 +405,7 @@ SUNN 1000      0
     } -body {
         aam attrit [list mode NBHOOD n NB1 casualties 100  g1 "" g2 ""]
         aam assess
-        demog stats
+        tdb demog stats
 
         set a [pprint_demog_g]
         set b [ted query {SELECT u,personnel FROM units}]
@@ -458,7 +458,7 @@ USAID/NB1 15
     } -body {
         aam attrit [list mode NBHOOD n NB1 casualties 3000  g1 "" g2 ""]
         aam assess
-        demog stats
+        tdb demog stats
 
         pprint_demog_g
     } -cleanup {

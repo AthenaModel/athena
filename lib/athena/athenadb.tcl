@@ -271,32 +271,21 @@ snit::type ::athena::athenadb {
             actor                       \
             agent                       \
             bsys                        \
-            cash                        \
             civgroup                    \
-            coop                        \
-            control                     \
-            control_model               \
-            coverage_model              \
             curse                       \
-            demog                       \
             econ                        \
             executive                   \
             exporter                    \
             frcgroup                    \
             group                       \
-            hist                        \
             hook                        \
-            hrel                        \
             inject                      \
             iom                         \
-            map                         \
             nbhood                      \
-            nbrel                       \
             orggroup                    \
             parm                        \
             payload                     \
             plant                       \
-            personnel                   \
             rebase                      \
             {ruleset  ruleset_manager}  \
             sanity                      \
@@ -317,6 +306,17 @@ snit::type ::athena::athenadb {
             autogen                     \
             broadcast                   \
             cap                         \
+            cash                        \
+            coop                        \
+            control                     \
+            control_model               \
+            coverage_model              \
+            demog                       \
+            hist                        \
+            hrel                        \
+            map                         \
+            nbrel                       \
+            personnel                   \
 
 
         # NEXT, register the ones that are saveables.  This will change

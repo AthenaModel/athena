@@ -205,7 +205,7 @@
             return 
         }
 
-        cash spend $owner FUNDENI $trans(amount)
+        [my adb] cash spend $owner FUNDENI $trans(amount)
 
         # NEXT, Compute strings needed for logging.
         if {[llength $trans(glist)] == 1} {

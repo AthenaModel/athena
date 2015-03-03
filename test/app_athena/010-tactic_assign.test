@@ -59,9 +59,9 @@ namespace eval ::athena_test::tests:: {
         }
 
         # NEXT, prepare for obligation
-        cash load
-        personnel start
-        personnel load
+        tdb cash load
+        tdb personnel start
+        tdb personnel load
         set coffer [::athena::coffer new [::adb athenadb] JOE]
     }
 
@@ -594,7 +594,7 @@ namespace eval ::athena_test::tests:: {
         setcost 1
         settroops 1000
         $T1 configure -pmode SOME -personnel 100
-        personnel deploy 1 NB1 BLUE 1000
+        tdb personnel deploy 1 NB1 BLUE 1000
 
         $T1 obligate $coffer
     } -body {
@@ -613,7 +613,7 @@ BLUE 100
         setcost 1
         settroops 1000
         $T1 configure -pmode SOME -personnel 100
-        personnel deploy 1 NB1 BLUE 1000
+        tdb personnel deploy 1 NB1 BLUE 1000
 
         $T1 obligate $coffer
     } -body {

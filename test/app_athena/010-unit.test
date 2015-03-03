@@ -38,13 +38,13 @@ namespace eval ::athena_test::tests:: {
 
     proc setup {} {
         ted create NB1 NB2 BLUE USAID SHIA
-        demog start
-        personnel start
+        tdb demog start
+        tdb personnel start
         unit reset
-        personnel load
-        personnel deploy 1 NB1 BLUE  100
-        personnel deploy 2 NB2 USAID 100
-        personnel save
+        tdb personnel load
+        tdb personnel deploy 1 NB1 BLUE  100
+        tdb personnel deploy 2 NB2 USAID 100
+        tdb personnel save
     }
 
     # Clean up after a test

@@ -44,7 +44,7 @@ namespace eval ::athena_test::tests:: {
         variable coffer
         ted create JOE BOB
 
-        cash load
+        tdb cash load
         set coffer [::athena::coffer new [::adb athenadb] JOE]
 
         set B1 [ted addblock JOE]
@@ -58,7 +58,7 @@ namespace eval ::athena_test::tests:: {
 
     proc execute_setup {} {
         setup
-        cash load
+        tdb cash load
     }
 
 

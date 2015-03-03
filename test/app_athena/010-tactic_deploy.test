@@ -82,12 +82,12 @@ namespace eval ::athena_test::tests:: {
         variable coffer
 
         if {[sim state] eq "PREP"} {
-            demog start
-            personnel start
+            tdb demog start
+            tdb personnel start
         }
 
-        cash load
-        personnel load
+        tdb cash load
+        tdb personnel load
         set coffer [::athena::coffer new [::adb athenadb] JOE]
     }
 

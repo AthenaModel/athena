@@ -163,13 +163,13 @@ namespace eval ::athena_test::tests:: {
     proc execute_setup {} {
         setup
         [adb athenadb] aram init
-        demog start
+        tdb demog start
     }
 
     proc empty_setup {} {
         esetup
         [adb athenadb] aram init
-        demog start
+        tdb demog start
     }
 
     # Clean up after a test

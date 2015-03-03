@@ -168,7 +168,7 @@
         # can succeed with 0 troops. 
 
         if {$trans(personnel) > 0} {
-            personnel mobilize $g $trans(personnel)
+            [my adb] personnel mobilize $g $trans(personnel)
         }
 
         [my adb] sigevent log 1 tactic "
