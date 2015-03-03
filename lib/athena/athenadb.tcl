@@ -268,7 +268,6 @@ snit::type ::athena::athenadb {
 
         $self MakeComponentsWithGlobal  \
             aam                         \
-            actor                       \
             agent                       \
             bsys                        \
             civgroup                    \
@@ -297,6 +296,7 @@ snit::type ::athena::athenadb {
             abevent                     \
             absit                       \
             activity                    \
+            actor                       \
             autogen                     \
             broadcast                   \
             cap                         \

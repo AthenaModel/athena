@@ -74,7 +74,7 @@ snit::type ::athena::actor {
     method validate {a} {
         set names [$self names]
 
-        if {$a ni $names} {
+        if {![$self exists $a]} {
             set nameString [join $names ", "]
 
             if {$nameString ne ""} {
@@ -98,18 +98,30 @@ snit::type ::athena::actor {
     # actors.
 
     method get {a {parm ""}} {
-        # FIRST, get the data
-        $adb eval {SELECT * FROM actors WHERE a=$a} row {
-            if {$parm ne ""} {
-                return $row($parm)
-            } else {
-                unset row(*)
-                return [array get row]
-            }
-        }
-
-        return ""
+        return [dbget $adb actors a $a $parm]
     }
+
+    # exists a
+    #
+    # a    - An actor
+    #
+    # Returns 1 if a is an actor, and 0 otherwise.
+
+    method exists {a} {
+        return [dbexists $adb actors a $a]
+    }
+
+    # view a ?tag?
+    #
+    # a    - An actor
+    # tag  - A view tag (ignored)
+    #
+    # Retrieves a view dictionary for the actor.
+
+    method view {a {tag ""}} {
+        return [dbget $adb gui_actors a $a]
+    }
+
 
     # frcgroups a 
     #

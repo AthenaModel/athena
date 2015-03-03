@@ -1150,7 +1150,7 @@ snit::type view {
     
     proc ga_vrel {domain vartype g a} {
         ValidateIndex $domain $vartype g $g {group validate $g}
-        ValidateIndex $domain $vartype a $a {actor validate $a}
+        ValidateIndex $domain $vartype a $a {adb actor validate $a}
     }
 
     # Proc: gc_sat

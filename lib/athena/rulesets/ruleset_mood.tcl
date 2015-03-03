@@ -160,7 +160,7 @@
         my rule MOOD-1-1 $fdict {
             $delta < 0.0
         } {
-            foreach a [actor names] {
+            foreach a [my actor names] {
                 if {$a eq $controller} {
                     my vrel T $g $a [my mag/ $delta S-] "has control"
                 } else {
@@ -172,7 +172,7 @@
         my rule MOOD-1-2 $fdict {
             $delta > 0.0
         } {
-            foreach a [actor names] {
+            foreach a [my actor names] {
                 if {$a eq $controller} {
                     my vrel T $g $a [my mag/ $delta S+] "has control"
                 } else {

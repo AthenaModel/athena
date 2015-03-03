@@ -955,7 +955,7 @@ appserver module CONTRIBS {
             set g "?"
         }
 
-        if {$a ni [actor names]} {
+        if {![adb actor exists $a]} {
             set a "?"
         }
         

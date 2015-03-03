@@ -713,7 +713,7 @@ JOE
     test autogen_actors-1.2 {successful creation} -setup {
     } -body {
         ted sendex autogen actors
-        expr {[llength [actor names]] > 0}
+        expr {[llength [tdb actor names]] > 0}
     } -cleanup {
         cleanup
     } -result {1}
@@ -1135,7 +1135,7 @@ JOE
     test autogen_scenario-2.1 {successful creation} -setup {
     } -body {
         ted sendex autogen scenario -civg 1
-        set a [expr {[llength [actor names]] > 0}]
+        set a [expr {[llength [tdb actor names]] > 0}]
         set b [expr {[llength [nbhood names]] > 0}]
         set c [expr {[llength [civgroup names]] > 0}]
         set d [expr {[llength [frcgroup names]] > 0}]
@@ -1150,9 +1150,9 @@ JOE
     test autogen_scenario-2.2 {creating whole scenario dumps existing} -setup {
         ted sendex autogen scenario -civg 1
     } -body {
-        set a [llength [actor names]]
+        set a [llength [tdb actor names]]
         ted sendex autogen scenario -civg 1
-        set b [llength [actor names]] 
+        set b [llength [tdb actor names]] 
 
         expr {$a == $b}
 

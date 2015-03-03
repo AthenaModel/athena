@@ -48,7 +48,7 @@ namespace eval ::athena_test::tests:: {
     # mutate create
 
     test create-1.1 {actor is created} -body {
-        actor create [ted entity JOE]
+        tdb actor create [ted entity JOE]
         ted querylist {SELECT * FROM actors}
     } -cleanup {
         cleanup
@@ -71,7 +71,7 @@ budget            0.0
     }
 
     test create-1.3 {supports=NONE => NULL} -body {
-        actor create [dict merge [ted entity JOE] {supports NONE}]
+        tdb actor create [dict merge [ted entity JOE] {supports NONE}]
         ted querylist {SELECT * FROM actors}
     } -cleanup {
         cleanup
@@ -94,7 +94,7 @@ budget            0.0
     }
 
     test create-1.4 {Strategy created} -body {
-        actor create [ted entity JOE]
+        tdb actor create [ted entity JOE]
         info object isa object [strategy getname JOE]
     } -cleanup {
         cleanup
@@ -102,8 +102,8 @@ budget            0.0
 
 
     test create-2.1 {undo deletes the actor} -setup {
-        actor create [ted entity JOE]
-        set undo [actor create [ted entity BOB]]
+        tdb actor create [ted entity JOE]
+        set undo [tdb actor create [ted entity BOB]]
     } -body {
         namespace eval :: $undo
         adb eval {SELECT a FROM actors}
@@ -112,7 +112,7 @@ budget            0.0
     } -result {JOE}
 
     test create-2.3 {undo deletes the strategy} -setup {
-        set undo [actor create [ted entity JOE]]
+        set undo [tdb actor create [ted entity JOE]]
     } -body {
         namespace eval :: $undo
         info object isa object ::strategy::JOE
@@ -126,7 +126,7 @@ budget            0.0
     test delete-1.1 {Actor is deleted} -setup {
         ted create JOE BOB
     } -body {
-        actor delete JOE
+        tdb actor delete JOE
 
         # Is JOE gone?
         adb eval {SELECT a FROM actors}
@@ -136,7 +136,7 @@ budget            0.0
 
     test delete-2.1 {Undo restores actor} -setup {
         ted create JOE
-        set undo [actor delete JOE]
+        set undo [tdb actor delete JOE]
     } -body {
         namespace eval :: $undo
         ted querylist {SELECT * FROM actors}
@@ -163,7 +163,7 @@ budget            0.0
     test delete-4.1 {groups.a set to NULL} -setup {
         ted create JOE BLUE USAID
     } -body {
-        actor delete JOE
+        tdb actor delete JOE
 
         adb eval {SELECT g,a FROM groups}
     } -cleanup {
@@ -175,7 +175,7 @@ budget            0.0
     } -body {
         set a [adb eval {SELECT g,a FROM groups}]
 
-        set undo [actor delete JOE]
+        set undo [tdb actor delete JOE]
         namespace eval :: $undo
 
         set b [adb eval {SELECT g,a FROM groups}]
@@ -191,7 +191,7 @@ budget            0.0
         ted create JOE
     } -body {
         set a [info object isa object [strategy getname JOE]]
-        actor delete JOE
+        tdb actor delete JOE
         set b [info object isa object ::strategy::JOE]
 
         list $a $b
@@ -201,7 +201,7 @@ budget            0.0
 
     test delete-7.2 {Undo restores strategy} -setup {
         ted create JOE
-        set undo [actor delete JOE]
+        set undo [tdb actor delete JOE]
     } -body {
         namespace eval :: $undo
         info object isa object [strategy getname JOE]
@@ -215,7 +215,7 @@ budget            0.0
             UPDATE actors SET supports = 'BOB' WHERE a = 'JOE'
         }
     } -body {
-        actor delete BOB
+        tdb actor delete BOB
 
         adb onecolumn {SELECT supports FROM actors WHERE a='JOE'}
     } -cleanup {
@@ -230,7 +230,7 @@ budget            0.0
     } -body {
         set a [adb eval {SELECT a,supports FROM actors}]
 
-        set undo [actor delete BOB]
+        set undo [tdb actor delete BOB]
         namespace eval :: $undo
 
         set b [adb eval {SELECT a,supports FROM actors}]
@@ -244,7 +244,7 @@ budget            0.0
         ted create JOE SHIA
         ted order VREL:OVERRIDE id {SHIA JOE}
     } -body {
-        actor delete JOE
+        tdb actor delete JOE
 
         adb eval {SELECT g,a FROM vrel_ga ORDER BY g,a}
     } -cleanup {
@@ -255,7 +255,7 @@ budget            0.0
         ted create JOE SHIA
         ted order VREL:OVERRIDE id {SHIA JOE}
 
-        set undo [actor delete JOE]
+        set undo [tdb actor delete JOE]
     } -body {
         namespace eval :: $undo
 
@@ -267,7 +267,7 @@ budget            0.0
     test delete-10.1 {caps.owner is set to NULL} -setup {
         ted create JOE CBS
     } -body {
-        actor delete JOE
+        tdb actor delete JOE
         adb eval {SELECT k,owner FROM caps}
     } -cleanup {
         cleanup
@@ -278,7 +278,7 @@ budget            0.0
     } -body {
         set a [adb eval {SELECT owner FROM caps}]
 
-        set undo [actor delete JOE]
+        set undo [tdb actor delete JOE]
         namespace eval :: $undo
 
         set b [adb eval {SELECT owner FROM caps}]
@@ -297,7 +297,7 @@ budget            0.0
     } -body {
         # NOTE: Because the atype changes, the
         # INPUT-atype-specific columns are zeroed.
-        actor update {
+        tdb actor update {
             a                JOE
             longname         "Joe the Actress"
             bsid             2
@@ -341,7 +341,7 @@ budget            10.0
     } -body {
         set a [ted querylist {SELECT * FROM actors}]
 
-        actor update  {
+        tdb actor update  {
             a                JOE
             longname         ""
             bsid             ""
@@ -372,7 +372,7 @@ budget            10.0
 
         set a [ted querylist {SELECT * FROM actors}]
 
-        set undo [actor update {
+        set undo [tdb actor update {
             a                JOE
             longname         "Joe the Actress"
             supports         BOB
@@ -403,7 +403,7 @@ budget            10.0
     # names
 
     test names-1.1 {Returns names: none defined} -body {
-        actor names
+        tdb actor names
     } -cleanup {
         cleanup
     } -result {}
@@ -411,7 +411,7 @@ budget            10.0
     test names-1.2 {Returns names} -setup {
         ted create JOE BOB
     } -body {
-        actor names
+        tdb actor names
     } -cleanup {
         cleanup
     } -result {BOB JOE}
@@ -421,7 +421,7 @@ budget            10.0
     # validate
 
     test validate-1.1 {Invalid name: none defined} -body {
-        actor validate NONESUCH
+        tdb actor validate NONESUCH
     } -returnCodes {
         error
     } -cleanup {
@@ -431,7 +431,7 @@ budget            10.0
     test validate-1.2 {Invalid name: some defined} -setup {
         ted create JOE BOB
     } -body {
-        actor validate NONESUCH
+        tdb actor validate NONESUCH
     } -returnCodes {
         error
     } -cleanup {
@@ -441,10 +441,16 @@ budget            10.0
     test validate-2.1 {Valid name} -setup {
         ted create JOE BOB
     } -body {
-        actor validate BOB
+        tdb actor validate BOB
     } -cleanup {
         cleanup
     } -result {BOB}
+
+    #-------------------------------------------------------------------
+    # exists
+
+    # Tested by validate.
+    
 
     #-------------------------------------------------------------------
     # get
@@ -452,7 +458,7 @@ budget            10.0
     test get-1.1 {get actor dict} -setup {
         ted create JOE
     } -body {
-        ted pdicts [actor get JOE]
+        ted pdicts [tdb actor get JOE]
     } -cleanup {
         cleanup
     } -match dict -result {
@@ -476,10 +482,47 @@ budget            10.0
     test get-1.2 {get actor attribute} -setup {
         ted create JOE
     } -body {
-        actor get JOE income_goods
+        tdb actor get JOE income_goods
     } -cleanup {
         cleanup
     } -result {10000.0}
+
+
+    #-------------------------------------------------------------------
+    # view
+
+    test view-1.1 {view actor dict} -setup {
+        ted create JOE
+    } -body {
+        ted pdicts [tdb actor view JOE]
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+        a                JOE
+        atype            INCOME
+        auto_maintain    0
+        bsid             1
+        bsysname         {Neutral (1)}
+        budget           0.00
+        cash_on_hand     0.00
+        cash_reserve     200,000
+        fancy            {JOE: Joe the Actor}
+        id               JOE
+        income           10,000
+        income_black_tax 0.00
+        income_goods     10,000
+        income_graft     0.00
+        income_pop       0.00
+        income_world     0.00
+        link             {<a href="my://app/actor/JOE">JOE</a>}
+        longlink         {<a href="my://app/actor/JOE">JOE: Joe the Actor</a>}
+        longname         {Joe the Actor}
+        pretty_am_flag   No
+        shares_black_nr  0
+        supports         SELF
+        supports_link    SELF
+        url              my://app/actor/JOE
+    }
 
     #-------------------------------------------------------------------
     # income
@@ -487,7 +530,7 @@ budget            10.0
     test income-1.1 {get actor income, no income_a} -setup {
         ted create JOE
 
-        actor update {
+        tdb actor update {
             a                JOE
             supports         ""
             atype            ""
@@ -501,7 +544,7 @@ budget            10.0
             budget           ""
         }
     } -body {
-        actor income JOE
+        tdb actor income JOE
     } -cleanup {
         cleanup
     } -result {11111.0}
@@ -513,7 +556,7 @@ budget            10.0
             INSERT INTO income_a(a, income) VALUES('JOE',12345.0)
         }
     } -body {
-        actor income JOE
+        tdb actor income JOE
     } -cleanup {
         cleanup
     } -result {12345.0}
@@ -521,7 +564,7 @@ budget            10.0
     test income-1.3 {get actor income, budget} -setup {
         ted create JOE
 
-        actor update {
+        tdb actor update {
             a                JOE
             supports         ""
             atype            BUDGET
@@ -535,7 +578,7 @@ budget            10.0
             budget           12345.0
         }
     } -body {
-        actor income JOE
+        tdb actor income JOE
     } -cleanup {
         cleanup
     } -result {12345.0}

@@ -104,8 +104,8 @@ BOB 150000.0     5000.0  5000.0       0.0
     test load-1.2 {load adds income} -setup {
         setup
     } -body {
-        array set joe [actor get JOE]
-        let a { $joe(cash_on_hand) + [actor income JOE] }
+        array set joe [tdb actor get JOE]
+        let a { $joe(cash_on_hand) + [tdb actor income JOE] }
 
         tdb cash load
         set b [adb onecolumn {
@@ -619,7 +619,7 @@ BOB 150000.0     5000.0
             SELECT cash_on_hand FROM working_cash WHERE a='WILL'
         }]
         tdb cash save
-        set b [actor get WILL cash_on_hand]
+        set b [tdb actor get WILL cash_on_hand]
     
         list $a $b
     } -cleanup {
