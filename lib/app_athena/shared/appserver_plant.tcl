@@ -397,7 +397,7 @@ appserver module PLANT {
 
         set a [string toupper $(1)]
 
-        if {$a ni [agent names]} {
+        if {![adb agent exists $a]} {
             return -code error -errorcode NOTFOUND \
                 "Unknown entity: [dict get $udict url]."
         }

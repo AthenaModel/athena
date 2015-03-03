@@ -102,12 +102,12 @@ appserver module AGENT {
         ht table {
             "Agent" "Type" "# Blocks" "# Conditions" "# Tactics"
         } {
-            foreach a [agent names] {
-                array set stats [agent stats $a]
+            foreach a [adb agent names] {
+                array set stats [adb agent stats $a]
 
                 ht tr {
                     ht td left  { ht link my://app/agent/$a $a }
-                    ht td left  { ht put [agent type $a]       }
+                    ht td left  { ht put [adb agent type $a]       }
                     ht td right { ht put $stats(blocks)        }
                     ht td right { ht put $stats(conditions)    }
                     ht td right { ht put $stats(tactics)       } 
@@ -137,7 +137,7 @@ appserver module AGENT {
         # FIRST, Accumulate data
         set a [string toupper $(1)]
 
-        if {$a ni [agent names]} {
+        if {![adb agent exists $a]} {
             return -code error -errorcode NOTFOUND \
                 "Unknown entity: [dict get $udict url]."
         }
@@ -191,7 +191,7 @@ appserver module AGENT {
         # FIRST, Accumulate data
         set a [string toupper $(1)]
 
-        if {$a ni [agent names]} {
+        if {![adb agent exists $a]} {
             return -code error -errorcode NOTFOUND \
                 "Unknown entity: [dict get $udict url]."
         }

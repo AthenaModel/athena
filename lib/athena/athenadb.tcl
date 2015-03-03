@@ -267,9 +267,36 @@ snit::type ::athena::athenadb {
         # types/classes with instances; each instance takes one argument,
         # the athenadb(n) handle.
 
+        $self MakeComponents            \
+            abevent                     \
+            absit                       \
+            activity                    \
+            actor                       \
+            agent                       \
+            autogen                     \
+            broadcast                   \
+            cap                         \
+            cash                        \
+            coop                        \
+            control                     \
+            control_model               \
+            coverage_model              \
+            demog                       \
+            hist                        \
+            hrel                        \
+            map                         \
+            nbrel                       \
+            personnel                   \
+            ptype                       \
+            rebase                      \
+            sat                         \
+            security_model              \
+            sigevent                    \
+            stance                      \
+            vrel
+
         $self MakeComponentsWithGlobal  \
             aam                         \
-            agent                       \
             bsys                        \
             civgroup                    \
             curse                       \
@@ -293,32 +320,6 @@ snit::type ::athena::athenadb {
             {strategy strategy_manager} \
             unit                        \
 
-        $self MakeComponents            \
-            abevent                     \
-            absit                       \
-            activity                    \
-            actor                       \
-            autogen                     \
-            broadcast                   \
-            cap                         \
-            cash                        \
-            coop                        \
-            control                     \
-            control_model               \
-            coverage_model              \
-            demog                       \
-            hist                        \
-            hrel                        \
-            map                         \
-            nbrel                       \
-            personnel                   \
-            ptype                       \
-            rebase                      \
-            sat                         \
-            security_model              \
-            sigevent                    \
-            stance                      \
-            vrel
 
 
         # NEXT, register the ones that are saveables.  This will change

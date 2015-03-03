@@ -456,8 +456,8 @@ snit::widget strategybrowser {
         # NEXT, if the currently selected agent no longer 
         # exists, select the first actor.
 
-        if {$info(agent) ni [agent names]} {
-            set info(agent) [lindex [agent names] 0]
+        if {![adb agent exists $info(agent)]} {
+            set info(agent) [lindex [adb agent names] 0]
             set info(block) ""
 
             $alist uid select $info(agent)
@@ -1936,7 +1936,7 @@ snit::widget strategybrowser {
             return 0
         }
 
-        expr {$typename in [agent tactictypes $info(agent)]}
+        expr {$typename in [adb agent tactictypes $info(agent)]}
     }
 
     #-------------------------------------------------------------------

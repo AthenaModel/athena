@@ -112,12 +112,20 @@ snit::type ::athena::athena {
     delegate method {absit names}        to adb as {absit names}
     delegate method {absit validate}     to adb as {absit validate}
     delegate method {absit view}         to adb as {absit view}
+
     delegate method {actor exists}       to adb as {actor exists}
     delegate method {actor get}          to adb as {actor get}
     delegate method {actor namedict}     to adb as {actor namedict}
     delegate method {actor names}        to adb as {actor names}
     delegate method {actor validate}     to adb as {actor validate}
     delegate method {actor view}         to adb as {actor view}
+
+    delegate method {agent exists}       to adb as {agent exists}
+    delegate method {agent names}        to adb as {agent names}
+    delegate method {agent stats}        to adb as {agent stats}
+    delegate method {agent tactictypes}  to adb as {agent tactictypes}
+    delegate method {agent type}         to adb as {agent type}
+    delegate method {agent validate}     to adb as {agent validate}
 
     delegate method adbfile              to adb
     delegate method autogen              to adb
