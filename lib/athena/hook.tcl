@@ -543,7 +543,7 @@ snit::type ::athena::hook {
 
 
     method _validate {} {
-        my prepare hook_id -toupper -required -type hook
+        my prepare hook_id -toupper -required -type [list $adb hook]
     }
 
     method _execute {{flunky ""}} {
@@ -597,7 +597,7 @@ snit::type ::athena::hook {
 
 
     method _validate {} {
-        my prepare hook_id      -toupper   -required -type hook
+        my prepare hook_id      -toupper   -required -type [list $adb hook]
         my prepare longname     -normalize
     }
 
@@ -638,8 +638,8 @@ snit::type ::athena::hook {
 
 
     method _validate {} {
-        my prepare hook_id       -toupper -required -type hook
-        my prepare topic_id      -toupper -required -type {bsys topic}
+        my prepare hook_id       -toupper -required -type [list $adb hook]
+        my prepare topic_id      -toupper -required -type [list $adb bsys topic]
         my prepare position -num -toupper -required -type qposition 
 
         my returnOnError 
@@ -675,7 +675,7 @@ snit::type ::athena::hook {
 
 
     method _validate {} {
-        my prepare id   -toupper -required -type {hook topic}
+        my prepare id   -toupper -required -type [list $adb hook topic]
     }
 
     method _execute {{flunky ""}} {
@@ -709,7 +709,7 @@ snit::type ::athena::hook {
 
 
     method _validate {} {
-        my prepare id            -toupper -required -type {hook topic}
+        my prepare id            -toupper -required -type [list $adb hook topic]
         my prepare position -num -toupper -required -type qposition
     }
 
@@ -740,7 +740,7 @@ snit::type ::athena::hook {
 
 
     method _validate {} {
-        my prepare id    -required          -type {hook topic}
+        my prepare id    -required          -type [list $adb hook topic]
         my prepare state -required -tolower -type etopic_state
     }
 

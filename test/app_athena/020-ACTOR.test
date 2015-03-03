@@ -250,7 +250,7 @@ namespace eval ::athena_test::tests:: {
     
     test CREATE-2.1 {actor is created} -setup {
         # Adds belief system 2
-        bsys system add 2
+        tdb bsys system add 2
     } -body {
         ted order ACTOR:CREATE $bob
         
@@ -491,7 +491,7 @@ budget            0.0
 
     test UPDATE-2.1 {actor is updated} -setup {
         ted create JOE BOB
-        bsys system add 2
+        tdb bsys system add 2
     } -body {
         ted order ACTOR:UPDATE {
             a                JOE

@@ -105,65 +105,84 @@ snit::type ::athena::athena {
     # subcommands we really want to expose.
 
     # ADB
-    delegate method {absit exists}       to adb as {absit exists}
-    delegate method {absit get}          to adb as {absit get}
-    delegate method {absit isinitial}    to adb as {absit isinitial}
-    delegate method {absit islive}       to adb as {absit islive}
-    delegate method {absit names}        to adb as {absit names}
-    delegate method {absit validate}     to adb as {absit validate}
-    delegate method {absit view}         to adb as {absit view}
+    delegate method {absit exists}          to adb as {absit exists}
+    delegate method {absit get}             to adb as {absit get}
+    delegate method {absit isinitial}       to adb as {absit isinitial}
+    delegate method {absit islive}          to adb as {absit islive}
+    delegate method {absit names}           to adb as {absit names}
+    delegate method {absit validate}        to adb as {absit validate}
+    delegate method {absit view}            to adb as {absit view}
 
-    delegate method {actor exists}       to adb as {actor exists}
-    delegate method {actor get}          to adb as {actor get}
-    delegate method {actor namedict}     to adb as {actor namedict}
-    delegate method {actor names}        to adb as {actor names}
-    delegate method {actor validate}     to adb as {actor validate}
-    delegate method {actor view}         to adb as {actor view}
+    delegate method {actor exists}          to adb as {actor exists}
+    delegate method {actor get}             to adb as {actor get}
+    delegate method {actor namedict}        to adb as {actor namedict}
+    delegate method {actor names}           to adb as {actor names}
+    delegate method {actor validate}        to adb as {actor validate}
+    delegate method {actor view}            to adb as {actor view}
+    
+    delegate method adbfile                 to adb
+    
+    delegate method {agent exists}          to adb as {agent exists}
+    delegate method {agent names}           to adb as {agent names}
+    delegate method {agent stats}           to adb as {agent stats}
+    delegate method {agent tactictypes}     to adb as {agent tactictypes}
+    delegate method {agent type}            to adb as {agent type}
+    delegate method {agent validate}        to adb as {agent validate}
+    
+    delegate method autogen                 to adb
 
-    delegate method {agent exists}       to adb as {agent exists}
-    delegate method {agent names}        to adb as {agent names}
-    delegate method {agent stats}        to adb as {agent stats}
-    delegate method {agent tactictypes}  to adb as {agent tactictypes}
-    delegate method {agent type}         to adb as {agent type}
-    delegate method {agent validate}     to adb as {agent validate}
+    delegate method {bsys affinity}         to adb as {bsys affinity}
+    delegate method {bsys belief view}      to adb as {bsys belief view}
+    delegate method {bsys belief validate}  to adb as {bsys belief validate}
+    delegate method {bsys belief isdefault} to adb as {bsys belief isdefault}
+    delegate method {bsys playbox cget}     to adb as {bsys playbox cget}
+    delegate method {bsys system cget}      to adb as {bsys system cget}
+    delegate method {bsys system exists}    to adb as {bsys system exists}
+    delegate method {bsys system ids}       to adb as {bsys system ids}
+    delegate method {bsys system view}      to adb as {bsys system view}
+    delegate method {bsys system validate}  to adb as {bsys system validate}
+    delegate method {bsys topic cget}       to adb as {bsys topic cget}
+    delegate method {bsys topic exists}     to adb as {bsys topic exists}
+    delegate method {bsys topic ids}        to adb as {bsys topic ids}
+    delegate method {bsys topic inuse}      to adb as {bsys topic inuse}
+    delegate method {bsys topic validate}   to adb as {bsys topic validate}
+    delegate method {bsys topic view}       to adb as {bsys topic view}
 
-    delegate method adbfile              to adb
-    delegate method autogen              to adb
-    delegate method dbsync               to adb
-    delegate method enter                to adb
-    delegate method executive            to adb
-    delegate method export               to adb
-    delegate method gofer                to adb
-    delegate method load                 to adb
-    delegate method locked               to adb
-    delegate method paste                to adb
-    delegate method reset                to adb
-    delegate method sanity               to adb
-    delegate method save                 to adb
-    delegate method {order available}    to adb as {order available}
-    delegate method {order canundo}      to adb as {order canundo}
-    delegate method {order canredo}      to adb as {order canredo}
-    delegate method {order class}        to adb as {order class}
-    delegate method {order make}         to adb as {order make}
-    delegate method {order monitor}      to adb as {order monitor}
-    delegate method {order redo}         to adb as {order redo}
-    delegate method {order redotext}     to adb as {order redotext}
-    delegate method {order reset}        to adb as {order reset}
-    delegate method {order send}         to adb as {order send}
-    delegate method {order senddict}     to adb as {order senddict}
-    delegate method {order transaction}  to adb as {order transaction}
-    delegate method {order transactions} to adb as {order transactions}
-    delegate method {order undo}         to adb as {order undo}
-    delegate method {order undotext}     to adb as {order undotext}
-    delegate method stable               to adb
-    delegate method state                to adb
-    delegate method unsaved              to adb
-    delegate method version              to adb
-    delegate method contribs             to adb as {aram contribs}
-    delegate method {bean get}           to adb as {bean get}
-    delegate method {bean has}           to adb as {bean has}
-    delegate method {bean ids}           to adb as {bean ids}
-    delegate method {bean view}          to adb as {bean view}
+    delegate method contribs                to adb as {aram contribs}
+    delegate method dbsync                  to adb
+    delegate method enter                   to adb
+    delegate method executive               to adb
+    delegate method export                  to adb
+    delegate method gofer                   to adb
+    delegate method load                    to adb
+    delegate method locked                  to adb
+    delegate method paste                   to adb
+    delegate method reset                   to adb
+    delegate method sanity                  to adb
+    delegate method save                    to adb
+    delegate method stable                  to adb
+    delegate method state                   to adb
+    delegate method unsaved                 to adb
+    delegate method version                 to adb
+    delegate method {bean get}              to adb as {bean get}
+    delegate method {bean has}              to adb as {bean has}
+    delegate method {bean ids}              to adb as {bean ids}
+    delegate method {bean view}             to adb as {bean view}
+    delegate method {order available}       to adb as {order available}
+    delegate method {order canredo}         to adb as {order canredo}
+    delegate method {order canundo}         to adb as {order canundo}
+    delegate method {order class}           to adb as {order class}
+    delegate method {order make}            to adb as {order make}
+    delegate method {order monitor}         to adb as {order monitor}
+    delegate method {order redotext}        to adb as {order redotext}
+    delegate method {order redo}            to adb as {order redo}
+    delegate method {order reset}           to adb as {order reset}
+    delegate method {order senddict}        to adb as {order senddict}
+    delegate method {order send}            to adb as {order send}
+    delegate method {order transactions}    to adb as {order transactions}
+    delegate method {order transaction}     to adb as {order transaction}
+    delegate method {order undotext}        to adb as {order undotext}
+    delegate method {order undo}            to adb as {order undo}
 
     # RDB
     #

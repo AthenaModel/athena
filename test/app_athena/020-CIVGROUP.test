@@ -556,7 +556,7 @@ upc        0.0
 
     test UPDATE-2.1 {civgroup is updated} -setup {
         ted create NB1 NB2 SHIA
-        bsys system add 2
+        tdb bsys system add 2
     } -body {
         ted order CIVGROUP:UPDATE {
             g            SHIA

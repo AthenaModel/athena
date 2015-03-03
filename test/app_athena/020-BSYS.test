@@ -71,7 +71,7 @@ namespace eval ::athena_test::tests:: {
     test PLAYBOX:UPDATE-2.1 {gamma is updated} -body {
         ted order BSYS:PLAYBOX:UPDATE gamma 0.25
 
-        bsys playbox get
+        tdb bsys playbox get
     } -cleanup {
         cleanup
     } -result {gamma .25}
@@ -120,7 +120,7 @@ namespace eval ::athena_test::tests:: {
 
     test SYSTEM:ADD-2.1 {creates new system, assigning ID} -body {
         set sid [ted order BSYS:SYSTEM:ADD {}]
-        ted pdicts [bsys system get $sid]
+        ted pdicts [tdb bsys system get $sid]
     } -cleanup {
         cleanup
     } -match dict -result {
@@ -169,7 +169,7 @@ namespace eval ::athena_test::tests:: {
         ted order BSYS:SYSTEM:ADD sid 2
     } -body {
         ted order -reject BSYS:SYSTEM:UPDATE sid 2 \
-            name [bsys system cget 1 -name]
+            name [tdb bsys system cget 1 -name]
     } -cleanup {
         cleanup
     } -result {
@@ -193,7 +193,7 @@ namespace eval ::athena_test::tests:: {
             name        FRED  \
             commonality 0.5
 
-        ted pdicts [bsys system get $sid]
+        ted pdicts [tdb bsys system get $sid]
     } -cleanup {
         cleanup
     } -match dict -result {
@@ -221,7 +221,7 @@ namespace eval ::athena_test::tests:: {
         ted order BSYS:SYSTEM:ADD sid 2
     } -body {
         ted order BSYS:SYSTEM:UPDATE sid 2 \
-            name [bsys system cget 2 -name]
+            name [tdb bsys system cget 2 -name]
     } -cleanup {
         cleanup
     } -result {}
@@ -276,7 +276,7 @@ namespace eval ::athena_test::tests:: {
         set sid [ted order BSYS:SYSTEM:ADD {}]
     } -body {
         ted order BSYS:SYSTEM:DELETE sid $sid
-        bsys system ids
+        tdb bsys system ids
     } -cleanup {
         cleanup
     } -result {1}
@@ -306,7 +306,7 @@ namespace eval ::athena_test::tests:: {
     }
 
     test TOPIC:ADD-1.2 {existing ID specified} -setup {
-        bsys topic add 1
+        tdb bsys topic add 1
     } -body {
         ted order -reject BSYS:TOPIC:ADD tid 1
     } -cleanup {
@@ -318,7 +318,7 @@ namespace eval ::athena_test::tests:: {
     test TOPIC:ADD-2.1 {creates topic, assigning ID} -body {
         set tid [ted order BSYS:TOPIC:ADD]
 
-        ted pdicts [bsys topic view $tid]
+        ted pdicts [tdb bsys topic view $tid]
     } -cleanup {
         cleanup
     } -match dict -result {
@@ -332,7 +332,7 @@ namespace eval ::athena_test::tests:: {
     test TOPIC:ADD-2.2 {creates topic given ID} -body {
         set tid [ted order BSYS:TOPIC:ADD tid 5]
 
-        ted pdicts [bsys topic view $tid]
+        ted pdicts [tdb bsys topic view $tid]
     } -cleanup {
         cleanup
     } -match dict -result {
@@ -433,7 +433,7 @@ namespace eval ::athena_test::tests:: {
         ted order BSYS:TOPIC:ADD tid 2
     } -body {
         ted order -reject BSYS:TOPIC:UPDATE tid 2 \
-            name [bsys topic cget 1 -name]
+            name [tdb bsys topic cget 1 -name]
     } -cleanup {
         cleanup
     } -result {
@@ -458,7 +458,7 @@ namespace eval ::athena_test::tests:: {
         ted order BSYS:TOPIC:UPDATE \
             tid $tid name "New Title" affinity no
 
-        ted pdicts [bsys topic get $tid]
+        ted pdicts [tdb bsys topic get $tid]
     } -cleanup {
         cleanup
     } -result {
@@ -486,7 +486,7 @@ namespace eval ::athena_test::tests:: {
         ted order BSYS:TOPIC:ADD tid 1
     } -body {
         ted order BSYS:TOPIC:UPDATE tid 1 \
-            name [bsys topic cget 1 -name]
+            name [tdb bsys topic cget 1 -name]
     } -cleanup {
         cleanup
     } -result {}
@@ -552,7 +552,7 @@ namespace eval ::athena_test::tests:: {
         ted order BSYS:BELIEF:UPDATE \
             bid [list $sid $tid] position 0.1 emphasis 0.2
 
-        ted pdicts [bsys belief get $sid $tid]
+        ted pdicts [tdb bsys belief get $sid $tid]
     } -cleanup {
         cleanup
     } -match dict -result {
@@ -567,7 +567,7 @@ namespace eval ::athena_test::tests:: {
         ted order BSYS:BELIEF:UPDATE \
             bid [list $sid $tid] position P- emphasis ASTRONG
 
-        ted pdicts [bsys belief get $sid $tid]
+        ted pdicts [tdb bsys belief get $sid $tid]
     } -cleanup {
         cleanup
     } -result {

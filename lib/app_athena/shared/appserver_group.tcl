@@ -360,7 +360,7 @@ appserver module GROUPS {
         ht putln "The group's housing status is $data(housing)."
 
         ht putln "The group's belief system is "
-        set bsysname [bsys system cget $data(bsid) -name]
+        set bsysname [adb bsys system cget $data(bsid) -name]
         ht link my://app/bsystem/$data(bsid) "\"$bsysname ($data(bsid))\"."
 
         if {!$nb(local)} {

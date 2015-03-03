@@ -57,10 +57,10 @@ namespace eval ::athena_test::tests:: {
 
     # mktopic
     #
-    # Makes a bsys topic with ID 1.
+    # Makes a tdb bsys topic with ID 1.
     proc mktopic {} {
-        bsys topic add 1
-        bsys topic configure 1 -name "Topic #1" -affinity no
+        tdb bsys topic add 1
+        tdb bsys topic configure 1 -name "Topic #1" -affinity no
     }
 
     #-------------------------------------------------------------------

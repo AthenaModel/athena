@@ -50,9 +50,9 @@ appserver module BSYSTEM {
     proc /bsystems:linkdict {udict matchArray} {
         set result [dict create]
 
-        foreach sid [bsys system ids] {
+        foreach sid [adb bsys system ids] {
             set url my://app/bsystem/$sid
-            set name [bsys system cget $sid -name]
+            set name [adb bsys system cget $sid -name]
             dict set result $url label "$name ($sid)"
             dict set result $url listIcon ::projectgui::icon::bsystem12
         }
@@ -81,9 +81,9 @@ appserver module BSYSTEM {
         ht table {
             "ID" "Name" "Commonality" "# of Actors" "# of Groups"
         } {
-            foreach sid [bsys system ids] {
+            foreach sid [adb bsys system ids] {
                 # FIRST, get data.
-                array set sdata [bsys system view $sid]
+                array set sdata [adb bsys system view $sid]
 
                 set sdata(ac) [adb onecolumn {
                     SELECT count(bsid) FROM actors
@@ -128,12 +128,12 @@ appserver module BSYSTEM {
         # FIRST, get the system ID and data.
         set sid $(1)
 
-        if {![bsys system exists $sid]} {
+        if {![adb bsys system exists $sid]} {
             return -code error -errorcode NOTFOUND \
                 "Unknown entity: [dict get $udict url]."
         }
 
-        array set data [bsys system view $sid]
+        array set data [adb bsys system view $sid]
 
         # NEXT, Begin the page
         ht page "Belief System: $sid"
@@ -148,7 +148,7 @@ appserver module BSYSTEM {
         # Definition
         ht subtitle "Definition" meta
 
-        ht putln "This system is one of [llength [bsys system ids]] "
+        ht putln "This system is one of [llength [adb bsys system ids]] "
         ht putln "belief systems in this scenario."
         ht para
 
@@ -178,10 +178,10 @@ appserver module BSYSTEM {
         ht table {
             "Topic" "ID" "Position" "" "Emphasis" "" "Affinity?"
         } {
-            foreach tid [bsys topic ids] {
+            foreach tid [adb bsys topic ids] {
                 # FIRST, get data.
-                array set tdata [bsys topic view $tid]
-                array set bdata [bsys belief view $sid $tid]
+                array set tdata [adb bsys topic view $tid]
+                array set bdata [adb bsys belief view $sid $tid]
 
                 # NEXT, format row.
                 ht tr {

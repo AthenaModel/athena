@@ -872,7 +872,7 @@ JOE
         ted sendex autogen civgroups 1
     } -body {
         ted sendex autogen bsystem
-        expr {[llength [bsys topic ids]] > 0}
+        expr {[llength [tdb bsys topic ids]] > 0}
     } -cleanup {
         cleanup
     } -result {1}
@@ -1140,7 +1140,7 @@ JOE
         set c [expr {[llength [civgroup names]] > 0}]
         set d [expr {[llength [frcgroup names]] > 0}]
         set e [expr {[llength [orggroup names]] > 0}]
-        set f [expr {[llength [bsys topic ids]] > 0}]
+        set f [expr {[llength [tdb bsys topic ids]] > 0}]
 
         list $a $b $c $d $e $f
     } -cleanup {

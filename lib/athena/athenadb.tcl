@@ -275,6 +275,7 @@ snit::type ::athena::athenadb {
             agent                       \
             autogen                     \
             broadcast                   \
+            bsys                        \
             cap                         \
             cash                        \
             coop                        \
@@ -297,7 +298,6 @@ snit::type ::athena::athenadb {
 
         $self MakeComponentsWithGlobal  \
             aam                         \
-            bsys                        \
             civgroup                    \
             curse                       \
             econ                        \

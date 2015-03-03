@@ -56,8 +56,8 @@ namespace eval ::athena_test::tests:: {
         }
 
         # We need a payload and a hook topic, or we can't execute.
-        bsys topic add 1
-        bsys topic configure 1 -name TBD
+        tdb bsys topic add 1
+        tdb bsys topic configure 1 -name TBD
 
         payload create {
             iom_id       IOM1
