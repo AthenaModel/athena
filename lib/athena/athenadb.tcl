@@ -309,6 +309,7 @@ snit::type ::athena::athenadb {
             sanity                      \
             sat                         \
             security_model              \
+            service                     \
             sigevent                    \
             stance                      \
             {strategy strategy_manager} \
@@ -317,7 +318,6 @@ snit::type ::athena::athenadb {
 
         $self MakeComponentsWithGlobal  \
             aam                         \
-            service                     \
             sim                         \
 
 

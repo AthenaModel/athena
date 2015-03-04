@@ -234,14 +234,14 @@ snit::type ::athena::service {
     #-------------------------------------------------------------------
     # Simulation 
 
-    # srservice 
+    # levels 
     # 
     # This method rebuilds the saturation and required service table based 
     # on the simulation state. In "PREP" it is the base population, otherwise
     # it is the actual population from the demographics model.
     #
 
-    method srservice {} {
+    method levels {} {
         # FIRST, blow away whatever is there it will be computed again
         $adb eval {
             DELETE FROM sr_service;
@@ -324,7 +324,7 @@ snit::type ::athena::service {
         }
 
         # NEXT, update the required and saturation levels of funding
-        $self srservice
+        $self levels
 
         # NEXT, compute the actual and effective levels of service.
         $self ComputeLOS
@@ -354,7 +354,7 @@ snit::type ::athena::service {
         # otherwise it is retrieved from the service_sg table which 
         # is computed every tick
         if {[$adb state] eq "PREP"} {
-            $self srservice
+            $self levels
 
             set gclause "g IN ('[join $glist {','}]')"
             set sat_funding [$adb onecolumn "

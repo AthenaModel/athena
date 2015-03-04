@@ -55,9 +55,9 @@ namespace eval ::athena_test::tests:: {
             VALUES('NB2','JOE',0.5);
         }
 
-        service start
-        service load
-        service save
+        tdb service start
+        tdb service load
+        tdb service save
         tdb cash load
 
         set coffer [::athena::coffer new [::adb athenadb] JOE]

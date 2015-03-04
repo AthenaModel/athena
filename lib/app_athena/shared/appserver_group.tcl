@@ -152,7 +152,7 @@ appserver module GROUPS {
         set gtype [string toupper $(1)]
 
         # FIRST, update the saturation and required levels of service
-        service srservice
+        adb service levels
 
         # Begin the page
         if {$gtype eq ""} {
@@ -303,7 +303,7 @@ appserver module GROUPS {
 
     proc CivGroup:html {g} {
         # FIRST, update the saturation and required levels of service
-        service srservice
+        adb service levels
 
         # NEXT, get the data about this group
         adb eval {SELECT * FROM gui_civgroups  WHERE g=$g}              data {}

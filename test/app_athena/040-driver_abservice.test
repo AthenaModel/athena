@@ -124,7 +124,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         # Default.
         lock
-        service actual NB1 ENERGY 0.0
+        tdb service actual NB1 ENERGY 0.0
         ted step
 
         ted querylist {
@@ -154,7 +154,7 @@ fdict      required 0.5 a {} expected 0.375 actual 0.0 dtype ENERGY needs 2.0 ex
     } -body {
         # No funding.
         lock
-        service actual NB1 ENERGY 0.0
+        tdb service actual NB1 ENERGY 0.0
         ted step
         ted query {
             SELECT rule, g, c
@@ -179,7 +179,7 @@ ENERGY-1-1 SUNN QOL
         # No funding.
         lock
         controller JOE NB1
-        service actual NB1 ENERGY 0.0
+        tdb service actual NB1 ENERGY 0.0
         ted step
         ted query {
             SELECT rule, g, a
@@ -201,7 +201,7 @@ ENERGY-1-1 SUNN JOE
     } -body {
         # Default.
         lock
-        service actual NB1 WATER 0.0
+        tdb service actual NB1 WATER 0.0
         ted step
 
         ted querylist {
@@ -231,7 +231,7 @@ fdict      required 0.5 a {} expected 0.375 actual 0.0 dtype WATER needs 2.0 exp
     } -body {
         # No funding.
         lock
-        service actual NB1 WATER 0.0
+        tdb service actual NB1 WATER 0.0
         ted step
         ted query {
             SELECT rule, g, c
@@ -256,7 +256,7 @@ WATER-1-1 SUNN QOL
         # No funding.
         lock
         controller JOE NB1
-        service actual NB1 WATER 0.0
+        tdb service actual NB1 WATER 0.0
         ted step
         ted query {
             SELECT rule, g, a
@@ -278,7 +278,7 @@ WATER-1-1 SUNN JOE
     } -body {
         # Default.
         lock
-        service actual NB1 TRANSPORT 0.0
+        tdb service actual NB1 TRANSPORT 0.0
         ted step
 
         ted querylist {
@@ -308,7 +308,7 @@ fdict      required 0.5 a {} expected 0.375 actual 0.0 dtype TRANSPORT needs 2.0
     } -body {
         # No funding.
         lock
-        service actual NB1 TRANSPORT 0.0
+        tdb service actual NB1 TRANSPORT 0.0
         ted step
         ted query {
             SELECT rule, g, c
@@ -333,7 +333,7 @@ TRANSPORT-1-1 SUNN QOL
         # No funding.
         lock
         controller JOE NB1
-        service actual NB1 TRANSPORT 0.0
+        tdb service actual NB1 TRANSPORT 0.0
         ted step
         ted query {
             SELECT rule, g, a
@@ -354,7 +354,7 @@ TRANSPORT-1-1 SUNN JOE
         enable ENERGY
     } -body {
         lock
-        service actual NB1 ENERGY 0.5
+        tdb service actual NB1 ENERGY 0.5
         adb eval {UPDATE service_sg SET expected=0.6}
         ted step
         ted querylist {
@@ -383,7 +383,7 @@ fdict      required 0.5 a {} expected 0.575 actual 0.5 dtype ENERGY needs 0.0 ex
         enable ENERGY
     } -body {
         lock
-        service actual NB1 ENERGY 0.5
+        tdb service actual NB1 ENERGY 0.5
         adb eval {UPDATE service_sg SET expected=0.6}
         ted step
 
@@ -409,7 +409,7 @@ ENERGY-1-2 SUNN QOL
     } -body {
         lock
         controller JOE NB1
-        service actual NB1 ENERGY 0.5
+        tdb service actual NB1 ENERGY 0.5
         adb eval {UPDATE service_sg SET expected=0.6}
         ted step
 
@@ -432,7 +432,7 @@ ENERGY-1-2 SUNN JOE
         enable WATER
     } -body {
         lock
-        service actual NB1 WATER 0.5
+        tdb service actual NB1 WATER 0.5
         adb eval {UPDATE service_sg SET expected=0.6}
         ted step
         ted querylist {
@@ -461,7 +461,7 @@ fdict      required 0.5 a {} expected 0.575 actual 0.5 dtype WATER needs 0.0 exp
         enable WATER
     } -body {
         lock
-        service actual NB1 WATER 0.5
+        tdb service actual NB1 WATER 0.5
         adb eval {UPDATE service_sg SET expected=0.6}
         ted step
 
@@ -487,7 +487,7 @@ WATER-1-2 SUNN QOL
     } -body {
         lock
         controller JOE NB1
-        service actual NB1 WATER 0.5
+        tdb service actual NB1 WATER 0.5
         adb eval {UPDATE service_sg SET expected=0.6}
         ted step
 
@@ -510,7 +510,7 @@ WATER-1-2 SUNN JOE
         enable TRANSPORT
     } -body {
         lock
-        service actual NB1 TRANSPORT 0.5
+        tdb service actual NB1 TRANSPORT 0.5
         adb eval {UPDATE service_sg SET expected=0.6}
         ted step
         ted querylist {
@@ -539,7 +539,7 @@ fdict      required 0.5 a {} expected 0.575 actual 0.5 dtype TRANSPORT needs 0.0
         enable TRANSPORT
     } -body {
         lock
-        service actual NB1 TRANSPORT 0.5
+        tdb service actual NB1 TRANSPORT 0.5
         adb eval {UPDATE service_sg SET expected=0.6}
         ted step
 
@@ -565,7 +565,7 @@ TRANSPORT-1-2 SUNN QOL
     } -body {
         lock
         controller JOE NB1
-        service actual NB1 TRANSPORT 0.5
+        tdb service actual NB1 TRANSPORT 0.5
         adb eval {UPDATE service_sg SET expected=0.6}
         ted step
 
@@ -588,7 +588,7 @@ TRANSPORT-1-2 SUNN JOE
         enable ENERGY
     } -body {
         lock
-        service actual NB1 ENERGY 0.5
+        tdb service actual NB1 ENERGY 0.5
         ted step
 
         ted querylist {
@@ -617,7 +617,7 @@ fdict      required 0.5 a {} expected 0.5 actual 0.5 dtype ENERGY needs 0.0 expe
         enable ENERGY
     } -body {
         lock
-        service actual NB1 ENERGY 0.5
+        tdb service actual NB1 ENERGY 0.5
         ted step
 
         # No satisfaction effects when expectations are met
@@ -636,7 +636,7 @@ fdict      required 0.5 a {} expected 0.5 actual 0.5 dtype ENERGY needs 0.0 expe
     } -body {
         lock
         controller JOE NB1
-        service actual NB1 ENERGY 0.5
+        tdb service actual NB1 ENERGY 0.5
         ted step
 
         # No vrel effects when expectations are met
@@ -654,7 +654,7 @@ fdict      required 0.5 a {} expected 0.5 actual 0.5 dtype ENERGY needs 0.0 expe
         enable WATER
     } -body {
         lock
-        service actual NB1 WATER 0.5
+        tdb service actual NB1 WATER 0.5
         ted step
 
         ted querylist {
@@ -683,7 +683,7 @@ fdict      required 0.5 a {} expected 0.5 actual 0.5 dtype WATER needs 0.0 expec
         enable WATER
     } -body {
         lock
-        service actual NB1 WATER 0.5
+        tdb service actual NB1 WATER 0.5
         ted step
 
         # No satisfaction effects when expectations are met
@@ -702,7 +702,7 @@ fdict      required 0.5 a {} expected 0.5 actual 0.5 dtype WATER needs 0.0 expec
     } -body {
         lock
         controller JOE NB1
-        service actual NB1 WATER 0.5
+        tdb service actual NB1 WATER 0.5
         ted step
 
         # No vrel effects when expectations are met
@@ -720,7 +720,7 @@ fdict      required 0.5 a {} expected 0.5 actual 0.5 dtype WATER needs 0.0 expec
         enable TRANSPORT
     } -body {
         lock
-        service actual NB1 TRANSPORT 0.5
+        tdb service actual NB1 TRANSPORT 0.5
         ted step
 
         ted querylist {
@@ -749,7 +749,7 @@ fdict      required 0.5 a {} expected 0.5 actual 0.5 dtype TRANSPORT needs 0.0 e
         enable TRANSPORT
     } -body {
         lock
-        service actual NB1 TRANSPORT 0.5
+        tdb service actual NB1 TRANSPORT 0.5
         ted step
 
         # No satisfaction effects when expectations are met
@@ -768,7 +768,7 @@ fdict      required 0.5 a {} expected 0.5 actual 0.5 dtype TRANSPORT needs 0.0 e
     } -body {
         lock
         controller JOE NB1
-        service actual NB1 TRANSPORT 0.5
+        tdb service actual NB1 TRANSPORT 0.5
         ted step
 
         # No vrel effects when expectations are met
@@ -786,7 +786,7 @@ fdict      required 0.5 a {} expected 0.5 actual 0.5 dtype TRANSPORT needs 0.0 e
         enable ENERGY
     } -body {
         lock
-        service actual NB1 ENERGY 1.0
+        tdb service actual NB1 ENERGY 1.0
         ted step
 
         ted querylist {
@@ -815,7 +815,7 @@ fdict      required 0.5 a {} expected 0.75 actual 1.0 dtype ENERGY needs 0.0 exp
         enable ENERGY
     } -body {
         lock
-        service actual NB1 ENERGY 1.0
+        tdb service actual NB1 ENERGY 1.0
         ted step
 
         ted query {
@@ -840,7 +840,7 @@ ENERGY-1-4 SUNN QOL
     } -body {
         lock
         controller JOE NB1
-        service actual NB1 ENERGY 1.0
+        tdb service actual NB1 ENERGY 1.0
         ted step
 
         ted query {
@@ -862,7 +862,7 @@ ENERGY-1-4 SUNN JOE
         enable WATER
     } -body {
         lock
-        service actual NB1 WATER 1.0
+        tdb service actual NB1 WATER 1.0
         ted step
 
         ted querylist {
@@ -891,7 +891,7 @@ fdict      required 0.5 a {} expected 0.75 actual 1.0 dtype WATER needs 0.0 expe
         enable WATER
     } -body {
         lock
-        service actual NB1 WATER 1.0
+        tdb service actual NB1 WATER 1.0
         ted step
 
         ted query {
@@ -916,7 +916,7 @@ WATER-1-4 SUNN QOL
     } -body {
         lock
         controller JOE NB1
-        service actual NB1 WATER 1.0
+        tdb service actual NB1 WATER 1.0
         ted step
 
         ted query {
@@ -938,7 +938,7 @@ WATER-1-4 SUNN JOE
         enable TRANSPORT
     } -body {
         lock
-        service actual NB1 TRANSPORT 1.0
+        tdb service actual NB1 TRANSPORT 1.0
         ted step
 
         ted querylist {
@@ -967,7 +967,7 @@ fdict      required 0.5 a {} expected 0.75 actual 1.0 dtype TRANSPORT needs 0.0 
         enable TRANSPORT
     } -body {
         lock
-        service actual NB1 TRANSPORT 1.0
+        tdb service actual NB1 TRANSPORT 1.0
         ted step
 
         ted query {
@@ -992,7 +992,7 @@ TRANSPORT-1-4 SUNN QOL
     } -body {
         lock
         controller JOE NB1
-        service actual NB1 TRANSPORT 1.0
+        tdb service actual NB1 TRANSPORT 1.0
         ted step
 
         ted query {

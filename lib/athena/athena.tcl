@@ -281,6 +281,8 @@ snit::type ::athena::athena {
     delegate method {ruleset narrative}     to adb as {ruleset narrative}
     delegate method {ruleset rulename}      to adb as {ruleset rulename}
 
+    delegate method {service levels}        to adb as {service levels}
+
     delegate method {strategy getname}      to adb as {strategy getname}
     delegate method {strategy checker}      to adb as {strategy checker}
     delegate method {strategy check}        to adb as {strategy check}
