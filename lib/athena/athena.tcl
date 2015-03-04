@@ -131,6 +131,11 @@ snit::type ::athena::athena {
     
     delegate method autogen                 to adb
 
+    delegate method {bean get}              to adb as {bean get}
+    delegate method {bean has}              to adb as {bean has}
+    delegate method {bean ids}              to adb as {bean ids}
+    delegate method {bean view}             to adb as {bean view}
+
     delegate method {bsys affinity}         to adb as {bsys affinity}
     delegate method {bsys belief view}      to adb as {bsys belief view}
     delegate method {bsys belief validate}  to adb as {bsys belief validate}
@@ -170,20 +175,16 @@ snit::type ::athena::athena {
     delegate method {frcgroup view}         to adb as {frcgroup view}
 
     delegate method gofer                   to adb
+
+    delegate method {group exists}          to adb as {group exists}
+    delegate method {group gtype}           to adb as {group gtype}
+    delegate method {group namedict}        to adb as {group namedict}
+    delegate method {group names}           to adb as {group names}
+    delegate method {group validate}        to adb as {group validate}
+
     delegate method load                    to adb
     delegate method locked                  to adb
-    delegate method paste                   to adb
-    delegate method reset                   to adb
-    delegate method sanity                  to adb
-    delegate method save                    to adb
-    delegate method stable                  to adb
-    delegate method state                   to adb
-    delegate method unsaved                 to adb
-    delegate method version                 to adb
-    delegate method {bean get}              to adb as {bean get}
-    delegate method {bean has}              to adb as {bean has}
-    delegate method {bean ids}              to adb as {bean ids}
-    delegate method {bean view}             to adb as {bean view}
+
     delegate method {order available}       to adb as {order available}
     delegate method {order canredo}         to adb as {order canredo}
     delegate method {order canundo}         to adb as {order canundo}
@@ -199,6 +200,22 @@ snit::type ::athena::athena {
     delegate method {order transaction}     to adb as {order transaction}
     delegate method {order undotext}        to adb as {order undotext}
     delegate method {order undo}            to adb as {order undo}
+
+    delegate method {orggroup exists}       to adb as {orggroup exists}
+    delegate method {orggroup get}          to adb as {orggroup get}
+    delegate method {orggroup namedict}     to adb as {orggroup namedict}
+    delegate method {orggroup names}        to adb as {orggroup names}
+    delegate method {orggroup validate}     to adb as {orggroup validate}
+    delegate method {orggroup view}         to adb as {orggroup view}
+
+    delegate method paste                   to adb
+    delegate method reset                   to adb
+    delegate method sanity                  to adb
+    delegate method save                    to adb
+    delegate method stable                  to adb
+    delegate method state                   to adb
+    delegate method unsaved                 to adb
+    delegate method version                 to adb
 
     # RDB
     #

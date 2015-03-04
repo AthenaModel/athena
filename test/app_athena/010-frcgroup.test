@@ -357,6 +357,27 @@ local           1
 
 
     #-------------------------------------------------------------------
+    # namedict
+
+    test namedict-1.1 {Returns namedict: none defined} -body {
+        tdb frcgroup namedict
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test namedict-1.2 {Returns namedict} -setup {
+        ted create BLUE BRIT ALQ
+    } -body {
+        ted pdicts [tdb frcgroup namedict]
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+        ALQ  {Al Qaeda}
+        BLUE {US Army}
+        BRIT {British Forces}
+    }
+
+    #-------------------------------------------------------------------
     # validate
 
     test validate-1.1 {Invalid name: none defined} -body {

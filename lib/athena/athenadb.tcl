@@ -285,10 +285,12 @@ snit::type ::athena::athenadb {
             coverage_model              \
             demog                       \
             frcgroup                    \
+            group                       \
             hist                        \
             hrel                        \
             map                         \
             nbrel                       \
+            orggroup                    \
             personnel                   \
             ptype                       \
             rebase                      \
@@ -304,12 +306,10 @@ snit::type ::athena::athenadb {
             econ                        \
             executive                   \
             exporter                    \
-            group                       \
             hook                        \
             inject                      \
             iom                         \
             nbhood                      \
-            orggroup                    \
             parm                        \
             payload                     \
             plant                       \

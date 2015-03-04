@@ -318,11 +318,11 @@ appserver module CONTRIBS {
         set f [string toupper $f]
         set g [string toupper $g]
 
-        if {$f ni [group names]} {
+        if {![adb group exists $f]} {
             set f "?"
         }
 
-        if {$g ni [group names]} {
+        if {![adb group exists $g]} {
             set g "?"
         }
         
@@ -951,7 +951,7 @@ appserver module CONTRIBS {
         set g [string toupper $g]
         set a [string toupper $a]
 
-        if {$g ni [group names]} {
+        if {![adb group exists $g]} {
             set g "?"
         }
 

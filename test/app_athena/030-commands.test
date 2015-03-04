@@ -804,7 +804,7 @@ JOE
         ted sendex autogen nbhoods
     } -body {
         ted sendex autogen orggroups 
-        expr {[llength [orggroup names]] > 0}
+        expr {[llength [tdb orggroup names]] > 0}
     } -cleanup {
         cleanup
     } -result {1}
@@ -1139,7 +1139,7 @@ JOE
         set b [expr {[llength [nbhood names]] > 0}]
         set c [expr {[llength [tdb civgroup names]] > 0}]
         set d [expr {[llength [tdb frcgroup names]] > 0}]
-        set e [expr {[llength [orggroup names]] > 0}]
+        set e [expr {[llength [tdb orggroup names]] > 0}]
         set f [expr {[llength [tdb bsys topic ids]] > 0}]
 
         list $a $b $c $d $e $f

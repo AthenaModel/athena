@@ -18,7 +18,7 @@
 
 package require snit
 
-#-------------------------------------------------------------------
+#-----------------------------------------------------------------------
 # ted
 
 puts ""
@@ -981,7 +981,7 @@ snit::type ted {
     # DEPLOY tactic in that block.
 
     typemethod deploy {n g personnel} {
-        set a [group owner $g]
+        set a [tdb group owner $g]
         set block [ted addblock $a onlock YES]
 
         if {$personnel eq "all"} {
@@ -1011,7 +1011,7 @@ snit::type ted {
     # ASSIGN tactic in that block.
 
     typemethod assign {n g a personnel} {
-        set owner [group owner $g]
+        set owner [tdb group owner $g]
         set block [ted addblock $owner onlock YES]
 
         ted addtactic $block ASSIGN \
