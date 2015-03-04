@@ -302,6 +302,7 @@ snit::type ::athena::athenadb {
             parm                        \
             payload                     \
             personnel                   \
+            plant                       \
             ptype                       \
             rebase                      \
             {ruleset  ruleset_manager}  \
@@ -316,7 +317,6 @@ snit::type ::athena::athenadb {
 
         $self MakeComponentsWithGlobal  \
             aam                         \
-            plant                       \
             service                     \
             sim                         \
 

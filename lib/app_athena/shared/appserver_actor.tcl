@@ -402,8 +402,8 @@ appserver module ACTOR {
                     }
                 } 
             
-                set capA [plant capacity a $a]
-                set capT [plant capacity total]
+                set capA [adb plant capacity a $a]
+                set capT [adb plant capacity total]
                 set pct  [format "%.2f" [expr {($capA/$capT) * 100.0}]]
             
                 ht put "

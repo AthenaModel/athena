@@ -50,7 +50,7 @@ namespace eval ::athena_test::tests:: {
         }
 
         tdb demog start
-        plant start
+        tdb plant start
         tdb cash load
 
         set coffer [::athena::coffer new [::adb athenadb] JOE]

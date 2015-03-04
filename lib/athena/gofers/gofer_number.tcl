@@ -628,7 +628,7 @@
     method eval {gdict} {
         dict with gdict {}
 
-        set plants [plant number a $a]
+        set plants [$adb plant number a $a]
 
         if {$plants == ""} {
             set plants 0.0
@@ -911,7 +911,7 @@
     method eval {gdict} {
         dict with gdict {}
 
-        set goodscap [plant capacity a $a]
+        set goodscap [$adb plant capacity a $a]
 
         if {$goodscap == ""} {
             set goodscap 0.0
@@ -1644,7 +1644,7 @@
     method eval {gdict} {
         dict with gdict {}
 
-        set goodscap [plant capacity n $n]
+        set goodscap [$adb plant capacity n $n]
 
         if {$goodscap == ""} {
             set goodscap 0.0
@@ -1713,7 +1713,7 @@
     method eval {gdict} {
         dict with gdict {}
 
-        set nbplants [plant number n $n]
+        set nbplants [$adb plant number n $n]
 
         if {$nbplants == ""} {
             set nbplants 0.0
@@ -2016,7 +2016,7 @@
     method eval {gdict} {
         dict with gdict {}
 
-        set goodscap [plant capacity total]
+        set goodscap [$adb plant capacity total]
 
         if {$goodscap == ""} {
             set goodscap 0.0
@@ -2048,7 +2048,7 @@
     method eval {gdict} {
         dict with gdict {}
 
-        set plants [plant number total]
+        set plants [$adb plant number total]
 
         if {$plants == ""} {
             set plants 0.0
@@ -2264,7 +2264,7 @@
     method eval {gdict} {
         dict with gdict {}
 
-        set plants [plant get "$n $a" num]
+        set plants [$adb plant get "$n $a" num]
 
         if {$plants == ""} {
             set plants 0.0
@@ -2343,7 +2343,7 @@
     method eval {gdict} {
         dict with gdict {}
 
-        set repair [plant get "$n $a" rho]
+        set repair [$adb plant get "$n $a" rho]
 
         if {$repair == ""} {
             set repair 0.0

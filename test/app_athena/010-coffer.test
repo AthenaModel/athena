@@ -48,7 +48,7 @@ namespace eval ::athena_test::tests:: {
 
         tdb personnel start
         tdb personnel load
-        plant start
+        tdb plant start
         tdb cash load
     }
 

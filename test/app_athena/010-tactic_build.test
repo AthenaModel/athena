@@ -48,7 +48,7 @@ namespace eval ::athena_test::tests:: {
             VALUES('NB1', 'JOE', 1, 0.9);
         }
 
-        plant start
+        tdb plant start
         tdb cash load
 
         set coffer [::athena::coffer new [::adb athenadb] JOE]

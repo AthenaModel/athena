@@ -275,6 +275,8 @@ snit::type ::athena::athena {
     delegate method {payload typenames}     to adb as {payload typenames}
     delegate method {payload validate}      to adb as {payload validate}
 
+    delegate method {plant capacity}        to adb as {plant capacity}
+
     delegate method {ruleset detail}        to adb as {ruleset detail}
     delegate method {ruleset narrative}     to adb as {ruleset narrative}
     delegate method {ruleset rulename}      to adb as {ruleset rulename}

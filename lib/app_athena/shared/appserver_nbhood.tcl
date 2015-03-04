@@ -651,8 +651,8 @@ appserver module NBHOOD {
     
                 ht para
     
-                set capN [plant capacity n $n]
-                set capT [plant capacity total]
+                set capN [adb plant capacity n $n]
+                set capT [adb plant capacity total]
                 set pct  [format "%.2f" [expr {($capN/$capT) * 100.0}]]
     
                 ht put "
