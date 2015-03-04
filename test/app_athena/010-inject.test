@@ -136,7 +136,7 @@ namespace eval ::athena_test::tests:: {
     test create-1.1 {inject is created} -setup {
         setup
     } -body {
-        inject create $I1
+        tdb inject create $I1
         ted querylist {SELECT * FROM curse_injects}
     } -cleanup {
         cleanup
@@ -156,7 +156,7 @@ mag          1.0
 
     test create-2.1 {undo deletes the inject} -setup {
         setup
-        set undo [inject create $I1]
+        set undo [tdb inject create $I1]
     } -body {
         namespace eval :: $undo
         adb eval {SELECT * FROM curse_injects}
@@ -169,10 +169,10 @@ mag          1.0
 
     test delete-1.1 {inject is deleted} -setup {
         setup
-        inject create $I1
-        inject create $I2
+        tdb inject create $I1
+        tdb inject create $I2
     } -body {
-        inject delete {C1 1}
+        tdb inject delete {C1 1}
 
         adb eval {SELECT curse_id,inject_num FROM curse_injects}
     } -cleanup {
@@ -181,9 +181,9 @@ mag          1.0
 
     test delete-2.1 {Undo restores inject} -setup {
         setup
-        inject create $I1
-        inject create $I2
-        set undo [inject delete {C1 1}]
+        tdb inject create $I1
+        tdb inject create $I2
+        set undo [tdb inject delete {C1 1}]
     } -body {
         namespace eval :: $undo
         ted querylist {SELECT * FROM curse_injects ORDER BY curse_id,inject_num}
@@ -220,9 +220,9 @@ mag          2.0
 
     test update-1.1 {inject is updated} -setup {
         setup
-        inject create $I2
+        tdb inject create $I2
     } -body {
-        inject update {
+        tdb inject update {
             id     {C2 1}
             g      @F1
             mag    3.0
@@ -249,11 +249,11 @@ mag          3.0
 
     test update-1.2 {empty values are OK} -setup {
         setup
-        inject create $I2
+        tdb inject create $I2
     } -body {
         set a [ted query {SELECT * FROM curse_injects}]
 
-        inject update {
+        tdb inject update {
             id   {C2 1}
         }
 
@@ -267,12 +267,12 @@ mag          3.0
 
     test update-2.1 {undo undoes the change} -setup {
         setup
-        inject create $I2
+        tdb inject create $I2
     } -body {
 
         set a [ted query {SELECT * FROM curse_injects}]
 
-        set undo [inject update {
+        set undo [tdb inject update {
             id     {C2 1}
             g      @F1
             mag    3.0
@@ -292,9 +292,9 @@ mag          3.0
 
     test state-1.1 {inject state is changed} -setup {
         setup
-        inject create $I2
+        tdb inject create $I2
     } -body {
-        inject state {C2 1} disabled
+        tdb inject state {C2 1} disabled
 
         ted querylist {SELECT * FROM curse_injects}
     } -cleanup {
@@ -316,12 +316,12 @@ mag          2.0
 
     test state-2.1 {undo undoes the change} -setup {
         setup
-        inject create $I2
+        tdb inject create $I2
     } -body {
 
         set a [ted query {SELECT * FROM curse_injects}]
 
-        set undo [inject state {C2 1} disabled]
+        set undo [tdb inject state {C2 1} disabled]
 
         namespace eval :: $undo
 
@@ -338,7 +338,7 @@ mag          2.0
     test validate-1.1 {Invalid ID: no such CURSE} -setup {
         setup
     } -body {
-        inject validate {NONESUCH 1}
+        tdb inject validate {NONESUCH 1}
     } -returnCodes {
         error
     } -cleanup {
@@ -348,7 +348,7 @@ mag          2.0
     test validate-1.2 {Invalid ID: no curse_injects defined} -setup {
         setup
     } -body {
-        inject validate {C1 1}
+        tdb inject validate {C1 1}
     } -returnCodes {
         error
     } -cleanup {
@@ -357,10 +357,10 @@ mag          2.0
 
     test validate-1.3 {Invalid ID: no such inject} -setup {
         setup
-        inject create $I1
-        inject create $I2
+        tdb inject create $I1
+        tdb inject create $I2
     } -body {
-        inject validate {C1 2}
+        tdb inject validate {C1 2}
     } -returnCodes {
         error
     } -cleanup {
@@ -369,32 +369,32 @@ mag          2.0
 
     test validate-2.1 {Valid name} -setup {
         setup
-        inject create $I1
+        tdb inject create $I1
     } -body {
-        inject validate {C1 1}
+        tdb inject validate {C1 1}
     } -cleanup {
         cleanup
     } -result {C1 1}
 
     test validate-3.1 {Valid rolenames: SAT} -setup {
         setup
-        inject create $I1
-        inject create $I3
-        inject create $I4
+        tdb inject create $I1
+        tdb inject create $I3
+        tdb inject create $I4
     } -body {
-        inject rolenames SAT g C1
+        tdb inject rolenames SAT g C1
     } -cleanup {
         cleanup
     } -result {@G1 @C1 @G2}
 
     test validate-3.2 {Valid rolenames: COOP} -setup {
         setup
-        inject create $I1
-        inject create $I3
-        inject create $I4
+        tdb inject create $I1
+        tdb inject create $I3
+        tdb inject create $I4
     } -body {
-        set a [inject rolenames COOP f C1]
-        set b [inject rolenames COOP g C1]
+        set a [tdb inject rolenames COOP f C1]
+        set b [tdb inject rolenames COOP g C1]
         list $a $b
     } -cleanup {
         cleanup
@@ -402,12 +402,12 @@ mag          2.0
 
     test validate-3.3 {Valid rolenames: HREL} -setup {
         setup
-        inject create $I1
-        inject create $I3
-        inject create $I4
+        tdb inject create $I1
+        tdb inject create $I3
+        tdb inject create $I4
     } -body {
-        set a [inject rolenames HREL f C1]
-        set b [inject rolenames HREL g C1]
+        set a [tdb inject rolenames HREL f C1]
+        set b [tdb inject rolenames HREL g C1]
         list $a $b
     } -cleanup {
         cleanup
@@ -415,12 +415,12 @@ mag          2.0
 
     test validate-3.4 {Valid rolenames: VREL} -setup {
         setup
-        inject create $I1
-        inject create $I3
-        inject create $I4
+        tdb inject create $I1
+        tdb inject create $I3
+        tdb inject create $I4
     } -body {
-        set a [inject rolenames VREL a C1]
-        set b [inject rolenames VREL g C1]
+        set a [tdb inject rolenames VREL a C1]
+        set b [tdb inject rolenames VREL g C1]
         list $a $b
     } -cleanup {
         cleanup
@@ -432,19 +432,19 @@ mag          2.0
 
     test exists-1.1 {no such inject} -setup {
         setup
-        inject create $I1
-        inject create $I2
+        tdb inject create $I1
+        tdb inject create $I2
     } -body {
-        inject exists {C1 2}
+        tdb inject exists {C1 2}
     } -cleanup {
         cleanup
     } -result {0}
 
     test exists-2.1 {Valid inject} -setup {
         setup
-        inject create $I1
+        tdb inject create $I1
     } -body {
-        inject exists {C1 1}
+        tdb inject exists {C1 1}
     } -cleanup {
         cleanup
     } -result {1}
@@ -455,13 +455,13 @@ mag          2.0
     proc setup_get {} {
         variable I2
         setup
-        inject create $I2
+        tdb inject create $I2
     }
 
     test get-1.1 {get inject dict} -setup {
         setup_get
     } -body {
-        ted pdict [inject get {C2 1}]
+        ted pdict [tdb inject get {C2 1}]
     } -cleanup {
         cleanup
     } -result {
@@ -481,7 +481,7 @@ mag          2.0
     test get-1.2 {get parameter} -setup {
         setup_get
     } -body {
-        inject get {C2 1} g
+        tdb inject get {C2 1} g
     } -cleanup {
         cleanup
     } -result {@F1}
@@ -491,39 +491,39 @@ mag          2.0
 
     test check-1.1 {call check method, no errors} -setup {
         setup
-        inject create $I2
+        tdb inject create $I2
     } -body {
-        inject coop check [inject get {C2 1}]
+        tdb inject coop check [tdb inject get {C2 1}]
     } -cleanup {
         cleanup
     } -result {}
 
     test check-1.2 {call check method, error} -setup {
         setup
-        inject create $I1
-        inject create $BADI1
+        tdb inject create $I1
+        tdb inject create $BADI1
     } -body {
-        inject vrel check [inject get {C1 2}]
+        tdb inject vrel check [tdb inject get {C1 2}]
     } -cleanup {
         cleanup
     } -result {Role @C1 is CIVGROUPS role, must be an ACTORS role.}
 
     test check-1.3 {call check method, error} -setup {
         setup
-        inject create $I4
-        inject create $BADI2
+        tdb inject create $I4
+        tdb inject create $BADI2
     } -body {
-        inject hrel check [inject get {C1 2}]
+        tdb inject hrel check [tdb inject get {C1 2}]
     } -cleanup {
         cleanup
     } -result {Role @A1 is ACTORS role, must be GROUPS role.}
 
     test check-1.4 {call check method, error} -setup {
         setup
-        inject create $I1
-        inject create $BADI3
+        tdb inject create $I1
+        tdb inject create $BADI3
     } -body {
-        inject sat check [inject get {C1 2}]
+        tdb inject sat check [tdb inject get {C1 2}]
     } -cleanup {
         cleanup
     } -result {Role @F1 is FRCGROUPS role, must be a CIVGROUPS role.}
@@ -533,9 +533,9 @@ mag          2.0
 
     test narrative-1.1 {narrative} -setup {
         setup
-        inject create $I1
+        tdb inject create $I1
     } -body {
-        inject coop narrative [inject get {C1 1}]
+        tdb inject coop narrative [tdb inject get {C1 1}]
     } -cleanup {
         cleanup
     } -result {Change cooperation of civilians in @C1 with forces in @F1 by 1.0 points (XXXS+).}
@@ -545,9 +545,9 @@ mag          2.0
 
     test narrative-1.2 {narrative} -setup {
         setup
-        inject create $I3
+        tdb inject create $I3
     } -body {
-        inject hrel narrative [inject get {C1 1}]
+        tdb inject hrel narrative [tdb inject get {C1 1}]
     } -cleanup {
         cleanup
     } -result {Change horizontal relationships of groups in @G1 with groups in @F1 by 1.0 points (XXXS+).}
@@ -557,9 +557,9 @@ mag          2.0
 
     test narrative-1.3 {narrative} -setup {
         setup
-        inject create $I5
+        tdb inject create $I5
     } -body {
-        inject sat narrative [inject get {C1 1}]
+        tdb inject sat narrative [tdb inject get {C1 1}]
     } -cleanup {
         cleanup
     } -result {Change satisfaction of civilians in @C1 with SFT by 1.0 points (XXXS+).}
@@ -569,9 +569,9 @@ mag          2.0
 
     test narrative-1.4 {narrative} -setup {
         setup
-        inject create $I4
+        tdb inject create $I4
     } -body {
-        inject vrel narrative [inject get {C1 1}]
+        tdb inject vrel narrative [tdb inject get {C1 1}]
     } -cleanup {
         cleanup
     } -result {Change vertical relationships of groups in role @G2 with actors in role @A1 by 1.0 points (XXXS+).}

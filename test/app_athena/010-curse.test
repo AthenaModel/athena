@@ -156,7 +156,7 @@ state     normal
         setup
         tdb curse create $c1
         tdb curse create $c2
-        inject create $i1
+        tdb inject create $i1
     } -body {
         tdb curse delete C1
 
@@ -172,7 +172,7 @@ state     normal
         setup
         tdb curse create $c1
         tdb curse create $c2
-        inject create $i1
+        tdb inject create $i1
         
         set undo [tdb curse delete C1]
     } -body {

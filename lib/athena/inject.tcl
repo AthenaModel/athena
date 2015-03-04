@@ -80,11 +80,11 @@ snit::type ::athena::inject {
         set adb $adb_
     }
 
-    # type names
+    # typenames
     #
     # Returns the inject type names.
     
-    method {type names} {} {
+    method typenames {} {
         return [lsort $tinfo(names)]
     }
     
@@ -950,7 +950,7 @@ snit::type ::athena::inject {
 
 
     method _validate {} {
-        my prepare id -toupper -required -type inject
+        my prepare id -toupper -required -type [list $adb inject]
     }
 
     method _execute {{flunky ""}} {
@@ -980,7 +980,7 @@ snit::type ::athena::inject {
 
 
     method _validate {} {
-        my prepare id     -required          -type inject
+        my prepare id     -required          -type [list $adb inject]
         my prepare state  -required -tolower -type einject_state
     }
 
@@ -1143,7 +1143,7 @@ snit::type ::athena::inject {
 
 
     method _validate {} {
-        my prepare id  -required           -type inject
+        my prepare id  -required           -type [list $adb inject]
         my prepare mode          -tolower  -type einputmode
         my prepare ftype         -toupper  -selector
         my prepare gtype         -toupper  -selector
@@ -1315,7 +1315,7 @@ snit::type ::athena::inject {
 
 
     method _validate {} {
-        my prepare id         -required -type inject
+        my prepare id         -required -type [list $adb inject]
         my prepare mode       -tolower  -type einputmode
         my prepare ftype      -toupper  -selector
         my prepare gtype      -toupper  -selector
@@ -1456,7 +1456,7 @@ snit::type ::athena::inject {
 
 
     method _validate {} {
-        my prepare id    -required           -type  inject
+        my prepare id    -required           -type  [list $adb inject]
         my prepare mode            -tolower  -type  einputmode
         my prepare gtype           -toupper  -selector
         my prepare g               -toupper  -type  roleid
@@ -1621,7 +1621,7 @@ snit::type ::athena::inject {
 
 
     method _validate {} {
-        my prepare id    -required           -type inject
+        my prepare id    -required           -type [list $adb inject]
         my prepare mode            -tolower  -type  einputmode
         my prepare gtype           -toupper  -selector
         my prepare atype           -toupper  -selector

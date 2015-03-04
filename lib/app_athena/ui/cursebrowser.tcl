@@ -183,7 +183,7 @@ snit::widget cursebrowser {
     method {MonInjects update} {id} {
         # FIRST, we need to get the data about this inject.
         # If it isn't currently displayed, we can ignore it.
-        array set data [inject get $id]
+        array set data [adb inject get $id]
 
         if {[info exists c2item($data(curse_id))]} {
             $self DrawInject data
@@ -461,7 +461,7 @@ snit::widget cursebrowser {
         if {"curse" in [$citree item tag names $id]} {
             app enter CURSE:UPDATE curse_id $oid
         } else {
-            set curse_id [inject get $oid curse_id]
+            set curse_id [adb inject get $oid curse_id]
             set longname [adb curse get $curse_id longname]
             app enter INJECT:$otype:UPDATE id $oid longname $longname
         }
@@ -502,7 +502,7 @@ snit::widget cursebrowser {
                 # Do nothing (this should never happen anyway)
             }
         } else {
-            set state [inject get $oid state]
+            set state [adb inject get $oid state]
 
             if {$state eq "normal"} {
                 adb order senddict gui INJECT:STATE [list id $oid state disabled]
@@ -592,7 +592,7 @@ snit::widget cursebrowser {
         # FIRST, get a list of order names and titles
         set odict [dict create]
 
-        foreach name [inject type names] {
+        foreach name [adb inject typenames] {
             set order "INJECT:$name:CREATE"
 
             if {![string match "INJECT:*:CREATE" $order]} {
@@ -617,7 +617,7 @@ snit::widget cursebrowser {
             set curse_id $oid
             $citree item expand $id
         } else {
-            set curse_id [inject get $oid curse_id]
+            set curse_id [adb inject get $oid curse_id]
         }
 
         set longname [adb curse get $curse_id longname]

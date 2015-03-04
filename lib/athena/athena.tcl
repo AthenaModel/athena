@@ -180,7 +180,6 @@ snit::type ::athena::athena {
     delegate method {curse get}             to adb as {curse get}
     delegate method {curse namedict}        to adb as {curse namedict}
     delegate method {curse names}           to adb as {curse names}
-    delegate method {curse narrative}       to adb as {curse narrative}
     delegate method {curse normal}          to adb as {curse normal}
     delegate method {curse validate}        to adb as {curse validate}
 
@@ -205,13 +204,19 @@ snit::type ::athena::athena {
     delegate method {group names}           to adb as {group names}
     delegate method {group validate}        to adb as {group validate}
 
-    delegate method {hook get}             to adb as {hook get}
-    delegate method {hook namedict}        to adb as {hook namedict}
-    delegate method {hook names}           to adb as {hook names}
-    delegate method {hook topic exists}    to adb as {hook topic exists}
-    delegate method {hook topic get}       to adb as {hook topic get}
-    delegate method {hook topic validate}  to adb as {hook topic validate}
-    delegate method {hook validate}        to adb as {hook validate}
+    delegate method {hook get}              to adb as {hook get}
+    delegate method {hook namedict}         to adb as {hook namedict}
+    delegate method {hook names}            to adb as {hook names}
+    delegate method {hook topic exists}     to adb as {hook topic exists}
+    delegate method {hook topic get}        to adb as {hook topic get}
+    delegate method {hook topic validate}   to adb as {hook topic validate}
+    delegate method {hook validate}         to adb as {hook validate}
+
+    delegate method {inject checker}        to adb as {inject checker}
+    delegate method {inject exists}         to adb as {inject exists}
+    delegate method {inject get}            to adb as {inject get}
+    delegate method {inject typenames}      to adb as {inject typenames}
+    delegate method {inject validate}       to adb as {inject validate}
 
     delegate method {nbhood bbox}           to adb as {nbhood bbox}
     delegate method {nbhood exists}         to adb as {nbhood exists}
