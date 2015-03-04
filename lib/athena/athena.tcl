@@ -252,6 +252,10 @@ snit::type ::athena::athena {
     delegate method {strategy checker}      to adb as {strategy checker}
     delegate method {strategy check}        to adb as {strategy check}
 
+    delegate method {unit get}              to adb as {unit get}
+    delegate method {unit names}            to adb as {unit names}
+    delegate method {unit validate}         to adb as {unit validate}
+
     delegate method unsaved                 to adb
     delegate method version                 to adb
 

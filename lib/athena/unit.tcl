@@ -393,7 +393,7 @@ snit::type ::athena::unit {
     }
 
     method _validate {} {
-        my prepare u          -toupper -required -type unit
+        my prepare u          -toupper -required -type [list $adb unit]
         my prepare location   -toupper -required -type refpoint
     
         my returnOnError

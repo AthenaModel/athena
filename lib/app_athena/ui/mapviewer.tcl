@@ -1566,7 +1566,7 @@ snit::widget mapviewer {
     # group.
 
     method UnitBrowseDetail {} {
-        set g [unit get $icons(context) g]
+        set g [adb unit get $icons(context) g]
 
         app show my://app/group/$g
     }

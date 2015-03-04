@@ -306,6 +306,7 @@ snit::type ::athena::athenadb {
             sigevent                    \
             stance                      \
             {strategy strategy_manager} \
+            unit                        \
             vrel
 
         $self MakeComponentsWithGlobal  \
@@ -318,7 +319,6 @@ snit::type ::athena::athenadb {
             plant                       \
             service                     \
             sim                         \
-            unit                        \
 
 
 

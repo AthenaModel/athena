@@ -40,7 +40,7 @@ namespace eval ::athena_test::tests:: {
         ted create NB1 NB2 BLUE USAID SHIA
         tdb demog start
         tdb personnel start
-        unit reset
+        tdb unit reset
         tdb personnel load
         tdb personnel deploy 1 NB1 BLUE  100
         tdb personnel deploy 2 NB2 USAID 100
@@ -60,7 +60,7 @@ namespace eval ::athena_test::tests:: {
     test makebase-1.1 {units are created} -setup {
         setup
     } -body {
-        unit makebase
+        tdb unit makebase
 
         ted query {
             SELECT u,n,g,gtype,a,personnel,active 
@@ -85,7 +85,7 @@ USAID/NB2 NB2 USAID ORG   NONE 100       1
     test assign-1.1 {units are created} -setup {
         setup
     } -body {
-        unit assign 1 BLUE NB2 PATROL 50
+        tdb unit assign 1 BLUE NB2 PATROL 50
 
         ted query {
             SELECT tactic_id,u,n,g,gtype,a,personnel,active 
@@ -105,10 +105,10 @@ tactic_id u      n   g    gtype a      personnel active
 
     test reset-1.1 {units are reset} -setup {
         setup
-        unit makebase
-        unit assign 1 BLUE NB1 PATROL 50
+        tdb unit makebase
+        tdb unit assign 1 BLUE NB1 PATROL 50
     } -body {
-        unit reset
+        tdb unit reset
         ted query {
             SELECT tactic_id,u,n,g,gtype,a,personnel,active 
             FROM units
@@ -130,9 +130,9 @@ tactic_id u         n   g     gtype a    personnel active
 
     test personnel-1.1 {unit is updated} -setup {
         setup
-        unit assign 1 BLUE NB1 PATROL 50
+        tdb unit assign 1 BLUE NB1 PATROL 50
     } -body {
-        unit personnel UT0001 3
+        tdb unit personnel UT0001 3
 
         ted query {SELECT u,personnel FROM units WHERE active}
     } -cleanup {
@@ -146,10 +146,10 @@ UT0001 3
 
     test personnel-1.2 {updated unit is active} -setup {
         setup
-        unit makebase
-        unit reset
+        tdb unit makebase
+        tdb unit reset
     } -body {
-        unit personnel BLUE/NB1 3
+        tdb unit personnel BLUE/NB1 3
 
         ted query {SELECT u,personnel,active FROM units ORDER BY u}
     } -cleanup {
@@ -167,9 +167,9 @@ USAID/NB2 0         0
 
     test delete-1.1 {Unit is deleted} -setup {
         setup
-        unit makebase
+        tdb unit makebase
     } -body {
-        unit delete BLUE/NB1
+        tdb unit delete BLUE/NB1
 
         # Is it gone?
         adb eval {SELECT u FROM units ORDER BY u}
@@ -182,9 +182,9 @@ USAID/NB2 0         0
 
     test move-1.1 {unit is moved} -setup {
         setup
-        unit makebase
+        tdb unit makebase
     } -body {
-        unit move BLUE/NB1 {2 2}
+        tdb unit move BLUE/NB1 {2 2}
 
         ted query {SELECT u, location FROM units WHERE u='BLUE/NB1'}
     } -cleanup {
@@ -198,13 +198,13 @@ BLUE/NB1 2 2
 
     test move-2.1 {undo undoes the change} -setup {
         setup
-        unit makebase
+        tdb unit makebase
     } -body {
 
-        set a [unit get BLUE/NB1 location]
-        set undo [unit move BLUE/NB1 {3 3}]
+        set a [tdb unit get BLUE/NB1 location]
+        set undo [tdb unit move BLUE/NB1 {3 3}]
         namespace eval :: $undo
-        set b [unit get BLUE/NB1 location]
+        set b [tdb unit get BLUE/NB1 location]
 
         expr {$a eq $b}
     } -cleanup {
@@ -218,9 +218,9 @@ BLUE/NB1 2 2
 
     test mutate_personnel-1.1 {unit is updated} -setup {
         setup
-        unit makebase
+        tdb unit makebase
     } -body {
-        unit personnel BLUE/NB1 3
+        tdb unit personnel BLUE/NB1 3
 
         ted query {SELECT u,personnel FROM units WHERE active ORDER BY u}
     } -cleanup {
@@ -236,10 +236,10 @@ USAID/NB2 100
 
     test mutate_personnel-1.2 {updated unit is active} -setup {
         setup
-        unit makebase
-        unit reset
+        tdb unit makebase
+        tdb unit reset
     } -body {
-        unit personnel BLUE/NB1 3
+        tdb unit personnel BLUE/NB1 3
 
         ted query {SELECT u,personnel,active FROM units ORDER BY u}
     } -cleanup {
@@ -254,16 +254,16 @@ USAID/NB2 0         0
 
     test mutate_personnel-2.1 {undo undoes the change} -setup {
         setup
-        unit makebase
+        tdb unit makebase
     } -body {
 
-        set a [unit get BLUE/NB1 personnel]
+        set a [tdb unit get BLUE/NB1 personnel]
 
-        set undo [unit personnel BLUE/NB1 25]
+        set undo [tdb unit personnel BLUE/NB1 25]
 
         namespace eval :: $undo
 
-        set b [unit get BLUE/NB1 personnel]
+        set b [tdb unit get BLUE/NB1 personnel]
 
         expr {$a eq $b}
     } -cleanup {
@@ -274,7 +274,7 @@ USAID/NB2 0         0
     # names
 
     test names-1.1 {Returns names: none defined} -body {
-        unit names
+        tdb unit names
     } -cleanup {
         cleanup
     } -result {}
@@ -282,9 +282,9 @@ USAID/NB2 0         0
 
     test names-1.2 {Returns names} -setup {
         setup
-        unit makebase
+        tdb unit makebase
     } -body {
-        lsort [unit names]
+        lsort [tdb unit names]
     } -cleanup {
         cleanup
     } -result {BLUE/NB1 SHIA/NB1 USAID/NB2}
@@ -294,7 +294,7 @@ USAID/NB2 0         0
     # validate
 
     test validate-1.1 {Invalid name} -body {
-        unit validate NONESUCH
+        tdb unit validate NONESUCH
     } -returnCodes {
         error
     } -cleanup {
@@ -304,9 +304,9 @@ USAID/NB2 0         0
 
     test validate-2.1 {Valid name} -setup {
         setup
-        unit makebase
+        tdb unit makebase
     } -body {
-        unit validate BLUE/NB1
+        tdb unit validate BLUE/NB1
     } -cleanup {
         cleanup
     } -result {BLUE/NB1}
@@ -317,9 +317,9 @@ USAID/NB2 0         0
 
     test get-1.1 {Get dict} -setup {
         setup
-        unit makebase
+        tdb unit makebase
     } -body {
-        ted pdict [dict remove [unit get BLUE/NB1] location]
+        ted pdict [dict remove [tdb unit get BLUE/NB1] location]
     } -cleanup {
         cleanup
     } -result {
@@ -337,9 +337,9 @@ USAID/NB2 0         0
 
     test get-1.2 {Get one parameter} -setup {
         setup
-        unit makebase
+        tdb unit makebase
     } -body {
-        unit get BLUE/NB1 n
+        tdb unit get BLUE/NB1 n
     } -cleanup {
         cleanup
     } -result {NB1}
