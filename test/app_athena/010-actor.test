@@ -95,7 +95,7 @@ budget            0.0
 
     test create-1.4 {Strategy created} -body {
         tdb actor create [ted entity JOE]
-        info object isa object [strategy getname JOE]
+        info object isa object [tdb strategy getname JOE]
     } -cleanup {
         cleanup
     } -result {1}
@@ -190,7 +190,7 @@ budget            0.0
     test delete-7.1 {Owned strategy deleted} -setup {
         ted create JOE
     } -body {
-        set a [info object isa object [strategy getname JOE]]
+        set a [info object isa object [tdb strategy getname JOE]]
         tdb actor delete JOE
         set b [info object isa object ::strategy::JOE]
 
@@ -204,7 +204,7 @@ budget            0.0
         set undo [tdb actor delete JOE]
     } -body {
         namespace eval :: $undo
-        info object isa object [strategy getname JOE]
+        info object isa object [tdb strategy getname JOE]
     } -cleanup {
         cleanup
     } -result {1}

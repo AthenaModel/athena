@@ -142,7 +142,7 @@ appserver module AGENT {
                 "Unknown entity: [dict get $udict url]."
         }
 
-        set s [strategy getname $a]
+        set s [adb strategy getname $a]
 
         # NEXT, Begin the page
         adb eval {SELECT * FROM gui_agents WHERE agent_id=$a} data {}
@@ -196,7 +196,7 @@ appserver module AGENT {
                 "Unknown entity: [dict get $udict url]."
         }
 
-        set s [strategy getname $a]
+        set s [adb strategy getname $a]
 
         # NEXT, Begin the page
         adb eval {SELECT * FROM gui_agents WHERE agent_id=$a} data {}
@@ -257,7 +257,7 @@ appserver module AGENT {
     # of the page.
 
     proc BlockList {a mode} {
-        set s [strategy getname $a]
+        set s [adb strategy getname $a]
 
         if {$mode eq "full"} {
             set root my://app/agent/$a/full#block
@@ -328,7 +328,7 @@ appserver module AGENT {
         ht page "Sanity Check: Agents' Strategies" {
             ht title "Agents' Strategies" "Sanity Check"
             
-            if {[strategy checker ::appserver::ht] eq "OK"} {
+            if {[adb strategy checker ::appserver::ht] eq "OK"} {
                 ht putln "No problems were found."
                 ht para
             }

@@ -185,7 +185,7 @@ appserver module SANITY {
         ht page "Sanity Check: Actors' Strategies" {
             ht title "Actors' Strategies" "Sanity Check"
             
-            if {[strategy checker ::appserver::ht] eq "OK"} {
+            if {[adb strategy checker ::appserver::ht] eq "OK"} {
                 ht putln "No problems were found."
                 ht para
             }

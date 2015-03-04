@@ -247,6 +247,11 @@ snit::type ::athena::athena {
     delegate method save                    to adb
     delegate method stable                  to adb
     delegate method state                   to adb
+
+    delegate method {strategy getname}      to adb as {strategy getname}
+    delegate method {strategy checker}      to adb as {strategy checker}
+    delegate method {strategy check}        to adb as {strategy check}
+
     delegate method unsaved                 to adb
     delegate method version                 to adb
 

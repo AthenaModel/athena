@@ -61,7 +61,7 @@ namespace eval ::athena_test::tests:: {
     proc cleanup {} {
         variable coffer
         $coffer destroy
-        strategy locking 0
+        tdb strategy locking 0
         ted cleanup
     }
 

@@ -81,7 +81,7 @@ namespace eval ::athena_test::tests:: {
     proc cleanup {} {
         variable coffer
         $coffer destroy
-        strategy locking 0
+        tdb strategy locking 0
         ted cleanup
     }
 
@@ -301,7 +301,7 @@ namespace eval ::athena_test::tests:: {
         setup -valid
         settroops 1000
         setcost 1000
-        strategy locking 1
+        tdb strategy locking 1
         $T1 configure -pmode ALL
     } -body {
         set a [$T1 obligate $coffer]
@@ -359,7 +359,7 @@ namespace eval ::athena_test::tests:: {
         setup -valid
         settroops 2000
         setcost 1000
-        strategy locking 1
+        tdb strategy locking 1
         $T1 configure -pmode SOME -personnel 1000
     } -body {
         set a [$T1 obligate $coffer]
@@ -451,7 +451,7 @@ namespace eval ::athena_test::tests:: {
         setup -valid
         settroops 2000
         setcost 1000
-        strategy locking 1
+        tdb strategy locking 1
         $T1 configure -pmode UPTO -min 1000 -max 1500
     } -body {
         set a [$T1 obligate $coffer]
@@ -512,7 +512,7 @@ namespace eval ::athena_test::tests:: {
         setup -valid
         settroops 1000
         setcost 1000
-        strategy locking 1
+        tdb strategy locking 1
         $T1 configure -pmode ALLBUT -personnel 100
     } -body {
         set a [$T1 obligate $coffer]
@@ -573,7 +573,7 @@ namespace eval ::athena_test::tests:: {
         setup -valid
         settroops 1000
         setcost 1000
-        strategy locking 1
+        tdb strategy locking 1
         $T1 configure -pmode PERCENT -percent 50.0
     } -body {
         set a [$T1 obligate $coffer]

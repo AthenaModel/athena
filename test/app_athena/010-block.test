@@ -75,7 +75,7 @@ namespace eval ::athena_test::tests:: {
     # Clean up after a test
 
     proc cleanup {} {
-        strategy locking 0
+        tdb strategy locking 0
         ted cleanup
     }
 
@@ -160,7 +160,7 @@ namespace eval ::athena_test::tests:: {
     test strategy-1.1 {can retrieve owning strategy} -setup {
         setup
     } -body {
-        expr {[$B1 strategy] eq [strategy getname SYSTEM]}
+        expr {[$B1 strategy] eq [tdb strategy getname SYSTEM]}
     } -cleanup {
         cleanup
     } -result {1}
@@ -883,7 +883,7 @@ namespace eval ::athena_test::tests:: {
         setup
         addExecutive
         lock
-        strategy locking 1
+        tdb strategy locking 1
     } -body {
         $BJOE set onlock 0
         $BJOE execute $coffer
@@ -895,7 +895,7 @@ namespace eval ::athena_test::tests:: {
     test execute-2.2 {SKIPPED on lock if no tactics} -setup {
         setup
         lock
-        strategy locking 1
+        tdb strategy locking 1
     } -body {
         $BJOE set onlock 1
         $BJOE execute $coffer
@@ -909,7 +909,7 @@ namespace eval ::athena_test::tests:: {
         set t [addExecutive]
         $t set state disabled
         lock
-        strategy locking 1
+        tdb strategy locking 1
     } -body {
         $BJOE set onlock 1
         $BJOE execute $coffer
@@ -922,7 +922,7 @@ namespace eval ::athena_test::tests:: {
         setup
         addSigevent
         lock
-        strategy locking 1
+        tdb strategy locking 1
     } -body {
         $BJOE set onlock 1
         $BJOE execute $coffer
@@ -936,7 +936,7 @@ namespace eval ::athena_test::tests:: {
         addSigevent
         addExecutive
         lock
-        strategy locking 1
+        tdb strategy locking 1
     } -body {
         $BJOE set onlock 1
         $BJOE execute $coffer
@@ -1115,7 +1115,7 @@ namespace eval ::athena_test::tests:: {
         $coffer spend [$coffer cash]
         $coffer withdraw 2000
         $BJOE set onlock 1
-        strategy locking 1
+        tdb strategy locking 1
     } -body {
         set a [$coffer cash]
         $BJOE execute $coffer

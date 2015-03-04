@@ -94,7 +94,7 @@ namespace eval ::athena_test::tests:: {
     # Creates the BROADCAST tactic, and locks the scenario.
 
     proc curse {cid roles} {
-        set S1 [strategy getname SYSTEM]
+        set S1 [tdb strategy getname SYSTEM]
 
         ted order STRATEGY:BLOCK:ADD agent SYSTEM
         lassign [$S1 blocks] B1

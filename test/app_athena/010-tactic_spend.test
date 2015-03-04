@@ -201,7 +201,7 @@ namespace eval ::athena_test::tests:: {
 
     test obligate-1.4 {Insufficient cash on lock} -setup {
         setup
-        strategy locking 1
+        tdb strategy locking 1
     } -body {
         $T1 set mode EXACT
         $T1 set amount 10001.0
@@ -216,7 +216,7 @@ namespace eval ::athena_test::tests:: {
 
     test obligate-1.5 {No cash on lock} -setup {
         setup
-        strategy locking 1
+        tdb strategy locking 1
     } -body {
         $T1 set mode EXACT
         $T1 set amount 10001.0

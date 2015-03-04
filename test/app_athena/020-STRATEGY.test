@@ -73,7 +73,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         ted order STRATEGY:BLOCK:ADD agent SYSTEM
-        set S1 [strategy getname SYSTEM]
+        set S1 [tdb strategy getname SYSTEM]
         $S1 blocks
     } -cleanup {
         cleanup

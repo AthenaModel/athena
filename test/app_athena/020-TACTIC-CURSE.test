@@ -44,7 +44,7 @@ namespace eval ::athena_test::tests:: {
         variable B1
         variable T1
 
-        set S1 [strategy getname SYSTEM]
+        set S1 [tdb strategy getname SYSTEM]
         ted order STRATEGY:BLOCK:ADD agent SYSTEM
 
         ted order CURSE:CREATE curse_id C1

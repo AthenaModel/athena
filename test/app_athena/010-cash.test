@@ -40,7 +40,7 @@ namespace eval ::athena_test::tests:: {
 
     proc cleanup {} {
         # Clean up the test environment
-        strategy acting ""
+        tdb strategy acting ""
         ted cleanup
     }
 
@@ -202,7 +202,7 @@ gifts         0.0
     test onhand-1.1 {retrieves working cash for acting actor} -setup {
         setup
         tdb cash load
-        strategy acting JOE
+        tdb strategy acting JOE
         cashset  JOE 5000 10000
         wcashset JOE 2000  4000
     } -body {
@@ -214,7 +214,7 @@ gifts         0.0
     test onhand-1.2 {retrieves pre-strategy cash for other actor} -setup {
         setup
         tdb cash load
-        strategy acting BOB
+        tdb strategy acting BOB
         cashset  JOE 5000 10000
         wcashset JOE 2000  4000
     } -body {
@@ -230,7 +230,7 @@ gifts         0.0
     test reserve-1.1 {retrieves working reserve for acting actor} -setup {
         setup
         tdb cash load
-        strategy acting JOE
+        tdb strategy acting JOE
         cashset  JOE 5000 10000
         wcashset JOE 2000  4000
     } -body {
@@ -242,7 +242,7 @@ gifts         0.0
     test reserve-1.2 {retrieves pre-strategy reserve for other actor} -setup {
         setup
         tdb cash load
-        strategy acting BOB
+        tdb strategy acting BOB
         cashset  JOE 5000 10000
         wcashset JOE 2000  4000
     } -body {

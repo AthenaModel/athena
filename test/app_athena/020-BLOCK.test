@@ -45,7 +45,7 @@ namespace eval ::athena_test::tests:: {
         variable S1
         variable B1
         ted order STRATEGY:BLOCK:ADD agent SYSTEM
-        set S1 [strategy getname SYSTEM]
+        set S1 [tdb strategy getname SYSTEM]
         lassign [$S1 blocks] B1
     }
 
@@ -194,7 +194,7 @@ namespace eval ::athena_test::tests:: {
     test BLOCK:UPDATE-1.15 {duplicate name} -setup {
         setup
         ted order STRATEGY:BLOCK:ADD agent SYSTEM
-        set S [strategy getname SYSTEM]
+        set S [tdb strategy getname SYSTEM]
         lassign [$S blocks end] B2
     } -body {
         ted order -reject BLOCK:UPDATE block_id [$B1 id] \

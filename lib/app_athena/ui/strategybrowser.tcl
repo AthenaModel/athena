@@ -483,7 +483,7 @@ snit::widget strategybrowser {
         # FIRST, get the list of blocks.  We could get this from the 
         # BList, but it's easier to get it from the strategy.
         if {$info(agent) ne ""} {
-            set s [strategy getname $info(agent)]
+            set s [adb strategy getname $info(agent)]
             set blocks [$s blocks]
         } else {
             set blocks [list]
@@ -516,7 +516,7 @@ snit::widget strategybrowser {
         }
 
         # NEXT, configure the -beancmd and force a reload.
-        $blist configure -beancmd [list [strategy getname $info(agent)] blocks]
+        $blist configure -beancmd [list [adb strategy getname $info(agent)] blocks]
         $blist reload -force
     }
 
@@ -634,7 +634,7 @@ snit::widget strategybrowser {
     method AListDisplay {rindex values} {
         # FIRST, set color
         set agent [lindex $values 0]
-        set state [[strategy getname $agent] state]
+        set state [[adb strategy getname $agent] state]
 
         $alist rowconfigure $rindex \
             -foreground [ebeanstate as color $state] \
@@ -1017,7 +1017,7 @@ snit::widget strategybrowser {
     # results.
 
     method BListCheckStrategies {} {
-        set failed [strategy check]
+        set failed [adb strategy check]
 
         if {$failed} {
             set msg "at least one problem was found"

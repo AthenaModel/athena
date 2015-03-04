@@ -65,7 +65,7 @@ namespace eval ::athena_test::tests:: {
         $B1 configure -tmode BEFORE -t1 10 -cmode ANY -once 1
     } -body {
         adb paste block BOB [list [$B1 copydata]]
-        set B2 [[strategy getname BOB] blocks 0]
+        set B2 [[tdb strategy getname BOB] blocks 0]
         ted pdicts [$B2 getdict]
     } -cleanup {
         cleanup
@@ -95,7 +95,7 @@ namespace eval ::athena_test::tests:: {
         ted addcondition $B1 EXPR expression {2 == 2}
     } -body {
         adb paste block BOB [list [$B1 copydata]]
-        set B2 [[strategy getname BOB] blocks 0]
+        set B2 [[tdb strategy getname BOB] blocks 0]
         lassign [$B2 conditions] C1 C2
         list [$C1 get expression] [$C2 get expression]
     } -cleanup {
@@ -108,7 +108,7 @@ namespace eval ::athena_test::tests:: {
         ted addtactic $B1 SIGEVENT msg {message 2}
     } -body {
         adb paste block BOB [list [$B1 copydata]]
-        set B2 [[strategy getname BOB] blocks 0]
+        set B2 [[tdb strategy getname BOB] blocks 0]
         lassign [$B2 tactics] T1 T2
         list [$T1 get msg] [$T2 get msg]
     } -cleanup {
@@ -122,7 +122,7 @@ namespace eval ::athena_test::tests:: {
         $B2 configure -tmode AFTER -t1 20
     } -body {
         adb paste block BOB [list [$B1 copydata] [$B2 copydata]]
-        lassign [[strategy getname BOB] blocks] B3 B4
+        lassign [[tdb strategy getname BOB] blocks] B3 B4
         list [$B3 get tmode] [$B4 get tmode]
     } -cleanup {
         cleanup

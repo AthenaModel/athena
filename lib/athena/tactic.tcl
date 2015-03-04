@@ -353,7 +353,7 @@ oo::define ::athena::tactic {
     # and 0 otherwise.  Cash is always sufficient on lock.
 
     method InsufficientCash {cash cost} {
-        if {[strategy ontick] && $cost > $cash} {
+        if {[[my adb] strategy ontick] && $cost > $cash} {
 
             set cash [commafmt $cash]
             set cost [commafmt $cost]
