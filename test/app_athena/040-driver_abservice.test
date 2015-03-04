@@ -1015,7 +1015,7 @@ TRANSPORT-1-4 SUNN JOE
     test sigline-1.1 {ENERGY sigline output} -setup {
         setup
     } -body {
-        ruleset ENERGY sigline SHIA 
+        tdb ruleset ENERGY sigline SHIA 
     } -cleanup {
         cleanup
     } -result {Provision of ENERGY services to SHIA}
@@ -1023,7 +1023,7 @@ TRANSPORT-1-4 SUNN JOE
     test sigline-1.2 {WATER sigline output} -setup {
         setup
     } -body {
-        ruleset WATER sigline SHIA 
+        tdb ruleset WATER sigline SHIA 
     } -cleanup {
         cleanup
     } -result {Provision of WATER services to SHIA}
@@ -1031,7 +1031,7 @@ TRANSPORT-1-4 SUNN JOE
     test sigline-1.3 {TRANSPORT sigline output} -setup {
         setup
     } -body {
-        ruleset TRANSPORT sigline SHIA 
+        tdb ruleset TRANSPORT sigline SHIA 
     } -cleanup {
         cleanup
     } -result {Provision of TRANSPORT services to SHIA}
@@ -1042,7 +1042,7 @@ TRANSPORT-1-4 SUNN JOE
     test narrative-1.1 {ENERGY narrative output} -setup {
         setup
     } -body {
-        ruleset ENERGY narrative {
+        tdb ruleset ENERGY narrative {
             g          SHIA
             case       E-
         } 
@@ -1053,7 +1053,7 @@ TRANSPORT-1-4 SUNN JOE
     test narrative-1.2 {WATER narrative output} -setup {
         setup
     } -body {
-        ruleset WATER narrative {
+        tdb ruleset WATER narrative {
             g          SHIA
             case       E-
         } 
@@ -1064,7 +1064,7 @@ TRANSPORT-1-4 SUNN JOE
     test narrative-1.3 {TRANSPORT narrative output} -setup {
         setup
     } -body {
-        ruleset TRANSPORT narrative {
+        tdb ruleset TRANSPORT narrative {
             g          SHIA
             case       E-
         } 
@@ -1078,7 +1078,7 @@ TRANSPORT-1-4 SUNN JOE
     test detail-1.1 {ENERGY detail} -setup {
         setup
     } -body {
-        ruleset ENERGY detail {
+        tdb ruleset ENERGY detail {
             g          SHIA
             a          JOE
             actual     0.8
@@ -1119,7 +1119,7 @@ These values led to the following rule set inputs:<p>
     test detail-1.2 {WATER detail} -setup {
         setup
     } -body {
-        ruleset WATER detail {
+        tdb ruleset WATER detail {
             g          SHIA
             a          JOE
             actual     0.8
@@ -1160,7 +1160,7 @@ These values led to the following rule set inputs:<p>
     test detail-1.3 {TRANSPORT detail} -setup {
         setup
     } -body {
-        ruleset TRANSPORT detail {
+        tdb ruleset TRANSPORT detail {
             g          SHIA
             a          JOE
             actual     0.8

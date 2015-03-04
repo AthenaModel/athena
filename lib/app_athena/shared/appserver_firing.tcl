@@ -307,7 +307,7 @@ appserver module firing {
         ht page "Rule Firing: $id"
         ht title "Rule Firing: $id" 
 
-        set ruleTitle [ruleset $data(ruleset) rulename $data(rule)]
+        set ruleTitle [adb ruleset rulename $data(rule)]
 
         ht record {
             ht field "Rule:" {
@@ -327,7 +327,7 @@ appserver module firing {
         ht para
 
         set ruleset [dict get $data(fdict) dtype]
-        ruleset $ruleset detail $data(fdict) [namespace origin ht]
+        adb ruleset detail $ruleset $data(fdict) [namespace origin ht]
 
         ht para
 

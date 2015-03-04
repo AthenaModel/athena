@@ -140,7 +140,7 @@ namespace eval ::athena_test::tests:: {
     test sigline-1.1 {sigline text} -setup {
         # none needed
     } -body {
-        ruleset DISEASE sigline {ONGOING NB1}
+        tdb ruleset DISEASE sigline {ONGOING NB1}
     } -cleanup {
         cleanup
     } -result {DISEASE ongoing in NB1}
@@ -155,7 +155,7 @@ namespace eval ::athena_test::tests:: {
     test narrative-1.1 {narrative text: ongoing} -setup {
         # none needed
     } -body {
-        ruleset DISEASE narrative {
+        tdb ruleset DISEASE narrative {
             dtype       DISEASE
             s           1
             state       ONGOING
@@ -171,7 +171,7 @@ namespace eval ::athena_test::tests:: {
     test narrative-1.2 {narrative text: resolved, resolver} -setup {
         # none needed
     } -body {
-        ruleset DISEASE narrative {
+        tdb ruleset DISEASE narrative {
             dtype       DISEASE
             s           1
             state       RESOLVED
@@ -187,7 +187,7 @@ namespace eval ::athena_test::tests:: {
     test narrative-1.3 {narrative text: resolved, no resolver} -setup {
         # none needed
     } -body {
-        ruleset DISEASE narrative {
+        tdb ruleset DISEASE narrative {
             dtype       DISEASE
             s           1
             state       RESOLVED
@@ -215,7 +215,7 @@ namespace eval ::athena_test::tests:: {
             SELECT fdict FROM rule_firings WHERE firing_id = 1
         }]
 
-        ruleset DISEASE detail $fdict [namespace current]::ht
+        tdb ruleset DISEASE detail $fdict [namespace current]::ht
         pprint [ht get]
     } -cleanup {
         cleanup
@@ -235,7 +235,7 @@ in neighborhood
             SELECT fdict FROM rule_firings WHERE firing_id = 2
         }]
 
-        ruleset DISEASE detail $fdict [namespace current]::ht
+        tdb ruleset DISEASE detail $fdict [namespace current]::ht
         pprint [ht get]
     } -cleanup {
         cleanup
@@ -255,7 +255,7 @@ in neighborhood
             SELECT fdict FROM rule_firings WHERE firing_id = 3
         }]
 
-        ruleset DISEASE detail $fdict [namespace current]::ht
+        tdb ruleset DISEASE detail $fdict [namespace current]::ht
         pprint [ht get]
     } -cleanup {
         cleanup

@@ -226,7 +226,7 @@
             return
         }
 
-        ruleset CURSE assess $fdict
+        [my adb] ruleset CURSE assess $fdict
     }
 }
 

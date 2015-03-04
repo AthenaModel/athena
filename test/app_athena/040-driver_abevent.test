@@ -128,7 +128,7 @@ namespace eval ::athena_test::tests:: {
     test sigline-1.1 {sigline text} -setup {
         # none needed
     } -body {
-        ruleset ACCIDENT sigline {NB1}
+        tdb ruleset ACCIDENT sigline {NB1}
     } -cleanup {
         cleanup
     } -result {ACCIDENT in NB1}
@@ -143,7 +143,7 @@ namespace eval ::athena_test::tests:: {
     test narrative-1.1 {narrative text} -setup {
         # none needed
     } -body {
-        ruleset ACCIDENT narrative {
+        tdb ruleset ACCIDENT narrative {
             dtype       ACCIDENT
             n           NB1
             coverage    0.5
@@ -168,7 +168,7 @@ namespace eval ::athena_test::tests:: {
             coverage    0.5
         }
 
-        ruleset ACCIDENT detail $fdict [namespace current]::ht
+        tdb ruleset ACCIDENT detail $fdict [namespace current]::ht
         pprint [ht get]
     } -cleanup {
         cleanup
@@ -259,7 +259,7 @@ t rule     aut   cul   qol   sft
     test DEMO-2.1 {sigline text} -setup {
         # none needed
     } -body {
-        ruleset DEMO sigline {NB1 SHIA}
+        tdb ruleset DEMO sigline {NB1 SHIA}
     } -cleanup {
         cleanup
     } -result {DEMO by SHIA in NB1}
@@ -267,7 +267,7 @@ t rule     aut   cul   qol   sft
     test DEMO-2.2 {narrative text} -setup {
         # none needed
     } -body {
-        ruleset DEMO narrative {
+        tdb ruleset DEMO narrative {
             dtype       DEMO
             n           NB1
             coverage    0.5
@@ -287,7 +287,7 @@ t rule     aut   cul   qol   sft
             g           SHIA
         }
 
-        ruleset DEMO detail $fdict [namespace current]::ht
+        tdb ruleset DEMO detail $fdict [namespace current]::ht
         pprint [ht get]
     } -cleanup {
         cleanup

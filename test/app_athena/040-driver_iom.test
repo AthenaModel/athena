@@ -176,7 +176,7 @@ IOM-1-1 vrel       SHIA     JOE
     test sigline-1.1 {sigline output} -setup {
         setup
     } -body {
-        ruleset IOM sigline "JOE IOM1" 
+        tdb ruleset IOM sigline "JOE IOM1" 
     } -cleanup {
         cleanup
     } -result {Broadcast of IOM1 by JOE}
@@ -188,7 +188,7 @@ IOM-1-1 vrel       SHIA     JOE
     test narrative-1.1 {narrative output} -setup {
         setup
     } -body {
-        ruleset IOM narrative {
+        tdb ruleset IOM narrative {
             dtype      IOM
             tsource    JOE
             cap        CBS
@@ -208,7 +208,7 @@ IOM-1-1 vrel       SHIA     JOE
     } -body {
         # Note: the numeric parameters are in the correct range,
         # but no attempt has been made to make them sensible.
-        ruleset IOM detail {
+        tdb ruleset IOM detail {
             dtype      IOM
             tsource    JOE
             cap        CBS

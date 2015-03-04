@@ -206,7 +206,7 @@
         " {*}$tags
 
         # NEXT, assess the broadcast.
-        ruleset IOM assess $rdict
+        [my adb] ruleset IOM assess $rdict
     }
 }
 

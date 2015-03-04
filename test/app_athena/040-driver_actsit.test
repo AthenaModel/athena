@@ -126,7 +126,7 @@ namespace eval ::athena_test::tests:: {
     test sigline-1.1 {sigline text} -setup {
         # none needed
     } -body {
-        ruleset PATROL sigline {N1 BLUE}
+        tdb ruleset PATROL sigline {N1 BLUE}
     } -cleanup {
         cleanup
     } -result {BLUE PATROL in N1}
@@ -141,7 +141,7 @@ namespace eval ::athena_test::tests:: {
     test narrative-1.1 {narrative text} -setup {
         # none needed
     } -body {
-        ruleset PATROL narrative {
+        tdb ruleset PATROL narrative {
             dtype       PATROL
             n           N1
             g           BLUE
@@ -164,7 +164,7 @@ namespace eval ::athena_test::tests:: {
         
         set fdict [adb onecolumn {SELECT fdict FROM rule_firings}]
 
-        ruleset CONSTRUCT detail $fdict [namespace current]::ht
+        tdb ruleset CONSTRUCT detail $fdict [namespace current]::ht
         pprint [ht get]
     } -cleanup {
         cleanup
@@ -187,7 +187,7 @@ Note: The coverage function is 20/1000
         
         set fdict [adb onecolumn {SELECT fdict FROM rule_firings}]
 
-        ruleset CONSTRUCT detail $fdict [namespace current]::ht
+        tdb ruleset CONSTRUCT detail $fdict [namespace current]::ht
         pprint [ht get]
     } -cleanup {
         cleanup
