@@ -786,7 +786,7 @@ snit::type ted {
         # NEXT, execute the command
         if {$errorFlag} {
             set code [catch {
-                executive eval $command
+                tdb executive eval $command
             } result]
 
             if {$code} {
@@ -796,8 +796,7 @@ snit::type ted {
             }
         } else {
             # Normal case; let nature take its course
-            # executive eval test $command
-            executive eval $command
+            tdb executive eval $command
         }
     }
 

@@ -1041,7 +1041,7 @@ snit::widget appwin {
             -relief    flat                     \
             -maxlines  [prefs get cli.maxlines] \
             -promptcmd [mymethod CliPrompt]     \
-            -evalcmd   [list ::executive eval]
+            -evalcmd   [list ::adb executive eval]
 
         # NEXT, manage all of the components.
         grid $win.sep0     -sticky ew
@@ -1075,7 +1075,7 @@ snit::widget appwin {
     # Returns a prompt string for the CLI
 
     method CliPrompt {} {
-        if {[executive usermode] eq "super"} {
+        if {[adb executive usermode] eq "super"} {
             return "super>"
         } else {
             return ">"

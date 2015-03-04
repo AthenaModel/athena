@@ -218,6 +218,16 @@ snit::type ::athena::executive {
         return $result
     }
 
+    # call scriptname args...
+    #
+    # scriptname  - The name of an internal or external script
+    #
+    # Calls the script in the context of the executive.
+
+    method call {scriptname args} {
+        return [$self eval [list call $scriptname {*}$args]]
+    }
+
     # errtrace
     #
     # returns the stack trace from the most recent evaluation error.

@@ -278,7 +278,7 @@ snit::type app {
 
                 app error $message
             } elseif {[catch {
-                executive eval [list call $opts(-script)]
+                adb executive call $opts(-script)
             } result eopts]} {
                 if {[dict get $eopts -errorcode] eq "REJECT"} {
                     set message {

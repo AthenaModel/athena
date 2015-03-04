@@ -42,7 +42,7 @@ namespace eval ::athena_test::tests:: {
 
     # Clean up after a test
     proc cleanup {} {
-        executive reset
+        tdb executive reset
         ted cleanup
     }
 

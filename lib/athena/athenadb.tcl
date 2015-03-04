@@ -285,6 +285,7 @@ snit::type ::athena::athenadb {
             coverage_model              \
             demog                       \
             econ                        \
+            executive                   \
             frcgroup                    \
             group                       \
             hist                        \
@@ -305,7 +306,6 @@ snit::type ::athena::athenadb {
         $self MakeComponentsWithGlobal  \
             aam                         \
             curse                       \
-            executive                   \
             exporter                    \
             hook                        \
             inject                      \

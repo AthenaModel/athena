@@ -4,7 +4,7 @@
 - Remove global singleton names:
   - Revise remaining app code to not use them.
   - Remove all such aliases, and see what breaks.
-- Move parmdb(n) into athena(n).
+- Move "application" executive commands from executive.tcl to app.
 - Check whether "adb reset" can replace all of the resets in "ted cleanup"
   - And if not, why not?
 - Figure out what to do about icon names in athena(n) HTML.
