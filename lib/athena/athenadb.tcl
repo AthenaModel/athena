@@ -286,6 +286,7 @@ snit::type ::athena::athenadb {
             demog                       \
             econ                        \
             executive                   \
+            exporter                    \
             frcgroup                    \
             group                       \
             hist                        \
@@ -306,7 +307,6 @@ snit::type ::athena::athenadb {
         $self MakeComponentsWithGlobal  \
             aam                         \
             curse                       \
-            exporter                    \
             hook                        \
             inject                      \
             iom                         \
