@@ -107,9 +107,9 @@ appserver module PARMDB {
 
         # NEXT, get the base set of parms.
         if {$pattern eq ""} {
-            set parms [parm $initialSet]
+            set parms [adb parm $initialSet]
         } else {
-            set parms [parm $initialSet $pattern]
+            set parms [adb parm $initialSet $pattern]
         }
 
         # NEXT, get the title
@@ -165,12 +165,12 @@ appserver module PARMDB {
                     }
                     
                     ht td left {
-                        set defval [htools escape [parm getdefault $parm]]
+                        set defval [htools escape [adb parm getdefault $parm]]
                         ht putln <tt>$defval</tt>
                     }
 
                     ht td left {
-                        set value [htools escape [parm get $parm]]
+                        set value [htools escape [adb parm get $parm]]
 
                         if {$value eq $defval} {
                             set color black
@@ -182,7 +182,7 @@ appserver module PARMDB {
                     }
 
                     ht td left {
-                        if {[parm islocked $parm]} {
+                        if {[adb parm islocked $parm]} {
                             ht image ::marsgui::icon::locked
                         } elseif {![adb order available PARM:SET]} {
                             ht image ::marsgui::icon::pencil22d

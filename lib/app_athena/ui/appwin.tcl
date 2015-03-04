@@ -1788,7 +1788,7 @@ snit::widget appwin {
         }
 
         # NEXT, Save the scenario using this name
-        return [parm save $filename]
+        return [adb parm save $filename]
     }
 
     # FileExit

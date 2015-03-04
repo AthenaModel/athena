@@ -227,6 +227,15 @@ snit::type ::athena::athena {
     delegate method {orggroup validate}     to adb as {orggroup validate}
     delegate method {orggroup view}         to adb as {orggroup view}
 
+    delegate method {parm docstring}        to adb as {parm docstring}
+    delegate method {parm get}              to adb as {parm get}
+    delegate method {parm getdefault}       to adb as {parm getdefault}
+    delegate method {parm islocked}         to adb as {parm islocked}
+    delegate method {parm list}             to adb as {parm list}
+    delegate method {parm names}            to adb as {parm names}
+    delegate method {parm nondefaults}      to adb as {parm nondefaults}
+    delegate method {parm save}             to adb as {parm save}
+
     delegate method paste                   to adb
     delegate method reset                   to adb
     delegate method sanity                  to adb

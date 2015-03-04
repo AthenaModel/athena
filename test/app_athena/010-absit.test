@@ -756,7 +756,7 @@ location   *
     # Cleanup
 
     cleanupTests
-    parm set dam.UNEMP.active yes
+    tdb parm set dam.UNEMP.active yes
 }
 
 namespace delete ::athena_test::tests::

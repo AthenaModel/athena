@@ -179,8 +179,8 @@ namespace eval ::athena_test::tests:: {
 
     test LOCK-2.1 {locks the scenario} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
         ted order SIM:LOCK
         sim state
@@ -190,8 +190,8 @@ namespace eval ::athena_test::tests:: {
 
     test LOCK-2.2 {Sends <State>} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
         ted notifier bind ::adb <State>
         ted order SIM:LOCK

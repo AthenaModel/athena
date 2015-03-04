@@ -678,8 +678,8 @@ snit::type ted {
 
     typemethod lock {args} {
         if {[lindex $args 0] ne "-fullecon"} {
-            parm set econ.gdpExp 0
-            parm set econ.empExp 0
+            tdb parm set econ.gdpExp 0
+            tdb parm set econ.empExp 0
         }
         tdb absit reconcile
         ted order SIM:LOCK

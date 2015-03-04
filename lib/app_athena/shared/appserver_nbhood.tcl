@@ -755,7 +755,7 @@ appserver module NBHOOD {
             ht putln "as follows."
             ht putln "Note that an actor has influence in a neighborhood"
             ht putln "only if his total support from groups exceeds"
-            ht putln [format %.2f [parm get control.support.min]].
+            ht putln [format %.2f [adb parm get control.support.min]].
             ht para
     
             ht query {
@@ -773,7 +773,7 @@ appserver module NBHOOD {
             ht putln "Actor support comes from the following groups."
             ht putln "Note that a group only supports an actor if"
             ht putln "its vertical relationship with the actor is at"
-            ht putln "least [parm get control.support.vrelMin], or if"
+            ht putln "least [adb parm get control.support.vrelMin], or if"
             ht putln "another actor lends his direct support to the"
             ht putln "first actor.  See each actor's page for a"
             ht putln "detailed analysis of the actor's support and"

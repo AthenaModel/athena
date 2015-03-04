@@ -266,7 +266,7 @@ appserver module CONTRIBS {
 
         # If the URAM gamma for this attitude is non-zero, include the
         # natural level.
-        if {[lindex [parm get uram.factors.COOP] 1] > 0.0} {
+        if {[lindex [adb parm get uram.factors.COOP] 1] > 0.0} {
             lappend vars natcoop.$f.$g
         }
 
@@ -393,7 +393,7 @@ appserver module CONTRIBS {
 
         # If the URAM gamma for this attitude is non-zero, include the
         # natural level.
-        if {[lindex [parm get uram.factors.HREL] 1] > 0.0} {
+        if {[lindex [adb parm get uram.factors.HREL] 1] > 0.0} {
             lappend vars nathrel.$f.$g
         }
 
@@ -899,7 +899,7 @@ appserver module CONTRIBS {
 
         # If the URAM gamma for this concern is non-zero, include the
         # natural level.
-        if {[lindex [parm get uram.factors.$c] 1] > 0.0} {
+        if {[lindex [adb parm get uram.factors.$c] 1] > 0.0} {
             lappend vars natsat.$g.$c
         }
 
@@ -1026,7 +1026,7 @@ appserver module CONTRIBS {
 
         # If the URAM gamma for this attitude is non-zero, include the
         # natural level.
-        if {[lindex [parm get uram.factors.VREL] 1] > 0.0} {
+        if {[lindex [adb parm get uram.factors.VREL] 1] > 0.0} {
             lappend vars natvrel.$g.$a
         }
 
@@ -1159,7 +1159,7 @@ appserver module CONTRIBS {
     # Adds a plot of the listed variables to the ht buffer.
 
     proc PutPlot {histparm start end vars} {
-        if {![parm get $histparm]} {
+        if {![adb parm get $histparm]} {
             ht putln {
                 <b>Note:</b> Athena is not currently saving some or
                 all of the historical data required for the following 

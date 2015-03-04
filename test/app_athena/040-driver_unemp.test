@@ -78,8 +78,8 @@ namespace eval ::athena_test::tests:: {
     
     proc setup {} {
         # FIRST, other rule sets shouldn't muddy the waters.
-        parm set dam.ENI.active no
-        parm set dam.CONSUMP.active no
+        tdb parm set dam.ENI.active no
+        tdb parm set dam.CONSUMP.active no
         adb eval {DELETE FROM drivers}
         
         # NEXT, create the entities
@@ -88,7 +88,7 @@ namespace eval ::athena_test::tests:: {
         # NEXT, lock, so that URAM is ready to receive inputs.  Disable
         # UNEMP so that it does nothing on lock.
         tdb econ setstate ENABLED
-        parm set dam.UNEMP.active no
+        tdb parm set dam.UNEMP.active no
         ted lock
     }
     
@@ -101,7 +101,7 @@ namespace eval ::athena_test::tests:: {
     # to assess the results.
     
     proc unemp {uaf} {
-        parm set dam.UNEMP.active yes
+        tdb parm set dam.UNEMP.active yes
 
         # FIRST, spoof the factors.
         adb eval {

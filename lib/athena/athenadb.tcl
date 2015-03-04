@@ -295,6 +295,7 @@ snit::type ::athena::athenadb {
             nbhood                      \
             nbrel                       \
             orggroup                    \
+            parm                        \
             personnel                   \
             ptype                       \
             rebase                      \
@@ -310,7 +311,6 @@ snit::type ::athena::athenadb {
             hook                        \
             inject                      \
             iom                         \
-            parm                        \
             payload                     \
             plant                       \
             {ruleset  ruleset_manager}  \

@@ -208,7 +208,7 @@ appserver module ACTOR {
             ht putln "following neighborhoods."
             ht putln "Note that an actor has influence in a neighborhood"
             ht putln "only if his total support from groups exceeds"
-            ht putln [format %.2f [parm get control.support.min]].
+            ht putln [format %.2f [adb parm get control.support.min]].
             ht para
 
             set supports [adb onecolumn {
@@ -251,7 +251,7 @@ appserver module ACTOR {
         ht subtitle "Power Base" base
 
         if {[locked -disclaimer]} {
-            set vmin [parm get control.support.vrelMin]
+            set vmin [adb parm get control.support.vrelMin]
 
             ht putln "Actor $a receives direct support from the following"
             ht putln "supporters (and would-be supporters)."

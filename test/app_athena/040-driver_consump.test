@@ -78,9 +78,9 @@ namespace eval ::athena_test::tests:: {
     
     proc setup {} {
         # FIRST, other rule sets shouldn't muddy the waters.
-        parm set dam.ENI.active no
-        parm set dam.CONSUMP.active no
-        parm set dam.UNEMP.active no
+        tdb parm set dam.ENI.active no
+        tdb parm set dam.CONSUMP.active no
+        tdb parm set dam.UNEMP.active no
         adb eval {DELETE FROM drivers}
         
         # NEXT, create the entities
@@ -89,7 +89,7 @@ namespace eval ::athena_test::tests:: {
         # NEXT, lock, so that URAM is ready to receive inputs.  Disable
         # CONSUMP so that it does nothing on lock.
         tdb econ setstate ENABLED
-        parm set dam.CONSUMP.active no
+        tdb parm set dam.CONSUMP.active no
         ted lock
     }
     
@@ -102,7 +102,7 @@ namespace eval ::athena_test::tests:: {
     # Sets up the demog_g table, and assesses CONSUMP for group SHIA.
     
     proc consump {emult povfrac {controller ""}} {
-        parm set dam.CONSUMP.active yes
+        tdb parm set dam.CONSUMP.active yes
 
         set aloc 1000.0
         let eloc {$emult * $aloc}

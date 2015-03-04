@@ -432,7 +432,7 @@ appserver module GROUPS {
                     WHERE g=$g AND a=$controller
                 }]
 
-                set vrelMin [parm get control.support.vrelMin]
+                set vrelMin [adb parm get control.support.vrelMin]
                 ht putln "$g "
                 ht putif {$vrel_c > $vrelMin} "favors" "does not favor"
                 ht put   " actor "

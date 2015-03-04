@@ -150,8 +150,8 @@ namespace eval ::athena_test::tests:: {
 
     test lock-1.1 {lock sets state to PAUSED} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
         sim lock
 
@@ -163,8 +163,8 @@ namespace eval ::athena_test::tests:: {
 
     test lock-1.2 {must be in PREP} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
         sim lock
     } -body {
         sim lock
@@ -176,8 +176,8 @@ namespace eval ::athena_test::tests:: {
 
     test lock-1.3 {Saves a PREP snapshot} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
         sim lock
 
@@ -188,8 +188,8 @@ namespace eval ::athena_test::tests:: {
 
     test lock-1.4 {Initializes URAM} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
         sim lock
 
@@ -204,8 +204,8 @@ namespace eval ::athena_test::tests:: {
 
     test runpause-1.1 {No stop time} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
         sim lock
         sim run
@@ -217,8 +217,8 @@ namespace eval ::athena_test::tests:: {
     
     test runpause-1.2 {Run for -ticks} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
         sim lock
         sim run -ticks 5
@@ -229,8 +229,8 @@ namespace eval ::athena_test::tests:: {
 
     test runpause-1.3 {Run -until} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
         sim lock
         sim run -until 10
@@ -241,8 +241,8 @@ namespace eval ::athena_test::tests:: {
 
     test runpause-1.4 {Sets state to "RUNNING"} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
         sim lock
         sim run
@@ -254,8 +254,8 @@ namespace eval ::athena_test::tests:: {
 
     test runpause-1.5 {Can't run unless "PAUSED"} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
         sim lock
         sim run
@@ -269,8 +269,8 @@ namespace eval ::athena_test::tests:: {
 
     test runpause-1.6 {Sends <State>} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
         sim lock
         ted notifier bind ::adb <State>
@@ -285,8 +285,8 @@ namespace eval ::athena_test::tests:: {
 
     test runpause-1.7 {Returns undo script} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
         sim lock
         sim run
@@ -297,8 +297,8 @@ namespace eval ::athena_test::tests:: {
 
     test runpause-2.1 {Pauses if running} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
         sim lock
         sim run
@@ -312,8 +312,8 @@ namespace eval ::athena_test::tests:: {
 
     test runpause-2.2 {Sends <State>} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
         sim lock
         sim run
@@ -338,8 +338,8 @@ namespace eval ::athena_test::tests:: {
 
     test runpause-2.4 {Runs for some number of ticks} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
         sim lock
         sim run -ticks 5 -block yes
@@ -361,8 +361,8 @@ namespace eval ::athena_test::tests:: {
 
     test unlock-1.2 {Sets state to PREP} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
         sim lock
     } -body {
         sim unlock
@@ -373,8 +373,8 @@ namespace eval ::athena_test::tests:: {
 
     test unlock-1.3 {Purges snapshot} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
         sim lock
         sim run -ticks 1 -block yes
     } -body {
@@ -397,8 +397,8 @@ namespace eval ::athena_test::tests:: {
 
     test state-1.1 {Returns current state} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
         set states [list]
         
@@ -424,8 +424,8 @@ namespace eval ::athena_test::tests:: {
 
     test stoptime-1.1 {Returns current stoptime} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
         set times [list]
 
@@ -458,8 +458,8 @@ namespace eval ::athena_test::tests:: {
 
     test restart-1.1 {Check results} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
         sim lock
         sim run
         simclock advance 5

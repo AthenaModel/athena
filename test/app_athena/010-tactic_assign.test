@@ -67,7 +67,7 @@ namespace eval ::athena_test::tests:: {
 
     # Set the cost of the PATROL activity
     proc setcost {cost} {
-        parm set activity.FRC.PATROL.cost $cost
+        tdb parm set activity.FRC.PATROL.cost $cost
     }
 
     # Set the number of unassigned troops (<= 5000)
