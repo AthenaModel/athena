@@ -59,7 +59,7 @@ namespace eval ::athena_test::tests:: {
         tdb bsys topic add 1
         tdb bsys topic configure 1 -name TBD
 
-        payload create {
+        tdb payload create {
             iom_id       IOM1
             payload_type COOP 
             g            BLUE

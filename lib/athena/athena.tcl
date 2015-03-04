@@ -115,6 +115,8 @@ snit::type ::athena::athena {
     delegate method gofer                   to adb
     delegate method load                    to adb
     delegate method locked                  to adb
+    delegate method paste                   to adb
+    delegate method reset                   to adb
     delegate method sanity                  to adb
     delegate method save                    to adb
     delegate method stable                  to adb
@@ -267,8 +269,11 @@ snit::type ::athena::athena {
     delegate method {parm nondefaults}      to adb as {parm nondefaults}
     delegate method {parm save}             to adb as {parm save}
 
-    delegate method paste                   to adb
-    delegate method reset                   to adb
+    delegate method {payload checker}       to adb as {payload checker}
+    delegate method {payload exists}        to adb as {payload exists}
+    delegate method {payload get}           to adb as {payload get}
+    delegate method {payload typenames}     to adb as {payload typenames}
+    delegate method {payload validate}      to adb as {payload validate}
 
     delegate method {ruleset detail}        to adb as {ruleset detail}
     delegate method {ruleset narrative}     to adb as {ruleset narrative}

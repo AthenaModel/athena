@@ -182,7 +182,7 @@ snit::widget iombrowser {
     method {MonPayloads update} {id} {
         # FIRST, we need to get the data about this payload.
         # If it isn't currently displayed, we can ignore it.
-        array set data [payload get $id]
+        array set data [adb payload get $id]
 
         if {[info exists i2item($data(iom_id))]} {
             $self DrawPayload data
@@ -449,7 +449,7 @@ snit::widget iombrowser {
         if {"iom" in [$iptree item tag names $id]} {
             app enter IOM:UPDATE iom_id $oid
         } else {
-            set iom_id [payload get $oid iom_id]
+            set iom_id [adb payload get $oid iom_id]
             set longname [adb iom get $iom_id longname]
             app enter PAYLOAD:$otype:UPDATE id $oid longname $longname
         }
@@ -488,7 +488,7 @@ snit::widget iombrowser {
                 # Do nothing (this should never happen anyway)
             }
         } else {
-            set state [payload get $oid state]
+            set state [adb payload get $oid state]
 
             if {$state eq "normal"} {
                 adb order senddict gui PAYLOAD:STATE [list id $oid state disabled]
@@ -576,7 +576,7 @@ snit::widget iombrowser {
         # FIRST, get a list of order names and titles
         set odict [dict create]
 
-        foreach name [payload type names] {
+        foreach name [adb payload typenames] {
             set order "PAYLOAD:$name:CREATE"
 
             if {![string match "PAYLOAD:*:CREATE" $order]} {
@@ -601,7 +601,7 @@ snit::widget iombrowser {
             set iom_id $oid
             $iptree item expand $id
         } else {
-            set iom_id [payload get $oid iom_id]
+            set iom_id [adb payload get $oid iom_id]
         }
 
         set longname [adb iom get $iom_id longname]

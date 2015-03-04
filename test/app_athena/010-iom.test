@@ -154,7 +154,7 @@ state     normal
         setup
         tdb iom create $m1
         tdb iom create $m2
-        payload create $p1
+        tdb payload create $p1
     } -body {
         tdb iom delete M1
 
@@ -170,7 +170,7 @@ state     normal
         setup
         tdb iom create $m1
         tdb iom create $m2
-        payload create $p1
+        tdb payload create $p1
         
         set undo [tdb iom delete M1]
     } -body {

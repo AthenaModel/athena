@@ -300,6 +300,7 @@ snit::type ::athena::athenadb {
             nbrel                       \
             orggroup                    \
             parm                        \
+            payload                     \
             personnel                   \
             ptype                       \
             rebase                      \
@@ -315,7 +316,6 @@ snit::type ::athena::athenadb {
 
         $self MakeComponentsWithGlobal  \
             aam                         \
-            payload                     \
             plant                       \
             service                     \
             sim                         \

@@ -77,11 +77,11 @@ snit::type ::athena::payload {
         set adb $adb_
     }
 
-    # type names
+    # typenames
     #
     # Returns the payload type names.
     
-    method {type names} {} {
+    method typenames {} {
         return [lsort $tinfo(names)]
     }
     
