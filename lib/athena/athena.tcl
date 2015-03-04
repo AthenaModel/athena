@@ -192,7 +192,6 @@ snit::type ::athena::athena {
     delegate method {econ enable}           to adb as {econ enable}
     delegate method {econ disable}          to adb as {econ disable}
 
-
     delegate method {frcgroup exists}       to adb as {frcgroup exists}
     delegate method {frcgroup get}          to adb as {frcgroup get}
     delegate method {frcgroup namedict}     to adb as {frcgroup namedict}
@@ -205,6 +204,14 @@ snit::type ::athena::athena {
     delegate method {group namedict}        to adb as {group namedict}
     delegate method {group names}           to adb as {group names}
     delegate method {group validate}        to adb as {group validate}
+
+    delegate method {hook get}             to adb as {hook get}
+    delegate method {hook namedict}        to adb as {hook namedict}
+    delegate method {hook names}           to adb as {hook names}
+    delegate method {hook topic exists}    to adb as {hook topic exists}
+    delegate method {hook topic get}       to adb as {hook topic get}
+    delegate method {hook topic validate}  to adb as {hook topic validate}
+    delegate method {hook validate}        to adb as {hook validate}
 
     delegate method {nbhood bbox}           to adb as {nbhood bbox}
     delegate method {nbhood exists}         to adb as {nbhood exists}

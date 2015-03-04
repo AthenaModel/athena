@@ -291,6 +291,7 @@ snit::type ::athena::athenadb {
             frcgroup                    \
             group                       \
             hist                        \
+            hook                        \
             hrel                        \
             map                         \
             nbhood                      \
@@ -312,7 +313,6 @@ snit::type ::athena::athenadb {
 
         $self MakeComponentsWithGlobal  \
             aam                         \
-            hook                        \
             inject                      \
             iom                         \
             payload                     \
