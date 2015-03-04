@@ -300,6 +300,7 @@ snit::type ::athena::athenadb {
             ptype                       \
             rebase                      \
             {ruleset  ruleset_manager}  \
+            sanity                      \
             sat                         \
             security_model              \
             sigevent                    \
@@ -315,7 +316,6 @@ snit::type ::athena::athenadb {
             iom                         \
             payload                     \
             plant                       \
-            sanity                      \
             service                     \
             sim                         \
             unit                        \
