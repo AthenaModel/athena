@@ -153,7 +153,7 @@ appserver module ACTOR {
         ht put "\$$data(cash_reserve) in reserve."
         ht para
 
-        if {[locked -disclaimer] && [econ state] eq "ENABLED"} {
+        if {[locked -disclaimer] && [adb econ state] eq "ENABLED"} {
             if {$data(atype) eq "INCOME"} {
                 ht putln {
                     The following table shows this actor's income per week
@@ -352,7 +352,7 @@ appserver module ACTOR {
             }
         } else {
 
-            if {[econ state] eq "DISABLED"} {
+            if {[adb econ state] eq "DISABLED"} {
                 ht put {
                     The economic model is disabled, so actors own no
                     GOODS production infrastructure.

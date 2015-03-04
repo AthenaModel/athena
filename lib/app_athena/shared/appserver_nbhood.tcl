@@ -559,7 +559,7 @@ appserver module NBHOOD {
         # GOODS Production Infrastructure
         ht subtitle "GOODS Production Infrastructure" infra
 
-        if {[econ state] eq "DISABLED"} {
+        if {[adb econ state] eq "DISABLED"} {
             ht put {
                 The economic model is disabled, so neighborhoods have no 
                 GOODS production infrastructure.

@@ -126,7 +126,7 @@
 
         set povfrac [string trim [percent $povfrac]]
 
-        if {[econ state] eq "DISABLED"} {
+        if {[[my adb] econ state] eq "DISABLED"} {
             $ht putln "The economic model is disabled, therefore the"
             $ht putln "consumption of goods by\n"
             $ht link my://app/group/$g $g

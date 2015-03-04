@@ -158,7 +158,7 @@ appserver module PLANT {
 
         } else {
 
-            if {[econ state] eq "DISABLED"} {
+            if {[adb econ state] eq "DISABLED"} {
                 ht para
                 ht put "The Economic model is disabled, so the infrastructure "
                 ht put "model is not in use."
@@ -468,7 +468,7 @@ appserver module PLANT {
 
         } else {
 
-            if {[econ state] eq "DISABLED"} {
+            if {[adb econ state] eq "DISABLED"} {
                 ht para
                 ht put "The Economic model is disabled, so the infrastructure "
                 ht put "model is not in use."

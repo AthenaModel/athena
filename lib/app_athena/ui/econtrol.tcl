@@ -118,10 +118,10 @@ snit::widget econtrol {
     method ToggleSwitch {} {
         if {$econstate eq "DISABLED"} {
             $browser show "my://app/econ/disabled/"
-            econ disable
+            adb econ disable
         } else {
             $browser show "my://app/econ/enabled/"
-            econ enable
+            adb econ enable
         }
 
         notifier send ::econtrol <State> $econstate 
@@ -148,7 +148,7 @@ snit::widget econtrol {
     # if that happens.
 
     method EconState {} {
-        if {[econ state] eq "ENABLED"} {
+        if {[adb econ state] eq "ENABLED"} {
             $modelswitch select
             $browser show "my://app/econ/enabled/"
         } else {

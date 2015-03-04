@@ -41,7 +41,7 @@ namespace eval ::athena_test::tests:: {
     proc setup {} {
         variable T1
         variable coffer
-        econ setstate ENABLED
+        tdb econ setstate ENABLED
         ted create JOE BOB NB1 NB2 SHIA SUNN KURD BLUE
 
         adb eval {

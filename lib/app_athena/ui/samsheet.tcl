@@ -179,7 +179,7 @@ snit::widget samsheet {
             "Balancing Flows" BAL]
 
         # NEXT, get a copy of the sam and solve it
-        set sam [econ getsam 1]
+        set sam [adb econ getsam 1]
         $sam solve
 
         htmlframe $win.h \
@@ -880,7 +880,7 @@ snit::widget samsheet {
     # the cmsheet(n) objects are refreshed.
 
     method SyncSheet {} {
-        $sam set [[econ getsam] get]
+        $sam set [[adb econ getsam] get]
         $sam solve
         $self refresh
     }

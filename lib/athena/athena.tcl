@@ -163,6 +163,16 @@ snit::type ::athena::athena {
 
     delegate method contribs                to adb as {aram contribs}
     delegate method dbsync                  to adb
+
+    delegate method {econ state}            to adb as {econ state}
+    delegate method {econ report}           to adb as {econ report}
+    delegate method {econ hist}             to adb as {econ hist}
+    delegate method {econ getcge}           to adb as {econ getcge}
+    delegate method {econ getsam}           to adb as {econ getsam}
+    delegate method {econ enable}           to adb as {econ enable}
+    delegate method {econ disable}          to adb as {econ disable}
+
+
     delegate method enter                   to adb
     delegate method executive               to adb
     delegate method export                  to adb

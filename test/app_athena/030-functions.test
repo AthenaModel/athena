@@ -43,7 +43,7 @@ namespace eval ::athena_test::tests:: {
     }
 
     proc econstate {state} {
-        econ setstate $state
+        tdb econ setstate $state
     }
 
     #-------------------------------------------------------------------

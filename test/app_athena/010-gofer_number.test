@@ -42,7 +42,7 @@ namespace eval ::athena_test::tests:: {
 
     proc setup {{opt ""}} {
         if {$opt eq "-econ"} {
-            econ setstate ENABLED
+            tdb econ setstate ENABLED
         }
         ted create JOE BOB BLUE BRIT TAL SUNN SHIA KURD USAID
     }
@@ -613,7 +613,7 @@ namespace eval ::athena_test::tests:: {
         setup
         ted lock
     } -body {
-        set a [format %.2f [econ value Out::DGDP]]
+        set a [format %.2f [tdb econ value Out::DGDP]]
         set b [adb gofer NUMBER GDP eval {}]
         expr {$a == $b}
     } -cleanup {

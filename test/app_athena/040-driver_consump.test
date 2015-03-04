@@ -88,7 +88,7 @@ namespace eval ::athena_test::tests:: {
         
         # NEXT, lock, so that URAM is ready to receive inputs.  Disable
         # CONSUMP so that it does nothing on lock.
-        econ setstate ENABLED
+        tdb econ setstate ENABLED
         parm set dam.CONSUMP.active no
         ted lock
     }

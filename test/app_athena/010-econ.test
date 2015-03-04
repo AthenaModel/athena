@@ -46,12 +46,12 @@ namespace eval ::athena_test::tests:: {
     test samupdate-1.1 {sam is updated} -setup {
         ted create NB1 NB2
     } -body {
-        econ samcell {
+        tdb econ samcell {
             id  BX.world.world
             val 100M
         }
 
-        dict get [[econ getsam] get] BX.world.world
+        dict get [[tdb econ getsam] get] BX.world.world
     } -cleanup {
         cleanup
     } -result {100M}
@@ -59,16 +59,16 @@ namespace eval ::athena_test::tests:: {
     test samupdate-2.1 {undo undoes the change} -setup {
         ted create NB1 NB2
     } -body {
-        set a [dict get [[econ getsam] get] BX.world.world]
+        set a [dict get [[tdb econ getsam] get] BX.world.world]
 
-        set undo [econ samcell {
+        set undo [tdb econ samcell {
             id BX.world.world
             val 100M
         }]
 
         eval $undo
 
-        set b [dict get [[econ getsam] get] BX.world.world]
+        set b [dict get [[tdb econ getsam] get] BX.world.world]
 
         expr {$a eq $b}
     } -cleanup {
@@ -78,12 +78,12 @@ namespace eval ::athena_test::tests:: {
     test cgeupdate-1.1 {cge is updated} -setup {
         ted create NB1 NB2
     } -body {
-        econ cgecell {
+        tdb econ cgecell {
             id  BPF.world.black
             val 100M
         }
 
-        dict get [[econ getcge] get] BPF.world.black
+        dict get [[tdb econ getcge] get] BPF.world.black
     } -cleanup {
         cleanup
     } -result {100M}
@@ -91,16 +91,16 @@ namespace eval ::athena_test::tests:: {
     test cgeupdate-2.1 {undo undoes the change} -setup {
         ted create NB1 NB2
     } -body {
-        set a [dict get [[econ getcge] get] BPF.world.black]
+        set a [dict get [[tdb econ getcge] get] BPF.world.black]
 
-        set undo [econ cgecell {
+        set undo [tdb econ cgecell {
             id BPF.world.black
             val 100M
         }]
 
         eval $undo
 
-        set b [dict get [[econ getcge] get] BPF.world.black]
+        set b [dict get [[tdb econ getcge] get] BPF.world.black]
 
         expr {$a eq $b}
     } -cleanup {

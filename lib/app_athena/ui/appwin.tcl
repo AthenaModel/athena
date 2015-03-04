@@ -818,7 +818,7 @@ snit::widget appwin {
 
         cond::available control \
             [menuitem $submenu command [::athena::orders title ECON:UPDATE:HIST]... \
-            -command {app enter ECON:UPDATE:HIST [econ hist]}]    \
+            -command {app enter ECON:UPDATE:HIST [adb econ hist]}]    \
             order ECON:UPDATE:HIST
 
         # Wizard menu
