@@ -741,7 +741,7 @@ JOE
         ted sendex autogen actors
     } -body {
         ted sendex autogen nbhoods
-        expr {[llength [nbhood names]] > 0}
+        expr {[llength [tdb nbhood names]] > 0}
     } -cleanup {
         cleanup
     } -result {1}
@@ -1136,7 +1136,7 @@ JOE
     } -body {
         ted sendex autogen scenario -civg 1
         set a [expr {[llength [tdb actor names]] > 0}]
-        set b [expr {[llength [nbhood names]] > 0}]
+        set b [expr {[llength [tdb nbhood names]] > 0}]
         set c [expr {[llength [tdb civgroup names]] > 0}]
         set d [expr {[llength [tdb frcgroup names]] > 0}]
         set e [expr {[llength [tdb orggroup names]] > 0}]

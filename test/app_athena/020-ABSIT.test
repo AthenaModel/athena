@@ -477,7 +477,7 @@ location   *
     test MOVE-2.1 {absit is updated} -setup {
         ted create NB1 BLUE
         ted order ABSIT:CREATE $s1
-        set loc [latlong tomgrs [nbhood get NB1 refpoint]]
+        set loc [latlong tomgrs [tdb nbhood get NB1 refpoint]]
     } -body {
         ted order ABSIT:MOVE s 1 location $loc
 
@@ -492,7 +492,7 @@ location   *
     test MOVE-2.2 {table monitor event} -setup {
         ted create NB1 BLUE
         ted order ABSIT:CREATE $s1
-        set loc [latlong tomgrs [nbhood randloc NB1]]
+        set loc [latlong tomgrs [tdb nbhood randloc NB1]]
     } -body {
         ted notifier bind ::adb <absits>
         ted order ABSIT:MOVE s 1 location $loc
@@ -507,7 +507,7 @@ location   *
     test MOVE-3.1 {undo undoes the change} -setup {
         ted create NB1 BLUE
         ted order ABSIT:CREATE $s1
-        set loc [latlong tomgrs [nbhood randloc NB1]]
+        set loc [latlong tomgrs [tdb nbhood randloc NB1]]
         ted order ABSIT:MOVE s 1 location  $loc
     } -body {
         ted notifier bind ::adb <absits>

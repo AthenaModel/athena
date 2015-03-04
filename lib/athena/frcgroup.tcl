@@ -87,7 +87,7 @@ snit::type ::athena::frcgroup {
         return $g
     }
 
-    # exists get
+    # exists g
     #
     # g      - A force group
     # 

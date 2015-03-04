@@ -529,7 +529,7 @@ snit::widget wmswin {
 
     method MapCompatible {} {
         # FIRST, no neighborhoods; all is good
-        if {[llength [nbhood names]] == 0} {
+        if {[llength [adb nbhood names]] == 0} {
             return 1
         }
 
@@ -540,7 +540,7 @@ snit::widget wmswin {
         set minlat [$proj cget -minlat]
         set maxlat [$proj cget -maxlat]
 
-        lassign [nbhood bbox] nminlat nminlon nmaxlat nmaxlon
+        lassign [adb nbhood bbox] nminlat nminlon nmaxlat nmaxlon
 
         return [expr {$nminlon > $minlon && $nminlat > $minlat &&
                       $nmaxlat < $maxlat && $nmaxlon < $maxlon}]

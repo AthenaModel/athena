@@ -559,7 +559,7 @@ appserver module CONTRIBS {
         set n [string toupper $n]
         set g [string toupper $g]
 
-        if {$n ni [nbhood names]} {
+        if {![adb nbhood exists $n]} {
             set n "?"
         }
 
@@ -697,7 +697,7 @@ appserver module CONTRIBS {
         # NEXT, get the neighborhood
         set n [string toupper $n]
 
-        if {$n ni [nbhood names]} {
+        if {![adb nbhood exists $n]} {
             set n "?"
         }
 

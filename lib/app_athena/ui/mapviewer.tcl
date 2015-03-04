@@ -614,7 +614,7 @@ snit::widget mapviewer {
         if {"point" in $info(ordertags) || "nbpoint" in $info(ordertags)} {
             # FIRST, if nbpoint we must be in a neighborhood.
             if {"nbpoint" in $info(ordertags)} {
-                set n [nbhood find {*}[$canvas ref2m $ref]]
+                set n [$adb nbhood find {*}[$canvas ref2m $ref]]
 
                 if {$n eq ""} {
                     return
@@ -942,7 +942,7 @@ snit::widget mapviewer {
 
     method Compatible {} {
         # FIRST, if there are no neighborhoods, then it's always compatible
-        if {[llength [nbhood names]] == 0} {
+        if {[llength [adb nbhood names]] == 0} {
             return 1
         }
 
@@ -952,7 +952,7 @@ snit::widget mapviewer {
         set maxlat [$projection cget -maxlat]
         set maxlon [$projection cget -maxlon]
 
-        lassign [nbhood bbox] nminlat nminlon nmaxlat nmaxlon
+        lassign [adb nbhood bbox] nminlat nminlon nmaxlat nmaxlon
         return [expr {$nminlon > $minlon && $nminlat > $minlat &&
                       $nmaxlat < $maxlat && $nmaxlon < $maxlon}]
     }

@@ -185,6 +185,15 @@ snit::type ::athena::athena {
     delegate method load                    to adb
     delegate method locked                  to adb
 
+    delegate method {nbhood bbox}           to adb as {nbhood bbox}
+    delegate method {nbhood exists}         to adb as {nbhood exists}
+    delegate method {nbhood find}           to adb as {nbhood find}
+    delegate method {nbhood get}            to adb as {nbhood get}
+    delegate method {nbhood namedict}       to adb as {nbhood namedict}
+    delegate method {nbhood names}          to adb as {nbhood names}
+    delegate method {nbhood validate}       to adb as {nbhood validate}
+    delegate method {nbhood view}           to adb as {nbhood view}
+
     delegate method {order available}       to adb as {order available}
     delegate method {order canredo}         to adb as {order canredo}
     delegate method {order canundo}         to adb as {order canundo}

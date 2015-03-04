@@ -45,10 +45,10 @@ namespace eval ::athena_test::tests:: {
     }
 
     #-------------------------------------------------------------------
-    # mutate create
+    # create
 
     test create-1.1 {nbhood is created} -body {
-        nbhood create [ted entity NB1]
+        tdb nbhood create [ted entity NB1]
         ted querylist {SELECT * FROM nbhoods}
     } -cleanup {
         cleanup
@@ -69,7 +69,7 @@ obscured_by
         ted create JOE
     } -body {
         
-        nbhood create \
+        tdb nbhood create \
             [dict merge [ted entity NB1] {controller JOE}]
         ted querylist {SELECT * FROM nbhoods}
     } -cleanup {
@@ -88,8 +88,8 @@ obscured_by
     }
 
     test create-1.3 {stacking_order is set} -body {
-        nbhood create [ted entity NB1]
-        nbhood create [ted entity NB2]
+        tdb nbhood create [ted entity NB1]
+        tdb nbhood create [ted entity NB2]
 
         ted querylist {SELECT n,stacking_order FROM nbhoods}
     } -cleanup {
@@ -104,8 +104,8 @@ stacking_order  2
 
 
     test create-1.4 {obscured_by is set} -body {
-        nbhood create [ted entity NB1]
-        nbhood create [ted entity OV1]
+        tdb nbhood create [ted entity NB1]
+        tdb nbhood create [ted entity OV1]
         ted querylist {SELECT n,stacking_order,obscured_by FROM nbhoods}
     } -cleanup {
         cleanup
@@ -120,9 +120,9 @@ obscured_by
     }
 
     test create-2.1 {undo deletes the nbhood} -setup {
-        nbhood create [ted entity NB1]
+        tdb nbhood create [ted entity NB1]
     } -body {
-        set undo [nbhood create [ted entity NB2]]
+        set undo [tdb nbhood create [ted entity NB2]]
         namespace eval :: $undo
 
         # Is NB2 gone?
@@ -133,8 +133,8 @@ obscured_by
 
 
     test create-2.2 {undo updates obscured_by} -setup {
-        nbhood create [ted entity NB1]
-        set undo [nbhood create [ted entity OV1]]
+        tdb nbhood create [ted entity NB1]
+        set undo [tdb nbhood create [ted entity OV1]]
     } -body {
         namespace eval :: $undo
         adb eval "SELECT n,obscured_by FROM nbhoods"
@@ -143,8 +143,8 @@ obscured_by
     } -result {NB1 {}}
 
     test create-3.1 {nbrel_mn records are created} -body {
-        nbhood create [ted entity NB1]
-        nbhood create [ted entity NB2]
+        tdb nbhood create [ted entity NB1]
+        tdb nbhood create [ted entity NB2]
         ted query {SELECT * FROM nbrel_mn}
     } -cleanup {
         cleanup
@@ -158,9 +158,9 @@ NB2 NB2 HERE
     }
 
     test create-3.2 {undo deletes the nbrel_mn records} -setup {
-        nbhood create [ted entity NB1]
+        tdb nbhood create [ted entity NB1]
     } -body {
-        set undo [nbhood create [ted entity NB2]]
+        set undo [tdb nbhood create [ted entity NB2]]
         namespace eval :: $undo
 
         # Is NB2 gone?
@@ -176,16 +176,16 @@ NB1 NB1 HERE
     # create-4.*, demog_n effects, deleted as obsolete.
 
     test create-5.1 {econ_n records are created} -body {
-        nbhood create [ted entity NB1]
+        tdb nbhood create [ted entity NB1]
         adb eval {SELECT n FROM econ_n}
     } -cleanup {
         cleanup
     } -result {NB1}
 
     test create-5.2 {undo deletes the econ_n record} -setup {
-        nbhood create [ted entity NB1]
+        tdb nbhood create [ted entity NB1]
     } -body {
-        set undo [nbhood create [ted entity NB2]]
+        set undo [tdb nbhood create [ted entity NB2]]
         namespace eval :: $undo
 
         # Is NB2 gone?
@@ -196,12 +196,12 @@ NB1 NB1 HERE
 
 
     #-------------------------------------------------------------------
-    # mutate delete
+    # delete
 
     test delete-1.1 {Nbhood is deleted} -setup {
         ted create NB1 NB2
     } -body {
-        nbhood delete NB1
+        tdb nbhood delete NB1
 
         # Is NB1 gone?
         adb eval {SELECT n FROM nbhoods}
@@ -213,7 +213,7 @@ NB1 NB1 HERE
     test delete-1.2 {obscured_by is cleared} -setup {
         ted create NB1 OV1
     } -body {
-        nbhood delete OV1
+        tdb nbhood delete OV1
         ted query {SELECT n,stacking_order,obscured_by FROM nbhoods}
     } -cleanup {
         cleanup
@@ -225,7 +225,7 @@ NB1 1
 
     test delete-2.1 {Undo restores nbhood} -setup {
         ted create NB1
-        set undo [nbhood delete NB1]
+        set undo [tdb nbhood delete NB1]
     } -body {
         namespace eval :: $undo
         ted querylist {SELECT * FROM nbhoods WHERE n='NB1'}
@@ -248,7 +248,7 @@ obscured_by
     test delete-2.2 {Undo restores stacking order} -setup {
         ted create NB1
         ted create OV1
-        set undo [nbhood delete NB1]
+        set undo [tdb nbhood delete NB1]
     } -body {
         namespace eval :: $undo
         ted query {SELECT n,stacking_order,obscured_by FROM nbhoods}
@@ -264,7 +264,7 @@ NB1 1              OV1
     test delete-3.1 {nbrel_mn records are deleted} -setup {
         ted create NB1 NB2
     } -body {
-        nbhood delete NB2
+        tdb nbhood delete NB2
         ted query {SELECT * FROM nbrel_mn}
     } -cleanup {
         cleanup
@@ -276,7 +276,7 @@ NB1 NB1 HERE
 
     test delete-3.2 {Undo restores nbrel_mn} -setup {
         ted create NB1
-        set undo [nbhood delete NB1]
+        set undo [tdb nbhood delete NB1]
     } -body {
         namespace eval :: $undo
         ted query {SELECT * FROM nbrel_mn ORDER BY m,n}
@@ -293,7 +293,7 @@ NB1 NB1 HERE
     test delete-5.1 {econ_n records are deleted} -setup {
         ted create NB1 NB2
     } -body {
-        nbhood delete NB2
+        tdb nbhood delete NB2
         adb eval {SELECT n FROM econ_n}
     } -cleanup {
         cleanup
@@ -301,7 +301,7 @@ NB1 NB1 HERE
 
     test delete-5.2 {Undo restores econ_n} -setup {
         ted create NB1
-        set undo [nbhood delete NB1]
+        set undo [tdb nbhood delete NB1]
     } -body {
         namespace eval :: $undo
         adb eval {SELECT n FROM econ_n ORDER BY n}
@@ -313,7 +313,7 @@ NB1 NB1 HERE
     test delete-6.1 {resident civilian groups deleted} -setup {
         ted create NB1 SHIA
     } -body {
-        nbhood delete NB1
+        tdb nbhood delete NB1
         adb eval {SELECT g FROM civgroups}
     } -cleanup {
         cleanup
@@ -321,7 +321,7 @@ NB1 NB1 HERE
 
     test delete-6.2 {Undo restores resident civgroups} -setup {
         ted create NB1 SHIA
-        set undo [nbhood delete NB1]
+        set undo [tdb nbhood delete NB1]
     } -body {
         namespace eval :: $undo
         adb eval {SELECT g FROM civgroups}
@@ -332,7 +332,7 @@ NB1 NB1 HERE
     test delete-7.1 {cap_kn records deleted} -setup {
         ted create CBS
     } -body {
-        nbhood delete NB1
+        tdb nbhood delete NB1
         adb eval {SELECT k,n FROM cap_kn}
     } -cleanup {
         cleanup
@@ -340,7 +340,7 @@ NB1 NB1 HERE
 
     test delete-7.2 {Undo restores cap_kn records} -setup {
         ted create CBS
-        set undo [nbhood delete NB1]
+        set undo [tdb nbhood delete NB1]
     } -body {
         namespace eval :: $undo
         adb eval {SELECT k,n FROM cap_kn}
@@ -351,12 +351,12 @@ NB1 NB1 HERE
 
 
     #-------------------------------------------------------------------
-    # mutate lower
+    # lower
 
     test lower-1.1 {Nbhood is lowered} -setup {
         ted create NB1 OV1
     } -body {
-        nbhood lower OV1
+        tdb nbhood lower OV1
         ted query {SELECT n,stacking_order,obscured_by FROM nbhoods}
     } -cleanup {
         cleanup
@@ -372,7 +372,7 @@ OV1 1              NB1
         ted create NB1 OV1
     } -body {
         ted notifier bind ::adb.nbhood <Stack>
-        nbhood lower OV1
+        tdb nbhood lower OV1
         ted notifier received
     } -cleanup {
         cleanup
@@ -386,7 +386,7 @@ OV1 1              NB1
     } -body {
         set before [ted querylist {SELECT * FROM nbhoods}]
 
-        set undo [nbhood lower OV1]
+        set undo [tdb nbhood lower OV1]
 
         namespace eval :: $undo
 
@@ -398,12 +398,12 @@ OV1 1              NB1
     } -result {1}
 
     #-------------------------------------------------------------------
-    # mutate raise
+    # raise
 
     test raise-1.1 {Nbhood is raised} -setup {
         ted create NB1 OV1
     } -body {
-        nbhood raise NB1
+        tdb nbhood raise NB1
         ted query {SELECT n,stacking_order,obscured_by FROM nbhoods}
     } -cleanup {
         cleanup
@@ -419,7 +419,7 @@ OV1 1              NB1
         ted create NB1 OV1
     } -body {
         ted notifier bind ::adb.nbhood <Stack>
-        nbhood raise NB1
+        tdb nbhood raise NB1
         ted notifier received
     } -cleanup {
         cleanup
@@ -433,7 +433,7 @@ OV1 1              NB1
     } -body {
         set before [ted querylist {SELECT * FROM nbhoods}]
 
-        set undo [nbhood raise NB1]
+        set undo [tdb nbhood raise NB1]
 
         namespace eval :: $undo
 
@@ -445,12 +445,12 @@ OV1 1              NB1
     } -result {1}
 
     #-------------------------------------------------------------------
-    # mutate update
+    # update
 
     test update-1.1 {nbhood is updated} -setup {
         ted create JOE NB1 
     } -body {
-        nbhood update {
+        tdb nbhood update {
             n            NB1
             longname     "Not Here"
             local        0
@@ -482,7 +482,7 @@ obscured_by
     } -body {
         set before [ted querylist {SELECT * FROM nbhoods}]
 
-        nbhood update {
+        tdb nbhood update {
             n            NB1
             longname     ""
             local        ""
@@ -502,7 +502,7 @@ obscured_by
 
     test update-1.3 {controller NONE yields NULL} -setup {
         ted create JOE NB1 
-        nbhood update {
+        tdb nbhood update {
             n            NB1
             longname     ""
             local        ""
@@ -512,7 +512,7 @@ obscured_by
             polygon      ""
         }
     } -body {
-        nbhood update {
+        tdb nbhood update {
             n            NB1
             longname     ""
             local        ""
@@ -542,7 +542,7 @@ obscured_by
         ted create NB1 NB2
     } -body {
         # Move NB2 over NB1
-        nbhood update [ted entity OV1 n NB2 longname "There"]
+        tdb nbhood update [ted entity OV1 n NB2 longname "There"]
 
         ted query {SELECT n,stacking_order,obscured_by FROM nbhoods}
     } -cleanup {
@@ -560,7 +560,7 @@ NB2 2
     } -body {
         set before [ted querylist {SELECT * FROM nbhoods}]
 
-        set undo [nbhood update [ted entity NB2 n NB1]]
+        set undo [tdb nbhood update [ted entity NB2 n NB1]]
 
         namespace eval :: $undo
 
@@ -578,7 +578,7 @@ NB2 2
         set before [ted querylist {SELECT * FROM nbhoods}]
 
         # Move NB2 over NB1
-        set undo [nbhood update [ted entity OV1 n NB2]]
+        set undo [tdb nbhood update [ted entity OV1 n NB2]]
         
         namespace eval :: $undo
 
@@ -594,7 +594,7 @@ NB2 2
     # names
 
     test names-1.1 {Returns neighborhood names: none defined} -body {
-        nbhood names
+        tdb nbhood names
     } -cleanup {
         cleanup
     } -result {}
@@ -602,7 +602,7 @@ NB2 2
     test names-1.2 {Returns neighborhood names} -setup {
         ted create NB1 NB2
     } -body {
-        nbhood names
+        tdb nbhood names
     } -cleanup {
         cleanup
     } -result {NB1 NB2}
@@ -611,7 +611,7 @@ NB2 2
     # names
 
     test local_names-1.1 {Returns local nbhood names: none defined} -body {
-        nbhood local names
+        tdb nbhood local names
     } -cleanup {
         cleanup
     } -result {}
@@ -619,21 +619,41 @@ NB2 2
     test local_names-1.2 {Returns only local neighborhood names} -setup {
         ted create NB1 NB2 NL1
     } -body {
-        nbhood local names
+        tdb nbhood local names
     } -cleanup {
         cleanup
     } -result {NB1 NB2}
 
     #-------------------------------------------------------------------
+    # namedict
+
+    test namedict-1.1 {Returns namedict: none defined} -body {
+        tdb nbhood namedict
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test namedict-1.2 {Returns namedict} -setup {
+        ted create NB1 NB2
+    } -body {
+        ted pdicts [tdb nbhood namedict]
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+        NB1 Here
+        NB2 There
+    }
+
+    #-------------------------------------------------------------------
     # find
 
     test find-1.1 {No neighborhood to find} -body {
-        nbhood find 1 1
+        tdb nbhood find 1 1
     } -result {}
     
 
     test find-1.2 {Find stacked neighborhoods} -setup {
-        nbhood create {
+        tdb nbhood create {
             n            N1
             longname     "Nb 1"
             local        1
@@ -642,7 +662,7 @@ NB2 2
             polygon      {0 0 10 0 10 10 0 10}
         }
 
-        nbhood create {
+        tdb nbhood create {
             n            N2
             longname     "Nb 2"
             local        1
@@ -651,16 +671,16 @@ NB2 2
             polygon      {3 3 7 3 7 7 3 7}
         }
     } -body {
-        set a [nbhood find 1 1]  ;# Should be N1
-        set b [nbhood find 5 5]  ;# Should be N2
+        set a [tdb nbhood find 1 1]  ;# Should be N1
+        set b [tdb nbhood find 5 5]  ;# Should be N2
 
-        nbhood lower N2
+        tdb nbhood lower N2
 
-        set c [nbhood find 5 5]  ;# Should be N1
+        set c [tdb nbhood find 5 5]  ;# Should be N1
 
-        nbhood raise N2
+        tdb nbhood raise N2
 
-        set d [nbhood find 5 5]  ;# Should be N2
+        set d [tdb nbhood find 5 5]  ;# Should be N2
 
         list $a $b $c $d
     } -cleanup {
@@ -671,7 +691,7 @@ NB2 2
     # validate
 
     test validate-1.1 {Invalid name: none defined} -body {
-        nbhood validate NONESUCH
+        tdb nbhood validate NONESUCH
     } -returnCodes {
         error
     } -cleanup {
@@ -681,7 +701,7 @@ NB2 2
     test validate-1.2 {Invalid name: some defined} -setup {
         ted create NB1 NB2
     } -body {
-        nbhood validate NONESUCH
+        tdb nbhood validate NONESUCH
     } -returnCodes {
         error
     } -cleanup {
@@ -691,16 +711,22 @@ NB2 2
     test validate-2.1 {Valid name} -setup {
         ted create NB1 NB2
     } -body {
-        nbhood validate NB1
+        tdb nbhood validate NB1
     } -cleanup {
         cleanup
     } -result {NB1}
 
     #-------------------------------------------------------------------
+    # exists
+
+    # Tested by validate
+    
+
+    #-------------------------------------------------------------------
     # local validate
 
     test local_validate-1.1 {Invalid local name: none defined} -body {
-        nbhood local validate NONESUCH
+        tdb nbhood local validate NONESUCH
     } -returnCodes {
         error
     } -cleanup {
@@ -710,7 +736,7 @@ NB2 2
     test local_validate-1.2 {Invalid local name: some defined} -setup {
         ted create NB1 NB2 NL1
     } -body {
-        nbhood local validate NONESUCH
+        tdb nbhood local validate NONESUCH
     } -returnCodes {
         error
     } -cleanup {
@@ -720,7 +746,7 @@ NB2 2
     test local_validate-1.3 {Non-local nbhood: some defined} -setup {
         ted create NB1 NB2 NL1
     } -body {
-        nbhood local validate NL1
+        tdb nbhood local validate NL1
     } -returnCodes {
         error
     } -cleanup {
@@ -730,7 +756,7 @@ NB2 2
     test local_validate-2.1 {Valid name} -setup {
         ted create NB1 NB2 NL1
     } -body {
-        nbhood local validate NB1
+        tdb nbhood local validate NB1
     } -cleanup {
         cleanup
     } -result {NB1}
@@ -740,6 +766,73 @@ NB2 2
 
     # This is effectively tested by the lower and raise tests.
     
+    #-------------------------------------------------------------------
+    # get
+
+    test get-1.1 {get nbhood dict} -setup {
+        ted create NB1 NB2
+    } -body {
+        ted pdicts [tdb nbhood get NB1]
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+        controller     {}
+        local          1
+        longname       Here
+        n              NB1
+        obscured_by    {}
+        pcf            1.0
+        polygon        {0 0 2 0 2 2 0 2}
+        refpoint       {1 1}
+        stacking_order 1
+        urbanization   URBAN
+    }
+
+    test get-1.2 {get attribute} -setup {
+        ted create NB1 NB2
+    } -body {
+        tdb nbhood get NB1 longname
+    } -cleanup {
+        cleanup
+    } -result {Here}
+
+    #-------------------------------------------------------------------
+    # view
+
+    test view-1.1 {view dict} -setup {
+        ted create NB1 NB2
+    } -body {
+        ted pdicts [tdb nbhood view NB1]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        consumers      0
+        controller     NONE
+        fancy          *
+        id             NB1
+        labor_force    0
+        link           *
+        local          YES
+        longlink       *
+        longname       Here
+        mood           0.000
+        mood0          0.000
+        n              NB1
+        obscured_by    {}
+        pcf            *
+        polygon        *
+        population     0.0
+        refpoint       31NBB7743810598
+        since          2012W01
+        since_ticks    0
+        stacking_order 1
+        subsistence    0
+        unemployed     0
+        urbanization   URBAN
+        url            my://app/nbhood/NB1
+        volatility     0
+    }
+
 
     #-------------------------------------------------------------------
     # Cleanup

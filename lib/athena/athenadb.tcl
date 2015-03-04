@@ -289,6 +289,7 @@ snit::type ::athena::athenadb {
             hist                        \
             hrel                        \
             map                         \
+            nbhood                      \
             nbrel                       \
             orggroup                    \
             personnel                   \
@@ -309,7 +310,6 @@ snit::type ::athena::athenadb {
             hook                        \
             inject                      \
             iom                         \
-            nbhood                      \
             parm                        \
             payload                     \
             plant                       \
