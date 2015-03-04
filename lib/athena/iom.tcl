@@ -51,6 +51,16 @@ snit::type ::athena::iom {
         }]
     }
 
+    # namedict
+    #
+    # Returns the list of IOM IDs
+
+    method namedict {} {
+        return [$adb eval {
+            SELECT iom_id, longname FROM ioms 
+        }]
+    }
+
     # longnames
     #
     # Returns the list of IOM long names
@@ -147,6 +157,7 @@ snit::type ::athena::iom {
             ORDER BY iom_id
         }]
     }
+
     # normal longnames
     #
     # Returns the list of IOM long names with state=normal
@@ -472,7 +483,7 @@ snit::type ::athena::iom {
         my prepare iom_id    -toupper   -required -type ident
         my unused iom_id
         my prepare longname  -normalize
-        my prepare hook_id   -toupper             -type hook
+        my prepare hook_id   -toupper             -type [list $adb hook]
     }
 
     method _execute {{flunky ""}} {
@@ -502,7 +513,7 @@ snit::type ::athena::iom {
 
 
     method _validate {} {
-        my prepare iom_id -toupper -required -type iom
+        my prepare iom_id -toupper -required -type [list $adb iom]
     }
 
     method _execute {{flunky ""}} {
@@ -559,9 +570,9 @@ snit::type ::athena::iom {
 
 
     method _validate {} {
-        my prepare iom_id      -toupper   -required -type iom
+        my prepare iom_id      -toupper   -required -type [list $adb iom]
         my prepare longname    -normalize
-        my prepare hook_id     -toupper             -type hook
+        my prepare hook_id     -toupper             -type [list $adb hook]
     }
 
     method _execute {{flunky ""}} {
@@ -590,7 +601,7 @@ snit::type ::athena::iom {
 
 
     method _validate {} {
-        my prepare iom_id -required          -type iom
+        my prepare iom_id -required          -type [list $adb iom]
         my prepare state  -required -tolower -type eiom_state
     }
 

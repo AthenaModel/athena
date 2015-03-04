@@ -77,9 +77,9 @@
             dict set errdict iom "No IOM selected."            
         } elseif {!$gotIOM} {
             dict set errdict iom "No such IOM: \"$iom\"."
-        } elseif {[iom get $iom state] eq "disabled"} {
+        } elseif {[[my adb] iom get $iom state] eq "disabled"} {
             dict set errdict iom "IOM is disabled: \"$iom\"."
-        } elseif {[iom get $iom state] eq "invalid"} {
+        } elseif {[[my adb] iom get $iom state] eq "invalid"} {
             dict set errdict iom "IOM is invalid: \"$iom\"."
         }
 
@@ -159,7 +159,7 @@
         if {![[my adb] cap hasaccess $cap [my agent]]} {
             my set execstatus FAIL_RESOURCES
             my Fail CAP "Failed during execution: [my agent] has no access to CAP $cap."
-            cash refund [my agent] BROADCAST $trans(cost) 
+            [my adb] cash refund [my agent] BROADCAST $trans(cost) 
 
             # NEXT, log the event
             [my adb] sigevent log 2 tactic "

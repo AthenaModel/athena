@@ -148,7 +148,7 @@ snit::widget iombrowser {
 
     method {MonIOMs update} {iom_id} {
         # FIRST, we need to get the data about this IOM.
-        array set data [iom get $iom_id]
+        array set data [adb iom get $iom_id]
 
         # NEXT, Display the IOM item
         $self DrawIOM data
@@ -450,7 +450,7 @@ snit::widget iombrowser {
             app enter IOM:UPDATE iom_id $oid
         } else {
             set iom_id [payload get $oid iom_id]
-            set longname [iom get $iom_id longname]
+            set longname [adb iom get $iom_id longname]
             app enter PAYLOAD:$otype:UPDATE id $oid longname $longname
         }
     }
@@ -478,7 +478,7 @@ snit::widget iombrowser {
 
         # NEXT, it's a iom or a payload.
         if {"iom" in [$iptree item tag names $id]} {
-            set state [iom get $oid state]
+            set state [adb iom get $oid state]
 
             if {$state eq "normal"} {
                 adb order senddict gui IOM:STATE [list iom_id $oid state disabled]
@@ -505,7 +505,7 @@ snit::widget iombrowser {
     # Allows the user to check the sanity of the existing payloads. 
     
     method SanityCheck {} {
-        if {[iom checker] ne "OK"} {
+        if {[adb iom checker] ne "OK"} {
             app show my://app/sanity/iom
         }
     }
@@ -604,7 +604,7 @@ snit::widget iombrowser {
             set iom_id [payload get $oid iom_id]
         }
 
-        set longname [iom get $iom_id longname]
+        set longname [adb iom get $iom_id longname]
 
         # NEXT, let them pick one
         set title [messagebox pick \

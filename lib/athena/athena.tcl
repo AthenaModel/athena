@@ -218,6 +218,14 @@ snit::type ::athena::athena {
     delegate method {inject typenames}      to adb as {inject typenames}
     delegate method {inject validate}       to adb as {inject validate}
 
+    delegate method {iom checker}           to adb as {iom checker}
+    delegate method {iom exists}            to adb as {iom exists}
+    delegate method {iom get}               to adb as {iom get}
+    delegate method {iom namedict}          to adb as {iom namedict}
+    delegate method {iom names}             to adb as {iom names}
+    delegate method {iom normal}            to adb as {iom normal}
+    delegate method {iom validate}          to adb as {iom validate}
+
     delegate method {nbhood bbox}           to adb as {nbhood bbox}
     delegate method {nbhood exists}         to adb as {nbhood exists}
     delegate method {nbhood find}           to adb as {nbhood find}

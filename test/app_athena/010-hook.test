@@ -141,7 +141,7 @@ longname  Puppies are good
 
     test delete-1.3 {IOM reflects hook delete} -setup {
         tdb hook create $h1
-        iom create $m1
+        tdb iom create $m1
     } -body {
         set a [ted querylist {SELECT * FROM ioms}]
         set hook_id [adb onecolumn {SELECT hook_id FROM hooks}]
@@ -164,7 +164,7 @@ state     normal
 
     test delete-1.4 {Undo restores hook in ioms} -setup {
         tdb hook create $h1
-        iom create $m1
+        tdb iom create $m1
         set hook_id [adb onecolumn {SELECT hook_id FROM hooks}]
         set undo [tdb hook delete $hook_id]
     } -body {

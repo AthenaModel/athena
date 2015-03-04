@@ -294,6 +294,7 @@ snit::type ::athena::athenadb {
             hook                        \
             hrel                        \
             inject                      \
+            iom                         \
             map                         \
             nbhood                      \
             nbrel                       \
@@ -314,7 +315,6 @@ snit::type ::athena::athenadb {
 
         $self MakeComponentsWithGlobal  \
             aam                         \
-            iom                         \
             payload                     \
             plant                       \
             service                     \
