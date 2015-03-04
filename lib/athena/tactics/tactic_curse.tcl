@@ -124,7 +124,7 @@
     }
 
     method narrative {} {
-        set narr [curse narrative $curse]
+        set narr [[my adb] curse narrative $curse]
         append narr ". "
 
         foreach {role goferdict} $roles {

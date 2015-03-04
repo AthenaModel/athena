@@ -149,7 +149,7 @@ snit::widget cursebrowser {
 
     method {MonCURSEs update} {curse_id} {
         # FIRST, we need to get the data about this CURSE.
-        array set data [curse get $curse_id]
+        array set data [adb curse get $curse_id]
 
         # NEXT, Display the CURSE item
         $self DrawCURSE data
@@ -462,7 +462,7 @@ snit::widget cursebrowser {
             app enter CURSE:UPDATE curse_id $oid
         } else {
             set curse_id [inject get $oid curse_id]
-            set longname [curse get $curse_id longname]
+            set longname [adb curse get $curse_id longname]
             app enter INJECT:$otype:UPDATE id $oid longname $longname
         }
     }
@@ -490,7 +490,7 @@ snit::widget cursebrowser {
 
         # NEXT, it's a curse or an inject.
         if {"curse" in [$citree item tag names $id]} {
-            set state [curse get $oid state]
+            set state [adb curse get $oid state]
 
             if {$state eq "normal"} {
                 adb order senddict gui CURSE:STATE \
@@ -519,7 +519,7 @@ snit::widget cursebrowser {
     # Allows the user to check the sanity of the existing injectss. 
     
     method SanityCheck {} {
-        if {[curse checker] ne "OK"} {
+        if {[adb curse checker] ne "OK"} {
             app show my://app/sanity/curse
         }
     }
@@ -620,7 +620,7 @@ snit::widget cursebrowser {
             set curse_id [inject get $oid curse_id]
         }
 
-        set longname [curse get $curse_id longname]
+        set longname [adb curse get $curse_id longname]
 
         # NEXT, let them pick one
         set title [messagebox pick \

@@ -82,7 +82,7 @@ namespace eval ::athena_test::tests:: {
     test create-1.1 {curse is created} -setup {
         setup
     } -body {
-        curse create $c1
+        tdb curse create $c1
         ted querylist {SELECT * FROM curses}
     } -cleanup {
         cleanup
@@ -98,8 +98,8 @@ state     normal
 
     test create-2.1 {undo deletes the curse} -setup {
         setup
-        curse create $c1
-        set undo [curse create $c2]
+        tdb curse create $c1
+        set undo [tdb curse create $c2]
     } -body {
         namespace eval :: $undo
         adb eval {SELECT curse_id FROM curses}
@@ -113,10 +113,10 @@ state     normal
 
     test delete-1.1 {curse is deleted} -setup {
         setup
-        curse create $c1
-        curse create $c2
+        tdb curse create $c1
+        tdb curse create $c2
     } -body {
-        curse delete C1
+        tdb curse delete C1
 
         # Is C1 gone?
         adb eval {SELECT curse_id FROM curses}
@@ -126,9 +126,9 @@ state     normal
 
     test delete-1.2 {Undo restores curse} -setup {
         setup
-        curse create $c1
-        curse create $c2
-        set undo [curse delete C1]
+        tdb curse create $c1
+        tdb curse create $c2
+        set undo [tdb curse delete C1]
     } -body {
         namespace eval :: $undo
         ted querylist {SELECT * FROM curses ORDER BY curse_id}
@@ -154,11 +154,11 @@ state     normal
 
     test delete-2.1 {inject records are deleted} -setup {
         setup
-        curse create $c1
-        curse create $c2
+        tdb curse create $c1
+        tdb curse create $c2
         inject create $i1
     } -body {
-        curse delete C1
+        tdb curse delete C1
 
         adb eval {
             SELECT curse_id,inject_num FROM curse_injects
@@ -170,11 +170,11 @@ state     normal
 
     test delete-2.2 {Undo restores inject records} -setup {
         setup
-        curse create $c1
-        curse create $c2
+        tdb curse create $c1
+        tdb curse create $c2
         inject create $i1
         
-        set undo [curse delete C1]
+        set undo [tdb curse delete C1]
     } -body {
         namespace eval :: $undo
         adb eval {
@@ -190,9 +190,9 @@ state     normal
 
     test update-1.1 {CURSE is updated} -setup {
         setup
-        curse create $c1
+        tdb curse create $c1
     } -body {
-        curse update {
+        tdb curse update {
             curse_id   C1
             longname "Cast a CURSE"
         }
@@ -213,11 +213,11 @@ state     normal
 
     test update-1.2 {identical values are OK} -setup {
         setup
-        curse create $c1
+        tdb curse create $c1
     } -body {
         set a [ted query {SELECT * FROM curses}]
 
-        curse update $c1
+        tdb curse update $c1
 
         set b [ted query {SELECT * FROM curses}]
 
@@ -229,11 +229,11 @@ state     normal
 
     test update-1.3 {empty values are OK} -setup {
         setup
-        curse create $c1
+        tdb curse create $c1
     } -body {
         set a [ted query {SELECT * FROM curses}]
 
-        curse update  {
+        tdb curse update  {
             curse_id   C1
             longname ""
         }
@@ -248,11 +248,11 @@ state     normal
 
     test update-2.1 {undo undoes the change} -setup {
         setup
-        curse create $c1
+        tdb curse create $c1
     } -body {
         set a [ted query {SELECT * FROM curses}]
 
-        set undo [curse update {
+        set undo [tdb curse update {
             curse_id   C1
             longname "Cast a CURSE"
         }]
@@ -272,9 +272,9 @@ state     normal
 
     test state-1.1 {curse state is changed} -setup {
         setup
-        curse create $c2
+        tdb curse create $c2
     } -body {
-        curse state C2 disabled
+        tdb curse state C2 disabled
 
         ted querylist {SELECT * FROM curses}
     } -cleanup {
@@ -291,12 +291,12 @@ state     disabled
 
     test state-2.1 {undo undoes the change} -setup {
         setup
-        curse create $c2
+        tdb curse create $c2
     } -body {
 
         set a [ted query {SELECT * FROM curses}]
 
-        set undo [curse state C2 disabled]
+        set undo [tdb curse state C2 disabled]
 
         namespace eval :: $undo
 
@@ -312,38 +312,57 @@ state     disabled
 
     test names-1.1 {Returns names: none defined} -body {
         setup
-        curse names
+        tdb curse names
     } -cleanup {
         cleanup
     } -result {}
 
     test names-1.2 {Returns names} -setup {
         setup
-        curse create $c1
-        curse create $c2
+        tdb curse create $c1
+        tdb curse create $c2
     } -body {
-        curse names
+        tdb curse names
     } -cleanup {
         cleanup
     } -result {C1 C2}
 
+    #-------------------------------------------------------------------
+    # namedict
+
+    test namedict-1.1 {Returns namedict: none defined} -body {
+        setup
+        tdb curse namedict
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test namedict-1.2 {Returns namedict} -setup {
+        setup
+        tdb curse create $c1
+        tdb curse create $c2
+    } -body {
+        tdb curse namedict
+    } -cleanup {
+        cleanup
+    } -result {C1 {Curse One} C2 {Curse Two}}
 
     #-------------------------------------------------------------------
     # longnames
 
     test longnames-1.1 {Returns names: none defined} -body {
         setup
-        curse longnames
+        tdb curse longnames
     } -cleanup {
         cleanup
     } -result {}
 
     test longnames-1.2 {Returns names} -setup {
         setup
-        curse create $c1
-        curse create $c2
+        tdb curse create $c1
+        tdb curse create $c2
     } -body {
-        curse longnames
+        tdb curse longnames
     } -cleanup {
         cleanup
     } -result {{C1: Curse One} {C2: Curse Two}}
@@ -353,7 +372,7 @@ state     disabled
     # validate
 
     test validate-1.1 {Invalid name: none defined} -body {
-        curse validate NONESUCH
+        tdb curse validate NONESUCH
     } -returnCodes {
         error
     } -cleanup {
@@ -362,10 +381,10 @@ state     disabled
 
     test validate-1.2 {Invalid name: some defined} -setup {
         setup
-        curse create $c1
-        curse create $c2
+        tdb curse create $c1
+        tdb curse create $c2
     } -body {
-        curse validate NONESUCH
+        tdb curse validate NONESUCH
     } -returnCodes {
         error
     } -cleanup {
@@ -374,10 +393,10 @@ state     disabled
 
     test validate-2.1 {Valid name} -setup {
         setup
-        curse create $c1
-        curse create $c2
+        tdb curse create $c1
+        tdb curse create $c2
     } -body {
-        curse validate C2
+        tdb curse validate C2
     } -cleanup {
         cleanup
     } -result {C2}
@@ -387,20 +406,20 @@ state     disabled
 
     test exists-1.1 {curse doesn't exist} -setup {
         setup
-        curse create $c1
-        curse create $c2
+        tdb curse create $c1
+        tdb curse create $c2
     } -body {
-        curse exists C3
+        tdb curse exists C3
     } -cleanup {
         cleanup
     } -result {0}
 
     test exists-1.2 {curse exists} -setup {
         setup
-        curse create $c1
-        curse create $c2
+        tdb curse create $c1
+        tdb curse create $c2
     } -body {
-        curse exists C2
+        tdb curse exists C2
     } -cleanup {
         cleanup
     } -result {1}
@@ -410,18 +429,18 @@ state     disabled
 
     test normal_names-1.1 {Returns normal names: none defined} -body {
         setup
-        curse normal names
+        tdb curse normal names
     } -cleanup {
         cleanup
     } -result {}
 
     test normal_names-1.2 {Returns normal names} -setup {
         setup
-        curse create $c1
-        curse create $c2
-        curse state C2 disabled
+        tdb curse create $c1
+        tdb curse create $c2
+        tdb curse state C2 disabled
     } -body {
-        curse normal names
+        tdb curse normal names
     } -cleanup {
         cleanup
     } -result {C1}
@@ -432,18 +451,18 @@ state     disabled
 
     test normal_namedict-1.1 {Returns normal namedict: none defined} -body {
         setup
-        curse normal namedict
+        tdb curse normal namedict
     } -cleanup {
         cleanup
     } -result {}
 
     test normal_namedict-1.2 {Returns normal namedict} -setup {
         setup
-        curse create $c1
-        curse create $c2
-        curse state C2 disabled
+        tdb curse create $c1
+        tdb curse create $c2
+        tdb curse state C2 disabled
     } -body {
-        curse normal namedict
+        tdb curse normal namedict
     } -cleanup {
         cleanup
     } -result {C1 {Curse One}}
@@ -453,18 +472,18 @@ state     disabled
 
     test normal_longnames-1.1 {Returns names: none defined} -body {
         setup
-        curse normal longnames
+        tdb curse normal longnames
     } -cleanup {
         cleanup
     } -result {}
 
     test normal_longnames-1.2 {Returns normal names} -setup {
         setup
-        curse create $c1
-        curse create $c2
-        curse state C2 disabled
+        tdb curse create $c1
+        tdb curse create $c2
+        tdb curse state C2 disabled
     } -body {
-        curse normal longnames
+        tdb curse normal longnames
     } -cleanup {
         cleanup
     } -result {{C1: Curse One}}
@@ -474,7 +493,7 @@ state     disabled
     # normal validate
 
     test normal_validate-1.1 {Invalid name: none defined} -body {
-        curse normal validate NONESUCH
+        tdb curse normal validate NONESUCH
     } -returnCodes {
         error
     } -cleanup {
@@ -483,11 +502,11 @@ state     disabled
 
     test normal_validate-1.2 {Invalid name: some defined} -setup {
         setup
-        curse create $c1
-        curse create $c2
-        curse state C2 disabled
+        tdb curse create $c1
+        tdb curse create $c2
+        tdb curse state C2 disabled
     } -body {
-        curse normal validate NONESUCH
+        tdb curse normal validate NONESUCH
     } -returnCodes {
         error
     } -cleanup {
@@ -496,11 +515,11 @@ state     disabled
 
     test validate-2.1 {Valid name} -setup {
         setup
-        curse create $c1
-        curse create $c2
-        curse state C2 disabled
+        tdb curse create $c1
+        tdb curse create $c2
+        tdb curse state C2 disabled
     } -body {
-        curse validate C1
+        tdb curse validate C1
     } -cleanup {
         cleanup
     } -result {C1}
@@ -510,9 +529,9 @@ state     disabled
 
     test get-1.1 {get dict} -setup {
         setup
-        curse create $c1
+        tdb curse create $c1
     } -body {
-        ted pdict [curse get C1]
+        ted pdict [tdb curse get C1]
     } -cleanup {
         cleanup
     } -result {
@@ -529,9 +548,9 @@ state     disabled
 
     test get-1.2 {get column} -setup {
         setup
-        curse create $c1
+        tdb curse create $c1
     } -body {
-        curse get C1 longname
+        tdb curse get C1 longname
     } -cleanup {
         cleanup
     } -result {Curse One}

@@ -379,7 +379,7 @@ snit::type ::athena::inject {
         return ""
     }
 
-    # roletype curse_id role
+    # roletype [list $adb curse]_id role
     #
     # curse_id   - The ID of a CURSE
     # role       - A role in the CURSE
@@ -1055,7 +1055,7 @@ snit::type ::athena::inject {
 
 
     method _validate {} {
-        my prepare curse_id -toupper  -required -type curse
+        my prepare curse_id -toupper  -required -type [list $adb curse]
         my prepare mode     -tolower  -required -type einputmode
         my prepare ftype    -toupper  -required -selector
         my prepare gtype    -toupper  -required -selector
@@ -1228,7 +1228,7 @@ snit::type ::athena::inject {
 
 
     method _validate {} {
-        my prepare curse_id -toupper   -required -type curse
+        my prepare curse_id -toupper   -required -type [list $adb curse]
         my prepare mode     -tolower   -required -type einputmode
         my prepare ftype    -toupper   -required -selector
         my prepare gtype    -toupper   -required -selector
@@ -1388,7 +1388,7 @@ snit::type ::athena::inject {
 
 
     method _validate {} {
-        my prepare curse_id   -toupper   -required -type curse
+        my prepare curse_id   -toupper   -required -type [list $adb curse]
         my prepare mode       -tolower   -required -type einputmode
         my prepare gtype      -toupper   -required -selector
         my prepare g          -toupper   -required -type roleid
@@ -1534,7 +1534,7 @@ snit::type ::athena::inject {
 
 
     method _validate {} {
-        my prepare curse_id -toupper   -required -type curse
+        my prepare curse_id -toupper   -required -type [list $adb curse]
         my prepare mode     -tolower   -required -type einputmode
         my prepare gtype    -toupper   -required -selector
         my prepare atype    -toupper   -required -selector

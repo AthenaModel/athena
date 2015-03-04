@@ -283,6 +283,7 @@ snit::type ::athena::athenadb {
             control                     \
             control_model               \
             coverage_model              \
+            curse                       \
             demog                       \
             econ                        \
             executive                   \
@@ -311,7 +312,6 @@ snit::type ::athena::athenadb {
 
         $self MakeComponentsWithGlobal  \
             aam                         \
-            curse                       \
             hook                        \
             inject                      \
             iom                         \

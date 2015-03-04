@@ -105,6 +105,23 @@ snit::type ::athena::athena {
     # subcommands we really want to expose.
 
     # ADB
+    delegate method adbfile                 to adb
+    delegate method autogen                 to adb
+    delegate method contribs                to adb as {aram contribs}
+    delegate method dbsync                  to adb
+    delegate method enter                   to adb
+    delegate method executive               to adb
+    delegate method export                  to adb
+    delegate method gofer                   to adb
+    delegate method load                    to adb
+    delegate method locked                  to adb
+    delegate method sanity                  to adb
+    delegate method save                    to adb
+    delegate method stable                  to adb
+    delegate method state                   to adb
+    delegate method unsaved                 to adb
+    delegate method version                 to adb
+
     delegate method {absit exists}          to adb as {absit exists}
     delegate method {absit get}             to adb as {absit get}
     delegate method {absit isinitial}       to adb as {absit isinitial}
@@ -120,7 +137,6 @@ snit::type ::athena::athena {
     delegate method {actor validate}        to adb as {actor validate}
     delegate method {actor view}            to adb as {actor view}
     
-    delegate method adbfile                 to adb
     
     delegate method {agent exists}          to adb as {agent exists}
     delegate method {agent names}           to adb as {agent names}
@@ -129,8 +145,6 @@ snit::type ::athena::athena {
     delegate method {agent type}            to adb as {agent type}
     delegate method {agent validate}        to adb as {agent validate}
     
-    delegate method autogen                 to adb
-
     delegate method {bean get}              to adb as {bean get}
     delegate method {bean has}              to adb as {bean has}
     delegate method {bean ids}              to adb as {bean ids}
@@ -161,8 +175,14 @@ snit::type ::athena::athena {
     delegate method {civgroup validate}     to adb as {civgroup validate}
     delegate method {civgroup view}         to adb as {civgroup view}
 
-    delegate method contribs                to adb as {aram contribs}
-    delegate method dbsync                  to adb
+    delegate method {curse checker}         to adb as {curse checker}
+    delegate method {curse exists}          to adb as {curse exists}
+    delegate method {curse get}             to adb as {curse get}
+    delegate method {curse namedict}        to adb as {curse namedict}
+    delegate method {curse names}           to adb as {curse names}
+    delegate method {curse narrative}       to adb as {curse narrative}
+    delegate method {curse normal}          to adb as {curse normal}
+    delegate method {curse validate}        to adb as {curse validate}
 
     delegate method {econ state}            to adb as {econ state}
     delegate method {econ report}           to adb as {econ report}
@@ -173,10 +193,6 @@ snit::type ::athena::athena {
     delegate method {econ disable}          to adb as {econ disable}
 
 
-    delegate method enter                   to adb
-    delegate method executive               to adb
-    delegate method export                  to adb
-
     delegate method {frcgroup exists}       to adb as {frcgroup exists}
     delegate method {frcgroup get}          to adb as {frcgroup get}
     delegate method {frcgroup namedict}     to adb as {frcgroup namedict}
@@ -184,16 +200,11 @@ snit::type ::athena::athena {
     delegate method {frcgroup validate}     to adb as {frcgroup validate}
     delegate method {frcgroup view}         to adb as {frcgroup view}
 
-    delegate method gofer                   to adb
-
     delegate method {group exists}          to adb as {group exists}
     delegate method {group gtype}           to adb as {group gtype}
     delegate method {group namedict}        to adb as {group namedict}
     delegate method {group names}           to adb as {group names}
     delegate method {group validate}        to adb as {group validate}
-
-    delegate method load                    to adb
-    delegate method locked                  to adb
 
     delegate method {nbhood bbox}           to adb as {nbhood bbox}
     delegate method {nbhood exists}         to adb as {nbhood exists}
@@ -243,11 +254,6 @@ snit::type ::athena::athena {
     delegate method {ruleset narrative}     to adb as {ruleset narrative}
     delegate method {ruleset rulename}      to adb as {ruleset rulename}
 
-    delegate method sanity                  to adb
-    delegate method save                    to adb
-    delegate method stable                  to adb
-    delegate method state                   to adb
-
     delegate method {strategy getname}      to adb as {strategy getname}
     delegate method {strategy checker}      to adb as {strategy checker}
     delegate method {strategy check}        to adb as {strategy check}
@@ -256,8 +262,6 @@ snit::type ::athena::athena {
     delegate method {unit names}            to adb as {unit names}
     delegate method {unit validate}         to adb as {unit validate}
 
-    delegate method unsaved                 to adb
-    delegate method version                 to adb
 
     # RDB
     #

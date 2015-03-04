@@ -6,6 +6,7 @@
   - Remove all such aliases, and see what breaks.
 - Move "application" executive commands from executive.tcl to app.
 - Remove all "app" calls from athena(n).
+- See about giving athena(n) a read-only db.
 - Check whether "adb reset" can replace all of the resets in "ted cleanup"
   - And if not, why not?
 - Figure out what to do about icon names in athena(n) HTML.
