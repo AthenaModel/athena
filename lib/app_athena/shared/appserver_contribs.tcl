@@ -195,7 +195,7 @@ appserver module CONTRIBS {
             set f "?"
         }
 
-        if {$g ni [frcgroup names]} {
+        if {![adb frcgroup exists $g]} {
             set g "?"
         }
         
@@ -563,7 +563,7 @@ appserver module CONTRIBS {
             set n "?"
         }
 
-        if {$g ni [frcgroup names]} {
+        if {![adb frcgroup exists $g]} {
             set g "?"
         }
         

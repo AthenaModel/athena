@@ -1045,7 +1045,7 @@ snit::widget mapviewer {
         # already on the list.
         set standards $defaultFills
 
-        foreach g [frcgroup names] {
+        foreach g [adb frcgroup names] {
             lappend standards "nbcoop.$g"
         }
 

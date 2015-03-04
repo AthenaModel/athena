@@ -284,6 +284,7 @@ snit::type ::athena::athenadb {
             control_model               \
             coverage_model              \
             demog                       \
+            frcgroup                    \
             hist                        \
             hrel                        \
             map                         \
@@ -303,7 +304,6 @@ snit::type ::athena::athenadb {
             econ                        \
             executive                   \
             exporter                    \
-            frcgroup                    \
             group                       \
             hook                        \
             inject                      \

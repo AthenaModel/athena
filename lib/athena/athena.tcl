@@ -161,6 +161,14 @@ snit::type ::athena::athena {
     delegate method enter                   to adb
     delegate method executive               to adb
     delegate method export                  to adb
+
+    delegate method {frcgroup exists}       to adb as {frcgroup exists}
+    delegate method {frcgroup get}          to adb as {frcgroup get}
+    delegate method {frcgroup namedict}     to adb as {frcgroup namedict}
+    delegate method {frcgroup names}        to adb as {frcgroup names}
+    delegate method {frcgroup validate}     to adb as {frcgroup validate}
+    delegate method {frcgroup view}         to adb as {frcgroup view}
+
     delegate method gofer                   to adb
     delegate method load                    to adb
     delegate method locked                  to adb

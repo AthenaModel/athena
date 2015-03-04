@@ -45,12 +45,12 @@ namespace eval ::athena_test::tests:: {
     }
 
     #-------------------------------------------------------------------
-    # mutate create
+    # create
 
     test create-1.1 {frcgroup is created} -setup {
         ted create JOE
     } -body {
-        frcgroup create [ted entity BLUE]
+        tdb frcgroup create [ted entity BLUE]
         ted querylist {SELECT * FROM frcgroups_view}
     } -cleanup {
         cleanup
@@ -72,7 +72,7 @@ local           0
     test create-1.2 {a can be empty, yields NULL} -setup {
         ted create JOE
     } -body {
-        frcgroup create [dict merge [ted entity BLUE] {a ""}]
+        tdb frcgroup create [dict merge [ted entity BLUE] {a ""}]
         ted querylist {SELECT * FROM frcgroups_view}
     } -cleanup {
         cleanup
@@ -94,8 +94,8 @@ local           0
 
     test create-2.1 {undo deletes the frcgroup} -setup {
         ted create JOE
-        frcgroup create [ted entity BLUE]
-        set undo [frcgroup create [ted entity BRIT]]
+        tdb frcgroup create [ted entity BLUE]
+        set undo [tdb frcgroup create [ted entity BRIT]]
     } -body {
         {*}$undo
         adb eval {SELECT g FROM frcgroups_view}
@@ -107,7 +107,7 @@ local           0
     test create-3.1 {coop curves are created} -setup {
         ted create JOE SHIA
     } -body {
-        frcgroup create [ted entity BLUE]
+        tdb frcgroup create [ted entity BLUE]
         adb eval {SELECT f,g FROM coop_fg ORDER BY f,g}
     } -cleanup {
         cleanup
@@ -116,7 +116,7 @@ local           0
     test create-3.2 {undo deletes the coop curves} -setup {
         ted create JOE SHIA
     } -body {
-        set undo [frcgroup create [ted entity BLUE]]
+        set undo [tdb frcgroup create [ted entity BLUE]]
 
         namespace eval :: $undo
         adb eval {SELECT f,g FROM coop_fg ORDER BY f,g}
@@ -125,12 +125,12 @@ local           0
     } -result {}
 
     #-------------------------------------------------------------------
-    # mutate delete
+    # delete
 
     test delete-1.1 {Group is deleted} -setup {
         ted create BLUE BRIT
     } -body {
-        frcgroup delete BLUE
+        tdb frcgroup delete BLUE
 
         # Is BLUE gone?
         adb eval {SELECT g FROM frcgroups_view}
@@ -140,7 +140,7 @@ local           0
 
     test delete-1.2 {Undo restores group} -setup {
         ted create BLUE
-        set undo [frcgroup delete BLUE]
+        set undo [tdb frcgroup delete BLUE]
     } -body {
         {*}$undo
         ted querylist {SELECT * FROM frcgroups_view}
@@ -164,7 +164,7 @@ local           0
     test delete-2.1 {coop curves are deleted} -setup {
         ted create BLUE SHIA
     } -body {
-        frcgroup delete BLUE
+        tdb frcgroup delete BLUE
 
         adb eval {SELECT f,g FROM coop_fg ORDER BY f,g}
     } -cleanup {
@@ -173,7 +173,7 @@ local           0
 
     test delete-2.2 {Undo restores coop curves} -setup {
         ted create BLUE SHIA
-        set undo [frcgroup delete BLUE]
+        set undo [tdb frcgroup delete BLUE]
     } -body {
         namespace eval :: $undo
         adb eval {SELECT f,g FROM coop_fg ORDER BY f,g}
@@ -187,7 +187,7 @@ local           0
         ted order HREL:OVERRIDE id {BLUE BRIT}
         ted order HREL:OVERRIDE id {BRIT BLUE}
     } -body {
-        frcgroup delete BLUE
+        tdb frcgroup delete BLUE
 
         adb eval {SELECT f,g FROM hrel_fg ORDER BY f,g}
     } -cleanup {
@@ -199,7 +199,7 @@ local           0
         ted order HREL:OVERRIDE id {BLUE BRIT}
         ted order HREL:OVERRIDE id {BRIT BLUE}
 
-        set undo [frcgroup delete BLUE]
+        set undo [tdb frcgroup delete BLUE]
     } -body {
         namespace eval :: $undo
 
@@ -212,7 +212,7 @@ local           0
         ted create JOE BLUE
         ted order VREL:OVERRIDE id {BLUE JOE}
     } -body {
-        frcgroup delete BLUE
+        tdb frcgroup delete BLUE
 
         adb eval {SELECT g,a FROM vrel_ga ORDER BY g,a}
     } -cleanup {
@@ -223,7 +223,7 @@ local           0
         ted create JOE BLUE
         ted order VREL:OVERRIDE id {BLUE JOE}
 
-        set undo [frcgroup delete BLUE]
+        set undo [tdb frcgroup delete BLUE]
     } -body {
         namespace eval :: $undo
 
@@ -233,13 +233,13 @@ local           0
     } -result {BLUE JOE}
 
     #-------------------------------------------------------------------
-    # mutate update
+    # update
 
 
     test update-1.1 {frcgroup is updated} -setup {
         ted create BOB BLUE
     } -body {
-        frcgroup update {
+        tdb frcgroup update {
             g            BLUE
             a            BOB
             longname     "Blue Angels"
@@ -275,7 +275,7 @@ local           1
     } -body {
         set a [ted query {SELECT * FROM frcgroups_view}]
 
-        frcgroup update [ted entity BLUE]
+        tdb frcgroup update [ted entity BLUE]
 
         set b [ted query {SELECT * FROM frcgroups_view}]
 
@@ -290,7 +290,7 @@ local           1
     } -body {
         set a [ted query {SELECT * FROM frcgroups_view}]
 
-        frcgroup update  {
+        tdb frcgroup update  {
             g            BLUE
             longname     ""
             a            ""
@@ -316,7 +316,7 @@ local           1
 
         set a [ted query {SELECT * FROM frcgroups_view}]
 
-        set undo [frcgroup update {
+        set undo [tdb frcgroup update {
             g            BLUE
             longname     "Blue Angels"
             a            ""
@@ -342,7 +342,7 @@ local           1
     # names
 
     test names-1.1 {Returns names: none defined} -body {
-        frcgroup names
+        tdb frcgroup names
     } -cleanup {
         cleanup
     } -result {}
@@ -350,7 +350,7 @@ local           1
     test names-1.2 {Returns names} -setup {
         ted create BLUE BRIT
     } -body {
-        frcgroup names
+        tdb frcgroup names
     } -cleanup {
         cleanup
     } -result {BLUE BRIT}
@@ -360,7 +360,7 @@ local           1
     # validate
 
     test validate-1.1 {Invalid name: none defined} -body {
-        frcgroup validate NONESUCH
+        tdb frcgroup validate NONESUCH
     } -returnCodes {
         error
     } -cleanup {
@@ -370,7 +370,7 @@ local           1
     test validate-1.2 {Invalid name: some defined} -setup {
         ted create BLUE BRIT
     } -body {
-        frcgroup validate NONESUCH
+        tdb frcgroup validate NONESUCH
     } -returnCodes {
         error
     } -cleanup {
@@ -380,10 +380,16 @@ local           1
     test validate-2.1 {Valid name} -setup {
         ted create BLUE BRIT
     } -body {
-        frcgroup validate BRIT
+        tdb frcgroup validate BRIT
     } -cleanup {
         cleanup
     } -result {BRIT}
+
+    #-------------------------------------------------------------------
+    # exists
+
+    # Tested by validate
+    
 
     #-------------------------------------------------------------------
     # get
@@ -391,7 +397,7 @@ local           1
     test get-1.1 {get group dict} -setup {
         ted create NB1 BLUE
     } -body {
-        ted pdicts [frcgroup get BLUE]
+        ted pdicts [tdb frcgroup get BLUE]
     } -cleanup {
         cleanup
     } -match dict -result {
@@ -412,10 +418,40 @@ local           1
     test get-1.2 {get group attribute} -setup {
         ted create NB1 BLUE
     } -body {
-        frcgroup get BLUE a
+        tdb frcgroup get BLUE a
     } -cleanup {
         cleanup
     } -result {JOE}
+
+    #-------------------------------------------------------------------
+    # view
+
+    test view-1.1 {view group dict} -setup {
+        ted create NB1 BLUE
+    } -body {
+        ted pdicts [tdb frcgroup view BLUE]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        a              JOE
+        base_personnel 5000
+        color          {#f00001}
+        cost           0.00
+        demeanor       AVERAGE
+        fancy          *
+        forcetype      REGULAR
+        g              BLUE
+        gtype          FRC
+        id             BLUE
+        link           *
+        local          0
+        longlink       *
+        longname       *
+        personnel      0
+        pretty_local   No
+        training       PROFICIENT
+        url            my://app/group/BLUE
+    }
 
 
     #-------------------------------------------------------------------
@@ -424,7 +460,7 @@ local           1
     test ownedby-1.1 {No groups owned by actor} -setup {
         ted create JOE BOB BLUE BRIT 
     } -body {
-        frcgroup ownedby BOB
+        tdb frcgroup ownedby BOB
     } -cleanup {
         cleanup
     } -result {}
@@ -432,7 +468,7 @@ local           1
     test ownedby-1.2 {Some groups owned by actor} -setup {
         ted create JOE BOB ALQ TAL BLUE BRIT
     } -body {
-        frcgroup ownedby JOE
+        tdb frcgroup ownedby JOE
     } -cleanup {
         cleanup
     } -result {BLUE BRIT}
