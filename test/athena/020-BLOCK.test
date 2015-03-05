@@ -1,0 +1,725 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    020-BLOCK.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#
+#    This test suite tests the BLOCK:* orders.
+#
+# TBD:
+#    Test BLOCK:TACTIC:PASTE.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Set up for tests
+
+
+    proc setup {} {
+        variable S1
+        variable B1
+        ted order STRATEGY:BLOCK:ADD agent SYSTEM
+        set S1 [tdb strategy getname SYSTEM]
+        lassign [$S1 blocks] B1
+    }
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # BLOCK:UPDATE
+
+    test BLOCK:UPDATE-1.1 {required parameters} -setup {
+        setup
+    } -body {
+        ted order -reject BLOCK:UPDATE
+    } -cleanup {
+        cleanup
+    } -result {
+        block_id {required value}
+    }
+
+    test BLOCK:UPDATE-1.2 {unknown block_id} -setup {
+        setup
+    } -body {
+        ted order -reject BLOCK:UPDATE block_id NONESUCH
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        block_id {Invalid block ID: "NONESUCH"}
+    }
+
+    test BLOCK:UPDATE-1.4 {invalid tmode} -setup {
+        setup
+    } -body {
+        ted order -reject BLOCK:UPDATE block_id [$B1 id] tmode NONESUCH
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        tmode {invalid value "NONESUCH", should be one of: ALWAYS,*}
+    }
+
+    test BLOCK:UPDATE-1.5 {invalid t1} -setup {
+        setup
+    } -body {
+        ted order -reject BLOCK:UPDATE block_id [$B1 id] t1 NONESUCH
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        t1 {invalid time spec "NONESUCH", base time should be "NOW", "T0", an integer tick, or a week string}
+    }
+
+    test BLOCK:UPDATE-1.6 {invalid t2} -setup {
+        setup
+    } -body {
+        ted order -reject BLOCK:UPDATE block_id [$B1 id] t2 NONESUCH
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        t2 {invalid time spec "NONESUCH", base time should be "NOW", "T0", an integer tick, or a week string}
+    }
+
+    test BLOCK:UPDATE-1.7 {invalid cmode} -setup {
+        setup
+    } -body {
+        ted order -reject BLOCK:UPDATE block_id [$B1 id] cmode NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        cmode {invalid value "NONESUCH", should be one of: ANY, ALL}
+    }
+
+    test BLOCK:UPDATE-1.8 {invalid emode} -setup {
+        setup
+    } -body {
+        ted order -reject BLOCK:UPDATE block_id [$B1 id] emode NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        emode {invalid value "NONESUCH", should be one of: ALL, SOME}
+    }
+
+    test BLOCK:UPDATE-1.9 {invalid once} -setup {
+        setup
+    } -body {
+        ted order -reject BLOCK:UPDATE block_id [$B1 id] once NONESUCH
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        once {invalid boolean "NONESUCH", should be one of: *}
+    }
+
+    test BLOCK:UPDATE-1.10 {invalid onlock} -setup {
+        setup
+    } -body {
+        ted order -reject BLOCK:UPDATE block_id [$B1 id] onlock NONESUCH
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        onlock {invalid boolean "NONESUCH", should be one of: *}
+    }
+
+    test BLOCK:UPDATE-1.11 {t1 required, not given} -setup {
+        setup
+    } -body {
+        ted order -reject BLOCK:UPDATE block_id [$B1 id] tmode AT
+    } -cleanup {
+        cleanup
+    } -result {
+        t1 {Week not specified.}
+    }
+
+    test BLOCK:UPDATE-1.12 {t2 required, not given} -setup {
+        setup
+    } -body {
+        ted order -reject BLOCK:UPDATE block_id [$B1 id] \
+            tmode DURING t1 5
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        t2 {Week not specified.}
+    }
+
+    test BLOCK:UPDATE-1.13 {t2 required, t2 < t1} -setup {
+        setup
+    } -body {
+        ted order -reject BLOCK:UPDATE block_id [$B1 id] \
+            tmode DURING t1 5 t2 4
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        t1 {End week must be no earlier than start week.}
+    }
+
+    test BLOCK:UPDATE-1.14 {invalid name} -setup {
+        setup
+    } -body {
+        ted order -reject BLOCK:UPDATE block_id [$B1 id] \
+            name 1234
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Identifiers begin with a letter and contain only letters and digits.}
+    }
+
+    test BLOCK:UPDATE-1.15 {duplicate name} -setup {
+        setup
+        ted order STRATEGY:BLOCK:ADD agent SYSTEM
+        set S [tdb strategy getname SYSTEM]
+        lassign [$S blocks end] B2
+    } -body {
+        ted order -reject BLOCK:UPDATE block_id [$B1 id] \
+            name [$B2 get name]
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Name already exists: "B2"}
+    }
+
+    test BLOCK:UPDATE-2.1 {block updated} -setup {
+        setup
+
+        # Set fields so we can see that they get cleared
+        $B1 set execstatus SUCCESS
+        $B1 set exectime   7
+    } -body {
+        ted order BLOCK:UPDATE \
+            block_id [$B1 id]           \
+            intent   "New intent"       \
+            tmode    DURING             \
+            t1       5                  \
+            t2       10                 \
+            cmode    ANY                \
+            emode    SOME               \
+            once     YES                \
+            onlock   YES
+
+        ted pdict [$B1 getdict]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        cmode      ANY
+        execstatus NONE
+        state      normal
+        tmode      DURING
+        conditions {}
+        emode      SOME
+        id         *
+        once       1
+        t1         5
+        onlock     1
+        t2         10
+        name       B*
+        parent     *
+        intent     {New intent}
+        pot        *::pot
+        tactics    {}
+        exectime   {}
+    }
+
+    test BLOCK:UPDATE-2.2 {notifier event} -setup {
+        setup
+    } -body {
+        ted notifier bind ::tdb.block <update>
+        ted order BLOCK:UPDATE block_id [$B1 id] intent "New intent"
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -match glob -result {*{::tdb.block <update> *}*}
+
+    test BLOCK:UPDATE-2.3 {undo notifier event} -setup {
+        setup
+        ted order BLOCK:UPDATE block_id [$B1 id] intent "New intent"
+    } -body {
+        ted notifier bind ::tdb.block <update>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -match glob -result {*{::tdb.block <update> *}*}
+
+    #-------------------------------------------------------------------
+    # BLOCK:STATE
+
+    test BLOCK:STATE-1.1 {required parameters} -setup {
+        setup
+    } -body {
+        ted order -reject BLOCK:STATE
+    } -cleanup {
+        cleanup
+    } -result {
+        block_id {required value}
+        state {required value}
+    }
+
+    test BLOCK:STATE-1.2 {unknown block_id} -setup {
+        setup
+    } -body {
+        ted order -reject BLOCK:STATE block_id NONESUCH state normal
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        block_id {Invalid block ID: "NONESUCH"}
+    }
+
+    test BLOCK:STATE-1.3 {invalid state} -setup {
+        setup
+    } -body {
+        ted order -reject BLOCK:STATE block_id [$B1 id] state NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        state {invalid value "nonesuch", should be one of: normal, disabled, invalid}
+    }
+
+    test BLOCK:STATE-2.1 {block updated} -setup {
+        setup
+    } -body {
+        ted order BLOCK:STATE block_id [$B1 id] state disabled
+
+        $B1 state
+    } -cleanup {
+        cleanup
+    } -result {disabled}
+
+    test BLOCK:STATE-2.2 {notifier event} -setup {
+        setup
+    } -body {
+        ted notifier bind ::tdb.block <update>
+        ted order BLOCK:STATE block_id [$B1 id] state disabled
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -match glob -result {*{::tdb.block <update> *}*}
+
+    test BLOCK:STATE-2.3 {undo notifier event} -setup {
+        setup
+        ted order BLOCK:STATE block_id [$B1 id] state disabled
+    } -body {
+        ted notifier bind ::tdb.block <update>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -match glob -result {*{::tdb.block <update> *}*}
+ 
+    #-------------------------------------------------------------------
+    # BLOCK:TACTIC:ADD
+
+    test BLOCK:TACTIC:ADD-1.1 {required parameters} -setup {
+        setup
+    } -body {
+        ted order -reject BLOCK:TACTIC:ADD
+    } -cleanup {
+        cleanup
+    } -result {
+        block_id {required value}
+        typename {required value}
+    }
+
+    test BLOCK:TACTIC:ADD-1.2 {unknown block_id} -setup {
+        setup
+    } -body {
+        ted order -reject BLOCK:TACTIC:ADD block_id NONESUCH typename SIGEVENT
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        block_id {Invalid block ID: "NONESUCH"}
+    }
+
+    test BLOCK:TACTIC:ADD-1.3 {invalid typename} -setup {
+        setup
+    } -body {
+        ted order -reject BLOCK:TACTIC:ADD block_id [$B1 id] typename NONESUCH
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        typename {invalid value: "NONESUCH"}
+    }
+
+    test BLOCK:TACTIC:ADD-2.1 {added} -setup {
+        setup
+    } -body {
+        ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename SIGEVENT
+
+        $B1 tactics
+    } -cleanup {
+        cleanup
+    } -match glob -result {*::pot::SIGEVENT*}
+
+    test BLOCK:TACTIC:ADD-2.2 {notifier event} -setup {
+        setup
+    } -body {
+        ted notifier bind ::tdb.block <tactics>
+        ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename SIGEVENT
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -match glob -result {*{::tdb.block <tactics> *}*}
+
+    test BLOCK:TACTIC:ADD-2.3 {undo notifier event} -setup {
+        setup
+        ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename SIGEVENT
+    } -body {
+        ted notifier bind ::tdb.block <tactics>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -match glob -result {*{::tdb.block <tactics> *}*}
+ 
+    #-------------------------------------------------------------------
+    # BLOCK:TACTIC:DELETE
+
+    proc btd_setup {} {
+        variable B1
+        variable T1
+        variable T2
+        setup
+        set T1 [ted addtactic $B1 SIGEVENT]
+        set T2 [ted addtactic $B1 DEPLOY]
+    }
+
+    test BLOCK:TACTIC:DELETE-1.1 {required parameters} -setup {
+        setup
+    } -body {
+        ted order -reject BLOCK:TACTIC:DELETE
+    } -cleanup {
+        cleanup
+    } -result {
+        ids {required value}
+    }
+
+    test BLOCK:TACTIC:DELETE-1.2 {unknown tactic_id} -setup {
+        setup
+    } -body {
+        ted order -reject BLOCK:TACTIC:DELETE ids NONESUCH
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        ids {Invalid tactic ID: "NONESUCH"}
+    }
+
+    test BLOCK:TACTIC:DELETE-2.1 {one deleted} -setup {
+        btd_setup
+    } -body {
+        ted order BLOCK:TACTIC:DELETE ids [$T1 id]
+
+        $B1 tactics
+    } -cleanup {
+        cleanup
+    } -match glob -result {*::pot::DEPLOY*}
+
+    test BLOCK:TACTIC:DELETE-2.2 {two deleted} -setup {
+        btd_setup
+    } -body {
+        ted order BLOCK:TACTIC:DELETE ids [list [$T1 id] [$T2 id]]
+
+        $B1 tactics
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test BLOCK:TACTIC:DELETE-2.3 {notifier event} -setup {
+        btd_setup
+    } -body {
+        ted notifier bind ::tdb.block <tactics>
+        ted order BLOCK:TACTIC:DELETE ids [$T1 id]
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -match glob -result {*{::tdb.block <tactics> *}*}
+
+    test BLOCK:TACTIC:DELETE-2.4 {undoes all deletions} -setup {
+        btd_setup
+        ted order BLOCK:TACTIC:DELETE ids [list [$T1 id] [$T2 id]]
+    } -body {
+        tdb order undo
+        $B1 tactics
+    } -cleanup {
+        cleanup
+    } -match glob -result {*::pot::SIGEVENT* *::pot::DEPLOY*}
+ 
+    test BLOCK:TACTIC:DELETE-2.5 {undo notifier event} -setup {
+        btd_setup
+        ted order BLOCK:TACTIC:DELETE ids [list [$T1 id] [$T2 id]]
+    } -body {
+        ted notifier bind ::tdb.block <tactics>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        {::tdb.block <tactics> add * *}
+        {::tdb.block <tactics> add * *}
+    }
+
+    #-------------------------------------------------------------------
+    # BLOCK:TACTIC:MOVE
+
+    test BLOCK:TACTIC:MOVE-1.1 {required parameters} -setup {
+        setup
+    } -body {
+        ted order -reject BLOCK:TACTIC:MOVE
+    } -cleanup {
+        cleanup
+    } -result {
+        tactic_id {required value}
+        where {required value}
+    }
+
+    test BLOCK:TACTIC:MOVE-1.2 {unknown block} -setup {
+        setup
+    } -body {
+        ted order -reject BLOCK:TACTIC:MOVE tactic_id NONESUCH where top
+    } -cleanup {
+        cleanup
+    } -result {
+        tactic_id {Invalid tactic ID: "NONESUCH"}
+    }
+
+    test BLOCK:TACTIC:MOVE-1.3 {invalid where} -setup {
+        setup
+        ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename SIGEVENT
+        ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename SIGEVENT
+        lassign [$B1 tactics] T1 T2
+    } -body {
+        ted order -reject BLOCK:TACTIC:MOVE tactic_id [$T2 id] where NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        where {invalid value "NONESUCH", should be one of: top, up, down, bottom}
+    }
+
+    test BLOCK:TACTIC:MOVE-2.1 {block moved} -setup {
+        setup
+        ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename SIGEVENT
+        ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename SIGEVENT
+        lassign [$B1 tactics] T1 T2
+    } -body {
+        set before [$B1 tactics]
+        ted order BLOCK:TACTIC:MOVE tactic_id [$T2 id] where top
+        set after [$B1 tactics]
+        expr {$after eq [lreverse $before]}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test BLOCK:TACTIC:MOVE-2.2 {notifier event} -setup {
+        setup
+        ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename SIGEVENT
+        ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename SIGEVENT
+    } -body {
+        ted notifier bind ::tdb.block <tactics>
+        ted order BLOCK:TACTIC:MOVE tactic_id [$T2 id] where top
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -match glob -result {*{::tdb.block <tactics> *}*}
+
+    test BLOCK:TACTIC:MOVE-2.3 {undo notifier event} -setup {
+        setup
+        ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename SIGEVENT
+        ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename SIGEVENT
+        ted order BLOCK:TACTIC:MOVE tactic_id [$T2 id] where top
+    } -body {
+        ted notifier bind ::tdb.block <tactics>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -match glob -result {*{::tdb.block <tactics> *}*}
+
+    #-------------------------------------------------------------------
+    # BLOCK:CONDITION:ADD
+
+    test BLOCK:CONDITION:ADD-1.1 {required parameters} -setup {
+        setup
+    } -body {
+        ted order -reject BLOCK:CONDITION:ADD
+    } -cleanup {
+        cleanup
+    } -result {
+        block_id {required value}
+        typename {required value}
+    }
+
+    test BLOCK:CONDITION:ADD-1.2 {unknown block_id} -setup {
+        setup
+    } -body {
+        ted order -reject BLOCK:CONDITION:ADD block_id NONESUCH typename EXPR
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        block_id {Invalid block ID: "NONESUCH"}
+    }
+
+    test BLOCK:CONDITION:ADD-1.3 {invalid typename} -setup {
+        setup
+    } -body {
+        ted order -reject BLOCK:CONDITION:ADD block_id [$B1 id] typename NONESUCH
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        typename {invalid value "NONESUCH", should be one of: *}
+    }
+
+    test BLOCK:CONDITION:ADD-2.1 {added} -setup {
+        setup
+    } -body {
+        ted order BLOCK:CONDITION:ADD block_id [$B1 id] typename EXPR
+
+        $B1 conditions
+    } -cleanup {
+        cleanup
+    } -match glob -result {*::pot::EXPR*}
+
+    test BLOCK:CONDITION:ADD-2.2 {notifier event} -setup {
+        setup
+    } -body {
+        ted notifier bind ::tdb.block <conditions>
+        ted order BLOCK:CONDITION:ADD block_id [$B1 id] typename EXPR
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -match glob -result {*{::tdb.block <conditions> *}*}
+
+    test BLOCK:CONDITION:ADD-2.3 {undo notifier event} -setup {
+        setup
+        ted order BLOCK:CONDITION:ADD block_id [$B1 id] typename EXPR
+    } -body {
+        ted notifier bind ::tdb.block <conditions>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -match glob -result {*{::tdb.block <conditions> *}*}
+ 
+    #-------------------------------------------------------------------
+    # BLOCK:CONDITION:DELETE
+
+    proc bcd_setup {} {
+        variable B1
+        variable C1
+        variable C2
+        setup
+        set C1 [ted addcondition $B1 EXPR]
+        set C2 [ted addcondition $B1 COMPARE]
+    }
+
+    test BLOCK:CONDITION:DELETE-1.1 {required parameters} -setup {
+        setup
+    } -body {
+        ted order -reject BLOCK:CONDITION:DELETE
+    } -cleanup {
+        cleanup
+    } -result {
+        ids {required value}
+    }
+
+    test BLOCK:CONDITION:DELETE-1.2 {unknown ids} -setup {
+        setup
+    } -body {
+        ted order -reject BLOCK:CONDITION:DELETE ids NONESUCH
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        ids {Invalid condition ID: "NONESUCH"}
+    }
+
+    test BLOCK:CONDITION:DELETE-2.1 {one deleted} -setup {
+        bcd_setup
+    } -body {
+        ted order BLOCK:CONDITION:DELETE ids [$C1 id]
+
+        $B1 conditions
+    } -cleanup {
+        cleanup
+    } -match glob -result {*::pot::COMPARE*}
+
+    test BLOCK:CONDITION:DELETE-2.2 {two deleted} -setup {
+        bcd_setup
+    } -body {
+        ted order BLOCK:CONDITION:DELETE ids [list [$C1 id] [$C2 id]]
+
+        $B1 conditions
+    } -cleanup {
+        cleanup
+    } -match glob -result {}
+
+    test BLOCK:CONDITION:DELETE-2.3 {notifier event} -setup {
+        bcd_setup
+    } -body {
+        ted notifier bind ::tdb.block <conditions>
+        ted order BLOCK:CONDITION:DELETE ids [list [$C1 id] [$C2 id]]
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        {::tdb.block <conditions> delete * *}
+        {::tdb.block <conditions> delete * *}
+    }
+
+    test BLOCK:CONDITION:DELETE-2.4 {undone} -setup {
+        bcd_setup
+        ted order BLOCK:CONDITION:DELETE ids [list [$C1 id] [$C2 id]]
+    } -body {
+        tdb order undo
+        $B1 conditions
+    } -cleanup {
+        cleanup
+    } -match glob -result {*::pot::EXPR* *::pot::COMPARE*}
+
+    test BLOCK:CONDITION:DELETE-2.5 {undo notifier event} -setup {
+        bcd_setup
+        ted order BLOCK:CONDITION:DELETE ids [list [$C1 id] [$C2 id]]
+    } -body {
+        ted notifier bind ::tdb.block <conditions>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        {::tdb.block <conditions> add * *}
+        {::tdb.block <conditions> add * *}
+    }
+ 
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+

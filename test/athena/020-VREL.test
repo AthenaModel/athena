@@ -1,0 +1,481 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    020-VREL.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    app_sim(1) VREL:* order tests.
+#
+#    This test suite tests the vertical relationship-related orders.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    proc setup {} {
+        ted create JOE BLUE SHIA
+    }
+
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # VREL:OVERRIDE
+
+    test OVERRIDE-1.1 {required parms} -body {
+        ted order -reject VREL:OVERRIDE {}
+    } -result {
+        id {required value}
+    }
+    
+
+    test OVERRIDE-1.2 {invalid g} -setup {
+        setup
+    } -body {
+        ted order -reject VREL:OVERRIDE id {NONESUCH JOE}
+    } -cleanup {
+        cleanup
+    } -result {
+        id {Invalid group, should be one of: BLUE, SHIA}
+    }
+
+    test OVERRIDE-1.3 {invalid a} -setup {
+        setup
+    } -body {
+        ted order -reject VREL:OVERRIDE id {SHIA NONESUCH}
+    } -cleanup {
+        cleanup
+    } -result {
+        id {Invalid actor, should be one of: JOE}
+    }
+
+    test OVERRIDE-1.4 {invalid base} -setup {
+        setup
+    } -body {
+        ted order -reject VREL:OVERRIDE id {BLUE JOE} base 1.1
+    } -cleanup {
+        cleanup
+    } -result {
+        base {invalid value "1.1", should be a real number in range -1.0, 1.0, or one of: SUPPORT, LIKE, INDIFF, DISLIKE, OPPOSE}
+    }
+
+    test OVERRIDE-1.5 {invalid hist_flag} -setup {
+        setup
+    } -body {
+        ted order -reject VREL:OVERRIDE id {BLUE JOE} hist_flag NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        hist_flag {invalid boolean "NONESUCH", should be one of: 1, 0, true, false, yes, no, on, off}
+    }
+
+    test OVERRIDE-1.6 {invalid current} -setup {
+        setup
+    } -body {
+        ted order -reject VREL:OVERRIDE id {BLUE JOE} current NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        current {invalid value "NONESUCH", should be a real number in range -1.0, 1.0, or one of: SUPPORT, LIKE, INDIFF, DISLIKE, OPPOSE}
+    }
+
+    # Create new override
+
+    test OVERRIDE-2.1 {override is created} -setup {
+        setup
+    } -body {
+        ted order VREL:OVERRIDE {
+            id        {SHIA JOE}
+            base      0.5
+            hist_flag 1
+            current   0.6
+        }
+
+        ted query {SELECT * FROM vrel_ga ORDER BY g,a}
+    } -cleanup {
+        cleanup
+    } -result {
+g    a   base hist_flag current 
+---- --- ---- --------- ------- 
+SHIA JOE 0.5  1         0.6     
+    }
+
+    test OVERRIDE-2.2 {test defaults} -setup {
+        setup
+    } -body {
+        ted order VREL:OVERRIDE {id {BLUE JOE}}
+        ted query {SELECT * FROM vrel_ga}
+    } -cleanup {
+        cleanup
+    } -result {
+g    a   base hist_flag current 
+---- --- ---- --------- ------- 
+BLUE JOE 0.0  0         0.0     
+    }
+
+
+    test OVERRIDE-2.3 {table monitor event on creation} -setup {
+        setup
+    } -body {
+        ted notifier bind ::tdb <vrel_ga>
+        ted order VREL:OVERRIDE id {SHIA JOE} base 0.5
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <vrel_ga> update {SHIA JOE}}
+    }
+
+
+    test OVERRIDE-2.4 {undo undoes the creation} -setup {
+        setup
+
+        ted order VREL:OVERRIDE {
+            id    {SHIA JOE}
+            base   0.5
+        }
+    } -body {
+        ted notifier bind ::tdb <vrel_ga>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <vrel_ga> delete {SHIA JOE}}
+    }
+
+
+    # Update existing override
+
+    test OVERRIDE-3.1 {rel is updated} -setup {
+        setup
+        ted order VREL:OVERRIDE {id {SHIA JOE}}
+    } -body {
+        ted order VREL:OVERRIDE {
+            id        {SHIA JOE}
+            base      0.5
+            hist_flag 1
+            current   0.6
+        }
+
+        ted query {SELECT * FROM vrel_ga ORDER BY g,a}
+    } -cleanup {
+        cleanup
+    } -result {
+g    a   base hist_flag current 
+---- --- ---- --------- ------- 
+SHIA JOE 0.5  1         0.6     
+    }
+
+
+    test OVERRIDE-3.2 {table monitor event} -setup {
+        setup
+        ted order VREL:OVERRIDE {id {SHIA JOE}}
+    } -body {
+        ted notifier bind ::tdb <vrel_ga>
+        ted order VREL:OVERRIDE id {SHIA JOE} base 0.5
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <vrel_ga> update {SHIA JOE}}
+    }
+
+
+    test OVERRIDE-3.3 {undo undoes the change} -setup {
+        setup
+
+        ted order VREL:OVERRIDE {id {SHIA JOE}}
+        ted order VREL:OVERRIDE {
+            id    {SHIA JOE}
+            base   0.5
+        }
+    } -body {
+        ted notifier bind ::tdb <vrel_ga>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <vrel_ga> update {SHIA JOE}}
+    }
+
+    #-------------------------------------------------------------------
+    # VREL:RESTORE
+
+    test RESTORE-1.1 {required parms} -body {
+        ted order -reject VREL:RESTORE {}
+    } -result {
+        id {required value}
+    }
+    
+
+    test RESTORE-1.2 {unknown g in id} -setup {
+        setup
+    } -body {
+        ted order -reject VREL:RESTORE id {NONESUCH JOE}
+    } -cleanup {
+        cleanup
+    } -result {
+        id {Invalid group, should be one of: BLUE, SHIA}
+    }
+
+    test RESTORE-1.3 {unknown a in id} -setup {
+        setup
+    } -body {
+        ted order -reject VREL:RESTORE id {SHIA NONESUCH}
+    } -cleanup {
+        cleanup
+    } -result {
+        id {Invalid actor, should be one of: JOE}
+    }
+
+    test RESTORE-2.1 {Effects} -setup {
+        setup
+        ted order VREL:OVERRIDE {id {BLUE JOE}}
+    } -body {
+        ted notifier bind ::tdb <vrel_ga>
+        ted order VREL:RESTORE id {BLUE JOE}
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <vrel_ga> delete {BLUE JOE}}
+    }
+
+
+    test RESTORE-2.2 {Effects on undo} -setup {
+        setup
+        ted order VREL:OVERRIDE {id {BLUE JOE}}
+        ted order VREL:RESTORE {id {BLUE JOE}}
+    } -body {
+        ted notifier bind ::tdb <vrel_ga>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <vrel_ga> update {BLUE JOE}}
+    }
+
+    test RESTORE-3.1 {OK if there's no override} -setup {
+        setup
+    } -body {
+        ted notifier bind ::tdb <vrel_ga>
+        ted order VREL:RESTORE id {BLUE JOE}
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {}
+
+
+    test RESTORE-3.2 {Can undo even if there was no override} -setup {
+        setup
+        ted order VREL:RESTORE {id {BLUE JOE}}
+    } -body {
+        ted notifier bind ::tdb <vrel_ga>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {}
+
+
+    #-------------------------------------------------------------------
+    # VREL:OVERRIDE:MULTI
+
+    test OVERRIDE:MULTI-1.1 {required parms} -setup {
+        setup
+    } -body {
+        ted order -reject VREL:OVERRIDE:MULTI {}
+    } -cleanup {
+        cleanup
+    } -result {
+        ids {required value}
+    }
+    
+
+    test OVERRIDE:MULTI-1.2 {invalid g in ids} -setup {
+        setup
+    } -body {
+        ted order -reject VREL:OVERRIDE:MULTI \
+            ids {{NONESUCH JOE}}
+    } -cleanup {
+        cleanup
+    } -result {
+        ids {Invalid group, should be one of: BLUE, SHIA}
+    }
+
+
+    test OVERRIDE:MULTI-1.3 {invalid a in ids} -setup {
+        setup
+    } -body {
+        ted order -reject VREL:OVERRIDE:MULTI \
+            ids {{SHIA NONESUCH}}
+    } -cleanup {
+        cleanup
+    } -result {
+        ids {Invalid actor, should be one of: JOE}
+    }
+
+    test OVERRIDE:MULTI-1.4 {invalid base} -setup {
+        setup
+    } -body {
+        ted order -reject VREL:OVERRIDE:MULTI \
+            ids {{SHIA JOE}} base 1.1
+    } -cleanup {
+        cleanup
+    } -result {
+        base {invalid value "1.1", should be a real number in range -1.0, 1.0, or one of: SUPPORT, LIKE, INDIFF, DISLIKE, OPPOSE}
+    }
+
+    test OVERRIDE:MULTI-1.5 {invalid hist_flag} -setup {
+        setup
+    } -body {
+        ted order -reject VREL:OVERRIDE:MULTI \
+            ids {{SHIA JOE}} hist_flag NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        hist_flag {invalid boolean "NONESUCH", should be one of: 1, 0, true, false, yes, no, on, off}
+    }
+
+    test OVERRIDE:MULTI-1.6 {invalid current} -setup {
+        setup
+    } -body {
+        ted order -reject VREL:OVERRIDE:MULTI \
+            ids {{SHIA JOE}} current NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        current {invalid value "NONESUCH", should be a real number in range -1.0, 1.0, or one of: SUPPORT, LIKE, INDIFF, DISLIKE, OPPOSE}
+    }
+
+    # Create new overrides
+
+    test OVERRIDE:MULTI-2.1 {create new overrides} -setup {
+        setup
+    } -body {
+        ted notifier bind ::tdb <vrel_ga>
+
+        ted order VREL:OVERRIDE:MULTI {
+            ids        {{SHIA JOE} {BLUE JOE}}
+            base       0.5
+            hist_flag  1
+            current    0.6
+        }
+
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <vrel_ga> update {SHIA JOE}}
+        {::tdb <vrel_ga> update {BLUE JOE}}
+    }
+
+    test OVERRIDE:MULTI-2.2 {undo undoes the change} -setup {
+        setup
+        ted order VREL:OVERRIDE:MULTI {
+            ids        {{SHIA JOE} {BLUE JOE}}
+            base       0.5
+            hist_flag  1
+            current    0.6
+        }
+    } -body {
+        ted notifier bind ::tdb <vrel_ga>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <vrel_ga> delete {SHIA JOE}}
+        {::tdb <vrel_ga> delete {BLUE JOE}}
+    }
+
+    # Update existing overrides
+    test OVERRIDE:MULTI-3.1 {several overrides} -setup {
+        setup
+        ted order VREL:OVERRIDE {id {BLUE JOE}}
+        ted order VREL:OVERRIDE {id {SHIA JOE}}
+    } -body {
+        ted notifier bind ::tdb <vrel_ga>
+        ted order VREL:OVERRIDE:MULTI {
+            ids        {{SHIA JOE} {BLUE JOE}}
+            base       0.5
+            hist_flag  1
+            current    0.6
+        }
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <vrel_ga> update {SHIA JOE}}
+        {::tdb <vrel_ga> update {BLUE JOE}}
+    }
+
+    test OVERRIDE:MULTI-3.2 {undo undoes the change} -setup {
+        setup
+        ted order VREL:OVERRIDE {id {BLUE JOE}}
+        ted order VREL:OVERRIDE {id {SHIA JOE}}
+
+        ted order VREL:OVERRIDE:MULTI {
+            ids        {{SHIA JOE} {BLUE JOE}}
+            base       0.5
+            hist_flag  1
+            current    0.6
+        }
+    } -body {
+        ted notifier bind ::tdb <vrel_ga>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <vrel_ga> update {SHIA JOE}}
+        {::tdb <vrel_ga> update {BLUE JOE}}
+    }
+
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+
+

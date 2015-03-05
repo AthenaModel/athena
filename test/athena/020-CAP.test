@@ -1,0 +1,1130 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    020-CAP.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    app_sim(1) CAP:* order tests.
+#
+#    This test suite tests the cap-related orders.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Standard caps
+    set cbs {
+        k        CBS
+        longname "Columbia Broadcasting System"
+        owner    JOE
+        capacity 0.8
+        cost     1000.0
+        nlist    NB1
+        glist    SHIA
+    }
+
+    set cnn {
+        k        CNN
+        longname "Cable News Network"
+        owner    BOB
+        capacity 0.9
+        cost     500.0
+        nlist    {NB1 NB2}
+        glist    {SUNN KURD}
+    }
+
+    # Setup
+    proc setup {} {
+        ted create JOE BOB NB1 NB2 SHIA SUNN KURD
+    }
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        # Clean up the test environment
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # CAP:CREATE
+
+    test CREATE-1.1 {required parms} -body {
+        ted order -reject CAP:CREATE {}
+    } -result {
+        k {required value}
+        owner {required value}
+    }
+    
+
+    test CREATE-1.2 {Duplicate k} -setup {
+        setup
+        ted order CAP:CREATE $cbs
+    } -body {
+        ted order -reject CAP:CREATE $cbs
+    } -cleanup {
+        cleanup
+    } -result {
+        k {An entity with this ID already exists}
+    }
+
+
+    test CREATE-1.3 {k is not an ident} -setup {
+        setup
+        ted create JOE
+    } -body {
+        ted order -reject CAP:CREATE {*}$cbs k "CB&S"
+    } -cleanup {
+        cleanup
+    } -result {
+        k {Identifiers begin with a letter and contain only letters and digits.}
+    }
+
+    test CREATE-1.4 {invalid owner} -body {
+        setup
+        ted order -reject CAP:CREATE {*}$cbs owner NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        owner {Invalid actor, should be one of: BOB, JOE}
+    }
+
+    test CREATE-1.5 {invalid capacity} -body {
+        setup
+        ted order -reject CAP:CREATE {*}$cbs capacity NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        capacity {invalid value "NONESUCH", should be a real number in range 0.0, 1.0}
+    }
+
+    test CREATE-1.6 {invalid cost} -body {
+        setup
+        ted order -reject CAP:CREATE {*}$cbs cost NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        cost {invalid money value "NONESUCH", expected positive numeric value with optional K, M, or B suffix}
+    }
+
+    test CREATE-1.7 {invalid nlist} -body {
+        setup
+        ted order -reject CAP:CREATE {*}$cbs nlist NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        nlist {Invalid neighborhood, should be one of: NB1, NB2}
+    }
+
+    test CREATE-1.8 {invalid glist} -body {
+        setup
+        ted order -reject CAP:CREATE {*}$cbs glist NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        glist {Invalid civilian group, should be one of: SHIA, SUNN, KURD}
+    }
+
+      test CREATE-2.1 {cap is created} -setup {
+        setup
+    } -body {
+        ted order CAP:CREATE $cbs
+
+        ted querylist {SELECT * FROM caps}
+    } -cleanup {
+        cleanup
+    } -result {
+k         CBS
+longname  Columbia Broadcasting System
+owner     JOE
+capacity  0.8
+cost      1000.0
+    }
+
+    test CREATE-2.2 {longname defaults to ID} -setup {
+        setup
+    } -body {
+        ted order CAP:CREATE {*}$cbs longname ""
+
+        tdb onecolumn {SELECT longname FROM caps}
+    } -cleanup {
+        cleanup
+    } -result {CBS}
+
+    test CREATE-2.3 {Effects} -setup {
+        setup
+    } -body {
+        ted notifier bind ::tdb <caps>
+        ted notifier bind ::tdb <cap_kn>
+        ted notifier bind ::tdb <cap_kg>
+        ted order CAP:CREATE $cbs
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <caps> update CBS}
+        {::tdb <cap_kn> update {CBS NB1}}
+        {::tdb <cap_kg> update {CBS SHIA}}
+    }
+
+
+    test CREATE-3.1 {undo effects} -setup {
+        setup
+        ted order CAP:CREATE $cbs
+    } -body {
+        ted notifier bind ::tdb <caps>
+        ted notifier bind ::tdb <cap_kn>
+        ted notifier bind ::tdb <cap_kg>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <cap_kg> delete {CBS SHIA}}
+        {::tdb <cap_kn> delete {CBS NB1}}
+        {::tdb <caps> delete CBS}
+    }
+
+
+    #-------------------------------------------------------------------
+    # CAP:DELETE
+
+    test DELETE-1.1 {required parms} -body {
+        ted order -reject CAP:DELETE {}
+    } -result {
+        k {required value}
+    }
+
+    
+    test DELETE-1.2 {unknown k} -body {
+        ted order -reject CAP:DELETE k NONESUCH
+    } -result {
+        k {Invalid CAP, none are defined}
+    }
+
+
+    test DELETE-2.1 {Effects} -setup {
+        ted create CBS
+    } -body {
+        ted notifier bind ::tdb <caps>
+        ted notifier bind ::tdb <cap_kn>
+        ted notifier bind ::tdb <cap_kg>
+        ted order CAP:DELETE k CBS
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <cap_kg> delete {CBS SHIA}}
+        {::tdb <cap_kn> delete {CBS NB1}}
+        {::tdb <caps> delete CBS}
+    }
+
+
+    test DELETE-3.1 {Undo effects} -setup {
+        ted create CBS
+        ted order CAP:DELETE k CBS
+    } -body {
+        ted notifier bind ::tdb <caps>
+        ted notifier bind ::tdb <cap_kn>
+        ted notifier bind ::tdb <cap_kg>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <caps> update CBS}
+        {::tdb <cap_kg> update {CBS SHIA}}
+        {::tdb <cap_kn> update {CBS NB1}}
+    }
+
+
+    #-------------------------------------------------------------------
+    # CAP:UPDATE
+
+    test UPDATE-1.1 {required parms} -body {
+        ted order -reject CAP:UPDATE {}
+    } -result {
+        k {required value}
+    }
+
+    test UPDATE-1.2 {invalid owner} -setup {
+        ted create CBS
+    } -body {
+        ted order -reject CAP:UPDATE k CBS owner NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        owner {Invalid actor, should be one of: JOE}
+    }
+
+    test UPDATE-1.3 {invalid capacity} -setup {
+        ted create CBS
+    } -body {
+        ted order -reject CAP:UPDATE k CBS capacity NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        capacity {invalid value "NONESUCH", should be a real number in range 0.0, 1.0}
+    }
+
+    test UPDATE-1.4 {invalid cost} -setup {
+        ted create CBS
+    } -body {
+        ted order -reject CAP:UPDATE k CBS cost NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        cost {invalid money value "NONESUCH", expected positive numeric value with optional K, M, or B suffix}
+    }
+
+    test UPDATE-2.1 {cap is updated} -setup {
+        ted create BOB CBS
+    } -body {
+        ted order CAP:UPDATE {
+            k            CBS
+            longname     "New Name"
+            owner        BOB
+            capacity     0.5
+            cost         400.0
+        }
+
+        ted querylist {SELECT * FROM caps}
+    } -cleanup {
+        cleanup
+    } -result {
+k         CBS
+longname  New Name
+owner     BOB
+capacity  0.5
+cost      400.0
+    }
+
+
+    test UPDATE-2.2 {table monitor event} -setup {
+        ted create CBS
+    } -body {
+        ted notifier bind ::tdb <caps>
+        ted order CAP:UPDATE k CBS longname "New Name"
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <caps> update CBS}
+    }
+
+
+    test UPDATE-3.1 {undo undoes the change} -setup {
+        ted create BOB CBS
+        ted order CAP:UPDATE {
+            k            CBS
+            longname     "New Name"
+            owner        BOB
+            capacity     0.5
+            cost         400.0
+        }
+    } -body {
+        ted notifier bind ::tdb <caps>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <caps> update CBS}
+    }
+
+    #-------------------------------------------------------------------
+    # CAP:UPDATE:MULTI
+
+    test UPDATE:MULTI-1.1 {required parms} -body {
+        ted order -reject CAP:UPDATE:MULTI {}
+    } -result {
+        ids {required value}
+    }
+    
+
+    test UPDATE:MULTI-1.2 {invalid ids, no groups} -body {
+        ted order -reject CAP:UPDATE:MULTI ids NONESUCH
+    } -result {
+        ids {Invalid CAP, none are defined}
+    }
+
+
+    test UPDATE:MULTI-1.3 {invalid ids, groups} -setup {
+        ted create CBS
+    } -body {
+        ted order -reject CAP:UPDATE:MULTI ids NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        ids {Invalid CAP, should be one of: CBS}
+    }
+
+
+    test UPDATE:MULTI-1.4 {invalid owner} -setup {
+        ted create CBS
+    } -body {
+        ted order -reject CAP:UPDATE:MULTI ids CBS owner NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        owner {Invalid actor, should be one of: JOE}
+    }
+
+
+    test UPDATE:MULTI-2.1 {one group of several is updated} -setup {
+        ted create BOB CBS CNN
+    } -body {
+        ted notifier bind ::tdb <caps>
+
+        ted order CAP:UPDATE:MULTI {
+            ids         CBS 
+            owner        BOB
+            capacity     0.5
+            cost         400.0
+        }
+
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <caps> update CBS}
+    }
+
+
+    test UPDATE:MULTI-2.2 {several groups are updated} -setup {
+        ted create BOB CBS CNN
+    } -body {
+        ted notifier bind ::tdb <caps>
+
+        ted order CAP:UPDATE:MULTI {
+            ids         {CBS CNN}
+            owner        BOB
+            capacity     0.5
+            cost         400.0
+        }
+
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <caps> update CBS}
+        {::tdb <caps> update CNN}
+    }
+
+    test UPDATE:MULTI-3.1 {undo effects} -setup {
+        ted create CBS CNN
+        ted order CAP:UPDATE:MULTI {
+            ids       {CBS CNN}
+            owner        BOB
+            capacity     0.5
+            cost         400.0
+        }
+    } -body {
+        ted notifier bind ::tdb <caps>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <caps> update CBS}
+        {::tdb <caps> update CNN}
+    }
+
+    #-------------------------------------------------------------------
+    # CAP:CAPACITY
+
+    test CAPACITY-1.1 {required parms} -body {
+        ted order -reject CAP:CAPACITY {}
+    } -result {
+        k {required value}
+    }
+
+    test CAPACITY-1.2 {invalid capacity} -setup {
+        ted create CBS
+    } -body {
+        ted order -reject CAP:CAPACITY k CBS capacity NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        capacity {invalid value "NONESUCH", should be a real number in range 0.0, 1.0}
+    }
+
+    test CAPACITY-2.1 {cap is updated} -setup {
+        ted create BOB CBS
+    } -body {
+        ted order CAP:CAPACITY k CBS capacity 0.5
+
+        ted querylist {SELECT * FROM caps}
+    } -cleanup {
+        cleanup
+    } -result {
+k         CBS
+longname  Columbia Broadcasting System
+owner     JOE
+capacity  0.5
+cost      1000.0
+    }
+
+
+    test CAPACITY-2.2 {table monitor event} -setup {
+        ted create CBS
+    } -body {
+        ted notifier bind ::tdb <caps>
+        ted order CAP:CAPACITY k CBS capacity 0.5
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <caps> update CBS}
+    }
+
+
+    test CAPACITY-3.1 {undo undoes the change} -setup {
+        ted create BOB CBS
+        ted order CAP:CAPACITY k CBS capacity 0.5
+    } -body {
+        ted notifier bind ::tdb <caps>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <caps> update CBS}
+    }
+
+    #-------------------------------------------------------------------
+    # CAP:CAPACITY:MULTI
+
+    test CAPACITY:MULTI-1.1 {required parms} -body {
+        ted order -reject CAP:CAPACITY:MULTI {}
+    } -result {
+        ids {required value}
+    }
+    
+
+    test CAPACITY:MULTI-1.2 {invalid ids, no caps} -body {
+        ted order -reject CAP:CAPACITY:MULTI ids NONESUCH
+    } -result {
+        ids {Invalid CAP, none are defined}
+    }
+
+
+    test CAPACITY:MULTI-1.3 {invalid ids, caps} -setup {
+        ted create CBS
+    } -body {
+        ted order -reject CAP:CAPACITY:MULTI ids NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        ids {Invalid CAP, should be one of: CBS}
+    }
+
+
+    test CAPACITY:MULTI-1.4 {invalid capacity} -setup {
+        ted create CBS
+    } -body {
+        ted order -reject CAP:CAPACITY:MULTI ids CBS capacity NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        capacity {invalid value "NONESUCH", should be a real number in range 0.0, 1.0}
+    }
+
+
+    test CAPACITY:MULTI-2.1 {one cap of several is updated} -setup {
+        ted create BOB CBS CNN
+    } -body {
+        ted notifier bind ::tdb <caps>
+
+        ted order CAP:CAPACITY:MULTI ids CBS capacity 0.5
+
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <caps> update CBS}
+    }
+
+
+    test CAPACITY:MULTI-2.2 {several groups are updated} -setup {
+        ted create BOB CBS CNN
+    } -body {
+        ted notifier bind ::tdb <caps>
+
+        ted order CAP:CAPACITY:MULTI ids {CBS CNN} capacity 0.5
+
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <caps> update CBS}
+        {::tdb <caps> update CNN}
+    }
+
+    test CAPACITY:MULTI-3.1 {undo effects} -setup {
+        ted create CBS CNN
+        ted order CAP:CAPACITY:MULTI ids {CBS CNN} capacity 0.5
+    } -body {
+        ted notifier bind ::tdb <caps>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <caps> update CBS}
+        {::tdb <caps> update CNN}
+    }
+
+    #-------------------------------------------------------------------
+    # CAP:NBCOV:SET
+
+    test NBCOV:SET-1.1 {required parms} -body {
+        ted order -reject CAP:NBCOV:SET {}
+    } -result {
+        id {required value}
+    }
+    
+
+    test NBCOV:SET-1.2 {invalid k, n} -setup {
+        ted create CBS
+    } -body {
+        ted order -reject CAP:NBCOV:SET id {NONESUCH NONESUCH}
+    } -cleanup {
+        cleanup
+    } -result {
+        id {Invalid CAP, should be one of: CBS}
+    }
+
+    test NBCOV:SET-1.3 {invalid nbcov} -setup {
+        ted create CBS
+    } -body {
+        ted order -reject CAP:NBCOV:SET id {CBS NB1} nbcov 1.1
+    } -cleanup {
+        cleanup
+    } -result {
+        nbcov {invalid value "1.1", should be a real number in range 0.0, 1.0}
+    }
+
+    # 2.*: Create new cap_kn record
+    test NBCOV:SET-2.1 {new cap_kn is created} -setup {
+        setup
+        ted create CBS
+    } -body {
+        ted order CAP:NBCOV:SET id {CBS NB2} nbcov 0.5
+
+        ted query {SELECT * FROM cap_kn ORDER BY k,n}
+    } -cleanup {
+        cleanup
+    } -result {
+k   n   nbcov 
+--- --- ----- 
+CBS NB1 1.0   
+CBS NB2 0.5   
+    }
+
+    test NBCOV:SET-2.2 {table monitor event on creation} -setup {
+        setup
+        ted create CBS
+    } -body {
+        ted notifier bind ::tdb <cap_kn>
+        ted order CAP:NBCOV:SET id {CBS NB2} nbcov 0.5
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <cap_kn> update {CBS NB2}}
+    }
+
+
+    test NBCOV:SET-2.3 {undo undoes the creation} -setup {
+        setup
+        ted create CBS
+        ted order CAP:NBCOV:SET id {CBS NB2} nbcov 0.5
+    } -body {
+        ted notifier bind ::tdb <cap_kn>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <cap_kn> delete {CBS NB2}}
+    }
+
+
+    # 3.*: Update existing cap_kn
+
+    test NBCOV:SET-3.1 {cap_kn is updated} -setup {
+        setup
+        ted create CBS
+        ted order CAP:NBCOV:SET id {CBS NB2} nbcov 0.5
+    } -body {
+        ted order CAP:NBCOV:SET id {CBS NB2} nbcov 0.7
+
+        ted query {SELECT * FROM cap_kn ORDER BY k,n}
+    } -cleanup {
+        cleanup
+    } -result {
+k   n   nbcov 
+--- --- ----- 
+CBS NB1 1.0   
+CBS NB2 0.7   
+    }
+
+
+    test NBCOV:SET-3.2 {table monitor event} -setup {
+        setup
+        ted create CBS
+        ted order CAP:NBCOV:SET id {CBS NB2} nbcov 0.5
+    } -body {
+        ted notifier bind ::tdb <cap_kn>
+        ted order CAP:NBCOV:SET id {CBS NB2} nbcov 0.7
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <cap_kn> update {CBS NB2}}
+    }
+
+
+    test NBCOV:SET-3.3 {undo undoes the change} -setup {
+        setup
+        ted create CBS
+        ted order CAP:NBCOV:SET id {CBS NB2} nbcov 0.5
+        ted order CAP:NBCOV:SET id {CBS NB2} nbcov 0.7
+    } -body {
+        ted notifier bind ::tdb <cap_kn>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <cap_kn> update {CBS NB2}}
+    }
+
+    # 4.*: Zero existing cap_kn
+
+    test NBCOV:SET-4.1 {cap_kn is deleted} -setup {
+        setup
+        ted create CBS
+        ted order CAP:NBCOV:SET id {CBS NB2} nbcov 0.5
+    } -body {
+        ted order CAP:NBCOV:SET id {CBS NB2} nbcov 0.0
+
+        ted query {SELECT * FROM cap_kn ORDER BY k,n}
+    } -cleanup {
+        cleanup
+    } -result {
+k   n   nbcov 
+--- --- ----- 
+CBS NB1 1.0   
+    }
+
+
+    test NBCOV:SET-4.2 {table monitor event} -setup {
+        setup
+        ted create CBS
+        ted order CAP:NBCOV:SET id {CBS NB2} nbcov 0.5
+    } -body {
+        ted notifier bind ::tdb <cap_kn>
+        ted order CAP:NBCOV:SET id {CBS NB2} nbcov 0.0
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <cap_kn> delete {CBS NB2}}
+    }
+
+
+    test NBCOV:SET-4.3 {undo undoes the change} -setup {
+        setup
+        ted create CBS
+        ted order CAP:NBCOV:SET id {CBS NB2} nbcov 0.5
+        ted order CAP:NBCOV:SET id {CBS NB2} nbcov 0.0
+    } -body {
+        ted notifier bind ::tdb <cap_kn>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <cap_kn> update {CBS NB2}}
+    }
+
+    #-------------------------------------------------------------------
+    # CAP:NBCOV:SET:MULTI
+
+    test NBCOV:SET:MULTI-1.1 {required parms} -setup {
+        setup
+        ted create CBS
+    } -body {
+        ted order -reject CAP:NBCOV:SET:MULTI {}
+    } -cleanup {
+        cleanup
+    } -result {
+        ids {required value}
+    }
+    
+
+    test NBCOV:SET:MULTI-1.2 {invalid k in ids} -setup {
+        setup
+        ted create CBS
+    } -body {
+        ted order -reject CAP:NBCOV:SET:MULTI \
+            ids {{NONESUCH NB2}}
+    } -cleanup {
+        cleanup
+    } -result {
+        ids {Invalid CAP, should be one of: CBS}
+    }
+
+
+    test NBCOV:SET:MULTI-1.3 {invalid n in ids} -setup {
+        setup
+        ted create CBS
+    } -body {
+        ted order -reject CAP:NBCOV:SET:MULTI \
+            ids {{CBS NONESUCH}}
+    } -cleanup {
+        cleanup
+    } -result {
+        ids {Invalid neighborhood, should be one of: NB1, NB2}
+    }
+
+
+    test NBCOV:SET:MULTI-1.5 {invalid nbcov} -setup {
+        setup
+        ted create CBS
+    } -body {
+        ted order -reject CAP:NBCOV:SET:MULTI \
+            ids {{CBS NB2}} nbcov 1.1
+    } -cleanup {
+        cleanup
+    } -result {
+        nbcov {invalid value "1.1", should be a real number in range 0.0, 1.0}
+    }
+
+    test NBCOV:SET:MULTI-2.1 {update multiple} -setup {
+        setup
+        ted create CBS
+    } -body {
+        ted notifier bind ::tdb <cap_kn>
+
+        ted order CAP:NBCOV:SET:MULTI \
+            ids {{CBS NB2} {CBS NB1}} nbcov 0.5
+
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <cap_kn> update {CBS NB2}}
+        {::tdb <cap_kn> update {CBS NB1}}
+    }
+
+    test NBCOV:SET:MULTI-2.2 {undo undoes the change} -setup {
+        setup
+        ted create CBS
+        ted order CAP:NBCOV:SET:MULTI \
+            ids {{CBS NB2} {CBS NB1}} nbcov  0.5
+    } -body {
+        ted notifier bind ::tdb <cap_kn>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <cap_kn> delete {CBS NB2}}
+        {::tdb <cap_kn> update {CBS NB1}}
+    }
+
+    #-------------------------------------------------------------------
+    # CAP:PEN:SET
+
+    test PEN:SET-1.1 {required parms} -body {
+        ted order -reject CAP:PEN:SET {}
+    } -result {
+        id {required value}
+    }
+    
+
+    test PEN:SET-1.2 {invalid k, g} -setup {
+        ted create CBS
+    } -body {
+        ted order -reject CAP:PEN:SET id {NONESUCH NONESUCH}
+    } -cleanup {
+        cleanup
+    } -result {
+        id {Invalid CAP, should be one of: CBS}
+    }
+
+    test PEN:SET-1.3 {invalid pen} -setup {
+        ted create CBS
+    } -body {
+        ted order -reject CAP:PEN:SET id {CBS SHIA} pen 1.1
+    } -cleanup {
+        cleanup
+    } -result {
+        pen {invalid value "1.1", should be a real number in range 0.0, 1.0}
+    }
+
+    # 2.*: Create new cap_kg record
+    test PEN:SET-2.1 {new cap_kg is created} -setup {
+        setup
+        ted create CBS
+    } -body {
+        ted order CAP:PEN:SET id {CBS SUNN} pen 0.5
+
+        ted query {SELECT * FROM cap_kg ORDER BY k,g}
+    } -cleanup {
+        cleanup
+    } -result {
+k   g    pen 
+--- ---- --- 
+CBS SHIA 1.0 
+CBS SUNN 0.5 
+    }
+
+    test PEN:SET-2.2 {table monitor event on creation} -setup {
+        setup
+        ted create CBS
+    } -body {
+        ted notifier bind ::tdb <cap_kg>
+        ted order CAP:PEN:SET id {CBS SUNN} pen 0.5
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <cap_kg> update {CBS SUNN}}
+    }
+
+
+    test PEN:SET-2.3 {undo undoes the creation} -setup {
+        setup
+        ted create CBS
+        ted order CAP:PEN:SET id {CBS SUNN} pen 0.5
+    } -body {
+        ted notifier bind ::tdb <cap_kg>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <cap_kg> delete {CBS SUNN}}
+    }
+
+
+    # 3.*: Update existing cap_kg
+
+    test PEN:SET-3.1 {cap_kg is updated} -setup {
+        setup
+        ted create CBS
+        ted order CAP:PEN:SET id {CBS SUNN} pen 0.5
+    } -body {
+        ted order CAP:PEN:SET id {CBS SUNN} pen 0.7
+
+        ted query {SELECT * FROM cap_kg ORDER BY k,g}
+    } -cleanup {
+        cleanup
+    } -result {
+k   g    pen 
+--- ---- --- 
+CBS SHIA 1.0 
+CBS SUNN 0.7 
+    }
+
+
+    test PEN:SET-3.2 {table monitor event} -setup {
+        setup
+        ted create CBS
+        ted order CAP:PEN:SET id {CBS SUNN} pen 0.5
+    } -body {
+        ted notifier bind ::tdb <cap_kg>
+        ted order CAP:PEN:SET id {CBS SUNN} pen 0.7
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <cap_kg> update {CBS SUNN}}
+    }
+
+
+    test PEN:SET-3.3 {undo undoes the change} -setup {
+        setup
+        ted create CBS
+        ted order CAP:PEN:SET id {CBS SUNN} pen 0.5
+        ted order CAP:PEN:SET id {CBS SUNN} pen 0.7
+    } -body {
+        ted notifier bind ::tdb <cap_kg>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <cap_kg> update {CBS SUNN}}
+    }
+
+    # 4.*: Zero existing cap_kg
+
+    test PEN:SET-4.1 {cap_kg is deleted} -setup {
+        setup
+        ted create CBS
+        ted order CAP:PEN:SET id {CBS SUNN} pen 0.5
+    } -body {
+        ted order CAP:PEN:SET id {CBS SUNN} pen 0.0
+
+        ted query {SELECT * FROM cap_kg ORDER BY k,g}
+    } -cleanup {
+        cleanup
+    } -result {
+k   g    pen 
+--- ---- --- 
+CBS SHIA 1.0 
+    }
+
+
+    test PEN:SET-4.2 {table monitor event} -setup {
+        setup
+        ted create CBS
+        ted order CAP:PEN:SET id {CBS SUNN} pen 0.5
+    } -body {
+        ted notifier bind ::tdb <cap_kg>
+        ted order CAP:PEN:SET id {CBS SUNN} pen 0.0
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <cap_kg> delete {CBS SUNN}}
+    }
+
+
+    test PEN:SET-4.3 {undo undoes the change} -setup {
+        setup
+        ted create CBS
+        ted order CAP:PEN:SET id {CBS SUNN} pen 0.5
+        ted order CAP:PEN:SET id {CBS SUNN} pen 0.0
+    } -body {
+        ted notifier bind ::tdb <cap_kg>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <cap_kg> update {CBS SUNN}}
+    }
+
+    #-------------------------------------------------------------------
+    # CAP:PEN:SET:MULTI
+
+    test PEN:SET:MULTI-1.1 {required parms} -setup {
+        setup
+        ted create CBS
+    } -body {
+        ted order -reject CAP:PEN:SET:MULTI {}
+    } -cleanup {
+        cleanup
+    } -result {
+        ids {required value}
+    }
+    
+
+    test PEN:SET:MULTI-1.2 {invalid k in ids} -setup {
+        setup
+        ted create CBS
+    } -body {
+        ted order -reject CAP:PEN:SET:MULTI \
+            ids {{NONESUCH SUNN}}
+    } -cleanup {
+        cleanup
+    } -result {
+        ids {Invalid CAP, should be one of: CBS}
+    }
+
+
+    test PEN:SET:MULTI-1.3 {invalid g in ids} -setup {
+        setup
+        ted create CBS
+    } -body {
+        ted order -reject CAP:PEN:SET:MULTI \
+            ids {{CBS NONESUCH}}
+    } -cleanup {
+        cleanup
+    } -result {
+        ids {Invalid civilian group, should be one of: SHIA, SUNN, KURD}
+    }
+
+
+    test PEN:SET:MULTI-1.5 {invalid pen} -setup {
+        setup
+        ted create CBS
+    } -body {
+        ted order -reject CAP:PEN:SET:MULTI \
+            ids {{CBS SUNN}} pen 1.1
+    } -cleanup {
+        cleanup
+    } -result {
+        pen {invalid value "1.1", should be a real number in range 0.0, 1.0}
+    }
+
+    test PEN:SET:MULTI-2.1 {update multiple} -setup {
+        setup
+        ted create CBS
+    } -body {
+        ted notifier bind ::tdb <cap_kg>
+
+        ted order CAP:PEN:SET:MULTI \
+            ids {{CBS SUNN} {CBS SHIA}} pen 0.5
+
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <cap_kg> update {CBS SUNN}}
+        {::tdb <cap_kg> update {CBS SHIA}}
+    }
+
+    test PEN:SET:MULTI-2.2 {undo undoes the change} -setup {
+        setup
+        ted create CBS
+        ted order CAP:PEN:SET:MULTI \
+            ids {{CBS SUNN} {CBS SHIA}} pen  0.5
+    } -body {
+        ted notifier bind ::tdb <cap_kg>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <cap_kg> delete {CBS SUNN}}
+        {::tdb <cap_kg> update {CBS SHIA}}
+    }
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+

@@ -1,0 +1,186 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    020-TACTIC-SUPPORT.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    TACTIC:SUPPORT Order tests
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Set up for tests
+
+    proc setup {} {
+        variable B1
+        variable T1
+
+        ted create JOE BOB NB1 NB2
+        set B1 [ted addblock JOE]
+        set T1 [ted addtactic $B1 SUPPORT]
+    }
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # TACTIC:SUPPORT
+
+    # klist and alist are validated by the sanity checker.
+
+    test TACTIC:SUPPORT-1.1 {required parameters} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:SUPPORT
+    } -cleanup {
+        cleanup
+    } -result {
+        tactic_id {required value}
+    }
+
+    test TACTIC:SUPPORT-1.2 {unknown tactic_id} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:SUPPORT tactic_id NONESUCH
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        tactic_id {Invalid SUPPORT ID: "NONESUCH"}
+    }
+
+    test TACTIC:SUPPORT-1.3 {invalid name} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:SUPPORT tactic_id [$T1 id] name 1234
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Identifiers begin with a letter and contain only letters and digits.}
+    }
+
+    test TACTIC:SUPPORT-1.4 {duplicate name} -setup {
+        setup
+        set T2 [ted addtactic $B1 ABSIT]
+    } -body {
+        ted order -reject TACTIC:SUPPORT tactic_id [$T1 id] \
+            name [$T2 get name]
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Name already exists: "T2"}
+    }
+
+    test TACTIC:SUPPORT-2.1 {tactic updated, state normal} -setup {
+        setup
+    } -body {
+        ted order TACTIC:SUPPORT \
+            tactic_id [$T1 id]         \
+            a     BOB        \
+            nlist [tdb gofer make NBHOODS BY_VALUE NB1]
+
+        ted pdicts [$T1 getdict]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        a          BOB
+        execstatus NONE
+        faildict   {}
+        id         *
+        name       T*
+        nlist      {_type NBHOODS _rule BY_VALUE nlist NB1}
+        parent     *
+        pot        *::pot
+        state      normal
+    }
+
+    test TACTIC:SUPPORT-2.2 {tactic updated, state invalid} -setup {
+        setup
+    } -body {
+        ted order TACTIC:SUPPORT \
+            tactic_id [$T1 id] a BOB nlist NONESUCH
+        ted pdicts [$T1 getdict]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        a          BOB
+        execstatus NONE
+        faildict   {}
+        id         *
+        name       T*
+        nlist      NONESUCH
+        parent     *
+        pot        *::pot
+        state      invalid
+    }
+
+    test TACTIC:SUPPORT-2.3 {notifier event} -setup {
+        setup
+    } -body {
+        ted notifier bind ::projectlib::bean <Monitor>
+        ted order TACTIC:SUPPORT tactic_id [$T1 id] a BOB
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -match glob -result {*{::projectlib::bean <Monitor>}*}
+
+    test TACTIC:SUPPORT-2.4 {undo notifier event} -setup {
+        setup
+        ted order TACTIC:SUPPORT tactic_id [$T1 id] a BOB
+    } -body {
+        ted notifier bind ::projectlib::bean <Monitor>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -match glob -result {*{::projectlib::bean <Monitor>}*}
+ 
+    test TACTIC:SUPPORT-3.1 {identity} -setup {
+        setup
+    } -body {
+        ted tactic identity $T1
+    } -cleanup {
+        cleanup
+    } -result {OK}
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+

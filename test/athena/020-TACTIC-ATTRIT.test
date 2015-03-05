@@ -1,0 +1,219 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    020-TACTIC-ATTRIT.test
+#
+# AUTHOR:
+#    Dave Hanks
+#
+# DESCRIPTION:
+#    TACTIC:ATTRIT:* Orders tests
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Set up for tests
+
+    proc setup {} {
+        variable B1
+        variable T1
+
+        ted create JOE BLUE ALQ NB1 NB2 SUNN SHIA KURD USAID
+
+        set B1 [ted addblock SYSTEM]
+        set T1 [ted addtactic $B1 ATTRIT]
+    }
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # TACTIC:ATTRIT
+
+    test TACTIC:ATTRIT-1.1 {required parameters} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:ATTRIT
+    } -cleanup {
+        cleanup
+    } -result {
+        tactic_id {required value}
+    }
+
+    test TACTIC:ATTRIT-1.2 {unknown tactic_id} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:ATTRIT tactic_id NONESUCH
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        tactic_id {Invalid ATTRIT ID: "NONESUCH"}
+    }
+
+    test TACTIC:ATTRIT-1.3 {invalid mode} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:ATTRIT tactic_id [$T1 id] mode "NONE SUCH"
+    } -cleanup {
+        cleanup
+    } -result {
+        mode {invalid value "NONE SUCH", should be one of: NBHOOD, GROUP}
+    }
+
+    test TACTIC:ATTRIT-1.4 {invalid casualties} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:ATTRIT tactic_id [$T1 id] \
+            mode NBHOOD casualties "NONESUCH"
+    } -cleanup {
+        cleanup
+    } -result {
+        casualties {invalid value "NONESUCH", expected integer}
+    }
+
+    test TACTIC:ATTRIT-1.5 {casualties out of range} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:ATTRIT tactic_id [$T1 id] \
+            mode NBHOOD casualties -1
+    } -cleanup {
+        cleanup
+    } -result {
+        casualties {invalid value "-1", expected integer no less than 0}
+    }
+
+    test TACTIC:ATTRIT-1.6 {invalid name} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:ATTRIT tactic_id [$T1 id] name 1234
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Identifiers begin with a letter and contain only letters and digits.}
+    }
+
+    test TACTIC:ATTRIT-1.7 {duplicate name} -setup {
+        setup
+        set T2 [ted addtactic $B1 ABSIT]
+    } -body {
+        ted order -reject TACTIC:ATTRIT tactic_id [$T1 id] \
+            name [$T2 get name]
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Name already exists: "T2"}
+    }
+
+    test TACTIC:ATTRIT-2.1 {tactic valid} -setup {
+        setup
+    } -body {
+        ted order TACTIC:ATTRIT \
+            tactic_id [$T1 id]  \
+            n          NB1      \
+            f          SHIA     \
+            mode       GROUP    \
+            casualties 1000     \
+            g1         BLUE     \
+            g2         ALQ
+
+        ted pdicts [$T1 getdict]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        casualties 1000
+        execstatus NONE
+        f          SHIA
+        faildict   {}
+        g1         BLUE
+        g2         ALQ
+        id         *
+        mode       GROUP
+        n          NB1
+        name       T*
+        parent     *
+        pot        *::pot
+        state      normal
+    }
+
+    test TACTIC:ATTRIT-2.2 {notifier event} -setup {
+        setup
+    } -body {
+        ted notifier bind ::projectlib::bean <Monitor>
+        ted order TACTIC:ATTRIT \
+            tactic_id [$T1 id]  \
+            n          NB1      \
+            f          SHIA     \
+            mode       GROUP    \
+            casualties 1000     \
+            g1         BLUE     \
+            g2         ALQ
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -match glob -result {*{::projectlib::bean <Monitor>}*}
+
+    test TACTIC:ATTRIT-2.3 {undo notifier event} -setup {
+        setup
+        ted order TACTIC:ATTRIT \
+            tactic_id [$T1 id]  \
+            n          NB1      \
+            f          SHIA     \
+            mode       GROUP    \
+            casualties 1000     \
+            g1         BLUE     \
+            g2         ALQ
+    } -body {
+        ted notifier bind ::projectlib::bean <Monitor>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -match glob -result {*{::projectlib::bean <Monitor>}*}
+ 
+    test TACTIC:ATTRIT-3.1 {identity} -setup {
+        setup
+    } -body {
+        ted tactic identity $T1
+    } -cleanup {
+        cleanup
+    } -result {OK}
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+

@@ -1,7 +1,7 @@
 # TODO.md - Athena TODO List
 
 - Problems in test/athena:
-  - econ.tcl uses workdir
+  - MAP:* orders use `app puts`; wrote issue #130 for Dave. 
 - When app_athena no longer needs to be loaded to test athena(n):
   - app_athena tests to test/athena.
   - Add '$adb ruleset' test, vs. 010-dam, 010-driver.

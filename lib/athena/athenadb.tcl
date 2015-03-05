@@ -543,6 +543,7 @@ snit::type ::athena::athenadb {
         $self InitializeRDB
         $self RestoreSaveables
         $strategy reset
+        $nbhood   dbsync
 
         set info(adbfile) ""
 

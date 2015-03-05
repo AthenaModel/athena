@@ -940,13 +940,13 @@ snit::type ::athena::sim {
     meta sendstates PAUSED
     meta monitor    off
     meta parmlist   {
-        weeks 
+        {weeks 1} 
         {block 1}
     }
 
     meta form {
         rcc "Weeks to Run:" -for weeks
-        text weeks
+        text weeks -defvalue 1
 
         rcc "Block?" -for block
         enumlong block -dict {1 Yes 0 No} -defvalue 1
@@ -954,16 +954,10 @@ snit::type ::athena::sim {
 
 
     method _validate {} {
-        my prepare weeks -toupper -type iticks
+        my prepare weeks -toupper -type ipositive
         my prepare block -toupper -type boolean
 
         my returnOnError
-
-        my checkon block {
-            if {$parms(block) && ($parms(weeks) eq "" || $parms(weeks) == 0)} {
-                my reject block "Cannot block without specifying the weeks to run"
-            }
-        }
     }
 
     method _execute {{flunky ""}} {
@@ -972,12 +966,7 @@ snit::type ::athena::sim {
         }
 
         # NEXT, start the simulation and return the undo script. 
-        # There is an assumption that a tick is exactly one week.
-        if {$parms(weeks) eq "" || $parms(weeks) == 0} {
-            lappend undo [$adb sim run]
-        } else {
-            lappend undo [$adb sim run -ticks $parms(weeks) -block $parms(block)]
-        }
+        lappend undo [$adb sim run -ticks $parms(weeks) -block $parms(block)]
 
         my setundo [join $undo \n]
     }

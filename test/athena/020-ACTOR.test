@@ -1,0 +1,836 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    020-ACTOR.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    app_sim(1) ACTOR:* order tests.
+#
+#    This test suite tests the actor-related orders.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Standard actors
+
+    set joe {
+        a                JOE
+        longname         "Joe the Actor"
+        bsid             1
+        supports         SELF
+        atype            INCOME
+        auto_maintain    0
+        cash_reserve     200000
+        cash_on_hand     0
+        income_goods     60000
+        shares_black_nr  50000
+        income_black_tax 40000
+        income_pop       30000
+        income_graft     20000
+        income_world     10000
+        budget           0
+    }
+
+    set bob {
+        a                BOB
+        longname         "Bob the Actor"
+        bsid             2
+        supports         SELF
+        atype            INCOME
+        auto_maintain    1
+        cash_reserve     150000
+        cash_on_hand     0
+        income_goods     5000
+        shares_black_nr  10000
+        income_black_tax 15000
+        income_pop       20000
+        income_graft     25000
+        income_world     30000
+        budget           0
+    }
+
+    set DAVE {
+        a                DAVE
+        longname         "Dave the Actor"
+        bsid             1
+        supports         SELF
+        atype            BUDGET
+        auto_maintain    1
+        cash_reserve     0
+        cash_on_hand     0
+        income_goods     0
+        shares_black_nr  0
+        income_black_tax 0
+        income_pop       0
+        income_graft     0
+        income_world     0
+        budget           250
+    }
+    
+    # Clean up after a test
+
+    proc cleanup {} {
+        # Clean up the test environment
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # ACTOR:CREATE
+
+    test CREATE-1.1 {required parms} -body {
+        ted order -reject ACTOR:CREATE {}
+    } -result {
+        a {required value}
+    }
+    
+    test CREATE-1.2 {Duplicate a} -setup {
+        ted order ACTOR:CREATE $joe
+    } -body {
+        ted order -reject ACTOR:CREATE $joe
+    } -cleanup {
+        cleanup
+    } -result {
+        a {An entity with this ID already exists}
+    }
+
+    test CREATE-1.3 {a is not an ident} -body {
+        ted order -reject ACTOR:CREATE [dict merge $joe {
+            a "JOE&BOB"
+        }]
+    } -cleanup {
+        cleanup
+    } -result {
+        a {Identifiers begin with a letter and contain only letters and digits.}
+    }
+
+    test CREATE-1.4 {bsid is not a belief system ID} -body {
+        ted order -reject ACTOR:CREATE [dict merge $joe {
+            bsid 2
+        }]
+    } -cleanup {
+        cleanup
+    } -result {
+        bsid {Invalid belief system ID}
+    }
+
+    test CREATE-1.5 {invalid supports} -body {
+        ted order -reject ACTOR:CREATE [dict merge $joe {
+            supports "NONESUCH"
+        }]
+    } -cleanup {
+        cleanup
+    } -result {
+        supports {Invalid actor "NONESUCH", should be one of: SELF, NONE}
+    }
+
+    test CREATE-1.6 {invalid atype} -body {
+        ted order -reject ACTOR:CREATE [dict merge $joe {
+            atype "NONESUCH"
+        }]
+    } -cleanup {
+        cleanup
+    } -result {
+        atype {invalid value "NONESUCH", should be one of: INCOME, BUDGET}
+    }
+
+    test CREATE-1.7 {invalid cash_reserve} -body {
+        ted order -reject ACTOR:CREATE [dict merge $joe {
+            cash_reserve NONESUCH
+        }]
+    } -cleanup {
+        cleanup
+    } -result {
+        cash_reserve {invalid money value "NONESUCH", expected positive numeric value with optional K, M, or B suffix}
+    }
+
+    test CREATE-1.8 {invalid cash_on_hand} -body {
+        ted order -reject ACTOR:CREATE [dict merge $joe {
+            cash_on_hand NONESUCH
+        }]
+    } -cleanup {
+        cleanup
+    } -result {
+        cash_on_hand {invalid money value "NONESUCH", expected positive numeric value with optional K, M, or B suffix}
+    }
+
+    test CREATE-1.9 {invalid income_goods} -body {
+        ted order -reject ACTOR:CREATE [dict merge $joe {
+            income_goods NONESUCH
+        }]
+    } -cleanup {
+        cleanup
+    } -result {
+        income_goods {invalid money value "NONESUCH", expected positive numeric value with optional K, M, or B suffix}
+    }
+    
+    test CREATE-1.10 {invalid shares_black_nr} -body {
+        ted order -reject ACTOR:CREATE [dict merge $joe {
+            shares_black_nr NONESUCH
+        }]
+    } -cleanup {
+        cleanup
+    } -result {
+        shares_black_nr {invalid value "NONESUCH", expected integer}
+    }
+    
+    test CREATE-1.11 {invalid income_black_tax} -body {
+        ted order -reject ACTOR:CREATE [dict merge $joe {
+            income_black_tax NONESUCH
+        }]
+    } -cleanup {
+        cleanup
+    } -result {
+        income_black_tax {invalid money value "NONESUCH", expected positive numeric value with optional K, M, or B suffix}
+    }
+    
+    test CREATE-1.12 {invalid income_pop} -body {
+        ted order -reject ACTOR:CREATE [dict merge $joe {
+            income_pop NONESUCH
+        }]
+    } -cleanup {
+        cleanup
+    } -result {
+        income_pop {invalid money value "NONESUCH", expected positive numeric value with optional K, M, or B suffix}
+    }
+    
+    test CREATE-1.13 {invalid income_graft} -body {
+        ted order -reject ACTOR:CREATE [dict merge $joe {
+            income_graft NONESUCH
+        }]
+    } -cleanup {
+        cleanup
+    } -result {
+        income_graft {invalid money value "NONESUCH", expected positive numeric value with optional K, M, or B suffix}
+    }
+    
+    test CREATE-1.14 {invalid income_world} -body {
+        ted order -reject ACTOR:CREATE [dict merge $joe {
+            income_world NONESUCH
+        }]
+    } -cleanup {
+        cleanup
+    } -result {
+        income_world {invalid money value "NONESUCH", expected positive numeric value with optional K, M, or B suffix}
+    }
+    
+    test CREATE-1.15 {invalid budget} -body {
+        ted order -reject ACTOR:CREATE [dict merge $joe {
+            budget NONESUCH
+        }]
+    } -cleanup {
+        cleanup
+    } -result {
+        budget {invalid money value "NONESUCH", expected positive numeric value with optional K, M, or B suffix}
+    }
+    
+    test CREATE-2.1 {actor is created} -setup {
+        # Adds belief system 2
+        tdb bsys system add 2
+    } -body {
+        ted order ACTOR:CREATE $bob
+        
+        ted querylist {SELECT * FROM actors}
+    } -cleanup {
+        cleanup
+    } -result {
+a                 BOB
+longname          Bob the Actor
+bsid              2
+supports          BOB
+atype             INCOME
+auto_maintain     1
+cash_reserve      150000.0
+cash_on_hand      0.0
+income_goods      5000.0
+shares_black_nr   10000
+income_black_tax  15000.0
+income_pop        20000.0
+income_graft      25000.0
+income_world      30000.0
+budget            0.0
+    }
+
+    test CREATE-2.2 {longname defaults to ID} -body {
+        ted order ACTOR:CREATE [dict merge $joe {longname ""}]
+        
+        tdb onecolumn {SELECT longname FROM actors}
+    } -cleanup {
+        cleanup
+    } -result {JOE}
+
+    test CREATE-2.3 {bsid defaults to 1} -body {
+        ted order ACTOR:CREATE [dict merge $bob {bsid ""}]
+        
+        tdb onecolumn {SELECT bsid FROM actors}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test CREATE-2.3 {effects} -body {
+        ted notifier bind ::tdb <actors>
+        ted order ACTOR:CREATE $joe
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <actors> update JOE}
+    }
+
+
+    test CREATE-3.1 {effects are undone} -setup {
+        ted order ACTOR:CREATE $joe
+    } -body {
+        ted notifier bind ::tdb <actors>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <actors> delete JOE}
+    }
+
+    #-------------------------------------------------------------------
+    # ACTOR:DELETE
+
+    test DELETE-1.1 {required parms} -body {
+        ted order -reject ACTOR:DELETE {}
+    } -result {
+        a {required value}
+    }
+    
+
+    test DELETE-1.2 {unknown a} -body {
+        ted order -reject ACTOR:DELETE a NONESUCH
+    } -result {
+        a {Invalid actor, none are defined}
+    }
+
+
+    test DELETE-2.1 {Effects} -setup {
+        ted create JOE
+    } -body {
+        ted notifier bind ::tdb <actors>
+        ted order ACTOR:DELETE a JOE
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <actors> delete JOE}
+    }
+
+
+    test DELETE-3.1 {Effects on undo} -setup {
+        ted create JOE
+        ted order ACTOR:DELETE a JOE
+    } -body {
+        ted notifier bind ::tdb <actors>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <actors> update JOE}
+    }
+
+    #-------------------------------------------------------------------
+    # ACTOR:UPDATE
+
+    test UPDATE-1.1 {required parms} -body {
+        ted order -reject ACTOR:UPDATE {}
+    } -result {
+        a {required value}
+    }
+
+    test UPDATE-1.2 {invalid bsid} -setup {
+        ted create JOE
+    } -body {
+        ted order -reject ACTOR:UPDATE a JOE bsid 2
+    } -cleanup {
+        cleanup
+    } -result {
+        bsid {Invalid belief system ID}
+    }
+
+    
+    test UPDATE-1.3 {invalid supports} -setup {
+        ted create JOE BOB
+    } -body {
+        ted order -reject ACTOR:UPDATE a JOE supports NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        supports {Invalid actor "NONESUCH", should be one of: SELF, NONE, BOB, JOE}
+    }
+
+    test UPDATE-1.4 {invalid atype} -setup {
+        ted create JOE BOB
+    } -body {
+        ted order -reject ACTOR:UPDATE a JOE atype NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        atype {invalid value "NONESUCH", should be one of: INCOME, BUDGET}
+    }
+
+    test UPDATE-1.5 {invalid cash_reserve} -setup {
+        ted create JOE
+    } -body {
+        ted order -reject ACTOR:UPDATE a JOE cash_reserve NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        cash_reserve {invalid money value "NONESUCH", expected positive numeric value with optional K, M, or B suffix}
+    }
+
+    test UPDATE-1.6 {invalid cash_on_hand} -setup {
+        ted create JOE
+    } -body {
+        ted order -reject ACTOR:UPDATE a JOE cash_on_hand NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        cash_on_hand {invalid money value "NONESUCH", expected positive numeric value with optional K, M, or B suffix}
+    }
+
+
+    test UPDATE-1.7 {invalid income_goods} -setup {
+        ted create JOE
+    } -body {
+        ted order -reject ACTOR:UPDATE a JOE income_goods NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        income_goods {invalid money value "NONESUCH", expected positive numeric value with optional K, M, or B suffix}
+    }
+
+    test UPDATE-1.8 {invalid shares_black_nr} -setup {
+        ted create JOE
+    } -body {
+        ted order -reject ACTOR:UPDATE a JOE shares_black_nr NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        shares_black_nr {invalid value "NONESUCH", expected integer}
+    }
+
+    test UPDATE-1.9 {invalid income_black_tax} -setup {
+        ted create JOE
+    } -body {
+        ted order -reject ACTOR:UPDATE a JOE income_black_tax NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        income_black_tax {invalid money value "NONESUCH", expected positive numeric value with optional K, M, or B suffix}
+    }
+
+    test UPDATE-1.10 {invalid income_pop} -setup {
+        ted create JOE
+    } -body {
+        ted order -reject ACTOR:UPDATE a JOE income_pop NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        income_pop {invalid money value "NONESUCH", expected positive numeric value with optional K, M, or B suffix}
+    }
+
+    test UPDATE-1.11 {invalid income_graft} -setup {
+        ted create JOE
+    } -body {
+        ted order -reject ACTOR:UPDATE a JOE income_graft NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        income_graft {invalid money value "NONESUCH", expected positive numeric value with optional K, M, or B suffix}
+    }
+
+    test UPDATE-1.12 {invalid income_world} -setup {
+        ted create JOE
+    } -body {
+        ted order -reject ACTOR:UPDATE a JOE income_world NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        income_world {invalid money value "NONESUCH", expected positive numeric value with optional K, M, or B suffix}
+    }
+
+    test UPDATE-1.13 {invalid budget} -setup {
+        ted create JOE
+    } -body {
+        ted order -reject ACTOR:UPDATE a JOE budget NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        budget {invalid money value "NONESUCH", expected positive numeric value with optional K, M, or B suffix}
+    }
+
+
+    test UPDATE-2.1 {actor is updated} -setup {
+        ted create JOE BOB
+        tdb bsys system add 2
+    } -body {
+        ted order ACTOR:UPDATE {
+            a                JOE
+            longname         "Joe the Actress"
+            bsid             2
+            supports         BOB
+            atype            BUDGET
+            cash_reserve     10
+            cash_on_hand     20
+            income_goods     0
+            shares_black_nr  1
+            income_black_tax 2
+            income_pop       3
+            income_graft     4
+            income_world     5
+            budget           6
+        }
+
+        ted querylist {SELECT * FROM actors}
+    } -cleanup {
+        cleanup
+    } -result {
+a                 JOE
+longname          Joe the Actress
+bsid              2
+supports          BOB
+atype             BUDGET
+auto_maintain     0
+cash_reserve      0.0
+cash_on_hand      0.0
+income_goods      0.0
+shares_black_nr   0
+income_black_tax  0.0
+income_pop        0.0
+income_graft      0.0
+income_world      0.0
+budget            6.0
+
+a                 BOB
+longname          Bob the Actor
+bsid              1
+supports          BOB
+atype             INCOME
+auto_maintain     0
+cash_reserve      150000.0
+cash_on_hand      0.0
+income_goods      5000.0
+shares_black_nr   0
+income_black_tax  0.0
+income_pop        0.0
+income_graft      0.0
+income_world      0.0
+budget            0.0
+    }
+
+
+    test UPDATE-2.2 {table monitor event} -setup {
+        ted create JOE
+    } -body {
+        ted notifier bind ::tdb <actors>
+        ted order ACTOR:UPDATE a JOE longname "Joe the Actress"
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <actors> update JOE}
+    }
+
+
+    test UPDATE-3.1 {undo effects} -setup {
+        ted create NB1 JOE
+        ted order ACTOR:UPDATE {
+            a            JOE
+            longname     "Joe the Actress"
+        }
+    } -body {
+        ted notifier bind ::tdb <actors>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <actors> update JOE}
+    }
+
+    #-------------------------------------------------------------------
+    # ACTOR:INCOME
+
+    test INCOME-1.1 {required parms} -body {
+        ted order -reject ACTOR:INCOME {}
+    } -result {
+        a {required value}
+    }
+
+    test INCOME-1.2 {invalid income_goods} -setup {
+        ted create JOE
+    } -body {
+        ted order -reject ACTOR:INCOME a JOE income_goods NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        income_goods {invalid money value "NONESUCH", expected positive numeric value with optional K, M, or B suffix}
+    }
+
+    test INCOME-1.3 {invalid shares_black_nr} -setup {
+        ted create JOE
+    } -body {
+        ted order -reject ACTOR:INCOME a JOE shares_black_nr NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        shares_black_nr {invalid value "NONESUCH", expected integer}
+    }
+
+    test INCOME-1.4 {invalid income_black_tax} -setup {
+        ted create JOE
+    } -body {
+        ted order -reject ACTOR:INCOME a JOE income_black_tax NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        income_black_tax {invalid money value "NONESUCH", expected positive numeric value with optional K, M, or B suffix}
+    }
+
+    test INCOME-1.5 {invalid income_pop} -setup {
+        ted create JOE
+    } -body {
+        ted order -reject ACTOR:INCOME a JOE income_pop NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        income_pop {invalid money value "NONESUCH", expected positive numeric value with optional K, M, or B suffix}
+    }
+
+    test INCOME-1.6 {invalid income_graft} -setup {
+        ted create JOE
+    } -body {
+        ted order -reject ACTOR:INCOME a JOE income_graft NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        income_graft {invalid money value "NONESUCH", expected positive numeric value with optional K, M, or B suffix}
+    }
+
+    test INCOME-1.7 {invalid income_world} -setup {
+        ted create JOE
+    } -body {
+        ted order -reject ACTOR:INCOME a JOE income_world NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        income_world {invalid money value "NONESUCH", expected positive numeric value with optional K, M, or B suffix}
+    }
+
+    test INCOME-2.1 {actor is updated} -setup {
+        ted create JOE
+    } -body {
+        ted order ACTOR:INCOME {
+            a                 JOE
+            income_goods      0
+            shares_black_nr   1
+            income_black_tax  2
+            income_pop        3
+            income_graft      4
+            income_world      5
+            budget            6
+        }
+
+        ted querylist {SELECT * FROM actors}
+    } -cleanup {
+        cleanup
+    } -result {
+a                 JOE
+longname          Joe the Actor
+bsid              1
+supports          JOE
+atype             INCOME
+auto_maintain     0
+cash_reserve      200000.0
+cash_on_hand      0.0
+income_goods      0.0
+shares_black_nr   1
+income_black_tax  2.0
+income_pop        3.0
+income_graft      4.0
+income_world      5.0
+budget            0.0
+    }
+
+    test INCOME-2.3 {can't change atype} -setup {
+        ted create JOE
+    } -body {
+        ted order ACTOR:INCOME {
+            a                 JOE
+            atype             BUDGET
+            income_goods      0
+            shares_black_nr   1
+            income_black_tax  2
+            income_pop        3
+            income_graft      4
+            income_world      5
+            budget            6
+        }
+
+        ted querylist {SELECT * FROM actors}
+    } -cleanup {
+        cleanup
+    } -result {
+a                 JOE
+longname          Joe the Actor
+bsid              1
+supports          JOE
+atype             INCOME
+auto_maintain     0
+cash_reserve      200000.0
+cash_on_hand      0.0
+income_goods      0.0
+shares_black_nr   1
+income_black_tax  2.0
+income_pop        3.0
+income_graft      4.0
+income_world      5.0
+budget            0.0
+    }
+
+
+
+    test INCOME-2.4 {table monitor event} -setup {
+        ted create JOE
+    } -body {
+        ted notifier bind ::tdb <actors>
+        ted order ACTOR:INCOME a JOE income_goods 5
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <actors> update JOE}
+    }
+
+
+    test INCOME-3.1 {undo effects} -setup {
+        ted create NB1 JOE
+        ted order ACTOR:INCOME {
+            a            JOE
+            income_goods 5
+        }
+    } -body {
+        ted notifier bind ::tdb <actors>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <actors> update JOE}
+    }
+
+    #-------------------------------------------------------------------
+    # ACTOR:SUPPORTS
+
+    test SUPPORTS-1.1 {required parms} -body {
+        ted order -reject ACTOR:SUPPORTS {}
+    } -result {
+        a {required value}
+        supports {required value}
+    }
+
+    
+    test SUPPORTS-1.2 {invalid supports} -setup {
+        ted create JOE BOB
+    } -body {
+        ted order -reject ACTOR:SUPPORTS a JOE supports NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        supports {Invalid actor "NONESUCH", should be one of: SELF, NONE, BOB, JOE}
+    }
+
+
+
+    test SUPPORTS-2.1 {actor is updated} -setup {
+        ted create JOE BOB
+    } -body {
+        ted order ACTOR:SUPPORTS {
+            a            JOE
+            supports     BOB
+        }
+
+        ted query {SELECT a, supports FROM actors}
+    } -cleanup {
+        cleanup
+    } -result {
+a   supports 
+--- -------- 
+JOE BOB      
+BOB BOB      
+    }
+
+
+    test SUPPORTS-2.2 {table monitor event} -setup {
+        ted create JOE
+    } -body {
+        ted notifier bind ::tdb <actors>
+        ted order ACTOR:SUPPORTS a JOE supports NONE
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <actors> update JOE}
+    }
+
+
+    test SUPPORTS-3.1 {undo effects} -setup {
+        ted create JOE BOB
+        ted order ACTOR:SUPPORTS {
+            a            JOE
+            supports     BOB
+        }
+    } -body {
+        ted notifier bind ::tdb <actors>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <actors> update JOE}
+    }
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+
+

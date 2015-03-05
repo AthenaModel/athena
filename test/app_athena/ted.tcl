@@ -136,6 +136,8 @@ snit::type ted {
 
         if {$::tkLoaded} {
             package require Tk
+            wm withdraw .
+            update idletasks
         }
 
         # NEXT, load and initialize app_athena.

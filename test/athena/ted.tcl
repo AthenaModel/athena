@@ -122,6 +122,16 @@ snit::type ted {
         puts "ted: athena(n) at $::athena::library"
         puts ""
 
+        if {"-tk" in $argv} {
+            set ndx [lsearch -exact $argv -tk]
+            set argv [lreplace $argv $ndx $ndx]
+            package require Tk
+            package require Img
+            set tkLoaded 1
+        } else {
+            set tkLoaded 0
+        }
+
         athena create ::adb \
             -subject ::tdb
 
@@ -138,13 +148,17 @@ snit::type ted {
             -notfile    {all.test all_tests.test} \
             {*}$argv
 
-        # NEXT, define test entities
-        DefineEntities
+        # NEXT, Define Constraints
+        ::tcltest::testConstraint tk    $tkLoaded
+        ::tcltest::testConstraint notk  [expr !$tkLoaded]
 
         # NEXT, define custom match algorithms.
         ::tcltest::customMatch dict     [mytypemethod MatchDict]
         ::tcltest::customMatch indict   [mytypemethod MatchInDict]
         ::tcltest::customMatch dictglob [mytypemethod MatchDictGlob]
+
+        # NEXT, define test entities
+        DefineEntities
 
         puts "Test Execution Deputy: Initialized"
     }

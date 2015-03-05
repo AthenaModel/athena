@@ -1,0 +1,513 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    020-HREL.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    app_sim(1) HREL:* order tests.
+#
+#    This test suite tests the horizontal relationship-related orders.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    proc setup {} {
+        ted create BLUE SHIA SUNN
+    }
+
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # HREL:OVERRIDE
+
+    test OVERRIDE-1.1 {required parms} -body {
+        ted order -reject HREL:OVERRIDE {}
+    } -result {
+        id {required value}
+    }
+    
+
+    test OVERRIDE-1.2 {invalid f, g} -setup {
+        setup
+    } -body {
+        ted order -reject HREL:OVERRIDE id {NONESUCH NONESUCH}
+    } -cleanup {
+        cleanup
+    } -result {
+        id {Invalid group, should be one of: BLUE, SHIA, SUNN}
+    }
+
+
+    test OVERRIDE-1.3 {f eq g} -setup {
+        setup
+    } -body {
+        ted order -reject HREL:OVERRIDE id {SHIA SHIA} base 1.0
+    } -cleanup {
+        cleanup
+    } -result {
+        id {A group's relationship with itself cannot be overridden.}
+    }
+
+
+    test OVERRIDE-1.4 {invalid base: out of range} -setup {
+        setup
+    } -body {
+        ted order -reject HREL:OVERRIDE id {SHIA SUNN} base 1.1
+    } -cleanup {
+        cleanup
+    } -result {
+        base {invalid value "1.1", should be a real number in range -1.0, 1.0, or one of: SUPPORT, LIKE, INDIFF, DISLIKE, OPPOSE}
+    }
+
+    test OVERRIDE-1.5 {invalid hist_flag} -setup {
+        setup
+    } -body {
+        ted order -reject HREL:OVERRIDE id {SHIA SUNN} hist_flag NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        hist_flag {invalid boolean "NONESUCH", should be one of: 1, 0, true, false, yes, no, on, off}
+    }
+
+    test OVERRIDE-1.6 {invalid current} -setup {
+        setup
+    } -body {
+        ted order -reject HREL:OVERRIDE id {SHIA SUNN} current NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        current {invalid value "NONESUCH", should be a real number in range -1.0, 1.0, or one of: SUPPORT, LIKE, INDIFF, DISLIKE, OPPOSE}
+    }
+
+    # Create new override
+
+    test OVERRIDE-2.1 {override is created, new scenario} -setup {
+        setup
+    } -body {
+        ted order HREL:OVERRIDE {
+            id    {SHIA BLUE}
+            base   0.5
+        }
+
+        ted query {SELECT * FROM hrel_fg ORDER BY f,g}
+    } -cleanup {
+        cleanup
+    } -result {
+f    g    base hist_flag current 
+---- ---- ---- --------- ------- 
+SHIA BLUE 0.5  0         0.5     
+    }
+
+    test OVERRIDE-2.2 {override is created, previous scenario} -setup {
+        setup
+    } -body {
+        ted order HREL:OVERRIDE {
+            id        {SHIA BLUE}
+            base      0.5
+            hist_flag 1
+            current   0.6
+        }
+
+        ted query {SELECT * FROM hrel_fg ORDER BY f,g}
+    } -cleanup {
+        cleanup
+    } -result {
+f    g    base hist_flag current 
+---- ---- ---- --------- ------- 
+SHIA BLUE 0.5  1         0.6     
+    }
+
+    test OVERRIDE-2.3 {Rel defaults to 0.0} -setup {
+        setup
+    } -body {
+        ted order HREL:OVERRIDE {id {SHIA SUNN}}
+        ted query {SELECT * FROM hrel_fg}
+    } -cleanup {
+        cleanup
+    } -result {
+f    g    base hist_flag current 
+---- ---- ---- --------- ------- 
+SHIA SUNN 0.0  0         0.0     
+    }
+
+
+    test OVERRIDE-2.4 {table monitor event on creation} -setup {
+        setup
+    } -body {
+        ted notifier bind ::tdb <hrel_fg>
+        ted order HREL:OVERRIDE id {SHIA BLUE} base 0.5
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <hrel_fg> update {SHIA BLUE}}
+    }
+
+
+    test OVERRIDE-2.5 {undo undoes the creation} -setup {
+        setup
+
+        ted order HREL:OVERRIDE {
+            id    {SHIA BLUE}
+            base   0.5
+        }
+    } -body {
+        ted notifier bind ::tdb <hrel_fg>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <hrel_fg> delete {SHIA BLUE}}
+    }
+
+
+    # Update existing override
+
+    test OVERRIDE-3.1 {rel is updated} -setup {
+        setup
+        ted order HREL:OVERRIDE {id {SHIA BLUE}}
+    } -body {
+        ted order HREL:OVERRIDE {
+            id        {SHIA BLUE}
+            base      0.5
+            hist_flag 1
+            current   0.6
+        }
+
+        ted query {SELECT * FROM hrel_fg ORDER BY f,g}
+    } -cleanup {
+        cleanup
+    } -result {
+f    g    base hist_flag current 
+---- ---- ---- --------- ------- 
+SHIA BLUE 0.5  1         0.6     
+    }
+
+
+    test OVERRIDE-3.2 {table monitor event} -setup {
+        setup
+        ted order HREL:OVERRIDE {id {SHIA BLUE}}
+    } -body {
+        ted notifier bind ::tdb <hrel_fg>
+        ted order HREL:OVERRIDE id {SHIA BLUE} base 0.5
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <hrel_fg> update {SHIA BLUE}}
+    }
+
+
+    test OVERRIDE-3.3 {undo undoes the change} -setup {
+        setup
+
+        ted order HREL:OVERRIDE {id {SHIA BLUE}}
+        ted order HREL:OVERRIDE {
+            id    {SHIA BLUE}
+            base   0.5
+        }
+    } -body {
+        ted notifier bind ::tdb <hrel_fg>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <hrel_fg> update {SHIA BLUE}}
+    }
+
+    #-------------------------------------------------------------------
+    # HREL:RESTORE
+
+    test DELETE-1.1 {required parms} -body {
+        ted order -reject HREL:RESTORE {}
+    } -result {
+        id {required value}
+    }
+    
+
+    test DELETE-1.2 {unknown f in id} -setup {
+        setup
+    } -body {
+        ted order -reject HREL:RESTORE id {NONESUCH SUNN}
+    } -cleanup {
+        cleanup
+    } -result {
+        id {Invalid group, should be one of: BLUE, SHIA, SUNN}
+    }
+
+    test DELETE-1.3 {unknown g in id} -setup {
+        setup
+    } -body {
+        ted order -reject HREL:RESTORE id {SHIA NONESUCH}
+    } -cleanup {
+        cleanup
+    } -result {
+        id {Invalid group, should be one of: BLUE, SHIA, SUNN}
+    }
+
+    test DELETE-2.1 {Effects} -setup {
+        setup
+        ted order HREL:OVERRIDE {id {SHIA SUNN}}
+    } -body {
+        ted notifier bind ::tdb <hrel_fg>
+        ted order HREL:RESTORE id {SHIA SUNN}
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <hrel_fg> delete {SHIA SUNN}}
+    }
+
+
+    test DELETE-2.2 {Effects on undo} -setup {
+        setup
+        ted order HREL:OVERRIDE {id {SHIA SUNN}}
+        ted order HREL:RESTORE {id {SHIA SUNN}}
+    } -body {
+        ted notifier bind ::tdb <hrel_fg>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <hrel_fg> update {SHIA SUNN}}
+    }
+
+    test DELETE-3.1 {OK if there's no override} -setup {
+        setup
+    } -body {
+        ted notifier bind ::tdb <hrel_fg>
+        ted order HREL:RESTORE id {SHIA SUNN}
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {}
+
+
+    test DELETE-3.2 {Can undo even if there was no override} -setup {
+        setup
+        ted order HREL:RESTORE {id {SHIA SUNN}}
+    } -body {
+        ted notifier bind ::tdb <hrel_fg>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {}
+
+
+    #-------------------------------------------------------------------
+    # HREL:OVERRIDE:MULTI
+
+    test UPDATE:MULTI-1.1 {required parms} -setup {
+        setup
+    } -body {
+        ted order -reject HREL:OVERRIDE:MULTI {}
+    } -cleanup {
+        cleanup
+    } -result {
+        ids {required value}
+    }
+    
+
+    test UPDATE:MULTI-1.2 {invalid f in ids} -setup {
+        setup
+    } -body {
+        ted order -reject HREL:OVERRIDE:MULTI \
+            ids {{NONESUCH BLUE}}
+    } -cleanup {
+        cleanup
+    } -result {
+        ids {Invalid group, should be one of: BLUE, SHIA, SUNN}
+    }
+
+
+    test UPDATE:MULTI-1.3 {invalid g in ids} -setup {
+        setup
+    } -body {
+        ted order -reject HREL:OVERRIDE:MULTI \
+            ids {{SHIA NONESUCH}}
+    } -cleanup {
+        cleanup
+    } -result {
+        ids {Invalid group, should be one of: BLUE, SHIA, SUNN}
+    }
+
+
+    test UPDATE:MULTI-1.4 {f eq g in ids} -setup {
+        setup
+    } -body {
+        ted order -reject HREL:OVERRIDE:MULTI \
+            ids {{SHIA SHIA}}
+    } -cleanup {
+        cleanup
+    } -result {
+        ids {A group's relationship with itself cannot be overridden.}
+    }
+
+
+    test UPDATE:MULTI-1.5 {invalid base} -setup {
+        setup
+    } -body {
+        ted order -reject HREL:OVERRIDE:MULTI \
+            ids {{SHIA BLUE}} base 1.1
+    } -cleanup {
+        cleanup
+    } -result {
+        base {invalid value "1.1", should be a real number in range -1.0, 1.0, or one of: SUPPORT, LIKE, INDIFF, DISLIKE, OPPOSE}
+    }
+
+    test UPDATE:MULTI-1.6 {invalid hist_flag} -setup {
+        setup
+    } -body {
+        ted order -reject HREL:OVERRIDE:MULTI \
+            ids {{SHIA BLUE}} base 0.5 hist_flag NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        hist_flag {invalid boolean "NONESUCH", should be one of: 1, 0, true, false, yes, no, on, off}
+    }
+
+    test UPDATE:MULTI-1.7 {invalid current} -setup {
+        setup
+    } -body {
+        ted order -reject HREL:OVERRIDE:MULTI \
+            ids {{SHIA BLUE}} base 0.5 current NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        current {invalid value "NONESUCH", should be a real number in range -1.0, 1.0, or one of: SUPPORT, LIKE, INDIFF, DISLIKE, OPPOSE}
+    }
+
+    # Create new overrides
+
+    test UPDATE:MULTI-2.1 {create new overrides} -setup {
+        setup
+    } -body {
+        ted notifier bind ::tdb <hrel_fg>
+
+        ted order HREL:OVERRIDE:MULTI {
+            ids        {{SHIA BLUE} {BLUE SUNN}}
+            base       0.5
+            hist_flag  0
+            current    0.0
+        }
+
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <hrel_fg> update {SHIA BLUE}}
+        {::tdb <hrel_fg> update {BLUE SUNN}}
+    }
+
+    test UPDATE:MULTI-2.2 {undo undoes the change} -setup {
+        setup
+        ted order HREL:OVERRIDE:MULTI {
+            ids        {{SHIA BLUE} {SHIA SUNN}}
+            base       0.5
+            hist_flag  0
+            current    0.0
+        }
+    } -body {
+        ted notifier bind ::tdb <hrel_fg>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <hrel_fg> delete {SHIA BLUE}}
+        {::tdb <hrel_fg> delete {SHIA SUNN}}
+    }
+
+    # Update existing overrides
+    test UPDATE:MULTI-3.1 {several overrides} -setup {
+        setup
+        ted order HREL:OVERRIDE {id {SHIA SUNN}}
+        ted order HREL:OVERRIDE {id {SHIA BLUE}}
+    } -body {
+        ted notifier bind ::tdb <hrel_fg>
+        ted order HREL:OVERRIDE:MULTI {
+            ids        {{SHIA BLUE} {SHIA SUNN}} 
+            base       0.5
+            hist_flag  0
+            current    0.0
+        }
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <hrel_fg> update {SHIA BLUE}}
+        {::tdb <hrel_fg> update {SHIA SUNN}}
+    }
+
+    test UPDATE:MULTI-3.2 {undo undoes the change} -setup {
+        setup
+        ted order HREL:OVERRIDE {id {SHIA SUNN}}
+        ted order HREL:OVERRIDE {id {SHIA BLUE}}
+
+        ted order HREL:OVERRIDE:MULTI {
+            ids        {{SHIA BLUE} {SHIA SUNN}}
+            base       0.5
+            hist_flag  0
+            current    0.0
+        }
+    } -body {
+        ted notifier bind ::tdb <hrel_fg>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <hrel_fg> update {SHIA BLUE}}
+        {::tdb <hrel_fg> update {SHIA SUNN}}
+    }
+
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+
+
