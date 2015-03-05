@@ -63,7 +63,7 @@ namespace eval ::athena_test::tests:: {
             mag      1.0
 
         # Verify that unused columns contain NULL
-        adb rdb nullvalue "@"
+        adb sql nullvalue "@"
 
         set B1 [ted addblock SYSTEM]
         set T2 [ted addtactic $B1 CURSE {*}$T2]
@@ -154,7 +154,7 @@ namespace eval ::athena_test::tests:: {
             mag      1.0
 
         # Verify that unused columns contain NULL
-        adb rdb nullvalue "@"
+        adb sql nullvalue "@"
 
         set B1 [ted addblock SYSTEM]
         set T1 [ted addtactic $B1 CURSE {*}$T1]
@@ -176,7 +176,7 @@ namespace eval ::athena_test::tests:: {
 
     proc cleanup {} {
         # Clean up the test environment
-        adb rdb nullvalue ""
+        adb sql nullvalue ""
         array unset parms
         ted cleanup
     }

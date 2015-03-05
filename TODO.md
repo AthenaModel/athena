@@ -1,9 +1,10 @@
 # TODO.md - Athena TODO List
 
 - Why is there no 010-abevent.test?
+- Revise athena(n)'s SQL api.
 - Make simclock an athenadb component.
 - Move "application" executive commands from executive.tcl to app.
-- parm component should be told about state changes.
+- parm component should be told about state changes directly.
 - Remove all "app" calls from athena(n).
 - See about giving athena(n) a read-only db.
 - Check whether "adb reset" can replace all of the resets in "ted cleanup"

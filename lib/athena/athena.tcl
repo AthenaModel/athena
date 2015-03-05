@@ -113,7 +113,7 @@ snit::type ::athena::athena {
     delegate method executive               to adb
     delegate method export                  to adb
     delegate method gofer                   to adb
-    delegate method halt                    to adb
+    delegate method halt                    to adb as {sim halt}
     delegate method load                    to adb
     delegate method locked                  to adb
     delegate method paste                   to adb
@@ -302,13 +302,14 @@ snit::type ::athena::athena {
     # At present, these are delegated to the real RDB.  Ultimately
     # we will want to create a read-only RDB handle and delegate to
     # that.
-    delegate method {rdb nullvalue} to rdb as nullvalue
-    delegate method eval            to rdb as eval
-    delegate method exists          to rdb as exists
-    delegate method onecolumn       to rdb as onecolumn
-    delegate method query           to rdb as query
-    delegate method safequery       to rdb as safequery
-    delegate method safeeval        to rdb as safeeval
+    delegate method eval                    to rdb as eval
+    delegate method exists                  to rdb as exists
+    delegate method onecolumn               to rdb as onecolumn
+    delegate method query                   to rdb as query
+
+    delegate method {sql nullvalue}         to rdb as nullvalue
+    delegate method {sql safequery}         to rdb as safequery
+    delegate method {sql safeeval}          to rdb as safeeval
 
     #-------------------------------------------------------------------
     # Public Methods

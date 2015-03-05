@@ -42,14 +42,14 @@ namespace eval ::athena_test::tests:: {
         ted create BLUE BRIT IOM1 IOM2
 
         # Verify that unused columns contain NULL
-        adb rdb nullvalue "@"
+        adb sql nullvalue "@"
     }
 
     # Clean up after a test
 
     proc cleanup {} {
         # Clean up the test environment
-        adb rdb nullvalue ""
+        adb sql nullvalue ""
         array unset parms
         ted cleanup
     }
