@@ -77,7 +77,7 @@
 
     method assess {fdict} {
         if {![my isactive]} {
-            log warning [my name] "driver type has been deactivated"
+            [my adb] log warning [my name] "driver type has been deactivated"
             return
         }
 

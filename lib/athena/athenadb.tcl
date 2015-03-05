@@ -474,8 +474,10 @@ snit::type ::athena::athenadb {
         $self notify "" <Destroy>
 
         # FIRST, close and destroy the RDB.
-        $rdb close
-        $rdb destroy
+        catch {
+            $rdb close
+            $rdb destroy
+        }
     }
 
     #-------------------------------------------------------------------

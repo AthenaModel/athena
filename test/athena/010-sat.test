@@ -1,0 +1,180 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-sat.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    sat(sim) tests.
+#
+#    This test suite tests the sat(sim) mutators and queries
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        # Clean up the test environment
+        array unset parms
+        ted cleanup
+    }
+
+
+    #-------------------------------------------------------------------
+    # update
+
+    test update-1.1 {sat is updated} -setup {
+        ted create NB1 SHIA
+    } -body {
+        tdb sat update {
+            id             {SHIA AUT}
+            base           10.0
+            saliency       0.5
+            hist_flag      1
+            current        20.0
+        }
+
+        ted query {SELECT * FROM sat_gc ORDER BY g, c}
+    } -cleanup {
+        cleanup
+    } -result {
+g    c   base saliency hist_flag current 
+---- --- ---- -------- --------- ------- 
+SHIA AUT 10.0 0.5      1         20.0    
+SHIA CUL 0.0  1.0      0         0.0     
+SHIA QOL 0.0  1.0      0         0.0     
+SHIA SFT 0.0  1.0      0         0.0     
+    }
+
+
+    test update-1.2 {empty values are OK} -setup {
+        ted create NB1 SHIA
+    } -body {
+        set a [ted query {SELECT * FROM sat_gc}]
+
+        tdb sat update  {
+            id             {SHIA SFT}
+            base           ""
+            saliency       ""
+            hist_flag      ""
+            current        ""
+        }
+
+        set b [ted query {SELECT * FROM sat_gc}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    test update-2.1 {undo undoes the change} -setup {
+        ted create NB1 SHIA
+    } -body {
+
+        set a [ted query {SELECT * FROM sat_gc ORDER BY g,c}]
+
+        set undo [tdb sat update {
+            id          {SHIA SFT}
+            base        10.0
+            saliency    0.5
+            hist_flag   1
+            current     20.0
+        }]
+
+        eval $undo
+
+        set b [ted query {SELECT * FROM sat_gc ORDER BY g,c}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    #-------------------------------------------------------------------
+    # exists
+
+    test exists-1.1 {sat does not exist} -body {
+        tdb sat exists NONESUCH NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+    test exists-1.2 {sat exists} -setup {
+        ted create NB1 SHIA
+    } -body {
+        tdb sat exists SHIA SFT
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    #-------------------------------------------------------------------
+    # validate
+
+    test validate-1.1 {invalid civgroup} -setup {
+        ted create NB1 SHIA
+    } -body {
+        tdb sat validate {NONESUCH NONESUCH}
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Invalid civilian group, should be one of: SHIA}
+
+    test validate-1.2 {Invalid concern} -setup {
+        ted create NB1 SHIA
+    } -body {
+        tdb sat validate {SHIA NONESUCH}
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {invalid value "NONESUCH", should be one of: AUT, SFT, CUL, QOL}
+
+    test validate-2.1 {Valid group} -setup {
+        ted create NB1 SHIA
+    } -body {
+        tdb sat validate {SHIA SFT}
+    } -cleanup {
+        cleanup
+    } -result {SHIA SFT}
+
+    
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+

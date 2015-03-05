@@ -157,7 +157,7 @@
                     set parms(mag)  $idata(mag)
 
                     if {$parms(f) eq "" || $parms(g) eq ""} {
-                        log detail tactic \
+                        [my adb] log detail tactic \
                             "$idata(curse_id) inject $idata(inject_num) did not execute because one or more roles are empty."
                         continue
                     }
@@ -172,7 +172,7 @@
                     set parms(mag)  $idata(mag)
 
                     if {$parms(g) eq "" || $parms(a) eq ""} {
-                        log detail tactic \
+                        [my adb] log detail tactic \
                             "$idata(curse_id) inject $idata(inject_num) did not execute because one or more roles are empty."
                         continue
                     }
@@ -187,7 +187,7 @@
                     set parms(mag)  $idata(mag)
 
                     if {$parms(f) eq "" || $parms(g) eq ""} {
-                        log detail tactic \
+                        [my adb] log detail tactic \
                             "$idata(curse_id) inject $idata(inject_num) did not execute because one or more roles are empty."
                         continue
                     }
@@ -202,7 +202,7 @@
                     set parms(mag)  $idata(mag)
 
                     if {$parms(g) eq ""} {
-                        log detail tactic \
+                        [my adb] log detail tactic \
                             "$idata(curse_id) inject $idata(inject_num) did not execute because one or more roles are empty."
                         continue
                     }
@@ -221,7 +221,7 @@
         # NEXT, it's possible that gofers in every inject returned an empty
         # list, in which case the tactic executes trivially.
         if {![dict exists $fdict injects]} {
-            log detail tactic \
+            [my adb] log detail tactic \
                 "$idata(curse_id) has no executable injects."
             return
         }

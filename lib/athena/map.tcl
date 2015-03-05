@@ -104,11 +104,11 @@ snit::type ::athena::map {
                 let llat {$ulat - $height*[lindex $pscale 1]}
                 let llon {$ulon + $width* [lindex $pscale 0]}
             } else {
-                log detail map \
+                 $adb log detail map \
                     "Projection type not recognized in $tail, using defaults."
             }
         } result]} {
-            log detail map "Could not read GeoTIFF info from $tail: $result"
+             $adb log detail map "Could not read GeoTIFF info from $tail: $result"
         }
 
         $adb eval {DELETE FROM maps;}
@@ -162,7 +162,7 @@ snit::type ::athena::map {
         $self load $filename
 
         # NEXT, log it.
-        log normal app "Import Map: $filename"
+         $adb log normal app "Import Map: $filename"
         
         app puts "Imported Map: $filename"
 
@@ -272,7 +272,7 @@ snit::type ::athena::map {
         # FIRST, blank everything out
         $adb eval {DELETE FROM maps;}
 
-        log normal app "Using Default Map"
+         $adb log normal app "Using Default Map"
         app puts "Using Default Map"
 
         # NEXT, notify application
@@ -304,7 +304,7 @@ snit::type ::athena::map {
         # NEXT, log it
         set filename [dict get $dict filename]
 
-        log normal app "Restored Map: $filename"
+         $adb log normal app "Restored Map: $filename"
         app puts "Restored Map: $filename"
 
         # NEXT, Notify the application.

@@ -1,0 +1,349 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-tactic_demob.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    tactic_demob(sim) tests.
+#
+#    This test suite tests the tactic_demob(sim) class.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Set up for tests
+
+    proc setup {} {
+        variable T1
+        variable coffer
+        ted create JOE BOB NB1 NB2 BLUE BRIT SHIA SUNN KURD
+        tdb personnel start
+        tdb personnel load
+        set coffer [::athena::coffer new ::tdb JOE]
+
+
+        set B1 [ted addblock JOE]
+        set T1 [ted addtactic $B1 DEMOB]
+    }
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        variable coffer
+        $coffer destroy
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    test constructor-1.1 {default state} -setup {
+        setup
+    } -body {
+        ted pdicts [$T1 getdict]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        execstatus NONE
+        faildict   {}
+        g          {}
+        id         *
+        mode       ALL
+        name       T*
+        parent     *
+        percent    0
+        personnel  0
+        pot        *::pot
+        state      invalid
+    }
+
+    test constructor-1.2 {can set options} -setup {
+        setup
+    } -body {
+        set T1 [ted newbean ::athena::tactic::DEMOB -parent DUMMY]
+        $T1 get parent
+    } -cleanup {
+        cleanup
+    } -result {DUMMY}
+    
+
+    #-------------------------------------------------------------------
+    # narrative
+
+    test narrative-1.1 {narrative, default state} -setup {
+        setup
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {Demobilize all of group ???'s undeployed personnel.}
+
+    test narrative-1.2 {mode is ALL} -setup {
+        setup
+        $T1 set g BLUE
+        $T1 set mode ALL
+        $T1 check
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {Demobilize all of group {group:BLUE}'s undeployed personnel.}
+
+    test narrative-1.3 {mode is SOME} -setup {
+        setup
+        $T1 set g BLUE
+        $T1 set mode SOME
+        $T1 set personnel 100
+        $T1 check
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {Demobilize 100 of group {group:BLUE}'s undeployed personnel.}
+
+    test narrative-1.4 {mode is PERCENT} -setup {
+        setup
+        $T1 set g BLUE
+        $T1 set mode PERCENT
+        $T1 set percent 3.5
+        $T1 check
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {Demobilize 3.5% of group {group:BLUE}'s undeployed personnel.}
+
+    test narrative-1.2 {mode is excess} -setup {
+        setup
+        $T1 set g BLUE
+        $T1 set mode EXCESS
+        $T1 set personnel 100
+        $T1 check
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {Demobilize all but 100 of group {group:BLUE}'s undeployed personnel.}
+
+
+    #-------------------------------------------------------------------
+    # check
+
+    test check-1.1 {Initial state fails} -setup {
+        setup
+    } -body {
+        $T1 check
+    } -cleanup {
+        cleanup
+    } -result {g {No group selected.}}
+
+    test check-1.2 {g not owned by actor} -setup {
+        setup
+    } -body {
+        $T1 set g NONESUCH
+        $T1 check
+    } -cleanup {
+        cleanup
+    } -result {g {JOE does not own a group called "NONESUCH".}}
+
+    test check-1.3 {Success} -setup {
+        setup
+    } -body {
+        $T1 set g BLUE
+        $T1 set personnel 100
+        $T1 check
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    #-------------------------------------------------------------------
+    # obligate
+
+    test obligate-1.1 {mode is ALL, some personnel} -setup {
+        setup
+    } -body {
+        $T1 configure -g BLUE -mode ALL
+
+        list \
+            [$coffer troops BLUE undeployed] \
+            [$T1 obligate $coffer]           \
+            [$coffer troops BLUE undeployed]
+    } -cleanup {
+        cleanup
+    } -result {5000 1 0}
+
+    test obligate-1.2 {mode is ALL, no personnel} -setup {
+        setup
+    } -body {
+        $T1 configure -g BLUE -mode ALL
+
+        $coffer demobilize BLUE [$coffer troops BLUE undeployed]
+
+        list \
+            [$coffer troops BLUE undeployed] \
+            [$T1 obligate $coffer]           \
+            [$coffer troops BLUE undeployed]
+    } -cleanup {
+        cleanup
+    } -result {0 1 0}
+
+
+    test obligate-2.1 {mode is SOME, sufficient personnel} -setup {
+        setup
+    } -body {
+        $T1 configure -g BLUE -mode SOME -personnel 100
+
+        list \
+            [$coffer troops BLUE undeployed] \
+            [$T1 obligate $coffer]           \
+            [$coffer troops BLUE undeployed]
+    } -cleanup {
+        cleanup
+    } -result {5000 1 4900}
+
+    test obligate-2.2 {mode is SOME, insufficient personnel} -setup {
+        setup
+    } -body {
+        $T1 configure -g BLUE -mode SOME -personnel 10000
+
+        $T1 obligate $coffer
+        $T1 faildict
+    } -cleanup {
+        cleanup
+    } -result {PERSONNEL {Required 10000 personnel, but had only 5000 available.}}
+
+    test obligate-3.1 {mode is PERCENT} -setup {
+        setup
+    } -body {
+        $T1 configure -g BLUE -mode PERCENT -percent 10.0
+
+        list \
+            [$coffer troops BLUE undeployed] \
+            [$T1 obligate $coffer]           \
+            [$coffer troops BLUE undeployed]
+    } -cleanup {
+        cleanup
+    } -result {5000 1 4500}
+
+    test obligate-3.2 {mode is PERCENT, rounds up} -setup {
+        setup
+    } -body {
+        $T1 configure -g BLUE -mode PERCENT -percent 10.0
+
+        $coffer demobilize BLUE [$coffer troops BLUE undeployed]
+        $coffer mobilize BLUE 1
+
+        list \
+            [$coffer troops BLUE undeployed] \
+            [$T1 obligate $coffer]           \
+            [$coffer troops BLUE undeployed]
+    } -cleanup {
+        cleanup
+    } -result {1 1 0}
+
+    test obligate-3.3 {mode is PERCENT, no troops} -setup {
+        setup
+    } -body {
+        $T1 configure -g BLUE -mode PERCENT -percent 10.0
+
+        $coffer demobilize BLUE [$coffer troops BLUE undeployed]
+
+        list \
+            [$coffer troops BLUE undeployed] \
+            [$T1 obligate $coffer]           \
+            [$coffer troops BLUE undeployed]
+    } -cleanup {
+        cleanup
+    } -result {0 1 0}
+
+    test obligate-4.1 {mode is EXCESS} -setup {
+        setup
+    } -body {
+        $T1 configure -g BLUE -mode EXCESS -personnel 100
+
+        list \
+            [$coffer troops BLUE undeployed] \
+            [$T1 obligate $coffer]           \
+            [$coffer troops BLUE undeployed]
+    } -cleanup {
+        cleanup
+    } -result {5000 1 100}
+
+    test obligate-3.3 {mode is EXCESS, less troops} -setup {
+        setup
+    } -body {
+        $T1 configure -g BLUE -mode EXCESS -personnel 100
+
+        $coffer demobilize BLUE [$coffer troops BLUE undeployed]
+        $coffer mobilize BLUE 50
+
+        list \
+            [$coffer troops BLUE undeployed] \
+            [$T1 obligate $coffer]           \
+            [$coffer troops BLUE undeployed]
+    } -cleanup {
+        cleanup
+    } -result {50 1 50}
+
+    #-------------------------------------------------------------------
+    # execute
+
+    test execute-1.1 {always succeeds} -setup {
+        setup
+        $T1 set g BLUE
+        $T1 set mode SOME
+        $T1 set personnel 1000
+        $T1 obligate $coffer
+    } -body {
+        # NOTE: execute doesn't use the mode, so we don't need to
+        # test every mode.
+        $T1 execute
+        ted query {SELECT * FROM working_personnel WHERE g='BLUE'}
+    } -cleanup {
+        cleanup
+    } -result {
+g    personnel available 
+---- --------- --------- 
+BLUE 4000      4000      
+    }
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+
+

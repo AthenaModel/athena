@@ -1,0 +1,637 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-cash.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    cash(sim) tests.
+#
+#    This test suite tests the cash(sim) interface.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        # Clean up the test environment
+        tdb strategy acting ""
+        ted cleanup
+    }
+
+    proc setup {} {
+        ted create JOE BOB
+        tdb cash start
+    }
+
+    # Set actor's pre-strategy cash
+    proc cashset {a reserve onhand} {
+        tdb eval {
+            UPDATE actors 
+            SET cash_reserve = $reserve,
+                cash_on_hand = $onhand
+            WHERE a=$a
+        }
+    }
+
+    # Set actor's working cash
+    proc wcashset {a reserve onhand} {
+        tdb eval {
+            UPDATE working_cash 
+            SET cash_reserve = $reserve,
+                cash_on_hand = $onhand
+            WHERE a=$a
+        }
+    }
+
+    #-------------------------------------------------------------------
+    # start
+    test start-1.1 {start populates expenditures} -body {
+        ted create JOE BOB
+        tdb cash start
+        ted query {SELECT * FROM expenditures}
+    } -cleanup {
+        ted cleanup
+    } -result {
+a   goods black pop actor region world tot_goods tot_black tot_pop tot_actor tot_region tot_world 
+--- ----- ----- --- ----- ------ ----- --------- --------- ------- --------- ---------- --------- 
+BOB 0.0   0.0   0.0 0.0   0.0    0.0   0.0       0.0       0.0     0.0       0.0        0.0       
+JOE 0.0   0.0   0.0 0.0   0.0    0.0   0.0       0.0       0.0     0.0       0.0        0.0       
+    }
+
+    #-------------------------------------------------------------------
+    # load
+
+    test load-1.1 {load populates working_cash} -setup {
+        setup
+    } -body {
+        tdb cash load
+        ted query {SELECT * FROM working_cash}
+    } -cleanup {
+        cleanup
+    } -result {
+a   cash_reserve income  cash_on_hand gifts 
+--- ------------ ------- ------------ ----- 
+JOE 200000.0     10000.0 10000.0      0.0   
+BOB 150000.0     5000.0  5000.0       0.0   
+    }
+
+    test load-1.2 {load adds income} -setup {
+        setup
+    } -body {
+        array set joe [tdb actor get JOE]
+        let a { $joe(cash_on_hand) + [tdb actor income JOE] }
+
+        tdb cash load
+        set b [tdb onecolumn {
+            SELECT cash_on_hand FROM working_cash WHERE a='JOE'
+        }]
+
+        expr {$a == $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test load-1.3 {load clears allocations} -setup {
+        setup
+        tdb cash spend JOE ASSIGN 1000.0
+    } -body {
+        tdb cash load
+        tdb cash allocations
+    } -cleanup {
+        cleanup
+    } -result {world 0.0 region 0.0 goods 0.0 black 0.0 pop 0.0}
+
+    test load-1.5 {load clears expenditures} -setup {
+        setup
+        tdb cash spend JOE ASSIGN 1000.0
+    } -body {
+        tdb cash load
+        ted querylist {SELECT * FROM expenditures WHERE a='JOE'}
+    } -cleanup {
+        cleanup
+    } -result {
+a           JOE
+goods       0.0
+black       0.0
+pop         0.0
+actor       0.0
+region      0.0
+world       0.0
+tot_goods   0.0
+tot_black   0.0
+tot_pop     0.0
+tot_actor   0.0
+tot_region  0.0
+tot_world   0.0
+    }
+    
+    test load-1.6 {load adds budget for budget actors} -setup {
+        setup
+        ted create WILL
+    } -body {
+        tdb cash load
+        ted querylist {
+            SELECT * FROM working_cash WHERE a='WILL'
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+a             WILL
+cash_reserve  0.0
+income        10000.0
+cash_on_hand  10000.0
+gifts         0.0
+    }
+
+    #-------------------------------------------------------------------
+    # get
+
+    test get-1.1 {get all working_cash columns} -setup {
+        setup
+        tdb cash load
+    } -body {
+        ted pdict [tdb cash get JOE]
+    } -cleanup {
+        cleanup
+    } -result {
+        gifts        0.0
+        cash_on_hand 10000.0
+        a            JOE
+        cash_reserve 200000.0
+        income       10000.0
+    }
+
+    test get-1.2 {get one working_cash column} -setup {
+        setup
+        tdb cash load
+    } -body {
+        tdb cash get JOE cash_reserve
+    } -cleanup {
+        cleanup
+    } -result {200000.0}
+
+    #-------------------------------------------------------------------
+    # onhand
+
+    test onhand-1.1 {retrieves working cash for acting actor} -setup {
+        setup
+        tdb cash load
+        tdb strategy acting JOE
+        cashset  JOE 5000 10000
+        wcashset JOE 2000  4000
+    } -body {
+        tdb cash onhand JOE
+    } -cleanup {
+        cleanup
+    } -result {4000.0}
+
+    test onhand-1.2 {retrieves pre-strategy cash for other actor} -setup {
+        setup
+        tdb cash load
+        tdb strategy acting BOB
+        cashset  JOE 5000 10000
+        wcashset JOE 2000  4000
+    } -body {
+        tdb cash onhand JOE
+    } -cleanup {
+        cleanup
+    } -result {10000.0}
+
+
+    #-------------------------------------------------------------------
+    # reserve
+    
+    test reserve-1.1 {retrieves working reserve for acting actor} -setup {
+        setup
+        tdb cash load
+        tdb strategy acting JOE
+        cashset  JOE 5000 10000
+        wcashset JOE 2000  4000
+    } -body {
+        tdb cash reserve JOE
+    } -cleanup {
+        cleanup
+    } -result {2000.0}
+
+    test reserve-1.2 {retrieves pre-strategy reserve for other actor} -setup {
+        setup
+        tdb cash load
+        tdb strategy acting BOB
+        cashset  JOE 5000 10000
+        wcashset JOE 2000  4000
+    } -body {
+        tdb cash reserve JOE
+    } -cleanup {
+        cleanup
+    } -result {5000.0}
+
+    #-------------------------------------------------------------------
+    # spend
+
+    test spend-1.1 {Return 0 if insufficient funds} -setup {
+        setup
+        tdb cash load
+    } -body {
+        tdb cash spend JOE ASSIGN 1000000.0
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+    test spend-1.2 {Return 1 if sufficient funds} -setup {
+        setup
+        tdb cash load
+    } -body {
+        tdb cash spend JOE ASSIGN 1.0
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test spend-1.3 {Money is spent} -setup {
+        setup
+        tdb cash load
+    } -body {
+        tdb cash spend JOE ASSIGN 1000
+        ted query {SELECT * FROM working_cash}
+    } -cleanup {
+        cleanup
+    } -result {
+a   cash_reserve income  cash_on_hand gifts 
+--- ------------ ------- ------------ ----- 
+JOE 200000.0     10000.0 9000.0       0.0   
+BOB 150000.0     5000.0  5000.0       0.0   
+    }
+
+    test spend-1.4 {Money is allocated to sectors} -setup {
+        setup
+        tdb cash load
+    } -body {
+        tdb cash spend JOE ASSIGN 1000
+        tdb cash allocations
+    } -cleanup {
+        cleanup
+    } -result {world 0.0 region 0.0 goods 400.0 black 0.0 pop 600.0}
+
+    test spend-1.5 {No allocation on NONE} -setup {
+        setup
+        tdb cash load
+    } -body {
+        tdb cash spend JOE NONE 1000
+        tdb cash allocations
+    } -cleanup {
+        cleanup
+    } -result {world 0.0 region 0.0 goods 0.0 black 0.0 pop 0.0}
+
+    test spend-1.6 {Money is saved by actor and sector} -setup {
+        setup
+        tdb cash load
+    } -body {
+        tdb cash spend JOE ASSIGN 1000
+        ted querylist {SELECT * FROM expenditures WHERE a='JOE'}
+    } -cleanup {
+        cleanup
+    } -result {
+a           JOE
+goods       400.0
+black       0.0
+pop         600.0
+actor       0.0
+region      0.0
+world       0.0
+tot_goods   400.0
+tot_black   0.0
+tot_pop     600.0
+tot_actor   0.0
+tot_region  0.0
+tot_world   0.0
+    }
+
+    #-------------------------------------------------------------------
+    # spendon
+
+    test spendon-1.1 {Return 0 if insufficient funds} -setup {
+        setup
+        tdb cash load
+    } -body {
+        tdb cash spendon JOE 1000000.0 {goods 1}
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+    test spendon-1.2 {Return 1 if sufficient funds} -setup {
+        setup
+        tdb cash load
+    } -body {
+        tdb cash spendon JOE 1.0 {goods 1}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test spendon-1.3 {Money is spent} -setup {
+        setup
+        tdb cash load
+    } -body {
+        tdb cash spendon JOE 1000 {goods 1}
+        ted query {SELECT * FROM working_cash}
+    } -cleanup {
+        cleanup
+    } -result {
+a   cash_reserve income  cash_on_hand gifts 
+--- ------------ ------- ------------ ----- 
+JOE 200000.0     10000.0 9000.0       0.0   
+BOB 150000.0     5000.0  5000.0       0.0   
+    }
+
+    test spendon-1.4 {Money is allocated to sectors} -setup {
+        setup
+        tdb cash load
+    } -body {
+        tdb cash spendon JOE 1000 {goods .35 pop .55 region .1}
+        tdb cash allocations
+    } -cleanup {
+        cleanup
+    } -result {world 0.0 region 100.0 goods 350.0 black 0.0 pop 550.0}
+
+    test spendon-1.5 {Money is saved by actor and sector} -setup {
+        setup
+        tdb cash load
+    } -body {
+        tdb cash spendon JOE 1000 {goods .35 pop .55 region .1}
+        ted querylist {SELECT * FROM expenditures WHERE a='JOE'}
+    } -cleanup {
+        cleanup
+    } -result {
+a           JOE
+goods       350.0
+black       0.0
+pop         550.0
+actor       0.0
+region      100.0
+world       0.0
+tot_goods   350.0
+tot_black   0.0
+tot_pop     550.0
+tot_actor   0.0
+tot_region  100.0
+tot_world   0.0
+    }
+
+    #-------------------------------------------------------------------
+    # refund
+
+    test refund-1.1 {Refunds cash to actor's cash-on-hand.} -setup {
+        setup
+        tdb cash load
+    } -body {
+        tdb cash refund JOE ASSIGN 2000.0
+        tdb cash refund BOB ASSIGN 5000.0
+        ted query {SELECT * FROM working_cash}
+    } -cleanup {
+        cleanup
+    } -result {
+a   cash_reserve income  cash_on_hand gifts 
+--- ------------ ------- ------------ ----- 
+JOE 200000.0     10000.0 12000.0      0.0   
+BOB 150000.0     5000.0  10000.0      0.0   
+    }
+
+    test refund-1.2 {Removes allocations from sectors.} -setup {
+        setup
+        tdb cash load
+        tdb cash spend JOE ASSIGN 1000.0
+    } -body {
+        tdb cash refund JOE ASSIGN 500.0
+        tdb cash allocations
+    } -cleanup {
+        cleanup
+    } -result {world 0.0 region 0.0 goods 200.0 black 0.0 pop 300.0}
+
+    test refund-1.3 {No deallocation on NONE} -setup {
+        setup
+        tdb cash load
+        tdb cash spend JOE ASSIGN 1000.0
+    } -body {
+        tdb cash refund JOE NONE 500.0
+        tdb cash allocations
+    } -cleanup {
+        cleanup
+    } -result {world 0.0 region 0.0 goods 400.0 black 0.0 pop 600.0}
+
+    test refund-1.4 {Refund is saved by actor and sector} -setup {
+        setup
+        tdb cash load
+        tdb cash spend JOE ASSIGN 1000.0
+    } -body {
+        tdb cash refund JOE ASSIGN 500.0
+        ted querylist {SELECT * FROM expenditures WHERE a='JOE'}
+    } -cleanup {
+        cleanup
+    } -result {
+a           JOE
+goods       200.0
+black       0.0
+pop         300.0
+actor       0.0
+region      0.0
+world       0.0
+tot_goods   200.0
+tot_black   0.0
+tot_pop     300.0
+tot_actor   0.0
+tot_region  0.0
+tot_world   0.0
+    }
+
+    #-------------------------------------------------------------------
+    # allocations
+
+    # This command is tested in the tests for [tdb cash load], [tdb cash spend],
+    # and [tdb cash refund].
+
+    #-------------------------------------------------------------------
+    # deposit
+
+    test deposit-1.1 {Return 0 if insufficient funds} -setup {
+        setup
+        tdb cash load
+    } -body {
+        tdb cash deposit JOE 1000000.0
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+    test deposit-1.2 {Return 1 if sufficient funds} -setup {
+        setup
+        tdb cash load
+    } -body {
+        tdb cash deposit JOE 1.0
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test deposit-1.3 {Money is transferred} -setup {
+        setup
+        tdb cash load
+    } -body {
+        tdb cash deposit JOE 1000
+        ted query {SELECT * FROM working_cash}
+    } -cleanup {
+        cleanup
+    } -result {
+a   cash_reserve income  cash_on_hand gifts 
+--- ------------ ------- ------------ ----- 
+JOE 201000.0     10000.0 9000.0       0.0   
+BOB 150000.0     5000.0  5000.0       0.0   
+    }
+
+    #-------------------------------------------------------------------
+    # withdraw
+
+    test withdraw-1.1 {Money is transferred} -setup {
+        setup
+        tdb cash load
+    } -body {
+        tdb cash withdraw JOE 1000
+        ted query {SELECT * FROM working_cash}
+    } -cleanup {
+        cleanup
+    } -result {
+a   cash_reserve income  cash_on_hand gifts 
+--- ------------ ------- ------------ ----- 
+JOE 199000.0     10000.0 11000.0      0.0   
+BOB 150000.0     5000.0  5000.0       0.0   
+    }
+
+    test withdraw-1.2 {Money can be borrowed} -setup {
+        setup
+        tdb cash load
+    } -body {
+        tdb cash withdraw JOE 400000
+        ted query {SELECT * FROM working_cash}
+    } -cleanup {
+        cleanup
+    } -result {
+a   cash_reserve income  cash_on_hand gifts 
+--- ------------ ------- ------------ ----- 
+JOE -200000.0    10000.0 410000.0     0.0   
+BOB 150000.0     5000.0  5000.0       0.0   
+    }
+
+    #-------------------------------------------------------------------
+    # give
+
+    test give-1.1 {Gives cash to actor for later use.} -setup {
+        setup
+        tdb cash load
+    } -body {
+        tdb cash give BOB JOE 2000.0
+        tdb cash give JOE BOB 5000.0
+        ted query {SELECT * FROM working_cash}
+    } -cleanup {
+        cleanup
+    } -result {
+a   cash_reserve income  cash_on_hand gifts  
+--- ------------ ------- ------------ ------ 
+JOE 200000.0     10000.0 10000.0      2000.0 
+BOB 150000.0     5000.0  5000.0       5000.0 
+    }
+
+    #-------------------------------------------------------------------
+    # save
+
+    test save-1.1 {Saves balances back to actors.} -setup {
+        setup
+        tdb cash load
+        tdb cash withdraw JOE 2000.0
+    } -body {
+        tdb cash save
+        ted query {SELECT a, cash_reserve, cash_on_hand FROM actors}
+    } -cleanup {
+        cleanup
+    } -result {
+a   cash_reserve cash_on_hand 
+--- ------------ ------------ 
+JOE 198000.0     12000.0      
+BOB 150000.0     5000.0       
+    }
+
+    test save-1.2 {Adds gifts to cash_on_hand} -setup {
+        setup
+        tdb cash load
+        tdb cash give BOB JOE 5000.0
+    } -body {
+        tdb cash save
+        ted query {SELECT a, cash_reserve, cash_on_hand FROM actors}
+    } -cleanup {
+        cleanup
+    } -result {
+a   cash_reserve cash_on_hand 
+--- ------------ ------------ 
+JOE 200000.0     15000.0      
+BOB 150000.0     5000.0       
+    }
+
+
+    test save-1.3 {Clears working cash.} -setup {
+        setup
+        tdb cash load
+        tdb cash withdraw JOE 2000.0
+    } -body {
+        tdb cash save
+        ted query {SELECT * FROM working_cash}
+    } -cleanup {
+        cleanup
+    } -result {
+    }
+
+    test save-1.4 {Budget actors lose unspent funds} -setup {
+        setup
+        ted create WILL
+        tdb cash load
+        tdb cash spend WILL DEPLOY 5000
+    } -body {
+        set a [tdb onecolumn {
+            SELECT cash_on_hand FROM working_cash WHERE a='WILL'
+        }]
+        tdb cash save
+        set b [tdb actor get WILL cash_on_hand]
+    
+        list $a $b
+    } -cleanup {
+        cleanup
+    } -result {5000.0 0.0}
+
+
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::

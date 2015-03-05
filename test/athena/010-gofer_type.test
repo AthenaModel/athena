@@ -1,0 +1,257 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-gofer.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    gofer(n) tests.
+#
+#    This test suite tests the gofer_type type.  It makes use of the
+#    gofer::ACTORS type to test the generic code.
+#
+#    The "tdb gofer" command creates gofers of each type; any command
+#    of the form "tdb gofer ACTORS" is passed along to the ACTORS gofer
+#    type.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    proc cleanup {} {
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # name
+
+    test name-1.1 {name is returned} -body {
+        tdb gofer ACTORS name
+    } -cleanup {
+        cleanup
+    } -result {ACTORS}
+
+    #-------------------------------------------------------------------
+    # dynaform
+
+    test dynaform-1.1 {dynaform value is returned} -body {
+        tdb gofer ACTORS dynaform
+    } -cleanup {
+        cleanup
+    } -result {::athena::gofer::ACTORS}
+    
+    #-------------------------------------------------------------------
+    # validate
+
+    test validate-1.1 {canonicalizes _type} -setup {
+        ted create JOE BOB DAVE
+    } -body {
+        tdb gofer ACTORS validate {_type actors _rule BY_VALUE raw_value JOE}
+    } -cleanup {
+        cleanup
+    } -result {_type ACTORS _rule BY_VALUE raw_value JOE}    
+
+    test validate-1.2 {missing _type} -setup {
+        ted create JOE BOB DAVE
+    } -body {
+        tdb gofer ACTORS validate NONESUCH
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Not a gofer ACTORS value}
+
+    test validate-1.3 {unknown _type} -setup {
+        ted create JOE BOB DAVE
+    } -body {
+        tdb gofer ACTORS validate {_type NONESUCH _rule BY_VALUE raw_value JOE}
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {No such gofer type: "NONESUCH"}
+
+    test validate-1.4 {_type mismatch} -setup {
+        ted create JOE BOB DAVE
+    } -body {
+        tdb gofer ACTORS validate {_type CIVGROUPS _rule BY_VALUE raw_value SHIA}
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Type mismatch, got "CIVGROUPS", expected "ACTORS"}
+
+    test validate-1.5 {canonicalizes _rule} -setup {
+        ted create JOE BOB DAVE
+    } -body {
+        tdb gofer ACTORS validate {_type ACTORS _rule by_value raw_value JOE}
+    } -cleanup {
+        cleanup
+    } -result {_type ACTORS _rule BY_VALUE raw_value JOE}
+
+    test validate-1.6 {missing _rule} -setup {
+        ted create JOE BOB DAVE
+    } -body {
+        tdb gofer ACTORS validate {_type ACTORS raw_value NONESUCH}
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {No rule specified}
+
+    test validate-1.7 {invalid rule} -setup {
+        ted create JOE BOB DAVE
+    } -body {
+        tdb gofer ACTORS validate {_type ACTORS _rule NONESUCH raw_value NONESUCH}
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Unknown rule: "NONESUCH"}
+
+    test validate-1.8 {invalid rule parms} -setup {
+        ted create JOE BOB DAVE
+    } -body {
+        tdb gofer ACTORS validate {_type ACTORS _rule BY_VALUE raw_value NONESUCH}
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -match glob -result {Invalid actor,*}
+
+    #-------------------------------------------------------------------
+    # eval
+
+    test eval-1.1 {unknown type} -body {
+        tdb gofer ACTORS eval {_type NONESUCH raw_value {JOE BOB}}
+    } -returnCodes {
+        error
+    } -result {No such gofer type: "NONESUCH"}
+
+    test eval-1.2 {type mismatch} -body {
+        tdb gofer ACTORS eval {_type CIVGROUPS raw_value {SUNN SHIA}}
+    } -returnCodes {
+        error
+    } -result {Type mismatch, got "CIVGROUPS", expected "ACTORS"}
+
+    test eval-1.3 {missing rule} -body {
+        tdb gofer ACTORS eval {_type ACTORS raw_value {JOE BOB}}
+    } -returnCodes {
+        error
+    } -result {No rule specified}
+
+    test eval-1.4 {unknown rule} -body {
+        tdb gofer ACTORS eval {_type ACTORS _rule NONESUCH raw_value {JOE BOB}}
+    } -returnCodes {
+        error
+    } -result {Unknown rule: "NONESUCH"}
+
+    test eval-1.5 {successful evaluation} -setup {
+        ted create JOE BOB DAVE
+    } -body {
+        tdb gofer ACTORS eval {_type ACTORS _rule BY_VALUE raw_value {JOE BOB}}
+    } -cleanup {
+        cleanup
+    } -result {JOE BOB}
+    
+
+    #-------------------------------------------------------------------
+    # narrative
+
+    test narrative-1.1 {raw value} -setup {
+        ted create JOE BOB DAVE
+    } -body {
+        tdb gofer ACTORS narrative {JOE BOB}
+    } -cleanup {
+        cleanup
+    } -result {actor ???}
+
+    test narrative-1.2 {unknown type} -body {
+        tdb gofer ACTORS narrative {_type NONESUCH raw_value {JOE BOB}}
+    } -result {actor ???}
+
+    test narrative-1.3 {type mismatch} -body {
+        tdb gofer ACTORS narrative {_type NONESUCH raw_value {JOE BOB}}
+    } -result {actor ???}
+
+    test narrative-1.4 {missing rule} -body {
+        tdb gofer ACTORS narrative {_type ACTORS raw_value {JOE BOB}}
+    } -result {actor ???}
+
+    test narrative-1.4 {unknown rule} -body {
+        tdb gofer ACTORS narrative {_type ACTORS _rule NONESUCH raw_value {JOE BOB}}
+    } -result {actor ???}
+
+    test narrative-1.5 {brief output} -body {
+        tdb gofer ACTORS narrative {
+            _type ACTORS _rule BY_VALUE raw_value {A B C D E F G H I J}
+        } -brief
+    } -result {these actors (A, B, C, D, E, F, G, H, ...)}
+
+    #-------------------------------------------------------------------
+    # keys
+
+    test keys-1.1 {keys for known rule} -body {
+        tdb gofer ACTORS keys BY_VALUE
+    } -result {raw_value}
+    
+    test keys-1.2 {keys for unknown rule} -body {
+        tdb gofer ACTORS keys NONESUCH
+    } -returnCodes {
+        error
+    } -result {Unknown rule: "NONESUCH"}
+    
+    #-------------------------------------------------------------------
+    # blank
+    
+    test blank-1.1 {blank value} -body {
+        tdb gofer ACTORS blank
+    } -result {_type ACTORS _rule {}}
+    
+    #-------------------------------------------------------------------
+    # make
+
+    test make-1.1 {make creates and validates.} -setup {
+        ted create JOE BOB DAVE
+    } -body {
+        tdb gofer ACTORS make BY_VALUE {JOE BOB}
+    } -cleanup {
+        cleanup
+    } -result {_type ACTORS _rule BY_VALUE raw_value {JOE BOB}}
+        
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+

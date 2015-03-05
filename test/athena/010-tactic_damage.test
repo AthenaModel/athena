@@ -1,0 +1,199 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-tactic_damage.test
+#
+# AUTHOR:
+#    Dave Hanks
+#
+# DESCRIPTION:
+#    tactic_damage(sim) tests.
+#
+#    This test suite tests the tactic_damage class.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Set up for tests
+
+    proc setup {} {
+        variable T1
+        ted create JOE BOB NB1 NB2 SHIA SUNN KURD BLUE
+
+        tdb eval {
+            INSERT INTO plants_shares(n, a, num, rho)
+            VALUES('NB1', 'JOE', 1, 0.9);
+        }
+
+        tdb plant start
+
+        set B1 [ted addblock SYSTEM]
+        set T1 [ted addtactic $B1 DAMAGE]
+    }
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        # Clean up the test environment
+        ted cleanup
+    }
+
+       
+    #-------------------------------------------------------------------
+    # constructor
+    
+    test constructor-1.1 {default state} -setup {
+        setup
+    } -body {
+        ted pdicts [$T1 getdict]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        a          {}
+        execstatus NONE
+        faildict   {}
+        id         *
+        n          {}
+        name       T*
+        parent     *
+        percent    0
+        pot        *::pot
+        state      invalid
+    }
+
+    test constructor-1.2 {can set options} -setup {
+        setup
+    } -body {
+        set T1 [ted newbean ::athena::tactic::DAMAGE -parent DUMMY]
+        $T1 get parent
+    } -cleanup {
+        cleanup
+    } -result {DUMMY}
+
+    #-------------------------------------------------------------------
+    # narrative
+
+    test narrative-1.1 {narrative, default state} -setup {
+        setup
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {Set average repair level of any infrastructure owned by ??? in ??? to 0.0% of full capacity.}
+
+    test narrative-1.2 {narrative, valid} -setup {
+        setup
+        $T1 set n NB1
+        $T1 set a JOE
+        $T1 set percent 80
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {Set average repair level of any infrastructure owned by {actor:JOE} in {nbhood:NB1} to 80.0% of full capacity.}
+
+    #-------------------------------------------------------------------
+    # check
+
+    test check-1.1 {Initial state fails}  -setup {
+        setup
+    } -body {
+        $T1 check
+    } -cleanup {
+        cleanup
+    } -result {a {No actor selected.} n {No neighborhood selected.}}
+
+    test check-1.2 {check: n no longer exists} -setup {
+        setup
+        $T1 set n NB2
+        $T1 set a BOB
+        tdb eval {DELETE FROM nbhoods WHERE n='NB2'}
+    } -body {
+        $T1 check
+    } -cleanup {
+        cleanup
+    } -result {n {No such neighborhood: "NB2".}}
+
+    test check-1.3 {check: n no longer local} -setup {
+        setup
+        $T1 set n NB2
+        $T1 set a BOB
+        tdb eval {UPDATE nbhoods SET local=0 WHERE n='NB2'}
+    } -body {
+        $T1 check
+    } -cleanup {
+        cleanup
+    } -result {n {Neighborhood "NB2" is not local, should be.}}
+
+    test check-1.4 {check: a no longer exists} -setup {
+        setup
+        $T1 set n NB1
+        $T1 set a JOE
+        tdb eval {DELETE FROM actors WHERE a='JOE'}
+    } -body {
+        $T1 check
+    } -cleanup {
+        cleanup
+    } -result {a {No such actor: "JOE".}}
+
+    #-------------------------------------------------------------------
+    # obligate
+
+    test obligate-1.1 {always succeeds} -setup {
+        setup
+    } -body {
+        # Don't need a coffer
+        $T1 obligate NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    #-------------------------------------------------------------------
+    # execute
+
+    test execute-1.1 {always succeeds} -setup {
+        setup
+        $T1 set n NB1
+        $T1 set a JOE
+        $T1 set percent 80
+    } -body {
+        $T1 execute
+        tdb onecolumn {SELECT rho FROM plants_na WHERE n='NB1' AND a='JOE'}
+    } -cleanup {
+        cleanup
+    } -result {0.8}
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+

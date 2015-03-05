@@ -70,7 +70,7 @@ oo::class create ::athena::ruleset_abservice {
             set fdict [array get gdata]
 
             if {![my isactive]} {
-                log warning $dtype "driver type has been deactivated"
+                [my adb] log warning $dtype "driver type has been deactivated"
                 continue
             }
 

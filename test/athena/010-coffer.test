@@ -1,0 +1,419 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-coffer.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    coffer(sim) tests.
+#
+#    This test suite tests the coffer(sim) class.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Set up for tests
+
+    proc setup {} {
+        ted create JOE BOB NB1 NB2 BLUE BRIT SHIA SUNN KURD
+
+        tdb eval {
+            INSERT INTO plants_na(n, a, num, rho)
+            VALUES('NB1', 'JOE', 2, 0.9);
+        }
+
+        tdb personnel start
+        tdb personnel load
+        tdb plant start
+        tdb cash load
+    }
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        tdb strategy locking 0
+        ted cleanup
+        catch {coff destroy}
+    }
+
+    #-------------------------------------------------------------------
+    # constructor
+
+    test constructor-1.1 {default state} -setup {
+        setup
+    } -body {
+        ::athena::coffer create coff ::tdb
+        ted sortdict [coff getdict]
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+        cash    0.0
+        plants  {}
+        reserve 0.0
+        troops  {}
+    }
+
+    test constructor-1.2 {create with actor} -setup {
+        setup
+    } -body {
+        ::athena::coffer create coff ::tdb JOE
+        ted sortdict [coff getdict]
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+        cash    10000.0
+        plants  {NB1 0.9}
+        reserve 200000.0
+        troops  {BLUE {mobilized 5000 undeployed 5000} BRIT {mobilized 5000 undeployed 5000}}
+    }
+
+    #-------------------------------------------------------------------
+    # getdict
+
+    # Tested in use by the other tests.
+
+    #-------------------------------------------------------------------
+    # setdict
+
+    test setdict-1.1 {restores state} -setup {
+        setup
+    } -body {
+        ::athena::coffer create coff ::tdb
+        coff setdict {cash 1 reserve 2 troops DUMMY plants DUMMY}
+        coff getdict
+    } -cleanup {
+        cleanup
+    } -result {cash 1 reserve 2 troops DUMMY plants DUMMY}
+
+    #-------------------------------------------------------------------
+    # cash
+
+    test cash-1.1 {retrieves cash-on-hand} -setup {
+        setup
+    } -body {
+        ::athena::coffer create coff ::tdb JOE
+        coff cash
+    } -cleanup {
+        cleanup
+    } -result {10000.0}
+
+    #-------------------------------------------------------------------
+    # reserve
+
+    test reserve-1.1 {retrieves cash-reserve} -setup {
+        setup
+    } -body {
+        ::athena::coffer create coff ::tdb JOE
+        coff reserve
+    } -cleanup {
+        cleanup
+    } -result {200000.0}
+
+    
+    #-------------------------------------------------------------------
+    # troops
+
+    test troops-1.1 {retrieves troop levels} -setup {
+        setup
+    } -body {
+        ::athena::coffer create coff ::tdb JOE
+        coff troops BLUE undeployed
+    } -cleanup {
+        cleanup
+    } -result {5000}
+
+    test troops-1.2 {0 if no troops are in location} -setup {
+        setup
+    } -body {
+        ::athena::coffer create coff ::tdb JOE
+        coff troops BLUE NB1
+    } -cleanup {
+        cleanup
+    } -result {0}
+    
+    #-------------------------------------------------------------------
+    # plants
+
+    test plants-1.1 {retrieve plant repair levels} -setup {
+        setup
+    } -body {
+        ::athena::coffer create coff ::tdb JOE
+        coff plants NB1
+    } -cleanup {
+        cleanup
+    } -result {0.9}
+
+    #-------------------------------------------------------------------
+    # spend
+
+    test spend-1.1 {deducts cash from cash-on-hand} -setup {
+        setup
+    } -body {
+        ::athena::coffer create coff ::tdb JOE
+        coff spend 100.0
+        coff cash
+    } -cleanup {
+        cleanup
+    } -result {9900.0}
+
+    test spend-1.2 {insufficient cash on tick} -setup {
+        setup
+    } -body {
+        ::athena::coffer create coff ::tdb JOE
+        coff spend [expr {[coff cash] + 10.0}]
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {insufficient cash}
+
+    test spend-1.3 {insufficient cash on lock} -setup {
+        setup
+        tdb strategy locking 1
+    } -body {
+        # No error on lock, but balance doesn't go negative.
+        ::athena::coffer create coff ::tdb JOE
+        coff spend [expr {[coff cash] + 10.0}]
+        coff cash
+    } -cleanup {
+        cleanup
+    } -result {0.0}
+
+    #-------------------------------------------------------------------
+    # deposit
+
+    test deposit-1.1 {transfers cash-on-hand to reserve} -setup {
+        setup
+    } -body {
+        ::athena::coffer create coff ::tdb JOE
+        coff deposit 100.0
+        list [coff cash] [coff reserve]
+    } -cleanup {
+        cleanup
+    } -result {9900.0 200100.0}
+
+    test deposit-1.2 {insufficient cash} -setup {
+        setup
+    } -body {
+        ::athena::coffer create coff ::tdb JOE
+        coff deposit 10001.0
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {insufficient cash}
+
+    #-------------------------------------------------------------------
+    # withdraw
+
+    test withdraw-1.1 {transfers reserve to cash-on-hand} -setup {
+        setup
+    } -body {
+        ::athena::coffer create coff ::tdb JOE
+        coff withdraw 100.0
+        list [coff cash] [coff reserve]
+    } -cleanup {
+        cleanup
+    } -result {10100.0 199900.0}
+
+    test withdraw-1.2 {reserve can be negative} -setup {
+        setup
+    } -body {
+        ::athena::coffer create coff ::tdb JOE
+        coff withdraw 400000.0
+        list [coff cash] [coff reserve]
+    } -cleanup {
+        cleanup
+    } -result {410000.0 -200000.0}
+    
+    #-------------------------------------------------------------------
+    # demobilize
+
+    test demobilize-1.1 {removes personnel from mobilized, undeployed} -setup {
+        setup
+    } -body {
+        ::athena::coffer create coff ::tdb JOE
+        set a [coff troops BLUE mobilized]
+        set b [coff troops BLUE undeployed]
+        coff demobilize BLUE 100
+        set c [coff troops BLUE mobilized]
+        set d [coff troops BLUE undeployed]
+        list $a $b $c $d
+    } -cleanup {
+        cleanup
+    } -result {5000 5000 4900 4900}
+    
+    test demobilize-1.2 {insufficient personnel} -setup {
+        setup
+    } -body {
+        ::athena::coffer create coff ::tdb JOE
+        coff demobilize BLUE 6000
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {insufficient personnel}
+
+    test demobilize-1.3 {can demobilize all} -setup {
+        setup
+    } -body {
+        ::athena::coffer create coff ::tdb JOE
+        set a [coff troops BLUE undeployed]
+        coff demobilize BLUE $a
+        set b [coff troops BLUE undeployed]
+        list $a $b
+    } -cleanup {
+        cleanup
+    } -result {5000 0}
+    
+
+    #-------------------------------------------------------------------
+    # mobilize
+
+    test mobilize-1.1 {adds personnel to mobilized, undeployed} -setup {
+        setup
+    } -body {
+        ::athena::coffer create coff ::tdb JOE
+        set a [coff troops BLUE mobilized]
+        set b [coff troops BLUE undeployed]
+        coff mobilize BLUE 100
+        set c [coff troops BLUE mobilized]
+        set d [coff troops BLUE undeployed]
+        list $a $b $c $d
+    } -cleanup {
+        cleanup
+    } -result {5000 5000 5100 5100}
+
+    #-------------------------------------------------------------------
+    # deploy
+
+    test deploy-1.1 {deploys undeployed personnel to neighborhood} -setup {
+        setup
+    } -body {
+        ::athena::coffer create coff ::tdb JOE
+        set a [coff troops BLUE undeployed]
+        set b [coff troops BLUE NB1]
+        coff deploy BLUE NB1 100
+        set c [coff troops BLUE undeployed]
+        set d [coff troops BLUE NB1]
+        list $a $b $c $d
+    } -cleanup {
+        cleanup
+    } -result {5000 0 4900 100}
+
+    test deploy-1.2 {insufficient personnel on tick} -setup {
+        setup
+    } -body {
+        ::athena::coffer create coff ::tdb JOE
+        coff deploy BLUE NB1 [expr {[coff troops BLUE undeployed] + 100}]
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {insufficient personnel}
+
+    test deploy-1.3 {insufficient personnel on lock} -setup {
+        setup
+        tdb strategy locking 1
+    } -body {
+        ::athena::coffer create coff ::tdb JOE
+        coff deploy BLUE NB1 [expr {[coff troops BLUE undeployed] + 100}]
+        coff troops BLUE undeployed
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+    #-------------------------------------------------------------------
+    # assign
+
+    test assign-1.1 {assigns unassigned personnel in neighborhood} -setup {
+        setup
+    } -body {
+        ::athena::coffer create coff ::tdb JOE
+        coff deploy BLUE NB1 2500
+        set a [coff troops BLUE NB1]
+        coff assign BLUE NB1 100
+        set b [coff troops BLUE NB1]
+        list $a $b
+    } -cleanup {
+        cleanup
+    } -result {2500 2400}
+
+    test assign-1.2 {insufficient personnel on tick} -setup {
+        setup
+        ::athena::coffer create coff ::tdb JOE
+        coff deploy BLUE NB1 2500
+    } -body {
+        coff assign BLUE NB1 [expr {[coff troops BLUE NB1] + 100}]
+        coff troops BLUE NB1
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {insufficient personnel}
+
+    test assign-1.3 {insufficient personnel on lock} -setup {
+        setup
+        tdb strategy locking 1
+        ::athena::coffer create coff ::tdb JOE
+        coff deploy BLUE NB1 2500
+    } -body {
+        coff assign BLUE NB1 [expr {[coff troops BLUE NB1] + 100}]
+        coff troops BLUE NB1
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+
+    #-------------------------------------------------------------------
+    # repair
+
+    test repair-1.1 {set repair level in neighborhood} -setup {
+        setup
+    } -body {
+        ::athena::coffer create coff ::tdb JOE
+        coff repair NB1 0.1
+        coff plants NB1
+    } -cleanup {
+        cleanup
+    } -result {1.0}
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+
+

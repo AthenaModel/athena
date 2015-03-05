@@ -1,0 +1,449 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-rebase.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    rebase(sim) tests.
+#
+#    This test suite tests the rebase(sim) capability. 
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Get initial time 0
+    set clockdata [tdb clock checkpoint]
+    
+    # Set up for the rebase comparison test.
+    proc setup {} {
+        tdb econ setstate ENABLED
+        tdb autogen scenario -nb 3
+        ted lock
+        ted step
+        ted step
+    }
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        variable clockdata
+
+        # Clean up the test environment
+        tdb clock restore $clockdata
+
+        if {[tdb sim state] eq "RUNNING"} {
+            tdb sim pause
+        }
+
+        if {[tdb sim state] eq "PAUSED"} {
+            tdb sim unlock
+        }
+
+        ted cleanup
+    }
+
+    # grab table ?keys? ?except? ?orderby?
+    #
+    # table    - The table name
+    # keys     - List of the names of the key columns (ignored)
+    # except   - List of columns to exclude from the grab
+    # orderby  - SQL "ORDER BY" clause, or ""
+    #
+    # Grabs the table's data as a list of dictionaries; the
+    # dictionary keys are the column names.  The parameters are
+    # ordered to match the entries in the simTables list.
+
+    proc grab {table {keys {}} {except {}} {orderby {}}} {
+        set list [list]
+        set names [list]
+
+        tdb eval "SELECT * FROM $table $orderby" row {
+            if {[info exists row(*)]} {
+                unset -nocomplain row(*)
+                foreach name [lsort [array names row]] {
+                    if {$name ni $except} {
+                        lappend names $name
+                    }
+                }
+            }
+
+            set dict [dict create]
+            foreach col $names {dict set dict $col $row($col)}
+            lappend list $dict 
+        }
+
+        return $list
+    }
+
+    # diffgrab keys before after
+    #
+    # keys      - List of names of table key columns
+    # before    - [grab] result from just before rebase.
+    # after     - [grab] result from just after lock
+    #
+    # Compares the two grab dictionaries.  It is assumed that the dictionaries
+    # have the same rows in the same order.  For each row that differs, the
+    # command outputs the key columns and the columns that differ, with the
+    # differing values labeled "b:" for before and "a:" for after.
+
+    proc diffgrab {keys before after} {
+        set result [list]
+
+        foreach bdict $before adict $after {
+            # FIRST, skip dicts that in fact match
+            if {$adict eq $bdict} {
+                continue
+            }
+            set rdict [dict create]
+
+            foreach key $keys {
+                dict set rdict $key [dict get $bdict $key]
+            }
+
+            foreach key [dict keys $bdict] {
+                set b [dict get $bdict $key]
+                set a [dict get $adict $key]
+                if {$a ne $b} {
+                    dict set rdict $key [list b:$b a:$a]
+                }
+            }
+
+            lappend result $rdict
+        }
+
+        puts [join $result \n]
+    }
+
+    #-------------------------------------------------------------------
+    # save
+    #
+    # This section tests that the proper data is saved on rebase.
+
+    test save-1.1 {civgroups data} -setup {
+        ted create JOE BLUE SHIA SUNN KURD
+        ted lock
+        ted step
+
+        foreach {g pop upc} {
+            SHIA 5000   1.0
+            SUNN 10000  5.0
+            KURD 20000  10.0
+        } {
+            tdb eval {
+                UPDATE demog_g
+                SET population=$pop,
+                    upc       =$upc
+                WHERE g=$g
+            }
+        }
+    } -body {
+        tdb rebase save
+        ted query {SELECT g, basepop, hist_flag, upc FROM civgroups}
+    } -cleanup {
+        cleanup
+    } -result {
+g    basepop hist_flag upc  
+---- ------- --------- ---- 
+SHIA 5000    1         1.0  
+SUNN 10000   1         5.0  
+KURD 20000   1         10.0 
+    }
+    
+
+    test save-1.2 {coop_fg data} -setup {
+        ted create JOE BLUE SHIA
+        ted lock
+        ted step
+        ted coop bset 1 SHIA BLUE 80.0
+    } -body {
+        tdb rebase save
+        tdb eval {
+            SELECT f, g, base, regress_to, natural 
+            FROM coop_fg WHERE f='SHIA' AND g='BLUE' 
+        }
+    } -cleanup {
+        cleanup
+    } -result {SHIA BLUE 80.0 NATURAL 50.0}
+
+    
+    test save-1.3 {frcgroups data} -setup {
+        ted create JOE BLUE BRIT SHIA
+        ted lock
+        ted step
+        foreach {g p} {BLUE 1000 BRIT 2000} {
+            tdb eval {UPDATE personnel_g SET personnel=$p WHERE g=$g}
+        }
+    } -body {
+        tdb rebase save
+        ted query {SELECT g, base_personnel FROM frcgroups}
+    } -cleanup {
+        cleanup
+    } -result {
+g    base_personnel 
+---- -------------- 
+BLUE 1000           
+BRIT 2000           
+    }
+    
+    
+    test save-1.4 {hrel_fg data} -setup {
+        ted create JOE SHIA BLUE
+        ted lock
+        ted step
+        ted hrel bset 1 SHIA BLUE 0.9
+    } -body {
+        tdb rebase save
+
+        # Note: rebase data is not saved when f=g.  Also, rebase
+        # data is not saved if current=base=nat, so as to save 
+        # disk space.
+        ted query {SELECT * FROM hrel_base_view ORDER BY f,g}
+    } -cleanup {
+        cleanup
+    } -result {
+f    ftype fbsid g    gtype gbsid nat base hist_flag current override 
+---- ----- ----- ---- ----- ----- --- ---- --------- ------- -------- 
+BLUE FRC   1     BLUE FRC   1     1.0 1.0  0         1.0     0        
+BLUE FRC   1     SHIA CIV   1              0                 0        
+SHIA CIV   1     BLUE FRC   1         0.9  1         0.0     1        
+SHIA CIV   1     SHIA CIV   1     1.0 1.0  0         1.0     0        
+    }
+    
+    test save-1.5 {nbhoods data} -setup {
+        ted create NB1 JOE BOB BLUE SHIA
+        ted lock
+        ted step
+        tdb eval {UPDATE control_n SET controller='JOE'}
+    } -body {
+        tdb rebase save
+        tdb eval {SELECT n, controller FROM nbhoods}
+    } -cleanup {
+        cleanup
+    } -result {NB1 JOE}
+    
+    test save-1.6 {orggroups data} -setup {
+        ted create JOE BLUE USAID SHIA
+        ted lock
+        ted step
+        tdb eval {UPDATE personnel_g SET personnel=100000 WHERE g='USAID'}
+    } -body {
+        tdb rebase save
+        tdb eval {SELECT g, base_personnel FROM orggroups}
+    } -cleanup {
+        cleanup
+    } -result {USAID 100000}
+
+    
+    test save-1.7 {sat_gc data} -setup {
+        ted create JOE BLUE SHIA
+        tdb econ setstate ENABLED
+        ted lock
+        ted step
+        ted sat bset 1 SHIA QOL 0.9
+    } -body {
+        tdb rebase save
+        ted query {
+            SELECT * FROM sat_gc WHERE g='SHIA' AND c='QOL'
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+g    c   base saliency hist_flag current 
+---- --- ---- -------- --------- ------- 
+SHIA QOL 0.9  1.0      1         -3.45   
+    }
+    
+    test save-1.8 {vrel_ga data} -setup {
+        ted create JOE BLUE SHIA
+        ted lock
+        ted step
+        ted vrel bset 1 SHIA JOE 0.9
+    } -body {
+        tdb rebase save
+        ted query {SELECT * FROM vrel_ga}
+    } -cleanup {
+        cleanup
+    } -result {
+g    a   base hist_flag current 
+---- --- ---- --------- ------- 
+SHIA JOE 0.9  1         0.0     
+    }
+
+    test save-1.9 {econ data} -setup {
+        ted create JOE BLUE SHIA
+        tdb econ setstate ENABLED
+        tdb econ setsam [list REMChangeRate 10.0]
+        ted lock
+        ted step
+    } -body {
+        tdb rebase save
+        set hdict [tdb econ gethist]
+        dict with hdict {
+            expr {$rem_rate == 10.0}
+        }
+    } -cleanup {
+        cleanup
+    } -result {1}
+    
+
+    #-------------------------------------------------------------------
+    # comparison
+    #
+    # This section verifies that when the rebased scenario is locked,
+    # it matches the simulation state prior to rebase.
+    
+
+    # After a rebase/lock, the tables listed here should contain the same
+    # data as before the rebase.
+    #
+    # Schema: each entry is a list {<table> <except> <orderby>}, where
+    #
+    # table    - The table name
+    # key      - Names of key columns
+    # except   - List of columns to exclude from the checkpoint
+    # orderby  - ORDER BY clause, if needed.
+
+    set simTables {
+        {activity_nga {n g a}}                  
+        {cap_access {k a}}                    
+        {cap_kg {k g}}                        
+        {cap_kn {k n}}                        
+        {caps {k}}                          
+        {control_n {n}}                     
+        {demog_g {g}}          
+        {demog_local}                   
+        {demog_n {n}}                       
+        {deploy_ng {n g}}                     
+        {ensits_t {s}}                      
+        {expenditures {a}} 
+        {force_civg {g}}  
+        {force_n {n}}
+        {force_ng {n g}}               
+        {hook_topics}                   
+        {hooks {h}}                         
+        {income_a {a}}  
+        {influence_na {n a}}                    
+        {ioms}                          
+        {mam_affinity}                  
+        {mam_belief}                    
+        {mam_entity}                    
+        {mam_playbox}                   
+        {mam_topic}                     
+        {mam_undo}                      
+        {payloads}                      
+        {personnel_g}                   
+        {service_sg}                     
+        {service_ga}                    
+        {situations}                    
+        {stance_fg}                     
+        {stance_nfg}        
+        {support_nga {n g a}}            
+        {supports_na}                   
+        {ucurve_adjustments_t}          
+        {ucurve_ctypes_t}    
+        {ucurve_curves_t {curve_id}}           
+        {ucurve_effects_t}              
+        {undostack_stack}               
+        {units {u} {location}}                         
+        {uram_a}                        
+        {uram_c}                        
+        {uram_cause}
+        {uram_civ_g g}                    
+        {uram_civrel_t}                 
+        {uram_coop_t}                   
+        {uram_frcrel_t}                 
+        {uram_g {g}}                        
+        {uram_hrel_t {f g}}                   
+        {uram_mn {m n}}     
+        {uram_n {n}}
+        {uram_nbcoop_t {n g}}                  
+        {uram_sat_t}                    
+        {uram_vrel_t}                   
+    }
+
+    # These tables are known to have problems, and are excluded from the
+    # test at the moment.
+    set excluded {
+        demog_g
+        influence_na
+        support_nga
+        ucurve_curves_t
+        uram_civ_g
+        uram_nbcoop_t
+    }
+
+    test comparison-1.1 {table comparison} -constraints tbd -setup {
+        setup
+    } -body {
+        set count 0
+
+        foreach tableRec $simTables {
+            set table [lindex $tableRec 0]
+            set before($table) [grab {*}$tableRec]
+        }
+
+        tdb sim rebase
+        ted lock
+
+        foreach tableRec $simTables {
+            lassign $tableRec table keys
+
+            if {$table in $excluded} {
+                continue
+            }
+
+            set after [grab {*}$tableRec]
+
+            if {$before($table) eq $after} {
+                incr count
+            } else {
+                puts "$table doesn't match" 
+                diffgrab $keys $before($table) $after
+                puts ""
+            }
+        }
+             
+        set count   
+    } -cleanup {
+        cleanup
+    } -result [expr {[llength $simTables] - [llength $excluded]}]
+    
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+

@@ -51,14 +51,14 @@ snit::type ::athena::control_model {
     # the model and populate the relevant tables.
 
     method start {} {
-        log normal control_model "start"
+         $adb log normal control_model "start"
 
         # FIRST, initialize the control tables
         $self PopulateNbhoodControl
         $self PopulateActorSupports
         $self PopulateActorInfluence
 
-        log normal control_model "start complete"
+         $adb log normal control_model "start complete"
     }
 
     # PopulateNbhoodControl
@@ -350,7 +350,7 @@ snit::type ::athena::control_model {
     # Handles the shift in control from cOld to cNew in n.
     
     method ShiftControl {n cNew cOld} {
-        log normal control_model "shift in $n to <$cNew> from <$cOld>"
+         $adb log normal control_model "shift in $n to <$cNew> from <$cOld>"
 
         if {$cNew eq ""} {
             $adb sigevent log 1 control "

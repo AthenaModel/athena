@@ -1,0 +1,310 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-vrel.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    vrel(sim) tests.
+#
+#    This test suite tests the vrel(sim) mutators and queries
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+
+    # Standard override
+
+    set V1 {
+        id        {SHIA JOE}
+        base      0.5
+        hist_flag 0
+        current   0.0
+    }
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        # Clean up the test environment
+        array unset parms
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # create
+
+    test create-1.1 {override is created} -setup {
+        ted create JOE SHIA
+    } -body {
+        tdb vrel create $V1
+        ted query {SELECT * FROM vrel_ga}
+    } -cleanup {
+        cleanup
+    } -result {
+g    a   base hist_flag current 
+---- --- ---- --------- ------- 
+SHIA JOE 0.5  0         0.0     
+    }
+
+    test create-2.1 {undo deletes the override} -setup {
+        ted create JOE SHIA
+        set undo [tdb vrel create $V1]
+    } -body {
+        namespace eval :: $undo
+        tdb eval {SELECT * FROM vrel_ga}
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    #-------------------------------------------------------------------
+    # delete
+
+    test delete-1.1 {Record is deleted} -setup {
+        ted create JOE SHIA
+        tdb vrel create $V1
+    } -body {
+        tdb vrel delete {SHIA JOE}
+
+        # Is SHIA gone?
+        tdb eval {SELECT g,a FROM vrel_ga}
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test delete-2.1 {Undo restores record} -setup {
+        ted create JOE SHIA
+        tdb vrel create $V1
+        set undo [tdb vrel delete {SHIA JOE}]
+    } -body {
+        namespace eval :: $undo
+        ted query {SELECT * FROM vrel_ga}
+    } -cleanup {
+        cleanup
+    } -result {
+g    a   base hist_flag current 
+---- --- ---- --------- ------- 
+SHIA JOE 0.5  0         0.0     
+    }
+
+
+    #-------------------------------------------------------------------
+    # update
+
+
+    test update-1.1 {rel is updated} -setup {
+        ted create JOE SHIA
+        tdb vrel create $V1
+    } -body {
+        tdb vrel update {
+            id        {SHIA JOE}
+            base      0.7
+            hist_flag 1
+            current   0.5
+        }
+
+        ted query {SELECT * FROM vrel_ga ORDER BY g,a}
+    } -cleanup {
+        cleanup
+    } -result {
+g    a   base hist_flag current 
+---- --- ---- --------- ------- 
+SHIA JOE 0.7  1         0.5     
+    }
+
+
+    test update-1.2 {empty values are OK} -setup {
+        ted create JOE SHIA
+        tdb vrel create $V1
+    } -body {
+        set a [ted query {SELECT * FROM vrel_ga ORDER BY g,a}]
+
+        tdb vrel update  {
+            id        {SHIA JOE}
+            base      ""
+            hist_flag ""
+            current   ""
+        }
+
+        set b [ted query {SELECT * FROM vrel_ga ORDER BY g,a}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    test update-2.1 {undo undoes the change} -setup {
+        ted create JOE SHIA
+        tdb vrel create $V1
+    } -body {
+
+        set a [ted query {SELECT * FROM vrel_ga ORDER BY g,a}]
+
+        set undo [tdb vrel update {
+            id   {SHIA JOE}
+            base  0.7
+        }]
+
+        eval $undo
+
+        set b [ted query {SELECT * FROM vrel_ga ORDER BY g,a}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    #-------------------------------------------------------------------
+    # exists
+
+    test exists-1.1 {groups do exist} -body {
+        tdb vrel exists {NONESUCH NONESUCH}
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+
+    test exists-1.2 {record does not exist} -body {
+        ted create JOE SHIA
+        tdb vrel exists {SHIA JOE}
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+    test exists-1.3 {record exists} -setup {
+        ted create JOE SHIA
+        tdb vrel create $V1
+    } -body {
+        tdb vrel exists {SHIA JOE}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    #-------------------------------------------------------------------
+    # validate
+
+    test validate-1.1 {invalid group f} -body {
+        tdb vrel validate {NONESUCH NONESUCH}
+    } -returnCodes {
+        error
+    } -result {Invalid group, none are defined}
+
+
+    test validate-1.2 {Invalid group g} -setup {
+        ted create JOE SHIA
+    } -body {
+        tdb vrel validate {NONESUCH JOE}
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Invalid group, should be one of: SHIA}
+
+    test validate-1.3 {Invalid actor a} -setup {
+        ted create JOE SHIA
+    } -body {
+        tdb vrel validate {SHIA NONESUCH}
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Invalid actor, should be one of: JOE}
+
+
+    test validate-2.1 {Valid relationship} -setup {
+        ted create JOE SHIA
+    } -body {
+        tdb vrel validate {SHIA JOE}
+    } -cleanup {
+        cleanup
+    } -result {SHIA JOE}
+
+    #-------------------------------------------------------------------
+    # vrel_base_view
+    #
+    # The gui_vrel_base_view is implemented in scenariodb_attitude.sql 
+    # and gui_attitude.sql, not in vrel.tcl,
+    # so perhaps it doesn't belong here; on the other hand, it pulls
+    # together affinities from the bsystem with relationship overrides
+    # from vrel_ga, and it ought to be tested somewhere.
+
+    test vrel_base_view-1.1 {Defaults to 1.0 for owned groups} -setup {
+        ted create JOE BLUE SHIA
+    } -body {
+        ted query {SELECT * FROM gui_vrel_base_view ORDER BY g,a}
+    } -cleanup {
+        cleanup
+    } -result {
+g    gtype gbsid owner a   absid nat base hist_flag current override 
+---- ----- ----- ----- --- ----- --- ---- --------- ------- -------- 
+BLUE FRC   1     JOE   JOE 1     1.0 1.0  0         1.0     0        
+SHIA CIV   1           JOE 1     0.0 0.0  0         0.0     0        
+    }
+
+    test vrel_base_view-1.2 {vrel_ga overrides bsystem values} -setup {
+        ted create JOE BLUE SHIA
+    } -body {
+        tdb vrel create $V1
+        tdb vrel create {id {BLUE JOE} base 0.25 hist_flag 0 current 0.0}
+        ted query {SELECT * FROM gui_vrel_base_view ORDER BY g,a}
+    } -cleanup {
+        cleanup
+    } -result {
+g    gtype gbsid owner a   absid nat base hist_flag current override 
+---- ----- ----- ----- --- ----- --- ---- --------- ------- -------- 
+BLUE FRC   1     JOE   JOE 1     1.0 0.25 0         0.25    1        
+SHIA CIV   1           JOE 1     0.0 0.5  0         0.5     1        
+    }
+
+    test vrel_base_view-1.3 {hist_flag overrides bsystem values} -setup {
+        ted create JOE BLUE SHIA
+    } -body {
+        tdb vrel create {id {BLUE JOE} base 0.25 hist_flag 1 current 0.4}
+        ted query {SELECT * FROM gui_vrel_base_view ORDER BY g,a}
+    } -cleanup {
+        cleanup
+    } -result {
+g    gtype gbsid owner a   absid nat base hist_flag current override 
+---- ----- ----- ----- --- ----- --- ---- --------- ------- -------- 
+BLUE FRC   1     JOE   JOE 1     1.0 0.25 1         0.4     1        
+SHIA CIV   1           JOE 1     0.0 0.0  0         0.0     0        
+    }
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+

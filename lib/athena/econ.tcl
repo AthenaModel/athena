@@ -29,7 +29,6 @@
 
 #-----------------------------------------------------------------------
 # Module: econ
-#
 
 snit::type ::athena::econ {
 
@@ -79,16 +78,15 @@ snit::type ::athena::econ {
         set info(state) "DISABLED"
 
         # NEXT, create the SAM
-        set sam [cellmodel sam \
+        install sam using cellmodel ${selfns}::sam \
                      -epsilon 0.000001 \
                      -maxiters 1       \
-                     -failcmd  [mymethod CellModelFailure] \
-                     -tracecmd [mymethod TraceSAM]]
+                     -failcmd  [mymethod CellModelFailure]
 
         $sam load \
             [readfile [file join $::athena::library sam6x6.cm]]
 
-        log detail econ "Read SAM from [file join $::app_athena_shared::library sam6x6.cm]"
+        $adb log detail econ "Read SAM from [file join $::athena::library sam6x6.cm]"
 
         require {[$sam sane]} "The econ model's SAM is not sane."
 
@@ -100,14 +98,14 @@ snit::type ::athena::econ {
         }
 
         # NEXT, create the CGE.
-        set cge [cellmodel cge \
+        install cge using cellmodel ${selfns}::cge \
                      -epsilon  0.000001 \
                      -maxiters 1000     \
                      -failcmd  [mymethod CellModelFailure] \
-                     -tracecmd [mymethod TraceCGE]]
+                     -tracecmd [mymethod TraceCGE]
         $cge load [readfile [file join $::athena::library cge6x6.cm]]
 
-        log detail econ "Read CGE from [file join $::app_athena_shared::library cge6x6.cm]"
+        $adb log detail econ "Read CGE from [file join $::athena::library cge6x6.cm]"
         
         require {[$cge sane]} "The econ model's CGE (cge6x6.cm) is not sane."
     }
@@ -469,9 +467,9 @@ snit::type ::athena::econ {
 
     method TraceCGE {args} {
         if {[lindex $args 0] eq "converge"} {
-            log detail econ "cge solve trace: $args"
+            $adb log detail econ "cge solve trace: $args"
         } else {
-            log debug econ "cge solve trace: $args"
+            $adb log debug econ "cge solve trace: $args"
         }
     }
 
@@ -482,9 +480,9 @@ snit::type ::athena::econ {
 
     method TraceSAM {args} {
         if {[lindex $args 0] eq "converge"} {
-            log detail econ "sam solve trace: $args"
+            $adb log detail econ "sam solve trace: $args"
         } else {
-            log debug econ "sam solve trace: $args"
+            $adb log debug econ "sam solve trace: $args"
         }
     }
 
@@ -500,7 +498,7 @@ snit::type ::athena::econ {
 
     method CellModelFailure {cm msg page} {
         # FIRST, log the warning
-        log warning econ "Cell model ailed to solve: $msg $page"
+        $adb log warning econ "Cell model ailed to solve: $msg $page"
         
         # NEXT, open a debug file for use in analyzing the problem
         set filename [workdir join .. econdebug.cmsnap]
@@ -524,7 +522,7 @@ snit::type ::athena::econ {
         set result [$sam solve]
 
         if {$result ne "ok"} {
-            log warning econ "Failed to reset SAM"
+            $adb log warning econ "Failed to reset SAM"
             error "Failed to reset SAM model"
         }
 
@@ -549,14 +547,14 @@ snit::type ::athena::econ {
         #
         # TBD: should cellmodel(n) be changed to handle symbolic 
         # "yes" and "no"?
-        sam set [list Flag.REMisTaxed \
+        $sam set [list Flag.REMisTaxed \
             [::projectlib::boolean validate [$adb parm get econ.REMisTaxed]]]
 
         # NEXT, if we have historical data to deal with, set that in 
         # the SAM. For now, just unemployment rate and the annual remittance
         # change rate
         if {$histdata(hist_flag)} {
-            sam set [list \
+            $sam set [list \
                         BaseUR            $histdata(base_ur)    \
                         REMChangeRate     $histdata(rem_rate)]
         }
@@ -743,11 +741,11 @@ snit::type ::athena::econ {
         # NEXT, set flags in the SAM and CGE indicating whether actors
         # are getting black market profits
         if {$totalBNRShares == 0} {
-            cge set [list Flag.ActorsGetBNR 0]
-            sam set [list Flag.ActorsGetBNR 0]
+            $cge set [list Flag.ActorsGetBNR 0]
+            $sam set [list Flag.ActorsGetBNR 0]
         } else {
-            cge set [list Flag.ActorsGetBNR 1]
-            sam set [list Flag.ActorsGetBNR 1]
+            $cge set [list Flag.ActorsGetBNR 1]
+            $sam set [list Flag.ActorsGetBNR 1]
         }
 
         # NEXT, compute the composite graft fraction
@@ -771,7 +769,7 @@ snit::type ::athena::econ {
 
         # NEXT, handle failures.
         if {$info(status) ne "ok"} {
-            log warning econ "Failed to initialize SAM"
+            $adb log warning econ "Failed to initialize SAM"
             $self SamError "SAM Error"
             return 0
         }
@@ -795,14 +793,14 @@ snit::type ::athena::econ {
 
         # NEXT, base prices from the SAM
         foreach i $sectors {
-            cge set [list BP.$i $samdata(BP.$i)]
+            $cge set [list BP.$i $samdata(BP.$i)]
         }
 
         # NEXT, base expenditures/revenues as a starting point for 
         # CGE BX.i.j's
         foreach i $sectors {
             foreach j $sectors {
-                cge set [list BX.$i.$j $samdata(XT.$i.$j)]
+                $cge set [list BX.$i.$j $samdata(XT.$i.$j)]
             }
         }
 
@@ -810,17 +808,17 @@ snit::type ::athena::econ {
         # CGE BQD.i.j's
         foreach i {black} {
             foreach j $sectors {
-                cge set [list BQD.$i.$j $samdata(BQD.$i.$j)]
+                $cge set [list BQD.$i.$j $samdata(BQD.$i.$j)]
             }
         }
 
         # NEXT, the base GDP
-        cge set [list BaseGDP $samdata(BaseGDP)]
+        $cge set [list BaseGDP $samdata(BaseGDP)]
 
         # NEXT, if we are loading from history, we need the historical
         # GDP
         if {$histdata(hist_flag)} {
-            cge set [list BaseGDP $histdata(base_gdp)]
+            $cge set [list BaseGDP $histdata(base_gdp)]
         }
 
         # NEXT, shape parameters for the economy
@@ -828,59 +826,59 @@ snit::type ::athena::econ {
         #-------------------------------------------------------------
         # The goods sector
         foreach i {goods black pop} {
-            cge set [list f.$i.goods $samdata(f.$i.goods)]
+            $cge set [list f.$i.goods $samdata(f.$i.goods)]
         }
        
         foreach i {actors region world} {
-            cge set [list t.$i.goods $samdata(t.$i.goods)]
+            $cge set [list t.$i.goods $samdata(t.$i.goods)]
         }
 
-        cge set [list k.goods $samdata(k.goods)]
+        $cge set [list k.goods $samdata(k.goods)]
 
         #-------------------------------------------------------------
         # The black sector
         foreach i {goods black pop} {
-            cge set [list A.$i.black $samdata(A.$i.black)]
+            $cge set [list A.$i.black $samdata(A.$i.black)]
         }
 
         foreach i {actors region world} {
-            cge set [list t.$i.black $samdata(t.$i.black)]
+            $cge set [list t.$i.black $samdata(t.$i.black)]
         }
 
         #-------------------------------------------------------------
         # The pop sector
-        cge set [list k.pop $samdata(k.pop)]
+        $cge set [list k.pop $samdata(k.pop)]
 
         foreach i {goods black pop} {
-            cge set [list f.$i.pop $samdata(f.$i.pop)]
+            $cge set [list f.$i.pop $samdata(f.$i.pop)]
         }
 
         foreach i {actors region world} {
-            cge set [list t.$i.pop $samdata(t.$i.pop)]
+            $cge set [list t.$i.pop $samdata(t.$i.pop)]
         }
 
         #-------------------------------------------------------------
         # The actors and region sectors
         foreach i $sectors {
-            cge set [list f.$i.actors $samdata(f.$i.actors)]
-            cge set [list f.$i.region $samdata(f.$i.region)]
+            $cge set [list f.$i.actors $samdata(f.$i.actors)]
+            $cge set [list f.$i.region $samdata(f.$i.region)]
         }
 
         #-------------------------------------------------------------
         # The world sector
-        cge set [list BFAA $samdata(BFAA)]
-        cge set [list BFAR $samdata(BFAR)]
+        $cge set [list BFAA $samdata(BFAA)]
+        $cge set [list BFAR $samdata(BFAR)]
 
         #-------------------------------------------------------------
         # Base values for Exports
         foreach i {goods black pop} {
-            cge set [list BEXPORTS.$i $samdata(BEXPORTS.$i)]
+            $cge set [list BEXPORTS.$i $samdata(BEXPORTS.$i)]
         }
 
         #-------------------------------------------------------------
         # A.goods.pop, the unconstrained base demand for goods in 
         # goods basket per year per capita.
-        cge set [list BA.goods.pop $samdata(BA.goods.pop)]
+        $cge set [list BA.goods.pop $samdata(BA.goods.pop)]
 
         #-------------------------------------------------------------
         # graft, the percentage skimmed off FAR by all actors
@@ -893,7 +891,7 @@ snit::type ::athena::econ {
         # NEXT, if this is from history then we use the historical
         # REM. This happens if we are initializing from a rebase.
         if {$histdata(hist_flag)} {
-            cge set [list BREM $histdata(rem)]
+            $cge set [list BREM $histdata(rem)]
         }
 
         #-------------------------------------------------------------
@@ -918,7 +916,7 @@ snit::type ::athena::econ {
     # the PREP state and enters time 0.
 
     method start {} {
-        log normal econ "start"
+        $adb log normal econ "start"
 
         # FIRST, clear out and initialize actor income tables.
         $adb eval {DELETE FROM income_a;}
@@ -935,7 +933,7 @@ snit::type ::athena::econ {
 
         if {$info(state) eq "ENABLED"} {
             # FIRST, reset the CGE
-            cge reset
+            $cge reset
 
             # NEXT, prepare the SAM with actor data
             $self PrepareSAM
@@ -954,9 +952,9 @@ snit::type ::athena::econ {
 
             set startdict [$cge get]
 
-            log normal econ "start complete"
+            $adb log normal econ "start complete"
         } else {
-            log warning econ "disabled"
+            $adb log warning econ "disabled"
         }
 
     }
@@ -967,14 +965,14 @@ snit::type ::athena::econ {
     # converged, and 0 otherwise.
 
     method tock {} {
-        log normal econ "tock"
+        $adb log normal econ "tock"
 
         if {$info(state) eq "ENABLED"} {
             $self analyze
 
-            log normal econ "tock complete"
+            $adb log normal econ "tock complete"
         } else {
-            log warning econ "disabled"
+            $adb log warning econ "disabled"
             return 1
         }
 
@@ -999,7 +997,7 @@ snit::type ::athena::econ {
     #
 
     method analyze {{opt ""}} {
-        log detail econ "analyze $opt"
+        $adb log detail econ "analyze $opt"
 
         # FIRST, get labor and consumer security factors
         set LSF [$self ComputeLaborSecurityFactor]
@@ -1015,20 +1013,20 @@ snit::type ::athena::econ {
 
             # NEXT, some globals. These only need to get set during
             # calibration
-            cge set [list Global::REMChangeRate $samdata(REMChangeRate)]
+            $cge set [list Global::REMChangeRate $samdata(REMChangeRate)]
 
             # NEXT some calibration tuning parameters
-            cge set [list GDPExponent     [$adb parm get econ.gdpExp]]
-            cge set [list EmpExponent     [$adb parm get econ.empExp]]
-            cge set [list TurFrac         [$adb parm get demog.turFrac]]
-            cge set [list Flag.REMisTaxed \
+            $cge set [list GDPExponent     [$adb parm get econ.gdpExp]]
+            $cge set [list EmpExponent     [$adb parm get econ.empExp]]
+            $cge set [list TurFrac         [$adb parm get demog.turFrac]]
+            $cge set [list Flag.REMisTaxed \
                 [::projectlib::boolean validate [$adb parm get econ.REMisTaxed]]]
 
             # NEXT, the base unemployed
             let baseUnemp {$demdata(labor_force) * $samdata(BaseUR) / 100.0}
 
             # NEXT, demographic data
-            cge set [list \
+            $cge set [list \
                          BaseConsumers $demdata(consumers)     \
                          BaseUnemp     $baseUnemp              \
                          BaseLF        $demdata(labor_force)   \
@@ -1039,34 +1037,34 @@ snit::type ::athena::econ {
                          In::CSF       $CSF]
 
             # NEXT, subsistence wage, the poverty level
-            cge set [list In::SubWage $samdata(BaseSubWage)]
+            $cge set [list In::SubWage $samdata(BaseSubWage)]
 
             # NEXT, foreign aid to the region
-            cge set [list In::FAR $samdata(BFAR)]
+            $cge set [list In::FAR $samdata(BFAR)]
 
             # NEXT, foreign aid to actors
-            cge set [list In::FAA $samdata(BFAA)]
+            $cge set [list In::FAA $samdata(BFAA)]
 
             # NEXT, remittances
-            cge set [list In::REM $samdata(BREM)]
+            $cge set [list In::REM $samdata(BREM)]
 
             # NEXT, override remittances with historical data if necessary
             if {$histdata(hist_flag)} {
-                cge set [list In::REM $histdata(rem)]
+                $cge set [list In::REM $histdata(rem)]
             }
 
             # NEXT, exports
             foreach i {goods black pop} {
-                cge set [list In::EXPORTS.$i $samdata(BEXPORTS.$i)]
+                $cge set [list In::EXPORTS.$i $samdata(BEXPORTS.$i)]
             }
 
             # NEXT, black market capacity
-            cge set [list In::CAP.black  $samdata(BaseCAP.black)]
+            $cge set [list In::CAP.black  $samdata(BaseCAP.black)]
 
             # NEXT, number engaged in subsistence agriculture
             let subsisters {$demdata(population) - $demdata(consumers)}
-            cge set [list BaseSubsisters $subsisters]
-            cge set [list In::Subsisters $subsisters]
+            $cge set [list BaseSubsisters $subsisters]
+            $cge set [list In::Subsisters $subsisters]
 
             # NEXT, actors expenditures. Multiplication by 52 because the
             # CGE has money flows in years.
@@ -1078,7 +1076,7 @@ snit::type ::athena::econ {
             let Xba {$exp(black)  * 52.0}
             let Xpa {$exp(pop)    * 52.0}
 
-            cge set [list \
+            $cge set [list \
                          In::X.world.actors  $Xwa \
                          In::X.region.actors $Xra \
                          In::X.goods.actors  $Xga \
@@ -1086,7 +1084,7 @@ snit::type ::athena::econ {
                          In::X.pop.actors    $Xpa]       
 
             # NEXT, actors revenue
-            cge set [list \
+            $cge set [list \
                          In::X.actors.goods  $samdata(XT.actors.goods)  \
                          In::X.actors.black  $samdata(XT.actors.black)  \
                          In::X.actors.pop    $samdata(XT.actors.pop)    \
@@ -1094,7 +1092,7 @@ snit::type ::athena::econ {
                          In::X.actors.world  $samdata(XT.actors.world)]
 
             # NEXT, black market feedstocks
-            cge set [list \
+            $cge set [list \
                         AF.world.black  $samdata(AF.world.black) \
                         MF.world.black  $samdata(MF.world.black) \
                         BPF.world.black $samdata(PF.world.black)]
@@ -1104,7 +1102,7 @@ snit::type ::athena::econ {
             # here
 
             # NEXT, calibrate the CGE.
-            set status [cge solve]
+            set status [$cge solve]
 
             set info(status) [lindex $status 0]
 
@@ -1121,13 +1119,13 @@ snit::type ::athena::econ {
 
             # NEXT, handle failures.
             if {$info(status) ne "ok"} {
-                log warning econ "Failed to calibrate: $info(page)"
+                $adb log warning econ "Failed to calibrate: $info(page)"
                 $self CgeError "CGE Calibration Error"
                 return 0
             }
 
             # NEXT, retrieve the initial CAP.goods.
-            array set out [cge get Out -bare]
+            array set out [$cge get Out -bare]
             set CAPgoods $out(BQS.goods)
 
             foreach n [$adb nbhood names] {
@@ -1175,7 +1173,7 @@ snit::type ::athena::econ {
         # NEXT, compute an updated value for REM
         set REM [$self ComputeREM]
 
-        cge set [list \
+        $cge set [list \
                      In::Consumers  $demdata(consumers)     \
                      In::Subsisters $subsisters             \
                      In::LF         $demdata(labor_force)   \
@@ -1192,7 +1190,7 @@ snit::type ::athena::econ {
         # here
 
         # NEXT, actors expenditures
-        cge set [list \
+        $cge set [list \
                      In::X.world.actors  $Xwa \
                      In::X.region.actors $Xra \
                      In::X.goods.actors  $Xga \
@@ -1201,7 +1199,7 @@ snit::type ::athena::econ {
 
 
         # Solve the CGE.
-        set status [cge solve In Out]
+        set status [$cge solve In Out]
         set info(status) [lindex $status 0]
 
         if {$info(status) ne "ok"} {
@@ -1217,7 +1215,7 @@ snit::type ::athena::econ {
 
         # NEXT, handle failures
         if {$info(status) ne "ok"} {
-            log warning econ "Economic analysis failed"
+            $adb log warning econ "Economic analysis failed"
             $self CgeError "CGE Solution Error"
             return 0
         }
@@ -1228,7 +1226,7 @@ snit::type ::athena::econ {
         if {$opt ne "-calibrate"} {
 
             # Jobs comes from the capacity constrained M page
-            array set data [cge get M -bare]
+            array set data [$cge get M -bare]
 
             foreach n [$adb nbhood local names] {
                 set cap [$adb plant capacity n $n]
@@ -1308,14 +1306,14 @@ snit::type ::athena::econ {
 
         let Xaw {$Xaw + ($budgetXaw * 52.0)}
 
-        cge set [list \
+        $cge set [list \
                     In::X.actors.goods  $Xag \
                     In::X.actors.black  $Xab \
                     In::X.actors.pop    $Xap \
                     In::X.actors.region $Xar \
                     In::X.actors.world  $Xaw] 
 
-        log detail econ "analysis complete"
+        $adb log detail econ "analysis complete"
         
         return 1
     }
@@ -1524,7 +1522,7 @@ snit::type ::athena::econ {
     # no _page_ is specified, only the *out* page is included.
 
     method dump {{page Out}} {
-        set pages [linsert [cge pages] 0 all]
+        set pages [linsert [$cge pages] 0 all]
 
         if {$page ni $pages} {
             set pages [join $pages ", "]
@@ -1532,7 +1530,7 @@ snit::type ::athena::econ {
                 "Invalid page name \"$page\", should be one of: $pages"
         }
 
-        cge dump $page
+        $cge dump $page
     }
 
     # getstart
@@ -1564,12 +1562,12 @@ snit::type ::athena::econ {
     method samcell {parmdict} {
         dict with parmdict {
             # FIRST, get the old value, this is for undo
-            set oldval [dict get [sam get] $id]
+            set oldval [dict get [$sam get] $id]
 
             # NEXT, update the cell model, solve it and notify that the 
             # cell has been updated
-            sam set [list $id $val]
-            sam solve
+            $sam set [list $id $val]
+            $sam solve
             $adb notify econ <SamUpdate> $id $val
 
             # NEXT, return the undo command
@@ -1590,12 +1588,12 @@ snit::type ::athena::econ {
     method cgecell {parmdict} {
         dict with parmdict {
             # FIRST, get the old value, this is for undo
-            set oldval [dict get [cge get] $id]
+            set oldval [dict get [$cge get] $id]
 
             # NEXT, update the cell model, solve it and notify that the 
             # cell has been updated
-            cge set [list $id $val]
-            cge solve In Out
+            $cge set [list $id $val]
+            $cge solve In Out
 
             $adb notify econ <CgeUpdate>
 
@@ -1659,15 +1657,15 @@ snit::type ::athena::econ {
 
         # NEXT, zero the actors sector, it'll get recomputed at the
         # proper time from rebased actor data
-        set sectors [sam index i]
+        set sectors [$sam index i]
 
         foreach i $sectors {
-            sam set [list BX.actors.$i 0.0]
-            sam set [list BX.$i.actors 0.0]
+            $sam set [list BX.actors.$i 0.0]
+            $sam set [list BX.$i.actors 0.0]
         }
 
         # NEXT, store pertinent history
-        array set cgedata [cge get]
+        array set cgedata [$cge get]
 
         set histdata(rem)        $cgedata(In::REM)
         set histdata(rem_rate)   $cgedata(Global::REMChangeRate)
@@ -1717,8 +1715,8 @@ snit::type ::athena::econ {
             set info(changed) 0
         }
 
-        return [list sam [sam get] \
-                     cge [cge get] \
+        return [list sam [$sam get] \
+                     cge [$cge get] \
                      startdict $startdict \
                      histdata [array get histdata] \
                      info [array get info]]
@@ -1740,12 +1738,12 @@ snit::type ::athena::econ {
 
         if {[dict size $checkpoint] > 0} {
             # FIRST, restore the checkpoint data
-            sam set [dict get $checkpoint sam]
-            cge set [dict get $checkpoint cge]
+            $sam set [dict get $checkpoint sam]
+            $cge set [dict get $checkpoint cge]
 
             # NEXT, solve the SAM we need to have all computed values
             # updated
-            sam solve
+            $sam solve
 
             set startdict [dict get $checkpoint startdict]
             array set histdata [dict get $checkpoint histdata]

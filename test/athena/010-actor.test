@@ -1,0 +1,600 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-actor.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    actor(sim) tests.
+#
+#    This test suite tests the actor(sim) mutators and queries
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        # Clean up the test environment
+        array unset parms
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # mutate create
+
+    test create-1.1 {actor is created} -body {
+        tdb actor create [ted entity JOE]
+        ted querylist {SELECT * FROM actors}
+    } -cleanup {
+        cleanup
+    } -result {
+a                 JOE
+longname          Joe the Actor
+bsid              1
+supports          JOE
+atype             INCOME
+auto_maintain     0
+cash_reserve      200000.0
+cash_on_hand      0.0
+income_goods      10000.0
+shares_black_nr   0
+income_black_tax  0.0
+income_pop        0.0
+income_graft      0.0
+income_world      0.0
+budget            0.0
+    }
+
+    test create-1.3 {supports=NONE => NULL} -body {
+        tdb actor create [dict merge [ted entity JOE] {supports NONE}]
+        ted querylist {SELECT * FROM actors}
+    } -cleanup {
+        cleanup
+    } -result {
+a                 JOE
+longname          Joe the Actor
+bsid              1
+supports          
+atype             INCOME
+auto_maintain     0
+cash_reserve      200000.0
+cash_on_hand      0.0
+income_goods      10000.0
+shares_black_nr   0
+income_black_tax  0.0
+income_pop        0.0
+income_graft      0.0
+income_world      0.0
+budget            0.0
+    }
+
+    test create-1.4 {Strategy created} -body {
+        tdb actor create [ted entity JOE]
+        info object isa object [tdb strategy getname JOE]
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    test create-2.1 {undo deletes the actor} -setup {
+        tdb actor create [ted entity JOE]
+        set undo [tdb actor create [ted entity BOB]]
+    } -body {
+        namespace eval :: $undo
+        tdb eval {SELECT a FROM actors}
+    } -cleanup {
+        cleanup
+    } -result {JOE}
+
+    test create-2.3 {undo deletes the strategy} -setup {
+        set undo [tdb actor create [ted entity JOE]]
+    } -body {
+        namespace eval :: $undo
+        info object isa object ::strategy::JOE
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+    #-------------------------------------------------------------------
+    # mutate delete
+
+    test delete-1.1 {Actor is deleted} -setup {
+        ted create JOE BOB
+    } -body {
+        tdb actor delete JOE
+
+        # Is JOE gone?
+        tdb eval {SELECT a FROM actors}
+    } -cleanup {
+        cleanup
+    } -result {BOB}
+
+    test delete-2.1 {Undo restores actor} -setup {
+        ted create JOE
+        set undo [tdb actor delete JOE]
+    } -body {
+        namespace eval :: $undo
+        ted querylist {SELECT * FROM actors}
+    } -cleanup {
+        cleanup
+    } -result {
+a                 JOE
+longname          Joe the Actor
+bsid              1
+supports          JOE
+atype             INCOME
+auto_maintain     0
+cash_reserve      200000.0
+cash_on_hand      0.0
+income_goods      10000.0
+shares_black_nr   0
+income_black_tax  0.0
+income_pop        0.0
+income_graft      0.0
+income_world      0.0
+budget            0.0
+    }
+
+    test delete-4.1 {groups.a set to NULL} -setup {
+        ted create JOE BLUE USAID
+    } -body {
+        tdb actor delete JOE
+
+        tdb eval {SELECT g,a FROM groups}
+    } -cleanup {
+        cleanup
+    } -result {BLUE {} USAID {}}
+
+    test delete-4.2 {Undo restores groups.a} -setup {
+        ted create JOE BLUE
+    } -body {
+        set a [tdb eval {SELECT g,a FROM groups}]
+
+        set undo [tdb actor delete JOE]
+        namespace eval :: $undo
+
+        set b [tdb eval {SELECT g,a FROM groups}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    # 6.* Obsolete
+
+    test delete-7.1 {Owned strategy deleted} -setup {
+        ted create JOE
+    } -body {
+        set a [info object isa object [tdb strategy getname JOE]]
+        tdb actor delete JOE
+        set b [info object isa object ::strategy::JOE]
+
+        list $a $b
+    } -cleanup {
+        cleanup
+    } -result {1 0}
+
+    test delete-7.2 {Undo restores strategy} -setup {
+        ted create JOE
+        set undo [tdb actor delete JOE]
+    } -body {
+        namespace eval :: $undo
+        info object isa object [tdb strategy getname JOE]
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test delete-8.1 {actors.supports set to NULL} -setup {
+        ted create JOE BOB
+        tdb eval {
+            UPDATE actors SET supports = 'BOB' WHERE a = 'JOE'
+        }
+    } -body {
+        tdb actor delete BOB
+
+        tdb onecolumn {SELECT supports FROM actors WHERE a='JOE'}
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test delete-8.2 {Undo restores actors.supports} -setup {
+        ted create JOE BOB
+        tdb eval {
+            UPDATE actors SET supports = 'BOB' WHERE a = 'JOE'
+        }
+    } -body {
+        set a [tdb eval {SELECT a,supports FROM actors}]
+
+        set undo [tdb actor delete BOB]
+        namespace eval :: $undo
+
+        set b [tdb eval {SELECT a,supports FROM actors}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test delete-9.1 {deletes vrel_ga overrides} -setup {
+        ted create JOE SHIA
+        ted order VREL:OVERRIDE id {SHIA JOE}
+    } -body {
+        tdb actor delete JOE
+
+        tdb eval {SELECT g,a FROM vrel_ga ORDER BY g,a}
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test delete-9.2 {undo restores vrel_ga overrides} -setup {
+        ted create JOE SHIA
+        ted order VREL:OVERRIDE id {SHIA JOE}
+
+        set undo [tdb actor delete JOE]
+    } -body {
+        namespace eval :: $undo
+
+        tdb eval {SELECT g,a FROM vrel_ga ORDER BY g,a}
+    } -cleanup {
+        cleanup
+    } -result {SHIA JOE}
+
+    test delete-10.1 {caps.owner is set to NULL} -setup {
+        ted create JOE CBS
+    } -body {
+        tdb actor delete JOE
+        tdb eval {SELECT k,owner FROM caps}
+    } -cleanup {
+        cleanup
+    } -result {CBS {}}
+
+    test delete-10.2 {undo restores caps.owner} -setup {
+        ted create JOE CBS
+    } -body {
+        set a [tdb eval {SELECT owner FROM caps}]
+
+        set undo [tdb actor delete JOE]
+        namespace eval :: $undo
+
+        set b [tdb eval {SELECT owner FROM caps}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    #-------------------------------------------------------------------
+    # mutate update
+
+
+    test update-1.1 {actor is updated} -setup {
+        ted create JOE
+    } -body {
+        # NOTE: Because the atype changes, the
+        # INPUT-atype-specific columns are zeroed.
+        tdb actor update {
+            a                JOE
+            longname         "Joe the Actress"
+            bsid             2
+            supports         NONE
+            atype            BUDGET
+            cash_reserve     0
+            cash_on_hand     10
+            income_goods     4
+            shares_black_nr  5
+            income_black_tax 6
+            income_pop       7
+            income_graft     8
+            income_world     9
+            budget           10
+        }
+
+        ted querylist {SELECT * FROM actors}
+    } -cleanup {
+        cleanup
+    } -result {
+a                 JOE
+longname          Joe the Actress
+bsid              2
+supports          
+atype             BUDGET
+auto_maintain     0
+cash_reserve      0.0
+cash_on_hand      0.0
+income_goods      0.0
+shares_black_nr   0
+income_black_tax  0.0
+income_pop        0.0
+income_graft      0.0
+income_world      0.0
+budget            10.0
+    }
+
+
+    test update-1.2 {empty values are OK} -setup {
+        ted create JOE
+    } -body {
+        set a [ted querylist {SELECT * FROM actors}]
+
+        tdb actor update  {
+            a                JOE
+            longname         ""
+            bsid             ""
+            supports         ""
+            atype            ""
+            cash_reserve     ""
+            cash_on_hand     ""
+            income_goods     ""
+            shares_black_nr  ""
+            income_black_tax ""
+            income_pop       ""
+            income_graft     ""
+            income_world     ""
+            budget           ""
+        }
+
+        set b [ted querylist {SELECT * FROM actors}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    test update-2.1 {undo undoes the change} -setup {
+        ted create JOE BOB
+    } -body {
+
+        set a [ted querylist {SELECT * FROM actors}]
+
+        set undo [tdb actor update {
+            a                JOE
+            longname         "Joe the Actress"
+            supports         BOB
+            atype            BUDGET
+            cash_reserve     ""
+            cash_on_hand     ""
+            income_goods     ""
+            shares_black_nr  ""
+            income_black_tax ""
+            income_pop       ""
+            income_graft     ""
+            income_world     ""
+            budget           10.0
+        }]
+
+        namespace eval :: $undo
+
+        set b [ted querylist {SELECT * FROM actors}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+
+    #-------------------------------------------------------------------
+    # names
+
+    test names-1.1 {Returns names: none defined} -body {
+        tdb actor names
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test names-1.2 {Returns names} -setup {
+        ted create JOE BOB
+    } -body {
+        tdb actor names
+    } -cleanup {
+        cleanup
+    } -result {BOB JOE}
+
+
+    #-------------------------------------------------------------------
+    # validate
+
+    test validate-1.1 {Invalid name: none defined} -body {
+        tdb actor validate NONESUCH
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Invalid actor, none are defined}
+
+    test validate-1.2 {Invalid name: some defined} -setup {
+        ted create JOE BOB
+    } -body {
+        tdb actor validate NONESUCH
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Invalid actor, should be one of: BOB, JOE}
+
+    test validate-2.1 {Valid name} -setup {
+        ted create JOE BOB
+    } -body {
+        tdb actor validate BOB
+    } -cleanup {
+        cleanup
+    } -result {BOB}
+
+    #-------------------------------------------------------------------
+    # exists
+
+    # Tested by validate.
+    
+
+    #-------------------------------------------------------------------
+    # get
+
+    test get-1.1 {get actor dict} -setup {
+        ted create JOE
+    } -body {
+        ted pdicts [tdb actor get JOE]
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+        a                JOE
+        atype            INCOME
+        auto_maintain    0
+        bsid             1
+        budget           0.0
+        cash_on_hand     0.0
+        cash_reserve     200000.0
+        income_black_tax 0.0
+        income_goods     10000.0
+        income_graft     0.0
+        income_pop       0.0
+        income_world     0.0
+        longname         {Joe the Actor}
+        shares_black_nr  0
+        supports         JOE
+    }
+
+    test get-1.2 {get actor attribute} -setup {
+        ted create JOE
+    } -body {
+        tdb actor get JOE income_goods
+    } -cleanup {
+        cleanup
+    } -result {10000.0}
+
+
+    #-------------------------------------------------------------------
+    # view
+
+    test view-1.1 {view actor dict} -setup {
+        ted create JOE
+    } -body {
+        ted pdicts [tdb actor view JOE]
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+        a                JOE
+        atype            INCOME
+        auto_maintain    0
+        bsid             1
+        bsysname         {Neutral (1)}
+        budget           0.00
+        cash_on_hand     0.00
+        cash_reserve     200,000
+        fancy            {JOE: Joe the Actor}
+        id               JOE
+        income           10,000
+        income_black_tax 0.00
+        income_goods     10,000
+        income_graft     0.00
+        income_pop       0.00
+        income_world     0.00
+        link             {<a href="my://app/actor/JOE">JOE</a>}
+        longlink         {<a href="my://app/actor/JOE">JOE: Joe the Actor</a>}
+        longname         {Joe the Actor}
+        pretty_am_flag   No
+        shares_black_nr  0
+        supports         SELF
+        supports_link    SELF
+        url              my://app/actor/JOE
+    }
+
+    #-------------------------------------------------------------------
+    # income
+
+    test income-1.1 {get actor income, no income_a} -setup {
+        ted create JOE
+
+        tdb actor update {
+            a                JOE
+            supports         ""
+            atype            ""
+            cash_reserve     ""
+            cash_on_hand     ""
+            income_goods     1
+            income_black_tax 10
+            income_pop       100
+            income_graft     1000
+            income_world     10000
+            budget           ""
+        }
+    } -body {
+        tdb actor income JOE
+    } -cleanup {
+        cleanup
+    } -result {11111.0}
+
+    test income-1.2 {get actor income, income_a} -setup {
+        ted create JOE BOB
+
+        tdb eval {
+            INSERT INTO income_a(a, income) VALUES('JOE',12345.0)
+        }
+    } -body {
+        tdb actor income JOE
+    } -cleanup {
+        cleanup
+    } -result {12345.0}
+    
+    test income-1.3 {get actor income, budget} -setup {
+        ted create JOE
+
+        tdb actor update {
+            a                JOE
+            supports         ""
+            atype            BUDGET
+            cash_reserve     ""
+            cash_on_hand     ""
+            income_goods     ""
+            income_black_tax ""
+            income_pop       ""
+            income_graft     ""
+            income_world     ""
+            budget           12345.0
+        }
+    } -body {
+        tdb actor income JOE
+    } -cleanup {
+        cleanup
+    } -result {12345.0}
+
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+
