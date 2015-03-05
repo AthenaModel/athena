@@ -41,6 +41,7 @@ namespace eval ::athena_test::tests:: {
     proc cleanup {} {
         # Clean up the test environment
         ted cleanup
+        tcltest::removeFile econdebug.cmsnap
     }
 
     test samupdate-1.1 {sam is updated} -setup {

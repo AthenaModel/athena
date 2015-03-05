@@ -449,7 +449,7 @@ snit::type ::athena::econ {
 
             $ht put   "A file called econdebug.cmsnap that contains the set "
             $ht put   "of initial conditions that led to this problem "
-            $ht put   "is located in [file normalize [workdir join ..]] "
+            $ht put   "is located in [file normalize [$adb scratch]] "
             $ht put   "and can be used for debugging this problem."
 
             $ht para
@@ -501,7 +501,7 @@ snit::type ::athena::econ {
         $adb log warning econ "Cell model ailed to solve: $msg $page"
         
         # NEXT, open a debug file for use in analyzing the problem
-        set filename [workdir join .. econdebug.cmsnap]
+        set filename [$adb scratch econdebug.cmsnap]
         set f [open $filename w]
 
         # NEXT, dump the CGE initial state

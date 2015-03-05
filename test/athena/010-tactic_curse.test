@@ -63,7 +63,7 @@ namespace eval ::athena_test::tests:: {
             mag      1.0
 
         # Verify that unused columns contain NULL
-        tdb nullvalue "@"
+        tdb rdb nullvalue "@"
 
         set B1 [ted addblock SYSTEM]
         set T2 [ted addtactic $B1 CURSE {*}$T2]
@@ -154,7 +154,7 @@ namespace eval ::athena_test::tests:: {
             mag      1.0
 
         # Verify that unused columns contain NULL
-        tdb nullvalue "@"
+        tdb rdb nullvalue "@"
 
         set B1 [ted addblock SYSTEM]
         set T1 [ted addtactic $B1 CURSE {*}$T1]
@@ -162,13 +162,13 @@ namespace eval ::athena_test::tests:: {
 
     proc execute_setup {} {
         setup
-        [tdb athenadb] aram init
+        tdb aram init
         tdb demog start
     }
 
     proc empty_setup {} {
         esetup
-        [tdb athenadb] aram init
+        tdb aram init
         tdb demog start
     }
 
@@ -176,7 +176,7 @@ namespace eval ::athena_test::tests:: {
 
     proc cleanup {} {
         # Clean up the test environment
-        tdb nullvalue ""
+        tdb rdb nullvalue ""
         array unset parms
         ted cleanup
     }
