@@ -11,9 +11,6 @@
 #    This module is responsible for managing messages and the operations
 #    upon them.  As such, it is a type ensemble.
 #
-# TBD:
-#    * Global entities in use: payload
-#
 #-----------------------------------------------------------------------
 
 snit::type ::athena::iom {

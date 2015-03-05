@@ -11,10 +11,6 @@
 #    This module is responsible for managing neighborhoods and operations
 #    upon them.
 #
-# TBD: 
-#    * Global references: notifier bind, ptype, refpoint, app/messagebox, 
-#      sim
-#
 #-----------------------------------------------------------------------
 
 snit::type ::athena::nbhood {

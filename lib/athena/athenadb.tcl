@@ -366,15 +366,11 @@ snit::type ::athena::athenadb {
     # Creates the RDB Component.
     #
     # TODO:
-    #   * Make ::simclock a true component
-    #   * Merge scenariodb(n) into this object.
+    #   * Merge scenariodb(n) into this object?
     #     * Merge "marksaved" code in scenariodb(n) into sqldocument(n).
     #   * Consider where SQL sections should be registered.
-    #   * Consider where table monitoring should be done.  I don't
-    #     think the grand scenario object will need it internally.
     #   * Consider how to clean up sqldocument so that the temp schema
     #     can be defined in an sqlsection.
-    #   * Remove ::rdb alias when it is no longer needed.
     #   
 
     method CreateRDB {} {
@@ -1147,9 +1143,6 @@ snit::type ::athena::athenadb {
 
     #===================================================================
     # SQL Functions
-    #
-    # TODO: Some should be application specific.
-    
 
     # Locked
     #

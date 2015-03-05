@@ -11,8 +11,6 @@
 #    This module is responsible for managing units of all kinds, and 
 #    operations upon them.  As such, it is a type ensemble.
 #
-# TBD: Global refs: $adb, $adb pot, unit, $self, nbhood, group
-#
 #-----------------------------------------------------------------------
 
 snit::type ::athena::unit {

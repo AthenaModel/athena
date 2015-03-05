@@ -23,8 +23,6 @@
 #    * ::athena::strategy, the strategy bean.
 #    * The various ::strategy::* orders.
 #
-# TBD: Global refs: sim, plant, service, service_eni
-#
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------

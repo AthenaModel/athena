@@ -14,8 +14,6 @@
 #    for load testing, unit testing or for use by the automated
 #    test suite.
 #
-# TBD: Global refs: app, map
-#
 #-----------------------------------------------------------------------
 
 snit::type ::athena::autogen {

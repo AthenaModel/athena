@@ -13,10 +13,6 @@
 #    Semantic hooks are sent as part tactics that employ information
 #    operations.
 #
-# TBD:
-#    * Global entities in use: bsys
-#    * Need a way to elevate Are you sure messagebox popups to app gui.
-#
 #-----------------------------------------------------------------------
 
 snit::type ::athena::hook {

@@ -9,8 +9,6 @@
 #    athena(n): Number gofer, a number, floating-or-integer, produced 
 #    according to one of various rules
 #
-# TBD: Global ref: ptype, sim
-#
 #-----------------------------------------------------------------------
 
 ::athena::goferx define NUMBER value {
@@ -491,11 +489,6 @@
         }
     }
 }
-
-#-----------------------------------------------------------------------
-# Helper Commands
-
-# TBD
 
 #-----------------------------------------------------------------------
 # Gofer Rules

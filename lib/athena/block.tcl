@@ -510,7 +510,6 @@ oo::class create ::athena::block {
         $ht putln "The conditions are as follows:"
         $ht para
 
-        # TBD: Add state
         $ht table {
             "Status" "ID" "Name" "Type" "State" "Narrative"
         } {

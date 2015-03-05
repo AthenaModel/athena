@@ -32,10 +32,6 @@
 #    g    <= g         g   <= g        c   <= c        a   <= a
 #    mag  <= mag       mag <= mag      mag <= mag      mag <= mag
 # 
-# TBD:
-#    * Global entities in use: iom, frcgroup, group, actor
-#
-#
 #-----------------------------------------------------------------------
 
 snit::type ::athena::payload {

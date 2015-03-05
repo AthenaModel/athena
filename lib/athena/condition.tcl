@@ -128,7 +128,6 @@ oo::define ::athena::condition {
     # Instance Variables
 
     variable parent   ;# The bean ID of the condition's owning block
-                       # TBD: in the long run, it won't always be a block.
     variable state    ;# The condition's state
     variable metflag  ;# 1 if condition is met, 0 if it is unmet, 
                        # or "" if the result is unknown

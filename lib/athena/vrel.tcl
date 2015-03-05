@@ -32,8 +32,6 @@
 #    This module concerns itself only with the scenario inputs.  For
 #    the dynamic relationship values, see URAM.
 #
-# TBD: Global refs: group, actor, $adb, vrel
-#
 #-----------------------------------------------------------------------
 
 snit::type ::athena::vrel {

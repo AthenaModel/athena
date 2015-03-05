@@ -12,10 +12,6 @@
 #    This module is responsible for managing messages and the operations
 #    upon them.
 #
-# TBD: Global refs: ::gofer::GROUPS, ::gofer::ACTORS,
-# gofer::CIVGROUPS, gofer::FRCGROUPS, inject,
-# app/messagebox
-#
 #-----------------------------------------------------------------------
 
 snit::type ::athena::curse {

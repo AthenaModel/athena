@@ -16,8 +16,6 @@
 #    * History export, which exports the orders in the cif table
 #      (this is the classic export mode).
 #
-# TBD: Global refs: map, simclock
-#
 #-----------------------------------------------------------------------
 
 snit::type ::athena::exporter {

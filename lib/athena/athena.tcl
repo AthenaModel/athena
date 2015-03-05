@@ -101,9 +101,6 @@ snit::type ::athena::athena {
     #-------------------------------------------------------------------
     # Delegated commands
 
-    # TBD: Review commands which are ensembles; and verify which 
-    # subcommands we really want to expose.
-
     # ADB
     delegate method adbfile                 to adb
     delegate method autogen                 to adb

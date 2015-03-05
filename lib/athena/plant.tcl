@@ -19,8 +19,6 @@
 # Note that plants owned by the SYSTEM agent are automatically kept at
 # their initial state of repair and do not need to be maintained.
 #
-# TBD:
-#    * Global entities in use: econ, money, actor
 #-----------------------------------------------------------------------
 
 snit::type ::athena::plant {

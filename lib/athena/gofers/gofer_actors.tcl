@@ -9,8 +9,6 @@
 #    athena(n): ACTORS gofer - A list of actors produced according to 
 #    various rules
 #
-# TBD: Global refs: ptype
-#
 #-----------------------------------------------------------------------
 
 

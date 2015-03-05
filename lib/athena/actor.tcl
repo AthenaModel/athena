@@ -11,10 +11,6 @@
 #    This module is responsible for managing political actors and operations
 #    upon them.  As such, it is a type ensemble.
 #
-# TBD:
-#    * Global entities in use: ::ptype, ::app
-#      * Need a way to elevate Are You Sure messages to app gui.
-#
 #-----------------------------------------------------------------------
 
 snit::type ::athena::actor {

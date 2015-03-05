@@ -34,9 +34,6 @@
 #    g    <= g        g   <= g       c   <= c       a   <= a
 #    mag  <= mag      mag <= mag     mag <= mag     mag <= mag
 # 
-# TBD:
-#    * Global entities in use: curse
-#
 #-----------------------------------------------------------------------
 
 snit::type ::athena::inject {

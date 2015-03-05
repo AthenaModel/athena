@@ -11,8 +11,6 @@
 #    This module manages the overall simulation, as distinct from the 
 #    the purely scenario-data oriented work done by scenario(sim).
 #
-# TBD: Global refs: app/messagebox.
-#
 #-----------------------------------------------------------------------
 
 snit::type ::athena::sim {

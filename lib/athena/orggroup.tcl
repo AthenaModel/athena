@@ -11,8 +11,6 @@
 #    This module is responsible for managing organization groups and 
 #    operations upon them.
 #
-# TBD: Global references: app/messagebox
-#
 #-----------------------------------------------------------------------
 
 snit::type ::athena::orggroup {
