@@ -7,7 +7,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    app_sim(1) Test Execution Deputy tests.
+#    athena(n) Test Execution Deputy tests.
 #
 #    This test suite tests the test infrastructure itself: for example,
 #    can we advance time and read game truth variables?  It's named
@@ -21,7 +21,7 @@
 if {[lsearch [namespace children] ::tcltest] == -1} {
     source [file join [file dirname [file normalize [info script]]] ted.tcl]
 
-    # Initialize tcltest(n), app_athena(n), et al.
+    # Initialize tcltest(n), athena(n), et al.
     ted init $argv
 }
 

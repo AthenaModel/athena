@@ -7,7 +7,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    Tcltest test suite for app_athena(n).
+#    Tcltest test suite for athena(n).
 #    This test script invokes all of the others in alphabetical order.
 #
 #-----------------------------------------------------------------------
@@ -18,7 +18,7 @@
 if {[lsearch [namespace children] ::tcltest] == -1} {
     source [file join [file dirname [file normalize [info script]]] ted.tcl]
 
-    # Initialize tcltest(n), app_athena(n), et al.
+    # Initialize tcltest(n), athena(n), et al.
     ted init $argv
 }
 

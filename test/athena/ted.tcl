@@ -100,7 +100,7 @@ snit::type ted {
     #
     # argv  - The command line arguments
     #
-    # Loads the app_athena code in preparation for tests, initializes
+    # Loads the athena code in preparation for tests, initializes
     # Ted's data structures, and configures tcltest.  If 
     # the argument list includes "-notk", sets ::loadtk to false,
     # extracts -notk from the argument list.  The remaining arguments

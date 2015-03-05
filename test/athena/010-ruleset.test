@@ -1,7 +1,7 @@
 # -*-Tcl-*-
 #-----------------------------------------------------------------------
 # TITLE:
-#    010-driver.test
+#    010-ruleset.test
 #
 # AUTHOR:
 #    Will Duquette
@@ -9,23 +9,17 @@
 # DESCRIPTION:
 #    mad(sim) tests.
 #
-#    This test suite tests the driver(sim) module.
-#
-#    Note: the driver type definition calls are adequately tested by the
-#    040-* rule sets and will not be tested here.
-#
-# TBD: This actually tests ruleset_manager.tcl, which has replaced
-# driver.tcl.
+#    This test suite tests the [$adb ruleset] component.
 #
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-# Initialize tcltest(n) and athena(1)
+# Initialize tcltest(n) and athena(n)
 
 if {[lsearch [namespace children] ::tcltest] == -1} {
     source [file join [file dirname [file normalize [info script]]] ted.tcl]
 
-    # Initialize tcltest(n), app_athena(n), et al.
+    # Initialize tcltest(n), athena(n), et al.
     ted init $argv
 }
 
