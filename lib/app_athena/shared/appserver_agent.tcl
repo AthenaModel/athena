@@ -28,7 +28,7 @@ appserver module AGENT {
         # FIRST, register the resource types
         appserver register /agents {agents/?}         \
             tcl/linkdict [myproc /agents:linkdict]    \
-            tcl/enumlist [asproc enum:enumlist agent] \
+            tcl/enumlist [asproc enum:enumlist {adb agent}] \
             text/html    [myproc /agents:html] {
                 Links to all of the currently 
                 defined agents.  HTML content 

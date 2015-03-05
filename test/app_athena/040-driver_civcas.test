@@ -79,7 +79,7 @@ namespace eval ::athena_test::tests:: {
     # Attrits groups in NB1, and advances time so that rules fire.
     
     proc attrit {casualties {g1 ""} {g2 ""}} {
-        aam attrit [dict create            \
+        tdb aam attrit [dict create            \
                     mode       NBHOOD      \
                     n          NB1         \
                     f          ""          \

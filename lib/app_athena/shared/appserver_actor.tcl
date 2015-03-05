@@ -28,7 +28,7 @@ appserver module ACTOR {
         # FIRST, register the resource types
         appserver register /actors {actors/?}          \
             tcl/linkdict [myproc /actors:linkdict]     \
-            tcl/enumlist [asproc enum:enumlist actor] \
+            tcl/enumlist [asproc enum:enumlist {adb actor}] \
             text/html    [myproc /actors:html] {
                 Links to all of the currently 
                 defined actors.  HTML content 

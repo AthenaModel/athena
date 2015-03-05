@@ -131,7 +131,7 @@ appserver module CURSES {
         }
 
         # NEXT, get the driver ID
-        set driver_id [driver get CURSE $id]
+        set driver_id [adb ruleset get CURSE $id]
 
         ht para
 

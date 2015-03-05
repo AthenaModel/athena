@@ -117,6 +117,7 @@ snit::type ::athena::athena {
     delegate method load                    to adb
     delegate method locked                  to adb
     delegate method paste                   to adb
+    delegate method ptype                   to adb
     delegate method reset                   to adb
     delegate method sanity                  to adb
     delegate method save                    to adb
@@ -281,6 +282,7 @@ snit::type ::athena::athena {
     delegate method {plant capacity}        to adb as {plant capacity}
 
     delegate method {ruleset detail}        to adb as {ruleset detail}
+    delegate method {ruleset get}           to adb as {ruleset get}
     delegate method {ruleset narrative}     to adb as {ruleset narrative}
     delegate method {ruleset rulename}      to adb as {ruleset rulename}
 

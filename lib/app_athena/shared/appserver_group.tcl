@@ -282,7 +282,7 @@ appserver module GROUPS {
         }
 
         # Next, what kind of group is it?
-        set gtype [group gtype $g]
+        set gtype [adb group gtype $g]
 
         switch $gtype {
             CIV     { return [CivGroup:html $g] }

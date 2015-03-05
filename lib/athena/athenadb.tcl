@@ -268,6 +268,7 @@ snit::type ::athena::athenadb {
         # the athenadb(n) handle.
 
         $self MakeComponents            \
+            aam                         \
             abevent                     \
             absit                       \
             activity                    \
@@ -317,10 +318,6 @@ snit::type ::athena::athenadb {
             unit                        \
             vrel
 
-        $self MakeComponentsWithGlobal  \
-            aam                         \
-
-
 
         # NEXT, register the ones that are saveables.  This will change
         # when the transition to library code is complete.
@@ -357,24 +354,6 @@ snit::type ::athena::athenadb {
 
 
             install $comp using ::athena::${module} ${selfns}::$comp $self
-        }
-    }
-
-    # MakeComponentsWithGlobal component...
-    #
-    # component...  - A list of component names.
-    #
-    # Creates instances for a list of components, all of which take one
-    # constructor argument, the athenadb(n) instance.  Also
-    # defines global entry points.
-
-    method MakeComponentsWithGlobal {args} {
-        $self MakeComponents {*}$args
-
-        foreach pair $args {
-            lassign $pair comp module
-
-            interp alias {} ::${comp} {} [set $comp]
         }
     }
 

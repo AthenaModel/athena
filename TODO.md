@@ -1,11 +1,9 @@
 # TODO.md - Athena TODO List
 
 - Why is there no 010-abevent.test?
-- Remove global singleton names:
-  - Revise remaining app code to not use them.
-  - Remove all such aliases, and see what breaks.
 - Make simclock an athenadb component.
 - Move "application" executive commands from executive.tcl to app.
+- parm component should be told about state changes.
 - Remove all "app" calls from athena(n).
 - See about giving athena(n) a read-only db.
 - Check whether "adb reset" can replace all of the resets in "ted cleanup"
