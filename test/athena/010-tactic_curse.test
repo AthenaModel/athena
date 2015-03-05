@@ -1,0 +1,332 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-tactic_curse.test
+#
+# AUTHOR:
+#    Dave Hanks
+#
+# DESCRIPTION:
+#    tactic_curse(sim) tests.
+#
+#    This test suite tests the tactic_curse(sim) class.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Set up for tests
+
+    proc esetup {} {
+        variable T2
+        variable coffer
+        set T2 {
+            curse C2
+            roles {
+                @N1 {
+                    _type CIVGROUPS
+                    _rule BY_VALUE
+                    raw_value NO_ONE
+                }
+            }
+        }
+
+        ted create JOE BOB NB1 NB2 NO_ONE SHIA SUNN KURD BLUE
+        ted order CURSE:CREATE curse_id C2
+
+        ted order INJECT:SAT:CREATE \
+            curse_id C2          \
+            mode     transient   \
+            g        @N1         \
+            c        SFT         \
+            mag      1.0
+
+        # Verify that unused columns contain NULL
+        tdb rdb nullvalue "@"
+
+        set B1 [ted addblock SYSTEM]
+        set T2 [ted addtactic $B1 CURSE {*}$T2]
+    }
+
+    proc setup {} {
+        variable T1
+        variable coffer
+        set T1 {
+            curse       C1
+            roles       {
+                @C1 {
+                    _type CIVGROUPS
+                    _rule BY_VALUE
+                    raw_value SHIA
+                }
+    
+                @C2 {
+                    _type GROUPS
+                    _rule BY_VALUE
+                    raw_value SUNN
+                }
+    
+                @C3 {
+                    _type GROUPS
+                    _rule BY_VALUE
+                    raw_value SHIA
+                }
+    
+                @C4 {
+                    _type CIVGROUPS
+                    _rule BY_VALUE
+                    raw_value SUNN
+                }
+
+                @F1 {
+                    _type FRCGROUPS
+                    _rule BY_VALUE
+                    raw_value BLUE
+                }
+    
+                @F2 {
+                    _type GROUPS
+                    _rule BY_VALUE
+                    raw_value BLUE
+                }
+    
+                @A1 {
+                    _type ACTORS
+                    _rule BY_VALUE
+                    raw_value JOE
+                }
+            }
+        }
+
+
+
+        ted create JOE BOB NB1 NB2 NO_ONE SHIA SUNN KURD BLUE
+        ted order CURSE:CREATE curse_id C1
+        ted order CURSE:CREATE curse_id C2
+
+        ted order INJECT:COOP:CREATE \
+            curse_id C1          \
+            mode     transient   \
+            f        @C1         \
+            g        @F1         \
+            mag      1.0
+
+        ted order INJECT:HREL:CREATE \
+            curse_id C1          \
+            mode     transient   \
+            f        @C2         \
+            g        @F2         \
+            mag      1.0
+
+        ted order INJECT:VREL:CREATE \
+            curse_id C1          \
+            mode     transient   \
+            g        @C3         \
+            a        @A1         \
+            mag      1.0
+
+        ted order INJECT:SAT:CREATE \
+            curse_id C1          \
+            mode     transient   \
+            g        @C4         \
+            c        SFT         \
+            mag      1.0
+
+        # Verify that unused columns contain NULL
+        tdb rdb nullvalue "@"
+
+        set B1 [ted addblock SYSTEM]
+        set T1 [ted addtactic $B1 CURSE {*}$T1]
+    }
+
+    proc execute_setup {} {
+        setup
+        tdb aram init
+        tdb demog start
+    }
+
+    proc empty_setup {} {
+        esetup
+        tdb aram init
+        tdb demog start
+    }
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        # Clean up the test environment
+        tdb rdb nullvalue ""
+        array unset parms
+        ted cleanup
+    }
+
+    test constructor-1.1 {default state} -setup {
+        setup
+    } -body {
+        ted pdicts [$T1 getdict]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        curse      C1
+        execstatus NONE
+        faildict   {}
+        id         *
+        name       T*
+        parent     *
+        pot        *::pot
+        roles      *
+        state      normal
+    }
+
+    test constructor-1.2 {can set options} -setup {
+        setup
+    } -body {
+        set T1 [ted newbean ::athena::tactic::CURSE -curse DUMMY]
+        $T1 get curse
+    } -cleanup {
+        cleanup
+    } -result {DUMMY}
+
+    #-------------------------------------------------------------------
+    # narrative
+
+    test narrative-1.1 {narrative: ALL} -setup {
+        setup
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {C1 (C1). @C1 = group SHIA. @C2 = group SUNN. @C3 = group SHIA. @C4 = group SUNN. @F1 = group BLUE. @F2 = group BLUE. @A1 = actor JOE. }
+
+    #-------------------------------------------------------------------
+    # check
+
+    test check-1.1 {no curse selected} -setup {
+        setup
+        $T1 configure -curse ""
+    } -body {
+        ted pdict [$T1 check]
+    } -cleanup {
+        cleanup
+    } -result {
+        curse {No curse selected.}
+    }
+
+    test check-1.2 {no such curse} -setup {
+        setup
+        $T1 configure -curse "NONESUCH"
+    } -body {
+        ted pdict [$T1 check]
+    } -cleanup {
+        cleanup
+    } -result {
+        curse {No such curse: "NONESUCH".}
+    }
+
+    test check-2.1 {check: role no longer exists} -setup {
+        setup
+        tdb eval {DELETE FROM curse_injects WHERE inject_type='VREL'}
+    } -body {
+        $T1 check
+    } -cleanup {
+        cleanup
+    } -result {roles {Role @C3 no longer exists. Role @A1 no longer exists.}}
+
+    test check-2.2 {check: inject changes roles} -setup {
+        setup
+    } -body {
+        ted order INJECT:DELETE  \
+            id       {C1 1} 
+
+        ted order INJECT:COOP:CREATE \
+            curse_id C1          \
+            mode     transient   \
+            f        @DUMMY1     \
+            g        @DUMMY2     \
+            mag      1.0
+
+        $T1 check
+    } -cleanup {
+        cleanup
+    } -result {roles {Role @C1 no longer exists. Role @F1 no longer exists. Role @DUMMY1 is not defined. Role @DUMMY2 is not defined.}}
+
+
+    test check-2.3 {check: inject changes role types} -setup {
+        setup
+    } -body {
+        ted order INJECT:DELETE  \
+            id       {C1 1} 
+
+        ted order INJECT:COOP:CREATE \
+            curse_id C1          \
+            mode     transient   \
+            f        @F1         \
+            g        @C1         \
+            mag      1.0
+
+        $T1 check
+    } -cleanup {
+        cleanup
+    } -result {roles {Role type of @C1 changed. Role type of @F1 changed.}}
+
+
+    #-------------------------------------------------------------------
+    # execute
+
+    test execute-1.1 {ALL, success} -setup {
+        execute_setup
+    } -body {
+        $T1 execute 
+        ted query {SELECT * FROM drivers}
+    } -cleanup {
+        cleanup
+    } -result {
+driver_id dtype signature 
+--------- ----- --------- 
+1000      CURSE C1        
+    }
+
+    test execute-1.2 {EMPTY injects, success} -setup {
+        empty_setup
+    } -body {
+        $T2 execute
+        # No error on execution, no drivers in query is success
+        ted query {SELECT * FROM drivers}
+    } -cleanup {
+        cleanup
+    } -result {
+    }
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+

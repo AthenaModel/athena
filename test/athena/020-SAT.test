@@ -1,0 +1,378 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    020-SAT.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    athena(n) SAT:* order tests.
+#
+#    This test suite tests the satisfaction-curve-related orders.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    proc setup {} {
+        ted create NB1 SHIA SUNN
+    }
+
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        ted cleanup
+    }
+
+
+    #-------------------------------------------------------------------
+    # SAT:UPDATE
+
+    test UPDATE-1.1 {required parms} -body {
+        ted order -reject SAT:UPDATE {}
+    } -result {
+        id {required value}
+    }
+    
+
+    test UPDATE-1.2 {invalid g, c} -setup {
+        setup
+    } -body {
+        ted order -reject SAT:UPDATE id {NONESUCH NONESUCH}
+    } -cleanup {
+        cleanup
+    } -result {
+        id {Invalid civilian group, should be one of: SHIA, SUNN}
+    }
+
+
+    test UPDATE-1.3 {invalid base: symbol} -setup {
+        setup
+    } -body {
+        ted order -reject SAT:UPDATE id {SHIA SFT} base NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        base {invalid value "NONESUCH", should be a real number in range -100.0, 100.0, or one of: VS, S, A, D, VD}
+    }
+
+
+    test UPDATE-1.4 {invalid base: out of range} -setup {
+        setup
+    } -body {
+        ted order -reject SAT:UPDATE id {SHIA SFT} base 101.0
+    } -cleanup {
+        cleanup
+    } -result {
+        base {invalid value "101.0", should be a real number in range -100.0, 100.0, or one of: VS, S, A, D, VD}
+    }
+
+
+    test UPDATE-1.5 {invalid saliency: symbol} -setup {
+        setup
+    } -body {
+        ted order -reject SAT:UPDATE id {SHIA SFT} saliency NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        saliency {invalid value "NONESUCH", should be a real number in range 0.0, 1.0, or one of: CR, VI, I, LI, UN, NG}
+    }
+
+
+    test UPDATE-1.6 {invalid saliency: out of range} -setup {
+        setup
+    } -body {
+        ted order -reject SAT:UPDATE id {SHIA SFT} saliency -0.1
+    } -cleanup {
+        cleanup
+    } -result {
+        saliency {invalid value "-0.1", should be a real number in range 0.0, 1.0, or one of: CR, VI, I, LI, UN, NG}
+    }
+
+    test UPDATE-1.7 {invalid hist_flag} -setup {
+        setup
+    } -body {
+        ted order -reject SAT:UPDATE id {SHIA SFT} hist_flag NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        hist_flag {invalid boolean "NONESUCH", should be one of: 1, 0, true, false, yes, no, on, off}
+    }
+    
+    test UPDATE-1.8 {invalid current} -setup {
+        setup
+    } -body {
+        ted order -reject SAT:UPDATE id {SHIA SFT} current NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        current {invalid value "NONESUCH", should be a real number in range -100.0, 100.0, or one of: VS, S, A, D, VD}
+    }
+    
+
+    test UPDATE-2.1 {sat is updated} -setup {
+        setup
+    } -body {
+        ted order SAT:UPDATE {
+            id             {SHIA SFT}
+            base           VS
+            saliency       VI
+            hist_flag      1
+            current        75.0
+        }
+        ted query {
+            SELECT * FROM sat_gc ORDER BY g,c
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+g    c   base saliency hist_flag current 
+---- --- ---- -------- --------- ------- 
+SHIA AUT 0.0  1.0      0         0.0     
+SHIA CUL 0.0  1.0      0         0.0     
+SHIA QOL 0.0  1.0      0         0.0     
+SHIA SFT 80.0 0.85     1         75.0    
+SUNN AUT 0.0  1.0      0         0.0     
+SUNN CUL 0.0  1.0      0         0.0     
+SUNN QOL 0.0  1.0      0         0.0     
+SUNN SFT 0.0  1.0      0         0.0     
+    }
+
+
+    test UPDATE-2.2 {table monitor event} -setup {
+        setup
+    } -body {
+        ted notifier bind ::tdb <sat_gc>
+        ted order SAT:UPDATE id {SHIA SFT} base 4.0
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <sat_gc> update {SHIA SFT}}
+    }
+
+
+    test UPDATE-3.1 {undo undoes the change} -setup {
+        setup
+
+        ted order SAT:UPDATE {
+            id             {SHIA SFT}
+            base           VS
+            saliency       VI
+            hist_flag      1
+            current        75.0
+        }
+    } -body {
+        ted notifier bind ::tdb <sat_gc>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <sat_gc> update {SHIA SFT}}
+    }
+
+    #-------------------------------------------------------------------
+    # SAT:UPDATE:MULTI
+
+    test UPDATE:MULTI-1.1 {required parms} -setup {
+        setup
+    } -body {
+        ted order -reject SAT:UPDATE:MULTI {}
+    } -cleanup {
+        cleanup
+    } -result {
+        ids {required value}
+    }
+    
+
+    test UPDATE:MULTI-1.2 {invalid g in ids} -setup {
+        setup
+    } -body {
+        ted order -reject SAT:UPDATE:MULTI \
+            ids {{NONESUCH SFT}}
+    } -cleanup {
+        cleanup
+    } -result {
+        ids {Invalid civilian group, should be one of: SHIA, SUNN}
+    }
+
+
+    test UPDATE:MULTI-1.3 {invalid c in ids} -setup {
+        setup
+    } -body {
+        ted order -reject SAT:UPDATE:MULTI \
+            ids {{SHIA NONESUCH}}
+    } -cleanup {
+        cleanup
+    } -result {
+        ids {invalid value "NONESUCH", should be one of: AUT, SFT, CUL, QOL}
+    }
+
+
+    test UPDATE:MULTI-1.5 {invalid base: symbol} -setup {
+        setup
+    } -body {
+        ted order -reject SAT:UPDATE:MULTI \
+            ids {{SHIA SFT}} base NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        base {invalid value "NONESUCH", should be a real number in range -100.0, 100.0, or one of: VS, S, A, D, VD}
+    }
+
+
+    test UPDATE:MULTI-1.6 {invalid base: out of range} -setup {
+        setup
+    } -body {
+        ted order -reject SAT:UPDATE:MULTI ids {{SHIA SFT}} base 101.0
+    } -cleanup {
+        cleanup
+    } -result {
+        base {invalid value "101.0", should be a real number in range -100.0, 100.0, or one of: VS, S, A, D, VD}
+    }
+
+
+    test UPDATE:MULTI-1.7 {invalid saliency: symbol} -setup {
+        setup
+    } -body {
+        ted order -reject SAT:UPDATE:MULTI \
+            ids {{SHIA SFT}} saliency NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        saliency {invalid value "NONESUCH", should be a real number in range 0.0, 1.0, or one of: CR, VI, I, LI, UN, NG}
+    }
+
+
+    test UPDATE:MULTI-1.8 {invalid saliency: out of range} -setup {
+        setup
+    } -body {
+        ted order -reject SAT:UPDATE:MULTI ids \
+            {{SHIA SFT}} saliency -0.1
+    } -cleanup {
+        cleanup
+    } -result {
+        saliency {invalid value "-0.1", should be a real number in range 0.0, 1.0, or one of: CR, VI, I, LI, UN, NG}
+    }
+
+
+    test UPDATE:MULTI-1.9 {invalid hist_flag} -setup {
+        setup
+    } -body {
+        ted order -reject SAT:UPDATE:MULTI ids \
+            {{SHIA SFT}} hist_flag NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        hist_flag {invalid boolean "NONESUCH", should be one of: 1, 0, true, false, yes, no, on, off}
+    }
+
+
+    test UPDATE:MULTI-1.10 {invalid current} -setup {
+        setup
+    } -body {
+        ted order -reject SAT:UPDATE:MULTI ids \
+            {{SHIA SFT}} current NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        current {invalid value "NONESUCH", should be a real number in range -100.0, 100.0, or one of: VS, S, A, D, VD}
+    }
+
+
+    test UPDATE:MULTI-2.1 {one curve of several is updated} -setup {
+        setup
+    } -body {
+        ted notifier bind ::tdb <sat_gc>
+
+        ted order SAT:UPDATE:MULTI {
+            ids       {{SHIA SFT}}
+            base      VS
+            saliency  VI
+            hist_flag 1
+            current   75.0
+        }
+
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <sat_gc> update {SHIA SFT}}
+    }
+
+
+    test UPDATE:MULTI-2.2 {several curves are updated} -setup {
+        setup
+    } -body {
+        ted notifier bind ::tdb <sat_gc>
+        ted order SAT:UPDATE:MULTI {
+            ids   {{SHIA SFT} {SHIA CUL}} 
+            base  4.0
+        }
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <sat_gc> update {SHIA SFT}}
+        {::tdb <sat_gc> update {SHIA CUL}}
+    }
+
+
+    test UPDATE:MULTI-3.1 {undo undoes the change} -setup {
+        setup
+
+        ted order SAT:UPDATE:MULTI {
+            ids        {{SHIA SFT} {SHIA CUL}}
+            base       VS
+            saliency   VI
+        }
+    } -body {
+        ted notifier bind ::tdb <sat_gc>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <sat_gc> update {SHIA SFT}}
+        {::tdb <sat_gc> update {SHIA CUL}}
+    }
+
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+

@@ -1,0 +1,408 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#   040-driver_consump.test
+#
+# AUTHOR:
+#   Will Duquette
+#
+# DESCRIPTION:
+#   CONSUMP tests
+#
+#   This test suite tests that the rules fire when appropriate.
+#
+# NOTE:
+#   This test suite differs from most of the other 040-* test suites.
+#
+#   The 040-* tests have the following purposes, in order of importance:
+#
+#   1. Elimination of lurking bgerrors.
+#   2. Verification that the correct rules fire, given the rule set inputs
+#   3. Verification that the rules provide the correct kinds of inputs to
+#      URAM.
+#   4. Verification that the other Athena models will give correct inputs
+#      to the rule sets.
+#
+#   In short, the 040-* test suites test not only the rule sets themselves,
+#   but (as noted in point #4) the models that drive the rule sets.
+#
+#   However, the both the CGE and the cellmodel used to initialize it are
+#   in a state of flux; if we use the CGE outputs to drive this test suite,
+#   we will be having to modify the tests on a weekly basis as the economic
+#   model changes.
+#
+#   Thus, in this test suite we will skip point #4, and focus narrowly
+#   on just the rule sets themselves.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Define an htools buffer for tests
+    htools ht
+
+    # pprint text
+    #
+    # text  - block text
+    #
+    # Prints it so that it looks nice in a -result option.
+
+    proc pprint {text} {
+        return "\n[string trim $text]\n    "
+    }
+
+    # setup 
+    #
+    # Sets up for tests.
+    
+    proc setup {} {
+        # FIRST, other rule sets shouldn't muddy the waters.
+        tdb parm set dam.ENI.active no
+        tdb parm set dam.CONSUMP.active no
+        tdb parm set dam.UNEMP.active no
+        adb eval {DELETE FROM drivers}
+        
+        # NEXT, create the entities
+        ted create JOE BOB DAVE NB1 NB2 TAL SHIA SUNN KURD
+        
+        # NEXT, lock, so that URAM is ready to receive inputs.  Disable
+        # CONSUMP so that it does nothing on lock.
+        tdb econ setstate ENABLED
+        tdb parm set dam.CONSUMP.active no
+        ted lock
+    }
+    
+    # consump emult povfrac ?controller?
+    #
+    # emult      - ELOC multiplier; ELOC = emult * ALOC
+    # povfrac    - The poverty fraction
+    # controller - The controller of neighborhood NB1
+    #
+    # Sets up the demog_g table, and assesses CONSUMP for group SHIA.
+    
+    proc consump {emult povfrac {controller ""}} {
+        tdb parm set dam.CONSUMP.active yes
+
+        set aloc 1000.0
+        let eloc {$emult * $aloc}
+    
+        adb eval {
+            UPDATE control_n
+            SET controller = nullif($controller, '')
+            WHERE n = 'NB1';
+            
+            UPDATE demog_g
+            SET aloc = $aloc, eloc = $aloc, povfrac = 0;
+            
+            UPDATE demog_g
+            SET aloc    = $aloc,
+                eloc    = $eloc,
+                povfrac = $povfrac
+            WHERE g = 'SHIA'
+        }
+    
+        tdb ruleset CONSUMP assess
+    }
+    
+    # Clean up after a test
+    proc cleanup {} {
+        ht clear
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # assess
+    
+    test assess-1.1 {Rule 1-1 fires, effectf not zero} -setup {
+        setup
+    } -body {
+        consump 2.0 0.0
+        ted querylist {
+            SELECT fdict FROM rule_firings where rule GLOB 'CONSUMP-1-*'
+        }
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+fdict  a {} povfrac 0.0 n NB1 eloc 2000.0 aloc 1000.0 g SHIA dtype CONSUMP expectf -1.5 povf 0.00
+    }
+    
+    test assess-1.2 {Rule 1-1 inputs, expectf not zero} -setup {
+        setup
+    } -body {
+        consump 2.0 0.0 
+        ted query {
+            SELECT rule, g, c
+            FROM rule_firings JOIN rule_inputs USING (firing_id)
+            WHERE rule GLOB 'CONSUMP-1-*'
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+rule        g    c   
+----------- ---- --- 
+CONSUMP-1-1 SHIA AUT 
+CONSUMP-1-1 SHIA QOL 
+    }
+    
+    test assess-1.3 {Rule 1-1 fires, povf not zero} -setup {
+        setup
+    } -body {
+        consump 1.0 1.0
+        ted querylist {
+            SELECT fdict FROM rule_firings where rule GLOB 'CONSUMP-1-*'
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+fdict  a {} povfrac 1.0 n NB1 eloc 1000.0 aloc 1000.0 g SHIA dtype CONSUMP expectf 0.0 povf 1.00
+    }
+    
+    test assess-1.4 {Rule 1-1 inputs, povf not zero} -setup {
+        setup
+    } -body {
+        consump 1.0 1.0 
+        ted query {
+            SELECT rule, g, c
+            FROM rule_firings JOIN rule_inputs USING (firing_id)
+            WHERE rule GLOB 'CONSUMP-1-*'
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+rule        g    c   
+----------- ---- --- 
+CONSUMP-1-1 SHIA AUT 
+CONSUMP-1-1 SHIA QOL 
+    }
+    
+    test assess-2.1 {Rule 2-1 fires} -setup {
+        setup
+    } -body {
+        consump 1.0 1.0 JOE
+        
+        ted querylist {
+            SELECT fdict FROM rule_firings where rule GLOB 'CONSUMP-2-*'
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+fdict  a JOE povfrac 1.0 n NB1 eloc 1000.0 aloc 1000.0 g SHIA dtype CONSUMP expectf 0.0 povf 1.00
+    }
+    
+    test assess-2.2 {Rule 2-1 doesn't fire with no controller} -setup {
+        setup
+    } -body {
+        consump 1.0 1.0
+        
+        adb eval {
+            SELECT rule FROM rule_firings WHERE rule GLOB 'CONSUMP-*'
+        }
+    } -cleanup {
+        cleanup
+    } -result {CONSUMP-1-1}
+    
+    test assess-2.3 {Rule 2-1 inputs} -setup {
+        setup
+    } -body {
+        consump 1.0 1.0 JOE
+        ted query {
+            SELECT rule, g, a
+            FROM rule_firings JOIN rule_inputs USING (firing_id)
+            WHERE rule GLOB 'CONSUMP-2-*'
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+rule        g    a   
+----------- ---- --- 
+CONSUMP-2-1 SHIA JOE 
+    }
+    
+    test assess-3.1 {Rule 2-2 fires} -setup {
+        setup
+    } -body {
+        consump 2.0 1.0 JOE
+        
+        ted querylist {
+            SELECT fdict FROM rule_firings where rule GLOB 'CONSUMP-2-*'
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+fdict  a JOE povfrac 1.0 n NB1 eloc 2000.0 aloc 1000.0 g SHIA dtype CONSUMP expectf -1.5 povf 1.00
+    }
+    
+    test assess-3.2 {Rule 2-2 doesn't fire with no controller} -setup {
+        setup
+    } -body {
+        consump 2.0 1.0
+        
+        adb eval {
+            SELECT rule FROM rule_firings WHERE rule GLOB 'CONSUMP-*'
+        }
+    } -cleanup {
+        cleanup
+    } -result {CONSUMP-1-1}
+    
+    test assess-3.3 {Rule 2-2 inputs} -setup {
+        setup
+    } -body {
+        consump 2.0 1.0 JOE
+        ted query {
+            SELECT rule, g, a
+            FROM rule_firings JOIN rule_inputs USING (firing_id)
+            WHERE rule GLOB 'CONSUMP-2-*'
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+rule        g    a   
+----------- ---- --- 
+CONSUMP-2-2 SHIA JOE 
+    }
+
+    #-------------------------------------------------------------------
+    # sigline
+
+    test sigline-1.1 {sigline output} -setup {
+        setup
+    } -body {
+        tdb ruleset CONSUMP sigline SHIA 
+    } -cleanup {
+        cleanup
+    } -result {Group SHIA's consumption of goods}
+         
+
+    #-------------------------------------------------------------------
+    # narrative
+
+    test narrative-1.1 {narrative output} -setup {
+        setup
+    } -body {
+        tdb ruleset CONSUMP narrative {
+            dtype      CONSUMP
+            g          SHIA
+            aloc       10.5
+            eloc       12.5
+            povfrac    0.15
+            n          NB1
+            a          JOE
+            expectf    -0.5
+            povf       0.1
+        } 
+    } -cleanup {
+        cleanup
+    } -result {{group:SHIA}'s consumption, expectf=-0.5 povf=0.1}
+
+         
+    #-------------------------------------------------------------------
+    # detail
+
+    test detail-1.1 {detail, nbhood has controller} -setup {
+        setup
+    } -body {
+        tdb ruleset CONSUMP detail {
+            dtype      CONSUMP
+            g          SHIA
+            aloc       10.5
+            eloc       12.5
+            povfrac    0.15
+            n          NB1
+            a          JOE
+            expectf    -0.5
+            povf       0.1
+        } [namespace current]::ht
+
+        pprint [ht get] 
+    } -cleanup {
+        cleanup
+    } -result {
+Civilian group
+<a href="my://app/group/SHIA">SHIA</a>
+is consuming goods at a rate of
+10.5 baskets per week;
+the group expects to consume at a rate of
+12.5 baskets per week.
+15% of the group is living in poverty.
+Actor <a href="my://app/actor/JOE">JOE</a>
+is in control of neighborhood
+<a href="my://app/nbhood/NB1">NB1</a>.<p>
+
+These conditions lead to the following rule set inputs:<p>
+
+<i>expectf</i>=-0.50<br>
+<i>povf</i>=0.10<p>
+    }
+    
+    test detail-1.2 {detail, nbhood has no controller} -setup {
+        setup
+    } -body {
+        tdb ruleset CONSUMP detail {
+            dtype      CONSUMP
+            g          SHIA
+            aloc       10.5
+            eloc       12.5
+            povfrac    0.15
+            n          NB1
+            a          ""
+            expectf    -0.5
+            povf       0.1
+        } [namespace current]::ht
+
+        pprint [ht get] 
+    } -cleanup {
+        cleanup
+    } -result {
+Civilian group
+<a href="my://app/group/SHIA">SHIA</a>
+is consuming goods at a rate of
+10.5 baskets per week;
+the group expects to consume at a rate of
+12.5 baskets per week.
+15% of the group is living in poverty.
+No actor
+is in control of neighborhood
+<a href="my://app/nbhood/NB1">NB1</a>.<p>
+
+These conditions lead to the following rule set inputs:<p>
+
+<i>expectf</i>=-0.50<br>
+<i>povf</i>=0.10<p>
+    }
+
+    
+    
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+
+
+

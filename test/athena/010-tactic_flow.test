@@ -1,0 +1,297 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-tactic_flow.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    tactic_flow(sim) tests.
+#
+#    This test suite tests the tactic_flow(sim) class.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Set up for tests
+
+    proc setup {} {
+        variable T1
+        variable coffer
+        ted create JOE BOB NB1 NB2 BLUE TAL SHIA SUNN KURD
+        set B1 [ted addblock SYSTEM]
+        set T1 [ted addtactic $B1 FLOW]
+
+        set coffer [::athena::coffer new ::tdb SYSTEM]
+    }
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        variable coffer
+        $coffer destroy
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    test constructor-1.1 {default state} -setup {
+        setup
+    } -body {
+        ted pdicts [$T1 getdict]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        execstatus NONE
+        f          {}
+        faildict   {}
+        g          {}
+        id         *
+        mode       ALL
+        name       T*
+        parent     *
+        percent    0
+        personnel  0
+        pot        *::pot
+        state      invalid
+    }
+
+    test constructor-1.2 {can set options} -setup {
+        setup
+    } -body {
+        set T1 [ted newbean ::athena::tactic::FLOW -parent DUMMY]
+        $T1 get parent
+    } -cleanup {
+        cleanup
+    } -result {DUMMY}
+    
+
+    #-------------------------------------------------------------------
+    # narrative
+
+    test narrative-1.1 {narrative, default state} -setup {
+        setup
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {Flow all remaining members of ??? into ???.}
+
+    test narrative-1.2 {mode is ALL} -setup {
+        setup
+        $T1 configure -f SHIA -g KURD -mode ALL
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {Flow all remaining members of {group:SHIA} into {group:KURD}.}
+
+    test narrative-1.3 {mode is RATE} -setup {
+        setup
+        $T1 configure -f SHIA -g KURD -mode RATE -percent 5
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {Flow population from {group:SHIA} to {group:KURD} at a rate of 5.0%/year.}
+
+    test narrative-1.4 {mode is UPTO} -setup {
+        setup
+        $T1 configure -f SHIA -g KURD -mode UPTO -personnel 1000
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {Flow up to 1000 members of {group:SHIA} into {group:KURD}.}
+
+    test narrative-1.5 {mode is ALLBUT} -setup {
+        setup
+        $T1 configure -f SHIA -g KURD -mode ALLBUT -personnel 1000
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {Flow all but 1000 members of {group:SHIA} into {group:KURD}.}
+
+
+    #-------------------------------------------------------------------
+    # check
+
+    test check-1.1 {Initial state fails} -setup {
+        setup
+    } -body {
+        ted pdicts [$T1 check]
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+        f {No group selected.}
+        g {No group selected.}
+    }
+
+    test check-1.2 {f not a civilian group} -setup {
+        setup
+    } -body {
+        $T1 configure -f NONESUCH -g KURD
+        ted pdicts [$T1 check]
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+        f {No such civilian group: "NONESUCH".}
+    }
+
+    test check-1.3 {g not a civilian group} -setup {
+        setup
+    } -body {
+        $T1 configure -f SHIA -g NONESUCH
+        ted pdicts [$T1 check]
+    } -cleanup {
+        cleanup
+    } -result {
+        g {No such civilian group: "NONESUCH".}
+    }
+
+    test check-2.1 {Success} -setup {
+        setup
+    } -body {
+        $T1 configure -f SHIA -g KURD
+        $T1 check
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    #-------------------------------------------------------------------
+    # obligate
+
+    test obligate-1.1 {always succeeds} -setup {
+        setup
+    } -body {
+        $T1 configure -f SHIA -g KURD -mode ALL
+        $T1 obligate $coffer
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    #-------------------------------------------------------------------
+    # execute
+    #
+    # Because this tactic never fails due to insufficient resources,
+    # we determine the number of civilians to move in execute.  Thus,
+    # we need to test each of the modes.
+
+    test execute-1.1 {ALL} -setup {
+        setup
+        $T1 configure -f SHIA -g KURD -mode ALL
+        $T1 check
+        ted lock
+    } -body {
+        $T1 execute
+
+        tdb personnel pendingFlows
+    } -cleanup {
+        cleanup
+    } -result {SHIA KURD 1000}
+
+    test execute-2.1 {RATE} -setup {
+        setup
+        $T1 configure -f SHIA -g KURD -mode RATE -percent 100.0
+        $T1 check
+        ted lock
+    } -body {
+        $T1 execute
+
+        tdb personnel pendingFlows
+    } -cleanup {
+        cleanup
+    } -result {SHIA KURD 19.230769230769234}
+
+    test execute-3.1 {UPTO, tdb personnel available} -setup {
+        setup
+        $T1 configure -f SHIA -g KURD -mode UPTO -personnel 400
+        $T1 check
+        ted lock
+    } -body {
+        $T1 execute
+
+        tdb personnel pendingFlows
+    } -cleanup {
+        cleanup
+    } -result {SHIA KURD 400}
+
+    test execute-3.2 {UPTO, not enough tdb personnel available} -setup {
+        setup
+        $T1 configure -f SHIA -g KURD -mode UPTO -personnel 1400
+        $T1 check
+        ted lock
+    } -body {
+        $T1 execute
+
+        tdb personnel pendingFlows
+    } -cleanup {
+        cleanup
+    } -result {SHIA KURD 1000}
+
+    test execute-4.1 {ALLBUT, tdb personnel available} -setup {
+        setup
+        $T1 configure -f SHIA -g KURD -mode ALLBUT -personnel 400
+        $T1 check
+        ted lock
+    } -body {
+        $T1 execute
+
+        tdb personnel pendingFlows
+    } -cleanup {
+        cleanup
+    } -result {SHIA KURD 600}
+
+    test execute-4.2 {ALLBUT, no tdb personnel available} -setup {
+        setup
+        $T1 configure -f SHIA -g KURD -mode ALLBUT -personnel 1400
+        $T1 check
+        ted lock
+    } -body {
+        $T1 execute
+
+        tdb personnel pendingFlows
+    } -cleanup {
+        cleanup
+    } -result {}
+    
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+
+

@@ -1923,6 +1923,7 @@ snit::widget appwin {
             adb order send gui SIM:PAUSE
         } else {
             adb order send gui SIM:RUN \
+                -block NO              \
                 -weeks [dict get $durations [$simtools.duration get]]
         }
     }

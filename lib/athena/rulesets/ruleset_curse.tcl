@@ -43,7 +43,7 @@
     method assess {fdict} {
         # FIRST, see if the CURSE driver is deactivated
         if {![my isactive]} {
-            log warning [my name] "driver type has been deactivated"
+            [my adb] log warning [my name] "driver type has been deactivated"
             return
         }
         

@@ -1,0 +1,263 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-tactic_withdraw.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    tactic_withdraw(sim) tests.
+#
+#    This test suite tests the tactic_withdraw(sim) class.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Set up for tests
+
+    proc setup {} {
+        variable T1
+        variable coffer
+        ted create JOE BOB NB1 NB2 BLUE BRIT SHIA SUNN KURD
+        tdb cash load
+        set coffer [::athena::coffer new ::tdb JOE]
+
+
+        set B1 [ted addblock JOE]
+        set T1 [ted addtactic $B1 WITHDRAW]
+    }
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        variable coffer
+        $coffer destroy
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    test constructor-1.1 {default state} -setup {
+        setup
+    } -body {
+        ted pdicts [$T1 getdict]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        amount     0.0
+        execstatus NONE
+        faildict   {}
+        id         *
+        mode       ALL
+        name       T*
+        parent     *
+        percent    0.0
+        pot        *::pot
+        state      normal
+    }
+
+    test constructor-1.2 {can set options} -setup {
+        setup
+    } -body {
+        set T1 [ted newbean ::athena::tactic::WITHDRAW -parent DUMMY]
+        $T1 get parent
+    } -cleanup {
+        cleanup
+    } -result {DUMMY}
+    
+
+    #-------------------------------------------------------------------
+    # narrative
+
+    test narrative-1.1 {narrative, default state} -setup {
+        setup
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {Withdraw all money from cash reserve.}
+
+    test narrative-1.2 {narrative, EXACT amount} -setup {
+        setup
+        $T1 set mode EXACT
+        $T1 set amount 10.0
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {Withdraw $10.00 from cash reserve.}
+
+    test narrative-1.3 {narrative, UPTO amount} -setup {
+        setup
+        $T1 set mode UPTO
+        $T1 set amount 100000.0
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {Withdraw up to $100,000 from cash reserve.}
+
+    test narrative-1.4 {narrative, PERCENT} -setup {
+        setup
+        $T1 set mode PERCENT
+        $T1 set percent 10.0
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {Withdraw 10.0% of cash reserve.}
+
+    test narrative-1.5 {narrative, BORROW amount} -setup {
+        setup
+        $T1 set mode BORROW
+        $T1 set amount 100000.0
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {Withdraw $100,000 from cash reserve, borrowing if necessary.}
+
+    #-------------------------------------------------------------------
+    # check
+
+    test check-1.1 {Initial state succeeds} -setup {
+        setup
+    } -body {
+        $T1 check
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    #-------------------------------------------------------------------
+    # obligate
+
+    test obligate-1.1 {Sufficient cash; EXACT} -setup {
+        setup
+    } -body {
+        $T1 set mode EXACT
+        $T1 set amount 100.0
+
+        set a [$T1 obligate $coffer]
+        set b [$coffer cash]
+        set c [$coffer reserve]
+
+        list $a $b $c
+    } -cleanup {
+        cleanup
+    } -result {1 10100.0 199900.0}
+
+    test obligate-1.2 {Insufficient cash; EXACT} -setup {
+        setup
+    } -body {
+        $T1 set mode EXACT
+        $T1 set amount 400000.0
+
+        $T1 obligate $coffer
+        $T1 faildict
+    } -cleanup {
+        cleanup
+    } -result {CASH {Required $400,000, but had only $200,000.}}
+
+    test obligate-1.3 {mode UPTO} -setup {
+        setup
+    } -body {
+        $T1 set mode UPTO
+        $T1 set amount 400000.0
+
+        set a [$T1 obligate $coffer]
+        set b [$coffer cash]
+        set c [$coffer reserve]
+
+        list $a $b $c
+    } -cleanup {
+        cleanup
+    } -result {1 210000.0 0.0}
+
+    test obligate-1.4 {mode PERCENT} -setup {
+        setup
+    } -body {
+        $T1 set mode PERCENT
+        $T1 set percent 10.0
+
+        set a [$T1 obligate $coffer]
+        set b [$coffer cash]
+        set c [$coffer reserve]
+
+        list $a $b $c
+    } -cleanup {
+        cleanup
+    } -result {1 30000.0 180000.0}
+
+    test obligate-1.5 {mode BORROW} -setup {
+        setup
+    } -body {
+        $T1 set mode BORROW
+        $T1 set amount 400000.0
+
+        set a [$T1 obligate $coffer]
+        set b [$coffer cash]
+        set c [$coffer reserve]
+
+        list $a $b $c
+    } -cleanup {
+        cleanup
+    } -result {1 410000.0 -200000.0}
+
+    #-------------------------------------------------------------------
+    # execute
+
+    test execute-1.1 {always succeeds} -setup {
+        setup
+        $T1 set mode EXACT
+        $T1 set amount 1000.0
+        $T1 obligate $coffer
+    } -body {
+        $T1 execute
+        ted query {SELECT * FROM working_cash WHERE a='JOE'}
+    } -cleanup {
+        cleanup
+    } -result {
+a   cash_reserve income  cash_on_hand gifts 
+--- ------------ ------- ------------ ----- 
+JOE 199000.0     10000.0 11000.0      0.0   
+    }
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+
+

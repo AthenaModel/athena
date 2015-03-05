@@ -1,0 +1,417 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-tactic.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    tactic(sim) tests.
+#
+#    This test suite tests the tactic(sim) mutators and queries
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Set up for tests
+
+    proc setup {} {
+        variable B1
+        variable B2
+        variable T1
+        variable T2
+        variable BJOE
+        variable TJOE
+
+        ted create JOE BOB NB1 NB2 BLUE BRIT SHIA SUNN KURD
+
+        # NEXT, add a block to the system's strategy and tactics to
+        # the block.
+        set B1 [ted addblock SYSTEM]
+        set T1 [ted addtactic $B1 SIGEVENT]
+        set T2 [ted addtactic $B1 EXECUTIVE]
+        set B2 [ted addblock SYSTEM]
+
+        set BJOE [ted addblock JOE]
+        set TJOE [ted addtactic $BJOE SIGEVENT]
+   }
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        ted cleanup
+    }
+
+
+    #===================================================================
+    # tactic class methods
+    #
+    # [::athena::tactic define] is tested implicitly.
+
+    #-------------------------------------------------------------------
+    # type
+
+    test type-1.1 {return type given type name} -body {
+        ::athena::tactic type SIGEVENT
+    } -result {::athena::tactic::SIGEVENT}
+    
+    #-------------------------------------------------------------------
+    # typedict
+
+    test typedict-1.1 {lists types and titles} -body {
+        # Spot check
+        set a [llength [::athena::tactic types]]
+        set b [dict size [::athena::tactic typedict]]
+        set c [dict get [::athena::tactic typedict] ::athena::tactic::SIGEVENT]
+        
+        list [expr {$a == $b}] $c
+    } -result {1 {SIGEVENT: Log Significant Event}}
+
+    test typedict-1.2 {lists by agent type} -body {
+        set a [::athena::tactic typedict system]
+        set b [::athena::tactic typedict actor]
+        expr {$a ne $b}
+    } -result {1}
+
+    
+    #===================================================================
+    # tactic::<type> class methods
+
+    #-------------------------------------------------------------------
+    # ttype's typename
+
+    test ttype_typename-1.1 {return type's name} -body {
+        ::athena::tactic::SIGEVENT typename
+    } -result {SIGEVENT}
+    
+    #-------------------------------------------------------------------
+    # ttype's title
+
+    test ttype_title-1.1 {return type's title} -body {
+        ::athena::tactic::SIGEVENT title
+    } -result {Log Significant Event}
+    
+    #-------------------------------------------------------------------
+    # ttype's onlock
+
+    test ttype_onlock-1.1 {return type's onlock} -body {
+        ::athena::tactic::SIGEVENT onlock
+    } -result {0}
+    
+
+    #===================================================================
+    # tactic instance methods
+
+
+    #-------------------------------------------------------------------
+    # constructor
+
+    test constructor-1.1 {tactic is created} -setup {
+        setup
+    } -body {
+        ted pdicts [$T1 getdict]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        execstatus NONE
+        faildict   {}
+        id         *
+        msg        {}
+        name       T*
+        parent     *
+        pot        *::pot
+        state      normal
+    }
+
+    #-------------------------------------------------------------------
+    # typename
+
+    test typename-1.1 {can retrieve typename} -setup {
+        setup
+    } -body {
+        $T1 typename
+    } -cleanup {
+        cleanup
+    } -result {SIGEVENT}
+    
+    #-------------------------------------------------------------------
+    # agent
+
+    test agent-1.1 {can retrieve owning agent} -setup {
+        setup
+    } -body {
+        $T1 agent
+    } -cleanup {
+        cleanup
+    } -result {SYSTEM}
+    
+    #-------------------------------------------------------------------
+    # strategy
+
+    test strategy-1.1 {can retrieve owning strategy} -setup {
+        setup
+    } -body {
+        expr {[$T1 strategy] eq [tdb strategy getname SYSTEM]}
+    } -cleanup {
+        cleanup
+    } -result {1}
+    
+    #-------------------------------------------------------------------
+    # block
+
+    test block-1.1 {can retrieve owning block} -setup {
+        setup
+    } -body {
+        $T1 block
+    } -cleanup {
+        cleanup
+    } -match glob -result {*::pot::block*}
+    
+    #-------------------------------------------------------------------
+    # state
+
+    test state-1.1 {can retrieve state} -setup {
+        setup
+    } -body {
+        $T1 state
+    } -cleanup {
+        cleanup
+    } -result {normal}
+    
+    #-------------------------------------------------------------------
+    # execstatus
+
+    test execstatus-1.1 {can retrieve execstatus} -setup {
+        setup
+    } -body {
+        $T1 set execstatus SUCCESS
+        $T1 execstatus
+    } -cleanup {
+        cleanup
+    } -result {SUCCESS}
+    
+
+    #-------------------------------------------------------------------
+    # execflag
+
+    test execflag-1.1 {can retrieve execflag} -setup {
+        setup
+    } -body {
+        $T1 set execstatus SKIPPED
+        set a [$T1 execflag]
+        $T1 set execstatus SUCCESS
+        set b [$T1 execflag]
+
+        list $a $b
+    } -cleanup {
+        cleanup
+    } -result {0 1}
+
+    #-------------------------------------------------------------------
+    # view
+
+    test view-1.1 {view: text} -setup {
+        setup
+        set T3 [ted addtactic $BJOE DEMOB g BLUE]
+    } -body {
+        ted pdicts [$T3 view]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        agent      JOE
+        execstatus NONE
+        faildict   {}
+        failures   {}
+        fullname   JOE/B*/T*
+        g          BLUE
+        id         *
+        mode       ALL
+        name       T*
+        narrative  {Demobilize all of group BLUE's undeployed personnel.}
+        parent     8
+        percent    0
+        personnel  0
+        pot        *::pot
+        state      normal
+        statusicon ::projectgui::icon::dash13
+        typename   DEMOB
+    }
+
+    test view-1.2 {view: html} -setup {
+        setup
+        set T3 [ted addtactic $BJOE DEMOB g BLUE]
+    } -body {
+        ted pdicts [$T3 view html]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        agent      JOE
+        execstatus NONE
+        faildict   {}
+        failures   {}
+        fullname   JOE/B*/T*
+        g          BLUE
+        id         *
+        mode       ALL
+        name       T*
+        narrative  {Demobilize all of group <a href="my://app/group/BLUE">BLUE</a>'s undeployed personnel.}
+        parent     *
+        percent    0
+        personnel  0
+        pot        *::pot
+        state      normal
+        statusicon ::projectgui::icon::dash13
+        typename   DEMOB
+    }
+
+    test view-1.3 {view: cget} -setup {
+        setup
+        set T3 [ted addtactic $BJOE DEMOB g BLUE]
+    } -body {
+        ted pdicts [$T3 view cget]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        agent     JOE
+        fullname  JOE/B*/T*
+        g         BLUE
+        mode      ALL
+        name      T*
+        narrative {Demobilize all of group BLUE's undeployed personnel.}
+        parent    *
+        percent   0
+        personnel 0
+        state     normal
+        tactic_id 10
+        typename  DEMOB
+    }
+    
+    
+    #-------------------------------------------------------------------
+    # check
+
+    test check-1.1 {returns errors} -setup {
+        setup
+    } -body {
+        $T2 check
+    } -cleanup {
+        cleanup
+    } -result {command {No executive command has been specified.}}
+
+    test check-1.2 {sets state to invalid on failure} -setup {
+        setup
+    } -body {
+        $T2 set state normal 
+        $T2 check
+        $T2 state
+    } -cleanup {
+        cleanup
+    } -result {invalid}
+    
+    test check-1.3 {will reset invalid to normal on success} -setup {
+        setup
+    } -body {
+        $T2 set state invalid
+        $T2 set command dummy
+        $T2 check
+        $T2 state
+    } -cleanup {
+        cleanup
+    } -result {normal}
+    
+    test check-1.4 {will not reset disabled to normal on success} -setup {
+        setup
+    } -body {
+        $T2 set state disabled
+        $T2 set command dummy
+        $T2 check
+        $T2 state
+    } -cleanup {
+        cleanup
+    } -result {disabled}
+
+    #-------------------------------------------------------------------
+    # narrative
+
+    test narrative-1.1 {returns narrative string} -setup {
+        setup
+    } -body {
+        $T1 set msg "Howdy"
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {Logs "Howdy" to the sigevents log}
+
+    #-------------------------------------------------------------------
+    # obligate
+
+    # TBD: no general behavior to test.
+
+    #-------------------------------------------------------------------
+    # execute
+
+    # TBD: no general behavior to test.
+    
+    
+    #-------------------------------------------------------------------
+    # update_
+
+    test update-1.1 {update_ does a sanity check} -setup {
+        setup
+    } -body {
+        $T1 set state invalid
+        $T1 update_ {msg} {msg Howdy}
+        $T1 state
+    } -cleanup {
+        cleanup
+    } -result {normal}
+    
+    test update-1.2 {update_ clears execstatus} -setup {
+        setup
+    } -body {
+        $T1 set execstatus SUCCESS
+        $T1 update_ {msg} {msg Howdy}
+        $T1 get execstatus
+    } -cleanup {
+        cleanup
+    } -result {NONE}
+    
+    
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+
+

@@ -1,0 +1,1144 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-block.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    block(sim) tests.
+#
+#    This test suite tests the block(sim) mutators and queries
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Set up for tests
+
+    # setup
+
+    proc setup {} {
+        variable B1
+        variable BJOE
+
+        ted create JOE BOB NB1 NB2 BLUE BRIT SHIA SUNN KURD
+
+        # NEXT, add some blocks
+        set B1   [ted addblock SYSTEM]
+        set BJOE [ted addblock JOE]
+    }
+
+    proc lock {} {
+        variable B1
+        variable BJOE
+        variable coffer
+
+        # FIRST, disable the blocks, so that they don't execute
+        $B1 configure -state disabled
+        $BJOE configure -state disabled
+
+        # NEXT, lock everything and create the coffer
+        tdb econ setstate DISABLED
+        ted lock
+        tdb cash load
+        tdb personnel load
+        set coffer [::athena::coffer new ::tdb JOE]
+
+        # NEXT, enable the blocks again.
+        $B1   configure -state normal
+        $BJOE configure -state normal
+    }
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        tdb strategy locking 0
+        ted cleanup
+    }
+
+    proc lastcond {block} {
+        return [lindex [$block conditions] end]
+    }
+
+    proc lasttactic {block} {
+        return [lindex [$block tactics] end]
+    }
+    
+    #-------------------------------------------------------------------
+    # constructor
+
+    test constructor-1.1 {block is created} -setup {
+        setup
+    } -body {
+        ted pdicts [$B1 getdict]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        cmode      ALL
+        conditions {}
+        emode      ALL
+        execstatus NONE
+        exectime   {}
+        id         *
+        intent     {}
+        name       B*
+        once       0
+        onlock     0
+        parent     1
+        pot        *::pot
+        state      normal
+        t1         {}
+        t2         {}
+        tactics    {}
+        tmode      ALWAYS
+    }
+
+    test constructor-1.2 {can set options} -setup {
+        setup
+        set B1 [ted newbean ::athena::block -cmode ANY -intent "My block"]
+    } -body {
+        ted pdicts [$B1 getdict]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        cmode      ANY
+        conditions {}
+        emode      ALL
+        execstatus NONE
+        exectime   {}
+        id         *
+        intent     {My block}
+        name       {}
+        once       0
+        onlock     0
+        parent     {}
+        pot        *::pot
+        state      normal
+        t1         {}
+        t2         {}
+        tactics    {}
+        tmode      ALWAYS
+    }
+
+    #-------------------------------------------------------------------
+    # agent
+
+    test agent-1.1 {can retrieve owning agent} -setup {
+        setup
+    } -body {
+        $B1 agent
+    } -cleanup {
+        cleanup
+    } -result {SYSTEM}
+    
+    #-------------------------------------------------------------------
+    # strategy
+
+    test strategy-1.1 {can retrieve owning strategy} -setup {
+        setup
+    } -body {
+        expr {[$B1 strategy] eq [tdb strategy getname SYSTEM]}
+    } -cleanup {
+        cleanup
+    } -result {1}
+        
+    #-------------------------------------------------------------------
+    # state
+
+    test state-1.1 {can retrieve state} -setup {
+        setup
+    } -body {
+        $B1 state
+    } -cleanup {
+        cleanup
+    } -result {normal}
+
+    #-------------------------------------------------------------------
+    # view
+
+    test view-1.1 {view, exectime not set} -setup {
+        setup
+    } -body {
+        $B1 set exectime ""
+        ted pdicts [$B1 view]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        agent           SYSTEM
+        cmode           ALL
+        conditions      {}
+        emode           ALL
+        execstatus      NONE
+        exectime        {}
+        fullname        SYSTEM/B*
+        id              *
+        intent          {}
+        name            B*
+        once            0
+        onlock          0
+        parent          *
+        pot             *::pot
+        pretty_exectime -
+        pretty_once     No
+        pretty_onlock   No
+        state           normal
+        statusicon      ::projectgui::icon::dash13
+        t1              {}
+        t2              {}
+        tactics         {}
+        timestring      {every week}
+        tmode           ALWAYS
+    }
+
+    test view-1.2 {view, exectime set} -setup {
+        setup
+    } -body {
+        $B1 set exectime 5
+        ted pdicts [$B1 view]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        agent           SYSTEM
+        cmode           ALL
+        conditions      {}
+        emode           ALL
+        execstatus      NONE
+        exectime        5
+        fullname        SYSTEM/B*
+        id              *
+        intent          {}
+        name            B*
+        once            0
+        onlock          0
+        parent          *
+        pot             *::pot
+        pretty_exectime 2012W06
+        pretty_once     No
+        pretty_onlock   No
+        state           normal
+        statusicon      ::projectgui::icon::dash13
+        t1              {}
+        t2              {}
+        tactics         {}
+        timestring      {every week}
+        tmode           ALWAYS
+    }
+    
+    test view-1.3 {cget view} -setup {
+        setup
+        ted addcondition $BJOE COMPARE
+        ted addcondition $BJOE EXPR
+        ted addtactic    $BJOE SIGEVENT
+        ted addtactic    $BJOE EXECUTIVE
+
+        $BJOE configure -tmode DURING -t1 5 -t2 10 -intent "My Block"
+    } -body {
+        ted pdicts [$BJOE view cget]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        agent      JOE
+        block_id   5
+        cmode      ALL
+        conditions {6 7}
+        emode      ALL
+        fullname   JOE/B*
+        intent     {My Block}
+        name       B*
+        once       0
+        onlock     0
+        state      normal
+        t1         5
+        t2         10
+        tactics    {8 9}
+        tmode      DURING
+    }
+
+    #-------------------------------------------------------------------
+    # update_
+
+    test update-1.1 {update_ clears parameters} -setup {
+        setup
+    } -body {
+        $B1 set execstatus SUCCESS
+        $B1 set exectime   1
+        $B1 update_ {cmode} {cmode ANY}
+        ted pdict [$B1 getdict]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        cmode      ANY
+        execstatus NONE
+        state      normal
+        tmode      ALWAYS
+        conditions {}
+        emode      ALL
+        id         *
+        once       0
+        t1         {}
+        onlock     0
+        t2         {}
+        name       B*
+        parent     1
+        intent     {}
+        pot        *::pot
+        tactics    {}
+        exectime   {}
+    }
+
+    #-------------------------------------------------------------------
+    # addtactic_
+
+    test addtactic-1.1 {adds a tactic with default settings} -setup {
+        setup
+    } -body {
+        $B1 addtactic_ SIGEVENT
+        $B1 tactics
+    } -cleanup {
+        cleanup
+    } -match glob -result {*::pot::SIGEVENT*}
+
+    test addtactic-1.2 {can be undone} -setup {
+        setup
+    } -body {
+        set undo [$B1 addtactic_ SIGEVENT]
+        set tactics [$B1 tactics]
+        namespace eval :: $undo
+
+        set count 0
+        foreach tactic $tactics {
+            if {[info object isa object $tactic]} {
+                incr count
+            }
+        }
+        list [$B1 tactics] $count
+    } -cleanup {
+        cleanup
+    } -result {{} 0}
+  
+    test addtactic-1.3 {clears exec data} -setup {
+        setup
+    } -body {
+        $B1 set execstatus SUCCESS
+        $B1 set exectime   1
+        $B1 addtactic_ SIGEVENT
+        list [$B1 get execstatus] [$B1 get exectime]
+    } -cleanup {
+        cleanup
+    } -result {NONE {}}
+
+    #-------------------------------------------------------------------
+    # deletetactic_
+
+    test deletetactic-1.1 {deletes a tactic} -setup {
+        setup
+        $B1 addtactic_ SIGEVENT
+        $B1 addtactic_ SIGEVENT
+    } -body {
+        set T1 [lindex [$B1 tactics] 0]
+        $B1 deletetactic_ [$T1 id]
+        llength [$B1 tactics]
+        # TBD: We really need two different tactic types here.
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test deletetactic-1.2 {can be undone} -setup {
+        setup
+        $B1 addtactic_ SIGEVENT
+        $B1 addtactic_ SIGEVENT
+    } -body {
+        set T1 [lindex [$B1 tactics] 0]
+        set undo [$B1 deletetactic_ [$T1 id]]
+        namespace eval :: $undo
+        llength [$B1 tactics]
+        # TBD: We really need two different tactic types here.
+    } -cleanup {
+        cleanup
+    } -result {2}
+  
+    test deletetactic-1.3 {clears exec data} -setup {
+        setup
+        $B1 addtactic_ SIGEVENT
+    } -body {
+        $B1 set execstatus SUCCESS
+        $B1 set exectime   1
+
+        set T1 [lindex [$B1 tactics] 0]
+        $B1 deletetactic_ [$T1 id]
+
+        list [$B1 get execstatus] [$B1 get exectime]
+    } -cleanup {
+        cleanup
+    } -result {NONE {}}
+
+    #-------------------------------------------------------------------
+    # movetactic_
+    #
+    # Since the actual rearrangement is handled by emoveitem, this code
+    # will not test all possible moves.
+
+    test movetactic_-1.1 {moves a tactic} -setup {
+        setup
+        $B1 addtactic_ SIGEVENT
+        $B1 addtactic_ SIGEVENT
+        lassign [$B1 tactics] T1 T2
+    } -body {
+        $B1 movetactic_ [$T2 id] top
+        expr {[$B1 tactics] eq [list $T2 $T1]}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test movetactic_-2.1 {undo: tactics is restored} -setup {
+        setup
+        $B1 addtactic_ SIGEVENT
+        $B1 addtactic_ SIGEVENT
+        lassign [$B1 tactics] T1 T2
+    } -body {
+        set before [$B1 tactics]
+        set undo [$B1 movetactic_ [$T2 id] top]
+        namespace eval :: $undo
+        set after [$B1 tactics]
+        expr {$before eq $after}
+    } -cleanup {
+        cleanup
+    } -result {1}    
+    
+    #-------------------------------------------------------------------
+    # addcondition_
+
+    test addcondition-1.1 {adds a condition with default settings} -setup {
+        setup
+    } -body {
+        $B1 addcondition_ EXPR
+        $B1 conditions
+    } -cleanup {
+        cleanup
+    } -match glob -result {*::pot::EXPR*}
+
+    test addcondition-1.2 {can be undone} -setup {
+        setup
+    } -body {
+        set undo [$B1 addcondition_ EXPR]
+        set conditions [$B1 conditions]
+        namespace eval :: $undo
+
+        set count 0
+        foreach cond $conditions {
+            if {[info object isa object $cond]} {
+                incr count
+            }
+        }
+        list [$B1 conditions] $count
+    } -cleanup {
+        cleanup
+    } -result {{} 0}
+  
+    test addcondition-1.3 {clears exec data} -setup {
+        setup
+    } -body {
+        $B1 set execstatus SUCCESS
+        $B1 set exectime   1
+        $B1 addcondition_ EXPR
+        list [$B1 get execstatus] [$B1 get exectime]
+    } -cleanup {
+        cleanup
+    } -result {NONE {}}
+
+    #-------------------------------------------------------------------
+    # deletecondition_
+
+    test deletecondition-1.1 {deletes a condition} -setup {
+        setup
+        $B1 addcondition_ EXPR
+        $B1 addcondition_ EXPR
+    } -body {
+        set C1 [lindex [$B1 conditions] 0]
+        $B1 deletecondition_ [$C1 id]
+        llength [$B1 conditions]
+        # TBD: We really need two different condition types here.
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test deletecondition-1.2 {can be undone} -setup {
+        setup
+        $B1 addcondition_ EXPR
+        $B1 addcondition_ EXPR
+    } -body {
+        set C1 [lindex [$B1 conditions] 0]
+        set undo [$B1 deletecondition_ [$C1 id]]
+        namespace eval :: $undo
+        llength [$B1 conditions]
+        # TBD: We really need two different condition types here.
+    } -cleanup {
+        cleanup
+    } -result {2}
+  
+    test deletecondition-1.3 {clears exec data} -setup {
+        setup
+        $B1 addcondition_ EXPR
+    } -body {
+        $B1 set execstatus SUCCESS
+        $B1 set exectime   1
+
+        set C1 [lindex [$B1 conditions] 0]
+        $B1 deletecondition_ [$C1 id]
+
+        list [$B1 get execstatus] [$B1 get exectime]
+    } -cleanup {
+        cleanup
+    } -result {NONE {}}
+
+    #-------------------------------------------------------------------
+    # condition_ids
+
+    test condition_ids-1.1 {returns condition IDs} -setup {
+        setup
+    } -body {
+        $B1 addcondition_ EXPR
+        $B1 addcondition_ EXPR
+        $B1 addcondition_ EXPR
+
+        set a [tdb bean ids ::athena::condition]
+        set b [$B1 condition_ids]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    #-------------------------------------------------------------------
+    # tactic_ids
+
+    test tactic_ids-1.1 {returns tactic IDs} -setup {
+        setup
+    } -body {
+        $B1 addtactic_ SIGEVENT
+        $B1 addtactic_ SIGEVENT
+        $B1 addtactic_ SIGEVENT
+
+        set a [tdb bean ids ::athena::tactic]
+        set b [$B1 tactic_ids]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    #-------------------------------------------------------------------
+    # check
+
+    test check-1.1 {all tactics are valid} -setup {
+        setup
+        $B1 addtactic_ SIGEVENT
+        $B1 addtactic_ SIGEVENT
+    } -body {
+        $B1 check
+    } -cleanup {
+        cleanup
+    } -result {}
+
+
+    test check-1.2 {some tactics are invalid} -setup {
+        setup
+        $B1 addtactic_ SIGEVENT
+        $B1 addtactic_ SIGEVENT
+        $B1 addtactic_ EXECUTIVE
+        $B1 addtactic_ EXECUTIVE
+    } -body {
+        $B1 check
+    } -cleanup {
+        cleanup
+    } -match glob -result {tactics {*EXECUTIVE* {command *} *::pot::EXECUTIVE* {command *}}}
+
+    #-------------------------------------------------------------------
+    # timestring
+
+    test timestring-1.1 {tmode ALWAYS} -setup {
+        setup
+    } -body {
+        $B1 set tmode ALWAYS
+        $B1 timestring
+    } -cleanup {
+        cleanup
+    } -result {every week}
+    
+    test timestring-1.2 {tmode AT} -setup {
+        setup
+    } -body {
+        $B1 set tmode AT
+        $B1 set t1    5
+        $B1 timestring
+    } -cleanup {
+        cleanup
+    } -result {at week 2012W06 (5)}
+
+    test timestring-1.3 {tmode BEFORE} -setup {
+        setup
+    } -body {
+        $B1 set tmode BEFORE
+        $B1 set t1    7
+        $B1 timestring
+    } -cleanup {
+        cleanup
+    } -result {every week before 2012W08 (7)}
+
+    test timestring-1.4 {tmode AFTER} -setup {
+        setup
+    } -body {
+        $B1 set tmode AFTER
+        $B1 set t1    10
+        $B1 timestring
+    } -cleanup {
+        cleanup
+    } -result {every week after 2012W11 (10)}
+
+    test timestring-1.5 {tmode DURING} -setup {
+        setup
+    } -body {
+        $B1 set tmode DURING
+        $B1 set t1    5
+        $B1 set t2    15
+        $B1 timestring
+    } -cleanup {
+        cleanup
+    } -result {every week from 2012W06 (5) to 2012W16 (15)}
+
+    #-------------------------------------------------------------------
+    # istime
+
+    test istime-1.1 {tmode ALWAYS} -setup {
+        setup
+    } -body {
+        $B1 set tmode ALWAYS
+        $B1 istime
+    } -cleanup {
+        cleanup
+    } -result {1}
+    
+    test istime-2.1 {tmode AT, success} -setup {
+        setup
+        tdb clock advance 10
+    } -body {
+        $B1 set tmode AT
+        $B1 set t1    10
+        $B1 istime
+    } -cleanup {
+        cleanup
+    } -result {1}
+    
+    test istime-2.2 {tmode AT, failure} -setup {
+        setup
+        tdb clock advance 10
+    } -body {
+        $B1 set tmode AT
+        $B1 set t1    12
+        $B1 istime
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+    test istime-3.1 {tmode BEFORE, t < t1} -setup {
+        setup
+        tdb clock advance 9
+    } -body {
+        $B1 set tmode BEFORE
+        $B1 set t1    10
+        $B1 istime
+    } -cleanup {
+        cleanup
+    } -result {1}
+    
+    test istime-3.2 {tmode BEFORE, t = t1} -setup {
+        setup
+        tdb clock advance 10
+    } -body {
+        $B1 set tmode BEFORE
+        $B1 set t1    10
+        $B1 istime
+    } -cleanup {
+        cleanup
+    } -result {0}
+    
+    test istime-3.3 {tmode BEFORE, t > t1} -setup {
+        setup
+        tdb clock advance 11
+    } -body {
+        $B1 set tmode BEFORE
+        $B1 set t1    10
+        $B1 istime
+    } -cleanup {
+        cleanup
+    } -result {0}
+    
+    test istime-4.1 {tmode AFTER, t < t1} -setup {
+        setup
+        tdb clock advance 9
+    } -body {
+        $B1 set tmode AFTER
+        $B1 set t1    10
+        $B1 istime
+    } -cleanup {
+        cleanup
+    } -result {0}
+    
+    test istime-4.2 {tmode AFTER, t = t1} -setup {
+        setup
+        tdb clock advance 10
+    } -body {
+        $B1 set tmode AFTER
+        $B1 set t1    10
+
+        $B1 istime
+    } -cleanup {
+        cleanup
+    } -result {0}
+    
+    test istime-4.3 {tmode AFTER, t > t1} -setup {
+        setup
+        tdb clock advance 11
+    } -body {
+        $B1 set tmode AFTER
+        $B1 set t1    10
+        $B1 istime
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test istime-5.1 {tmode DURING, t < t1} -setup {
+        setup
+        tdb clock advance 9
+    } -body {
+        $B1 set tmode DURING
+        $B1 set t1    10
+        $B1 set t2    15
+        $B1 istime
+    } -cleanup {
+        cleanup
+    } -result {0}
+    
+    test istime-5.2 {tmode DURING, t = t1} -setup {
+        setup
+        tdb clock advance 10
+    } -body {
+        $B1 set tmode DURING
+        $B1 set t1    10
+        $B1 set t2    15
+        $B1 istime
+    } -cleanup {
+        cleanup
+    } -result {1}
+    
+    test istime-5.3 {tmode DURING, t1 < t < t2} -setup {
+        setup
+        tdb clock advance 11
+    } -body {
+        $B1 set tmode DURING
+        $B1 set t1    10
+        $B1 set t2    15
+        $B1 istime
+    } -cleanup {
+        cleanup
+    } -result {1}
+    
+    test istime-5.4 {tmode DURING, t = t2} -setup {
+        setup
+        tdb clock advance 15
+    } -body {
+        $B1 set tmode DURING
+        $B1 set t1    10
+        $B1 set t2    15
+        $B1 istime
+    } -cleanup {
+        cleanup
+    } -result {1}
+    
+    test istime-5.5 {tmode DURING, t > t2} -setup {
+        setup
+        tdb clock advance 16
+    } -body {
+        $B1 set tmode DURING
+        $B1 set t1    10
+        $B1 set t2    15
+        $B1 istime
+    } -cleanup {
+        cleanup
+    } -result {0}
+    
+
+
+    #-------------------------------------------------------------------
+    # execflag
+    
+    test execflag-1.1 {1 if execstatus is SUCCESS} -setup {
+        setup
+    } -body {
+        $B1 set execstatus ""
+        set a [$B1 execflag]
+
+        $B1 set execstatus SUCCESS
+        set b [$B1 execflag]
+
+        list $a $b
+    } -cleanup {
+        cleanup
+    } -result {0 1}
+
+    #-------------------------------------------------------------------
+    # execute
+
+    proc addExecutive {} {
+        variable BJOE
+
+        $BJOE addtactic_ EXECUTIVE
+        set t [lasttactic $BJOE]
+        $t set command "# dummy"
+        $t check
+
+        return $t
+    }
+
+    proc addSigevent {} {
+        variable BJOE
+
+        $BJOE addtactic_ SIGEVENT
+        set t [lasttactic $BJOE]
+        $t set msg "howdy"
+
+        return $t
+    }
+
+    proc addDeploy {personnel} {
+        variable BJOE
+        
+        return [ted addtactic $BJOE DEPLOY \
+            g         BLUE \
+            nlist     [tdb gofer make NBHOODS BY_VALUE NB1] \
+            nmode     EQUAL \
+            pmode     SOME  \
+            personnel $personnel]
+    }
+
+    proc addSpend {amount} {
+        variable BJOE
+        
+        $BJOE addtactic_ SPEND
+        set t [lasttactic $BJOE]
+        $t set mode EXACT
+        $t set amount $amount
+        $t check
+
+        return $t
+    }
+
+
+    proc tstate {} {
+        variable BJOE
+        set result [list]
+        foreach t [$BJOE tactics] {
+            lappend result [$t id] [$t execstatus]
+        }
+
+        return $result
+    }
+
+    test execute-1.1 {SKIPPED if state is not normal} -setup {
+        setup
+        addExecutive
+        lock
+    } -body {
+        $BJOE set state disabled
+        $BJOE execute $coffer
+        $BJOE execstatus
+    } -cleanup {
+        cleanup
+    } -result {SKIP_STATE}
+ 
+    test execute-2.1 {SKIPPED on lock if onlock=0} -setup {
+        setup
+        addExecutive
+        lock
+        tdb strategy locking 1
+    } -body {
+        $BJOE set onlock 0
+        $BJOE execute $coffer
+        $BJOE execstatus
+    } -cleanup {
+        cleanup
+    } -result {SKIP_LOCK}
+    
+    test execute-2.2 {SKIPPED on lock if no tactics} -setup {
+        setup
+        lock
+        tdb strategy locking 1
+    } -body {
+        $BJOE set onlock 1
+        $BJOE execute $coffer
+        $BJOE execstatus
+    } -cleanup {
+        cleanup
+    } -result {SKIP_EMPTY}
+    
+    test execute-2.3 {SKIPPED on lock if no normal tactics} -setup {
+        setup
+        set t [addExecutive]
+        $t set state disabled
+        lock
+        tdb strategy locking 1
+    } -body {
+        $BJOE set onlock 1
+        $BJOE execute $coffer
+        list [$BJOE execstatus] [tstate]
+    } -cleanup {
+        cleanup
+    } -result {SKIP_EMPTY {6 SKIP_STATE}}
+
+    test execute-2.4 {SKIPPED on lock if no onlock tactics} -setup {
+        setup
+        addSigevent
+        lock
+        tdb strategy locking 1
+    } -body {
+        $BJOE set onlock 1
+        $BJOE execute $coffer
+        list [$BJOE execstatus] [tstate]
+    } -cleanup {
+        cleanup
+    } -result {SKIP_EMPTY {6 SKIP_LOCK}}
+
+    test execute-3.1 {SUCCESS on lock if normal with onlock tactic} -setup {
+        setup
+        addSigevent
+        addExecutive
+        lock
+        tdb strategy locking 1
+    } -body {
+        $BJOE set onlock 1
+        $BJOE execute $coffer
+        list [$BJOE execstatus] [tstate]
+    } -cleanup {
+        cleanup
+    } -result {SUCCESS {6 SKIP_LOCK 7 SUCCESS}}
+
+     test execute-4.1 {SKIP_TIME if time constraint not met} -setup {
+        setup 
+        lock
+    } -body {
+        $BJOE set tmode AT
+        $BJOE set t1    10
+        $BJOE execute $coffer
+        $BJOE execstatus
+    } -cleanup {
+        cleanup
+    } -result {SKIP_TIME}
+
+    test execute-5.1 {cmode ALL, not all are met} -setup {
+        setup 
+        $BJOE addcondition_ EXPR
+        set C1 [lastcond $BJOE]
+
+        $BJOE addcondition_ EXPR
+        set C2 [lastcond $BJOE]
+
+        $C1 update_ {expression} { expression { 1 == 1 } }
+        $C2 update_ {expression} { expression { 1 == 2 } }
+        lock
+    } -body {
+        $BJOE set cmode ALL
+        $BJOE execute $coffer
+        $BJOE execstatus
+    } -cleanup {
+        cleanup
+    } -result {SKIP_CONDITIONS}
+    
+    test execute-5.2 {cmode ANY, none are met} -setup {
+        setup 
+        $BJOE addcondition_ EXPR
+        set C1 [lastcond $BJOE]
+
+        $BJOE addcondition_ EXPR
+        set C2 [lastcond $BJOE]
+
+        $C1 update_ {expression} { expression { 1 == 2 } }
+        $C2 update_ {expression} { expression { 2 == 3 } }
+
+        lock
+    } -body {
+        $BJOE set cmode ANY
+        $BJOE execute $coffer
+        $BJOE execstatus
+    } -cleanup {
+        cleanup
+    } -result {SKIP_CONDITIONS}
+    
+    test execute-6.1 {cmode ALL, all are met} -setup {
+        setup 
+        addSigevent ;# So the block isn't empty
+        $BJOE addcondition_ EXPR
+        set C1 [lastcond $BJOE]
+
+        $BJOE addcondition_ EXPR
+        set C2 [lastcond $BJOE]
+
+        $C1 update_ {expression} { expression { 1 == 1 } }
+        $C2 update_ {expression} { expression { 2 == 2 } }
+
+        lock
+    } -body {
+        $BJOE set cmode ALL
+        $BJOE execute $coffer
+        $BJOE execstatus
+    } -cleanup {
+        cleanup
+    } -result {SUCCESS}
+
+    test execute-6.2 {cmode ANY, some are met} -setup {
+        setup 
+        addSigevent ;# So the block isn't empty
+        $BJOE addcondition_ EXPR
+        set C1 [lastcond $BJOE]
+
+        $BJOE addcondition_ EXPR
+        set C2 [lastcond $BJOE]
+
+        $C1 update_ {expression} { expression { 1 == 2 } }
+        $C2 update_ {expression} { expression { 2 == 2 } }
+
+        lock
+    } -body {
+        $BJOE set cmode ANY
+        $BJOE execute $coffer
+        $BJOE execstatus
+    } -cleanup {
+        cleanup
+    } -result {SUCCESS}
+
+    test execute-6.3 {disabled conditions are ignored} -setup {
+        setup 
+        addSigevent ;# So the block isn't empty
+        $BJOE addcondition_ EXPR
+        set C1 [lastcond $BJOE]
+
+        $BJOE addcondition_ EXPR
+        set C2 [lastcond $BJOE]
+
+        $C1 update_ {expression} { expression { 1 == 2 } }
+        $C2 update_ {expression} { expression { 2 == 2 } }
+
+        $C1 set state disabled
+        lock
+    } -body {
+        $BJOE set cmode ALL
+        $BJOE execute $coffer
+        list [$BJOE execstatus] [tstate]
+    } -cleanup {
+        cleanup
+    } -result {SUCCESS {6 SUCCESS}}
+    
+    test execute-6.4 {invalid conditions are ignored} -setup {
+        setup
+        addSigevent ;# So the block isn't empty
+        $BJOE addcondition_ EXPR
+        set C1 [lastcond $BJOE]
+
+        $BJOE addcondition_ EXPR
+        set C2 [lastcond $BJOE]
+
+        $C2 update_ {expression} { expression { 2 == 2 } }
+        lock
+    } -body {
+        $C1 set state invalid
+        $BJOE set cmode ALL
+        $BJOE execute $coffer
+        list [$BJOE execstatus] [tstate]
+    } -cleanup {
+        cleanup
+    } -result {SUCCESS {6 SUCCESS}}
+    
+    test execute-7.1 {insufficient resources for 1, emode=ALL} -setup {
+        setup 
+        addSigevent 
+        addDeploy 30000  ;# Shouldn't be any troops mobilized.
+        lock
+    } -body {
+        $BJOE set emode ALL
+        $BJOE execute $coffer
+        list [$BJOE execstatus] [tstate]
+    } -cleanup {
+        cleanup
+    } -result {FAIL_RESOURCES {6 SKIP_BLOCK 7 FAIL_RESOURCES}}
+    
+    test execute-7.2 {insufficient resources for 1, emode=SOME} -setup {
+        setup
+        addSigevent 
+        addDeploy 30000  ;# Shouldn't be any troops mobilized.
+
+        lock
+    } -body {
+        $BJOE set emode SOME
+        $BJOE execute $coffer
+        list [$BJOE execstatus] [tstate]
+    } -cleanup {
+        cleanup
+    } -result {SUCCESS {6 SUCCESS 7 FAIL_RESOURCES}}
+
+    test execute-8.1 {obligates on lock} -setup {
+        setup
+        addSpend 1000.0
+        lock
+
+        $coffer spend [$coffer cash]
+        $coffer withdraw 2000
+        $BJOE set onlock 1
+        tdb strategy locking 1
+    } -body {
+        set a [$coffer cash]
+        $BJOE execute $coffer
+        set b [$coffer cash]
+        list $a $b
+    } -cleanup {
+        cleanup
+    } -result {2000.0 1000.0}
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+
+
+
+

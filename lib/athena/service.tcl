@@ -225,10 +225,10 @@ snit::type ::athena::service {
         $self LogLOSChanges
         $self ComputeFactors 
 
-        profile 1 $adb ruleset ENI       assess
-        profile 1 $adb ruleset ENERGY    assess
-        profile 1 $adb ruleset TRANSPORT assess
-        profile 1 $adb ruleset WATER     assess
+        $adb cprofile 1 ruleset ENI       assess
+        $adb cprofile 1 ruleset ENERGY    assess
+        $adb cprofile 1 ruleset TRANSPORT assess
+        $adb cprofile 1 ruleset WATER     assess
     }
 
     #-------------------------------------------------------------------

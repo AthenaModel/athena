@@ -1,0 +1,565 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-curse.test
+#
+# AUTHOR:
+#    Dave Hanks
+#
+# DESCRIPTION:
+#    curse(sim) tests.
+#
+#    This test suite tests the curse(sim) mutators and queries
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Setup
+    proc setup {} {
+        #Stub, no setup needed, yet.
+    }
+
+    # Clean up after a test
+    proc cleanup {} {
+        # Clean up the test environment
+        ted cleanup
+    }
+
+    # curses
+
+    set c1 {
+        curse_id    C1 
+        longname   "Curse One"
+        cause       UNIQUE
+        s           1.0
+        p           0.2
+        q           0.1
+    }
+
+    set c2 {
+        curse_id    C2
+        longname   "Curse Two"
+        cause       UNIQUE
+        s           1.0
+        p           0.0
+        q           0.0
+    }
+
+    # injects
+    set i1 {
+        inject_type COOP
+        curse_id    C1
+        f           @CIV1
+        g           @FRC1
+        mag         1.0
+    }
+
+    #-------------------------------------------------------------------
+    # create
+
+    test create-1.1 {curse is created} -setup {
+        setup
+    } -body {
+        tdb curse create $c1
+        ted querylist {SELECT * FROM curses}
+    } -cleanup {
+        cleanup
+    } -result {
+curse_id  C1
+longname  Curse One
+cause     UNIQUE
+s         1.0
+p         0.2
+q         0.1
+state     normal
+    }
+
+    test create-2.1 {undo deletes the curse} -setup {
+        setup
+        tdb curse create $c1
+        set undo [tdb curse create $c2]
+    } -body {
+        namespace eval :: $undo
+        tdb eval {SELECT curse_id FROM curses}
+    } -cleanup {
+        cleanup
+    } -result {C1}
+
+
+    #-------------------------------------------------------------------
+    # delete
+
+    test delete-1.1 {curse is deleted} -setup {
+        setup
+        tdb curse create $c1
+        tdb curse create $c2
+    } -body {
+        tdb curse delete C1
+
+        # Is C1 gone?
+        tdb eval {SELECT curse_id FROM curses}
+    } -cleanup {
+        cleanup
+    } -result {C2}
+
+    test delete-1.2 {Undo restores curse} -setup {
+        setup
+        tdb curse create $c1
+        tdb curse create $c2
+        set undo [tdb curse delete C1]
+    } -body {
+        namespace eval :: $undo
+        ted querylist {SELECT * FROM curses ORDER BY curse_id}
+    } -cleanup {
+        cleanup
+    } -result {
+curse_id  C1
+longname  Curse One
+cause     UNIQUE
+s         1.0
+p         0.2
+q         0.1
+state     normal
+
+curse_id  C2
+longname  Curse Two
+cause     UNIQUE
+s         1.0
+p         0.0
+q         0.0
+state     normal
+    }
+
+    test delete-2.1 {inject records are deleted} -setup {
+        setup
+        tdb curse create $c1
+        tdb curse create $c2
+        tdb inject create $i1
+    } -body {
+        tdb curse delete C1
+
+        tdb eval {
+            SELECT curse_id,inject_num FROM curse_injects
+            ORDER BY curse_id,inject_num
+        }
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test delete-2.2 {Undo restores inject records} -setup {
+        setup
+        tdb curse create $c1
+        tdb curse create $c2
+        tdb inject create $i1
+        
+        set undo [tdb curse delete C1]
+    } -body {
+        namespace eval :: $undo
+        tdb eval {
+            SELECT curse_id,inject_num FROM curse_injects
+            ORDER BY curse_id,inject_num
+        }
+    } -cleanup {
+        cleanup
+    } -result {C1 1}
+
+    #-------------------------------------------------------------------
+    # update
+
+    test update-1.1 {CURSE is updated} -setup {
+        setup
+        tdb curse create $c1
+    } -body {
+        tdb curse update {
+            curse_id   C1
+            longname "Cast a CURSE"
+        }
+
+        ted querylist {SELECT * FROM curses}
+    } -cleanup {
+        cleanup
+    } -result {
+curse_id  C1
+longname  Cast a CURSE
+cause     UNIQUE
+s         1.0
+p         0.2
+q         0.1
+state     normal
+    }
+
+
+    test update-1.2 {identical values are OK} -setup {
+        setup
+        tdb curse create $c1
+    } -body {
+        set a [ted query {SELECT * FROM curses}]
+
+        tdb curse update $c1
+
+        set b [ted query {SELECT * FROM curses}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    test update-1.3 {empty values are OK} -setup {
+        setup
+        tdb curse create $c1
+    } -body {
+        set a [ted query {SELECT * FROM curses}]
+
+        tdb curse update  {
+            curse_id   C1
+            longname ""
+        }
+
+        set b [ted query {SELECT * FROM curses}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    test update-2.1 {undo undoes the change} -setup {
+        setup
+        tdb curse create $c1
+    } -body {
+        set a [ted query {SELECT * FROM curses}]
+
+        set undo [tdb curse update {
+            curse_id   C1
+            longname "Cast a CURSE"
+        }]
+
+        namespace eval :: $undo
+
+        set b [ted query {SELECT * FROM curses}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    #-------------------------------------------------------------------
+    # state
+
+    test state-1.1 {curse state is changed} -setup {
+        setup
+        tdb curse create $c2
+    } -body {
+        tdb curse state C2 disabled
+
+        ted querylist {SELECT * FROM curses}
+    } -cleanup {
+        cleanup
+    } -result {
+curse_id  C2
+longname  Curse Two
+cause     UNIQUE
+s         1.0
+p         0.0
+q         0.0
+state     disabled
+    }
+
+    test state-2.1 {undo undoes the change} -setup {
+        setup
+        tdb curse create $c2
+    } -body {
+
+        set a [ted query {SELECT * FROM curses}]
+
+        set undo [tdb curse state C2 disabled]
+
+        namespace eval :: $undo
+
+        set b [ted query {SELECT * FROM curses}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    #-------------------------------------------------------------------
+    # names
+
+    test names-1.1 {Returns names: none defined} -body {
+        setup
+        tdb curse names
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test names-1.2 {Returns names} -setup {
+        setup
+        tdb curse create $c1
+        tdb curse create $c2
+    } -body {
+        tdb curse names
+    } -cleanup {
+        cleanup
+    } -result {C1 C2}
+
+    #-------------------------------------------------------------------
+    # namedict
+
+    test namedict-1.1 {Returns namedict: none defined} -body {
+        setup
+        tdb curse namedict
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test namedict-1.2 {Returns namedict} -setup {
+        setup
+        tdb curse create $c1
+        tdb curse create $c2
+    } -body {
+        tdb curse namedict
+    } -cleanup {
+        cleanup
+    } -result {C1 {Curse One} C2 {Curse Two}}
+
+    #-------------------------------------------------------------------
+    # longnames
+
+    test longnames-1.1 {Returns names: none defined} -body {
+        setup
+        tdb curse longnames
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test longnames-1.2 {Returns names} -setup {
+        setup
+        tdb curse create $c1
+        tdb curse create $c2
+    } -body {
+        tdb curse longnames
+    } -cleanup {
+        cleanup
+    } -result {{C1: Curse One} {C2: Curse Two}}
+
+
+    #-------------------------------------------------------------------
+    # validate
+
+    test validate-1.1 {Invalid name: none defined} -body {
+        tdb curse validate NONESUCH
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Invalid CURSE, none are defined}
+
+    test validate-1.2 {Invalid name: some defined} -setup {
+        setup
+        tdb curse create $c1
+        tdb curse create $c2
+    } -body {
+        tdb curse validate NONESUCH
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Invalid CURSE, should be one of: C1, C2}
+
+    test validate-2.1 {Valid name} -setup {
+        setup
+        tdb curse create $c1
+        tdb curse create $c2
+    } -body {
+        tdb curse validate C2
+    } -cleanup {
+        cleanup
+    } -result {C2}
+
+    #-------------------------------------------------------------------
+    # exists
+
+    test exists-1.1 {curse doesn't exist} -setup {
+        setup
+        tdb curse create $c1
+        tdb curse create $c2
+    } -body {
+        tdb curse exists C3
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+    test exists-1.2 {curse exists} -setup {
+        setup
+        tdb curse create $c1
+        tdb curse create $c2
+    } -body {
+        tdb curse exists C2
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    #-------------------------------------------------------------------
+    # normal names
+
+    test normal_names-1.1 {Returns normal names: none defined} -body {
+        setup
+        tdb curse normal names
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test normal_names-1.2 {Returns normal names} -setup {
+        setup
+        tdb curse create $c1
+        tdb curse create $c2
+        tdb curse state C2 disabled
+    } -body {
+        tdb curse normal names
+    } -cleanup {
+        cleanup
+    } -result {C1}
+
+
+    #-------------------------------------------------------------------
+    # normal namedict
+
+    test normal_namedict-1.1 {Returns normal namedict: none defined} -body {
+        setup
+        tdb curse normal namedict
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test normal_namedict-1.2 {Returns normal namedict} -setup {
+        setup
+        tdb curse create $c1
+        tdb curse create $c2
+        tdb curse state C2 disabled
+    } -body {
+        tdb curse normal namedict
+    } -cleanup {
+        cleanup
+    } -result {C1 {Curse One}}
+
+    #-------------------------------------------------------------------
+    # normal longnames
+
+    test normal_longnames-1.1 {Returns names: none defined} -body {
+        setup
+        tdb curse normal longnames
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test normal_longnames-1.2 {Returns normal names} -setup {
+        setup
+        tdb curse create $c1
+        tdb curse create $c2
+        tdb curse state C2 disabled
+    } -body {
+        tdb curse normal longnames
+    } -cleanup {
+        cleanup
+    } -result {{C1: Curse One}}
+
+
+    #-------------------------------------------------------------------
+    # normal validate
+
+    test normal_validate-1.1 {Invalid name: none defined} -body {
+        tdb curse normal validate NONESUCH
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Invalid CURSE, no valid CURSEs are defined}
+
+    test normal_validate-1.2 {Invalid name: some defined} -setup {
+        setup
+        tdb curse create $c1
+        tdb curse create $c2
+        tdb curse state C2 disabled
+    } -body {
+        tdb curse normal validate NONESUCH
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Invalid CURSE, should be one of: C1}
+
+    test validate-2.1 {Valid name} -setup {
+        setup
+        tdb curse create $c1
+        tdb curse create $c2
+        tdb curse state C2 disabled
+    } -body {
+        tdb curse validate C1
+    } -cleanup {
+        cleanup
+    } -result {C1}
+
+    #-------------------------------------------------------------------
+    # get
+
+    test get-1.1 {get dict} -setup {
+        setup
+        tdb curse create $c1
+    } -body {
+        ted pdict [tdb curse get C1]
+    } -cleanup {
+        cleanup
+    } -result {
+        narrative {Curse One (s: 1.0 p: 0.2 q: 0.1)}
+        state     normal
+        fancy     {C1: Curse One}
+        cause     UNIQUE
+        longname  {Curse One}
+        longlink  {<a href="my://app/curse/C1">Curse One</a>}
+        link      {<a href="my://app/curse/C1">C1</a>}
+        curse_id  C1
+        url       my://app/curse/C1
+    }
+
+    test get-1.2 {get column} -setup {
+        setup
+        tdb curse create $c1
+    } -body {
+        tdb curse get C1 longname
+    } -cleanup {
+        cleanup
+    } -result {Curse One}
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+

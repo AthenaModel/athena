@@ -939,48 +939,34 @@ snit::type ::athena::sim {
     meta title      "Run Simulation"
     meta sendstates PAUSED
     meta monitor    off
-    meta parmlist   {weeks block}
+    meta parmlist   {
+        {weeks 1} 
+        {block 1}
+    }
 
     meta form {
         rcc "Weeks to Run:" -for weeks
-        text weeks
+        text weeks -defvalue 1
 
         rcc "Block?" -for block
-        enumlong block -dict {1 Yes 0 No} -defvalue 0
+        enumlong block -dict {1 Yes 0 No} -defvalue 1
     }
 
 
     method _validate {} {
-        my prepare weeks -toupper -type iticks
+        my prepare weeks -toupper -type ipositive
         my prepare block -toupper -type boolean
 
         my returnOnError
-
-        my checkon block {
-            if {$parms(block) && ($parms(weeks) eq "" || $parms(weeks) == 0)} {
-                my reject block "Cannot block without specifying the weeks to run"
-            }
-
-            # TBD: The library needs to know whether the event loop is 
-            # running or not.  If not, block automatically.
-            if {![app tkloaded] && !$parms(block)} {
-                my reject block "Must be YES when Athena is in non-GUI mode"
-            }
-        }
     }
 
     method _execute {{flunky ""}} {
         if {$parms(block) eq ""} {
-            set parms(block) 0
+            set parms(block) 1
         }
 
         # NEXT, start the simulation and return the undo script. 
-        # There is an assumption that a tick is exactly one week.
-        if {$parms(weeks) eq "" || $parms(weeks) == 0} {
-            lappend undo [$adb sim run]
-        } else {
-            lappend undo [$adb sim run -ticks $parms(weeks) -block $parms(block)]
-        }
+        lappend undo [$adb sim run -ticks $parms(weeks) -block $parms(block)]
 
         my setundo [join $undo \n]
     }

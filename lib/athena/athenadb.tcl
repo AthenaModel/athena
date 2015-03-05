@@ -201,6 +201,14 @@ snit::type ::athena::athenadb {
 
     option -subject \
         -readonly yes
+
+    # -scratch dirname
+    #
+    # The name of a directory in which athena(n) can write files.
+    # Defaults to the current working directory.
+
+    option -scratch \
+        -default ""
     
 
     #-------------------------------------------------------------------
@@ -474,8 +482,10 @@ snit::type ::athena::athenadb {
         $self notify "" <Destroy>
 
         # FIRST, close and destroy the RDB.
-        $rdb close
-        $rdb destroy
+        catch {
+            $rdb close
+            $rdb destroy
+        }
     }
 
     #-------------------------------------------------------------------
@@ -533,6 +543,7 @@ snit::type ::athena::athenadb {
         $self InitializeRDB
         $self RestoreSaveables
         $strategy reset
+        $nbhood   dbsync
 
         set info(adbfile) ""
 
@@ -1022,6 +1033,21 @@ snit::type ::athena::athenadb {
 
     method version {} {
         return [package present athena]
+    }
+
+    # scratch args
+    #
+    # Returns a path to a file in the scratch directory, joining the
+    # arguments together like [file join].
+
+    method scratch {args} {
+        if {$options(-scratch) ne ""} {
+            set base $options(-scratch)
+        } else {
+            set base [pwd]
+        }
+
+        return [file join $base {*}$args]
     }
 
     #-------------------------------------------------------------------

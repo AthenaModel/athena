@@ -74,7 +74,7 @@ snit::type ::athena::aam {
     # attrition assessment.
 
     method assess {} {
-        log normal aam "assess"
+         $adb log normal aam "assess"
 
         # FIRST, create SAT and COOP dicts to hold transient data
         set sdict [dict create]
@@ -166,7 +166,7 @@ snit::type ::athena::aam {
     # g1 and g2 are used only for attrition to a civilian group.
 
     method AttritGroup {n f casualties g1 g2} {
-        log normal aam "AttritGroup $n $f $casualties $g1 $g2"
+         $adb log normal aam "AttritGroup $n $f $casualties $g1 $g2"
 
         # FIRST, determine the set of units to attrit.
         $adb eval {
@@ -203,7 +203,7 @@ snit::type ::athena::aam {
     # Units are attrited in proportion to their size.
 
     method AttritNbhood {n casualties g1 g2} {
-        log normal aam "AttritNbhood $n $casualties $g1 $g2"
+         $adb log normal aam "AttritNbhood $n $casualties $g1 $g2"
 
         # FIRST, determine the set of units to attrit (all
         # the CIV units in the neighborhood).
@@ -244,11 +244,11 @@ snit::type ::athena::aam {
         let actual {min($casualties, $total)}
 
         if {$actual == 0} {
-            log normal aam \
+             $adb log normal aam \
                 "Overkill; no casualties can be inflicted."
             return 
         } elseif {$actual < $casualties} {
-            log normal aam \
+             $adb log normal aam \
                 "Overkill; only $actual casualties can be inflicted."
         }
         
@@ -303,7 +303,7 @@ snit::type ::athena::aam {
         # FIRST, log the attrition
         let personnel {$personnel - $casualties}
 
-        log normal aam \
+         $adb log normal aam \
           "Unit $u takes $casualties casualties, leaving $personnel personnel"
             
         # NEXT, update the unit.

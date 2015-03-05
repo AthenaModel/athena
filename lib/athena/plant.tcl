@@ -88,7 +88,7 @@ snit::type ::athena::plant {
         if {[$adb econ state] eq "ENABLED"} {
             $self LaydownPlants
         } else {
-            log warning plant "econ is disabled"
+             $adb log warning plant "econ is disabled"
         }
     }
 

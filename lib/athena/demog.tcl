@@ -221,7 +221,7 @@ snit::type ::athena::demog {
             # annual rate expressed as a percentage; we need a
             # weekly fraction.  Thus, we divide by 100*52.
             let delta {$real_pop * $pop_cr/5200.0}
-            log detail demog "Group $g's population changes by $delta"
+             $adb log detail demog "Group $g's population changes by $delta"
             $self adjust $g $delta
         }
     }
@@ -703,9 +703,9 @@ snit::type ::athena::demog {
                     # If we haven't finished by 1000 iterations, something
                     # is completely hosed.
                     if {$iter >= 1000} {
-                        log debug demog \
+                         $adb log debug demog \
                             "Jobs remaining by nbhood: [array get jobsremain]"
-                        log debug demog \
+                         $adb log debug demog \
                             "Labor remaining by nbhood: [array get lfremain]"
                         error "Disaggregation of unemployment failed"
                     }

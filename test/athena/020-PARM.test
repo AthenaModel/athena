@@ -1,0 +1,188 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    020-PARM.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    athena(n) PARM:* order tests.
+#
+#    This test suite tests the parm(sim) orders.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # PARM:IMPORT
+
+    test IMPORT-1.1 {required parms} -body {
+        ted order -reject PARM:IMPORT {}
+    } -result {
+        filename {required value}
+    }
+
+
+    test IMPORT-1.2 {invalid filename} -body {
+        ted order -reject PARM:IMPORT filename /nonesuch/nonesuch
+    } -result {
+        filename {Error, file not found: "/nonesuch/nonesuch"}
+    }
+
+
+    test IMPORT-2.1 {file is imported} -setup {
+        makeFile {
+            parm dam.absit.nominalCoverage 0.5
+        } temp.parmdb
+    } -body {
+        ted order PARM:IMPORT filename \
+            [file join [temporaryDirectory] temp.parmdb]
+        tdb parm get dam.absit.nominalCoverage
+    } -cleanup {
+        cleanup
+    } -result {0.5}
+
+
+    test IMPORT-2.2 {Changes are undone} -setup {
+        makeFile {
+            parm dam.absit.nominalCoverage 0.5
+        } temp.parmdb
+    } -body {
+        set a [tdb parm get dam.absit.nominalCoverage]
+
+        ted order PARM:IMPORT filename \
+            [file join [temporaryDirectory] temp.parmdb]
+
+        tdb order undo
+        set b [tdb parm get dam.absit.nominalCoverage]
+
+        expr {$a == $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    #-------------------------------------------------------------------
+    # PARM:RESET
+    #
+    # We can't test this thoroughly, because the results depend on the
+    # defaults.parmdb file.  However, we can make sure that it can be
+    # executed without error, and that the undo script appears to work
+
+    test RESET-1.1 {Executes without error} -body {
+        ted order PARM:RESET
+    } -cleanup {
+        cleanup
+    } -result {}
+
+
+    test RESET-1.2 {Changes *appear* to be undone} -body {
+        set a [tdb parm get dam.absit.nominalCoverage]
+
+        ted order PARM:RESET
+        tdb order undo
+
+        set b [tdb parm get dam.absit.nominalCoverage]
+
+        expr {$a == $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    #-------------------------------------------------------------------
+    # PARM:SET
+
+    test SET-1.1 {Required parameters} -body {
+        ted order -reject PARM:SET
+    } -cleanup {
+        cleanup
+    } -result {
+        parm {required value}
+    }
+
+
+    test SET-1.2 {Sets an unknown parameter} -body {
+        ted order -reject PARM:SET parm foo value bar
+    } -cleanup {
+        cleanup
+    } -result {
+        parm {Unknown model parameter: "foo"}
+    }
+
+
+    test SET-1.3 {Sets a known parameter to an invalid value} -body {
+        ted order -reject PARM:SET parm dam.absit.nominalCoverage value bar
+    } -cleanup {
+        cleanup
+    } -result {
+        value {invalid value "bar", should be a real number in range 0.1, 1.0}
+    }
+
+    test SET-2.1 {Set is successful} -body {
+        ted order PARM:SET parm dam.absit.nominalCoverage value 0.1
+        tdb parm get dam.absit.nominalCoverage
+    } -cleanup {
+        cleanup
+    } -result {0.1}
+
+
+    test SET-2.2 {Set can be undone} -body {
+        set a [tdb parm get dam.absit.nominalCoverage]
+
+        ted order PARM:SET parm dam.absit.nominalCoverage value 0.2
+        tdb order undo
+
+        set b [tdb parm get dam.absit.nominalCoverage]
+
+        expr {$a == $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+
+

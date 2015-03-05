@@ -1,0 +1,772 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-absit.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    tdb absit(sim) tests.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        ted cleanup
+    }
+
+    set s1 {
+        stype     BADWATER
+        n         NB1
+        coverage  1.0 
+        g         BLUE
+        resolver  NONE
+        inception 1   
+        rduration ""
+    } 
+
+    set s2 {
+        stype     COMMOUT
+        n         NB1 
+        coverage  0.5 
+        g         NONE
+        resolver  BLUE
+        inception 0   
+        rduration ""
+    } 
+
+    set s3 {
+        stype     INDSPILL
+        n         NB1
+        coverage  1.0 
+        g         BLUE
+        resolver  NONE
+        inception 1   
+        rduration ""
+    } 
+
+    #-------------------------------------------------------------------
+    # create
+
+    test create-1.1 {Ensit is created} -setup {
+        ted create NB1 BLUE
+    } -body {
+        tdb absit create $s1
+        ted querylist {SELECT * FROM absits}
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+s          1
+stype      BADWATER
+n          NB1
+coverage   1.0
+inception  1
+resolver   NONE
+rduration  1
+state      INITIAL
+ts         0
+tr         1
+location   *
+    }
+    
+
+    test create-1.2 {Ensit is created, duration can be set} -setup {
+        ted create JOE NB1 BLUE SHIA
+    } -body {
+        tdb absit create [dict merge $s1 [list rduration 20]]
+
+        ted querylist {SELECT * FROM absits}
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+s          1
+stype      BADWATER
+n          NB1
+coverage   1.0
+inception  1
+resolver   NONE
+rduration  20
+state      INITIAL
+ts         0
+tr         20
+location   *
+    }
+
+    test create-1.3 {If created while PAUSED, ts = now+1} -setup {
+        ted create JOE NB1 BLUE SHIA
+    } -body {
+        ted lock
+        tdb absit create $s1
+
+        tdb eval {SELECT ts, tr FROM absits}
+    } -cleanup {
+        cleanup
+    } -result {1 2}
+
+    test create-2.1 {Undo deletes the entity} -setup {
+        ted create NB1 BLUE
+        set undo [tdb absit create $s1]
+    } -body {
+        {*}$undo
+        tdb query {SELECT s FROM absits}
+    } -cleanup {
+        cleanup
+    } -result {}
+
+
+    #-------------------------------------------------------------------
+    # delete
+
+    test delete-1.1 {Entity is deleted} -setup {
+        ted create NB1 BLUE
+        tdb absit create $s1
+        tdb absit create $s2
+    } -body {
+        tdb absit delete 1
+
+        # Is 1 gone?
+        tdb eval {SELECT s FROM absits}
+    } -cleanup {
+        cleanup
+    } -result {2}
+
+
+    test delete-2.1 {Undo restores absit} -setup {
+        ted create NB1 BLUE
+        tdb absit create $s1
+    } -body {
+        set a [tdb absit get 1]
+        set undo [tdb absit delete 1]
+        {*}$undo
+        set b [tdb absit get 1]
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    #-------------------------------------------------------------------
+    # update
+
+
+    test update-1.1 {absit is updated} -setup {
+        ted create NB1 NB2 BLUE
+        tdb absit create $s1
+    } -body {
+        tdb absit update {
+            s         1 
+            stype     BADFOOD
+            n         NB2 
+            coverage  0.5
+            inception 0
+            g         NONE
+            resolver  BLUE
+            rduration 10
+        }
+
+        ted querylist {SELECT * FROM absits}
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+s          1
+stype      BADFOOD
+n          NB2
+coverage   0.5
+inception  0
+resolver   BLUE
+rduration  10
+state      INITIAL
+ts         0
+tr         10
+location   *
+    }
+
+    test update-1.2 {identical values are OK} -setup {
+        ted create NB1 BLUE
+        tdb absit create $s1
+    } -body {
+        set a [ted query {SELECT * FROM absits}]
+
+        tdb absit update [concat {s 1} $s1]
+
+        set b [ted query {SELECT * FROM absits}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    test update-1.3 {empty values are OK} -setup {
+        ted create NB1 BLUE
+        tdb absit create $s1
+    } -body {
+        set a [ted query {SELECT * FROM absits}]
+
+        tdb absit update  {
+            s         1
+            stype     ""
+            n         ""
+            coverage  ""
+            inception ""
+            g         ""
+            resolver  ""
+            rduration ""
+        }
+
+        set b [ted query {SELECT * FROM absits}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    test update-1.5 {location is updated} -setup {
+        ted create NB1 NB2 BLUE
+        tdb absit create $s1
+    } -body {
+        set a [tdb absit get 1 location]
+        tdb absit update {
+            s         1 
+            stype     ""
+            n         NB2
+            coverage  ""
+            inception ""
+            g         ""
+            resolver  ""
+            rduration ""
+        }
+        set b [tdb absit get 1 location]
+        expr {$a ne $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    test update-2.1 {undo undoes the change} -setup {
+        ted create NB1 BLUE
+        tdb absit create $s1
+    } -body {
+        set a [ted query {SELECT * FROM absits}]
+
+        set undo [tdb absit update {
+            s         1 
+            stype     BADFOOD
+            n         ""
+            coverage  ""
+            inception ""
+            g         ""
+            resolver  ""
+            rduration ""
+        }]
+
+        {*}$undo
+
+        set b [ted query {SELECT * FROM absits}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    #-------------------------------------------------------------------
+    # resolve
+
+
+    test resolve-1.1 {absit is resolved by NONE} -setup {
+        ted create NB1 BLUE
+        tdb absit create $s1
+    } -body {
+        tdb absit resolve {
+            s         1 
+            resolver  NONE
+        }
+
+        ted querylist {SELECT * FROM absits}
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+s          1
+stype      BADWATER
+n          NB1
+coverage   1.0
+inception  1
+resolver   NONE
+rduration  0
+state      RESOLVED
+ts         0
+tr         0
+location   *
+    }
+
+
+    test resolve-2.1 {undo undoes the change} -setup {
+        ted create NB1 BLUE
+        tdb absit create $s1
+    } -body {
+        set a [ted query {SELECT * FROM absits}]
+
+        set undo [tdb absit resolve {
+            s        1
+            resolver NONE
+        }]
+
+        {*}$undo
+
+        set b [ted query {SELECT * FROM absits}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    #-------------------------------------------------------------------
+    # reconcile
+
+    test reconcile-1.1 {resolver set to NONE if resolver doesn't exist} -setup {
+        ted create NB1
+        tdb absit create [dict merge $s1 [list g NONE]]
+        tdb absit resolve [list s 1 resolver BLUE]
+    } -body {
+        tdb absit reconcile
+
+        tdb eval {SELECT resolver FROM absits}
+    } -cleanup {
+        cleanup
+    } -result {NONE}
+
+
+    #-------------------------------------------------------------------
+    # get
+
+    test get-1.1 {get all} -setup {
+        ted create NB1 BLUE
+        tdb absit create $s1
+        tdb absit create $s2
+    } -body {
+        ted pdicts [tdb absit get 1]
+        
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        coverage  1.0
+        inception 1
+        location  *
+        n         NB1
+        rduration 1
+        resolver  NONE
+        s         1
+        state     INITIAL
+        stype     BADWATER
+        tr        1
+        ts        0
+    }
+
+    test get-1.2 {get parm} -setup {
+        ted create NB1 BLUE
+        tdb absit create $s1
+        tdb absit create $s2
+    } -body {
+        tdb absit get 1 n
+    } -cleanup {
+        cleanup
+    } -result {NB1}
+
+    #-------------------------------------------------------------------
+    # view
+
+    test view-1.1 {view all} -setup {
+        ted create NB1 BLUE
+        tdb absit create $s1
+    } -body {
+        ted pdicts [tdb absit view 1]        
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        coverage  1.0000
+        g         {}
+        id        1
+        inception 1
+        location  *
+        longid    {1 -- BADWATER in NB1}
+        n         NB1
+        rduration 1
+        resolver  NONE
+        s         1
+        state     INITIAL
+        stype     BADWATER
+        tr        2012W02
+        ts        2012W01
+    }
+
+    
+    #-------------------------------------------------------------------
+    # existsInNbhood
+
+    test existsInNbhood-1.1 {get list of live absits} -setup {
+        ted create NB1 BLUE
+        tdb absit create $s1
+        tdb absit create $s2
+
+        tdb absit resolve {
+            s        2
+            resolver NONE
+        }
+    } -body {
+        tdb absit existsInNbhood NB1
+    } -cleanup {
+        cleanup
+    } -result {BADWATER}
+
+
+    test existsInNbhood-1.2 {Check existence of types} -setup {
+        ted create NB1 BLUE
+        tdb absit create $s1
+        tdb absit create $s2
+        tdb absit resolve {
+            s        2
+            resolver NONE
+        }
+    } -body {
+        list \
+            [tdb absit existsInNbhood NB1 BADWATER] \
+            [tdb absit existsInNbhood NB1 COMMOUT]
+    } -cleanup {
+        cleanup
+    } -result {1 0}
+
+
+    #-------------------------------------------------------------------
+    # absentFromNbhood
+
+    test absentFromNbhood-1.1 {get list of absent absits} -setup {
+        ted create NB1 BLUE
+        tdb absit create $s1
+        tdb absit create $s2
+        tdb absit resolve {
+            s        2
+            resolver NONE
+        }
+    } -body {
+        # Only BADWATER should be missing.
+        tdb absit absentFromNbhood NB1
+    } -cleanup {
+        cleanup
+    } -result {BADFOOD COMMOUT CULSITE DISASTER DISEASE DROUGHT EPIDEMIC FOODSHRT FUELSHRT GARBAGE INDSPILL MINEFIELD ORDNANCE PIPELINE REFINERY RELSITE SEWAGE}
+
+    
+    #-------------------------------------------------------------------
+    # names/validate
+    #
+    # enum(n)-like subcommands for all absits, live and RESOLVED.
+
+    test names-1.1 {get list of absit IDs} -setup {
+        ted create NB1 BLUE
+        tdb absit create $s1
+        tdb absit create $s2
+    } -body {
+        tdb absit names
+    } -cleanup {
+        cleanup
+    } -result {1 2}
+    
+
+    test names-1.2 {validate valid ID} -setup {
+        ted create NB1 BLUE
+        tdb absit create $s1
+        tdb absit create $s2
+    } -body {
+        tdb absit validate 2
+    } -cleanup {
+        cleanup
+    } -result {2}
+    
+
+    test names-1.3 {validate invalid ID} -setup {
+        ted create NB1 BLUE
+        tdb absit create $s1
+        tdb absit create $s2
+    } -body {
+        tdb absit validate 3
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Invalid abstract situation ID: "3"}
+    
+    #-------------------------------------------------------------------
+    # exists
+
+    # Tested by validate.
+    
+
+    #-------------------------------------------------------------------
+    # initial names/validate
+    #
+    # enum(n)-like subcommands for absits in the INITIAL state
+
+    test initial_names-1.1 {get list of absit IDs} -setup {
+        ted create NB1 BLUE
+        tdb absit create $s1
+        tdb absit create $s2
+        tdb absit resolve {
+            s        2
+            resolver NONE
+        }
+    } -body {
+        tdb absit initial names
+    } -cleanup {
+        cleanup
+    } -result {1}
+    
+
+    test initial_names-1.2 {validate valid ID} -setup {
+        ted create NB1 BLUE
+        tdb absit create $s1
+        tdb absit create $s2
+        tdb absit resolve {
+            s        2
+            resolver NONE
+        }
+    } -body {
+        tdb absit initial validate 1
+    } -cleanup {
+        cleanup
+    } -result {1}
+    
+
+    test initial_names-1.3 {validate RESOLVED ID} -setup {
+        ted create NB1 BLUE
+        tdb absit create $s1
+        tdb absit create $s2
+        tdb absit resolve {
+            s        2
+            resolver NONE
+        }
+    } -body {
+        tdb absit initial validate 2
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {not a "live" situation: "2"}
+    
+
+    test initial_names-1.4 {validate active ID} -setup {
+        ted create NB1 BLUE
+        tdb absit create $s1
+        tdb absit create $s2
+        tdb eval {UPDATE absits SET state='ONGOING' WHERE s=2}
+    } -body {
+        tdb absit initial validate 2
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {operation is invalid; time has passed.}
+
+    #-------------------------------------------------------------------
+    # isinitial
+    
+    test isinitial-1.1 {absit is initial} -setup {
+        ted create NB1 BLUE
+        tdb absit create $s1
+        set s [lindex [tdb absit names] end]
+    } -body {
+        tdb absit isinitial $s
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test isinitial-1.2 {absit is not initial after assess} -setup {
+        ted create JOE BOB NB1 NB2 BLUE SUNN SHIA KURD
+        tdb absit create $s1
+        set s [lindex [tdb absit names] end]
+        ted lock
+    } -body {
+        tdb absit isinitial $s
+    } -cleanup {
+        cleanup
+    } -result {0}
+    
+    test isinitial-1.3 {absit is not initial when resolved} -setup {
+        ted create NB1 BLUE
+        tdb absit create $s1
+        set s [lindex [tdb absit names] end]
+        tdb absit resolve [list s $s resolver NONE]
+    } -body {
+        tdb absit isinitial $s
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+    #-------------------------------------------------------------------
+    # live names/validate
+    #
+    # enum(n)-like subcommands for absits that "live"
+
+    test live_names-1.1 {get list of absit IDs} -setup {
+        ted create NB1 BLUE
+        tdb absit create $s1
+        tdb absit create $s2
+        tdb absit resolve {
+            s        2
+            resolver NONE
+        }
+    } -body {
+        tdb absit live names
+    } -cleanup {
+        cleanup
+    } -result {1}
+    
+
+    test live_names-1.2 {validate valid ID} -setup {
+        ted create NB1 BLUE
+        tdb absit create $s1
+        tdb absit create $s2
+        tdb absit resolve {
+            s        2
+            resolver NONE
+        }
+    } -body {
+        tdb absit live validate 1
+    } -cleanup {
+        cleanup
+    } -result {1}
+    
+
+    test live_names-1.3 {validate invalid ID} -setup {
+        ted create NB1 BLUE
+        tdb absit create $s1
+        tdb absit create $s2
+        tdb absit resolve {
+            s        2
+            resolver NONE
+        }
+    } -body {
+        tdb absit live validate 2
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {not a "live" situation: "2".}
+
+    #-------------------------------------------------------------------
+    # islive
+    
+    test islive-1.1 {absit is live on creation} -setup {
+        ted create NB1 BLUE
+        tdb absit create $s1
+        set s [lindex [tdb absit names] end]
+    } -body {
+        tdb absit islive $s
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test islive-1.2 {absit is live after assess} -setup {
+        ted create JOE BOB NB1 NB2 BLUE SUNN SHIA KURD
+        tdb absit create $s1
+        set s [lindex [tdb absit names] end]
+        ted lock
+    } -body {
+        tdb absit islive $s
+    } -cleanup {
+        cleanup
+    } -result {1}
+    
+
+    
+    test islive-1.3 {absit is not live after resolve} -setup {
+        ted create NB1 BLUE
+        tdb absit create $s1
+        set s [lindex [tdb absit names] end]
+        tdb absit resolve [list s $s resolver NONE]
+    } -body {
+        tdb absit islive $s
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+
+    #-------------------------------------------------------------------
+    # rebase
+
+    test rebase-1.1 {Clean up absits} -setup {
+        ted create NB1 JOE BLUE SHIA
+        tdb absit create $s1
+        tdb absit create $s2
+        tdb absit create $s3
+        ted lock
+        tdb absit resolve {s 1 resolver NONE}
+        ted step
+        ted step
+    } -body {
+        tdb absit rebase
+
+        # RESOLVED absits should be gone.  For those remaining,
+        # tc=ts=now (t=2); state is INITIAL; inception is 0;
+        # driver IDs are unassigned; duration is truncated.
+        ted querylist {SELECT * FROM absits}
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+s          3
+stype      INDSPILL
+n          NB1
+coverage   1.0
+inception  0
+resolver   NONE
+rduration  10
+state      INITIAL
+ts         2
+tr         12
+location   *
+    }    
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+    tdb parm set dam.UNEMP.active yes
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+
+
+
+

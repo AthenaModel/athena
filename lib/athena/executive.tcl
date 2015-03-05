@@ -153,7 +153,7 @@ snit::type ::athena::executive {
         }]
 
         foreach name $autoScripts {
-            log normal exec "loading: $name"
+             $adb log normal exec "loading: $name"
             append out "Loading script: $name\n"
             if {[catch {$self script load $name} result]} {
                 $adb log normal exec "failed: $result"
