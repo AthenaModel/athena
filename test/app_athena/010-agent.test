@@ -48,7 +48,7 @@ namespace eval ::athena_test::tests:: {
     # names
 
     test names-1.1 {Returns names: no actors defined} -body {
-        agent names
+        tdb agent names
     } -cleanup {
         cleanup
     } -result {SYSTEM}
@@ -56,7 +56,7 @@ namespace eval ::athena_test::tests:: {
     test names-1.2 {Returns names with actors} -setup {
         ted create JOE BOB
     } -body {
-        agent names
+        tdb agent names
     } -cleanup {
         cleanup
     } -result {BOB JOE SYSTEM}
@@ -68,7 +68,7 @@ namespace eval ::athena_test::tests:: {
     test validate-1.1 {Invalid name: some defined} -setup {
         ted create JOE BOB
     } -body {
-        agent validate NONESUCH
+        tdb agent validate NONESUCH
     } -returnCodes {
         error
     } -cleanup {
@@ -78,7 +78,7 @@ namespace eval ::athena_test::tests:: {
     test validate-2.1 {Valid name} -setup {
         ted create JOE BOB
     } -body {
-        agent validate BOB
+        tdb agent validate BOB
     } -cleanup {
         cleanup
     } -result {BOB}
@@ -87,7 +87,7 @@ namespace eval ::athena_test::tests:: {
     # system names
 
     test system_names-1.1 {Returns name} -body {
-        agent system names
+        tdb agent system names
     } -cleanup {
         cleanup
     } -result {SYSTEM}
@@ -96,7 +96,7 @@ namespace eval ::athena_test::tests:: {
     # validate
 
     test validate-1.1 {Invalid name} -body {
-        agent system validate NONESUCH
+        tdb agent system validate NONESUCH
     } -returnCodes {
         error
     } -cleanup {
@@ -104,7 +104,7 @@ namespace eval ::athena_test::tests:: {
     } -result {Invalid system agent, should be one of: SYSTEM}
 
     test validate-2.1 {Valid name} -body {
-        agent system validate SYSTEM
+        tdb agent system validate SYSTEM
     } -cleanup {
         cleanup
     } -result {SYSTEM}
@@ -113,13 +113,13 @@ namespace eval ::athena_test::tests:: {
     # get
 
     test get-1.1 {get SYSTEM type} -body {
-        agent type SYSTEM
+        tdb agent type SYSTEM
     } -result {system}
 
     test get-1.2 {get actor type} -setup {
         ted create JOE
     } -body {
-        agent type JOE
+        tdb agent type JOE
     } -cleanup {
         cleanup
     } -result {actor}
@@ -128,24 +128,24 @@ namespace eval ::athena_test::tests:: {
     # tactictypes 
 
     test tactictypes-1.1 {tactics for SYSTEM type} -body {
-        agent tactictypes SYSTEM
+        tdb agent tactictypes SYSTEM
     } -result {ABSIT ACCIDENT ATTRIT CURSE DAMAGE DEMO EXECUTIVE EXPLOSION FLOW RIOT SERVICE SIGEVENT VIOLENCE}
 
     test tactictypes-1.2 {tactics for normal actor} -setup {
         ted create JOE
     } -body {
-        agent tactictypes JOE
+        tdb agent tactictypes JOE
     } -cleanup {
         cleanup
     } -result {ABSIT ACCIDENT ASSIGN BROADCAST BUILD DEMO DEMOB DEPLOY DEPOSIT EXECUTIVE EXPLOSION FUND FUNDENI GRANT MAINTAIN MOBILIZE RIOT SERVICE SIGEVENT SPEND STANCE SUPPORT VIOLENCE WITHDRAW}
 
     test tactictypes-1.3 {tactics for auto_maintain actor} -setup {
         ted create JOE
-        rdb eval {
+        adb eval {
             UPDATE actors SET auto_maintain=1
         }
     } -body {
-        set list [agent tactictypes JOE]
+        set list [tdb agent tactictypes JOE]
 
         expr {"MAINTAIN" ni $list}
     } -cleanup {

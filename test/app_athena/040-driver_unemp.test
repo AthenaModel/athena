@@ -78,17 +78,17 @@ namespace eval ::athena_test::tests:: {
     
     proc setup {} {
         # FIRST, other rule sets shouldn't muddy the waters.
-        parm set dam.ENI.active no
-        parm set dam.CONSUMP.active no
-        rdb eval {DELETE FROM drivers}
+        tdb parm set dam.ENI.active no
+        tdb parm set dam.CONSUMP.active no
+        adb eval {DELETE FROM drivers}
         
         # NEXT, create the entities
         ted create JOE BOB DAVE NB1 NB2 TAL SHIA SUNN KURD
         
         # NEXT, lock, so that URAM is ready to receive inputs.  Disable
         # UNEMP so that it does nothing on lock.
-        econ setstate ENABLED
-        parm set dam.UNEMP.active no
+        tdb econ setstate ENABLED
+        tdb parm set dam.UNEMP.active no
         ted lock
     }
     
@@ -101,17 +101,17 @@ namespace eval ::athena_test::tests:: {
     # to assess the results.
     
     proc unemp {uaf} {
-        parm set dam.UNEMP.active yes
+        tdb parm set dam.UNEMP.active yes
 
         # FIRST, spoof the factors.
-        rdb eval {
+        adb eval {
             UPDATE demog_n SET uaf = 0.0;
             UPDATE demog_n SET uaf = $uaf
             WHERE n = 'NB1';
         }
         
         # NEXT, execute the rule set.
-        ruleset UNEMP assess
+        tdb ruleset UNEMP assess
     }
     
     # Clean up after a test
@@ -166,7 +166,7 @@ UNEMP-1-1 SUNN AUT
     test sigline-1.1 {sigline output} -setup {
         setup
     } -body {
-        ruleset UNEMP sigline "NB1 SHIA" 
+        tdb ruleset UNEMP sigline "NB1 SHIA" 
     } -cleanup {
         cleanup
     } -result {Effect of NB1 unemployment on SHIA}
@@ -178,7 +178,7 @@ UNEMP-1-1 SUNN AUT
     test narrative-1.1 {narrative output} -setup {
         setup
     } -body {
-        ruleset UNEMP narrative {
+        tdb ruleset UNEMP narrative {
             dtype      UNEMP
             n          NB1
             g          SHIA
@@ -196,7 +196,7 @@ UNEMP-1-1 SUNN AUT
     test detail-1.1 {detail, UNEMP-1} -setup {
         setup
     } -body {
-        ruleset UNEMP detail {
+        tdb ruleset UNEMP detail {
             dtype      UNEMP
             n          NB1
             g          SHIA

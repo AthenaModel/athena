@@ -517,7 +517,7 @@ oo::define ::athena::condition {
     }
 
     method _execute {{flunky ""}} {
-        set cond [$adb pot get $parms(condition_id)]
+        set cond [$adb bean get $parms(condition_id)]
         my setundo [$cond update_ {state} [array get parms]]
     }
 }

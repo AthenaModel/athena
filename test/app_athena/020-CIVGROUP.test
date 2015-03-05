@@ -304,7 +304,7 @@ upc        0.0
         ted create NB1
         ted order CIVGROUP:CREATE {*}$shia longname ""
 
-        rdb onecolumn {SELECT longname FROM civgroups_view}
+        adb onecolumn {SELECT longname FROM civgroups_view}
     } -cleanup {
         cleanup
     } -result {SHIA}
@@ -313,7 +313,7 @@ upc        0.0
         ted create NB1
         ted order CIVGROUP:CREATE {*}$shia bsid ""
 
-        rdb onecolumn {SELECT bsid FROM civgroups_view}
+        adb onecolumn {SELECT bsid FROM civgroups_view}
     } -cleanup {
         cleanup
     } -result {1}
@@ -322,7 +322,7 @@ upc        0.0
         ted create NB1
         ted order CIVGROUP:CREATE {*}$shia basepop 0
 
-        rdb onecolumn {SELECT basepop FROM civgroups_view}
+        adb onecolumn {SELECT basepop FROM civgroups_view}
     } -cleanup {
         cleanup
     } -result {0}
@@ -344,7 +344,7 @@ upc        0.0
         ted order CIVGROUP:CREATE $sunn
     } -body {
         ted notifier bind ::adb <civgroups>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -387,7 +387,7 @@ upc        0.0
         ted order CIVGROUP:DELETE g SHIA
     } -body {
         ted notifier bind ::adb <civgroups>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -556,7 +556,7 @@ upc        0.0
 
     test UPDATE-2.1 {civgroup is updated} -setup {
         ted create NB1 NB2 SHIA
-        bsys system add 2
+        tdb bsys system add 2
     } -body {
         ted order CIVGROUP:UPDATE {
             g            SHIA
@@ -616,7 +616,7 @@ upc        10.0
         }
     } -body {
         ted notifier bind ::adb <civgroups>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup

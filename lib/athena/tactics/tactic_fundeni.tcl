@@ -205,7 +205,7 @@
             return 
         }
 
-        cash spend $owner FUNDENI $trans(amount)
+        [my adb] cash spend $owner FUNDENI $trans(amount)
 
         # NEXT, Compute strings needed for logging.
         if {[llength $trans(glist)] == 1} {
@@ -235,7 +235,7 @@
         }
 
         # NEXT, get the related neighborhoods.
-        set nbhoods [rdb eval "
+        set nbhoods [[my adb] eval "
             SELECT DISTINCT n 
             FROM civgroups
             WHERE g IN ('[join $trans(glist) ',']')
@@ -352,7 +352,7 @@
             -with [list $adb strategy valclass ::athena::tactic::FUNDENI]
         my returnOnError
 
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
 
         # FIRST, prepare and validate the parameters
         my prepare name    -toupper -with [list $tactic valName]
@@ -379,7 +379,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
         my setundo [$tactic update_ {
             name glist cmode mode amount percent los
         } [array get parms]]

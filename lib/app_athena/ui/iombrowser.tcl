@@ -148,7 +148,7 @@ snit::widget iombrowser {
 
     method {MonIOMs update} {iom_id} {
         # FIRST, we need to get the data about this IOM.
-        array set data [iom get $iom_id]
+        array set data [adb iom get $iom_id]
 
         # NEXT, Display the IOM item
         $self DrawIOM data
@@ -182,7 +182,7 @@ snit::widget iombrowser {
     method {MonPayloads update} {id} {
         # FIRST, we need to get the data about this payload.
         # If it isn't currently displayed, we can ignore it.
-        array set data [payload get $id]
+        array set data [adb payload get $id]
 
         if {[info exists i2item($data(iom_id))]} {
             $self DrawPayload data
@@ -385,7 +385,7 @@ snit::widget iombrowser {
         array unset p2item
 
         # NEXT, insert the ioms
-        rdb eval {
+        adb eval {
             SELECT * FROM gui_ioms ORDER BY iom_id
         } row {
             unset -nocomplain row(*)
@@ -393,7 +393,7 @@ snit::widget iombrowser {
         }
 
         # NEXT, insert the payloads
-        rdb eval {
+        adb eval {
             SELECT * FROM gui_payloads
             ORDER BY id;
         } row {
@@ -449,8 +449,8 @@ snit::widget iombrowser {
         if {"iom" in [$iptree item tag names $id]} {
             app enter IOM:UPDATE iom_id $oid
         } else {
-            set iom_id [payload get $oid iom_id]
-            set longname [iom get $iom_id longname]
+            set iom_id [adb payload get $oid iom_id]
+            set longname [adb iom get $iom_id longname]
             app enter PAYLOAD:$otype:UPDATE id $oid longname $longname
         }
     }
@@ -478,22 +478,22 @@ snit::widget iombrowser {
 
         # NEXT, it's a iom or a payload.
         if {"iom" in [$iptree item tag names $id]} {
-            set state [iom get $oid state]
+            set state [adb iom get $oid state]
 
             if {$state eq "normal"} {
-                flunky senddict gui IOM:STATE [list iom_id $oid state disabled]
+                adb order senddict gui IOM:STATE [list iom_id $oid state disabled]
             } elseif {$state eq "disabled"} {
-                flunky senddict gui IOM:STATE [list iom_id $oid state normal]
+                adb order senddict gui IOM:STATE [list iom_id $oid state normal]
             } else {
                 # Do nothing (this should never happen anyway)
             }
         } else {
-            set state [payload get $oid state]
+            set state [adb payload get $oid state]
 
             if {$state eq "normal"} {
-                flunky senddict gui PAYLOAD:STATE [list id $oid state disabled]
+                adb order senddict gui PAYLOAD:STATE [list id $oid state disabled]
             } elseif {$state eq "disabled"} {
-                flunky senddict gui PAYLOAD:STATE [list id $oid state normal]
+                adb order senddict gui PAYLOAD:STATE [list id $oid state normal]
             } else {
                 # Do nothing (this should never happen anyway)
             }
@@ -505,7 +505,7 @@ snit::widget iombrowser {
     # Allows the user to check the sanity of the existing payloads. 
     
     method SanityCheck {} {
-        if {[iom checker] ne "OK"} {
+        if {[adb iom checker] ne "OK"} {
             app show my://app/sanity/iom
         }
     }
@@ -522,10 +522,10 @@ snit::widget iombrowser {
 
         # NEXT, it's a iom or a payload.
         if {"iom" in [$iptree item tag names $id]} {
-            flunky senddict gui IOM:DELETE \
+            adb order senddict gui IOM:DELETE \
                 [list iom_id [$iptree item text $id {tag id}]]
         } else {
-            flunky senddict gui PAYLOAD:DELETE \
+            adb order senddict gui PAYLOAD:DELETE \
                 [list id [$iptree item text $id {tag id}]]
         }
     }
@@ -576,7 +576,7 @@ snit::widget iombrowser {
         # FIRST, get a list of order names and titles
         set odict [dict create]
 
-        foreach name [payload type names] {
+        foreach name [adb payload typenames] {
             set order "PAYLOAD:$name:CREATE"
 
             if {![string match "PAYLOAD:*:CREATE" $order]} {
@@ -601,10 +601,10 @@ snit::widget iombrowser {
             set iom_id $oid
             $iptree item expand $id
         } else {
-            set iom_id [payload get $oid iom_id]
+            set iom_id [adb payload get $oid iom_id]
         }
 
-        set longname [iom get $iom_id longname]
+        set longname [adb iom get $iom_id longname]
 
         # NEXT, let them pick one
         set title [messagebox pick \

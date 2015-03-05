@@ -111,7 +111,7 @@ state     normal
     } -body {
         ted order IOM:CREATE {*}$m1 longname ""
 
-        rdb onecolumn {SELECT longname FROM ioms}
+        adb onecolumn {SELECT longname FROM ioms}
     } -cleanup {
         cleanup
     } -result {M1}
@@ -134,7 +134,7 @@ state     normal
         ted order IOM:CREATE $m1
     } -body {
         ted notifier bind ::adb <ioms>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -178,7 +178,7 @@ state     normal
         ted order IOM:DELETE iom_id M1
     } -body {
         ted notifier bind ::adb <ioms>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -237,7 +237,7 @@ state     normal
         }
     } -body {
         ted notifier bind ::adb <ioms>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -283,7 +283,7 @@ state     normal
         ted order IOM:STATE iom_id M1 state disabled
     } -body {
         ted notifier bind ::adb <ioms>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup

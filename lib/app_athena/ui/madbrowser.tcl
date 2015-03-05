@@ -184,7 +184,7 @@ snit::widgetadaptor madbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Send the delete order.
-        flunky senddict normal MAD:DELETE [list mad_id $id]
+        adb order senddict normal MAD:DELETE [list mad_id $id]
     }
 
 }

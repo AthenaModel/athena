@@ -259,7 +259,7 @@
             -with [list $adb strategy valclass ::athena::tactic::ATTRIT]
         my returnOnError
 
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
 
         # All validation takes place on sanity check
         my prepare name       -toupper -with [list $tactic valName]
@@ -272,7 +272,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
         ::athena::fillparms parms [$tactic view]
 
         if {$parms(g1) eq ""} {set parms(g1) "NONE"}

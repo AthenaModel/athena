@@ -109,7 +109,7 @@ namespace eval ::athena_test::tests:: {
         ted order UNIT:MOVE u BLUE/NB1 location $loc
 
         set newloc [latlong tomgrs \
-            [rdb onecolumn {SELECT location FROM units WHERE u='BLUE/NB1'}]]
+            [adb onecolumn {SELECT location FROM units WHERE u='BLUE/NB1'}]]
         expr {$loc == $newloc}
     } -cleanup {
         cleanup
@@ -136,7 +136,7 @@ namespace eval ::athena_test::tests:: {
         ted order UNIT:MOVE u BLUE/NB1 location $loc
     } -body {
         ted notifier bind ::adb <units>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup

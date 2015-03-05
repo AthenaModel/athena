@@ -198,7 +198,7 @@ base_personnel  1000
     } -body {
         ted order ORGGROUP:CREATE [dict merge $usaid {longname ""}]
 
-        rdb onecolumn {SELECT longname FROM orggroups_view}
+        adb onecolumn {SELECT longname FROM orggroups_view}
     } -cleanup {
         cleanup
     } -result {USAID}
@@ -221,7 +221,7 @@ base_personnel  1000
         ted order ORGGROUP:CREATE $usaid
     } -body {
         ted notifier bind ::adb <orggroups>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -265,7 +265,7 @@ base_personnel  1000
         ted order ORGGROUP:DELETE g USAID
     } -body {
         ted notifier bind ::adb <orggroups>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -388,7 +388,7 @@ base_personnel  1000
         }
     } -body {
         ted notifier bind ::adb <orggroups>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -522,7 +522,7 @@ base_personnel  1000
             ids {USAID HAL} color "#ff0000"
     } -body {
         ted notifier bind ::adb <orggroups>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup

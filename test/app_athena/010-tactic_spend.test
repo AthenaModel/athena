@@ -42,7 +42,7 @@ namespace eval ::athena_test::tests:: {
         variable T1
         variable coffer
         ted create JOE BOB NB1 NB2 BLUE BRIT SHIA SUNN KURD
-        cash load
+        tdb cash load
         set coffer [::athena::coffer new [::adb athenadb] JOE]
 
 
@@ -88,7 +88,7 @@ namespace eval ::athena_test::tests:: {
     test constructor-1.2 {can set options} -setup {
         setup
     } -body {
-        set T1 [pot new ::athena::tactic::SPEND -parent DUMMY]
+        set T1 [ted newbean ::athena::tactic::SPEND -parent DUMMY]
         $T1 get parent
     } -cleanup {
         cleanup
@@ -201,7 +201,7 @@ namespace eval ::athena_test::tests:: {
 
     test obligate-1.4 {Insufficient cash on lock} -setup {
         setup
-        strategy locking 1
+        tdb strategy locking 1
     } -body {
         $T1 set mode EXACT
         $T1 set amount 10001.0
@@ -216,7 +216,7 @@ namespace eval ::athena_test::tests:: {
 
     test obligate-1.5 {No cash on lock} -setup {
         setup
-        strategy locking 1
+        tdb strategy locking 1
     } -body {
         $T1 set mode EXACT
         $T1 set amount 10001.0
@@ -297,7 +297,7 @@ namespace eval ::athena_test::tests:: {
         $T1 obligate $coffer
     } -body {
         $T1 execute
-        rdb onecolumn {SELECT narrative FROM sigevents WHERE component='tactic'}
+        adb onecolumn {SELECT narrative FROM sigevents WHERE component='tactic'}
     } -cleanup {
         cleanup
     } -result {SPEND: Actor {actor:JOE} spends 1000.0 on goods: 20%; black: 20%; pop: 20%; region: 20%; world: 20%}

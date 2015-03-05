@@ -112,7 +112,7 @@ snit::type ::athena::demog {
 
     method ComputePopG {} {
         # FIRST, compute the breakdown for all groups.
-        foreach {g population sa_flag lfp} [rdb eval {
+        foreach {g population sa_flag lfp} [$adb eval {
             SELECT g, population, sa_flag, lfp
             FROM demog_g JOIN civgroups USING (g)
         }] {
@@ -173,7 +173,7 @@ snit::type ::athena::demog {
             set defaultUR [$adb parm get demog.playboxUR]
         }
 
-        foreach {n labor_force} [rdb eval {
+        foreach {n labor_force} [$adb eval {
              SELECT n,labor_force FROM demog_n
         }] {
             let jobs {$labor_force * (1.0 - ($defaultUR / 100.0))}
@@ -215,7 +215,7 @@ snit::type ::athena::demog {
     # based on its change rate.
 
     method growth {} {
-        foreach {g real_pop pop_cr} [rdb eval {
+        foreach {g real_pop pop_cr} [$adb eval {
             SELECT g, real_pop, pop_cr
             FROM civgroups JOIN demog_g USING (g)
             WHERE pop_cr != 0.0
@@ -271,7 +271,7 @@ snit::type ::athena::demog {
         set cgeUnemp $data(Unemp)
 
         set demogUnemp \
-            [rdb onecolumn {SELECT total(unemployed) FROM demog_n}]
+            [$adb onecolumn {SELECT total(unemployed) FROM demog_n}]
 
         # NEXT, return the difference between the two
         let GU {max(0, round($demogUnemp-$cgeUnemp))}
@@ -289,7 +289,7 @@ snit::type ::athena::demog {
         set zuaf [$adb parm get demog.Zuaf]
 
         # NEXT, compute the group employment statistics
-        foreach {n g population labor_force} [rdb eval {
+        foreach {n g population labor_force} [$adb eval {
             SELECT n, g, population, labor_force
             FROM demog_g
             JOIN civgroups USING (g)
@@ -297,12 +297,12 @@ snit::type ::athena::demog {
             WHERE nbhoods.local
             GROUP BY g
         }] {
-            set laborN [rdb eval {
+            set laborN [$adb eval {
                 SELECT labor_force FROM demog_n
                 WHERE n=$n
             }]
 
-            set unemployedN [rdb eval {
+            set unemployedN [$adb eval {
                 SELECT unemployed FROM demog_n
                 WHERE n=$n
             }]
@@ -369,14 +369,14 @@ snit::type ::athena::demog {
         }
         
         # NEXT, compute total employment
-        set totalEmployed [rdb onecolumn {
+        set totalEmployed [$adb onecolumn {
             SELECT total(employed) FROM demog_g
         }]
 
         # NEXT, disaggregate the consumption of goods to the groups.         
         set QD [$adb econ value Out::QD.goods.pop]
         
-        foreach {g employed consumers urbanization} [rdb eval {
+        foreach {g employed consumers urbanization} [$adb eval {
             SELECT D.g            AS g,
                    D.employed     AS employed,
                    D.consumers    AS consumers,
@@ -439,7 +439,7 @@ snit::type ::athena::demog {
         set alphaA [$adb parm get demog.consump.alphaA]
         set alphaE [$adb parm get demog.consump.alphaE]
     
-        foreach {g aloc eloc} [rdb eval {
+        foreach {g aloc eloc} [$adb eval {
             SELECT g, aloc, eloc
             FROM demog_g
             WHERE consumers > 0
@@ -492,7 +492,7 @@ snit::type ::athena::demog {
             
             # We want groups that are non-subsistence agriculture, and
             # that have population.  Requiring consumers > 0 does this.
-            foreach {g tc rloc population} [rdb eval {
+            foreach {g tc rloc population} [$adb eval {
                 SELECT g, tc, rloc, population
                 FROM demog_g
                 WHERE consumers > 0
@@ -553,7 +553,7 @@ snit::type ::athena::demog {
         # neighborhoods with workers that could work them
         set jmap [dict create]
 
-        set nbWithJobs [rdb eval {
+        set nbWithJobs [$adb eval {
             SELECT DISTINCT N.n
             FROM nbhoods AS N JOIN nbrel_mn AS R
             WHERE R.n        =N.n
@@ -563,7 +563,7 @@ snit::type ::athena::demog {
 
         foreach n $nbWithJobs {
             # Neighborhoods with workers 
-            set nbWithWorkers [rdb eval {
+            set nbWithWorkers [$adb eval {
                 SELECT DISTINCT R.m
                 FROM nbrel_mn AS R 
                 JOIN nbhoods AS N ON (N.n=R.m)
@@ -729,7 +729,7 @@ snit::type ::athena::demog {
         set zuaf [$adb parm get demog.Zuaf]
         set TurFrac [$adb parm get demog.turFrac]
 
-        foreach {n population labor_force} [rdb eval {
+        foreach {n population labor_force} [$adb eval {
             SELECT n, population, labor_force
             FROM demog_n
             JOIN nbhoods USING (n)
@@ -851,11 +851,11 @@ snit::type ::athena::demog {
 
     method gIn {n} {
         if {[$adb state] eq "PREP"} {
-            return [rdb eval {
+            return [$adb eval {
                 SELECT g FROM civgroups WHERE n=$n AND basepop > 0 ORDER BY g
             }]
         } else {
-            return [rdb eval {
+            return [$adb eval {
                 SELECT g
                 FROM demog_g
                 JOIN civgroups USING (g)
@@ -874,13 +874,13 @@ snit::type ::athena::demog {
 
     method saIn {n} {
         if {[$adb state] eq "PREP"} {
-            return [rdb eval {
+            return [$adb eval {
                 SELECT g FROM civgroups 
                 WHERE n=$n AND basepop > 0 AND sa_flag 
                 ORDER BY g
             }]
         } else {
-            return [rdb eval {
+            return [$adb eval {
                 SELECT g
                 FROM demog_g
                 JOIN civgroups USING (g)
@@ -899,13 +899,13 @@ snit::type ::athena::demog {
 
     method nonSaIn {n} {
         if {[$adb state] eq "PREP"} {
-            return [rdb eval {
+            return [$adb eval {
                 SELECT g FROM civgroups 
                 WHERE n=$n AND basepop > 0 AND NOT sa_flag 
                 ORDER BY g
             }]
         } else {
-            return [rdb eval {
+            return [$adb eval {
                 SELECT g
                 FROM demog_g
                 JOIN civgroups USING (g)
@@ -923,7 +923,7 @@ snit::type ::athena::demog {
     # list.
 
     method pop {nbhoods} {
-        set total [rdb onecolumn "
+        set total [$adb onecolumn "
             SELECT total(population)
             FROM demog_n
             WHERE n IN ('[join $nbhoods ',']')
@@ -953,7 +953,7 @@ snit::type ::athena::demog {
         }
 
         # NEXT, compute the profile for the set of neighborhoods.
-        return [rdb eval "
+        return [$adb eval "
             SELECT n, (CAST (population AS DOUBLE))/\$total
             FROM demog_n 
             WHERE n IN ('[join $nbhoods ',']')

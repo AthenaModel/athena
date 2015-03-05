@@ -195,7 +195,7 @@ snit::widget capbrowser {
         set ids [$caps uid curselection]
 
         # NEXT, select the correct order processor
-        if {[sim state] eq "PREP"} {
+        if {[adb state] eq "PREP"} {
             set root CAP:UPDATE
         } else {
             set root CAP:CAPACITY
@@ -221,7 +221,7 @@ snit::widget capbrowser {
         set id [lindex [$caps uid curselection] 0]
 
         # NEXT, Pop up the dialog, and select this entity
-        flunky senddict gui CAP:DELETE [list k $id]
+        adb order senddict gui CAP:DELETE [list k $id]
     }
 
     # CapSelectionChanged

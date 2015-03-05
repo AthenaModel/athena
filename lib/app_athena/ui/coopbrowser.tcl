@@ -30,8 +30,8 @@ snit::widgetadaptor coopbrowser {
     #
     # Array of configuration data for different app modes.
     #
-    # scenario   - [sim state] eq PREP
-    # simulation - [sim state] ne PREP 
+    # scenario   - [adb state] eq PREP
+    # simulation - [adb state] ne PREP 
     #
     #    -layout   - The layout spec for the sqlbrowser.  %D is replaced
     #                with the color for derived columns.
@@ -132,7 +132,7 @@ snit::widgetadaptor coopbrowser {
     # The simulation state has changed.  Update the display.
 
     method StateChange {} {
-        if {[sim state] eq "PREP"} {
+        if {[adb state] eq "PREP"} {
             $self SetMode scenario
         } else {
             $self SetMode simulation

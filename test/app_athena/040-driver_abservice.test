@@ -56,26 +56,26 @@ namespace eval ::athena_test::tests:: {
     
     proc setup {} {
         # FIRST, other rule sets shouldn't muddy the waters.
-        parm set dam.UNEMP.active no
-        parm set dam.CONSUMP.active no
-        parm set dam.ENI.active no
-        parm set dam.WATER.active no
-        parm set dam.TRANSPORT.active no
-        parm set dam.ENERGY.active no
-        parm set service.ENERGY.actual.URBAN 0.5
-        parm set service.ENERGY.required.URBAN 0.5
-        parm set service.WATER.actual.URBAN 0.5
-        parm set service.WATER.required.URBAN 0.5
-        parm set service.TRANSPORT.actual.URBAN 0.5
-        parm set service.TRANSPORT.required.URBAN 0.5
-        rdb eval {DELETE FROM drivers}
+        tdb parm set dam.UNEMP.active no
+        tdb parm set dam.CONSUMP.active no
+        tdb parm set dam.ENI.active no
+        tdb parm set dam.WATER.active no
+        tdb parm set dam.TRANSPORT.active no
+        tdb parm set dam.ENERGY.active no
+        tdb parm set service.ENERGY.actual.URBAN 0.5
+        tdb parm set service.ENERGY.required.URBAN 0.5
+        tdb parm set service.WATER.actual.URBAN 0.5
+        tdb parm set service.WATER.required.URBAN 0.5
+        tdb parm set service.TRANSPORT.actual.URBAN 0.5
+        tdb parm set service.TRANSPORT.required.URBAN 0.5
+        adb eval {DELETE FROM drivers}
         
         # NEXT, create the entities
         ted create JOE BOB NB1 BLUE SHIA SUNN
     }
 
     proc controller {a n} {
-        rdb eval {
+        adb eval {
             UPDATE control_n
             SET controller = $a
             WHERE n = $n
@@ -84,13 +84,13 @@ namespace eval ::athena_test::tests:: {
 
     proc disable {rules} {
         foreach rule $rules {
-            parm set dam.$rule.active no
+            tdb parm set dam.$rule.active no
         }
     }
 
     proc enable {rules} {
         foreach rule $rules {
-            parm set dam.$rule.active yes
+            tdb parm set dam.$rule.active yes
         }
     }
     
@@ -101,7 +101,7 @@ namespace eval ::athena_test::tests:: {
 
     proc lock {} {
         ted lock
-        rdb eval {
+        adb eval {
             DELETE FROM rule_firings;
             DELETE FROM rule_inputs;
             DELETE FROM drivers;
@@ -124,7 +124,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         # Default.
         lock
-        service actual NB1 ENERGY 0.0
+        tdb service actual NB1 ENERGY 0.0
         ted step
 
         ted querylist {
@@ -154,7 +154,7 @@ fdict      required 0.5 a {} expected 0.375 actual 0.0 dtype ENERGY needs 2.0 ex
     } -body {
         # No funding.
         lock
-        service actual NB1 ENERGY 0.0
+        tdb service actual NB1 ENERGY 0.0
         ted step
         ted query {
             SELECT rule, g, c
@@ -179,7 +179,7 @@ ENERGY-1-1 SUNN QOL
         # No funding.
         lock
         controller JOE NB1
-        service actual NB1 ENERGY 0.0
+        tdb service actual NB1 ENERGY 0.0
         ted step
         ted query {
             SELECT rule, g, a
@@ -201,7 +201,7 @@ ENERGY-1-1 SUNN JOE
     } -body {
         # Default.
         lock
-        service actual NB1 WATER 0.0
+        tdb service actual NB1 WATER 0.0
         ted step
 
         ted querylist {
@@ -231,7 +231,7 @@ fdict      required 0.5 a {} expected 0.375 actual 0.0 dtype WATER needs 2.0 exp
     } -body {
         # No funding.
         lock
-        service actual NB1 WATER 0.0
+        tdb service actual NB1 WATER 0.0
         ted step
         ted query {
             SELECT rule, g, c
@@ -256,7 +256,7 @@ WATER-1-1 SUNN QOL
         # No funding.
         lock
         controller JOE NB1
-        service actual NB1 WATER 0.0
+        tdb service actual NB1 WATER 0.0
         ted step
         ted query {
             SELECT rule, g, a
@@ -278,7 +278,7 @@ WATER-1-1 SUNN JOE
     } -body {
         # Default.
         lock
-        service actual NB1 TRANSPORT 0.0
+        tdb service actual NB1 TRANSPORT 0.0
         ted step
 
         ted querylist {
@@ -308,7 +308,7 @@ fdict      required 0.5 a {} expected 0.375 actual 0.0 dtype TRANSPORT needs 2.0
     } -body {
         # No funding.
         lock
-        service actual NB1 TRANSPORT 0.0
+        tdb service actual NB1 TRANSPORT 0.0
         ted step
         ted query {
             SELECT rule, g, c
@@ -333,7 +333,7 @@ TRANSPORT-1-1 SUNN QOL
         # No funding.
         lock
         controller JOE NB1
-        service actual NB1 TRANSPORT 0.0
+        tdb service actual NB1 TRANSPORT 0.0
         ted step
         ted query {
             SELECT rule, g, a
@@ -354,8 +354,8 @@ TRANSPORT-1-1 SUNN JOE
         enable ENERGY
     } -body {
         lock
-        service actual NB1 ENERGY 0.5
-        rdb eval {UPDATE service_sg SET expected=0.6}
+        tdb service actual NB1 ENERGY 0.5
+        adb eval {UPDATE service_sg SET expected=0.6}
         ted step
         ted querylist {
             SELECT * FROM rule_firings
@@ -383,8 +383,8 @@ fdict      required 0.5 a {} expected 0.575 actual 0.5 dtype ENERGY needs 0.0 ex
         enable ENERGY
     } -body {
         lock
-        service actual NB1 ENERGY 0.5
-        rdb eval {UPDATE service_sg SET expected=0.6}
+        tdb service actual NB1 ENERGY 0.5
+        adb eval {UPDATE service_sg SET expected=0.6}
         ted step
 
         ted query {
@@ -409,8 +409,8 @@ ENERGY-1-2 SUNN QOL
     } -body {
         lock
         controller JOE NB1
-        service actual NB1 ENERGY 0.5
-        rdb eval {UPDATE service_sg SET expected=0.6}
+        tdb service actual NB1 ENERGY 0.5
+        adb eval {UPDATE service_sg SET expected=0.6}
         ted step
 
         ted query {
@@ -432,8 +432,8 @@ ENERGY-1-2 SUNN JOE
         enable WATER
     } -body {
         lock
-        service actual NB1 WATER 0.5
-        rdb eval {UPDATE service_sg SET expected=0.6}
+        tdb service actual NB1 WATER 0.5
+        adb eval {UPDATE service_sg SET expected=0.6}
         ted step
         ted querylist {
             SELECT * FROM rule_firings
@@ -461,8 +461,8 @@ fdict      required 0.5 a {} expected 0.575 actual 0.5 dtype WATER needs 0.0 exp
         enable WATER
     } -body {
         lock
-        service actual NB1 WATER 0.5
-        rdb eval {UPDATE service_sg SET expected=0.6}
+        tdb service actual NB1 WATER 0.5
+        adb eval {UPDATE service_sg SET expected=0.6}
         ted step
 
         ted query {
@@ -487,8 +487,8 @@ WATER-1-2 SUNN QOL
     } -body {
         lock
         controller JOE NB1
-        service actual NB1 WATER 0.5
-        rdb eval {UPDATE service_sg SET expected=0.6}
+        tdb service actual NB1 WATER 0.5
+        adb eval {UPDATE service_sg SET expected=0.6}
         ted step
 
         ted query {
@@ -510,8 +510,8 @@ WATER-1-2 SUNN JOE
         enable TRANSPORT
     } -body {
         lock
-        service actual NB1 TRANSPORT 0.5
-        rdb eval {UPDATE service_sg SET expected=0.6}
+        tdb service actual NB1 TRANSPORT 0.5
+        adb eval {UPDATE service_sg SET expected=0.6}
         ted step
         ted querylist {
             SELECT * FROM rule_firings
@@ -539,8 +539,8 @@ fdict      required 0.5 a {} expected 0.575 actual 0.5 dtype TRANSPORT needs 0.0
         enable TRANSPORT
     } -body {
         lock
-        service actual NB1 TRANSPORT 0.5
-        rdb eval {UPDATE service_sg SET expected=0.6}
+        tdb service actual NB1 TRANSPORT 0.5
+        adb eval {UPDATE service_sg SET expected=0.6}
         ted step
 
         ted query {
@@ -565,8 +565,8 @@ TRANSPORT-1-2 SUNN QOL
     } -body {
         lock
         controller JOE NB1
-        service actual NB1 TRANSPORT 0.5
-        rdb eval {UPDATE service_sg SET expected=0.6}
+        tdb service actual NB1 TRANSPORT 0.5
+        adb eval {UPDATE service_sg SET expected=0.6}
         ted step
 
         ted query {
@@ -588,7 +588,7 @@ TRANSPORT-1-2 SUNN JOE
         enable ENERGY
     } -body {
         lock
-        service actual NB1 ENERGY 0.5
+        tdb service actual NB1 ENERGY 0.5
         ted step
 
         ted querylist {
@@ -617,11 +617,11 @@ fdict      required 0.5 a {} expected 0.5 actual 0.5 dtype ENERGY needs 0.0 expe
         enable ENERGY
     } -body {
         lock
-        service actual NB1 ENERGY 0.5
+        tdb service actual NB1 ENERGY 0.5
         ted step
 
         # No satisfaction effects when expectations are met
-        rdb eval {
+        adb eval {
             SELECT count(*)
             FROM rule_firings JOIN rule_inputs USING (firing_id)
             WHERE atype='sat'
@@ -636,11 +636,11 @@ fdict      required 0.5 a {} expected 0.5 actual 0.5 dtype ENERGY needs 0.0 expe
     } -body {
         lock
         controller JOE NB1
-        service actual NB1 ENERGY 0.5
+        tdb service actual NB1 ENERGY 0.5
         ted step
 
         # No vrel effects when expectations are met
-        rdb eval {
+        adb eval {
             SELECT count(*)
             FROM rule_firings JOIN rule_inputs USING (firing_id)
             WHERE atype='vrel'
@@ -654,7 +654,7 @@ fdict      required 0.5 a {} expected 0.5 actual 0.5 dtype ENERGY needs 0.0 expe
         enable WATER
     } -body {
         lock
-        service actual NB1 WATER 0.5
+        tdb service actual NB1 WATER 0.5
         ted step
 
         ted querylist {
@@ -683,11 +683,11 @@ fdict      required 0.5 a {} expected 0.5 actual 0.5 dtype WATER needs 0.0 expec
         enable WATER
     } -body {
         lock
-        service actual NB1 WATER 0.5
+        tdb service actual NB1 WATER 0.5
         ted step
 
         # No satisfaction effects when expectations are met
-        rdb eval {
+        adb eval {
             SELECT count(*)
             FROM rule_firings JOIN rule_inputs USING (firing_id)
             WHERE atype='sat'
@@ -702,11 +702,11 @@ fdict      required 0.5 a {} expected 0.5 actual 0.5 dtype WATER needs 0.0 expec
     } -body {
         lock
         controller JOE NB1
-        service actual NB1 WATER 0.5
+        tdb service actual NB1 WATER 0.5
         ted step
 
         # No vrel effects when expectations are met
-        rdb eval {
+        adb eval {
             SELECT count(*)
             FROM rule_firings JOIN rule_inputs USING (firing_id)
             WHERE atype='vrel'
@@ -720,7 +720,7 @@ fdict      required 0.5 a {} expected 0.5 actual 0.5 dtype WATER needs 0.0 expec
         enable TRANSPORT
     } -body {
         lock
-        service actual NB1 TRANSPORT 0.5
+        tdb service actual NB1 TRANSPORT 0.5
         ted step
 
         ted querylist {
@@ -749,11 +749,11 @@ fdict      required 0.5 a {} expected 0.5 actual 0.5 dtype TRANSPORT needs 0.0 e
         enable TRANSPORT
     } -body {
         lock
-        service actual NB1 TRANSPORT 0.5
+        tdb service actual NB1 TRANSPORT 0.5
         ted step
 
         # No satisfaction effects when expectations are met
-        rdb eval {
+        adb eval {
             SELECT count(*)
             FROM rule_firings JOIN rule_inputs USING (firing_id)
             WHERE atype='sat'
@@ -768,11 +768,11 @@ fdict      required 0.5 a {} expected 0.5 actual 0.5 dtype TRANSPORT needs 0.0 e
     } -body {
         lock
         controller JOE NB1
-        service actual NB1 TRANSPORT 0.5
+        tdb service actual NB1 TRANSPORT 0.5
         ted step
 
         # No vrel effects when expectations are met
-        rdb eval {
+        adb eval {
             SELECT count(*)
             FROM rule_firings JOIN rule_inputs USING (firing_id)
             WHERE atype='vrel'
@@ -786,7 +786,7 @@ fdict      required 0.5 a {} expected 0.5 actual 0.5 dtype TRANSPORT needs 0.0 e
         enable ENERGY
     } -body {
         lock
-        service actual NB1 ENERGY 1.0
+        tdb service actual NB1 ENERGY 1.0
         ted step
 
         ted querylist {
@@ -815,7 +815,7 @@ fdict      required 0.5 a {} expected 0.75 actual 1.0 dtype ENERGY needs 0.0 exp
         enable ENERGY
     } -body {
         lock
-        service actual NB1 ENERGY 1.0
+        tdb service actual NB1 ENERGY 1.0
         ted step
 
         ted query {
@@ -840,7 +840,7 @@ ENERGY-1-4 SUNN QOL
     } -body {
         lock
         controller JOE NB1
-        service actual NB1 ENERGY 1.0
+        tdb service actual NB1 ENERGY 1.0
         ted step
 
         ted query {
@@ -862,7 +862,7 @@ ENERGY-1-4 SUNN JOE
         enable WATER
     } -body {
         lock
-        service actual NB1 WATER 1.0
+        tdb service actual NB1 WATER 1.0
         ted step
 
         ted querylist {
@@ -891,7 +891,7 @@ fdict      required 0.5 a {} expected 0.75 actual 1.0 dtype WATER needs 0.0 expe
         enable WATER
     } -body {
         lock
-        service actual NB1 WATER 1.0
+        tdb service actual NB1 WATER 1.0
         ted step
 
         ted query {
@@ -916,7 +916,7 @@ WATER-1-4 SUNN QOL
     } -body {
         lock
         controller JOE NB1
-        service actual NB1 WATER 1.0
+        tdb service actual NB1 WATER 1.0
         ted step
 
         ted query {
@@ -938,7 +938,7 @@ WATER-1-4 SUNN JOE
         enable TRANSPORT
     } -body {
         lock
-        service actual NB1 TRANSPORT 1.0
+        tdb service actual NB1 TRANSPORT 1.0
         ted step
 
         ted querylist {
@@ -967,7 +967,7 @@ fdict      required 0.5 a {} expected 0.75 actual 1.0 dtype TRANSPORT needs 0.0 
         enable TRANSPORT
     } -body {
         lock
-        service actual NB1 TRANSPORT 1.0
+        tdb service actual NB1 TRANSPORT 1.0
         ted step
 
         ted query {
@@ -992,7 +992,7 @@ TRANSPORT-1-4 SUNN QOL
     } -body {
         lock
         controller JOE NB1
-        service actual NB1 TRANSPORT 1.0
+        tdb service actual NB1 TRANSPORT 1.0
         ted step
 
         ted query {
@@ -1015,7 +1015,7 @@ TRANSPORT-1-4 SUNN JOE
     test sigline-1.1 {ENERGY sigline output} -setup {
         setup
     } -body {
-        ruleset ENERGY sigline SHIA 
+        tdb ruleset ENERGY sigline SHIA 
     } -cleanup {
         cleanup
     } -result {Provision of ENERGY services to SHIA}
@@ -1023,7 +1023,7 @@ TRANSPORT-1-4 SUNN JOE
     test sigline-1.2 {WATER sigline output} -setup {
         setup
     } -body {
-        ruleset WATER sigline SHIA 
+        tdb ruleset WATER sigline SHIA 
     } -cleanup {
         cleanup
     } -result {Provision of WATER services to SHIA}
@@ -1031,7 +1031,7 @@ TRANSPORT-1-4 SUNN JOE
     test sigline-1.3 {TRANSPORT sigline output} -setup {
         setup
     } -body {
-        ruleset TRANSPORT sigline SHIA 
+        tdb ruleset TRANSPORT sigline SHIA 
     } -cleanup {
         cleanup
     } -result {Provision of TRANSPORT services to SHIA}
@@ -1042,7 +1042,7 @@ TRANSPORT-1-4 SUNN JOE
     test narrative-1.1 {ENERGY narrative output} -setup {
         setup
     } -body {
-        ruleset ENERGY narrative {
+        tdb ruleset ENERGY narrative {
             g          SHIA
             case       E-
         } 
@@ -1053,7 +1053,7 @@ TRANSPORT-1-4 SUNN JOE
     test narrative-1.2 {WATER narrative output} -setup {
         setup
     } -body {
-        ruleset WATER narrative {
+        tdb ruleset WATER narrative {
             g          SHIA
             case       E-
         } 
@@ -1064,7 +1064,7 @@ TRANSPORT-1-4 SUNN JOE
     test narrative-1.3 {TRANSPORT narrative output} -setup {
         setup
     } -body {
-        ruleset TRANSPORT narrative {
+        tdb ruleset TRANSPORT narrative {
             g          SHIA
             case       E-
         } 
@@ -1078,7 +1078,7 @@ TRANSPORT-1-4 SUNN JOE
     test detail-1.1 {ENERGY detail} -setup {
         setup
     } -body {
-        ruleset ENERGY detail {
+        tdb ruleset ENERGY detail {
             g          SHIA
             a          JOE
             actual     0.8
@@ -1119,7 +1119,7 @@ These values led to the following rule set inputs:<p>
     test detail-1.2 {WATER detail} -setup {
         setup
     } -body {
-        ruleset WATER detail {
+        tdb ruleset WATER detail {
             g          SHIA
             a          JOE
             actual     0.8
@@ -1160,7 +1160,7 @@ These values led to the following rule set inputs:<p>
     test detail-1.3 {TRANSPORT detail} -setup {
         setup
     } -body {
-        ruleset TRANSPORT detail {
+        tdb ruleset TRANSPORT detail {
             g          SHIA
             a          JOE
             actual     0.8

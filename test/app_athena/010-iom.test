@@ -75,7 +75,7 @@ namespace eval ::athena_test::tests:: {
     test create-1.1 {iom is created with hook} -setup {
         setup
     } -body {
-        iom create $m1
+        tdb iom create $m1
         ted querylist {SELECT * FROM ioms}
     } -cleanup {
         cleanup
@@ -89,7 +89,7 @@ state     normal
     test create-1.2 {iom is created without hook} -setup {
         setup
     } -body {
-        iom create $m2
+        tdb iom create $m2
         ted querylist {SELECT * FROM ioms}
     } -cleanup {
         cleanup
@@ -102,11 +102,11 @@ state     normal
 
     test create-2.1 {undo deletes the iom} -setup {
         setup
-        iom create $m1
-        set undo [iom create $m2]
+        tdb iom create $m1
+        set undo [tdb iom create $m2]
     } -body {
         namespace eval :: $undo
-        rdb eval {SELECT iom_id FROM ioms}
+        adb eval {SELECT iom_id FROM ioms}
     } -cleanup {
         cleanup
     } -result {M1}
@@ -117,22 +117,22 @@ state     normal
 
     test delete-1.1 {iom is deleted} -setup {
         setup
-        iom create $m1
-        iom create $m2
+        tdb iom create $m1
+        tdb iom create $m2
     } -body {
-        iom delete M1
+        tdb iom delete M1
 
         # Is M1 gone?
-        rdb eval {SELECT iom_id FROM ioms}
+        adb eval {SELECT iom_id FROM ioms}
     } -cleanup {
         cleanup
     } -result {M2}
 
     test delete-1.2 {Undo restores iom} -setup {
         setup
-        iom create $m1
-        iom create $m2
-        set undo [iom delete M1]
+        tdb iom create $m1
+        tdb iom create $m2
+        set undo [tdb iom delete M1]
     } -body {
         namespace eval :: $undo
         ted querylist {SELECT * FROM ioms ORDER BY iom_id}
@@ -152,13 +152,13 @@ state     normal
 
     test delete-2.1 {payload records are deleted} -setup {
         setup
-        iom create $m1
-        iom create $m2
-        payload create $p1
+        tdb iom create $m1
+        tdb iom create $m2
+        tdb payload create $p1
     } -body {
-        iom delete M1
+        tdb iom delete M1
 
-        rdb eval {
+        adb eval {
             SELECT iom_id,payload_num FROM payloads 
             ORDER BY iom_id,payload_num
         }
@@ -168,14 +168,14 @@ state     normal
 
     test delete-2.2 {Undo restores payload records} -setup {
         setup
-        iom create $m1
-        iom create $m2
-        payload create $p1
+        tdb iom create $m1
+        tdb iom create $m2
+        tdb payload create $p1
         
-        set undo [iom delete M1]
+        set undo [tdb iom delete M1]
     } -body {
         namespace eval :: $undo
-        rdb eval {
+        adb eval {
             SELECT iom_id,payload_num FROM payloads 
             ORDER BY iom_id,payload_num
         }
@@ -188,9 +188,9 @@ state     normal
 
     test update-1.1 {iom is updated} -setup {
         setup
-        iom create $m1
+        tdb iom create $m1
     } -body {
-        iom update {
+        tdb iom update {
             iom_id   M1
             longname "Support the Govt"
             hook_id  HOOK2
@@ -209,11 +209,11 @@ state     normal
 
     test update-1.2 {identical values are OK} -setup {
         setup
-        iom create $m1
+        tdb iom create $m1
     } -body {
         set a [ted query {SELECT * FROM ioms}]
 
-        iom update $m1
+        tdb iom update $m1
 
         set b [ted query {SELECT * FROM ioms}]
 
@@ -225,11 +225,11 @@ state     normal
 
     test update-1.3 {empty values are OK} -setup {
         setup
-        iom create $m1
+        tdb iom create $m1
     } -body {
         set a [ted query {SELECT * FROM ioms}]
 
-        iom update  {
+        tdb iom update  {
             iom_id   M1
             longname ""
             hook_id  ""
@@ -245,11 +245,11 @@ state     normal
 
     test update-2.1 {undo undoes the change} -setup {
         setup
-        iom create $m1
+        tdb iom create $m1
     } -body {
         set a [ted query {SELECT * FROM ioms}]
 
-        set undo [iom update {
+        set undo [tdb iom update {
             iom_id   M1
             longname "Support the Govt"
             hook_id  ""
@@ -270,9 +270,9 @@ state     normal
 
     test state-1.1 {iom state is changed} -setup {
         setup
-        iom create $m2
+        tdb iom create $m2
     } -body {
-        iom state M2 disabled
+        tdb iom state M2 disabled
 
         ted querylist {SELECT * FROM ioms}
     } -cleanup {
@@ -287,12 +287,12 @@ state     disabled
 
     test state-2.1 {undo undoes the change} -setup {
         setup
-        iom create $m2
+        tdb iom create $m2
     } -body {
 
         set a [ted query {SELECT * FROM ioms}]
 
-        set undo [iom state M2 disabled]
+        set undo [tdb iom state M2 disabled]
 
         namespace eval :: $undo
 
@@ -308,38 +308,50 @@ state     disabled
 
     test names-1.1 {Returns names: none defined} -body {
         setup
-        iom names
+        tdb iom names
     } -cleanup {
         cleanup
     } -result {}
 
     test names-1.2 {Returns names} -setup {
         setup
-        iom create $m1
-        iom create $m2
+        tdb iom create $m1
+        tdb iom create $m2
     } -body {
-        iom names
+        tdb iom names
     } -cleanup {
         cleanup
     } -result {M1 M2}
 
+    #-------------------------------------------------------------------
+    # namedict
+
+    test namedict-1.1 {Returns namedict} -setup {
+        setup
+        tdb iom create $m1
+        tdb iom create $m2
+    } -body {
+        tdb iom namedict
+    } -cleanup {
+        cleanup
+    } -result {M1 {IOM One} M2 {IOM Two}}
 
     #-------------------------------------------------------------------
     # longnames
 
     test longnames-1.1 {Returns names: none defined} -body {
         setup
-        iom longnames
+        tdb iom longnames
     } -cleanup {
         cleanup
     } -result {}
 
     test longnames-1.2 {Returns names} -setup {
         setup
-        iom create $m1
-        iom create $m2
+        tdb iom create $m1
+        tdb iom create $m2
     } -body {
-        iom longnames
+        tdb iom longnames
     } -cleanup {
         cleanup
     } -result {{M1: IOM One} {M2: IOM Two}}
@@ -349,7 +361,7 @@ state     disabled
     # validate
 
     test validate-1.1 {Invalid name: none defined} -body {
-        iom validate NONESUCH
+        tdb iom validate NONESUCH
     } -returnCodes {
         error
     } -cleanup {
@@ -358,10 +370,10 @@ state     disabled
 
     test validate-1.2 {Invalid name: some defined} -setup {
         setup
-        iom create $m1
-        iom create $m2
+        tdb iom create $m1
+        tdb iom create $m2
     } -body {
-        iom validate NONESUCH
+        tdb iom validate NONESUCH
     } -returnCodes {
         error
     } -cleanup {
@@ -370,10 +382,10 @@ state     disabled
 
     test validate-2.1 {Valid name} -setup {
         setup
-        iom create $m1
-        iom create $m2
+        tdb iom create $m1
+        tdb iom create $m2
     } -body {
-        iom validate M2
+        tdb iom validate M2
     } -cleanup {
         cleanup
     } -result {M2}
@@ -383,20 +395,20 @@ state     disabled
 
     test exists-1.1 {iom doesn't exist} -setup {
         setup
-        iom create $m1
-        iom create $m2
+        tdb iom create $m1
+        tdb iom create $m2
     } -body {
-        iom exists M3
+        tdb iom exists M3
     } -cleanup {
         cleanup
     } -result {0}
 
     test exists-1.2 {iom exists} -setup {
         setup
-        iom create $m1
-        iom create $m2
+        tdb iom create $m1
+        tdb iom create $m2
     } -body {
-        iom exists M2
+        tdb iom exists M2
     } -cleanup {
         cleanup
     } -result {1}
@@ -406,18 +418,18 @@ state     disabled
 
     test normal_names-1.1 {Returns normal names: none defined} -body {
         setup
-        iom normal names
+        tdb iom normal names
     } -cleanup {
         cleanup
     } -result {}
 
     test normal_names-1.2 {Returns normal names} -setup {
         setup
-        iom create $m1
-        iom create $m2
-        iom state M2 disabled
+        tdb iom create $m1
+        tdb iom create $m2
+        tdb iom state M2 disabled
     } -body {
-        iom normal names
+        tdb iom normal names
     } -cleanup {
         cleanup
     } -result {M1}
@@ -428,18 +440,18 @@ state     disabled
 
     test normal_namedict-1.1 {Returns normal namedict: none defined} -body {
         setup
-        iom normal namedict
+        tdb iom normal namedict
     } -cleanup {
         cleanup
     } -result {}
 
     test normal_namedict-1.2 {Returns normal namedict} -setup {
         setup
-        iom create $m1
-        iom create $m2
-        iom state M2 disabled
+        tdb iom create $m1
+        tdb iom create $m2
+        tdb iom state M2 disabled
     } -body {
-        iom normal namedict
+        tdb iom normal namedict
     } -cleanup {
         cleanup
     } -result {M1 {IOM One}}
@@ -449,18 +461,18 @@ state     disabled
 
     test normal_longnames-1.1 {Returns names: none defined} -body {
         setup
-        iom normal longnames
+        tdb iom normal longnames
     } -cleanup {
         cleanup
     } -result {}
 
     test normal_longnames-1.2 {Returns normal names} -setup {
         setup
-        iom create $m1
-        iom create $m2
-        iom state M2 disabled
+        tdb iom create $m1
+        tdb iom create $m2
+        tdb iom state M2 disabled
     } -body {
-        iom normal longnames
+        tdb iom normal longnames
     } -cleanup {
         cleanup
     } -result {{M1: IOM One}}
@@ -470,7 +482,7 @@ state     disabled
     # normal validate
 
     test normal_validate-1.1 {Invalid name: none defined} -body {
-        iom normal validate NONESUCH
+        tdb iom normal validate NONESUCH
     } -returnCodes {
         error
     } -cleanup {
@@ -479,11 +491,11 @@ state     disabled
 
     test normal_validate-1.2 {Invalid name: some defined} -setup {
         setup
-        iom create $m1
-        iom create $m2
-        iom state M2 disabled
+        tdb iom create $m1
+        tdb iom create $m2
+        tdb iom state M2 disabled
     } -body {
-        iom normal validate NONESUCH
+        tdb iom normal validate NONESUCH
     } -returnCodes {
         error
     } -cleanup {
@@ -492,11 +504,11 @@ state     disabled
 
     test validate-2.1 {Valid name} -setup {
         setup
-        iom create $m1
-        iom create $m2
-        iom state M2 disabled
+        tdb iom create $m1
+        tdb iom create $m2
+        tdb iom state M2 disabled
     } -body {
-        iom validate M1
+        tdb iom validate M1
     } -cleanup {
         cleanup
     } -result {M1}
@@ -506,9 +518,9 @@ state     disabled
 
     test get-1.1 {get dict} -setup {
         setup
-        iom create $m1
+        tdb iom create $m1
     } -body {
-        ted pdict [iom get M1]
+        ted pdict [tdb iom get M1]
     } -cleanup {
         cleanup
     } -result {
@@ -526,9 +538,9 @@ state     disabled
 
     test get-1.2 {get column} -setup {
         setup
-        iom create $m1
+        tdb iom create $m1
     } -body {
-        iom get M1 longname
+        tdb iom get M1 longname
     } -cleanup {
         cleanup
     } -result {IOM One}

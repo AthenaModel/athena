@@ -278,7 +278,7 @@ snit::type app {
 
                 app error $message
             } elseif {[catch {
-                executive eval [list call $opts(-script)]
+                adb executive call $opts(-script)
             } result eopts]} {
                 if {[dict get $eopts -errorcode] eq "REJECT"} {
                     set message {
@@ -396,9 +396,9 @@ snit::type app {
         # Objdict:   order   THE:ORDER:NAME
 
         statecontroller ::cond::available -events {
-            ::adb.flunky <Sync>
+            ::adb.order <Sync>
         } -condition {
-            [::flunky available $order]
+            [::adb order available $order]
         }
 
         # One browser entry is selected.  The
@@ -417,9 +417,9 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableSingle -events {
-            ::adb.flunky <Sync>
+            ::adb.order <Sync>
         } -condition {
-            [::flunky available $order]                &&
+            [::adb order available $order]                &&
             [llength [$browser curselection]] == 1
         }
 
@@ -430,9 +430,9 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableMulti -events {
-            ::adb.flunky <Sync>
+            ::adb.order <Sync>
         } -condition {
-            [::flunky available $order]              &&
+            [::adb order available $order]              &&
             [llength [$browser curselection]] > 0
         }
 
@@ -443,9 +443,9 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableCanDelete -events {
-            ::adb.flunky <Sync>
+            ::adb.order <Sync>
         } -condition {
-            [::flunky available $order] &&
+            [::adb order available $order] &&
             [$browser candelete]
         }
 
@@ -456,9 +456,9 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableCanUpdate -events {
-            ::adb.flunky <Sync>
+            ::adb.order <Sync>
         } -condition {
-            [::flunky available $order] &&
+            [::adb order available $order] &&
             [$browser canupdate]
         }
 
@@ -469,9 +469,9 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableCanResolve -events {
-            ::adb.flunky <Sync>
+            ::adb.order <Sync>
         } -condition {
-            [::flunky available $order] &&
+            [::adb order available $order] &&
             [$browser canresolve]
         }
     }
@@ -724,19 +724,12 @@ snit::type app {
 
         set order [string toupper $order]
 
-        order_dialog enter \
-            -resources [dict create adb_ [::adb athenadb] db_ ::adb] \
+        adb enter \
+            -order     $order                      \
             -parmdict  $parmdict                   \
             -appname   "Athena [kiteinfo version]" \
-            -flunky    ::flunky                    \
-            -order     $order                      \
             -master    [app topwin]                \
-            -helpcmd   [list app help]             \
-            -refreshon {
-                ::adb.flunky <Sync>
-                ::adb        <Tick>
-                ::adb        <Sync>
-            }
+            -helpcmd   [list app help]
     }
 
     # show uri
@@ -801,6 +794,7 @@ snit::type app {
                 if {[catch {
                     app enter $order $parms
                 } result]} {
+                    puts $::errorInfo
                     $type GuiUrlError $uri $result
                 }
             } else {
@@ -919,7 +913,7 @@ snit::type app {
     # Saves the current scenario using the existing name.
 
     typemethod save {{filename ""}} {
-        require {[sim stable]} "The scenario cannot be saved in this state."
+        require {[adb stable]} "The scenario cannot be saved in this state."
 
         # FIRST, notify the simulation that we're saving, so other
         # modules can prepare.
@@ -1129,9 +1123,7 @@ proc bgerror {msg} {
     log error app "bgerror: $msg"
     log error app "Stack Trace:\n$bgErrorInfo"
 
-    if {[sim state] eq "RUNNING"} {
-        sim pause
-    }
+    adb halt
 
     # Gather any error context we may have
     set trace ""

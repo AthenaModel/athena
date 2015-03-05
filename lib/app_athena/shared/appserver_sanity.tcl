@@ -74,7 +74,7 @@ appserver module SANITY {
 
             ht para
             
-            sanity onlock report ::appserver::ht
+            adb sanity onlock report ::appserver::ht
         }
 
         return [ht get]
@@ -103,8 +103,8 @@ appserver module SANITY {
 
             ht para
 
-            if {[sim state] ne "PREP"} {
-                sanity ontick report ::appserver::ht
+            if {[adb state] ne "PREP"} {
+                adb sanity ontick report ::appserver::ht
             } else {
                 ht putln {
                     This check cannot be performed until after the scenario
@@ -134,7 +134,7 @@ appserver module SANITY {
         ht page "Sanity Check: Semantic Hook Topics" {
             ht title "Semantic Hooks" "Sanity Check"
 
-            if {[hook checker ::appserver::ht] eq "OK"} {
+            if {[adb hook checker ::appserver::ht] eq "OK"} {
                 ht putln "No problems were found."
                 ht para
             }
@@ -159,7 +159,7 @@ appserver module SANITY {
         ht page "Sanity Check: IOMs" {
             ht title "IOMs" "Sanity Check"
             
-            if {[iom checker ::appserver::ht] eq "OK"} {
+            if {[adb iom checker ::appserver::ht] eq "OK"} {
                 ht putln "No problems were found."
                 ht para
             }
@@ -185,7 +185,7 @@ appserver module SANITY {
         ht page "Sanity Check: Actors' Strategies" {
             ht title "Actors' Strategies" "Sanity Check"
             
-            if {[strategy checker ::appserver::ht] eq "OK"} {
+            if {[adb strategy checker ::appserver::ht] eq "OK"} {
                 ht putln "No problems were found."
                 ht para
             }
@@ -210,7 +210,7 @@ appserver module SANITY {
         ht page "Sanity Check: CURSEs" {
             ht title "CURSEs" "Sanity Check"
             
-            if {[curse checker ::appserver::ht] eq "OK"} {
+            if {[adb curse checker ::appserver::ht] eq "OK"} {
                 ht putln "No problems were found."
                 ht para
             }

@@ -122,12 +122,12 @@ snit::type ::athena::athenadb {
     component autogen        -public autogen        ;# Scenario auto-generator
     component executive      -public executive      ;# executive command processor
     component exporter       -public export         ;# exporter
-    component flunky         -public flunky         ;# athena_flunky(n)
+    component flunky         -public order          ;# athena_flunky(n)
     component gofer          -public gofer          ;# gofer
     component hist           -public hist           ;# results history
     component parm           -public parm           ;# model parameter DB
     component paster         -public paste          ;# paste manager
-    component pot            -public pot            ;# beanpot(n)
+    component pot            -public bean           ;# beanpot(n)
     component ptype          -public ptype          ;# app level type validators
     component ruleset        -public ruleset        ;# rule set manager
     component sanity         -public sanity         ;# sanity checker
@@ -215,7 +215,7 @@ snit::type ::athena::athenadb {
         adbfile   ""
         saveables {}
     }
-    
+
     #-------------------------------------------------------------------
     # Constructor/Destructor
 
@@ -287,8 +287,8 @@ snit::type ::athena::athenadb {
             curse                       \
             demog                       \
             econ                        \
-            exporter                    \
             executive                   \
+            exporter                    \
             frcgroup                    \
             group                       \
             hist                        \
@@ -302,8 +302,8 @@ snit::type ::athena::athenadb {
             orggroup                    \
             parm                        \
             payload                     \
-            plant                       \
             personnel                   \
+            plant                       \
             ptype                       \
             rebase                      \
             {ruleset  ruleset_manager}  \
@@ -313,18 +313,11 @@ snit::type ::athena::athenadb {
             service                     \
             sigevent                    \
             sim                         \
-            {strategy strategy_manager} \
             stance                      \
+            {strategy strategy_manager} \
             unit                        \
             vrel
 
-        # NEXT, Make these components globally available.
-        # TBD: These will go away once the transition to library code
-        # is complete.
-        interp alias {} ::aram     {} $aram
-        interp alias {} ::rdb      {} $rdb
-        interp alias {} ::pot      {} $pot
-        interp alias {} ::flunky   {} $flunky
 
         # NEXT, register the ones that are saveables.  This will change
         # when the transition to library code is complete.
@@ -349,8 +342,7 @@ snit::type ::athena::athenadb {
     # component...  - A list of component names.
     #
     # Creates instances for a list of components, all of which take one
-    # constructor argument, the athenadb(n) instance.  For now, also
-    # defines global entry points.
+    # constructor argument, the athenadb(n) instance.
 
     method MakeComponents {args} {
         foreach pair $args {
@@ -362,9 +354,6 @@ snit::type ::athena::athenadb {
 
 
             install $comp using ::athena::${module} ${selfns}::$comp $self
-
-            # TBD: The alias will go away once the conversion is complete.
-            interp alias {} ::${comp} {} [set $comp]
         }
     }
 
@@ -497,27 +486,29 @@ snit::type ::athena::athenadb {
 
     # RDB
     delegate method {rdb *}           to rdb
-    delegate method eval              to rdb as eval
-    delegate method delete            to rdb as delete
-    delegate method exists            to rdb as exists
-    delegate method grab              to rdb as grab
-    delegate method last_insert_rowid to rdb as last_insert_rowid
-    delegate method monitor           to rdb as monitor
-    delegate method onecolumn         to rdb as onecolumn
-    delegate method query             to rdb as query
-    delegate method safeeval          to rdb as safeeval
-    delegate method safequery         to rdb as safequery
-    delegate method schema            to rdb as schema
-    delegate method tables            to rdb as tables
-    delegate method ungrab            to rdb as ungrab
+    delegate method eval              to rdb
+    delegate method delete            to rdb
+    delegate method exists            to rdb
+    delegate method grab              to rdb
+    delegate method last_insert_rowid to rdb
+    delegate method monitor           to rdb
+    delegate method onecolumn         to rdb
+    delegate method query             to rdb
+    delegate method safeeval          to rdb
+    delegate method safequery         to rdb
+    delegate method schema            to rdb
+    delegate method tables            to rdb
+    delegate method ungrab            to rdb
 
     # SIM
-    delegate method locked            to sim as locked
-    delegate method state             to sim as state
-    delegate method stable            to sim as stable
+    delegate method locked            to sim
+    delegate method state             to sim
+    delegate method stable            to sim
+    delegate method stoptime          to sim
+    delegate method wizlock           to sim
     
     # FLUNKY
-    delegate method send              to flunky as send
+    delegate method send              to flunky
 
     #-------------------------------------------------------------------
     # Scenario Control
@@ -554,6 +545,11 @@ snit::type ::athena::athenadb {
         # but any changes to its interp state will be lost.  (This
         # is OK.)
         $executive reset
+
+        # NEXT, clear any old transient data out of modules.
+        $aram    clear
+        $aam     reset
+        $abevent reset
 
         $self FinishOpeningScenario
     }
@@ -1007,6 +1003,14 @@ snit::type ::athena::athenadb {
         notifier send $subject $event {*}$args
     }
 
+    # tkloaded
+    #
+    # Returns 1 if Tk is loaded, and 0 otherwise.
+
+    method tkloaded {} {
+        return [expr {[info command "tk"] ne ""}]
+    }
+
     # version
     #
     # Returns the package version.
@@ -1014,6 +1018,52 @@ snit::type ::athena::athenadb {
     method version {} {
         return [package present athena]
     }
+
+    #-------------------------------------------------------------------
+    # Order Dialog Entry
+
+    # enter options...
+    #
+    # -order        - Order name, e.g., MY:ORDER
+    # -parmdict     - Dictionary of initial parameter values
+    # -master       - Master window
+    # -appname      - Application name for dialog title
+    # -helpcmd      - Help command
+    #
+    # If tk is loaded, pops up an order dialog.
+
+    method enter {args} {
+        require {[$self tkloaded]} \
+            "Command unavailable; this is not a Tk app."
+
+        array set opts {
+            -order    ""
+            -parmdict {}
+            -master   ""
+            -appname  ""
+            -helpcmd  ""
+        }
+
+        foroption opt args -all {
+            -order    -
+            -parmdict -
+            -master   -
+            -appname  -
+            -helpcmd {
+                set opts($opt) [lshift args]
+            }
+        }
+
+        order_dialog enter \
+            -resources [dict create adb_ $self db_ $self] \
+            -flunky    $flunky                            \
+            -refreshon {
+                ::adb.flunky <Sync>
+                ::adb        <Tick>
+                ::adb        <Sync>
+            } {*}[array get opts]
+    }
+    
 
     #-------------------------------------------------------------------
     # URAM-related routines.

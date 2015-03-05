@@ -64,9 +64,9 @@ namespace eval ::athena_test::tests:: {
         variable p1
         variable p2
         setup
-        econ setstate ENABLED
-        plant create $p1
-        plant create $p2
+        tdb econ setstate ENABLED
+        tdb plant create $p1
+        tdb plant create $p2
         ted create BLUE
         ted lock
     }
@@ -77,8 +77,8 @@ namespace eval ::athena_test::tests:: {
     test create-1.1 {Plant share record is created} -setup {
         setup
     } -body {
-        plant create $p1 
-        plant create $p2
+        tdb plant create $p1 
+        tdb plant create $p2
 
         ted querylist {SELECT * FROM plants_shares}
     } -cleanup {
@@ -99,7 +99,7 @@ rho  0.8
     test create-1.2 {Plant share record created, rho can be set} -setup {
         setup
     } -body {
-        plant create [dict merge $p1 [list rho 0.7]]
+        tdb plant create [dict merge $p1 [list rho 0.7]]
 
         ted querylist {SELECT * FROM plants_shares}
     } -cleanup {
@@ -113,10 +113,10 @@ rho  0.7
 
     test create-2.1 {Undo deletes the entity} -setup {
         setup
-        set undo [plant create $p1]
+        set undo [tdb plant create $p1]
     } -body {
         {*}$undo
-        rdb query {SELECT n FROM plants_shares}
+        adb query {SELECT n FROM plants_shares}
     } -cleanup {
         cleanup
     } -result {}
@@ -127,13 +127,13 @@ rho  0.7
 
     test delete-1.1 {Record is deleted} -setup {
         setup
-        plant create $p1
-        plant create $p2
+        tdb plant create $p1
+        tdb plant create $p2
     } -body {
-        plant delete {NB1 JOE}
+        tdb plant delete {NB1 JOE}
 
         # Is 1 gone?
-        rdb eval {SELECT n,a FROM plants_shares}
+        adb eval {SELECT n,a FROM plants_shares}
     } -cleanup {
         cleanup
     } -result {NB1 BOB}
@@ -141,8 +141,8 @@ rho  0.7
 
     test delete-2.1 {Undo restores record} -setup {
         setup
-        plant create $p1
-        set undo [plant delete {NB1 JOE}]
+        tdb plant create $p1
+        set undo [tdb plant delete {NB1 JOE}]
     } -body {
         {*}$undo
         ted querylist {SELECT * FROM plants_shares}
@@ -162,9 +162,9 @@ rho  0.9
 
     test update-1.1 {record is updated} -setup {
         setup
-        plant create $p1
+        tdb plant create $p1
     } -body {
-        plant update {
+        tdb plant update {
             id {NB1 JOE}
             rho 0.5
         }
@@ -181,11 +181,11 @@ rho  0.5
 
     test update-1.2 {empty values are OK} -setup {
         setup
-        plant create $p1
+        tdb plant create $p1
     } -body {
         set a [ted query {SELECT * FROM plants_shares}]
 
-        plant update  {
+        tdb plant update  {
             id      [list NB1 JOE]
             rho     ""
             shares  ""
@@ -201,11 +201,11 @@ rho  0.5
 
     test update-2.1 {undo undoes the change} -setup {
         setup
-        plant create $p1
+        tdb plant create $p1
     } -body {
         set a [ted query {SELECT * FROM plants_shares}]
 
-        set undo [plant update {
+        set undo [tdb plant update {
             id        [list NB1 JOE]
             rho       0.5
             shares    3
@@ -227,7 +227,7 @@ rho  0.5
     test exists-1.1 {record exists} -setup {
         execute_setup
     } -body {
-        plant exists [list NB1 JOE]
+        tdb plant exists [list NB1 JOE]
     } -cleanup {
         cleanup
     } -result {1}
@@ -236,7 +236,7 @@ rho  0.5
     test exists-1.2 {record does not exist} -setup {
         execute_setup
     } -body {
-        plant exists [list FOO BAR]
+        tdb plant exists [list FOO BAR]
     } -cleanup {
         cleanup
     } -result {0}
@@ -248,7 +248,7 @@ rho  0.5
     test start-1.1 {validate laydown of plants} -setup {
         execute_setup
     } -body {
-        rdb eval {SELECT n, a, num FROM plants_na}
+        adb eval {SELECT n, a, num FROM plants_na}
     } -cleanup {
         cleanup
     } -result {NB1 JOE 9 NB1 BOB 19}
@@ -259,8 +259,8 @@ rho  0.5
     test get-1.1 {valid parm} -setup {
         execute_setup
     } -body {
-        rdb eval {UPDATE plants_na SET num=9 WHERE n='NB1' AND a='JOE'}
-        plant get [list NB1 JOE] num
+        adb eval {UPDATE plants_na SET num=9 WHERE n='NB1' AND a='JOE'}
+        tdb plant get [list NB1 JOE] num
     } -cleanup {
         cleanup
     } -result {9}
@@ -268,11 +268,11 @@ rho  0.5
     test get-1.2 {entire dict} -setup {
         execute_setup
     } -body {
-        rdb eval {
+        adb eval {
             UPDATE plants_na SET num=9, rho=0.445
             WHERE n='NB1' AND a='JOE'
         }
-        ted pdicts [plant get [list NB1 JOE]]
+        ted pdicts [tdb plant get [list NB1 JOE]]
     } -cleanup {
         cleanup
     }  -result {
@@ -289,25 +289,25 @@ rho  0.5
         execute_setup
     } -body {
         ted create DAVE
-        plant repaircost NB1 DAVE 1.0
+        tdb plant repaircost NB1 DAVE 1.0
     } -cleanup {
         cleanup
     } -result {0.0}
 
     test repaircost-1.2 {plants owned} -setup {
         execute_setup
-        rdb eval {UPDATE plants_na SET num=7 WHERE n='NB1' AND a='JOE'}
+        adb eval {UPDATE plants_na SET num=7 WHERE n='NB1' AND a='JOE'}
     } -body {
-        moneyfmt [plant repaircost NB1 JOE 1.0]
+        moneyfmt [tdb plant repaircost NB1 JOE 1.0]
     } -cleanup {
         cleanup
     } -result {7.000M}
 
     test repaircost-1.3 {almost totally repaired} -setup {
         execute_setup
-        rdb eval {UPDATE plants_na SET num=7 WHERE n='NB1' AND a='JOE'}
+        adb eval {UPDATE plants_na SET num=7 WHERE n='NB1' AND a='JOE'}
     } -body {
-        moneyfmt [plant repaircost NB1 JOE 0.01]
+        moneyfmt [tdb plant repaircost NB1 JOE 0.01]
     } -cleanup {
         cleanup
     } -result {70,000}
@@ -319,9 +319,9 @@ rho  0.5
         execute_setup
     } -body {
         ted create DAVE
-        set a [rdb eval {SELECT total(rho) FROM plants_na}]
-        plant repair DAVE {NB1} 1.0
-        set b [rdb eval {SELECT total(rho) FROM plants_na}]
+        set a [adb eval {SELECT total(rho) FROM plants_na}]
+        tdb plant repair DAVE {NB1} 1.0
+        set b [adb eval {SELECT total(rho) FROM plants_na}]
 
         expr {$a==$b}
     } -cleanup {
@@ -331,9 +331,9 @@ rho  0.5
     test repair-1.2 {plants owned, plants repaired} -setup {
         execute_setup
     } -body {
-        set a [rdb eval {SELECT total(rho) FROM plants_na}]
-        plant repair JOE {NB1} 1.0
-        set b [rdb eval {SELECT total(rho) FROM plants_na}]
+        set a [adb eval {SELECT total(rho) FROM plants_na}]
+        tdb plant repair JOE {NB1} 1.0
+        set b [adb eval {SELECT total(rho) FROM plants_na}]
 
         expr {$a<$b}
     } -cleanup {
@@ -345,9 +345,9 @@ rho  0.5
     test degrade-1.1 {plants degrade} -setup {
         execute_setup
     } -body {
-        set a [rdb eval {SELECT total(rho) FROM plants_na}]
-        plant degrade
-        set b [rdb eval {SELECT total(rho) FROM plants_na}]
+        set a [adb eval {SELECT total(rho) FROM plants_na}]
+        tdb plant degrade
+        set b [adb eval {SELECT total(rho) FROM plants_na}]
 
         expr {$a>$b}
     } -cleanup {
@@ -356,11 +356,11 @@ rho  0.5
 
     test degrade-1.2 {no degradation with auto-maintain enabled} -setup {
         execute_setup
-        rdb eval {UPDATE actors SET auto_maintain=1}
+        adb eval {UPDATE actors SET auto_maintain=1}
     } -body {
-        set a [rdb eval {SELECT total(rho) FROM plants_na}]
-        plant degrade
-        set b [rdb eval {SELECT total(rho) FROM plants_na}]
+        set a [adb eval {SELECT total(rho) FROM plants_na}]
+        tdb plant degrade
+        set b [adb eval {SELECT total(rho) FROM plants_na}]
         
         expr {$a==$b}
     } -cleanup {
@@ -369,11 +369,11 @@ rho  0.5
 
     test degrade-1.3 {no degradation when econ is disabled} -setup {
         execute_setup
-        econ setstate DISABLED
+        tdb econ setstate DISABLED
     } -body {
-        set a [rdb eval {SELECT total(rho) FROM plants_na}]
-        plant degrade
-        set b [rdb eval {SELECT total(rho) FROM plants_na}]
+        set a [adb eval {SELECT total(rho) FROM plants_na}]
+        tdb plant degrade
+        set b [adb eval {SELECT total(rho) FROM plants_na}]
         
         expr {$a==$b}
     } -cleanup {
@@ -386,7 +386,7 @@ rho  0.5
     test buildcost-1.1 {no work yet done} -setup {
         setup
     } -body {
-        set cost [plant buildcost NB1 JOE 3]
+        set cost [tdb plant buildcost NB1 JOE 3]
         expr {$cost > 0.0}
     } -cleanup {
         cleanup
@@ -394,13 +394,13 @@ rho  0.5
 
     test buildcost-1.2 {some work already done} -setup {
         setup
-        set costA [plant buildcost NB1 JOE 3]
-        rdb eval {
+        set costA [tdb plant buildcost NB1 JOE 3]
+        adb eval {
             INSERT INTO working_build(n, a, progress)
             VALUES('NB1','JOE','0.0 0.01 0.0 0.01 0.0 0.01');
         }
     } -body {
-        set costB [plant buildcost NB1 JOE 3]
+        set costB [tdb plant buildcost NB1 JOE 3]
         expr {$costB < $costA}
     } -cleanup {
         cleanup
@@ -408,12 +408,12 @@ rho  0.5
 
     test buildcost-1.3 {no work needed} -setup {
         setup
-        rdb eval {
+        adb eval {
             INSERT INTO working_build(n, a, progress)
             VALUES('NB1','JOE','1.0 0.0 1.0 0.0 1.0 0.0');
         }
     } -body {
-        plant buildcost NB1 JOE 3
+        tdb plant buildcost NB1 JOE 3
     } -cleanup {
         cleanup
     } -result {0.0}
@@ -425,10 +425,10 @@ rho  0.5
     test build-1.1 {new construction} -setup {
         setup
     } -body {
-        set a [rdb onecolumn {SELECT progress FROM working_build 
+        set a [adb onecolumn {SELECT progress FROM working_build 
                          WHERE n='NB1' AND a='JOE'}]
-        plant build NB1 JOE 1000000.0
-        set b [rdb onecolumn {SELECT progress FROM working_build 
+        tdb plant build NB1 JOE 1000000.0
+        set b [adb onecolumn {SELECT progress FROM working_build 
                          WHERE n='NB1' AND a='JOE'}]
         expr {[llength $b] > [llength $a]}
     } -cleanup {
@@ -437,12 +437,12 @@ rho  0.5
 
     test build-1.2 {existing construction} -setup {
         setup
-        plant build NB1 JOE 1000000.0
+        tdb plant build NB1 JOE 1000000.0
     } -body {
-        set a [rdb onecolumn {SELECT progress FROM working_build 
+        set a [adb onecolumn {SELECT progress FROM working_build 
                          WHERE n='NB1' AND a='JOE'}]
-        plant build NB1 JOE 1000000.0
-        set b [rdb onecolumn {SELECT progress FROM working_build 
+        tdb plant build NB1 JOE 1000000.0
+        set b [adb onecolumn {SELECT progress FROM working_build 
                          WHERE n='NB1' AND a='JOE'}]
         expr {[llength $b] == [llength $a]}
     } -cleanup {
@@ -451,15 +451,15 @@ rho  0.5
 
     test build-1.3 {start new plants} -setup {
         setup
-        rdb eval {
+        adb eval {
             INSERT INTO working_build(n, a, progress)
             VALUES('NB1','JOE','1.0 0.0 1.0 0.0 1.0 0.0')
         }
     } -body {
-        set a [rdb onecolumn {SELECT progress FROM working_build 
+        set a [adb onecolumn {SELECT progress FROM working_build 
                          WHERE n='NB1' AND a='JOE'}]
-        plant build NB1 JOE 1000000.0
-        set b [rdb onecolumn {SELECT progress FROM working_build 
+        tdb plant build NB1 JOE 1000000.0
+        set b [adb onecolumn {SELECT progress FROM working_build 
                          WHERE n='NB1' AND a='JOE'}]
         expr {[llength $a] < [llength $b]}
     } -cleanup {
@@ -471,16 +471,16 @@ rho  0.5
 
     test capacity-1.1 {total, by nbhood and by actor} -setup {
         setup
-        econ setstate ENABLED
-        plant create $p1
-        plant create $p2
+        tdb econ setstate ENABLED
+        tdb plant create $p1
+        tdb plant create $p2
         ted create BLUE 
         ted lock
-        rdb eval {UPDATE plants_na SET num=10}
+        adb eval {UPDATE plants_na SET num=10}
     } -body {
-        set a [moneyfmt [plant capacity total]]
-        set b [moneyfmt [plant capacity n NB1]]
-        set c [moneyfmt [plant capacity a JOE]]
+        set a [moneyfmt [tdb plant capacity total]]
+        set b [moneyfmt [tdb plant capacity n NB1]]
+        set c [moneyfmt [tdb plant capacity a JOE]]
 
         list $a $b $c
     } -cleanup {
@@ -489,15 +489,15 @@ rho  0.5
 
     test capacity-1.2 {summed by nbhood equals total} -setup {
         setup
-        econ setstate ENABLED
-        plant create $p1
-        plant create $p2
+        tdb econ setstate ENABLED
+        tdb plant create $p1
+        tdb plant create $p2
         ted create BLUE 
         ted lock
     } -body {
-        set a [moneyfmt [plant capacity total]]
-        set sum [expr {[plant capacity n NB1] +
-                       [plant capacity n NB2]}]
+        set a [moneyfmt [tdb plant capacity total]]
+        set sum [expr {[tdb plant capacity n NB1] +
+                       [tdb plant capacity n NB2]}]
         set b [moneyfmt $sum]
 
         expr {$a eq $b}
@@ -507,16 +507,16 @@ rho  0.5
 
     test capacity-1.3 {summed by agent equals total} -setup {
         setup
-        econ setstate ENABLED
-        plant create $p1
-        plant create $p2
+        tdb econ setstate ENABLED
+        tdb plant create $p1
+        tdb plant create $p2
         ted create BLUE 
         ted lock
     } -body {
-        set a [moneyfmt [plant capacity total]]
-        set sum [expr {[plant capacity a JOE] +
-                       [plant capacity a BOB] +
-                       [plant capacity a SYSTEM]}]
+        set a [moneyfmt [tdb plant capacity total]]
+        set sum [expr {[tdb plant capacity a JOE] +
+                       [tdb plant capacity a BOB] +
+                       [tdb plant capacity a SYSTEM]}]
         set b [moneyfmt $sum]
 
         expr {$a eq $b}
@@ -529,15 +529,15 @@ rho  0.5
 
     test number-1.1 {total, by nbhood and by actor} -setup {
         setup
-        plant create $p1
-        plant create $p2
+        tdb plant create $p1
+        tdb plant create $p2
         ted create BLUE 
         ted lock
-        rdb eval {UPDATE plants_na SET num=10}
+        adb eval {UPDATE plants_na SET num=10}
     } -body {
-        set a [plant number total]
-        set b [plant number n NB1]
-        set c [plant number a JOE]
+        set a [tdb plant number total]
+        set b [tdb plant number n NB1]
+        set c [tdb plant number a JOE]
 
         list $a $b $c
     } -cleanup {
@@ -546,13 +546,13 @@ rho  0.5
 
     test number-1.2 {summed by nbhood equals total} -setup {
         setup
-        plant create $p1
-        plant create $p2
+        tdb plant create $p1
+        tdb plant create $p2
         ted create BLUE 
         ted lock
     } -body {
-        set a [plant number total]
-        set b [expr {[plant number n NB1] + [plant number n NB2]}]
+        set a [tdb plant number total]
+        set b [expr {[tdb plant number n NB1] + [tdb plant number n NB2]}]
 
         expr {$a eq $b}
     } -cleanup {
@@ -561,15 +561,15 @@ rho  0.5
 
     test number-1.3 {summed by agent equals total} -setup {
         setup
-        plant create $p1
-        plant create $p2
+        tdb plant create $p1
+        tdb plant create $p2
         ted create BLUE 
         ted lock
     } -body {
-        set a [plant number total]
-        set b [expr {[plant number a JOE] +
-                     [plant number a BOB] +
-                     [plant number a SYSTEM]}]
+        set a [tdb plant number total]
+        set b [expr {[tdb plant number a JOE] +
+                     [tdb plant number a BOB] +
+                     [tdb plant number a SYSTEM]}]
 
         expr {$a eq $b}
     } -cleanup {

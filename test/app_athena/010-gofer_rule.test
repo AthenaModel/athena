@@ -351,7 +351,7 @@ namespace eval ::athena_test::tests:: {
             BRIT JOE 0.0
             TAL  BOB 0.0
         } {
-            rdb eval {
+            adb eval {
                 INSERT INTO support_nga(n,g,a,support)
                 VALUES('NB1',$g,$a,$support)
             }
@@ -363,7 +363,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         $rule anyall_alist_supportingActor "" {anyall ANY alist BOB}
     } -cleanup {
-        rdb eval {DELETE FROM support_nga}
+        adb eval {DELETE FROM support_nga}
     } -result {BLUE SHIA}
 
     test anyall_alist_supportingActor-1.2 {any of several actors} -setup {
@@ -371,7 +371,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         $rule anyall_alist_supportingActor "" {anyall ANY alist {BOB JOE}}
     } -cleanup {
-        rdb eval {DELETE FROM support_nga}
+        adb eval {DELETE FROM support_nga}
     } -result {BLUE SHIA SUNN}
 
     test anyall_alist_supportingActor-1.3 {all of several actors} -setup {
@@ -379,7 +379,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         $rule anyall_alist_supportingActor "" {anyall ALL alist {BOB JOE}}
     } -cleanup {
-        rdb eval {DELETE FROM support_nga}
+        adb eval {DELETE FROM support_nga}
     } -result {SHIA}
 
     test anyall_alist_supportingActor-1.4 {by group type} -setup {
@@ -387,7 +387,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         $rule anyall_alist_supportingActor CIV {anyall ANY alist {BOB JOE}}
     } -cleanup {
-        rdb eval {DELETE FROM support_nga}
+        adb eval {DELETE FROM support_nga}
     } -result {SHIA SUNN}
 
     #-------------------------------------------------------------------
@@ -406,7 +406,7 @@ namespace eval ::athena_test::tests:: {
             BRIT JOE 0.0
             TAL  BOB 0.0
         } {
-            aram vrel bset 1 $g $a $vrel
+            ted vrel bset 1 $g $a $vrel
         }
         ted step
     }
@@ -461,7 +461,7 @@ namespace eval ::athena_test::tests:: {
             BRIT BOB  0.0
             BRIT JOE  0.0
         } {
-            aram vrel bset 1 $g $a $vrel
+            ted vrel bset 1 $g $a $vrel
         }
         ted step
     }
@@ -503,14 +503,14 @@ namespace eval ::athena_test::tests:: {
     
     proc setupLikingGroup {} {
         ted lock
-        aram hrel bset 1 SHIA KURD  0.3
-        aram hrel bset 1 SHIA SUNN  0.3
-        aram hrel bset 1 SUNN KURD  0.0
-        aram hrel bset 1 SUNN SHIA  0.3
-        aram hrel bset 1 BLUE KURD  0.3
-        aram hrel bset 1 BLUE SHIA  0.0
-        aram hrel bset 1 BRIT KURD  0.3
-        aram hrel bset 1 BRIT SHIA  0.3
+        ted hrel bset 1 SHIA KURD  0.3
+        ted hrel bset 1 SHIA SUNN  0.3
+        ted hrel bset 1 SUNN KURD  0.0
+        ted hrel bset 1 SUNN SHIA  0.3
+        ted hrel bset 1 BLUE KURD  0.3
+        ted hrel bset 1 BLUE SHIA  0.0
+        ted hrel bset 1 BRIT KURD  0.3
+        ted hrel bset 1 BRIT SHIA  0.3
 
         ted step
     }
@@ -552,14 +552,14 @@ namespace eval ::athena_test::tests:: {
 
     proc setupDislikingGroup {} {
         ted lock
-        aram hrel bset 1 SHIA KURD -0.3
-        aram hrel bset 1 SHIA SUNN -0.3
-        aram hrel bset 1 SUNN KURD  0.0
-        aram hrel bset 1 SUNN SHIA -0.3
-        aram hrel bset 1 BLUE KURD -0.3
-        aram hrel bset 1 BLUE SHIA  0.0
-        aram hrel bset 1 BRIT KURD -0.3
-        aram hrel bset 1 BRIT SHIA -0.3
+        ted hrel bset 1 SHIA KURD -0.3
+        ted hrel bset 1 SHIA SUNN -0.3
+        ted hrel bset 1 SUNN KURD  0.0
+        ted hrel bset 1 SUNN SHIA -0.3
+        ted hrel bset 1 BLUE KURD -0.3
+        ted hrel bset 1 BLUE SHIA  0.0
+        ted hrel bset 1 BRIT KURD -0.3
+        ted hrel bset 1 BRIT SHIA -0.3
 
         ted step
     }
@@ -601,14 +601,14 @@ namespace eval ::athena_test::tests:: {
 
     proc setupLikedByGroup {} {
         ted lock
-        aram hrel bset 1 KURD BLUE  0.3
-        aram hrel bset 1 KURD BRIT  0.3
-        aram hrel bset 1 KURD SHIA  0.3
-        aram hrel bset 1 KURD SUNN  0.0
-        aram hrel bset 1 SHIA BLUE  0.0
-        aram hrel bset 1 SHIA BRIT  0.3
-        aram hrel bset 1 SHIA KURD  0.0
-        aram hrel bset 1 SHIA SUNN  0.3
+        ted hrel bset 1 KURD BLUE  0.3
+        ted hrel bset 1 KURD BRIT  0.3
+        ted hrel bset 1 KURD SHIA  0.3
+        ted hrel bset 1 KURD SUNN  0.0
+        ted hrel bset 1 SHIA BLUE  0.0
+        ted hrel bset 1 SHIA BRIT  0.3
+        ted hrel bset 1 SHIA KURD  0.0
+        ted hrel bset 1 SHIA SUNN  0.3
 
         ted step
     }
@@ -650,14 +650,14 @@ namespace eval ::athena_test::tests:: {
 
     proc setupDislikedByGroup {} {
         ted lock
-        aram hrel bset 1 KURD BLUE -0.3
-        aram hrel bset 1 KURD BRIT -0.3
-        aram hrel bset 1 KURD SHIA -0.3
-        aram hrel bset 1 KURD SUNN  0.0
-        aram hrel bset 1 SHIA BLUE  0.0
-        aram hrel bset 1 SHIA BRIT -0.3
-        aram hrel bset 1 SHIA KURD  0.0
-        aram hrel bset 1 SHIA SUNN -0.3
+        ted hrel bset 1 KURD BLUE -0.3
+        ted hrel bset 1 KURD BRIT -0.3
+        ted hrel bset 1 KURD SHIA -0.3
+        ted hrel bset 1 KURD SUNN  0.0
+        ted hrel bset 1 SHIA BLUE  0.0
+        ted hrel bset 1 SHIA BRIT -0.3
+        ted hrel bset 1 SHIA KURD  0.0
+        ted hrel bset 1 SHIA SUNN -0.3
 
         ted step
     }
@@ -706,7 +706,7 @@ namespace eval ::athena_test::tests:: {
             NB1 TAL  0
             NB2 TAL  1
         } {
-            rdb eval {
+            adb eval {
                 INSERT INTO deploy_ng(n,g,personnel)
                 VALUES($n, $g, $personnel)
             }
@@ -718,7 +718,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         $rule anyall_nlist_deployedTo {anyall ANY nlist NB1}
     } -cleanup {
-        rdb eval {DELETE FROM deploy_ng}
+        adb eval {DELETE FROM deploy_ng}
     } -result {BLUE BRIT}
 
     test anyall_nlist_deployedTo-1.2 {any of several neighborhoods} -setup {
@@ -726,7 +726,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         $rule anyall_nlist_deployedTo {anyall ANY nlist {NB1 NB2}}
     } -cleanup {
-        rdb eval {DELETE FROM deploy_ng}
+        adb eval {DELETE FROM deploy_ng}
     } -result {BLUE BRIT TAL}
 
     test anyall_nlist_deployedTo-1.3 {all of several neighborhoods} -setup {
@@ -734,7 +734,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         $rule anyall_nlist_deployedTo {anyall ALL nlist {NB1 NB2}}
     } -cleanup {
-        rdb eval {DELETE FROM deploy_ng}
+        adb eval {DELETE FROM deploy_ng}
     } -result {BLUE}
 
     #-------------------------------------------------------------------
@@ -749,7 +749,7 @@ namespace eval ::athena_test::tests:: {
             NB1 TAL  1
             NB2 TAL  0
         } {
-            rdb eval {
+            adb eval {
                 INSERT INTO deploy_ng(n,g,personnel)
                 VALUES($n, $g, $personnel)
             }
@@ -761,7 +761,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         $rule anyall_nlist_notDeployedTo {anyall ANY nlist NB1}
     } -cleanup {
-        rdb eval {DELETE FROM deploy_ng}
+        adb eval {DELETE FROM deploy_ng}
     } -result {BLUE BRIT}
 
     test anyall_nlist_notDeployedTo-1.2 {any of several neighborhoods} -setup {
@@ -769,7 +769,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         $rule anyall_nlist_notDeployedTo {anyall ANY nlist {NB1 NB2}}
     } -cleanup {
-        rdb eval {DELETE FROM deploy_ng}
+        adb eval {DELETE FROM deploy_ng}
     } -result {BLUE BRIT TAL}
 
     test anyall_nlist_notDeployedTo-1.3 {all of several neighborhoods} -setup {
@@ -777,7 +777,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         $rule anyall_nlist_notDeployedTo {anyall ALL nlist {NB1 NB2}}
     } -cleanup {
-        rdb eval {DELETE FROM deploy_ng}
+        adb eval {DELETE FROM deploy_ng}
     } -result {BLUE}
     
             

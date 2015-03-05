@@ -50,7 +50,7 @@ namespace eval ::athena_test::tests:: {
     test update-1.1 {coop is updated} -setup {
         ted create NB1 BLUE SHIA
     } -body {
-        coop update {
+        tdb coop update {
             id         {SHIA BLUE}
             base       40.0
             regress_to BASELINE
@@ -70,7 +70,7 @@ SHIA BLUE 40.0 BASELINE   50.0
     test update-1.2 {coop is updated} -setup {
         ted create NB1 BLUE SHIA
     } -body {
-        coop update {
+        tdb coop update {
             id         {SHIA BLUE}
             base       40.0
             regress_to NATURAL
@@ -91,7 +91,7 @@ SHIA BLUE 40.0 NATURAL    70.0
     } -body {
         set a [ted query {SELECT * FROM coop_fg}]
 
-        coop update  {
+        tdb coop update  {
             id         {SHIA BLUE}
             base       ""
             regress_to ""
@@ -112,7 +112,7 @@ SHIA BLUE 40.0 NATURAL    70.0
 
         set a [ted query {SELECT * FROM coop_fg}]
 
-        set undo [coop update {
+        set undo [tdb coop update {
             id         {SHIA BLUE}
             base       40.0
             regress_to BASELINE
@@ -133,7 +133,7 @@ SHIA BLUE 40.0 NATURAL    70.0
     # exists
 
     test exists-1.1 {coop does not exist} -body {
-        coop exists NONESUCH NONESUCH
+        tdb coop exists NONESUCH NONESUCH
     } -cleanup {
         cleanup
     } -result {0}
@@ -142,7 +142,7 @@ SHIA BLUE 40.0 NATURAL    70.0
     test exists-1.2 {coop exists} -setup {
         ted create NB1 BLUE SHIA
     } -body {
-        coop exists SHIA BLUE
+        tdb coop exists SHIA BLUE
     } -cleanup {
         cleanup
     } -result {1}
@@ -154,7 +154,7 @@ SHIA BLUE 40.0 NATURAL    70.0
     test validate-1.1 {invalid group f} -setup {
         ted create NB1 BLUE SHIA
     } -body {
-        coop validate {NONESUCH NONESUCH}
+        tdb coop validate {NONESUCH NONESUCH}
     } -returnCodes {
         error
     } -cleanup {
@@ -165,7 +165,7 @@ SHIA BLUE 40.0 NATURAL    70.0
     test validate-1.2 {Invalid group g} -setup {
         ted create NB1 BLUE SHIA
     } -body {
-        coop validate {SHIA NONESUCH}
+        tdb coop validate {SHIA NONESUCH}
     } -returnCodes {
         error
     } -cleanup {
@@ -176,7 +176,7 @@ SHIA BLUE 40.0 NATURAL    70.0
     test validate-2.1 {Valid group} -setup {
         ted create NB1 BLUE SHIA
     } -body {
-        coop validate {SHIA BLUE}
+        tdb coop validate {SHIA BLUE}
     } -cleanup {
         cleanup
     } -result {SHIA BLUE}

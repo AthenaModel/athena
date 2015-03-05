@@ -130,10 +130,10 @@ appserver module GROUPS {
         upvar 1 $matchArray ""
 
         switch -exact -- $(1) {
-            ""   { return [group names] }
-            civ  { return [civgroup names] }
-            frc  { return [frcgroup names] }
-            org  { return [orggroup names] }
+            ""   { return [adb group names] }
+            civ  { return [adb civgroup names] }
+            frc  { return [adb frcgroup names] }
+            org  { return [adb orggroup names] }
             default {
                 error "Unexpected group type: \"$(1)\""
             }
@@ -152,7 +152,7 @@ appserver module GROUPS {
         set gtype [string toupper $(1)]
 
         # FIRST, update the saturation and required levels of service
-        service srservice
+        adb service levels
 
         # Begin the page
         if {$gtype eq ""} {
@@ -177,7 +177,7 @@ appserver module GROUPS {
             ht putln "The scenario contains the following civilian groups:"
             ht para
 
-            if {[sim state] eq "PREP"} {
+            if {[adb state] eq "PREP"} {
                 ht query {
                     SELECT longlink       AS "Group",
                            n              AS "Nbhood",
@@ -276,13 +276,13 @@ appserver module GROUPS {
         # Get the group
         set g [string toupper $(1)]
 
-        if {![rdb exists {SELECT * FROM groups WHERE g=$g}]} {
+        if {![adb exists {SELECT * FROM groups WHERE g=$g}]} {
             return -code error -errorcode NOTFOUND \
                 "Unknown entity: [dict get $udict url]."
         }
 
         # Next, what kind of group is it?
-        set gtype [group gtype $g]
+        set gtype [adb group gtype $g]
 
         switch $gtype {
             CIV     { return [CivGroup:html $g] }
@@ -303,12 +303,12 @@ appserver module GROUPS {
 
     proc CivGroup:html {g} {
         # FIRST, update the saturation and required levels of service
-        service srservice
+        adb service levels
 
         # NEXT, get the data about this group
-        rdb eval {SELECT * FROM gui_civgroups  WHERE g=$g}              data {}
-        rdb eval {SELECT * FROM gui_nbhoods    WHERE n=$data(n)}        nb   {}
-        rdb eval {SELECT * FROM gui_service_sg WHERE g=$g AND s='ENI'}  eni  {}
+        adb eval {SELECT * FROM gui_civgroups  WHERE g=$g}              data {}
+        adb eval {SELECT * FROM gui_nbhoods    WHERE n=$data(n)}        nb   {}
+        adb eval {SELECT * FROM gui_service_sg WHERE g=$g AND s='ENI'}  eni  {}
         
         # NEXT, begin the page.
         ht page "Civilian Group: $g"
@@ -316,7 +316,7 @@ appserver module GROUPS {
 
         # NEXT, what we do depends on whether the simulation is locked
         # or not.
-        let locked {[sim state] ne "PREP"}
+        let locked {[adb state] ne "PREP"}
 
         ht linkbar {
             "#actors"     "Relationships with Actors"
@@ -360,7 +360,7 @@ appserver module GROUPS {
         ht putln "The group's housing status is $data(housing)."
 
         ht putln "The group's belief system is "
-        set bsysname [bsys system cget $data(bsid) -name]
+        set bsysname [adb bsys system cget $data(bsid) -name]
         ht link my://app/bsystem/$data(bsid) "\"$bsysname ($data(bsid))\"."
 
         if {!$nb(local)} {
@@ -419,7 +419,7 @@ appserver module GROUPS {
             ht para
 
             # Actors
-            set controller [rdb onecolumn {
+            set controller [adb onecolumn {
                 SELECT controller FROM control_n WHERE n=$data(n)
             }]
 
@@ -427,12 +427,12 @@ appserver module GROUPS {
                 ht putln "No actor is in control of $data(n)."
                 set vrel_c -1.0
             } else {
-                set vrel_c [rdb onecolumn {
+                set vrel_c [adb onecolumn {
                     SELECT vrel FROM gui_uram_vrel
                     WHERE g=$g AND a=$controller
                 }]
 
-                set vrelMin [parm get control.support.vrelMin]
+                set vrelMin [adb parm get control.support.vrelMin]
                 ht putln "$g "
                 ht putif {$vrel_c > $vrelMin} "favors" "does not favor"
                 ht put   " actor "
@@ -440,7 +440,7 @@ appserver module GROUPS {
                 ht put   ", who is in control of neighborhood $data(n)."
             }
 
-            rdb eval {
+            adb eval {
                 SELECT a,vrel FROM gui_uram_vrel
                 WHERE g=$g
                 ORDER BY vrel DESC
@@ -683,7 +683,7 @@ appserver module GROUPS {
             ht para
         }
         
-        set hascapcov [rdb eval {
+        set hascapcov [adb eval {
                            SELECT count(*) FROM capcov
                            WHERE g=$g
                            AND   capcov > 0.0
@@ -751,7 +751,7 @@ appserver module GROUPS {
             ht put   "at the present time are as follows:"
             ht para
 
-            aram contribs mood $g \
+            adb contribs mood $g \
                 -start [simclock now]
 
             ht query {
@@ -783,7 +783,7 @@ appserver module GROUPS {
     # Formats the summary page for force /group/{g}.
 
     proc FrcGroup:html {g} {
-        rdb eval {SELECT * FROM frcgroups_view WHERE g=$g} data {}
+        adb eval {SELECT * FROM frcgroups_view WHERE g=$g} data {}
 
         ht page "Force Group: $g"
         ht title "$data(longname) ($g)" "Force Group" 
@@ -833,7 +833,7 @@ appserver module GROUPS {
     # Formats the summary page for org /group/{g}.
 
     proc OrgGroup:html {g} {
-        rdb eval {SELECT * FROM orggroups_view WHERE g=$g} data {}
+        adb eval {SELECT * FROM orggroups_view WHERE g=$g} data {}
 
         ht page "Organization Group: $g"
         ht title "$data(longname) ($g)" "Organization Group" 

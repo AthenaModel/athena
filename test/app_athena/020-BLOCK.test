@@ -45,7 +45,7 @@ namespace eval ::athena_test::tests:: {
         variable S1
         variable B1
         ted order STRATEGY:BLOCK:ADD agent SYSTEM
-        set S1 [strategy getname SYSTEM]
+        set S1 [tdb strategy getname SYSTEM]
         lassign [$S1 blocks] B1
     }
 
@@ -194,7 +194,7 @@ namespace eval ::athena_test::tests:: {
     test BLOCK:UPDATE-1.15 {duplicate name} -setup {
         setup
         ted order STRATEGY:BLOCK:ADD agent SYSTEM
-        set S [strategy getname SYSTEM]
+        set S [tdb strategy getname SYSTEM]
         lassign [$S blocks end] B2
     } -body {
         ted order -reject BLOCK:UPDATE block_id [$B1 id] \
@@ -261,7 +261,7 @@ namespace eval ::athena_test::tests:: {
         ted order BLOCK:UPDATE block_id [$B1 id] intent "New intent"
     } -body {
         ted notifier bind ::adb.block <update>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -326,7 +326,7 @@ namespace eval ::athena_test::tests:: {
         ted order BLOCK:STATE block_id [$B1 id] state disabled
     } -body {
         ted notifier bind ::adb.block <update>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -391,7 +391,7 @@ namespace eval ::athena_test::tests:: {
         ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename SIGEVENT
     } -body {
         ted notifier bind ::adb.block <tactics>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -463,7 +463,7 @@ namespace eval ::athena_test::tests:: {
         btd_setup
         ted order BLOCK:TACTIC:DELETE ids [list [$T1 id] [$T2 id]]
     } -body {
-        flunky undo
+        adb order undo
         $B1 tactics
     } -cleanup {
         cleanup
@@ -474,7 +474,7 @@ namespace eval ::athena_test::tests:: {
         ted order BLOCK:TACTIC:DELETE ids [list [$T1 id] [$T2 id]]
     } -body {
         ted notifier bind ::adb.block <tactics>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -553,7 +553,7 @@ namespace eval ::athena_test::tests:: {
         ted order BLOCK:TACTIC:MOVE tactic_id [$T2 id] where top
     } -body {
         ted notifier bind ::adb.block <tactics>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -618,7 +618,7 @@ namespace eval ::athena_test::tests:: {
         ted order BLOCK:CONDITION:ADD block_id [$B1 id] typename EXPR
     } -body {
         ted notifier bind ::adb.block <conditions>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -693,7 +693,7 @@ namespace eval ::athena_test::tests:: {
         bcd_setup
         ted order BLOCK:CONDITION:DELETE ids [list [$C1 id] [$C2 id]]
     } -body {
-        flunky undo
+        adb order undo
         $B1 conditions
     } -cleanup {
         cleanup
@@ -704,7 +704,7 @@ namespace eval ::athena_test::tests:: {
         ted order BLOCK:CONDITION:DELETE ids [list [$C1 id] [$C2 id]]
     } -body {
         ted notifier bind ::adb.block <conditions>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup

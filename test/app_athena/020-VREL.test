@@ -164,7 +164,7 @@ BLUE JOE 0.0  0         0.0
         }
     } -body {
         ted notifier bind ::adb <vrel_ga>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -220,7 +220,7 @@ SHIA JOE 0.5  1         0.6
         }
     } -body {
         ted notifier bind ::adb <vrel_ga>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -278,7 +278,7 @@ SHIA JOE 0.5  1         0.6
         ted order VREL:RESTORE {id {BLUE JOE}}
     } -body {
         ted notifier bind ::adb <vrel_ga>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -302,7 +302,7 @@ SHIA JOE 0.5  1         0.6
         ted order VREL:RESTORE {id {BLUE JOE}}
     } -body {
         ted notifier bind ::adb <vrel_ga>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -411,7 +411,7 @@ SHIA JOE 0.5  1         0.6
         }
     } -body {
         ted notifier bind ::adb <vrel_ga>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -454,7 +454,7 @@ SHIA JOE 0.5  1         0.6
         }
     } -body {
         ted notifier bind ::adb <vrel_ga>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup

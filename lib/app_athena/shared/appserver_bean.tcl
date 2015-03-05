@@ -81,7 +81,7 @@ appserver module BEAN {
         ht para
 
         # NEXT, get output stats
-        set items [llength [pot ids]]
+        set items [llength [adb bean ids]]
      
         if {$page_size eq "ALL"} {
             set page_size $items
@@ -98,19 +98,19 @@ appserver module BEAN {
         ht pager $qdict $page $pages
 
         # NEXT, get the ids.
-        set ids [lrange [lrange [pot ids] $offset end] 0 $page_size-1]
+        set ids [lrange [lrange [adb bean ids] $offset end] 0 $page_size-1]
 
         # NEXT, include the table
         ht table {
             "ID" "Class" "Object" "Parent"
         } {
             foreach id $ids {
-                set bean [pot get $id]
+                set bean [adb bean get $id]
                 set cls  [info object class $bean]
 
                 set bdict [$bean getdict]
                 if {[dict exists $bdict parent]} {
-                    set parent [dict get $bdict parent]
+                    set parent [adb bean get [dict get $bdict parent]]
                 } else {
                     set parent ""
                 }
@@ -162,12 +162,12 @@ appserver module BEAN {
         # FIRST, is there a bean with this id?
         set id [string toupper $(1)]
 
-        if {![pot has $id]} {
+        if {![adb bean has $id]} {
             return -code error -errorcode NOTFOUND \
                 "Unknown entity: [dict get $udict url]."
         }
 
-        set bean [pot get $id]
+        set bean [adb bean get $id]
 
         # NEXT, does it have an "htmlpage" method?
         if {"htmlpage" ni [info object methods $bean -all]} {

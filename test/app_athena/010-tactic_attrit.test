@@ -52,15 +52,15 @@ namespace eval ::athena_test::tests:: {
         set T1 [ted addtactic $B1 ATTRIT]
 
         # NEXT, prepare for obligation
-        personnel start
-        personnel load
+        tdb personnel start
+        tdb personnel load
         set coffer [::athena::coffer new [::adb athenadb] JOE]
     }
 
     proc cleanup {} {
         variable coffer
         $coffer destroy
-        strategy locking 0
+        tdb strategy locking 0
         ted cleanup
     }
 
@@ -92,7 +92,7 @@ namespace eval ::athena_test::tests:: {
     test constructor-1.2 {can set options} -setup {
         setup
     } -body {
-        set T1 [pot new ::athena::tactic::ASSIGN -parent DUMMY]
+        set T1 [ted newbean ::athena::tactic::ASSIGN -parent DUMMY]
         $T1 get parent
     } -cleanup {
         cleanup

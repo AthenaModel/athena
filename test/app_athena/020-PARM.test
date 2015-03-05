@@ -67,7 +67,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         ted order PARM:IMPORT filename \
             [file join [temporaryDirectory] temp.parmdb]
-        parm get dam.absit.nominalCoverage
+        tdb parm get dam.absit.nominalCoverage
     } -cleanup {
         cleanup
     } -result {0.5}
@@ -78,13 +78,13 @@ namespace eval ::athena_test::tests:: {
             parm dam.absit.nominalCoverage 0.5
         } temp.parmdb
     } -body {
-        set a [parm get dam.absit.nominalCoverage]
+        set a [tdb parm get dam.absit.nominalCoverage]
 
         ted order PARM:IMPORT filename \
             [file join [temporaryDirectory] temp.parmdb]
 
-        flunky undo
-        set b [parm get dam.absit.nominalCoverage]
+        adb order undo
+        set b [tdb parm get dam.absit.nominalCoverage]
 
         expr {$a == $b}
     } -cleanup {
@@ -107,12 +107,12 @@ namespace eval ::athena_test::tests:: {
 
 
     test RESET-1.2 {Changes *appear* to be undone} -body {
-        set a [parm get dam.absit.nominalCoverage]
+        set a [tdb parm get dam.absit.nominalCoverage]
 
         ted order PARM:RESET
-        flunky undo
+        adb order undo
 
-        set b [parm get dam.absit.nominalCoverage]
+        set b [tdb parm get dam.absit.nominalCoverage]
 
         expr {$a == $b}
     } -cleanup {
@@ -151,19 +151,19 @@ namespace eval ::athena_test::tests:: {
 
     test SET-2.1 {Set is successful} -body {
         ted order PARM:SET parm dam.absit.nominalCoverage value 0.1
-        parm get dam.absit.nominalCoverage
+        tdb parm get dam.absit.nominalCoverage
     } -cleanup {
         cleanup
     } -result {0.1}
 
 
     test SET-2.2 {Set can be undone} -body {
-        set a [parm get dam.absit.nominalCoverage]
+        set a [tdb parm get dam.absit.nominalCoverage]
 
         ted order PARM:SET parm dam.absit.nominalCoverage value 0.2
-        flunky undo
+        adb order undo
 
-        set b [parm get dam.absit.nominalCoverage]
+        set b [tdb parm get dam.absit.nominalCoverage]
 
         expr {$a == $b}
     } -cleanup {

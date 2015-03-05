@@ -95,8 +95,8 @@ namespace eval ::athena_test::tests:: {
         ted notifier received
     } -cleanup {
         cleanup
-        [econ getsam] reset
-        [econ getsam] solve
+        [tdb econ getsam] reset
+        [tdb econ getsam] solve
     } -result {
         {::adb.econ <SamUpdate> BX.world.world 10000.0}
     }
@@ -110,12 +110,12 @@ namespace eval ::athena_test::tests:: {
         }
     } -body {
         ted notifier bind ::adb.econ <SamUpdate>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
-        [econ getsam] reset
-        [econ getsam] solve
+        [tdb econ getsam] reset
+        [tdb econ getsam] solve
     } -result {
         {::adb.econ <SamUpdate> BX.world.world 0.0}
     }
@@ -157,8 +157,8 @@ namespace eval ::athena_test::tests:: {
         ted notifier received
     } -cleanup {
         cleanup
-        [econ getsam] reset
-        [econ getsam] solve
+        [tdb econ getsam] reset
+        [tdb econ getsam] solve
     } -result {
         {::adb.econ <SamUpdate> BaseUR 10}
     }
@@ -172,12 +172,12 @@ namespace eval ::athena_test::tests:: {
         }
     } -body {
         ted notifier bind ::adb.econ <SamUpdate>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
-        [econ getsam] reset
-        [econ getsam] solve
+        [tdb econ getsam] reset
+        [tdb econ getsam] solve
     } -result {
         {::adb.econ <SamUpdate> BaseUR 10.0}
     }
@@ -244,7 +244,7 @@ namespace eval ::athena_test::tests:: {
         ted notifier received
     } -cleanup {
         cleanup
-        [econ getcge] reset
+        [tdb econ getcge] reset
     } -result {
         {::adb.econ <CgeUpdate>}
     }
@@ -260,11 +260,11 @@ namespace eval ::athena_test::tests:: {
         }
     } -body {
         ted notifier bind ::adb.econ <CgeUpdate>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
-        [econ getcge] reset
+        [tdb econ getcge] reset
     } -result {
         {::adb.econ <CgeUpdate>}
     }
@@ -304,7 +304,7 @@ namespace eval ::athena_test::tests:: {
         ted notifier received
     } -cleanup {
         cleanup
-        [econ getcge] reset
+        [tdb econ getcge] reset
     } -result {
         {::adb.econ <CgeUpdate>}
     }
@@ -317,11 +317,11 @@ namespace eval ::athena_test::tests:: {
         ted order ECON:UPDATE:REMRATE val 5.0
     } -body {
         ted notifier bind ::adb.econ <CgeUpdate>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
-        [econ getcge] reset
+        [tdb econ getcge] reset
     } -result {
         {::adb.econ <CgeUpdate>}
     }
@@ -370,8 +370,8 @@ namespace eval ::athena_test::tests:: {
     test UPDATE:HIST-3.1 {undo undoes the change} -setup {
         ted order ECON:UPDATE:HIST hist_flag 1 base_gdp 1T
     } -body {
-        flunky undo
-        set pdict [econ gethist]
+        adb order undo
+        set pdict [tdb econ gethist]
         dict with pdict {
             expr {$base_gdp == 200000000000.0}
         }

@@ -11,7 +11,7 @@
 #    This module manages the overall simulation, as distinct from the 
 #    the purely scenario-data oriented work done by scenario(sim).
 #
-# TBD: Global refs: simclock, sanity, app/messagebox, rebase
+# TBD: Global refs: app/messagebox.
 #
 #-----------------------------------------------------------------------
 
@@ -84,7 +84,7 @@ snit::type ::athena::sim {
         set info(changed)  0
         set info(stoptime) 0
 
-        $adb flunky state $info(state)
+        $adb order state $info(state)
 
         simclock configure \
             -week0 $constants(startdate) \
@@ -174,14 +174,14 @@ snit::type ::athena::sim {
     #-------------------------------------------------------------------
     # Wizard Control
 
-    # wizard ?flag?
+    # wizlock ?flag?
     #
     # flag   - on | off
     #
     # By default, returns true if the sim state is WIZARD.  If the
     # flag is given, sets the sim state to WIZARD or to PREP, accordingly.
 
-    method wizard {{flag ""}} {
+    method wizlock {{flag ""}} {
         if {$flag ne ""} {
             assert {$info(state) in {PREP WIZARD}}
 
@@ -450,7 +450,7 @@ snit::type ::athena::sim {
         # and TickWork will do the rest.  Otherwise, this is coming from a
         # GUI event, outside TickWork; just set the state to paused.
 
-        if {[$adb flunky state] eq "TACTIC"} {
+        if {[$adb order state] eq "TACTIC"} {
             set info(stoptime) [simclock now]
         } elseif {$info(state) eq "RUNNING"} {
             set info(stoptime) 0
@@ -459,6 +459,19 @@ snit::type ::athena::sim {
 
         # NEXT, cannot be undone.
         return ""
+    }
+
+    # halt
+    #
+    # If running, pauses the simulation; never throws an error.
+    # This allows the application to halt the sim cleanly on error.
+
+    method halt {} {
+        if {[$self state] eq "RUNNING"} {
+            $self pause
+        }
+
+        return
     }
 
     #-------------------------------------------------------------------
@@ -744,7 +757,7 @@ snit::type ::athena::sim {
     method SetState {state} {
         # FIRST, transition to the new state.
         set info(state) $state
-        $adb flunky state $state
+        $adb order state $state
 
         $adb log normal sim "Simulation state is $info(state)"
 
@@ -778,6 +791,7 @@ snit::type ::athena::sim {
     # checkpoint     A string returned by the checkpoint method
     
     method restore {checkpoint {option ""}} {
+        $self reset
         set info(changed) 1
 
         if {[dict size $checkpoint] > 0} {

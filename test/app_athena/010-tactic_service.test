@@ -52,16 +52,16 @@ namespace eval ::athena_test::tests:: {
         set T1 [ted addtactic $B1 SERVICE]
 
         # NEXT, prepare for obligation
-        personnel start
-        personnel load
-        service reset
+        tdb personnel start
+        tdb personnel load
+        tdb service reset
         set coffer [::athena::coffer new [::adb athenadb] JOE]
     }
 
     proc cleanup {} {
         variable coffer
         $coffer destroy
-        strategy locking 0
+        tdb strategy locking 0
         ted cleanup
     }
 
@@ -92,7 +92,7 @@ namespace eval ::athena_test::tests:: {
     test constructor-1.2 {can set options} -setup {
         setup
     } -body {
-        set T1 [pot new ::athena::tactic::SERVICE -parent DUMMY]
+        set T1 [ted newbean ::athena::tactic::SERVICE -parent DUMMY]
         $T1 get parent
     } -cleanup {
         cleanup
@@ -194,7 +194,7 @@ namespace eval ::athena_test::tests:: {
         $T1 configure         \
             -nlist    [adb gofer make NBHOODS BY_VALUE {NB1 NB2}] \
             -s        ENERGY 
-        rdb eval {DELETE FROM nbhoods WHERE n='NB1'}
+        adb eval {DELETE FROM nbhoods WHERE n='NB1'}
     } -body {
         $T1 check
     } -cleanup {
@@ -245,7 +245,7 @@ namespace eval ::athena_test::tests:: {
 
     test execute-1.1 {updates service, EXACT} -setup {
         setup
-        service start
+        tdb service start
         $T1 configure         \
             -nlist    [adb gofer make NBHOODS BY_VALUE {NB1 NB2}] \
             -s        ENERGY  \
@@ -274,8 +274,8 @@ new_actual s         g
 
     test execute-1.2 {updates service, RDELTA} -setup {
         setup
-        service start
-        rdb eval {UPDATE service_sg SET required=0.25}
+        tdb service start
+        adb eval {UPDATE service_sg SET required=0.25}
         $T1 configure         \
             -nlist    [adb gofer make NBHOODS BY_VALUE {NB1 NB2}] \
             -s        ENERGY  \
@@ -305,8 +305,8 @@ new_actual s         g
 
     test execute-1.3 {updates service, EDELTA} -setup {
         setup
-        service start
-        rdb eval {UPDATE service_sg SET expected=0.25}
+        tdb service start
+        adb eval {UPDATE service_sg SET expected=0.25}
         $T1 configure         \
             -nlist    [adb gofer make NBHOODS BY_VALUE {NB1 NB2}] \
             -s        ENERGY  \
@@ -337,8 +337,8 @@ new_actual s         g
 
     test execute-1.4 {updates service, ADELTA up} -setup {
         setup
-        service start
-        rdb eval {UPDATE service_sg SET actual=0.5}
+        tdb service start
+        adb eval {UPDATE service_sg SET actual=0.5}
         $T1 configure         \
             -nlist    [adb gofer make NBHOODS BY_VALUE {NB1 NB2}] \
             -s        ENERGY  \
@@ -368,8 +368,8 @@ new_actual s         g
 
     test execute-1.5 {updates service, ADELTA down} -setup {
         setup
-        service start
-        rdb eval {UPDATE service_sg SET actual=1.0}
+        tdb service start
+        adb eval {UPDATE service_sg SET actual=1.0}
         $T1 configure         \
             -nlist    [adb gofer make NBHOODS BY_VALUE {NB1 NB2}] \
             -s        ENERGY  \

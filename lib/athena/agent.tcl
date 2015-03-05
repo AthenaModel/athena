@@ -60,7 +60,7 @@ snit::type ::athena::agent {
     method validate {agent_id} {
         set names [$self names]
 
-        if {$agent_id ni $names} {
+        if {![$self exists $agent_id]} {
             set nameString [join $names ", "]
 
             if {$nameString ne ""} {
@@ -74,6 +74,16 @@ snit::type ::athena::agent {
         }
 
         return $agent_id
+    }
+
+    # exists agent_id
+    #
+    # agent_id  - Possibly, an agent short name
+    #
+    # Returns 1 if the agent exist, and 0 otherwise.
+
+    method exists {agent_id} {
+        return [dbexists $adb agents agent_id $agent_id]
     }
 
     # system names

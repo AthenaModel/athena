@@ -44,7 +44,7 @@ namespace eval ::athena_test::tests:: {
         variable S1
         ted create JOE BOB NB1 NB2 BLUE BRIT SHIA SUNN KURD
 
-        set S1 [strategy getname SYSTEM]
+        set S1 [tdb strategy getname SYSTEM]
     }
 
     # Clean up after a test
@@ -62,26 +62,26 @@ namespace eval ::athena_test::tests:: {
 
     test strategy_init-1.1 {locking is initialized} -body {
         # init is called automatically when the application is initialized.
-        strategy locking
+        tdb strategy locking
     } -result {0}
 
     #-------------------------------------------------------------------
     # strategy getname
 
     test strategy_getname-1.1 {retrieves strategy names} -body {
-        strategy getname SYSTEM
+        tdb strategy getname SYSTEM
     } -match glob -result {*::pot::strategy1}
 
     #-------------------------------------------------------------------
     # strategy locking
 
     test strategy_locking-1.1 {sets and returns locking flag} -body {
-        set a [strategy locking]
-        set b [strategy locking 1]
-        set c [strategy locking]
+        set a [tdb strategy locking]
+        set b [tdb strategy locking 1]
+        set c [tdb strategy locking]
         list $a $b $c
     } -cleanup {
-        strategy locking 0
+        tdb strategy locking 0
     } -result {0 1 1}
     
     
@@ -89,8 +89,8 @@ namespace eval ::athena_test::tests:: {
     # strategy create_
 
     test strategy_create-1.1 {creates a strategy} -body {
-        strategy create_ DUMMY
-        set s [strategy getname DUMMY]
+        tdb strategy create_ DUMMY
+        set s [tdb strategy getname DUMMY]
 
         $s agent
     } -cleanup {
@@ -98,8 +98,8 @@ namespace eval ::athena_test::tests:: {
     } -result {DUMMY}
 
     test strategy_create-2.1 {create can be undone} -body {
-        set undo [strategy create_ DUMMY]
-        set s [strategy getname DUMMY]
+        set undo [tdb strategy create_ DUMMY]
+        set s [tdb strategy getname DUMMY]
         namespace eval :: $undo
 
         info object isa object $s
@@ -111,10 +111,10 @@ namespace eval ::athena_test::tests:: {
     # strategy delete_
 
     test strategy_delete-1.1 {deletes a strategy} -setup {
-        strategy create_ DUMMY
+        tdb strategy create_ DUMMY
     } -body {
-        set s [strategy getname DUMMY]
-        strategy delete_ DUMMY
+        set s [tdb strategy getname DUMMY]
+        tdb strategy delete_ DUMMY
 
         info object isa object $s
     } -cleanup {
@@ -123,10 +123,10 @@ namespace eval ::athena_test::tests:: {
 
 
     test strategy_delete-2.1 {delete can be undone} -setup {
-        strategy create_ DUMMY
+        tdb strategy create_ DUMMY
     } -body {
-        set s [strategy getname DUMMY]
-        set undo [strategy delete_ DUMMY]
+        set s [tdb strategy getname DUMMY]
+        set undo [tdb strategy delete_ DUMMY]
         namespace eval :: $undo
 
         list \
@@ -193,7 +193,7 @@ namespace eval ::athena_test::tests:: {
 
     test execute-1.1 {executes eligible blocks} -setup {
         setup
-        set s [strategy getname SYSTEM]
+        set s [tdb strategy getname SYSTEM]
 
         # Create a block that executes only at week 10.
         $s addblock_
@@ -217,7 +217,7 @@ namespace eval ::athena_test::tests:: {
 
         set a [$b1 execstatus]
         set b [$b2 execstatus]
-        set c [rdb onecolumn {
+        set c [adb onecolumn {
             SELECT narrative FROM sigevents WHERE component='tactic'
         }]
 

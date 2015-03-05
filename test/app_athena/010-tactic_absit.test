@@ -52,15 +52,15 @@ namespace eval ::athena_test::tests:: {
         set T1 [ted addtactic $B1 ABSIT]
 
         # NEXT, prepare for obligation
-        personnel start
-        personnel load
+        tdb personnel start
+        tdb personnel load
         set coffer [::athena::coffer new [::adb athenadb] JOE]
     }
 
     proc cleanup {} {
         variable coffer
         $coffer destroy
-        strategy locking 0
+        tdb strategy locking 0
         ted cleanup
     }
 
@@ -91,7 +91,7 @@ namespace eval ::athena_test::tests:: {
     test constructor-1.2 {can set options} -setup {
         setup
     } -body {
-        set T1 [pot new ::athena::tactic::ABSIT -parent DUMMY]
+        set T1 [ted newbean ::athena::tactic::ABSIT -parent DUMMY]
         $T1 get parent
     } -cleanup {
         cleanup
@@ -239,7 +239,7 @@ rduration  2
     } -body {
         $T1 execute
         $T1 execute
-        rdb eval {SELECT n, stype FROM absits}
+        adb eval {SELECT n, stype FROM absits}
     } -cleanup {
         cleanup
     } -result {NB1 COMMOUT}
@@ -256,7 +256,7 @@ rduration  2
         $T1 execute
         $T1 configure -stype BADWATER
         $T1 execute
-        rdb eval {SELECT n, stype FROM absits ORDER BY n, stype}
+        adb eval {SELECT n, stype FROM absits ORDER BY n, stype}
     } -cleanup {
         cleanup
     } -result {NB1 BADWATER NB1 COMMOUT}

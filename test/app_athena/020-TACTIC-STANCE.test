@@ -188,7 +188,7 @@ namespace eval ::athena_test::tests:: {
             glist [adb gofer make GROUPS BY_VALUE {BRIT USAID}] 
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup

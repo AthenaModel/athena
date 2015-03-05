@@ -7,7 +7,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    civgroup(sim) tests.
+#    tdb civgroup(sim) tests.
 #
 #    This test suite tests the gofer::CIVGROUPS type.
 #
@@ -51,14 +51,14 @@ namespace eval ::athena_test::tests:: {
     proc setupMood {} {
         setup
         ted lock
-        aram sat bset 1 SHIA AUT  100.0
-        aram sat bset 1 SHIA CUL  100.0
-        aram sat bset 1 SHIA QOL  100.0
-        aram sat bset 1 SHIA SFT  100.0
-        aram sat bset 1 SUNN AUT -100.0
-        aram sat bset 1 SUNN CUL -100.0
-        aram sat bset 1 SUNN QOL -100.0
-        aram sat bset 1 SUNN SFT -100.0
+        ted sat bset 1 SHIA AUT  100.0
+        ted sat bset 1 SHIA CUL  100.0
+        ted sat bset 1 SHIA QOL  100.0
+        ted sat bset 1 SHIA SFT  100.0
+        ted sat bset 1 SUNN AUT -100.0
+        ted sat bset 1 SUNN CUL -100.0
+        ted sat bset 1 SUNN QOL -100.0
+        ted sat bset 1 SUNN SFT -100.0
         ted step
     }
 
@@ -721,7 +721,7 @@ namespace eval ::athena_test::tests:: {
             SUNN BOB 0.0
             BLUE BOB 0.3
         } {
-            rdb eval {
+            adb eval {
                 INSERT INTO support_nga(n,g,a,support)
                 VALUES('NB1',$g,$a,$support)
             }
@@ -741,10 +741,10 @@ namespace eval ::athena_test::tests:: {
     test MEGA-4.11 {eval: bygroups LIKING KURD} -setup {
         setup
         ted lock
-        aram hrel bset 1 SHIA KURD  0.3
-        aram hrel bset 1 SHIA SUNN  0.3
-        aram hrel bset 1 SUNN KURD  0.0
-        aram hrel bset 1 BLUE KURD  0.3
+        ted hrel bset 1 SHIA KURD  0.3
+        ted hrel bset 1 SHIA SUNN  0.3
+        ted hrel bset 1 SUNN KURD  0.0
+        ted hrel bset 1 BLUE KURD  0.3
         ted step
     } -body {
         # This uses anyall_glist, like the specific group-based rules.
@@ -975,7 +975,7 @@ namespace eval ::athena_test::tests:: {
             SUNN BOB 0.0
             BLUE BOB 0.3
         } {
-            rdb eval {
+            adb eval {
                 INSERT INTO support_nga(n,g,a,support)
                 VALUES('NB1',$g,$a,$support)
             }
@@ -1012,10 +1012,10 @@ namespace eval ::athena_test::tests:: {
     test LIKING_ACTOR-4.1 {eval} -setup {
         setup
         ted lock
-        aram vrel bset 1 SHIA BOB  0.3
-        aram vrel bset 1 SHIA JOE  0.3
-        aram vrel bset 1 SUNN BOB  0.0
-        aram vrel bset 1 BLUE BOB  0.3
+        ted vrel bset 1 SHIA BOB  0.3
+        ted vrel bset 1 SHIA JOE  0.3
+        ted vrel bset 1 SUNN BOB  0.0
+        ted vrel bset 1 BLUE BOB  0.3
         ted step
     } -body {
         adb gofer CIVGROUPS LIKING_ACTOR eval {anyall ANY alist BOB}
@@ -1049,10 +1049,10 @@ namespace eval ::athena_test::tests:: {
     test DISLIKING_ACTOR-4.1 {eval} -setup {
         setup
         ted lock
-        aram vrel bset 1 SHIA BOB -0.3
-        aram vrel bset 1 SHIA JOE -0.3
-        aram vrel bset 1 SUNN BOB  0.0
-        aram vrel bset 1 BLUE BOB -0.3
+        ted vrel bset 1 SHIA BOB -0.3
+        ted vrel bset 1 SHIA JOE -0.3
+        ted vrel bset 1 SUNN BOB  0.0
+        ted vrel bset 1 BLUE BOB -0.3
         ted step
     } -body {
         adb gofer CIVGROUPS DISLIKING_ACTOR eval {anyall ANY alist BOB}
@@ -1086,10 +1086,10 @@ namespace eval ::athena_test::tests:: {
     test LIKING_GROUP-4.1 {eval} -setup {
         setup
         ted lock
-        aram hrel bset 1 SHIA KURD  0.3
-        aram hrel bset 1 SHIA SUNN  0.3
-        aram hrel bset 1 SUNN KURD  0.0
-        aram hrel bset 1 BLUE KURD  0.3
+        ted hrel bset 1 SHIA KURD  0.3
+        ted hrel bset 1 SHIA SUNN  0.3
+        ted hrel bset 1 SUNN KURD  0.0
+        ted hrel bset 1 BLUE KURD  0.3
         ted step
     } -body {
         adb gofer CIVGROUPS LIKING_GROUP eval {anyall ANY glist KURD}
@@ -1123,10 +1123,10 @@ namespace eval ::athena_test::tests:: {
     test DISLIKING_GROUP-4.1 {eval} -setup {
         setup
         ted lock
-        aram hrel bset 1 SHIA KURD -0.3
-        aram hrel bset 1 SHIA SUNN -0.3
-        aram hrel bset 1 SUNN KURD  0.0
-        aram hrel bset 1 BLUE KURD -0.3
+        ted hrel bset 1 SHIA KURD -0.3
+        ted hrel bset 1 SHIA SUNN -0.3
+        ted hrel bset 1 SUNN KURD  0.0
+        ted hrel bset 1 BLUE KURD -0.3
         ted step
     } -body {
         adb gofer CIVGROUPS DISLIKING_GROUP eval {anyall ANY glist KURD}
@@ -1160,10 +1160,10 @@ namespace eval ::athena_test::tests:: {
     test LIKED_BY_GROUP-4.1 {eval} -setup {
         setup
         ted lock
-        aram hrel bset 1 SHIA SUNN  0.3
-        aram hrel bset 1 SHIA KURD  0.0
-        aram hrel bset 1 KURD SUNN  0.3
-        aram hrel bset 1 SHIA BLUE  0.3
+        ted hrel bset 1 SHIA SUNN  0.3
+        ted hrel bset 1 SHIA KURD  0.0
+        ted hrel bset 1 KURD SUNN  0.3
+        ted hrel bset 1 SHIA BLUE  0.3
         ted step
     } -body {
         adb gofer CIVGROUPS LIKED_BY_GROUP eval {anyall ANY glist SHIA}
@@ -1197,10 +1197,10 @@ namespace eval ::athena_test::tests:: {
     test DISLIKED_BY_GROUP-4.1 {eval} -setup {
         setup
         ted lock
-        aram hrel bset 1 SHIA SUNN -0.3
-        aram hrel bset 1 SHIA KURD  0.0
-        aram hrel bset 1 KURD SUNN -0.3
-        aram hrel bset 1 SHIA BLUE -0.3
+        ted hrel bset 1 SHIA SUNN -0.3
+        ted hrel bset 1 SHIA KURD  0.0
+        ted hrel bset 1 KURD SUNN -0.3
+        ted hrel bset 1 SHIA BLUE -0.3
         ted step
     } -body {
         adb gofer CIVGROUPS DISLIKED_BY_GROUP eval {anyall ANY glist SHIA}

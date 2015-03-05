@@ -204,7 +204,7 @@ location   *
         ted order ABSIT:CREATE $s1
     } -body {
         ted notifier bind ::adb <absits>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -233,7 +233,7 @@ location   *
     test DELETE-1.3 {s not in initial state} -setup {
         ted create NB1 BLUE
         ted order ABSIT:CREATE $s1
-        rdb eval {UPDATE absits SET state='ONGOING' WHERE s=1}
+        adb eval {UPDATE absits SET state='ONGOING' WHERE s=1}
     } -body {
         ted order -reject ABSIT:DELETE s 1
     } -cleanup {
@@ -263,7 +263,7 @@ location   *
         ted order ABSIT:DELETE s 1
     } -body {
         ted notifier bind ::adb <absits>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -359,7 +359,7 @@ location   *
     test UPDATE-1.8 {Not INITIAL state} -setup {
         ted create NB1 BLUE
         ted order ABSIT:CREATE $s1
-        rdb eval {UPDATE absits SET state='ONGOING' WHERE s=1}
+        adb eval {UPDATE absits SET state='ONGOING' WHERE s=1}
     } -body {
         ted order -reject ABSIT:UPDATE s 1 \
             stype     COMMOUT \
@@ -428,7 +428,7 @@ location   *
         }
     } -body {
         ted notifier bind ::adb <absits>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -464,7 +464,7 @@ location   *
     test MOVE-1.3 {location is out of neighborhood} -setup {
         ted create NB1 BLUE
         ted order ABSIT:CREATE $s1
-        rdb eval {UPDATE absits SET state='ONGOING' WHERE s=1}
+        adb eval {UPDATE absits SET state='ONGOING' WHERE s=1}
     } -body {
         ted order -reject ABSIT:MOVE s 1 location 38TNM000000
     } -cleanup {
@@ -477,12 +477,12 @@ location   *
     test MOVE-2.1 {absit is updated} -setup {
         ted create NB1 BLUE
         ted order ABSIT:CREATE $s1
-        set loc [latlong tomgrs [nbhood get NB1 refpoint]]
+        set loc [latlong tomgrs [tdb nbhood get NB1 refpoint]]
     } -body {
         ted order ABSIT:MOVE s 1 location $loc
 
         set newloc [latlong tomgrs \
-            [rdb onecolumn {SELECT location FROM absits}]]
+            [adb onecolumn {SELECT location FROM absits}]]
         expr {$loc == $newloc}
     } -cleanup {
         cleanup
@@ -492,7 +492,7 @@ location   *
     test MOVE-2.2 {table monitor event} -setup {
         ted create NB1 BLUE
         ted order ABSIT:CREATE $s1
-        set loc [latlong tomgrs [nbhood randloc NB1]]
+        set loc [latlong tomgrs [tdb nbhood randloc NB1]]
     } -body {
         ted notifier bind ::adb <absits>
         ted order ABSIT:MOVE s 1 location $loc
@@ -507,11 +507,11 @@ location   *
     test MOVE-3.1 {undo undoes the change} -setup {
         ted create NB1 BLUE
         ted order ABSIT:CREATE $s1
-        set loc [latlong tomgrs [nbhood randloc NB1]]
+        set loc [latlong tomgrs [tdb nbhood randloc NB1]]
         ted order ABSIT:MOVE s 1 location  $loc
     } -body {
         ted notifier bind ::adb <absits>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -622,7 +622,7 @@ location   *
         ted order ABSIT:RESOLVE s 1 resolver BLUE
     } -body {
         ted notifier bind ::adb <absits>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup

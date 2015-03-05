@@ -232,7 +232,7 @@ mag         2.0
         ted order INJECT:COOP:CREATE $I1
     } -body {
         ted notifier bind ::adb <curse_injects>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -320,7 +320,7 @@ mag         10.0
         ted order INJECT:COOP:UPDATE id {C2 1} g BLUE
     } -body {
         ted notifier bind ::adb <curse_injects>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -399,7 +399,7 @@ mag         2.0
         ted order INJECT:HREL:CREATE $I1
     } -body {
         ted notifier bind ::adb <curse_injects>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -487,7 +487,7 @@ mag         10.0
         ted order INJECT:HREL:UPDATE id {C2 1} g BLUE
     } -body {
         ted notifier bind ::adb <curse_injects>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -566,7 +566,7 @@ mag         5.0
         ted order INJECT:SAT:CREATE $I3
     } -body {
         ted notifier bind ::adb <curse_injects>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -653,7 +653,7 @@ mag         10.0
         ted order INJECT:SAT:UPDATE id {C2 1} g BLUE
     } -body {
         ted notifier bind ::adb <curse_injects>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -742,7 +742,7 @@ mag         5.0
         ted order INJECT:VREL:CREATE $I5
     } -body {
         ted notifier bind ::adb <curse_injects>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -830,7 +830,7 @@ mag         10.0
         ted order INJECT:VREL:UPDATE id {C2 1} g BLUE
     } -body {
         ted notifier bind ::adb <curse_injects>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -889,7 +889,7 @@ mag         10.0
         ted order INJECT:DELETE id {C1 1}
     } -body {
         ted notifier bind ::adb <curse_injects>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -936,7 +936,7 @@ mag         10.0
         ted order INJECT:STATE id {C1 1} state disabled
     } -body {
         ted notifier bind ::adb <curse_injects>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup

@@ -158,7 +158,7 @@ namespace eval ::athena_test::tests:: {
         ted order PAYLOAD:DELETE id {IOM1 1}
     } -body {
         ted notifier bind ::adb <payloads>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -205,7 +205,7 @@ namespace eval ::athena_test::tests:: {
         ted order PAYLOAD:STATE id {IOM1 1} state disabled
     } -body {
         ted notifier bind ::adb <payloads>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -291,7 +291,7 @@ mag           2.0
         ted order PAYLOAD:COOP:CREATE $P1
     } -body {
         ted notifier bind ::adb <payloads>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -388,7 +388,7 @@ mag           10.0
         ted order PAYLOAD:COOP:UPDATE id {IOM2 1} g BLUE
     } -body {
         ted notifier bind ::adb <payloads>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -474,7 +474,7 @@ mag           2.0
         ted order PAYLOAD:HREL:CREATE $P1
     } -body {
         ted notifier bind ::adb <payloads>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -571,7 +571,7 @@ mag           10.0
         ted order PAYLOAD:HREL:UPDATE id {IOM2 1} g BLUE
     } -body {
         ted notifier bind ::adb <payloads>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -657,7 +657,7 @@ mag           5.0
         ted order PAYLOAD:SAT:CREATE $P3
     } -body {
         ted notifier bind ::adb <payloads>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -754,7 +754,7 @@ mag           10.0
         ted order PAYLOAD:SAT:UPDATE id {IOM2 1} c AUT
     } -body {
         ted notifier bind ::adb <payloads>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -840,7 +840,7 @@ mag           5.0
         ted order PAYLOAD:VREL:CREATE $P5
     } -body {
         ted notifier bind ::adb <payloads>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -937,7 +937,7 @@ mag           10.0
         ted order PAYLOAD:VREL:UPDATE id {IOM2 1} a JOE
     } -body {
         ted notifier bind ::adb <payloads>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup

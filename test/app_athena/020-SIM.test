@@ -67,8 +67,6 @@ namespace eval ::athena_test::tests:: {
         }
 
         ted cleanup
-
-        assert {![aram initialized]}
     }
 
     #-------------------------------------------------------------------
@@ -111,7 +109,7 @@ namespace eval ::athena_test::tests:: {
 
     } -body {
         ted notifier bind ::adb <Time>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -159,7 +157,7 @@ namespace eval ::athena_test::tests:: {
 
     } -body {
         ted notifier bind ::adb <Time>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -181,19 +179,19 @@ namespace eval ::athena_test::tests:: {
 
     test LOCK-2.1 {locks the scenario} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
         ted order SIM:LOCK
-        sim state
+        tdb sim state
     } -cleanup {
         cleanup
     } -result {PAUSED}
 
     test LOCK-2.2 {Sends <State>} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
         ted notifier bind ::adb <State>
         ted order SIM:LOCK
@@ -268,7 +266,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         ted order SIM:RUN 
-        list [sim state] [sim stoptime]
+        list [tdb sim state] [tdb sim stoptime]
     } -cleanup {
         cleanup
     } -result {RUNNING 0}
@@ -278,7 +276,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         ted order SIM:RUN weeks 5
-        list [sim state] [sim stoptime]
+        list [tdb sim state] [tdb sim stoptime]
     } -cleanup {
         cleanup
     } -result {RUNNING 5}
@@ -300,7 +298,7 @@ namespace eval ::athena_test::tests:: {
     # SIM:PAUSE
 
     test PAUSE-1.1 {Not allowed in PREP} -body {
-        flunky available SIM:PAUSE
+        adb order available SIM:PAUSE
     } -cleanup {
         cleanup
     } -result {0}
@@ -312,7 +310,7 @@ namespace eval ::athena_test::tests:: {
         ted order SIM:RUN
         simclock tick
         ted order SIM:PAUSE
-        sim state
+        tdb sim state
     } -cleanup {
         cleanup
     } -result {PAUSED}
@@ -324,7 +322,7 @@ namespace eval ::athena_test::tests:: {
         ted order SIM:RUN
         simclock tick
         ted order SIM:PAUSE
-        flunky available SIM:PAUSE
+        adb order available SIM:PAUSE
     } -cleanup {
         cleanup
     } -result {0}
@@ -350,7 +348,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         ted order SIM:UNLOCK
-        sim state
+        tdb sim state
     } -cleanup {
         cleanup
     } -result {PREP}
@@ -378,7 +376,7 @@ namespace eval ::athena_test::tests:: {
         ted step
     } -body {
         ted order SIM:REBASE
-        list [sim state] [simclock now]
+        list [tdb sim state] [simclock now]
     } -cleanup {
         cleanup
     } -result {PREP 1}

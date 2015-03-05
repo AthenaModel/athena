@@ -47,7 +47,7 @@ snit::widget ::wnbhood::wizwin {
 
     constructor {args} {
         # FIRST, enter the wizard state.  We are in process.
-        sim wizard on
+        adb wizlock on
 
         # NEXT, withdraw the hull widget until it's populated.
         wm withdraw $win
@@ -156,7 +156,7 @@ snit::widget ::wnbhood::wizwin {
             return
         }
 
-        flunky transaction "Ingest $num Neighborhoods" {
+        adb order transaction "Ingest $num Neighborhoods" {
             dict for {name data} $ndict {
                 lassign $data refpt poly
                 set id "N[format "%03d" $ctr]"
@@ -169,7 +169,7 @@ snit::widget ::wnbhood::wizwin {
                 set parms(polygon)    $poly
                 set parms(controller) NONE
 
-                flunky senddict gui NBHOOD:CREATE:RAW [array get parms]
+                adb order senddict gui NBHOOD:CREATE:RAW [array get parms]
 
                 incr ctr
             }
@@ -185,7 +185,7 @@ snit::widget ::wnbhood::wizwin {
     method MaxNbhoodID {} {
         set num 0
         # FIRST, get the highest existing ID
-        rdb eval {
+        adb eval {
             SELECT n FROM nbhoods
         } {
             if {[string compare -length 1 "N" $n] == 0} {

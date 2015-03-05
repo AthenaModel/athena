@@ -42,7 +42,7 @@ namespace eval ::athena_test::tests:: {
         variable B1
         variable T1
         ted order ACTOR:UPDATE a JOE cash_on_hand 10000.0 cash_reserve 0.0
-        set S1 [strategy getname JOE]
+        set S1 [tdb strategy getname JOE]
         ted order STRATEGY:BLOCK:ADD agent JOE
         lassign [$S1 blocks] B1
         ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename DEPOSIT
@@ -254,7 +254,7 @@ namespace eval ::athena_test::tests:: {
         ted order TACTIC:DEPOSIT tactic_id [$T1 id] mode EXACT amount 10.0
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup

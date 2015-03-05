@@ -59,7 +59,7 @@ snit::widgetadaptor ordersentbrowser {
             -reloadon {
                 ::adb        <Sync>
                 ::adb        <Tick>
-                ::adb.flunky <Sync>
+                ::adb.order <Sync>
             } -layout [string map [list %D $::app::derivedfg] $layout]
 
         # NEXT, get the options.

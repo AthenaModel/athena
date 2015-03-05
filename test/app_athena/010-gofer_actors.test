@@ -121,7 +121,7 @@ namespace eval ::athena_test::tests:: {
             NB1 JOE
             NB2 BOB
         } { 
-            rdb eval {INSERT INTO control_n(n,controller) VALUES($n,$a)}
+            adb eval {INSERT INTO control_n(n,controller) VALUES($n,$a)}
         }
     }
 
@@ -167,7 +167,7 @@ namespace eval ::athena_test::tests:: {
     proc setupInfluenceIn {dict} {
         setup
         dict for {n a} $dict {
-            rdb eval {
+            adb eval {
                 INSERT INTO influence_na(n,a,influence) VALUES($n,$a,0.1)
             }
         }
@@ -286,7 +286,7 @@ namespace eval ::athena_test::tests:: {
             TAL  JOE 0.0
             TAL  BOB 0.3
         } {
-            rdb eval {
+            adb eval {
                 INSERT INTO support_nga(n,g,a,support)
                 VALUES('NB1',$g,$a,$support)
             }
@@ -344,12 +344,12 @@ namespace eval ::athena_test::tests:: {
     proc setupLikedBy {} {
         setup
         ted lock
-        aram vrel bset 1 BLUE JOE  0.3
-        aram vrel bset 1 BLUE BOB  0.3
-        aram vrel bset 1 BRIT JOE  0.3
-        aram vrel bset 1 BRIT BOB  0.0
-        aram vrel bset 1 TAL  JOE  0.0
-        aram vrel bset 1 TAL  BOB  0.3
+        ted vrel bset 1 BLUE JOE  0.3
+        ted vrel bset 1 BLUE BOB  0.3
+        ted vrel bset 1 BRIT JOE  0.3
+        ted vrel bset 1 BRIT BOB  0.0
+        ted vrel bset 1 TAL  JOE  0.0
+        ted vrel bset 1 TAL  BOB  0.3
         ted step
     } 
 
@@ -403,12 +403,12 @@ namespace eval ::athena_test::tests:: {
     proc setupDislikedBy {} {
         setup
         ted lock
-        aram vrel bset 1 BLUE JOE -0.3
-        aram vrel bset 1 BLUE BOB -0.3
-        aram vrel bset 1 BRIT JOE -0.3
-        aram vrel bset 1 BRIT BOB  0.0
-        aram vrel bset 1 TAL  JOE  0.0
-        aram vrel bset 1 TAL  BOB -0.3
+        ted vrel bset 1 BLUE JOE -0.3
+        ted vrel bset 1 BLUE BOB -0.3
+        ted vrel bset 1 BRIT JOE -0.3
+        ted vrel bset 1 BRIT BOB  0.0
+        ted vrel bset 1 TAL  JOE  0.0
+        ted vrel bset 1 TAL  BOB -0.3
         ted step
     } 
 

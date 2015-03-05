@@ -43,7 +43,7 @@ namespace eval ::athena_test::tests:: {
         variable B1
         variable T1
 
-        set S1 [strategy getname SYSTEM]
+        set S1 [tdb strategy getname SYSTEM]
         ted order STRATEGY:BLOCK:ADD agent SYSTEM
         lassign [$S1 blocks] B1
         ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename DAMAGE
@@ -158,7 +158,7 @@ namespace eval ::athena_test::tests:: {
         ted order TACTIC:DAMAGE tactic_id [$T1 id] n NB1 a JOE percent 80
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup

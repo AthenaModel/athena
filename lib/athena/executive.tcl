@@ -218,6 +218,16 @@ snit::type ::athena::executive {
         return $result
     }
 
+    # call scriptname args...
+    #
+    # scriptname  - The name of an internal or external script
+    #
+    # Calls the script in the context of the executive.
+
+    method call {scriptname args} {
+        return [$self eval [list call $scriptname {*}$args]]
+    }
+
     # errtrace
     #
     # returns the stack trace from the most recent evaluation error.
@@ -1634,7 +1644,7 @@ snit::type ::athena::executive {
 
         # monitor
         $interp smartalias monitor 0 1 {?flag?} \
-            [list $adb flunky monitor]
+            [list $adb order monitor]
 
         # parm
         $interp ensemble parm
@@ -1913,7 +1923,7 @@ snit::type ::athena::executive {
     # plus -state.
 
     method BlockAdd {agent args} {
-        $adb flunky transaction "block add..." {
+        $adb order transaction "block add..." {
             set block_id [$self Send STRATEGY:BLOCK:ADD -agent $agent]
             $self BlockUpdate $block_id $args
         }
@@ -1934,10 +1944,10 @@ snit::type ::athena::executive {
             set block_id [$self LastBean ::athena::block]
         }
 
-        $adb pot valclass ::athena::block $block_id
+        $adb bean valclass ::athena::block $block_id
 
         # NEXT, get the block data
-        set block [$adb pot get $block_id]
+        set block [$adb bean get $block_id]
 
         set dict [parmdict2optdict [$block view cget]]
 
@@ -1967,7 +1977,7 @@ snit::type ::athena::executive {
         }
 
         # NEXT, configure it
-        $adb flunky transaction "block configure..." {
+        $adb order transaction "block configure..." {
             $self BlockUpdate $block_id $args
         }
     }
@@ -2007,7 +2017,7 @@ snit::type ::athena::executive {
         }
 
         # NEXT, create the condition
-        $adb flunky transaction "condition add..." {
+        $adb order transaction "condition add..." {
             set condition_id [$self Send BLOCK:CONDITION:ADD \
                                     -block_id $block_id \
                                     -typename $typename]
@@ -2030,10 +2040,10 @@ snit::type ::athena::executive {
             set condition_id [$self LastBean ::athena::condition]
         }
 
-        $adb pot valclass ::athena::condition $condition_id
+        $adb bean valclass ::athena::condition $condition_id
 
         # NEXT, get the condition data
-        set condition [$adb pot get $condition_id]
+        set condition [$adb bean get $condition_id]
 
         set dict [parmdict2optdict [$condition view cget]]
 
@@ -2062,10 +2072,10 @@ snit::type ::athena::executive {
             set condition_id [$self LastBean ::athena::condition]
         }
 
-        $adb pot valclass ::athena::condition $condition_id
+        $adb bean valclass ::athena::condition $condition_id
 
         # NEXT, configure it
-        $adb flunky transaction "condition configure..." {
+        $adb order transaction "condition configure..." {
             $self ConditionUpdate $condition_id $args
         }
     }
@@ -2079,7 +2089,7 @@ snit::type ::athena::executive {
     # CONDITION:UPDATE send options plus -state.
 
     method ConditionUpdate {condition_id opts} {
-        set c [$adb pot get $condition_id]
+        set c [$adb bean get $condition_id]
 
         set state [from opts -state ""]
 
@@ -2220,7 +2230,7 @@ snit::type ::athena::executive {
     # the given bean class, or "" if none.
 
     method LastBean {cls} {
-        set last [lindex [$adb pot ids $cls] end]
+        set last [lindex [$adb bean ids $cls] end]
 
         if {$last eq ""} {
             set kind [namespace tail $cls]
@@ -2302,12 +2312,12 @@ snit::type ::athena::executive {
     # If possible, redoes the last undone order.
 
     method Redo {} {
-        if {![$adb flunky canredo]} {
+        if {![$adb order canredo]} {
             return "Nothing to redo."
         }
 
-        set title [$adb flunky redotext]
-        $adb flunky redo
+        set title [$adb order redotext]
+        $adb order redo
 
         return "Redone: $title"
     }
@@ -2349,10 +2359,10 @@ snit::type ::athena::executive {
         set order [string toupper $order]
 
         # NEXT, determine the order mode.
-        if {[flunky state] eq "TACTIC"} {
-            $adb flunky send private $order {*}$args
+        if {[$adb state] eq "TACTIC"} {
+            $adb order send private $order {*}$args
         } else {
-            $adb flunky send normal $order {*}$args
+            $adb order send normal $order {*}$args
         }
     }
 
@@ -2384,7 +2394,7 @@ snit::type ::athena::executive {
         }
 
         # NEXT, create the tactic
-        $adb flunky transaction "tactic add..." {
+        $adb order transaction "tactic add..." {
             set tactic_id [$self Send BLOCK:TACTIC:ADD \
                                     -block_id $block_id \
                                     -typename $typename]
@@ -2407,10 +2417,10 @@ snit::type ::athena::executive {
             set tactic_id [$self LastBean ::athena::tactic]
         }
 
-        $adb pot valclass ::athena::tactic $tactic_id
+        $adb bean valclass ::athena::tactic $tactic_id
 
         # NEXT, get the tactic data
-        set tactic [$adb pot get $tactic_id]
+        set tactic [$adb bean get $tactic_id]
 
         set dict [parmdict2optdict [$tactic view cget]]
 
@@ -2439,10 +2449,10 @@ snit::type ::athena::executive {
             set tactic_id [$self LastBean ::athena::tactic]
         }
 
-        $adb pot valclass ::athena::tactic $tactic_id
+        $adb bean valclass ::athena::tactic $tactic_id
 
         # NEXT, configure it
-        $adb flunky transaction "tactic configure..." {
+        $adb order transaction "tactic configure..." {
             $self TacticUpdate $tactic_id $args
         }
     }
@@ -2456,7 +2466,7 @@ snit::type ::athena::executive {
     # TACTIC:UPDATE send options plus -state.
 
     method TacticUpdate {tactic_id opts} {
-        set c [$adb pot get $tactic_id]
+        set c [$adb bean get $tactic_id]
 
         set state [from opts -state ""]
 
@@ -2500,12 +2510,12 @@ snit::type ::athena::executive {
     # If possible, undoes the order on the top of the stack.
 
     method Undo {} {
-        if {![$adb flunky canundo]} {
+        if {![$adb order canundo]} {
             return "Nothing to undo."
         }
 
-        set title [$adb flunky undotext]
-        $adb flunky undo
+        set title [$adb order undotext]
+        $adb order undo
 
         return "Undone: $title"
     }

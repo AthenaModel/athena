@@ -51,7 +51,7 @@ namespace eval ::athena_test::tests:: {
     test update-1.1 {nbrel is updated} -setup {
         ted create NB1 NB2
     } -body {
-        nbrel update {
+        tdb nbrel update {
             id            {NB1 NB2}
             proximity     NEAR
         }
@@ -76,11 +76,11 @@ NB2 NB2 HERE
             proximity     NEAR
         }
 
-        nbrel update $parmdict
+        tdb nbrel update $parmdict
     } -body {
         set a [ted query {SELECT * FROM nbrel_mn}]
         
-        nbrel update $parmdict
+        tdb nbrel update $parmdict
 
         set b [ted query {SELECT * FROM nbrel_mn}]
 
@@ -95,7 +95,7 @@ NB2 NB2 HERE
     } -body {
         set a [ted query {SELECT * FROM nbrel_mn}]
 
-        nbrel update  {
+        tdb nbrel update  {
             id            {NB1 NB2}
             proximity     ""
         }
@@ -115,7 +115,7 @@ NB2 NB2 HERE
 
         set a [ted query {SELECT * FROM nbrel_mn ORDER BY m,n}]
 
-        set undo [nbrel update {
+        set undo [tdb nbrel update {
             id            {NB1 NB2}
             proximity     NEAR
         }]
@@ -136,7 +136,7 @@ NB2 NB2 HERE
     test validate-1.1 {invalid m} -setup {
         ted create NB1 NB2
     } -body {
-        nbrel validate {NONESUCH NONESUCH}
+        tdb nbrel validate {NONESUCH NONESUCH}
     } -returnCodes {
         error
     } -cleanup {
@@ -147,7 +147,7 @@ NB2 NB2 HERE
     test validate-1.2 {invalid n} -setup {
         ted create NB1 NB2
     } -body {
-        nbrel validate {NB1 NONESUCH}
+        tdb nbrel validate {NB1 NONESUCH}
     } -returnCodes {
         error
     } -cleanup {

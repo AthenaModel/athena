@@ -148,6 +148,38 @@ snit::type ::athena::ruleset_manager {
         return $new_id
     }
 
+    # rulename rule
+    #
+    # rule - A ruleset rule, e.g., CIVCAS-1-1
+    #
+    # Returns the full rule name
+    method rulename {rule} {
+        set setname [lindex [split $rule -] 0]
+        return [::athena::ruleset_${setname} rulename $rule]
+    }
+
+    # narrative setname fdict
+    #
+    # setname - A rule set name
+    # fdict   - A firing dictionary
+    #
+    # Returns the firing narrative.
+
+    method narrative {setname fdict} {
+        return [$self call $setname narrative $fdict]
+    }
+
+    # detail setname fdict ht
+    #
+    # setname - A rule set name
+    # fdict   - A firing dictionary
+    # ht      - An htools handle
+    #
+    # Returns the firing detail.
+
+    method detail {setname fdict ht} {
+        return [$self call $setname detail $fdict $ht]
+    }
 }
 
 

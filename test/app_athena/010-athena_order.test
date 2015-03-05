@@ -40,7 +40,7 @@ namespace eval ::athena_test::tests:: {
 
     proc setup {name} {
         variable order
-        set order [flunky make $name]
+        set order [adb order make $name]
         ted create JOE BOB NB1 NB2 BLUE BRIT SUNN SHIA KURD \
             CBS NBC CNN
     }

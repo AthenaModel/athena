@@ -58,13 +58,13 @@ namespace eval ::athena_test::tests:: {
     
     proc setup {a b} {
         # FIRST, other rule sets shouldn't muddy the waters.
-        parm set dam.CONSUMP.active no
-        parm set dam.UNEMP.active no
-        parm set dam.ENI.active no
-        parm set dam.ENERGY.active no
-        parm set dam.WATER.active no
-        parm set dam.TRANSPORT.active no
-        rdb eval {DELETE FROM drivers}
+        tdb parm set dam.CONSUMP.active no
+        tdb parm set dam.UNEMP.active no
+        tdb parm set dam.ENI.active no
+        tdb parm set dam.ENERGY.active no
+        tdb parm set dam.WATER.active no
+        tdb parm set dam.TRANSPORT.active no
+        adb eval {DELETE FROM drivers}
         
         # NEXT, create the entities
         ted create JOE BOB DAVE NB1 NB2 BLUE BRIT TAL SHIA SUNN KURD
@@ -74,7 +74,7 @@ namespace eval ::athena_test::tests:: {
         
         # NEXT, is BOB initially in control?
         if {$a ne ""} {
-            rdb eval {
+            adb eval {
                 UPDATE nbhoods
                 SET controller=$a
                 WHERE n='NB1'
@@ -377,7 +377,7 @@ CONTROL-2-1 SUNN JOE  V.ga=INDIFF, gained control
     test sigline-1.1 {sigline output} -setup {
         # not needed
     } -body {
-        ruleset CONTROL sigline NB1 
+        tdb ruleset CONTROL sigline NB1 
     } -cleanup {
         cleanup
     } -result {Shift in control of nbhood NB1}
@@ -389,7 +389,7 @@ CONTROL-2-1 SUNN JOE  V.ga=INDIFF, gained control
     test narrative-1.1 {narrative output: a and b} -setup {
         # not needed
     } -body {
-        ruleset CONTROL narrative {
+        tdb ruleset CONTROL narrative {
             dtype      CONTROL
             n          NB1
             a          JOE
@@ -402,7 +402,7 @@ CONTROL-2-1 SUNN JOE  V.ga=INDIFF, gained control
     test narrative-1.2 {narrative output: a only} -setup {
         # not needed
     } -body {
-        ruleset CONTROL narrative {
+        tdb ruleset CONTROL narrative {
             dtype      CONTROL
             n          NB1
             a          JOE
@@ -415,7 +415,7 @@ CONTROL-2-1 SUNN JOE  V.ga=INDIFF, gained control
     test narrative-1.3 {narrative output: b only} -setup {
         # not needed
     } -body {
-        ruleset CONTROL narrative {
+        tdb ruleset CONTROL narrative {
             dtype      CONTROL
             n          NB1
             a          ""
@@ -431,7 +431,7 @@ CONTROL-2-1 SUNN JOE  V.ga=INDIFF, gained control
     test detail-1.1 {detail, a and b} -setup {
         # not needed
     } -body {
-        ruleset CONTROL detail {
+        tdb ruleset CONTROL detail {
             dtype      CONTROL
             n          NB1
             a          JOE
@@ -451,7 +451,7 @@ from <a href="my://app/actor/JOE">JOE</a>.<p>
     test detail-1.2 {detail, a only} -setup {
         # not needed
     } -body {
-        ruleset CONTROL detail {
+        tdb ruleset CONTROL detail {
             dtype      CONTROL
             n          NB1
             a          JOE
@@ -471,7 +471,7 @@ which is now in a state of chaos.<p>
     test detail-1.3 {detail, b only} -setup {
         # not needed
     } -body {
-        ruleset CONTROL detail {
+        tdb ruleset CONTROL detail {
             dtype      CONTROL
             n          NB1
             a          ""

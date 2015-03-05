@@ -250,7 +250,7 @@ namespace eval ::athena_test::tests:: {
     
     test CREATE-2.1 {actor is created} -setup {
         # Adds belief system 2
-        bsys system add 2
+        tdb bsys system add 2
     } -body {
         ted order ACTOR:CREATE $bob
         
@@ -278,7 +278,7 @@ budget            0.0
     test CREATE-2.2 {longname defaults to ID} -body {
         ted order ACTOR:CREATE [dict merge $joe {longname ""}]
         
-        rdb onecolumn {SELECT longname FROM actors}
+        adb onecolumn {SELECT longname FROM actors}
     } -cleanup {
         cleanup
     } -result {JOE}
@@ -286,7 +286,7 @@ budget            0.0
     test CREATE-2.3 {bsid defaults to 1} -body {
         ted order ACTOR:CREATE [dict merge $bob {bsid ""}]
         
-        rdb onecolumn {SELECT bsid FROM actors}
+        adb onecolumn {SELECT bsid FROM actors}
     } -cleanup {
         cleanup
     } -result {1}
@@ -306,7 +306,7 @@ budget            0.0
         ted order ACTOR:CREATE $joe
     } -body {
         ted notifier bind ::adb <actors>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -349,7 +349,7 @@ budget            0.0
         ted order ACTOR:DELETE a JOE
     } -body {
         ted notifier bind ::adb <actors>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -491,7 +491,7 @@ budget            0.0
 
     test UPDATE-2.1 {actor is updated} -setup {
         ted create JOE BOB
-        bsys system add 2
+        tdb bsys system add 2
     } -body {
         ted order ACTOR:UPDATE {
             a                JOE
@@ -569,7 +569,7 @@ budget            0.0
         }
     } -body {
         ted notifier bind ::adb <actors>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -740,7 +740,7 @@ budget            0.0
         }
     } -body {
         ted notifier bind ::adb <actors>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -811,7 +811,7 @@ BOB BOB
         }
     } -body {
         ted notifier bind ::adb <actors>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup

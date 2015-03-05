@@ -142,7 +142,7 @@ SUNN BLUE 50.0 BASELINE   50.0
         }
     } -body {
         ted notifier bind ::adb <coop_fg>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -259,7 +259,7 @@ SUNN BLUE 50.0 BASELINE   50.0
         }
     } -body {
         ted notifier bind ::adb <coop_fg>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup

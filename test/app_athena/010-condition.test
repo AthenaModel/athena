@@ -151,7 +151,7 @@ namespace eval ::athena_test::tests:: {
     test strategy-1.1 {can retrieve owning strategy} -setup {
         setup
     } -body {
-        expr {[$C1 strategy] eq [strategy getname SYSTEM]}
+        expr {[$C1 strategy] eq [tdb strategy getname SYSTEM]}
     } -cleanup {
         cleanup
     } -result {1}

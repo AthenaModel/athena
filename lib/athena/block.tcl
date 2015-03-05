@@ -1066,7 +1066,7 @@ oo::class create ::athena::block {
         my prepare block_id -required -toupper -with [list $adb strategy valclass ::athena::block]
         my returnOnError
 
-        set block [$adb pot get $parms(block_id)]
+        set block [$adb bean get $parms(block_id)]
 
         my prepare name     -toupper  -with [list $block valName]
         my prepare intent
@@ -1099,7 +1099,7 @@ oo::class create ::athena::block {
     }
 
     method _execute {{flunky ""}} {
-        set block [$adb pot get $parms(block_id)]
+        set block [$adb bean get $parms(block_id)]
 
         my setundo [$block update_ {
             name intent tmode t1 t2 cmode emode once onlock
@@ -1122,7 +1122,7 @@ oo::class create ::athena::block {
     }
 
     method _execute {{flunky ""}} {
-        set block [$adb pot get $parms(block_id)]
+        set block [$adb bean get $parms(block_id)]
 
         my setundo [$block update_ {state} [array get parms]]
     }
@@ -1146,10 +1146,10 @@ oo::class create ::athena::block {
     }
 
     method _execute {{flunky ""}} {
-        set block [$adb pot get $parms(block_id)]
+        set block [$adb bean get $parms(block_id)]
 
         if {[info exists tactic_id]} {
-            $adb pot setnextid $tactic_id
+            $adb bean setnextid $tactic_id
         }
 
         my setundo [$block addtactic_ $parms(typename)]
@@ -1176,7 +1176,7 @@ oo::class create ::athena::block {
     method _execute {{flunky ""}} {
         set undo [list]
         foreach tid $parms(ids) {
-            set tactic [$adb pot get $tid]
+            set tactic [$adb bean get $tid]
             set block [$tactic block]
             lappend undo [$block deletetactic_ $tid]
         }
@@ -1200,7 +1200,7 @@ oo::class create ::athena::block {
     }
 
     method _execute {{flunky ""}} {
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
         set block [$tactic block]
 
         my setundo [$block movetactic_ $parms(tactic_id) $parms(where)]
@@ -1226,10 +1226,10 @@ oo::class create ::athena::block {
     }
 
     method _execute {{flunky ""}} {
-        set block [$adb pot get $parms(block_id)]
+        set block [$adb bean get $parms(block_id)]
 
         if {[info exists cond_id]} {
-            $adb pot setnextid $cond_id
+            $adb bean setnextid $cond_id
         }
 
         my setundo [$block addcondition_ $parms(typename)]
@@ -1259,7 +1259,7 @@ oo::class create ::athena::block {
         set undo [list]
 
         foreach tid $parms(ids) {
-            set condition [$adb pot get $tid]
+            set condition [$adb bean get $tid]
             set block [$condition block]
             lappend undo [$block deletecondition_ $tid]
         }

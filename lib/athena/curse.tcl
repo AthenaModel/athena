@@ -53,6 +53,16 @@ snit::type ::athena::curse {
         }]
     }
 
+    # namedict
+    #
+    # Returns the list of CURSE IDs
+
+    method namedict {} {
+        return [$adb eval {
+            SELECT curse_id, longname FROM curses 
+        }]
+    }
+
     # longnames
     #
     # Returns the list of CURSE long names
@@ -87,9 +97,7 @@ snit::type ::athena::curse {
     # Validates a CURSE ID
 
     method validate {curse_id} {
-        if {![$adb exists {
-            SELECT * FROM curses WHERE curse_id = $curse_id
-        }]} {
+        if {![$self exists $curse_id]} {
             set names [join [$self names] ", "]
 
             if {$names ne ""} {
@@ -112,9 +120,7 @@ snit::type ::athena::curse {
     # Returns 1 if there's such a curse, and 0 otherwise.
 
     method exists {curse_id} {
-        $adb exists {
-            SELECT * FROM curses WHERE curse_id=$curse_id
-        }
+        return [dbexists $adb curses curse_id $curse_id]
     }
 
     # get id ?parm?
@@ -130,20 +136,7 @@ snit::type ::athena::curse {
     # dynamically.
 
     method get {curse_id {parm ""}} {
-        # FIRST, get the data
-        $adb eval {
-            SELECT * FROM gui_curses 
-            WHERE curse_id=$curse_id
-        } row {
-            if {$parm eq ""} {
-                unset row(*)
-                return [array get row]
-            } else {
-                return $row($parm)
-            }
-        }
-
-        return ""
+        return [dbget $adb gui_curses curse_id $curse_id $parm]
     }
 
     # normal names
@@ -166,6 +159,7 @@ snit::type ::athena::curse {
             ORDER BY curse_id
         }]
     }
+
     # normal longnames
     #
     # Returns the list of CURSE long names with state=normal

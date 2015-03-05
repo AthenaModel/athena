@@ -177,7 +177,7 @@ snit::widgetadaptor civgroupbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Pop up the dialog, and select this entity
-        flunky senddict gui CIVGROUP:DELETE [list g $id]
+        adb order senddict gui CIVGROUP:DELETE [list g $id]
     }
 }
 

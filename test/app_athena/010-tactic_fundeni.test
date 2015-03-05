@@ -43,8 +43,8 @@ namespace eval ::athena_test::tests:: {
         variable coffer
         ted create JOE BOB NB1 NB2 SHIA SUNN KURD NO_ONE
 
-        demog start
-        rdb eval {
+        tdb demog start
+        adb eval {
             UPDATE demog_g SET population=10000 WHERE g='SHIA';
             UPDATE demog_g SET population=20000 WHERE g='SUNN';
             UPDATE demog_g SET population=40000 WHERE g='KURD';
@@ -55,10 +55,10 @@ namespace eval ::athena_test::tests:: {
             VALUES('NB2','JOE',0.5);
         }
 
-        service start
-        service load
-        service save
-        cash load
+        tdb service start
+        tdb service load
+        tdb service save
+        tdb cash load
 
         set coffer [::athena::coffer new [::adb athenadb] JOE]
 
@@ -106,7 +106,7 @@ namespace eval ::athena_test::tests:: {
     test constructor-1.2 {can set options} -setup {
         setup
     } -body {
-        set T1 [pot new ::athena::tactic::FUNDENI -parent DUMMY]
+        set T1 [ted newbean ::athena::tactic::FUNDENI -parent DUMMY]
         $T1 get parent
     } -cleanup {
         cleanup
@@ -190,7 +190,7 @@ namespace eval ::athena_test::tests:: {
     test check-1.2 {check: g in glist no longer exist} -setup {
         setup
         $T1 set glist [adb gofer make CIVGROUPS BY_VALUE {SHIA SUNN KURD}]
-        rdb eval {DELETE FROM civgroups WHERE g='SUNN'}
+        adb eval {DELETE FROM civgroups WHERE g='SUNN'}
     } -body {
         $T1 check
     } -cleanup {

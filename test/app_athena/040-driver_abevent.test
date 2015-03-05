@@ -55,14 +55,14 @@ namespace eval ::athena_test::tests:: {
     
     proc setup {} {
         # FIRST, other rule sets shouldn't muddy the waters.
-        parm set dam.CONSUMP.active no
-        parm set dam.UNEMP.active no
-        parm set dam.ENI.active no
-        parm set dam.ENERGY.active no
-        parm set dam.WATER.active no
-        parm set dam.TRANSPORT.active no
-        parm set dam.MOOD.active no
-        rdb eval {DELETE FROM drivers}
+        tdb parm set dam.CONSUMP.active no
+        tdb parm set dam.UNEMP.active no
+        tdb parm set dam.ENI.active no
+        tdb parm set dam.ENERGY.active no
+        tdb parm set dam.WATER.active no
+        tdb parm set dam.TRANSPORT.active no
+        tdb parm set dam.MOOD.active no
+        adb eval {DELETE FROM drivers}
         
         # NEXT, create the entities
         ted create JOE BOB NB1 NB2 BLUE TAL SHIA SUNN KURD
@@ -80,8 +80,8 @@ namespace eval ::athena_test::tests:: {
     # Creates an abstract event and then assesses it.
 
     proc mkevent {dtype args} {
-        abevent add $dtype NB1 0.5 {*}$args
-        abevent assess
+        tdb abevent add $dtype NB1 0.5 {*}$args
+        tdb abevent assess
     }
         
     # inputs
@@ -89,19 +89,19 @@ namespace eval ::athena_test::tests:: {
     # Output the rule inputs from the current firings.
     
     proc inputs {} {
-        rdb eval {
+        adb eval {
             DROP TABLE IF EXISTS temp_inputs;
             CREATE TEMP TABLE temp_inputs AS
             SELECT DISTINCT t, rule, '' AS aut, '' AS cul, '' AS qol, '' AS sft
             FROM rule_firings
         }
         
-        rdb eval {
+        adb eval {
             SELECT F.t AS t, F.rule AS rule, I.g AS g, I.c AS c
             FROM rule_firings AS F
             JOIN rule_inputs  AS I USING (firing_id)
         } {
-            rdb eval "
+            adb eval "
                 UPDATE temp_inputs
                 SET $c = $c || \$g || ' '
                 WHERE t=\$t AND rule=\$rule
@@ -128,7 +128,7 @@ namespace eval ::athena_test::tests:: {
     test sigline-1.1 {sigline text} -setup {
         # none needed
     } -body {
-        ruleset ACCIDENT sigline {NB1}
+        tdb ruleset ACCIDENT sigline {NB1}
     } -cleanup {
         cleanup
     } -result {ACCIDENT in NB1}
@@ -143,7 +143,7 @@ namespace eval ::athena_test::tests:: {
     test narrative-1.1 {narrative text} -setup {
         # none needed
     } -body {
-        ruleset ACCIDENT narrative {
+        tdb ruleset ACCIDENT narrative {
             dtype       ACCIDENT
             n           NB1
             coverage    0.5
@@ -168,7 +168,7 @@ namespace eval ::athena_test::tests:: {
             coverage    0.5
         }
 
-        ruleset ACCIDENT detail $fdict [namespace current]::ht
+        tdb ruleset ACCIDENT detail $fdict [namespace current]::ht
         pprint [ht get]
     } -cleanup {
         cleanup
@@ -259,7 +259,7 @@ t rule     aut   cul   qol   sft
     test DEMO-2.1 {sigline text} -setup {
         # none needed
     } -body {
-        ruleset DEMO sigline {NB1 SHIA}
+        tdb ruleset DEMO sigline {NB1 SHIA}
     } -cleanup {
         cleanup
     } -result {DEMO by SHIA in NB1}
@@ -267,7 +267,7 @@ t rule     aut   cul   qol   sft
     test DEMO-2.2 {narrative text} -setup {
         # none needed
     } -body {
-        ruleset DEMO narrative {
+        tdb ruleset DEMO narrative {
             dtype       DEMO
             n           NB1
             coverage    0.5
@@ -287,7 +287,7 @@ t rule     aut   cul   qol   sft
             g           SHIA
         }
 
-        ruleset DEMO detail $fdict [namespace current]::ht
+        tdb ruleset DEMO detail $fdict [namespace current]::ht
         pprint [ht get]
     } -cleanup {
         cleanup

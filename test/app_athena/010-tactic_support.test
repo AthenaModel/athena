@@ -46,7 +46,7 @@ namespace eval ::athena_test::tests:: {
 
         set B1 [ted addblock JOE]
         set T1 [ted addtactic $B1 SUPPORT]
-        control load
+        tdb control load
     }
 
     # Clean up after a test
@@ -81,7 +81,7 @@ namespace eval ::athena_test::tests:: {
     test constructor-1.2 {can set options} -setup {
         setup
     } -body {
-        set T1 [pot new ::athena::tactic::SUPPORT -parent DUMMY]
+        set T1 [ted newbean ::athena::tactic::SUPPORT -parent DUMMY]
         $T1 get parent
     } -cleanup {
         cleanup
@@ -182,7 +182,7 @@ namespace eval ::athena_test::tests:: {
         $T1 check
         $T1 obligate $coffer
         $T1 execute
-        control save
+        tdb control save
         ted query {SELECT * FROM supports_na WHERE a='JOE'}
     } -cleanup {
         cleanup

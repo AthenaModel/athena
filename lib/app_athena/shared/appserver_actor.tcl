@@ -28,7 +28,7 @@ appserver module ACTOR {
         # FIRST, register the resource types
         appserver register /actors {actors/?}          \
             tcl/linkdict [myproc /actors:linkdict]     \
-            tcl/enumlist [asproc enum:enumlist actor] \
+            tcl/enumlist [asproc enum:enumlist {adb actor}] \
             text/html    [myproc /actors:html] {
                 Links to all of the currently 
                 defined actors.  HTML content 
@@ -106,13 +106,13 @@ appserver module ACTOR {
         # Accumulate data
         set a [string toupper $(1)]
 
-        if {![rdb exists {SELECT * FROM actors WHERE a=$a}]} {
+        if {![adb exists {SELECT * FROM actors WHERE a=$a}]} {
             return -code error -errorcode NOTFOUND \
                 "Unknown entity: [dict get $udict url]."
         }
 
         # Begin the page
-        rdb eval {SELECT * FROM gui_actors WHERE a=$a} data {}
+        adb eval {SELECT * FROM gui_actors WHERE a=$a} data {}
 
         ht page "Actor: $a"
         ht title $data(fancy) "Actor" 
@@ -129,14 +129,14 @@ appserver module ACTOR {
         }
         
         ht putln "Belief System: "
-        set bsysname [bsys system cget $data(bsid) -name]
+        set bsysname [adb bsys system cget $data(bsid) -name]
         ht link my://app/bsystem/$data(bsid) "$bsysname ($data(bsid))"
 
         ht para
 
         ht putln "Groups owned: "
 
-        ht linklist -default "None" [rdb eval {
+        ht linklist -default "None" [adb eval {
             SELECT url, g FROM gui_agroups 
             WHERE a=$a
             ORDER BY g
@@ -153,7 +153,7 @@ appserver module ACTOR {
         ht put "\$$data(cash_reserve) in reserve."
         ht para
 
-        if {[locked -disclaimer] && [econ state] eq "ENABLED"} {
+        if {[locked -disclaimer] && [adb econ state] eq "ENABLED"} {
             if {$data(atype) eq "INCOME"} {
                 ht putln {
                     The following table shows this actor's income per week
@@ -208,10 +208,10 @@ appserver module ACTOR {
             ht putln "following neighborhoods."
             ht putln "Note that an actor has influence in a neighborhood"
             ht putln "only if his total support from groups exceeds"
-            ht putln [format %.2f [parm get control.support.min]].
+            ht putln [format %.2f [adb parm get control.support.min]].
             ht para
 
-            set supports [rdb onecolumn {
+            set supports [adb onecolumn {
                 SELECT supports_link FROM gui_actors
                 WHERE a=$a
             }]
@@ -251,7 +251,7 @@ appserver module ACTOR {
         ht subtitle "Power Base" base
 
         if {[locked -disclaimer]} {
-            set vmin [parm get control.support.vrelMin]
+            set vmin [adb parm get control.support.vrelMin]
 
             ht putln "Actor $a receives direct support from the following"
             ht putln "supporters (and would-be supporters)."
@@ -329,7 +329,7 @@ appserver module ACTOR {
         ht subtitle "GOODS Plant Ownership" infra
 
         if {![locked]} {
-            set nbhoods [rdb eval {
+            set nbhoods [adb eval {
                 SELECT nlink FROM gui_plants_alloc
                 WHERE a=$a
             }]
@@ -352,7 +352,7 @@ appserver module ACTOR {
             }
         } else {
 
-            if {[econ state] eq "DISABLED"} {
+            if {[adb econ state] eq "DISABLED"} {
                 ht put {
                     The economic model is disabled, so actors own no
                     GOODS production infrastructure.
@@ -360,7 +360,7 @@ appserver module ACTOR {
                 
                 ht para
             } else {
-                set nbhoods [rdb eval {
+                set nbhoods [adb eval {
                     SELECT nlink FROM gui_plants_na
                     WHERE a=$a
                 }]
@@ -373,7 +373,7 @@ appserver module ACTOR {
                 } else {
 
                     set nlist [join $nbhoods ", "]
-                    set num [rdb eval {
+                    set num [adb eval {
                         SELECT sum(num) FROM gui_plants_na
                         WHERE a=$a
                     }]
@@ -402,8 +402,8 @@ appserver module ACTOR {
                     }
                 } 
             
-                set capA [plant capacity a $a]
-                set capT [plant capacity total]
+                set capA [adb plant capacity a $a]
+                set capT [adb plant capacity total]
                 set pct  [format "%.2f" [expr {($capA/$capT) * 100.0}]]
             
                 ht put "

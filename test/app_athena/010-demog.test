@@ -43,7 +43,7 @@ namespace eval ::athena_test::tests:: {
     # Sets up for tests; by default, sets econ enabled.
     # Pass state explicitly to disable it.
     proc setup {{state ENABLED}} {
-        econ setstate $state
+        tdb econ setstate $state
         ted create JOE BOB BLUE USAID NB1 NB2 SHIA SUNN KURD
         ted lock
     }
@@ -57,12 +57,12 @@ namespace eval ::athena_test::tests:: {
     #-------------------------------------------------------------------
     # start
     #
-    # NOTE: This tests [demog stats] as well
+    # NOTE: This tests [tdb demog stats] as well
 
     test start-1.1 {demog_g is populated} -setup {
         ted create JOE BOB BLUE USAID NB1 NB2 SHIA SUNN KURD
     } -body {
-        demog start
+        tdb demog start
         ted querylist {SELECT * FROM demog_g}
     } -cleanup {
         cleanup
@@ -125,7 +125,7 @@ attrition    0
     test start-1.2 {demog_n is populated} -setup {
         ted create JOE BOB BLUE USAID NB1 NB2 SHIA SUNN KURD
     } -body {
-        demog start
+        tdb demog start
         ted query {SELECT * FROM demog_n}
     } -cleanup {
         cleanup
@@ -142,7 +142,7 @@ NB2 1000       1000        0         0           0          0.0 0.0 0.0
     test getg-1.1 {can get all data} -setup {
         setup DISABLED
     } -body {
-        demog getg SHIA
+        tdb demog getg SHIA
     } -cleanup {
         cleanup
     } -result {subsistence 0 povfrac 0.0 unemployed 24 eloc 0.0 population 1000 uaf 0.0 attrition 0 labor_force 600 tc 0.0 g SHIA consumers 1000 employed 576 rloc 0.0 upc 2.4 real_pop 1000.0 aloc 0.0 ur 4.0}
@@ -150,7 +150,7 @@ NB2 1000       1000        0         0           0          0.0 0.0 0.0
     test getg-1.2 {can get one parameter} -setup {
         setup
     } -body {
-        demog getg SHIA labor_force
+        tdb demog getg SHIA labor_force
     } -cleanup {
         cleanup
     } -result {600}
@@ -158,7 +158,7 @@ NB2 1000       1000        0         0           0          0.0 0.0 0.0
     test getg-1.3 {returns "" if not found} -setup {
         setup
     } -body {
-        demog getg NONESUCH
+        tdb demog getg NONESUCH
     } -cleanup {
         cleanup
     } -result {}
@@ -169,11 +169,11 @@ NB2 1000       1000        0         0           0          0.0 0.0 0.0
     test getn-1.1 {can get all data} -setup {
         setup
         # Remove any dependancy on econ model
-        rdb eval {
+        adb eval {
             UPDATE demog_n SET uaf=0.0,upc=2.4,unemployed=48 WHERE n='NB1'
         }
     } -body {
-        demog getn NB1
+        tdb demog getn NB1
     } -cleanup {
         cleanup
     } -result {uaf 0.0 upc 2.4 subsistence 0 unemployed 48 labor_force 1200 n NB1 ur 4.0 consumers 2000 population 2000}
@@ -181,7 +181,7 @@ NB2 1000       1000        0         0           0          0.0 0.0 0.0
     test getn-1.2 {can get one parameter} -setup {
         setup
     } -body {
-        demog getn NB1 labor_force
+        tdb demog getn NB1 labor_force
     } -cleanup {
         cleanup
     } -result {1200}
@@ -189,7 +189,7 @@ NB2 1000       1000        0         0           0          0.0 0.0 0.0
     test getn-1.3 {returns "" if not found} -setup {
         setup
     } -body {
-        demog getn NONESUCH
+        tdb demog getn NONESUCH
     } -cleanup {
         cleanup
     } -result {}
@@ -200,7 +200,7 @@ NB2 1000       1000        0         0           0          0.0 0.0 0.0
     test getlocal-1.1 {can get all data} -setup {
         setup
     } -body {
-        demog getlocal
+        tdb demog getlocal
     } -cleanup {
         cleanup
     } -result {labor_force 1200 consumers 2000 population 3000}
@@ -208,7 +208,7 @@ NB2 1000       1000        0         0           0          0.0 0.0 0.0
     test getlocal-1.2 {can get one parameter} -setup {
         setup
     } -body {
-        demog getlocal labor_force
+        tdb demog getlocal labor_force
     } -cleanup {
         cleanup
     } -result {1200}
@@ -220,7 +220,7 @@ NB2 1000       1000        0         0           0          0.0 0.0 0.0
     test pop-1.1 {get pop for multiple neighborhoods} -setup {
         setup
     } -body {
-        demog pop {NB1 NB2}
+        tdb demog pop {NB1 NB2}
     } -cleanup {
         cleanup
     } -result {3000}
@@ -231,16 +231,16 @@ NB2 1000       1000        0         0           0          0.0 0.0 0.0
     test shares-1.1 {get shares for multiple neighborhoods} -setup {
         setup
     } -body {
-        demog shares {NB1 NB2}
+        tdb demog shares {NB1 NB2}
     } -cleanup {
         cleanup
     } -result {NB1 0.6666666666666666 NB2 0.3333333333333333}
 
     test shares-1.2 {get shares for empty neighborhoods} -setup {
         setup
-        rdb eval {UPDATE demog_n SET population = 0.0}
+        adb eval {UPDATE demog_n SET population = 0.0}
     } -body {
-        demog shares {NB1 NB2}
+        tdb demog shares {NB1 NB2}
     } -cleanup {
         cleanup
     } -result {NB1 0.0 NB2 0.0}
@@ -252,8 +252,8 @@ NB2 1000       1000        0         0           0          0.0 0.0 0.0
     test adjust-1.1 {adds to population} -setup {
         setup
     } -body {
-        demog adjust SHIA 100
-        demog getg SHIA population
+        tdb demog adjust SHIA 100
+        tdb demog getg SHIA population
     } -cleanup {
         cleanup
     } -result {1100}
@@ -261,8 +261,8 @@ NB2 1000       1000        0         0           0          0.0 0.0 0.0
     test adjust-1.2 {subtracts from population} -setup {
         setup
     } -body {
-        demog adjust SHIA -100
-        demog getg SHIA population
+        tdb demog adjust SHIA -100
+        tdb demog getg SHIA population
     } -cleanup {
         cleanup
     } -result {900}
@@ -270,8 +270,8 @@ NB2 1000       1000        0         0           0          0.0 0.0 0.0
     test adjust-1.3 {subtracts but not less than 0} -setup {
         setup
     } -body {
-        demog adjust SHIA -1100
-        demog getg SHIA population
+        tdb demog adjust SHIA -1100
+        tdb demog getg SHIA population
     } -cleanup {
         cleanup
     } -result {0}
@@ -279,8 +279,8 @@ NB2 1000       1000        0         0           0          0.0 0.0 0.0
     test adjust-1.4 {change can be fractional} -setup {
         setup
     } -body {
-        demog adjust SHIA 0.5
-        list [demog getg SHIA population] [demog getg SHIA real_pop]
+        tdb demog adjust SHIA 0.5
+        list [tdb demog getg SHIA population] [tdb demog getg SHIA real_pop]
     } -cleanup {
         cleanup
     } -result {1001 1000.5}
@@ -288,9 +288,9 @@ NB2 1000       1000        0         0           0          0.0 0.0 0.0
     test adjust-1.5 {fractional changes accumulate} -setup {
         setup
     } -body {
-        demog adjust SHIA 0.7
-        demog adjust SHIA 0.7
-        format "%d %.1f" [demog getg SHIA population] [demog getg SHIA real_pop]
+        tdb demog adjust SHIA 0.7
+        tdb demog adjust SHIA 0.7
+        format "%d %.1f" [tdb demog getg SHIA population] [tdb demog getg SHIA real_pop]
     } -cleanup {
         cleanup
     } -result {1001 1001.4}
@@ -301,8 +301,8 @@ NB2 1000       1000        0         0           0          0.0 0.0 0.0
     test attrit-1.1 {subtracts from population} -setup {
         setup
     } -body {
-        demog attrit SHIA 100
-        list [demog getg SHIA population] [demog getg SHIA attrition]
+        tdb demog attrit SHIA 100
+        list [tdb demog getg SHIA population] [tdb demog getg SHIA attrition]
     } -cleanup {
         cleanup
     } -result {900 100}
@@ -310,9 +310,9 @@ NB2 1000       1000        0         0           0          0.0 0.0 0.0
     test attrit-1.2 {attrition is accumulated} -setup {
         setup
     } -body {
-        demog attrit SHIA 100
-        demog attrit SHIA 200
-        list [demog getg SHIA population] [demog getg SHIA attrition]
+        tdb demog attrit SHIA 100
+        tdb demog attrit SHIA 200
+        list [tdb demog getg SHIA population] [tdb demog getg SHIA attrition]
     } -cleanup {
         cleanup
     } -result {700 300}
@@ -320,8 +320,8 @@ NB2 1000       1000        0         0           0          0.0 0.0 0.0
     test attrit-1.3 {subtracts but not less than 0} -setup {
         setup
     } -body {
-        demog attrit SHIA 1100
-        list [demog getg SHIA population] [demog getg SHIA attrition]
+        tdb demog attrit SHIA 1100
+        list [tdb demog getg SHIA population] [tdb demog getg SHIA attrition]
     } -cleanup {
         cleanup
     } -result {0 1000}
@@ -331,9 +331,9 @@ NB2 1000       1000        0         0           0          0.0 0.0 0.0
 
     test growth-1.1 {changes population size} -setup {
         setup
-        rdb eval {UPDATE civgroups SET pop_cr = 100.0}
+        adb eval {UPDATE civgroups SET pop_cr = 100.0}
     } -body {
-        demog growth
+        tdb demog growth
         ted query {SELECT g, population, real_pop FROM demog_g}
     } -cleanup {
         cleanup
@@ -347,9 +347,9 @@ KURD 1019       1019.2307692307693
     
     test growth-1.2 {can be negative} -setup {
         setup
-        rdb eval {UPDATE civgroups SET pop_cr = -100.0}
+        adb eval {UPDATE civgroups SET pop_cr = -100.0}
     } -body {
-        demog growth
+        tdb demog growth
         ted query {SELECT g, population, real_pop FROM demog_g}
     } -cleanup {
         cleanup
@@ -366,13 +366,13 @@ KURD 981        980.7692307692307
     # econstats
     test econstats-1.1 {More workers, more unemployment} -setup {
         setup
-        rdb eval {UPDATE demog_n SET labor_force = 2000 WHERE n='NB1'}
-        demog econstats
+        adb eval {UPDATE demog_n SET labor_force = 2000 WHERE n='NB1'}
+        tdb demog econstats
     } -body {
-        set a [rdb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
-        rdb eval {UPDATE demog_n SET labor_force = 3000 WHERE n='NB1'}
-        demog econstats
-        set b [rdb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
+        set a [adb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
+        adb eval {UPDATE demog_n SET labor_force = 3000 WHERE n='NB1'}
+        tdb demog econstats
+        set b [adb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
         expr {$a < $b}
     } -cleanup {
         cleanup
@@ -380,48 +380,48 @@ KURD 981        980.7692307692307
 
     test econstats-1.2 {Fewer workers, less unemployment} -setup {
         setup
-        rdb eval {UPDATE demog_n SET labor_force = 2000 WHERE n='NB1'}
-        demog econstats
+        adb eval {UPDATE demog_n SET labor_force = 2000 WHERE n='NB1'}
+        tdb demog econstats
     } -body {
-        set a [rdb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
-        rdb eval {UPDATE demog_n SET labor_force = 1000 WHERE n='NB1'}
-        demog econstats
-        set b [rdb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
+        set a [adb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
+        adb eval {UPDATE demog_n SET labor_force = 1000 WHERE n='NB1'}
+        tdb demog econstats
+        set b [adb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
         expr {$a > $b}
     } -cleanup {
         cleanup
     } -result {1}
 
     test econstats-1.3 {Workers willing to travel, less unemployment} -setup {
-        econ setstate ENABLED
+        tdb econ setstate ENABLED
 
         ted create JOE BOB BLUE USAID NB1 NB2 SHIA SUNN KURD 
-        parm set demog.maxcommute NEAR
-        rdb eval {UPDATE nbrel_mn SET proximity='REMOTE'}
+        tdb parm set demog.maxcommute NEAR
+        adb eval {UPDATE nbrel_mn SET proximity='REMOTE'}
         ted lock
     } -body {
-        set a [rdb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
+        set a [adb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
         # Make NB1 and NB2 NEAR to each other
-        rdb eval {UPDATE nbrel_mn SET proximity='NEAR'}
-        demog econstats
-        set b [rdb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
+        adb eval {UPDATE nbrel_mn SET proximity='NEAR'}
+        tdb demog econstats
+        set b [adb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
         expr {$a > $b}
     } -cleanup {
         cleanup
     } -result {1}
 
     test econstats-1.4 {Workers won't travel, more unemployment} -setup {
-        econ setstate ENABLED
+        tdb econ setstate ENABLED
         ted create JOE BOB BLUE USAID NB1 NB2 SHIA SUNN KURD 
-        parm set demog.maxcommute NEAR 
-        rdb eval {UPDATE nbrel_mn SET proximity='NEAR'}
+        tdb parm set demog.maxcommute NEAR 
+        adb eval {UPDATE nbrel_mn SET proximity='NEAR'}
         ted lock
     } -body {
-        set a [rdb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
+        set a [adb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
         # Make NB1 and NB2 FAR to each other
-        rdb eval {UPDATE nbrel_mn SET proximity='FAR'}
-        demog econstats
-        set b [rdb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
+        adb eval {UPDATE nbrel_mn SET proximity='FAR'}
+        tdb demog econstats
+        set b [adb eval {SELECT ur FROM demog_n WHERE n='NB1'}]
         expr {$a < $b}
     } -cleanup {
         cleanup
@@ -433,7 +433,7 @@ KURD 981        980.7692307692307
     test gIn-1.1 {Groups resident in n, PREP} -setup {
         ted create NB1 NB2 BLUE SUNN SHIA KURD
     } -body {
-        lsort [demog gIn NB1]
+        lsort [tdb demog gIn NB1]
     } -cleanup {
         cleanup
     } -result {SHIA SUNN}
@@ -442,16 +442,16 @@ KURD 981        980.7692307692307
         ted create NB1 NB2 BLUE SUNN SHIA KURD
         ted lock
     } -body {
-        lsort [demog gIn NB1]
+        lsort [tdb demog gIn NB1]
     } -cleanup {
         cleanup
     } -result {SHIA SUNN}
 
     test gIn-2.1 {Skips empty groups, PREP} -setup {
         ted create NB1 NB2 BLUE SUNN SHIA KURD
-        rdb eval {UPDATE civgroups SET basepop = 0 WHERE g='SHIA'}
+        adb eval {UPDATE civgroups SET basepop = 0 WHERE g='SHIA'}
     } -body {
-        lsort [demog gIn NB1]
+        lsort [tdb demog gIn NB1]
     } -cleanup {
         cleanup
     } -result {SUNN}
@@ -459,9 +459,9 @@ KURD 981        980.7692307692307
     test gIn-2.2 {Skips empty groups, lock} -setup {
         ted create NB1 NB2 BLUE SUNN SHIA KURD
         ted lock
-        rdb eval {UPDATE demog_g SET population = 0 WHERE g='SUNN'}
+        adb eval {UPDATE demog_g SET population = 0 WHERE g='SUNN'}
     } -body {
-        lsort [demog gIn NB1]
+        lsort [tdb demog gIn NB1]
     } -cleanup {
         cleanup
     } -result {SHIA}
@@ -471,29 +471,29 @@ KURD 981        980.7692307692307
 
     test saIn-1.1 {SA Groups resident in n, PREP} -setup {
         ted create NB1 NB2 BLUE SUNN SHIA KURD
-        rdb eval {UPDATE civgroups SET sa_flag=1 WHERE g='SUNN'}
+        adb eval {UPDATE civgroups SET sa_flag=1 WHERE g='SUNN'}
     } -body {
-        lsort [demog saIn NB1]
+        lsort [tdb demog saIn NB1]
     } -cleanup {
         cleanup
     } -result {SUNN}
     
     test saIn-1.2 {SA Groups resident in n, lock} -setup {
         ted create NB1 NB2 BLUE SUNN SHIA KURD
-        rdb eval {UPDATE civgroups SET sa_flag=1 WHERE g='SUNN'}
+        adb eval {UPDATE civgroups SET sa_flag=1 WHERE g='SUNN'}
         ted lock
     } -body {
-        lsort [demog saIn NB1]
+        lsort [tdb demog saIn NB1]
     } -cleanup {
         cleanup
     } -result {SUNN}
 
     test saIn-2.1 {Skips empty groups, PREP} -setup {
         ted create NB1 NB2 BLUE SUNN SHIA KURD
-        rdb eval {UPDATE civgroups SET sa_flag=1}
-        rdb eval {UPDATE civgroups SET basepop = 0 WHERE g='SUNN'}
+        adb eval {UPDATE civgroups SET sa_flag=1}
+        adb eval {UPDATE civgroups SET basepop = 0 WHERE g='SUNN'}
     } -body {
-        lsort [demog saIn NB1]
+        lsort [tdb demog saIn NB1]
     } -cleanup {
         cleanup
     } -result {SHIA}
@@ -501,10 +501,10 @@ KURD 981        980.7692307692307
     test saIn-2.2 {Skips empty groups, lock} -setup {
         ted create NB1 NB2 BLUE SUNN SHIA KURD
         ted lock
-        rdb eval {UPDATE civgroups SET sa_flag=1}
-        rdb eval {UPDATE demog_g SET population = 0 WHERE g='SUNN'}
+        adb eval {UPDATE civgroups SET sa_flag=1}
+        adb eval {UPDATE demog_g SET population = 0 WHERE g='SUNN'}
     } -body {
-        lsort [demog saIn NB1]
+        lsort [tdb demog saIn NB1]
     } -cleanup {
         cleanup
     } -result {SHIA}
@@ -514,28 +514,28 @@ KURD 981        980.7692307692307
 
     test nonSaIn-1.1 {SA Groups resident in n, PREP} -setup {
         ted create NB1 NB2 BLUE SUNN SHIA KURD
-        rdb eval {UPDATE civgroups SET sa_flag=1 WHERE g='SUNN'}
+        adb eval {UPDATE civgroups SET sa_flag=1 WHERE g='SUNN'}
     } -body {
-        lsort [demog nonSaIn NB1]
+        lsort [tdb demog nonSaIn NB1]
     } -cleanup {
         cleanup
     } -result {SHIA}
     
     test nonSaIn-1.2 {SA Groups resident in n, lock} -setup {
         ted create NB1 NB2 BLUE SUNN SHIA KURD
-        rdb eval {UPDATE civgroups SET sa_flag=1 WHERE g='SUNN'}
+        adb eval {UPDATE civgroups SET sa_flag=1 WHERE g='SUNN'}
         ted lock
     } -body {
-        lsort [demog nonSaIn NB1]
+        lsort [tdb demog nonSaIn NB1]
     } -cleanup {
         cleanup
     } -result {SHIA}
 
     test nonSaIn-2.1 {Skips empty groups, PREP} -setup {
         ted create NB1 NB2 BLUE SUNN SHIA KURD
-        rdb eval {UPDATE civgroups SET basepop = 0 WHERE g='SUNN'}
+        adb eval {UPDATE civgroups SET basepop = 0 WHERE g='SUNN'}
     } -body {
-        lsort [demog nonSaIn NB1]
+        lsort [tdb demog nonSaIn NB1]
     } -cleanup {
         cleanup
     } -result {SHIA}
@@ -543,9 +543,9 @@ KURD 981        980.7692307692307
     test nonSaIn-2.2 {Skips empty groups, lock} -setup {
         ted create NB1 NB2 BLUE SUNN SHIA KURD
         ted lock
-        rdb eval {UPDATE demog_g SET population = 0 WHERE g='SUNN'}
+        adb eval {UPDATE demog_g SET population = 0 WHERE g='SUNN'}
     } -body {
-        lsort [demog nonSaIn NB1]
+        lsort [tdb demog nonSaIn NB1]
     } -cleanup {
         cleanup
     } -result {SHIA}

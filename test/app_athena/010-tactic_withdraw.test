@@ -42,7 +42,7 @@ namespace eval ::athena_test::tests:: {
         variable T1
         variable coffer
         ted create JOE BOB NB1 NB2 BLUE BRIT SHIA SUNN KURD
-        cash load
+        tdb cash load
         set coffer [::athena::coffer new [::adb athenadb] JOE]
 
 
@@ -83,7 +83,7 @@ namespace eval ::athena_test::tests:: {
     test constructor-1.2 {can set options} -setup {
         setup
     } -body {
-        set T1 [pot new ::athena::tactic::WITHDRAW -parent DUMMY]
+        set T1 [ted newbean ::athena::tactic::WITHDRAW -parent DUMMY]
         $T1 get parent
     } -cleanup {
         cleanup

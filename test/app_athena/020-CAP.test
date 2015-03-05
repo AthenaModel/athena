@@ -169,7 +169,7 @@ cost      1000.0
     } -body {
         ted order CAP:CREATE {*}$cbs longname ""
 
-        rdb onecolumn {SELECT longname FROM caps}
+        adb onecolumn {SELECT longname FROM caps}
     } -cleanup {
         cleanup
     } -result {CBS}
@@ -198,7 +198,7 @@ cost      1000.0
         ted notifier bind ::adb <caps>
         ted notifier bind ::adb <cap_kn>
         ted notifier bind ::adb <cap_kg>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -250,7 +250,7 @@ cost      1000.0
         ted notifier bind ::adb <caps>
         ted notifier bind ::adb <cap_kn>
         ted notifier bind ::adb <cap_kg>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -347,7 +347,7 @@ cost      400.0
         }
     } -body {
         ted notifier bind ::adb <caps>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -444,7 +444,7 @@ cost      400.0
         }
     } -body {
         ted notifier bind ::adb <caps>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -507,7 +507,7 @@ cost      1000.0
         ted order CAP:CAPACITY k CBS capacity 0.5
     } -body {
         ted notifier bind ::adb <caps>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -589,7 +589,7 @@ cost      1000.0
         ted order CAP:CAPACITY:MULTI ids {CBS CNN} capacity 0.5
     } -body {
         ted notifier bind ::adb <caps>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -665,7 +665,7 @@ CBS NB2 0.5
         ted order CAP:NBCOV:SET id {CBS NB2} nbcov 0.5
     } -body {
         ted notifier bind ::adb <cap_kn>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -716,7 +716,7 @@ CBS NB2 0.7
         ted order CAP:NBCOV:SET id {CBS NB2} nbcov 0.7
     } -body {
         ted notifier bind ::adb <cap_kn>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -765,7 +765,7 @@ CBS NB1 1.0
         ted order CAP:NBCOV:SET id {CBS NB2} nbcov 0.0
     } -body {
         ted notifier bind ::adb <cap_kn>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -850,7 +850,7 @@ CBS NB1 1.0
             ids {{CBS NB2} {CBS NB1}} nbcov  0.5
     } -body {
         ted notifier bind ::adb <cap_kn>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -926,7 +926,7 @@ CBS SUNN 0.5
         ted order CAP:PEN:SET id {CBS SUNN} pen 0.5
     } -body {
         ted notifier bind ::adb <cap_kg>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -977,7 +977,7 @@ CBS SUNN 0.7
         ted order CAP:PEN:SET id {CBS SUNN} pen 0.7
     } -body {
         ted notifier bind ::adb <cap_kg>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -1026,7 +1026,7 @@ CBS SHIA 1.0
         ted order CAP:PEN:SET id {CBS SUNN} pen 0.0
     } -body {
         ted notifier bind ::adb <cap_kg>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -1111,7 +1111,7 @@ CBS SHIA 1.0
             ids {{CBS SUNN} {CBS SHIA}} pen  0.5
     } -body {
         ted notifier bind ::adb <cap_kg>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup

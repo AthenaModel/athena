@@ -41,8 +41,8 @@ namespace eval ::athena_test::tests:: {
     
     # Set up for the rebase comparison test.
     proc setup {} {
-        econ setstate ENABLED
-        autogen scenario -nb 3
+        tdb econ setstate ENABLED
+        tdb autogen scenario -nb 3
         ted lock
         ted step
         ted step
@@ -56,17 +56,15 @@ namespace eval ::athena_test::tests:: {
         # Clean up the test environment
         simclock restore $clockdata
 
-        if {[sim state] eq "RUNNING"} {
-            sim pause
+        if {[tdb sim state] eq "RUNNING"} {
+            tdb sim pause
         }
 
-        if {[sim state] eq "PAUSED"} {
-            sim unlock
+        if {[tdb sim state] eq "PAUSED"} {
+            tdb sim unlock
         }
 
         ted cleanup
-
-        assert {![aram initialized]}
     }
 
     # grab table ?keys? ?except? ?orderby?
@@ -84,7 +82,7 @@ namespace eval ::athena_test::tests:: {
         set list [list]
         set names [list]
 
-        rdb eval "SELECT * FROM $table $orderby" row {
+        adb eval "SELECT * FROM $table $orderby" row {
             if {[info exists row(*)]} {
                 unset -nocomplain row(*)
                 foreach name [lsort [array names row]] {
@@ -156,7 +154,7 @@ namespace eval ::athena_test::tests:: {
             SUNN 10000  5.0
             KURD 20000  10.0
         } {
-            rdb eval {
+            adb eval {
                 UPDATE demog_g
                 SET population=$pop,
                     upc       =$upc
@@ -164,7 +162,7 @@ namespace eval ::athena_test::tests:: {
             }
         }
     } -body {
-        rebase save
+        tdb rebase save
         ted query {SELECT g, basepop, hist_flag, upc FROM civgroups}
     } -cleanup {
         cleanup
@@ -181,10 +179,10 @@ KURD 20000   1         10.0
         ted create JOE BLUE SHIA
         ted lock
         ted step
-        aram coop bset 1 SHIA BLUE 80.0
+        ted coop bset 1 SHIA BLUE 80.0
     } -body {
-        rebase save
-        rdb eval {
+        tdb rebase save
+        adb eval {
             SELECT f, g, base, regress_to, natural 
             FROM coop_fg WHERE f='SHIA' AND g='BLUE' 
         }
@@ -198,10 +196,10 @@ KURD 20000   1         10.0
         ted lock
         ted step
         foreach {g p} {BLUE 1000 BRIT 2000} {
-            rdb eval {UPDATE personnel_g SET personnel=$p WHERE g=$g}
+            adb eval {UPDATE personnel_g SET personnel=$p WHERE g=$g}
         }
     } -body {
-        rebase save
+        tdb rebase save
         ted query {SELECT g, base_personnel FROM frcgroups}
     } -cleanup {
         cleanup
@@ -217,9 +215,9 @@ BRIT 2000
         ted create JOE SHIA BLUE
         ted lock
         ted step
-        aram hrel bset 1 SHIA BLUE 0.9
+        ted hrel bset 1 SHIA BLUE 0.9
     } -body {
-        rebase save
+        tdb rebase save
 
         # Note: rebase data is not saved when f=g.  Also, rebase
         # data is not saved if current=base=nat, so as to save 
@@ -240,10 +238,10 @@ SHIA CIV   1     SHIA CIV   1     1.0 1.0  0         1.0     0
         ted create NB1 JOE BOB BLUE SHIA
         ted lock
         ted step
-        rdb eval {UPDATE control_n SET controller='JOE'}
+        adb eval {UPDATE control_n SET controller='JOE'}
     } -body {
-        rebase save
-        rdb eval {SELECT n, controller FROM nbhoods}
+        tdb rebase save
+        adb eval {SELECT n, controller FROM nbhoods}
     } -cleanup {
         cleanup
     } -result {NB1 JOE}
@@ -252,10 +250,10 @@ SHIA CIV   1     SHIA CIV   1     1.0 1.0  0         1.0     0
         ted create JOE BLUE USAID SHIA
         ted lock
         ted step
-        rdb eval {UPDATE personnel_g SET personnel=100000 WHERE g='USAID'}
+        adb eval {UPDATE personnel_g SET personnel=100000 WHERE g='USAID'}
     } -body {
-        rebase save
-        rdb eval {SELECT g, base_personnel FROM orggroups}
+        tdb rebase save
+        adb eval {SELECT g, base_personnel FROM orggroups}
     } -cleanup {
         cleanup
     } -result {USAID 100000}
@@ -263,12 +261,12 @@ SHIA CIV   1     SHIA CIV   1     1.0 1.0  0         1.0     0
     
     test save-1.7 {sat_gc data} -setup {
         ted create JOE BLUE SHIA
-        econ setstate ENABLED
+        tdb econ setstate ENABLED
         ted lock
         ted step
-        aram sat bset 1 SHIA QOL 0.9
+        ted sat bset 1 SHIA QOL 0.9
     } -body {
-        rebase save
+        tdb rebase save
         ted query {
             SELECT * FROM sat_gc WHERE g='SHIA' AND c='QOL'
         }
@@ -284,9 +282,9 @@ SHIA QOL 0.9  1.0      1         -3.45
         ted create JOE BLUE SHIA
         ted lock
         ted step
-        aram vrel bset 1 SHIA JOE 0.9
+        ted vrel bset 1 SHIA JOE 0.9
     } -body {
-        rebase save
+        tdb rebase save
         ted query {SELECT * FROM vrel_ga}
     } -cleanup {
         cleanup
@@ -298,13 +296,13 @@ SHIA JOE 0.9  1         0.0
 
     test save-1.9 {econ data} -setup {
         ted create JOE BLUE SHIA
-        econ setstate ENABLED
-        econ setsam [list REMChangeRate 10.0]
+        tdb econ setstate ENABLED
+        tdb econ setsam [list REMChangeRate 10.0]
         ted lock
         ted step
     } -body {
-        rebase save
-        set hdict [econ gethist]
+        tdb rebase save
+        set hdict [tdb econ gethist]
         dict with hdict {
             expr {$rem_rate == 10.0}
         }
@@ -409,7 +407,7 @@ SHIA JOE 0.9  1         0.0
             set before($table) [grab {*}$tableRec]
         }
 
-        sim rebase
+        tdb sim rebase
         ted lock
 
         foreach tableRec $simTables {

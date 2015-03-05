@@ -148,7 +148,7 @@ namespace eval ::athena_test::tests:: {
         ted order CONDITION:EXPR condition_id [$C1 id] expression 1
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup

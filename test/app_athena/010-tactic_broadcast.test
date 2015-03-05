@@ -45,7 +45,7 @@ namespace eval ::athena_test::tests:: {
         variable coffer
         ted create JOE BOB CBS CNN IOM1 IOM2 BLUE
 
-        cash load
+        tdb cash load
         set coffer [::athena::coffer new [::adb athenadb] JOE]
 
         set T1 {
@@ -56,17 +56,17 @@ namespace eval ::athena_test::tests:: {
         }
 
         # We need a payload and a hook topic, or we can't execute.
-        bsys topic add 1
-        bsys topic configure 1 -name TBD
+        tdb bsys topic add 1
+        tdb bsys topic configure 1 -name TBD
 
-        payload create {
+        tdb payload create {
             iom_id       IOM1
             payload_type COOP 
             g            BLUE
             mag          1.0
         }
 
-        hook topic create [dict create \
+        tdb hook topic create [dict create \
             hook_id  HOOK1 \
             topic_id 1     \
             position 0.9]
@@ -79,7 +79,7 @@ namespace eval ::athena_test::tests:: {
             set T1 [ted addtactic $B1 BROADCAST]
         }
 
-        broadcast reset
+        tdb broadcast reset
     }
 
     # Clean up after a test
@@ -88,7 +88,7 @@ namespace eval ::athena_test::tests:: {
         variable coffer
         $coffer destroy
         ted cleanup
-        broadcast reset
+        tdb broadcast reset
     }
 
 
@@ -223,7 +223,7 @@ namespace eval ::athena_test::tests:: {
 
     test check-1.5 {IOM is disabled.} -setup {
         setup -valid
-        rdb eval {UPDATE ioms SET state='disabled'}
+        adb eval {UPDATE ioms SET state='disabled'}
     } -body {
         ted pdicts [$T1 check]
     } -cleanup {
@@ -234,7 +234,7 @@ namespace eval ::athena_test::tests:: {
 
     test check-1.6 {IOM is invalid.} -setup {
         setup -valid
-        rdb eval {UPDATE ioms SET state='invalid'}
+        adb eval {UPDATE ioms SET state='invalid'}
     } -body {
         ted pdicts [$T1 check]
     } -cleanup {
@@ -245,7 +245,7 @@ namespace eval ::athena_test::tests:: {
 
     test check-1.7 {check: IOM has no valid payloads.} -setup {
         setup -valid
-        rdb eval {DELETE FROM payloads;}
+        adb eval {DELETE FROM payloads;}
     } -body {
         ted pdicts [$T1 check]
     } -cleanup {
@@ -256,7 +256,7 @@ namespace eval ::athena_test::tests:: {
 
     test check-1.8 {check: IOM hook has no valid topics.} -setup {
         setup -valid
-        rdb eval {DELETE FROM hook_topics;}
+        adb eval {DELETE FROM hook_topics;}
     } -body {
         ted pdicts [$T1 check]
     } -cleanup {
@@ -270,7 +270,7 @@ namespace eval ::athena_test::tests:: {
 
     test obligate-1.1 {CAP cost + prep cost} -setup {
         setup -valid
-        cap access load
+        tdb cap access load
     } -body {
         set a [$coffer cash]
         set b [$T1 obligate $coffer]
@@ -282,7 +282,7 @@ namespace eval ::athena_test::tests:: {
 
     test obligate-1.2 {obligate: insufficient funds} -setup {
         setup -valid
-        cap access load
+        tdb cap access load
     } -body {
         $T1 set cost 100000.0
         $T1 obligate $coffer
@@ -299,7 +299,7 @@ namespace eval ::athena_test::tests:: {
         $T1 obligate $coffer
     } -body {
         $T1 execute
-        rdb onecolumn {SELECT cash_on_hand FROM working_cash WHERE a='JOE'}
+        adb onecolumn {SELECT cash_on_hand FROM working_cash WHERE a='JOE'}
      } -cleanup {
         cleanup
     } -result {8500.0}

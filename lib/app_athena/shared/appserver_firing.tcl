@@ -61,7 +61,7 @@ appserver module firing {
     proc /firings:linkdict {udict matchArray} {
         set result [dict create]
 
-        rdb eval {
+        adb eval {
             SELECT DISTINCT ruleset
             FROM rule_firings
             ORDER BY ruleset
@@ -189,7 +189,7 @@ appserver module firing {
 
         append query $where
 
-        set items [rdb onecolumn $query]
+        set items [adb onecolumn $query]
 
         if {$page_size eq "ALL"} {
             set page_size $items
@@ -292,14 +292,14 @@ appserver module firing {
         # Accumulate data
         set id $(1)
 
-        if {![rdb exists {SELECT * FROM rule_firings WHERE firing_id=$id}]} {
+        if {![adb exists {SELECT * FROM rule_firings WHERE firing_id=$id}]} {
             return -code error -errorcode NOTFOUND \
                 "Unknown entity: [dict get $udict url]."
         }
 
         # Begin the page
-        rdb eval {SELECT * FROM gui_firings WHERE firing_id=$id} data {}
-        rdb eval {
+        adb eval {SELECT * FROM gui_firings WHERE firing_id=$id} data {}
+        adb eval {
             SELECT * FROM gui_drivers
             WHERE driver_id = $data(driver_id)
         } ddata {}
@@ -307,7 +307,7 @@ appserver module firing {
         ht page "Rule Firing: $id"
         ht title "Rule Firing: $id" 
 
-        set ruleTitle [ruleset $data(ruleset) rulename $data(rule)]
+        set ruleTitle [adb ruleset rulename $data(rule)]
 
         ht record {
             ht field "Rule:" {
@@ -327,7 +327,7 @@ appserver module firing {
         ht para
 
         set ruleset [dict get $data(fdict) dtype]
-        ruleset $ruleset detail $data(fdict) [namespace origin ht]
+        adb ruleset detail $ruleset $data(fdict) [namespace origin ht]
 
         ht para
 

@@ -47,17 +47,15 @@ namespace eval ::athena_test::tests:: {
         # Clean up the test environment
         simclock restore $clockdata
 
-        if {[sim state] eq "RUNNING"} {
-            sim pause
+        if {[tdb sim state] eq "RUNNING"} {
+            tdb sim pause
         }
 
-        if {[sim state] eq "PAUSED"} {
-            sim unlock
+        if {[tdb sim state] eq "PAUSED"} {
+            tdb sim unlock
         }
 
         ted cleanup
-
-        assert {![aram initialized]}
     }
 
     #-------------------------------------------------------------------
@@ -68,9 +66,9 @@ namespace eval ::athena_test::tests:: {
 
     test init-1.1 {Initial state} -body {
         list \
-            [sim now]         \
-            [sim state]       \
-            [sim stoptime]    \
+            [tdb sim now]         \
+            [tdb sim state]       \
+            [tdb sim stoptime]    \
             [simclock asString]
         
     } -result {0 PREP 0 2012W01}
@@ -79,7 +77,7 @@ namespace eval ::athena_test::tests:: {
     # startdate
 
     test startdate-1.1 {Sets the simclock's start date} -body {
-        sim startdate 2014W26
+        tdb sim startdate 2014W26
         simclock cget -week0
     } -cleanup {
         cleanup
@@ -88,7 +86,7 @@ namespace eval ::athena_test::tests:: {
     
     test startdate-1.2 {Sends <Time>} -body {
         ted notifier bind ::adb <Time>
-        sim startdate 2014W26
+        tdb sim startdate 2014W26
         ted notifier received
     } -cleanup {
         cleanup
@@ -98,15 +96,15 @@ namespace eval ::athena_test::tests:: {
 
 
     test startdate-1.3 {Returns undo script} -body {
-        sim startdate 2014W26
+        tdb sim startdate 2014W26
     } -cleanup {
         cleanup
     } -match glob -result {* startdate 2012W01}
 
 
     test startdate-1.4 {Sets "changed"} -body {
-        sim startdate 2014W26
-        sim changed
+        tdb sim startdate 2014W26
+        tdb sim changed
     } -cleanup {
         cleanup
     } -result {1}
@@ -115,7 +113,7 @@ namespace eval ::athena_test::tests:: {
     # starttick
 
     test starttick-1.1 {Sets the simclock's start tick} -body {
-        sim starttick 52
+        tdb sim starttick 52
         simclock cget -tick0
     } -cleanup {
         cleanup
@@ -124,7 +122,7 @@ namespace eval ::athena_test::tests:: {
     
     test starttick-1.2 {Sends <Time>} -body {
         ted notifier bind ::adb <Time>
-        sim starttick 52
+        tdb sim starttick 52
         ted notifier received
     } -cleanup {
         cleanup
@@ -134,15 +132,15 @@ namespace eval ::athena_test::tests:: {
 
 
     test starttick-1.3 {Returns undo script} -body {
-        sim starttick 52
+        tdb sim starttick 52
     } -cleanup {
         cleanup
     } -match glob -result {* starttick 0}
 
 
     test starttick-1.4 {Sets "changed"} -body {
-        sim starttick 52
-        sim changed
+        tdb sim starttick 52
+        tdb sim changed
     } -cleanup {
         cleanup
     } -result {1}
@@ -152,12 +150,12 @@ namespace eval ::athena_test::tests:: {
 
     test lock-1.1 {lock sets state to PAUSED} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
-        sim lock
+        tdb sim lock
 
-        sim state
+        tdb sim state
     } -cleanup {
         cleanup
     } -result {PAUSED}
@@ -165,11 +163,11 @@ namespace eval ::athena_test::tests:: {
 
     test lock-1.2 {must be in PREP} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
-        sim lock
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
+        tdb sim lock
     } -body {
-        sim lock
+        tdb sim lock
     } -returnCodes {
         error
     } -cleanup {
@@ -178,24 +176,24 @@ namespace eval ::athena_test::tests:: {
 
     test lock-1.3 {Saves a PREP snapshot} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
-        sim lock
+        tdb sim lock
 
-        rdb eval {SELECT tick FROM snapshots}
+        adb eval {SELECT tick FROM snapshots}
     } -cleanup {
         cleanup
     } -result {-1}
 
     test lock-1.4 {Initializes URAM} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
-        sim lock
+        tdb sim lock
 
-        rdb onecolumn {SELECT n FROM uram_n}
+        adb onecolumn {SELECT n FROM uram_n}
     } -cleanup {
         cleanup
     } -result {NB1}
@@ -206,12 +204,12 @@ namespace eval ::athena_test::tests:: {
 
     test runpause-1.1 {No stop time} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
-        sim lock
-        sim run
-        sim stoptime
+        tdb sim lock
+        tdb sim run
+        tdb sim stoptime
     } -cleanup {
         cleanup
     } -result {0}
@@ -219,36 +217,36 @@ namespace eval ::athena_test::tests:: {
     
     test runpause-1.2 {Run for -ticks} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
-        sim lock
-        sim run -ticks 5
-        sim stoptime
+        tdb sim lock
+        tdb sim run -ticks 5
+        tdb sim stoptime
     } -cleanup {
         cleanup
     } -result {5}
 
     test runpause-1.3 {Run -until} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
-        sim lock
-        sim run -until 10
-        sim stoptime
+        tdb sim lock
+        tdb sim run -until 10
+        tdb sim stoptime
     } -cleanup {
         cleanup
     } -result {10}
 
     test runpause-1.4 {Sets state to "RUNNING"} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
-        sim lock
-        sim run
-        sim state
+        tdb sim lock
+        tdb sim run
+        tdb sim state
     } -cleanup {
         cleanup
     } -result {RUNNING}
@@ -256,12 +254,12 @@ namespace eval ::athena_test::tests:: {
 
     test runpause-1.5 {Can't run unless "PAUSED"} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
-        sim lock
-        sim run
-        sim run
+        tdb sim lock
+        tdb sim run
+        tdb sim run
     } -returnCodes {
         error
     } -cleanup {
@@ -271,12 +269,12 @@ namespace eval ::athena_test::tests:: {
 
     test runpause-1.6 {Sends <State>} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
-        sim lock
+        tdb sim lock
         ted notifier bind ::adb <State>
-        sim run
+        tdb sim run
         ted notifier received
     } -cleanup {
         cleanup
@@ -287,11 +285,11 @@ namespace eval ::athena_test::tests:: {
 
     test runpause-1.7 {Returns undo script} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
-        sim lock
-        sim run
+        tdb sim lock
+        tdb sim run
     } -cleanup {
         cleanup
     } -result {}
@@ -299,14 +297,14 @@ namespace eval ::athena_test::tests:: {
 
     test runpause-2.1 {Pauses if running} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
-        sim lock
-        sim run
+        tdb sim lock
+        tdb sim run
         simclock tick
-        sim pause
-        sim state
+        tdb sim pause
+        tdb sim state
     } -cleanup {
         cleanup
     } -result {PAUSED}
@@ -314,13 +312,13 @@ namespace eval ::athena_test::tests:: {
 
     test runpause-2.2 {Sends <State>} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
-        sim lock
-        sim run
+        tdb sim lock
+        tdb sim run
         ted notifier bind ::adb <State>
-        sim pause
+        tdb sim pause
         ted notifier received
     } -cleanup {
         cleanup
@@ -332,7 +330,7 @@ namespace eval ::athena_test::tests:: {
     test runpause-2.3 {Returns undo script} -setup {
         ted create NB1 BLUE SHIA
     } -body {
-        sim pause
+        tdb sim pause
     } -cleanup {
         cleanup
     } -result {}
@@ -340,12 +338,12 @@ namespace eval ::athena_test::tests:: {
 
     test runpause-2.4 {Runs for some number of ticks} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
-        sim lock
-        sim run -ticks 5 -block yes
-        list [simclock now] [sim state]
+        tdb sim lock
+        tdb sim run -ticks 5 -block yes
+        list [simclock now] [tdb sim state]
     } -cleanup {
         cleanup
     } -result {5 PAUSED}
@@ -354,7 +352,7 @@ namespace eval ::athena_test::tests:: {
     # unlock
 
     test unlock-1.1 {Can't unlock in PREP} -body {
-        sim unlock
+        tdb sim unlock
     } -returnCodes {
         error
     } -cleanup {
@@ -363,25 +361,25 @@ namespace eval ::athena_test::tests:: {
 
     test unlock-1.2 {Sets state to PREP} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
-        sim lock
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
+        tdb sim lock
     } -body {
-        sim unlock
-        sim state
+        tdb sim unlock
+        tdb sim state
     } -cleanup {
         cleanup
     } -result {PREP}
 
     test unlock-1.3 {Purges snapshot} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
-        sim lock
-        sim run -ticks 1 -block yes
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
+        tdb sim lock
+        tdb sim run -ticks 1 -block yes
     } -body {
-        sim unlock
-        rdb eval {SELECT tick FROM snapshots}
+        tdb sim unlock
+        adb eval {SELECT tick FROM snapshots}
     } -cleanup {
         cleanup
     } -result {}
@@ -390,7 +388,7 @@ namespace eval ::athena_test::tests:: {
     # now
 
     test now-1.1 {Returns 0 at time 0} -body {
-        expr {[sim now] == [simclock now]}
+        expr {[tdb sim now] == [simclock now]}
     } -result {1}
 
 
@@ -399,21 +397,21 @@ namespace eval ::athena_test::tests:: {
 
     test state-1.1 {Returns current state} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
         set states [list]
         
-        lappend states [sim state]
-        sim lock
-        lappend states [sim state]
-        sim run
+        lappend states [tdb sim state]
+        tdb sim lock
+        lappend states [tdb sim state]
+        tdb sim run
         simclock tick
-        lappend states [sim state]
-        sim pause
-        lappend states [sim state]
-        sim unlock
-        lappend states [sim state]
+        lappend states [tdb sim state]
+        tdb sim pause
+        lappend states [tdb sim state]
+        tdb sim unlock
+        lappend states [tdb sim state]
 
         set states
     } -cleanup {
@@ -426,24 +424,24 @@ namespace eval ::athena_test::tests:: {
 
     test stoptime-1.1 {Returns current stoptime} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
     } -body {
         set times [list]
 
-        lappend times [sim stoptime]
+        lappend times [tdb sim stoptime]
 
-        sim lock
-        sim run
-        lappend times [sim stoptime]
-        sim pause
+        tdb sim lock
+        tdb sim run
+        lappend times [tdb sim stoptime]
+        tdb sim pause
         
-        sim run -ticks 5
-        lappend times [sim stoptime]
-        sim pause
+        tdb sim run -ticks 5
+        lappend times [tdb sim stoptime]
+        tdb sim pause
 
-        sim run -until 10
-        lappend times [sim stoptime]
+        tdb sim run -until 10
+        lappend times [tdb sim stoptime]
 
         set times
     } -cleanup {
@@ -460,20 +458,20 @@ namespace eval ::athena_test::tests:: {
 
     test restart-1.1 {Check results} -setup {
         ted create NB1 BLUE SHIA
-        parm set econ.gdpExp 0
-        parm set econ.empExp 0
-        sim lock
-        sim run
+        tdb parm set econ.gdpExp 0
+        tdb parm set econ.empExp 0
+        tdb sim lock
+        tdb sim run
         simclock advance 5
-        sim pause
-        sim startdate 2014W26
+        tdb sim pause
+        tdb sim startdate 2014W26
     } -body {
-        sim unlock
+        tdb sim unlock
 
         list \
-            [sim state]         \
-            [sim now]           \
-            [sim changed]       \
+            [tdb sim state]         \
+            [tdb sim now]           \
+            [tdb sim changed]       \
             [simclock cget -week0]
     } -cleanup {
         cleanup
@@ -482,7 +480,7 @@ namespace eval ::athena_test::tests:: {
     #-------------------------------------------------------------------
     # rebase
     #
-    # Note: this tests [sim rebase] specifically; more general
+    # Note: this tests [tdb sim rebase] specifically; more general
     # rebase testing is done in 010-rebase.test.
     
     test rebase-1.1 {in prep after rebase} -setup {
@@ -491,9 +489,9 @@ namespace eval ::athena_test::tests:: {
         ted step
         ted step
     } -body {
-        sim rebase
+        tdb sim rebase
         list \
-            [sim state] \
+            [tdb sim state] \
             [simclock now] \
             [simclock cget -tick0]
     } -cleanup {

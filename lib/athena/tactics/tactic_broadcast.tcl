@@ -77,9 +77,9 @@
             dict set errdict iom "No IOM selected."            
         } elseif {!$gotIOM} {
             dict set errdict iom "No such IOM: \"$iom\"."
-        } elseif {[iom get $iom state] eq "disabled"} {
+        } elseif {[[my adb] iom get $iom state] eq "disabled"} {
             dict set errdict iom "IOM is disabled: \"$iom\"."
-        } elseif {[iom get $iom state] eq "invalid"} {
+        } elseif {[[my adb] iom get $iom state] eq "invalid"} {
             dict set errdict iom "IOM is invalid: \"$iom\"."
         }
 
@@ -130,7 +130,7 @@
 
         # Total cost is prep cost plus cost to use CAP
         set cash [$coffer cash]
-        set trans(cost) [expr {$cost + [cap get $cap cost]}]
+        set trans(cost) [expr {$cost + [[my adb] cap get $cap cost]}]
 
         if {[my InsufficientCash $cash $trans(cost)]} {
             return
@@ -159,7 +159,7 @@
         if {![[my adb] cap hasaccess $cap [my agent]]} {
             my set execstatus FAIL_RESOURCES
             my Fail CAP "Failed during execution: [my agent] has no access to CAP $cap."
-            cash refund [my agent] BROADCAST $trans(cost) 
+            [my adb] cash refund [my agent] BROADCAST $trans(cost) 
 
             # NEXT, log the event
             [my adb] sigevent log 2 tactic "
@@ -206,7 +206,7 @@
         " {*}$tags
 
         # NEXT, assess the broadcast.
-        ruleset IOM assess $rdict
+        [my adb] ruleset IOM assess $rdict
     }
 }
 
@@ -249,7 +249,7 @@
         my returnOnError
 
         # NEXT, get the tactic
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
 
         # NEXT, the parameters
         my prepare name     -toupper   -with [list $tactic valName]
@@ -260,7 +260,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
         ::athena::fillparms parms [$tactic view]
         my setundo [$tactic update_ {name cap a iom cost} [array get parms]]
     }

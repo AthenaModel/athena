@@ -100,7 +100,7 @@ oo::class create ::athena::athena_flunky {
 
     method state {{newState ""}} {
         set result [next $newState]
-        $adb notify flunky <Sync>
+        $adb notify order <Sync>
 
         return $result
     }    
@@ -171,7 +171,7 @@ oo::class create ::athena::athena_flunky {
             WHERE id = $maxid
         }
         $adb log normal flunky "Undo: [$order name] [$order getdict]"
-        $adb notify flunky <Sync>
+        $adb notify order <Sync>
     }
 
 
@@ -217,7 +217,7 @@ oo::class create ::athena::athena_flunky {
         }
 
         $adb log normal flunky "Order: $name $parmdict"
-        $adb notify flunky <Sync>
+        $adb notify order <Sync>
     }
 }
 

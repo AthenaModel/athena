@@ -144,7 +144,7 @@ snit::type ::athena::exporter {
             # non-default values.
             set cmd [list send $name]
 
-            set o [$adb flunky make $name]
+            set o [$adb order make $name]
             $o setdict $parmdict
 
             dict for {parm value} [$o prune] {

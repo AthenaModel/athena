@@ -227,7 +227,7 @@ local           0
     } -body {
         ted order FRCGROUP:CREATE [dict merge $blue {longname ""}]
 
-        rdb onecolumn {SELECT longname FROM frcgroups_view}
+        adb onecolumn {SELECT longname FROM frcgroups_view}
     } -cleanup {
         cleanup
     } -result {BLUE}
@@ -250,7 +250,7 @@ local           0
         ted order FRCGROUP:CREATE $blue
     } -body {
         ted notifier bind ::adb <frcgroups>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -294,7 +294,7 @@ local           0
         ted order FRCGROUP:DELETE g BLUE
     } -body {
         ted notifier bind ::adb <frcgroups>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -461,7 +461,7 @@ local           1
         }
     } -body {
         ted notifier bind ::adb <frcgroups>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup
@@ -643,7 +643,7 @@ local           1
         }
     } -body {
         ted notifier bind ::adb <frcgroups>
-        flunky undo
+        adb order undo
         ted notifier received
     } -cleanup {
         cleanup

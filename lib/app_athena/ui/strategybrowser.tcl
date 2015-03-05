@@ -304,7 +304,7 @@ snit::widget strategybrowser {
 
     method StrategyBlocks {op strategy_id block_id} {
         # FIRST, if it's not our strategy we don't care.
-        set s [pot get $strategy_id]
+        set s [adb bean get $strategy_id]
 
         if {$info(agent) eq "" || $info(agent) ne [$s agent]} {
             return
@@ -456,8 +456,8 @@ snit::widget strategybrowser {
         # NEXT, if the currently selected agent no longer 
         # exists, select the first actor.
 
-        if {$info(agent) ni [agent names]} {
-            set info(agent) [lindex [agent names] 0]
+        if {![adb agent exists $info(agent)]} {
+            set info(agent) [lindex [adb agent names] 0]
             set info(block) ""
 
             $alist uid select $info(agent)
@@ -483,7 +483,7 @@ snit::widget strategybrowser {
         # FIRST, get the list of blocks.  We could get this from the 
         # BList, but it's easier to get it from the strategy.
         if {$info(agent) ne ""} {
-            set s [strategy getname $info(agent)]
+            set s [adb strategy getname $info(agent)]
             set blocks [$s blocks]
         } else {
             set blocks [list]
@@ -516,7 +516,7 @@ snit::widget strategybrowser {
         }
 
         # NEXT, configure the -beancmd and force a reload.
-        $blist configure -beancmd [list [strategy getname $info(agent)] blocks]
+        $blist configure -beancmd [list [adb strategy getname $info(agent)] blocks]
         $blist reload -force
     }
 
@@ -634,7 +634,7 @@ snit::widget strategybrowser {
     method AListDisplay {rindex values} {
         # FIRST, set color
         set agent [lindex $values 0]
-        set state [[strategy getname $agent] state]
+        set state [[adb strategy getname $agent] state]
 
         $alist rowconfigure $rindex \
             -foreground [ebeanstate as color $state] \
@@ -865,7 +865,7 @@ snit::widget strategybrowser {
         set id [lindex [$blist uid curselection] 0]
 
         if {$id ne ""} {
-            set newBlock [pot get $id]
+            set newBlock [adb bean get $id]
         } else {
             set newBlock ""
         }
@@ -889,7 +889,7 @@ snit::widget strategybrowser {
 
     method BListCutCopy {mode} {
         # FIRST, if the sim state is wrong, we're done.
-        if {[sim state] ni {PREP PAUSED}} {
+        if {[adb state] ni {PREP PAUSED}} {
             bell
             return
         }
@@ -900,7 +900,7 @@ snit::widget strategybrowser {
         set data [list]
 
         foreach id $ids {
-            set bean [pot get $id]
+            set bean [adb bean get $id]
             lappend copyData [$bean copydata]
         }
 
@@ -909,7 +909,7 @@ snit::widget strategybrowser {
 
         # NEXT, if the mode is cut delete the items.
         if {$mode eq "cut"} {
-            flunky senddict gui STRATEGY:BLOCK:DELETE [ids $ids]
+            adb order senddict gui STRATEGY:BLOCK:DELETE [ids $ids]
         }
 
         # NEXT, notify the user:
@@ -928,7 +928,7 @@ snit::widget strategybrowser {
     method BListPaste {} {
         # FIRST, if the sim state is wrong or there's no strategy loaded,
         # we're done.
-        if {[sim state] ni {PREP PAUSED} ||
+        if {[adb state] ni {PREP PAUSED} ||
             $info(agent) eq ""
         } {
             bell
@@ -967,7 +967,7 @@ snit::widget strategybrowser {
     # Creates a new block and adds it to the strategy.
     
     method BListAdd {} {
-        set block_id [flunky senddict gui STRATEGY:BLOCK:ADD \
+        set block_id [adb order senddict gui STRATEGY:BLOCK:ADD \
                         [list agent $info(agent)]]
 
         $blist uid select $block_id
@@ -986,7 +986,7 @@ snit::widget strategybrowser {
         set id [lindex [$blist uid curselection] 0]
 
         # NEXT, Change its priority.
-        flunky senddict gui STRATEGY:BLOCK:MOVE \
+        adb order senddict gui STRATEGY:BLOCK:MOVE \
             [list block_id $id where $where]
     }
 
@@ -1001,13 +1001,13 @@ snit::widget strategybrowser {
         set id [lindex [$blist uid curselection] 0]
 
         # NEXT, get the block's state
-        set block [pot get $id]
+        set block [adb bean get $id]
         set state [$block state]
 
         if {$state eq "disabled"} {
-            flunky senddict gui BLOCK:STATE [list block_id $id state normal]
+            adb order senddict gui BLOCK:STATE [list block_id $id state normal]
         } else {
-            flunky senddict gui BLOCK:STATE [list block_id $id state disabled]
+            adb order senddict gui BLOCK:STATE [list block_id $id state disabled]
         }
     }
 
@@ -1017,7 +1017,7 @@ snit::widget strategybrowser {
     # results.
 
     method BListCheckStrategies {} {
-        set failed [strategy check]
+        set failed [adb strategy check]
 
         if {$failed} {
             set msg "at least one problem was found"
@@ -1035,7 +1035,7 @@ snit::widget strategybrowser {
     # Deletes the selected block(s).
 
     method BListDelete {} {
-        flunky senddict gui STRATEGY:BLOCK:DELETE \
+        adb order senddict gui STRATEGY:BLOCK:DELETE \
             [list ids [$blist uid curselection]]
     }
 
@@ -1302,7 +1302,7 @@ snit::widget strategybrowser {
 
     method CTabCutCopy {mode} {
         # FIRST, if the sim state is wrong, we're done.
-        if {[sim state] ni {PREP PAUSED}} {
+        if {[adb state] ni {PREP PAUSED}} {
             bell
             return
         }
@@ -1313,7 +1313,7 @@ snit::widget strategybrowser {
         set data [list]
 
         foreach id $ids {
-            set bean [pot get $id]
+            set bean [adb bean get $id]
             lappend copyData [$bean copydata]
         }
 
@@ -1322,7 +1322,7 @@ snit::widget strategybrowser {
 
         # NEXT, if the mode is cut delete the items.
         if {$mode eq "cut"} {
-            flunky senddict gui BLOCK:CONDITION:DELETE [list ids $ids]
+            adb order senddict gui BLOCK:CONDITION:DELETE [list ids $ids]
         }
 
         # NEXT, notify the user:
@@ -1341,7 +1341,7 @@ snit::widget strategybrowser {
     method CTabPaste {} {
         # FIRST, if the sim state is wrong or there's no block loaded,
         # we're done.
-        if {[sim state] ni {PREP PAUSED} ||
+        if {[adb state] ni {PREP PAUSED} ||
             ![$self gotblock]
         } {
             bell
@@ -1387,7 +1387,7 @@ snit::widget strategybrowser {
     
     method CTabAdd {typename} {
         # FIRST, create the condition.
-        set condition_id [flunky senddict gui BLOCK:CONDITION:ADD \
+        set condition_id [adb order senddict gui BLOCK:CONDITION:ADD \
             [list block_id [$info(block) id] \
                 typename $typename]]
 
@@ -1406,7 +1406,7 @@ snit::widget strategybrowser {
     method CTabEdit {} {
         # FIRST, there should be only one selected.
         set id [lindex [$ctab uid curselection] 0]
-        set cond [pot get $id]
+        set cond [adb bean get $id]
 
         # NEXT, allow editing.
         app enter CONDITION:[$cond typename] condition_id $id
@@ -1422,13 +1422,13 @@ snit::widget strategybrowser {
         set id [lindex [$ctab uid curselection] 0]
 
         # NEXT, get the condition's state
-        set cond [pot get $id]
+        set cond [adb bean get $id]
         set state [$cond state]
 
         if {$state eq "disabled"} {
-            flunky send gui CONDITION:STATE -condition_id $id -state normal
+            adb order send gui CONDITION:STATE -condition_id $id -state normal
         } else {
-            flunky send gui CONDITION:STATE -condition_id $id -state disabled
+            adb order send gui CONDITION:STATE -condition_id $id -state disabled
         }
     }
 
@@ -1440,7 +1440,7 @@ snit::widget strategybrowser {
 
     method CTabDelete {} {
         # FIRST, delete all selected conditions.
-        flunky senddict gui BLOCK:CONDITION:DELETE \
+        adb order senddict gui BLOCK:CONDITION:DELETE \
             [list ids [$ctab uid curselection]]
     }
 
@@ -1650,7 +1650,7 @@ snit::widget strategybrowser {
 
     method TTabCutCopy {mode} {
         # FIRST, if the sim state is wrong, we're done.
-        if {[sim state] ni {PREP PAUSED}} {
+        if {[adb state] ni {PREP PAUSED}} {
             bell
             return
         }
@@ -1661,7 +1661,7 @@ snit::widget strategybrowser {
         set data [list]
 
         foreach id $ids {
-            set bean [pot get $id]
+            set bean [adb bean get $id]
             lappend copyData [$bean copydata]
         }
 
@@ -1670,7 +1670,7 @@ snit::widget strategybrowser {
 
         # NEXT, if the mode is cut delete the items.
         if {$mode eq "cut"} {
-            flunky senddict gui BLOCK:TACTIC:DELETE [list ids $ids]
+            adb order senddict gui BLOCK:TACTIC:DELETE [list ids $ids]
         }
 
         # NEXT, notify the user:
@@ -1689,7 +1689,7 @@ snit::widget strategybrowser {
     method TTabPaste {} {
         # FIRST, if the sim state is wrong or there's no block loaded,
         # we're done.
-        if {[sim state] ni {PREP PAUSED} ||
+        if {[adb state] ni {PREP PAUSED} ||
             ![$self gotblock]
         } {
             bell
@@ -1741,7 +1741,7 @@ snit::widget strategybrowser {
     
     method TTabAdd {typename} {
         # FIRST, create the tactic.
-        set tactic_id [flunky senddict gui BLOCK:TACTIC:ADD \
+        set tactic_id [adb order senddict gui BLOCK:TACTIC:ADD \
             [list block_id [$info(block) id] \
                 typename $typename]]
 
@@ -1761,7 +1761,7 @@ snit::widget strategybrowser {
         # FIRST, there should be only one selected.
         set id [lindex [$ttab uid curselection] 0]
 
-        set tactic [pot get $id]
+        set tactic [adb bean get $id]
 
         # NEXT, allow editing.
         app enter TACTIC:[$tactic typename] tactic_id $id
@@ -1778,13 +1778,13 @@ snit::widget strategybrowser {
         set id [lindex [$ttab uid curselection] 0]
 
         # NEXT, get the tactic's state
-        set tactic [pot get $id]
+        set tactic [adb bean get $id]
         set state [$tactic state]
 
         if {$state eq "disabled"} {
-            flunky send gui TACTIC:STATE -tactic_id $id -state normal
+            adb order send gui TACTIC:STATE -tactic_id $id -state normal
         } else {
-            flunky send gui TACTIC:STATE -tactic_id $id -state disabled
+            adb order send gui TACTIC:STATE -tactic_id $id -state disabled
         }
     }
 
@@ -1799,7 +1799,7 @@ snit::widget strategybrowser {
         set id [lindex [$ttab uid curselection] 0]
 
         # NEXT, Change its priority.
-        flunky send gui BLOCK:TACTIC:MOVE -tactic_id $id -where $where
+        adb order send gui BLOCK:TACTIC:MOVE -tactic_id $id -where $where
     }
 
 
@@ -1811,7 +1811,7 @@ snit::widget strategybrowser {
 
     method TTabDelete {} {
         # FIRST, delete all selected tactics.
-        flunky send gui BLOCK:TACTIC:DELETE -ids [$ttab uid curselection]
+        adb order send gui BLOCK:TACTIC:DELETE -ids [$ttab uid curselection]
     }
 
     #-------------------------------------------------------------------
@@ -1838,7 +1838,7 @@ snit::widget strategybrowser {
         }
 
         # NEXT, set the block's parameter.
-        flunky send gui BLOCK:UPDATE \
+        adb order send gui BLOCK:UPDATE \
             -block_id  [$info(block) id] \
             -$name     $value
     }
@@ -1936,7 +1936,7 @@ snit::widget strategybrowser {
             return 0
         }
 
-        expr {$typename in [agent tactictypes $info(agent)]}
+        expr {$typename in [adb agent tactictypes $info(agent)]}
     }
 
     #-------------------------------------------------------------------

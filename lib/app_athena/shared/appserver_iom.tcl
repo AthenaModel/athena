@@ -100,7 +100,7 @@ appserver module IOM {
         # FIRST, get the IOM ID and data.
         set iom_id [string toupper $(1)]
 
-        rdb eval {SELECT * FROM gui_ioms WHERE iom_id=$iom_id} data {}
+        adb eval {SELECT * FROM gui_ioms WHERE iom_id=$iom_id} data {}
 
         # NEXT, Begin the page
         ht page "IOM: $iom_id"
@@ -133,7 +133,7 @@ appserver module IOM {
 
         ht subtitle "Semantic Hook" hook
 
-        rdb eval {
+        adb eval {
             SELECT longlink FROM gui_hooks WHERE hook_id=$data(hook_id)
         } hdata {}
 
@@ -151,7 +151,7 @@ appserver module IOM {
         # NEXT, may need to customize the table for disabled or invalid
         # hook topics, so build it from scratch
         ht table {"Topic" "Position" "Symbolic Value" "State"} {
-            rdb eval {
+            adb eval {
                 SELECT fancy      AS fancy,
                        position   AS position,
                        state      AS state

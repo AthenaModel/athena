@@ -42,7 +42,7 @@ namespace eval ::athena_test::tests:: {
 
     # Clean up after a test
     proc cleanup {} {
-        executive reset
+        tdb executive reset
         ted cleanup
     }
 
@@ -74,7 +74,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         set id [ted sendex block add JOE]
-        [pot get $id] get intent
+        [adb bean get $id] get intent
     } -cleanup {
         cleanup
     } -result {}
@@ -83,7 +83,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         set id [ted sendex block add JOE -intent "New Block"]
-        [pot get $id] get intent
+        [adb bean get $id] get intent
     } -cleanup {
         cleanup
     } -result {New Block}
@@ -92,7 +92,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         set id [ted sendex block add JOE -state disabled]
-        [pot get $id] get state
+        [adb bean get $id] get state
     } -cleanup {
         cleanup
     } -result {disabled}
@@ -232,7 +232,7 @@ namespace eval ::athena_test::tests:: {
         set B1 [ted addblock JOE]
     } -body {
         set id [ted sendex condition add [$B1 id] EXPR]
-        [pot get $id] get metflag
+        [adb bean get $id] get metflag
     } -cleanup {
         cleanup
     } -result {}
@@ -242,7 +242,7 @@ namespace eval ::athena_test::tests:: {
         set B1 [ted addblock JOE]
     } -body {
         set id [ted sendex condition add [$B1 id] EXPR -expression "1 + 1 == 2"]
-        [pot get $id] get expression
+        [adb bean get $id] get expression
     } -cleanup {
         cleanup
     } -result {1 + 1 == 2}
@@ -252,7 +252,7 @@ namespace eval ::athena_test::tests:: {
         set B1 [ted addblock JOE]
     } -body {
         set id [ted sendex condition add [$B1 id] EXPR -state disabled]
-        [pot get $id] get state
+        [adb bean get $id] get state
     } -cleanup {
         cleanup
     } -result {disabled}
@@ -504,7 +504,7 @@ JOE
         set B1 [ted addblock JOE]
     } -body {
         set id [ted sendex tactic add [$B1 id] SIGEVENT]
-        [pot get $id] get msg
+        [adb bean get $id] get msg
     } -cleanup {
         cleanup
     } -result {}
@@ -514,7 +514,7 @@ JOE
         set B1 [ted addblock JOE]
     } -body {
         set id [ted sendex tactic add [$B1 id] SIGEVENT -msg "1 + 1 == 2"]
-        [pot get $id] get msg
+        [adb bean get $id] get msg
     } -cleanup {
         cleanup
     } -result {1 + 1 == 2}
@@ -524,7 +524,7 @@ JOE
         set B1 [ted addblock JOE]
     } -body {
         set id [ted sendex tactic add [$B1 id] SIGEVENT -state disabled]
-        [pot get $id] get state
+        [adb bean get $id] get state
     } -cleanup {
         cleanup
     } -result {disabled}
@@ -713,7 +713,7 @@ JOE
     test autogen_actors-1.2 {successful creation} -setup {
     } -body {
         ted sendex autogen actors
-        expr {[llength [actor names]] > 0}
+        expr {[llength [tdb actor names]] > 0}
     } -cleanup {
         cleanup
     } -result {1}
@@ -741,7 +741,7 @@ JOE
         ted sendex autogen actors
     } -body {
         ted sendex autogen nbhoods
-        expr {[llength [nbhood names]] > 0}
+        expr {[llength [tdb nbhood names]] > 0}
     } -cleanup {
         cleanup
     } -result {1}
@@ -772,7 +772,7 @@ JOE
         ted sendex autogen nbhoods
     } -body {
         ted sendex autogen civgroups 
-        expr {[llength [civgroup names]] > 0}
+        expr {[llength [tdb civgroup names]] > 0}
     } -cleanup {
         cleanup
     } -result {1}
@@ -804,7 +804,7 @@ JOE
         ted sendex autogen nbhoods
     } -body {
         ted sendex autogen orggroups 
-        expr {[llength [orggroup names]] > 0}
+        expr {[llength [tdb orggroup names]] > 0}
     } -cleanup {
         cleanup
     } -result {1}
@@ -836,7 +836,7 @@ JOE
         ted sendex autogen nbhoods
     } -body {
         ted sendex autogen frcgroups 
-        expr {[llength [frcgroup names]] > 0}
+        expr {[llength [tdb frcgroup names]] > 0}
     } -cleanup {
         cleanup
     } -result {1}
@@ -872,7 +872,7 @@ JOE
         ted sendex autogen civgroups 1
     } -body {
         ted sendex autogen bsystem
-        expr {[llength [bsys topic ids]] > 0}
+        expr {[llength [tdb bsys topic ids]] > 0}
     } -cleanup {
         cleanup
     } -result {1}
@@ -969,10 +969,10 @@ JOE
         ted sendex autogen actors
         ted sendex autogen nbhoods
         ted sendex autogen frcgroups
-        set a [llength [[strategy getname A00] blocks]]
+        set a [llength [[tdb strategy getname A00] blocks]]
     } -body {
         ted sendex autogen assign A00 
-        set b [llength [[strategy getname A00] blocks]]]
+        set b [llength [[tdb strategy getname A00] blocks]]]
         expr {$b > $a}
     } -cleanup {
         cleanup
@@ -989,7 +989,7 @@ JOE
     } -result {Must create actors first}
 
     test autogen_strategy-1.2 {error, no nbhoods} -setup {
-        autogen actors
+        tdb autogen actors
     } -body {
         ted sendex -error autogen strategy
     } -cleanup {
@@ -997,8 +997,8 @@ JOE
     } -result {Must create nbhoods first}
 
     test autogen_strategy-1.3 {error, no force or org groups} -setup {
-        autogen actors
-        autogen nbhoods
+        tdb autogen actors
+        tdb autogen nbhoods
     } -body {
         ted sendex -error autogen strategy
     } -cleanup {
@@ -1006,9 +1006,9 @@ JOE
     } -result {Must have at least one FRC group or one ORG group}
 
     test autogen_strategy-1.4 {bad option, -actors} -setup {
-        autogen actors
-        autogen nbhoods
-        autogen frcgroups
+        tdb autogen actors
+        tdb autogen nbhoods
+        tdb autogen frcgroups
     } -body {
         ted sendex -error autogen strategy -actors NONESUCH
     } -cleanup {
@@ -1016,9 +1016,9 @@ JOE
     } -result {Unrecognized actor: NONESUCH}
 
     test autogen_strategy-1.5 {bad option, -civg} -setup {
-        autogen actors
-        autogen nbhoods
-        autogen frcgroups
+        tdb autogen actors
+        tdb autogen nbhoods
+        tdb autogen frcgroups
     } -body {
         ted sendex -error autogen strategy -civg NONESUCH
     } -cleanup {
@@ -1026,9 +1026,9 @@ JOE
     } -result {Unrecognized CIV group: NONESUCH}
 
     test autogen_strategy-1.6 {bad option, -frcg} -setup {
-        autogen actors
-        autogen nbhoods
-        autogen frcgroups
+        tdb autogen actors
+        tdb autogen nbhoods
+        tdb autogen frcgroups
     } -body {
         ted sendex -error autogen strategy -frcg NONESUCH
     } -cleanup {
@@ -1036,9 +1036,9 @@ JOE
     } -result {Unrecognized FRC group: NONESUCH}
 
     test autogen_strategy-1.7 {bad option, -orgg} -setup {
-        autogen actors
-        autogen nbhoods
-        autogen frcgroups
+        tdb autogen actors
+        tdb autogen nbhoods
+        tdb autogen frcgroups
     } -body {
         ted sendex -error autogen strategy -orgg NONESUCH
     } -cleanup {
@@ -1046,9 +1046,9 @@ JOE
     } -result {Unrecognized ORG group: NONESUCH}
 
     test autogen_strategy-1.8 {bad option, -nbhoods} -setup {
-        autogen actors
-        autogen nbhoods
-        autogen frcgroups
+        tdb autogen actors
+        tdb autogen nbhoods
+        tdb autogen frcgroups
     } -body {
         ted sendex -error autogen strategy -nbhoods NONESUCH
     } -cleanup {
@@ -1056,9 +1056,9 @@ JOE
     } -result {Unrecognized nbhood: NONESUCH}
 
     test autogen_strategy-1.9 {bad option, -frcact} -setup {
-        autogen actors
-        autogen nbhoods
-        autogen frcgroups
+        tdb autogen actors
+        tdb autogen nbhoods
+        tdb autogen frcgroups
     } -body {
         ted sendex -error autogen strategy -frcact NONESUCH
     } -cleanup {
@@ -1066,9 +1066,9 @@ JOE
     } -result {Unrecognized force activity: NONESUCH}
 
     test autogen_strategy-1.10 {bad option, -orgact} -setup {
-        autogen actors
-        autogen nbhoods
-        autogen frcgroups
+        tdb autogen actors
+        tdb autogen nbhoods
+        tdb autogen frcgroups
     } -body {
         ted sendex -error autogen strategy -orgact NONESUCH
     } -cleanup {
@@ -1076,13 +1076,13 @@ JOE
     } -result {Unrecognized org activity: NONESUCH}
 
     test autogen_strategy-2.0 {strategy created} -setup {
-        autogen actors
-        autogen nbhoods
-        autogen frcgroups
+        tdb autogen actors
+        tdb autogen nbhoods
+        tdb autogen frcgroups
     } -body {
-        set a [llength [[strategy getname A00] blocks]]
+        set a [llength [[tdb strategy getname A00] blocks]]
         ted sendex autogen strategy
-        set b [llength [[strategy getname A00] blocks]]
+        set b [llength [[tdb strategy getname A00] blocks]]
         list $a $b
     } -cleanup {
         cleanup
@@ -1135,12 +1135,12 @@ JOE
     test autogen_scenario-2.1 {successful creation} -setup {
     } -body {
         ted sendex autogen scenario -civg 1
-        set a [expr {[llength [actor names]] > 0}]
-        set b [expr {[llength [nbhood names]] > 0}]
-        set c [expr {[llength [civgroup names]] > 0}]
-        set d [expr {[llength [frcgroup names]] > 0}]
-        set e [expr {[llength [orggroup names]] > 0}]
-        set f [expr {[llength [bsys topic ids]] > 0}]
+        set a [expr {[llength [tdb actor names]] > 0}]
+        set b [expr {[llength [tdb nbhood names]] > 0}]
+        set c [expr {[llength [tdb civgroup names]] > 0}]
+        set d [expr {[llength [tdb frcgroup names]] > 0}]
+        set e [expr {[llength [tdb orggroup names]] > 0}]
+        set f [expr {[llength [tdb bsys topic ids]] > 0}]
 
         list $a $b $c $d $e $f
     } -cleanup {
@@ -1150,9 +1150,9 @@ JOE
     test autogen_scenario-2.2 {creating whole scenario dumps existing} -setup {
         ted sendex autogen scenario -civg 1
     } -body {
-        set a [llength [actor names]]
+        set a [llength [tdb actor names]]
         ted sendex autogen scenario -civg 1
-        set b [llength [actor names]] 
+        set b [llength [tdb actor names]] 
 
         expr {$a == $b}
 

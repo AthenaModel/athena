@@ -7,7 +7,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    cap(sim) tests.
+#    tdb cap(sim) tests.
 #
 #    This test suite tests the cap(sim) mutators and queries
 #
@@ -55,7 +55,7 @@ namespace eval ::athena_test::tests:: {
     test create-1.1 {cap is created} -setup {
         setup
     } -body {
-        cap create [ted entity CBS]
+        tdb cap create [ted entity CBS]
         ted querylist {SELECT * FROM caps}
     } -cleanup {
         cleanup
@@ -70,7 +70,7 @@ cost      1000.0
     test create-1.2 {owner can be empty, yields NULL} -setup {
         setup
     } -body {
-        cap create [dict merge [ted entity CBS] {owner ""}]
+        tdb cap create [dict merge [ted entity CBS] {owner ""}]
         ted querylist {SELECT * FROM caps}
     } -cleanup {
         cleanup
@@ -84,11 +84,11 @@ cost      1000.0
 
     test create-2.1 {undo deletes the cap} -setup {
         setup
-        cap create [ted entity CBS]
-        set undo [cap create [ted entity CNN]]
+        tdb cap create [ted entity CBS]
+        set undo [tdb cap create [ted entity CNN]]
     } -body {
         namespace eval :: $undo
-        rdb eval {SELECT k FROM caps}
+        adb eval {SELECT k FROM caps}
     } -cleanup {
         cleanup
     } -result {CBS}
@@ -97,8 +97,8 @@ cost      1000.0
     test create-3.1 {cap_kn records created} -setup {
         setup
     } -body {
-        cap create [ted entity CBS]
-        cap create [ted entity CNN]
+        tdb cap create [ted entity CBS]
+        tdb cap create [ted entity CNN]
         ted querylist {SELECT * FROM cap_kn}
     } -cleanup {
         cleanup
@@ -118,11 +118,11 @@ nbcov  1.0
 
     test create-3.2 {undo deletes the cap_kn} -setup {
         setup
-        cap create [ted entity CBS]
-        set undo [cap create [ted entity CNN]]
+        tdb cap create [ted entity CBS]
+        set undo [tdb cap create [ted entity CNN]]
     } -body {
         namespace eval :: $undo
-        rdb eval {SELECT k,n FROM cap_kn}
+        adb eval {SELECT k,n FROM cap_kn}
     } -cleanup {
         cleanup
     } -result {CBS NB1}
@@ -130,8 +130,8 @@ nbcov  1.0
     test create-4.1 {cap_kg records created} -setup {
         setup
     } -body {
-        cap create [ted entity CBS]
-        cap create [ted entity CNN]
+        tdb cap create [ted entity CBS]
+        tdb cap create [ted entity CNN]
         ted querylist {SELECT * FROM cap_kg}
     } -cleanup {
         cleanup
@@ -151,11 +151,11 @@ pen  1.0
 
     test create-4.2 {undo deletes the cap_kg} -setup {
         setup
-        cap create [ted entity CBS]
-        set undo [cap create [ted entity CNN]]
+        tdb cap create [ted entity CBS]
+        set undo [tdb cap create [ted entity CNN]]
     } -body {
         namespace eval :: $undo
-        rdb eval {SELECT k,g FROM cap_kg}
+        adb eval {SELECT k,g FROM cap_kg}
     } -cleanup {
         cleanup
     } -result {CBS SHIA}
@@ -166,17 +166,17 @@ pen  1.0
     test delete-1.1 {CAP is deleted} -setup {
         ted create CBS CNN
     } -body {
-        cap delete CBS
+        tdb cap delete CBS
 
         # Is CBS gone?
-        rdb eval {SELECT k FROM caps}
+        adb eval {SELECT k FROM caps}
     } -cleanup {
         cleanup
     } -result {CNN}
 
     test delete-1.2 {Undo restores CAP} -setup {
         ted create CBS CNN
-        set undo [cap delete CBS]
+        set undo [tdb cap delete CBS]
     } -body {
         namespace eval :: $undo
         ted querylist {SELECT * FROM caps ORDER BY k}
@@ -199,19 +199,19 @@ cost      500.0
     test delete-2.1 {cap_kn records are deleted} -setup {
         ted create CBS CNN
     } -body {
-        cap delete CBS
+        tdb cap delete CBS
 
-        rdb eval {SELECT k,n FROM cap_kn ORDER BY k,n}
+        adb eval {SELECT k,n FROM cap_kn ORDER BY k,n}
     } -cleanup {
         cleanup
     } -result {CNN NB1 CNN NB2}
 
     test delete-2.2 {Undo restores cap_kn records} -setup {
         ted create CBS CNN
-        set undo [cap delete CBS]
+        set undo [tdb cap delete CBS]
     } -body {
         namespace eval :: $undo
-        rdb eval {SELECT k,n FROM cap_kn ORDER BY k,n}
+        adb eval {SELECT k,n FROM cap_kn ORDER BY k,n}
     } -cleanup {
         cleanup
     } -result {CBS NB1 CNN NB1 CNN NB2}
@@ -219,19 +219,19 @@ cost      500.0
     test delete-3.1 {cap_kg records are deleted} -setup {
         ted create CBS CNN
     } -body {
-        cap delete CBS
+        tdb cap delete CBS
 
-        rdb eval {SELECT k,g FROM cap_kg ORDER BY k,g}
+        adb eval {SELECT k,g FROM cap_kg ORDER BY k,g}
     } -cleanup {
         cleanup
     } -result {CNN KURD CNN SUNN} 
     
     test delete-3.2 {Undo restores cap_kg records} -setup {
         ted create CBS CNN
-        set undo [cap delete CBS]
+        set undo [tdb cap delete CBS]
     } -body {
         namespace eval :: $undo
-        rdb eval {SELECT k,g FROM cap_kg ORDER BY k,g}
+        adb eval {SELECT k,g FROM cap_kg ORDER BY k,g}
     } -cleanup {
         cleanup
     } -result {CBS SHIA CNN KURD CNN SUNN}
@@ -243,7 +243,7 @@ cost      500.0
     test update-1.1 {cap is updated} -setup {
         ted create CBS BOB
     } -body {
-        cap update {
+        tdb cap update {
             k            CBS
             longname     "Warsim 2000"
             owner        BOB
@@ -268,7 +268,7 @@ cost      10.0
     } -body {
         set a [ted query {SELECT * FROM caps}]
 
-        cap update [ted entity CBS]
+        tdb cap update [ted entity CBS]
 
         set b [ted query {SELECT * FROM caps}]
 
@@ -283,7 +283,7 @@ cost      10.0
     } -body {
         set a [ted query {SELECT * FROM caps}]
 
-        cap update  {
+        tdb cap update  {
             k            CBS
             longname     ""
             owner        ""
@@ -304,7 +304,7 @@ cost      10.0
     } -body {
         set a [ted query {SELECT * FROM caps}]
 
-        set undo [cap update {
+        set undo [tdb cap update {
             k            CBS
             owner        BOB
             longname     "Warsim 2000"
@@ -327,9 +327,9 @@ cost      10.0
 
     test nbcov_create-1.1 {record is created} -setup {
         setup
-        cap create [ted entity CBS]
+        tdb cap create [ted entity CBS]
     } -body {
-        cap nbcov create {id {CBS NB2} nbcov 0.5}
+        tdb cap nbcov create {id {CBS NB2} nbcov 0.5}
         ted query {SELECT * FROM cap_kn}
     } -cleanup {
         cleanup
@@ -342,11 +342,11 @@ CBS NB2 0.5
 
     test nbcov_create-2.1 {undo deletes the record} -setup {
         setup
-        cap create [ted entity CBS]
-        set undo [cap nbcov create {id {CBS NB2} nbcov 0.5}]
+        tdb cap create [ted entity CBS]
+        set undo [tdb cap nbcov create {id {CBS NB2} nbcov 0.5}]
     } -body {
         namespace eval :: $undo
-        rdb eval {SELECT k,n FROM cap_kn}
+        adb eval {SELECT k,n FROM cap_kn}
     } -cleanup {
         cleanup
     } -result {CBS NB1}
@@ -357,20 +357,20 @@ CBS NB2 0.5
 
     test nbcov_delete-1.1 {record is deleted} -setup {
         ted create CBS CNN
-        cap nbcov create {id {CBS NB2} nbcov 0.5}
+        tdb cap nbcov create {id {CBS NB2} nbcov 0.5}
     } -body {
-        cap nbcov delete {CBS NB1}
+        tdb cap nbcov delete {CBS NB1}
 
         # Is CBS NB1 gone?
-        rdb eval {SELECT k,n FROM cap_kn ORDER BY k,n}
+        adb eval {SELECT k,n FROM cap_kn ORDER BY k,n}
     } -cleanup {
         cleanup
     } -result {CBS NB2 CNN NB1 CNN NB2}
 
     test nbcov_delete-1.2 {Undo restores record} -setup {
         ted create CBS CNN
-        cap nbcov create {id {CBS NB2} nbcov 0.5}
-        set undo [cap nbcov delete {CBS NB1}]
+        tdb cap nbcov create {id {CBS NB2} nbcov 0.5}
+        set undo [tdb cap nbcov delete {CBS NB1}]
     } -body {
         namespace eval :: $undo
         ted query {SELECT * FROM cap_kn ORDER BY k,n}
@@ -391,7 +391,7 @@ CNN NB2 1.0
     test nbcov_update-1.1 {record is updated} -setup {
         ted create CBS BOB
     } -body {
-        cap nbcov update {
+        tdb cap nbcov update {
             id      {CBS NB1}
             nbcov   0.5
         }
@@ -410,7 +410,7 @@ CBS NB1 0.5
     } -body {
         set a [ted query {SELECT * FROM cap_kn}]
 
-        cap nbcov update {
+        tdb cap nbcov update {
             id      {CBS NB1}
             nbcov   1.0
         }
@@ -428,7 +428,7 @@ CBS NB1 0.5
     } -body {
         set a [ted query {SELECT * FROM cap_kn}]
 
-        cap nbcov update {
+        tdb cap nbcov update {
             id      {CBS NB1}
             nbcov   ""
         }
@@ -446,7 +446,7 @@ CBS NB1 0.5
     } -body {
         set a [ted query {SELECT * FROM cap_kn}]
 
-        set undo [cap nbcov update {
+        set undo [tdb cap nbcov update {
             id      {CBS NB1}
             nbcov   0.5
         }]
@@ -465,9 +465,9 @@ CBS NB1 0.5
 
     test pen_create-1.1 {record is created} -setup {
         setup
-        cap create [ted entity CBS]
+        tdb cap create [ted entity CBS]
     } -body {
-        cap pen create {id {CBS SUNN} pen 0.5}
+        tdb cap pen create {id {CBS SUNN} pen 0.5}
         ted query {SELECT * FROM cap_kg}
     } -cleanup {
         cleanup
@@ -480,11 +480,11 @@ CBS SUNN 0.5
 
     test pen_create-2.1 {undo deletes the record} -setup {
         setup
-        cap create [ted entity CBS]
-        set undo [cap pen create {id {CBS SUNN} pen 0.5}]
+        tdb cap create [ted entity CBS]
+        set undo [tdb cap pen create {id {CBS SUNN} pen 0.5}]
     } -body {
         namespace eval :: $undo
-        rdb eval {SELECT k,g FROM cap_kg}
+        adb eval {SELECT k,g FROM cap_kg}
     } -cleanup {
         cleanup
     } -result {CBS SHIA}
@@ -495,20 +495,20 @@ CBS SUNN 0.5
 
     test pen_delete-1.1 {record is deleted} -setup {
         ted create CBS CNN
-        cap pen create {id {CBS SUNN} pen 0.5}
+        tdb cap pen create {id {CBS SUNN} pen 0.5}
     } -body {
-        cap pen delete {CBS SHIA}
+        tdb cap pen delete {CBS SHIA}
 
         # Is CBS SHIA gone?
-        rdb eval {SELECT k,g FROM cap_kg ORDER BY k, g}
+        adb eval {SELECT k,g FROM cap_kg ORDER BY k, g}
     } -cleanup {
         cleanup
     } -result {CBS SUNN CNN KURD CNN SUNN}
 
     test pen_delete-1.2 {Undo restores record} -setup {
         ted create CBS CNN
-        cap pen create {id {CBS SUNN} pen 0.5}
-        set undo [cap pen delete {CBS SHIA}]
+        tdb cap pen create {id {CBS SUNN} pen 0.5}
+        set undo [tdb cap pen delete {CBS SHIA}]
     } -body {
         namespace eval :: $undo
         ted query {SELECT * FROM cap_kg ORDER BY k,g}
@@ -529,7 +529,7 @@ CNN SUNN 1.0
     test pen_update-1.1 {record is updated} -setup {
         ted create CBS BOB
     } -body {
-        cap pen update {
+        tdb cap pen update {
             id    {CBS SHIA}
             pen   0.5
         }
@@ -548,7 +548,7 @@ CBS SHIA 0.5
     } -body {
         set a [ted query {SELECT * FROM cap_kg}]
 
-        cap pen update {
+        tdb cap pen update {
             id   {CBS SHIA}
             pen  1.0
         }
@@ -566,7 +566,7 @@ CBS SHIA 0.5
     } -body {
         set a [ted query {SELECT * FROM cap_kg}]
 
-        cap pen update {
+        tdb cap pen update {
             id   {CBS SHIA}
             pen  ""
         }
@@ -584,7 +584,7 @@ CBS SHIA 0.5
     } -body {
         set a [ted query {SELECT * FROM cap_kg}]
 
-        set undo [cap pen update {
+        set undo [tdb cap pen update {
             id   {CBS SHIA}
             pen  0.5
         }]
@@ -602,7 +602,7 @@ CBS SHIA 0.5
     # names
 
     test names-1.1 {Returns names: none defined} -body {
-        cap names
+        tdb cap names
     } -cleanup {
         cleanup
     } -result {}
@@ -610,7 +610,7 @@ CBS SHIA 0.5
     test names-1.2 {Returns names} -setup {
         ted create CBS CNN
     } -body {
-        cap names
+        tdb cap names
     } -cleanup {
         cleanup
     } -result {CBS CNN}
@@ -620,7 +620,7 @@ CBS SHIA 0.5
     # longnames
 
     test longnames-1.1 {Returns names: none defined} -body {
-        cap longnames
+        tdb cap longnames
     } -cleanup {
         cleanup
     } -result {}
@@ -628,7 +628,7 @@ CBS SHIA 0.5
     test longnames-1.2 {Returns names} -setup {
         ted create CBS CNN
     } -body {
-        cap longnames
+        tdb cap longnames
     } -cleanup {
         cleanup
     } -result {{CBS: Columbia Broadcasting System} {CNN: Cable News Network}}
@@ -637,7 +637,7 @@ CBS SHIA 0.5
     # validate
 
     test validate-1.1 {Invalid name: none defined} -body {
-        cap validate NONESUCH
+        tdb cap validate NONESUCH
     } -returnCodes {
         error
     } -cleanup {
@@ -647,7 +647,7 @@ CBS SHIA 0.5
     test validate-1.2 {Invalid name: some defined} -setup {
         ted create CBS CNN
     } -body {
-        cap validate NONESUCH
+        tdb cap validate NONESUCH
     } -returnCodes {
         error
     } -cleanup {
@@ -657,7 +657,7 @@ CBS SHIA 0.5
     test validate-2.1 {Valid name} -setup {
         ted create CBS CNN
     } -body {
-        cap validate CNN
+        tdb cap validate CNN
     } -cleanup {
         cleanup
     } -result {CNN}
@@ -668,7 +668,7 @@ CBS SHIA 0.5
     test exists-1.1 {CAP doesn't exist} -setup {
         ted create CBS CNN
     } -body {
-        cap exists NBC
+        tdb cap exists NBC
     } -cleanup {
         cleanup
     } -result {0}
@@ -676,7 +676,7 @@ CBS SHIA 0.5
     test exists-1.2 {CAP exists} -setup {
         ted create CBS CNN
     } -body {
-        cap exists CNN
+        tdb cap exists CNN
     } -cleanup {
         cleanup
     } -result {1}
@@ -687,7 +687,7 @@ CBS SHIA 0.5
     test get-1.1 {get dict} -setup {
         ted create CBS CNN
     } -body {
-        ted pdict [cap get CBS]
+        ted pdict [tdb cap get CBS]
     } -cleanup {
         cleanup
     } -result {
@@ -701,7 +701,7 @@ CBS SHIA 0.5
     test get-1.2 {get column} -setup {
         ted create CBS CNN
     } -body {
-        cap get CBS longname
+        tdb cap get CBS longname
     } -cleanup {
         cleanup
     } -result {Columbia Broadcasting System}
@@ -712,7 +712,7 @@ CBS SHIA 0.5
     test nbcov_validate-1.1 {Invalid cap} -setup {
         ted create CBS CNN
     } -body {
-        cap nbcov validate {NONESUCH NB1}
+        tdb cap nbcov validate {NONESUCH NB1}
     } -returnCodes {
         error
     } -cleanup {
@@ -723,7 +723,7 @@ CBS SHIA 0.5
     test nbcov_validate-1.2 {Invalid nbhood} -setup {
         ted create CBS CNN
     } -body {
-        cap nbcov validate {CBS NONESUCH}
+        tdb cap nbcov validate {CBS NONESUCH}
     } -returnCodes {
         error
     } -cleanup {
@@ -733,7 +733,7 @@ CBS SHIA 0.5
     test nbcov_validate-2.1 {Valid record} -setup {
         ted create CBS CNN
     } -body {
-        cap nbcov validate {CBS NB1}
+        tdb cap nbcov validate {CBS NB1}
     } -cleanup {
         cleanup
     } -result {CBS NB1}
@@ -744,7 +744,7 @@ CBS SHIA 0.5
     test nbcov_exists-1.1 {record doesn't exist} -setup {
         ted create CBS CNN
     } -body {
-        cap nbcov exists {CBS NB2}
+        tdb cap nbcov exists {CBS NB2}
     } -cleanup {
         cleanup
     } -result {0}
@@ -752,7 +752,7 @@ CBS SHIA 0.5
     test nbcov_exist-1.2 {record exists} -setup {
         ted create CBS CNN
     } -body {
-        cap nbcov exists {CBS NB1}
+        tdb cap nbcov exists {CBS NB1}
     } -cleanup {
         cleanup
     } -result {1}
@@ -763,7 +763,7 @@ CBS SHIA 0.5
     test pen_validate-1.1 {Invalid cap} -setup {
         ted create CBS CNN
     } -body {
-        cap pen validate {NONESUCH SHIA}
+        tdb cap pen validate {NONESUCH SHIA}
     } -returnCodes {
         error
     } -cleanup {
@@ -774,7 +774,7 @@ CBS SHIA 0.5
     test pen_validate-1.2 {Invalid nbhood} -setup {
         ted create CBS CNN
     } -body {
-        cap pen validate {CBS NONESUCH}
+        tdb cap pen validate {CBS NONESUCH}
     } -returnCodes {
         error
     } -cleanup {
@@ -784,7 +784,7 @@ CBS SHIA 0.5
     test pen_validate-2.1 {Valid record} -setup {
         ted create CBS CNN
     } -body {
-        cap pen validate {CBS SHIA}
+        tdb cap pen validate {CBS SHIA}
     } -cleanup {
         cleanup
     } -result {CBS SHIA}
@@ -795,7 +795,7 @@ CBS SHIA 0.5
     test pen_exists-1.1 {record doesn't exist} -setup {
         ted create CBS CNN
     } -body {
-        cap pen exists {CBS SUNN}
+        tdb cap pen exists {CBS SUNN}
     } -cleanup {
         cleanup
     } -result {0}
@@ -803,7 +803,7 @@ CBS SHIA 0.5
     test pen_exist-1.2 {record exists} -setup {
         ted create CBS CNN
     } -body {
-        cap pen exists {CBS SHIA}
+        tdb cap pen exists {CBS SHIA}
     } -cleanup {
         cleanup
     } -result {1}
@@ -874,7 +874,7 @@ CNN SUNN NB1 BOB   0.9      1.0   1.0 0.9
     test access-1.1 {No one has access until [access load]} -setup {
         ted create JOE BOB CBS CNN 
     } -body {
-        cap hasaccess CBS JOE
+        tdb cap hasaccess CBS JOE
     } -cleanup {
         cleanup
     } -result {0}
@@ -882,16 +882,16 @@ CNN SUNN NB1 BOB   0.9      1.0   1.0 0.9
     test access-1.2 {On [access load], only actors have access} -setup {
         ted create JOE BOB DAVE BRIAN CBS CNN 
     } -body {
-        cap access load
+        tdb cap access load
         list \
-            [cap hasaccess CBS JOE]   \
-            [cap hasaccess CBS BOB]   \
-            [cap hasaccess CBS DAVE]  \
-            [cap hasaccess CBS BRIAN] \
-            [cap hasaccess CNN JOE]   \
-            [cap hasaccess CNN BOB]   \
-            [cap hasaccess CNN DAVE]  \
-            [cap hasaccess CNN BRIAN]
+            [tdb cap hasaccess CBS JOE]   \
+            [tdb cap hasaccess CBS BOB]   \
+            [tdb cap hasaccess CBS DAVE]  \
+            [tdb cap hasaccess CBS BRIAN] \
+            [tdb cap hasaccess CNN JOE]   \
+            [tdb cap hasaccess CNN BOB]   \
+            [tdb cap hasaccess CNN DAVE]  \
+            [tdb cap hasaccess CNN BRIAN]
     } -cleanup {
         cleanup
     } -result {1 0 0 0 0 1 0 0}
@@ -899,17 +899,17 @@ CNN SUNN NB1 BOB   0.9      1.0   1.0 0.9
     test access-1.3 {can grant access} -setup {
         ted create JOE BOB DAVE BRIAN CBS CNN 
     } -body {
-        cap access load
-        cap access grant {CBS CNN} {DAVE BRIAN}
+        tdb cap access load
+        tdb cap access grant {CBS CNN} {DAVE BRIAN}
         list \
-            [cap hasaccess CBS JOE]   \
-            [cap hasaccess CBS BOB]   \
-            [cap hasaccess CBS DAVE]  \
-            [cap hasaccess CBS BRIAN] \
-            [cap hasaccess CNN JOE]   \
-            [cap hasaccess CNN BOB]   \
-            [cap hasaccess CNN DAVE]  \
-            [cap hasaccess CNN BRIAN]
+            [tdb cap hasaccess CBS JOE]   \
+            [tdb cap hasaccess CBS BOB]   \
+            [tdb cap hasaccess CBS DAVE]  \
+            [tdb cap hasaccess CBS BRIAN] \
+            [tdb cap hasaccess CNN JOE]   \
+            [tdb cap hasaccess CNN BOB]   \
+            [tdb cap hasaccess CNN DAVE]  \
+            [tdb cap hasaccess CNN BRIAN]
     } -cleanup {
         cleanup
     } -result {1 0 1 1 0 1 1 1}
@@ -917,9 +917,9 @@ CNN SUNN NB1 BOB   0.9      1.0   1.0 0.9
     test access-1.4 {can save access to cap_access} -setup {
         ted create JOE BOB DAVE BRIAN CBS CNN 
     } -body {
-        cap access load
-        cap access grant {CBS CNN} {DAVE BRIAN}
-        cap access save
+        tdb cap access load
+        tdb cap access grant {CBS CNN} {DAVE BRIAN}
+        tdb cap access save
 
         ted query {SELECT * FROM cap_access ORDER BY k, a}
     } -cleanup {

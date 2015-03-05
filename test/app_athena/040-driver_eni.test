@@ -56,12 +56,12 @@ namespace eval ::athena_test::tests:: {
     
     proc setup {} {
         # FIRST, other rule sets shouldn't muddy the waters.
-        parm set dam.UNEMP.active no
-        parm set dam.CONSUMP.active no
-        parm set dam.ENERGY.active no
-        parm set dam.WATER.active no
-        parm set dam.TRANSPORT.active no
-        rdb eval {DELETE FROM drivers}
+        tdb parm set dam.UNEMP.active no
+        tdb parm set dam.CONSUMP.active no
+        tdb parm set dam.ENERGY.active no
+        tdb parm set dam.WATER.active no
+        tdb parm set dam.TRANSPORT.active no
+        adb eval {DELETE FROM drivers}
         
         # NEXT, create the entities
         ted create JOE BOB NB1 BLUE SHIA SUNN
@@ -112,7 +112,7 @@ namespace eval ::athena_test::tests:: {
 
     proc lock {} {
         ted lock
-        rdb eval {
+        adb eval {
             DELETE FROM rule_firings;
             DELETE FROM rule_inputs;
             DELETE FROM drivers;
@@ -308,7 +308,7 @@ fdict      controller JOE required 0.6 expected 0.75 actual 0.75 needs 0.0 expec
         ted step
 
         # No satisfaction effects when expectations are met
-        rdb eval {
+        adb eval {
             SELECT count(*)
             FROM rule_firings JOIN rule_inputs USING (firing_id)
             WHERE atype='sat'
@@ -420,7 +420,7 @@ ENI-1-4 SUNN JOE credit=M, has control
     test sigline-1.1 {sigline output} -setup {
         setup
     } -body {
-        ruleset ENI sigline SHIA 
+        tdb ruleset ENI sigline SHIA 
     } -cleanup {
         cleanup
     } -result {Provision of ENI services to SHIA}
@@ -432,7 +432,7 @@ ENI-1-4 SUNN JOE credit=M, has control
     test narrative-1.1 {narrative output} -setup {
         setup
     } -body {
-        ruleset ENI narrative {
+        tdb ruleset ENI narrative {
             dtype      ENI
             g          SHIA
             case       E-
@@ -448,7 +448,7 @@ ENI-1-4 SUNN JOE credit=M, has control
     test detail-1.1 {detail, controller} -setup {
         setup
     } -body {
-        ruleset ENI detail {
+        tdb ruleset ENI detail {
             dtype      ENI
             g          SHIA
             actual     0.8
@@ -487,7 +487,7 @@ actor <a href="my://app/actor/JOE">JOE</a>.<p>
     test detail-1.2 {detail, no controller} -setup {
         setup
     } -body {
-        ruleset ENI detail {
+        tdb ruleset ENI detail {
             dtype      ENI
             g          SHIA
             actual     0.7

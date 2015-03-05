@@ -28,7 +28,7 @@ appserver module AGENT {
         # FIRST, register the resource types
         appserver register /agents {agents/?}         \
             tcl/linkdict [myproc /agents:linkdict]    \
-            tcl/enumlist [asproc enum:enumlist agent] \
+            tcl/enumlist [asproc enum:enumlist {adb agent}] \
             text/html    [myproc /agents:html] {
                 Links to all of the currently 
                 defined agents.  HTML content 
@@ -102,12 +102,12 @@ appserver module AGENT {
         ht table {
             "Agent" "Type" "# Blocks" "# Conditions" "# Tactics"
         } {
-            foreach a [agent names] {
-                array set stats [agent stats $a]
+            foreach a [adb agent names] {
+                array set stats [adb agent stats $a]
 
                 ht tr {
                     ht td left  { ht link my://app/agent/$a $a }
-                    ht td left  { ht put [agent type $a]       }
+                    ht td left  { ht put [adb agent type $a]       }
                     ht td right { ht put $stats(blocks)        }
                     ht td right { ht put $stats(conditions)    }
                     ht td right { ht put $stats(tactics)       } 
@@ -137,22 +137,22 @@ appserver module AGENT {
         # FIRST, Accumulate data
         set a [string toupper $(1)]
 
-        if {$a ni [agent names]} {
+        if {![adb agent exists $a]} {
             return -code error -errorcode NOTFOUND \
                 "Unknown entity: [dict get $udict url]."
         }
 
-        set s [strategy getname $a]
+        set s [adb strategy getname $a]
 
         # NEXT, Begin the page
-        rdb eval {SELECT * FROM gui_agents WHERE agent_id=$a} data {}
+        adb eval {SELECT * FROM gui_agents WHERE agent_id=$a} data {}
 
         ht page "Agent: $a ($data(agent_type))"
         ht title "Agent: $a ($data(agent_type))" 
 
         if {$data(agent_type) eq "actor"} {
             ht putln "Agent $a is an actor; click "
-            ht link [rdb onecolumn {
+            ht link [adb onecolumn {
                 SELECT url FROM gui_actors
                 WHERE a=$a
             }] here
@@ -191,22 +191,22 @@ appserver module AGENT {
         # FIRST, Accumulate data
         set a [string toupper $(1)]
 
-        if {$a ni [agent names]} {
+        if {![adb agent exists $a]} {
             return -code error -errorcode NOTFOUND \
                 "Unknown entity: [dict get $udict url]."
         }
 
-        set s [strategy getname $a]
+        set s [adb strategy getname $a]
 
         # NEXT, Begin the page
-        rdb eval {SELECT * FROM gui_agents WHERE agent_id=$a} data {}
+        adb eval {SELECT * FROM gui_agents WHERE agent_id=$a} data {}
 
         ht page "Agent: $a ($data(agent_type))"
         ht title "Agent: $a ($data(agent_type))" 
 
         if {$data(agent_type) eq "actor"} {
             ht putln "Agent $a is an actor; click "
-            ht link [rdb onecolumn {
+            ht link [adb onecolumn {
                 SELECT url FROM gui_actors
                 WHERE a=$a
             }] here
@@ -257,7 +257,7 @@ appserver module AGENT {
     # of the page.
 
     proc BlockList {a mode} {
-        set s [strategy getname $a]
+        set s [adb strategy getname $a]
 
         if {$mode eq "full"} {
             set root my://app/agent/$a/full#block
@@ -328,7 +328,7 @@ appserver module AGENT {
         ht page "Sanity Check: Agents' Strategies" {
             ht title "Agents' Strategies" "Sanity Check"
             
-            if {[strategy checker ::appserver::ht] eq "OK"} {
+            if {[adb strategy checker ::appserver::ht] eq "OK"} {
                 ht putln "No problems were found."
                 ht para
             }

@@ -7,7 +7,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    activity(sim) tests.
+#    tdb activity(sim) tests.
 #
 #    This test suite tests the activity(sim) mutators and queries
 #
@@ -48,42 +48,42 @@ namespace eval ::athena_test::tests:: {
     # asched
 
     test asched-1.1 {List of schedulable names} -body {
-        activity asched names
+        tdb activity asched names
     } -result {CHKPOINT COERCION CONSTRUCT CRIME CURFEW EDU EMPLOY GUARD INDUSTRY INFRA LAWENF MEDICAL PATROL PSYOP RELIEF}
 
     test asched-1.2 {List of schedulable names group g} -body {
-        activity asched names BLUE
+        tdb activity asched names BLUE
     } -result {}
 
     test asched-2.1 {Invalid name} -body {
-        activity asched validate NONESUCH
+        tdb activity asched validate NONESUCH
     } -returnCodes {
         error
     } -result {Invalid activity, should be one of: CHKPOINT, COERCION, CONSTRUCT, CRIME, CURFEW, EDU, EMPLOY, GUARD, INDUSTRY, INFRA, LAWENF, MEDICAL, PATROL, PSYOP, RELIEF}
 
     test asched-2.2 {Valid name} -body {
-        activity asched validate PATROL
+        tdb activity asched validate PATROL
     } -result {PATROL}
 
     #-------------------------------------------------------------------
     # withcov
 
     test withcov-1.1 {List of implicit/explicit names force group} -body {
-        activity withcov names BLUE
+        tdb activity withcov names BLUE
     } -result {}
 
     test withcov-1.2 {List of implicit/explicit names force group} -body {
-        activity withcov names USAID 
+        tdb activity withcov names USAID 
     } -result {}
 
     test withcov-2.1 {FRC - Invalid name} -body {
-        activity withcov frc validate NONESUCH
+        tdb activity withcov frc validate NONESUCH
     } -returnCodes {
         error
     } -result {Invalid activity, should be one of: CHKPOINT, COERCION, CONSTRUCT, CRIME, CURFEW, EDU, EMPLOY, GUARD, INDUSTRY, INFRA, LAWENF, MEDICAL, PATROL, PSYOP, RELIEF}
 
     test withcov-2.2 {ORG - Invalid name} -body {
-        activity withcov org validate NONESUCH
+        tdb activity withcov org validate NONESUCH
     } -returnCodes {
         error
     } -result {Invalid activity, should be one of: CONSTRUCT, EDU, EMPLOY, INDUSTRY, INFRA, MEDICAL, RELIEF}
@@ -94,7 +94,7 @@ namespace eval ::athena_test::tests:: {
     test check-1.1 {group/activity mismatch} -setup {
         ted create BLUE
     } -body {
-        activity check BLUE NONESUCH
+        tdb activity check BLUE NONESUCH
     } -returnCodes {
         error
     } -cleanup {
@@ -104,7 +104,7 @@ namespace eval ::athena_test::tests:: {
     test check-1.2 {group/activity match} -setup {
         ted create BLUE
     } -body {
-        activity check BLUE PATROL
+        tdb activity check BLUE PATROL
     } -cleanup {
         cleanup
     } -result {}

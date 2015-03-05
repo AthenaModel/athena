@@ -55,13 +55,13 @@ namespace eval ::athena_test::tests:: {
     
     proc setup {} {
         # FIRST, other rule sets shouldn't muddy the waters.
-        parm set dam.CONSUMP.active no
-        parm set dam.UNEMP.active no
-        parm set dam.ENI.active no
-        parm set dam.ENERGY.active no
-        parm set dam.WATER.active no
-        parm set dam.TRANSPORT.active no
-        rdb eval {DELETE FROM drivers}
+        tdb parm set dam.CONSUMP.active no
+        tdb parm set dam.UNEMP.active no
+        tdb parm set dam.ENI.active no
+        tdb parm set dam.ENERGY.active no
+        tdb parm set dam.WATER.active no
+        tdb parm set dam.TRANSPORT.active no
+        adb eval {DELETE FROM drivers}
         
         # NEXT, create the entities
         ted create JOE BOB NB1 BLUE BRIT SHIA SUNN
@@ -79,7 +79,7 @@ namespace eval ::athena_test::tests:: {
     # Attrits groups in NB1, and advances time so that rules fire.
     
     proc attrit {casualties {g1 ""} {g2 ""}} {
-        aam attrit [dict create            \
+        tdb aam attrit [dict create            \
                     mode       NBHOOD      \
                     n          NB1         \
                     f          ""          \
@@ -149,7 +149,7 @@ CIVCAS-1-1 SUNN QOL
         setup
     } -body {
         attrit 1000
-        rdb eval {
+        adb eval {
             SELECT count(*) FROM rule_firings WHERE rule GLOB 'CIVCAS-2-*'
         }
     } -cleanup {
@@ -246,7 +246,7 @@ CIVCAS-2-1 SUNN BLUE
     test sigline-1.1 {sigline output} -setup {
         setup
     } -body {
-        ruleset CIVCAS sigline SHIA 
+        tdb ruleset CIVCAS sigline SHIA 
     } -cleanup {
         cleanup
     } -result {Casualties to group SHIA}
@@ -258,7 +258,7 @@ CIVCAS-2-1 SUNN BLUE
     test narrative-1.1 {narrative output: CIVCAS-1} -setup {
         setup
     } -body {
-        ruleset CIVCAS narrative {
+        tdb ruleset CIVCAS narrative {
             dtype      CIVCAS
             f          SHIA
             casualties 100
@@ -270,7 +270,7 @@ CIVCAS-2-1 SUNN BLUE
     test narrative-1.2 {narrative output: CIVCAS-2} -setup {
         setup
     } -body {
-        ruleset CIVCAS narrative {
+        tdb ruleset CIVCAS narrative {
             dtype      CIVCAS
             f          SHIA
             g          BLUE
@@ -286,7 +286,7 @@ CIVCAS-2-1 SUNN BLUE
     test detail-1.1 {detail, CIVCAS-1} -setup {
         setup
     } -body {
-        ruleset CIVCAS detail {
+        tdb ruleset CIVCAS detail {
             dtype      CIVCAS
             f          SHIA
             casualties 100
@@ -306,7 +306,7 @@ The Z-curve multiplier is <i>mult</i>=2.00.<p>
     test detail-1.2 {detail, CIVCAS-2} -setup {
         setup
     } -body {
-        ruleset CIVCAS detail {
+        tdb ruleset CIVCAS detail {
             dtype      CIVCAS
             f          SHIA
             g          BLUE

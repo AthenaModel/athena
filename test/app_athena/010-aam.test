@@ -101,13 +101,13 @@ namespace eval ::athena_test::tests:: {
     proc mkunits {args} {
         variable units
 
-        personnel start
+        tdb personnel start
 
-        rdb eval { DELETE FROM units }
+        adb eval { DELETE FROM units }
 
         foreach unit $args {
             dict with units($unit) {
-                rdb eval {
+                adb eval {
                     INSERT INTO units(u,g,n,a,personnel)
                     VALUES($unit,$g,$n,'NONE',$personnel);
                 }
@@ -133,8 +133,8 @@ namespace eval ::athena_test::tests:: {
         ted create NB1 BLUE BRIT
         mkunits BLUE-NB1/0000 BLUE-NB1/0001 BRIT-NB1/0000
     } -body {
-        aam attrit [list mode GROUP n NB1 f BLUE casualties 20 g1 "" g2 ""]
-        aam assess
+        tdb aam attrit [list mode GROUP n NB1 f BLUE casualties 20 g1 "" g2 ""]
+        tdb aam assess
         # All units had 15 personnel to start.
         # The two BLUE units should be attrited equally.
         # The BRIT unit should not be touched.
@@ -154,9 +154,9 @@ BRIT-NB1/0000 15
         ted create NB1 BLUE BRIT
         mkunits BLUE-NB1/0000 BLUE-NB1/0001 BRIT-NB1/0000
     } -body {
-        aam attrit [list mode GROUP n NB1 f BLUE casualties 40 g1 "" g2 ""]
+        tdb aam attrit [list mode GROUP n NB1 f BLUE casualties 40 g1 "" g2 ""]
 
-        aam assess
+        tdb aam assess
         # All BLUE units should be at 0.
         ted query {SELECT u,personnel FROM units}
     } -cleanup {
@@ -174,9 +174,9 @@ BRIT-NB1/0000 15
         ted create NB1 BLUE BRIT
         mkunits BRIT-NB1/0000
     } -body {
-        aam attrit [list mode GROUP n NB1 f BLUE casualties 40 g1 "" g2 ""]
+        tdb aam attrit [list mode GROUP n NB1 f BLUE casualties 40 g1 "" g2 ""]
 
-        aam assess
+        tdb aam assess
         # All BLUE units should be at 0.
         ted query {SELECT u,personnel FROM units}
     } -cleanup {
@@ -192,8 +192,8 @@ BRIT-NB1/0000 15
         ted create NB1 USAID HAL
         mkunits USAID-NB1/0000 USAID-NB1/0001 HAL-NB1/0000
     } -body {
-        aam attrit [list mode GROUP n NB1 f USAID casualties 20 g1 "" g2 ""]
-        aam assess
+        tdb aam attrit [list mode GROUP n NB1 f USAID casualties 20 g1 "" g2 ""]
+        tdb aam assess
         # All units had 15 personnel to start.
         # The USAID units should be attrited equally.
         # The HAL unit should not be touched.
@@ -215,9 +215,9 @@ HAL-NB1/0000   15
         ted create NB1 NB2 BLUE SHIA KURD 
         ted lock
     } -body {
-        aam attrit [list mode GROUP n NB1 f KURD casualties 20 g1 "" g2 ""]
-        aam assess
-        demog stats
+        tdb aam attrit [list mode GROUP n NB1 f KURD casualties 20 g1 "" g2 ""]
+        tdb aam assess
+        tdb demog stats
 
         # No error
         pprint_demog_g
@@ -234,9 +234,9 @@ KURD 0         1000
         ted create NB1 BLUE SHIA SUNN
         ted lock
     } -body {
-        aam attrit [list mode GROUP n NB1 f SHIA casualties 20 g1 "" g2 ""]
-        aam assess
-        demog stats
+        tdb aam attrit [list mode GROUP n NB1 f SHIA casualties 20 g1 "" g2 ""]
+        tdb aam assess
+        tdb demog stats
 
         pprint_demog_g
     } -cleanup {
@@ -253,9 +253,9 @@ SUNN 0         1000
         ted create NB1 BLUE SHIA SUNN
         ted lock
     } -body {
-        aam attrit [list mode GROUP n NB1 f SHIA casualties 2000 g1 "" g2 ""]
-        aam assess
-        demog stats
+        tdb aam attrit [list mode GROUP n NB1 f SHIA casualties 2000 g1 "" g2 ""]
+        tdb aam assess
+        tdb demog stats
 
         pprint_demog_g
     } -cleanup {
@@ -274,9 +274,9 @@ SUNN 0         1000
     } -body {
         # There are only 1000 in the group, so we should get 1000
         # casualties.
-        aam attrit [list mode GROUP n NB1 f SHIA casualties 2000 g1 "" g2 ""]
+        tdb aam attrit [list mode GROUP n NB1 f SHIA casualties 2000 g1 "" g2 ""]
         
-        aam assess
+        tdb aam assess
         ted query {SELECT u,personnel FROM units}
     } -cleanup {
         cleanup
@@ -291,10 +291,10 @@ SUNN/NB1 1000
         ted create NB1 BLUE BRIT SHIA SUNN
         ted lock
     } -body {
-        aam attrit \
+        tdb aam attrit \
             [list mode GROUP n NB1 f SHIA casualties 2000 g1 BLUE g2 BRIT]
         
-        aam assess
+        tdb aam assess
         ted query {SELECT u,personnel FROM units}
     } -cleanup {
         cleanup
@@ -308,13 +308,13 @@ SUNN/NB1 1000
     test attrit-2.8 {f is empty CIV group} -setup {
         ted create NB1 BLUE SHIA SUNN
         ted lock
-        aam attrit [list mode GROUP n NB1 f SHIA casualties 2000 g1 "" g2 ""]
-        aam assess
+        tdb aam attrit [list mode GROUP n NB1 f SHIA casualties 2000 g1 "" g2 ""]
+        tdb aam assess
     } -body {
         # Attriting an empty civilian group causes no problems.
-        aam attrit [list mode GROUP n NB1 f SHIA casualties 2000 g1 "" g2 ""]
-        aam assess
-        demog stats
+        tdb aam attrit [list mode GROUP n NB1 f SHIA casualties 2000 g1 "" g2 ""]
+        tdb aam assess
+        tdb demog stats
 
         pprint_demog_g
     } -cleanup {
@@ -334,7 +334,7 @@ SUNN 0         1000
         ted deploy NB1 BRIT 200
         ted lock
     } -body {
-        aam attrit {
+        tdb aam attrit {
             mode        GROUP 
             n           NB1 
             f           BLUE 
@@ -342,7 +342,7 @@ SUNN 0         1000
             g1          "" 
             g2          ""
         }
-        aam ApplyAttrition
+        tdb aam ApplyAttrition
         ted query {select n,g,personnel from deploy_tng}
     } -cleanup {
         cleanup
@@ -365,9 +365,9 @@ NB1 BRIT 200
         ted create NB1 BLUE SHIA SUNN
         ted lock
     } -body {
-        aam attrit [list mode NBHOOD n NB1 casualties 20 g1 "" g2 ""]
-        aam assess
-        demog stats
+        tdb aam attrit [list mode NBHOOD n NB1 casualties 20 g1 "" g2 ""]
+        tdb aam assess
+        tdb demog stats
 
         pprint_demog_g
     } -cleanup {
@@ -384,9 +384,9 @@ SUNN 10        990
         ted create NB1 BLUE SHIA SUNN
         ted lock
     } -body {
-        aam attrit [list mode NBHOOD n NB1 casualties 3000  g1 "" g2 ""]
-        aam assess
-        demog stats
+        tdb aam attrit [list mode NBHOOD n NB1 casualties 3000  g1 "" g2 ""]
+        tdb aam assess
+        tdb demog stats
 
         pprint_demog_g
     } -cleanup {
@@ -403,9 +403,9 @@ SUNN 1000      0
         ted create NB1 BLUE SHIA SUNN
         ted lock
     } -body {
-        aam attrit [list mode NBHOOD n NB1 casualties 100  g1 "" g2 ""]
-        aam assess
-        demog stats
+        tdb aam attrit [list mode NBHOOD n NB1 casualties 100  g1 "" g2 ""]
+        tdb aam assess
+        tdb demog stats
 
         set a [pprint_demog_g]
         set b [ted query {SELECT u,personnel FROM units}]
@@ -433,8 +433,8 @@ SUNN/NB1 950
         ted deploy NB1 BRIT 15
         ted lock
     } -body {
-        aam attrit [list mode NBHOOD n NB1 casualties 10000 g1 BLUE g2 BRIT]
-        aam assess
+        tdb aam attrit [list mode NBHOOD n NB1 casualties 10000 g1 BLUE g2 BRIT]
+        tdb aam assess
 
         ted query {SELECT u,personnel FROM units ORDER BY u}
     } -cleanup {
@@ -453,12 +453,12 @@ USAID/NB1 15
     test attritn-1.7 {attriting empty neighborhood is OK} -setup {
         ted create NB1 BLUE SHIA SUNN
         ted lock
-        aam attrit [list mode NBHOOD n NB1 casualties 3000  g1 "" g2 ""]
-        aam assess
+        tdb aam attrit [list mode NBHOOD n NB1 casualties 3000  g1 "" g2 ""]
+        tdb aam assess
     } -body {
-        aam attrit [list mode NBHOOD n NB1 casualties 3000  g1 "" g2 ""]
-        aam assess
-        demog stats
+        tdb aam attrit [list mode NBHOOD n NB1 casualties 3000  g1 "" g2 ""]
+        tdb aam assess
+        tdb demog stats
 
         pprint_demog_g
     } -cleanup {

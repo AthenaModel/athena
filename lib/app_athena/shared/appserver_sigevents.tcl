@@ -218,7 +218,7 @@ appserver module SIGEVENTS {
         set query "SELECT count(*) FROM $table\n"
         append query $where
 
-        set items [rdb onecolumn $query]
+        set items [adb onecolumn $query]
 
         if {$page_size eq "ALL"} {
             set page_size $items
@@ -247,7 +247,7 @@ appserver module SIGEVENTS {
         ht push
 
         ht table {"Week" "Date" "Model" "Narrative"} {
-            rdb eval $query {
+            adb eval $query {
                 ht tr {
                     ht td right {
                         ht put $t
