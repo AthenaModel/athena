@@ -2,12 +2,10 @@
 
 - Problems in test/athena:
   - MAP:* orders use `app puts`; wrote issue #130 for Dave. 
-- When app_athena no longer needs to be loaded to test athena(n):
-  - app_athena tests to test/athena.
-  - Add '$adb ruleset' test, vs. 010-dam, 010-driver.
-- Move "application" executive commands from executive.tcl to app.
-- parm component should be told about state changes directly.
 - Remove all "app" calls from athena(n).
+- Move "application" executive commands from executive.tcl to app.
+- Add tests for the athena(n) object (in so far as that's useful)
+  as 050-athena.test.
 - Document athena(n)
 - Document athenadb(n)
 - See about giving athena(n) a read-only db.

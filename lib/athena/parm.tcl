@@ -36,13 +36,14 @@ snit::type ::athena::parm {
     #-------------------------------------------------------------------
     # Constructor
 
-    # constructor adb_
+    # constructor ?adb_?
     #
     # adb_    - The athenadb(n) that owns this instance.
     #
-    # Initializes instances of the type.
+    # Initializes instances of the type.  If the adb_ is given, the 
+    # relevant parms will be locked on dbsync.
 
-    constructor {adb_} {
+    constructor {{adb_ ""}} {
         set adb $adb_
 
         # FIRST, create and initialize parmset(n)
@@ -51,7 +52,9 @@ snit::type ::athena::parm {
 
         # Register to receive simulation state updates.
         # We need a better way to do this.
-        notifier bind [$adb cget -subject] <State> $self [mymethod SimState]
+        if {$adb ne ""} {
+            notifier bind [$adb cget -subject] <State> $self [mymethod SimState]
+        }
     }
 
     destructor {
@@ -2046,7 +2049,7 @@ snit::type ::athena::parm {
 
 
     #-------------------------------------------------------------------
-    # Event Handlers
+    # Synchronization
 
     # SimState
     #
@@ -2054,22 +2057,16 @@ snit::type ::athena::parm {
     # PREP to RUNNING.  It locks and unlocks significant parameters.
 
     method SimState {} {
+        if {$adb eq ""} {
+            return
+        }
+
         if {[$adb state] eq "PREP"} {
             $ps unlock *
         } else {
-            $self LockParms
+            $ps lock econ.ticksPerTock
         }
     }
-
-    # LockParms
-    #
-    # Locks parameters that shouldn't be changed once the simulation is
-    # running.
-
-    method LockParms {} {
-        $ps lock econ.ticksPerTock
-    }
-
 
     #-------------------------------------------------------------------
     # Queries
