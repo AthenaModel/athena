@@ -643,7 +643,7 @@ namespace eval ::athena_test::tests:: {
     
     test istime-2.1 {tmode AT, success} -setup {
         setup
-        simclock advance 10
+        tdb clock advance 10
     } -body {
         $B1 set tmode AT
         $B1 set t1    10
@@ -654,7 +654,7 @@ namespace eval ::athena_test::tests:: {
     
     test istime-2.2 {tmode AT, failure} -setup {
         setup
-        simclock advance 10
+        tdb clock advance 10
     } -body {
         $B1 set tmode AT
         $B1 set t1    12
@@ -665,7 +665,7 @@ namespace eval ::athena_test::tests:: {
 
     test istime-3.1 {tmode BEFORE, t < t1} -setup {
         setup
-        simclock advance 9
+        tdb clock advance 9
     } -body {
         $B1 set tmode BEFORE
         $B1 set t1    10
@@ -676,7 +676,7 @@ namespace eval ::athena_test::tests:: {
     
     test istime-3.2 {tmode BEFORE, t = t1} -setup {
         setup
-        simclock advance 10
+        tdb clock advance 10
     } -body {
         $B1 set tmode BEFORE
         $B1 set t1    10
@@ -687,7 +687,7 @@ namespace eval ::athena_test::tests:: {
     
     test istime-3.3 {tmode BEFORE, t > t1} -setup {
         setup
-        simclock advance 11
+        tdb clock advance 11
     } -body {
         $B1 set tmode BEFORE
         $B1 set t1    10
@@ -698,7 +698,7 @@ namespace eval ::athena_test::tests:: {
     
     test istime-4.1 {tmode AFTER, t < t1} -setup {
         setup
-        simclock advance 9
+        tdb clock advance 9
     } -body {
         $B1 set tmode AFTER
         $B1 set t1    10
@@ -709,7 +709,7 @@ namespace eval ::athena_test::tests:: {
     
     test istime-4.2 {tmode AFTER, t = t1} -setup {
         setup
-        simclock advance 10
+        tdb clock advance 10
     } -body {
         $B1 set tmode AFTER
         $B1 set t1    10
@@ -721,7 +721,7 @@ namespace eval ::athena_test::tests:: {
     
     test istime-4.3 {tmode AFTER, t > t1} -setup {
         setup
-        simclock advance 11
+        tdb clock advance 11
     } -body {
         $B1 set tmode AFTER
         $B1 set t1    10
@@ -732,7 +732,7 @@ namespace eval ::athena_test::tests:: {
 
     test istime-5.1 {tmode DURING, t < t1} -setup {
         setup
-        simclock advance 9
+        tdb clock advance 9
     } -body {
         $B1 set tmode DURING
         $B1 set t1    10
@@ -744,7 +744,7 @@ namespace eval ::athena_test::tests:: {
     
     test istime-5.2 {tmode DURING, t = t1} -setup {
         setup
-        simclock advance 10
+        tdb clock advance 10
     } -body {
         $B1 set tmode DURING
         $B1 set t1    10
@@ -756,7 +756,7 @@ namespace eval ::athena_test::tests:: {
     
     test istime-5.3 {tmode DURING, t1 < t < t2} -setup {
         setup
-        simclock advance 11
+        tdb clock advance 11
     } -body {
         $B1 set tmode DURING
         $B1 set t1    10
@@ -768,7 +768,7 @@ namespace eval ::athena_test::tests:: {
     
     test istime-5.4 {tmode DURING, t = t2} -setup {
         setup
-        simclock advance 15
+        tdb clock advance 15
     } -body {
         $B1 set tmode DURING
         $B1 set t1    10
@@ -780,7 +780,7 @@ namespace eval ::athena_test::tests:: {
     
     test istime-5.5 {tmode DURING, t > t2} -setup {
         setup
-        simclock advance 16
+        tdb clock advance 16
     } -body {
         $B1 set tmode DURING
         $B1 set t1    10

@@ -36,7 +36,7 @@ namespace eval ::athena_test::tests:: {
     # Import tcltest(n)
     namespace import ::tcltest::*
 
-    variable clockdata [simclock checkpoint]
+    variable clockdata [tdb clock checkpoint]
 
     # Set up to run
 
@@ -52,7 +52,7 @@ namespace eval ::athena_test::tests:: {
         variable clockdata
 
         # Clean up the test environment
-        simclock restore $clockdata
+        tdb clock restore $clockdata
 
         if {[adb state] eq "RUNNING"} {
             [adb athenadb] sim pause
@@ -62,8 +62,8 @@ namespace eval ::athena_test::tests:: {
             [adb athenadb] sim unlock
         }
 
-        if {[simclock now] > 0} {
-            simclock reset
+        if {[tdb clock now] > 0} {
+            tdb clock reset
         }
 
         ted cleanup
@@ -88,7 +88,7 @@ namespace eval ::athena_test::tests:: {
 
     test STARTDATE-2.1 {startdate is set} -body {
         ted order SIM:STARTDATE startdate 2014W26
-        simclock cget -week0
+        tdb clock cget -week0
     } -cleanup {
         cleanup
     } -result {2014W26}
@@ -136,7 +136,7 @@ namespace eval ::athena_test::tests:: {
 
     test STARTTICK-2.1 {starttick is set} -body {
         ted order SIM:STARTTICK starttick 52
-        simclock cget -tick0
+        tdb clock cget -tick0
     } -cleanup {
         cleanup
     } -result {52}
@@ -308,7 +308,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         ted order SIM:RUN
-        simclock tick
+        tdb clock tick
         ted order SIM:PAUSE
         tdb sim state
     } -cleanup {
@@ -320,7 +320,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         ted order SIM:RUN
-        simclock tick
+        tdb clock tick
         ted order SIM:PAUSE
         adb order available SIM:PAUSE
     } -cleanup {
@@ -376,7 +376,7 @@ namespace eval ::athena_test::tests:: {
         ted step
     } -body {
         ted order SIM:REBASE
-        list [tdb sim state] [simclock now]
+        list [tdb sim state] [tdb clock now]
     } -cleanup {
         cleanup
     } -result {PREP 1}

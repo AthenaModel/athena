@@ -11,8 +11,6 @@
 #    This module defines a type, "absit", which is used to
 #    manage the collection of abstract situation objects, or absits.
 #
-# TBD: Global references: simclock, ptype
-#
 #-----------------------------------------------------------------------
 
 snit::type ::athena::absit {
@@ -84,7 +82,7 @@ snit::type ::athena::absit {
         # NEXT, Determine the correct state for each absit.  Those in the
         # INITIAL state are now ONGOING, and those ONGOING whose resolution 
         # time has been reached are now RESOLVED.
-        set now [simclock now]
+        set now [adb clock now]
 
         foreach {s state rduration tr} [$adb eval {
             SELECT s, state, rduration, tr FROM absits
@@ -422,11 +420,11 @@ snit::type ::athena::absit {
         # right now.
 
         if {[$adb state] eq "PREP"} {
-            set ts [simclock cget -tick0]
+            set ts [adb clock cget -tick0]
         } elseif {[$adb state] eq "PAUSED"} {
-            set ts [simclock now 1]
+            set ts [adb clock now 1]
         } else {
-            set ts [simclock now]
+            set ts [adb clock now]
         }
 
         if {$rduration ne ""} {

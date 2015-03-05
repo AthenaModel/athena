@@ -132,6 +132,7 @@ snit::type ::athena::athenadb {
     component ruleset        -public ruleset        ;# rule set manager
     component sanity         -public sanity         ;# sanity checker
     component sim            -public sim            ;# Simulation Control
+    component simclock       -public clock          ;# Simulation Clock
     
     # Editable Entities
     component absit          -public absit          ;# absit manager
@@ -233,6 +234,9 @@ snit::type ::athena::athenadb {
         set options(-subject) $self
 
         $self configurelist $args
+
+        # NEXT, create the simulation clock
+        install simclock using ::projectlib::weekclock ${selfns}::simclock
 
         # NEXT, create the RDB and configure it for use.
         $self CreateRDB
@@ -375,13 +379,10 @@ snit::type ::athena::athenadb {
 
     method CreateRDB {} {
         # FIRST, create a clean working RDB.
-        # 
-        # TODO: Make ::simclock ${selfns}::clock
-
         set rdb ${selfns}::rdb
 
         scenariodb $rdb \
-            -clock      ::simclock \
+            -clock      $simclock             \
             -explaincmd [mymethod ExplainCmd] \
             -subject    $options(-subject)
 
@@ -866,7 +867,7 @@ snit::type ::athena::athenadb {
         $sigevent purge 0
 
         # NEXT, update the clock
-        simclock configure -tick0 [simclock now]
+        $simclock configure -tick0 [$simclock now]
 
         # NEXT, reinitialize modules that depend on the time.
         $aram clear
@@ -894,12 +895,20 @@ snit::type ::athena::athenadb {
         return $info(adbfile)
     } 
 
-    # rdb component
+    # component rdb
     #
     # Returns the name of the RDB component, for use by athena(n).
 
-    method {rdb component} {} {
+    method {component rdb} {} {
         return $rdb
+    }
+
+    # component clock
+    #
+    # Returns the name of the clock component, for use by athena(n).
+
+    method {component clock} {} {
+        return $simclock
     }
 
     #-------------------------------------------------------------------

@@ -755,7 +755,7 @@ snit::type ted {
         tdb aam      reset
         tdb abevent  reset
         tdb strategy reset
-        simclock reset
+        tdb clock reset
     }
 
     # sendex ?-error? command...

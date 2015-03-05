@@ -752,7 +752,7 @@ appserver module GROUPS {
             ht para
 
             adb contribs mood $g \
-                -start [simclock now]
+                -start [adb clock now]
 
             ht query {
                 SELECT format('%8.3f', contrib) AS 'Delta',

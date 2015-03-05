@@ -91,7 +91,7 @@ snit::type ::athena::athena {
         $self configurelist $args
 
         # NEXT, get subcomponents from athenadb(n).
-        set rdb [$adb rdb component]
+        set rdb [$adb component rdb]
     } 
 
     destructor {
@@ -107,6 +107,8 @@ snit::type ::athena::athena {
     # ADB
     delegate method adbfile                 to adb
     delegate method autogen                 to adb
+    delegate method clock                   to adb
+    delegate method getclock                to adb as {component clock}
     delegate method contribs                to adb as {aram contribs}
     delegate method dbsync                  to adb
     delegate method enter                   to adb

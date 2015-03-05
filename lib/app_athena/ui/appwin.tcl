@@ -2042,7 +2042,7 @@ snit::widget appwin {
                 set info(simstate) "$prefix until paused"
             } else {
                 set info(simstate) \
-                    "$prefix until [simclock toString [adb stoptime]]"
+                    "$prefix until [adb clock toString [adb stoptime]]"
             }
         } else {
             set info(simstate) [esimstate longname [adb state]]
@@ -2114,8 +2114,8 @@ snit::widget appwin {
 
     method SimTime {} {
         # Display current sim time.
-        set info(tick) [format "%04d" [simclock now]]
-        set info(date) [simclock asString]
+        set info(tick) [format "%04d" [adb clock now]]
+        set info(date) [adb clock asString]
     }
 
 

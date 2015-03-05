@@ -86,7 +86,7 @@ snit::type ::athena::sim {
 
         $adb order state $info(state)
 
-        simclock configure \
+        $adb clock configure \
             -week0 $constants(startdate) \
             -tick0 $constants(starttick)
 
@@ -109,9 +109,9 @@ snit::type ::athena::sim {
     # Reinitializes the module when a new scenario is created.
 
     method reset {} {
-        # FIRST, configure the simclock.
-        simclock reset
-        simclock configure \
+        # FIRST, configure the $adb clock.
+        $adb clock reset
+        $adb clock configure \
             -week0 $constants(startdate) \
             -tick0 $constants(starttick)
 
@@ -122,8 +122,6 @@ snit::type ::athena::sim {
     
     #-------------------------------------------------------------------
     # Queries
-
-    delegate method now using {::simclock %m}
 
     # state
     #
@@ -212,9 +210,9 @@ snit::type ::athena::sim {
     # Sets the simclock's -week0 start date.
 
     method startdate {startdate} {
-        set oldDate [simclock cget -week0]
+        set oldDate [$adb clock cget -week0]
 
-        simclock configure -week0 $startdate
+        $adb clock configure -week0 $startdate
 
         # NEXT, saveable(i) data has changed
         set info(changed) 1
@@ -233,9 +231,9 @@ snit::type ::athena::sim {
     # Sets the simclock's -tick0 start tick
 
     method starttick {starttick} {
-        set oldtick [simclock cget -tick0]
+        set oldtick [$adb clock cget -tick0]
 
-        simclock configure -tick0 $starttick
+        $adb clock configure -tick0 $starttick
 
         # NEXT, saveable(i) data has changed
         set info(changed) 1
@@ -270,8 +268,8 @@ snit::type ::athena::sim {
 
         # NEXT, mark the time: this supports time queries based on
         # symbolic time names.
-        simclock mark set LOCK
-        simclock mark set RUN
+        $adb clock mark set LOCK
+        $adb clock mark set RUN
 
         # NEXT, set the state to PAUSED
         $self SetState PAUSED
@@ -370,7 +368,7 @@ snit::type ::athena::sim {
                 -ticks {
                     set val [lshift args]
 
-                    set info(stoptime) [expr {[simclock now] + $val}]
+                    set info(stoptime) [expr {[$adb clock now] + $val}]
                 }
 
                 -until {
@@ -389,7 +387,7 @@ snit::type ::athena::sim {
 
         # The SIM:RUN order should have guaranteed this, but let's
         # check it to make sure.
-        assert {$info(stoptime) == 0 || $info(stoptime) > [simclock now]}
+        assert {$info(stoptime) == 0 || $info(stoptime) > [$adb clock now]}
         assert {!$blocking || $info(stoptime) != 0}
 
         # NEXT, set the state to running.  This will initialize the
@@ -397,7 +395,7 @@ snit::type ::athena::sim {
         $self SetState RUNNING
 
         # NEXT, mark the start of the run.
-        simclock mark set RUN 1
+        $adb clock mark set RUN 1
 
         # NEXT, we have been paused, and the user might have made
         # changes.  Run necessary analysis before the first tick.
@@ -451,7 +449,7 @@ snit::type ::athena::sim {
         # GUI event, outside TickWork; just set the state to paused.
 
         if {[$adb order state] eq "TACTIC"} {
-            set info(stoptime) [simclock now]
+            set info(stoptime) [$adb clock now]
         } elseif {$info(state) eq "RUNNING"} {
             set info(stoptime) 0
             $self SetState PAUSED
@@ -510,7 +508,7 @@ snit::type ::athena::sim {
         # in which we execute the on-lock strategy and provide transient
         # effects to URAM.
 
-        set t0 [simclock now]
+        set t0 [$adb clock now]
 
         $adb cprofile cash start           ;# Prepare cash for on-lock strategies
         $adb cprofile strategy start       ;# Execute on-lock strategies
@@ -612,7 +610,7 @@ snit::type ::athena::sim {
         }
 
         if {$info(stoptime) != 0 &&
-            [simclock now] >= $info(stoptime)
+            [$adb clock now] >= $info(stoptime)
         } {
             $adb log normal sim "Stop time reached"
             set info(reason) "OK"
@@ -635,9 +633,9 @@ snit::type ::athena::sim {
 
     method TickModels {} {
         # FIRST, advance time by one tick.
-        simclock tick
+        $adb clock tick
         $adb notify "" <Time>
-        $adb log normal sim "Tick [simclock now]"
+        $adb log normal sim "Tick [$adb clock now]"
 
         # NEXT, prepare for a rebase at the end of this tick.
         $adb rebase prepare
@@ -677,7 +675,7 @@ snit::type ::athena::sim {
         $adb cprofile demog stats
 
         # NEXT, update the economics.
-        if {[simclock now] % [$adb parm get econ.ticksPerTock] == 0} {
+        if {[$adb clock now] % [$adb parm get econ.ticksPerTock] == 0} {
             set econOK [$adb cprofile econ tock]
 
             if {$econOK} {
@@ -698,12 +696,12 @@ snit::type ::athena::sim {
         }]
 
         $adb profile $self SetNaturalLevels
-        $adb cprofile aram advance [simclock now]
+        $adb cprofile aram advance [$adb clock now]
 
         # NEXT, save the history for this tick.
         $adb cprofile hist tick
 
-        if {[simclock now] % [$adb parm get econ.ticksPerTock] == 0} {
+        if {[$adb clock now] % [$adb parm get econ.ticksPerTock] == 0} {
             if {$econOK} {
                 $adb cprofile hist econ
             }
@@ -781,7 +779,7 @@ snit::type ::athena::sim {
         set checkpoint [dict create]
         
         dict set checkpoint state $info(state)
-        dict set checkpoint clock [simclock checkpoint]
+        dict set checkpoint clock [$adb clock checkpoint]
 
         return $checkpoint
     }
@@ -796,7 +794,7 @@ snit::type ::athena::sim {
 
         if {[dict size $checkpoint] > 0} {
             dict with checkpoint {
-                simclock restore $clock
+                $adb clock restore $clock
                 set info(state) $state
             }
         }

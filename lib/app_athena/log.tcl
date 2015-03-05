@@ -38,7 +38,6 @@ snit::type log {
 
         # NEXT, create a logger.
         set logger [logger %AUTO% \
-                        -simclock   ::simclock               \
                         -logdir     $logDir                  \
                         -newlogcmd  [mytypemethod OnNewLog]]
 

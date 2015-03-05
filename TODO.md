@@ -1,12 +1,12 @@
 # TODO.md - Athena TODO List
 
-- Why is there no 010-abevent.test?
-- Revise athena(n)'s SQL api.
 - Make simclock an athenadb component.
+- Scan for TBD and TODOs in library.
 - Move "application" executive commands from executive.tcl to app.
 - parm component should be told about state changes directly.
 - Remove all "app" calls from athena(n).
 - See about giving athena(n) a read-only db.
+- Why is there no 010-abevent.test?
 - Check whether "adb reset" can replace all of the resets in "ted cleanup"
   - And if not, why not?
 - Figure out what to do about icon names in athena(n) HTML.
@@ -38,40 +38,5 @@
   - Could use "define" command to build up metadata for introspection.
 - Write cellide manpage.
 
-# Global Resources in use in athena(n)
-
-- aam
-  - tactic_attrit
-- app/messagebox
-  - absit, actor, autogen, bsys, cap, civgroup, curse, frcgroup, nbhood, 
-    orggroup, sim
-- aram
-  - ruleset
-- athena register
-  - bsys, econ
-- autogen
-  - executive
-- curse
-  - dynatypes, tactic_curse
-- iom
-  - tactic_broadcast
-- inject
-  - curse, tactic_curse
-- map
-  - autogen, exporter
-- notifier bind
-  - nbhood
-- ptype - Should go in athena_order.tcl? (But no hierarchical methods!)
-  - absit, actor, gofer_actors.tcl, gofer_number.tcl, nbhood, tactic_*.tcl
-- rebase
-  - sim
-- service
-  - strategy, tactic_service
-- service_eni
-  - strategy, tactic_fundeni
-- sigevent
-  - condition_expr, personnel, tactic_*.tcl
-- simclock
-  - absit, athenadb, block, exporter, sim
 
 

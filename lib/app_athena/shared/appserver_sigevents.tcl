@@ -142,12 +142,12 @@ appserver module SIGEVENTS {
             set start_ $start
             set end_   $end
 
-            restrict start_ {simclock timespec} [simclock cget -tick0]
-            restrict end_   {simclock timespec} [simclock now]
+            restrict start_ {adb clock timespec} [adb clock cget -tick0]
+            restrict end_   {adb clock timespec} [adb clock now]
 
             # If they picked the defaults, clear their entries.
-            if {$start_ == [simclock cget -tick0]} { set start "" }
-            if {$end_   == [simclock now]} { set end   "" }
+            if {$start_ == [adb clock cget -tick0]} { set start "" }
+            if {$end_   == [adb clock now]} { set end   "" }
 
             # NEXT, end_ can't be later than mystart.
             let end_ {max($start_,$end_)}
@@ -164,8 +164,8 @@ appserver module SIGEVENTS {
     # will be included.
 
     typemethod recent {{entity ""}} {
-        dict set qdict start_ [simclock now -5]
-        dict set qdict end_ [simclock now]
+        dict set qdict start_ [adb clock now -5]
+        dict set qdict end_ [adb clock now]
         dict set qdict page_size ALL
         dict set qdict page 1
 

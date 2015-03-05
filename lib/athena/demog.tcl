@@ -425,7 +425,7 @@ snit::type ::athena::demog {
     
         # NEXT, on lock the expected consumption is just the actual
         # consumption.
-        if {[simclock delta] == 0} {
+        if {[$adb clock delta] == 0} {
            $adb eval {
                 UPDATE demog_g
                 SET eloc = aloc;

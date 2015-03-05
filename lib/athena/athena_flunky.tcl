@@ -205,7 +205,7 @@ oo::class create ::athena::athena_flunky {
     # Adds the order to the CIF.
 
     method AddToCIF {order} {
-        set now [simclock now]
+        set now [$adb clock now]
 
         set name      [$order name]
         set narrative [$order narrative]

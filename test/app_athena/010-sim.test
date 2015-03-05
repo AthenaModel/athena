@@ -37,7 +37,7 @@ namespace eval ::athena_test::tests:: {
     namespace import ::tcltest::*
 
     # Get initial time 0
-    set clockdata [simclock checkpoint]
+    set clockdata [tdb clock checkpoint]
     
     # Clean up after a test
 
@@ -45,7 +45,7 @@ namespace eval ::athena_test::tests:: {
         variable clockdata
 
         # Clean up the test environment
-        simclock restore $clockdata
+        tdb clock restore $clockdata
 
         if {[tdb sim state] eq "RUNNING"} {
             tdb sim pause
@@ -66,10 +66,10 @@ namespace eval ::athena_test::tests:: {
 
     test init-1.1 {Initial state} -body {
         list \
-            [tdb sim now]         \
+            [tdb clock now]       \
             [tdb sim state]       \
             [tdb sim stoptime]    \
-            [simclock asString]
+            [tdb clock asString]
         
     } -result {0 PREP 0 2012W01}
 
@@ -78,7 +78,7 @@ namespace eval ::athena_test::tests:: {
 
     test startdate-1.1 {Sets the simclock's start date} -body {
         tdb sim startdate 2014W26
-        simclock cget -week0
+        tdb clock cget -week0
     } -cleanup {
         cleanup
     } -result {2014W26}
@@ -114,7 +114,7 @@ namespace eval ::athena_test::tests:: {
 
     test starttick-1.1 {Sets the simclock's start tick} -body {
         tdb sim starttick 52
-        simclock cget -tick0
+        tdb clock cget -tick0
     } -cleanup {
         cleanup
     } -result {52}
@@ -302,7 +302,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         tdb sim lock
         tdb sim run
-        simclock tick
+        tdb clock tick
         tdb sim pause
         tdb sim state
     } -cleanup {
@@ -343,7 +343,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         tdb sim lock
         tdb sim run -ticks 5 -block yes
-        list [simclock now] [tdb sim state]
+        list [tdb clock now] [tdb sim state]
     } -cleanup {
         cleanup
     } -result {5 PAUSED}
@@ -385,14 +385,6 @@ namespace eval ::athena_test::tests:: {
     } -result {}
 
     #-------------------------------------------------------------------
-    # now
-
-    test now-1.1 {Returns 0 at time 0} -body {
-        expr {[tdb sim now] == [simclock now]}
-    } -result {1}
-
-
-    #-------------------------------------------------------------------
     # state
 
     test state-1.1 {Returns current state} -setup {
@@ -406,7 +398,7 @@ namespace eval ::athena_test::tests:: {
         tdb sim lock
         lappend states [tdb sim state]
         tdb sim run
-        simclock tick
+        tdb clock tick
         lappend states [tdb sim state]
         tdb sim pause
         lappend states [tdb sim state]
@@ -462,7 +454,7 @@ namespace eval ::athena_test::tests:: {
         tdb parm set econ.empExp 0
         tdb sim lock
         tdb sim run
-        simclock advance 5
+        tdb clock advance 5
         tdb sim pause
         tdb sim startdate 2014W26
     } -body {
@@ -470,9 +462,9 @@ namespace eval ::athena_test::tests:: {
 
         list \
             [tdb sim state]         \
-            [tdb sim now]           \
+            [tdb clock now]         \
             [tdb sim changed]       \
-            [simclock cget -week0]
+            [tdb clock cget -week0]
     } -cleanup {
         cleanup
     } -result {PREP 0 1 2012W01}
@@ -492,8 +484,8 @@ namespace eval ::athena_test::tests:: {
         tdb sim rebase
         list \
             [tdb sim state] \
-            [simclock now] \
-            [simclock cget -tick0]
+            [tdb clock now] \
+            [tdb clock cget -tick0]
     } -cleanup {
         cleanup
     } -result {PREP 2 2}

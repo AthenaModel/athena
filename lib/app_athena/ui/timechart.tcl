@@ -429,7 +429,7 @@ snit::widgetadaptor timechart {
 
 
     proc timestr {t} {
-        simclock toString [tcl::mathfunc::int $t]
+        adb clock toString [tcl::mathfunc::int $t]
     }
    
 

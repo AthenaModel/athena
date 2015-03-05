@@ -225,8 +225,8 @@ snit::type ::athena::exporter {
 
         # NEXT, Date and Time Parameters
         SectionHeader $f "Date and Time Parameters"
-        MakeSend $f SIM:STARTDATE startdate [simclock cget -week0]
-        MakeSend $f SIM:STARTTICK starttick [simclock cget -tick0]
+        MakeSend $f SIM:STARTDATE startdate [$adb clock cget -week0]
+        MakeSend $f SIM:STARTTICK starttick [$adb clock cget -tick0]
 
         # NEXT, Model Parameters
         SectionHeader $f "Model Parameters"

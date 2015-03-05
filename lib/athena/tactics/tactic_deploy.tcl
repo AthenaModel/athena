@@ -236,7 +236,7 @@
         if {[[my adb] strategy locking]
             || $redeploy
             || $last_tick eq ""
-            || $last_tick < [simclock now] - 1
+            || $last_tick < [[my adb] clock now] - 1
         } {
             return 0
         }
@@ -721,7 +721,7 @@
         set s(g) "{group:$g}"
 
         # NEXT, set last_tick
-        my set last_tick [simclock now]
+        my set last_tick [[my adb] clock now]
 
         # NEXT, Pay the deployment cost, which might be zero.
         [my adb] cash spend [my agent] DEPLOY $trans(cost)

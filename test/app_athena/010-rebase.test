@@ -37,7 +37,7 @@ namespace eval ::athena_test::tests:: {
     namespace import ::tcltest::*
 
     # Get initial time 0
-    set clockdata [simclock checkpoint]
+    set clockdata [tdb clock checkpoint]
     
     # Set up for the rebase comparison test.
     proc setup {} {
@@ -54,7 +54,7 @@ namespace eval ::athena_test::tests:: {
         variable clockdata
 
         # Clean up the test environment
-        simclock restore $clockdata
+        tdb clock restore $clockdata
 
         if {[tdb sim state] eq "RUNNING"} {
             tdb sim pause

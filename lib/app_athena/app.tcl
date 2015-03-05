@@ -207,11 +207,6 @@ snit::type app {
         # NEXT, enable notifier(n) tracing
         notifier trace [myproc NotifierTrace]
 
-        # NEXT, create the weekclock, replacing the default Mars 
-        # simclock(n) object.
-        simclock destroy
-        weekclock ::simclock
-
         # NEXT, Create the working scenario RDB and initialize simulation
         # components
         view      init
@@ -980,6 +975,9 @@ snit::type app {
             -adbfile $filename \
             -logcmd  ::log     \
             -subject ::adb
+
+        log configure \
+            -simclock [adb getclock]
     }
 
     # lock

@@ -12,7 +12,7 @@
 #    that provides safe command interpretation for user input, separate
 #    from the main interpreter.
 #
-# TBD: Global refs: ptype, simclock, app puts
+# TBD: Global refs: app puts
 #
 #-----------------------------------------------------------------------
 
@@ -634,7 +634,7 @@ snit::type ::athena::executive {
             [mymethod Fn_nbworkers]
 
         $interp function now 0 0 {} \
-            [list simclock now]
+            [list $adb clock now]
 
         $interp function onhand 1 1 {a} \
             [mymethod Fn_onhand]
