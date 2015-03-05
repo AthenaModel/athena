@@ -1,6 +1,5 @@
 # TODO.md - Athena TODO List
 
-- Make simclock an athenadb component.
 - Scan for TBD and TODOs in library.
 - Move "application" executive commands from executive.tcl to app.
 - parm component should be told about state changes directly.
