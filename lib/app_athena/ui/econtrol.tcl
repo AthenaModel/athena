@@ -132,7 +132,7 @@ snit::widget econtrol {
     # This method responds to changes in the simulation state.
 
     method SimState {} {
-        if {[sim state] eq "PREP"} {
+        if {[adb state] eq "PREP"} {
             $modelswitch configure -state normal
         } else {
             $modelswitch configure -state disabled

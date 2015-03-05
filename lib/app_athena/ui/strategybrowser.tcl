@@ -889,7 +889,7 @@ snit::widget strategybrowser {
 
     method BListCutCopy {mode} {
         # FIRST, if the sim state is wrong, we're done.
-        if {[sim state] ni {PREP PAUSED}} {
+        if {[adb state] ni {PREP PAUSED}} {
             bell
             return
         }
@@ -928,7 +928,7 @@ snit::widget strategybrowser {
     method BListPaste {} {
         # FIRST, if the sim state is wrong or there's no strategy loaded,
         # we're done.
-        if {[sim state] ni {PREP PAUSED} ||
+        if {[adb state] ni {PREP PAUSED} ||
             $info(agent) eq ""
         } {
             bell
@@ -1302,7 +1302,7 @@ snit::widget strategybrowser {
 
     method CTabCutCopy {mode} {
         # FIRST, if the sim state is wrong, we're done.
-        if {[sim state] ni {PREP PAUSED}} {
+        if {[adb state] ni {PREP PAUSED}} {
             bell
             return
         }
@@ -1341,7 +1341,7 @@ snit::widget strategybrowser {
     method CTabPaste {} {
         # FIRST, if the sim state is wrong or there's no block loaded,
         # we're done.
-        if {[sim state] ni {PREP PAUSED} ||
+        if {[adb state] ni {PREP PAUSED} ||
             ![$self gotblock]
         } {
             bell
@@ -1650,7 +1650,7 @@ snit::widget strategybrowser {
 
     method TTabCutCopy {mode} {
         # FIRST, if the sim state is wrong, we're done.
-        if {[sim state] ni {PREP PAUSED}} {
+        if {[adb state] ni {PREP PAUSED}} {
             bell
             return
         }
@@ -1689,7 +1689,7 @@ snit::widget strategybrowser {
     method TTabPaste {} {
         # FIRST, if the sim state is wrong or there's no block loaded,
         # we're done.
-        if {[sim state] ni {PREP PAUSED} ||
+        if {[adb state] ni {PREP PAUSED} ||
             ![$self gotblock]
         } {
             bell

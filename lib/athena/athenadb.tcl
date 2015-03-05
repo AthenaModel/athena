@@ -311,6 +311,7 @@ snit::type ::athena::athenadb {
             security_model              \
             service                     \
             sigevent                    \
+            sim                         \
             stance                      \
             {strategy strategy_manager} \
             unit                        \
@@ -318,7 +319,6 @@ snit::type ::athena::athenadb {
 
         $self MakeComponentsWithGlobal  \
             aam                         \
-            sim                         \
 
 
 
@@ -507,27 +507,29 @@ snit::type ::athena::athenadb {
 
     # RDB
     delegate method {rdb *}           to rdb
-    delegate method eval              to rdb as eval
-    delegate method delete            to rdb as delete
-    delegate method exists            to rdb as exists
-    delegate method grab              to rdb as grab
-    delegate method last_insert_rowid to rdb as last_insert_rowid
-    delegate method monitor           to rdb as monitor
-    delegate method onecolumn         to rdb as onecolumn
-    delegate method query             to rdb as query
-    delegate method safeeval          to rdb as safeeval
-    delegate method safequery         to rdb as safequery
-    delegate method schema            to rdb as schema
-    delegate method tables            to rdb as tables
-    delegate method ungrab            to rdb as ungrab
+    delegate method eval              to rdb
+    delegate method delete            to rdb
+    delegate method exists            to rdb
+    delegate method grab              to rdb
+    delegate method last_insert_rowid to rdb
+    delegate method monitor           to rdb
+    delegate method onecolumn         to rdb
+    delegate method query             to rdb
+    delegate method safeeval          to rdb
+    delegate method safequery         to rdb
+    delegate method schema            to rdb
+    delegate method tables            to rdb
+    delegate method ungrab            to rdb
 
     # SIM
-    delegate method locked            to sim as locked
-    delegate method state             to sim as state
-    delegate method stable            to sim as stable
+    delegate method locked            to sim
+    delegate method state             to sim
+    delegate method stable            to sim
+    delegate method stoptime          to sim
+    delegate method wizlock           to sim
     
     # FLUNKY
-    delegate method send              to flunky as send
+    delegate method send              to flunky
 
     #-------------------------------------------------------------------
     # Scenario Control

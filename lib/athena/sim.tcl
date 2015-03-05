@@ -11,7 +11,7 @@
 #    This module manages the overall simulation, as distinct from the 
 #    the purely scenario-data oriented work done by scenario(sim).
 #
-# TBD: Global refs: simclock, sanity, app/messagebox, rebase
+# TBD: Global refs: app/messagebox.
 #
 #-----------------------------------------------------------------------
 
@@ -174,14 +174,14 @@ snit::type ::athena::sim {
     #-------------------------------------------------------------------
     # Wizard Control
 
-    # wizard ?flag?
+    # wizlock ?flag?
     #
     # flag   - on | off
     #
     # By default, returns true if the sim state is WIZARD.  If the
     # flag is given, sets the sim state to WIZARD or to PREP, accordingly.
 
-    method wizard {{flag ""}} {
+    method wizlock {{flag ""}} {
         if {$flag ne ""} {
             assert {$info(state) in {PREP WIZARD}}
 
@@ -459,6 +459,19 @@ snit::type ::athena::sim {
 
         # NEXT, cannot be undone.
         return ""
+    }
+
+    # halt
+    #
+    # If running, pauses the simulation; never throws an error.
+    # This allows the application to halt the sim cleanly on error.
+
+    method halt {} {
+        if {[$self state] eq "RUNNING"} {
+            $self pause
+        }
+
+        return
     }
 
     #-------------------------------------------------------------------

@@ -353,7 +353,7 @@ snit::widget wmswin {
     # The simulation has changed state, update GUI components
 
     method StateChange {} {
-        if {[sim state] eq "PREP"} {
+        if {[adb state] eq "PREP"} {
             $self ButtonState normal
         } else {
             $self ButtonState disabled

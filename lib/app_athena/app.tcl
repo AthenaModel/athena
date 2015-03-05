@@ -913,7 +913,7 @@ snit::type app {
     # Saves the current scenario using the existing name.
 
     typemethod save {{filename ""}} {
-        require {[sim stable]} "The scenario cannot be saved in this state."
+        require {[adb stable]} "The scenario cannot be saved in this state."
 
         # FIRST, notify the simulation that we're saving, so other
         # modules can prepare.
@@ -1123,9 +1123,7 @@ proc bgerror {msg} {
     log error app "bgerror: $msg"
     log error app "Stack Trace:\n$bgErrorInfo"
 
-    if {[sim state] eq "RUNNING"} {
-        sim pause
-    }
+    adb halt
 
     # Gather any error context we may have
     set trace ""

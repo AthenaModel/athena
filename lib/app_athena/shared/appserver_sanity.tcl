@@ -103,7 +103,7 @@ appserver module SANITY {
 
             ht para
 
-            if {[sim state] ne "PREP"} {
+            if {[adb state] ne "PREP"} {
                 adb sanity ontick report ::appserver::ht
             } else {
                 ht putln {

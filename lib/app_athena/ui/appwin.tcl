@@ -1478,7 +1478,7 @@ snit::widget appwin {
         # FIRST, we can only create a new scenario if we're not RUNNING.
         # The menu item will be unavailable in this case, but we might
         # still get here via a hot-key.
-        if {![sim stable]} {
+        if {![adb stable]} {
             return
         }
 
@@ -1499,7 +1499,7 @@ snit::widget appwin {
         # FIRST, we can only open a new scenario if we're not RUNNING.
         # The menu item will be unavailable in this case, but we might
         # still get here via a hot-key.
-        if {![sim stable]} {
+        if {![adb stable]} {
             return
         }
 
@@ -1533,7 +1533,7 @@ snit::widget appwin {
         # FIRST, we can only save a new scenario if we're not RUNNING.
         # The menu item will be unavailable in this case, but we might
         # still get here via a hot-key.
-        if {![sim stable]} {
+        if {![adb stable]} {
             return
         }
 
@@ -1566,7 +1566,7 @@ snit::widget appwin {
         # FIRST, we can only save a scenario if we're not RUNNING.
         # The menu item will be unavailable in this case, but we might
         # still get here via a hot-key.
-        if {![sim stable]} {
+        if {![adb stable]} {
             return
         }
 
@@ -1587,7 +1587,7 @@ snit::widget appwin {
         # FIRST, we can only export a new scenario if we're in PREP
         # The menu item will be unavailable in this case, but we might
         # still get here via a hot-key.
-        if {[sim state] ne "PREP"} {
+        if {[adb state] ne "PREP"} {
             return
         }
 
@@ -1919,7 +1919,7 @@ snit::widget appwin {
     # Sends SIM:RUN or SIM:PAUSE, depending on state.
 
     method RunPause {} {
-        if {[sim state] eq "RUNNING"} {
+        if {[adb state] eq "RUNNING"} {
             adb order send gui SIM:PAUSE
         } else {
             adb order send gui SIM:RUN \
@@ -1934,7 +1934,7 @@ snit::widget appwin {
 
     method PrepLock {} {
         # FIRST, if we're in PREP then it's time to leave it.
-        if {[sim state] eq "PREP"} {
+        if {[adb state] eq "PREP"} {
             app lock
             return
         }
@@ -2035,35 +2035,35 @@ snit::widget appwin {
 
     method SimState {} {
         # FIRST, display the simulation state
-        if {[sim state] eq "RUNNING"} {
-            set prefix [esimstate longname [sim state]]
+        if {[adb state] eq "RUNNING"} {
+            set prefix [esimstate longname [adb state]]
 
-            if {[sim stoptime] == 0} {
+            if {[adb stoptime] == 0} {
                 set info(simstate) "$prefix until paused"
             } else {
                 set info(simstate) \
-                    "$prefix until [simclock toString [sim stoptime]]"
+                    "$prefix until [simclock toString [adb stoptime]]"
             }
         } else {
-            set info(simstate) [esimstate longname [sim state]]
+            set info(simstate) [esimstate longname [adb state]]
         }
 
         # NEXT, update the window mode
-        if {[sim state] in {PREP WIZARD}} {
+        if {[adb state] in {PREP WIZARD}} {
             $self SetMode scenario
         } else {
             $self SetMode simulation
         }
         
         # NEXT, update the Prep Lock button
-        if {[sim state] eq "PREP"} {
+        if {[adb state] eq "PREP"} {
             $toolbar.preplock configure -image {
                 ::projectgui::icon::unlocked22
                 disabled ::projectgui::icon::unlocked22d
             } -state normal
             DynamicHelp::add $toolbar.preplock \
                 -text "Lock Scenario Preparation"
-        } elseif {[sim state] eq "WIZARD"} {
+        } elseif {[adb state] eq "WIZARD"} {
             $toolbar.preplock configure -state disabled
         } else {
             $toolbar.preplock configure -image {
@@ -2071,7 +2071,7 @@ snit::widget appwin {
                 disabled ::projectgui::icon::locked22d
             }
 
-            if {[sim state] eq "RUNNING"} {
+            if {[adb state] eq "RUNNING"} {
                 $toolbar.preplock configure -state disabled
             } else {
                 $toolbar.preplock configure -state normal
@@ -2082,14 +2082,14 @@ snit::widget appwin {
         }
 
         # NEXT, Update Run/Pause button and the Duration
-        if {[sim state] eq "RUNNING"} {
+        if {[adb state] eq "RUNNING"} {
             $simtools.runpause configure \
                 -image ::marsgui::icon::pause22 \
                 -state normal
             DynamicHelp::add $simtools.runpause -text "Pause Simulation"
 
             $simtools.duration configure -state disabled
-        } elseif {[sim state] eq "PAUSED"} {
+        } elseif {[adb state] eq "PAUSED"} {
             $simtools.runpause configure \
                 -image ::marsgui::icon::play22 \
                 -state normal

@@ -815,7 +815,7 @@ snit::widget samsheet {
 
     method SimState {} {
         # FIRST, get the state
-        if {[sim state] eq "PREP"} {
+        if {[adb state] eq "PREP"} {
             # NEXT, set the view to input flows
             $vmenu set [lindex [dict keys $vdict] 1]
 

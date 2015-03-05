@@ -56,12 +56,12 @@ namespace eval ::athena_test::tests:: {
         # Clean up the test environment
         simclock restore $clockdata
 
-        if {[sim state] eq "RUNNING"} {
-            sim pause
+        if {[tdb sim state] eq "RUNNING"} {
+            tdb sim pause
         }
 
-        if {[sim state] eq "PAUSED"} {
-            sim unlock
+        if {[tdb sim state] eq "PAUSED"} {
+            tdb sim unlock
         }
 
         ted cleanup
@@ -407,7 +407,7 @@ SHIA JOE 0.9  1         0.0
             set before($table) [grab {*}$tableRec]
         }
 
-        sim rebase
+        tdb sim rebase
         ted lock
 
         foreach tableRec $simTables {

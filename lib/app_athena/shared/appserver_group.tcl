@@ -177,7 +177,7 @@ appserver module GROUPS {
             ht putln "The scenario contains the following civilian groups:"
             ht para
 
-            if {[sim state] eq "PREP"} {
+            if {[adb state] eq "PREP"} {
                 ht query {
                     SELECT longlink       AS "Group",
                            n              AS "Nbhood",
@@ -316,7 +316,7 @@ appserver module GROUPS {
 
         # NEXT, what we do depends on whether the simulation is locked
         # or not.
-        let locked {[sim state] ne "PREP"}
+        let locked {[adb state] ne "PREP"}
 
         ht linkbar {
             "#actors"     "Relationships with Actors"

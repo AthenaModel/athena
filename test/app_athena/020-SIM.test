@@ -183,7 +183,7 @@ namespace eval ::athena_test::tests:: {
         tdb parm set econ.empExp 0
     } -body {
         ted order SIM:LOCK
-        sim state
+        tdb sim state
     } -cleanup {
         cleanup
     } -result {PAUSED}
@@ -266,7 +266,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         ted order SIM:RUN 
-        list [sim state] [sim stoptime]
+        list [tdb sim state] [tdb sim stoptime]
     } -cleanup {
         cleanup
     } -result {RUNNING 0}
@@ -276,7 +276,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         ted order SIM:RUN weeks 5
-        list [sim state] [sim stoptime]
+        list [tdb sim state] [tdb sim stoptime]
     } -cleanup {
         cleanup
     } -result {RUNNING 5}
@@ -310,7 +310,7 @@ namespace eval ::athena_test::tests:: {
         ted order SIM:RUN
         simclock tick
         ted order SIM:PAUSE
-        sim state
+        tdb sim state
     } -cleanup {
         cleanup
     } -result {PAUSED}
@@ -348,7 +348,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         ted order SIM:UNLOCK
-        sim state
+        tdb sim state
     } -cleanup {
         cleanup
     } -result {PREP}
@@ -376,7 +376,7 @@ namespace eval ::athena_test::tests:: {
         ted step
     } -body {
         ted order SIM:REBASE
-        list [sim state] [simclock now]
+        list [tdb sim state] [simclock now]
     } -cleanup {
         cleanup
     } -result {PREP 1}

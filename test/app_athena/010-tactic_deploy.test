@@ -81,7 +81,7 @@ namespace eval ::athena_test::tests:: {
     proc context {} {
         variable coffer
 
-        if {[sim state] eq "PREP"} {
+        if {[tdb sim state] eq "PREP"} {
             tdb demog start
             tdb personnel start
         }

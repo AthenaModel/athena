@@ -113,6 +113,7 @@ snit::type ::athena::athena {
     delegate method executive               to adb
     delegate method export                  to adb
     delegate method gofer                   to adb
+    delegate method halt                    to adb
     delegate method load                    to adb
     delegate method locked                  to adb
     delegate method paste                   to adb
@@ -121,8 +122,10 @@ snit::type ::athena::athena {
     delegate method save                    to adb
     delegate method stable                  to adb
     delegate method state                   to adb
+    delegate method stoptime                to adb
     delegate method unsaved                 to adb
     delegate method version                 to adb
+    delegate method wizlock                 to adb
 
     delegate method {absit exists}          to adb as {absit exists}
     delegate method {absit get}             to adb as {absit get}

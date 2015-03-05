@@ -195,7 +195,7 @@ snit::widget capbrowser {
         set ids [$caps uid curselection]
 
         # NEXT, select the correct order processor
-        if {[sim state] eq "PREP"} {
+        if {[adb state] eq "PREP"} {
             set root CAP:UPDATE
         } else {
             set root CAP:CAPACITY

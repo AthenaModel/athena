@@ -167,7 +167,7 @@ snit::type appserver {
         ht putln <hr>
         ht putln "<font size=2><i>"
 
-        if {[sim state] eq "PREP"} {
+        if {[adb state] eq "PREP"} {
             ht put "Scenario is unlocked."
         } else {
             ht put [format "Simulation time: Week %04d, %s." \
@@ -330,7 +330,7 @@ snit::type appserver {
     # adds a disclaimer to the output.
 
     proc locked {{option ""}} {
-        if {[sim locked]} {
+        if {[adb locked]} {
             return 1
         } else {
             if {$option ne ""} {
