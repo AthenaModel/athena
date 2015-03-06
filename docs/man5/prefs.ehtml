@@ -4,8 +4,8 @@
 
 <expand [project tclsh {
     package require projectlib
-    ::projectlib::parmdb init
-    ::projectlib::parmdb manlinks
+    ::projectlib::prefs init
+    ::projectlib::prefs manlinks
 }]>
 
 <section DESCRIPTION>
@@ -35,8 +35,8 @@ The valid parameters are as follows:<p>
 
 <expand [project tclsh {
     package require projectlib
-    ::projectlib::parmdb init
-    ::projectlib::parmdb manpage
+    ::projectlib::prefs init
+    ::projectlib::prefs manpage
 }]>
 
 <section AUTHOR>
