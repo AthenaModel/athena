@@ -2,8 +2,6 @@
 
 - Problems in test/athena:
   - MAP:* orders use `app puts`; wrote issue #130 for Dave. 
-- Remove all "app" calls from athena(n).
-- Move "application" executive commands from executive.tcl to app.
 - Add tests for the athena(n) object (in so far as that's useful)
   as 050-athena.test.
 - Document athena(n)
