@@ -871,28 +871,6 @@ snit::type ::athena::nbhood {
     }
 
     method _execute {{flunky ""}} {
-        if {[my mode] eq "gui"} {
-            set answer [messagebox popup \
-                            -title         "Are you sure?"                  \
-                            -icon          warning                          \
-                            -buttons       {ok "Delete it" cancel "Cancel"} \
-                            -default       cancel                           \
-                            -onclose       cancel                           \
-                            -ignoretag     NBHOOD:DELETE                    \
-                            -ignoredefault ok                               \
-                            -parent        [app topwin]                     \
-                            -message       [normalize {
-                                Are you sure you
-                                really want to delete this neighborhood, along
-                                with all of the entities that depend upon it?
-                            }]]
-
-            if {$answer eq "cancel"} {
-                my cancel
-            }
-        }
-
-        # NEXT, delete the neighborhood and dependent entities
         lappend undo [$adb nbhood delete $parms(n)]
         lappend undo [$adb absit reconcile]
 

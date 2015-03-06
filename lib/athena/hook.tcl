@@ -543,27 +543,6 @@ snit::type ::athena::hook {
     }
 
     method _execute {{flunky ""}} {
-        if {[my mode] eq "gui"} {
-            set answer [messagebox popup \
-                            -title         "Are you sure?"                  \
-                            -icon          warning                          \
-                            -buttons       {ok "Delete it" cancel "Cancel"} \
-                            -default       cancel                           \
-                            -onclose       cancel                           \
-                            -ignoretag     [my name]                        \
-                            -ignoredefault ok                               \
-                            -parent        [app topwin]                     \
-                            -message       [normalize {
-                                Are you sure you
-                                really want to delete this semantic hook 
-                                and all hook topics that depend on it?
-                            }]]
-
-            if {$answer eq "cancel"} {
-                my cancel
-            }
-        }
-
         my setundo [$adb hook delete $parms(hook_id)]
     }
 }

@@ -221,7 +221,12 @@ snit::widget capbrowser {
         set id [lindex [$caps uid curselection] 0]
 
         # NEXT, Pop up the dialog, and select this entity
-        adb order senddict gui CAP:DELETE [list k $id]
+        app delete CAP:DELETE [list k $id] {
+            Are you sure you
+            really want to delete this CAP, along
+            with all of the entities that depend upon it?
+        }
+
     }
 
     # CapSelectionChanged

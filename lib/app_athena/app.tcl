@@ -562,6 +562,36 @@ snit::type app {
         }
     }
 
+    # delete order parmdict message
+    #
+    # order    - The delete order name
+    # parmdict - The deletion parameters
+    # message  - "Are you sure" message
+    #
+    # Normalizes the message and asks the user if he is sure.  If so,
+    # deletes sends the delete order.  This is for use by browsers.
+
+    typemethod delete {order parmdict message} {
+        set answer [messagebox popup \
+                        -title         "Are you sure?"                  \
+                        -icon          warning                          \
+                        -buttons       {ok "Delete it" cancel "Cancel"} \
+                        -default       cancel                           \
+                        -onclose       cancel                           \
+                        -ignoretag     $order                           \
+                        -ignoredefault ok                               \
+                        -parent        [app topwin]                     \
+                        -message       [normalize $message]]
+
+        if {$answer eq "cancel"} {
+            return
+        }
+
+        # NEXT, Send the delete order.
+        adb order senddict gui $order $parmdict
+
+    }
+
     # Type Method: error
     #
     # Normally, displays the error _text_ in a message box.  In 

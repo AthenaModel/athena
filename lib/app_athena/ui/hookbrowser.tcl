@@ -481,8 +481,11 @@ snit::widget hookbrowser {
 
         # NEXT, it's a hook or a topic.
         if {"hook" in [$htree item tag names $id]} {
-            adb order senddict gui HOOK:DELETE \
-                [list hook_id [$htree item text $id {tag id}]]
+            app delete HOOK:DELETE [list hook_id [$htree item text $id {tag id}]] {
+                Are you sure you
+                really want to delete this semantic hook and all
+                hook topics that depend upon it?
+            }
         } else {
             adb order senddict gui HOOK:TOPIC:DELETE \
                 [list id [$htree item text $id {tag id}]]

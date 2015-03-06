@@ -514,28 +514,6 @@ snit::type ::athena::iom {
     }
 
     method _execute {{flunky ""}} {
-        if {[my mode] eq "gui"} {
-            set answer [messagebox popup \
-                            -title         "Are you sure?"                  \
-                            -icon          warning                          \
-                            -buttons       {ok "Delete it" cancel "Cancel"} \
-                            -default       cancel                           \
-                            -onclose       cancel                           \
-                            -ignoretag     [my name]                        \
-                            -ignoredefault ok                               \
-                            -parent        [app topwin]                     \
-                            -message       [normalize {
-                                Are you sure you really want to delete this 
-                                Info Ops Message, along with all of its 
-                                payloads?
-                            }]]
-    
-            if {$answer eq "cancel"} {
-                my cancel
-            }
-        }
-    
-        # NEXT, Delete the record and dependent entities
         lappend undo [$adb iom delete $parms(iom_id)]
     
         my setundo [join $undo \n]

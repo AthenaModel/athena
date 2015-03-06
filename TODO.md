@@ -25,6 +25,9 @@
   - Code creating htools buffers get them from athenadb(n).
 - Consider moving all rule set metadata from projtypes into athena(n).
   - Could use "define" command to build up metadata for introspection.
+- arachne tool can have subcommands:
+  - Make a scenario file given a script.
+  - Modify a scenario file given a script.
 - Write cellide manpage.
 
 

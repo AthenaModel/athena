@@ -183,8 +183,12 @@ snit::widgetadaptor frcgroupbrowser {
         # FIRST, there should be only one selected.
         set id [lindex [$hull uid curselection] 0]
 
-        # NEXT, Pop up the dialog, and select this entity
-        adb order senddict gui FRCGROUP:DELETE [list g $id]
+        # NEXT, Delete this entity
+        app delete FRCGROUP:DELETE [list g $id] {
+            Are you sure you
+            really want to delete this group and all of the
+            entities that depend upon it?
+        }
     }
 }
 

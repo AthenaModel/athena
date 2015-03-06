@@ -437,7 +437,32 @@ snit::widget bsysbrowser {
     # Deletes the selected system.
 
     method SListDelete {} {
-        adb order senddict gui BSYS:SYSTEM:DELETE [list sid [$self SListGet]]
+        set sid [$self SListGet]
+
+        if {[adb bsys system inuse $sid]} {
+            set message [normalize "
+                The selected belief system is in use by 
+                at least one actor or group; see the belief system's
+                detail browser page for a complete list.  The
+                system cannot be deleted while it is in use.
+            "]
+
+            messagebox popup \
+                -title   "System is in use"  \
+                -icon    error               \
+                -buttons {cancel "Cancel"}   \
+                -default cancel              \
+                -parent  [app topwin]        \
+                -message $message
+
+            return
+        }
+
+        app delete BSYS:SYSTEM:DELETE [list sid $sid] {
+            Are you sure you really want to delete this 
+            belief system and all of the beliefs it
+            contains?
+        }
     }
 
 
@@ -929,7 +954,33 @@ snit::widget bsysbrowser {
     # Deletes the selected topic.
 
     method TListDelete {} {
-        adb order senddict gui BSYS:TOPIC:DELETE [list tid [$self TListGet]]
+        set tid [$self TListGet]
+
+        if {[adb bsys topic inuse $tid]} {
+            set message [normalize "
+                The selected topic is in use by 
+                at least one semantic hook; see the topic's
+                detail browser page for a complete list.  The
+                topic cannot be deleted while it is in use.
+            "]
+
+            messagebox popup \
+                -title   "Topic is in use"  \
+                -icon    error               \
+                -buttons {cancel "Cancel"}   \
+                -default cancel              \
+                -parent  [app topwin]        \
+                -message $message
+
+            return
+        }
+
+
+        app delete BSYS:TOPIC:DELETE [list tid $tid] {
+            Are you sure you really want to delete this 
+            belief topic and all of the beliefs it
+            contains?
+        }
     }
 
 

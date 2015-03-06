@@ -522,8 +522,11 @@ snit::widget iombrowser {
 
         # NEXT, it's a iom or a payload.
         if {"iom" in [$iptree item tag names $id]} {
-            adb order senddict gui IOM:DELETE \
-                [list iom_id [$iptree item text $id {tag id}]]
+            app delete IOM:DELETE [list iom_id [$iptree item text $id {tag id}]] {
+                Are you sure you
+                really want to delete this Info Ops Message, along
+                with all of its payloads?
+            }
         } else {
             adb order senddict gui PAYLOAD:DELETE \
                 [list id [$iptree item text $id {tag id}]]

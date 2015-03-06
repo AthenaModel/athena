@@ -246,8 +246,9 @@ snit::widgetadaptor absitbrowser {
         # FIRST, there should be only one selected.
         set id [lindex [$hull uid curselection] 0]
 
-        # NEXT, Send the delete order.
-        adb order senddict gui ABSIT:DELETE [list s $id]
+        app delete ABSIT:DELETE [list s $id] {
+            Are you sure you really want to delete this situation?
+        }
     }
 
 }

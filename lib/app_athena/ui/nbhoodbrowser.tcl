@@ -208,7 +208,11 @@ snit::widgetadaptor nbhoodbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Send the order.
-        adb order senddict gui NBHOOD:DELETE [list n $id]
+        app delete NBHOOD:DELETE [list n $id] {
+            Are you sure you
+            really want to delete this neighborhood and all of the
+            entities that depend upon it?
+        }
     }
 }
 
