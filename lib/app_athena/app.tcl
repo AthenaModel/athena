@@ -226,6 +226,7 @@ snit::type app {
 
         # NEXT, bind components together
         notifier bind ::app <Puck>  ::order_dialog  {::order_dialog puck}
+        notifier bind ::adb <InsaneOnTick> ::app [mytypemethod InsaneOnTick]
 
         # NEXT, create state controllers, to enable and disable
         # GUI components as application state changes.
@@ -861,6 +862,28 @@ snit::type app {
             The requested gui:// URL cannot be displayed by the application:
 
             $message
+        }
+    }
+
+    # InsaneOnTick
+    #
+    # This is called when the scenario's on-tick sanity check fails.
+    # The run stops automatically.
+
+    typemethod InsaneOnTick {} {
+        # FIRST, direct the user to the appropriate appserver page
+        # if we are in GUI mode
+        app show my://app/sanity/ontick
+
+        if {[winfo exists .main]} {
+            messagebox popup \
+                -parent  [app topwin]         \
+                -icon    error                \
+                -title   "Simulation Stopped" \
+                -message [normalize {
+        On-tick sanity check failed; simulation stopped.
+        Please see the On-Tick Sanity Check report for details.
+                }]
         }
     }
 

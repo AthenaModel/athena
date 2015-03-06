@@ -585,26 +585,11 @@ snit::type ::athena::sim {
         set stopping 0
 
         if {[$adb sanity ontick check] != "OK"} {
-            # TBD: Need to handle this across library I/F.
-            # NEXT, direct the user to the appropriate appserver page
-            # if we are in GUI mode
-            if {[app tkloaded]} {
-                app show my://app/sanity/ontick
-
-                if {[winfo exists .main]} {
-                    messagebox popup \
-                        -parent  [app topwin]         \
-                        -icon    error                \
-                        -title   "Simulation Stopped" \
-                        -message [normalize {
-                On-tick sanity check failed; simulation stopped.
-                Please see the On-Tick Sanity Check report for details.
-                        }]
-                }
-            }
 
             set info(reason) FAILURE
             set stopping 1
+
+            $adb notify "" <InsaneOnTick>
         }
 
         if {$info(stoptime) != 0 &&
