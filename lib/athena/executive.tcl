@@ -141,6 +141,7 @@ snit::type ::athena::executive {
 
     delegate method ensemble   to interp
     delegate method expr       to interp
+    delegate method function   to interp
     delegate method proc       to interp
     delegate method smartalias to interp
 

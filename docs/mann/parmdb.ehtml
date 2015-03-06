@@ -42,7 +42,7 @@ the name of an enclosing <xref athenadb(n)> object; when using
 
 <section "INSTANCE COMMANDS">
 
-Each instace of parmdb(n) provides all of the <xref mars:parmset(n)> 
+Each instance of parmdb(n) provides all of the <xref mars:parmset(n)> 
 instance subcommands; in addition, it adds the following.<p>
 
 <deflist instance>
