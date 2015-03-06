@@ -3,13 +3,13 @@
 - Problems in test/athena:
   - MAP:* orders use `app puts`; wrote issue #130 for Dave. 
 - Document athena(n)
-- Document athenadb(n)
-- Document executive(n)
 - New tests:
   - 010-abevent.test
   - 010-athenadb.test
   - 010-athena.test
-- See about giving athena(n) a read-only db.
+- arachne tool can have subcommands:
+  - Make a scenario file given a script.
+  - Modify a scenario file given a script.
 - athena(n) HTML generation
   - What to do about icon names?
     - Replace with .png files, with valid URLs?
@@ -24,9 +24,7 @@
     - athenadb(n) provides a factory method for creating configured htools
       buffers.
     - Code using htools buffers get them from athenadb(n).
-- arachne tool can have subcommands:
-  - Make a scenario file given a script.
-  - Modify a scenario file given a script.
+- See about giving athena(n) a read-only db.
 - Write cellide manpage.
 
 
