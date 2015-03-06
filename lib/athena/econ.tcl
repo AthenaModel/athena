@@ -1429,60 +1429,28 @@ snit::type ::athena::econ {
 
     # CgeError title
     #
-    # This method pops up a dialog to inform the user that because the CGE
+    # This method notifies the application that because the CGE
     # has failed to solve the econ model is disabled.
 
     method CgeError {title} {
-        append msg "Failure in the econ model caused it to be disabled."
-        append msg "\nSee the detail browser for more information."
-
         # FIRST, disable the econ model.
         $self setstate DISABLED
 
-        # NEXT, if the app in in GUI mode, inform the user about
-        # the failure. The on-tick sanity check will also fail
-        # which will stop the run if it's in batch mode
-        if {[app tkloaded]} {
-            set answer [messagebox popup              \
-                            -icon warning             \
-                            -message $msg             \
-                            -parent [app topwin]      \
-                            -title  $title            \
-                            -buttons {ok "Ok" browser "Go To Detail Browser"}]
-
-           if {$answer eq "browser"} {
-               app show my://app/econ
-           }
-       }
-
+        # NEXT, notify the application.
+        $adb notify econ <CgeError>
     }
 
     # SamError title
     #
-    # This method pops up a dialog to inform the user that because the CGE
+    # This method notifies the application that because the SAM
     # has failed to solve the econ model is disabled.
 
     method SamError {title} {
-        append msg "Failure in the econ model caused it to be disabled."
-        append msg "\nSee the detail browser for more information."
-
         # FIRST, disable the econ model
         $self setstate DISABLED
 
-        # NEXT, if the app in in GUI mode, inform the user about the
-        # failure. The on-lock sanity check will also fail.
-        if {[app tkloaded]} {
-            set answer [messagebox popup              \
-                            -icon warning             \
-                            -message $msg             \
-                            -parent [app topwin]      \
-                            -title  $title            \
-                            -buttons {ok "Ok" browser "Go To Detail Browser"}]
-
-           if {$answer eq "browser"} {
-               app show my://app/econ
-           }
-       }
+        # NEXT, notify the application.
+        $adb notify econ <SamError>
     }
 
 

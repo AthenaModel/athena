@@ -15,11 +15,6 @@
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-# Required Packages
-
-# All needed packages are required in app_sim.tcl.
- 
-#-----------------------------------------------------------------------
 # Module: app
 #
 # app_sim(n) Application Ensemble
@@ -225,8 +220,10 @@ snit::type app {
 
 
         # NEXT, bind components together
-        notifier bind ::app <Puck>  ::order_dialog  {::order_dialog puck}
-        notifier bind ::adb <InsaneOnTick> ::app [mytypemethod InsaneOnTick]
+        notifier bind ::app <Puck>          ::order_dialog {::order_dialog puck}
+        notifier bind ::adb <InsaneOnTick>  ::app [mytypemethod InsaneOnTick]
+        notifier bind ::adb.econ <SamError> ::app [mytypemethod EconError]
+        notifier bind ::adb.econ <CgeError> ::app [mytypemethod EconError]
 
         # NEXT, create state controllers, to enable and disable
         # GUI components as application state changes.
@@ -885,6 +882,28 @@ snit::type app {
         Please see the On-Tick Sanity Check report for details.
                 }]
         }
+    }
+
+    # EconError
+    #
+    # This is called when the econ model fails.
+
+    typemethod EconError {} {
+        append msg "Failure in the econ model caused it to be disabled."
+        append msg "\nSee the detail browser for more information."
+
+        if {[app tkloaded]} {
+            set answer [messagebox popup              \
+                            -icon warning             \
+                            -message $msg             \
+                            -parent [app topwin]      \
+                            -title  $title            \
+                            -buttons {ok "Ok" browser "Go To Detail Browser"}]
+
+           if {$answer eq "browser"} {
+               app show my://app/econ
+           }
+       }
     }
 
     #-------------------------------------------------------------------

@@ -94,7 +94,7 @@ snit::type ::athena::sim {
         install ticker using timeout ${selfns}::ticker    \
             -interval   $constants(tickDelay)             \
             -repetition yes                               \
-            -command    [list $adb profile sim Tick]
+            -command    [list $adb cprofile sim Tick]
 
     }
 
