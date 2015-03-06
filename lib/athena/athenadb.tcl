@@ -332,7 +332,7 @@ snit::type ::athena::athenadb {
             nbhood                      \
             nbrel                       \
             orggroup                    \
-            parm                        \
+            {parm parmdb}               \
             payload                     \
             personnel                   \
             plant                       \

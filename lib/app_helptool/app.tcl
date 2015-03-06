@@ -103,7 +103,7 @@ snit::type app {
 
         # NEXT, create a parmdb so that the help can acquire the parm
         # docs.
-        ::athena::parm ::parmdb
+        ::athena::parmdb ::pdb
 
         # NEXT, process the input file.
         set code [catch {$type CompileInputFile $infile} result]

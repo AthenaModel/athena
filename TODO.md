@@ -6,6 +6,8 @@
   as 050-athena.test.
 - Document athena(n)
 - Document athenadb(n)
+- Document parm(n)
+- Document executive(n)
 - See about giving athena(n) a read-only db.
 - Why is there no 010-abevent.test?
 - Check whether "adb reset" can replace all of the resets in "ted cleanup"

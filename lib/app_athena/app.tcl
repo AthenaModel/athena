@@ -1156,10 +1156,8 @@ snit::type app {
 
         try {
             if {$info(userMode) eq "normal"} {
-                puts "Calling exec"
                 set result [adb executive eval $script]
             } else {
-                puts "Calling uplevel"
                 set result [uplevel #0 $script]
             }
         } on error {errmsg eopts} {

@@ -67,10 +67,10 @@ proc parmpage {parm itemtype} {
 
     if {$itemtype ne "subset"} {
         append text \
-       "Default value: [super ::parmdb getdefault $parm]<p>\n\n"
+       "Default value: [super ::pdb getdefault $parm]<p>\n\n"
     }
 
-    set docstring [super ::parmdb docstring $parm]
+    set docstring [super ::pdb docstring $parm]
     append text [string map {& &amp; < &lt; > &gt;} $docstring]
     append text "<p>"
 
@@ -86,7 +86,7 @@ proc parmpage {parm itemtype} {
 # Creates a page called "parm.<parmname>" for each parameters.
 
 proc parmpages {} {
-    foreach {item itemtype} [super ::parmdb items] {
+    foreach {item itemtype} [super ::pdb items] {
         parmpage $item $itemtype
     }
 }

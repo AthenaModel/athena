@@ -8,9 +8,11 @@
 # DESCRIPTION:
 #    athena(n): Model Parameters
 #
-# TBD: Global refs: athena register, 
-#
 #-----------------------------------------------------------------------
+
+namespace eval :: {
+    namespace export parmdb
+}
 
 #-------------------------------------------------------------------
 # Internal parameter value types used in this database
@@ -26,7 +28,7 @@
 #-------------------------------------------------------------------
 # parm
 
-snit::type ::athena::parm {
+snit::type ::athena::parmdb {
     #-------------------------------------------------------------------
     # Components
 
