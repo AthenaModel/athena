@@ -61,7 +61,6 @@ appserver module PARMDB {
             sim
             absit
             activity
-            app
             attitude
             control
             dam

@@ -128,7 +128,7 @@ snit::type ::athena::athenadb {
     component parm           -public parm           ;# model parameter DB
     component paster         -public paste          ;# paste manager
     component pot            -public bean           ;# beanpot(n)
-    component ptype          -public ptype          ;# app level type validators
+    component ptype          -public ptype          ;# parm type validators
     component ruleset        -public ruleset        ;# rule set manager
     component sanity         -public sanity         ;# sanity checker
     component sim            -public sim            ;# Simulation Control
@@ -980,7 +980,7 @@ snit::type ::athena::athenadb {
             set result [uplevel 1 $args]
         } 1] 0]
 
-        $self log detail app "${prefix}profile [list $args] $msec"
+        $self log detail "" "${prefix}profile [list $args] $msec"
 
         return $result
     }

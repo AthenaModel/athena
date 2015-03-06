@@ -101,6 +101,10 @@ snit::type app {
         hdb clear
         hdb eval [readfile [file join $::app_helptool::library help.sql]]
 
+        # NEXT, create a parmdb so that the help can acquire the parm
+        # docs.
+        ::athena::parm ::parmdb
+
         # NEXT, process the input file.
         set code [catch {$type CompileInputFile $infile} result]
 

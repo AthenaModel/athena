@@ -555,21 +555,6 @@ snit::type ::athena::parm {
         # ORG Activities
         # All parameters use defaults.
 
-        # app.* parameters
-        $ps subset app {
-            Parameters related to how the Athena application should behave
-            under certain circumstances. For now, this is limited to
-            only developer user.
-        }
-
-        $ps define app.dev ::projectlib::boolean no {
-            This flag indicates areas of Athena that should not be
-            accessed because they are under development
-            and should not be used in the course of running. This flag
-            also provides a way of marking the code clearly for these types
-            of areas.
-        }
-
         # attitude.* parameters
         $ps subset attitude {
             Parameters related to Athena's attitudes model.  Note that
