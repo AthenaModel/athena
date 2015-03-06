@@ -4,7 +4,7 @@
 #   Application Ensemble.
 #
 # PACKAGE:
-#   app_sim(n) -- athena_sim(1) implementation package
+#   app_athena(n) -- athena(1) implementation package
 #
 # PROJECT:
 #   Athena S&RO Simulation
@@ -17,17 +17,16 @@
 #-----------------------------------------------------------------------
 # Module: app
 #
-# app_sim(n) Application Ensemble
+# app_athena(n) Application Ensemble
 #
 # This module defines app, the application ensemble.  app encapsulates 
 # all of the functionality of athena_sim(1), including the application's 
 # start-up behavior.  To invoke the  application,
 #
-# > package require app_sim
+# > package require app_athena
 # > app init $argv
 #
-# The app_sim(n) package can be invoked by athena(1) and by 
-# athena_test(1).
+# The app_athena(n) package can be invoked by athena(1).
 
 snit::type app {
     pragma -hastypedestroy 0 -hasinstances 0
@@ -69,6 +68,14 @@ snit::type app {
         -script     {}
         -scratch    {}
         -url        {}
+    }
+
+    # Array of info variables
+    #
+    # userMode  - normal | super
+
+    typevariable info -array {
+        userMode normal
     }
 
 
@@ -204,8 +211,14 @@ snit::type app {
 
         # NEXT, Create the working scenario RDB and initialize simulation
         # components
-        view      init
-        MakeAthena ::adb
+        athena create ::adb    \
+            -logcmd  ::log     \
+            -executivecmd [mytypemethod DefineExecutiveCommands]
+
+        # NEXT, configure and initialize application modules.
+        log configure \
+            -simclock [adb getclock]
+        view init
 
         # NEXT, register my:// servers with myagent.
         appserver init
@@ -1035,23 +1048,6 @@ snit::type app {
         }
     }
 
-    # MakeAthena name ?filename?
-    #
-    # name     - The command name
-    # filename - An .adb file name, or ""
-    #
-    # Creates the ::adb object.
-
-    proc MakeAthena {name {filename ""}} {
-        athena create $name \
-            -adbfile $filename \
-            -logcmd  ::log     \
-            -subject ::adb
-
-        log configure \
-            -simclock [adb getclock]
-    }
-
     # lock
     #
     # Locks the scenario by sending SIM:LOCK; displays sanity check
@@ -1137,11 +1133,182 @@ snit::type app {
 
         adb rebase
     }
+
+    #-------------------------------------------------------------------
+    # Application-specific Executive Commands
+
+    # eval script
+    #
+    # Evaluate the script; throw an error or return the script's value.
+    # Either way, log what happens. Ignore empty scripts, and respect
+    # the user mode.
+
+    typemethod eval {script} {
+        if {[string trim $script] eq ""} {
+            return
+        }
+
+        log normal exec "Command: $script"
+
+        # Make sure the command displays in the log before it
+        # executes.
+        update idletasks
+
+        try {
+            if {$info(userMode) eq "normal"} {
+                puts "Calling exec"
+                set result [adb executive eval $script]
+            } else {
+                puts "Calling uplevel"
+                set result [uplevel #0 $script]
+            }
+        } on error {errmsg eopts} {
+            log warning exec "Command error: $errmsg"
+            return {*}$eopts $errmsg
+        }
+
+        return $result
+    }
+
+
+    # DefineExecutiveCommands exec
+    #
+    # exec - athena(n) executive object
+    #
+    # Defines application-specific executive commands.
+
+    typemethod DefineExecutiveCommands {exec} {
+        # clear
+        $exec smartalias clear 0 0 {} \
+            [list .main cli clear]
+
+        # debug
+        $exec smartalias debug 0 0 {} \
+            [list ::marsgui::debugger new]
+
+        # enter
+        $exec smartalias enter 1 - {order ?parm value...?} \
+            [mytypemethod enter]
+
+        # help
+        $exec smartalias help 0 - {?command...?} \
+            [mytypemethod CliHelp]
+
+        # load
+        $exec smartalias load 1 1 {filename} \
+            [mytypemethod open]
+
+        # nbfill
+        $exec smartalias nbfill 1 1 {varname} \
+            [list .main nbfill]
+
+        # new
+        $exec smartalias new 0 0 {} \
+            [mytypemethod new]
+
+        # prefs
+        $exec ensemble prefs
+
+        # prefs get
+        $exec smartalias {prefs get} 1 1 {prefs} \
+            [list prefs get]
+
+        # prefs help
+        $exec smartalias {prefs help} 1 1 {parm} \
+            [list prefs help]
+
+        # prefs list
+        $exec smartalias {prefs list} 0 1 {?pattern?} \
+            [list prefs list]
+
+        # prefs names
+        $exec smartalias {prefs names} 0 1 {?pattern?} \
+            [list prefs names]
+
+        # prefs reset
+        $exec smartalias {prefs reset} 0 0 {} \
+            [list prefs reset]
+
+        # prefs set
+        $exec smartalias {prefs set} 2 2 {prefs value} \
+            [list prefs set]
+
+        # save
+        $exec smartalias save 1 1 {filename} \
+            [mytypemethod save]
+
+        # show
+        $exec smartalias show 1 1 {url} \
+            [mytypemethod show]
+
+        # super
+        $exec smartalias super 1 - {arg ?arg...?} \
+            [mytypemethod Super]
+
+        # usermode
+        $exec smartalias {usermode} 0 1 {?mode?} \
+            [mytypemethod usermode]
+
+    }
+
+    # usermode ?mode?
+    #
+    # mode     normal|super
+    #
+    # Queries/sets the CLI mode.  In normal mode, all commands are 
+    # methodessed by the smartinterp, unless "super" is used.  In
+    # super mode, all commands are methodessed by the main interpreter.
+
+    typemethod usermode {{mode ""}} {
+        # FIRST, handle queries
+        if {$mode eq ""} {
+            return $info(userMode)
+        }
+
+        # NEXT, check the mode
+        require {$mode in {normal super}} \
+            "Invalid mode, should be one of: normal, super"
+
+        # NEXT, save it.
+        set info(userMode) $mode
+
+        # NEXT, this is usually a CLI command; it looks odd to
+        # return the mode in this case, so don't.
+        return
+    }
+
+
+    # Super args
+    #
+    # Executes args as a command in the global namespace
+    typemethod Super {args} {
+        namespace eval :: $args
+    }
+
+    # CliHelp args
+    #
+    # Displays the help for the command 
+
+    typemethod CliHelp {args} {
+        if {[llength $args] == 0} {
+            app show my://help/command
+        } else {
+            app help $args
+        }
+    }
 }
 
 
 #-----------------------------------------------------------------------
 # Section: Miscellaneous Application Utility Procs
+
+# usermode ?mode?
+#
+# Sets the usermode.  For use when usermode is super.
+
+proc usermode {{mode ""}} {
+    ::app usermode $mode
+}
 
 # version
 #

@@ -186,14 +186,6 @@ snit::type ::athena::athenadb {
     #-------------------------------------------------------------------
     # Options
 
-    # -logcmd cmd
-    #
-    # The name of a logger(n) object (or equivalent) to use to log the 
-    # scenario's activities.  This object will use the -subject as its
-    # logger(n) "component" name.
-
-    option -logcmd
-
     # -subject name
     #
     # The name of the object for use in log messages and as a 
@@ -202,6 +194,29 @@ snit::type ::athena::athenadb {
     option -subject \
         -readonly yes
 
+    # -adbfile filename
+    #
+    # Pseudo-option, read-only after creation.  Used to open an .adb 
+    # file.  After that, tracks names established by "save".
+
+    option -adbfile      \
+        -default     ""  \
+        -readonly    yes \
+        -cgetmethod  CgetAdbFile
+
+    method CgetAdbFile {opt} {
+        return [$self adbfile]
+    }
+
+    # -logcmd cmd
+    #
+    # The name of a logger(n) object (or equivalent) to use to log the 
+    # scenario's activities.  This object will use the -subject as its
+    # logger(n) "component" name.
+
+    option -logcmd
+
+
     # -scratch dirname
     #
     # The name of a directory in which athena(n) can write files.
@@ -209,7 +224,15 @@ snit::type ::athena::athenadb {
 
     option -scratch \
         -default ""
+
+    # -executivecmd cmd
+    #
+    # The name of a command to call to define additional executive
+    # commands in the context of the scenario.  The cmd is a command
+    # prefix, to which will be added the name of the athena(n) object.
     
+    option -executivecmd \
+        -readonly yes
 
     #-------------------------------------------------------------------
     # Instance Variables
@@ -228,15 +251,13 @@ snit::type ::athena::athenadb {
     #-------------------------------------------------------------------
     # Constructor/Destructor
 
-    # constructor filename ?options...?
+    # constructor ?options...?
     #
-    # filename - An .adb filename or ""
-    #
-    # Creates a new scenario object.  If a valid .adb file name is given,
+    # Creates a new scenario object.  If a valid -adbfile is given,
     # the .adb file will be loaded; otherwise, the new scenario will
     # be empty.  
 
-    constructor {filename args} {
+    constructor {args} {
         # FIRST, set the -subject's default value.  Then, get the option
         # values.
         set options(-subject) $self
@@ -299,7 +320,6 @@ snit::type ::athena::athenadb {
             curse                       \
             demog                       \
             econ                        \
-            executive                   \
             exporter                    \
             frcgroup                    \
             group                       \
@@ -341,12 +361,17 @@ snit::type ::athena::athenadb {
         $self RegisterSaveable sim  $sim
 
         # NEXT, either load the named file or create an empty database.
-        if {$filename ne ""} {
+        if {$options(-adbfile) ne ""} {
             $self load $filename
         } else {
             set info(adbfile) ""
             $self FinishOpeningScenario
         }
+
+        # NEXT, add executive
+        install executive using ::athena::executive ${selfns}::executive \
+            $self \
+            -executivecmd $options(-executivecmd)
     } 
 
     # MakeComponents component...

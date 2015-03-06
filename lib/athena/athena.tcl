@@ -54,23 +54,12 @@ snit::type ::athena::athena {
     #-------------------------------------------------------------------
     # Options
 
-    delegate option -scratch to adb
-    delegate option -logcmd  to adb
-    delegate option -subject to adb
+    delegate option -subject      to adb
+    delegate option -adbfile      to adb
+    delegate option -scratch      to adb
+    delegate option -logcmd       to adb
+    delegate option -executivecmd to adb
 
-    # -adbfile filename
-    #
-    # Pseudo-option, read-only after creation.  Used to open an .adb 
-    # file.  After that, tracks names established by "save".
-
-    option -adbfile      \
-        -default     ""  \
-        -readonly    yes \
-        -cgetmethod  CgetAdbFile
-
-    method CgetAdbFile {opt} {
-        return [$self adbfile]
-    }
 
     #-------------------------------------------------------------------
     # Constructor
@@ -80,13 +69,13 @@ snit::type ::athena::athena {
     # Creates a new athena(n), loading an .adb if -filename is given.
 
     constructor {args} {
-        # FIRST, handle options explicitly.
-        set filename [from args -adbfile ""]
-        set subject  [from args -subject $self]
+        # FIRST, handle certain options explicitly.
 
         # NEXT, create and configure the athenadb instance.
-        install adb using athenadb ${selfns}::adb $filename \
-            -subject $subject
+        install adb using athenadb ${selfns}::adb      \
+            -subject      [from args -subject $self]   \
+            -adbfile      [from args -adbfile ""]      \
+            -executivecmd [from args -executivecmd ""]
 
         # NEXT, handle any additional options.
         $self configurelist $args

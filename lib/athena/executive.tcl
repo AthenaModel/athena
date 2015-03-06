@@ -12,8 +12,6 @@
 #    that provides safe command interpretation for user input, separate
 #    from the main interpreter.
 #
-# TBD: Global refs: app puts
-#
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
@@ -31,25 +29,36 @@ snit::type ::athena::executive {
 
     # Array of instance variables
     #
-    #  userMode            normal | super
     #  stackTrace          Traceback for last error
 
     variable info -array {
-        userMode     normal
         stackTrace   {}
     }
+
+    #-------------------------------------------------------------------
+    # Options
+    
+    # -executivecmd cmd
+    #
+    # The name of a command to call to define additional executive
+    # commands in the context of the scenario.  The cmd is a command
+    # prefix, to which will be added the name of the athena(n) object.
+    
+    option -executivecmd \
+        -readonly yes
         
     #-------------------------------------------------------------------
     # Constructor
 
-    # constructor adb_
+    # constructor adb_ ?options...?
     #
     # adb_    - The athenadb(n) that owns this instance.
     #
     # Initializes instances of the type.
 
-    constructor {adb_} {
+    constructor {adb_ args} {
         set adb $adb_
+        $self configurelist $args
         $self InitializeInterp
     }
 
@@ -120,6 +129,9 @@ snit::type ::athena::executive {
         # NEXT, install the executive functions and commands
         $self DefineExecutiveFunctions
         $self DefineExecutiveCommands
+
+        # NEXT, define application-specific commands.
+        callwith $options(-executivecmd) $self
     }
 
 
@@ -127,6 +139,7 @@ snit::type ::athena::executive {
     #-------------------------------------------------------------------
     # Public Methods
 
+    delegate method ensemble   to interp
     delegate method expr       to interp
     delegate method proc       to interp
     delegate method smartalias to interp
@@ -190,28 +203,17 @@ snit::type ::athena::executive {
     # eval script
     #
     # Evaluate the script; throw an error or return the script's value.
-    # Either way, log what happens. Ignore empty scripts.
+    # Save any errors. Ignore empty scripts.
 
     method eval {script} {
         if {[string trim $script] eq ""} {
             return
         }
 
-        $adb log normal exec "Command: $script"
-
-        # Make sure the command displays in the log before it
-        # executes.
-        update idletasks
-
-        if {[catch {
-            if {$info(userMode) eq "normal"} {
-                $interp eval $script
-            } else {
-                uplevel \#0 $script
-            }
-        } result eopts]} {
+        try {
+            set result [$interp eval $script]
+        } on error {result eopts} {
             set info(stackTrace) $::errorInfo
-            $adb log warning exec "Command error: $result"
             return {*}$eopts $result
         }
 
@@ -1611,10 +1613,6 @@ snit::type ::athena::executive {
         $interp smartalias gofer 1 - {typeOrGdict ?rulename? ?args...?} \
             [mymethod Gofer]
 
-        # help
-        $interp smartalias help 0 - {?-info? ?command...?} \
-            [mymethod Help]
-
         # last
         $interp ensemble last
 
@@ -1705,7 +1703,7 @@ snit::type ::athena::executive {
             [mymethod reset]
 
         # save
-        # TBD: Application/library hybrid
+        # Note: apps will often override this command.
         $interp smartalias save 1 1 {filename} \
             [mymethod Save]
 
@@ -1787,79 +1785,6 @@ snit::type ::athena::executive {
         # version
         $interp smartalias version 0 0 {} \
             [list $adb version]
-
-
-        #---------------------------------------------------------------
-        # Application Commands
-        #
-        # These will need to be moved to the application.
-
-
-        # clear
-        $interp smartalias clear 0 0 {} \
-            [list .main cli clear]
-
-        # debug
-        $interp smartalias debug 0 0 {} \
-            [list ::marsgui::debugger new]
-
-        # enter
-        $interp smartalias enter 1 - {order ?parm value...?} \
-            [mymethod Enter]
-
-        # load
-        $interp smartalias load 1 1 {filename} \
-            [list app open]
-
-        # nbfill
-        # TBD: Application executive command
-        $interp smartalias nbfill 1 1 {varname} \
-            [list .main nbfill]
-
-        # new
-        $interp smartalias new 0 0 {} \
-            [list app new]
-
-        # prefs
-        # TBD: This whole ensemble is application-specific.
-        $interp ensemble prefs
-
-        # prefs get
-        $interp smartalias {prefs get} 1 1 {prefs} \
-            [list prefs get]
-
-        # prefs help
-        $interp smartalias {prefs help} 1 1 {parm} \
-            [list prefs help]
-
-        # prefs list
-        $interp smartalias {prefs list} 0 1 {?pattern?} \
-            [list prefs list]
-
-        # prefs names
-        $interp smartalias {prefs names} 0 1 {?pattern?} \
-            [list prefs names]
-
-        # prefs reset
-        $interp smartalias {prefs reset} 0 0 {} \
-            [list prefs reset]
-
-        # prefs set
-        $interp smartalias {prefs set} 2 2 {prefs value} \
-            [list prefs set]
-
-        # show
-        # TBD: Application-specific commands
-        $interp smartalias show 1 1 {url} \
-            [mymethod Show]
-
-        # super
-        $interp smartalias super 1 - {arg ?arg...?} \
-            [mymethod Super]
-
-        # usermode
-        $interp smartalias {usermode} 0 1 {?mode?} \
-            [mymethod usermode]
     }
 
     
@@ -2163,8 +2088,7 @@ snit::type ::athena::executive {
         if {$opts(-history)} {
             $adb export fromcif $fullname $opts(-map)
 
-            app puts "Exported scenario from history as $fullname."
-            return
+            return "Exported scenario from history as $fullname."
         }
 
         # NEXT, the normal export can only be done during PREP.
@@ -2174,9 +2098,7 @@ snit::type ::athena::executive {
 
         $adb export fromdata $fullname $opts(-map)
 
-        app puts "Exported scenario from current data as $fullname."
-
-        return
+        return "Exported scenario from current data as $fullname."
     }
 
     # gofer typeOrGdict ?rulename? ?args...?
@@ -2195,30 +2117,6 @@ snit::type ::athena::executive {
             return [$adb gofer make $typeOrGdict $rulename {*}$args]
         } else {
             return [$adb gofer eval [$adb gofer validate $typeOrGdict]]
-        }
-    }
-
-    # help ?-info? ?command...?
-    #
-    # Outputs the help for the command 
-    #
-    # TBD: Hybrid command, half application half library
-
-    method Help {args} {
-        if {[llength $args] == 0} {
-            app show my://help/command
-        }
-
-        if {[lindex $args 0] eq "-info"} {
-            set args [lrange $args 1 end]
-
-            set out [$interp help $args]
-
-            append out "\n\n[$interp cmdinfo $args]"
-
-            return $out
-        } else {
-            app help $args
         }
     }
 
@@ -2326,13 +2224,12 @@ snit::type ::athena::executive {
     # 
     # filename   - Scenario file name
     #
-    # Saves the scenario using the name.  Errors are handled by
-    # [app error].
+    # Saves the scenario using the name. 
     #
-    # TBD: hybrid
+    # Note: Applications will likely override this.
 
     method Save {filename} {
-        app save $filename
+        $adb save $filename
         return
     }
     
@@ -2527,83 +2424,6 @@ snit::type ::athena::executive {
     method Unlock {} {
         $self Send SIM:UNLOCK
     }
-
-
-    #-------------------------------------------------------------------
-    # Application Executive Commands
-    #
-    # TBD: These need to move to app
-
-    # enter order ?parm value...?
-    #
-    # order   - The name of an order.
-    # parm    - One of order's parameter names
-    # value   - The parameter's value
-    #
-    # This routine pops up an order dialog from the command line.  It is
-    # intended for debugging rather than end-user use.
-
-    method Enter {order args} {
-        app enter $order $args
-    }
-
-    # show url
-    #
-    # Shows a URL in the detail browser.
-
-    method Show {url} {
-        .main tab view detail
-        app show $url
-    }
-
-    # super args
-    #
-    # Executes args as a command in the global namespace
-    method Super {args} {
-        namespace eval :: $args
-    }
-
-    # usermode ?mode?
-    #
-    # mode     normal|super
-    #
-    # Queries/sets the CLI mode.  In normal mode, all commands are 
-    # methodessed by the smartinterp, unless "super" is used.  In
-    # super mode, all commands are methodessed by the main interpreter.
-
-    method usermode {{mode ""}} {
-        # FIRST, handle queries
-        if {$mode eq ""} {
-            return $info(userMode)
-        }
-
-        # NEXT, check the mode
-        require {$mode in {normal super}} \
-            "Invalid mode, should be one of: normal, super"
-
-        # NEXT, save it.
-        set info(userMode) $mode
-
-        # NEXT, this is usually a CLI command; it looks odd to
-        # return the mode in this case, so don't.
-        return
-    }
-
-    
-}
-
-
-
-#-----------------------------------------------------------------------
-# Commands defined in ::, for use when usermode is super
-
-# usermode ?mode?
-#
-# Calls executive usermode
-# TBD: As written this should be in the application.
-
-proc usermode {{mode ""}} {
-    ::adb executive usermode $mode
 }
 
 
