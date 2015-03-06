@@ -536,8 +536,10 @@ snit::widget cursebrowser {
 
         # NEXT, it's a curse or an inject.
         if {"curse" in [$citree item tag names $id]} {
-            adb order senddict gui CURSE:DELETE \
-                [list curse_id [$citree item text $id {tag id}]]
+            app delete CURSE:DELETE [list curse_id [$citree item text $id {tag id}]] {
+                Are you sure you really want to delete this 
+                CURSE, along with all of its inputs?
+            }
         } else {
             adb order senddict gui INJECT:DELETE \
                 [list id [$citree item text $id {tag id}]]
