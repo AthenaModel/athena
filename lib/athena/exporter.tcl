@@ -51,7 +51,7 @@ snit::type ::athena::exporter {
     # map flag is set to 0, MAP:IMPORT:* orders are changed to 
     # MAP:GEOREF orders and only projection information is exported.
 
-    method fromcif {scriptFile mapflag} {
+    method fromcif {scriptFile {mapflag 0}} {
         # FIRST, get a list of the order data.  Skip SIM:UNLOCK, and 
         # prepare to fix up SIM:RUN and SIM:PAUSE
         set orders [list]
@@ -184,7 +184,7 @@ snit::type ::athena::exporter {
     #
     # Creates a script that will recreate the current scenario.
 
-    method fromdata {scriptFile mapflag} {
+    method fromdata {scriptFile {mapflag 0}} {
         # FIRST, open the file.  We'll throw an error on a bad file
         # name; that's OK.
         set f [open $scriptFile w]
