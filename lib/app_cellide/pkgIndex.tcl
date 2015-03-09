@@ -12,5 +12,5 @@
 #-------------------------------------------------------------------------
 
 # -kite-ifneeded-start  DO NOT EDIT THIS BLOCK BY HAND
-package ifneeded app_cellide 6.3.0a6 [list source [file join $dir pkgModules.tcl]]
+package ifneeded app_cellide 6.3.0a7 [list source [file join $dir pkgModules.tcl]]
 # -kite-ifneeded-end
