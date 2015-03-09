@@ -55,6 +55,7 @@ snit::type ::athena::aam {
     variable alist {} ;# list of attrition dictionaries
     variable sdict    ;# dict used to assess SAT effects
     variable cdict    ;# dict used to assess COOP effects
+    variable roedict  ;# array of dicts used to store ROE tactic information
 
     #-------------------------------------------------------------------
     # reset
@@ -63,8 +64,41 @@ snit::type ::athena::aam {
         set alist ""
         set sdict ""
         set cdict ""
+        array unset roedict
     }
 
+    method start {} {
+        $self ComputeEffectiveForce
+    }
+
+    method ComputeEffectiveForce {} {
+        foreach {dem trn ft urb pers n g} [$adb eval {
+            SELECT F.demeanor      AS demeanor,
+                   F.training      AS training,
+                   F.forcetype     AS forcetype,
+                   N.urbanization  AS urb,
+                   D.personnel     AS personnel,
+                   D.n             AS n,
+                   D.g             AS g
+            FROM gui_frcgroups AS F
+            JOIN deploy_ng     AS D ON (D.g=F.g)
+            JOIN nbhoods       AS N ON (D.n=N.n)
+            WHERE D.personnel > 0
+        }] {
+            set Fd [$adb parm get aam.FRC.demeanor.$dem]
+            set Ff [$adb parm get aam.FRC.forcetype.$ft]
+            set Ft [$adb parm get aam.FRC.discipline.$trn]
+
+            let eff_pers {entier(ceil($Fd * $Ft * $Ff * $pers))}
+
+            $adb eval {
+                UPDATE deploy_ng
+                SET eff_personnel=$eff_pers
+                WHERE n=$n AND g=$g
+            }
+
+        }
+    }
     #-------------------------------------------------------------------
     # Attrition Assessment
 
@@ -96,9 +130,64 @@ snit::type ::athena::aam {
     }
 
     #-------------------------------------------------------------------
-    # Magic attrition, from ATTRIT tactic
-    
+    # ROE Tactic API 
 
+    # setroe n g rdict
+    #
+    # n       - a neighborhood in which g assumes an ROE
+    # g       - a force group assuming the ROE
+    # rdict   - dictionary of ROE key/values
+    #
+    # rdict contains the following data related to how g should conduct
+    # itself while in combat against other force groups in n:
+    #
+    #    $f  => dictionary of ROE data for the FRC group g is engaging
+    #        -> roe => the ROE $g is attempting with $f: ATTACK or DEFEND
+    #        -> athresh => the force/enemy ratio below which $g DEFENDs
+    #        -> dthresh => the force/enemy ratio below which $g WITHDRAWs
+    #        -> civc => $g's concern for civilian casualties
+    #
+    # The data in this array of dictionaries is used to set up the initial
+    # conditions of the various conflicts between FRC groups by neighborhood.
+    # It should be noted that just because a FRC group is ordered to assume
+    # a posture via the ROE, that posture may not be attainable due to
+    # the computed force ratios.
+
+    method setroe {n g rdict} {
+        dict set roedict($n) $g $rdict 
+    }
+
+    # hasroe n g f
+    #
+    # n   - a neighborhood
+    # g   - a force group
+    # f   - other force group
+    #
+    # This method returns a flag indicating whether g has an ROE already
+    # set against g in n.  This is used during ROE tactic execution to
+    # determine whether an ROE has already been set and, therefore, cannot
+    # be overridden.
+
+    method hasroe {n g f} {
+        if {![info exists roedict($n)]} {
+            return 0
+        }
+
+        return [dict exists $roedict($n) $g $f]
+    }
+
+    # getroe
+    #
+    # Returns the roedict as a dictionary
+
+    method getroe {} {
+        return [array get roedict]
+    }
+
+    #-------------------------------------------------------------------
+    # Attrition, from ATTRIT tactic
+    # TBD: Use this with AAM combat? (mode always GROUP)
+    
     # attrit parmdict
     #
     # parmdict

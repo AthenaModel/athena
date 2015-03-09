@@ -502,9 +502,11 @@ snit::type ::athena::sim {
         $adb cprofile cash start           ;# Prepare cash for on-lock strategies
         $adb cprofile strategy start       ;# Execute on-lock strategies
         $adb cprofile econ start           ;# Initializes the econ model taking 
-                                                # into account on-lock strategies
+                                            # into account on-lock strategies
         $adb cprofile plant start          ;# Initializes the infrastructure model
-                                               ;# which depends on the econ model
+                                            # which depends on the econ model
+        $adb cprofile aam start            ;# Compute effective forces of 
+                                            # deployed troops
 
         # NEXT, do analysis and assessment, of transient effects only.
         # There will be no attrition and no shifts in neighborhood control.

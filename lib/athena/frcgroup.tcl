@@ -122,6 +122,18 @@ snit::type ::athena::frcgroup {
         }]
     }
 
+    # notownedby a
+    #
+    # a - An actor
+    #
+    # Returns a list of the force groups not owned by actor a.
+
+    method notownedby {a} {
+        return [$adb eval {
+            SELECT g FROM frcgroups_view
+            WHERE a!=$a
+        }]
+    }
 
     #-------------------------------------------------------------------
     # Mutators

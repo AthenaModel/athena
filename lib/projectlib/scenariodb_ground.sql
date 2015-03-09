@@ -34,19 +34,22 @@ CREATE TABLE personnel_g (
 -- Deployment Table: FRC and ORG personnel deployed into neighborhoods.
 CREATE TABLE deploy_ng (
     -- Symbolic neighborhood name
-    n          TEXT REFERENCES nbhoods(n)
-               ON DELETE CASCADE
-               DEFERRABLE INITIALLY DEFERRED,
+    n              TEXT REFERENCES nbhoods(n)
+                   ON DELETE CASCADE
+                   DEFERRABLE INITIALLY DEFERRED,
 
     -- Symbolic group name
-    g          TEXT REFERENCES groups(g)
-               DEFERRABLE INITIALLY DEFERRED,
+    g              TEXT REFERENCES groups(g)
+                   DEFERRABLE INITIALLY DEFERRED,
 
     -- Personnel
-    personnel  INTEGER DEFAULT 0,
+    personnel     INTEGER DEFAULT 0,
+
+    -- Effective Personnel; used by AAM
+    eff_personnel INTEGER DEFAULT 0,
 
     -- Unassigned personnel.
-    unassigned INTEGER DEFAULT 0,
+    unassigned    INTEGER DEFAULT 0,
     
     PRIMARY KEY (n,g)
 );
