@@ -164,8 +164,6 @@ snit::type ::athena::map {
         # NEXT, log it.
          $adb log normal app "Import Map: $filename"
         
-        app puts "Imported Map: $filename"
-
         # NEXT, Notify the application.
         $adb notify map <MapChanged>
 
@@ -272,8 +270,7 @@ snit::type ::athena::map {
         # FIRST, blank everything out
         $adb eval {DELETE FROM maps;}
 
-         $adb log normal app "Using Default Map"
-        app puts "Using Default Map"
+        $adb log normal app "Using Default Map"
 
         # NEXT, notify application
         $adb notify map <MapChanged>
@@ -304,8 +301,7 @@ snit::type ::athena::map {
         # NEXT, log it
         set filename [dict get $dict filename]
 
-         $adb log normal app "Restored Map: $filename"
-        app puts "Restored Map: $filename"
+        $adb log normal app "Restored Map: $filename"
 
         # NEXT, Notify the application.
         $adb notify map <MapChanged>
