@@ -286,6 +286,11 @@ snit::type ::athena::athenadb {
         # NEXT, support pasting of objects.
         install paster using ::athena::paster create ${selfns}::paster $self
 
+        # NEXT, create the executive.
+        install executive using ::athena::executive ${selfns}::executive \
+            $self \
+            -executivecmd $options(-executivecmd)
+
         # NEXT, add aram.
         install aram using uram ${selfns}::aram \
             -rdb          $rdb                  \
@@ -360,18 +365,14 @@ snit::type ::athena::athenadb {
         $self RegisterSaveable pot  $pot
         $self RegisterSaveable sim  $sim
 
+
         # NEXT, either load the named file or create an empty database.
         if {$options(-adbfile) ne ""} {
-            $self load $filename
+            $self load $options(-adbfile)
         } else {
             set info(adbfile) ""
             $self FinishOpeningScenario
         }
-
-        # NEXT, add executive
-        install executive using ::athena::executive ${selfns}::executive \
-            $self \
-            -executivecmd $options(-executivecmd)
     } 
 
     # MakeComponents component...

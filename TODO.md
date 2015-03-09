@@ -1,15 +1,10 @@
 # TODO.md - Athena TODO List
 
-- Problems in test/athena:
-  - MAP:* orders use `app puts`; wrote issue #130 for Dave. 
 - Document athena(n)
 - New tests:
   - 010-abevent.test
   - 010-athenadb.test
   - 010-athena.test
-- arachne tool can have subcommands:
-  - Make a scenario file given a script.
-  - Modify a scenario file given a script.
 - athena(n) HTML generation
   - What to do about icon names?
     - Replace with .png files, with valid URLs?
