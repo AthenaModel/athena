@@ -191,11 +191,11 @@ appserver module CONTRIBS {
         set f [string toupper $f]
         set g [string toupper $g]
 
-        if {$f ni [civgroup names]} {
+        if {![adb civgroup exists $f]} {
             set f "?"
         }
 
-        if {$g ni [frcgroup names]} {
+        if {![adb frcgroup exists $g]} {
             set g "?"
         }
         
@@ -266,14 +266,14 @@ appserver module CONTRIBS {
 
         # If the URAM gamma for this attitude is non-zero, include the
         # natural level.
-        if {[lindex [parm get uram.factors.COOP] 1] > 0.0} {
+        if {[lindex [adb parm get uram.factors.COOP] 1] > 0.0} {
             lappend vars natcoop.$f.$g
         }
 
         PutPlot hist.coop $start_ $end_ $vars
 
         # NEXT, Get the drivers for this time period.
-        aram contribs coop $f $g \
+        adb contribs coop $f $g \
             -start $start_       \
             -end   $end_
 
@@ -318,11 +318,11 @@ appserver module CONTRIBS {
         set f [string toupper $f]
         set g [string toupper $g]
 
-        if {$f ni [group names]} {
+        if {![adb group exists $f]} {
             set f "?"
         }
 
-        if {$g ni [group names]} {
+        if {![adb group exists $g]} {
             set g "?"
         }
         
@@ -393,14 +393,14 @@ appserver module CONTRIBS {
 
         # If the URAM gamma for this attitude is non-zero, include the
         # natural level.
-        if {[lindex [parm get uram.factors.HREL] 1] > 0.0} {
+        if {[lindex [adb parm get uram.factors.HREL] 1] > 0.0} {
             lappend vars nathrel.$f.$g
         }
 
         PutPlot hist.hrel $start_ $end_ $vars
 
         # NEXT, Get the drivers for this time period.
-        aram contribs hrel $f $g \
+        adb contribs hrel $f $g \
             -start $start_       \
             -end   $end_
 
@@ -443,7 +443,7 @@ appserver module CONTRIBS {
         # NEXT, get the group
         set g [string toupper $g]
 
-        if {$g ni [civgroup names]} {
+        if {![adb civgroup exists $g]} {
             set g "?"
         }
 
@@ -513,7 +513,7 @@ appserver module CONTRIBS {
         PutPlot hist.sat $start_ $end_ $vars
 
         # NEXT, Get the drivers for this time period.
-        aram contribs mood $g \
+        adb contribs mood $g \
             -start $start_    \
             -end   $end_
 
@@ -559,11 +559,11 @@ appserver module CONTRIBS {
         set n [string toupper $n]
         set g [string toupper $g]
 
-        if {$n ni [nbhood names]} {
+        if {![adb nbhood exists $n]} {
             set n "?"
         }
 
-        if {$g ni [frcgroup names]} {
+        if {![adb frcgroup exists $g]} {
             set g "?"
         }
         
@@ -631,7 +631,7 @@ appserver module CONTRIBS {
 
         # NEXT, insert the plot.
         set vars [list]
-        rdb eval {SELECT g AS f FROM civgroups WHERE n=$n} {
+        adb eval {SELECT g AS f FROM civgroups WHERE n=$n} {
             lappend vars coop.$f.$g
         }
 
@@ -653,7 +653,7 @@ appserver module CONTRIBS {
         PutPlot hist.nbcoop $start_ $end_ $vars
 
         # NEXT, Get the drivers for this time period.
-        aram contribs nbcoop $n $g \
+        adb contribs nbcoop $n $g \
             -start $start_       \
             -end   $end_
 
@@ -697,7 +697,7 @@ appserver module CONTRIBS {
         # NEXT, get the neighborhood
         set n [string toupper $n]
 
-        if {$n ni [nbhood names]} {
+        if {![adb nbhood exists $n]} {
             set n "?"
         }
 
@@ -759,7 +759,7 @@ appserver module CONTRIBS {
 
         # NEXT, insert the plot.
         set vars [list] 
-        rdb eval {SELECT g FROM civgroups WHERE n=$n} {
+        adb eval {SELECT g FROM civgroups WHERE n=$n} {
             lappend vars mood.$g
         }
         lappend vars nbmood.$n
@@ -779,7 +779,7 @@ appserver module CONTRIBS {
         PutPlot hist.nbmood $start_ $end_ $vars
 
         # NEXT, Get the drivers for this time period.
-        aram contribs nbmood $n \
+        adb contribs nbmood $n \
             -start $start_    \
             -end   $end_
 
@@ -825,7 +825,7 @@ appserver module CONTRIBS {
         set g [string toupper $g]
         set c [string toupper $c]
 
-        if {$g ni [civgroup names]} {
+        if {![adb civgroup exists $g]} {
             set g "?"
         }
 
@@ -899,14 +899,14 @@ appserver module CONTRIBS {
 
         # If the URAM gamma for this concern is non-zero, include the
         # natural level.
-        if {[lindex [parm get uram.factors.$c] 1] > 0.0} {
+        if {[lindex [adb parm get uram.factors.$c] 1] > 0.0} {
             lappend vars natsat.$g.$c
         }
 
         PutPlot hist.sat $start_ $end_ $vars
 
         # NEXT, Get the drivers for this time period.
-        aram contribs sat $g $c \
+        adb contribs sat $g $c \
             -start $start_      \
             -end   $end_
 
@@ -951,11 +951,11 @@ appserver module CONTRIBS {
         set g [string toupper $g]
         set a [string toupper $a]
 
-        if {$g ni [group names]} {
+        if {![adb group exists $g]} {
             set g "?"
         }
 
-        if {$a ni [actor names]} {
+        if {![adb actor exists $a]} {
             set a "?"
         }
         
@@ -1026,14 +1026,14 @@ appserver module CONTRIBS {
 
         # If the URAM gamma for this attitude is non-zero, include the
         # natural level.
-        if {[lindex [parm get uram.factors.VREL] 1] > 0.0} {
+        if {[lindex [adb parm get uram.factors.VREL] 1] > 0.0} {
             lappend vars natvrel.$g.$a
         }
 
         PutPlot hist.vrel $start_ $end_ $vars
 
         # NEXT, Get the drivers for this time period.
-        aram contribs vrel $g $a \
+        adb contribs vrel $g $a \
             -start $start_       \
             -end   $end_
 
@@ -1080,12 +1080,12 @@ appserver module CONTRIBS {
             set start_ $start
             set end_   $end
 
-            restrict start_ {simclock timespec} [simclock cget -tick0]
-            restrict end_   {simclock timespec} [simclock now]
+            restrict start_ {adb clock timespec} [adb clock cget -tick0]
+            restrict end_   {adb clock timespec} [adb clock now]
 
             # If they picked the defaults, clear their entries.
             if {$start_ == 0             } { set start "" }
-            if {$end_   == [simclock now]} { set end   "" }
+            if {$end_   == [adb clock now]} { set end   "" }
 
             # NEXT, end_ can't be later than mystart.
             let end_ {max($start_,$end_)}
@@ -1101,7 +1101,7 @@ appserver module CONTRIBS {
     # Returns the actor's long link.
 
     proc ActorLongLink {a} {
-        rdb onecolumn {
+        adb onecolumn {
             SELECT longlink FROM gui_actors WHERE a=$a
         }
     }
@@ -1113,7 +1113,7 @@ appserver module CONTRIBS {
     # Returns the group's long link.
 
     proc GroupLongLink {g} {
-        rdb onecolumn {
+        adb onecolumn {
             SELECT longlink FROM gui_groups WHERE g=$g
         }
     }
@@ -1125,7 +1125,7 @@ appserver module CONTRIBS {
     # Returns the nbhood's long link.
 
     proc NbhoodLongLink {n} {
-        rdb onecolumn {
+        adb onecolumn {
             SELECT longlink FROM gui_nbhoods WHERE n=$n
         }
     }
@@ -1138,12 +1138,12 @@ appserver module CONTRIBS {
     # Converts the start and end time into a time window string.
 
     proc TimeWindow {start end} {
-        set text "Window: [simclock toString $start] to "
+        set text "Window: [adb clock toString $start] to "
 
-        if {$end == [simclock now]} {
+        if {$end == [adb clock now]} {
             append text "now"
         } else {
-            append text "[simclock toString $end]"
+            append text "[adb clock toString $end]"
         }
 
         return $text
@@ -1159,7 +1159,7 @@ appserver module CONTRIBS {
     # Adds a plot of the listed variables to the ht buffer.
 
     proc PutPlot {histparm start end vars} {
-        if {![parm get $histparm]} {
+        if {![adb parm get $histparm]} {
             ht putln {
                 <b>Note:</b> Athena is not currently saving some or
                 all of the historical data required for the following 
@@ -1212,19 +1212,19 @@ appserver module CONTRIBS {
             append query "LIMIT $top"
         }
 
-        rdb eval $query
+        adb eval $query
 
         # NEXT, get the total contribution to this curve in this
         # time window.
 
-        set totContrib [rdb onecolumn {
+        set totContrib [adb onecolumn {
             SELECT total(abs(contrib))
             FROM uram_contribs
         }]
 
         # NEXT, get the total contribution represented by the report.
 
-        set totReported [rdb onecolumn {
+        set totReported [adb onecolumn {
             SELECT total(abs(contrib)) 
             FROM temp_contribs
         }]

@@ -1,0 +1,194 @@
+<manpage {athena(n) executive(n)} "Athena Executive Interpreter">
+
+<section SYNOPSIS>
+
+<pre>
+package require athena <version>
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+Each instance of <xref athena(n)> contains an executive interpreter for 
+processing scripts and expressions; the interpreter's complete API is
+exposed via the <xref athena(n)> instance's <tt executive> subcommand.<p>
+
+The heart of the executive is a <xref mars:marsutil(n)>
+<xref mars:smartinterp(n)> object; many of the executive's commands are
+delegated to the <xref mars:smartinterp(n)>.<p>
+
+This man page documents the executive API.<p>
+
+<section "INTERNAL SCRIPTS">
+
+The executive's <iref script> command is used to manage the scenario's
+collection of internal scripts.  Any number of internal scripts may
+be saved using <iref script save>.  A saved script can be executed on 
+demand, using the <iref call> method or executive command; alternatively,
+a script that defines Tcl procedures can be loaded automaticaly on 
+<iref reset> by setting its <iref script auto> flag.<p>
+
+Scripts can be used to automate tasks (i.e., the set up for particular
+excursions from a base case) or with EXECUTIVE tactics.<p>
+
+<section "COMMANDS">
+
+executive(n) provides the following commands for use by the application.<p>
+
+<deflist commands>
+
+<defitem executive {executive <i>obj</i> <i>adb_</i> ?<i options...>?}>
+
+Creates a new <iref executive> instance named <i>obj</i>, and
+returns the fully qualified object name.  The <i adb_> is the name of the
+enclosing <xref athenadb(n)> object.  The object takes the following 
+options:<p>
+
+<deflist options>
+
+<defopt {-executivecmd <i cmd>}>
+
+This option names a command to be called whenever the executive is reset.
+The <i cmd> is a prefix to be called with one additional argument, the 
+executive object itself.  The application will usually use this to define
+additional application-specific commands for use in executive scripts.<p>
+
+</deflist options>
+
+</deflist commands>
+
+<section "INSTANCE COMMANDS">
+
+Each instance of executive(n) provides all of the <xref mars:parmset(n)> 
+instance subcommands; in addition, it adds the following.<p>
+
+<deflist instance>
+
+<defitem ensemble {<i obj> ensemble ...}>
+<defitem expr {<i obj> expr ...}>
+<defitem function {<i obj> function ...}>
+<defitem proc {<i obj> proc ...}>
+<defitem smartalias {<i obj> smartalias ...}>
+
+These commands are delegated to the underlying
+<xref mars:smartalias(n)> interpreter; they are used to define new
+executive commands and functions.  See the <xref mars:smartalias(n)>
+man page for details.<p>
+
+<defitem call {<i obj> call <i scriptName>}>
+
+Executes the named script in the interpreter.  The <i scriptName> should
+either be a script name as returned by <iref script names>, or an 
+absolute or relative path to a file on the local disk.<p>
+
+<defitem check {<i obj> check <i script>}>
+
+Checks a script for obvious syntax errors.  Returns a flat list of
+line numbers and error messages.<p>
+
+<defitem commands {<i obj> commands}>
+
+Returns a list of the commands defined in the interpreter.<p>
+
+<defitem errtrace {<i obj> errtrace}>
+
+Returns the error stack trace from the last <iref eval> or <iref call> 
+that threw an error.<p>
+
+<defitem eval {<i obj> eval <i script>}>
+
+Evaluates the script in the interpreter, returning the result.  If the
+script throws an error, the stack trace is available by calling
+<iref errtrace>.<p>
+
+<defitem reset {<i obj> reset}>
+
+Resets the executive interpreter, restoring it to a pristine state with
+all standard executive commands and functions defined.  If there is a
+<tt -executivecmd> callback, it will be called when the reset is complete,
+allowing application commands to be defined in the interpreter.<p>
+
+<defitem script {<i obj> script <i subcommand> ?<i args...>?}>
+
+The client can save scripts into the scenario for later execution
+via the <i call> method or executive command.  This command's 
+subcommands are used to manage the scenario's collection of scripts.<p>
+
+<deflist script>
+
+<defitem "script names" {<i obj> script names}>
+
+Returns a list of the names of the scripts in sequence order.<p>
+
+<defitem "script list" {<i obj> script list}>
+
+Returns a human-readable list of the names of the defined executive
+scripts in sequence order, one per line.  The result is not a 
+proper Tcl list if any of the names contain whitespace.<p>
+
+<defitem "script get" {<i obj> script get <i name>}>
+
+Returns the body of the named script.<p>
+
+<defitem "script exists" {<i obj> script exists <i name>}>
+
+Returns 1 if there's a script with the given name, and 0 otherwise.<p>
+
+<defitem "script load" {<i obj> script load <i name>}>
+
+Loads the named script into the executive interpreter.  No special 
+error handling is done; it's assumed that the caller will handle any
+errors.<p>
+
+<defitem "script save" {<i obj> script save <i name> ?<i body>? ?-silent?}>
+
+Saves a script called <i name> into the scenario.  If <i body> is given,
+it's the script's new body; if not, the script is given a body consisting
+of a single header comment.<p>
+
+By default, the executive will send the <tt><tag Scripts></tt> event on 
+save; if the <tt -silent> option is given, it will not.  (See
+<xref athena(n)> for more about notifier events.)<p>
+
+<defitem "script auto" {<i obj> script auto <i name> ?<i flag>?}>
+
+Queries and sets the value of the named script's "auto" flag,
+which is false by default.  If true, the script will be loaded
+automatically on executive <i reset>.<p>
+
+<defitem "script import" {<i obj> script import <i filename>}>
+
+Imports a script from the named file into the scenario; a name is
+assigned automatically.<p>
+
+<defitem "script rename" {<i obj> script rename <i oldName newName>}>
+
+Renames a script.<p>
+
+<defitem "script sequence" {<i obj> script sequence <i name priority>}>
+
+Scripts are saved in priority order; on <iref reset>, all scripts with
+their <iref script auto> flag set are <iref script load>ed in priority order.  This
+command is used to move the named script in the sequence.  The 
+<i priority> can be one of <b top>, <b raise>, <b lower>, or <b bottom>.<p>
+
+
+</deflist>
+
+</deflist instance>
+
+<section ENVIRONMENT>
+
+Requires Tcl 8.5 or later.<p>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+</manpage>
+
+
+
+
+

@@ -146,8 +146,8 @@
         [my adb] personnel flow $f $g $delta
         
         # NEXT, log the changes.
-        set m [civgroup getg $f n]
-        set n [civgroup getg $g n]
+        set m [[my adb] civgroup get $f n]
+        set n [[my adb] civgroup get $g n]
         
         [my adb] sigevent log 2 tactic "
             FLOW: $delta people moved from {group:$f} in {nbhood:$m}
@@ -211,7 +211,7 @@
             -with [list $adb strategy valclass ::athena::tactic::FLOW]
         my returnOnError
 
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
 
         my prepare name       -toupper  -with [list $tactic valName]
         my prepare f          -toupper  -type ident
@@ -250,7 +250,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
         my setundo [$tactic update_ {
             name f g mode personnel percent
         } [array get parms]]

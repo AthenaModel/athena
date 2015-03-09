@@ -1,0 +1,168 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-tactic_executive.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    tactic_executive(sim) tests.
+#
+#    This test suite tests the tactic_executive(sim) class.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Set up for tests
+
+    proc setup {} {
+        variable T1
+        ted create JOE BOB NB1 NB2 BLUE BRIT SHIA SUNN KURD
+
+        set B1 [ted addblock JOE]
+        set T1 [ted addtactic $B1 EXECUTIVE]
+    }
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    test constructor-1.1 {default state} -setup {
+        setup
+    } -body {
+        ted pdicts [$T1 getdict]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        command    {}
+        execstatus NONE
+        faildict   {}
+        id         *
+        name       T*
+        parent     *
+        pot        *::pot
+        state      invalid
+    }
+
+    test constructor-1.2 {can set options} -setup {
+        setup
+    } -body {
+        set T1 [ted newbean ::athena::tactic::EXECUTIVE -parent DUMMY]
+        $T1 get parent
+    } -cleanup {
+        cleanup
+    } -result {DUMMY}
+
+
+    #-------------------------------------------------------------------
+    # narrative
+
+    test narrative-1.1 {narrative, initial state} -setup {
+        setup
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {Executive command: ???}
+
+    test narrative-1.2 {narrative, with msg} -setup {
+        setup
+        $T1 set command dummy
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {Executive command: dummy}
+
+    #-------------------------------------------------------------------
+    # check
+
+    test check-1.1 {Initial state fails} -setup {
+        setup
+    } -body {
+        $T1 check
+    } -cleanup {
+        cleanup
+    } -result {command {No executive command has been specified.}}
+
+    test check-1.2 {With command, always succeeds} -setup {
+        setup
+        $T1 set command dummy
+    } -body {
+        $T1 check
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    #-------------------------------------------------------------------
+    # obligate
+
+    test obligate-1.1 {always succeeds} -setup {
+        setup
+    } -body {
+        # The coffer argument is unused.
+        $T1 obligate NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    #-------------------------------------------------------------------
+    # execute
+
+    test execute-1.1 {always succeeds} -setup {
+        setup
+        $T1 set command "sigevent hello"
+    } -body {
+        $T1 execute
+        ted query {SELECT * FROM sigevents WHERE component='script'}
+    } -cleanup {
+        cleanup
+    } -result {
+event_id t level component narrative 
+-------- - ----- --------- --------- 
+1        0 1     script    hello     
+    }
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+
+

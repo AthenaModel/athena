@@ -116,7 +116,7 @@
             -with [list $adb strategy valclass ::athena::tactic::RIOT]
         my returnOnError
 
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
 
         # Validation of initially invalid items or contingent items
         # takes place on sanity check.
@@ -134,7 +134,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
         my setundo [$tactic update_ {
             name n coverage
         } [array get parms]]

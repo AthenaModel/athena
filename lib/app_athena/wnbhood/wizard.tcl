@@ -93,7 +93,7 @@ snit::type ::wnbhood::wizard {
         }
 
         # Reset the sim state, if necessary.
-        sim wizard off
+        adb wizlock off
     }
 
     #-------------------------------------------------------------------
@@ -106,7 +106,7 @@ snit::type ::wnbhood::wizard {
     # window isn't already in existence.
 
     typemethod caninvoke {} {
-        expr {[sim state] eq "PREP" && ![winfo exists $win]}
+        expr {[adb state] eq "PREP" && ![winfo exists $win]}
     }
 
     #-------------------------------------------------------------------
@@ -121,7 +121,7 @@ snit::type ::wnbhood::wizard {
     # on.
 
     typemethod MapExists {} {
-        set projtype [rdb onecolumn {SELECT projtype FROM maps WHERE id=1}]
+        set projtype [adb onecolumn {SELECT projtype FROM maps WHERE id=1}]
 
         # Must be a rectangular projection
         if {$projtype ne "RECT"} {
@@ -363,7 +363,7 @@ snit::type ::wnbhood::wizard {
 
     typemethod finish {} {
         # FIRST, the wizard is done; we're about to make things happen.
-        sim wizard off
+        adb wizlock off
 
         # NEXT, have the wizwin save the selected nbhoods
         $win save

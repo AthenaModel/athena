@@ -1,0 +1,415 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-tactic_service.test
+#
+# AUTHOR:
+#    Dave Hanks
+#
+# DESCRIPTION:
+#    tactic_service(sim) tests.
+#
+#    This test suite tests the tactic_service(sim) class.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Set up for tests
+
+    # If opt is -valid, sets up a valid tactic.
+    proc setup {{opt ""}} {
+        variable B1
+        variable T1
+        variable coffer
+
+        # FIRST, create the basic entities.
+        ted create JOE BLUE ALQ NB1 NB2 SUNN SHIA KURD
+
+        # NEXT, create a default SERVICE tactic
+        set B1 [ted addblock SYSTEM]
+        set T1 [ted addtactic $B1 SERVICE]
+
+        # NEXT, prepare for obligation
+        tdb personnel start
+        tdb personnel load
+        tdb service reset
+        set coffer [::athena::coffer new ::tdb JOE]
+    }
+
+    proc cleanup {} {
+        variable coffer
+        $coffer destroy
+        tdb strategy locking 0
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    test constructor-1.1 {default state} -setup {
+        setup
+    } -body {
+        ted pdicts [$T1 getdict]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        deltap     0.0
+        execstatus NONE
+        faildict   {}
+        id         *
+        los        1.0
+        mode       EXACT
+        name       T*
+        nlist      {_type NBHOODS _rule {}}
+        parent     *
+        pot        *::pot
+        s          ENERGY
+        state      invalid
+    }
+
+    test constructor-1.2 {can set options} -setup {
+        setup
+    } -body {
+        set T1 [ted newbean ::athena::tactic::SERVICE -parent DUMMY]
+        $T1 get parent
+    } -cleanup {
+        cleanup
+    } -result {DUMMY}
+
+    #-------------------------------------------------------------------
+    # narrative
+
+    test narrative-1.1 {narrative, default state} -setup {
+        setup
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {The SYSTEM agent attempts to set the actual level of ENERGY service to 100.0% of saturation level in nbhood ???}
+
+    test narrative-1.2 {narrative, mode EXACT} -setup {
+        setup
+        $T1 configure         \
+            -nlist    [tdb gofer make NBHOODS BY_VALUE {NB1 NB2}] \
+            -s        ENERGY \
+            -mode     EXACT \
+            -los      0.5
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {The SYSTEM agent attempts to set the actual level of ENERGY service to 50.0% of saturation level in these neighborhoods (NB1, NB2)}
+
+    test narrative-1.3 {narrative, mode RDELTA} -setup {
+        setup
+        $T1 configure         \
+            -nlist    [tdb gofer make NBHOODS BY_VALUE {NB1 NB2}] \
+            -s        ENERGY \
+            -mode     RDELTA \
+            -deltap   10
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {The SYSTEM agent attempts to set the actual level of ENERGY service up by 10.0% of current required level in these neighborhoods (NB1, NB2)}
+
+    test narrative-1.4 {narrative, mode EDELTA} -setup {
+        setup
+        $T1 configure         \
+            -nlist    [tdb gofer make NBHOODS BY_VALUE {NB1 NB2}] \
+            -s        ENERGY \
+            -mode     EDELTA \
+            -deltap   10
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {The SYSTEM agent attempts to set the actual level of ENERGY service up by 10.0% of current expected level in these neighborhoods (NB1, NB2)}
+
+    test narrative-1.5 {narrative, mode positive ADELTA} -setup {
+        setup
+        $T1 configure         \
+            -nlist    [tdb gofer make NBHOODS BY_VALUE {NB1 NB2}] \
+            -s        ENERGY \
+            -mode     ADELTA \
+            -deltap   20    \
+            -los      0.5
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {The SYSTEM agent attempts to set the actual level of ENERGY service up by 20.0% of current actual level in these neighborhoods (NB1, NB2)}
+
+    test narrative-1.6 {narrative, mode negative ADELTA} -setup {
+        setup
+        $T1 configure         \
+            -nlist    [tdb gofer make NBHOODS BY_VALUE {NB1 NB2}] \
+            -s        ENERGY \
+            -mode     ADELTA \
+            -deltap   -20    \
+            -los      0.5
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {The SYSTEM agent attempts to set the actual level of ENERGY service down by 20.0% of current actual level in these neighborhoods (NB1, NB2)}
+
+    #-------------------------------------------------------------------
+    # check
+
+    test check-1.1 {Initial state fails} -setup {
+        setup
+    } -body {
+        ted pdicts [$T1 check]
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+        nlist {No rule specified}
+    }
+
+    test check-1.2 {check: n in nlist no longer exists} -setup {
+        setup 
+        $T1 configure         \
+            -nlist    [tdb gofer make NBHOODS BY_VALUE {NB1 NB2}] \
+            -s        ENERGY 
+        tdb eval {DELETE FROM nbhoods WHERE n='NB1'}
+    } -body {
+        $T1 check
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+        nlist {Invalid neighborhood, should be one of: NB2}
+    }
+
+    test check-1.3 {check: invalid service} -setup {
+        setup 
+        $T1 configure         \
+            -nlist    [tdb gofer make NBHOODS BY_VALUE {NB1 NB2}] \
+            -s        NONESUCH 
+    } -body {
+        $T1 check
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+        s {No such service: NONESUCH}
+    }
+
+    test check-1.4 {Success} -setup {
+        setup
+        $T1 configure         \
+            -nlist    [tdb gofer make NBHOODS BY_VALUE {NB1 NB2}]
+    } -body {
+        $T1 check
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    #-------------------------------------------------------------------
+    # obligate
+    #
+
+    test obligate-1.1 {obligate always works, no money} -setup {
+        setup
+        $T1 configure  \
+            -nlist    [tdb gofer make NBHOODS BY_VALUE {NB1 NB2}]
+    } -body {
+        $T1 obligate $coffer
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    #-------------------------------------------------------------------
+    # execute
+
+    test execute-1.1 {updates service, EXACT} -setup {
+        setup
+        tdb service start
+        $T1 configure         \
+            -nlist    [tdb gofer make NBHOODS BY_VALUE {NB1 NB2}] \
+            -s        ENERGY  \
+            -los      0.25
+    } -body {
+        $T1 execute
+        ted query {SELECT new_actual, s, g FROM service_sg}
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+new_actual s         g    
+---------- --------- ---- 
+0.25       ENERGY    SUNN 
+0.25       ENERGY    SHIA 
+0.25       ENERGY    KURD 
+0.0        ENI       SUNN 
+0.0        ENI       SHIA 
+0.0        ENI       KURD 
+0.0        TRANSPORT SUNN 
+0.0        TRANSPORT SHIA 
+0.0        TRANSPORT KURD 
+0.0        WATER     SUNN 
+0.0        WATER     SHIA 
+0.0        WATER     KURD 
+    }
+
+    test execute-1.2 {updates service, RDELTA} -setup {
+        setup
+        tdb service start
+        tdb eval {UPDATE service_sg SET required=0.25}
+        $T1 configure         \
+            -nlist    [tdb gofer make NBHOODS BY_VALUE {NB1 NB2}] \
+            -s        ENERGY  \
+            -deltap   10      \
+            -mode     RDELTA
+    } -body {
+        $T1 execute
+        ted query {SELECT new_actual, s, g FROM service_sg}
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+new_actual s         g    
+---------- --------- ---- 
+0.275      ENERGY    SUNN 
+0.275      ENERGY    SHIA 
+0.275      ENERGY    KURD 
+0.0        ENI       SUNN 
+0.0        ENI       SHIA 
+0.0        ENI       KURD 
+0.0        TRANSPORT SUNN 
+0.0        TRANSPORT SHIA 
+0.0        TRANSPORT KURD 
+0.0        WATER     SUNN 
+0.0        WATER     SHIA 
+0.0        WATER     KURD 
+    }
+
+    test execute-1.3 {updates service, EDELTA} -setup {
+        setup
+        tdb service start
+        tdb eval {UPDATE service_sg SET expected=0.25}
+        $T1 configure         \
+            -nlist    [tdb gofer make NBHOODS BY_VALUE {NB1 NB2}] \
+            -s        ENERGY  \
+            -mode     EDELTA  \
+            -deltap   10
+    } -body {
+        $T1 execute
+        ted query {SELECT new_actual, s, g FROM service_sg}
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+
+new_actual s         g    
+---------- --------- ---- 
+0.275      ENERGY    SUNN 
+0.275      ENERGY    SHIA 
+0.275      ENERGY    KURD 
+0.0        ENI       SUNN 
+0.0        ENI       SHIA 
+0.0        ENI       KURD 
+0.0        TRANSPORT SUNN 
+0.0        TRANSPORT SHIA 
+0.0        TRANSPORT KURD 
+0.0        WATER     SUNN 
+0.0        WATER     SHIA 
+0.0        WATER     KURD 
+    }
+
+    test execute-1.4 {updates service, ADELTA up} -setup {
+        setup
+        tdb service start
+        tdb eval {UPDATE service_sg SET actual=0.5}
+        $T1 configure         \
+            -nlist    [tdb gofer make NBHOODS BY_VALUE {NB1 NB2}] \
+            -s        ENERGY  \
+            -mode     ADELTA  \
+            -deltap   50
+    } -body {
+        $T1 execute
+        ted query {SELECT new_actual, s, g FROM service_sg}
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+new_actual s         g    
+---------- --------- ---- 
+0.75       ENERGY    SUNN 
+0.75       ENERGY    SHIA 
+0.75       ENERGY    KURD 
+0.0        ENI       SUNN 
+0.0        ENI       SHIA 
+0.0        ENI       KURD 
+0.0        TRANSPORT SUNN 
+0.0        TRANSPORT SHIA 
+0.0        TRANSPORT KURD 
+0.0        WATER     SUNN 
+0.0        WATER     SHIA 
+0.0        WATER     KURD 
+    }
+
+    test execute-1.5 {updates service, ADELTA down} -setup {
+        setup
+        tdb service start
+        tdb eval {UPDATE service_sg SET actual=1.0}
+        $T1 configure         \
+            -nlist    [tdb gofer make NBHOODS BY_VALUE {NB1 NB2}] \
+            -s        ENERGY  \
+            -mode     ADELTA  \
+            -deltap   -10
+    } -body {
+        $T1 execute
+        ted query {SELECT new_actual, s, g FROM service_sg}
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+new_actual s         g    
+---------- --------- ---- 
+0.9        ENERGY    SUNN 
+0.9        ENERGY    SHIA 
+0.9        ENERGY    KURD 
+0.0        ENI       SUNN 
+0.0        ENI       SHIA 
+0.0        ENI       KURD 
+0.0        TRANSPORT SUNN 
+0.0        TRANSPORT SHIA 
+0.0        TRANSPORT KURD 
+0.0        WATER     SUNN 
+0.0        WATER     SHIA 
+0.0        WATER     KURD 
+    }
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+
+
+

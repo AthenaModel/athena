@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide app_athena 6.3.0a5
+package provide app_athena 6.3.0a7
 # -kite-provide-end
 
 #-----------------------------------------------------------------------
@@ -35,7 +35,7 @@ set ::tkLoaded [expr {[info command tk] ne ""}]
 
 # -kite-require-start ADD EXTERNAL DEPENDENCIES
 package require projectlib
-package require -exact athena 6.3.0a5
+package require -exact athena 6.3.0a7
 
 namespace import ::projectlib::*
 namespace import ::athena::*

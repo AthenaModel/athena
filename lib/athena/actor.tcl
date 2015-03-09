@@ -11,10 +11,6 @@
 #    This module is responsible for managing political actors and operations
 #    upon them.  As such, it is a type ensemble.
 #
-# TBD:
-#    * Global entities in use: ::ptype, ::app
-#      * Need a way to elevate Are You Sure messages to app gui.
-#
 #-----------------------------------------------------------------------
 
 snit::type ::athena::actor {
@@ -74,7 +70,7 @@ snit::type ::athena::actor {
     method validate {a} {
         set names [$self names]
 
-        if {$a ni $names} {
+        if {![$self exists $a]} {
             set nameString [join $names ", "]
 
             if {$nameString ne ""} {
@@ -98,18 +94,30 @@ snit::type ::athena::actor {
     # actors.
 
     method get {a {parm ""}} {
-        # FIRST, get the data
-        $adb eval {SELECT * FROM actors WHERE a=$a} row {
-            if {$parm ne ""} {
-                return $row($parm)
-            } else {
-                unset row(*)
-                return [array get row]
-            }
-        }
-
-        return ""
+        return [dbget $adb actors a $a $parm]
     }
+
+    # exists a
+    #
+    # a    - An actor
+    #
+    # Returns 1 if a is an actor, and 0 otherwise.
+
+    method exists {a} {
+        return [dbexists $adb actors a $a]
+    }
+
+    # view a ?tag?
+    #
+    # a    - An actor
+    # tag  - A view tag (ignored)
+    #
+    # Retrieves a view dictionary for the actor.
+
+    method view {a {tag ""}} {
+        return [dbget $adb gui_actors a $a]
+    }
+
 
     # frcgroups a 
     #
@@ -501,30 +509,6 @@ snit::type ::athena::actor {
     }
 
     method _execute {{flunky ""}} {
-        if {[my mode] eq "gui"} {
-            set answer [messagebox popup \
-                            -title         "Are you sure?"                  \
-                            -icon          warning                          \
-                            -buttons       {ok "Delete it" cancel "Cancel"} \
-                            -default       cancel                           \
-                            -onclose       cancel                           \
-                            -ignoretag     ACTOR:DELETE                     \
-                            -ignoredefault ok                               \
-                            -parent        [app topwin]                     \
-                            -message       [normalize {
-                                Are you sure you
-                                really want to delete this actor and all of the
-                                entities that depend upon it?
-                            }]]
-    
-            if {$answer eq "cancel"} {
-                my cancel
-            }
-        }
-
-        # NEXT, Delete the actor and dependent entities
-        lappend undo 
-    
         my setundo [$adb actor delete $parms(a)]
     }
 }

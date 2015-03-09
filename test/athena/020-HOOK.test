@@ -1,0 +1,457 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    020-HOOK.test
+#
+# AUTHOR:
+#    Dave Hanks
+#
+# DESCRIPTION:
+#    athena(n) HOOK:* order tests.
+#
+#    This test suite tests the semantic hook related orders.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Standard hooks/topics
+    set h1 {
+        hook_id   FOO
+        longname  "Foo is good"
+    }
+
+    set t1 {
+        hook_id   FOO 
+        topic_id  1
+        position  P+
+    }
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        # Clean up the test environment
+        ted cleanup
+    }
+
+    # mktopic
+    #
+    # Makes a tdb bsys topic with ID 1.
+    proc mktopic {} {
+        tdb bsys topic add 1
+        tdb bsys topic configure 1 -name "Topic #1" -affinity no
+    }
+
+    #-------------------------------------------------------------------
+    # HOOK:CREATE
+
+    test CREATE-1.1 {required parms} -body {
+        ted order -reject HOOK:CREATE {}
+    } -result {
+        hook_id {required value}
+    }
+
+    
+    test CREATE-2.1 {hook is created} -setup {
+    } -body {
+        ted order HOOK:CREATE $h1
+
+        ted querylist {SELECT * FROM hooks}
+    } -cleanup {
+        cleanup
+    } -result {
+hook_id   FOO
+longname  Foo is good
+    }
+
+
+    test CREATE-2.2 {Effects} -setup {
+    } -body {
+        ted notifier bind ::tdb <hooks>
+        ted order HOOK:CREATE $h1
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <hooks> update FOO}
+    }
+
+
+    test CREATE-3.1 {undo effects} -setup {
+        ted order HOOK:CREATE $h1
+    } -body {
+        ted notifier bind ::tdb <hooks>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <hooks> delete FOO}
+    }
+
+
+    #-------------------------------------------------------------------
+    # HOOK:TOPIC:CREATE
+
+    test TOPIC:CREATE-1.1 {required parms} -body {
+        ted order -reject HOOK:TOPIC:CREATE {}
+    } -result {
+        hook_id {required value}
+        topic_id {required value}
+        position {required value}
+    }
+
+    test TOPIC:CREATE-1.2 {invalid hook/topic ids} -body {
+        ted order -reject \
+            HOOK:TOPIC:CREATE {hook_id FOO topic_id 1 position 0.0}
+    } -result {
+        hook_id {Invalid hook ID, none are defined}
+        topic_id {Invalid topic ID}
+    }
+
+    test TOPIC:CREATE-1.3 {invalid topic id} -setup {
+        ted order HOOK:CREATE $h1
+    } -body {
+        ted order -reject \
+            HOOK:TOPIC:CREATE {hook_id FOO topic_id 1 position 0.0}
+    } -cleanup {
+        cleanup
+    } -result {
+        topic_id {Invalid topic ID}
+    }
+
+    test TOPIC:CREATE-1.4 {invalid position} -setup {
+        mktopic
+        ted order HOOK:CREATE $h1
+    } -body {
+        ted order -reject \
+            HOOK:TOPIC:CREATE {hook_id FOO topic_id 1 position NONESUCH}
+    } -cleanup {
+        cleanup 
+    } -result {
+        position {invalid value "NONESUCH", should be a real number in range -1.0, 1.0, or one of: P+, S+, W+, A, W-, S-, P-}
+    }
+
+    test TOPIC:CREATE-2.1 {hook topic is created} -setup {
+        mktopic
+        ted order HOOK:CREATE $h1
+    } -body {
+        ted order HOOK:TOPIC:CREATE $t1
+        ted querylist {SELECT * FROM hook_topics}
+    } -cleanup {
+        cleanup
+    } -result {
+hook_id   FOO
+topic_id  1
+state     normal
+position  0.9
+    }
+
+    test TOPIC:CREATE-2.2 {Effects} -setup {
+        mktopic
+        ted order HOOK:CREATE $h1
+    } -body {
+        ted notifier bind ::tdb <hook_topics>
+        ted order HOOK:TOPIC:CREATE $t1
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <hook_topics> update {FOO 1}}
+    }
+
+
+    test TOPIC:CREATE-3.1 {undo effects} -setup {
+        mktopic
+        ted order HOOK:CREATE $h1
+        ted order HOOK:TOPIC:CREATE $t1
+    } -body {
+        ted notifier bind ::tdb <hook_topics>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <hook_topics> delete {FOO 1}}
+    }
+
+    #-------------------------------------------------------------------
+    # HOOK:DELETE
+
+    test DELETE-1.1 {required parms} -body {
+        ted order -reject HOOK:DELETE {}
+    } -result {
+        hook_id {required value}
+    }
+
+    
+    test DELETE-1.2 {unknown hook_id} -body {
+        ted order -reject HOOK:DELETE hook_id NONESUCH
+    } -result {
+        hook_id {Invalid hook ID, none are defined}
+    }
+
+
+    test DELETE-2.1 {Effects} -setup {
+        ted order HOOK:CREATE $h1
+    } -body {
+        ted notifier bind ::tdb <hooks>
+        ted order HOOK:DELETE hook_id FOO
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <hooks> delete FOO}
+    }
+
+
+    test DELETE-3.1 {Undo effects} -setup {
+        ted order HOOK:CREATE $h1
+        ted order HOOK:DELETE hook_id FOO
+    } -body {
+        ted notifier bind ::tdb <hooks>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <hooks> update FOO}
+    }
+
+    #-------------------------------------------------------------------
+    # HOOK:TOPIC:DELETE
+
+    test TOPIC:DELETE-1.1 {require parms} -body {
+        ted order -reject HOOK:TOPIC:DELETE {}
+    } -result {
+        id {required value}
+    }
+
+    test TOPIC:DELETE-1.2 {unknown hook} -body {
+        ted order -reject HOOK:TOPIC:DELETE id NONESUCH
+    } -result {
+        id {Invalid hook ID, none are defined}
+    }
+
+    test TOPIC:DELETE-1.3 {unknown topic} -setup {
+        ted order HOOK:CREATE $h1
+    } -body {
+        ted order -reject HOOK:TOPIC:DELETE id {FOO NONESUCH}
+    } -cleanup {
+        cleanup
+    } -result {
+        id {Invalid topic ID}
+    }
+
+    test TOPIC:DELETE-2.1 {Effects} -setup {
+        mktopic
+        ted order HOOK:CREATE $h1
+        ted order HOOK:TOPIC:CREATE $t1
+    } -body {
+        ted notifier bind ::tdb <hook_topics>
+        ted order HOOK:TOPIC:DELETE id {FOO 1}
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <hook_topics> delete {FOO 1}}
+    }
+
+    test TOPIC:DELETE-3.1 {Undo effects} -setup {
+        mktopic
+        ted order HOOK:CREATE $h1
+        ted order HOOK:TOPIC:CREATE $t1
+        ted order HOOK:TOPIC:DELETE id {FOO 1}
+    } -body {
+        ted notifier bind ::tdb <hook_topics>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <hook_topics> update {FOO 1}}
+    }
+
+
+    #-------------------------------------------------------------------
+    # HOOK:UPDATE
+
+    # 1.*: parameter type validation
+    # 2.*: correct operation
+    # 3.*: undo
+
+    test UPDATE-1.1 {required parms} -body {
+        ted order -reject HOOK:UPDATE {}
+    } -result {
+        hook_id {required value}
+    }
+    
+    test UPDATE-2.1 {hook is updated} -setup {
+        ted order HOOK:CREATE $h1
+    } -body {
+        ted order HOOK:UPDATE {
+            hook_id FOO
+            longname "Foo is still good"
+        }
+
+        ted querylist {SELECT * FROM hooks}
+    } -cleanup {
+        cleanup
+    } -result {
+hook_id   FOO
+longname  Foo is still good
+    }
+
+
+    test UPDATE-2.2 {table monitor event} -setup {
+        ted order HOOK:CREATE $h1
+    } -body {
+        ted notifier bind ::tdb <hooks>
+        ted order HOOK:UPDATE hook_id FOO longname "Foo is still good"
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <hooks> update FOO}
+    }
+
+
+    test UPDATE-3.1 {undo undoes the change} -setup {
+        ted order HOOK:CREATE $h1
+        ted order HOOK:UPDATE {
+            hook_id   FOO
+            longname  "Foo is still good"
+        }
+    } -body {
+        ted notifier bind ::tdb <hooks>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <hooks> update FOO}
+    }
+
+    #----------------------------------------------------------------
+    # HOOK:TOPIC:UPDATE
+
+    test TOPIC:UPDATE-1.1 {required parms} -body {
+        ted order -reject HOOK:TOPIC:UPDATE {}
+    } -result {
+        id {required value}
+        position {required value}
+    }
+
+    test TOPIC:UPDATE-1.2 {invalid hook_id} -body {
+        ted order -reject HOOK:TOPIC:UPDATE {id {NONE SUCH} position 0.9}
+    } -result {
+        id {Invalid hook ID, none are defined}
+    }
+
+    test TOPIC:UPDATE-1.3 {invalid topic} -setup {
+        ted order HOOK:CREATE $h1
+    } -body {
+        ted order -reject HOOK:TOPIC:UPDATE {id {FOO NONESUCH} position 0.9}
+    } -cleanup {
+        cleanup
+    } -result {
+        id {Invalid topic ID}
+    }
+
+    test TOPIC:UPDATE-1.4 {invalid position} -setup {
+        mktopic
+        ted order HOOK:CREATE $h1
+        ted order HOOK:TOPIC:CREATE $t1
+    } -body {
+        ted order -reject HOOK:TOPIC:UPDATE {id {FOO 1} position NONESUCH}
+    } -cleanup {
+        cleanup
+    } -result {
+        position {invalid value "NONESUCH", should be a real number in range -1.0, 1.0, or one of: P+, S+, W+, A, W-, S-, P-}
+    }
+    
+    test TOPIC:UPDATE-2.1 {hook topic is updated} -setup {
+        mktopic
+        ted order HOOK:CREATE $h1
+        ted order HOOK:TOPIC:CREATE $t1
+    } -body {
+        ted order HOOK:TOPIC:UPDATE {
+            id {FOO 1}
+            position 0.0
+        }
+
+        ted querylist {SELECT * FROM hook_topics}
+    } -cleanup {
+        cleanup
+    } -result {
+hook_id   FOO
+topic_id  1
+state     normal
+position  0.0
+    }
+
+    test TOPIC:UPDATE-2.2 {table monitor event} -setup {
+        mktopic
+        ted order HOOK:CREATE $h1
+        ted order HOOK:TOPIC:CREATE $t1
+    } -body {
+        ted notifier bind ::tdb <hook_topics>
+        ted order HOOK:TOPIC:UPDATE {id {FOO 1} position 0.3}
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <hook_topics> update {FOO 1}}
+    }
+
+    test TOPIC:UPDATE-3.1 {undo undoes the change} -setup {
+        mktopic
+        ted order HOOK:CREATE $h1
+        ted order HOOK:TOPIC:CREATE $t1
+        ted order HOOK:TOPIC:UPDATE {id {FOO 1} position 0.3}
+    } -body {
+        ted notifier bind ::tdb <hook_topics>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <hook_topics> update {FOO 1}}
+    }
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+
+

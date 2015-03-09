@@ -83,19 +83,19 @@ snit::type ::athena::security_model {
     method analyze {} {
         # FIRST, compute the "force" values for each group in each 
         # neighborhood.
-        profile 2 $self ComputeCrimeSuppression
-        profile 2 $self ComputeCriminalFraction
-        profile 2 $self ComputeOwnForce
-        profile 2 $self ComputeLocalFriendsAndEnemies
-        profile 2 $self ComputeAllFriendsAndEnemies
-        profile 2 $self ComputeTotalForce
-        profile 2 $self ComputePercentForce
+        $adb profile 2 $self ComputeCrimeSuppression
+        $adb profile 2 $self ComputeCriminalFraction
+        $adb profile 2 $self ComputeOwnForce
+        $adb profile 2 $self ComputeLocalFriendsAndEnemies
+        $adb profile 2 $self ComputeAllFriendsAndEnemies
+        $adb profile 2 $self ComputeTotalForce
+        $adb profile 2 $self ComputePercentForce
 
         # NEXT, compute the volatility for each neighborhood.
-        profile 2 $self ComputeVolatility
+        $adb profile 2 $self ComputeVolatility
 
         # NEXT, compute the security for each group in each nbhood.
-        profile 2 $self ComputeSecurity
+        $adb profile 2 $self ComputeSecurity
    }
 
 

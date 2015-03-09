@@ -191,7 +191,7 @@ snit::widgetadaptor nbchart {
                 set data($varname) [list]
             }
 
-            rdb eval "SELECT * FROM $vdict(view) ORDER BY n" row {
+            adb eval "SELECT * FROM $vdict(view) ORDER BY n" row {
                 lappend ylabels $row(n)
                 
                 for {set i 0} {$i < $vdict(count)} {incr i} {

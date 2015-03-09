@@ -17,9 +17,6 @@
 #    nbrel_mn records are created by nbhood(n) as neighborhoods
 #    are created, and deleted by cascading delete.
 #
-# TBD:
-#    * Global entities in use: nbhood
-#
 #-----------------------------------------------------------------------
 
 snit::type ::athena::nbrel {
@@ -128,7 +125,7 @@ snit::type ::athena::nbrel {
 
 
     method _validate {} {
-        my prepare id            -toupper  -required -type nbrel
+        my prepare id            -toupper  -required -type [list $adb nbrel]
         my prepare proximity     -toupper            -type [list $adb ptype prox-HERE]
     
         my returnOnError
@@ -142,7 +139,7 @@ snit::type ::athena::nbrel {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [nbrel update [array get parms]]
+        my setundo [$adb nbrel update [array get parms]]
     }
 }
 
@@ -168,7 +165,7 @@ snit::type ::athena::nbrel {
 
 
     method _validate {} {
-        my prepare ids           -toupper  -required -listof nbrel
+        my prepare ids           -toupper  -required -listof [list $adb nbrel]
         my prepare proximity     -toupper            -type [list $adb ptype prox-HERE]
     
         my returnOnError
@@ -188,7 +185,7 @@ snit::type ::athena::nbrel {
         set undo [list]
     
         foreach parms(id) $parms(ids) {
-            lappend undo [nbrel update [array get parms]]
+            lappend undo [$adb nbrel update [array get parms]]
         }
     
         my setundo [join $undo \n]

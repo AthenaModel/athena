@@ -568,30 +568,8 @@ snit::type ::athena::bsys {
 
         my returnOnError
 
-        set inUse [$adb bsys system inuse $parms(sid)]
-
-
-        if {$inUse && [my mode] eq "gui" } {
-            set message [normalize "
-                The selected belief system is in use by 
-                at least one actor or group; see the belief system's
-                detail browser page for a complete list.  The
-                system cannot be deleted while it is in use.
-            "]
-
-            messagebox popup \
-                -title   "System is in use"  \
-                -icon    error               \
-                -buttons {cancel "Cancel"}   \
-                -default cancel              \
-                -parent  [app topwin]        \
-                -message $message
-
-            my cancel
-        }
-
         my checkon sid {
-            if {$inUse} {
+            if {[$adb bsys system inuse $parms(sid)]} {
                 my reject sid \
                     "System is in use by an actor or group: \"$parms(sid)\""
             }
@@ -599,28 +577,6 @@ snit::type ::athena::bsys {
     }
 
     method _execute {{flunky ""}} {
-        if {[my mode] eq "gui"} {
-            set answer [messagebox popup \
-                            -title         "Are you sure?"                  \
-                            -icon          warning                          \
-                            -buttons       {ok "Delete it" cancel "Cancel"} \
-                            -default       cancel                           \
-                            -onclose       cancel                           \
-                            -ignoretag     [my name]                        \
-                            -ignoredefault ok                               \
-                            -parent        [app topwin]                     \
-                            -message       [normalize {
-                                Are you sure you really want to delete this 
-                                belief system and all of the beliefs it
-                                contains?
-                            }]]
-
-            if {$answer eq "cancel"} {
-                my cancel
-            }
-        }
-
-        # NEXT, Delete the system.
         my setundo [$adb bsys delete system $parms(sid)]
         return
     }
@@ -717,29 +673,8 @@ snit::type ::athena::bsys {
 
         my returnOnError
 
-        set inUse [$adb bsys topic inuse $parms(tid)]
-
-        if {$inUse && [my mode] eq "gui" } {
-            set message [normalize "
-                The selected topic is in use by 
-                at least one semantic hook; see the topic's
-                detail browser page for a complete list.  The
-                topic cannot be deleted while it is in use.
-            "]
-
-            messagebox popup \
-                -title   "Topic is in use"  \
-                -icon    error               \
-                -buttons {cancel "Cancel"}   \
-                -default cancel              \
-                -parent  [app topwin]        \
-                -message $message
-
-            my cancel
-        }
-
         my checkon tid {
-            if {$inUse} {
+            if {[$adb bsys topic inuse $parms(tid)]} {
                 my reject tid \
                     "Topic is in use by a semantic hook: \"$parms(tid)\""
             }
@@ -747,28 +682,6 @@ snit::type ::athena::bsys {
     }
 
     method _execute {{flunky ""}} {
-        if {[my mode] eq "gui"} {
-            set answer [messagebox popup \
-                            -title         "Are you sure?"                  \
-                            -icon          warning                          \
-                            -buttons       {ok "Delete it" cancel "Cancel"} \
-                            -default       cancel                           \
-                            -onclose       cancel                           \
-                            -ignoretag     [my name]                        \
-                            -ignoredefault ok                               \
-                            -parent        [app topwin]                     \
-                            -message       [normalize {
-                                Are you sure you really want to delete this 
-                                belief topic and all of the beliefs that
-                                depend on it?
-                            }]]
-
-            if {$answer eq "cancel"} {
-                my cancel
-            }
-        }
-
-        # NEXT, Delete the topic.
         my setundo [$adb bsys delete topic $parms(tid)]
         return
     }

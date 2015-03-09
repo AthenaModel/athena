@@ -1,15 +1,15 @@
 # project.kite
-project athena 6.3.0a5 {Athena Regional Stability Simulation}
+project athena 6.3.0a7 {Athena Regional Stability Simulation}
 poc William.H.Duquette@jpl.nasa.gov
 
 # Applications
 app athena -apptype exe -gui
 app cellide -apptype exe -gui
 app helptool -apptype kit -gui
+app atool -apptype kit
 
 # Provided Libraries
 provide athena
-provide athenagui
 
 # Compiled Directories
 src help

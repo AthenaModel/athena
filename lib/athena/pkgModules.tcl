@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide athena 6.3.0a5
+package provide athena 6.3.0a7
 # -kite-provide-end
 
 #-----------------------------------------------------------------------
@@ -60,7 +60,7 @@ source [file join $::athena::library helpers.tcl                     ]
 source [file join $::athena::library hist.tcl                        ]
 source [file join $::athena::library link.tcl                        ]
 source [file join $::athena::library paster.tcl                      ]
-source [file join $::athena::library parm.tcl                        ]
+source [file join $::athena::library parmdb.tcl                      ]
 source [file join $::athena::library ptype.tcl                       ]
 source [file join $::athena::library rebase.tcl                      ]
 source [file join $::athena::library ruleset_manager.tcl             ]

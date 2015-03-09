@@ -236,7 +236,7 @@
         if {[[my adb] strategy locking]
             || $redeploy
             || $last_tick eq ""
-            || $last_tick < [simclock now] - 1
+            || $last_tick < [[my adb] clock now] - 1
         } {
             return 0
         }
@@ -721,7 +721,7 @@
         set s(g) "{group:$g}"
 
         # NEXT, set last_tick
-        my set last_tick [simclock now]
+        my set last_tick [[my adb] clock now]
 
         # NEXT, Pay the deployment cost, which might be zero.
         [my adb] cash spend [my agent] DEPLOY $trans(cost)
@@ -845,7 +845,7 @@
         my returnOnError
 
         # NEXT, get the tactic
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
 
         my prepare name       -toupper  -with [list $tactic valName]
         my prepare g                    
@@ -884,7 +884,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
         my setundo [$tactic update_ {
             name g pmode personnel min max percent nlist nmode redeploy
         } [array get parms]]

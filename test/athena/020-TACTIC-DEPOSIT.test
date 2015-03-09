@@ -1,0 +1,284 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    020-TACTIC-DEPOSIT.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    TACTIC:DEPOSIT:* Orders tests
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Set up for tests
+
+    proc setup {} {
+        ted create JOE
+        variable S1
+        variable B1
+        variable T1
+        ted order ACTOR:UPDATE a JOE cash_on_hand 10000.0 cash_reserve 0.0
+        set S1 [tdb strategy getname JOE]
+        ted order STRATEGY:BLOCK:ADD agent JOE
+        lassign [$S1 blocks] B1
+        ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename DEPOSIT
+        lassign [$B1 tactics] T1
+    }
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # TACTIC:DEPOSIT
+
+    test TACTIC:DEPOSIT-1.1 {required parameters} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:DEPOSIT
+    } -cleanup {
+        cleanup
+    } -result {
+        tactic_id {required value}
+    }
+
+    test TACTIC:DEPOSIT-1.2 {unknown tactic_id} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:DEPOSIT tactic_id NONESUCH
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        tactic_id {Invalid DEPOSIT ID: "NONESUCH"}
+    }
+
+    test TACTIC:DEPOSIT-1.3 {invalid amount} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:DEPOSIT tactic_id [$T1 id] amount NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        amount {invalid money value "NONESUCH", expected positive numeric value with optional K, M, or B suffix}
+    }
+
+    test TACTIC:DEPOSIT-1.4 {invalid mode} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:DEPOSIT tactic_id [$T1 id] mode FOO
+    } -cleanup {
+        cleanup
+    } -result {
+        mode {invalid value "FOO", should be one of: ALL, EXACT, UPTO, PERCENT, EXCESS}
+    }
+
+    test TACTIC:DEPOSIT-1.5 {invalid name} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:DEPOSIT tactic_id [$T1 id] name 1234
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Identifiers begin with a letter and contain only letters and digits.}
+    }
+
+    test TACTIC:DEPOSIT-1.6 {duplicate name} -setup {
+        setup
+        set T2 [ted addtactic $B1 ABSIT]
+    } -body {
+        ted order -reject TACTIC:DEPOSIT tactic_id [$T1 id] \
+            name [$T2 get name]
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Name already exists: "T2"}
+    }
+
+    test TACTIC:DEPOSIT-2.1 {tactic updated: ALL} -setup {
+        setup
+    } -body {
+        ted order TACTIC:DEPOSIT \
+            tactic_id [$T1 id] \
+            mode      ALL 
+
+        ted pdicts [$T1 getdict]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        amount     0.0
+        execstatus NONE
+        faildict   {}
+        id         *
+        mode       ALL
+        name       T*
+        parent     *
+        percent    0.0
+        pot        *::pot
+        state      normal
+    }
+
+    test TACTIC:DEPOSIT-2.2 {tactic updated: EXACT} -setup {
+        setup
+    } -body {
+        ted order TACTIC:DEPOSIT \
+            tactic_id [$T1 id] \
+            mode      EXACT    \
+            amount    100.0
+
+        ted pdicts [$T1 getdict]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        amount     100.0
+        execstatus NONE
+        faildict   {}
+        id         *
+        mode       EXACT
+        name       T*
+        parent     *
+        percent    0.0
+        pot        *::pot
+        state      normal
+    }
+
+    test TACTIC:DEPOSIT-2.3 {tactic updated: UPTO} -setup {
+        setup
+    } -body {
+        ted order TACTIC:DEPOSIT \
+            tactic_id [$T1 id] \
+            mode      UPTO     \
+            amount    100.0
+
+        ted pdicts [$T1 getdict]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        amount     100.0
+        execstatus NONE
+        faildict   {}
+        id         *
+        mode       UPTO
+        name       T*
+        parent     *
+        percent    0.0
+        pot        *::pot
+        state      normal
+    }
+
+    test TACTIC:DEPOSIT-2.4 {tactic updated: PERCENT} -setup {
+        setup
+    } -body {
+        ted order TACTIC:DEPOSIT \
+            tactic_id [$T1 id] \
+            mode      PERCENT  \
+            percent   10.0
+
+        ted pdicts [$T1 getdict]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        amount     0.0
+        execstatus NONE
+        faildict   {}
+        id         *
+        mode       PERCENT
+        name       T*
+        parent     *
+        percent    10.0
+        pot        *::pot
+        state      normal
+    }
+
+    test TACTIC:DEPOSIT-2.5 {tactic updated: EXCESS} -setup {
+        setup
+    } -body {
+        ted order TACTIC:DEPOSIT \
+            tactic_id [$T1 id] \
+            mode      EXCESS   \
+            amount    100.0
+
+        ted pdicts [$T1 getdict]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        amount     100.0
+        execstatus NONE
+        faildict   {}
+        id         *
+        mode       EXCESS
+        name       T*
+        parent     *
+        percent    0.0
+        pot        *::pot
+        state      normal
+    }
+
+    test TACTIC:DEPOSIT-2.6 {notifier event} -setup {
+        setup
+    } -body {
+        ted notifier bind ::projectlib::bean <Monitor>
+        ted order TACTIC:DEPOSIT tactic_id [$T1 id] mode EXACT amount 10.0
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -match glob -result {*{::projectlib::bean <Monitor>}*}
+
+    test TACTIC:DEPOSIT-2.7 {undo notifier event} -setup {
+        setup
+        ted order TACTIC:DEPOSIT tactic_id [$T1 id] mode EXACT amount 10.0
+    } -body {
+        ted notifier bind ::projectlib::bean <Monitor>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -match glob -result {*{::projectlib::bean <Monitor>}*}
+ 
+    test TACTIC:DEPOSIT-3.1 {identity} -setup {
+        setup
+    } -body {
+        ted tactic identity $T1
+    } -cleanup {
+        cleanup
+    } -result {OK}
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+

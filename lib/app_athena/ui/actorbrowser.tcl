@@ -180,7 +180,11 @@ snit::widgetadaptor actorbrowser {
         set id [lindex [$hull uid curselection] 0]
 
         # NEXT, Delete the entity
-        flunky senddict gui ACTOR:DELETE [list a $id]
+        app delete ACTOR:DELETE [list a $id] {
+            Are you sure you
+            really want to delete this actor and all of the
+            entities that depend upon it?
+        }
     }
 }
 

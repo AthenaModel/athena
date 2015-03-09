@@ -78,11 +78,11 @@ snit::type ::athena::coverage_model {
     # effectiveness. Must follow [security analyze].
 
     method analyze {} {
-        profile 2 $self InitializeActivityTable
-        profile 2 $self ComputeActivityPersonnel
-        profile 2 $self ComputeForceActivityFlags
-        profile 2 $self ComputeOrgActivityFlags
-        profile 2 $self ComputeCoverage
+        $adb profile 2 $self InitializeActivityTable
+        $adb profile 2 $self ComputeActivityPersonnel
+        $adb profile 2 $self ComputeForceActivityFlags
+        $adb profile 2 $self ComputeOrgActivityFlags
+        $adb profile 2 $self ComputeCoverage
     }
 
     # InitializeActivityTable

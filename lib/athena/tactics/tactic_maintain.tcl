@@ -277,7 +277,7 @@
         # NEXT, filter out any neighborhoods that have no infrastructure
         # owned by the actor
         # NOTE: non-local neighborhoods will also get filtered out here.
-        set nbhoodsWithPlants [rdb eval {
+        set nbhoodsWithPlants [[my adb] eval {
             SELECT n FROM plants_na
             WHERE a = $owner
         }]
@@ -387,7 +387,7 @@
             -with [list $adb strategy valclass ::athena::tactic::MAINTAIN]
         my returnOnError
 
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
 
         my prepare name    -toupper  -with [list $tactic valName]
         my prepare nlist
@@ -412,7 +412,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
         my setundo [$tactic update_ {
             name nlist rmode amount fmode level percent
         } [array get parms]]

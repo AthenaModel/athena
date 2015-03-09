@@ -284,8 +284,8 @@ snit::widget bsysbrowser {
         # NEXT, if the currently selected agent no longer 
         # exists, select the first actor.
 
-        if {$info(sid) ni [bsys system ids]} {
-            set info(sid) [lindex [bsys system ids] 0]
+        if {$info(sid) ni [adb bsys system ids]} {
+            set info(sid) [lindex [adb bsys system ids] 0]
 
             $slist uid select $info(sid)
         }
@@ -303,8 +303,8 @@ snit::widget bsysbrowser {
     method SListCreate {pane} {
         # FIRST, create the list widget
         install slist using databrowser $pane     \
-            -sourcecmd        [list bsys system ids]         \
-            -dictcmd          [list bsys system view]        \
+            -sourcecmd        [list adb bsys system ids]         \
+            -dictcmd          [list adb bsys system view]        \
             -width            40                             \
             -height           15                             \
             -relief           flat                           \
@@ -397,7 +397,7 @@ snit::widget bsysbrowser {
     # Creates a new belief system.
     
     method SListAdd {} {
-        set sid [flunky senddict gui BSYS:SYSTEM:ADD]
+        set sid [adb order senddict gui BSYS:SYSTEM:ADD]
 
         $slist uid select $sid
         $self SListEdit
@@ -423,11 +423,11 @@ snit::widget bsysbrowser {
     # Called when the SList's commonality slider is changed.
 
     method SListCommonChanged {newValue} {
-        if {$newValue == [bsys system cget $info(sid) -commonality]} {
+        if {$newValue == [adb bsys system cget $info(sid) -commonality]} {
             return
         }
 
-        flunky senddict gui BSYS:SYSTEM:UPDATE   \
+        adb order senddict gui BSYS:SYSTEM:UPDATE   \
             [list sid $info(sid) commonality $newValue]
     }
 
@@ -437,7 +437,32 @@ snit::widget bsysbrowser {
     # Deletes the selected system.
 
     method SListDelete {} {
-        flunky senddict gui BSYS:SYSTEM:DELETE [list sid [$self SListGet]]
+        set sid [$self SListGet]
+
+        if {[adb bsys system inuse $sid]} {
+            set message [normalize "
+                The selected belief system is in use by 
+                at least one actor or group; see the belief system's
+                detail browser page for a complete list.  The
+                system cannot be deleted while it is in use.
+            "]
+
+            messagebox popup \
+                -title   "System is in use"  \
+                -icon    error               \
+                -buttons {cancel "Cancel"}   \
+                -default cancel              \
+                -parent  [app topwin]        \
+                -message $message
+
+            return
+        }
+
+        app delete BSYS:SYSTEM:DELETE [list sid $sid] {
+            Are you sure you really want to delete this 
+            belief system and all of the beliefs it
+            contains?
+        }
     }
 
 
@@ -491,7 +516,7 @@ snit::widget bsysbrowser {
 
     method SListReloadToolbar {} {
         if {$info(sid) ne ""} {
-            $slist_common set [bsys system cget $info(sid) -commonality]
+            $slist_common set [adb bsys system cget $info(sid) -commonality]
         }
     }
 
@@ -567,7 +592,7 @@ snit::widget bsysbrowser {
             return [list]
         }
 
-        set ids [bsys system ids]
+        set ids [adb bsys system ids]
         ldelete ids $info(sid)
 
         return $ids 
@@ -585,10 +610,10 @@ snit::widget bsysbrowser {
     method AListView {b} {
         set a $info(sid)
 
-        dict set dict a     "[bsys system cget $a -name] ($a)"
-        dict set dict b     "[bsys system cget $b -name] ($b)"
-        dict set dict aforb [format %.2f [bsys affinity $a $b]]
-        dict set dict bfora [format %.2f [bsys affinity $b $a]]
+        dict set dict a     "[adb bsys system cget $a -name] ($a)"
+        dict set dict b     "[adb bsys system cget $b -name] ($b)"
+        dict set dict aforb [format %.2f [adb bsys affinity $a $b]]
+        dict set dict bfora [format %.2f [adb bsys affinity $b $a]]
 
         return $dict
     }
@@ -599,7 +624,7 @@ snit::widget bsysbrowser {
 
     method AListReload {{opt ""}} {
         $alist reload {*}$opt
-        $alist_gamma set [bsys playbox cget -gamma]
+        $alist_gamma set [adb bsys playbox cget -gamma]
     }
 
     # AListGammaChanged newGamma
@@ -607,8 +632,8 @@ snit::widget bsysbrowser {
     # Sends the BSYS:PLAYBOX:UPDATE order.
 
     method AListGammaChanged {newGamma} {
-        if {$newGamma != [bsys playbox cget -gamma]} {
-            flunky senddict gui BSYS:PLAYBOX:UPDATE [list gamma $newGamma]
+        if {$newGamma != [adb bsys playbox cget -gamma]} {
+            adb order senddict gui BSYS:PLAYBOX:UPDATE [list gamma $newGamma]
         }
     }
 
@@ -626,7 +651,7 @@ snit::widget bsysbrowser {
     method TListCreate {pane} {
         # FIRST, create the list widget
         install tlist using databrowser $pane     \
-            -sourcecmd        [list bsys topic ids]          \
+            -sourcecmd        [list adb bsys topic ids]          \
             -dictcmd          [mymethod TListView]           \
             -width            40                             \
             -height           15                             \
@@ -761,10 +786,10 @@ snit::widget bsysbrowser {
     # system's beliefs.
 
     method TListView {tid} {
-        set view [bsys topic view $tid]
+        set view [adb bsys topic view $tid]
 
         if {$info(sid) ne ""} {
-            set view [dict merge $view [bsys belief view $info(sid) $tid]]
+            set view [dict merge $view [adb bsys belief view $info(sid) $tid]]
         } else {
             dict set view position ""
             dict set view emphasis ""
@@ -809,7 +834,7 @@ snit::widget bsysbrowser {
     # Reloads beliefs for each displayed topic.
 
     method TListReloadBeliefs {} {
-        foreach tid [bsys topic ids] {
+        foreach tid [adb bsys topic ids] {
             set view [$self TListView $tid]
 
             set r [$tlist uid2rindex $tid]
@@ -866,7 +891,7 @@ snit::widget bsysbrowser {
     # Creates a new belief topic
     
     method TListAdd {} {
-        set tid [flunky senddict gui BSYS:TOPIC:ADD]
+        set tid [adb order senddict gui BSYS:TOPIC:ADD]
 
         $tlist uid select $tid
         $self TListEditTopic
@@ -894,8 +919,8 @@ snit::widget bsysbrowser {
     # Sends the BSYS:TOPIC:UPDATE order.
 
     method TListAffinityChanged {newValue} {
-        if {$newValue != [bsys topic cget $info(tid) -affinity]} {
-            flunky senddict gui BSYS:TOPIC:UPDATE \
+        if {$newValue != [adb bsys topic cget $info(tid) -affinity]} {
+            adb order senddict gui BSYS:TOPIC:UPDATE \
                 [list tid $info(tid) affinity $newValue]
         }
     }
@@ -907,8 +932,8 @@ snit::widget bsysbrowser {
     method TListBeliefChanged {parm newValue} {
         set bid [list $info(sid) $info(tid)]
 
-        if {$newValue != [bsys belief cget {*}$bid -$parm]} {
-            flunky senddict gui BSYS:BELIEF:UPDATE \
+        if {$newValue != [adb bsys belief cget {*}$bid -$parm]} {
+            adb order senddict gui BSYS:BELIEF:UPDATE \
                 [list bid $bid $parm $newValue]
         }
     }
@@ -918,8 +943,8 @@ snit::widget bsysbrowser {
     # Sends the BSYS:PLAYBOX:UPDATE order.
 
     method TListGammaChanged {newGamma} {
-        if {$newGamma != [bsys playbox cget -gamma]} {
-            flunky senddict gui BSYS:PLAYBOX:UPDATE [list gamma $newGamma]
+        if {$newGamma != [adb bsys playbox cget -gamma]} {
+            adb order senddict gui BSYS:PLAYBOX:UPDATE [list gamma $newGamma]
         }
     }
 
@@ -929,7 +954,33 @@ snit::widget bsysbrowser {
     # Deletes the selected topic.
 
     method TListDelete {} {
-        flunky senddict gui BSYS:TOPIC:DELETE [list tid [$self TListGet]]
+        set tid [$self TListGet]
+
+        if {[adb bsys topic inuse $tid]} {
+            set message [normalize "
+                The selected topic is in use by 
+                at least one semantic hook; see the topic's
+                detail browser page for a complete list.  The
+                topic cannot be deleted while it is in use.
+            "]
+
+            messagebox popup \
+                -title   "Topic is in use"  \
+                -icon    error               \
+                -buttons {cancel "Cancel"}   \
+                -default cancel              \
+                -parent  [app topwin]        \
+                -message $message
+
+            return
+        }
+
+
+        app delete BSYS:TOPIC:DELETE [list tid $tid] {
+            Are you sure you really want to delete this 
+            belief topic and all of the beliefs it
+            contains?
+        }
     }
 
 

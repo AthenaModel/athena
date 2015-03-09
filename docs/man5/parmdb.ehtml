@@ -3,9 +3,9 @@
 <section SYNOPSIS>
 
 <expand [project tclsh {
-    package require projectlib
-    ::projectlib::parmdb init
-    ::projectlib::parmdb manlinks
+    package require athena
+    ::athena::parmdb ::pdb
+    ::pdb manlinks
 }]>
 
 <section DESCRIPTION>
@@ -32,9 +32,9 @@ modules.<p>
 
 The valid parameters are as follows:<p>
 <expand [project tclsh {
-    package require projectlib
-    ::projectlib::parmdb init
-    ::projectlib::parmdb manpage
+    package require athena
+    ::athena::parmdb ::pdb
+    ::pdb manpage
 }]>
 
 <section AUTHOR>

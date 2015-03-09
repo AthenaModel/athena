@@ -165,7 +165,7 @@ snit::widget scriptbrowser {
         set info(reloadRequests) 0
 
         # NEXT, the currently displayed script might no longer exist.
-        if {$info(sname) ni [executive script names]} {
+        if {$info(sname) ni [adb executive script names]} {
             set info(sname) ""
         }
 
@@ -413,7 +413,7 @@ snit::widget scriptbrowser {
             return
         }
 
-        executive script save $sname
+        adb executive script save $sname
 
         $self Show $sname
     }
@@ -437,7 +437,7 @@ snit::widget scriptbrowser {
             return
         }
 
-        if {[executive script exists $sname]} {
+        if {[adb executive script exists $sname]} {
             messagebox popup \
                 -parent  [winfo toplevel $win]   \
                 -buttons {ok "OK"}               \
@@ -473,7 +473,7 @@ snit::widget scriptbrowser {
 
         # NEXT, Import the map
         if {[catch {
-            set sname [executive script import $filename]
+            set sname [adb executive script import $filename]
         } result]} {
             app error {
                 |<--
@@ -521,7 +521,7 @@ snit::widget scriptbrowser {
         if {[catch {
             try {
                 set f [open $filename w]
-                puts $f [executive script get $info(sname)]
+                puts $f [adb executive script get $info(sname)]
             } finally {
                 close $f
             }
@@ -551,8 +551,8 @@ snit::widget scriptbrowser {
     # Toggles the auto flag for the selected script.
 
     method SListScriptToggleAuto {} {
-        set auto [executive script auto $info(sname)]
-        executive script auto $info(sname) [expr {!$auto}]
+        set auto [adb executive script auto $info(sname)]
+        adb executive script auto $info(sname) [expr {!$auto}]
     }
 
     # SListDelete
@@ -568,7 +568,7 @@ snit::widget scriptbrowser {
             -message "Delete the script called \"$info(sname)\"?"]
 
         if {$answer eq "ok"} {
-            executive script delete $info(sname)
+            adb executive script delete $info(sname)
             $self reload
         }
     }
@@ -580,7 +580,7 @@ snit::widget scriptbrowser {
     # Changes the sequence of the scripts.
 
     method SListSequence {op} {
-        executive script sequence $info(sname) $op
+        adb executive script sequence $info(sname) $op
     }
 
 
@@ -754,7 +754,7 @@ snit::widget scriptbrowser {
         if {$info(sname) eq ""} {
             $editor configure -state disabled
         } else {
-            $editor insert 1.0 [executive script get $info(sname)]
+            $editor insert 1.0 [adb executive script get $info(sname)]
             $editor see 1.0
             $editor mark set insert 1.0
             $editor edit modified no
@@ -780,15 +780,15 @@ snit::widget scriptbrowser {
             return
         }
 
-        executive script rename $oldName $newName
+        adb executive script rename $oldName $newName
     }
 
     # EditorReset
     #
-    # Resets the executive.
+    # Resets the adb executive.
 
     method EditorReset {} {
-        $self OutlogShow [executive reset]
+        $self OutlogShow [adb executive reset]
     }
 
     # EditorCheck
@@ -810,7 +810,7 @@ snit::widget scriptbrowser {
         $self OutlogPuts "Script: $info(sname)\n\n"
 
         # NEXT, check it.
-        set errlist [executive check $text]
+        set errlist [adb executive check $text]
 
         if {[llength $errlist] == 0} {
             $self OutlogPuts "OK\n" ok
@@ -845,7 +845,7 @@ snit::widget scriptbrowser {
         $self OutlogPuts "Script: $info(sname)\n\n"
 
         if {[catch {
-            executive eval $text
+            adb executive eval $text
         } result eopts]} {
             $self OutlogPuts "Error: "
             $self OutlogPuts "$result\n\n" error
@@ -867,18 +867,18 @@ snit::widget scriptbrowser {
 
     method EditorSave {} {
         set text [$editor get 1.0 "end -1 char"]
-        executive script save $info(sname) $text -silent
+        adb executive script save $info(sname) $text -silent
         $editor edit modified no
         $self SetButtonState
 
         $self OutlogClear
         $self OutlogPuts "Saved Script: $info(sname)\n"
 
-        if {[executive script auto $info(sname)]} {
+        if {[adb executive script auto $info(sname)]} {
             $self OutlogPuts "Checking Script: $info(sname)\n"
 
             if {[catch {
-                executive script load $info(sname)
+                adb executive script load $info(sname)
             } result eopts]} {
                 $self OutlogPuts "Error: "
                 $self OutlogPuts "$result\n\n" error

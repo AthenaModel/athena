@@ -742,7 +742,7 @@ snit::type view {
         set query [dict get $viewdef($domain,$vartype) query]
         set rtype [dict get $viewdef($domain,$vartype) rtype]
 
-        rdb eval "CREATE TEMPORARY VIEW $vid AS [subst $query]"
+        adb eval "CREATE TEMPORARY VIEW $vid AS [subst $query]"
 
         set vdict [dict create]
         dict set vdict view     $vid
@@ -825,7 +825,7 @@ snit::type view {
             FROM $joins
         "
 
-        rdb eval $sql
+        adb eval $sql
 
         # NEXT, save the view dict.
         set views($domain,$composite) $vdict
@@ -1027,8 +1027,8 @@ snit::type view {
     # Validates {f g} for cooperation
     
     proc fg_coop {domain vartype f g} {
-        ValidateIndex $domain $vartype f $f {civgroup validate $f}
-        ValidateIndex $domain $vartype g $g {frcgroup validate $g}
+        ValidateIndex $domain $vartype f $f {adb civgroup validate $f}
+        ValidateIndex $domain $vartype g $g {adb frcgroup validate $g}
     }
 
     # Proc: fg_rel
@@ -1036,8 +1036,8 @@ snit::type view {
     # Validates {f g} for horizontal relationships
     
     proc fg_rel {domain vartype f g} {
-        ValidateIndex $domain $vartype f $f {group validate $f}
-        ValidateIndex $domain $vartype g $g {group validate $g}
+        ValidateIndex $domain $vartype f $f {adb group validate $f}
+        ValidateIndex $domain $vartype g $g {adb group validate $g}
     }
 
     # Proc: ga
@@ -1045,14 +1045,14 @@ snit::type view {
     # Validates {g a} where is an activity.
     
     proc ga {domain vartype g a} {
-        ValidateIndex $domain $vartype g $g {group validate $g}
+        ValidateIndex $domain $vartype g $g {adb group validate $g}
         ValidateIndex $domain $vartype a $a {
             set gtype [group gtype $g]
 
             switch -exact -- $gtype {
-                CIV     { ptype civa validate $a }
-                FRC     { ptype frca validate $a }
-                ORG     { ptype orga validate $a }
+                CIV     { adb ptype civa validate $a }
+                FRC     { adb ptype frca validate $a }
+                ORG     { adb ptype orga validate $a }
                 default { error "Unexpected gtype: \"$gtype\""   }
             }
         }
@@ -1064,8 +1064,8 @@ snit::type view {
     # concern.
     
     proc gc {domain vartype g c} {
-        ValidateIndex $domain $vartype g $g {civgroup validate $g}
-        ValidateIndex $domain $vartype c $c {ptype c validate $c}
+        ValidateIndex $domain $vartype g $g {adb civgroup validate $g}
+        ValidateIndex $domain $vartype c $c {adb ptype c validate $c}
     }
 
     # Proc: g
@@ -1073,7 +1073,7 @@ snit::type view {
     # Validates {g} as a group
     
     proc g {domain vartype g} {
-        ValidateIndex $domain $vartype g $g {group validate $g}
+        ValidateIndex $domain $vartype g $g {adb group validate $g}
     }
 
     # Proc: g_sat
@@ -1081,7 +1081,7 @@ snit::type view {
     # Validates {g} as a satisfaction group
     
     proc g_sat {domain vartype g} {
-        ValidateIndex $domain $vartype g $g {civgroup validate $g}
+        ValidateIndex $domain $vartype g $g {adb civgroup validate $g}
     }
 
     # Proc: g_frc
@@ -1089,7 +1089,7 @@ snit::type view {
     # Validates {g} as a force group
     
     proc g_frc {domain vartype g} {
-        ValidateIndex $domain $vartype g $g {frcgroup validate $g}
+        ValidateIndex $domain $vartype g $g {adb frcgroup validate $g}
     }
 
     # Proc: i
@@ -1115,7 +1115,7 @@ snit::type view {
     # Validates {n} as a nbhood
     
     proc n {domain vartype n} {
-        ValidateIndex $domain $vartype n $n {nbhood validate $n}
+        ValidateIndex $domain $vartype n $n {adb nbhood validate $n}
     }
 
     # Proc: fg_coop
@@ -1123,8 +1123,8 @@ snit::type view {
     # Validates {f g} for cooperation
     
     proc fg_coop {domain vartype f g} {
-        ValidateIndex $domain $vartype f $f {civgroup validate $f}
-        ValidateIndex $domain $vartype g $g {frcgroup validate $g}
+        ValidateIndex $domain $vartype f $f {adb civgroup validate $f}
+        ValidateIndex $domain $vartype g $g {adb frcgroup validate $g}
     }
 
     # Proc: ng_coop
@@ -1132,8 +1132,8 @@ snit::type view {
     # Validates {n g} for cooperation
     
     proc ng_coop {domain vartype n g} {
-        ValidateIndex $domain $vartype n $n {nbhood   validate $n}
-        ValidateIndex $domain $vartype g $g {frcgroup validate $g}
+        ValidateIndex $domain $vartype n $n {adb nbhood   validate $n}
+        ValidateIndex $domain $vartype g $g {adb frcgroup validate $g}
     }
 
     # Proc: ga_vrel
@@ -1141,8 +1141,8 @@ snit::type view {
     # Validates {g a} for vrel
     
     proc ga_vrel {domain vartype g a} {
-        ValidateIndex $domain $vartype g $g {group validate $g}
-        ValidateIndex $domain $vartype a $a {actor validate $a}
+        ValidateIndex $domain $vartype g $g {adb group validate $g}
+        ValidateIndex $domain $vartype a $a {adb actor validate $a}
     }
 
     # Proc: gc_sat
@@ -1150,7 +1150,7 @@ snit::type view {
     # Validates {n g c} as a satisfaction curve
     
     proc gc_sat {domain vartype g c} {
-        ValidateIndex $domain $vartype g $g {civgroup validate $g}
-        ValidateIndex $domain $vartype c $c {ptype c validate $c}
+        ValidateIndex $domain $vartype g $g {adb civgroup validate $g}
+        ValidateIndex $domain $vartype c $c {adb ptype c validate $c}
     }
 }

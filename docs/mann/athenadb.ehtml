@@ -1,4 +1,4 @@
-<manpage {athena(n) athenadb(n)} "Athena Internal Scenario Type">
+<manpage {athena(n) athenadb(n)} "Athena Private Scenario Type">
 
 <section SYNOPSIS>
 
@@ -27,25 +27,43 @@ This module defines the following commands:<p>
 
 <deflist commands>
 
-<defitem "athenadb create" {athenadb create <i name> <i filename> ?<i options...>?}>
+<defitem "athenadb create" {athenadb create <i name> ?<i options...>?}>
 
 Creates a new instance of athenadb(n) called <i name>, which becomes a 
 Tcl command defined in the current scope; <iref athenadb create> returns
 the fully-qualified form of the name.<p>
 
-If the <i filename> isn't the empty string, it specifies the name of 
-an <tt .adb> scenario file to load.  If the named file cannot be loaded, 
-athenadb(n) will throw "<tt SCENARIO OPEN>".<p>
 
 The following options may be used:<p>
 
 <deflist options>
 
+<defopt {-adbfile <i filename>}>
+
+Specifies the name of an Athena scenario (<tt *.adb>) file.  If given,
+the file is loaded immediately.<p>
+
+<defopt {-executivecmd <i cmd>}>
+
+A callback command to be used to define application-specific executive
+commands.  It is passed along to the scenario <xref executive(n)> 
+component.  This option is read-only after creation.<p>
+
 <defopt {-logcmd <i command>}>
 
-Specifies the name of a <xref mars:logger(n)> object used to log the 
-object's activities.  The last component of the <tt -subject> name 
-is used as the log "component".<p>
+Specifies the name of a command the library code will use to write to
+an application log.  athenadb(n) assumes that the <i command> either is
+or mimics a <xref mars:logger(n)> object; however, only the 
+logger(n) subcommands that output log messages are used.<p>
+
+Log messages produced by athenadb(n) use the <tt -subject> as the 
+log component name, possibly qualified by the name of the athenadb(n)
+subcomponent producing the message.<p>
+
+<defopt {-scratch <i dirname>}>
+
+Names a scratch directory where athenadb(n) can write debugging files.
+Defaults to the current working directory.<p>
 
 <defopt {-subject <i name>}>
 
@@ -58,94 +76,172 @@ athenadb(n) wraps an <xref mars:sqldocument(n)> object used to contain
 the scenario's run-time database (RDB).  When monitoring is enabled, the
 RDB can generate <xref mars:notifier(n)> events as tables are updated.<p>
 
+
 </deflist options>
-
-
-<defitem "athenadb register" {athenadb register <i saveable>}>
-
-Registers the name of an <xref mars:saveable(i)> command with Athena,
-so that the command's data will be loaded and restored with the scenario
-data.<p>
-
-<b TODO>: Once all registered modules are part of the library, this must
-become a private instance method; athenadb(n) will register all modules
-as part of its initialization.<p>
 
 </deflist commands>
 
 <section "INSTANCE COMMAND">
 
-Each athenadb(n) instance has the following subcommands:<p>
+Each athenadb(n) instance has many subcommands, most of which correspond
+to a particular subcomponent; e.g., the <tt civgroup> subcommand corresponds
+to the module that handles the editing of civilian group entities.<p>
+
+Because this is a private module, and because the list of such components
+changes over time, few of these subcommands will be documented here.  
+Other subcommands represent utilities for general use by the library as 
+a whole, and these are documented below.<p>
 
 <deflist instance>
 
-<defitem adbfile {<i adb> adbfile}>
+<defitem rdb {<i obj> rdb <i subcommand...> ?<i args...>?}>       
+<defitem eval {<i obj> eval ...}>      
+<defitem delete {<i obj> delete ...}>
+<defitem exists {<i obj> exists ...}>
+<defitem grab {<i obj> grab ...}>
+<defitem last_insert_rowid {<i obj> last_insert_rowid}>
+<defitem monitor {<i obj> monitor ...}>
+<defitem onecolumn {<i obj> onecolumn ...}>
+<defitem query {<i obj> query ...}>
+<defitem safeeval {<i obj> safeeval ...}>
+<defitem safequery {<i obj> safequery ...}>
+<defitem schema {<i obj> schema ...}>
+<defitem tables {<i obj> tables ...}>
+<defitem ungrab {<i obj> ungrab ...}>
+
+These subcommands are delegated to the underlying <i scenariodb(n)> object,
+and are used to change and query the run-time database (RDB).<p>
+
+<defitem adbfile {<i obj> adbfile}>
 
 Returns the name of the <tt .adb> file loaded on creation, if any, or
 the <tt .adb> file name last used for saving, or "" if no <tt .adb> file
 has ever been loaded or saved.<p>
 
-<defitem eval {<i adb> eval <i query> ?<i args...>?}>
+<defitem "component clock" {<i obj> component clock}>
 
-Evaluates an SQL <i query> with respect to the scenario's run-time 
-database.  The arguments are as for the standard SQLite3 <tt eval>
-subcommand.<p>
+Returns the fully-qualified name of the instance's simulation clock,
+a <xref weekclock(n)> object, for direct
+use by the wrapping <xref athena(n)> object.<p>
 
-<defitem exists {<i adb> exists <i query>}>
+<defitem "component rdb" {<i obj> component rdb}>
 
-Evaluates an SQL <i query> with respect to the scenario's run-time 
-database, returning 1 if the result set contains at least one row,
-and 0 otherwise.  The arguments are as for the standard SQLite3
-<tt exists> subcommand.<p>
+Returns the fully-qualified name of the instance's 
+<xref scenariodb(n)> handle, for direct
+use by the wrapping <xref athena(n)> object.<p>
 
-<defitem last_insert_rowid {<i adb> last_insert_rowid}>
+<defitem cprofile {<i obj> cprofile ?<i depth>? <i component args...>}>
 
-Returns the last row ID (or integer primary key) inserted into any
-table in the scenario's SQL RDB.<p>
+This is exactly like <iref profile>, but the command to call is an
+<xref athenadb(n)> subcomponent called as a subcommand of <i obj>.<p>
 
-<defitem log {<i adb> log <i level message>}>
 
-Given a <tt -logcmd>, logs the <i message> at the given <i level>,
-e.g., "warning".<p>
+<defitem dbsync {<i obj> dbsync}>
 
-<defitem monitor {<i adb> monitor <i args...>}>
+Sends out a sequence of notifier events to the client, to be used to
+refresh the client when the scenario changes, i.e., after a <iref load>
+or <iref reset>.<p>
 
-This command is identical to the <xref mars:sqldocument(n)> object's
-<xref mars:sqldocument(n) monitor> subcommand, allowing the control
-of automatic monitoring of database changes.<p>
+The sequence is <tt><tag PreSync></tt>, <tt><tag Sync></tt>, 
+<tt><tag Time></tt>, and <tt><tag State></tt>.  See <xref athena(n)> for
+more about the notifier events sent by the library.<p>
 
-<defitem notify {<i adb> notify <i component event> ?<i args...>?}>
+<defitem enter {<i obj> enter <i options...>}>
 
-Sends a <xref mars:notifier(n)> <i event> for the library.  If the
-<i component> is the empty string, then it is sent for the library
-as a whole, and the subject of the event is the value of the <tt -subject>
-option (defaulting to the <xref athena(n)> object name).<p>
+If <iref tkloaded>, then this command is used to pop up order dialogs.
+The options are as follows:<p>
 
-Otherwise, the <i component> should be the name of a subcomponent of
-the library (i.e., the "flunky"); in this case, the event is sent for
-the component, and the subject of the event is 
-"<tt><i subject>.<i component></tt>", where <i subject> is the value
-of the <tt -subject> option and the <i component> is as given.<p>
+<deflist enter>
 
-Suppose, for example the <tt -subject> is "<tt ::adb>".  Then:
+<defopt {-order <i name>}>
 
-<ul>
-<li> RDB monitoring events are sent as "<tt ::adb>".
-<li> Neighborhood <tag Stack> events are sent as 
-     "<tt ::adb.nbhood>".
-<li> Order flunky <tag Sync> events are sent as 
-     "<tt ::adb.flunky>".
-</ul>
+Specifies the order name, e.g., <tt ACTOR:CREATE>.<p>
 
-The full set of events sent by <xref athena(n)>/athenadb(n) is documented
-in <xref athena(n)>.<p>
+<defopt {-parmdict <i dict>}>
 
-<defitem onecolumn {<i adb> onecolumn <i query>}>
+Specifies a dictionary of order parameter names and values, to be used to
+initialize the dialog.<p>
 
-Evaluates an SQL <i query> with respect to the scenario's run-time 
-database, returning only the first column.<p>
+<defopt {-master <i window>}>
 
-<defitem paste {<i adb> paste <i subcommand> ?<i args...>?}>
+Specifies the Tk window over which the dialog should appear.<p>
+
+<defopt {-appname <i name>}>
+
+Specifies the application name for the dialog title.<p>
+
+<defopt {-helpcmd <i cmd>}>
+
+Specifies a command to call if the dialog's help button is pushed.<p>
+
+</deflist enter>
+
+<defitem load {<i obj> load <i filename>}>
+
+Loads the scenario from the named <tt *.adb> file into this scenario
+object, throwing away any previous data.<p>
+
+<defitem locked {<i obj> locked}>
+
+Returns 1 if the scenario is "locked", i.e., in the <b PAUSED> or 
+<b RUNNING> state.<p>
+
+<defitem notify {<i obj> notify <i component event> ?<i args...>?}>
+
+Sends a <xref mars:notifier(n)> event on behalf of <xref athena(n)>.  If
+the <i component> name is "", then the event is sent by the 
+<tt -subject>; otherwise, the <tt -subject> is suffixed with 
+"<tt>.<i component></tt>"<p>
+
+<defitem order {<i obj> order <i subcommand> ?<i args...>?}>
+
+The subcommands of this command are passed along to the scenario's
+"order flunky".  They are as follows:
+
+<deflist order>
+
+<defitem "order available" {<i obj> order available ...}>
+<defitem "order canredo" {<i obj> order canredo}>
+<defitem "order canundo" {<i obj> order canundo}>
+<defitem "order class" {<i obj> order class ...}>
+<defitem "order execute" {<i obj> order execute ...}>
+<defitem "order exists" {<i obj> order exists ...}>
+<defitem "order make" {<i obj> order make ...}>
+<defitem "order names" {<i obj> order names}>
+<defitem "order redo" {<i obj> order redo}>
+<defitem "order redotext" {<i obj> order redotext}>
+<defitem "order reset" {<i obj> order reset}>
+<defitem "order send" {<i obj> order send ...}>
+<defitem "order senddict" {<i obj> order senddict...}>
+<defitem "order state" {<i obj> order state ...}>
+<defitem "order transaction" {<i obj> order transaction ...}>
+<defitem "order undo" {<i obj> order undo}>
+<defitem "order undotext" {<i obj> order undotext}>
+<defitem "order validate" {<i obj> order validate ...}>
+
+These commands are defined by the <xref mars:order_flunky(n)> class;
+see that man page for details.<p>
+
+<defitem "monitor" {<i obj> order monitor ?<i flag>?}>
+
+Sets and queries the monitor flag.  If set, RDB changes taking place
+during order execution are monitored, and relevant notifier events are
+sent to the application.  See <xref athena(n)> for details.<p>
+
+Defaults to true.<p>
+
+
+<defitem "transactions" {<i obj> order transactions ?<i flag>?}>
+
+Sets and queries the transaction flag.  If set, all orders are executed
+in the context of an SQL transaction; if the order throws an error, the
+transaction is rolled back, thus preventing corruption of the RDB.<p>
+
+Defaults to true.<p>
+
+</deflist order>
+
+<defitem paste {<i obj> paste <i subcommand> ?<i args...>?}>
 
 Pastes copied items into scenario, where the subcommand determines the 
 kind of item to paste.  In each case, the paste is done as a sequence of 
@@ -155,114 +251,101 @@ The available subcommands are as follows:<p>
 
 <deflist paste>
 
-<defitem "paste block" {<i adb> paste block <i agent copysets>}>
+<defitem "paste block" {<i obj> paste block <i agent copysets>}>
 
 Pastes <i copysets>, a list of copied strategy blocks, into the strategy
 owned by the named <i agent>.<p>
 
-<defitem "paste condition" {<i adb> paste condition <i block_id copysets>}>
+<defitem "paste condition" {<i obj> paste condition <i block_id copysets>}>
 
 Pastes <i copysets>, a list of copied conditions, into the strategy block
 with the given <i block_id>.<p>
 
-<defitem "paste tactic" {<i adb> paste tactic <i block_id copysets>}>
+<defitem "paste tactic" {<i obj> paste tactic <i block_id copysets>}>
 
 Pastes <i copysets>, a list of copied tactics, into the strategy block
 with the given <i block_id>.<p>
 
 </deflist paste>
 
-<defitem profile {<i adb> profile ?<i depth>? <i command...>}>
+<defitem profile {<i obj> profile ?<i depth>? <i command...>}>
 
 Calls the command once using <tt time>, in the caller's context,
 and the logs the outcome, returning the commands return value.
 In other words, you can prefix any statement with 
-"<tt><i adb> profile</tt>" and profile that call without changing code
+"<tt><i obj> profile</tt>" and profile that call without changing code
 or adding new routines.<p>
 
 If the <i depth> is given, it must be an integer; that many "*" characters
 are added to the beginning of the log message.  This is useful when 
 profiling calls within another profiled call.<p>
 
-<defitem query {<i adb> query <i query> ?<i options...>?}>
 
-Evaluates an SQL <i query> with respect to the scenario's run-time 
-database, and returns the result set as a formatted string.  The 
-<i query> can contain any valid SQL statements understood by SQLite3,
-but in practice it will be a single statemet that returns a result 
-set (i.e., <tt SELECT> or certain <tt PRAGMA> statements).<p>
+<defitem reset {<i obj> reset}>
 
-The following options may be used:<p>
+Resets the scenario back to initial empty state.<p>
 
-<deflist query>
-
-<defopt {-mode mc|list|csv}>
-
-Specifies the output mode; the default is <b>mc</b>, multicolumn.<p>
-
-When <tt -mode> is <b>mc</b>, each record is output on a single
-line.  Fields are formatted in columns, with the field name as the
-column header.<p>
-
-When <tt -mode> is <b>list</b>, the output is a list of records.
-Each record is output on multiple lines, with (nominally) one line
-per field.  Each line consists of the field name and value; the
-record's field names are values are formatted neatly in parallel columns.<p>
-
-When <tt -mode> is <b>csv</b>, the output is in CSV (comma-separated value)
-format, one record per line, beginning with a header record of column labels.
-Non-numeric values are enclosed in double-quotes.<p>
-
-<defopt {-labels <i>list</i>}>
-
-Normally <iref query> uses the column names found in the query to
-label the fields in the output.  If specified, the value of
-<b>-labels</b> is a list of labels to be used instead.<p>
-
-<defopt {-maxcolwidth <i>chars</i>}>
-
-Sets the maximum column width, in characters, when <tt -mode> is
-<b>mc</b>; the default is 30.  All
-data values longer than this will be truncated with "...".<p>
-
-If <b>-maxcolwidth</b> is set to 0 then values will not be
-truncated.<p>
-
-<defopt {-headercols <i>num</i>}>
-
-Sets the number of header columns.  When <tt -mode> is <b>mc</b>,
-repeated values in a column are skipped.  That is, if a column
-contains identical values in consecutive rows, the column will be
-blank in all but the first of the rows.  Defaults to "0".<p>
-
-</deflist query>
-
-<defitem "rdb component" {<i adb> rdb component}>
-
-Returns the fully-qualified name of the instance's RDB handle, for direct
-use by the wrapping <xref athena(n)> object.<p>
-
-<b TODO>: At present, this is the same RDB handle used by athenadb(n) 
-itself; ultimately, it will be a read-only SQLite3 handle accessing the
-same RDB file and providing the same functions and temporary schema 
-items.  This will allow <xref athena(n)> to provide safe access to 
-clients.<p>
-
-
-<defitem rebase {<i adb> rebase}>
-
-Given a scenario with time advanced, this command converts it into a
-scenario with the same data at time 0.  This is experimental.<p>
-
-<defitem save {<i adb> save ?<i filename>?}>
+<defitem save {<i obj> save ?<i filename>?}>
 
 Saves the scenario to disk as an <tt .adb> file called <i filename>,
-adding the "<tt .adb>" extension if necessary.  On failure, throws
-"<tt SCENARIO SAVE>".<p>
+adding the "<tt .adb>" extension if necessary.  If no <i filename> is
+given but the <iref adbfile> name is known, the <iref adbfile> name is
+used.<p>
 
-<defitem unsaved {<i adb> unsaved}>
+  On failure, throws "<tt SCENARIO SAVE>".<p>
+
+<defitem scratch {<i obj> scratch ?<i args...>?}>
+
+Called with no arguments, returns the <tt -scratch> directory.  Any
+arguments are joined to the scratch directory as by <tt file join>, and
+the resulting path is returned.<p>
+
+<defitem stable {<i obj> stable}>
+
+Returns 1 if the simulation is "stable", i.e., is paused for input, 
+and 0 otherwise.  It is stable if the <iref state> is <b PREP> or
+<b PAUSED>.<p>
+
+<defitem state {<i obj> state}>
+
+Returns the scenario's simulation state: <b PREP>, <b PAUSED>, <b RUNNING>,
+or <b WIZARD>.  <b PREP> is the "scenario preparation" state; the 
+scenario may be edited freely.  "Locking" the scenario places it in the
+<b PAUSED> state, at which point time may be advanced; while time is 
+advancing, it is in the <b RUNNING> state.<p>
+
+The client may place an unlocked scenario in the <b WIZARD> state using
+<iref wizlock>; this locks out all changes until the <iref wizlock> is
+disabled.  It is used to lock out the normal scenario orders while a 
+"wizard" GUI is being used.<p>
+
+<defitem stoptime {<i obj> stoptime}>
+
+While the <i state> is <b RUNNING>, this method returns the simulation
+time in weeks at which the simulation will stop and return to the 
+<b PAUSED> state.<p>
+
+<defitem tkloaded {<i obj> tkloaded}>
+
+Returns 1 if Tk is loaded, and 0 otherwise.<p>
+
+<defitem unsaved {<i obj> unsaved}>
 
 Returns 1 if there is unsaved scenario data, and 0 otherwise.<p>
+
+<defitem version {<i obj> version}>
+
+Returns the version number of the <xref athena(n)> library.<p>
+
+<defitem wizlock {<i obj> wizlock <i flag>}>
+
+Sets or clears the "wizard lock" flag, which is used to lock out 
+changes to the scenario while a wizard GUI is running.  The wizard
+itself will typical set the <i flag> when it starts, and clear it
+just prior to sending a sequence of orders in an <iref order transaction>.
+The wizard lock flag may only be set when <iref state> is <b PREP>, and
+functions by setting the <iref state> to <b WIZARD>.<p>
+
 
 </deflist instance>
 

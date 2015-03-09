@@ -149,7 +149,7 @@
             -with [list $adb strategy valclass ::athena::tactic::DAMAGE]
         my returnOnError
 
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
 
         my prepare name    -toupper  -with [list $tactic valName]
         my prepare n
@@ -158,7 +158,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
         my setundo [$tactic update_ {name n a percent} [array get parms]]
     }
 }

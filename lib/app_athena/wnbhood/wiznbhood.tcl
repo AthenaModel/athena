@@ -103,7 +103,7 @@ snit::widget ::wnbhood::wiznbhood {
     method CreateNbChooser {w} {
         # FIRST, grab the map image and projection object from
         # the scenario.
-        rdb eval {
+        adb eval {
             SELECT width,height,projtype,ulat,ulon,llat,llon,data
             FROM maps WHERE id=1
 

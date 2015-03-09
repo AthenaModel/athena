@@ -176,8 +176,12 @@ snit::widgetadaptor orggroupbrowser {
         # FIRST, there should be only one selected.
         set id [lindex [$hull uid curselection] 0]
 
-        # NEXT, Send the order
-        flunky senddict gui ORGGROUP:DELETE [list g $id]
+        # NEXT, Delete this entity
+        app delete ORGGROUP:DELETE [list g $id] {
+            Are you sure you
+            really want to delete this group and all of the
+            entities that depend upon it?
+        }
     }
 }
 

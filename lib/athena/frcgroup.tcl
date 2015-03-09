@@ -71,7 +71,7 @@ snit::type ::athena::frcgroup {
     # Validates a force group short name
 
     method validate {g} {
-        if {![$adb exists {SELECT g FROM frcgroups WHERE g=$g}]} {
+        if {![$self exists $g]} {
             set names [join [$self names] ", "]
 
             if {$names ne ""} {
@@ -87,6 +87,16 @@ snit::type ::athena::frcgroup {
         return $g
     }
 
+    # exists g
+    #
+    # g      - A force group
+    # 
+    # Returns 1 if the group exists, and 0 otherwise.
+
+    method exists {g} {
+        return [dbexists $adb frcgroups g $g]
+    }
+
     # get g ?parm?
     #
     # g      - A force group
@@ -96,18 +106,20 @@ snit::type ::athena::frcgroup {
     # frcgroups; or "" if not found.
 
     method get {g {parm ""}} {
-        # FIRST, get the data
-        $adb eval {SELECT * FROM frcgroups_view WHERE g=$g} row {
-            if {$parm ne ""} {
-                return $row($parm)
-            } else {
-                unset row(*)
-                return [array get row]
-            }
-        }
-
-        return ""
+        return [dbget $adb frcgroups_view g $g $parm]
     }
+
+    # view g ?tag?
+    #
+    # g    - A force group
+    # tag  - A view tag (unused)
+    #
+    # Retrieves a view dictionary for the group.
+
+    method view {g {tag ""}} {
+        return [dbget $adb gui_frcgroups g $g]
+    }
+
 
     # ownedby a
     #
@@ -377,28 +389,6 @@ snit::type ::athena::frcgroup {
     }
 
     method _execute {{flunky ""}} {
-        if {[my mode] eq "gui"} {
-            set answer [messagebox popup \
-                            -title         "Are you sure?"                  \
-                            -icon          warning                          \
-                            -buttons       {ok "Delete it" cancel "Cancel"} \
-                            -default       cancel                           \
-                            -onclose       cancel                           \
-                            -ignoretag     [my name]                        \
-                            -ignoredefault ok                               \
-                            -parent        [app topwin]                     \
-                            -message       [normalize {
-                                Are you sure you
-                                really want to delete this group, along
-                                with all of the entities that depend upon it?
-                            }]]
-    
-            if {$answer eq "cancel"} {
-                my cancel
-            }
-        }
-
-        # NEXT, Delete the group and dependent entities
         lappend undo [$adb frcgroup delete $parms(g)]
         lappend undo [$adb absit reconcile]
     

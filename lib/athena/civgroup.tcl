@@ -69,7 +69,7 @@ snit::type ::athena::civgroup {
     # Validates a civilian group short name
 
     method validate {g} {
-        if {![$adb exists {SELECT g FROM civgroups_view WHERE g=$g}]} {
+        if {![$self exists $g]} {
             set names [join [$self names] ", "]
 
             if {$names ne ""} {
@@ -83,6 +83,16 @@ snit::type ::athena::civgroup {
         }
 
         return $g
+    }
+
+    # exists g
+    #
+    # g - Possibly, a civ group name
+    #
+    # Returns 1 if the group exists and 0 otherwise.
+
+    method exists {g} {
+        return [dbexists $adb civgroups g $g]
     }
 
     # local names
@@ -156,31 +166,28 @@ snit::type ::athena::civgroup {
         }
     }
 
-
-
-    # Type Method: getg
+    # get g ?parm?
+    #
+    # g    - A group in the neighborhood
+    # parm - A civgroups column name
     #
     # Retrieves a row dictionary, or a particular column value, from
     # civgroups.
     #
-    # Syntax:
-    #   getg _g ?parm?_
+
+    method get {g {parm ""}} {
+        return [dbget $adb civgroups_view g $g $parm]
+    }
+
+    # view g ?tag?
     #
-    #   g    - A group in the neighborhood
-    #   parm - A civgroups column name
+    # g    - A group in the neighborhood
+    # tag  - A view tag (unused)
+    #
+    # Retrieves a view dictionary for the group.
 
-    method getg {g {parm ""}} {
-        # FIRST, get the data
-        $adb eval {SELECT * FROM civgroups_view WHERE g=$g} row {
-            if {$parm ne ""} {
-                return $row($parm)
-            } else {
-                unset row(*)
-                return [array get row]
-            }
-        }
-
-        return ""
+    method view {g {tag ""}} {
+        return [dbget $adb gui_civgroups g $g]
     }
 
     # check lfp/sa_flag lfp sa_flag
@@ -458,7 +465,7 @@ snit::type ::athena::civgroup {
         my prepare g -toupper -required -type ident
         my unused g
         my prepare longname  -normalize
-        my prepare n         -toupper   -required -type nbhood
+        my prepare n         -toupper   -required -type [list $adb nbhood]
         my prepare bsid      -num                 -type [list $adb bsys system]
         my prepare color     -tolower   -required -type hexcolor
         my prepare demeanor  -toupper   -required -type edemeanor
@@ -474,11 +481,11 @@ snit::type ::athena::civgroup {
 
         # NEXT, cross-validation
         my checkon lfp {
-            civgroup check lfp/sa_flag $parms(lfp) $parms(sa_flag)
+            $adb civgroup check lfp/sa_flag $parms(lfp) $parms(sa_flag)
         }
 
         my checkon housing {
-            civgroup check housing/sa_flag $parms(housing) $parms(sa_flag)
+            $adb civgroup check housing/sa_flag $parms(housing) $parms(sa_flag)
         }
     }
 
@@ -524,28 +531,6 @@ snit::type ::athena::civgroup {
     }
 
     method _execute {{flunky ""}} {
-        if {[my mode ] eq "gui"} {
-            set answer [messagebox popup \
-                        -title         "Are you sure?"                  \
-                        -icon          warning                          \
-                        -buttons       {ok "Delete it" cancel "Cancel"} \
-                        -default       cancel                           \
-                        -onclose       cancel                           \
-                        -ignoretag     [my name]                        \
-                        -ignoredefault ok                               \
-                        -parent        [app topwin]                     \
-                        -message       [normalize {
-                            Are you sure you
-                            really want to delete this group and all of the
-                            entities that depend upon it?
-                        }]]
-
-            if {$answer eq "cancel"} {
-                my cancel
-            }
-        }
-
-        # NEXT, Delete the group and dependent entities
         lappend undo [$adb civgroup delete $parms(g)]
         lappend undo [$adb absit reconcile]
 
@@ -625,7 +610,7 @@ snit::type ::athena::civgroup {
         # FIRST, prepare the parameters
         my prepare g         -toupper   -required -type [list $adb civgroup]
         my prepare longname  -normalize
-        my prepare n         -toupper   -type nbhood
+        my prepare n         -toupper   -type [list $adb nbhood]
         my prepare bsid      -num       -type [list $adb bsys system]
         my prepare color     -tolower   -type hexcolor
         my prepare demeanor  -toupper   -type edemeanor
@@ -640,7 +625,7 @@ snit::type ::athena::civgroup {
         my returnOnError
 
         # NEXT, do cross validation
-        ::athena::fillparms parms [$adb civgroup getg $parms(g)]
+        ::athena::fillparms parms [$adb civgroup get $parms(g)]
 
         my checkon lfp {
             $adb civgroup check lfp/sa_flag $parms(lfp) $parms(sa_flag)

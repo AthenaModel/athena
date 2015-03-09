@@ -32,10 +32,6 @@
 #    g    <= g         g   <= g        c   <= c        a   <= a
 #    mag  <= mag       mag <= mag      mag <= mag      mag <= mag
 # 
-# TBD:
-#    * Global entities in use: iom, frcgroup, group, actor
-#
-#
 #-----------------------------------------------------------------------
 
 snit::type ::athena::payload {
@@ -77,11 +73,11 @@ snit::type ::athena::payload {
         set adb $adb_
     }
 
-    # type names
+    # typenames
     #
     # Returns the payload type names.
     
-    method {type names} {} {
+    method typenames {} {
         return [lsort $tinfo(names)]
     }
     
@@ -609,7 +605,7 @@ snit::type ::athena::payload {
 
 
     method _validate {} {
-        my prepare id -toupper -required -type payload
+        my prepare id -toupper -required -type [list $adb payload]
     }
 
     method _execute {{flunky ""}} {
@@ -639,7 +635,7 @@ snit::type ::athena::payload {
 
 
     method _validate {} {
-        my prepare id     -required          -type payload
+        my prepare id     -required          -type [list $adb payload]
         my prepare state  -required -tolower -type epayload_state
     }
 
@@ -676,8 +672,8 @@ snit::type ::athena::payload {
 
 
     method _validate {} {
-        my prepare iom_id   -toupper   -required -type iom
-        my prepare g        -toupper   -required -type frcgroup
+        my prepare iom_id   -toupper   -required -type [list $adb iom]
+        my prepare g        -toupper   -required -type [list $adb frcgroup]
         my prepare mag -num -toupper   -required -type qmag
     }
 
@@ -716,8 +712,8 @@ snit::type ::athena::payload {
 
 
     method _validate {} {
-        my prepare id         -required -type payload
-        my prepare g          -toupper  -type frcgroup
+        my prepare id         -required -type [list $adb payload]
+        my prepare g          -toupper  -type [list $adb frcgroup]
         my prepare mag   -num -toupper  -type qmag
     }
 
@@ -754,8 +750,8 @@ snit::type ::athena::payload {
 
 
     method _validate {} {
-        my prepare iom_id   -toupper   -required -type iom
-        my prepare g        -toupper   -required -type group
+        my prepare iom_id   -toupper   -required -type [list $adb iom]
+        my prepare g        -toupper   -required -type [list $adb group]
         my prepare mag -num -toupper   -required -type qmag
     }
 
@@ -795,8 +791,8 @@ snit::type ::athena::payload {
 
 
     method _validate {} {
-        my prepare id         -required -type payload
-        my prepare g          -toupper  -type group
+        my prepare id         -required -type [list $adb payload]
+        my prepare g          -toupper  -type [list $adb group]
         my prepare mag   -num -toupper  -type qmag
     }
 
@@ -833,7 +829,7 @@ snit::type ::athena::payload {
 
 
     method _validate {} {
-        my prepare iom_id   -toupper   -required -type iom
+        my prepare iom_id   -toupper   -required -type [list $adb iom]
         my prepare c        -toupper   -required -type econcern
         my prepare mag -num -toupper   -required -type qmag
     }
@@ -874,7 +870,7 @@ snit::type ::athena::payload {
 
 
     method _validate {} {
-        my prepare id         -required -type payload
+        my prepare id         -required -type [list $adb payload]
         my prepare c          -toupper  -type econcern
         my prepare mag   -num -toupper  -type qmag
     }
@@ -912,8 +908,8 @@ snit::type ::athena::payload {
 
 
     method _validate {} {
-        my prepare iom_id   -toupper   -required -type iom
-        my prepare a        -toupper   -required -type actor
+        my prepare iom_id   -toupper   -required -type [list $adb iom]
+        my prepare a        -toupper   -required -type [list $adb actor]
         my prepare mag -num -toupper   -required -type qmag
     }
 
@@ -953,8 +949,8 @@ snit::type ::athena::payload {
 
 
     method _validate {} {
-        my prepare id         -required -type payload
-        my prepare a          -toupper  -type actor
+        my prepare id         -required -type [list $adb payload]
+        my prepare a          -toupper  -type [list $adb actor]
         my prepare mag  -num  -toupper  -type qmag
     }
 

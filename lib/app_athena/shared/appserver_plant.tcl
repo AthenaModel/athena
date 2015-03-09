@@ -82,7 +82,7 @@ appserver module PLANT {
             # determining GOODS production plant distribution by neighborhood
             set adjpop 0.0
 
-            rdb eval {
+            adb eval {
                 SELECT nbpop, pcf
                 FROM plants_n_view
             } row {
@@ -106,7 +106,7 @@ appserver module PLANT {
                     "Neighborhood" "Agent" "Shares" "Capacity<br>Factor" 
                     "Consumers" "% of GOODS<br>Production Plants"
                 } {
-                    rdb eval {
+                    adb eval {
                         SELECT n              AS n,
                                nlink          AS nlink,
                                pcf            AS pcf,
@@ -114,12 +114,12 @@ appserver module PLANT {
                         FROM gui_plants_n
                         ORDER by nlink
                     } {
-                        set totshares [rdb eval {
+                        set totshares [adb eval {
                             SELECT total(shares) FROM plants_alloc_view
                             WHERE n=$n
                         }]
 
-                        foreach {shares alink} [rdb eval {
+                        foreach {shares alink} [adb eval {
                             SELECT shares, alink FROM gui_plants_alloc
                             WHERE n=$n
                         }] {
@@ -158,7 +158,7 @@ appserver module PLANT {
 
         } else {
 
-            if {[econ state] eq "DISABLED"} {
+            if {[adb econ state] eq "DISABLED"} {
                 ht para
                 ht put "The Economic model is disabled, so the infrastructure "
                 ht put "model is not in use."
@@ -203,7 +203,7 @@ appserver module PLANT {
                 "Nbhood" "Owner" "Total" "&lt 20%" "20%-40%" 
                 "40%-60%" "60%-80%" "&gt 80%" "" 
             } {
-                rdb eval {
+                adb eval {
                     SELECT n, a, nlink, alink, levels
                     FROM gui_plants_build
                 } {
@@ -296,7 +296,7 @@ appserver module PLANT {
 
         set data [dict create]
 
-        rdb eval {
+        adb eval {
             SELECT n, nlink, a, alink, levels
             FROM gui_plants_build
         } {
@@ -397,7 +397,7 @@ appserver module PLANT {
 
         set a [string toupper $(1)]
 
-        if {$a ni [agent names]} {
+        if {![adb agent exists $a]} {
             return -code error -errorcode NOTFOUND \
                 "Unknown entity: [dict get $udict url]."
         }
@@ -407,7 +407,7 @@ appserver module PLANT {
 
         if {![locked]} {
             set adjpop 0
-            rdb eval {
+            adb eval {
                 SELECT nbpop, pcf
                 FROM plants_n_view
             } row {
@@ -429,19 +429,19 @@ appserver module PLANT {
                     "Neighborhood" "Shares" "Capacity<br>Factor" 
                     "Consumers" "% of GOODS<br>Production Plants"
                 } {
-                    rdb eval {
+                    adb eval {
                         SELECT n              AS n,
                                nlink          AS nlink,
                                pcf            AS pcf,
                                nbpop          AS nbpop 
                         FROM gui_plants_n
                     } {
-                        set totshares [rdb eval {
+                        set totshares [adb eval {
                             SELECT total(shares) FROM plants_alloc_view
                             WHERE n=$n
                         }]
 
-                        foreach {shares alink} [rdb eval {
+                        foreach {shares alink} [adb eval {
                             SELECT shares, alink FROM gui_plants_alloc
                             WHERE n=$n AND a=$a
                         }] {
@@ -468,7 +468,7 @@ appserver module PLANT {
 
         } else {
 
-            if {[econ state] eq "DISABLED"} {
+            if {[adb econ state] eq "DISABLED"} {
                 ht para
                 ht put "The Economic model is disabled, so the infrastructure "
                 ht put "model is not in use."
@@ -514,7 +514,7 @@ appserver module PLANT {
             "Nbhood" "Total" "&lt 20%" "20%-40%" 
             "40%-60%" "60%-80%" "&gt 80%" 
         } {
-            rdb eval {
+            adb eval {
                 SELECT n, nlink, levels, num
                 FROM gui_plants_build
                 WHERE a=$a

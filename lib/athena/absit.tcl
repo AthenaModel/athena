@@ -11,8 +11,6 @@
 #    This module defines a type, "absit", which is used to
 #    manage the collection of abstract situation objects, or absits.
 #
-# TBD: Global references: simclock, ptype
-#
 #-----------------------------------------------------------------------
 
 snit::type ::athena::absit {
@@ -84,7 +82,7 @@ snit::type ::athena::absit {
         # NEXT, Determine the correct state for each absit.  Those in the
         # INITIAL state are now ONGOING, and those ONGOING whose resolution 
         # time has been reached are now RESOLVED.
-        set now [simclock now]
+        set now [adb clock now]
 
         foreach {s state rduration tr} [$adb eval {
             SELECT s, state, rduration, tr FROM absits
@@ -99,7 +97,7 @@ snit::type ::athena::absit {
         }
 
         # NEXT, assess all absits.
-        rdb eval {
+        $adb eval {
             SELECT * FROM absits ORDER BY s
         } sit {
             set dtype $sit(stype)
@@ -134,19 +132,19 @@ snit::type ::athena::absit {
     # absits.
 
     method get {s {parm ""}} {
-        # FIRST, get the data
-        $adb eval {SELECT * FROM absits WHERE s=$s} row {
-            if {$parm ne ""} {
-                return $row($parm)
-            } else {
-                unset row(*)
-                return [array get row]
-            }
-        }
-
-        return ""
+        return [dbget $adb absits s $s $parm]
     }
 
+    # view s ?tag?
+    #
+    # s     - A situation ID
+    # tag   - An optional view tag (ignored)
+    #
+    # Retrieves a view dictionary for the absit.
+
+    method view {s {tag ""}} {
+        return [dbget $adb gui_absits s $s]
+    }
 
 
     # existsInNbhood n ?stype?
@@ -209,6 +207,16 @@ snit::type ::athena::absit {
         }]
     }
 
+    # exists s
+    #
+    # s  - A situation ID
+    #
+    # Returns 1 if s is an absit and 0 otherwise.
+
+    method exists {s} {
+        return [dbexists $adb absits s $s]
+    }
+
 
     # validate s
     #
@@ -217,7 +225,7 @@ snit::type ::athena::absit {
     # Verifies that s is an absit.
 
     method validate {s} {
-        if {$s ni [$self names]} {
+        if {![$self exists $s]} {
             return -code error -errorcode INVALID \
                 "Invalid abstract situation ID: \"$s\""
         }
@@ -283,6 +291,25 @@ snit::type ::athena::absit {
         return $s
     }
 
+    # isinitial s
+    #
+    # s    - A situation ID
+    #
+    # Returns 1 if the situation is in the initial state, and 0 otherwise.
+
+    method isinitial {s} {
+        expr {[$self get $s state] eq "INITIAL"}
+    }
+
+    # islive s
+    #
+    # s    - A situation ID
+    #
+    # Returns 1 if the situation is in the live state, and 0 otherwise.
+
+    method islive {s} {
+        expr {[$self get $s state] ne "RESOLVED"}
+    }
 
     #-------------------------------------------------------------------
     # Mutators
@@ -393,11 +420,11 @@ snit::type ::athena::absit {
         # right now.
 
         if {[$adb state] eq "PREP"} {
-            set ts [simclock cget -tick0]
+            set ts [adb clock cget -tick0]
         } elseif {[$adb state] eq "PAUSED"} {
-            set ts [simclock now 1]
+            set ts [adb clock now 1]
         } else {
-            set ts [simclock now]
+            set ts [adb clock now]
         }
 
         if {$rduration ne ""} {
@@ -728,28 +755,6 @@ snit::type ::athena::absit {
     }
 
     method _execute {{flunky ""}} {
-        # NEXT, make sure the user knows what he is getting into.
-        if {[my mode] eq "gui"} {
-            set answer [messagebox popup \
-                            -title         "Are you sure?"                  \
-                            -icon          warning                          \
-                            -buttons       {ok "Delete it" cancel "Cancel"} \
-                            -default       cancel                           \
-                            -onclose       cancel                           \
-                            -ignoretag     [my name]                        \
-                            -ignoredefault ok                               \
-                            -parent        [app topwin]                     \
-                            -message       [normalize {
-                                Are you sure you
-                                really want to delete this situation?
-                            }]]
-    
-            if {$answer eq "cancel"} {
-                my cancel
-            }
-        }
-
-        # NEXT, delete the situation.
         lappend undo [$adb absit delete $parms(s)]
         my setundo [join $undo \n]
     }

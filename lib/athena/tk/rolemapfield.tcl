@@ -112,11 +112,6 @@ snit::widget ::athena::rolemapfield {
         -default         10
 
     #-------------------------------------------------------------------
-    # Instance Variables
-
-    # TBD
-
-    #-------------------------------------------------------------------
     # Constructor
 
     constructor {args} {

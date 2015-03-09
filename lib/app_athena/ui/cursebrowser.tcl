@@ -149,7 +149,7 @@ snit::widget cursebrowser {
 
     method {MonCURSEs update} {curse_id} {
         # FIRST, we need to get the data about this CURSE.
-        array set data [curse get $curse_id]
+        array set data [adb curse get $curse_id]
 
         # NEXT, Display the CURSE item
         $self DrawCURSE data
@@ -183,7 +183,7 @@ snit::widget cursebrowser {
     method {MonInjects update} {id} {
         # FIRST, we need to get the data about this inject.
         # If it isn't currently displayed, we can ignore it.
-        array set data [inject get $id]
+        array set data [adb inject get $id]
 
         if {[info exists c2item($data(curse_id))]} {
             $self DrawInject data
@@ -397,7 +397,7 @@ snit::widget cursebrowser {
         array unset i2item
 
         # NEXT, insert the curses
-        rdb eval {
+        adb eval {
             SELECT * FROM gui_curses ORDER BY curse_id
         } row {
             unset -nocomplain row(*)
@@ -405,7 +405,7 @@ snit::widget cursebrowser {
         }
 
         # NEXT, insert the injects
-        rdb eval {
+        adb eval {
             SELECT * FROM gui_injects
             ORDER BY id;
         } row {
@@ -461,8 +461,8 @@ snit::widget cursebrowser {
         if {"curse" in [$citree item tag names $id]} {
             app enter CURSE:UPDATE curse_id $oid
         } else {
-            set curse_id [inject get $oid curse_id]
-            set longname [curse get $curse_id longname]
+            set curse_id [adb inject get $oid curse_id]
+            set longname [adb curse get $curse_id longname]
             app enter INJECT:$otype:UPDATE id $oid longname $longname
         }
     }
@@ -490,24 +490,24 @@ snit::widget cursebrowser {
 
         # NEXT, it's a curse or an inject.
         if {"curse" in [$citree item tag names $id]} {
-            set state [curse get $oid state]
+            set state [adb curse get $oid state]
 
             if {$state eq "normal"} {
-                flunky senddict gui CURSE:STATE \
+                adb order senddict gui CURSE:STATE \
                     [list curse_id $oid state disabled]
             } elseif {$state eq "disabled"} {
-                flunky senddict gui CURSE:STATE \
+                adb order senddict gui CURSE:STATE \
                     [list curse_id $oid state normal]
             } else {
                 # Do nothing (this should never happen anyway)
             }
         } else {
-            set state [inject get $oid state]
+            set state [adb inject get $oid state]
 
             if {$state eq "normal"} {
-                flunky senddict gui INJECT:STATE [list id $oid state disabled]
+                adb order senddict gui INJECT:STATE [list id $oid state disabled]
             } elseif {$state eq "disabled"} {
-                flunky senddict gui INJECT:STATE [list id $oid state normal]
+                adb order senddict gui INJECT:STATE [list id $oid state normal]
             } else {
                 # Do nothing (this should never happen anyway)
             }
@@ -519,7 +519,7 @@ snit::widget cursebrowser {
     # Allows the user to check the sanity of the existing injectss. 
     
     method SanityCheck {} {
-        if {[curse checker] ne "OK"} {
+        if {[adb curse checker] ne "OK"} {
             app show my://app/sanity/curse
         }
     }
@@ -536,10 +536,12 @@ snit::widget cursebrowser {
 
         # NEXT, it's a curse or an inject.
         if {"curse" in [$citree item tag names $id]} {
-            flunky senddict gui CURSE:DELETE \
-                [list curse_id [$citree item text $id {tag id}]]
+            app delete CURSE:DELETE [list curse_id [$citree item text $id {tag id}]] {
+                Are you sure you really want to delete this 
+                CURSE, along with all of its inputs?
+            }
         } else {
-            flunky senddict gui INJECT:DELETE \
+            adb order senddict gui INJECT:DELETE \
                 [list id [$citree item text $id {tag id}]]
         }
     }
@@ -592,7 +594,7 @@ snit::widget cursebrowser {
         # FIRST, get a list of order names and titles
         set odict [dict create]
 
-        foreach name [inject type names] {
+        foreach name [adb inject typenames] {
             set order "INJECT:$name:CREATE"
 
             if {![string match "INJECT:*:CREATE" $order]} {
@@ -617,10 +619,10 @@ snit::widget cursebrowser {
             set curse_id $oid
             $citree item expand $id
         } else {
-            set curse_id [inject get $oid curse_id]
+            set curse_id [adb inject get $oid curse_id]
         }
 
-        set longname [curse get $curse_id longname]
+        set longname [adb curse get $curse_id longname]
 
         # NEXT, let them pick one
         set title [messagebox pick \

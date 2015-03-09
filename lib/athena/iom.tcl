@@ -11,9 +11,6 @@
 #    This module is responsible for managing messages and the operations
 #    upon them.  As such, it is a type ensemble.
 #
-# TBD:
-#    * Global entities in use: payload
-#
 #-----------------------------------------------------------------------
 
 snit::type ::athena::iom {
@@ -48,6 +45,16 @@ snit::type ::athena::iom {
     method names {} {
         return [$adb eval {
             SELECT iom_id FROM ioms 
+        }]
+    }
+
+    # namedict
+    #
+    # Returns the list of IOM IDs
+
+    method namedict {} {
+        return [$adb eval {
+            SELECT iom_id, longname FROM ioms 
         }]
     }
 
@@ -147,6 +154,7 @@ snit::type ::athena::iom {
             ORDER BY iom_id
         }]
     }
+
     # normal longnames
     #
     # Returns the list of IOM long names with state=normal
@@ -472,7 +480,7 @@ snit::type ::athena::iom {
         my prepare iom_id    -toupper   -required -type ident
         my unused iom_id
         my prepare longname  -normalize
-        my prepare hook_id   -toupper             -type hook
+        my prepare hook_id   -toupper             -type [list $adb hook]
     }
 
     method _execute {{flunky ""}} {
@@ -502,32 +510,10 @@ snit::type ::athena::iom {
 
 
     method _validate {} {
-        my prepare iom_id -toupper -required -type iom
+        my prepare iom_id -toupper -required -type [list $adb iom]
     }
 
     method _execute {{flunky ""}} {
-        if {[my mode] eq "gui"} {
-            set answer [messagebox popup \
-                            -title         "Are you sure?"                  \
-                            -icon          warning                          \
-                            -buttons       {ok "Delete it" cancel "Cancel"} \
-                            -default       cancel                           \
-                            -onclose       cancel                           \
-                            -ignoretag     [my name]                        \
-                            -ignoredefault ok                               \
-                            -parent        [app topwin]                     \
-                            -message       [normalize {
-                                Are you sure you really want to delete this 
-                                Info Ops Message, along with all of its 
-                                payloads?
-                            }]]
-    
-            if {$answer eq "cancel"} {
-                my cancel
-            }
-        }
-    
-        # NEXT, Delete the record and dependent entities
         lappend undo [$adb iom delete $parms(iom_id)]
     
         my setundo [join $undo \n]
@@ -559,9 +545,9 @@ snit::type ::athena::iom {
 
 
     method _validate {} {
-        my prepare iom_id      -toupper   -required -type iom
+        my prepare iom_id      -toupper   -required -type [list $adb iom]
         my prepare longname    -normalize
-        my prepare hook_id     -toupper             -type hook
+        my prepare hook_id     -toupper             -type [list $adb hook]
     }
 
     method _execute {{flunky ""}} {
@@ -590,7 +576,7 @@ snit::type ::athena::iom {
 
 
     method _validate {} {
-        my prepare iom_id -required          -type iom
+        my prepare iom_id -required          -type [list $adb iom]
         my prepare state  -required -tolower -type eiom_state
     }
 

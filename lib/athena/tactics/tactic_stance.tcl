@@ -116,7 +116,7 @@
             set nbhoods [[my adb] gofer eval $nlist]
             set groups [list]
             foreach n $nbhoods {
-                set groups [concat $groups [civgroup gIn $n]]
+                set groups [concat $groups [[my adb] civgroup gIn $n]]
             }
         } else {
             set groups [[my adb] gofer eval $glist]
@@ -139,7 +139,7 @@
             if {$g ni $gIgnored} {
                 lappend gSet $g
 
-                stance setfg $f $g $drel
+                [my adb] stance setfg $f $g $drel
             }
         }
 
@@ -224,7 +224,7 @@
             -with [list $adb strategy valclass ::athena::tactic::STANCE]
         my returnOnError
 
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
 
         my prepare name -toupper -with [list $tactic valName]
         my prepare f    -toupper
@@ -235,7 +235,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
         my setundo [$tactic update_ {
             name f mode drel glist nlist
         } [array get parms]]

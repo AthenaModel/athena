@@ -4,7 +4,7 @@
 #   Application Ensemble.
 #
 # PACKAGE:
-#   app_sim(n) -- athena_sim(1) implementation package
+#   app_athena(n) -- athena(1) implementation package
 #
 # PROJECT:
 #   Athena S&RO Simulation
@@ -15,24 +15,18 @@
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-# Required Packages
-
-# All needed packages are required in app_sim.tcl.
- 
-#-----------------------------------------------------------------------
 # Module: app
 #
-# app_sim(n) Application Ensemble
+# app_athena(n) Application Ensemble
 #
 # This module defines app, the application ensemble.  app encapsulates 
 # all of the functionality of athena_sim(1), including the application's 
 # start-up behavior.  To invoke the  application,
 #
-# > package require app_sim
+# > package require app_athena
 # > app init $argv
 #
-# The app_sim(n) package can be invoked by athena(1) and by 
-# athena_test(1).
+# The app_athena(n) package can be invoked by athena(1).
 
 snit::type app {
     pragma -hastypedestroy 0 -hasinstances 0
@@ -74,6 +68,14 @@ snit::type app {
         -script     {}
         -scratch    {}
         -url        {}
+    }
+
+    # Array of info variables
+    #
+    # userMode  - normal | super
+
+    typevariable info -array {
+        userMode normal
     }
 
 
@@ -207,15 +209,16 @@ snit::type app {
         # NEXT, enable notifier(n) tracing
         notifier trace [myproc NotifierTrace]
 
-        # NEXT, create the weekclock, replacing the default Mars 
-        # simclock(n) object.
-        simclock destroy
-        weekclock ::simclock
-
         # NEXT, Create the working scenario RDB and initialize simulation
         # components
-        view      init
-        MakeAthena ::adb
+        athena create ::adb    \
+            -logcmd  ::log     \
+            -executivecmd [mytypemethod DefineExecutiveCommands]
+
+        # NEXT, configure and initialize application modules.
+        log configure \
+            -simclock [adb getclock]
+        view init
 
         # NEXT, register my:// servers with myagent.
         appserver init
@@ -230,7 +233,10 @@ snit::type app {
 
 
         # NEXT, bind components together
-        notifier bind ::app <Puck>  ::order_dialog  {::order_dialog puck}
+        notifier bind ::app <Puck>          ::order_dialog {::order_dialog puck}
+        notifier bind ::adb <InsaneOnTick>  ::app [mytypemethod InsaneOnTick]
+        notifier bind ::adb.econ <SamError> ::app [mytypemethod EconError]
+        notifier bind ::adb.econ <CgeError> ::app [mytypemethod EconError]
 
         # NEXT, create state controllers, to enable and disable
         # GUI components as application state changes.
@@ -278,7 +284,7 @@ snit::type app {
 
                 app error $message
             } elseif {[catch {
-                executive eval [list call $opts(-script)]
+                adb executive call $opts(-script)
             } result eopts]} {
                 if {[dict get $eopts -errorcode] eq "REJECT"} {
                     set message {
@@ -396,9 +402,9 @@ snit::type app {
         # Objdict:   order   THE:ORDER:NAME
 
         statecontroller ::cond::available -events {
-            ::adb.flunky <Sync>
+            ::adb.order <Sync>
         } -condition {
-            [::flunky available $order]
+            [::adb order available $order]
         }
 
         # One browser entry is selected.  The
@@ -417,9 +423,9 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableSingle -events {
-            ::adb.flunky <Sync>
+            ::adb.order <Sync>
         } -condition {
-            [::flunky available $order]                &&
+            [::adb order available $order]                &&
             [llength [$browser curselection]] == 1
         }
 
@@ -430,9 +436,9 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableMulti -events {
-            ::adb.flunky <Sync>
+            ::adb.order <Sync>
         } -condition {
-            [::flunky available $order]              &&
+            [::adb order available $order]              &&
             [llength [$browser curselection]] > 0
         }
 
@@ -443,9 +449,9 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableCanDelete -events {
-            ::adb.flunky <Sync>
+            ::adb.order <Sync>
         } -condition {
-            [::flunky available $order] &&
+            [::adb order available $order] &&
             [$browser candelete]
         }
 
@@ -456,9 +462,9 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableCanUpdate -events {
-            ::adb.flunky <Sync>
+            ::adb.order <Sync>
         } -condition {
-            [::flunky available $order] &&
+            [::adb order available $order] &&
             [$browser canupdate]
         }
 
@@ -469,9 +475,9 @@ snit::type app {
         #            browser   The browser window
 
         statecontroller ::cond::availableCanResolve -events {
-            ::adb.flunky <Sync>
+            ::adb.order <Sync>
         } -condition {
-            [::flunky available $order] &&
+            [::adb order available $order] &&
             [$browser canresolve]
         }
     }
@@ -565,6 +571,36 @@ snit::type app {
                 $topwin puts $text
             }
         }
+    }
+
+    # delete order parmdict message
+    #
+    # order    - The delete order name
+    # parmdict - The deletion parameters
+    # message  - "Are you sure" message
+    #
+    # Normalizes the message and asks the user if he is sure.  If so,
+    # deletes sends the delete order.  This is for use by browsers.
+
+    typemethod delete {order parmdict message} {
+        set answer [messagebox popup \
+                        -title         "Are you sure?"                  \
+                        -icon          warning                          \
+                        -buttons       {ok "Delete it" cancel "Cancel"} \
+                        -default       cancel                           \
+                        -onclose       cancel                           \
+                        -ignoretag     $order                           \
+                        -ignoredefault ok                               \
+                        -parent        [app topwin]                     \
+                        -message       [normalize $message]]
+
+        if {$answer eq "cancel"} {
+            return
+        }
+
+        # NEXT, Send the delete order.
+        adb order senddict gui $order $parmdict
+
     }
 
     # Type Method: error
@@ -724,19 +760,12 @@ snit::type app {
 
         set order [string toupper $order]
 
-        order_dialog enter \
-            -resources [dict create adb_ [::adb athenadb] db_ ::adb] \
+        adb enter \
+            -order     $order                      \
             -parmdict  $parmdict                   \
             -appname   "Athena [kiteinfo version]" \
-            -flunky    ::flunky                    \
-            -order     $order                      \
             -master    [app topwin]                \
-            -helpcmd   [list app help]             \
-            -refreshon {
-                ::adb.flunky <Sync>
-                ::adb        <Tick>
-                ::adb        <Sync>
-            }
+            -helpcmd   [list app help]
     }
 
     # show uri
@@ -801,6 +830,7 @@ snit::type app {
                 if {[catch {
                     app enter $order $parms
                 } result]} {
+                    puts $::errorInfo
                     $type GuiUrlError $uri $result
                 }
             } else {
@@ -843,6 +873,50 @@ snit::type app {
 
             $message
         }
+    }
+
+    # InsaneOnTick
+    #
+    # This is called when the scenario's on-tick sanity check fails.
+    # The run stops automatically.
+
+    typemethod InsaneOnTick {} {
+        # FIRST, direct the user to the appropriate appserver page
+        # if we are in GUI mode
+        app show my://app/sanity/ontick
+
+        if {[winfo exists .main]} {
+            messagebox popup \
+                -parent  [app topwin]         \
+                -icon    error                \
+                -title   "Simulation Stopped" \
+                -message [normalize {
+        On-tick sanity check failed; simulation stopped.
+        Please see the On-Tick Sanity Check report for details.
+                }]
+        }
+    }
+
+    # EconError
+    #
+    # This is called when the econ model fails.
+
+    typemethod EconError {} {
+        append msg "Failure in the econ model caused it to be disabled."
+        append msg "\nSee the detail browser for more information."
+
+        if {[app tkloaded]} {
+            set answer [messagebox popup              \
+                            -icon warning             \
+                            -message $msg             \
+                            -parent [app topwin]      \
+                            -title  $title            \
+                            -buttons {ok "Ok" browser "Go To Detail Browser"}]
+
+           if {$answer eq "browser"} {
+               app show my://app/econ
+           }
+       }
     }
 
     #-------------------------------------------------------------------
@@ -919,7 +993,7 @@ snit::type app {
     # Saves the current scenario using the existing name.
 
     typemethod save {{filename ""}} {
-        require {[sim stable]} "The scenario cannot be saved in this state."
+        require {[adb stable]} "The scenario cannot be saved in this state."
 
         # FIRST, notify the simulation that we're saving, so other
         # modules can prepare.
@@ -972,20 +1046,6 @@ snit::type app {
         } else {
             app new
         }
-    }
-
-    # MakeAthena name ?filename?
-    #
-    # name     - The command name
-    # filename - An .adb file name, or ""
-    #
-    # Creates the ::adb object.
-
-    proc MakeAthena {name {filename ""}} {
-        athena create $name \
-            -adbfile $filename \
-            -logcmd  ::log     \
-            -subject ::adb
     }
 
     # lock
@@ -1073,11 +1133,180 @@ snit::type app {
 
         adb rebase
     }
+
+    #-------------------------------------------------------------------
+    # Application-specific Executive Commands
+
+    # eval script
+    #
+    # Evaluate the script; throw an error or return the script's value.
+    # Either way, log what happens. Ignore empty scripts, and respect
+    # the user mode.
+
+    typemethod eval {script} {
+        if {[string trim $script] eq ""} {
+            return
+        }
+
+        log normal exec "Command: $script"
+
+        # Make sure the command displays in the log before it
+        # executes.
+        update idletasks
+
+        try {
+            if {$info(userMode) eq "normal"} {
+                set result [adb executive eval $script]
+            } else {
+                set result [uplevel #0 $script]
+            }
+        } on error {errmsg eopts} {
+            log warning exec "Command error: $errmsg"
+            return {*}$eopts $errmsg
+        }
+
+        return $result
+    }
+
+
+    # DefineExecutiveCommands exec
+    #
+    # exec - athena(n) executive object
+    #
+    # Defines application-specific executive commands.
+
+    typemethod DefineExecutiveCommands {exec} {
+        # clear
+        $exec smartalias clear 0 0 {} \
+            [list .main cli clear]
+
+        # debug
+        $exec smartalias debug 0 0 {} \
+            [list ::marsgui::debugger new]
+
+        # enter
+        $exec smartalias enter 1 - {order ?parm value...?} \
+            [mytypemethod enter]
+
+        # help
+        $exec smartalias help 0 - {?command...?} \
+            [mytypemethod CliHelp]
+
+        # load
+        $exec smartalias load 1 1 {filename} \
+            [mytypemethod open]
+
+        # nbfill
+        $exec smartalias nbfill 1 1 {varname} \
+            [list .main nbfill]
+
+        # new
+        $exec smartalias new 0 0 {} \
+            [mytypemethod new]
+
+        # prefs
+        $exec ensemble prefs
+
+        # prefs get
+        $exec smartalias {prefs get} 1 1 {prefs} \
+            [list prefs get]
+
+        # prefs help
+        $exec smartalias {prefs help} 1 1 {parm} \
+            [list prefs help]
+
+        # prefs list
+        $exec smartalias {prefs list} 0 1 {?pattern?} \
+            [list prefs list]
+
+        # prefs names
+        $exec smartalias {prefs names} 0 1 {?pattern?} \
+            [list prefs names]
+
+        # prefs reset
+        $exec smartalias {prefs reset} 0 0 {} \
+            [list prefs reset]
+
+        # prefs set
+        $exec smartalias {prefs set} 2 2 {prefs value} \
+            [list prefs set]
+
+        # save
+        $exec smartalias save 1 1 {filename} \
+            [mytypemethod save]
+
+        # show
+        $exec smartalias show 1 1 {url} \
+            [mytypemethod show]
+
+        # super
+        $exec smartalias super 1 - {arg ?arg...?} \
+            [mytypemethod Super]
+
+        # usermode
+        $exec smartalias {usermode} 0 1 {?mode?} \
+            [mytypemethod usermode]
+
+    }
+
+    # usermode ?mode?
+    #
+    # mode     normal|super
+    #
+    # Queries/sets the CLI mode.  In normal mode, all commands are 
+    # methodessed by the smartinterp, unless "super" is used.  In
+    # super mode, all commands are methodessed by the main interpreter.
+
+    typemethod usermode {{mode ""}} {
+        # FIRST, handle queries
+        if {$mode eq ""} {
+            return $info(userMode)
+        }
+
+        # NEXT, check the mode
+        require {$mode in {normal super}} \
+            "Invalid mode, should be one of: normal, super"
+
+        # NEXT, save it.
+        set info(userMode) $mode
+
+        # NEXT, this is usually a CLI command; it looks odd to
+        # return the mode in this case, so don't.
+        return
+    }
+
+
+    # Super args
+    #
+    # Executes args as a command in the global namespace
+    typemethod Super {args} {
+        namespace eval :: $args
+    }
+
+    # CliHelp args
+    #
+    # Displays the help for the command 
+
+    typemethod CliHelp {args} {
+        if {[llength $args] == 0} {
+            app show my://help/command
+        } else {
+            app help $args
+        }
+    }
 }
 
 
 #-----------------------------------------------------------------------
 # Section: Miscellaneous Application Utility Procs
+
+# usermode ?mode?
+#
+# Sets the usermode.  For use when usermode is super.
+
+proc usermode {{mode ""}} {
+    ::app usermode $mode
+}
 
 # version
 #
@@ -1129,9 +1358,7 @@ proc bgerror {msg} {
     log error app "bgerror: $msg"
     log error app "Stack Trace:\n$bgErrorInfo"
 
-    if {[sim state] eq "RUNNING"} {
-        sim pause
-    }
+    adb halt
 
     # Gather any error context we may have
     set trace ""

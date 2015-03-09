@@ -11,10 +11,6 @@
 #    This module is responsible for managing neighborhoods and operations
 #    upon them.
 #
-# TBD: 
-#    * Global references: notifier bind, ptype, refpoint, app/messagebox, 
-#      sim
-#
 #-----------------------------------------------------------------------
 
 snit::type ::athena::nbhood {
@@ -150,17 +146,18 @@ snit::type ::athena::nbhood {
     # parameter, if given.
 
     method get {n {parm ""}} {
-        # FIRST, get the data
-        $adb eval {SELECT * FROM nbhoods WHERE n=$n} row {
-            if {$parm ne ""} {
-                return $row($parm)
-            } else {
-                unset row(*)
-                return [array get row]
-            }
-        }
+        return [dbget $adb nbhoods n $n $parm]
+    }
 
-        return ""
+    # view n ?tag?
+    #
+    # n    - A neighborhood
+    # tag  - A view tag (unused)
+    #
+    # Retrieves a view dictionary for the neighborhood.
+
+    method view {n {tag ""}} {
+        return [dbget $adb gui_nbhoods n $n]
     }
 
     # namedict
@@ -180,7 +177,7 @@ snit::type ::athena::nbhood {
     # Validates a neighborhood short name
 
     method validate {n} {
-        if {![$adb exists {SELECT n FROM nbhoods WHERE n=$n}]} {
+        if {![$self exists $n]} {
             set names [join [$self names] ", "]
 
             if {$names ne ""} {
@@ -195,6 +192,17 @@ snit::type ::athena::nbhood {
 
         return $n
     }
+
+    # exists n
+    #
+    # n - A neighborhood name
+    # 
+    # Returns 1 if the neighborhood exists, and 0 otherwise.
+
+    method exists {n} {
+        return [dbexists $adb nbhoods n $n]
+    }
+ 
 
     # local names
     #
@@ -859,32 +867,10 @@ snit::type ::athena::nbhood {
     }
 
     method _validate {} {
-        my prepare n  -toupper -required -type nbhood
+        my prepare n  -toupper -required -type [list $adb nbhood]
     }
 
     method _execute {{flunky ""}} {
-        if {[my mode] eq "gui"} {
-            set answer [messagebox popup \
-                            -title         "Are you sure?"                  \
-                            -icon          warning                          \
-                            -buttons       {ok "Delete it" cancel "Cancel"} \
-                            -default       cancel                           \
-                            -onclose       cancel                           \
-                            -ignoretag     NBHOOD:DELETE                    \
-                            -ignoredefault ok                               \
-                            -parent        [app topwin]                     \
-                            -message       [normalize {
-                                Are you sure you
-                                really want to delete this neighborhood, along
-                                with all of the entities that depend upon it?
-                            }]]
-
-            if {$answer eq "cancel"} {
-                my cancel
-            }
-        }
-
-        # NEXT, delete the neighborhood and dependent entities
         lappend undo [$adb nbhood delete $parms(n)]
         lappend undo [$adb absit reconcile]
 
@@ -905,7 +891,7 @@ snit::type ::athena::nbhood {
     }
 
     method _validate {} {
-        my prepare n  -toupper -required -type nbhood
+        my prepare n  -toupper -required -type [list $adb nbhood]
     }
 
     method _execute {{flunky ""}} {
@@ -929,7 +915,7 @@ snit::type ::athena::nbhood {
     }
 
     method _validate {} {
-        my prepare n  -toupper -required -type nbhood
+        my prepare n  -toupper -required -type [list $adb nbhood]
     }
 
     method _execute {{flunky ""}} {

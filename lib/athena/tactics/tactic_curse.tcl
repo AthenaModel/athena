@@ -124,7 +124,7 @@
     }
 
     method narrative {} {
-        set narr [curse narrative $curse]
+        set narr [[my adb] curse narrative $curse]
         append narr ". "
 
         foreach {role goferdict} $roles {
@@ -157,7 +157,7 @@
                     set parms(mag)  $idata(mag)
 
                     if {$parms(f) eq "" || $parms(g) eq ""} {
-                        log detail tactic \
+                        [my adb] log detail tactic \
                             "$idata(curse_id) inject $idata(inject_num) did not execute because one or more roles are empty."
                         continue
                     }
@@ -172,7 +172,7 @@
                     set parms(mag)  $idata(mag)
 
                     if {$parms(g) eq "" || $parms(a) eq ""} {
-                        log detail tactic \
+                        [my adb] log detail tactic \
                             "$idata(curse_id) inject $idata(inject_num) did not execute because one or more roles are empty."
                         continue
                     }
@@ -187,7 +187,7 @@
                     set parms(mag)  $idata(mag)
 
                     if {$parms(f) eq "" || $parms(g) eq ""} {
-                        log detail tactic \
+                        [my adb] log detail tactic \
                             "$idata(curse_id) inject $idata(inject_num) did not execute because one or more roles are empty."
                         continue
                     }
@@ -202,7 +202,7 @@
                     set parms(mag)  $idata(mag)
 
                     if {$parms(g) eq ""} {
-                        log detail tactic \
+                        [my adb] log detail tactic \
                             "$idata(curse_id) inject $idata(inject_num) did not execute because one or more roles are empty."
                         continue
                     }
@@ -221,12 +221,12 @@
         # NEXT, it's possible that gofers in every inject returned an empty
         # list, in which case the tactic executes trivially.
         if {![dict exists $fdict injects]} {
-            log detail tactic \
+            [my adb] log detail tactic \
                 "$idata(curse_id) has no executable injects."
             return
         }
 
-        ruleset CURSE assess $fdict
+        [my adb] ruleset CURSE assess $fdict
     }
 }
 
@@ -261,7 +261,7 @@
             -with [list $adb strategy valclass ::athena::tactic::CURSE]
         my returnOnError
 
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
 
         # More validation takes place on sanity check
         my prepare name  -toupper   -with [list $tactic valName]
@@ -270,7 +270,7 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
         my setundo [$tactic update_ {name curse roles} [array get parms]]
     }
 }

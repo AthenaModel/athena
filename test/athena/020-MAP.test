@@ -1,0 +1,209 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    020-MAP.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    athena(n) MAP:* order tests.
+#
+#    This test suite tests the map-related orders.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # MAP:IMPORT:FILE
+
+    test MAP:IMPORT:FILE-1.1 {filename is required} -body {
+        ted order -reject MAP:IMPORT:FILE {}
+    } -result {
+        filename {required value}
+    }
+    
+    test MAP:IMPORT:FILE-1.2 {filename is bad} -constraints tk -body {
+        ted order -reject MAP:IMPORT:FILE filename nosuchfile.png
+    } -result {
+        filename {Error, file not found: "nosuchfile.png"}
+    }
+
+    test MAP:IMPORT:FILE-2.1 {map loaded} -constraints tk -body {
+        ted order MAP:IMPORT:FILE filename map.png
+
+        tdb onecolumn {SELECT filename FROM maps WHERE id=1}
+    } -cleanup {
+        cleanup
+    } -result {map.png}
+
+    test MAP:IMPORT:FILE-2.2 {<MapChanged> sent} -constraints tk -body {
+        ted notifier bind ::tdb.map <MapChanged>
+        ted order MAP:IMPORT:FILE filename map.png
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb.map <MapChanged>}
+    }
+
+    test MAP:IMPORT:FILE:3.1 {undo resets map} -constraints tk -setup {
+        ted order MAP:IMPORT:FILE filename map.png
+    } -body {
+        tdb order undo
+        tdb onecolumn {SELECT filename FROM maps WHERE id=1}
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test MAP:IMPORT:FILE:3.2 {undo sends <MapChanged>} -constraints tk -setup {
+        ted order MAP:IMPORT:FILE filename map.png
+    } -body {
+        ted notifier bind ::tdb.map <MapChanged>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb.map <MapChanged>}
+    }
+
+    #-------------------------------------------------------------------
+    # MAP:GEOREF
+
+    test MAP:GEOREF-1.1 {no parms} -body {
+        ted order -reject MAP:GEOREF
+    } -result {
+        ulat {required value}
+        ulon {required value}
+        llat {required value}
+        llon {required value}
+    }
+
+    test MAP:GEOREF-1.2 {invalid parms} -body {
+        ted order -reject MAP:GEOREF ulat NONESUCH \
+                                     ulon NONESUCH \
+                                     llat NONESUCH \
+                                     llon NONESUCH
+    } -result {
+        ulat {expected floating-point number but got "NONESUCH"}
+        ulon {expected floating-point number but got "NONESUCH"}
+        llat {expected floating-point number but got "NONESUCH"}
+        llon {expected floating-point number but got "NONESUCH"}
+    }
+
+    test MAP:GEOREF-1.3 {latitude out of range} -body {
+        ted order -reject MAP:GEOREF ulat 91 ulon 0 llat -91 llon 1
+    } -result {
+        ulat {invalid latitude, should be -90.0 to 90.0 degrees: "91.0"}
+        llat {invalid latitude, should be -90.0 to 90.0 degrees: "-91.0"}
+    }
+
+    test MAP:GEOREF-1.4 {longitude out of range} -body {
+        ted order -reject MAP:GEOREF ulat 0 ulon 361 llat -1 llon -181
+    } -result {
+        ulon {invalid longitude, should be -180.0 to 360.0 degrees: "361.0"}
+        llon {invalid longitude, should be -180.0 to 360.0 degrees: "-181.0"}
+    }
+
+    test MAP:GEOREF-1.5 {upper lat < lower lat} -body {
+        ted order -reject MAP:GEOREF ulat 33 ulon -118 llat 34 llon -117
+    } -result {
+        llat {Latitude of lower point must be < latitude of upper point}
+    }
+
+    test MAP:GEOREF-1.6 {upper lon > lower lon} -body {
+        ted order -reject MAP:GEOREF ulat 33 ulon -118 llat 32 llon -119
+    } -result {
+        llon {Longitude of lower point must be > longitude of upper point}
+    }
+
+    test MAP:GEOREF-2.1 {geolocations change} -body {
+        ted order MAP:GEOREF ulat 33 ulon -118 llat 32 llon -117
+        ted querylist {SELECT * FROM maps WHERE id=1}
+    } -cleanup {
+        cleanup
+    } -result {
+id        1
+filename  
+projtype  RECT
+width     1000
+height    1000
+ulat      33.0
+ulon      -118.0
+llat      32.0
+llon      -117.0
+data      
+    }
+
+    test MAP:GEOREF-2.2 {<MapChanged> sent} -body {
+        ted notifier bind ::tdb.map <MapChanged>
+        ted order MAP:GEOREF ulat 33 ulon -118 llat 32 llon -117
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb.map <MapChanged>}
+    }
+
+    test MAP:GEOREF-3.1 {undo resets geolocations} -setup {
+        ted order MAP:GEOREF ulat 33 ulon -118 llat 32 llon -117
+     } -body {
+       tdb order undo
+       tdb eval {SELECT count(*) FROM maps WHERE id=1}    
+    } -cleanup {
+        cleanup 
+    } -result {0}
+
+    test MAP:GEOREF-3.2 {Undo sends <MapChanged>} -setup {
+        ted order MAP:GEOREF ulat 33 ulon -118 llat 32 llon -117    
+    } -body {
+        ted notifier bind ::tdb.map <MapChanged>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb.map <MapChanged>}
+    }
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+

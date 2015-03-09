@@ -1,0 +1,643 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-service.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    service(sim) tests.
+#
+#    This test suite tests service(sim).
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        # Clean up the test environment
+        ted cleanup
+    }
+
+    proc setup {} {
+        ted create JOE BOB BLUE USAID NB1 NB2 SHIA SUNN KURD
+        tdb demog start
+        tdb service reset
+        tdb eval {
+            UPDATE demog_g SET population=10000 WHERE g='SHIA';
+            UPDATE demog_g SET population=20000 WHERE g='SUNN';
+            UPDATE demog_g SET population=40000 WHERE g='KURD';
+        }
+    }
+    
+    proc setup_lock {} {
+        ted create JOE BOB BLUE USAID NB1 NB2 SHIA SUNN KURD
+        tdb eval {
+            UPDATE civgroups SET basepop=10000 WHERE g='SHIA';
+            UPDATE civgroups SET basepop=20000 WHERE g='SUNN';
+            UPDATE civgroups SET basepop=40000 WHERE g='KURD';
+        }
+        ted lock
+    }
+
+
+    #-------------------------------------------------------------------
+    # levels
+    test levels-1.1 {levels populates sr_service in PREP} -setup {
+        setup
+    } -body {
+        tdb service levels
+        ted query {SELECT * FROM sr_service}
+    } -cleanup {
+        cleanup
+    } -result {
+g    req_funding sat_funding 
+---- ----------- ----------- 
+SHIA 240.0       400.0       
+SUNN 240.0       400.0       
+KURD 20.0        100.0       
+    }
+
+    test levels-1.2 {levels populates sr_service on LOCK} -setup {
+        ted create JOE BOB BLUE USAID NB1 NB2 SHIA SUNN KURD
+        ted lock
+    } -body {
+        tdb service levels
+        ted query {SELECT * FROM sr_service}
+    } -cleanup {
+        cleanup
+    } -result {
+g    req_funding sat_funding 
+---- ----------- ----------- 
+SHIA 240.0       400.0       
+SUNN 240.0       400.0       
+KURD 20.0        100.0       
+    }
+
+
+    #-------------------------------------------------------------------
+    # start
+
+    test start-1.1 {start populates service_ga} -setup {
+        setup
+    } -body {
+        tdb service start
+        ted query {SELECT * FROM service_ga ORDER BY g, a}
+    } -cleanup {
+        cleanup
+    } -result {
+g    a   funding credit 
+---- --- ------- ------ 
+KURD BOB 0.0     0.0    
+KURD JOE 0.0     0.0    
+SHIA BOB 0.0     0.0    
+SHIA JOE 0.0     0.0    
+SUNN BOB 0.0     0.0    
+SUNN JOE 0.0     0.0    
+    }
+
+    test start-1.2 {start populates service_sg} -setup {
+        setup
+    } -body {
+        tdb service start
+        ted querylist {SELECT g,s FROM service_sg ORDER BY g}
+    } -cleanup {
+        cleanup
+    } -result {
+g  KURD
+s  ENERGY
+
+g  KURD
+s  ENI
+
+g  KURD
+s  TRANSPORT
+
+g  KURD
+s  WATER
+
+g  SHIA
+s  ENERGY
+
+g  SHIA
+s  ENI
+
+g  SHIA
+s  TRANSPORT
+
+g  SHIA
+s  WATER
+
+g  SUNN
+s  ENERGY
+
+g  SUNN
+s  ENI
+
+g  SUNN
+s  TRANSPORT
+
+g  SUNN
+s  WATER
+    }
+
+    #-------------------------------------------------------------------
+    # load
+
+    test load-1.1 {loads working_service_ga} -setup {
+        setup
+        tdb service start
+    } -body {
+        tdb service load
+        ted query {SELECT * FROM working_service_ga ORDER BY g,a}
+    } -cleanup {
+        cleanup
+    } -result {
+g    a   funding 
+---- --- ------- 
+KURD BOB 0.0     
+KURD JOE 0.0     
+SHIA BOB 0.0     
+SHIA JOE 0.0     
+SUNN BOB 0.0     
+SUNN JOE 0.0     
+    }
+
+
+    #-------------------------------------------------------------------
+    # fundeni
+
+    test fundeni-1.1 {Increments ENI funding for a group} -setup {
+        setup
+        tdb service start
+        tdb service load
+    } -body {
+        tdb service fundeni JOE 2000 SHIA
+        ted query {SELECT * FROM working_service_ga ORDER BY g,a}
+    } -cleanup {
+        cleanup
+    } -result {
+g    a   funding 
+---- --- ------- 
+KURD BOB 0.0     
+KURD JOE 0.0     
+SHIA BOB 0.0     
+SHIA JOE 2000.0  
+SUNN BOB 0.0     
+SUNN JOE 0.0     
+    }
+
+    test fundeni-1.2 {Increments for groups in proportion to pop} -setup {
+        setup
+        tdb service start
+        tdb service load
+    } -body {
+        tdb service fundeni BOB 3000 {SHIA SUNN}
+        ted query {SELECT * FROM working_service_ga ORDER BY g,a}
+    } -cleanup {
+        cleanup
+    } -result {
+g    a   funding 
+---- --- ------- 
+KURD BOB 0.0     
+KURD JOE 0.0     
+SHIA BOB 1000.0  
+SHIA JOE 0.0     
+SUNN BOB 2000.0  
+SUNN JOE 0.0     
+    }
+
+    test fundeni-1.3 {Fund one group several times} -setup {
+        setup
+        tdb service start
+        tdb service load
+    } -body {
+        tdb service fundeni JOE 2000 SHIA
+        tdb service fundeni JOE 3000 SHIA
+        ted query {SELECT * FROM working_service_ga ORDER BY g,a}
+    } -cleanup {
+        cleanup
+    } -result {
+g    a   funding 
+---- --- ------- 
+KURD BOB 0.0     
+KURD JOE 0.0     
+SHIA BOB 0.0     
+SHIA JOE 5000.0  
+SUNN BOB 0.0     
+SUNN JOE 0.0     
+    }
+
+    #-------------------------------------------------------------------
+    # fundlevel
+
+    test fundlevel-1.1 {Returns ENI funding level for groups in PREP} -setup {
+        setup
+        tdb service start
+        tdb service load
+    } -body {
+        tdb service fundlevel 100 {SUNN SHIA}
+    } -cleanup {
+        cleanup
+    } -result {800.0}
+
+    test fundlevel-1.2 {Returns ENI funding level for groups} -setup {
+        setup_lock
+    } -body {
+        tdb service fundlevel 100 {SUNN SHIA}
+    } -cleanup {
+        cleanup
+    } -result {12000.0}
+
+    test fundlevel-1.3 {Returns funding level for groups, smaller %} -setup {
+        setup_lock
+    } -body {
+        tdb service fundlevel 50 {SUNN SHIA}
+    } -cleanup {
+        cleanup
+    } -result {6000.0}
+
+    #-------------------------------------------------------------------
+    # save
+
+    test save-1.1 {Logs changed ENI funding levels} -setup {
+        setup
+        tdb service start
+        tdb service load
+        tdb service fundeni JOE 7000.0 {SHIA SUNN KURD}
+    } -body {
+        tdb service save
+
+        tdb eval {SELECT count(event_id) FROM sigevents}
+    } -cleanup {
+        cleanup
+    } -result {3}
+
+    test save-2.1 {Saves service back to service_sg} -setup {
+        setup
+        tdb service start
+        tdb service load
+        tdb service fundeni JOE 7000.0 {SHIA SUNN KURD}
+    } -body {
+        tdb service save
+
+        ted query {SELECT * FROM service_ga ORDER BY g,a}
+    } -cleanup {
+        cleanup
+    } -result {
+g    a   funding credit 
+---- --- ------- ------ 
+KURD BOB 0.0     0.0    
+KURD JOE 1750.0  0.0    
+SHIA BOB 0.0     0.0    
+SHIA JOE 1750.0  0.0    
+SUNN BOB 0.0     0.0    
+SUNN JOE 3500.0  0.0    
+    }
+
+
+    test save-3.1 {Computes saturation funding} -setup {
+        setup
+        tdb service start
+        tdb service load
+    } -body {
+        tdb service save
+
+        # saturation_funding is population.g * S.urb;
+        # NB1.urb = URBAN, S.URBAN = 0.2 (SHIA, SUNN)
+        # NB2.urb = RURAL, S.RURAL = 0.1 (KURD)
+        ted query {
+            SELECT g, saturation_funding FROM service_sg 
+            WHERE s = 'ENI' 
+            ORDER BY g
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+g    saturation_funding 
+---- ------------------ 
+KURD 4000.0             
+SHIA 4000.0             
+SUNN 8000.0             
+    }
+    
+    test save-3.2 {Retrieves required fraction} -setup {
+        setup
+        tdb service start
+        tdb service load
+    } -body {
+        tdb service save
+
+        ted query {SELECT g, required FROM service_sg WHERE s='ENI' ORDER BY g}
+    } -cleanup {
+        cleanup
+    } -result {
+g    required 
+---- -------- 
+KURD 0.2      
+SHIA 0.6      
+SUNN 0.6      
+    }
+
+    test save-3.3 {Computes ENI funding: zero funding} -setup {
+        setup
+        tdb service start
+        tdb service load
+    } -body {
+        tdb service save
+
+        ted query {SELECT g, funding FROM service_sg WHERE s='ENI' ORDER BY g}
+    } -cleanup {
+        cleanup
+    } -result {
+g    funding 
+---- ------- 
+KURD 0.0     
+SHIA 0.0     
+SUNN 0.0     
+    }
+
+    test save-3.4 {Computes ENI funding: JOE and BOB fund} -setup {
+        setup
+        tdb service start
+        tdb service load
+        tdb service fundeni JOE 700.0  {SHIA SUNN KURD}
+        tdb service fundeni BOB 1400.0 {SHIA SUNN KURD}
+    } -body {
+        tdb service save
+
+        # Groups get funding in proportion to their size.
+        # So from JOE the groups get 100, 200, and 400
+        # and from BOB, they get 200, 400, and 800
+        ted query {SELECT g, funding FROM service_sg WHERE s='ENI' ORDER BY g}
+    } -cleanup {
+        cleanup
+    } -result {
+g    funding 
+---- ------- 
+KURD 525.0   
+SHIA 525.0   
+SUNN 1050.0  
+    }
+
+    test save-3.5 {Computes actual level of ENI service fraction} -setup {
+        setup
+        tdb service start
+        tdb service load
+        tdb service fundeni JOE 700.0  {SHIA SUNN KURD}
+        tdb service fundeni BOB 1400.0 {SHIA SUNN KURD}
+    } -body {
+        tdb service save
+
+        ted query {
+            SELECT g, 
+                   funding, 
+                   saturation_funding,
+                   funding/saturation_funding,
+                   actual 
+            FROM service_sg WHERE s='ENI' ORDER BY g
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+g    funding saturation_funding funding/saturation_funding actual  
+---- ------- ------------------ -------------------------- ------- 
+KURD 525.0   4000.0             0.13125                    0.13125 
+SHIA 525.0   4000.0             0.13125                    0.13125 
+SUNN 1050.0  8000.0             0.13125                    0.13125 
+    }
+
+    test save-3.6 {Computes expected LOS fraction at time 0} -setup {
+        setup
+        tdb service start
+        tdb service load
+        tdb service save
+        tdb service fundeni JOE 700.0  {SHIA SUNN KURD}
+        tdb service fundeni BOB 1400.0 {SHIA SUNN KURD}
+    } -body {
+        tdb service save
+
+        # The expected will be between 0 and actual
+        ted query {
+            SELECT g, actual, expected FROM service_sg WHERE s='ENI' ORDER BY g
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+g    actual  expected 
+---- ------- -------- 
+KURD 0.13125 0.065625 
+SHIA 0.13125 0.065625 
+SUNN 0.13125 0.065625 
+    }
+
+    #-------------------------------------------------------------------
+    # Abstract Infrastructure Services
+
+    test abservice-1.1 {Populate ENERGY service} -setup {
+        setup
+        tdb service start
+    } -body {
+        ted query {
+            SELECT g, actual FROM service_sg WHERE s='ENERGY' ORDER BY g
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+g    actual 
+---- ------ 
+KURD 0.4    
+SHIA 1.0    
+SUNN 1.0    
+    }
+
+    test abservice-1.2 {Computes default expected LOS at time 0} -setup {
+        setup
+        tdb service start
+    } -body {
+        tdb service assess
+        ted query {
+            SELECT g, actual, expected FROM service_sg WHERE s='ENERGY' 
+            ORDER BY g
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+g    actual expected 
+---- ------ -------- 
+KURD 0.4    0.4      
+SHIA 1.0    1.0      
+SUNN 1.0    1.0      
+    }
+
+    test abservice-1.3 {Updates actual LOS} -setup {
+        setup
+        tdb service start
+    } -body {
+        tdb service actual NB1 ENERGY 0.25
+        ted query {
+            SELECT g, actual, new_actual FROM service_sg WHERE s='ENERGY' 
+            ORDER BY g
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+g    actual new_actual 
+---- ------ ---------- 
+KURD 0.4    0.4        
+SHIA 1.0    0.25       
+SUNN 1.0    0.25       
+    }
+
+    test abservice-1.4 {Updates actual LOS using delta of ELOS} -setup {
+        setup
+        tdb service start
+    } -body {
+        tdb service delta EDELTA NB1 ENERGY -0.25
+        ted query {
+            SELECT g, expected, new_actual FROM service_sg WHERE s='ENERGY' 
+            ORDER BY g
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+g    expected new_actual 
+---- -------- ---------- 
+KURD 0.4      0.4        
+SHIA 1.0      0.75       
+SUNN 1.0      0.75       
+    }
+
+    test abservice-1.5 {Updates actual LOS using delta of ALOS} -setup {
+        setup
+        tdb service start
+    } -body {
+        tdb service delta ADELTA NB1 ENERGY -0.25
+        ted query {
+            SELECT g, actual, new_actual FROM service_sg WHERE s='ENERGY' 
+            ORDER BY g
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+g    actual new_actual 
+---- ------ ---------- 
+KURD 0.4    0.4        
+SHIA 1.0    0.75       
+SUNN 1.0    0.75       
+    }
+
+    test abservice-1.6 {Updates actual LOS using delta of RLOS} -setup {
+        setup
+        tdb service start
+    } -body {
+        tdb service delta RDELTA NB1 ENERGY -0.25
+        ted query {
+            SELECT g, required, new_actual FROM service_sg WHERE s='ENERGY' 
+            ORDER BY g
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+g    required new_actual 
+---- -------- ---------- 
+KURD 0.4      0.4        
+SHIA 1.0      0.75       
+SUNN 1.0      0.75       
+    }
+
+    test abservice-1.7 {Actual LOS is clamped to 1.0} -setup {
+        setup
+        tdb service start
+    } -body {
+        tdb service delta RDELTA NB1 ENERGY 0.25
+        ted query {
+            SELECT g, required, new_actual FROM service_sg WHERE s='ENERGY' 
+            ORDER BY g
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+g    required new_actual 
+---- -------- ---------- 
+KURD 0.4      0.4        
+SHIA 1.0      1.0        
+SUNN 1.0      1.0        
+    }
+
+    test abservice-1.8 {Actual LOS is clamped to 0.0} -setup {
+        setup
+        tdb service start
+    } -body {
+        tdb service delta RDELTA NB2 ENERGY -1.0
+        ted query {
+            SELECT g, required, new_actual FROM service_sg WHERE s='ENERGY' 
+            ORDER BY g
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+g    required new_actual 
+---- -------- ---------- 
+KURD 0.4      0.0        
+SHIA 1.0      1.0        
+SUNN 1.0      1.0        
+    }
+
+    test abservice-1.9 {Computes new expected LOS} -setup {
+        setup
+        tdb service start
+        tdb service actual NB1 ENERGY 0.25
+    } -body {
+        tdb service assess
+        ted query {
+            SELECT g, actual, expected FROM service_sg WHERE s='ENERGY' 
+            ORDER BY g
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+g    actual expected 
+---- ------ -------- 
+KURD 0.4    0.4      
+SHIA 0.25   0.8125   
+SUNN 0.25   0.8125   
+    }
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+

@@ -1,0 +1,74 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-link.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    link(sim) tests.
+#
+#    This test suite tests the link(sim) translators.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Set up for tests
+
+    # TBD: none needed, yet
+
+
+    #-------------------------------------------------------------------
+    # html
+
+    test html-1.1 {translate links to html} -body {
+        link html {Actor {actor:JOE} owns group {group:BLUE}.}
+    } -result {Actor <a href="my://app/actor/JOE">JOE</a> owns group <a href="my://app/group/BLUE">BLUE</a>.}
+    
+    #-------------------------------------------------------------------
+    # text
+
+    test text-1.1 {translate links to text} -body {
+        link text {Actor {actor:JOE} owns group {group:BLUE}.}
+    } -result {Actor JOE owns group BLUE.}
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+
+
+
+

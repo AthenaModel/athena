@@ -139,7 +139,7 @@ snit::widget cgesheet {
             "Calibrated Values from Base SAM"               Cal]
 
         # NEXT, Get the CGE.
-        set cge [econ getcge]
+        set cge [adb econ getcge]
 
         # NEXT, the frame for the htmlframe and scroll bar
         ttk::frame $win.frm
@@ -660,7 +660,7 @@ snit::widget cgesheet {
     # Refreshes all components in the widget.
     
     method refresh {} {
-        if {[econ state] eq "DISABLED"} {
+        if {[adb econ state] eq "DISABLED"} {
             $sheetlbl configure -text "Current Economy (*DISABLED*)" 
         } else {
             $sheetlbl configure -text "Current Economy" 

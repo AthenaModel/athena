@@ -32,8 +32,6 @@
 #    This module concerns itself only with the scenario inputs.  For
 #    the dynamic relationship values, see URAM.
 #
-# TBD: Global refs: group, actor, $adb, vrel
-#
 #-----------------------------------------------------------------------
 
 snit::type ::athena::vrel {
@@ -253,7 +251,7 @@ snit::type ::athena::vrel {
     }
 
     method _execute {{flunky ""}} {
-        if {[vrel exists $parms(id)]} {
+        if {[$adb vrel exists $parms(id)]} {
             my setundo [$adb vrel update [array get parms]]
         } else {
             my setundo [$adb vrel create [array get parms]]
@@ -305,7 +303,7 @@ snit::type ::athena::vrel {
         set undo [list]
     
         foreach parms(id) $parms(ids) {
-            if {[vrel exists $parms(id)]} {
+            if {[$adb vrel exists $parms(id)]} {
                 lappend undo [$adb vrel update [array get parms]]
             } else {
                 lappend undo [$adb vrel create [array get parms]]

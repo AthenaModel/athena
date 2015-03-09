@@ -11,8 +11,6 @@
 #    An agent's strategy determines his actions.  It consists of a number
 #    of blocks, each of which contains zero or more conditions and tactics.
 #
-# TBD: Global refs: simclock
-#
 #-----------------------------------------------------------------------
 
 # FIRST, create the class
@@ -83,6 +81,14 @@ oo::class create ::athena::block {
 
     method adb {} {
         return [[my pot] cget -rdb]
+    }
+
+    # clock args...
+    #
+    # Calls the sim's clock.
+
+    method clock {args} {
+        [my adb] clock {*}$args
     }
 
     # subject
@@ -173,17 +179,17 @@ oo::class create ::athena::block {
                 return "every week" 
             }
             AT { 
-                return "at week [simclock toString $t1] ($t1)"
+                return "at week [my clock toString $t1] ($t1)"
             }
             BEFORE { 
-                return "every week before [simclock toString $t1] ($t1)"
+                return "every week before [my clock toString $t1] ($t1)"
             }
             AFTER { 
-                return "every week after [simclock toString $t1] ($t1)"
+                return "every week after [my clock toString $t1] ($t1)"
             }
             DURING {
-                set w1 "[simclock toString $t1] ($t1)"
-                set w2 "[simclock toString $t2] ($t2)"
+                set w1 "[my clock toString $t1] ($t1)"
+                set w2 "[my clock toString $t2] ($t2)"
                 return "every week from $w1 to $w2"
             }
             default {
@@ -200,7 +206,7 @@ oo::class create ::athena::block {
 
     method istime {{tick ""}} {
         if {$tick eq ""} {
-            set tick [simclock now]
+            set tick [my clock now]
         }
 
         switch -exact -- $tmode {
@@ -323,7 +329,7 @@ oo::class create ::athena::block {
         dict set vdict fullname      [my fullname]
 
         if {$exectime ne ""} {
-            dict set vdict pretty_exectime [simclock toString $exectime]
+            dict set vdict pretty_exectime [my clock toString $exectime]
         } else {
             dict set vdict pretty_exectime "-"
         }
@@ -418,9 +424,9 @@ oo::class create ::athena::block {
         set etime [my get exectime]
 
         if {$etime ne ""} {
-            set week [simclock toString $etime]
+            set week [my clock toString $etime]
 
-            if {$etime == [simclock cget -tick0]} {
+            if {$etime == [my clock cget -tick0]} {
                 set tick "on lock"
             } else {
                 set tick "tick $etime"
@@ -504,7 +510,6 @@ oo::class create ::athena::block {
         $ht putln "The conditions are as follows:"
         $ht para
 
-        # TBD: Add state
         $ht table {
             "Status" "ID" "Name" "Type" "State" "Narrative"
         } {
@@ -740,7 +745,7 @@ oo::class create ::athena::block {
         }
 
         my set execstatus SUCCESS
-        my set exectime   [simclock now]
+        my set exectime   [my clock now]
 
         # NEXT, disable the block if it should only be executed once.
         if {$once} {
@@ -1066,13 +1071,13 @@ oo::class create ::athena::block {
         my prepare block_id -required -toupper -with [list $adb strategy valclass ::athena::block]
         my returnOnError
 
-        set block [$adb pot get $parms(block_id)]
+        set block [$adb bean get $parms(block_id)]
 
         my prepare name     -toupper  -with [list $block valName]
         my prepare intent
         my prepare tmode    -toupper  -selector
-        my prepare t1       -toupper  -type {simclock timespec}
-        my prepare t2       -toupper  -type {simclock timespec}
+        my prepare t1       -toupper  -type [list $adb clock timespec]
+        my prepare t2       -toupper  -type [list $adb clock timespec]
         my prepare cmode    -toupper  -type eanyall
         my prepare emode    -toupper  -type eexecmode
         my prepare once               -type boolean
@@ -1099,7 +1104,7 @@ oo::class create ::athena::block {
     }
 
     method _execute {{flunky ""}} {
-        set block [$adb pot get $parms(block_id)]
+        set block [$adb bean get $parms(block_id)]
 
         my setundo [$block update_ {
             name intent tmode t1 t2 cmode emode once onlock
@@ -1122,7 +1127,7 @@ oo::class create ::athena::block {
     }
 
     method _execute {{flunky ""}} {
-        set block [$adb pot get $parms(block_id)]
+        set block [$adb bean get $parms(block_id)]
 
         my setundo [$block update_ {state} [array get parms]]
     }
@@ -1146,10 +1151,10 @@ oo::class create ::athena::block {
     }
 
     method _execute {{flunky ""}} {
-        set block [$adb pot get $parms(block_id)]
+        set block [$adb bean get $parms(block_id)]
 
         if {[info exists tactic_id]} {
-            $adb pot setnextid $tactic_id
+            $adb bean setnextid $tactic_id
         }
 
         my setundo [$block addtactic_ $parms(typename)]
@@ -1176,7 +1181,7 @@ oo::class create ::athena::block {
     method _execute {{flunky ""}} {
         set undo [list]
         foreach tid $parms(ids) {
-            set tactic [$adb pot get $tid]
+            set tactic [$adb bean get $tid]
             set block [$tactic block]
             lappend undo [$block deletetactic_ $tid]
         }
@@ -1200,7 +1205,7 @@ oo::class create ::athena::block {
     }
 
     method _execute {{flunky ""}} {
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
         set block [$tactic block]
 
         my setundo [$block movetactic_ $parms(tactic_id) $parms(where)]
@@ -1226,10 +1231,10 @@ oo::class create ::athena::block {
     }
 
     method _execute {{flunky ""}} {
-        set block [$adb pot get $parms(block_id)]
+        set block [$adb bean get $parms(block_id)]
 
         if {[info exists cond_id]} {
-            $adb pot setnextid $cond_id
+            $adb bean setnextid $cond_id
         }
 
         my setundo [$block addcondition_ $parms(typename)]
@@ -1259,7 +1264,7 @@ oo::class create ::athena::block {
         set undo [list]
 
         foreach tid $parms(ids) {
-            set condition [$adb pot get $tid]
+            set condition [$adb bean get $tid]
             set block [$condition block]
             lappend undo [$block deletecondition_ $tid]
         }

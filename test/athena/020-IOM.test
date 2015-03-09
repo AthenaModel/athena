@@ -1,0 +1,301 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    020-iom.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    athena(n) IOM:* order tests.
+#
+#    This test suite tests the IOM-related orders.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Standard ioms
+    set m1 {
+        iom_id M1
+        longname   "IOM One"
+    }
+
+    set m2 {
+        iom_id M2
+        longname   "IOM Two"
+    }
+
+    # Setup
+    proc setup {} {
+        # TBD 
+    }
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        # Clean up the test environment
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # IOM:CREATE
+
+    test CREATE-1.1 {required parms} -body {
+        ted order -reject IOM:CREATE {}
+    } -result {
+        iom_id {required value}
+    }
+    
+
+    test CREATE-1.2 {Duplicate iom_id} -setup {
+        setup
+        ted order IOM:CREATE $m1
+    } -body {
+        ted order -reject IOM:CREATE $m1
+    } -cleanup {
+        cleanup
+    } -result {
+        iom_id {An entity with this ID already exists}
+    }
+
+
+    test CREATE-1.3 {iom_id is not an ident} -setup {
+        setup
+    } -body {
+        ted order -reject IOM:CREATE {*}$m1 iom_id "M&"
+    } -cleanup {
+        cleanup
+    } -result {
+        iom_id {Identifiers begin with a letter and contain only letters and digits.}
+    }
+
+      test CREATE-2.1 {iom is created} -setup {
+        setup
+    } -body {
+        ted order IOM:CREATE $m1
+
+        ted querylist {SELECT * FROM ioms}
+    } -cleanup {
+        cleanup
+    } -result {
+iom_id    M1
+longname  IOM One
+hook_id   
+state     normal
+    }
+
+    test CREATE-2.2 {longname defaults to ID} -setup {
+        setup
+    } -body {
+        ted order IOM:CREATE {*}$m1 longname ""
+
+        tdb onecolumn {SELECT longname FROM ioms}
+    } -cleanup {
+        cleanup
+    } -result {M1}
+
+    test CREATE-2.3 {Effects} -setup {
+        setup
+    } -body {
+        ted notifier bind ::tdb <ioms>
+        ted order IOM:CREATE $m1
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <ioms> update M1}
+    }
+
+
+    test CREATE-3.1 {undo effects} -setup {
+        setup
+        ted order IOM:CREATE $m1
+    } -body {
+        ted notifier bind ::tdb <ioms>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <ioms> delete M1}
+    }
+
+
+    #-------------------------------------------------------------------
+    # IOM:DELETE
+
+    test DELETE-1.1 {required parms} -body {
+        ted order -reject IOM:DELETE {}
+    } -result {
+        iom_id {required value}
+    }
+
+    
+    test DELETE-1.2 {unknown IOM} -body {
+        ted order -reject IOM:DELETE iom_id NONESUCH
+    } -result {
+        iom_id {Invalid IOM, none are defined}
+    }
+
+
+    test DELETE-2.1 {Effects} -setup {
+        ted order IOM:CREATE $m1
+    } -body {
+        ted notifier bind ::tdb <ioms>
+        ted order IOM:DELETE iom_id M1
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <ioms> delete M1}
+    }
+
+
+    test DELETE-3.1 {Undo effects} -setup {
+        ted order IOM:CREATE $m1
+        ted order IOM:DELETE iom_id M1
+    } -body {
+        ted notifier bind ::tdb <ioms>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <ioms> update M1}
+    }
+
+
+    #-------------------------------------------------------------------
+    # IOM:UPDATE
+
+    test UPDATE-1.1 {required parms} -body {
+        ted order -reject IOM:UPDATE {}
+    } -result {
+        iom_id {required value}
+    }
+
+    test UPDATE-2.1 {iom is updated} -setup {
+        ted order IOM:CREATE $m1
+    } -body {
+        ted order IOM:UPDATE {
+            iom_id     M1
+            longname   "New Name"
+            hook_id    ""
+        }
+
+        ted querylist {SELECT * FROM ioms}
+    } -cleanup {
+        cleanup
+    } -result {
+iom_id    M1
+longname  New Name
+hook_id   
+state     normal
+    }
+
+
+    test UPDATE-2.2 {table monitor event} -setup {
+        ted order IOM:CREATE $m1
+    } -body {
+        ted notifier bind ::tdb <ioms>
+        ted order IOM:UPDATE iom_id M1 longname "New Name"
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <ioms> update M1}
+    }
+
+
+    test UPDATE-3.1 {undo undoes the change} -setup {
+        ted order IOM:CREATE $m1
+        ted order IOM:UPDATE {
+            iom_id   M1
+            longname "New Name"
+        }
+    } -body {
+        ted notifier bind ::tdb <ioms>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <ioms> update M1}
+    }
+
+    #-------------------------------------------------------------------
+    # IOM:STATE
+
+    test STATE-1.1 {required parms} -body {
+        ted order -reject IOM:STATE {}
+    } -result {
+        iom_id {required value}
+        state {required value}
+    }
+
+    
+    test STATE-1.2 {unknown iom id} -body {
+        ted order -reject IOM:STATE iom_id NONESUCH state disabled
+    } -result {
+        iom_id {Invalid IOM, none are defined}
+    }
+
+
+    test STATE-2.1 {Effects} -setup {
+        setup
+        ted order IOM:CREATE $m1
+    } -body {
+        ted notifier bind ::tdb <ioms>
+        ted order IOM:STATE iom_id M1 state disabled
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <ioms> update M1}
+    }
+
+
+    test STATE-3.1 {Undo effects} -setup {
+        setup
+        ted order IOM:CREATE $m1
+        ted order IOM:STATE iom_id M1 state disabled
+    } -body {
+        ted notifier bind ::tdb <ioms>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <ioms> update M1}
+    }
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+

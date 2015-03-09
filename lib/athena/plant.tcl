@@ -19,8 +19,6 @@
 # Note that plants owned by the SYSTEM agent are automatically kept at
 # their initial state of repair and do not need to be maintained.
 #
-# TBD:
-#    * Global entities in use: econ, money, actor
 #-----------------------------------------------------------------------
 
 snit::type ::athena::plant {
@@ -90,7 +88,7 @@ snit::type ::athena::plant {
         if {[$adb econ state] eq "ENABLED"} {
             $self LaydownPlants
         } else {
-            log warning plant "econ is disabled"
+             $adb log warning plant "econ is disabled"
         }
     }
 
@@ -919,8 +917,8 @@ snit::type ::athena::plant {
 
 
     method _validate {} {
-        my prepare a      -toupper -required -type agent
-        my prepare n      -toupper -required -type {nbhood local}
+        my prepare a      -toupper -required -type [list $adb agent]
+        my prepare n      -toupper -required -type [list $adb nbhood local]
         my prepare rho    -toupper           -type rfraction
         my prepare num    -toupper           -type ipositive
     
@@ -958,7 +956,7 @@ snit::type ::athena::plant {
 
 
     method _validate {} {
-        my prepare id -toupper -required -type plant
+        my prepare id -toupper -required -type [list $adb plant]
     }
 
     method _execute {{flunky ""}} {
@@ -992,7 +990,7 @@ snit::type ::athena::plant {
 
 
     method _validate {} {
-        my prepare id  -required -type plant
+        my prepare id  -required -type [list $adb plant]
         my prepare rho -toupper  -type rfraction
         my prepare num -toupper  -type iquantity
     }
@@ -1030,7 +1028,7 @@ snit::type ::athena::plant {
 
 
     method _validate {} {
-        my prepare ids -required -listof plant
+        my prepare ids -required -listof [list $adb plant]
         my prepare rho -toupper -type rfraction
         my prepare num -toupper -type iquantity
     }

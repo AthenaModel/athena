@@ -157,7 +157,7 @@ oo::class create ::athena::athena_order {
     # the default view, as that is what will be copied.
 
     method beanload {idict id {view ""}} {
-        return [$adb pot view $id $view]
+        return [$adb bean view $id $view]
     }
 
     #-------------------------------------------------------------------
@@ -172,8 +172,8 @@ oo::class create ::athena::athena_order {
     # dynaforms where the user must choose an owned group.
 
     method groupsOwnedByAgent {id} {
-        if {[$adb pot has $id]} {
-            set tactic [$adb pot get $id]
+        if {[$adb bean has $id]} {
+            set tactic [$adb bean get $id]
             return [$adb group ownedby [$tactic agent]]
         } else {
             return [list]
@@ -189,8 +189,8 @@ oo::class create ::athena::athena_order {
     # dynaforms where the user must choose an owned group.
 
     method frcgroupsOwnedByAgent {id} {
-        if {[$adb pot has $id]} {
-            set tactic [$adb pot get $id]
+        if {[$adb bean has $id]} {
+            set tactic [$adb bean get $id]
             return [$adb frcgroup ownedby [$tactic agent]]
         } else {
             return [list]
@@ -223,8 +223,8 @@ oo::class create ::athena::athena_order {
     # given tactic.
 
     method allAgentsBut {id} {
-        if {[$adb pot has $id]} {
-            set tactic [$adb pot get $id]
+        if {[$adb bean has $id]} {
+            set tactic [$adb bean get $id]
             set alist [$adb actor names]
             return [ldelete alist [$tactic agent]]
         } else {
@@ -240,8 +240,8 @@ oo::class create ::athena::athena_order {
     # given tactic, plus SELF and NONE
 
     method agents+SelfNone {id} {
-        if {[$adb pot has $id]} {
-            set tactic [$adb pot get $id]
+        if {[$adb bean has $id]} {
+            set tactic [$adb bean get $id]
             set alist [linsert [$adb actor names] 0 SELF NONE]
             return [ldelete alist [$tactic agent]]
         } else {
@@ -273,11 +273,11 @@ oo::class create ::athena::athena_order {
     # Returns a namedict of CAPs owned by the tactic's agent.
     
     method capsOwnedBy {tactic_id} {
-        if {![$adb pot has $tactic_id]} {
+        if {![$adb bean has $tactic_id]} {
             return [list]
         }
 
-        set tactic [$adb pot get $tactic_id]
+        set tactic [$adb bean get $tactic_id]
         set owner  [$tactic agent]
 
         return [$adb eval {

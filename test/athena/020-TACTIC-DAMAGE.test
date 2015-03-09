@@ -1,0 +1,188 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    020-TACTIC-DAMAGE.test
+#
+# AUTHOR:
+#    Dave Hanks
+#
+# DESCRIPTION:
+#    athena(n) TACTIC:DAMAGE:* order tests.
+#
+#    This test suite tests the DAMAGE tactic's orders.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Set up for tests
+    proc setup {} {
+        ted create JOE NB1 NB2 SHIA SUNN KURD BLUE
+        variable S1
+        variable B1
+        variable T1
+
+        set S1 [tdb strategy getname SYSTEM]
+        ted order STRATEGY:BLOCK:ADD agent SYSTEM
+        lassign [$S1 blocks] B1
+        ted order BLOCK:TACTIC:ADD block_id [$B1 id] typename DAMAGE
+        lassign [$B1 tactics] T1
+    }
+
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        # Clean up the test environment
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # TACTIC:DAMAGE
+
+    test TACTIC:DAMAGE-1.1 {required parms} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:DAMAGE
+    } -result {
+        tactic_id {required value}
+    }
+
+    test TACTIC:DAMAGE-1.2 {tactic_id is unknown} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:DAMAGE tactic_id NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        tactic_id {Invalid DAMAGE ID: "NONESUCH"}
+    }
+
+    test TACTIC:DAMAGE-1.3 {percent is non-numeric} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:DAMAGE tactic_id [$T1 id] percent NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        percent {invalid value "NONESUCH", expected integer}
+    }
+
+    test TACTIC:DAMAGE-1.4 {percent is negative} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:DAMAGE tactic_id [$T1 id] percent -1
+    } -cleanup {
+        cleanup
+    } -result {
+        percent {invalid value "-1", expected integer in range 0, 100}
+    }
+
+    test TACTIC:DAMAGE-1.5 {invalid name} -setup {
+        setup
+    } -body {
+        ted order -reject TACTIC:DAMAGE tactic_id [$T1 id] name 1234
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Identifiers begin with a letter and contain only letters and digits.}
+    }
+
+    test TACTIC:DAMAGE-1.6 {duplicate name} -setup {
+        setup
+        set T2 [ted addtactic $B1 ABSIT]
+    } -body {
+        ted order -reject TACTIC:DAMAGE tactic_id [$T1 id] \
+            name [$T2 get name]
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+        name {Name already exists: "T2"}
+    }
+
+    test TACTIC:DAMAGE-2.1 {tactic is created} -setup {
+        setup
+    } -body {
+        ted order TACTIC:DAMAGE tactic_id [$T1 id] n NB1 a JOE percent 80
+        ted pdicts [$T1 getdict]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        a          JOE
+        execstatus NONE
+        faildict   {}
+        id         *
+        n          NB1
+        name       T*
+        parent     *
+        percent    80
+        pot        *::pot
+        state      normal
+    }
+
+    test TACTIC:DAMAGE-2.2 {notifier event} -setup {
+        setup
+    } -body {
+        ted notifier bind ::projectlib::bean <Monitor>
+        ted order TACTIC:DAMAGE tactic_id [$T1 id] n NB1 a JOE percent 80
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::projectlib::bean <Monitor>}
+    }
+
+    test TACTIC:DAMAGE-3.1 {undo effects} -setup {
+        setup
+        ted order TACTIC:DAMAGE tactic_id [$T1 id] n NB1 a JOE percent 80
+    } -body {
+        ted notifier bind ::projectlib::bean <Monitor>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::projectlib::bean <Monitor>}
+    }
+
+    test TACTIC:DAMAGE-4.1 {identity} -setup {
+        setup
+    } -body {
+        ted tactic identity $T1
+    } -cleanup {
+        cleanup
+    } -result {OK}
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+

@@ -12,8 +12,6 @@
 #    that provides safe command interpretation for user input, separate
 #    from the main interpreter.
 #
-# TBD: Global refs: ptype, simclock, app puts
-#
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
@@ -31,25 +29,36 @@ snit::type ::athena::executive {
 
     # Array of instance variables
     #
-    #  userMode            normal | super
     #  stackTrace          Traceback for last error
 
     variable info -array {
-        userMode     normal
         stackTrace   {}
     }
+
+    #-------------------------------------------------------------------
+    # Options
+    
+    # -executivecmd cmd
+    #
+    # The name of a command to call to define additional executive
+    # commands in the context of the scenario.  The cmd is a command
+    # prefix, to which will be added the name of the athena(n) object.
+    
+    option -executivecmd \
+        -readonly yes
         
     #-------------------------------------------------------------------
     # Constructor
 
-    # constructor adb_
+    # constructor adb_ ?options...?
     #
     # adb_    - The athenadb(n) that owns this instance.
     #
     # Initializes instances of the type.
 
-    constructor {adb_} {
+    constructor {adb_ args} {
         set adb $adb_
+        $self configurelist $args
         $self InitializeInterp
     }
 
@@ -120,6 +129,9 @@ snit::type ::athena::executive {
         # NEXT, install the executive functions and commands
         $self DefineExecutiveFunctions
         $self DefineExecutiveCommands
+
+        # NEXT, define application-specific commands.
+        callwith $options(-executivecmd) $self
     }
 
 
@@ -127,7 +139,9 @@ snit::type ::athena::executive {
     #-------------------------------------------------------------------
     # Public Methods
 
+    delegate method ensemble   to interp
     delegate method expr       to interp
+    delegate method function   to interp
     delegate method proc       to interp
     delegate method smartalias to interp
 
@@ -153,7 +167,7 @@ snit::type ::athena::executive {
         }]
 
         foreach name $autoScripts {
-            log normal exec "loading: $name"
+             $adb log normal exec "loading: $name"
             append out "Loading script: $name\n"
             if {[catch {$self script load $name} result]} {
                 $adb log normal exec "failed: $result"
@@ -190,32 +204,31 @@ snit::type ::athena::executive {
     # eval script
     #
     # Evaluate the script; throw an error or return the script's value.
-    # Either way, log what happens. Ignore empty scripts.
+    # Save any errors. Ignore empty scripts.
 
     method eval {script} {
         if {[string trim $script] eq ""} {
             return
         }
 
-        $adb log normal exec "Command: $script"
-
-        # Make sure the command displays in the log before it
-        # executes.
-        update idletasks
-
-        if {[catch {
-            if {$info(userMode) eq "normal"} {
-                $interp eval $script
-            } else {
-                uplevel \#0 $script
-            }
-        } result eopts]} {
+        try {
+            set result [$interp eval $script]
+        } on error {result eopts} {
             set info(stackTrace) $::errorInfo
-            $adb log warning exec "Command error: $result"
             return {*}$eopts $result
         }
 
         return $result
+    }
+
+    # call scriptname args...
+    #
+    # scriptname  - The name of an internal or external script
+    #
+    # Calls the script in the context of the executive.
+
+    method call {scriptname args} {
+        return [$self eval [list call $scriptname {*}$args]]
     }
 
     # errtrace
@@ -624,7 +637,7 @@ snit::type ::athena::executive {
             [mymethod Fn_nbworkers]
 
         $interp function now 0 0 {} \
-            [list simclock now]
+            [list $adb clock now]
 
         $interp function onhand 1 1 {a} \
             [mymethod Fn_onhand]
@@ -1601,10 +1614,6 @@ snit::type ::athena::executive {
         $interp smartalias gofer 1 - {typeOrGdict ?rulename? ?args...?} \
             [mymethod Gofer]
 
-        # help
-        $interp smartalias help 0 - {?-info? ?command...?} \
-            [mymethod Help]
-
         # last
         $interp ensemble last
 
@@ -1634,7 +1643,7 @@ snit::type ::athena::executive {
 
         # monitor
         $interp smartalias monitor 0 1 {?flag?} \
-            [list $adb flunky monitor]
+            [list $adb order monitor]
 
         # parm
         $interp ensemble parm
@@ -1695,7 +1704,7 @@ snit::type ::athena::executive {
             [mymethod reset]
 
         # save
-        # TBD: Application/library hybrid
+        # Note: apps will often override this command.
         $interp smartalias save 1 1 {filename} \
             [mymethod Save]
 
@@ -1777,79 +1786,6 @@ snit::type ::athena::executive {
         # version
         $interp smartalias version 0 0 {} \
             [list $adb version]
-
-
-        #---------------------------------------------------------------
-        # Application Commands
-        #
-        # These will need to be moved to the application.
-
-
-        # clear
-        $interp smartalias clear 0 0 {} \
-            [list .main cli clear]
-
-        # debug
-        $interp smartalias debug 0 0 {} \
-            [list ::marsgui::debugger new]
-
-        # enter
-        $interp smartalias enter 1 - {order ?parm value...?} \
-            [mymethod Enter]
-
-        # load
-        $interp smartalias load 1 1 {filename} \
-            [list app open]
-
-        # nbfill
-        # TBD: Application executive command
-        $interp smartalias nbfill 1 1 {varname} \
-            [list .main nbfill]
-
-        # new
-        $interp smartalias new 0 0 {} \
-            [list app new]
-
-        # prefs
-        # TBD: This whole ensemble is application-specific.
-        $interp ensemble prefs
-
-        # prefs get
-        $interp smartalias {prefs get} 1 1 {prefs} \
-            [list prefs get]
-
-        # prefs help
-        $interp smartalias {prefs help} 1 1 {parm} \
-            [list prefs help]
-
-        # prefs list
-        $interp smartalias {prefs list} 0 1 {?pattern?} \
-            [list prefs list]
-
-        # prefs names
-        $interp smartalias {prefs names} 0 1 {?pattern?} \
-            [list prefs names]
-
-        # prefs reset
-        $interp smartalias {prefs reset} 0 0 {} \
-            [list prefs reset]
-
-        # prefs set
-        $interp smartalias {prefs set} 2 2 {prefs value} \
-            [list prefs set]
-
-        # show
-        # TBD: Application-specific commands
-        $interp smartalias show 1 1 {url} \
-            [mymethod Show]
-
-        # super
-        $interp smartalias super 1 - {arg ?arg...?} \
-            [mymethod Super]
-
-        # usermode
-        $interp smartalias {usermode} 0 1 {?mode?} \
-            [mymethod usermode]
     }
 
     
@@ -1913,7 +1849,7 @@ snit::type ::athena::executive {
     # plus -state.
 
     method BlockAdd {agent args} {
-        $adb flunky transaction "block add..." {
+        $adb order transaction "block add..." {
             set block_id [$self Send STRATEGY:BLOCK:ADD -agent $agent]
             $self BlockUpdate $block_id $args
         }
@@ -1934,10 +1870,10 @@ snit::type ::athena::executive {
             set block_id [$self LastBean ::athena::block]
         }
 
-        $adb pot valclass ::athena::block $block_id
+        $adb bean valclass ::athena::block $block_id
 
         # NEXT, get the block data
-        set block [$adb pot get $block_id]
+        set block [$adb bean get $block_id]
 
         set dict [parmdict2optdict [$block view cget]]
 
@@ -1967,7 +1903,7 @@ snit::type ::athena::executive {
         }
 
         # NEXT, configure it
-        $adb flunky transaction "block configure..." {
+        $adb order transaction "block configure..." {
             $self BlockUpdate $block_id $args
         }
     }
@@ -2007,7 +1943,7 @@ snit::type ::athena::executive {
         }
 
         # NEXT, create the condition
-        $adb flunky transaction "condition add..." {
+        $adb order transaction "condition add..." {
             set condition_id [$self Send BLOCK:CONDITION:ADD \
                                     -block_id $block_id \
                                     -typename $typename]
@@ -2030,10 +1966,10 @@ snit::type ::athena::executive {
             set condition_id [$self LastBean ::athena::condition]
         }
 
-        $adb pot valclass ::athena::condition $condition_id
+        $adb bean valclass ::athena::condition $condition_id
 
         # NEXT, get the condition data
-        set condition [$adb pot get $condition_id]
+        set condition [$adb bean get $condition_id]
 
         set dict [parmdict2optdict [$condition view cget]]
 
@@ -2062,10 +1998,10 @@ snit::type ::athena::executive {
             set condition_id [$self LastBean ::athena::condition]
         }
 
-        $adb pot valclass ::athena::condition $condition_id
+        $adb bean valclass ::athena::condition $condition_id
 
         # NEXT, configure it
-        $adb flunky transaction "condition configure..." {
+        $adb order transaction "condition configure..." {
             $self ConditionUpdate $condition_id $args
         }
     }
@@ -2079,7 +2015,7 @@ snit::type ::athena::executive {
     # CONDITION:UPDATE send options plus -state.
 
     method ConditionUpdate {condition_id opts} {
-        set c [$adb pot get $condition_id]
+        set c [$adb bean get $condition_id]
 
         set state [from opts -state ""]
 
@@ -2153,8 +2089,7 @@ snit::type ::athena::executive {
         if {$opts(-history)} {
             $adb export fromcif $fullname $opts(-map)
 
-            app puts "Exported scenario from history as $fullname."
-            return
+            return "Exported scenario from history as $fullname."
         }
 
         # NEXT, the normal export can only be done during PREP.
@@ -2164,9 +2099,7 @@ snit::type ::athena::executive {
 
         $adb export fromdata $fullname $opts(-map)
 
-        app puts "Exported scenario from current data as $fullname."
-
-        return
+        return "Exported scenario from current data as $fullname."
     }
 
     # gofer typeOrGdict ?rulename? ?args...?
@@ -2188,30 +2121,6 @@ snit::type ::athena::executive {
         }
     }
 
-    # help ?-info? ?command...?
-    #
-    # Outputs the help for the command 
-    #
-    # TBD: Hybrid command, half application half library
-
-    method Help {args} {
-        if {[llength $args] == 0} {
-            app show my://help/command
-        }
-
-        if {[lindex $args 0] eq "-info"} {
-            set args [lrange $args 1 end]
-
-            set out [$interp help $args]
-
-            append out "\n\n[$interp cmdinfo $args]"
-
-            return $out
-        } else {
-            app help $args
-        }
-    }
-
     # LastBean cls
     #
     # cls   - A bean class
@@ -2220,7 +2129,7 @@ snit::type ::athena::executive {
     # the given bean class, or "" if none.
 
     method LastBean {cls} {
-        set last [lindex [$adb pot ids $cls] end]
+        set last [lindex [$adb bean ids $cls] end]
 
         if {$last eq ""} {
             set kind [namespace tail $cls]
@@ -2302,12 +2211,12 @@ snit::type ::athena::executive {
     # If possible, redoes the last undone order.
 
     method Redo {} {
-        if {![$adb flunky canredo]} {
+        if {![$adb order canredo]} {
             return "Nothing to redo."
         }
 
-        set title [$adb flunky redotext]
-        $adb flunky redo
+        set title [$adb order redotext]
+        $adb order redo
 
         return "Redone: $title"
     }
@@ -2316,13 +2225,12 @@ snit::type ::athena::executive {
     # 
     # filename   - Scenario file name
     #
-    # Saves the scenario using the name.  Errors are handled by
-    # [app error].
+    # Saves the scenario using the name. 
     #
-    # TBD: hybrid
+    # Note: Applications will likely override this.
 
     method Save {filename} {
-        app save $filename
+        $adb save $filename
         return
     }
     
@@ -2349,10 +2257,10 @@ snit::type ::athena::executive {
         set order [string toupper $order]
 
         # NEXT, determine the order mode.
-        if {[flunky state] eq "TACTIC"} {
-            $adb flunky send private $order {*}$args
+        if {[$adb state] eq "TACTIC"} {
+            $adb order send private $order {*}$args
         } else {
-            $adb flunky send normal $order {*}$args
+            $adb order send normal $order {*}$args
         }
     }
 
@@ -2384,7 +2292,7 @@ snit::type ::athena::executive {
         }
 
         # NEXT, create the tactic
-        $adb flunky transaction "tactic add..." {
+        $adb order transaction "tactic add..." {
             set tactic_id [$self Send BLOCK:TACTIC:ADD \
                                     -block_id $block_id \
                                     -typename $typename]
@@ -2407,10 +2315,10 @@ snit::type ::athena::executive {
             set tactic_id [$self LastBean ::athena::tactic]
         }
 
-        $adb pot valclass ::athena::tactic $tactic_id
+        $adb bean valclass ::athena::tactic $tactic_id
 
         # NEXT, get the tactic data
-        set tactic [$adb pot get $tactic_id]
+        set tactic [$adb bean get $tactic_id]
 
         set dict [parmdict2optdict [$tactic view cget]]
 
@@ -2439,10 +2347,10 @@ snit::type ::athena::executive {
             set tactic_id [$self LastBean ::athena::tactic]
         }
 
-        $adb pot valclass ::athena::tactic $tactic_id
+        $adb bean valclass ::athena::tactic $tactic_id
 
         # NEXT, configure it
-        $adb flunky transaction "tactic configure..." {
+        $adb order transaction "tactic configure..." {
             $self TacticUpdate $tactic_id $args
         }
     }
@@ -2456,7 +2364,7 @@ snit::type ::athena::executive {
     # TACTIC:UPDATE send options plus -state.
 
     method TacticUpdate {tactic_id opts} {
-        set c [$adb pot get $tactic_id]
+        set c [$adb bean get $tactic_id]
 
         set state [from opts -state ""]
 
@@ -2500,12 +2408,12 @@ snit::type ::athena::executive {
     # If possible, undoes the order on the top of the stack.
 
     method Undo {} {
-        if {![$adb flunky canundo]} {
+        if {![$adb order canundo]} {
             return "Nothing to undo."
         }
 
-        set title [$adb flunky undotext]
-        $adb flunky undo
+        set title [$adb order undotext]
+        $adb order undo
 
         return "Undone: $title"
     }
@@ -2517,83 +2425,6 @@ snit::type ::athena::executive {
     method Unlock {} {
         $self Send SIM:UNLOCK
     }
-
-
-    #-------------------------------------------------------------------
-    # Application Executive Commands
-    #
-    # TBD: These need to move to app
-
-    # enter order ?parm value...?
-    #
-    # order   - The name of an order.
-    # parm    - One of order's parameter names
-    # value   - The parameter's value
-    #
-    # This routine pops up an order dialog from the command line.  It is
-    # intended for debugging rather than end-user use.
-
-    method Enter {order args} {
-        app enter $order $args
-    }
-
-    # show url
-    #
-    # Shows a URL in the detail browser.
-
-    method Show {url} {
-        .main tab view detail
-        app show $url
-    }
-
-    # super args
-    #
-    # Executes args as a command in the global namespace
-    method Super {args} {
-        namespace eval :: $args
-    }
-
-    # usermode ?mode?
-    #
-    # mode     normal|super
-    #
-    # Queries/sets the CLI mode.  In normal mode, all commands are 
-    # methodessed by the smartinterp, unless "super" is used.  In
-    # super mode, all commands are methodessed by the main interpreter.
-
-    method usermode {{mode ""}} {
-        # FIRST, handle queries
-        if {$mode eq ""} {
-            return $info(userMode)
-        }
-
-        # NEXT, check the mode
-        require {$mode in {normal super}} \
-            "Invalid mode, should be one of: normal, super"
-
-        # NEXT, save it.
-        set info(userMode) $mode
-
-        # NEXT, this is usually a CLI command; it looks odd to
-        # return the mode in this case, so don't.
-        return
-    }
-
-    
-}
-
-
-
-#-----------------------------------------------------------------------
-# Commands defined in ::, for use when usermode is super
-
-# usermode ?mode?
-#
-# Calls executive usermode
-# TBD: As written this should be in the application.
-
-proc usermode {{mode ""}} {
-    ::adb executive usermode $mode
 }
 
 

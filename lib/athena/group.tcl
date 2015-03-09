@@ -68,7 +68,7 @@ snit::type ::athena::group {
     # Validates a group short name
 
     method validate {g} {
-        if {![$adb exists {SELECT g FROM groups WHERE g=$g}]} {
+        if {![$self exists $g]} {
             set names [join [$self names] ", "]
 
             if {$names ne ""} {
@@ -83,6 +83,18 @@ snit::type ::athena::group {
 
         return $g
     }
+
+
+    # exists get
+    #
+    # g      - A group
+    # 
+    # Returns 1 if the group exists, and 0 otherwise.
+
+    method exists {g} {
+        return [dbexists $adb groups g $g]
+    }
+
 
     # gtype g
     #

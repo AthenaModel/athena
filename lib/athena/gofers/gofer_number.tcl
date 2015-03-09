@@ -9,8 +9,6 @@
 #    athena(n): Number gofer, a number, floating-or-integer, produced 
 #    according to one of various rules
 #
-# TBD: Global ref: ptype, sim
-#
 #-----------------------------------------------------------------------
 
 ::athena::goferx define NUMBER value {
@@ -493,11 +491,6 @@
 }
 
 #-----------------------------------------------------------------------
-# Helper Commands
-
-# TBD
-
-#-----------------------------------------------------------------------
 # Gofer Rules
 
 # Rule: BY_VALUE
@@ -628,7 +621,7 @@
     method eval {gdict} {
         dict with gdict {}
 
-        set plants [plant number a $a]
+        set plants [$adb plant number a $a]
 
         if {$plants == ""} {
             set plants 0.0
@@ -660,7 +653,7 @@
             return -code error -errorcode INVALID \
                 "Invalid activity \"\"."
         } else {
-            activity check [string toupper $g] [string toupper $activity]
+            $adb activity check [string toupper $g] [string toupper $activity]
         }
 
         dict set valid n [$adb nbhood validate [string toupper $n]]
@@ -786,9 +779,9 @@
         set gtype [$adb group gtype [string toupper $g]]
 
         if {$gtype eq "FRC"} {
-            activity withcov frc validate [string toupper $activity]
+            $adb activity withcov frc validate [string toupper $activity]
         } elseif {$gtype eq "ORG"} {
-            activity withcov org validate [string toupper $activity]
+            $adb activity withcov org validate [string toupper $activity]
         }
 
         dict set valid n [$adb nbhood validate [string toupper $n]]
@@ -911,7 +904,7 @@
     method eval {gdict} {
         dict with gdict {}
 
-        set goodscap [plant capacity a $a]
+        set goodscap [$adb plant capacity a $a]
 
         if {$goodscap == ""} {
             set goodscap 0.0
@@ -1644,7 +1637,7 @@
     method eval {gdict} {
         dict with gdict {}
 
-        set goodscap [plant capacity n $n]
+        set goodscap [$adb plant capacity n $n]
 
         if {$goodscap == ""} {
             set goodscap 0.0
@@ -1713,7 +1706,7 @@
     method eval {gdict} {
         dict with gdict {}
 
-        set nbplants [plant number n $n]
+        set nbplants [$adb plant number n $n]
 
         if {$nbplants == ""} {
             set nbplants 0.0
@@ -2016,7 +2009,7 @@
     method eval {gdict} {
         dict with gdict {}
 
-        set goodscap [plant capacity total]
+        set goodscap [$adb plant capacity total]
 
         if {$goodscap == ""} {
             set goodscap 0.0
@@ -2048,7 +2041,7 @@
     method eval {gdict} {
         dict with gdict {}
 
-        set plants [plant number total]
+        set plants [$adb plant number total]
 
         if {$plants == ""} {
             set plants 0.0
@@ -2264,7 +2257,7 @@
     method eval {gdict} {
         dict with gdict {}
 
-        set plants [plant get "$n $a" num]
+        set plants [$adb plant get "$n $a" num]
 
         if {$plants == ""} {
             set plants 0.0
@@ -2343,7 +2336,7 @@
     method eval {gdict} {
         dict with gdict {}
 
-        set repair [plant get "$n $a" rho]
+        set repair [$adb plant get "$n $a" rho]
 
         if {$repair == ""} {
             set repair 0.0

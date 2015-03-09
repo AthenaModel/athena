@@ -109,7 +109,7 @@ snit::widgetadaptor econngbrowser {
     # if it runs into problems.
 
     method EconChange {} {
-        if {[econ state] eq "DISABLED"} {
+        if {[adb econ state] eq "DISABLED"} {
             $self SetMode econ_disabled
         } else {
             $self SetMode econ_enabled
@@ -122,7 +122,7 @@ snit::widgetadaptor econngbrowser {
     # is locked.
 
     method SimChange {} {
-        if {[econ state] eq "DISABLED"} {
+        if {[adb econ state] eq "DISABLED"} {
             $self SetMode econ_disabled
         } else {
             $self SetMode econ_enabled

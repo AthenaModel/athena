@@ -179,7 +179,7 @@ snit::widget samsheet {
             "Balancing Flows" BAL]
 
         # NEXT, get a copy of the sam and solve it
-        set sam [econ getsam 1]
+        set sam [adb econ getsam 1]
         $sam solve
 
         htmlframe $win.h \
@@ -768,7 +768,7 @@ snit::widget samsheet {
         set new [::marsutil::moneyscan $new]
 
         # NEXT, send the order to the econ model
-        flunky senddict gui ECON:SAM:UPDATE [list id $cell val $new]
+        adb order senddict gui ECON:SAM:UPDATE [list id $cell val $new]
     }
 
     # GlobalChanged cell new
@@ -782,7 +782,7 @@ snit::widget samsheet {
     # The new value is sent to the order processor.
 
     method GlobalChanged {cell new} {
-        flunky senddict gui ECON:SAM:GLOBAL [list id $cell val $new]
+        adb order senddict gui ECON:SAM:GLOBAL [list id $cell val $new]
     }
 
     # SamUpdate index value
@@ -815,7 +815,7 @@ snit::widget samsheet {
 
     method SimState {} {
         # FIRST, get the state
-        if {[sim state] eq "PREP"} {
+        if {[adb state] eq "PREP"} {
             # NEXT, set the view to input flows
             $vmenu set [lindex [dict keys $vdict] 1]
 
@@ -880,7 +880,7 @@ snit::widget samsheet {
     # the cmsheet(n) objects are refreshed.
 
     method SyncSheet {} {
-        $sam set [[econ getsam] get]
+        $sam set [[adb econ getsam] get]
         $sam solve
         $self refresh
     }

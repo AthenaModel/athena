@@ -11,8 +11,6 @@
 #    This module is responsible for managing organization groups and 
 #    operations upon them.
 #
-# TBD: Global references: app/messagebox
-#
 #-----------------------------------------------------------------------
 
 snit::type ::athena::orggroup {
@@ -52,6 +50,16 @@ snit::type ::athena::orggroup {
         }]
     }
 
+    # namedict
+    #
+    # Returns ID/longname dictionary
+
+    method namedict {} {
+        return [$adb eval {
+            SELECT g, longname FROM orggroups_view ORDER BY g
+        }]
+    }
+
 
     # validate g
     #
@@ -60,7 +68,7 @@ snit::type ::athena::orggroup {
     # Validates a organization group short name
 
     method validate {g} {
-        if {![$adb exists {SELECT g FROM orggroups WHERE g=$g}]} {
+        if {![$self exists $g]} {
             set names [join [$adb orggroup names] ", "]
 
             if {$names ne ""} {
@@ -76,6 +84,39 @@ snit::type ::athena::orggroup {
         return $g
     }
 
+    # exists g
+    #
+    # g - Possibly, an org group name
+    #
+    # Returns 1 if the group exists and 0 otherwise.
+
+    method exists {g} {
+        return [dbexists $adb orggroups g $g]
+    }
+
+    # get g ?parm?
+    #
+    # g    - A group
+    # parm - An orggroups column name
+    #
+    # Retrieves a row dictionary, or a particular column value, from
+    # orggroups.
+    #
+
+    method get {g {parm ""}} {
+        return [dbget $adb orggroups_view g $g $parm]
+    }
+
+    # view g ?tag?
+    #
+    # g    - A group 
+    # tag  - A view tag (unused)
+    #
+    # Retrieves a view dictionary for the group.
+
+    method view {g {tag ""}} {
+        return [dbget $adb gui_orggroups g $g]
+    }
 
     #-------------------------------------------------------------------
     # Mutators
@@ -278,27 +319,6 @@ snit::type ::athena::orggroup {
     }
 
     method _execute {{flunky ""}} {
-        if {[my mode] eq "gui"} {
-            set answer [messagebox popup \
-                            -title         "Are you sure?"                  \
-                            -icon          warning                          \
-                            -buttons       {ok "Delete it" cancel "Cancel"} \
-                            -default       cancel                           \
-                            -onclose       cancel                           \
-                            -ignoretag     [my name]                        \
-                            -ignoredefault ok                               \
-                            -parent        [app topwin]                     \
-                            -message       [normalize {
-                                Are you sure you really want to delete this 
-                                group, along with all of the entities that 
-                                depend upon it?
-                            }]]
-    
-            if {$answer eq "cancel"} {
-                my cancel
-            }
-        }
-
         lappend undo [$adb orggroup delete $parms(g)]
         lappend undo [$adb absit reconcile]
         

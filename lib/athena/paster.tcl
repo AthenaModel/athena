@@ -47,19 +47,19 @@ snit::type ::athena::paster {
 
     method block {agent copysets} {
         # FIRST, paste the copied blocks into the agent's strategy
-        $adb flunky transaction "Paste Block(s)" {
+        $adb order transaction "Paste Block(s)" {
             foreach copyset $copysets {
                 # FIRST, get the block data
                 set bdict [$self GetParmsFromCopySet $copyset block_id \
                             BLOCK:UPDATE]
 
                 # NEXT, create the block with default settings
-                set block_id [$adb flunky senddict gui STRATEGY:BLOCK:ADD \
+                set block_id [$adb order senddict gui STRATEGY:BLOCK:ADD \
                                     [list agent $agent]]
 
                 # NEXT, update the block with the right data.
                 dict set bdict block_id $block_id
-                $adb flunky senddict gui BLOCK:UPDATE $bdict
+                $adb order senddict gui BLOCK:UPDATE $bdict
 
                 # NEXT, paste the conditions and tactics
                 $adb paste condition $block_id [dict get $copyset conditions]
@@ -81,7 +81,7 @@ snit::type ::athena::paster {
 
     method condition {block_id copysets} {
         # FIRST, paste the copied conditions into the block
-        $adb flunky transaction "Paste Condition(s)" {
+        $adb order transaction "Paste Condition(s)" {
             foreach copyset $copysets {
                 # FIRST, get the condition data
                 set cls   [dict get $copyset class_]
@@ -91,11 +91,11 @@ snit::type ::athena::paster {
 
                 # NEXT, create the condition with default settings
                 set condition_id \
-                    [$adb flunky senddict gui BLOCK:CONDITION:ADD \
+                    [$adb order senddict gui BLOCK:CONDITION:ADD \
                         [list block_id $block_id typename $cname]]
 
                 # NEXT, update the condition with the right data.
-                $adb flunky senddict gui CONDITION:$cname \
+                $adb order senddict gui CONDITION:$cname \
                     [list condition_id $condition_id {*}$cdict]
             }
         }
@@ -114,7 +114,7 @@ snit::type ::athena::paster {
 
     method tactic {block_id copysets} {
         # FIRST, paste the copied tactics into the block
-        $adb flunky transaction "Paste Tactic(s)" {
+        $adb order transaction "Paste Tactic(s)" {
             foreach copyset $copysets {
                 # FIRST, get the tactic data
                 set cls   [dict get $copyset class_]
@@ -124,11 +124,11 @@ snit::type ::athena::paster {
 
                 # NEXT, create the tactic with default settings
                 set tactic_id \
-                    [$adb flunky senddict gui BLOCK:TACTIC:ADD \
+                    [$adb order senddict gui BLOCK:TACTIC:ADD \
                         [list block_id $block_id typename $tname]]
 
                 # NEXT, update the tactic with the right data.
-                $adb flunky senddict gui TACTIC:$tname \
+                $adb order senddict gui TACTIC:$tname \
                     [list tactic_id $tactic_id {*}$tdict]
             }
         }

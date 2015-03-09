@@ -11,8 +11,6 @@
 #    This module is responsible for managing units of all kinds, and 
 #    operations upon them.  As such, it is a type ensemble.
 #
-# TBD: Global refs: $adb, $adb pot, unit, $self, nbhood, group
-#
 #-----------------------------------------------------------------------
 
 snit::type ::athena::unit {
@@ -119,7 +117,7 @@ snit::type ::athena::unit {
             FROM units
             WHERE tactic_id > 0
         } {
-            if {![$adb pot hasa ::athena::tactic $tactic_id]} {
+            if {![$adb bean hasa ::athena::tactic $tactic_id]} {
                 $self delete $u
             }
         }
@@ -393,7 +391,7 @@ snit::type ::athena::unit {
     }
 
     method _validate {} {
-        my prepare u          -toupper -required -type unit
+        my prepare u          -toupper -required -type [list $adb unit]
         my prepare location   -toupper -required -type refpoint
     
         my returnOnError

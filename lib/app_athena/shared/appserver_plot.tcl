@@ -54,8 +54,8 @@ appserver module plot {
         dict with qdict {}
 
         # NEXT, validate the time interval
-        restrict start {simclock timespec} [simclock cget -tick0]
-        restrict end   {simclock timespec} [simclock now]
+        restrict start {adb clock timespec} [adb clock cget -tick0]
+        restrict end   {adb clock timespec} [adb clock now]
 
         let end {max($start,$end)}
 

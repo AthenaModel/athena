@@ -166,7 +166,7 @@ snit::widget ::wnbhood::nbchooser {
             -label "Deselect All Children" \
             -command [mymethod ChildrenState 0]
 
-        rdb eval {
+        adb eval {
             SELECT ulat,ulon,llat,llon FROM maps WHERE id=1
         } {
             set pbbox [list $llat $ulon $ulat $llon]
@@ -588,7 +588,7 @@ snit::widget ::wnbhood::nbchooser {
                 # NEXT, compare the polygon to neighborhoods that already
                 # exist and mark them.
                 set poly [$geo coords $n]
-                if {[rdb exists {SELECT n FROM nbhoods WHERE polygon=$poly}]} {
+                if {[adb exists {SELECT n FROM nbhoods WHERE polygon=$poly}]} {
                     set info(inrdb-$n) 1
                     set info(selected-$key) 1
                     set btn [$nblist windowpath $info(btnidx-$key)]

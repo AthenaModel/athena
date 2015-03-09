@@ -138,7 +138,7 @@ snit::widgetadaptor absitbrowser {
         if {[llength [$self uid curselection]] == 1} {
             set id [lindex [$self uid curselection] 0]
 
-            if {$id in [absit initial names]} {
+            if {[adb absit isinitial $id]} {
                 return 1
             }
         }
@@ -155,7 +155,7 @@ snit::widgetadaptor absitbrowser {
         if {[llength [$self uid curselection]] == 1} {
             set id [lindex [$self uid curselection] 0]
 
-            if {$id in [absit initial names]} {
+            if {[adb absit isinitial $id]} {
                 return 1
             }
         }
@@ -172,7 +172,7 @@ snit::widgetadaptor absitbrowser {
         if {[llength [$self uid curselection]] == 1} {
             set id [lindex [$self uid curselection] 0]
 
-            if {$id in [absit live names]} {
+            if {[adb absit islive $id]} {
                 return 1
             }
         }
@@ -246,8 +246,9 @@ snit::widgetadaptor absitbrowser {
         # FIRST, there should be only one selected.
         set id [lindex [$hull uid curselection] 0]
 
-        # NEXT, Send the delete order.
-        flunky senddict gui ABSIT:DELETE [list s $id]
+        app delete ABSIT:DELETE [list s $id] {
+            Are you sure you really want to delete this situation?
+        }
     }
 
 }

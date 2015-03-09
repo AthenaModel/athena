@@ -31,21 +31,22 @@ namespace eval ::kiteinfo:: {
         reqver-comm 4.6
         local-Tktable 0
         local-simlib 1
+        gui-atool 0
         exclude-cellide {}
         xfiles {docs/aag.docx docs/aug.docx docs/rules.pptx docs/mag.docx}
         local-Tkhtml 0
-        apps {athena cellide helptool}
+        apps {athena cellide helptool atool}
         local-fileutil 0
         dists {install-%platform src docs}
         reqver-kitedocs 0.4.6
         local-textutil::adjust 0
         force-helptool 0
         local-tablelist 0
+        icon-atool {}
         local-treectrl 0
         icon-athena {}
         reqver-kiteutils 0.4.6
         reqver-fileutil 1.14
-        binary-athenagui 0
         url-docs/mag.docx https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20140826.docx
         local-marsutil 1
         reqver-marsgui 3.0.13
@@ -62,8 +63,8 @@ namespace eval ::kiteinfo:: {
     docs/*.docx
     docs/*.pptx
 }
-        reqver-textutil::adjust 0.7
         gui-cellide 1
+        reqver-textutil::adjust 0.7
         url-docs/rules.pptx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/rules-20141010.pptx
         reqver-tls 1.6
         icon-helptool {}
@@ -76,8 +77,9 @@ namespace eval ::kiteinfo:: {
         apptype-cellide exe
         reqver-marsutil 3.0.13
         local-tls 0
-        provides {athena athenagui}
+        provides athena
         description {Athena Regional Stability Simulation}
+        exclude-atool {}
         local-BWidget 0
         apptype-helptool kit
         reqver-sqlite3 3.8.5
@@ -97,6 +99,7 @@ namespace eval ::kiteinfo:: {
         local-sqlite3 0
         force-cellide 0
         reqver-tablelist 5.11
+        apptype-atool kit
         distpat-docs {
     docs/*.html
     docs/*.png
@@ -135,12 +138,13 @@ namespace eval ::kiteinfo:: {
         requires {snit comm Img BWidget Tktable treectrl sqlite3 tablelist textutil::expander textutil::adjust Tkhtml uri fileutil ctext tls tdom struct::set kiteutils kitedocs marsutil marsgui simlib Marsbin}
         clean-help {make clean}
         poc William.H.Duquette@jpl.nasa.gov
+        force-atool 0
         srcs help
         local-tdom 0
         local-comm 0
         reqver-Marsbin 3.0.13
         local-kiteutils 1
-        version 6.3.0a5
+        version 6.3.0a7
         local-textutil::expander 0
         reqver-Img 1.4.1
     }

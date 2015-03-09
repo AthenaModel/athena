@@ -58,7 +58,7 @@ appserver module ECON {
 
             ht para
             
-            econ report ::appserver::ht
+            adb econ report ::appserver::ht
         }
 
         return [ht get]

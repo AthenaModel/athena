@@ -100,13 +100,13 @@ appserver module CURSES {
         # Accumulate data
         set id $(1)
 
-        if {![rdb exists {SELECT * FROM curses WHERE curse_id=$id}]} {
+        if {![adb exists {SELECT * FROM curses WHERE curse_id=$id}]} {
             return -code error -errorcode NOTFOUND \
                 "Unknown entity: [dict get $udict url]."
         }
 
         # Begin the page
-        rdb eval {SELECT * FROM gui_curses WHERE curse_id=$id} data {}
+        adb eval {SELECT * FROM gui_curses WHERE curse_id=$id} data {}
 
         ht page "CURSE Attitude Driver: $id"
         ht title $data(fancy) "CURSE" 
@@ -131,7 +131,7 @@ appserver module CURSES {
         }
 
         # NEXT, get the driver ID
-        set driver_id [driver get CURSE $id]
+        set driver_id [adb ruleset get CURSE $id]
 
         ht para
 
@@ -142,7 +142,7 @@ appserver module CURSES {
         }
 
         # NEXT, get the driver data
-        rdb eval {SELECT * FROM gui_drivers WHERE driver_id=$driver_id} ddata {}
+        adb eval {SELECT * FROM gui_drivers WHERE driver_id=$driver_id} ddata {}
 
 
         ht putln \

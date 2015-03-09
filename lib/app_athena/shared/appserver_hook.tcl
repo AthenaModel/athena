@@ -99,7 +99,7 @@ appserver module HOOK {
         # FIRST, get the hook ID and data.
         set hook_id [string toupper $(1)]
 
-        rdb eval {SELECT * FROM gui_hooks WHERE hook_id=$hook_id} data {}
+        adb eval {SELECT * FROM gui_hooks WHERE hook_id=$hook_id} data {}
 
         # NEXT, Begin the page
         ht page "Semantic Hook: $hook_id"
@@ -137,7 +137,7 @@ appserver module HOOK {
         ht push
 
         ht table {"Topic" "Position" "Symbolic Value" "State"} {
-            rdb eval {
+            adb eval {
                 SELECT fancy      AS fancy,
                        position   AS position,
                        state      AS state

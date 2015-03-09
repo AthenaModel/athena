@@ -144,7 +144,7 @@ snit::widget hookbrowser {
 
     method {MonHooks update} {hook_id} {
         # FIRST, we need to get the data about this hook.
-        array set data [hook get $hook_id]
+        array set data [adb hook get $hook_id]
 
         # NEXT, Display the hook item
         $self DrawHook data
@@ -178,7 +178,7 @@ snit::widget hookbrowser {
     method {MonTopics update} {id} {
         # FIRST, we need to get the data about this topic.
         # If it isn't currently displayed, we can ignore it.
-        array set data [hook topic get $id]
+        array set data [adb hook topic get $id]
 
         if {[info exists hitem($data(hook_id))]} {
             $self DrawTopic data
@@ -369,7 +369,7 @@ snit::widget hookbrowser {
         array unset titem
 
         # NEXT, insert the hooks
-        rdb eval {
+        adb eval {
             SELECT * FROM hooks ORDER BY hook_id
         } row {
             unset -nocomplain row(*)
@@ -377,7 +377,7 @@ snit::widget hookbrowser {
         }
 
         # NEXT, insert the topics 
-        rdb eval {
+        adb eval {
             SELECT * FROM gui_hook_topics
             ORDER BY id;
         } row {
@@ -458,12 +458,12 @@ snit::widget hookbrowser {
         set id [$htree item text $id {tag id}]
 
         # NEXT, Get its state
-        set state [hook topic get $id state]
+        set state [adb hook topic get $id state]
 
         if {$state eq "normal"} {
-            flunky senddict gui HOOK:TOPIC:STATE [list id $id state disabled]
+            adb order senddict gui HOOK:TOPIC:STATE [list id $id state disabled]
         } elseif {$state eq "disabled"} {
-            flunky senddict gui HOOK:TOPIC:STATE [list id $id state normal]
+            adb order senddict gui HOOK:TOPIC:STATE [list id $id state normal]
         } else {
             # Do nothing (this should never happen anyway)
         }
@@ -481,10 +481,13 @@ snit::widget hookbrowser {
 
         # NEXT, it's a hook or a topic.
         if {"hook" in [$htree item tag names $id]} {
-            flunky senddict gui HOOK:DELETE \
-                [list hook_id [$htree item text $id {tag id}]]
+            app delete HOOK:DELETE [list hook_id [$htree item text $id {tag id}]] {
+                Are you sure you
+                really want to delete this semantic hook and all
+                hook topics that depend upon it?
+            }
         } else {
-            flunky senddict gui HOOK:TOPIC:DELETE \
+            adb order senddict gui HOOK:TOPIC:DELETE \
                 [list id [$htree item text $id {tag id}]]
         }
     }
@@ -534,10 +537,10 @@ snit::widget hookbrowser {
         if {"hook" in [$htree item tag names $id]} {
             set hook_id $oid
         } else {
-            set hook_id [hook topic get $oid hook_id]
+            set hook_id [adb hook topic get $oid hook_id]
         }
 
-        set longname [hook get $hook_id longname]
+        set longname [adb hook get $hook_id longname]
 
         app enter HOOK:TOPIC:CREATE hook_id $hook_id longname $longname
     }

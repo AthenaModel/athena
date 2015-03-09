@@ -12,10 +12,6 @@
 #    This module is responsible for managing messages and the operations
 #    upon them.
 #
-# TBD: Global refs: ::gofer::GROUPS, ::gofer::ACTORS,
-# gofer::CIVGROUPS, gofer::FRCGROUPS, inject,
-# app/messagebox
-#
 #-----------------------------------------------------------------------
 
 snit::type ::athena::curse {
@@ -53,6 +49,16 @@ snit::type ::athena::curse {
         }]
     }
 
+    # namedict
+    #
+    # Returns the list of CURSE IDs
+
+    method namedict {} {
+        return [$adb eval {
+            SELECT curse_id, longname FROM curses 
+        }]
+    }
+
     # longnames
     #
     # Returns the list of CURSE long names
@@ -87,9 +93,7 @@ snit::type ::athena::curse {
     # Validates a CURSE ID
 
     method validate {curse_id} {
-        if {![$adb exists {
-            SELECT * FROM curses WHERE curse_id = $curse_id
-        }]} {
+        if {![$self exists $curse_id]} {
             set names [join [$self names] ", "]
 
             if {$names ne ""} {
@@ -112,9 +116,7 @@ snit::type ::athena::curse {
     # Returns 1 if there's such a curse, and 0 otherwise.
 
     method exists {curse_id} {
-        $adb exists {
-            SELECT * FROM curses WHERE curse_id=$curse_id
-        }
+        return [dbexists $adb curses curse_id $curse_id]
     }
 
     # get id ?parm?
@@ -130,20 +132,7 @@ snit::type ::athena::curse {
     # dynamically.
 
     method get {curse_id {parm ""}} {
-        # FIRST, get the data
-        $adb eval {
-            SELECT * FROM gui_curses 
-            WHERE curse_id=$curse_id
-        } row {
-            if {$parm eq ""} {
-                unset row(*)
-                return [array get row]
-            } else {
-                return $row($parm)
-            }
-        }
-
-        return ""
+        return [dbget $adb gui_curses curse_id $curse_id $parm]
     }
 
     # normal names
@@ -166,6 +155,7 @@ snit::type ::athena::curse {
             ORDER BY curse_id
         }]
     }
+
     # normal longnames
     #
     # Returns the list of CURSE long names with state=normal
@@ -643,27 +633,6 @@ snit::type ::athena::curse {
     }
 
     method _execute {{flunky ""}} {
-        if {[my mode] eq "gui"} {
-            set answer [messagebox popup \
-                            -title         "Are you sure?"                  \
-                            -icon          warning                          \
-                            -buttons       {ok "Delete it" cancel "Cancel"} \
-                            -default       cancel                           \
-                            -onclose       cancel                           \
-                            -ignoretag     [my name]                        \
-                            -ignoredefault ok                               \
-                            -parent        [app topwin]                     \
-                            -message       [normalize {
-                                Are you sure you really want to delete this 
-                                CURSE, along with all of its inputs?
-                            }]]
-
-            if {$answer eq "cancel"} {
-                my cancel
-            }
-        }
-
-        # NEXT, Delete the record and dependent entities
         lappend undo [$adb curse delete $parms(curse_id)]
 
         my setundo [join $undo \n]

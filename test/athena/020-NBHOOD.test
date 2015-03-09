@@ -1,0 +1,929 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    020-NBHOOD.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    athena(n) NBHOOD:* order tests.
+#
+#    This test suite tests the nbhood-related orders.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Default neighborhoods.  nb1 and nb2 do not overlap.
+    # overnb1 overlaps nb1's refpoint
+
+    set nb1 {
+        n            NB1
+        longname     "Here"
+        local        YES
+        urbanization URBAN
+        controller   NONE
+        pcf          1.0
+        refpoint     31NBB774105
+        polygon      {31NAA6600000000 31NAC6622421366 31NCC8878721095 31NCA8871900000}
+    }
+
+    set overnb1 {
+        n            OV1
+        longname     "Over"
+        local        YES
+        urbanization SUBURBAN
+        controller   NONE
+        pcf          1.0
+        refpoint     31NCB3312565853
+        polygon      {31NAA6600000000 31NAE6683142736 31NFE1101142195 31NFA1128100000}
+    }
+
+    set nb2 {
+        n            NB2
+        longname     "There"
+        local        YES
+        urbanization RURAL
+        controller   NONE
+        pcf          1.0
+        refpoint     {31NGF2175353002}
+        polygon      {31NFE1101142195 31NFG1067563306 32NJM6784264114 32NJK6683142736}
+    }
+
+    set nl1 {
+        n            NL1
+        longname     "Non-Local"
+        local        NO
+        urbanization RURAL
+        controller   NONE
+        pcf          1.0
+        refpoint     {32PQT1852916707}
+        polygon      {32PPS0960105579 32PPU0886426751 33PSP7328528333 33PSM7107106909}
+    }
+
+    set rawnb1 {
+        n            RAW1
+        longname     "Raw1"
+        refpoint     {30 30}
+        polygon      {-90 -180 90 -180 90 180 -90 180}
+        urbanization URBAN
+        controller   NONE
+        pcf          1.0
+        local        YES
+    }
+
+    set rawnb2 {
+        n            RAW2
+        longname     "Raw2"
+        refpoint     {31 31}
+        polygon      {-89 -179 89 -179 89 179 -89 179}
+        urbanization URBAN
+        controller   NONE
+        pcf          1.0
+        local        YES
+    }
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        # Clean up the test environment
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # NBHOOD:CREATE
+
+    test CREATE-1.1 {required parms} -body {
+        ted order -reject NBHOOD:CREATE {}
+    } -result {
+        n {required value}
+        refpoint {required value}
+        polygon {required value}
+    }
+
+    
+    test CREATE-1.2 {Duplicate n} -setup {
+        ted order NBHOOD:CREATE $nb1
+    } -body {
+        ted order -reject NBHOOD:CREATE $nb1 
+    } -cleanup {
+        cleanup
+    } -result {
+        n {An entity with this ID already exists}
+    }
+
+
+    test CREATE-1.4 {invalid identifier} -body {
+        ted order -reject NBHOOD:CREATE [dict merge $nb1 {n "NONE-SUCH"}]
+    } -cleanup {
+        cleanup
+    } -result {
+        n {Identifiers begin with a letter and contain only letters and digits.}
+    }
+
+    test CREATE-1.4 {invalid urbanization} -body {
+        ted order -reject NBHOOD:CREATE [dict merge $nb1 {
+            urbanization NONESUCH
+        }]
+    } -result {
+        urbanization {invalid value "NONESUCH", should be one of: ISOLATED, RURAL, SUBURBAN, URBAN}
+    }
+
+    test CREATE-1.5 {invalid controller} -body {
+        ted order -reject NBHOOD:CREATE [dict merge $nb1 {
+            controller NONESUCH
+        }]
+    } -result {
+        controller {Invalid actor "NONESUCH", should be one of: NONE}
+    }
+
+    # CREATE-1.6 obsolete
+
+    test CREATE-1.7 {invalid pcf} -body {
+        ted order -reject NBHOOD:CREATE [dict merge $nb1 {
+            pcf -1.0
+        }]
+    } -result {
+        pcf {invalid value "-1.0", should be a real number no less than 0.0}
+    }
+
+    test CREATE-1.8 {polygon: invalid map ref} -body {
+        ted order -reject NBHOOD:CREATE [dict merge $nb1 {
+            polygon {32PPS0960105579 32PPU0886426751 Z99Z99 33PSM7107106909}
+        }]
+    } -result {
+        polygon {Invalid MGRS string: "Z99Z99"}
+    }
+
+    test CREATE-1.9 {polygon: duplicate polygon} -setup {
+        ted order NBHOOD:CREATE  $nb1
+    } -body {
+        ted order -reject NBHOOD:CREATE \
+            [dict merge $nb2 [list polygon [dict get $nb1 polygon]]]
+    } -cleanup {
+        cleanup
+    } -result {
+        polygon {A neighborhood with this polygon already exists}
+    }
+    
+
+    test CREATE-1.10 {refpoint: invalid map ref} -body {
+        ted order -reject NBHOOD:CREATE [dict merge $nb1 {
+            refpoint X99X99
+        }]
+    } -result {
+        refpoint {Invalid MGRS string: "X99X99"}
+    }
+
+
+    test CREATE-1.11 {refpoint: duplicate refpoint} -setup {
+        ted order NBHOOD:CREATE  $nb1
+    } -body {
+        ted order -reject NBHOOD:CREATE \
+            [dict merge $nb2 [list refpoint [dict get $nb1 refpoint]]]
+    } -cleanup {
+        cleanup
+    } -result {
+        refpoint {A neighborhood with this reference point already exists}
+    }
+
+
+    test CREATE-1.12 {refpoint not in polygon} -body {
+        ted order -reject NBHOOD:CREATE [dict merge $nb1 {
+            refpoint 31NGF2175353002
+        }]
+    } -result {
+        refpoint {not in polygon}
+    }
+
+
+    test CREATE-1.13 {local: invalid boolean} -body {
+        ted order -reject NBHOOD:CREATE [dict merge $nb1 {
+            local NONESUCH
+        }]
+    } -result {
+        local {invalid boolean "NONESUCH", should be one of: 1, 0, true, false, yes, no, on, off}
+    }
+
+
+    test CREATE-2.1 {nbhood is created, controller is NONE} -body {
+        ted order NBHOOD:CREATE $nb1
+        set parms [join [dict keys $nb1] ","]
+        ted querylist "SELECT $parms FROM nbhoods"
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+n             NB1
+longname      Here
+local         1
+urbanization  URBAN
+controller    
+pcf           1.0
+refpoint      *
+polygon       *
+    }
+
+    test CREATE-2.2 {nbhood is created, controller is given} -setup {
+        ted create JOE
+    } -body {
+        ted order NBHOOD:CREATE [dict merge $nb1 {controller JOE}]
+        set parms [join [dict keys $nb1] ","]
+        ted querylist "SELECT $parms FROM nbhoods"
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+n             NB1
+longname      Here
+local         1
+urbanization  URBAN
+controller    JOE
+pcf           1.0
+refpoint      *
+polygon       *
+    }
+
+    test CREATE-2.3 {longname defaults to ID} -body {
+        ted order NBHOOD:CREATE [dict merge $nb1 {longname ""}]
+
+        tdb onecolumn {SELECT longname FROM nbhoods}
+    } -cleanup {
+        cleanup
+    } -result {NB1}
+
+    test CREATE-2.4 {pcf defaults to 0.0 for non-local} -body {
+        ted order NBHOOD:CREATE [dict merge $nl1 {longname ""}]
+
+        tdb onecolumn {SELECT pcf FROM nbhoods}
+    } -cleanup {
+        cleanup
+    } -result {0.0}
+
+    test CREATE-2.5 {Effects} -body {
+        ted notifier bind ::tdb <nbhoods>
+        ted order NBHOOD:CREATE $nb1
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <nbhoods> update NB1}
+        {::tdb <nbhoods> update NB1}
+    }
+
+
+    test CREATE-3.1 {undo effects} -setup {
+        ted order NBHOOD:CREATE $nb1
+    } -body {
+        ted notifier bind ::tdb <nbhoods>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <nbhoods> delete NB1}
+    }
+
+    #-------------------------------------------------------------------
+    # NBHOOD:CREATE:RAW
+
+    test CREATE_RAW-1.1 {required parms} -body {
+        ted order -reject NBHOOD:CREATE:RAW {}
+    } -result {
+        n {required value}
+        refpoint {required value}
+        polygon {required value}
+    }
+
+    
+    test CREATE_RAW-1.2 {Duplicate n} -setup {
+        ted order NBHOOD:CREATE:RAW $rawnb1
+    } -body {
+        ted order -reject NBHOOD:CREATE:RAW $rawnb1 
+    } -cleanup {
+        cleanup
+    } -result {
+        n {An entity with this ID already exists}
+    }
+
+
+    test CREATE_RAW-1.4 {invalid identifier} -body {
+        ted order -reject NBHOOD:CREATE:RAW [dict merge $rawnb1 {n "NONE-SUCH"}]
+    } -cleanup {
+        cleanup
+    } -result {
+        n {Identifiers begin with a letter and contain only letters and digits.}
+    }
+
+    test CREATE_RAW-1.4 {invalid urbanization} -body {
+        ted order -reject NBHOOD:CREATE:RAW [dict merge $rawnb1 {
+            urbanization NONESUCH
+        }]
+    } -result {
+        urbanization {invalid value "NONESUCH", should be one of: ISOLATED, RURAL, SUBURBAN, URBAN}
+    }
+
+    test CREATE_RAW-1.5 {invalid controller} -body {
+        ted order -reject NBHOOD:CREATE:RAW [dict merge $rawnb1 {
+            controller NONESUCH
+        }]
+    } -result {
+        controller {Invalid actor "NONESUCH", should be one of: NONE}
+    }
+
+    # CREATE_RAW-1.6 obsolete
+
+    test CREATE_RAW-1.7 {invalid pcf} -body {
+        ted order -reject NBHOOD:CREATE:RAW [dict merge $rawnb1 {
+            pcf -1.0
+        }]
+    } -result {
+        pcf {invalid value "-1.0", should be a real number no less than 0.0}
+    }
+
+    test CREATE_RAW-1.10 {polygon: duplicate polygon} -setup {
+        ted order NBHOOD:CREATE:RAW  $rawnb1
+    } -body {
+        ted order -reject NBHOOD:CREATE:RAW \
+            [dict merge $rawnb2 [list polygon [dict get $rawnb1 polygon]]]
+    } -cleanup {
+        cleanup
+    } -result {
+        polygon {A neighborhood with this polygon already exists}
+    }
+    
+
+    test CREATE_RAW-1.11 {refpoint: invalid ref point, not coord} -body {
+        ted order -reject NBHOOD:CREATE:RAW [dict merge $rawnb1 {
+            refpoint 180
+        }]
+    } -result {
+        refpoint {expected lat/long pair, got: "180"}
+    }
+
+    test CREATE_RAW-1.12 {refpoint: invalid ref point, invalid coord} -body {
+        ted order -reject NBHOOD:CREATE:RAW [dict merge $rawnb1 {
+            refpoint {-91 180}
+        }]
+    } -match glob -result {
+        refpoint {invalid latitude, should be -90.0 to 90.0 degrees*}
+    }
+
+
+    test CREATE_RAW-1.13 {refpoint: duplicate refpoint} -setup {
+        ted order NBHOOD:CREATE:RAW  $rawnb1
+    } -body {
+        ted order -reject NBHOOD:CREATE:RAW \
+            [dict merge $rawnb2 [list refpoint [dict get $rawnb1 refpoint]]]
+    } -cleanup {
+        cleanup
+    } -result {
+        refpoint {A neighborhood with this reference point already exists}
+    }
+
+
+    test CREATE_RAW-1.14 {refpoint not in polygon} -body {
+        ted order -reject NBHOOD:CREATE:RAW [dict merge $rawnb1 {
+            polygon {0 0 1 0 1 1 0 1}
+        }]
+    } -result {
+        refpoint {not in polygon}
+    }
+
+
+    test CREATE_RAW-1.15 {local: invalid boolean} -body {
+        ted order -reject NBHOOD:CREATE:RAW [dict merge $rawnb1 {
+            local NONESUCH
+        }]
+    } -result {
+        local {invalid boolean "NONESUCH", should be one of: 1, 0, true, false, yes, no, on, off}
+    }
+
+
+    test CREATE_RAW-2.1 {nbhood is created, controller is NONE} -body {
+        ted order NBHOOD:CREATE:RAW $rawnb1
+        set parms [join [dict keys $rawnb1] ","]
+        ted querylist "SELECT $parms FROM nbhoods"
+    } -cleanup {
+        cleanup
+    } -result {
+n             RAW1
+longname      Raw1
+refpoint      30 30
+polygon       -90 -180 90 -180 90 180 -90 180
+urbanization  URBAN
+controller    
+pcf           1.0
+local         1
+    }
+
+    test CREATE_RAW-2.2 {nbhood is created, controller is given} -setup {
+        ted create JOE
+    } -body {
+        ted order NBHOOD:CREATE:RAW [dict merge $rawnb1 {controller JOE}]
+        set parms [join [dict keys $rawnb1] ","]
+        ted querylist "SELECT $parms FROM nbhoods"
+    } -cleanup {
+        cleanup
+    } -result {
+n             RAW1
+longname      Raw1
+refpoint      30 30
+polygon       -90 -180 90 -180 90 180 -90 180
+urbanization  URBAN
+controller    JOE
+pcf           1.0
+local         1
+    }
+
+    test CREATE_RAW-2.3 {longname defaults to ID} -body {
+        ted order NBHOOD:CREATE:RAW [dict merge $rawnb1 {longname ""}]
+
+        tdb onecolumn {SELECT longname FROM nbhoods}
+    } -cleanup {
+        cleanup
+    } -result {RAW1}
+
+    test CREATE_RAW-2.4 {Effects} -body {
+        ted notifier bind ::tdb <nbhoods>
+        ted order NBHOOD:CREATE:RAW $rawnb1
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <nbhoods> update RAW1}
+        {::tdb <nbhoods> update RAW1}
+    }
+
+
+    test CREATE_RAW-3.1 {undo effects} -setup {
+        ted order NBHOOD:CREATE:RAW $rawnb1
+    } -body {
+        ted notifier bind ::tdb <nbhoods>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <nbhoods> delete RAW1}
+    }
+
+
+    #-------------------------------------------------------------------
+    # NBHOOD:DELETE
+
+    test DELETE-1.1 {required parms} -body {
+        ted order -reject NBHOOD:DELETE {}
+    } -result {
+        n {required value}
+    }
+    
+    test DELETE-1.2 {unknown n} -body {
+        ted order -reject NBHOOD:DELETE n NONESUCH
+    } -result {
+        n {Invalid neighborhood, none are defined}
+    }
+
+    test DELETE-2.1 {Effects} -setup {
+        ted create NB1
+    } -body {
+        ted notifier bind ::tdb <nbhoods>
+        ted order NBHOOD:DELETE n NB1
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <nbhoods> delete NB1}
+    }
+
+
+    test DELETE-3.1 {Undo effects} -setup {
+        ted create NB1
+        ted order NBHOOD:DELETE n NB1
+    } -body {
+        ted notifier bind ::tdb <nbhoods>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <nbhoods> update NB1}
+    }
+
+
+    #-------------------------------------------------------------------
+    # NBHOOD:LOWER
+
+    test LOWER-1.1 {required parms} -body {
+        ted order -reject NBHOOD:LOWER {}
+    } -result {
+        n {required value}
+    }
+    
+    test LOWER-1.2 {unknown n} -body {
+        ted order -reject NBHOOD:LOWER n NONESUCH
+    } -result {
+        n {Invalid neighborhood, none are defined}
+    }
+
+    test LOWER-2.1 {Nbhood is lower} -setup {
+        ted order NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $overnb1
+    } -body {
+        ted order NBHOOD:LOWER n OV1
+        ted query {SELECT n,longname,stacking_order,obscured_by FROM nbhoods}
+    } -cleanup {
+        cleanup
+    } -result {
+n   longname stacking_order obscured_by 
+--- -------- -------------- ----------- 
+NB1 Here     2                          
+OV1 Over     1              NB1         
+    }
+
+    test LOWER-2.2 {<Stack>} -setup {
+        ted order NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $overnb1
+    } -body {
+        ted notifier bind ::tdb.nbhood <Stack>
+        ted order NBHOOD:LOWER n OV1
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb.nbhood <Stack>}
+    }
+
+    test LOWER-3.1 {Undo} -setup {
+        ted order NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $overnb1
+    } -body {
+        ted order NBHOOD:LOWER n OV1
+        tdb order undo
+        ted query {SELECT n,longname,stacking_order,obscured_by FROM nbhoods}
+    } -cleanup {
+        cleanup
+    } -result {
+n   longname stacking_order obscured_by 
+--- -------- -------------- ----------- 
+NB1 Here     1              OV1         
+OV1 Over     2                          
+    }
+
+    #-------------------------------------------------------------------
+    # NBHOOD:RAISE
+
+    test RAISE-1.1 {required parms} -body {
+        ted order -reject NBHOOD:RAISE {}
+    } -result {
+        n {required value}
+    }
+    
+    test RAISE-1.2 {unknown n} -body {
+        ted order -reject NBHOOD:RAISE n NONESUCH
+    } -result {
+        n {Invalid neighborhood, none are defined}
+    }
+
+    test RAISE-2.1 {Nbhood is lower} -setup {
+        ted order NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $overnb1
+    } -body {
+        ted order NBHOOD:RAISE n NB1
+        ted query {SELECT n,longname,stacking_order,obscured_by FROM nbhoods}
+    } -cleanup {
+        cleanup
+    } -result {
+n   longname stacking_order obscured_by 
+--- -------- -------------- ----------- 
+NB1 Here     2                          
+OV1 Over     1              NB1         
+    }
+
+    test RAISE-2.2 {<Stack>} -setup {
+        ted order NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $overnb1
+    } -body {
+        ted notifier bind ::tdb.nbhood <Stack>
+        ted order NBHOOD:RAISE n NB1
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb.nbhood <Stack>}
+    }
+
+    test RAISE-3.1 {Undo} -setup {
+        ted order NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $overnb1
+    } -body {
+        ted order NBHOOD:RAISE n NB1
+        tdb order undo
+        ted query {SELECT n,longname,stacking_order,obscured_by FROM nbhoods}
+    } -cleanup {
+        cleanup
+    } -result {
+n   longname stacking_order obscured_by 
+--- -------- -------------- ----------- 
+NB1 Here     1              OV1         
+OV1 Over     2                          
+    }
+
+    #-------------------------------------------------------------------
+    # NBHOOD:UPDATE
+
+    test UPDATE-1.1 {required parms} -body {
+        ted order -reject NBHOOD:UPDATE {}
+    } -result {
+        n {required value}
+    }
+    
+    test UPDATE-1.2 {invalid urbanization} -setup {
+        ted order NBHOOD:CREATE $nb1
+    } -body {
+        ted order -reject NBHOOD:UPDATE n NB1 urbanization NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        urbanization {invalid value "NONESUCH", should be one of: ISOLATED, RURAL, SUBURBAN, URBAN}
+    }
+
+    test UPDATE-1.3 {invalid controller} -setup {
+        ted order NBHOOD:CREATE $nb1
+    } -body {
+        ted order -reject NBHOOD:UPDATE n NB1 controller NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        controller {Invalid actor "NONESUCH", should be one of: NONE}
+    }
+
+    # UPDATE-1.4: Obsolete
+
+    test UPDATE-1.5 {invalid pcf} -setup {
+        ted order NBHOOD:CREATE $nb1
+    } -body {
+        ted order -reject NBHOOD:UPDATE n NB1 pcf -1.0
+    } -cleanup {
+        cleanup
+    } -result {
+        pcf {invalid value "-1.0", should be a real number no less than 0.0}
+    }
+
+    test UPDATE-1.6 {polygon: invalid map ref} -setup {
+        ted order NBHOOD:CREATE $nb1
+    } -body {
+        ted order -reject NBHOOD:UPDATE           \
+            n       NB1                          \
+            polygon {31NFE1101142195 31NFG1067563306 Z99Z99 32NJK6683142736}
+    } -cleanup {
+        cleanup
+    } -result {
+        polygon {Invalid MGRS string: "Z99Z99"}
+    }
+
+    test UPDATE-1.7 {polygon: duplicate polygon} -setup {
+        ted order NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $nb2
+    } -body {
+        ted order -reject NBHOOD:UPDATE     \
+            n       NB1                    \
+            polygon [dict get $nb2 polygon]
+    } -cleanup {
+        cleanup
+    } -result {
+        polygon {A neighborhood with this polygon already exists}
+    }
+
+    test UPDATE-1.8 {refpoint: invalid map ref} -setup {
+        ted order NBHOOD:CREATE $nb1
+    } -body {
+        ted order -reject NBHOOD:UPDATE \
+            n        NB1               \
+            refpoint X99X99
+    } -cleanup {
+        cleanup
+    } -result {
+        refpoint {Invalid MGRS string: "X99X99"}
+    }
+
+    test UPDATE-1.9 {refpoint: duplicate refpoint} -setup {
+        ted order NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $nb2
+    } -body {
+        ted order -reject NBHOOD:UPDATE       \
+            n        NB1                     \
+            refpoint [dict get $nb2 refpoint]
+    } -cleanup {
+        cleanup
+    } -result {
+        polygon {A neighborhood with this reference point already exists}
+    }
+
+    test UPDATE-1.10 {refpoint not in polygon} -setup {
+        ted order NBHOOD:CREATE $nb1
+    } -body {
+        ted order -reject NBHOOD:UPDATE \
+            n        NB1               \
+            refpoint 31NGF2175353002
+    } -cleanup {
+        cleanup
+    } -result {
+        refpoint {not in polygon}
+    }
+
+    test UPDATE-1.11 {invalid local} -setup {
+        ted order NBHOOD:CREATE $nb1
+    } -body {
+        ted order -reject NBHOOD:UPDATE n NB1 local NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        local {invalid boolean "NONESUCH", should be one of: 1, 0, true, false, yes, no, on, off}
+    }
+
+    test UPDATE-2.1 {nbhood is updated} -setup {
+        ted create JOE
+        ted order NBHOOD:CREATE $nb1
+    } -body {
+        ted order NBHOOD:UPDATE {
+            n            NB1
+            longname     "Not Here"
+            local        NO
+            urbanization RURAL
+            controller   JOE
+            pcf          0.5
+            refpoint     31NCB3312565853
+            polygon      {31NAA6600000000 31NAE6683142736 31NFE1101142195 31NFA1128100000}
+        }
+
+        set parms [join [dict keys $nb1] ","]
+        ted querylist "SELECT $parms FROM nbhoods"
+    } -cleanup {
+        cleanup
+    } -match glob -result {
+n             NB1
+longname      Not Here
+local         0
+urbanization  RURAL
+controller    JOE
+pcf           0.0
+refpoint      1.5*
+polygon       0.0*
+    }
+
+
+    test UPDATE-2.2 {table monitor event} -setup {
+        ted order NBHOOD:CREATE $nb1
+    } -body {
+        ted notifier bind ::tdb <nbhoods>
+        ted order NBHOOD:UPDATE n NB1 longname "Not Here"
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <nbhoods> update NB1}
+    }
+
+
+    test UPDATE-3.1 {undo undoes the change} -setup {
+        ted order NBHOOD:CREATE $nb1
+        ted order NBHOOD:UPDATE [dict merge $overnb1 {n NB1}]
+    } -body {
+        ted notifier bind ::tdb <nbhoods>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <nbhoods> update NB1}
+    }
+
+    #-------------------------------------------------------------------
+    # NBHOOD:UPDATE:MULTI
+
+    test UPDATE:MULTI-1.1 {required parms} -body {
+        ted order -reject NBHOOD:UPDATE:MULTI {}
+    } -result {
+        ids {required value}
+    }
+
+    test UPDATE:MULTI-1.2 {invalid ids, no nbhoods} -body {
+        ted order -reject NBHOOD:UPDATE:MULTI ids NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        ids {Invalid neighborhood, none are defined}
+    }
+    
+    test UPDATE:MULTI-1.3 {invalid ids, nbhoods} -setup {
+        ted order NBHOOD:CREATE $nb1
+    } -body {
+        ted order -reject NBHOOD:UPDATE:MULTI ids NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        ids {Invalid neighborhood, should be one of: NB1}
+    }
+
+    test UPDATE:MULTI-1.4 {invalid urbanization} -setup {
+        ted order NBHOOD:CREATE $nb1
+    } -body {
+        ted order -reject NBHOOD:UPDATE:MULTI ids NB1 urbanization NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        urbanization {invalid value "NONESUCH", should be one of: ISOLATED, RURAL, SUBURBAN, URBAN}
+    }
+
+    # UPDATE:MULTI-1.5: Obsolete
+
+    test UPDATE:MULTI-1.6 {invalid pcf} -setup {
+        ted order NBHOOD:CREATE $nb1
+    } -body {
+        ted order -reject NBHOOD:UPDATE:MULTI ids NB1 pcf -1.0
+    } -cleanup {
+        cleanup
+    } -result {
+        pcf {invalid value "-1.0", should be a real number no less than 0.0}
+    }
+
+    test UPDATE:MULTI-2.1 {one nbhood of several is updated} -setup {
+        ted order NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $nb2
+    } -body {
+        ted notifier bind ::tdb <nbhoods>
+        ted order NBHOOD:UPDATE:MULTI ids NB1 urbanization SUBURBAN
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <nbhoods> update NB1}
+    }
+
+    test UPDATE:MULTI-2.2 {several nbhoods are updated} -setup {
+        ted order NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $nb2
+    } -body {
+        ted notifier bind ::tdb <nbhoods>
+        ted order NBHOOD:UPDATE:MULTI ids {NB1 NB2} urbanization SUBURBAN
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <nbhoods> update NB1}
+        {::tdb <nbhoods> update NB2}
+    }
+
+
+    test UPDATE:MULTI-3.1 {Undo effects} -setup {
+        ted order NBHOOD:CREATE $nb1
+        ted order NBHOOD:CREATE $nb2
+        ted order NBHOOD:UPDATE:MULTI ids {NB1 NB2} urbanization SUBURBAN
+    } -body {
+        ted notifier bind ::tdb <nbhoods>
+        tdb order undo
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <nbhoods> update NB1}
+        {::tdb <nbhoods> update NB2}
+    }
+
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+
+
+

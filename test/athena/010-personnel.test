@@ -1,0 +1,437 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-personnel.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    personnel(sim) tests.
+#
+#    This test suite tests the personnel(sim) mutators and queries
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        # Clean up the test environment
+        ted cleanup
+    }
+
+    proc setup {} {
+        ted create NB1 NB2 BLUE BRIT HAL SHIA SUNN KURD
+    }
+
+    #-------------------------------------------------------------------
+    # start
+
+    test start-1.1 {start populates personnel_g} -setup {
+        setup
+    } -body {
+        tdb personnel start
+        ted query {SELECT * FROM personnel_g}
+    } -cleanup {
+        cleanup
+    } -result {
+g    personnel 
+---- --------- 
+BLUE 5000      
+BRIT 5000      
+HAL  2000      
+    }
+
+    test start-1.2 {start populates deploy_ng} -setup {
+        setup
+    } -body {
+        tdb personnel start
+        ted query {SELECT * FROM deploy_ng ORDER BY n, g}
+    } -cleanup {
+        cleanup
+    } -result {
+n   g    personnel unassigned 
+--- ---- --------- ---------- 
+NB1 BLUE 0         0          
+NB1 BRIT 0         0          
+NB1 HAL  0         0          
+NB2 BLUE 0         0          
+NB2 BRIT 0         0          
+NB2 HAL  0         0          
+    }
+
+    #-------------------------------------------------------------------
+    # load
+
+    test load-1.1 {loads working_personnel} -setup {
+        setup
+        tdb personnel start
+    } -body {
+        tdb personnel load
+        ted query {SELECT * FROM working_personnel}
+    } -cleanup {
+        cleanup
+    } -result {
+g    personnel available 
+---- --------- --------- 
+BLUE 5000      5000      
+BRIT 5000      5000      
+HAL  2000      2000      
+    }
+
+    test load-1.2 {loads working_deployment} -setup {
+        setup
+        tdb personnel start
+    } -body {
+        tdb personnel load
+        ted query {SELECT * FROM working_deployment ORDER BY n,g}
+    } -cleanup {
+        cleanup
+    } -result {
+n   g    personnel unassigned 
+--- ---- --------- ---------- 
+NB1 BLUE 0         0          
+NB1 BRIT 0         0          
+NB1 HAL  0         0          
+NB2 BLUE 0         0          
+NB2 BRIT 0         0          
+NB2 HAL  0         0          
+    }
+
+    test load-1.3 {clears pending flows} -setup {
+        setup
+        tdb personnel start
+    } -body {
+        tdb personnel load
+        tdb personnel pendingFlows
+    } -cleanup {
+        cleanup
+    } -result {}
+
+
+    #-------------------------------------------------------------------
+    # deploy
+
+    test deploy-1.1 {fails if troops are unavailable} -setup {
+        setup
+        tdb personnel start
+        tdb personnel load
+    } -body {
+        tdb personnel deploy 1 NB1 BLUE 6000
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Insufficient personnel available: 6000 > 5000}
+
+    test deploy-2.1 {Decrements available} -setup {
+        setup
+        tdb personnel start
+        tdb personnel load
+    } -body {
+        tdb personnel deploy 1 NB1 BLUE 1000
+        ted query {SELECT * FROM working_personnel}
+    } -cleanup {
+        cleanup
+    } -result {
+g    personnel available 
+---- --------- --------- 
+BLUE 5000      4000      
+BRIT 5000      5000      
+HAL  2000      2000      
+    }
+
+    test deploy-2.2 {Increments personnel} -setup {
+        setup
+        tdb personnel start
+        tdb personnel load
+    } -body {
+        tdb personnel deploy 1 NB1 BLUE 1000
+        ted query {SELECT * FROM working_deployment ORDER BY n,g}
+    } -cleanup {
+        cleanup
+    } -result {
+n   g    personnel unassigned 
+--- ---- --------- ---------- 
+NB1 BLUE 1000      1000       
+NB1 BRIT 0         0          
+NB1 HAL  0         0          
+NB2 BLUE 0         0          
+NB2 BRIT 0         0          
+NB2 HAL  0         0          
+    }
+
+    test deploy-2.3 {Multiple deployments to same n,g} -setup {
+        setup
+        tdb personnel start
+        tdb personnel load
+    } -body {
+        tdb personnel deploy 1 NB1 BLUE 1000
+        tdb personnel deploy 2 NB1 BLUE 500
+        ted query {SELECT * FROM working_deployment ORDER BY n,g}
+    } -cleanup {
+        cleanup
+    } -result {
+n   g    personnel unassigned 
+--- ---- --------- ---------- 
+NB1 BLUE 1500      1500       
+NB1 BRIT 0         0          
+NB1 HAL  0         0          
+NB2 BLUE 0         0          
+NB2 BRIT 0         0          
+NB2 HAL  0         0          
+    }
+
+    #-------------------------------------------------------------------
+    # demob
+
+    test demob-1.1 {fails if troops are unavailable} -setup {
+        setup
+        tdb personnel start
+        tdb personnel load
+    } -body {
+        tdb personnel demob BLUE 6000
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Insufficient personnel available: 6000 > 5000}
+
+    test demob-2.1 {Decrements personnel and available} -setup {
+        setup
+        tdb personnel start
+        tdb personnel load
+    } -body {
+        tdb personnel demob BLUE 1000
+        ted query {SELECT * FROM working_personnel}
+    } -cleanup {
+        cleanup
+    } -result {
+g    personnel available 
+---- --------- --------- 
+BLUE 4000      4000      
+BRIT 5000      5000      
+HAL  2000      2000      
+    }
+
+    #-------------------------------------------------------------------
+    # flow
+
+    test flow-1.1 {saves population flow} -setup {
+        setup
+        tdb personnel start
+        tdb personnel load
+    } -body {
+        tdb personnel flow SHIA SUNN 6000
+        tdb personnel flow SHIA KURD 7000
+
+        tdb personnel pendingFlows
+    } -cleanup {
+        cleanup
+    } -result {SHIA SUNN 6000 SHIA KURD 7000}
+
+
+    #-------------------------------------------------------------------
+    # save
+
+    test save-1.1 {Logs changed deployments} -setup {
+        setup
+        tdb personnel start
+        tdb personnel load
+
+        # Initially, all troops are deployed in NB1.  Move or
+        # otherwise change them.
+        tdb personnel deploy 1 NB1 BLUE 2000
+        tdb personnel deploy 2 NB1 BRIT 2000
+        tdb personnel deploy 3 NB1 HAL 1000
+    } -body {
+        tdb personnel save
+
+        # Should be 6 messages: 3 deployments to NB1
+        # and 3 demobilization of unused troops
+        tdb eval {SELECT count(event_id) FROM sigevents}
+    } -cleanup {
+        cleanup
+    } -result {6}
+
+    test save-1.2 {Saves personnel back to personnel_g} -setup {
+        setup
+        tdb personnel start
+        tdb personnel load
+        tdb personnel deploy 1 NB1 BLUE 2000
+        tdb personnel deploy 2 NB1 BRIT 5000
+        tdb personnel deploy 3 NB1 HAL 2000
+    } -body {
+        tdb personnel save
+
+        ted query {SELECT * FROM personnel_g}
+    } -cleanup {
+        cleanup
+    } -result {
+g    personnel 
+---- --------- 
+BLUE 2000      
+BRIT 5000      
+HAL  2000      
+    }
+
+    test save-1.3 {Automatically demobilizes undeployed personnel} -setup {
+        setup
+        tdb personnel start
+        tdb personnel load
+        tdb personnel deploy 1 NB1 BLUE 2000
+    } -body {
+        tdb personnel save
+
+        ted query {SELECT * FROM personnel_g}
+    } -cleanup {
+        cleanup
+    } -result {
+g    personnel 
+---- --------- 
+BLUE 2000      
+BRIT 0         
+HAL  0         
+    }
+
+    test save-1.4 {Saves pending flows} -setup {
+        setup
+        ted lock
+        tdb personnel load
+        tdb personnel flow SHIA SUNN 1000
+    } -body {
+        tdb personnel save
+
+        ted query {SELECT g, population FROM demog_g}
+    } -cleanup {
+        cleanup
+    } -result {
+g    population 
+---- ---------- 
+SHIA 0          
+SUNN 2000       
+KURD 1000       
+    }
+
+    #-------------------------------------------------------------------
+    # available
+
+    test available-1.1 {Returns available} -setup {
+        setup
+        tdb personnel start
+        tdb personnel load
+    } -body {
+        set a [tdb personnel available BLUE]
+        tdb personnel deploy 1 NB1 BLUE 1000
+        set b [tdb personnel available BLUE]
+
+        list $a $b
+    } -cleanup {
+        cleanup
+    } -result {5000 4000}
+
+
+
+
+
+    #-------------------------------------------------------------------
+    # mutate attrit
+
+    test attrit-1.1 {attrit updates the personnel_g count} -setup {
+        setup
+        tdb personnel start
+        tdb personnel load
+        tdb personnel deploy 1 NB1 BLUE 100
+        tdb personnel save
+    } -body {
+        tdb personnel attrit NB1 BLUE 15
+        ted query {SELECT * FROM personnel_g ORDER BY g}
+    } -cleanup {
+        cleanup
+    } -result {
+g    personnel 
+---- --------- 
+BLUE 85        
+BRIT 0         
+HAL  0         
+    }
+
+    test attrit-1.2 {attrit updates the deploy_ng count} -setup {
+        setup
+        tdb personnel start
+        tdb personnel load
+        tdb personnel deploy 1 NB1 BLUE 100
+        tdb personnel deploy 2 NB1 BRIT 100
+        tdb personnel save
+    } -body {
+        tdb personnel attrit NB1 BLUE 15
+        ted query {SELECT * FROM deploy_ng ORDER BY g}
+    } -cleanup {
+        cleanup
+    } -result {
+n   g    personnel unassigned 
+--- ---- --------- ---------- 
+NB1 BLUE 85        100        
+NB2 BLUE 0         0          
+NB1 BRIT 100       100        
+NB2 BRIT 0         0          
+NB1 HAL  0         0          
+NB2 HAL  0         0          
+    }
+
+    test attrit-1.3 {attrits down to zero} -setup {
+        setup
+        tdb personnel start
+        tdb personnel load
+        tdb personnel deploy 1 NB1 BLUE 100
+        tdb personnel deploy 1 NB2 BLUE 100
+        tdb personnel deploy 2 NB1 BRIT 100
+        tdb personnel save
+    } -body {
+        tdb personnel attrit NB1 BLUE 150
+
+        set personnel [tdb onecolumn {
+            SELECT personnel FROM personnel_g WHERE g='BLUE'
+        }]
+
+        set deployed [tdb onecolumn {
+            SELECT personnel FROM deploy_ng
+            WHERE n='NB1' AND g='BLUE'
+        }]
+
+        list $personnel $deployed
+    } -cleanup {
+        cleanup
+    } -result {100 0}
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+

@@ -16,8 +16,6 @@
 #    * History export, which exports the orders in the cif table
 #      (this is the classic export mode).
 #
-# TBD: Global refs: map, simclock
-#
 #-----------------------------------------------------------------------
 
 snit::type ::athena::exporter {
@@ -53,7 +51,7 @@ snit::type ::athena::exporter {
     # map flag is set to 0, MAP:IMPORT:* orders are changed to 
     # MAP:GEOREF orders and only projection information is exported.
 
-    method fromcif {scriptFile mapflag} {
+    method fromcif {scriptFile {mapflag 0}} {
         # FIRST, get a list of the order data.  Skip SIM:UNLOCK, and 
         # prepare to fix up SIM:RUN and SIM:PAUSE
         set orders [list]
@@ -144,7 +142,7 @@ snit::type ::athena::exporter {
             # non-default values.
             set cmd [list send $name]
 
-            set o [$adb flunky make $name]
+            set o [$adb order make $name]
             $o setdict $parmdict
 
             dict for {parm value} [$o prune] {
@@ -186,7 +184,7 @@ snit::type ::athena::exporter {
     #
     # Creates a script that will recreate the current scenario.
 
-    method fromdata {scriptFile mapflag} {
+    method fromdata {scriptFile {mapflag 0}} {
         # FIRST, open the file.  We'll throw an error on a bad file
         # name; that's OK.
         set f [open $scriptFile w]
@@ -225,8 +223,8 @@ snit::type ::athena::exporter {
 
         # NEXT, Date and Time Parameters
         SectionHeader $f "Date and Time Parameters"
-        MakeSend $f SIM:STARTDATE startdate [simclock cget -week0]
-        MakeSend $f SIM:STARTTICK starttick [simclock cget -tick0]
+        MakeSend $f SIM:STARTDATE startdate [$adb clock cget -week0]
+        MakeSend $f SIM:STARTTICK starttick [$adb clock cget -tick0]
 
         # NEXT, Model Parameters
         SectionHeader $f "Model Parameters"

@@ -122,16 +122,17 @@ snit::type ::athena::athenadb {
     component autogen        -public autogen        ;# Scenario auto-generator
     component executive      -public executive      ;# executive command processor
     component exporter       -public export         ;# exporter
-    component flunky         -public flunky         ;# athena_flunky(n)
+    component flunky         -public order          ;# athena_flunky(n)
     component gofer          -public gofer          ;# gofer
     component hist           -public hist           ;# results history
     component parm           -public parm           ;# model parameter DB
     component paster         -public paste          ;# paste manager
-    component pot            -public pot            ;# beanpot(n)
-    component ptype          -public ptype          ;# app level type validators
+    component pot            -public bean           ;# beanpot(n)
+    component ptype          -public ptype          ;# parm type validators
     component ruleset        -public ruleset        ;# rule set manager
     component sanity         -public sanity         ;# sanity checker
     component sim            -public sim            ;# Simulation Control
+    component simclock       -public clock          ;# Simulation Clock
     
     # Editable Entities
     component absit          -public absit          ;# absit manager
@@ -185,6 +186,28 @@ snit::type ::athena::athenadb {
     #-------------------------------------------------------------------
     # Options
 
+    # -subject name
+    #
+    # The name of the object for use in log messages and as a 
+    # notifier(n) subject.  Defaults to the tail of the object's command.
+
+    option -subject \
+        -readonly yes
+
+    # -adbfile filename
+    #
+    # Pseudo-option, read-only after creation.  Used to open an .adb 
+    # file.  After that, tracks names established by "save".
+
+    option -adbfile      \
+        -default     ""  \
+        -readonly    yes \
+        -cgetmethod  CgetAdbFile
+
+    method CgetAdbFile {opt} {
+        return [$self adbfile]
+    }
+
     # -logcmd cmd
     #
     # The name of a logger(n) object (or equivalent) to use to log the 
@@ -193,14 +216,23 @@ snit::type ::athena::athenadb {
 
     option -logcmd
 
-    # -subject name
-    #
-    # The name of the object for use in log messages and as a 
-    # notifier(n) subject.  Defaults to the tail of the object's command.
 
-    option -subject \
-        -readonly yes
+    # -scratch dirname
+    #
+    # The name of a directory in which athena(n) can write files.
+    # Defaults to the current working directory.
+
+    option -scratch \
+        -default ""
+
+    # -executivecmd cmd
+    #
+    # The name of a command to call to define additional executive
+    # commands in the context of the scenario.  The cmd is a command
+    # prefix, to which will be added the name of the athena(n) object.
     
+    option -executivecmd \
+        -readonly yes
 
     #-------------------------------------------------------------------
     # Instance Variables
@@ -215,24 +247,25 @@ snit::type ::athena::athenadb {
         adbfile   ""
         saveables {}
     }
-    
+
     #-------------------------------------------------------------------
     # Constructor/Destructor
 
-    # constructor filename ?options...?
+    # constructor ?options...?
     #
-    # filename - An .adb filename or ""
-    #
-    # Creates a new scenario object.  If a valid .adb file name is given,
+    # Creates a new scenario object.  If a valid -adbfile is given,
     # the .adb file will be loaded; otherwise, the new scenario will
     # be empty.  
 
-    constructor {filename args} {
+    constructor {args} {
         # FIRST, set the -subject's default value.  Then, get the option
         # values.
         set options(-subject) $self
 
         $self configurelist $args
+
+        # NEXT, create the simulation clock
+        install simclock using ::projectlib::weekclock ${selfns}::simclock
 
         # NEXT, create the RDB and configure it for use.
         $self CreateRDB
@@ -288,7 +321,6 @@ snit::type ::athena::athenadb {
             demog                       \
             econ                        \
             exporter                    \
-            executive                   \
             frcgroup                    \
             group                       \
             hist                        \
@@ -300,10 +332,10 @@ snit::type ::athena::athenadb {
             nbhood                      \
             nbrel                       \
             orggroup                    \
-            parm                        \
+            {parm parmdb}               \
             payload                     \
-            plant                       \
             personnel                   \
+            plant                       \
             ptype                       \
             rebase                      \
             {ruleset  ruleset_manager}  \
@@ -313,18 +345,11 @@ snit::type ::athena::athenadb {
             service                     \
             sigevent                    \
             sim                         \
-            {strategy strategy_manager} \
             stance                      \
+            {strategy strategy_manager} \
             unit                        \
             vrel
 
-        # NEXT, Make these components globally available.
-        # TBD: These will go away once the transition to library code
-        # is complete.
-        interp alias {} ::aram     {} $aram
-        interp alias {} ::rdb      {} $rdb
-        interp alias {} ::pot      {} $pot
-        interp alias {} ::flunky   {} $flunky
 
         # NEXT, register the ones that are saveables.  This will change
         # when the transition to library code is complete.
@@ -336,12 +361,17 @@ snit::type ::athena::athenadb {
         $self RegisterSaveable sim  $sim
 
         # NEXT, either load the named file or create an empty database.
-        if {$filename ne ""} {
+        if {$options(-adbfile) ne ""} {
             $self load $filename
         } else {
             set info(adbfile) ""
             $self FinishOpeningScenario
         }
+
+        # NEXT, add executive
+        install executive using ::athena::executive ${selfns}::executive \
+            $self \
+            -executivecmd $options(-executivecmd)
     } 
 
     # MakeComponents component...
@@ -349,8 +379,7 @@ snit::type ::athena::athenadb {
     # component...  - A list of component names.
     #
     # Creates instances for a list of components, all of which take one
-    # constructor argument, the athenadb(n) instance.  For now, also
-    # defines global entry points.
+    # constructor argument, the athenadb(n) instance.
 
     method MakeComponents {args} {
         foreach pair $args {
@@ -362,9 +391,6 @@ snit::type ::athena::athenadb {
 
 
             install $comp using ::athena::${module} ${selfns}::$comp $self
-
-            # TBD: The alias will go away once the conversion is complete.
-            interp alias {} ::${comp} {} [set $comp]
         }
     }
 
@@ -373,26 +399,19 @@ snit::type ::athena::athenadb {
     # Creates the RDB Component.
     #
     # TODO:
-    #   * Make ::simclock a true component
-    #   * Merge scenariodb(n) into this object.
+    #   * Merge scenariodb(n) into this object?
     #     * Merge "marksaved" code in scenariodb(n) into sqldocument(n).
     #   * Consider where SQL sections should be registered.
-    #   * Consider where table monitoring should be done.  I don't
-    #     think the grand scenario object will need it internally.
     #   * Consider how to clean up sqldocument so that the temp schema
     #     can be defined in an sqlsection.
-    #   * Remove ::rdb alias when it is no longer needed.
     #   
 
     method CreateRDB {} {
         # FIRST, create a clean working RDB.
-        # 
-        # TODO: Make ::simclock ${selfns}::clock
-
         set rdb ${selfns}::rdb
 
         scenariodb $rdb \
-            -clock      ::simclock \
+            -clock      $simclock             \
             -explaincmd [mymethod ExplainCmd] \
             -subject    $options(-subject)
 
@@ -488,8 +507,10 @@ snit::type ::athena::athenadb {
         $self notify "" <Destroy>
 
         # FIRST, close and destroy the RDB.
-        $rdb close
-        $rdb destroy
+        catch {
+            $rdb close
+            $rdb destroy
+        }
     }
 
     #-------------------------------------------------------------------
@@ -497,27 +518,29 @@ snit::type ::athena::athenadb {
 
     # RDB
     delegate method {rdb *}           to rdb
-    delegate method eval              to rdb as eval
-    delegate method delete            to rdb as delete
-    delegate method exists            to rdb as exists
-    delegate method grab              to rdb as grab
-    delegate method last_insert_rowid to rdb as last_insert_rowid
-    delegate method monitor           to rdb as monitor
-    delegate method onecolumn         to rdb as onecolumn
-    delegate method query             to rdb as query
-    delegate method safeeval          to rdb as safeeval
-    delegate method safequery         to rdb as safequery
-    delegate method schema            to rdb as schema
-    delegate method tables            to rdb as tables
-    delegate method ungrab            to rdb as ungrab
+    delegate method eval              to rdb
+    delegate method delete            to rdb
+    delegate method exists            to rdb
+    delegate method grab              to rdb
+    delegate method last_insert_rowid to rdb
+    delegate method monitor           to rdb
+    delegate method onecolumn         to rdb
+    delegate method query             to rdb
+    delegate method safeeval          to rdb
+    delegate method safequery         to rdb
+    delegate method schema            to rdb
+    delegate method tables            to rdb
+    delegate method ungrab            to rdb
 
     # SIM
-    delegate method locked            to sim as locked
-    delegate method state             to sim as state
-    delegate method stable            to sim as stable
+    delegate method locked            to sim
+    delegate method state             to sim
+    delegate method stable            to sim
+    delegate method stoptime          to sim
+    delegate method wizlock           to sim
     
     # FLUNKY
-    delegate method send              to flunky as send
+    delegate method send              to flunky
 
     #-------------------------------------------------------------------
     # Scenario Control
@@ -545,6 +568,7 @@ snit::type ::athena::athenadb {
         $self InitializeRDB
         $self RestoreSaveables
         $strategy reset
+        $nbhood   dbsync
 
         set info(adbfile) ""
 
@@ -554,6 +578,11 @@ snit::type ::athena::athenadb {
         # but any changes to its interp state will be lost.  (This
         # is OK.)
         $executive reset
+
+        # NEXT, clear any old transient data out of modules.
+        $aram    clear
+        $aam     reset
+        $abevent reset
 
         $self FinishOpeningScenario
     }
@@ -870,7 +899,7 @@ snit::type ::athena::athenadb {
         $sigevent purge 0
 
         # NEXT, update the clock
-        simclock configure -tick0 [simclock now]
+        $simclock configure -tick0 [$simclock now]
 
         # NEXT, reinitialize modules that depend on the time.
         $aram clear
@@ -898,12 +927,20 @@ snit::type ::athena::athenadb {
         return $info(adbfile)
     } 
 
-    # rdb component
+    # component rdb
     #
     # Returns the name of the RDB component, for use by athena(n).
 
-    method {rdb component} {} {
+    method {component rdb} {} {
         return $rdb
+    }
+
+    # component clock
+    #
+    # Returns the name of the clock component, for use by athena(n).
+
+    method {component clock} {} {
+        return $simclock
     }
 
     #-------------------------------------------------------------------
@@ -968,7 +1005,7 @@ snit::type ::athena::athenadb {
             set result [uplevel 1 $args]
         } 1] 0]
 
-        $self log detail app "${prefix}profile [list $args] $msec"
+        $self log detail "" "${prefix}profile [list $args] $msec"
 
         return $result
     }
@@ -1007,6 +1044,14 @@ snit::type ::athena::athenadb {
         notifier send $subject $event {*}$args
     }
 
+    # tkloaded
+    #
+    # Returns 1 if Tk is loaded, and 0 otherwise.
+
+    method tkloaded {} {
+        return [expr {[info command "tk"] ne ""}]
+    }
+
     # version
     #
     # Returns the package version.
@@ -1014,6 +1059,67 @@ snit::type ::athena::athenadb {
     method version {} {
         return [package present athena]
     }
+
+    # scratch args
+    #
+    # Returns a path to a file in the scratch directory, joining the
+    # arguments together like [file join].
+
+    method scratch {args} {
+        if {$options(-scratch) ne ""} {
+            set base $options(-scratch)
+        } else {
+            set base [pwd]
+        }
+
+        return [file join $base {*}$args]
+    }
+
+    #-------------------------------------------------------------------
+    # Order Dialog Entry
+
+    # enter options...
+    #
+    # -order        - Order name, e.g., MY:ORDER
+    # -parmdict     - Dictionary of initial parameter values
+    # -master       - Master window
+    # -appname      - Application name for dialog title
+    # -helpcmd      - Help command
+    #
+    # If tk is loaded, pops up an order dialog.
+
+    method enter {args} {
+        require {[$self tkloaded]} \
+            "Command unavailable; this is not a Tk app."
+
+        array set opts {
+            -order    ""
+            -parmdict {}
+            -master   ""
+            -appname  ""
+            -helpcmd  ""
+        }
+
+        foroption opt args -all {
+            -order    -
+            -parmdict -
+            -master   -
+            -appname  -
+            -helpcmd {
+                set opts($opt) [lshift args]
+            }
+        }
+
+        order_dialog enter \
+            -resources [dict create adb_ $self db_ $self] \
+            -flunky    $flunky                            \
+            -refreshon {
+                ::adb.flunky <Sync>
+                ::adb        <Tick>
+                ::adb        <Sync>
+            } {*}[array get opts]
+    }
+    
 
     #-------------------------------------------------------------------
     # URAM-related routines.
@@ -1088,9 +1194,6 @@ snit::type ::athena::athenadb {
 
     #===================================================================
     # SQL Functions
-    #
-    # TODO: Some should be application specific.
-    
 
     # Locked
     #

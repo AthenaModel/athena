@@ -1,0 +1,421 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-orggroup.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    orggroup(sim) tests.
+#
+#    This test suite tests the orggroup(sim) mutators and queries
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Clean up after a test
+
+    proc cleanup {} {
+        # Clean up the test environment
+        array unset parms
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # create
+
+    test create-1.1 {orggroup is created} -setup {
+        ted create JOE
+    } -body {
+        tdb orggroup create [ted entity USAID]
+        ted querylist {SELECT * FROM orggroups_view}
+    } -cleanup {
+        cleanup
+    } -result {
+g               USAID
+longname        US Aid
+color           #000001
+demeanor        AVERAGE
+cost            0.0
+gtype           ORG
+a               JOE
+bsid            
+orgtype         NGO
+base_personnel  1000
+    }
+
+    test create-1.2 {a can be empty, yields NULL} -setup {
+        ted create JOE
+    } -body {
+        tdb orggroup create [dict merge [ted entity USAID] {a ""}]
+        ted querylist {SELECT * FROM orggroups_view}
+    } -cleanup {
+        cleanup
+    } -result {
+g               USAID
+longname        US Aid
+color           #000001
+demeanor        AVERAGE
+cost            0.0
+gtype           ORG
+a               
+bsid            
+orgtype         NGO
+base_personnel  1000
+    }
+
+    test create-2.1 {undo deletes the orggroup} -setup {
+        ted create JOE
+        tdb orggroup create [ted entity USAID]
+        set undo [tdb orggroup create [ted entity HAL]]
+    } -body {
+        {*}$undo
+        tdb eval {SELECT g FROM orggroups_view}
+    } -cleanup {
+        cleanup
+    } -result {USAID}
+
+    #-------------------------------------------------------------------
+    # delete
+
+    test delete-1.1 {Group is deleted} -setup {
+        ted create USAID HAL
+    } -body {
+        tdb orggroup delete USAID
+
+        # Is USAID gone?
+        tdb eval {SELECT g FROM orggroups_view}
+    } -cleanup {
+        cleanup
+    } -result {HAL}
+
+
+    test delete-2.1 {Undo restores group} -setup {
+        ted create USAID
+        set undo [tdb orggroup delete USAID]
+    } -body {
+        {*}$undo
+        ted querylist {SELECT * FROM orggroups_view}
+    } -cleanup {
+        cleanup
+    } -result {
+g               USAID
+longname        US Aid
+color           #000001
+demeanor        AVERAGE
+cost            0.0
+gtype           ORG
+a               JOE
+bsid            
+orgtype         NGO
+base_personnel  1000
+    }
+
+
+    test delete-5.1 {deletes hrel_fg overrides} -setup {
+        ted create USAID BRIT
+        ted order HREL:OVERRIDE id {USAID BRIT}
+        ted order HREL:OVERRIDE id {BRIT USAID}
+    } -body {
+        tdb orggroup delete USAID
+
+        tdb eval {SELECT f,g FROM hrel_fg ORDER BY f,g}
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test delete-5.2 {undo restores hrel_fg overrides} -setup {
+        ted create USAID BRIT
+        ted order HREL:OVERRIDE id {USAID BRIT}
+        ted order HREL:OVERRIDE id {BRIT USAID}
+
+        set undo [tdb orggroup delete USAID]
+    } -body {
+        namespace eval :: $undo
+
+        tdb eval {SELECT f,g FROM hrel_fg ORDER BY f,g}
+    } -cleanup {
+        cleanup
+    } -result {BRIT USAID USAID BRIT}
+
+    test delete-6.1 {deletes vrel_ga overrides} -setup {
+        ted create JOE USAID
+        ted order VREL:OVERRIDE id {USAID JOE}
+    } -body {
+        tdb orggroup delete USAID
+
+        tdb eval {SELECT g,a FROM vrel_ga ORDER BY g,a}
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test delete-6.2 {undo restores vrel_ga overrides} -setup {
+        ted create JOE USAID
+        ted order VREL:OVERRIDE id {USAID JOE}
+
+        set undo [tdb orggroup delete USAID]
+    } -body {
+        namespace eval :: $undo
+
+        tdb eval {SELECT g,a FROM vrel_ga ORDER BY g,a}
+    } -cleanup {
+        cleanup
+    } -result {USAID JOE}
+
+    #-------------------------------------------------------------------
+    # update
+
+
+    test update-1.1 {orggroup is updated} -setup {
+        ted create BOB USAID
+    } -body {
+        tdb orggroup update {
+            g              USAID
+            longname       "Red Cross"
+            a              BOB
+            color          "#ff0000"
+            orgtype        IGO
+            demeanor       APATHETIC
+            cost           10.0
+        }
+
+        ted querylist {SELECT * FROM orggroups_view}
+    } -cleanup {
+        cleanup
+    } -result {
+g               USAID
+longname        Red Cross
+color           #ff0000
+demeanor        APATHETIC
+cost            10.0
+gtype           ORG
+a               BOB
+bsid            
+orgtype         IGO
+base_personnel  1000
+    }
+
+
+    test update-1.2 {identical values are OK} -setup {
+        ted create USAID
+    } -body {
+        set a [ted query {SELECT * FROM orggroups_view}]
+
+        tdb orggroup update [ted entity USAID]
+
+        set b [ted query {SELECT * FROM orggroups_view}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    test update-1.3 {empty values are OK} -setup {
+        ted create USAID
+    } -body {
+        set a [ted query {SELECT * FROM orggroups_view}]
+
+        tdb orggroup update  {
+            g              USAID
+            longname       ""
+            a              ""
+            color          ""
+            orgtype        ""
+            demeanor       ""
+            cost           ""
+        }
+
+        set b [ted query {SELECT * FROM orggroups_view}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    test update-2.1 {undo undoes the change} -setup {
+        ted create USAID
+    } -body {
+
+        set a [ted query {SELECT * FROM orggroups_view}]
+
+        set undo [tdb orggroup update {
+            g              USAID
+            longname       "Red Cross"
+            a              ""
+            color          "#ff0000"
+            orgtype        IGO
+            demeanor       AGGRESSIVE
+            cost           10.0
+        }]
+
+        {*}$undo
+
+        set b [ted query {SELECT * FROM orggroups_view}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    #-------------------------------------------------------------------
+    # names
+
+    test names-1.1 {Returns names: none defined} -body {
+        tdb orggroup names
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test names-1.2 {Returns names} -setup {
+        ted create USAID HAL
+    } -body {
+        tdb orggroup names
+    } -cleanup {
+        cleanup
+    } -result {HAL USAID}
+
+    #-------------------------------------------------------------------
+    # namedict
+
+    test namedict-1.1 {Returns namedict: none defined} -body {
+        tdb orggroup namedict
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test namedict-1.2 {Returns namedict} -setup {
+        ted create HAL USAID
+    } -body {
+        ted pdicts [tdb orggroup namedict]
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+        HAL   Haliburton
+        USAID {US Aid}
+    }
+
+    #-------------------------------------------------------------------
+    # validate
+
+    test validate-1.1 {Invalid name: none defined} -body {
+        tdb orggroup validate NONESUCH
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Invalid organization group, none are defined}
+
+    test validate-1.2 {Invalid name: some defined} -setup {
+        ted create USAID HAL
+    } -body {
+        tdb orggroup validate NONESUCH
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Invalid organization group, should be one of: HAL, USAID}
+
+    test validate-2.1 {Valid name} -setup {
+        ted create USAID HAL
+    } -body {
+        tdb orggroup validate HAL
+    } -cleanup {
+        cleanup
+    } -result {HAL}
+
+    #-------------------------------------------------------------------
+    # exists
+
+    # tested by validate
+    
+    #-------------------------------------------------------------------
+    # get
+
+    test get-1.1 {get group dict} -setup {
+        ted create HAL
+    } -body {
+        ted pdicts [tdb orggroup get HAL]
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+        a              JOE
+        base_personnel 2000
+        bsid           {}
+        color          {#000002}
+        cost           0.0
+        demeanor       AVERAGE
+        g              HAL
+        gtype          ORG
+        longname       Haliburton
+        orgtype        CTR
+    }
+
+    test get-1.2 {get group attribute} -setup {
+        ted create NB1 HAL
+    } -body {
+        tdb orggroup get HAL a
+    } -cleanup {
+        cleanup
+    } -result {JOE}
+
+    #-------------------------------------------------------------------
+    # view
+
+    test view-1.1 {view group dict} -setup {
+        ted create NB1 HAL
+    } -body {
+        ted pdicts [tdb orggroup view HAL]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        a              JOE
+        base_personnel 2000
+        color          {#000002}
+        cost           0.00
+        demeanor       AVERAGE
+        fancy          *
+        g              HAL
+        gtype          ORG
+        id             HAL
+        link           *
+        longlink       *
+        longname       Haliburton
+        orgtype        CTR
+        personnel      0
+        url            my://app/group/HAL
+    }
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+

@@ -614,7 +614,7 @@ snit::widget mapviewer {
         if {"point" in $info(ordertags) || "nbpoint" in $info(ordertags)} {
             # FIRST, if nbpoint we must be in a neighborhood.
             if {"nbpoint" in $info(ordertags)} {
-                set n [nbhood find {*}[$canvas ref2m $ref]]
+                set n [$adb nbhood find {*}[$canvas ref2m $ref]]
 
                 if {$n eq ""} {
                     return
@@ -693,7 +693,7 @@ snit::widget mapviewer {
         }
 
         # NEXT, load the map.
-        rdb eval {
+        adb eval {
             SELECT width,height,projtype,llat,llon,ulat,ulon,data 
             FROM maps WHERE id=1
         } {
@@ -772,7 +772,7 @@ snit::widget mapviewer {
       "can't use variable as fill: no associated color gradient: \"$varname\""
         }
 
-        if {![rdb exists "SELECT * FROM $vdict(view)"]} {
+        if {![adb exists "SELECT * FROM $vdict(view)"]} {
             return -code error -errorcode INVALID \
                 "variable has no associated data in the database: \"$varname\""
         }
@@ -881,7 +881,7 @@ snit::widget mapviewer {
         array unset nbhoods
 
         # NEXT, add neighborhoods
-        rdb eval {
+        adb eval {
             SELECT n, refpoint, polygon 
             FROM nbhoods
             ORDER BY stacking_order
@@ -942,7 +942,7 @@ snit::widget mapviewer {
 
     method Compatible {} {
         # FIRST, if there are no neighborhoods, then it's always compatible
-        if {[llength [nbhood names]] == 0} {
+        if {[llength [adb nbhood names]] == 0} {
             return 1
         }
 
@@ -952,7 +952,7 @@ snit::widget mapviewer {
         set maxlat [$projection cget -maxlat]
         set maxlon [$projection cget -maxlon]
 
-        lassign [nbhood bbox] nminlat nminlon nmaxlat nmaxlon
+        lassign [adb nbhood bbox] nminlat nminlon nmaxlat nmaxlon
         return [expr {$nminlon > $minlon && $nminlat > $minlat &&
                       $nmaxlat < $maxlat && $nmaxlon < $maxlon}]
     }
@@ -986,7 +986,7 @@ snit::widget mapviewer {
 
             array set vdict [view n get $view(filltag)]
 
-            array set data [rdb eval "SELECT n, x0 FROM $vdict(view)"]
+            array set data [adb eval "SELECT n, x0 FROM $vdict(view)"]
 
             set gradient [dict get $vdict(meta) $view(filltag) gradient]
         }
@@ -1015,7 +1015,7 @@ snit::widget mapviewer {
     # up the refpoint.
 
     method NbhoodShowObscured {} {
-        rdb eval {
+        adb eval {
             SELECT n,obscured_by FROM nbhoods
         } {
             if {$obscured_by ne ""} {
@@ -1045,7 +1045,7 @@ snit::widget mapviewer {
         # already on the list.
         set standards $defaultFills
 
-        foreach g [frcgroup names] {
+        foreach g [adb frcgroup names] {
             lappend standards "nbcoop.$g"
         }
 
@@ -1127,7 +1127,7 @@ snit::widget mapviewer {
     # Brings the transient neighborhood to the front
 
     method NbhoodBringToFront {} {
-        flunky senddict gui NBHOOD:RAISE [list n $nbhoods(trans)]
+        adb order senddict gui NBHOOD:RAISE [list n $nbhoods(trans)]
     }
 
 
@@ -1136,7 +1136,7 @@ snit::widget mapviewer {
     # Sends the transient neighborhood to the back
 
     method NbhoodSendToBack {} {
-        flunky senddict gui NBHOOD:LOWER [list n $nbhoods(trans)]
+        adb order senddict gui NBHOOD:LOWER [list n $nbhoods(trans)]
     }
 
     #-------------------------------------------------------------------
@@ -1184,7 +1184,7 @@ snit::widget mapviewer {
 
     method {EntityNbhood update} {n} {
         # FIRST, get the nbhood data we care about
-        rdb eval {SELECT refpoint, polygon FROM nbhoods WHERE n=$n} {}
+        adb eval {SELECT refpoint, polygon FROM nbhoods WHERE n=$n} {}
 
         # NEXT, if this is a new neighborhood, just draw it;
         # otherwise, update the refpoint and polygon
@@ -1353,7 +1353,7 @@ snit::widget mapviewer {
         set itype $icons(itype-$cid)
 
         if {$itype eq "situation"} {
-            return [expr {$sid in [absit initial names]}]
+            return [adb absit isinitial $sid]
         } else {
             return 1
         }
@@ -1421,7 +1421,7 @@ snit::widget mapviewer {
         switch -exact $icons(itype-$cid) {
             unit {
                 if {[catch {
-                    flunky senddict gui UNIT:MOVE [list  \
+                    adb order senddict gui UNIT:MOVE [list  \
                         u        $icons(sid-$cid)        \
                         location [$canvas icon ref $cid]]
                 }]} {
@@ -1431,7 +1431,7 @@ snit::widget mapviewer {
 
             situation {
                 if {[catch {
-                    flunky senddict gui ABSIT:MOVE [list \
+                    adb order senddict gui ABSIT:MOVE [list \
                         s        $icons(sid-$cid)        \
                         location [$canvas icon ref $cid]]
                 }]} {
@@ -1462,7 +1462,7 @@ snit::widget mapviewer {
     # Clears and redraws all units
 
     method UnitDrawAll {} {
-        rdb eval {
+        adb eval {
             SELECT * FROM units_view
             WHERE active
         } row {
@@ -1537,7 +1537,7 @@ snit::widget mapviewer {
     # to be redrawn.
 
     method UnitDrawSingle {u} {
-        rdb eval {
+        adb eval {
             SELECT * FROM units_view
             WHERE u=$u
         } row {
@@ -1566,7 +1566,7 @@ snit::widget mapviewer {
     # group.
 
     method UnitBrowseDetail {} {
-        set g [unit get $icons(context) g]
+        set g [adb unit get $icons(context) g]
 
         app show my://app/group/$g
     }
@@ -1611,7 +1611,7 @@ snit::widget mapviewer {
     # Clears and redraws all absits
 
     method AbsitDrawAll {} {
-        rdb eval {
+        adb eval {
             SELECT * FROM absits
         } row {
             $self AbsitDraw [array get row]
@@ -1679,7 +1679,7 @@ snit::widget mapviewer {
 
     method AbsitDrawSingle {s} {
         # FIRST, draw it, if it's current.
-        rdb eval {
+        adb eval {
             SELECT * FROM absits
             WHERE s=$s
         } row {

@@ -1,0 +1,555 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-iom.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    iom(sim) tests.
+#
+#    This test suite tests the iom(sim) mutators and queries
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Setup
+    proc setup {} {
+        ted create BLUE HOOK1 HOOK2
+    }
+
+    # Clean up after a test
+    proc cleanup {} {
+        # Clean up the test environment
+        ted cleanup
+    }
+
+    # ioms
+
+    set m1 {
+        iom_id     M1
+        longname   "IOM One"
+        hook_id    HOOK1
+    }
+
+    set m2 {
+        iom_id     M2
+        longname   "IOM Two"
+        hook_id    ""
+    }
+
+    # payloads
+    set p1 {
+        payload_type COOP
+        iom_id       M1
+        g            BLUE
+        mag          1.0
+    }
+
+    #-------------------------------------------------------------------
+    # create
+
+    test create-1.1 {iom is created with hook} -setup {
+        setup
+    } -body {
+        tdb iom create $m1
+        ted querylist {SELECT * FROM ioms}
+    } -cleanup {
+        cleanup
+    } -result {
+iom_id    M1
+longname  IOM One
+hook_id   HOOK1
+state     normal
+    }
+
+    test create-1.2 {iom is created without hook} -setup {
+        setup
+    } -body {
+        tdb iom create $m2
+        ted querylist {SELECT * FROM ioms}
+    } -cleanup {
+        cleanup
+    } -result {
+iom_id    M2
+longname  IOM Two
+hook_id   
+state     normal
+    }
+
+    test create-2.1 {undo deletes the iom} -setup {
+        setup
+        tdb iom create $m1
+        set undo [tdb iom create $m2]
+    } -body {
+        namespace eval :: $undo
+        tdb eval {SELECT iom_id FROM ioms}
+    } -cleanup {
+        cleanup
+    } -result {M1}
+
+
+    #-------------------------------------------------------------------
+    # delete
+
+    test delete-1.1 {iom is deleted} -setup {
+        setup
+        tdb iom create $m1
+        tdb iom create $m2
+    } -body {
+        tdb iom delete M1
+
+        # Is M1 gone?
+        tdb eval {SELECT iom_id FROM ioms}
+    } -cleanup {
+        cleanup
+    } -result {M2}
+
+    test delete-1.2 {Undo restores iom} -setup {
+        setup
+        tdb iom create $m1
+        tdb iom create $m2
+        set undo [tdb iom delete M1]
+    } -body {
+        namespace eval :: $undo
+        ted querylist {SELECT * FROM ioms ORDER BY iom_id}
+    } -cleanup {
+        cleanup
+    } -result {
+iom_id    M1
+longname  IOM One
+hook_id   HOOK1
+state     normal
+
+iom_id    M2
+longname  IOM Two
+hook_id   
+state     normal
+    }
+
+    test delete-2.1 {payload records are deleted} -setup {
+        setup
+        tdb iom create $m1
+        tdb iom create $m2
+        tdb payload create $p1
+    } -body {
+        tdb iom delete M1
+
+        tdb eval {
+            SELECT iom_id,payload_num FROM payloads 
+            ORDER BY iom_id,payload_num
+        }
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test delete-2.2 {Undo restores payload records} -setup {
+        setup
+        tdb iom create $m1
+        tdb iom create $m2
+        tdb payload create $p1
+        
+        set undo [tdb iom delete M1]
+    } -body {
+        namespace eval :: $undo
+        tdb eval {
+            SELECT iom_id,payload_num FROM payloads 
+            ORDER BY iom_id,payload_num
+        }
+    } -cleanup {
+        cleanup
+    } -result {M1 1}
+
+    #-------------------------------------------------------------------
+    # update
+
+    test update-1.1 {iom is updated} -setup {
+        setup
+        tdb iom create $m1
+    } -body {
+        tdb iom update {
+            iom_id   M1
+            longname "Support the Govt"
+            hook_id  HOOK2
+        }
+
+        ted querylist {SELECT * FROM ioms}
+    } -cleanup {
+        cleanup
+    } -result {
+iom_id    M1
+longname  Support the Govt
+hook_id   HOOK2
+state     normal
+    }
+
+
+    test update-1.2 {identical values are OK} -setup {
+        setup
+        tdb iom create $m1
+    } -body {
+        set a [ted query {SELECT * FROM ioms}]
+
+        tdb iom update $m1
+
+        set b [ted query {SELECT * FROM ioms}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    test update-1.3 {empty values are OK} -setup {
+        setup
+        tdb iom create $m1
+    } -body {
+        set a [ted query {SELECT * FROM ioms}]
+
+        tdb iom update  {
+            iom_id   M1
+            longname ""
+            hook_id  ""
+        }
+
+        set b [ted query {SELECT * FROM ioms}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    test update-2.1 {undo undoes the change} -setup {
+        setup
+        tdb iom create $m1
+    } -body {
+        set a [ted query {SELECT * FROM ioms}]
+
+        set undo [tdb iom update {
+            iom_id   M1
+            longname "Support the Govt"
+            hook_id  ""
+        }]
+
+        namespace eval :: $undo
+
+        set b [ted query {SELECT * FROM ioms}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    #-------------------------------------------------------------------
+    # state
+
+    test state-1.1 {iom state is changed} -setup {
+        setup
+        tdb iom create $m2
+    } -body {
+        tdb iom state M2 disabled
+
+        ted querylist {SELECT * FROM ioms}
+    } -cleanup {
+        cleanup
+    } -result {
+iom_id    M2
+longname  IOM Two
+hook_id   
+state     disabled
+    }
+
+
+    test state-2.1 {undo undoes the change} -setup {
+        setup
+        tdb iom create $m2
+    } -body {
+
+        set a [ted query {SELECT * FROM ioms}]
+
+        set undo [tdb iom state M2 disabled]
+
+        namespace eval :: $undo
+
+        set b [ted query {SELECT * FROM ioms}]
+
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    #-------------------------------------------------------------------
+    # names
+
+    test names-1.1 {Returns names: none defined} -body {
+        setup
+        tdb iom names
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test names-1.2 {Returns names} -setup {
+        setup
+        tdb iom create $m1
+        tdb iom create $m2
+    } -body {
+        tdb iom names
+    } -cleanup {
+        cleanup
+    } -result {M1 M2}
+
+    #-------------------------------------------------------------------
+    # namedict
+
+    test namedict-1.1 {Returns namedict} -setup {
+        setup
+        tdb iom create $m1
+        tdb iom create $m2
+    } -body {
+        tdb iom namedict
+    } -cleanup {
+        cleanup
+    } -result {M1 {IOM One} M2 {IOM Two}}
+
+    #-------------------------------------------------------------------
+    # longnames
+
+    test longnames-1.1 {Returns names: none defined} -body {
+        setup
+        tdb iom longnames
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test longnames-1.2 {Returns names} -setup {
+        setup
+        tdb iom create $m1
+        tdb iom create $m2
+    } -body {
+        tdb iom longnames
+    } -cleanup {
+        cleanup
+    } -result {{M1: IOM One} {M2: IOM Two}}
+
+
+    #-------------------------------------------------------------------
+    # validate
+
+    test validate-1.1 {Invalid name: none defined} -body {
+        tdb iom validate NONESUCH
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Invalid IOM, none are defined}
+
+    test validate-1.2 {Invalid name: some defined} -setup {
+        setup
+        tdb iom create $m1
+        tdb iom create $m2
+    } -body {
+        tdb iom validate NONESUCH
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Invalid IOM, should be one of: M1, M2}
+
+    test validate-2.1 {Valid name} -setup {
+        setup
+        tdb iom create $m1
+        tdb iom create $m2
+    } -body {
+        tdb iom validate M2
+    } -cleanup {
+        cleanup
+    } -result {M2}
+
+    #-------------------------------------------------------------------
+    # exists
+
+    test exists-1.1 {iom doesn't exist} -setup {
+        setup
+        tdb iom create $m1
+        tdb iom create $m2
+    } -body {
+        tdb iom exists M3
+    } -cleanup {
+        cleanup
+    } -result {0}
+
+    test exists-1.2 {iom exists} -setup {
+        setup
+        tdb iom create $m1
+        tdb iom create $m2
+    } -body {
+        tdb iom exists M2
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    #-------------------------------------------------------------------
+    # normal names
+
+    test normal_names-1.1 {Returns normal names: none defined} -body {
+        setup
+        tdb iom normal names
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test normal_names-1.2 {Returns normal names} -setup {
+        setup
+        tdb iom create $m1
+        tdb iom create $m2
+        tdb iom state M2 disabled
+    } -body {
+        tdb iom normal names
+    } -cleanup {
+        cleanup
+    } -result {M1}
+
+
+    #-------------------------------------------------------------------
+    # normal namedict
+
+    test normal_namedict-1.1 {Returns normal namedict: none defined} -body {
+        setup
+        tdb iom normal namedict
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test normal_namedict-1.2 {Returns normal namedict} -setup {
+        setup
+        tdb iom create $m1
+        tdb iom create $m2
+        tdb iom state M2 disabled
+    } -body {
+        tdb iom normal namedict
+    } -cleanup {
+        cleanup
+    } -result {M1 {IOM One}}
+
+    #-------------------------------------------------------------------
+    # normal longnames
+
+    test normal_longnames-1.1 {Returns names: none defined} -body {
+        setup
+        tdb iom normal longnames
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test normal_longnames-1.2 {Returns normal names} -setup {
+        setup
+        tdb iom create $m1
+        tdb iom create $m2
+        tdb iom state M2 disabled
+    } -body {
+        tdb iom normal longnames
+    } -cleanup {
+        cleanup
+    } -result {{M1: IOM One}}
+
+
+    #-------------------------------------------------------------------
+    # normal validate
+
+    test normal_validate-1.1 {Invalid name: none defined} -body {
+        tdb iom normal validate NONESUCH
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Invalid IOM, no valid IOMs are defined}
+
+    test normal_validate-1.2 {Invalid name: some defined} -setup {
+        setup
+        tdb iom create $m1
+        tdb iom create $m2
+        tdb iom state M2 disabled
+    } -body {
+        tdb iom normal validate NONESUCH
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Invalid IOM, should be one of: M1}
+
+    test validate-2.1 {Valid name} -setup {
+        setup
+        tdb iom create $m1
+        tdb iom create $m2
+        tdb iom state M2 disabled
+    } -body {
+        tdb iom validate M1
+    } -cleanup {
+        cleanup
+    } -result {M1}
+
+    #-------------------------------------------------------------------
+    # get
+
+    test get-1.1 {get dict} -setup {
+        setup
+        tdb iom create $m1
+    } -body {
+        ted pdict [tdb iom get M1]
+    } -cleanup {
+        cleanup
+    } -result {
+        narrative {IOM One  (Hook HOOK1: Hook One: No position on any topics)}
+        state     normal
+        fancy     {M1: IOM One}
+        hook_id   HOOK1
+        longname  {IOM One}
+        iom_id    M1
+        hlink     {<a href="my://app/hook/HOOK1">HOOK1</a>}
+        longlink  {<a href="my://app/iom/M1">M1</a>}
+        link      {<a href="my://app/iom/M1">M1</a>}
+        url       my://app/iom/M1
+    }
+
+    test get-1.2 {get column} -setup {
+        setup
+        tdb iom create $m1
+    } -body {
+        tdb iom get M1 longname
+    } -cleanup {
+        cleanup
+    } -result {IOM One}
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+

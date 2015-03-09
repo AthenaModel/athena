@@ -25,8 +25,6 @@
 #
 #    rules    - A metadict of rule names and title strings.
 #
-# TBD: global refs: parm, aram
-#
 #-----------------------------------------------------------------------
 
 # FIRST, create the class
