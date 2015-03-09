@@ -2,6 +2,63 @@
 
 <h2>Build Notes</h2>
 
+<h3>Build 6.3.0a6, 9 March 2015</h3>
+
+This build contains more changes related to the re-architecture of Athena. As
+of this build, the re-architecture can be considered feature complete unless
+some unforeseen problem arises.  There are a few bug fixes and enhancements
+included with this build.  However, most of the testing of this build should be 
+centered on regresssion testing.<p>
+
+<ul>
+<li> Issue #135: Econ Failure notifications
+<li> Issue #134: Handle on-tick sanity failures in app
+<li> Issue #133: Move deletion confirmations to GUI
+<li> Issue #132: Remove parmdb(5) app dependencies. 
+<li> Issue #131: Athena(n) test suite
+<li> Issue #130: MAP:* orders call `app puts` 
+<li> Issue #129: Make global simclock an athenadb(n) component 
+<li> Issue #128: Revise athena(n) API r
+<li> Issue #127: Remove global component names
+<li> Issue #126: Move contents of parmdb.tcl from projectlib to athena(n) parm module 
+<li> Issue #124: Neighborhood Ingestion Wizard default map bgerror 
+<li> Issue #123: mapviewer(n) has an outdated reference to the map module
+<li> Issue #122: Update esectors enumeration remove duplicate proc from view.tcl
+<li> Issue #121: Move helpers.tcl to athena(n) 
+<li> Issue #120: Move "apptypes" to athena(n) 
+<li> Issue #119: Move rebase.tcl to athena(n)
+<li> Issue #118: Move hist.tcl to athena(n) 
+<li> Issue #117: Fix saveable semantics 
+<li> Issue #116: Save/restore appwin prefs on start, exit 
+<li> Issue #115: Add -map option to the exporter. 
+<li> Issue #114: Fix saveable registry in athena(n) 
+<li> Issue #113: Move link.tcl to athena(n) 
+<li> Issue #112: Move ptype to athena(n) 
+<li> Issue #111: Move sanity.tcl to athena(n) 
+<li> Issue #110: Move sim.tcl into athena(n)
+<li> Issue #109: Update MAP:IMPORT:DATA and MAP:GEOREF helps 
+<li> Issue #107: Move map.tcl to athena(n). 
+<li> Issue #106: Move "autogen" to athena(n) 
+<li> Issue #105: Remove field_types.tcl from Athena 
+<li> Issue #104: athena(n) should support "new", "open" operations 
+<li> Issue #103: Move security_model.tcl to athena(n)
+<li> Issue #102: Move coverage_model.tcl into athena(n).
+<li> Issue #101: Move "executive" to athena(n) 
+<li> Issue #100: Create FLOW tactic button causes bgerror
+<li> Issue #99: Condition orders cannot be entered in the command line
+<li> Issue #98: Move control_model.tcl to athena(n). 
+<li> Issue #97: Reorganize athena(n)'s directory tree 
+<li> Issue #96: peMove rolemapfield widget to athena(n) 
+<li> Issue #95: Remove axdb capability 
+<li> Issue #94: Move exporter into athena(n). 
+<li> Issue #93: Move "parm" into athena(n) 
+<li> Issue #92: Gofers in athena(n)
+<li> Issue #91: Move plant.tcl to athena(n) 
+<li> Issue #90: License Agreement text in Windows Installer
+<li> Issue #89: Move aam.tcl to athena(n) 
+<li> Issue #72: force.proximity should be 0.0 
+</ul><p>
+
 <h3>Build 6.3.0a5, 19 February 2015</h3>
 
 This build contains a whole host of architectural changes to many modules
