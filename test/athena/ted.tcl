@@ -132,11 +132,11 @@ snit::type ted {
             set tkLoaded 0
         }
 
-        athena create ::adb \
+        athena create ::sdb \
             -subject ::tdb
 
         # NEXT, define ::tdb
-        interp alias {} ::tdb {} [::adb athenadb]
+        interp alias {} ::tdb {} [::sdb athenadb]
 
         puts "athena(n) initialized."
 

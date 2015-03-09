@@ -61,7 +61,7 @@ namespace eval ::athena_test::tests:: {
         tdb parm set dam.ENERGY.active no
         tdb parm set dam.WATER.active no
         tdb parm set dam.TRANSPORT.active no
-        adb eval {DELETE FROM drivers}
+        tdb eval {DELETE FROM drivers}
         
         # NEXT, create the entities
         ted create JOE BOB NB1 BLUE BRIT SHIA SUNN
@@ -149,7 +149,7 @@ CIVCAS-1-1 SUNN QOL
         setup
     } -body {
         attrit 1000
-        adb eval {
+        tdb eval {
             SELECT count(*) FROM rule_firings WHERE rule GLOB 'CIVCAS-2-*'
         }
     } -cleanup {

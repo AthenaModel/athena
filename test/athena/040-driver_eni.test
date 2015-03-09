@@ -61,7 +61,7 @@ namespace eval ::athena_test::tests:: {
         tdb parm set dam.ENERGY.active no
         tdb parm set dam.WATER.active no
         tdb parm set dam.TRANSPORT.active no
-        adb eval {DELETE FROM drivers}
+        tdb eval {DELETE FROM drivers}
         
         # NEXT, create the entities
         ted create JOE BOB NB1 BLUE SHIA SUNN
@@ -88,7 +88,7 @@ namespace eval ::athena_test::tests:: {
             # Create a block that executes only on lock.
             set blk [ted addblock $a onlock yes tmode AFTER t1 100]
             ted addtactic $blk FUNDENI \
-                glist   [adb gofer make CIVGROUPS BY_VALUE {SHIA SUNN}] \
+                glist   [tdb gofer make CIVGROUPS BY_VALUE {SHIA SUNN}] \
                 mode    EXACT               \
                 amount  $lockAmount         \
                 cmode   UNCAPPED
@@ -98,7 +98,7 @@ namespace eval ::athena_test::tests:: {
             # Create a block that doesn't execute on lock.
             set blk [ted addblock $a onlock no]
             ted addtactic $blk FUNDENI \
-                glist   [adb gofer make CIVGROUPS BY_VALUE {SHIA SUNN}] \
+                glist   [tdb gofer make CIVGROUPS BY_VALUE {SHIA SUNN}] \
                 mode    EXACT               \
                 amount  $t1Amount           \
                 cmode   UNCAPPED
@@ -112,7 +112,7 @@ namespace eval ::athena_test::tests:: {
 
     proc lock {} {
         ted lock
-        adb eval {
+        tdb eval {
             DELETE FROM rule_firings;
             DELETE FROM rule_inputs;
             DELETE FROM drivers;
@@ -308,7 +308,7 @@ fdict      controller JOE required 0.6 expected 0.75 actual 0.75 needs 0.0 expec
         ted step
 
         # No satisfaction effects when expectations are met
-        adb eval {
+        tdb eval {
             SELECT count(*)
             FROM rule_firings JOIN rule_inputs USING (firing_id)
             WHERE atype='sat'
