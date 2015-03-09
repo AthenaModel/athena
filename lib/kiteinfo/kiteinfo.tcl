@@ -45,7 +45,6 @@ namespace eval ::kiteinfo:: {
         icon-athena {}
         reqver-kiteutils 0.4.6
         reqver-fileutil 1.14
-        binary-athenagui 0
         url-docs/mag.docx https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20140826.docx
         local-marsutil 1
         reqver-marsgui 3.0.13
@@ -62,8 +61,8 @@ namespace eval ::kiteinfo:: {
     docs/*.docx
     docs/*.pptx
 }
-        reqver-textutil::adjust 0.7
         gui-cellide 1
+        reqver-textutil::adjust 0.7
         url-docs/rules.pptx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/rules-20141010.pptx
         reqver-tls 1.6
         icon-helptool {}
@@ -76,7 +75,7 @@ namespace eval ::kiteinfo:: {
         apptype-cellide exe
         reqver-marsutil 3.0.13
         local-tls 0
-        provides {athena athenagui}
+        provides athena
         description {Athena Regional Stability Simulation}
         local-BWidget 0
         apptype-helptool kit
@@ -140,7 +139,7 @@ namespace eval ::kiteinfo:: {
         local-comm 0
         reqver-Marsbin 3.0.13
         local-kiteutils 1
-        version 6.3.0a5
+        version 6.3.0a6
         local-textutil::expander 0
         reqver-Img 1.4.1
     }

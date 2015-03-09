@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide athena 6.3.0a5
+package provide athena 6.3.0a6
 # -kite-provide-end
 
 #-----------------------------------------------------------------------
