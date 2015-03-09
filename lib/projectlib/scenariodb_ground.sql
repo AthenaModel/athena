@@ -194,7 +194,10 @@ CREATE TABLE force_n (
     nominal_volatility  INTEGER DEFAULT 0,
 
     -- Effective Volatility, including gain, 0 to 100
-    volatility          INTEGER DEFAULT 0
+    volatility          INTEGER DEFAULT 0,
+
+    -- Average Civilian Security
+    security            INTEGER DEFAULT 0
 );
 
 -- nbstat Table: Group force in neighborhoods

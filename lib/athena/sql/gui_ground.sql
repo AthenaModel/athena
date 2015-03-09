@@ -42,9 +42,10 @@ CREATE TEMPORARY VIEW gui_security AS
 SELECT n || ' ' || g                      AS id,
        n                                  AS n,
        g                                  AS g,
-       force_ng.personnel                 AS personnel,
-       security                           AS security,
-       qsecurity('longname',security)     AS symbol,
+       NG.personnel                       AS personnel,
+       NG.security                        AS security,
+       N.security                         AS nbsecurity,
+       qsecurity('longname',NG.security)  AS symbol,
        actual_cf                          AS actual_cf,
        CASE WHEN actual_cf IS NULL 
             THEN 'n/a' 
@@ -56,8 +57,8 @@ SELECT n || ' ' || g                      AS id,
        pct_force                          AS pct_force,
        pct_enemy                          AS pct_enemy,
        volatility                         AS volatility
-FROM force_ng 
-JOIN force_n USING (n)
+FROM force_ng AS NG
+JOIN force_n AS N USING (n)
 LEFT OUTER JOIN force_civg USING (g)
 WHERE personnel > 0
 ORDER BY n, g;

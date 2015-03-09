@@ -1670,11 +1670,6 @@ snit::type ::athena::parmdb {
             by neighborhood to the hist_activity_nga table.
         }        
 
-        $ps define hist.control ::snit::boolean on {
-            If on, Athena will save, each week, the actor in control of each
-            neighborhood to the hist_control table.
-        }
-
         $ps define hist.coop ::snit::boolean on {
             If on, Athena will save, each week, the cooperation of
             each civilian group with each force group
@@ -1693,11 +1688,6 @@ snit::type ::athena::parmdb {
             If on, Athena will save, each week, the cooperation of
             each neighborhood with each force group
             to the hist_nbcoop table.
-        }
-
-        $ps define hist.nbmood ::snit::boolean on {
-            If on, Athena will save, each week, the mood of
-            each neighborhood to the hist_nbmood table.
         }
 
         $ps define hist.pop ::snit::boolean on {
@@ -1727,11 +1717,6 @@ snit::type ::athena::parmdb {
             If on, Athena will save, each week, the direct
             support, total support, and influence of each actor in
             each neighborhood to the hist_support table.
-        }
-
-        $ps define hist.volatility ::snit::boolean on {
-            If on, Athena will save, each week, the volatility of each
-            neighborhood to the hist_volatility table.
         }
 
         $ps define hist.vrel ::snit::boolean on {

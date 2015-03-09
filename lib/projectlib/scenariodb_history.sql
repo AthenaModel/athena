@@ -15,6 +15,30 @@
 --
 ------------------------------------------------------------------------
 
+-- The following tables contain simulation history data for
+-- "after-action analysis".  The tables are grouped by index; e.g.,
+-- the hist_civg table contains civilian group outputs over time.
+
+CREATE TABLE hist_nbhood (
+    -- History: Neighborhood outputs
+    t          INTEGER,
+    n          TEXT,       -- Neighborhood name
+
+    a          TEXT,       -- Name of actor controlling n, or NULL if none 
+    nbmood     DOUBLE,     -- Neighborhood mood
+    volatility INTEGER,    -- Volatility of neighborhood
+    population INTEGER,    -- Civilian population of neighborhood
+    security   INTEGER,    -- Average civilian security in neighborhood
+
+    PRIMARY KEY (t,n)
+);
+
+CREATE VIEW hist_control    AS SELECT t, n, a          FROM hist_nbhood;
+CREATE VIEW hist_nbmood     AS SELECT t, n, nbmood     FROM hist_nbhood;
+CREATE VIEW hist_volatility AS SELECT t, n, volatility FROM hist_nbhood;
+CREATE VIEW hist_npop       AS SELECT t, n, population FROM hist_nbhood;
+
+
 -- The following tables are used to save time series variable data
 -- for plotting, etc.  Each table has a name like "history_<vartype>"
 -- where <vartype> is a time series variable type.  In some cases,
@@ -23,7 +47,6 @@
 
 CREATE TABLE hist_sat (
     -- History: sat.g.c
-    case_id  INTEGER DEFAULT 0,
     t        INTEGER,
     g        TEXT,
     c        TEXT,
@@ -31,33 +54,21 @@ CREATE TABLE hist_sat (
     base     DOUBLE, -- Baseline level of satisfaction
     nat      DOUBLE, -- Natural level of satisfaction
 
-    PRIMARY KEY (case_id,t,g,c)
+    PRIMARY KEY (t,g,c)
 );
 
 -- mood.g
 CREATE TABLE hist_mood (
-    case_id  INTEGER DEFAULT 0,
     t        INTEGER,
     g        TEXT,
     mood     DOUBLE,
 
-    PRIMARY KEY (case_id,t,g)
-);
-
--- nbmood.n
-CREATE TABLE hist_nbmood (
-    case_id  INTEGER DEFAULT 0,
-    t        INTEGER,
-    n        TEXT,
-    nbmood   DOUBLE,
-
-    PRIMARY KEY (case_id,t,n)
+    PRIMARY KEY (t,g)
 );
 
 -- coop.f.g
 CREATE TABLE hist_coop (
     -- History: coop.f.g
-    case_id  INTEGER DEFAULT 0,
     t        INTEGER,
     f        TEXT,
     g        TEXT,
@@ -65,23 +76,21 @@ CREATE TABLE hist_coop (
     base     DOUBLE, -- Baseline level of cooperation
     nat      DOUBLE, -- Natural level of cooperation
 
-    PRIMARY KEY (case_id,t,f,g)
+    PRIMARY KEY (t,f,g)
 );
 
 -- nbcoop.n.g
 CREATE TABLE hist_nbcoop (
-    case_id  INTEGER DEFAULT 0,
     t        INTEGER,
     n        TEXT,
     g        TEXT,
     nbcoop   DOUBLE,
 
-    PRIMARY KEY (case_id,t,n,g)
+    PRIMARY KEY (t,n,g)
 );
 
 -- econ
 CREATE TABLE hist_econ (
-    case_id     INTEGER DEFAULT 0,
     t           INTEGER,
     consumers   INTEGER,
     subsisters  INTEGER,
@@ -93,57 +102,44 @@ CREATE TABLE hist_econ (
     dgdp        DOUBLE,
     ur          DOUBLE,
 
-    PRIMARY KEY (case_id,t)
+    PRIMARY KEY (t)
 );
 
 -- econ.i
 CREATE TABLE hist_econ_i (
-    case_id     INTEGER DEFAULT 0,
     t           INTEGER,
     i           TEXT,
     p           DOUBLE,
     qs          DOUBLE,
     rev         DOUBLE,
 
-    PRIMARY KEY (case_id,t,i)
+    PRIMARY KEY (t,i)
 );
 
 -- econ.i.j
 CREATE TABLE hist_econ_ij (
-    case_id     INTEGER DEFAULT 0,
     t           INTEGER,
     i           TEXT,
     j           TEXT,
     x           DOUBLE,
     qd          DOUBLE,
 
-    PRIMARY KEY (case_id,t,i,j)        
+    PRIMARY KEY (t,i,j)        
 );
 
--- control.n.a
-CREATE TABLE hist_control (
-    case_id  INTEGER DEFAULT 0,
-    t        INTEGER,
-    n        TEXT, -- Neighborhood
-    a        TEXT, -- Actor controlling neighborhood n, or NULL if none.
-
-    PRIMARY KEY (case_id,t,n)
-);
 
 -- security.n.g
 CREATE TABLE hist_security (
-    case_id  INTEGER DEFAULT 0,
     t        INTEGER,
     n        TEXT,     -- Neighborhood
     g        TEXT,     -- Group
     security INTEGER,  -- g's security in n.
 
-    PRIMARY KEY (case_id,t,n,g)
+    PRIMARY KEY (t,n,g)
 );
 
 -- support.n.a
 CREATE TABLE hist_support (
-    case_id        INTEGER DEFAULT 0,
     t              INTEGER,
     n              TEXT,    -- Neighborhood
     a              TEXT,    -- Actor
@@ -151,22 +147,12 @@ CREATE TABLE hist_support (
     support        REAL,    -- a's total support (direct + derived) in n
     influence      REAL,    -- a's influence in n
 
-    PRIMARY KEY (case_id,t,n,a)
+    PRIMARY KEY (t,n,a)
 );
 
--- volatility.n.a
-CREATE TABLE hist_volatility (
-    case_id        INTEGER DEFAULT 0,
-    t              INTEGER,
-    n              TEXT,    -- Neighborhood
-    volatility     INTEGER, -- Volatility of n
-
-    PRIMARY KEY (case_id,t,n)
-);
 
 CREATE TABLE hist_hrel (
     -- History: hrel.f.g
-    case_id  INTEGER DEFAULT 0,
     t        INTEGER,
     f        TEXT,    -- First group
     g        TEXT,    -- Second group
@@ -174,12 +160,11 @@ CREATE TABLE hist_hrel (
     base     REAL,    -- Base Horizontal relationship of f with g.
     nat      REAL,    -- Natural Horizontal relationship of f with g.
 
-    PRIMARY KEY (case_id,t,f,g)
+    PRIMARY KEY (t,f,g)
 );
 
 CREATE TABLE hist_vrel (
     -- History: vrel.g.a
-    case_id  INTEGER DEFAULT 0,
     t        INTEGER,
     g        TEXT,    -- Civilian group
     a        TEXT,    -- Actor
@@ -187,27 +172,16 @@ CREATE TABLE hist_vrel (
     base     REAL,    -- Base Vertical relationship of g with a.
     nat      REAL,    -- Natural Vertical relationship of g with a.
 
-    PRIMARY KEY (case_id,t,g,a)
+    PRIMARY KEY (t,g,a)
 );
 
 CREATE TABLE hist_pop (
     -- History: pop.g (civilian group population)
-    case_id     INTEGER DEFAULT 0,
     t           INTEGER,
     g           TEXT,       -- Civilian group
     population  INTEGER,    -- Population
     
-    PRIMARY KEY (case_id,t,g)
-);
-
-CREATE TABLE hist_npop (
-    -- History: pop.n (civilian neighborhood population)
-    case_id     INTEGER DEFAULT 0,
-    t           INTEGER,
-    n           TEXT,      -- Neighborhood
-    population  INTEGER,   -- Population
-
-    PRIMARY KEY (case_id,t,n)
+    PRIMARY KEY (t,g)
 );
 
 CREATE TABLE hist_flow (
@@ -215,18 +189,16 @@ CREATE TABLE hist_flow (
     -- This table is sparse; only positive flows are included.
     -- Unlike the other tables, it is not saved by [hist], but
     -- by [demog].
-    case_id INTEGER DEFAULT 0,
     t       INTEGER,
     f       TEXT,
     g       TEXT,
     flow    INTEGER DEFAULT 0,
     
-    PRIMARY KEY (case_id,t,f,g)
+    PRIMARY KEY (t,f,g)
 );
 
 CREATE TABLE hist_service_sg (
     -- History: service.sg (amount of service s to group g)
-    case_id INTEGER DEFAULT 0,
 
     t INTEGER,
     s TEXT,
@@ -239,12 +211,11 @@ CREATE TABLE hist_service_sg (
     expectf            REAL,
     needs              REAL,
 
-    PRIMARY KEY (case_id,t,g,s)
+    PRIMARY KEY (t,g,s)
 );
 
 CREATE TABLE hist_activity_nga (
     -- History: activity.nga (activity by nbhood and group)
-    case_id INTEGER DEFAULT 0,
 
     t        INTEGER,
     n        TEXT,
@@ -256,7 +227,7 @@ CREATE TABLE hist_activity_nga (
     effective     INTEGER,
     coverage      DOUBLE,
     
-    PRIMARY KEY (case_id,t,n,g,a)
+    PRIMARY KEY (t,n,g,a)
 );
 
 
