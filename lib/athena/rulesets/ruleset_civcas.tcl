@@ -163,7 +163,7 @@
         # FIRST, compute the casualty multiplier
         set zsat [my parm dam.CIVCAS.Zcoop]
         set cmult [zcurve eval $zsat $casualties]
-        set rmult [rmf enmore [my hrel.fg $f $g]]
+        set rmult [my rmf enmore [my hrel.fg $f $g]]
         let mult {$cmult * $rmult}
 
         dict set fdict mult $cmult

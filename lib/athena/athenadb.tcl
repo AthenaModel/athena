@@ -125,7 +125,7 @@ snit::type ::athena::athenadb {
     component flunky         -public order          ;# athena_flunky(n)
     component gofer          -public gofer          ;# gofer
     component hist           -public hist           ;# results history
-    component parm           -public parm           ;# model parameter DB
+    component parmdb         -public parm           ;# model parameter DB
     component paster         -public paste          ;# paste manager
     component pot            -public bean           ;# beanpot(n)
     component ptype          -public ptype          ;# parm type validators
@@ -291,8 +291,12 @@ snit::type ::athena::athenadb {
             $self \
             -executivecmd $options(-executivecmd)
 
+        # NEXT, create the parmdb.
+        install parmdb using ::athena::parmdb ${selfns}::parmdb $self
+
         # NEXT, add aram.
         install aram using uram ${selfns}::aram \
+            -parmset      $parmdb               \
             -rdb          $rdb                  \
             -loadcmd      [mymethod LoadAram]   \
             -undo         on                    \
@@ -337,7 +341,6 @@ snit::type ::athena::athenadb {
             nbhood                      \
             nbrel                       \
             orggroup                    \
-            {parm parmdb}               \
             payload                     \
             personnel                   \
             plant                       \
@@ -361,7 +364,7 @@ snit::type ::athena::athenadb {
         $self RegisterSaveable aram [list $aram saveable]
         $self RegisterSaveable bsys $bsys
         $self RegisterSaveable econ $econ
-        $self RegisterSaveable parm $parm
+        $self RegisterSaveable parm $parmdb
         $self RegisterSaveable pot  $pot
         $self RegisterSaveable sim  $sim
 

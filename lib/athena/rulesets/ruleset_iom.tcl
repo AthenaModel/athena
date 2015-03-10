@@ -208,7 +208,7 @@
         if {$asource eq ""} {
             return 1.0
         } else {
-            return [rmf frmore [my vrel.ga $f $asource]]
+            return [my rmf frmore [my vrel.ga $f $asource]]
         }
     }
 

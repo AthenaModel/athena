@@ -25,6 +25,7 @@ namespace eval :: {
 ::marsutil::range ::athena::parmdb_nomcoverage \
     -min 0.1 -max 1.0 -format "%+5.2f"
 
+
 #-------------------------------------------------------------------
 # parm
 
@@ -49,7 +50,7 @@ snit::type ::athena::parmdb {
         set adb $adb_
 
         # FIRST, create and initialize parmset(n)
-        set ps [parmset %AUTO%]
+        set ps [parmset %AUTO%]           
         $self Initialize 
 
         # Register to receive simulation state updates.
@@ -1776,7 +1777,7 @@ snit::type ::athena::parmdb {
         }
 
         # NEXT, define rmf parameters
-        $ps slave add [list ::simlib::rmf parm]
+        ::simlib::rmf parm into $ps
 
         # Service Model Parameters
         $ps subset service {
@@ -2016,7 +2017,7 @@ snit::type ::athena::parmdb {
         }
 
         # NEXT, define uram parameters
-        $ps slave add [list ::simlib::uram parm]
+        ::simlib::uram parm into $ps 
     }
 
 
@@ -2247,7 +2248,7 @@ snit::type ::athena::parmdb {
 
     meta form {
         rcc "Parameter:" -for parm
-        enum parm -listcmd {parm names} \
+        enum parm -listcmd {$adb_ parm names} \
             -loadcmd {$order_ loadValue}
 
         rcc "Value:" -for value
