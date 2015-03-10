@@ -32,6 +32,15 @@ tool define COMPARE {
     * Identical actor names
     * Identical group names 
 } {
+    # Type Variables
+
+    typevariable varnames {
+        security.n
+        control.n
+        influence.n.*
+        nbmood.n
+    }
+
     #-------------------------------------------------------------------
     # Execution 
 
@@ -74,10 +83,9 @@ tool define COMPARE {
 
 
         # NEXT, look for differences
-        $type DiffNbhoodSecurity  $s1 $t1 $s2 $t2
-        $type DiffNbhoodControl   $s1 $t1 $s2 $t2
-        $type DiffNbhoodInfluence $s1 $t1 $s2 $t2
-        $type DiffNbhoodMood      $s1 $t1 $s2 $t2
+        foreach var $varnames {
+            $type compare $var $s1 $t1 $s2 $t2
+        }
     }
 
     # LoadScenario adbfile
@@ -122,35 +130,40 @@ tool define COMPARE {
 
     typemethod CheckCompatibility {s1 s2} {
         if {![lequal [$s1 nbhood names] [$s2 nbhood names]]} {
-            throw FATAL "Scenarios have different neighborhoods."
+            throw FATAL \
+                "Scenarios not comparable: different neighborhoods."
         }
 
         if {![lequal [$s1 actor names] [$s2 actor names]]} {
-            throw FATAL "Scenarios have different actors."
+            throw FATAL \
+                "Scenarios not comparable: different actors."
         }
 
         if {![lequal [$s1 civgroup names] [$s2 civgroup names]]} {
-            throw FATAL "Scenarios have different civilian groups."
+            throw FATAL \
+                "Scenarios not comparable: different civilian groups."
         }
 
         if {![lequal [$s1 frcgroup names] [$s2 frcgroup names]]} {
-            throw FATAL "Scenarios have different force groups."
+            throw FATAL \
+                "Scenarios not comparable: different force groups."
         }
 
         if {![lequal [$s1 orggroup names] [$s2 orggroup names]]} {
-            throw FATAL "Scenarios have different organization groups."
+            throw FATAL \
+                "Scenarios not comparable: different organization groups."
         }
     }    
 
     #-------------------------------------------------------------------
     # Difference Checkers
 
-    # DiffNbhoodSecurity s1 t1 s2 t2
+    # compare security.n s1 t1 s2 t2
     #
     # Find differences in nbhood security.
     # Two security values are different if they have different symbols.
 
-    typemethod DiffNbhoodSecurity {s1 t1 s2 t2} {
+    typemethod {compare security.n} {s1 t1 s2 t2} {
         # NOTE: Secret of general comparisons: two queries that produce
         # a vector of items to compare.  It doesn't matter whether the
         # queries are from one scenario or two.
@@ -167,17 +180,17 @@ tool define COMPARE {
             set bsym [qsecurity name $b($n)]
 
             if {$asym ne $bsym} {
-                puts [format "%-15s: %-8s => %-8s (%4d => %4d)" \
-                    security.$n $asym $bsym $a($n) $b($n)]
+                printf "%-20s: %-8s => %-8s (%4d => %4d)" \
+                    security.$n $asym $bsym $a($n) $b($n)
             }
         }
     }
 
-    # DiffNbhoodControl s1 t1 s2 t2
+    # compare control.n s1 t1 s2 t2
     #
     # Find differences in nbhood control.
 
-    typemethod DiffNbhoodControl {s1 t1 s2 t2} {
+    typemethod {compare control.n} {s1 t1 s2 t2} {
         array set a [$s1 eval {
             SELECT n, a FROM hist_nbhood WHERE t=$t1
         }]
@@ -188,17 +201,17 @@ tool define COMPARE {
 
         foreach n [$s1 nbhood names] {
             if {$a($n) ne $b($n)} {
-                puts [format "%-15s: %-8s => %-8s" \
-                    control.$n $a($n) $b($n)]
+                printf "%-20s: %-8s => %-8s" \
+                    control.$n $a($n) $b($n)
             }
         }
     }
 
-    # DiffNbhoodInfluence s1 t1 s2 t2
+    # compare influence.n.* s1 t1 s2 t2
     #
     # Find differences in nbhood influence.
 
-    typemethod DiffNbhoodInfluence {s1 t1 s2 t2} {
+    typemethod {compare influence.n.*} {s1 t1 s2 t2} {
         foreach n [$s1 nbhood names] {
             set actors1($n) {}
             set actors2($n) {}
@@ -231,18 +244,18 @@ tool define COMPARE {
             defset actors2($n) "*NONE*"
 
             if {$actors1($n) ne $actors2($n)} {
-                puts [format "%-15s: %s => %s" \
-                    influence.$n $actors1($n) $actors2($n)]
+                printf "%-20s: %s => %s" \
+                    influence.$n.* $actors1($n) $actors2($n)
             }
         }
     }
 
 
-    # DiffNbhoodMood s1 t1 s2 t2
+    # compare nbmood.n s1 t1 s2 t2
     #
     # Find differences in nbhood control.
 
-    typemethod DiffNbhoodMood {s1 t1 s2 t2} {
+    typemethod {compare nbmood.n} {s1 t1 s2 t2} {
         array set a [$s1 eval {
             SELECT n, nbmood FROM hist_nbhood WHERE t=$t1
         }]
@@ -256,14 +269,24 @@ tool define COMPARE {
             set bsym [qsat name $b($n)]
 
             if {abs($a($n) - $b($n)) > 10.0} {
-                puts [format "%-15s: %-8s => %-8s (%6.1f => %6.1f)" \
-                    nbmood.$n $asym $bsym $a($n) $b($n)]
+                printf "%-20s: %-8s => %-8s (%6.1f => %6.1f)" \
+                    nbmood.$n $asym $bsym $a($n) $b($n)
             }
         }
     }
 
     #-------------------------------------------------------------------
     # Helper Procs
+
+    # printf fmt args
+    #
+    # fmt  - a format string
+    # 
+    # puts [format ...]
+
+    proc printf {fmt args} {
+        puts [uplevel 1 [list format $fmt {*}$args]]
+    }
     
     # defset varname value
     #
