@@ -472,7 +472,7 @@ snit::type ::athena::iom {
         text longname -width 60
 
         rcc "Semantic Hook:" -for hook_id
-        enumlong hook_id -dictcmd {::hook namedict} -showkeys yes
+        enumlong hook_id -dictcmd {$adb_ hook namedict} -showkeys yes
     }
 
 
@@ -540,7 +540,7 @@ snit::type ::athena::iom {
         text longname -width 60
 
         rcc "Semantic Hook:" -for hook_id
-        enumlong hook_id -dictcmd {::hook namedict} -showkeys yes
+        enumlong hook_id -dictcmd {$adb_ hook namedict} -showkeys yes
     }
 
 
