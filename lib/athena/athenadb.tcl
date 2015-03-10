@@ -1237,7 +1237,7 @@ snit::type ::athena::athenadb {
 
     method UramGamma {ctype} {
         # The [expr] converts it to a number.
-        return [expr [lindex [$parm get uram.factors.$ctype] 1]]
+        return [expr [lindex [$parmdb get uram.factors.$ctype] 1]]
     }
 
     # Sigline dtype signature
