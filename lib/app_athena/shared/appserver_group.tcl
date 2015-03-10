@@ -220,6 +220,7 @@ appserver module GROUPS {
                        a            AS "Owner",
                        forcetype    AS "Force Type",
                        training     AS "Training Level",
+                       equip_level  AS "Equipment Level",
                        demeanor     AS "Demeanor",
                        personnel    AS "Personnel",
                        cost         AS "Cost, $/person/week",
@@ -804,7 +805,8 @@ appserver module GROUPS {
         }
         ht put " local to the playbox."
 
-        ht putln "It has a training level of $data(training) and a"
+        ht putln "It has a training level of $data(training),"
+        ht putln "an equipment level of $data(equip_level) and a"
         ht putln "demeanor of $data(demeanor)."
 
         ht putln "It has a deployment cost of [moneyfmt $data(cost)]"

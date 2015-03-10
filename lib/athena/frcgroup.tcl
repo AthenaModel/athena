@@ -165,6 +165,7 @@ snit::type ::athena::frcgroup {
     #    color          The group's color
     #    forcetype      The group's eforcetype
     #    training       The group's training level (etraining(n))
+    #    equip_level    The group's equipment level (eequiplevel(n))
     #    base_personnel The group's base personnel
     #    demeanor       The group's demeanor (edemeanor(n))
     #    cost           The group's maintenance cost, $/person/week
@@ -192,11 +193,12 @@ snit::type ::athena::frcgroup {
                    $cost,
                    'FRC');
 
-            INSERT INTO frcgroups(g, forcetype, training,
-                                  base_personnel, local)
+            INSERT INTO frcgroups(g, forcetype, training, 
+                                  equip_level, base_personnel, local)
             VALUES($g,
                    $forcetype,
                    $training,
+                   $equip_level,
                    $base_personnel,
                    $local);
 
@@ -232,6 +234,7 @@ snit::type ::athena::frcgroup {
     #    color          A new color, or ""
     #    forcetype      A new eforcetype, or ""
     #    training       A new training level, or ""
+    #    equip_level    A new equipment level, or ""
     #    base_personnel A new base personnel, or ""
     #    demeanor       A new demeanor, or ""
     #    cost           A new cost, or ""
@@ -260,6 +263,7 @@ snit::type ::athena::frcgroup {
             UPDATE frcgroups
             SET forcetype      = nonempty($forcetype,      forcetype),
                 training       = nonempty($training,       training),
+                equip_level    = nonempty($equip_level,    equip_level),
                 base_personnel = nonempty($base_personnel, base_personnel),
                 local          = nonempty($local,          local)
             WHERE g=$g
@@ -288,6 +292,7 @@ snit::type ::athena::frcgroup {
         {color          "#AA7744"}
         {forcetype      REGULAR}
         {training       FULL}
+        {equip_level    GOOD}
         {base_personnel 0}
         {demeanor       AVERAGE}
         {cost           0}
@@ -307,11 +312,14 @@ snit::type ::athena::frcgroup {
         rcc "Color:" -for color
         color color -defvalue #AA7744
 
-        rcc "Force Type" -for forcetype
+        rcc "Force Type:" -for forcetype
         enumlong forcetype -dictcmd {eforcetype deflist} -defvalue REGULAR
 
-        rcc "Training" -for training
+        rcc "Training:" -for training
         enumlong training -dictcmd {etraining deflist} -defvalue FULL
+
+        rcc "Equipment Level:" -for equip_level
+        enumlong equip_level -dictcmd {eequiplevel deflist} -defvalue GOOD
 
         rcc "Base Personnel:" -for base_personnel
         text base_personnel -defvalue 0
@@ -343,6 +351,7 @@ snit::type ::athena::frcgroup {
         my prepare color          -tolower   -required -type hexcolor
         my prepare forcetype      -toupper   -required -type eforcetype
         my prepare training       -toupper   -required -type etraining
+        my prepare equip_level    -toupper   -required -type eequiplevel
         my prepare base_personnel -num       -required -type iquantity
         my prepare demeanor       -toupper   -required -type edemeanor
         my prepare cost           -toupper   -required -type money
@@ -406,8 +415,8 @@ snit::type ::athena::frcgroup {
     meta sendstates PREP
 
     meta parmlist {
-        g longname a color forcetype training base_personnel demeanor
-        cost local
+        g longname a color forcetype training equip_level base_personnel 
+        demeanor cost local
     }
 
     meta form {
@@ -424,11 +433,14 @@ snit::type ::athena::frcgroup {
         rcc "Color:" -for color
         color color
 
-        rcc "Force Type" -for forcetype
+        rcc "Force Type:" -for forcetype
         enumlong forcetype -dictcmd {eforcetype deflist}
 
-        rcc "Training" -for training
+        rcc "Training:" -for training
         enumlong training -dictcmd {etraining deflist}
+
+        rcc "Equipment Level:" -for equip_level
+        enumlong equip_level -dictcmd {eequiplevel deflist}
 
         rcc "Base Personnel:" -for base_personnel
         text base_personnel
@@ -453,6 +465,7 @@ snit::type ::athena::frcgroup {
         my prepare color          -tolower   -type hexcolor
         my prepare forcetype      -toupper   -type eforcetype
         my prepare training       -toupper   -type etraining
+        my prepare equip_level    -toupper   -type eequiplevel
         my prepare base_personnel -num       -type iquantity
         my prepare demeanor       -toupper   -type edemeanor
         my prepare cost           -toupper   -type money
@@ -477,7 +490,8 @@ snit::type ::athena::frcgroup {
     meta sendstates PREP
 
     meta parmlist {
-        ids a color forcetype training base_personnel demeanor cost local
+        ids a color forcetype training equip_level base_personnel demeanor 
+        cost local
     }
 
     meta form {
@@ -491,11 +505,14 @@ snit::type ::athena::frcgroup {
         rcc "Color:" -for color
         color color
 
-        rcc "Force Type" -for forcetype
+        rcc "Force Type:" -for forcetype
         enumlong forcetype -dictcmd {eforcetype deflist}
 
-        rcc "Training" -for training
+        rcc "Training:" -for training
         enumlong training -dictcmd {etraining deflist}
+
+        rcc "Equipment Level:" -for equip_level
+        enumlong equip_level -dictcmd {eequiplevel deflist}
 
         rcc "Base Personnel:" -for base_personnel
         text base_personnel
@@ -518,6 +535,7 @@ snit::type ::athena::frcgroup {
         my prepare color          -tolower  -type   hexcolor
         my prepare forcetype      -toupper  -type   eforcetype
         my prepare training       -toupper  -type   etraining
+        my prepare equip_level    -toupper  -type   eequiplevel
         my prepare base_personnel -num      -type   iquantity
         my prepare demeanor       -toupper  -type   edemeanor
         my prepare cost           -toupper  -type   money

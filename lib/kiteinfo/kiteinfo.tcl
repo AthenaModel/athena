@@ -31,8 +31,8 @@ namespace eval ::kiteinfo:: {
         reqver-comm 4.6
         local-Tktable 0
         local-simlib 1
-        gui-atool 0
         exclude-cellide {}
+        gui-atool 0
         xfiles {docs/aag.docx docs/aug.docx docs/rules.pptx docs/mag.docx}
         local-Tkhtml 0
         apps {athena cellide helptool atool}
@@ -63,8 +63,8 @@ namespace eval ::kiteinfo:: {
     docs/*.docx
     docs/*.pptx
 }
-        gui-cellide 1
         reqver-textutil::adjust 0.7
+        gui-cellide 1
         url-docs/rules.pptx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/rules-20141010.pptx
         reqver-tls 1.6
         icon-helptool {}
@@ -84,6 +84,7 @@ namespace eval ::kiteinfo:: {
         apptype-helptool kit
         reqver-sqlite3 3.8.5
         local-ctext 0
+        reqver-textutil::expander 1.3
         shell {
     catch {rename echo ""}
     package require projectlib
@@ -91,15 +92,13 @@ namespace eval ::kiteinfo:: {
 }
         icon-cellide {}
         reqver-snit 2.3
-        reqver-textutil::expander 1.3
         name athena
         gui-athena 1
         url-docs/aag.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aag-20141010.docx
         force-athena 0
         local-sqlite3 0
-        force-cellide 0
         reqver-tablelist 5.11
-        apptype-atool kit
+        force-cellide 0
         distpat-docs {
     docs/*.html
     docs/*.png
@@ -109,6 +108,7 @@ namespace eval ::kiteinfo:: {
     docs/*.pptx
 }
         reqver-struct::set 2.2
+        apptype-atool kit
         exclude-athena {}
         gui-helptool 1
         reqver-simlib 3.0.13
@@ -138,14 +138,14 @@ namespace eval ::kiteinfo:: {
         requires {snit comm Img BWidget Tktable treectrl sqlite3 tablelist textutil::expander textutil::adjust Tkhtml uri fileutil ctext tls tdom struct::set kiteutils kitedocs marsutil marsgui simlib Marsbin}
         clean-help {make clean}
         poc William.H.Duquette@jpl.nasa.gov
-        force-atool 0
         srcs help
+        force-atool 0
         local-tdom 0
         local-comm 0
         reqver-Marsbin 3.0.13
         local-kiteutils 1
-        version 6.3.0a7
         local-textutil::expander 0
+        version 6.3.0a7
         reqver-Img 1.4.1
     }
 

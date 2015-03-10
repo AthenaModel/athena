@@ -333,7 +333,6 @@ snit::type ::athena::strategy_manager {
         $adb profile 1 $adb broadcast reset
         $adb profile 1 $adb stance reset
         $adb profile 1 $adb unit reset
-        $adb profile 1 $adb aam reset
         $adb profile 1 $adb service reset
 
         # NEXT, execute each agent's strategy.

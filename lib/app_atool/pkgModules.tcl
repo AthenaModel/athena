@@ -27,7 +27,7 @@ package provide app_atool 6.3.0a7
 
 # -kite-require-start ADD EXTERNAL DEPENDENCIES
 package require projectlib
-package require athena
+package require -exact athena 6.3.0a7
 # -kite-require-end
 
 namespace import projectlib::* athena::*

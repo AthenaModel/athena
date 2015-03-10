@@ -203,6 +203,7 @@ SELECT G.id                                             AS id,
        G.a                                              AS a,
        F.forcetype                                      AS forcetype,
        F.training                                       AS training,
+       F.equip_level                                    AS equip_level,
        F.base_personnel                                 AS base_personnel,
        local                                            AS local,
        CASE F.local     WHEN 1 THEN 'Yes' ELSE 'No' END AS pretty_local

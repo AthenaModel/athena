@@ -99,6 +99,7 @@ snit::type ::athena::aam {
 
         }
     }
+
     #-------------------------------------------------------------------
     # Attrition Assessment
 
@@ -127,6 +128,7 @@ snit::type ::athena::aam {
         set alist ""
         set sdict ""
         set cdict ""
+        array unset roedict
     }
 
     #-------------------------------------------------------------------

@@ -426,6 +426,7 @@ snit::type ted {
             color          "#f00001"
             forcetype      REGULAR
             training       PROFICIENT
+            equip_level    BEST
             base_personnel 5000
             demeanor       AVERAGE
             cost           0.0
@@ -439,6 +440,7 @@ snit::type ted {
             color          "#f00002"
             forcetype      REGULAR
             training       PROFICIENT
+            equip_level    FAIR
             base_personnel 5000
             demeanor       AVERAGE
             cost           0.0
@@ -452,6 +454,7 @@ snit::type ted {
             color          "#f00003"
             forcetype      IRREGULAR
             training       PARTIAL
+            equip_level    FAIR
             base_personnel 1000
             demeanor       AGGRESSIVE
             cost           0.0
@@ -465,6 +468,7 @@ snit::type ted {
             color          "#f00004"
             forcetype      IRREGULAR
             training       PARTIAL
+            equip_level    POOR
             base_personnel 1000
             demeanor       AGGRESSIVE
             cost           0.0

@@ -212,6 +212,15 @@ object group_frc {
         <enumdoc ::projectlib::etraining>
     } -tags {create update multi}
 
+    attribute equip_level "Equipment Level" {
+        The group's equipment level, which should reflect the 
+        effectiveness of the group's weapons and defenses based solely
+        on the kind of technology they have.  The possible equipment
+        levels are as follows:<p>
+
+        <enumdoc ::projectlib::eequiplevel>
+    } -tags {create update multi}
+
     attribute base_personnel "Base Personnel" {
         The number of group personnel in the playbox on scenario lock.
     } -tags {create update multi}
