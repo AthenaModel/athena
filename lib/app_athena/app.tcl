@@ -1067,7 +1067,7 @@ snit::type app {
                      -title         "On-lock Sanity Check Failed"    \
                      -icon          warning                          \
                      -buttons       {ok "Continue" cancel "Cancel"}  \
-                     -default       my cancel                           \
+                     -default       cancel                           \
                      -ignoretag     onlock_check_failed              \
                      -ignoredefault ok                               \
                      -parent        [app topwin]                     \
