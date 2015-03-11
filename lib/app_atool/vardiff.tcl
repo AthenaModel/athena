@@ -17,8 +17,10 @@ oo::class create vardiff {
     variable val1    ;# Value 1
     variable val2    ;# Value 2
 
-    constructor {} {
+    constructor {val1_ val2_} {
         next
+        my readonly val1 $val1_
+        my readonly val2 $val2_
     }
 
     method name {} {
@@ -57,10 +59,8 @@ oo::class create vardiff::security.n {
     variable n 
 
     constructor {n_ val1_ val2_} {
-        next
-        my readonly n    $n_
-        my readonly val1 $val1_
-        my readonly val2 $val2_
+        next $val1_ $val2_
+        my readonly n $n_
     }
 
     method name {} {
@@ -83,10 +83,8 @@ oo::class create vardiff::control.n {
     variable n 
 
     constructor {n_ val1_ val2_} {
-        next
+        next $val1_ $val2_
         my readonly n    $n_
-        my readonly val1 $val1_
-        my readonly val2 $val2_
     }
 
     method name {} {
@@ -103,10 +101,8 @@ oo::class create vardiff::influence.n.* {
     # TBD: val1, val2 should probably be dictionaries of actors and 
     # influences.
     constructor {n_ val1_ val2_} {
-        next
+        next $val1_ $val2_
         my readonly n    $n_
-        my readonly val1 $val1_
-        my readonly val2 $val2_
     }
 
     method name {} {
@@ -121,10 +117,8 @@ oo::class create vardiff::nbmood.n {
     variable n 
 
     constructor {n_ val1_ val2_} {
-        next
-        my readonly n    $n_
-        my readonly val1 $val1_
-        my readonly val2 $val2_
+        next $val1_ $val2_
+        my readonly n  $n_
     }
 
     method name {} {

@@ -58,7 +58,6 @@ tool define COMPARE {
 
         if {$adbfile2 ne ""} {
             set s2 [$type LoadScenario $adbfile2]
-            $type CheckCompatibility $s1 $s2
         } else {
             set s2 $s1
         }
@@ -83,16 +82,16 @@ tool define COMPARE {
 
 
         # NEXT, look for differences
-        set diffs [list]
+        set comp [comparison new $s1 $t1 $s2 $t2]
+
         foreach var $varnames {
-            lappend diffs {*}[$type compare $var $s1 $t1 $s2 $t2]
+            $type compare $var $comp
         }
 
         # NEXT, output to console.
-        $type DumpDiffs $diffs
+        puts [$comp dump]
 
-        # NEXT, dispose of them.
-        foreach x $diffs {$x destroy}
+        $comp destroy
     }
 
     # LoadScenario adbfile
@@ -125,86 +124,30 @@ tool define COMPARE {
         return $s
     }
 
-    # CheckCompatibility s1 s2
-    #
-    # s1   - A scenario object
-    # s2   - A scenario object
-    #
-    # Determine whether the two scenarios are sufficiently similar that
-    # comparison is meaningful.
-    #
-    # TBD: The current set of checks is preliminary.
 
-    typemethod CheckCompatibility {s1 s2} {
-        if {![lequal [$s1 nbhood names] [$s2 nbhood names]]} {
-            throw FATAL \
-                "Scenarios not comparable: different neighborhoods."
-        }
 
-        if {![lequal [$s1 actor names] [$s2 actor names]]} {
-            throw FATAL \
-                "Scenarios not comparable: different actors."
-        }
-
-        if {![lequal [$s1 civgroup names] [$s2 civgroup names]]} {
-            throw FATAL \
-                "Scenarios not comparable: different civilian groups."
-        }
-
-        if {![lequal [$s1 frcgroup names] [$s2 frcgroup names]]} {
-            throw FATAL \
-                "Scenarios not comparable: different force groups."
-        }
-
-        if {![lequal [$s1 orggroup names] [$s2 orggroup names]]} {
-            throw FATAL \
-                "Scenarios not comparable: different organization groups."
-        }
-    }
-
-    # DumpDiffs diffs
-    #
-    # diffs  - A list of vardiff objects.
-    #
-    # Dumps them to the console.
-
-    typemethod DumpDiffs {diffs} {
-        set table [list]
-        foreach diff $diffs {
-            dict set row Variable   [$diff name]
-            dict set row A          [$diff fmt1]
-            dict set row B          [$diff fmt2]
-            dict set row Context    [$diff context]
-
-            lappend table $row
-        }
-
-        dictab puts $table -headers
-    }
 
     #-------------------------------------------------------------------
     # Difference Checkers
 
-    # compare security.n s1 t1 s2 t2
+    # compare security.n comp
     #
     # Find differences in nbhood security.
     # Two security values are different if they have different symbols.
 
-    typemethod {compare security.n} {s1 t1 s2 t2} {
-        # NOTE: Secret of general comparisons: two queries that produce
-        # a vector of items to compare.  It doesn't matter whether the
-        # queries are from one scenario or two.
-        array set val1 [$s1 eval {
+    typemethod {compare security.n} {comp} {
+        set t1 [$comp t1]
+        set t2 [$comp t2]
+
+        array set val1 [$comp s1 eval {
             SELECT n, security FROM hist_nbhood WHERE t=$t1
         }]
 
-        array set val2 [$s2 eval {
+        array set val2 [$comp s2 eval {
             SELECT n, security FROM hist_nbhood WHERE t=$t2
         }]
 
-        set diffs [list]
-
-        foreach n [$s1 nbhood names] {
+        foreach n [$comp s1 nbhood names] {
             set sym1 [qsecurity name $val1($n)]
             set sym2 [qsecurity name $val2($n)]
 
@@ -212,48 +155,51 @@ tool define COMPARE {
                 continue
             }
 
-            lappend diffs \
+            $comp add security.n \
                 [::vardiff::security.n new $n $val1($n) $val2($n)]
         }
-
-        return $diffs
     }
 
-    # compare control.n s1 t1 s2 t2
+    # compare control.n comp
     #
     # Find differences in nbhood control.
 
-    typemethod {compare control.n} {s1 t1 s2 t2} {
-        array set val1 [$s1 eval {
+    typemethod {compare control.n} {comp} {
+        set t1 [$comp t1]
+        set t2 [$comp t2]
+
+        array set val1 [$comp s1 eval {
             SELECT n, a FROM hist_nbhood WHERE t=$t1
         }]
 
-        array set val2 [$s2 eval {
+        array set val2 [$comp s2 eval {
             SELECT n, a FROM hist_nbhood WHERE t=$t2
         }]
 
-        set diffs [list]
-        foreach n [$s1 nbhood names] {
+        foreach n [$comp s1 nbhood names] {
             if {$val1($n) eq $val2($n)} {
                 continue
             }
-            lappend diffs [::vardiff::control.n new $n $val1($n) $val2($n)]
-        }
 
-        return $diffs
+            $comp add control.n \
+                [::vardiff::control.n new $n $val1($n) $val2($n)]
+        }
     }
 
-    # compare influence.n.* s1 t1 s2 t2
+    # compare influence.n.* comp
     #
     # Find differences in nbhood influence.
 
-    typemethod {compare influence.n.*} {s1 t1 s2 t2} {
-        foreach n [$s1 nbhood names] {
+    typemethod {compare influence.n.*} {comp} {
+        set t1 [$comp t1]
+        set t2 [$comp t2]
+
+        foreach n [$comp s1 nbhood names] {
             set actors1($n) {}
             set actors2($n) {}
         }
 
-        $s1 eval {
+        $comp s1 eval {
             SELECT n, a, influence FROM hist_support 
             WHERE t=$t1
             ORDER BY influence DESC
@@ -264,7 +210,7 @@ tool define COMPARE {
             set inf1($n,$a) $influence
         }
 
-        $s2 eval {
+        $comp s2 eval {
             SELECT n, a, influence FROM hist_support 
             WHERE t=$t2
             ORDER BY influence DESC
@@ -275,9 +221,7 @@ tool define COMPARE {
             set inf2($n,$a) $influence
         }
 
-        set diffs [list]
-
-        foreach n [$s1 nbhood names] {
+        foreach n [$comp s1 nbhood names] {
             defset actors1($n) "*NONE*"
             defset actors2($n) "*NONE*"
 
@@ -285,81 +229,80 @@ tool define COMPARE {
                 continue
             }
 
-            lappend diffs \
+            $comp add influence.n.* \
                 [::vardiff::influence.n.* new $n $actors1($n) $actors2($n)]
         }
-
-        return $diffs
     }
 
 
-    # compare nbmood.n s1 t1 s2 t2
+    # compare nbmood.n comp
     #
     # Find differences in nbhood control.
 
-    typemethod {compare nbmood.n} {s1 t1 s2 t2} {
-        array set val1 [$s1 eval {
+    typemethod {compare nbmood.n} {comp} {
+        set t1 [$comp t1]
+        set t2 [$comp t2]
+
+        array set val1 [$comp s1 eval {
             SELECT n, nbmood FROM hist_nbhood WHERE t=$t1
         }]
 
-        array set val2 [$s2 eval {
+        array set val2 [$comp s2 eval {
             SELECT n, nbmood FROM hist_nbhood WHERE t=$t2
         }]
 
-        set diffs [list]
-
-        foreach n [$s1 nbhood names] {
+        foreach n [$comp s1 nbhood names] {
             if {abs($val1($n) - $val2($n)) < 10.0} {
                 continue
             }
 
-            lappend diffs \
+            $comp add nbmood.n \
                 [vardiff::nbmood.n new $n $val1($n) $val2($n)]
         }
-
-        return $diffs
-    }
-
-    #-------------------------------------------------------------------
-    # Helper Procs
-
-    # printf fmt args
-    #
-    # fmt  - a format string
-    # 
-    # puts [format ...]
-
-    proc printf {fmt args} {
-        puts [uplevel 1 [list format $fmt {*}$args]]
-    }
-    
-    # defset varname value
-    #
-    # varname   - A variable name
-    # value     - value
-    #
-    # Assigns the value to the variable only if the variable's value
-    # is currently the empty string.
-
-    proc defset {varname value} {
-        upvar 1 $varname var
-
-        if {$var eq ""} {
-            set var $value
-        }
-    }
-
-    # lequal list1 list2
-    #
-    # Returns 1 if the lists are equal and 2 otherwise.
-    # Sorts the lists before comparing.
-
-    proc lequal {list1 list2} {
-        expr {[lsort $list1] eq [lsort $list2]}
     }
 
 }
 
+
+#-------------------------------------------------------------------
+# Helper Procs
+#
+# These should go in a library, probably in Kite.
+
+# printf fmt args
+#
+# fmt  - a format string
+# 
+# puts [format ...]
+
+proc printf {fmt args} {
+    puts [uplevel 1 [list format $fmt {*}$args]]
+}
+
+# defset varname value
+#
+# varname   - A variable name
+# value     - value
+#
+# Assigns the value to the variable only if the variable's value
+# is currently the empty string.
+
+proc defset {varname value} {
+    upvar 1 $varname var
+
+    if {$var eq ""} {
+        set var $value
+    }
+}
+
+# lequal list1 list2
+#
+# Returns 1 if the lists are equal and 2 otherwise.
+# Sorts the lists before comparing.
+
+proc lequal {list1 list2} {
+    expr {[lsort $list1] eq [lsort $list2]}
+}
 
 
 
