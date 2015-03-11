@@ -52,10 +52,10 @@ snit::type ::athena::aam {
     #------------------------------------------------------------------
     # Variables
 
-    variable alist {} ;# list of attrition dictionaries
-    variable sdict    ;# dict used to assess SAT effects
-    variable cdict    ;# dict used to assess COOP effects
-    variable roedict  ;# array of dicts used to store ROE tactic information
+    variable alist {}  ;# list of attrition dictionaries
+    variable sdict     ;# dict used to assess SAT effects
+    variable cdict     ;# dict used to assess COOP effects
+    variable roedict   ;# array of dicts used to store ROE tactic information
 
     #-------------------------------------------------------------------
     # reset
@@ -65,17 +65,20 @@ snit::type ::athena::aam {
         set sdict ""
         set cdict ""
         array unset roedict
+        array unset combatset
     }
 
     method start {} {
         $self ComputeEffectiveForce
+        $self AllocateForces
     }
 
     method ComputeEffectiveForce {} {
-        foreach {dem trn ft urb pers n g} [$adb eval {
-            SELECT F.demeanor      AS demeanor,
+        foreach {elvl tlvl frctype dem urb pers n g} [$adb eval {
+            SELECT F.equip_level   AS equip_level,
                    F.training      AS training,
                    F.forcetype     AS forcetype,
+                   F.demeanor      AS demeanor,
                    N.urbanization  AS urb,
                    D.personnel     AS personnel,
                    D.n             AS n,
@@ -85,18 +88,34 @@ snit::type ::athena::aam {
             JOIN nbhoods       AS N ON (D.n=N.n)
             WHERE D.personnel > 0
         }] {
-            set Fd [$adb parm get aam.FRC.demeanor.$dem]
-            set Ff [$adb parm get aam.FRC.forcetype.$ft]
+            set Fe [$adb parm get aam.FRC.equiplevel.$elvl]
+            set Ff [$adb parm get aam.FRC.forcetype.$frctype]
             set Ft [$adb parm get aam.FRC.discipline.$trn]
+            set Fd [$adb parm get aam.FRC.demeanor.$dem]
 
-            let eff_pers {entier(ceil($Fd * $Ft * $Ff * $pers))}
+            let eff_pers {entier(ceil($Fe * $Ff * $Ft * $Fd * $pers))}
 
             $adb eval {
                 UPDATE deploy_ng
                 SET eff_personnel=$eff_pers
                 WHERE n=$n AND g=$g
             }
+        }
+    }
 
+    method AllocateForces {} {
+        # FIRST, fill in the working combat table with defaults
+        foreach n [nbhood names] {
+            foreach f [rdb onecolumn {
+                SELECT g FROM deploy_ng WHERE personnel>0
+            }] {
+                foreach g [rdb onecolumn {
+                    SELECT g FROM deploy_ng WHERE personnel>0 AND g!=$f
+                }] {
+                    INSERT INTO working_combat(n,f,g,roe,posture,civc)
+                    VALUES($n,$f,$g,'DEFEND','DEFEND','HIGH')
+                }
+            }
         }
     }
 
@@ -134,20 +153,20 @@ snit::type ::athena::aam {
     #-------------------------------------------------------------------
     # ROE Tactic API 
 
-    # setroe n g rdict
+    # setroe n f rdict
     #
     # n       - a neighborhood in which g assumes an ROE
-    # g       - a force group assuming the ROE
+    # f       - a force group assuming the ROE
     # rdict   - dictionary of ROE key/values
     #
     # rdict contains the following data related to how g should conduct
     # itself while in combat against other force groups in n:
     #
-    #    $f  => dictionary of ROE data for the FRC group g is engaging
-    #        -> roe => the ROE $g is attempting with $f: ATTACK or DEFEND
-    #        -> athresh => the force/enemy ratio below which $g DEFENDs
-    #        -> dthresh => the force/enemy ratio below which $g WITHDRAWs
-    #        -> civc => $g's concern for civilian casualties
+    #    $g  => dictionary of ROE data for the FRC group f is engaging
+    #        -> roe => the ROE $f is attempting with $g: ATTACK or DEFEND
+    #        -> athresh => the force/enemy ratio below which $f DEFENDs
+    #        -> dthresh => the force/enemy ratio below which $f WITHDRAWs
+    #        -> civc => $f's concern for civilian casualties
     #
     # The data in this array of dictionaries is used to set up the initial
     # conditions of the various conflicts between FRC groups by neighborhood.
@@ -155,27 +174,27 @@ snit::type ::athena::aam {
     # a posture via the ROE, that posture may not be attainable due to
     # the computed force ratios.
 
-    method setroe {n g rdict} {
-        dict set roedict($n) $g $rdict 
+    method setroe {n f rdict} {
+        dict set roedict($n) $f $rdict 
     }
 
     # hasroe n g f
     #
     # n   - a neighborhood
-    # g   - a force group
-    # f   - other force group
+    # f   - a force group
+    # g   - other force group
     #
     # This method returns a flag indicating whether g has an ROE already
     # set against g in n.  This is used during ROE tactic execution to
     # determine whether an ROE has already been set and, therefore, cannot
     # be overridden.
 
-    method hasroe {n g f} {
+    method hasroe {n f g} {
         if {![info exists roedict($n)]} {
             return 0
         }
 
-        return [dict exists $roedict($n) $g $f]
+        return [dict exists $roedict($n) $f $g]
     }
 
     # getroe

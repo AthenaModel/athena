@@ -24,8 +24,8 @@
     # Instance Variables
 
     # Editable Parameters
-    variable g           ;# A force group owned by the actor group
-    variable f           ;# A force group to engage
+    variable f           ;# A force group owned by the actor group
+    variable g           ;# A force group to engage
     variable nlist       ;# A list of neighborhoods to assume the ROE
     variable roe         ;# The ROE the group should attempt to take
     variable athresh     ;# Force ratio below which posture is defend
@@ -40,9 +40,9 @@
         next $pot_
 
         # Initialize state variables
-        set g          ""
-        set nlist      [[my adb] gofer NBHOODS blank]
         set f          ""
+        set nlist      [[my adb] gofer NBHOODS blank]
+        set g          ""
         set roe        ATTACK
         set athresh    1.0
         set dthresh    0.8
@@ -60,11 +60,11 @@
 
     method SanityCheck {errdict} {
         # Check g
-        if {$g eq ""} {
+        if {$f eq ""} {
             dict set errdict g "No force group selected."
-        } elseif {$g ni [[my adb] group ownedby [my agent]]} {
-            dict set errdict g \
-                "[my agent] does not own a force group called \"$g\"."
+        } elseif {$f ni [[my adb] group ownedby [my agent]]} {
+            dict set errdict f \
+                "[my agent] does not own a force group called \"$f\"."
         }
 
         # nlist
@@ -73,25 +73,25 @@
         }
 
         # f
-        if {$f eq ""} {
-            dict set errdict f "No enemy group selected."
-        } elseif {$f in [[my adb] group ownedby [my agent]]} {
-            dict set errdict f \
-                "[my agent] can't engage own force group: \"$f\"."
+        if {$g eq ""} {
+            dict set errdict g "No enemy group selected."
+        } elseif {$g in [[my adb] group ownedby [my agent]]} {
+            dict set errdict g \
+                "[my agent] can't engage own force group: \"$g\"."
         }
 
         return [next $errdict]
     }
 
     method narrative {} {
-        set s(g)     [::athena::link make group $g]
-        set s(nlist) [[my adb] gofer NBHOODS narrative $nlist]
         set s(f)     [::athena::link make group $f]
+        set s(nlist) [[my adb] gofer NBHOODS narrative $nlist]
+        set s(g)     [::athena::link make group $g]
         set s(roe)   [eroe longname $roe]
         set s(athresh) [format %.0f%% [expr $athresh * 100.0]]
         set s(dthresh) [format %.0f%% [expr $dthresh * 100.0]]
 
-        set narr "$s(g) will try to $s(roe) $s(f) in $s(nlist). "
+        set narr "$s(f) will try to $s(roe) $s(g) in $s(nlist). "
         append narr "Force/Enemy ratio: "
         if {[eroe name $roe] eq "ATTACK"} {
             append narr "DEFEND below $s(athresh) and "
@@ -116,8 +116,8 @@
         set nbhoods [[my adb] gofer eval $nlist]
 
         foreach n $nbhoods {
-            if {![[my adb] aam hasroe $n $g $f]} {
-                [my adb] aam setroe $n $g [list $f \
+            if {![[my adb] aam hasroe $n $f $g]} {
+                [my adb] aam setroe $n $f [list $g \
                     [list roe $roe athresh $athresh dthresh $dthresh civc $civc]]
                 lappend goodn $n 
             } else {
@@ -127,32 +127,32 @@
 
         if {[llength $goodn] == 0} {
             set msg "
-                ROE: Actor {actor:[my agent]} ordered {group:$g} to adopt
-                an ROE of $roe towards {group:$f} in 
-                [[my adb] gofer NBHOODS narrative $nlist], however, $g's 
+                ROE: Actor {actor:[my agent]} ordered {group:$f} to adopt
+                an ROE of $roe towards {group:$g} in 
+                [[my adb] gofer NBHOODS narrative $nlist], however, $f's 
                 ROE were already set in these neighborhoods by higher-priority
                  tactics.
             "
 
-            set tags [list [my agent] $g $f {*}$nbhoods]
+            set tags [list [my agent] $f $g {*}$nbhoods]
             [my adb] sigevent log 2 tactic $msg {*}$tags
         
             return
         }
 
         set msg "
-            ROE: Actor {actor:[my agent]}'s group {group:$g} adopts an ROE
-            of $roe towards {group:$f} in [join $goodn {, }].
+            ROE: Actor {actor:[my agent]}'s group {group:$f} adopts an ROE
+            of $roe towards {group:$g} in [join $goodn {, }].
         "
 
         if {[llength $badn] > 0} {
             append msg "
-                Group {group:$g}'s ROE already set in these neighborhood(s) by
+                Group {group:$f}'s ROE already set in these neighborhood(s) by
                 a prior tactic: [join $badn {, }].
             "
         }
 
-        set tags [list [my agent] $g $f {*}$goodn]
+        set tags [list [my agent] $f $g {*}$goodn]
         [my adb] sigevent log 2 tactic $msg {*}$tags
 
         return 
@@ -170,7 +170,7 @@
     meta title      "Tactic: Force Group ROE"
     meta sendstates PREP
     meta parmlist   {
-        tactic_id name g nlist f roe athresh dthresh civc
+        tactic_id name f nlist g roe athresh dthresh civc
     }
 
     meta form {
@@ -181,14 +181,14 @@
         rcc "Name:" -for name
         text name -width 20
 
-        rcc "Group:" -for g
-        enum g -listcmd {$order_ frcgroupsOwnedByAgent $tactic_id}
+        rcc "Group:" -for f
+        enum f -listcmd {$order_ frcgroupsOwnedByAgent $tactic_id}
 
         rcc "Neighborhoods:" -for nlist
         gofer nlist -typename NBHOODS
 
-        rcc "Against:" -for f
-        enum f -listcmd {$order_ frcgroupsNotOwnedByAgent $tactic_id}
+        rcc "Against:" -for g
+        enum g -listcmd {$order_ frcgroupsNotOwnedByAgent $tactic_id}
 
         rcc "ROE:" -for roe
         selector roe {
@@ -218,12 +218,12 @@
         my returnOnError
 
         # NEXT, get the tactic
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
 
         my prepare name       -toupper  -with [list $tactic valName]
-        my prepare g  
+        my prepare f  
         my prepare nlist
-        my prepare f
+        my prepare g
         my prepare roe        -toupper  -type eroe
         my prepare athresh    -toupper  -type rmagnitude
         my prepare dthresh    -toupper  -type rmagnitude
@@ -242,9 +242,9 @@
     }
 
     method _execute {{flunky ""}} {
-        set tactic [$adb pot get $parms(tactic_id)]
+        set tactic [$adb bean get $parms(tactic_id)]
         my setundo [$tactic update_ {
-            name g nlist f roe athresh dthresh civc
+            name f nlist g roe athresh dthresh civc
         } [array get parms]]
     }
 }

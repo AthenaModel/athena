@@ -207,8 +207,8 @@ oo::class create ::athena::athena_order {
     # other agent.
 
     method frcgroupsNotOwnedByAgent {id} {
-        if {[$adb pot has $id]} {
-            set tactic [$adb pot get $id]
+        if {[$adb bean has $id]} {
+            set tactic [$adb bean get $id]
             return [$adb frcgroup notownedby [$tactic agent]]
         } else {
             return [list]

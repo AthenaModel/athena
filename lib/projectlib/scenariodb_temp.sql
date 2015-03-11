@@ -186,3 +186,39 @@ CREATE TEMPORARY TABLE working_build (
     PRIMARY KEY (n, a)
 );
 
+---------------------------------------------------------------------
+-- Temporary Attrition Model Tables
+
+-- Working combat table for AAM: tracks ROE, postures, thresholds and
+-- casualties for force groups engaged in combat
+
+CREATE TEMPORARY TABLE working_combat (
+    -- Nbhood ID
+    n            TEXT,
+
+    -- Force group IDs of combatants
+    f            TEXT,
+    g            TEXT,
+
+    -- ROE of f->g
+    roe          TEXT,
+
+    -- Posture of f->g
+    posture      TEXT,
+
+    -- Attack and defend force/enemy thresholds of f->g
+    athresh      DOUBLE DEFAULT 0.0,
+    dthresh      DOUBLE DEFAULT 0.0,
+
+    -- Concern for civilian casualties
+    civc         TEXT,
+
+    -- Designated personnel of f->g
+    desig_pers   INTEGER DEFAULT 0,
+
+    -- Casualties suffered to f by g
+    casualties   INTEGER DEFAULT 0,
+
+    PRIMARY KEY (n, f, g)
+);
+
