@@ -83,9 +83,16 @@ tool define COMPARE {
 
 
         # NEXT, look for differences
+        set diffs [list]
         foreach var $varnames {
-            $type compare $var $s1 $t1 $s2 $t2
+            lappend diffs {*}[$type compare $var $s1 $t1 $s2 $t2]
         }
+
+        # NEXT, output to console.
+        $type DumpDiffs $diffs
+
+        # NEXT, dispose of them.
+        foreach x $diffs {$x destroy}
     }
 
     # LoadScenario adbfile
@@ -153,7 +160,27 @@ tool define COMPARE {
             throw FATAL \
                 "Scenarios not comparable: different organization groups."
         }
-    }    
+    }
+
+    # DumpDiffs diffs
+    #
+    # diffs  - A list of vardiff objects.
+    #
+    # Dumps them to the console.
+
+    typemethod DumpDiffs {diffs} {
+        set table [list]
+        foreach diff $diffs {
+            dict set row Variable   [$diff name]
+            dict set row A          [$diff fmt1]
+            dict set row B          [$diff fmt2]
+            dict set row Context    [$diff context]
+
+            lappend table $row
+        }
+
+        dictab puts $table -headers
+    }
 
     #-------------------------------------------------------------------
     # Difference Checkers
@@ -167,23 +194,29 @@ tool define COMPARE {
         # NOTE: Secret of general comparisons: two queries that produce
         # a vector of items to compare.  It doesn't matter whether the
         # queries are from one scenario or two.
-        array set a [$s1 eval {
+        array set val1 [$s1 eval {
             SELECT n, security FROM hist_nbhood WHERE t=$t1
         }]
 
-        array set b [$s2 eval {
+        array set val2 [$s2 eval {
             SELECT n, security FROM hist_nbhood WHERE t=$t2
         }]
 
-        foreach n [$s1 nbhood names] {
-            set asym [qsecurity name $a($n)]
-            set bsym [qsecurity name $b($n)]
+        set diffs [list]
 
-            if {$asym ne $bsym} {
-                printf "%-20s: %-8s => %-8s (%4d => %4d)" \
-                    security.$n $asym $bsym $a($n) $b($n)
+        foreach n [$s1 nbhood names] {
+            set sym1 [qsecurity name $val1($n)]
+            set sym2 [qsecurity name $val2($n)]
+
+            if {$sym1 eq $sym2} {
+                continue
             }
+
+            lappend diffs \
+                [::vardiff::security.n new $n $val1($n) $val2($n)]
         }
+
+        return $diffs
     }
 
     # compare control.n s1 t1 s2 t2
@@ -191,20 +224,23 @@ tool define COMPARE {
     # Find differences in nbhood control.
 
     typemethod {compare control.n} {s1 t1 s2 t2} {
-        array set a [$s1 eval {
+        array set val1 [$s1 eval {
             SELECT n, a FROM hist_nbhood WHERE t=$t1
         }]
 
-        array set b [$s2 eval {
+        array set val2 [$s2 eval {
             SELECT n, a FROM hist_nbhood WHERE t=$t2
         }]
 
+        set diffs [list]
         foreach n [$s1 nbhood names] {
-            if {$a($n) ne $b($n)} {
-                printf "%-20s: %-8s => %-8s" \
-                    control.$n $a($n) $b($n)
+            if {$val1($n) eq $val2($n)} {
+                continue
             }
+            lappend diffs [::vardiff::control.n new $n $val1($n) $val2($n)]
         }
+
+        return $diffs
     }
 
     # compare influence.n.* s1 t1 s2 t2
@@ -239,15 +275,21 @@ tool define COMPARE {
             set inf2($n,$a) $influence
         }
 
+        set diffs [list]
+
         foreach n [$s1 nbhood names] {
             defset actors1($n) "*NONE*"
             defset actors2($n) "*NONE*"
 
-            if {$actors1($n) ne $actors2($n)} {
-                printf "%-20s: %s => %s" \
-                    influence.$n.* $actors1($n) $actors2($n)
+            if {$actors1($n) eq $actors2($n)} {
+                continue
             }
+
+            lappend diffs \
+                [::vardiff::influence.n.* new $n $actors1($n) $actors2($n)]
         }
+
+        return $diffs
     }
 
 
@@ -256,23 +298,26 @@ tool define COMPARE {
     # Find differences in nbhood control.
 
     typemethod {compare nbmood.n} {s1 t1 s2 t2} {
-        array set a [$s1 eval {
+        array set val1 [$s1 eval {
             SELECT n, nbmood FROM hist_nbhood WHERE t=$t1
         }]
 
-        array set b [$s2 eval {
+        array set val2 [$s2 eval {
             SELECT n, nbmood FROM hist_nbhood WHERE t=$t2
         }]
 
-        foreach n [$s1 nbhood names] {
-            set asym [qsat name $a($n)]
-            set bsym [qsat name $b($n)]
+        set diffs [list]
 
-            if {abs($a($n) - $b($n)) > 10.0} {
-                printf "%-20s: %-8s => %-8s (%6.1f => %6.1f)" \
-                    nbmood.$n $asym $bsym $a($n) $b($n)
+        foreach n [$s1 nbhood names] {
+            if {abs($val1($n) - $val2($n)) < 10.0} {
+                continue
             }
+
+            lappend diffs \
+                [vardiff::nbmood.n new $n $val1($n) $val2($n)]
         }
+
+        return $diffs
     }
 
     #-------------------------------------------------------------------
