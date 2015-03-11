@@ -34,7 +34,7 @@ tool define COMPARE {
 } {
     # Type Variables
 
-    typevariable varnames {
+    typevariable vartypes {
         security.n
         control.n
         influence.n.*
@@ -84,8 +84,8 @@ tool define COMPARE {
         # NEXT, look for differences
         set comp [comparison new $s1 $t1 $s2 $t2]
 
-        foreach var $varnames {
-            $type compare $var $comp
+        foreach var $vartypes {
+            ::vardiff::$var compare $comp
         }
 
         # NEXT, output to console.

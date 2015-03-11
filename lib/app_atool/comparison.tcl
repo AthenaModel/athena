@@ -30,11 +30,8 @@ oo::class create comparison {
     }
 
     destructor {
-        dict for {vartype difflist} $diffs {
-            foreach diff $difflist {
-                $diff destroy
-            }
-        }
+        # Destroy the difference objects.
+        my reset
     }
 
     # CheckCompatibility
@@ -77,10 +74,15 @@ oo::class create comparison {
     # vartype - A variable type, e.g., security.n
     # diff    - A difference in a specific variable of that type.
     #
-    # Adds the diff to the differences.
+    # Adds the diff to the differences, or throws it away if it isn't
+    # significant.
 
     method add {vartype diff} {
-        dict lappend diffs $vartype $diff
+        if {[$diff significant]} {
+            dict lappend diffs $vartype $diff
+        } else {
+            $diff destroy
+        }
     }
 
     # reset
@@ -88,6 +90,11 @@ oo::class create comparison {
     # Resets the differences.
 
     method reset {} {
+        dict for {vartype difflist} $diffs {
+            foreach diff $difflist {
+                $diff destroy
+            }
+        }
         set diffs [dict create]
     }
 

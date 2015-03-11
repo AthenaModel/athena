@@ -14,13 +14,15 @@ oo::class create vardiff {
     superclass ::record
     meta type *      ;# Type is undefined
 
-    variable val1    ;# Value 1
-    variable val2    ;# Value 2
+    variable comp    ;# comparison object
+    variable val1
+    variable val2
 
-    constructor {val1_ val2_} {
+    constructor {comp_} {
         next
-        my readonly val1 $val1_
-        my readonly val2 $val2_
+        set comp $comp_
+        set val1 ""
+        set val2 ""
     }
 
     method name {} {
@@ -56,11 +58,36 @@ oo::class create vardiff::security.n {
     superclass ::vardiff
     meta type security.n
 
+    self method compare {comp} {
+        foreach n [$comp s1 nbhood names] {
+            $comp add [my type] [my new $comp $n]
+        }
+    }
+
+    variable comp ;# Consider definer to add this automatically
+
     variable n 
 
-    constructor {n_ val1_ val2_} {
-        next $val1_ $val2_
+    constructor {comp_ n_} {
+        next $comp_
         my readonly n $n_
+        my readonly val1 [my GetValue s1 t1]
+        my readonly val2 [my GetValue s2 t2]
+    }
+
+    # TBD: hist method?
+    method GetValue {s t} {
+        set t [$comp $t]
+        return [$comp $s onecolumn {
+            SELECT security FROM hist_nbhood WHERE t=$t AND n=$n
+        }]
+    }
+
+    method significant {} {
+        set sym1 [qsecurity name [my val1]]
+        set sym2 [qsecurity name [my val2]]
+
+        expr {$sym1 ne $sym2}
     }
 
     method name {} {
@@ -80,15 +107,43 @@ oo::class create vardiff::control.n {
     superclass ::vardiff
     meta type control.n
 
+    self method compare {comp} {
+        foreach n [$comp s1 nbhood names] {
+            $comp add [my type] [my new $comp $n]
+        }
+    }
+
+    variable comp ;# Consider definer to add this automatically
     variable n 
 
-    constructor {n_ val1_ val2_} {
-        next $val1_ $val2_
+    constructor {comp_ n_} {
+        next $comp_
         my readonly n    $n_
+        my readonly val1 [my GetValue s1 t1]
+        my readonly val2 [my GetValue s2 t2]
+    }
+
+    method GetValue {s t} {
+        set t [$comp $t]
+        return [$comp $s onecolumn {
+            SELECT a FROM hist_nbhood WHERE t=$t AND n=$n
+        }]
+    }
+
+    method significant {} {
+        expr {[my val1] ne [my val2]}
     }
 
     method name {} {
         return "control.$n"
+    }
+
+    method format {val} {
+        if {$val ne ""} {
+            return $val
+        } else {
+            return "*NONE*"
+        }
     }
 }
 
@@ -96,13 +151,42 @@ oo::class create vardiff::influence.n.* {
     superclass ::vardiff
     meta type influence.n.*
 
+    self method compare {comp} {
+        foreach n [$comp s1 nbhood names] {
+            $comp add [my type] [my new $comp $n]
+        }
+    }
+
+    variable comp ;# Consider definer to add this automatically
     variable n 
 
-    # TBD: val1, val2 should probably be dictionaries of actors and 
-    # influences.
-    constructor {n_ val1_ val2_} {
-        next $val1_ $val2_
+    constructor {comp_ n_} {
+        next $comp_
         my readonly n    $n_
+        my readonly val1 [my GetValue s1 t1]
+        my readonly val2 [my GetValue s2 t2]
+    }
+
+    method GetValue {s t} {
+        set t [$comp $t]
+        return [$comp $s eval {
+            SELECT a, influence FROM hist_support 
+            WHERE t=$t AND n=$n AND influence > 0 
+            ORDER BY influence DESC
+        }]
+    }
+
+    method significant {} {
+        expr {[my fmt1] ne [my fmt2]}
+    }
+
+
+    method format {val} {
+        if {[dict size $val] > 0} {
+            return [dict keys $val]
+        } else {
+            return "*NONE*"
+        }
     }
 
     method name {} {
@@ -114,15 +198,36 @@ oo::class create vardiff::nbmood.n {
     superclass ::vardiff
     meta type nbmood.n
 
+    self method compare {comp} {
+        foreach n [$comp s1 nbhood names] {
+            $comp add [my type] [my new $comp $n]
+        }
+    }
+
+    variable comp ;# Consider definer to add this automatically
     variable n 
 
-    constructor {n_ val1_ val2_} {
-        next $val1_ $val2_
+    constructor {comp_ n_} {
+        next $comp_
         my readonly n  $n_
+        my readonly val1 [my GetValue 1]
+        my readonly val2 [my GetValue 2]
+    }
+
+    method GetValue {case} {
+        set t [$comp t$case]
+        return [$comp s$case eval {
+            SELECT nbmood FROM hist_nbhood 
+            WHERE t=$t AND n=$n 
+        }]
     }
 
     method name {} {
         return "nbmood.$n"
+    }
+
+    method significant {} {
+        expr {abs([my val1] - [my val2]) >= 10.0}
     }
 
     method format {val} {
