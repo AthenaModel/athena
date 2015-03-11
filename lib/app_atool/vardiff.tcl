@@ -11,22 +11,34 @@
 #-----------------------------------------------------------------------
 
 oo::class create vardiff {
-    superclass ::record
     meta type *      ;# Type is undefined
 
     variable comp    ;# comparison object
-    variable val1
-    variable val2
+    variable keydict ;# Key dictionary
+    variable val1    ;# Value from case 1
+    variable val2    ;# Value from case 2
 
-    constructor {comp_} {
-        next
-        set comp $comp_
-        set val1 ""
-        set val2 ""
+    constructor {comp_ keydict_} {
+        set comp    $comp_
+        set keydict $keydict_
+        set val1    [my retrieve [$comp s1] [$comp t1]]
+        set val2    [my retrieve [$comp s2] [$comp t2]]
     }
 
     method name {} {
         error "Not overridden"
+    }
+
+    method keydict {} {
+        return $keydict
+    }
+
+    method keys {} {
+        return [dict keys $keydict]
+    }
+
+    method key {name} {
+        return [dict get $keydict $name]
     }
 
     method val1 {} {
@@ -64,21 +76,14 @@ oo::class create vardiff::security.n {
         }
     }
 
-    variable comp ;# Consider definer to add this automatically
-
-    variable n 
-
     constructor {comp_ n_} {
-        next $comp_
-        my readonly n $n_
-        my readonly val1 [my GetValue s1 t1]
-        my readonly val2 [my GetValue s2 t2]
+        next $comp_ [list n $n_]
     }
 
-    # TBD: hist method?
-    method GetValue {s t} {
-        set t [$comp $t]
-        return [$comp $s onecolumn {
+    method retrieve {s t} {
+        set n [my key n]
+
+        return [$s onecolumn {
             SELECT security FROM hist_nbhood WHERE t=$t AND n=$n
         }]
     }
@@ -91,7 +96,7 @@ oo::class create vardiff::security.n {
     }
 
     method name {} {
-        return "security.$n"
+        return "security.[my key n]"
     }
 
     method format {val} {
@@ -113,19 +118,14 @@ oo::class create vardiff::control.n {
         }
     }
 
-    variable comp ;# Consider definer to add this automatically
-    variable n 
-
     constructor {comp_ n_} {
-        next $comp_
-        my readonly n    $n_
-        my readonly val1 [my GetValue s1 t1]
-        my readonly val2 [my GetValue s2 t2]
+        next $comp_ [list n $n_]
     }
 
-    method GetValue {s t} {
-        set t [$comp $t]
-        return [$comp $s onecolumn {
+    method retrieve {s t} {
+        set n [my key n]
+
+        return [$s onecolumn {
             SELECT a FROM hist_nbhood WHERE t=$t AND n=$n
         }]
     }
@@ -135,7 +135,7 @@ oo::class create vardiff::control.n {
     }
 
     method name {} {
-        return "control.$n"
+        return "control.[my key n]"
     }
 
     method format {val} {
@@ -157,19 +157,14 @@ oo::class create vardiff::influence.n.* {
         }
     }
 
-    variable comp ;# Consider definer to add this automatically
-    variable n 
-
     constructor {comp_ n_} {
-        next $comp_
-        my readonly n    $n_
-        my readonly val1 [my GetValue s1 t1]
-        my readonly val2 [my GetValue s2 t2]
+        next $comp_ [list n $n_]
     }
 
-    method GetValue {s t} {
-        set t [$comp $t]
-        return [$comp $s eval {
+    method retrieve {s t} {
+        set n [my key n]
+
+        return [$s eval {
             SELECT a, influence FROM hist_support 
             WHERE t=$t AND n=$n AND influence > 0 
             ORDER BY influence DESC
@@ -190,7 +185,7 @@ oo::class create vardiff::influence.n.* {
     }
 
     method name {} {
-        return "influence.$n.*"
+        return "influence.[my key n].*"
     }
 }
 
@@ -204,26 +199,20 @@ oo::class create vardiff::nbmood.n {
         }
     }
 
-    variable comp ;# Consider definer to add this automatically
-    variable n 
-
     constructor {comp_ n_} {
-        next $comp_
-        my readonly n  $n_
-        my readonly val1 [my GetValue 1]
-        my readonly val2 [my GetValue 2]
+        next $comp_ [list n $n_]
     }
 
-    method GetValue {case} {
-        set t [$comp t$case]
-        return [$comp s$case eval {
+    method retrieve {s t} {
+        set n [my key n]
+        return [$s onecolumn {
             SELECT nbmood FROM hist_nbhood 
             WHERE t=$t AND n=$n 
         }]
     }
 
     method name {} {
-        return "nbmood.$n"
+        return "nbmood.[my key n]"
     }
 
     method significant {} {

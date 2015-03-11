@@ -119,7 +119,11 @@ oo::class create comparison {
     # Executes the args as a subcommand of s1.
 
     method s1 {args} {
-        tailcall $s1 {*}$args
+        if {[llength $args] == 0} {
+            return $s1
+        } else {
+            tailcall $s1 {*}$args            
+        }
     }
 
     # s2 args
@@ -127,7 +131,11 @@ oo::class create comparison {
     # Executes the args as a subcommand of s2.
 
     method s2 {args} {
-        tailcall $s2 {*}$args
+        if {[llength $args] == 0} {
+            return $s2
+        } else {
+            tailcall $s2 {*}$args            
+        }
     }
 
     # dump
