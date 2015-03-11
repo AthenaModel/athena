@@ -74,7 +74,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         set id [ted sendex block add JOE]
-        [adb bean get $id] get intent
+        [tdb bean get $id] get intent
     } -cleanup {
         cleanup
     } -result {}
@@ -83,7 +83,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         set id [ted sendex block add JOE -intent "New Block"]
-        [adb bean get $id] get intent
+        [tdb bean get $id] get intent
     } -cleanup {
         cleanup
     } -result {New Block}
@@ -92,7 +92,7 @@ namespace eval ::athena_test::tests:: {
         setup
     } -body {
         set id [ted sendex block add JOE -state disabled]
-        [adb bean get $id] get state
+        [tdb bean get $id] get state
     } -cleanup {
         cleanup
     } -result {disabled}
@@ -232,7 +232,7 @@ namespace eval ::athena_test::tests:: {
         set B1 [ted addblock JOE]
     } -body {
         set id [ted sendex condition add [$B1 id] EXPR]
-        [adb bean get $id] get metflag
+        [tdb bean get $id] get metflag
     } -cleanup {
         cleanup
     } -result {}
@@ -242,7 +242,7 @@ namespace eval ::athena_test::tests:: {
         set B1 [ted addblock JOE]
     } -body {
         set id [ted sendex condition add [$B1 id] EXPR -expression "1 + 1 == 2"]
-        [adb bean get $id] get expression
+        [tdb bean get $id] get expression
     } -cleanup {
         cleanup
     } -result {1 + 1 == 2}
@@ -252,7 +252,7 @@ namespace eval ::athena_test::tests:: {
         set B1 [ted addblock JOE]
     } -body {
         set id [ted sendex condition add [$B1 id] EXPR -state disabled]
-        [adb bean get $id] get state
+        [tdb bean get $id] get state
     } -cleanup {
         cleanup
     } -result {disabled}
@@ -504,7 +504,7 @@ JOE
         set B1 [ted addblock JOE]
     } -body {
         set id [ted sendex tactic add [$B1 id] SIGEVENT]
-        [adb bean get $id] get msg
+        [tdb bean get $id] get msg
     } -cleanup {
         cleanup
     } -result {}
@@ -514,7 +514,7 @@ JOE
         set B1 [ted addblock JOE]
     } -body {
         set id [ted sendex tactic add [$B1 id] SIGEVENT -msg "1 + 1 == 2"]
-        [adb bean get $id] get msg
+        [tdb bean get $id] get msg
     } -cleanup {
         cleanup
     } -result {1 + 1 == 2}
@@ -524,7 +524,7 @@ JOE
         set B1 [ted addblock JOE]
     } -body {
         set id [ted sendex tactic add [$B1 id] SIGEVENT -state disabled]
-        [adb bean get $id] get state
+        [tdb bean get $id] get state
     } -cleanup {
         cleanup
     } -result {disabled}

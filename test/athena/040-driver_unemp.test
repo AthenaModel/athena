@@ -80,7 +80,7 @@ namespace eval ::athena_test::tests:: {
         # FIRST, other rule sets shouldn't muddy the waters.
         tdb parm set dam.ENI.active no
         tdb parm set dam.CONSUMP.active no
-        adb eval {DELETE FROM drivers}
+        tdb eval {DELETE FROM drivers}
         
         # NEXT, create the entities
         ted create JOE BOB DAVE NB1 NB2 TAL SHIA SUNN KURD
@@ -104,7 +104,7 @@ namespace eval ::athena_test::tests:: {
         tdb parm set dam.UNEMP.active yes
 
         # FIRST, spoof the factors.
-        adb eval {
+        tdb eval {
             UPDATE demog_n SET uaf = 0.0;
             UPDATE demog_n SET uaf = $uaf
             WHERE n = 'NB1';

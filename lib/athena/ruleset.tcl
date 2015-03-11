@@ -484,6 +484,19 @@ oo::define ::athena::ruleset {
         return [[my adb] iom {*}$args]
     }
 
+    # rmf func rel
+    #
+    # func  - The RMF function name
+    # rel   - The relationship
+    #
+    # Returns the RMF value.
+
+    method rmf {func rel} {
+        set Rnom [my parm rmf.nominalRelationship]
+
+        return [rmf $func $rel $Rnom]
+    }
+
     # mag* multiplier mag
     #
     # multiplier    A numeric multiplier

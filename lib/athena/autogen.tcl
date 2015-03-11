@@ -162,6 +162,7 @@ snit::type ::athena::autogen {
 
         # NEXT, all inputs check out, blank out the scenario
         $adb reset
+        $adb dbsync
 
         # NEXT, create scenario entities, order matters
         $self Actors    $opts(-actors)

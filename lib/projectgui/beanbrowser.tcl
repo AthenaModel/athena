@@ -63,6 +63,11 @@ snit::widget ::projectgui::beanbrowser {
     delegate option -stripebackground to tlist
     delegate option -stripeforeground to tlist
     delegate option -stripeheight     to tlist
+
+    # -beanpot pot
+    #
+    # The beanpot(n) that contains the beans this browser displays.
+    option -beanpot
     
     # -beancmd cmd
     #
@@ -891,7 +896,7 @@ snit::widget ::projectgui::beanbrowser {
 
         # NEXT, get the bean's data and prepare it to be loaded into the
         # tablelist.
-        set bean [pot get $uid]
+        set bean [callwith $options(-beanpot) get $uid]
         set bdict [$bean view]
 
         set data [list]

@@ -106,6 +106,9 @@ These options are delegated to the hull ttk::frame widget.<p>
 
 These options are delegated to the underlying tablelist(n) widget.<p>
 
+<defopt {-beanpot <i>pot</i>}>
+The <xref beanpot(n)> in which the displayed beans reside.<p>
+
 <defopt {-beancmd <i>cmd</i>}>
 
 The <i>cmd</i> is a Tcl command that returns the list of beans to be 

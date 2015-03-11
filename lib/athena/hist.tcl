@@ -52,45 +52,39 @@ snit::type ::athena::hist {
     method purge {t} {
         if {$t == -1} {
             $adb eval {
+                DELETE FROM hist_nbhood;
                 DELETE FROM hist_sat;
                 DELETE FROM hist_mood;
-                DELETE FROM hist_nbmood;
                 DELETE FROM hist_coop;
                 DELETE FROM hist_nbcoop;
                 DELETE FROM hist_econ;
                 DELETE FROM hist_econ_i;
                 DELETE FROM hist_econ_ij;
-                DELETE FROM hist_control;
                 DELETE FROM hist_security;
                 DELETE FROM hist_service_sg;
                 DELETE FROM hist_support;
-                DELETE FROM hist_volatility;
                 DELETE FROM hist_hrel;
                 DELETE FROM hist_vrel;
                 DELETE FROM hist_pop;
-                DELETE FROM hist_npop;
                 DELETE FROM hist_flow;
                 DELETE FROM hist_activity_nga;
             }
         } else {
             $adb eval {
+                DELETE FROM hist_nbhood       WHERE t > $t;
                 DELETE FROM hist_sat          WHERE t > $t;
                 DELETE FROM hist_mood         WHERE t > $t;
-                DELETE FROM hist_nbmood       WHERE t > $t;
                 DELETE FROM hist_coop         WHERE t > $t;
                 DELETE FROM hist_nbcoop       WHERE t > $t;
                 DELETE FROM hist_econ         WHERE t > $t;
                 DELETE FROM hist_econ_i       WHERE t > $t;
                 DELETE FROM hist_econ_ij      WHERE t > $t;
-                DELETE FROM hist_control      WHERE t > $t;
                 DELETE FROM hist_security     WHERE t > $t;
                 DELETE FROM hist_service_sg   WHERE t > $t;
                 DELETE FROM hist_support      WHERE t > $t;
-                DELETE FROM hist_volatility   WHERE t > $t;
                 DELETE FROM hist_hrel         WHERE t > $t;
                 DELETE FROM hist_vrel         WHERE t > $t;
                 DELETE FROM hist_pop          WHERE t > $t;
-                DELETE FROM hist_npop         WHERE t > $t;
                 DELETE FROM hist_flow         WHERE t > $t;
                 DELETE FROM hist_activity_nga WHERE t > $t;
             }
@@ -100,17 +94,34 @@ snit::type ::athena::hist {
     # tick
     #
     # This method is called at each time tick, and preserves data values
-    # that change tick-by-tick.  History data can be disabled.
+    # that change tick-by-tick.  
+    #
+    # "Significant" outputs (i.e., those used in practice by analysts)
+    # are always saved, as are outputs required to construct causal
+    # chains.  Other outputs may be disabled by setting the appropriate
+    # parameter.
 
     method tick {} {
-        if {[$adb parm get hist.control]} {
-            $adb eval {
-                INSERT INTO hist_control(t,n,a)
-                SELECT now(),n,controller
-                FROM control_n;
-            }
+        set t [$adb clock now]
+
+        $adb eval {
+            INSERT INTO hist_nbhood(t,n,a,nbmood,volatility,population,
+                                    security)
+            SELECT $t AS t, n, 
+                   C.controller AS a, 
+                   U.nbmood, 
+                   F.volatility, 
+                   D.population,
+                   F.security
+            FROM uram_n    AS U
+            JOIN force_n   AS F USING (n)
+            JOIN demog_n   AS D USING (n)
+            JOIN control_n AS C USING (n);
         }
 
+
+        # TBD: The data collection that follows has not yet been
+        # "cleaned up".
         if {[$adb parm get hist.coop]} {
             $adb eval {
                 INSERT INTO hist_coop(t,f,g,coop,base,nat)
@@ -131,14 +142,6 @@ snit::type ::athena::hist {
                 INSERT INTO hist_nbcoop(t,n,g,nbcoop)
                 SELECT now() AS t, n, g, nbcoop
                 FROM uram_nbcoop;
-            }
-        }
-
-        if {[$adb parm get hist.nbmood]} {
-            $adb eval {
-                INSERT INTO hist_nbmood(t,n,nbmood)
-                SELECT now() AS t, n, nbmood
-                FROM uram_n;
             }
         }
 
@@ -166,14 +169,6 @@ snit::type ::athena::hist {
             }
         }
 
-        if {[$adb parm get hist.volatility]} {
-            $adb eval {
-                INSERT INTO hist_volatility(t,n,volatility)
-                SELECT now(), n, volatility
-                FROM force_n;
-            }
-        }
-
         if {[$adb parm get hist.hrel]} {
             $adb eval {
                 INSERT INTO hist_hrel(t,f,g,hrel,base,nat)
@@ -195,12 +190,6 @@ snit::type ::athena::hist {
                 INSERT INTO hist_pop(t,g,population)
                 SELECT now(), g, population
                 FROM demog_g
-            }
-
-            $adb eval {
-                INSERT INTO hist_npop(t,n,population)
-                SELECT now(), n, population
-                FROM demog_n
             }
         }
 

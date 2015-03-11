@@ -25,6 +25,7 @@ namespace eval :: {
 ::marsutil::range ::athena::parmdb_nomcoverage \
     -min 0.1 -max 1.0 -format "%+5.2f"
 
+
 #-------------------------------------------------------------------
 # parm
 
@@ -49,7 +50,7 @@ snit::type ::athena::parmdb {
         set adb $adb_
 
         # FIRST, create and initialize parmset(n)
-        set ps [parmset %AUTO%]
+        set ps [parmset %AUTO%]           
         $self Initialize 
 
         # Register to receive simulation state updates.
@@ -1670,11 +1671,6 @@ snit::type ::athena::parmdb {
             by neighborhood to the hist_activity_nga table.
         }        
 
-        $ps define hist.control ::snit::boolean on {
-            If on, Athena will save, each week, the actor in control of each
-            neighborhood to the hist_control table.
-        }
-
         $ps define hist.coop ::snit::boolean on {
             If on, Athena will save, each week, the cooperation of
             each civilian group with each force group
@@ -1693,11 +1689,6 @@ snit::type ::athena::parmdb {
             If on, Athena will save, each week, the cooperation of
             each neighborhood with each force group
             to the hist_nbcoop table.
-        }
-
-        $ps define hist.nbmood ::snit::boolean on {
-            If on, Athena will save, each week, the mood of
-            each neighborhood to the hist_nbmood table.
         }
 
         $ps define hist.pop ::snit::boolean on {
@@ -1727,11 +1718,6 @@ snit::type ::athena::parmdb {
             If on, Athena will save, each week, the direct
             support, total support, and influence of each actor in
             each neighborhood to the hist_support table.
-        }
-
-        $ps define hist.volatility ::snit::boolean on {
-            If on, Athena will save, each week, the volatility of each
-            neighborhood to the hist_volatility table.
         }
 
         $ps define hist.vrel ::snit::boolean on {
@@ -1791,7 +1777,7 @@ snit::type ::athena::parmdb {
         }
 
         # NEXT, define rmf parameters
-        $ps slave add [list ::simlib::rmf parm]
+        ::simlib::rmf parm into $ps
 
         # Service Model Parameters
         $ps subset service {
@@ -2031,7 +2017,7 @@ snit::type ::athena::parmdb {
         }
 
         # NEXT, define uram parameters
-        $ps slave add [list ::simlib::uram parm]
+        ::simlib::uram parm into $ps 
     }
 
 
@@ -2262,7 +2248,7 @@ snit::type ::athena::parmdb {
 
     meta form {
         rcc "Parameter:" -for parm
-        enum parm -listcmd {parm names} \
+        enum parm -listcmd {$adb_ parm names} \
             -loadcmd {$order_ loadValue}
 
         rcc "Value:" -for value

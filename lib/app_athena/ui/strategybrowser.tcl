@@ -687,9 +687,10 @@ snit::widget strategybrowser {
     method BListCreate {pane} {
         # FIRST, create the pane
         install blist using beanbrowser $pane          \
+            -beanpot       {adb bean}                  \
             -beancmd        ""                         \
             -columnsorting 0                           \
-            -titlecolumns  3                          \
+            -titlecolumns  3                           \
             -displaycmd    [mymethod BListDisplay]     \
             -selectioncmd  [mymethod BListSelection]   \
             -cutcopycmd    [mymethod BListCutCopy]     \
@@ -1156,6 +1157,7 @@ snit::widget strategybrowser {
         # TBD: Display cflag using thumbup/thumbdown/dash
         #      Needs emetstatus value, "yes", "no", "unknown"
         install ctab using beanbrowser $pane          \
+            -beanpot       {adb bean}                 \
             -beancmd        ""                        \
             -columnsorting 0                          \
             -titlecolumns  3                          \
@@ -1456,6 +1458,7 @@ snit::widget strategybrowser {
     method TTabCreate {pane} {
         # FIRST, create the pane
         install ttab using beanbrowser $pane          \
+            -beanpot       {adb bean}                 \
             -beancmd       ""                         \
             -columnsorting 0                          \
             -titlecolumns  3                          \

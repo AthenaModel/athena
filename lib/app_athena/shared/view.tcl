@@ -450,7 +450,7 @@ snit::type view {
             query {
                 SELECT t      AS t,
                        nbmood AS x0
-                FROM hist_nbmood
+                FROM hist_nbhood
                 WHERE n='$1'
             }
         }

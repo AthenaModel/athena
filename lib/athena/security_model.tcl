@@ -94,8 +94,10 @@ snit::type ::athena::security_model {
         # NEXT, compute the volatility for each neighborhood.
         $adb profile 2 $self ComputeVolatility
 
-        # NEXT, compute the security for each group in each nbhood.
+        # NEXT, compute the security for each group in each nbhood,
+        # and the average security for each neighborhood.
         $adb profile 2 $self ComputeSecurity
+        $adb profile 2 $self ComputeNbhoodSecurity
    }
 
 
@@ -571,6 +573,31 @@ snit::type ::athena::security_model {
                 UPDATE force_ng
                 SET security = $security
                 WHERE n = $n AND g = $g
+            }
+        }
+    }
+
+    # ComputeNbhoodSecurity
+    #
+    # Computes Security.n
+
+    method ComputeNbhoodSecurity {} {
+        $adb eval {
+            SELECT n, 
+                   total(CAST(F.security AS DOUBLE)*population) AS numerator,
+                   total(population)                            AS denominator
+            FROM force_ng AS F
+            JOIN civgroups USING (g,n)
+            JOIN demog_g AS D USING (g)
+            WHERE D.population > 0
+            GROUP BY n
+        } {
+            let avgSecurity {entier($numerator/$denominator)}
+
+            $adb eval {
+                UPDATE force_n 
+                SET security = $avgSecurity
+                WHERE n=$n
             }
         }
     }

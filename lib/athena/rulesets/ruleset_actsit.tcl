@@ -136,7 +136,7 @@ oo::class create ::athena::ruleset_actsit {
             set result [list]
 
             foreach {con rmf mag} $args {
-                let mult {[rmf $rmf $hrel] * $cov / $nomCov}
+                let mult {[my rmf $rmf $hrel] * $cov / $nomCov}
                 
                 lappend result $con [my mag* $mult $mag]
             }
@@ -163,7 +163,7 @@ oo::class create ::athena::ruleset_actsit {
         foreach f $flist {
             set hrel [my hrel.fg $f $g]
 
-            let mult {[rmf $rmf $hrel] * $cov / $nomCov}
+            let mult {[my rmf $rmf $hrel] * $cov / $nomCov}
         
             my coop T $f $g [my mag* $mult $mag] $note
         }
