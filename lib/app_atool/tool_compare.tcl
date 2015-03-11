@@ -37,6 +37,7 @@ tool define COMPARE {
     typevariable vartypes {
         security.n
         control.n
+        support.n.a
         influence.n.*
         nbmood.n
     }

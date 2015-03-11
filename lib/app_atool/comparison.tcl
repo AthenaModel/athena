@@ -145,17 +145,35 @@ oo::class create comparison {
     method dump {} {
         set table [list]
         dict for {vartype difflist} $diffs {
+        set difflist [lsort \
+            -command [list [self] compareScores] \
+            -decreasing $difflist]
+            
             foreach diff $difflist {
                 dict set row Variable   [$diff name]
                 dict set row A          [$diff fmt1]
                 dict set row B          [$diff fmt2]
                 dict set row Context    [$diff context]
+                dict set row Score      [$diff score]
 
                 lappend table $row
             }
         }
 
         return [dictab format $table -headers]
+    }
+
+    method compareScores {diff1 diff2} {
+        set score1 [$diff1 score]
+        set score2 [$diff2 score]
+
+        if {$score1 < $score2} {
+            return -1
+        } elseif {$score1 > $score2} {
+            return 1
+        } else {
+            return 0
+        }
     }
 
 }

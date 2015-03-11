@@ -26,7 +26,12 @@ oo::class create vardiff {
     }
 
     method name {} {
-        error "Not overridden"
+        set prefix [lindex [split [my type] .] 0]
+
+        dict for {key val} $keydict {
+            append prefix .$val
+        }
+        return $prefix
     }
 
     method keydict {} {
@@ -64,6 +69,18 @@ oo::class create vardiff {
     method context {} {
         return "n/a"
     }
+
+    method score {} {
+        error "Not defined"
+    }
+
+    method retrieve {s t} {
+        error "Not defined"
+    }
+
+    method significant {} {
+        error "Not defined"
+    }
 }
 
 oo::class create vardiff::security.n {
@@ -95,8 +112,8 @@ oo::class create vardiff::security.n {
         expr {$sym1 ne $sym2}
     }
 
-    method name {} {
-        return "security.[my key n]"
+    method score {} {
+        expr {abs([my val1] - [my val2])}
     }
 
     method format {val} {
@@ -134,8 +151,8 @@ oo::class create vardiff::control.n {
         expr {[my val1] ne [my val2]}
     }
 
-    method name {} {
-        return "control.[my key n]"
+    method score {} {
+        return 1
     }
 
     method format {val} {
@@ -175,6 +192,9 @@ oo::class create vardiff::influence.n.* {
         expr {[my fmt1] ne [my fmt2]}
     }
 
+    method score {} {
+        return 1
+    }
 
     method format {val} {
         if {[dict size $val] > 0} {
@@ -183,9 +203,44 @@ oo::class create vardiff::influence.n.* {
             return "*NONE*"
         }
     }
+}
 
-    method name {} {
-        return "influence.[my key n].*"
+oo::class create vardiff::support.n.a {
+    superclass ::vardiff
+    meta type support.n.a
+
+    self method compare {comp} {
+        foreach n [$comp s1 nbhood names] {
+            foreach a [$comp s1 actor names] {
+                $comp add [my type] [my new $comp $n $a]
+            }
+        }
+    }
+
+    constructor {comp_ n_ a_} {
+        next $comp_ [list n $n_ a $a_]
+    }
+
+    method retrieve {s t} {
+        set n [my key n]
+        set a [my key a]
+
+        return [$s eval {
+            SELECT support FROM hist_support 
+            WHERE t=$t AND n=$n AND a=$a 
+        }]
+    }
+
+    method significant {} {
+        expr {[my fmt1] != [my fmt2]}
+    }
+
+    method score {} {
+        expr {abs([my val1] - [my val2])}
+    }
+
+    method format {val} {
+        format %.1f $val
     }
 }
 
@@ -211,13 +266,15 @@ oo::class create vardiff::nbmood.n {
         }]
     }
 
-    method name {} {
-        return "nbmood.[my key n]"
+    method significant {} {
+        expr {[my score] >= 10.0}
     }
 
-    method significant {} {
-        expr {abs([my val1] - [my val2]) >= 10.0}
+    method score {} {
+        expr {abs([my val1] - [my val2])}
     }
+
+
 
     method format {val} {
         return [qsat longname $val]
