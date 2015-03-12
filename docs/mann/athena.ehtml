@@ -14,13 +14,14 @@ namespace import ::athena::*
 athena(n) is the primary public interface for the athena(n) package.
 athena(n) is a Snit type whose instances represent entire Athena
 scenarios.  To create a new scenario, possibly loading an <tt .adb> file,
-create an instance of athena(n).<p>
+create an instance of athena(n).  In addition, athena(n) provides 
+a number of capabilities that involve analyzing and comparing scenarios.<p>
 
 <section "Relationship with athenadb(n)">
 
-athena(n) is a thin wrapper around <xref athenadb(n)>, which is the true
-main object in the package.  <xref athenadb(n)> also provides services to 
-internal modules that aren't appropriate for use by clients.<p>
+Instances of athena(n) are thin wrappers around <xref athenadb(n)>, which 
+is the true main object in the package.  <xref athenadb(n)> also provides
+services to internal modules that aren't appropriate for use by clients.<p>
 
 <section "COMMANDS">
 
@@ -46,11 +47,29 @@ athena(n) will throw "<tt SCENARIO OPEN>".<p>
 
 Note that this option is read-only after the object is created.<p>
 
+<defopt {-executivecmd <i cmd>}>
+
+A callback command to be used to define application-specific executive
+commands.  It is called with on additional argument, the scenario's
+<xref executive(n)> component.  This option is read-only after creation.<p>
+
 <defopt {-logcmd <i command>}>
 
-Specifies the name of a <xref mars:logger(n)> object used to log the 
-object's activities.  The last component of the <tt -subject> name 
-is used as the log "component".<p>
+Specifies the name of a command the library code will use to write to
+an application log.  athena(n) assumes that the <i command> either is
+or mimics a <xref mars:logger(n)> object; however, only the 
+logger(n) subcommands that output log messages are used.<p>
+
+Log messages produced by athenadb(n) use the <tt -subject> as the 
+log component name, possibly qualified by the name of the athenadb(n)
+subcomponent producing the message.<p>
+
+If no <tt -logcmd> is specified, no log output is produced.<p>
+
+<defopt {-scratch <i dirname>}>
+
+Names a scratch directory where athenadb(n) can write debugging files.
+Defaults to the current working directory.<p>
 
 <defopt {-subject <i name>}>
 
@@ -63,17 +82,9 @@ athena(n) wraps an <xref mars:sqldocument(n)> object used to contain
 the scenario's run-time database (RDB).  When monitoring is enabled, the
 RDB can generate <xref mars:notifier(n)> events as tables are updated.<p>
 
+See <xref "NOTIFIER EVENTS"> for more details.<p>
+
 </deflist options>
-
-
-<defitem "athena register" {athena register <i saveable>}>
-
-Registers the name of an <xref mars:saveable(i)> command with Athena,
-so that the command's data will be loaded and restored with the scenario
-data.<p>
-
-<b TBD:> Once all registered modules have been integrated into 
-athena(n), this typemethod will go away.<p>
 
 </deflist commands>
 
@@ -83,11 +94,385 @@ Each athena(n) instance has the following subcommands:<p>
 
 <deflist instance>
 
+<defitem absit {<i adb> absit <i subcommand> ?<i args...>?}>
+
+This command gives access to the abstract situations in the scenario.<p>
+
+<deflist absit>
+
+<defitem "absit exists" {<i adb> absit exists TBD}>
+<defitem "absit get" {<i adb> absit get TBD}>
+<defitem "absit isinitial" {<i adb> absit isinitial TBD}>
+<defitem "absit islive" {<i adb> absit islive TBD}>
+<defitem "absit names" {<i adb> absit names TBD}>
+<defitem "absit validate" {<i adb> absit validate TBD}>
+<defitem "absit view" {<i adb> absit view TBD}>
+
+</deflist absit>
+
+<defitem actor {<i adb> actor <i subcommand> ?<i args...>?}>
+
+This command gives access to the actors in the scenario.<p>
+
+<deflist actor>
+
+<defitem "actor exists" {<i adb> actor exists TBD}>
+<defitem "actor get" {<i adb> actor get TBD}>
+<defitem "actor namedict" {<i adb> actor namedict TBD}>
+<defitem "actor names" {<i adb> actor names TBD}>
+<defitem "actor validate" {<i adb> actor validate TBD}>
+<defitem "actor view" {<i adb> actor view TBD}>
+
+</deflist actor>
+
 <defitem adbfile {<i adb> adbfile}>
 
 Returns the name of the <tt .adb> file loaded on creation, if any, or
 the <tt .adb> file name last used for saving, or "" if no <tt .adb> file
 has ever been loaded or saved.<p>
+
+<defitem agent {<i adb> agent <i subcommand> ?<i args...>?}>
+
+This command gives access to the agents in the scenario.  Agents
+are entities that have strategies, and include all actors plus the 
+"SYSTEM" agent.<p>
+
+<deflist agent>
+
+<defitem "agent exists" {<i adb> agent exists TBD}>
+<defitem "agent names" {<i adb> agent names TBD}>
+<defitem "agent stats" {<i adb> agent stats TBD}>
+<defitem "agent tactictypes" {<i adb> agent tactictypes TBD}>
+<defitem "agent type" {<i adb> agent type TBD}>
+<defitem "agent validate" {<i adb> agent validate TBD}>
+
+</deflist agent>
+
+
+<defitem autogen {<i adb> autogen <i subcommand> ?<i args...>?}>
+
+TBD: Interface to autogen; write a separate man page.<p>
+
+<defitem bean {<i adb> bean <i subcommand> ?<i args...>?}>
+
+Some of the objects in athena(n) are stored at <xref bean(n)> objects.
+This command allows the application to query and manipulate beans.<p>
+
+<deflist bean>
+
+<defitem "bean get" {<i adb> bean get TBD}>
+<defitem "bean has" {<i adb> bean has TBD}>
+<defitem "bean ids" {<i adb> bean ids TBD}>
+<defitem "bean view" {<i adb> bean view TBD}>
+
+</deflist bean>
+
+<defitem bsys {<i adb> bsys <i subcommand> ?<i args...>?}>
+
+This command gives access to the belief systems in the scenario.<p>
+
+<deflist bsys>
+
+<defitem "bsys affinity" {<i adb> bsys affinity TBD}>
+<defitem "bsys belief" {<i adb> bsys belief TBD}>
+<defitem "bsys playbox" {<i adb> bsys playbox TBD}>
+<defitem "bsys system" {<i adb> bsys system TBD}>
+<defitem "bsys topic" {<i adb> bsys topic TBD}>
+
+</deflist bsys>
+
+<defitem civgroup {<i adb> civgroup <i subcommand> ?<i args...>?}>
+
+This command gives access to the civilian groups in the scenario.<p>
+
+<deflist civgroup>
+
+<defitem "civgroup exists" {<i adb> civgroup exists TBD}>
+<defitem "civgroup get" {<i adb> civgroup get TBD}>
+<defitem "civgroup local" {<i adb> civgroup local TBD}>
+<defitem "civgroup namedict" {<i adb> civgroup namedict TBD}>
+<defitem "civgroup names" {<i adb> civgroup names TBD}>
+<defitem "civgroup validate" {<i adb> civgroup validate TBD}>
+<defitem "civgroup view" {<i adb> civgroup view TBD}>
+
+</deflist civgroup>
+
+
+<defitem clock {<i adb> clock <i subcommand> ?<i args...>?}>
+
+TBD: Fill this in.  Refer to <xref weekclock(n)>.  
+Consider exposing only certain subcommands.<p>
+
+<defitem contribs {<i adb> contribs <i subcommand> ?<i args...>?}>
+
+TBD: Access to URAM contribs ensemble.  Fill this in.
+
+<defitem curse {<i adb> curse <i subcommand> ?<i args...>?}>
+
+This command gives access to the CURSEs in the scenario.  A
+CURSE is a scenario-specific rule set triggered by the CURSE
+tactic.s<p>
+
+<deflist curse>
+
+<defitem "curse checker" {<i adb> curse checker TBD}>
+<defitem "curse exists" {<i adb> curse exists TBD}>
+<defitem "curse get" {<i adb> curse get TBD}>
+<defitem "curse namedict" {<i adb> curse namedict TBD}>
+<defitem "curse names" {<i adb> curse names TBD}>
+<defitem "curse normal" {<i adb> curse normal TBD}>
+<defitem "curse validate" {<i adb> curse validate TBD}>
+
+</deflist curse>
+
+<defitem dbsync {<i adb> dbsync}>
+
+Causes athena(n) to send out the <xref "NOTIFIER EVENTS"> it sends on 
+database change, so that the application will refresh itself.<p>
+
+<defitem econ {<i adb> econ <i subcommand> ?<i args...>?}>
+
+This command gives access to the economic model in the scenario.<p>
+
+<deflist econ>
+
+<defitem "econ state" {<i adb> econ state TBD}>
+<defitem "econ report" {<i adb> econ report TBD}>
+<defitem "econ hist" {<i adb> econ hist TBD}>
+<defitem "econ getcge" {<i adb> econ getcge TBD}>
+<defitem "econ getsam" {<i adb> econ getsam TBD}>
+<defitem "econ enable" {<i adb> econ enable TBD}>
+<defitem "econ disable" {<i adb> econ disable TBD}>
+
+</deflist econ>
+
+
+<defitem enter {<i adb> enter TBD}>
+
+If Tk is loaded, pops up an order dialog for the specified order.  It is an
+error if Tk is not loaded.<p>
+
+TBD: Fill in details.<p>
+
+<defitem executive {<i adb> executive <i subcommand> ?<i args...>?}>
+
+This ensemble gives access to the scenario's executive interpreter, which 
+executes commands and scripts in the context of the scenario.  See the
+<xref executive(n)> man page for details about the executive.<p>
+
+Further, the application can add its own commands to the executive by defining
+an <tt -executivecmd>.<p>
+
+<defitem export {<i adb> export TBD}>
+
+Exports a scenario as an order script.  TBD: fill in details.<p>
+
+<defitem frcgroup {<i adb> frcgroup <i subcommand> ?<i args...>?}>
+
+This command gives access to the force groups in the scenario.<p>
+
+<deflist frcgroup>
+
+<defitem "frcgroup exists" {<i adb> frcgroup exists TBD}>
+<defitem "frcgroup get" {<i adb> frcgroup get TBD}>
+<defitem "frcgroup namedict" {<i adb> frcgroup namedict TBD}>
+<defitem "frcgroup names" {<i adb> frcgroup names TBD}>
+<defitem "frcgroup validate" {<i adb> frcgroup validate TBD}>
+<defitem "frcgroup view" {<i adb> frcgroup view TBD}>
+
+</deflist frcgroup>
+
+
+<defitem getclock {<i adb> getclock}>
+
+Returns the scenario's <xref weekclock(n)> object, so that it can be 
+passed to other library modules (e.g., <xref logger(n)>).<p>
+
+<defitem gofer {<i adb> gofer TBD}>
+
+TBD: Interface to gofers; write a separate man page.<p>
+
+<defitem group {<i adb> group <i subcommand> ?<i args...>?}>
+
+This command gives access to the groups (of all three kinds) in the 
+scenario.<p>
+
+<deflist group>
+
+<defitem "group exists" {<i adb> group exists TBD}>
+<defitem "group get" {<i adb> group get TBD}>
+<defitem "group namedict" {<i adb> group namedict TBD}>
+<defitem "group names" {<i adb> group names TBD}>
+<defitem "group validate" {<i adb> group validate TBD}>
+<defitem "group view" {<i adb> group view TBD}>
+
+</deflist group>
+
+
+<defitem halt {<i adb> halt}>
+
+Returns athena(n) to the <b PAUSED> state if it is in the 
+<b RUNNING> state.  The application can use this if 
+athena(n) throws an unexpected error while advancing time.<p>
+
+<defitem hook {<i adb> hook <i subcommand> ?<i args...>?}>
+
+This command gives access to the semantic hooks in the scenario.<p>
+
+<deflist hook>
+
+<defitem "hook exists" {<i adb> hook exists TBD}>
+<defitem "hook namedict" {<i adb> hook namedict TBD}>
+<defitem "hook names" {<i adb> hook names TBD}>
+<defitem "hook topic" {<i adb> hook topic TBD}>
+<defitem "hook validate" {<i adb> hook validate TBD}>
+
+</deflist hook>
+
+<defitem inject {<i adb> inject <i subcommand> ?<i args...>?}>
+
+This command gives access to the Information Ops Message (IOM) injects
+in the scenario.<p>
+
+<deflist inject>
+
+<defitem "inject checker" {<i adb> inject checker TBD}>
+<defitem "inject exists" {<i adb> inject exists TBD}>
+<defitem "inject get" {<i adb> inject get TBD}>
+<defitem "inject typenames" {<i adb> inject typenames TBD}>
+<defitem "inject validate" {<i adb> inject validate TBD}>
+
+</deflist inject>
+
+<defitem iom {<i adb> iom <i subcommand> ?<i args...>?}>
+
+This command gives access to the Information Ops Message (IOM) objects
+in the scenario.<p>
+
+<deflist iom>
+
+<defitem "iom checker" {<i adb> iom checker TBD}>
+<defitem "iom exists" {<i adb> iom exists TBD}>
+<defitem "iom get" {<i adb> iom get TBD}>
+<defitem "iom namedict" {<i adb> iom namedict TBD}>
+<defitem "iom names" {<i adb> iom names TBD}>
+<defitem "iom normal" {<i adb> iom normal TBD}>
+<defitem "iom validate" {<i adb> iom validate TBD}>
+
+</deflist iom>
+
+<defitem load {<i obj> load <i filename>}>
+
+Loads the scenario from the named <tt *.adb> file into this scenario
+object, throwing away any previous data.<p>
+
+TBD: athena(n) should call "load" then "dbsync".<p>
+
+<defitem locked {<i obj> locked}>
+
+Returns 1 if the scenario is "locked", i.e., in the <b PAUSED> or 
+<b RUNNING> state, and 0 otherwise.<p>
+
+<defitem paste {<i obj> paste <i subcommand> ?<i args...>?}>
+
+Pastes copied items into scenario, where the subcommand determines the 
+kind of item to paste.  In each case, the paste is done as a sequence of 
+grouped orders, and will be undone and redone as a group.<p>
+
+TBD: specify how you get copysets.<p>
+
+The available subcommands are as follows:<p>
+
+<deflist paste>
+
+<defitem "paste block" {<i obj> paste block <i agent copysets>}>
+
+Pastes <i copysets>, a list of copied strategy blocks, into the strategy
+owned by the named <i agent>.<p>
+
+<defitem "paste condition" {<i obj> paste condition <i block_id copysets>}>
+
+Pastes <i copysets>, a list of copied conditions, into the strategy block
+with the given <i block_id>.<p>
+
+<defitem "paste tactic" {<i obj> paste tactic <i block_id copysets>}>
+
+Pastes <i copysets>, a list of copied tactics, into the strategy block
+with the given <i block_id>.<p>
+
+</deflist paste>
+
+<defitem ptype {<i obj> ptype <i subcommand> ?<i args...>?}>
+
+Parameter type validation subcommands.  This is exposed because it is used by
+the Athena Workbench's "view" mechanism.  Ultimately, that should be replaced 
+by a gofer-based solution; when that happens, this module can become private.<p>
+
+<defitem reset {<i obj> reset}>
+
+Resets the scenario back to initial empty state.<p>
+
+TBD: athena(n) should call "reset" then "dbsync".<p>
+
+<defitem sanity {<i obj> sanity <i subcommand> ?<i args...>?}>
+
+TBD: Sanity-checking module; fill this in.<p>
+
+<defitem save {<i obj> save ?<i filename>?}>
+
+Saves the scenario to disk as an <tt .adb> file called <i filename>,
+adding the "<tt .adb>" extension if necessary.  If no <i filename> is
+given but the <iref adbfile> name is known, the <iref adbfile> name is
+used.<p>
+
+On failure, throws "<tt SCENARIO SAVE>".<p>
+
+<defitem stable {<i obj> stable}>
+
+Returns 1 if the simulation is "stable", i.e., is paused for input, 
+and 0 otherwise.  It is stable if the <iref state> is <b PREP> or
+<b PAUSED>.<p>
+
+<defitem state {<i obj> state}>
+
+Returns the scenario's simulation state: <b PREP>, <b PAUSED>, <b RUNNING>,
+or <b WIZARD>.  <b PREP> is the "scenario preparation" state; the 
+scenario may be edited freely.  "Locking" the scenario places it in the
+<b PAUSED> state, at which point time may be advanced; while time is 
+advancing, it is in the <b RUNNING> state.<p>
+
+The client may place an unlocked scenario in the <b WIZARD> state using
+<iref wizlock>; this locks out all changes until the <iref wizlock> is
+disabled.  It is used to lock out the normal scenario orders while a 
+"wizard" GUI is being used.<p>
+
+<defitem stoptime {<i obj> stoptime}>
+
+While the <i state> is <b RUNNING>, this method returns the simulation
+time in weeks at which the simulation will stop and return to the 
+<b PAUSED> state.<p>
+
+<defitem unsaved {<i obj> unsaved}>
+
+Returns 1 if there is unsaved scenario data, and 0 otherwise.<p>
+
+<defitem version {<i obj> version}>
+
+Returns the version number of the <xref athena(n)> library.<p>
+
+<defitem wizlock {<i obj> wizlock <i flag>}>
+
+Sets or clears the "wizard lock" flag, which is used to lock out 
+changes to the scenario while a wizard GUI is running.  The wizard
+itself will typical set the <i flag> when it starts, and clear it
+just prior to sending a sequence of orders in an <iref order transaction>.
+The wizard lock flag may only be set when <iref state> is <b PREP>, and
+functions by setting the <iref state> to <b WIZARD>.<p>
+
+
+
+
+--------------------------
 
 <defitem eval {<i adb> eval <i query> ?<i args...>?}>
 
