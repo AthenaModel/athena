@@ -68,22 +68,24 @@ oo::class create comparison {
         }
     }
 
-
-    # add vartype diff
+    # add vartype args...
     #
-    # vartype - A variable type, e.g., security.n
-    # diff    - A difference in a specific variable of that type.
+    # vartype  - An output variable type.
+    # args     - Creation arguments for that vardiff class.
     #
     # Adds the diff to the differences, or throws it away if it isn't
     # significant.
 
-    method add {vartype diff} {
+    method add {vartype args} {
+        set diff [::vardiff::$vartype new [self] {*}$args]
+
         if {[$diff significant]} {
-            dict lappend diffs $vartype $diff
+            dict lappend diffs [$diff type] $diff
         } else {
             $diff destroy
         }
     }
+
 
     # reset
     #
@@ -148,7 +150,7 @@ oo::class create comparison {
         set difflist [lsort \
             -command [list [self] compareScores] \
             -decreasing $difflist]
-            
+
             foreach diff $difflist {
                 dict set row Variable   [$diff name]
                 dict set row A          [$diff fmt1]

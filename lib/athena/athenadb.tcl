@@ -597,8 +597,7 @@ snit::type ::athena::athenadb {
 
     method InitializeRDB {} {
         # FIRST, create the actual RDB file on the disk.
-        set rdbfile [fileutil::tempfile rdb]
-        $rdb open $rdbfile
+        $rdb open [fileutil::tempfile rdb]
         $rdb clear
 
         # NEXT, enable write-ahead logging on the RDB
@@ -929,6 +928,15 @@ snit::type ::athena::athenadb {
 
     method adbfile {} {
         return $info(adbfile)
+    } 
+
+    # rdbfile
+    #
+    # Returns the name of the working RDB file.  Note that this will
+    # change on "load" or "reset".
+
+    method rdbfile {} {
+        return [$rdb dbfile]
     } 
 
     # component rdb

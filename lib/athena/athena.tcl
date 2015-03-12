@@ -296,6 +296,7 @@ snit::type ::athena::athena {
     delegate method exists                  to rdb as exists
     delegate method onecolumn               to rdb as onecolumn
     delegate method query                   to rdb as query
+    delegate method rdbfile                 to rdb as dbfile
 
     delegate method {sql nullvalue}         to rdb as nullvalue
     delegate method {sql safequery}         to rdb as safequery

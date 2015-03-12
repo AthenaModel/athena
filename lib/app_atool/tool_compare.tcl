@@ -85,9 +85,7 @@ tool define COMPARE {
         # NEXT, look for differences
         set comp [comparison new $s1 $t1 $s2 $t2]
 
-        foreach var $vartypes {
-            ::vardiff::$var compare $comp
-        }
+        $type DoComparisons $comp
 
         # NEXT, output to console.
         puts [$comp dump]
@@ -124,7 +122,87 @@ tool define COMPARE {
 
         return $s
     }
+
+    # DoComparisons comp
+    #
+    # comp  - A comparison object
+    #
+    # Queries history to identify significant outputs.
+
+    typemethod DoComparisons {comp} {
+        set cdb [sqldocument %AUTO -readonly yes]
+        $cdb open :memory:
+
+        set db1 [$comp s1 rdbfile]
+        set db2 [$comp s2 rdbfile]
+        set t1  [$comp t1]
+        set t2  [$comp t2]
+
+        $cdb eval {
+            ATTACH $db1 AS s1;
+            ATTACH $db2 AS s2;
+        }
+
+        # hist_nbhood data
+        $cdb eval {
+            SELECT H1.n        AS n,
+                   H1.security AS security1,
+                   H1.a        AS a1,
+                   H1.nbmood   AS nbmood1,
+                   H2.security AS security2,
+                   H2.a        AS a2,
+                   H2.nbmood   AS nbmood2
+            FROM s1.hist_nbhood AS H1
+            JOIN s2.hist_nbhood AS H2 
+            ON (H1.n = H2.n AND H1.t=$t1 AND H2.t=$t2);
+        } {
+            $comp add security.n $n $security1 $security2
+            $comp add control.n  $n $a1        $a2
+            $comp add nbmood.n   $n $nbmood1   $nbmood2
+        }
+
+        # hist_support data
+        set idict1 [dict create]
+        set idict2 [dict create]
+
+        foreach n [$comp s1 nbhood names] {
+            dict set idict1 $n {}
+            dict set idict2 $n {}
+        }
+
+        $cdb eval {
+            SELECT H1.n         AS n,
+                   H1.a         AS a,
+                   H1.support   AS support1,
+                   H1.influence AS influence1,
+                   H2.support   AS support2,
+                   H2.influence AS influence2
+            FROM s1.hist_support AS H1
+            JOIN s2.hist_support AS H2 
+            ON (H1.n = H2.n AND H1.a = H2.a AND H1.t=$t1 AND H2.t=$t2)
+            WHERE support1 > 0.0 OR support2 > 0.0;
+        } {
+            # influence.n.* works on dictionaries of non-zero influences.
+            if {$influence1 > 0.0} {
+                dict set idict1 $n $a $influence1
+            }
+            if {$influence2 > 0.0} {
+                dict set idict2 $n $a $influence2
+            }
+
+            $comp add support.n.a $n $a $support1 $support2
+        }
+
+        foreach n [$comp s1 nbhood names] {
+            $comp add influence.n.* $n \
+                [dict get $idict1 $n]  \
+                [dict get $idict2 $n]
+        }
+
+        $cdb destroy
+    }
 }
+
 
 
 #-------------------------------------------------------------------
