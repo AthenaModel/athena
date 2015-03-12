@@ -117,8 +117,8 @@
 
         foreach n $nbhoods {
             if {![[my adb] aam hasroe $n $f $g]} {
-                [my adb] aam setroe $n $f [list $g \
-                    [list roe $roe athresh $athresh dthresh $dthresh civc $civc]]
+                [my adb] aam setroe $n $f $g \
+                    [list roe $roe athresh $athresh dthresh $dthresh civc $civc]
                 lappend goodn $n 
             } else {
                 lappend badn $n 

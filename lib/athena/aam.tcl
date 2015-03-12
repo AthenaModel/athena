@@ -65,13 +65,21 @@ snit::type ::athena::aam {
         set sdict ""
         set cdict ""
         array unset roedict
-        array unset combatset
     }
 
     method start {} {
+        $adb eval {DELETE FROM working_combat;}
         $self ComputeEffectiveForce
-        $self AllocateForces
+        $self BuildWorkingCombat
+        $self AllocateForce
     }
+
+    # ComputeEffectiveForce
+    #
+    # This method computes a deployed force groups effective force
+    # based on it's makeup.  For example, highly disciplined regular 
+    # forces with the best equipment will project more force than 
+    # poorly trained irregular forces with poor equipment.
 
     method ComputeEffectiveForce {} {
         foreach {elvl tlvl frctype dem urb pers n g} [$adb eval {
@@ -90,7 +98,7 @@ snit::type ::athena::aam {
         }] {
             set Fe [$adb parm get aam.FRC.equiplevel.$elvl]
             set Ff [$adb parm get aam.FRC.forcetype.$frctype]
-            set Ft [$adb parm get aam.FRC.discipline.$trn]
+            set Ft [$adb parm get aam.FRC.discipline.$tlvl]
             set Fd [$adb parm get aam.FRC.demeanor.$dem]
 
             let eff_pers {entier(ceil($Fe * $Ff * $Ft * $Fd * $pers))}
@@ -103,20 +111,107 @@ snit::type ::athena::aam {
         }
     }
 
-    method AllocateForces {} {
-        # FIRST, fill in the working combat table with defaults
-        foreach n [nbhood names] {
-            foreach f [rdb onecolumn {
-                SELECT g FROM deploy_ng WHERE personnel>0
+    # BuildWorkingCombat
+    #
+    # This method builds the working combat table based on deployments.
+    # Default ROEs, thresholds and postures are set for those groups
+    # that have not explictly been given them via an actor's strategy.
+
+    method BuildWorkingCombat {} {
+        # FIRST, fill in the working combat table based on
+        # deployments
+        foreach {n f pers eff_frc_f} [$adb eval {
+            SELECT n,g,personnel,eff_personnel FROM deploy_ng 
+            WHERE personnel>0
+        }] {                       
+            # NEXT, groups in n other than f
+            foreach {g eff_frc_g} [$adb eval {
+                SELECT g,eff_personnel FROM deploy_ng 
+                WHERE n=$n AND personnel>0 AND g!=$f
             }] {
-                foreach g [rdb onecolumn {
-                    SELECT g FROM deploy_ng WHERE personnel>0 AND g!=$f
-                }] {
-                    INSERT INTO working_combat(n,f,g,roe,posture,civc)
-                    VALUES($n,$f,$g,'DEFEND','DEFEND','HIGH')
+                # NEXT, defaults in case no ROE specified
+                set roe  "DEFEND"
+                set athr 0.0
+                set dthr 0.8
+                set civc "HIGH"
+
+                if {[info exists roedict($n)] && 
+                    [dict exists $roedict($n) $f $g]} {
+                    set roe  [dict get $roedict($n) $f $g roe]
+                    set athr [dict get $roedict($n) $f $g athresh]
+                    set dthr [dict get $roedict($n) $f $g dthresh]
+                    set civc [dict get $roedict($n) $f $g civc]
+                }
+
+                # NEXT, add to the combat table
+                $adb eval {
+                    INSERT INTO 
+                        working_combat(n,f,g,roe,posture,
+                                       athresh,dthresh,civc,
+                                       pers,eff_frc_f,eff_frc_g)
+                    VALUES($n,$f,$g,$roe,'DEFEND',
+                           $athr,$dthr,$civc,
+                           $pers,$eff_frc_f,$eff_frc_g)
                 }
             }
         }
+    }
+
+    # AllocateForce
+    #
+    # This method determines how many personnel in force group f
+    # should be allocated against a force group g where either f is
+    # attacking g or g is attacking f (or both).  Allocation is based
+    # upon how much force is projected by the groups involved in combat.
+
+    method AllocateForce {} {
+        # FIRST, go through the working combat table
+        foreach {n f g} [$adb eval {
+            SELECT n,f,g FROM working_combat
+        }] {
+            # NEXT, compute total effective force involved which is the
+            # effective force of those attacking and the effective force
+            # of those being attacked.
+            set totalEffFrcG [$adb eval {
+                SELECT total(eff_frc_g) FROM working_combat
+                WHERE n=$n AND f=$f AND roe='ATTACK'
+            }]
+
+            set totalEffFrcF [$adb eval {
+                SELECT total(eff_frc_f) FROM working_combat
+                WHERE n=$n AND g=$f AND roe='ATTACK'
+            }]
+
+            let totalFrcH {$totalEffFrcG + $totalEffFrcF}
+
+            # NEXT, allocate personnel based on effective force
+            if {[$self NeedsAllocation $n $f $g]} {
+                $adb eval {
+                    UPDATE working_combat
+                    SET desig_pers = pers*eff_frc_g/$totalFrcH
+                    WHERE n=$n AND f=$f AND g=$g
+                }                
+            }
+        }
+    }
+
+    # NeedsAllocation n f g
+    #
+    # n    - A neighborhood ID 
+    # f    - A force group ID 
+    # g    - Another force group ID
+    #
+    # This helper method determines if f needs to allocate force
+    # against g in n because f is either attacking g or is being
+    # attacked by g.
+
+    method NeedsAllocation {n f g} {
+        return [$adb exists {
+            SELECT * FROM working_combat 
+            WHERE n=$n AND
+                    ((f=$f AND g=$g AND roe='ATTACK') OR
+                     (f=$g AND g=$f AND roe='ATTACK'))
+        }]
     }
 
     #-------------------------------------------------------------------
@@ -133,6 +228,8 @@ snit::type ::athena::aam {
         # FIRST, create SAT and COOP dicts to hold transient data
         set sdict [dict create]
         set cdict [dict create]
+
+        $self DoGroupCombat
 
         # NEXT, Apply all saved magic attrition. This updates 
         # units and deployments, and accumulates all civilian 
@@ -174,8 +271,8 @@ snit::type ::athena::aam {
     # a posture via the ROE, that posture may not be attainable due to
     # the computed force ratios.
 
-    method setroe {n f rdict} {
-        dict set roedict($n) $f $rdict 
+    method setroe {n f g rdict} {
+        dict set roedict($n) $f $g $rdict 
     }
 
     # hasroe n g f
@@ -227,6 +324,21 @@ snit::type ::athena::aam {
 
     method attrit {parmdict} {
         lappend alist $parmdict
+    }
+
+    #-------------------------------------------------------------------
+    # DoGroupCombat
+
+    # DoGroupCombat
+    #
+    # Updates force allocation based on ROEs and computes attrition to
+    # force groups and civilian groups.
+
+    method DoGroupCombat {} {
+        $adb eval {DELETE FROM working_combat;}
+        $self ComputeEffectiveForce
+        $self BuildWorkingCombat
+        $self AllocateForce        
     }
 
     #-------------------------------------------------------------------

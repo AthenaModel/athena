@@ -49,7 +49,7 @@ namespace eval ::kiteinfo:: {
         reqver-fileutil 1.14
         url-docs/mag.docx https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20140826.docx
         local-marsutil 1
-        reqver-marsgui 3.0.13
+        reqver-marsgui 3.0.14
         reqver-uri 1.2
         distpat-install-%platform {
     LICENSE
@@ -75,7 +75,7 @@ namespace eval ::kiteinfo:: {
         local-uri 0
         reqver-BWidget 1.9
         apptype-cellide exe
-        reqver-marsutil 3.0.13
+        reqver-marsutil 3.0.14
         local-tls 0
         provides athena
         description {Athena Regional Stability Simulation}
@@ -111,7 +111,7 @@ namespace eval ::kiteinfo:: {
         apptype-atool kit
         exclude-athena {}
         gui-helptool 1
-        reqver-simlib 3.0.13
+        reqver-simlib 3.0.14
         binary-athena 0
         local-struct::set 0
         distpat-src {
@@ -142,7 +142,7 @@ namespace eval ::kiteinfo:: {
         force-atool 0
         local-tdom 0
         local-comm 0
-        reqver-Marsbin 3.0.13
+        reqver-Marsbin 3.0.14
         local-kiteutils 1
         local-textutil::expander 0
         version 6.3.0a7

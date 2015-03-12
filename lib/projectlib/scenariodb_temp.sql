@@ -206,6 +206,9 @@ CREATE TEMPORARY TABLE working_combat (
     -- Posture of f->g
     posture      TEXT,
 
+    -- Is f hiding?
+    hiding       INTEGER DEFAULT 0,
+
     -- Attack and defend force/enemy thresholds of f->g
     athresh      DOUBLE DEFAULT 0.0,
     dthresh      DOUBLE DEFAULT 0.0,
@@ -213,11 +216,19 @@ CREATE TEMPORARY TABLE working_combat (
     -- Concern for civilian casualties
     civc         TEXT,
 
-    -- Designated personnel of f->g
+    -- Personnel in f deployed to nbhood
+    pers         INTEGER DEFAULT 0,
+
+    -- Personnel involved in fight, may be same as pers
     desig_pers   INTEGER DEFAULT 0,
 
-    -- Casualties suffered to f by g
-    casualties   INTEGER DEFAULT 0,
+    -- Casualties suffered to f 
+    casualties_f  INTEGER DEFAULT 0,
+
+    -- Effective force based upon multipliers, used to allocate
+    -- personnel
+    eff_frc_f    DOUBLE DEFAULT 0.0,
+    eff_frc_g    DOUBLE DEFAULT 0.0,
 
     PRIMARY KEY (n, f, g)
 );
