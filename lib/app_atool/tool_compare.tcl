@@ -32,16 +32,6 @@ tool define COMPARE {
     * Identical actor names
     * Identical group names 
 } {
-    # Type Variables
-
-    typevariable vartypes {
-        security.n
-        control.n
-        support.n.a
-        influence.n.*
-        nbmood.n
-    }
-
     #-------------------------------------------------------------------
     # Execution 
 
@@ -145,20 +135,20 @@ tool define COMPARE {
 
         # hist_nbhood data
         $cdb eval {
-            SELECT H1.n        AS n,
-                   H1.security AS security1,
-                   H1.a        AS a1,
-                   H1.nbmood   AS nbmood1,
-                   H2.security AS security2,
-                   H2.a        AS a2,
-                   H2.nbmood   AS nbmood2
-            FROM s1.hist_nbhood AS H1
-            JOIN s2.hist_nbhood AS H2 
+            SELECT H1.n          AS n,
+                   H1.nbsecurity AS nbsec1,
+                   H1.a          AS a1,
+                   H1.nbmood     AS nbmood1,
+                   H2.nbsecurity AS nbsec2,
+                   H2.a          AS a2,
+                   H2.nbmood     AS nbmood2
+            FROM s1.hist_nbhood  AS H1
+            JOIN s2.hist_nbhood  AS H2 
             ON (H1.n = H2.n AND H1.t=$t1 AND H2.t=$t2);
         } {
-            $comp add security.n $n $security1 $security2
-            $comp add control.n  $n $a1        $a2
-            $comp add nbmood.n   $n $nbmood1   $nbmood2
+            $comp add nbsecurity.n $n $nbsec1  $nbsec2
+            $comp add control.n    $n $a1      $a2
+            $comp add nbmood.n     $n $nbmood1 $nbmood2
         }
 
         # hist_support data

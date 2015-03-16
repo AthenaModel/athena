@@ -105,8 +105,8 @@ snit::type ::athena::hist {
         set t [$adb clock now]
 
         $adb eval {
-            INSERT INTO hist_nbhood(t,n,a,nbmood,volatility,population,
-                                    security)
+            INSERT INTO hist_nbhood(t,n,a,nbmood,volatility,nbpop,
+                                    nbsecurity)
             SELECT $t AS t, n, 
                    C.controller AS a, 
                    U.nbmood, 

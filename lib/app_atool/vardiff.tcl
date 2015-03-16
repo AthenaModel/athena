@@ -70,36 +70,53 @@ oo::class create vardiff {
         return "n/a"
     }
 
+    # score
+    #
+    # A ranking score.  By default, it's the absolute difference of the
+    # two values, which are assumed to be numeric.  
+    #
+    # Subclasses should override this if necessary.
+
     method score {} {
-        error "Not defined"
+        expr {abs([my val1] - [my val2])}
     }
 
-    method retrieve {s t} {
-        error "Not defined"
+    # different
+    #
+    # Returns 1 if val1 isn't trivially identical to val2, and 0
+    # otherwise.  This is used to filter out trivial instances.
+
+    method different {} {
+        expr {$val1 ne $val2}
     }
 
+    # significant
+    #
+    # Returns 1 if val1 is significantly different than val2, and 0
+    # otherwise.  By default, two values are significantly different
+    # if they are trivally different.  Subclasses should override this
+    # accordingly.
+    
     method significant {} {
-        error "Not defined"
+        my different
     }
 }
 
-oo::class create vardiff::security.n {
+oo::class create vardiff::nbsecurity.n {
     superclass ::vardiff
-    meta type security.n
+    meta type nbsecurity.n
 
     constructor {comp_ n_ val1_ val2_} {
         next $comp_ [list n $n_] $val1_ $val2_
     }
 
     method significant {} {
+        set lim 20 ;# TBD: Need parm
+
         set sym1 [qsecurity name [my val1]]
         set sym2 [qsecurity name [my val2]]
 
-        expr {$sym1 ne $sym2}
-    }
-
-    method score {} {
-        expr {abs([my val1] - [my val2])}
+        expr {$sym1 ne $sym2 || [my score] >= $lim}
     }
 
     method format {val} {

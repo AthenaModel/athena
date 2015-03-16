@@ -27,16 +27,27 @@ CREATE TABLE hist_nbhood (
     a          TEXT,       -- Name of actor controlling n, or NULL if none 
     nbmood     DOUBLE,     -- Neighborhood mood
     volatility INTEGER,    -- Volatility of neighborhood
-    population INTEGER,    -- Civilian population of neighborhood
-    security   INTEGER,    -- Average civilian security in neighborhood
+    nbpop      INTEGER,    -- Civilian population of neighborhood
+    nbsecurity INTEGER,    -- Average civilian security in neighborhood
 
     PRIMARY KEY (t,n)
 );
 
-CREATE VIEW hist_control    AS SELECT t, n, a          FROM hist_nbhood;
-CREATE VIEW hist_nbmood     AS SELECT t, n, nbmood     FROM hist_nbhood;
-CREATE VIEW hist_volatility AS SELECT t, n, volatility FROM hist_nbhood;
-CREATE VIEW hist_npop       AS SELECT t, n, population FROM hist_nbhood;
+CREATE VIEW hist_control AS 
+SELECT t, n, a          
+FROM hist_nbhood;
+
+CREATE VIEW hist_nbmood AS 
+SELECT t, n, nbmood
+FROM hist_nbhood;
+
+CREATE VIEW hist_volatility AS 
+SELECT t, n, volatility 
+FROM hist_nbhood;
+
+CREATE VIEW hist_npop AS 
+SELECT t, n, nbpop AS population 
+FROM hist_nbhood;
 
 
 -- The following tables are used to save time series variable data
