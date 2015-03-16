@@ -73,6 +73,7 @@ comp => Dictionary of variable types by PMESII category
 
 
 - Document athena(n)
+- Make mods work with all athena(n) applications.
 - New tests:
   - 010-abevent.test
   - 010-athenadb.test

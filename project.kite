@@ -3,7 +3,7 @@ project athena 6.3.0a7 {Athena Regional Stability Simulation}
 poc William.H.Duquette@jpl.nasa.gov
 
 # Applications
-app athena -apptype exe -gui
+app athenawb -apptype exe -gui
 app cellide -apptype exe -gui
 app helptool -apptype kit -gui
 app atool -apptype exe
@@ -52,7 +52,7 @@ dist install-%platform {
     %apps
     docs/*.html
     docs/*.png
-    docs/man1/athena.html
+    docs/man1/athenawb.html
     docs/man1/cellide.html
     docs/athena.helpdb
     docs/*.docx

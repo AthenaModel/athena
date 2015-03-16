@@ -56,7 +56,7 @@ set auto_path [linsert $auto_path 0 $libdir]
 package require Tcl 8.6
 package require kiteinfo
 
-if {[kiteinfo gui athena]} {
+if {[kiteinfo gui athenawb]} {
     package require Tk 8.6
 }
 
@@ -64,7 +64,7 @@ if {[kiteinfo gui athena]} {
 # NEXT, load the application code.  This should define the "main"
 # command.
 
-package require app_athena
+package require app_athenawb
 
 #-----------------------------------------------------------------------
 # Run the program

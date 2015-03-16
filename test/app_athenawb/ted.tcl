@@ -112,7 +112,7 @@ snit::type ted {
     #
     # argv  - The command line arguments
     #
-    # Loads the app_athena code in preparation for tests, initializes
+    # Loads the app_athenawb code in preparation for tests, initializes
     # Ted's data structures, and configures tcltest.  If 
     # the argument list includes "-notk", sets ::loadtk to false,
     # extracts -notk from the argument list.  The remaining arguments
@@ -140,11 +140,11 @@ snit::type ted {
             update idletasks
         }
 
-        # NEXT, load and initialize app_athena.
-        package require app_athena
+        # NEXT, load and initialize app_athenawb.
+        package require app_athenawb
         namespace import ::kiteutils::* ::marsutil::* ::projectlib::*
 
-        puts "ted: app_athena(n) at $::app_athena::library"
+        puts "ted: app_athenawb(n) at $::app_athenawb::library"
         puts ""
 
         app init [list -ignoreuser]
@@ -152,7 +152,7 @@ snit::type ted {
         # NEXT, define ::tdb
         interp alias {} ::tdb {} [::adb athenadb]
 
-        puts "app_athena(n) initialized."
+        puts "app_athenawb(n) initialized."
 
         # NEXT, initialize tcltest(n).
         package require tcltest 2.2 

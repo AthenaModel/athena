@@ -6,7 +6,7 @@
 #   athena - Athena Regional Stability Simulation
 #
 # DESCRIPTION:
-#   app_athena(n) Package, main module.
+#   app_athenawb(n) Package, main module.
 #
 #-----------------------------------------------------------------------
 
