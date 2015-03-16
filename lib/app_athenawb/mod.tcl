@@ -6,7 +6,7 @@
 #   athena - Athena Regional Stability Simulation
 #
 # DESCRIPTION:
-#   app_athena(n) Package, "mods" manager.
+#   app_athenawb(n) Package, "mods" manager.
 #
 #-----------------------------------------------------------------------
 

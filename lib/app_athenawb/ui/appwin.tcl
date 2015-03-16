@@ -479,7 +479,7 @@ snit::widget appwin {
         # NEXT, set the icon for this and subsequent windows on X11.
         if {[tk windowingsystem] eq "x11"} {
             set icon [image create photo \
-                          -file [file join $::app_athena::library icon.png]]
+                          -file [file join $::app_athenawb::library icon.png]]
             wm iconphoto $win -default $icon
         }
 
@@ -1153,7 +1153,7 @@ snit::widget appwin {
             set modeText "Simulation"
         }
 
-        wm title $win "Athena [kiteinfo version]: $modeText, $dbfile"
+        wm title $win "Athena Workbench [kiteinfo version]: $modeText, $dbfile"
     }
 
 

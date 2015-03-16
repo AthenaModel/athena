@@ -20,7 +20,7 @@ namespace eval ::kiteinfo:: {
 
     array set kiteInfo {
         url-docs/aug.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aug-20141028.docx
-        apptype-athena exe
+        exclude-athenawb {}
         reqver-Tktable 2.11
         reqver-ctext 3.3
         local-Marsbin 1
@@ -35,8 +35,9 @@ namespace eval ::kiteinfo:: {
         gui-atool 0
         xfiles {docs/aag.docx docs/aug.docx docs/rules.pptx docs/mag.docx}
         local-Tkhtml 0
-        apps {athena cellide helptool atool}
+        apps {athenawb cellide helptool atool}
         local-fileutil 0
+        force-athenawb 0
         dists {install-%platform src docs}
         reqver-kitedocs 0.4.6
         local-textutil::adjust 0
@@ -44,9 +45,9 @@ namespace eval ::kiteinfo:: {
         local-tablelist 0
         icon-atool {}
         local-treectrl 0
-        icon-athena {}
         reqver-kiteutils 0.4.6
         reqver-fileutil 1.14
+        icon-athenawb {}
         url-docs/mag.docx https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20140826.docx
         local-marsutil 1
         reqver-marsgui 3.0.13
@@ -57,7 +58,7 @@ namespace eval ::kiteinfo:: {
     %apps
     docs/*.html
     docs/*.png
-    docs/man1/athena.html
+    docs/man1/athenawb.html
     docs/man1/cellide.html
     docs/athena.helpdb
     docs/*.docx
@@ -74,6 +75,7 @@ namespace eval ::kiteinfo:: {
         local-marsgui 1
         local-uri 0
         reqver-BWidget 1.9
+        apptype-athenawb exe
         apptype-cellide exe
         reqver-marsutil 3.0.13
         local-tls 0
@@ -93,9 +95,8 @@ namespace eval ::kiteinfo:: {
         icon-cellide {}
         reqver-snit 2.3
         name athena
-        gui-athena 1
+        gui-athenawb 1
         url-docs/aag.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aag-20141010.docx
-        force-athena 0
         local-sqlite3 0
         reqver-tablelist 5.11
         force-cellide 0
@@ -108,8 +109,7 @@ namespace eval ::kiteinfo:: {
     docs/*.pptx
 }
         reqver-struct::set 2.2
-        apptype-atool kit
-        exclude-athena {}
+        apptype-atool exe
         gui-helptool 1
         reqver-simlib 3.0.13
         binary-athena 0

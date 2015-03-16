@@ -64,7 +64,7 @@ if {[kiteinfo gui athena]} {
 # NEXT, load the application code.  This should define the "main"
 # command.
 
-package require app_athena
+package require app_athenawb
 
 #-----------------------------------------------------------------------
 # Run the program

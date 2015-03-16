@@ -4,7 +4,7 @@
 #   Application Ensemble.
 #
 # PACKAGE:
-#   app_athena(n) -- athena(1) implementation package
+#   app_athenawb(n) -- athena(1) implementation package
 #
 # PROJECT:
 #   Athena S&RO Simulation
@@ -17,16 +17,16 @@
 #-----------------------------------------------------------------------
 # Module: app
 #
-# app_athena(n) Application Ensemble
+# app_athenawb(n) Application Ensemble
 #
 # This module defines app, the application ensemble.  app encapsulates 
 # all of the functionality of athena_sim(1), including the application's 
 # start-up behavior.  To invoke the  application,
 #
-# > package require app_athena
+# > package require app_athenawb
 # > app init $argv
 #
-# The app_athena(n) package can be invoked by athena(1).
+# The app_athenawb(n) package can be invoked by athena(1).
 
 snit::type app {
     pragma -hastypedestroy 0 -hasinstances 0

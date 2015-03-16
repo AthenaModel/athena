@@ -42,7 +42,7 @@ appserver module HOME {
 
     proc /:html {udict matchArray} {
         if {[catch {
-            set text [readfile [file join $::app_athena::library welcome.ehtml]]
+            set text [readfile [file join $::app_athenawb::library welcome.ehtml]]
         } result]} {
             return -code error -errorcode NOTFOUND \
                 "The Welcome page could not be loaded from disk: $result"
