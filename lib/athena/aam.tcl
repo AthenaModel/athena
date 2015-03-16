@@ -68,9 +68,12 @@ snit::type ::athena::aam {
     }
 
     method start {} {
-        $adb eval {DELETE FROM working_combat;}
+        $adb eval {
+            DELETE FROM working_force;
+        }
+
         $self ComputeEffectiveForce
-        $self BuildWorkingCombat
+        $self BuildWorkingForceTable
         $self AllocateForce
     }
 
@@ -111,22 +114,22 @@ snit::type ::athena::aam {
         }
     }
 
-    # BuildWorkingCombat
+    # BuildWorkingForceTable
     #
     # This method builds the working combat table based on deployments.
     # Default ROEs, thresholds and postures are set for those groups
     # that have not explictly been given them via an actor's strategy.
 
-    method BuildWorkingCombat {} {
+    method BuildWorkingForceTable {} {
         # FIRST, fill in the working combat table based on
         # deployments
-        foreach {n f pers eff_frc_f} [$adb eval {
+        foreach {n f pers_f eff_frc_f} [$adb eval {
             SELECT n,g,personnel,eff_personnel FROM deploy_ng 
             WHERE personnel>0
         }] {                       
             # NEXT, groups in n other than f
-            foreach {g eff_frc_g} [$adb eval {
-                SELECT g,eff_personnel FROM deploy_ng 
+            foreach {g eff_frc_g pers_g} [$adb eval {
+                SELECT g,eff_personnel,personnel FROM deploy_ng 
                 WHERE n=$n AND personnel>0 AND g!=$f
             }] {
                 # NEXT, defaults in case no ROE specified
@@ -135,6 +138,7 @@ snit::type ::athena::aam {
                 set dthr 0.8
                 set civc "HIGH"
 
+                # NEXT, pull data from ROE dict, if it's there 
                 if {[info exists roedict($n)] && 
                     [dict exists $roedict($n) $f $g]} {
                     set roe  [dict get $roedict($n) $f $g roe]
@@ -143,15 +147,40 @@ snit::type ::athena::aam {
                     set civc [dict get $roedict($n) $f $g civc]
                 }
 
-                # NEXT, add to the combat table
+                # NEXT, compute force ratios used to determine posture 
+                let frcRatio {
+                    (double($eff_frc_g)/double($pers_g)) / 
+                    (double($eff_frc_f)/double($pers_f))
+                }
+
+                let attack_R {$athr * $frcRatio}
+                let defend_R {$dthr * $frcRatio}
+
+                # NEXT, if a record for the pair of potential combatants
+                # already exists, update it with g's data
+                if {[$adb exists {
+                    SELECT * FROM working_force
+                    WHERE n=$n AND f=$g AND g=$f
+                }]} {
+                    $adb eval {
+                        UPDATE working_force 
+                        SET roe_g       = $roe,
+                            civc_g      = $civc,
+                            attack_R_gf = $attack_R,
+                            defend_R_gf = $defend_R
+                        WHERE n=$n AND f=$g AND g=$f
+                    }
+
+                    continue
+                }
+                
+                # NEXT, add to the working force table
                 $adb eval {
-                    INSERT INTO 
-                        working_combat(n,f,g,roe,posture,
-                                       athresh,dthresh,civc,
-                                       pers,eff_frc_f,eff_frc_g)
-                    VALUES($n,$f,$g,$roe,'DEFEND',
-                           $athr,$dthr,$civc,
-                           $pers,$eff_frc_f,$eff_frc_g)
+                    INSERT INTO working_force(n,f,g,pers_f,pers_g,
+                                              roe_f,attack_R_fg,defend_R_fg,
+                                              civc_f,eff_frc_f,eff_frc_g)
+                    VALUES($n,$f,$g,$pers_f,$pers_g,$roe,$attack_R,
+                           $defend_R,$civc,$eff_frc_f,$eff_frc_g)
                 }
             }
         }
@@ -167,51 +196,53 @@ snit::type ::athena::aam {
     method AllocateForce {} {
         # FIRST, go through the working combat table
         foreach {n f g} [$adb eval {
-            SELECT n,f,g FROM working_combat
+            SELECT n,f,g FROM working_force
+            WHERE roe_f = 'ATTACK' OR roe_g = 'ATTACK'
         }] {
-            # NEXT, compute total effective force involved which is the
-            # effective force of those attacking and the effective force
-            # of those being attacked.
+            # NEXT, compute total effective force from f's point of view
+            # Those f is attacking
             set totalEffFrcG [$adb eval {
-                SELECT total(eff_frc_g) FROM working_combat
-                WHERE n=$n AND f=$f AND roe='ATTACK'
+                SELECT total(eff_frc_g) FROM working_force
+                WHERE n=$n AND f=$f AND roe_f='ATTACK'
             }]
 
+            # Those attacking f 
             set totalEffFrcF [$adb eval {
-                SELECT total(eff_frc_f) FROM working_combat
-                WHERE n=$n AND g=$f AND roe='ATTACK'
+                SELECT total(eff_frc_g) FROM working_force
+                WHERE n=$n AND f=$f AND roe_g='ATTACK'
             }]
 
-            let totalFrcH {$totalEffFrcG + $totalEffFrcF}
+            let totalFrcF {$totalEffFrcG + $totalEffFrcF}
+
+            # NEXT, compute total effective force from g's point of view
+            # Those g is attacking
+            set totalEffFrcF [$adb eval {
+                SELECT total(eff_frc_f) FROM working_force
+                WHERE n=$n AND g=$g AND roe_g='ATTACK'
+            }]
+
+            # Those attacking g
+            set totalEffFrcG [$adb eval {
+                SELECT total(eff_frc_f) FROM working_force
+                WHERE n=$n AND g=$g AND roe_f='ATTACK'
+            }]
+
+
+            let totalFrcG {$totalEffFrcG + $totalEffFrcF}
 
             # NEXT, allocate personnel based on effective force
-            if {[$self NeedsAllocation $n $f $g]} {
-                $adb eval {
-                    UPDATE working_combat
-                    SET desig_pers = pers*eff_frc_g/$totalFrcH
-                    WHERE n=$n AND f=$f AND g=$g
-                }                
-            }
+            $adb eval {
+                UPDATE working_force
+                SET desig_pers_f = 
+                        CAST(round(pers_f*eff_frc_g/$totalFrcF) AS INTEGER),
+                    desig_pers_g = 
+                        CAST(round(pers_g*eff_frc_f/$totalFrcG) AS INTEGER)
+                WHERE n=$n AND f=$f AND g=$g
+            }               
         }
     }
 
-    # NeedsAllocation n f g
-    #
-    # n    - A neighborhood ID 
-    # f    - A force group ID 
-    # g    - Another force group ID
-    #
-    # This helper method determines if f needs to allocate force
-    # against g in n because f is either attacking g or is being
-    # attacked by g.
-
-    method NeedsAllocation {n f g} {
-        return [$adb exists {
-            SELECT * FROM working_combat 
-            WHERE n=$n AND
-                    ((f=$f AND g=$g AND roe='ATTACK') OR
-                     (f=$g AND g=$f AND roe='ATTACK'))
-        }]
+    method SetGroupPosture {} {
     }
 
     #-------------------------------------------------------------------
@@ -335,10 +366,11 @@ snit::type ::athena::aam {
     # force groups and civilian groups.
 
     method DoGroupCombat {} {
-        $adb eval {DELETE FROM working_combat;}
+        $adb eval {DELETE FROM working_force;}
         $self ComputeEffectiveForce
-        $self BuildWorkingCombat
-        $self AllocateForce        
+        $self BuildWorkingForceTable
+        $self AllocateForce
+        $self SetGroupPosture     
     }
 
     #-------------------------------------------------------------------

@@ -189,10 +189,10 @@ CREATE TEMPORARY TABLE working_build (
 ---------------------------------------------------------------------
 -- Temporary Attrition Model Tables
 
--- Working combat table for AAM: tracks ROE, postures, thresholds and
--- casualties for force groups engaged in combat
+-- Working force table for AAM: tracks effective force, designated
+-- personnel, postures and casualties
 
-CREATE TEMPORARY TABLE working_combat (
+CREATE TEMPORARY TABLE working_force (
     -- Nbhood ID
     n            TEXT,
 
@@ -200,35 +200,40 @@ CREATE TEMPORARY TABLE working_combat (
     f            TEXT,
     g            TEXT,
 
-    -- ROE of f->g
-    roe          TEXT,
+    -- ROE of f to g and g to f
+    roe_f      TEXT,
+    roe_g      TEXT,
 
-    -- Posture of f->g
-    posture      TEXT,
-
-    -- Is f hiding?
-    hiding       INTEGER DEFAULT 0,
-
-    -- Attack and defend force/enemy thresholds of f->g
-    athresh      DOUBLE DEFAULT 0.0,
-    dthresh      DOUBLE DEFAULT 0.0,
+    -- Posture f takes wrt to g and g takes wrt f
+    posture_f  TEXT,
+    posture_g  TEXT,
 
     -- Concern for civilian casualties
-    civc         TEXT,
+    civc_f      TEXT,
+    civc_g      TEXT,
 
-    -- Personnel in f deployed to nbhood
-    pers         INTEGER DEFAULT 0,
-
-    -- Personnel involved in fight, may be same as pers
-    desig_pers   INTEGER DEFAULT 0,
-
-    -- Casualties suffered to f 
-    casualties_f  INTEGER DEFAULT 0,
+    -- Total personnel and those involved in fight 
+    pers_f       INTEGER DEFAULT 0,
+    pers_g       INTEGER DEFAULT 0,
+    desig_pers_f INTEGER DEFAULT 0,
+    desig_pers_g INTEGER DEFAULT 0,
 
     -- Effective force based upon multipliers, used to allocate
     -- personnel
     eff_frc_f    DOUBLE DEFAULT 0.0,
     eff_frc_g    DOUBLE DEFAULT 0.0,
+
+    -- Attack and defend posture force ratios from each combatants
+    -- point of view based on effective force
+    attack_R_fg  DOUBLE DEFAULT 0.0,
+    defend_R_fg  DOUBLE DEFAULT 0.0,
+
+    attack_R_gf  DOUBLE DEFAULT 0.0,
+    defend_R_gf  DOUBLE DEFAULT 0.0,
+
+    -- Casualties suffered by f an g
+    cas_f        INTEGER DEFAULT 0,
+    cas_g        INTEGER DEFAULT 0,
 
     PRIMARY KEY (n, f, g)
 );
