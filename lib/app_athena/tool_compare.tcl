@@ -6,7 +6,7 @@
 #   Will Duquette
 #
 # DESCRIPTION:
-#   Atool "compare" tool.  This tool compares scenario files.
+#   Athena "compare" tool.  This tool compares scenario files.
 #
 #-----------------------------------------------------------------------
 
@@ -17,7 +17,7 @@ tool define COMPARE {
     usage       {1 2 "<adbfile1> ?<adbfile2>?"}
     description "Scenario comparison"
 } {
-    EXPERIMENTAL.  The 'atool compare' tool compares scenario outcomes and 
+    EXPERIMENTAL.  The 'athena compare' tool compares scenario outcomes and 
     computes the significant differences in the outputs.
 
     If only a single scenario file is given, then the tool compares the
