@@ -45,7 +45,6 @@ namespace eval ::app_atool:: {
 source [file join $::app_atool::library main.tcl        ]
 source [file join $::app_atool::library tool.tcl        ]
 source [file join $::app_atool::library comparison.tcl  ]
-source [file join $::app_atool::library record.tcl      ]
 source [file join $::app_atool::library vardiff.tcl     ]
 
 source [file join $::app_atool::library tool_help.tcl   ]

@@ -6,7 +6,7 @@ poc William.H.Duquette@jpl.nasa.gov
 app athena -apptype exe -gui
 app cellide -apptype exe -gui
 app helptool -apptype kit -gui
-app atool -apptype kit
+app atool -apptype exe
 
 # Provided Libraries
 provide athena

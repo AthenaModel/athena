@@ -22,9 +22,6 @@ files, which conventionally have a "<code>.adb</code>" extension.
 If a scenario file name is given on the command line, it will be
 opened automatically.<p>
 
-Note that Athena may also be run in batch mode; see the 
-<xref athena_batch(1)> man page.<p>
-
 The following options may be used:<p>
 
 <deflist options>
