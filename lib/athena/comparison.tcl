@@ -6,11 +6,14 @@
 #   Will Duquette
 #
 # DESCRIPTION:
-#   Scenario Comparison class
+#   athena(n): Scenario Comparison class
+#
+#   A comparison object records the results of comparing two scenarios
+#   (or the same scenario at different times).
 #
 #-----------------------------------------------------------------------
 
-oo::class create comparison {
+oo::class create ::athena::comparison {
     variable s1         ;# Scenario 1
     variable t1         ;# Time 1
     variable s2         ;# Scenario 2
@@ -37,33 +40,34 @@ oo::class create comparison {
     # CheckCompatibility
     #
     # Determine whether the two scenarios are sufficiently similar that
-    # comparison is meaningful.
+    # comparison is meaningful.  Throws "SCENARIO INCOMPARABLE" if the
+    # two scenarios cannot be meaningfully compared.
     #
     # TBD: The current set of checks is preliminary.
 
     method CheckCompatibility {} {
         if {![lequal [$s1 nbhood names] [$s2 nbhood names]]} {
-            throw FATAL \
+            throw {SCENARIO INCOMPARABLE} \
                 "Scenarios not comparable: different neighborhoods."
         }
 
         if {![lequal [$s1 actor names] [$s2 actor names]]} {
-            throw FATAL \
+            throw {SCENARIO INCOMPARABLE} \
                 "Scenarios not comparable: different actors."
         }
 
         if {![lequal [$s1 civgroup names] [$s2 civgroup names]]} {
-            throw FATAL \
+            throw {SCENARIO INCOMPARABLE} \
                 "Scenarios not comparable: different civilian groups."
         }
 
         if {![lequal [$s1 frcgroup names] [$s2 frcgroup names]]} {
-            throw FATAL \
+            throw {SCENARIO INCOMPARABLE} \
                 "Scenarios not comparable: different force groups."
         }
 
         if {![lequal [$s1 orggroup names] [$s2 orggroup names]]} {
-            throw FATAL \
+            throw {SCENARIO INCOMPARABLE} \
                 "Scenarios not comparable: different organization groups."
         }
     }
@@ -77,7 +81,7 @@ oo::class create comparison {
     # significant.
 
     method add {vartype args} {
-        set diff [::vardiff::$vartype new [self] {*}$args]
+        set diff [::athena::vardiff::$vartype new [self] {*}$args]
 
         if {[$diff significant]} {
             dict lappend diffs [$diff type] $diff

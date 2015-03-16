@@ -150,6 +150,21 @@ namespace eval ::athena_test::tests {
     } -result {}
 
     #-------------------------------------------------------------------
+    # lequal
+
+    test lequal-1.1 {Lists are identical} -body {
+        ::athena::lequal {a b c} {a b c}
+    } -result {1}
+
+    test lequal-1.2 {Order doesn't matter} -body {
+        ::athena::lequal {a b c} {a c b}
+    } -result {1}
+
+    test lequal-1.3 {Missing values matter} -body {
+        ::athena::lequal {a b c} {a b}
+    } -result {0}
+
+    #-------------------------------------------------------------------
     # Done
 
     cleanupTests

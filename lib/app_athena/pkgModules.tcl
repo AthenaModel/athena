@@ -44,8 +44,6 @@ namespace eval ::app_athena:: {
 
 source [file join $::app_athena::library main.tcl        ]
 source [file join $::app_athena::library tool.tcl        ]
-source [file join $::app_athena::library comparison.tcl  ]
-source [file join $::app_athena::library vardiff.tcl     ]
 
 source [file join $::app_athena::library tool_help.tcl   ]
 source [file join $::app_athena::library tool_build.tcl  ]

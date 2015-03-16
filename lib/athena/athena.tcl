@@ -31,14 +31,13 @@ snit::type ::athena::athena {
     #-------------------------------------------------------------------
     # Type Components and Methods
 
-    typecomponent athenadb
-
-    delegate typemethod register to athenadb
+    delegate typemethod diff using {::athena::differencer diff}
 
     typeconstructor {
         set athenadb ::athena::athenadb
     }
-    
+
+
     #-------------------------------------------------------------------
     # Components
     #
