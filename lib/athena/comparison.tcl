@@ -72,16 +72,26 @@ oo::class create ::athena::comparison {
         }
     }
 
-    # add vartype args...
+    # add vartype val1 val2 keys...
     #
     # vartype  - An output variable type.
-    # args     - Creation arguments for that vardiff class.
+    # val1     - The value from s1/t1
+    # val2     - The value from s2/t2
+    # keys...  - Key values for the vardiff class
     #
     # Adds the diff to the differences, or throws it away if it isn't
-    # significant.
+    # significant.  If val1 and val2 are "eq", identical, then the
+    # difference is presumed to be insignificant.
 
-    method add {vartype args} {
-        set diff [::athena::vardiff::$vartype new [self] {*}$args]
+    method add {vartype val1 val2 args} {
+        # FIRST, exclude identical values.
+        if {$val1 eq $val2} {
+            return
+        }
+
+        # NEXT, create a vardiff object; keep it if the difference
+        # proves to be significant, and otherwise throw it away.
+        set diff [::athena::vardiff::$vartype new [self] $val1 $val2 {*}$args]
 
         if {[$diff significant]} {
             dict lappend diffs [$diff type] $diff

@@ -14,7 +14,7 @@ oo::class create ::athena::vardiff::nbsecurity {
     superclass ::athena::vardiff
     meta type nbsecurity.n
 
-    constructor {comp_ n_ val1_ val2_} {
+    constructor {comp_ val1_ val2_ n_} {
         next $comp_ [list n $n_] $val1_ $val2_
     }
 

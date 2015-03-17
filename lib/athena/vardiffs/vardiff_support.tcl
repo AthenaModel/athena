@@ -14,7 +14,7 @@ oo::class create ::athena::vardiff::support {
     superclass ::athena::vardiff
     meta type support.n.a
 
-    constructor {comp_ n_ a_ val1_ val2_} {
+    constructor {comp_ val1_ val2_ n_ a_} {
         next $comp_ [list n $n_ a $a_] $val1_ $val2_
     }
 

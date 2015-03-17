@@ -123,18 +123,18 @@ snit::type ::athena::differencer {
             JOIN s2.hist_nbhood  AS H2 
             ON (H1.n = H2.n AND H1.t=$t1 AND H2.t=$t2);
         } {
-            $comp add nbsecurity $n $nbsec1  $nbsec2
-            $comp add control    $n $a1      $a2
-            $comp add nbmood     $n $nbmood1 $nbmood2
+            $comp add nbsecurity $nbsec1  $nbsec2  $n
+            $comp add control    $a1      $a2      $n
+            $comp add nbmood     $nbmood1 $nbmood2 $n
         }
 
         # hist_support data
-        set idict1 [dict create]
-        set idict2 [dict create]
+        set i1 [dict create]
+        set i2 [dict create]
 
         foreach n [$comp s1 nbhood names] {
-            dict set idict1 $n {}
-            dict set idict2 $n {}
+            dict set i1 $n {}
+            dict set i2 $n {}
         }
 
         $cdb eval {
@@ -151,19 +151,17 @@ snit::type ::athena::differencer {
         } {
             # influence.n.* works on dictionaries of non-zero influences.
             if {$influence1 > 0.0} {
-                dict set idict1 $n $a $influence1
+                dict set i1 $n $a $influence1
             }
             if {$influence2 > 0.0} {
-                dict set idict2 $n $a $influence2
+                dict set i2 $n $a $influence2
             }
 
-            $comp add support $n $a $support1 $support2
+            $comp add support $support1 $support2 $n $a
         }
 
         foreach n [$comp s1 nbhood names] {
-            $comp add influence $n \
-                [dict get $idict1 $n]  \
-                [dict get $idict2 $n]
+            $comp add influence [dict get $i1 $n] [dict get $i2 $n] $n
         }
 
         $cdb destroy

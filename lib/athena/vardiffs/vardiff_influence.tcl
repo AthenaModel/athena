@@ -19,7 +19,7 @@ oo::class create ::athena::vardiff::influence {
     superclass ::athena::vardiff
     meta type influence.n.*
 
-    constructor {comp_ n_ val1_ val2_} {
+    constructor {comp_ val1_ val2_ n_} {
         next $comp_ [list n $n_] $val1_ $val2_
     }
 
