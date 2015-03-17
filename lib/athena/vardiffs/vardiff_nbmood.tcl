@@ -19,7 +19,9 @@ oo::class create ::athena::vardiff::nbmood {
     }
 
     method significant {} {
-        expr {[my score] >= 10.0}
+        set lim 15.0 ;# TBD: Need parameter
+
+        expr {[my score] >= $lim}
     }
 
     method format {val} {

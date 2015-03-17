@@ -19,7 +19,8 @@ oo::class create ::athena::vardiff::support {
     }
 
     method significant {} {
-        expr {[my fmt1] != [my fmt2]}
+        set lim 0.1
+        expr {[my score] >= $lim}
     }
 
     method format {val} {
