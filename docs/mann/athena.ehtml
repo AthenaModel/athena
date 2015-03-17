@@ -86,6 +86,34 @@ See <xref "NOTIFIER EVENTS"> for more details.<p>
 
 </deflist options>
 
+<defitem "athena diff" {athena diff <i s1> ?<i s2>? ?<i options...>?}>
+
+Compares two scenarios (or one scenario with itself at different 
+simulation times) for significant differences, and returns a
+<xref comparison(n)> object containing them.<p>  
+
+<i s1> (and <i s2> if given) must be an <xref athena(n)> scenario object.
+By default, the command compares <i s1> at time 0 with itself at its latest
+simulation time.  If both scenarios are given, it compares <i s1> with
+<i s2> at the latest simulation time they have in common.<p>
+
+The options are as follows:<p>
+
+<deflist options>
+
+<defopt {-t1 <i week>}>
+
+Specifies the simulation time for the first scenario, overriding the
+logic given above.<p>
+
+<defopt {-t2 <i week>}>
+
+Specifies the simulation time for the second scenario (or the second
+simulation time for the first scenario if only one is given), 
+overriding the logic given above.<p>
+
+</deflist options>
+
 </deflist commands>
 
 <section "INSTANCE COMMAND">

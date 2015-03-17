@@ -27,7 +27,7 @@ package provide app_athena 6.3.0a7
 
 # -kite-require-start ADD EXTERNAL DEPENDENCIES
 package require projectlib
-package require huddle
+package require huddle 0.1.5
 package require -exact athena 6.3.0a7
 # -kite-require-end
 

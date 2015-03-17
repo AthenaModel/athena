@@ -60,8 +60,7 @@ additional application-specific commands for use in executive scripts.<p>
 
 <section "INSTANCE COMMANDS">
 
-Each instance of executive(n) provides all of the <xref mars:parmset(n)> 
-instance subcommands; in addition, it adds the following.<p>
+Each instance of executive(n) provides the following.<p>
 
 <deflist instance>
 
