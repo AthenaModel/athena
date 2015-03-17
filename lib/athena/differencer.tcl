@@ -83,7 +83,7 @@ snit::type ::athena::differencer {
         }
 
         # NEXT, look for differences
-        set comp [::athena::comparison new $s1 $t1 $s2 $t2]
+        set comp [::athena::comparison create %AUTO% $s1 $t1 $s2 $t2]
 
         $type FindDiffs $comp
 

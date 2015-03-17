@@ -11,7 +11,9 @@
 #-----------------------------------------------------------------------
 
 oo::class create ::athena::vardiff {
-    meta type *      ;# Type is undefined; subclasses should override.
+    meta type *          ;# Type is undefined; subclasses should override.
+    meta category "???"  ;# Pmesii category is undefined; subclasses should
+                          # override.
 
     variable comp    ;# comparison object
     variable keydict ;# Key dictionary
@@ -160,5 +162,27 @@ oo::class create ::athena::vardiff {
     
     method significant {} {
         my different
+    }
+
+    # view
+    #
+    # Returns a view on the difference record.
+
+    method view {} {
+        dict set result type     [my type]
+        dict set result name     [my name]
+        dict set result category [my category]
+
+        dict for {key value} $keydict {
+            dict set result $key $value
+        }
+        
+        dict set result val1     $val1
+        dict set result val2     $val2
+        dict set result fmt1     [my fmt1]
+        dict set result fmt2     [my fmt2]
+        dict set result score    [my score]
+
+        return $result
     }
 }

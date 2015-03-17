@@ -15,7 +15,8 @@
 
 oo::class create ::athena::vardiff::control {
     superclass ::athena::vardiff
-    meta type control.n
+    meta type     control.n
+    meta category political
 
     constructor {comp_ val1_ val2_ n_} {
         next $comp_ [list n $n_] $val1_ $val2_  

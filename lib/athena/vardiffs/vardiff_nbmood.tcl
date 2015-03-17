@@ -12,7 +12,8 @@
 
 oo::class create ::athena::vardiff::nbmood {
     superclass ::athena::vardiff
-    meta type nbmood.n
+    meta type     nbmood.n
+    meta category social
 
     constructor {comp_ val1_ val2_ n_} {
         next $comp_ [list n $n_] $val1_ $val2_

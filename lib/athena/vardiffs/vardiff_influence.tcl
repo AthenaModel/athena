@@ -17,7 +17,8 @@
 
 oo::class create ::athena::vardiff::influence {
     superclass ::athena::vardiff
-    meta type influence.n.*
+    meta type     influence.n.*
+    meta category political
 
     constructor {comp_ val1_ val2_ n_} {
         next $comp_ [list n $n_] $val1_ $val2_

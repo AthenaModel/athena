@@ -14,7 +14,7 @@
 # tool::COMPARE
 
 tool define COMPARE {
-    usage       {1 2 "<adbfile1> ?<adbfile2>?"}
+    usage       {1 - "<adbfile1> ?<adbfile2>? ?options...?"}
     description "Scenario comparison"
 } {
     EXPERIMENTAL.  The 'athena compare' tool compares scenario outcomes and 
@@ -31,6 +31,10 @@ tool define COMPARE {
     * Identical neighborhood names
     * Identical actor names
     * Identical group names 
+
+    Options:
+
+    -format dump|json  - Output format
 } {
     #-------------------------------------------------------------------
     # Execution 
@@ -40,11 +44,34 @@ tool define COMPARE {
     # Executes the tool given the command line arguments.
 
     typemethod execute {argv} {
-        # FIRST, get the output file name.
+        # FIRST, parse the command line
+
+        # adbfile1
         set adbfile1 [lshift argv]
-        set adbfile2 [lshift argv]
         set fname1   [file tail $adbfile1]
+
+        # adbfile2
+        if {![string match "-*" [lindex $argv 0]]} {
+            set adbfile2 [lshift argv]
+        } else {
+            set adbfile2 ""
+        }
         set fname2   [file tail $adbfile2]
+
+        # options
+        array set opts {
+            -format dump
+        }
+
+        foroption opt argv -all {
+            -format {
+                set opts(-format) [lshift argv]
+                if {$opts(-format) ni {dump json}} {
+                    throw FATAL \
+                        "Invalid -format value, \"$opts(-format)\""
+                }
+            }
+        }
 
         # NEXT, get the scenario objects.
         set s1 [$type LoadScenario $adbfile1]
@@ -75,7 +102,7 @@ tool define COMPARE {
         puts ""
 
         # NEXT, output to console.
-        puts [$comp dump]
+        puts [$comp diffs $opts(-format)]
 
         $comp destroy
     }

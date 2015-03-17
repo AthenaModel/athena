@@ -27,6 +27,7 @@ namespace eval ::kiteinfo:: {
         local-Marsbin 1
         local-Img 0
         local-kitedocs 1
+        local-huddle 0
         reqver-tdom 0.8
         exclude-helptool {}
         reqver-comm 4.6
@@ -110,6 +111,7 @@ namespace eval ::kiteinfo:: {
     docs/*.pptx
 }
         reqver-struct::set 2.2
+        reqver-huddle 0.1.5
         exclude-athena {}
         gui-helptool 1
         reqver-simlib 3.0.13
@@ -136,7 +138,7 @@ namespace eval ::kiteinfo:: {
     test/*/*
 }
         reqver-Tkhtml 3.0
-        requires {snit comm Img BWidget Tktable treectrl sqlite3 tablelist textutil::expander textutil::adjust Tkhtml uri fileutil ctext tls tdom struct::set kiteutils kitedocs marsutil marsgui simlib Marsbin}
+        requires {snit comm Img BWidget Tktable treectrl sqlite3 tablelist textutil::expander textutil::adjust Tkhtml uri fileutil ctext tls tdom struct::set huddle kiteutils kitedocs marsutil marsgui simlib Marsbin}
         clean-help {make clean}
         poc William.H.Duquette@jpl.nasa.gov
         srcs help

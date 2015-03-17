@@ -13,13 +13,19 @@
 #
 #-----------------------------------------------------------------------
 
-oo::class create ::athena::comparison {
+snit::type ::athena::comparison {
+    #-------------------------------------------------------------------
+    # Instance Variables
+    
     variable s1         ;# Scenario 1
     variable t1         ;# Time 1
     variable s2         ;# Scenario 2
     variable t2         ;# Time 2
-    variable diffs      ;# Dictionary of differences by vartype
+    variable diffs {}   ;# Dictionary of differences by vartype
 
+    #-------------------------------------------------------------------
+    # Constructor
+    
     constructor {s1_ t1_ s2_ t2_} {
         set s1 $s1_
         set t1 $t1_
@@ -28,13 +34,13 @@ oo::class create ::athena::comparison {
         set diffs [dict create]
 
         if {$s1 ne $s2} {
-            my CheckCompatibility
+            $self CheckCompatibility
         }
     }
 
     destructor {
         # Destroy the difference objects.
-        my reset
+        $self reset
     }
 
     # CheckCompatibility
@@ -91,7 +97,7 @@ oo::class create ::athena::comparison {
 
         # NEXT, create a vardiff object; keep it if the difference
         # proves to be significant, and otherwise throw it away.
-        set diff [::athena::vardiff::$vartype new [self] $val1 $val2 {*}$args]
+        set diff [::athena::vardiff::$vartype new $self $val1 $val2 {*}$args]
 
         if {[$diff significant]} {
             dict lappend diffs [$diff type] $diff
@@ -154,18 +160,17 @@ oo::class create ::athena::comparison {
         }
     }
 
-    # dump
+    #-------------------------------------------------------------------
+    # Output of Diffs
+    
+    # diffs dump
     #
-    # Returns a formatted table of the differences.
+    # Returns a monotext formatted table of the differences.
 
-    method dump {} {
+    method {diffs dump} {} {
         set table [list]
         dict for {vartype difflist} $diffs {
-        set difflist [lsort \
-            -command [list [self] compareScores] \
-            -decreasing $difflist]
-
-            foreach diff $difflist {
+            foreach diff [$self SortByScore $difflist] {
                 dict set row Variable   [$diff name]
                 dict set row A          [$diff fmt1]
                 dict set row B          [$diff fmt2]
@@ -179,7 +184,35 @@ oo::class create ::athena::comparison {
         return [dictab format $table -headers]
     }
 
-    method compareScores {diff1 diff2} {
+    # diffs json
+    #
+    # Returns the differences formatted as JSON. 
+
+    method {diffs json} {} {
+        set hud [huddle list]
+
+        dict for {vartype difflist} $diffs {
+            foreach diff [$self SortByScore $difflist] {
+                set hvar [huddle compile dict [$diff view]]
+                huddle append hud $hvar
+            }
+        }
+
+        return [huddle jsondump $hud]
+    }
+
+
+
+    # SortByScore difflist
+    #
+    # Returns the difflist sorted in order of decreasing score.
+
+    method SortByScore {difflist} {
+        return [lsort -command [myproc CompareScores] \
+                      -decreasing $difflist]
+    } 
+
+    proc CompareScores {diff1 diff2} {
         set score1 [$diff1 score]
         set score2 [$diff2 score]
 
@@ -191,5 +224,7 @@ oo::class create ::athena::comparison {
             return 0
         }
     }
+
+
 
 }
