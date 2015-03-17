@@ -6,7 +6,7 @@
 #   Will Duquette
 #
 # DESCRIPTION:
-#   Atool "build" tool.  This tool builds scenario files given inputs
+#   Athena "build" tool.  This tool builds scenario files given inputs
 #   and options.
 #
 #-----------------------------------------------------------------------
@@ -18,7 +18,7 @@ tool define BUILD {
     usage       {2 - "?<infile>? ?<script>...? ?options...? <outfile>"}
     description "Athena Scenario Builder"
 } {
-    The 'atool build' tool builds an output scenario file from a variety
+    The 'athena build' tool builds an output scenario file from a variety
     of inputs.  In particular, the tool:
 
     * Loads <infile>, an input scenario file (if given)

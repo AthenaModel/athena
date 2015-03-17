@@ -44,6 +44,7 @@ namespace eval ::athena:: {
 # Used to define and query orders.
 ::marsutil::order_set create ::athena::orders ::athena::athena_order {adb}
 
+# Basic Functions
 source [file join $::athena::library athena.tcl                      ]
 source [file join $::athena::library athenadb.tcl                    ]
 source [file join $::athena::library athena_order.tcl                ]
@@ -176,6 +177,16 @@ source [file join $::athena::library tactics tactic_support.tcl      ]
 source [file join $::athena::library tactics tactic_violence.tcl     ]
 source [file join $::athena::library tactics tactic_withdraw.tcl     ]
 
+# Scenario Comparison and Causality Chaining
+source [file join $::athena::library differencer.tcl                 ]
+source [file join $::athena::library comparison.tcl                  ]
+source [file join $::athena::library vardiff.tcl                     ]
+
+source [file join $::athena::library vardiffs vardiff_control.tcl    ]
+source [file join $::athena::library vardiffs vardiff_influence.tcl  ]
+source [file join $::athena::library vardiffs vardiff_nbmood.tcl     ]
+source [file join $::athena::library vardiffs vardiff_nbsecurity.tcl ]
+source [file join $::athena::library vardiffs vardiff_support.tcl    ]
 
 # Tk Code (loaded only if Tk is already present)
 if {[info command tk] ne ""} {

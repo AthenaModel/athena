@@ -6,7 +6,7 @@
 #   Will Duquette
 #
 # DESCRIPTION:
-#   Atool "shell" tool.  Loads the code and pops up a debugger.
+#   Athena "shell" tool.  Loads the code and pops up a debugger.
 #
 #-----------------------------------------------------------------------
 

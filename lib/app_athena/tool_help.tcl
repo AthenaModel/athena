@@ -6,7 +6,7 @@
 #   Will Duquette
 #
 # DESCRIPTION:
-#   Atool: "help" tool
+#   Athena: "help" tool
 #
 #-----------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ tool define help {
 
     # execute ?args?
     #
-    # Displays the Atool help.
+    # Displays the Athena help.
 
     typemethod execute {argv} {
         set topic [lindex $argv 0]
@@ -42,9 +42,13 @@ tool define help {
     # List all of the help topics (i.e., the tools and their descriptions).
 
     proc ShowTopicList {} {
-        puts "Atool is a tool for working with Athena scenarios.\n"
+        puts [outdent {
+            athena(1) is a collection of tools for working with Athena 
+            scenarios at the command line.  The following tools are
+            available:
+        }]
 
-        puts "Several tools are available:\n"
+        puts ""
 
         foreach tool [lsort [tool names]] {
             puts [format "%-10s - %s" $tool [tool description $tool]]
@@ -52,7 +56,7 @@ tool define help {
 
         puts ""
 
-        puts "Enter 'atool help <topic>' for help on a given topic."
+        puts "Enter 'athena help <topic>' for help on a given topic."
 
         puts ""
     }

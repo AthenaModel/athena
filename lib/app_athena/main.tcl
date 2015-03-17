@@ -6,17 +6,17 @@
 #   athena - Athena Regional Stability Simulation
 #
 # PACKAGE:
-#   app_atool(n): Athena Tool Application Package
+#   app_athena(n): Athena Tool Application Package
 #
 # AUTHOR:
 #   Will Duquette
 #
 # DESCRIPTION:
-#   Atool main program, as called by the apploader script, bin/atool.tcl.
+#   Athena main program, as called by the apploader script, bin/athena.tcl.
 #
 #-----------------------------------------------------------------------
 
-namespace eval ::app_atool:: {
+namespace eval ::app_athena:: {
     variable verbose 0
 }
 
@@ -39,7 +39,7 @@ proc main {argv} {
 
     # NEXT, get any options
     foroption opt argv {
-        -verbose { set ::app_atool::verbose 1 }
+        -verbose { set ::app_athena::verbose 1 }
     }
 
     # NEXT, get the subcommand and see if we have a matching tool.
@@ -49,7 +49,7 @@ proc main {argv} {
     if {![tool exists $tool]} {
         throw FATAL [outdent "
             This command provides no tool called '$tool'. 
-            See 'atool help' for usage information.
+            See 'athena help' for usage information.
         "]
     }
 
@@ -65,7 +65,7 @@ proc main {argv} {
 # -verbose is on.
 
 proc vputs {args} {
-    if {$::app_atool::verbose} {
+    if {$::app_athena::verbose} {
         puts [join $args]
     }
 }
