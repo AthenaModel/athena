@@ -138,7 +138,7 @@ proc DocSubstSystemFile {sock key code {extra {}} {interp {}}} {
     if {![info exists Doc(page,$key)] || 
 	[catch {Subst_ReturnFile $sock $Doc(page,$key) $interp} err]} {
 	if {[info exists err]} {
-	    Log $sock DocSubstSystemFile $err
+	    ::ahttpd::log add $sock DocSubstSystemFile $err
 	}
 	Httpd_Error $sock $code $extra
     }

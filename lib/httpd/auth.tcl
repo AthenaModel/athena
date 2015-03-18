@@ -50,7 +50,7 @@ if {![info exists Config(AuthGroupFile)]} {
     set Config(AuthGroupFile) default
 }
 if {![info exists Config(AuthDefaultFile)]} {
-    set Config(AuthDefaultFile) /tmp/tclhttpd.default
+    set Config(AuthDefaultFile) [fileutil::tempfile tclhttpd.default]
 }
 
 # Authentication bootstrap.
@@ -60,7 +60,7 @@ if {![info exists Config(AuthDefaultFile)]} {
 # password to bootstrap this process.
 #
 # The approach taken is to allow the administrator to give plaintext
-# passwords via Config, or (failing that) to generate and Log a random
+# passwords via Config, or (failing that) to generate and ::ahttpd::log add a random
 # password at runtime.  A new random password will be created on each 
 # server startup.
 #
@@ -499,7 +499,7 @@ proc AuthVerifyNet {sock file op} {
 	}
     }
     if {! $ok} {
-	Log $sock AuthVerifyNet "access denied to $rname in [file tail [file dirname $file]]"
+	::ahttpd::log add $sock AuthVerifyNet "access denied to $rname in [file tail [file dirname $file]]"
     }
     return $ok
 }
@@ -549,7 +549,7 @@ proc AuthParseHtaccess {sock file} {
 	    if {[catch {
 		eval {Ht-$cmd auth$file} [lrange $words 1 end]
 	    } err]} {
-		Log $sock Error $err
+		::ahttpd::log add $sock Error $err
 	    }
 	}
 	close $in

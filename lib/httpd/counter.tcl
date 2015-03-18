@@ -68,17 +68,16 @@ proc Counter_Init {{secsPerMinute 60}} {
 }
 
 proc Counter_CheckPoint {} {
-    global Log
-    if {[info exists Log(log)]} {
-	set path $Log(log)counter
-	catch {file rename -force $path $path.old}
-	if {![catch {open $path w} out]} {
-	    puts $out \n[parray counter]
-	    puts $out \n[parray [counter::get urlhits -histVar]]
-	    puts $out \n[parray [counter::get urlhits -histHourVar]]
-	    puts $out \n[parray [counter::get urlhits -histDayVar]]
-	    close $out
-	}
+    if {[::ahttpd::log basename] ne ""} {
+        set path [::ahttpd::log basename]counter
+        catch {file rename -force $path $path.old}
+        if {![catch {open $path w} out]} {
+            puts $out \n[parray counter]
+            puts $out \n[parray [counter::get urlhits -histVar]]
+            puts $out \n[parray [counter::get urlhits -histHourVar]]
+            puts $out \n[parray [counter::get urlhits -histDayVar]]
+            close $out
+        }
     }
 }
 

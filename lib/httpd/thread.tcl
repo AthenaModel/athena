@@ -277,7 +277,7 @@ proc Thread_Invoke_General {cmd} {
 	Count errors
 
         # An error occurred, so log it.
-        Log {} bgerror "Error with code $errorCode in thread [Thread_Id]:\n$errorInfo"
+        ::ahttpd::log add {} bgerror "Error with code $errorCode in thread [Thread_Id]:\n$errorInfo"
     }
     
     Thread_MasterEvalAsync [list Thread_Free [Thread_Id]]

@@ -31,7 +31,7 @@ tool define SERVER {
         puts "Starting web server"
 
         ahttpd::server init \
-            -docroot ~/github/athena/docs
+            -docroot ~/github/athena/htdocs
         vwait forever
     }
 }

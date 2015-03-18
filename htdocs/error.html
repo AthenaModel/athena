@@ -1,0 +1,40 @@
+<!Doctype HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<Html>
+<Head>
+<Title>Server Error</Title>
+<!-- Author: bwelch -->
+<META HTTP-Equiv=Editor Content="SunLabs WebTk 1.0demo 3/10/97">
+</Head>
+<Body>
+
+
+
+<h1>Server Error</h1>
+<h4>[clock format [clock seconds]]</h4>
+<p>
+The server encountered an internal error when handling your page.
+<p>
+[Version]
+<p>
+<form action=/mail/bugreport method=post>
+<input type=hidden name=errorInfo value="[protect_text [Doc_ErrorInfo]]">
+<input type=hidden name=env value="[protect_text [array get env]]">
+<input type=hidden name=email value=[Doc_Webmaster]>
+<input type=submit value="Submit auto bug report to [Doc_Webmaster]">
+</form>
+<p>
+<p>
+<form action=/debug/errorInfo method=post>
+<input type=hidden name=errorInfo value="[protect_text [Doc_ErrorInfo]]">
+<input type=hidden name=env value="[protect_text [array get env]]">
+<input type=hidden name=title value="Error Info">
+<input type=submit value="See the error info">
+</form>
+<p>
+<a HREF=mailto:[Doc_Webmaster]>Send email to [Doc_Webmaster]</a>.
+<p>
+<a HREF="/index.html">Home</a>
+
+</Body>
+</Html>
+

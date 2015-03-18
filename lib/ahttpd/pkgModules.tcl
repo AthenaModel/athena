@@ -49,12 +49,7 @@ package require httpd::counter  ;# For Count
 package require httpd::url      ;# URL dispatching
 package require httpd::mtype    ;# Mime types
 package require httpd::redirect ;# URL redirection
-
-# TBD: Revise auth to set this better.
-set ::Config(AuthDefaultFile) [pwd]/tmp/tclhttpd.default
-
 package require httpd::auth     ;# Basic authentication
-package require httpd::log      ;# Standard logging
 package require httpd::digest   ;# Digest authentication
 package require httpd::doc
 package require httpd::dirlist  ;# Directory listings
@@ -64,3 +59,4 @@ package require httpd::status   ;# Built in status counters
 package require httpd::debug    ;# Debug utilites
 
 source [file join $::ahttpd::library server.tcl]
+source [file join $::ahttpd::library log.tcl   ]

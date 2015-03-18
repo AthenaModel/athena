@@ -99,7 +99,7 @@ proc File_Reset {} {
         append result sock$i\n
     }
     }
-    Log_SetFile
+    ::ahttpd::log setfile
     return $result
 }
 

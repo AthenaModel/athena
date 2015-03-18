@@ -10,12 +10,6 @@
 #
 #-----------------------------------------------------------------------
 
-
-# TBD: Add -logcmd option.
-proc log {level comp text} {
-    puts "$level $comp $text"
-}
-
 snit::type ::ahttpd::server {
     # Make it an ensemble
     pragma -hasinstances 0 -hastypedestroy 0
@@ -36,13 +30,10 @@ snit::type ::ahttpd::server {
     # host      - hostname of the server. Defaulted to the current host
     # port      - The port the server is running on. Default 8080
     # ipaddr    - IP address of the server. Defaulted to ""
-    # uid       - User ID of the server process. Not used.
-    # gid       - Group ID of the server process. Not used.
     # docroot   - The location of the root of the html document tree
     # webmaster - email address of contact person should server have
     #             problems
     # limit     - The file descriptor limit, currently set to the OS default
-    # comp      - Compression program used to compress log files
 
     typevariable info -array {
         host        {}
@@ -53,7 +44,6 @@ snit::type ::ahttpd::server {
         docroot     {}
         webmaster   "David.R.Hanks@jpl.nasa.gov"
         limit       default
-        comp        gzip
     }
 
     # pageCache
@@ -114,12 +104,11 @@ snit::type ::ahttpd::server {
         $type StartMainThread
 
         # NEXT, some logging parameters
-        Log_SetFile         [pwd]/log/httpd$info(port)_
-        Log_FlushMinutes    0
-        Log_Flush
-        
-        log normal httpd "httpd started on port $info(port)\n"
+        # TBD: Need -logroot parameter
+        ::ahttpd::log setfile ~/github/athena/log/httpd$info(port)
 
+        # TBD: Need application log.  ahttpd::log should be combined
+        # with it.
         puts "httpd started on port $info(port)"
     }
     
