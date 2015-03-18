@@ -20,6 +20,8 @@ teapot.txt
 .backup
 ~*.tmp
 temp.tcl
+/lib/app_athena/log
+/lib/app_athena/tmp
 
 # SublimeText artifacts.
 *.sublime-*
