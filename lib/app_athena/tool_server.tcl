@@ -30,8 +30,8 @@ tool define SERVER {
     typemethod execute {argv} {
         puts "Starting web server"
 
-        webserver init \
-            -docroot $::app_athena::library
+        ahttpd::server init \
+            -docroot ~/github/athena/docs
         vwait forever
     }
 }

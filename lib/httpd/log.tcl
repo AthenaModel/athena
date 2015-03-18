@@ -123,7 +123,7 @@ proc Log_Configure args {
 		foreach {option value} $args {
 		    switch -- $option {
 			-lognames {
-			    lappend newOptions lognames [boolean $value]
+			    lappend newOptions lognames [boolnum $value]
 			}
 			default {
 			    # TODO: Other logging options, such as filenames, flush interval, etc

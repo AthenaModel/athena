@@ -80,9 +80,10 @@ namespace eval ::kiteinfo:: {
         apptype-cellide exe
         reqver-marsutil 3.0.13
         local-tls 0
-        provides athena
+        provides {athena ahttpd}
         description {Athena Regional Stability Simulation}
         local-BWidget 0
+        binary-ahttpd 0
         apptype-helptool kit
         reqver-sqlite3 3.8.5
         local-ctext 0

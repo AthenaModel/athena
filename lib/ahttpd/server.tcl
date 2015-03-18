@@ -1,69 +1,22 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#    webserver.tcl
+#   ahttpd.tcl
 #
-# AUTHOR:
-#    Dave Hanks
+# PROJECT:
+#   athena - Athena Regional Stability Simulation
 #
 # DESCRIPTION:
-#    jnem_console(1) webserver module. This module is a refactoring of
-#    the main script from the Tclhttpd package. It uses the tclhttpd 
-#    library to load all of its needed submodules.
-#
-#  Libs needed:
-#      counter 2.0
-#      html    1.4.4
-#      ncgi    1.4.3
-#
-#  Needs:
-#      -tempdir
-#      -logdir
+#   ahttpd(n) Package: Application Web Server
 #
 #-----------------------------------------------------------------------
 
-#-----------------------------------------------------------------------
-# Required Packages
-package require httpd 1.7
-package require md5
-# package require cmdline
-# package require html
-# package require ncgi
 
-# httpd sub-packages
-package require httpd::version  ;# For Version proc
-package require httpd::utils    ;# For Stderr
-package require httpd::counter  ;# For Count
-
-package require httpd::url	    ;# URL dispatching
-package require httpd::mtype	;# Mime types
-package require httpd::redirect	;# URL redirection
-
-set ::Config(AuthDefaultFile) [pwd]/tmp/tclhttpd.default
-
-package require httpd::auth	    ;# Basic authentication
-package require httpd::log	    ;# Standard logging
-package require httpd::digest	;# Digest authentication
-package require httpd::doc
-package require httpd::dirlist  ;# Directory listings
-package require httpd::include  ;# Server side includes
-# package require httpd::cgi      ;# Standard CGI
-# package require httpd::ismaptk
-package require httpd::direct   ;# Application Direct URLs
-package require httpd::status   ;# Built in status counters
-# package require httpd::mail     ;# Crude email form handlers
-# package require httpd::admin    ;# Url-based administration
-package require httpd::debug    ;# Debug utilites
-# package require httpd::doctools ;# doctool type conversions
-# package require httpd::compat   ;# doctool type conversions
- 
-#----------------------------------------------------------------------
-# webserver singleton
-
+# TBD: Add -logcmd option.
 proc log {level comp text} {
     puts "$level $comp $text"
 }
 
-snit::type webserver {
+snit::type ::ahttpd::server {
     # Make it an ensemble
     pragma -hasinstances 0 -hastypedestroy 0
 
@@ -161,8 +114,8 @@ snit::type webserver {
         $type StartMainThread
 
         # NEXT, some logging parameters
-        Log_SetFile		    [pwd]/log/httpd$info(port)_
-        Log_FlushMinutes	0
+        Log_SetFile         [pwd]/log/httpd$info(port)_
+        Log_FlushMinutes    0
         Log_Flush
         
         log normal httpd "httpd started on port $info(port)\n"
@@ -208,7 +161,7 @@ snit::type webserver {
         # Merge in a second file system into the URL tree.
         set htdocs_2 [file join [file dirname [info script]] ../htdocs_2]
         if {[file isdirectory $htdocs_2]} {
-            Doc_AddRoot /addroot	$htdocs_2
+            Doc_AddRoot /addroot    $htdocs_2
         }
         
         # Template_Interp determines which interpreter to use when
@@ -250,14 +203,8 @@ snit::type webserver {
         
         Httpd_Webmaster  $info(webmaster)
         
-        # Cgi_Directory /cgi-bin
-        
         Status_Url /status /images
-        
-        # Mail_Url /mail
-        
-        # Admin_Url /admin
-        
+                
         Debug_Url /debug
         
         Redirect_Init /redirect
@@ -269,6 +216,7 @@ snit::type webserver {
         }
         
         # NEXT, define URLs recognized by this webserver
+        # TBD: Object should provide registration method.
         $type DefineURLs
     }
 
@@ -286,5 +234,7 @@ snit::type webserver {
 }
                 
 # These stubs tell the httpd server that there are no worker threads
+# TBD: These should not be necessary; just need to configure 
+# Httpd to not use threads.
 proc Thread_Respond {args} {return 0}
 proc Thread_Enabled {}     {return 0}
