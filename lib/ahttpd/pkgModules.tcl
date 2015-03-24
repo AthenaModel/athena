@@ -27,8 +27,9 @@ package provide ahttpd 6.3.0a7
 
 # -kite-require-start ADD EXTERNAL DEPENDENCIES
 package require md5 2.0.7
-package require uri
+package require uri 1.2
 package require counter 2.0
+package require ncgi 1.4.3
 # -kite-require-end
 
 #-----------------------------------------------------------------------
@@ -47,12 +48,12 @@ package require httpd 1.7
 # httpd sub-packages
 package require httpd::utils    ;# For Stderr
 
+package require httpd::cgi      ;# CGI services
 package require httpd::url      ;# URL dispatching
 package require httpd::redirect ;# URL redirection
 package require httpd::auth     ;# Basic authentication
 package require httpd::digest   ;# Digest authentication
 package require httpd::dirlist  ;# Directory listings
-package require httpd::direct   ;# Application Direct URLs
 package require httpd::status   ;# Built in status counters
 package require httpd::debug    ;# Debug utilites
 
@@ -63,3 +64,4 @@ source [file join $::ahttpd::library stats.tcl   ]
 source [file join $::ahttpd::library fallback.tcl]
 source [file join $::ahttpd::library docsubst.tcl]
 source [file join $::ahttpd::library doc.tcl     ]
+source [file join $::ahttpd::library direct.tcl  ]

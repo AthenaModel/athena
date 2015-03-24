@@ -21,7 +21,7 @@ package provide httpd::debug 1.0
 #	dir	The URL prefix
 
 proc Debug_Url {dir} {
-    Direct_Url $dir Debug
+    ::ahttpd::direct url $dir Debug
     # Not going to set it randomly
     # DebugSetRandomPassword $dir
     set ::DebugPassword "httpdebug"
@@ -426,7 +426,7 @@ proc Debug/showproc {proc} {
 #       Removes the /debug URL
 
 proc Debug/disable {} {
-    Direct_UrlRemove Debug
+    ::ahttpd::direct remove Debug
     return "<title>Debugging disabled</title>\n
                     <h1> Debugging disabled</h1>"
 }  

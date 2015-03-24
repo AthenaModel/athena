@@ -7,11 +7,11 @@
 package ifneeded httpd 1.7 "
 	source \[file join [list $dir] httpd.tcl\]
 	package ifneeded httpd::auth 2.0 \[list source \[file join [list $dir] auth.tcl\]\]
+	package ifneeded httpd::cgi 1.1 \[list source \[file join [list $dir] cgi.tcl\]\]
 	package ifneeded httpd::config 1.0 \[list source \[file join [list $dir] config.tcl\]\]
 	package ifneeded httpd::cookie 1.0 \[list source \[file join [list $dir] cookie.tcl\]\]
 	package ifneeded httpd::debug 1.0 \[list source \[file join [list $dir] debug.tcl\]\]
 	package ifneeded httpd::digest 1.0 \[list source \[file join [list $dir] digest.tcl\]\]
-	package ifneeded httpd::direct 1.1 \[list source \[file join [list $dir] direct.tcl\]\]
 	package ifneeded httpd::dirlist 1.1 \[list source \[file join [list $dir] dirlist.tcl\]\]
 	package ifneeded httpd::opentrace 1.0 \[list source \[file join [list $dir] open.tcl\]\]
 	package ifneeded httpd::passcheck 1.0 \[list source \[file join [list $dir] passcheck.tcl\]\]

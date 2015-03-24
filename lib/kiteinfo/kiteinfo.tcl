@@ -33,6 +33,7 @@ namespace eval ::kiteinfo:: {
         reqver-comm 4.6
         local-Tktable 0
         local-simlib 1
+        local-ncgi 0
         exclude-cellide {}
         xfiles {docs/aag.docx docs/aug.docx docs/rules.pptx docs/mag.docx}
         local-Tkhtml 0
@@ -42,6 +43,7 @@ namespace eval ::kiteinfo:: {
         dists {install-%platform src docs}
         reqver-kitedocs 0.4.6
         local-textutil::adjust 0
+        reqver-ncgi 1.4.3
         force-helptool 0
         local-tablelist 0
         local-treectrl 0
@@ -97,6 +99,7 @@ namespace eval ::kiteinfo:: {
         icon-cellide {}
         reqver-snit 2.3
         name athena
+        reqver-counter 2.0
         gui-athena 0
         gui-athenawb 1
         url-docs/aag.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aag-20141010.docx
@@ -113,6 +116,7 @@ namespace eval ::kiteinfo:: {
     docs/*.pptx
 }
         reqver-struct::set 2.2
+        local-counter 0
         reqver-huddle 0.1.5
         exclude-athena {}
         gui-helptool 1
@@ -140,7 +144,7 @@ namespace eval ::kiteinfo:: {
     test/*/*
 }
         reqver-Tkhtml 3.0
-        requires {snit comm Img BWidget Tktable treectrl sqlite3 tablelist textutil::expander textutil::adjust Tkhtml uri fileutil ctext tls tdom struct::set huddle md5 kiteutils kitedocs marsutil marsgui simlib Marsbin}
+        requires {snit comm Img BWidget Tktable treectrl sqlite3 tablelist textutil::expander textutil::adjust Tkhtml uri fileutil ctext tls tdom struct::set huddle md5 counter ncgi kiteutils kitedocs marsutil marsgui simlib Marsbin}
         clean-help {make clean}
         poc William.H.Duquette@jpl.nasa.gov
         srcs help

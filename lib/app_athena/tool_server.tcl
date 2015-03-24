@@ -32,7 +32,27 @@ tool define SERVER {
 
         ahttpd::server init \
             -docroot ~/github/athena/htdocs
+
+        ahttpd::direct url /welcome.html [myproc Welcome]
         vwait forever
+    }
+
+    proc Welcome {args} {
+        append result [outdent {
+            <html>
+            <head>
+            <title>Welcome!</title>
+            </head>
+            <body>
+            Welcome!  The arguments are:<p>
+
+        }]
+
+        append result "<pre>[list $args]</pre><p>"
+        append result "</body></html>"
+
+        return $result
+
     }
 }
 

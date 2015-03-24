@@ -76,10 +76,10 @@ snit::type ::ahttpd::docsubst {
         switch [file type $path] {
             file -
             link {
-                return [uplevel 1 [list SubstFile $path $interp]]
+                return [uplevel 1 [myproc SubstFile $path $interp]]
             }
             directory {
-                return [uplevel 1 [list SubstFile [file join $path index.tml] $interp]]
+                return [uplevel 1 [myproc SubstFile [file join $path index.tml] $interp]]
             }
             default {
                 error "Can't process [file type $path] files."

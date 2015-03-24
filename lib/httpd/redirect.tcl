@@ -65,7 +65,7 @@ proc Redirect_Self {newurl} {
 
 proc Redirect_Init {{url {}}} {
     if {[string length $url]} {
-	Direct_Url $url Redirect
+	::ahttpd::direct url $url Redirect
     }
     # The [list] makes the eval in Url_Dispatch run slightly faster
     Url_AccessInstall [list RedirectAccess]

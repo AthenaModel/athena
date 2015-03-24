@@ -86,7 +86,7 @@ snit::type ::ahttpd::server {
                 }
 
                 -docroot {
-                    set info(docroot) [lshift args]
+                    set info(docroot) [file normalize [lshift args]]
                 }
 
                 default {
@@ -197,22 +197,6 @@ snit::type ::ahttpd::server {
         } err]} {
             catch {puts "No .htaccess support: $err"}
         }
-        
-        # NEXT, define URLs recognized by this webserver
-        # TBD: Object should provide registration method.
-        $type DefineURLs
-    }
-
-
-    # Type method: DefineURLs
-    #
-    # This typemethod calls the tclhttpd proc to create all the URLs 
-    # recognized by the JNEM webserver. When a client requests a document
-    # from the server the corresponding proc is called to build and 
-    # deliver the requested page. 
-
-    typemethod DefineURLs {} {
-        Direct_Url /getReport.html [myproc getReport]
     }
 }
                 

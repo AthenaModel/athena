@@ -17,7 +17,7 @@ proc Status_Url {dir {imgdir /images}} {
     global _status
     set _status(dir) $dir
     set _status(images) $imgdir
-    Direct_Url $dir Status
+    ::ahttpd::direct url $dir Status
 }
 
 # Status/hello --
