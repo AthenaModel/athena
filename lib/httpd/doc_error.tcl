@@ -70,7 +70,7 @@ proc Doc_ErrorPage { virtual } {
 proc Doc_NotFound { sock } {
     global Doc Referer
     upvar #0 Httpd$sock data
-    CountName $data(url) notfound
+    ::ahttpd::stats countname $data(url) notfound
     set Doc(url,notfound) $data(url)	;# For subst
     if {[info exists data(mime,referer)]} {
 
@@ -103,7 +103,7 @@ proc Doc_Error { sock ei } {
     catch {
 	set Doc(errorUrl) $data(url)
 	set Doc(errorInfo) $ei	;# For subst
-	CountName $Doc(errorUrl) errors
+	::ahttpd::stats countname $Doc(errorUrl) errors
     }
     if {![info exists data(error_hook)] || [catch {$data(error_hook) $sock}]} {
 	DocSubstSystemFile $sock error 500 [protect_text $ei]

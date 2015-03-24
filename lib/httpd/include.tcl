@@ -34,7 +34,7 @@ array set Include {
 # Process a file with server includes
 
 proc Doc_application/x-server-include {path suffix sock} {
-    Count includes
+    ::ahttpd::stats count includes
     if {[catch {open $path} in]} {
 	Httpd_Error $sock 404 $in
     } else {

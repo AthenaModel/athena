@@ -123,6 +123,7 @@ snit::type ::ahttpd::server {
 
     #------------------------------------------------------------------
     # Private Type methods
+
     #------------------------------------------------------------------
     # Type method: StartMainThread
     #
@@ -133,10 +134,8 @@ snit::type ::ahttpd::server {
         # FIRST, read the MIME types
         Mtype_ReadTypes [file join $::Httpd(library) mime.types]
 
-        # NEXT, initial the counter, this is for gathering statistics about
-        # the server.
-        # Note: This could be made an option to be passed to the server
-        Counter_Init 60
+        # NEXT, initialize the statistics counter
+        ::ahttpd::stats init 
         
         # NEXT, Doc_Root defines the top-level directory, or folder, for
         # your web-visible file structure.

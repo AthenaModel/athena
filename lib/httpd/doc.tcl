@@ -353,7 +353,7 @@ proc DocDomain {prefix directory sock suffix} {
     set data(path) $path	;# record this path for not found handling
 
     if {[file exists $path]} {
-	CountName $data(url) hit
+	::ahttpd::stats countname $data(url) hit
 	Doc_Handle $prefix $path $suffix $sock
 	return
     }

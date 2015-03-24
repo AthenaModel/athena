@@ -65,8 +65,8 @@ snit::type ::ahttpd::log {
             return
         }
 
-        # TBD: Ugly!
-        catch {Counter_CheckPoint}      ;# Save counter data
+        # TBD: Ugly!  Should be handled separately.
+        stats checkpoint
 
         # set the log file and error file.
         set info(logfile) $info(basename)

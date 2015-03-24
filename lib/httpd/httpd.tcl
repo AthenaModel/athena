@@ -368,8 +368,8 @@ proc HttpdAccept {self sock ipaddr port} {
     global Httpd
     upvar #0 Httpd$sock data
 
-    Count accepts
-    Count sockets
+    ::ahttpd::stats count accepts
+    ::ahttpd::stats count sockets
     set data(self) $self
     set data(ipaddr) $ipaddr
     if {[Httpd_Protocol $sock] == "https"} {
@@ -378,7 +378,7 @@ proc HttpdAccept {self sock ipaddr port} {
     # We do that by calling tls::handshake in a fileevent
     # until it is complete, or an error occurs.
 
-    Count accept_https
+    ::ahttpd::stats count accept_https
     fconfigure $sock -blocking 0
     fileevent $sock readable [list HttpdHandshake $sock]
     } else {
@@ -447,7 +447,7 @@ proc HttpdReset {sock {left {}}} {
     Httpd_SockClose $sock 1 $err
     return
     }
-    Count connections
+    ::ahttpd::stats count connections
 
     # Count down transactions.
 
@@ -570,7 +570,7 @@ proc HttpdRead {sock} {
         }
         set data(state) mime
         set data(line) $line
-        CountHist urlhits
+        ::ahttpd::stats counthist urlhits
 
         # Limit the time allowed to serve this request
 
@@ -705,7 +705,7 @@ proc HttpdRead {sock} {
         # and use Httpd_Resume later to restore it.
 
         set Httpd(currentSocket) $sock
-        CountStart serviceTime $sock
+        ::ahttpd::stats countstart serviceTime $sock
         Url_Dispatch $sock
         }
     }
@@ -980,31 +980,31 @@ proc HttpdCloseP {sock} {
 
     if {[info exists data(mime,connection)]} {
     if {[string tolower $data(mime,connection)] == "keep-alive"} {
-        Count keepalive
+        ::ahttpd::stats count keepalive
         set close 0
     } else {
-        Count connclose
+        ::ahttpd::stats count connclose
         set close 1
     }
     } elseif {[info exists data(mime,proxy-connection)]} {
     if {[string tolower $data(mime,proxy-connection)] == "keep-alive"} {
-        Count keepalive
+        ::ahttpd::stats count keepalive
         set close 0
     } else {
-        Count connclose
+        ::ahttpd::stats count connclose
         set close 1
     }
     } elseif {$data(version) >= 1.1} {
-    Count http1.1
+    ::ahttpd::stats count http1.1
         set close 0
     } else {
     # HTTP/1.0
-    Count http1.0
+    ::ahttpd::stats count http1.0
     set close 1
     }
     if {[expr {$data(left) == 0}]} {
     # Exceeded transactions per connection
-    Count noneleft
+    ::ahttpd::stats count noneleft
         set close 1
     }
     return $close
@@ -1050,7 +1050,7 @@ proc HttpdDoCallback {sock {errmsg {}}} {
     # Ensure it is only called once
     unset data(callback)
     }
-    CountStop serviceTime $sock
+    ::ahttpd::stats countstop serviceTime $sock
 }
 
 # Httpd_AddHeaders
@@ -1272,7 +1272,7 @@ proc Httpd_ReturnFile {sock type path {offset 0}} {
     set data(file_size) [file size $path]
     set data(code) 200
 
-    Count urlreply
+    ::ahttpd::stats count urlreply
     if {[info exists data(mime,if-modified-since)]} {
         # No need for complicated date comparison, if they're identical then 304.
     if {$data(mime,if-modified-since) == [HttpdDate [file mtime $path]]} {
@@ -1332,7 +1332,7 @@ proc Httpd_ReturnData {sock type content {code 200} {close 0}} {
     return
     }
 
-    Count urlreply
+    ::ahttpd::stats count urlreply
     if {$close == 0} {
         set close [HttpdCloseP $sock]
     }
@@ -1373,7 +1373,7 @@ proc Httpd_ReturnCacheableData {sock type content date {code 200}} {
     return
     }
 
-    Count urlreply
+    ::ahttpd::stats count urlreply
     set close [HttpdCloseP $sock]
     if {[catch {
     HttpdRespondHeader $sock $type $close [string length $content] $code
@@ -1429,7 +1429,7 @@ proc HttpdCopyDone {in sock close bytes {error {}}} {
 
 proc HttpdCancel {sock} {
     upvar #0 Httpd$sock data
-    Count cancel
+    ::ahttpd::stats count cancel
     Httpd_Error $sock 408
 }
 
@@ -1468,7 +1468,7 @@ proc Httpd_Error {sock code {detail ""}} {
     upvar #0 Httpd$sock data
     global Httpd Httpd_ErrorFormat
 
-    Count errors
+    ::ahttpd::stats count errors
     append data(url) ""
     set message [format $Httpd_ErrorFormat $code [HttpdErrorString $code] $data(url)]
     append message <br>$detail
@@ -1874,7 +1874,7 @@ proc Httpd_SockClose {sock closeit {message Close}} {
 
     HttpdDoCallback $sock $message
 
-    Count connections -1
+    ::ahttpd::stats count connections -1
     if {[info exist data(infile)]} {
 
     # Close file or CGI pipe.  Still need catch because of CGI pipe.
@@ -1942,7 +1942,7 @@ proc HttpdReadPostDone {sock var errmsg} {
 
 proc HttpdCloseFinal {sock {errmsg {}}} {
     upvar #0 Httpd$sock data
-    Count sockets -1
+    ::ahttpd::stats count sockets -1
     if {[info exists data(cancel)]} {
     after cancel $data(cancel)
     }

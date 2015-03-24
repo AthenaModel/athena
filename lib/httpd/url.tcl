@@ -48,7 +48,7 @@ proc Url_Dispatch {sock} {
     catch {after cancel $data(cancel)}
     set url $data(url)
 
-    CountName $url hit
+    ::ahttpd::stats countname $url hit
     if {[catch {
 
 	# INLINE VERSION OF Url_PrefixMatch
@@ -75,7 +75,7 @@ proc Url_Dispatch {sock} {
 
 	set data(prefix) $prefix
 	set data(suffix) $suffix
-	CountName $prefix domainHit
+	::ahttpd::stats countname $prefix domainHit
 
 	foreach hook $Url(accessHooks) {
 	    switch -- [eval $hook [list $sock $url]] {
@@ -114,11 +114,11 @@ proc Url_Dispatch {sock} {
 	# or in a worker thread
 
 	if {$Url(thread,$prefix)} {
-	    Count UrlToThread
+	    ::ahttpd::stats count UrlToThread
 	    Thread_Dispatch $sock \
 		    [concat $Url(command,$prefix) [list $sock $suffix]]
 	} else {
-	    Count UrlEval
+	    ::ahttpd::stats count UrlEval
 	    eval $Url(command,$prefix) [list $sock $suffix]
 	}
     } error] == 1} {
@@ -157,11 +157,11 @@ proc Url_DeferredDispatch {prefix suffix sock varname errmsg} {
 	# or in a worker thread
 
 	if {$Url(thread,$prefix)} {
-	    Count UrlToThread
+	    ::ahttpd::stats count UrlToThread
 	    Thread_Dispatch $sock \
 		    [concat $Url(command,$prefix) [list $sock $suffix]]
 	} else {
-	    Count UrlEval
+	    ::ahttpd::stats count UrlEval
 	    eval $Url(command,$prefix) [list $sock $suffix]
 	}
     } error] == 1} {
@@ -267,7 +267,7 @@ proc Url_Unwind {sock ei ec} {
 	    # this is lame and probably not necessary.
 	    # Early bugs lead to file descriptor leaks, but
 	    # these are all plugged up.
-	    Count numfiles
+	    ::ahttpd::stats count numfiles
 	    Httpd_SockClose $sock 1 $error
 	    File_Reset
 	} 

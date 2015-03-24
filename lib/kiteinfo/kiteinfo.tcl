@@ -74,16 +74,17 @@ namespace eval ::kiteinfo:: {
         local-snit 0
         reqver-treectrl 2.4
         local-marsgui 1
+        reqver-md5 2.0.7
         local-uri 0
         reqver-BWidget 1.9
         apptype-athenawb exe
         apptype-cellide exe
         reqver-marsutil 3.0.13
         local-tls 0
-        provides {athena ahttpd}
+        provides athena
         description {Athena Regional Stability Simulation}
+        local-md5 0
         local-BWidget 0
-        binary-ahttpd 0
         apptype-helptool kit
         reqver-sqlite3 3.8.5
         local-ctext 0
@@ -139,7 +140,7 @@ namespace eval ::kiteinfo:: {
     test/*/*
 }
         reqver-Tkhtml 3.0
-        requires {snit comm Img BWidget Tktable treectrl sqlite3 tablelist textutil::expander textutil::adjust Tkhtml uri fileutil ctext tls tdom struct::set huddle kiteutils kitedocs marsutil marsgui simlib Marsbin}
+        requires {snit comm Img BWidget Tktable treectrl sqlite3 tablelist textutil::expander textutil::adjust Tkhtml uri fileutil ctext tls tdom struct::set huddle md5 kiteutils kitedocs marsutil marsgui simlib Marsbin}
         clean-help {make clean}
         poc William.H.Duquette@jpl.nasa.gov
         srcs help

@@ -408,7 +408,7 @@ proc StatusMainTable {} {
     set html "<H1>$Httpd(name):$Httpd(port)</h1>\n"
     append html "<H2>Server Info</h2>"
     append html "<table border=0>"
-    append html "<tr><td>Start Time</td><td>[clock format [Counter_StartTime]]</td></tr>\n"
+    append html "<tr><td>Start Time</td><td>[clock format [::ahttpd::stats starttime]]</td></tr>\n"
     append html "<tr><td>Current Time</td><td>[clock format [clock seconds]]</td></tr>\n"
     append html "<tr><td>Server</td><td>$Httpd(server)</td></tr>\n"
     append html "<tr><td>Tcl Version</td><td>$tcl_patchLevel</td></tr>"
@@ -442,7 +442,7 @@ proc StatusMainTable {} {
 		    [Thread_Send $id StatusTable]
 	    } else {
 		# Use cached version of the other threads counters,
-		# but update our stats for next time.
+		# but update our ::ahttpd::stats for next time.
 		append html "<i>busy, using cached values</i>\n"
 		Thread_SendAsync $id [list StatusThreadUpdate $id $self]
 	    }
