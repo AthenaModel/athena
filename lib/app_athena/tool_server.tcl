@@ -38,6 +38,7 @@ tool define SERVER {
     }
 
     proc Welcome {args} {
+        upvar 1 env env
         append result [outdent {
             <html>
             <head>
@@ -49,6 +50,9 @@ tool define SERVER {
         }]
 
         append result "<pre>[list $args]</pre><p>"
+
+        append result "The environment is:<p>"
+        append result "<pre>[parray env]</pre>"
         append result "</body></html>"
 
         return $result
