@@ -58,7 +58,7 @@ if {![info exists Session(expires)]} {
 if {![info exists Session(dir)]} {
     # I'm not keen on this default location, as it could
     # be exposed to URL fetches
-    set Session(dir) [file join [Doc_Root] .sessions]
+    set Session(dir) [file join [::ahttpd::doc root] .sessions]
 }
 
 # if an MD5 package is available, we use it to make

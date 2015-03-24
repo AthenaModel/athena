@@ -272,7 +272,7 @@ proc Url_Unwind {sock ei ec} {
 	    File_Reset
 	} 
 	default {
-	    Doc_Error $sock $ei
+	    ::ahttpd::doc error $sock $ei
 	}
     }
 }

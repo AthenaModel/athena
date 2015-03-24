@@ -731,7 +731,7 @@ proc Doc_application/x-tcl-status {path suffix sock} {
     # the page as ordinary html if the session has ended.
 
     if {$result} {
-	Subst_ReturnFile $sock $path interp$session
+	::ahttpd::docsubst returnfile $sock $path interp$session
     } else {
 	Httpd_ReturnFile $sock text/html $path
     }

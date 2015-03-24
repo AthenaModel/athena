@@ -11,7 +11,6 @@
 
 package provide httpd::template 1.0
 
-package require httpd::subst
 package require httpd::cookie
 
 # Set the file extension for templates
@@ -302,7 +301,7 @@ proc TemplateInstantiate {sock template htmlfile suffix dynamicVar {interp {}}} 
 
     # Source the .tml files from the root downward.
 
-    foreach libdir [Doc_GetPath $sock $template] {
+    foreach libdir [::ahttpd::doc getpath $sock $template] {
     set libfile [file join $libdir $Template(tmlExt)]
     if {[file exists $libfile]} {
         interp eval $interp [list uplevel #0 [list source $libfile]]
@@ -311,7 +310,7 @@ proc TemplateInstantiate {sock template htmlfile suffix dynamicVar {interp {}}} 
 
     # Process the template itself
 
-    set code [catch {Subst_File $template $interp} html]
+    set code [catch {::ahttpd::docsubst file $template $interp} html]
 
     if {$code != 0} {
     # pass errors up - specifically Redirect return code
@@ -320,6 +319,8 @@ proc TemplateInstantiate {sock template htmlfile suffix dynamicVar {interp {}}} 
     global errorCode errorInfo
     set ec $errorCode
     set ei $errorInfo
+
+    puts "Error, $errorInfo"
 
     # Save return cookies, if any
     Cookie_Save $sock $interp
@@ -391,10 +392,10 @@ proc TemplateCheck {sock template htmlfile} {
 
     # Look for .tml library files down the hierarchy.
     global Doc
-    set rlen [llength [file split $Doc(root)]]
+    set rlen [llength [file split [::ahttpd::doc root]]]
     set dirs [lrange [file split [file dirname $template]] $rlen end]
     
-    foreach libdir [Doc_GetPath $sock $template] {
+    foreach libdir [::ahttpd::doc getpath $sock $template] {
     set libfile [file join $libdir $Template(tmlExt)]
     if {[file exists $libfile] && ([file mtime $libfile] > $mtime)} {
         return 1

@@ -81,7 +81,7 @@ proc DirectDomain {prefix sock suffix} {
     Url_QuerySetup $sock
     set cmd [Direct_MarshallArguments $prefix $suffix]
     if {$cmd == ""} {
-	Doc_NotFound $sock
+	::ahttpd::doc notfound $sock
 	return
     }
 

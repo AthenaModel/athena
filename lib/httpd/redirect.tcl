@@ -187,8 +187,7 @@ proc RedirectAccess {sock url} {
 #	Sources "redirect" from the document root.
 
 proc Redirect/reload {} {
-    global Doc
-    set path [file join $Doc(root) redirect]
+    set path [file join [::ahttpd::doc root] redirect]
     if { ! [file exists $path]} {
 	return
     }

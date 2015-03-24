@@ -142,37 +142,27 @@ snit::type ::ahttpd::server {
         # FIRST, initialize the statistics counter
         ::ahttpd::stats init 
         
-        # NEXT, Doc_Root defines the top-level directory, or folder, for
-        # your web-visible file structure.
-        Doc_Root $info(docroot)
+        # NEXT, Define the top-level directory, or folder, for
+        # the web-visible file structure.
+        ::ahttpd::doc root $info(docroot)
 
         # NOTE: the following package require must have Doc_Root set first 
         # otherwise it fails -- YUK!
         # Session state module 
         package require httpd::session
-        
-        # Merge in a second file system into the URL tree.
-        set htdocs_2 [file join [file dirname [info script]] ../htdocs_2]
-        if {[file isdirectory $htdocs_2]} {
-            Doc_AddRoot /addroot    $htdocs_2
-        }
-        
+                
         # Template_Interp determines which interpreter to use when
         # interpreting templates.
         
         Template_Interp {}
         
-        # Doc_IndexFile defines the name of the default index file
+        # DirList_IndexFile defines the name of the default index file
         # in each directory.  Its value is a glob pattern.
         
         DirList_IndexFile index.{tml,html,shtml,thtml,htm,subst}
         
-        # Doc_PublicHtml turns on the mapping from ~user to the
-        # specified directory under their home directory.
         
-        # Doc_PublicHtml public_html
-        
-        # Doc_CheckTemplates causes the processing of text/html files to
+        # Template_Check causes the processing of text/html files to
         # first look aside at the corresponding .tml file and check if it is
         # up-to-date.  If the .tml (or its dependent files) are newer than
         # the HTML file, the HTML file is regenerated from the template.
@@ -184,12 +174,12 @@ snit::type ::ahttpd::server {
         # through subst at the global level.  In particular,  
         # it does not have the full semantics of a .tml template.
         
-        Doc_ErrorPage /error.html
+        ::ahttpd::doc errorpage /error.html
         
         # Doc_NotFoundPage registers a template to be used when a 404 not found
         # error occurs.  Like Doc_ErrorPage, this page is simply subst'ed.
         
-        Doc_NotFoundPage /notfound.html
+        ::ahttpd::doc notfoundpage /notfound.html
         
         # Doc_Webmaster returns the value last passed into it.
         # Designed to be used in page templates where contact email is needed.

@@ -69,11 +69,11 @@ proc DirList_Directory {prefix path suffix sock} {
 	if {[string compare $Template(tmlExt) [file extension $newest]] == 0} {
 	    set newest [file root $newest]$Template(htmlExt)
 	}
-	return [Doc_Handle $prefix $newest $suffix $sock]
+	return [::ahttpd::doc handle $prefix $newest $suffix $sock]
     }
     if {[Dir_ListingIsHidden]} {
         # Directory listings are hidden, so give the not-found page.
-        return [Doc_NotFound $sock]
+        return [::ahttpd::doc notfound $sock]
     }
     # Listings are not hidden, so show it.
     Httpd_ReturnData $sock text/html [DirList $sock $path $data(url)]
