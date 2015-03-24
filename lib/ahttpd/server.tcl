@@ -62,8 +62,9 @@ snit::type ::ahttpd::server {
 
     #------------------------------------------------------------------
     # Public Type methods
-    #------------------------------------------------------------------
-    # Type Method: init
+
+    
+    # init
     #
     # Initializes and starts the webserver
 
@@ -120,6 +121,13 @@ snit::type ::ahttpd::server {
         array unset pageCache
     }
     
+    # version
+    #
+    # Returns the package version.
+
+    typemethod version {} {
+        return [package present ahttpd]
+    }
 
     #------------------------------------------------------------------
     # Private Type methods

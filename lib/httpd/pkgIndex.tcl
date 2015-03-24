@@ -29,6 +29,5 @@ package ifneeded httpd 1.7 "
 	package ifneeded httpd::template 1.0 \[list source \[file join [list $dir] template.tcl\]\]
 	package ifneeded httpd::url 1.2 \[list source \[file join [list $dir] url.tcl\]\]
 	package ifneeded httpd::utils 1.0 \[list source \[file join [list $dir] utils.tcl\]\]
-	package ifneeded httpd::version 3.5 \[list source \[file join [list $dir] version.tcl\]\]
 	package ifneeded tclcrypt 1.0 \[list source \[file join [list $dir] tclcrypt.tcl\]\]
 "

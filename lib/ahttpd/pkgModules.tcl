@@ -44,7 +44,6 @@ namespace eval ::ahttpd:: {
 package require httpd 1.7
 
 # httpd sub-packages
-package require httpd::version  ;# For Version proc
 package require httpd::utils    ;# For Stderr
 
 package require httpd::url      ;# URL dispatching

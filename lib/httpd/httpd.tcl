@@ -158,8 +158,8 @@ proc Httpd_Init {} {
     if {![info exist Httpd(maxthreads)]} {
     set Httpd(maxthreads) 0
     }
-    Httpd_Version
-    append Httpd(server) $Httpd(version)
+
+    append Httpd(server) [::ahttpd::server version]
 }
 
 # Httpd_Server --
