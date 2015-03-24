@@ -139,10 +139,7 @@ snit::type ::ahttpd::server {
     # all the configuration parameters for the webserver
 
     typemethod StartMainThread {} {
-        # FIRST, read the MIME types
-        Mtype_ReadTypes [file join $::Httpd(library) mime.types]
-
-        # NEXT, initialize the statistics counter
+        # FIRST, initialize the statistics counter
         ::ahttpd::stats init 
         
         # NEXT, Doc_Root defines the top-level directory, or folder, for

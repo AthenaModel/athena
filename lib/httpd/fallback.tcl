@@ -18,8 +18,6 @@
 
 package provide httpd::fallback 1.0
 
-package require httpd::mtype
-
 # Fallback_ExcludePat --
 #
 # Define a pattern of files names to exclude in Fallback
@@ -82,7 +80,7 @@ proc Fallback_Try {virtual path suffix sock} {
     }
 
     # Now we pick the best file from the ones that matched.
-    set npath [FallbackChoose [Mtype_Accept $sock] $ok]
+    set npath [FallbackChoose [::ahttpd::mimetype accept $sock] $ok]
     if {[string length $npath] == 0 || [string compare $path $npath] == 0} {
 
 	# not found or still trying one we cannot use
@@ -157,7 +155,7 @@ proc FallbackExclude {name} {
 # then on the newest file that matches a given accept pattern.
 #
 # Arguments:
-#	accept	The results of Mtype_Accept
+#	accept	The results of [mimetype accept]
 #	choices	The list of matching file names.
 #
 # Results:
@@ -173,7 +171,7 @@ proc FallbackChoose {accept choices} {
 	set t [string trim [string tolower $t]]
 	set hits {}
 	foreach f $choices {
-	    set type [Mtype $f]	;# mime-type for f's file extension
+	    set type [::ahttpd::mimetype frompath $f]	;# mime-type for f's file extension
 	    if {[string match $t $type]} {
 		lappend hits $f	;# this file provides a matching mime type
 	    }

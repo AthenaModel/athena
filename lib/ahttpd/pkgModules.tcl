@@ -47,7 +47,6 @@ package require httpd 1.7
 package require httpd::utils    ;# For Stderr
 
 package require httpd::url      ;# URL dispatching
-package require httpd::mtype    ;# Mime types
 package require httpd::redirect ;# URL redirection
 package require httpd::auth     ;# Basic authentication
 package require httpd::digest   ;# Digest authentication
@@ -58,6 +57,7 @@ package require httpd::direct   ;# Application Direct URLs
 package require httpd::status   ;# Built in status counters
 package require httpd::debug    ;# Debug utilites
 
-source [file join $::ahttpd::library server.tcl ]
-source [file join $::ahttpd::library log.tcl    ]
-source [file join $::ahttpd::library stats.tcl  ]
+source [file join $::ahttpd::library server.tcl  ]
+source [file join $::ahttpd::library mimetype.tcl]
+source [file join $::ahttpd::library log.tcl     ]
+source [file join $::ahttpd::library stats.tcl   ]

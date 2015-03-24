@@ -18,7 +18,6 @@ package ifneeded httpd 1.7 "
 	package ifneeded httpd::doc_error 1.0 \[list source \[file join [list $dir] doc_error.tcl\]\]
 	package ifneeded httpd::fallback 1.0 \[list source \[file join [list $dir] fallback.tcl\]\]
 	package ifneeded httpd::include 1.0 \[list source \[file join [list $dir] include.tcl\]\]
-	package ifneeded httpd::mtype 1.1 \[list source \[file join [list $dir] mtype.tcl\]\]
 	package ifneeded httpd::opentrace 1.0 \[list source \[file join [list $dir] open.tcl\]\]
 	package ifneeded httpd::passcheck 1.0 \[list source \[file join [list $dir] passcheck.tcl\]\]
 	package ifneeded httpd::passgen 1.0 \[list source \[file join [list $dir] passgen.tcl\]\]

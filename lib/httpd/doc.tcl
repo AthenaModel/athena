@@ -398,9 +398,9 @@ proc Doc_Handle {prefix path suffix sock} {
 	
 	# Look for Tcl procedures whos name match the MIME Content-Type
 
-	set cmd Doc_[Mtype $path]
+	set cmd Doc_[::ahttpd::mimetype frompath $path]
 	if {![iscommand $cmd]} {
-	    Httpd_ReturnFile $sock [Mtype $path] $path
+	    Httpd_ReturnFile $sock [::ahttpd::mimetype frompath $path] $path
 	} else {
 	    $cmd $path $suffix $sock
 	}
