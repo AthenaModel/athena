@@ -22,7 +22,7 @@
 package provide httpd::doc 1.1
 
 package require uri
-package require httpd::fallback
+# package require httpd::fallback
 package require httpd::subst
 package require httpd::template
 package require httpd::dirlist
@@ -360,7 +360,7 @@ proc DocDomain {prefix directory sock suffix} {
 
     # Try to find an alternate.
 
-    if {![Fallback_Try $prefix $path $suffix $sock]} {
+    if {![::ahttpd::fallback try $prefix $path $suffix $sock]} {
 	# Couldn't find anything.
 	# check for cgi script in the middle of the path
 	Cgi_Domain $prefix $directory $sock $suffix
@@ -407,7 +407,7 @@ proc Doc_Handle {prefix path suffix sock} {
     } else {
 	# Either not found, or we can find an alternate (e.g. a template).
 
-	if {![Fallback_Try $prefix $path $suffix $sock]} {
+	if {![::ahttpd::fallback try $prefix $path $suffix $sock]} {
 	    Doc_NotFound $sock
 	}
     }

@@ -39,7 +39,6 @@ snit::type ::ahttpd::mimetype {
     # path   - A file path
     #
     # Returns the mime type for the file, given its file extension.
-    # TBD: Was Mtype
 
     typemethod frompath {path} {
         set ext [string tolower [file extension $path]]
@@ -100,37 +99,17 @@ snit::type ::ahttpd::mimetype {
     #
     # Returns the Accept specification from the HTTP headers.
     # These are a list of MIME types that the browser favors.
+    #
+    # TBD: Is there any reason why this needs to be in this module?
 
     typemethod accept {sock} {
-        # TBD: Need a better interface.
-        # TBD: Is there any reason why this needs to be in this module?
+        # TBD: Need a better interface to Httpd data.
         upvar #0 Httpd$sock data
         if {![info exist data(mime,accept)]} {
             return */*
         } else {
             return $data(mime,accept)
         }
-    }
-
-    # match accept mtype
-    #
-    # accept   - The results of the "accept" call.
-    # mtype    - A MIME Content-Type.
-    #
-    # Returns 1 if the content type matches the accept spec, and 0
-    # otherwise.
-    #
-    # TBD: This is currently not used.
-
-    typemethod match {accept mtype} {
-        foreach t [split $accept ,] {
-            regsub {;.*} $t {} t    ;# Nuke quality parameters
-            set t [string trim [string tolower $t]]
-            if {[string match $t $mtype]} {
-                return 1
-            }
-        }
-        return 0
     }
 }
 

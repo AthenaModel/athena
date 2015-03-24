@@ -52,7 +52,6 @@ package require httpd::auth     ;# Basic authentication
 package require httpd::digest   ;# Digest authentication
 package require httpd::doc
 package require httpd::dirlist  ;# Directory listings
-package require httpd::include  ;# Server side includes
 package require httpd::direct   ;# Application Direct URLs
 package require httpd::status   ;# Built in status counters
 package require httpd::debug    ;# Debug utilites
@@ -61,3 +60,4 @@ source [file join $::ahttpd::library server.tcl  ]
 source [file join $::ahttpd::library mimetype.tcl]
 source [file join $::ahttpd::library log.tcl     ]
 source [file join $::ahttpd::library stats.tcl   ]
+source [file join $::ahttpd::library fallback.tcl]
