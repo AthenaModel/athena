@@ -649,7 +649,7 @@ snit::type ::ahttpd::url {
     # 3 Escape constructs that are "special" to the tcl parser
     # 4 "subst" the result, doing all the array substitutions
      
-    typemethod {url encode} {string} {
+    typemethod encode {string} {
         regsub -all \[^a-zA-Z0-9\] $string {$encodeMap(&)} string
         regsub -all \n $string {\\n} string
         regsub -all \t $string {\\t} string
@@ -670,7 +670,7 @@ snit::type ::ahttpd::url {
     # Side Effects:
     #   None
 
-    typemethod {islinktoself} {url} {
+    typemethod islinktoself {url} {
         global page
         return [expr {[string compare $url $page(url)] == 0}]
     }
