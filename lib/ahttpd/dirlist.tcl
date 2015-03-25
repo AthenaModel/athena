@@ -241,7 +241,7 @@ snit::type ::ahttpd::dirlist {
     }
 
     proc DirHref {entry} {
-        set entry [Url_Encode [file tail $entry]]
+        set entry [url encode [file tail $entry]]
         # Decode ".",
         regsub -all -nocase {%2e} $entry . entry
         regsub -all -nocase {%5f} $entry _ entry
@@ -254,10 +254,10 @@ snit::type ::ahttpd::dirlist {
         set sort name
         set pattern *
         if {[info exists data(query)]} {
-            foreach {name value} [Url_DecodeQuery $data(query)] {
+            foreach {name value} [url decodequery $data(query)] {
                 switch $name {
-                sort {set sort $value}
-                pattern {set pattern $value}
+                    sort    {set sort $value}
+                    pattern {set pattern $value}
                 }
             }
         }

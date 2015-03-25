@@ -60,11 +60,11 @@ proc Cgi_Directory {virtual {directory {}}} {
     # The CGI module will also read the post data itself so TclHttpd doesn't buffer
     # it all in memory before passing it to the CGI process.
 
-    Url_PrefixInstall $virtual [list Cgi_Domain $virtual $directory] \
+    ::ahttpd::url prefix install $virtual [list Cgi_Domain $virtual $directory] \
 	-thread 0 -readpost 0
 }
 
-# Cgi_Domain is called from Url_Dispatch for URLs inside cgi-bin directories.
+# Cgi_Domain is called from ::ahttpd::url dispatch for URLs inside cgi-bin directories.
 
 proc Cgi_Domain {virtual directory sock suffix} {
     global Cgi env
@@ -72,7 +72,7 @@ proc Cgi_Domain {virtual directory sock suffix} {
     # Check the path and then find the part beyond the program name.
     # The trimleft avoids a buildup of extra / after the domain prefix.
 
-    if [catch {Url_PathCheck [string trimleft $suffix /]} pathlist] {
+    if [catch {::ahttpd::url pathcheck [string trimleft $suffix /]} pathlist] {
 	::ahttpd::doc notfound $sock
 	return
     }
@@ -111,7 +111,7 @@ proc Cgi_Domain {virtual directory sock suffix} {
     # the extra part after the program name,
     # and the translated version of the whole pathname.
 
-    Url_Handle [list CgiHandle $url $extra $path] $sock
+    CgiHandle $url $extra $path $sock
 }
 
 proc CgiHandle {url extra path sock} {
@@ -125,7 +125,7 @@ proc CgiHandle {url extra path sock} {
 
 proc Doc_application/x-cgi {path suffix sock} {
     upvar #0 Httpd$sock data
-    Url_Handle [list CgiHandle $data(url) {} $path] $sock
+    CgiHandle $data(url) {} $path $sock
 }
 
 # Set the environment for the cgi scripts.  This is passed implicitly to

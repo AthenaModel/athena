@@ -49,7 +49,7 @@ snit::type ::ahttpd::direct {
 
     typemethod url {virtual prefix} {
         set info($prefix) $virtual    ;# So we can reconstruct URLs
-        Url_PrefixInstall $virtual [myproc DirectDomain $prefix]
+        url prefix install $virtual [myproc DirectDomain $prefix]
     }
 
     # remove prefix
@@ -60,7 +60,7 @@ snit::type ::ahttpd::direct {
     # direct Tcl calls.
            
     typemethod remove {prefix} {
-        catch { Url_PrefixRemove $info($prefix) }
+        catch { url prefix uninstall $info($prefix) }
         unset -nocomplain info($prefix)
     }
 
@@ -99,7 +99,7 @@ snit::type ::ahttpd::direct {
         Cgi_SetEnv $sock $prefix$suffix
 
         # Prepare an argument data from the query data.
-        Url_QuerySetup $sock
+        url querysetup $sock
 
         set cmd [MarshallArguments $prefix $suffix]
         if {$cmd eq ""} {

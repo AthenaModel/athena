@@ -49,7 +49,6 @@ package require httpd 1.7
 package require httpd::utils    ;# For Stderr
 
 package require httpd::cgi      ;# CGI services
-package require httpd::url      ;# URL dispatching
 package require httpd::redirect ;# URL redirection
 package require httpd::auth     ;# Basic authentication
 package require httpd::digest   ;# Digest authentication
@@ -67,3 +66,4 @@ source [file join $::ahttpd::library docsubst.tcl]
 source [file join $::ahttpd::library dirlist.tcl ]
 source [file join $::ahttpd::library direct.tcl  ]
 source [file join $::ahttpd::library template.tcl]
+source [file join $::ahttpd::library url.tcl     ]

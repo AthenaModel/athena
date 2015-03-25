@@ -23,7 +23,7 @@ package provide httpd::redirect 1.0
 #	None
 #
 # Side Effects:
-#	Raises a special error that is caught by Url_Unwind
+#	Raises a special error that is caught by ::ahttpd::url::Unwind
 
 proc Redirect_To {newurl} {
     return -code error \
@@ -67,8 +67,8 @@ proc Redirect_Init {{url {}}} {
     if {[string length $url]} {
 	::ahttpd::direct url $url Redirect
     }
-    # The [list] makes the eval in Url_Dispatch run slightly faster
-    Url_AccessInstall [list RedirectAccess]
+    # The [list] makes the eval in ::ahttpd::url dispatch run slightly faster
+    ::ahttpd::url access install [list RedirectAccess]
 
     # Load the default redirect file
     Redirect/reload
@@ -86,7 +86,7 @@ proc Redirect_Init {{url {}}} {
 #	Future requests to old/a/b/c will redirect to new/a/b/c
 
 proc Redirect_UrlTree {old new} {
-    Url_PrefixInstall $old [list RedirectDomain $new]
+    ::ahttpd::url prefix install $old [list RedirectDomain $new]
 }
 
 # RedirectDomain
@@ -94,7 +94,7 @@ proc Redirect_UrlTree {old new} {
 #	Set up a domain that redirects requests elsewhere
 #	To use, make a call like this:
 #
-#	Url_PrefixInstall /olddir [list RedirectDomain /newdir]
+#	::ahttpd::url prefix install /olddir [list RedirectDomain /newdir]
 #
 # Arguments:
 #	prefix	The Prefix of the domain

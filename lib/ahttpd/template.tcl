@@ -299,11 +299,10 @@ snit::type ::ahttpd::template {
             }
 
             # Read and append the pending post data to data(query).
-            Url_ReadPost $sock data(query)
+            url readpost $sock data(query)
 
             # Initialize the Standard Tcl Library ncgi package so its
-            # ncgi::value can be used to get the data.  This replaces
-            # the old Url_DecodeQuery interface.
+            # ncgi::value can be used to get the data.
 
             interp eval $interp [list ncgi::reset $data(query) $type]
             interp eval $interp [list ncgi::parse]

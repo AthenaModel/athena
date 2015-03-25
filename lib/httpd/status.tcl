@@ -475,7 +475,7 @@ proc StatusTable {} {
     }
     foreach {c label} {
 	    urlhits "URL Requests"
-	    Url_Dispatch "URL Dispatch"
+	    ::ahttpd::url dispatch "URL Dispatch"
 	    UrlToThread "Thread Dispatch"
 	    UrlEval "Direct Dispatch"
 	    UrlCacheHit "UrlCache eval"
@@ -706,7 +706,7 @@ proc Doc_application/x-tcl-status {path suffix sock} {
     upvar #0 Httpd$sock data
 
     append data(query) ""
-    set queryList [Url_DecodeQuery $data(query)]
+    set queryList [::ahttpd::url decodequery $data(query)]
 
     # Put the query data into an array.
     # If a key appears multiple times, the resultant array value will

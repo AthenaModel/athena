@@ -70,7 +70,7 @@ snit::type ::ahttpd::doc {
     # real - The name of the file system directory containing the root of 
     #        the URL tree.  If this is empty, then the current document 
     #        root is returned instead.
-    # args - With "real", arguments for Url_PrefixInstall.
+    # args - With "real", arguments for [url prefix install]
     #
     # Sets or queries the root of the document tree.
 
@@ -88,15 +88,15 @@ snit::type ::ahttpd::doc {
     #
     # virtual    - The URL prefix of the document tree to add.
     # directory  - The file system directory containing the doc tree.
-    # args       - Same as args for Url_PrefixInstall
+    # args       - Same as args for [url prefix install]
     #
     # Add a file system to the virtual document hierarchy.
     # Sets up a document URL domain and the document-based access hook.
 
     typemethod addroot {virtual directory args} {
         $type registerroot $virtual $directory
-        Url_PrefixInstall $virtual [myproc DocDomain $virtual $directory] {*}$args
-        Url_AccessInstall [myproc DocAccessHook]
+        url prefix install $virtual [myproc DocDomain $virtual $directory] {*}$args
+        url access install [myproc DocAccessHook]
         return
     }
 
@@ -138,7 +138,7 @@ snit::type ::ahttpd::doc {
 
         # Try to hook up the pathname under the appropriate document root
         if {[regexp ^/ $virtual]} {
-            Url_PrefixMatch $virtual prefix suffix
+            url prefix match  $virtual prefix suffix
             if {[info exist info(root,$prefix)]} {
                 return [file join $info(root,$prefix) [string trimleft $suffix /]]
             } else {
@@ -391,7 +391,7 @@ snit::type ::ahttpd::doc {
     #
     # Access handle for Doc domains.  This looks for special files in the 
     # file system that determine access control.  This is registered via
-    # Url_AccessInstall
+    # [url access install]
     #
     # Returns "denied", in which case an authorization challenge or
     # not found error has been returned.  Otherwise "skip"
@@ -404,7 +404,7 @@ snit::type ::ahttpd::doc {
         # Make sure the path doesn't sneak out via ..
         # This turns the URL suffix into a list of pathname components
 
-        if {[catch {Url_PathCheck $data(suffix)} data(pathlist)]} {
+        if {[catch {url pathcheck $data(suffix)} data(pathlist)]} {
             doc notfound $sock
             return denied
         }

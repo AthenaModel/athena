@@ -1,7 +1,7 @@
 # httpd.tcl --
 #
 # HTTP 1.0 protocol stack, plus connection keep-alive and 1.1 subset.
-# This accepts connections and calls out to Url_Dispatch once a request
+# This accepts connections and calls out to ::ahttpd::url dispatch once a request
 # has been recieved.  There are several utilities for returning
 # different errors, redirects, challenges, files, and data.
 #
@@ -98,8 +98,8 @@ array set Httpd_EnvMap {
 # headers       List of http headers to stick into the response
 #       Use Httpd_AddHeaders to append to this.
 
-# prefix    (Set by Url_Dispatch to be the URL domain prefix)
-# suffix    (Set by Url_Dispatch to be the URL domain suffix)
+# prefix    (Set by ::ahttpd::url dispatch to be the URL domain prefix)
+# suffix    (Set by ::ahttpd::url dispatch to be the URL domain suffix)
 
 # auth_type (Set by the auth.tcl module to "Basic", etc.)
 # remote_user   (Set by the auth.tcl to username from Basic authentication)
@@ -667,14 +667,14 @@ proc HttpdRead {sock} {
 
         set data(checkNewline) 1
 
-        # Facilitate a backdoor hook between Url_DecodeQuery
+        # Facilitate a backdoor hook between ::ahttpd::url decodequery
         # where it will read the post data on behalf of the
         # domain handler in the case where the domain handler
         # doesn't use an Httpd call to read the post data itself.
 
-        Url_PostHook $sock $data(count)
+        ::ahttpd::url posthook $sock $data(count)
         } else {
-        Url_PostHook $sock 0    ;# Clear any left-over hook
+        ::ahttpd::url posthook $sock 0    ;# Clear any left-over hook
         set data(count) 0
         }
 
@@ -706,7 +706,7 @@ proc HttpdRead {sock} {
 
         set Httpd(currentSocket) $sock
         ::ahttpd::stats countstart serviceTime $sock
-        Url_Dispatch $sock
+        ::ahttpd::url dispatch $sock
         }
     }
     -1,* {
@@ -905,7 +905,7 @@ proc HttpdReadPost {sock varName blockSize {cmd {}}} {
     }
     }
     if {[info exist doneMsg]} {
-    Url_PostHook $sock 0
+    ::ahttpd::url posthook $sock 0
     catch {fileevent $sock readable {}}
     Httpd_Resume $sock
     if {[string length $cmd]} {
@@ -939,7 +939,7 @@ proc Httpd_CopyPostData {sock channel cmd} {
     upvar #0 Httpd$sock data
     fcopy $sock $channel -size $data(count) \
         -command [concat $cmd $sock $channel]
-    Url_PostHook $sock 0
+    ::ahttpd::url posthook $sock 0
     return
 }
 
