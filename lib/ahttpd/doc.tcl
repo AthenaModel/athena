@@ -32,7 +32,6 @@
 
 # TBD: Clean these up as modules are moved.
 package require httpd::template
-package require httpd::dirlist
 
 snit::type ::ahttpd::doc {
     pragma -hasinstances no
@@ -156,7 +155,7 @@ snit::type ::ahttpd::doc {
                 return
             }
 
-            DirList_Directory $prefix $path $suffix $sock
+            dirlist handle $prefix $path $suffix $sock
         } elseif {[file readable $path]} {
             # Look for Tcl procedures whose names match the MIME Content-Type
             # TBD: Use an explicit registry

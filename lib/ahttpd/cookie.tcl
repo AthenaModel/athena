@@ -1,6 +1,6 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#    doc.tcl
+#    cookie.tcl
 #
 # PROJECT:
 #    athena - Athena Regional Stability Simulation
@@ -20,6 +20,12 @@
 #    retained this because the "save" call will retrieve data from
 #    the Cookie array in a specific interpreter.  Until I understand
 #    how the Cookie array is propagated I can't clean it up.
+#
+#    It appears that the Cookie array is NEVER populated in the 
+#    alternate interpreters, unless client domain code populates it
+#    directly.  The only code that uses [cookie save] with an interp
+#    is in the template module; conceivably a template could populate
+#    the Cookie array.
 #
 #-----------------------------------------------------------------------
 

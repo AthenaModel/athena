@@ -11,7 +11,6 @@ package ifneeded httpd 1.7 "
 	package ifneeded httpd::config 1.0 \[list source \[file join [list $dir] config.tcl\]\]
 	package ifneeded httpd::debug 1.0 \[list source \[file join [list $dir] debug.tcl\]\]
 	package ifneeded httpd::digest 1.0 \[list source \[file join [list $dir] digest.tcl\]\]
-	package ifneeded httpd::dirlist 1.1 \[list source \[file join [list $dir] dirlist.tcl\]\]
 	package ifneeded httpd::opentrace 1.0 \[list source \[file join [list $dir] open.tcl\]\]
 	package ifneeded httpd::passcheck 1.0 \[list source \[file join [list $dir] passcheck.tcl\]\]
 	package ifneeded httpd::passgen 1.0 \[list source \[file join [list $dir] passgen.tcl\]\]

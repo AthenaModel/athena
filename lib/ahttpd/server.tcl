@@ -157,13 +157,7 @@ snit::type ::ahttpd::server {
         # Template_Interp determines which interpreter to use when
         # interpreting templates.
         
-        Template_Interp {}
-        
-        # DirList_IndexFile defines the name of the default index file
-        # in each directory.  Its value is a glob pattern.
-        
-        DirList_IndexFile index.{tml,html,shtml,thtml,htm,subst}
-        
+        Template_Interp {}        
         
         # Template_Check causes the processing of text/html files to
         # first look aside at the corresponding .tml file and check if it is

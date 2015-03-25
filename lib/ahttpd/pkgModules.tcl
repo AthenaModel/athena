@@ -53,7 +53,6 @@ package require httpd::url      ;# URL dispatching
 package require httpd::redirect ;# URL redirection
 package require httpd::auth     ;# Basic authentication
 package require httpd::digest   ;# Digest authentication
-package require httpd::dirlist  ;# Directory listings
 package require httpd::status   ;# Built in status counters
 package require httpd::debug    ;# Debug utilites
 
@@ -65,4 +64,5 @@ source [file join $::ahttpd::library cookie.tcl  ]
 source [file join $::ahttpd::library fallback.tcl]
 source [file join $::ahttpd::library docsubst.tcl]
 source [file join $::ahttpd::library doc.tcl     ]
+source [file join $::ahttpd::library dirlist.tcl ]
 source [file join $::ahttpd::library direct.tcl  ]
