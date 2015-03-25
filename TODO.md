@@ -1,7 +1,10 @@
 # TODO.md - Athena TODO List
 
 - TclHTTPD Conversion
-  - Templates require the CGI module to create interpreters.
+  - Finish converting existing code.
+  - Write domain handler for our use: no CGI env required.
+    - Use directories for organization, file names with extension for data
+      products, e.g., index.json
 - Significant Outputs:
   - All history variable base names should be unique, e.g., nbsecurity.n rather
     than security.n.

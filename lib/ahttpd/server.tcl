@@ -140,15 +140,18 @@ snit::type ::ahttpd::server {
 
     typemethod StartMainThread {} {
         # FIRST, initialize the statistics counter
-        ::ahttpd::stats init 
+        stats init 
         
         # NEXT, Define the top-level directory, or folder, for
         # the web-visible file structure.
-        ::ahttpd::doc root $info(docroot)
+        doc root $info(docroot)
 
         # NOTE: the following package require must have Doc_Root set first 
         # otherwise it fails -- YUK!
         # Session state module 
+        # TBD: It appears that we're not actually using this.  It allows
+        # a "session" involving a single user to operate in its own 
+        # interpreter somehow.
         package require httpd::session
                 
         # Template_Interp determines which interpreter to use when
@@ -174,12 +177,12 @@ snit::type ::ahttpd::server {
         # through subst at the global level.  In particular,  
         # it does not have the full semantics of a .tml template.
         
-        ::ahttpd::doc errorpage /error.html
+        doc errorpage /error.html
         
         # Doc_NotFoundPage registers a template to be used when a 404 not found
         # error occurs.  Like Doc_ErrorPage, this page is simply subst'ed.
         
-        ::ahttpd::doc notfoundpage /notfound.html
+        doc notfoundpage /notfound.html
         
         # Doc_Webmaster returns the value last passed into it.
         # Designed to be used in page templates where contact email is needed.

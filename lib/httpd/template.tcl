@@ -1,5 +1,5 @@
 # template.tcl
-#@c Template support
+# Template support
 #
 # Derived from doc.tcl
 # Stephen Uhler / Brent Welch (c) 1997-1998 Sun Microsystems
@@ -10,8 +10,6 @@
 # RCS: @(#) $Id: template.tcl,v 1.12 2004/04/29 01:23:50 coldstore Exp $
 
 package provide httpd::template 1.0
-
-package require httpd::cookie
 
 # Set the file extension for templates
 
@@ -315,7 +313,7 @@ proc TemplateInstantiate {sock template htmlfile suffix dynamicVar {interp {}}} 
     if {$code != 0} {
     # pass errors up - specifically Redirect return code
 
-    # stash error information so Cookie_Save doesn't interfere
+    # stash error information so [cookie save] doesn't interfere
     global errorCode errorInfo
     set ec $errorCode
     set ei $errorInfo
@@ -323,13 +321,13 @@ proc TemplateInstantiate {sock template htmlfile suffix dynamicVar {interp {}}} 
     puts "Error, $errorInfo"
 
     # Save return cookies, if any
-    Cookie_Save $sock $interp
+    ::ahttpd::cookie save $sock $interp
 
     return -code $code -errorcode $ec -errorinfo $ei
     }
 
     # Save return cookies, if any
-    Cookie_Save $sock $interp
+    ::ahttpd::cookie save $sock $interp
 
     set dynamic [interp eval $interp {uplevel #0 {set page(dynamic)}}]
     if {!$dynamic} {

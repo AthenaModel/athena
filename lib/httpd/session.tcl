@@ -233,7 +233,7 @@ proc Session_Cookie {{querylist {}} {type {}} {error_name error} {isSafe 1}} {
     # fetch cookies pertaining to session
     set old 0
     foreach {key var} {session session session_sequence sequence} {
-	set x [Cookie_GetSock $Httpd(currentSocket) ${type}_$key]
+	set x [::ahttpd::cookie getsock $Httpd(currentSocket) ${type}_$key]
 	if {$x != ""} {
 	    incr old
 	    lappend querylist $var [lindex $x 0]
@@ -262,7 +262,7 @@ proc Session_Cookie {{querylist {}} {type {}} {error_name error} {isSafe 1}} {
 	    session_sequence session(sequence)
 	    session_type session(type)} {
 	    if {[info exists $var]} {
-		Cookie_Set -expires $Session(expires) -path / -name ${type}_$key -value [set $var]
+		::ahttpd::cookie set -expires $Session(expires) -path / -name ${type}_$key -value [set $var]
 	    }
 	}
     }
@@ -284,7 +284,7 @@ proc Session_Cookie {{querylist {}} {type {}} {error_name error} {isSafe 1}} {
 # you may have to reload the page to get the new cookies
 proc Session_CookieDestroy {{type {}}} {
     foreach key {session session_sequence} {
-	Cookie_Unset ${type}_$key -path /
+	    ::ahttpd::cookie unset ${type}_$key -path /
     }
 }
 

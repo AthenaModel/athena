@@ -103,7 +103,7 @@ snit::type ::ahttpd::direct {
 
         set cmd [MarshallArguments $prefix $suffix]
         if {$cmd eq ""} {
-            ::ahttpd::doc notfound $sock
+            doc notfound $sock
             return
         }
 
@@ -223,9 +223,10 @@ snit::type ::ahttpd::direct {
         # See if a content type has been registered for the URL.
 
         # Save any return cookies which have been set.
-        # This works with the Cookie_Set procedure that populates
+        # This works with the [cookie set] command that populates
         # the global cookie array.
-        Cookie_Save $sock
+        puts "Direct Respond"
+        cookie save $sock
 
         Httpd_ReturnData $sock $type $result
         return ""

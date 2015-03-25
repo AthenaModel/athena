@@ -33,7 +33,6 @@
 # TBD: Clean these up as modules are moved.
 package require httpd::template
 package require httpd::dirlist
-package require httpd::cookie
 
 snit::type ::ahttpd::doc {
     pragma -hasinstances no
@@ -161,16 +160,16 @@ snit::type ::ahttpd::doc {
         } elseif {[file readable $path]} {
             # Look for Tcl procedures whose names match the MIME Content-Type
             # TBD: Use an explicit registry
-            set cmd Doc_[::ahttpd::mimetype frompath $path]
+            set cmd Doc_[mimetype frompath $path]
 
             if {![iscommand $cmd]} {
-                Httpd_ReturnFile $sock [::ahttpd::mimetype frompath $path] $path
+                Httpd_ReturnFile $sock [mimetype frompath $path] $path
             } else {
                 $cmd $path $suffix $sock
             }
         } else {
             # Either not found, or we can find an alternate (e.g. a template).
-            if {![::ahttpd::fallback try $prefix $path $suffix $sock]} {
+            if {![fallback try $prefix $path $suffix $sock]} {
                 $type notfound $sock
             }
         }
@@ -260,7 +259,7 @@ snit::type ::ahttpd::doc {
         global Referer
         upvar #0 Httpd$sock data
 
-        ::ahttpd::stats countname $data(url) notfound
+        stats countname $data(url) notfound
         set info(url,notfound) $data(url)    ;# For subst
 
         if {[info exists data(mime,referer)]} {
@@ -286,7 +285,7 @@ snit::type ::ahttpd::doc {
         catch {
             set info(errorUrl)  $data(url)
             set info(errorInfo) $ei  ;# For subst
-            ::ahttpd::stats countname $info(errorUrl) errors
+            stats countname $info(errorUrl) errors
         }
 
         if {![info exists data(error_hook)] || 
@@ -357,16 +356,16 @@ snit::type ::ahttpd::doc {
         set data(path) $path    ;# record this path for not found handling
 
         if {[file exists $path]} {
-            ::ahttpd::stats countname $data(url) hit
-            ::ahttpd::doc handle $prefix $path $suffix $sock
+            stats countname $data(url) hit
+            doc handle $prefix $path $suffix $sock
             return
         }
 
         # Try to find an alternate.
 
-        if {![::ahttpd::fallback try $prefix $path $suffix $sock]} {
+        if {![fallback try $prefix $path $suffix $sock]} {
             # Couldn't find anything.
-            ::ahttpd::doc notfound $sock
+            doc notfound $sock
         }
     }
 
@@ -392,7 +391,7 @@ snit::type ::ahttpd::doc {
         # This turns the URL suffix into a list of pathname components
 
         if {[catch {Url_PathCheck $data(suffix)} data(pathlist)]} {
-            ::ahttpd::doc notfound $sock
+            doc notfound $sock
             return denied
         }
 
@@ -443,7 +442,7 @@ snit::type ::ahttpd::doc {
         }
 
         if {![info exists info(page,$key)] || 
-            [catch {::ahttpd::docsubst returnfile $sock $info(page,$key) $interp} err]
+            [catch {docsubst returnfile $sock $info(page,$key) $interp} err]
         } {
             if {[info exists err]} {
                 ::ahttpd::log add $sock DocSubstSystemFile $err
@@ -453,13 +452,3 @@ snit::type ::ahttpd::doc {
     }
 
 }
-
-
-
-
-
-# Compat routines with 3.4 routines
-
-# catch {interp alias {} Doc_Dynamic {} Template_Dynamic}
-# catch {interp alias {} Doc_Redirect {} Redirect_To}
-# catch {interp alias {} Doc_RedirectSelf {} Redirect_Self}

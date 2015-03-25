@@ -93,7 +93,7 @@ snit::type ::ahttpd::fallback {
         }
 
         # Now we pick the best file from the ones that matched.
-        set npath [Choose [::ahttpd::mimetype accept $sock] $ok]
+        set npath [Choose [mimetype accept $sock] $ok]
         if {[string length $npath] == 0 || [string compare $path $npath] == 0} {
             # not found or still trying one we cannot use
             return 0
@@ -172,7 +172,7 @@ snit::type ::ahttpd::fallback {
             set hits {}
         
             foreach f $choices {
-                set type [::ahttpd::mimetype frompath $f]
+                set type [mimetype frompath $f]
                 if {[string match $t $type]} {
                     lappend hits $f ;# this file provides a matching mime type
                 }
