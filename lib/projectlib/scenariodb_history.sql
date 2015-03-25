@@ -100,6 +100,17 @@ CREATE TABLE hist_nbcoop (
     PRIMARY KEY (t,n,g)
 );
 
+-- deploy_ng
+CREATE TABLE hist_deploy_ng (
+    t            INTEGER,
+    n            TEXT,
+    g            TEXT,
+    personnel    INTEGER,
+    unassigned   INTEGER,
+
+    PRIMARY KEY(t,n,g)
+);
+
 -- econ
 CREATE TABLE hist_econ (
     t           INTEGER,
