@@ -44,8 +44,8 @@
         set nlist      [[my adb] gofer NBHOODS blank]
         set g          ""
         set roe        ATTACK
-        set athresh    1.0
-        set dthresh    0.8
+        set athresh    2.0
+        set dthresh    0.15
         set civc       HIGH
 
         # Initial state is invalid (no g, nlist or f)

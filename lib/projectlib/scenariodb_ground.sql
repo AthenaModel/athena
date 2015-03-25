@@ -45,8 +45,11 @@ CREATE TABLE deploy_ng (
     -- Personnel
     personnel     INTEGER DEFAULT 0,
 
-    -- Effective Personnel; used by AAM
-    eff_personnel INTEGER DEFAULT 0,
+    -- Effective Force of personnel; used by AAM
+    eff_force     INTEGER DEFAULT 0,
+
+    -- Force Multiplier; used by AAM
+    frcmult       DOUBLE  DEFAULT 1.0,
 
     -- Unassigned personnel.
     unassigned    INTEGER DEFAULT 0,

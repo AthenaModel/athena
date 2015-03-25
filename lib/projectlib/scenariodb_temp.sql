@@ -212,6 +212,10 @@ CREATE TEMPORARY TABLE working_force (
     civc_f      TEXT,
     civc_g      TEXT,
 
+    -- Force multipliers for Lanchester coefficients
+    fmult_f      DOUBLE DEFAULT 1.0,
+    fmult_g      DOUBLE DEFAULT 1.0,
+
     -- Total personnel and those involved in fight 
     pers_f       INTEGER DEFAULT 0,
     pers_g       INTEGER DEFAULT 0,
@@ -234,6 +238,10 @@ CREATE TEMPORARY TABLE working_force (
     -- Casualties suffered by f an g
     cas_f        INTEGER DEFAULT 0,
     cas_g        INTEGER DEFAULT 0,
+
+    -- The number of hours of combat remaining in the current week
+    -- between f and g
+    hours_left   DOUBLE DEFAULT 0.0,
 
     PRIMARY KEY (n, f, g)
 );
