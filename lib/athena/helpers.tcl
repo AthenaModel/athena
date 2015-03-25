@@ -206,3 +206,18 @@ proc ::athena::dbget {db table key value {column ""}} {
 
     return ""
 }
+
+# lequal list1 list2
+#
+# Returns 1 if the lists are equal and 2 otherwise.
+# Sorts the lists before comparing.
+
+proc ::athena::lequal {list1 list2} {
+    expr {[lsort $list1] eq [lsort $list2]}
+}
+
+
+
+
+
+

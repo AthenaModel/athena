@@ -5,56 +5,68 @@
 # PROJECT:
 #   athena - Athena Regional Stability Simulation
 #
+# PACKAGE:
+#   app_athena(n): Athena Tool Application Package
+#
+# AUTHOR:
+#   Will Duquette
+#
 # DESCRIPTION:
-#   app_athena(n) Package, main module.
+#   Athena main program, as called by the apploader script, bin/athena.tcl.
 #
 #-----------------------------------------------------------------------
 
+namespace eval ::app_athena:: {
+    variable verbose 0
+}
+
 #-----------------------------------------------------------------------
-# Commands
+# Main Program 
 
 # main argv
 #
-# argv  - Arguments
+# argv       Command line arguments
 #
-# Application Main Procedure
+# This is the main program; it is invoked at the bottom of the file.
+# It determines the tool to invoke, and does so.
 
 proc main {argv} {
-    # FIRST, get the application directory in the host file system.
-    appdir init
-
-    # NEXT, load the mods from the mods directory, if any, and
-    # apply any applicable mods.
-    mod load
-    mod apply
-
-    # NEXT, Invoke the app.
-    app init $argv
-}
-
-# errexit line...
-#
-# line   -  One or more lines of text, as distinct arguments.
-#
-# On Linux/OS X or when Tk is not loaded, writes the text to standard 
-# output, and exits. On Windows, pops up a messagebox and exits when 
-# the box is closed.
-
-proc errexit {args} {
-    set text [join $args \n]
-
-    set f [open "error.log" w]
-    puts $f $text
-    close $f
-
-    if {[os type] ne "win32" || !$::tkLoaded} {
-         puts $text
-    } else {
-        wm withdraw .
-        modaltextwin popup \
-            -title   "Athena is shutting down" \
-            -message $text
+    # FIRST, given no input display the help.
+    if {[llength $argv] == 0} {
+        tool use help
+        return
     }
 
-    exit 1
+    # NEXT, get any options
+    foroption opt argv {
+        -verbose { set ::app_athena::verbose 1 }
+    }
+
+    # NEXT, get the subcommand and see if we have a matching tool.
+    # Alternatively, we might have a script file to run.
+    set tool [lshift argv]
+
+    if {![tool exists $tool]} {
+        throw FATAL [outdent "
+            This command provides no tool called '$tool'. 
+            See 'athena help' for usage information.
+        "]
+    }
+
+    # NEXT, use the selected tool, passing along the remaining arguments.
+    tool use $tool $argv
 }
+
+# vputs text...
+#
+# text...  - One or more text strings
+#
+# Joins its arguments together and prints them to stdout, only if
+# -verbose is on.
+
+proc vputs {args} {
+    if {$::app_athena::verbose} {
+        puts [join $args]
+    }
+}
+

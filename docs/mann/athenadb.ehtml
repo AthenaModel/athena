@@ -46,8 +46,8 @@ the file is loaded immediately.<p>
 <defopt {-executivecmd <i cmd>}>
 
 A callback command to be used to define application-specific executive
-commands.  It is passed along to the scenario <xref executive(n)> 
-component.  This option is read-only after creation.<p>
+commands.  It is called with on additional argument, the scenario's
+<xref executive(n)> component.  This option is read-only after creation.<p>
 
 <defopt {-logcmd <i command>}>
 

@@ -74,7 +74,7 @@ appserver module OVERVIEW {
 
     proc /overview:html {udict matchArray} {
         if {[catch {
-            set text [readfile [file join $::app_athena::library overview.ehtml]]
+            set text [readfile [file join $::app_athenawb::library overview.ehtml]]
         } result]} {
             return -code error -errorcode NOTFOUND \
                 "The Overview page could not be loaded from disk: $result"

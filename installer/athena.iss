@@ -4,7 +4,7 @@
 #define MyAppName "Athena"
 #define MyAppVersion "6.3.0a6"
 #define MyAppPublisher "Jet Propulsion Laboratory, California Institute of Technology"
-#define MyAppExeName "athena.exe"
+#define MyAppExeName "athenawb.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -38,7 +38,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]             
-Source: "..\bin\athena-{#MyAppVersion}-win32-ix86.exe"; DestDir: "{app}"; DestName: "athena.exe"; Flags: ignoreversion
+Source: "..\bin\athenawb-{#MyAppVersion}-win32-ix86.exe"; DestDir: "{app}"; DestName: "athenawb.exe"; Flags: ignoreversion
 Source: "..\docs\build_notes.html"; DestDir: "{app}\docs"; Flags: ignoreversion 
 Source: "..\docs\index.html"; DestDir: "{app}\docs"; Flags: ignoreversion 
 Source: "..\docs\*.png"; DestDir: "{app}\docs"; Flags: ignoreversion 

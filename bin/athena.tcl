@@ -8,7 +8,7 @@ exec tclsh "$0" "$@"
 #    athena.tcl
 #
 # PROJECT:
-#    athena - Athena Regional Stability Simulation
+#    athena
 #
 # DESCRIPTION:
 #    Application Launcher for athena
@@ -53,11 +53,11 @@ set auto_path [linsert $auto_path 0 $libdir]
 #-----------------------------------------------------------------------
 # Next, require Tcl/Tk and other required packages.
 
-package require Tcl 8.6
+package require Tcl
 package require kiteinfo
 
 if {[kiteinfo gui athena]} {
-    package require Tk 8.6
+    package require Tk
 }
 
 #-----------------------------------------------------------------------

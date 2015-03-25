@@ -1,4 +1,4 @@
-athena-sim
-==========
+athena
+======
 
 Athena Regional Stability Simulation

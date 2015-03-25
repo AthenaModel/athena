@@ -1,0 +1,127 @@
+<manpage {athena(n) comparison(n)} "Athena Scenario Comparison">
+
+<section SYNOPSIS>
+
+<pre>
+package require athena <version>
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+The <xref athena(n)> command <xref athena(n) "athena diff"> compares two
+scenarios for significant differences, and returns a comparison(n) object
+that contains them.  The comparison(n) object provides
+information about the differences in a variety of formats, and is also
+used to drill down on particular differences for more information.<p> 
+
+<section "COMMANDS">
+
+comparison(n) provides the following commands:<p>
+
+<deflist commands>
+
+<defitem "::athena::comparison create" {comparison create <i>obj</i> <i s1 t1 s2 t2>}>
+
+Creates a new comparison(n) instance named <i>obj</i>, and
+returns the fully qualified object name.  The object will contain
+a comparison of scenarios <i s1> and <i s2> (which might be identical)
+at times <i t1> and <i t2>.<p>
+
+If <i s1> and <i s2> are not identical, then they are checked for
+compatibility.  The requirements are still evolving, but include:
+
+<ul>
+    <li> Identical neighborhood names
+    <li> Identical actor names
+    <li> Identical group names
+</ul><p>
+
+The object is initially empty.  Practically speaking, comparison(n) 
+objects will usually be created and populated by 
+<xref athena(n) "athena diff">.<p>
+
+</deflist commands>
+
+<section "INSTANCE COMMANDS">
+
+Each instance of comparison(n) provides the following subcommands:<p>
+
+<deflist instance>
+
+<defitem add {<i obj> add vartype val1 val2 keys...}>
+
+<b>This command is used when populating the object; clients should rarely
+if ever need it.</b><p>
+
+This command compares two values of a given variable type, and retains
+them if the difference is signficant.  The <i vartype> is the barename of
+an <tt ::athena::vardiff::*> class, (e.g., <tt nbsecurity>).  
+The values <i val1> and <i val2>
+are the values of a variable of the given <i vartype> from 
+<i s1>@<i t1> and <i s2>@<i t2>.  The <i keys...> are the key values for
+the specific variable/<xref vardiff(n)> subclass.  For example, the key
+value for the <tt nbsecurity.n> variable is a neighborhood name, and the
+key values for the <tt support.n.a> variable are a neighborhood name and
+an actor name.<p>
+
+<defitem diffs {<i obj> diffs <i subcommand> ?<i args...>?}>
+
+Asks for the set of significant differences; the <i subcommand> determines
+the output format.<p>
+
+<deflist diffs>
+
+<defitem "diffs dump" {<i obj> diffs dump}>
+
+Returns a dump of the signicant differences as a simple text table.  This
+format is usually used for debugging.<p>
+
+<defitem "diffs json" {<i obj> diffs json}>
+
+Returns a dump of the signicant differences as a JSON list containing
+difference records.<p>
+
+</deflist diffs>
+
+<defitem reset {<i obj> reset}>
+
+Resets the comparison object back to its empty state.<p>
+
+<defitem s1 {<i obj> s1 ?<i subcommand args...>?}>
+
+Called with no arguments, returns the <xref athena(n)> scenario
+object for scenario <i s1>.  Otherwise, the remaining arguments are
+passed along to <i s1> as a subcommand and the result is returned.<p>
+
+<defitem s2 {<i obj> s2 ?<i subcommand args...>?}>
+
+Called with no arguments, returns the <xref athena(n)> scenario
+object for scenario <i s2>.  Otherwise, the remaining arguments are
+passed along to <i s2> as a subcommand and the result is returned.<p>
+
+<defitem t1 {<i obj> t1}>
+
+Returns the value of <i t1>, a simulation time in integer weeks.<p>
+
+<defitem t2 {<i obj> t2}>
+
+Returns the value of <i t2>, a simulation time in integer weeks.<p>
+
+</deflist instance>
+
+<section ENVIRONMENT>
+
+Requires Tcl 8.6 or later.<p>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+</manpage>
+
+
+
+
+

@@ -1,4 +1,4 @@
-<manpage {athena(1)} "Athena S&amp;RO Simulation">
+<manpage {athenawb(1)} "Athena Workbench">
 
 <section SYNOPSIS>
 
@@ -8,22 +8,21 @@
 
 <deflist program>
 
-<defitem {athena} {athena ?options...? ?<i>filename</i>.adb?}>
+<defitem {athenawb} {athenawb ?options...? ?<i>filename</i>.adb?}>
 
 </deflist program>
 
-<xref athena(1)> is the Athena simulation application.  Details of
+<xref athenawb(1)> is the desktop Athena simulation application.  Details of
 the simulation model are to be found in the <i>Athena Analyst's
-Guide</i> and related documents, rather than here.<p>
+Guide</i> and related documents, rather than here.  The models and 
+algorithms, along with tools for scenario-building, are found in 
+<xref athena(n)>.<p>
 
-<xref athena(1)> is a documentic-centric application, like a
+<xref athenawb(1)> is a documentic-centric application, like a
 word-processor; here, however, the documents are Athena scenario
 files, which conventionally have a "<code>.adb</code>" extension.
 If a scenario file name is given on the command line, it will be
 opened automatically.<p>
-
-Note that Athena may also be run in batch mode; see the 
-<xref athena_batch(1)> man page.<p>
 
 The following options may be used:<p>
 

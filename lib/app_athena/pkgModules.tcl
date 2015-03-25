@@ -19,14 +19,6 @@ package provide app_athena 6.3.0a7
 # -kite-provide-end
 
 #-----------------------------------------------------------------------
-# Is Tk loaded?
-#
-# For athena(1), Tk is already loaded, and we have a GUI.
-# For athena_batch(1), Tk is not loaded, and we will not have a GUI.
-
-set ::tkLoaded [expr {[info command tk] ne ""}]
-
-#-----------------------------------------------------------------------
 # Required Packages
 
 # Add 'package require' statements for this package's external 
@@ -35,20 +27,11 @@ set ::tkLoaded [expr {[info command tk] ne ""}]
 
 # -kite-require-start ADD EXTERNAL DEPENDENCIES
 package require projectlib
+package require huddle 0.1.5
 package require -exact athena 6.3.0a7
-
-namespace import ::projectlib::*
-namespace import ::athena::*
-
-# For Tk applications
-if {$::tkLoaded} {
-    package require ctext 3.3
-    package require projectgui
-    namespace import projectgui::*
-
-}
-
 # -kite-require-end
+
+namespace import projectlib::* athena::*
 
 #-----------------------------------------------------------------------
 # Namespace definition
@@ -57,29 +40,14 @@ namespace eval ::app_athena:: {
     variable library [file dirname [info script]]
 }
 
-
 #-----------------------------------------------------------------------
-# Load app_athena(n) modules
+# Modules
 
-source [file join $::app_athena::library main.tcl         ]
-source [file join $::app_athena::library mod.tcl          ]
-source [file join $::app_athena::library app.tcl          ]
-source [file join $::app_athena::library log.tcl          ]
+source [file join $::app_athena::library main.tcl        ]
+source [file join $::app_athena::library tool.tcl        ]
 
-#-----------------------------------------------------------------------
-# Load app_athena(n) subpackages
-
-source [file join $::app_athena::library shared modules.tcl]
-
-# For Tk applications
-if {$::tkLoaded} {
-    source [file join $::app_athena::library ui      modules.tcl]
-    source [file join $::app_athena::library wnbhood modules.tcl]
-}
-
-
-
-
-
-
+source [file join $::app_athena::library tool_help.tcl   ]
+source [file join $::app_athena::library tool_build.tcl  ]
+source [file join $::app_athena::library tool_compare.tcl]
+source [file join $::app_athena::library tool_shell.tcl  ]
 

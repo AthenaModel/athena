@@ -4,7 +4,7 @@
 #   Application Ensemble.
 #
 # PACKAGE:
-#   app_athena(n) -- athena(1) implementation package
+#   app_athenawb(n) -- athena(1) implementation package
 #
 # PROJECT:
 #   Athena S&RO Simulation
@@ -17,16 +17,16 @@
 #-----------------------------------------------------------------------
 # Module: app
 #
-# app_athena(n) Application Ensemble
+# app_athenawb(n) Application Ensemble
 #
 # This module defines app, the application ensemble.  app encapsulates 
 # all of the functionality of athena_sim(1), including the application's 
 # start-up behavior.  To invoke the  application,
 #
-# > package require app_athena
+# > package require app_athenawb
 # > app init $argv
 #
-# The app_athena(n) package can be invoked by athena(1).
+# The app_athenawb(n) package can be invoked by athena(1).
 
 snit::type app {
     pragma -hastypedestroy 0 -hasinstances 0
@@ -129,16 +129,7 @@ snit::type app {
                 }
                 
                 default {
-                    # Generate error message for users that are accustomed
-                    # to the -batch option in previous versions of Athena
-                    if {$opt eq "-batch"} {
-                        set errmsg "\"-batch\" is invalid, use athena_batch "
-                        append errmsg "instead.\nSee the athena_batch(1) "
-                        append errmsg "documentation for more information."
-                    } else {
-                        set errmsg "Unknown option: \"$opt\"\n[app usage]"
-                    }
-                    app exit $errmsg
+                    app exist "Unknown option: \"$opt\"\n[app usage]"
                 }
             }
         }
@@ -177,7 +168,7 @@ snit::type app {
         }
 
         # NEXT, create the preferences directory.
-        if {[app tkloaded] && !$opts(-ignoreuser)} {
+        if {!$opts(-ignoreuser)} {
             if {[catch {prefsdir init} result]} {
                 app exit {
                     |<--
@@ -199,7 +190,7 @@ snit::type app {
         # NEXT, initialize and load the user preferences
         prefs init
         
-        if {[app tkloaded] && !$opts(-ignoreuser)} {
+        if {!$opts(-ignoreuser)} {
             prefs load
         }
 
@@ -243,22 +234,12 @@ snit::type app {
         $type CreateStateControllers
         
         # NEXT, Create the main window.
-
-        if {[app tkloaded]} {
-            wm withdraw .
-            appwin .main
-        }
+        wm withdraw .
+        appwin .main
 
         # NEXT, log that we're up.
         log normal app "Athena [kiteinfo version]"
         
-        # NEXT, if we're in non-GUI mode print that we are up
-        if {![app tkloaded]} {
-            puts [format "%-25s %s" "Athena version:"        [kiteinfo version]]
-            puts [format "%-25s %s" "Application directory:" [appdir join]]
-            puts [format "%-25s %s" "Working directory:"     [workdir join]]
-        }
-
         # NEXT, if a scenario file is specified on the command line,
         # open it.
         if {[llength $argv] == 1} {
@@ -294,20 +275,7 @@ snit::type app {
                         $result
                     }
 
-                    if {![app tkloaded]} {
-                        app exit $message
-                    } else {
-                        app error $message
-                    }
-                } elseif {![app tkloaded]} {
-                    app exit {
-                        |<--
-                        Error in -script:
-                        $result
-
-                        Stack Trace:
-                        [dict get $eopts -errorinfo]
-                    }
+                    app error $message
                 } else {
                     log error app "Unexpected error in -script:\n$result"
                     log error app "Stack Trace:\n[dict get $eopts -errorinfo]"
@@ -324,18 +292,10 @@ snit::type app {
             }
         }
 
-        # NEXT, if there's a URL and we're in GUI mode, load it.
-        if {$opts(-url) ne "" && [app tkloaded]} {
+        # NEXT, if there's a URL, load it.
+        if {$opts(-url) ne ""} {
             app show [string map {% /} $opts(-url)]
         }
-    }
-
-    # tkloaded
-    #
-    # Returns the value of the tkLoaded flag for other modules to use
-
-    typemethod tkloaded {} {
-        return $::tkLoaded
     }
 
     
@@ -488,30 +448,17 @@ snit::type app {
     # in GUI mode or non-GUI mode
     
     typemethod usage {} {
-        if {![app tkloaded]} {
-            set usage \
-                "Usage: athena_batch ?options...? ?scenario.adb?\n\n"
-        } else {
-            set usage \
-                "Usage: athena ?options...? ?scenario.adb?\n\n"
+        return [outdent {
+            Usage: athena ?options...? ?scenario.adb?
+
+            -script filename    A script to execute after loading
+                                the scenario file (if any).
+            -ignoreuser         Ignore preference settings.  
+            -url url            Load the URL in the detail browser.
+                                '%' is replaced with '/'.
+
+            See athena(1) for more information.
         }
-
-        append usage \
-            "-script filename    A script to execute after loading\n"   \
-            "                    the scenario file (if any).\n"         \
-            "-ignoreuser         Ignore preference settings.\n"
-
-        if {![app tkloaded]} {
-            append usage \
-                "\nSee athena_batch(1) for more information.\n"
-        } else {
-            append usage \
-            "-url url            Load the URL in the detail browser.\n" \
-            "                    '%' is replaced with '/'.\n"           \
-            "\nSee athena(1) for more information.\n"
-        }
-
-        return $usage
     }
 
     # Type Method: NotifierTrace
@@ -556,7 +503,6 @@ snit::type app {
     # Type Method: puts
     #
     # Writes the _text_ to the message line of the topmost appwin.
-    # This is a no-op in batch mode.
     #
     # Syntax: 
     #   puts _text_
@@ -564,12 +510,10 @@ snit::type app {
     #   text - A text string
 
     typemethod puts {text} {
-        if {[app tkloaded]} {
-            set topwin [app topwin]
+        set topwin [app topwin]
 
-            if {$topwin ne ""} {
-                $topwin puts $text
-            }
+        if {$topwin ne ""} {
+            $topwin puts $text
         }
     }
 
@@ -605,8 +549,7 @@ snit::type app {
 
     # Type Method: error
     #
-    # Normally, displays the error _text_ in a message box.  In 
-    # batchmode, calls [app exit].
+    # Normally, displays the error _text_ in a message box.
     #
     # Syntax:
     #   error _text_
@@ -616,17 +559,12 @@ snit::type app {
     typemethod error {text} {
         set text [uplevel 1 [list tsubst $text]]
 
-        if {![app tkloaded]} {
-            # Uplevel, so that [app exit] can expand the text.
-            uplevel 1 [list app exit $text]
+        if {[winfo exists .main]} {
+            wm deiconify .main
+            raise .main
+            .main error $text
         } else {
-            if {[winfo exists .main]} {
-                wm deiconify .main
-                raise .main
-                .main error $text
-            } else {
-                error $text
-            }
+            error $text
         }
     }
 
@@ -653,24 +591,15 @@ snit::type app {
     #   text - Optional error message, tsubst'd
 
     typemethod exit {{text ""}} {
-        # FIRST, output the text.  In batch mode, write it to
-        # error.log.
+        # FIRST, output the text.
         if {$text ne ""} {
             set text [uplevel 1 [list tsubst $text]]
 
-            if {[app tkloaded]} {
-                app DisplayExitText $text
-            } else {
-                set f [open "error.log" w]
-                puts $f $text
-                close $f
-                app DisplayExitText \
-                    "Error; see [file join [pwd] error.log] for details."
-            }
+            app DisplayExitText $text
         }
 
         # NEXT, save the main window prefs, if any.
-        if {!$opts(-ignoreuser) && [app tkloaded] && [winfo exists .main]} {
+        if {!$opts(-ignoreuser) && [winfo exists .main]} {
             .main saveprefs
         }
 
@@ -692,9 +621,9 @@ snit::type app {
     typemethod DisplayExitText {args} {
         set text [join $args \n]
 
-        # FIRST, if this is not windows or if Tk is not loaded then
+        # FIRST, if this is not windows then
         # a simple puts will do.
-        if {[os flavor] ne "windows" || ![app tkloaded]} {
+        if {[os flavor] ne "windows"} {
             puts $text
         } else {
             wm withdraw .
@@ -714,12 +643,7 @@ snit::type app {
     # no top win, this is a noop.
 
     typemethod topwin {args} {
-        # FIRST, if no Tk then nothing to do
-        if {![app tkloaded]} {
-            return ""
-        }
-
-        # NEXT, determine the topwin.  Note that [wm stackorder]
+        # FIRST, determine the topwin.  Note that [wm stackorder]
         # skips windows that are not mapped.
         set topwin ""
 
@@ -777,18 +701,7 @@ snit::type app {
     # to the Detail browser.
 
     typemethod show {uri} {
-        # FIRST, if the app has not loaded Tk, there's nothing to show
-        # (This happens in batchmode, or when athena_test(1) is 
-        # explicitly told not to load Tk.)
-
-        if {![app tkloaded]} {
-            return
-        }
-
-        # NEXT, if there's no main window, just return.
-        # (This happens when athena_test(1) runs the 
-        # test suite with Tk loaded.)
-
+        # FIRST, if there's no main window, just return.
         if {![winfo exists .main]} {
             return
         }
@@ -905,17 +818,15 @@ snit::type app {
         append msg "Failure in the econ model caused it to be disabled."
         append msg "\nSee the detail browser for more information."
 
-        if {[app tkloaded]} {
-            set answer [messagebox popup              \
-                            -icon warning             \
-                            -message $msg             \
-                            -parent [app topwin]      \
-                            -title  $title            \
-                            -buttons {ok "Ok" browser "Go To Detail Browser"}]
+        set answer [messagebox popup              \
+                        -icon warning             \
+                        -message $msg             \
+                        -parent [app topwin]      \
+                        -title  $title            \
+                        -buttons {ok "Ok" browser "Go To Detail Browser"}]
 
-           if {$answer eq "browser"} {
-               app show my://app/econ
-           }
+       if {$answer eq "browser"} {
+           app show my://app/econ
        }
     }
 
@@ -1059,7 +970,7 @@ snit::type app {
 
         set sev [adb sanity onlock check]
  
-        if {$sev eq "WARNING" && [app tkloaded]} {
+        if {$sev eq "WARNING"} {
             app show my://app/sanity/onlock
 
             set answer \
@@ -1108,27 +1019,25 @@ snit::type app {
         require {[adb state] eq "PAUSED"} \
             "The scenario cannot be rebased in this state."
 
-        if {[app tkloaded]} {
-            set answer \
-                [messagebox popup \
-                    -title         "Are you sure?"                  \
-                    -icon          warning                          \
-                    -buttons       {ok "Rebase" cancel "Cancel"}    \
-                    -default       cancel                           \
-                    -ignoretag     SIM:REBASE                       \
-                    -ignoredefault ok                               \
-                    -parent        [app topwin]                     \
-                    -message       [normalize {
-                        By pressing "Rebase" you will be creating a
-                        new scenario based on the current simulation
-                        state.  This action cannot be undone, so be
-                        sure to save the old scenario before you do
-                        this.
-                    }]]
+        set answer \
+            [messagebox popup \
+                -title         "Are you sure?"                  \
+                -icon          warning                          \
+                -buttons       {ok "Rebase" cancel "Cancel"}    \
+                -default       cancel                           \
+                -ignoretag     SIM:REBASE                       \
+                -ignoredefault ok                               \
+                -parent        [app topwin]                     \
+                -message       [normalize {
+                    By pressing "Rebase" you will be creating a
+                    new scenario based on the current simulation
+                    state.  This action cannot be undone, so be
+                    sure to save the old scenario before you do
+                    this.
+                }]]
 
-            if {$answer eq "cancel"} {
-                return
-            }
+        if {$answer eq "cancel"} {
+            return
         }
 
         adb rebase
@@ -1371,10 +1280,7 @@ proc bgerror {msg} {
         }
     }
 
-    if {![app tkloaded]} {
-        # app exit subst's in the caller's context
-        app exit {$msg\n\nStack Trace:\n$bgErrorInfo\n$trace}
-    } elseif {[winfo exists .main]} {
+    if {[winfo exists .main]} {
         if {$trace ne ""} {
             log error app $trace
         }

@@ -1,14 +1,14 @@
-app_athena(n) Automated Test Suite
+app_athenawb(n) Automated Test Suite
 ----------------------------------------------------------------------
 
-This directory contains the automated test suite for app_athena(n).  The
+This directory contains the automated test suite for app_athenawb(n).  The
 entire test suite is executed by the command line
 
-    $ kite test app_athena
+    $ kite test app_athenawb
 
 To run tests without Tk loaded, 
 
-    $ kite test app_athena -notk
+    $ kite test app_athenawb -notk
 
 Individual test scripts can be executed as well.  See 'kite help test'
 for details.  
