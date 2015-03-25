@@ -225,7 +225,6 @@ snit::type ::ahttpd::direct {
         # Save any return cookies which have been set.
         # This works with the [cookie set] command that populates
         # the global cookie array.
-        puts "Direct Respond"
         cookie save $sock
 
         Httpd_ReturnData $sock $type $result

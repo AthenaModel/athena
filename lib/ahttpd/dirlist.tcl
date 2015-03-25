@@ -83,11 +83,12 @@ snit::type ::ahttpd::dirlist {
             # case that file should be cached when running the template.
             # If we ask for the .tml directly then its result is never 
             # cached.
-            #
-            # TBD: Need a better I/F here
-            global Template
-            if {[string compare $Template(tmlExt) [file extension $newest]] == 0} {
-                set newest [file root $newest]$Template(htmlExt)
+
+            set tmlext [template tmlext]
+
+            if {$tmlext eq [file extension $newest]} {
+                puts "Looking for newest"
+                set newest [file root $newest]$tmlext
             }
             return [doc handle $prefix $newest $suffix $sock]
         }

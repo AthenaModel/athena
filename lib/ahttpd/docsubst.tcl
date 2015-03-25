@@ -134,71 +134,79 @@ snit::type ::ahttpd::docsubst {
 
         return $result
     }
-}
 
-# Doc_application/x-tcl-auth --
-#
-# Like tcl-subst, but a basic authentication cookie is used for session state
-#
-# Arguments:
-#   path    The file pathname.
-#   suffix  The URL suffix.
-#   sock    The socket connection.
-#
-# Results:
-#   None
-#
-# Side Effects:
-#   Returns a page to the client.
-#
-# TBD: I'm not sure whether we need this or not.
+    #-------------------------------------------------------------------
+    # Content Type Handlers
+    
 
-proc Doc_application/x-tcl-auth {path suffix sock} {
-    puts "Doc_application/x-tcl-auth"
-    upvar #0 Httpd$sock data
+    # application/x-tcl-auth --
+    #
+    # Like tcl-subst, but a basic authentication cookie is used for session state
+    #
+    # Arguments:
+    #   path    The file pathname.
+    #   suffix  The URL suffix.
+    #   sock    The socket connection.
+    #
+    # Results:
+    #   None
+    #
+    # Side Effects:
+    #   Returns a page to the client.
+    #
+    # TBD: I'm not sure whether we need this or not.
 
-    if {![info exists data(session)]} {
-        Httpd_RequestAuth $sock Basic "Random Password"
-        return
+    typemethod application/x-tcl-auth {path suffix sock} {
+        upvar #0 Httpd$sock data
+
+        if {![info exists data(session)]} {
+            Httpd_RequestAuth $sock Basic "Random Password"
+            return
+        }
+        set interp [Session_Authorized $data(session)]
+
+        # Need to make everything look like a GET so the Cgi parser
+        # doesn't read post data from stdin.  We've already read it.
+        set data(proto) GET
+
+        $type application/x-tcl-subst $path $suffix $sock
     }
-    set interp [Session_Authorized $data(session)]
 
-    # Need to make everything look like a GET so the Cgi parser
-    # doesn't read post data from stdin.  We've already read it.
-    set data(proto) GET
+    # application/x-tcl-subst --
+    #
+    # Tcl-subst a template that mixes HTML and Tcl.
+    # This subst is just done in the context of the specified
+    # interpreter with not much other support.
+    # See x-tcl-template for something more sophisticated
+    #
+    # Arguments:
+    #   path    The file pathname.
+    #   suffix  The URL suffix.
+    #   sock    The socket connection.
+    #   interp  The interp to use for subst'ing.
+    #
+    # Results:
+    #   None
+    #
+    # Side Effects:
+    #   Sets the env array in interp and calls returnfile.
+    #
+    # TBD: I'm not sure whether we need this or not.
 
-    Doc_application/x-tcl-subst $path $suffix $sock
+    typemethod application/x-tcl-subst {path suffix sock {interp {}}} {
+        upvar #0 Httpd$sock data
+
+        Cgi_SetEnv $sock $path pass
+        interp eval $interp [list uplevel #0 [list array set env [array get pass]]]
+        ::ahttpd::docsubst returnfile $sock $path $interp
+    }
+
 }
 
-# Doc_application/x-tcl-subst --
-#
-# Tcl-subst a template that mixes HTML and Tcl.
-# This subst is just done in the context of the specified
-# interpreter with not much other support.
-# See x-tcl-template for something more sophisticated
-#
-# Arguments:
-#   path    The file pathname.
-#   suffix  The URL suffix.
-#   sock    The socket connection.
-#   interp  The interp to use for subst'ing.
-#
-# Results:
-#   None
-#
-# Side Effects:
-#   Sets the env array in interp and calls returnfile.
-#
-# TBD: I'm not sure whether we need this or not.
+# Define content-type handlers
+::ahttpd::doc handler application/x-tcl-auth [list ::ahttpd::docsubst application/x-tcl-auth]
+::ahttpd::doc handler application/x-tcl-auth [list ::ahttpd::docsubst application/x-tcl-subst]
 
-proc Doc_application/x-tcl-subst {path suffix sock {interp {}}} {
-    puts "Doc_application/x-tcl-subst"
-    upvar #0 Httpd$sock data
-
-    Cgi_SetEnv $sock $path pass
-    interp eval $interp [list uplevel #0 [list array set env [array get pass]]]
-    ::ahttpd::docsubst returnfile $sock $path $interp
-}
 
 
 

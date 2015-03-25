@@ -10,11 +10,9 @@
 #
 #    This calls out to the Auth module to check for access files.
 #    Once a file is found, it checks for content-type handlers defined
-#    by Tcl procs of the form Doc_$contentType.  If those are present
-#    then they are responsible for processing the file and returning it.
-#    Otherwise the file is returned by "doc handle".
-#
-#    TBD: Add a registry for content types
+#    by "doc handler".  If one is present then it is responsible for 
+#    processing the file and returning it.  Otherwise the file is 
+#    returned by "doc handle".
 #
 #    If a file is not found then a limited form of content negotiation is
 #    done based on the browser's Accept header.  For example, this makes
@@ -30,9 +28,6 @@
 #
 #-----------------------------------------------------------------------
 
-# TBD: Clean these up as modules are moved.
-package require httpd::template
-
 snit::type ::ahttpd::doc {
     pragma -hasinstances no
 
@@ -46,8 +41,29 @@ snit::type ::ahttpd::doc {
         root {}
     }
 
+    # handler - Content Type handlers by mime type   
+    typevariable handler -array {}
+
     #-------------------------------------------------------------------
     # Public Type Methods
+
+    # handler mtype ?command?
+    #
+    # mtype   - A mime type
+    # command - A command prefix
+    #
+    # Sets and queries a mimetype handler that will be used to process
+    # specific content types.  The command will be called with
+    # three additional arguments, the path, the URL suffix, and the
+    # socket connection.
+
+    typemethod handler {mtype {command ""}} {
+        if {$command ne ""} {
+            set handler($mtype) $command
+        }
+
+        return $handler($mtype)
+    }
 
     # root ?real? args
     #
@@ -157,14 +173,13 @@ snit::type ::ahttpd::doc {
 
             dirlist handle $prefix $path $suffix $sock
         } elseif {[file readable $path]} {
-            # Look for Tcl procedures whose names match the MIME Content-Type
-            # TBD: Use an explicit registry
-            set cmd Doc_[mimetype frompath $path]
+            # Is there a content handler for this type?
+            set mtype [mimetype frompath $path]
 
-            if {![iscommand $cmd]} {
-                Httpd_ReturnFile $sock [mimetype frompath $path] $path
+            if {![info exists handler($mtype)]} {
+                Httpd_ReturnFile $sock $mtype $path
             } else {
-                $cmd $path $suffix $sock
+                {*}$handler($mtype) $path $suffix $sock
             }
         } else {
             # Either not found, or we can find an alternate (e.g. a template).

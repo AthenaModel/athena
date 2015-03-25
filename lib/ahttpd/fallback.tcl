@@ -103,10 +103,9 @@ snit::type ::ahttpd::fallback {
             # Another hack for templates.  If the requested .html is not found,
             # and the .tml exists, ask for .html so the template is
             # processed and cached as the .html file.
-            # TBD: Do we need templates?
-            global Template
-            if {[string compare $Template(tmlExt) [file extension $npath]] == 0} {
-                Doc_text/html [file root $npath]$Template(htmlExt) $suffix $sock
+            if {[template tmlext] eq [file extension $npath]} {
+                {*}[doc handler text/html] \
+                    [file root $npath][template htmlext] $suffix $sock
                 return 1
             }
 

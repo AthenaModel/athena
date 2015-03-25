@@ -154,18 +154,6 @@ snit::type ::ahttpd::server {
         # interpreter somehow.
         package require httpd::session
                 
-        # Template_Interp determines which interpreter to use when
-        # interpreting templates.
-        
-        Template_Interp {}        
-        
-        # Template_Check causes the processing of text/html files to
-        # first look aside at the corresponding .tml file and check if it is
-        # up-to-date.  If the .tml (or its dependent files) are newer than
-        # the HTML file, the HTML file is regenerated from the template.
-        
-        Template_Check 1
-        
         # Doc_ErrorPage registers a template to be used when a page raises an
         # uncaught Tcl error.  This is a crude template that is simply passed 
         # through subst at the global level.  In particular,  
