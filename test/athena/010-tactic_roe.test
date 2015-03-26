@@ -1,15 +1,15 @@
 # -*-Tcl-*-
 #-----------------------------------------------------------------------
 # TITLE:
-#    010-tactic_attrit.test
+#    010-tactic_roe.test
 #
 # AUTHOR:
 #    Dave Hanks
 #
 # DESCRIPTION:
-#    tactic_attrit(sim) tests.
+#    tactic_roe(sim) tests.
 #
-#    This test suite tests the tactic_attrit(sim) class.
+#    This test suite tests the tactic_roe(sim) class.
 #
 #-----------------------------------------------------------------------
 
@@ -48,8 +48,8 @@ namespace eval ::athena_test::tests:: {
         ted create JOE BLUE ALQ NB1 NB2 SUNN SHIA KURD USAID
 
         # NEXT, create a default ASSIGN tactic
-        set B1 [ted addblock SYSTEM]
-        set T1 [ted addtactic $B1 ATTRIT]
+        set B1 [ted addblock JOE]
+        set T1 [ted addtactic $B1 ROE]
 
         # NEXT, prepare for obligation
         tdb personnel start
@@ -74,25 +74,26 @@ namespace eval ::athena_test::tests:: {
     } -cleanup {
         cleanup
     } -match dictglob -result {
-        casualties 1
+        athresh    2.0
+        civc       HIGH
+        dthresh    0.15
         execstatus NONE
         f          {}
         faildict   {}
-        g1         NONE
-        g2         NONE
+        g          {}
         id         *
-        mode       NBHOOD
-        n          {}
         name       T*
+        nlist      {_type NBHOODS _rule {}}
         parent     *
         pot        *::pot
+        roe        ATTACK
         state      invalid
     }
 
     test constructor-1.2 {can set options} -setup {
         setup
     } -body {
-        set T1 [ted newbean ::athena::tactic::ATTRIT -parent DUMMY]
+        set T1 [ted newbean ::athena::tactic::ROE -parent DUMMY]
         $T1 get parent
     } -cleanup {
         cleanup
@@ -107,62 +108,18 @@ namespace eval ::athena_test::tests:: {
         $T1 narrative
     } -cleanup {
         cleanup
-    } -result {Magic attrit 1 personnel in ???.}
+    } -result {??? will try to attack ??? in nbhood ???. Force/Enemy ratio: DEFEND below 200% and WITHDRAW below 15%. Concern for CIVCAS: HIGH.}
 
-    test narrative-1.2 {mode NBHOOD} -setup {
+    test narrative-1.2 {valid inputs} -setup {
         setup
-        $T1 configure -n NB1 -casualties 10
+        $T1 configure -f BLUE -g ALQ \
+                      -nlist [tdb gofer make NBHOODS BY_VALUE {NB1 NB2}]
     } -body {
         $T1 narrative
     } -cleanup {
         cleanup
-    } -result {Magic attrit 10 personnel in {nbhood:NB1}.}
+    } -result {{group:BLUE} will try to attack {group:ALQ} in these neighborhoods (NB1, NB2). Force/Enemy ratio: DEFEND below 200% and WITHDRAW below 15%. Concern for CIVCAS: HIGH.}
 
-    test narrative-1.3 {mode GROUP} -setup {
-        setup
-        $T1 configure -f BLUE -n NB1 -mode GROUP -casualties 10
-    } -body {
-        $T1 narrative
-    } -cleanup {
-        cleanup
-    } -result {Magic attrit 10 of {group:BLUE}'s personnel in {nbhood:NB1}.}
-
-    test narrative-1.4 {mode NBHOOD, responsible group} -setup {
-        setup
-        $T1 configure -n NB1 -casualties 10 -g1 BLUE
-    } -body {
-        $T1 narrative
-    } -cleanup {
-        cleanup
-    } -result {Magic attrit 10 personnel in {nbhood:NB1} and attribute it to {group:BLUE}.}
-
-    test narrative-1.5 {mode NBHOOD, two responsible groups} -setup {
-        setup
-        $T1 configure -n NB1 -casualties 10 -g1 BLUE -g2 ALQ
-    } -body {
-        $T1 narrative
-    } -cleanup {
-        cleanup
-    } -result {Magic attrit 10 personnel in {nbhood:NB1} and attribute it to {group:BLUE} and {group:ALQ}.}
-
-    test narrative-1.6 {mode GROUP, responsible group} -setup {
-        setup
-        $T1 configure -f SHIA -n NB1 -mode GROUP -casualties 10 -g1 BLUE
-    } -body {
-        $T1 narrative
-    } -cleanup {
-        cleanup
-    } -result {Magic attrit 10 of {group:SHIA}'s personnel in {nbhood:NB1} and attribute it to {group:BLUE}.}
-
-    test narrative-1.7 {mode GROUP, two responsible groups} -setup {
-        setup
-        $T1 configure -f SHIA -n NB1 -mode GROUP \
-                      -casualties 10 -g1 BLUE -g2 ALQ
-    } -body {
-        $T1 narrative
-    } -cleanup {
-        cleanup
-    } -result {Magic attrit 10 of {group:SHIA}'s personnel in {nbhood:NB1} and attribute it to {group:BLUE} and {group:ALQ}.}
 
     #-------------------------------------------------------------------
     # check
@@ -174,56 +131,54 @@ namespace eval ::athena_test::tests:: {
     } -cleanup {
         cleanup
     } -match dict -result {
-        n {No neighborhood selected.} 
+        g     {No enemy group selected.}
+        nlist {No rule specified}
     }
 
-    test check-1.2 {unknown n} -setup {
+    test check-1.2 {unknown f} -setup {
         setup 
     } -body {
-        $T1 configure -n NONESUCH
+        $T1 configure -f NONESUCH \
+                      -nlist [tdb gofer make NBHOODS BY_VALUE NB1] \
+                      -g ALQ
         ted pdicts [$T1 check]
     } -cleanup {
         cleanup
     } -match dict -result {
-        n {No such neighborhood: "NONESUCH".}
+        f {JOE does not own a force group called "NONESUCH".}
     }
 
-    test check-1.3 {f doesn't exist} -setup {
-        setup 
-    } -body {
-        $T1 configure -mode GROUP -n NB1 -f NONESUCH
-        ted pdicts [$T1 check]
-    } -cleanup {
-        cleanup
-    } -match dict -result {
-        f {No such group: "NONESUCH".}
-    }
-
-    test check-1.4 {unknown g1} -setup {
+    test check-1.3 {unknown g} -setup {
         setup
     } -body {
-        $T1 configure -f SHIA -n NB1 -g1 NONESUCH
+        $T1 configure -f BLUE \
+                      -nlist [tdb gofer make NBHOODS BY_VALUE NB1] \
+                      -g NONESUCH
         ted pdicts [$T1 check]
     } -cleanup {
         cleanup
     } -match dict -result {
-        g1 {No such FRC group: "NONESUCH".}
+        g {No such FRC group: NONESUCH.}
     }
 
-    test check-1.5 {unknown g2} -setup {
+    test check-1.4 {can't set ROE against own group} -setup {
         setup
     } -body {
-        $T1 configure -f SHIA -n NB1 -g1 BLUE -g2 NONESUCH
+        $T1 configure -f BLUE \
+                      -nlist [tdb gofer make NBHOODS BY_VALUE NB1] \
+                      -g BLUE
         ted pdicts [$T1 check]
     } -cleanup {
         cleanup
     } -match dict -result {
-        g2 {No such FRC group: "NONESUCH".}
+        g {JOE can't engage own force group: "BLUE".}
     }
 
-    test check-1.6 {Success} -setup {
+    test check-1.5 {Success} -setup {
         setup
-        $T1 configure -f SHIA -n NB1 -g2 BLUE -g2 ALQ
+        $T1 configure -f BLUE \
+                      -nlist [tdb gofer make NBHOODS BY_VALUE NB1] \
+                      -g ALQ
     } -body {
         $T1 check
     } -cleanup {
@@ -236,7 +191,9 @@ namespace eval ::athena_test::tests:: {
 
     test obligate-1.1 {obligate always works, no money} -setup {
         setup
-        $T1 configure -f SHIA -n NB1 -g2 BLUE -g2 ALQ
+        $T1 configure -f BLUE \
+                      -nlist [tdb gofer make NBHOODS BY_VALUE NB1] \
+                      -g ALQ
     } -body {
         $T1 obligate $coffer
     } -cleanup {
@@ -248,12 +205,15 @@ namespace eval ::athena_test::tests:: {
 
     test execute-1.1 {execution always works} -setup {
         setup
-        $T1 configure -mode NBHOOD -n NB1 -g1 BLUE -g2 ALQ
+        $T1 configure -f BLUE \
+                      -nlist [tdb gofer make NBHOODS BY_VALUE NB1] \
+                      -g ALQ
     } -body {
         $T1 execute
+        tdb aam getroe
     } -cleanup {
         cleanup
-    } -result {{g1 BLUE g2 ALQ mode NBHOOD f {} n NB1 casualties 1}}
+    } -result {NB1 {BLUE {ALQ {roe ATTACK athresh 2.0 dthresh 0.15 civc HIGH}}}}
 
     #-------------------------------------------------------------------
     # Cleanup
@@ -262,12 +222,3 @@ namespace eval ::athena_test::tests:: {
 }
 
 namespace delete ::athena_test::tests::
-
-
-
-
-
-
-
-
-

@@ -84,12 +84,6 @@ snit::type ::athena::aam {
         set tlvl  [$adb parm get aam.FRC.discipline.PROFICIENT]
         set dem   [$adb parm get aam.FRC.demeanor.AVERAGE]
         let frcmultD {$urb * $civc * $elvl * $ftype * $tlvl * $dem}
-
-        # NEXT, allocate forces and initialize group posture
-        $self ComputeEffectiveForce
-        $self BuildWorkingForceTable
-        $self AllocateForce
-        $self SetGroupPosture   
     }
 
     # ComputeEffectiveForce
@@ -146,13 +140,14 @@ snit::type ::athena::aam {
         # deployments
         foreach {n f pers_f eff_frc_f fmult_f} [$adb eval {
             SELECT n,g,personnel,eff_force,frcmult FROM deploy_ng 
-            WHERE personnel>0
+            WHERE personnel > 0 AND eff_force > 0
         }] {                       
             # NEXT, groups in n other than f
             foreach {g pers_g eff_frc_g fmult_g} [$adb eval {
                 SELECT g,personnel,eff_force,frcmult FROM deploy_ng 
-                WHERE n=$n AND personnel>0 AND g!=$f
+                WHERE n=$n AND personnel > 0 AND eff_force > 0 AND g!=$f
             }] {
+
                 # NEXT, defaults in case no ROE specified
                 set roe  "DEFEND"
                 set athr 0.0

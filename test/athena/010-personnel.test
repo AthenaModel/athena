@@ -73,14 +73,14 @@ HAL  2000
     } -cleanup {
         cleanup
     } -result {
-n   g    personnel eff_personnel unassigned 
---- ---- --------- ------------- ---------- 
-NB1 BLUE 0         0             0          
-NB1 BRIT 0         0             0          
-NB1 HAL  0         0             0          
-NB2 BLUE 0         0             0          
-NB2 BRIT 0         0             0          
-NB2 HAL  0         0             0          
+n   g    personnel eff_force frcmult unassigned 
+--- ---- --------- --------- ------- ---------- 
+NB1 BLUE 0         0         1.0     0          
+NB1 BRIT 0         0         1.0     0          
+NB1 HAL  0         0         1.0     0          
+NB2 BLUE 0         0         1.0     0          
+NB2 BRIT 0         0         1.0     0          
+NB2 HAL  0         0         1.0     0          
     }
 
     #-------------------------------------------------------------------
@@ -392,14 +392,14 @@ HAL  0
     } -cleanup {
         cleanup
     } -result {
-n   g    personnel eff_personnel unassigned 
---- ---- --------- ------------- ---------- 
-NB1 BLUE 85        0             100        
-NB2 BLUE 0         0             0          
-NB1 BRIT 100       0             100        
-NB2 BRIT 0         0             0          
-NB1 HAL  0         0             0          
-NB2 HAL  0         0             0          
+n   g    personnel eff_force frcmult unassigned 
+--- ---- --------- --------- ------- ---------- 
+NB1 BLUE 85        0         1.0     100        
+NB2 BLUE 0         0         1.0     0          
+NB1 BRIT 100       0         1.0     100        
+NB2 BRIT 0         0         1.0     0          
+NB1 HAL  0         0         1.0     0          
+NB2 HAL  0         0         1.0     0          
     }
 
     test attrit-1.3 {attrits down to zero} -setup {

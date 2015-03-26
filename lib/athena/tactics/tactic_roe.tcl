@@ -59,7 +59,7 @@
     # Operations
 
     method SanityCheck {errdict} {
-        # Check g
+        # Check f
         if {$f eq ""} {
             dict set errdict g "No force group selected."
         } elseif {$f ni [[my adb] group ownedby [my agent]]} {
@@ -72,9 +72,11 @@
             dict set errdict nlist $result
         }
 
-        # f
+        # g
         if {$g eq ""} {
             dict set errdict g "No enemy group selected."
+        } elseif {$g ni [[my adb] frcgroup names]} {
+            dict set errdict g "No such FRC group: $g."
         } elseif {$g in [[my adb] group ownedby [my agent]]} {
             dict set errdict g \
                 "[my agent] can't engage own force group: \"$g\"."
