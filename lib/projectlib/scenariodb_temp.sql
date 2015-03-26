@@ -212,30 +212,13 @@ CREATE TEMPORARY TABLE working_force (
     civc_f      TEXT,
     civc_g      TEXT,
 
-    -- Force multipliers for Lanchester coefficients
-    fmult_f      DOUBLE DEFAULT 1.0,
-    fmult_g      DOUBLE DEFAULT 1.0,
-
     -- Total personnel and those involved in fight 
     pers_f       INTEGER DEFAULT 0,
     pers_g       INTEGER DEFAULT 0,
     desig_pers_f INTEGER DEFAULT 0,
     desig_pers_g INTEGER DEFAULT 0,
 
-    -- Effective force based upon multipliers, used to allocate
-    -- personnel
-    eff_frc_f    DOUBLE DEFAULT 0.0,
-    eff_frc_g    DOUBLE DEFAULT 0.0,
-
-    -- Attack and defend posture force ratios from each combatants
-    -- point of view based on effective force
-    attack_R_fg  DOUBLE DEFAULT 0.0,
-    defend_R_fg  DOUBLE DEFAULT 0.0,
-
-    attack_R_gf  DOUBLE DEFAULT 0.0,
-    defend_R_gf  DOUBLE DEFAULT 0.0,
-
-    -- Casualties suffered by f an g
+    -- Casualties suffered by f and g
     cas_f        INTEGER DEFAULT 0,
     cas_g        INTEGER DEFAULT 0,
 

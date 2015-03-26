@@ -47,8 +47,6 @@ snit::type ::athena::aam {
 
     constructor {adb_} {
         set adb $adb_
-
-
     }
 
     #------------------------------------------------------------------
@@ -57,8 +55,22 @@ snit::type ::athena::aam {
     variable alist {}   ;# list of attrition dictionaries
     variable sdict      ;# dict used to assess SAT effects
     variable cdict      ;# dict used to assess COOP effects
-    variable frcmultD   ;# force multiplier denominator, same for all groups
+    variable frcmultD   ;# force mult denominator, same for all force groups
     variable roedict    ;# array of dicts used to store ROE tactic information
+
+    # Transient arrays
+    #
+    # effFrc($n,$g)     - effective force for group g in n
+    # frcMult($n,$g)    - force multiplier for group g in n
+    # civcasMult($n,$g) - civilian casualties multiplier for group g
+    # aThresh($n,$f,$g) - ATTACK force ratio threshold of f with g in n
+    # dThresh($n,$f,$g) - DEFEND force ratio threshold of f with g in n
+
+    variable effFrc     -array {}
+    variable frcMult    -array {}
+    variable civcasMult -array {}
+    variable aThresh    -array {}
+    variable dThresh    -array {}
 
     #-------------------------------------------------------------------
     # reset
@@ -68,6 +80,11 @@ snit::type ::athena::aam {
         set sdict ""
         set cdict ""
         array unset roedict
+        array unset effFrc
+        array unset frcMult
+        array unset civcasMult
+        array unset aThresh
+        array unset dThresh
     }
 
     method start {} {
@@ -84,6 +101,11 @@ snit::type ::athena::aam {
         set tlvl  [$adb parm get aam.FRC.discipline.PROFICIENT]
         set dem   [$adb parm get aam.FRC.demeanor.AVERAGE]
         let frcmultD {$urb * $civc * $elvl * $ftype * $tlvl * $dem}
+
+        $self ComputeEffectiveForce
+        $self BuildWorkingForceTable
+        $self AllocateForce
+        $self SetGroupPosture
     }
 
     # ComputeEffectiveForce
@@ -114,15 +136,8 @@ snit::type ::athena::aam {
             set Fd [$adb parm get aam.FRC.demeanor.$dem]
             set Fu [$adb parm get aam.FRC.urbcas.$urb]
 
-            let effForce {entier(ceil($Fe * $Ff * $Ft * $Fd * $pers))}
-            let frcmult {$Fe * $Ff * $Ft * $Fd * $Fu}
-
-            $adb eval {
-                UPDATE deploy_ng
-                SET eff_force = $effForce,
-                    frcmult   = $frcmult 
-                WHERE n=$n AND g=$g
-            }
+            let effFrc($n,$g)  {entier(ceil($Fe * $Ff * $Ft * $Fd * $pers))}
+            let frcMult($n,$g) {$Fe * $Ff * $Ft * $Fd * $Fu}
         }
     }
 
@@ -138,15 +153,22 @@ snit::type ::athena::aam {
 
         # NEXT, fill in the working combat table based on
         # deployments
-        foreach {n f pers_f eff_frc_f fmult_f} [$adb eval {
-            SELECT n,g,personnel,eff_force,frcmult FROM deploy_ng 
-            WHERE personnel > 0 AND eff_force > 0
-        }] {                       
+        foreach {n f pers_f} [$adb eval {
+            SELECT n,g,personnel FROM deploy_ng 
+            WHERE personnel > 0
+        }] {
+            if {$f ni [$adb frcgroup names]} {
+                continue
+            }           
+
             # NEXT, groups in n other than f
-            foreach {g pers_g eff_frc_g fmult_g} [$adb eval {
-                SELECT g,personnel,eff_force,frcmult FROM deploy_ng 
-                WHERE n=$n AND personnel > 0 AND eff_force > 0 AND g!=$f
+            foreach {g pers_g} [$adb eval {
+                SELECT g,personnel FROM deploy_ng 
+                WHERE n=$n AND personnel > 0 AND g!=$f
             }] {
+                if {$g ni [$adb frcgroup names]} {
+                    continue
+                }
 
                 # NEXT, defaults in case no ROE specified
                 set roe  "DEFEND"
@@ -166,12 +188,9 @@ snit::type ::athena::aam {
                 # NEXT, compute force ratios used for determining posture
                 # later 
                 let frcRatio {
-                    (double($eff_frc_g)/double($pers_g)) / 
-                    (double($eff_frc_f)/double($pers_f))
+                    (double($effFrc($n,$g))/double($pers_g)) / 
+                    (double($effFrc($n,$f))/double($pers_f))
                 }
-
-                let attack_R {$athr * $frcRatio}
-                let defend_R {$dthr * $frcRatio}
 
                 # NEXT, if a record for the pair of potential combatants
                 # already exists, update it with g's data
@@ -179,27 +198,34 @@ snit::type ::athena::aam {
                     SELECT * FROM working_force
                     WHERE n=$n AND f=$g AND g=$f
                 }]} {
+
+                    set frcmult $frcMult($n,$g)
+                    set efrc    $effFrc($n,$f)
+
+                    let aThresh($n,$f,$g) {$athr * $frcRatio}
+                    let dThresh($n,$f,$g) {$dthr * $frcRatio}
+
                     $adb eval {
                         UPDATE working_force 
                         SET roe_g       = $roe,
-                            civc_g      = $civc,
-                            fmult_g     = $fmult_g,
-                            attack_R_gf = $attack_R,
-                            defend_R_gf = $defend_R
+                            civc_g      = $civc
                         WHERE n=$n AND f=$g AND g=$f
                     }
 
                     continue
                 }
                 
+                set frcmult $frcMult($n,$f)
+                set efrc    $effFrc($n,$g)
+
+                let aThresh($n,$f,$g) {$athr * $frcRatio}
+                let dThresh($n,$f,$g) {$dthr * $frcRatio}
+
                 # NEXT, add to the working force table
                 $adb eval {
-                    INSERT INTO working_force(n,f,g,pers_f,pers_g,fmult_f,
-                                              roe_f,attack_R_fg,defend_R_fg,
-                                              civc_f,eff_frc_f,eff_frc_g,
-                                              hours_left)
-                    VALUES($n,$f,$g,$pers_f,$pers_g,$fmult_f,$roe,$attack_R,
-                           $defend_R,$civc,$eff_frc_f,$eff_frc_g,$hours)
+                    INSERT INTO working_force(n,f,g,pers_f,pers_g,
+                                              roe_f,civc_f,hours_left)
+                    VALUES($n,$f,$g,$pers_f,$pers_g,$roe,$civc,$hours)
                 }
             }
         }
@@ -221,45 +247,102 @@ snit::type ::athena::aam {
         }] {
             # NEXT, compute total effective force from f's point of view
             # Those g's that f is attacking
-            set totalEffFrcG [$adb eval {
-                SELECT total(eff_frc_g) FROM working_force
+            set totalEffFrcG 0.0
+
+            foreach grp [$adb eval {
+                SELECT g FROM working_force
                 WHERE n=$n AND f=$f AND roe_f='ATTACK'
-            }]
+            }] {
+                let totalEffFrcG {$totalEffFrcG + $effFrc($n,$grp)}
+            }
 
             # Those g's attacking f 
-            set totalEffFrcF [$adb eval {
-                SELECT total(eff_frc_g) FROM working_force
+            set totalEffFrcF 0.0
+            foreach grp [$adb eval {
+                SELECT g FROM working_force
                 WHERE n=$n AND f=$f AND roe_g='ATTACK'
-            }]
+            }] {
+                let totalEffFrcF {$totalEffFrcF + $effFrc($n,$grp)}
+            }
 
-            let totalFrcF {$totalEffFrcG + $totalEffFrcF}
+            let fracF {$effFrc($n,$g) / ($totalEffFrcG + $totalEffFrcF)}
 
             # NEXT, compute total effective force from g's point of view
             # Those g is attacking
-            set totalEffFrcF [$adb eval {
-                SELECT total(eff_frc_f) FROM working_force
+            set totalEffFrcF 0.0
+            foreach grp [$adb eval {
+                SELECT f FROM working_force
                 WHERE n=$n AND g=$g AND roe_g='ATTACK'
-            }]
+            }] {
+                let totalEffFrcF {$totalEffFrcF + $effFrc($n,$grp)}
+            }
 
             # Those attacking g
-            set totalEffFrcG [$adb eval {
-                SELECT total(eff_frc_f) FROM working_force
+            set totalEffFrcG 0.0
+
+            foreach grp [$adb eval {
+                SELECT f FROM working_force
                 WHERE n=$n AND g=$g AND roe_f='ATTACK'
-            }]
+            }] {
+                let totalEffFrcG {$totalEffFrcG + $effFrc($n,$grp)}
+            }
 
-
-            let totalFrcG {$totalEffFrcG + $totalEffFrcF}
+            let fracG {$effFrc($n,$f) / ($totalEffFrcG + $totalEffFrcF)}
 
             # NEXT, allocate personnel based on effective force
             $adb eval {
                 UPDATE working_force
                 SET desig_pers_f = 
-                        CAST(round(pers_f*eff_frc_g/$totalFrcF) AS INTEGER),
+                        CAST(round(pers_f*$fracF) AS INTEGER),
                     desig_pers_g = 
-                        CAST(round(pers_g*eff_frc_f/$totalFrcG) AS INTEGER)
+                        CAST(round(pers_g*$fracG) AS INTEGER)
                 WHERE n=$n AND f=$f AND g=$g
             }               
         }
+    }
+
+    #-------------------------------------------------------------------
+    # DoGroupCombat
+
+    # DoGroupCombat
+    #
+    # Updates force allocation based on ROEs and computes attrition to
+    # force groups and civilian groups.
+
+    method DoGroupCombat {} {
+        set moreCombat 1
+        while {$moreCombat} {
+            $self SetGroupPosture   
+            set moreCombat [$self ComputeForceGroupAttrition]
+        }
+
+        # NEXT, assess casualties to force groups 
+        $adb eval {
+            SELECT * FROM working_force
+            WHERE cas_f > 0 OR cas_g > 0
+        } row {
+            set parmdict [dict create]
+            dict set parmdict mode GROUP
+            dict set parmdict g1 ""
+            dict set parmdict g2 ""
+
+            if {$row(cas_f) > 0} {
+                dict set parmdict casualties $row(cas_f)
+                dict set parmdict n $row(n)
+                dict set parmdict f $row(f)
+                $self attrit $parmdict
+            }
+
+            if {$row(cas_g) > 0} {
+                dict set parmdict casualties $row(cas_g)
+                dict set parmdict n $row(n)
+                dict set parmdict f $row(g)
+                $self attrit $parmdict                
+            }
+        }
+
+        # NEXT, assess civilian casualties due to force group combat
+        $self ComputeCivilianCasualties
     }
 
     # SetGroupPosture
@@ -269,27 +352,29 @@ snit::type ::athena::aam {
     # table involved in combat
 
     method SetGroupPosture {} {
-        $adb eval {
-            SELECT * FROM working_force
+        foreach {n f g DPf DPg roeF roeG} [$adb eval {
+            SELECT n,f,g,desig_pers_f,desig_pers_g,roe_f,roe_g 
+            FROM working_force
             WHERE desig_pers_f > 0 AND desig_pers_g > 0
-        } row {
-            # FIRST, set default posture
-            set posture_f "DEFEND"
-            set posture_g "DEFEND"
-            let DPf {double($row(desig_pers_f))}
-            let DPg {double($row(desig_pers_g))}
+        }] {
+            let DPf {double($DPf)}
+            let DPg {double($DPg)}
 
-            # NEXT, f's posture towards g, ATTACK only if ordered
-            if {$DPf/$DPg >= $row(attack_R_fg) && $row(roe_f) eq "ATTACK"} {
+            # FIRST, f's posture towards g, ATTACK only if ordered
+            set posture_f "DEFEND"
+
+            if {$DPf/$DPg >= $aThresh($n,$f,$g) && $roeF eq "ATTACK"} {
                 set posture_f "ATTACK"
-            } elseif {$DPf/$DPg < $row(defend_R_fg)} {
+            } elseif {$DPf/$DPg < $dThresh($n,$f,$g)} {
                 set posture_f "WITHDRAW"
             } 
 
             # NEXT, g's posture towards f, ATTACK only if ordered
-            if {$DPg/$DPf >= $row(attack_R_gf) && $row(roe_g) eq "ATTACK"} {
+            set posture_g "DEFEND"
+
+            if {$DPg/$DPf >= $aThresh($n,$g,$f) && $roeG eq "ATTACK"} {
                 set posture_g "ATTACK"
-            } elseif {$DPg/$DPf < $row(defend_R_gf)} {
+            } elseif {$DPg/$DPf < $dThresh($n,$g,$f)} {
                 set posture_g "WITHDRAW"
             } 
 
@@ -298,7 +383,7 @@ snit::type ::athena::aam {
                 UPDATE working_force
                 SET posture_f = $posture_f,
                     posture_g = $posture_g
-                WHERE n=$row(n) AND f=$row(f) AND g=$row(g)
+                WHERE n=$n AND f=$f AND g=$g
             }
         }
     }
@@ -342,28 +427,29 @@ snit::type ::athena::aam {
 
             # NEXT, combat time depends on posture and force ratio
             # thresholds
-            set Rfg $row(attack_R_fg)
-            set Rgf $row(attack_R_gf)
+            set Rfg $aThresh($row(n),$row(f),$row(g))
 
             if {$row(posture_f) eq "DEFEND"} {
-                set Rfg $row(defend_R_fg)
+                set Rfg $dThresh($row(n),$row(f),$row(g))
             } elseif {$row(posture_f) eq "WITHDRAW"} {
                 set Rfg 0.0
             }
 
+            set Rgf $aThresh($row(n),$row(g),$row(f))
+
             if {$row(posture_g) eq "DEFEND"} {
-                set Rgf $row(defend_R_gf)
+                set Rgf $dThresh($row(n),$row(g),$row(f))
             } elseif {$row(posture_g) eq "WITHDRAW"} {
                 set Rgf 0.0
             }
 
             # Coefficient multipliers for Afg
             set Fc [$adb parm get aam.FRC.civconcern.$row(civc_f)]
-            let Afg {$afg * $Fc * $row(fmult_f) / $frcmultD}
+            let Afg {$afg * $Fc * $frcMult($row(n),$row(f)) / $frcmultD}
 
             # Coefficient multipliers for Agf
             set Fc [$adb parm get aam.FRC.civconcern.$row(civc_g)]
-            let Agf {$agf * $Fc * $row(fmult_g) / $frcmultD}
+            let Agf {$agf * $Fc * $frcMult($row(n),$row(g)) / $frcmultD}
 
             # NEXT, populate transient input data for computing
             # casualties and time of combat 
@@ -375,7 +461,8 @@ snit::type ::athena::aam {
             set idata(DPg)   $row(desig_pers_g)
             set idata(Tleft) $row(hours_left)
 
-            lassign [$self ComputeCasualties [array get idata]] PRf PRg t
+            lassign [$self ComputeForceGroupCasualties [array get idata]] \
+                PRf PRg t
 
             # NEXT, minumum casualty of 1 for the attacker. If both
             # have an ATTACK ROE, arbitrarily choose f. This prevents
@@ -383,15 +470,13 @@ snit::type ::athena::aam {
             # evenly matched, small force groups where one is very close to a 
             # posture change and the minimum fight time is not enough to 
             # change that.
-            set casF 0
-            set casG 0
+            let casF {max(0,$row(desig_pers_f) - $PRf)}
+            let casG {max(0,$row(desig_pers_g) - $PRg)}
 
             if {$row(roe_f) eq "ATTACK"} {
-                let casF {max(1,$row(desig_pers_f) - $PRf)}
-                let casG {max(0,$row(desig_pers_g) - $PRg)}
+                let casF {max(1,$casF)}
             } else {
-                let casG {max(1,$row(desig_pers_g) - $PRg)}
-                let casF {max(0,$row(desig_pers_f) - $PRf)}
+                let casG {max(1,$casG)}
             }
 
             # NEXT, store combat outcome data for later
@@ -423,17 +508,17 @@ snit::type ::athena::aam {
         return 0
     }
 
-    # ComputeCasualties tdata
+    # ComputeForceGroupCasualties tdata
     #
     # tdata   - dictionary of transient data
     #
     # This method takes the contents of the supplied dictionary and
-    # computes the number of casualties taken by one or two sides in
+    # computes the number of casualties taken by one or two sides involved in
     # combat.  It returns, in a list, the number of personnel remaining in
     # the first group, number of personnel remaining in the second group 
     # and the amount of time expended during combat.
 
-    method ComputeCasualties {tdata} {
+    method ComputeForceGroupCasualties {tdata} {
         dict with tdata {}
 
         # FIRST, if Afg and Agf are non-zero we need to compute
@@ -505,6 +590,11 @@ snit::type ::athena::aam {
         return [list $PRf $PRg $t]
     }
 
+    method ComputeCivilianCasualties {} {
+
+
+    }
+
     #-------------------------------------------------------------------
     # Attrition Assessment
 
@@ -520,6 +610,13 @@ snit::type ::athena::aam {
         $adb eval {
             DELETE FROM working_force;
         }
+
+        # NEXT, clear transient data
+        array unset effFrc
+        array unset frcMult
+        array unset civcasMult
+        array unset aThresh
+        array unset dThresh
 
         # NEXT, create SAT and COOP dicts to hold transient data
         set sdict [dict create]
@@ -626,47 +723,6 @@ snit::type ::athena::aam {
 
     method attrit {parmdict} {
         lappend alist $parmdict
-    }
-
-    #-------------------------------------------------------------------
-    # DoGroupCombat
-
-    # DoGroupCombat
-    #
-    # Updates force allocation based on ROEs and computes attrition to
-    # force groups and civilian groups.
-
-    method DoGroupCombat {} {
-        set moreCombat 1
-        while {$moreCombat} {
-            $self SetGroupPosture   
-            set moreCombat [$self ComputeForceGroupAttrition]
-        }
-
-        # NEXT, assess casualties to force groups 
-        $adb eval {
-            SELECT * FROM working_force
-            WHERE cas_f > 0 OR cas_g > 0
-        } row {
-            set parmdict [dict create]
-            dict set parmdict mode GROUP
-            dict set parmdict g1 ""
-            dict set parmdict g2 ""
-
-            if {$row(cas_f) > 0} {
-                dict set parmdict casualties $row(cas_f)
-                dict set parmdict n $row(n)
-                dict set parmdict f $row(f)
-                $self attrit $parmdict
-            }
-
-            if {$row(cas_g) > 0} {
-                dict set parmdict casualties $row(cas_g)
-                dict set parmdict n $row(n)
-                dict set parmdict f $row(g)
-                $self attrit $parmdict                
-            }
-        }
     }
 
     #-------------------------------------------------------------------
