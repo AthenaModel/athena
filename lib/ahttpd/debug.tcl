@@ -39,7 +39,6 @@ snit::type ::ahttpd::debug {
 
     #-------------------------------------------------------------------
     # Debug URL handlers
-    
 
 
     # Debug/source source=<file.tcl>
@@ -53,38 +52,23 @@ snit::type ::ahttpd::debug {
     # Returns HTML code that displays result of loading the file.
 
     proc Debug/source {source} {
-        global Httpd Config
-        set source [file tail $source]
+        set source   [file tail $source]
+        set filename [file join $::ahttpd::library $source]
 
-        set dirlist $Httpd(library)
-
-        if {[info exists Config(library)]} {
-            lappend dirlist $Config(library)
-        }
-        if {[info exists Config(lib)]} {
-            lappend dirlist $Config(lib)
-        }
-        foreach dir $dirlist {
-            set file [file join $dir $source]
-            if {[file exists $file]} {
-                break
-            }
-        }
-
-        if {![file exists $file]} {
+        if {![file exists $filename]} {
             set html "<h1>Error sourcing $source</h1>"
-            append html "Cannot find it in <br>[join $dirlist <br>]"
+            append html "Cannot find it in: $::ahttpd::library"
             return $html
         }
           
         set html "<title>Source $source</title>\n"
 
         try {
-            set result [uplevel #0 [list source $file]]
+            set result [uplevel #0 [list source $filename]]
         } on error {error} {
             global errorInfo
             append html "<H1>Error in $source</H1>\n"
-            append html "<pre>$result<p>$errorInfo</pre>"
+            append html "<pre>$error<p>$errorInfo</pre>"
             return $html
         }
 

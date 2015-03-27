@@ -30,13 +30,18 @@ package require md5 2.0.7
 package require uri 1.2
 package require counter 2.0
 package require ncgi 1.4.3
+package require html
+package require kiteutils
 # -kite-require-end
+
 
 #-----------------------------------------------------------------------
 # Namespace definition
 
 namespace eval ::ahttpd:: {
     variable library [file dirname [info script]]
+
+    namespace import ::kiteutils::foroption
 }
 
 
@@ -50,7 +55,6 @@ package require httpd::utils    ;# For Stderr
 package require httpd::cgi      ;# CGI services
 package require httpd::auth     ;# Basic authentication
 package require httpd::digest   ;# Digest authentication
-package require httpd::status   ;# Built in status counters
 
 source [file join $::ahttpd::library server.tcl  ]
 source [file join $::ahttpd::library mimetype.tcl]
@@ -66,4 +70,5 @@ source [file join $::ahttpd::library template.tcl]
 source [file join $::ahttpd::library url.tcl     ]
 source [file join $::ahttpd::library redirect.tcl]
 source [file join $::ahttpd::library debug.tcl   ]
+source [file join $::ahttpd::library status.tcl  ]
 

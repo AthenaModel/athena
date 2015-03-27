@@ -148,7 +148,7 @@ proc Httpd_Init {} {
     timeout1    120000
     timeout2    120000
     timeout3    2000
-    server      "Tcl-Webserver/"
+    server      "ahttpd(n)/"
     initialized     1
     shutdown    ""
     sockblock   0

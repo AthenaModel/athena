@@ -172,10 +172,8 @@ snit::type ::ahttpd::server {
         
         Httpd_Webmaster  $info(webmaster)
         
-        Status_Url /status /images
-                
+        status init       
         debug init /debug
-        
         redirect init /redirect
 
         
