@@ -174,7 +174,7 @@ snit::type ::ahttpd::server {
         
         Status_Url /status /images
                 
-        Debug_Url /debug
+        debug init /debug
         
         redirect init /redirect
 
