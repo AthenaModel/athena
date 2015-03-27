@@ -1,0 +1,4 @@
+# Redirect configuration
+redirect toself /staticr.html /static.html
+redirect to /cm.html https://pepper.jpl.nasa.gov/athena/docs/athena_6.3/6.3.0a6/docs/cm.html
+redirect subtree /mann https://pepper.jpl.nasa.gov/athena/docs/athena_6.3/6.3.0a6/docs/mann

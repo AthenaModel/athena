@@ -15,7 +15,7 @@
 # tool::SERVER
 
 tool define SERVER {
-    usage       {0 0 TBD}
+    usage       {0 - "?options...?"}
     description "Athena Web Server"
 } {
     EXPERIMENTAL.
@@ -29,6 +29,14 @@ tool define SERVER {
 
     typemethod execute {argv} {
         puts "Starting web server"
+
+        foroption opt argv {
+            -gui {
+                package require marsgui
+                wm withdraw .
+                ::marsgui::debugger new
+            }
+        }
 
         ahttpd::server init \
             -docroot ~/github/athena/htdocs

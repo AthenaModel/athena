@@ -139,6 +139,7 @@ snit::type ::ahttpd::doc {
         # Try to hook up the pathname under the appropriate document root
         if {[regexp ^/ $virtual]} {
             url prefix match  $virtual prefix suffix
+
             if {[info exist info(root,$prefix)]} {
                 return [file join $info(root,$prefix) [string trimleft $suffix /]]
             } else {

@@ -14,7 +14,6 @@ package ifneeded httpd 1.7 "
 	package ifneeded httpd::opentrace 1.0 \[list source \[file join [list $dir] open.tcl\]\]
 	package ifneeded httpd::passcheck 1.0 \[list source \[file join [list $dir] passcheck.tcl\]\]
 	package ifneeded httpd::passgen 1.0 \[list source \[file join [list $dir] passgen.tcl\]\]
-	package ifneeded httpd::redirect 1.0 \[list source \[file join [list $dir] redirect.tcl\]\]
 	package ifneeded httpd::session 1.0 \[list source \[file join [list $dir] session.tcl\]\]
 	package ifneeded httpd::status 1.0 \[list source \[file join [list $dir] status.tcl\]\]
 	package ifneeded httpd::utils 1.0 \[list source \[file join [list $dir] utils.tcl\]\]

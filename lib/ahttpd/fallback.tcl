@@ -132,7 +132,7 @@ snit::type ::ahttpd::fallback {
                 append url ? $data(query)
             }
 
-            Redirect_Self $url  ;# offer what we have to the client
+            redirect gotoself $url  ;# offer what we have to the client
         }
     }
 

@@ -113,7 +113,8 @@ snit::type ::ahttpd::url {
             # to match the /cgi-bin prefix
             regsub -all /+ $url / url
 
-            if {![regexp ^($info(prefixset))(.*) $url x prefix suffix] ||
+            if {$info(prefixset) eq "" ||
+                ![regexp ^($info(prefixset))(.*) $url x prefix suffix] ||
                 ([string length $suffix] && ![string match /* $suffix])} {
 
                 # Fall back and assume it is under the root
@@ -282,7 +283,7 @@ snit::type ::ahttpd::url {
         # to match the /cgi-bin prefix
         regsub -all /+ $url / url
 
-        if {![info exist info(prefixset)] ||
+        if {$info(prefixset) eq "" ||
             ![regexp ^($info(prefixset))(.*) $url x prefix suffix] ||
             ([string length $suffix] && ![string match /* $suffix])
         } {

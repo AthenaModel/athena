@@ -153,6 +153,7 @@ snit::type ::ahttpd::server {
         # a "session" involving a single user to operate in its own 
         # interpreter somehow.
         package require httpd::session
+
                 
         # Doc_ErrorPage registers a template to be used when a page raises an
         # uncaught Tcl error.  This is a crude template that is simply passed 
@@ -175,7 +176,8 @@ snit::type ::ahttpd::server {
                 
         Debug_Url /debug
         
-        Redirect_Init /redirect
+        redirect init /redirect
+
         
         if {[catch {
             Auth_InitCrypt ;# Probe for crypt module
