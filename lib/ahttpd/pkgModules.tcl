@@ -52,9 +52,6 @@ package require httpd 1.7
 
 # httpd sub-packages
 package require httpd::utils    ;# For Stderr
-package require httpd::cgi      ;# CGI services
-package require httpd::auth     ;# Basic authentication
-package require httpd::digest   ;# Digest authentication
 
 source [file join $::ahttpd::library server.tcl  ]
 source [file join $::ahttpd::library mimetype.tcl]
@@ -71,4 +68,9 @@ source [file join $::ahttpd::library url.tcl     ]
 source [file join $::ahttpd::library redirect.tcl]
 source [file join $::ahttpd::library debug.tcl   ]
 source [file join $::ahttpd::library status.tcl  ]
+source [file join $::ahttpd::library tclcrypt.tcl]
 
+
+package require httpd::cgi      ;# CGI services
+package require httpd::auth     ;# Authentication
+package require httpd::digest   ;# Digest Authentication

@@ -8,7 +8,7 @@
 # Supports only algorithm=MD5 and qop=auth
 # (which is more than most browsers support :)
 #
-# Copyright 2004 Colin McCormack.  colinhinix.com
+# Copyright 2004 Colin McCormack.  colin@chinix.com
 # Licensed on terms identical to tclhttpd's license.
 
 package provide httpd::digest 1.0
@@ -24,7 +24,7 @@ if {[catch {package require Random}]} {
     }
 } else {
     # use http://mini.net/tcl/random
-    # cvs -d:pserver:anonymousvs.tclsoap.sourceforge.net:/cvsroot/tclsoap co Random
+    # cvs -d:pserver:anonymous@cvs.tclsoap.sourceforge.net:/cvsroot/tclsoap co Random
 
     # generate a random seed
     if {[file exists /dev/random]} {

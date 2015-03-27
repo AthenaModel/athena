@@ -36,12 +36,6 @@ package require base64
 
 set Auth_DigestOnly 0;	# set this to 1 to only use Digest auth
 
-# Crypto packages
-if {[catch {package require crypt}] || [catch {crypt foo ba}]} {
-    # if we don't have a C library, fall back to pure tcl crypt
-    package require tclcrypt
-}
-
 # set default user/group files
 if {![info exists Config(AuthUserFile)]} {
     set Config(AuthUserFile) default
@@ -74,7 +68,7 @@ if {[info exists Config(Auth)]} {
 	if {[string match user,* $var]} {
 	    # encrypt the password
 	    set salt [Passgen_Salt]
-	    set val [crypt $password $salt]
+	    set val [::ahttpd::crypt $password $salt]
 	}
 	
 	set authdefault($var) $val
@@ -85,7 +79,7 @@ if {[info exists Config(Auth)]} {
     
     set webmaster_password [Passgen_Generate]
     set salt [Passgen_Salt]
-    set authdefault(user,webmaster) [crypt $webmaster_password $salt]
+    set authdefault(user,webmaster) [::ahttpd::crypt $webmaster_password $salt]
     set authdefault(group,webmaster) webmaster
     set fd [open $Config(AuthDefaultFile) w 0660]
     puts $fd $webmaster_password
@@ -352,7 +346,7 @@ proc AuthVerifyBasic {sock file} {
 		    set pass [lindex $parts 1]
 		    set crypt [AuthGetPass $sock $file $user]
 		    set salt [string range $crypt 0 1]
-		    set crypt2 [crypt $pass $salt]
+		    set crypt2 [::ahttpd::crypt $pass $salt]
 		    if {[string compare $crypt $crypt2] != 0} {
 			set ok 0        ;# Not the right password
 		    }

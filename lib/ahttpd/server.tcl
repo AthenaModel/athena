@@ -175,13 +175,6 @@ snit::type ::ahttpd::server {
         status init       
         debug init /debug
         redirect init /redirect
-
-        
-        if {[catch {
-            Auth_InitCrypt ;# Probe for crypt module
-        } err]} {
-            catch {puts "No .htaccess support: $err"}
-        }
     }
 }
                 

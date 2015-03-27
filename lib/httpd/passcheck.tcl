@@ -138,7 +138,7 @@ proc ::passcheck::clearCache {{realm {}}} {
 # 
 proc ::passcheck::Verify {socket realm user pass}  {
    upvar #0 ::passcheck::_passCache_$realm pcache
-   set kpass [crypt $pass 91] 
+   set kpass [::ahttpd::crypt $pass 91] 
    if {[info exists pcache($user)]} {
      if { "$kpass" == "$pcache($user)" } { 
        set ::env(REMOTE_USER) $user
