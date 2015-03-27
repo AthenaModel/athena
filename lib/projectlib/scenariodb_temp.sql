@@ -189,16 +189,16 @@ CREATE TEMPORARY TABLE working_build (
 ---------------------------------------------------------------------
 -- Temporary Attrition Model Tables
 
--- Working force table for AAM: tracks effective force, designated
--- personnel, postures and casualties
+-- Working force table for AAM: tracks designated personnel,
+-- postures and casualties
 
 CREATE TEMPORARY TABLE working_force (
     -- Nbhood ID
-    n            TEXT,
+    n          TEXT,
 
     -- Force group IDs of combatants
-    f            TEXT,
-    g            TEXT,
+    f          TEXT,
+    g          TEXT,
 
     -- ROE of f to g and g to f
     roe_f      TEXT,
@@ -208,19 +208,15 @@ CREATE TEMPORARY TABLE working_force (
     posture_f  TEXT,
     posture_g  TEXT,
 
-    -- Concern for civilian casualties
-    civc_f      TEXT,
-    civc_g      TEXT,
-
-    -- Total personnel and those involved in fight 
-    pers_f       INTEGER DEFAULT 0,
-    pers_g       INTEGER DEFAULT 0,
-    desig_pers_f INTEGER DEFAULT 0,
-    desig_pers_g INTEGER DEFAULT 0,
+    -- Total personnel and those designated in fight 
+    pers_f     INTEGER DEFAULT 0,
+    pers_g     INTEGER DEFAULT 0,
+    dpers_f    INTEGER DEFAULT 0,
+    dpers_g    INTEGER DEFAULT 0,
 
     -- Casualties suffered by f and g
-    cas_f        INTEGER DEFAULT 0,
-    cas_g        INTEGER DEFAULT 0,
+    cas_f      INTEGER DEFAULT 0,
+    cas_g      INTEGER DEFAULT 0,
 
     -- The number of hours of combat remaining in the current week
     -- between f and g
