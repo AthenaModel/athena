@@ -95,18 +95,14 @@ snit::type ::athena::aam {
     }
 
     method start {} {
-        # FIRST, clear out temporary table 
-        $adb eval {
-            DELETE FROM working_force;
-        }
-
-        # NEXT, compute force group multiplier denominator
+        # FIRXT, compute force group multiplier denominator
         set urb   [$adb parm get aam.FRC.urbcas.URBAN]
         set civc  [$adb parm get aam.FRC.civconcern.NONE]
         set elvl  [$adb parm get aam.FRC.equiplevel.BEST]
         set ftype [$adb parm get aam.FRC.forcetype.REGULAR]
         set tlvl  [$adb parm get aam.FRC.discipline.PROFICIENT]
         set dem   [$adb parm get aam.FRC.demeanor.AVERAGE]
+        
         let frcmultD {$urb * $civc * $elvl * $ftype * $tlvl * $dem}
     }
 

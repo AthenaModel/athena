@@ -514,8 +514,7 @@ snit::type ::athena::sim {
                                             # into account on-lock strategies
         $adb cprofile plant start          ;# Initializes the infrastructure model
                                             # which depends on the econ model
-        $adb cprofile aam start            ;# Compute effective forces of 
-                                            # deployed troops
+        $adb cprofile aam start            ;# Initializes attrition model
 
         # NEXT, do analysis and assessment, of transient effects only.
         # There will be no attrition and no shifts in neighborhood control.
