@@ -32,7 +32,6 @@
 # RCS: @(#) $Id: auth.tcl,v 1.19 2004/03/22 16:23:32 coldstore Exp $
 
 package provide httpd::auth 2.0
-package require base64
 
 set Auth_DigestOnly 0;	# set this to 1 to only use Digest auth
 
@@ -322,7 +321,7 @@ proc AuthVerifyBasic {sock file} {
 	switch -- [string tolower $type] {
 	    digest {
 		# unpack the digest request
-		Digest_Get $sock $parts
+		::ahttpd::digest::Digest_Get $sock $parts
 
 		# check that the proferred user can have access
 		set user $data(digest,username)
@@ -330,7 +329,7 @@ proc AuthVerifyBasic {sock file} {
 
 		if {$ok} {
 		    # now check the Digest credentials
-		    set ok [Digest_Request $sock $realm $file]
+		    set ok [::ahttpd::digest::Digest_Request $sock $realm $file]
 		}
 	    }
 	    basic {
@@ -366,7 +365,7 @@ proc AuthVerifyBasic {sock file} {
 	    Httpd_RequestAuth $sock Basic $realm
 	} else {
 	    # make Digest the default
-	    Digest_Challenge $sock $realm $user
+	    ::ahttpd::digest::Digest_Challenge $sock $realm $user
 	}
     } else {
 	# client is permitted and credentials check out

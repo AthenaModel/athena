@@ -8,7 +8,6 @@ package ifneeded httpd 1.7 "
 	source \[file join [list $dir] httpd.tcl\]
 	package ifneeded httpd::auth 2.0 \[list source \[file join [list $dir] auth.tcl\]\]
 	package ifneeded httpd::cgi 1.1 \[list source \[file join [list $dir] cgi.tcl\]\]
-	package ifneeded httpd::digest 1.0 \[list source \[file join [list $dir] digest.tcl\]\]
 	package ifneeded httpd::opentrace 1.0 \[list source \[file join [list $dir] open.tcl\]\]
 	package ifneeded httpd::passcheck 1.0 \[list source \[file join [list $dir] passcheck.tcl\]\]
 	package ifneeded httpd::passgen 1.0 \[list source \[file join [list $dir] passgen.tcl\]\]

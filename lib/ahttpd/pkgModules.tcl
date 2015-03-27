@@ -27,11 +27,12 @@ package provide ahttpd 6.3.0a7
 
 # -kite-require-start ADD EXTERNAL DEPENDENCIES
 package require md5 2.0.7
+package require base64 2.4.2
 package require uri 1.2
 package require counter 2.0
 package require ncgi 1.4.3
-package require html
-package require kiteutils
+package require html 1.4.3
+package require kiteutils 0.4.6
 # -kite-require-end
 
 
@@ -69,8 +70,8 @@ source [file join $::ahttpd::library redirect.tcl]
 source [file join $::ahttpd::library debug.tcl   ]
 source [file join $::ahttpd::library status.tcl  ]
 source [file join $::ahttpd::library tclcrypt.tcl]
+source [file join $::ahttpd::library digest.tcl  ]
 
 
 package require httpd::cgi      ;# CGI services
 package require httpd::auth     ;# Authentication
-package require httpd::digest   ;# Digest Authentication
