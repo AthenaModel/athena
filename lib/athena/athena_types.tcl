@@ -14,24 +14,24 @@
 #-----------------------------------------------------------------------
 
 namespace eval ::athena:: {
-    namespace export \
-        eanyall      \
-        ecivconcern  \
-        edoes        \
-        eexecstatus  \
-        eresource    \
-        eflagstatus  \
-        eexecmode    \
-        ePrioUpdate  \
-        eroe         \
-        esanity      \
-        esimstate    \
-        einputmode   \
-        rgamma       \
-        rcov         \
-        rsvcpct      \
-        refpoint     \
-        refpoly      \
+    namespace export   \
+        eanyall        \
+        ecivcasconcern \
+        edoes          \
+        eexecstatus    \
+        eresource      \
+        eflagstatus    \
+        eexecmode      \
+        ePrioUpdate    \
+        eroe           \
+        esanity        \
+        esimstate      \
+        einputmode     \
+        rgamma         \
+        rcov           \
+        rsvcpct        \
+        refpoint       \
+        refpoly        \
         tclscript
 }
 
@@ -43,7 +43,7 @@ enum ::athena::eanyall {
 }
 
 # Concern for civilian casualties
-enum ::athena::ecivconcern {
+enum ::athena::ecivcasconcern {
     NONE   "None"
     LOW    "Low"
     MEDIUM "Medium"

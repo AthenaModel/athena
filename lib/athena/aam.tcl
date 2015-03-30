@@ -85,7 +85,7 @@ snit::type ::athena::aam {
         set alist ""
         set sdict ""
         set cdict ""
-        array unset roedict
+        set roedict [lzipper [$adb nbhood names]]
         array unset effFrc
         array unset frcMult
         array unset civcasMult
@@ -95,15 +95,17 @@ snit::type ::athena::aam {
     }
 
     method start {} {
-        # FIRXT, compute force group multiplier denominator
+        # FIRST, compute force group multiplier denominator
         set urb   [$adb parm get aam.FRC.urbcas.URBAN]
         set civc  [$adb parm get aam.FRC.civconcern.NONE]
         set elvl  [$adb parm get aam.FRC.equiplevel.BEST]
         set ftype [$adb parm get aam.FRC.forcetype.REGULAR]
         set tlvl  [$adb parm get aam.FRC.discipline.PROFICIENT]
         set dem   [$adb parm get aam.FRC.demeanor.AVERAGE]
-        
+
         let frcmultD {$urb * $civc * $elvl * $ftype * $tlvl * $dem}
+
+        set roedict [lzipper [$adb nbhood names]]
     }
 
     #-------------------------------------------------------------------
@@ -119,7 +121,7 @@ snit::type ::athena::aam {
 
         # FIRST, clear out temporary table 
         $adb eval {
-            DELETE FROM working_force;
+            DELETE FROM aam_battle;
         }
 
         # NEXT, clear transient combat data
@@ -137,7 +139,7 @@ snit::type ::athena::aam {
         # NEXT, force on force combat and collateral civilian casualties
         if {[$adb parm get aam.maxCombatTimeHours] > 0} {
             $self ComputeEffectiveForce
-            $self BuildWorkingCombatData
+            $self BuildBattleData 
             $self AllocateForce
             $self DoGroupCombat
         }
@@ -155,7 +157,7 @@ snit::type ::athena::aam {
         set alist ""
         set sdict ""
         set cdict ""
-        array unset roedict
+        set roedict ""
     }
 
     # ComputeEffectiveForce
@@ -166,20 +168,20 @@ snit::type ::athena::aam {
     # poorly trained irregular forces with poor equipment.
 
     method ComputeEffectiveForce {} {
-        foreach {elvl tlvl frctype dem urb pers n g} [$adb eval {
-            SELECT F.equip_level   AS equip_level,
-                   F.training      AS training,
-                   F.forcetype     AS forcetype,
-                   F.demeanor      AS demeanor,
+        $adb eval {
+            SELECT F.equip_level   AS elvl,
+                   F.training      AS tlvl,
+                   F.forcetype     AS frctype,
+                   F.demeanor      AS dem,
                    N.urbanization  AS urb,
-                   D.personnel     AS personnel,
+                   D.personnel     AS pers,
                    D.n             AS n,
                    D.g             AS g
             FROM gui_frcgroups AS F
             JOIN deploy_ng     AS D ON (D.g=F.g)
             JOIN nbhoods       AS N ON (D.n=N.n)
             WHERE D.personnel > 0
-        }] {
+        } {
             set Fe [$adb parm get aam.FRC.equiplevel.$elvl]
             set Ff [$adb parm get aam.FRC.forcetype.$frctype]
             set Ft [$adb parm get aam.FRC.discipline.$tlvl]
@@ -191,96 +193,77 @@ snit::type ::athena::aam {
         }
     }
 
-    # BuildWorkingCombatData
+    # BuildBattleData
     #
-    # This method builds the working combat table based on deployments.
+    # This method builds the AAM battle table based on deployments.
     # Default ROEs, thresholds and postures are set for those groups
     # that have not explictly been given them via an actor's strategy.
 
-    method BuildWorkingCombatData {} {
+    method BuildBattleData {} {
         # FIRST, get max combat time for this week
         set hours [$adb parm get aam.maxCombatTimeHours]
 
-        # NEXT, fill in the working combat table based on
-        # deployments
-        foreach {n f pers_f} [$adb eval {
-            SELECT n,g,personnel FROM deploy_ng 
-            WHERE personnel > 0
-        }] {
-            # NEXT, only care about FRC groups
-            if {$f ni [$adb frcgroup names]} {
+        $adb eval {
+            SELECT N.n         AS n,
+                   F.g         AS f,
+                   G.g         AS g,
+                   DF.personnel AS persf,
+                   DG.personnel AS persg
+            FROM nbhoods AS N
+            JOIN frcgroups AS F 
+            JOIN frcgroups AS G
+            JOIN deploy_ng AS DF ON (DF.n = N.n AND DF.g = F.g)
+            JOIN deploy_ng AS DG ON (DG.n = N.n AND DG.g = G.g)
+            WHERE F.g != G.g AND DF.personnel > 0 AND DG.personnel > 0
+        } {
+            if {[info exists dThresh($n,$f,$g)]} {
                 continue
-            }           
+            }
 
-            # NEXT, groups in n other than f
-            foreach {g pers_g} [$adb eval {
-                SELECT g,personnel FROM deploy_ng 
-                WHERE n=$n AND personnel > 0 AND g!=$f
-            }] {
+            # NEXT, defaults for f->g in case no ROE specified
+            array set fvals {roe "DEFEND" athresh 0.0 dthresh 0.15 civc "HIGH"}
 
-                # NEXT, only care about FRC groups
-                if {$g ni [$adb frcgroup names]} {
-                    continue
-                }
+            # NEXT, pull data from ROE dict, if it's there 
+            if {[dict exists $roedict $n $f $g]} {
+                array set fvals [dict get $roedict $n $f $g]
+            }
 
-                # NEXT, skip if we already have data for g->f 
-                if {[info exists dThresh($n,$g,$f)]} {
-                    continue
-                }
+            # NEXT, defaults for g->f in case no ROE specified
+            array set gvals {roe "DEFEND" athresh 0.0 dthresh 0.15 civc "HIGH"}
 
-                # NEXT, defaults for f->g in case no ROE specified
-                set roeF  "DEFEND"
-                set athrF 0.0
-                set dthrF 0.15
-                set civcF "HIGH"
+            # NEXT, pull data from ROE dict, if it's there 
+            if {[dict exists $roedict $n $g $f]} {
+                array set gvals [dict get $roedict $n $g $f]
+            }
 
-                # NEXT, pull data from ROE dict, if it's there 
-                if {[info exists roedict($n)] && 
-                    [dict exists $roedict($n) $f $g]} {
-                    set roeF  [dict get $roedict($n) $f $g roe]
-                    set athrF [dict get $roedict($n) $f $g athresh]
-                    set dthrF [dict get $roedict($n) $f $g dthresh]
-                    set civcF [dict get $roedict($n) $f $g civc]
-                }
+            # NEXT, if ROE on both side is DEFEND, no need to add to
+            # battle table
+            if {$fvals(roe) eq "DEFEND" && $gvals(roe) eq "DEFEND"} {
+                continue
+            }
 
-                # NEXT, defaults for g->f in case no ROE specified
-                set roeG  "DEFEND"
-                set athrG 0.0
-                set dthrG 0.15
-                set civcG "HIGH"
+            # NEXT, compute force ratios used for determining posture
+            # later 
+            let frcRatio {
+                (double($effFrc($n,$g))/double($persg)) / 
+                (double($effFrc($n,$f))/double($persf))
+            }
 
-                # NEXT, pull data from ROE dict, if it's there 
-                if {[info exists roedict($n)] && 
-                    [dict exists $roedict($n) $g $f]} {
-                    set roeG  [dict get $roedict($n) $g $f roe]
-                    set athrG [dict get $roedict($n) $g $f athresh]
-                    set dthrG [dict get $roedict($n) $g $f dthresh]
-                    set civcG [dict get $roedict($n) $g $f civc]
-                }
+            # f -> g
+            let aThresh($n,$f,$g) {$fvals(athresh) * $frcRatio}
+            let dThresh($n,$f,$g) {$fvals(dthresh) * $frcRatio}
+            set civconc($n,$f,$g) $fvals(civc)
 
-                # NEXT, compute force ratios used for determining posture
-                # later 
-                let frcRatio {
-                    (double($effFrc($n,$g))/double($pers_g)) / 
-                    (double($effFrc($n,$f))/double($pers_f))
-                }
-
-                # f -> g
-                let aThresh($n,$f,$g) {$athrF * $frcRatio}
-                let dThresh($n,$f,$g) {$dthrF * $frcRatio}
-                set civconc($n,$f,$g) $civcF
-
-                # g -> f
-                let aThresh($n,$g,$f) {$athrG * $frcRatio}
-                let dThresh($n,$g,$f) {$dthrG * $frcRatio}
-                set civconc($n,$g,$f) $civcG
-                
-                # NEXT, add to the working force table
-                $adb eval {
-                    INSERT INTO working_force(n,f,g,pers_f,pers_g,
-                                              roe_f,roe_g,hours_left)
-                    VALUES($n,$f,$g,$pers_f,$pers_g,$roeF,$roeG,$hours)
-                }
+            # g -> f
+            let aThresh($n,$g,$f) {$gvals(athresh) * $frcRatio}
+            let dThresh($n,$g,$f) {$gvals(dthresh) * $frcRatio}
+            set civconc($n,$g,$f) $gvals(civc)
+            
+            # NEXT, add to the working force table
+            $adb eval {
+                INSERT INTO aam_battle(n,f,g,pers_f,pers_g,
+                                       roe_f,roe_g,hours_left)
+                VALUES($n,$f,$g,$persf,$persg,$fvals(roe),$gvals(roe),$hours)
             }
         }
     }
@@ -293,64 +276,68 @@ snit::type ::athena::aam {
     # upon how much force is projected by the groups involved in combat.
 
     method AllocateForce {} {
-        # FIRST, go through the working combat table looking for groups
-        # that could possibly be in combat
+        # FIRST, accumulate effective force from both f and g's
+        # point of view
+        $adb eval {
+            SELECT n,f,g FROM aam_battle
+        } {
+
+            # NEXT, initialize accumulators
+            if {![info exists totEffFrcF($n,$f)]} {
+                set totEffFrcF($n,$f) 0.0
+            }
+
+            if {![info exists totEffFrcG($n,$g)]} {
+                set totEffFrcG($n,$g) 0.0
+            }
+
+            # NEXT, effective force accumulators from both sides'
+            # point of view 
+            let totEffFrcF($n,$f) {$totEffFrcF($n,$f) + $effFrc($n,$g)}
+            let totEffFrcG($n,$g) {$totEffFrcG($n,$g) + $effFrc($n,$f)}
+        }
+
+        # NEXT, designate personnel to combat based upon the fraction of
+        # force each opponent has in the battle 
         foreach {n f g} [$adb eval {
-            SELECT n,f,g FROM working_force
-            WHERE roe_f = 'ATTACK' OR roe_g = 'ATTACK'
+            SELECT n,f,g FROM aam_battle
         }] {
-            # NEXT, compute total effective force from f's point of view
-            # Those g's that f is attacking
-            set totalEffFrcG 0.0
 
-            foreach grp [$adb eval {
-                SELECT g FROM working_force
-                WHERE n=$n AND f=$f AND roe_f='ATTACK'
-            }] {
-                let totalEffFrcG {$totalEffFrcG + $effFrc($n,$grp)}
-            }
+            let fracF {$effFrc($n,$g) / $totEffFrcF($n,$f)}
+            let fracG {$effFrc($n,$f) / $totEffFrcG($n,$g)}
 
-            # Those g's attacking f 
-            set totalEffFrcF 0.0
-            foreach grp [$adb eval {
-                SELECT g FROM working_force
-                WHERE n=$n AND f=$f AND roe_g='ATTACK'
-            }] {
-                let totalEffFrcF {$totalEffFrcF + $effFrc($n,$grp)}
-            }
-
-            let fracF {$effFrc($n,$g) / ($totalEffFrcG + $totalEffFrcF)}
-
-            # NEXT, compute total effective force from g's point of view
-            # Those g is attacking
-            set totalEffFrcF 0.0
-            foreach grp [$adb eval {
-                SELECT f FROM working_force
-                WHERE n=$n AND g=$g AND roe_g='ATTACK'
-            }] {
-                let totalEffFrcF {$totalEffFrcF + $effFrc($n,$grp)}
-            }
-
-            # Those attacking g
-            set totalEffFrcG 0.0
-
-            foreach grp [$adb eval {
-                SELECT f FROM working_force
-                WHERE n=$n AND g=$g AND roe_f='ATTACK'
-            }] {
-                let totalEffFrcG {$totalEffFrcG + $effFrc($n,$grp)}
-            }
-
-            let fracG {$effFrc($n,$f) / ($totalEffFrcG + $totalEffFrcF)}
-
-            # NEXT, allocate personnel based on effective force
             $adb eval {
-                UPDATE working_force
+                UPDATE aam_battle
                 SET dpers_f = CAST(round(pers_f*$fracF) AS INTEGER),
                     dpers_g = CAST(round(pers_g*$fracG) AS INTEGER)
                 WHERE n=$n AND f=$f AND g=$g
-            }               
+            }           
         }
+    }
+
+
+    # DoGroupCombat
+    #
+    # Updates force allocation based on ROEs and computes attrition to
+    # force groups and civilian groups.
+
+    method DoGroupCombat {} {
+        set moreCombat 1
+        while {$moreCombat} {
+            $self SetGroupPosture   
+            set moreCombat [$self ComputeForceGroupAttrition]
+        }
+
+        # NEXT, assess casualties to force groups 
+        $adb eval {
+            SELECT n, f, g, cas_f, cas_g FROM aam_battle
+            WHERE cas_f > 0 OR cas_g > 0
+        } {
+            $self AttritForceGroups $n $f $g $cas_f $cas_g
+        }
+
+        # NEXT, assess civilian casualties due to force group combat
+        $self ComputeCivilianCasualties
     }
 
     # SetGroupPosture
@@ -362,7 +349,7 @@ snit::type ::athena::aam {
     method SetGroupPosture {} {
         foreach {n f g DPf DPg roeF roeG} [$adb eval {
             SELECT n,f,g,dpers_f,dpers_g,roe_f,roe_g 
-            FROM working_force
+            FROM aam_battle
             WHERE dpers_f > 0 AND dpers_g > 0
         }] {
             let DPf {double($DPf)}
@@ -388,7 +375,7 @@ snit::type ::athena::aam {
 
             # NEXT, set posture in the adb
             $adb eval {
-                UPDATE working_force
+                UPDATE aam_battle
                 SET posture_f = $posture_f,
                     posture_g = $posture_g
                 WHERE n=$n AND f=$f AND g=$g
@@ -396,51 +383,40 @@ snit::type ::athena::aam {
         }
     }
 
-    # DoGroupCombat
+    # AttritForceGroups n f g casf casg 
     #
-    # Updates force allocation based on ROEs and computes attrition to
-    # force groups and civilian groups.
+    # n    - A neighborhood ID 
+    # f    - A force group that has, perhaps, taken casualties
+    # g    - Another force group that has, perhaps, taken casualties
+    # casf - The casualties to f, may be zero
+    # casg - The casualties to g, may be zero
+    #
+    # This helper method appends attrition data for one or two force groups
+    # that have taken casualties during the AAM assessment.  Only groups with
+    # non-zero casualties are added to the list.  The attrition is adjudicated
+    # later at the end of assessment.
 
-    method DoGroupCombat {} {
-        set moreCombat 1
-        while {$moreCombat} {
-            $self SetGroupPosture   
-            set moreCombat [$self ComputeForceGroupAttrition]
+    method AttritForceGroups {n f g casf casg} {
+        # FIRST, initialize the attrition dictionary 
+        set adata [dict create mode GROUP g1 "" g2 "" n $n]
+
+        # NEXT, as appropriate add attrition taken by f and/or g
+        if {$casf > 0} {
+            dict set adata f $f
+            dict set adata casualties $casf
+            lappend alist $adata
         }
 
-        # NEXT, assess casualties to force groups 
-        $adb eval {
-            SELECT n, f, g, cas_f, cas_g FROM working_force
-            WHERE cas_f > 0 OR cas_g > 0
-        } {
-            set parmdict [dict create]
-            dict set parmdict mode GROUP
-            dict set parmdict g1 ""
-            dict set parmdict g2 ""
-
-            if {$cas_f > 0} {
-                dict set parmdict casualties $cas_f
-                dict set parmdict n $n
-                dict set parmdict f $f
-                $self attrit $parmdict
-            }
-
-            if {$cas_g > 0} {
-                dict set parmdict casualties $cas_g
-                dict set parmdict n $n
-                dict set parmdict f $g
-                $self attrit $parmdict                
-            }
+        if {$casg > 0} {
+            dict set adata f $g
+            dict set adata casualties $casg
+            lappend alist $adata
         }
-
-        # NEXT, assess civilian casualties due to force group combat
-        $self ComputeCivilianCasualties
     }
-
 
     # ComputeForceGroupAttrition
     #
-    # This method goes through the working force table and computes
+    # This method goes through the AAM battle table and computes
     # the amount of time two combatant fight based on postures and 
     # Lanchester attrition rates.  This time is used to compute the
     # number of casualties each side of a force on force fight
@@ -463,7 +439,7 @@ snit::type ::athena::aam {
         $adb eval {
             SELECT n,f,g,posture_f,posture_g,dpers_f,dpers_g,
                    roe_f,hours_left
-            FROM working_force
+            FROM aam_battle
             WHERE dpers_f > 0 AND dpers_g > 0 AND hours_left > 0 
         } {
             # NEXT, get model parameter Lanchester coefficients 
@@ -505,16 +481,16 @@ snit::type ::athena::aam {
 
             # NEXT, populate transient input data for computing
             # casualties and time of combat 
-            set idata(Afg)   $Afg
-            set idata(Agf)   $Agf
-            set idata(Rfg)   $Rfg
-            set idata(Rgf)   $Rgf
-            set idata(DPf)   $dpers_f
-            set idata(DPg)   $dpers_g
-            set idata(Tleft) $hours_left
+            set idata [dict create]
+            dict set idata Afg   $Afg
+            dict set idata Agf   $Agf
+            dict set idata Rfg   $Rfg
+            dict set idata Rgf   $Rgf
+            dict set idata DPf   $dpers_f
+            dict set idata DPg   $dpers_g
+            dict set idata Tleft $hours_left
 
-            lassign [$self ComputeForceGroupCasualties [array get idata]] \
-                PRf PRg t
+            lassign [$self ComputeForceGroupCasualties $idata] PRf PRg t
 
             # NEXT, minumum casualty of 1 for the attacker. If both
             # have an ATTACK ROE, arbitrarily choose f. This prevents
@@ -539,7 +515,7 @@ snit::type ::athena::aam {
         # NEXT adjudicate the outcome of any fighting
         foreach {n f g casF casG t} $outcome {
             $adb eval {
-                UPDATE working_force
+                UPDATE aam_battle
                 SET cas_f      = cas_f+$casF,
                     cas_g      = cas_g+$casG,
                     pers_f     = pers_f-$casF,
@@ -653,6 +629,7 @@ snit::type ::athena::aam {
     #
     # n       - a neighborhood in which g assumes an ROE
     # f       - a force group assuming the ROE
+    # g       - a force group to whom the ROE is directed
     # rdict   - dictionary of ROE key/values
     #
     # rdict contains the following data related to how g should conduct
@@ -664,41 +641,29 @@ snit::type ::athena::aam {
     #        -> dthresh => the force/enemy ratio below which $f WITHDRAWs
     #        -> civc => $f's concern for civilian casualties
     #
-    # The data in this array of dictionaries is used to set up the initial
+    # The data in this nested dictionart is used to set up the initial
     # conditions of the various conflicts between FRC groups by neighborhood.
     # It should be noted that just because a FRC group is ordered to assume
     # a posture via the ROE, that posture may not be attainable due to
     # the computed force ratios.
 
     method setroe {n f g rdict} {
-        dict set roedict($n) $f $g $rdict 
+        dict set roedict $n $f $g $rdict 
     }
 
-    # hasroe n g f
+    # hasroe n f g
     #
     # n   - a neighborhood
     # f   - a force group
-    # g   - other force group
+    # g   - another force group
     #
-    # This method returns a flag indicating whether g has an ROE already
+    # This method returns a flag indicating whether f has an ROE already
     # set against g in n.  This is used during ROE tactic execution to
     # determine whether an ROE has already been set and, therefore, cannot
     # be overridden.
 
     method hasroe {n f g} {
-        if {![info exists roedict($n)]} {
-            return 0
-        }
-
-        return [dict exists $roedict($n) $f $g]
-    }
-
-    # getroe
-    #
-    # Returns the roedict as a dictionary
-
-    method getroe {} {
-        return [array get roedict]
+        return [dict exists $n $f $g]
     }
 
     #-------------------------------------------------------------------

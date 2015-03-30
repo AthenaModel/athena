@@ -67,6 +67,46 @@ CREATE TABLE deploy_tng (
 -- Index so that attrition is efficient.
 CREATE INDEX deploy_tng_index ON deploy_tng(n,g);
 
+---------------------------------------------------------------------
+-- Attrition Model Tables
+
+-- Battle table for AAM: tracks designated personnel,
+-- postures and casualties
+
+CREATE TABLE aam_battle (
+    -- Nbhood ID
+    n          TEXT,
+
+    -- Force group IDs of combatants
+    f          TEXT,
+    g          TEXT,
+
+    -- The number of hours of combat remaining in the current week
+    -- between f and g
+    hours_left   DOUBLE DEFAULT 0.0,
+
+    -- ROE of f to g and g to f
+    roe_f      TEXT,
+    roe_g      TEXT,
+
+    -- Posture f takes wrt to g and g takes wrt f
+    posture_f  TEXT,
+    posture_g  TEXT,
+
+    -- Total personnel and those designated in fight 
+    pers_f     INTEGER DEFAULT 0,
+    pers_g     INTEGER DEFAULT 0,
+    dpers_f    INTEGER DEFAULT 0,
+    dpers_g    INTEGER DEFAULT 0,
+
+    -- Casualties suffered by f and g
+    cas_f      INTEGER DEFAULT 0,
+    cas_g      INTEGER DEFAULT 0,
+
+    PRIMARY KEY (n, f, g)
+);
+
+
 
 -- General unit data
 CREATE TABLE units (

@@ -209,7 +209,7 @@
         }
 
         rcc "Concern For Civilian Casualties:" -for civc
-        enum civc -listcmd {ecivconcern names} -defvalue HIGH
+        enum civc -listcmd {ecivcasconcern names} -defvalue HIGH
     }
 
 
@@ -229,7 +229,7 @@
         my prepare roe        -toupper  -type eroe
         my prepare athresh    -toupper  -type rmagnitude
         my prepare dthresh    -toupper  -type rmagnitude
-        my prepare civc       -toupper  -type ecivconcern
+        my prepare civc       -toupper  -type ecivcasconcern
 
         my returnOnError
 
