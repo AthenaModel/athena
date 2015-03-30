@@ -28,6 +28,31 @@ snit::type ::ahttpd::cgi {
     #-------------------------------------------------------------------
     # Type Variables
 
+    # envmap
+    #
+    # Environment variables that are extracted from the mime header
+    # SetEnvAll.  The values are keys into the per-connection state 
+    # array (i.e. "data")
+
+    typevariable envmap -array {
+        CONTENT_LENGTH          mime,content-length
+        CONTENT_TYPE            mime,content-type
+        HTTP_ACCEPT             mime,accept
+        HTTP_AUTHORIZATION      mime,authorization
+        HTTP_FROM               mime,from
+        HTTP_REFERER            mime,referer
+        HTTP_USER_AGENT         mime,user-agent
+        QUERY_STRING            query
+        REQUEST_METHOD          proto
+        HTTP_COOKIE             mime,cookie
+        HTTP_FORWARDED          mime,forwarded
+        HTTP_HOST               mime,host
+        HTTP_PROXY_CONNECTION   mime,proxy-connection
+        REMOTE_USER             remote_user
+        AUTH_TYPE               auth_type
+    }
+
+
     # info array:
     #
     # env-pass   - List of environment variables to preserve when setting
@@ -51,7 +76,7 @@ snit::type ::ahttpd::cgi {
 
     typemethod setenv {sock path {var env}} {
         upvar 1 $var env
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
         SetEnvAll $sock $path {} $data(url) env
     }
     
@@ -64,7 +89,7 @@ snit::type ::ahttpd::cgi {
     # Set up a CGI-like environment array in the interpreter.
 
     typemethod setenvfor {sock path interp} {
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
         SetEnvAll $sock $path {} $data(url) env
         interp eval $interp \
             [list uplevel #0 [list array set env [array get env]]]
@@ -83,9 +108,9 @@ snit::type ::ahttpd::cgi {
     # Sets up an environment array with the necessary data.
 
     proc SetEnvAll {sock path extra url var} {
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
+        upvar #0 ::ahttpd::httpd::Httpd Httpd
         upvar 1 $var env
-        global Httpd Httpd_EnvMap
 
         # Clear the environment
         foreach i [array names env] {
@@ -94,16 +119,16 @@ snit::type ::ahttpd::cgi {
             } 
         }
 
-        foreach name [array names Httpd_EnvMap] {
+        foreach name [array names envmap] {
             set env($name) ""
             catch {
-                set env($name) $data($Httpd_EnvMap($name))
+                set env($name) $data($envmap($name))
             }
         }
 
-        set env(REQUEST_URI) [Httpd_SelfUrl $data(uri) $sock]
+        set env(REQUEST_URI) [httpd selfUrl $data(uri) $sock]
         set env(GATEWAY_INTERFACE) "CGI/1.1"
-        set env(SERVER_PORT) [Httpd_Port $sock]
+        set env(SERVER_PORT) [httpd port $sock]
         if {[info exist Httpd(https_port)]} {
             set env(SERVER_HTTPS_PORT) $Httpd(https_port)
         }

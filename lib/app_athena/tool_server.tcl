@@ -30,6 +30,17 @@ tool define SERVER {
     typemethod execute {argv} {
         puts "Starting web server"
 
+        # server specific version of bgerror
+        proc ::bgerror {msg} {
+            global errorInfo
+
+            set msg "[clock format [clock seconds]]\n$errorInfo"
+            if [catch {::ahttpd::log add nosock bgerror $msg}] {
+                ::ahttpd::Stderr $msg
+            }
+        }
+
+
         foroption opt argv {
             -gui {
                 package require marsgui

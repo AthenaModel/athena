@@ -194,7 +194,7 @@ snit::type ::ahttpd::auth {
     # Returns 1 for success and 0 for access denied.
 
     proc AuthVerifyTcl {sock file} {
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
 
 
         # The file contains definitions for the "realm" variable
@@ -220,7 +220,7 @@ snit::type ::ahttpd::auth {
     # denied.
 
     proc Auth_VerifyCallback {sock realm callback} {
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
 
         if {![info exists data(mime,authorization)]} {
             set ok 0
@@ -240,7 +240,7 @@ snit::type ::ahttpd::auth {
         }
 
         if {!$ok} {
-            Httpd_RequestAuth $sock Basic $realm
+            httpd requestAuth $sock Basic $realm
             return 0
         } else {
             set data(auth_type) Basic
@@ -251,7 +251,7 @@ snit::type ::ahttpd::auth {
     }
 
     proc AuthNullCallback {sock realm user pass} {
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
         variable auth
 
         if {[info exists auth($realm,$user)]} {
@@ -282,7 +282,7 @@ snit::type ::ahttpd::auth {
 
     proc AuthUserOp {sock file op user} {
         upvar #0 ::ahttpd::auth$file info
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
 
         if {[info exists info(htaccessp,require,$op,group)]} {
             if {![AuthGroupCheck $sock $file \
@@ -311,7 +311,7 @@ snit::type ::ahttpd::auth {
 
     proc AuthVerifyBasic {sock file} {
         upvar #0 ::ahttpd::auth$file info
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
 
         set user ""
 
@@ -323,7 +323,7 @@ snit::type ::ahttpd::auth {
         if {[info exists info(htaccessp,order,$op)]} {
             if {! [AuthVerifyNet $sock $file $op]} {
                 # it is controlled and network address is excluded
-                Httpd_Error $sock 403
+                httpd error $sock 403
                 return 0
             }
         }
@@ -386,7 +386,7 @@ snit::type ::ahttpd::auth {
         if {!$ok} {
             # client hasn't sent auth or auth doesn't satisfy
             if {!$config(digestOnly) && ($info(htaccessp,type) == "Basic")} {
-                Httpd_RequestAuth $sock Basic $realm
+                httpd requestAuth $sock Basic $realm
             } else {
                 # make Digest the default
                 ::ahttpd::digest::Digest_Challenge $sock $realm $user

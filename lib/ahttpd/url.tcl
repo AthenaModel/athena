@@ -98,7 +98,7 @@ snit::type ::ahttpd::url {
     # Dispatches the request to a type-specific handler for a URL.
 
     typemethod dispatch {sock} {
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
 
         catch {after cancel $data(cancel)}
         set url $data(url)
@@ -144,8 +144,8 @@ snit::type ::ahttpd::url {
                         # appropriate response, such as a 403, to request
                         # a retry. But, if it hasn't, we generate a default.
 
-                        if {![Httpd_RequestComplete $sock]} {
-                            Httpd_Error $sock 403
+                        if {![httpd requestComplete $sock]} {
+                            httpd error $sock 403
                         }
                         return
                     }
@@ -157,12 +157,12 @@ snit::type ::ahttpd::url {
 
             # Register a callback with the Httpd layer
             if {[info exist info(callback,$prefix)]} {
-                Httpd_CompletionCallback $sock $info(callback,$prefix)
+                httpd onCompletion $sock $info(callback,$prefix)
             }
 
             # Pre-read the post data, if the domain wants that
             if {$info(readpost,$prefix) && $data(count) > 0} {                
-                Httpd_ReadPostDataAsync $sock \
+                httpd readPostDataAsync $sock \
                     [myproc DeferredDispatch $prefix $suffix]
                 return
             }
@@ -189,7 +189,7 @@ snit::type ::ahttpd::url {
 
     proc DeferredDispatch {prefix suffix sock varname errmsg} {
         if {[string length $errmsg]} {
-            Httpd_SockClose $sock 1 $errmsg
+            httpd sockclose $sock 1 $errmsg
             return
         }
 
@@ -225,28 +225,28 @@ snit::type ::ahttpd::url {
                 # info into the errorCode variable, which should be of the 
                 # form HTTPD_REDIRECT $newurl
 
-                Httpd_Redirect [lindex $ec 1] $sock
+                httpd redirect [lindex $ec 1] $sock
                 return
             }
             HTTPD_SUSPEND {
                 # The domain handler has until Httpd(timeout2) to complete 
                 # this request
         
-                Httpd_Suspend $sock
+                httpd suspend $sock
                 return
             }
         }
 
         switch -glob -- $ei {
             "*can not find channel*"  {
-                Httpd_SockClose $sock 1 $error
+                httpd sockclose $sock 1 $error
             }
             "*too many open files*" {
                 # this is lame and probably not necessary.
                 # Early bugs lead to file descriptor leaks, but
                 # these are all plugged up.
                 stats count numfiles
-                Httpd_SockClose $sock 1 $error
+                httpd sockclose $sock 1 $error
                 File_Reset
             } 
             default {
@@ -357,7 +357,7 @@ snit::type ::ahttpd::url {
     # command - The domain handler command.  This is invoked with one
     #           additional argument, $sock, that is the handle identifier.
     #           A well-known state array is available at
-    #           upvar #0 Httpd$sock 
+    #           upvar #0 ::ahttpd::Httpd$sock 
     #
     # Declare that a handler exists for a point in the URL tree
     # identified by the prefix of all URLs below that point.
@@ -560,7 +560,7 @@ snit::type ::ahttpd::url {
     #   ncgi::reset, ncgi::parse, ncgi::urlstup
 
     typemethod querysetup {sock} {
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
 
         set valuelist {}
 
@@ -609,7 +609,7 @@ snit::type ::ahttpd::url {
                 append query &
             }
             while {$info(postlength) > 0} {
-                set info(postlength) [Httpd_GetPostData $sock query]
+                set info(postlength) [httpd getPostData $sock query]
             }
             unset info(postlength)
             return $result

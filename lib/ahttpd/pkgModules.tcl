@@ -33,6 +33,7 @@ package require counter 2.0
 package require ncgi 1.4.3
 package require html 1.4.3
 package require kiteutils 0.4.6
+package require tls 1.6
 # -kite-require-end
 
 
@@ -49,10 +50,9 @@ namespace eval ::ahttpd:: {
 #-----------------------------------------------------------------------
 # Modules
 
-package require httpd 1.7
+source [file join $::ahttpd::library httpd.tcl    ]
 
-# httpd sub-packages
-package require httpd::utils    ;# For Stderr
+package require httpd::utils    ;# For Stderr, etc.
 
 source [file join $::ahttpd::library server.tcl   ]
 source [file join $::ahttpd::library mimetype.tcl ]

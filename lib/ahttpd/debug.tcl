@@ -45,9 +45,8 @@ snit::type ::ahttpd::debug {
     #
     # source - The file to source
     #
-    # Source the file into a server thread.  First look for the file to
-    # source in the dir specified by Httpd(library).  If not found, use the
-    # dir in Config(lib).
+    # Source the file into a server thread.  For the file to
+    # source in the ::ahttpd::library.
     #
     # Returns HTML code that displays result of loading the file.
 

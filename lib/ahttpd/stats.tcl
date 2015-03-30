@@ -68,7 +68,7 @@ snit::type ::ahttpd::stats {
             counter::init $c
         }
 
-        Httpd_RegisterShutdown [mytypemethod checkpoint]
+        httpd onShutdown [mytypemethod checkpoint]
     }
 
     # checkpoint

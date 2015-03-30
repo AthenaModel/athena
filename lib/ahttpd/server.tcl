@@ -1,6 +1,6 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#   ahttpd.tcl
+#   server.tcl
 #
 # PROJECT:
 #   athena - Athena Regional Stability Simulation
@@ -18,7 +18,10 @@
 #     possible.
 #     * Use same variables, but pass array explicitly, or access via
 #       "sock".
-#   * Consider removing templates.
+#   * Scan mime.types, and remove tcl-* handlers that we don't use.
+#   * Consider removing templates.  If not, simplify.
+#       * Always use safe interp.
+#       * Provide clean API for use by templates.
 #
 #-----------------------------------------------------------------------
 
@@ -107,21 +110,21 @@ snit::type ::ahttpd::server {
             }
         }
 
-        # NEXT, start the server running
-        Httpd_Init
-        
-        # NEXT, Open the listening sockets
-        Httpd_Server $info(port) $info(host) $info(ipaddr)
-                        
-        # NEXT, start the server running
+        # NEXT, initialize the package.
+        httpd init
+
+        # TBD: Move in-line
         $type StartMainThread
 
-        # NEXT, some logging parameters
         # TBD: Need -logroot parameter
-        ::ahttpd::log setfile ~/github/athena/log/httpd$info(port)
-
         # TBD: Need application log.  ahttpd::log should be combined
         # with it.
+        ::ahttpd::log setfile ~/github/athena/log/httpd$info(port)
+
+        # NEXT, start the server.
+        httpd server $info(port) $info(host) $info(ipaddr)
+
+
         puts "httpd started on port $info(port)"
     }
     
@@ -173,19 +176,13 @@ snit::type ::ahttpd::server {
         
         doc notfoundpage /notfound.html
         
-        # Doc_Webmaster returns the value last passed into it.
+        # httpd webmaster returns the value last passed into it.
         # Designed to be used in page templates where contact email is needed.
         
-        Httpd_Webmaster  $info(webmaster)
+        httpd webmaster  $info(webmaster)
         
         status init       
         debug init /debug
         redirect init /redirect
     }
 }
-                
-# These stubs tell the httpd server that there are no worker threads
-# TBD: These should not be necessary; just need to configure 
-# Httpd to not use threads.
-proc Thread_Respond {args} {return 0}
-proc Thread_Enabled {}     {return 0}

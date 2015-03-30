@@ -104,7 +104,7 @@ snit::type ::ahttpd::mimetype {
 
     typemethod accept {sock} {
         # TBD: Need a better interface to Httpd data.
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
         if {![info exist data(mime,accept)]} {
             return */*
         } else {

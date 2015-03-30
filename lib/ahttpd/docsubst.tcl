@@ -49,7 +49,7 @@ snit::type ::ahttpd::docsubst {
     # TBD: Should this be in this module?
 
     typemethod returnfile {sock path {interp {}}} {
-        Httpd_ReturnData $sock text/html [$type file $path $interp]
+        httpd returnData $sock text/html [$type file $path $interp]
     }
 
     # scope scope
@@ -157,10 +157,10 @@ snit::type ::ahttpd::docsubst {
     # TBD: I'm not sure whether we need this or not.
 
     typemethod application/x-tcl-auth {path suffix sock} {
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
 
         if {![info exists data(session)]} {
-            Httpd_RequestAuth $sock Basic "Random Password"
+            httpd requestAuth $sock Basic "Random Password"
             return
         }
         set interp [Session_Authorized $data(session)]
@@ -194,7 +194,7 @@ snit::type ::ahttpd::docsubst {
     # TBD: I'm not sure whether we need this or not.
 
     typemethod application/x-tcl-subst {path suffix sock {interp {}}} {
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
 
         cgi setenv $sock $path pass
         interp eval $interp [list uplevel #0 [list array set env [array get pass]]]

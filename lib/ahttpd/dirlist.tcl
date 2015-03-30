@@ -64,7 +64,7 @@ snit::type ::ahttpd::dirlist {
     #
 
     typemethod handle {prefix path suffix sock} {
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
         global tcl_platform
 
         # Special case because glob doesn't work in wrapped files
@@ -98,7 +98,7 @@ snit::type ::ahttpd::dirlist {
             return [doc notfound $sock]
         }
         # Listings are not hidden, so show it.
-        Httpd_ReturnData $sock text/html [DirList $sock $path $data(url)]
+        httpd returnData $sock text/html [DirList $sock $path $data(url)]
     }
 
 
@@ -249,7 +249,7 @@ snit::type ::ahttpd::dirlist {
     }
 
     proc DirList {sock dir urlpath} {
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
 
         set sort name
         set pattern *

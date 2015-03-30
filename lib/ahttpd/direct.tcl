@@ -93,7 +93,7 @@ snit::type ::ahttpd::direct {
 
     proc DirectDomain {prefix sock suffix} {
         global env
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
 
         # Set up the environment a-la CGI.
         cgi setenv $sock $prefix$suffix
@@ -195,7 +195,7 @@ snit::type ::ahttpd::direct {
     # could also occur.
     #
     # Side effects:
-    #   If code 302 (redirect) is passed, calls Httpd_Redirect to 
+    #   If code 302 (redirect) is passed, calls httpd redirect to 
     #   redirect the current request to the url in result.
     #   If code 0 is passed, the result is returned to the client.
     #   If any other code is passed, an exception is raised, which
@@ -204,11 +204,11 @@ snit::type ::ahttpd::direct {
     proc DirectRespond {sock code result {type text/html}} {
         switch $code {
             0 {
-                # Fall through to Httpd_ReturnData.
+                # Fall through to httpd returnData.
             }
             302 {
                 # Redirect.
-                Httpd_Redirect $result $sock
+                httpd redirect $result $sock
                 return ""
             }
             default {
@@ -227,7 +227,7 @@ snit::type ::ahttpd::direct {
         # the global cookie array.
         cookie save $sock
 
-        Httpd_ReturnData $sock $type $result
+        httpd returnData $sock $type $result
         return ""
     }
 }

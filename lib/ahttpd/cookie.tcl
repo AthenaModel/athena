@@ -49,7 +49,7 @@ snit::type ::ahttpd::cookie {
             interp eval $interp {uplevel #0 {set Cookie(set-cookie)}}
         } cookie]} {
             foreach c $cookie {
-                Httpd_SetCookie $sock $c
+                httpd setCookie $sock $c
             }
             interp eval $interp {uplevel #0 {unset Cookie(set-cookie)}}
         }
@@ -65,7 +65,7 @@ snit::type ::ahttpd::cookie {
     # to be present, so we return a list.
 
     typemethod getsock {sock cookie} {
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
         set result ""
         set rawcookie ""
 
@@ -146,7 +146,7 @@ snit::type ::ahttpd::cookie {
     typemethod unset {name args} {
         # TBD: previously passed "name" rather than "$name", which
         # looks like a mistake.
-        Httpd_RemoveCookies [Httpd_CurrentSocket] $name
+        httpd RemoveCookies [httpd currentSocket] $name
         $type set -name $name -value "" \
             -expires [clock format [clock scan "last year"] -format "%A, %d-%b-%Y %H:%M:%S GMT" -gmt 1]
     }

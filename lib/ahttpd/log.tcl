@@ -108,7 +108,7 @@ snit::type ::ahttpd::log {
 
     typemethod add {sock reason args} {
         # TBD: Need a better mechanism
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
 
         switch -- $reason {
             "Close" {
@@ -210,10 +210,10 @@ snit::type ::ahttpd::log {
 
     proc LogStandardList {sock now} {
         # TBD: Need better mechanism.
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
 
         if {$info(lognames)} {
-            if {[catch {lappend result ipaddr [Httpd_Peername $sock]}]} {
+            if {[catch {lappend result ipaddr [httpd peername $sock]}]} {
                 lappend result ipaddr [LogValue data(ipaddr)]
             }
         } else {

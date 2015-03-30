@@ -162,13 +162,13 @@ snit::type ::ahttpd::doc {
     # Handle a document URL.  Dispatch to the mime type handler, if defined.
 
     typemethod handle {prefix path suffix sock} {
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
 
         if {[file isdirectory $path]} {
             if {[string length $data(url)] && ![regexp /$ $data(url)]} {
 
                 # Insist on the trailing slash
-                Httpd_RedirectDir $sock
+                httpd redirectDir $sock
                 return
             }
 
@@ -178,7 +178,7 @@ snit::type ::ahttpd::doc {
             set mtype [mimetype frompath $path]
 
             if {![info exists handler($mtype)]} {
-                Httpd_ReturnFile $sock $mtype $path
+                httpd returnFile $sock $mtype $path
             } else {
                 {*}$handler($mtype) $path $suffix $sock
             }
@@ -199,7 +199,7 @@ snit::type ::ahttpd::doc {
     # Adjusts for Document roots and user directories
 
     typemethod getpath {sock {file ""}} {
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
 
         if {$file == ""} {
             set file $data(path)
@@ -272,7 +272,7 @@ snit::type ::ahttpd::doc {
     typemethod notfound {sock} {
         # TBD: Referer -- where does this come from?
         global Referer
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
 
         stats countname $data(url) notfound
         set info(url,notfound) $data(url)    ;# For subst
@@ -294,7 +294,7 @@ snit::type ::ahttpd::doc {
     # Returns a page.
 
     typemethod error {sock ei} {
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
 
         # Could have been reset!!!
         catch {
@@ -332,7 +332,7 @@ snit::type ::ahttpd::doc {
     # Returns the webmaster's e-mail address.
 
     typemethod webmaster {} {
-        return [Httpd_Webmaster]
+        return [httpd webmaster]
     }
 
     #-------------------------------------------------------------------
@@ -352,7 +352,7 @@ snit::type ::ahttpd::doc {
 
     proc DocDomain {prefix directory sock suffix} {
         # TBD: Need a better way to do this.
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
 
         # The pathlist has been checked and URL decoded by
         # DocAccess, so we ignore the suffix and recompute it.
@@ -400,7 +400,7 @@ snit::type ::ahttpd::doc {
     # most likely access will be granted.
 
     proc DocAccessHook {sock url} {
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
 
         # Make sure the path doesn't sneak out via ..
         # This turns the URL suffix into a list of pathname components
@@ -462,7 +462,7 @@ snit::type ::ahttpd::doc {
             if {[info exists err]} {
                 ::ahttpd::log add $sock DocSubstSystemFile $err
             }
-            Httpd_Error $sock $code $extra
+            httpd error $sock $code $extra
         }
     }
 

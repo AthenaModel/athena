@@ -55,7 +55,7 @@ namespace eval ::ahttpd::digest {
 
     # calculate a digest key for a given session
     proc DigestA1 {sock} {
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
         upvar #0 Digest$data(digest,nonce) digest
 
         set userstuff "$data(digest,username):$data(digest,realm):$digest(passwd)"
@@ -75,7 +75,7 @@ namespace eval ::ahttpd::digest {
 
     # per operation hash
     proc DigestA2 {sock} {
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
         if {[info exists data(op)]} {
             set result [md5hex "[string toupper $data(op)]:$data(digest,uri)"]
             # nb: we don't offer auth-int
@@ -96,7 +96,7 @@ namespace eval ::ahttpd::digest {
 
     # calculate the digest value for a given operation and session
     proc DigestDigest {sock} {
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
         upvar #0 Digest$data(digest,nonce) digest
         if {![info exists digest(A1)]} {
             set digest(A1) [DigestA1 $sock]
@@ -114,7 +114,7 @@ namespace eval ::ahttpd::digest {
 
     # handle the client's Digest
     proc Digest_Request {sock realm file} {
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
 
         upvar #0 Digest$data(digest,nonce) digest
         set digest(last) [clock clicks] ;# remember the last use
@@ -174,14 +174,14 @@ namespace eval ::ahttpd::digest {
         global DigestByRealmName
         set DigestByRealmName($digest(realm),$digest(username)) $digest(nonce)
 
-        Httpd_AddHeaders $sock Authentication-Info $auth_info
+        httpd addHeaders $sock Authentication-Info $auth_info
 
         return 1
     }
 
     # decode an Authentication request
     proc Digest_Get {sock parts} {
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
 
         # get the digest request args
         foreach el [lrange $parts 1 end] {
@@ -195,7 +195,7 @@ namespace eval ::ahttpd::digest {
 
     # create and issue a Digest challenge to the client
     proc Digest_Challenge {sock realm user} {
-        upvar #0 Httpd$sock data
+        upvar #0 ::ahttpd::Httpd$sock data
 
         global DigestByRealmName
         if {[info exists DigestByRealmName($realm,$user)]} {
@@ -235,7 +235,7 @@ namespace eval ::ahttpd::digest {
         #}
         
         # issue Digest authentication challenge
-        eval Httpd_RequestAuth $sock Digest $realm $challenge
+        eval httpd requestAuth $sock Digest $realm $challenge
     }
 
     if {0} {

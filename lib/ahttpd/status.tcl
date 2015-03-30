@@ -194,7 +194,8 @@ snit::type ::ahttpd::status {
     # Display the main status counters.
 
     proc StatusMainTable {} {
-        global Httpd Doc status tcl_patchLevel tcl_platform
+        upvar #0 ::ahttpd::httpd::Httpd Httpd
+        global tcl_patchLevel tcl_platform
 
         set html "<H1>$Httpd(name):$Httpd(port)</h1>\n"
         append html "<H2>Server Info</h2>"
@@ -242,7 +243,6 @@ snit::type ::ahttpd::status {
         foreach {c label} {
             urlhits      "URL Requests"
             UrlDispatch  "URL Dispatch"
-            UrlToThread  "Thread Dispatch"
             UrlEval      "Direct Dispatch"
             UrlCacheHit  "UrlCache eval"
             urlreply     "URL Replies"
@@ -251,7 +251,6 @@ snit::type ::ahttpd::status {
             keepalive    "KeepAlive Requests"
             http1.0      "OneShot Connections"
             http1.1      "Http1.1 Connections"
-            threads      "Worker Threads"
             sockets      "Open Sockets"
             cgihits      "CGI Hits"
             tclhits      "Tcl Safe-CGIO Hits"

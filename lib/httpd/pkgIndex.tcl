@@ -4,7 +4,5 @@
 # lib directory.  The goal is to not pollute the package namespace
 # until you package require httpd
 
-package ifneeded httpd 1.7 "
-	source \[file join [list $dir] httpd.tcl\]
-	package ifneeded httpd::utils 1.0 \[list source \[file join [list $dir] utils.tcl\]\]
-"
+package ifneeded httpd::utils 1.0 [list source [file join [list $dir] utils.tcl]]
+

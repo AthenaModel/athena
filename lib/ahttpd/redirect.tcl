@@ -55,7 +55,7 @@ snit::type ::ahttpd::redirect {
 
     typemethod gotoself {newurl} {
         set thispage [ncgi::urlStub]
-        set thisurl [Httpd_SelfUrl $thispage]
+        set thisurl [httpd selfUrl $thispage]
         set newurl [uri::resolve $thisurl $newurl]
         $type to $newurl
     }
@@ -127,7 +127,7 @@ snit::type ::ahttpd::redirect {
 
     proc RedirectDomain {url sock suffix} {
         set newurl $url$suffix
-        Httpd_Redirect $newurl $sock
+        httpd redirect $newurl $sock
     }
 
     #-------------------------------------------------------------------
@@ -180,13 +180,13 @@ snit::type ::ahttpd::redirect {
         if {[dict exists $toselfDict $url]} {
             # Note - this is not an "internal" redirect, but in this case
             # the server simply qualifies the url with its own name
-            Httpd_RedirectSelf [dict get $toselfDict $url] $sock
+            httpd redirectSelf [dict get $toselfDict $url] $sock
             return denied
         }
 
         # NEXT, check for redirection to an external URL.
         if {[dict exists $toDict $url]} {
-            Httpd_Redirect [dict get $toDict $url] $sock
+            httpd redirect [dict get $toDict $url] $sock
             return denied
         }
 
