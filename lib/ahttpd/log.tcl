@@ -77,11 +77,11 @@ snit::type ::ahttpd::log {
         catch {file mkdir [file dirname $info(logfile)]}
 
         if {[catch {set fd(log) [open $info(logfile) a]} err]} {
-            Stderr $err
+            errputs $err
         }
 
         if {[catch {set fd(error) [open $info(basename)error a]} err]} {
-            Stderr $err
+            errputs $err
         }
     }
 

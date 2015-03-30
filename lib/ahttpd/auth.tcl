@@ -257,12 +257,12 @@ snit::type ::ahttpd::auth {
         if {[info exists auth($realm,$user)]} {
             switch -exact -- $auth($realm,$user) \
                 $pass {
-                    Stderr "Session: $realm,$user"
+                    errputs "Session: $realm,$user"
                     return 1
                 } \
                 PasswordRequired {
                     set auth($realm,$user) $pass
-                    Stderr "Session: $realm,$user"
+                    errputs "Session: $realm,$user"
                     return 1
                 } \
                 default {

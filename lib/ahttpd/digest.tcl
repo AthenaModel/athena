@@ -126,7 +126,7 @@ namespace eval ::ahttpd::digest {
 
         # check that realms match
         if {$realm ne $data(digest,realm)} {
-            Stderr "realm"
+            errputs "realm"
             return 0
         }
 

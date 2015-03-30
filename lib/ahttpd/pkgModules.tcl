@@ -44,6 +44,9 @@ namespace eval ::ahttpd:: {
     variable library [file dirname [info script]]
 
     namespace import ::kiteutils::foroption
+    namespace import ::kiteutils::ladd
+    namespace import ::kiteutils::ldelete
+
 }
 
 
@@ -51,9 +54,7 @@ namespace eval ::ahttpd:: {
 # Modules
 
 source [file join $::ahttpd::library httpd.tcl    ]
-
-package require httpd::utils    ;# For Stderr, etc.
-
+source [file join $::ahttpd::library utils.tcl   ]
 source [file join $::ahttpd::library server.tcl   ]
 source [file join $::ahttpd::library mimetype.tcl ]
 source [file join $::ahttpd::library log.tcl      ]

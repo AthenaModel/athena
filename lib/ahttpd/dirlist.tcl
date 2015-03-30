@@ -169,7 +169,7 @@ snit::type ::ahttpd::dirlist {
         if {[llength $list] > 0} {
             set max 0
             foreach entry $list {
-                setmax max [string length [file tail $entry]]
+                set max [expr {max($max,[string length [file tail $entry]])}]
             }
             incr max [string length </a>]
 

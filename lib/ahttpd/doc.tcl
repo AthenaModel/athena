@@ -280,7 +280,7 @@ snit::type ::ahttpd::doc {
         if {[info exists data(mime,referer)]} {
             # Record the referring URL so we can track down
             # bad links
-            lappendOnce Referer($data(url)) $data(mime,referer)
+            ladd Referer($data(url)) $data(mime,referer)
         }
         DocSubstSystemFile $sock notfound 404 [protect_text $info(url,notfound)]
     }
