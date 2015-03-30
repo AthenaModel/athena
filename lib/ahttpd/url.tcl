@@ -14,8 +14,7 @@
 #    the URLs in that domain.  The dispatcher selects a domain by the 
 #    longest matching prefix, and then calls a domain handler to process 
 #    the URL.  Different domain handlers correspond to files (Doc), 
-#    cgi-bin directories (Cgi), and things built right into the 
-#    application (Direct).
+#    and things built right into the application (Direct, etc).
 #
 #    URL processing is divided into two parts: access control and
 #    url implementation.  You register access hooks with

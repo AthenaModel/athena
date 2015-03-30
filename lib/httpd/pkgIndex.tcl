@@ -6,8 +6,5 @@
 
 package ifneeded httpd 1.7 "
 	source \[file join [list $dir] httpd.tcl\]
-	package ifneeded httpd::cgi 1.1 \[list source \[file join [list $dir] cgi.tcl\]\]
-	package ifneeded httpd::session 1.0 \[list source \[file join [list $dir] session.tcl\]\]
 	package ifneeded httpd::utils 1.0 \[list source \[file join [list $dir] utils.tcl\]\]
-	package ifneeded tclcrypt 1.0 \[list source \[file join [list $dir] tclcrypt.tcl\]\]
 "

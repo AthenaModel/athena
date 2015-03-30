@@ -8,6 +8,18 @@
 # DESCRIPTION:
 #   ahttpd(n) Package: Application Web Server
 #
+# TBD:
+#
+#   * Convert all required httpd/*.tcl modules
+#   * Determine required server options, and implement, initializing
+#     the ahttpd modules as required.
+#   * Replace the ahttpd::log with a -logcmd that can work with logger(n).
+#   * Simplify remaining CGI-related code; get rid of env() fixups if
+#     possible.
+#     * Use same variables, but pass array explicitly, or access via
+#       "sock".
+#   * Consider removing templates.
+#
 #-----------------------------------------------------------------------
 
 snit::type ::ahttpd::server {
@@ -148,15 +160,6 @@ snit::type ::ahttpd::server {
         # NEXT, Define the top-level directory, or folder, for
         # the web-visible file structure.
         doc root $info(docroot)
-
-        # NOTE: the following package require must have Doc_Root set first 
-        # otherwise it fails -- YUK!
-        # Session state module 
-        # TBD: It appears that we're not actually using this.  It allows
-        # a "session" involving a single user to operate in its own 
-        # interpreter somehow.
-        package require httpd::session
-
                 
         # Doc_ErrorPage registers a template to be used when a page raises an
         # uncaught Tcl error.  This is a crude template that is simply passed 

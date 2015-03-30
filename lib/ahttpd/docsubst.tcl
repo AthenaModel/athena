@@ -196,7 +196,7 @@ snit::type ::ahttpd::docsubst {
     typemethod application/x-tcl-subst {path suffix sock {interp {}}} {
         upvar #0 Httpd$sock data
 
-        Cgi_SetEnv $sock $path pass
+        cgi setenv $sock $path pass
         interp eval $interp [list uplevel #0 [list array set env [array get pass]]]
         ::ahttpd::docsubst returnfile $sock $path $interp
     }
@@ -205,7 +205,7 @@ snit::type ::ahttpd::docsubst {
 
 # Define content-type handlers
 ::ahttpd::doc handler application/x-tcl-auth [list ::ahttpd::docsubst application/x-tcl-auth]
-::ahttpd::doc handler application/x-tcl-auth [list ::ahttpd::docsubst application/x-tcl-subst]
+::ahttpd::doc handler application/x-tcl-subst [list ::ahttpd::docsubst application/x-tcl-subst]
 
 
 

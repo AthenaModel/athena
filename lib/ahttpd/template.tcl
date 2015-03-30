@@ -276,7 +276,7 @@ snit::type ::ahttpd::template {
 
         # Populate the global "env" array similarly to the CGI environment
         if {$info(env)} {
-            Cgi_SetEnvInterp $sock $filename $interp
+            cgi setenvfor $sock $filename $interp
         }
 
         # Check query data.

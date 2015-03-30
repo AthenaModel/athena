@@ -73,6 +73,5 @@ source [file join $::ahttpd::library tclcrypt.tcl ]
 source [file join $::ahttpd::library digest.tcl   ]
 source [file join $::ahttpd::library passgen.tcl  ]
 source [file join $::ahttpd::library auth.tcl     ]
+source [file join $::ahttpd::library cgi.tcl      ]
 
-
-package require httpd::cgi      ;# CGI services

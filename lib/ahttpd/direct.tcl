@@ -96,7 +96,7 @@ snit::type ::ahttpd::direct {
         upvar #0 Httpd$sock data
 
         # Set up the environment a-la CGI.
-        Cgi_SetEnv $sock $prefix$suffix
+        cgi setenv $sock $prefix$suffix
 
         # Prepare an argument data from the query data.
         url querysetup $sock
