@@ -141,6 +141,9 @@ snit::type ::ahttpd::server {
     typemethod StartMainThread {} {
         # FIRST, initialize the statistics counter
         stats init 
+
+        # NEXT, authentication
+        auth init
         
         # NEXT, Define the top-level directory, or folder, for
         # the web-visible file structure.

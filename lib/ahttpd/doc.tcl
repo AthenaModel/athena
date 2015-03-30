@@ -424,11 +424,11 @@ snit::type ::ahttpd::doc {
         # cookies you could save the cost of probing the file system
         # for these files on each URL.
 
-        set cookie [Auth_Check $sock $directory $data(pathlist)]
+        set cookie [auth check $sock $directory $data(pathlist)]
 
         # Finally, check access
 
-        if {![Auth_Verify $sock $cookie]} {
+        if {![auth verify $sock $cookie]} {
             return denied
         } else {
             return skip

@@ -54,24 +54,25 @@ package require httpd 1.7
 # httpd sub-packages
 package require httpd::utils    ;# For Stderr
 
-source [file join $::ahttpd::library server.tcl  ]
-source [file join $::ahttpd::library mimetype.tcl]
-source [file join $::ahttpd::library log.tcl     ]
-source [file join $::ahttpd::library stats.tcl   ]
-source [file join $::ahttpd::library cookie.tcl  ]
-source [file join $::ahttpd::library fallback.tcl]
-source [file join $::ahttpd::library doc.tcl     ]
-source [file join $::ahttpd::library docsubst.tcl]
-source [file join $::ahttpd::library dirlist.tcl ]
-source [file join $::ahttpd::library direct.tcl  ]
-source [file join $::ahttpd::library template.tcl]
-source [file join $::ahttpd::library url.tcl     ]
-source [file join $::ahttpd::library redirect.tcl]
-source [file join $::ahttpd::library debug.tcl   ]
-source [file join $::ahttpd::library status.tcl  ]
-source [file join $::ahttpd::library tclcrypt.tcl]
-source [file join $::ahttpd::library digest.tcl  ]
+source [file join $::ahttpd::library server.tcl   ]
+source [file join $::ahttpd::library mimetype.tcl ]
+source [file join $::ahttpd::library log.tcl      ]
+source [file join $::ahttpd::library stats.tcl    ]
+source [file join $::ahttpd::library cookie.tcl   ]
+source [file join $::ahttpd::library fallback.tcl ]
+source [file join $::ahttpd::library doc.tcl      ]
+source [file join $::ahttpd::library docsubst.tcl ]
+source [file join $::ahttpd::library dirlist.tcl  ]
+source [file join $::ahttpd::library direct.tcl   ]
+source [file join $::ahttpd::library template.tcl ]
+source [file join $::ahttpd::library url.tcl      ]
+source [file join $::ahttpd::library redirect.tcl ]
+source [file join $::ahttpd::library debug.tcl    ]
+source [file join $::ahttpd::library status.tcl   ]
+source [file join $::ahttpd::library tclcrypt.tcl ]
+source [file join $::ahttpd::library digest.tcl   ]
+source [file join $::ahttpd::library passgen.tcl  ]
+source [file join $::ahttpd::library auth.tcl     ]
 
 
 package require httpd::cgi      ;# CGI services
-package require httpd::auth     ;# Authentication

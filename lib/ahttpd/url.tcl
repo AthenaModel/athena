@@ -482,7 +482,7 @@ snit::type ::ahttpd::url {
                 # an empty component because it could be the last thing,
                 # /a/b/c/
                 # which indicates a directory.  In this case you want
-                # Auth_Check to recurse into the directory in the last step.
+                # [auth check] to recurse into the directory in the last step.
             }
             set part [$type decode $part]
 
