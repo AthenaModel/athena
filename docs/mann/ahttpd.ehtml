@@ -195,6 +195,13 @@ set to "", it will receive connections at any of the host platform's
 IP addresses.  Defaults to "127.0.0.1", so that it will only accept
 connections from the local host.<p>
 
+<defopt {-logcmd <i logger>}>
+
+Specifies a command for logging server activity.  The command will be
+called with three additional arguments, the log level, the component, and
+the log message.  The command may be (but need not be) a
+<xref mars:logger(n)> instance.<p>
+
 <defopt {-notfoundpage <i path>}>
 
 Specifies the server-absolute <i path> of the file to display for URLs

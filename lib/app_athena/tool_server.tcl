@@ -30,6 +30,11 @@ tool define SERVER {
                        directory.
 } {
     #-------------------------------------------------------------------
+    # Type Variables
+
+    typevariable logger ""
+
+    #-------------------------------------------------------------------
     # Execution 
 
     # execute argv
@@ -37,37 +42,35 @@ tool define SERVER {
     # Executes the tool given the command line arguments.
 
     typemethod execute {argv} {
-        puts "Starting web server"
+        # FIRST, get the default option values.
         appdir init
-
-        # server specific version of bgerror
-        proc ::bgerror {msg} {
-            global errorInfo
-
-            set msg "[clock format [clock seconds]]\n$errorInfo"
-            if [catch {::ahttpd::log add nosock bgerror $msg}] {
-                ::ahttpd::Stderr $msg
-            }
-        }
-
+        workdir init
         set docroot [appdir join htdocs]
+        set gui     0
 
+        # NEXT, get the command-line options
         foroption opt argv {
             -docroot {
                 set docroot [file normalize [lshift argv]]
             }
             -gui {
-                package require marsgui
-                wm withdraw .
-                ::marsgui::debugger new
+                set gui 1
             }
         }
 
+        set logger [logger %AUTO%                    \
+                -logdir    [workdir join log athena] \
+                -newlogcmd [myproc OnNewLog]]
+
+        $logger normal app "Starting athena server..."
+
+        puts "Starting web server"
         ahttpd init                \
             -debug                 \
             -allowtml              \
             -allowsubst            \
-            -docroot     $docroot
+            -docroot     $docroot  \
+            -logcmd      $logger
 
         # TBD: Need better API for this kind of thing.
         ahttpd::direct url /welcome.html [myproc Welcome]
@@ -80,8 +83,34 @@ tool define SERVER {
             puts "https started on port [ahttpd secureport]"
         }
 
+
+        # server specific version of bgerror
+        proc ::bgerror {msg} {
+            global errorInfo
+
+            set msg "[clock format [clock seconds]]\n$errorInfo"
+            if [catch {::ahttpd::log add nosock bgerror $msg}] {
+                ::ahttpd::Stderr $msg
+            }
+        }
+
+        # NEXT, load the GUI if needed.
+        if {$gui} {
+            package require marsgui
+            logwin init [workdir join log athena]
+        }
+
+
+
         vwait forever
     }
+
+    proc OnNewLog {filename} {
+        notifier send ::log <NewLog> $filename
+    }
+
+    #-------------------------------------------------------------------
+    # Dynamic Content
 
     proc Welcome {args} {
         append result [outdent {
@@ -101,10 +130,223 @@ tool define SERVER {
         append result "</body></html>"
 
         return $result
-
-    }
+    }    
 }
 
+snit::type logwin {
+    pragma -hasinstances no
+
+    #-------------------------------------------------------------------
+    # Group: Type Components
+    
+    # Type component: log
+    #
+    # The scrollinglog(n) widget.
+    typecomponent log
+    
+    # Type component: msgline
+    #
+    # The messageline(n) widget.
+    typecomponent msgline
+    
+    #-------------------------------------------------------------------
+    # Group: Type Variables
+
+    # Type variable: scrollLockFlag
+    #
+    # Do we auto-update and scroll, or not?
+    typevariable scrollLockFlag 0
+    
+    #-------------------------------------------------------------------
+    # Group: Application Initializer
+
+    # init logdir
+    #
+    # Initializes the GUI, and processes the command line.
+    #
+    # The GUI expects a single argument, the application's 
+    # log directory.
+
+    typemethod init {logdir} {
+        # FIRST, get the log dir and the default app dir
+        set defAppDir [file tail $logdir]
+        set logdir [file dirname $logdir]
+
+        # NEXT, set the default window title
+        wm title . "Athena Log: [file normalize $logdir]"
+
+        # NEXT, Exit the app when this window is closed, if it's a 
+        # main window.
+        wm protocol . WM_DELETE_WINDOW [list logwin exit]
+        
+        # NEXT, create the menus
+        
+        # Menu Bar
+        set menubar [menu .menubar -relief flat]
+        . configure -menu $menubar
+        
+        # File Menu
+        set mnu [menu $menubar.file]
+        $menubar add cascade -label "File" -underline 0 -menu $mnu
+
+        $mnu add command                       \
+            -label       "Exit"                \
+            -underline   1                     \
+            -accelerator "Ctrl+Q"              \
+            -command     [list logwin exit]
+        bind . <Control-q> [list logwin exit]
+        bind . <Control-Q> [list logwin exit]
+
+        # Edit menu
+        set mnu [menu $menubar.edit]
+        $menubar add cascade -label "Edit" -underline 0 -menu $mnu
+
+        $mnu add command \
+            -label "Cut" \
+            -underline 2 \
+            -accelerator "Ctrl+X" \
+            -command {event generate [focus] <<Cut>>}
+
+        $mnu add command \
+            -label "Copy" \
+            -underline 0 \
+            -accelerator "Ctrl+C" \
+            -command {event generate [focus] <<Copy>>}
+        
+        $mnu add command \
+            -label "Paste" \
+            -underline 0 \
+            -accelerator "Ctrl+V" \
+            -command {event generate [focus] <<Paste>>}
+        
+        $mnu add separator
+        
+        $mnu add command \
+            -label "Select All" \
+            -underline 7 \
+            -accelerator "Ctrl+Shift+A" \
+            -command {event generate [focus] <<SelectAll>>}
+        
+        # View Menu
+        set mnu [menu $menubar.view]
+        $menubar add cascade -label "View" -underline 2 -menu $mnu
+        
+        $mnu add checkbutton \
+            -label    "Set Scroll Lock"                 \
+            -variable [mytypevar scrollLockFlag]        \
+            -command  [mytypemethod SetScrollLock]
+        
+        # NEXT, create the components
+        
+        # ROW 0 -- separator
+        ttk::separator .sep0 -orient horizontal
+        
+        # ROW 1 -- Scrolling log
+        set log .log
+        ::marsgui::scrollinglog $log \
+            -relief        flat                \
+            -height        24                  \
+            -logcmd        [mytypemethod puts] \
+            -loglevel      "normal"            \
+            -showloglist   yes                 \
+            -rootdir       $logdir             \
+            -defaultappdir $defAppDir          \
+            -parsecmd      [myproc LogParser]  \
+            -format        {
+                {t    19 yes}
+                {v    7 yes}
+                {c    14 yes}
+                {m    0 yes}
+            }
+             
+        # ROW 2 -- separator
+        ttk::separator .sep2 -orient horizontal
+        
+        # ROW 3 -- message line
+        set msgline [::marsgui::messageline .msgline]
+
+        # NEXT, grid the components in
+        grid .sep0    -row 0 -column 0 -sticky ew
+        grid .log     -row 1 -column 0 -sticky nsew -pady 2
+        grid .sep2    -row 2 -column 0 -sticky ew
+        grid .msgline -row 3 -column 0 -sticky ew
+        
+        grid rowconfigure    . 1 -weight 1 ;# Content
+        grid columnconfigure . 0 -weight 1
+        
+        # NEXT, addition behavior
+        bind all <Control-F12> [list debugger new]
+
+        notifier bind ::log <NewLog> .log {.log load}
+    }
+
+    # LogParser text
+    #
+    # text    A block of log lines
+    #
+    # Parses the lines and returns a list of lists.
+    
+    proc LogParser {text} {
+        set lines [split [string trimright $text] "\n"]
+    
+        set lineList {}
+
+        foreach line $lines {
+            set fields [list \
+                            [lindex $line 0] \
+                            [lindex $line 1] \
+                            [lindex $line 2] \
+                            [lindex $line 3]]
+            
+            lappend lineList $fields
+        }
+        
+        return $lineList
+    }
+
+    
+    #-------------------------------------------------------------------
+    # Group: Event Handlers
+    
+    # Type method: SetScrollLock
+    #
+    # Locks/Unlocks the scrolling log's scroll lock.
+    
+    typemethod SetScrollLock {} {
+        $log lock $scrollLockFlag
+    }    
+    
+    #-------------------------------------------------------------------
+    # Group: Utility Type Methods
+    
+    # Type method: exit
+    #
+    # Exits the program, with the specified exit code.
+    #
+    # Syntax:
+    #   exit _?code?_
+    #
+    #   code - The exit code.  Defaults to 0.
+    
+    typemethod exit {{code 0}} {
+        # TBD: Put any special exit handling here.
+        exit $code
+    }
+    
+    # Type method: puts
+    #
+    # Display the _msg_ in the message line
+    #
+    # Syntax:
+    #   puts _msg_
+    #
+    #   msg - A text string
+    
+    typemethod puts {msg} {
+        $msgline puts $msg        
+    }
+
+}
 
 
 

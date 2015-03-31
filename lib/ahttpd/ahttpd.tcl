@@ -55,6 +55,7 @@ snit::type ::ahttpd::ahttpd {
         -errorpage    "/error.html"
         -host         {}
         -ipaddr       127.0.0.1
+        -logcmd       ""
         -notfoundpage "/notfound.html"
         -port         8080
         -secureport   8081
@@ -87,6 +88,7 @@ snit::type ::ahttpd::ahttpd {
             -errorpage    -
             -host         -
             -ipaddr       -
+            -logcmd       -
             -notfoundpage -
             -port         -
             -secureport   -
@@ -130,13 +132,23 @@ snit::type ::ahttpd::ahttpd {
 
         # NEXT, start the server.
         if {$info(-port) ne ""} {
+            $type log normal ahttpd "Starting http server on $info(-port)"
             httpd server $info(-port) $info(-host) $info(-ipaddr)
         }
 
         if {$info(-secureport) ne ""} {
+            $type log normal ahttpd "Starting https server on $info(-secureport)"
             tls::init -tls1 1 -ssl2 0 -ssl3 0 -tls1.1 0 -tls1.2 0
             httpd secureserver $info(-secureport) $info(-host) $info(-ipaddr)           
         }
+    }
+
+    # log level comp message
+    #
+    # Writes to the log.
+
+    typemethod log {level comp message} {
+        callwith $info(-logcmd) $level $comp $message
     }
         
     # version
