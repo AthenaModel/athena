@@ -52,7 +52,19 @@ tool define SERVER {
         ahttpd::server init \
             -docroot ~/github/athena/htdocs
 
+        # TBD: Need better API for this kind of thing.
         ahttpd::direct url /welcome.html [myproc Welcome]
+
+
+
+        if {[ahttpd::server port] ne ""} {
+            puts "http started on port [ahttpd::server port]"
+        }
+
+        if {[ahttpd::server secureport] ne ""} {
+            puts "https started on port [ahttpd::server secureport]"
+        }
+
         vwait forever
     }
 

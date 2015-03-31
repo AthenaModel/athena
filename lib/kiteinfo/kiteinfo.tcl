@@ -73,7 +73,7 @@ namespace eval ::kiteinfo:: {
         reqver-textutil::adjust 0.7
         gui-cellide 1
         url-docs/rules.pptx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/rules-20141010.pptx
-        reqver-tls 1.6
+        reqver-tls 1.6.4
         icon-helptool {}
         build-help {make clean all}
         local-snit 0

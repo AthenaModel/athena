@@ -29,7 +29,7 @@ require Tkhtml 3.0
 require uri 1.2
 require fileutil 1.14
 require ctext 3.3
-require tls 1.6
+require tls 1.6.4
 require tdom 0.8
 require struct::set 2.2
 require huddle 0.1.5

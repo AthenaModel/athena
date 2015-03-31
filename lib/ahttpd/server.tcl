@@ -10,7 +10,6 @@
 #
 # TBD:
 #
-#   * Convert all required httpd/*.tcl modules
 #   * Determine required server options, and implement, initializing
 #     the ahttpd modules as required.
 #   * Replace the ahttpd::log with a -logcmd that can work with logger(n).
@@ -30,11 +29,6 @@ snit::type ::ahttpd::server {
     pragma -hasinstances 0 -hastypedestroy 0
 
     #------------------------------------------------------------------
-    # Type Components
-
-    # none
-    #
-    #------------------------------------------------------------------
     # Typevariables
     
     # info
@@ -42,37 +36,24 @@ snit::type ::ahttpd::server {
     # The info array carries around configuration data used to set up
     # the webserver. This array contains the following data:
     #
+    # debug     - 1 to enable ahttpd debugging, and 0 otherwise.
+    # docroot   - The location of the root of the html document tree
     # host      - hostname of the server. Defaulted to the current host
     # port      - The port the server is running on. Default 8080
     # ipaddr    - IP address of the server. Defaulted to ""
-    # docroot   - The location of the root of the html document tree
     # webmaster - email address of contact person should server have
     #             problems
-    # limit     - The file descriptor limit, currently set to the OS default
 
     typevariable info -array {
-        host        {}
-        port        8080
-        ipaddr      127.0.0.1
-        uid         50
-        gid         50
-        docroot     {}
-        webmaster   "David.R.Hanks@jpl.nasa.gov"
-        limit       default
-    }
-
-    # pageCache
-    #
-    # Cached HTML pages. The code returns this for a particular time
-    # if it already exists.
-
-    typevariable pageCache -array {}
-
-    #------------------------------------------------------------------
-    # Type Constructor
-
-    typeconstructor {
-        # Nothing yet
+        debug        0
+        docroot      {}
+        errorpage    "/error.html"
+        host         {}
+        ipaddr       127.0.0.1
+        notfoundpage "/notfound.html"
+        port         8080
+        secureport   8081
+        webmaster    "David.R.Hanks@jpl.nasa.gov"
     }
 
     #------------------------------------------------------------------
@@ -87,34 +68,44 @@ snit::type ::ahttpd::server {
         # FIRST, default the host name 
         set info(host) [info host]
 
-        # NEXT, parse the configuration args
-        while {[llength $args] > 0} {
-            set opt [lshift args]
-
-            switch -exact -- $opt {
-                -host {
-                    set info(host) [lshift args]
-                }
-
-                -port {
-                    set info(port) [lshift args]
-                }
-
-                -docroot {
-                    set info(docroot) [file normalize [lshift args]]
-                }
-
-                default {
-                    error "Unknown option \"$opt\""
-                }
+        # NEXT, parse the options.
+        # TBD: Add error checking
+        foroption opt args -all {
+            -debug {
+                set info(debug) 1
+            }
+            -docroot {
+                set info(docroot) [file normalize [lshift args]]
+            }
+            -errorpage    -
+            -host         -
+            -ipaddr       -
+            -notfoundpage -
+            -port         -
+            -secureport   -
+            -webmaster    {
+                set info($opt) [lshift args]
             }
         }
 
         # NEXT, initialize the package.
-        httpd init
+        httpd init                              ;# Server data structures      
+        stats init                              ;# Statistics gathering
+        auth init                               ;# Authentication
+        doc root $info(docroot)                 ;# Document tree
+        doc errorpage $info(errorpage)          ;# Error template
+        doc notfoundpage $info(notfoundpage)    ;# Page not found template
+        httpd webmaster $info(webmaster)        ;# Webmaster e-mail
 
-        # TBD: Move in-line
-        $type StartMainThread
+        if {$info(debug)} {
+            status init                         ;# Status Pages
+            debug init /debug                   ;# Debugging tools
+            redirect init /redirect             ;# Redirect management
+        } else {
+            # Do not provide UI unless debugging.
+            redirect init                       ;# Redirect management
+        }
+
 
         # TBD: Need -logroot parameter
         # TBD: Need application log.  ahttpd::log should be combined
@@ -122,20 +113,16 @@ snit::type ::ahttpd::server {
         ::ahttpd::log setfile ~/github/athena/log/httpd$info(port)
 
         # NEXT, start the server.
-        httpd server $info(port) $info(host) $info(ipaddr)
+        if {$info(port) ne ""} {
+            httpd server $info(port) $info(host) $info(ipaddr)
+        }
 
-
-        puts "httpd started on port $info(port)"
+        if {$info(secureport) ne ""} {
+            tls::init -tls1 1 -ssl2 0 -ssl3 0 -tls1.1 0 -tls1.2 0
+            httpd secureserver $info(secureport) $info(host) $info(ipaddr)           
+        }
     }
-    
-    # flush
-    #
-    # Empties the pageCache of all history
-
-    typemethod flush {} {
-        array unset pageCache
-    }
-    
+        
     # version
     #
     # Returns the package version.
@@ -144,45 +131,11 @@ snit::type ::ahttpd::server {
         return [package present ahttpd]
     }
 
-    #------------------------------------------------------------------
-    # Private Type methods
+    #-------------------------------------------------------------------
+    # Delegated Methods
 
-    #------------------------------------------------------------------
-    # Type method: StartMainThread
-    #
-    # This method does all the heavy lifting for starting up and setting
-    # all the configuration parameters for the webserver
+    delegate typemethod port       using {::ahttpd::httpd %m}
+    delegate typemethod secureport using {::ahttpd::httpd %m}
+    
 
-    typemethod StartMainThread {} {
-        # FIRST, initialize the statistics counter
-        stats init 
-
-        # NEXT, authentication
-        auth init
-        
-        # NEXT, Define the top-level directory, or folder, for
-        # the web-visible file structure.
-        doc root $info(docroot)
-                
-        # Doc_ErrorPage registers a template to be used when a page raises an
-        # uncaught Tcl error.  This is a crude template that is simply passed 
-        # through subst at the global level.  In particular,  
-        # it does not have the full semantics of a .tml template.
-        
-        doc errorpage /error.html
-        
-        # Doc_NotFoundPage registers a template to be used when a 404 not found
-        # error occurs.  Like Doc_ErrorPage, this page is simply subst'ed.
-        
-        doc notfoundpage /notfound.html
-        
-        # httpd webmaster returns the value last passed into it.
-        # Designed to be used in page templates where contact email is needed.
-        
-        httpd webmaster  $info(webmaster)
-        
-        status init       
-        debug init /debug
-        redirect init /redirect
-    }
 }

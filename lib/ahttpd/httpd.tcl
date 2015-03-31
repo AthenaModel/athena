@@ -399,7 +399,7 @@ snit::type ::ahttpd::httpd {
                 # This seems to occur normally on UNIX systems
                 return
             }
-            ::ahttpd::log $sock "HttpdHandshake" "\{$data(self)\} $sock \
+            ::ahttpd::log add $sock "HttpdHandshake" "\{$data(self)\} $sock \
                 $data(ipaddr) $complete"
             httpd sockclose $sock 1 "$complete"
         } elseif {$complete} {

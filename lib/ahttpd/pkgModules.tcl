@@ -33,7 +33,7 @@ package require counter 2.0
 package require ncgi 1.4.3
 package require html 1.4.3
 package require kiteutils 0.4.6
-package require tls 1.6
+package require tls 1.6.4
 # -kite-require-end
 
 
