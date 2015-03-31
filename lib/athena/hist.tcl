@@ -57,6 +57,7 @@ snit::type ::athena::hist {
                 DELETE FROM hist_mood;
                 DELETE FROM hist_coop;
                 DELETE FROM hist_nbcoop;
+                DELETE FROM hist_deploy_ng;
                 DELETE FROM hist_econ;
                 DELETE FROM hist_econ_i;
                 DELETE FROM hist_econ_ij;
@@ -76,6 +77,7 @@ snit::type ::athena::hist {
                 DELETE FROM hist_mood         WHERE t > $t;
                 DELETE FROM hist_coop         WHERE t > $t;
                 DELETE FROM hist_nbcoop       WHERE t > $t;
+                DELETE FROM hist_deploy_ng    WHERE t > $t;
                 DELETE FROM hist_econ         WHERE t > $t;
                 DELETE FROM hist_econ_i       WHERE t > $t;
                 DELETE FROM hist_econ_ij      WHERE t > $t;
@@ -142,6 +144,14 @@ snit::type ::athena::hist {
                 INSERT INTO hist_nbcoop(t,n,g,nbcoop)
                 SELECT now() AS t, n, g, nbcoop
                 FROM uram_nbcoop;
+            }
+        }
+
+        if {[$adb parm get hist.deploy]} {
+            $adb eval {
+                INSERT INTO hist_deploy_ng(t,n,g,personnel,unassigned)
+                SELECT now() AS t, n, g, personnel, unassigned
+                FROM deploy_ng;
             }
         }
 
