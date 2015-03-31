@@ -182,6 +182,8 @@ snit::type ::athena::aam {
             JOIN nbhoods       AS N ON (D.n=N.n)
             WHERE D.personnel > 0
         } {
+
+            # Effective force and force multipliers
             set Fe [$adb parm get aam.FRC.equiplevel.$elvl]
             set Ff [$adb parm get aam.FRC.forcetype.$frctype]
             set Ft [$adb parm get aam.FRC.discipline.$tlvl]
@@ -190,6 +192,13 @@ snit::type ::athena::aam {
 
             let effFrc($n,$g)  {entier(ceil($Fe * $Ff * $Ft * $Fd * $pers))}
             let frcMult($n,$g) {$Fe * $Ff * $Ft * $Fd * $Fu}
+
+            # Civilian casualty multipliers
+            set Cf [$adb parm get aam.civcas.forcetype.$frctype]
+            set Ct [$adb parm get aam.civcas.discipline.$tlvl]
+            set Cu [$adb parm get aam.civcas.$urb]
+
+            let civcasMult($n,$g) {$Cf * $Ct * $Cu}
         }
     }
 
@@ -474,8 +483,8 @@ snit::type ::athena::aam {
             set Fc [$adb parm get aam.FRC.civconcern.$civc]
             let Afg {$afg * $Fc * $frcMult($n,$f) / $frcmultD}
 
-            set civc $civconc($n,$g,$f)
             # Coefficient multipliers for Agf
+            set civc $civconc($n,$g,$f)
             set Fc [$adb parm get aam.FRC.civconcern.$civc]
             let Agf {$agf * $Fc * $frcMult($n,$g) / $frcmultD}
 
@@ -618,8 +627,80 @@ snit::type ::athena::aam {
         return [list $PRf $PRg $t]
     }
 
+    # ComputeCivilianCasualties
+    #
+    # This method computes the number of casualties inflicted on the
+    # civilians in neighborhoods that have active combat between two
+    # or more force groups.  The computed casualties are then added to 
+    # the growing list of casualty dictionaries that is assessed later.
+
     method ComputeCivilianCasualties {} {
-        # TBD
+        # FIRST, extract the limit to civilian casualties
+        set limit [$adb parm get aam.civcas.limit]
+
+        # NEXT, if the limit is zero, we are done
+        if {$limit == 0}  {
+            return
+        }
+
+        # NEXT, initialize the casualty dictionary
+        set casdict [lzipper [$adb nbhood names]]
+
+        # NEXT, fill in the data based on force group casualties 
+        $adb eval {
+            SELECT n,f,g,cas_f,cas_g FROM aam_battle
+            WHERE cas_f > 0 OR cas_g > 0
+        } {
+            if {![dict exists $casdict $n $f]} {
+                dict set casdict $n $f 0.0
+            }
+
+            if {![dict exists $casdict $n $g]} {
+                dict set casdict $n $g 0.0
+            }
+
+            # NEXT, accumulate casualties caused by f in n 
+            if {$cas_f > 0} {
+                set currcas [dict get $casdict $n $f]
+                set civc $civconc($n,$f,$g)
+                set Cc [$adb parm get aam.FRC.civconcern.$civc]
+                let newcas {
+                    $currcas + $civcasMult($n,$f) * $Cc * $cas_f
+                }
+                dict set casdict $n $f $newcas
+            }
+
+            # NEXT, accumulate casualties caused by g in n 
+            if {$cas_g > 0} {
+                set currcas [dict get $casdict $n $g]
+                set civc $civconc($n,$g,$f)
+                set Cc [$adb parm get aam.FRC.civconcern.$civc]
+                let newcas {
+                    $currcas + $civcasMult($n,$g) * $Cc * $cas_g
+                }
+                dict set casdict $n $g $newcas
+            }
+        }
+
+        # NEXT, traverse the casualty dictionary and accumulate civilian
+        # casualties limited by the maximum allowed
+        dict for {n fdict} $casdict {
+            # NEXT, no combat, no collateral civilian casualties
+            if {$fdict eq ""} {
+                continue
+            }
+
+            # NEXT, set the limit and enforce it
+            let maxcas {$limit * [$adb demog getn $n population]}
+
+            dict for {grp cas} $fdict {
+                let totcas {entier(floor(min($cas, $maxcas)))}
+                if {$totcas > 0} {
+                    lappend alist [list \
+                        mode NBHOOD g1 $grp g2 "" n $n f "" casualties $totcas]
+                }
+            }   
+        }
     }
 
     #-------------------------------------------------------------------

@@ -273,6 +273,14 @@ snit::type ::athena::parmdb {
             in combat with each other.
         }
 
+        $ps define aam.civcas.limit ::simlib::rfraction 0.1 {
+            The maximum percentage of the total civilian population in
+            a neighborhood that could suffer casualties inflicted from 
+            a force group engaged in combat in that neighborhood.  This
+            model parameter can be used to throttle down civilian casualties
+            if they are too high.
+        }
+
         foreach urb [eurbanization names] {
             $ps define aam.civcas.$urb ::simlib::rfraction 1.0 "
                 For civilian groups in a neighborhood with an urbanization
