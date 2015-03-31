@@ -195,8 +195,8 @@ snit::type ::ahttpd::httpd {
     # Finishes initializing the module.
 
     typemethod init {} {
-        set Httpd(version)     [server version]
-        set Httpd(server)      "ahttpd(n)/[server version]"
+        set Httpd(version)     [ahttpd version]
+        set Httpd(server)      "ahttpd(n)/[ahttpd version]"
         set Httpd(initialized) 1
     }
     

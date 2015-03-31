@@ -33,6 +33,19 @@ snit::type ::ahttpd::docsubst {
     
     #-------------------------------------------------------------------
     # Public Type Methods
+
+    # init 
+    #
+    # Enables .subst and .auth templates.
+
+    typemethod init {} {
+        # Define content-type handlers
+        ::ahttpd::doc handler application/x-tcl-auth  \
+            [list ::ahttpd::docsubst application/x-tcl-auth]
+        ::ahttpd::doc handler application/x-tcl-subst \
+            [list ::ahttpd::docsubst application/x-tcl-subst]
+    }
+
     
     # returnfile sock path interp
     #
@@ -153,8 +166,6 @@ snit::type ::ahttpd::docsubst {
     #
     # Side Effects:
     #   Returns a page to the client.
-    #
-    # TBD: I'm not sure whether we need this or not.
 
     typemethod application/x-tcl-auth {path suffix sock} {
         upvar #0 ::ahttpd::Httpd$sock data
@@ -190,22 +201,17 @@ snit::type ::ahttpd::docsubst {
     #
     # Side Effects:
     #   Sets the env array in interp and calls returnfile.
-    #
-    # TBD: I'm not sure whether we need this or not.
 
     typemethod application/x-tcl-subst {path suffix sock {interp {}}} {
         upvar #0 ::ahttpd::Httpd$sock data
 
         cgi setenv $sock $path pass
-        interp eval $interp [list uplevel #0 [list array set env [array get pass]]]
+        interp eval $interp [list uplevel #0 [list array set ::ahttpd::cgienv [array get pass]]]
         ::ahttpd::docsubst returnfile $sock $path $interp
     }
 
 }
 
-# Define content-type handlers
-::ahttpd::doc handler application/x-tcl-auth [list ::ahttpd::docsubst application/x-tcl-auth]
-::ahttpd::doc handler application/x-tcl-subst [list ::ahttpd::docsubst application/x-tcl-subst]
 
 
 

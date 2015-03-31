@@ -32,7 +32,7 @@ package require -exact athena 6.3.0a7
 package require -exact ahttpd 6.3.0a7
 # -kite-require-end
 
-namespace import projectlib::* athena::*
+namespace import projectlib::* athena::* ahttpd::*
 
 #-----------------------------------------------------------------------
 # Namespace definition

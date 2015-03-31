@@ -35,7 +35,8 @@ snit::type ::ahttpd::template {
     # TBD: Don't forget to scan for info() in code!
     #
     # tmlExt  - The template extension
-    # env     - If 1, populate the env() array as for CGI scripts.
+    # env     - If 1, populate the ::ahttpd::cgienv() array as for 
+    #           CGI scripts.
     # htmlExt - The HTML extension for templates
     # check   - If 1, check for newer templates.
     # interp  - The interpreter for substituting templates.
@@ -50,6 +51,18 @@ snit::type ::ahttpd::template {
 
     #-------------------------------------------------------------------
     # Public Type Methods
+
+    # init 
+    #
+    # Enables .tml templates.
+
+    typemethod init {} {
+        # Define content-type handlers
+        ::ahttpd::doc handler text/html \
+            [list ::ahttpd::template text/html]
+        ::ahttpd::doc handler application/x-tcl-template \
+            [list ::ahttpd::template application/x-tcl-template]
+    }
 
     # check ?flag?
     #
@@ -396,8 +409,4 @@ snit::type ::ahttpd::template {
     }
 }
 
-
-# Define content-type handlers
-::ahttpd::doc handler text/html                  [list ::ahttpd::template text/html]
-::ahttpd::doc handler application/x-tcl-template [list ::ahttpd::template application/x-tcl-template]
 

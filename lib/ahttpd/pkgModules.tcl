@@ -53,9 +53,9 @@ namespace eval ::ahttpd:: {
 #-----------------------------------------------------------------------
 # Modules
 
+source [file join $::ahttpd::library ahttpd.tcl   ]
 source [file join $::ahttpd::library httpd.tcl    ]
-source [file join $::ahttpd::library utils.tcl   ]
-source [file join $::ahttpd::library server.tcl   ]
+source [file join $::ahttpd::library utils.tcl    ]
 source [file join $::ahttpd::library mimetype.tcl ]
 source [file join $::ahttpd::library log.tcl      ]
 source [file join $::ahttpd::library stats.tcl    ]

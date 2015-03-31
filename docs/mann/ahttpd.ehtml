@@ -1,0 +1,383 @@
+<manpage {ahttpd(n)} "Athena Web Server">
+
+<section SYNOPSIS>
+
+<pre>
+package require ahttpd <version>
+namespace import ::ahttpd::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+ahttpd(n) is a web server derived from the classic TclHTTPD web server.
+On the one hand, ahttpd(n) doesn't provide all of TclHTTPD's facilities;
+on the other, it is a well-behaved library package that plays nicely with
+applications.  This man page explains how to use ahttpd(n) and its 
+various features; it also documents the features that were removed.<p>
+
+To initialize and start the server, call <iref ahttpd init>.  The following
+call causes the server to listen for connections only on the local host
+at ports 8080 for normal traffic and 8081 for https traffic.  The served
+files will be found in the <tt ~/htdocs> directory.<p>
+
+<example>
+ahttpd init -docroot ~/htdocs
+</example>
+
+<subsection "Domain Handlers">
+
+The most powerful way for the application to define dynamic content is
+to define a new "domain handler".  The API is TBD (because I haven't
+decided how to expose it yet).  However, it's generally better to use
+an existing domain handler if one exists that will do the job.<p>
+
+<subsection "Direct URLs">
+
+So-called "Direct URLs" are a way of mapping specific URLs to specific
+Tcl procedures.  The procedure can receive any query parameters included
+in the URL as procedure arguments, and returns the HTML to display to the
+user.  There is also a mechanism for returning non-HTML content.<p>
+
+The API is TBD (because I haven't decided how to expose it yet).<p>
+
+<subsection "Templates">
+
+An ahttpd(n) template is a file in the <tt -docroot> tree that is expanded
+into an HTML page at run-time.  ahttpd(n) supports two kinds, 
+<tt .subst> templates and <tt .tml> templates.<p>
+
+A <tt .subst> template is a file with a <tt .subst> extension that contains
+HTML with interpolated Tcl variable and command references.  When the file
+is requested its contents is read and the Tcl <tt subst> command is 
+called on it.  The <tt subst>'d content is then returned to the user
+with content-type <tt text/html>.<p>
+
+A <tt .tml> template is a file with a <tt .tml> extension.  Its contents
+are the same as for a <tt .subst> file, but ahttpd(n) provides some
+additional features:<p>
+
+<ul>
+<li> If <tt filename.html> is requested, and there is a file called
+     <tt filename.tml> with a newer date, then <tt filename.tml> will
+     be expanded and the result saved as <tt filename.html>.  This allows
+     <tt .tml> templates to be used to automate the creation of static
+     web content.<p>
+
+<li> If <tt filename.tml> is requested, it is always expanded and the
+     result returned.<p>
+
+<li> Before expanding any <tt filename.tml> template, ahttpd(n) will look 
+     for files called just "<tt .tml>" in every directory from 
+     <tt -docroot> down to the directory containing the file.  These
+     files contain Tcl code that is used to initialize the Tcl interpreter
+     before the substitution is done.  <b Note:>  Use of these files is
+     not recommended; the application should provide all needed commands
+     to the template.<p>
+</ul>
+
+
+While expanding either kind of template, the variable 
+<tt ::ahttpd::cgienv> will contain environmental variable settings similar 
+to those used in CGI-BIN scripts.<p>
+
+<subsection "Authentication">
+
+ahttpd(n) supports <tt .htaccess>-based Basic and Digest authentication of 
+directories in the <tt -doctree>.  (TBD: This remains untested; it's 
+not clear we will need it.)<p>
+
+<subsection "Redirection">
+
+ahttpd(n) provides an API (TBD) for allowing automatic redirection of 
+URLs to other URLs on or off the server.  This API can be used directly
+by the application; and if the file <tt redirect> exists in the 
+<tt -docroot> it is expected to be a .Tcl file of redirection commands
+and will be loaded automatically.<p>
+
+If the <tt -debug> option is given, then the current set of redirections
+can be seen at URL <tt /redirect/status>, and the <tt redirect> file
+can be reloaded by browsing <tt /redirect/reload>.<p>
+
+<subsection "Server Status">
+
+If the <tt -debug> option is given, then a number of server-related 
+statistics can be seen by browsing URL <tt /status>.<p>
+
+<subsection "Debugging">
+
+If the <tt -debug> option is given, then quite a few debugging URLs
+become available at URL <tt /debug/...>.  See <tt ahttpd/debug.tcl> 
+for the full set.<p>
+
+<section "COMMANDS">
+
+This module defines the following commands:<p>
+
+<deflist commands>
+
+<defitem "ahttpd init" {ahttpd init ?<i options...>?}>
+
+Initializes the server and prepares it to listen for connections.  The
+application must enter the Tcl event loop before any connections will be
+handled.<p>
+
+The following options may be used:<p>
+
+<deflist options>
+
+<defopt {-allowtml}>
+
+If given, then any <tt .tml> templates in the server's <tt -docroot> tree 
+will be expanded to <tt .html> pages at run time.  
+See <xref "Templates"> for details.  Otherwise, <tt .tml> files will get
+no special handling.<p>
+
+<defopt {-allowsubst}>
+
+If given, then any <tt .subst> templates in the server's <tt -docroot> tree 
+will be expanded to <tt .html> pages at run time.  
+See <xref "Templates"> for details.  Otherwise, <tt .subst> files will get
+no special handling.<p>
+
+<defopt {-debug}>
+
+If given, the server will provide <tt /status>, <tt /debug>, and 
+<tt /redirect> URLs for use while debugging the server and the served
+pages.<p>
+
+<defopt {-docroot <i path>}>
+
+<b Required>.  Specifies the root directory of the server's file space; any
+files in this space will be served to clients.<p>
+
+<defopt {-errorpage <i path>}>
+
+Specifies the server-absolute <i path> of the file to display on unexpected
+server errors.  The file must be in the tree rooted at <tt -docroot>, 
+must be relative to the <tt -docroot>, and must begin with a "/".  The
+error page defaults to "<tt /error.html>"; i.e., a file called 
+"error.html" in the <tt -docroot> directory.<p>
+
+<defopt {-host <i name>}>
+
+The server's host name.  Defaults to the server platform's actual host
+name.<p>
+
+<defopt {-ipaddr <i ip_address>}>
+
+The IP address at which the server should accept connections.  If it is
+set to "", it will receive connections at any of the host platform's 
+IP addresses.  Defaults to "127.0.0.1", so that it will only accept
+connections from the local host.<p>
+
+<defopt {-notfoundpage <i path>}>
+
+Specifies the server-absolute <i path> of the file to display for URLs
+not found on the server.  The file must be in the tree rooted at 
+<tt -docroot>, must be relative to the <tt -docroot>, and must begin 
+with a "/".  The not-found page defaults to "<tt /notfound.html>", i.e., 
+a file called "notfound.html" in the <tt -docroot> directory.<p>
+
+<defopt {-port <i port>}>
+
+The TCP/IP port at which the server will accept "http:" connections.
+Defaults to "8080"; if it is "", then the server will not listen for
+"http:" connections.<p>
+
+<defopt {-secureport <i port>}>
+
+The TCP/IP port at which the server will accept "https:" connections.
+Defaults to "8081"; if it is "", then the server will not listen for 
+"https:" connections.<p>
+
+<defopt {-webmaster <i email>}>
+
+Specifies the e-mail address of the webmaster, for display on status
+pages.<p>
+
+</deflist options>
+
+<defitem "ahttpd port" {ahttpd port}>
+
+Returns the configured value of <tt -port>.<p>
+
+<defitem "ahttpd secureport" {ahttpd secureport}>
+
+Returns the configured value of <tt -secureport>.<p>
+
+<defitem "ahttpd version" {ahttpd version}>
+
+Returns the ahttpd(n) package version number.<p>
+
+
+
+</deflist commands>
+
+
+<section "ABANDONED FEATURES">
+
+This section describes the features of TclHTTPD which were removed while 
+creating ahttpd(n).  The changes all stem from the difference in use case.
+ahttpd(n) is intended to be embedded in an application, and to serve up 
+data from within that application.  It is not intended for use as a 
+general purpose web server.  Consequently, features intended to provide
+disk-based dynamic content (such as cgi-bin capability) and features 
+intended to protect the server's interpreter from that dynamic content
+have largely been dropped.<p>
+
+Abandoned features are listed in order from most attractive to least
+attractive.<p>
+
+<subsection "Session Management">
+
+TclHTTP provides cookie-based session management; each session is associated
+with a Tcl interpreter in which session data can be stored.  At present
+we see no need for this capability, but it might well be reclaimed in
+whole or in part at a later time.<p>
+
+<subsection "Template Interpreters">
+
+TclHTTPD provides a scheme for creating HTML pages from templates containing
+interpolated Tcl commands and variables.  It provides a number of nice 
+features:<p>
+
+<ul>
+<li> It will rebuild the <tt .html> file automatically, if the 
+     <tt .tml> file is newer.<p>
+<li> It can mark the generated page as dynamic content so that it isn't
+     cached.<p>
+<li> <tt .tml> files can be linked directly, in which case the dynamic
+     content is always returned.<p>
+<li> Templates can be expanded in a safe interpreter, to protect the 
+     server.<p>
+<li> Tcl code definitions can be placed in files called just ".tml", to
+     provide Tcl commands to be used in templates.<p>
+</ul>
+
+On the other hand, the template feature has some drawbacks:<p>
+
+<ul>
+<li> Setting up the safe interpreter so that it is properly configured
+     for use by templates is non-trivial.<p>
+
+<li> It only works with HTML content, at present.<p> 
+
+<li> It isn't clear that ahttpd(n) needs to cache template-based
+     HTML files.<p>
+
+<li> <tt textutil::expander> is not as efficient as <tt subst>, but
+    provides considerably more control over the expansion.<p>
+
+<li> Any commands provided for use by templates should be provided by
+     the application, not in ".tml" files on disk.<p>
+
+</ul>
+
+In short, the template feature is for content providers using TclHTTPD
+as a stand-alone web server, rather than for the application in which
+ahttpd(n) is embedded.  ".subst" files appear to do most or
+all of what templates do, so far as they are likely to be useful to 
+ahttpd(n).  And a template system based on <tt texutil::expander> and
+on a safe interpreter providing an application-specific template API
+is likely to be more useful than ".subst" files.<p>
+
+At present, then, ahttpd(n) allows the use of templates in its document 
+tree, but does not support use of a safe interpreter for templates, as all 
+templates are presumed to be part of the application code base; and it's
+possible that the whole feature will be abandoned and replaced by
+something more suitable at some point in the future.<p>
+
+<subsection "E-Mail Forms">
+
+TclHTTPD provides pages for sending e-mail to the webmaster in case of
+problems.  However, most web browsers will now handle this automatically
+for e-mail links; and in any event, ahttpd(n) will often be used in 
+environments where sending e-mail will not be possible.  This feature
+could be reclaimed if necessary.<p> 
+
+<subsection "Password Checking">
+
+TclHTTP provides a module for doing authentication checks against the
+server platform's own password databases.  This feature could be reclaimed
+if necessary, in whole or in part.<p>
+
+<subsection "File Upload">
+
+TclHTTPD provides a module for uploading files to the server.  We have no
+immediate need of this; ahttpd(n) is intended provide a browser-based UI
+for command line tools (a la <tt fossil ui>) or to be used as part of a 
+larger back-end on a cloud node.  In either case, the local environment
+is a given.  This feature could be reclaimed if necessary.<p>
+
+<subsection "Debugging UIs">
+
+TclHTTPD provides a Tk-based server user interface and a module for 
+interacting with a running server from the command line.  For ahttpd(n),
+it is up to the application to provide the UI; and <xref mars:marsgui(n)>'s
+<xref mars:debugger(n)> can provide command-line access to a running 
+server.  However, the ability to use the "/debug" and "/status"
+URLs has been retained.<p>
+
+<subsection "Threading">
+
+Threading is intended to allow multiple clients to efficiently retrieve 
+disk-based content at the same time.  In the embedded context, where 
+maintaining a consistent view of application state across threads can be
+difficult, and where high performance is much less important (the server 
+will usually be talking to a single client), in-server threads are an
+unnecessary complication.  Hence, the threading code has been removed.<p>
+
+Note that the application itself can still use threads, with ahttpd(n)
+providing access to the client.<p>
+
+<subsection "Image Maps">
+
+TclHTTPD provides support for client-side and server-side image maps.
+This simply isn't the way web applications are developed anymore, and so
+the feature was not retained.  It could be reclaimed if necessary.<p>
+
+<subsection "Includes">
+
+TclHTTPD supports server-side includes: <tt .shtml> files that can include
+other server files to create the final page.  This is an old-fashioned 
+way of building pages, and so the feature was not retained.<p>
+
+<subsection "CGI Scripting">
+
+TclHTTPD provides a full "cgi-bin" capability; this is a way for users
+of a conventional web-server to add dynamic pages.  With ahttpd(n), dynamic
+content is provided by the application itself; there is no reason to wrap
+content-provision in external CGI scripts.<p>
+
+<subsection "Virtual Hosts">
+
+TclHTTPD provides a features called "virtual hosts", which does not seem
+necessary for our purposes.  The relevant code was removed.<p>
+
+
+<subsection "Server Administration">
+
+TclHTTPD provides a rudimentary set of server administration pages.
+These were judged to be unnecessary.<p>
+
+<subsection "Backwards Compatibility">
+
+TclHTTPD provides backwards compatibility for ancient versions of Tcl
+and for code written to work with older versions of TclHTTPD.  Under
+the circumstances, all such code has been removed.<p>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+New package derived from Athena internals.<p>
+
+</manpage>
+
+
+
+

@@ -227,8 +227,6 @@ snit::type ::ahttpd::redirect {
     # Returns the HTML text.
 
     proc Redirect/status {} {
-        global Url  ;# hack alert
-
         append html "<h3>Redirect Table</h3>\n"
         append html "<table>\n"
         append html "<tr><th colspan=2>Single URLs</th></tr>\n"
