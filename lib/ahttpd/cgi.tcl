@@ -60,7 +60,7 @@ snit::type ::ahttpd::cgi {
     #              recreated from information in the CGI request.
 
     typevariable info -array {
-        env-pass {PATH LD_LIBRARY_PATH TZ}
+        env-pass {TZ}
     }
 
     #-------------------------------------------------------------------
@@ -70,14 +70,14 @@ snit::type ::ahttpd::cgi {
     #
     # sock    - The client socket
     # path    - ???? (Server-specific URL?)
-    # var     - Name of the environment array
+    # var     - Name of the environment array; defaults to ::ahttpd::cgienv
     #
     # Set up a CGI-like environment array in the caller's environment.
 
-    typemethod setenv {sock path {var env}} {
-        upvar 1 $var env
+    typemethod setenv {sock path {var ::ahttpd::cgienv}} {
+        upvar 1 $var cgienv
         upvar #0 ::ahttpd::Httpd$sock data
-        SetEnvAll $sock $path {} $data(url) env
+        SetEnvAll $sock $path {} $data(url) cgienv
     }
     
     # setenvfor sock path interp
@@ -90,9 +90,9 @@ snit::type ::ahttpd::cgi {
 
     typemethod setenvfor {sock path interp} {
         upvar #0 ::ahttpd::Httpd$sock data
-        SetEnvAll $sock $path {} $data(url) env
+        SetEnvAll $sock $path {} $data(url) cgienv
         interp eval $interp \
-            [list uplevel #0 [list array set env [array get env]]]
+            [list uplevel #0 [list array set ::ahttpd::cgienv [array get cgienv]]]
     }
 
     #-------------------------------------------------------------------
@@ -113,6 +113,7 @@ snit::type ::ahttpd::cgi {
         upvar 1 $var env
 
         # Clear the environment
+        array set env [array get ::env]
         foreach i [array names env] {
             if {$i ni $info(env-pass)} {
                 unset env($i)

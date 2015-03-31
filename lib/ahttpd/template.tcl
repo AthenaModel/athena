@@ -42,7 +42,7 @@ snit::type ::ahttpd::template {
 
     typevariable info -array {
         tmlExt  .tml
-        env     0
+        env     1
         htmlExt .html
         check   1
         interp  {}
@@ -274,7 +274,8 @@ snit::type ::ahttpd::template {
             dynamic       $dynamic    \
         ]]]
 
-        # Populate the global "env" array similarly to the CGI environment
+        # Populate the global "::ahttpd::cgienv" array similarly to the 
+        # CGI environment
         if {$info(env)} {
             cgi setenvfor $sock $filename $interp
         }
@@ -293,9 +294,9 @@ snit::type ::ahttpd::template {
                 # then the GET request erroneously has a content-type header
                 # that is a copy of the one from the previous POST!
 
-                set type application/x-www-urlencoded
+                set ctype application/x-www-urlencoded
             } else {
-                set type $data(mime,content-type)
+                set ctype $data(mime,content-type)
             }
 
             # Read and append the pending post data to data(query).
@@ -304,7 +305,7 @@ snit::type ::ahttpd::template {
             # Initialize the Standard Tcl Library ncgi package so its
             # ncgi::value can be used to get the data.
 
-            interp eval $interp [list ncgi::reset $data(query) $type]
+            interp eval $interp [list ncgi::reset $data(query) $ctype]
             interp eval $interp [list ncgi::parse]
             interp eval $interp [list ncgi::urlStub $data(url)]
 
@@ -314,7 +315,7 @@ snit::type ::ahttpd::template {
             # to avoid parsing the data twice.
 
             interp eval $interp [list uplevel #0 [list set page(querytype) \
-                [string trim [lindex [split $type \;] 0]]]]
+                [string trim [lindex [split $ctype \;] 0]]]]
 
             interp eval $interp [list uplevel #0 {
                 set page(query) {}

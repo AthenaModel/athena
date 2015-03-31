@@ -10,13 +10,14 @@
 #
 # TBD:
 #
-#   * Determine required server options, and implement, initializing
-#     the ahttpd modules as required.
 #   * Replace the ahttpd::log with a -logcmd that can work with logger(n).
 #   * Simplify remaining CGI-related code; get rid of env() fixups if
 #     possible.
 #     * Use same variables, but pass array explicitly, or access via
 #       "sock".
+#   * Delegate from server to url, direct, etc., for adding content 
+#     URLs and domains.
+#   * Add a "help" domain, displaying the Athena help.
 #   * Scan mime.types, and remove tcl-* handlers that we don't use.
 #   * Consider removing templates.  If not, simplify.
 #       * Always use safe interp.

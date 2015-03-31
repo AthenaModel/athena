@@ -447,8 +447,6 @@ snit::type ::ahttpd::doc {
     # the page.
 
     proc DocSubstSystemFile {sock key code {extra {}} {interp {}}} {
-        global env
-
         if {![info exists info(page,$key)]} {
             set path [$type virtual {} {} /$key.html]
             if {[file exists $path]} {

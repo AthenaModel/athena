@@ -92,10 +92,9 @@ snit::type ::ahttpd::direct {
     #  The default type is text/html
 
     proc DirectDomain {prefix sock suffix} {
-        global env
         upvar #0 ::ahttpd::Httpd$sock data
 
-        # Set up the environment a-la CGI.
+        # Set up the environment a-la CGI, into ::ahttpd::cgienv
         cgi setenv $sock $prefix$suffix
 
         # Prepare an argument data from the query data.
