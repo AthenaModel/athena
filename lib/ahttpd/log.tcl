@@ -8,11 +8,8 @@
 # DESCRIPTION:
 #    ahttpd(n): server logging
 #
-#    This is a file-based logging module for TclHttpd.
-#
-#    This starts a new log file each day with Log_SetFile
-#    It also maintains an error log file that is always appended to
-#    so it grows over time even when you restart the server.
+#    This module is a simple adaptor from old-style TclHTTPD logging
+#    to logger(n)-style logging.
 #
 #    Stephen Uhler / Brent Welch (c) 1997 Sun Microsystems
 #    Brent Welch (c) 1998-2000 Ajuba Solutions
@@ -26,71 +23,9 @@
 snit::type ::ahttpd::log {
     pragma -hasinstances no
 
-    #-------------------------------------------------------------------
-    # Type Variables
-    
-    # Info Array
-    #
-    # lognames  - If 1, log host names; otherwise, log IP addresses. 
-    # cookies   - If 1, log cookie values.
-    # basename  - Base name of current log
-    # logfile   - Current log file name.
-
     typevariable info -array {
         lognames 0
         cookies  0
-        basename ""
-        logfile  ""
-    }
-
-    typevariable fd -array {
-        log   ""
-        error ""
-    }
-
-    # setfile basename
-    #
-    # basename   - Base log file name, including directory, or ""
-    #
-    # Opens log files, closing any previous log files.  
-    # If basename is the empty string, just closes the log.
-    
-    typemethod setfile {basename} {
-        # FIRST, save the new base name.
-        if {$basename ne ""} {
-            set info(basename) $basename
-        }
-
-        if {$info(basename) eq ""} {
-            return
-        }
-
-        # TBD: Ugly!  Should be handled separately.
-        stats checkpoint
-
-        # set the log file and error file.
-        set info(logfile) $info(basename)
-        catch {close $fd(log)}
-        catch {close $fd(error)}
-
-        # Create log directory, if neccesary, then open the log files
-        catch {file mkdir [file dirname $info(logfile)]}
-
-        if {[catch {set fd(log) [open $info(logfile) a]} err]} {
-            errputs $err
-        }
-
-        if {[catch {set fd(error) [open $info(basename)error a]} err]} {
-            errputs $err
-        }
-    }
-
-    # basename
-    #
-    # Returns the base name, or ""
-
-    typemethod basename {} {
-        return $info(basename)
     }
 
     # add sock reason args
@@ -107,59 +42,27 @@ snit::type ::ahttpd::log {
     # error log file.
 
     typemethod add {sock reason args} {
-        # TBD: Need a better mechanism
         upvar #0 ::ahttpd::Httpd$sock data
-
-        switch -- $reason {
-            "Close" {
-                set now [clock seconds]
-                set result [LogStandardData $sock $now]
-                if {[catch {puts $fd(log) $result} err]} {
-                    # TBD: urk?
-                    set urk !
-                }
-
-                catch {flush $fd(log)}
-            }
-            default {
-                set now [clock seconds]
-                append result { } \[[clock format $now -format %d/%h/%Y:%T]\]
-                append result { } $sock { } $reason { } $args
-                if {[info exists data(url)]} {
-                    append result { } $data(url)
-                }
-                catch { 
-                    puts $fd(error) $result
-                    flush $fd(error) 
-                }
-            }
+        if {$reason eq "Close"} {
+            ahttpd log normal $sock [LogStandardData $sock]
+        } else {
+            ahttpd log warning $sock "$reason $args"
         }
-    }
-
-    # flush
-    #
-    # Flush the output to the log file.  Do this periodically, rather than
-    # for every transaction, for better performance
-
-    typemethod flush {} {
-        catch {flush $fd(log)}
-        catch {flush $fd(error)}
     }
 
     #-------------------------------------------------------------------
     # Standard HTTP Logging
 
-    # LogStandardData sock now
+    # LogStandardData sock
     #
     # sock  - The client connection.
-    # now   - The timestamp for the connection, in seconds
     #
     # Generate a standard web log file record for the current connection.
     # This records the client address, the URL, the time, the error
     # code, and so forth.  Returns the record string.
 
-    proc LogStandardData {sock now} {
-        return [LogStandardPrint [LogStandardList $sock $now]]
+    proc LogStandardData {sock} {
+        return [LogStandardPrint [LogStandardList $sock]]
     }
 
     # LogStandardPrint data
@@ -180,10 +83,6 @@ snit::type ::ahttpd::log {
                 continue
             }
             switch -- $n {
-                time {
-                    append result \
-                        $sep\[[clock format $v -format "%d/%h/%Y:%T %Z"]\]
-                }
                 http      -
                 referer   -
                 useragent -
@@ -199,17 +98,15 @@ snit::type ::ahttpd::log {
         return $result
     }
 
-    # LogStandardList sock now
+    # LogStandardList sock
     #
     # sock  - The client connection.
-    # now   - The timestamp for the connection, in seconds
     #
     # Like LogStandardData, but return the data in a name, value list
     # suitable for use in foreach loops, array get, or long term
     # storage.
 
-    proc LogStandardList {sock now} {
-        # TBD: Need better mechanism.
+    proc LogStandardList {sock} {
         upvar #0 ::ahttpd::Httpd$sock data
 
         if {$info(lognames)} {
@@ -222,7 +119,6 @@ snit::type ::ahttpd::log {
 
         lappend result authuser  [LogValue data(mime,auth-user)]
         lappend result username  [LogValue data(mime,username)]
-        lappend result time      $now
         lappend result http      [LogValue data(line)]
         lappend result status    [LogValue data(code)]
         lappend result filesize  [LogValue data(file_size)]
@@ -256,8 +152,6 @@ snit::type ::ahttpd::log {
            return -
         }
     }
-
-    
 
 }
 

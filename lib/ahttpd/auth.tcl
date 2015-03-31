@@ -83,7 +83,7 @@ snit::type ::ahttpd::auth {
         #
         # The approach taken is to allow the administrator to give 
         # plaintext passwords via Config, or (failing that) to generate 
-        # and "::ahttpd::log add" a random password at runtime.  A new 
+        # and log a random password at runtime.  A new 
         # random password will be created on each server startup.
         #
         # Here, we create a default authentication array

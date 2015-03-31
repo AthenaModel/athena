@@ -124,12 +124,6 @@ snit::type ::ahttpd::ahttpd {
             redirect init                       ;# Redirect management
         }
 
-
-        # TBD: Need -logroot parameter
-        # TBD: Need application log.  ahttpd::log should be combined
-        # with it.
-        ::ahttpd::log setfile ~/github/athena/log/httpd$info(-port)
-
         # NEXT, start the server.
         if {$info(-port) ne ""} {
             $type log normal ahttpd "Starting http server on $info(-port)"

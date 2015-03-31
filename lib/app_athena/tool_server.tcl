@@ -255,7 +255,7 @@ snit::type logwin {
             -format        {
                 {t    19 yes}
                 {v    7 yes}
-                {c    14 yes}
+                {c    9 yes}
                 {m    0 yes}
             }
              
@@ -275,7 +275,7 @@ snit::type logwin {
         grid columnconfigure . 0 -weight 1
         
         # NEXT, addition behavior
-        bind all <Control-F12> [list debugger new]
+        bind all <Control-F12> [list ::marsgui::debugger new]
 
         notifier bind ::log <NewLog> .log {.log load}
     }
