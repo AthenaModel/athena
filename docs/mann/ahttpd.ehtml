@@ -26,12 +26,23 @@ files will be found in the <tt ~/htdocs> directory.<p>
 ahttpd init -docroot ~/htdocs
 </example>
 
+<section "TCLHTTPD FEATURES">
+
+The following features have been retained from TclHTTP, more or less 
+"as is".<p>
+
 <subsection "Domain Handlers">
 
 The most powerful way for the application to define dynamic content is
 to define a new "domain handler".  The API is TBD (because I haven't
 decided how to expose it yet).  However, it's generally better to use
 an existing domain handler if one exists that will do the job.<p>
+
+<subsection "The Document Domain">
+
+ahttpd(n) serves up files from the directory tree rooted at 
+<tt -docroot>.  In addition, it is possible to define URL domains for
+other directory trees (the API is TBD).<p>
 
 <subsection "Direct URLs">
 
@@ -110,6 +121,18 @@ statistics can be seen by browsing URL <tt /status>.<p>
 If the <tt -debug> option is given, then quite a few debugging URLs
 become available at URL <tt /debug/...>.  See <tt ahttpd/debug.tcl> 
 for the full set.<p>
+
+<section "AHTPPD FEATURES">
+
+The following features are new to ahttpd(n).<p>
+
+<b TBD:> Not implemented yet:<p>
+
+<ul>
+<li> appserver(n)-like domain handlers
+<li> Athena Help domain handler
+<li> RDB schema domain handler
+</ul>
 
 <section "COMMANDS">
 

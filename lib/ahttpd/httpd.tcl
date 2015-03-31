@@ -1349,11 +1349,12 @@ snit::type ::ahttpd::httpd {
         append data(url) ""
 
         set message [format $errorFormat $code [HttpdErrorString $code] $data(url)]
-        append message <br>$detail
+        append message <br><pre>$detail</pre>
+
         if {$code == 500} {
             append message "<h2>Tcl Call Trace</h2>"
             for {set l [expr [info level]-1]} {$l > 0} {incr l -1} {
-                append message "$l: [protect_text [info level $l]]<br>"
+                append message "<pre>$l: [protect_text [info level $l]]</pre><br>"
             }
         }
         ::ahttpd::log add $sock Error $code $data(url) $detail

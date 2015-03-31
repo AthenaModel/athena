@@ -13,7 +13,10 @@
 #   * Replace the ahttpd::log with a -logcmd that can work with logger(n).
 #   * Delegate from server to url, direct, etc., for adding content 
 #     URLs and domains.
-#   * Add a "help" domain, displaying the Athena help.
+#   * Define an appserver-like domain handler
+#     for defining URLs with place-holders.
+#   * Add a "help" domain, displaying the Athena help.\
+#   * Clean up the mime.types file and add the new mime-types we need.
 #
 #-----------------------------------------------------------------------
 
