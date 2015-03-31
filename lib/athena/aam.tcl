@@ -663,7 +663,7 @@ snit::type ::athena::aam {
     # be overridden.
 
     method hasroe {n f g} {
-        return [dict exists $n $f $g]
+        return [dict exists $roedict $n $f $g]
     }
 
     #-------------------------------------------------------------------

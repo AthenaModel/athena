@@ -80,7 +80,7 @@ namespace eval ::athena_test::tests:: {
         execstatus NONE
         f          {}
         faildict   {}
-        g          {}
+        glist      {_type FRCGROUPS _rule {}}
         id         *
         name       T*
         nlist      {_type NBHOODS _rule {}}
@@ -108,17 +108,17 @@ namespace eval ::athena_test::tests:: {
         $T1 narrative
     } -cleanup {
         cleanup
-    } -result {??? will try to attack ??? in nbhood ???. Force/Enemy ratio: DEFEND below 200% and WITHDRAW below 15%. Concern for CIVCAS: HIGH.}
+    } -result {??? will try to attack group ??? in nbhood ???. Force/Enemy ratio: DEFEND below 200% and WITHDRAW below 15%. Concern for CIVCAS: HIGH.}
 
     test narrative-1.2 {valid inputs} -setup {
         setup
-        $T1 configure -f BLUE -g ALQ \
+        $T1 configure -f BLUE -glist [tdb gofer make FRCGROUPS BY_VALUE ALQ] \
                       -nlist [tdb gofer make NBHOODS BY_VALUE {NB1 NB2}]
     } -body {
         $T1 narrative
     } -cleanup {
         cleanup
-    } -result {{group:BLUE} will try to attack {group:ALQ} in these neighborhoods (NB1, NB2). Force/Enemy ratio: DEFEND below 200% and WITHDRAW below 15%. Concern for CIVCAS: HIGH.}
+    } -result {{group:BLUE} will try to attack group ALQ in these neighborhoods (NB1, NB2). Force/Enemy ratio: DEFEND below 200% and WITHDRAW below 15%. Concern for CIVCAS: HIGH.}
 
 
     #-------------------------------------------------------------------
@@ -131,7 +131,8 @@ namespace eval ::athena_test::tests:: {
     } -cleanup {
         cleanup
     } -match dict -result {
-        g     {No enemy group selected.}
+        f     {No force group selected.}
+        glist {No rule specified}
         nlist {No rule specified}
     }
 
@@ -140,7 +141,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         $T1 configure -f NONESUCH \
                       -nlist [tdb gofer make NBHOODS BY_VALUE NB1] \
-                      -g ALQ
+                      -glist [tdb gofer make FRCGROUPS BY_VALUE ALQ]
         ted pdicts [$T1 check]
     } -cleanup {
         cleanup
@@ -148,37 +149,11 @@ namespace eval ::athena_test::tests:: {
         f {JOE does not own a force group called "NONESUCH".}
     }
 
-    test check-1.3 {unknown g} -setup {
-        setup
-    } -body {
-        $T1 configure -f BLUE \
-                      -nlist [tdb gofer make NBHOODS BY_VALUE NB1] \
-                      -g NONESUCH
-        ted pdicts [$T1 check]
-    } -cleanup {
-        cleanup
-    } -match dict -result {
-        g {No such FRC group: NONESUCH.}
-    }
-
-    test check-1.4 {can't set ROE against own group} -setup {
-        setup
-    } -body {
-        $T1 configure -f BLUE \
-                      -nlist [tdb gofer make NBHOODS BY_VALUE NB1] \
-                      -g BLUE
-        ted pdicts [$T1 check]
-    } -cleanup {
-        cleanup
-    } -match dict -result {
-        g {JOE can't engage own force group: "BLUE".}
-    }
-
-    test check-1.5 {Success} -setup {
+    test check-1.4 {Success} -setup {
         setup
         $T1 configure -f BLUE \
                       -nlist [tdb gofer make NBHOODS BY_VALUE NB1] \
-                      -g ALQ
+                      -glist [tdb gofer make FRCGROUPS BY_VALUE ALQ]
     } -body {
         $T1 check
     } -cleanup {
@@ -193,7 +168,7 @@ namespace eval ::athena_test::tests:: {
         setup
         $T1 configure -f BLUE \
                       -nlist [tdb gofer make NBHOODS BY_VALUE NB1] \
-                      -g ALQ
+                      -glist [tdb gofer make FRCGROUPS BY_VALUE ALQ]
     } -body {
         $T1 obligate $coffer
     } -cleanup {
@@ -207,13 +182,13 @@ namespace eval ::athena_test::tests:: {
         setup
         $T1 configure -f BLUE \
                       -nlist [tdb gofer make NBHOODS BY_VALUE NB1] \
-                      -g ALQ
+                      -glist [tdb gofer make FRCGROUPS BY_VALUE ALQ]
     } -body {
         $T1 execute
-        tdb aam getroe
+        tdb aam hasroe NB1 BLUE ALQ
     } -cleanup {
         cleanup
-    } -result {NB1 {BLUE {ALQ {roe ATTACK athresh 2.0 dthresh 0.15 civc HIGH}}}}
+    } -result {1}
 
     #-------------------------------------------------------------------
     # Cleanup

@@ -25,7 +25,7 @@
 
     # Editable Parameters
     variable f           ;# A force group owned by the actor group
-    variable g           ;# A force group to engage
+    variable glist       ;# A list of force groups to engage
     variable nlist       ;# A list of neighborhoods to assume the ROE
     variable roe         ;# The ROE the group should attempt to take
     variable athresh     ;# Force ratio below which posture is defend
@@ -42,7 +42,7 @@
         # Initialize state variables
         set f          ""
         set nlist      [[my adb] gofer NBHOODS blank]
-        set g          ""
+        set glist      [[my adb] gofer FRCGROUPS blank]
         set roe        ATTACK
         set athresh    2.0
         set dthresh    0.15
@@ -61,7 +61,7 @@
     method SanityCheck {errdict} {
         # Check f
         if {$f eq ""} {
-            dict set errdict g "No force group selected."
+            dict set errdict f "No force group selected."
         } elseif {$f ni [[my adb] group ownedby [my agent]]} {
             dict set errdict f \
                 "[my agent] does not own a force group called \"$f\"."
@@ -72,14 +72,9 @@
             dict set errdict nlist $result
         }
 
-        # g
-        if {$g eq ""} {
-            dict set errdict g "No enemy group selected."
-        } elseif {$g ni [[my adb] frcgroup names]} {
-            dict set errdict g "No such FRC group: $g."
-        } elseif {$g in [[my adb] group ownedby [my agent]]} {
-            dict set errdict g \
-                "[my agent] can't engage own force group: \"$g\"."
+        # glist
+        if {[catch {[my adb] gofer FRCGROUPS validate $glist} result]} {
+            dict set errdict glist $result
         }
 
         return [next $errdict]
@@ -88,12 +83,12 @@
     method narrative {} {
         set s(f)     [::athena::link make group $f]
         set s(nlist) [[my adb] gofer NBHOODS narrative $nlist]
-        set s(g)     [::athena::link make group $g]
+        set s(glist) [[my adb] gofer FRCGROUPS narrative $glist]
         set s(roe)   [eroe longname $roe]
         set s(athresh) [format %.0f%% [expr $athresh * 100.0]]
         set s(dthresh) [format %.0f%% [expr $dthresh * 100.0]]
 
-        set narr "$s(f) will try to $s(roe) $s(g) in $s(nlist). "
+        set narr "$s(f) will try to $s(roe) $s(glist) in $s(nlist). "
         append narr "Force/Enemy ratio: "
         if {[eroe name $roe] eq "ATTACK"} {
             append narr "DEFEND below $s(athresh) and "
@@ -114,47 +109,98 @@
     method execute {} {
         set goodn [list]
         set badn  [list]
+        set goodg [list]
+        set badg  [list]
 
         set nbhoods [[my adb] gofer eval $nlist]
+        set groups  [[my adb] gofer eval $glist]
+        set ownedg  [[my adb] actor frcgroups [my agent]]
 
-        foreach n $nbhoods {
-            if {![[my adb] aam hasroe $n $f $g]} {
-                [my adb] aam setroe $n $f $g \
-                    [list roe $roe athresh $athresh dthresh $dthresh civc $civc]
-                lappend goodn $n 
-            } else {
-                lappend badn $n 
+        foreach g $groups {
+            if {$g ni $ownedg} {
+                lappend goodg $g
             }
         }
 
-        if {[llength $goodn] == 0} {
+        if {[llength $goodg] == 0} {
             set msg "
-                ROE: Actor {actor:[my agent]} ordered {group:$f} to adopt
-                an ROE of $roe towards {group:$g} in 
-                [[my adb] gofer NBHOODS narrative $nlist], however, $f's 
-                ROE were already set in these neighborhoods by higher-priority
-                 tactics.
+                ROE: Actor {actor:[my agent]} ordered {group:$f} to adopt 
+                an ROE of $roe towards 
+                [[my adb] gofer FRCGROUPS narrative $glist], however, 
+                [my agent] owns all of those groups so ROE cannot be set
+                against them.
             "
 
-            set tags [list [my agent] $f $g {*}$nbhoods]
+            set tags [list [my agent] $f {*}$groups {*}$nbhoods]
+            [my adb] sigevent log 2 tactic $msg {*}$tags
+
+            return
+        }
+
+        # NEXT, check for existing ROEs already ordered
+        set goodng [list]
+        set badng  [list]
+
+        foreach n $nbhoods {            
+            foreach g $goodg {
+                if {![[my adb] aam hasroe $n $f $g]} {
+                    [my adb] aam setroe $n $f $g        \
+                        [list roe $roe athresh $athresh \
+                              dthresh $dthresh civc $civc]
+                    lappend goodng $n $g
+                } else {
+                    lappend badng $n $g
+                }
+            }
+        }
+
+        if {[llength $goodng] == 0} {
+            set msg "
+                ROE: Actor {actor:[my agent]} ordered {group:$f} to adopt
+                an ROE of $roe towards: [join $goodg {, }] in 
+                [[my adb] gofer NBHOODS narrative $nlist], however, $f's 
+                ROE were already set in these neighborhoods toward these
+                groups by higher-priority tactics.
+            "
+
+            set tags [list [my agent] $f {*}$groups {*}$nbhoods]
             [my adb] sigevent log 2 tactic $msg {*}$tags
         
             return
         }
 
+        # NEXT, only need to report on good nbhoods and good groups
+        # once
+        set good(n) [list]
+        set good(g) [list]
+        foreach {n g} $goodng {
+            if {$n ni $good(n)} {lappend good(n) $n}
+            if {$g ni $good(g)} {lappend good(g) $g}
+        }
+
         set msg "
             ROE: Actor {actor:[my agent]}'s group {group:$f} adopts an ROE
-            of $roe towards {group:$g} in [join $goodn {, }].
+            of $roe towards [join $good(g) {, }] in [join $good(n) {, }].
         "
 
-        if {[llength $badn] > 0} {
+        # NEXT, only need to report on bad nbhoods and bad groups
+        # once
+        set bad(n) [list]
+        set bad(g) [list]
+        foreach {n g} $badng {
+            if {$n ni $bad(n)} {lappend bad(n) $n}
+            if {$g ni $bad(g)} {lappend bad(g) $g} 
+        }
+
+        if {[llength $bad(n)] > 0} {
             append msg "
-                Group {group:$f}'s ROE already set in these neighborhood(s) by
-                a prior tactic: [join $badn {, }].
+                Group {group:$f}'s ROE already set toward these group(s):
+                [join $bad(g) {, }] in these neighborhood(s): 
+                [join $bad(n) {, }] by a prior tactic.
             "
         }
 
-        set tags [list [my agent] $f $g {*}$goodn]
+        set tags [list [my agent] $f {*}$good(g) {*}$good(n)]
         [my adb] sigevent log 2 tactic $msg {*}$tags
 
         return 
@@ -172,7 +218,7 @@
     meta title      "Tactic: Force Group ROE"
     meta sendstates PREP
     meta parmlist   {
-        tactic_id name f nlist g roe athresh dthresh civc
+        tactic_id name f nlist glist roe athresh dthresh civc
     }
 
     meta form {
@@ -189,8 +235,8 @@
         rcc "Neighborhoods:" -for nlist
         gofer nlist -typename NBHOODS
 
-        rcc "Against:" -for g
-        enum g -listcmd {$order_ frcgroupsNotOwnedByAgent $tactic_id}
+        rcc "Against:" -for glist
+        gofer glist -typename FRCGROUPS
 
         rcc "ROE:" -for roe
         selector roe {
@@ -225,7 +271,7 @@
         my prepare name       -toupper  -with [list $tactic valName]
         my prepare f  
         my prepare nlist
-        my prepare g
+        my prepare glist
         my prepare roe        -toupper  -type eroe
         my prepare athresh    -toupper  -type rmagnitude
         my prepare dthresh    -toupper  -type rmagnitude
@@ -246,7 +292,7 @@
     method _execute {{flunky ""}} {
         set tactic [$adb bean get $parms(tactic_id)]
         my setundo [$tactic update_ {
-            name f nlist g roe athresh dthresh civc
+            name f nlist glist roe athresh dthresh civc
         } [array get parms]]
     }
 }

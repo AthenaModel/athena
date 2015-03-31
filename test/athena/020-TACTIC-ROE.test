@@ -147,7 +147,7 @@ namespace eval ::athena_test::tests:: {
             tactic_id [$T1 id]  \
             f          BLUE     \
             nlist     [tdb gofer make NBHOODS BY_VALUE {NB1}] \
-            g          ALQ
+            glist     [tdb gofer make FRCGROUPS BY_VALUE {ALQ}]
 
         ted pdicts [$T1 getdict]
     } -cleanup {
@@ -159,7 +159,7 @@ namespace eval ::athena_test::tests:: {
         execstatus NONE
         f          BLUE
         faildict   {}
-        g          ALQ
+        glist      {_type FRCGROUPS _rule BY_VALUE raw_value ALQ}
         id         *
         name       T*
         nlist      {_type NBHOODS _rule BY_VALUE nlist NB1}
@@ -177,7 +177,7 @@ namespace eval ::athena_test::tests:: {
             tactic_id [$T1 id]  \
             f          BLUE     \
             nlist     [tdb gofer make NBHOODS BY_VALUE {NB1}] \
-            g          ALQ
+            glist     [tdb gofer make FRCGROUPS BY_VALUE {ALQ}]
 
         ted notifier received
     } -cleanup {
@@ -191,7 +191,7 @@ namespace eval ::athena_test::tests:: {
             tactic_id [$T1 id]  \
             f          BLUE     \
             nlist     [tdb gofer make NBHOODS BY_VALUE {NB1}] \
-            g          ALQ
+            glist     [tdb gofer make FRCGROUPS BY_VALUE {ALQ}]
 
     } -body {
         ted notifier bind ::projectlib::bean <Monitor>
