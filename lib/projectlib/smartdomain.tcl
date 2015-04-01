@@ -1,0 +1,299 @@
+#-----------------------------------------------------------------------
+# TITLE:
+#    smartdomain.tcl
+#
+# PROJECT:
+#    athena - Athena Regional Stability Simulation
+#
+# DESCRIPTION:
+#    projectlib(n): smart URL domain handler
+#
+#    Instances of smartdomain(n) provide domain handlers that can be
+#    used with ahttpd(n) or myserver(n).
+#
+#    TBD: If a folder is queried, redirect to index.html.
+#
+#-----------------------------------------------------------------------
+
+oo::class create ::projectlib::smartdomain {
+    #-------------------------------------------------------------------
+    # Instance Variables
+
+    # info array
+    #
+    # domain            - The URL prefix for this domain, e.g., /foo/bar
+    # handler-$suffix   - The handler command for the suffix
+    # docstring-$suffix - The documentation string for the suffix
+
+    variable info
+
+    # patterns dictionary: URL suffix by matching regexp
+
+    variable patterns
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    # constructor domain
+    #
+    # domain   - The domain prefix, e.g., /foo/bar
+
+    constructor {domain} {
+        set info(domain) $domain
+        set patterns [dict create]
+    }
+
+    #-------------------------------------------------------------------
+    # Server Registrations
+
+    # ahttpd
+    #
+    # Registers this domain with ahttpd(n), which should already be
+    # initialized.
+
+    method ahttpd {} {
+        ahttpd domain install $info(domain) [mymethod ahttpdDomain]
+    }
+
+    # myserver name
+    #
+    # Registers this domain with a myserver(n) called $name.
+
+    method myserver {name} {
+        error "Not implemented yet"
+        $name install $info(domain) [mymethod myHandler]
+    }
+    
+    
+    #-------------------------------------------------------------------
+    # URL Registration
+
+    # url suffix handler docstring
+    #
+    # suffix     - The URL suffix with filename and extension, e.g.,
+    #              /this/that/index.html
+    # handler    - The handler command prefix; see below.
+    # docstring  - A brief documentary string for the URL.
+    #
+    # Registers a URL with the domain.  The suffix must begin with a "/",
+    # end with a filename and extension, and may include zero or
+    # more variables, e.g., "/actor/{a}/index.html".  The variable name 
+    # must be the entire path component, and must be contained in {} as 
+    # shown.
+    #
+    # The suffix will be matched by replacing the variables with 
+    # regexp's, e.g., /actor/(\w+)/index.html.
+    #
+    # The handler must be a command prefix, to which will be added
+    # one argument for each matched variable; the name of the request
+    # data array; and a dictionary of query data as parsed by ncgi.
+    # The full query string is also contained in the data array, in
+    # case the handler wants to handle it by itself.
+
+    method url {suffix handler docstring} {
+        # FIRST, turn it into a matching pattern; this will throw
+        # an error if there's a problem.
+        set pattern [my GetUrlPattern $suffix]
+
+        # NEXT, save it all.
+        set info(handler-$suffix) $handler
+        set info(docstring-$suffix) [outdent $docstring]
+        dict set patterns $pattern $suffix
+    }
+
+    # urltree root handler docstring
+    #
+    # root       - The domain suffix that is the root of the tree, e.g.,
+    #              /this/that
+    # handler    - The handler command prefix; see below.
+    # docstring  - A brief documentary string for the URL tree
+    #
+    # Registers a URL tree with the domain.  The root must begin with 
+    # a "/", must end with a directory name, and may include
+    # zero or more variables, e.g., "/rdb/{name}".  The variable name 
+    # must be the entire path component, and must be contained in {} as 
+    # shown.
+    #
+    # The root will be matched by replacing the variables with 
+    # regexp's and adding a regexp for the URL suffix, e.g., 
+    # "/rdb/(\w+)/(.+..)".
+    #
+    # The handler must be a command prefix, to which will be added
+    # one argument for each matched variable; the URL suffix; the name of 
+    # the request data array; and a dictionary of query data as parsed by 
+    # ncgi. The full query string is also contained in the data array, in
+    # case the handler wants to handle it by itself.
+
+    method urltree {root handler docstring} {
+        # FIRST, turn it into a matching pattern.
+        set pattern [my GetUrlTreePattern $root]
+
+        if {$pattern eq ""} {
+            error "Invalid suffix: \"$suffix\""
+        }
+
+        # NEXT, save it all.
+        set info(handler-$root) $handler
+        set info(docstring-$root) [outdent $docstring]
+        dict set patterns $pattern $root
+    }
+
+    # GetUrlPattern suffix
+    #
+    # suffix  - A URL suffix, possibly containing variables.
+    #
+    # Returns the matching regexp pattern, or "" if the suffix
+    # is invalid.
+
+    method GetUrlPattern {suffix} {
+        if {[string index $suffix 0] ne "/"} {
+            return ""
+        }
+
+        set folders  [split [string range $suffix 1 end] /]
+        set filename [lpop folders]
+
+        set pattern "^"
+
+        foreach f $folders {
+            if {[regexp {^{\w+}$} $f]} {
+                append pattern {/(\w+)}
+            } elseif [regexp {^\w+$} $f] {
+                append pattern / $f
+            } else {
+                return ""
+            }
+        }
+
+        if {[regexp {^\w+\.\w+$} $filename]} {
+            append pattern / $filename
+        } else {
+            return ""
+        }
+
+        append pattern "\$"
+
+        return $pattern
+    }
+
+    # GetUrlTreePattern suffix
+    #
+    # suffix  - An URL tree root, possibly containing variables.
+    #
+    # Returns the matching regexp pattern, or "" if the suffix
+    # is invalid.
+
+    method GetUrlTreePattern {suffix} {
+        if {[string index $suffix 0] ne "/"} {
+            return ""
+        }
+
+        set folders  [split [string range $suffix 1 end] /]
+
+        set pattern "^"
+        foreach f $folders {
+            if {[regexp {^{\w+}$} $f]} {
+                append pattern {/(\w+)}
+            } elseif [regexp {^\w+$} $f] {
+                append pattern / $f
+            } else {
+                return ""
+            }
+        }
+
+        append pattern "/(.*)\$"
+
+        return $pattern
+    }
+
+    # GetHandler suffix
+    #
+    # suffix   - The URL's suffix in this domain.
+    #
+    # Finds the matching handler, and returns the command prefix.  
+    # If there's no match, returns "".
+
+    method GetHandler {suffix} {
+        # FIRST, find the matching handler.
+        dict for {pattern id} $patterns {
+            puts "Tried: <$pattern>"
+            set result [regexp -inline $pattern $suffix]
+            if {[llength $result] == 0} {
+                continue
+            }
+
+            return [concat $info(handler-$id) [lrange $result 1 end]]
+        }
+
+        # NEXT, it hasn't matched anything; see if it's a directory
+        # and if so add index.html and try again.
+        if {[file extension $suffix] eq ""} {
+            set newsuffix [file join $suffix index.html]
+
+            if {[my GetHandler $newsuffix] ne ""} {
+                set newurl "$info(domain)$newsuffix"
+                throw [list HTTPD_REDIRECT $newurl] "Redirect to index.html"
+            }
+        }
+
+        return ""
+    }
+
+
+    #-------------------------------------------------------------------
+    # ahttpd(n) support
+
+    # ahttpdDomain sock suffix
+    #
+    # sock    - The socket back to the client
+    # suffix  - The part of the URL after the domain prefix
+    #
+    # Main ahttpd(n) handler for smart domains.  The content-type
+    # is determined by the file extension on the URL.
+    #
+    #  The default type is text/html
+    #
+    # TBD: provide ahttpd subcommands, as needed, so that it isn't
+    # necessary to call internal modules.
+    #
+    # TBD: What should go in the data array?
+
+    method ahttpdDomain {sock suffix} {
+        # FIRST, get the handler for this suffix.  Return "not found"
+        # if there's no matching handler.  The handler will include
+        # values of any place-holder arguments as normal arguments.
+
+        puts "Got suffix: <$suffix>"
+        set handler [my GetHandler $suffix]
+
+        if {$handler eq ""} {
+            ::ahttpd::doc notfound $sock            
+        }
+
+        puts "Got handler: <$handler>"
+
+        # NEXT, get the request data.  TBD: Possibly, data should be
+        # sanitized for the handler.
+        upvar #0 ::ahttpd::Httpd$sock data
+
+        # NEXT, parse the query data into a dictionary.
+        # TBD: This will need to be generalized for myserver use.
+        ::ahttpd::url querysetup $sock
+
+        set qdict [ncgi::nvlist]
+
+        try {
+            set result [{*}$handler data $qdict]
+        } trap NOTFOUND {result} {
+            ::ahttpd::doc notfound $sock
+        }
+
+        set ctype [::ahttpd::mimetype frompath $suffix]
+
+        ::ahttpd::httpd returnData $sock $ctype $result
+
+        return
+    }
+
+}
+

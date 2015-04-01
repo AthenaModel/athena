@@ -153,6 +153,19 @@ snit::type ::ahttpd::ahttpd {
         return [package present ahttpd]
     }
 
+    # domain install domain handler
+    #
+    # domain   - The URL prefix for the domain, e.g., /mydomain
+    # handler  - The domain handler
+    #
+    # Installs a domain handler with the server.  The handler
+    # is a command prefix to which will be added the connection
+    # socket name and the URL suffix.
+
+    typemethod {domain install} {domain handler} {
+        url prefix install $domain $handler
+    }
+
     #-------------------------------------------------------------------
     # Delegated Methods
 

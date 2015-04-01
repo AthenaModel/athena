@@ -354,8 +354,9 @@ snit::type ::ahttpd::url {
     # prefix install prefix command ?options?
     #
     # prefix  - The leading part of the URL, (e.., /foo/bar)
-    # command - The domain handler command.  This is invoked with one
-    #           additional argument, $sock, that is the handle identifier.
+    # command - The domain handler command.  This is invoked with two
+    #           additional arguments, $sock, that is the handle identifier,
+    #           and $suffix, the remainder of the URL.
     #           A well-known state array is available at
     #           upvar #0 ::ahttpd::Httpd$sock 
     #

@@ -75,6 +75,10 @@ tool define SERVER {
         # TBD: Need better API for this kind of thing.
         ahttpd::direct url /welcome.html [myproc Welcome]
 
+        # NEXT, define a smart domain
+        DefineURLs
+
+        # NEXT, tell the user what's going on.
         if {[ahttpd port] ne ""} {
             puts "http started on port [ahttpd port]"
         }
@@ -130,7 +134,67 @@ tool define SERVER {
         append result "</body></html>"
 
         return $result
-    }    
+    }
+
+    proc DefineURLs {} {
+        set sd [::projectlib::smartdomain new /smart]
+
+        $sd url /index.html           [myproc index.html]         {Index file}
+        $sd url /data/index.html      [myproc data/index.html]    {Data index file}
+        $sd url /actor/{a}/index.html [myproc actor/a/index.html] {Actor data}
+        $sd urltree /help [myproc help] {Help pages}
+
+        $sd ahttpd
+    }
+
+    proc index.html {datavar qdict} {
+        upvar 1 $datavar data
+        array set qdata $qdict
+
+        append result "<h1>index.html</h1>\n"
+        append result "<pre>[::ahttpd::parray qdata]</pre><p><hr>\n"
+        append result "<pre>[::ahttpd::parray data]</pre><p>\n"
+
+        return $result
+    }
+
+    proc data/index.html {datavar qdict} {
+        upvar 1 $datavar data
+        array set qdata $qdict
+
+        append result "<h1>data/index.html</h1>\n"
+        append result "<pre>[::ahttpd::parray qdata]</pre><p><hr>\n"
+        append result "<pre>[::ahttpd::parray data]</pre><p>\n"
+
+        return $result
+    }
+
+    proc actor/a/index.html {a datavar qdict} {
+        upvar 1 $datavar data
+        array set qdata $qdict
+
+        if {$a eq "bogus"} {
+            throw NOTFOUND "No actor: $a"
+        }
+
+        append result "<h1>actor/$a/index.html</h1>\n"
+        append result "<pre>[::ahttpd::parray qdata]</pre><p><hr>\n"
+        append result "<pre>[::ahttpd::parray data]</pre><p>\n"
+
+        return $result
+    }
+
+    proc help {page datavar qdict} {
+        upvar 1 $datavar data
+        array set qdata $qdict
+
+        append result "<h1>Help: $page</h1>\n"
+        append result "<pre>[::ahttpd::parray qdata]</pre><p><hr>\n"
+        append result "<pre>[::ahttpd::parray data]</pre><p>\n"
+
+        return $result        
+    }
+
 }
 
 snit::type logwin {

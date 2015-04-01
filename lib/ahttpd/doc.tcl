@@ -341,7 +341,7 @@ snit::type ::ahttpd::doc {
     # DocDomain prefix directory sock suffix
     #
     # prefix     - The URL prefix of the domain.
-    # directory  - The directory containing teh domain.
+    # directory  - The directory containing the domain.
     # sock       - The socket connection.
     # suffix     - The URL after the prefix.
     #

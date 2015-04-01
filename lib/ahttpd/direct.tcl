@@ -182,7 +182,7 @@ snit::type ::ahttpd::direct {
         return $cmd
     }
 
-    # DirectRespond sock code result ?type?
+    # DirectRespond sock code result ?ctype?
     #
     # sock    - The socket back to the client.
     # code    - The return code from evaluating the direct url.
@@ -200,7 +200,7 @@ snit::type ::ahttpd::direct {
     #   If any other code is passed, an exception is raised, which
     #   will cause a stack trace to be returned to the client.
 
-    proc DirectRespond {sock code result {type text/html}} {
+    proc DirectRespond {sock code result {ctype text/html}} {
         switch $code {
             0 {
                 # Fall through to httpd returnData.
@@ -226,7 +226,7 @@ snit::type ::ahttpd::direct {
         # the global cookie array.
         cookie save $sock
 
-        httpd returnData $sock $type $result
+        httpd returnData $sock $ctype $result
         return ""
     }
 }
