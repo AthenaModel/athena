@@ -141,7 +141,7 @@ tool define SERVER {
 
         $sd url /index.html           [myproc index.html]         {Index file}
         $sd url /data/index.html      [myproc data/index.html]    {Data index file}
-        $sd url /actor/{a}/index.html [myproc actor/a/index.html] {Actor data}
+        $sd url /actor/{a}/index.html [myproc actor/a/index.html] {Data about actor {a}.}
         $sd urltree /help [myproc help] {Help pages}
 
         $sd ahttpd

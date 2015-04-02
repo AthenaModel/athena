@@ -49,6 +49,26 @@ snit::type ::ahttpd::mimetype {
         }
     }
 
+    # add mtype extlist ?mtype extlist...?
+    # add mappings
+    #
+    # mtype    - A MIME content-type
+    # extlist  - A list of file extensions that map to it.
+    #
+    # Adds the mappings to the database.
+
+    typemethod add {args} {
+        if {[llength $args] eq 1} {
+            set args [lindex $args 0]
+        }
+
+        foreach {mtype extlist} $args {
+            foreach ext $extlist {
+                set mimeTypes([string tolower $ext]) $mtype
+            }
+        }
+    }
+
     # readtypes file
     #
     # file  - A mime.types file
@@ -82,10 +102,10 @@ snit::type ::ahttpd::mimetype {
             if {[regexp {^(  )*#} $line]} {
                 continue
             }
-            if {[regexp {([^     ]+)[    ]+(.+)$} $line match type rest]} {
+            if {[regexp {([^     ]+)[    ]+(.+)$} $line match mtype rest]} {
                 foreach item [split $rest] {
                     if {[string length $item]} {
-                        set mimeTypes([string tolower .$item]) $type
+                        set mimeTypes([string tolower .$item]) $mtype
                     }
                 }
             }

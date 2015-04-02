@@ -26,7 +26,7 @@ files will be found in the <tt ~/htdocs> directory.<p>
 ahttpd init -docroot ~/htdocs
 </example>
 
-<section "TCLHTTPD FEATURES">
+<section "FEATURES">
 
 The following features have been retained from TclHTTP, more or less 
 "as is".<p>
@@ -34,15 +34,16 @@ The following features have been retained from TclHTTP, more or less
 <subsection "Domain Handlers">
 
 The most powerful way for the application to define dynamic content is
-to define a new "domain handler".  The API is TBD (because I haven't
-decided how to expose it yet).  However, it's generally better to use
+to define a new "domain handler" using <iref ahttpd domain install>.
+However, it's generally better to use
 an existing domain handler if one exists that will do the job.<p>
 
 <subsection "The Document Domain">
 
 ahttpd(n) serves up files from the directory tree rooted at 
 <tt -docroot>.  In addition, it is possible to define URL domains for
-other directory trees (the API is TBD).<p>
+other directory trees.  The public API is TBD because we haven't needed
+to expose it yet.<p>
 
 <subsection "Direct URLs">
 
@@ -51,7 +52,7 @@ Tcl procedures.  The procedure can receive any query parameters included
 in the URL as procedure arguments, and returns the HTML to display to the
 user.  There is also a mechanism for returning non-HTML content.<p>
 
-The API is TBD (because I haven't decided how to expose it yet).<p>
+The public API is TBD because we haven't needed to expose it yet.
 
 <subsection "Templates">
 
@@ -101,7 +102,7 @@ not clear we will need it.)<p>
 
 <subsection "Redirection">
 
-ahttpd(n) provides an API (TBD) for allowing automatic redirection of 
+ahttpd(n) provides an API for allowing automatic redirection of 
 URLs to other URLs on or off the server.  This API can be used directly
 by the application; and if the file <tt redirect> exists in the 
 <tt -docroot> it is expected to be a .Tcl file of redirection commands
@@ -110,6 +111,9 @@ and will be loaded automatically.<p>
 If the <tt -debug> option is given, then the current set of redirections
 can be seen at URL <tt /redirect/status>, and the <tt redirect> file
 can be reloaded by browsing <tt /redirect/reload>.<p>
+
+The API is provided by ahttpd(n)'s "redirect" module.
+The public API is TBD because we haven't needed to expose it yet.<p>
 
 <subsection "Server Status">
 
@@ -121,18 +125,6 @@ statistics can be seen by browsing URL <tt /status>.<p>
 If the <tt -debug> option is given, then quite a few debugging URLs
 become available at URL <tt /debug/...>.  See <tt ahttpd/debug.tcl> 
 for the full set.<p>
-
-<section "AHTPPD FEATURES">
-
-The following features are new to ahttpd(n).<p>
-
-<b TBD:> Not implemented yet:<p>
-
-<ul>
-<li> appserver(n)-like domain handlers
-<li> Athena Help domain handler
-<li> RDB schema domain handler
-</ul>
 
 <section "COMMANDS">
 
@@ -229,9 +221,83 @@ pages.<p>
 
 </deflist options>
 
+<defitem "ahttpd domain install" {ahttpd domain install <i domain handler>}>
+
+Installs a new domain handler.  The <i domain> is the URL prefix for the
+domain's subtree (e.g., "/my/sub/domain").  The <i handler> is the domain
+handler itself, a command prefix to which will be added two arguments, the
+connection socket and the URL suffix within the domain.  For example,
+a request to "/my/sub/domain/this/that" will call the handler with
+the suffix "/this/that".<p>
+
+The handler must terminate the request in some way.  It may:<p>
+
+<ul>
+<li> Call <iref ahttpd notfound> if the requested URL doesn't exist.<p>
+<li> Call <iref ahttpd return> to return the requested data.<p>
+<li> Throw HTTPD_REDIRECT to redirect to a different URL.  The errorcode
+     must be a two item list, <tt>{HTTPD_REDIRECT <i newurl>}</tt>.<p>
+<li> Throw an error.  An error page will be return to the client.<p>
+</ul>
+
+Domain handlers are tricky; before writing a new one, review the 
+implementation of one or more existing domain handlers.  See 
+<tt doc.tcl> and <tt direct.tcl> in the ahttpd(n) code base, or
+<xref smartdomain(n)> in <xref projectlib(n)>.<p>
+
+<defitem "ahttpd log" {ahttpd log <i level comp message>}>
+
+Writes a log message using the <tt -logcmd>.<p>
+
+<defitem "ahttpd mimetype" {ahttpd mimetype <i subcommand> ?<i args...>?}>
+
+Gives access to ahttpd(n)'s database of MIME type mappings.<p>
+
+<deflist mimetype>
+
+<defitem "ahttpd mimetype frompath" {ahttpd mimetype frompath <i suffix>}>
+
+Given a URL <i suffix>, extracts the file extension and looks up and
+returns the MIME content-type.  If there is no extension or it is 
+unknown, returns "text/plain".<p>
+
+<defitem "ahttpd mimetype add" {ahttpd mimetype add <i mtype extlist>...}>
+<defitem "ahttpd mimetype add" {ahttpd mimetype add <i mappings>}>
+
+Adds new content-type mappings to the database.  In the first form,
+<i mtype> is a content-type, e.g., "application/json" and <i extlist> is
+a list of one or more file extensions that map to that content type, 
+e.g., ".json".  Any number of <i mtype> and <i extlist> pairs may appear 
+on the command line.<p>
+
+In the second form, <i mappings> is a flat list of <i mtype> and 
+<i extlist> pairs.<p>
+
+
+</deflist mimetype>
+
+<defitem "ahttpd notfound" {ahttpd notfound <i sock>}>
+
+For use in domain handlers.  This command terminates a request
+with a 404 Not Found message.<p>
+
 <defitem "ahttpd port" {ahttpd port}>
 
 Returns the configured value of <tt -port>.<p>
+
+<defitem "ahttpd querydict" {ahttpd querydict <i sock>}>
+
+For use in domain handlers.  Parses the request's query
+data in the usual way and returns a dictionary of query
+variables and values as returned by <tt ncgi::nvlist>.<p>
+
+<defitem "ahttpd return" {ahttpd return <i sock ctype result>}>
+
+For use in domain handlers.  Returns the requested data and
+terminates the request.  The <i sock> is the connection socket, the
+<i ctype> is the content-type of the returned data (e.g., "text/html"),
+and the <i result> is data with that content-type.<p>
+
 
 <defitem "ahttpd secureport" {ahttpd secureport}>
 

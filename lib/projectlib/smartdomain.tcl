@@ -31,6 +31,9 @@ oo::class create ::projectlib::smartdomain {
 
     variable patterns
 
+    # schemaForm - array of values
+    variable schemaForm
+
     #-------------------------------------------------------------------
     # Constructor
 
@@ -39,8 +42,13 @@ oo::class create ::projectlib::smartdomain {
     # domain   - The domain prefix, e.g., /foo/bar
 
     constructor {domain} {
+        namespace import ::ahttpd::ahttpd
         set info(domain) $domain
         set patterns [dict create]
+
+        my url /urlschema.html [mymethod UrlSchema] {This description.}
+
+        set schemaForm(order) alpha
     }
 
     #-------------------------------------------------------------------
@@ -216,7 +224,6 @@ oo::class create ::projectlib::smartdomain {
     method GetHandler {suffix} {
         # FIRST, find the matching handler.
         dict for {pattern id} $patterns {
-            puts "Tried: <$pattern>"
             set result [regexp -inline $pattern $suffix]
             if {[llength $result] == 0} {
                 continue
@@ -228,10 +235,14 @@ oo::class create ::projectlib::smartdomain {
         # NEXT, it hasn't matched anything; see if it's a directory
         # and if so add index.html and try again.
         if {[file extension $suffix] eq ""} {
-            set newsuffix [file join $suffix index.html]
+            if {$suffix eq ""} {
+                set newsuffix "/index.html"
+            } else {
+                set newsuffix [file join $suffix index.html]
+            }
 
             if {[my GetHandler $newsuffix] ne ""} {
-                set newurl "$info(domain)$newsuffix"
+                set newurl $info(domain)$newsuffix
                 throw [list HTTPD_REDIRECT $newurl] "Redirect to index.html"
             }
         }
@@ -263,37 +274,110 @@ oo::class create ::projectlib::smartdomain {
         # if there's no matching handler.  The handler will include
         # values of any place-holder arguments as normal arguments.
 
-        puts "Got suffix: <$suffix>"
         set handler [my GetHandler $suffix]
 
         if {$handler eq ""} {
-            ::ahttpd::doc notfound $sock            
+            ahttpd notfound  $sock            
+            return
         }
 
-        puts "Got handler: <$handler>"
-
         # NEXT, get the request data.  TBD: Possibly, data should be
-        # sanitized for the handler.
+        # sanitized for the handler.  Be nice to have a better way to
+        # do this, as well.
         upvar #0 ::ahttpd::Httpd$sock data
 
         # NEXT, parse the query data into a dictionary.
         # TBD: This will need to be generalized for myserver use.
-        ::ahttpd::url querysetup $sock
-
-        set qdict [ncgi::nvlist]
+        set qdict [ahttpd querydict $sock]
 
         try {
             set result [{*}$handler data $qdict]
         } trap NOTFOUND {result} {
-            ::ahttpd::doc notfound $sock
+            ahttpd notfound $sock
+            return
         }
 
-        set ctype [::ahttpd::mimetype frompath $suffix]
+        set ctype [ahttpd mimetype frompath $suffix]
 
-        ::ahttpd::httpd returnData $sock $ctype $result
+        ahttpd return $sock $ctype $result
 
         return
     }
+
+    #-------------------------------------------------------------------
+    # Automatically generated content
+
+    # UrlSchema datavar qdict
+    #
+    # datavar  - name of the ahttpd(n) state array
+    # qdict    - Dictionary of query data
+    #
+    # Returns an HTML description of the URLs in the domain.
+
+    method UrlSchema {datavar qdict} {
+        upvar 1 $datavar data
+        set ht [htools create %AUTO%]
+
+        if {[dict exist $qdict sort]} {
+            set sort [dict get $qdict sort]
+        } else {
+            set sort url
+        }
+
+        set urlcheck ""
+        set defcheck ""
+
+        switch -- $sort {
+            url     { set urlcheck checked }
+            def     { set defcheck checked }
+            default { 
+                set urlcheck checked 
+                set sort url
+            }
+        }
+
+        set trans [list \{ <i> \} </i>]
+
+        set title "URL Schema Help: $info(domain)" 
+        $ht page $title
+        $ht h1 $title
+
+        $ht putln "The following URLs are defined within this domain."
+        $ht para
+        $ht hr
+        $ht form -action $data(url)
+        $ht putln "Sort by URL <input type=radio name=sort value=url $urlcheck>"
+        $ht putln "or Match Order <input type=radio name=sort value=def $defcheck>"
+        $ht putln "<input type=submit name=submit value=\"Refresh\">"
+        $ht /form
+        $ht hr
+        $ht para
+
+        set suffixes [dict values $patterns]
+
+        if {$sort eq "url"} {
+            set suffixes [lsort $suffixes]
+        }
+
+        $ht dl
+
+        foreach suffix $suffixes {
+            set url "$info(domain)[string map $trans $suffix]"
+            set doc [string map $trans \
+                [htools escape $info(docstring-$suffix)]]
+
+            $ht dlitem  "<tt>$url</tt>" $doc       
+        }
+
+        $ht /dl
+        $ht /page
+
+        set result [$ht get]
+
+        $ht destroy
+        return $result
+    }
+    
 
 }
 

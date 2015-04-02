@@ -593,6 +593,18 @@ snit::type ::ahttpd::url {
         return
     }
 
+    # querydict sock
+    #
+    # sock  - The socket back to the client
+    #
+    # Grab any query data, parse it, and return it as a 
+    # dictionary.
+
+    typemethod querydict {sock} {
+        $type querysetup $sock
+        return [ncgi::nvlist]
+    }
+
 
 
     typemethod readpost {sock varname} {

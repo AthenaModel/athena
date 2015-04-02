@@ -171,6 +171,10 @@ snit::type ::ahttpd::ahttpd {
 
     delegate typemethod port       using {::ahttpd::httpd %m}
     delegate typemethod secureport using {::ahttpd::httpd %m}
+    delegate typemethod notfound   using {::ahttpd::doc %m}
+    delegate typemethod querydict  using {::ahttpd::url %m}
+    delegate typemethod return     using {::ahttpd::httpd returnData}
+    delegate typemethod mimetype   using {::ahttpd::mimetype}
     
 
 }
