@@ -114,6 +114,11 @@ overriding the logic given above.<p>
 
 </deflist options>
 
+<defitem "athena new" {athena new ?<i options...>?}>
+
+Creates a new instance of athena(n), and returns its name.  The
+options are as for <iref athena create>.<p>
+
 </deflist commands>
 
 <section "INSTANCE COMMAND">

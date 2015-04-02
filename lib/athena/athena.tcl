@@ -37,6 +37,15 @@ snit::type ::athena::athena {
         set athenadb ::athena::athenadb
     }
 
+    # new ?options...?
+    #
+    # Creates and returns a new instance of athena(n).
+
+    typemethod new {args} {
+        return [$type create %AUTO% {*}$args]
+    }
+
+
 
     #-------------------------------------------------------------------
     # Components

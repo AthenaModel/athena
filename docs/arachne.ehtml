@@ -13,6 +13,11 @@ does not yet exist.<p>
 
 <changelog>
 
+<change 4/2/2015 Update will>
+Added the <tt -web> option, which causes the web server to be started;
+the <tt -port> now defaults to 8080.
+</change>
+
 <change 2/3/2015 Update will>
 <ul>
 <li> Arachne assumes all incoming HTTP requests use "https".
@@ -75,13 +80,14 @@ Arachne is installed as a Linux executable called <b><tt arachne></b>.
 It can run as a simple batch-mode version of Athena, or as an interactive
 application with a RESTful web interface.<p>
 
-To run Arachne with its RESTful interface, specify the HTTP <tt -port>
-and (optionally) <tt -public> and <tt -heartbeatfile>.  Arachne will 
-load any <tt -scenario> and execute any <tt -script>, and then wait for 
+To run Arachne with its RESTful interface, pass it the <tt -web> option,
+optionally specifying the HTTP <tt -port>, <tt -public>, and 
+<tt -heartbeatfile>.  Arachne will load any <tt -scenario> and execute 
+any <tt -script>, and then wait for 
 instructions via HTTP.<p>
 
 To run Arachne as a batch-mode application, specify the <tt -scenario>
-and <tt -script> but do not specify any <tt -port>.  The RESTful interface
+and <tt -script> but do not specify <tt -web>.  The RESTful interface
 will not be initialize; instead, Arachne will load the <tt -scenario> and
 run the <tt -script> and the halt.<p>
 
@@ -91,18 +97,21 @@ Arachne takes the following command-line options:<p>
 
 <def {-heartbeat <i seconds>}>
 
-Specifies the number of seconds between heartbeats.<p>
+<b Not Yet Implemented.>  Specifies the number of seconds between 
+heartbeats.<p>
 
 <def {-heartbeatfile <i filepath>}>
 
-If given, and if Arachne is listening for HTTP requests, it will write the 
+<b Not Yet Implemented.>  If given, and if Arachne is listening for HTTP 
+requests, it will write the 
 current time in seconds to the named <i filepath> approximately every 
 <tt -heartbeat> seconds.  This allows the enclosing web application to be 
 sure that it is alive.<p>
 
 <def {-heartbeaturl <i url>}>
 
-If given, and if Arachne is listening for HTTP requests, it will GET the
+<b Not Yet Implemented.>  If given, and if Arachne is listening for 
+HTTP requests, it will GET the
 specified URL approximately every <tt -heartbeat> seconds.  This allows the 
 enclosing web application to be sure that it is alive.<p>
 
@@ -113,9 +122,8 @@ this option is given, Arachne will accept HTTP requests from other hosts.<p>
 
 <def {-port <i portid>}>
 
-Specifies the port ID at which Arachne should listen for HTTP requests.<p>
-
-The <xref restapi> is only enabled if a port is specified.<p>
+Specifies the port ID at which Arachne should listen for HTTP requests.
+Defaults to port 8080.<p>
 
 <def {-scenario <i filepath>}>
 
@@ -127,6 +135,12 @@ via the RESTful API, although this can also be scripted.<p>
 
 Specifies the path to an Athena script (.tcl) file to load at start-up.
 Any <tt -scenario> is loaded first.<p> 
+
+<def {-web}>
+
+Invokes the Arachne web servert at <tt -port>.  If this option is 
+not specified, Arachne will halt immediately after loading the
+<tt -scenario> and executing the <tt -script>.<p>
 
 </deflist options>
 
