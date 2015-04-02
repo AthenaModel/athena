@@ -1,10 +1,11 @@
 # TODO.md - Athena TODO List
 
-- TclHTTPD Conversion
-  - Fix logging
-  - Write domain handlers for our use:
-    - Use directories for organization, file names with extension for data
-      products, e.g., index.json
+- Arachne
+  - What should the htdocs directory look like?
+  - How to include the arachne.html file in the htdocs directory?
+    - Population script in ./bin?
+  - Htools is too appserver-specific
+    - Form HTML is not portable
   - Figure out how to handle POST requests of executive scripts
 - Significant Outputs:
   - All history variable base names should be unique, e.g., nbsecurity.n rather

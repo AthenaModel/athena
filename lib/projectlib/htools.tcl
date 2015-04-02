@@ -79,6 +79,12 @@ snit::type ::projectlib::htools {
 
     option -rdb
 
+    # -cssfile
+    #
+    # A URL for an external CSS file.
+
+    option -cssfile
+
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -302,6 +308,11 @@ snit::type ::projectlib::htools {
 
         $self put <html><head>
         $self putln <title>$title</title>
+
+        if {$options(-cssfile) ne ""} {
+            $self putln \
+                "<link rel=\"stylesheet\" href=\"$options(-cssfile)\">"
+        }
         $self putln </head>
 
         callwith $options(-headercmd) $title

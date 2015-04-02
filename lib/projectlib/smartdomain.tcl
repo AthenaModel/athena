@@ -103,6 +103,10 @@ oo::class create ::projectlib::smartdomain {
         # an error if there's a problem.
         set pattern [my GetUrlPattern $suffix]
 
+        if {$pattern eq ""} {
+            error "Invalid suffix: \"$suffix\""
+        }
+
         # NEXT, save it all.
         set info(handler-$suffix) $handler
         set info(docstring-$suffix) [outdent $docstring]
@@ -137,7 +141,7 @@ oo::class create ::projectlib::smartdomain {
         set pattern [my GetUrlTreePattern $root]
 
         if {$pattern eq ""} {
-            error "Invalid suffix: \"$suffix\""
+            error "Invalid root: \"$root\""
         }
 
         # NEXT, save it all.

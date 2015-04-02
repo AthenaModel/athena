@@ -102,6 +102,15 @@ snit::type app {
     #-------------------------------------------------------------------
     # Case Management
 
+    # case names
+    #
+    # Returns the list of case names.
+
+    typemethod {case names} {} {
+        return $cases(names)
+    }
+
+
     # sdb case ?subcommand ...?
     #
     # case - A case name
@@ -172,8 +181,8 @@ snit::type app {
             -logcmd     [$type MakeLog ahttpd]  \
             -docroot    [appdir join htdocs]
 
-        # TBD: Add more content
-
+        # NEXT, Add content
+        [scenario_domain new] ahttpd
     }
 
 

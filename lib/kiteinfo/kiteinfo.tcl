@@ -37,7 +37,7 @@ namespace eval ::kiteinfo:: {
         exclude-cellide {}
         xfiles {docs/aag.docx docs/aug.docx docs/rules.pptx docs/mag.docx}
         local-Tkhtml 0
-        apps {athena athenawb arachne cellide helptool athena_log}
+        apps {athena athenawb arachne athena_log cellide helptool}
         gui-arachne 0
         gui-athena_log 1
         local-html 0
@@ -89,8 +89,8 @@ namespace eval ::kiteinfo:: {
         local-uri 0
         reqver-BWidget 1.9
         apptype-athenawb exe
-        apptype-cellide exe
         apptype-athena_log kit
+        apptype-cellide exe
         reqver-marsutil 3.0.13
         local-tls 0
         provides athena
@@ -130,8 +130,8 @@ namespace eval ::kiteinfo:: {
         local-counter 0
         reqver-huddle 0.1.5
         exclude-athena {}
-        gui-helptool 1
         exclude-athena_log {}
+        gui-helptool 1
         reqver-simlib 3.0.13
         binary-athena 0
         local-struct::set 0
