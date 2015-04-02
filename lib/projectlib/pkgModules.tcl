@@ -31,7 +31,7 @@ package require http
 package require sqlite3 3.8.5
 package require uri 1.2
 package require fileutil 1.14
-package require tls 1.6
+package require tls 1.6.4
 package require tdom 0.8
 package require struct::set 2.2
 package require kiteutils 0.4.6
@@ -88,4 +88,5 @@ source [file join $::projectlib::library httpagent.tcl      ]
 source [file join $::projectlib::library httpagentsim.tcl   ]
 source [file join $::projectlib::library wmsclient.tcl      ]
 source [file join $::projectlib::library wfsclient.tcl      ]
+source [file join $::projectlib::library smartdomain.tcl    ]
 

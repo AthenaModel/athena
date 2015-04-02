@@ -33,18 +33,23 @@ namespace eval ::kiteinfo:: {
         reqver-comm 4.6
         local-Tktable 0
         local-simlib 1
+        local-ncgi 0
         exclude-cellide {}
         xfiles {docs/aag.docx docs/aug.docx docs/rules.pptx docs/mag.docx}
         local-Tkhtml 0
         apps {athena athenawb cellide helptool}
+        local-html 0
         local-fileutil 0
         force-athenawb 0
         dists {install-%platform src docs}
         reqver-kitedocs 0.4.6
         local-textutil::adjust 0
+        reqver-ncgi 1.4.3
         force-helptool 0
         local-tablelist 0
         local-treectrl 0
+        reqver-base64 2.4.2
+        reqver-html 1.4.3
         icon-athena {}
         reqver-kiteutils 0.4.6
         reqver-fileutil 1.14
@@ -68,12 +73,13 @@ namespace eval ::kiteinfo:: {
         reqver-textutil::adjust 0.7
         gui-cellide 1
         url-docs/rules.pptx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/rules-20141010.pptx
-        reqver-tls 1.6
+        reqver-tls 1.6.4
         icon-helptool {}
         build-help {make clean all}
         local-snit 0
         reqver-treectrl 2.4
         local-marsgui 1
+        reqver-md5 2.0.7
         local-uri 0
         reqver-BWidget 1.9
         apptype-athenawb exe
@@ -82,6 +88,7 @@ namespace eval ::kiteinfo:: {
         local-tls 0
         provides athena
         description {Athena Regional Stability Simulation}
+        local-md5 0
         local-BWidget 0
         apptype-helptool kit
         reqver-sqlite3 3.8.5
@@ -95,9 +102,11 @@ namespace eval ::kiteinfo:: {
         icon-cellide {}
         reqver-snit 2.3
         name athena
+        reqver-counter 2.0
         gui-athena 0
         gui-athenawb 1
         url-docs/aag.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aag-20141010.docx
+        local-base64 0
         force-athena 0
         local-sqlite3 0
         reqver-tablelist 5.11
@@ -111,6 +120,7 @@ namespace eval ::kiteinfo:: {
     docs/*.pptx
 }
         reqver-struct::set 2.2
+        local-counter 0
         reqver-huddle 0.1.5
         exclude-athena {}
         gui-helptool 1
@@ -138,7 +148,7 @@ namespace eval ::kiteinfo:: {
     test/*/*
 }
         reqver-Tkhtml 3.0
-        requires {snit comm Img BWidget Tktable treectrl sqlite3 tablelist textutil::expander textutil::adjust Tkhtml uri fileutil ctext tls tdom struct::set huddle kiteutils kitedocs marsutil marsgui simlib Marsbin}
+        requires {snit comm Img BWidget Tktable treectrl sqlite3 tablelist textutil::expander textutil::adjust Tkhtml uri fileutil ctext tls tdom struct::set huddle md5 counter ncgi html base64 kiteutils kitedocs marsutil marsgui simlib Marsbin}
         clean-help {make clean}
         poc William.H.Duquette@jpl.nasa.gov
         srcs help

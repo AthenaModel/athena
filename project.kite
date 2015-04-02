@@ -29,10 +29,15 @@ require Tkhtml 3.0
 require uri 1.2
 require fileutil 1.14
 require ctext 3.3
-require tls 1.6
+require tls 1.6.4
 require tdom 0.8
 require struct::set 2.2
 require huddle 0.1.5
+require md5 2.0.7
+require counter 2.0
+require ncgi 1.4.3
+require html 1.4.3
+require base64 2.4.2
 require kiteutils 0.4.6 -local
 require kitedocs 0.4.6 -local
 require marsutil 3.0.13 -local

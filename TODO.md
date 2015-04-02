@@ -1,5 +1,11 @@
 # TODO.md - Athena TODO List
 
+- TclHTTPD Conversion
+  - Fix logging
+  - Write domain handlers for our use:
+    - Use directories for organization, file names with extension for data
+      products, e.g., index.json
+  - Figure out how to handle POST requests of executive scripts
 - Significant Outputs:
   - All history variable base names should be unique, e.g., nbsecurity.n rather
     than security.n.

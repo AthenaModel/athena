@@ -20,6 +20,7 @@ teapot.txt
 .backup
 ~*.tmp
 temp.tcl
+/log
 
 # SublimeText artifacts.
 *.sublime-*
