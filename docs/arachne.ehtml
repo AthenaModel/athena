@@ -1,7 +1,7 @@
 <document "Arachne Interface Specification">
 
 <b NOTE:> This is a preliminary specification; the Arachne executable
-does not yet exist.<p>
+is an incomplete prototype.<p>
 
 <hrule>
 
@@ -12,6 +12,10 @@ does not yet exist.<p>
 <preface changelog "Change Log">
 
 <changelog>
+
+<change 4/6/2015 Update will>
+Added details about the RESTful API.<p>
+</change>
 
 <change 4/2/2015 Update will>
 Added the <tt -web> option, which causes the web server to be started;
@@ -169,18 +173,89 @@ will certainly allow:<p>
      chains of causality. 
 </ul> 
 
-Most requests will be GET requests; scripts will likely be sent using POST,
-and if orders are sent as URLs with the parameter values embedded in the 
-URL, as from an HTML form, I would expect them to be sent using PUT.<p>
+Most requests will be GET requests; scripts will generally be sent using 
+POST.  However, Arachne isn't terribly concerned about the request type.<p>
+
+Information will be returned to the client as HTML or JSON text.  At
+present, we assume that the front-end will do most of its own presentation,
+and that the HTML will primarily be for debugging.  The return type will
+be indicated by the file extension on the URL, ".html" or ".json".<p>
+
+<section restapi.ref "API Reference">
+
+<deflist urls>
+
+<def {/scenario/index.{html,json}}>
+
+Arachne will work with multiple Athena scenarios at one time.  This URL
+returns an index of data about each scenario: the scenario's ID string,
+state, current simulation time, and so forth.  The JSON output is formatted
+as a list of objects.<p>
+
+<def {/scenario/<i name>/order.{html,json}}>
+
+These URLs are used to send an Athena order to a scenario whose ID is 
+<i name>.  The order is sent as the URL query.  The query parameters
+are the same as the Athena order parameters, plus the <tt order_> parameter
+which specifies the order's name.<p>
+
+The JSON result is a list of two or three elements.  The first element is a
+code, "OK", "REJECT", or "ERROR".<p>
+
+<ul>
+<li>  If the code is "OK", the order was
+      accepted; the second element is the order's result string, which is 
+      typically empty.<p>
+
+<li> If the code is "REJECT", the order was rejected.  The second 
+     element is a JSON object with one field for each problem parameter
+     in the order.  The field names are parameter names (or "*" for errors
+     affecting the whole order); the field values are error messages for
+     display to the user.<p>
+
+<li> If the code is "ERROR", there was an unexpected error while executing
+     the order.  The second element is an error message, and the third
+     element is a stack trace.<p>
+</ul>
+
+<def {/scenario/<i name>/script.{html,json}}>
+
+These URLs are used to send executive scripts to a scenario whose ID is
+<i name>.  The HTML version presents a web form with a <tag textarea>
+for entry of a script, and an "Execute" button.  Pressing "Execute" sends
+the script, URL-encoded, as the value of the <tt script> query parameter
+and reloads the page.  The script and the result value are displayed, and
+the user can then enter and execute another script.<p>
+
+The JSON version accepts the script as POST data in with a content-type of
+<tt text/plain>.  (This can be changed, if desired.)  The script is 
+executed, and the result returned to the client in JSON format.   
+
+The JSON result is a list of two or three elements.  The first element is a
+code, "OK" or "ERROR".<p>
+
+<ul>
+<li>  If the code is "OK", the executed successfully; the second element 
+      is the script's result string.<p>
+
+<li> If the code is "ERROR", there was an error while executing
+     the script; this usually indicates a problem with the script itself.
+     The second element is an error message, and the third
+     element is a stack trace.<p>
+</ul>
+
+
+</deflist urls>
 
 <section script "Athena Script Commands">
 
-<b TBD>: It's likely that the web interface will interact with the Athena
-executive; thus, the executive commands are part of the interface 
-specification.  It isn't clear whether they should be documented here
-or in a separate document.  At present, they are documented in the on-line
-help, which is useful but perhaps not the right place.  The challenge, then,
-is to manage to document them once only yet still make them useful.<p>
+The RESTful interface allows executive scripts to be sent to a particular
+scenario and executed by it; thus, the executive commands are part of the 
+interface specification.  We already have high-quality documentation of
+the executive commands as on-line help in the Athena Workbench; our 
+plan for now is make this help database available through Arachne's
+web interface.  The web developer can then invoke Arachne and browse
+its help.<p>
 
 </document>
 
