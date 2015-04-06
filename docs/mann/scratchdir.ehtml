@@ -1,0 +1,99 @@
+<manpage {projectlib(n) scratchdir(n)} "Scratch Directory Utility">
+
+<section SYNOPSIS>
+
+<pre>
+package require projectlib <version>
+namespace import ::projectlib::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+<xref scratchdir(n)> is responsible for locating and creating
+scratch directories for <xref arachne(1)> and other applications that
+require a well-known scratch directory.<p>
+
+At start up the application calls <iref scratchdir init>, optionally
+passing it a specific scratch directory name.  By default, the 
+scratch directory will be <tt><i appdir>/scratch/</tt>, where the 
+<i appdir> is defined as for <xref appdir(n)>.<p>
+
+The scratch directory may be referenced by multiple applications at once,
+i.e., a master application such as <xref arachne(1)> and any number of
+ancillary tools, such as the <xref athena_log(1)> logbrowser.  Only the
+master should write to the scratch directory.<p>
+
+Normally, the master application will initialize and clear the scratch 
+directory:<p>
+
+<example>
+    scratchdir init
+    scratchdir clear
+</example>
+
+The <iref scratchdir clear> command also creates the normal set of 
+subdirectories, e.g., <tt><i scratchdir>/log</tt>.<p>
+
+<section "COMMANDS">
+
+This module defines the following commands:<p>
+
+<deflist commands>
+
+<defitem "scratchdir clear" {scratchdir clear}>
+
+Deletes the content of the scratch directory, including all subdirectories,
+and creates the standard subdirectories.  It's an error to call this 
+command prior to <iref scratchdir init>.<p>
+
+<defitem "scratchdir init" {scratchdir init ?<i>scratchdir</i>?}>
+
+Initializes scratchdir(n).  If <i scratchdir> is given, it is normalized
+and saved as the scratch directory; otherwise, the 
+scratch directory will be <tt><i appdir>/scratch/</tt>, where the 
+<i appdir> is defined as for <xref appdir(n)>.<p>
+
+Successive calls to this command in one application are no-ops.<p>
+
+
+<defitem "scratchdir join" {scratchdir join ?<i>arg arg...</i>?}>
+
+Called with no arguments, returns the name of the scratch directory.
+Otherwise, returns the path name resulting from joining the
+arguments to the scratch directory.  For example, the
+following command returns the absolute path of a file called
+"<code>working.rdb</code>" in the RDB directory.<p>
+
+<pre>
+set rdbfile [scratchdir join rdb working.rdb]
+</pre>
+
+</deflist commands>
+
+<section "SEE ALSO">
+
+<xref workdir(n)>, which creates working directories for applications like
+Athena Workbench, <xref athenawb(1)>, where only the application itself
+needs access to the directory.<p>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+
+
+

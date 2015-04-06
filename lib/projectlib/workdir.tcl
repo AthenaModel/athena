@@ -9,7 +9,7 @@
 #    Athena Working Directory Access
 #
 #    This object is responsible for providing access to
-#    the Athena working directory tree, which resides at
+#    the Athena Workbench working directory tree, which resides at
 #    
 #      [fileutil::tempdir]/<NNNNNNNN>/
 #

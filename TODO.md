@@ -7,6 +7,8 @@
   - Htools is too appserver-specific
     - Form HTML is not portable
   - Figure out how to handle POST requests of executive scripts
+  - Write arachne(1) man page, referencing I/F doc.
+  - Write athena_log(1) man page.
 - Significant Outputs:
   - All history variable base names should be unique, e.g., nbsecurity.n rather
     than security.n.

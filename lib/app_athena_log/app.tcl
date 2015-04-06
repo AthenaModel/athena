@@ -54,14 +54,19 @@ snit::type app {
     #
     #   argv - Command line arguments (if any)
     #
-    # The application expects a single argument, the root of the log
-    # directory tree; if absent, it defaults to "./log".
+    # The application expects a single argument, the root of the 
+    # working directory space, $workdir; if absent, it defaults to 
+    # "work/" in the appdir.
 
     typemethod init {argv} {
-        appdir init
-
         # FIRST, get the log directory.
-        set logdir [appdir join log]
+        if {[llength $argv] > 0} {
+            scratchdir init [lshift $argv]
+        } else {
+            scratchdir init
+        }
+
+        set logdir [scratchdir join log]
         
         # NEXT, set the default window title
         wm title . "Athena Log: [file normalize $logdir]"

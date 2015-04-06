@@ -28,8 +28,8 @@ snit::type app {
     # web    - 1 if Arachne should start the web server, and 0 otherwise.
 
     typevariable info -array {
-        port 8080
-        web  0
+        port    8080
+        web     0
     }
 
     # cases array: tracks scenarios
@@ -57,20 +57,24 @@ snit::type app {
     typemethod init {argv} {
         set result ""
 
-        # FIRST, initialize projectlib
-        appdir init
-
-        # NEXT, get the command line options.
+        # FIRST, get the command line options.
         set adbfile ""
         set script ""
+        set scratchdir ""
 
         foroption opt argv -all {
+            -port {
+                set info(port) [lshift argv]
+            }
             -scenario { 
                 set adbfile [lshift argv]
 
                 if {![file isfile $adbfile]} {
                     throw FATAL "-scenario does not exist: \"$adbfile\""
                 }
+            }
+            -scratchdir {
+                set scratchdir [lshift argv]
             }
             -script { 
                 set script [lshift argv] 
@@ -79,13 +83,14 @@ snit::type app {
                     throw fatal "-script does no exist: \"$script\""
                 }
             }
-            -port {
-                set info(port) [lshift argv]
-            }
             -web {
                 set info(web) 1
             }
         }
+
+        # NEXT, initialize the scratch directory
+        scratchdir init $scratchdir
+        scratchdir clear
 
         # NEXT, add the base case scenario.
         $type AddBaseCase $adbfile $script
@@ -194,12 +199,8 @@ snit::type app {
     # Creates a log for the given name.
 
     typemethod MakeLog {name} {
-        set logdir [appdir join log $name]
-        file mkdir $logdir
-
-        foreach file [glob -nocomplain [file join $logdir *.log]] {
-            file delete $file
-        }
+        set logdir [scratchdir join log $name]
+        file mkdir $logdir ;# TBD: Neede?
 
         set logs($name) [logger %AUTO% -logdir $logdir]
 
