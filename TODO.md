@@ -1,6 +1,7 @@
 # TODO.md - Athena TODO List
 
 - Arachne
+  - Need a way to include a message in the "notfound".
   - What should the htdocs directory look like?
   - How to include the arachne.html file in the htdocs directory?
     - Population script in ./bin?

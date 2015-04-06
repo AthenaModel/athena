@@ -31,10 +31,24 @@ oo::class create scenario_domain {
             -headercmd [mymethod htmlHeader] \
             -footercmd [mymethod htmlFooter]
 
-        # NEXT, define content
+        # NEXT, define content.  All urls are prefixed with /scenario.
         my url /index.html [mymethod index.html] {List of open scenarios}
         my url /index.json [mymethod index.json] {List of open scenarios}
 
+        my url /{name}/order.html [mymethod order.html] {
+            Accepts an order and its parameters as a PUT query.
+            The query parameters are the order name as <tt>order_</tt>
+            and the order-specific parameters as indicated in the on-line
+            help.  The result of the order is returned as HTML text.<p>
+        }
+        my url /{name}/order.json [mymethod order.json] {
+            Accepts an order and its parameters as a PUT query.
+            The query parameters are the order name as <tt>order_</tt>
+            and the order-specific parameters as indicated in the on-line
+            help.  The result of the order is returned as a JSON list 
+            indicating the success of the request with related 
+            information.<p>
+        }
     }            
 
     #-------------------------------------------------------------------
@@ -98,6 +112,92 @@ oo::class create scenario_domain {
 
         return [huddle jsondump $hud]
     }
-    
+
+    #-------------------------------------------------------------------
+    # Order Handling
+
+    # order.html
+    #
+    # name     - The scenario name
+    # datavar  - ahttpd state array
+    # qdict    - Query dictionary
+    #
+    # Attempts to send an order specfied as a query.
+
+    method order.html {name datavar qdict} {
+        # FIRST, do we have the scenario?
+        set name [string tolower $name]
+
+        if {$name ni [app case names]} {
+            puts "order.html: not found: $name"
+            throw NOTFOUND "No such scenario: \"$name\""
+        }
+
+        # NEXT, do we have the order?
+        if {![dict exist $qdict order_]} {
+            ht page "Order Result"
+            ht title "Order Result"
+            ht putln "Error, no <tt>order_</tt> specified in query.<p>"
+            return [ht /page]
+        }
+
+        # NEXT, get the parameters
+        set order [dict get $qdict order_]
+        set qdict [dict remove $qdict order_]
+
+        # NEXT, send the order.
+        try {
+            ht page "Order Result: [string toupper $order]"
+            ht title "Order Result: [string toupper $order]"
+
+            ht putln "Scenario: $name"
+            ht para
+            ht h2 "Order Parameters"
+            my HtmlDictFields $qdict
+            ht para
+            ht hr
+
+            set result [app sdb $name order senddict normal $order $qdict]
+        } trap REJECT {result} {
+            ht h2 "Rejected."
+            my HtmlDictFields $result
+            return [ht /page]
+        } on error {result eopts} {
+            # TBD: format result nicely
+            ht record {
+                ht field "Unexpected error:" {
+                    ht putln $result
+                }
+                ht field "Stack Trace:" {
+                    ht pre [dict get $eopts -errorinfo]
+                }
+            }
+
+            return [ht /page]
+        }
+
+        # NEXT, we were successful!
+
+        if {$result eq ""} {
+            ht putln "Accepted."
+        } else {
+            ht putln "Accepted: "
+            ht pre $result
+        }
+
+        return [ht /page]
+    }
+
+    # HtmlDictFields qdict
+    #
+    # Formats a dictionary as a list of fields in a record.
+
+    method HtmlDictFields {qdict} {
+        ht record
+        dict for {key value} $qdict {
+            ht field "<b>$key</b>:" { ht pre $value }
+        }
+        ht /record
+    }
 }
 
