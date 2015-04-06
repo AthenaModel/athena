@@ -206,6 +206,18 @@ snit::type app {
 
         return $logs($name)
     }
-            
+    
+
+    # dumpstack
+
+    typemethod dumpstack {} {
+        set i [info frame]
+
+        puts "Stack Frames:"
+        for {set i [info frame]} {$i > 0} {incr i -1} {
+            array set frm [info frame $i]
+            puts "$i: $frm(cmd)"
+        }
+    }
 }
 

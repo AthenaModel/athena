@@ -705,6 +705,7 @@ snit::type ::ahttpd::httpd {
             set size $Httpd(bufsize)
         }
         HttpdReadPost $sock buffer $size
+
         return $data(count)
     }
 
@@ -730,7 +731,7 @@ snit::type ::ahttpd::httpd {
         httpd suspend $sock
 
         fileevent $sock readable \
-            [myproc HttpdReadPostGlobal $sock Httpd${sock}(query) \
+            [myproc HttpdReadPostGlobal $sock ::ahttpd::Httpd${sock}(query) \
                     $Httpd(bufsize) $cmd]
         return
     }
@@ -854,7 +855,7 @@ snit::type ::ahttpd::httpd {
         if {[info exist doneMsg]} {
             url posthook $sock 0
             catch {fileevent $sock readable {}}
-            $self resume $sock
+            httpd resume $sock
             if {[string length $cmd]} {
                 eval $cmd [list $sock $varName $doneMsg]
             }

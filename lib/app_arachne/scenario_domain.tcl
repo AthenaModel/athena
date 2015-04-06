@@ -49,6 +49,13 @@ oo::class create scenario_domain {
             indicating the success of the request with related 
             information.<p>
         }
+
+        my url /{name}/script.json [mymethod script.json] {
+            Accepts a Tcl script as a POST query, and attempts to
+            execute it in the named scenario's executive interpreter.
+            The result of running the script is returned in JSON
+            format.
+        }
     }            
 
     #-------------------------------------------------------------------
@@ -122,7 +129,7 @@ oo::class create scenario_domain {
     # datavar  - ahttpd state array
     # qdict    - Query dictionary
     #
-    # Attempts to send an order specfied as a query; returns results
+    # Attempts to send an order specified as a query; returns results
     # as HTML.
 
     method order.html {name datavar qdict} {
@@ -195,7 +202,7 @@ oo::class create scenario_domain {
     # datavar  - ahttpd state array
     # qdict    - Query dictionary
     #
-    # Attempts to send an order specfied as a query; returns results
+    # Attempts to send an order specified as a query; returns results
     # as JSON.
 
     method order.json {name datavar qdict} {
@@ -240,6 +247,48 @@ oo::class create scenario_domain {
         return [huddle jsondump $hud]
     }
 
+    #-------------------------------------------------------------------
+    # Script Handling
+    
+    # script.json
+    #
+    # name     - The scenario name
+    # datavar  - ahttpd state array
+    # qdict    - Query dictionary
+    #
+    # Attempts to execute a script specified as a query; returns results
+    # as JSON.  The script is presumed to be text/plain in $data(query).
+
+    method script.json {name datavar qdict} {
+        upvar 1 $datavar data
+
+        set hud [huddle list]
+
+        # FIRST, do we have the scenario?
+        set name [string tolower $name]
+
+        if {$name ni [app case names]} {
+            puts "order.html: not found: $name"
+            throw NOTFOUND "No such scenario: \"$name\""
+        }
+
+        set script $data(query)
+
+        # NEXT, send the order.
+        try {
+            set result [app sdb $name executive eval $script]
+        } on error {result eopts} {
+            huddle append hud "ERROR"
+            huddle append hud $result
+            huddle append hud [dict get $eopts -errorinfo] 
+            return [huddle jsondump $hud]
+        }
+
+        # NEXT, we were successful!
+        huddle append hud "OK"
+        huddle append hud $result
+        return [huddle jsondump $hud]
+    }
 
     #-------------------------------------------------------------------
     # Utility Methods.

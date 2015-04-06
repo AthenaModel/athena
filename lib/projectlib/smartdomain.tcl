@@ -292,7 +292,12 @@ oo::class create ::projectlib::smartdomain {
 
         # NEXT, parse the query data into a dictionary.
         # TBD: This will need to be generalized for myserver use.
-        set qdict [ahttpd querydict $sock]
+        if {$data(mime,content-type) eq "application/x-www-form-urlencoded"} {
+            set qdict [ahttpd querydict $sock]
+        } else {
+            set qdict {}
+        }
+
 
         try {
             set result [{*}$handler data $qdict]
