@@ -122,7 +122,8 @@ oo::class create scenario_domain {
     # datavar  - ahttpd state array
     # qdict    - Query dictionary
     #
-    # Attempts to send an order specfied as a query.
+    # Attempts to send an order specfied as a query; returns results
+    # as HTML.
 
     method order.html {name datavar qdict} {
         # FIRST, do we have the scenario?
@@ -188,6 +189,61 @@ oo::class create scenario_domain {
         return [ht /page]
     }
 
+    # order.json
+    #
+    # name     - The scenario name
+    # datavar  - ahttpd state array
+    # qdict    - Query dictionary
+    #
+    # Attempts to send an order specfied as a query; returns results
+    # as JSON.
+
+    method order.json {name datavar qdict} {
+        set hud [huddle list]
+
+        # FIRST, do we have the scenario?
+        set name [string tolower $name]
+
+        if {$name ni [app case names]} {
+            puts "order.html: not found: $name"
+            throw NOTFOUND "No such scenario: \"$name\""
+        }
+
+        # NEXT, do we have the order?
+        if {![dict exist $qdict order_]} {
+            huddle append hud "REJECT"
+            huddle append hud "No order_ in query"
+            return [huddle jsondump $hud]
+        }
+
+        # NEXT, get the parameters
+        set order [dict get $qdict order_]
+        set qdict [dict remove $qdict order_]
+
+        # NEXT, send the order.
+        try {
+            set result [app sdb $name order senddict normal $order $qdict]
+        } trap REJECT {result} {
+            huddle append hud "REJECT"
+            huddle append hud [huddle create {*}$result]
+            return [huddle jsondump $hud]
+        } on error {result eopts} {
+            huddle append hud "ERROR"
+            huddle append hud $result
+            huddle append hud [dict get $eopts -errorinfo] 
+            return [huddle jsondump $hud]
+        }
+
+        # NEXT, we were successful!
+        huddle append hud "OK"
+        huddle append hud $result
+        return [huddle jsondump $hud]
+    }
+
+
+    #-------------------------------------------------------------------
+    # Utility Methods.
+    
     # HtmlDictFields qdict
     #
     # Formats a dictionary as a list of fields in a record.
