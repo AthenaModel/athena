@@ -137,7 +137,6 @@ oo::class create scenario_domain {
         set name [string tolower $name]
 
         if {$name ni [app case names]} {
-            puts "order.html: not found: $name"
             throw NOTFOUND "No such scenario: \"$name\""
         }
 
@@ -212,7 +211,6 @@ oo::class create scenario_domain {
         set name [string tolower $name]
 
         if {$name ni [app case names]} {
-            puts "order.html: not found: $name"
             throw NOTFOUND "No such scenario: \"$name\""
         }
 

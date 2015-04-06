@@ -262,20 +262,21 @@ snit::type ::ahttpd::doc {
         set info(page,error) [$type virtual {} {} $virtual]
     }
 
-    # notfound sock
+    # notfound sock ?reason?
     #
     # sock - The socket connection.
     #
     # Called when a page is missing.  This looks for a handler page
     # and sets up a small amount of context for it.  Returns the page.
 
-    typemethod notfound {sock} {
+    typemethod notfound {sock {reason "n/a"}} {
         # TBD: Referer -- where does this come from?
         global Referer
         upvar #0 ::ahttpd::Httpd$sock data
 
         stats countname $data(url) notfound
         set info(url,notfound) $data(url)    ;# For subst
+        set info(reason,notfound) $reason    ;# For subst
 
         if {[info exists data(mime,referer)]} {
             # Record the referring URL so we can track down
@@ -325,6 +326,14 @@ snit::type ::ahttpd::doc {
 
     typemethod urlnotfound {} {
         return $info(url,notfound)
+    }
+
+    # reasonNotFound
+    #
+    # Return the reason the URL was not found.
+
+    typemethod reasonNotFound {} {
+        return $info(reason,notfound)
     }
 
     # webmaster
