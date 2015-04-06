@@ -50,11 +50,20 @@ oo::class create scenario_domain {
             information.<p>
         }
 
+        my url /{name}/script.html [mymethod script.html] {
+            Accepts a Tcl script and attempts to
+            execute it in the named scenario's executive interpreter.
+            The result of running the script is returned.  The
+            script should be the value of the <tt>script</tt> 
+            query parameter, and should be URL-encoded.
+        }
+
         my url /{name}/script.json [mymethod script.json] {
             Accepts a Tcl script as a POST query, and attempts to
             execute it in the named scenario's executive interpreter.
-            The result of running the script is returned in JSON
-            format.
+            The query data should be just the script itself with a
+            content-type of text/plain.  The result of running the script 
+            is returned in JSON format.
         }
     }            
 
@@ -114,7 +123,7 @@ oo::class create scenario_domain {
             dict set dict tick  [app sdb $case clock now]
             dict set dict week  [app sdb $case clock asString]
 
-            huddle append hud [huddle create {*}$dict]
+            huddle append hud [huddle compile dict $dict]
         }
 
         return [huddle jsondump $hud]
@@ -154,31 +163,25 @@ oo::class create scenario_domain {
 
         # NEXT, send the order.
         try {
-            ht page "Order Result: [string toupper $order]"
-            ht title "Order Result: [string toupper $order]"
+            ht page "Order Result: '$name' scenario"
+            ht title "Order Result: '$name' scenario"
 
-            ht putln "Scenario: $name"
             ht para
-            ht h2 "Order Parameters"
+            ht h3 [string toupper $order]
             my HtmlDictFields $qdict
             ht para
             ht hr
 
             set result [app sdb $name order senddict normal $order $qdict]
         } trap REJECT {result} {
-            ht h2 "Rejected."
+            ht h3 "Rejected"
             my HtmlDictFields $result
             return [ht /page]
         } on error {result eopts} {
-            # TBD: format result nicely
-            ht record {
-                ht field "Unexpected error:" {
-                    ht putln $result
-                }
-                ht field "Stack Trace:" {
-                    ht pre [dict get $eopts -errorinfo]
-                }
-            }
+            ht h3 "Unexpected Application Error:"
+            ht putln $result
+            ht para
+            ht pre [dict get $eopts -errorinfo]
 
             return [ht /page]
         }
@@ -186,9 +189,9 @@ oo::class create scenario_domain {
         # NEXT, we were successful!
 
         if {$result eq ""} {
-            ht putln "Accepted."
+            ht h3 "Accepted"
         } else {
-            ht putln "Accepted: "
+            ht h3 "Accepted"
             ht pre $result
         }
 
@@ -230,7 +233,7 @@ oo::class create scenario_domain {
             set result [app sdb $name order senddict normal $order $qdict]
         } trap REJECT {result} {
             huddle append hud "REJECT"
-            huddle append hud [huddle create {*}$result]
+            huddle append hud [huddle compile dict $result]
             return [huddle jsondump $hud]
         } on error {result eopts} {
             huddle append hud "ERROR"
@@ -247,6 +250,76 @@ oo::class create scenario_domain {
 
     #-------------------------------------------------------------------
     # Script Handling
+
+    # script.html
+    #
+    # name     - The scenario name
+    # datavar  - ahttpd state array
+    # qdict    - Query dictionary
+    #
+    # Attempts to execute a script specified as a query; returns results
+    # as JSON.  The script is presumed to be text/plain in $data(query).
+
+    method script.html {name datavar qdict} {
+        upvar 1 $datavar data
+
+        ht page "Script Entry: '$name' scenario"
+        ht title "Script Entry: '$name' scenario"
+
+        # FIRST, do we have the scenario?
+        set name [string tolower $name]
+
+        if {$name ni [app case names]} {
+            throw NOTFOUND "No such scenario: \"$name\""
+        }
+
+        # NEXT, set up the entry form.
+        ht form -action "/scenario/$name/script.html" -method post
+        ht putln "<textarea rows=10 cols=60 name=\"script\"></textarea><br>"
+        ht putln "<input type=\"submit\" value=\"Execute\">"
+        ht /form
+
+        set script ""
+
+        if {[dict exists $qdict script]} {
+            set script [dict get $qdict script]
+        }
+
+        ht h3 "Script:"
+
+        if {$script ne ""} {
+            ht pre $script
+        } else {
+            ht putln "Enter a script in the text area, above."
+        }
+
+        # NEXT, send the order.
+        if {$script ne ""} {
+            try {
+                set result [app sdb $name executive eval $script]
+            } on error {result eopts} {
+                ht h3 "Error in Script:"
+
+                ht putln $result
+                ht para
+                ht pre [dict get $eopts -errorinfo]
+
+                return [ht /page]
+            }
+
+            ht h3 "Result:"
+
+            if {$result ne ""} {
+                ht pre $result
+            } else {
+                ht putln "The script had no return value."
+            }
+        }
+
+
+        return [ht /page]
+    }
+
     
     # script.json
     #
@@ -255,7 +328,10 @@ oo::class create scenario_domain {
     # qdict    - Query dictionary
     #
     # Attempts to execute a script specified as a query; returns results
-    # as JSON.  The script is presumed to be text/plain in $data(query).
+    # as JSON.  The script is presumed to be text/plain in $data(query),
+    # as the result of a POST request.
+    #
+    # TBD: We might modify this after discussion with the web guys.
 
     method script.json {name datavar qdict} {
         upvar 1 $datavar data
@@ -266,13 +342,12 @@ oo::class create scenario_domain {
         set name [string tolower $name]
 
         if {$name ni [app case names]} {
-            puts "order.html: not found: $name"
             throw NOTFOUND "No such scenario: \"$name\""
         }
 
         set script $data(query)
 
-        # NEXT, send the order.
+        # NEXT, evaluate the script.
         try {
             set result [app sdb $name executive eval $script]
         } on error {result eopts} {
