@@ -55,7 +55,8 @@ snit::type ::athena::aam {
     variable alist {}   ;# list of attrition dictionaries
     variable sdict      ;# dict used to assess SAT effects
     variable cdict      ;# dict used to assess COOP effects
-    variable roedict    ;# array of dicts used to store ROE tactic information
+    variable roedict    ;# dict used to store ROE tactic information
+    variable hdict      ;# dict used to keep track of hiding force groups
 
     # Transient combat variables
     #
@@ -86,6 +87,7 @@ snit::type ::athena::aam {
         set sdict ""
         set cdict ""
         set roedict [lzipper [$adb nbhood names]]
+        set hdict   [lzipper [$adb nbhood names]]
         array unset effFrc
         array unset frcMult
         array unset civcasMult
@@ -106,6 +108,7 @@ snit::type ::athena::aam {
         let frcmultD {$urb * $civc * $elvl * $ftype * $tlvl * $dem}
 
         set roedict [lzipper [$adb nbhood names]]
+        set hdict   [lzipper [$adb nbhood names]]
     }
 
     #-------------------------------------------------------------------
@@ -706,7 +709,7 @@ snit::type ::athena::aam {
     #-------------------------------------------------------------------
     # ROE Tactic API 
 
-    # setroe n f rdict
+    # setroe n f g rdict
     #
     # n       - a neighborhood in which g assumes an ROE
     # f       - a force group assuming the ROE
@@ -745,6 +748,32 @@ snit::type ::athena::aam {
 
     method hasroe {n f g} {
         return [dict exists $roedict $n $f $g]
+    }
+
+    #-------------------------------------------------------------------
+    # HIDE Tactic API
+
+    # hide n f
+    #
+    # n   - a neighborhood
+    # f   - a force group
+    #
+    # This method adds the group f to the list of groups hiding in n
+
+    method hide {n f} {
+        dict lappend hdict $n $f
+    }
+
+    # hiding n f
+    #
+    # n   - a neighborhood
+    # f   - a force group
+    #
+    # This method returns a flag indicating whether the group f is 
+    # hiding in n
+
+    method hiding {n f} {
+        return [expr {$f in [dict get $hdict $n]}]
     }
 
     #-------------------------------------------------------------------
