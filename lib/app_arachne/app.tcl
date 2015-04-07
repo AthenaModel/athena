@@ -207,7 +207,9 @@ snit::type app {
         return $logs($name)
     }
     
-
+    #-------------------------------------------------------------------
+    # Utility Commands
+    
     # dumpstack
 
     typemethod dumpstack {} {
@@ -218,6 +220,14 @@ snit::type app {
             array set frm [info frame $i]
             puts "$i: $frm(cmd)"
         }
+    }
+
+    # version
+    #
+    # Returns the application version
+
+    typemethod version {} {
+        return [kiteinfo version]
     }
 }
 

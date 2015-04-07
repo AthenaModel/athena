@@ -16,14 +16,10 @@
 #
 #-----------------------------------------------------------------------
 
-namespace eval ::projectlib:: {
-    namespace export htmlbuffer
-}
-
 #-----------------------------------------------------------------------
 # htmlbuffer type
 
-snit::type ::projectlib::htmlbuffer {
+oo::class create ::projectlib::htmlbuffer {
     #-------------------------------------------------------------------
     # Lookup Tables
 
@@ -33,88 +29,104 @@ snit::type ::projectlib::htmlbuffer {
     # if -styles or -cssfile are given when the buffer is created,
     # they are not used.
 
-    typemethod defaultStyles {
-        
+    meta defaultStyles {
+        /* TBD */
     }
+
+    # Alignments for ht query.
+    meta alignments {
+        "" left
+        L  left
+        C  center
+        R  right
+    }
+
     
-
-    #-------------------------------------------------------------------
-    # Type Methods
-
-    # escape text
-    #
-    # text - Plain text to be included in an HTML page
-    #
-    # Escapes the &, <, and > characters so that the included text
-    # doesn't screw up the formatting.
-
-    typemethod escape {text} {
-        return [string map {& &amp; < &lt; > &gt;} $text]
-    }
-
-    #-------------------------------------------------------------------
-    # Options
-
-    # -cssfile
-    #
-    # A URL for an external CSS file.  This is useful primarily for
-    # external content.
-
-    option -cssfile
-
-    # -domain prefix
-    #
-    # A domain prefix for iref links produced using this buffer, e.g.,
-    # /scenario/base.  All iref links will include this domain as a 
-    # prefix.
-
-    option -domain
-
-    # -footercmd
-    #
-    # A command that returns content for the page footer.
-
-    option -footercmd
-
-    # -headercmd
-    #
-    # A command that returns content for the page header.
-
-    option -headercmd
-
-    # -styles
-    #
-    # CSS styles for inclusion in generated pages.
-
-    option -styles
-
     #-------------------------------------------------------------------
     # Instance Variables
+
+    # Options Array
+    variable options
 
     # Buffer Stack: The htmlbuffer instance maintains a stack of 
     # buffers; it is often convenient to push a buffer onto the stack,
     # generate HTML in that buffer, and then pop it, either retaining
     # or discarding the HTML (e.g., table headers if there is no table
     # content).
-
-    # Stack pointer: index into stack().
-    variable sp 0
-
-    # stack: buffer stack
-    #
-    # $num - Buffer 
     
-    variable stack -array {
-        0  {}
-    }
+    variable sp     ;# Stack pointer: index into stack()
+    variable stack  ;# Stack: array from index to buffer content
 
-    
+    # trans array: transient data used while formatting tables and 
+    # similar multi-tag content.
+
+    variable trans
 
     #-------------------------------------------------------------------
     # Constructor 
 
+    # constructor ?options?
+    #
+    # Creates and initializes the buffer.
+    #
+    # Options:
+    #    -cssfile name   - The name of an external CSS file to be
+    #                      <link>ed in page headers.
+    #    -domain prefix  - A URL domain prefix, e.g., "/this/that",
+    #                      used as a prefix for iref links.
+    #    -footercmd cmd  - A callback that adds content to the page
+    #                      footer.  Called with one additional argument,
+    #                      the buffer itself, by "/page".
+    #    -headercmd cmd  - A callback that adds content to the page
+    #                      header.  Called with two additional arguments,
+    #                      the buffer and the page title, by "page".
+    #    -mode mode      - web|tk; the HTML generation mode.  Defaults to
+    #                      web.
+    #    -styles css     - CSS styles to be used in place of the default
+    #                      CSS styles.
     constructor {args} {
-        $self configurelist $args
+        # FIRST, initialize the options.
+        array set options {
+            -cssfile   ""
+            -domain    ""
+            -footercmd {}
+            -headercmd {}
+            -mode      web
+            -styles    {}
+        }
+
+        # NEXT, get the creation options.
+        my configure {*}$args
+
+        # NEXT, initialize the buffer.
+        my clear
+    }
+
+    #-------------------------------------------------------------------
+    # Option Management
+
+    # configure ?option value...?
+    #
+    # Sets the options and the values.  No error checking is done,
+    # except for option names.  None of the fancy Tk-style processing is 
+    # done.
+
+    method configure {args} {
+        foreach {opt val} $args {
+            if {![info exists options($opt)]} {
+                error "Invalid option:\"$opt\""
+            }
+
+            set options($opt) $val
+        }
+    }
+    
+    # cget option 
+    #
+    # Retrieves an option value.
+
+    method cget {option} {
+        return $options($option)
     }
 
     #-------------------------------------------------------------------
@@ -163,6 +175,7 @@ snit::type ::projectlib::htmlbuffer {
         return $result
     }
 
+
     # put text...
     #
     # text - One or more text strings
@@ -202,9 +215,9 @@ snit::type ::projectlib::htmlbuffer {
     #    <td align="left">
 
     method tag {tag args} {
-        $self put "<$tag"
-        $self InsertAttributes $args
-        $self put ">"
+        my put "<$tag"
+        my InsertAttributes $args
+        my put ">"
     }
 
     # tagln tag ?options...?
@@ -214,9 +227,9 @@ snit::type ::projectlib::htmlbuffer {
     # Like tag, but begins on a new line.
 
     method tagln {tag args} {
-        $self putln "<$tag"
-        $self InsertAttributes $args
-        $self put ">"
+        my putln "<$tag"
+        my InsertAttributes $args
+        my put ">"
     }
 
     # wrap tag text ?options...?
@@ -233,9 +246,9 @@ snit::type ::projectlib::htmlbuffer {
     #    <title>My Title</title>
 
     method wrap {tag text args} {
-        $self tag $tag $args
-        $self put $text
-        $self put </$tag>
+        my tag $tag {*}$args
+        my put $text
+        my put </$tag>
     }
 
     # wrapln tag text ?options...?
@@ -245,9 +258,9 @@ snit::type ::projectlib::htmlbuffer {
     # Like wrap, but begins on a new line.
 
     method wrapln {tag text args} {
-        $self tag $tag $args
-        $self put $text
-        $self put </$tag>
+        my tagln $tag {*}$args
+        my put $text
+        my put </$tag>
     }
 
     # putif expr then ?else?
@@ -260,20 +273,19 @@ snit::type ::projectlib::htmlbuffer {
 
     method putif {expr then {else ""}} {
         if {[uplevel 1 [list expr $expr]]} {
-            $self put $then
+            my put $then
         } else {
-            $self put $else
+            my put $else
         }
     }
 
     #-------------------------------------------------------------------
     # Page Management
 
-    # page title ?options? ?body?
+    # page title ?options?
     #
     # title   - Title of HTML page
     # options - Options for the <body> tag
-    # body    - A body script
     #
     # Adds the standard HTML header boilerplate and clears the
     # buffer stack.  The page <title> is set as given, but no
@@ -297,35 +309,25 @@ snit::type ::projectlib::htmlbuffer {
     # <body> tag attributes.
 
     method page {title args} {
-        $self clear
+        my clear
 
-        if {[llength $args] % 2 == 1} {
-            set body [lpop args]
-        } else {
-            set body ""
-        }
-
-        $self putln <html>
-        $self putln <head>
-        $self wrapln title $title
+        my putln <html>
+        my putln <head>
+        my wrapln title $title
 
         if {$options(-cssfile) ne ""} {
-            $self tagln link -rel stylesheet -href $options(-cssfile)
+            my tagln link -rel stylesheet -href $options(-cssfile)
         }
 
         if {$options(-styles) ne ""} {
-            $self wrapln style $options(-styles)
+            # TBD: Handling of defaultStyles!
+            my wrapln style $options(-styles)
         }
 
-        $self putln </head>
-        $self tagln body {*}$args
+        my putln </head>
+        my tagln body {*}$args
 
-        callwith $options(-headercmd) $self $title
-
-        if {$body ne ""} {
-            uplevel 1 $body
-            $self /page
-        }
+        callwith $options(-headercmd) [self] $title
     }
 
     # /page
@@ -336,13 +338,14 @@ snit::type ::projectlib::htmlbuffer {
     # tag.
 
     method /page {} {
-        callwith $options(-footercmd) $self
+        callwith $options(-footercmd) [self]
 
-        $self putln </body>
-        $self putln </html>
+        my putln </body>
+        my putln </html>
 
-        return [$self get]
+        return [my get]
     }
+    export /page
 
     #-------------------------------------------------------------------
     # Headings
@@ -355,7 +358,7 @@ snit::type ::projectlib::htmlbuffer {
     # Returns an HTML H1 title.
 
     method h1 {title args} {
-        $self wrapln h1 $title {*}$args
+        my wrapln h1 $title {*}$args
     }
 
     # h2 title ?options?
@@ -366,7 +369,7 @@ snit::type ::projectlib::htmlbuffer {
     # Returns an HTML H2 title.
 
     method h2 {title args} {
-        $self wrapln h1 $title {*}$args
+        my wrapln h1 $title {*}$args
     }
 
     # h3 title ?options?
@@ -377,7 +380,7 @@ snit::type ::projectlib::htmlbuffer {
     # Returns an HTML H3 title.
 
     method h3 {title args} {
-        $self wrapln h1 $title {*}$args
+        my wrapln h1 $title {*}$args
     }
 
     # h4 title ?options?
@@ -388,26 +391,18 @@ snit::type ::projectlib::htmlbuffer {
     # Returns an HTML H4 title.
 
     method h4 {title args} {
-        $self wrapln h4 $title {*}$args
+        my wrapln h4 $title {*}$args
     }
 
     #-------------------------------------------------------------------
     # Other HTML Tags
-
-    # para
-    #
-    # Adds a paragraph mark.
-    
-    method para {} {
-        $self put <p> \n
-    }
 
     # br
     #
     # Adds a line break
     
     method br {} {
-        $self put <br> \n
+        my put <br> \n
     }
 
     # hr ?options?
@@ -417,48 +412,115 @@ snit::type ::projectlib::htmlbuffer {
     # Inserts an <hr> tag.
     
     method hr {args} {
-        $self tagln hr {*}$args
+        my tagln hr {*}$args
+        my put \n
     }
 
-    # span ?options? ?text?
+    # para
     #
-    # options   - Attribute options, e.g., -class
-    #
-    # Creates a <span>.  If text is given, wraps it.
+    # Adds a paragraph mark.
+    
+    method para {} {
+        my put <p> \n
+    }
 
-    method span {args} {
-        if {[llength $args] %2 == 1} {
-            set text [lpop args]
-            $self wrap span $text {*}$args
+    # pre ?options...? ?text?
+    #
+    # text    - A text string
+    # options - Attribute options
+    #
+    # Begins a <pre> block.  If the text is given, it is
+    # escaped for HTML and the </pre> tag is added automatically.
+   
+    method pre {args} {
+        set text [my PopOdd args]
+
+        if {$text ne ""} {
+            my wrap pre [my escape $text] {*}$args
         } else {
-            $self tag span {*}$args
+            my tag pre {*}$args
         }
     }
-   
-    # /span
-    #
-    # Terminates a <span>.
 
-    method /span {} {
-        $self put </span>
+    # pre-with ?options? body
+    #
+    # body    - A script to execute
+    #
+    # Defines a <pre> block.  The body is executed, and the </pre> tag
+    # is added automatically.
+   
+    method pre-with {args} {
+        set body [my PopOdd args body]
+        my tag pre {*}$args
+        uplevel 1 $body
+        my /pre
     }
 
+    # /pre
+    #
+    # Ends a <pre> block
+    
+    method /pre {} {
+        my putln </pre>
+    }
+    export /pre
+
+    # span ?options...? ?text?
+    #
+    # text    - A text string
+    # options - Attribute options
+    #
+    # Begins a <span> block.  If the text is given, the </span> tag is 
+    # added automatically.
+   
+    method span {args} {
+        set text [my PopOdd args]
+
+        if {$text ne ""} {
+            my wrap span $text {*}$args
+        } else {
+            my tag span {*}$args
+        }
+    }
+
+    # span-with ?options? body
+    #
+    # body    - A script to execute
+    #
+    # Defines a <span> block.  The body is executed, and the </span> tag
+    # is added automatically.
+   
+    method span-with {args} {
+        set body [my PopOdd args body]
+        my tag span {*}$args
+        uplevel 1 $body
+        my /span
+    }
+
+    # /span
+    #
+    # Ends a <span> block
+    
+    method /span {} {
+        my putln </span>
+    }
+    export /span
 
     #-------------------------------------------------------------------
     # <a href> links
 
-    # href url ?options? label
+    # xref url ?options? label
     #
-    # url       - A server-local URL.  Must begin with "/".
+    # url       - An external or server-local URL.
     # options   - Attribute options
     # label     - The label to display.
     #
     # Produces an <a href="...">...</a> tag.
 
-    method href {url args} {
-        set label [lpop args]
+    method xref {url args} {
+        set label [my PopOdd args label]
 
-        $self wrap a $label -href $url {*}$args
+        my wrap a $label -href $url {*}$args
     }
 
     # iref suffix ?options? label
@@ -469,46 +531,554 @@ snit::type ::projectlib::htmlbuffer {
     # label     - The label to display.
 
     method iref {suffix args} {
-        $self href $options(-domain)$suffix {*}$args
+        my xref $options(-domain)$suffix {*}$args
     }
-    
 
+    # ximg url ?options?
+    #
+    # url       - An external or server-local URL.
+    # options   - Attribute options
+    #
+    # Produces an <img src="..."> tag.
+
+    method ximg {url args} {
+        my tag img -src $url {*}$args
+    }
+
+    # iimg suffix ?options?
+    #
+    # suffix    - A suffix to add to the -domain to get a server-local
+    #             URL.  Must begin with "/".
+    # options   - Attribute options
+    #
+    # Produces an <img src="..."> tag.
+
+    method iimg {suffix args} {
+        my ximg $options(-domain)$suffix {*}$args
+    }
 
     #-------------------------------------------------------------------
-    # Helper Commands
+    # Lists
 
-    # InsertAttributes optlist
+    # ul ?options? ?body?
     #
-    # optlist   - Tcl-style option list
+    # options - Attribute options
+    # body    - A body script
     #
-    # Puts the option list into the buffer as HTML attributes.
+    # Begins an unordered list. If the body is given, it is executed and 
+    # the </ul> is added automatically.
+   
+    method ul {args} {
+        set body [my PopOdd args]
 
-    method InsertAttributes {optlist} {
-        foreach {opt val} $optlist {
-            # FIRST, remove the hyphen
-            set opt [string trimleft $opt -]
+        my tagln ul {*}$args
 
-            # NEXT, add the attribute
-            $self put " $opt=\"$val\""
+        if {$body ne ""} {
+            uplevel 1 $body
+            my /ul
         }
     }
 
+    # /ul
+    #
+    # Ends an unordered list
     
+    method /ul {} {
+        my putln </ul>
+    }
+    export /ul
+
+    # ol ?options? ?body?
+    #
+    # options - Attribute options
+    # body    - A body script
+    #
+    # Begins an ordered list. If the body is given, it is executed and 
+    # the </ol> is added automatically.
+   
+    method ol {args} {
+        set body [my PopOdd args]
+
+        my tagln ol {*}$args
+
+        if {$body ne ""} {
+            uplevel 1 $body
+            my /ol
+        }
+    }
+
+    # /ol
+    #
+    # Ends an ordered list
+    
+    method /ol {} {
+        my putln </ol>
+    }
+    export /ol
+
+    # li ?options...? ?text?
+    #
+    # text    - A text string
+    # options - Attribute options
+    #
+    # Begins a <li> block.  If the text is given, the </li> tag is 
+    # added automatically.
+   
+    method li {args} {
+        set text [my PopOdd args]
+
+        if {$text ne ""} {
+            my wrapln li $text {*}$args
+        } else {
+            my tagln li {*}$args
+        }
+    }
+
+    # li-with ?options? body
+    #
+    # body    - A script to execute
+    #
+    # Defines a <li> block.  The body is executed, and the </li> tag
+    # is added automatically.
+   
+    method li-with {args} {
+        set body [my PopOdd args body]
+        my tagln li {*}$args
+        uplevel 1 $body
+        my /li
+    }
+
+    # /li
+    #
+    # Ends a <li> block
+    
+    method /li {} {
+        my putln </li>
+    }
+    export /li
 
 
-    #===================================================================
-    # NOT PROCESSED YET
+    # dl ?options? ?body?
+    #
+    # options - Attribute options
+    # body    - A body script
+    #
+    # Begins a definition list. If the body is given, it is executed and 
+    # the </dl> is added automatically.
+   
+    method dl {args} {
+        set body [my PopOdd args]
+
+        my tagln dl {*}$args
+
+        if {$body ne ""} {
+            uplevel 1 $body
+            my /dl
+        }
+    }
+
+    # /dl
+    #
+    # Ends a <dl> list
+
+    method /dl {} {
+        my putln </dl>
+    }
+    export /dl
+
+    # dt ?options...? ?text?
+    #
+    # text    - A text string
+    # options - Attribute options
+    #
+    # Begins a <dt> span.  If the text is given, the </dt> tag is 
+    # added automatically.
+   
+    method dt {args} {
+        set text [my PopOdd args]
+
+        if {$text ne ""} {
+            my wrapln dt $text {*}$args
+        } else {
+            my tagln dt {*}$args
+        }
+    }
+
+    # /dt
+    #
+    # Ends a <dt> block
     
+    method /dt {} {
+        my putln </dt>
+    }
+    export /dt
+
+    # dd ?options...? ?text?
+    #
+    # text    - A text string
+    # options - Attribute options
+    #
+    # Begins a <dd> block.  If the text is given, the </dd> tag is 
+    # added automatically.
+   
+    method dd {args} {
+        set text [my PopOdd args]
+
+        if {$text ne ""} {
+            my wrapln dd $text {*}$args
+        } else {
+            my tagln dd {*}$args
+        }
+    }
+
+    # dd-with ?options? body
+    #
+    # body    - A script to execute
+    #
+    # Defines a <dd> block.  The body is executed, and the </dd> tag
+    # is added automatically.
+   
+    method dd-with {args} {
+        set body [my PopOdd args body]
+        my tagln dd {*}$args
+        uplevel 1 $body
+        my /dd
+    }
+
+    # /dd
+    #
+    # Ends a <dd> block
+    
+    method /dd {} {
+        my putln </dd>
+    }
+    export /dd
+
+    
+    #-------------------------------------------------------------------
+    # Tables
+    
+    # table ?options? ?body?
+    #
+    # options - Attribute options
+    # body    - A body script
+    #
+    # In addition to the attribute options, the following may also
+    # be used:
+    #
+    # -class   cls    - The CSS class; defaults to "pretty".
+    # -headers list   - A list of header strings, to be loaded
+    #                   with class=header align=left.
+    #
+    # If the body is given, it is executed and the </table> is
+    # added automatically.
+
+    method table {args} {
+        # FIRST, get the body, if any
+        set body [my PopOdd args]
+
+        # NEXT, get the options (setting defaults)
+        set headers [optval args -headers ""]
+
+        array set opts {
+            -class       pretty
+            -cellpadding 5
+        }
+
+        array set opts $args
+
+
+        # NEXT, initialize transient data
+        set trans(rowCounter) 0
+
+        my tagln table {*}[array get opts]
+
+        if {[llength $headers] > 0} {
+            my tagln tr -class header -align left
+            foreach header $headers {
+                my wrapln th $header -align left
+            }
+            my /tr
+        }
+
+        if {$body ne ""} {
+            uplevel 1 $body
+            my /table
+        }
+    }
+
+    # /table
+    #
+    # Ends a standard table
+
+    method /table {} {
+        my putln </table>
+    }
+    export /table
+
+
+    # tr ?options...? ?body?
+    #
+    # options - Attribute options
+    # body    - A body script
+    #
+    # Begins a standard table row.  If the body is included,
+    # it is executed, and the </tr> is included automatically.
+    
+    method tr {args} {
+        # FIRST, get the attributes and the body.
+        set body [my PopOdd args]
+
+        if {[incr trans(rowCounter)] %2 == 1} {
+            set cls oddrow
+        } else {
+            set cls evenrow
+        }
+
+        my tagln tr -class $cls -valign top {*}$args
+
+        if {$body ne ""} {
+            uplevel 1 $body
+            my /tr
+        }
+    }
+
+    # /tr
+    #
+    # ends a standard table row
+    
+    method /tr {} {
+        my put </tr>
+    }
+    export /tr
+
+
+    # rowcount 
+    #
+    # Number of rows in most recently produced table.
+
+    method rowcount {} {
+        return $trans(rowCounter)
+    }
+
+    # td ?options...? ?text?
+    #
+    # text    - A text string
+    # options - Attribute options
+    #
+    # Begins a <td> block.  If the text is given, the </td> tag
+    # is added automatically.  By default, the text aligns left.
+   
+    method td {args} {
+        set text [my PopOdd args]
+
+        set align [optval args -align left]
+
+        if {$text ne ""} {
+            my wrapln td $text -align $align {*}$args
+        } else {
+            my tagln td {*}$args
+        }
+    }
+
+    # td-with ?options? body
+    #
+    # body    - A script to execute
+    #
+    # Begins a <td> block.  The body is executed, and the </td> tag
+    # is added automatically.
+   
+    method td-with {args} {
+        set body [my PopOdd args body]
+        set align [optval args -align left]
+        my tag td -align $align {*}$args
+        uplevel 1 $body
+        my /td
+    }
+
+    # /td
+    #
+    # Ends a <td> block
+
+    method /td {} {
+        my put </td>
+    }
+    export /td    
 
     #-------------------------------------------------------------------
-    # Commands for building up HTML in the buffer
+    # Records and Fields
+    #
+    # A record is two parallel columns of labels and values.
+
+    # record ?options? ?body?
+    #
+    # options   - Table attribute options
+    # body      - A body script.
+    #
+    # Begins a record list: a borderless table in which the first column
+    # contains labels and the second contains values.  If the body is given
+    # it is executed and the /record is done automatically.
+    #
+    # The default table options are border=0 cellpadding=2 cellspacing=0
+
+    method record {args} {
+        set body [my PopOdd args]
+
+        array set opts {
+            -border      0
+            -cellpadding 2
+            -cellspacing 0
+        }
+        array set opts $args
+
+        my tagln table {*}[array get opts]
+
+        if {$body ne ""} {
+            uplevel 1 $body
+            my /record
+        }
+    }
+
+    # field label ?text?
+    #
+    # label   - The field label
+    #
+    # Begins a new field in a record; if the text is given it is
+    # added and the /field is added automatically.
+
+    method field {label {text ""}} {
+        my tr
+        my td "<b>$label</b>"
+
+        if {$text ne ""} {
+            my td $text
+            my /tr
+        }
+    }
+    
+    # field-with label body
+    #
+    # label   - The field label
+    # body    - The body script.
+    #
+    # Adds a new field to a record; executes the body and adds
+    # the /field automatically.
+
+    method field-with {label body} {
+        my tr
+        my field $label
+        my td
+        uplevel 1 $body
+        my /td
+        my /tr
+    }
+
+    # /field
+    #
+    # Terminates a field in a record
+
+    method /field {} {
+        my put "</td></tr>"
+    }
+    export /field
+
+    # /record
+    #
+    # Ends a named list.
+
+    method /record {} {
+        my putln "</table>"
+    }
+    export /record
+
+    #-------------------------------------------------------------------
+    # HTML Forms
+    #
+    # TBD: We'll add specific commands for the input tags we need.
+
+    # form ?options? 
+    #
+    # options  - Attribute Options
+    #
+    # Adds a <form> element.  The options are converted into 
+    # attribute names and values without error checking.
+
+    method form {args} {
+        my tagln form {*}$args
+    }
+
+    # /form
+    #
+    # Terminates <form>
+
+    method /form {} {
+        my putln </form>
+    }
+    export /form
+
+    # label name ?options...? ?text?
+    #
+    # name    - an input name
+    # options - Attribute options
+    # text    - Label text
+    # 
+    # Inserts a <label> tag for the named input.  If text is given,
+    # the </label> is inserted automatically.
+    
+    method label {name args} {
+        set text [my PopOdd args]
+
+        if {$text ne ""} {
+            my wrapln label $text -for $name {*}$args
+        } else {
+            my tagln label -for $name {*}$args
+        }
+    }
+
+    # /label
+    #
+    # Terminates </label>
+
+    method /label {} {
+        my put "</label>"
+    }
+    export /label
+
+    # textarea ?options...? ?text?
+    #
+    # text    - A text string to initialize the textarea.
+    # options - Attribute options
+    #
+    # Defines a <textarea> block.  </textarea> tag is 
+    # added automatically.
+   
+    method textarea {args} {
+        set text [my PopOdd args]
+
+        my wrapln textarea $text {*}$args
+    }
+
+    # submit ?options? ?label?
+    #
+    # options - Attribute options
+    # label   - A button label string
+    #
+    # Inserts a "submit" input into the current form.
+
+    method submit {args} {
+        set text [my PopOdd args]
+
+        if {$text ne ""} {
+            lappend args -value $text
+        }
+        my tagln input -type submit {*}$args
+    }
+
+    #-------------------------------------------------------------------
+    # SQL Queries
 
 
-
-
-
-
-    # query sql ?options...?
+    # query db sql ?options...?
     #
     # sql           An SQL query.
     # options       Formatting options
@@ -522,41 +1092,41 @@ snit::type ::projectlib::htmlbuffer {
     #
     # Executes the query and accumulates the results as HTML.
 
-    method query {sql args} {
-        require {$options(-rdb) ne ""} "No -rdb has been specified."
-
+    method query {db sql args} {
         # FIRST, get options.
-        array set qopts {
+        array set opts {
             -labels   {}
             -default  "No data found.<p>"
             -align    {}
             -escape   no
         }
-        array set qopts $args
+        array set opts $args
 
-        # FIRST, begin the table
-        $self push
-
-        # NEXT, if we have labels, use them.
-        if {[llength $qopts(-labels)] > 0} {
-            $self table $qopts(-labels)
+        # FIRST, begin the table.  If we have labels, we'll use those
+        # as headers; otherwise, QueryRows will use the column names
+        # as headers.
+        my push
+        if {$opts(-labels) ne ""} {
+            my table -headers $opts(-labels)
         }
+
 
         # NEXT, get the data.  Execute the query as an uplevel,
         # so that we can use variables.
-        set qnames {}
+        set trans(qnames) {}
+        set trans(qopts)  [array get opts]
 
-        uplevel 1 [list $options(-rdb) eval $sql ::projectlib::htmlbuffer::qrow \
-                       [list $self QueryRow]]
+        uplevel 1 [list $db eval $sql ::projectlib::htmlbuffer::qrow \
+                       [list my QueryRow]]
 
-        $self /table
+        my /table
 
-        set table [$self pop]
-
-        if {[llength $qnames] == 0} {
-            $self putln $qopts(-default)
+        set table [my pop]
+        
+        if {[llength $trans(qnames)] == 0} {
+            my putln $opts(-default)
         } else {
-            $self putln $table
+            my putln $table
         }
     }
 
@@ -565,545 +1135,54 @@ snit::type ::projectlib::htmlbuffer {
     # Builds up the table results
 
     method QueryRow {} {
-        if {[llength $qnames] == 0} {
-            set qnames $qrow(*)
+        upvar #0 ::projectlib::htmlbuffer::qrow qrow
+
+        if {[llength $trans(qnames)] == 0} {
+            set trans(qnames) $qrow(*)
             unset qrow(*)
 
-            if {$qopts(-escape)} {
-                set qnames [$type escape $qnames]
+            if {[dict get $trans(qopts) -escape} {
+                set trans(qnames) [my escape $trans(qnames)]
             }
 
-            if {[$self get] eq ""} {
-                $self table $qnames
+            if {[my get] eq ""} {
+                my table -headers $trans(qnames)
             }
         }
         
         # If the alignment spec is longer than the number of columns, 
         # trim it down. No need to worry if it's shorter, that's handled
-        set alignstr \
-            [string range $qopts(-align) 0 [expr {[llength $qnames]-1}]]
+        set alignstr [string range \
+                        [dict get $trans(qopts) -align] 
+                        0 [expr {[llength $trans(qnames)]-1}]]
 
-        $self tr {
-            foreach name $qnames align [split $alignstr ""] {
-                if {$qopts(-escape)} {
-                    set qrow($name) <code>[$type escape $qrow($name)]</code>
+        my tr {
+            foreach name $trans(qnames) align [split $alignstr ""] {
+                if {[dict get $trans(qopts) -escape} {
+                    set qrow($name) <tt>[my escape $qrow($name)]</tt>
                 }
 
-                $self td $alignments($align) {
-                    $self put $qrow($name)
+                my td-with -align [my alignments $align] {
+                    my put $qrow($name)
                 }
             }
         }
     }
+
     
 
     #-------------------------------------------------------------------
-    # HTML Commands
+    # Helper Commands
 
-
-
-    # linkbar linkdict
-    # 
-    # linkdict   - A dictionary of URLs and labels
+    # escape text
     #
-    # Displays the links in a horizontal bar.
-
-    method linkbar {linkdict} {
-        $self hr
-        set count 0
-
-        foreach {link label} $linkdict {
-            if {$count > 0} {
-               $self put " | "
-            }
-
-            $self link $link $label
-
-            incr count
-        }
-
-        $self hr
-        $self para
-    }
-
-    # tiny text
+    # text - Plain text to be included in an HTML page
     #
-    # text - A text string
-    #
-    # Sets the text in tiny font.
-
-    method tiny {text} {
-        $self put "<font size=2>$text</font>"
-    }
-
-    # tinyb text
-    #
-    # text - A text string
-    #
-    # Sets the text in tiny bold.
-
-    method tinyb {text} {
-        $self put "<font size=2><b>$text</b></font>"
-    }
-
-    # tinyi text
-    #
-    # text - A text string
-    #
-    # Puts the text in tiny italics.
-
-    method tinyi {text} {
-        $self put "<font size=2><i>$text</i></font>"
-    }
-
-    # ul ?body?
-    #
-    # body    - A body script
-    #
-    # Begins an unordered list. If the body is given, it is executed and 
-    # the </ul> is added automatically.
-   
-    method ul {{body ""}} {
-        $self putln <ul>
-
-        if {$body ne ""} {
-            uplevel 1 $body
-            $self /ul
-        }
-    }
-
-    # li
-    #
-    # body    - A body script
-    #
-    # Begins a list item.  If the body is given, it is executed and 
-    # the </li> is added automatically.
-    
-    method li {{body ""}} {
-        $self putln <li>
-
-        if {$body ne ""} {
-            uplevel 1 $body
-            $self put </li>
-        }
-    }
-
-    # li-text text
-    #
-    # text    - A text string
-    #
-    # Puts the text as a list item.    
-
-    method li-text {text} {
-        $self putln <li>$text</li>
-    }
-
-    # /ul
-    #
-    # Ends an unordered list
-    
-    method /ul {} {
-        $self putln </ul>
-    }
-
-    # pre ?text?
-    #
-    # text    - A text string
-    #
-    # Begins a <pre> block.  If the text is given, it is
-    # escaped for HTML and the </pre> is added automatically.
-   
-    method pre {{text ""}} {
-        $self putln <pre>
-        if {$text ne ""} {
-            $self putln [string map {& &amp; < &lt; > &gt;} $text]
-            $self /pre
-        }
-    }
-
-    # /pre
-    #
-    # Ends a <pre> block
-    
-    method /pre {} {
-        $self putln </pre>
-    }
-
-
-    # para
-    #
-    # Adds a paragraph mark.
-    
-    method para {} {
-        $self put "<p>\n"
-    }
-
-    # br
-    #
-    # Adds a line break
-    
-    method br {} {
-        $self put <br>
-    }
-
-    # link url label
-    #
-    # url    - A resource URL
-    # label  - A text label
-    #
-    # Formats and returns an HTML link.
-
-    method link {url label} {
-        $self put "<a href=\"$url\">$label</a>"
-    }
-
-    # linklist ?options...? links
-    #
-    # links  - A list of links and labels
-    #
-    # Options:
-    #   -delim   - Delimiter; defaults to ", "
-    #   -default - String to put if list is empty; defaults to ""
-    #
-    # Formats and returns a list of HTML links.
-
-    method linklist {args} {
-        # FIRST, get the options
-        set links [lindex $args end]
-        set args  [lrange $args 0 end-1]
-
-        array set opts {
-            -delim   ", "
-            -default ""
-        }
-
-        while {[llength $args] > 0} {
-            set opt [lshift args]
-
-            switch -exact -- $opt {
-                -delim   -
-                -default {
-                    set opts($opt) [lshift args]
-                }
-
-                default {
-                    error "Unknown option: \"$opt\""
-                }
-            }
-        }
-
-        # NEXT, build the list of links.
-        set list [list]
-        foreach {url label} $links {
-            lappend list "<a href=\"$url\">$label</a>"
-        }
-
-        set result [join $list $opts(-delim)]
-
-        if {$result ne ""} {
-            $self put $result
-        } else {
-            $self put $opts(-default)
-        }
-    }
-
-
-    # table headers ?body?
-    #
-    # headers - A list of column headers
-    # body    - A body script
-    #
-    # Begins a standard table with the specified column headers.
-    # If the body is given, it is executed and the </table> is
-    # added automatically.
-
-    method table {headers {body ""}} {
-        set itemCounter 0
-
-        $self putln "<table class=pretty cellpadding=5>"
-
-        if {[llength $headers] > 0} {
-            $self putln "<tr class=header align=left>"
-
-            foreach header $headers {
-                $self put "<th align=left>$header</th>"
-            }
-            $self put </tr>
-        }
-
-        if {$body ne ""} {
-            uplevel 1 $body
-            $self /table
-        }
-    }
-
-    # tr ?attr value...? ?body?
-    #
-    # attr    - A <tr> attribute
-    # value   - An attribute value
-    # body    - A body script
-    #
-    # Begins a standard table row.  If the body is included,
-    # it is executed, and the </tr> is included automatically.
-    
-    method tr {args} {
-        # FIRST, get the attributes and the body.
-        if {[llength $args] % 2 == 1} {
-            set body [lindex $args end]
-            set args [lrange $args 0 end-1]
-        }
-
-        set attrs ""
-        foreach {attr value} $args {
-            append attrs " $attr=\"$value\""
-        }
-
-        if {[incr itemCounter] % 2 == 1} {
-            set trClass oddrow
-        } else {
-            set trClass evenrow
-        }
-
-        $self putln "<tr class=$trClass valign=top$attrs>"
-
-        if {$body ne ""} {
-            uplevel 1 $body
-            $self /tr
-        }
-    }
-
-    # rowcount 
-    #
-    # Number of rows in most recently produced table.
-
-    method rowcount {} {
-        return $itemCounter
-    }
-
-    # td ?align? ?body?
-    #
-    # align   - left | center | right; defaults to "left".
-    # body    - A body script
-    #
-    # Formats a standard table item; if the body is included,
-    # it is executed, and the </td> is included automatically.
-    
-    method td {{align left} {body ""}} {
-        $self putln "<td align=\"$align\">"
-        if {$body ne ""} {
-            uplevel 1 $body
-            $self put </td>
-        }
-    }
-
-    # /td
-    #
-    # ends a standard table item
-    
-    method /td {} {
-        $self put </td>
-    }
-
-    # /tr
-    #
-    # ends a standard table row
-    
-    method /tr {} {
-        $self put </tr>
-    }
-
-    # /table
-    #
-    # Ends a standard table with the specified column headers
-
-    method /table {} {
-        $self put </table>
-    }
-
-    # record ?body?
-    #
-    # Begins a record list: a borderless table in which the first column
-    # contains labels and the second contains values.  If the body is given
-    # it is executed and the /namelist is done automatically.
-
-    method record {{body ""}} {
-        $self putln "<table border=0 cellpadding=2 cellspacing=0>"
-
-        if {$body ne ""} {
-            uplevel 1 $body
-            $self /record
-        }
-    }
-
-    # field label ?body?
-    #
-    # label   - The field label
-    #
-    # Begins a new field to a record; if the body is given, it is executed
-    # and the /field as added automatically.
-
-    method field {label {body ""}} {
-        $self putln "<tr><td align=left><b>$label</b></td> <td>" 
-        if {$body ne ""} {
-            uplevel 1 $body
-            $self /field
-        }
-    }
-    
-    # /field
-    #
-    # Terminates a field in a record
-
-    method /field {} {
-        $self put "</td></tr>"
-    }
-
-    # /record
-    #
-    # Ends a named list.
-
-    method /record {} {
-        $self putln "</table>"
-    }
-
-    # dl ?body?
-    #
-    # body    - A body script
-    #
-    # Begins a standard <dl> list.  If the body is included,
-    # it is executed, and the </dl> is included automatically.
-    
-    method dl {{body ""}} {
-        $self putln "<dl>"
-
-        if {$body ne ""} {
-            if {$body ne ""} {
-                uplevel 1 $body
-                $self /dl
-            }
-        }
-    }
-
-    # dlitem
-    # 
-    # dt    - The content of the <dt> tag
-    # dd    - The content of the <dd> tag
-    #
-    # Adds one complete item to the <dl> list, terminated by a <p>.
-
-    method dlitem {dt dd} {
-        $self putln "<dt>$dt"
-        $self putln "<dd>$dd"
-        $self para
-    }
-
-    # /dl
-    #
-    # Ends a <dl> list
-
-    method /dl {} {
-        $self putln "</dl>"
-    }
-
-    # image name ?align?
-    #
-    # name  - A Tk image name
-    # align - Alignment
-    #
-    # Adds an in-line <img>.
-
-    method image {name {align ""}} {
-        $self put "<img src=\"/image/$name\" align=\"$align\">"
-    }
-
-    # object url ?options...?
-    #
-    # url     - The URL of a tk/widget resource
-    # options - Any number of options
-    #
-    # Adds an <object></object> tag.  The options are converted into
-    # attribute names and values.
-    
-    method object {url args} {
-        $self putln "<object data=\"$url\""
-        $self InsertAttributes $args
-        $self put "></object>"
-    }
-
-    # form ?options? 
-    #
-    # options  - Any number of options
-    #
-    # Adds a <form> element.  The options are converted into 
-    # attribute names and values without error checking.
-    # Typical options include:
-    #
-    #   -action url         - The URL to load (defaults to current page).
-    #   -autosubmit value   - If yes, the form autosubmits. 
-
-    method form {args} {
-        $self putln "<form "
-        $self InsertAttributes $args
-        $self put ">"
-    }
-
-    # /form
-    #
-    # Terminates <form>
-
-    method /form {} {
-        $self putln </form>
-    }
-
-    # label for ?text?
-    #
-    # for     - an input name
-    # text    - Label text
-    # 
-    # Inserts a <label> tag for the named input.  If text is given,
-    # the </label> is inserted automatically.
-    
-    method label {for {text ""}} {
-        $self putln "<label for=\"$for\">"
-
-        if {$text ne ""} {
-            $self put "$text</label>"
-        }
-    }
-
-    # /label
-    #
-    # Terminates </label>
-
-    method /label {} {
-        $self put "</label>"
-    }
-
-    # input name itype value ?options? 
-    #
-    # name     - The input's name
-    # itype    - The input's type, e.g., "enum", "text"
-    # value    - The input's initial value
-    # options  - Any number of options
-    #
-    # Adds an <input> element with the given name, type, and value
-    # attribute values.  The options are converted into 
-    # attribute names and values without error checking.
-
-    method input {name itype value args} {
-        $self putln "<input name=\"$name\" type=\"$itype\" value=\"$value\""
-        $self InsertAttributes $args
-        $self put ">"
-    }
-
-    # submit ?label?
-    #
-    # label   - A button label string
-    #
-    # Inserts a "submit" input into the current form.
-
-    method submit {{label "Submit"}} {
-        $self putln "<input type=\"submit\" value=\"$label\">"
+    # Escapes the &, <, and > characters so that the included text
+    # doesn't screw up the formatting.
+
+    method escape {text} {
+        return [string map {& &amp; < &lt; > &gt;} $text]
     }
 
     # InsertAttributes optlist
@@ -1111,120 +1190,260 @@ snit::type ::projectlib::htmlbuffer {
     # optlist   - Tcl-style option list
     #
     # Puts the option list into the buffer as HTML attributes.
+    # If an option begins with "+", its name goes in by itself,
+    # without a value.
 
     method InsertAttributes {optlist} {
-        foreach {opt val} $optlist {
-            # FIRST, remove the hyphen
-            set opt [string trimleft $opt -]
+        while {[llength $optlist] > 0} {
+            set opt [lshift optlist]
 
-            # NEXT, add the attribute
-            $self put " $opt=\"$val\""
-        }
-    }
+            set code [string index $opt 0]
+            set opt [string trimleft $opt +-]
 
-    #-------------------------------------------------------------------
-    # Output Paging
-
-    # pager qdict page pages
-    #
-    # qdict   - The current query dictionary
-    # page    - The page currently displayed
-    # pages   - The total number of pages
-    #
-    # This command inserts a "Pages:" controller with a (carefully pruned)
-    # list of page numbers, as one sees on search web pages when the 
-    # search returns too many results to display at once.  It is intended
-    # for use on myserver(n) pages that use a query dictionary, e.g.,
-    # the URL ends with "?parm=value+parm=value...".
-    #
-    # The qdict parameter contains the current query dictionary; it may be
-    # empty.  The parameters contained in it will be put in the URL that
-    # the page numbers link to.
-    #
-    # The page number will be included in these URLs as a query
-    # parameter, "page=<num>".  
-    #
-    # If the number of pages is less than 2, no output will appear.
-
-    method pager {qdict page pages} {
-        if {$pages <= 1} {
-            return
-        }
-
-        $self tinyb "Page: "
-
-        if {$page > 1} {
-            $self PageLink $qdict [expr {$page - 1}] "Prev"
-            $self put " "
-        } else {
-            $self put "Prev "
-        }
-
-        foreach i [$self PageSequence $page $pages] {
-            if {$i == $page} {
-                $self put "<b>$i</b>"
-            } elseif {$i eq "..."} {
-                $self put $i
+            if {$code eq "-"} {
+                my put " $opt=\"[lshift optlist]\""
             } else {
-                $self PageLink $qdict $i
+                my put " $opt"
             }
-
-            $self put " "
         }
+    }
 
-        if {$page < $pages} {
-            $self PageLink $qdict [expr {$page + 1}] "Next"
+    # PopOdd listvar ?argname?
+    #
+    # Pops the last value from the listvar, only if there are an
+    # odd number of entries, and returns it.  If there is no odd
+    # entry, either returns "" or throws an error of the argument
+    # name is given.
+
+    method PopOdd {listvar {argname ""}} {
+        upvar 1 $listvar list
+
+        if {[llength $list] % 2 == 1} {
+            return [lpop list]
+        } elseif {$argname ne ""} {
+            error "Missing argument: $argname"
         } else {
-            $self put "Next"
+            return ""
         }
-
-        $self para
     }
 
-    # PageSequence page pages 
-    #
-    # page    - A page number, 1 to N
-    # pages   - The total number of pages N 
-    #
-    # Returns a list of ordered page numbers, possibly with "...".
 
-    method PageSequence {page pages} {
-        set result [list]
-        set last 0
+    #===================================================================
+    # NOT PROCESSED YET
+    # 
+    # Old code from htools(n) that we'll probably want eventually.
 
-        for {set i 1} {$i <= $pages} {incr i} {
-            if {$i <= 3 || 
-                $i >= $pages - 2 ||
-                ($i >= $page - 2 && $i <= $page + 2)
-            } {
-                if {$i - 1 != $last} {
-                    lappend result "..."
+    if 0 {
+        # linkbar linkdict
+        # 
+        # linkdict   - A dictionary of URLs and labels
+        #
+        # Displays the links in a horizontal bar.
+
+        method linkbar {linkdict} {
+            my hr
+            set count 0
+
+            foreach {link label} $linkdict {
+                if {$count > 0} {
+                   my put " | "
                 }
-                lappend result $i
-                set last $i                
+
+                my link $link $label
+
+                incr count
+            }
+
+            my hr
+            my para
+        }
+
+        # tiny text
+        #
+        # text - A text string
+        #
+        # Sets the text in tiny font.
+
+        method tiny {text} {
+            my put "<font size=2>$text</font>"
+        }
+
+        # tinyb text
+        #
+        # text - A text string
+        #
+        # Sets the text in tiny bold.
+
+        method tinyb {text} {
+            my put "<font size=2><b>$text</b></font>"
+        }
+
+        # tinyi text
+        #
+        # text - A text string
+        #
+        # Puts the text in tiny italics.
+
+        method tinyi {text} {
+            my put "<font size=2><i>$text</i></font>"
+        }
+
+
+        # linklist ?options...? links
+        #
+        # links  - A list of links and labels
+        #
+        # Options:
+        #   -delim   - Delimiter; defaults to ", "
+        #   -default - String to put if list is empty; defaults to ""
+        #
+        # Formats and returns a list of HTML links.
+
+        method linklist {args} {
+            # FIRST, get the options
+            set links [lindex $args end]
+            set args  [lrange $args 0 end-1]
+
+            array set opts {
+                -delim   ", "
+                -default ""
+            }
+
+            while {[llength $args] > 0} {
+                set opt [lshift args]
+
+                switch -exact -- $opt {
+                    -delim   -
+                    -default {
+                        set opts($opt) [lshift args]
+                    }
+
+                    default {
+                        error "Unknown option: \"$opt\""
+                    }
+                }
+            }
+
+            # NEXT, build the list of links.
+            set list [list]
+            foreach {url label} $links {
+                lappend list "<a href=\"$url\">$label</a>"
+            }
+
+            set result [join $list $opts(-delim)]
+
+            if {$result ne ""} {
+                my put $result
+            } else {
+                my put $opts(-default)
             }
         }
 
-        return $result
-    }
+        #-------------------------------------------------------------------
+        # Output Paging
 
-    # PageLink qdict page ?label?
-    #
-    # qdict   - The current query dictionary
-    # page    - The page to link to
-    # label   - The link label; defaults to the page number.
-    #
-    # Creates a link to the named page.
+        # pager qdict page pages
+        #
+        # qdict   - The current query dictionary
+        # page    - The page currently displayed
+        # pages   - The total number of pages
+        #
+        # This command inserts a "Pages:" controller with a (carefully pruned)
+        # list of page numbers, as one sees on search web pages when the 
+        # search returns too many results to display at once.  It is intended
+        # for use on myserver(n) pages that use a query dictionary, e.g.,
+        # the URL ends with "?parm=value+parm=value...".
+        #
+        # The qdict parameter contains the current query dictionary; it may be
+        # empty.  The parameters contained in it will be put in the URL that
+        # the page numbers link to.
+        #
+        # The page number will be included in these URLs as a query
+        # parameter, "page=<num>".  
+        #
+        # If the number of pages is less than 2, no output will appear.
 
-    method PageLink {qdict page {label ""}} {
-        if {$label eq ""} {
-            set label $page
+        method pager {qdict page pages} {
+            if {$pages <= 1} {
+                return
+            }
+
+            my tinyb "Page: "
+
+            if {$page > 1} {
+                my PageLink $qdict [expr {$page - 1}] "Prev"
+                my put " "
+            } else {
+                my put "Prev "
+            }
+
+            foreach i [my PageSequence $page $pages] {
+                if {$i == $page} {
+                    my put "<b>$i</b>"
+                } elseif {$i eq "..."} {
+                    my put $i
+                } else {
+                    my PageLink $qdict $i
+                }
+
+                my put " "
+            }
+
+            if {$page < $pages} {
+                my PageLink $qdict [expr {$page + 1}] "Next"
+            } else {
+                my put "Next"
+            }
+
+            my para
         }
 
-        dict set qdict page $page
+        # PageSequence page pages 
+        #
+        # page    - A page number, 1 to N
+        # pages   - The total number of pages N 
+        #
+        # Returns a list of ordered page numbers, possibly with "...".
 
-        $self link "?[urlquery fromdict $qdict]" $label
+        method PageSequence {page pages} {
+            set result [list]
+            set last 0
+
+            for {set i 1} {$i <= $pages} {incr i} {
+                if {$i <= 3 || 
+                    $i >= $pages - 2 ||
+                    ($i >= $page - 2 && $i <= $page + 2)
+                } {
+                    if {$i - 1 != $last} {
+                        lappend result "..."
+                    }
+                    lappend result $i
+                    set last $i                
+                }
+            }
+
+            return $result
+        }
+
+        # PageLink qdict page ?label?
+        #
+        # qdict   - The current query dictionary
+        # page    - The page to link to
+        # label   - The link label; defaults to the page number.
+        #
+        # Creates a link to the named page.
+
+        method PageLink {qdict page {label ""}} {
+            if {$label eq ""} {
+                set label $page
+            }
+
+            dict set qdict page $page
+
+            my link "?[urlquery fromdict $qdict]" $label
+        }        
     }
+
 }
 
 

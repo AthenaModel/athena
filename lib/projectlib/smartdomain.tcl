@@ -374,8 +374,7 @@ oo::class create ::projectlib::smartdomain {
 
         foreach suffix $suffixes {
             set url "$info(domain)[string map $trans $suffix]"
-            set doc [string map $trans \
-                [htools escape $info(docstring-$suffix)]]
+            set doc [string map $trans $info(docstring-$suffix)]
 
             $ht dlitem  "<tt>$url</tt>" $doc       
         }

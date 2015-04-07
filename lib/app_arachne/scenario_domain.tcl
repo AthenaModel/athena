@@ -26,7 +26,8 @@ oo::class create scenario_domain {
         next /scenario
 
         # FIRST, define helpers
-        htools ht \
+        ::projectlib::htmlbuffer create hb   \
+            -domain    /scenario             \
             -cssfile   "/athena.css"         \
             -headercmd [mymethod htmlHeader] \
             -footercmd [mymethod htmlFooter]
@@ -70,12 +71,14 @@ oo::class create scenario_domain {
     #-------------------------------------------------------------------
     # Header and Footer
 
-    method htmlHeader {title} {
+    method htmlHeader {hb title} {
         # TBD
     }
 
-    method htmlFooter {} {
-        # TBD
+    method htmlFooter {hb} {
+        $hb hr
+        $hb putln "Athena Arachne [app version] - [clock format [clock seconds]]"
+        $hb para
     }
 
     
@@ -84,33 +87,33 @@ oo::class create scenario_domain {
     # General Content
 
     method index.html {datavar qdict} {
-        ht page "Scenarios"
-        ht title "Scenarios"
+        hb page "Scenarios"
+        hb h1 "Scenarios"
 
-        ht putln "The following scenarios are loaded:"
-        ht para
+        hb putln "The following scenarios are loaded:"
+        hb para
 
-        ht table {"ID" "State" "Tick" "Week"} {
+        hb table -headers {"ID" "State" "Tick" "Week"} {
             foreach case [app case names] {
-                ht tr {
-                    ht td left { 
-                        ht putln <b>
-                        ht link /scenario/$case $case
-                        ht put </b>
+                hb tr {
+                    hb td-with { 
+                        hb putln <b>
+                        hb iref /$case $case
+                        hb put </b>
                     }
-                    ht td left { ht putln [app sdb $case state]          }
-                    ht td left { ht putln [app sdb $case clock now]      }
-                    ht td left { ht putln [app sdb $case clock asString] }
+                    hb td [app sdb $case state]
+                    hb td [app sdb $case clock now]
+                    hb td [app sdb $case clock asString]
                 }
             }
         }
 
-        ht para
-        ht putln (
-        ht link /scenario/index.json json
-        ht put )
+        hb para
+        hb putln (
+        hb iref /index.json json
+        hb put )
 
-        return [ht /page]
+        return [hb /page]
     }
 
     method index.json {datavar qdict} {
@@ -151,10 +154,10 @@ oo::class create scenario_domain {
 
         # NEXT, do we have the order?
         if {![dict exist $qdict order_]} {
-            ht page "Order Result"
-            ht title "Order Result"
-            ht putln "Error, no <tt>order_</tt> specified in query.<p>"
-            return [ht /page]
+            hb page "Order Result"
+            hb h1 "Order Result"
+            hb putln "Error, no <tt>order_</tt> specified in query.<p>"
+            return [hb /page]
         }
 
         # NEXT, get the parameters
@@ -163,39 +166,39 @@ oo::class create scenario_domain {
 
         # NEXT, send the order.
         try {
-            ht page "Order Result: '$name' scenario"
-            ht title "Order Result: '$name' scenario"
+            hb page "Order Result: '$name' scenario"
+            hb h1 "Order Result: '$name' scenario"
 
-            ht para
-            ht h3 [string toupper $order]
-            my HtmlDictFields $qdict
-            ht para
-            ht hr
+            hb para
+            hb h3 [string toupper $order]
+            my PreDict $qdict
+            hb para
+            hb hr
 
             set result [app sdb $name order senddict normal $order $qdict]
         } trap REJECT {result} {
-            ht h3 "Rejected"
-            my HtmlDictFields $result
-            return [ht /page]
+            hb h3 "Rejected"
+            my PreDict $result
+            return [hb /page]
         } on error {result eopts} {
-            ht h3 "Unexpected Application Error:"
-            ht putln $result
-            ht para
-            ht pre [dict get $eopts -errorinfo]
+            hb h3 "Unexpected Application Error:"
+            hb putln $result
+            hb para
+            hb pre [dict get $eopts -errorinfo]
 
-            return [ht /page]
+            return [hb /page]
         }
 
         # NEXT, we were successful!
 
         if {$result eq ""} {
-            ht h3 "Accepted"
+            hb h3 "Accepted"
         } else {
-            ht h3 "Accepted"
-            ht pre $result
+            hb h3 "Accepted"
+            hb pre $result
         }
 
-        return [ht /page]
+        return [hb /page]
     }
 
     # order.json
@@ -263,8 +266,8 @@ oo::class create scenario_domain {
     method script.html {name datavar qdict} {
         upvar 1 $datavar data
 
-        ht page "Script Entry: '$name' scenario"
-        ht title "Script Entry: '$name' scenario"
+        hb page "Script Entry: '$name' scenario"
+        hb h1 "Script Entry: '$name' scenario"
 
         # FIRST, do we have the scenario?
         set name [string tolower $name]
@@ -274,10 +277,11 @@ oo::class create scenario_domain {
         }
 
         # NEXT, set up the entry form.
-        ht form -action "/scenario/$name/script.html" -method post
-        ht putln "<textarea rows=10 cols=60 name=\"script\"></textarea><br>"
-        ht putln "<input type=\"submit\" value=\"Execute\">"
-        ht /form
+        hb form -method post
+        hb textarea -name script -rows 10 -cols 60
+        hb para
+        hb submit "Execute"
+        hb /form
 
         set script ""
 
@@ -285,12 +289,12 @@ oo::class create scenario_domain {
             set script [dict get $qdict script]
         }
 
-        ht h3 "Script:"
+        hb h3 "Script:"
 
         if {$script ne ""} {
-            ht pre $script
+            hb pre $script
         } else {
-            ht putln "Enter a script in the text area, above."
+            hb putln "Enter a script in the text area, above."
         }
 
         # NEXT, send the order.
@@ -298,26 +302,26 @@ oo::class create scenario_domain {
             try {
                 set result [app sdb $name executive eval $script]
             } on error {result eopts} {
-                ht h3 "Error in Script:"
+                hb h3 "Error in Script:"
 
-                ht putln $result
-                ht para
-                ht pre [dict get $eopts -errorinfo]
+                hb putln $result
+                hb para
+                hb pre [dict get $eopts -errorinfo]
 
-                return [ht /page]
+                return [hb /page]
             }
 
-            ht h3 "Result:"
+            hb h3 "Result:"
 
             if {$result ne ""} {
-                ht pre $result
+                hb pre $result
             } else {
-                ht putln "The script had no return value."
+                hb putln "The script had no return value."
             }
         }
 
 
-        return [ht /page]
+        return [hb /page]
     }
 
     
@@ -331,7 +335,7 @@ oo::class create scenario_domain {
     # as JSON.  The script is presumed to be text/plain in $data(query),
     # as the result of a POST request.
     #
-    # TBD: We might modify this after discussion with the web guys.
+    # TBD: We mighb modify this after discussion with the web guys.
 
     method script.json {name datavar qdict} {
         upvar 1 $datavar data
@@ -366,16 +370,16 @@ oo::class create scenario_domain {
     #-------------------------------------------------------------------
     # Utility Methods.
     
-    # HtmlDictFields qdict
+    # PreDict qdict
     #
-    # Formats a dictionary as a list of fields in a record.
+    # Formats a dictionary as a record of preformatted fields.
 
-    method HtmlDictFields {qdict} {
-        ht record
+    method PreDict {qdict} {
+        hb record
         dict for {key value} $qdict {
-            ht field "<b>$key</b>:" { ht pre $value }
+            hb field-with "<b>$key</b>:" { hb pre $value }
         }
-        ht /record
+        hb /record
     }
 }
 
