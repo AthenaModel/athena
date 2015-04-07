@@ -129,6 +129,11 @@ this option is given, Arachne will accept HTTP requests from other hosts.<p>
 Specifies the port ID at which Arachne should listen for HTTP requests.
 Defaults to port 8080.<p>
 
+<def {-scenariodir <i dirpath>}>
+Specifies the name of a directory in which to store and look for 
+Athena scenario (.adb) files and scenario script (.tcl) files at 
+run-time.<p>
+
 <def {-scenario <i filepath>}>
 
 Specifies the path to an Athena scenario (.adb) file to load at start-up.

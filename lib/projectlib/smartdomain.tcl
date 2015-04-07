@@ -388,6 +388,25 @@ oo::class create ::projectlib::smartdomain {
         return $result
     }
     
+    #-------------------------------------------------------------------
+    # Tools For Domains
+
+    # qparm parm dict ?defvalue?
+    #
+    # parm      - A query parameter name
+    # dict      - A query dictionary
+    # defvalue  - A default value, nominally ""
+    #
+    # Returns the value of the parm from the dictionary, if present,
+    # or the default otherwise.
+    
+    method qparm {parm dict {defvalue ""}} {
+        if {[dict exists $dict $parm]} {
+            return [dict get $dict $parm]
+        } else {
+            return $defvalue
+        }
+    }
 
 }
 

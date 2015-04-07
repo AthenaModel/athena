@@ -1074,6 +1074,26 @@ oo::class create ::projectlib::htmlbuffer {
         my tagln input -type submit {*}$args
     }
 
+    # entry ?options?
+    #
+    # options  - Attribute options
+    #
+    # Inserts a text entry input into the current form.
+
+    method entry {name args} {
+        my tagln input -type text -name $name {*}$args
+    }
+
+    # hidden name value ?options?
+    #
+    # options  - Attribute options
+    #
+    # Inserts a text entry input into the current form.
+
+    method hidden {name value args} {
+        my tagln input -type hidden -name $name -value $value {*}$args
+    }
+
     #-------------------------------------------------------------------
     # SQL Queries
 
@@ -1190,21 +1210,14 @@ oo::class create ::projectlib::htmlbuffer {
     # optlist   - Tcl-style option list
     #
     # Puts the option list into the buffer as HTML attributes.
-    # If an option begins with "+", its name goes in by itself,
-    # without a value.
 
     method InsertAttributes {optlist} {
         while {[llength $optlist] > 0} {
             set opt [lshift optlist]
 
-            set code [string index $opt 0]
-            set opt [string trimleft $opt +-]
+            set opt [string trimleft $opt -]
 
-            if {$code eq "-"} {
-                my put " $opt=\"[lshift optlist]\""
-            } else {
-                my put " $opt"
-            }
+            my put " $opt=\"[lshift optlist]\""
         }
     }
 

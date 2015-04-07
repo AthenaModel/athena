@@ -36,6 +36,12 @@ oo::class create scenario_domain {
         my url /index.html [mymethod index.html] {List of open scenarios}
         my url /index.json [mymethod index.json] {List of open scenarios}
 
+        my url /load.html  [mymethod load.html]  {
+            Load a scenario into memory given the <tt>id</tt> and 
+            <tt>filename</tt>.  The <tt>id</tt> must be unused, and the
+            <tt>filename</tt> must name a file in the <tt>-scenariodir</tt>.
+        }
+
         my url /{name}/order.html [mymethod order.html] {
             Accepts an order and its parameters as a PUT query.
             The query parameters are the order name as <tt>order_</tt>
@@ -90,7 +96,10 @@ oo::class create scenario_domain {
         hb page "Scenarios"
         hb h1 "Scenarios"
 
-        hb putln "The following scenarios are loaded:"
+        hb putln "The following scenarios are loaded ("
+        hb iref /index.json json
+        hb put )
+
         hb para
 
         hb table -headers {"ID" "State" "Tick" "Week"} {
@@ -107,11 +116,42 @@ oo::class create scenario_domain {
                 }
             }
         }
+        hb para
+
+        hb h3 "Available Scenarios"
+
+        set pattern [file join [app scenariodir] *.adb]
+        set names [glob -nocomplain $pattern]
+
+        if {[llength $names] == 0} {
+            hb putln "None available."
+        } else {
+            hb table {
+                foreach name $names {
+                    set name [file tail $name]
+                    set id [file root $name]
+
+                    if {$id in [app case names]} {
+                        set id ""
+                    }
+
+                    hb tr {
+                        hb td <tt>$name</tt>
+                        hb td-with {
+                            hb form -action /scenario/load.html
+                            hb submit "Load"
+                            hb label id "As:"
+                            hb entry id -max 20 -value $id
+                            hb hidden filename $name
+                            hb /form
+                        }
+                    }
+                }
+            }
+        }
 
         hb para
-        hb putln (
-        hb iref /index.json json
-        hb put )
+
 
         return [hb /page]
     }
@@ -131,6 +171,52 @@ oo::class create scenario_domain {
 
         return [huddle jsondump $hud]
     }
+
+    #-------------------------------------------------------------------
+    # Scenario Management
+
+    # load.html
+    #
+    # datavar  - ahttpd state array
+    # qdict    - Query Dictionary
+    #
+    # Attempts to load a scenario into memory.
+
+    method load.html {datavar qdict} {
+        hb page "Load Scenario"
+
+        hb record {
+            hb field "ID:"        <tt>$id</tt>
+            hb field "File Name:" <tt>$filename</tt>
+        }
+
+        hb para
+
+        if {$id eq ""} {
+            hb putln "Error, no ID specified."
+            return [hb /page]
+        }
+
+        if {$id in [app case names]} {
+            hb putln "Error, duplicate ID."
+            return [hb /page]
+        }
+
+        if {$filename eq ""} {
+            hb putln "Error, no filename specified."
+            return [hb /page]
+        }
+
+        if {![file isfile [file join [app scenariodir] $filename]]} {
+            hb putln "Error, no such scenario is available."
+            return [hb /page]
+        }
+
+        hb putln "Found scenario."
+
+        return [hb /page]
+    }
+    
 
     #-------------------------------------------------------------------
     # Order Handling

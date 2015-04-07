@@ -24,12 +24,15 @@ snit::type app {
 
     # info array - configuration
     #
-    # port   - The port on which to listen to http requests.
-    # web    - 1 if Arachne should start the web server, and 0 otherwise.
+    # scenariodir - The local directory for .adb file storage
+    # port        - The port on which to listen to http requests.
+    # web         - 1 if Arachne should start the web server, and 0 
+    #               otherwise.
 
     typevariable info -array {
-        port    8080
-        web     0
+        scenariodir  ""
+        port         8080
+        web          0
     }
 
     # cases array: tracks scenarios
@@ -55,14 +58,20 @@ snit::type app {
     # If it returns "vwait", the application loader will vwait forever.
 
     typemethod init {argv} {
+        appdir init
         set result ""
 
         # FIRST, get the command line options.
+        set info(scenariodir) [appdir join scenarios]
         set adbfile ""
         set script ""
         set scratchdir ""
 
         foroption opt argv -all {
+            -scenariodir {
+                set info(scenariodir) [file normalize [lshift argv]]
+                file mkdir $info(scenariodir)
+            }
             -port {
                 set info(port) [lshift argv]
             }
@@ -74,13 +83,13 @@ snit::type app {
                 }
             }
             -scratchdir {
-                set scratchdir [lshift argv]
+                set scratchdir [file normalize [lshift argv]]
             }
             -script { 
                 set script [lshift argv] 
 
                 if {![file isfile $script]} {
-                    throw fatal "-script does no exist: \"$script\""
+                    throw fatal "-script does not exist: \"$script\""
                 }
             }
             -web {
@@ -209,6 +218,14 @@ snit::type app {
     
     #-------------------------------------------------------------------
     # Utility Commands
+
+    # scenariodir
+    #
+    # Returns the name of the scenario directory.
+
+    typemethod scenariodir {} {
+        return $info(scenariodir)
+    }
     
     # dumpstack
 
