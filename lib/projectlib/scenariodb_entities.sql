@@ -309,6 +309,9 @@ CREATE TABLE frcgroups (
     -- Training Level
     training       TEXT,
 
+    -- Equipment Level
+    equip_level    TEXT,
+
     -- The base number personnel 
     base_personnel INTEGER DEFAULT 0,
 
@@ -319,7 +322,6 @@ CREATE TABLE frcgroups (
 -- Force Group View: joins groups with frcgroups.
 CREATE VIEW frcgroups_view AS
 SELECT * FROM groups JOIN frcgroups USING (g);
-
 
 -- Org Groups
 CREATE TABLE orggroups (

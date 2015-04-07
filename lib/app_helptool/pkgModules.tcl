@@ -26,7 +26,7 @@ package provide app_helptool 6.3.0a7
 # numbers automatically as they change in project.kite.
 
 package require projectlib
-package require athena
+package require athena 
 
 # -kite-require-start ADD EXTERNAL DEPENDENCIES
 package require kitedocs 0.4.6

@@ -1277,6 +1277,7 @@ tab "Military/Force Groups" {
     <group_frc parm color>
     <group_frc parm forcetype>
     <group_frc parm training>
+    <group_frc parm equip_level>
     <group_frc parm base_personnel>
     <group_frc parm demeanor>
     <group_frc parm cost>
