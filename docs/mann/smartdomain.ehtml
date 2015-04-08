@@ -94,6 +94,7 @@ The <i handler> is a command prefix that will be called when the URL
 suffix is matched.  To it will be added:<p>
 
 <ul>
+<li> The smartdomain(n) object name.<p>
 <li> One argument for each place-holder in the <i suffix>, giving the
      actual content from the requested URL.<p>
 <li> The name of the <xref ahttpd(d)> request array variable, "data".<p>
@@ -137,6 +138,7 @@ The <i handler> is a command prefix that will be called when the URL
 suffix is matched.  To it will be added:<p>
 
 <ul>
+<li> The smartdomain(n) object name.
 <li> One argument for each place-holder in the <i root>, giving the
      actual content from the requested URL.<p>
 <li> The remainder of the URL following the <i root>.

@@ -233,7 +233,7 @@ oo::class create ::projectlib::smartdomain {
                 continue
             }
 
-            return [concat $info(handler-$id) [lrange $result 1 end]]
+            return [list {*}$info(handler-$id) [self] {*}[lrange $result 1 end]]
         }
 
         # NEXT, it hasn't matched anything; see if it's a directory
@@ -301,11 +301,15 @@ oo::class create ::projectlib::smartdomain {
         }
 
 
+        set pdict [::projectlib::parmdict new $qdict]
+
         try {
-            set result [{*}$handler data $qdict]
+            set result [{*}$handler data $pdict]
         } trap NOTFOUND {result} {
             ahttpd notfound $sock $result
             return
+        } finally {
+            $pdict destroy
         }
 
         set ctype [ahttpd mimetype frompath $suffix]
@@ -391,18 +395,23 @@ oo::class create ::projectlib::smartdomain {
     #-------------------------------------------------------------------
     # Tools For Domains
 
-    # qparm parm dict ?defvalue?
+    # querypop parm ?defvalue?
     #
     # parm      - A query parameter name
-    # dict      - A query dictionary
     # defvalue  - A default value, nominally ""
     #
-    # Returns the value of the parm from the dictionary, if present,
+    # Returns the value of the parm from the query dictionary, if present,
     # or the default otherwise.
+    #
+    # Assumes qdict is defined.
     
-    method qparm {parm dict {defvalue ""}} {
-        if {[dict exists $dict $parm]} {
-            return [dict get $dict $parm]
+    method querypop {parm {defvalue ""}} {
+        upvar 1 qdict qdict
+
+        if {[dict exists $qdict $parm]} {
+            set value [dict get $qdict $parm]
+            set qdict [dict remove $qdict $parm]
+            return $value
         } else {
             return $defvalue
         }

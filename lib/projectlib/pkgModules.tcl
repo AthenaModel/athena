@@ -91,4 +91,5 @@ source [file join $::projectlib::library wmsclient.tcl      ]
 source [file join $::projectlib::library wfsclient.tcl      ]
 source [file join $::projectlib::library smartdomain.tcl    ]
 source [file join $::projectlib::library scratchdir.tcl     ]
+source [file join $::projectlib::library parmdict.tcl       ]
 
