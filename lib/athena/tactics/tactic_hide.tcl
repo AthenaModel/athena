@@ -78,10 +78,34 @@
     method execute {} {
         set nbhoods [[my adb] gofer eval $nlist]
 
-        set goodn [list]
-        set badn [list]
+        set goodn   [list]
+        set badn    [list]
+        set attackn [list]
+        set defendn [list]
 
         foreach n $nbhoods {
+            if {![[my adb] aam hasattack $n $f]} {
+                lappend defendn $n
+            } else {
+                lappend attackn $n
+            }
+        }
+
+        if {[llength $defendn] == 0} {
+            set msg "
+                HIDE: Actor {actor:[my agent]} ordered {group:$f} to hide
+                in [[my adb] gofer NBHOODS narrative $nlist], however, $f's
+                personnel were already ordered to assume an ATTACK ROE in these
+                neighborhoods.
+            "
+
+            set tags [list [my agent] $f {*}$nbhoods]
+            [my adb] sigevent log 2 tactic $msg {*}$tags
+
+            return
+        }
+
+        foreach n $defendn {
             if {[[my adb] aam hiding $n $f]} {
                 lappend badn $n
             } else {
@@ -96,10 +120,17 @@
         if {[llength $goodn] == 0} {
             set msg "
                 HIDE: Actor {actor:[my agent]} ordered {group:$f} to hide
-                in [[my adb] gofer NBHOODS narrative $nlist], however, $f's 
-                personnel were already set to hide in these neighborhoods 
-                so no additional action will be taken.
+                in: [join $defendn {, }], however, $f's 
+                personnel were already set to hide in these neighborhoods.
             "
+
+            if {[llength $attackn] > 0} {
+                append msg "
+                    Group $f cannot hide in [join $attackn {, }] since $f
+                    was given an ROE of ATTACK.
+                "
+            }
+
             set tags [list [my agent] $f {*}$nbhoods]
             [my adb] sigevent log 2 tactic $msg {*}$tags
         
@@ -111,10 +142,17 @@
             in [join $goodn {, }].
         "
 
+        if {[llength $attackn] > 0} {
+            append msg "
+                Group $f will not hide in [join $attackn {, }] since it has
+                already been given an ATTACK ROE there by a prior tactic.
+            "
+        }
+
         if {[llength $badn] > 0} {
             append msg "
-                Group {group:$f}'s already set to hide in these 
-                neighborhood(s): [join $badn {, }] by a prior tactic.
+                Group {group:$f} already set to hide in [join $badn {, }] 
+                by a prior tactic.
             "
         }
         

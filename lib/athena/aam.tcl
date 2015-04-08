@@ -311,23 +311,97 @@ snit::type ::athena::aam {
 
         # NEXT, designate personnel to combat based upon the fraction of
         # force each opponent has in the battle 
-        foreach {n f g} [$adb eval {
-            SELECT n,f,g FROM aam_battle
+        foreach {n f g roe_f} [$adb eval {
+            SELECT n,f,g,roe_f FROM aam_battle
         }] {
 
             let fracF {$effFrc($n,$g) / $totEffFrcF($n,$f)}
             let fracG {$effFrc($n,$f) / $totEffFrcG($n,$g)}
 
+            # NEXT, compute an apply detection factors 
+            set dFactors [$self ComputeDetectionFactors $n $f $g]
+
+            # NEXT, if f isn't the attacker, then g is
+            if {$roe_f eq "ATTACK"} {
+                let fracG {$fracG * [lindex $dFactors 0]}
+                let fracF {$fracF * [lindex $dFactors 1]}
+            } else {
+                let fracF {$fracF * [lindex $dFactors 0]}
+                let fracG {$fracG * [lindex $dFactors 1]}
+            }
+
+            # NEXT, must have at least one personnel designated
+            # to the fight
             $adb eval {
                 UPDATE aam_battle
-                SET dpers_f = CAST(round(pers_f*$fracF) AS INTEGER),
-                    dpers_g = CAST(round(pers_g*$fracG) AS INTEGER)
+                SET dpers_f = CAST(max(1,pers_f*$fracF) AS INTEGER),
+                    dpers_g = CAST(max(1,pers_g*$fracG) AS INTEGER)
                 WHERE n=$n AND f=$f AND g=$g
             }           
         }
     }
 
+    # ComputeDetectionFactors n f g
+    #
+    # n   - a neighborhood
+    # f   - a (possibly hiding) force group in combat with g
+    # g   - a (possibly hiding) force group in combat with f
+    #
+    # This method computes the detection factor for a hiding group and 
+    # the involved personnel factor for the group attacking
+    # it.  If neither group is hiding it trivially returns
+    # with values of 1.0 for each factor.  The factors are returned as a
+    # list, one for the hiding group and one for the attacking group.
 
+    method ComputeDetectionFactors {n f g} {
+        # FIRST, figure out if either side is hiding. They both can't
+        # be
+        if {[$self hiding $n $f]} {
+            set hiding   $f
+            set attacker $g
+        } elseif {[$self hiding $n $g]} {
+            set hiding   $g
+            set attacker $f
+        } else {
+            # Neither hiding
+            return [list 1.0 1.0]
+        }
+
+        # NEXT, get multipliers and nbhood population
+        set dGain  [$adb parm get aam.detectionGain]
+        set urb    [$adb nbhood get $n urbanization]
+        set visUrb [$adb parm get aam.visibility.$urb]
+        set pop    [$adb demog getn $n population]
+
+        # NEXT, compute visibility of the hiding groups personnel that are
+        # performing neighborhood activities
+        set visAct  0.0
+
+        $adb eval {
+            SELECT a,effective FROM activity_nga
+            WHERE coverage > 0.0 AND n=$n AND g=$hiding
+        } {
+            set actMult [$adb parm get activity.FRC.$a.visFactor]
+            let visAct {$visAct + $actMult * $effective}
+        }
+
+        # NEXT, detected personnel and involved personnel factors are computed 
+        # from the visiblity of the hiding group's activities and the
+        # cooperation the attacker has from the civilians in n.
+        let visPers {$visUrb * $visAct}
+        set covfunc [$adb parm get aam.visibility.coverage]
+        set visibility [coverage eval $covfunc $visPers $pop]
+
+        set nbcoop [$adb eval {
+            SELECT nbcoop FROM uram_nbcoop WHERE n=$n AND g=$attacker
+        }]
+
+        let dpFact {$visibility * (100.0-$nbcoop)/100.0 + ($nbcoop/100.0)}
+        let ipFact {$dGain * $dpFact}
+
+        return [list $dpFact $ipFact]
+    }
+    
     # DoGroupCombat
     #
     # Updates force allocation based on ROEs and computes attrition to
@@ -595,6 +669,7 @@ snit::type ::athena::aam {
             let t {min($t,$Tleft)}
 
             # NEXT, personnel remaining, protect against negative personnel
+            # NOTE: using floor because a partial casualty is a full casualty
             let PRf {max(0,
                 entier(floor($C1*sqrt($Agf)*exp($rootA*$t) +
                              $C2*sqrt($Agf)*exp(-$rootA*$t))))
@@ -750,6 +825,7 @@ snit::type ::athena::aam {
         return [dict exists $roedict $n $f $g]
     }
 
+
     #-------------------------------------------------------------------
     # HIDE Tactic API
 
@@ -774,6 +850,32 @@ snit::type ::athena::aam {
 
     method hiding {n f} {
         return [expr {$f in [dict get $hdict $n]}]
+    }
+
+    # hasattack n f
+    #
+    # n   - a neighborhood
+    # f   - a group that may have an ATTACK roe in n
+    #
+    # This method returns 1 if f has an ATTACK ROE in n, 0 otherwise.
+    # It is used by the HIDE tactic to filter out force groups that
+    # cannot hide due to being ordered to attack.
+    
+    method hasattack {n f} {
+        # FIRST, no explicit ROE means ATTACK not possible
+        if {![dict exists $roedict $n $f]} {
+            return 0
+        }
+
+        # NEXT, find any occurence of an ATTACK ROE in n
+        foreach {g gdict} [dict get $roedict $n $f] {
+            dict with gdict {}
+            if {$roe eq "ATTACK"} {
+                return 1
+            }
+        }
+
+        return 0
     }
 
     #-------------------------------------------------------------------
