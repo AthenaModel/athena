@@ -36,7 +36,7 @@ oo::class create scenario_domain {
         my url /index.html [mymethod index.html] {List of open scenarios}
         my url /index.json [mymethod index.json] {List of open scenarios}
 
-        my url /load.html  [mymethod load.html]  {
+        my url /load.json  [mymethod load.json]  {
             Load a scenario into memory given the <tt>id</tt> and 
             <tt>filename</tt>.  The <tt>id</tt> must be unused, and the
             <tt>filename</tt> must name a file in the <tt>-scenariodir</tt>.
@@ -92,7 +92,7 @@ oo::class create scenario_domain {
     #-------------------------------------------------------------------
     # General Content
 
-    method index.html {datavar qdict} {
+    method index.html {sd datavar qdict} {
         hb page "Scenarios"
         hb h1 "Scenarios"
 
@@ -156,7 +156,7 @@ oo::class create scenario_domain {
         return [hb /page]
     }
 
-    method index.json {datavar qdict} {
+    method index.json {sd datavar qdict} {
         set table [list]
 
         foreach case [app case names] {
@@ -175,46 +175,30 @@ oo::class create scenario_domain {
     #-------------------------------------------------------------------
     # Scenario Management
 
-    # load.html
+    # load.json
     #
     # datavar  - ahttpd state array
     # qdict    - Query Dictionary
     #
-    # Attempts to load a scenario into memory.
+    # Attempts to load a scenario into memory as scenario $id from
+    # .adb or .tcl file $filename.
 
-    method load.html {datavar qdict} {
-        hb page "Load Scenario"
+    method load.json {sd datavar qdict} {
+        $qdict prepare id -required -tolower -ident -notin [app case names]
+        $qdict prepare filename -required
 
-        hb record {
-            hb field "ID:"        <tt>$id</tt>
-            hb field "File Name:" <tt>$filename</tt>
+        $qdict assign filename
+        $qdict checkon filename {
+            if {![file isfile [file join [app scenariodir] $filename]]} {
+                $qdict reject filename "No such scenario is available."
+            }
         }
 
-        hb para
-
-        if {$id eq ""} {
-            hb putln "Error, no ID specified."
-            return [hb /page]
+        if {![$qdict ok]} {
+            return [js reject [$qdict errors]]
         }
 
-        if {$id in [app case names]} {
-            hb putln "Error, duplicate ID."
-            return [hb /page]
-        }
-
-        if {$filename eq ""} {
-            hb putln "Error, no filename specified."
-            return [hb /page]
-        }
-
-        if {![file isfile [file join [app scenariodir] $filename]]} {
-            hb putln "Error, no such scenario is available."
-            return [hb /page]
-        }
-
-        hb putln "Found scenario."
-
-        return [hb /page]
+        return [js ok "Parms are valid!"]
     }
     
 
@@ -230,7 +214,7 @@ oo::class create scenario_domain {
     # Attempts to send an order specified as a query; returns results
     # as HTML.
 
-    method order.html {name datavar qdict} {
+    method order.html {sd name datavar qdict} {
         # FIRST, do we have the scenario?
         set name [string tolower $name]
 
@@ -238,33 +222,32 @@ oo::class create scenario_domain {
             throw NOTFOUND "No such scenario: \"$name\""
         }
 
-        # NEXT, do we have the order?
-        if {![dict exist $qdict order_]} {
-            hb page "Order Result"
-            hb h1 "Order Result"
-            hb putln "Error, no <tt>order_</tt> specified in query.<p>"
+        hb page "Order Result: '$name' scenario"
+        hb h1 "Order Result: '$name' scenario"
+
+        hb para
+
+        # NEXT, get the parameters
+        set order [$qdict prepare order_ -required -remove]
+
+        if {$order eq ""} {
+            hb h3 "Rejected"
+            my dictpre [$qdict errors]
             return [hb /page]
         }
 
-        # NEXT, get the parameters
-        set order [dict get $qdict order_]
-        set qdict [dict remove $qdict order_]
-
         # NEXT, send the order.
         try {
-            hb page "Order Result: '$name' scenario"
-            hb h1 "Order Result: '$name' scenario"
-
-            hb para
             hb h3 [string toupper $order]
-            my PreDict $qdict
+            my dictpre [$qdict getdict]
             hb para
             hb hr
 
-            set result [app sdb $name order senddict normal $order $qdict]
+            set result \
+                [app sdb $name order senddict normal $order [$qdict getdict]]
         } trap REJECT {result} {
             hb h3 "Rejected"
-            my PreDict $result
+            my dictpre $result
             return [hb /page]
         } on error {result eopts} {
             hb h3 "Unexpected Application Error:"
@@ -296,7 +279,7 @@ oo::class create scenario_domain {
     # Attempts to send an order specified as a query; returns results
     # as JSON.
 
-    method order.json {name datavar qdict} {
+    method order.json {sd name datavar qdict} {
         # FIRST, do we have the scenario?
         set name [string tolower $name]
 
@@ -305,17 +288,16 @@ oo::class create scenario_domain {
         }
 
         # NEXT, do we have the order?
-        if {![dict exist $qdict order_]} {
-            return [js reject * "No order_ in query"]
-        }
+        set order [$qdict prepare order_ -required -remove]
 
-        # NEXT, get the parameters
-        set order [dict get $qdict order_]
-        set qdict [dict remove $qdict order_]
+        if {![$qdict ok]} {
+            return [js reject [$qdict errors]]
+        }
 
         # NEXT, send the order.
         try {
-            set result [app sdb $name order senddict normal $order $qdict]
+            set result \
+                [app sdb $name order senddict normal $order [$qdict getdict]]
         } trap REJECT {result} {
             return [js reject $result]
         } on error {result eopts} {
@@ -338,7 +320,7 @@ oo::class create scenario_domain {
     # Attempts to execute a script specified as a query; returns results
     # as JSON.  The script is presumed to be text/plain in $data(query).
 
-    method script.html {name datavar qdict} {
+    method script.html {sd name datavar qdict} {
         upvar 1 $datavar data
 
         hb page "Script Entry: '$name' scenario"
@@ -358,11 +340,7 @@ oo::class create scenario_domain {
         hb submit "Execute"
         hb /form
 
-        set script ""
-
-        if {[dict exists $qdict script]} {
-            set script [dict get $qdict script]
-        }
+        set script [$qdict prepare script -required]
 
         hb h3 "Script:"
 
@@ -412,7 +390,7 @@ oo::class create scenario_domain {
     #
     # TBD: We mighb modify this after discussion with the web guys.
 
-    method script.json {name datavar qdict} {
+    method script.json {sd name datavar qdict} {
         upvar 1 $datavar data
 
         # FIRST, do we have the scenario?
@@ -438,16 +416,17 @@ oo::class create scenario_domain {
     #-------------------------------------------------------------------
     # Utility Methods.
     
-    # PreDict qdict
+    # dictpre qdict
     #
     # Formats a dictionary as a record of preformatted fields.
 
-    method PreDict {qdict} {
+    method dictpre {qdict} {
         hb record
         dict for {key value} $qdict {
             hb field-with "<b>$key</b>:" { hb pre $value }
         }
         hb /record
     }
+
 }
 

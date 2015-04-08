@@ -125,6 +125,20 @@ oo::class create ::projectlib::parmdict {
 
         while {[llength $args] > 0 && ![dict exists $errors $parm]} {
             switch -exact -- [lshift args] {
+                -ident {
+                    my checkon $parm {
+                        identifier validate $value
+                    }
+                }
+                -notin {
+                    set list [lshift args]
+
+                    my checkon $parm {
+                        if {$value in $list} {
+                            my reject $parm "Duplicate $parm"
+                        }
+                    }
+                }
                 -required {
                     if {$value eq ""} {
                         my reject $parm "Required parameter"
@@ -175,6 +189,19 @@ oo::class create ::projectlib::parmdict {
             uplevel 1 $script
         } trap INVALID {result} {
             my reject $parm $result
+        }
+    }
+
+    # assign parm...
+    #
+    # parm - A parameter name
+    #
+    # Assign each parameter its value.
+
+    method assign {args} {
+        foreach name $args {
+            upvar 1 $name parm
+            set parm [dict get $parms $name]
         }
     }
 }

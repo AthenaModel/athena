@@ -44,6 +44,12 @@ Instances of parmdict(n) provide the following subcommands.<p>
 
 <deflist instance>
 
+<defitem assign {<i obj> assign <i parm> ?<i parm>...?}>
+
+Assigns each listed <i parm>'s value to a variable of the same name
+in the caller's context.  It's an error if <i parm> isn't defined in
+the parmdict, so be sure to <iref prepare>.<p>
+
 <defitem badparm {<i obj> badparm <i parm>}>
 
 Returns 1 if it's known that the <i parm> requires no further validation:
@@ -89,6 +95,16 @@ The command returns the final value of the parameter.<p>
 The options are as follows:<p>
 
 <deflist options>
+
+<defopt {-ident}>
+
+Requires that the parameter's value be a valid identifier, as determined
+by the <tt identifier> type in <xref mars:marsmisc(n)>.<p>
+
+<defopt {-notin <i list>}>
+
+Requires that the parameter's value not be in the given list; if it is,
+it will be rejected with the message "Duplicate <i parm>".<p>
 
 <defopt {-remove}>
 
