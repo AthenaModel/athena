@@ -161,6 +161,7 @@ snit::type ::athena::aam {
         set sdict ""
         set cdict ""
         set roedict ""
+        set hdict ""
     }
 
     # ComputeEffectiveForce
@@ -849,6 +850,10 @@ snit::type ::athena::aam {
     # hiding in n
 
     method hiding {n f} {
+        if {![dict exists $hdict $n]} {
+            return 0
+        }
+
         return [expr {$f in [dict get $hdict $n]}]
     }
 
