@@ -157,7 +157,7 @@ oo::class create scenario_domain {
     }
 
     method index.json {datavar qdict} {
-        set hud [huddle list]
+        set table [list]
 
         foreach case [app case names] {
             dict set dict id $case
@@ -166,10 +166,10 @@ oo::class create scenario_domain {
             dict set dict tick  [app sdb $case clock now]
             dict set dict week  [app sdb $case clock asString]
 
-            huddle append hud [huddle compile dict $dict]
+            lappend table $dict
         }
 
-        return [huddle jsondump $hud]
+        return [js dictab $table]
     }
 
     #-------------------------------------------------------------------
@@ -297,8 +297,6 @@ oo::class create scenario_domain {
     # as JSON.
 
     method order.json {name datavar qdict} {
-        set hud [huddle list]
-
         # FIRST, do we have the scenario?
         set name [string tolower $name]
 
@@ -308,9 +306,7 @@ oo::class create scenario_domain {
 
         # NEXT, do we have the order?
         if {![dict exist $qdict order_]} {
-            huddle append hud "REJECT"
-            huddle append hud "No order_ in query"
-            return [huddle jsondump $hud]
+            return [js reject * "No order_ in query"]
         }
 
         # NEXT, get the parameters
@@ -321,20 +317,13 @@ oo::class create scenario_domain {
         try {
             set result [app sdb $name order senddict normal $order $qdict]
         } trap REJECT {result} {
-            huddle append hud "REJECT"
-            huddle append hud [huddle compile dict $result]
-            return [huddle jsondump $hud]
+            return [js reject $result]
         } on error {result eopts} {
-            huddle append hud "ERROR"
-            huddle append hud $result
-            huddle append hud [dict get $eopts -errorinfo] 
-            return [huddle jsondump $hud]
+            return [js error $result [dict get $eopts -errorinfo]]
         }
 
         # NEXT, we were successful!
-        huddle append hud "OK"
-        huddle append hud $result
-        return [huddle jsondump $hud]
+        return [js ok $result]
     }
 
     #-------------------------------------------------------------------
@@ -426,8 +415,6 @@ oo::class create scenario_domain {
     method script.json {name datavar qdict} {
         upvar 1 $datavar data
 
-        set hud [huddle list]
-
         # FIRST, do we have the scenario?
         set name [string tolower $name]
 
@@ -441,16 +428,11 @@ oo::class create scenario_domain {
         try {
             set result [app sdb $name executive eval $script]
         } on error {result eopts} {
-            huddle append hud "ERROR"
-            huddle append hud $result
-            huddle append hud [dict get $eopts -errorinfo] 
-            return [huddle jsondump $hud]
+            return [js error $result [dict get $eopts -errorinfo]]
         }
 
         # NEXT, we were successful!
-        huddle append hud "OK"
-        huddle append hud $result
-        return [huddle jsondump $hud]
+        return [js ok $result]
     }
 
     #-------------------------------------------------------------------

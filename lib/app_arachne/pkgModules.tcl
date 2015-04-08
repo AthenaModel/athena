@@ -47,4 +47,5 @@ namespace eval ::app_arachne:: {
 source [file join $::app_arachne::library main.tcl            ]
 source [file join $::app_arachne::library app.tcl             ]
 source [file join $::app_arachne::library scenario_domain.tcl ]
+source [file join $::app_arachne::library js.tcl              ]
 
