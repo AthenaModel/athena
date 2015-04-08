@@ -465,6 +465,16 @@ snit::type ::athena::parmdb {
                 population.  If the density is 0, the coverage is 0.  The 
                 coverage fraction increases to 2/3 when density is c.
             }
+
+            $ps define activity.FRC.$a.visFactor ::projectlib::rgain 1.1 {
+                The visibility factor applied to a group that is in combat.
+                Typically, groups that are performing activities should be
+                more easily detected and, thus, easier to target in combat.
+                Setting this to something less than 1.0 will make fewer 
+                personnel doing this activity detected and thus susceptible
+                to suffering attrition. Setting it to 0.0 will make a group 
+                doing this activity undectectable.
+            }
         }
 
         # ORG activities

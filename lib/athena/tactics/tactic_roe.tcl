@@ -137,11 +137,39 @@
             return
         }
 
+        set goodn [list]
+        set hiden [list]
+
+        # NEXT, hiding groups cannot be ordered to attack
+        if {$roe eq "ATTACK"} {
+            foreach n $nbhoods {
+                if {![[my adb] aam hiding $n $f]} {
+                    lappend goodn $n
+                } else {
+                    lappend hiden $n
+                }
+            } 
+        }
+
+        if {[llength $goodn] == 0} {
+            set msg "
+                ROE: Actor {actor:[my agent]} ordered {group:$f} to adopt
+                an roe of ATTACK in 
+                [[my adb] gofer NBHOODS narrative $nlist], but $f has
+                already been ordered to hide in these neighborhood(s) by a
+                higher-priority tactic(s).
+            "
+            set tags [list [my agent] $f {*}$groups {*}$nbhoods]
+            [my adb] sigevent log 2 tactic $msg {*}$tags
+
+            return
+        }
+
         # NEXT, check for existing ROEs already ordered
         set goodng [list]
         set badng  [list]
 
-        foreach n $nbhoods {            
+        foreach n $goodn {            
             foreach g $goodg {
                 if {![[my adb] aam hasroe $n $f $g]} {
                     [my adb] aam setroe $n $f $g        \
@@ -159,7 +187,7 @@
                 ROE: Actor {actor:[my agent]} ordered {group:$f} to adopt
                 an ROE of $roe towards: [join $goodg {, }] in 
                 [[my adb] gofer NBHOODS narrative $nlist], however, $f's 
-                ROE were already set in these neighborhoods toward these
+                ROE were already set in these neighborhood(s) toward these
                 groups by higher-priority tactics.
             "
 
@@ -197,6 +225,13 @@
                 Group {group:$f}'s ROE already set toward these group(s):
                 [join $bad(g) {, }] in these neighborhood(s): 
                 [join $bad(n) {, }] by a prior tactic.
+            "
+        }
+
+        if {[llength $hiden] > 0} {
+            append msg "
+                Group {group:$f} has already been ordered to hide in these
+                neighborhhood(s): [join $hiden {, }] by a prior tactic.
             "
         }
 
