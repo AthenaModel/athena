@@ -25,6 +25,7 @@ oo::class create ::projectlib::parmdict {
     # Variables
 
     variable parms   ;# The parmdict
+    variable prepped ;# Records which parms have been prepared.
     variable errors  ;# Dictionary of error messages
 
     #-------------------------------------------------------------------
@@ -50,8 +51,9 @@ oo::class create ::projectlib::parmdict {
     # Re-initializes the object with the new dictionary.
 
     method setdict {dict} {
-        set parms $dict
-        set errors [dict create]
+        set parms   $dict
+        set prepped $dict
+        set errors  [dict create]
     }
 
     # getdict
@@ -120,11 +122,13 @@ oo::class create ::projectlib::parmdict {
         if {![dict exists $parms $parm]} {
             dict set parms $parm ""
         }
+        dict set prepped $parm 1
 
         set value [string trim [dict get $parms $parm]]
 
         while {[llength $args] > 0 && ![dict exists $errors $parm]} {
-            switch -exact -- [lshift args] {
+            set opt [lshift args]
+            switch -exact -- $opt {
                 -ident {
                     my checkon $parm {
                         identifier validate $value
@@ -136,6 +140,15 @@ oo::class create ::projectlib::parmdict {
                     my checkon $parm {
                         if {$value in $list} {
                             my reject $parm "Duplicate $parm"
+                        }
+                    }
+                }
+                -in {
+                    set list [lshift args]
+
+                    my checkon $parm {
+                        if {$value ni $list} {
+                            my reject $parm "Unknown $parm"
                         }
                     }
                 }
@@ -160,6 +173,9 @@ oo::class create ::projectlib::parmdict {
                     my checkon $parm {
                         set value [{*}$checker $value]
                     }
+                }
+                default {
+                    error "Unknown option: \"$opt\""
                 }
             }
         }
@@ -203,5 +219,20 @@ oo::class create ::projectlib::parmdict {
             upvar 1 $name parm
             set parm [dict get $parms $name]
         }
+    }
+
+    # prune
+    #
+    # Removes all parameters that haven't been prepared.
+
+    method prune {} {
+        set unprepped [list]
+        foreach parm [dict keys] {
+            if {![dict exists $prepped $parm]} {
+                lappend unprepped $parm
+            }
+        }
+
+        set parms [dict remove $parms $unprepped]
     }
 }

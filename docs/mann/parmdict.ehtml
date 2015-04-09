@@ -132,6 +132,10 @@ will be rejected.<p>
 
 </deflist options>
 
+<defitem prune {<i obj> prune}>
+
+Removes any parameters for which <i prepare> has not been called.<p>
+
 <defitem reject {<i obj> reject <i parm message>}>
 
 A client calls this to explicitly reject a particular <i parm>'s value.
