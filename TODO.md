@@ -1,6 +1,10 @@
 # TODO.md - Athena TODO List
 
 - Arachne
+  - Need a way for a smartdomain handler to redirect to another URL.
+    - Needs to work in ahttpd and myserver cases.
+    - $sd redirect url
+      - Saves URL; redirects after handler completes.
   - Need a way to include a message in the "notfound".
   - What should the htdocs directory look like?
   - How to include the arachne.html file in the htdocs directory?

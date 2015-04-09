@@ -32,11 +32,12 @@ snit::type case {
 
     # cases array: tracks scenarios
     #
-    # names                 - The IDs of the different cases.
-    # counter               - The case ID counter
-    # sdb-$case             - The scenario object for $case 
-    # longname-$case        - A one-line description of $case
-    # log-$case             - logger(n) object for the $case
+    # names               - The IDs of the different cases.
+    # counter             - The case ID counter
+    # sdb-$id             - The scenario object for $id 
+    # longname-$id        - A one-line description of $id
+    # log-$id             - logger(n) object for the $id
+    # source-$id          - Description of the original source of the $id
 
     typevariable cases -array {
         counter -1
@@ -126,6 +127,7 @@ snit::type case {
         set cases(sdb-$id)      [athena new \
                                     -logcmd $cases(log-$id) \
                                     -subject $id]
+        set cases(source-$id) "n/a"
 
         app log normal $id "Created new case $id, $longname"
 
@@ -144,44 +146,105 @@ snit::type case {
         dict set result state    [$type with $id state]
         dict set result tick     [$type with $id clock now]
         dict set result week     [$type with $id clock asString]
+        dict set result source   $cases(source-$id)
 
         return $result
     }
 
-    # import id adbfile
+    # import filename id longname
     #
-    # adbfile - An external scenario file
+    # filename  - An .adb or .tcl file name in -scenariodir
+    # id        - An existing case ID, or ""
+    # longname  - A longname, or ""
     #
-    # Loads the file into the named case.  If the import fails, the
-    # content of the scenario will be empty; the caller will handle
-    # any error.
-    #
-    # TBD: Should we save the scenario to disk, and restore its 
-    # content if the import fails?  Should we immediately save the 
-    # new content into the scratch space?
-    #
-    # TBD: Q: Should we presume that all changes made to cases are
-    # immediately persistent?  "Saving" to the user means exporting 
-    # a scenario or scenarios to the -scenariodir?
+    # Attempts to import the scenario into the application.  Throws
+    # SCENARIO IMPORT on failure.
 
-    typemethod import {id adbfile} {
-        set sdb $cases(sdb-$id)
+    typemethod import {filename id {longname ""}} {
+        # FIRST, validate the inputs
+        if {[file tail $filename] ne $filename} {
+            throw {SCENARIO IMPORT} "Not a bare file name"
+        }
 
-        # Load the file.  Assume it's in the scenario directory; 
-        # if it's an absolute path already, the file join will have no
-        # effect. 
-        $sdb load [file join $info(scenarioDir) $adbfile]
+        set ext [file extension $filename]
+        if {$ext ni {.adb .tcl}} {
+            throw {SCENARIO IMPORT} "Cannot import $ext files"
+        }
+
+        set filename [case scenariodir $filename]
+        if {![file isfile $filename]} {
+            throw {SCENARIO IMPORT} "No such scenario is available."
+        }
+
+        # NEXT, get the ID
+        if {$id ne ""} {
+            set theID $id
+        } else {
+            set theID [NextID]
+        }
+
+        # NEXT, make sure we can load the filename.
+        set sdb [athena new -subject $theID]
+
+        if {$ext eq ".adb"} {
+            try {
+                $sdb load $filename
+            } trap {SCENARIO OPEN} {result} {
+                $sdb destroy
+                throw {SCENARIO IMPORT} $result
+            }
+        } else {
+            try {
+                $sdb executive call $filename
+            } on error {result} {
+                $sdb destroy
+                throw {SCENARIO IMPORT} "Script error: $result"
+            }
+        }
+
+        # NEXT, the import was successful.  Save the new data.
+        if {$id ne ""} {
+            $cases(sdb-$id) destroy
+            set cases(sdb-$id) $sdb
+            $cases(log-$id) newlog reimport
+            $cases(log-$id) normal app "Re-imported from $filename"
+        } else {
+            set id $theID
+            lappend cases(names) $id
+            set cases(sdb-$id) $sdb
+            set cases(log-$id) [app newlog $id]
+            if {$longname eq ""} {
+                set longname [DefaultLongname $id]
+            }
+        }
+
+        $sdb configure -logcmd $cases(log-$id)
+
+        if {$longname ne ""} {
+            set cases(longname-$id) $longname
+        }
+
+        set cases(source-$id) [file tail $filename]
+        
+        return $theID
     }
+
+
     
     #-------------------------------------------------------------------
     # Utility Commands
 
-    # scenariodir
+    # scenariodir ?filename?
     #
-    # Returns the name of the scenario directory.
+    # Returns the name of the scenario directory, optionally joining
+    # a file to it.
 
-    typemethod scenariodir {} {
-        return $info(scenarioDir)
+    typemethod scenariodir {{filename ""}} {
+        if {$filename ne ""} {
+            return [file join $info(scenarioDir) $filename]
+        } else {
+            return $info(scenarioDir)
+        }
     }   
 
     #-------------------------------------------------------------------

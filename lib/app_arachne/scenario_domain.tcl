@@ -36,10 +36,15 @@ oo::class create scenario_domain {
         my url /index.html [mymethod index.html] {List of open scenarios}
         my url /index.json [mymethod index.json] {List of open scenarios}
 
-        my url /load.json  [mymethod load.json]  {
-            Load a scenario into memory given the <tt>id</tt> and 
-            <tt>filename</tt>.  The <tt>id</tt> must be unused, and the
-            <tt>filename</tt> must name a file in the <tt>-scenariodir</tt>.
+        my url /import.json  [mymethod import.json]  {
+            Imports scenario <i>filename</i> and loads it into memory.
+            The <i>filename</i> must name a file in the 
+            <tt>-scenariodir</tt>.  If the <i>id</i> is given,
+            the scenario will replace the existing scenario with that 
+            ID; otherwise a new ID will be assigned.  
+            If the <i>longname</i> is given, the scenario will
+            be assigned that name.  On success, returns a list
+            "OK", <i>id</id>.
         }
 
         my url /{name}/order.html [mymethod order.html] {
@@ -102,7 +107,9 @@ oo::class create scenario_domain {
 
         hb para
 
-        hb table -headers {"ID" "Name" "State" "Tick" "Week"} {
+        hb table -headers {
+            "ID" "Name" "Original Source" "State" "Tick" "Week"
+        } {
             foreach case [case names] {
                 set cdict [case getdict $case]
                 hb tr {
@@ -112,6 +119,7 @@ oo::class create scenario_domain {
                         hb put </b>
                     }
                     hb td [dict get $cdict longname]
+                    hb td [dict get $cdict source]
                     hb td [dict get $cdict state]
                     hb td [dict get $cdict tick]
                     hb td [dict get $cdict week]
@@ -119,41 +127,6 @@ oo::class create scenario_domain {
             }
         }
         hb para
-
-        hb h3 "Available Scenarios"
-
-        set pattern [file join [case scenariodir] *.adb]
-        set names [glob -nocomplain $pattern]
-
-        if {[llength $names] == 0} {
-            hb putln "None available."
-        } else {
-            hb table {
-                foreach name $names {
-                    set name [file tail $name]
-                    set id [file root $name]
-
-                    if {$id in [app case names]} {
-                        set id ""
-                    }
-
-                    hb tr {
-                        hb td <tt>$name</tt>
-                        hb td-with {
-                            hb form -action /scenario/load.html
-                            hb submit "Load"
-                            hb label id "As:"
-                            hb entry id -max 20 -value $id
-                            hb hidden filename $name
-                            hb /form
-                        }
-                    }
-                }
-            }
-        }
-
-        hb para
-
 
         return [hb /page]
     }
@@ -174,30 +147,36 @@ oo::class create scenario_domain {
     #-------------------------------------------------------------------
     # Scenario Management
 
-    # load.json
+    # import.json
     #
     # datavar  - ahttpd state array
     # qdict    - Query Dictionary
     #
-    # Attempts to load a scenario into memory as scenario $id from
-    # .adb or .tcl file $filename.
+    # Attempts to import a scenario into memory from an .adb or .tcl
+    # $filename in -scenariodir, optionally overriding the $id and 
+    # setting a $longname.  On success returns [OK,$theID] where 
+    # $theID is the actual scenario ID, whether specified or generated.
 
-    method load.json {sd datavar qdict} {
-        $qdict prepare id -required -tolower -ident -notin [app case names]
+    method import.json {sd datavar qdict} {
         $qdict prepare filename -required
+        $qdict prepare id -tolower -in [case names]
+        $qdict prepare longname
 
-        $qdict assign filename
-        $qdict checkon filename {
-            if {![file isfile [file join [app scenariodir] $filename]]} {
-                $qdict reject filename "No such scenario is available."
-            }
-        }
+        $qdict assign filename id longname
 
         if {![$qdict ok]} {
             return [js reject [$qdict errors]]
         }
 
-        return [js ok "Parms are valid!"]
+        # NEXT, try to import it.
+        try {
+            set theID [case import $filename $id $longname]
+        } trap {SCENARIO IMPORT} {result} {
+            $qdict reject filename $result
+            return [js reject [$qdict errors]]
+        }
+
+        return [js ok $theID]
     }
     
 
