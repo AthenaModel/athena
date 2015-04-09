@@ -58,7 +58,7 @@ snit::type case {
         set info(scenarioDir) $scenarioDir
 
         # NEXT, add an empty base case
-        $type new "Base Case"
+        $type new "" "Base Case"
     }
 
     #-------------------------------------------------------------------
@@ -110,30 +110,6 @@ snit::type case {
         tailcall $cases(sdb-$id) {*}$args
     }
 
-    # new ?longname?
-    #
-    # Creates a new, empty scenario, giving it the longname.
-
-    typemethod new {{longname ""}} {
-        set id [NextID]
-
-        if {$longname eq ""} {
-            set longname [DefaultDescription $id]
-        }
-
-        lappend cases(names) $id
-        set cases(log-$id)      [app newlog $id]
-        set cases(longname-$id) $longname
-        set cases(sdb-$id)      [athena new \
-                                    -logcmd $cases(log-$id) \
-                                    -subject $id]
-        set cases(source-$id) "n/a"
-
-        app log normal $id "Created new case $id, $longname"
-
-        return $id
-    }
-
     # getdict id
     #
     # id   - A case ID
@@ -149,6 +125,44 @@ snit::type case {
         dict set result source   $cases(source-$id)
 
         return $result
+    }
+
+    # new ?id? ?longname?
+    #
+    # id         - Optionally, an existing case ID
+    # longname   - Optionally, a new longname.
+    #
+    # Creates a new, empty scenario, optionally giving it the longname,
+    # or replaces an existing scenario with a new empty one.
+
+    typemethod new {{id ""} {longname ""}} {
+        if {$id eq ""} {
+            set id [NextID]
+        }
+
+        if {$id in $cases(names)} {
+            $cases(log-$id) newlog reset
+            case with $id reset
+            app log normal $id "Reset case $id"
+        } else {
+            lappend cases(names) $id
+            set cases(log-$id)      [app newlog $id]
+            set cases(longname-$id) [DefaultLongname $id]
+            set cases(sdb-$id)      [athena new \
+                                        -logcmd $cases(log-$id) \
+                                        -subject $id]
+            app log normal $id "Created new case $id"
+        }
+
+        set cases(source-$id) "n/a"
+
+        if {$longname ne ""} {
+            set cases(longname-$id) $longname
+        }
+
+
+
+        return $id
     }
 
     # import filename id longname
@@ -225,7 +239,7 @@ snit::type case {
         }
 
         set cases(source-$id) [file tail $filename]
-        
+
         return $theID
     }
 

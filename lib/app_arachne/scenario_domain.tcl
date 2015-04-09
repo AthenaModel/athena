@@ -36,7 +36,15 @@ oo::class create scenario_domain {
         my url /index.html [mymethod index.html] {List of open scenarios}
         my url /index.json [mymethod index.json] {List of open scenarios}
 
-        my url /import.json  [mymethod import.json]  {
+        my url /new.json [mymethod new.json]  {
+            Creates a new, empty scenario, assigning it an id and longname.
+            If <i id> is given, it must be an existing scenario; the 
+            scenario's contents will be reset to the empty state.
+            If <i longname> is given, the scenario will be given the new
+            name.  On success, returns a list "OK", <i>id</id>.
+        }
+
+        my url /import.json [mymethod import.json]  {
             Imports scenario <i>filename</i> and loads it into memory.
             The <i>filename</i> must name a file in the 
             <tt>-scenariodir</tt>.  If the <i>id</i> is given,
@@ -146,6 +154,28 @@ oo::class create scenario_domain {
 
     #-------------------------------------------------------------------
     # Scenario Management
+
+    # new.json
+    #
+    # datavar  - ahttpd state array
+    # qdict    - Query Dictionary
+    #
+    # Creates a new scenario (or resets an existing one), optionally
+    # setting the longname.  On success returns [OK,$theID] where 
+    # $theID is the actual scenario ID, whether specified or generated.
+
+    method new.json {sd datavar qdict} {
+        $qdict prepare id -tolower -in [case names]
+        $qdict prepare longname
+        $qdict assign id longname
+
+        if {![$qdict ok]} {
+            return [js reject [$qdict errors]]
+        }
+
+        # NEXT, create it.
+        return [js ok [case new $id $longname]]
+    }
 
     # import.json
     #
