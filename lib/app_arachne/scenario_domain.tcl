@@ -102,17 +102,19 @@ oo::class create scenario_domain {
 
         hb para
 
-        hb table -headers {"ID" "State" "Tick" "Week"} {
-            foreach case [app case names] {
+        hb table -headers {"ID" "Name" "State" "Tick" "Week"} {
+            foreach case [case names] {
+                set cdict [case getdict $case]
                 hb tr {
                     hb td-with { 
                         hb putln <b>
                         hb iref /$case $case
                         hb put </b>
                     }
-                    hb td [app sdb $case state]
-                    hb td [app sdb $case clock now]
-                    hb td [app sdb $case clock asString]
+                    hb td [dict get $cdict longname]
+                    hb td [dict get $cdict state]
+                    hb td [dict get $cdict tick]
+                    hb td [dict get $cdict week]
                 }
             }
         }
@@ -120,7 +122,7 @@ oo::class create scenario_domain {
 
         hb h3 "Available Scenarios"
 
-        set pattern [file join [app scenariodir] *.adb]
+        set pattern [file join [case scenariodir] *.adb]
         set names [glob -nocomplain $pattern]
 
         if {[llength $names] == 0} {
@@ -159,14 +161,11 @@ oo::class create scenario_domain {
     method index.json {sd datavar qdict} {
         set table [list]
 
-        foreach case [app case names] {
-            dict set dict id $case
-            dict set dict url   "/scenario/$case/index.json"
-            dict set dict state [app sdb $case state]
-            dict set dict tick  [app sdb $case clock now]
-            dict set dict week  [app sdb $case clock asString]
+        foreach case [case names] {
+            set cdict [case getdict $case]
+            dict set cdict url   "/scenario/$case/index.json"
 
-            lappend table $dict
+            lappend table $cdict
         }
 
         return [js dictab $table]

@@ -322,14 +322,15 @@ oo::class create ::projectlib::smartdomain {
     #-------------------------------------------------------------------
     # Automatically generated content
 
-    # UrlSchema datavar qdict
+    # UrlSchema sd datavar qdict
     #
+    # sd       - The smartdomain object name
     # datavar  - name of the ahttpd(n) state array
     # qdict    - Dictionary of query data
     #
     # Returns an HTML description of the URLs in the domain.
 
-    method UrlSchema {datavar qdict} {
+    method UrlSchema {sd datavar qdict} {
         upvar 1 $datavar data
         set ht [htools create %AUTO%]
 

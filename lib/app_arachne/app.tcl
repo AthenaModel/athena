@@ -24,24 +24,13 @@ snit::type app {
 
     # info array - configuration
     #
-    # scenariodir - The local directory for .adb file storage
     # port        - The port on which to listen to http requests.
     # web         - 1 if Arachne should start the web server, and 0 
     #               otherwise.
 
     typevariable info -array {
-        scenariodir  ""
         port         8080
         web          0
-    }
-
-    # cases array: tracks scenarios
-    #
-    # names      - The names of the different cases.
-    # sdb-$case  - The scenario object for $case 
-
-    typevariable cases -array {
-        names {}
     }
 
     # logs array: Logs by log name
@@ -62,21 +51,20 @@ snit::type app {
         set result ""
 
         # FIRST, get the command line options.
-        set info(scenariodir) [appdir join scenarios]
+        set scenariodir [appdir join scenarios]
         set adbfile ""
         set script ""
         set scratchdir ""
 
         foroption opt argv -all {
             -scenariodir {
-                set info(scenariodir) [file normalize [lshift argv]]
-                file mkdir $info(scenariodir)
+                set scenariodir [file normalize [lshift argv]]
             }
             -port {
                 set info(port) [lshift argv]
             }
             -scenario { 
-                set adbfile [lshift argv]
+                set adbfile [file normalize [lshift argv]]
 
                 if {![file isfile $adbfile]} {
                     throw FATAL "-scenario does not exist: \"$adbfile\""
@@ -86,7 +74,7 @@ snit::type app {
                 set scratchdir [file normalize [lshift argv]]
             }
             -script { 
-                set script [lshift argv] 
+                set script [file normalize [lshift argv]] 
 
                 if {![file isfile $script]} {
                     throw fatal "-script does not exist: \"$script\""
@@ -101,8 +89,13 @@ snit::type app {
         scratchdir init $scratchdir
         scratchdir clear
 
+        # NEXT, initialize the application log
+        $type newlog app
+
         # NEXT, add the base case scenario.
-        $type AddBaseCase $adbfile $script
+        case init $scenariodir
+
+        $type InitializeBaseCase $adbfile $script
 
         # NEXT, start the server if desired.
         if {$info(web)} {
@@ -113,60 +106,27 @@ snit::type app {
         return $result
     }
 
-    #-------------------------------------------------------------------
-    # Case Management
-
-    # case names
-    #
-    # Returns the list of case names.
-
-    typemethod {case names} {} {
-        return $cases(names)
-    }
-
-
-    # sdb case ?subcommand ...?
-    #
-    # case - A case name
-    #
-    # By default, returns the sdb for the case.  If a subcommand is
-    # given, executes the subcommand.
-
-    typemethod sdb {case args} {
-        if {[llength $args] == 0} {
-            return cases(sdb-$case)
-        }
-
-        tailcall $cases(sdb-$case) {*}$args
-    }
-
-    # AddBaseCase adbfile script
+    # InitializeBaseCase adbfile script
     #
     # adbfile  - A scenario file, or ""
     # script   - A script file or ""
     #
-    # Adds the case to the data structure.
+    # Initializes the base case using the file and script.
 
-    typemethod AddBaseCase {adbfile script} {
-        puts "Loading base case: $adbfile $script"
-        set sdb [athena new \
-                    -logcmd [$type MakeLog sdb-base] \
-                    -subject base]
+    typemethod InitializeBaseCase {adbfile script} {
+        app log normal app "Initializing case00: adbfile=$adbfile script=$script"
 
-        lappend cases(names) base
-        set cases(sdb-base) $sdb
-
-        $logs(sdb-base) normal base "Initialization scenario"
         try {
             if {$adbfile ne ""} {
-                $sdb load $adbfile                
+                case import case00 $adbfile                
             }
         } trap {SCENARIO OPEN} {result} {
-            throw FATAL "Could not load $adbfile:\n$result"
+            throw FATAL "Could not import $adbfile:\n$result"
         }
 
         try {
             if {$script ne ""} {
+                set sdb [case get case00]
                 $sdb executive call $script
             }
         } on error {result eopts} {
@@ -186,13 +146,14 @@ snit::type app {
 
     typemethod StartServer {} {
         puts "Starting server on port $info(port)"
+        app log normal app "Starting server on port $info(port)"
 
         # FIRST, create a web server log
         ahttpd init \
             -port       $info(port)             \
             -secureport ""                      \
             -debug                              \
-            -logcmd     [$type MakeLog ahttpd]  \
+            -logcmd     [$type newlog ahttpd]   \
             -docroot    [appdir join htdocs]
 
         # NEXT, Add content
@@ -201,31 +162,31 @@ snit::type app {
 
 
     #-------------------------------------------------------------------
-    # Application Log
+    # Application Logs
 
-    # MakeLog name 
+    # newlog name 
     #
     # Creates a log for the given name.
 
-    typemethod MakeLog {name} {
+    typemethod newlog {name} {
         set logdir [scratchdir join log $name]
-        file mkdir $logdir ;# TBD: Neede?
+        file mkdir $logdir ;# TBD: Needed?
 
         set logs($name) [logger %AUTO% -logdir $logdir]
 
         return $logs($name)
     }
+
+    # log level comp message
+    #
+    # Logs to the main application log.
+
+    typemethod log {level comp message} {
+        $logs(app) $level $comp $message
+    }
     
     #-------------------------------------------------------------------
     # Utility Commands
-
-    # scenariodir
-    #
-    # Returns the name of the scenario directory.
-
-    typemethod scenariodir {} {
-        return $info(scenariodir)
-    }
     
     # dumpstack
 
