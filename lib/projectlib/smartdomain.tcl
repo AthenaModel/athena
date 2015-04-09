@@ -24,6 +24,7 @@ oo::class create ::projectlib::smartdomain {
     # domain            - The URL prefix for this domain, e.g., /foo/bar
     # handler-$suffix   - The handler command for the suffix
     # docstring-$suffix - The documentation string for the suffix
+    # sock              - The connection currently being handled.
 
     variable info
 
@@ -233,7 +234,7 @@ oo::class create ::projectlib::smartdomain {
                 continue
             }
 
-            return [list {*}$info(handler-$id) [self] {*}[lrange $result 1 end]]
+            return [list {*}$info(handler-$id) {*}[lrange $result 1 end]]
         }
 
         # NEXT, it hasn't matched anything; see if it's a directory
@@ -304,7 +305,8 @@ oo::class create ::projectlib::smartdomain {
         set pdict [::projectlib::parmdict new $qdict]
 
         try {
-            set result [{*}$handler data $pdict]
+            set info(sock) $sock
+            set result [{*}$handler [self] $pdict]
         } trap NOTFOUND {result} {
             ahttpd notfound $sock $result
             return
@@ -394,28 +396,25 @@ oo::class create ::projectlib::smartdomain {
     }
     
     #-------------------------------------------------------------------
-    # Tools For Domains
+    # Tools for use in domain handlers 
 
-    # querypop parm ?defvalue?
+    # redirect url
     #
-    # parm      - A query parameter name
-    # defvalue  - A default value, nominally ""
+    # url   - A server-relative URL
     #
-    # Returns the value of the parm from the query dictionary, if present,
-    # or the default otherwise.
+    # Redirects to the URL.
+
+    method redirect {url} {
+        throw [list HTTPD_REDIRECT $url] "Redirect to $url"
+    }
+
+    # query
     #
-    # Assumes qdict is defined.
+    # Returns the raw query string.
     
-    method querypop {parm {defvalue ""}} {
-        upvar 1 qdict qdict
-
-        if {[dict exists $qdict $parm]} {
-            set value [dict get $qdict $parm]
-            set qdict [dict remove $qdict $parm]
-            return $value
-        } else {
-            return $defvalue
-        }
+    method query {} {
+        upvar #0 ::ahttpd::Httpd$info(sock) data
+        return $data(query) 
     }
 
 }

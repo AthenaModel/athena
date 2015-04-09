@@ -25,11 +25,13 @@ snit::type app {
     # info array - configuration
     #
     # port        - The port on which to listen to http requests.
+    # secureport  - The port on which to listen to https requests.
     # web         - 1 if Arachne should start the web server, and 0 
     #               otherwise.
 
     typevariable info -array {
         port         8080
+        secureport   8081
         web          0
     }
 
@@ -148,6 +150,8 @@ snit::type app {
         puts "Starting server on port $info(port)"
         app log normal app "Starting server on port $info(port)"
 
+        # ::tls::init -tls1 1 -tls1.1 0 -tls1.2 0 -ssl2 0 -ssl3 0
+
         # FIRST, create a web server log
         ahttpd init \
             -port       $info(port)             \
@@ -175,6 +179,15 @@ snit::type app {
         set logs($name) [logger %AUTO% -logdir $logdir]
 
         return $logs($name)
+    }
+
+    # remlog name
+    #
+    # Removes the log object.
+
+    typemethod remlog {name} {
+        $logs($name) destroy
+        unset logs($name)
     }
 
     # log level comp message

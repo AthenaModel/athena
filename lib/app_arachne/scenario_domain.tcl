@@ -55,6 +55,11 @@ oo::class create scenario_domain {
             "OK", <i>id</id>.
         }
 
+        my url /delete.json [mymethod delete.json]  {
+            Deletes scenario <i>id</i> from the current session.
+            On success, returns a list "OK", <i>message</id>.
+        }
+
         my url /{name}/order.html [mymethod order.html] {
             Accepts an order and its parameters as a PUT query.
             The query parameters are the order name as <tt>order_</tt>
@@ -105,7 +110,14 @@ oo::class create scenario_domain {
     #-------------------------------------------------------------------
     # General Content
 
-    method index.html {sd datavar qdict} {
+    # index.html
+    #
+    # sd       - The smartdomain object (e.g., [self])
+    # qdict    - Query Dictionary
+    #
+    # Displays a list of the loaded scenarios.
+
+    method index.html {sd qdict} {
         hb page "Scenarios"
         hb h1 "Scenarios"
 
@@ -139,7 +151,14 @@ oo::class create scenario_domain {
         return [hb /page]
     }
 
-    method index.json {sd datavar qdict} {
+    # index.html
+    #
+    # sd       - The smartdomain object (e.g., [self])
+    # qdict    - Query Dictionary
+    #
+    # Returns a JSON list of scenario metadata objects.
+
+    method index.json {sd qdict} {
         set table [list]
 
         foreach case [case names] {
@@ -155,16 +174,47 @@ oo::class create scenario_domain {
     #-------------------------------------------------------------------
     # Scenario Management
 
+    # new.html
+    #
+    # sd       - The smartdomain object (e.g., [self])
+    # qdict    - Query Dictionary
+    #
+    # Creates a new scenario (or resets an existing one), optionally
+    # setting the longname.
+
+    method new.html {sd qdict} {
+        $qdict prepare id -tolower -in [case names]
+        $qdict prepare longname
+        $qdict assign id longname
+
+        if {![$qdict ok]} {
+            hb page "New Scenario"
+            hb h1 "New Scenario"
+
+            hb putln "Cannot create a new scenario:"
+            hb para
+            my predict [$qdict errors]
+            return [hb page]
+        }
+
+        # NEXT, create it.
+        case new $id $longname
+
+        my redirect /scenario/index.html
+        return
+    }
+
+
     # new.json
     #
-    # datavar  - ahttpd state array
+    # sd       - The smartdomain object (e.g., [self])
     # qdict    - Query Dictionary
     #
     # Creates a new scenario (or resets an existing one), optionally
     # setting the longname.  On success returns [OK,$theID] where 
     # $theID is the actual scenario ID, whether specified or generated.
 
-    method new.json {sd datavar qdict} {
+    method new.json {sd qdict} {
         $qdict prepare id -tolower -in [case names]
         $qdict prepare longname
         $qdict assign id longname
@@ -179,7 +229,7 @@ oo::class create scenario_domain {
 
     # import.json
     #
-    # datavar  - ahttpd state array
+    # sd       - The smartdomain object (e.g., [self])
     # qdict    - Query Dictionary
     #
     # Attempts to import a scenario into memory from an .adb or .tcl
@@ -187,7 +237,7 @@ oo::class create scenario_domain {
     # setting a $longname.  On success returns [OK,$theID] where 
     # $theID is the actual scenario ID, whether specified or generated.
 
-    method import.json {sd datavar qdict} {
+    method import.json {sd qdict} {
         $qdict prepare filename -required
         $qdict prepare id -tolower -in [case names]
         $qdict prepare longname
@@ -209,6 +259,33 @@ oo::class create scenario_domain {
         return [js ok $theID]
     }
     
+    # delete.json
+    #
+    # sd       - The smartdomain object (e.g., [self])
+    # qdict    - Query Dictionary
+    #
+    # Creates a new scenario (or resets an existing one), optionally
+    # setting the longname.  On success returns [OK,$theID] where 
+    # $theID is the actual scenario ID, whether specified or generated.
+
+    method delete.json {sd qdict} {
+        $qdict prepare id -required -tolower -in [case names]
+
+        $qdict assign id
+       
+        if {$id eq "case00"} {
+            $qdict reject id "Cannot delete the base case"
+        }
+
+
+        if {![$qdict ok]} {
+            return [js reject [$qdict errors]]
+        }
+
+        # NEXT, create it.
+        case delete $id
+        return [js ok "Deleted $id"]
+    }
 
     #-------------------------------------------------------------------
     # Order Handling
@@ -216,17 +293,17 @@ oo::class create scenario_domain {
     # order.html
     #
     # name     - The scenario name
-    # datavar  - ahttpd state array
+    # sd       - The smartdomain object (e.g., [self])
     # qdict    - Query dictionary
     #
     # Attempts to send an order specified as a query; returns results
     # as HTML.
 
-    method order.html {sd name datavar qdict} {
+    method order.html {name sd qdict} {
         # FIRST, do we have the scenario?
         set name [string tolower $name]
 
-        if {$name ni [app case names]} {
+        if {$name ni [case names]} {
             throw NOTFOUND "No such scenario: \"$name\""
         }
 
@@ -281,17 +358,17 @@ oo::class create scenario_domain {
     # order.json
     #
     # name     - The scenario name
-    # datavar  - ahttpd state array
+    # sd       - The smartdomain object (e.g., [self])
     # qdict    - Query dictionary
     #
     # Attempts to send an order specified as a query; returns results
     # as JSON.
 
-    method order.json {sd name datavar qdict} {
+    method order.json {name sd qdict} {
         # FIRST, do we have the scenario?
         set name [string tolower $name]
 
-        if {$name ni [app case names]} {
+        if {$name ni [case names]} {
             throw NOTFOUND "No such scenario: \"$name\""
         }
 
@@ -322,22 +399,20 @@ oo::class create scenario_domain {
     # script.html
     #
     # name     - The scenario name
-    # datavar  - ahttpd state array
+    # sd       - The smartdomain object (e.g., [self])
     # qdict    - Query dictionary
     #
     # Attempts to execute a script specified as a query; returns results
     # as JSON.  The script is presumed to be text/plain in $data(query).
 
-    method script.html {sd name datavar qdict} {
-        upvar 1 $datavar data
-
+    method script.html {name sd qdict} {
         hb page "Script Entry: '$name' scenario"
         hb h1 "Script Entry: '$name' scenario"
 
         # FIRST, do we have the scenario?
         set name [string tolower $name]
 
-        if {$name ni [app case names]} {
+        if {$name ni [case names]} {
             throw NOTFOUND "No such scenario: \"$name\""
         }
 
@@ -361,7 +436,7 @@ oo::class create scenario_domain {
         # NEXT, send the order.
         if {$script ne ""} {
             try {
-                set result [app sdb $name executive eval $script]
+                set result [case with $name executive eval $script]
             } on error {result eopts} {
                 hb h3 "Error in Script:"
 
@@ -389,30 +464,28 @@ oo::class create scenario_domain {
     # script.json
     #
     # name     - The scenario name
-    # datavar  - ahttpd state array
+    # sd       - The smartdomain object (e.g., [self])
     # qdict    - Query dictionary
     #
     # Attempts to execute a script specified as a query; returns results
     # as JSON.  The script is presumed to be text/plain in $data(query),
     # as the result of a POST request.
     #
-    # TBD: We mighb modify this after discussion with the web guys.
+    # TBD: We might modify this after discussion with the web guys.
 
-    method script.json {sd name datavar qdict} {
-        upvar 1 $datavar data
-
+    method script.json {name sd qdict} {
         # FIRST, do we have the scenario?
         set name [string tolower $name]
 
-        if {$name ni [app case names]} {
+        if {$name ni [case names]} {
             throw NOTFOUND "No such scenario: \"$name\""
         }
 
-        set script $data(query)
+        set script [$sd query]
 
         # NEXT, evaluate the script.
         try {
-            set result [app sdb $name executive eval $script]
+            set result [case with $name executive eval $script]
         } on error {result eopts} {
             return [js error $result [dict get $eopts -errorinfo]]
         }

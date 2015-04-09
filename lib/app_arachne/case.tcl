@@ -243,6 +243,21 @@ snit::type case {
         return $theID
     }
 
+    # delete id
+    #
+    # id   - A case ID
+    #
+    # Destroys the case object and its log, and removes any related data
+    # from disk.
+
+    typemethod delete {id} {
+        case with $id destroy
+        app remlog $id
+
+        array unset cases(*-$id)
+        ldelete cases(names) $id
+    }
+
 
     
     #-------------------------------------------------------------------
