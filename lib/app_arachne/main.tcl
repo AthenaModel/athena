@@ -27,7 +27,11 @@
 # It determines the tool to invoke, and does so.
 
 proc main {argv} {
-    return [app init $argv]
+    try {
+        return [app init $argv]
+    } trap INVALID {result} {
+        throw FATAL $result
+    }
 }
 
 

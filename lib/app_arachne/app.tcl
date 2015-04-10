@@ -32,7 +32,7 @@ snit::type app {
     typevariable info -array {
         port         8080
         secureport   8081
-        web          0
+        web          1
     }
 
     # logs array: Logs by log name
@@ -82,8 +82,8 @@ snit::type app {
                     throw fatal "-script does not exist: \"$script\""
                 }
             }
-            -web {
-                set info(web) 1
+            -noweb {
+                set info(web) 0
             }
         }
 

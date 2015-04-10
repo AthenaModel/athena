@@ -13,8 +13,10 @@ is an incomplete prototype.<p>
 
 <changelog>
 
-<change 4/6/2015 Update will>
-Added details about the RESTful API.<p>
+<change 4/10/2015 Update will>
+Added details about the RESTful API.  Also, Arachne is no longer 
+intended for non-server batch runs; <xref athena(1)>'s "build" subcommand
+handles that use-case quite nicely.<p>
 </change>
 
 <change 4/2/2015 Update will>
@@ -40,8 +42,7 @@ Preliminary draft
 <section overview "Overview">
 
 Arachne is a version of Athena intended to run as part of a web back-end in
-the cloud.  It is a non-GUI version intended to run in batch mode, given
-scripts; it also includes a web server that provides a RESTful interface
+the cloud.  It includes a web server that provides a RESTful interface
 to Athena's run-time data.<p>
 
 The purpose of this document is to specify Arachne's command-line and
@@ -81,19 +82,15 @@ spider.  Arachne is therefore Athena's web-spinner.<p>
 <b TBD>: This is, of course, quite preliminary.<p>
 
 Arachne is installed as a Linux executable called <b><tt arachne></b>.
-It can run as a simple batch-mode version of Athena, or as an interactive
-application with a RESTful web interface.<p>
+It runs as a server with a RESTful web interface.<p>
 
-To run Arachne with its RESTful interface, pass it the <tt -web> option,
-optionally specifying the HTTP <tt -port>, <tt -public>, and 
-<tt -heartbeatfile>.  Arachne will load any <tt -scenario> and execute 
-any <tt -script>, and then wait for 
-instructions via HTTP.<p>
+To run Arachne simply invoke it, optionally specifying the HTTP 
+<tt -port>, <tt -public>, and <tt -heartbeatfile>.  Arachne will load 
+any <tt -scenario> and execute any <tt -script> for its "base" case, 
+and then wait for instructions via HTTP.<p>
 
-To run Arachne as a batch-mode application, specify the <tt -scenario>
-and <tt -script> but do not specify <tt -web>.  The RESTful interface
-will not be initialize; instead, Arachne will load the <tt -scenario> and
-run the <tt -script> and the halt.<p>
+To invoke Arache without starting the HTTP server, pass the 
+<-tt noweb> option.  (This is provided as an aid to testing.)<p>
 
 Arachne takes the following command-line options:<p>
 
@@ -121,35 +118,51 @@ enclosing web application to be sure that it is alive.<p>
 
 <def {-public}>
 
+<b Not Yet Implemented.> 
 By default, Arachne only accepts HTTP requests from the local host.  If
 this option is given, Arachne will accept HTTP requests from other hosts.<p>
 
 <def {-port <i portid>}>
 
 Specifies the port ID at which Arachne should listen for HTTP requests.
-Defaults to port 8080.<p>
+Defaults to port 8080.
+<b TBD:> Ultimately, Arachne will accept only HTTPS request; at present,
+we are waiting on a bug fix in the Tcl TLS package, so we list for 
+normal HTTP requests.<p>
 
 <def {-scenariodir <i dirpath>}>
-Specifies the name of a directory in which to store and look for 
-Athena scenario (.adb) files and scenario script (.tcl) files at 
-run-time.<p>
+Specifies the name of a directory from which Arachne will import and 
+export Athena scenario (.adb) files and scenario script (.tcl) files at 
+run-time.  The larger application can stage and retrieve files using
+this directory.<p>
 
 <def {-scenario <i filepath>}>
 
-Specifies the path to an Athena scenario (.adb) file to load at start-up.
-It is usual to begin with a base scenario and then run excursions from it
-via the RESTful API, although this can also be scripted.<p>
+Specifies the path to an Athena scenario (.adb) file to load at start-up
+as Arachne's base case, "<tt case00>".  It is usual to begin with a base 
+scenario and then run excursions from it via the RESTful API.<p>
+
+If no <tt -scenario> is specified, then Arachne creates an empty scenario
+for "<tt case00>".<p>
 
 <def {-script <i filepath>}>
 
-Specifies the path to an Athena script (.tcl) file to load at start-up.
-Any <tt -scenario> is loaded first.<p> 
+Specifies the path to an Athena script (.tcl) file to load into the
+base case at start-up. Any <tt -scenario> is loaded into "<tt case00>" 
+first.<p> 
 
-<def {-web}>
+<b TBD:> The RESTful interface is importing scenario files and scenario
+scripts interchangeably, based on the file type.  The 
+<tt -scenario>/<tt -script> option pair is mostly of use for batch
+processing, for which Arachne no longer responsible; perhaps we should 
+remove <tt -script> and let <tt -scenario> be either a .adb or .tcl 
+file.<p>
 
-Invokes the Arachne web servert at <tt -port>.  If this option is 
-not specified, Arachne will halt immediately after loading the
-<tt -scenario> and executing the <tt -script>.<p>
+<def {-noweb}>
+
+If this option is specified, Arachne will halt immediately after loading the
+<tt -scenario> and executing the <tt -script>.  This is provided as an
+aid to testing.<p>
 
 </deflist options>
 
