@@ -1,0 +1,299 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    020-scenario.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    app_arachne(1): Scenario Management URLs
+#
+#    This test suite tests the handlers for these URLs:
+#
+#    /scenario/*.{html,json}
+#    /scenario/{name}/*.{html,json}.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athenawb(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    proc setup {} {
+        # TBD
+    }
+
+    set pdict [::projectlib::parmdict new]
+
+    proc cleanup {} {
+       ted cleanup
+    }
+
+    proc codecatch {args} {
+        try {
+            set out [uplevel 1 $args]
+        } on error {result eopts} {
+            return [list [dict get $eopts -errorcode] $result]
+        }
+
+        error "Expected error, got \"$out\""
+    }
+
+    ted mkadb    test1
+    ted mkscript test1
+
+    #-------------------------------------------------------------------
+    # Notes
+    #
+    # "case init" and "case clear" are tested in use by the test suite.
+    
+    #-------------------------------------------------------------------
+    # names
+
+    test names-1.1 {default} -body {
+        case names
+    } -cleanup {
+        cleanup
+    } -result {case00}
+
+    test names-1.2 {default} -setup {
+        case new
+    } -body {
+        case names
+    } -cleanup {
+        cleanup
+    } -result {case00 case01}
+    
+
+    #-------------------------------------------------------------------
+    # validate
+
+    test validate-1.1 {not found} -body {
+        codecatch case validate nonesuch
+    } -cleanup {
+        cleanup
+    } -result {INVALID {Unknown scenario: "nonesuch"}}
+
+    test validate-1.2 {found} -body {
+        case validate case00
+    } -cleanup {
+        cleanup
+    } -result {case00}
+
+    #-------------------------------------------------------------------
+    # get
+
+    test get-1.1 {get sdb} -body {
+        case get case00
+    } -cleanup {
+        cleanup
+    } -match glob -result {::athena::athena::athena*}
+
+    #-------------------------------------------------------------------
+    # with
+
+    test with-1.1 {call sdb directly given id} -setup {
+        ted mkadb test1
+        set id [case import test1.adb ""]
+    } -body {
+        case with $id actor names
+    } -cleanup {
+        cleanup
+    } -result {JOE}
+
+    #-------------------------------------------------------------------
+    # metadata
+    
+    test metadata-1.1 {get all} -body {
+        ted pdicts [case metadata case00]
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+        id       case00
+        longname {Base Case}
+        source   n/a
+        state    PREP
+        tick     0
+        week     2012W01
+    }
+
+    test metadata-1.2 {get one} -body {
+        case metadata case00 longname
+    } -cleanup {
+        cleanup
+    } -result {Base Case}
+
+    #-------------------------------------------------------------------
+    # new
+    
+    test new-1.1 {OK} -body {
+        case new
+    } -cleanup {
+        cleanup
+    } -result {case01}
+
+    test new-1.2 {New case, default longname} -body {
+        set id [case new]
+        list $id [case metadata $id longname]
+    } -cleanup {
+        cleanup
+    } -result {case01 {Scenario #01}}
+
+    test new-1.3 {New case, new longname} -body {
+        set id [case new "" "My New Name"]
+        list $id [case metadata $id longname]
+    } -cleanup {
+        cleanup
+    } -result {case01 {My New Name}}
+
+    test new-1.4 {Reset case, new longname} -setup {
+        set id [case import test1.adb ""]
+        set a1 [case with $id actor names]
+    } -body {
+        set newid [case new $id "A New Name"]
+        set a2 [case with $id actor names]
+        list $id $newid $a1 $a2 [case metadata $id longname]
+    } -cleanup {
+        cleanup
+    } -result {case01 case01 JOE {} {A New Name}}
+
+    #-------------------------------------------------------------------
+    # import
+    
+    test import-1.1 {complex file name} -body {
+        codecatch case import "dir/file.adb" ""
+    } -cleanup {
+        cleanup
+    } -result {{SCENARIO IMPORT} {Not a bare file name}}
+
+    test import-1.2 {invalid file type} -body {
+        codecatch case import "file.doc" ""
+    } -cleanup {
+        cleanup
+    } -result {{SCENARIO IMPORT} {Cannot import files of type ".doc"}}
+
+    test import-1.3 {unavailable scenario} -body {
+        codecatch case import "test2.adb" ""
+    } -cleanup {
+        cleanup
+    } -result {{SCENARIO IMPORT} {No such scenario is available.}}
+
+    test import-2.1 {import new .adb} -body {
+        set id [case import "test1.adb" ""]
+        case metadata $id source
+    } -cleanup {
+        cleanup
+    } -result {test1.adb}
+
+    test import-2.2 {import new .tcl} -body {
+        set id [case import "test1.tcl" ""]
+        case metadata $id source
+    } -cleanup {
+        cleanup
+    } -result {test1.tcl}
+
+    test import-3.1 {default longname} -body {
+        set id [case import "test1.adb" ""]
+        case metadata $id longname
+    } -cleanup {
+        cleanup
+    } -result {Scenario #01}
+
+    test import-3.2 {set longname} -body {
+        set id [case import "test1.adb" "" "My Scenario"]
+        case metadata $id longname
+    } -cleanup {
+        cleanup
+    } -result {My Scenario}
+
+    test import-4.1 {Replace existing scenario} -body {
+        set id [case import "test1.adb" case00 "New Base Case"]
+        list $id [case metadata $id longname]
+    } -cleanup {
+        cleanup
+    } -result {case00 {New Base Case}}
+
+    #-------------------------------------------------------------------
+    # delete
+
+    test delete-1.1 {Can delete} -setup {
+        set id [case new]
+    } -body {
+        set sdb [case get $id]
+        case delete $id
+        list \
+            [info commands $sdb] \
+            [expr {$id in [case names]}]
+    } -cleanup {
+        cleanup
+    } -result {{} 0}
+
+    #-------------------------------------------------------------------
+    # send
+
+    test send-1.1 {No order_} -body {
+        $pdict setdict [list a BOB]
+        codecatch case send case00 $pdict
+    } -cleanup {
+        cleanup
+    } -match trim -result {
+        REJECT {order_ {Required parameter}}
+    }
+
+    test send-1.2 {Invalid order} -body {
+        $pdict setdict [list order_ ACTOR:CREATE]
+        codecatch case send case00 $pdict
+    } -cleanup {
+        cleanup
+    } -match trim -result {
+        REJECT {a {required value}}
+    }
+
+    test send-2.1 {OK} -body {
+        $pdict setdict [list order_ ACTOR:CREATE a BOB]
+        case send case00 $pdict
+        case with case00 actor names
+    } -cleanup {
+        cleanup
+    } -result {BOB}
+
+    test send-2.2 {Excess parms ignored} -body {
+        $pdict setdict [list order_ ACTOR:CREATE a BOB foo bar]
+        case send case00 $pdict
+        case with case00 actor names
+    } -cleanup {
+        cleanup
+    } -result {BOB}
+    
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    ::tcltest::cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+

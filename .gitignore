@@ -22,6 +22,9 @@ teapot.txt
 temp.tcl
 /log
 
+/test/app_arachne/scratch
+/test/app_arachne/scenario
+
 # SublimeText artifacts.
 *.sublime-*
 

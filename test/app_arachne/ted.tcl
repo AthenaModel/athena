@@ -78,7 +78,7 @@ snit::type ted {
         ::tcltest::customMatch indict   [mytypemethod MatchInDict]
         ::tcltest::customMatch dictglob [mytypemethod MatchDictGlob]
         ::tcltest::customMatch trim     [mytypemethod MatchTrim]
-        ::tcltest::customMatch json     [mytypemethod MatchJSON]
+        ::tcltest::customMatch norm     [mytypemethod MatchNorm]
 
 
         puts "Test Execution Deputy: Initialized"
@@ -162,6 +162,34 @@ snit::type ted {
 
         return [string trim $result]
     }
+
+    # getjson suffix ?query...?
+    #
+    # suffix   - The url in the /scenario domain, e.g., /index.json
+    # query    - The query string, which is simply the dictionary
+    #
+    # Calls the scenario_domain handler directly as a GET request,
+    # and parses a JSON return value.
+
+    typemethod getjson {suffix args} {
+        if {[llength $args] == 1} {
+            set query [lindex $args 0]
+        } else {
+            set query $args
+        }
+
+        try {
+            set result [$::app::domain request GET $suffix $query]
+        } trap HTTPD_REDIRECT {result eopts} {
+            # The error code includes the URL
+            return [dict get $eopts -errorcode]
+        } trap NOTFOUND {result} {
+            return [list NOTFOUND $result]
+        }
+
+        return [json::json2dict $result]
+    }
+
 
     # post suffix ?query?
     #
@@ -287,16 +315,15 @@ snit::type ted {
         expr {[string trim $e] eq [string trim $a]}
     }
 
-    # MatchJSON e a
+    # MatchNorm e a
     #
     # e    - Expected result
     # a    - Actual result
     #
-    # TclTest custom match algorithm for "json": parses the actual
-    # json, normalizes both, and glob matches.
+    # TclTest custom match algorithm for "norm": normalizes whitespace
+    # in both, and glob matches.
 
-    typemethod MatchJSON {e a} {
-        set a [json::json2dict $a]
+    typemethod MatchNorm {e a} {
         string match [normalize $e] [normalize $a]
     }
 
