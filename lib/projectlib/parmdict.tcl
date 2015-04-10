@@ -56,11 +56,11 @@ oo::class create ::projectlib::parmdict {
         set errors  [dict create]
     }
 
-    # getdict
+    # parms
     #
     # Returns the current parameter dictionary.
 
-    method getdict {} {
+    method parms {} {
         return $parms
     }
 
@@ -234,5 +234,23 @@ oo::class create ::projectlib::parmdict {
         }
 
         set parms [dict remove $parms $unprepped]
+    }
+
+    # remove parm
+    #
+    # parm - A parameter name.
+    #
+    # Removes the parameter from the parmdict, returning its value.
+    # If the parameter was not present, returns "".
+
+    method remove {parm} {
+        if {[dict exists $parms $parm]} {
+            set value [dict get $parms $parm]
+            set parms [dict remove $parms $parm]
+            return $value
+        } else {
+            return ""
+        }
+
     }
 }

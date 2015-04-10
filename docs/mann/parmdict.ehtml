@@ -76,13 +76,13 @@ parameters.<p>
 If no errors have been discovered, this command returns an empty 
 dictionary.<p>
 
-<defitem getdict {<i obj> getdict}>
-
-Returns the current parameter dictionary.<p>
-
 <defitem ok {<i obj> ok}>
 
 Returns 1 if no parameter errors have been discovered, and 0 otherwise.<p>
+
+<defitem parms {<i obj> parms}>
+
+Returns the current parameter dictionary.<p>
 
 <defitem prepare {<i obj> prepare <i parm> ?<i options...>?}>
 
@@ -140,6 +140,11 @@ Removes any parameters for which <i prepare> has not been called.<p>
 
 A client calls this to explicitly reject a particular <i parm>'s value.
 The <i message> is added to the <iref errors> dictionary.<p>
+
+<defitem remove {<i obj> remove <i parm>}>
+
+Removes the parameter from the parmdict, returning its value.  If the
+parameter is undefined, returns "".<p>
 
 <defitem setdict {<i obj> setdict <i dict>}>
 

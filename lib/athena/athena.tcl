@@ -245,6 +245,7 @@ snit::type ::athena::athena {
     delegate method {order class}           to adb as {order class}
     delegate method {order make}            to adb as {order make}
     delegate method {order monitor}         to adb as {order monitor}
+    delegate method {order names}           to adb as {order names}
     delegate method {order redotext}        to adb as {order redotext}
     delegate method {order redo}            to adb as {order redo}
     delegate method {order reset}           to adb as {order reset}
@@ -254,6 +255,7 @@ snit::type ::athena::athena {
     delegate method {order transaction}     to adb as {order transaction}
     delegate method {order undotext}        to adb as {order undotext}
     delegate method {order undo}            to adb as {order undo}
+    delegate method {order validate}        to adb as {order validate}
 
     delegate method {orggroup exists}       to adb as {orggroup exists}
     delegate method {orggroup get}          to adb as {orggroup get}

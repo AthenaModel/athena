@@ -36,28 +36,36 @@ oo::class create scenario_domain {
         my url /index.html [mymethod index.html] {List of open scenarios}
         my url /index.json [mymethod index.json] {List of open scenarios}
 
+        my url /new.html [mymethod new.html]  {
+            Creates a new, empty scenario, assigning it an id and longname.
+            If {id} is given, it must be an existing scenario; the 
+            scenario's contents will be reset to the empty state.
+            If {longname} is given, the scenario will be given the new
+            name.  On success, redirects to scenario index.
+        }
+
         my url /new.json [mymethod new.json]  {
             Creates a new, empty scenario, assigning it an id and longname.
-            If <i id> is given, it must be an existing scenario; the 
+            If {id} is given, it must be an existing scenario; the 
             scenario's contents will be reset to the empty state.
-            If <i longname> is given, the scenario will be given the new
-            name.  On success, returns a list "OK", <i>id</id>.
+            If {longname} is given, the scenario will be given the new
+            name.  On success, returns a list "OK", {id}.
         }
 
         my url /import.json [mymethod import.json]  {
-            Imports scenario <i>filename</i> and loads it into memory.
-            The <i>filename</i> must name a file in the 
-            <tt>-scenariodir</tt>.  If the <i>id</i> is given,
+            Imports scenario {filename} and loads it into memory.
+            The {filename} must name a file in the 
+            <tt>-scenariodir</tt>.  If the {id} is given,
             the scenario will replace the existing scenario with that 
             ID; otherwise a new ID will be assigned.  
-            If the <i>longname</i> is given, the scenario will
+            If the {longname} is given, the scenario will
             be assigned that name.  On success, returns a list
-            "OK", <i>id</id>.
+            "OK", {id}.
         }
 
         my url /delete.json [mymethod delete.json]  {
-            Deletes scenario <i>id</i> from the current session.
-            On success, returns a list "OK", <i>message</id>.
+            Deletes scenario {id} from the current session.
+            On success, returns a list "OK", {message}.
         }
 
         my url /{name}/order.html [mymethod order.html] {
@@ -131,7 +139,7 @@ oo::class create scenario_domain {
             "ID" "Name" "Original Source" "State" "Tick" "Week"
         } {
             foreach case [case names] {
-                set cdict [case getdict $case]
+                set cdict [case metadata $case]
                 hb tr {
                     hb td-with { 
                         hb putln <b>
@@ -162,7 +170,7 @@ oo::class create scenario_domain {
         set table [list]
 
         foreach case [case names] {
-            set cdict [case getdict $case]
+            set cdict [case metadata $case]
             dict set cdict url   "/scenario/$case/index.json"
 
             lappend table $cdict
@@ -191,10 +199,12 @@ oo::class create scenario_domain {
             hb page "New Scenario"
             hb h1 "New Scenario"
 
+            my dictpre [$qdict parms]
+
             hb putln "Cannot create a new scenario:"
             hb para
-            my predict [$qdict errors]
-            return [hb page]
+            my dictpre [$qdict errors]
+            return [hb /page]
         }
 
         # NEXT, create it.
@@ -312,24 +322,12 @@ oo::class create scenario_domain {
 
         hb para
 
-        # NEXT, get the parameters
-        set order [$qdict prepare order_ -required -remove]
-
-        if {$order eq ""} {
-            hb h3 "Rejected"
-            my dictpre [$qdict errors]
-            return [hb /page]
-        }
-
         # NEXT, send the order.
         try {
-            hb h3 [string toupper $order]
-            my dictpre [$qdict getdict]
+            my dictpre [$qdict parms]
             hb para
             hb hr
-
-            set result \
-                [app sdb $name order senddict normal $order [$qdict getdict]]
+            set result [case send $name $qdict]
         } trap REJECT {result} {
             hb h3 "Rejected"
             my dictpre $result
@@ -372,17 +370,9 @@ oo::class create scenario_domain {
             throw NOTFOUND "No such scenario: \"$name\""
         }
 
-        # NEXT, do we have the order?
-        set order [$qdict prepare order_ -required -remove]
-
-        if {![$qdict ok]} {
-            return [js reject [$qdict errors]]
-        }
-
         # NEXT, send the order.
         try {
-            set result \
-                [app sdb $name order senddict normal $order [$qdict getdict]]
+            set result [case send $name $qdict]
         } trap REJECT {result} {
             return [js reject $result]
         } on error {result eopts} {

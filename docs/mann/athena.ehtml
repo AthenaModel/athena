@@ -406,6 +406,14 @@ TBD: athena(n) should call "load" then "dbsync".<p>
 Returns 1 if the scenario is "locked", i.e., in the <b PAUSED> or 
 <b RUNNING> state, and 0 otherwise.<p>
 
+<defitem order {<i adb> order <i subcommand> ?<i args...>?}>
+
+This command gives access to the scenario's <xref mars:order_flunky(n)>
+object.<p>
+
+The subcommands are TBD.<p>
+
+
 <defitem paste {<i obj> paste <i subcommand> ?<i args...>?}>
 
 Pastes copied items into scenario, where the subcommand determines the 

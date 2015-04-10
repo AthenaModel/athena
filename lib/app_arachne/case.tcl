@@ -95,7 +95,7 @@ snit::type case {
     # be done.
 
     typemethod get {id} {
-        return cases(sdb-$id)
+        return $cases(sdb-$id)
     }
 
     # with id subcommand ...
@@ -110,13 +110,42 @@ snit::type case {
         tailcall $cases(sdb-$id) {*}$args
     }
 
-    # getdict id
+    # send id pdict
+    #
+    # id     - A case ID
+    # pdict  - An order parmdict(n) object, including "order_"
+    #
+    # Attempts to send the order to the scenario.  Can throw REJECT.
+
+    typemethod send {id pdict} {
+        set sdb [case get $id]
+
+        $pdict prepare order_ -required -toupper \
+            -with [list $sdb order validate]
+
+        if {![$pdict ok]} {
+            throw REJECT [$pdict errors]
+        }
+
+        set order [$pdict remove order_]
+        set validparms [::athena::orders parms $order]
+
+        foreach p [dict keys [$pdict parms]] {
+            if {$p ni $validparms} {
+                $pdict remove $p
+            }
+        }
+
+        return [$sdb order senddict normal $order [$pdict parms]]
+    } 
+
+    # metadata id
     #
     # id   - A case ID
     #
     # Returns a dictionary of information about the case.
 
-    typemethod getdict {id} {
+    typemethod metadata {id} {
         dict set result id       $id
         dict set result longname $cases(longname-$id)
         dict set result state    [$type with $id state]
@@ -182,7 +211,7 @@ snit::type case {
 
         set ext [file extension $filename]
         if {$ext ni {.adb .tcl}} {
-            throw {SCENARIO IMPORT} "Cannot import $ext files"
+            throw {SCENARIO IMPORT} "Cannot import files of type \"$ext\""
         }
 
         set filename [case scenariodir $filename]

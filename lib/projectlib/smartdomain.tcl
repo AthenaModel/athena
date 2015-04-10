@@ -324,16 +324,14 @@ oo::class create ::projectlib::smartdomain {
     #-------------------------------------------------------------------
     # Automatically generated content
 
-    # UrlSchema sd datavar qdict
+    # UrlSchema sd qdict
     #
     # sd       - The smartdomain object name
-    # datavar  - name of the ahttpd(n) state array
     # qdict    - Dictionary of query data
     #
     # Returns an HTML description of the URLs in the domain.
 
-    method UrlSchema {sd datavar qdict} {
-        upvar 1 $datavar data
+    method UrlSchema {sd qdict} {
         set ht [htools create %AUTO%]
 
         if {[dict exist $qdict sort]} {
@@ -363,7 +361,7 @@ oo::class create ::projectlib::smartdomain {
         $ht putln "The following URLs are defined within this domain."
         $ht para
         $ht hr
-        $ht form -action $data(url)
+        $ht form
         $ht putln "Sort by URL <input type=radio name=sort value=url $urlcheck>"
         $ht putln "or Match Order <input type=radio name=sort value=def $defcheck>"
         $ht putln "<input type=submit name=submit value=\"Refresh\">"
