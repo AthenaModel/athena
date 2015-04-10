@@ -25,12 +25,12 @@ following commands.<p>
 
 <deflist commands>
 
-<defitem "parmdict create" {parmdict create <i name dict>}>
+<defitem "parmdict create" {parmdict create <i name> ?<i dict>}>
 
 Creates a new instance of parmdict(n) with the given command <i name>
 for the given initial parameter <i dict>.<p>
 
-<defitem "parmdict new" {parmdict new <i dict>}>
+<defitem "parmdict new" {parmdict new ?<i dict>?}>
 
 Creates a new instance of parmdict(n) for the given initial
 parameter <i dict> and returns the instance's name.<p>

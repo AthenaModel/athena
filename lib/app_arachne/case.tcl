@@ -58,6 +58,22 @@ snit::type case {
         set info(scenarioDir) $scenarioDir
 
         # NEXT, add an empty base case
+        $type clear
+    }
+
+    # clear
+    #
+    # Removes all scenarios except the basecase, and resets that one.
+
+    typemethod clear {} {
+        foreach id $cases(names) {
+            $type delete $id
+        }
+
+        array unset cases
+        set cases(counter) -1
+        set cases(names)   {}
+
         $type new "" "Base Case"
     }
 
@@ -139,13 +155,15 @@ snit::type case {
         return [$sdb order senddict normal $order [$pdict parms]]
     } 
 
-    # metadata id
+    # metadata id ?parm?
     #
     # id   - A case ID
+    # parm - A metadata parameter
     #
-    # Returns a dictionary of information about the case.
+    # Returns a dictionary of metadata about the case.  If parm
+    # is given, returns just that parm.
 
-    typemethod metadata {id} {
+    typemethod metadata {id {parm ""}} {
         dict set result id       $id
         dict set result longname $cases(longname-$id)
         dict set result state    [$type with $id state]
@@ -153,7 +171,11 @@ snit::type case {
         dict set result week     [$type with $id clock asString]
         dict set result source   $cases(source-$id)
 
-        return $result
+        if {$parm ne ""} {
+            return [dict get $result $parm]
+        } else {
+            return $result
+        }
     }
 
     # new ?id? ?longname?

@@ -24,11 +24,7 @@ snit::type ted {
     #-------------------------------------------------------------------
     # Type Variables
 
-    # appLoaded flag
-    #
-    # If 1, [ted init] has loaded the app.
-
-    typevariable appLoaded 0
+    typevariable appLoaded 0  ;# if 1, [ted init] has loaded the app.
 
     #-------------------------------------------------------------------
     # Initialization
@@ -55,11 +51,15 @@ snit::type ted {
         puts "ted: app_arachne(n) at $::app_arachne::library"
         puts ""
 
-        lappend appOptions \
-            -noweb                                  \
-            -scratchdir  [file join [pwd] scratch]  \
-            -scenariodir [file join [pwd] scenario]
+        # Make working directories
+        set scratchDir  [file join [pwd] scratch]
+        set scenarioDir [file join [pwd] scenario]
 
+        file mkdir $scenarioDir
+        lappend appOptions            \
+            -test                     \
+            -scratchdir  $scratchDir  \
+            -scenariodir $scenarioDir
 
         app init $appOptions
 
@@ -77,6 +77,9 @@ snit::type ted {
         ::tcltest::customMatch dict     [mytypemethod MatchDict]
         ::tcltest::customMatch indict   [mytypemethod MatchInDict]
         ::tcltest::customMatch dictglob [mytypemethod MatchDictGlob]
+        ::tcltest::customMatch trim     [mytypemethod MatchTrim]
+        ::tcltest::customMatch json     [mytypemethod MatchJSON]
+
 
         puts "Test Execution Deputy: Initialized"
     }
@@ -96,6 +99,94 @@ snit::type ted {
         case clear
     }
 
+    #-------------------------------------------------------------------
+    # Scenario Management
+
+    typevariable scenarioScripts -array {
+        test1 {
+            send ACTOR:CREATE -a JOE
+        }
+    }
+
+    # mkadb scenario
+    #
+    # scenario  - An index into scenarioScripts
+    #
+    # Creates a scenario file using the named script.
+
+    typemethod mkadb {scenario} {
+        set sdb [athena new]
+        $sdb executive eval $scenarioScripts($scenario)
+        $sdb save [file join [case scenariodir] $scenario.adb]
+        $sdb destroy
+    }
+
+
+    # mkscript scenario
+    #
+    # scenario - An index into scenarioScripts
+    #
+    # Saves the script to disk.
+
+    typemethod mkscript {scenario} {
+        writefile [file join [case scenariodir] $scenario.tcl] \
+            [outdent $scenarioScripts($scenario)]    
+    }
+    
+
+    #-------------------------------------------------------------------
+    # Domain Requests
+    
+    # get suffix ?query...?
+    #
+    # suffix   - The url in the /scenario domain, e.g., /index.json
+    # query    - The query string, which is simply the dictionary
+    #
+    # Calls the scenario_domain handler directly as a GET request.
+
+    typemethod get {suffix args} {
+        if {[llength $args] == 1} {
+            set query [lindex $args 0]
+        } else {
+            set query $args
+        }
+
+        try {
+            set result [$::app::domain request GET $suffix $query]
+        } trap HTTPD_REDIRECT {result eopts} {
+            # The error code includes the URL
+            return [dict get $eopts -errorcode]
+        } trap NOTFOUND {result} {
+            return [list NOTFOUND $result]
+        }
+
+        return [string trim $result]
+    }
+
+    # post suffix ?query?
+    #
+    # suffix   - The url in the /scenario domain, e.g., /index.json
+    # query    - The query string, which is text/plain
+    #
+    # Calls the scenario_domain handler directly as a POST request.
+
+    typemethod post {suffix {query ""}} {
+        try {
+            set result [$::app::domain request POST $suffix $query]
+        } trap HTTPD_REDIRECT {result eopts} {
+            # The error code includes the URL
+            return [dict get $eopts -errorcode]
+        } trap NOTFOUND {result} {
+            return [list NOTFOUND $result]
+        }
+
+        return [string trim $result]
+    }
+
+
+    #-------------------------------------------------------------------
+    # SQL Queries
+    
     # query case sql
     #
     # case    - A case ID
@@ -183,6 +274,32 @@ snit::type ted {
                     
         return $result
     }
+
+    # MatchTrim e a
+    #
+    # e    - Expected result
+    # a    - Actual result
+    #
+    # TclTest custom match algorithm for "trim":
+    # trims both results and compares.
+
+    typemethod MatchTrim {e a} {
+        expr {[string trim $e] eq [string trim $a]}
+    }
+
+    # MatchJSON e a
+    #
+    # e    - Expected result
+    # a    - Actual result
+    #
+    # TclTest custom match algorithm for "json": parses the actual
+    # json, normalizes both, and glob matches.
+
+    typemethod MatchJSON {e a} {
+        set a [json::json2dict $a]
+        string match [normalize $e] [normalize $a]
+    }
+
 
     # MatchDict edict adict
     #

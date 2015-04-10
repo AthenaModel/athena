@@ -24,7 +24,6 @@ oo::class create ::projectlib::smartdomain {
     # domain            - The URL prefix for this domain, e.g., /foo/bar
     # handler-$suffix   - The handler command for the suffix
     # docstring-$suffix - The documentation string for the suffix
-    # sock              - The connection currently being handled.
 
     variable info
 
@@ -32,8 +31,17 @@ oo::class create ::projectlib::smartdomain {
 
     variable patterns
 
+    # trans array
+    #
+    # Transient data during a request.
+    #
+    # query   - The full query string
+
+    variable trans
+
     # schemaForm - array of values
     variable schemaForm
+
 
     #-------------------------------------------------------------------
     # Constructor
@@ -48,6 +56,8 @@ oo::class create ::projectlib::smartdomain {
         set patterns [dict create]
 
         my url /urlschema.html [mymethod UrlSchema] {This description.}
+
+        set trans(query) ""
 
         set schemaForm(order) alpha
     }
@@ -290,6 +300,7 @@ oo::class create ::projectlib::smartdomain {
         # sanitized for the handler.  Be nice to have a better way to
         # do this, as well.
         upvar #0 ::ahttpd::Httpd$sock data
+        set trans(query) $data(query)
 
         # NEXT, parse the query data into a dictionary.
         # TBD: This will need to be generalized for myserver use.
@@ -322,6 +333,48 @@ oo::class create ::projectlib::smartdomain {
     }
 
     #-------------------------------------------------------------------
+    # Direct Access
+
+    # request op suffix ?query?
+    #
+    # op      - GET or POST
+    # suffix  - The part of the URL after the domain prefix
+    # query   - The query data
+    #
+    # Calls the handler for the suffix, returning the desired value,
+    # or throws NOTFOUND.  On GET, the query data is parsed as 
+    # a query dictionary; on POST it is not. 
+
+    method request {op suffix {query ""}} {
+        # FIRST, get the handler for this suffix.  Return "not found"
+        # if there's no matching handler.  The handler will include
+        # values of any place-holder arguments as normal arguments.
+
+        set handler [my GetHandler $suffix]
+
+        if {$handler eq ""} {
+            throw NOTFOUND "Not found: $suffix"
+        }
+
+        # NEXT, get the query data.
+        set trans(query) $query
+
+        set pdict [::projectlib::parmdict new]
+
+        if {$op ne "POST"} {
+            $pdict setdict $query
+        }
+
+        try {
+            return [{*}$handler [self] $pdict]
+        } finally {
+            $pdict destroy
+        }
+    }
+
+    
+
+    #-------------------------------------------------------------------
     # Automatically generated content
 
     # UrlSchema sd qdict
@@ -352,8 +405,6 @@ oo::class create ::projectlib::smartdomain {
             }
         }
 
-        set trans [list \{ <i> \} </i>]
-
         set title "URL Schema Help: $info(domain)" 
         $ht page $title
         $ht h1 $title
@@ -377,9 +428,11 @@ oo::class create ::projectlib::smartdomain {
 
         $ht dl
 
+        set mapping [list \{ <i> \} </i>]
+
         foreach suffix $suffixes {
-            set url "$info(domain)[string map $trans $suffix]"
-            set doc [string map $trans $info(docstring-$suffix)]
+            set url "$info(domain)[string map $mapping $suffix]"
+            set doc [string map $mapping $info(docstring-$suffix)]
 
             $ht dlitem  "<tt>$url</tt>" $doc       
         }
@@ -411,8 +464,7 @@ oo::class create ::projectlib::smartdomain {
     # Returns the raw query string.
     
     method query {} {
-        upvar #0 ::ahttpd::Httpd$info(sock) data
-        return $data(query) 
+        return $trans(query) 
     }
 
 }

@@ -20,6 +20,12 @@ snit::type app {
     pragma -hasinstances no
 
     #-------------------------------------------------------------------
+    # Type Components
+
+    typecomponent domain  ;# The scenario_domain(n)
+    
+
+    #-------------------------------------------------------------------
     # Type Variables
 
     # info array - configuration
@@ -32,7 +38,7 @@ snit::type app {
     typevariable info -array {
         port         8080
         secureport   8081
-        web          1
+        test         0
     }
 
     # logs array: Logs by log name
@@ -82,8 +88,8 @@ snit::type app {
                     throw fatal "-script does not exist: \"$script\""
                 }
             }
-            -noweb {
-                set info(web) 0
+            -test {
+                set info(test) 1
             }
         }
 
@@ -99,8 +105,11 @@ snit::type app {
 
         $type InitializeBaseCase $adbfile $script
 
+        # NEXT, create the domain.
+        set domain [scenario_domain new]
+
         # NEXT, start the server if desired.
-        if {$info(web)} {
+        if {!$info(test)} {
             $type StartServer
             set result vwait
         }
@@ -161,7 +170,7 @@ snit::type app {
             -docroot    [appdir join htdocs]
 
         # NEXT, Add content
-        [scenario_domain new] ahttpd
+        $domain ahttpd
     }
 
 
@@ -173,10 +182,13 @@ snit::type app {
     # Creates a log for the given name.
 
     typemethod newlog {name} {
-        set logdir [scratchdir join log $name]
-        file mkdir $logdir ;# TBD: Needed?
+        if {$info(test)} {
+            set logs($name) [myproc Swallow]
+        } else {
+            set logdir [scratchdir join log $name]
+            set logs($name) [logger %AUTO% -logdir $logdir]
+        }
 
-        set logs($name) [logger %AUTO% -logdir $logdir]
 
         return $logs($name)
     }
@@ -186,7 +198,7 @@ snit::type app {
     # Removes the log object.
 
     typemethod remlog {name} {
-        $logs($name) destroy
+        catch {$logs($name) destroy}
         unset logs($name)
     }
 
@@ -220,5 +232,8 @@ snit::type app {
     typemethod version {} {
         return [kiteinfo version]
     }
+
+    # Swallow args
+    proc Swallow {args} {}
 }
 

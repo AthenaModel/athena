@@ -23,6 +23,7 @@ namespace eval ::kiteinfo:: {
         reqver-Tktable 2.11
         apptype-athena exe
         exclude-athenawb {}
+        local-json 0
         reqver-ctext 3.3
         local-Marsbin 1
         local-Img 0
@@ -36,6 +37,7 @@ namespace eval ::kiteinfo:: {
         local-ncgi 0
         exclude-cellide {}
         xfiles {docs/aag.docx docs/aug.docx docs/rules.pptx docs/mag.docx}
+        reqver-json 1.3.3
         local-Tkhtml 0
         apps {athena athenawb arachne athena_log cellide helptool}
         gui-arachne 0
@@ -156,7 +158,7 @@ namespace eval ::kiteinfo:: {
     test/*/*
 }
         reqver-Tkhtml 3.0
-        requires {snit comm Img BWidget Tktable treectrl sqlite3 tablelist textutil::expander textutil::adjust Tkhtml uri fileutil ctext tls tdom struct::set huddle md5 counter ncgi html base64 kiteutils kitedocs marsutil marsgui simlib Marsbin}
+        requires {snit comm Img BWidget Tktable treectrl sqlite3 tablelist textutil::expander textutil::adjust Tkhtml uri fileutil ctext tls tdom struct::set huddle json md5 counter ncgi html base64 kiteutils kitedocs marsutil marsgui simlib Marsbin}
         icon-athena_log {}
         exclude-arachne {}
         clean-help {make clean}

@@ -31,13 +31,13 @@ oo::class create ::projectlib::parmdict {
     #-------------------------------------------------------------------
     # Constructor
 
-    # constructor dict
+    # constructor ?dict?
     #
     # dict - A dictionary of parameter names and values.
     #
     # Initializes the object and sets the initial parameter dictionary.
 
-    constructor {dict} {
+    constructor {{dict ""}} {
         my setdict $dict
     }
 
@@ -52,7 +52,7 @@ oo::class create ::projectlib::parmdict {
 
     method setdict {dict} {
         set parms   $dict
-        set prepped $dict
+        set prepped [dict create]
         set errors  [dict create]
     }
 
