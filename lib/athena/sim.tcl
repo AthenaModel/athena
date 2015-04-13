@@ -766,12 +766,9 @@ snit::type ::athena::sim {
     method ThreadStart {tempfile} {
         assert {$info(slave) eq ""}
 
-        set ::slave $tempfile
         set info(slavefile) $tempfile
 
-        # set slave [thread::create -joinable]
         set slave [thread::create]
-        thread::send $slave {puts "Slave: [thread::id]"}
         thread::send $slave [list set master [thread::id]]
         thread::send $slave [list set fgsim $self]
         thread::send $slave [list set auto_path $::auto_path]
@@ -795,7 +792,6 @@ snit::type ::athena::sim {
             }
 
             proc SlaveTick {state i n} {
-                puts "SlaveTick $state $i $n"
                 global fgsim
                 global master
                 thread::send $master \
@@ -808,17 +804,8 @@ snit::type ::athena::sim {
                 thread::send $master \
                     [list $fgsim ThreadError $errmsg $errinfo]
             }
-
-
-
-            puts "Defined Slave* commands"
         }
         thread::send $slave [list sdb load $tempfile]
-        thread::send $slave {
-            puts "File:  [sdb adbfile]"
-            puts "State: [sdb state]"
-            puts "Now:   [sdb clock now]"
-        }
 
         set info(slave) $slave
     }
@@ -839,7 +826,7 @@ snit::type ::athena::sim {
 
     # ThreadTick state i n
     # 
-    # state    - RUN, PAUSED, "done"
+    # state    - RUNNING, PAUSED, "done"
     # i        - Progress counter
     # n        - Progress limit
     #
@@ -847,9 +834,16 @@ snit::type ::athena::sim {
     # when state = "done".
 
     method ThreadTick {state i n} {
+        if {$state eq "RUNNING"} {
+            # TBD Use progressbar instead!
+            $adb clock tick
+            $adb notify "" <Time>
+        }
         callwith $options(-tickcmd) $state $i $n
         if {$state eq "done"} {
+            $self SetState PAUSED
             $adb load $info(slavefile)
+            $adb dbsync
             $self ThreadComplete
         }
     }
@@ -865,6 +859,7 @@ snit::type ::athena::sim {
     method ThreadError {errmsg errinfo} {
         puts "ThreadError: $errmsg\n$errinfo"
         $self ThreadComplete
+        $self SetState PAUSED
         return -code error -errorinfo $errinfo \
             "Error in background thread: $errmsg"
     }
@@ -876,7 +871,6 @@ snit::type ::athena::sim {
     method ThreadComplete {} {
         set slave $info(slave)
         set info(slave) ""
-        $self SetState PAUSED
 
         after idle [list thread::send $slave thread::release]
     }
