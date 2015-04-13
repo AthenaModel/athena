@@ -302,11 +302,11 @@ snit::type ::athena::parmdb {
         }
 
         foreach {name value} {
-            REGULAR      1.0
-            PARAMILITARY 1.25
-            POLICE       1.0
-            IRREGULAR    1.5
-            CRIMINAL     2.0
+            REGULAR      0.5
+            PARAMILITARY 0.6
+            POLICE       0.5
+            IRREGULAR    0.75
+            CRIMINAL     1.0
         } {
             $ps define aam.civcas.forcetype.$name ::projectlib::rgain $value "
                 This multiplier acts as a gain on civilian casualties for when

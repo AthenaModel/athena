@@ -114,6 +114,11 @@ appserver module OBJECTS {
             listIcon ::marsgui::icon::pencil12
         }
 
+        /combats {
+            label "Combat"
+            listIcon ::projectgui::icon::cannon12
+        }
+
         /curses {
             label    "CURSEs"
             listIcon ::projectgui::icon::blueheart12
@@ -176,6 +181,7 @@ appserver module OBJECTS {
             /groups/civ 
             /groups/frc 
             /groups/org
+            /combats
             /plants
             /curses
             /drivers

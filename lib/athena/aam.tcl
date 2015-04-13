@@ -71,6 +71,7 @@ snit::type ::athena::aam {
     # aThresh(n,f,g)  - ATTACK force ratio threshold of f with g in n
     # dThresh(n,f,g)  - DEFEND force ratio threshold of f with g in n
     # civconc(n,f,g)  - Concern for CIVCAS by f against g in n
+    # civcas(n,g)     - Total civilian casualties caused by g in n 
 
     variable effFrc     -array {}
     variable frcMult    -array {}
@@ -78,6 +79,7 @@ snit::type ::athena::aam {
     variable aThresh    -array {}
     variable dThresh    -array {}
     variable civconc    -array {}
+    variable civcas     -array {}
 
     #-------------------------------------------------------------------
     # reset
@@ -94,6 +96,7 @@ snit::type ::athena::aam {
         array unset aThresh
         array unset dThresh
         array unset civconc
+        array unset civcas 
     }
 
     method start {} {
@@ -134,6 +137,7 @@ snit::type ::athena::aam {
         array unset aThresh
         array unset dThresh
         array unset civconc
+        array unset civcas
 
         # NEXT, create SAT and COOP dicts to hold transient effects data
         set sdict [dict create]
@@ -203,6 +207,9 @@ snit::type ::athena::aam {
             set Cu [$adb parm get aam.civcas.$urb]
 
             let civcasMult($n,$g) {$Cf * $Ct * $Cu}
+
+            # Initialize civilian casualties array
+            set civcas($n,$g) 0
         }
     }
 
@@ -335,8 +342,8 @@ snit::type ::athena::aam {
             # to the fight
             $adb eval {
                 UPDATE aam_battle
-                SET dpers_f = CAST(max(1,pers_f*$fracF) AS INTEGER),
-                    dpers_g = CAST(max(1,pers_g*$fracG) AS INTEGER)
+                SET dpers_f = CAST(round(max(1,pers_f*$fracF)) AS INTEGER),
+                    dpers_g = CAST(round(max(1,pers_g*$fracG)) AS INTEGER)
                 WHERE n=$n AND f=$f AND g=$g
             }           
         }
@@ -409,10 +416,15 @@ snit::type ::athena::aam {
     # force groups and civilian groups.
 
     method DoGroupCombat {} {
+        # FIRST, set initial posture and store beginning of combat history
+        $self SetGroupPosture   
+        $self SaveStartHistory
+
+        # NEXT, loop until all combat is done 
         set moreCombat 1
         while {$moreCombat} {
-            $self SetGroupPosture   
             set moreCombat [$self ComputeForceGroupAttrition]
+            $self SetGroupPosture
         }
 
         # NEXT, assess casualties to force groups 
@@ -425,6 +437,9 @@ snit::type ::athena::aam {
 
         # NEXT, assess civilian casualties due to force group combat
         $self ComputeCivilianCasualties
+
+        # NEXT, save end of combat history
+        $self SaveEndHistory
     }
 
     # SetGroupPosture
@@ -739,23 +754,23 @@ snit::type ::athena::aam {
             }
 
             # NEXT, accumulate casualties caused by f in n 
-            if {$cas_f > 0} {
+            if {$cas_g > 0} {
                 set currcas [dict get $casdict $n $f]
                 set civc $civconc($n,$f,$g)
                 set Cc [$adb parm get aam.FRC.civconcern.$civc]
                 let newcas {
-                    $currcas + $civcasMult($n,$f) * $Cc * $cas_f
+                    $currcas + $civcasMult($n,$f) * $Cc * $cas_g
                 }
                 dict set casdict $n $f $newcas
             }
 
             # NEXT, accumulate casualties caused by g in n 
-            if {$cas_g > 0} {
+            if {$cas_f > 0} {
                 set currcas [dict get $casdict $n $g]
                 set civc $civconc($n,$g,$f)
                 set Cc [$adb parm get aam.FRC.civconcern.$civc]
                 let newcas {
-                    $currcas + $civcasMult($n,$g) * $Cc * $cas_g
+                    $currcas + $civcasMult($n,$g) * $Cc * $cas_f
                 }
                 dict set casdict $n $g $newcas
             }
@@ -774,12 +789,63 @@ snit::type ::athena::aam {
 
             dict for {grp cas} $fdict {
                 let totcas {entier(floor(min($cas, $maxcas)))}
+                set civcas($n,$grp) $totcas
                 if {$totcas > 0} {
                     lappend alist [list \
                         mode NBHOOD g1 $grp g2 "" n $n f "" casualties $totcas]
                 }
             }   
         }
+    }
+
+    #-------------------------------------------------------------------
+    # Combat history management
+
+    # SaveStartHistory
+    #
+    # This method inserts new records into the AMM battle history table to
+    # represent the state of force groups at the start of combat during
+    # a tick.  Only groups with ROEs of "ATTACK" are represented.
+
+    method SaveStartHistory {} {
+        $adb eval {
+            INSERT INTO hist_aam_battle(t,n,f,g,roe_f,roe_g,
+                                        dpers_f,dpers_g,startp_f,startp_g)
+            SELECT now() AS t, n, f, g, roe_f, roe_g, 
+                   dpers_f, dpers_g, posture_f, posture_g
+            FROM aam_battle;
+        }
+    }
+
+    # SaveEndHistory
+    #
+    # This method updates the records in the AAM battle history table with
+    # data representing the state of force groups as the end of combat
+    # during a tick.  Only groups with ROEs of "DEFEND" are represented.
+
+    method SaveEndHistory {} {
+        foreach {n f g posture_f posture_g cas_f cas_g} [$adb eval {
+            SELECT n,f,g,posture_f,posture_g,cas_f,cas_g 
+            FROM aam_battle
+        }] {
+            set civcas_f $civcas($n,$f)
+            set civcas_g $civcas($n,$g)
+            set civc_f   $civconc($n,$f,$g)
+            set civc_g   $civconc($n,$g,$f)
+            $adb eval {
+                UPDATE hist_aam_battle 
+                SET endp_f   = $posture_f,
+                    endp_g   = $posture_g,
+                    cas_f    = $cas_f,
+                    cas_g    = $cas_g,
+                    civcas_f = $civcas_f,
+                    civcas_g = $civcas_g,
+                    civc_f   = $civc_f,
+                    civc_g   = $civc_g
+                WHERE t = now() AND n=$n AND f=$f AND g=$g                
+            }
+        }
+
     }
 
     #-------------------------------------------------------------------
