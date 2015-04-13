@@ -18,6 +18,10 @@
 package provide athena 6.3.0a7
 # -kite-provide-end
 
+# The thread package is part of Tcl, and so doesn't need to be
+# managed by Kite.
+package require Thread
+
 #-----------------------------------------------------------------------
 # Required Packages
 

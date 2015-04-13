@@ -94,6 +94,7 @@ snit::type ::athena::athena {
     # ADB
     delegate method adbfile                 to adb
     delegate method autogen                 to adb
+    delegate method bgrun                   to adb as {sim bgrun}
     delegate method clock                   to adb
     delegate method getclock                to adb as {component clock}
     delegate method contribs                to adb as {aram contribs}

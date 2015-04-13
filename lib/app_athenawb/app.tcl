@@ -491,6 +491,7 @@ snit::type app {
     # For now, it just updates idletasks.
 
     typemethod TickCmd {state i n} {
+        puts "advancing: $state $i $n"
         update idletasks
     }
 

@@ -54,6 +54,8 @@ snit::type ::athena::sim {
     #             OK        - Normal termination
     #             FAILURE   - On-tick sanity check failure
     #             ""        - Abnormal
+    # slave     - Slave thread ID.
+    # slavefile - Slave .adb file name
 
     variable info -array {
         changed    0
@@ -61,6 +63,8 @@ snit::type ::athena::sim {
         stoptime   0
         basetime   0
         reason     ""
+        slave      ""
+        slavefile  ""
     }
 
     # trans -- transient data array
@@ -700,6 +704,183 @@ snit::type ::athena::sim {
 
         $adb notify "" <State>
     }
+
+    #-------------------------------------------------------------------
+    # Background (i.e., threaded) Runs
+
+    # bgrun ?options...?
+    #
+    # -ticks ticks       Run until now + ticks
+    # -until tick        Run until tick
+    #
+    # Causes the simulation to advance time in a background thread.
+    # The thread runs until the requested run time is complete or we
+    # get an error.
+    #
+    # TBD: In time, this should be merged with 'sim run'.
+
+    method bgrun {args} {
+        assert {$info(state) eq "PAUSED"}
+
+        # FIRST, clear the stop reason.
+        set info(reason) ""
+
+        # NEXT, get the stop time.  By default, run for one week.
+        let info(stoptime) {[$adb clock now] + 1}
+
+        foroption opt args -all {
+            -ticks {
+                set val [lshift args]
+
+                set info(stoptime) [expr {[$adb clock now] + $val}]
+            }
+
+            -until {
+                set info(stoptime) [lshift args]
+            }
+        }
+
+        # The SIM:RUN order should have guaranteed this, but let's
+        # check it to make sure.
+        assert {$info(stoptime) > [$adb clock now]}
+
+        # NEXT, save this instance to a temporary file.
+        set tempfile [workdir join bgrun.adb]
+        $adb save $tempfile
+
+        # NEXT, set the state to running.
+        $self SetState RUNNING
+
+        # NEXT, initialize the thread.
+        $self ThreadStart $tempfile
+
+        $self ThreadRun $info(stoptime)
+    }
+
+    # ThreadStart tempfile
+    #
+    # tempfile   - The scenario file to advance time in.
+    #
+    # Prepares a thread to advance time in the given scenario.
+
+    method ThreadStart {tempfile} {
+        assert {$info(slave) eq ""}
+
+        set ::slave $tempfile
+        set info(slavefile) $tempfile
+
+        # set slave [thread::create -joinable]
+        set slave [thread::create]
+        thread::send $slave {puts "Slave: [thread::id]"}
+        thread::send $slave [list set master [thread::id]]
+        thread::send $slave [list set fgsim $self]
+        thread::send $slave [list set auto_path $::auto_path]
+        thread::send $slave {
+            package require athena
+            namespace import ::projectlib::* ::athena::*
+            athena create sdb \
+                -tickcmd [list ::SlaveTick]
+
+            proc SlaveAdvance {weeks} {
+                global master
+                global fgsim
+
+                try {
+                    sdb order send normal SIM:RUN -weeks $weeks
+                    sdb save
+                    ::SlaveTick done 0 0
+                } on error {result eopts} {
+                    ::SlaveError $result [dict get $eopts -errorinfo]
+                }
+            }
+
+            proc SlaveTick {state i n} {
+                puts "SlaveTick $state $i $n"
+                global fgsim
+                global master
+                thread::send $master \
+                    [list $fgsim ThreadTick $state $i $n]
+            }
+
+            proc SlaveError {errmsg errinfo} {
+                global fgsim
+                global master
+                thread::send $master \
+                    [list $fgsim ThreadError $errmsg $errinfo]
+            }
+
+
+
+            puts "Defined Slave* commands"
+        }
+        thread::send $slave [list sdb load $tempfile]
+        thread::send $slave {
+            puts "File:  [sdb adbfile]"
+            puts "State: [sdb state]"
+            puts "Now:   [sdb clock now]"
+        }
+
+        set info(slave) $slave
+    }
+
+
+
+    # ThreadRun stoptime
+    #
+    # stoptime  - The time in ticks at which to stop running.
+    # 
+    # Starts the thread advancing time in the background.
+
+    method ThreadRun {stoptime} {
+        let weeks {$stoptime - [$adb clock now]}
+        thread::send -async $info(slave) \
+            [list SlaveAdvance $weeks]
+    }
+
+    # ThreadTick state i n
+    # 
+    # state    - RUN, PAUSED, "done"
+    # i        - Progress counter
+    # n        - Progress limit
+    #
+    # Called on slave thread tick.  The run is completely over 
+    # when state = "done".
+
+    method ThreadTick {state i n} {
+        callwith $options(-tickcmd) $state $i $n
+        if {$state eq "done"} {
+            $adb load $info(slavefile)
+            $self ThreadComplete
+        }
+    }
+
+
+    # ThreadError errmsg errinfo
+    # 
+    # errmsg   - Error message
+    # errinfo  - Stack trace
+    #
+    # Sends the stack trace to the master thread.
+
+    method ThreadError {errmsg errinfo} {
+        puts "ThreadError: $errmsg\n$errinfo"
+        $self ThreadComplete
+        return -code error -errorinfo $errinfo \
+            "Error in background thread: $errmsg"
+    }
+
+    # ThreadComplete
+    #
+    # Terminates the slave thread.
+
+    method ThreadComplete {} {
+        set slave $info(slave)
+        set info(slave) ""
+        $self SetState PAUSED
+
+        after idle [list thread::send $slave thread::release]
+    }
+
 
     #-------------------------------------------------------------------
     # saveable(i) interface
