@@ -642,6 +642,9 @@ snit::type ::athena::athenadb {
 
         # NEXT, Finish Up
         $self FinishOpeningScenario
+
+        $strategy dbsync
+        $nbhood dbsync
     }
     
     # save ?filename?
