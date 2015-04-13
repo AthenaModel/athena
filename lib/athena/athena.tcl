@@ -55,6 +55,7 @@ snit::type ::athena::athena {
 
     delegate option -subject      to adb
     delegate option -adbfile      to adb
+    delegate option -tickcmd      to adb
     delegate option -scratch      to adb
     delegate option -logcmd       to adb
     delegate option -executivecmd to adb

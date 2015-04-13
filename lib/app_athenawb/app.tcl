@@ -203,7 +203,8 @@ snit::type app {
         # NEXT, Create the working scenario RDB and initialize simulation
         # components
         athena create ::adb    \
-            -logcmd  ::log     \
+            -logcmd       ::log                                  \
+            -tickcmd      [mytypemethod TickCmd]                 \
             -executivecmd [mytypemethod DefineExecutiveCommands]
 
         # NEXT, configure and initialize application modules.
@@ -482,6 +483,15 @@ snit::type app {
         append out "<hr><p>\n"
         
         return $out
+    }
+
+    # TickCmd state i n
+    #
+    # This command is called when the scenario ticks time forward.
+    # For now, it just updates idletasks.
+
+    typemethod TickCmd {state i n} {
+        update idletasks
     }
 
     #-------------------------------------------------------------------

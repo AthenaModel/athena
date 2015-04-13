@@ -186,6 +186,8 @@ snit::type ::athena::athenadb {
     #-------------------------------------------------------------------
     # Options
 
+    delegate option -tickcmd to sim
+
     # -subject name
     #
     # The name of the object for use in log messages and as a 
@@ -262,6 +264,8 @@ snit::type ::athena::athenadb {
         # values.
         set options(-subject) $self
 
+        set tickcmd [from args -tickcmd]
+
         $self configurelist $args
 
         # NEXT, create the simulation clock
@@ -293,6 +297,10 @@ snit::type ::athena::athenadb {
 
         # NEXT, create the parmdb.
         install parmdb using ::athena::parmdb ${selfns}::parmdb $self
+
+        # NEXT, add the simulation controller.
+        install sim using ::athena::sim ${selfns}::sim $self \
+            -tickcmd $tickcmd
 
         # NEXT, add aram.
         install aram using uram ${selfns}::aram \
@@ -352,7 +360,6 @@ snit::type ::athena::athenadb {
             security_model              \
             service                     \
             sigevent                    \
-            sim                         \
             stance                      \
             {strategy strategy_manager} \
             unit                        \

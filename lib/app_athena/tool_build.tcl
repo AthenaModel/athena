@@ -48,7 +48,8 @@ tool define BUILD {
         }
 
         # NEXT, create a blank scenario.
-        athena create sdb
+        athena create sdb \
+            -tickcmd [mytypemethod TickCmd]
 
         # NEXT, load the input file if any.
         set infile [lindex $argv 0]
@@ -116,8 +117,15 @@ tool define BUILD {
         } trap {SCENARIO SAVE} {result} {
             throw FATAL "Could not save $outfile:\n$result"
         }
-
     }
+
+    #-------------------------------------------------------------------
+    # Helper Routines
+
+    typemethod TickCmd {state i n} {
+        puts "$state tick $i of $n"
+    }
+    
 }
 
 

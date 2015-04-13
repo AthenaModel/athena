@@ -230,41 +230,37 @@ namespace eval ::athena_test::tests:: {
         weeks {invalid value "-1", expected integer no less than 1}
     }
 
-    
-    test RUN-1.3 {invalid block} -setup {
-        setup
-    } -body {
-        ted order -reject SIM:RUN weeks 1 block NONESUCH
-    } -cleanup {
-        cleanup
-    } -result {
-        block {invalid boolean "NONESUCH", should be one of: 1, 0, true, false, yes, no, on, off}
-    }
-
     test RUN-2.2 {Run for weeks} -setup {
         setup
     } -body {
-        ted order SIM:RUN weeks 5 block 0
+        ted order SIM:RUN weeks 5
         list [tdb sim state] [tdb sim stoptime]
     } -cleanup {
         cleanup
-    } -result {RUNNING 5}
+    } -result {PAUSED 5}
 
 
     test RUN-2.3 {Sends <State>} -setup {
         setup
     } -body {
         ted notifier bind ::tdb <State>
-        ted order SIM:RUN weeks 5 block 0
+        ted order SIM:RUN weeks 5
         ted notifier received
     } -cleanup {
         cleanup
     } -result {
         {::tdb <State>}
+        {::tdb <State>}
     }
 
     #-------------------------------------------------------------------
     # SIM:PAUSE
+
+    proc pauseCmd {state i n} {
+        if {$state eq "RUNNING" && $i == 3} {
+            ted order SIM:PAUSE
+        }
+    }
 
     test PAUSE-1.1 {Not allowed in PREP} -body {
         tdb order available SIM:PAUSE
@@ -272,42 +268,25 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -result {0}
 
-
     test PAUSE-1.2 {Pauses while running} -setup {
         setup
     } -body {
-        ted order SIM:RUN weeks 10 block 0
-        tdb clock tick
-        ted order SIM:PAUSE
-        tdb sim state
+        tdb sim configure -tickcmd [namespace current]::pauseCmd
+        ted order SIM:RUN weeks 10
+        list [tdb sim state] [tdb clock now]
     } -cleanup {
+        tdb sim configure -tickcmd ""
         cleanup
-    } -result {PAUSED}
+    } -result {PAUSED 3}
 
 
     test PAUSE-1.3 {Not allowed while paused} -setup {
         setup
     } -body {
-        ted order SIM:RUN weeks 10 block 0
-        tdb clock tick
-        ted order SIM:PAUSE
         tdb order available SIM:PAUSE
     } -cleanup {
         cleanup
     } -result {0}
-
-    test PAUSE-1.4 {Sends <State>} -setup {
-        setup
-    } -body {
-        ted order SIM:RUN weeks 10 block 0
-        ted notifier bind ::tdb <State>
-        ted order SIM:PAUSE
-        ted notifier received
-    } -cleanup {
-        cleanup
-    } -result {
-        {::tdb <State>}
-    }
 
     #-------------------------------------------------------------------
     # SIM:UNLOCK
