@@ -823,6 +823,8 @@ appserver module GROUPS {
 
             ht para
 
+            set ldep [list]
+            
             foreach n [adb nbhood names] {
                 set pers [adb eval {
                     SELECT personnel FROM deploy_ng WHERE g=$g AND n=$n
