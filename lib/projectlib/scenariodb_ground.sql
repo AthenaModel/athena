@@ -107,7 +107,6 @@ CREATE TABLE aam_battle (
 );
 
 
-
 -- General unit data
 CREATE TABLE units (
     -- Symbolic unit name

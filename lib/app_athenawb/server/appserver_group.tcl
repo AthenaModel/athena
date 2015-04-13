@@ -790,8 +790,9 @@ appserver module GROUPS {
         ht title "$data(longname) ($g)" "Force Group" 
 
         ht linkbar {
-            "#deployment" "Deployment"
-            "#sigevents"  "Significant Events"
+            "#deployment"  "Deployment and Combat"
+            "#engagements" "Engagements"
+            "#sigevents"   "Significant Events"
         }
 
         # General information
@@ -814,8 +815,101 @@ appserver module GROUPS {
 
         ht para
 
-        # Deployment; anchor is "deployment".
-        GroupDeployment:html $g
+        ht subtitle "Deployment and Combat" deployment
+
+        if {[locked]} {
+            ht putln "Group $g currently has the following deployment with"
+            ht putln "summary of combat engagements by neighborhood:"
+
+            ht para
+
+            foreach n [adb nbhood names] {
+                set pers [adb eval {
+                    SELECT personnel FROM deploy_ng WHERE g=$g AND n=$n
+                }]
+
+                if {$pers == 0} {
+                    continue
+                }
+
+                set natt [adb eval {
+                    SELECT count(*) FROM hist_aam_battle_fview
+                    WHERE n=$n AND f=$g AND roe_f='ATTACK' AND t=now()
+                }]
+
+                set nall [adb eval {
+                    SELECT count(*) FROM hist_aam_battle_fview
+                    WHERE n=$n AND f=$g AND t=now() 
+                }]
+
+                set civcas [adb eval {
+                    SELECT coalesce(sum(civcas_f),0) FROM hist_aam_battle_fview
+                    WHERE n=$n AND f=$g AND t=now() 
+                }]
+
+
+                lappend ldep $n $pers $nall $natt $civcas
+            }
+            
+            if {[llength $ldep] > 0} {
+                ht table {
+                    "<br>Neighborhood" "<br>Personnel" "Total<br>Engagements" 
+                    "Attack<br>Engagements" "Civ. Cas.<br>Caused"
+                } {
+                    foreach {n pers nall natt civcas} $ldep {
+                        set longname [adb nbhood get $n longname]
+                        ht tr {
+                            ht td left { 
+                                ht link my://app/nbhood/$n "$n: $longname" 
+                            }
+                            ht td right { ht put $pers }
+                            ht td right { ht put $nall }
+                            ht td right { ht put $natt }
+                            ht td right { ht put $civcas }
+                        }
+                    }
+                }
+            } else {
+                ht putln "No personnel are deployed."
+            }
+
+        } else {
+            ht put "Deployment for $g should be done as part of strategy "
+            ht put "execution using \"On Lock\" tactics."
+            ht para
+
+            ht putln ""
+            ht tinyi {
+                More information will be available once the scenario has
+                been locked.
+            }
+            ht para
+        }
+        ht para
+
+        ht subtitle "Engagements" engagements 
+        if {[locked -disclaimer]} {
+
+            ht putln "Group $g has been involved in battle in the"
+            ht putln "following neighborhoods in the last time tick:"
+
+            ht para 
+
+            ht query {
+                SELECT nlink      AS "<br>Neighborhood",
+                       roe_f      AS "<br>ROE",
+                       endp_f     AS "<br>Posture",
+                       link_g     AS "<br>Against",
+                       endp_g     AS "Against<br>Posture",
+                       cas_f      AS "Cas.<br>Taken",
+                       cas_g      AS "Cas.<br>Inflicted",
+                       civc_f     AS "Civ. Cas.<br>Concern"
+                FROM gui_battle_f
+                WHERE f=$g AND t=now()
+            } -default "None." -align LLLLLRRL
+
+            ht para
+        }
 
         ht subtitle "Significant Events" sigevents
 
@@ -845,29 +939,6 @@ appserver module GROUPS {
             "#sigevents"  "Significant Events"
         }
 
-        # Deployment; anchor is "deployment".
-        GroupDeployment:html $g
-
-        ht subtitle "Significant Events" sigevents
-
-        if {[locked -disclaimer]} {
-            appserver::SIGEVENTS recent $g
-        }
-
-        ht /page
-
-        return [ht get]
-    }
-
-    # GroupDeployment:html g
-    #
-    # g   - A FRC/ORG group.
-    #
-    # Outputs the deployment for group g, with title; the 
-    # anchor is "deployment".  During PREP, shows the status
-    # quo deployment, with explanation.
-
-    proc GroupDeployment:html {g} {
         ht subtitle "Deployment" deployment
 
         if {[locked]} {
@@ -897,6 +968,16 @@ appserver module GROUPS {
             ht para
         }
         ht para
+
+        ht subtitle "Significant Events" sigevents
+
+        if {[locked -disclaimer]} {
+            appserver::SIGEVENTS recent $g
+        }
+
+        ht /page
+
+        return [ht get]
     }
 }
 
