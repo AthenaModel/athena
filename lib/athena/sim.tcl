@@ -18,11 +18,17 @@ snit::type ::athena::sim {
     # Components
 
     component adb       ;# The athenadb(n) instance
-    component ticker    ;# The timeout(n) instance that makes the
-                         # simulation go when running in an event loop.
 
     #-------------------------------------------------------------------
-    # Non-checkpointed Instancd Variables
+    # Options
+
+    # -tickcmd cmd
+    #
+    # Callback called at the end of each time tick while advancing time. 
+    option -tickcmd
+    
+    #-------------------------------------------------------------------
+    # Non-checkpointed Instance Variables
 
     # constants -- scalar array
     #
@@ -33,7 +39,6 @@ snit::type ::athena::sim {
     variable constants -array {
         startdate 2012W01
         starttick 0
-        tickDelay 50
     }
 
     # info -- scalar info array
@@ -43,6 +48,7 @@ snit::type ::athena::sim {
     # state     - The current simulation state, a simstate value
     # stoptime  - The time tick at which the simulation should 
     #             pause, or 0 if there's no limit.
+    # basetime  - The time at which a run started.
     # reason    - A code indicating why the run stopped:
     # 
     #             OK        - Normal termination
@@ -53,6 +59,7 @@ snit::type ::athena::sim {
         changed    0
         state      PREP
         stoptime   0
+        basetime   0
         reason     ""
     }
 
@@ -73,9 +80,10 @@ snit::type ::athena::sim {
     #
     # Initializes instances of the type.
 
-    constructor {adb_} {
-        # FIRST, save athenadb(n) handle
+    constructor {adb_ args} {
+        # FIRST, save athenadb(n) handle and options.
         set adb $adb_
+        $self configurelist $args
 
         # NEXT, set the simulation state
         set info(state)    PREP
@@ -89,13 +97,6 @@ snit::type ::athena::sim {
             -tick0 $constants(starttick)
 
         $adb notify "" <Time>
-
-        # NEXT, create the ticker
-        install ticker using timeout ${selfns}::ticker    \
-            -interval   $constants(tickDelay)             \
-            -repetition yes                               \
-            -command    [list $adb cprofile sim Tick]
-
     }
 
 
@@ -336,18 +337,12 @@ snit::type ::athena::sim {
     #
     # -ticks ticks       Run until now + ticks
     # -until tick        Run until tick
-    # -block flag        If true, block until run completed.
     #
     # Causes the simulation to run time forward until the specified
     # time, or until "pause" is called.
     #
-    # Time proceeds by ticks.  Normally, each tick is run in the 
-    # context of the Tcl event loop, as controlled by a timeout(n) 
-    # object called "ticker".  The timeout interval is called the 
-    # inter-tick delay; it determines how fast the simulation runs.
-    # If -block is specified, then this routine runs time forward
-    # until the stoptime, and then returns.  Thus, -block requires
-    # -ticks or -until.
+    # Time advances by ticks until the stoptime is reached or
+    # 'sim pause' is called during the -tickcmd.
 
     method run {args} {
         assert {$info(state) eq "PAUSED"}
@@ -355,9 +350,8 @@ snit::type ::athena::sim {
         # FIRST, clear the stop reason.
         set info(reason) ""
 
-        # NEXT, get the pause time
-        set info(stoptime) 0
-        set blocking 0
+        # NEXT, get the stop time.  By default, run for one week.
+        let info(stoptime) {[$adb clock now] + 1}
 
         while {[llength $args] > 0} {
             set opt [lshift args]
@@ -373,10 +367,6 @@ snit::type ::athena::sim {
                     set info(stoptime) [lshift args]
                 }
 
-                -block {
-                    set blocking [lshift args]
-                }
-
                 default {
                     error "Unknown option: \"$opt\""
                 }
@@ -385,39 +375,35 @@ snit::type ::athena::sim {
 
         # The SIM:RUN order should have guaranteed this, but let's
         # check it to make sure.
-        assert {$info(stoptime) == 0 || $info(stoptime) > [$adb clock now]}
-        assert {!$blocking || $info(stoptime) != 0}
+        assert {$info(stoptime) > [$adb clock now]}
 
         # NEXT, set the state to running.  This will initialize the
         # models, if need be.
         $self SetState RUNNING
 
         # NEXT, mark the start of the run.
+        set info(basetime) [$adb clock now]
         $adb clock mark set RUN 1
 
         # NEXT, we have been paused, and the user might have made
         # changes.  Run necessary analysis before the first tick.
         $self RestartModels
 
-        # NEXT, Either execute the first tick and schedule the next,
-        # or run in blocking mode until the stop time.
-        if {!$blocking} {
-            # FIRST, run a tick immediately.
-            $self Tick
-
-            # NEXT, if we didn't pause as a result of the first
-            # tick, schedule the next one.
-            if {$info(state) eq "RUNNING"} {
-                $ticker schedule
-            }
-
-            # NEXT, return "", as this can't be undone.
-            return ""
-        }
-
         # NEXT, handle a blocking run.  On error, set state to PAUSED
         # since it didn't get done automatically.
-        if {[catch {$self BlockingRun} result eopts]} {
+        set withTrans [$adb parm get sim.tickTransaction]
+
+        try {
+            while {$info(state) eq "RUNNING"} {
+                if {$withTrans} {
+                    $adb rdb transaction {
+                        $self Tick
+                    }
+                } else {
+                    $self Tick
+                }
+            }
+        } on error {result eopts} {
             $self SetState PAUSED
             return {*}$eopts $result
         }
@@ -426,32 +412,15 @@ snit::type ::athena::sim {
         return ""
     }
 
-    method BlockingRun {} {
-        while {$info(state) eq "RUNNING"} {
-            $self Tick
-        }
 
-        set info(stoptime) 0
-    }
 
     # pause
     #
     # Pauses the simulation from running.
 
     method pause {} {
-        # FIRST, cancel the ticker, so that the next tick doesn't occur.
-        $ticker cancel
-
-        # NEXT, if we're in tactic execution just set the stop time to now
-        # and TickWork will do the rest.  Otherwise, this is coming from a
-        # GUI event, outside TickWork; just set the state to paused.
-
-        if {[$adb order state] eq "TACTIC"} {
-            set info(stoptime) [$adb clock now]
-        } elseif {$info(state) eq "RUNNING"} {
-            set info(stoptime) 0
-            $self SetState PAUSED
-        }
+        # FIRST, set the stoptime to now.
+        set info(stoptime) [$adb clock now]
 
         # NEXT, cannot be undone.
         return ""
@@ -560,52 +529,39 @@ snit::type ::athena::sim {
 
     # Tick
     #
-    # This command invokes TickWork to do the tick work, wrapped in an
-    # RDB transaction.
-
-    method Tick {} {
-        if {[$adb parm get sim.tickTransaction]} {
-            $adb rdb transaction {
-                $self TickWork
-            }
-        } else {
-            $self TickWork
-        }
-    }
-
-    # TickWork
-    #
     # This command is executed at each time tick.
 
-    method TickWork {} {
+    method Tick {} {
         # FIRST, tell the engine to do a tick.
         $self TickModels
 
-        # NEXT, pause if it's the pause time, or checks failed.
+        # NEXT, notify the client about progress
+        let i {[$adb clock now] - $info(basetime)}
+        let n {$info(stoptime) - $info(basetime)}
+        callwith $options(-tickcmd) $info(state) $i $n 
+
+        # NEXT, pause if checks failed or the stop time is met.
         set stopping 0
 
         if {[$adb sanity ontick check] != "OK"} {
-
             set info(reason) FAILURE
             set stopping 1
 
             $adb notify "" <InsaneOnTick>
         }
 
-        if {$info(stoptime) != 0 &&
-            [$adb clock now] >= $info(stoptime)
-        } {
+        if {[$adb clock now] >= $info(stoptime)} {
             $adb log normal sim "Stop time reached"
             set info(reason) "OK"
             set stopping 1
         }
 
-        if {$stopping} {
-            $self pause
-        }
-
-        # NEXT, notify the application that the tick has occurred.
         $adb notify "" <Tick>
+
+        if {$stopping} {
+            $self SetState PAUSED
+            callwith $options(-tickcmd) PAUSED $i $n
+        }
     }
 
 
@@ -618,7 +574,7 @@ snit::type ::athena::sim {
         # FIRST, advance time by one tick.
         $adb clock tick
         $adb notify "" <Time>
-        $adb log normal sim "Tick [$adb clock now]"
+        $adb log normal sim "Begin Tick [$adb clock now]"
 
         # NEXT, prepare for a rebase at the end of this tick.
         $adb rebase prepare
@@ -940,18 +896,13 @@ snit::type ::athena::sim {
 
     method _validate {} {
         my prepare weeks -toupper -type ipositive
-        my prepare block -toupper -type boolean
 
         my returnOnError
     }
 
     method _execute {{flunky ""}} {
-        if {$parms(block) eq ""} {
-            set parms(block) 1
-        }
-
         # NEXT, start the simulation and return the undo script. 
-        lappend undo [$adb sim run -ticks $parms(weeks) -block $parms(block)]
+        lappend undo [$adb sim run -ticks $parms(weeks)]
 
         my setundo [join $undo \n]
     }
