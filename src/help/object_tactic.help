@@ -1458,6 +1458,46 @@ page /object/tactic grant "GRANT tactic" {
 }
 
 #-----------------------------------------------------------------------
+# HIDE tactic
+
+object tactic_hide {
+    noun "HIDE tactic"
+
+    overview {
+        This <term tactic> is used to have a force group owned by an actor
+        hide in one or more neighborhoods.  Once combat begins during
+        a tick, hiding force groups have a lower number of personnel 
+        involved in the fight.  Exactly how many fewer depends on a 
+        number of things such as the urbanization of the neighborhood and 
+        whether the group is performing any activities.
+    }
+
+    include tactic_ -attrs id
+    include tactic_ -attrs name
+    include tactic_ -attrs agent
+    include tactic_ -attrs state
+
+    attribute f "Group" {
+        The <term frcgroup> owned by the agent to hide.
+    } -tags {update}
+
+    attribute nlist "Neighborhoods" {
+        A <cref /gofer/nbhoods> value specifying a list of one or 
+        more neighborhoods in which the group should hide.
+    } -tags {update}    
+}
+
+page /object/tactic hide "HIDE tactic" {
+    <sotitle>
+
+    <tactic_hide overview><p>
+
+    HIDE tactics have the following attributes:<p>
+
+    <tactic_hide parmlist>
+}
+
+#-----------------------------------------------------------------------
 # MAINTAIN Tactic
 
 object tactic_maintain {
@@ -1718,6 +1758,84 @@ page /object/tactic riot "RIOT tactic" {
     RIOT tactics have the following attributes:<p>
 
     <tactic_riot parmlist>
+}
+
+#-----------------------------------------------------------------------
+# ROE tactic
+
+object tactic_roe {
+    noun "ROE tactic"
+
+    overview {
+        This <term tactic> is used to set the rules of engagement (ROE)
+        for a force group against another force
+        group in one or more neighborhoods.  Once combat begins during
+        a tick, force/enemy ratios are computed to determine whether the
+        ROE can be used as the force groups posture based on the 
+        force/enemy thresholds specified in the tactic.  If the ratio is
+        below a threshold then a different posture is assumed.<p>
+
+        Therefore, if a force is ordered to assume an ROE of ATTACK, but the
+        enemy is too strong compared to it, it may only be able to have a
+        posture of DEFEND or be forced to assume a posture of WITHDRAW.<p>
+
+        The posture a force group takes during combat will affect how many
+        casualties it can inflict and receive.<p>
+
+        This tactic is also used to set the concern for civilian casualties
+        the force group should assume during combat operations.  The amount
+        of concern will effect the number of casualties it can inflict on an
+        enemy force.
+    }
+
+    include tactic_ -attrs id
+    include tactic_ -attrs name
+    include tactic_ -attrs agent
+    include tactic_ -attrs state
+
+    attribute f "Group" {
+        The <term frcgroup> owned by the agent to assume an ROE.
+    } -tags {update}
+
+    attribute nlist "Neighborhoods" {
+        A <cref /gofer/nbhoods> value specifying a list of one or 
+        more neighborhoods in which the ROE should be assumed.
+    } -tags {update}    
+
+    attribute glist "Against" {
+        A <cref /gofer/frcgroups> against whom f should assume an ROE.
+    } -tags {update}
+
+    attribute roe "ROE" {
+        The ROE that f should assume, either ATTACK or DEFEND.
+    } -tags {update}
+
+    attribute athresh "Attack Threshold Frac" {
+        The force/enemy ratio below which f will DEFEND.  Note that
+        this ratio could be greater than 1.0
+    } -tags {update}
+
+    attribute dthresh "Defend Threshold Frac" {
+        The force/enemy ratio below which f will WITHDRAW.  Note that
+        this ratio could be greater than 1.0, but cannot be greater
+        than athresh.
+    } -tags {update}
+
+    attribute civc "Concern For Civilian Casualties" {
+        The concern that f should show for civilian casualties while
+        engaged in combat. One of: NONE, LOW, MEDIUM, HIGH.
+    } -tags {update}
+
+}
+
+page /object/tactic roe "ROE tactic" {
+    <sotitle>
+
+    <tactic_roe overview><p>
+
+    ROE tactics have the following attributes:<p>
+
+    <tactic_roe parmlist>
 }
 
 #-----------------------------------------------------------------------

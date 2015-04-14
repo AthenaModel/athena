@@ -69,6 +69,7 @@ snit::type ::athena::hist {
                 DELETE FROM hist_pop;
                 DELETE FROM hist_flow;
                 DELETE FROM hist_activity_nga;
+                DELETE FROM hist_aam_battle;
             }
         } else {
             $adb eval {
@@ -89,6 +90,7 @@ snit::type ::athena::hist {
                 DELETE FROM hist_pop          WHERE t > $t;
                 DELETE FROM hist_flow         WHERE t > $t;
                 DELETE FROM hist_activity_nga WHERE t > $t;
+                DELETE FROM hist_aam_battle   WHERE t > $t;
             }
         }
     }

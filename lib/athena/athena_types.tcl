@@ -14,22 +14,24 @@
 #-----------------------------------------------------------------------
 
 namespace eval ::athena:: {
-    namespace export \
-        eanyall      \
-        edoes        \
-        eexecstatus  \
-        eresource    \
-        eflagstatus  \
-        eexecmode    \
-        ePrioUpdate  \
-        esanity      \
-        esimstate    \
-        einputmode   \
-        rgamma       \
-        rcov         \
-        rsvcpct      \
-        refpoint     \
-        refpoly      \
+    namespace export   \
+        eanyall        \
+        ecivcasconcern \
+        edoes          \
+        eexecstatus    \
+        eresource      \
+        eflagstatus    \
+        eexecmode      \
+        ePrioUpdate    \
+        eroe           \
+        esanity        \
+        esimstate      \
+        einputmode     \
+        rgamma         \
+        rcov           \
+        rsvcpct        \
+        refpoint       \
+        refpoly        \
         tclscript
 }
 
@@ -38,6 +40,14 @@ namespace eval ::athena:: {
 enum ::athena::eanyall {
     ANY "Any of"
     ALL "All of"
+}
+
+# Concern for civilian casualties
+enum ::athena::ecivcasconcern {
+    NONE   "None"
+    LOW    "Low"
+    MEDIUM "Medium"
+    HIGH   "High"
 }
 
 # Does vs Doesn't
@@ -135,6 +145,12 @@ enum ::athena::ePrioUpdate {
     raise  "Raise"
     lower  "Lower"
     bottom "To Bottom"
+}
+
+# eroe: rule of engagement in ROE tactics
+enum ::athena::eroe {
+    ATTACK "attack"
+    DEFEND "defend against"
 }
 
 # esanity: Severity levels used by sanity checkers

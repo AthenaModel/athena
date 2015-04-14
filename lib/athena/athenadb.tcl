@@ -490,6 +490,7 @@ snit::type ::athena::athenadb {
         $self RdbEvalFile gui_ground.sql         ;# Ground Area
         $self RdbEvalFile gui_info.sql           ;# Information Area
         $self RdbEvalFile gui_curses.sql         ;# User-defined CURSEs Area
+        $self RdbEvalFile gui_combat.sql         ;# Combat 
         $self RdbEvalFile gui_politics.sql       ;# Politics Area
         $self RdbEvalFile gui_infrastructure.sql ;# Infrastructure Area
         $self RdbEvalFile gui_application.sql    ;# Application Views
@@ -648,6 +649,9 @@ snit::type ::athena::athenadb {
 
         # NEXT, Finish Up
         $self FinishOpeningScenario
+
+        $strategy dbsync
+        $nbhood dbsync
     }
     
     # save ?filename?
@@ -1330,7 +1334,7 @@ snit::type ::athena::athenadb {
     # infrastructure service based on urbanization and type of LOS
 
     method Service {svc which urb} {
-        return [$adb parm get service.$svc.$which.$urb]
+        return [$parmdb get service.$svc.$which.$urb]
     }
 
 

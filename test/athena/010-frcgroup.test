@@ -65,6 +65,7 @@ a               JOE
 bsid            
 forcetype       REGULAR
 training        PROFICIENT
+equip_level     BEST
 base_personnel  5000
 local           0
     }
@@ -87,6 +88,7 @@ a
 bsid            
 forcetype       REGULAR
 training        PROFICIENT
+equip_level     BEST
 base_personnel  5000
 local           0
     }
@@ -157,6 +159,7 @@ a               JOE
 bsid            
 forcetype       REGULAR
 training        PROFICIENT
+equip_level     BEST
 base_personnel  5000
 local           0
     }
@@ -245,6 +248,7 @@ local           0
             longname     "Blue Angels"
             color        "#ff0000"
             forcetype    POLICE
+            equip_level  BEST
             training     NONE
             demeanor     AGGRESSIVE
             cost         10.0
@@ -265,6 +269,7 @@ a               BOB
 bsid            
 forcetype       POLICE
 training        NONE
+equip_level     BEST
 base_personnel  5000
 local           1
     }
@@ -297,13 +302,13 @@ local           1
             color        ""
             forcetype    ""
             training     ""
+            equip_level  ""
             demeanor     ""
             cost         ""
             local        ""
         }
 
         set b [ted query {SELECT * FROM frcgroups_view}]
-
         expr {$a eq $b}
     } -cleanup {
         cleanup
@@ -323,6 +328,7 @@ local           1
             color        ""
             forcetype    ""
             training     ""
+            equip_level  ""
             demeanor     ""
             cost         ""
             local        ""
@@ -428,6 +434,7 @@ local           1
         color          {#f00001}
         cost           0.0
         demeanor       AVERAGE
+        equip_level    BEST
         forcetype      REGULAR
         g              BLUE
         gtype          FRC
@@ -459,6 +466,7 @@ local           1
         color          {#f00001}
         cost           0.00
         demeanor       AVERAGE
+        equip_level    BEST
         fancy          *
         forcetype      REGULAR
         g              BLUE
@@ -493,6 +501,26 @@ local           1
     } -cleanup {
         cleanup
     } -result {BLUE BRIT}
+
+
+    #-------------------------------------------------------------------
+    # notownedby
+
+    test notownedby-1.1 {All groups not owned by actor} -setup {
+        ted create JOE BOB BLUE BRIT 
+    } -body {
+        tdb frcgroup notownedby BOB
+    } -cleanup {
+        cleanup
+    } -result {BLUE BRIT}
+
+    test notownedby-1.2 {Some groups owned by actor} -setup {
+        ted create JOE BOB ALQ TAL BLUE BRIT
+    } -body {
+        tdb frcgroup notownedby JOE
+    } -cleanup {
+        cleanup
+    } -result {ALQ TAL}
 
 
     #-------------------------------------------------------------------

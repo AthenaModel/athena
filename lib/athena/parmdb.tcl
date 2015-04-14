@@ -98,9 +98,10 @@ snit::type ::athena::parmdb {
             Athena Attrition model (AAM) parameters.
         }
 
-        $ps define aam.combatTimeHours ::projectlib::iquantity 40 {
+        $ps define aam.maxCombatTimeHours ::projectlib::iquantity 40 {
             The maximum time, in hours, two force groups will actively remain
-             in combat during the course of a week.
+            in combat during the course of a week. Setting this to zero will
+            disable casualties from combat, but not from magic attrition.
         }
 
         $ps define aam.detectionGain ::projectlib::rgain 1.0 {
@@ -226,7 +227,12 @@ snit::type ::athena::parmdb {
             $ps define aam.FRC.urbcas.$urb ::projectlib::rgain 1.0 "
                 For units in a force group fighting in a neighborhood
                 with an urbanization of $urb, a gain on the number of "
-        }          
+        }
+
+        $ps setdefault aam.FRC.urbcas.ISOLATED  2.0      
+        $ps setdefault aam.FRC.urbcas.RURAL     2.0      
+        $ps setdefault aam.FRC.urbcas.SUBURBAN  1.6      
+        $ps setdefault aam.FRC.urbcas.URBAN     1.0      
 
         $ps subset aam.visibility {
             Parameters that effect the visiblity of force group units engaged
@@ -267,6 +273,14 @@ snit::type ::athena::parmdb {
             in combat with each other.
         }
 
+        $ps define aam.civcas.limit ::simlib::rfraction 0.1 {
+            The maximum percentage of the total civilian population in
+            a neighborhood that could suffer casualties inflicted from 
+            a force group engaged in combat in that neighborhood.  This
+            model parameter can be used to throttle down civilian casualties
+            if they are too high.
+        }
+
         foreach urb [eurbanization names] {
             $ps define aam.civcas.$urb ::simlib::rfraction 1.0 "
                 For civilian groups in a neighborhood with an urbanization
@@ -288,11 +302,11 @@ snit::type ::athena::parmdb {
         }
 
         foreach {name value} {
-            REGULAR      1.0
-            PARAMILITARY 1.25
-            POLICE       1.0
-            IRREGULAR    1.5
-            CRIMINAL     2.0
+            REGULAR      0.5
+            PARAMILITARY 0.6
+            POLICE       0.5
+            IRREGULAR    0.75
+            CRIMINAL     1.0
         } {
             $ps define aam.civcas.forcetype.$name ::projectlib::rgain $value "
                 This multiplier acts as a gain on civilian casualties for when
@@ -339,13 +353,19 @@ snit::type ::athena::parmdb {
 
         foreach fposture {ATTACK DEFEND WITHDRAW} {
             foreach gposture {ATTACK DEFEND WITHDRAW} {
-                $ps define aam.lc.$fposture.$gposture ::simlib::rfraction 0.0 "
+                $ps define aam.lc.$fposture.$gposture ::projectlib::rrate 0.0 "
                     The Lanchester coefficient for a unit with a posture of 
                     $fposture in combat against a unit with a posture of $gposture.
                     Set to 0.0, there will be no attrition.
                 "
             }
         }
+
+        $ps setdefault aam.lc.ATTACK.ATTACK      1.0
+        $ps setdefault aam.lc.ATTACK.DEFEND      0.5
+        $ps setdefault aam.lc.ATTACK.WITHDRAW    0.1
+        $ps setdefault aam.lc.DEFEND.ATTACK      2.0
+        $ps setdefault aam.lc.WITHDRAW.ATTACK    0.05
 
         # absit.* parameters
         $ps subset absit {
@@ -444,6 +464,16 @@ snit::type ::athena::parmdb {
                 of personnel conducting the activity per d people in the 
                 population.  If the density is 0, the coverage is 0.  The 
                 coverage fraction increases to 2/3 when density is c.
+            }
+
+            $ps define activity.FRC.$a.visFactor ::projectlib::rgain 1.1 {
+                The visibility factor applied to a group that is in combat.
+                Typically, groups that are performing activities should be
+                more easily detected and, thus, easier to target in combat.
+                Setting this to something less than 1.0 will make fewer 
+                personnel doing this activity detected and thus susceptible
+                to suffering attrition. Setting it to 0.0 will make a group 
+                doing this activity undectectable.
             }
         }
 

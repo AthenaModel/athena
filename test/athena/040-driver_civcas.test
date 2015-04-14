@@ -79,14 +79,15 @@ namespace eval ::athena_test::tests:: {
     # Attrits groups in NB1, and advances time so that rules fire.
     
     proc attrit {casualties {g1 ""} {g2 ""}} {
-        tdb aam attrit [dict create            \
+        tdb aam attrit [dict create        \
                     mode       NBHOOD      \
                     n          NB1         \
                     f          ""          \
                     casualties $casualties \
                     g1        $g1          \
                     g2        $g2]
-        ted step
+
+        tdb aam assess
     }
     
     # Clean up after a test
@@ -109,14 +110,14 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -result {
 firing_id  1
-t          1
+t          0
 driver_id  1000
 ruleset    CIVCAS
 rule       CIVCAS-1-1
 fdict      casualties 500 f SHIA dtype CIVCAS mult 2.0
 
 firing_id  2
-t          1
+t          0
 driver_id  1001
 ruleset    CIVCAS
 rule       CIVCAS-1-1
@@ -167,14 +168,14 @@ CIVCAS-1-1 SUNN QOL
         cleanup
     } -result {
 firing_id  3
-t          1
+t          0
 driver_id  1000
 ruleset    CIVCAS
 rule       CIVCAS-2-1
 fdict      casualties 500 f SHIA dtype CIVCAS g BLUE mult 2.0
 
 firing_id  4
-t          1
+t          0
 driver_id  1001
 ruleset    CIVCAS
 rule       CIVCAS-2-1
@@ -192,28 +193,28 @@ fdict      casualties 500 f SUNN dtype CIVCAS g BLUE mult 2.0
         cleanup
     } -result {
 firing_id  3
-t          1
+t          0
 driver_id  1000
 ruleset    CIVCAS
 rule       CIVCAS-2-1
 fdict      casualties 500 f SHIA dtype CIVCAS g BLUE mult 2.0
 
 firing_id  4
-t          1
+t          0
 driver_id  1000
 ruleset    CIVCAS
 rule       CIVCAS-2-1
 fdict      casualties 500 f SHIA dtype CIVCAS g BRIT mult 2.0
 
 firing_id  5
-t          1
+t          0
 driver_id  1001
 ruleset    CIVCAS
 rule       CIVCAS-2-1
 fdict      casualties 500 f SUNN dtype CIVCAS g BLUE mult 2.0
 
 firing_id  6
-t          1
+t          0
 driver_id  1001
 ruleset    CIVCAS
 rule       CIVCAS-2-1

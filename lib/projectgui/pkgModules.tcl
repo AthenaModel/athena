@@ -31,7 +31,7 @@ package require snit 2.3
 package require Img 1.4.1
 package require Tkhtml 3.0
 package require projectlib
-package require marsgui 3.0.13
+package require marsgui 3.0.14
 # -kite-require-end
 
 #-----------------------------------------------------------------------

@@ -111,6 +111,80 @@ CREATE TABLE hist_deploy_ng (
     PRIMARY KEY(t,n,g)
 );
 
+-- aam_battle
+CREATE TABLE hist_aam_battle (
+    t           INTEGER,
+    n           TEXT,
+    f           TEXT,
+    g           TEXT,
+    roe_f       TEXT,
+    roe_g       TEXT,
+    dpers_f     INTEGER,
+    dpers_g     INTEGER,
+    startp_f    TEXT,
+    startp_g    TEXT,
+    endp_f      TEXT,
+    endp_g      TEXT,
+    cas_f       INTEGER,
+    cas_g       INTEGER,
+    civc_f      TEXT,
+    civc_g      TEXT,
+    civcas_f    INTEGER,
+    civcas_g    INTEGER,
+
+    PRIMARY KEY(t,n,f,g)
+);
+
+-- hist_aam_battle_fview
+
+-- This view is useful when wanting to get data for a force group
+-- of interest into the same column reliably.  This view can be used 
+-- with a WHERE clause on f to get just the battles some group is 
+-- involved in, but always have that group appear in the column for f
+-- AND all the data for where f is really in g be switched
+-- appropriately
+
+CREATE VIEW hist_aam_battle_fview AS
+SELECT F.t         AS t,
+       F.n         AS n,
+       F.f         AS f,
+       F.g         AS g,
+       F.roe_f     AS roe_f,
+       F.roe_g     AS roe_g,
+       F.dpers_f   AS dpers_f,
+       F.dpers_g   AS dpers_g,
+       F.startp_f  AS startp_f,
+       F.startp_g  AS startp_g,
+       F.endp_f    AS endp_f,
+       F.endp_g    AS endp_g,
+       F.cas_f     AS cas_f,
+       F.cas_g     AS cas_g,
+       F.civcas_f  AS civcas_f,
+       F.civcas_g  AS civcas_g,
+       F.civc_f    AS civc_f,
+       F.civc_g    AS civc_g
+FROM hist_aam_battle AS F
+UNION
+SELECT G.t         AS t,
+       G.n         AS n,
+       G.g         AS f,
+       G.f         AS g,
+       G.roe_g     AS roe_f,
+       G.roe_f     AS roe_g,
+       G.dpers_g   AS dpers_f,
+       G.dpers_f   AS dpers_g,
+       G.startp_g  AS startp_f,
+       G.startp_f  AS startp_g,
+       G.endp_g    AS endp_f,
+       G.endp_f    AS endp_g,
+       G.cas_g     AS cas_f,
+       G.cas_f     AS cas_g,
+       G.civcas_g  AS civcas_f,
+       G.civcas_f  AS civcas_g,
+       G.civc_g    AS civc_f,
+       G.civc_f    AS civc_g
+FROM hist_aam_battle AS G;
+
 -- econ
 CREATE TABLE hist_econ (
     t           INTEGER,

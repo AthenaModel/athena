@@ -393,6 +393,7 @@ snit::widget appwin {
                 scrollinglog %W \
                     -relief        flat                \
                     -height        20                  \
+                    -autowidth     on                  \
                     -logcmd        [mymethod puts]     \
                     -loglevel      "normal"            \
                     -showloglist   yes                 \

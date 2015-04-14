@@ -184,7 +184,7 @@ oo::class create ::athena::athena_order {
     #
     # id   - A tactic ID
     #
-    # Returns a list of force and organization groups owned by the 
+    # Returns a list of force groups owned by the 
     # agent who owns the given tactic.  This is for use in order
     # dynaforms where the user must choose an owned group.
 
@@ -192,6 +192,24 @@ oo::class create ::athena::athena_order {
         if {[$adb bean has $id]} {
             set tactic [$adb bean get $id]
             return [$adb frcgroup ownedby [$tactic agent]]
+        } else {
+            return [list]
+        }
+    }
+
+    # frcgroupsNotOwnedByAgent id
+    #
+    # id   - A tactic ID
+    #
+    # Returns a list of force groups not owned by the 
+    # agent who owns the given tactic.  This is for use in order
+    # dynaforms where the user must choose a group owned by some
+    # other agent.
+
+    method frcgroupsNotOwnedByAgent {id} {
+        if {[$adb bean has $id]} {
+            set tactic [$adb bean get $id]
+            return [$adb frcgroup notownedby [$tactic agent]]
         } else {
             return [list]
         }
