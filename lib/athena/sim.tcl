@@ -90,11 +90,8 @@ snit::type ::athena::sim {
         $self configurelist $args
 
         # NEXT, set the simulation state
-        set info(state)    PREP
         set info(changed)  0
         set info(stoptime) 0
-
-        $adb order state $info(state)
 
         $adb clock configure \
             -week0 $constants(startdate) \
@@ -120,36 +117,12 @@ snit::type ::athena::sim {
 
         # NEXT, set the simulation status
         set info(changed) 0
-        set info(state)   PREP
+        $adb setstate PREP
     }
     
     #-------------------------------------------------------------------
     # Queries
 
-    # state
-    #
-    # Returns the current simulation state
-
-    method state {} {
-        return $info(state)
-    }
-
-    # locked
-    #
-    # Returns 1 if the simulation is locked, and 0 otherwise.
-
-    method locked {} {
-        return [expr {$info(state) in {PAUSED RUNNING}}]
-    }
-
-    # stable
-    #
-    # Returns 1 if the simulation is "stable", with nothing in process.
-    # I.e., the simulation is in either the PREP or PAUSED states.
-
-    method stable {} {
-        return [expr {$info(state) in {PREP PAUSED}}]
-    }
 
     # stoptime
     #
@@ -172,30 +145,6 @@ snit::type ::athena::sim {
         return $info(reason)
     }
 
-    #-------------------------------------------------------------------
-    # Wizard Control
-
-    # wizlock ?flag?
-    #
-    # flag   - on | off
-    #
-    # By default, returns true if the sim state is WIZARD.  If the
-    # flag is given, sets the sim state to WIZARD or to PREP, accordingly.
-
-    method wizlock {{flag ""}} {
-        if {$flag ne ""} {
-            assert {$info(state) in {PREP WIZARD}}
-
-            if {$flag} {
-                $self SetState WIZARD
-            } else {
-                $self SetState PREP
-            }
-        }
-
-        return [expr {$info(state) eq "WIZARD"}]
-    }
-    
 
     #-------------------------------------------------------------------
     # Mutators
@@ -253,7 +202,7 @@ snit::type ::athena::sim {
     # Causes the simulation to transition from PREP to PAUSED.
 
     method lock {} {
-        assert {$info(state) eq "PREP"}
+        assert {[$adb state] eq "PREP"}
 
         # FIRST, Make sure that bsys has had a chance to compute
         # all of the affinities.
@@ -290,7 +239,7 @@ snit::type ::athena::sim {
     # to PREP.
 
     method unlock {} {
-        assert {$info(state) eq "PAUSED"}
+        assert {[$adb state] eq "PAUSED"}
 
         # FIRST, load the PREP snapshot
         $adb snapshot load
@@ -317,7 +266,7 @@ snit::type ::athena::sim {
     # to PREP, retaining the current simulation state.
 
     method rebase {} {
-        assert {$info(state) eq "PAUSED"}
+        assert {[$adb state] eq "PAUSED"}
 
         # FIRST, save the current simulation state to the
         # scenario tables
@@ -349,7 +298,7 @@ snit::type ::athena::sim {
     # 'sim pause' is called during the -tickcmd.
 
     method run {args} {
-        assert {$info(state) eq "PAUSED"}
+        assert {[$adb state] eq "PAUSED"}
 
         # FIRST, clear the stop reason.
         set info(reason) ""
@@ -398,7 +347,7 @@ snit::type ::athena::sim {
         set withTrans [$adb parm get sim.tickTransaction]
 
         try {
-            while {$info(state) eq "RUNNING"} {
+            while {[$adb state] eq "RUNNING"} {
                 if {$withTrans} {
                     $adb rdb transaction {
                         $self Tick
@@ -543,7 +492,7 @@ snit::type ::athena::sim {
         # NEXT, notify the client about progress
         let i {[$adb clock now] - $info(basetime)}
         let n {$info(stoptime) - $info(basetime)}
-        callwith $options(-tickcmd) $info(state) $i $n 
+        callwith $options(-tickcmd) [$adb state] $i $n 
 
         # NEXT, pause if checks failed or the stop time is met.
         set stopping 0
@@ -688,25 +637,6 @@ snit::type ::athena::sim {
     }
 
     #-------------------------------------------------------------------
-    # Utility Routines
-
-    # SetState state
-    #
-    # state    The simulation state
-    #
-    # Sets the current simulation state, and reports it as <State>.
-
-    method SetState {state} {
-        # FIRST, transition to the new state.
-        set info(state) $state
-        $adb order state $state
-
-        $adb log normal sim "Simulation state is $info(state)"
-
-        $adb notify "" <State>
-    }
-
-    #-------------------------------------------------------------------
     # Background (i.e., threaded) Runs
 
     # bgrun ?options...?
@@ -721,7 +651,7 @@ snit::type ::athena::sim {
     # TBD: In time, this should be merged with 'sim run'.
 
     method bgrun {args} {
-        assert {$info(state) eq "PAUSED"}
+        assert {[$adb state] eq "PAUSED"}
 
         # FIRST, clear the stop reason.
         set info(reason) ""
@@ -885,7 +815,7 @@ snit::type ::athena::sim {
     # Returns a checkpoint of the non-RDB simulation data.
 
     method checkpoint {{option ""}} {
-        assert {$info(state) in {PREP PAUSED}}
+        assert {[$adb state] in {PREP PAUSED}}
 
         if {$option eq "-saved"} {
             set info(changed) 0
@@ -893,7 +823,7 @@ snit::type ::athena::sim {
 
         set checkpoint [dict create]
         
-        dict set checkpoint state $info(state)
+        dict set checkpoint state [$adb state]
         dict set checkpoint clock [$adb clock checkpoint]
 
         return $checkpoint

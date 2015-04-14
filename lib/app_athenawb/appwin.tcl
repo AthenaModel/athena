@@ -2051,7 +2051,7 @@ snit::widget appwin {
         }
 
         # NEXT, update the window mode
-        if {[adb state] in {PREP WIZARD}} {
+        if {[adb state] in {PREP BUSY}} {
             $self SetMode scenario
         } else {
             $self SetMode simulation
@@ -2065,7 +2065,7 @@ snit::widget appwin {
             } -state normal
             DynamicHelp::add $toolbar.preplock \
                 -text "Lock Scenario Preparation"
-        } elseif {[adb state] eq "WIZARD"} {
+        } elseif {[adb state] eq "BUSY"} {
             $toolbar.preplock configure -state disabled
         } else {
             $toolbar.preplock configure -image {

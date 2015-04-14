@@ -244,10 +244,23 @@ snit::type ::athena::athenadb {
     # adbfile   - The name of the related .adb file, or "" if none.
     # saveables - Dictionary of saveable(i) objects by symbolic name.
     #             The symbolic name is used in the RDB saveables table.
+    # busytext  - The busy text
+    # progress  - Busy progress indicator, "user", "wait", or fraction.
 
     variable info -array {
         adbfile   ""
         saveables {}
+        busytext  ""
+        progress  user
+    }
+
+    # Checkpointed data
+    #
+    # state     - The scenario state, esimstate(n).
+    # TBD: Need to checkpoint!
+
+    variable data -array {
+        state PREP
     }
 
     #-------------------------------------------------------------------
@@ -283,6 +296,7 @@ snit::type ::athena::athenadb {
         # NEXT, create the order flunky for processing order input and
         # handling undo/redo.
         install flunky using ::athena::athena_flunky create ${selfns}::flunky $self
+        $flunky state $data(state)
 
         # NEXT, create the gofer for retrieving data.
         install gofer using ::athena::goferx create ${selfns}::gofer $self
@@ -545,11 +559,7 @@ snit::type ::athena::athenadb {
     delegate method ungrab            to rdb
 
     # SIM
-    delegate method locked            to sim
-    delegate method state             to sim
-    delegate method stable            to sim
     delegate method stoptime          to sim
-    delegate method wizlock           to sim
     
     # FLUNKY
     delegate method send              to flunky
@@ -563,11 +573,11 @@ snit::type ::athena::athenadb {
     # "new" scenario.
 
     method reset {} {
-        require {[$sim stable]} "A new scenario cannot be created in this state."
+        require {[$self stable]} "A new scenario cannot be created in this state."
 
         # FIRST, unlock the scenario if it is locked; this
         # will reinitialize modules like URAM.
-        if {[$sim state] ne "PREP"} {
+        if {[$self state] ne "PREP"} {
             $sim unlock
         }
 
@@ -632,7 +642,7 @@ snit::type ::athena::athenadb {
     # before.
 
     method load {filename} {
-        require {[$sim stable]} "A new scenario cannot be opened in this state."
+        require {[$self stable]} "A new scenario cannot be opened in this state."
 
         try {
             $rdb load $filename
@@ -786,8 +796,121 @@ snit::type ::athena::athenadb {
         $self notify "" <State>
 
     }
-    
 
+    #-------------------------------------------------------------------
+    # Scenario State
+
+    # state
+    #
+    # Returns the scenario state, e.g., PREP, PAUSED, ...
+    # If the busylock is set, then the state is BUSY; when the lock
+    # is cleared, we return to the "normal" state.
+
+    method state {} {
+        # RUNNING is a special case; RUNNING also uses the busy text.
+        if {$data(state) ne "RUNNING" && $info(busytext) ne ""} {
+            return "BUSY"
+        } else {
+            return $data(state)
+        }
+    }
+
+    # locked
+    #
+    # Returns 1 if the simulation is locked, and 0 otherwise.
+
+    method locked {} {
+        return [expr {$data(state) in {PAUSED RUNNING}}]
+    }
+
+    # stable
+    #
+    # Returns 1 if the simulation is "stable", with nothing in process.
+    # I.e., the simulation is in either the PREP or PAUSED states.
+
+    method stable {} {
+        return [expr {$data(state) in {PREP PAUSED}}]
+    }
+    
+    # busy
+    #
+    # The scenario is "busy" if its state is "BUSY" or "RUNNING".
+    # Busy is the complement of "stable".
+
+    method busy {} {
+        return [expr {[$self state] in {BUSY RUNNING}}]
+    }
+
+    # setstate state
+    #
+    # state    - An esimstate(n) value
+    #
+    # Sets the scenario state and notifies the client.
+
+    method setstate {state} {
+        set data(state) $state
+        $flunky state $state
+
+        $self log normal "" "Scenario state is $data(state)"
+        $self notify     "" <State>
+    }
+
+    #-------------------------------------------------------------------
+    # Busy Lock Control
+
+    # busylock ?busytext?
+    #
+    # busytext   - A message indicating how we're busy, or "clear" if 
+    #              no longer busy.
+    #
+    # By default, returns the current busytext.  If the busytext is "clear",
+    # clears any busy lock.  Otherwise, we enter the BUSY state (if not 
+    # already "busy"), and save the busytext.  Finally, sends <State>.
+
+    method busylock {{busytext ""}} {
+        if {$busytext eq "clear"} {
+            set info(busytext) ""
+            $self progress user
+            $self log normal "" "Scenario is no longer BUSY"
+            $self notify "" <State>
+        } elseif {$busytext ne ""} {
+            if {$info(busytext) eq ""} {
+                $self progress wait
+            }
+
+            set info(busytext) $busytext
+            $self log normal "" "Scenario is BUSY ($busytext)"
+            $self notify "" <State>
+        }
+
+        return $info(busytext)
+    }
+
+    # progress ?value?
+    #
+    # value   - A new progress value
+    #
+    # Gets/sets the progress value.  The progress value may be:
+    #
+    # user        - The program is under user control.  (Default)
+    # wait        - An indefinitely long process is on-going.
+    # 0.0 to 1.0  - We are this fraction of the way through the process.
+    #
+    # When the busylock is set, progress is set to "wait".  When the
+    # simulation is stable again, progress is set to "user".  The 
+    # on-going process is free to call this with the fraction of 
+    # completion if desired.
+    #
+    # Sends <Progress> on change.
+
+    method progress {{value ""}} {
+        if {$value ne ""} {
+            set info(progress) $value
+            $self notify "" <Progress>
+        }
+
+        return $info(progress)
+    }
 
     #-------------------------------------------------------------------
     # Snapshot management
@@ -1223,7 +1346,7 @@ snit::type ::athena::athenadb {
     # Returns 1 if the scenario is locked, and 0 otherwise.
 
     method Locked {} {
-        expr {[$sim state] ne "PREP"}
+        expr {[$self state] ne "PREP"}
     }
 
     # Mgrs args

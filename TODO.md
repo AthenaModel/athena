@@ -1,11 +1,15 @@
 # TODO.md - Athena TODO List
 
-- TclHTTPD Conversion
-  - Fix logging
-  - Write domain handlers for our use:
-    - Use directories for organization, file names with extension for data
-      products, e.g., index.json
-  - Figure out how to handle POST requests of executive scripts
+- athena-slave:
+  - athenadb(n)
+    - Checkpoint the state
+    - Test the new state/busy methods
+      - Interactively
+      - In test/athena
+  - Make sim.tcl set busylock appropriately.
+  - Test master/slave code.
+  - Display progress bar in appwin.
+  - Finish athena(n), athenadb(n) man pages!!!!!!!
 - Significant Outputs:
   - All history variable base names should be unique, e.g., nbsecurity.n rather
     than security.n.

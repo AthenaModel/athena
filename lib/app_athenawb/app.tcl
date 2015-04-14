@@ -330,7 +330,7 @@ snit::type app {
             [$browser {*}$predicate]
         }
 
-        # Simulation state is not RUNNING or WIZARD
+        # Simulation state is not RUNNING or BUSY
 
         statecontroller ::cond::simIsStable -events {
             ::adb <State>

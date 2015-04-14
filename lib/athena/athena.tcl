@@ -94,7 +94,8 @@ snit::type ::athena::athena {
     # ADB
     delegate method adbfile                 to adb
     delegate method autogen                 to adb
-    delegate method bgrun                   to adb as {sim bgrun}
+    delegate method busy                    to adb
+    delegate method busylock                to adb
     delegate method clock                   to adb
     delegate method getclock                to adb as {component clock}
     delegate method contribs                to adb as {aram contribs}
@@ -107,6 +108,7 @@ snit::type ::athena::athena {
     delegate method load                    to adb
     delegate method locked                  to adb
     delegate method paste                   to adb
+    delegate method progress                to adb
     delegate method ptype                   to adb
     delegate method reset                   to adb
     delegate method sanity                  to adb
@@ -116,7 +118,6 @@ snit::type ::athena::athena {
     delegate method stoptime                to adb
     delegate method unsaved                 to adb
     delegate method version                 to adb
-    delegate method wizlock                 to adb
 
     delegate method {absit exists}          to adb as {absit exists}
     delegate method {absit get}             to adb as {absit get}

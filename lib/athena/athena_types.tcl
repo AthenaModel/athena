@@ -169,14 +169,16 @@ enum ::athena::esanity {
 #           the simulation can be paused.
 # PAUSED  - The scenario has been locked, but time is not advancing.  
 #           Only certain orders may be used.
-# WIZARD  - The application has popped up a Wizard window.  No orders may
-#           be sent until the state has returned to PREP.
+# BUSY    - The application is generically "BUSY".  It might have 
+#           popped up a Wizard window or be running a background task.  
+#           No orders may be sent until the state has returned to its
+#           previous value.
 
 enum ::athena::esimstate {
     PREP     Prep
     RUNNING  Running
     PAUSED   Paused
-    WIZARD   Wizard
+    BUSY     Busy
 }
 
 # Magic Input Mode
