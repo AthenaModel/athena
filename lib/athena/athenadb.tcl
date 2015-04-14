@@ -554,9 +554,6 @@ snit::type ::athena::athenadb {
     delegate method tables            to rdb
     delegate method ungrab            to rdb
 
-    # SIM
-    delegate method stoptime          to sim
-    
     # FLUNKY
     delegate method send              to flunky
 

@@ -1,15 +1,23 @@
 # TODO.md - Athena TODO List
 
 - athena-slave:
-  - athenadb(n)
-    - Checkpoint the state
-    - Test the new state/busy methods
-      - Interactively
-      - In test/athena
-  - Make sim.tcl set busylock appropriately.
-  - Test master/slave code.
-  - Display progress bar in appwin.
   - Finish athena(n), athenadb(n) man pages!!!!!!!
+    - athenadb(n)
+      - Make sure all top-level commands are documented.
+      - Add a list of the components that aren't documented.
+  - athenadb(n)
+    - Test the new state/busy methods
+      - In test/athena
+    - Make sure we don't screw up the changed flag!
+      - athenadb "save" needs a -temp option to indicate it's a temporary
+        save and that it shouldn't reset the saved flag.
+    - Figure out how to use master/slave for doing runs in practice.
+      - Perhaps a limit: more than x ticks, use background, fewer than x
+        use fg, where the limit can be set and can automatically decrease
+        if fg processing takes too long?
+      - Or, add a checkbox, and automatically do background for anything over
+        five ticks?
+      - For arachne, we'll always want to do background runs.
 - Significant Outputs:
   - All history variable base names should be unique, e.g., nbsecurity.n rather
     than security.n.

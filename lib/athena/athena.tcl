@@ -115,7 +115,6 @@ snit::type ::athena::athena {
     delegate method save                    to adb
     delegate method stable                  to adb
     delegate method state                   to adb
-    delegate method stoptime                to adb
     delegate method unsaved                 to adb
     delegate method version                 to adb
 

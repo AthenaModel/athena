@@ -94,47 +94,31 @@ a whole, and these are documented below.<p>
 
 <deflist instance>
 
-<defitem rdb {<i obj> rdb <i subcommand...> ?<i args...>?}>       
-<defitem eval {<i obj> eval ...}>      
-<defitem delete {<i obj> delete ...}>
-<defitem exists {<i obj> exists ...}>
-<defitem grab {<i obj> grab ...}>
-<defitem last_insert_rowid {<i obj> last_insert_rowid}>
-<defitem monitor {<i obj> monitor ...}>
-<defitem onecolumn {<i obj> onecolumn ...}>
-<defitem query {<i obj> query ...}>
-<defitem safeeval {<i obj> safeeval ...}>
-<defitem safequery {<i obj> safequery ...}>
-<defitem schema {<i obj> schema ...}>
-<defitem tables {<i obj> tables ...}>
-<defitem ungrab {<i obj> ungrab ...}>
-
-These subcommands are delegated to the underlying <i scenariodb(n)> object,
-and are used to change and query the run-time database (RDB).<p>
-
 <defitem adbfile {<i obj> adbfile}>
 
 Returns the name of the <tt .adb> file loaded on creation, if any, or
 the <tt .adb> file name last used for saving, or "" if no <tt .adb> file
 has ever been loaded or saved.<p>
 
-<defitem "component clock" {<i obj> component clock}>
+<defitem component {<i obj> component <i name>}>
 
-Returns the fully-qualified name of the instance's simulation clock,
-a <xref weekclock(n)> object, for direct
-use by the wrapping <xref athena(n)> object.<p>
+Returns the fully-qualified command name for the named component, so that
+it can be passed to other objects that need direct access.  The following
+components are accessible:<p>
 
-<defitem "component rdb" {<i obj> component rdb}>
+<deflist components>
+<def {clock}>
+The instance's simulation clock, a <xref weekclock(n)> object.<p>
 
-Returns the fully-qualified name of the instance's 
-<xref scenariodb(n)> handle, for direct
-use by the wrapping <xref athena(n)> object.<p>
+<def {rdb}>
+The instance's run-time database object, a <xref scenariodb(n)> object.<p>
+
+</deflist components>
 
 <defitem cprofile {<i obj> cprofile ?<i depth>? <i component args...>}>
 
 This is exactly like <iref profile>, but the command to call is an
 <xref athenadb(n)> subcomponent called as a subcommand of <i obj>.<p>
-
 
 <defitem dbsync {<i obj> dbsync}>
 
@@ -145,6 +129,9 @@ or <iref reset>.<p>
 The sequence is <tt><tag PreSync></tt>, <tt><tag Sync></tt>, 
 <tt><tag Time></tt>, and <tt><tag State></tt>.  See <xref athena(n)> for
 more about the notifier events sent by the library.<p>
+
+<defitem delete {<i obj> delete ...}>
+This command is delegated to the underlying <i scenariodb(n)> object.<p>
 
 <defitem enter {<i obj> enter <i options...>}>
 
@@ -176,6 +163,18 @@ Specifies a command to call if the dialog's help button is pushed.<p>
 
 </deflist enter>
 
+<defitem eval {<i obj> eval ...}>
+This command is delegated to the underlying <i scenariodb(n)> object.<p>
+
+<defitem exists {<i obj> exists ...}>
+This command is delegated to the underlying <i scenariodb(n)> object.<p>
+
+<defitem grab {<i obj> grab ...}>
+This command is delegated to the underlying <i scenariodb(n)> object.<p>
+
+<defitem last_insert_rowid {<i obj> last_insert_rowid}>
+This command is delegated to the underlying <i scenariodb(n)> object.<p>
+
 <defitem load {<i obj> load <i filename>}>
 
 Loads the scenario from the named <tt *.adb> file into this scenario
@@ -186,6 +185,9 @@ object, throwing away any previous data.<p>
 Returns 1 if the scenario is "locked", i.e., in the <b PAUSED> or 
 <b RUNNING> state.<p>
 
+<defitem monitor {<i obj> monitor ...}>
+This command is delegated to the underlying <i scenariodb(n)> object.<p>
+
 <defitem notify {<i obj> notify <i component event> ?<i args...>?}>
 
 Sends a <xref mars:notifier(n)> event on behalf of <xref athena(n)>.  If
@@ -193,34 +195,17 @@ the <i component> name is "", then the event is sent by the
 <tt -subject>; otherwise, the <tt -subject> is suffixed with 
 "<tt>.<i component></tt>"<p>
 
+<defitem onecolumn {<i obj> onecolumn ...}>
+This command is delegated to the underlying <i scenariodb(n)> object.<p>
+
 <defitem order {<i obj> order <i subcommand> ?<i args...>?}>
 
 The subcommands of this command are passed along to the scenario's
-"order flunky".  They are as follows:
+"order flunky".  Most subcommands are documented by the
+<xref mars:order_flunky(n)> man page; the Athena-specific subcommands
+are as follows:<p>
 
 <deflist order>
-
-<defitem "order available" {<i obj> order available ...}>
-<defitem "order canredo" {<i obj> order canredo}>
-<defitem "order canundo" {<i obj> order canundo}>
-<defitem "order class" {<i obj> order class ...}>
-<defitem "order execute" {<i obj> order execute ...}>
-<defitem "order exists" {<i obj> order exists ...}>
-<defitem "order make" {<i obj> order make ...}>
-<defitem "order names" {<i obj> order names}>
-<defitem "order redo" {<i obj> order redo}>
-<defitem "order redotext" {<i obj> order redotext}>
-<defitem "order reset" {<i obj> order reset}>
-<defitem "order send" {<i obj> order send ...}>
-<defitem "order senddict" {<i obj> order senddict...}>
-<defitem "order state" {<i obj> order state ...}>
-<defitem "order transaction" {<i obj> order transaction ...}>
-<defitem "order undo" {<i obj> order undo}>
-<defitem "order undotext" {<i obj> order undotext}>
-<defitem "order validate" {<i obj> order validate ...}>
-
-These commands are defined by the <xref mars:order_flunky(n)> class;
-see that man page for details.<p>
 
 <defitem "monitor" {<i obj> order monitor ?<i flag>?}>
 
@@ -229,7 +214,6 @@ during order execution are monitored, and relevant notifier events are
 sent to the application.  See <xref athena(n)> for details.<p>
 
 Defaults to true.<p>
-
 
 <defitem "transactions" {<i obj> order transactions ?<i flag>?}>
 
@@ -280,10 +264,18 @@ If the <i depth> is given, it must be an integer; that many "*" characters
 are added to the beginning of the log message.  This is useful when 
 profiling calls within another profiled call.<p>
 
+<defitem query {<i obj> query ...}>
+This command is delegated to the underlying <i scenariodb(n)> object.<p>
 
 <defitem reset {<i obj> reset}>
 
 Resets the scenario back to initial empty state.<p>
+
+<defitem safeeval {<i obj> safeeval ...}>
+This command is delegated to the underlying <i scenariodb(n)> object.<p>
+
+<defitem safequery {<i obj> safequery ...}>
+This command is delegated to the underlying <i scenariodb(n)> object.<p>
 
 <defitem save {<i obj> save ?<i filename>?}>
 
@@ -294,11 +286,20 @@ used.<p>
 
   On failure, throws "<tt SCENARIO SAVE>".<p>
 
+<defitem schema {<i obj> schema ...}>
+This command is delegated to the underlying <i scenariodb(n)> object.<p>
+
 <defitem scratch {<i obj> scratch ?<i args...>?}>
 
 Called with no arguments, returns the <tt -scratch> directory.  Any
 arguments are joined to the scratch directory as by <tt file join>, and
 the resulting path is returned.<p>
+
+<defitem tables {<i obj> tables ...}>
+This command is delegated to the underlying <i scenariodb(n)> object.<p>
+
+<defitem ungrab {<i obj> ungrab ...}>
+This command is delegated to the underlying <i scenariodb(n)> object.<p>
 
 <defitem stable {<i obj> stable}>
 
@@ -319,12 +320,6 @@ The client may place an unlocked scenario in the <b WIZARD> state using
 disabled.  It is used to lock out the normal scenario orders while a 
 "wizard" GUI is being used.<p>
 
-<defitem stoptime {<i obj> stoptime}>
-
-While the <i state> is <b RUNNING>, this method returns the simulation
-time in weeks at which the simulation will stop and return to the 
-<b PAUSED> state.<p>
-
 <defitem tkloaded {<i obj> tkloaded}>
 
 Returns 1 if Tk is loaded, and 0 otherwise.<p>
@@ -337,22 +332,12 @@ Returns 1 if there is unsaved scenario data, and 0 otherwise.<p>
 
 Returns the version number of the <xref athena(n)> library.<p>
 
-<defitem wizlock {<i obj> wizlock <i flag>}>
-
-Sets or clears the "wizard lock" flag, which is used to lock out 
-changes to the scenario while a wizard GUI is running.  The wizard
-itself will typical set the <i flag> when it starts, and clear it
-just prior to sending a sequence of orders in an <iref order transaction>.
-The wizard lock flag may only be set when <iref state> is <b PREP>, and
-functions by setting the <iref state> to <b WIZARD>.<p>
-
-
 </deflist instance>
 
-<section FUNCTIONS>
+<section "SQL FUNCTIONS">
 
-athena(n) defines many SQL functions for use in database queries.  The
-functions are TBD.<p>
+athenadb(n) defines many SQL functions for use in database queries.  
+See <xref athena(n)> for details.<p>
 
 <section AUTHOR>
 
