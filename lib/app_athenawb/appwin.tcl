@@ -56,6 +56,7 @@ snit::widget appwin {
     component viewmenu              ;# The View menu
     component toolbar               ;# The main toolbar
     component simtools              ;# The simulation controls
+    component progbar               ;# The progress bar
     component cli                   ;# The cli(n) pane
     component msgline               ;# The messageline(n)
     component content               ;# The content notebook
@@ -425,12 +426,14 @@ snit::widget appwin {
     # simstate    Current simulation state
     # tick        Current sim time as a four-digit tick 
     # date        Current sim time as a week(n) string.
+    # pbarflag    1 if the progressbar is shown, and 0 otherwise.
 
     variable info -array {
         mode           scenario
         simstate       ""
         tick           "0000"
         date           ""
+        pbarflag       0
     }
 
     # Visibility Array: this array determines whether or not various 
@@ -503,6 +506,7 @@ snit::widget appwin {
         notifier bind ::adb      <Sync>          $self [mymethod reload]
         notifier bind ::scenario <ScenarioSaved> $self [mymethod reload]
         notifier bind ::adb      <State>         $self [mymethod SimState]
+        notifier bind ::adb      <Progress>      $self [mymethod SimProgress]
         notifier bind ::adb      <Time>          $self [mymethod SimTime]
         notifier bind ::app      <Prefs>         $self [mymethod AppPrefs]
 
@@ -958,6 +962,11 @@ snit::widget appwin {
         $simtools.duration set [lindex [dict keys $durations] 0]
 
         DynamicHelp::add $simtools.duration -text "Duration of run"
+
+        # Progress Bar
+        install progbar using ttk::progressbar $toolbar.progbar \
+            -orient horizontal \
+            -length 200
 
         # Sim State
         ttk::label $toolbar.state                \
@@ -2049,7 +2058,7 @@ snit::widget appwin {
         } else {
             $self SetMode simulation
         }
-        
+
         # NEXT, update the Prep Lock button
         if {[adb state] eq "PREP"} {
             $toolbar.preplock configure -image {
@@ -2099,6 +2108,43 @@ snit::widget appwin {
             DynamicHelp::add $simtools.runpause -text "Run Simulation"
 
             $simtools.duration configure -state disabled
+        }
+    }
+
+    # SimProgress
+    #
+    # This routine displays/hides the progress bar.
+
+    method SimProgress {} {
+        set prog [adb progress]
+
+        # FIRST, if the progress is "user" we don't want to the
+        # progress bar; make it go away if it's visible.
+        if {$prog eq "user"} {
+            if {$info(pbarflag)} {
+                pack forget $progbar
+                $progbar stop
+                set info(pbarflag) 0
+            }
+
+            return
+        }
+
+        # NEXT, display the progress bar.
+        if {!$info(pbarflag)} {
+            pack $progbar -after $toolbar.state -side right
+            set info(pbarflag) 1
+        }
+
+        if {$prog eq "wait"} {
+            $progbar start
+            $progbar configure \
+                -mode indeterminate
+        } else {
+            $progbar stop
+            $progbar configure \
+                -mode determinate \
+                -value [expr {int(round(100*$prog))}]
         }
     }
 

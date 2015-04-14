@@ -149,17 +149,23 @@ snit::type ::athena::master {
 
         # NEXT, request a time advance.
         set info(completionCB) AdvanceComplete
+        $adb setstate RUNNING
         $self Slave advance $ticks
     }
 
-    # AdvanceComplete
+    # AdvanceComplete tag
+    #
+    # tag   - COMPLETE | ERROR
     #
     # This method is called when the time advance is complete.
 
-    method AdvanceComplete {} {
-        # FIRST, load the syncfile.
-        $adb load $info(syncfile)
-        $adb dbsync
+    method AdvanceComplete {tag} {
+        $adb setstate PAUSED
+
+        if {$tag eq "COMPLETE"} {
+            $adb load $info(syncfile)
+            $adb dbsync
+        }
     }
 
     #-------------------------------------------------------------------
@@ -194,8 +200,8 @@ snit::type ::athena::master {
 
         # NEXT, if we're done, clean up.
         if {$tag eq "COMPLETE"} {
-            $self $info(completionCB)
-
+            $self $info(completionCB) $tag
+            set info(completionCB) ""
             $adb busylock clear
         }
     }
@@ -208,6 +214,7 @@ snit::type ::athena::master {
     # Handles errors from the slave.
 
     method _error {msg errinfo} {
+        $self $info(completionCB) ERROR
         set info(completionCB) ""
         $adb busylock clear
         return -code error -errorinfo $errinfo \

@@ -491,6 +491,16 @@ snit::type app {
     # For now, it just updates idletasks.
 
     typemethod TickCmd {state i n} {
+        if {$state ni {RUNNING BUSY}} {
+            return
+        }
+        
+        if {$n eq "" || $n == 0} {
+            set prog wait
+        } else {
+            set prog [expr {double($i)/double($n)}]            
+        }
+        adb progress $prog
         update idletasks
     }
 
