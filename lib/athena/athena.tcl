@@ -224,6 +224,9 @@ snit::type ::athena::athena {
     delegate method {iom normal}            to adb as {iom normal}
     delegate method {iom validate}          to adb as {iom validate}
 
+    delegate method {master advance}        to adb as {master advance}
+    delegate method {master shutdown}       to adb as {master shutdown}
+
     delegate method {nbhood bbox}           to adb as {nbhood bbox}
     delegate method {nbhood exists}         to adb as {nbhood exists}
     delegate method {nbhood find}           to adb as {nbhood find}

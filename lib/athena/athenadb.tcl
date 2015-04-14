@@ -125,6 +125,7 @@ snit::type ::athena::athenadb {
     component flunky         -public order          ;# athena_flunky(n)
     component gofer          -public gofer          ;# gofer
     component hist           -public hist           ;# results history
+    component master         -public master         ;# master for bg thread
     component parmdb         -public parm           ;# model parameter DB
     component paster         -public paste          ;# paste manager
     component pot            -public bean           ;# beanpot(n)
@@ -354,6 +355,7 @@ snit::type ::athena::athenadb {
             inject                      \
             iom                         \
             map                         \
+            master                      \
             nbhood                      \
             nbrel                       \
             orggroup                    \

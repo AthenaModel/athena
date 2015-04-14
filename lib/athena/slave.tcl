@@ -38,6 +38,12 @@ snit::type ::athena::slave {
     # fgadb    - The name of the foreground athenadb(n) object.
     # syncfile - The name of the synchronization .adb file.
 
+    typevariable info -array {
+        master   ""
+        fgadb    ""
+        syncfile ""
+    }
+
     #-------------------------------------------------------------------
     # Initialize and Termination
 
@@ -59,9 +65,10 @@ snit::type ::athena::slave {
 
         # NEXT, create the athenadb instance.
         try {
+            workdir init
             athenadb create ::sdb \
-                -logcmd   [mytypemethod log]
-                -scenario $info(syncfile)
+                -logcmd  [mytypemethod log] \
+                -adbfile $info(syncfile)
 
             # NEXT, turn off all RDB monitoring and transactions on
             # orders.  We'll explicitly run important operations in 
@@ -98,7 +105,7 @@ snit::type ::athena::slave {
         # No transaction is needed, as sim.tcl already wraps the run
         # in a transaction
 
-        sdb configure -tickdb [mytypemethod AdvanceTickCmd]
+        sdb configure -tickcmd [mytypemethod progress]
 
         try {
             sdb order send normal SIM:RUN -weeks $weeks
@@ -107,11 +114,10 @@ snit::type ::athena::slave {
         } on error {result eopts} {
             $type error $result $eopts
         } finally {
-            sdb configure -tickdb ""
+            sdb configure -tickcmd ""
         }
     }
     
-
     #-------------------------------------------------------------------
     # Utility Type Methods
     

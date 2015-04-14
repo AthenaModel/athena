@@ -68,11 +68,7 @@ snit::type ::athena::master {
     # Shutdown the slave, if we have one.
 
     destructor {
-        if {$info(slave) ne ""} {
-            catch { 
-                $self Slave shutdown
-            }
-        }
+        catch {$self shutdown}
     }
 
     #-------------------------------------------------------------------
@@ -84,6 +80,21 @@ snit::type ::athena::master {
     # be able to ask the master directly.
 
     delegate method busy to adb
+
+    #-------------------------------------------------------------------
+    # Request: Shutdown
+
+    # shutdown
+    #
+    # Shuts down the slave, if it's active.
+
+    method shutdown {} {
+        if {$info(slave) ne ""} {
+            $self Slave shutdown
+            set info(slave) ""
+        }
+    }
+    
     
 
     #-------------------------------------------------------------------
@@ -99,7 +110,7 @@ snit::type ::athena::master {
     # get an error.  Assumes (for now) that the scenario is locked.
 
     method advance {args} {
-        assert {![$adb busy]}
+        assert {[$adb locked] && ![$adb busy]}
 
         # FIRST, get the number of weeks.  By default, run for one week.
         set ticks 1
@@ -185,12 +196,44 @@ snit::type ::athena::master {
         if {$tag eq "COMPLETE"} {
             $self $info(completionCB)
 
-            $adb busylock ""
+            $adb busylock clear
         }
+    }
+
+    # _error msg errinfo
+    #
+    # msg      - Error message
+    # errinfo  - Stack trace
+    #
+    # Handles errors from the slave.
+
+    method _error {msg errinfo} {
+        set info(completionCB) ""
+        $adb busylock clear
+        return -code error -errorinfo $errinfo \
+            "Error in background thread: $msg"
     }
     
     #-------------------------------------------------------------------
     # Utility Methods
+
+    # SlaveInit
+    #
+    # Initializes the slave.
+
+    method SlaveInit {} {
+        assert {$info(slave) eq ""}
+        set info(slave) [thread::create]
+
+        thread::send $info(slave) [list set auto_path $::auto_path]
+
+        thread::send $info(slave) {
+            package require athena
+            namespace import ::projectlib::* ::athena::*
+        }
+
+        $self Slave init [thread::id] $adb $info(syncfile)
+    }
 
     # Slave subcommand ?args?
     #
