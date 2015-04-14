@@ -117,7 +117,7 @@ snit::type ::athena::sim {
 
         # NEXT, set the simulation status
         set info(changed) 0
-        $adb setstate PREP
+        $adb setstate PREP  ;# TBD: Should be done in athenadb?
     }
     
     #-------------------------------------------------------------------
@@ -224,7 +224,7 @@ snit::type ::athena::sim {
         $adb clock mark set RUN
 
         # NEXT, set the state to PAUSED
-        $self SetState PAUSED
+        $adb setstate PAUSED
 
         # NEXT, resync the GUI, since much has changed.
         $adb dbsync
@@ -247,7 +247,7 @@ snit::type ::athena::sim {
         $adb sigevent purge 0
 
         # NEXT, set state
-        $self SetState PREP
+        $adb setstate PREP
 
         # NEXT, log it.
         $adb notify "" <Unlock>
@@ -273,7 +273,7 @@ snit::type ::athena::sim {
         $adb rebase save
 
         # NEXT, set state
-        $self SetState PREP
+        $adb setstate PREP
 
         # NEXT, log it.
         $adb notify "" <Unlock>
@@ -332,7 +332,8 @@ snit::type ::athena::sim {
 
         # NEXT, set the state to running.  This will initialize the
         # models, if need be.
-        $self SetState RUNNING
+        $adb setstate RUNNING
+        $adb busylock "Running until [$adb clock toString $info(stoptime)]"
 
         # NEXT, mark the start of the run.
         set info(basetime) [$adb clock now]
@@ -357,7 +358,8 @@ snit::type ::athena::sim {
                 }
             }
         } on error {result eopts} {
-            $self SetState PAUSED
+            $adb busylock clear
+            $adb setstate PAUSED
             return {*}$eopts $result
         }
 
@@ -385,7 +387,7 @@ snit::type ::athena::sim {
     # This allows the application to halt the sim cleanly on error.
 
     method halt {} {
-        if {[$self state] eq "RUNNING"} {
+        if {[$adb state] eq "RUNNING"} {
             $self pause
         }
 
@@ -513,7 +515,8 @@ snit::type ::athena::sim {
         $adb notify "" <Tick>
 
         if {$stopping} {
-            $self SetState PAUSED
+            $adb busylock clear
+            $adb setstate PAUSED
             callwith $options(-tickcmd) PAUSED $i $n
         }
     }
@@ -680,7 +683,7 @@ snit::type ::athena::sim {
         $adb save $tempfile
 
         # NEXT, set the state to running.
-        $self SetState RUNNING
+        $adb setstate RUNNING
 
         # NEXT, initialize the thread.
         $self ThreadStart $tempfile
@@ -772,7 +775,7 @@ snit::type ::athena::sim {
         }
         callwith $options(-tickcmd) $state $i $n
         if {$state eq "done"} {
-            $self SetState PAUSED
+            $adb setstate PAUSED
             $adb load $info(slavefile)
             $adb dbsync
             $self ThreadComplete
@@ -790,7 +793,7 @@ snit::type ::athena::sim {
     method ThreadError {errmsg errinfo} {
         puts "ThreadError: $errmsg\n$errinfo"
         $self ThreadComplete
-        $self SetState PAUSED
+        $adb setstate PAUSED
         return -code error -errorinfo $errinfo \
             "Error in background thread: $errmsg"
     }
@@ -840,7 +843,7 @@ snit::type ::athena::sim {
         if {[dict size $checkpoint] > 0} {
             dict with checkpoint {
                 $adb clock restore $clock
-                set info(state) $state
+                $adb setstate $state
             }
         }
 

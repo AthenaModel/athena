@@ -246,21 +246,15 @@ snit::type ::athena::athenadb {
     #             The symbolic name is used in the RDB saveables table.
     # busytext  - The busy text
     # progress  - Busy progress indicator, "user", "wait", or fraction.
+    # state     - The scenario state, esimstate(n).  
+    #             NOTE: state is checkpointed/restored by sim.tcl.
 
     variable info -array {
         adbfile   ""
         saveables {}
         busytext  ""
         progress  user
-    }
-
-    # Checkpointed data
-    #
-    # state     - The scenario state, esimstate(n).
-    # TBD: Need to checkpoint!
-
-    variable data -array {
-        state PREP
+        state     PREP
     }
 
     #-------------------------------------------------------------------
@@ -296,7 +290,7 @@ snit::type ::athena::athenadb {
         # NEXT, create the order flunky for processing order input and
         # handling undo/redo.
         install flunky using ::athena::athena_flunky create ${selfns}::flunky $self
-        $flunky state $data(state)
+        $flunky state $info(state)
 
         # NEXT, create the gofer for retrieving data.
         install gofer using ::athena::goferx create ${selfns}::gofer $self
@@ -808,10 +802,10 @@ snit::type ::athena::athenadb {
 
     method state {} {
         # RUNNING is a special case; RUNNING also uses the busy text.
-        if {$data(state) ne "RUNNING" && $info(busytext) ne ""} {
+        if {$info(state) ne "RUNNING" && $info(busytext) ne ""} {
             return "BUSY"
         } else {
-            return $data(state)
+            return $info(state)
         }
     }
 
@@ -820,7 +814,7 @@ snit::type ::athena::athenadb {
     # Returns 1 if the simulation is locked, and 0 otherwise.
 
     method locked {} {
-        return [expr {$data(state) in {PAUSED RUNNING}}]
+        return [expr {$info(state) in {PAUSED RUNNING}}]
     }
 
     # stable
@@ -829,7 +823,7 @@ snit::type ::athena::athenadb {
     # I.e., the simulation is in either the PREP or PAUSED states.
 
     method stable {} {
-        return [expr {$data(state) in {PREP PAUSED}}]
+        return [expr {$info(state) in {PREP PAUSED}}]
     }
     
     # busy
@@ -848,11 +842,17 @@ snit::type ::athena::athenadb {
     # Sets the scenario state and notifies the client.
 
     method setstate {state} {
-        set data(state) $state
+        # Don't set it to BUSY; special case.
+        if {$state eq "BUSY"} {
+            $self log normal "" "Scenario state is BUSY ($info(busytext))"
+        } else {
+            set info(state) $state
+            $self log normal "" "Scenario state is $info(state)"
+        }
+
         $flunky state $state
 
-        $self log normal "" "Scenario state is $data(state)"
-        $self notify     "" <State>
+        $self notify  "" <State>
     }
 
     #-------------------------------------------------------------------
@@ -871,16 +871,14 @@ snit::type ::athena::athenadb {
         if {$busytext eq "clear"} {
             set info(busytext) ""
             $self progress user
-            $self log normal "" "Scenario is no longer BUSY"
-            $self notify "" <State>
+            $self setstate $info(state)
         } elseif {$busytext ne ""} {
             if {$info(busytext) eq ""} {
                 $self progress wait
             }
 
             set info(busytext) $busytext
-            $self log normal "" "Scenario is BUSY ($busytext)"
-            $self notify "" <State>
+            $self setstate BUSY
         }
 
         return $info(busytext)

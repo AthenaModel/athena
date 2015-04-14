@@ -2037,17 +2037,10 @@ snit::widget appwin {
 
     method SimState {} {
         # FIRST, display the simulation state
-        if {[adb state] eq "RUNNING"} {
-            set prefix [esimstate longname [adb state]]
-
-            if {[adb stoptime] == 0} {
-                set info(simstate) "$prefix until paused"
-            } else {
-                set info(simstate) \
-                    "$prefix until [adb clock toString [adb stoptime]]"
-            }
+        if {[adb busy]} {
+            set info(simstate) [adb busylock]
         } else {
-            set info(simstate) [esimstate longname [adb state]]
+            set info(simstate) [esimstate longname [adb state]]            
         }
 
         # NEXT, update the window mode
