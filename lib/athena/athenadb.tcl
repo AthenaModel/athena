@@ -250,6 +250,7 @@ snit::type ::athena::athenadb {
     # busytext  - The busy text
     # pausecmd  - Command to use to pause the scenario when busy.
     # progress  - Busy progress indicator, "user", "wait", or fraction.
+    # state     - State as of last state change.  Used to detect changes.
 
     variable info -array {
         adbfile   ""
@@ -257,6 +258,7 @@ snit::type ::athena::athenadb {
         busytext  ""
         pausecmd  {}
         progress  user
+        state     ""
     }
 
     # cpinfo - Checkpointed Data Array
@@ -611,6 +613,7 @@ snit::type ::athena::athenadb {
         $aram    clear
         $aam     reset
         $abevent reset
+        $flunky reset
 
         $self FinishOpeningScenario
     }
@@ -659,6 +662,8 @@ snit::type ::athena::athenadb {
         # NEXT, restore the saveables
         $self RestoreSaveables -saved
         $executive reset
+        $flunky reset
+
 
         # NEXT, save the name.
         set info(adbfile) $filename
@@ -829,7 +834,11 @@ snit::type ::athena::athenadb {
         if {$flag} {
             require {[$self unlocked]} "Scenario is already locked"
         } else {
-            require {[$self locked]} "Scenario is already unlocked"
+            # We don't check if the scenario was already unlocked.  As
+            # a natural part of the "sim unlock" call, the cpinfo() array
+            # is reset to its pre-lock state, and cpinfo(locked) will be
+            # false.  However, we need the state change call anyway.
+            # So just don't check.
         }
 
         set cpinfo(locked) $flag
@@ -881,7 +890,17 @@ snit::type ::athena::athenadb {
     # the state has changed.
 
     method StateChange {} {
-        $flunky state [$self state]
+        if {[$self state] ne $info(state)} {
+            $flunky state [$self state]
+
+            # Clear undo stack on state change; can't undo after
+            # going from PREP to PAUSED.
+            # TBD: Might not be best approach.  There are no undoable
+            # orders in any state but PREP.  Just need to make 
+            # canundo/undotext handle the state properly.  Then you
+            # can lock, unlock, and have your undo stack back.
+            $flunky reset
+        }
         $self notify "" <State>
     }
 
@@ -963,7 +982,11 @@ snit::type ::athena::athenadb {
     # Returns 1 if the scenario is locked, and 0 otherwise.
 
     method locked {} {
-        return $cpinfo(locked)
+        if {$cpinfo(locked)} {
+            return 1
+        } else {
+            return 0
+        }
     }
 
     # unlocked
@@ -971,7 +994,11 @@ snit::type ::athena::athenadb {
     # Returns 1 if the scenario is unlocked, and 0 otherwise.
 
     method unlocked {} {
-        expr {!$cpinfo(locked)}
+        if {!$cpinfo(locked)} {
+            return 1
+        } else {
+            return 0
+        }
     }
 
     # idle
