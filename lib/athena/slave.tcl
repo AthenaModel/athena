@@ -131,7 +131,8 @@ snit::type ::athena::slave {
     # be added to the component name.
 
     typemethod log {level comp message} {
-        $type master _log $level $comp $message
+        # TBD: Sending the log to the master makes no sense.
+        # $type master _log $level $comp $message
     }
 
     # progress tag ?i n?

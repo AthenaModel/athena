@@ -8,9 +8,13 @@
   - athenadb(n)
     - Test the new state/busy methods
       - In test/athena
-    - Make sure we don't screw up the changed flag!
-      - athenadb "save" needs a -temp option to indicate it's a temporary
-        save and that it shouldn't reset the saved flag.
+    - Add "savetemp", "loadtemp" to save and load transient files.
+      - Not exposed by athena(n).
+      - Don't affect the changed flag.
+      - Don't set adbfile name.
+    - Make "master" be "background" and "slave" be "bgslave".
+    - Handle slave logging.
+      - Multiple log directories, $subject and $subject.bg.
     - Figure out how to use master/slave for doing runs in practice.
       - Perhaps a limit: more than x ticks, use background, fewer than x
         use fg, where the limit can be set and can automatically decrease
@@ -18,6 +22,8 @@
       - Or, add a checkbox, and automatically do background for anything over
         five ticks?
       - For arachne, we'll always want to do background runs.
+    - Cleanup references to state names wherever possible, using the
+      predicates instead.
 - Significant Outputs:
   - All history variable base names should be unique, e.g., nbsecurity.n rather
     than security.n.

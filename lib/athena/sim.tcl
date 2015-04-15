@@ -54,8 +54,6 @@ snit::type ::athena::sim {
     #             OK        - Normal termination
     #             FAILURE   - On-tick sanity check failure
     #             ""        - Abnormal
-    # slave     - Slave thread ID.
-    # slavefile - Slave .adb file name
 
     variable info -array {
         changed    0
@@ -63,8 +61,6 @@ snit::type ::athena::sim {
         stoptime   0
         basetime   0
         reason     ""
-        slave      ""
-        slavefile  ""
     }
 
     # trans -- transient data array
@@ -117,7 +113,6 @@ snit::type ::athena::sim {
 
         # NEXT, set the simulation status
         set info(changed) 0
-        $adb setstate PREP  ;# TBD: Should be done in athenadb?
     }
     
     #-------------------------------------------------------------------
@@ -199,10 +194,15 @@ snit::type ::athena::sim {
 
     # lock
     #
-    # Causes the simulation to transition from PREP to PAUSED.
+    # Locks the scenario.  Saves a snapshot to be restored on unlock,
+    # and initializes the models.
+    #
+    # TBD: Ideally, this routine might be called by [$adb setlock]
+    # rather than the other way around (and SIM:LOCK would be an
+    # athenadb(n) order, ATHENA:LOCK).
 
     method lock {} {
-        assert {[$adb state] eq "PREP"}
+        assert {[$adb idle] && [$adb unlocked]}
 
         # FIRST, Make sure that bsys has had a chance to compute
         # all of the affinities.
@@ -223,8 +223,8 @@ snit::type ::athena::sim {
         $adb clock mark set LOCK
         $adb clock mark set RUN
 
-        # NEXT, set the state to PAUSED
-        $adb setstate PAUSED
+        # NEXT, lock the scenario
+        $adb setlock on
 
         # NEXT, resync the GUI, since much has changed.
         $adb dbsync
@@ -235,19 +235,24 @@ snit::type ::athena::sim {
 
     # unlock
     #
-    # Causes the simulation to transition from PAUSED
-    # to PREP.
+    # Unlocks the scenario, and restores the on-lock snapshot, returning
+    # the scenario to its state before the models were initialized and
+    # advanced.
+    #
+    # TBD: Ideally, this routine might be called by [$adb setlock]
+    # rather than the other way around (and SIM:UNLOCK would be an
+    # athenadb(n) order, ATHENA:UNLOCK).
 
     method unlock {} {
-        assert {[$adb state] eq "PAUSED"}
+        assert {[$adb idle] && [$adb locked]}
 
-        # FIRST, load the PREP snapshot
+        # FIRST, load the on-lock snapshot
         $adb snapshot load
         $adb snapshot purge
         $adb sigevent purge 0
 
-        # NEXT, set state
-        $adb setstate PREP
+        # NEXT, set unlock the scenario
+        $adb setlock off
 
         # NEXT, log it.
         $adb notify "" <Unlock>
@@ -262,18 +267,18 @@ snit::type ::athena::sim {
 
     # rebase
     #
-    # Causes the simulation to transition from PAUSED
-    # to PREP, retaining the current simulation state.
+    # Unlocks the scenario, but attempts to update it to match the 
+    # current state of the simulation.
 
     method rebase {} {
-        assert {[$adb state] eq "PAUSED"}
+        assert {[$adb idle] && [$adb locked]}
 
         # FIRST, save the current simulation state to the
         # scenario tables
         $adb rebase save
 
         # NEXT, set state
-        $adb setstate PREP
+        $adb setlock off
 
         # NEXT, log it.
         $adb notify "" <Unlock>
@@ -298,7 +303,7 @@ snit::type ::athena::sim {
     # 'sim pause' is called during the -tickcmd.
 
     method run {args} {
-        assert {[$adb state] eq "PAUSED"}
+        assert {[$adb idle] && [$adb locked]}
 
         # FIRST, clear the stop reason.
         set info(reason) ""
@@ -330,10 +335,10 @@ snit::type ::athena::sim {
         # check it to make sure.
         assert {$info(stoptime) > [$adb clock now]}
 
-        # NEXT, set the state to running.  This will initialize the
-        # models, if need be.
-        $adb setstate RUNNING
-        $adb busylock "Running until [$adb clock toString $info(stoptime)]"
+        # NEXT, we are busy, but interruptible.
+        $adb busy set \
+            "Running until [$adb clock toString $info(stoptime)]" \
+            [mymethod pause]
 
         # NEXT, mark the start of the run.
         set info(basetime) [$adb clock now]
@@ -348,7 +353,7 @@ snit::type ::athena::sim {
         set withTrans [$adb parm get sim.tickTransaction]
 
         try {
-            while {[$adb state] eq "RUNNING"} {
+            while {[$adb isbusy]} {
                 if {$withTrans} {
                     $adb rdb transaction {
                         $self Tick
@@ -358,8 +363,8 @@ snit::type ::athena::sim {
                 }
             }
         } on error {result eopts} {
-            $adb busylock clear
-            $adb setstate PAUSED
+            # We halted; return to idle
+            $adb busy clear
             return {*}$eopts $result
         }
 
@@ -515,9 +520,8 @@ snit::type ::athena::sim {
         $adb notify "" <Tick>
 
         if {$stopping} {
-            $adb busylock clear
-            $adb setstate PAUSED
-            callwith $options(-tickcmd) PAUSED $i $n
+            $adb busy clear
+            callwith $options(-tickcmd) [$adb state] $i $n
         }
     }
 
@@ -649,7 +653,7 @@ snit::type ::athena::sim {
     # Returns a checkpoint of the non-RDB simulation data.
 
     method checkpoint {{option ""}} {
-        assert {[$adb state] in {PREP PAUSED}}
+        assert {[$adb idle]}
 
         if {$option eq "-saved"} {
             set info(changed) 0
@@ -657,7 +661,6 @@ snit::type ::athena::sim {
 
         set checkpoint [dict create]
         
-        dict set checkpoint state [$adb state]
         dict set checkpoint clock [$adb clock checkpoint]
 
         return $checkpoint
@@ -674,7 +677,6 @@ snit::type ::athena::sim {
         if {[dict size $checkpoint] > 0} {
             dict with checkpoint {
                 $adb clock restore $clock
-                $adb setstate $state
             }
         }
 
@@ -851,8 +853,8 @@ snit::type ::athena::sim {
 
 # SIM:PAUSE
 #
-# Pauses the simulation.  It's an error if the simulation is not
-# running.
+# Pauses the simulation when it's "RUNNING", i.e., busy and interruptible.
+# It's an error if the simulation is not running.
 
 ::athena::orders define SIM:PAUSE {
     meta title      "Pause Simulation"
@@ -865,7 +867,7 @@ snit::type ::athena::sim {
     }
 
     method _execute {{flunky ""}} {
-        my setundo [$adb sim pause]
+        my setundo [$adb interrupt]
     }
 }
 

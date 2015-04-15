@@ -335,7 +335,7 @@ snit::type app {
         statecontroller ::cond::simIsStable -events {
             ::adb <State>
         } -condition {
-            [::adb stable]
+            [::adb idle]
         }
 
         # Simulation state is PREP or PAUSED
@@ -494,7 +494,7 @@ snit::type app {
         if {$state ni {RUNNING BUSY}} {
             return
         }
-        
+
         if {$n eq "" || $n == 0} {
             set prog wait
         } else {
@@ -924,7 +924,7 @@ snit::type app {
     # Saves the current scenario using the existing name.
 
     typemethod save {{filename ""}} {
-        require {[adb stable]} "The scenario cannot be saved in this state."
+        require {[adb idle]} "The scenario cannot be saved in this state."
 
         # FIRST, notify the simulation that we're saving, so other
         # modules can prepare.
@@ -1223,6 +1223,7 @@ snit::type app {
             app help $args
         }
     }
+
 }
 
 

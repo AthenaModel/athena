@@ -162,22 +162,27 @@ enum ::athena::esanity {
 
 # esimstate: The current simulation state
 #
-# PREP    - Scenario preparation.  The user can send orders to edit the
-#           scenario.
-# RUNNING - Time is advancing.  The user is generally not allowed to send
-#           orders.  Certain orders can be sent by tactic, and of course
-#           the simulation can be paused.
-# PAUSED  - The scenario has been locked, but time is not advancing.  
-#           Only certain orders may be used.
-# BUSY    - The application is generically "BUSY".  It might have 
-#           popped up a Wizard window or be running a background task.  
-#           No orders may be sent until the state has returned to its
-#           previous value.
+# PREP    - Scenario preparation.  The scenario is unlocked and idle;
+#           The user can send orders to edit the scenario.
+#
+# PAUSED  - Scenario paused.  The scenario is locked and idle; only a
+#           subset of orders may be used.
+#
+# RUNNING - The application is busy running some process that blocks 
+#           changes to the scenario.  The process is interruptible (e.g.,
+#           simulation time is advancing in the foreground.)  No orders
+#           may be sent until the scenario is once again idle.
+#
+# BUSY    - The application is busy running some process that blocks 
+#           changes to the scenario; the process is NOT interruptible.
+#           It might have popped up a Wizard window or be running a 
+#           background task.  No orders may be sent until the scenario
+#           is once again idle.
 
 enum ::athena::esimstate {
     PREP     Prep
-    RUNNING  Running
     PAUSED   Paused
+    RUNNING  Running
     BUSY     Busy
 }
 

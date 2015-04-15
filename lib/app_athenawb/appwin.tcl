@@ -1485,10 +1485,10 @@ snit::widget appwin {
     # Prompts the user to create a brand new scenario.
 
     method FileNew {} {
-        # FIRST, we can only create a new scenario if we're not RUNNING.
+        # FIRST, we can only create a new scenario if we're idle.
         # The menu item will be unavailable in this case, but we might
         # still get here via a hot-key.
-        if {![adb stable]} {
+        if {![adb idle]} {
             return
         }
 
@@ -1506,10 +1506,10 @@ snit::widget appwin {
     # Prompts the user to open a scenario in a particular file.
 
     method FileOpen {} {
-        # FIRST, we can only open a new scenario if we're not RUNNING.
+        # FIRST, we can only open a new scenario if we're idle.
         # The menu item will be unavailable in this case, but we might
         # still get here via a hot-key.
-        if {![adb stable]} {
+        if {![adb idle]} {
             return
         }
 
@@ -1540,10 +1540,10 @@ snit::widget appwin {
     # Prompts the user to save the scenario as a particular file.
 
     method FileSaveAs {} {
-        # FIRST, we can only save a new scenario if we're not RUNNING.
+        # FIRST, we can only save a new scenario if we're idle.
         # The menu item will be unavailable in this case, but we might
         # still get here via a hot-key.
-        if {![adb stable]} {
+        if {![adb idle]} {
             return
         }
 
@@ -1573,10 +1573,10 @@ snit::widget appwin {
     # copy.
 
     method FileSave {} {
-        # FIRST, we can only save a scenario if we're not RUNNING.
+        # FIRST, we can only save a scenario if we're idle.
         # The menu item will be unavailable in this case, but we might
         # still get here via a hot-key.
-        if {![adb stable]} {
+        if {![adb idle]} {
             return
         }
 
@@ -2046,14 +2046,10 @@ snit::widget appwin {
 
     method SimState {} {
         # FIRST, display the simulation state
-        if {[adb busy]} {
-            set info(simstate) [adb busylock]
-        } else {
-            set info(simstate) [esimstate longname [adb state]]            
-        }
+        set info(simstate) [adb statetext]
 
         # NEXT, update the window mode
-        if {[adb state] in {PREP BUSY}} {
+        if {[adb unlocked]} {
             $self SetMode scenario
         } else {
             $self SetMode simulation

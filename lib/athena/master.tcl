@@ -110,7 +110,7 @@ snit::type ::athena::master {
     # get an error.  Assumes (for now) that the scenario is locked.
 
     method advance {args} {
-        assert {[$adb locked] && ![$adb busy]}
+        assert {[$adb locked] && [$adb idle]}
 
         # FIRST, get the number of weeks.  By default, run for one week.
         set ticks 1
@@ -139,7 +139,7 @@ snit::type ::athena::master {
         $adb save $info(syncfile)
 
         # NEXT, set the busy lock.
-        $adb busylock "Running until [$adb clock toString $stoptime]"
+        $adb busy set "Running until [$adb clock toString $stoptime]"
         $adb progress 0.0
 
         # NEXT, if the thread doesn't exist, create it.
@@ -149,7 +149,6 @@ snit::type ::athena::master {
 
         # NEXT, request a time advance.
         set info(completionCB) AdvanceComplete
-        $adb setstate RUNNING
         $self Slave advance $ticks
     }
 
@@ -160,7 +159,7 @@ snit::type ::athena::master {
     # This method is called when the time advance is complete.
 
     method AdvanceComplete {tag} {
-        $adb setstate PAUSED
+        $adb busy clear
 
         if {$tag eq "COMPLETE"} {
             $adb load $info(syncfile)
@@ -202,7 +201,6 @@ snit::type ::athena::master {
         if {$tag eq "COMPLETE"} {
             $self $info(completionCB) $tag
             set info(completionCB) ""
-            $adb busylock clear
         }
     }
 
@@ -216,7 +214,6 @@ snit::type ::athena::master {
     method _error {msg errinfo} {
         $self $info(completionCB) ERROR
         set info(completionCB) ""
-        $adb busylock clear
         return -code error -errorinfo $errinfo \
             "Error in background thread: $msg"
     }

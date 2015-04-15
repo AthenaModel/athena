@@ -167,6 +167,23 @@ proc ::athena::caller {} {
     }
 }
 
+# dumpstack
+#
+# Dumps the stack at the current point in execution.  Useful for
+# figuring out how a command is called.
+
+proc ::athena::dumpstack {} {
+    set i [info frame]
+
+    puts "Stack Frames:"
+    for {set i [info frame]} {$i > 0} {incr i -1} {
+        array set frm [info frame $i]
+        puts "$i: $frm(cmd)"
+    }
+}
+
+
+
 # dbexists db table key value
 #
 # db    - Database handle

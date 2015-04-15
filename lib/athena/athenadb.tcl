@@ -245,17 +245,27 @@ snit::type ::athena::athenadb {
     # adbfile   - The name of the related .adb file, or "" if none.
     # saveables - Dictionary of saveable(i) objects by symbolic name.
     #             The symbolic name is used in the RDB saveables table.
+    # 
+    # datalock  - 1 if scenario is locked, 0 if it is not.
     # busytext  - The busy text
+    # pausecmd  - Command to use to pause the scenario when busy.
     # progress  - Busy progress indicator, "user", "wait", or fraction.
-    # state     - The scenario state, esimstate(n).  
-    #             NOTE: state is checkpointed/restored by sim.tcl.
 
     variable info -array {
         adbfile   ""
         saveables {}
         busytext  ""
+        pausecmd  {}
         progress  user
-        state     PREP
+    }
+
+    # cpinfo - Checkpointed Data Array
+    #
+    # locked   - The scenario lock flag.  If 1, scenario is locked;
+    #            if 0, scenario is unlocked.
+
+    variable cpinfo -array {
+        locked 0
     }
 
     #-------------------------------------------------------------------
@@ -268,7 +278,10 @@ snit::type ::athena::athenadb {
     # be empty.  
 
     constructor {args} {
-        # FIRST, set the -subject's default value.  Then, get the option
+        # FIRST, initialize the workdir if it hasn't been.
+        workdir init
+
+        # NEXT, set the -subject's default value.  Then, get the option
         # values.
         set options(-subject) $self
 
@@ -291,7 +304,7 @@ snit::type ::athena::athenadb {
         # NEXT, create the order flunky for processing order input and
         # handling undo/redo.
         install flunky using ::athena::athena_flunky create ${selfns}::flunky $self
-        $flunky state $info(state)
+        $flunky state [$self state]
 
         # NEXT, create the gofer for retrieving data.
         install gofer using ::athena::goferx create ${selfns}::gofer $self
@@ -378,12 +391,13 @@ snit::type ::athena::athenadb {
 
         # NEXT, register the ones that are saveables.  This will change
         # when the transition to library code is complete.
-        $self RegisterSaveable aram [list $aram saveable]
-        $self RegisterSaveable bsys $bsys
-        $self RegisterSaveable econ $econ
-        $self RegisterSaveable parm $parmdb
-        $self RegisterSaveable pot  $pot
-        $self RegisterSaveable sim  $sim
+        $self RegisterSaveable aram     [list $aram saveable]
+        $self RegisterSaveable athenadb $self
+        $self RegisterSaveable bsys     $bsys
+        $self RegisterSaveable econ     $econ
+        $self RegisterSaveable parm     $parmdb
+        $self RegisterSaveable pot      $pot
+        $self RegisterSaveable sim      $sim
 
 
         # NEXT, either load the named file or create an empty database.
@@ -566,11 +580,11 @@ snit::type ::athena::athenadb {
     # "new" scenario.
 
     method reset {} {
-        require {[$self stable]} "A new scenario cannot be created in this state."
+        require {[$self idle]} "A new scenario cannot be created in this state."
 
         # FIRST, unlock the scenario if it is locked; this
         # will reinitialize modules like URAM.
-        if {[$self state] ne "PREP"} {
+        if {[$self locked]} {
             $sim unlock
         }
 
@@ -635,7 +649,7 @@ snit::type ::athena::athenadb {
     # before.
 
     method load {filename} {
-        require {[$self stable]} "A new scenario cannot be opened in this state."
+        require {[$self idle]} "A new scenario cannot be opened in this state."
 
         try {
             $rdb load $filename
@@ -791,96 +805,85 @@ snit::type ::athena::athenadb {
     }
 
     #-------------------------------------------------------------------
-    # Scenario State
-
-    # state
+    # Scenario State Machine
     #
-    # Returns the scenario state, e.g., PREP, PAUSED, ...
-    # If the busylock is set, then the state is BUSY; when the lock
-    # is cleared, we return to the "normal" state.
+    # The scenario may be unlocked or locked; and it may be idle or 
+    # busy.  The state names are as follows:
+    #
+    # PREP     - idle, unlocked
+    # PAUSED   - idle, locked
+    # BUSY     - busy, not interruptible
+    # RUNNING  - busy, interruptible
+    #
+    # The scenario may be locked or unlocked only when it is idle.
 
-    method state {} {
-        # RUNNING is a special case; RUNNING also uses the busy text.
-        if {$info(state) ne "RUNNING" && $info(busytext) ne ""} {
-            return "BUSY"
+    # setlock flag
+    #
+    # flag   - 1 if the scenario is locked, and 0 otherwise.
+    #
+    # Sets the scenario lock flag.  This only sets the flag; the
+    # work that goes along with it is done by sim.tcl.
+
+    method setlock {flag} {
+        require {[$self idle]} "Scenario is busy"
+
+        if {$flag} {
+            require {[$self unlocked]} "Scenario is already locked"
         } else {
-            return $info(state)
-        }
-    }
-
-    # locked
-    #
-    # Returns 1 if the simulation is locked, and 0 otherwise.
-
-    method locked {} {
-        return [expr {$info(state) in {PAUSED RUNNING}}]
-    }
-
-    # stable
-    #
-    # Returns 1 if the simulation is "stable", with nothing in process.
-    # I.e., the simulation is in either the PREP or PAUSED states.
-
-    method stable {} {
-        return [expr {$info(state) in {PREP PAUSED}}]
-    }
-    
-    # busy
-    #
-    # The scenario is "busy" if its state is "BUSY" or "RUNNING".
-    # Busy is the complement of "stable".
-
-    method busy {} {
-        return [expr {[$self state] in {BUSY RUNNING}}]
-    }
-
-    # setstate state
-    #
-    # state    - An esimstate(n) value
-    #
-    # Sets the scenario state and notifies the client.
-
-    method setstate {state} {
-        # Don't set it to BUSY; special case.
-        if {$state eq "BUSY"} {
-            $self log normal "" "Scenario state is BUSY ($info(busytext))"
-        } else {
-            set info(state) $state
-            $self log normal "" "Scenario state is $info(state)"
+            require {[$self locked]} "Scenario is already unlocked"
         }
 
-        $flunky state $state
+        set cpinfo(locked) $flag
+        set info(changed) 1
 
-        $self notify  "" <State>
+        $self StateChange
     }
 
-    #-------------------------------------------------------------------
-    # Busy Lock Control
-
-    # busylock ?busytext?
+    # busy set busytext ?pausecmd?
     #
-    # busytext   - A message indicating how we're busy, or "clear" if 
-    #              no longer busy.
+    # busytext  - A busy message, e.g., "Running until 2014W32"
+    # pausecmd - A command to interrupt the activity.
     #
-    # By default, returns the current busytext.  If the busytext is "clear",
-    # clears any busy lock.  Otherwise, we enter the BUSY state (if not 
-    # already "busy"), and save the busytext.  Finally, sends <State>.
+    # The scenario is running a long running process in the context
+    # of the event loop, in either the foreground or the background.
+    # The busytext indicates what it is.  If pausecmd is given, it is
+    # interruptible; otherwise not.
+    #
+    # This is usually used with 'progress' to give progress information
+    # to the user.
+    #
+    # busy set can be called multiple times while busy to change the
+    # busytext or the pausecmd.
 
-    method busylock {{busytext ""}} {
-        if {$busytext eq "clear"} {
-            set info(busytext) ""
-            $self progress user
-            $self setstate $info(state)
-        } elseif {$busytext ne ""} {
-            if {$info(busytext) eq ""} {
-                $self progress wait
-            }
+    method {busy set} {busytext {pausecmd ""}} {
+        set info(busytext) $busytext
+        set info(pausecmd) $pausecmd
 
-            set info(busytext) $busytext
-            $self setstate BUSY
-        }
+        $self StateChange
+    }
 
-        return $info(busytext)
+    # busy clear
+    #
+    # The long running process has ended. Clears the busytext and
+    # pausecmd; the scenario is now idle.
+
+    method {busy clear} {} {
+        require {[$self isbusy]} "Scenario is already idle"
+        set info(busytext) ""
+        set info(pausecmd) ""
+
+        $self progress user
+        $self StateChange
+    }
+
+    # StateChange
+    #
+    # Notifies the rest of the scenario code, and the client, that
+    # the state has changed.
+
+    method StateChange {} {
+        $flunky state [$self state]
+        $self notify "" <State>
     }
 
     # progress ?value?
@@ -893,10 +896,9 @@ snit::type ::athena::athenadb {
     # wait        - An indefinitely long process is on-going.
     # 0.0 to 1.0  - We are this fraction of the way through the process.
     #
-    # When the busylock is set, progress is set to "wait".  When the
-    # simulation is stable again, progress is set to "user".  The 
-    # on-going process is free to call this with the fraction of 
-    # completion if desired.
+    # When the scenario becomes idle, the progress is set back to "user".
+    # It is up to the busy activity to set progress to "wait" or a
+    # fraction.
     #
     # Sends <Progress> on change.
 
@@ -908,6 +910,97 @@ snit::type ::athena::athenadb {
 
         return $info(progress)
     }
+
+    # interrupt
+    #
+    # Interrupts the busy process.  This is an error if the busy process
+    # is not interruptible.
+
+    method interrupt {} {
+        require {[$self interruptible]} "No interruptible process is running"
+        $self log normal "" "Interrupting busy process"
+        {*}$info(pausecmd)
+        return
+    }
+
+    #-------------------------------------------------------------------
+    # State Machine Queries
+    
+    # state
+    #
+    # Computes and returns the scenario state.
+
+    method state {} {
+        if {$info(busytext) ne ""} {
+            if {$info(pausecmd) eq ""} {
+                return "BUSY"
+            } else {
+                return "RUNNING"
+            }
+        } else {
+            if {$cpinfo(locked)} {
+                return "PAUSED"
+            } else {
+                return "PREP"
+            }
+        }
+    }
+
+    # statetext
+    #
+    # Returns a human-readable equivalent of the state, using the
+    # busytext if available.
+
+    method statetext {} {
+        if {$info(busytext) ne ""} {
+            return $info(busytext)
+        } else {
+            return [esimstate longname [$self state]]
+        }
+    }
+
+    # locked
+    #
+    # Returns 1 if the scenario is locked, and 0 otherwise.
+
+    method locked {} {
+        return $cpinfo(locked)
+    }
+
+    # unlocked
+    #
+    # Returns 1 if the scenario is unlocked, and 0 otherwise.
+
+    method unlocked {} {
+        expr {!$cpinfo(locked)}
+    }
+
+    # idle
+    #
+    # Returns 1 if the scenario is idle, with nothing in process,
+    # and 0 otherwise.
+
+    method idle {} {
+        expr {$info(busytext) eq ""}
+    }
+    
+    # isbusy
+    #
+    # Returns 1 if the scenario is busy, and 0 otherwise.
+
+    method isbusy {} {
+        expr {$info(busytext) ne ""}
+    }
+
+    # interruptible
+    #
+    # Returns 1 if the scenario is busy and the process is interruptible,
+    # and 0 otherwise.
+
+    method interruptible {} {
+        expr {[$self isbusy] && $info(pausecmd) ne ""}
+    }
+
 
     #-------------------------------------------------------------------
     # Snapshot management
@@ -1335,6 +1428,51 @@ snit::type ::athena::athenadb {
         }]
     }
 
+    #-------------------------------------------------------------------
+    # saveable(i) interface
+
+    # checkpoint ?-saved?
+    #
+    # Returns a checkpoint of the non-RDB simulation data.
+
+    method checkpoint {{option ""}} {
+        assert {[$self idle]}
+
+        if {$option eq "-saved"} {
+            set info(changed) 0
+        }
+
+        set checkpoint [dict create]
+        
+        return [array get cpinfo]
+    }
+
+    # restore checkpoint ?-saved?
+    #
+    # checkpoint     A string returned by the checkpoint method
+    
+    method restore {checkpoint {option ""}} {
+        set info(changed) 1
+
+        if {[dict size $checkpoint] > 0} {
+            array unset cpinfo
+            array set cpinfo $checkpoint
+        }
+
+        if {$option eq "-saved"} {
+            set info(changed) 0
+        }
+    }
+
+    # changed
+    #
+    # Returns 1 if saveable(i) data has changed, and 0 otherwise.
+
+    method changed {} {
+        return $info(changed)
+    }
+
+
     #===================================================================
     # SQL Functions
 
@@ -1343,7 +1481,7 @@ snit::type ::athena::athenadb {
     # Returns 1 if the scenario is locked, and 0 otherwise.
 
     method Locked {} {
-        expr {[$self state] ne "PREP"}
+        $self locked
     }
 
     # Mgrs args
