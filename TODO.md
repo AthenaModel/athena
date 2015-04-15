@@ -1,10 +1,7 @@
 # TODO.md - Athena TODO List
 
 - athena-slave:
-  - Finish athena(n), athenadb(n) man pages!!!!!!!
-    - athenadb(n)
-      - Make sure all top-level commands are documented.
-      - Add a list of the components that aren't documented.
+  - Finish athena(n) man page!!!!!!!
   - athenadb(n)
     - Test the new state/busy methods
       - In test/athena

@@ -118,7 +118,7 @@ snit::type ::athena::athenadb {
     # Components
     
     # Resources
-    component rdb                                   ;# writable sqldatabase handle
+    component rdb            -public rdb            ;# writable sqldatabase handle
     component autogen        -public autogen        ;# Scenario auto-generator
     component executive      -public executive      ;# executive command processor
     component exporter       -public export         ;# exporter
@@ -553,7 +553,6 @@ snit::type ::athena::athenadb {
     # Delegated commands
 
     # RDB
-    delegate method {rdb *}           to rdb
     delegate method eval              to rdb
     delegate method delete            to rdb
     delegate method exists            to rdb
