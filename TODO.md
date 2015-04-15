@@ -5,10 +5,7 @@
   - athenadb(n)
     - Test the new state/busy methods
       - In test/athena
-    - Add "savetemp", "loadtemp" to save and load transient files.
-      - Not exposed by athena(n).
-      - Don't affect the changed flag.
-      - Don't set adbfile name.
+    - Use "savetemp", "loadtemp" in master/slave.
     - Make "master" be "background" and "slave" be "bgslave".
     - Handle slave logging.
       - Multiple log directories, $subject and $subject.bg.
