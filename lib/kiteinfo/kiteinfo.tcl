@@ -122,7 +122,16 @@ namespace eval ::kiteinfo:: {
         reqver-struct::set 2.2
         local-counter 0
         reqver-huddle 0.1.5
-        exclude-athena {}
+        exclude-athena {
+    Img
+    BWidget
+    Tktable
+    treectrl
+    tablelist
+    Tkhtml
+    ctext
+    marsgui
+}
         gui-helptool 1
         reqver-simlib 3.0.14
         binary-athena 0

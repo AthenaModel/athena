@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Athena"
-#define MyAppVersion "6.3.0a6"
+#define MyAppVersion "6.3.0a7"
 #define MyAppPublisher "Jet Propulsion Laboratory, California Institute of Technology"
 #define MyAppExeName "athenawb.exe"
 
@@ -43,8 +43,7 @@ Source: "..\docs\build_notes.html"; DestDir: "{app}\docs"; Flags: ignoreversion
 Source: "..\docs\index.html"; DestDir: "{app}\docs"; Flags: ignoreversion 
 Source: "..\docs\*.png"; DestDir: "{app}\docs"; Flags: ignoreversion 
 Source: "..\docs\athena.helpdb"; DestDir: "{app}\docs"; Flags: ignoreversion 
-Source: "..\docs\man1\athena.html"; DestDir: "{app}\docs\man1"; Flags: ignoreversion 
-Source: "..\docs\man1\athena_batch.html"; DestDir: "{app}\docs\man1"; Flags: ignoreversion 
+Source: "..\docs\man1\athenawb.html"; DestDir: "{app}\docs\man1"; Flags: ignoreversion  
 Source: "..\docs\*.docx"; DestDir: "{app}\docs\dev"; Flags: ignoreversion 
 Source: "..\docs\*.pptx"; DestDir: "{app}\docs\dev"; Flags: ignoreversion skipifsourcedoesntexist
 Source: "..\docs\*.pdf"; DestDir: "{app}\docs\dev"; Flags: ignoreversion skipifsourcedoesntexist
