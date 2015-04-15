@@ -105,6 +105,7 @@ snit::type ::athena::athena {
     delegate method idle                    to adb
     delegate method isbusy                  to adb
     delegate method load                    to adb
+    delegate method loadtemp                to adb
     delegate method locked                  to adb
     delegate method paste                   to adb
     delegate method progress                to adb
@@ -112,6 +113,7 @@ snit::type ::athena::athena {
     delegate method reset                   to adb
     delegate method sanity                  to adb
     delegate method save                    to adb
+    delegate method savetemp                to adb
     delegate method state                   to adb
     delegate method statetext               to adb
     delegate method unlocked                to adb

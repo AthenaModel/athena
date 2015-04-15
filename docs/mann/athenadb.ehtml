@@ -291,6 +291,19 @@ object, throwing away any previous data.  The scenario must be
 <iref idle>.  Afterwards, the scenario will be <i locked> or 
 <i unlocked> depending on the loaded data.<p>
 
+<defitem loadtemp {<i obj> loadtemp <i filename>}>
+
+Loads the scenario from the named <tt *.adb> file into this scenario
+object, throwing away any previous data.  The scenario will be marked
+<iref unsaved>, and the <i filename> will not be remembered. Afterwards, 
+the scenario will be <i locked> or <i unlocked> depending on the loaded 
+data.<p>
+
+Together with <iref savetemp>, this command allows athenadb(n) to save 
+itself to a temporary file, run some process on the contents of that file
+(i.e., in another thread) and load the results, while setting the 
+<iref unsaved> flag properly and not changing the user's <iref adbfile>.<p>
+
 <defitem locked {<i obj> locked}>
 
 Returns 1 if the scenario is "locked", initialized and ready for a time
@@ -438,7 +451,15 @@ This command is delegated to the underlying <xref scenariodb(n)> object.<p>
 Saves the scenario to disk as an <tt .adb> file called <i filename>,
 adding the "<tt .adb>" extension if necessary.  If no <i filename> is
 given but the <iref adbfile> name is known, the <iref adbfile> name is
-used.<p>
+used.  The scenario is marked saved.<p>
+
+On failure, throws "<tt SCENARIO SAVE>".<p>
+
+<defitem savetemp {<i obj> savetemp <i filename>}>
+
+Saves the scenario to disk as an <tt .adb> file called <i filename>.  
+Any existing file of the same name is deleted.  The state of the 
+loaded scenario is completely unchanged.<p>
 
 On failure, throws "<tt SCENARIO SAVE>".<p>
 

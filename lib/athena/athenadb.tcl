@@ -616,6 +616,7 @@ snit::type ::athena::athenadb {
         $flunky reset
 
         $self FinishOpeningScenario
+        $rdb marksaved
     }
 
     # InitializeRDB
@@ -631,14 +632,13 @@ snit::type ::athena::athenadb {
         $rdb eval { PRAGMA journal_mode = WAL; }
     }
 
-    # FinishOpeningScenario
+    # FinishOpeningScenario 
     #
-    # Defines the temp schema, marks everything saved, and notifies
+    # Defines the temp schema and notifies
     # the application.
 
     method FinishOpeningScenario {} {
         $self DefineTempSchema
-        $rdb marksaved
         $flunky state [$self state]
         $self notify "" <Create>
     }
@@ -661,19 +661,52 @@ snit::type ::athena::athenadb {
 
         # NEXT, restore the saveables
         $self RestoreSaveables -saved
+        $rdb marksaved
+
         $executive reset
         $flunky reset
 
-
-        # NEXT, save the name.
-        set info(adbfile) $filename
 
         # NEXT, Finish Up
         $self FinishOpeningScenario
 
         $strategy dbsync
         $nbhood dbsync
+
+        # NEXT, save the name.
+        set info(adbfile) $filename
+
+        return
     }
+
+    # loadtemp filename
+    #
+    # filename  - An .adb file
+    #
+    # Loads the scenario data from the temporary file into the object, 
+    # replacing what went before.  The result is unsaved.  This is
+    # for loading the results from a background process or thread.
+
+    method loadtemp {filename} {
+        try {
+            $rdb load $filename
+        } on error {result eopts} {
+            throw {SCENARIO OPEN} $result
+        }
+
+        # NEXT, restore the saveables without marking them saved.
+        $self RestoreSaveables
+        $executive reset
+        $flunky reset
+
+        $self FinishOpeningScenario
+
+        $strategy dbsync
+        $nbhood dbsync
+
+        return
+    }
+
     
     # save ?filename?
     #
@@ -717,6 +750,29 @@ snit::type ::athena::athenadb {
 
         # NEXT, save the name
         set info(adbfile) $dbfile
+
+        return
+    }
+
+    # savetemp filename
+    #
+    # filename - Name for the temp save file
+    #
+    # Saves the scenario to the specified temporary file; the 
+    # scenario is not marked saved.  Throws "SCENARIO SAVE" if there's 
+    # an error saving.
+
+    method savetemp {filename} {
+        # FIRST, save the saveables to the rdb.
+        $self SaveSaveables
+
+        # NEXT, Save the scenario to disk.
+        try {
+            file delete -force $filename
+            $rdb saveas $filename
+        } on error {result} {
+            throw {SCENARIO SAVE} $result
+        }
 
         return
     }
