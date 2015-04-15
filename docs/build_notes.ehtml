@@ -2,6 +2,35 @@
 
 <h2>Build Notes</h2>
 
+<h3>Build 6.3.0a7, 15 April 2015</h3>
+
+This build changes the name of the Athena front end GUI to "Athena Workbench".
+The name of the executable is now athenawb.exe on Windows and athenawb
+on Linux. From a Windows user's standpoint, nothing has changed; the same 
+Athena icon is what is double clicked to launch the Athena GUI.  The build
+also contains the implementation of AAM as laid out in the model memo. There
+is two new tactics: ROE and HIDE.  Athena Workbench has new detail browser
+pages for tracking combat within AAM.  A one-year moving average for GDP 
+within the economics model is now computed by Athena and displayed on the
+Economics/Overview tab.  There are a few bug fixes as well.<p>
+
+<ul>
+<li> Issue #159: Moving Average GDP Calculation
+<li> Issue #158: athenawb(1): Log tab, -autowidth
+<li> Issue #157: bgerror on time advance after loading a paused scenario
+<li> Issue #156: combat appserver page bgerror
+<li> Issue #155: Appserver combat
+<li> Issue #153: Hide tactic and visibility factors
+<li> Issue #152: New aam
+<li> Issue #150: Add deployment history table
+<li> Issue #149: Athena tool
+<li> Issue #148: Athena workbench
+<li> Issue #143: Popup cancel bgerror 
+<li> Issue #142: Beanbrowsers need to have an option for the beanpot 
+<li> Issue #140: Autogen scenario does not clear old neighborhood polygons 
+<li> Issue #138: athena(n): cannot create two instances 
+</ul>
+
 <h3>Build 6.3.0a6, 9 March 2015</h3>
 
 This build contains more changes related to the re-architecture of Athena. As
