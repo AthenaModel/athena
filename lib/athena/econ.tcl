@@ -40,20 +40,23 @@ snit::type ::athena::econ {
     component sam  ;# cellmodel(n) instance containing the SAM model
 
     #-------------------------------------------------------------------
-    # Non-Checkpointed Variables
+    # Checkpointed Variables
 
-    # Miscellaneous non-checkpointed scalar values
+    # Miscellaneous checkpointed scalar values
 
     variable info -array {
-        changed   0
-        status    ok
-        state     DISABLED
-        cellModel {}
-        page      {}
+        changed    0
+        status     ok
+        state      DISABLED
+        cellModel  {}
+        page       {}
+        prevDP     0
+        weekDP     0
+        AGDP       0
     }
 
-    #-------------------------------------------------------------------
-    # Checkpointed Type Variables
+    # Domestic product weekly average history
+    variable histDP -array {}
 
     variable startdict {}  ;# dict of CGE cell values, as of "econ start"
 
@@ -1128,6 +1131,11 @@ snit::type ::athena::econ {
             array set out [$cge get Out -bare]
             set CAPgoods $out(BQS.goods)
 
+            # NEXT, initialize previous weekly domestic product as 
+            # of time 0 and cumulative GDP from time 0
+            let info(prevDP) {$out(GDP)/52.0}
+            set info(AGDP)   0.0
+
             foreach n [$adb nbhood names] {
                 set cap0 [$adb plant capacity n $n]
                 let jobs0 {$out(BQS.pop) * $cap0 / $CAPgoods}
@@ -1173,6 +1181,9 @@ snit::type ::athena::econ {
         # NEXT, compute an updated value for REM
         set REM [$self ComputeREM]
 
+        # NEXT, compute 1 year moving average GDP
+        set AGDP [$self MovingAverageGDP]
+
         $cge set [list \
                      In::Consumers  $demdata(consumers)     \
                      In::Subsisters $subsisters             \
@@ -1182,6 +1193,7 @@ snit::type ::athena::econ {
                      In::CAP.black  $samdata(BaseCAP.black) \
                      In::LSF        $LSF                    \
                      In::CSF        $CSF                    \
+                     In::AGDP       $AGDP                   \
                      In::REM        $REM]
 
 
@@ -1246,7 +1258,7 @@ snit::type ::athena::econ {
         # CGE money flows are in years, but actors get incomes
         # based on a week.
         array set out [$cge get Out -bare]
-        
+
         foreach {actor tg tb tp tw gr cut} [$adb eval {                   
                 SELECT a, t_goods, t_black, t_pop,
                        t_world, graft_region, cut_black 
@@ -1401,7 +1413,6 @@ snit::type ::athena::econ {
         return $CSF
     }
 
-
     # ComputeREM 
     #
     # Given the global remittance change rate in the CGE
@@ -1425,6 +1436,46 @@ snit::type ::athena::econ {
         return [expr {
             max(0.0, $currRem + $currRem * ($changeRate/100.0/52.0))
         }]
+    }
+
+    # MovingAverageGDP
+    #
+    # This method computes a 52 week moving average of GDP. It changes slower
+    # than the equilibrium GDP computed by the CGE.  This value should be 
+    # more representative of the absolute health of an economy rather than
+    # the relative health that week to week equilibrium GDPs provide
+
+    method MovingAverageGDP {} {
+        # FIRST, initialize some values.
+        array set out [$cge get Out -bare]
+        set now [$adb clock delta]
+
+        # NEXT, the weekly domestic product is 1/52nd of annual 
+        # equilibrium GDP, save the value in the history array
+        let histDP($now) {$out(GDP)/52.0}
+
+        # NEXT, if time has not moved forward, nothing to compute, it's already
+        # in the CGE 
+        if {$now == 0} {
+            return $out(GDP)
+        }
+
+        # NEXT, accumulate the weekly GDP into the cumulative GDP 
+        let info(AGDP) {$info(AGDP) + $histDP($now)}
+
+        # NEXT, if we don't yet have a year's worth of history, then use
+        # the initial previous weekly average DP as the history, otherwise 
+        # we need to subtract the weekly average from a year ago
+        if {$now <= 52} {
+            let histGDP {$info(prevDP)*(52-$now)}
+            let AGDP {$info(AGDP) + $histGDP}
+        } else {
+            let yearago {$now-53}
+            let AGDP {$info(AGDP) - $histDP($yearago)}
+            set info(AGDP) $AGDP
+        }
+
+        return $AGDP
     }
 
     # CgeError title
@@ -1687,6 +1738,7 @@ snit::type ::athena::econ {
                      cge [$cge get] \
                      startdict $startdict \
                      histdata [array get histdata] \
+                     histDP [array get histDP] \
                      info [array get info]]
     }
 
@@ -1716,6 +1768,7 @@ snit::type ::athena::econ {
             set startdict [dict get $checkpoint startdict]
             array set histdata [dict get $checkpoint histdata]
             array set info [dict get $checkpoint info]
+            array set histDP [dict get $checkpoint histDP]
         }
 
         if {$option eq "-saved"} {

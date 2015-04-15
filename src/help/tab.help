@@ -1630,13 +1630,27 @@ tab "Economics/Overview" {
     Lastly, the amount of remittances including any increase or decrease
     due to an annual percentage rate appears.<p>
 
-    The most salient outputs consist of the Gross Domestic Product (GDP),
+    <b>Salient Outputs</b><p>
+
+    The most salient outputs consist of the Equilibrium Gross Domestic 
+    Product (GDP), the 1-year Moving Average GDP,
     the Consumer Price Index (CPI), the Deflated GDP, the per capita 
     Deflated GDP, the average per capita demand for goods, the number of 
     unemployed workers in the playbox along 
-    with the unemployment rate.  Real Unemployment includes those that
-    are geographically unemployed, but not those "between jobs". 
-    The amount of the labor force afraid to 
+    with the unemployment rate.<p>
+
+    <b>Gross Domestic Product</b><p>
+
+    Equilibrium GDP represents an annualized GDP based on the money 
+    flows in the CGE at the current time.  The 1-year Moving Average GDP
+    is the average Equilibrium GDP from the last 52 weeks.  If Athena has run
+    less than 52 weeks, the Equilibrium GDP computed at time zero 
+    is used for the weeks prior to simulation start.<p>
+
+    <b>Unemployment</b><p>
+
+    Real Unemployment includes those that are geographically unemployed, 
+    but not those "between jobs".  The amount of the labor force afraid to 
     go to work due to lack of neighborhood security is the Insecure Labor
     Force. This number is part of Unemployment, but not part of Real
     Unemployment.<p>
