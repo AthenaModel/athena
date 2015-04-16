@@ -1935,6 +1935,7 @@ snit::widget appwin {
         if {[adb state] eq "RUNNING"} {
             adb interrupt
         } elseif {[adb idle]} {
+            set ticks [dict get $durations [$simtools.duration get]]
 
             set bgflag [expr {$ticks > 1}]
             adb advance \
