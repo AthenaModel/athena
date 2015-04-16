@@ -781,13 +781,11 @@ snit::type ::athena::athenadb {
 
     method unsaved {} {
         if {[$rdb unsaved]} {
-            puts "RDB is unsaved"
             return 1
         }
 
         dict for {name command} $info(saveables) {
             if {[{*}$command changed]} {
-                puts "$name ($command) is unsaved."
                 return 1
             }
         }
@@ -959,7 +957,7 @@ snit::type ::athena::athenadb {
     # as the new scenario inputs. 
 
     method unlock {{opt ""}} {
-        require {[$self idle] && [$self locked]} {Scenario is busy or unlocked}
+        require {[$self idle] && [$self locked]} "Scenario is busy or unlocked"
 
         $self log normal "" "Unlocking scenario."
 

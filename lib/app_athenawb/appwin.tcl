@@ -698,10 +698,10 @@ snit::widget appwin {
         $self AddOrder $submenu SIM:STARTDATE
         $self AddOrder $submenu SIM:STARTTICK
         
-        cond::available control \
-            [menuitem $submenu command [::athena::orders title SIM:REBASE]... \
-                -command [list app rebase]]    \
-                order SIM:REBASE
+        # TBD: Possibly this should go elsewhere
+        cond::lockedAndIdle control \
+            [menuitem $submenu command "Rebase Scenario" \
+                -command [list app rebase]]
 
         # Orders/Unit
         set submenu [menu $ordersmenu.unit]
@@ -1079,6 +1079,8 @@ snit::widget appwin {
             }
         }
     }
+
+
 
     # CliPrompt
     #
@@ -1926,42 +1928,66 @@ snit::widget appwin {
 
     # RunPause
     #
-    # Sends SIM:RUN or SIM:PAUSE, depending on state.
+    # Tells time to advance, or interrupts a time advance, depending on
+    # state.
 
     method RunPause {} {
+        # TBD: For now, no background; we'll add that.
         if {[adb state] eq "RUNNING"} {
-            adb order send gui SIM:PAUSE
+            adb interrupt
         } else {
-            adb order send gui SIM:RUN \
-                -block NO              \
-                -weeks [dict get $durations [$simtools.duration get]]
+            adb advance \
+                -ticks [dict get $durations [$simtools.duration get]] \
+                -tickcmd [mymethod TickCmd]
         }
     }
+
+    # TickCmd state i n
+    #
+    # This command is called when the scenario ticks time forward.
+    # For now, it just updates idletasks, so that the pause button
+    # can have effect.
+
+    method TickCmd {state i n} {
+        update idletasks
+    }
+
 
 
     # PrepLock
     #
-    # Sends SIM:LOCK or SIM:UNLOCK, depending on state.
+    # Locks or unlocks the scenario, depending on state.
 
     method PrepLock {} {
-        # FIRST, if we're in PREP then it's time to leave it.
-        if {[adb state] eq "PREP"} {
+        if {[adb isbusy]} {
+            messagebox popup \
+                -parent $win \
+                -icon   info \
+                -title  "Please Wait" \
+                -message [normalize {
+                    Athena is currently busy processing your last
+                    request.  Please wait.
+                }]
+            return
+        }
+
+        # FIRST, if we're unlocked then lock; but if we're locked
+        # then verify before unlocking.
+        if {[adb unlocked]} {
             app lock
             return
         }
 
-        # NEXT, we're not in PREP; we want to return to it.  But
-        # give the user the option.
         set answer [messagebox popup \
                         -parent        $win                  \
                         -icon          warning               \
                         -title         "Are you sure?"       \
                         -default       cancel                \
-                        -ignoretag     "sim_unlock"          \
+                        -ignoretag     "unlock"          \
                         -ignoredefault ok                    \
                         -onclose       cancel                \
                         -buttons       {
-                            ok      "Return to Prep"
+                            ok      "Unlock Scenario"
                             cancel  "Cancel"
                         } -message [normalize {
                             If you return to Scenario Preparation, you 

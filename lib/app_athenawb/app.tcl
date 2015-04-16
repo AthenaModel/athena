@@ -204,7 +204,6 @@ snit::type app {
         # components
         athena create ::adb    \
             -logcmd       ::log                                  \
-            -tickcmd      [mytypemethod TickCmd]                 \
             -executivecmd [mytypemethod DefineExecutiveCommands]
 
         # NEXT, configure and initialize application modules.
@@ -307,6 +306,15 @@ snit::type app {
 
     typemethod CreateStateControllers {} {
         namespace eval ::cond { }
+
+        # Scenario is locked and idle (PAUSED)
+
+        statecontroller ::cond::lockedAndIdle -events {
+            ::adb <State>
+        } -condition {
+            [::adb locked] && [::adb idle]
+        }
+
 
         # Simulation state is PREP.
 
@@ -485,24 +493,6 @@ snit::type app {
         return $out
     }
 
-    # TickCmd state i n
-    #
-    # This command is called when the scenario ticks time forward.
-    # For now, it just updates idletasks.
-
-    typemethod TickCmd {state i n} {
-        if {$state ni {RUNNING BUSY}} {
-            return
-        }
-
-        if {$n eq "" || $n == 0} {
-            set prog wait
-        } else {
-            set prog [expr {double($i)/double($n)}]            
-        }
-        adb progress $prog
-        update idletasks
-    }
 
     #-------------------------------------------------------------------
     # Group: Utility Type Methods
@@ -981,11 +971,10 @@ snit::type app {
 
     # lock
     #
-    # Locks the scenario by sending SIM:LOCK; displays sanity check
-    # failures on rejection.
+    # Locks the scenario; displays sanity check failures.
 
     typemethod lock {} {
-        require {[adb state] eq "PREP"} \
+        require {[adb idle] && [adb unlocked]} \
             "The scenario cannot be locked in this state."
 
         set sev [adb sanity onlock check]
@@ -1036,7 +1025,7 @@ snit::type app {
     # Rebases the app, unlocking it and returning it to the prep state.
 
     typemethod rebase {} {
-        require {[adb state] eq "PAUSED"} \
+        require {[adb locked] && [adb idle]} \
             "The scenario cannot be rebased in this state."
 
         set answer \
@@ -1045,7 +1034,7 @@ snit::type app {
                 -icon          warning                          \
                 -buttons       {ok "Rebase" cancel "Cancel"}    \
                 -default       cancel                           \
-                -ignoretag     SIM:REBASE                       \
+                -ignoretag     rebase                       \
                 -ignoredefault ok                               \
                 -parent        [app topwin]                     \
                 -message       [normalize {
