@@ -1049,7 +1049,7 @@ snit::type app {
             return
         }
 
-        adb rebase
+        adb unlock -rebase
     }
 
     #-------------------------------------------------------------------

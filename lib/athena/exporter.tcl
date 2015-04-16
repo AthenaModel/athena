@@ -46,18 +46,13 @@ snit::type ::athena::exporter {
     # mapflag       If 0, no map image data is exported.
     #
     # Creates a script of "send" commands from the orders in the
-    # CIF.  "SIM:UNLOCK" is explicitly ignored, as it gets left
-    # behind in the CIF on unlock, and would break scripts. If the
-    # map flag is set to 0, MAP:IMPORT:* orders are changed to 
+    # CIF.  If the map flag is set to 0, MAP:IMPORT:* orders are changed to
     # MAP:GEOREF orders and only projection information is exported.
 
     method fromcif {scriptFile {mapflag 0}} {
-        # FIRST, get a list of the order data.  Skip SIM:UNLOCK, and 
-        # prepare to fix up SIM:RUN and SIM:PAUSE
+        # FIRST, get a list of the order data.
         set orders [list]
-        set lastRun(index) ""
-        set lastRun(time)  ""
-        set projdict       ""
+        set projdict ""
 
         if {!$mapflag && [$adb exists {SELECT * FROM maps}]} {
             $adb eval {
@@ -72,34 +67,8 @@ snit::type ::athena::exporter {
         $adb eval {
             SELECT time,name,parmdict
             FROM cif
-            WHERE name != 'SIM:UNLOCK'
             ORDER BY id
         } {
-            # SIM:RUN requires special handling.
-            if {$name eq "SIM:RUN"} {
-                # FIRST, all SIM:RUN's should be blocking.
-                dict set parmdict block yes
-
-                # NEXT, we might need to fix up the days; save this order's
-                # index into the orders list.
-                set lastRun(index) [llength $orders]
-                set lastRun(time)  $time
-            }
-
-            # SIM:PAUSE updates previous SIM:RUN
-            if {$name eq "SIM:PAUSE"} {
-                # FIRST, update the previous SIM:RUN
-                let days {$time - $lastRun(time) + 1}
-
-                lassign [lindex $orders $lastRun(index)] runOrder runParms
-                dict set runParms days $days
-                lset orders $lastRun(index) [list $runOrder $runParms]
-
-                # NEXT, the sim will stop running automatically now,
-                # so no PAUSE is needed.
-                continue
-            }
-
             if {!$mapflag && [string first "MAP:IMPORT" $name 0] == 0} {
                 lappend orders [list "MAP:GEOREF" $projdict]
                 continue

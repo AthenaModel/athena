@@ -550,7 +550,7 @@ snit::type ::athena::sim {
 
     # starttick starttick
     #
-    # starttick   The integer tick as of SIM:LOCK
+    # starttick   The integer tick on lock.
     #
     # Sets the simclock's -tick0 start tick
 

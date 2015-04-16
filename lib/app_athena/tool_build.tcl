@@ -48,8 +48,7 @@ tool define BUILD {
         }
 
         # NEXT, create a blank scenario.
-        athena create sdb \
-            -tickcmd [mytypemethod TickCmd]
+        athena create sdb
 
         # NEXT, load the input file if any.
         set infile [lindex $argv 0]
@@ -89,18 +88,15 @@ tool define BUILD {
             -run {
                 set t [lshift argv]
 
-                if {![string is integer -strict $t] ||
-                    $t < 0
-                } {
+                if {![string is integer -strict $t] || $t < 0} {
                     throw FATAL "-run: expected time <t> >= 0, got \"$t\"."
                 }
 
-                # TBD: athena(n) should provide "lock" and "advance" methods.
                 puts "Advancing time to: $t"
                 try {
-                    sdb order send normal SIM:LOCK
+                    sdb lock
                     if {$t > 0} {
-                        sdb order send normal SIM:RUN -weeks $t                        
+                        sdb advance -ticks $t -tickcmd [mytypemethod TickCmd]
                     }
                 } on error {result} {
                     vputs $::errorInfo

@@ -890,14 +890,6 @@ snit::type ::athena::athenadb {
     # canlock
     #
     # Returns 1 if the scenario is sane and can be locked, and 0 otherwise.
-    #
-    # TBD: Old lock failure message, from SIM:LOCK:
-    #
-    # The on-lock sanity check failed with one or more errors; 
-    # time cannot advance.  Fix the error, and try again.
-    # Please see the On-lock Sanity Check Report in the 
-    # Detail Browser for details.
-
 
     method canlock {} {
         set sev [$sanity onlock check]
