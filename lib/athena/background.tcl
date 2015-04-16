@@ -1,6 +1,6 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#    master.tcl
+#    background.tcl
 #
 # AUTHOR:
 #    Will Duquette
@@ -14,7 +14,7 @@
 #    through this module.  This module:
 #
 #    * Creates a background thread (if it hasn't already been created)
-#    * Initializes the ::athena::slave module in the thread.
+#    * Initializes the ::athena::bgslave module in the thread.
 #    * Sends the request to the background slave.
 #    * Uses the busy/progress API to notify the scenario of the progress
 #      of the request.
@@ -22,7 +22,7 @@
 #
 #-----------------------------------------------------------------------
 
-snit::type ::athena::master {
+snit::type ::athena::background {
     #-------------------------------------------------------------------
     # Components
 
@@ -37,11 +37,13 @@ snit::type ::athena::master {
     # syncfile      - The name of the synchronization .adb file.
     # completionCB  - The name of the method to call when the request
     #                 is complete.
+    # tickCmd       - TickCmd for advance request.
 
     variable info -array {
         slave        ""
         syncfile     ""
         completionCB ""
+        tickCmd      ""
     }
     
 
@@ -100,45 +102,27 @@ snit::type ::athena::master {
     #-------------------------------------------------------------------
     # Request: Time Advance
 
-    # advance ?options...?
+    # advance ticks ?tickcmd?
     #
-    # -ticks ticks       Run until now + ticks
-    # -until tick        Run until tick
+    # ticks    - Number of ticks to advance time.
+    # tickcmd  - Command to call on each tick and at end.
     #
     # Causes the simulation to advance time in a background thread.
     # The thread runs until the requested run time is complete or we
-    # get an error.  Assumes (for now) that the scenario is locked.
+    # get an error.  Assumes that the scenario is locked.
 
-    method advance {args} {
+    method advance {ticks {tickcmd ""}} {
         assert {[$adb locked] && [$adb idle]}
 
-        # FIRST, get the number of weeks.  By default, run for one week.
-        set ticks 1
-
-        foroption opt args -all {
-            -ticks {
-                set ticks [lshift args]
-                let stoptime {$ticks + [$adb clock now]}
-            }
-
-            -until {
-                set stoptime [lshift args]
-                let ticks {$stoptime - [$adb clock now]}
-            }
-        }
-
-        # NEXT, Make sure it's in the future.
-        assert {$ticks > 0}
-
-        # NEXT, save this instance to the syncfile.
+        # FIRST, save this instance to the syncfile.
         #
         # TBD: Could track orders to see when things have changed since
         # last sync.
-        #
-        # TBD: Need to be able to save without setting unchanged flag!
-        $adb save $info(syncfile)
 
-        # NEXT, set the busy lock.
+        $adb savetemp $info(syncfile)
+
+        # NEXT, set the busy lock; this is not currently interruptible.
+        let stoptime {[$adb clock now] + $ticks}
         $adb busy set "Running until [$adb clock toString $stoptime]"
         $adb progress 0.0
 
@@ -148,6 +132,7 @@ snit::type ::athena::master {
         }
 
         # NEXT, request a time advance.
+        set info(tickCmd)      $tickcmd
         set info(completionCB) AdvanceComplete
         $self Slave advance $ticks
     }
@@ -159,11 +144,14 @@ snit::type ::athena::master {
     # This method is called when the time advance is complete.
 
     method AdvanceComplete {tag} {
-        $adb busy clear
+        set info(tickCmd) ""
 
         if {$tag eq "COMPLETE"} {
-            $adb load $info(syncfile)
+            $adb loadtemp $info(syncfile)
+            $adb busy clear
             $adb dbsync
+        } else {
+            $adb busy clear
         }
     }
 
@@ -178,7 +166,8 @@ snit::type ::athena::master {
     # Passes the slave's log messages along to the main log.
     
     method _log {level comp message} {
-        $adb log $level bg.$comp $message
+        # TBD: This is just wrong; log times are necessarily incorrect.
+        # $adb log $level bg.$comp $message
     }
 
     # _progress tag i n
@@ -190,14 +179,15 @@ snit::type ::athena::master {
     # Updates the busy progress, and terminates it when done.
 
     method _progress {tag i n} {
-        # FIRST, notify app of progress.
-        if {$n != 0} {
-            $adb progress [expr {double($i)/double($n)}]
-        } else {
-            $adb progress wait
+        set progflag ""
+        if {$info(tickCmd) ne ""} {
+            set progflag [{*}$info(tickCmd) [$adb state] $i $n]
         }
 
-        # NEXT, if we're done, clean up.
+        if {$progflag eq ""} {
+            $adb progress [expr {double($i)/double($n)}] 
+        }
+
         if {$tag eq "COMPLETE"} {
             $self $info(completionCB) $tag
             set info(completionCB) ""
@@ -248,7 +238,7 @@ snit::type ::athena::master {
 
     method Slave {subcommand args} {
         thread::send -async $info(slave) \
-            [list ::athena::slave $subcommand {*}$args]
+            [list ::athena::bgslave $subcommand {*}$args]
     }
 }
 

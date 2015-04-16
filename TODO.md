@@ -1,10 +1,8 @@
 # TODO.md - Athena TODO List
 
 - athena-slave:
-  - athenadb(n)
-    - Make sure the WB handles the on-lock sanity check properly.
-    - Use "savetemp", "loadtemp" in master/slave.
-    - Make "master" be "background" and "slave" be "bgslave".
+  - cli history is not being saved (or, possibly, restored).
+  - Provide -tickcmd in executive advance.
     - Handle slave logging.
       - Multiple log directories, $subject and $subject.bg.
     - Figure out how to use master/slave for doing runs in practice.

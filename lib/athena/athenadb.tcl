@@ -125,7 +125,7 @@ snit::type ::athena::athenadb {
     component flunky         -public order          ;# athena_flunky(n)
     component gofer          -public gofer          ;# gofer
     component hist           -public hist           ;# results history
-    component master         -public master         ;# master for bg thread
+    component background     -public background     ;# master for bg thread
     component parmdb         -public parm           ;# model parameter DB
     component paster         -public paste          ;# paste manager
     component pot            -public bean           ;# beanpot(n)
@@ -343,6 +343,7 @@ snit::type ::athena::athenadb {
             actor                       \
             agent                       \
             autogen                     \
+            background                  \
             broadcast                   \
             bsys                        \
             cap                         \
@@ -364,7 +365,6 @@ snit::type ::athena::athenadb {
             inject                      \
             iom                         \
             map                         \
-            master                      \
             nbhood                      \
             nbrel                       \
             orggroup                    \
@@ -1208,7 +1208,7 @@ snit::type ::athena::athenadb {
         assert {$ticks > 0}
 
         if {$bgflag} {
-            $master advance $ticks $tickcmd
+            $background advance $ticks $tickcmd
         } else {
             $sim advance $ticks $tickcmd
         }

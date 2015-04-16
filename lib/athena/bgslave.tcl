@@ -1,6 +1,6 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#    slave.tcl
+#    bgslave.tcl
 #
 # AUTHOR:
 #    Will Duquette
@@ -26,7 +26,7 @@
 # 
 #-----------------------------------------------------------------------
 
-snit::type ::athena::slave {
+snit::type ::athena::bgslave {
     pragma -hasinstances no
 
     #-------------------------------------------------------------------
@@ -105,16 +105,23 @@ snit::type ::athena::slave {
         # No transaction is needed, as sim.tcl already wraps the run
         # in a transaction
 
-        sdb configure -tickcmd [mytypemethod progress]
-
         try {
-            sdb order send normal SIM:RUN -weeks $weeks
+            sdb advance -ticks $weeks -tickcmd [mytypemethod TickCmd]
             sdb save
             $type progress COMPLETE $weeks $weeks
         } on error {result eopts} {
             $type error $result $eopts
-        } finally {
-            sdb configure -tickcmd ""
+        }
+    }
+
+    # TickCmd tag i n
+    #
+    # Notifies the master of our progress.  Skip COMPLETE; we aren't
+    # complete until we've saved the results.
+
+    typemethod TickCmd {tag i n} {
+        if {$tag ne "COMPLETE"} {
+            $type progress $tag $i $n
         }
     }
     
@@ -167,7 +174,7 @@ snit::type ::athena::slave {
 
     typemethod master {subcommand args} {
         thread::send $info(master) \
-            [list $info(fgadb) master $subcommand {*}$args]
+            [list $info(fgadb) background $subcommand {*}$args]
     }
 
     #-------------------------------------------------------------------

@@ -55,6 +55,8 @@ source [file join $::athena::library athena_order.tcl                ]
 source [file join $::athena::library athena_flunky.tcl               ]
 source [file join $::athena::library athena_types.tcl                ]
 source [file join $::athena::library autogen.tcl                     ]
+source [file join $::athena::library background.tcl                  ]
+source [file join $::athena::library bgslave.tcl                     ]
 source [file join $::athena::library dynatypes.tcl                   ]
 source [file join $::athena::library exporter.tcl                    ]
 source [file join $::athena::library executive.tcl                   ]
@@ -193,10 +195,6 @@ source [file join $::athena::library vardiffs vardiff_influence.tcl  ]
 source [file join $::athena::library vardiffs vardiff_nbmood.tcl     ]
 source [file join $::athena::library vardiffs vardiff_nbsecurity.tcl ]
 source [file join $::athena::library vardiffs vardiff_support.tcl    ]
-
-# Background Processing
-source [file join $::athena::library master.tcl                      ]
-source [file join $::athena::library slave.tcl                       ]
 
 
 # Tk Code (loaded only if Tk is already present)
