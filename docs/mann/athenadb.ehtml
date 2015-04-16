@@ -26,9 +26,9 @@ wrapper around athenadb(n), providing only the public operations.<p>
 athenadb(n) defines a state machine to determine what can be done at 
 different times, and more specifically which <xref order(n)> orders are
 available at any given time.  The state machine is illustrated in the
-following diagram:<p>
+following diagram (athenadb(n) subcommands are shown in blue):<p>
 
-<img src="athenadb_state.png">
+<img src="athenadb_state.png"><p>
 
 First, the scenario may be <iref locked> or <iref unlocked>.  While
 <iref unlocked>, the scenario may be edited freely.  When the scenario
@@ -66,12 +66,11 @@ The scenario <iref isbusy> with an <iref interruptible> task.
 </topic>
 </topiclist>
 
-The lock state is set using <iref setlock>; this command is reserved for
-use by the <tt sim> component's mutators.<p>
+The lock state is set using <iref lock> and <iref unlock>.<p>
 
 The busy state is set using <iref busy>, which also indicates whether 
 the task is <iref interruptible> or not.  At present, 
-<iref interruptible> tasks are terminated by sending <tt SIM:PAUSE>.<p>
+<iref interruptible> tasks are terminated by <iref interrupt>.<p>
 
 
 <section "COMMANDS">
@@ -129,15 +128,6 @@ athenadb(n) wraps an <xref mars:sqldocument(n)> object used to contain
 the scenario's run-time database (RDB).  When monitoring is enabled, the
 RDB can generate <xref mars:notifier(n)> events as tables are updated.<p>
 
-<defopt {-tickcmd <i cmd>}>
-
-Specifies a callback command prefix to be called by the object when as 
-simulation time advances due to a SIM:RUN order.  It is called with
-three additional arguments, <i state>, <i i>, and <i n>.  The <i state>
-is the <iref state>, the <i i> is the tick counter, and <i n> is the
-tick limit.  The value of <i i> runs from 0 to <i n>; taken together, 
-<i i> and <i n> can be used to complete the progress fraction.<p>
-
 </deflist options>
 
 </deflist commands>
@@ -161,6 +151,49 @@ Returns the name of the <tt .adb> file loaded on creation, if any, or
 the <tt .adb> file name last used for saving, or "" if no <tt .adb> file
 has ever been loaded or saved.<p>
 
+<defitem advance {<i obj> advance ?<i options...>?}>
+
+Advances simulation time, provided that the scenario is <iref locked> and
+<iref idle>.  With no options, advances time by one tick.<p>
+
+At present, background processing is never <iref interruptible>.  Normal
+processing is <iref interruptible> only when the <tt -tickcmd> is given, 
+because the <tt -tickcmd> is the only opportunity the caller has to call
+<iref interrupt>.<p>
+
+The options are as follows:<p>
+
+<deflist options>
+<defopt {-ticks <i ticks>}>
+Specifies the number of ticks to advance time.<p>
+
+<defopt {-until <i time>}>
+Specifies that time should advance until the specified <i time> in ticks. 
+It's an error if <i time> is less than the current sim time.<p>
+
+<defopt {-background <i flag>}>
+If <i flag> is false (the default), the simulation processing will be
+done in the foreground and the command will not return until it is
+complete (or there was an error).  If <i flag> is true, Athena will spawn
+a background thread and do the simulation processing in the background.
+The <iref advance> command will return immediately; the scenario will 
+be <iref busy> until it completes.  This can be useful when running in
+the context of the event loop.<p>
+
+<defopt {-tickcmd <i cmd>}>
+Calls a <i cmd> to be called at the end of each simulation time tick.
+It is called with three arguments: a tag, a tick counter, and the total 
+number of ticks to run.  The tick counter runs from 0 to the total number
+of ticks as time progresses.  While time advances, the tag will be 
+<b RUNNING> if the process can be interrupted and <b BUSY> otherwise; and
+at the end, the <i cmd> will be called once with a tag of <b COMPLETE>.<p>
+
+By <iref advance> automatically updates the <iref progress> as 
+time advances.  If the caller wishes to manage the <iref progress>
+itself, the <tt -tickcmd> can return "NO_PROGRESS".<p>
+
+</deflist options>
+
 <defitem busy {<i obj> busy <i subcommand> ?<i args...>?}>
 
 This command manages the scenario's "busy" state.  When the scenario is
@@ -177,12 +210,17 @@ Clears the busy state; the scenario will be <iref idle>.<p>
 Sets the busy state.  The <i busytext> is a brief statement of the
 task, e.g., "Running until 2014W01" or "Wizard".  If the <i pausecmd>
 is given, it is a command to call to pause or interrupt the task; the
-task is then <iref interruptible> by the <tt SIM:PAUSE> order.  Otherwise,
+task is then <iref interruptible> by the <iref interrupt> order.  Otherwise,
 the task is not interruptible and must run to completion.<p>
 
 While the scenario <iref isbusy>, the task will often use <iref progress>
 to keep the user informed as to its progress.<p>
 </deflist busy>
+
+<defitem canlock {<i obj> canlock}>
+
+Returns 1 if the scenario passess the on-lock sanity check, and hence
+can in theory be locked, and 0 otherwise.<p>
 
 <defitem component {<i obj> component <i name>}>
 
@@ -268,9 +306,6 @@ this command will attempt to interrupt it, causing it to terminate
 prematurely; see <iref busy set> for how to specify that the scenario
 is doing an interruptible task.<p>
 
-<b Note:> At present, this command is intended for use only by the 
-<tt SIM:PAUSE> order.<p>
-
 <defitem interruptible {<i obj> interruptible}>
 
 Returns 1 if the scenario <iref isbusy> with an interruptible task,
@@ -279,7 +314,7 @@ and 0 otherwise.<p>
 <defitem isbusy {<i obj> isbusy}>
 
 Returns 1 if the scenario is busy, i.e., is performing a task and 
-cannot accept user order; see <xref "Scenario States">.<p>
+cannot accept user orders, and 0 otherwise; see <xref "Scenario States">.<p>
 
 <defitem last_insert_rowid {<i obj> last_insert_rowid}>
 This command is delegated to the underlying <xref scenariodb(n)> object.<p>
@@ -304,10 +339,16 @@ itself to a temporary file, run some process on the contents of that file
 (i.e., in another thread) and load the results, while setting the 
 <iref unsaved> flag properly and not changing the user's <iref adbfile>.<p>
 
+<defitem lock {<i obj> lock}>
+
+Locks the scenario, if the scenario is <iref idle> and <iref unlocked>
+and <iref canlock>.  The simulation time can only be advanced while the
+scenario is locked.<p>
+
 <defitem locked {<i obj> locked}>
 
 Returns 1 if the scenario is "locked", initialized and ready for a time
-advance; see <xref "Scenario States">.<p>
+advance, and 0 otherwise; see <xref "Scenario States">.<p>
 
 <defitem log {<i obj> log <i level component message>}>
 
@@ -320,6 +361,10 @@ is joined to the <tt -subject> with a ".".  Thus, if <tt -subject> is
 <b TBD:> This might be silly.  We can't include multiple scenarios in 
 one log without confusion, because they'll all have different simulation
 times.  Reconsider this.<p>
+
+<defitem marksaved {<i obj> marksaved}>
+
+Marks the RDB and all components saved.<p>
 
 <defitem monitor {<i obj> monitor ...}>
 This command is delegated to the underlying <xref scenariodb(n)> object.<p>
@@ -472,15 +517,6 @@ Called with no arguments, returns the <tt -scratch> directory.  Any
 arguments are joined to the scratch directory as by <tt file join>, and
 the resulting path is returned.<p>
 
-<defitem setlock {<i obj> setlock <i flag>}>
-
-Sets the scenario lock state on or off according to the <i flag>.
-This command should generally be used only by the <tt sim> module's 
-<tt lock> and <tt unlock> mutators.<p>
-
-Locking the scenario initializes the models and allows time to be advanced.
-It also affects the scenario <i state>.<p>
-
 <defitem send {<i obj> send}>
 This command is delegated to the underlying <xref order_flunky(n)> 
 component.<p>
@@ -508,10 +544,15 @@ Returns 1 if Tk is loaded, and 0 otherwise.<p>
 <defitem ungrab {<i obj> ungrab ...}>
 This command is delegated to the underlying <xref scenariodb(n)> object.<p>
 
+<defitem unlock {<i obj> unlock}>
+
+Unlocks the scenario, if the scenario is <iref idle> and <iref locked>.
+The scenario can only be edited while it is unlocked.<p>
+
 <defitem unlocked {<i obj> unlocked}>
 
-Returns 1 if the scenario is "unlocked", ready for editing; see 
-<xref "Scenario States">.<p>
+Returns 1 if the scenario is "unlocked", ready for editing, and 0
+otherwise; see <xref "Scenario States">.<p>
 
 <defitem unsaved {<i obj> unsaved}>
 

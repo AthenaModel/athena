@@ -705,14 +705,9 @@ snit::type ted {
         # NEXT, we don't care about notifier events.
         ted notifier forget
 
-        # NEXT, if we're busy become unbusy.
-        if {[tdb isbusy]} {
-            if {[tdb interruptible]} {
-                tdb interrupt
-            } else {
-                tdb wait
-            }
-        }
+        # NEXT, we must not be busy on cleanup.  Any activities
+        # that set the busy flag should complete before cleanup.
+        assert {[tdb idle]}
 
         # NEXT, if we're locked, unlock.
         if {[tdb locked]} {

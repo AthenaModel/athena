@@ -2,8 +2,6 @@
 
 - athena-slave:
   - athenadb(n)
-    - Implement [$adb wait]; waits until not busy.
-    - The -tickcmd should be an argument of [$adb advance].
     - Make sure the WB handles the on-lock sanity check properly.
     - Use "savetemp", "loadtemp" in master/slave.
     - Make "master" be "background" and "slave" be "bgslave".

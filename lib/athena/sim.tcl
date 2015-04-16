@@ -18,14 +18,6 @@ snit::type ::athena::sim {
     # Components
 
     component adb       ;# The athenadb(n) instance
-
-    #-------------------------------------------------------------------
-    # Options
-
-    # -tickcmd cmd
-    #
-    # Callback called at the end of each time tick while advancing time. 
-    option -tickcmd
     
     #-------------------------------------------------------------------
     # Non-checkpointed Instance Variables
@@ -77,10 +69,9 @@ snit::type ::athena::sim {
     #
     # Initializes instances of the type.
 
-    constructor {adb_ args} {
+    constructor {adb_} {
         # FIRST, save athenadb(n) handle and options.
         set adb $adb_
-        $self configurelist $args
 
         # NEXT, set the simulation state
         set info(changed)  0
@@ -223,14 +214,15 @@ snit::type ::athena::sim {
     }
 
 
-    # advance ticks
+    # advance ticks ?tickcmd?
     #
-    # ticks   - Number of ticks to advance time.
+    # ticks    - Number of ticks to advance time.
+    # tickcmd  - Command to call on each tick and at end.
     #
     # Time advances by ticks until the stoptime is reached or
     # "pause' is called during the -tickcmd.
 
-    method advance {ticks} {
+    method advance {ticks {tickcmd ""}} {
         assert {[$adb idle] && [$adb locked]}
 
         # FIRST, clear the stop reason.
@@ -239,10 +231,17 @@ snit::type ::athena::sim {
         # NEXT, get the stop time.  By default, run for one week.
         let info(stoptime) {[$adb clock now] + $ticks}
 
-        # NEXT, we are busy, but interruptible.
+        # NEXT, are we interruptible?
+        if {$tickcmd ne ""} {
+            set pauseCmd [mymethod pause]
+        } else {
+            set pauseCmd ""
+        }
+
+        # NEXT, we are busy.
         $adb busy set \
             "Running until [$adb clock toString $info(stoptime)]" \
-            [mymethod pause]
+            $pauseCmd
 
         # NEXT, mark the start of the run.
         set info(basetime) [$adb clock now]
@@ -260,15 +259,17 @@ snit::type ::athena::sim {
             while {[$adb isbusy]} {
                 if {$withTrans} {
                     $adb rdb transaction {
-                        $self Tick
+                        $self Tick $tickcmd
                     }
                 } else {
-                    $self Tick
+                    $self Tick $tickcmd
                 }
             }
         } on error {result eopts} {
             # We halted; return to idle
-            $adb busy clear
+            if {[$adb isbusy]} {
+                $adb busy clear
+            }
             return {*}$eopts $result
         }
 
@@ -298,18 +299,28 @@ snit::type ::athena::sim {
         return
     }
 
-    # Tick
+    # Tick tickcmd
+    #
+    # tickcmd - A command to call after each tick, or ""
     #
     # This command is executed at each time tick.
 
-    method Tick {} {
+    method Tick {tickcmd} {
         # FIRST, tell the engine to do a tick.
         $self TickModels
 
         # NEXT, notify the client about progress
         let i {[$adb clock now] - $info(basetime)}
         let n {$info(stoptime) - $info(basetime)}
-        callwith $options(-tickcmd) [$adb state] $i $n 
+
+        set progflag ""
+        if {$tickcmd ne ""} {
+            set progflag [{*}$tickcmd [$adb state] $i $n]
+        }
+
+        if {$progflag eq ""} {
+            $adb progress [expr {double($i)/double($n)}] 
+        }
 
         # NEXT, pause if checks failed or the stop time is met.
         set stopping 0
@@ -331,7 +342,9 @@ snit::type ::athena::sim {
 
         if {$stopping} {
             $adb busy clear
-            callwith $options(-tickcmd) [$adb state] $i $n
+            if {$tickcmd ne ""} {
+                {*}$tickcmd COMPLETE $i $n
+            }
         }
     }
 

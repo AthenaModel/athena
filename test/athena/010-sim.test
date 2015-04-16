@@ -45,7 +45,7 @@ namespace eval ::athena_test::tests:: {
         variable tickList
         lappend tickList [list $state $i $n]
 
-        assert {$state eq [tdb state]}
+        assert {$state in {RUNNING COMPLETE}}
     }
 
     proc pauseCmd {state i n} {
@@ -178,13 +178,11 @@ namespace eval ::athena_test::tests:: {
         ted create NB1 BLUE SHIA
     } -body {
         tdb lock
-        tdb sim configure -tickcmd [namespace current]::tickCmd
-        tdb sim advance 2
+        tdb sim advance 2 [namespace current]::tickCmd
         set tickList
     } -cleanup {
-        tdb sim configure -tickcmd ""
         cleanup
-    } -result {{RUNNING 1 2} {RUNNING 2 2} {PAUSED 2 2}}
+    } -result {{RUNNING 1 2} {RUNNING 2 2} {COMPLETE 2 2}}
 
 
     test advance-1.5 {Sends Events} -setup {
@@ -208,8 +206,7 @@ namespace eval ::athena_test::tests:: {
         ted create NB1 BLUE SHIA
     } -body {
         tdb lock
-        tdb sim configure -tickcmd [namespace current]::pauseCmd
-        tdb sim advance 10
+        tdb sim advance 10 [namespace current]::pauseCmd
         list [tdb state] [tdb clock now]
     } -cleanup {
         cleanup
