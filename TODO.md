@@ -1,19 +1,12 @@
 # TODO.md - Athena TODO List
 
 - athena-slave:
-  - cli history is not being saved (or, possibly, restored).
-  - Provide -tickcmd in executive advance.
+  - athenadb:
+    - cli history is not being saved (or, possibly, restored).
+    - Add pref setting, bg.advance yes/no; appwin RunPause can use it.
+    - Provide -tickcmd in executive advance.
     - Handle slave logging.
       - Multiple log directories, $subject and $subject.bg.
-    - Figure out how to use master/slave for doing runs in practice.
-      - Perhaps a limit: more than x ticks, use background, fewer than x
-        use fg, where the limit can be set and can automatically decrease
-        if fg processing takes too long?
-      - Or, add a checkbox, and automatically do background for anything over
-        five ticks?
-      - For arachne, we'll always want to do background runs.
-    - Cleanup references to state names wherever possible, using the
-      predicates instead.
   - Finish athena(n) man page!!!!!!!
 - Significant Outputs:
   - All history variable base names should be unique, e.g., nbsecurity.n rather

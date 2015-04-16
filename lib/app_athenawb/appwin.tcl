@@ -1932,13 +1932,15 @@ snit::widget appwin {
     # state.
 
     method RunPause {} {
-        # TBD: For now, no background; we'll add that.
         if {[adb state] eq "RUNNING"} {
             adb interrupt
-        } else {
+        } elseif {[adb idle]} {
+
+            set bgflag [expr {$ticks > 1}]
             adb advance \
-                -ticks [dict get $durations [$simtools.duration get]] \
-                -tickcmd [mymethod TickCmd]
+                -ticks      $ticks \
+                -background $bgflag \
+                -tickcmd    [mymethod TickCmd]
         }
     }
 
