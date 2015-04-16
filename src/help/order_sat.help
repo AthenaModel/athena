@@ -56,7 +56,7 @@ order SAT:UPDATE "Update Baseline Satisfaction" {
     <parm hist_flag "Start Mode">
     <b>Optional.</b> The start mode indicates whether the scenario is a new scenario, or if it
     was created to reflect an existing time-advanced scenario via the
-    <cref /order/sim/rebase> order.  The value is either 0 ("New Scenario") or
+    scenario <term rebase>.  The value is either 0 ("New Scenario") or
     1 ("From Previous Scenario").  If 1, the specified <i>current</i> value
     will be used.<p>
     </parm>
@@ -64,12 +64,12 @@ order SAT:UPDATE "Update Baseline Satisfaction" {
     <parm current "Current">
     <b>Optional.</b> If the start mode is 1 ("From Previous Scenario") then this is the initial
     current level of the curve on scenario lock.  Usually it will be set
-    by <cref /order/sim/rebase> rather than by the user.<p>
+    by <term rebase> rather than by the user.<p>
 
     This setting determines the "current" value of the curve during the
     first part of locking the scenario, when it can affect the value of
     security and other models as part of bootstrapping the simulation.  It
-    is set by <cref /order/sim/rebase> to increase the fidelity of a
+    is set by <term rebase> to increase the fidelity of a
     rebased scenario on-lock; there is little reason to set it manually.
     </parm>
 
@@ -113,8 +113,8 @@ order SAT:UPDATE+MULTI "Update Baseline Satisfaction (Multi)" {
     <parm hist_flag "Start Mode">
     <b>Optional.</b> The start mode indicates whether the scenario is a new 
     scenario, or if it
-    was created to reflect an existing time-advanced scenario via the
-    <cref /order/sim/rebase> order.  The value is either 0 ("New Scenario") or
+    was created to reflect an existing time-advanced scenario via 
+    scenario <term rebase>.  The value is either 0 ("New Scenario") or
     1 ("From Previous Scenario").  If 1, the specified <i>current</i> value
     will be used.<p>
     </parm>
@@ -122,12 +122,12 @@ order SAT:UPDATE+MULTI "Update Baseline Satisfaction (Multi)" {
     <parm current "Current">
     <b>Optional.</b> If the start mode is 1 ("From Previous Scenario") then this is the initial
     current level of the curve on scenario lock.  Usually it will be set
-    by <cref /order/sim/rebase> rather than by the user.<p>
+    by <term rebase> rather than by the user.<p>
 
     This setting determines the "current" value of the curve during the
     first part of locking the scenario, when it can affect the value of
     security and other models as part of bootstrapping the simulation.  It
-    is set by <cref /order/sim/rebase> to increase the fidelity of a
+    is set by <term rebase> to increase the fidelity of a
     rebased scenario on-lock; there is little reason to set it manually.
     </parm>
 
