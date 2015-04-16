@@ -834,8 +834,7 @@ snit::type ted {
 
                 if {$code} {
                     if {[dict get $opts -errorcode] eq "REJECT"} {
-
-                        set    results "\n"
+                        set results "\n"
                         foreach {parm error} $result {
                             append results "        $parm [list $error]\n" 
                         }

@@ -62,14 +62,6 @@ namespace eval ::athena_test::tests:: {
         # Clean up the test environment
         tdb clock restore $clockdata
 
-        if {[tdb state] eq "RUNNING"} {
-            tdb sim pause
-        }
-
-        if {[tdb state] eq "PAUSED"} {
-            tdb sim unlock
-        }
-
         ted cleanup
     }
 
@@ -82,11 +74,9 @@ namespace eval ::athena_test::tests:: {
     test init-1.1 {Initial state} -body {
         list \
             [tdb clock now]       \
-            [tdb state]       \
-            [tdb sim stoptime]    \
             [tdb clock asString]
         
-    } -result {0 PREP 0 2012W01}
+    } -result {0 2012W01}
 
     #-------------------------------------------------------------------
     # startdate
@@ -160,121 +150,36 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -result {1}
 
-    #-------------------------------------------------------------------
-    # lock
-
-    test lock-1.1 {lock sets state to PAUSED} -setup {
-        ted create NB1 BLUE SHIA
-        tdb parm set econ.gdpExp 0
-        tdb parm set econ.empExp 0
-    } -body {
-        tdb sim lock
-
-        tdb state
-    } -cleanup {
-        cleanup
-    } -result {PAUSED}
-
-
-    test lock-1.2 {must be in PREP} -setup {
-        ted create NB1 BLUE SHIA
-        tdb parm set econ.gdpExp 0
-        tdb parm set econ.empExp 0
-        tdb sim lock
-    } -body {
-        tdb sim lock
-    } -returnCodes {
-        error
-    } -cleanup {
-        cleanup
-    } -result {Assertion failed: $info(state) eq "PREP"}
-
-    test lock-1.3 {Saves a PREP snapshot} -setup {
-        ted create NB1 BLUE SHIA
-        tdb parm set econ.gdpExp 0
-        tdb parm set econ.empExp 0
-    } -body {
-        tdb sim lock
-
-        tdb eval {SELECT tick FROM snapshots}
-    } -cleanup {
-        cleanup
-    } -result {-1}
-
-    test lock-1.4 {Initializes URAM} -setup {
-        ted create NB1 BLUE SHIA
-        tdb parm set econ.gdpExp 0
-        tdb parm set econ.empExp 0
-    } -body {
-        tdb sim lock
-
-        tdb onecolumn {SELECT n FROM uram_n}
-    } -cleanup {
-        cleanup
-    } -result {NB1}
 
     #-------------------------------------------------------------------
     # run/pause
 
-    test runpause-1.1 {Run for 1 week} -setup {
+    test advance-1.1 {Run for 1 week} -setup {
         ted create NB1 BLUE SHIA
-        tdb parm set econ.gdpExp 0
-        tdb parm set econ.empExp 0
     } -body {
-        tdb sim lock
-        tdb sim run
+        tdb lock
+        tdb sim advance 1
         tdb sim stoptime
     } -cleanup {
         cleanup
     } -result {1}
 
-    test runpause-1.2 {Run for -ticks} -setup {
+    test advance-1.2 {Run for several ticks} -setup {
         ted create NB1 BLUE SHIA
-        tdb parm set econ.gdpExp 0
-        tdb parm set econ.empExp 0
     } -body {
-        tdb sim lock
-        tdb sim run -ticks 5
+        tdb lock
+        tdb sim advance 5
         tdb sim stoptime
     } -cleanup {
         cleanup
     } -result {5}
 
-    test runpause-1.3 {Run -until} -setup {
+    test advance-1.3 {Calls tickcmd} -setup {
         ted create NB1 BLUE SHIA
-        tdb parm set econ.gdpExp 0
-        tdb parm set econ.empExp 0
     } -body {
-        tdb sim lock
-        tdb sim run -until 10
-        tdb sim stoptime
-    } -cleanup {
-        cleanup
-    } -result {10}
-
-    test runpause-1.4 {Can't run unless "PAUSED"} -setup {
-        ted create NB1 BLUE SHIA
-        tdb parm set econ.gdpExp 0
-        tdb parm set econ.empExp 0
-    } -body {
-        tdb sim lock
-        tdb sim SetState RUNNING
-        tdb sim run
-    } -returnCodes {
-        error
-    } -cleanup {
-        tdb sim SetState PAUSED
-        cleanup
-    } -result {Assertion failed: $info(state) eq "PAUSED"}
-
-    test runpause-1.5 {Calls tickcmd} -setup {
-        ted create NB1 BLUE SHIA
-        tdb parm set econ.gdpExp 0
-        tdb parm set econ.empExp 0
-    } -body {
-        tdb sim lock
+        tdb lock
         tdb sim configure -tickcmd [namespace current]::tickCmd
-        tdb sim run -ticks 2
+        tdb sim advance 2
         set tickList
     } -cleanup {
         tdb sim configure -tickcmd ""
@@ -282,15 +187,13 @@ namespace eval ::athena_test::tests:: {
     } -result {{RUNNING 1 2} {RUNNING 2 2} {PAUSED 2 2}}
 
 
-    test runpause-1.5 {Sends Events} -setup {
+    test advance-1.5 {Sends Events} -setup {
         ted create NB1 BLUE SHIA
-        tdb parm set econ.gdpExp 0
-        tdb parm set econ.empExp 0
     } -body {
-        tdb sim lock
+        tdb lock
         ted notifier bind ::tdb <Tick>
         ted notifier bind ::tdb <State>
-        tdb sim run -ticks 2
+        tdb sim advance 2
         ted notifier received
     } -cleanup {
         cleanup
@@ -301,142 +204,17 @@ namespace eval ::athena_test::tests:: {
         {::tdb <State>}
     }
 
-
-    test runpause-1.6 {Returns undo script} -setup {
+    test advance-2.1 {Pauses if running} -setup {
         ted create NB1 BLUE SHIA
-        tdb parm set econ.gdpExp 0
-        tdb parm set econ.empExp 0
     } -body {
-        tdb sim lock
-        tdb sim run
-    } -cleanup {
-        cleanup
-    } -result {}
-
-
-    test runpause-2.1 {Pauses if running} -setup {
-        ted create NB1 BLUE SHIA
-        tdb parm set econ.gdpExp 0
-        tdb parm set econ.empExp 0
-    } -body {
-        tdb sim lock
+        tdb lock
         tdb sim configure -tickcmd [namespace current]::pauseCmd
-        tdb sim run -ticks 10
+        tdb sim advance 10
         list [tdb state] [tdb clock now]
     } -cleanup {
         cleanup
     } -result {PAUSED 3}
-    
-    test runpause-2.2 {Returns undo script} -setup {
-        ted create NB1 BLUE SHIA
-    } -body {
-        tdb sim pause
-    } -cleanup {
-        cleanup
-    } -result {}
 
-    #-------------------------------------------------------------------
-    # unlock
-
-    test unlock-1.1 {Can't unlock in PREP} -body {
-        tdb sim unlock
-    } -returnCodes {
-        error
-    } -cleanup {
-        cleanup
-    } -result {Assertion failed: $info(state) eq "PAUSED"}
-
-    test unlock-1.2 {Sets state to PREP} -setup {
-        ted create NB1 BLUE SHIA
-        tdb parm set econ.gdpExp 0
-        tdb parm set econ.empExp 0
-        tdb sim lock
-    } -body {
-        tdb sim unlock
-        tdb state
-    } -cleanup {
-        cleanup
-    } -result {PREP}
-
-    test unlock-1.3 {Purges snapshot} -setup {
-        ted create NB1 BLUE SHIA
-        tdb parm set econ.gdpExp 0
-        tdb parm set econ.empExp 0
-        tdb sim lock
-        tdb sim run -ticks 1
-    } -body {
-        tdb sim unlock
-        tdb eval {SELECT tick FROM snapshots}
-    } -cleanup {
-        cleanup
-    } -result {}
-
-    #-------------------------------------------------------------------
-    # state
-
-    test state-1.1 {Returns current state} -setup {
-        ted create NB1 BLUE SHIA
-        tdb parm set econ.gdpExp 0
-        tdb parm set econ.empExp 0
-    } -body {
-        set states [list]
-        
-        lappend states [tdb state]
-        tdb sim lock
-        lappend states [tdb state]
-
-        set states
-    } -cleanup {
-        cleanup
-    } -result {PREP PAUSED}
-
-
-    #-------------------------------------------------------------------
-    # restart
-    #
-    # NOTE: sim unlock is tested pretty thoroughly during the "cleanup"
-    # process and by the other tests.
-
-    test restart-1.1 {Check results} -setup {
-        ted create NB1 BLUE SHIA
-        tdb parm set econ.gdpExp 0
-        tdb parm set econ.empExp 0
-        tdb sim lock
-        tdb sim run -ticks 5
-        tdb sim startdate 2014W26
-    } -body {
-        tdb sim unlock
-
-        list \
-            [tdb state]         \
-            [tdb clock now]         \
-            [tdb sim changed]       \
-            [tdb clock cget -week0]
-    } -cleanup {
-        cleanup
-    } -result {PREP 0 1 2012W01}
-    
-    #-------------------------------------------------------------------
-    # rebase
-    #
-    # Note: this tests [tdb sim rebase] specifically; more general
-    # rebase testing is done in 010-rebase.test.
-    
-    test rebase-1.1 {in prep after rebase} -setup {
-        ted create NB1 BLUE SHIA
-        ted lock
-        ted step
-        ted step
-    } -body {
-        tdb sim rebase
-        list \
-            [tdb state] \
-            [tdb clock now] \
-            [tdb clock cget -tick0]
-    } -cleanup {
-        cleanup
-    } -result {PREP 2 2}
-        
 
     #-------------------------------------------------------------------
     # Cleanup

@@ -528,6 +528,7 @@ namespace eval ::athena_test::tests:: {
         tdb advance -ticks 10
         list [tdb state] [tdb clock now]
     } -cleanup {
+        tdb configure -tickcmd ""
         cleanup
     } -result {PAUSED 3}
     
