@@ -60,7 +60,6 @@ snit::type ::athena::athena {
     delegate option -logcmd       to adb
     delegate option -executivecmd to adb
 
-
     #-------------------------------------------------------------------
     # Constructor
 
@@ -91,8 +90,10 @@ snit::type ::athena::athena {
 
     # ADB
     delegate method adbfile                 to adb
+    delegate method advance                 to adb
     delegate method autogen                 to adb
     delegate method busy                    to adb
+    delegate method canlock                 to adb
     delegate method clock                   to adb
     delegate method getclock                to adb as {component clock}
     delegate method contribs                to adb as {aram contribs}
@@ -101,11 +102,12 @@ snit::type ::athena::athena {
     delegate method executive               to adb
     delegate method export                  to adb
     delegate method gofer                   to adb
-    delegate method halt                    to adb as {sim halt}
+    delegate method halt                    to adb as {sim halt} ;# TBD
     delegate method idle                    to adb
     delegate method isbusy                  to adb
     delegate method load                    to adb
     delegate method loadtemp                to adb
+    delegate method lock                    to adb
     delegate method locked                  to adb
     delegate method paste                   to adb
     delegate method progress                to adb
@@ -116,6 +118,7 @@ snit::type ::athena::athena {
     delegate method savetemp                to adb
     delegate method state                   to adb
     delegate method statetext               to adb
+    delegate method unlock                  to adb
     delegate method unlocked                to adb
     delegate method unsaved                 to adb
     delegate method version                 to adb
@@ -319,29 +322,5 @@ snit::type ::athena::athena {
         return $adb
     }
     
-    # lock
-    # 
-    # Locks the scenario by sending SIM:LOCK.
-
-    method lock {} {
-        $adb send normal SIM:LOCK
-    }
-
-    # unlock
-    # 
-    # Unlocks the scenario by sending SIM:UNLOCK.
-
-    method unlock {} {
-        $adb send normal SIM:UNLOCK
-    }
-
-    # rebase
-    # 
-    # Rebases the scenario by sending SIM:REBASE.
-
-    method rebase {} {
-        $adb send normal SIM:REBASE
-    }
-
 }
 

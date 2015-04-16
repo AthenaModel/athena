@@ -62,11 +62,11 @@ namespace eval ::athena_test::tests:: {
         # Clean up the test environment
         tdb clock restore $clockdata
 
-        if {[tdb sim state] eq "RUNNING"} {
+        if {[tdb state] eq "RUNNING"} {
             tdb sim pause
         }
 
-        if {[tdb sim state] eq "PAUSED"} {
+        if {[tdb state] eq "PAUSED"} {
             tdb sim unlock
         }
 
@@ -82,7 +82,7 @@ namespace eval ::athena_test::tests:: {
     test init-1.1 {Initial state} -body {
         list \
             [tdb clock now]       \
-            [tdb sim state]       \
+            [tdb state]       \
             [tdb sim stoptime]    \
             [tdb clock asString]
         
@@ -170,7 +170,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         tdb sim lock
 
-        tdb sim state
+        tdb state
     } -cleanup {
         cleanup
     } -result {PAUSED}
@@ -322,7 +322,7 @@ namespace eval ::athena_test::tests:: {
         tdb sim lock
         tdb sim configure -tickcmd [namespace current]::pauseCmd
         tdb sim run -ticks 10
-        list [tdb sim state] [tdb clock now]
+        list [tdb state] [tdb clock now]
     } -cleanup {
         cleanup
     } -result {PAUSED 3}
@@ -353,7 +353,7 @@ namespace eval ::athena_test::tests:: {
         tdb sim lock
     } -body {
         tdb sim unlock
-        tdb sim state
+        tdb state
     } -cleanup {
         cleanup
     } -result {PREP}
@@ -381,9 +381,9 @@ namespace eval ::athena_test::tests:: {
     } -body {
         set states [list]
         
-        lappend states [tdb sim state]
+        lappend states [tdb state]
         tdb sim lock
-        lappend states [tdb sim state]
+        lappend states [tdb state]
 
         set states
     } -cleanup {
@@ -408,7 +408,7 @@ namespace eval ::athena_test::tests:: {
         tdb sim unlock
 
         list \
-            [tdb sim state]         \
+            [tdb state]         \
             [tdb clock now]         \
             [tdb sim changed]       \
             [tdb clock cget -week0]
@@ -430,7 +430,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         tdb sim rebase
         list \
-            [tdb sim state] \
+            [tdb state] \
             [tdb clock now] \
             [tdb clock cget -tick0]
     } -cleanup {

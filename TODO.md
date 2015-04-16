@@ -1,8 +1,11 @@
 # TODO.md - Athena TODO List
 
 - athena-slave:
-  - Finish athena(n) man page!!!!!!!
   - athenadb(n)
+    - Refactor the lock/unlock/run/pause code so as not to use orders.
+    - Implement [$adb wait]; waits until not busy.
+    - The -tickcmd should be an argument of [$adb advance].
+    - Make sure the WB handles the on-lock sanity check properly.
     - Test the new state/busy methods
       - In test/athena
     - Use "savetemp", "loadtemp" in master/slave.
@@ -18,6 +21,7 @@
       - For arachne, we'll always want to do background runs.
     - Cleanup references to state names wherever possible, using the
       predicates instead.
+  - Finish athena(n) man page!!!!!!!
 - Significant Outputs:
   - All history variable base names should be unique, e.g., nbsecurity.n rather
     than security.n.

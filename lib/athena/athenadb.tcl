@@ -243,6 +243,7 @@ snit::type ::athena::athenadb {
     # Scenario working info.
     #
     # adbfile   - The name of the related .adb file, or "" if none.
+    # changed   - 1 if cpinfo changed, 0 otherwise.
     # saveables - Dictionary of saveable(i) objects by symbolic name.
     #             The symbolic name is used in the RDB saveables table.
     # 
@@ -254,6 +255,7 @@ snit::type ::athena::athenadb {
 
     variable info -array {
         adbfile   ""
+        changed   0
         saveables {}
         busytext  ""
         pausecmd  {}
@@ -409,6 +411,9 @@ snit::type ::athena::athenadb {
             set info(adbfile) ""
             $self FinishOpeningScenario
         }
+
+        # NEXT, make the scenario saved.
+        $self marksaved
     } 
 
     # MakeComponents component...
@@ -783,16 +788,29 @@ snit::type ::athena::athenadb {
 
     method unsaved {} {
         if {[$rdb unsaved]} {
+            puts "RDB is unsaved"
             return 1
         }
 
         dict for {name command} $info(saveables) {
             if {[{*}$command changed]} {
+                puts "$name ($command) is unsaved."
                 return 1
             }
         }
 
         return 0
+    }
+
+    # marksaved
+    #
+    # Marks everything saved, whether it is or not.
+
+    method marksaved {} {
+        dict for {name command} $info(saveables) {
+            {*}$command checkpoint -saved
+        }
+        $rdb marksaved
     }
 
     # RegisterSaveable name command
@@ -877,26 +895,110 @@ snit::type ::athena::athenadb {
     #
     # The scenario may be locked or unlocked only when it is idle.
 
-    # setlock flag
+
+    # canlock
+    #
+    # Returns 1 if the scenario is sane and can be locked, and 0 otherwise.
+    #
+    # TBD: Old lock failure message, from SIM:LOCK:
+    #
+    # The on-lock sanity check failed with one or more errors; 
+    # time cannot advance.  Fix the error, and try again.
+    # Please see the On-lock Sanity Check Report in the 
+    # Detail Browser for details.
+
+
+    method canlock {} {
+        set sev [$sanity onlock check]
+
+        expr {$sev ni {"ERROR" "WARNING"}}
+    }
+
+    # lock
+    #
+    # Locks the scenario, initializing the simulation models.  Saves
+    # a snapshot of the state just prior to lock, so that it can be
+    # restored on unlock.
+
+    method lock {} {
+        require {[$self idle] && [$self unlocked]} "Scenario is busy or locked"
+
+        # FIRST, do the on-lock sanity check.
+        if {![$self canlock]} {
+            throw {SCENARIO LOCK} "Sanity check failed; cannot lock."
+        }
+
+        $self sigevent log 1 lock "Locking Scenario; simulation begins"
+        $self log normal "" "Locking Scenario"
+
+        # FIRST, Make sure that bsys has had a chance to compute
+        # all of the affinities.
+        $bsys start
+
+        # NEXT, save an on-lock snapshot
+        $self SnapshotSave
+
+        # NEXT, do initial analyses, and initialize modules that
+        # begin to work at this time.
+        $sim start
+
+        # NEXT, mark the time: this supports time queries based on
+        # symbolic time names.
+        $simclock mark set LOCK
+        $simclock mark set RUN
+
+        # NEXT, lock the scenario
+        $self SetLock 1
+
+        # NEXT, resync the GUI, since much has changed.
+        $self dbsync
+
+        $self log normal "" "Scenario is locked; simulation begins."
+
+        return
+    }
+
+    # unlock ?-rebase?
+    #
+    # Unlocks the scenario.  By default, it restores the on-lock snap-shot,
+    # returning the scenario to its state before the scneario was locked.
+    # If -rebase is given, the current state of the simulation is saved
+    # as the new scenario inputs. 
+
+    method unlock {{opt ""}} {
+        require {[$self idle] && [$self locked]} {Scenario is busy or unlocked}
+
+        $self log normal "" "Unlocking scenario."
+
+        # FIRST, rebase or load the on-lock snapshot
+        if {$opt eq "-rebase"} {
+            $self RebaseSave
+        } else {
+            $self SnapshotLoad
+            $self SnapshotPurge
+            $sigevent purge 0
+        }
+
+        # NEXT, set unlock the scenario
+        $self SetLock 0
+
+        # NEXT, log it.
+        $self notify "" <Unlock>
+
+        # NEXT, resync the app with the RDB
+        $self dbsync
+        $self log normal "" "Unlocked scenario; Preparation resumes."
+        return
+    }
+
+
+    # SetLock flag
     #
     # flag   - 1 if the scenario is locked, and 0 otherwise.
     #
-    # Sets the scenario lock flag.  This only sets the flag; the
-    # work that goes along with it is done by sim.tcl.
+    # Sets the scenario lock flag.
 
-    method setlock {flag} {
-        require {[$self idle]} "Scenario is busy"
-
-        if {$flag} {
-            require {[$self unlocked]} "Scenario is already locked"
-        } else {
-            # We don't check if the scenario was already unlocked.  As
-            # a natural part of the "sim unlock" call, the cpinfo() array
-            # is reset to its pre-lock state, and cpinfo(locked) will be
-            # false.  However, we need the state change call anyway.
-            # So just don't check.
-        }
-
+    method SetLock {flag} {
         set cpinfo(locked) $flag
         set info(changed) 1
 
@@ -1083,17 +1185,59 @@ snit::type ::athena::athenadb {
         expr {[$self isbusy] && $info(pausecmd) ne ""}
     }
 
+    #-------------------------------------------------------------------
+    # Advance time (run)
+
+    # advance ?options...?
+    #
+    # -ticks ticks       Run until now + ticks
+    # -until tick        Run until tick
+    # -background flag   Run in the background (default is false)    
+    #
+    # Causes the simulation to run time forward until the specified
+    # time, or until "interrupt" is called.  This routine processes
+    # the inputs and delegates the actual work to either sim.tcl or
+    # background.tcl.
+
+    method advance {args} {
+        require {[$self idle] && [$self locked]} "Scenario is busy or unlocked"
+
+        # FIRST, process the arguments.
+        set ticks  1
+        set bgflag 0
+
+        foroption opt args -all {
+            -ticks {
+                set ticks [lshift args]
+            }
+            -until {
+                let ticks {[lshift args] - [$simclock now]}
+            }
+            -background {
+                set bgflag [lshift args]
+            }
+        }
+
+        assert {$ticks > 0}
+
+        if {$bgflag} {
+            $master advance $ticks
+        } else {
+            $sim advance $ticks
+        }
+    }    
+
 
     #-------------------------------------------------------------------
     # Snapshot management
 
-    # snapshot save
+    # SnapshotSave
     #
     # Saves an on-lock snapshot of the scenario, so that we can 
     # return to it on-lock.  See nonSnapshotTables, above, for the
     # excluded tables.
 
-    method {snapshot save} {} {
+    method SnapshotSave {} {
         # FIRST, save the saveables
         $self SaveSaveables
 
@@ -1146,12 +1290,12 @@ snit::type ::athena::athenadb {
         return $snapshot
     }
 
-    # snapshot load
+    # SnapshotLoad
     #
     # Loads the on-lock snapshot.  The caller should
     # dbsync the sim.
 
-    method {snapshot load} {} {
+    method SnapshotLoad {} {
         set snapshot [$rdb onecolumn {
             SELECT snapshot FROM snapshots
             WHERE tick = -1
@@ -1176,11 +1320,11 @@ snit::type ::athena::athenadb {
         $self RestoreSaveables
     }
 
-    # snapshot purge
+    # SnapshotPurge
     #
     # Purges the on-lock snapshot and all history.
 
-    method {snapshot purge} {} {
+    method SnapshotPurge {} {
         $rdb eval {
             DELETE FROM snapshots;
             DELETE FROM ucurve_contribs_t;
@@ -1188,7 +1332,6 @@ snit::type ::athena::athenadb {
             DELETE FROM rule_inputs;
         }
 
-        # TODO: This should be part of grand scenario object.
         $hist purge -1
     }
 
@@ -1197,14 +1340,14 @@ snit::type ::athena::athenadb {
 
     delegate method {rebase prepare} to rebase as prepare
     
-    method {rebase save} {} {
+    method RebaseSave {} {
 
         # FIRST, allow all modules to rebase.
         $rebase save
         
         # NEXT, purge history.  (Do this second, in case the modules
         # needed the history to do their work.)
-        $self snapshot purge
+        $self SnapshotPurge
         $sigevent purge 0
 
         # NEXT, update the clock
@@ -1306,7 +1449,7 @@ snit::type ::athena::athenadb {
     #
     # Calls the command once using [time], in the caller's context,
     # and logs the outcome, returning the command's return value.
-    # In other words, you can stick "$adb profile" before any command name
+    # In other words, you can stick "$self profile" before any command name
     # and profile that call without changing code or adding new routines.
     #
     # If the depth is given, it must be an integer; that many "*" characters
