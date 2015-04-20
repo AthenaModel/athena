@@ -1,20 +1,12 @@
 # TODO.md - Athena TODO List
 
 - athena-slave:
+  - CLI history is not getting saved.
+    - saveprefs is getting called.
+    - Perhaps LoadPrefs isn't properly closing the file, so Windows is 
+      helpfully writing to another file?
+      - But LoadPrefs is using "readfile"
   - athenadb:
-    - Advance should have three modes:
-      - blocking
-        - Runs in one go, calling -tickcmd.
-      - foreground
-        - Runs in event loop; executed by "worker" object.  Pauses between
-          ticks for events.
-      - background
-        - Runs in background thread by background component.
-    - The "advance" executive command defined in athena(n) should block.
-    - Athena WB should define `app advance` that runs fg/bg as appwin now
-      does.
-      - And then define its own "advance" executive command which uses
-        `app advance` (as should appwin).
     - Handle slave logging.
       - Multiple log directories, $subject and $subject.bg.
   - Finish athena(n) man page!!!!!!!

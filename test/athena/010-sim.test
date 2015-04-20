@@ -45,11 +45,11 @@ namespace eval ::athena_test::tests:: {
         variable tickList
         lappend tickList [list $state $i $n]
 
-        assert {$state in {RUNNING COMPLETE}}
+        assert {$state in {BUSY RUNNING COMPLETE}}
     }
 
     proc pauseCmd {state i n} {
-        if {$state eq "RUNNING" && $i == 3} {
+        if {$state in {"BUSY" "RUNNING"} && $i == 3} {
             tdb sim pause
         }
     }
@@ -152,13 +152,15 @@ namespace eval ::athena_test::tests:: {
 
 
     #-------------------------------------------------------------------
-    # run/pause
+    # advance
+    #
+    # TBD: Test with mode=foreground
 
     test advance-1.1 {Run for 1 week} -setup {
         ted create NB1 BLUE SHIA
     } -body {
         tdb lock
-        tdb sim advance 1
+        tdb sim advance blocking 1
         tdb sim stoptime
     } -cleanup {
         cleanup
@@ -168,7 +170,7 @@ namespace eval ::athena_test::tests:: {
         ted create NB1 BLUE SHIA
     } -body {
         tdb lock
-        tdb sim advance 5
+        tdb sim advance blocking 5
         tdb sim stoptime
     } -cleanup {
         cleanup
@@ -178,11 +180,11 @@ namespace eval ::athena_test::tests:: {
         ted create NB1 BLUE SHIA
     } -body {
         tdb lock
-        tdb sim advance 2 [namespace current]::tickCmd
+        tdb sim advance blocking 2 [namespace current]::tickCmd
         set tickList
     } -cleanup {
         cleanup
-    } -result {{RUNNING 1 2} {RUNNING 2 2} {COMPLETE 2 2}}
+    } -result {{BUSY 1 2} {BUSY 2 2} {COMPLETE 2 2}}
 
 
     test advance-1.5 {Sends Events} -setup {
@@ -191,7 +193,7 @@ namespace eval ::athena_test::tests:: {
         tdb lock
         ted notifier bind ::tdb <Tick>
         ted notifier bind ::tdb <State>
-        tdb sim advance 2
+        tdb sim advance blocking 2
         ted notifier received
     } -cleanup {
         cleanup
@@ -206,7 +208,7 @@ namespace eval ::athena_test::tests:: {
         ted create NB1 BLUE SHIA
     } -body {
         tdb lock
-        tdb sim advance 10 [namespace current]::pauseCmd
+        tdb sim advance blocking 10 [namespace current]::pauseCmd
         list [tdb state] [tdb clock now]
     } -cleanup {
         cleanup

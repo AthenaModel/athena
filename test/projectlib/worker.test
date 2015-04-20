@@ -1,0 +1,99 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    worker.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Tcltest test suite for projectlib(n) worker(n)
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+
+# Import tcltest(n)
+namespace import ::tcltest::*
+
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+source ../../lib/projectlib/pkgModules.tcl
+namespace import ::projectlib::*
+
+#-------------------------------------------------------------------
+# Set up the test environment
+
+proc setup {count_} {
+    variable count
+    variable ticklist
+
+    set count $count_
+    set ticklist [list]
+    worker myworker -command ::ticker -delay 1
+}
+
+proc ticker {} {
+    variable count
+    variable ticklist
+    variable done
+
+    lappend ticklist $count
+
+
+    if {[incr count -1] <= 0} {
+        incr done
+        return 1
+    } else {
+        return 0
+    }
+}
+
+proc cleanup {} {
+    myworker destroy
+}
+
+#-------------------------------------------------------------------
+# Creation
+
+test creation-1.1 {Default -delay} -setup {
+    worker dummy
+} -body {
+    dummy cget -delay
+} -cleanup {
+    dummy destroy
+} -result {100}
+
+#-------------------------------------------------------------------
+# start
+
+test start-1.1 {1 tick returns immediately} -setup {
+    setup 1
+} -body {
+    myworker start
+    set ticklist
+} -cleanup {
+    cleanup
+} -result {1}
+
+test start-1.2 {multiple ticks require vwait} -setup {
+    setup 5
+} -body {
+    myworker start
+    vwait done
+    set ticklist
+} -cleanup {
+    cleanup
+} -result {5 4 3 2 1}
+
+#-------------------------------------------------------------------
+# Cleanup
+
+cleanupTests

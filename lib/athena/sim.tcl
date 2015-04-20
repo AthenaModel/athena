@@ -18,6 +18,8 @@ snit::type ::athena::sim {
     # Components
 
     component adb       ;# The athenadb(n) instance
+    component ticker    ;# A worker(n) object for advancing time in the
+                         # foreground.
     
     #-------------------------------------------------------------------
     # Non-checkpointed Instance Variables
@@ -82,6 +84,9 @@ snit::type ::athena::sim {
             -tick0 $constants(starttick)
 
         $adb notify "" <Time>
+
+        # NEXT, create the ticker, should we need it. 
+        install ticker using worker ${selfns}::ticker
     }
 
 
@@ -214,15 +219,18 @@ snit::type ::athena::sim {
     }
 
 
-    # advance ticks ?tickcmd?
+    # advance mode ticks ?tickcmd?
     #
+    # mode     - blocking|foreground
     # ticks    - Number of ticks to advance time.
     # tickcmd  - Command to call on each tick and at end.
     #
     # Time advances by ticks until the stoptime is reached or
-    # "pause' is called during the -tickcmd.
+    # "pause' is called during the -tickcmd.  The process is 
+    # interruptible if the mode is foreground; and sim pause
+    # will pause even when blocking if called in the tickcmd.
 
-    method advance {ticks {tickcmd ""}} {
+    method advance {mode ticks {tickcmd ""}} {
         assert {[$adb idle] && [$adb locked]}
 
         # FIRST, clear the stop reason.
@@ -232,7 +240,7 @@ snit::type ::athena::sim {
         let info(stoptime) {[$adb clock now] + $ticks}
 
         # NEXT, are we interruptible?
-        if {$tickcmd ne ""} {
+        if {$mode eq "foreground"} {
             set pauseCmd [mymethod pause]
         } else {
             set pauseCmd ""
@@ -255,17 +263,17 @@ snit::type ::athena::sim {
         # since it didn't get done automatically.
         set withTrans [$adb parm get sim.tickTransaction]
 
-        try {
+        if {$mode eq "blocking"} {
             set allDone 0
             while {!$allDone} {
                 set allDone [$self DoTick $withTrans $tickcmd]
-            }
-        } on error {result eopts} {
-            # We halted; return to idle
-            if {[$adb isbusy]} {
-                $adb busy clear
-            }
-            return {*}$eopts $result
+            }            
+        } elseif {$mode eq "foreground"} {
+            $ticker configure \
+                -command [list $self DoTick $withTrans $tickcmd]
+            $ticker start
+        } else {
+            error "Invalid mode: \"$mode\""
         }
 
         return
@@ -279,12 +287,20 @@ snit::type ::athena::sim {
     # Runs one tick, in an RDB transaction or not.
 
     method DoTick {withTrans tickcmd} {
-        if {$withTrans} {
-            $adb rdb transaction {
+        try {
+            if {$withTrans} {
+                $adb rdb transaction {
+                    return [$self Tick $tickcmd]
+                }
+            } else {
                 return [$self Tick $tickcmd]
             }
-        } else {
-            return [$self Tick $tickcmd]
+        } on error {result eopts} {
+            # We halted; return to idle and rethrow
+            if {[$adb isbusy]} {
+                $adb busy clear
+            }
+            return {*}$eopts $result
         }
     }
 

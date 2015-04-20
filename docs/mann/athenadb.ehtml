@@ -156,29 +156,35 @@ has ever been loaded or saved.<p>
 Advances simulation time, provided that the scenario is <iref locked> and
 <iref idle>.  With no options, advances time by one tick.<p>
 
-At present, background processing is never <iref interruptible>.  Normal
-processing is <iref interruptible> only when the <tt -tickcmd> is given, 
-because the <tt -tickcmd> is the only opportunity the caller has to call
-<iref interrupt>.<p>
-
 The options are as follows:<p>
 
 <deflist options>
+<defopt {-mode <i mode>}>
+
+The execution mode: <b blocking> (the default), <b foreground>, or 
+<b background>.<p>
+
+When <b blocking>, the command returns after it has advanced 
+time the specified number of ticks.  The time advance is not 
+<iref interruptible>.<p>
+
+When running in the <b foreground>, the command returns after executing
+one tick.  The scenario <iref isbusy>, and successive ticks are executed 
+in the context of the Tcl event loop.  The process is 
+<iref interruptible>, but if the UI will block during each tick.<p>
+
+When running in the <b background>, the scenario <iref isbusy> and the 
+entire process is handed over to a background thread.  Running in the
+background has a higher start-up and completion cost, but leaves the
+foreground thread responsive as the process runs.  At present, 
+background runs are not <iref interruptible>, though this may change.<p>
+
 <defopt {-ticks <i ticks>}>
 Specifies the number of ticks to advance time.<p>
 
 <defopt {-until <i time>}>
 Specifies that time should advance until the specified <i time> in ticks. 
 It's an error if <i time> is less than the current sim time.<p>
-
-<defopt {-background <i flag>}>
-If <i flag> is false (the default), the simulation processing will be
-done in the foreground and the command will not return until it is
-complete (or there was an error).  If <i flag> is true, Athena will spawn
-a background thread and do the simulation processing in the background.
-The <iref advance> command will return immediately; the scenario will 
-be <iref busy> until it completes.  This can be useful when running in
-the context of the event loop.<p>
 
 <defopt {-tickcmd <i cmd>}>
 Calls a <i cmd> to be called at the end of each simulation time tick.

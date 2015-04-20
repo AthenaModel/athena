@@ -103,6 +103,8 @@ snit::type ::athena::athena {
     delegate method gofer                   to adb
     delegate method halt                    to adb as {sim halt} ;# TBD
     delegate method idle                    to adb
+    delegate method interrupt               to adb
+    delegate method interruptible           to adb
     delegate method isbusy                  to adb
     delegate method load                    to adb
     delegate method loadtemp                to adb

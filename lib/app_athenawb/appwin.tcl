@@ -1941,11 +1941,16 @@ snit::widget appwin {
             # We advance time in the background if background processing
             # is enabled (bgticks >= 0) and if the number of ticks is
             # large enough (ticks >= bgticks)
-            set bgflag [expr {$bgticks >= 0 && $ticks >= $bgticks}]
+            if {$bgticks >= 0 && $ticks >= $bgticks} {
+                set mode background
+            } else {
+                set mode foreground
+            }
+
             adb advance \
-                -ticks      $ticks \
-                -background $bgflag \
-                -tickcmd    [mymethod TickCmd]
+                -mode    $mode  \
+                -ticks   $ticks \
+                -tickcmd [mymethod TickCmd]
         }
     }
 

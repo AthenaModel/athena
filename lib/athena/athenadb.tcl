@@ -1173,9 +1173,10 @@ snit::type ::athena::athenadb {
 
     # advance ?options...?
     #
-    # -ticks ticks       Run until now + ticks
-    # -until tick        Run until tick
-    # -background flag   Run in the background (default is false)    
+    # -ticks ticks   - Run until now + ticks
+    # -until tick    - Run until tick
+    # -mode mode     - blocking|foreground|background (blocking is default)
+    # -tickcmd cmd   - Command is called each tick; see sim.tcl.  
     #
     # Causes the simulation to run time forward until the specified
     # time, or until "interrupt" is called.  This routine processes
@@ -1187,7 +1188,7 @@ snit::type ::athena::athenadb {
 
         # FIRST, process the arguments.
         set ticks   1
-        set bgflag  0
+        set mode    blocking
         set tickcmd {}
 
         foroption opt args -all {
@@ -1197,8 +1198,8 @@ snit::type ::athena::athenadb {
             -until {
                 let ticks {[lshift args] - [$simclock now]}
             }
-            -background {
-                set bgflag [lshift args]
+            -mode {
+                set mode [lshift args]
             }
             -tickcmd {
                 set tickcmd [lshift args]
@@ -1207,10 +1208,12 @@ snit::type ::athena::athenadb {
 
         assert {$ticks > 0}
 
-        if {$bgflag} {
+        if {$mode eq "background"} {
             $background advance $ticks $tickcmd
+        } elseif {$mode in {"blocking" "foreground"}} {
+            $sim advance $mode $ticks $tickcmd
         } else {
-            $sim advance $ticks $tickcmd
+            error "Invalid -mode: \"$mode\""
         }
     }    
 

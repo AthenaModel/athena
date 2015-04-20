@@ -51,8 +51,6 @@ namespace eval ::athena_test::tests:: {
     proc tickCmd {state i n} {
         variable tickList
         lappend tickList [list $state $i $n]
-
-        assert {$state in {RUNNING COMPLETE}}
     }
 
     proc pauseCmd {state i n} {
@@ -442,7 +440,7 @@ namespace eval ::athena_test::tests:: {
     #-------------------------------------------------------------------
     # advance
     #
-    # TBD: Not testing -background yet.
+    # TBD: Not testing background, foreground modes yet.
 
     test advance-1.1 {cannot advance if already busy} -setup {
         tdb busy set "Busy busy busy"
@@ -502,7 +500,7 @@ namespace eval ::athena_test::tests:: {
         set tickList
     } -cleanup {
         cleanup
-    } -result {{RUNNING 1 2} {RUNNING 2 2} {COMPLETE 2 2}}
+    } -result {{BUSY 1 2} {BUSY 2 2} {COMPLETE 2 2}}
 
     test advance-1.7 {Sends Events} -setup {
         ted create NB1 BLUE SHIA
@@ -543,7 +541,7 @@ namespace eval ::athena_test::tests:: {
     }
 
 
-    test advance-2.1 {Can be interrupted} -setup {
+    test advance-2.1 {Cannot be interrupted when blocking} -setup {
         ted create NB1 BLUE SHIA
     } -body {
         tdb lock
@@ -551,7 +549,7 @@ namespace eval ::athena_test::tests:: {
         list [tdb state] [tdb clock now]
     } -cleanup {
         cleanup
-    } -result {PAUSED 3}
+    } -result {PAUSED 10}
     
 
         
