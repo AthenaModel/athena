@@ -101,16 +101,14 @@ A callback command to be used to define application-specific executive
 commands.  It is called with on additional argument, the scenario's
 <xref executive(n)> component.  This option is read-only after creation.<p>
 
-<defopt {-logcmd <i command>}>
+<defopt {-logdir <i dirname>}>
 
-Specifies the name of a command the library code will use to write to
-an application log.  athenadb(n) assumes that the <i command> either is
-or mimics a <xref mars:logger(n)> object; however, only the 
-logger(n) subcommands that output log messages are used.<p>
+Specifies the name of log directory; athenadb(n) should create a 
+logger(n) object with this <tt -logdir>.<p>
 
-Log messages produced by athenadb(n) use the <tt -subject> as the 
-log component name, possibly qualified by the name of the athenadb(n)
-subcomponent producing the message.<p>
+If the object uses background processing, the background thread 
+should use the log directory name created by appending ".bg" to this 
+directory name.<p>
 
 <defopt {-scratch <i dirname>}>
 
