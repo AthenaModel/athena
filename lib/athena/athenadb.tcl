@@ -120,12 +120,13 @@ snit::type ::athena::athenadb {
     # Resources
     component rdb            -public rdb            ;# writable sqldatabase handle
     component autogen        -public autogen        ;# Scenario auto-generator
+    component background     -public background     ;# master for bg thread
     component executive      -public executive      ;# executive command processor
     component exporter       -public export         ;# exporter
     component flunky         -public order          ;# athena_flunky(n)
     component gofer          -public gofer          ;# gofer
     component hist           -public hist           ;# results history
-    component background     -public background     ;# master for bg thread
+    component logger         -public log            ;# logger(n)
     component parmdb         -public parm           ;# model parameter DB
     component paster         -public paste          ;# paste manager
     component pot            -public bean           ;# beanpot(n)
@@ -209,13 +210,12 @@ snit::type ::athena::athenadb {
         return [$self adbfile]
     }
 
-    # -logcmd cmd
+    # -logdir dir
     #
-    # The name of a logger(n) object (or equivalent) to use to log the 
-    # scenario's activities.  This object will use the -subject as its
-    # logger(n) "component" name.
+    # The name of the root log directory for this scenario object.
+    # The scenario will create a subdirectory based on its -subject.
 
-    option -logcmd
+    option -logdir
 
 
     # -scratch dirname
@@ -291,6 +291,18 @@ snit::type ::athena::athenadb {
 
         # NEXT, create the simulation clock
         install simclock using ::projectlib::weekclock ${selfns}::simclock
+
+        # NEXT, initialize the log.
+        if {$options(-logdir) eq ""} {
+            set options(-logdir) [workdir join log]
+        }
+
+        install logger using logger ${selfns}::logger \
+            -simclock  $simclock                      \
+            -logdir    $options(-logdir)              \
+            -newlogcmd [mymethod OnNewLog]
+
+        $self log normal athenadb "Initializing athena: $options(-subject)"
 
         # NEXT, create the RDB and configure it for use.
         $self CreateRDB
@@ -385,7 +397,6 @@ snit::type ::athena::athenadb {
             unit                        \
             vrel
 
-
         # NEXT, register the ones that are saveables.  This will change
         # when the transition to library code is complete.
         $self RegisterSaveable aram     [list $aram saveable]
@@ -408,6 +419,14 @@ snit::type ::athena::athenadb {
         # NEXT, make the scenario saved.
         $self marksaved
     } 
+
+    # OnNewLog filename
+    #
+    # This is called when we open a new log directory.
+
+    method OnNewLog {filename} {
+        $self notify "" <NewLog> $filename
+    }
 
     # MakeComponents component...
     #
@@ -584,8 +603,11 @@ snit::type ::athena::athenadb {
         # FIRST, unlock the scenario if it is locked; this
         # will reinitialize modules like URAM.
         if {[$self locked]} {
-            $sim unlock
+            $self unlock
         }
+
+        # NEXT, open a new log directory.
+        $self log newlog reset
 
         # NEXT, close the RDB if it's open
         if {[$rdb isopen]} {
@@ -651,6 +673,10 @@ snit::type ::athena::athenadb {
     method load {filename} {
         require {[$self idle]} "A new scenario cannot be opened in this state."
 
+        # NEXT, open a new log directory.
+        $self log newlog load
+        $self log normal athenadb "load $filename"
+
         try {
             $rdb load $filename
         } on error {result eopts} {
@@ -686,6 +712,7 @@ snit::type ::athena::athenadb {
     # for loading the results from a background process or thread.
 
     method loadtemp {filename} {
+        $self log normal athenadb "loadtemp $filename"
         try {
             $rdb load $filename
         } on error {result eopts} {
@@ -733,6 +760,7 @@ snit::type ::athena::athenadb {
         }
 
         # NEXT, save the saveables to the rdb.
+        $self log normal athenadb "save $filename"
         $self SaveSaveables -saved
 
         # NEXT, Save the scenario to disk.
@@ -761,6 +789,8 @@ snit::type ::athena::athenadb {
     # an error saving.
 
     method savetemp {filename} {
+        $self log normal athenadb "savetemp $filename"
+
         # FIRST, save the saveables to the rdb.
         $self SaveSaveables
 
@@ -911,8 +941,10 @@ snit::type ::athena::athenadb {
             throw {SCENARIO LOCK} "Sanity check failed; cannot lock."
         }
 
+        # NEXT, log it.
+        $self log newlog lock
+        $self log normal athenadb "lock"
         $self sigevent log 1 lock "Locking Scenario; simulation begins"
-        $self log normal "" "Locking Scenario"
 
         # FIRST, Make sure that bsys has had a chance to compute
         # all of the affinities.
@@ -936,7 +968,7 @@ snit::type ::athena::athenadb {
         # NEXT, resync the GUI, since much has changed.
         $self dbsync
 
-        $self log normal "" "Scenario is locked; simulation begins."
+        $self log normal athenadb "Scenario is locked; simulation begins."
 
         return
     }
@@ -951,7 +983,10 @@ snit::type ::athena::athenadb {
     method unlock {{opt ""}} {
         require {[$self idle] && [$self locked]} "Scenario is busy or unlocked"
 
-        $self log normal "" "Unlocking scenario."
+        $self log newlog onlock
+        $self log normal athenadb "unlock $opt"
+
+        $self log normal athenadb "Unlocking scenario."
 
         # FIRST, rebase or load the on-lock snapshot
         if {$opt eq "-rebase"} {
@@ -970,7 +1005,7 @@ snit::type ::athena::athenadb {
 
         # NEXT, resync the app with the RDB
         $self dbsync
-        $self log normal "" "Unlocked scenario; Preparation resumes."
+        $self log normal athenadb "Unlocked scenario; Preparation resumes."
         return
     }
 
@@ -1077,7 +1112,7 @@ snit::type ::athena::athenadb {
 
     method interrupt {} {
         require {[$self interruptible]} "No interruptible process is running"
-        $self log normal "" "Interrupting busy process"
+        $self log normal athenadb "Interrupting busy process"
         {*}$info(pausecmd)
         return
     }
@@ -1241,7 +1276,7 @@ snit::type ::athena::athenadb {
         }
 
         # NEXT, log the size.
-        $self log normal "" "snapshot saved: [string length $snapshot] bytes"
+        $self log normal athenadb "snapshot saved: [string length $snapshot] bytes"
     }
 
     # GrabAllBut exclude
@@ -1292,7 +1327,7 @@ snit::type ::athena::athenadb {
         }]
 
         # NEXT, import it.
-        $self log normal "" \
+        $self log normal athenadb \
             "Loading on-lock snapshot: [string length $snapshot] bytes"
 
         $rdb transaction {
@@ -1416,25 +1451,6 @@ snit::type ::athena::athenadb {
     #
     # These methods are defined for use by components.
 
-    # log level component message
-    #
-    # level       - The log level
-    # component   - The athenadb(n) component name, e.g., "flunky"
-    # message     - The log message
-    #
-    # Writes the message to the scrolling log, prefixing the component
-    # with "$subject.".
-
-    method log {level component message} {
-        set name [namespace tail $options(-subject)]
-
-        if {$component ne ""} {
-            append name ".$component"
-        }
-
-        callwith $options(-logcmd) $level $name $message
-    }
-
     # profile ?depth? command ?args...?
     #
     # Calls the command once using [time], in the caller's context,
@@ -1475,7 +1491,6 @@ snit::type ::athena::athenadb {
 
         $self profile {*}$depth $self {*}$args
     }
-
 
     # notify component event args...
     #

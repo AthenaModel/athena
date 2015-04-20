@@ -398,14 +398,15 @@ snit::widget appwin {
                     -logcmd        [mymethod puts]     \
                     -loglevel      "normal"            \
                     -showloglist   yes                 \
+                    -showapplist   yes                 \
                     -rootdir       [workdir join log]  \
-                    -defaultappdir app_sim             \
                     -format        {
-                        {week 7 yes}
-                        {v    7 yes}
-                        {c    14 yes}
-                        {m    0 yes}
-                    }
+                        {t 19 yes}
+                        {w  7 yes}
+                        {v  7 yes}
+                        {c  9 yes}
+                        {m  0 yes}
+                    } -parsecmd ::appwin::LogParser
             }
         }
 
@@ -1044,6 +1045,7 @@ snit::widget appwin {
         set slog   [$self tab win slog]
         $slog load [log cget -logfile]
         notifier bind ::log <NewLog> $self [list $slog load]
+        notifier bind ::adb <NewLog> $self [list $slog load]
 
         # NEXT, add the CLI to the paner
         install cli using cli $win.paner.cli    \
@@ -2242,6 +2244,36 @@ snit::widget appwin {
 
         $cli clear
     }
+
+    #-------------------------------------------------------------------
+    # Helper Procs
+
+    # LogParser text
+    #
+    # text - A block of log lines.
+    #
+    # Parses the log lines for scrolling log and returns a list of lists.
+    
+    proc LogParser {text} {
+        set lines [split [string trimright $text] "\n"]
+    
+        set lineList {}
+
+        foreach line $lines {
+            set fields [list \
+                            [lindex $line 0] \
+                            [lindex $line 4] \
+                            [lindex $line 1] \
+                            [lindex $line 2] \
+                            [lindex $line 3]]
+            
+            lappend lineList $fields
+        }
+        
+        return $lineList
+    }
+
+    
 }
 
 

@@ -56,7 +56,7 @@ snit::type ::athena::athena {
     delegate option -subject      to adb
     delegate option -adbfile      to adb
     delegate option -scratch      to adb
-    delegate option -logcmd       to adb
+    delegate option -logdir       to adb
     delegate option -executivecmd to adb
 
     #-------------------------------------------------------------------
@@ -71,7 +71,8 @@ snit::type ::athena::athena {
         install adb using athenadb ${selfns}::adb      \
             -subject      [from args -subject $self]   \
             -adbfile      [from args -adbfile ""]      \
-            -executivecmd [from args -executivecmd ""]
+            -executivecmd [from args -executivecmd ""] \
+            -logdir       [from args -logdir ""]
 
         # NEXT, handle any additional options.
         $self configurelist $args

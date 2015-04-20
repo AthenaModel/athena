@@ -202,13 +202,13 @@ snit::type app {
 
         # NEXT, Create the working scenario RDB and initialize simulation
         # components
-        athena create ::adb    \
-            -logcmd       ::log                                  \
+        athena create ::adb \
+            -logdir       [workdir join log scenario]            \
             -executivecmd [mytypemethod DefineExecutiveCommands]
 
+        notifier bind ::adb <NewLog> ::app [mytypemethod NewScenarioLog]
+
         # NEXT, configure and initialize application modules.
-        log configure \
-            -simclock [adb getclock]
         view init
 
         # NEXT, register my:// servers with myagent.
@@ -480,6 +480,16 @@ snit::type app {
     proc NotifierTrace {subject event eargs objects} {
         set objects [join $objects ", "]
         log detail notify "send $subject $event [list $eargs] to $objects"
+    }
+
+    # NewScenarioLog filename
+    #
+    # filename  - A log file name
+    #
+    # Logs that the scenario has opened a new log file.
+
+    typemethod NewScenarioLog {filename} {
+        log warning adb "New log file: scenario/[file tail $filename]"
     }
 
     # HelpHeader udict
@@ -853,12 +863,12 @@ snit::type app {
     # Creates a new scenario, throwing away unsaved changes.
 
     typemethod new {} {
+        # FIRST, log it.
+        log normal app "New Scenario: Untitled"
+
         # NEXT, create a new, blank scenario
         ::adb reset
 
-        # NEXT, log it.
-        log newlog new
-        log normal scenario "New Scenario: Untitled"
 
         app puts "New scenario created"
 
@@ -898,8 +908,7 @@ snit::type app {
         catch {cd [file dirname [file normalize $filename]]}
 
         # NEXT, log it.
-        log newlog open
-        log normal scenario "Open Scenario: $filename"
+        log normal app "Open Scenario: $filename"
 
         app puts "Opened Scenario [file tail $filename]"
 
@@ -943,11 +952,7 @@ snit::type app {
         catch {cd [file dirname [file normalize $filename]]}
 
         # NEXT, log it.
-        if {$filename ne ""} {
-            log newlog saveas
-        }
-
-        log normal scenario "Save Scenario: [adb adbfile]"
+        log normal app "Save Scenario: [adb adbfile]"
 
         app puts "Saved Scenario [file tail [adb adbfile]]"
 
