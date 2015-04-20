@@ -111,6 +111,18 @@ snit::type ::athena::parmdb {
             that is actively trying to hide.
         }
 
+        $ps define aam.defaultDefendThresh ::projectlib::rgain 0.15 {
+            The effective force ratio threshold under which a force group 
+            without an explicit ROE from an ROE tactic will change posture 
+            from DEFEND to WITHDRAW when it is attacked by another force 
+            group.
+        }
+
+        $ps define aam.defaultCivcasConcern ::athena::ecivcasconcern HIGH {
+            The default concern for civilian casualties a force group will 
+            assume if it has not been explicitly set by an ROE tactic. 
+        }
+
         $ps subset aam.FRC {
             Parameters for force groups engaged in combat.
         }

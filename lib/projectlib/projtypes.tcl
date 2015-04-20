@@ -21,7 +21,6 @@ namespace eval ::projectlib:: {
         eactortype       \
         ebeanstate       \
         ecause           \
-        ecivcasconcern   \
         ecomparator      \
         ecomparatorx     \
         econcern         \
