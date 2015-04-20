@@ -1936,8 +1936,12 @@ snit::widget appwin {
             adb interrupt
         } elseif {[adb idle]} {
             set ticks [dict get $durations [$simtools.duration get]]
+            set bgticks [prefs get app.bgticks]
 
-            set bgflag [expr {$ticks > 1}]
+            # We advance time in the background if background processing
+            # is enabled (bgticks >= 0) and if the number of ticks is
+            # large enough (ticks >= bgticks)
+            set bgflag [expr {$bgticks >= 0 && $ticks >= $bgticks}]
             adb advance \
                 -ticks      $ticks \
                 -background $bgflag \
