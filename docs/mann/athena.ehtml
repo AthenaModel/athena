@@ -53,18 +53,14 @@ A callback command to be used to define application-specific executive
 commands.  It is called with on additional argument, the scenario's
 <xref executive(n)> component.  This option is read-only after creation.<p>
 
-<defopt {-logcmd <i command>}>
+<defopt {-logdir <i dirname>}>
 
-Specifies the name of a command the library code will use to write to
-an application log.  athena(n) assumes that the <i command> either is
-or mimics a <xref mars:logger(n)> object; however, only the 
-logger(n) subcommands that output log messages are used.<p>
+Specifies the name of log directory; athenadb(n) should create a 
+logger(n) object with this <tt -logdir>.<p>
 
-Log messages produced by athenadb(n) use the <tt -subject> as the 
-log component name, possibly qualified by the name of the athenadb(n)
-subcomponent producing the message.<p>
-
-If no <tt -logcmd> is specified, no log output is produced.<p>
+If the object uses background processing, the background thread 
+should use the log directory name created by appending ".bg" to this 
+directory name.<p>
 
 <defopt {-scratch <i dirname>}>
 
@@ -128,13 +124,38 @@ This command gives access to the abstract situations in the scenario.<p>
 
 <deflist absit>
 
-<defitem "absit exists" {<i adb> absit exists TBD}>
-<defitem "absit get" {<i adb> absit get TBD}>
-<defitem "absit isinitial" {<i adb> absit isinitial TBD}>
-<defitem "absit islive" {<i adb> absit islive TBD}>
-<defitem "absit names" {<i adb> absit names TBD}>
-<defitem "absit validate" {<i adb> absit validate TBD}>
-<defitem "absit view" {<i adb> absit view TBD}>
+<defitem "absit exists" {<i adb> absit exists <i s>}>
+
+Returns 1 if there is an absit with ID <i s>, and 0 otherwise.<p>
+
+<defitem "absit get" {<i adb> absit get <i s> ?<i parm>?}>
+
+By default, returns a dictionary of information about the absit with
+ID <i s> (the dictionary is consistent with the <tt absits> SQL table).
+If <i parm> is given, it returns the value of that entry in the dict.<p>
+
+<defitem "absit isinitial" {<i adb> absit isinitial <i s>}>
+
+Returns 1 if absit <i s> is in the initial state, and 0 otherwise.<p>
+
+<defitem "absit islive" {<i adb> absit islive <i s>}>
+
+Returns 1 if absit <i s> is "live", i.e., it has not been resolved,
+and 0 otherwise.<p>
+
+<defitem "absit names" {<i adb> absit names}>
+Returns a list of the IDs of the existing absits.<p>
+
+<defitem "absit validate" {<i adb> absit validate <i s>}>
+Validates <i s> as an absit ID, returning it if it is valid and
+throwing <b INVALID> otherwise.<p>
+
+<defitem "absit view" {<i adb> absit view <i s> ?<i tag>?}>
+
+By default, returns a dictionary of information about the absit with
+ID <i s>, consistent with the <tt gui_absits> SQL view.  The <i tag>
+allows the command to tailor its output for different output formats
+(e.g., html); at present it is ignored.<p>
 
 </deflist absit>
 
@@ -144,12 +165,31 @@ This command gives access to the actors in the scenario.<p>
 
 <deflist actor>
 
-<defitem "actor exists" {<i adb> actor exists TBD}>
-<defitem "actor get" {<i adb> actor get TBD}>
-<defitem "actor namedict" {<i adb> actor namedict TBD}>
-<defitem "actor names" {<i adb> actor names TBD}>
-<defitem "actor validate" {<i adb> actor validate TBD}>
-<defitem "actor view" {<i adb> actor view TBD}>
+<defitem "actor exists" {<i adb> actor exists <i a>}>
+Returns 1 if there is an absit with ID <i a>, and 0 otherwise.<p>
+
+<defitem "actor get" {<i adb> actor get <i a> ?<i parms>?}>
+By default, returns a dictionary of information about actor <i a>
+(the dictionary is consistent with the <tt absits> SQL table).
+If <i parm> is given, it returns the value of that entry in the dict.<p>
+
+<defitem "actor namedict" {<i adb> actor namedict}>
+Returns a dictionary of actor IDs and long names for all actors in the
+scenario.<p>
+
+<defitem "actor names" {<i adb> actor names}>
+Returns a list of actor IDs for all actors in the scenario.<p>
+
+<defitem "actor validate" {<i adb> actor validate <i a>}>
+Validates <i a> as an actor ID, returning it if it is valid and
+throwing <b INVALID> otherwise.<p>
+
+<defitem "actor view" {<i adb> actor view <i a> ?<i tag>?}>
+
+By default, returns a dictionary of information about actor <i a>
+consistent with the <tt gui_actors> SQL view.  The <i tag>
+allows the command to tailor its output for different output formats
+(e.g., html); at present it is ignored.<p>
 
 </deflist actor>
 
