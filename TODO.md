@@ -2,9 +2,19 @@
 
 - athena-slave:
   - athenadb:
-    - cli history is not being saved (or, possibly, restored).
-    - Add pref setting, bg.advance yes/no; appwin RunPause can use it.
-    - Provide -tickcmd in executive advance.
+    - Advance should have three modes:
+      - blocking
+        - Runs in one go, calling -tickcmd.
+      - foreground
+        - Runs in event loop; executed by "worker" object.  Pauses between
+          ticks for events.
+      - background
+        - Runs in background thread by background component.
+    - The "advance" executive command defined in athena(n) should block.
+    - Athena WB should define `app advance` that runs fg/bg as appwin now
+      does.
+      - And then define its own "advance" executive command which uses
+        `app advance` (as should appwin).
     - Handle slave logging.
       - Multiple log directories, $subject and $subject.bg.
   - Finish athena(n) man page!!!!!!!

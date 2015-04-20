@@ -256,14 +256,9 @@ snit::type ::athena::sim {
         set withTrans [$adb parm get sim.tickTransaction]
 
         try {
-            while {[$adb isbusy]} {
-                if {$withTrans} {
-                    $adb rdb transaction {
-                        $self Tick $tickcmd
-                    }
-                } else {
-                    $self Tick $tickcmd
-                }
+            set allDone 0
+            while {!$allDone} {
+                set allDone [$self DoTick $withTrans $tickcmd]
             }
         } on error {result eopts} {
             # We halted; return to idle
@@ -274,6 +269,23 @@ snit::type ::athena::sim {
         }
 
         return
+    }
+
+    # DoTick withTrans tickcmd
+    #
+    # withTrans  - If true, run in RDB transaction
+    # tickcmd    - Callback to pass to Tick.
+    #
+    # Runs one tick, in an RDB transaction or not.
+
+    method DoTick {withTrans tickcmd} {
+        if {$withTrans} {
+            $adb rdb transaction {
+                return [$self Tick $tickcmd]
+            }
+        } else {
+            return [$self Tick $tickcmd]
+        }
     }
 
     # pause
@@ -303,7 +315,8 @@ snit::type ::athena::sim {
     #
     # tickcmd - A command to call after each tick, or ""
     #
-    # This command is executed at each time tick.
+    # This command is executed at each time tick.  If returns
+    # 1 if it is done, and 0 otherwise.
 
     method Tick {tickcmd} {
         # FIRST, tell the engine to do a tick.
@@ -346,6 +359,8 @@ snit::type ::athena::sim {
                 {*}$tickcmd COMPLETE $i $n
             }
         }
+
+        return $stopping
     }
 
 
