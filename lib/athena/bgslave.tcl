@@ -54,10 +54,11 @@ snit::type ::athena::bgslave {
     #            master thread.
     # syncfile - The name of the .adb file to use for synchronization
     #            with the master thread.
+    # logdir   - The log directory for the scenario log.
     #
     # Saves the data, and initializes the thread's athenadb(n) instance.
 
-    typemethod init {master fgadb syncfile} {
+    typemethod init {master fgadb syncfile logdir} {
         # FIRST, save the data.
         set info(master)   $master
         set info(fgadb)    $fgadb
@@ -67,8 +68,10 @@ snit::type ::athena::bgslave {
         try {
             workdir init
             athenadb create ::sdb \
-                -logcmd  [mytypemethod log] \
+                -logdir  $logdir  \
                 -adbfile $info(syncfile)
+
+            notifier bind ::sdb <NewLog> $type [mytypemethod newlog]
 
             # NEXT, turn off all RDB monitoring and transactions on
             # orders.  We'll explicitly run important operations in 
@@ -79,7 +82,7 @@ snit::type ::athena::bgslave {
             $type error $result $eopts
         }
 
-        $type log normal slave "Initialized."
+        sdb log normal slave "Initialized."
     }
 
     # shutdown
@@ -106,6 +109,7 @@ snit::type ::athena::bgslave {
         # in a transaction
 
         try {
+            sdb log newlog advance
             sdb advance -ticks $weeks -tickcmd [mytypemethod TickCmd]
             sdb save
             $type progress COMPLETE $weeks $weeks
@@ -128,18 +132,14 @@ snit::type ::athena::bgslave {
     #-------------------------------------------------------------------
     # Utility Type Methods
     
-    # log level comp message
+    # newlog filename
     #
-    # level     - The log level
-    # comp      - The component name
-    # message   - The log message
+    # filename - The new log file name.
     #
-    # Sends the log message to the master thread.  The string "bg." will
-    # be added to the component name.
+    # Sends the new log file name to the master thread.
 
-    typemethod log {level comp message} {
-        # TBD: Sending the log to the master makes no sense.
-        # $type master _log $level $comp $message
+    typemethod newlog {filename} {
+        $type master _newlog $filename
     }
 
     # progress tag ?i n?

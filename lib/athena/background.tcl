@@ -114,6 +114,8 @@ snit::type ::athena::background {
     method advance {ticks {tickcmd ""}} {
         assert {[$adb locked] && [$adb idle]}
 
+        $adb log normal background "advance $ticks $tickcmd"
+
         # FIRST, save this instance to the syncfile.
         #
         # TBD: Could track orders to see when things have changed since
@@ -161,13 +163,14 @@ snit::type ::athena::background {
     # The slave calls these commands when communicating with the master
     # thread.
 
-    # _log level comp message
+    # _newlog filename
     #
-    # Passes the slave's log messages along to the main log.
+    # Logs the slave's new log file name.
     
-    method _log {level comp message} {
-        # TBD: This is just wrong; log times are necessarily incorrect.
-        # $adb log $level bg.$comp $message
+    method _newlog {filename} {
+        set logfile [file tail $filename]
+        set logdir  [file tail $logfile]
+        $adb log normal background "newlog $logdir/$logfile"
     }
 
     # _progress tag i n
@@ -226,7 +229,8 @@ snit::type ::athena::background {
             namespace import ::projectlib::* ::athena::*
         }
 
-        $self Slave init [thread::id] $adb $info(syncfile)
+        $self Slave init [thread::id] $adb $info(syncfile) \
+            [$adb cget -logdir].bg
     }
 
     # Slave subcommand ?args?
