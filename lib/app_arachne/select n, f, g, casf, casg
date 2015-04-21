@@ -1,9 +1,0 @@
-select n, f, g, casf, casg
-from hist_battle where f=$f
-union
-select H.n as n,
-  H.g as f,
-  H.f as g,
-  H.casg as casf,
-  H.casf as casg
-from hist_battle as H where g=$f;

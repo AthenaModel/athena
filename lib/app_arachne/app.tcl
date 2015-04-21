@@ -193,15 +193,6 @@ snit::type app {
         return $logs($name)
     }
 
-    # remlog name
-    #
-    # Removes the log object.
-
-    typemethod remlog {name} {
-        catch {$logs($name) destroy}
-        unset logs($name)
-    }
-
     # log level comp message
     #
     # Logs to the main application log.

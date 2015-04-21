@@ -36,7 +36,6 @@ snit::type case {
     # counter             - The case ID counter
     # sdb-$id             - The scenario object for $id 
     # longname-$id        - A one-line description of $id
-    # log-$id             - logger(n) object for the $id
     # source-$id          - Description of the original source of the $id
 
     typevariable cases -array {
@@ -192,16 +191,14 @@ snit::type case {
         }
 
         if {$id in $cases(names)} {
-            $cases(log-$id) newlog reset
             case with $id reset
             app log normal $id "Reset case $id"
         } else {
             lappend cases(names) $id
-            set cases(log-$id)      [app newlog $id]
             set cases(longname-$id) [DefaultLongname $id]
             set cases(sdb-$id)      [athena new \
-                                        -logcmd $cases(log-$id) \
-                                        -subject $id]
+                                        -subject $id] \
+                                        -logdir [scratchdir join log $id]
             app log normal $id "Created new case $id"
         }
 
@@ -210,8 +207,6 @@ snit::type case {
         if {$longname ne ""} {
             set cases(longname-$id) $longname
         }
-
-
 
         return $id
     }
@@ -271,19 +266,15 @@ snit::type case {
         if {$id ne ""} {
             $cases(sdb-$id) destroy
             set cases(sdb-$id) $sdb
-            $cases(log-$id) newlog reimport
-            $cases(log-$id) normal app "Re-imported from $filename"
+            $cases(sdb-$id) log normal app "Re-imported from $filename"
         } else {
             set id $theID
             lappend cases(names) $id
             set cases(sdb-$id) $sdb
-            set cases(log-$id) [app newlog $id]
             if {$longname eq ""} {
                 set longname [DefaultLongname $id]
             }
         }
-
-        $sdb configure -logcmd $cases(log-$id)
 
         if {$longname ne ""} {
             set cases(longname-$id) $longname
@@ -303,7 +294,6 @@ snit::type case {
 
     typemethod delete {id} {
         case with $id destroy
-        app remlog $id
 
         array unset cases(*-$id)
         ldelete cases(names) $id
