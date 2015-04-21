@@ -239,9 +239,12 @@ snit::type ::athena::aam {
             if {[info exists dThresh($n,$f,$g)]} {
                 continue
             }
+            set ddt [$adb parm get aam.defaultDefendThresh]
+            set cc  [$adb parm get aam.defaultCivcasConcern]
 
             # NEXT, defaults for f->g in case no ROE specified
-            array set fvals {roe "DEFEND" athresh 0.0 dthresh 0.15 civc "HIGH"}
+            array set fvals \
+                [list roe "DEFEND" athresh 0.0 dthresh $ddt civc $cc]
 
             # NEXT, pull data from ROE dict, if it's there 
             if {[dict exists $roedict $n $f $g]} {
@@ -249,7 +252,8 @@ snit::type ::athena::aam {
             }
 
             # NEXT, defaults for g->f in case no ROE specified
-            array set gvals {roe "DEFEND" athresh 0.0 dthresh 0.15 civc "HIGH"}
+            array set gvals \
+                [list roe "DEFEND" athresh 0.0 dthresh $ddt civc $cc]
 
             # NEXT, pull data from ROE dict, if it's there 
             if {[dict exists $roedict $n $g $f]} {

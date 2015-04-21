@@ -245,11 +245,12 @@ snit::type ::athena::hist {
         $adb eval {
             -- hist_econ
             INSERT INTO hist_econ(t, consumers, subsisters, labor, 
-                                  lsf, csf, rem, cpi, dgdp, ur)
+                                  lsf, csf, rem, cpi, agdp, dgdp, ur)
             VALUES(now(), 
                    $inputs(Consumers), $inputs(Subsisters), $inputs(LF),
                    $inputs(LSF), $inputs(CSF), $inputs(REM),
-                   $outputs(CPI), $outputs(DGDP), $outputs(UR));
+                   $outputs(CPI), $outputs(AGDP), $outputs(DGDP), 
+                   $outputs(UR));
         }
 
         foreach i {goods pop black actors region world} {

@@ -69,6 +69,10 @@
 #    In, and Out pages.
 #
 # HISTORY:
+#    Version aj: Added a 1-year moving average of GDP. It is a pass through
+# from the In page to the Out page and is only computed if Athena is running
+# the CGE.
+#
 #    Version ai: Removed GU from the M page. Turns out that geographic
 # unemployment, as computed from the demographics model, is an input to
 # the S page.  Using it as in input on the M page causes a "limit cycle"
@@ -1082,6 +1086,7 @@ let BaseBasketValue = {
 # Some outputs for display in the Athena GUI, these are set to "n/a" 
 # whenever their value does not make sense
 letsym CPI        = {"n/a"}
+letsym AGDP       = {"n/a"}
 letsym DGDP       = {"n/a"}
 letsym PerCapDGDP = {"n/a"}
 let A.goods.pop   = {[Agp]}
@@ -1249,6 +1254,10 @@ let CSF = 1.0
 # Demographics may also say that some laborers are afraid to go to work.
 # This fraction is those that do go:
 let LSF = 1.0
+
+# GDP as a 52 week moving average, computed by Athena and appears only
+# as an output
+let AGDP = 0.0
 
 # Actors expenditures
 let X.goods.actors  = 9.135e9
@@ -1715,6 +1724,10 @@ let GDP = {
     [S::REV.world] +
     [In::SA]
 }
+
+# 1-year Moving Average GDP: computed by and passed in from Athena, 
+# if Athena is running the cell model
+let AGDP = {[In::AGDP]}
 
 # Deflated GDP and Deflated per capita GDP
 let DGDP = {[GDP] / [CPI]}

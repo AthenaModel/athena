@@ -111,6 +111,18 @@ snit::type ::athena::parmdb {
             that is actively trying to hide.
         }
 
+        $ps define aam.defaultDefendThresh ::projectlib::rgain 0.15 {
+            The effective force ratio threshold under which a force group 
+            without an explicit ROE from an ROE tactic will change posture 
+            from DEFEND to WITHDRAW when it is attacked by another force 
+            group.
+        }
+
+        $ps define aam.defaultCivcasConcern ::athena::ecivcasconcern HIGH {
+            The default concern for civilian casualties a force group will 
+            assume if it has not been explicitly set by an ROE tactic. 
+        }
+
         $ps subset aam.FRC {
             Parameters for force groups engaged in combat.
         }
@@ -129,12 +141,12 @@ snit::type ::athena::parmdb {
             IRREGULAR     20
             CRIMINAL       8
         } {
-            $ps define aam.FRC.forcetype.$name ::projectlib::rgain $value "
+            $ps define aam.FRC.forcetype.$name ::athena::rminfrac $value "
                 This dial determines the contribution each
                 person in a unit has for the purpose of computing the effective
                 force of a unit in combat, where that unit belongs to an
                 force group of force type $name.
-                Must be no less than 0.
+                Must be no less than 0.01.
             "
         }
 
@@ -150,11 +162,11 @@ snit::type ::athena::parmdb {
             PARTIAL    0.7
             NONE       0.4
         } {
-            $ps define aam.FRC.discipline.$name ::simlib::rfraction $value "
+            $ps define aam.FRC.discipline.$name ::athena::rminfrac $value "
                 Dial that determines a force group's level of discipline
                 given a training level of $name. This factor is a component
                 of effective force of a unit beloning to a force group.
-                It is a number between 0.0 and 1.0.
+                It is a number between 0.01 and 1.0.
             "
         }
 
@@ -169,9 +181,9 @@ snit::type ::athena::parmdb {
             AVERAGE    1.0
             AGGRESSIVE 1.5
         } {
-            $ps define aam.FRC.demeanor.$name ::projectlib::rgain $value "
+            $ps define aam.FRC.demeanor.$name ::athena::rminfrac $value "
                 Dial that determines the effect of $name demeanor
-                on a group's effective force.  Must be no less than 0; 
+                on a group's effective force.  Must be no less than 0.01; 
                 set to 1.0 if demeanor should have no effect.
             "
         }
@@ -188,7 +200,7 @@ snit::type ::athena::parmdb {
             GOOD 1.0
             BEST 1.5
         } {
-            $ps define aam.FRC.equiplevel.$name ::projectlib::rgain $value "
+            $ps define aam.FRC.equiplevel.$name ::athena::rminfrac $value "
                 Dial that determines the effect of a group having a $name level
                 of equipment present in units.  Must be no less than 0;
                 set to 1.0 if equipment level should have no effect.
@@ -209,24 +221,27 @@ snit::type ::athena::parmdb {
             HIGH   0.5
         } {
             $ps define aam.FRC.civconcern.$name ::simlib::rfraction $value "
-                Dial that determines the effect of a force group that has a 
+                Dial that determines the effect a force group has with a 
                 concern for civilian casualties of $name to cause attrition to
-                a force group that it is actively fighting.  Set to 1.0, the
-                concern for civilian casualties has no effect.
+                a force group that it is actively fighting.  Set to 0.0,
+                the group will not cause attrition.
             "
         }
 
         $ps subset aam.FRC.urbcas {
             For units belonging to a force group, how the urbanization of
             a neighborhood effects the number of casualties it suffers due
-            to attrition from units with which they are in combat.
-
+            to attrition from units with which they are in combat. Setting
+            these parameters to 1.0 makes urbanization a non-factor in combat.
         }      
 
         foreach urb [eurbanization names] {
-            $ps define aam.FRC.urbcas.$urb ::projectlib::rgain 1.0 "
-                For units in a force group fighting in a neighborhood
-                with an urbanization of $urb, a gain on the number of "
+            $ps define aam.FRC.urbcas.$urb ::athena::rminfrac 1.0 "
+                For a force group fighting in a neighborhood
+                with an urbanization of $urb, a dial that determines the
+                effectiveness of that group to cause attrition. Must be 
+                greater than 0.01.
+            "
         }
 
         $ps setdefault aam.FRC.urbcas.ISOLATED  2.0      

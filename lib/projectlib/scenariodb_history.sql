@@ -196,6 +196,7 @@ CREATE TABLE hist_econ (
     rem         DOUBLE,
     cpi         DOUBLE,
     dgdp        DOUBLE,
+    agdp        DOUBLE,
     ur          DOUBLE,
 
     PRIMARY KEY (t)

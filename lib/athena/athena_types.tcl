@@ -205,6 +205,10 @@ enum ::athena::einputmode {
 
 ::marsutil::range ::athena::rsvcpct -min -100.0 
 
+# rminfrac: Fraction with a minimum value, used in AAM multipliers
+
+::marsutil::range ::athena::rminfrac -min 0.01
+
 # refpoint
 #
 # A refpoint is a location expressed as a map reference.  On validation,

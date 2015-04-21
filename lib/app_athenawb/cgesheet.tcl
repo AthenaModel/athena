@@ -445,7 +445,7 @@ snit::widget cgesheet {
             -colorigin     0                          \
             -cellmodel     $cge                       \
             -state         disabled                   \
-            -rows          9                          \
+            -rows          10                         \
             -cols          3                          \
             -titlerows     0                          \
             -titlecols     1                          \
@@ -454,9 +454,10 @@ snit::widget cgesheet {
 
         # NEXT, add titles
         $outputs textcol 0,0 {
-            "GDP"
+            "Equilibrium GDP"
+            "1-yr Moving Avg. GDP"
             "CPI"
-            "Deflated GDP"
+            "Equilibrium Deflated GDP"
             "Per Capita Deflated GDP"
             "Per Cap. Demand for goods"
             "Real Unemployment"
@@ -468,6 +469,7 @@ snit::widget cgesheet {
         $outputs width 0 25
 
         $outputs textcol 0,2 {
+            "$/Year"
             "$/Year"
             ""
             "$/Year, Deflated"
@@ -483,14 +485,15 @@ snit::widget cgesheet {
         
         # NEXT, add data
         $outputs mapcell  0,1 Out::GDP          x -background $color(x)
-        $outputs mapcell  1,1 Out::CPI          q -background $color(q)
-        $outputs mapcell  2,1 Out::DGDP         x
-        $outputs mapcell  3,1 Out::PerCapDGDP   x 
-        $outputs mapcell  4,1 Out::A.goods.pop  q
-        $outputs mapcell  5,1 Out::RealUnemp    q
-        $outputs mapcell  6,1 Out::Unemployment q
-        $outputs mapcell  7,1 Out::UR           q
-        $outputs mapcell  8,1 Out::LFU          q
+        $outputs mapcell  1,1 Out::AGDP         x -background $color(x)
+        $outputs mapcell  2,1 Out::CPI          q -background $color(q)
+        $outputs mapcell  3,1 Out::DGDP         x
+        $outputs mapcell  4,1 Out::PerCapDGDP   x 
+        $outputs mapcell  5,1 Out::A.goods.pop  q
+        $outputs mapcell  6,1 Out::RealUnemp    q
+        $outputs mapcell  7,1 Out::Unemployment q
+        $outputs mapcell  8,1 Out::UR           q
+        $outputs mapcell  9,1 Out::LFU          q
     }
 
     # FormatOutput value
@@ -613,14 +616,15 @@ snit::widget cgesheet {
 
         # NEXT, some outputs that depend on mode
         $outputs mapcell  0,1 ${mode}::GDP          x -background $color(x)
-        $outputs mapcell  1,1 ${mode}::CPI          q -background $color(q)
-        $outputs mapcell  2,1 ${mode}::DGDP         x
-        $outputs mapcell  3,1 ${mode}::PerCapDGDP   x 
-        $outputs mapcell  4,1 ${mode}::A.goods.pop  q
-        $outputs mapcell  5,1 ${mode}::RealUnemp    q
-        $outputs mapcell  6,1 ${mode}::Unemployment q
-        $outputs mapcell  7,1 ${mode}::UR           q
-        $outputs mapcell  8,1 ${mode}::LFU          q
+        $outputs mapcell  1,1 ${mode}::AGDP         x -background $color(x)
+        $outputs mapcell  2,1 ${mode}::CPI          q -background $color(q)
+        $outputs mapcell  3,1 ${mode}::DGDP         x
+        $outputs mapcell  4,1 ${mode}::PerCapDGDP   x 
+        $outputs mapcell  5,1 ${mode}::A.goods.pop  q
+        $outputs mapcell  6,1 ${mode}::RealUnemp    q
+        $outputs mapcell  7,1 ${mode}::Unemployment q
+        $outputs mapcell  8,1 ${mode}::UR           q
+        $outputs mapcell  9,1 ${mode}::LFU          q
 
         # NEXT, take focus off the menu
         focus $win
