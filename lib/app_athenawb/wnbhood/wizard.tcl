@@ -93,7 +93,7 @@ snit::type ::wnbhood::wizard {
         }
 
         # Reset the sim state, if necessary.
-        adb wizlock off
+        adb busy clear
     }
 
     #-------------------------------------------------------------------
@@ -363,7 +363,7 @@ snit::type ::wnbhood::wizard {
 
     typemethod finish {} {
         # FIRST, the wizard is done; we're about to make things happen.
-        adb wizlock off
+        adb busy clear
 
         # NEXT, have the wizwin save the selected nbhoods
         $win save

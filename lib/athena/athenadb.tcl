@@ -118,13 +118,15 @@ snit::type ::athena::athenadb {
     # Components
     
     # Resources
-    component rdb                                   ;# writable sqldatabase handle
+    component rdb            -public rdb            ;# writable sqldatabase handle
     component autogen        -public autogen        ;# Scenario auto-generator
+    component background     -public background     ;# master for bg thread
     component executive      -public executive      ;# executive command processor
     component exporter       -public export         ;# exporter
     component flunky         -public order          ;# athena_flunky(n)
     component gofer          -public gofer          ;# gofer
     component hist           -public hist           ;# results history
+    component logger         -public log            ;# logger(n)
     component parmdb         -public parm           ;# model parameter DB
     component paster         -public paste          ;# paste manager
     component pot            -public bean           ;# beanpot(n)
@@ -208,13 +210,12 @@ snit::type ::athena::athenadb {
         return [$self adbfile]
     }
 
-    # -logcmd cmd
+    # -logdir dir
     #
-    # The name of a logger(n) object (or equivalent) to use to log the 
-    # scenario's activities.  This object will use the -subject as its
-    # logger(n) "component" name.
+    # The name of the root log directory for this scenario object.
+    # The scenario will create a subdirectory based on its -subject.
 
-    option -logcmd
+    option -logdir
 
 
     # -scratch dirname
@@ -240,12 +241,33 @@ snit::type ::athena::athenadb {
     # Scenario working info.
     #
     # adbfile   - The name of the related .adb file, or "" if none.
+    # changed   - 1 if cpinfo changed, 0 otherwise.
     # saveables - Dictionary of saveable(i) objects by symbolic name.
     #             The symbolic name is used in the RDB saveables table.
+    # 
+    # datalock  - 1 if scenario is locked, 0 if it is not.
+    # busytext  - The busy text
+    # pausecmd  - Command to use to pause the scenario when busy.
+    # progress  - Busy progress indicator, "user", "wait", or fraction.
+    # state     - State as of last state change.  Used to detect changes.
 
     variable info -array {
         adbfile   ""
+        changed   0
         saveables {}
+        busytext  ""
+        pausecmd  {}
+        progress  user
+        state     ""
+    }
+
+    # cpinfo - Checkpointed Data Array
+    #
+    # locked   - The scenario lock flag.  If 1, scenario is locked;
+    #            if 0, scenario is unlocked.
+
+    variable cpinfo -array {
+        locked 0
     }
 
     #-------------------------------------------------------------------
@@ -258,7 +280,10 @@ snit::type ::athena::athenadb {
     # be empty.  
 
     constructor {args} {
-        # FIRST, set the -subject's default value.  Then, get the option
+        # FIRST, initialize the workdir if it hasn't been.
+        workdir init
+
+        # NEXT, set the -subject's default value.  Then, get the option
         # values.
         set options(-subject) $self
 
@@ -266,6 +291,18 @@ snit::type ::athena::athenadb {
 
         # NEXT, create the simulation clock
         install simclock using ::projectlib::weekclock ${selfns}::simclock
+
+        # NEXT, initialize the log.
+        if {$options(-logdir) eq ""} {
+            set options(-logdir) [workdir join log]
+        }
+
+        install logger using logger ${selfns}::logger \
+            -simclock  $simclock                      \
+            -logdir    $options(-logdir)              \
+            -newlogcmd [mymethod OnNewLog]
+
+        $self log normal athenadb "Initializing athena: $options(-subject)"
 
         # NEXT, create the RDB and configure it for use.
         $self CreateRDB
@@ -279,6 +316,7 @@ snit::type ::athena::athenadb {
         # NEXT, create the order flunky for processing order input and
         # handling undo/redo.
         install flunky using ::athena::athena_flunky create ${selfns}::flunky $self
+        $flunky state [$self state]
 
         # NEXT, create the gofer for retrieving data.
         install gofer using ::athena::goferx create ${selfns}::gofer $self
@@ -317,6 +355,7 @@ snit::type ::athena::athenadb {
             actor                       \
             agent                       \
             autogen                     \
+            background                  \
             broadcast                   \
             bsys                        \
             cap                         \
@@ -358,15 +397,15 @@ snit::type ::athena::athenadb {
             unit                        \
             vrel
 
-
         # NEXT, register the ones that are saveables.  This will change
         # when the transition to library code is complete.
-        $self RegisterSaveable aram [list $aram saveable]
-        $self RegisterSaveable bsys $bsys
-        $self RegisterSaveable econ $econ
-        $self RegisterSaveable parm $parmdb
-        $self RegisterSaveable pot  $pot
-        $self RegisterSaveable sim  $sim
+        $self RegisterSaveable aram     [list $aram saveable]
+        $self RegisterSaveable athenadb $self
+        $self RegisterSaveable bsys     $bsys
+        $self RegisterSaveable econ     $econ
+        $self RegisterSaveable parm     $parmdb
+        $self RegisterSaveable pot      $pot
+        $self RegisterSaveable sim      $sim
 
 
         # NEXT, either load the named file or create an empty database.
@@ -376,7 +415,18 @@ snit::type ::athena::athenadb {
             set info(adbfile) ""
             $self FinishOpeningScenario
         }
+
+        # NEXT, make the scenario saved.
+        $self marksaved
     } 
+
+    # OnNewLog filename
+    #
+    # This is called when we open a new log directory.
+
+    method OnNewLog {filename} {
+        $self notify "" <NewLog> $filename
+    }
 
     # MakeComponents component...
     #
@@ -522,7 +572,6 @@ snit::type ::athena::athenadb {
     # Delegated commands
 
     # RDB
-    delegate method {rdb *}           to rdb
     delegate method eval              to rdb
     delegate method delete            to rdb
     delegate method exists            to rdb
@@ -537,13 +586,6 @@ snit::type ::athena::athenadb {
     delegate method tables            to rdb
     delegate method ungrab            to rdb
 
-    # SIM
-    delegate method locked            to sim
-    delegate method state             to sim
-    delegate method stable            to sim
-    delegate method stoptime          to sim
-    delegate method wizlock           to sim
-    
     # FLUNKY
     delegate method send              to flunky
 
@@ -556,13 +598,16 @@ snit::type ::athena::athenadb {
     # "new" scenario.
 
     method reset {} {
-        require {[$sim stable]} "A new scenario cannot be created in this state."
+        require {[$self idle]} "A new scenario cannot be created in this state."
 
         # FIRST, unlock the scenario if it is locked; this
         # will reinitialize modules like URAM.
-        if {[$sim state] ne "PREP"} {
-            $sim unlock
+        if {[$self locked]} {
+            $self unlock
         }
+
+        # NEXT, open a new log directory.
+        $self log newlog reset
 
         # NEXT, close the RDB if it's open
         if {[$rdb isopen]} {
@@ -588,8 +633,10 @@ snit::type ::athena::athenadb {
         $aram    clear
         $aam     reset
         $abevent reset
+        $flunky reset
 
         $self FinishOpeningScenario
+        $rdb marksaved
     }
 
     # InitializeRDB
@@ -605,14 +652,13 @@ snit::type ::athena::athenadb {
         $rdb eval { PRAGMA journal_mode = WAL; }
     }
 
-    # FinishOpeningScenario
+    # FinishOpeningScenario 
     #
-    # Defines the temp schema, marks everything saved, and notifies
+    # Defines the temp schema and notifies
     # the application.
 
     method FinishOpeningScenario {} {
         $self DefineTempSchema
-        $rdb marksaved
         $flunky state [$self state]
         $self notify "" <Create>
     }
@@ -625,7 +671,11 @@ snit::type ::athena::athenadb {
     # before.
 
     method load {filename} {
-        require {[$sim stable]} "A new scenario cannot be opened in this state."
+        require {[$self idle]} "A new scenario cannot be opened in this state."
+
+        # NEXT, open a new log directory.
+        $self log newlog load
+        $self log normal athenadb "load $filename"
 
         try {
             $rdb load $filename
@@ -635,17 +685,53 @@ snit::type ::athena::athenadb {
 
         # NEXT, restore the saveables
         $self RestoreSaveables -saved
-        $executive reset
+        $rdb marksaved
 
-        # NEXT, save the name.
-        set info(adbfile) $filename
+        $executive reset
+        $flunky reset
+
 
         # NEXT, Finish Up
         $self FinishOpeningScenario
 
         $strategy dbsync
         $nbhood dbsync
+
+        # NEXT, save the name.
+        set info(adbfile) $filename
+
+        return
     }
+
+    # loadtemp filename
+    #
+    # filename  - An .adb file
+    #
+    # Loads the scenario data from the temporary file into the object, 
+    # replacing what went before.  The result is unsaved.  This is
+    # for loading the results from a background process or thread.
+
+    method loadtemp {filename} {
+        $self log normal athenadb "loadtemp $filename"
+        try {
+            $rdb load $filename
+        } on error {result eopts} {
+            throw {SCENARIO OPEN} $result
+        }
+
+        # NEXT, restore the saveables without marking them saved.
+        $self RestoreSaveables
+        $executive reset
+        $flunky reset
+
+        $self FinishOpeningScenario
+
+        $strategy dbsync
+        $nbhood dbsync
+
+        return
+    }
+
     
     # save ?filename?
     #
@@ -674,6 +760,7 @@ snit::type ::athena::athenadb {
         }
 
         # NEXT, save the saveables to the rdb.
+        $self log normal athenadb "save $filename"
         $self SaveSaveables -saved
 
         # NEXT, Save the scenario to disk.
@@ -689,6 +776,31 @@ snit::type ::athena::athenadb {
 
         # NEXT, save the name
         set info(adbfile) $dbfile
+
+        return
+    }
+
+    # savetemp filename
+    #
+    # filename - Name for the temp save file
+    #
+    # Saves the scenario to the specified temporary file; the 
+    # scenario is not marked saved.  Throws "SCENARIO SAVE" if there's 
+    # an error saving.
+
+    method savetemp {filename} {
+        $self log normal athenadb "savetemp $filename"
+
+        # FIRST, save the saveables to the rdb.
+        $self SaveSaveables
+
+        # NEXT, Save the scenario to disk.
+        try {
+            file delete -force $filename
+            $rdb saveas $filename
+        } on error {result} {
+            throw {SCENARIO SAVE} $result
+        }
 
         return
     }
@@ -709,6 +821,17 @@ snit::type ::athena::athenadb {
         }
 
         return 0
+    }
+
+    # marksaved
+    #
+    # Marks everything saved, whether it is or not.
+
+    method marksaved {} {
+        dict for {name command} $info(saveables) {
+            {*}$command checkpoint -saved
+        }
+        $rdb marksaved
     }
 
     # RegisterSaveable name command
@@ -779,19 +902,367 @@ snit::type ::athena::athenadb {
         $self notify "" <State>
 
     }
+
+    #-------------------------------------------------------------------
+    # Scenario State Machine
+    #
+    # The scenario may be unlocked or locked; and it may be idle or 
+    # busy.  The state names are as follows:
+    #
+    # PREP     - idle, unlocked
+    # PAUSED   - idle, locked
+    # BUSY     - busy, not interruptible
+    # RUNNING  - busy, interruptible
+    #
+    # The scenario may be locked or unlocked only when it is idle.
+
+
+    # canlock
+    #
+    # Returns 1 if the scenario is sane and can be locked, and 0 otherwise.
+
+    method canlock {} {
+        set sev [$sanity onlock check]
+
+        expr {$sev ni {"ERROR" "WARNING"}}
+    }
+
+    # lock
+    #
+    # Locks the scenario, initializing the simulation models.  Saves
+    # a snapshot of the state just prior to lock, so that it can be
+    # restored on unlock.
+
+    method lock {} {
+        require {[$self idle] && [$self unlocked]} "Scenario is busy or locked"
+
+        # FIRST, do the on-lock sanity check.
+        if {![$self canlock]} {
+            throw {SCENARIO LOCK} "Sanity check failed; cannot lock."
+        }
+
+        # NEXT, log it.
+        $self log newlog lock
+        $self log normal athenadb "lock"
+        $self sigevent log 1 lock "Locking Scenario; simulation begins"
+
+        # FIRST, Make sure that bsys has had a chance to compute
+        # all of the affinities.
+        $bsys start
+
+        # NEXT, save an on-lock snapshot
+        $self SnapshotSave
+
+        # NEXT, do initial analyses, and initialize modules that
+        # begin to work at this time.
+        $sim start
+
+        # NEXT, mark the time: this supports time queries based on
+        # symbolic time names.
+        $simclock mark set LOCK
+        $simclock mark set RUN
+
+        # NEXT, lock the scenario
+        $self SetLock 1
+
+        # NEXT, resync the GUI, since much has changed.
+        $self dbsync
+
+        $self log normal athenadb "Scenario is locked; simulation begins."
+
+        return
+    }
+
+    # unlock ?-rebase?
+    #
+    # Unlocks the scenario.  By default, it restores the on-lock snap-shot,
+    # returning the scenario to its state before the scneario was locked.
+    # If -rebase is given, the current state of the simulation is saved
+    # as the new scenario inputs. 
+
+    method unlock {{opt ""}} {
+        require {[$self idle] && [$self locked]} "Scenario is busy or unlocked"
+
+        $self log newlog onlock
+        $self log normal athenadb "unlock $opt"
+
+        $self log normal athenadb "Unlocking scenario."
+
+        # FIRST, rebase or load the on-lock snapshot
+        if {$opt eq "-rebase"} {
+            $self RebaseSave
+        } else {
+            $self SnapshotLoad
+            $self SnapshotPurge
+            $sigevent purge 0
+        }
+
+        # NEXT, set unlock the scenario
+        $self SetLock 0
+
+        # NEXT, log it.
+        $self notify "" <Unlock>
+
+        # NEXT, resync the app with the RDB
+        $self dbsync
+        $self log normal athenadb "Unlocked scenario; Preparation resumes."
+        return
+    }
+
+
+    # SetLock flag
+    #
+    # flag   - 1 if the scenario is locked, and 0 otherwise.
+    #
+    # Sets the scenario lock flag.
+
+    method SetLock {flag} {
+        set cpinfo(locked) $flag
+        set info(changed) 1
+
+        $self StateChange
+    }
+
+    # busy set busytext ?pausecmd?
+    #
+    # busytext  - A busy message, e.g., "Running until 2014W32"
+    # pausecmd - A command to interrupt the activity.
+    #
+    # The scenario is running a long running process in the context
+    # of the event loop, in either the foreground or the background.
+    # The busytext indicates what it is.  If pausecmd is given, it is
+    # interruptible; otherwise not.
+    #
+    # This is usually used with 'progress' to give progress information
+    # to the user.
+    #
+    # busy set can be called multiple times while busy to change the
+    # busytext or the pausecmd.
+
+    method {busy set} {busytext {pausecmd ""}} {
+        set info(busytext) $busytext
+        set info(pausecmd) $pausecmd
+
+        $self StateChange
+    }
+
+    # busy clear
+    #
+    # The long running process has ended. Clears the busytext and
+    # pausecmd; the scenario is now idle.
+
+    method {busy clear} {} {
+        require {[$self isbusy]} "Scenario is already idle"
+        set info(busytext) ""
+        set info(pausecmd) ""
+
+        $self progress user
+        $self StateChange
+    }
+
+    # StateChange
+    #
+    # Notifies the rest of the scenario code, and the client, that
+    # the state has changed.
+
+    method StateChange {} {
+        if {[$self state] ne $info(state)} {
+            $flunky state [$self state]
+
+            # Clear undo stack on state change; can't undo after
+            # going from PREP to PAUSED.
+            # TBD: Might not be best approach.  There are no undoable
+            # orders in any state but PREP.  Just need to make 
+            # canundo/undotext handle the state properly.  Then you
+            # can lock, unlock, and have your undo stack back.
+            $flunky reset
+        }
+        $self notify "" <State>
+    }
+
+    # progress ?value?
+    #
+    # value   - A new progress value
+    #
+    # Gets/sets the progress value.  The progress value may be:
+    #
+    # user        - The program is under user control.  (Default)
+    # wait        - An indefinitely long process is on-going.
+    # 0.0 to 1.0  - We are this fraction of the way through the process.
+    #
+    # When the scenario becomes idle, the progress is set back to "user".
+    # It is up to the busy activity to set progress to "wait" or a
+    # fraction.
+    #
+    # Sends <Progress> on change.
+
+    method progress {{value ""}} {
+        if {$value ne ""} {
+            set info(progress) $value
+            $self notify "" <Progress>
+        }
+
+        return $info(progress)
+    }
+
+    # interrupt
+    #
+    # Interrupts the busy process.  This is an error if the busy process
+    # is not interruptible.
+
+    method interrupt {} {
+        require {[$self interruptible]} "No interruptible process is running"
+        $self log normal athenadb "Interrupting busy process"
+        {*}$info(pausecmd)
+        return
+    }
+
+    #-------------------------------------------------------------------
+    # State Machine Queries
     
+    # state
+    #
+    # Computes and returns the scenario state.
+
+    method state {} {
+        if {$info(busytext) ne ""} {
+            if {$info(pausecmd) eq ""} {
+                return "BUSY"
+            } else {
+                return "RUNNING"
+            }
+        } else {
+            if {$cpinfo(locked)} {
+                return "PAUSED"
+            } else {
+                return "PREP"
+            }
+        }
+    }
+
+    # statetext
+    #
+    # Returns a human-readable equivalent of the state, using the
+    # busytext if available.
+
+    method statetext {} {
+        if {$info(busytext) ne ""} {
+            return $info(busytext)
+        } else {
+            return [esimstate longname [$self state]]
+        }
+    }
+
+    # locked
+    #
+    # Returns 1 if the scenario is locked, and 0 otherwise.
+
+    method locked {} {
+        if {$cpinfo(locked)} {
+            return 1
+        } else {
+            return 0
+        }
+    }
+
+    # unlocked
+    #
+    # Returns 1 if the scenario is unlocked, and 0 otherwise.
+
+    method unlocked {} {
+        if {!$cpinfo(locked)} {
+            return 1
+        } else {
+            return 0
+        }
+    }
+
+    # idle
+    #
+    # Returns 1 if the scenario is idle, with nothing in process,
+    # and 0 otherwise.
+
+    method idle {} {
+        expr {$info(busytext) eq ""}
+    }
+    
+    # isbusy
+    #
+    # Returns 1 if the scenario is busy, and 0 otherwise.
+
+    method isbusy {} {
+        expr {$info(busytext) ne ""}
+    }
+
+    # interruptible
+    #
+    # Returns 1 if the scenario is busy and the process is interruptible,
+    # and 0 otherwise.
+
+    method interruptible {} {
+        expr {[$self isbusy] && $info(pausecmd) ne ""}
+    }
+
+    #-------------------------------------------------------------------
+    # Advance time (run)
+
+    # advance ?options...?
+    #
+    # -ticks ticks   - Run until now + ticks
+    # -until tick    - Run until tick
+    # -mode mode     - blocking|foreground|background (blocking is default)
+    # -tickcmd cmd   - Command is called each tick; see sim.tcl.  
+    #
+    # Causes the simulation to run time forward until the specified
+    # time, or until "interrupt" is called.  This routine processes
+    # the inputs and delegates the actual work to either sim.tcl or
+    # background.tcl.
+
+    method advance {args} {
+        require {[$self idle] && [$self locked]} "Scenario is busy or unlocked"
+
+        # FIRST, process the arguments.
+        set ticks   1
+        set mode    blocking
+        set tickcmd {}
+
+        foroption opt args -all {
+            -ticks {
+                set ticks [lshift args]
+            }
+            -until {
+                let ticks {[lshift args] - [$simclock now]}
+            }
+            -mode {
+                set mode [lshift args]
+            }
+            -tickcmd {
+                set tickcmd [lshift args]
+            }
+        }
+
+        assert {$ticks > 0}
+
+        if {$mode eq "background"} {
+            $background advance $ticks $tickcmd
+        } elseif {$mode in {"blocking" "foreground"}} {
+            $sim advance $mode $ticks $tickcmd
+        } else {
+            error "Invalid -mode: \"$mode\""
+        }
+    }    
 
 
     #-------------------------------------------------------------------
     # Snapshot management
 
-    # snapshot save
+    # SnapshotSave
     #
     # Saves an on-lock snapshot of the scenario, so that we can 
     # return to it on-lock.  See nonSnapshotTables, above, for the
     # excluded tables.
 
-    method {snapshot save} {} {
+    method SnapshotSave {} {
         # FIRST, save the saveables
         $self SaveSaveables
 
@@ -805,7 +1276,7 @@ snit::type ::athena::athenadb {
         }
 
         # NEXT, log the size.
-        $self log normal "" "snapshot saved: [string length $snapshot] bytes"
+        $self log normal athenadb "snapshot saved: [string length $snapshot] bytes"
     }
 
     # GrabAllBut exclude
@@ -844,19 +1315,19 @@ snit::type ::athena::athenadb {
         return $snapshot
     }
 
-    # snapshot load
+    # SnapshotLoad
     #
     # Loads the on-lock snapshot.  The caller should
     # dbsync the sim.
 
-    method {snapshot load} {} {
+    method SnapshotLoad {} {
         set snapshot [$rdb onecolumn {
             SELECT snapshot FROM snapshots
             WHERE tick = -1
         }]
 
         # NEXT, import it.
-        $self log normal "" \
+        $self log normal athenadb \
             "Loading on-lock snapshot: [string length $snapshot] bytes"
 
         $rdb transaction {
@@ -874,11 +1345,11 @@ snit::type ::athena::athenadb {
         $self RestoreSaveables
     }
 
-    # snapshot purge
+    # SnapshotPurge
     #
     # Purges the on-lock snapshot and all history.
 
-    method {snapshot purge} {} {
+    method SnapshotPurge {} {
         $rdb eval {
             DELETE FROM snapshots;
             DELETE FROM ucurve_contribs_t;
@@ -886,7 +1357,6 @@ snit::type ::athena::athenadb {
             DELETE FROM rule_inputs;
         }
 
-        # TODO: This should be part of grand scenario object.
         $hist purge -1
     }
 
@@ -895,14 +1365,14 @@ snit::type ::athena::athenadb {
 
     delegate method {rebase prepare} to rebase as prepare
     
-    method {rebase save} {} {
+    method RebaseSave {} {
 
         # FIRST, allow all modules to rebase.
         $rebase save
         
         # NEXT, purge history.  (Do this second, in case the modules
         # needed the history to do their work.)
-        $self snapshot purge
+        $self SnapshotPurge
         $sigevent purge 0
 
         # NEXT, update the clock
@@ -981,30 +1451,11 @@ snit::type ::athena::athenadb {
     #
     # These methods are defined for use by components.
 
-    # log level component message
-    #
-    # level       - The log level
-    # component   - The athenadb(n) component name, e.g., "flunky"
-    # message     - The log message
-    #
-    # Writes the message to the scrolling log, prefixing the component
-    # with "$subject.".
-
-    method log {level component message} {
-        set name [namespace tail $options(-subject)]
-
-        if {$component ne ""} {
-            append name ".$component"
-        }
-
-        callwith $options(-logcmd) $level $name $message
-    }
-
     # profile ?depth? command ?args...?
     #
     # Calls the command once using [time], in the caller's context,
     # and logs the outcome, returning the command's return value.
-    # In other words, you can stick "$adb profile" before any command name
+    # In other words, you can stick "$self profile" before any command name
     # and profile that call without changing code or adding new routines.
     #
     # If the depth is given, it must be an integer; that many "*" characters
@@ -1040,7 +1491,6 @@ snit::type ::athena::athenadb {
 
         $self profile {*}$depth $self {*}$args
     }
-
 
     # notify component event args...
     #
@@ -1208,6 +1658,51 @@ snit::type ::athena::athenadb {
         }]
     }
 
+    #-------------------------------------------------------------------
+    # saveable(i) interface
+
+    # checkpoint ?-saved?
+    #
+    # Returns a checkpoint of the non-RDB simulation data.
+
+    method checkpoint {{option ""}} {
+        assert {[$self idle]}
+
+        if {$option eq "-saved"} {
+            set info(changed) 0
+        }
+
+        set checkpoint [dict create]
+        
+        return [array get cpinfo]
+    }
+
+    # restore checkpoint ?-saved?
+    #
+    # checkpoint     A string returned by the checkpoint method
+    
+    method restore {checkpoint {option ""}} {
+        set info(changed) 1
+
+        if {[dict size $checkpoint] > 0} {
+            array unset cpinfo
+            array set cpinfo $checkpoint
+        }
+
+        if {$option eq "-saved"} {
+            set info(changed) 0
+        }
+    }
+
+    # changed
+    #
+    # Returns 1 if saveable(i) data has changed, and 0 otherwise.
+
+    method changed {} {
+        return $info(changed)
+    }
+
+
     #===================================================================
     # SQL Functions
 
@@ -1216,7 +1711,7 @@ snit::type ::athena::athenadb {
     # Returns 1 if the scenario is locked, and 0 otherwise.
 
     method Locked {} {
-        expr {[$sim state] ne "PREP"}
+        $self locked
     }
 
     # Mgrs args

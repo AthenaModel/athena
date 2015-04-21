@@ -18,6 +18,10 @@
 package provide athena 6.3.0a8
 # -kite-provide-end
 
+# The thread package is part of Tcl, and so doesn't need to be
+# managed by Kite.
+package require Thread
+
 #-----------------------------------------------------------------------
 # Required Packages
 
@@ -51,6 +55,8 @@ source [file join $::athena::library athena_order.tcl                ]
 source [file join $::athena::library athena_flunky.tcl               ]
 source [file join $::athena::library athena_types.tcl                ]
 source [file join $::athena::library autogen.tcl                     ]
+source [file join $::athena::library background.tcl                  ]
+source [file join $::athena::library bgslave.tcl                     ]
 source [file join $::athena::library dynatypes.tcl                   ]
 source [file join $::athena::library exporter.tcl                    ]
 source [file join $::athena::library executive.tcl                   ]
@@ -189,6 +195,7 @@ source [file join $::athena::library vardiffs vardiff_influence.tcl  ]
 source [file join $::athena::library vardiffs vardiff_nbmood.tcl     ]
 source [file join $::athena::library vardiffs vardiff_nbsecurity.tcl ]
 source [file join $::athena::library vardiffs vardiff_support.tcl    ]
+
 
 # Tk Code (loaded only if Tk is already present)
 if {[info command tk] ne ""} {

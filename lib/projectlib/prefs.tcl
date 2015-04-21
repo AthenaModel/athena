@@ -6,9 +6,12 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    Athena user preferences
+#    Athena Workbench user preferences
 #
 #    The module delegates most of its function to parmset(n).
+#
+# TBD:
+#    This module should be called "wbprefs(n)".
 #
 #-----------------------------------------------------------------------
 
@@ -62,6 +65,18 @@ snit::type ::projectlib::prefs {
         set ps [parmset %AUTO%]
 
         # NEXT, define parameters
+
+        $ps subset app {
+            Parameters which affect the workbench app as a whole.
+        }
+
+        $ps define app.bgticks snit::integer 2 {
+            When advancing time, the Workbench will advance time in
+            a background thread if the number of ticks is greater than
+            or equal to this value.  If the parameter's value is 
+            negative, then time will always be advanced in the foreground
+            thread.
+        }
 
         $ps subset appwin {
             Parameters which affect the main window.

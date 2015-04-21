@@ -23,6 +23,63 @@ Instances of athena(n) are thin wrappers around <xref athenadb(n)>, which
 is the true main object in the package.  <xref athenadb(n)> also provides
 services to internal modules that aren't appropriate for use by clients.<p>
 
+<subsection "Scenario States">
+
+athena(n) defines a state machine to determine what can be done at 
+different times, and more specifically which <xref order(n)> orders are
+available at any given time.  The state machine is illustrated in the
+following diagram (athena(n) subcommands are shown in blue):<p>
+
+<img src="athenadb_state.png"><p>
+
+First, the scenario may be <iref locked> or <iref unlocked>.  While
+<iref unlocked>, the scenario may be edited freely.  When the scenario
+is <iref locked>, the models are initialized and many inputs become
+frozen until the scenario is <iref unlocked> again.<p>
+
+Second, the scenario may be <iref idle> or <iref busy>.  While it is
+<iref idle> it is waiting in the event loop for user input.  While it
+<iref isbusy>, it is performing some long-running task; the user interface
+might be responsive, but input (i.e., orders) cannot be accepted.<p>
+
+Third, any such task can be <iref interruptible> or 
+non-<iref interruptible>.  Interruptible tasks can be terminated in the 
+middle; other tasks must run to completion.<p>
+
+This leads to the following four states:<p>
+
+<topiclist>
+<topic {<b PREP>}>
+Scenario preparation.  The scenario is <iref idle> and <iref unlocked>,
+and most orders can be used to edit the scenario.
+</topic>
+
+<topic {<b PAUSED>}>
+The scenario is <iref idle> and <iref locked>; simulation time can be
+advanced.
+</topic>
+
+<topic {<b BUSY>}>
+The scenario <iref isbusy> with a non-<iref interruptible> task.
+</topic>
+
+<topic {<b RUNNING>}>
+The scenario <iref isbusy> with an <iref interruptible> task.
+</topic>
+</topiclist><p>
+
+The lock state is set using <iref lock> and <iref unlock>.<p>
+
+The busy state is set using <iref busy>, which also indicates whether 
+the task is <iref interruptible> or not.  At present, 
+<iref interruptible> tasks are terminated by <iref interrupt>.  Progress
+in a busy task is indicated to the user via the <iref progress> 
+subcommand.<p>
+
+The <iref busy> controls are primarily for use internally, but may also
+be used by the client.<p>
+
+
 <section "COMMANDS">
 
 This module defines the following commands:<p>
@@ -53,18 +110,14 @@ A callback command to be used to define application-specific executive
 commands.  It is called with on additional argument, the scenario's
 <xref executive(n)> component.  This option is read-only after creation.<p>
 
-<defopt {-logcmd <i command>}>
+<defopt {-logdir <i dirname>}>
 
-Specifies the name of a command the library code will use to write to
-an application log.  athena(n) assumes that the <i command> either is
-or mimics a <xref mars:logger(n)> object; however, only the 
-logger(n) subcommands that output log messages are used.<p>
+Specifies the name of log directory; athenadb(n) should create a 
+logger(n) object with this <tt -logdir>.<p>
 
-Log messages produced by athenadb(n) use the <tt -subject> as the 
-log component name, possibly qualified by the name of the athenadb(n)
-subcomponent producing the message.<p>
-
-If no <tt -logcmd> is specified, no log output is produced.<p>
+If the object uses background processing, the background thread 
+should use the log directory name created by appending ".bg" to this 
+directory name.<p>
 
 <defopt {-scratch <i dirname>}>
 
@@ -128,13 +181,38 @@ This command gives access to the abstract situations in the scenario.<p>
 
 <deflist absit>
 
-<defitem "absit exists" {<i adb> absit exists TBD}>
-<defitem "absit get" {<i adb> absit get TBD}>
-<defitem "absit isinitial" {<i adb> absit isinitial TBD}>
-<defitem "absit islive" {<i adb> absit islive TBD}>
-<defitem "absit names" {<i adb> absit names TBD}>
-<defitem "absit validate" {<i adb> absit validate TBD}>
-<defitem "absit view" {<i adb> absit view TBD}>
+<defitem "absit exists" {<i adb> absit exists <i s>}>
+
+Returns 1 if there is an absit with ID <i s>, and 0 otherwise.<p>
+
+<defitem "absit get" {<i adb> absit get <i s> ?<i parm>?}>
+
+By default, returns a dictionary of information about the absit with
+ID <i s> (the dictionary is consistent with the <tt absits> SQL table).
+If <i parm> is given, it returns the value of that entry in the dict.<p>
+
+<defitem "absit isinitial" {<i adb> absit isinitial <i s>}>
+
+Returns 1 if absit <i s> is in the initial state, and 0 otherwise.<p>
+
+<defitem "absit islive" {<i adb> absit islive <i s>}>
+
+Returns 1 if absit <i s> is "live", i.e., it has not been resolved,
+and 0 otherwise.<p>
+
+<defitem "absit names" {<i adb> absit names}>
+Returns a list of the IDs of the existing absits.<p>
+
+<defitem "absit validate" {<i adb> absit validate <i s>}>
+Validates <i s> as an absit ID, returning it if it is valid and
+throwing <b INVALID> otherwise.<p>
+
+<defitem "absit view" {<i adb> absit view <i s> ?<i tag>?}>
+
+By default, returns a dictionary of information about the absit with
+ID <i s>, consistent with the <tt gui_absits> SQL view.  The <i tag>
+allows the command to tailor its output for different output formats
+(e.g., html); at present it is ignored.<p>
 
 </deflist absit>
 
@@ -144,12 +222,31 @@ This command gives access to the actors in the scenario.<p>
 
 <deflist actor>
 
-<defitem "actor exists" {<i adb> actor exists TBD}>
-<defitem "actor get" {<i adb> actor get TBD}>
-<defitem "actor namedict" {<i adb> actor namedict TBD}>
-<defitem "actor names" {<i adb> actor names TBD}>
-<defitem "actor validate" {<i adb> actor validate TBD}>
-<defitem "actor view" {<i adb> actor view TBD}>
+<defitem "actor exists" {<i adb> actor exists <i a>}>
+Returns 1 if there is an actor with ID <i a>, and 0 otherwise.<p>
+
+<defitem "actor get" {<i adb> actor get <i a> ?<i parms>?}>
+By default, returns a dictionary of information about actor <i a>
+(the dictionary is consistent with the <tt absits> SQL table).
+If <i parm> is given, it returns the value of that entry in the dict.<p>
+
+<defitem "actor namedict" {<i adb> actor namedict}>
+Returns a dictionary of actor IDs and long names for all actors in the
+scenario.<p>
+
+<defitem "actor names" {<i adb> actor names}>
+Returns a list of actor IDs for all actors in the scenario.<p>
+
+<defitem "actor validate" {<i adb> actor validate <i a>}>
+Validates <i a> as an actor ID, returning it if it is valid and
+throwing <b INVALID> otherwise.<p>
+
+<defitem "actor view" {<i adb> actor view <i a> ?<i tag>?}>
+
+By default, returns a dictionary of information about actor <i a>
+consistent with the <tt gui_actors> SQL view.  The <i tag>
+allows the command to tailor its output for different output formats
+(e.g., html); at present it is ignored.<p>
 
 </deflist actor>
 
@@ -159,39 +256,345 @@ Returns the name of the <tt .adb> file loaded on creation, if any, or
 the <tt .adb> file name last used for saving, or "" if no <tt .adb> file
 has ever been loaded or saved.<p>
 
+<defitem advance {<i obj> advance ?<i options...>?}>
+
+Advances simulation time, provided that the scenario is <iref locked> and
+<iref idle>.  With no options, advances time by one tick.<p>
+
+The options are as follows:<p>
+
+<deflist options>
+<defopt {-mode <i mode>}>
+
+The execution mode: <b blocking> (the default), <b foreground>, or 
+<b background>.<p>
+
+When <b blocking>, the command returns after it has advanced 
+time the specified number of ticks.  The time advance is not 
+<iref interruptible>.<p>
+
+When running in the <b foreground>, the command returns after executing
+one tick.  The scenario <iref isbusy>, and successive ticks are executed 
+in the context of the Tcl event loop.  The process is 
+<iref interruptible>, but if the UI will block during each tick.<p>
+
+When running in the <b background>, the scenario <iref isbusy> and the 
+entire process is handed over to a background thread.  Running in the
+background has a higher start-up and completion cost, but leaves the
+foreground thread responsive as the process runs.  At present, 
+background runs are not <iref interruptible>, though this may change.<p>
+
+<defopt {-ticks <i ticks>}>
+Specifies the number of ticks to advance time.<p>
+
+<defopt {-until <i time>}>
+Specifies that time should advance until the specified <i time> in ticks. 
+It's an error if <i time> is less than the current sim time.<p>
+
+<defopt {-tickcmd <i cmd>}>
+Calls a <i cmd> to be called at the end of each simulation time tick.
+It is called with three arguments: a tag, a tick counter, and the total 
+number of ticks to run.  The tick counter runs from 0 to the total number
+of ticks as time progresses.  While time advances, the tag will be 
+<b RUNNING> if the process can be interrupted and <b BUSY> otherwise; and
+at the end, the <i cmd> will be called once with a tag of <b COMPLETE>.<p>
+
+By <iref advance> automatically updates the <iref progress> as 
+time advances.  If the caller wishes to manage the <iref progress>
+itself, the <tt -tickcmd> can return "NO_PROGRESS".<p>
+
+</deflist options>
+
 <defitem agent {<i adb> agent <i subcommand> ?<i args...>?}>
 
 This command gives access to the agents in the scenario.  Agents
 are entities that have strategies, and include all actors plus the 
-"SYSTEM" agent.<p>
+"SYSTEM" agent, which is used to control actions not dependent on
+particular actors.<p>
 
 <deflist agent>
 
-<defitem "agent exists" {<i adb> agent exists TBD}>
-<defitem "agent names" {<i adb> agent names TBD}>
-<defitem "agent stats" {<i adb> agent stats TBD}>
-<defitem "agent tactictypes" {<i adb> agent tactictypes TBD}>
-<defitem "agent type" {<i adb> agent type TBD}>
-<defitem "agent validate" {<i adb> agent validate TBD}>
+<defitem "agent exists" {<i adb> agent <i agent_id>}>
+Returns 1 if there is an agent with ID <i agent_id>, and 0 otherwise.<p>
+
+<defitem "agent names" {<i adb> agent names}>
+Returns a list of agent IDs for all agents in the scenario.<p>
+
+<defitem "agent stats" {<i adb> agent stats <i agent_id>}>
+Returns a dictionary of statistics about the specified agent's strategy:<p>
+
+<ul>
+<li> <b blocks>: The total number of blocks
+<li> <b conditions>: The total number of conditions
+<li> <b tactics>: The total number of tactics
+</ul><p>
+
+<defitem "agent tactictypes" {<i adb> agent tactictypes <i agent_id>}>
+
+Returns a list of the names of the tactic types that this agent is
+allowed to use.<p>
+
+<defitem "agent type" {<i adb> agent type <i agent_id>}>
+
+Returns the type of this agent, either <b system> or <b actor>.<p>
+
+<defitem "agent validate" {<i adb> agent validate <i agent_id>}>
+
+Validates <i agent_id> as an agent ID, returning it if it is valid and
+throwing <b INVALID> otherwise.<p>
+
 
 </deflist agent>
 
 
 <defitem autogen {<i adb> autogen <i subcommand> ?<i args...>?}>
 
-TBD: Interface to autogen; write a separate man page.<p>
+This command is used to automatically generate entire scenarios 
+or parts of scenarios, if desired. It has the following subcommands:<p>
+
+<deflist autogen>
+
+<defitem "autogen scenario" {<i adb> autogen scenario <i options...>}>
+
+Creates a scenario with a default number of each of Athena's entities
+or, if any of the options are supplied, the number of entities 
+requested by the user. If the <i>-nostrategy</i> flag is supplied then
+no tactics are created, otherwise a default set of tactics are created 
+for each actor.<p>
+
+The available options are:<p>
+
+<deflist options>
+
+<defopt {-nb <i>n</i>}>
+Specifies the number of neighborhoods to create. Each neighborhood is
+a 10x10 pixel square. Neighborhoods are laid out in strips starting at
+the top of the map. Defaults to 10.<p>
+
+<defopt {-actors <i>n</i>}>
+Specifies the number of actors to create. Defaults to 3.<p>
+
+<defopt {-frcg <i>n</i>}>
+Specifies the number of force groups to create. As they are created,
+the force group type is cycled through each possible type. Each force 
+group is given a base personnel of 100000. Defaults to 3.<p>
+
+<defopt {-civg <i>n</i>}>
+Specifies the number of civilian groups to create per neighborhood. The 
+last group in each neighborhood is created with the subsistence 
+agriculture flag set to true. The different types of housing are 
+cycled through as each group is created. The exception to this are 
+subsistence agriculture groups, which are always  
+<code>AT_HOME</code>.  The population of every group in a neighborhood 
+is some non-negative multiple of 10000. Thus, the first group in a 
+neighborhood has a base population of zero and each group created 
+after has a base population of 10000 more than the previous group.
+Defaults to 6.<p>
+
+<defopt {-orgg <i>n</i>}>
+Specifies the number of organization groups to create. As groups are
+created, the organization type is cycled through. Each group has a 
+base personnel of 100000. Defaults to 2.<p>
+
+<defopt {-topics <i>n</i>}>
+Specifies the number of belief system topics to create.  Each actor and
+civilian group is given its own belief system, and assigned a belief 
+for each topic.  The beliefs
+assigned are cycled through four possibilities comprised of a position
+and emphasis pair. They are:
+
+<ul>
+<li><b>Passionately For</b> and <b>Agreement--Strong</b>
+<li><b>Passionately For</b> and <b>Disagreement--Extreme</b>
+<li><b>Passionately Against</b> and <b>Agreement--Strong</b>
+<li><b>Passionately Against</b> and <b>Disagreement--Extreme</b>
+</ul>
+
+Note that if 4 topics are requested then all actors and
+civilians will have identical belief systems resulting in affinities of
+1 between all entity pairs. Defaults to 3.<p>
+
+<defopt {-nostrategy}>
+If specified, no tactics are employed by any actor.<p>
+
+</deflist options>
+
+To create a scenario with 8 neighborhoods and the default number of
+entities for all others, enter<p>
+
+<pre>
+    autogen scenario -nb 8
+</pre>
+
+To create a scenario with no tactics for any actor, enter<p>
+
+<pre>
+    autogen scenario -nostrategy
+</pre>
+
+<defitem "autogen actors" {<i adb> autogen actors ?<i num>?}>
+
+Automatically generates the requested number of actors provided that
+no actors already exist.  If no argument is supplied, three actors are
+created.<p>
+
+<defitem "autogen nbhoods" {<i adb> autogen nbhoods ?<i num>?}>
+
+Automatically generates the requested number of neighborhoods 
+subject to certain constraints. Each neighborhood is
+a 10x10 pixel square. Neighborhoods are laid out in strips starting at
+the top of the map. If no argument is supplied, 
+ten neighborhoods are created. The constraints are as follows:<p> 
+
+<ul>
+<li> No neighborhoods exist
+<li> At least one actor exists
+</ul><p>
+
+<defitem "autogen civgroups" {<i adb> autogen civgroups ?<i num>?}>
+
+Automatically generates the requested number of civilian groups per
+neighborhood. The last group in each neighborhood is created with 
+the subsistence agriculture flag set to true. The different types 
+of housing are cycled through as each group is created. The exception
+to this are subsistence agriculture groups, which are
+always <code>AT_HOME</code>. The population of every group in a 
+neighborhood is some non-negative multiple of 10000. Thus, the first
+group in a neighborhood has a base population of zero and each group 
+created after has a base population of 10000 more than the previous 
+group.  If no argument is supplied, six groups per neighborhood are 
+created.<p>
+
+The creation of civilian groups is subject to the following constraints:<p> 
+
+<ul>
+<li> Neighborhoods must exist
+<li> No civilian groups exist
+</ul><p>
+
+<defitem "autogen frcgroups" {<i adb> autogen frcgroups ?<i num>?}>
+
+Specifies the number of force groups to create. As they are created,
+force group type is cycled through each possible type. Each force 
+group is given a base personnel of 100000.  If no argument is supplied, 
+three groups are created. <p>
+
+The creation of force groups is subject to the following constraints:<p> 
+
+<ul>
+<li> At least one actor must exist
+<li> No force groups exist
+</ul><p>
+
+<defitem "autogen orggroups" {<i adb> autogen orggroups ?<i num>?}>
+
+Specifies the number of organization groups to create. As they are created,
+organization group type is cycled through each possible type. Each
+group is given a base personnel of 100000.  If no argument is supplied, 
+three groups are created. <p>
+
+The creation of organization groups is subject to the following 
+constraints:<p> 
+
+<ul>
+<li> At least one actor must exist
+<li> No force groups exist
+</ul><p>
+
+<defitem "autogen bsystem" {<i adb> autogen bsystem ?<i num>?}>
+
+Specifies the number of belief system topics to create.  Each actor and
+civilian group is given its own belief system, and is assigned a belief 
+for each topic.  The beliefs
+assigned are cycled through four possibilities comprised of a position
+and emphasis pair. They are:
+
+<ul>
+<li><b>Passionately For</b> and <b>Agreement--Strong</b>
+<li><b>Passionately For</b> and <b>Disagreement--Extreme</b>
+<li><b>Passionately Against</b> and <b>Agreement--Strong</b>
+<li><b>Passionately Against</b> and <b>Disagreement--Extreme</b>
+</ul>
+
+If no argument is supplied, three topics are created.<p>
+
+Creation of a belief system is subject to the following constraints. 
+The constraints are as follows:<p> 
+
+<ul>
+<li> At least one actor must exist
+<li> Civilian groups must exist
+<li> No topics exist
+</ul><p>
+
+
+<defitem "autogen assign" {<i adb> autogen assign ?<i options>?}>
+
+This command automatically generates one or more 
+ASSIGN tactics for force or organization groups
+that belong to the specified owner.  By default all activities are
+assigned in turn for each neighborhood.  For each tactic created,
+100 personnel are specified to be doing the activity.  The list
+of available options are:<p>
+
+<deflist options>
+
+<defopt {-frcg <i>glist</i>}>
+List of force groups owned by owner that should be assigned activities.
+Defaults to all force groups owned by the owner.<p>
+
+<defopt {-orgg <i>glist</i>}>
+List of organization groups owned by owner that should be assigned
+activities. Defaults to all organization groups owned by owner.<p>
+
+<defopt {-nbhoods <i>nlist</i>}>
+List of neighborhoods that activities should be assigned in.  Defaults
+to all neighborhoods.<p>
+
+<defopt {-frcact <i>alist</i>}>
+List of force activities that should be assigned, in turn, to each
+force group in each neighborhood.  Defaults to all force activities.<p>
+
+<defopt {-orgact <i>alist</i>}>
+List of organization activities that should be assigned, in turn, to each
+organization group in each neighborhood.  Defaults to all organization
+activities.<p>
+
+</deflist options>
+
+</deflist autogen>
+
 
 <defitem bean {<i adb> bean <i subcommand> ?<i args...>?}>
 
-Some of the objects in athena(n) are stored at <xref bean(n)> objects.
-This command allows the application to query and manipulate beans.<p>
+Some of the objects in athena(n) are stored at <xref bean(n)> objects,
+notably strategies, blocks, conditions, and tactics. This command 
+allows the application to query and manipulate beans.<p>
 
 <deflist bean>
 
-<defitem "bean get" {<i adb> bean get TBD}>
-<defitem "bean has" {<i adb> bean has TBD}>
-<defitem "bean ids" {<i adb> bean ids TBD}>
-<defitem "bean view" {<i adb> bean view TBD}>
+<defitem "bean get" {<i adb> bean get <i id>}>
+
+Returns the bean object with the given <i id>.  It is an error if no
+such bean exists in the scenario.<p>
+
+<defitem "bean has" {<i adb> bean has <i id>}>
+Returns 1 if the scenario has a bean object with the given ID, and 0
+otherwise.<p>
+
+<defitem "bean ids" {<i adb> bean ids ?<i cls>?}>
+
+By default, returns a list of the IDs of all beans in the scenario.  
+If <i cls> is given, returns a list of the IDs of the beans that belong
+to that class or its subclasses.  For example, passing 
+class <tt ::athena::tactic> will return the IDs of all tactic beans.<p>
+
+
+<defitem "bean view" {<i adb> bean view <i id> ?<i tag>?}>
+
+Returns a view dictionary for the bean with the given <i id>.  The
+<i tag> is used to tailor the information in specific ways; most beans
+support the <b text> and <b html> tags.<p>
 
 </deflist bean>
 
@@ -201,13 +604,68 @@ This command gives access to the belief systems in the scenario.<p>
 
 <deflist bsys>
 
-<defitem "bsys affinity" {<i adb> bsys affinity TBD}>
-<defitem "bsys belief" {<i adb> bsys belief TBD}>
-<defitem "bsys playbox" {<i adb> bsys playbox TBD}>
-<defitem "bsys system" {<i adb> bsys system TBD}>
-<defitem "bsys topic" {<i adb> bsys topic TBD}>
+<defitem "bsys affinity" {<i adb> bsys affinity <i sid1 sid2>}>
+Returns the belief system <i sid1>'s affinity for belief system
+<i sid2>.  Affinity is a number between -1.0 and 1.0.<p>
+
+<defitem "bsys belief" {<i adb> bsys belief <i subcommand> ?<i args>?}>
+
+This command is used to query the beliefs in a belief system.  The
+subcommands are as follows:<p>
+
+<deflist bsys belief>
+
+<defitem "bsys belief view" {<i adb> bsys belief view <i sid tid>}>
+Returns a dictionary of information about system <i sid>'s belief about
+topic <i tid>.<p>
+
+<defitem "bsys belief validate" {<i adb> bsys belief validate <i bid>}>
+
+Validates <i bid> as an {<i sid tid>} pair for this scenario.  Returns
+the <i bid>, or throws <b INVALID> on failure.<p>
+
+<defitem "bsys belief isdefault" {<i adb> bsys belief isdefault <i bid>}>
+
+Returns 1 if belief <i bid> has its default value, and 0 otherwise, where
+<i bid> is a valid {<i sid tid>} pair.<p>
+
+</deflist bsys belief>
+
+
+<defitem "bsys playbox" {<i adb> bsys playbox <i subcommand> ?<i args>?}>
+<defitem "bsys system" {<i adb> bsys system <i subcommand> ?<i args>?}>
+<defitem "bsys topic" {<i adb> bsys topic <i subcommand> ?<i args>?}>
 
 </deflist bsys>
+
+<defitem busy {<i obj> busy <i subcommand> ?<i args...>?}>
+
+This command manages the scenario's "busy" state.  When the scenario is
+undertaking some long-running task in the context of the event loop, 
+it will mark itself <iref isbusy>; this prevents orders from being accepted 
+and the scenario from being changed until the task is complete.
+It has the following subcommands:<p>
+
+<deflist busy>
+<defitem "busy clear" {<i obj> busy clear}>
+Clears the busy state; the scenario will be <iref idle>.<p>
+
+<defitem "busy set" {<i obj> busy set <i busytext> ?<i pausecmd>?}>
+Sets the busy state.  The <i busytext> is a brief statement of the
+task, e.g., "Running until 2014W01" or "Wizard".  If the <i pausecmd>
+is given, it is a command to call to pause or interrupt the task; the
+task is then <iref interruptible> by the <iref interrupt> order.  Otherwise,
+the task is not interruptible and must run to completion.<p>
+
+While the scenario <iref isbusy>, the task will often use <iref progress>
+to keep the user informed as to its progress.<p>
+</deflist busy>
+
+<defitem canlock {<i obj> canlock}>
+
+Returns 1 if the scenario passess the on-lock sanity check, and hence
+can in theory be locked, and 0 otherwise.<p>
+
 
 <defitem civgroup {<i adb> civgroup <i subcommand> ?<i args...>?}>
 
@@ -255,8 +713,14 @@ tactic.s<p>
 
 <defitem dbsync {<i adb> dbsync}>
 
-Causes athena(n) to send out the <xref "NOTIFIER EVENTS"> it sends on 
-database change, so that the application will refresh itself.<p>
+Sends out a sequence of notifier events to the client, to be used to
+refresh the client when the scenario changes, i.e., after a <iref load>
+or <iref reset>.<p>
+
+The sequence is <tt><tag PreSync></tt>, <tt><tag Sync></tt>, 
+<tt><tag Time></tt>, and <tt><tag State></tt>.  
+See <xref "NOTIFIER EVENTS"> for
+more about the notifier events sent by the library.<p>
 
 <defitem econ {<i adb> econ <i subcommand> ?<i args...>?}>
 
@@ -275,12 +739,36 @@ This command gives access to the economic model in the scenario.<p>
 </deflist econ>
 
 
-<defitem enter {<i adb> enter TBD}>
+<defitem enter {<i obj> enter <i options...>}>
 
-If Tk is loaded, pops up an order dialog for the specified order.  It is an
-error if Tk is not loaded.<p>
+If Tk is loaded, then this command is used to pop up Tk order dialogs.  If
+Tk is not loaded, it throws an error. The options are as follows:<p>
 
-TBD: Fill in details.<p>
+<deflist enter>
+
+<defopt {-order <i name>}>
+
+Specifies the order name, e.g., <tt ACTOR:CREATE>.<p>
+
+<defopt {-parmdict <i dict>}>
+
+Specifies a dictionary of order parameter names and values, to be used to
+initialize the dialog.<p>
+
+<defopt {-master <i window>}>
+
+Specifies the Tk window over which the dialog should appear.<p>
+
+<defopt {-appname <i name>}>
+
+Specifies the application name for the dialog title.<p>
+
+<defopt {-helpcmd <i cmd>}>
+
+Specifies a command to call if the dialog's help button is pushed.<p>
+
+</deflist enter>
+
 
 <defitem executive {<i adb> executive <i subcommand> ?<i args...>?}>
 
@@ -357,6 +845,11 @@ This command gives access to the semantic hooks in the scenario.<p>
 
 </deflist hook>
 
+<defitem idle {<i obj> idle}>
+
+Returns 1 if the scenario is idle, i.e., is ready to accept user input,
+and 0 otherwise; see <xref "Scenario States">.<p>
+
 <defitem inject {<i adb> inject <i subcommand> ?<i args...>?}>
 
 This command gives access to the Information Ops Message (IOM) injects
@@ -371,6 +864,18 @@ in the scenario.<p>
 <defitem "inject validate" {<i adb> inject validate TBD}>
 
 </deflist inject>
+
+<defitem interrupt {<i obj> interrupt}>
+
+If the scenario <iref isbusy> with a task that is <iref interruptible>,
+this command will attempt to interrupt it, causing it to terminate 
+prematurely; see <iref busy set> for how to specify that the scenario
+is doing an interruptible task.<p>
+
+<defitem interruptible {<i obj> interruptible}>
+
+Returns 1 if the scenario <iref isbusy> with an interruptible task,
+and 0 otherwise.<p>
 
 <defitem iom {<i adb> iom <i subcommand> ?<i args...>?}>
 
@@ -389,17 +894,32 @@ in the scenario.<p>
 
 </deflist iom>
 
+<defitem isbusy {<i obj> isbusy}>
+
+Returns 1 if the scenario is busy, i.e., is performing a task and 
+cannot accept user orders, and 0 otherwise; see <xref "Scenario States">.<p>
+
 <defitem load {<i obj> load <i filename>}>
 
 Loads the scenario from the named <tt *.adb> file into this scenario
-object, throwing away any previous data.<p>
+object, throwing away any previous data.  The scenario must be
+<iref idle>.  Afterwards, the scenario will be <i locked> or 
+<i unlocked> depending on the loaded data.<p>
 
-TBD: athena(n) should call "load" then "dbsync".<p>
+If the client depends on <xref "NOTIFIER EVENTS"> to keep its user interface
+in sync with the scenario, it should call <iref dbsync> after calling 
+<iref load>.<p>
+
+<defitem lock {<i obj> lock}>
+
+Locks the scenario, if the scenario is <iref idle> and <iref unlocked>
+and <iref canlock>.  The simulation time can only be advanced while the
+scenario is locked.<p>
 
 <defitem locked {<i obj> locked}>
 
-Returns 1 if the scenario is "locked", i.e., in the <b PAUSED> or 
-<b RUNNING> state, and 0 otherwise.<p>
+Returns 1 if the scenario is "locked", initialized and ready for a time
+advance, and 0 otherwise; see <xref "Scenario States">.<p>
 
 <defitem paste {<i obj> paste <i subcommand> ?<i args...>?}>
 
@@ -430,6 +950,36 @@ with the given <i block_id>.<p>
 
 </deflist paste>
 
+<defitem progress {<i obj> progress ?<i value>?}>
+
+Sets and queries the current progress value.  Progress is set while the
+scenario <iref isbusy>; see <iref busy set>.  The <i value> may take three
+forms:<p>
+
+<topiclist>
+<topic {<b user>}>
+The user is in control of the scenario.  This would be the case when the
+scenario is <i idle> and it <iref isbusy> with something like a wizard GUI,
+where normal order entry is suspended until the wizard is closed.
+</topic>
+
+<topic {<b wait>}>
+The scenario is performing a task of indefinite length, and no actual
+progress can be reported until it is done.
+</topic>
+
+<topic {<b><i fraction></b>}>
+A completion <i fraction> from 0.0 to 1.0.
+</topic>
+</topiclist><p>
+
+<b TBD>: It might also be good to have a mode for tasks where the duration
+cannot be estimated, but many messages are received from the task code.
+This would allow a <tt ttk::progressbar> to be animated by the receipt
+of these messages instead of automatically, which would give the user
+more feedback.<p>
+
+
 <defitem ptype {<i obj> ptype <i subcommand> ?<i args...>?}>
 
 Parameter type validation subcommands.  This is exposed because it is used by
@@ -438,9 +988,12 @@ by a gofer-based solution; when that happens, this module can become private.<p>
 
 <defitem reset {<i obj> reset}>
 
-Resets the scenario back to initial empty state.<p>
+Resets the scenario back to its initial empty state.  It will be 
+<iref idle> and <i unlocked>.<p>
 
-TBD: athena(n) should call "reset" then "dbsync".<p>
+If the client depends on <xref "NOTIFIER EVENTS"> to keep its user interface
+in sync with the scenario, it should call <iref dbsync> after calling 
+<iref load>.<p>
 
 <defitem sanity {<i obj> sanity <i subcommand> ?<i args...>?}>
 
@@ -451,34 +1004,38 @@ TBD: Sanity-checking module; fill this in.<p>
 Saves the scenario to disk as an <tt .adb> file called <i filename>,
 adding the "<tt .adb>" extension if necessary.  If no <i filename> is
 given but the <iref adbfile> name is known, the <iref adbfile> name is
-used.<p>
+used.  The scenario is marked saved.<p>
 
 On failure, throws "<tt SCENARIO SAVE>".<p>
 
-<defitem stable {<i obj> stable}>
-
-Returns 1 if the simulation is "stable", i.e., is paused for input, 
-and 0 otherwise.  It is stable if the <iref state> is <b PREP> or
-<b PAUSED>.<p>
-
 <defitem state {<i obj> state}>
 
-Returns the scenario's simulation state: <b PREP>, <b PAUSED>, <b RUNNING>,
-or <b WIZARD>.  <b PREP> is the "scenario preparation" state; the 
-scenario may be edited freely.  "Locking" the scenario places it in the
-<b PAUSED> state, at which point time may be advanced; while time is 
-advancing, it is in the <b RUNNING> state.<p>
+Returns the scenario's state, which depends on whether or not it is
+<iref idle> and whether or not it is <iref locked>.  The states are
+<b PREP>, <b PAUSED>, <b BUSY>, and <b RUNNING>; see 
+<xref "Scenario States"> for more details.<p>
 
-The client may place an unlocked scenario in the <b WIZARD> state using
-<iref wizlock>; this locks out all changes until the <iref wizlock> is
-disabled.  It is used to lock out the normal scenario orders while a 
-"wizard" GUI is being used.<p>
+<defitem statetext {<i obj> statetext}>
+
+Returns a human-readable string that derives from the current 
+<iref state>.  If the scenario <iref isbusy>, the string is simply
+the <i busytext> passes to <iref busy set>.<p>
 
 <defitem stoptime {<i obj> stoptime}>
 
 While the <i state> is <b RUNNING>, this method returns the simulation
 time in weeks at which the simulation will stop and return to the 
 <b PAUSED> state.<p>
+
+<defitem unlock {<i obj> unlock}>
+
+Unlocks the scenario, if the scenario is <iref idle> and <iref locked>.
+The scenario can only be edited while it is unlocked.<p>
+
+<defitem unlocked {<i obj> unlocked}>
+
+Returns 1 if the scenario is "unlocked", ready for editing, and 0
+otherwise; see <xref "Scenario States">.<p>
 
 <defitem unsaved {<i obj> unsaved}>
 
@@ -487,17 +1044,6 @@ Returns 1 if there is unsaved scenario data, and 0 otherwise.<p>
 <defitem version {<i obj> version}>
 
 Returns the version number of the <xref athena(n)> library.<p>
-
-<defitem wizlock {<i obj> wizlock <i flag>}>
-
-Sets or clears the "wizard lock" flag, which is used to lock out 
-changes to the scenario while a wizard GUI is running.  The wizard
-itself will typical set the <i flag> when it starts, and clear it
-just prior to sending a sequence of orders in an <iref order transaction>.
-The wizard lock flag may only be set when <iref state> is <b PREP>, and
-functions by setting the <iref state> to <b WIZARD>.<p>
-
-
 
 
 --------------------------
@@ -517,32 +1063,6 @@ database, returning only the first column.<p>
 
 <b TODO>: Ultimately, this will be a safe read-only operation.<p>
 
-<defitem paste {<i adb> paste <i subcommand> ?<i args...>?}>
-
-Pastes copied items into scenario, where the subcommand determines the 
-kind of item to paste.  In each case, the paste is done as a sequence of 
-grouped orders, and will be undone and redone as a group.<p>
-
-The available subcommands are as follows:<p>
-
-<deflist paste>
-
-<defitem "paste block" {<i adb> paste block <i agent copysets>}>
-
-Pastes <i copysets>, a list of copied strategy blocks, into the strategy
-owned by the named <i agent>.<p>
-
-<defitem "paste condition" {<i adb> paste condition <i block_id copysets>}>
-
-Pastes <i copysets>, a list of copied conditions, into the strategy block
-with the given <i block_id>.<p>
-
-<defitem "paste tactic" {<i adb> paste tactic <i block_id copysets>}>
-
-Pastes <i copysets>, a list of copied tactics, into the strategy block
-with the given <i block_id>.<p>
-
-</deflist paste>
 
 <defitem query {<i adb> query <i query> ?<i options...>?}>
 
@@ -598,21 +1118,6 @@ contains identical values in consecutive rows, the column will be
 blank in all but the first of the rows.  Defaults to "0".<p>
 
 </deflist query>
-
-<defitem rebase {<i adb> rebase}>
-
-Given a scenario with time advanced, this command converts it into a
-scenario with the same data at time 0.  This is experimental.<p>
-
-<defitem save {<i adb> save ?<i filename>?}>
-
-Saves the scenario to disk as an <tt .adb> file called <i filename>,
-adding the "<tt .adb>" extension if necessary.  On failure, throws
-"<tt SCENARIO SAVE>".<p>
-
-<defitem unsaved {<i adb> unsaved}>
-
-Returns 1 if there is unsaved scenario data, and 0 otherwise.<p>
 
 </deflist instance>
 

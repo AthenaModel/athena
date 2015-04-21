@@ -1,11 +1,14 @@
 # TODO.md - Athena TODO List
 
-- TclHTTPD Conversion
-  - Fix logging
-  - Write domain handlers for our use:
-    - Use directories for organization, file names with extension for data
-      products, e.g., index.json
-  - Figure out how to handle POST requests of executive scripts
+- athena-slave:
+  - CLI history is not getting saved.
+    - saveprefs is getting called.
+    - Perhaps LoadPrefs isn't properly closing the file, so Windows is 
+      helpfully writing to another file?
+      - But LoadPrefs is using "readfile"
+      - No "Virtual" directory with alternate file in it.
+  - Finish athena(n) man page!!!!!!!
+  - Figure out what to do about athena(n)-client access to the RDB.
 - Significant Outputs:
   - All history variable base names should be unique, e.g., nbsecurity.n rather
     than security.n.

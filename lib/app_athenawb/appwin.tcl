@@ -56,6 +56,7 @@ snit::widget appwin {
     component viewmenu              ;# The View menu
     component toolbar               ;# The main toolbar
     component simtools              ;# The simulation controls
+    component progbar               ;# The progress bar
     component cli                   ;# The cli(n) pane
     component msgline               ;# The messageline(n)
     component content               ;# The content notebook
@@ -397,14 +398,15 @@ snit::widget appwin {
                     -logcmd        [mymethod puts]     \
                     -loglevel      "normal"            \
                     -showloglist   yes                 \
+                    -showapplist   yes                 \
                     -rootdir       [workdir join log]  \
-                    -defaultappdir app_sim             \
                     -format        {
-                        {week 7 yes}
-                        {v    7 yes}
-                        {c    14 yes}
-                        {m    0 yes}
-                    }
+                        {t 19 yes}
+                        {w  7 yes}
+                        {v  7 yes}
+                        {c  9 yes}
+                        {m  0 yes}
+                    } -parsecmd ::appwin::LogParser
             }
         }
 
@@ -425,12 +427,14 @@ snit::widget appwin {
     # simstate    Current simulation state
     # tick        Current sim time as a four-digit tick 
     # date        Current sim time as a week(n) string.
+    # pbarflag    1 if the progressbar is shown, and 0 otherwise.
 
     variable info -array {
         mode           scenario
         simstate       ""
         tick           "0000"
         date           ""
+        pbarflag       0
     }
 
     # Visibility Array: this array determines whether or not various 
@@ -503,6 +507,7 @@ snit::widget appwin {
         notifier bind ::adb      <Sync>          $self [mymethod reload]
         notifier bind ::scenario <ScenarioSaved> $self [mymethod reload]
         notifier bind ::adb      <State>         $self [mymethod SimState]
+        notifier bind ::adb      <Progress>      $self [mymethod SimProgress]
         notifier bind ::adb      <Time>          $self [mymethod SimTime]
         notifier bind ::app      <Prefs>         $self [mymethod AppPrefs]
 
@@ -694,10 +699,10 @@ snit::widget appwin {
         $self AddOrder $submenu SIM:STARTDATE
         $self AddOrder $submenu SIM:STARTTICK
         
-        cond::available control \
-            [menuitem $submenu command [::athena::orders title SIM:REBASE]... \
-                -command [list app rebase]]    \
-                order SIM:REBASE
+        # TBD: Possibly this should go elsewhere
+        cond::lockedAndIdle control \
+            [menuitem $submenu command "Rebase Scenario" \
+                -command [list app rebase]]
 
         # Orders/Unit
         set submenu [menu $ordersmenu.unit]
@@ -959,6 +964,11 @@ snit::widget appwin {
 
         DynamicHelp::add $simtools.duration -text "Duration of run"
 
+        # Progress Bar
+        install progbar using ttk::progressbar $toolbar.progbar \
+            -orient horizontal \
+            -length 200
+
         # Sim State
         ttk::label $toolbar.state                \
             -text "State:"
@@ -1035,6 +1045,7 @@ snit::widget appwin {
         set slog   [$self tab win slog]
         $slog load [log cget -logfile]
         notifier bind ::log <NewLog> $self [list $slog load]
+        notifier bind ::adb <NewLog> $self [list $slog load]
 
         # NEXT, add the CLI to the paner
         install cli using cli $win.paner.cli    \
@@ -1070,6 +1081,8 @@ snit::widget appwin {
             }
         }
     }
+
+
 
     # CliPrompt
     #
@@ -1476,10 +1489,10 @@ snit::widget appwin {
     # Prompts the user to create a brand new scenario.
 
     method FileNew {} {
-        # FIRST, we can only create a new scenario if we're not RUNNING.
+        # FIRST, we can only create a new scenario if we're idle.
         # The menu item will be unavailable in this case, but we might
         # still get here via a hot-key.
-        if {![adb stable]} {
+        if {![adb idle]} {
             return
         }
 
@@ -1497,10 +1510,10 @@ snit::widget appwin {
     # Prompts the user to open a scenario in a particular file.
 
     method FileOpen {} {
-        # FIRST, we can only open a new scenario if we're not RUNNING.
+        # FIRST, we can only open a new scenario if we're idle.
         # The menu item will be unavailable in this case, but we might
         # still get here via a hot-key.
-        if {![adb stable]} {
+        if {![adb idle]} {
             return
         }
 
@@ -1531,10 +1544,10 @@ snit::widget appwin {
     # Prompts the user to save the scenario as a particular file.
 
     method FileSaveAs {} {
-        # FIRST, we can only save a new scenario if we're not RUNNING.
+        # FIRST, we can only save a new scenario if we're idle.
         # The menu item will be unavailable in this case, but we might
         # still get here via a hot-key.
-        if {![adb stable]} {
+        if {![adb idle]} {
             return
         }
 
@@ -1564,10 +1577,10 @@ snit::widget appwin {
     # copy.
 
     method FileSave {} {
-        # FIRST, we can only save a scenario if we're not RUNNING.
+        # FIRST, we can only save a scenario if we're idle.
         # The menu item will be unavailable in this case, but we might
         # still get here via a hot-key.
-        if {![adb stable]} {
+        if {![adb idle]} {
             return
         }
 
@@ -1917,42 +1930,78 @@ snit::widget appwin {
 
     # RunPause
     #
-    # Sends SIM:RUN or SIM:PAUSE, depending on state.
+    # Tells time to advance, or interrupts a time advance, depending on
+    # state.
 
     method RunPause {} {
         if {[adb state] eq "RUNNING"} {
-            adb order send gui SIM:PAUSE
-        } else {
-            adb order send gui SIM:RUN \
-                -block NO              \
-                -weeks [dict get $durations [$simtools.duration get]]
+            adb interrupt
+        } elseif {[adb idle]} {
+            set ticks [dict get $durations [$simtools.duration get]]
+            set bgticks [prefs get app.bgticks]
+
+            # We advance time in the background if background processing
+            # is enabled (bgticks >= 0) and if the number of ticks is
+            # large enough (ticks >= bgticks)
+            if {$bgticks >= 0 && $ticks >= $bgticks} {
+                set mode background
+            } else {
+                set mode foreground
+            }
+
+            adb advance \
+                -mode    $mode  \
+                -ticks   $ticks \
+                -tickcmd [mymethod TickCmd]
         }
     }
+
+    # TickCmd state i n
+    #
+    # This command is called when the scenario ticks time forward.
+    # For now, it just updates idletasks, so that the pause button
+    # can have effect.
+
+    method TickCmd {state i n} {
+        update idletasks
+    }
+
 
 
     # PrepLock
     #
-    # Sends SIM:LOCK or SIM:UNLOCK, depending on state.
+    # Locks or unlocks the scenario, depending on state.
 
     method PrepLock {} {
-        # FIRST, if we're in PREP then it's time to leave it.
-        if {[adb state] eq "PREP"} {
+        if {[adb isbusy]} {
+            messagebox popup \
+                -parent $win \
+                -icon   info \
+                -title  "Please Wait" \
+                -message [normalize {
+                    Athena is currently busy processing your last
+                    request.  Please wait.
+                }]
+            return
+        }
+
+        # FIRST, if we're unlocked then lock; but if we're locked
+        # then verify before unlocking.
+        if {[adb unlocked]} {
             app lock
             return
         }
 
-        # NEXT, we're not in PREP; we want to return to it.  But
-        # give the user the option.
         set answer [messagebox popup \
                         -parent        $win                  \
                         -icon          warning               \
                         -title         "Are you sure?"       \
                         -default       cancel                \
-                        -ignoretag     "sim_unlock"          \
+                        -ignoretag     "unlock"          \
                         -ignoredefault ok                    \
                         -onclose       cancel                \
                         -buttons       {
-                            ok      "Return to Prep"
+                            ok      "Unlock Scenario"
                             cancel  "Cancel"
                         } -message [normalize {
                             If you return to Scenario Preparation, you 
@@ -2037,26 +2086,15 @@ snit::widget appwin {
 
     method SimState {} {
         # FIRST, display the simulation state
-        if {[adb state] eq "RUNNING"} {
-            set prefix [esimstate longname [adb state]]
-
-            if {[adb stoptime] == 0} {
-                set info(simstate) "$prefix until paused"
-            } else {
-                set info(simstate) \
-                    "$prefix until [adb clock toString [adb stoptime]]"
-            }
-        } else {
-            set info(simstate) [esimstate longname [adb state]]
-        }
+        set info(simstate) [adb statetext]
 
         # NEXT, update the window mode
-        if {[adb state] in {PREP WIZARD}} {
+        if {[adb unlocked]} {
             $self SetMode scenario
         } else {
             $self SetMode simulation
         }
-        
+
         # NEXT, update the Prep Lock button
         if {[adb state] eq "PREP"} {
             $toolbar.preplock configure -image {
@@ -2065,7 +2103,7 @@ snit::widget appwin {
             } -state normal
             DynamicHelp::add $toolbar.preplock \
                 -text "Lock Scenario Preparation"
-        } elseif {[adb state] eq "WIZARD"} {
+        } elseif {[adb state] eq "BUSY"} {
             $toolbar.preplock configure -state disabled
         } else {
             $toolbar.preplock configure -image {
@@ -2106,6 +2144,43 @@ snit::widget appwin {
             DynamicHelp::add $simtools.runpause -text "Run Simulation"
 
             $simtools.duration configure -state disabled
+        }
+    }
+
+    # SimProgress
+    #
+    # This routine displays/hides the progress bar.
+
+    method SimProgress {} {
+        set prog [adb progress]
+
+        # FIRST, if the progress is "user" we don't want to the
+        # progress bar; make it go away if it's visible.
+        if {$prog eq "user"} {
+            if {$info(pbarflag)} {
+                pack forget $progbar
+                $progbar stop
+                set info(pbarflag) 0
+            }
+
+            return
+        }
+
+        # NEXT, display the progress bar.
+        if {!$info(pbarflag)} {
+            pack $progbar -after $toolbar.state -side right
+            set info(pbarflag) 1
+        }
+
+        if {$prog eq "wait"} {
+            $progbar start
+            $progbar configure \
+                -mode indeterminate
+        } else {
+            $progbar stop
+            $progbar configure \
+                -mode determinate \
+                -value [expr {int(round(100*$prog))}]
         }
     }
 
@@ -2169,6 +2244,36 @@ snit::widget appwin {
 
         $cli clear
     }
+
+    #-------------------------------------------------------------------
+    # Helper Procs
+
+    # LogParser text
+    #
+    # text - A block of log lines.
+    #
+    # Parses the log lines for scrolling log and returns a list of lists.
+    
+    proc LogParser {text} {
+        set lines [split [string trimright $text] "\n"]
+    
+        set lineList {}
+
+        foreach line $lines {
+            set fields [list \
+                            [lindex $line 0] \
+                            [lindex $line 4] \
+                            [lindex $line 1] \
+                            [lindex $line 2] \
+                            [lindex $line 3]]
+            
+            lappend lineList $fields
+        }
+        
+        return $lineList
+    }
+
+    
 }
 
 

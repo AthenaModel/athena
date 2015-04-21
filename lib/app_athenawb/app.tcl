@@ -202,13 +202,13 @@ snit::type app {
 
         # NEXT, Create the working scenario RDB and initialize simulation
         # components
-        athena create ::adb    \
-            -logcmd  ::log     \
+        athena create ::adb \
+            -logdir       [workdir join log scenario]            \
             -executivecmd [mytypemethod DefineExecutiveCommands]
 
+        notifier bind ::adb <NewLog> ::app [mytypemethod NewScenarioLog]
+
         # NEXT, configure and initialize application modules.
-        log configure \
-            -simclock [adb getclock]
         view init
 
         # NEXT, register my:// servers with myagent.
@@ -307,6 +307,15 @@ snit::type app {
     typemethod CreateStateControllers {} {
         namespace eval ::cond { }
 
+        # Scenario is locked and idle (PAUSED)
+
+        statecontroller ::cond::lockedAndIdle -events {
+            ::adb <State>
+        } -condition {
+            [::adb locked] && [::adb idle]
+        }
+
+
         # Simulation state is PREP.
 
         statecontroller ::cond::simIsPrep -events {
@@ -329,12 +338,12 @@ snit::type app {
             [$browser {*}$predicate]
         }
 
-        # Simulation state is not RUNNING or WIZARD
+        # Simulation state is not RUNNING or BUSY
 
         statecontroller ::cond::simIsStable -events {
             ::adb <State>
         } -condition {
-            [::adb stable]
+            [::adb idle]
         }
 
         # Simulation state is PREP or PAUSED
@@ -473,6 +482,16 @@ snit::type app {
         log detail notify "send $subject $event [list $eargs] to $objects"
     }
 
+    # NewScenarioLog filename
+    #
+    # filename  - A log file name
+    #
+    # Logs that the scenario has opened a new log file.
+
+    typemethod NewScenarioLog {filename} {
+        log warning adb "New log file: scenario/[file tail $filename]"
+    }
+
     # HelpHeader udict
     #
     # Formats a custom header for help pages.
@@ -483,6 +502,7 @@ snit::type app {
         
         return $out
     }
+
 
     #-------------------------------------------------------------------
     # Group: Utility Type Methods
@@ -843,12 +863,12 @@ snit::type app {
     # Creates a new scenario, throwing away unsaved changes.
 
     typemethod new {} {
+        # FIRST, log it.
+        log normal app "New Scenario: Untitled"
+
         # NEXT, create a new, blank scenario
         ::adb reset
 
-        # NEXT, log it.
-        log newlog new
-        log normal scenario "New Scenario: Untitled"
 
         app puts "New scenario created"
 
@@ -888,8 +908,7 @@ snit::type app {
         catch {cd [file dirname [file normalize $filename]]}
 
         # NEXT, log it.
-        log newlog open
-        log normal scenario "Open Scenario: $filename"
+        log normal app "Open Scenario: $filename"
 
         app puts "Opened Scenario [file tail $filename]"
 
@@ -904,7 +923,7 @@ snit::type app {
     # Saves the current scenario using the existing name.
 
     typemethod save {{filename ""}} {
-        require {[adb stable]} "The scenario cannot be saved in this state."
+        require {[adb idle]} "The scenario cannot be saved in this state."
 
         # FIRST, notify the simulation that we're saving, so other
         # modules can prepare.
@@ -933,11 +952,7 @@ snit::type app {
         catch {cd [file dirname [file normalize $filename]]}
 
         # NEXT, log it.
-        if {$filename ne ""} {
-            log newlog saveas
-        }
-
-        log normal scenario "Save Scenario: [adb adbfile]"
+        log normal app "Save Scenario: [adb adbfile]"
 
         app puts "Saved Scenario [file tail [adb adbfile]]"
 
@@ -961,11 +976,10 @@ snit::type app {
 
     # lock
     #
-    # Locks the scenario by sending SIM:LOCK; displays sanity check
-    # failures on rejection.
+    # Locks the scenario; displays sanity check failures.
 
     typemethod lock {} {
-        require {[adb state] eq "PREP"} \
+        require {[adb idle] && [adb unlocked]} \
             "The scenario cannot be locked in this state."
 
         set sev [adb sanity onlock check]
@@ -1016,7 +1030,7 @@ snit::type app {
     # Rebases the app, unlocking it and returning it to the prep state.
 
     typemethod rebase {} {
-        require {[adb state] eq "PAUSED"} \
+        require {[adb locked] && [adb idle]} \
             "The scenario cannot be rebased in this state."
 
         set answer \
@@ -1025,7 +1039,7 @@ snit::type app {
                 -icon          warning                          \
                 -buttons       {ok "Rebase" cancel "Cancel"}    \
                 -default       cancel                           \
-                -ignoretag     SIM:REBASE                       \
+                -ignoretag     rebase                       \
                 -ignoredefault ok                               \
                 -parent        [app topwin]                     \
                 -message       [normalize {
@@ -1040,7 +1054,7 @@ snit::type app {
             return
         }
 
-        adb rebase
+        adb unlock -rebase
     }
 
     #-------------------------------------------------------------------
@@ -1203,6 +1217,7 @@ snit::type app {
             app help $args
         }
     }
+
 }
 
 
