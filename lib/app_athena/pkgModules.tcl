@@ -29,10 +29,9 @@ package provide app_athena 6.3.0a8
 package require projectlib
 package require huddle 0.1.5
 package require -exact athena 6.3.0a8
-package require -exact ahttpd 6.3.0a7
 # -kite-require-end
 
-namespace import projectlib::* athena::* ahttpd::*
+namespace import projectlib::* athena::*
 
 #-----------------------------------------------------------------------
 # Namespace definition
@@ -52,6 +51,5 @@ source [file join $::app_athena::library tool_build.tcl  ]
 source [file join $::app_athena::library tool_compare.tcl]
 source [file join $::app_athena::library tool_get.tcl    ]
 source [file join $::app_athena::library tool_post.tcl   ]
-source [file join $::app_athena::library tool_server.tcl ]
 source [file join $::app_athena::library tool_shell.tcl  ]
 

@@ -21,6 +21,7 @@ app helptool -apptype kit -gui
 
 # Provided Libraries
 provide athena
+provide ahttpd
 
 # Compiled Directories
 src help

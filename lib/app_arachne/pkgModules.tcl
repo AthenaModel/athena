@@ -30,7 +30,7 @@ package require projectlib
 package require huddle 0.1.5
 package require json 1.3.3
 package require -exact athena 6.3.0a8
-package require ahttpd 6.3.0a8
+package require -exact ahttpd 6.3.0a8
 # -kite-require-end
 
 namespace import projectlib::* athena::* ahttpd::*
