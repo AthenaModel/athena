@@ -21,57 +21,6 @@ athenadb(n) is a <b private> type, to be used only within the library code.
 Note that <xref athena(n)>, the public interface to the library, is a thin
 wrapper around athenadb(n), providing only the public operations.<p>
 
-<subsection "Scenario States">
-
-athenadb(n) defines a state machine to determine what can be done at 
-different times, and more specifically which <xref order(n)> orders are
-available at any given time.  The state machine is illustrated in the
-following diagram (athenadb(n) subcommands are shown in blue):<p>
-
-<img src="athenadb_state.png"><p>
-
-First, the scenario may be <iref locked> or <iref unlocked>.  While
-<iref unlocked>, the scenario may be edited freely.  When the scenario
-is <iref locked>, the models are initialized and many inputs become
-frozen until the scenario is <iref unlocked> again.<p>
-
-Second, the scenario may be <iref idle> or <iref busy>.  While it is
-<iref idle> it is waiting in the event loop for user input.  While it
-<iref isbusy>, it is performing some long-running task; the user interface
-might be responsive, but input (i.e., orders) cannot be accepted.<p>
-
-Third, any such task can be <iref interruptible> or 
-non-<iref interruptible>.  Interruptible tasks can be terminated in the 
-middle; other tasks must run to completion.<p>
-
-This leads to the following four states:
-
-<topiclist>
-<topic PREP>
-Scenario preparation.  The scenario is <iref idle> and <iref unlocked>,
-and most orders can be used to edit the scenario.
-</topic>
-
-<topic PAUSED>
-The scenario is <iref idle> and <iref locked>; simulation time can be
-advanced.
-</topic>
-
-<topic BUSY>
-The scenario <iref isbusy> with a non-<iref interruptible> task.
-</topic>
-
-<topic RUNNING>
-The scenario <iref isbusy> with an <iref interruptible> task.
-</topic>
-</topiclist>
-
-The lock state is set using <iref lock> and <iref unlock>.<p>
-
-The busy state is set using <iref busy>, which also indicates whether 
-the task is <iref interruptible> or not.  At present, 
-<iref interruptible> tasks are terminated by <iref interrupt>.<p>
-
 
 <section "COMMANDS">
 
@@ -137,94 +86,41 @@ to a particular subcomponent; e.g., the <tt civgroup> subcommand corresponds
 to the module that handles the editing of civilian group entities.<p>
 
 Because this is a private module, and because the list of such components
-changes over time, few of these subcommands will be documented here.  
-Other subcommands represent utilities for general use by the library as 
-a whole, and these are documented below.<p>
+changes over time, few of these subcommands will be documented here. 
+Rather, the man page documents those athenadb(n) subcommands defined 
+directly by athenadb(n) <i itself>.  Note that
+such athenadb(n) subcommands that are also exposed by 
+<xref athena(n)> are listed here, but documented there.<p> 
 
 <deflist instance>
 
 <defitem adbfile {<i obj> adbfile}>
-
-Returns the name of the <tt .adb> file loaded on creation, if any, or
-the <tt .adb> file name last used for saving, or "" if no <tt .adb> file
-has ever been loaded or saved.<p>
-
 <defitem advance {<i obj> advance ?<i options...>?}>
-
-Advances simulation time, provided that the scenario is <iref locked> and
-<iref idle>.  With no options, advances time by one tick.<p>
-
-The options are as follows:<p>
-
-<deflist options>
-<defopt {-mode <i mode>}>
-
-The execution mode: <b blocking> (the default), <b foreground>, or 
-<b background>.<p>
-
-When <b blocking>, the command returns after it has advanced 
-time the specified number of ticks.  The time advance is not 
-<iref interruptible>.<p>
-
-When running in the <b foreground>, the command returns after executing
-one tick.  The scenario <iref isbusy>, and successive ticks are executed 
-in the context of the Tcl event loop.  The process is 
-<iref interruptible>, but if the UI will block during each tick.<p>
-
-When running in the <b background>, the scenario <iref isbusy> and the 
-entire process is handed over to a background thread.  Running in the
-background has a higher start-up and completion cost, but leaves the
-foreground thread responsive as the process runs.  At present, 
-background runs are not <iref interruptible>, though this may change.<p>
-
-<defopt {-ticks <i ticks>}>
-Specifies the number of ticks to advance time.<p>
-
-<defopt {-until <i time>}>
-Specifies that time should advance until the specified <i time> in ticks. 
-It's an error if <i time> is less than the current sim time.<p>
-
-<defopt {-tickcmd <i cmd>}>
-Calls a <i cmd> to be called at the end of each simulation time tick.
-It is called with three arguments: a tag, a tick counter, and the total 
-number of ticks to run.  The tick counter runs from 0 to the total number
-of ticks as time progresses.  While time advances, the tag will be 
-<b RUNNING> if the process can be interrupted and <b BUSY> otherwise; and
-at the end, the <i cmd> will be called once with a tag of <b COMPLETE>.<p>
-
-By <iref advance> automatically updates the <iref progress> as 
-time advances.  If the caller wishes to manage the <iref progress>
-itself, the <tt -tickcmd> can return "NO_PROGRESS".<p>
-
-</deflist options>
-
 <defitem busy {<i obj> busy <i subcommand> ?<i args...>?}>
-
-This command manages the scenario's "busy" state.  When the scenario is
-undertaking some long-running task in the context of the event loop, 
-it will mark itself <iref isbusy>; this prevents orders from being accepted 
-and the scenario from being changed until the task is complete.
-It has the following subcommands:<p>
-
-<deflist busy>
-<defitem "busy clear" {<i obj> busy clear}>
-Clears the busy state; the scenario will be <iref idle>.<p>
-
-<defitem "busy set" {<i obj> busy set <i busytext> ?<i pausecmd>?}>
-Sets the busy state.  The <i busytext> is a brief statement of the
-task, e.g., "Running until 2014W01" or "Wizard".  If the <i pausecmd>
-is given, it is a command to call to pause or interrupt the task; the
-task is then <iref interruptible> by the <iref interrupt> order.  Otherwise,
-the task is not interruptible and must run to completion.<p>
-
-While the scenario <iref isbusy>, the task will often use <iref progress>
-to keep the user informed as to its progress.<p>
-</deflist busy>
-
 <defitem canlock {<i obj> canlock}>
+<defitem dbsync {<i obj> dbsync}>
+<defitem enter {<i obj> enter <i options...>}>
+<defitem idle {<i obj> idle}>
+<defitem interrupt {<i obj> interrupt}>
+<defitem interruptible {<i obj> interruptible}>
+<defitem isbusy {<i obj> isbusy}>
+<defitem load {<i obj> load <i filename>}>
+<defitem lock {<i obj> lock}>
+<defitem locked {<i obj> locked}>
+<defitem paste {<i obj> paste <i subcommand> ?<i args...>?}>
+<defitem progress {<i obj> progress ?<i value>?}>
+<defitem reset {<i obj> reset}>
+<defitem save {<i obj> save ?<i filename>?}>
+<defitem state {<i obj> state}>
+<defitem statetext {<i obj> statetext}>
+<defitem unlock {<i obj> unlock}>
+<defitem unlocked {<i obj> unlocked}>
+<defitem unsaved {<i obj> unsaved}>
+<defitem version {<i obj> version}>
 
-Returns 1 if the scenario passess the on-lock sanity check, and hence
-can in theory be locked, and 0 otherwise.<p>
+These commands and their subcommands are documented in the 
+<xref athena(n)> man page.
+
 
 <defitem component {<i obj> component <i name>}>
 
@@ -246,48 +142,9 @@ The instance's run-time database object, a <xref scenariodb(n)> object.<p>
 This is exactly like <iref profile>, but the command to call is an
 <xref athenadb(n)> subcomponent called as a subcommand of <i obj>.<p>
 
-<defitem dbsync {<i obj> dbsync}>
-
-Sends out a sequence of notifier events to the client, to be used to
-refresh the client when the scenario changes, i.e., after a <iref load>
-or <iref reset>.<p>
-
-The sequence is <tt><tag PreSync></tt>, <tt><tag Sync></tt>, 
-<tt><tag Time></tt>, and <tt><tag State></tt>.  See <xref athena(n)> for
-more about the notifier events sent by the library.<p>
 
 <defitem delete {<i obj> delete ...}>
 This command is delegated to the underlying <xref scenariodb(n)> object.<p>
-
-<defitem enter {<i obj> enter <i options...>}>
-
-If <iref tkloaded>, then this command is used to pop up order dialogs.
-The options are as follows:<p>
-
-<deflist enter>
-
-<defopt {-order <i name>}>
-
-Specifies the order name, e.g., <tt ACTOR:CREATE>.<p>
-
-<defopt {-parmdict <i dict>}>
-
-Specifies a dictionary of order parameter names and values, to be used to
-initialize the dialog.<p>
-
-<defopt {-master <i window>}>
-
-Specifies the Tk window over which the dialog should appear.<p>
-
-<defopt {-appname <i name>}>
-
-Specifies the application name for the dialog title.<p>
-
-<defopt {-helpcmd <i cmd>}>
-
-Specifies a command to call if the dialog's help button is pushed.<p>
-
-</deflist enter>
 
 <defitem eval {<i obj> eval ...}>
 This command is delegated to the underlying <xref scenariodb(n)> object.<p>
@@ -298,37 +155,8 @@ This command is delegated to the underlying <xref scenariodb(n)> object.<p>
 <defitem grab {<i obj> grab ...}>
 This command is delegated to the underlying <xref scenariodb(n)> object.<p>
 
-<defitem idle {<i obj> idle}>
-
-Returns 1 if the scenario is idle, i.e., is ready to accept user input,
-and 0 otherwise; see <xref "Scenario States">.<p>
-
-<defitem interrupt {<i obj> interrupt}>
-
-If the scenario <iref isbusy> with a task that is <iref interruptible>,
-this command will attempt to interrupt it, causing it to terminate 
-prematurely; see <iref busy set> for how to specify that the scenario
-is doing an interruptible task.<p>
-
-<defitem interruptible {<i obj> interruptible}>
-
-Returns 1 if the scenario <iref isbusy> with an interruptible task,
-and 0 otherwise.<p>
-
-<defitem isbusy {<i obj> isbusy}>
-
-Returns 1 if the scenario is busy, i.e., is performing a task and 
-cannot accept user orders, and 0 otherwise; see <xref "Scenario States">.<p>
-
 <defitem last_insert_rowid {<i obj> last_insert_rowid}>
 This command is delegated to the underlying <xref scenariodb(n)> object.<p>
-
-<defitem load {<i obj> load <i filename>}>
-
-Loads the scenario from the named <tt *.adb> file into this scenario
-object, throwing away any previous data.  The scenario must be
-<iref idle>.  Afterwards, the scenario will be <i locked> or 
-<i unlocked> depending on the loaded data.<p>
 
 <defitem loadtemp {<i obj> loadtemp <i filename>}>
 
@@ -342,17 +170,6 @@ Together with <iref savetemp>, this command allows athenadb(n) to save
 itself to a temporary file, run some process on the contents of that file
 (i.e., in another thread) and load the results, while setting the 
 <iref unsaved> flag properly and not changing the user's <iref adbfile>.<p>
-
-<defitem lock {<i obj> lock}>
-
-Locks the scenario, if the scenario is <iref idle> and <iref unlocked>
-and <iref canlock>.  The simulation time can only be advanced while the
-scenario is locked.<p>
-
-<defitem locked {<i obj> locked}>
-
-Returns 1 if the scenario is "locked", initialized and ready for a time
-advance, and 0 otherwise; see <xref "Scenario States">.<p>
 
 <defitem log {<i obj> log <i level component message>}>
 
@@ -385,6 +202,8 @@ This command is delegated to the underlying <xref scenariodb(n)> object.<p>
 
 <defitem order {<i obj> order <i subcommand> ?<i args...>?}>
 
+<b TBD:> Document these in athena(n).<p>
+
 The subcommands of this command are passed along to the scenario's
 "order flunky".  Most subcommands are documented by the
 <xref mars:order_flunky(n)> man page; the Athena-specific subcommands
@@ -410,33 +229,6 @@ Defaults to true.<p>
 
 </deflist order>
 
-<defitem paste {<i obj> paste <i subcommand> ?<i args...>?}>
-
-Pastes copied items into scenario, where the subcommand determines the 
-kind of item to paste.  In each case, the paste is done as a sequence of 
-grouped orders, and will be undone and redone as a group.<p>
-
-The available subcommands are as follows:<p>
-
-<deflist paste>
-
-<defitem "paste block" {<i obj> paste block <i agent copysets>}>
-
-Pastes <i copysets>, a list of copied strategy blocks, into the strategy
-owned by the named <i agent>.<p>
-
-<defitem "paste condition" {<i obj> paste condition <i block_id copysets>}>
-
-Pastes <i copysets>, a list of copied conditions, into the strategy block
-with the given <i block_id>.<p>
-
-<defitem "paste tactic" {<i obj> paste tactic <i block_id copysets>}>
-
-Pastes <i copysets>, a list of copied tactics, into the strategy block
-with the given <i block_id>.<p>
-
-</deflist paste>
-
 <defitem profile {<i obj> profile ?<i depth>? <i command...>}>
 
 Calls the command once using <tt time>, in the caller's context,
@@ -449,33 +241,6 @@ If the <i depth> is given, it must be an integer; that many "*" characters
 are added to the beginning of the log message.  This is useful when 
 profiling calls within another profiled call.<p>
 
-<defitem progress {<i obj> progress ?<i value>?}>
-
-Sets and queries the current progress value.  Progress is set while the
-scenario <iref isbusy>; see <iref busy set>.  The <i value> may take three
-forms:<p>
-
-<deflist progress>
-<def user>
-The user is in control of the scenario.  This would be the case when the
-scenario is <i idle> and it <iref isbusy> with something like a wizard GUI,
-where normal order entry is suspended until the wizard is closed.<p>
-
-<def wait>
-The scenario is performing a task of indefinite length, and no actual
-progress can be reported until it is done.<p>
-
-<def {<i fraction>}>
-A completion <i fraction> from 0.0 to 1.0.<p>
-</deflist progress>
-
-<b TBD>: It might also be good to have a mode for tasks where the duration
-cannot be estimated, but many messages are received from the task code.
-This would allow a <tt ttk::progressbar> to be animated by the receipt
-of these messages instead of automatically, which would give the user
-more feedback.<p>
-
-
 <defitem query {<i obj> query ...}>
 This command is delegated to the underlying <xref scenariodb(n)> object.<p>
 
@@ -484,25 +249,11 @@ This command is delegated to the underlying <xref scenariodb(n)> object.<p>
 Returns the name of the scenario's run-time database (RDB) file.  Note
 that this will change on <iref load> or <iref reset>.<p>
 
-<defitem reset {<i obj> reset}>
-
-Resets the scenario back to its initial empty state.  It will be 
-<iref idle> and <i unlocked>.<p>
-
 <defitem safeeval {<i obj> safeeval ...}>
 This command is delegated to the underlying <xref scenariodb(n)> object.<p>
 
 <defitem safequery {<i obj> safequery ...}>
 This command is delegated to the underlying <xref scenariodb(n)> object.<p>
-
-<defitem save {<i obj> save ?<i filename>?}>
-
-Saves the scenario to disk as an <tt .adb> file called <i filename>,
-adding the "<tt .adb>" extension if necessary.  If no <i filename> is
-given but the <iref adbfile> name is known, the <iref adbfile> name is
-used.  The scenario is marked saved.<p>
-
-On failure, throws "<tt SCENARIO SAVE>".<p>
 
 <defitem savetemp {<i obj> savetemp <i filename>}>
 
@@ -525,19 +276,6 @@ the resulting path is returned.<p>
 This command is delegated to the underlying <xref order_flunky(n)> 
 component.<p>
 
-<defitem state {<i obj> state}>
-
-Returns the scenario's state, which depends on whether or not it is
-<iref idle> and whether or not it is <iref locked>.  The states are
-<b PREP>, <b PAUSED>, <b BUSY>, and <b RUNNING>; see 
-<xref "Scenario States"> for more details.<p>
-
-<defitem statetext {<i obj> statetext}>
-
-Returns a human-readable string that derives from the current 
-<iref state>.  If the scenario <iref isbusy>, the string is simply
-the <i busytext> passes to <iref busy set>.<p>
-
 <defitem tables {<i obj> tables ...}>
 This command is delegated to the underlying <xref scenariodb(n)> object.<p>
 
@@ -547,24 +285,6 @@ Returns 1 if Tk is loaded, and 0 otherwise.<p>
 
 <defitem ungrab {<i obj> ungrab ...}>
 This command is delegated to the underlying <xref scenariodb(n)> object.<p>
-
-<defitem unlock {<i obj> unlock}>
-
-Unlocks the scenario, if the scenario is <iref idle> and <iref locked>.
-The scenario can only be edited while it is unlocked.<p>
-
-<defitem unlocked {<i obj> unlocked}>
-
-Returns 1 if the scenario is "unlocked", ready for editing, and 0
-otherwise; see <xref "Scenario States">.<p>
-
-<defitem unsaved {<i obj> unsaved}>
-
-Returns 1 if there is unsaved scenario data, and 0 otherwise.<p>
-
-<defitem version {<i obj> version}>
-
-Returns the version number of the <xref athena(n)> library.<p>
 
 </deflist instance>
 

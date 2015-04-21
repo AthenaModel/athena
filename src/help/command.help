@@ -301,7 +301,7 @@ command "autogen nbhoods" {
     To create 8 neighborhoods, enter<p>
 
     <pre>
-        autogen nbhoods 5
+        autogen nbhoods 8
     </pre>
 }
 

@@ -6,10 +6,9 @@
     - Perhaps LoadPrefs isn't properly closing the file, so Windows is 
       helpfully writing to another file?
       - But LoadPrefs is using "readfile"
-  - athenadb:
-    - Handle slave logging.
-      - Multiple log directories, $subject and $subject.bg.
+      - No "Virtual" directory with alternate file in it.
   - Finish athena(n) man page!!!!!!!
+  - Figure out what to do about athena(n)-client access to the RDB.
 - Significant Outputs:
   - All history variable base names should be unique, e.g., nbsecurity.n rather
     than security.n.
