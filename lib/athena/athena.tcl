@@ -118,6 +118,7 @@ snit::type ::athena::athena {
     delegate method isbusy                  to adb
     delegate method load                    to adb
     delegate method loadtemp                to adb
+    delegate method log                     to adb
     delegate method lock                    to adb
     delegate method locked                  to adb
     delegate method paste                   to adb

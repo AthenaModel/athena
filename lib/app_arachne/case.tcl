@@ -194,11 +194,14 @@ snit::type case {
             case with $id reset
             app log normal $id "Reset case $id"
         } else {
-            lappend cases(names) $id
+            set sdb [athena new \
+                        -subject $id \
+                        -logdir [scratchdir join log $id]]
+
+            lappend cases(names)    $id
             set cases(longname-$id) [DefaultLongname $id]
-            set cases(sdb-$id)      [athena new \
-                                        -subject $id] \
-                                        -logdir [scratchdir join log $id]
+            set cases(sdb-$id)      $sdb
+            
             app log normal $id "Created new case $id"
         }
 
