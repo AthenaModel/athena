@@ -144,7 +144,7 @@ snit::type ::athena::bgslave {
 
     # progress tag ?i n?
     #
-    # tag       - The progress tag, e.g., PAUSED, RUNNING, COMPLETE
+    # tag       - The progress tag, e.g., PAUSED, BUSY, RUNNING, COMPLETE
     # i         - The progress counter, 0 to n
     # n         - The progress limit
     #
@@ -170,10 +170,11 @@ snit::type ::athena::bgslave {
     # subcommand  - A subcommand of the "master" component
     # args        - Subcommand arguments.
     #
-    # Sends the subcommand to the master thread's "master" component.
+    # Sends the subcommand asynchronously to the master thread's 
+    # "background" component.
 
     typemethod master {subcommand args} {
-        thread::send $info(master) \
+        thread::send -async $info(master) \
             [list $info(fgadb) background $subcommand {*}$args]
     }
 

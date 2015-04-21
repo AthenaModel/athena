@@ -187,7 +187,8 @@ snit::type ::athena::background {
             set progflag [{*}$info(tickCmd) [$adb state] $i $n]
         }
 
-        if {$progflag eq ""} {
+        # Report progress if the tickcmd didn't handle it.
+        if {$progflag ne "no_progress"} {
             $adb progress [expr {double($i)/double($n)}] 
         }
 
