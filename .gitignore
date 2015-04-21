@@ -21,6 +21,7 @@ teapot.txt
 ~*.tmp
 temp.tcl
 /log
+econdebug.cmsnap
 
 # SublimeText artifacts.
 *.sublime-*
