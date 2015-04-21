@@ -1,0 +1,569 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-athenadb.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    athenadb.tcl tests.
+#
+#    This test suite tests the athenadb.tcl code.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    proc codecatch {args} {
+        try {
+            uplevel 1 {*}$args
+        } on error {result eopts} {
+            return [list [dict get $eopts -errorcode] $result]
+        }
+
+        error "Expected error, got: $result"
+    }
+
+    variable tickList
+
+    proc tickCmd {state i n} {
+        variable tickList
+        lappend tickList [list $state $i $n]
+    }
+
+    proc pauseCmd {state i n} {
+        if {$state eq "RUNNING" && $i == 3} {
+            tdb interrupt
+        }
+    }
+
+    proc noProgCmd {state i n} {
+        return "NO_PROGRESS"
+    }
+
+    # Clean up after a test
+    proc cleanup {} {
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # constructor
+    #
+    # Verify initial module state
+
+    test constructor-1.1 {Initial state} -body {
+        list \
+            [tdb adbfile]   \
+            [tdb clock now] \
+            [tdb idle]      \
+            [tdb isbusy]    \
+            [tdb interruptible] \
+            [tdb unlocked]  \
+            [tdb locked]    \
+            [tdb state]     \
+            [tdb statetext] \
+            [tdb tkloaded]
+    } -result {{} 0 1 0 0 1 0 PREP Prep 0}
+
+    #-------------------------------------------------------------------
+    # reset/load/save/loadtemp/savetemp/dbsync
+    #
+    # TBD: These are tested thoroughly in use; however, they should be
+    # tested here as well.  Let's wait until they are stable.
+
+    #-------------------------------------------------------------------
+    # canlock
+
+    test canlock-1.1 {cannot lock initially} -body {
+        tdb canlock
+    } -result {0}
+
+    test canlock-1.2 {can lock after data created} -setup {
+        ted create NB1 BLUE SHIA
+    } -body {
+        tdb canlock
+    } -cleanup {
+        cleanup
+    } -result {1}
+    
+    #-------------------------------------------------------------------
+    # lock/locked/unlocked
+
+    test lock-1.1 {initially unlocked} -body {
+        list [tdb locked] [tdb unlocked]
+    } -cleanup {
+        cleanup
+    } -result {0 1}
+
+    test lock-1.2 {must be idle} -setup {
+        tdb busy set "Busy busy busy"
+    } -body {
+        tdb lock
+    } -returnCodes {
+        error
+    } -cleanup {
+        tdb busy clear
+        cleanup
+    } -result {Scenario is busy or locked}
+
+    test lock-1.3 {sanity check must pass} -body {
+        codecatch tdb lock
+    } -cleanup {
+        cleanup
+    } -result {{SCENARIO LOCK} {Sanity check failed; cannot lock.}}
+
+
+    test lock-1.4 {can lock} -setup {
+        ted create NB1 BLUE SHIA
+    } -body {
+        tdb lock
+        list [tdb locked] [tdb unlocked]
+    } -cleanup {
+        cleanup
+    } -result {1 0}
+
+    test lock-1.5 {cannot lock while locked} -setup {
+        ted create NB1 BLUE SHIA
+        tdb lock
+    } -body {
+        tdb lock
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Scenario is busy or locked}
+
+    test lock-1.6 {Saves a snapshot} -setup {
+        ted create NB1 BLUE SHIA
+    } -body {
+        tdb lock
+        tdb eval {SELECT tick FROM snapshots}
+    } -cleanup {
+        cleanup
+    } -result {-1}
+
+    test lock-1.7 {Initializes the models} -setup {
+        ted create NB1 BLUE SHIA
+    } -body {
+        tdb lock
+
+        # Use URAM as an example.
+        tdb onecolumn {SELECT n FROM uram_n}
+    } -cleanup {
+        cleanup
+    } -result {NB1}
+
+    test lock-1.8 {Marks clock times} -setup {
+        ted create NB1 BLUE SHIA
+    } -body {
+        tdb lock
+        list [tdb clock mark get LOCK] [tdb clock mark get RUN]
+    } -cleanup {
+        cleanup
+    } -result {0 0}
+
+    test lock-1.9 {Sends <State>} -setup {
+        ted create NB1 BLUE SHIA
+    } -body {
+        ted notifier bind ::tdb <State>
+        tdb lock
+        ted notifier received
+        # Should get two events; one is from dbsync.
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <State>}
+        {::tdb <State>}
+    }
+
+    #-------------------------------------------------------------------
+    # unlock
+    #
+    # TBD: "unlock -rebase" needs to be tested as well.
+
+    test unlock-1.1 {must be idle} -setup {
+        tdb busy set "Busy busy busy"
+    } -body {
+        tdb unlock
+    } -returnCodes {
+        error
+    } -cleanup {
+        tdb busy clear
+        cleanup
+    } -result {Scenario is busy or unlocked}
+
+    test unlock-1.2 {must be locked} -body {
+        tdb unlock
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Scenario is busy or unlocked}
+
+    test unlock-1.3 {can unlock} -setup {
+        ted create NB1 BLUE SHIA
+        tdb lock
+    } -body {
+        tdb unlock
+        list [tdb locked] [tdb unlocked]
+    } -cleanup {
+        cleanup
+    } -result {0 1}
+
+    test unlock-1.4 {purges snapshot} -setup {
+        ted create NB1 BLUE SHIA
+        tdb lock
+    } -body {
+        tdb unlock
+        tdb eval {SELECT tick FROM snapshots}
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    test unlock-2.1 {tests unlock -rebase} -setup {
+        ted create NB1 BLUE SHIA
+        ted lock
+        ted step
+        ted step
+    } -body {
+        tdb unlock -rebase
+        list \
+            [tdb state] \
+            [tdb clock now] \
+            [tdb clock cget -tick0]
+    } -cleanup {
+        cleanup
+    } -result {PREP 2 2}
+
+
+    #-------------------------------------------------------------------
+    # busy/isbusy
+
+    test busy-1.1 {Initially idle} -body {
+        list [tdb idle] [tdb isbusy]
+    } -cleanup {
+        cleanup
+    } -result {1 0}
+
+    test busy-1.2 {Can become busy} -body {
+        tdb busy set "Busy Now"
+        list [tdb idle] [tdb isbusy]
+    } -cleanup {
+        tdb busy clear
+        cleanup
+    } -result {0 1}
+    
+    test busy-1.3 {Can clear busy state} -setup {
+        tdb busy set "Busy Now"
+    } -body {
+        tdb busy clear
+        list [tdb idle] [tdb isbusy]
+    } -cleanup {
+        cleanup
+    } -result {1 0}
+
+    test busy-1.4 {Sends <State> on set} -body {
+        ted notifier bind ::tdb <State>
+        tdb busy set "Busy Now"
+        ted notifier received
+    } -cleanup {
+        tdb busy clear
+        cleanup
+    } -result {
+        {::tdb <State>}
+    }
+    
+    test busy-1.5 {Sends <State> on clear} -body {
+        tdb busy set "Busy Now"
+        ted notifier bind ::tdb <State>
+        tdb busy clear
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <State>}
+    }
+
+    #-------------------------------------------------------------------
+    # progress
+
+    test progress-1.1 {Initially "user"} -body {
+        tdb progress
+    } -result {user}
+
+    test progress-1.2 {Can set} -body {
+        tdb progress wait
+        tdb progress
+    } -cleanup {
+        tdb progress user
+        cleanup
+    } -result {wait}
+
+    test progress-1.3 {Sends <Progress> on set} -body {
+        ted notifier bind ::tdb <Progress>
+        tdb progress wait
+        ted notifier received
+    } -cleanup {
+        tdb progress user
+        cleanup
+    } -result {
+        {::tdb <Progress>}
+    }
+    
+    test progress-1.4 {Set to user on busy clear} -body {
+        tdb busy set "Busy busy busy"
+        tdb progress wait
+        tdb busy clear
+        tdb progress
+    } -cleanup {
+        cleanup
+    } -result {user}
+    
+    #-------------------------------------------------------------------
+    # interrupt
+    #
+    # Can only test that it errors out when the system is not
+    # interruptible; other tests depend on the actual task being done.
+
+    test interrupt-1.1 {error if not interruptible} -body {
+        tdb interrupt
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {No interruptible process is running}
+
+    
+    #-------------------------------------------------------------------
+    # state/statetext
+
+    test state-1.1 {idle, unlocked} -body {
+        list [tdb idle] [tdb unlocked] [tdb state] [tdb statetext]
+    } -result {1 1 PREP Prep}
+
+    test state-1.2 {idle, locked} -setup {
+        ted create NB1 BLUE SHIA
+        tdb lock
+    } -body {
+        list [tdb idle] [tdb unlocked] [tdb state] [tdb statetext]
+    } -cleanup {
+        cleanup
+    } -result {1 0 PAUSED Paused}
+    
+    test state-1.3 {unlocked, busy, not interruptible} -setup {
+        tdb busy set "Busy Busy Busy"
+    } -body {
+        list [tdb idle] [tdb unlocked] [tdb state] [tdb statetext]
+    } -cleanup {
+        tdb busy clear
+        cleanup
+    } -result {0 1 BUSY {Busy Busy Busy}}
+
+    test state-1.4 {unlocked, busy, interruptible} -setup {
+        tdb busy set "Busy Busy Busy" bogusPauseCmd
+    } -body {
+        list [tdb idle] [tdb unlocked] [tdb state] [tdb statetext]
+    } -cleanup {
+        tdb busy clear
+        cleanup
+    } -result {0 1 RUNNING {Busy Busy Busy}}
+
+    test state-1.5 {locked, busy, not interruptible} -setup {
+        ted create NB1 BLUE SHIA
+        tdb lock
+        tdb busy set "Busy Busy Busy"
+    } -body {
+        list [tdb idle] [tdb unlocked] [tdb state] [tdb statetext]
+    } -cleanup {
+        tdb busy clear
+        cleanup
+    } -result {0 0 BUSY {Busy Busy Busy}}
+
+    test state-1.6 {locked, busy, interruptible} -setup {
+        ted create NB1 BLUE SHIA
+        tdb lock
+        tdb busy set "Busy Busy Busy" bogusPauseCmd
+    } -body {
+        list [tdb idle] [tdb unlocked] [tdb state] [tdb statetext]
+    } -cleanup {
+        tdb busy clear
+        cleanup
+    } -result {0 0 RUNNING {Busy Busy Busy}}
+
+    #-------------------------------------------------------------------
+    # interruptible
+    
+    test interruptible-1.1 {idle} -body {
+        tdb interruptible
+    } -result {0}
+
+    test interruptible-1.2 {busy, no pause cmd} -setup {
+        tdb busy set "Busy Busy Busy"
+    } -body {
+        tdb interruptible
+    } -cleanup {
+        tdb busy clear
+        cleanup
+    } -result {0}
+
+    test interruptible-1.3 {busy, pause cmd} -setup {
+        tdb busy set "Busy Busy Busy" bogusPauseCmd
+    } -body {
+        tdb interruptible
+    } -cleanup {
+        tdb busy clear
+        cleanup
+    } -result {1}
+
+    #-------------------------------------------------------------------
+    # advance
+    #
+    # TBD: Not testing background, foreground modes yet.
+
+    test advance-1.1 {cannot advance if already busy} -setup {
+        tdb busy set "Busy busy busy"
+    } -body {
+        tdb advance
+    } -returnCodes {
+        error
+    } -cleanup {
+        tdb busy clear
+        cleanup
+    } -result {Scenario is busy or unlocked}
+
+    test advance-1.2 {cannot advance if unlocked} -body {
+        tdb advance
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {Scenario is busy or unlocked}
+
+    test advance-1.3 {Run for 1 week} -setup {
+        ted create NB1 BLUE SHIA
+    } -body {
+        tdb lock
+        tdb advance
+        tdb clock now
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test advance-1.4 {Run for -ticks} -setup {
+        ted create NB1 BLUE SHIA
+    } -body {
+        tdb lock
+        tdb advance -ticks 5
+        tdb clock now
+    } -cleanup {
+        cleanup
+    } -result {5}
+
+    test advance-1.5 {Run -until} -setup {
+        ted create NB1 BLUE SHIA
+    } -body {
+        tdb lock
+        tdb advance -ticks 5
+        tdb advance -until 10
+        tdb clock now
+    } -cleanup {
+        cleanup
+    } -result {10}
+
+    test advance-1.6 {Calls tickcmd} -setup {
+        ted create NB1 BLUE SHIA
+    } -body {
+        tdb lock
+        tdb advance -ticks 2 -tickcmd [namespace current]::tickCmd
+        set tickList
+    } -cleanup {
+        cleanup
+    } -result {{BUSY 1 2} {BUSY 2 2} {COMPLETE 2 2}}
+
+    test advance-1.7 {Sends Events} -setup {
+        ted create NB1 BLUE SHIA
+    } -body {
+        tdb lock
+        ted notifier bind ::tdb <Tick>
+        ted notifier bind ::tdb <Progress>
+        ted notifier bind ::tdb <State>
+        tdb advance -ticks 2
+        ted notifier received
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <State>}
+        {::tdb <Progress>}
+        {::tdb <Tick>}
+        {::tdb <Progress>}
+        {::tdb <Tick>}
+        {::tdb <Progress>}
+        {::tdb <State>}
+    }
+
+    test advance-1.8 {No <Progress> if -tickcmd says so.} -setup {
+        ted create NB1 BLUE SHIA
+    } -body {
+        tdb lock
+        ted notifier bind ::tdb <Tick>
+        ted notifier bind ::tdb <Progress>
+        tdb advance -ticks 2 -tickcmd [namespace current]::noProgCmd
+        ted notifier received
+        # The final <Progress> is caused by "busy clear".
+    } -cleanup {
+        cleanup
+    } -result {
+        {::tdb <Tick>}
+        {::tdb <Tick>}
+        {::tdb <Progress>}
+    }
+
+
+    test advance-2.1 {Cannot be interrupted when blocking} -setup {
+        ted create NB1 BLUE SHIA
+    } -body {
+        tdb lock
+        tdb advance -ticks 10 -tickcmd [namespace current]::pauseCmd
+        list [tdb state] [tdb clock now]
+    } -cleanup {
+        cleanup
+    } -result {PAUSED 10}
+    
+
+        
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+

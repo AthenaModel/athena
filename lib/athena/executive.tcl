@@ -1635,7 +1635,7 @@ snit::type ::athena::executive {
 
         # lock
         $interp smartalias lock 0 0 {} \
-            [mymethod Lock]
+            [list $adb lock]
 
         # log
         $interp smartalias log 1 1 {message} \
@@ -1781,7 +1781,7 @@ snit::type ::athena::executive {
 
         # unlock
         $interp smartalias unlock 0 0 {} \
-            [mymethod Unlock]
+            [list $adb unlock]
 
         # version
         $interp smartalias version 0 0 {} \
@@ -1832,11 +1832,11 @@ snit::type ::athena::executive {
     # scenario if necessary.
 
     method Advance {weeks} {
-        if {[$adb state] eq "PREP"} {
-            $self Lock
+        if {[$adb unlocked]} {
+            $adb lock
         }
 
-        $self Send SIM:RUN -weeks $weeks -block YES
+        $adb advance -ticks $weeks
     }
 
     # block add agent ?option value...?
@@ -2139,14 +2139,6 @@ snit::type ::athena::executive {
         return $last
     }
 
-    # lock
-    #
-    # Locks the scenario.
-
-    method Lock {} {
-        $self Send SIM:LOCK
-    }
-
     # log message
     #
     # message - A text string
@@ -2416,14 +2408,6 @@ snit::type ::athena::executive {
         $adb order undo
 
         return "Undone: $title"
-    }
- 
-    # unlock
-    #
-    # Unlocks the scenario.
-
-    method Unlock {} {
-        $self Send SIM:UNLOCK
     }
 }
 

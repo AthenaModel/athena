@@ -918,6 +918,17 @@ term proximity "proximity" {
 
 #-----------------------------------------------------------------------
 
+term rebase "rebase" {
+    Rebasing a scenario is the process of created a new, 
+    <term unlock> scenario out of a <term lock>ed scenario in which
+    time has been advanced, i.e., creating a scenario whose inputs are
+    the outputs of an existing scenario.  Rebasing is experimental; 
+    outputs on lock will usually not quite match the outputs of the
+    original scenario.
+}
+
+#-----------------------------------------------------------------------
+
 term relationship "relationship" {
     The <term attitude> a group has toward another group
     (the <term hrel>) or toward an actor (the <term vrel>).  

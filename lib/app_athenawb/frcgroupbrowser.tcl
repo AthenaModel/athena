@@ -37,6 +37,7 @@ snit::widgetadaptor frcgroupbrowser {
         { color            "\nColor"                            }
         { forcetype        "Force\nType"                        }
         { training         "Training\nLevel"                    }
+        { equip_level      "Equipment\nLevel"                   }
         { base_personnel   "Base\nPersonnel"                    }
         { demeanor         "\nDemeanor"                         }
         { cost             "Cost,\n$/person/week" 

@@ -21,7 +21,6 @@ namespace eval ::projectlib:: {
         eactortype       \
         ebeanstate       \
         ecause           \
-        ecivconcern      \
         ecomparator      \
         ecomparatorx     \
         econcern         \
@@ -31,6 +30,7 @@ namespace eval ::projectlib:: {
         edamruleset      \
         edemeanor        \
         eeconstate       \
+        eequiplevel      \
         eforcetype       \
         egoal_state      \
         egoal_predicate  \
@@ -277,6 +277,14 @@ snit::type ::projectlib::typewrapper {
     FULL        "Fully Trained"
     PARTIAL     "Partially Trained"
     NONE        "Not Trained"
+}
+
+# Force group equipment level
+::marsutil::enum ::projectlib::eequiplevel {
+    BEST   "Best"
+    GOOD   "Good"
+    FAIR   "Fair"
+    POOR   "Poor"
 }
 
 # Unit icon shape (per MIL-STD-2525B)

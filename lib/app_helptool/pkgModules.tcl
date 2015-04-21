@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide app_helptool 6.3.0a7
+package provide app_helptool 6.3.0a8
 # -kite-provide-end
 
 #-----------------------------------------------------------------------
@@ -26,7 +26,7 @@ package provide app_helptool 6.3.0a7
 # numbers automatically as they change in project.kite.
 
 package require projectlib
-package require athena
+package require athena 
 
 # -kite-require-start ADD EXTERNAL DEPENDENCIES
 package require kitedocs 0.4.6

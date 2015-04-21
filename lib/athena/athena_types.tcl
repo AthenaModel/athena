@@ -14,22 +14,24 @@
 #-----------------------------------------------------------------------
 
 namespace eval ::athena:: {
-    namespace export \
-        eanyall      \
-        edoes        \
-        eexecstatus  \
-        eresource    \
-        eflagstatus  \
-        eexecmode    \
-        ePrioUpdate  \
-        esanity      \
-        esimstate    \
-        einputmode   \
-        rgamma       \
-        rcov         \
-        rsvcpct      \
-        refpoint     \
-        refpoly      \
+    namespace export   \
+        eanyall        \
+        ecivcasconcern \
+        edoes          \
+        eexecstatus    \
+        eresource      \
+        eflagstatus    \
+        eexecmode      \
+        ePrioUpdate    \
+        eroe           \
+        esanity        \
+        esimstate      \
+        einputmode     \
+        rgamma         \
+        rcov           \
+        rsvcpct        \
+        refpoint       \
+        refpoly        \
         tclscript
 }
 
@@ -38,6 +40,14 @@ namespace eval ::athena:: {
 enum ::athena::eanyall {
     ANY "Any of"
     ALL "All of"
+}
+
+# Concern for civilian casualties
+enum ::athena::ecivcasconcern {
+    NONE   "None"
+    LOW    "Low"
+    MEDIUM "Medium"
+    HIGH   "High"
 }
 
 # Does vs Doesn't
@@ -137,6 +147,12 @@ enum ::athena::ePrioUpdate {
     bottom "To Bottom"
 }
 
+# eroe: rule of engagement in ROE tactics
+enum ::athena::eroe {
+    ATTACK "attack"
+    DEFEND "defend against"
+}
+
 # esanity: Severity levels used by sanity checkers
 enum ::athena::esanity {
     OK      OK
@@ -146,21 +162,28 @@ enum ::athena::esanity {
 
 # esimstate: The current simulation state
 #
-# PREP    - Scenario preparation.  The user can send orders to edit the
-#           scenario.
-# RUNNING - Time is advancing.  The user is generally not allowed to send
-#           orders.  Certain orders can be sent by tactic, and of course
-#           the simulation can be paused.
-# PAUSED  - The scenario has been locked, but time is not advancing.  
-#           Only certain orders may be used.
-# WIZARD  - The application has popped up a Wizard window.  No orders may
-#           be sent until the state has returned to PREP.
+# PREP    - Scenario preparation.  The scenario is unlocked and idle;
+#           The user can send orders to edit the scenario.
+#
+# PAUSED  - Scenario paused.  The scenario is locked and idle; only a
+#           subset of orders may be used.
+#
+# RUNNING - The application is busy running some process that blocks 
+#           changes to the scenario.  The process is interruptible (e.g.,
+#           simulation time is advancing in the foreground.)  No orders
+#           may be sent until the scenario is once again idle.
+#
+# BUSY    - The application is busy running some process that blocks 
+#           changes to the scenario; the process is NOT interruptible.
+#           It might have popped up a Wizard window or be running a 
+#           background task.  No orders may be sent until the scenario
+#           is once again idle.
 
 enum ::athena::esimstate {
     PREP     Prep
-    RUNNING  Running
     PAUSED   Paused
-    WIZARD   Wizard
+    RUNNING  Running
+    BUSY     Busy
 }
 
 # Magic Input Mode
@@ -181,6 +204,10 @@ enum ::athena::einputmode {
 # rsvcpct: The range of percentages for abstract services to be changed
 
 ::marsutil::range ::athena::rsvcpct -min -100.0 
+
+# rminfrac: Fraction with a minimum value, used in AAM multipliers
+
+::marsutil::range ::athena::rminfrac -min 0.01
 
 # refpoint
 #

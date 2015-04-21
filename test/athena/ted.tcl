@@ -426,6 +426,7 @@ snit::type ted {
             color          "#f00001"
             forcetype      REGULAR
             training       PROFICIENT
+            equip_level    BEST
             base_personnel 5000
             demeanor       AVERAGE
             cost           0.0
@@ -439,6 +440,7 @@ snit::type ted {
             color          "#f00002"
             forcetype      REGULAR
             training       PROFICIENT
+            equip_level    FAIR
             base_personnel 5000
             demeanor       AVERAGE
             cost           0.0
@@ -452,6 +454,7 @@ snit::type ted {
             color          "#f00003"
             forcetype      IRREGULAR
             training       PARTIAL
+            equip_level    FAIR
             base_personnel 1000
             demeanor       AGGRESSIVE
             cost           0.0
@@ -465,6 +468,7 @@ snit::type ted {
             color          "#f00004"
             forcetype      IRREGULAR
             training       PARTIAL
+            equip_level    POOR
             base_personnel 1000
             demeanor       AGGRESSIVE
             cost           0.0
@@ -660,7 +664,7 @@ snit::type ted {
             tdb parm set econ.empExp 0
         }
         tdb absit reconcile
-        ted order SIM:LOCK
+        tdb lock
     }
 
     # unlock
@@ -668,7 +672,7 @@ snit::type ted {
     # Unlocks the scenario.
 
     typemethod unlock {} {
-        ted order SIM:UNLOCK
+        tdb unlock
     }
 
 
@@ -681,7 +685,7 @@ snit::type ted {
             ted lock
         }
         
-        ted order SIM:RUN weeks 1 block 1
+        tdb advance
     }
     
     # cleanup
@@ -695,34 +699,31 @@ snit::type ted {
     # * Resets the parms
     
     typemethod cleanup {} {
+        # FIRST, we've created nothing.
         set createdEntities {}
 
+        # NEXT, we don't care about notifier events.
         ted notifier forget
 
-        # This is what we used to do to clean up after a test.
-        # Instead, we just do [app new].
+        # NEXT, we must not be busy on cleanup.  Any activities
+        # that set the busy flag should complete before cleanup.
+        assert {[tdb idle]}
 
-        if {[tdb state] eq "RUNNING"} {
-            tdb sim pause
+        # NEXT, if we're locked, unlock.
+        if {[tdb locked]} {
+            tdb unlock
         }
 
-        if {[tdb state] eq "PAUSED"} {
-            tdb sim unlock
-        }
 
+        # NEXT, reset everything.  
+        #
+        # TDB: [tdb reset] should do all of the below,
+        # but seems to be much slower and not quite right.  Need to 
+        # figure out why.
         foreach table $cleanupTables {
             tdb eval "DELETE FROM $table;" 
         }
 
-        # So that automatically generated IDs start over at 1.
-        # Note that SQLite adds this table as needed.
-        catch {
-            tdb eval {DELETE FROM main.sqlite_sequence}
-        }
-
-        # Q: Can we just do an "tdb reset" here?
-        # A: Tried it; it wasn't quite right, and seemed to be much
-        # slower.  More work is needed.
         tdb order    reset
         tdb bean     reset
         tdb nbhood   dbsync
@@ -733,7 +734,17 @@ snit::type ted {
         tdb aam      reset
         tdb abevent  reset
         tdb strategy reset
+
+        tdb clock configure -tick0 0
         tdb clock    reset
+
+        # So that automatically generated IDs start over at 1.
+        # Note that SQLite adds this table as needed.
+        catch {
+            tdb eval {DELETE FROM main.sqlite_sequence}
+        }
+
+        assert {[tdb clock now] == 0}
     }
 
     # sendex ?-error? command...
@@ -818,8 +829,7 @@ snit::type ted {
 
                 if {$code} {
                     if {[dict get $opts -errorcode] eq "REJECT"} {
-
-                        set    results "\n"
+                        set results "\n"
                         foreach {parm error} $result {
                             append results "        $parm [list $error]\n" 
                         }

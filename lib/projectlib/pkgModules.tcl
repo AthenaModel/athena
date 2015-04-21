@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide projectlib 6.3.0a7
+package provide projectlib 6.3.0a8
 # -kite-provide-end
 
 #-----------------------------------------------------------------------
@@ -35,8 +35,8 @@ package require tls 1.6.4
 package require tdom 0.8
 package require struct::set 2.2
 package require kiteutils 0.4.6
-package require marsutil 3.0.13
-package require simlib 3.0.13
+package require marsutil 3.0.14
+package require simlib 3.0.14
 # -kite-require-end
 
 package require kiteinfo
@@ -92,4 +92,5 @@ source [file join $::projectlib::library wfsclient.tcl      ]
 source [file join $::projectlib::library smartdomain.tcl    ]
 source [file join $::projectlib::library scratchdir.tcl     ]
 source [file join $::projectlib::library parmdict.tcl       ]
+source [file join $::projectlib::library worker.tcl         ]
 

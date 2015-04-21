@@ -56,14 +56,6 @@ namespace eval ::athena_test::tests:: {
         # Clean up the test environment
         tdb clock restore $clockdata
 
-        if {[tdb sim state] eq "RUNNING"} {
-            tdb sim pause
-        }
-
-        if {[tdb sim state] eq "PAUSED"} {
-            tdb sim unlock
-        }
-
         ted cleanup
     }
 
@@ -162,7 +154,7 @@ namespace eval ::athena_test::tests:: {
             }
         }
     } -body {
-        tdb rebase save
+        tdb RebaseSave
         ted query {SELECT g, basepop, hist_flag, upc FROM civgroups}
     } -cleanup {
         cleanup
@@ -181,7 +173,7 @@ KURD 20000   1         10.0
         ted step
         ted coop bset 1 SHIA BLUE 80.0
     } -body {
-        tdb rebase save
+        tdb RebaseSave
         tdb eval {
             SELECT f, g, base, regress_to, natural 
             FROM coop_fg WHERE f='SHIA' AND g='BLUE' 
@@ -199,7 +191,7 @@ KURD 20000   1         10.0
             tdb eval {UPDATE personnel_g SET personnel=$p WHERE g=$g}
         }
     } -body {
-        tdb rebase save
+        tdb RebaseSave
         ted query {SELECT g, base_personnel FROM frcgroups}
     } -cleanup {
         cleanup
@@ -217,7 +209,7 @@ BRIT 2000
         ted step
         ted hrel bset 1 SHIA BLUE 0.9
     } -body {
-        tdb rebase save
+        tdb RebaseSave
 
         # Note: rebase data is not saved when f=g.  Also, rebase
         # data is not saved if current=base=nat, so as to save 
@@ -240,7 +232,7 @@ SHIA CIV   1     SHIA CIV   1     1.0 1.0  0         1.0     0
         ted step
         tdb eval {UPDATE control_n SET controller='JOE'}
     } -body {
-        tdb rebase save
+        tdb RebaseSave
         tdb eval {SELECT n, controller FROM nbhoods}
     } -cleanup {
         cleanup
@@ -252,7 +244,7 @@ SHIA CIV   1     SHIA CIV   1     1.0 1.0  0         1.0     0
         ted step
         tdb eval {UPDATE personnel_g SET personnel=100000 WHERE g='USAID'}
     } -body {
-        tdb rebase save
+        tdb RebaseSave
         tdb eval {SELECT g, base_personnel FROM orggroups}
     } -cleanup {
         cleanup
@@ -266,7 +258,7 @@ SHIA CIV   1     SHIA CIV   1     1.0 1.0  0         1.0     0
         ted step
         ted sat bset 1 SHIA QOL 0.9
     } -body {
-        tdb rebase save
+        tdb RebaseSave
         ted query {
             SELECT * FROM sat_gc WHERE g='SHIA' AND c='QOL'
         }
@@ -284,7 +276,7 @@ SHIA QOL 0.9  1.0      1         -3.45
         ted step
         ted vrel bset 1 SHIA JOE 0.9
     } -body {
-        tdb rebase save
+        tdb RebaseSave
         ted query {SELECT * FROM vrel_ga}
     } -cleanup {
         cleanup
@@ -301,7 +293,7 @@ SHIA JOE 0.9  1         0.0
         ted lock
         ted step
     } -body {
-        tdb rebase save
+        tdb RebaseSave
         set hdict [tdb econ gethist]
         dict with hdict {
             expr {$rem_rate == 10.0}

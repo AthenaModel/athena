@@ -1,0 +1,101 @@
+<manpage {projectlib(n) worker(n)} "Event Loop Worker Manager">
+
+<section SYNOPSIS>
+
+<pre>
+package require projectlib <version>
+namespace import ::projectlib::worker
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+This module defines a "worker" object: an object that implements a 
+long-running process by repeatedly calling a <tt -command> in the 
+context of the Tcl event loop until the process is complete.<p>
+
+<section "Cancelling a Process">
+
+The worker instance provides no "cancel" method, because generally the
+process needs to know that it has been cancelled and worker(n) has no
+way of informing it.  Consequently, the usual way to cancel the process
+is to set some variable that the <tt -command> looks at; it can then
+clean up on its next execution and return true.<p>
+
+<section COMMANDS>
+
+<deflist commands>
+
+<defitem worker {worker <i>name</i> ?<i>options...?</i>}>
+
+Creates a new worker(n) object called <i>name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<iref worker> returns the fully-qualified form of the
+<i>name</i>.<p>
+
+The worker(n) may be created with the following options:<p>
+
+<deflist options>
+
+<defopt {-command <i>cmd</i>}>
+
+The command to call to do work.  The command should return a true 
+value when the work is done, and false otherwise.<p>
+
+The command will be called immediately on <iref start>; after each
+execution that returns a false value, the next call will be scheduled
+to execute after <tt -delay> milliseconds.<p>
+
+The process terminates if the <tt -command> throws an error.<p> 
+
+<defopt {-delay <i>msec</i>}>
+
+Specifies the length of delay between calls, in milliseconds.  The point of
+the delay is to allow the user to interact with the event loop, possibly
+canceling the process.  The default is 100 milliseconds.<p>
+
+</deflist options>
+
+</deflist commands>
+
+<section "INSTANCE COMMAND">
+
+Each instance of worker(n) has the following subcommands:<p>
+
+<deflist instance>
+
+<defitem start {<i>object</i> start}>
+
+Performs the first execution of the <tt -command>, and schedules the
+next if the first execution returns false.<p>
+
+</deflist instance>
+
+<section "SEE ALSO">
+
+<xref myserver(i)>.
+
+<section ENVIRONMENT>
+
+Requires Tcl 8.5 or later.
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+
+
+

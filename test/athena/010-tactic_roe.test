@@ -1,0 +1,199 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-tactic_roe.test
+#
+# AUTHOR:
+#    Dave Hanks
+#
+# DESCRIPTION:
+#    tactic_roe(sim) tests.
+#
+#    This test suite tests the tactic_roe(sim) class.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    # Set up for tests
+
+    # If opt is -valid, sets up a valid tactic.
+    proc setup {{opt ""}} {
+        variable B1
+        variable T1
+        variable coffer
+
+        # FIRST, create the basic entities.
+        ted create JOE BLUE ALQ NB1 NB2 SUNN SHIA KURD USAID
+
+        # NEXT, create a default ASSIGN tactic
+        set B1 [ted addblock JOE]
+        set T1 [ted addtactic $B1 ROE]
+
+        # NEXT, prepare for obligation
+        tdb personnel start
+        tdb personnel load
+        set coffer [::athena::coffer new ::tdb JOE]
+    }
+
+    proc cleanup {} {
+        variable coffer
+        $coffer destroy
+        tdb strategy locking 0
+        ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    test constructor-1.1 {default state} -setup {
+        setup
+    } -body {
+        ted pdicts [$T1 getdict]
+    } -cleanup {
+        cleanup
+    } -match dictglob -result {
+        athresh    2.0
+        civc       HIGH
+        dthresh    0.15
+        execstatus NONE
+        f          {}
+        faildict   {}
+        glist      {_type FRCGROUPS _rule {}}
+        id         *
+        name       T*
+        nlist      {_type NBHOODS _rule {}}
+        parent     *
+        pot        *::pot
+        roe        ATTACK
+        state      invalid
+    }
+
+    test constructor-1.2 {can set options} -setup {
+        setup
+    } -body {
+        set T1 [ted newbean ::athena::tactic::ROE -parent DUMMY]
+        $T1 get parent
+    } -cleanup {
+        cleanup
+    } -result {DUMMY}
+
+    #-------------------------------------------------------------------
+    # narrative
+
+    test narrative-1.1 {narrative, default state} -setup {
+        setup
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {??? will try to attack group ??? in nbhood ???. Force/Enemy ratio: DEFEND below 200% and WITHDRAW below 15%. Concern for CIVCAS: HIGH.}
+
+    test narrative-1.2 {valid inputs} -setup {
+        setup
+        $T1 configure -f BLUE -glist [tdb gofer make FRCGROUPS BY_VALUE ALQ] \
+                      -nlist [tdb gofer make NBHOODS BY_VALUE {NB1 NB2}]
+    } -body {
+        $T1 narrative
+    } -cleanup {
+        cleanup
+    } -result {{group:BLUE} will try to attack group ALQ in these neighborhoods (NB1, NB2). Force/Enemy ratio: DEFEND below 200% and WITHDRAW below 15%. Concern for CIVCAS: HIGH.}
+
+
+    #-------------------------------------------------------------------
+    # check
+
+    test check-1.1 {Initial state fails} -setup {
+        setup
+    } -body {
+        ted pdicts [$T1 check]
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+        f     {No force group selected.}
+        glist {No rule specified}
+        nlist {No rule specified}
+    }
+
+    test check-1.2 {unknown f} -setup {
+        setup 
+    } -body {
+        $T1 configure -f NONESUCH \
+                      -nlist [tdb gofer make NBHOODS BY_VALUE NB1] \
+                      -glist [tdb gofer make FRCGROUPS BY_VALUE ALQ]
+        ted pdicts [$T1 check]
+    } -cleanup {
+        cleanup
+    } -match dict -result {
+        f {JOE does not own a force group called "NONESUCH".}
+    }
+
+    test check-1.4 {Success} -setup {
+        setup
+        $T1 configure -f BLUE \
+                      -nlist [tdb gofer make NBHOODS BY_VALUE NB1] \
+                      -glist [tdb gofer make FRCGROUPS BY_VALUE ALQ]
+    } -body {
+        $T1 check
+    } -cleanup {
+        cleanup
+    } -result {}
+
+    #-------------------------------------------------------------------
+    # obligate
+    #
+
+    test obligate-1.1 {obligate always works, no money} -setup {
+        setup
+        $T1 configure -f BLUE \
+                      -nlist [tdb gofer make NBHOODS BY_VALUE NB1] \
+                      -glist [tdb gofer make FRCGROUPS BY_VALUE ALQ]
+    } -body {
+        $T1 obligate $coffer
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    #-------------------------------------------------------------------
+    # execute
+
+    test execute-1.1 {execution always works} -setup {
+        setup
+        $T1 configure -f BLUE \
+                      -nlist [tdb gofer make NBHOODS BY_VALUE NB1] \
+                      -glist [tdb gofer make FRCGROUPS BY_VALUE ALQ]
+    } -body {
+        $T1 execute
+        tdb aam hasroe NB1 BLUE ALQ
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::

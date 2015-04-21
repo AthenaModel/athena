@@ -45,6 +45,7 @@ namespace eval ::athena_test::tests:: {
         color          #0000ff
         forcetype      REGULAR
         training       PROFICIENT
+        equip_level    BEST
         base_personnel 1000
         demeanor       AVERAGE
         cost           0.0
@@ -58,6 +59,7 @@ namespace eval ::athena_test::tests:: {
         color          #00ffff
         forcetype      REGULAR
         training       FULL
+        equip_level    FAIR
         base_personnel 1000
         demeanor       AVERAGE
         cost           0.0
@@ -151,7 +153,19 @@ namespace eval ::athena_test::tests:: {
         training {invalid value "NONESUCH", should be one of: PROFICIENT, FULL, PARTIAL, NONE}
     }
 
-    test CREATE-1.9 {invalid base_personnel} -setup {
+    test CREATE-1.9 {invalid equip_level} -setup {
+        ted create JOE
+    } -body {
+        ted order -reject FRCGROUP:CREATE [dict merge $blue {
+            equip_level NONESUCH
+        }]
+    } -cleanup {
+        cleanup
+    } -result {
+        equip_level {invalid value "NONESUCH", should be one of: BEST, GOOD, FAIR, POOR}
+    }
+
+    test CREATE-1.10 {invalid base_personnel} -setup {
         ted create JOE
     } -body {
         ted order -reject FRCGROUP:CREATE [dict merge $blue {
@@ -163,7 +177,7 @@ namespace eval ::athena_test::tests:: {
         base_personnel {invalid value "NONESUCH", expected integer}
     }
 
-    test CREATE-1.10 {invalid demeanor} -setup {
+    test CREATE-1.11 {invalid demeanor} -setup {
         ted create JOE
     } -body {
         ted order -reject FRCGROUP:CREATE [dict merge $blue {
@@ -175,7 +189,7 @@ namespace eval ::athena_test::tests:: {
         demeanor {invalid value "NONESUCH", should be one of: APATHETIC, AVERAGE, AGGRESSIVE}
     }
 
-    test CREATE-1.11 {invalid cost} -setup {
+    test CREATE-1.12 {invalid cost} -setup {
         ted create JOE
     } -body {
         ted order -reject FRCGROUP:CREATE [dict merge $blue {
@@ -187,7 +201,7 @@ namespace eval ::athena_test::tests:: {
         cost {invalid money value "NONESUCH", expected positive numeric value with optional K, M, or B suffix}
     }
 
-    test CREATE-1.14 {invalid local} -setup {
+    test CREATE-1.13 {invalid local} -setup {
         ted create JOE
     } -body {
         ted order -reject FRCGROUP:CREATE [dict merge $blue {
@@ -218,6 +232,7 @@ a               JOE
 bsid            
 forcetype       REGULAR
 training        PROFICIENT
+equip_level     BEST
 base_personnel  1000
 local           0
     }
@@ -353,7 +368,17 @@ local           0
         training {invalid value "NONESUCH", should be one of: PROFICIENT, FULL, PARTIAL, NONE}
     }
 
-    test UPDATE-1.7 {invalid base_personnel} -setup {
+    test UPDATE-1.7 {invalid equip_level} -setup {
+        ted create BLUE
+    } -body {
+        ted order -reject FRCGROUP:UPDATE g BLUE equip_level NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        equip_level {invalid value "NONESUCH", should be one of: BEST, GOOD, FAIR, POOR}
+    }
+
+    test UPDATE-1.8 {invalid base_personnel} -setup {
         ted create BLUE
     } -body {
         ted order -reject FRCGROUP:UPDATE g BLUE base_personnel NONESUCH
@@ -364,7 +389,7 @@ local           0
     }
 
 
-    test UPDATE-1.8 {invalid demeanor} -setup {
+    test UPDATE-1.9 {invalid demeanor} -setup {
         ted create BLUE
     } -body {
         ted order -reject FRCGROUP:UPDATE g BLUE demeanor NONESUCH
@@ -375,7 +400,7 @@ local           0
     }
 
 
-    test UPDATE-1.9 {invalid cost} -setup {
+    test UPDATE-1.10 {invalid cost} -setup {
         ted create BLUE
     } -body {
         ted order -reject FRCGROUP:UPDATE g BLUE cost NONESUCH
@@ -386,7 +411,7 @@ local           0
     }
 
 
-    test UPDATE-1.12 {invalid local} -setup {
+    test UPDATE-1.11 {invalid local} -setup {
         ted create BLUE
     } -body {
         ted order -reject FRCGROUP:UPDATE g BLUE local NONESUCH
@@ -427,6 +452,7 @@ a               BOB
 bsid            
 forcetype       POLICE
 training        NONE
+equip_level     BEST
 base_personnel  10000
 local           1
     }
@@ -539,7 +565,17 @@ local           1
         training {invalid value "NONESUCH", should be one of: PROFICIENT, FULL, PARTIAL, NONE}
     }
 
-    test UPDATE:MULTI-1.9 {invalid base_personnel} -setup {
+    test UPDATE:MULTI-1.9 {invalid equip_level} -setup {
+        ted create BLUE
+    } -body {
+        ted order -reject FRCGROUP:UPDATE:MULTI ids BLUE equip_level NONESUCH
+    } -cleanup {
+        cleanup
+    } -result {
+        equip_level {invalid value "NONESUCH", should be one of: BEST, GOOD, FAIR, POOR}
+    }
+
+    test UPDATE:MULTI-1.10 {invalid base_personnel} -setup {
         ted create BLUE
     } -body {
         ted order -reject FRCGROUP:UPDATE:MULTI ids BLUE base_personnel NONESUCH
@@ -550,7 +586,7 @@ local           1
     }
 
 
-    test UPDATE:MULTI-1.10 {invalid demeanor} -setup {
+    test UPDATE:MULTI-1.11 {invalid demeanor} -setup {
         ted create BLUE
     } -body {
         ted order -reject FRCGROUP:UPDATE:MULTI ids BLUE demeanor NONESUCH
@@ -561,7 +597,7 @@ local           1
     }
 
 
-    test UPDATE:MULTI-1.11 {invalid cost} -setup {
+    test UPDATE:MULTI-1.12 {invalid cost} -setup {
         ted create BLUE
     } -body {
         ted order -reject FRCGROUP:UPDATE:MULTI ids BLUE cost NONESUCH
@@ -572,7 +608,7 @@ local           1
     }
 
 
-    test UPDATE:MULTI-1.14 {invalid local} -setup {
+    test UPDATE:MULTI-1.13 {invalid local} -setup {
         ted create BLUE
     } -body {
         ted order -reject FRCGROUP:UPDATE:MULTI ids BLUE local NONESUCH

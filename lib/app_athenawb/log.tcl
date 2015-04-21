@@ -24,6 +24,12 @@ snit::type log {
     # Type Components
 
     typecomponent logger   ;# logger(n)
+
+    #-------------------------------------------------------------------
+    # Type Variable
+
+    typevariable logdir  ;# The parent log directory.
+    
     
     #-------------------------------------------------------------------
     # Initialization
@@ -34,15 +40,21 @@ snit::type log {
 
     typemethod init {} {
         # FIRST, get the log directory.
-        set logDir [workdir join log app_sim]
+        set logdir [workdir join log]
+        set mydir [file join $logdir application]
 
         # NEXT, create a logger.
         set logger [logger %AUTO% \
-                        -logdir     $logDir                  \
+                        -logdir     $mydir                  \
                         -newlogcmd  [mytypemethod OnNewLog]]
+    }
 
-        # NEXT, create new log files when appropriate
-        notifier bind ::adb <Unlocked> $type [mytypemethod newlog prep]
+    # logdir
+    #
+    # Returns the log directory name.
+
+    typemethod logdir {} {
+        return $logdir
     }
 
     #-------------------------------------------------------------------

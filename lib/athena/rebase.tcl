@@ -15,13 +15,7 @@
 #
 #   * Rebasing requires data from the previous time tick.  
 #     [rebase prepare] saves this data at the beginning of each [tick].
-#   * The user sends SIM:REBASE, usually via the Orders menu.
-#   * SIM:REBASE calls [sim rebase], which handles the simulation
-#     control issues.
-#   * [sim rebase] calls [adb rebase], which handles the
-#     scenario issues, e.g., purging history and so forth.
-#   * [adb rebase] calls [rebase save] to actually save the 
-#     required state to the scenario tables.
+#   * The user calls `$adb unlock -rebase`.
 #
 #-----------------------------------------------------------------------
 

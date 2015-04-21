@@ -705,7 +705,7 @@ snit::type ted {
             ted lock
         }
         
-        ted order SIM:RUN weeks 1 block 1
+        ted order SIM:RUN weeks 1
     }
     
     # cleanup

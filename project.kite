@@ -1,9 +1,18 @@
 # project.kite
-project athena 6.3.0a7 {Athena Regional Stability Simulation}
+project athena 6.3.0a8 {Athena Regional Stability Simulation}
 poc William.H.Duquette@jpl.nasa.gov
 
 # Applications
-app athena -apptype exe
+app athena -apptype exe -exclude {
+    Img
+    BWidget
+    Tktable
+    treectrl
+    tablelist
+    Tkhtml
+    ctext
+    marsgui
+}
 app athenawb -apptype exe -gui
 app arachne -apptype exe
 app athena_log -apptype kit -gui
@@ -43,10 +52,10 @@ require html 1.4.3
 require base64 2.4.2
 require kiteutils 0.4.6 -local
 require kitedocs 0.4.6 -local
-require marsutil 3.0.13 -local
-require marsgui 3.0.13 -local
-require simlib 3.0.13 -local
-require Marsbin 3.0.13 -local
+require marsutil 3.0.14 -local
+require marsgui 3.0.14 -local
+require simlib 3.0.14 -local
+require Marsbin 3.0.14 -local
 
 # External Files
 xfile docs/aag.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aag-20141010.docx

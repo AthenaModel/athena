@@ -136,7 +136,7 @@ object group_civ {
     attribute hist_flag "Start Mode" {
         The start mode indicates whether the group data is for a new
         scenario, or if it was created to reflect an existing
-        time-advanced scenario via the <cref /order/sim/rebase> order.  
+        time-advanced scenario via a <cref /term/rebase>.  
         The value is either 0 ("New Scenario") or 1 ("From Previous 
         Scenario").  If 1, the specified <i>upc</i> value
         will be used.<p>
@@ -147,8 +147,8 @@ object group_civ {
         The percentage of unemployed workers in the group per group member
         at the start of scenario lock.  This value affects the computation of
         security during scenario lock, and is then overridden by the output
-        of the Economics and Demographics model.  It is set by 
-        <cref /order/sim/rebase> to increase the fidelity of a
+        of the Economics and Demographics model.  It is set during 
+        <term rebase> to increase the fidelity of a
         rebased scenario on-lock; there is little reason to set it manually.
     } -tags {create update browser}
 
@@ -210,6 +210,15 @@ object group_frc {
         forth.  The possible training levels are as follows:<p>
 
         <enumdoc ::projectlib::etraining>
+    } -tags {create update multi}
+
+    attribute equip_level "Equipment Level" {
+        The group's equipment level, which should reflect the 
+        effectiveness of the group's weapons and defenses based solely
+        on the kind of technology they have.  The possible equipment
+        levels are as follows:<p>
+
+        <enumdoc ::projectlib::eequiplevel>
     } -tags {create update multi}
 
     attribute base_personnel "Base Personnel" {
