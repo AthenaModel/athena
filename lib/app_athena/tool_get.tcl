@@ -15,7 +15,7 @@
 # tool::GET
 
 tool define GET {
-    usage       {1 - "?options...? url"}
+    usage       {1 - "?options...? url queryargs..."}
     description "Athena Web Server"
 } {
     Arachne Post Tool
@@ -25,6 +25,10 @@ tool define GET {
 
     -port <id>        - The server port on the local host; defaults to
                         port 8080.
+
+    If query arguments are given, they are assumed to be a list of 
+    query parameter names and values, and are encoded into a standard
+    query string and appended to the URL.
 } {
     #-------------------------------------------------------------------
     # Execution 
@@ -37,7 +41,6 @@ tool define GET {
         package require http
 
         set url      [lshift argv]
-        set filename [lshift argv]
         set port     8080
         
         foroption opt argv {
@@ -47,6 +50,12 @@ tool define GET {
         }
 
         set url http://localhost:$port/$url
+
+        if {[llength $argv] > 0} {
+            set query [http::formatQuery {*}$argv]
+            append url "?" $query
+        }
+
 
         puts "Getting $url"
 

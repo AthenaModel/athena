@@ -1,21 +1,8 @@
 # TODO.md - Athena TODO List
 
 - Arachne
-  - Safe access to RDB from athena(n) and Arachne
-    - athenadb(n) provides "safe" method.
-      - Implement (DONE)
-      - Add to test suite (DONE)
-      - Add to man page (DONE)
-    - athena(n) delegates to "safe" version
-      - eval/exists/onecolumn/query delegate to "$adb safe eval", etc. (DONE)
-      - rdb delegates to "$adb rdb" (thus, the read/write commands are available)
-        (DONE)
-      - Add to test suite
-      - Add to man page
-    - Update applications to use athena(n)'s eval, query, etc., since they
-      are known to be safe where they used to use safeeval, safequery.
-      - athenawb
-      - arachne
+  - Fix scenario name in Arache export .tcl file.  It depends on last 
+    export, and it shouldn't.
   - Missing Operations:
     - Export a scenario (e.g., save as)
     - Clone a scenario

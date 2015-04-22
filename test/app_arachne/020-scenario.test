@@ -224,6 +224,27 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -match norm -result {OK case00}
 
+    #-------------------------------------------------------------------
+    # /scenario/export.json
+    
+    test export.json-1.1 {REJECT: no id} -body {
+        ted getjson /export.json filename dummy.adb
+    } -match norm -result {REJECT {id {Required parameter}}}
+
+    test export.json-1.1 {REJECT: no filename} -body {
+        ted getjson /export.json id case00
+    } -match norm -result {REJECT {filename {Required parameter}}}
+
+    test export.json-1.2 {REJECT: no such id} -body {
+        ted getjson /export.json id case01 filename dummy.adb
+    } -match norm -result {REJECT {id {Unknown id}}}
+
+    test export.json-2.1 {OK} -body {
+        ted getjson /export.json id case00 filename export21
+    } -cleanup {
+        tcltest::removeFile [case scenariodir export21.adb]
+        cleanup
+    } -match norm -result {OK export21.adb}
 
     #-------------------------------------------------------------------
     # /scenario/delete.json

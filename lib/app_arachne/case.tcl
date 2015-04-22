@@ -87,16 +87,26 @@ snit::type case {
         return $cases(names)
     }
 
-    # validate name
+    # exists id
     #
-    # Validates the case name.
+    # id  - A case ID
+    #
+    # Returns 1 if there's a case with this ID, and 0 otherwise.
 
-    typemethod validate {name} {
-        if {$name ni $cases(names)} {
-            throw INVALID "Unknown scenario: \"$name\""
+    typemethod exists {id} {
+        expr {$id in $cases(names)}
+    }
+
+    # validate id
+    #
+    # Validates the case id.
+
+    typemethod validate {id} {
+        if {![case exists $id]} {
+            throw INVALID "Unknown scenario: \"$id\""
         }
 
-        return $name
+        return $id
     }
 
 
@@ -286,6 +296,50 @@ snit::type case {
         set cases(source-$id) [file tail $filename]
 
         return $theID
+    }
+
+    # export id filename
+    #
+    # id        - An existing case ID
+    # filename  - An .adb or .tcl file name
+    #
+    # Exports the scenario into the scenario directory under the given
+    # name and file type.  If there is no file type, appends ".adb".
+    # Throws SCENARIO EXPORT on failure.  Returns the bare save file
+    # name.
+
+    typemethod export {id filename} {
+        # FIRST, validate the inputs
+        if {[file tail $filename] ne $filename} {
+            throw {SCENARIO EXPORT} "Not a bare file name"
+        }
+
+        set ext [file extension $filename]
+
+        if {$ext eq ""} {
+            set ext ".adb"
+            append filename $ext
+        }
+
+        if {$ext ni {.adb .tcl}} {
+            throw {SCENARIO EXPORT} "Cannot export files of type \"$ext\""
+        }
+
+
+        # NEXT, save the scenario.
+        set fullname [case scenariodir $filename]
+
+        try {
+            switch -exact -- $ext {
+                .adb { case with $id save $fullname }
+                .tcl { case with $id export fromdata $fullname }
+                default { error "Unknown file type: \"$ext\""}
+            }
+        } trap {SCENARIO SAVE} {result} {
+            throw {SCENARIO EXPORT} $result
+        }
+
+        return [file tail $fullname]
     }
 
     # delete id

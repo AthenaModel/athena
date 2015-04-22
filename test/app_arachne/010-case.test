@@ -234,6 +234,45 @@ namespace eval ::athena_test::tests:: {
     } -result {case00 {New Base Case}}
 
     #-------------------------------------------------------------------
+    # export
+    
+    test export-1.1 {complex file name} -body {
+        codecatch case export case00 "dir/file.adb"
+    } -cleanup {
+        cleanup
+    } -result {{SCENARIO EXPORT} {Not a bare file name}}
+
+    test export-1.2 {invalid file type} -body {
+        codecatch case export case00 "file.doc"
+    } -cleanup {
+        cleanup
+    } -result {{SCENARIO EXPORT} {Cannot export files of type ".doc"}}
+
+    test export-2.1 {export .adb} -body {
+        set filename [case export case00 export21.adb]
+        list $filename [file exists [case scenariodir $filename]]
+    } -cleanup {
+        tcltest::removeFile $filename 
+        cleanup
+    } -result {export21.adb 1}
+
+    test export-2.2 {export .adb, appending type} -body {
+        set filename [case export case00 export22]
+        list $filename [file exists [case scenariodir $filename]]
+    } -cleanup {
+        tcltest::removeFile [case scenariodir $filename] 
+        cleanup
+    } -result {export22.adb 1}
+
+    test export-2.3 {export .tcl} -body {
+        set filename [case export case00 export23.tcl]
+        list $filename [file exists [case scenariodir $filename]]
+    } -cleanup {
+        tcltest::removeFile [case scenariodir $filename] 
+        cleanup
+    } -result {export23.tcl 1}
+
+    #-------------------------------------------------------------------
     # delete
 
     test delete-1.1 {Can delete} -setup {

@@ -49,7 +49,7 @@ oo::class create scenario_domain {
             If {id} is given, it must be an existing scenario; the 
             scenario's contents will be reset to the empty state.
             If {longname} is given, the scenario will be given the new
-            name.  On success, returns a list "OK", {id}.
+            name.  On success, returns a list ["OK", "{id}"].
         }
 
         my url /import.json [mymethod import.json]  {
@@ -60,12 +60,21 @@ oo::class create scenario_domain {
             ID; otherwise a new ID will be assigned.  
             If the {longname} is given, the scenario will
             be assigned that name.  On success, returns a list
-            "OK", {id}.
+            ["OK", "{id}"].
+        }
+
+        my url /export.json [mymethod export.json]  {
+            Exports scenario {id} to the <tt>-scenariodir</tt> as
+            {filename}.  The file type may be "<tt>.adb</tt>" for a
+            standard Athena scenario file or "<tt>.tcl</tt>" for a
+            scenario script.  If no file type is given, "<tt>.adb</tt>"
+            is assumed.  On success, returns a list
+            ["OK", "{filename}"].
         }
 
         my url /delete.json [mymethod delete.json]  {
             Deletes scenario {id} from the current session.
-            On success, returns a list "OK", {message}.
+            On success, returns a list ["OK", "{message}"].
         }
 
         my url /{name}/order.html [mymethod order.html] {
@@ -269,6 +278,35 @@ oo::class create scenario_domain {
         return [js ok $theID]
     }
     
+    # export.json
+    #
+    # sd       - The smartdomain object (e.g., [self])
+    # qdict    - Query Dictionary
+    #
+    # Attempts to export a scenario to an .adb or .tcl
+    # $filename in -scenariodir, defaulting to .adb.  On success returns 
+    # [OK,$filename] where is the filename in -scenariodir.
+
+    method export.json {sd qdict} {
+        $qdict prepare id -required -tolower -in [case names]
+        $qdict prepare filename -required
+        $qdict assign id filename
+
+        if {![$qdict ok]} {
+            return [js reject [$qdict errors]]
+        }
+
+        # NEXT, try to export it.
+        try {
+            set theFileName [case export $id $filename]
+        } trap {SCENARIO EXPORT} {result} {
+            $qdict reject filename $result
+            return [js reject [$qdict errors]]
+        }
+
+        return [js ok $theFileName]
+    }
+
     # delete.json
     #
     # sd       - The smartdomain object (e.g., [self])
