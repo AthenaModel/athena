@@ -48,9 +48,13 @@ oo::class create ::projectlib::parmdict {
     #
     # dict  - A dictionary of parameter names and values
     #
-    # Re-initializes the object with the new dictionary.
+    # Re-initializes the object with the new dictionary.  If the
+    # dict value isn't a valid dictionary, it is cleared.
 
     method setdict {dict} {
+        if {[llength $dict] %2 != 0} {
+            set dict [dict create]
+        }
         set parms   $dict
         set prepped [dict create]
         set errors  [dict create]

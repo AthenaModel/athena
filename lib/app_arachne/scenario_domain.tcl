@@ -52,6 +52,16 @@ oo::class create scenario_domain {
             name.  On success, returns a list ["OK", "{id}"].
         }
 
+        my url /clone.json [mymethod clone.json]  {
+            Clones existing scenario {id} as a new scenario, assigning
+            it an id and longname.  If {newid} is given, it must be an 
+            existing scenario other than {id}; the clone will replace
+            the previous state of scenario {newid}.  Otherwise, a 
+            {newid} will be chosen automatically.
+            If {longname} is given, the scenario will be given the new
+            name.  On success, returns a list ["OK", "{newid}"].
+        }
+
         my url /import.json [mymethod import.json]  {
             Imports scenario {filename} and loads it into memory.
             The {filename} must name a file in the 
@@ -244,6 +254,37 @@ oo::class create scenario_domain {
 
         # NEXT, create it.
         return [js ok [case new $id $longname]]
+    }
+
+    # clone.json
+    #
+    # sd       - The smartdomain object (e.g., [self])
+    # qdict    - Query Dictionary
+    #
+    # Clones an existing scenario, possibly replacing an existing
+    # scenario.  On success returns [OK,$theID] where 
+    # $theID is the new scenario ID, whether specified or generated.
+
+    method clone.json {sd qdict} {
+        $qdict prepare id       -required -tolower -in [case names]
+        $qdict prepare newid    -tolower -in [case names]
+        $qdict prepare longname
+
+        $qdict assign id newid longname
+
+        $qdict checkon newid {
+            if {$newid eq $id} {
+                $qdict reject newid "Cannot clone scenario to itself"
+            }            
+        }
+
+        if {![$qdict ok]} {
+            return [js reject [$qdict errors]]
+        }
+
+
+        # NEXT, create it.
+        return [js ok [case clone $id $newid $longname]]
     }
 
     # import.json

@@ -1,12 +1,10 @@
 # TODO.md - Athena TODO List
 
 - Arachne
-  - Problem with athenawb mods
+  - Add mod loader to arachne.
   - Fix scenario name in Arache export .tcl file.  It depends on last 
     export, and it shouldn't.
   - Missing Operations:
-    - Export a scenario (e.g., save as)
-    - Clone a scenario
     - Compare two scenarios, return vardiffs
     - HTML I/F to control these things.
   - What should the htdocs directory look like?
@@ -52,17 +50,6 @@
   - What to do about icon names?
     - Replace with .png files, with valid URLs?
       - That's probably easiest.
-  - Generation of URLs:
-    - htools is configured with a dictionary of symbolic names and base URLs.
-    - The `$ht link` command will translate "%name/" at the beginning of a
-      URL to "$baseurl/".
-    - If the "name" is unknown, no link is created; just the link text is
-      put in the buffer.
-    - athena(n) gets the same dictionary, and delegates it to athenadb(n).
-    - athenadb(n) provides a factory method for creating configured htools
-      buffers.
-    - Code using htools buffers get them from athenadb(n).
-- See about giving athena(n) a read-only db.
 - Write cellide manpage.
 
 
