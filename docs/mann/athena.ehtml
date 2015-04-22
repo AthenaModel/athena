@@ -774,6 +774,13 @@ Specifies a command to call if the dialog's help button is pushed.<p>
 
 </deflist enter>
 
+<defitem eval {<i adb> eval <i query> ?<i args...>?}>
+
+Evaluates an SQL <i query> with respect to the scenario's run-time 
+database.  The arguments are as for the standard SQLite3 <tt eval>
+subcommand.  Queries that attempt to write to the RDB will be
+rejected.<p>
+
 
 <defitem executive {<i adb> executive <i subcommand> ?<i args...>?}>
 
@@ -783,6 +790,13 @@ executes commands and scripts in the context of the scenario.  See the
 
 Further, the application can add its own commands to the executive by defining
 an <tt -executivecmd>.<p>
+
+<defitem exists {<i adb> exists <i query>}>
+
+Evaluates an SQL <i query> with respect to the scenario's run-time 
+database, returning 1 if the <i query> would return one or more
+rows, and 0 otherwise.  Queries that attempt to write to the RDB will be
+rejected.<p>
 
 <defitem export {<i adb> export TBD}>
 
@@ -926,6 +940,12 @@ scenario is locked.<p>
 Returns 1 if the scenario is "locked", initialized and ready for a time
 advance, and 0 otherwise; see <xref "Scenario States">.<p>
 
+<defitem onecolumn {<i adb> onecolumn <i query>}>
+
+Evaluates an SQL <i query> with respect to the scenario's run-time 
+database, returning only the first column of the first row.
+Queries that attempt to modify the RDB will be rejected.<p>
+
 <defitem order {<i adb> order <i subcommand> ?<i args...>?}>
 
 This command gives access to the scenario's <xref mars:order_flunky(n)>
@@ -999,6 +1019,66 @@ Parameter type validation subcommands.  This is exposed because it is used by
 the Athena Workbench's "view" mechanism.  Ultimately, that should be replaced 
 by a gofer-based solution; when that happens, this module can become private.<p>
 
+<defitem query {<i adb> query <i query> ?<i options...>?}>
+
+Evaluates an SQL <i query> with respect to the scenario's run-time 
+database, and returns the result set as a formatted string.  The 
+<i query> can contain any valid SQL statements understood by SQLite3,
+but in practice it will be a single statement that returns a result 
+set (i.e., <tt SELECT> or certain <tt PRAGMA> statements).  Queries
+that attempt to write to the RDB will be rejected.<p>
+
+The following options may be used:<p>
+
+<deflist query>
+
+<defopt {-mode mc|list|csv}>
+
+Specifies the output mode; the default is <b>mc</b>, multicolumn.<p>
+
+When <tt -mode> is <b>mc</b>, each record is output on a single
+line.  Fields are formatted in columns, with the field name as the
+column header.<p>
+
+When <tt -mode> is <b>list</b>, the output is a list of records.
+Each record is output on multiple lines, with (nominally) one line
+per field.  Each line consists of the field name and value; the
+record's field names are values are formatted neatly in parallel columns.<p>
+
+When <tt -mode> is <b>csv</b>, the output is in CSV (comma-separated value)
+format, one record per line, beginning with a header record of column labels.
+Non-numeric values are enclosed in double-quotes.<p>
+
+<defopt {-labels <i>list</i>}>
+
+Normally <iref query> uses the column names found in the query to
+label the fields in the output.  If specified, the value of
+<b>-labels</b> is a list of labels to be used instead.<p>
+
+<defopt {-maxcolwidth <i>chars</i>}>
+
+Sets the maximum column width, in characters, when <tt -mode> is
+<b>mc</b>; the default is 30.  All
+data values longer than this will be truncated with "...".<p>
+
+If <b>-maxcolwidth</b> is set to 0 then values will not be
+truncated.<p>
+
+<defopt {-headercols <i>num</i>}>
+
+Sets the number of header columns.  When <tt -mode> is <b>mc</b>,
+repeated values in a column are skipped.  That is, if a column
+contains identical values in consecutive rows, the column will be
+blank in all but the first of the rows.  Defaults to "0".<p>
+
+</deflist query>
+
+<defitem rdb {<i adb> rdb <i subcommand> ?<i args...>?}>
+
+This command gives full read/write access to the Run-Time Database (RDB),
+a <xref scenariodb(n)> object.  Its write capability is intended for use
+in debugging and test; use it with care.<p>
+
 <defitem reset {<i obj> reset}>
 
 Resets the scenario back to its initial empty state.  It will be 
@@ -1057,80 +1137,6 @@ Returns 1 if there is unsaved scenario data, and 0 otherwise.<p>
 <defitem version {<i obj> version}>
 
 Returns the version number of the <xref athena(n)> library.<p>
-
-
---------------------------
-
-<defitem eval {<i adb> eval <i query> ?<i args...>?}>
-
-Evaluates an SQL <i query> with respect to the scenario's run-time 
-database.  The arguments are as for the standard SQLite3 <tt eval>
-subcommand.<p>
-
-<b TODO>: Ultimately, this will be a safe read-only operation.<p>
-
-<defitem onecolumn {<i adb> onecolumn <i query>}>
-
-Evaluates an SQL <i query> with respect to the scenario's run-time 
-database, returning only the first column.<p>
-
-<b TODO>: Ultimately, this will be a safe read-only operation.<p>
-
-
-<defitem query {<i adb> query <i query> ?<i options...>?}>
-
-Evaluates an SQL <i query> with respect to the scenario's run-time 
-database, and returns the result set as a formatted string.  The 
-<i query> can contain any valid SQL statements understood by SQLite3,
-but in practice it will be a single statemet that returns a result 
-set (i.e., <tt SELECT> or certain <tt PRAGMA> statements).<p>
-
-<b TODO>: Ultimately, this will be a safe read-only operation.<p>
-
-The following options may be used:<p>
-
-<deflist query>
-
-<defopt {-mode mc|list|csv}>
-
-Specifies the output mode; the default is <b>mc</b>, multicolumn.<p>
-
-When <tt -mode> is <b>mc</b>, each record is output on a single
-line.  Fields are formatted in columns, with the field name as the
-column header.<p>
-
-When <tt -mode> is <b>list</b>, the output is a list of records.
-Each record is output on multiple lines, with (nominally) one line
-per field.  Each line consists of the field name and value; the
-record's field names are values are formatted neatly in parallel columns.<p>
-
-When <tt -mode> is <b>csv</b>, the output is in CSV (comma-separated value)
-format, one record per line, beginning with a header record of column labels.
-Non-numeric values are enclosed in double-quotes.<p>
-
-<defopt {-labels <i>list</i>}>
-
-Normally <iref query> uses the column names found in the query to
-label the fields in the output.  If specified, the value of
-<b>-labels</b> is a list of labels to be used instead.<p>
-
-<defopt {-maxcolwidth <i>chars</i>}>
-
-Sets the maximum column width, in characters, when <tt -mode> is
-<b>mc</b>; the default is 30.  All
-data values longer than this will be truncated with "...".<p>
-
-If <b>-maxcolwidth</b> is set to 0 then values will not be
-truncated.<p>
-
-<defopt {-headercols <i>num</i>}>
-
-Sets the number of header columns.  When <tt -mode> is <b>mc</b>,
-repeated values in a column are skipped.  That is, if a column
-contains identical values in consecutive rows, the column will be
-blank in all but the first of the rows.  Defaults to "0".<p>
-
-</deflist query>
 
 </deflist instance>
 

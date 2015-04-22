@@ -1,12 +1,26 @@
 # TODO.md - Athena TODO List
 
 - Arachne
+  - Safe access to RDB from athena(n) and Arachne
+    - athenadb(n) provides "safe" method.
+      - Implement (DONE)
+      - Add to test suite (DONE)
+      - Add to man page (DONE)
+    - athena(n) delegates to "safe" version
+      - eval/exists/onecolumn/query delegate to "$adb safe eval", etc. (DONE)
+      - rdb delegates to "$adb rdb" (thus, the read/write commands are available)
+        (DONE)
+      - Add to test suite
+      - Add to man page
+    - Update applications to use athena(n)'s eval, query, etc., since they
+      are known to be safe where they used to use safeeval, safequery.
+      - athenawb
+      - arachne
   - Missing Operations:
     - Export a scenario (e.g., save as)
     - Clone a scenario
     - Compare two scenarios, return vardiffs
     - HTML I/F to control these things.
-  - Make sure Arachne uses "safeeval" rather than "eval".
   - What should the htdocs directory look like?
   - How to include the arachne.html file in the htdocs directory?
     - Population script in ./bin?
@@ -19,16 +33,6 @@
     - But LoadPrefs is using "readfile"
     - No "Virtual" directory with alternate file in it.
 - Finish athena(n) man page!!!!!!!
-- Figure out what to do about athena(n)-client access to the RDB.
-    - Use of query variables
-      - eval, query, and safeeval allow vars; safequery does not.
-    - We will want safe JSON queries, using query vars.
-    - If we use safeeval to build JSON queries, we're good; but a dedicated
-      command might be a problem.
-    - htools(n)'s query allows variables, but is unsafe.
-    - Any query involving data coming in from outside needs to use 
-      variables.
-
 - Significant Outputs:
   - All history variable base names should be unique, e.g., nbsecurity.n rather
     than security.n.
