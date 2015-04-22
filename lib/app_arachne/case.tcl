@@ -224,6 +224,32 @@ snit::type case {
         return $id
     }
 
+    # clone id ?newid? ?longname?
+    #
+    # id         - ID of case to clone
+    # newid      - Optionally, an existing case ID
+    # longname   - Optionally, a new longname.
+    #
+    # Creates a new, empty scenario, optionally giving it the longname,
+    # or replaces an existing scenario with a new empty one; and then 
+    # loads an existing case's data into it.
+
+    typemethod clone {id {newid ""} {longname ""}} {
+        set newid [case new $newid $longname]
+
+        file mkdir [scratchdir join temp]
+        set tempfile [scratchdir join temp clone.adb]
+
+        case with $id savetemp $tempfile
+        case with $newid loadtemp $tempfile
+        app log normal $id "Cloned to case $newid"
+        app log normal $newid "Cloned from case $id"
+
+        set cases(source-$newid) $id
+
+        return $newid
+    }
+
     # import filename id longname
     #
     # filename  - An .adb or .tcl file name in -scenariodir

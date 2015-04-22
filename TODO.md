@@ -1,6 +1,7 @@
 # TODO.md - Athena TODO List
 
 - Arachne
+  - Problem with athenawb mods
   - Fix scenario name in Arache export .tcl file.  It depends on last 
     export, and it shouldn't.
   - Missing Operations:
