@@ -178,9 +178,22 @@ namespace eval ::athena_test::tests:: {
     #-------------------------------------------------------------------
     # execute
 
-    test execute-1.1 {execution always works} -setup {
+    test execute-1.1 {execution always works, ATTACK} -setup {
         setup
         $T1 configure -f BLUE \
+                      -nlist [tdb gofer make NBHOODS BY_VALUE NB1] \
+                      -glist [tdb gofer make FRCGROUPS BY_VALUE ALQ]
+    } -body {
+        $T1 execute
+        tdb aam hasroe NB1 BLUE ALQ
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test execute-1.2 {execution always works, DEFEND} -setup {
+        setup
+        $T1 configure -f BLUE \
+                      -roe DEFEND \
                       -nlist [tdb gofer make NBHOODS BY_VALUE NB1] \
                       -glist [tdb gofer make FRCGROUPS BY_VALUE ALQ]
     } -body {
