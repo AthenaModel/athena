@@ -53,10 +53,12 @@ snit::type ::athena::aam {
     # Variables
 
     variable alist {}   ;# list of attrition dictionaries
-    variable sdict      ;# dict used to assess SAT effects
-    variable cdict      ;# dict used to assess COOP effects
     variable roedict    ;# dict used to store ROE tactic information
     variable hdict      ;# dict used to keep track of hiding force groups
+
+    #------------------------------------------------------------------
+    # Ruleset dictionary
+    variable edict 
 
     # Transient combat variables
     #
@@ -86,8 +88,7 @@ snit::type ::athena::aam {
 
     method reset {} {
         set alist ""
-        set sdict ""
-        set cdict ""
+        set edict ""
         set roedict [lzipper [$adb nbhood names]]
         set hdict   [lzipper [$adb nbhood names]]
         array unset effFrc
@@ -110,6 +111,7 @@ snit::type ::athena::aam {
 
         let frcmultD {$urb * $civc * $elvl * $ftype * $tlvl * $dem}
 
+        # NEXT, initialize ROE and HIDE dicts
         set roedict [lzipper [$adb nbhood names]]
         set hdict   [lzipper [$adb nbhood names]]
     }
@@ -125,12 +127,12 @@ snit::type ::athena::aam {
     method assess {} {
          $adb log normal aam "assess"
 
-        # FIRST, clear out temporary table 
+        # FIRST, clear out old battle data, about to recompute it 
         $adb eval {
             DELETE FROM aam_battle;
         }
 
-        # NEXT, clear transient combat data
+        # NEXT, clear transient battle data
         array unset effFrc
         array unset frcMult
         array unset civcasMult
@@ -139,11 +141,10 @@ snit::type ::athena::aam {
         array unset civconc
         array unset civcas
 
-        # NEXT, create SAT and COOP dicts to hold transient effects data
-        set sdict [dict create]
-        set cdict [dict create]
+        # NEXT, create effects dict to hold transient effects data
+        set edict [dict create]
 
-        # NEXT, force on force combat and collateral civilian casualties
+        # NEXT, force on force battle and collateral civilian casualties
         if {[$adb parm get aam.maxCombatTimeHours] > 0} {
             $self ComputeEffectiveForce
             $self BuildBattleData 
@@ -158,14 +159,13 @@ snit::type ::athena::aam {
 
         # NEXT, assess the attitude implications of all attrition for
         # this tick.
-        $adb ruleset CIVCAS assess $sdict $cdict
+        $adb ruleset CIVCAS assess $edict
 
         # NEXT, clear the saved data for this tick; we're done.
-        set alist ""
-        set sdict ""
-        set cdict ""
+        set alist   ""
+        set edict   ""
         set roedict ""
-        set hdict ""
+        set hdict   ""
     }
 
     # ComputeEffectiveForce
@@ -1261,31 +1261,56 @@ snit::type ::athena::aam {
     method SaveCivAttrition {parmdict} {
         dict with parmdict {}
 
-        # FIRST, accumulate by CIV group for SAT effects
-        if {![dict exists $sdict $g]} {
-            dict set sdict $g 0
+        # FIRST, if we don't yet have attrition for this CIV group
+        # create an entry in the dict 
+        if {![dict exists $edict $g]} {
+            dict set edict $g cas 0
         }
 
-        let sum {[dict get $sdict $g] + $casualties}
-        dict set sdict $g $sum
+        # NEXT, sum attrition for SAT effects
+        let sum {[dict get $edict $g cas] + $casualties}
+        dict set edict $g cas $sum
 
-        # NEXT, accumulate by CIV and FRC group for COOP effects
+        # NEXT, if force groups were involved deal with COOP, HREL and 
+        # VREL effects
         if {$g1 ne ""} {
-            if {![dict exists cdict "$g $g1"]} {
-                dict set cdict "$g $g1" 0
+            # COOP and HREL
+            if {![dict exists $edict $g $g1]} {
+                dict set edict $g $g1 0
             }
 
-            let sum {[dict get $cdict "$g $g1"] + $casualties}
-            dict set cdict "$g $g1" $sum
+            let sum {[dict get $edict $g $g1] + $casualties}
+            dict set edict $g $g1 $sum
+
+            # VREL for owning actor
+            set a [$adb frcgroup get $g1 a]
+            if {![dict exists $edict $g $a]} {
+                dict set edict $g $a 0
+            }
+
+            let sum {[dict get $edict $g $a] + $casualties}
+            dict set edict $g $a $sum
         }
 
+        # NEXT, if a second force group is involved deal with COOP, HREL
+        # and VREL for them
         if {$g2 ne ""} {
-            if {![dict exists cdict "$g $g2"]} {
-                dict set cdict "$g $g2" 0
+            # COOP and HREL
+            if {![dict exists $edict $g $g2]} {
+                dict set edict $g $g2 0
             }
 
-            let sum {[dict get $cdict "$g $g2"] + $casualties}
-            dict set cdict "$g $g2" $sum
+            let sum {[dict get $edict $g $g2] + $casualties}
+            dict set edict $g $g2 $sum
+
+            # VREL
+            set a [$adb frcgroup get $g2 a]
+            if {![dict exists $edict $g $a]} {
+                dict set edict $g $a 0
+            }
+
+            let sum {[dict get $edict $g $a] + $casualties}
+            dict set edict $g $a $sum
         }
 
         return 
@@ -1301,10 +1326,11 @@ snit::type ::athena::aam {
     # Returns a list of all force groups but g1 and puts "NONE" at the
     # beginning of the list.
     #
-    # TBD: Should go in tactic_attrit.tcl
+    # NOTE: if this helper become used by more than just the ATTRIT 
+    # tactic, consider moving into athena_order.
 
     method AllButG1 {g1} {
-        set groups [ptype frcg+none names]
+        set groups [$adb ptype frcg+none names]
         ldelete groups $g1
 
         return $groups

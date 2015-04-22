@@ -851,6 +851,18 @@ snit::type ::athena::parmdb {
             casualties.
         }
 
+        $ps define dam.CIVCAS.Zhrel ::marsutil::zcurve {0.3 1.0 100.0 2.0} {
+            Z-curve used to compute the casualty multiplier used in
+            the CIVCAS horizontal relationship rule from the number of 
+            civilian casualties.
+        }
+
+        $ps define dam.CIVCAS.Zvrel ::marsutil::zcurve {0.3 1.0 100.0 2.0} {
+            Z-curve used to compute the casualty multiplier used in
+            the CIVCAS vertical relationship rule from the number of 
+            civilian casualties.
+        }
+
         # Rule Set: CONSTRUCT
         $ps setdefault dam.CONSTRUCT.cause        CONSTRUCT
         $ps setdefault dam.CONSTRUCT.nearFactor   0.75
