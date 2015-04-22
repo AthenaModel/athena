@@ -158,3 +158,31 @@ proc ::mod::logmods {} {
     }
 }
 
+# errexit line...
+#
+# line   -  One or more lines of text, as distinct arguments.
+#
+# On Linux/OS X or when Tk is not loaded, writes the text to standard 
+# output, and exits. On Windows, pops up a messagebox and exits when 
+# the box is closed.
+
+proc ::mod::errexit {args} {
+    set text [join $args \n]
+
+    set f [open "error.log" w]
+    puts $f $text
+    close $f
+
+    if {[os flavor] ne "windows"} {
+         puts $text
+    } else {
+        wm withdraw .
+        modaltextwin popup \
+            -title   "Athena is shutting down" \
+            -message $text
+    }
+
+    exit 1
+}
+
+
