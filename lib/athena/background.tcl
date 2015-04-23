@@ -221,15 +221,29 @@ snit::type ::athena::background {
 
     method SlaveInit {} {
         assert {$info(slave) eq ""}
+
+        # FIRST, create the thread.
         set info(slave) [thread::create]
 
+        # NEXT, set the auto_path, so that it can find packages.
         thread::send $info(slave) [list set auto_path $::auto_path]
 
+        # NEXT, initialize the starkit library, so that we can load
+        # binary extensions.  Note: this is a bit fraught; we may
+        # find that we need to prevent some from loading.
+        if {[info exists ::starkit::topdir]} {
+            thread::send $info(slave) [list package require starkit]
+            thread::send $info(slave) \
+                [list set ::starkit::topdir $::starkit::topdir]
+        }
+
+        # NEXT, load the athena(n) library.
         thread::send $info(slave) {
             package require athena
             namespace import ::projectlib::* ::athena::*
         }
 
+        # NEXT, ask the bgslave module to initialize itself.
         $self Slave init [thread::id] $adb $info(syncfile) \
             [$adb cget -logdir].bg
     }
