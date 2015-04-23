@@ -27,13 +27,17 @@ snit::type js {
     
     # ok result
     #
-    # result   - A huddle formatted result, usually a string
+    # result   - A string
     #
     # Formats a JSON operation result message.
 
     typemethod ok {result} {
         set hud [huddle list]
-        huddle append hud OK [huddle compile string $result]
+        if {[huddle isHuddle $result]} {
+            huddle append hud OK $result
+        } else {
+            huddle append hud OK [huddle compile string $result]
+        }
 
         return [huddle jsondump $hud]
     }

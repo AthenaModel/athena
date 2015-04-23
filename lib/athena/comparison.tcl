@@ -189,6 +189,14 @@ snit::type ::athena::comparison {
     # Returns the differences formatted as JSON. 
 
     method {diffs json} {} {
+        return [huddle jsondump [$self diffs huddle]]
+    }
+
+    # diffs huddle
+    #
+    # Returns the differences formatted as a huddle(n) object.
+
+    method {diffs huddle} {} {
         set hud [huddle list]
 
         dict for {vartype difflist} $diffs {
@@ -198,9 +206,8 @@ snit::type ::athena::comparison {
             }
         }
 
-        return [huddle jsondump $hud]
+        return $hud
     }
-
 
 
     # SortByScore difflist

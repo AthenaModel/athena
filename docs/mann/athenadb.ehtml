@@ -103,6 +103,7 @@ such athenadb(n) subcommands that are also exposed by
 <defitem idle {<i obj> idle}>
 <defitem interrupt {<i obj> interrupt}>
 <defitem interruptible {<i obj> interruptible}>
+<defitem is {<i obj> is <i predicate>}>
 <defitem isbusy {<i obj> isbusy}>
 <defitem load {<i obj> load <i filename>}>
 <defitem lock {<i obj> lock}>

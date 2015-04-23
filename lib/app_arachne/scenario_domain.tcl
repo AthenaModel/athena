@@ -87,6 +87,18 @@ oo::class create scenario_domain {
             On success, returns a list ["OK", "{message}"].
         }
 
+        my url /diff.json [mymethod diff.json]  {
+            Compares scenario {id2} with scenario {id1} looking 
+            for significant differents in the outputs.  If {id2} is
+            omitted, compares scenario {id1} at time 0 with itself
+            at its latest time.  The scenarios must be comparable, 
+            i.e., contain the same basic entities (groups, actors,
+            etc.).  Returns ["ERROR", "{message}"] on error, and 
+            and ["OK",{comparison}] otherwise.  See the 
+            Arachne interface specification for a description of 
+            the {comparison} object.<p>
+        }
+
         my url /{name}/order.html [mymethod order.html] {
             Accepts an order and its parameters as a PUT query.
             The query parameters are the order name as <tt>order_</tt>
@@ -374,6 +386,76 @@ oo::class create scenario_domain {
         # NEXT, create it.
         case delete $id
         return [js ok "Deleted $id"]
+    }
+
+    # diff.json
+    #
+    # sd       - The smartdomain object (e.g., [self])
+    # qdict    - Query Dictionary
+    #
+    # Compares scenario outputs and returns a list of significant 
+    # differences.  If two scenarios are given, compares them at
+    # the latest common time.  If one scenario is given, compares its
+    # state at time 0 to its final state.  The scenarios must be
+    # locked and idle with time advanced.
+    #
+    # On success, returns ["OK",{comparison}]
+
+    method diff.json {sd qdict} {
+        $qdict prepare id1 -required -tolower -in [case names]
+        $qdict prepare id2           -tolower -in [case names]
+
+        $qdict assign id1 id2
+       
+        if {![$qdict ok]} {
+            return [js reject [$qdict errors]]
+        }
+
+        # Check for advanced time.
+        # TBD: Add "case diff"?
+
+        set s1 [case get $id1]
+
+        if {![$s1 is advanced]} {
+            $qdict reject id1 "Time has not been advanced"
+        } elseif {[$s1 isbusy]} {
+            $qdict reject id1 "Scenario is busy; please wait."
+        }
+
+        if {$id2 ne ""} {
+            set s2 [case get $id2]
+
+            if {![$s2 is advanced]} {
+                $qdict reject id2 "Time has not been advanced"
+            } elseif {[$s2 isbusy]} {
+                $qdict reject id2 "Scenario is busy; please wait."
+            }
+        } else {
+            set id2 $id1
+            set s2 $s1
+        }
+
+        if {![$qdict ok]} {
+            return [js reject [$qdict errors]]
+        }
+
+        # NEXT, do the comparison
+        try {
+            set comp [athena diff $s1 $s2]
+        } trap {SCENARIO INCOMPARABLE} {result} {
+            return [js error $result]
+        }
+
+        # NEXT, build the response.
+        dict set result id1 $id1
+        dict set result t1  [$comp t1]
+        dict set result id2 $id2
+        dict set result t2  [$comp t2]
+
+        set hud [huddle compile dict $result]
+        huddle set hud diffs [$comp diffs huddle]
+
+        return [js ok $hud]
     }
 
     #-------------------------------------------------------------------

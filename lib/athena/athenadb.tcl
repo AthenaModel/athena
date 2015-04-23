@@ -1151,6 +1151,20 @@ snit::type ::athena::athenadb {
         }
     }
 
+    #-------------------------------------------------------------------
+    # Predicates
+    #
+    # TBD: Eventually, all predicates will be grouped under "is".
+    
+    # is advanced
+    #
+    # Returns 1 if time has been advanced, and 0 otherwise.
+
+    method {is advanced} {} {
+        expr {[$simclock delta] > 0}
+    }
+
+
     # locked
     #
     # Returns 1 if the scenario is locked, and 0 otherwise.

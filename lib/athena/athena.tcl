@@ -117,6 +117,7 @@ snit::type ::athena::athena {
     delegate method idle                    to adb
     delegate method interrupt               to adb
     delegate method interruptible           to adb
+    delegate method is                      to adb
     delegate method isbusy                  to adb
     delegate method load                    to adb
     delegate method loadtemp                to adb
@@ -129,6 +130,7 @@ snit::type ::athena::athena {
     delegate method ptype                   to adb
     delegate method query                   to adb as {safe query}
     delegate method rdb                     to adb
+    delegate method rdbfile                 to adb as {rdb dbfile}
     delegate method reset                   to adb
     delegate method sanity                  to adb
     delegate method save                    to adb

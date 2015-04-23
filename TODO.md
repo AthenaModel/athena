@@ -1,7 +1,8 @@
 # TODO.md - Athena TODO List
 
 - Arachne
-  - Add mod loader to arachne.
+  - Group athena(n) predicates under "is", e.g., "is busy".
+  - Add mod loader to projectlib, use it in WB and Arachne.
   - Fix scenario name in Arache export .tcl file.  It depends on last 
     export, and it shouldn't.
   - Missing Operations:

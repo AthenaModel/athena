@@ -78,6 +78,12 @@ the output format.<p>
 Returns a dump of the signicant differences as a simple text table.  This
 format is usually used for debugging.<p>
 
+<defitem "diffs huddle" {<i obj> diffs huddle}>
+
+Returns a dump of the signicant differences as a huddle(n) list containing
+difference records.  This dump can be included into a larger huddle(n)
+object for conversion to JSON.<p>
+
 <defitem "diffs json" {<i obj> diffs json}>
 
 Returns a dump of the signicant differences as a JSON list containing

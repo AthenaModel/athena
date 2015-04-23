@@ -913,6 +913,18 @@ in the scenario.<p>
 
 </deflist iom>
 
+<defitem is {<i obj> is <i predicate>}>
+
+Returns 1 if the <i predicate> is true and 0 otherwise.  The valid
+predicates are as follows:<p>
+
+<deflist is>
+<defitem "is advanced" {<i obj> is advanced}>
+Returns 1 if the scenario is <iref locked> and its simulation time has
+been advanced.<p>
+
+</deflist>
+
 <defitem isbusy {<i obj> isbusy}>
 
 Returns 1 if the scenario is busy, i.e., is performing a task and 
