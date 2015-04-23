@@ -2,6 +2,26 @@
 
 <h2>Build Notes</h2>
 
+<h3>Build 6.3.0a8, 23 April 2015</h3>
+
+This build contains updated CIVCAS rules for HREL and VREL effects.  There 
+is now a progress bar at the top of the Athena Workbench that appears after the
+run button is pressed to show runtime progress and disappears when the run
+is complete.  Since the Athena backend library has come into being and is
+completely separate from the frontend GUI , the library can now be run in its
+own thread.  For now, the target for running Athena in a background thread is 
+the Arachne case, but the workbench will at some point be updated to use this
+capability.<p>
+
+<ul>
+<li> Issue #166: athenawb(1): mod loader error reporting is broken
+<li> Issue #165: concern for civilian casualties not changing
+<li> Issue #164: New CIVCAS rules
+<li> Issue #163: athena(n): Background Processing
+<li> Issue #161: AAM needs some parmdb defaults
+<li> Issue #154: athenawb(1): Add progress bar enhancement
+</ul>
+
 <h3>Build 6.3.0a7, 15 April 2015</h3>
 
 This build changes the name of the Athena front end GUI to "Athena Workbench".

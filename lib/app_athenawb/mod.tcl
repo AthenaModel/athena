@@ -151,9 +151,6 @@ proc ::mod::logmods {} {
 
     foreach num [lsort -integer $mods(ids)] {
         log normal app "mod loaded: $num, \"$mods(title-$num)\", from $mods(modfile-$num)"
-        if {!$::tkLoaded} {
-            puts  "mod loaded: $num, \"$mods(title-$num)\", from $mods(modfile-$num)"
-        }
 
     }
 }
