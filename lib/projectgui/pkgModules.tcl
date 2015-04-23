@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide projectgui 6.3.0a8
+package provide projectgui 6.3.0a9
 # -kite-provide-end
 
 

@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide projectlib 6.3.0a8
+package provide projectlib 6.3.0a9
 # -kite-provide-end
 
 #-----------------------------------------------------------------------
