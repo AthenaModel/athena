@@ -2265,7 +2265,8 @@ snit::widget appwin {
                             [lindex $line 4] \
                             [lindex $line 1] \
                             [lindex $line 2] \
-                            [lindex $line 3]]
+                            [lindex $line 3] \
+                            [lindex $line 1]]
             
             lappend lineList $fields
         }
