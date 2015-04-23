@@ -49,7 +49,6 @@ namespace eval ::app_athenawb:: {
 # Load app_athenawb(n) modules
 
 source [file join $::app_athenawb::library main.tcl               ]
-source [file join $::app_athenawb::library mod.tcl                ]
 source [file join $::app_athenawb::library app.tcl                ]
 source [file join $::app_athenawb::library log.tcl                ]
 source [file join $::app_athenawb::library apptypes.tcl           ]

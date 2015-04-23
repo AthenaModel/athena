@@ -185,7 +185,12 @@ snit::type app {
         log init
 
         # NEXT, log any loaded mods
-        mod logmods
+        set modlist [mod list]
+        if {[llength $modlist] > 0} {
+            log normal app "Loaded Mods:\n[dictab format $modlist -headers]"
+        } else {
+            log normal app "No mods loaded."
+        }
 
         # NEXT, initialize and load the user preferences
         prefs init
