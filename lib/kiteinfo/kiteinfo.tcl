@@ -86,11 +86,12 @@ namespace eval ::kiteinfo:: {
         apptype-cellide exe
         reqver-marsutil 3.0.15
         local-tls 0
-        provides athena
+        provides {athena ahttpd}
         description {Athena Regional Stability Simulation}
         local-md5 0
         local-BWidget 0
         apptype-helptool kit
+        binary-ahttpd 0
         reqver-sqlite3 3.8.5
         local-ctext 0
         reqver-textutil::expander 1.3
@@ -107,8 +108,8 @@ namespace eval ::kiteinfo:: {
         gui-athenawb 1
         url-docs/aag.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aag-20141010.docx
         local-base64 0
-        force-athena 0
         local-sqlite3 0
+        force-athena 0
         reqver-tablelist 5.11
         force-cellide 0
         distpat-docs {
