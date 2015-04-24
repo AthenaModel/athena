@@ -1734,11 +1734,6 @@ snit::type ::athena::parmdb {
             to the hist_coop table.
         }
 
-        $ps define hist.deploy ::snit::boolean on {
-            If on, Athena will save, each week, the deployments of
-            force groups by neighborhood to the hist_deploy_ng table.
-        }
-
         $ps define hist.hrel ::snit::boolean off {
             If on, Athena will save, each week, the horizontal
             relationship between each pair of groups to this
@@ -1763,11 +1758,6 @@ snit::type ::athena::parmdb {
         $ps define hist.sat ::snit::boolean on {
             If on, Athena will save, each week, the satisfaction of
             each civilian group with each concern to the hist_sat table.
-        }
-
-        $ps define hist.security ::snit::boolean on {
-            If on, Athena will save, each week, the security of each
-            group in each neighborhood to the hist_security table.
         }
 
         $ps define hist.service ::snit::boolean on {
