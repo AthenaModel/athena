@@ -2,6 +2,16 @@
 
 <h2>Build Notes</h2>
 
+<h3>Build 6.3.0a9, 28 April 2015</h3>
+
+This build contains a fix to a significant bug and a minor refactor to how
+history is stored.  Athena should now run in the background without issue.<p>
+
+<ul>
+<li> Issue #170: History refactoring
+<li> Issue #167: bgerror: Athena won't run in background thread
+</ul>
+
 <h3>Build 6.3.0a8, 23 April 2015</h3>
 
 This build contains updated CIVCAS rules for HREL and VREL effects.  There 
