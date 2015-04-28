@@ -135,7 +135,8 @@ oo::class create scenario_domain {
     # Header and Footer
 
     method htmlHeader {hb title} {
-        # TBD
+        $hb h1 "&nbsp;Arachne: Athena Regional Stability Simulation" \
+            -style "background: red;"
     }
 
     method htmlFooter {hb} {

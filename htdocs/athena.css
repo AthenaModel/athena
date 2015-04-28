@@ -21,6 +21,22 @@ TD {
     padding-left: 4px;
 }
 
+/* Spans for different entity states */
+
+SPAN.disabled {
+    text-decoration: line-through;
+    color: #999999;
+}
+
+SPAN.invalid {
+    text-decoration: line-through;
+    color: #C7001B;
+}
+
+SPAN.error {
+    color: #C7001B;
+}
+
 /* Table Formatting Classes: "pretty" 
  * Border around the outside, even/odd striping, no internal
  * border lines.

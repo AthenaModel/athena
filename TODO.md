@@ -1,13 +1,14 @@
 # TODO.md - Athena TODO List
 
-- Arachne
+- Athena(n)
   - Group athena(n) predicates under "is", e.g., "is busy".
-  - Add mod loader to projectlib, use it in WB and Arachne.
-  - Fix scenario name in Arache export .tcl file.  It depends on last 
+- Arachne
+  - Allow use of mod loader in Arachne, including re-loading.
+  - Write htmlbuffer.ehtml.
+  - Fix scenario name in Arachne's export .tcl file.  It depends on last 
     export, and it shouldn't.
   - Missing Operations:
-    - Compare two scenarios, return vardiffs
-    - HTML I/F to control these things.
+    - HTML I/F to control toplevel operations
   - What should the htdocs directory look like?
   - How to include the arachne.html file in the htdocs directory?
     - Population script in ./bin?

@@ -29,6 +29,7 @@ snit::type ::projectlib::mod {
     # info array:
     #
     # ids          - List of mod IDs
+    # modtime      - Seconds at which mods were last applied
     # nums-$pkg    - List of mod numbers by package
     # package-$id  - Affected package
     # version-$id  - Package version
@@ -38,7 +39,8 @@ snit::type ::projectlib::mod {
     # body-$id     - Body of the mod
     
     typevariable info -array {
-        ids {}
+        ids     {}
+        modtime 0
     }
 
     # trans array: used while loading mod files
@@ -144,7 +146,10 @@ snit::type ::projectlib::mod {
     # are loaded.  If num is given as well, only that mod is loaded.
 
     typemethod apply {{pkg ""} {num ""}} {
-        # FIRST, apply the mods
+        # FIRST, save the time
+        set info(modtime) [clock seconds]
+
+        # NEXT, apply the mods
         foreach id [lsort $info(ids)] {
             # FIRST, skip irrelevant packages
             if {$pkg ne ""} {
@@ -187,6 +192,14 @@ snit::type ::projectlib::mod {
         }
 
         return $list
+    }
+
+    # modtime 
+    #
+    # Returns the time in seconds at which mods were last applied.
+
+    typemethod modtime {} {
+        return $info(modtime)
     }
 
 

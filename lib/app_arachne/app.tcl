@@ -20,12 +20,6 @@ snit::type app {
     pragma -hasinstances no
 
     #-------------------------------------------------------------------
-    # Type Components
-
-    typecomponent domain  ;# The scenario_domain(n)
-    
-
-    #-------------------------------------------------------------------
     # Type Variables
 
     # info array - configuration
@@ -58,7 +52,17 @@ snit::type app {
         appdir init
         set result ""
 
-        # FIRST, get the command line options.
+        # FIRST, load the mods
+        try {
+            mod load
+            mod apply
+        } trap {MODERROR LOAD} {result} {
+            throw FATAL "Could not load mods: $result"
+        } trap {MODERROR APPLY} {result} {
+            throw FATAL "Could not apply mods: $result"
+        }
+
+        # NEXT, get the command line options.
         set scenariodir [appdir join scenarios]
         set adbfile ""
         set script ""
@@ -104,9 +108,6 @@ snit::type app {
         case init $scenariodir
 
         $type InitializeBaseCase $adbfile $script
-
-        # NEXT, create the domain.
-        set domain [scenario_domain new]
 
         # NEXT, start the server if desired.
         if {!$info(test)} {
@@ -165,12 +166,13 @@ snit::type app {
         ahttpd init \
             -port       $info(port)             \
             -secureport ""                      \
-            -debug                              \
             -logcmd     [$type newlog ahttpd]   \
             -docroot    [appdir join htdocs]
 
         # NEXT, Add content
-        $domain ahttpd
+        [scenario_domain new] ahttpd
+        [debug_domain new] ahttpd     ;# TBD: enable this on -debug.
+
     }
 
 
@@ -200,7 +202,7 @@ snit::type app {
     typemethod log {level comp message} {
         $logs(app) $level $comp $message
     }
-    
+
     #-------------------------------------------------------------------
     # Utility Commands
     
