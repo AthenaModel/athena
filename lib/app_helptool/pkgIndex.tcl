@@ -12,5 +12,5 @@
 #-------------------------------------------------------------------------
 
 # -kite-ifneeded-start  DO NOT EDIT THIS BLOCK BY HAND
-package ifneeded app_helptool 6.3.0a9 [list source [file join $dir pkgModules.tcl]]
+package ifneeded app_helptool 6.3.0a10 [list source [file join $dir pkgModules.tcl]]
 # -kite-ifneeded-end

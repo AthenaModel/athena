@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide app_athena 6.3.0a9
+package provide app_athena 6.3.0a10
 # -kite-provide-end
 
 #-----------------------------------------------------------------------
@@ -28,8 +28,8 @@ package provide app_athena 6.3.0a9
 # -kite-require-start ADD EXTERNAL DEPENDENCIES
 package require projectlib
 package require huddle 0.1.5
-package require -exact athena 6.3.0a9
-package require -exact ahttpd 6.3.0a9
+package require -exact athena 6.3.0a10
+package require -exact ahttpd 6.3.0a10
 # -kite-require-end
 
 namespace import projectlib::* athena::* ahttpd::*
