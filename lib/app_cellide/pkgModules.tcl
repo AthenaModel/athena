@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide app_cellide 6.3.0a8
+package provide app_cellide 6.3.0a9
 # -kite-provide-end
 
 #-----------------------------------------------------------------------
@@ -30,9 +30,9 @@ package require snit 2.3
 package require sqlite3 3.8.5
 package require ctext 3.3
 
-package require marsutil 3.0.14
-package require marsgui 3.0.14
-package require simlib 3.0.14
+package require marsutil 3.0.15
+package require marsgui 3.0.15
+package require simlib 3.0.15
 
 package require projectlib
 package require projectgui

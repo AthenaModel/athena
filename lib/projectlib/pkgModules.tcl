@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide projectlib 6.3.0a8
+package provide projectlib 6.3.0a9
 # -kite-provide-end
 
 #-----------------------------------------------------------------------
@@ -34,9 +34,9 @@ package require fileutil 1.14
 package require tls 1.6.4
 package require tdom 0.8
 package require struct::set 2.2
-package require kiteutils 0.4.6
-package require marsutil 3.0.14
-package require simlib 3.0.14
+package require kiteutils 0.4.7
+package require marsutil 3.0.15
+package require simlib 3.0.15
 # -kite-require-end
 
 package require kiteinfo
@@ -57,6 +57,7 @@ namespace eval ::projectlib:: {
 #-----------------------------------------------------------------------
 # Modules
 
+source [file join $::projectlib::library mod.tcl            ]
 source [file join $::projectlib::library osdir.tcl          ]
 source [file join $::projectlib::library domparser.tcl      ]
 source [file join $::projectlib::library enumx.tcl          ]

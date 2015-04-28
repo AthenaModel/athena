@@ -149,6 +149,8 @@
                     lappend hiden $n
                 }
             } 
+        } else {
+            set goodn $nbhoods
         }
 
         if {[llength $goodn] == 0} {

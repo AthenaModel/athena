@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide projectgui 6.3.0a8
+package provide projectgui 6.3.0a9
 # -kite-provide-end
 
 
@@ -31,7 +31,7 @@ package require snit 2.3
 package require Img 1.4.1
 package require Tkhtml 3.0
 package require projectlib
-package require marsgui 3.0.14
+package require marsgui 3.0.15
 # -kite-require-end
 
 #-----------------------------------------------------------------------

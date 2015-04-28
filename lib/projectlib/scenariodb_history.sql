@@ -49,6 +49,45 @@ CREATE VIEW hist_npop AS
 SELECT t, n, nbpop AS population 
 FROM hist_nbhood;
 
+CREATE TABLE hist_nbgroup (
+    -- History: Neighborhood group outputs
+    t          INTEGER,
+    n          TEXT,      -- Neighborhood name
+    g          TEXT,      -- CIV/FRC/ORG group name
+
+    security   INTEGER,   -- g's security in n
+    personnel  INTEGER,   -- The population or personnel of g in n
+    unassigned INTEGER,   -- For ORG/FRC groups number of unassigned personnel
+
+    PRIMARY KEY (t,n,g)
+);
+
+CREATE VIEW hist_security AS
+SELECT t, n, g, security
+FROM hist_nbgroup;
+
+CREATE VIEW hist_deploy_ng AS
+SELECT t, n, g, personnel, unassigned
+FROM hist_nbgroup
+JOIN groups USING (g) WHERE gtype != 'CIV';
+
+CREATE TABLE hist_civg (
+    -- History: civilian group outputs
+    t          INTEGER,
+    g          TEXT,
+    mood       DOUBLE,
+    population INTEGER,
+
+    PRIMARY KEY (t,g)
+);
+
+CREATE VIEW hist_mood AS
+SELECT t, g, mood
+FROM hist_civg;
+
+CREATE VIEW hist_pop AS
+SELECT t, g, population
+FROM hist_civg;
 
 -- The following tables are used to save time series variable data
 -- for plotting, etc.  Each table has a name like "history_<vartype>"
@@ -68,16 +107,6 @@ CREATE TABLE hist_sat (
     PRIMARY KEY (t,g,c)
 );
 
--- mood.g
-CREATE TABLE hist_mood (
-    t        INTEGER,
-    g        TEXT,
-    mood     DOUBLE,
-
-    PRIMARY KEY (t,g)
-);
-
--- coop.f.g
 CREATE TABLE hist_coop (
     -- History: coop.f.g
     t        INTEGER,
@@ -90,8 +119,32 @@ CREATE TABLE hist_coop (
     PRIMARY KEY (t,f,g)
 );
 
--- nbcoop.n.g
+CREATE TABLE hist_hrel (
+    -- History: hrel.f.g
+    t        INTEGER,
+    f        TEXT,    -- First group
+    g        TEXT,    -- Second group
+    hrel     REAL,    -- Horizontal relationship of f with g.
+    base     REAL,    -- Base Horizontal relationship of f with g.
+    nat      REAL,    -- Natural Horizontal relationship of f with g.
+
+    PRIMARY KEY (t,f,g)
+);
+
+CREATE TABLE hist_vrel (
+    -- History: vrel.g.a
+    t        INTEGER,
+    g        TEXT,    -- Civilian group
+    a        TEXT,    -- Actor
+    vrel     REAL,    -- Vertical relationship of g with a.
+    base     REAL,    -- Base Vertical relationship of g with a.
+    nat      REAL,    -- Natural Vertical relationship of g with a.
+
+    PRIMARY KEY (t,g,a)
+);
+
 CREATE TABLE hist_nbcoop (
+    -- History: nbcoop.n.g
     t        INTEGER,
     n        TEXT,
     g        TEXT,
@@ -100,18 +153,13 @@ CREATE TABLE hist_nbcoop (
     PRIMARY KEY (t,n,g)
 );
 
--- deploy_ng
-CREATE TABLE hist_deploy_ng (
-    t            INTEGER,
-    n            TEXT,
-    g            TEXT,
-    personnel    INTEGER,
-    unassigned   INTEGER,
-
-    PRIMARY KEY(t,n,g)
-);
-
 -- aam_battle
+
+-- This table is sparse in that it only contains data for groups that
+-- are actively engaged in combat at time t.  To get data from a single
+-- force groups point of view see hist_amm_battle_fview below. This
+-- data is saved by the AAM module
+
 CREATE TABLE hist_aam_battle (
     t           INTEGER,
     n           TEXT,
@@ -224,17 +272,6 @@ CREATE TABLE hist_econ_ij (
     PRIMARY KEY (t,i,j)        
 );
 
-
--- security.n.g
-CREATE TABLE hist_security (
-    t        INTEGER,
-    n        TEXT,     -- Neighborhood
-    g        TEXT,     -- Group
-    security INTEGER,  -- g's security in n.
-
-    PRIMARY KEY (t,n,g)
-);
-
 -- support.n.a
 CREATE TABLE hist_support (
     t              INTEGER,
@@ -245,40 +282,6 @@ CREATE TABLE hist_support (
     influence      REAL,    -- a's influence in n
 
     PRIMARY KEY (t,n,a)
-);
-
-
-CREATE TABLE hist_hrel (
-    -- History: hrel.f.g
-    t        INTEGER,
-    f        TEXT,    -- First group
-    g        TEXT,    -- Second group
-    hrel     REAL,    -- Horizontal relationship of f with g.
-    base     REAL,    -- Base Horizontal relationship of f with g.
-    nat      REAL,    -- Natural Horizontal relationship of f with g.
-
-    PRIMARY KEY (t,f,g)
-);
-
-CREATE TABLE hist_vrel (
-    -- History: vrel.g.a
-    t        INTEGER,
-    g        TEXT,    -- Civilian group
-    a        TEXT,    -- Actor
-    vrel     REAL,    -- Vertical relationship of g with a.
-    base     REAL,    -- Base Vertical relationship of g with a.
-    nat      REAL,    -- Natural Vertical relationship of g with a.
-
-    PRIMARY KEY (t,g,a)
-);
-
-CREATE TABLE hist_pop (
-    -- History: pop.g (civilian group population)
-    t           INTEGER,
-    g           TEXT,       -- Civilian group
-    population  INTEGER,    -- Population
-    
-    PRIMARY KEY (t,g)
 );
 
 CREATE TABLE hist_flow (

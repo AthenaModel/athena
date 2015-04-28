@@ -47,7 +47,7 @@ namespace eval ::kiteinfo:: {
         force-athenawb 0
         force-athena_log 0
         dists {install-%platform src docs}
-        reqver-kitedocs 0.4.6
+        reqver-kitedocs 0.4.7
         local-textutil::adjust 0
         apptype-arachne exe
         reqver-ncgi 1.4.3
@@ -57,13 +57,13 @@ namespace eval ::kiteinfo:: {
         reqver-base64 2.4.2
         reqver-html 1.4.3
         icon-athena {}
-        reqver-kiteutils 0.4.6
+        reqver-kiteutils 0.4.7
         reqver-fileutil 1.14
         icon-athenawb {}
         icon-arachne {}
         url-docs/mag.docx https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20140826.docx
         local-marsutil 1
-        reqver-marsgui 3.0.14
+        reqver-marsgui 3.0.15
         reqver-uri 1.2
         distpat-install-%platform {
     LICENSE
@@ -93,7 +93,7 @@ namespace eval ::kiteinfo:: {
         apptype-athenawb exe
         apptype-athena_log kit
         apptype-cellide exe
-        reqver-marsutil 3.0.14
+        reqver-marsutil 3.0.15
         local-tls 0
         provides {athena ahttpd}
         description {Athena Regional Stability Simulation}
@@ -144,7 +144,7 @@ namespace eval ::kiteinfo:: {
 }
         exclude-athena_log {}
         gui-helptool 1
-        reqver-simlib 3.0.14
+        reqver-simlib 3.0.15
         binary-athena 0
         local-struct::set 0
         distpat-src {
@@ -176,10 +176,10 @@ namespace eval ::kiteinfo:: {
         srcs help
         local-tdom 0
         local-comm 0
-        reqver-Marsbin 3.0.14
+        reqver-Marsbin 3.0.15
         local-kiteutils 1
         local-textutil::expander 0
-        version 6.3.0a8
+        version 6.3.0a9
         reqver-Img 1.4.1
     }
 

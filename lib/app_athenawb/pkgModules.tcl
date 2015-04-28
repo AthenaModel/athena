@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide app_athenawb 6.3.0a8
+package provide app_athenawb 6.3.0a9
 # -kite-provide-end
 
 #-----------------------------------------------------------------------
@@ -27,7 +27,7 @@ package provide app_athenawb 6.3.0a8
 
 # -kite-require-start ADD EXTERNAL DEPENDENCIES
 package require projectlib
-package require -exact athena 6.3.0a8
+package require -exact athena 6.3.0a9
 package require ctext 3.3
 package require projectgui
 
@@ -49,7 +49,6 @@ namespace eval ::app_athenawb:: {
 # Load app_athenawb(n) modules
 
 source [file join $::app_athenawb::library main.tcl               ]
-source [file join $::app_athenawb::library mod.tcl                ]
 source [file join $::app_athenawb::library app.tcl                ]
 source [file join $::app_athenawb::library log.tcl                ]
 source [file join $::app_athenawb::library apptypes.tcl           ]

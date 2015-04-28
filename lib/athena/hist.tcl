@@ -53,20 +53,18 @@ snit::type ::athena::hist {
         if {$t == -1} {
             $adb eval {
                 DELETE FROM hist_nbhood;
+                DELETE FROM hist_nbgroup;
+                DELETE FROM hist_civg;
                 DELETE FROM hist_sat;
-                DELETE FROM hist_mood;
                 DELETE FROM hist_coop;
                 DELETE FROM hist_nbcoop;
-                DELETE FROM hist_deploy_ng;
                 DELETE FROM hist_econ;
                 DELETE FROM hist_econ_i;
                 DELETE FROM hist_econ_ij;
-                DELETE FROM hist_security;
                 DELETE FROM hist_service_sg;
                 DELETE FROM hist_support;
                 DELETE FROM hist_hrel;
                 DELETE FROM hist_vrel;
-                DELETE FROM hist_pop;
                 DELETE FROM hist_flow;
                 DELETE FROM hist_activity_nga;
                 DELETE FROM hist_aam_battle;
@@ -74,20 +72,18 @@ snit::type ::athena::hist {
         } else {
             $adb eval {
                 DELETE FROM hist_nbhood       WHERE t > $t;
+                DELETE FROM hist_nbgroup      WHERE t > $t;
+                DELETE FROM hist_civg         WHERE t > $t;
                 DELETE FROM hist_sat          WHERE t > $t;
-                DELETE FROM hist_mood         WHERE t > $t;
                 DELETE FROM hist_coop         WHERE t > $t;
                 DELETE FROM hist_nbcoop       WHERE t > $t;
-                DELETE FROM hist_deploy_ng    WHERE t > $t;
                 DELETE FROM hist_econ         WHERE t > $t;
                 DELETE FROM hist_econ_i       WHERE t > $t;
                 DELETE FROM hist_econ_ij      WHERE t > $t;
-                DELETE FROM hist_security     WHERE t > $t;
                 DELETE FROM hist_service_sg   WHERE t > $t;
                 DELETE FROM hist_support      WHERE t > $t;
                 DELETE FROM hist_hrel         WHERE t > $t;
                 DELETE FROM hist_vrel         WHERE t > $t;
-                DELETE FROM hist_pop          WHERE t > $t;
                 DELETE FROM hist_flow         WHERE t > $t;
                 DELETE FROM hist_activity_nga WHERE t > $t;
                 DELETE FROM hist_aam_battle   WHERE t > $t;
@@ -108,6 +104,53 @@ snit::type ::athena::hist {
     method tick {} {
         set t [$adb clock now]
 
+        # Attitudes history 
+        # SAT
+        if {[$adb parm get hist.sat]} {
+            $adb eval {
+                INSERT INTO hist_sat(t,g,c,sat,base,nat)
+                SELECT $t AS t, g, c, sat, bvalue, cvalue 
+                FROM uram_sat;
+            }
+        }
+
+        # COOP
+        if {[$adb parm get hist.coop]} {
+            $adb eval {
+                INSERT INTO hist_coop(t,f,g,coop,base,nat)
+                SELECT $t AS t, f, g, coop, bvalue, cvalue
+                FROM uram_coop;
+            }
+        }
+
+        # HREL
+        if {[$adb parm get hist.hrel]} {
+            $adb eval {
+                INSERT INTO hist_hrel(t,f,g,hrel,base,nat)
+                SELECT $t AS t, f, g, hrel, bvalue, cvalue
+                FROM uram_hrel;
+            }
+        }
+
+        # VREL 
+        if {[$adb parm get hist.vrel]} {
+            $adb eval {
+                INSERT INTO hist_vrel(t,g,a,vrel,base,nat)
+                SELECT $t AS t, g, a, vrel, bvalue, cvalue
+                FROM uram_vrel;
+            }
+        }
+
+        # Neighborhood COOP by FRC group
+        if {[$adb parm get hist.nbcoop]} {
+            $adb eval {
+                INSERT INTO hist_nbcoop(t,n,g,nbcoop)
+                SELECT $t AS t, n, g, nbcoop
+                FROM uram_nbcoop;
+            }
+        }
+
+        # Neighborhood history
         $adb eval {
             INSERT INTO hist_nbhood(t,n,a,nbmood,volatility,nbpop,
                                     nbsecurity)
@@ -123,54 +166,25 @@ snit::type ::athena::hist {
             JOIN control_n AS C USING (n);
         }
 
-
-        # TBD: The data collection that follows has not yet been
-        # "cleaned up".
-        if {[$adb parm get hist.coop]} {
-            $adb eval {
-                INSERT INTO hist_coop(t,f,g,coop,base,nat)
-                SELECT now() AS t, f, g, coop, bvalue, cvalue
-                FROM uram_coop;
-            }
-        }
-
-        # We always save mood; it's needed by the MOOD rule set.
+        # Neighborhood group history
         $adb eval {
-            INSERT INTO hist_mood(t,g,mood)
-            SELECT now() AS t, g, mood
-            FROM uram_mood;
+            INSERT INTO hist_nbgroup(t,n,g,security,personnel,unassigned)
+            SELECT $t AS t, n, g,
+                   F.security,
+                   F.personnel,
+                   coalesce(D.unassigned,0)
+            FROM            force_ng   AS F
+            LEFT OUTER JOIN deploy_ng  AS D USING (n,g)
         }
 
-        if {[$adb parm get hist.nbcoop]} {
-            $adb eval {
-                INSERT INTO hist_nbcoop(t,n,g,nbcoop)
-                SELECT now() AS t, n, g, nbcoop
-                FROM uram_nbcoop;
-            }
-        }
-
-        if {[$adb parm get hist.deploy]} {
-            $adb eval {
-                INSERT INTO hist_deploy_ng(t,n,g,personnel,unassigned)
-                SELECT now() AS t, n, g, personnel, unassigned
-                FROM deploy_ng;
-            }
-        }
-
-        if {[$adb parm get hist.sat]} {
-            $adb eval {
-                INSERT INTO hist_sat(t,g,c,sat,base,nat)
-                SELECT now() AS t, g, c, sat, bvalue, cvalue 
-                FROM uram_sat;
-            }
-        }
-
-        if {[$adb parm get hist.security]} {
-            $adb eval {
-                INSERT INTO hist_security(t,n,g,security)
-                SELECT now(), n, g, security
-                FROM force_ng;
-            }
+        # CIV group history
+        $adb eval {
+            INSERT INTO hist_civg(t,g,mood,population)
+            SELECT $t AS t, g, 
+                   U.mood,
+                   D.population
+            FROM uram_mood AS U
+            JOIN demog_g   AS D USING (g);
         }
 
         if {[$adb parm get hist.support]} {
@@ -178,30 +192,6 @@ snit::type ::athena::hist {
                 INSERT INTO hist_support(t,n,a,direct_support,support,influence)
                 SELECT now(), n, a, direct_support, support, influence
                 FROM influence_na;
-            }
-        }
-
-        if {[$adb parm get hist.hrel]} {
-            $adb eval {
-                INSERT INTO hist_hrel(t,f,g,hrel,base,nat)
-                SELECT now(), f, g, hrel, bvalue, cvalue
-                FROM uram_hrel;
-            }
-        }
-
-        if {[$adb parm get hist.vrel]} {
-            $adb eval {
-                INSERT INTO hist_vrel(t,g,a,vrel,base,nat)
-                SELECT now(), g, a, vrel, bvalue, cvalue
-                FROM uram_vrel;
-            }
-        }
-    
-        if {[$adb parm get hist.pop]} {
-            $adb eval {
-                INSERT INTO hist_pop(t,g,population)
-                SELECT now(), g, population
-                FROM demog_g
             }
         }
 

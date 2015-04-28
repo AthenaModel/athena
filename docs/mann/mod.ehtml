@@ -1,0 +1,125 @@
+<manpage {projectlib(n) mod(n)} "Software Mod Loader">
+
+<section SYNOPSIS>
+
+<pre>
+package require projectlib <version>
+namespace import ::projectlib::mod
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+mod(n) manages software modification files ("mods") which contain 
+Tcl code to fix bugs or provide <i ad hoc> extensions to existing
+packages at run-time.  Mods are usually loaded at start-up, but
+can be reloaded at any time.<p>
+
+A mod file is a <tt .tcl> file with a particular syntax.  It can be placed
+in one of two locations: either the <tt mods/> subdirectory in the
+Athena installation directory, or in the user's <tt ~/athena/mods> 
+directory.  Mod files are read from disk by the <iref mod load> 
+command, and made active by the <iref mod apply> command.<p>
+
+To disable a mod, remove it from the mod directory and restart the 
+software.  To revise a mod while the software is running, update the
+mod file, and arrange for <iref mod load> and <iref mod apply> to be
+called.<p>
+
+<subsection "Mod Syntax">
+
+A mod file is a <tt .tcl> file containing one or more "mods".  Each
+mod has this syntax:<p>
+
+<example>
+<b>mod</b> <i>package version number title</i> {
+    <i>body</i>
+}
+</example>
+
+The arguments indicate that the mod is supposed update a particular
+<i version> of a particular Tcl <i package>.  If the named package is
+not loaded into memory the mod is ignored.  If the loaded version of the
+package differs from the <i version> number given here, the mod will be
+rejected with an error.<p>
+
+Note that the <iref mod load> command assumes that each modded package
+has a namespace with precisely the same name as the package.<p>
+
+It is possible to define multiple mods for a single package; each such mod
+needs to have a distinct <i number>. If <iref mod load>
+finds a second mod with the same <i package> and <i number>, that mod 
+will be rejected with an error.<p>
+
+The <i title> of the mod identifies the mod's purpose to the developer.<p> 
+
+For example, the following mod file fixes problems in the <xref athena(n)>
+library and in the Athena Workbench GUI.  If <xref arachne(1)> is executed,
+it will pick up the <xref athena(n)> fix but not the GUI fix. The
+Workbench will naturally pick up both.<p>
+
+<example>
+# athena mod, 4/23/2014
+
+# Mod for the athena(n) library.
+mod athena 6.3.1 1 "Some actor fix" {
+    snit::method ::athena::actor names {} {
+        ...
+    }
+}
+
+# Mod for the Athena Workbench GUI.
+mod app_athenawb 6.3.1 1 "A GUI fix" {
+    snit::method ::appwin log {message} {
+        ...
+    }  
+}
+</example><p>
+
+<section "COMMANDS">
+
+mod(n) provides the following commands for use by the application.<p>
+
+<deflist commands>
+
+<defitem "mod load" {mod load}>
+
+Loads all mod files found in the mod directories (see above).  Throws
+<b MODERROR LOAD> if there is a problem with any mod file.  Note that
+<iref mod apply> must be called to make the loaded mods take effect.<p>
+
+<defitem "mod apply" {mod apply ?<i package> ?<i number>??}>
+
+By default, this command sources all loaded mods into the Tcl
+interpreter, thus making them take effect.  If <i package> is given,
+only mods for that package will be applied; and if <i number> is given,
+only that specific mod will be loaded for the given <i package>.<p>
+
+This command throws <b MODERROR APPLY> if there are any errors applying
+a mod.  Note that in this case the state of the application is uncertain.
+Thoroughly test all mods before applying them in production!<p>
+
+
+<defitem "mod list" {mod list}>
+
+This command returns a list of dictionaries of metadata about each
+loaded mod, suitable for formatting by <xref kite:dictab(n)>.<p>
+
+</deflist commands>
+
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original library package, based on Athena application code.
+
+</manpage>
+
+
+
+
+
