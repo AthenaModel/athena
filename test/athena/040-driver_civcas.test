@@ -64,7 +64,7 @@ namespace eval ::athena_test::tests:: {
         tdb eval {DELETE FROM drivers}
         
         # NEXT, create the entities
-        ted create JOE BOB NB1 BLUE BRIT SHIA SUNN
+        ted create JOE BOB NB1 BLUE BRIT ALQ SHIA SUNN
         
         # NEXT, lock, so we can do magic attrition
         ted lock
@@ -167,19 +167,19 @@ CIVCAS-1-1 SUNN QOL
     } -cleanup {
         cleanup
     } -result {
-firing_id  3
+firing_id  2
 t          0
 driver_id  1000
 ruleset    CIVCAS
 rule       CIVCAS-2-1
-fdict      casualties 500 f SHIA dtype CIVCAS g BLUE mult 2.0
+fdict      casualties 500 f SHIA dtype CIVCAS g BLUE cmult 2.0 hmult 2.0
 
-firing_id  4
+firing_id  5
 t          0
 driver_id  1001
 ruleset    CIVCAS
 rule       CIVCAS-2-1
-fdict      casualties 500 f SUNN dtype CIVCAS g BLUE mult 2.0
+fdict      casualties 500 f SUNN dtype CIVCAS g BLUE cmult 2.0 hmult 2.0
     }
     
     test assess-2.3 {Rule 2-1 fires with two groups} -setup {
@@ -192,37 +192,125 @@ fdict      casualties 500 f SUNN dtype CIVCAS g BLUE mult 2.0
     } -cleanup {
         cleanup
     } -result {
-firing_id  3
+firing_id  2
 t          0
 driver_id  1000
 ruleset    CIVCAS
 rule       CIVCAS-2-1
-fdict      casualties 500 f SHIA dtype CIVCAS g BLUE mult 2.0
+fdict      casualties 500 f SHIA dtype CIVCAS g BLUE cmult 2.0 hmult 2.0
 
 firing_id  4
 t          0
 driver_id  1000
 ruleset    CIVCAS
 rule       CIVCAS-2-1
-fdict      casualties 500 f SHIA dtype CIVCAS g BRIT mult 2.0
-
-firing_id  5
-t          0
-driver_id  1001
-ruleset    CIVCAS
-rule       CIVCAS-2-1
-fdict      casualties 500 f SUNN dtype CIVCAS g BLUE mult 2.0
+fdict      casualties 500 f SHIA dtype CIVCAS g BRIT cmult 2.0 hmult 2.0
 
 firing_id  6
 t          0
 driver_id  1001
 ruleset    CIVCAS
 rule       CIVCAS-2-1
-fdict      casualties 500 f SUNN dtype CIVCAS g BRIT mult 2.0
+fdict      casualties 500 f SUNN dtype CIVCAS g BLUE cmult 2.0 hmult 2.0
+
+firing_id  8
+t          0
+driver_id  1001
+ruleset    CIVCAS
+rule       CIVCAS-2-1
+fdict      casualties 500 f SUNN dtype CIVCAS g BRIT cmult 2.0 hmult 2.0
     }
     
+    test assess-2.4 {Rule 3-1 fires with one group} -setup {
+        setup
+    } -body {
+        attrit 1000 BLUE
+        ted querylist {
+            SELECT * FROM rule_firings WHERE rule GLOB 'CIVCAS-3-*'
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  3
+t          0
+driver_id  1000
+ruleset    CIVCAS
+rule       CIVCAS-3-1
+fdict      a JOE casualties 500 f SHIA dtype CIVCAS mult 2.0
+
+firing_id  6
+t          0
+driver_id  1001
+ruleset    CIVCAS
+rule       CIVCAS-3-1
+fdict      a JOE casualties 500 f SUNN dtype CIVCAS mult 2.0
+    }
     
-    test assess-2.4 {Rule 2-1 inputs} -setup {
+    test assess-2.5 {Rule 3-1 fires with two groups, same owner} -setup {
+        setup
+    } -body {
+        attrit 1000 BLUE BRIT
+        ted querylist {
+            SELECT * FROM rule_firings WHERE rule GLOB 'CIVCAS-3-*'
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  3
+t          0
+driver_id  1000
+ruleset    CIVCAS
+rule       CIVCAS-3-1
+fdict      a JOE casualties 1000 f SHIA dtype CIVCAS mult 2.0
+
+firing_id  7
+t          0
+driver_id  1001
+ruleset    CIVCAS
+rule       CIVCAS-3-1
+fdict      a JOE casualties 1000 f SUNN dtype CIVCAS mult 2.0
+    }
+
+    test assess-2.6 {Rule 3-1 fires with two groups, different owner} -setup {
+        setup
+    } -body {
+        attrit 1000 BLUE ALQ
+        ted querylist {
+            SELECT * FROM rule_firings WHERE rule GLOB 'CIVCAS-3-*'
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+firing_id  3
+t          0
+driver_id  1000
+ruleset    CIVCAS
+rule       CIVCAS-3-1
+fdict      a JOE casualties 500 f SHIA dtype CIVCAS mult 2.0
+
+firing_id  5
+t          0
+driver_id  1000
+ruleset    CIVCAS
+rule       CIVCAS-3-1
+fdict      a BOB casualties 500 f SHIA dtype CIVCAS mult 2.0
+
+firing_id  8
+t          0
+driver_id  1001
+ruleset    CIVCAS
+rule       CIVCAS-3-1
+fdict      a JOE casualties 500 f SUNN dtype CIVCAS mult 2.0
+
+firing_id  10
+t          0
+driver_id  1001
+ruleset    CIVCAS
+rule       CIVCAS-3-1
+fdict      a BOB casualties 500 f SUNN dtype CIVCAS mult 2.0
+    }
+                
+    test assess-2.7 {Rule 2-1 inputs} -setup {
         setup
     } -body {
         attrit 1000 BLUE
@@ -237,10 +325,29 @@ fdict      casualties 500 f SUNN dtype CIVCAS g BRIT mult 2.0
 rule       f    g    note 
 ---------- ---- ---- ---- 
 CIVCAS-2-1 SHIA BLUE      
+CIVCAS-2-1 SHIA BLUE      
+CIVCAS-2-1 SUNN BLUE      
 CIVCAS-2-1 SUNN BLUE      
     }
     
-    
+    test assess-2.8 {Rule 3-1 inputs} -setup {
+        setup
+    } -body {
+        attrit 1000 BLUE
+        ted query {
+            SELECT rule, a, g, note 
+            FROM rule_firings JOIN rule_inputs USING (firing_id)
+            WHERE rule GLOB 'CIVCAS-3-*'
+        }
+    } -cleanup {
+        cleanup
+    } -result {
+rule       a   g    note 
+---------- --- ---- ---- 
+CIVCAS-3-1 JOE SHIA      
+CIVCAS-3-1 JOE SUNN      
+    }
+
     #-------------------------------------------------------------------
     # sigline
 
@@ -301,7 +408,8 @@ CIVCAS-2-1 SUNN BLUE
 Civilian group <a href="my://app/group/SHIA">SHIA</a>
 took a total of 100 casualties this week
 from incidents of all kinds.
-The Z-curve multiplier is <i>mult</i>=2.00.<p>
+The Z-curve multiplier is
+<i>mult</i>=2.00.<p>
     }
     
     test detail-1.2 {detail, CIVCAS-2} -setup {
@@ -312,7 +420,8 @@ The Z-curve multiplier is <i>mult</i>=2.00.<p>
             f          SHIA
             g          BLUE
             casualties 50
-            mult       1.5
+            cmult      1.5
+            hmult      1.5
         } [namespace current]::ht
 
         pprint [ht get] 
@@ -324,10 +433,37 @@ took a total of 50 casualties this week
 as collateral damage in incidents in which
 <a href="my://app/group/BLUE">BLUE</a>
 was involved.
-The Z-curve multiplier is <i>mult</i>=1.50.<p>
+The Z-curve multiplier for cooperation is
+<i>mult</i>=1.50.
+The Z-curve multiplier for horiz. relationship is
+<i>mult</i>=1.50.<p>
     }
     
-    
+    test detail-1.3 {detail, CIVCAS-3} -setup {
+        setup
+    } -body {
+        tdb ruleset CIVCAS detail {
+            dtype      CIVCAS
+            f          SHIA
+            a          JOE
+            casualties 50
+            mult       1.5
+        } [namespace current]::ht
+
+        pprint [ht get] 
+    } -cleanup {
+        cleanup
+    } -result {
+Civilian group <a href="my://app/group/SHIA">SHIA</a>
+took a total of 50 casualties this week
+as collateral damage in incidents in which
+force groups owned by
+<a href="my://app/actor/JOE">JOE</a>
+were involved.
+The Z-curve multiplier is
+<i>mult</i>=1.50.<p>
+    }
+        
     cleanupTests
 }
 
