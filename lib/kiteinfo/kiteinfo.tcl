@@ -42,7 +42,7 @@ namespace eval ::kiteinfo:: {
         local-fileutil 0
         force-athenawb 0
         dists {install-%platform src docs}
-        reqver-kitedocs 0.4.6
+        reqver-kitedocs 0.4.7
         local-textutil::adjust 0
         reqver-ncgi 1.4.3
         force-helptool 0
@@ -51,7 +51,7 @@ namespace eval ::kiteinfo:: {
         reqver-base64 2.4.2
         reqver-html 1.4.3
         icon-athena {}
-        reqver-kiteutils 0.4.6
+        reqver-kiteutils 0.4.7
         reqver-fileutil 1.14
         icon-athenawb {}
         url-docs/mag.docx https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20140826.docx
