@@ -89,19 +89,31 @@ snit::type ::athena::stats {
         return [$self moodByGroups $grps $t]
     }
 
+    # satbybsys t clist
+    #
+    # t      - A simulation time in ticks
+    # clist  - A list of concerns over which to roll up 
+    #
+    # This method rolls up satisfaction over a list of concerns at some
+    # simulation time t.  If all four concerns are passed in the result is
+    # identical to a call to moodbybys, but this call is more expensive.
+
     method satbybsys {t clist} {
+        # FIRST, get the belief system IDs
         set bsids [$adb bsys system ids]
+        array set glists [lzipper $bsids]
 
         set rlist [list]
 
-        foreach bsid $bsids {
-            set grps [$adb eval {
-                SELECT g FROM civgroups_view
-                WHERE bsid=$bsid
-            }]
+        # NEXT, build array of groups by belief system
+        $adb eval {
+            SELECT g, bsid FROM civgroups_view
+        } {
+            lappend glists($bsid) $g
+        }
 
-            set sat [$self satByGroups $grps $clist $t]
-
+        foreach {bsid glist} [array get glists] {
+            set sat [$self satByGroups $glist $clist $t]
             lappend rlist $bsid $sat
         }
 
