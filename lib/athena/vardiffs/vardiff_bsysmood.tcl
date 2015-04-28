@@ -15,8 +15,8 @@ oo::class create ::athena::vardiff::bsysmood {
     meta type     bsysmood.b
     meta category social
 
-    constructor {comp_ val1_ val2_ n_} {
-        next $comp_ [list n $n_] $val1_ $val2_
+    constructor {comp_ val1_ val2_ b_} {
+        next $comp_ [list b $b_] $val1_ $val2_
     }
 
     method significant {} {

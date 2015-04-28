@@ -48,20 +48,63 @@ snit::type ::athena::stats {
     method moodbybsys {t} {
         # FIRST, get the belief system IDs
         set bsids [$adb bsys system ids]
+        array set glists [lzipper $bsids]
+
+        set rlist [list]
+
+        # NEXT, build array of groups by belief system
+        $adb eval {
+            SELECT g, bsid FROM civgroups_view
+        } {
+            lappend glists($bsid) $g
+        }
+
+        # NEXT, compute composite mood 
+        foreach {bsid glist} [array get glists] {
+            set mood [$self moodByGroups $glist $t]
+            lappend rlist $bsid $mood
+        }
+        
+        return $rlist
+    }
+
+    # pbmood  t ?local?
+    #
+    # t       - a simulation time
+    # local   - flag indicating whether only local groups are included
+    #
+    # Computes a rollup of playbox mood for a set of CIV groups. If 
+    # local is 1, only local groups are rolled up, otherwise all CIV
+    # groups are rolled up. The default for local is 1.
+
+    method pbmood {t {local 1}} {
+        set table "local_civgroups"
+
+        if {!$local} {
+            set table "civgroups"
+        }
+
+        set grps [$adb eval "SELECT g FROM $table"]
+
+        return [$self moodByGroups $grps $t]
+    }
+
+    method satbybsys {t clist} {
+        set bsids [$adb bsys system ids]
 
         set rlist [list]
 
         foreach bsid $bsids {
-            # NEXT get groups with this belief system
             set grps [$adb eval {
                 SELECT g FROM civgroups_view
                 WHERE bsid=$bsid
             }]
 
-            set mood [$self moodByGroups $grps $t]
-            lappend rlist $bsid $mood
+            set sat [$self satByGroups $grps $clist $t]
+
+            lappend rlist $bsid $sat
         }
-        
+
         return $rlist
     }
 
@@ -86,7 +129,7 @@ snit::type ::athena::stats {
             SELECT total(sat*saliency*population) AS num,
                    total(saliency*population)     AS denom
             FROM hist_sat
-            WHERE t=$t AND g IN $glist
+            WHERE t=\$t AND g IN $glist
         " {
             if {$denom == 0.0} {
                 set mood 0.0
@@ -96,5 +139,27 @@ snit::type ::athena::stats {
         }
 
         return $mood
+    }
+
+    method satByGroups {grps concerns t} {
+        # FIRST, create SQL for the list of groups and concerns
+        set glist "('[join $grps {', '}]')"
+        set clist "('[join $concerns {', '}]')"
+
+        # NEXT, roll up satisfaction by those groups and concerns
+        $adb eval "
+            SELECT total(sat*saliency*population) AS num,
+                   total(saliency*population)     AS denom
+            FROM hist_sat
+            WHERE t=$t AND g IN $glist AND c IN $clist
+        " {
+            if {$denom == 0.0} {
+                set sat 0.0
+            } else {
+                let sat {$num/$denom}
+            }
+        }
+
+        return $sat    
     }
 }

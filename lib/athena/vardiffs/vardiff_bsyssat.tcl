@@ -1,26 +1,26 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#   vardiff_mood.tcl
+#   vardiff_bsyssat.tcl
 #
 # AUTHOR:
 #   Dave Hanks
 #
 # DESCRIPTION:
-#   athena(n) variable differences: mood.g
+#   athena(n) variable differences: bsyssat.b.c
 #
 #-----------------------------------------------------------------------
 
-oo::class create ::athena::vardiff::mood {
+oo::class create ::athena::vardiff::bsyssat {
     superclass ::athena::vardiff
-    meta type     mood.g
+    meta type     bsyssat.b.c
     meta category social
 
-    constructor {comp_ val1_ val2_ g_} {
-        next $comp_ [list g $g_] $val1_ $val2_
+    constructor {comp_ val1_ val2_ b_ c_} {
+        next $comp_ [list b $b_ c $c_] $val1_ $val2_
     }
 
     method significant {} {
-        set lim 20.0 ;# TBD: Need parameter
+        set lim 25.0 ;# TBD: Need parameter
 
         expr {[my score] >= $lim}
     }

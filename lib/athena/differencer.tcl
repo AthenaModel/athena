@@ -140,15 +140,60 @@ snit::type ::athena::differencer {
             $comp add mood $mood1 $mood2 $g 
         }
 
+        # hist_sat data
+        $cdb eval {
+            SELECT H1.g         AS g,
+                   H1.c         AS c,
+                   H1.sat       AS sat1,
+                   H2.sat       AS sat2
+            FROM s1.hist_sat    AS H1
+            JOIN s2.hist_sat    AS H2
+            ON (H1.g = H2.g AND H1.c = H2.c AND H1.t=$t1 AND H2.t=$t2)
+        } {
+            $comp add sat $sat1 $sat2 $g $c
+        }
+
+        # sat by bsystem
+        set asat1 [$comp s1 stats satbybsys $t1 AUT]
+        set asat2 [$comp s2 stats satbybsys $t2 AUT]
+
+        set csat1 [$comp s1 stats satbybsys $t1 CUL]
+        set csat2 [$comp s2 stats satbybsys $t2 CUL]
+        
+        set ssat1 [$comp s1 stats satbybsys $t1 SFT]
+        set ssat2 [$comp s2 stats satbybsys $t2 SFT]
+        
+        set qsat1 [$comp s1 stats satbybsys $t1 QOL]
+        set qsat2 [$comp s2 stats satbybsys $t2 QOL]
+
         # mood by bsystem
-        set mbs1 [[$comp s1] stats moodbybsys $t1]
-        set mbs2 [[$comp s2] stats moodbybsys $t2]
+        set mbs1 [$comp s1 stats moodbybsys $t1]
+        set mbs2 [$comp s2 stats moodbybsys $t2]
 
         foreach bsid [$comp s1 bsys system ids] {
             set bsname "B$bsid"
             $comp add bsysmood \
                 [dict get $mbs1 $bsid] [dict get $mbs2 $bsid] $bsname
+
+            $comp add bsyssat \
+                [dict get $asat1 $bsid] [dict get $asat2 $bsid] $bsname AUT
+
+            $comp add bsyssat \
+                [dict get $csat1 $bsid] [dict get $csat2 $bsid] $bsname CUL
+
+            $comp add bsyssat \
+                [dict get $ssat1 $bsid] [dict get $ssat2 $bsid] $bsname SFT
+
+            $comp add bsyssat \
+                [dict get $qsat1 $bsid] [dict get $qsat2 $bsid] $bsname QOL
+
         }
+
+        # playbox mood (local CIV groups)
+        set pbm1 [$comp s1 stats pbmood $t1]
+        set pbm2 [$comp s2 stats pbmood $t2]
+
+        $comp add pbmood $pbm1 $pbm2 local
 
         # hist_support data
         set i1 [dict create]

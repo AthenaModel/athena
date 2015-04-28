@@ -294,6 +294,8 @@ snit::type ::athena::athena {
     delegate method {strategy check}        to adb as {strategy check}
 
     delegate method {stats moodbybsys}      to adb as {stats moodbybsys}
+    delegate method {stats satbybsys}       to adb as {stats satbybsys}
+    delegate method {stats pbmood}          to adb as {stats pbmood}
 
     delegate method {unit get}              to adb as {unit get}
     delegate method {unit names}            to adb as {unit names}

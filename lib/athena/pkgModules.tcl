@@ -197,6 +197,9 @@ source [file join $::athena::library vardiffs vardiff_mood.tcl       ]
 source [file join $::athena::library vardiffs vardiff_nbmood.tcl     ]
 source [file join $::athena::library vardiffs vardiff_bsysmood.tcl   ]
 source [file join $::athena::library vardiffs vardiff_nbsecurity.tcl ]
+source [file join $::athena::library vardiffs vardiff_pbmood.tcl     ]
+source [file join $::athena::library vardiffs vardiff_sat.tcl        ]
+source [file join $::athena::library vardiffs vardiff_bsyssat.tcl    ]
 source [file join $::athena::library vardiffs vardiff_support.tcl    ]
 
 

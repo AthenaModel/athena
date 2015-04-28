@@ -1,26 +1,28 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#   vardiff_mood.tcl
+#   vardiff_pbmood.tcl
 #
 # AUTHOR:
 #   Dave Hanks
 #
 # DESCRIPTION:
-#   athena(n) variable differences: mood.g
+#   athena(n) variable differences: pbmood.set
+#
+#   Two sets of playbox mood are supported: local and all
 #
 #-----------------------------------------------------------------------
 
-oo::class create ::athena::vardiff::mood {
+oo::class create ::athena::vardiff::pbmood {
     superclass ::athena::vardiff
-    meta type     mood.g
+    meta type     pbmood.set
     meta category social
 
-    constructor {comp_ val1_ val2_ g_} {
-        next $comp_ [list g $g_] $val1_ $val2_
+    constructor {comp_ val1_ val2_ set_} {
+        next $comp_ [list set $set_] $val1_ $val2_
     }
 
     method significant {} {
-        set lim 20.0 ;# TBD: Need parameter
+        set lim 10.0 ;# TBD: Need parameter
 
         expr {[my score] >= $lim}
     }
