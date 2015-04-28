@@ -95,7 +95,7 @@ FROM hist_civg;
 -- one table might contain multiple variables; in that case it will
 -- be named after the primary one.
 
-CREATE TABLE hist_sat (
+CREATE TABLE hist_sat_raw (
     -- History: sat.g.c
     t        INTEGER,
     g        TEXT,
@@ -106,6 +106,23 @@ CREATE TABLE hist_sat (
 
     PRIMARY KEY (t,g,c)
 );
+
+-- hist_sat view: includes saliency and population to allow for 
+-- easy computation of rollups
+
+CREATE VIEW hist_sat AS
+SELECT HS.t          AS t,
+       HS.g          AS g,
+       HS.c          AS c,
+       HS.sat        AS sat,
+       HS.base       AS base,
+       HS.nat        AS nat,
+       U.saliency    AS saliency,
+       HC.population AS population
+FROM hist_sat_raw AS HS
+JOIN uram_sat  AS U  USING (g,c)
+JOIN hist_civg AS HC USING (t,g);
+
 
 CREATE TABLE hist_coop (
     -- History: coop.f.g

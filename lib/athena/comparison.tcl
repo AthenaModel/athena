@@ -76,6 +76,11 @@ snit::type ::athena::comparison {
             throw {SCENARIO INCOMPARABLE} \
                 "Scenarios not comparable: different organization groups."
         }
+
+        if {![lequal [$s1 bsys system namedict] [$s2 bsys system namedict]]} {
+            throw {SCENARIO INCOMPARABLE} \
+                "Scenarios not comparable: different belief systems."
+        }
     }
 
     # add vartype val1 val2 keys...

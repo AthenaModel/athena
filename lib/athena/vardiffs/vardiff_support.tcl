@@ -27,5 +27,9 @@ oo::class create ::athena::vardiff::support {
     method format {val} {
         format %.1f $val
     }
+
+    method score {} {
+        format "%.1f" [next]
+    }
 }
 

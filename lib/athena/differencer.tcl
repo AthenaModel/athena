@@ -128,6 +128,28 @@ snit::type ::athena::differencer {
             $comp add nbmood     $nbmood1 $nbmood2 $n
         }
 
+        # hist_civg data
+        $cdb eval {
+            SELECT H1.g         AS g,
+                   H1.mood      AS mood1,
+                   H2.mood      AS mood2
+            FROM s1.hist_civg   AS H1
+            JOIN s2.hist_civg   AS H2
+            ON (H1.g = H2.g AND H1.t=$t1 AND H2.t=$t2);
+        } {
+            $comp add mood $mood1 $mood2 $g 
+        }
+
+        # mood by bsystem
+        set mbs1 [[$comp s1] stats moodbybsys $t1]
+        set mbs2 [[$comp s2] stats moodbybsys $t2]
+
+        foreach bsid [$comp s1 bsys system ids] {
+            set bsname "B$bsid"
+            $comp add bsysmood \
+                [dict get $mbs1 $bsid] [dict get $mbs2 $bsid] $bsname
+        }
+
         # hist_support data
         set i1 [dict create]
         set i2 [dict create]

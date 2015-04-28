@@ -55,7 +55,7 @@ snit::type ::athena::hist {
                 DELETE FROM hist_nbhood;
                 DELETE FROM hist_nbgroup;
                 DELETE FROM hist_civg;
-                DELETE FROM hist_sat;
+                DELETE FROM hist_sat_raw;
                 DELETE FROM hist_coop;
                 DELETE FROM hist_nbcoop;
                 DELETE FROM hist_econ;
@@ -74,7 +74,7 @@ snit::type ::athena::hist {
                 DELETE FROM hist_nbhood       WHERE t > $t;
                 DELETE FROM hist_nbgroup      WHERE t > $t;
                 DELETE FROM hist_civg         WHERE t > $t;
-                DELETE FROM hist_sat          WHERE t > $t;
+                DELETE FROM hist_sat_raw      WHERE t > $t;
                 DELETE FROM hist_coop         WHERE t > $t;
                 DELETE FROM hist_nbcoop       WHERE t > $t;
                 DELETE FROM hist_econ         WHERE t > $t;
@@ -108,7 +108,7 @@ snit::type ::athena::hist {
         # SAT
         if {[$adb parm get hist.sat]} {
             $adb eval {
-                INSERT INTO hist_sat(t,g,c,sat,base,nat)
+                INSERT INTO hist_sat_raw(t,g,c,sat,base,nat)
                 SELECT $t AS t, g, c, sat, bvalue, cvalue 
                 FROM uram_sat;
             }

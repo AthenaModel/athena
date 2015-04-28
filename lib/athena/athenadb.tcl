@@ -135,6 +135,7 @@ snit::type ::athena::athenadb {
     component sanity         -public sanity         ;# sanity checker
     component sim            -public sim            ;# Simulation Control
     component simclock       -public clock          ;# Simulation Clock
+    component stats          -public stats          ;# results statistics
     
     # Editable Entities
     component absit          -public absit          ;# absit manager
@@ -392,6 +393,7 @@ snit::type ::athena::athenadb {
             service                     \
             sigevent                    \
             sim                         \
+            stats                       \
             stance                      \
             {strategy strategy_manager} \
             unit                        \
