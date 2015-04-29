@@ -523,8 +523,7 @@ snit::widget appwin {
 
         # NEXT, Reload content
         $self reload
-        $self LoadPrefs
-
+        $self session load
     }
 
     destructor {
@@ -1419,12 +1418,12 @@ snit::widget appwin {
     #-------------------------------------------------------------------
     # Preferences
 
-    # saveprefs
+    # session save
     #
     # If there's a CLI, saves its command history to the preferences
     # directory.  Also, saves visibility flags.
 
-    method saveprefs {} {
+    method {session save} {} {
         assert {$cli ne ""}
 
         # FIRST, save flags
@@ -1434,31 +1433,29 @@ snit::widget appwin {
         prefs set appwin.slog    $visibility(slog)
 
         # NEXT, save cli history
-        set f [open [prefsdir join history.cli] w]
+        set filename [prefsdir join history.cli]
+        file delete -force $filename 
+        set f [open $filename w]
 
-        puts $f [$cli saveable checkpoint]
+        set data [$cli saveable checkpoint]
+        puts $f $data
         
         close $f
     }
 
-    # LoadPrefs
+    # session load
     #
     # Load the visibility flags and CLI history.
 
-    method LoadPrefs {} {
+    method {session load} {} {
         # FIRST, load visiblity flags.
-        set visibility(cli)     [prefs get appwin.cli]
-        set visibility(orders)  [prefs get appwin.orders]
-        set visibility(scripts) [prefs get appwin.scripts]
-        set visibility(slog)    [prefs get appwin.slog]
-
-        $self MakeTabsVisible
-        $self ToggleCLI
+        $self GetVisibility
 
         # NEXT, load the CLI history.
         set histFile [prefsdir join history.cli]
         if {[file exists $histFile]} {
-            $cli saveable restore [readfile $histFile]
+            set data [readfile $histFile]
+            $cli saveable restore $data
         }
     }
 
@@ -1471,13 +1468,27 @@ snit::widget appwin {
     method AppPrefs {parm} {
         switch -glob -- $parm {
             appwin.* {
-                $self LoadPrefs
+                $self GetVisibility
             }
             cli.maxlines -
             ""           {
                 $cli configure -maxlines [prefs get cli.maxlines]
             }
         }
+    }
+
+    # GetVisibility
+    #
+    # Sets the GUI's visibility flags according to the prefs parms.
+
+    method GetVisibility {} {
+        set visibility(cli)     [prefs get appwin.cli]
+        set visibility(orders)  [prefs get appwin.orders]
+        set visibility(scripts) [prefs get appwin.scripts]
+        set visibility(slog)    [prefs get appwin.slog]
+
+        $self MakeTabsVisible
+        $self ToggleCLI       
     }
 
 

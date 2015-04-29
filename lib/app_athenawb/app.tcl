@@ -625,7 +625,7 @@ snit::type app {
 
         # NEXT, save the main window prefs, if any.
         if {!$opts(-ignoreuser) && [winfo exists .main]} {
-            .main saveprefs
+            .main session save
         }
 
         # NEXT, exit
