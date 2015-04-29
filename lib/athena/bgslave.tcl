@@ -68,8 +68,7 @@ snit::type ::athena::bgslave {
         try {
             workdir init
             athenadb create ::sdb \
-                -logdir  $logdir  \
-                -adbfile $info(syncfile)
+                -logdir  $logdir
 
             notifier bind ::sdb <NewLog> $type [mytypemethod newlog]
 
@@ -109,9 +108,10 @@ snit::type ::athena::bgslave {
         # in a transaction
 
         try {
+            sdb loadtemp $info(syncfile)
             sdb log newlog advance
             sdb advance -ticks $weeks -tickcmd [mytypemethod TickCmd]
-            sdb save
+            sdb savetemp $info(syncfile)
             $type progress COMPLETE $weeks $weeks
         } on error {result eopts} {
             $type error $result $eopts
