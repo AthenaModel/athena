@@ -3,8 +3,6 @@
 - Athena(n)
   - Group athena(n) predicates under "is", e.g., "is busy".
 - Arachne
-  - Allow use of mod loader in Arachne, including re-loading.
-  - Write htmlbuffer.ehtml.
   - Fix scenario name in Arachne's export .tcl file.  It depends on last 
     export, and it shouldn't.
   - Missing Operations:
