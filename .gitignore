@@ -12,6 +12,7 @@ teapot.txt
 /bin/*-macosx*
 /docs/*.html
 /docs/*/*.html
+/htdocs/arachne.html
 *.docx
 *.pptx
 *.xlsx
