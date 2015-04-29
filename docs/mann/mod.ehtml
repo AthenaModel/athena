@@ -100,6 +100,10 @@ This command throws <b MODERROR APPLY> if there are any errors applying
 a mod.  Note that in this case the state of the application is uncertain.
 Thoroughly test all mods before applying them in production!<p>
 
+<defitem "mod time" {mod time}>
+
+Returns the time in seconds of the last attempt to apply mods, whether
+it was successful or unsuccessful.<p>
 
 <defitem "mod list" {mod list}>
 

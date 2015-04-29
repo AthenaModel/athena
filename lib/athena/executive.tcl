@@ -1681,11 +1681,11 @@ snit::type ::athena::executive {
 
         # rdb eval
         $interp smartalias {rdb eval}  1 1 {sql} \
-            [list $adb safeeval]
+            [list $adb eval]
 
         # rdb query
         $interp smartalias {rdb query} 1 - {sql ?option value...?} \
-            [list $adb safequery]
+            [list $adb query]
 
         # rdb schema
         $interp smartalias {rdb schema} 0 1 {?table?} \

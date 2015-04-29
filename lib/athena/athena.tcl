@@ -37,6 +37,15 @@ snit::type ::athena::athena {
         set athenadb ::athena::athenadb
     }
 
+    # new ?options...?
+    #
+    # Creates and returns a new instance of athena(n).
+
+    typemethod new {args} {
+        return [$type create %AUTO% {*}$args]
+    }
+
+
 
     #-------------------------------------------------------------------
     # Components
@@ -99,21 +108,29 @@ snit::type ::athena::athena {
     delegate method contribs                to adb as {aram contribs}
     delegate method dbsync                  to adb
     delegate method enter                   to adb
+    delegate method eval                    to adb as {safe eval}
     delegate method executive               to adb
+    delegate method exists                  to adb as {safe exists}
     delegate method export                  to adb
     delegate method gofer                   to adb
     delegate method halt                    to adb as {sim halt} ;# TBD
     delegate method idle                    to adb
     delegate method interrupt               to adb
     delegate method interruptible           to adb
+    delegate method is                      to adb
     delegate method isbusy                  to adb
     delegate method load                    to adb
     delegate method loadtemp                to adb
+    delegate method log                     to adb
     delegate method lock                    to adb
     delegate method locked                  to adb
+    delegate method onecolumn               to adb as {safe onecolumn}
     delegate method paste                   to adb
     delegate method progress                to adb
     delegate method ptype                   to adb
+    delegate method query                   to adb as {safe query}
+    delegate method rdb                     to adb
+    delegate method rdbfile                 to adb as {rdb dbfile}
     delegate method reset                   to adb
     delegate method sanity                  to adb
     delegate method save                    to adb
@@ -248,6 +265,7 @@ snit::type ::athena::athena {
     delegate method {order class}           to adb as {order class}
     delegate method {order make}            to adb as {order make}
     delegate method {order monitor}         to adb as {order monitor}
+    delegate method {order names}           to adb as {order names}
     delegate method {order redotext}        to adb as {order redotext}
     delegate method {order redo}            to adb as {order redo}
     delegate method {order reset}           to adb as {order reset}
@@ -257,6 +275,7 @@ snit::type ::athena::athena {
     delegate method {order transaction}     to adb as {order transaction}
     delegate method {order undotext}        to adb as {order undotext}
     delegate method {order undo}            to adb as {order undo}
+    delegate method {order validate}        to adb as {order validate}
 
     delegate method {orggroup exists}       to adb as {orggroup exists}
     delegate method {orggroup get}          to adb as {orggroup get}
@@ -296,22 +315,6 @@ snit::type ::athena::athena {
     delegate method {unit get}              to adb as {unit get}
     delegate method {unit names}            to adb as {unit names}
     delegate method {unit validate}         to adb as {unit validate}
-
-
-    # RDB
-    #
-    # At present, these are delegated to the real RDB.  Ultimately
-    # we will want to create a read-only RDB handle and delegate to
-    # that.
-    delegate method eval                    to rdb as eval
-    delegate method exists                  to rdb as exists
-    delegate method onecolumn               to rdb as onecolumn
-    delegate method query                   to rdb as query
-    delegate method rdbfile                 to rdb as dbfile
-
-    delegate method {sql nullvalue}         to rdb as nullvalue
-    delegate method {sql safequery}         to rdb as safequery
-    delegate method {sql safeeval}          to rdb as safeeval
 
     #-------------------------------------------------------------------
     # Public Methods

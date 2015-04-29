@@ -1,0 +1,170 @@
+<manpage {projectlib(n) parmdict(n)} "parmdict(i) Parameter Dictionary Manager">
+
+<section SYNOPSIS>
+
+<pre>
+package require projectlib <version>
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+parmdict(n) is a tool for managing and validating parameter dictionaries,
+e.g., the query dictionary in an HTTP request.  A handler can "prepare"
+each of the parameter values, possibly transforming or validating them
+along the way.  If there are errors, the errors can be reported back.<p>
+
+In general, parmdict(n) provides an <xref mars:order(n)>-like validation
+system for use in general procedures.<p>
+
+<section "COMMANDS">
+
+<tt ::projectlib::parmdict> is an <tt oo::class>.  It provides the 
+following commands.<p>
+
+<deflist commands>
+
+<defitem "parmdict create" {parmdict create <i name> ?<i dict>}>
+
+Creates a new instance of parmdict(n) with the given command <i name>
+for the given initial parameter <i dict>.<p>
+
+<defitem "parmdict new" {parmdict new ?<i dict>?}>
+
+Creates a new instance of parmdict(n) for the given initial
+parameter <i dict> and returns the instance's name.<p>
+
+</deflist commands>
+
+
+<section "INSTANCE COMMANDS">
+
+Instances of parmdict(n) provide the following subcommands.<p>
+
+<deflist instance>
+
+<defitem assign {<i obj> assign <i parm> ?<i parm>...?}>
+
+Assigns each listed <i parm>'s value to a variable of the same name
+in the caller's context.  It's an error if <i parm> isn't defined in
+the parmdict, so be sure to <iref prepare>.<p>
+
+<defitem badparm {<i obj> badparm <i parm>}>
+
+Returns 1 if it's known that the <i parm> requires no further validation:
+either there is already a known error, or the parameter is optional and
+its value is the empty string.<p>
+
+<defitem checkon {<i obj> checkon <i parm script>}>
+
+This command is used when <iref prepare>'s options aren't enough to
+do the job of validation, e.g., when two parameters must be validated
+together.  If the <i parm> isn't already known to be "bad" (in the sense
+of <iref badparm>), the <i script> will be executed in the caller's 
+context.  If the script throws INVALID, the error will be caught and
+<i parm> will be rejected.  Naturally, <iref reject> and other commands
+can also be used explicitly.<p>
+
+<defitem errors {<i obj> errors}>
+
+If parameter errors have been discovered, returns a dictionary of
+parameter names and error messages.  In some cases, the error dictionary
+might have one key, "*", and a message encompassing the whole set of
+parameters.<p>
+
+If no errors have been discovered, this command returns an empty 
+dictionary.<p>
+
+<defitem ok {<i obj> ok}>
+
+Returns 1 if no parameter errors have been discovered, and 0 otherwise.<p>
+
+<defitem parms {<i obj> parms}>
+
+Returns the current parameter dictionary.<p>
+
+<defitem prepare {<i obj> prepare <i parm> ?<i options...>?}>
+
+This one command does most of the work.  First it ensures that the <i parm>
+is present in the dictionary, adding it with an empty value if necessary.
+Next it executes each of the options in order from left to right; 
+each option can transform or validate the parameter's value in some way.  
+The command returns the final value of the parameter.<p>
+
+The options are as follows:<p>
+
+<deflist options>
+
+<defopt {-ident}>
+
+Requires that the parameter's value be a valid identifier, as determined
+by the <tt identifier> type in <xref mars:marsmisc(n)>.<p>
+
+<defopt {-notin <i list>}>
+
+Requires that the parameter's value not be in the given list; if it is,
+it will be rejected with the message "Duplicate <i parm>".<p>
+
+<defopt {-remove}>
+
+Removes the parameter from the dictionary.  When this option is used,
+the caller will usually capture the command's return value.<p>
+
+<defopt {-required}>
+
+The <i parm> is required; it is rejected if its value is the empty
+string.<p>
+
+<defopt {-toupper}>
+
+Converts the parameter's value to upper case.<p>
+
+<defopt {-tolower}>
+
+Converts the parameter's value to lower case.<p>
+
+<defopt {-with <i cmd>}>
+
+Passes the parameter's value to the <i cmd> as an additional argument,
+saving the return value.  If the command throws INVALID, the parameter
+will be rejected.<p>
+
+</deflist options>
+
+<defitem prune {<i obj> prune}>
+
+Removes any parameters for which <i prepare> has not been called.<p>
+
+<defitem reject {<i obj> reject <i parm message>}>
+
+A client calls this to explicitly reject a particular <i parm>'s value.
+The <i message> is added to the <iref errors> dictionary.<p>
+
+<defitem remove {<i obj> remove <i parm>}>
+
+Removes the parameter from the parmdict, returning its value.  If the
+parameter is undefined, returns "".<p>
+
+<defitem setdict {<i obj> setdict <i dict>}>
+
+Re-initializes the object with the new parameter <i dict>.<p>
+
+
+
+</deflist instance>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package, based on <xref mars:order(n)>'s validation commands.<p>
+
+</manpage>
+
+
+
+
+

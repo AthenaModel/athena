@@ -1,0 +1,821 @@
+<manpage {projectlib(n) htmlbuffer(n)} "HTML Generation Buffer">
+
+<section SYNOPSIS>
+
+<example>
+package require projectlib <version>
+</example>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+An htmlbuffer(n) object provides a buffer for generation of HTML
+output that makes writing generation code simple and easy.
+The application creates an instance and then calls methods of the
+instance to add HTML markup and other text to the buffer.<p>
+
+For example, given an htmlbuffer(n) buffer called <code>::hb</code>,
+you can format a simple page as follows:<p>
+
+<example>
+    hb page "My Page"
+    hb h1 "My Page"
+    hb putln "Some text for my page."
+    hb para
+    return [hb /page]
+</example>
+
+This will produce a page that looks like this:<p>
+
+<example>
+    <tag html><tag head>
+    <tag title>My Page<tag /title>
+    <tag /head>
+    <tag body>
+    <tag h1>My Page<tag /h1>
+    Some text for my page.<tag p>
+    <tag /body><tag /html>
+</example>
+
+The application will either <iref clear> the buffer or begin an
+explicit <iref page>, then write content using <iref put>,
+<iref putln>, and the various markup subcommands, then end the page
+with <iref /page>.  Once the content is complete, the
+<iref get> command retrieves the generated HTML text.<p>
+
+<subsection "Standard Conventions">
+
+htmlbuffer(n) subcommands are generally named after the HTML tag they 
+generate:
+
+<example>
+hb span
+</example>
+
+yields
+
+<example>
+<tag span>
+</example>
+
+When tags usually enclose a brief text string, it can be passed to
+the command and the tag will be closed automatically:<p>
+
+<example>
+hb span "My error message"
+</example>
+
+yields
+
+<example>
+<tag span>My error message<tag /span>
+</example>
+
+
+Most htmlbuffer(n) subcommands that yield specific HTML tags allow any
+number of HTML attributes to specified using Tcl option syntax.  For 
+example,
+
+<example>
+hb span -class error "My error message"
+</example>
+
+yields
+
+<example>
+<tag span class="error">My error message<tag /span>
+</example>
+
+Some tags naturally enclose longer, more complex content; the
+<tag ul> tag, for example, will enclose many other tags.  The 
+<iref ul> subcommand, consequently, takes an optional script:<p>
+
+<example>
+hb ul {
+   hb li "My first item"
+   hb li "My second item"
+}
+</example>
+
+yields
+
+<example>
+<tag ul>
+<tag li>My first item<tag /li>
+<tag li>My second item<tag /li>
+<tag /ul>
+</example>
+
+Other tags most often enclose a single string, but sometimes enclose
+a longer, more complex block of text.  In this case, the tag is supported
+by two subcommands, one which takes a string as an argument, the 
+other of which takes a script.  The latter have names ending with 
+"<tt -with>":<p>
+
+<example>
+hb ul {
+   hb li "My first item"
+   hb li-with {
+      hb span -class error "An error item"
+   }
+}
+</example>
+
+yields
+
+<example>
+<tag ul>
+<tag li>My first item<tag /li>
+<tag li class="error">An error item<tag /li>
+<tag /ul>
+</example>
+
+
+<subsection "The Buffer Stack">
+
+Content for a list of items is often quite different if the list is
+empty; for example, if you have at least one item you generate an HTML
+table or list, but if you have no items you generate a statement that
+there are no items.  And in such cases, the efficient way to find out that 
+there are no items is often by trying to generate the body of the table or 
+list, e.g., by querying an SQLite database.<p>
+
+This is an annoying case:<p>
+
+<ul>
+  <li> You'd like to generate HTML for the rows in the table as the
+       query executes.
+  <li> There's boilerplate (e.g., the "<code>&lt;table&gt;</code>"
+       tag) that has to precede the rows.
+  <li> But if you find that there are no rows, you don't want the
+       boilerplate.<p>
+</ul>
+
+htmlbuffer(n) supports this case by providing a "buffer stack".  Before
+executing the query, <iref push> a new buffer on the stack.  Once
+the query is complete, use <iref pop> to return the buffered HTML
+and pop the buffer off of the stack.  Then, if query had any content,
+you can add the boilerplate, using <iref put> to insert the queried
+content; and if not you can insert whatever alternative text you prefer.<p>
+
+<subsection "Records and Fields">
+
+A "record" is a borderless table used to present a set of labeled values,
+where the label appears in the first column and the value in the second.
+Each row in the table is called a "field".  At its most general, a 
+record is created like this:<p>
+
+<example>
+  hb record             ;# Begin the record
+
+  hb field "My Label:"  ;# Start a field
+  hb put "My Value..."  ;# Arbitrary content
+  hb /field             ;# End the field
+    .
+    .
+    .
+  hb /record
+</example>
+
+The <iref record> command takes an optional body script, and 
+<iref field> takes an optional text string, so
+the above can also be written<p>
+
+<example>
+hb record {                 
+    hb field "My Label:" "My value..."
+    .
+    .
+    .
+}
+</example>
+
+For more generality, <iref field-with> takes a body:<p>
+
+<example>
+hb record {
+    hb field-with "My Label:" {
+        hb span -class error "My error value"
+    }
+    .
+    .
+    .
+}
+</example>
+
+<section "COMMANDS">
+
+htmlbuffer(n) provides the following commands for use by the application.<p>
+
+<deflist commands>
+
+<defitem "htmlbuffer create" {::projectlib::htmlbuffer create <i obj> ?<i>options...</i>?}>
+
+Creates a new htmlbuffer(n) instance named <i obj>, and
+returns the fully qualified object name.  The object supports the following
+options:<p>
+
+<deflist options>
+
+<defopt {-cssfile <i name>}>
+
+If given, specifies the name of an external CSS file to be linked
+in page headers.  The appropriate <tag link> tag will be included 
+in the HTML header.<p>
+
+<defopt {-domain <i prefix>}>
+
+Specifies a domain <i prefix>, e.g., "<tt /this/domain>", that will be 
+prepended to <iref iref> links.<p>
+
+<defopt {-footercmd <i>command</i>}>
+
+Defines a command that is called by <iref /page> to generate a page
+footer.  It is called with one additional argument, the name of the
+htmlbuffer(n) itself.  The command may add any desired content to the 
+buffer using the various instance commands.  The command's return value 
+is ignored.<p>
+
+<defopt {-headercmd <i>command</i>}>
+
+Defines a command that is called by <iref page> to generate a page
+header.  It is called with two additional argument, the name of the
+htmlbuffer(n) itself, and the title passed to <iref page>.
+The command may add any desired content to the 
+buffer using the various instance commands.  The command's return value 
+is ignored.<p>
+
+<defopt {-mode <i mode>}>
+The generation mode, <b web> or <b tk>.  The former is used when 
+generating HTML for display by a standard web browser, and the latter
+is used when generating HTML for display by <xref mybrowser(n)>.<p>
+
+<b NOTE>: At present, <tt -mode> is ignored; <xref athenawb(1)> is 
+still using <xref htools(n)>.<p>
+
+<defopt {-styles <i css>}>
+Provides a CSS style-sheet for use instead of the default CSS styles.<p>
+
+<b NOTE>: No default CSS styles are currently defined.<p>
+
+</deflist options>
+
+<defitem "htmlbuffer new" {::projectlib::htmlbuffer new ?<i>options...</i>?}>
+Creates a new htmlbuffer(n) instance with an arbitrary name.  The
+options are as given above.
+
+</deflist commands>
+
+<section "INSTANCE COMMANDS">
+
+htmlbuffer(n) provides many instance commands, many of which are related
+in families; consequently, they will be documented in families as well.<p>
+
+
+<subsection "Buffer Management">
+
+<deflist Buffer Management>
+
+<defitem cget {<i obj> cget <i>option</i>}>
+
+Returns the value of the specified <i>option</i>.<p>
+
+<defitem clear {<i obj> clear}>
+
+Clears the object's contents, popping any extra buffers from the
+stack. Note that this is done automatically by the <iref /page> command.<p>
+
+<defitem configure {<i obj> configure <i>option value...</i>}>
+
+Sets the value of one or more of the object's
+options.<p>
+
+<defitem escape {<i obj> escape <i text>}>
+
+Escapes any "&lt;", "&gt;", and "&amp;" characters in the input so that
+they display as such rather than appearing to be HTML markup.<p>
+
+<defitem get {<i obj> get}>
+
+Returns the content from the buffer at the top of the stack.<p>
+
+<defitem pop {<i obj> pop}>
+
+Pops the buffer from the top of the stack, returning its content, or
+the empty string if none.  It's an error to call <iref pop> if no
+buffers have been <iref push>ed.<p>
+
+<defitem push {<i obj> push}>
+
+Pushes a buffer onto the stack.  Content will go into this buffer
+until the next <iref pop>, <iref clear>, or <iref /page> command.<p>
+
+<defitem put {<i obj> put <i>text</i> ?<i>text...</i>?}>
+
+Adds the text strings to the buffer, separated by space characters.<p>
+
+<defitem putif {<i obj> putif <i>expr then</i> ?<i>else</i>?}>
+
+Evaluates the expression, <i>expr</i>; if it is true, <iref put>s
+the <i>then</i> text, otherwise, puts the <i>else</i> text (if any).<p>
+
+<defitem putln {<i obj> putln <i>text</i> ?<i>text...</i>?}>
+
+Adds a newline to the buffer, followed by the text strings separated
+by space characters.<p>
+
+<defitem tag {<i obj> tag <i tag> ?<i options...>?}>
+
+Adds the named HTML <i tag> to the buffer.  If <i options> are given,
+they should have the usual Tcl syntax; they will be converted into
+tag attributes.<p>
+
+<defitem tagln {<i obj> tag <i tag> ?<i options...>?}>
+
+Like <iref tag>, but begins on a new line.<p>
+
+<defitem wrap {<i obj> wrap <i tag text> ?<i options...>?}>
+
+Adds the named HTML <i tag>, followed by the <i text>, followed by
+the appropriate closing tag.  If <i options> are given,
+they should have the usual Tcl syntax; they will be converted into
+tag attributes on the opening tag..<p>
+
+<defitem wrapln {<i obj> wrapln <i tag text> ?<i options...>?}>
+
+Like <iref wrap>, but begins on a new line.<p>
+
+</deflist Buffer Management>
+
+<subsection "Page Management">
+
+<deflist page management>
+
+<defitem page {<i obj> page <i title> ?<i options...>?}>
+
+Clears the buffer and adds the standard HTML header boilerplate:<p>
+
+<ul>
+<li> The <i title> is included in the header using the <tag title> tag.<p>
+<li> A <tag link> to the CSS file is included if the <tt -cssfile> option 
+     is set.<p>
+<li> A <tag style>...<tag /style> block is included if the 
+     <tt -styles> option is set.<p>
+<li> If <i options> are given, they become attributes of the 
+     <tag body> tag.<p>
+<li> The <tt -headercmd> (if any) is called; it may include the
+     <i title> at the top of the body of the page.<p>
+</ul>
+
+
+<defitem /page {<i obj> /page}>
+
+Terminates the page, calling the <code>-footercmd</code> (if any)
+to add any standard HTML footer boilerplate, and returning the 
+formatted HTML.<p>
+
+</deflist page management>
+
+<subsection "Miscellaneous HTML Tags">
+
+<deflist misc tags>
+
+<defitem br {<i obj> br}>
+
+Adds a <tag br> tag to the buffer, followed by a newline.<p>
+
+<defitem h1 {<i obj> h1 ?<i options>? <i title>}>
+<defitem h2 {<i obj> h2 ?<i options>? <i title>}>
+<defitem h3 {<i obj> h3 ?<i options>? <i title>}>
+<defitem h4 {<i obj> h4 ?<i options>? <i title>}>
+<defitem h5 {<i obj> h5 ?<i options>? <i title>}>
+<defitem h6 {<i obj> h6 ?<i options>? <i title>}>
+
+Adds an HTML header enclosing the given <i title>; any <i options> and
+their values are turned into element attributes.<p>
+
+<defitem hr {<i obj> hr ?<i options...>?}>
+
+Adds an <tag hr> tag to the buffer.  Any options are turned into
+tag attributes.<p>
+
+<defitem para {<i obj> para}>
+
+Adds a <tag p> tag to the buffer, followed by a newline.<p>
+
+<defitem pre {<i obj> pre ?<i options...>? ?<i text>?}>
+
+Begins a <tag pre> block.  If <i options> are given, they are converted
+into tag attributes.  If the <i text> is given, it is added to the buffer
+and the block is terminated with <tag /pre>.<p>
+
+<defitem pre-with {<i obj> pre ?<i options...>? <i body>}>
+
+Adds a complete <tag pre> block.  If <i options> are given, they are converted
+into tag attributes.  The <i body> is executed as a script that will 
+presumably add additional preformatted content.<p>
+
+<defitem /pre {<i obj> /pre}>
+
+Terminates a <tag pre> block.<p>
+
+<defitem span {<i obj> span ?<i options...>? ?<i text>?}>
+
+Begins a <tag span>.  If <i options> are given, they are converted
+into tag attributes.  If the <i text> is given, it is added to the buffer
+and the span is terminated with <tag /span>.<p>
+
+<defitem span-with {<i obj> span ?<i options...>? <i body>}>
+
+Adds a complete <tag span> element.  If <i options> are given, they are converted
+into tag attributes.  The <i body> is executed as a script that will 
+presumably add additional content.<p>
+
+<defitem /span {<i obj> /span}>
+
+Terminates a <tag span>.<p>
+
+</deflist misc tags>
+
+<subsection "Links">
+
+<deflist links>
+
+<defitem iimg {<i obj> ximg <i suffix> ?<i options...>?}>
+
+Adds an <tag img> tag displaying the image at the server-local
+<i url> formed by adding the <i suffix> to the buffer's 
+<tt -domain>.  Any options are converted
+into element attributes.<p>
+
+<defitem iref {<i obj> iref <i suffix> ?<i options...>? <i label>}>
+
+Adds an <tag a> link to the server-local URL formed by adding the
+<i suffix> to the buffer's <tt -domain>.  The
+<i label> string is the link text.  Any options are converted
+into element attributes.<p>
+
+<defitem ximg {<i obj> ximg <i url> ?<i options...>?}>
+
+Adds an <tag img> tag displaying the image at the given external or 
+server-local <i url>.  Any options are converted
+into element attributes.<p>
+
+<defitem xref {<i obj> xref <i url> ?<i options...>? <i label>}>
+
+Adds an <tag a> link to the given external or server-local <i url>
+using the <i label> string as the link text.  Any options are converted
+into element attributes.<p>
+
+</deflist links>
+
+<subsection "Lists">
+
+<deflist lists>
+
+<defitem dl {<i obj> dl ?<i options...>? ?<i body>?}>
+
+Adds a <tag dl> tag.  Any <i options> and their values are
+converted into tag attributes.  If present, <i body> is executed as a 
+script that will presumably add list items, and the <tag /dl> tag is
+added automatically.<p>
+
+<defitem /dl {<i obj> /dl}>
+
+Terminates a <tag dl> list.<p>
+
+<defitem dt {<i obj> dt ?<i options...>? ?<i text>?}>
+
+Begins a <tag dt> item.  Any <i options> and their values are converted
+into tag attributes.  If the <i text> is given, it is added to the buffer
+and the list item is terminated with <tag /dt>.<p>
+
+<defitem /dt {<i obj> /dt}>
+
+Terminates a <tag dt> item.<p>
+
+<defitem dd {<i obj> dd ?<i options...>? ?<i text>?}>
+
+Begins a <tag dd> item.  Any <i options> and their values are converted
+into tag attributes.  If the <i text> is given, it is added to the buffer
+and the list item is terminated with <tag /dd>.<p>
+
+<defitem dd-with {<i obj> dd-with ?<i options...>? <i body>}>
+
+Adds a complete <tag dd> item.  Any <i options> and their values are converted
+into tag attributes.  The <i body> is executed as a script that will 
+presumably add additional content.<p>
+
+<defitem /dd {<i obj> /dd}>
+
+Terminates a <tag dd> item.<p>
+
+<defitem ol {<i obj> ol ?<i options...>? ?<i body>?}>
+
+Adds a <tag ol> tag.  Any <i options> and their values are
+converted into tag attributes.  If present, <i body> is executed as a 
+script that will presumably add list items, and the <tag /ol> tag is
+added automatically.<p>
+
+<defitem /ol {<i obj> /ol}>
+
+Terminates an <tag ol> list.<p>
+
+<defitem ul {<i obj> ul ?<i options...>? ?<i body>?}>
+
+Adds a <tag ul> tag.  Any <i options> and their values are
+converted into tag attributes.  If present, <i body> is executed as a 
+script that will presumably add list items, and the <tag /ul> tag is
+added automatically.<p>
+
+<defitem /ul {<i obj> /ul}>
+
+Terminates an <tag ul> list.<p>
+
+<defitem li {<i obj> li ?<i options...>? ?<i text>?}>
+
+Begins a <tag li> item.  Any <i options> and their values are converted
+into tag attributes.  If the <i text> is given, it is added to the buffer
+and the list item is terminated with <tag /li>.<p>
+
+<defitem li-with {<i obj> li-with ?<i options...>? <i body>}>
+
+Adds a complete <tag li> item.  Any <i options> and their values are converted
+into tag attributes.  The <i body> is executed as a script that will 
+presumably add additional content.<p>
+
+<defitem /li {<i obj> /li}>
+
+Terminates a <tag li> item.<p>
+
+
+</deflist lists>
+
+<subsection "Tables">
+
+htmlbuffer's tables make use of a <tag table> CSS class called 
+<tt pretty> and <tag tr> CSS classes called <tt oddrow> and <tt evenrow>.
+The CSS classes are defined by the client, and allow the table to be
+displayed with stripes if that is desired.<p>
+
+<deflist tables>
+
+<defitem table {<i obj> table ?<i options...>? ?<i body>?}>
+
+Begins an HTML table.  By default there are no headers, the element
+<tt class> attribute will be "<tt pretty>" and the 
+<tt cellpadding> attribute will be "<tt 5>".<p>
+
+If the <tt -headers> option is given, its value should be a list of
+column headers; the header row is then added automatically.  Any remaining
+options and values are converted into element attributes on the 
+<tag table> element.<p>
+
+If <i>body</i> is given, it will be executed as a Tcl script and the 
+<tag /table> tag will be added automatically.<p>
+
+<defitem /table {<i obj> /table}>
+
+Terminates an HTML table by adding the <tag /table> tag.<p>
+
+<defitem tr {<i obj> tr ?<i options...>? ?<i body>?}>
+
+Begins a new table row, adding the <tag tr> tag.  By default, the
+tag will have its <tt class> attribute set to "<tt oddrow>" or
+"<tt evenrow>" and its <tt valign> attribute set to "<tt top>".
+Any options and their values are converted into additional element 
+attributes.<p>
+
+Note that the first row in the table (not including the header) is always
+considered row 0 and hence an "<tt evenrow>".<p>
+
+If <i>body</i> is given, it will be executed as a Tcl script and the
+<tag /tr> tag will be added automatically.<p>
+
+<defitem /tr {<i obj> /tr}>
+
+Terminates an HTML table row by adding the <tag /tr> tag.<p>
+
+<defitem td {<i obj> td ?<i options...>? ?<i text>?}>
+
+Begins a new table data item, adding the <tag td> tag.  By default,
+the "<tt align>" attribute will be set to "<tt left>".  Any 
+options and their values are added as additional element attributes.<p>
+
+If <i text> is given, it will be added to the buffer and
+the <tag /td> tag will be added automatically.<p>
+
+<defitem td-with {<i obj> td-with ?<i options...>? <i body>}>
+
+Begins a new table data item, adding the <tag td> tag.  By default,
+the "<tt align>" attribute will be set to "<tt left>".  Any 
+options and their values are added as additional element attributes.<p>
+
+The <i>body</i> is executed as a Tcl script, presumably adding content
+to the buffer, and then the <tag /td> tag is added automatically.<p>
+
+<defitem /td {<i obj> /td}>
+
+Terminates an HTML table cell by adding the <tag /td> tag.<p>
+
+<defitem rowcount {<i obj> rowcount}>
+
+Returns the number of <iref tr> calls made for the most recent
+<iref table>.  This can be used with <iref push> and <iref pop>
+to avoid including a table if it has no rows of data.<p>
+
+</deflist tables>
+
+<subsection "Records">
+
+<deflist records>
+
+<defitem record {<i obj> record ?<i options...>? ?<i body>?}>
+
+Begins a record structure, a borderless two-column table of labels
+and values; see <xref "Records and Fields">.  Any <i options...> and
+their values are added as element attributes on the <tag table> tag.<p>
+
+If the <i body> is given, it should be a Tcl script creating content to 
+go in the record; the record will be terminated automatically.  
+If the <i>body</i> is omitted, then the <iref /record> command must 
+be used to terminate the table.<p>
+
+Record structures contain one or more <iref field> structures.<p>
+
+<defitem /record {<i obj> /record}>
+
+Terminates a <iref record> structure.<p>
+
+
+<defitem field {<i obj> field <i label> ?<i text>?}>
+
+Creates a field, a labeled value, within a <iref record> structure; see 
+<xref "Records and Fields">.  The field will have the given <i>label</i>.
+If the <i text> is given, it is used as the label's value and the
+and the field will be terminated automatically.<p>
+
+<defitem field-with {<i obj> field <i label> <i body>}>
+
+Creates a field, a labeled value, within a <iref record> structure; see 
+<xref "Records and Fields">.  The field will have the given <i>label</i>
+text.  The <i body> is a Tcl script that will create
+the desired value content, and the field will be terminated 
+automatically.<p>
+
+<defitem /field {<i obj> /field}>
+
+Terminates a <iref field> in a <iref record>.<p>
+
+</deflist records>
+
+<subsection "HTML Forms">
+
+The following commands are used to build HTML forms.<p>
+
+<deflist forms>
+
+
+<defitem form {<i obj> form ?<i>options...</i>?}>
+
+Begins an HTML <tag form> element; any options and
+their values are converted into element attributes.<p>
+
+By default, submitting the form will reload the same page with the form's 
+parameters as the query.  To load a different page, specify the URL explicitly
+using the <b>-action</b> option (i.e., the "action" attribute).<p>
+
+The following options are of particular interest:<p>
+
+<deflist options>
+<defopt {-action <i>url</i>}>
+The action URL can be absolute, relative to the current page, or "" to simply
+reload the current page.  Note that any query in the <i>url</i> will be 
+ignored.<p>
+
+<defopt {-method <i>method</i>}>
+By default, the form is sent using an HTTP "<tt get>" request.  This option
+can be used to request a different HTTP method, e.g., "<tt post>".<p>
+</deflist options>
+
+<defitem /form {<i obj> /form}>
+
+Terminates an HTML form by adding the <tag form> tag.<p>
+
+<defitem label {<i obj> label <i name> ?<i options...>? ?<i text>?}>
+
+Begins a <tag label> element within a <iref form>.  The element
+tags the label text associated with the form input whose name
+is <i>name</i>.<p>
+
+Any options and their values are converted into element attributes.
+If <i>text</i> is given, it will be inserted as the label text, and
+the <tag /label> tag will be inserted automatically.<p>
+
+<defitem /label {<i obj> /label}>
+
+Terminates a <iref label> by adding the <tag /label> tag.<p>
+
+<defitem entry {<i obj> entry <i name> ?<i options...>?}>
+
+Adds a "text" <tag input> with the given <i name> to the current 
+<iref form>.  Any options and their values are converted to element 
+attributes; in particular, the <tt -size> option can be used to set
+the input's width in characters.<p>
+
+<defitem hidden {<i obj> hidden <i name value> ?<i options...>?}>
+
+Adds a "hidden" <tag input> with the given <i name> and <i value>
+to the current <iref form>.  Any options and their values are converted 
+to element attributes.<p>
+
+<defitem textarea {<i obj> textarea <i name> ?<i options...>? ?text?}>
+
+Adds a <tag textarea>...<tag /textarea> element with the given <i name> 
+to the current <iref form>.  Any options and their values are converted to 
+element attributes; in particular, the <tt -rows> and <tt -cols> options
+can be used to set the text area's height and width in characters.<p>
+
+If a <i text> string is given, it will be the input's initial value;
+otherwise, the input will be empty.<p>
+
+<defitem submit {<i obj> submit ?<i options...>? ?<i label>?}>
+
+Adds a "submit" <tag input> to the current <iref form>.  When pressed,
+the form will add its <tag input> values to the its 
+<tt -action> URL using standard query syntax, and request the resulting
+URL.  Any options and their values are converted to element attributes.<p>
+
+If <i>label</i> is given, it will be used as the label on the button;
+otherwise the button will say "Submit".<p>
+
+</deflist forms>
+
+<subsection "HTML Queries">
+
+<deflist queries>
+
+<defitem query {<i obj> query <i>sql</i> ?<i>options...</i>?}>
+
+Queries the <code>-rdb</code>, and generates an HTML
+table with the results.  If the <i>sql</i> query returns no data,
+generates the text
+
+<example>
+    No data found.&lt;p&gt;
+</example>
+
+The following options may be used:<p>
+
+<deflist options>
+
+<defopt {-align <i>string</i>}>
+
+Specifies a string of column alignments, <b>L</b>, <b>C</b>, or
+<b>R</b> for "left", "center", and "right".  By default, columns have
+alignment <b>L</b>. If the string of column alignments is longer than
+the number of columns returned by the query, the excess characters in 
+the string are ignored. If it's shorter, the default is used for column
+alignment for those columns that have no spec.<p>
+
+For example, an <code>-align</code> of <b>LRLR</b> indicates that the
+second and fourth column are right-aligned.<p>
+
+<defopt {-default <i>string</i>}>
+
+Defines the text to generate if the result set is empty.  Defaults to
+"<code>No data found.&lt;p&gt;</code>".<p>
+
+<defopt {-escape <i>flag</i>}>
+
+If the <i>flag</i> is <b>yes</b>, all output from the
+<code>-rdb</code> will be sanitized using <iref escape>;
+otherwise not.  The option defaults to <b>no</b>.  Use this when
+querying arbitrary data so that special characters in the result will
+not confuse the HTML formatting.<p>
+
+<defopt {-labels <i>list</i>}>
+
+Defines a list of strings to use as the column header labels.
+Alternatively, <iref query> will use the column names in the result
+set.<p>
+
+</deflist options>
+
+</deflist queries>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+

@@ -1,0 +1,392 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    020-scenario.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    app_arachne(1): Scenario Management URLs
+#
+#    This test suite tests the handlers for these URLs:
+#
+#    /scenario/*.{html,json}
+#    /scenario/{name}/*.{html,json}.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athenawb(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    proc setup {} {
+        # TBD
+    }
+
+    proc cleanup {} {
+       ted cleanup
+    }
+
+    ted mkadb test1
+
+    #-------------------------------------------------------------------
+    # /scenario/urlschema.html
+
+    test urlschema-1.1 {Can retrieve the URL schema} -body {
+        ted get /urlschema.html
+    } -match glob -result {<html>*URL Schema Help*</html>}
+    
+    #-------------------------------------------------------------------
+    # /scenario/index.json
+    
+    test index.json-1.1 {Can retrieve the URL} -body {
+        ted get /index.json
+    } -match trim -result {
+[{
+    "id": "case00",
+    "longname": "Base Case",
+    "state": "PREP",
+    "tick": 0,
+    "week": "2012W01",
+    "source": "n\/a",
+    "url": "\/scenario\/case00\/index.json"
+  }]
+    }
+
+    #-------------------------------------------------------------------
+    # /scenario/index.html
+    
+    test index.html-1.1 {Can retrieve the URL} -body {
+        ted get /index.html
+    } -match glob -result {<html>*case00*</html>}
+
+
+    #-------------------------------------------------------------------
+    # /scenario/new.json
+    
+    test new.json-1.1 {REJECT: unknown ID} -body {
+        ted getjson /new.json id case01
+    } -match norm -result {REJECT {id {Unknown id}}}
+
+    test new.json-2.1 {OK} -body {
+        ted getjson /new.json
+    } -cleanup {
+        cleanup
+    } -match norm -result {OK case01}
+
+    test new.json-3.1 {New case, default longname} -body {
+        ted get /new.json
+        set id [lindex [case names] end]
+
+        list $id [dict get [case metadata $id] longname]
+    } -cleanup {
+        cleanup
+    } -result {case01 {Scenario #01}}
+
+    test new.json-3.2 {New case, new longname} -body {
+        ted get /new.json longname "My New Name"
+        set id [lindex [case names] end]
+
+        list $id [dict get [case metadata $id] longname]
+    } -cleanup {
+        cleanup
+    } -result {case01 {My New Name}}
+
+    test new.json-3.3 {Reset case, new longname} -body {
+        ted get /new.json id case00 longname "A New Name"
+        set id [lindex [case names] end]
+
+        list $id [dict get [case metadata $id] longname]
+    } -cleanup {
+        cleanup
+    } -result {case00 {A New Name}}
+
+    #-------------------------------------------------------------------
+    # /scenario/new.html
+    
+    test new.html-1.1 {unknown ID} -body {
+        ted get /new.html id case01
+    } -match glob -result {*Cannot create*}
+
+    test new.html-2.1 {success, redirect} -body {
+        ted get /new.html
+    } -cleanup {
+        cleanup
+    } -result {HTTPD_REDIRECT /scenario/index.html}
+
+    test new.html-3.1 {New case, default longname} -body {
+        ted get /new.html
+        set id [lindex [case names] end]
+
+        list $id [dict get [case metadata $id] longname]
+    } -cleanup {
+        cleanup
+    } -match trim -result {case01 {Scenario #01}}
+
+    test new.html-3.2 {New case, new longname} -body {
+        ted get /new.html longname "My New Name"
+        set id [lindex [case names] end]
+
+        list $id [dict get [case metadata $id] longname]
+    } -cleanup {
+        cleanup
+    } -match trim -result {case01 {My New Name}}
+
+    test new.html-3.3 {Reset case, new longname} -body {
+        ted get /new.html id case00 longname "A New Name"
+        set id [lindex [case names] end]
+
+        list $id [dict get [case metadata $id] longname]
+    } -cleanup {
+        cleanup
+    } -match trim -result {case00 {A New Name}}
+
+    #-------------------------------------------------------------------
+    # /scenario/clone.json
+    
+    test clone.json-1.1 {REJECT: unknown ID} -body {
+        ted getjson /clone.json id case01
+    } -match norm -result {REJECT {id {Unknown id}}}
+
+    test clone.json-1.2 {REJECT: unknown newid} -body {
+        ted getjson /clone.json id case00 newid case01
+    } -match norm -result {REJECT {newid {Unknown newid}}}
+
+    test clone.json-1.3 {REJECT: id is newid} -body {
+        ted getjson /clone.json id case00 newid case00
+    } -match norm -result {REJECT {newid {Cannot clone scenario to itself}}}
+
+    test clone.json-2.1 {OK} -body {
+        ted getjson /clone.json id case00
+    } -cleanup {
+        cleanup
+    } -match norm -result {OK case01}
+
+    test clone.json-3.1 {New case with default longname} -body {
+        ted get /clone.json id case00
+        set id [lindex [case names] end]
+
+        list $id [dict get [case metadata $id] longname]
+    } -cleanup {
+        cleanup
+    } -result {case01 {Scenario #01}}
+
+    test clone.json-3.2 {New case with new longname} -body {
+        ted get /clone.json id case00 longname "My New Name"
+        set id [lindex [case names] end]
+
+        list $id [dict get [case metadata $id] longname]
+    } -cleanup {
+        cleanup
+    } -result {case01 {My New Name}}
+
+    test clone.json-3.3 {Existing case, new longname} -body {
+        ted get /new.json
+        set target [lindex [case names] end]
+
+        ted get /clone.json id case00 newid $target longname "The New Name"
+
+        list $target [dict get [case metadata $target] longname]
+    } -cleanup {
+        cleanup
+    } -result {case01 {The New Name}}
+
+    #-------------------------------------------------------------------
+    # /scenario/import.json
+    
+    test import.json-1.1 {REJECT: no filename} -body {
+        ted getjson /import.json
+    } -match norm -result {REJECT {filename {Required parameter}}}
+
+    test import.json-1.2 {REJECT: no such id} -body {
+        ted getjson /import.json filename dummy.adb id case01
+    } -match norm -result {REJECT {id {Unknown id}}}
+
+    test import.json-2.1 {OK} -body {
+        ted getjson /import.json filename test1.adb
+    } -cleanup {
+        cleanup
+    } -match norm -result {OK case01}
+
+    test import.json-3.1 {With id and longname} -body {
+        ted getjson /import.json filename test1.adb id case00 longname Fred
+    } -cleanup {
+        cleanup
+    } -match norm -result {OK case00}
+
+    #-------------------------------------------------------------------
+    # /scenario/export.json
+    
+    test export.json-1.1 {REJECT: no id} -body {
+        ted getjson /export.json filename dummy.adb
+    } -match norm -result {REJECT {id {Required parameter}}}
+
+    test export.json-1.1 {REJECT: no filename} -body {
+        ted getjson /export.json id case00
+    } -match norm -result {REJECT {filename {Required parameter}}}
+
+    test export.json-1.2 {REJECT: no such id} -body {
+        ted getjson /export.json id case01 filename dummy.adb
+    } -match norm -result {REJECT {id {Unknown id}}}
+
+    test export.json-2.1 {OK} -body {
+        ted getjson /export.json id case00 filename export21
+    } -cleanup {
+        tcltest::removeFile [case scenariodir export21.adb]
+        cleanup
+    } -match norm -result {OK export21.adb}
+
+    #-------------------------------------------------------------------
+    # /scenario/delete.json
+    
+    test delete.json-1.1 {REJECT: missing id} -body {
+        ted getjson /delete.json
+    } -match norm -result {REJECT {id {Required parameter}}}
+
+    test delete.json-1.2 {REJECT: unknown id} -body {
+        ted getjson /delete.json id NONESUCH
+    } -match norm -result {REJECT {id {Unknown id}}}
+
+    test delete.json-1.3 {REJECT: base case} -body {
+        ted getjson /delete.json id case00
+    } -match norm -result {REJECT {id {Cannot delete the base case}}}
+
+    test delete.json-2.1 {OK} -setup { 
+        set id [case new]
+    } -body {
+        ted getjson /delete.json id $id
+    } -cleanup {
+        cleanup
+    } -match norm -result {OK {Deleted case01}}
+
+    test delete.json-2.2 {Case deleted} -setup { 
+        set id [case new]
+    } -body {
+        set a [case names]
+        ted get /delete.json id $id
+        set b [case names]
+
+        list $a $b
+    } -cleanup {
+        cleanup
+    } -result {{case00 case01} case00}
+
+    #-------------------------------------------------------------------
+    # /scenario/{name}/order.json
+    #
+    # Note: most of the functionality is in the [case send] command,
+    # tested in 010-case.test.
+
+    test order.json-1.1 {No such scenario} -body {
+        ted get /nonesuch/order.json
+    } -result {NOTFOUND {No such scenario: "nonesuch"}}
+
+    test order.json-1.2 {REJECT: no order_} -body {
+        ted getjson /case00/order.json
+    } -match norm -result {REJECT {order_ {Required parameter}}}
+    
+    test order.json-2.1 {OK: order accepted} -body {
+        ted getjson /case00/order.json order_ ACTOR:CREATE a JOE
+    } -cleanup {
+        cleanup
+    } -match norm -result {OK {}}
+
+    #-------------------------------------------------------------------
+    # /scenario/{name}/order.html
+    #
+    # Note: most of the functionality is in the [case send] command,
+    # tested in 010-case.test.
+
+    test order.html-1.1 {No such scenario} -body {
+        ted get /nonesuch/order.html
+    } -result {NOTFOUND {No such scenario: "nonesuch"}}
+
+    test order.html-1.2 {REJECT: no order_} -body {
+        ted get /case00/order.html
+    } -match glob -result {*Rejected*}
+    
+    test order.html-2.1 {OK: order accepted} -body {
+        ted get /case00/order.html order_ ACTOR:CREATE a JOE
+    } -cleanup {
+        cleanup
+    } -match glob -result {*Accepted*}
+
+
+    #-------------------------------------------------------------------
+    # /scenario/{name}/script.json
+
+    test script.json-1.1 {No such scenario} -body {
+        ted post /nonesuch/script.json
+    } -result {NOTFOUND {No such scenario: "nonesuch"}}
+    
+    test script.json-2.1 {script executed} -body {
+        json::json2dict [ted post /case00/script.json {
+            set a howdy
+        }]
+    } -cleanup {
+        cleanup
+    } -match norm -result {OK howdy}
+
+    test script.json-2.2 {error in script} -body {
+        json::json2dict [ted post /case00/script.json {
+            error "Bogus Error"
+        }]
+    } -cleanup {
+        cleanup
+    } -match norm -result {ERROR {Bogus Error} {*}}
+
+    #-------------------------------------------------------------------
+    # /scenario/{name}/script.html
+
+    test script.html-1.1 {No such scenario} -body {
+        ted get /nonesuch/script.html
+    } -result {NOTFOUND {No such scenario: "nonesuch"}}
+
+    test script.html-1.2 {no script} -body {
+        ted get /case00/script.html
+    } -match glob -result {*Enter a script*}
+    
+    test script.html-2.1 {script executed} -body {
+        ted get /case00/script.html script "set a howdy"
+    } -cleanup {
+        cleanup
+    } -match glob -result {*Result:*howdy*}
+
+    test script.html-2.2 {error in script} -body {
+        ted get /case00/script.html script "error Bogus"
+    } -cleanup {
+        cleanup
+    } -match glob -result {*Error in Script:*Bogus*}
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+
+    ::tcltest::cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+

@@ -276,10 +276,11 @@ In the second form, <i mappings> is a flat list of <i mtype> and
 
 </deflist mimetype>
 
-<defitem "ahttpd notfound" {ahttpd notfound <i sock>}>
+<defitem "ahttpd notfound" {ahttpd notfound <i sock> ?<i reason>?}>
 
 For use in domain handlers.  This command terminates a request
-with a 404 Not Found message.<p>
+with a 404 Not Found message.  The <i reason> is made available
+to the "Not Found" page; it defaults to "n/a".<p>
 
 <defitem "ahttpd port" {ahttpd port}>
 

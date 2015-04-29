@@ -1,0 +1,137 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    001-ted.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    app_arachne(1) Test Execution Deputy tests.
+#
+#    This test suite tests the test infrastructure itself.  It's named
+#    with an "001-" prefix so that it runs before other test files.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athenawb(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::ted:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    #-------------------------------------------------------------------
+    # sortdict
+
+    test sortdict-1.1 {sorts a dictionary's keys} -body {
+        ted sortdict {c 1 a 2 b 3}
+    } -result {a 2 b 3 c 1}
+    
+
+    #-------------------------------------------------------------------
+    # dict match
+
+    test dict_match-1.1 {Can match a dict} -body {
+        set a {a 5 b 7 c "hello"}
+    } -match dict -result {
+        a 5
+        b 7
+        c "hello"
+    }
+
+    test dict_match-1.2 {Missing key fails} -body {
+        ted MatchDict {a 5 b 7 c "hello"} {
+            a 5
+            c "hello"
+        }
+    } -result {0}
+    
+    test dict_match-1.3 {Wrong value fails} -body {
+        ted MatchDict {a 5 b 7 c "hello"} {
+            a 5
+            b 9
+            c "hello"
+        }
+    } -result {0}
+
+    #-------------------------------------------------------------------
+    # dictglob match
+
+    test dictglob_match-1.1 {Can match a dictglob} -body {
+        set a {a 5 b 7 c "hello"}
+    } -match dictglob -result {
+        a 5
+        b 7
+        c "hello"
+    }
+
+    test dictglob_match-1.2 {Can match a dictglob with wildcard} -body {
+        set a {a 5 b 7 c "hello"}
+    } -match dictglob -result {
+        a 5
+        b 7
+        c "he*o"
+    }
+
+    test dictglob_match-1.3 {Missing key fails; wildcard doesn't run over} -body {
+        ted MatchDictGlob {a 5 b 7 c "hello"} {
+            a *
+            c "hello"
+        }
+    } -result {0}
+    
+    test dictglob_match-1.4 {Wrong value fails} -body {
+        ted MatchDictGlob {a 5 b 7 c "h*o"} {
+            a 5
+            b 9
+            c "goodbye"
+        }
+    } -result {0}
+
+    #-------------------------------------------------------------------
+    # indict match
+
+    test indict_match-1.1 {Can match in dict} -body {
+        set a {a 5 b 7 c "hello"}
+    } -match indict -result {
+        a 5
+        c "hello"
+    }
+
+    test indict_match-1.2 {Wrong value fails} -body {
+        ted MatchInDict {a 5 b 7 c "hello"} {
+            a 5
+            b 9
+            c "hello"
+        }
+    } -result {0}
+
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::ted::
+
+
+
+

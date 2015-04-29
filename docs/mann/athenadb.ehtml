@@ -103,12 +103,14 @@ such athenadb(n) subcommands that are also exposed by
 <defitem idle {<i obj> idle}>
 <defitem interrupt {<i obj> interrupt}>
 <defitem interruptible {<i obj> interruptible}>
+<defitem is {<i obj> is <i predicate>}>
 <defitem isbusy {<i obj> isbusy}>
 <defitem load {<i obj> load <i filename>}>
 <defitem lock {<i obj> lock}>
 <defitem locked {<i obj> locked}>
 <defitem paste {<i obj> paste <i subcommand> ?<i args...>?}>
 <defitem progress {<i obj> progress ?<i value>?}>
+<defitem rdb {<i obj> rdb <i subcommand> ?<i args>?}>
 <defitem reset {<i obj> reset}>
 <defitem save {<i obj> save ?<i filename>?}>
 <defitem state {<i obj> state}>
@@ -119,8 +121,22 @@ such athenadb(n) subcommands that are also exposed by
 <defitem version {<i obj> version}>
 
 These commands and their subcommands are documented in the 
-<xref athena(n)> man page.
+<xref athena(n)> man page.<p>
 
+<defitem eval {<i obj> eval ...}>
+<defitem delete {<i obj> delete ...}>
+<defitem exists {<i obj> exists ...}>
+<defitem grab {<i obj> grab ...}>
+<defitem last_insert_rowid {<i obj> last_insert_rowid ...}>
+<defitem monitor {<i obj> monitor ...}>
+<defitem onecolumn {<i obj> onecolumn ...}>
+<defitem query {<i obj> query ...}>
+<defitem schema {<i obj> schema ...}>
+<defitem tables {<i obj> tables ...}>
+<defitem ungrab {<i obj> ungrab ...}>
+
+These commands and their subcommands provide read/write access to the
+underlying run-time database (RDB), a <xref scenariodb(n)> object.<p>
 
 <defitem component {<i obj> component <i name>}>
 
@@ -249,11 +265,25 @@ This command is delegated to the underlying <xref scenariodb(n)> object.<p>
 Returns the name of the scenario's run-time database (RDB) file.  Note
 that this will change on <iref load> or <iref reset>.<p>
 
-<defitem safeeval {<i obj> safeeval ...}>
-This command is delegated to the underlying <xref scenariodb(n)> object.<p>
+<defitem safe {<i obj> safe <i subcommand> <i args>}>
 
-<defitem safequery {<i obj> safequery ...}>
-This command is delegated to the underlying <xref scenariodb(n)> object.<p>
+This command configures the underlying RDB, a <xref scenariodb(n)> object,
+for readonly mode using an SQLite3 authorizer command and the executes the
+given athenadb(n) subcommand in that context.  Thus, to process an SQL
+query with no danger that it will modify the database, one can write code
+like this:
+
+<example>
+# Do this
+puts [$myathenadb safe query $sql]
+
+# Not this
+puts [$myathenadb query $sql]
+</example>
+
+The <iref safe> command will work with any athenadb(n) subcommand, but it's
+intended primarily for use with <iref eval>, <iref exists>,
+<iref onecolumn>, and <iref query>.<p>
 
 <defitem savetemp {<i obj> savetemp <i filename>}>
 

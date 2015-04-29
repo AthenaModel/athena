@@ -127,6 +127,11 @@ options:<p>
 
 <deflist options>
 
+<defopt {-cssfile <i url>}>
+
+If given, specifies the (possibly relative) URL for a CSS file.
+The appropriate <tag link> tag will be included in the HTML header.<p>
+
 <defopt {-footercmd <i>command</i>}>
 
 Defines a command that is called when a page footer is needed.  The

@@ -7,7 +7,8 @@ application/andrew-inset
 application/applefile
 application/atomicmail                         
 application/dca-rft                            
-application/dec-dx                             
+application/dec-dx
+application/json            json                             
 application/mac-binhex40	hqx
 application/macwriteii
 application/msword		doc dot

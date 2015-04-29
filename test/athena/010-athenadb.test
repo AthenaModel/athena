@@ -551,8 +551,41 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -result {PAUSED 10}
     
+    #-------------------------------------------------------------------
+    # safe
+    #
+    # The safe subcommand wraps other athenadb subcommands such that
+    # they cannot write to the RDB.
 
-        
+    test safe-1.1 {Can query RDB} -setup {
+        ted create SHIA SUNN KURD
+    } -body {
+        tdb safe eval {SELECT g,n FROM civgroups}
+    } -cleanup {
+        cleanup
+    } -result {SHIA NB1 SUNN NB1 KURD NB2}
+
+    test safe-1.2 {Can use SQL variables} -setup {
+        ted create SHIA SUNN KURD
+    } -body {
+        set n NB1
+        tdb safe eval {SELECT g FROM civgroups WHERE n=$n}
+    } -cleanup {
+        cleanup
+    } -result {SHIA SUNN}
+    
+    test safe-1.3 {Cannot modify database} -setup {
+        ted create SHIA SUNN KURD
+    } -body {
+        tdb safe eval {
+            UPDATE civgroups SET n="NONESUCH"
+        }
+    } -returnCodes {
+        error
+    } -cleanup {
+        cleanup
+    } -result {safe eval error: not authorized}
+    
 
     #-------------------------------------------------------------------
     # Cleanup

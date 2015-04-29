@@ -34,7 +34,7 @@ package require fileutil 1.14
 package require tls 1.6.4
 package require tdom 0.8
 package require struct::set 2.2
-package require kiteutils 0.4.7
+package require kiteutils 0.4.8
 package require marsutil 3.0.16
 package require simlib 3.0.16
 # -kite-require-end
@@ -68,6 +68,7 @@ source [file join $::projectlib::library appdir.tcl         ]
 source [file join $::projectlib::library workdir.tcl        ]
 source [file join $::projectlib::library prefsdir.tcl       ]
 source [file join $::projectlib::library htools.tcl         ]
+source [file join $::projectlib::library htmlbuffer.tcl     ]
 source [file join $::projectlib::library myagent.tcl        ]
 source [file join $::projectlib::library myserver.tcl       ]
 source [file join $::projectlib::library urlquery.tcl       ]
@@ -90,5 +91,7 @@ source [file join $::projectlib::library httpagentsim.tcl   ]
 source [file join $::projectlib::library wmsclient.tcl      ]
 source [file join $::projectlib::library wfsclient.tcl      ]
 source [file join $::projectlib::library smartdomain.tcl    ]
+source [file join $::projectlib::library scratchdir.tcl     ]
+source [file join $::projectlib::library parmdict.tcl       ]
 source [file join $::projectlib::library worker.tcl         ]
 

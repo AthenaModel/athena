@@ -12,6 +12,7 @@ teapot.txt
 /bin/*-macosx*
 /docs/*.html
 /docs/*/*.html
+/htdocs/arachne.html
 *.docx
 *.pptx
 *.xlsx
@@ -22,6 +23,9 @@ teapot.txt
 temp.tcl
 /log
 econdebug.cmsnap
+
+/test/app_arachne/scratch
+/test/app_arachne/scenario
 
 # SublimeText artifacts.
 *.sublime-*

@@ -580,8 +580,6 @@ snit::type ::athena::athenadb {
     delegate method monitor           to rdb
     delegate method onecolumn         to rdb
     delegate method query             to rdb
-    delegate method safeeval          to rdb
-    delegate method safequery         to rdb
     delegate method schema            to rdb
     delegate method tables            to rdb
     delegate method ungrab            to rdb
@@ -1153,6 +1151,20 @@ snit::type ::athena::athenadb {
         }
     }
 
+    #-------------------------------------------------------------------
+    # Predicates
+    #
+    # TBD: Eventually, all predicates will be grouped under "is".
+    
+    # is advanced
+    #
+    # Returns 1 if time has been advanced, and 0 otherwise.
+
+    method {is advanced} {} {
+        expr {[$simclock delta] > 0}
+    }
+
+
     # locked
     #
     # Returns 1 if the scenario is locked, and 0 otherwise.
@@ -1702,7 +1714,47 @@ snit::type ::athena::athenadb {
         return $info(changed)
     }
 
+    #===================================================================
+    # RDB Utilities
 
+    # safe subcommand args
+    #
+    # subcommand  - A subcommand on this same object
+    # args        - Arguments to the subcommand
+    #
+    # Installs an SQLite3 authorizer that prevents writing to the,
+    # executes the subcommand in the caller's context, and removes
+    # the authorizer.  Errors bubble up normally.
+
+    method safe {subcommand args} {
+        $rdb authorizer [myproc SafeRdbAuthorizer]
+
+        try {
+            uplevel 1 [list $self $subcommand {*}$args]
+        } on error {result eopts} {
+            return {*}$eopts "safe $subcommand error: $result"
+        } finally {
+            $rdb authorizer ""
+        }
+    }
+
+    # SafeRdbAuthorizer op args
+    #
+    # op     - The SQLite operation
+    # args   - Related arguments; ignored.
+    #
+    # Allows SELECT, READ, and FUNCTION operations, which are needed to
+    # query the database.  All other operations are denied.
+
+    proc SafeRdbAuthorizer {op args} {
+        if {$op in {"SQLITE_SELECT" "SQLITE_READ" "SQLITE_FUNCTION"}} {
+            return SQLITE_OK
+        } else {
+            return SQLITE_DENY
+        }
+    }
+
+    
     #===================================================================
     # SQL Functions
 

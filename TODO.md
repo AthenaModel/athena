@@ -1,14 +1,17 @@
 # TODO.md - Athena TODO List
 
-- athena-slave:
-  - CLI history is not getting saved.
-    - saveprefs is getting called.
-    - Perhaps LoadPrefs isn't properly closing the file, so Windows is 
-      helpfully writing to another file?
-      - But LoadPrefs is using "readfile"
-      - No "Virtual" directory with alternate file in it.
-  - Finish athena(n) man page!!!!!!!
-  - Figure out what to do about athena(n)-client access to the RDB.
+- Athena(n)
+  - Group athena(n) predicates under "is", e.g., "is busy".
+- Arachne
+  - Fix scenario name in Arachne's export .tcl file.  It depends on last 
+    export, and it shouldn't.
+  - Missing Operations:
+    - HTML I/F to control toplevel operations
+    - Many, many .json queries
+  - What should the htdocs directory look like?
+  - Write arachne(1) man page, referencing I/F doc.
+  - Write athena_log(1) man page.
+- Finish athena(n) man page!!!!!!!
 - Significant Outputs:
   - All history variable base names should be unique, e.g., nbsecurity.n rather
     than security.n.
@@ -40,17 +43,6 @@
   - What to do about icon names?
     - Replace with .png files, with valid URLs?
       - That's probably easiest.
-  - Generation of URLs:
-    - htools is configured with a dictionary of symbolic names and base URLs.
-    - The `$ht link` command will translate "%name/" at the beginning of a
-      URL to "$baseurl/".
-    - If the "name" is unknown, no link is created; just the link text is
-      put in the buffer.
-    - athena(n) gets the same dictionary, and delegates it to athenadb(n).
-    - athenadb(n) provides a factory method for creating configured htools
-      buffers.
-    - Code using htools buffers get them from athenadb(n).
-- See about giving athena(n) a read-only db.
 - Write cellide manpage.
 
 

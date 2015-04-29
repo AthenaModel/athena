@@ -31,8 +31,17 @@ oo::class create ::projectlib::smartdomain {
 
     variable patterns
 
+    # trans array
+    #
+    # Transient data during a request.
+    #
+    # query   - The full query string
+
+    variable trans
+
     # schemaForm - array of values
     variable schemaForm
+
 
     #-------------------------------------------------------------------
     # Constructor
@@ -47,6 +56,8 @@ oo::class create ::projectlib::smartdomain {
         set patterns [dict create]
 
         my url /urlschema.html [mymethod UrlSchema] {This description.}
+
+        set trans(query) ""
 
         set schemaForm(order) alpha
     }
@@ -103,6 +114,10 @@ oo::class create ::projectlib::smartdomain {
         # an error if there's a problem.
         set pattern [my GetUrlPattern $suffix]
 
+        if {$pattern eq ""} {
+            error "Invalid suffix: \"$suffix\""
+        }
+
         # NEXT, save it all.
         set info(handler-$suffix) $handler
         set info(docstring-$suffix) [outdent $docstring]
@@ -137,7 +152,7 @@ oo::class create ::projectlib::smartdomain {
         set pattern [my GetUrlTreePattern $root]
 
         if {$pattern eq ""} {
-            error "Invalid suffix: \"$suffix\""
+            error "Invalid root: \"$root\""
         }
 
         # NEXT, save it all.
@@ -229,7 +244,7 @@ oo::class create ::projectlib::smartdomain {
                 continue
             }
 
-            return [concat $info(handler-$id) [lrange $result 1 end]]
+            return [list {*}$info(handler-$id) {*}[lrange $result 1 end]]
         }
 
         # NEXT, it hasn't matched anything; see if it's a directory
@@ -285,16 +300,29 @@ oo::class create ::projectlib::smartdomain {
         # sanitized for the handler.  Be nice to have a better way to
         # do this, as well.
         upvar #0 ::ahttpd::Httpd$sock data
+        set trans(query) $data(query)
 
         # NEXT, parse the query data into a dictionary.
         # TBD: This will need to be generalized for myserver use.
-        set qdict [ahttpd querydict $sock]
+        if {$data(proto) ne "POST" ||
+            $data(mime,content-type) eq "application/x-www-form-urlencoded"
+        } {
+            set qdict [ahttpd querydict $sock]
+        } else {
+            set qdict {}
+        }
+
+
+        set pdict [::projectlib::parmdict new $qdict]
 
         try {
-            set result [{*}$handler data $qdict]
+            set info(sock) $sock
+            set result [{*}$handler [self] $pdict]
         } trap NOTFOUND {result} {
-            ahttpd notfound $sock
+            ahttpd notfound $sock $result
             return
+        } finally {
+            $pdict destroy
         }
 
         set ctype [ahttpd mimetype frompath $suffix]
@@ -305,17 +333,58 @@ oo::class create ::projectlib::smartdomain {
     }
 
     #-------------------------------------------------------------------
+    # Direct Access
+
+    # request op suffix ?query?
+    #
+    # op      - GET or POST
+    # suffix  - The part of the URL after the domain prefix
+    # query   - The query data
+    #
+    # Calls the handler for the suffix, returning the desired value,
+    # or throws NOTFOUND.  On GET, the query data is parsed as 
+    # a query dictionary; on POST it is not. 
+
+    method request {op suffix {query ""}} {
+        # FIRST, get the handler for this suffix.  Return "not found"
+        # if there's no matching handler.  The handler will include
+        # values of any place-holder arguments as normal arguments.
+
+        set handler [my GetHandler $suffix]
+
+        if {$handler eq ""} {
+            throw NOTFOUND "Not found: $suffix"
+        }
+
+        # NEXT, get the query data.
+        set trans(query) $query
+
+        set pdict [::projectlib::parmdict new]
+
+        if {$op ne "POST"} {
+            $pdict setdict $query
+        }
+
+        try {
+            return [{*}$handler [self] $pdict]
+        } finally {
+            $pdict destroy
+        }
+    }
+
+    
+
+    #-------------------------------------------------------------------
     # Automatically generated content
 
-    # UrlSchema datavar qdict
+    # UrlSchema sd qdict
     #
-    # datavar  - name of the ahttpd(n) state array
+    # sd       - The smartdomain object name
     # qdict    - Dictionary of query data
     #
     # Returns an HTML description of the URLs in the domain.
 
-    method UrlSchema {datavar qdict} {
-        upvar 1 $datavar data
+    method UrlSchema {sd qdict} {
         set ht [htools create %AUTO%]
 
         if {[dict exist $qdict sort]} {
@@ -336,8 +405,6 @@ oo::class create ::projectlib::smartdomain {
             }
         }
 
-        set trans [list \{ <i> \} </i>]
-
         set title "URL Schema Help: $info(domain)" 
         $ht page $title
         $ht h1 $title
@@ -345,7 +412,7 @@ oo::class create ::projectlib::smartdomain {
         $ht putln "The following URLs are defined within this domain."
         $ht para
         $ht hr
-        $ht form -action $data(url)
+        $ht form
         $ht putln "Sort by URL <input type=radio name=sort value=url $urlcheck>"
         $ht putln "or Match Order <input type=radio name=sort value=def $defcheck>"
         $ht putln "<input type=submit name=submit value=\"Refresh\">"
@@ -361,10 +428,11 @@ oo::class create ::projectlib::smartdomain {
 
         $ht dl
 
+        set mapping [list \{ <i> \} </i>]
+
         foreach suffix $suffixes {
-            set url "$info(domain)[string map $trans $suffix]"
-            set doc [string map $trans \
-                [htools escape $info(docstring-$suffix)]]
+            set url "$info(domain)[string map $mapping $suffix]"
+            set doc [string map $mapping $info(docstring-$suffix)]
 
             $ht dlitem  "<tt>$url</tt>" $doc       
         }
@@ -378,6 +446,26 @@ oo::class create ::projectlib::smartdomain {
         return $result
     }
     
+    #-------------------------------------------------------------------
+    # Tools for use in domain handlers 
+
+    # redirect url
+    #
+    # url   - A server-relative URL
+    #
+    # Redirects to the URL.
+
+    method redirect {url} {
+        throw [list HTTPD_REDIRECT $url] "Redirect to $url"
+    }
+
+    # query
+    #
+    # Returns the raw query string.
+    
+    method query {} {
+        return $trans(query) 
+    }
 
 }
 

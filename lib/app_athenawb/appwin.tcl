@@ -406,6 +406,7 @@ snit::widget appwin {
                         {v  7 yes}
                         {c  9 yes}
                         {m  0 yes}
+                        {v2 0 no }
                     } -parsecmd ::appwin::LogParser
             }
         }
@@ -2264,6 +2265,14 @@ snit::widget appwin {
     # text - A block of log lines.
     #
     # Parses the log lines for scrolling log and returns a list of lists.
+    # The list for each line contains this data:
+    #
+    # 0 (from 0): Wallclock Time
+    # 1 (from 4): Sim Time, or ""
+    # 2 (from 1): Log Level
+    # 3 (from 2): Component Name
+    # 4 (from 3): Log Message
+    # 5 (from 1): Duplicate log level; used as rotext(n) style tag.
     
     proc LogParser {text} {
         set lines [split [string trimright $text] "\n"]
