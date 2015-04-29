@@ -90,7 +90,7 @@ any <tt -scenario> and execute any <tt -script> for its "base" case,
 and then wait for instructions via HTTP.<p>
 
 To invoke Arache without starting the HTTP server, pass the 
-<-tt noweb> option.  (This is provided as an aid to testing.)<p>
+<tt -test> option.  (This is provided as an aid to testing.)<p>
 
 Arachne takes the following command-line options:<p>
 

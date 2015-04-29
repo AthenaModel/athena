@@ -7,17 +7,10 @@
     export, and it shouldn't.
   - Missing Operations:
     - HTML I/F to control toplevel operations
+    - Many, many .json queries
   - What should the htdocs directory look like?
-  - How to include the arachne.html file in the htdocs directory?
-    - Population script in ./bin?
   - Write arachne(1) man page, referencing I/F doc.
   - Write athena_log(1) man page.
-- CLI history is not getting saved.
-  - saveprefs is getting called.
-  - Perhaps LoadPrefs isn't properly closing the file, so Windows is 
-    helpfully writing to another file?
-    - But LoadPrefs is using "readfile"
-    - No "Virtual" directory with alternate file in it.
 - Finish athena(n) man page!!!!!!!
 - Significant Outputs:
   - All history variable base names should be unique, e.g., nbsecurity.n rather
