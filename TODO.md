@@ -1,17 +1,18 @@
 # TODO.md - Athena TODO List
 
 - Athena(n)
-  - Group athena(n) predicates under "is", e.g., "is busy".
+  - Group athenadb(n) predicates under "is", e.g., "is busy".
+  - Finish athena(n) man page!!!!!!!
 - Arachne
   - Fix scenario name in Arachne's export .tcl file.  It depends on last 
     export, and it shouldn't.
   - Missing Operations:
+    - Lock/Unlock/Time Advance
     - HTML I/F to control toplevel operations
     - Many, many .json queries
   - What should the htdocs directory look like?
   - Write arachne(1) man page, referencing I/F doc.
   - Write athena_log(1) man page.
-- Finish athena(n) man page!!!!!!!
 - Significant Outputs:
   - All history variable base names should be unique, e.g., nbsecurity.n rather
     than security.n.
