@@ -41,8 +41,8 @@ oo::class create debug_domain {
     # Header and Footer
 
     method htmlHeader {hb title} {
-        $hb h1 "&nbsp;Arachne: Athena Regional Stability Simulation" \
-            -style "background: red;"
+        $hb h1 -style "background: red;" \
+            "&nbsp;Arachne: Athena Regional Stability Simulation"
     }
 
     method htmlFooter {hb} {

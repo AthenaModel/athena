@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide app_athena_log 6.3.0a9
+package provide app_athena_log 6.3.0a10
 # -kite-provide-end
 
 #-----------------------------------------------------------------------
@@ -27,7 +27,7 @@ package provide app_athena_log 6.3.0a9
 
 # -kite-require-start ADD EXTERNAL DEPENDENCIES
 package require projectlib
-package require marsgui 3.0.15
+package require marsgui 3.0.16
 # -kite-require-end
 
 namespace import ::projectlib::* marsgui::*

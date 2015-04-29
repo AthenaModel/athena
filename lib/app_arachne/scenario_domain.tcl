@@ -135,8 +135,8 @@ oo::class create scenario_domain {
     # Header and Footer
 
     method htmlHeader {hb title} {
-        $hb h1 "&nbsp;Arachne: Athena Regional Stability Simulation" \
-            -style "background: red;"
+        $hb h1 -style "background: red;" \
+            "&nbsp;Arachne: Athena Regional Stability Simulation"   
     }
 
     method htmlFooter {hb} {
@@ -570,7 +570,7 @@ oo::class create scenario_domain {
 
         # NEXT, set up the entry form.
         hb form -method post
-        hb textarea -name script -rows 10 -cols 60
+        hb textarea script -rows 10 -cols 60
         hb para
         hb submit "Execute"
         hb /form

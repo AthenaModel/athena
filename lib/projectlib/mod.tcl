@@ -82,7 +82,7 @@ snit::type ::projectlib::mod {
             try {
                 $interp invokehidden source $trans(modfile)
             } on error {result} {
-                throw {MODERROR} \
+                throw {MODERROR LOAD} \
                     "Error loading mod [file tail $trans(modfile)]: $result"
             }
         }

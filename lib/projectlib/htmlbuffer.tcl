@@ -350,49 +350,78 @@ oo::class create ::projectlib::htmlbuffer {
     #-------------------------------------------------------------------
     # Headings
     
-    # h1 title ?options?
+    # h1 ?options? title
     #
-    # title   - A title string
     # options - Attribute options
+    # title   - A title string
     #
     # Returns an HTML H1 title.
 
-    method h1 {title args} {
+    method h1 {args} {
+        set title [my PopOdd args]
         my wrapln h1 $title {*}$args
     }
 
-    # h2 title ?options?
+    # h2 ?options? title
     #
-    # title   - A title string
     # options - Attribute options
+    # title   - A title string
     #
-    # Returns an HTML H2 title.
+    # Returns an HTML H1 title.
 
-    method h2 {title args} {
-        my wrapln h1 $title {*}$args
+    method h2 {args} {
+        set title [my PopOdd args]
+        my wrapln h2 $title {*}$args
     }
 
-    # h3 title ?options?
+    # h3 ?options? title
     #
-    # title   - A title string
     # options - Attribute options
+    # title   - A title string
     #
-    # Returns an HTML H3 title.
+    # Returns an HTML H1 title.
 
-    method h3 {title args} {
-        my wrapln h1 $title {*}$args
+    method h3 {args} {
+        set title [my PopOdd args]
+        my wrapln h3 $title {*}$args
     }
 
-    # h4 title ?options?
+    # h4 ?options? title
     #
-    # title   - A title string
     # options - Attribute options
+    # title   - A title string
     #
-    # Returns an HTML H4 title.
+    # Returns an HTML H1 title.
 
-    method h4 {title args} {
+    method h4 {args} {
+        set title [my PopOdd args]
         my wrapln h4 $title {*}$args
     }
+
+    # h5 ?options? title
+    #
+    # options - Attribute options
+    # title   - A title string
+    #
+    # Returns an HTML H1 title.
+
+    method h5 {args} {
+        set title [my PopOdd args]
+        my wrapln h5 $title {*}$args
+    }
+
+    # h6 ?options? title
+    #
+    # options - Attribute options
+    # title   - A title string
+    #
+    # Returns an HTML H1 title.
+
+    method h6 {args} {
+        set title [my PopOdd args]
+        my wrapln h6 $title {*}$args
+    }
+
 
     #-------------------------------------------------------------------
     # Other HTML Tags
@@ -1044,7 +1073,7 @@ oo::class create ::projectlib::htmlbuffer {
     }
     export /label
 
-    # textarea ?options...? ?text?
+    # textarea name ?options...? ?text?
     #
     # text    - A text string to initialize the textarea.
     # options - Attribute options
@@ -1052,10 +1081,10 @@ oo::class create ::projectlib::htmlbuffer {
     # Defines a <textarea> block.  </textarea> tag is 
     # added automatically.
    
-    method textarea {args} {
+    method textarea {name args} {
         set text [my PopOdd args]
 
-        my wrapln textarea $text {*}$args
+        my wrapln textarea $text -name $name {*}$args
     }
 
     # submit ?options? ?label?

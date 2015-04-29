@@ -272,30 +272,29 @@ options are as given above.
 htmlbuffer(n) provides many instance commands, many of which are related
 in families; consequently, they will be documented in families as well.<p>
 
-<subsection "Buffer Options">
 
-<deflist buffer options>
+<subsection "Buffer Management">
+
+<deflist Buffer Management>
 
 <defitem cget {<i obj> cget <i>option</i>}>
 
 Returns the value of the specified <i>option</i>.<p>
+
+<defitem clear {<i obj> clear}>
+
+Clears the object's contents, popping any extra buffers from the
+stack. Note that this is done automatically by the <iref /page> command.<p>
 
 <defitem configure {<i obj> configure <i>option value...</i>}>
 
 Sets the value of one or more of the object's
 options.<p>
 
-</deflist buffer options>
+<defitem escape {<i obj> escape <i text>}>
 
-
-<subsection "Buffer Management">
-
-<deflist Buffer Management>
-
-<defitem clear {<i obj> clear}>
-
-Clears the object's contents, popping any extra buffers from the
-stack. Note that this is done automatically by the <iref /page> command.<p>
+Escapes any "&lt;", "&gt;", and "&amp;" characters in the input so that
+they display as such rather than appearing to be HTML markup.<p>
 
 <defitem get {<i obj> get}>
 
@@ -385,6 +384,16 @@ formatted HTML.<p>
 <defitem br {<i obj> br}>
 
 Adds a <tag br> tag to the buffer, followed by a newline.<p>
+
+<defitem h1 {<i obj> h1 ?<i options>? <i title>}>
+<defitem h2 {<i obj> h2 ?<i options>? <i title>}>
+<defitem h3 {<i obj> h3 ?<i options>? <i title>}>
+<defitem h4 {<i obj> h4 ?<i options>? <i title>}>
+<defitem h5 {<i obj> h5 ?<i options>? <i title>}>
+<defitem h6 {<i obj> h6 ?<i options>? <i title>}>
+
+Adds an HTML header enclosing the given <i title>; any <i options> and
+their values are turned into element attributes.<p>
 
 <defitem hr {<i obj> hr ?<i options...>?}>
 
@@ -550,58 +559,132 @@ htmlbuffer's tables make use of a <tag table> CSS class called
 The CSS classes are defined by the client, and allow the table to be
 displayed with stripes if that is desired.<p>
 
-<b TBD>: Continue here!<p>
+<deflist tables>
+
+<defitem table {<i obj> table ?<i options...>? ?<i body>?}>
+
+Begins an HTML table.  By default there are no headers, the element
+<tt class> attribute will be "<tt pretty>" and the 
+<tt cellpadding> attribute will be "<tt 5>".<p>
+
+If the <tt -headers> option is given, its value should be a list of
+column headers; the header row is then added automatically.  Any remaining
+options and values are converted into element attributes on the 
+<tag table> element.<p>
+
+If <i>body</i> is given, it will be executed as a Tcl script and the 
+<tag /table> tag will be added automatically.<p>
+
+<defitem /table {<i obj> /table}>
+
+Terminates an HTML table by adding the <tag /table> tag.<p>
+
+<defitem tr {<i obj> tr ?<i options...>? ?<i body>?}>
+
+Begins a new table row, adding the <tag tr> tag.  By default, the
+tag will have its <tt class> attribute set to "<tt oddrow>" or
+"<tt evenrow>" and its <tt valign> attribute set to "<tt top>".
+Any options and their values are converted into additional element 
+attributes.<p>
+
+Note that the first row in the table (not including the header) is always
+considered row 0 and hence an "<tt evenrow>".<p>
+
+If <i>body</i> is given, it will be executed as a Tcl script and the
+<tag /tr> tag will be added automatically.<p>
+
+<defitem /tr {<i obj> /tr}>
+
+Terminates an HTML table row by adding the <tag /tr> tag.<p>
+
+<defitem td {<i obj> td ?<i options...>? ?<i text>?}>
+
+Begins a new table data item, adding the <tag td> tag.  By default,
+the "<tt align>" attribute will be set to "<tt left>".  Any 
+options and their values are added as additional element attributes.<p>
+
+If <i text> is given, it will be added to the buffer and
+the <tag /td> tag will be added automatically.<p>
+
+<defitem td-with {<i obj> td-with ?<i options...>? <i body>}>
+
+Begins a new table data item, adding the <tag td> tag.  By default,
+the "<tt align>" attribute will be set to "<tt left>".  Any 
+options and their values are added as additional element attributes.<p>
+
+The <i>body</i> is executed as a Tcl script, presumably adding content
+to the buffer, and then the <tag /td> tag is added automatically.<p>
+
+<defitem /td {<i obj> /td}>
+
+Terminates an HTML table cell by adding the <tag /td> tag.<p>
+
+<defitem rowcount {<i obj> rowcount}>
+
+Returns the number of <iref tr> calls made for the most recent
+<iref table>.  This can be used with <iref push> and <iref pop>
+to avoid including a table if it has no rows of data.<p>
+
+</deflist tables>
 
 <subsection "Records">
 
-<subsection "HTML Forms">
+<deflist records>
 
-<subsection "HTML Queries">
+<defitem record {<i obj> record ?<i options...>? ?<i body>?}>
 
-<subsection "Helper Commands">
+Begins a record structure, a borderless two-column table of labels
+and values; see <xref "Records and Fields">.  Any <i options...> and
+their values are added as element attributes on the <tag table> tag.<p>
 
+If the <i body> is given, it should be a Tcl script creating content to 
+go in the record; the record will be terminated automatically.  
+If the <i>body</i> is omitted, then the <iref /record> command must 
+be used to terminate the table.<p>
 
-<deflist instance>
+Record structures contain one or more <iref field> structures.<p>
 
-<defitem dl {<i obj> dl ?<i>body</i>?}>
+<defitem /record {<i obj> /record}>
 
-Begins a standard <code>&lt;dl&gt;</code> list.  If <i>body</i> is given,
-it is executed as a Tcl script and <iref /dl> is executed automatically.<p>
-
-<defitem dlitem {<i obj> dlitem <i>dt dd</i>}>
-
-Adds one complete item to the <code>&lt;dl&gt;</code> list, terminated by
-a <code>&lt;p&gt;</code>.<p>
-
-<defitem /dl {<i obj> /dl}>
-
-Terminates a <code>&lt;dl&gt;</code> list.<p>
+Terminates a <iref record> structure.<p>
 
 
-<defitem field {<i obj> field <i>label</i> ?<i>body</i>?}>
+<defitem field {<i obj> field <i label> ?<i text>?}>
+
+Creates a field, a labeled value, within a <iref record> structure; see 
+<xref "Records and Fields">.  The field will have the given <i>label</i>.
+If the <i text> is given, it is used as the label's value and the
+and the field will be terminated automatically.<p>
+
+<defitem field-with {<i obj> field <i label> <i body>}>
 
 Creates a field, a labeled value, within a <iref record> structure; see 
 <xref "Records and Fields">.  The field will have the given <i>label</i>
-text.  If the <i>body</i> is given, it is a Tcl script that will create
-the desired value content, and the field will be terminated automatically.
-If the <i>body</i> is omitted, the field content must be explicitly
-terminated by the <iref /field> command.<p>
+text.  The <i body> is a Tcl script that will create
+the desired value content, and the field will be terminated 
+automatically.<p>
 
 <defitem /field {<i obj> /field}>
 
 Terminates a <iref field> in a <iref record>.<p>
 
+</deflist records>
+
+<subsection "HTML Forms">
+
+The following commands are used to build HTML forms.<p>
+
+<deflist forms>
+
+
 <defitem form {<i obj> form ?<i>options...</i>?}>
 
-Adds a <code>&lt;form&gt;</code> element to the buffer; any options and
-their values are naively turned into element attributes.<p>
+Begins an HTML <tag form> element; any options and
+their values are converted into element attributes.<p>
 
 By default, submitting the form will reload the same page with the form's 
 parameters as the query.  To load a different page, specify the URL explicitly
 using the <b>-action</b> option (i.e., the "action" attribute).<p>
-
-The form's entries are defined by <iref label> and <iref input> elements,
-possibly along with other HTML.<p>
 
 The following options are of particular interest:<p>
 
@@ -611,173 +694,67 @@ The action URL can be absolute, relative to the current page, or "" to simply
 reload the current page.  Note that any query in the <i>url</i> will be 
 ignored.<p>
 
-<defopt {-autosubmit <i>flag</i>}>
-If the <i>flag</i> is true, then the form will be submitted
-automatically when form inputs change in particular ways, i.e., when
-a new enumerated value is chosen from a pulldown.  Otherwise, the
-form will only be submitted when the user presses the 
-<iref submit> button.
+<defopt {-method <i>method</i>}>
+By default, the form is sent using an HTTP "<tt get>" request.  This option
+can be used to request a different HTTP method, e.g., "<tt post>".<p>
 </deflist options>
 
 <defitem /form {<i obj> /form}>
 
-Adds a <code>&lt;/form&gt;</code> element to the buffer, terminating the current
-form.<p>
+Terminates an HTML form by adding the <tag form> tag.<p>
 
-<defitem h1 {<i obj> h1 <i>title</i> ?<i>anchor</i>?}>
-<defitem h2 {<i obj> h2 <i>title</i> ?<i>anchor</i>?}>
-<defitem h3 {<i obj> h2 <i>title</i> ?<i>anchor</i>?}>
+<defitem label {<i obj> label <i name> ?<i options...>? ?<i text>?}>
 
-Generates an HTML <code>&lt;h1&gt;</code>, <code>&lt;h2&gt;</code>, or
-<code>&lt;h3&gt;</code> tag with the given <i>title</i>.  If
-<i>anchor</i> is given, it can be used as an anchor to that spot in
-the page in URLs from elsewhere in the page (or from other pages
-entirely).<p>
+Begins a <tag label> element within a <iref form>.  The element
+tags the label text associated with the form input whose name
+is <i>name</i>.<p>
 
-<defitem hr {<i obj> hr}>
-
-Adds an <code>&lt;hr&gt;</code> tag to the buffer.<p>
-
-<defitem image {<i obj> image <i>name</i> ?<i>align</i>?}>
-
-Generates an <code>&lt;img&gt;</code> tag with "src" equal to
-<code>/image/<i>name</i></code> and the specified alignment,
-<b>left</b>, <b>right</b>, or <b>center</b>.<p>
-
-This command is for use with <xref myserver(i)> instances that
-support querying Tk images.<p>
-
-<defitem input {<i obj> input <i>name itype value</i> ?<i>options...</i>?}>
-
-Inserts an <code>&lt;input&gt;</code> element into the current
-<iref form>.  The input will have the given <i>name</i> and initial
-<i>value</i>; the <i>itype</i> must be one of the input types listed
-below.  Any provided options are passed along as attributes;
-different input types expect different options.<p>
-
-The input types are as follows:<p>
-
-<deflist itypes>
-
-<defitem itype_enum {<b>enum</b>}>
-
-An <xref enumfield(n)> widget.  The set of
-enumerated values comes from a URL specified as the
-<code>-src</code> option, which must provide the <b>tcl/enumlist</b> 
-or <b>tcl/enumdict</b> content type.  By default, the
-<xref mybrowser(n)> will look for a <b>tcl/enumlist</b>; to use a
-<b>tcl/enumdict</b>, pass the content type as the value of the
-<code>-content</code> option.<p>
-
-<defitem itype_text {<b>text</b>}>
-
-A <xref textfield(n)> widget.  Set the width in characters using
-the <code>-size</code> option.<p>
-</deflist itypes>
-
-<defitem label {<i obj> label <i>for</i> ?<i>text</i>?}>
-
-Inserts a <code>&lt;label&gt;</code> element into a <iref form>.  The element
-tags the label text associated with the <iref input> whose name
-is <i>for</i>.<p>
-
+Any options and their values are converted into element attributes.
 If <i>text</i> is given, it will be inserted as the label text, and
-the <iref /label> element will be inserted automatically.<p>
+the <tag /label> tag will be inserted automatically.<p>
 
 <defitem /label {<i obj> /label}>
 
-Inserts a <code>&lt;/label&gt;</code> element into a <iref form>, terminating
-the current <iref label>.<p>
+Terminates a <iref label> by adding the <tag /label> tag.<p>
 
-<defitem li {<i obj> li ?<i>body</i>?}>
+<defitem entry {<i obj> entry <i name> ?<i options...>?}>
 
-Adds a <code>&lt;li&gt;</code> tag to the buffer.<p>
+Adds a "text" <tag input> with the given <i name> to the current 
+<iref form>.  Any options and their values are converted to element 
+attributes; in particular, the <tt -size> option can be used to set
+the input's width in characters.<p>
 
-If <i>body</i> is given, it will be executed as a Tcl script; then,
-<iref /li> will be called automatically.<p>
+<defitem hidden {<i obj> hidden <i name value> ?<i options...>?}>
 
-<defitem li-text {<i obj> li-text <i>text</i>}>
+Adds a "hidden" <tag input> with the given <i name> and <i value>
+to the current <iref form>.  Any options and their values are converted 
+to element attributes.<p>
 
-Adds <code>&lt;li&gt;<i>text</i>&lt;/li&gt;</code> to the buffer.<p>
+<defitem textarea {<i obj> textarea <i name> ?<i options...>? ?text?}>
 
-<defitem /li {<i obj> /li}>
+Adds a <tag textarea>...<tag /textarea> element with the given <i name> 
+to the current <iref form>.  Any options and their values are converted to 
+element attributes; in particular, the <tt -rows> and <tt -cols> options
+can be used to set the text area's height and width in characters.<p>
 
-Adds a <code>&lt;/li&gt;</code> tag to the buffer.<p>
+If a <i text> string is given, it will be the input's initial value;
+otherwise, the input will be empty.<p>
 
-<defitem link  {<i obj> link <i>url label</i>}>
+<defitem submit {<i obj> submit ?<i options...>? ?<i label>?}>
 
-Adds an <code>&lt;a&gt;</code> link to the buffer with the given
-"href" <i>url</i> and text <i>label</i>.<p>
+Adds a "submit" <tag input> to the current <iref form>.  When pressed,
+the form will add its <tag input> values to the its 
+<tt -action> URL using standard query syntax, and request the resulting
+URL.  Any options and their values are converted to element attributes.<p>
 
-<defitem linkbar  {<i obj> linkbar <i>linkdict</i>}>
+If <i>label</i> is given, it will be used as the label on the button;
+otherwise the button will say "Submit".<p>
 
-Given a dictionary of URLs and label strings, formats a "link bar": a
-horizontal bar of links.  Link bars are usually used near the top of a
-page to link to content further down.<p>
+</deflist forms>
 
-<defitem linklist  {<i obj> linklist ?<i>options...</i>? <i>linkdict</i>}>
+<subsection "HTML Queries">
 
-Given a dictionary of URLs and label strings, generates a list
-of links, concatenated together with ", ".  If the <i>linkdict</i> is
-empty, generates nothing.<p>
-
-The options are as follows:<p>
-
-<deflist options>
-
-<defopt {-delim <i>delim</i>}>
-
-Delimiter text to go between the list entries; defaults to ", ".<p>
-
-<defopt {-default <i>text</i>}>
-
-Specifies the text to generate if the link dict is empty; defaults to
-"".<p>
-
-</deflist options>
-
-<defitem object {<i obj> object <i>url</i> ?<i>options...</i>?}>
-
-Embeds a <b>tk/widget</b> resource in the current page as an 
-<code>&lt;object&gt;</code> element.  The resource
-is found at the specified <i>url</i>.  The <i>options</i> consist of
-any number of option/value pairs with the usual syntax; they are
-converted directly into attributes and values on the
-<code>&lt;object&gt;</code> in the most naive possible way.<p>
-
-It is common to assign an <code>-id</code>, and to specify the 
-<code>-width</code> and <code>-height</code>.<p>
-
-<defitem pager {<i obj> pager <i>qdict page pages</i>}>
-
-Creates a "Page:" navigation bar for moving through multiple pages of 
-output (i.e., search results, a long table, or so forth).  This command
-presumes that the page in question uses query parameters of the form
-"<code>?parm=value+parm=value</code>" to customize the page's output, and 
-that the query parameter "<code>page=<i>num</i></code>" is used to select
-the desired page of output.<p>
-
-The <i>pages</i> argument is the total number of pages of output, and 
-<i>page</i> is the number of the page (1 to <i>pages</i>) that is currently
-being shown.<p>
-
-The <i>qdict</i> parameter is a dictionary of query parameters to be included 
-in the links created as part of the navigation bar.  All links are back to the
-page itself.
-
-<defitem para {<i obj> para}>
-
-Adds a <code>&lt;p&gt;</code> tag to the buffer.<p>
-
-<defitem pre {<i obj> pre ?<i>text</i>?}>
-
-Adds a <code>&lt;pre&gt;</code> tag to the buffer.  If the <i>text</i>
-is given, it is sanitized for inclusion in an HTML page, and
-<iref /pre> is called automatically.<p>
-
-<defitem /pre {<i obj> /pre ?<i>text</i>?}>
-
-Adds a <code>&lt;/pre&gt;</code> tag to the buffer.<p>
+<deflist queries>
 
 <defitem query {<i obj> query <i>sql</i> ?<i>options...</i>?}>
 
@@ -813,7 +790,7 @@ Defines the text to generate if the result set is empty.  Defaults to
 <defopt {-escape <i>flag</i>}>
 
 If the <i>flag</i> is <b>yes</b>, all output from the
-<code>-rdb</code> will be sanitized using <iref htmlbuffer escape>;
+<code>-rdb</code> will be sanitized using <iref escape>;
 otherwise not.  The option defaults to <b>no</b>.  Use this when
 querying arbitrary data so that special characters in the result will
 not confuse the HTML formatting.<p>
@@ -826,142 +803,7 @@ set.<p>
 
 </deflist options>
 
-<defitem rowcount {<i obj> rowcount}>
-
-Returns the number of <iref tr> calls made for the most recent
-<iref table>.  This can be used with <iref push> and <iref pop>
-to avoid including a table if it has no rows of data.<p>
-
-<defitem record {<i obj> record ?<i>body</i>?}>
-
-Begins a record structure, a borderless two-column table of labels
-and values; see <xref "Records and Fields">.  If <i>body</i> is given,
-it should be a Tcl script creating content to go in the record; the record
-will be terminated automatically.  If the <i>body</i> is omitted, then 
-the <iref /record> command must be used to terminate the table.<p>
-
-Record structures contain one or more <iref field> structures.<p>
-
-<defitem /record {<i obj> /record}>
-
-Terminates a <iref record> structure.<p>
-
-<defitem span {<i obj> span <i>cls</i> ?<i>body</i>?}>
-
-Inserts a <code>&lt;span class="<i>cls</i>"&gt;</code> tag into the buffer. 
-If <i>body</i> is given, it will be executed as a Tcl script; then,
-<iref /span> will be called automatically.<p>
-
-<defitem /span {<i obj> /span}>
-
-Inserts a <code>&lt;/span&gt;</code> tag into the buffer.<p>
-
-
-<defitem submit {<i obj> submit ?<i>label</i>?}>
-
-Adds a "submit" button to the current <iref form>.  When pressed,
-the <xref mybrowser(n)> will add the form's <iref input> values
-to the form's <b>action</b> URL using standard query syntax, and
-display the resulting URL.<p>
-
-If <i>label</i> is given, it will be used as the label on the button;
-otherwise the button will say "Submit".<p>
-
-<defitem subtitle {<i obj> subtitle <i>title</i>
-?<i>anchor</i>? ?<i>link label</i> ?<i>link label...</i>??}>
-
-Defines a subtitle with in a page.  The subtitle is equivalent to
-an <iref h2> tag; however, it can include a linkbar directly below
-the title.  If
-<i>anchor</i> is given, it can be used as an anchor to this subtitle
-from elsewhere in the page (or from other pages entirely).  If one or
-more <i>link</i>/<i>label</i> pairs are included, the linkbar will be
-created; the linkbar will use <iref tiny> text, and will be no wider
-than the title (unless there are numerous links).
-
-The subtitle's linkbar is usually used for links to pages that contain
-more detail about the information following the subtitle.<p>
-
-
-<defitem table {<i obj> table <i>headers</i> ?<i>body</i>?}>
-
-Begins an HTML table with the given column <i>headers</i>.<p>
-
-If <i>body</i> is given, it will be executed as a Tcl script; then,
-<iref /table> will be called automatically.<p>
-
-
-<defitem /table {<i obj> /table}>
-
-Completes an HTML table.<p>
-
-<defitem td {<i obj> td ?<i>align</i>? ?<i>body</i>?}>
-
-Adds a <code>&lt;td&gt;</code> tag for a new table cell.  The
-default alignment is <b>left</b></i>, but <i>align</i> may be
-<b>left</b>, <b>right</b>, or <b>center</b>.<p>
-
-If <i>body</i> is given, it will be executed as a Tcl script; then,
-<iref /td> will be called automatically.<p>
-
-
-<defitem /td {<i obj> /td}>
-
-Completes an HTML table cell with a <code>&lt;/td&gt;</code> tag.<p>
-
-<defitem tr {<i obj> tr ?<i>attr value...</i>? ?<i>body</i>?}>
-
-Adds a <code>&lt;tr&gt;</code> tag for a new table row.<p>
-
-If any attributes and values are given, they will be included in the
-generated tag.<p>
-
-If <i>body</i> is given, it will be executed as a Tcl script; then,
-<iref /tr> will be called automatically.<p>
-
-
-<defitem /tr {<i obj> /tr}>
-
-Completes an HTML table row with a <code>&lt;/tr&gt;</code> tag.<p>
-
-
-<defitem tiny {<i obj> tiny <i>text</i>}>
-
-Adds the <i>text</i> to the buffer in a tiny font.<p>
-
-<defitem tinyb {<i obj> tinyb <i>text</i>}>
-
-Adds the <i>text</i> to the buffer in a tiny bold font.<p>
-
-<defitem tinyi {<i obj> tinyi <i>text</i>}>
-
-Adds the <i>text</i> to the buffer in a tiny italic font.<p>
-
-<defitem title {<i obj> title <i>title</i> ?<i>over</i>? ?<i>under</i>?}>
-
-Formats a visible page <i>title</i> (as distinguished from the
-<code>&lt;title&gt;</code> tag in the page header, which is not
-normally visible).  If the <i>over</i> text is given, it will appear
-in small type immediately over the main <i>title</i>; if the
-<i>under</i> text is given, it will in normal type immediately under
-the main <i>title</i>.<p>
-
-<defitem ul {<i obj> ul ?<i>body</i>?}>
-
-Inserts a <code>&lt;ul&gt;</code> tag into the buffer.<p>
-
-If <i>body</i> is given, it will be executed as a Tcl script; then,
-<iref /ul> will be called automatically.<p>
-
-<defitem /ul {<i obj> /ul}>
-
-Inserts a <code>&lt;/ul&gt;</code> tag into the buffer.<p>
-
-</deflist>
-
-<section ENVIRONMENT>
-
-Requires Tcl 8.5 or later.<p>
+</deflist queries>
 
 <section AUTHOR>
 
