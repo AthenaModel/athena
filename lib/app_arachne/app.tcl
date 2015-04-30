@@ -213,6 +213,32 @@ snit::type app {
         $logs(app) $level $comp $message
     }
 
+    # profile ?depth? command ?args...?
+    #
+    # Calls the command once using [time], in the caller's context,
+    # and logs the outcome, returning the command's return value.
+    # In other words, you can stick "$self profile" before any command name
+    # and profile that call without changing code or adding new routines.
+    #
+    # If the depth is given, it must be an integer; that many "*" characters
+    # are added to the beginning of the log message.
+
+    typemethod profile {args} {
+        if {[string is integer -strict [lindex $args 0]]} {
+            set prefix "[string repeat * [lshift args]] "
+        } else {
+            set prefix ""
+        }
+
+        set msec [lindex [time {
+            set result [uplevel 1 $args]
+        } 1] 0]
+
+        puts "${prefix}profile [list $args] $msec"
+
+        return $result
+    }
+
     #-------------------------------------------------------------------
     # Utility Commands
     
