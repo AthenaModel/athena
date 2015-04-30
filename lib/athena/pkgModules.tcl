@@ -191,16 +191,21 @@ source [file join $::athena::library differencer.tcl                 ]
 source [file join $::athena::library comparison.tcl                  ]
 source [file join $::athena::library vardiff.tcl                     ]
 
+source [file join $::athena::library vardiffs vardiff_bsysmood.tcl   ]
+source [file join $::athena::library vardiffs vardiff_bsyssat.tcl    ]
 source [file join $::athena::library vardiffs vardiff_control.tcl    ]
+source [file join $::athena::library vardiffs vardiff_gdp.tcl        ]
+source [file join $::athena::library vardiffs vardiff_goodscap.tcl   ]
 source [file join $::athena::library vardiffs vardiff_influence.tcl  ]
 source [file join $::athena::library vardiffs vardiff_mood.tcl       ]
 source [file join $::athena::library vardiffs vardiff_nbmood.tcl     ]
-source [file join $::athena::library vardiffs vardiff_bsysmood.tcl   ]
+source [file join $::athena::library vardiffs vardiff_nbsat.tcl      ]
 source [file join $::athena::library vardiffs vardiff_nbsecurity.tcl ]
 source [file join $::athena::library vardiffs vardiff_pbmood.tcl     ]
+source [file join $::athena::library vardiffs vardiff_pbsat.tcl      ]
 source [file join $::athena::library vardiffs vardiff_sat.tcl        ]
-source [file join $::athena::library vardiffs vardiff_bsyssat.tcl    ]
 source [file join $::athena::library vardiffs vardiff_support.tcl    ]
+source [file join $::athena::library vardiffs vardiff_vrel.tcl       ]
 
 
 # Tk Code (loaded only if Tk is already present)

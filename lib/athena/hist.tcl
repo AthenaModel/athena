@@ -61,6 +61,7 @@ snit::type ::athena::hist {
                 DELETE FROM hist_econ;
                 DELETE FROM hist_econ_i;
                 DELETE FROM hist_econ_ij;
+                DELETE FROM hist_plant_na;
                 DELETE FROM hist_service_sg;
                 DELETE FROM hist_support;
                 DELETE FROM hist_hrel;
@@ -80,6 +81,7 @@ snit::type ::athena::hist {
                 DELETE FROM hist_econ         WHERE t > $t;
                 DELETE FROM hist_econ_i       WHERE t > $t;
                 DELETE FROM hist_econ_ij      WHERE t > $t;
+                DELETE FROM hist_plant_na     WHERE t > $t;
                 DELETE FROM hist_service_sg   WHERE t > $t;
                 DELETE FROM hist_support      WHERE t > $t;
                 DELETE FROM hist_hrel         WHERE t > $t;
@@ -187,6 +189,15 @@ snit::type ::athena::hist {
             JOIN demog_g   AS D USING (g);
         }
 
+        if {[$adb parm get hist.plant]} {
+            set gpp [money validate [$adb parm get plant.bktsPerYear.goods]]
+
+            $adb eval {
+                INSERT INTO hist_plant_na(t,n,a,num,cap)
+                SELECT $t AS t, n, a, num, $gpp*num*rho AS cap
+                FROM plants_na;
+            }
+        }
         if {[$adb parm get hist.support]} {
             $adb eval {
                 INSERT INTO hist_support(t,n,a,direct_support,support,influence)

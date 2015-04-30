@@ -84,9 +84,9 @@ snit::type ::athena::stats {
             set table "civgroups"
         }
 
-        set grps [$adb eval "SELECT g FROM $table"]
+        set glist [$adb eval "SELECT g FROM $table"]
 
-        return [$self moodByGroups $grps $t]
+        return [$self moodByGroups $glist $t]
     }
 
     # satbybsys t clist
@@ -95,8 +95,8 @@ snit::type ::athena::stats {
     # clist  - A list of concerns over which to roll up 
     #
     # This method rolls up satisfaction over a list of concerns at some
-    # simulation time t.  If all four concerns are passed in the result is
-    # identical to a call to moodbybys, but this call is more expensive.
+    # simulation time t by belief system.  If all four concerns are passed 
+    # in the result is identical to a call to moodbybys.
 
     method satbybsys {t clist} {
         # FIRST, get the belief system IDs
@@ -118,6 +118,59 @@ snit::type ::athena::stats {
         }
 
         return $rlist
+    }
+
+    # satbynb t clist
+    #
+    # t      - A simulation time in ticks
+    # clist  - A list of concerns over which to roll up
+    #
+    # This method rolls up satisfaction over a list of concerns at some
+    # simulation time t by neighborhood. Note: a better solution to calling
+    # this method with all four concerns would be to look it up out of the 
+    # hist_nbhood table, where it is already computed.
+
+    method satbynb {t clist} {
+        set nbhoods [$adb nbhood names]
+        array set glists [lzipper $nbhoods]
+
+        set rlist [list]
+
+        $adb eval {
+            SELECT g, n FROM civgroups_view
+        } {
+            lappend glists($n) $g
+        }
+
+        foreach {n glist} [array get glists] {
+            set sat [$self satByGroups $glist $clist $t]
+            lappend rlist $n $sat
+        }
+
+        return $rlist
+    }
+
+    # pbsat t clist ?local?
+    #
+    # t       - A simulation time
+    # clist   - A list of concerns
+    # local   - Flag indicating whether only local groups should be included
+    #
+    # This method rolls up satisfaction for one or more concern over all
+    # civilian groups in the playbox.  By default, only local groups are
+    # included.  If clist contains all concerns, this call is equivalent to
+    # a call to pbmood.
+
+    method pbsat {t clist {local 1}} {
+        set table "local_civgroups"
+
+        if {!$local} {
+            set table "civgroups"
+        }
+
+        set glist [$adb eval "SELECT g FROM $table"]
+
+        return [$self satByGroups $glist $clist $t]
     }
 
     #--------------------------------------------------------------------

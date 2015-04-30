@@ -110,7 +110,27 @@ snit::type ::athena::differencer {
             ATTACH $db2 AS s2;
         }
 
-        # hist_nbhood data
+        $type CompareNbhoodOutputs    $comp $cdb
+        $type CompareAttitudeOutputs  $comp $cdb
+        $type ComparePoliticalOutputs $comp $cdb
+        $type CompareEconomicOutputs  $comp $cdb
+
+        $cdb destroy
+    }
+
+    # CompareNbhoodOutputs comp cdb
+    #
+    # comp   - A comparison object
+    # cdb    - The comparison sqldocument(n)
+    #
+    # This method compares neighborhood specific data for two scenarios
+    # or one scenario at different times.
+
+    typemethod CompareNbhoodOutputs {comp cdb} {
+        set t1 [$comp t1]
+        set t2 [$comp t2]
+
+        # FIRST, mood, security and control by nbhood
         $cdb eval {
             SELECT H1.n          AS n,
                    H1.nbsecurity AS nbsec1,
@@ -128,7 +148,35 @@ snit::type ::athena::differencer {
             $comp add nbmood     $nbmood1 $nbmood2 $n
         }
 
-        # hist_civg data
+        # NEXT, satisfaction by nbhood and concern
+        foreach c {AUT CUL SFT QOL} {            
+            set d1 [$comp s1 stats satbynb $t1 $c]
+            set d2 [$comp s2 stats satbynb $t2 $c]
+            dict set sdict $c [list $d1 $d2]
+        }
+
+        dict for {c ddict} $sdict {
+            set d1 [lindex $ddict 0]
+            set d2 [lindex $ddict 1]
+            foreach {n1 sat1} [dict get $d1] {n2 sat2} [dict get $d2] {
+                $comp add nbsat $sat1 $sat2 $n1 $c
+            }
+        }
+    }
+
+    # CompareAttitudeOutputs comp cdb
+    #
+    # comp    - A comparison object
+    # cdb     - The comparison sqldocument(n)
+    #
+    # This method compares attitudes of civilian groups for two scenarios
+    # or one scenario at different times.
+
+    typemethod CompareAttitudeOutputs {comp cdb} {
+        set t1 [$comp t1]
+        set t2 [$comp t2]
+
+        # FIRST, CIV mood by group
         $cdb eval {
             SELECT H1.g         AS g,
                    H1.mood      AS mood1,
@@ -140,7 +188,7 @@ snit::type ::athena::differencer {
             $comp add mood $mood1 $mood2 $g 
         }
 
-        # hist_sat data
+        # NEXT, CIV satisfaction by group and concern
         $cdb eval {
             SELECT H1.g         AS g,
                    H1.c         AS c,
@@ -153,49 +201,74 @@ snit::type ::athena::differencer {
             $comp add sat $sat1 $sat2 $g $c
         }
 
-        # sat by bsystem
-        set asat1 [$comp s1 stats satbybsys $t1 AUT]
-        set asat2 [$comp s2 stats satbybsys $t2 AUT]
+        # NEXT, CIV satisfaction by belief system and concern
+        set sdict [dict create]
 
-        set csat1 [$comp s1 stats satbybsys $t1 CUL]
-        set csat2 [$comp s2 stats satbybsys $t2 CUL]
-        
-        set ssat1 [$comp s1 stats satbybsys $t1 SFT]
-        set ssat2 [$comp s2 stats satbybsys $t2 SFT]
-        
-        set qsat1 [$comp s1 stats satbybsys $t1 QOL]
-        set qsat2 [$comp s2 stats satbybsys $t2 QOL]
+        foreach c {AUT CUL SFT QOL} {
+            set d1 [$comp s1 stats satbybsys $t1 $c]
+            set d2 [$comp s2 stats satbybsys $t2 $c]
+            dict set sdict $c [list $d1 $d2]
+        }
 
-        # mood by bsystem
+        dict for {c ddict} $sdict {
+            set d1 [lindex $ddict 0]
+            set d2 [lindex $ddict 1]
+            foreach {bsid1 sat1} [dict get $d1] {bsid2 sat2} [dict get $d2] {
+                set bsname "B$bsid1"
+                $comp add bsyssat $sat1 $sat2 $bsname $c
+            }
+        }
+
+        # NEXT, CIV satisfaction in the playbox by concern
+        foreach c {AUT CUL SFT QOL} {
+            set ps1 [$comp s1 stats pbsat $t1 $c]
+            set ps2 [$comp s2 stats pbsat $t2 $c]
+            $comp add pbsat $ps1 $ps2 $c local
+        }
+
+        # NEXT, CIV mood by belief system
         set mbs1 [$comp s1 stats moodbybsys $t1]
         set mbs2 [$comp s2 stats moodbybsys $t2]
 
-        foreach bsid [$comp s1 bsys system ids] {
-            set bsname "B$bsid"
-            $comp add bsysmood \
-                [dict get $mbs1 $bsid] [dict get $mbs2 $bsid] $bsname
-
-            $comp add bsyssat \
-                [dict get $asat1 $bsid] [dict get $asat2 $bsid] $bsname AUT
-
-            $comp add bsyssat \
-                [dict get $csat1 $bsid] [dict get $csat2 $bsid] $bsname CUL
-
-            $comp add bsyssat \
-                [dict get $ssat1 $bsid] [dict get $ssat2 $bsid] $bsname SFT
-
-            $comp add bsyssat \
-                [dict get $qsat1 $bsid] [dict get $qsat2 $bsid] $bsname QOL
-
+        foreach {bsid1 mood1} [dict get $mbs1] {bsid2 mood2} [dict get $mbs2] {
+            set bsname "B$bsid1"
+            $comp add bsysmood $mood1 $mood2 $bsname
         }
 
-        # playbox mood (local CIV groups)
+        # NEXT, playbox mood (local CIV groups)
         set pbm1 [$comp s1 stats pbmood $t1]
         set pbm2 [$comp s2 stats pbmood $t2]
 
         $comp add pbmood $pbm1 $pbm2 local
 
-        # hist_support data
+        # NEXT, vertical relationship 
+        $cdb eval {
+            SELECT H1.g    AS g,
+                   H1.a    AS a,
+                   H1.vrel AS vrel1,
+                   H2.vrel AS vrel2
+            FROM s1.hist_vrel AS H1
+            JOIN s2.hist_vrel AS H2
+            ON (H1.g = H2.g AND H1.a = H2.a AND H1.t=$t1 AND H2.t=$t2)
+
+        } {
+            $comp add vrel $vrel1 $vrel2 $g $a
+        }
+    }
+
+    # ComparePoliticalOutputs comp cdb
+    # 
+    # comp    - A comparison object
+    # cdb     - A comparison sqldocument(n)
+    #
+    # This method compares certain political outputs for two scenarios
+    # or for one scenario at different times.
+
+    typemethod ComparePoliticalOutputs {comp cdb} {
+        set t1 [$comp t1]
+        set t2 [$comp t2]
+
+        # FIRST, create dicts to hold influence data 
         set i1 [dict create]
         set i2 [dict create]
 
@@ -204,6 +277,7 @@ snit::type ::athena::differencer {
             dict set i2 $n {}
         }
 
+        # NEXT, influence and support by neighborhood and actor
         $cdb eval {
             SELECT H1.n         AS n,
                    H1.a         AS a,
@@ -230,8 +304,42 @@ snit::type ::athena::differencer {
         foreach n [$comp s1 nbhood names] {
             $comp add influence [dict get $i1 $n] [dict get $i2 $n] $n
         }
+    }
 
-        $cdb destroy
+    # CompareEconomicOutputs comp cdb
+    #
+    # comp    - A comparison object
+    # cdb     - A comparsion sqldocument(n)
+    #
+    # This method compares certain economic model outputs for two
+    # scenarios or for one scenario at different times.
+    
+    typemethod CompareEconomicOutputs {comp cdb} {
+        set t1 [$comp t1]
+        set t2 [$comp t2]
+
+        # FIRST, GOODS production capacity by nbhood
+        $cdb eval {
+            SELECT H1.n         AS n,
+                   H1.cap       AS cap1,
+                   H2.cap       AS cap2
+            FROM s1.hist_plant_n AS H1
+            JOIN s2.hist_plant_n AS H2
+            ON (H1.n = H2.n AND H1.t=$t1 AND H2.t=$t2)
+        } {
+            $comp add goodscap $cap1 $cap2 $n
+        }
+
+        # NEXT, GDP
+        $cdb eval {
+            SELECT H1.dgdp     AS gdp1,
+                   H2.dgdp     AS gdp2
+            FROM s1.hist_econ AS H1
+            JOIN s2.hist_econ AS H2
+            ON (H1.t=$t1 AND H2.t=$t2)
+        } {
+            $comp add gdp $gdp1 $gdp2
+        }
     }
 }
 

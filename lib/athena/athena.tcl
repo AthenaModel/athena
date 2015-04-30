@@ -161,6 +161,7 @@ snit::type ::athena::athena {
     delegate method {bsys system cget}      to adb as {bsys system cget}
     delegate method {bsys system exists}    to adb as {bsys system exists}
     delegate method {bsys system ids}       to adb as {bsys system ids}
+    delegate method {bsys system namedict}  to adb as {bsys system namedict}
     delegate method {bsys system inuse}     to adb as {bsys system inuse}
     delegate method {bsys system view}      to adb as {bsys system view}
     delegate method {bsys system validate}  to adb as {bsys system validate}
@@ -295,6 +296,8 @@ snit::type ::athena::athena {
 
     delegate method {stats moodbybsys}      to adb as {stats moodbybsys}
     delegate method {stats satbybsys}       to adb as {stats satbybsys}
+    delegate method {stats satbynb}         to adb as {stats satbynb}
+    delegate method {stats pbsat}           to adb as {stats pbsat}
     delegate method {stats pbmood}          to adb as {stats pbmood}
 
     delegate method {unit get}              to adb as {unit get}

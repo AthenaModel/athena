@@ -1748,6 +1748,11 @@ snit::type ::athena::parmdb {
             to the hist_nbcoop table.
         }
 
+        $ps define hist.plant ::snit::boolean on {
+            If on, Athena will save, each week, the number and capacity
+            of GOODS production plants by neighborhood and actor.
+        }
+
         $ps define hist.pop ::snit::boolean on {
             If on, Athena will save, each week, the population
             of each civilian group, the civilian population of each 
