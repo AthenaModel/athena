@@ -456,6 +456,8 @@ oo::class create scenario_domain {
         set hud [huddle compile dict $result]
         huddle set hud diffs [$comp diffs huddle]
 
+        $comp destroy
+        
         return [js ok $hud]
     }
 
