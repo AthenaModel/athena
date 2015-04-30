@@ -3,6 +3,7 @@
 - Projectlib(n)
   - Tests for parmdict(n), smartdomain(n)
 - Athena(n)
+  - Optimize athena(n) creation, reset, load.  It's way slow.
   - Group athenadb(n) predicates under "is", e.g., "is busy".
   - Finish athena(n) man page!!!!!!!
 - Arachne
