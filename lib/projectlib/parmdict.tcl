@@ -133,6 +133,12 @@ oo::class create ::projectlib::parmdict {
         while {[llength $args] > 0 && ![dict exists $errors $parm]} {
             set opt [lshift args]
             switch -exact -- $opt {
+                -default {
+                    set defvalue [lshift args]
+                    if {$value eq ""} {
+                        set value $defvalue
+                    }
+                }
                 -ident {
                     my checkon $parm {
                         identifier validate $value

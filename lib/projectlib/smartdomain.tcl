@@ -15,6 +15,11 @@
 #
 #-----------------------------------------------------------------------
 
+namespace eval ::projectlib:: {
+    namespace export smarturl
+}
+
+
 oo::class create ::projectlib::smartdomain {
     #-------------------------------------------------------------------
     # Instance Variables
@@ -55,11 +60,19 @@ oo::class create ::projectlib::smartdomain {
         set info(domain) $domain
         set patterns [dict create]
 
-        my url /urlschema.html [mymethod UrlSchema] {This description.}
+        my url /urlschema.html {This description.}
 
         set trans(query) ""
 
         set schemaForm(order) alpha
+
+        # Create components in the instance namespace for use
+        # in URL handlers.
+
+        ::projectlib::htmlbuffer create hb \
+            -domain $domain
+
+        ::projectlib::parmdict create qdict
     }
 
     #-------------------------------------------------------------------
@@ -87,11 +100,10 @@ oo::class create ::projectlib::smartdomain {
     #-------------------------------------------------------------------
     # URL Registration
 
-    # url suffix handler docstring
+    # url suffix docstring
     #
     # suffix     - The URL suffix with filename and extension, e.g.,
     #              /this/that/index.html
-    # handler    - The handler command prefix; see below.
     # docstring  - A brief documentary string for the URL.
     #
     # Registers a URL with the domain.  The suffix must begin with a "/",
@@ -103,28 +115,28 @@ oo::class create ::projectlib::smartdomain {
     # The suffix will be matched by replacing the variables with 
     # regexp's, e.g., /actor/(\w+)/index.html.
     #
-    # The handler must be a command prefix, to which will be added
-    # one argument for each matched variable; the name of the request
-    # data array; and a dictionary of query data as parsed by ncgi.
-    # The full query string is also contained in the data array, in
-    # case the handler wants to handle it by itself.
+    # The suffix will be handled by the method of the same name, which
+    # will be called with one argument for each matched variable and
+    # a dictionary of query data as parsed by ncgi.
 
-    method url {suffix handler docstring} {
+    method url {suffix docstring} {
         # FIRST, turn it into a matching pattern; this will throw
         # an error if there's a problem.
-        set pattern [my GetUrlPattern $suffix]
+        set result [::projectlib::smartdomain::GetUrlPattern $suffix]
 
-        if {$pattern eq ""} {
+        if {[llength $result] == 0} {
             error "Invalid suffix: \"$suffix\""
         }
 
+        set pattern [lindex $result 0]
+
         # NEXT, save it all.
-        set info(handler-$suffix) $handler
+        set info(handler-$suffix) [list my $suffix]
         set info(docstring-$suffix) [outdent $docstring]
         dict set patterns $pattern $suffix
     }
 
-    # urltree root handler docstring
+    # urltree root docstring
     #
     # root       - The domain suffix that is the root of the tree, e.g.,
     #              /this/that
@@ -141,13 +153,12 @@ oo::class create ::projectlib::smartdomain {
     # regexp's and adding a regexp for the URL suffix, e.g., 
     # "/rdb/(\w+)/(.+..)".
     #
-    # The handler must be a command prefix, to which will be added
-    # one argument for each matched variable; the URL suffix; the name of 
-    # the request data array; and a dictionary of query data as parsed by 
-    # ncgi. The full query string is also contained in the data array, in
-    # case the handler wants to handle it by itself.
+    # URLs with this root will be handled by the method of the same name, 
+    # which will be called with one argument for each matched variable, 
+    # the URL suffix (following the root) and a dictionary of query data 
+    # as parsed by ncgi.
 
-    method urltree {root handler docstring} {
+    method urltree {root docstring} {
         # FIRST, turn it into a matching pattern.
         set pattern [my GetUrlTreePattern $root]
 
@@ -156,47 +167,9 @@ oo::class create ::projectlib::smartdomain {
         }
 
         # NEXT, save it all.
-        set info(handler-$root) $handler
+        set info(handler-$root) [list my $root]
         set info(docstring-$root) [outdent $docstring]
         dict set patterns $pattern $root
-    }
-
-    # GetUrlPattern suffix
-    #
-    # suffix  - A URL suffix, possibly containing variables.
-    #
-    # Returns the matching regexp pattern, or "" if the suffix
-    # is invalid.
-
-    method GetUrlPattern {suffix} {
-        if {[string index $suffix 0] ne "/"} {
-            return ""
-        }
-
-        set folders  [split [string range $suffix 1 end] /]
-        set filename [lpop folders]
-
-        set pattern "^"
-
-        foreach f $folders {
-            if {[regexp {^{\w+}$} $f]} {
-                append pattern {/(\w+)}
-            } elseif [regexp {^\w+$} $f] {
-                append pattern / $f
-            } else {
-                return ""
-            }
-        }
-
-        if {[regexp {^\w+\.\w+$} $filename]} {
-            append pattern / $filename
-        } else {
-            return ""
-        }
-
-        append pattern "\$"
-
-        return $pattern
     }
 
     # GetUrlTreePattern suffix
@@ -307,22 +280,17 @@ oo::class create ::projectlib::smartdomain {
         if {$data(proto) ne "POST" ||
             $data(mime,content-type) eq "application/x-www-form-urlencoded"
         } {
-            set qdict [ahttpd querydict $sock]
+            qdict setdict [ahttpd querydict $sock]
         } else {
-            set qdict {}
+            qdict setdict {}
         }
-
-
-        set pdict [::projectlib::parmdict new $qdict]
 
         try {
             set info(sock) $sock
-            set result [{*}$handler [self] $pdict]
+            set result [{*}$handler]
         } trap NOTFOUND {result} {
             ahttpd notfound $sock $result
             return
-        } finally {
-            $pdict destroy
         }
 
         set ctype [ahttpd mimetype frompath $suffix]
@@ -359,39 +327,46 @@ oo::class create ::projectlib::smartdomain {
         # NEXT, get the query data.
         set trans(query) $query
 
-        set pdict [::projectlib::parmdict new]
-
         if {$op ne "POST"} {
-            $pdict setdict $query
+            qdict setdict $query
         }
 
-        try {
-            return [{*}$handler [self] $pdict]
-        } finally {
-            $pdict destroy
-        }
+        return [{*}$handler]
     }
 
+    #-------------------------------------------------------------------
+    # Tools for use in domain handlers 
+
+    # redirect url
+    #
+    # url   - A server-relative URL
+    #
+    # Redirects to the URL.
+    #
+    # TBD: Should really be 'throw REDIRECT $url'
+
+    method redirect {url} {
+        throw [list HTTPD_REDIRECT $url] "Redirect to $url"
+    }
+
+    # query
+    #
+    # Returns the raw query string.
     
+    method query {} {
+        return $trans(query) 
+    }
 
     #-------------------------------------------------------------------
     # Automatically generated content
 
-    # UrlSchema sd qdict
-    #
-    # sd       - The smartdomain object name
-    # qdict    - Dictionary of query data
+    # /urlschema.html
     #
     # Returns an HTML description of the URLs in the domain.
 
-    method UrlSchema {sd qdict} {
-        set ht [htools create %AUTO%]
-
-        if {[dict exist $qdict sort]} {
-            set sort [dict get $qdict sort]
-        } else {
-            set sort url
-        }
+    method /urlschema.html {} {
+        qdict prepare sort -default url
+        qdict assign sort
 
         set urlcheck ""
         set defcheck ""
@@ -406,19 +381,22 @@ oo::class create ::projectlib::smartdomain {
         }
 
         set title "URL Schema Help: $info(domain)" 
-        $ht page $title
-        $ht h1 $title
+        hb page $title
+        hb h1 $title
 
-        $ht putln "The following URLs are defined within this domain."
-        $ht para
-        $ht hr
-        $ht form
-        $ht putln "Sort by URL <input type=radio name=sort value=url $urlcheck>"
-        $ht putln "or Match Order <input type=radio name=sort value=def $defcheck>"
-        $ht putln "<input type=submit name=submit value=\"Refresh\">"
-        $ht /form
-        $ht hr
-        $ht para
+        hb putln "The following URLs are defined within this domain."
+        hb para
+        hb hr
+        hb form
+        hb label sort "Sort by URL"
+        # TBD: Need to support radio buttons, or perhaps a pulldown.
+        hb putln "<input type=radio name=sort value=url $urlcheck>"
+        hb putln "or Match Order"
+        hb putln "<input type=radio name=sort value=def $defcheck>"
+        hb submit "Refresh"
+        hb /form
+        hb hr
+        hb para
 
         set suffixes [dict values $patterns]
 
@@ -426,46 +404,92 @@ oo::class create ::projectlib::smartdomain {
             set suffixes [lsort $suffixes]
         }
 
-        $ht dl
-
         set mapping [list \{ <i> \} </i>]
 
-        foreach suffix $suffixes {
-            set url "$info(domain)[string map $mapping $suffix]"
-            set doc [string map $mapping $info(docstring-$suffix)]
+        hb dl {
+            foreach suffix $suffixes {
+                set url "$info(domain)[string map $mapping $suffix]"
+                set doc [string map $mapping $info(docstring-$suffix)]
 
-            $ht dlitem  "<tt>$url</tt>" $doc       
+                hb dt "<tt>$url</tt>"
+                hb dd-with {
+                    hb putln $doc
+                    hb para
+                }       
+            }
         }
 
-        $ht /dl
-        $ht /page
-
-        set result [$ht get]
-
-        $ht destroy
-        return $result
+        return [hb /page]
     }
     
-    #-------------------------------------------------------------------
-    # Tools for use in domain handlers 
+}
 
-    # redirect url
-    #
-    # url   - A server-relative URL
-    #
-    # Redirects to the URL.
+#-------------------------------------------------------------------
+# Helper Procs
 
-    method redirect {url} {
-        throw [list HTTPD_REDIRECT $url] "Redirect to $url"
+namespace eval ::projectlib::smartdomain {
+    # GetUrlPattern suffix
+    #
+    # suffix  - A URL suffix, possibly containing variables.
+    #
+    # Returns a pair, consisting of the matching regexp pattern
+    # and a list of the placeholder names, or "" if the suffix
+    # is invalid.
+
+    proc ::projectlib::smartdomain::GetUrlPattern {suffix} {
+        if {[string index $suffix 0] ne "/"} {
+            return ""
+        }
+
+        set folders  [split [string range $suffix 1 end] /]
+        set filename [lpop folders]
+
+        set pattern "^"
+        set pnames [list]
+
+        foreach f $folders {
+            if {[regexp {^{(\w+)}$} $f dummy pname]} {
+                append pattern {/(\w+)}
+                lappend pnames $pname
+            } elseif [regexp {^\w+$} $f] {
+                append pattern / $f
+            } else {
+                return ""
+            }
+        }
+
+        if {[regexp {^\w+\.\w+$} $filename]} {
+            append pattern / $filename
+        } else {
+            return ""
+        }
+
+        append pattern "\$"
+
+        return [list $pattern $pnames]
+    }
+}
+
+proc ::projectlib::smarturl {cls suffix docstring body} {
+    # FIRST, extract the placeholders out of the suffix.
+    set result [::projectlib::smartdomain::GetUrlPattern $suffix]
+
+    if {$result eq ""} {
+        error "Invalid smarturl suffix: \"$suffix\""
     }
 
-    # query
-    #
-    # Returns the raw query string.
-    
-    method query {} {
-        return $trans(query) 
-    }
+    lassign $result pattern arglist
 
+    # NEXT define the handler method
+    oo::define $cls method $suffix $arglist $body
+
+    # NEXT, make the constructor register the URL.
+    lassign [info class constructor $cls] carglist cbody
+
+    set cmd [list my url $suffix $docstring]
+
+    append cbody \n $cmd
+
+    oo::define $cls constructor $carglist $cbody
 }
 

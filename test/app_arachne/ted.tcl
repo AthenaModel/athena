@@ -152,7 +152,7 @@ snit::type ted {
         }
 
         try {
-            set result [$::app::domain request GET $suffix $query]
+            set result [$::app::domains(/scenario) request GET $suffix $query]
         } trap HTTPD_REDIRECT {result eopts} {
             # The error code includes the URL
             return [dict get $eopts -errorcode]
@@ -179,7 +179,7 @@ snit::type ted {
         }
 
         try {
-            set result [$::app::domain request GET $suffix $query]
+            set result [$::app::domains(/scenario) request GET $suffix $query]
         } trap HTTPD_REDIRECT {result eopts} {
             # The error code includes the URL
             return [dict get $eopts -errorcode]
@@ -200,7 +200,7 @@ snit::type ted {
 
     typemethod post {suffix {query ""}} {
         try {
-            set result [$::app::domain request POST $suffix $query]
+            set result [$::app::domains(/scenario) request POST $suffix $query]
         } trap HTTPD_REDIRECT {result eopts} {
             # The error code includes the URL
             return [dict get $eopts -errorcode]

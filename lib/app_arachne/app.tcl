@@ -38,6 +38,12 @@ snit::type app {
     # logs array: Logs by log name
     typevariable logs -array {}
 
+    # domains
+    #
+    # Array of domains by prefix, e.g., "/scenario"
+
+    typevariable domains -array {}
+
     #-------------------------------------------------------------------
     # Initialization
 
@@ -109,6 +115,10 @@ snit::type app {
 
         $type InitializeBaseCase $adbfile $script
 
+        # NEXT, define the domains.
+        set domains(/scenario) [/scenario new]
+        set domains(/debug)    [/debug new]     ;# TBD: If -debug
+
         # NEXT, start the server if desired.
         if {!$info(test)} {
             $type StartServer
@@ -170,9 +180,9 @@ snit::type app {
             -docroot    [appdir join htdocs]
 
         # NEXT, Add content
-        [scenario_domain new] ahttpd
-        [debug_domain new] ahttpd     ;# TBD: enable this on -debug.
-
+        foreach domain [array names domains] {
+            $domains($domain) ahttpd
+        }
     }
 
 

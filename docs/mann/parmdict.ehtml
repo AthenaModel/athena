@@ -96,6 +96,10 @@ The options are as follows:<p>
 
 <deflist options>
 
+<defopt {-default <i defvalue>}>
+
+If the parameter's value is the empty string, assigns <i defvalue>.<p>
+
 <defopt {-ident}>
 
 Requires that the parameter's value be a valid identifier, as determined
