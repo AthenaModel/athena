@@ -1729,15 +1729,19 @@ snit::type ::athena::athenadb {
     method safe {subcommand args} {
         $rdb authorizer [myproc SafeRdbAuthorizer]
 
-        try {
+        set code [catch {
             uplevel 1 [list $self $subcommand {*}$args]
-        } on return {result eopts} {
-            return ${eopts} $result
-        } on error {result eopts} {
+        } result eopts]
+
+        $rdb authorizer ""
+
+        if {$code == 1} {
             return {*}$eopts "safe $subcommand error: $result"
-        } finally {
-            $rdb authorizer ""
+        } elseif {$code > 0} {
+            return -code $code $result
         }
+
+        return $result
     }
 
     # SafeRdbAuthorizer op args
