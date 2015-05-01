@@ -8,8 +8,8 @@
 # DESCRIPTION:
 #    app_sim(n), appserver(sim) module: Agent Strategies
 #
-#    my://app/agents
-#    my://app/agent/{agent}
+#    /app/agents
+#    /app/agent/{agent}
 #
 #-----------------------------------------------------------------------
 
@@ -86,7 +86,7 @@ appserver module AGENT {
             Agent types include 
         }
 
-        ht link my://app/actors "Actors"
+        ht link /app/actors "Actors"
 
         ht putln {
             and the SYSTEM agent, which serves as a general purpose
@@ -106,7 +106,7 @@ appserver module AGENT {
                 array set stats [adb agent stats $a]
 
                 ht tr {
-                    ht td left  { ht link my://app/agent/$a $a }
+                    ht td left  { ht link /app/agent/$a $a }
                     ht td left  { ht put [adb agent type $a]       }
                     ht td right { ht put $stats(blocks)        }
                     ht td right { ht put $stats(conditions)    }
@@ -161,7 +161,7 @@ appserver module AGENT {
         }
 
         ht linkbar [list \
-            "my://app/agent/$a/full" "Full Strategy" \
+            "/app/agent/$a/full" "Full Strategy" \
             "gui:/tab/strategy"      "Editor"]
 
         # NEXT, List the blocks
@@ -215,7 +215,7 @@ appserver module AGENT {
         }
 
         ht linkbar [list \
-            "my://app/agent/$a"  "Overview" \
+            "/app/agent/$a"  "Overview" \
             "gui:/tab/strategy"  "Editor"]
 
         # NEXT, List the blocks in a table
@@ -260,9 +260,9 @@ appserver module AGENT {
         set s [adb strategy getname $a]
 
         if {$mode eq "full"} {
-            set root my://app/agent/$a/full#block
+            set root /app/agent/$a/full#block
         } else {
-            set root my://app/bean/
+            set root /app/bean/
         }
 
         # FIRST, List the blocks

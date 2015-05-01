@@ -118,17 +118,17 @@
         dict with fdict {}
 
         $ht putln "Civilian group "
-        $ht link my://app/group/$f $f
+        $ht link /app/group/$f $f
         $ht putln "took a total of $casualties casualties this week"
 
         if {[dict exists $fdict g]} {
             $ht putln "as collateral damage in incidents in which\n"
-            $ht link my://app/group/$g $g
+            $ht link /app/group/$g $g
             $ht putln "was involved."
         } elseif {[dict exists $fdict a]} {
             $ht putln "as collateral damage in incidents in which"
             $ht putln "force groups owned by\n"
-            $ht link my://app/actor/$a $a
+            $ht link /app/actor/$a $a
             $ht putln "were involved."
         } else {
             $ht putln "from incidents of all kinds."     

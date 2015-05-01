@@ -85,6 +85,12 @@ snit::type ::projectlib::htools {
 
     option -cssfile
 
+    # -domain
+    #
+    # The domain prefix for iref links.
+
+    option -domain
+
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -646,6 +652,17 @@ snit::type ::projectlib::htools {
 
     method link {url label} {
         $self put "<a href=\"$url\">$label</a>"
+    }
+
+    # iref suffix label
+    #
+    # suffix - A suffix within this domain
+    # label  - A text label
+    #
+    # Formats and returns an HTML link to another page in this domain.
+
+    method iref {suffix label} {
+        $self put "<a href=\"$options(-domain)$suffix\">$label</a>"
     }
 
     # linklist ?options...? links

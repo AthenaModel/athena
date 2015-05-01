@@ -8,7 +8,7 @@
 # DESCRIPTION:
 #    app_sim(n), appserver(sim) module: GOODS Production Infrastructure
 #
-#    my://app/plants
+#    /app/plants
 #
 #-----------------------------------------------------------------------
 
@@ -193,7 +193,7 @@ appserver module PLANT {
             ht put "The following table breaks down GOODS production plants under "
             ht put "construction by neighborhood and actor into ranges of "
             ht put "percentage complete.  Clicking on "
-            ht put "[ht link /plants/detail "detail"] will break construction "
+            ht put "[ht link app/plants/detail "detail"] will break construction "
             ht put "levels down even further."
             ht para
 
@@ -257,7 +257,7 @@ appserver module PLANT {
                         }
 
                         ht td center {
-                            ht link /plants/detail/ "Detail"
+                            ht link /app/plants/detail/ "Detail"
                         }
                     }
                 }

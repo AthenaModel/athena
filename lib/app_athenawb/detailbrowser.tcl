@@ -59,7 +59,7 @@ snit::widget detailbrowser {
     constructor {args} {
         # FIRST, Install the browser
         install browser using mybrowser $win.browser  \
-            -home         my://app/                   \
+            -home         /app/                   \
             -unknowncmd   [mymethod GuiLinkCmd]       \
             -searchcmd    [mymethod FormatSearchURL]  \
             -messagecmd   {app puts}                  \
@@ -80,7 +80,7 @@ snit::widget detailbrowser {
 
         # Object Tree
         install otree using linktree $sidebar.tabs.otree \
-            -url       my://app/objects                  \
+            -url       /app/objects                  \
             -width     150                               \
             -height    400                               \
             -changecmd [mymethod ShowLink]               \
@@ -96,7 +96,7 @@ snit::widget detailbrowser {
 
         # Help Tree
         install htree using linktree $sidebar.tabs.htree \
-            -url       my://help                         \
+            -url       /help                         \
             -lazy      yes                               \
             -width     150                               \
             -height    400                               \
@@ -310,7 +310,7 @@ snit::widget detailbrowser {
     # Given the search string, returns the search URL.
 
     method FormatSearchURL {text} {
-        return "my://help/?$text"
+        return "/help/?$text"
     }
 
     # RefreshLinks

@@ -98,7 +98,7 @@ snit::type ::projectlib::mydomain {
         $self configurelist $args
 
         if {$options(-domain) eq ""} {
-            error "-domain now specified"
+            error "-domain not specified"
         }
 
         # NEXT, create the htools buffer.
@@ -131,6 +131,14 @@ snit::type ::projectlib::mydomain {
 
     #-------------------------------------------------------------------
     # Public methods
+
+    # domain
+    #
+    # Returns the object's domain
+
+    method domain {} {
+        return $options(-domain)
+    }
 
     # register rtype pattern ctype handler ?ctype handler...? doc
     #

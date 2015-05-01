@@ -251,11 +251,11 @@
         dict with fdict {}
 
         $ht putln "Actor "
-        $ht link my://app/actor/$tsource $tsource
+        $ht link /app/actor/$tsource $tsource
         $ht putln "broadcast "
-        $ht link my://app/iom/$iom $iom
+        $ht link /app/iom/$iom $iom
         $ht putln "via " 
-        $ht link my://app/cap/$cap $cap
+        $ht link /app/cap/$cap $cap
 
         switch -exact -- $asource {
             NONE { 
@@ -266,13 +266,13 @@
             }
             default { 
                 $ht putln "as "
-                $ht link my://app/actor/$asource $asource
+                $ht link /app/actor/$asource $asource
             }
         }
 
         $ht put ","
         $ht putln "ultimately reaching group "
-        $ht link my://app/group/$f $f
+        $ht link /app/group/$f $f
         $ht putln "with a coverage of "
         $ht putln [string trim [percent $capcov]].
 

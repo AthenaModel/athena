@@ -8,7 +8,7 @@
 # DESCRIPTION:
 #    app_sim(n), appserver(sim) module: Tk Images
 #
-#    my://app/image/...
+#    /app/image/...
 #
 #-----------------------------------------------------------------------
 

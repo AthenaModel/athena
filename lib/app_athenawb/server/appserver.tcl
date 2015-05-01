@@ -21,8 +21,8 @@
 # URLs:
 #
 #    Resources are identified by URLs, as in a web server, using the
-#    "my://" scheme.  This server is registered as "app", so that it
-#    can be queried using "my://app/...".  However, it is also the
+#    "/" scheme.  This server is registered as "app", so that it
+#    can be queried using "/app/...".  However, it is also the
 #    default server, so "//app" can be omitted.
 #
 #-----------------------------------------------------------------------
@@ -100,7 +100,7 @@ snit::type appserver {
 
     typemethod init {} {
         # FIRST, create the server
-        set server [mydomain ${type}::server -logcmd ::log]
+        set server [mydomain ${type}::server -domain /app -logcmd ::log]
 
         # NEXT, create the buffer for generating HTML.
         htools ${type}::ht \
@@ -111,7 +111,6 @@ snit::type appserver {
         foreach name [lsort $minfo(names)] {
             $name init
         }
-
 
         # NEXT, add test handler
         $type register /test {test/?} \

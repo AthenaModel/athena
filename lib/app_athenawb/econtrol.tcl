@@ -98,7 +98,7 @@ snit::widget econtrol {
         notifier bind ::econ <State>   $self [mymethod EconState]
 
         # NEXT, populate the HTML frame based on view
-        $browser show "my://app/econ/disabled/"
+        $browser show "/app/econ/disabled/"
     }
 
     # Constructor: Destructor
@@ -117,10 +117,10 @@ snit::widget econtrol {
 
     method ToggleSwitch {} {
         if {$econstate eq "DISABLED"} {
-            $browser show "my://app/econ/disabled/"
+            $browser show "/app/econ/disabled/"
             adb econ disable
         } else {
-            $browser show "my://app/econ/enabled/"
+            $browser show "/app/econ/enabled/"
             adb econ enable
         }
 
@@ -150,10 +150,10 @@ snit::widget econtrol {
     method EconState {} {
         if {[adb econ state] eq "ENABLED"} {
             $modelswitch select
-            $browser show "my://app/econ/enabled/"
+            $browser show "/app/econ/enabled/"
         } else {
             $modelswitch deselect
-            $browser show "my://app/econ/disabled/"
+            $browser show "/app/econ/disabled/"
         }
     }
 }

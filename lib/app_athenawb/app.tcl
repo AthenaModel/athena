@@ -216,16 +216,16 @@ snit::type app {
         # NEXT, configure and initialize application modules.
         view init
 
-        # NEXT, register my:// servers with myagent.
+        # NEXT, register / servers with myagent.
         appserver init
 
-        myagent register app ::appserver
-        myagent register help \
+        myagent register ::appserver
+        myagent register \
             [helpserver %AUTO% \
                  -helpdb    [appdir join docs athena.helpdb] \
                  -headercmd [mytypemethod HelpHeader]]
-        myagent register rdb \
-            [rdbserver %AUTO% -rdb ::adb]
+        myagent register \
+            [rdbserver %AUTO% -domain /rdb -rdb ::adb]
 
 
         # NEXT, bind components together
@@ -522,7 +522,7 @@ snit::type app {
     # Shows a page with the desired title, if any, in the Detail Browser.
 
     typemethod help {{title ""}} {
-        app show "my://help/?[string trim $title]"
+        app show "/help/?[string trim $title]"
     }
 
     # Type Method: puts
@@ -807,7 +807,7 @@ snit::type app {
             
             $uri
 
-            The requested gui:// URL cannot be displayed by the application:
+            The requested gui:/ URL cannot be displayed by the application:
 
             $message
         }
@@ -821,7 +821,7 @@ snit::type app {
     typemethod InsaneOnTick {} {
         # FIRST, direct the user to the appropriate appserver page
         # if we are in GUI mode
-        app show my://app/sanity/ontick
+        app show /app/sanity/ontick
 
         if {[winfo exists .main]} {
             messagebox popup \
@@ -851,7 +851,7 @@ snit::type app {
                         -buttons {ok "Ok" browser "Go To Detail Browser"}]
 
        if {$answer eq "browser"} {
-           app show my://app/econ
+           app show /app/econ
        }
     }
 
@@ -990,7 +990,7 @@ snit::type app {
         set sev [adb sanity onlock check]
  
         if {$sev eq "WARNING"} {
-            app show my://app/sanity/onlock
+            app show /app/sanity/onlock
 
             set answer \
                 [messagebox popup \
@@ -1015,7 +1015,7 @@ snit::type app {
                 return
             }
         } elseif {$sev eq "ERROR"} {
-            app show my://app/sanity/onlock
+            app show /app/sanity/onlock
             return
         }
 
@@ -1217,7 +1217,7 @@ snit::type app {
 
     typemethod CliHelp {args} {
         if {[llength $args] == 0} {
-            app show my://help/command
+            app show /help/command
         } else {
             app help $args
         }

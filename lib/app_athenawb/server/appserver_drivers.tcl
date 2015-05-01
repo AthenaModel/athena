@@ -8,7 +8,7 @@
 # DESCRIPTION:
 #    app_sim(n), appserver(sim) module: Attitude Drivers
 #
-#    my://app/drivers/...
+#    /app/drivers/...
 #
 #-----------------------------------------------------------------------
 

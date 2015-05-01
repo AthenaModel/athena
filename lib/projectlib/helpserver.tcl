@@ -39,6 +39,10 @@ snit::type ::projectlib::helpserver {
     #-------------------------------------------------------------------
     # Options
 
+    # -domain
+
+    delegate option -domain to server
+
     # -helpdb
     #
     # The name of the help(5) .helpdb file.
@@ -70,6 +74,7 @@ snit::type ::projectlib::helpserver {
 
     constructor {args} {
         # FIRST, get the options
+        set domain [from args -domain /help]
         $self configurelist $args
 
         if {$options(-helpdb) eq ""} {
@@ -77,7 +82,8 @@ snit::type ::projectlib::helpserver {
         }
 
         # NEXT, create the server
-        install server using mydomain ${selfns}::server
+        install server using mydomain ${selfns}::server \
+            -domain $domain
 
         # NEXT, register the resources
         $server register /image/{name} {image/(.+)} \
@@ -326,6 +332,7 @@ snit::type ::projectlib::helpserver {
     # Public Methods
 
     delegate method ctypes    to server
+    delegate method domain    to server
     delegate method get       to server
     delegate method resources to server
 }

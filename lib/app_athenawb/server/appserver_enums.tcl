@@ -8,7 +8,7 @@
 # DESCRIPTION:
 #    app_sim(n), appserver(sim) module: Enumerations
 #
-#    my://app/enum/...
+#    /app/enum/...
 #
 # CONTENT TYPES:
 #    Enum URLs have two content types:

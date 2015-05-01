@@ -24,7 +24,7 @@
 CREATE TEMPORARY VIEW gui_combat AS
 SELECT B.n                           AS n,
        N.longname                    AS longname,
-       'my://app/combat/' || B.n     AS url,
+       '/app/combat/' || B.n     AS url,
         pair(longname, B.n)          AS fancy
 FROM hist_aam_battle AS B
 JOIN nbhoods AS N ON (N.n=B.n)

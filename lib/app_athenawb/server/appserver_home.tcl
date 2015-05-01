@@ -8,7 +8,7 @@
 # DESCRIPTION:
 #    app_sim(n), appserver(sim) module: Application Home Page
 #
-#    my://app/
+#    /app/
 #
 #-----------------------------------------------------------------------
 

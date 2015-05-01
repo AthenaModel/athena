@@ -8,8 +8,8 @@
 # DESCRIPTION:
 #    app_sim(n), appserver(sim) module: Belief systems
 #
-#    my://app/bsystems
-#    my://app/bsystem/{system_id}
+#    /app/bsystems
+#    /app/bsystem/{system_id}
 #
 #-----------------------------------------------------------------------
 
@@ -51,7 +51,7 @@ appserver module BSYSTEM {
         set result [dict create]
 
         foreach sid [adb bsys system ids] {
-            set url my://app/bsystem/$sid
+            set url /app/bsystem/$sid
             set name [adb bsys system cget $sid -name]
             dict set result $url label "$name ($sid)"
             dict set result $url listIcon ::projectgui::icon::bsystem12
@@ -97,8 +97,8 @@ appserver module BSYSTEM {
 
                 # NEXT, format row.
                 ht tr {
-                    ht td center { ht link my://app/bsystem/$sid $sid         }
-                    ht td left   { ht link my://app/bsystem/$sid $sdata(name) }
+                    ht td center { ht link /app/bsystem/$sid $sid         }
+                    ht td left   { ht link /app/bsystem/$sid $sdata(name) }
                     ht td right  { ht put $sdata(commonality)                 }
                     ht td right  { ht put $sdata(ac)                          }
                     ht td right  { ht put $sdata(gc)                          }
@@ -186,11 +186,11 @@ appserver module BSYSTEM {
                 # NEXT, format row.
                 ht tr {
                     ht td left { 
-                        ht link my://app/topic/$tid $tdata(name) 
+                        ht link /app/topic/$tid $tdata(name) 
                     }
 
                     ht td right { 
-                        ht link my://app/topic/$tid $tid 
+                        ht link /app/topic/$tid $tid 
                     }
 
                     ht td left {
@@ -226,9 +226,9 @@ appserver module BSYSTEM {
         ht subtitle "Actors and Groups" entities
 
         ht putln "This system is used in the definition of the following "
-        ht link my://app/actors "actors"
+        ht link /app/actors "actors"
         ht putln "and "
-        ht link my://app/groups "groups"
+        ht link /app/groups "groups"
         ht put "."
         ht para
 

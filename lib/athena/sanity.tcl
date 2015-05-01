@@ -510,7 +510,7 @@ snit::type ::athena::sanity {
                 The economy has converged to the zero point, i.e., there
                 is no consumption or production, and hence no economy.
                 Enter 
-                <tt><a href="my://help/command/dump/econ">dump econ In</a></tt>
+                <tt><a href="/help/command/dump/econ">dump econ In</a></tt>
                 at the CLI to see the current 
                 inputs to the economy; it's likely that there are no
                 consumers.
@@ -523,7 +523,7 @@ snit::type ::athena::sanity {
             $ht dlitem "<b>Error: Economy: Negative Quantity Supplied</b>" {
                 One of the QS.i cells has a negative value; this implies
                 an error in the CGE.  Enter 
-                <tt><a href="my://help/command/dump/econ">dump econ</a></tt>
+                <tt><a href="/help/command/dump/econ">dump econ</a></tt>
                 at the CLI to
                 see the full list of CGE outputs.  Consider disabling
                 the economic model on the
@@ -538,7 +538,7 @@ snit::type ::athena::sanity {
             $ht dlitem "<b>Error: Economy: Non-Positive Prices</b>" {
                 One of the P.i price cells is negative or zero; this implies
                 an error in the CGE.  Enter 
-                <tt><a href="my://help/command/dump/econ">dump econ</a></tt>
+                <tt><a href="/help/command/dump/econ">dump econ</a></tt>
                 at the CLI to
                 see the full list of CGE outputs.  Consider disabling
                 the economic model on the
@@ -561,7 +561,7 @@ snit::type ::athena::sanity {
                 $limit
                 of the starting number.  To change the limit, set the
                 value of the 
-                <a href=\"my://help/parmdb/econ/check/minconsumerfrac\">econ.check.MinConsumerFrac</a>
+                <a href=\"/help/parmdb/econ/check/minconsumerfrac\">econ.check.MinConsumerFrac</a>
                 model parameter.
             "
         }
@@ -581,7 +581,7 @@ snit::type ::athena::sanity {
                 $limit
                 of the starting number.  To change the limit, set the 
                 value of the 
-                <a href=\"my://help/parmdb/econ/check/minlaborfrac\">econ.check.MinLaborFrac</a>
+                <a href=\"/help/parmdb/econ/check/minlaborfrac\">econ.check.MinLaborFrac</a>
                 model parameter.
             "
         }
@@ -597,7 +597,7 @@ snit::type ::athena::sanity {
                 exceeds the limit of 
                 [format {%.1f%%.} $limit]
                 To change the limit, set the value of the 
-                <a href=\"my://help/parmdb/econ/check/maxur\">econ.check.MaxUR</a>
+                <a href=\"/help/parmdb/econ/check/maxur\">econ.check.MaxUR</a>
                 model parameter.
             "
         }
@@ -616,7 +616,7 @@ snit::type ::athena::sanity {
                 $limit
                 of its starting value.  To change the limit, set the
                 value of the 
-                <a href=\"my://help/parmdb/econ/check/mindgdpfrac\">econ.check.MinDgdpFrac</a>
+                <a href=\"/help/parmdb/econ/check/mindgdpfrac\">econ.check.MinDgdpFrac</a>
                 model parameter.
             "
         }
@@ -635,9 +635,9 @@ snit::type ::athena::sanity {
                 is outside the expected range of
                 [format {(%4.2f, %4.2f).} $min $max]
                 To change the bounds, set the values of the 
-                <a href=\"my://help/parmdb/econ/check/mincpi\">econ.check.MinCPI</a>
+                <a href=\"/help/parmdb/econ/check/mincpi\">econ.check.MinCPI</a>
                 and 
-                <a href=\"my://help/parmdb/econ/check/maxcpi\">econ.check.MaxCPI</a>
+                <a href=\"/help/parmdb/econ/check/maxcpi\">econ.check.MaxCPI</a>
                 model parameters.
             "
         }

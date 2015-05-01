@@ -506,7 +506,7 @@ snit::widget iombrowser {
     
     method SanityCheck {} {
         if {[adb iom checker] ne "OK"} {
-            app show my://app/sanity/iom
+            app show /app/sanity/iom
         }
     }
 

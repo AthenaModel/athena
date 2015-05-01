@@ -8,8 +8,8 @@
 # DESCRIPTION:
 #    app_sim(n), appserver(sim) module: firings
 #
-#    my://app/firings
-#    my://app/firing/{id}
+#    /app/firings
+#    /app/firing/{id}
 #
 #-----------------------------------------------------------------------
 
@@ -160,11 +160,11 @@ appserver module firing {
         ht input page_size enum $page_size -src enum/pagesize -content tcl/enumdict
         ht label start 
         ht put "Time Interval &mdash; "
-        ht link my://help/term/timespec "From:"
+        ht link /help/term/timespec "From:"
         ht /label
         ht input start text $start -size 12
         ht label end
-        ht link my://help/term/timespec "To:"
+        ht link /help/term/timespec "To:"
         ht /label
         ht input end text $end -size 12
         ht submit

@@ -1109,7 +1109,7 @@ snit::widget mapviewer {
     # browser.
 
     method NbhoodBrowseDetail {} {
-        app show my://app/nbhood/$nbhoods(trans)
+        app show /app/nbhood/$nbhoods(trans)
     }
 
 
@@ -1568,7 +1568,7 @@ snit::widget mapviewer {
     method UnitBrowseDetail {} {
         set g [adb unit get $icons(context) g]
 
-        app show my://app/group/$g
+        app show /app/group/$g
     }
 
     

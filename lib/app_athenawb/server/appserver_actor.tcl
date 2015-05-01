@@ -8,8 +8,8 @@
 # DESCRIPTION:
 #    app_sim(n), appserver(sim) module: Actors
 #
-#    my://app/actors
-#    my://app/actor
+#    /app/actors
+#    /app/actor
 #
 #-----------------------------------------------------------------------
 
@@ -130,7 +130,7 @@ appserver module ACTOR {
         
         ht putln "Belief System: "
         set bsysname [adb bsys system cget $data(bsid) -name]
-        ht link my://app/bsystem/$data(bsid) "$bsysname ($data(bsid))"
+        ht link /app/bsystem/$data(bsid) "$bsysname ($data(bsid))"
 
         ht para
 
@@ -346,7 +346,7 @@ appserver module ACTOR {
 
                 ht put "$a has been allocated shares of GOODS production "
                 ht put "infrastructure in these neighborhoods: $nlist. See $a's"
-                ht put "[ht link /plant/$a/ " infrastructure page"] "
+                ht put "[ht link /app/plant/$a/ " infrastructure page"] "
                 ht put "for more."
                 ht para
             }
@@ -381,7 +381,7 @@ appserver module ACTOR {
                     ht put "$a owns $num GOODS production infrastructure "
                     ht put "plants in these neighborhoods: $nlist. "
                     ht put "See $a's "
-                    ht put "[ht link /plant/$a/ "infrastructure page"] "
+                    ht put "[ht link /app/plant/$a/ "infrastructure page"] "
                     ht put "for more."
                 }
 

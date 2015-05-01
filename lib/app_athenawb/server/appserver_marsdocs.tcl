@@ -8,7 +8,7 @@
 # DESCRIPTION:
 #    app_sim(n), appserver(sim) module: External Mars Documents
 #
-#    my://app/mars/docs/...
+#    /app/mars/docs/...
 #
 # TBD:
 #    This module provides access to files in Athena's /mars/docs directory.

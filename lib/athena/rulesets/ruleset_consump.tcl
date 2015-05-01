@@ -129,14 +129,14 @@
         if {[[my adb] econ state] eq "DISABLED"} {
             $ht putln "The economic model is disabled, therefore the"
             $ht putln "consumption of goods by\n"
-            $ht link my://app/group/$g $g
+            $ht link /app/group/$g $g
             $ht putln "is being controlled by CONSUMP rule set\n"
-            $ht link my://app/parmdb?pattern=dam.consump.* "model parameters."
+            $ht link /app/parmdb?pattern=dam.consump.* "model parameters."
             $ht putln "To change the rule set inputs, change the value"
             $ht putln "of the appropriate parameters."
         } else {
             $ht putln "Civilian group\n"
-            $ht link my://app/group/$g $g
+            $ht link /app/group/$g $g
             $ht putln "is consuming goods at a rate of"
             $ht putln "[format %.1f $aloc] baskets per week;"
             $ht putln "the group expects to consume at a rate of"
@@ -146,12 +146,12 @@
 
         if {$a ne ""} {
             $ht putln "Actor "
-            $ht link my://app/actor/$a $a
+            $ht link /app/actor/$a $a
         } else {
             $ht putln "No actor"
         }
         $ht putln "is in control of neighborhood\n"
-        $ht link my://app/nbhood/$n $n
+        $ht link /app/nbhood/$n $n
         $ht put "."
         $ht para
 

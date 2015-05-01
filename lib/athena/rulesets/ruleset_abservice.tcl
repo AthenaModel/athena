@@ -119,7 +119,7 @@ oo::class create ::athena::ruleset_abservice {
         dict with fdict {}
 
         $ht putln "Civilian group\n"
-        $ht link my://app/group/$g $g
+        $ht link /app/group/$g $g
         $ht putln "received $dtype services at an actual level of"
         $ht putln "[format %.2f $actual], that is, at"
         $ht putln "[string trim [percent $actual]] of the saturation level"
@@ -129,9 +129,9 @@ oo::class create ::athena::ruleset_abservice {
         $ht para
         if {$a ne ""} {
             $ht putln "Actor\n"
-            $ht link my://app/actor/$a $a
+            $ht link /app/actor/$a $a
             $ht putln "is in control of the neighborhood, so "
-            $ht link my://app/group/$g $g
+            $ht link /app/group/$g $g
             $ht putln "'s relationship with $a is affected."
             $ht para
         } else {

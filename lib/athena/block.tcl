@@ -372,7 +372,7 @@ oo::class create ::athena::block {
     method htmlpage {ht} {
         $ht page "Agent [my agent], Detail for Strategy Block [my id]"
         $ht putln "<b>Agent "
-        $ht link my://app/agent/[my agent] [my agent]
+        $ht link /app/agent/[my agent] [my agent]
         $ht put ", Strategy Block [my id] ([my get name]): Detail</b>"
         $ht hr
         $ht para

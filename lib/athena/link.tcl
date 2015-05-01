@@ -16,7 +16,7 @@
 #    Links have the form {<entityType>:<entityID>}.  The default
 #    HTML translation is simply a link to this URL:
 #
-#        my://app/<entityType>/<entityID>
+#        /app/<entityType>/<entityID>
 #
 #-----------------------------------------------------------------------
 
@@ -62,7 +62,7 @@ snit::type ::athena::link {
 
     typemethod html {narrative} {
         regsub -all -- {{(\w+):(\w+)}} $narrative \
-            {<a href="my://app/\1/\2">\2</a>} \
+            {<a href="/app/\1/\2">\2</a>} \
             narrative
 
         return $narrative

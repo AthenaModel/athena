@@ -8,7 +8,7 @@
 # DESCRIPTION:
 #    app_sim(n), appserver(sim) module: Sanity Check Reports
 #
-#    my://app/sanity/...
+#    /app/sanity/...
 #
 #-----------------------------------------------------------------------
 

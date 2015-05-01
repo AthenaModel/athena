@@ -8,7 +8,7 @@
 # DESCRIPTION:
 #    app_sim(n), appserver(sim) module: Object Types
 #
-#    my://app/objects/...
+#    /app/objects/...
 #
 #    The purpose of these URLs is to provide the top-level set of links
 #    to navigate the tree of simulation objects in Athena (e.g., to 

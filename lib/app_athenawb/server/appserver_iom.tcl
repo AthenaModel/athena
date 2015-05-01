@@ -8,8 +8,8 @@
 # DESCRIPTION:
 #    app_sim(n), appserver(sim) module: IOMs
 #
-#    my://app/ioms
-#    my://app/iom/{iom_id}
+#    /app/ioms
+#    /app/iom/{iom_id}
 #
 #-----------------------------------------------------------------------
 

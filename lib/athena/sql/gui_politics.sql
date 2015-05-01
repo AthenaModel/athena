@@ -34,7 +34,7 @@ SELECT NA.n                                             AS n,
             END                                         AS supports,
        CASE WHEN NA.supports = NA.a   THEN 'SELF'
             WHEN NA.supports IS NULL  THEN 'NONE'
-            ELSE link('my://app/actor/' || NA.supports, NA.supports)
+            ELSE link('/app/actor/' || NA.supports, NA.supports)
             END                                         AS supports_link
 FROM supports_na AS NA
 JOIN gui_nbhoods AS N ON (NA.n = N.n)
@@ -45,10 +45,10 @@ CREATE TEMPORARY VIEW gui_agents AS
 SELECT agent_id                                         AS id,
        agent_id                                         AS agent_id,
        agent_type                                       AS agent_type,
-       'my://app/agent/' || agent_id                    AS url,
+       '/app/agent/' || agent_id                    AS url,
        agent_id                                         AS fancy,
-       link('my://app/agent/' || agent_id, agent_id)    AS link,
-       link('my://app/agent/' || agent_id, agent_id)    AS longlink
+       link('/app/agent/' || agent_id, agent_id)    AS link,
+       link('/app/agent/' || agent_id, agent_id)    AS longlink
 FROM agents;
 
 

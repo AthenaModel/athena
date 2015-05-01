@@ -8,7 +8,7 @@
 # DESCRIPTION:
 #    app_sim(n), appserver(sim) module: Tk plots and bar charts
 #
-#    my://app/plot/...
+#    /app/plot/...
 #
 #-----------------------------------------------------------------------
 

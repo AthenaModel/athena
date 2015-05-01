@@ -233,20 +233,20 @@
 
         if {$b ne ""} {
             $ht putln "Actor "
-            $ht link my://app/actor/$b $b
+            $ht link /app/actor/$b $b
             $ht putln "has taken control of neighborhood\n"
-            $ht link my://app/nbhood/$n $n
+            $ht link /app/nbhood/$n $n
 
             if {$a ne ""} {
                 $ht putln "from "
-                $ht link my://app/actor/$a $a
+                $ht link /app/actor/$a $a
                 $ht put "."
             }
         } else {
             $ht putln "Actor "
-            $ht link my://app/actor/$a $a
+            $ht link /app/actor/$a $a
             $ht putln "has lost control of neighborhood\n"
-            $ht link my://app/nbhood/$n $n
+            $ht link /app/nbhood/$n $n
             $ht put ","
             $ht putln "which is now in a state of chaos."
         }

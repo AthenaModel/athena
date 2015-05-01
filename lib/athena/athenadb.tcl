@@ -1731,6 +1731,8 @@ snit::type ::athena::athenadb {
 
         try {
             uplevel 1 [list $self $subcommand {*}$args]
+        } on return {result eopts} {
+            return ${eopts} $result
         } on error {result eopts} {
             return {*}$eopts "safe $subcommand error: $result"
         } finally {
@@ -1828,10 +1830,10 @@ snit::type ::athena::athenadb {
     #
     # Translates the args into 
     #
-    #   <a href="my://app/$etype/$name">$name</a>
+    #   <a href="/app/$etype/$name">$name</a>
 
     proc EntityLink {etype name} {
-        return "<a href=\"my://app/$etype/$name\">$name</a>"
+        return "<a href=\"/app/$etype/$name\">$name</a>"
     }
 
     # YesNo value

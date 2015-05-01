@@ -81,6 +81,10 @@ the application.<p>
 Given a resource type name, <i>rtype</i>, returns a list of the
 available content types.<p>
 
+<defitem domain {$server domain}>
+
+Returns the object's <tt -domain>.<p>
+
 <defitem get {$server get <i>url</i> ?<i>contentTypes</i>?}>
 
 <b>From <xref mydomain(i)>:</b> Retrieves the <i>url</i> from the

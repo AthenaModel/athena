@@ -8,7 +8,7 @@
 # DESCRIPTION:
 #    app_sim(n), appserver(sim) module: Significant Events
 #
-#    my://app/image/...
+#    /app/image/...
 #
 #-----------------------------------------------------------------------
 
@@ -80,7 +80,7 @@ appserver module SIGEVENTS {
         ht title $title
 
         # NEXT, insert the control form.
-        # NOTE: This is identical to the one used in my://app/firings.
+        # NOTE: This is identical to the one used in /app/firings.
         # Should be be generalized?
         ht hr
         ht form -autosubmit 1
@@ -88,11 +88,11 @@ appserver module SIGEVENTS {
         ht input page_size enum $page_size -src enum/pagesize -content tcl/enumdict
         ht label start 
         ht put "Time Interval &mdash; "
-        ht link my://help/term/timespec "From:"
+        ht link /help/term/timespec "From:"
         ht /label
         ht input start text $start -size 12
         ht label end
-        ht link my://help/term/timespec "To:"
+        ht link /help/term/timespec "To:"
         ht /label
         ht input end text $end -size 12
         ht submit
@@ -122,7 +122,7 @@ appserver module SIGEVENTS {
     # Where appropriate, cooked parameter values appear in the output
     # with a "_" suffix.
     #
-    # TBD: This is exactly what my://app/firings uses; should it to be
+    # TBD: This is exactly what /app/firings uses; should it to be
     # generalized?
     
     proc GetParms {udict} {
@@ -173,9 +173,9 @@ appserver module SIGEVENTS {
 
         if {$entity ne ""} {
             ht putln "involving $entity"
-            set base my://app/sigevents/$entity
+            set base /app/sigevents/$entity
         } else {
-            set base my://app/sigevents
+            set base /app/sigevents
         }
 
         ht putln "that occurred during the last 5 weeks."

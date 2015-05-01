@@ -24,10 +24,10 @@
 CREATE TEMPORARY VIEW gui_actors AS
 SELECT a                                               AS id,
        a                                               AS a,
-       'my://app/actor/' || a                          AS url,
+       '/app/actor/' || a                          AS url,
        pair(longname, a)                               AS fancy,
-       link('my://app/actor/' || a, a)                 AS link,
-       link('my://app/actor/' || a, pair(longname, a)) AS longlink,
+       link('/app/actor/' || a, a)                 AS link,
+       link('/app/actor/' || a, pair(longname, a)) AS longlink,
        longname                                        AS longname,
        bsid                                            AS bsid,
        bsysname(bsid)                                  AS bsysname,
@@ -37,7 +37,7 @@ SELECT a                                               AS id,
             END                                        AS supports,
        CASE WHEN supports = a      THEN 'SELF'
             WHEN supports IS NULL  THEN 'NONE'
-            ELSE link('my://app/actor/' || supports, supports)
+            ELSE link('/app/actor/' || supports, supports)
             END                                        AS supports_link,
        atype                                           AS atype,
        auto_maintain                                   AS auto_maintain,
@@ -63,10 +63,10 @@ FROM actors_view;
 CREATE TEMPORARY VIEW gui_nbhoods AS
 SELECT N.n                                                    AS id,
        N.n                                                    AS n,
-       'my://app/nbhood/' || N.n                              AS url,
+       '/app/nbhood/' || N.n                              AS url,
        pair(N.longname, N.n)                                  AS fancy,
-       link('my://app/nbhood/' || N.n, N.n)                   AS link,
-       link('my://app/nbhood/' || N.n, pair(N.longname, N.n)) AS longlink,
+       link('/app/nbhood/' || N.n, N.n)                   AS link,
+       link('/app/nbhood/' || N.n, pair(N.longname, N.n)) AS longlink,
        N.longname                                             AS longname,
        CASE N.local WHEN 1 THEN 'YES' ELSE 'NO' END           AS local,
        N.urbanization                                         AS urbanization,
@@ -119,12 +119,12 @@ WHERE MN.m != MN.n;
 CREATE TEMPORARY VIEW gui_groups AS
 SELECT g                                                 AS id,
        g                                                 AS g,
-       'my://app/group/' || g                            AS url,
+       '/app/group/' || g                            AS url,
        pair(longname, g)                                 AS fancy,
-       link('my://app/group/' || g, g)                   AS link,
-       link('my://app/group/' || g, pair(longname, g))   AS longlink,
+       link('/app/group/' || g, g)                   AS link,
+       link('/app/group/' || g, pair(longname, g))   AS longlink,
        gtype                                             AS gtype,
-       link('my://app/groups/' || lower(gtype), gtype)   AS gtypelink,
+       link('/app/groups/' || lower(gtype), gtype)   AS gtypelink,
        longname                                          AS longname,
        bsid                                              AS bsid,
        color                                             AS color,

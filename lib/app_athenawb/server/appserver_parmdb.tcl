@@ -8,7 +8,7 @@
 # DESCRIPTION:
 #    app_sim(n), appserver(sim) module: parmdb(5)
 #
-#    my://app/parmdb/...
+#    /app/parmdb/...
 #
 #-----------------------------------------------------------------------
 
@@ -160,7 +160,7 @@ appserver module PARMDB {
                 ht tr {
                     ht td left {
                         set path [string tolower [join [split $parm .] /]]
-                        ht link my://help/parmdb/$path $parm 
+                        ht link /help/parmdb/$path $parm 
                     }
                     
                     ht td left {

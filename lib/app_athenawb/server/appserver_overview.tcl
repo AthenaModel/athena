@@ -8,7 +8,7 @@
 # DESCRIPTION:
 #    app_sim(n), appserver(sim) module: Overview Pages
 #
-#    my://app/overview/...
+#    /app/overview/...
 #
 #-----------------------------------------------------------------------
 

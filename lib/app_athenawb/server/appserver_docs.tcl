@@ -8,7 +8,7 @@
 # DESCRIPTION:
 #    app_sim(n), appserver(sim) module: External Documents
 #
-#    my://app/docs/...
+#    /app/docs/...
 #
 # TBD:
 #    This module provides access to files in Athena's /docs directory.

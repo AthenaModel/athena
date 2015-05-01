@@ -285,8 +285,8 @@ SELECT driver_id                                        AS driver_id,
        sigline(dtype, signature)                        AS sigline,
        dtype                                            AS dtype,
        signature                                        AS signature,
-       'my://app/driver/' || driver_id                  AS url,
-       link('my://app/driver/' || driver_id, driver_id) AS link
+       '/app/driver/' || driver_id                  AS url,
+       link('/app/driver/' || driver_id, driver_id) AS link
 FROM drivers;
 
 -----------------------------------------------------------------------
@@ -301,8 +301,8 @@ SELECT firing_id                                        AS firing_id,
        rule                                             AS rule,
        fdict                                            AS fdict,
        mklinks(firing_narrative(fdict))                 AS narrative,
-       'my://app/firing/' || firing_id                  AS url,
-       link('my://app/firing/' || firing_id, firing_id) AS link
+       '/app/firing/' || firing_id                  AS url,
+       link('/app/firing/' || firing_id, firing_id) AS link
 FROM rule_firings;
 
 -- gui_inputs: All rule inputs

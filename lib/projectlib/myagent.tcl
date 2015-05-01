@@ -90,7 +90,7 @@ snit::type ::projectlib::myagent {
     # Registers a handler so that myagent knows how to query it.
 
     typemethod register {handler} {
-        set domains([$handler cget -domain]) $handler
+        set domains([$handler domain]) $handler
     }
 
     # resolve base url
