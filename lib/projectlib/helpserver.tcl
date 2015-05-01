@@ -200,7 +200,6 @@ snit::type ::projectlib::helpserver {
         $self CheckForHelpFile
 
         set query [dict get $udict query]
-        set host [dict get $udict host]
 
         # FIRST, is the query a page title?
         $hdb eval {
@@ -235,12 +234,10 @@ snit::type ::projectlib::helpserver {
             set out "<b>Search results for '$query':</b><p>\n<dl>\n"
 
             foreach {path title snippet} $found {
-                if {$host eq ""} {
-                    set url $path
-                } else {
-                    set url "my://$host$path"
-                }
+                set url $path
 
+                # Not including domain; it's translated properly
+                # by 'get'.
                 append out "<dt><a href=\"$url\">$title</a></dt>\n"
                 append out "<dd>$snippet<p></dd>\n\n"
             }
