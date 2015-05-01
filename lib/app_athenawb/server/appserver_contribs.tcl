@@ -216,11 +216,11 @@ appserver module CONTRIBS {
         ht hr
         ht form
         ht label f "Civ. Group:"
-        ht input f enum $f -src groups/civ
+        ht input f enum $f -src /app/groups/civ
         ht label g "Frc. Group:"
-        ht input g enum $g -src groups/frc
+        ht input g enum $g -src /app/groups/frc
         ht label top "Show:"
-        ht input top enum $top -src enum/topitems -content tcl/enumdict
+        ht input top enum $top -src /app/enum/topitems -content tcl/enumdict
         ht para
         ht label start 
         ht put "Time Interval &mdash; "
@@ -343,11 +343,11 @@ appserver module CONTRIBS {
         ht hr
         ht form
         ht label f "Of Group:"
-        ht input f enum $f -src groups
+        ht input f enum $f -src /app/groups
         ht label g "With Group:"
-        ht input g enum $g -src groups
+        ht input g enum $g -src /app/groups
         ht label top "Show:"
-        ht input top enum $top -src enum/topitems -content tcl/enumdict
+        ht input top enum $top -src /app/enum/topitems -content tcl/enumdict
         ht para
         ht label start 
         ht put "Time Interval &mdash; "
@@ -464,9 +464,9 @@ appserver module CONTRIBS {
         ht hr
         ht form
         ht label g "Group:"
-        ht input g enum $g -src groups/civ
+        ht input g enum $g -src /app/groups/civ
         ht label top "Show:"
-        ht input top enum $top -src enum/topitems -content tcl/enumdict
+        ht input top enum $top -src /app/enum/topitems -content tcl/enumdict
         ht para
         ht label start 
         ht put "Time Interval &mdash; "
@@ -584,11 +584,11 @@ appserver module CONTRIBS {
         ht hr
         ht form
         ht label n "Neighborhood:"
-        ht input n enum $n -src nbhoods
+        ht input n enum $n -src /app/nbhoods
         ht label g "Frc. Group:"
-        ht input g enum $g -src groups/frc
+        ht input g enum $g -src /app/groups/frc
         ht label top "Show:"
-        ht input top enum $top -src enum/topitems -content tcl/enumdict
+        ht input top enum $top -src /app/enum/topitems -content tcl/enumdict
         ht para
         ht label start 
         ht put "Time Interval &mdash; "
@@ -718,9 +718,9 @@ appserver module CONTRIBS {
         ht hr
         ht form
         ht label n "Neighborhood:"
-        ht input n enum $n -src nbhoods
+        ht input n enum $n -src /app/nbhoods
         ht label top "Show:"
-        ht input top enum $top -src enum/topitems -content tcl/enumdict
+        ht input top enum $top -src /app/enum/topitems -content tcl/enumdict
         ht para
         ht label start 
         ht put "Time Interval &mdash; "
@@ -850,11 +850,11 @@ appserver module CONTRIBS {
         ht hr
         ht form
         ht label g "Group:"
-        ht input g enum $g -src groups/civ
+        ht input g enum $g -src /app/groups/civ
         ht label c "Concern:"
-        ht input c enum $c -src enum/concerns
+        ht input c enum $c -src /app/enum/concerns
         ht label top "Show:"
-        ht input top enum $top -src enum/topitems -content tcl/enumdict
+        ht input top enum $top -src /app/enum/topitems -content tcl/enumdict
         ht para
         ht label start 
         ht put "Time Interval &mdash; "
@@ -976,11 +976,11 @@ appserver module CONTRIBS {
         ht hr
         ht form
         ht label g "Of Group:"
-        ht input g enum $g -src groups
+        ht input g enum $g -src /app/groups
         ht label a "With Actor:"
         ht input a enum $a -src actors
         ht label top "Show:"
-        ht input top enum $top -src enum/topitems -content tcl/enumdict
+        ht input top enum $top -src /app/enum/topitems -content tcl/enumdict
         ht para
         ht label start 
         ht put "Time Interval &mdash; "

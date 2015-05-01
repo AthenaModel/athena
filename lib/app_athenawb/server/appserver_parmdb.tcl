@@ -52,8 +52,8 @@ appserver module PARMDB {
         }
 
         # NEXT, set up the linkdict.
-        dict set result /parmdb?subset=changed label "Changed"
-        dict set result /parmdb?subset=changed listIcon ::marsgui::icon::pencil12
+        dict set result /app/parmdb?subset=changed label "Changed"
+        dict set result /app/parmdb?subset=changed listIcon ::marsgui::icon::pencil12
 
         # TBD: parmset(n) doesn't have queries for the tree structure of 
         # parm names (alas); we really should be grabbing this automatically. 
@@ -74,7 +74,7 @@ appserver module PARMDB {
             strategy
             uram
         } {
-            set url /parmdb?pattern=$subset.*
+            set url /app/parmdb?pattern=$subset.*
 
             dict set result $url label "$subset.*"
             dict set result $url listIcon ::marsgui::icon::pencil12
@@ -140,7 +140,7 @@ appserver module PARMDB {
         ht label pattern "Wildcard Pattern:"
         ht input pattern text $pattern -size 20
         ht label subset "Subset:"
-        ht input subset enum $subset -src enum/parmstate -content tcl/enumdict
+        ht input subset enum $subset -src /app/enum/parmstate -content tcl/enumdict
         ht submit
         ht /form
         ht hr

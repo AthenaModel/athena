@@ -66,7 +66,7 @@ appserver module firing {
             FROM rule_firings
             ORDER BY ruleset
         } {
-            set url /firings/$ruleset
+            set url /app/firings/$ruleset
 
             dict set result $url label $ruleset
             dict set result $url listIcon ::projectgui::icon::orangeheart12
@@ -157,7 +157,7 @@ appserver module firing {
         ht hr
         ht form -autosubmit 1
         ht label page_size "Page Size:"
-        ht input page_size enum $page_size -src enum/pagesize -content tcl/enumdict
+        ht input page_size enum $page_size -src /app/enum/pagesize -content tcl/enumdict
         ht label start 
         ht put "Time Interval &mdash; "
         ht link /help/term/timespec "From:"
