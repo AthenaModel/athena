@@ -280,12 +280,14 @@ snit::type ::projectlib::mydomain {
         if {[string first $options(-domain) /$path] == -1} {
             throw NOTFOUND "URL incorrectly sent to this domain."
         }
+        set suffix [string range $path [string length $options(-domain)] end]
 
         # NEXT, save the entire URL back in.
-        dict set u url $url
+        dict set u suffix $suffix
+        dict set u url    $url
 
         # NEXT, determine the resource type
-        set rtype [$self GetResourceType [dict get $u path] match]
+        set rtype [$self GetResourceType $suffix match]
 
         # NEXT, strip any trailing "/" from the URL
         set url [string trimright $url "/"]
@@ -304,21 +306,18 @@ snit::type ::projectlib::mydomain {
                     contentType $contentType]
     }
 
-    # GetResourceType path matchArray
+    # GetResourceType suffix matchArray
     #
-    # path        - A resource path, beginning with domain
+    # suffix      - A resource suffix
     # matchArray  - An array of matches from the pattern.  Up to 3
     #               substrings can be matched.
     #
     # Returns the resource type key from $rinfo, or throws NOTFOUND.
 
-    method GetResourceType {path matchArray} {
+    method GetResourceType {suffix matchArray} {
         upvar 1 $matchArray match
 
-        # FIRST, remove the domain.
-        set suffix [string range $path [string length $options(-domain)] end]
-
-        # NEXT, is it cached?
+        # FIRST, is it cached?
         if {[info exists rtypeCache($suffix)]} {
             lassign $rtypeCache($suffix) rtype matchDict
             array set match $matchDict

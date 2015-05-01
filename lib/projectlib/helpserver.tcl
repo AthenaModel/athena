@@ -129,7 +129,7 @@ snit::type ::projectlib::helpserver {
 
         $self CheckForHelpFile
 
-        set path /[dict get $udict path]
+        set path /[dict get $udict suffix]
 
         # FIRST, if we have it cached, just return it.
         if {[info exists imageCache($path)]} {
@@ -171,7 +171,7 @@ snit::type ::projectlib::helpserver {
         }
 
         # NEXT, return the page.
-        set path /[dict get $udict path]
+        set path /[dict get $udict suffix]
 
         $hdb eval {
             SELECT title, alias, text FROM helpdb_pages WHERE path=$path
@@ -286,7 +286,7 @@ snit::type ::projectlib::helpserver {
 
         $self CheckForHelpFile
 
-        set parent /[dict get $udict path]
+        set parent /[dict get $udict suffix]
 
         if {![$hdb exists {
             SELECT * FROM helpdb_pages WHERE path=$parent
@@ -309,8 +309,8 @@ snit::type ::projectlib::helpserver {
                 set icon ::marsgui::icon::folder12
             }
 
-            dict set result $path label $title
-            dict set result $path listIcon $icon
+            dict set result [$server domain]/$path label $title
+            dict set result [$server domain]/$path listIcon $icon
         }
 
         return $result
