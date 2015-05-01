@@ -333,7 +333,29 @@ snit::type ::projectlib::helpserver {
 
     delegate method ctypes    to server
     delegate method domain    to server
-    delegate method get       to server
     delegate method resources to server
+
+    # get url ?contentTypes?
+    #
+    # url         - The URL of the resource to get.
+    # contentType - The list of accepted content types.  Wildcards are
+    #               allowed, e.g., text/*, */*
+    #
+    # This is a simple wrapper around the mydomain(n)'s get that
+    # ensures that the -rdb is defined.
+
+    method get {url {contentTypes ""}} {
+        
+        set rdict [$server get $url $contentTypes]
+
+        if {[dict get $rdict contentType] eq "text/html"} {
+            dict set map " href=\"/" " href=\"[$server domain]/"
+            dict set map " src=\"/"  " src=\"[$server domain]/"
+            dict set rdict content \
+                [string map $map [dict get $rdict content]]
+        }
+
+        return $rdict
+    }
 }
 

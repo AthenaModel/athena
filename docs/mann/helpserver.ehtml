@@ -20,7 +20,7 @@ clients like <xref mybrowser(n)> can query it.<p>
 
 The resources known to the server are listed under <xref RESOURCES>;
 they can also be seen by querying the server's 
-<code>/urlhelp</code> resource.<p>
+<code>/<i domain>/urlhelp</code> resource.<p>
 
 <subsection "Searching">
 
@@ -28,7 +28,7 @@ A page URL can include a query in the usual way, delimited with a
 question mark, e.g.,<p>
 
 <pre>
-    /?my search text
+    /<i domain>/?my search text
 </pre>
 
 A query can be added to any page URL; however, the page path is
@@ -59,7 +59,7 @@ In addition to the standard resources provided by
 
 <deflist resources>
 
-<defitem / {/}>
+<defitem / {/<i domain>/}>
 
 This is the main help page; lower level pages can be referenced by
 adding on to the path in the usual way.  The <b>text/html</b> content type
@@ -69,7 +69,7 @@ dictionary of links to the child pages, if any.<p>
 If the URL contains a query, the help database will be searched.  See
 <xref Searching> for details.
 
-<defitem /image {/image/<i>name</i>}>
+<defitem /image {/<i domain>/image/<i>name</i>}>
 
 Returns the <b>tk/image</b> resources compiled into the help database
 with the given name.<p>
@@ -91,6 +91,12 @@ fully-qualified command name.<p>
 helpserver(n) has the following option:<p>
 
 <deflist options>
+
+<defopt {-domain <i>domain</i>}>
+
+The help server's folder in the application's URL tree.  It must begin
+with a "/" and consist of a single folder name.  Defaults to "/help".
+All help resources are accessed at URLs beginning with this name.<p>
 
 <defopt {-helpdb <i>database</i>}>
 
