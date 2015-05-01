@@ -52,7 +52,7 @@ snit::widget detailbrowser {
     constructor {args} {
         # FIRST, Install the browser
         install browser using mybrowser $win.browser  \
-            -home         my://app/                   \
+            -home         /app/                   \
             -unknowncmd   [mymethod GuiLinkCmd]       \
             -messagecmd   {app puts}                  \
             -styles       $browserStyles 
@@ -65,7 +65,7 @@ snit::widget detailbrowser {
             -padding   2
 
         install ltree using linktree $sidebar.tabs.ltree \
-            -url       my://app/links      \
+            -url       /app/links      \
             -lazy      yes                 \
             -width     150                 \
             -height    400                 \

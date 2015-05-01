@@ -604,7 +604,7 @@ snit::type ::projectlib::typewrapper {
     VREL  "Vert. rel. change"
 }
 
-# Page Sizes for paged myserver tables
+# Page Sizes for paged mydomain tables
 
 ::marsutil::enum ::projectlib::epagesize {
     ALL "All items"

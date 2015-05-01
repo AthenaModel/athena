@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    app_cellide(n): myserver(i) Server
+#    app_cellide(n): mydomain(i) Server
 #
 #    This is an object that presents a unified view of the data resources
 #    in the application, and consequently abstracts away the details of
@@ -17,8 +17,8 @@
 # URLs:
 #
 #    Resources are identified by URLs, as in a web server, using the
-#    "my://" scheme.  This server is registered as "app", so that it
-#    can be queried using "my://app/...".  However, it is also the
+#    "/" scheme.  This server is registered as "app", so that it
+#    can be queried using "/app/...".  However, it is also the
 #    default server, so "//app" can be omitted.
 #
 #-----------------------------------------------------------------------
@@ -33,7 +33,7 @@ snit::type appserver {
     # Look-up Tables
 
     typevariable linkInfo {
-        /pages {
+        /app/pages {
             label "Pages"
             listIcon ::marsgui::icon::folder12
         }
@@ -42,7 +42,7 @@ snit::type appserver {
     #-------------------------------------------------------------------
     # Type Components
 
-    typecomponent server   ;# The myserver(n) instance.
+    typecomponent server   ;# The mydomain(n) instance.
 
     #-------------------------------------------------------------------
     # Public methods
@@ -51,11 +51,11 @@ snit::type appserver {
 
     # init
     #
-    # Creates the myserver, and registers all of the resource types.
+    # Creates the mydomain, and registers all of the resource types.
 
     typemethod init {} {
         # FIRST, create the server
-        set server [myserver ${type}::server]
+        set server [mydomain ${type}::server -domain /app]
 
         # NEXT, create the buffer for generating HTML.
         htools ${type}::ht \
@@ -127,7 +127,7 @@ snit::type appserver {
             set line [dict get [cmscript checkinfo] line]
 
             ht putln "The cell model has a syntax error at line "
-            ht link gui://editor/$line $line
+            ht link gui:/editor/$line $line
             ht put ":"
             ht para
             ht putln "<b>$errmsg</b>"
@@ -181,9 +181,9 @@ snit::type appserver {
             foreach cell [cm cells invalid] {
                 set line [cm cellinfo line $cell]
 
-                ht link my://app/cell/$cell $cell
+                ht link /app/cell/$cell $cell
                 ht put " (Line "
-                ht link gui://editor/$line $line
+                ht link gui:/editor/$line $line
                 ht put ")"
                 ht put " = "
                 ht put [normalize [FormulaWithLinks $cell]]
@@ -248,7 +248,7 @@ snit::type appserver {
         set bare [cm cellinfo bare $cell]
 
         if {$page ne "null"} {
-            ht link my://app/page/$page "${page}::" 
+            ht link /app/page/$page "${page}::" 
         }
 
         ht put $bare
@@ -264,7 +264,7 @@ snit::type appserver {
             ht tr valign top {
                 ht td right {
                     set line [cm cellinfo line $cell]
-                    ht link gui://editor/$line $line
+                    ht link gui:/editor/$line $line
                 }
                 ht td left { ht put [cm value $cell] }
                 ht td left {
@@ -374,10 +374,10 @@ snit::type appserver {
 
         set result [dict create]
         foreach page [cm pages] {
-            dict set result my://app/page/$page \
+            dict set result /app/page/$page \
                 label $page 
 
-            dict set result my://app/page/$page \
+            dict set result /app/page/$page \
                 listIcon ::marsgui::icon::folder12 
         }
 
@@ -424,10 +424,10 @@ snit::type appserver {
         }
    
         foreach cell [lsort -dictionary [cm cells $page]] {
-            dict set result my://app/cell/$cell \
+            dict set result /app/cell/$cell \
                 label $cell 
 
-            dict set result my://app/cell/$cell \
+            dict set result /app/cell/$cell \
                 listIcon ::marsgui::icon::page12 
         }
 
@@ -500,7 +500,7 @@ snit::type appserver {
         set pline [cm pageinfo pline $page]
         ht put " [llength [cm cells $page]] cells."
         ht putln "It is defined starting at line "
-        ht link gui://editor/$pline $pline
+        ht link gui:/editor/$pline $pline
         ht putln "in the cell model file."
         ht para
 
@@ -555,11 +555,11 @@ snit::type appserver {
                 ht tr {
                     ht td right {
                         set line [cm pageinfo pline $page]
-                        ht link gui://editor/$line $line
+                        ht link gui:/editor/$line $line
                     }
                     ht td left { 
                         ht put <b>
-                        ht link my://app/page/$page $page
+                        ht link /app/page/$page $page
                         ht put </b>
                     }
                     ht td right { ht put $pcount }
@@ -603,13 +603,13 @@ snit::type appserver {
                 ht tr valign top {
                     ht td right {
                         set line [cm cellinfo line $c]
-                        ht link gui://editor/$line $line
+                        ht link gui:/editor/$line $line
                     }
                     ht td left {
                         if {[cm cellinfo page $c] ne $page} {
-                            ht link my://app/cell/$c $c 
+                            ht link /app/cell/$c $c 
                         } else {
-                            ht link my://app/cell/$c $bare 
+                            ht link /app/cell/$c $bare 
                         }
 
                     }
@@ -650,7 +650,7 @@ snit::type appserver {
 
         foreach rcell [cm cellinfo badpage $cell] {
             lappend out \
-                "References cell on later page: <a href=\"my://app/cell/$rcell\">$rcell</a>"
+                "References cell on later page: <a href=\"/app/cell/$rcell\">$rcell</a>"
         }
 
         return $out
@@ -665,7 +665,7 @@ snit::type appserver {
     # as themselves; the link URL is "${root}$cell", allowing the 
     # routine to be used for more than one kind of link.
 
-    proc FormulaWithLinks {cell {root my://app/cell/}} {
+    proc FormulaWithLinks {cell {root /app/cell/}} {
         # FIRST, if there's no such cell then there's no formula.
         if {$cell ni [cm cells]} {
             return ""
@@ -727,7 +727,7 @@ snit::type appserver {
                 dict with errdict {
                     ht putln {<div class="warning">}
                     ht putln "The model contains a syntax error at line "
-                    ht link gui://editor/$line $line
+                    ht link gui:/editor/$line $line
                     ht put ": $msg." 
                     ht putln </div>
                 }

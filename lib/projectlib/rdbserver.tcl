@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    app_sim(n): Run-time Database myserver(i) Server
+#    app_sim(n): Run-time Database mydomain(i) Server
 #
 #    This is an object that presents a unified view of the data resources
 #    contained in an SQLite3 database.  It's intended more developer
@@ -28,13 +28,13 @@ namespace eval ::projectlib:: {
 }
 
 #-----------------------------------------------------------------------
-# myserver type
+# mydomain type
 
 snit::type ::projectlib::rdbserver {
     #-------------------------------------------------------------------
     # Components
 
-    component server ;# myserver(n) instance
+    component server ;# mydomain(n) instance
     component ht     ;# htools(n) instance
     component rdb    ;# The -rdb
 
@@ -64,7 +64,7 @@ snit::type ::projectlib::rdbserver {
 
     constructor {args} {
         # FIRST, create the server
-        set server [myserver ${selfns}::server]
+        set server [mydomain ${selfns}::server]
 
         # NEXT, create the htools buffer.
         install ht using htools ${selfns}::ht \
@@ -396,7 +396,7 @@ snit::type ::projectlib::rdbserver {
     # contentType - The list of accepted content types.  Wildcards are
     #               allowed, e.g., text/*, */*
     #
-    # This is a simple wrapper around the myserver(n)'s get that
+    # This is a simple wrapper around the mydomain(n)'s get that
     # ensures that the -rdb is defined.
 
     method get {url {contentTypes ""}} {

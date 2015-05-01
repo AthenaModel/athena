@@ -9,7 +9,7 @@
 #    projectlib(n): smart URL domain handler
 #
 #    Instances of smartdomain(n) provide domain handlers that can be
-#    used with ahttpd(n) or myserver(n).
+#    used with ahttpd(n) or mydomain(n).
 #
 #    TBD: If a folder is queried, redirect to index.html.
 #
@@ -87,11 +87,11 @@ oo::class create ::projectlib::smartdomain {
         ahttpd domain install $info(domain) [mymethod ahttpdDomain]
     }
 
-    # myserver name
+    # mydomain name
     #
-    # Registers this domain with a myserver(n) called $name.
+    # Registers this domain with a mydomain(n) called $name.
 
-    method myserver {name} {
+    method mydomain {name} {
         error "Not implemented yet"
         $name install $info(domain) [mymethod myHandler]
     }
@@ -276,7 +276,7 @@ oo::class create ::projectlib::smartdomain {
         set trans(query) $data(query)
 
         # NEXT, parse the query data into a dictionary.
-        # TBD: This will need to be generalized for myserver use.
+        # TBD: This will need to be generalized for mydomain use.
         if {$data(proto) ne "POST" ||
             $data(mime,content-type) eq "application/x-www-form-urlencoded"
         } {

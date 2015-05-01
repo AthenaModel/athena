@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    app_sim(n): myserver(i) Server
+#    app_sim(n): mydomain(i) Server
 #
 #    This is an object that presents a unified view of the data resources
 #    in the application, and consequently abstracts away the details of
@@ -15,7 +15,7 @@
 #    editing as well).
 #
 #    The content is provided by the appserver_*.tcl modules; this module
-#    creates and configures the myserver(n) and provides tools to the
+#    creates and configures the mydomain(n) and provides tools to the
 #    other modules.
 #
 # URLs:
@@ -36,7 +36,7 @@ snit::type appserver {
     #-------------------------------------------------------------------
     # Type Components
 
-    typecomponent server   ;# The myserver(n) instance.
+    typecomponent server   ;# The mydomain(n) instance.
 
     #-------------------------------------------------------------------
     # Type Variables
@@ -96,11 +96,11 @@ snit::type appserver {
 
     # init
     #
-    # Creates the myserver, and registers all of the resource types.
+    # Creates the mydomain, and registers all of the resource types.
 
     typemethod init {} {
         # FIRST, create the server
-        set server [myserver ${type}::server -logcmd ::log]
+        set server [mydomain ${type}::server -logcmd ::log]
 
         # NEXT, create the buffer for generating HTML.
         htools ${type}::ht \

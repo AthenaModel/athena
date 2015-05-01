@@ -1,35 +1,36 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#    myserver.tcl
+#    mydomain.tcl
 #
 # AUTHOR:
 #    Will Duquette
 #
 # DESCRIPTION:
-#    app_sim(n): Generic myserver(i) Server
+#    projectlib(n): Generic mydomain(i) Server
 #
 #    This is an object that presents a unified view of the data resources
-#    in the application, and consequently abstracts away the details of
+#    in an application domain, and consequently abstracts away the details of
 #    the RDB.  The intent is to provide a RESTful interface to the 
 #    application data to support browsing (and, possibly,
 #    editing as well).
 #
 # URLs:
 #
-#    Resources are identified by URLs, as in a web server, using the
-#    "my://" scheme.  If this server were registered as "app", for
-#    example, it could be queried using "my://app/...".  
+#    Resources are identified by URLs, as in a web server.  The ostensible
+#    scheme is "my:", but that usage is obsolescent.  The mydomains in the
+#    application provide a single file system view rooted at "/".  Each
+#    mydomain provides one domain, e.g., "/app", "/help".
 #
 #-----------------------------------------------------------------------
 
 namespace eval ::projectlib:: {
-    namespace export myserver
+    namespace export mydomain
 }
 
 #-----------------------------------------------------------------------
-# myserver type
+# mydomain type
 
-snit::type ::projectlib::myserver {
+snit::type ::projectlib::mydomain {
     #-------------------------------------------------------------------
     # Components
 
@@ -37,6 +38,11 @@ snit::type ::projectlib::myserver {
 
     #-------------------------------------------------------------------
     # Options
+
+    # -domain: the server's domain, e.g., /app, /help, /rdb.
+    option -domain \
+        -readonly yes \
+        -type     {snit::stringtype -regexp "/[a-z]+"}
 
     # -logcmd: Command called to log activity
 
@@ -90,6 +96,10 @@ snit::type ::projectlib::myserver {
     constructor {args} {
         # FIRST, save options
         $self configurelist $args
+
+        if {$options(-domain) eq ""} {
+            error "-domain now specified"
+        }
 
         # NEXT, create the htools buffer.
         install ht using htools ${selfns}::ht \
@@ -255,6 +265,14 @@ snit::type ::projectlib::myserver {
         # FIRST, parse the URL.  We will ignore the scheme and host.
         set u [uri::split $url]
 
+        # NEXT, if the path isn't in this domain, NOTFOUND.  This shouldn't
+        # happen, but might during transition.
+        set path [dict get $u path]
+
+        if {[string first $options(-domain) /$path] == -1} {
+            throw NOTFOUND "URL incorrectly sent to this domain."
+        }
+
         # NEXT, save the entire URL back in.
         dict set u url $url
 
@@ -278,20 +296,23 @@ snit::type ::projectlib::myserver {
                     contentType $contentType]
     }
 
-    # GetResourceType url matchArray
+    # GetResourceType path matchArray
     #
-    # url         - A resource URL
+    # path        - A resource path, beginning with domain
     # matchArray  - An array of matches from the pattern.  Up to 3
     #               substrings can be matched.
     #
     # Returns the resource type key from $rinfo, or throws NOTFOUND.
 
-    method GetResourceType {url matchArray} {
+    method GetResourceType {path matchArray} {
         upvar 1 $matchArray match
 
-        # FIRST, is it cached?
-        if {[info exists rtypeCache($url)]} {
-            lassign $rtypeCache($url) rtype matchDict
+        # FIRST, remove the domain.
+        set suffix [string range $path [string length $options(-domain)] end]
+
+        # NEXT, is it cached?
+        if {[info exists rtypeCache($suffix)]} {
+            lassign $rtypeCache($suffix) rtype matchDict
             array set match $matchDict
             return $rtype
         }
@@ -301,12 +322,12 @@ snit::type ::projectlib::myserver {
             # FIRST, does it match?
             set pattern [dict get $rdict pattern]
 
-            set matched [regexp ^$pattern\$ $url \
+            set matched [regexp ^$pattern\$ $suffix \
                              match(0) match(1) match(2) match(3) match(4)  \
                              match(5) match(6) match(7) match(8) match(9)]
 
             if {$matched} {
-                set rtypeCache($url) [list $rtype [array get match]]
+                set rtypeCache($suffix) [list $rtype [array get match]]
 
                 return $rtype
             }

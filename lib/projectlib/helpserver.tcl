@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    app_sim(n): help(5) Database myserver(i) Server
+#    app_sim(n): help(5) Database mydomain(i) Server
 #
 #    This is an object that serves help pages and images from a 
 #    help(5) help database.
@@ -27,13 +27,13 @@ namespace eval ::projectlib:: {
 }
 
 #-----------------------------------------------------------------------
-# myserver type
+# mydomain type
 
 snit::type ::projectlib::helpserver {
     #-------------------------------------------------------------------
     # Components
 
-    component server ;# myserver(n) instance
+    component server ;# mydomain(n) instance
     component hdb    ;# The help database handle
 
     #-------------------------------------------------------------------
@@ -77,7 +77,7 @@ snit::type ::projectlib::helpserver {
         }
 
         # NEXT, create the server
-        install server using myserver ${selfns}::server
+        install server using mydomain ${selfns}::server
 
         # NEXT, register the resources
         $server register /image/{name} {image/(.+)} \

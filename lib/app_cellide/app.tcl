@@ -85,7 +85,7 @@ snit::type app {
 
         # NEXT, initialize the appserver
         appserver init
-        myagent register app ::appserver
+        myagent register ::appserver
 
         # NEXT, create the real main window.
         appwin .main
@@ -196,9 +196,11 @@ snit::type app {
         }
 
         # NEXT, what kind of "gui" url is it?
+        lassign [split $parts(path) /] domain line 
 
-        if {$parts(host) eq "editor"} {
-            if {[regexp {^(\d+)$} $parts(path) dummy line]} {
+
+        if {$domain eq "editor"} {
+            if {[regexp {^(\d+)$} $line]} {
                 .main gotoline $line
                 return
             }

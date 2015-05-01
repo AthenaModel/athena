@@ -268,7 +268,7 @@ Generates an <code>&lt;img&gt;</code> tag with "src" equal to
 <code>/image/<i>name</i></code> and the specified alignment,
 <b>left</b>, <b>right</b>, or <b>center</b>.<p>
 
-This command is for use with <xref myserver(i)> instances that
+This command is for use with <xref mydomain(i)> instances that
 support querying Tk images.<p>
 
 <defitem input {<i>object</i> input <i>name itype value</i> ?<i>options...</i>?}>

@@ -1,6 +1,4 @@
-<manpage {projectlib(n) myagent(n)} "myserver(i) User Agent">
-
-<xrefset uri(n) uri(n) "http://core.tcl.tk/tcllib/doc/trunk/embedded/www/tcllib/files/modules/uri/uri.html">
+<manpage {projectlib(n) myagent(n)} "mydomain(i) User Agent">
 
 <section SYNOPSIS>
 
@@ -15,12 +13,12 @@ namespace import ::projectlib::myagent
 
 In HTTP-parlance, a "user agent" is a program that accesses an HTTP
 server.  An instance of myagent(n) is an object that clients can use
-to access data from one or more <xref myserver(i)> servers within
-the same application.  See <xref myserver(i)> for information on
-what a <xref myserver(i)> is and why it is useful.<p>
+to access data from one or more <xref mydomain(i)> handlers within
+the same application.  See <xref mydomain(i)> for information on
+what a <xref mydomain(i)> is and why it is useful.<p>
 
 In addition, the myagent(n) type is responsible keeping track of the
-available myserver(i) instances.<p>
+available mydomain(i) instances.<p>
 
 <section COMMANDS>
 
@@ -34,48 +32,41 @@ represented as a new Tcl command in the caller's scope;
 <i>name</i>.<p>
 
 Before the new myagent(n) can be used, at least one
-<xref myserver(i)> must be registered using
+<xref mydomain(i)> must be registered using
 <iref myagent register>.<p>
 
 The myagent(n) may be created with the following options:<p>
 
 <deflist options>
 
-<defopt {-defaultserver <i>name</i>}>
-
-Specifies the name of the registered <xref myserver(i)> which should
-retrieve requests when no explicit server name is given.  Defaults to
-"app".<p>
-
 <defopt {-contenttypes <i>list</i>}>
 
 Specifies the list of content types acceptable to this client, e.g.,
 <b>text/html</b>.  Wildcards may be used, e.g., <b>text/*</b>.  This
-list will be passed to the myserver(i) along with the requested URL;
+list will be passed to the mydomain(i) along with the requested URL;
 the server will only respond with an acceptable content type.<p>
 
-The myserver(i) must document the content types it is capable of
+The mydomain(i) must document the content types it is capable of
 returning.  Usually it will do so dynamically as <b>text/html</b> at the
 address <tt>/urlhelp</tt>.<p>
 
 </deflist options>
 
-<defitem "myagent register" {myagent register <i>server command</i>}>
+<defitem "myagent register" {myagent register <i>handler</i>}>
 
-Registers a <xref myserver(i)> so that it can be accessed by
-instances of myagent(n).  The <i>command</i> is the actual
-<xref myserver(i)> object, and <i>server</i> is the server name to
-be used in <tt>my://</tt> URLs.  By convention, an application's
-main servers are <b>app</b> and <b>help</b>.<p>
+Registers a <xref mydomain(i)> object so that it can be accessed by
+instances of myagent(n).  The <i handler> is the actual
+object.  By convention, an application's
+main domains are <b>/app</b> and <b>/help</b>.<p>
 
 <defitem "myagent resolve" {myagent resolve <i>base url</i>}>
 
 Given a <i>base</i> URL and some other <i>url</i>, possibly relative,
 this command resolves the two into a single <i>url</i>.  For example,
-given <tt>my://app/group</tt> and <tt>BLUE</tt>, this command will
-return <tt>my://app/group/BLUE</tt>.  If the <i>url</i> were
-<tt>/nbhood/N1</tt>, the returned URL would be
-<tt>my://app/nbhood/N1</tt> instead.<p>
+given <tt>/app/group</tt> and <tt>BLUE</tt>, this command will
+return <tt>/app/group/BLUE</tt>.  If the <i>url</i> were
+<tt>/app/nbhood/N1</tt>, the returned URL would be
+<tt>/app/nbhood/N1</tt> instead.<p>
 
 The client should always use this command (or, equivalently,
 the instance's <iref resolve> subcommand) on all links embedded in
@@ -90,18 +81,17 @@ Each instance of myagent(n) has the following subcommands:<p>
 
 <deflist instance>
 
-<defitem join {<i>object</i> join <i>args...</i>}>
-<defitem split {<i>object</i> split <i>args...</i>}>
-<defitem canonicalize {<i>object</i> canonicalize <i>args...</i>}>
-<defitem isrelative {<i>object</i> isrelative <i>args...</i>}>
-
-These subcommands are all delegated to the Tcllib module
-<xref uri(n)>.  See the Tcllib documentation for more.<p>
-
 <defitem resolve {<i>object</i> resolve <i>base url</i>}>
 
 This is identical to <iref myagent resolve>; it is provided for
 convenience.<p>
+
+<defitem find {<i>object</i> find <i>url</i>}>
+
+Validates the <i url>, verifying its syntax and that its domain is
+known to the agent.  Returns a list, {<i domain> <i newurl>}, where
+the <i domain> is the domain extracted from the <i url>, e.g., "<tt /app>",
+and the <i newurl> is the <i url> in canonical form.<p>
 
 <defitem get {<i>object</i> get <i>url</i> ?<i>contentTypes</i>?}>
 
@@ -109,9 +99,7 @@ Retrieves the <i>url</i>'s content.  If the URL cannot be retrieved, the
 command will throw an error with error code <i>NOTFOUND</i>; the error
 message will indicate the reason for the error.<p>
 
-The <i>url</i>'s scheme will default to "<b>my:</b>" and the
-<i>url</i>'s server will default to the <code>-defaultserver</code>.
-At present only the "<b>my:</b>" scheme is supported.<p>
+If present, the <i>url</i>'s scheme must be "<b my:>".<p>
 
 If one or more <i>contentTypes</i> are given, the returned content will
 have the first available content type in the list; if none of the the
@@ -123,7 +111,7 @@ defaults to the value of the <code>-contenttypes</code> option.<p>
 
 <section "SEE ALSO">
 
-<xref myserver(i)>.
+<xref mydomain(i)>.
 
 <section ENVIRONMENT>
 

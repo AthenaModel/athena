@@ -3,7 +3,7 @@
 #   modules.tcl -- subpackage loader
 #
 # PACKAGE:
-#   app_athenawb/server(n) -- Master package for athenawb(1) myserver code.
+#   app_athenawb/server(n) -- Master package for athenawb(1) mydomain code.
 #
 # PROJECT:
 #   Athena S&RO Simulation
