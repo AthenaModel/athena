@@ -160,11 +160,11 @@ appserver module firing {
         ht input page_size enum $page_size -src /app/enum/pagesize -content tcl/enumdict
         ht label start 
         ht put "Time Interval &mdash; "
-        ht link /help/term/timespec "From:"
+        ht link /help/term/timespec.html "From:"
         ht /label
         ht input start text $start -size 12
         ht label end
-        ht link /help/term/timespec "To:"
+        ht link /help/term/timespec.html "To:"
         ht /label
         ht input end text $end -size 12
         ht submit

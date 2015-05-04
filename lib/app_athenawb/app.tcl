@@ -1217,7 +1217,7 @@ snit::type app {
 
     typemethod CliHelp {args} {
         if {[llength $args] == 0} {
-            app show /help/command
+            app show /help/command.html
         } else {
             app help $args
         }

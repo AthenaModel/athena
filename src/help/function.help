@@ -63,7 +63,7 @@ proc function {name text} {
 
 macro function_syntax {} {
     set fullname [pageinfo title]
-    set toplink "<a href=\"/function\">Executive Function</a>"
+    set toplink [cref /function "Executive Function"]
 } {
     |<--
     [mktitle small $toplink $fullname ""]

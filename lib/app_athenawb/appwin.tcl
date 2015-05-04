@@ -844,51 +844,51 @@ snit::widget appwin {
             -label       "Help Contents"           \
             -underline   0                         \
             -accelerator "F1"                      \
-            -command     [list app show /help]
+            -command     [list app show /help/index.html]
 
-        bind $win <F1> [list app show /help]
+        bind $win <F1> [list app show /help/index.html]
 
         $helpmenu add command                           \
             -label       "Application Menus"            \
             -underline   0                              \
-            -command     [list app show /help/menu]
+            -command     [list app show /help/menu.html]
 
         $helpmenu add command                    \
             -label       "Application Tabs"      \
             -underline   0                       \
-            -command     [list app show /help/tab]
+            -command     [list app show /help/tab.html]
 
         $helpmenu add command                    \
             -label       "Orders"                \
             -underline   0                       \
-            -command     [list app show /help/order]
+            -command     [list app show /help/order.html]
 
         $helpmenu add command                    \
             -label       "Display Variables"     \
             -underline   0                       \
-            -command     [list app show /help/var]
+            -command     [list app show /help/var.html]
 
         $helpmenu add command                    \
             -label       "Executive Commands"    \
             -underline   0                       \
-            -command     [list app show /help/command]
+            -command     [list app show /help/command.html]
 
         $helpmenu add command                    \
             -label       "Model Parameters"      \
             -underline   0                       \
-            -command     [list app show /help/parmdb]
+            -command     [list app show /help/parmdb.html]
 
         $helpmenu add separator
 
         $helpmenu add command                    \
             -label       "Release Notes"         \
             -underline   0                       \
-            -command     [list app show /help/release]
+            -command     [list app show /help/release.html]
 
         $helpmenu add command                    \
             -label       "About Athena"          \
             -underline   0                       \
-            -command     [list app show /help/about]
+            -command     [list app show /help/about.html]
 
 
     }

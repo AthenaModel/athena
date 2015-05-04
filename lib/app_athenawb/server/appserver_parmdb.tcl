@@ -160,7 +160,7 @@ appserver module PARMDB {
                 ht tr {
                     ht td left {
                         set path [string tolower [join [split $parm .] /]]
-                        ht link /help/parmdb/$path $parm 
+                        ht link /help/parmdb/$path.html $parm 
                     }
                     
                     ht td left {

@@ -68,7 +68,7 @@ macro syntax {{arglist ""}} {
     }
 
     append nametext $name
-    set toplink "<a href=\"/command\">Executive Command</a>"
+    set toplink [cref /command "Executive Command"]
 } {
     |<--
     [mktitle small $toplink "$nametext $arglist" ""]

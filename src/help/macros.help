@@ -174,7 +174,7 @@ macroproc name2pathlinks {root sep name} {
 
     foreach htok [lrange $hTokens 0 end-1] ptok [lrange $pTokens 0 end-1] {
         append path "/$ptok"
-        append nameWithLinks "<a href=\"$path\">$htok</a>$sep"
+        append nameWithLinks "[cref $path $htok]$sep"
     }
 
     append nameWithLinks [lindex $hTokens end]

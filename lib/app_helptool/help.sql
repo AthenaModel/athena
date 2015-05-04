@@ -17,9 +17,12 @@ PRAGMA user_version=1;
 -- Help Pages
 
 CREATE TABLE helpdb_pages (
-    -- Path of the page.  This is the name used in HREFs.  It's the
-    -- same as $parent/$slug.  The root page has path / and slug ''.
+    -- Path of the page; it's the same as $parent/$slug.  
+    -- The root page has path / and slug ''.
     path   TEXT PRIMARY KEY,
+
+    -- The page's url suffix.  This is the name used in HREFs. 
+    url    TEXT,
 
     -- Path of parent page, or '' for root
     parent TEXT,
@@ -33,7 +36,7 @@ CREATE TABLE helpdb_pages (
     -- Page title
     title  TEXT,
 
-    -- Page Alias: the URL of the page this is an alias to.
+    -- Page Alias: the 'path' of the page this is an alias to.
     alias  TEXT,
 
     -- The HTML text of the page, unless this is an alias.
@@ -49,6 +52,9 @@ CREATE TABLE helpdb_images (
     -- Path of the image: image/$slug.  This is the URI used in 
     -- IMG SRC.
     path     TEXT PRIMARY KEY,
+
+    -- The page's url suffix.  This is the name used in HREFs. 
+    url    TEXT,
 
     -- Image slug.  Every image has a unique slug, that is the last
     -- component in its path.
@@ -81,6 +87,7 @@ CREATE VIRTUAL TABLE helpdb_search USING fts3(
 
 CREATE TEMPORARY VIEW helpdb_reserved AS
 SELECT '/image' AS path         UNION
+SELECT '/index' AS path         UNION
 SELECT path FROM helpdb_pages   UNION
 SELECT path FROM helpdb_images;
 

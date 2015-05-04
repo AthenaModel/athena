@@ -138,7 +138,7 @@ snit::type ::projectlib::helpserver {
 
         # NEXT, try to retrieve it.
         $hdb eval {
-            SELECT data FROM helpdb_images WHERE path=$path
+            SELECT data FROM helpdb_images WHERE url=$path
         } {
             set imageCache($path) \
                 [image create photo -format png -data $data]
@@ -174,7 +174,7 @@ snit::type ::projectlib::helpserver {
         set path /[dict get $udict suffix]
 
         $hdb eval {
-            SELECT title, alias, text FROM helpdb_pages WHERE path=$path
+            SELECT title, alias, text FROM helpdb_pages WHERE url=$path
         } {
             if {$alias ne ""} {
                 set text [$hdb onecolumn {
@@ -214,7 +214,7 @@ snit::type ::projectlib::helpserver {
         # NEXT, do full text search
         set code [catch {
             set found [$hdb eval {
-                SELECT path, 
+                SELECT url, 
                        title,
                        snippet(helpdb_search) AS snippet
                 FROM helpdb_search
@@ -233,9 +233,7 @@ snit::type ::projectlib::helpserver {
         } else {
             set out "<b>Search results for '$query':</b><p>\n<dl>\n"
 
-            foreach {path title snippet} $found {
-                set url $path
-
+            foreach {url title snippet} $found {
                 # Not including domain; it's translated properly
                 # by 'get'.
                 append out "<dt><a href=\"$url\">$title</a></dt>\n"
@@ -283,19 +281,23 @@ snit::type ::projectlib::helpserver {
 
         $self CheckForHelpFile
 
-        set parent /[dict get $udict suffix]
+        set purl /[dict get $udict suffix]
 
         if {![$hdb exists {
-            SELECT * FROM helpdb_pages WHERE path=$parent
+            SELECT * FROM helpdb_pages WHERE url=$purl
         }]} {
             return -code error -errorcode NOTFOUND \
                 "Help page not found: [dict get $udict url]"
         }
 
+        set parent [$hdb onecolumn {
+            SELECT path FROM helpdb_pages WHERE url=$purl
+        }]
+
         set result [dict create]
 
         $hdb eval {
-            SELECT path, title, leaf
+            SELECT url, title, leaf
             FROM helpdb_pages
             WHERE parent=$parent
             ORDER BY rowid
@@ -306,8 +308,8 @@ snit::type ::projectlib::helpserver {
                 set icon ::marsgui::icon::folder12
             }
 
-            dict set result [$server domain]/$path label $title
-            dict set result [$server domain]/$path listIcon $icon
+            dict set result [$server domain]/$url label $title
+            dict set result [$server domain]/$url listIcon $icon
         }
 
         return $result

@@ -225,7 +225,7 @@ snit::type app {
 
     typemethod Compiler_page {parent slug title text} {
         # FIRST, get the path.
-        set path [$type MakePath $parent $slug]
+        lassign [$type MakePath $parent $slug] path url
 
         # NEXT, validate the input
         require {$text  ne ""} "Page \"$path\" has no text"
@@ -239,13 +239,13 @@ snit::type app {
     # parent      Path of parent page, or "" for root
     # slug        The page's name, or "" for the root
     # title       The page title
-    # alias       Path of page to which this is an alias.
+    # alias       path of page to which this is an alias.
     #
     # Defines a help page.
 
     typemethod Compiler_alias {parent slug title alias} {
         # FIRST, get the path.
-        set path [$type MakePath $parent $slug]
+        lassign [$type MakePath $parent $slug] path url
 
         # NEXT, validate the input
         require {$alias ne ""} "Aliased page \"$path\" has no alias"
@@ -268,8 +268,8 @@ snit::type app {
     typemethod MakePage {parent slug title alias text} {
         assert {$alias ne "" || $text ne ""}
 
-        # FIRST, get the path.
-        set path [$type MakePath $parent $slug]
+        # FIRST, get the path and URL
+        lassign [$type MakePath $parent $slug] path url
 
         # NEXT, validate the input
         require {
@@ -326,8 +326,8 @@ snit::type app {
         # NEXT, save the page.
         hdb eval {
             INSERT INTO 
-            helpdb_pages(path,parent,slug,title,alias,text)
-            VALUES($path,$parent,$slug,$title,$alias,$text);
+            helpdb_pages(path,url,parent,slug,title,alias,text)
+            VALUES($path,$url,$parent,$slug,$title,$alias,$text);
         }
     }
 
@@ -336,15 +336,15 @@ snit::type app {
     # parent      Path of parent page, or "" for root
     # slug        The page's name, or "" for the root
     #
-    # Returns the page's path given its parent and slug.
+    # Returns the page's path and url given its parent and slug.
 
     typemethod MakePath {parent slug} {
         if {$parent eq "" && $slug eq ""} {
-            return "/"
+            return [list "/" "/index.html"]
         } elseif {$parent eq "/"} {
-            return "/$slug"
+            return [list "/$slug" "/$slug.html"] 
         } else {
-            return "$parent/$slug"
+            return [list "$parent/$slug" "$parent/$slug.html"]
         }
     }
 
@@ -361,6 +361,7 @@ snit::type app {
     typemethod Compiler_image {slug title filename} {
         # FIRST, get the path
         set path /image/$slug
+        set url $path.png
 
         # NEXT, is the path unused?
         if {[hdb exists {
@@ -382,8 +383,8 @@ snit::type app {
 
         hdb eval {
             INSERT OR REPLACE
-            INTO helpdb_images(path,slug,title,data)
-            VALUES($path,$slug,$title,$data)
+            INTO helpdb_images(path,url,slug,title,data)
+            VALUES($path,$url,$slug,$title,$data)
         }
 
         image delete $img
@@ -476,6 +477,16 @@ snit::type app {
         hdb exists {SELECT * FROM helpdb_images WHERE path=$path}
     }
 
+    # image url path
+    #
+    # path - A image path
+    #
+    # Returns the image's server-relative URL.
+
+    typemethod {image url} {path} {
+        hdb onecolumn {SELECT url FROM helpdb_images WHERE path=$path}
+    }
+
     # page exists path
     #
     # path - A page path
@@ -484,6 +495,16 @@ snit::type app {
 
     typemethod {page exists} {path} {
         hdb exists {SELECT * FROM helpdb_pages WHERE path=$path}
+    }
+
+    # page url path
+    #
+    # path - A page path
+    #
+    # Returns the page's server-relative URL.
+
+    typemethod {page url} {path} {
+        hdb onecolumn {SELECT url FROM helpdb_pages WHERE path=$path}
     }
 
     # page title path

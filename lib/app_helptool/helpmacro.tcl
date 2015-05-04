@@ -145,23 +145,25 @@ snit::type helpmacro {
         return "<a name=\"$id\">$title</a>" 
     }
 
-    # cref url ?text?
+    # cref pathref ?text?
     #
-    # url     - A page URL, path?#anchor?
-    # text    - The link text.  Defaults to the page title.
+    # pathref  - A page path, path?#anchor?
+    # text     - The link text.  Defaults to the page title.
     #
     # Cross-reference link to the named page.
 
-    proc cref {url {text ""}} {
-        lassign [split $url "#"] path anchor
+    proc cref {pathref {text ""}} {
+        lassign [split $pathref "#"] path anchor
 
-        require {$path ne ""} "url has no page path: \"$url\""
+        require {$path ne ""} "url has no page path: \"$pathref\""
 
         if {[app page exists $path]} {
+            set url [app page url $path]
             if {$text eq ""} {
                 set text [app page title $path]
             }
         } else {
+            set url $pathref
             if {$text eq ""} {
                 set text $path
             }
@@ -191,11 +193,11 @@ snit::type helpmacro {
         set out "<ul>\n"
 
         hdb eval {
-            SELECT path, title 
+            SELECT url, title 
             FROM helpdb_pages 
             WHERE parent=$parent
         } {
-            append out "<li> <a href=\"$path\">$title</a>\n"
+            append out "<li> <a href=\"$url\">$title</a>\n"
         }
 
         append out "</ul>\n"
@@ -234,17 +236,18 @@ snit::type helpmacro {
 
     proc image {slug {align ""}} {
         set path /image/$slug
+        set url $path.png
 
         if {![app image exists $path]} {
             puts "On \"[pageinfo path]\", broken link to image: \"$path\""
 
-            return "<a href=\"$path\">{TBD: $path}</a>"
+            return "<a href=\"$url\">{TBD: $url}</a>"
         }
 
         if {$align eq ""} {
-            return "<img src=\"$path\">"
+            return "<img src=\"$url\">"
         } else {
-            return "<img src=\"$path\" align=\"$align\">"
+            return "<img src=\"$url\" align=\"$align\">"
         }
     }
 

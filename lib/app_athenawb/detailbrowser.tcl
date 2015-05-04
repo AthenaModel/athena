@@ -96,7 +96,7 @@ snit::widget detailbrowser {
 
         # Help Tree
         install htree using linktree $sidebar.tabs.htree \
-            -url       /help                         \
+            -url       /help/index.html                  \
             -lazy      yes                               \
             -width     150                               \
             -height    400                               \

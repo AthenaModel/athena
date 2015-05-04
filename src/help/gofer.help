@@ -69,7 +69,7 @@ proc gofer_rule {typename rulename title text} {
 
 # Formats the title for a gofer page
 macro gofer.header {otitle} {
-    set toplink "<a href=\"/gofer\">Gofer Type</a>"
+    set toplink [cref /gofer "Gofer Type"]
 } {
     |<--
     [mktitle small $toplink "<b>[pageinfo title]:</b> $otitle" ""]<p>
@@ -97,8 +97,8 @@ macro gofer.rules {} {
 #
 # Formats the title for a gofer rule page
 macro gofer_rule.header {typename rulename rtitle} {
-    set toplink "<a href=\"/gofer\">Gofer Type:</a>"
-    set typelink "<b><a href\"[pageinfo parent]\">$typename</a></b>"
+    set toplink [cref /gofer "Gofer Type:"]
+    set typelink "<b>[cref [pageinfo parent] $typename]</b>"
 } {
     |<--
     Gofer Rule: <b>$rtitle</b><p>
