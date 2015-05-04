@@ -1,39 +1,40 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#   vardiff_nbmood.tcl
+#   vardiff_goodscap.tcl
 #
 # AUTHOR:
-#   Will Duquette
+#   Dave Hanks
 #
 # DESCRIPTION:
-#   athena(n) variable differences: nbmood.n
+#   athena(n) variable differences: goodscap.n
 #
 #-----------------------------------------------------------------------
 
-oo::class create ::athena::vardiff::nbmood {
+oo::class create ::athena::vardiff::goodscap {
     superclass ::athena::vardiff
-    meta type     nbmood.n
-    meta category social
+    meta type     goodscap.n
+    meta category economic
 
     constructor {comp_ val1_ val2_ n_} {
         next $comp_ [list n $n_] $val1_ $val2_
     }
 
     method significant {} {
-        set lim 15.0 ;# TBD: Need parameter
+        set lim 0.2 ;# TBD: Need parameter
 
         expr {[my score] >= $lim}
     }
 
     method format {val} {
-        return [qsat longname $val]
+        return [moneyfmt $val]
     }
 
     method context {} {
-        format "%.1f vs %.1f" [my val1] [my val2]
+        format "%.1f%%" [expr {100.0*([my val2]-[my val1])/[my val1]}]
     }
 
     method score {} {
-        format "%.1f" [next]
+        let score {abs([my val2]-[my val1])/[my val1]}
+        format "%.2f" $score
     }
 }

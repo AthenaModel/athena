@@ -1,22 +1,24 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#   vardiff_nbmood.tcl
+#   vardiff_pbsat.tcl
 #
 # AUTHOR:
-#   Will Duquette
+#   Dave Hanks
 #
 # DESCRIPTION:
-#   athena(n) variable differences: nbmood.n
+#   athena(n) variable differences: pbsat.set
+#
+#   Two sets of playbox satisfaction are supported: local and all
 #
 #-----------------------------------------------------------------------
 
-oo::class create ::athena::vardiff::nbmood {
+oo::class create ::athena::vardiff::pbsat {
     superclass ::athena::vardiff
-    meta type     nbmood.n
+    meta type     pbsat.c.set
     meta category social
 
-    constructor {comp_ val1_ val2_ n_} {
-        next $comp_ [list n $n_] $val1_ $val2_
+    constructor {comp_ val1_ val2_ c_ set_} {
+        next $comp_ [list c $c_ set $set_] $val1_ $val2_
     }
 
     method significant {} {

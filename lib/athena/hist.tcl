@@ -55,12 +55,13 @@ snit::type ::athena::hist {
                 DELETE FROM hist_nbhood;
                 DELETE FROM hist_nbgroup;
                 DELETE FROM hist_civg;
-                DELETE FROM hist_sat;
+                DELETE FROM hist_sat_raw;
                 DELETE FROM hist_coop;
                 DELETE FROM hist_nbcoop;
                 DELETE FROM hist_econ;
                 DELETE FROM hist_econ_i;
                 DELETE FROM hist_econ_ij;
+                DELETE FROM hist_plant_na;
                 DELETE FROM hist_service_sg;
                 DELETE FROM hist_support;
                 DELETE FROM hist_hrel;
@@ -74,12 +75,13 @@ snit::type ::athena::hist {
                 DELETE FROM hist_nbhood       WHERE t > $t;
                 DELETE FROM hist_nbgroup      WHERE t > $t;
                 DELETE FROM hist_civg         WHERE t > $t;
-                DELETE FROM hist_sat          WHERE t > $t;
+                DELETE FROM hist_sat_raw      WHERE t > $t;
                 DELETE FROM hist_coop         WHERE t > $t;
                 DELETE FROM hist_nbcoop       WHERE t > $t;
                 DELETE FROM hist_econ         WHERE t > $t;
                 DELETE FROM hist_econ_i       WHERE t > $t;
                 DELETE FROM hist_econ_ij      WHERE t > $t;
+                DELETE FROM hist_plant_na     WHERE t > $t;
                 DELETE FROM hist_service_sg   WHERE t > $t;
                 DELETE FROM hist_support      WHERE t > $t;
                 DELETE FROM hist_hrel         WHERE t > $t;
@@ -108,7 +110,7 @@ snit::type ::athena::hist {
         # SAT
         if {[$adb parm get hist.sat]} {
             $adb eval {
-                INSERT INTO hist_sat(t,g,c,sat,base,nat)
+                INSERT INTO hist_sat_raw(t,g,c,sat,base,nat)
                 SELECT $t AS t, g, c, sat, bvalue, cvalue 
                 FROM uram_sat;
             }
@@ -153,12 +155,13 @@ snit::type ::athena::hist {
         # Neighborhood history
         $adb eval {
             INSERT INTO hist_nbhood(t,n,a,nbmood,volatility,nbpop,
-                                    nbsecurity)
+                                    ur,nbsecurity)
             SELECT $t AS t, n, 
                    C.controller AS a, 
                    U.nbmood, 
                    F.volatility, 
                    D.population,
+                   D.ur,
                    F.security
             FROM uram_n    AS U
             JOIN force_n   AS F USING (n)
@@ -187,6 +190,15 @@ snit::type ::athena::hist {
             JOIN demog_g   AS D USING (g);
         }
 
+        if {[$adb parm get hist.plant]} {
+            set gpp [money validate [$adb parm get plant.bktsPerYear.goods]]
+
+            $adb eval {
+                INSERT INTO hist_plant_na(t,n,a,num,cap)
+                SELECT $t AS t, n, a, num, $gpp*num*rho AS cap
+                FROM plants_na;
+            }
+        }
         if {[$adb parm get hist.support]} {
             $adb eval {
                 INSERT INTO hist_support(t,n,a,direct_support,support,influence)

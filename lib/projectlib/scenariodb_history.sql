@@ -29,6 +29,7 @@ CREATE TABLE hist_nbhood (
     volatility INTEGER,    -- Volatility of neighborhood
     nbpop      INTEGER,    -- Civilian population of neighborhood
     nbsecurity INTEGER,    -- Average civilian security in neighborhood
+    ur         DOUBLE,     -- Unemployment rate (%) in a neighborhood
 
     PRIMARY KEY (t,n)
 );
@@ -47,6 +48,10 @@ FROM hist_nbhood;
 
 CREATE VIEW hist_npop AS 
 SELECT t, n, nbpop AS population 
+FROM hist_nbhood;
+
+CREATE VIEW hist_nbur AS
+SELECT t, n, ur 
 FROM hist_nbhood;
 
 CREATE TABLE hist_nbgroup (
@@ -89,13 +94,7 @@ CREATE VIEW hist_pop AS
 SELECT t, g, population
 FROM hist_civg;
 
--- The following tables are used to save time series variable data
--- for plotting, etc.  Each table has a name like "history_<vartype>"
--- where <vartype> is a time series variable type.  In some cases,
--- one table might contain multiple variables; in that case it will
--- be named after the primary one.
-
-CREATE TABLE hist_sat (
+CREATE TABLE hist_sat_raw (
     -- History: sat.g.c
     t        INTEGER,
     g        TEXT,
@@ -106,6 +105,38 @@ CREATE TABLE hist_sat (
 
     PRIMARY KEY (t,g,c)
 );
+
+-- hist_sat view: includes saliency and population to allow for 
+-- easy computation of rollups
+
+CREATE VIEW hist_sat AS
+SELECT HS.t          AS t,
+       HS.g          AS g,
+       HS.c          AS c,
+       HS.sat        AS sat,
+       HS.base       AS base,
+       HS.nat        AS nat,
+       U.saliency    AS saliency,
+       HC.population AS population
+FROM hist_sat_raw AS HS
+JOIN uram_sat  AS U  USING (g,c)
+JOIN hist_civg AS HC USING (t,g);
+
+-- hist_nbsat view: includes neighborhood for rollup by nbhood and
+-- concern
+CREATE VIEW hist_nbsat AS
+SELECT HN.t          AS t,
+       HN.n          AS n,
+       HS.g          AS g,
+       HS.c          AS c,
+       HS.sat        AS sat,
+       HS.base       AS base,
+       HS.nat        AS nat,
+       U.saliency    AS saliency,
+       HN.personnel  AS population
+FROM hist_nbgroup AS HN
+JOIN hist_sat_raw AS HS USING (t,g)
+JOIN uram_sat     AS U  USING (g,c);
 
 CREATE TABLE hist_coop (
     -- History: coop.f.g
@@ -271,6 +302,24 @@ CREATE TABLE hist_econ_ij (
 
     PRIMARY KEY (t,i,j)        
 );
+
+CREATE TABLE hist_plant_na (
+    t           INTEGER,
+    n           TEXT,
+    a           TEXT,
+    num         INTEGER,
+    cap         DOUBLE,
+
+    PRIMARY KEY (t,n,a)
+);
+
+CREATE VIEW hist_plant_n AS
+SELECT t, n, sum(num) AS num, total(cap) AS cap
+FROM hist_plant_na GROUP BY t,n;
+
+CREATE VIEW hist_plant_a AS
+SELECT t, a, sum(num) AS num, total(cap) AS cap
+FROM hist_plant_na GROUP BY t,a;
 
 -- support.n.a
 CREATE TABLE hist_support (

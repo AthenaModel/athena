@@ -1,26 +1,26 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#   vardiff_nbmood.tcl
+#   vardiff_bsysmood.tcl
 #
 # AUTHOR:
-#   Will Duquette
+#   Dave Hanks
 #
 # DESCRIPTION:
-#   athena(n) variable differences: nbmood.n
+#   athena(n) variable differences: bsysmood.b
 #
 #-----------------------------------------------------------------------
 
-oo::class create ::athena::vardiff::nbmood {
+oo::class create ::athena::vardiff::bsysmood {
     superclass ::athena::vardiff
-    meta type     nbmood.n
+    meta type     bsysmood.b
     meta category social
 
-    constructor {comp_ val1_ val2_ n_} {
-        next $comp_ [list n $n_] $val1_ $val2_
+    constructor {comp_ val1_ val2_ b_} {
+        next $comp_ [list b $b_] $val1_ $val2_
     }
 
     method significant {} {
-        set lim 15.0 ;# TBD: Need parameter
+        set lim 20.0 ;# TBD: Need parameter
 
         expr {[my score] >= $lim}
     }

@@ -1,19 +1,19 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#   vardiff_nbmood.tcl
+#   vardiff_nbunemp.tcl
 #
 # AUTHOR:
-#   Will Duquette
+#   Dave Hanks
 #
 # DESCRIPTION:
-#   athena(n) variable differences: nbmood.n
+#   athena(n) variable differences: unemp.n
 #
 #-----------------------------------------------------------------------
 
-oo::class create ::athena::vardiff::nbmood {
+oo::class create ::athena::vardiff::nbunemp {
     superclass ::athena::vardiff
-    meta type     nbmood.n
-    meta category social
+    meta type     unemp.n
+    meta category economic
 
     constructor {comp_ val1_ val2_ n_} {
         next $comp_ [list n $n_] $val1_ $val2_
@@ -26,11 +26,11 @@ oo::class create ::athena::vardiff::nbmood {
     }
 
     method format {val} {
-        return [qsat longname $val]
+        return [format "%.1f%%" $val]
     }
 
     method context {} {
-        format "%.1f vs %.1f" [my val1] [my val2]
+        format "%.1f%%" [expr {[my val1]-[my val2]}]
     }
 
     method score {} {
