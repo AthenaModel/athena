@@ -31,29 +31,58 @@ page / menu "Application Menus" {
     <childlinks>
 }
 
-# menu name
+# menu name text                     
 #
-# name     The name of the menu
+# name  - The name of the menu
+# text  - The page text.
 #
-# Defines a menu page, defining the parent/child links properly.
-
+# Page Definition Proc: Defines a menu page, defining the 
+# parent/child links properly.
+ 
 proc menu {name text} {
     lassign [name2path /menu / $name] parent slug
 
     set title "$name Menu"
-    set tlinks "[name2pathlinks /menu / $name] Menu"
 
     page $parent $slug $title \
-        "<title [list $tlinks]>\n\n$text"
+        "<menutitle [list $name]>\n\n$text"
 }
+
+# menutitle name
+#
+# name  - The menu name
+#
+# Returns a full menu title.
+
+macroproc menutitle {name} {
+    set tlinks "[name2pathlinks /menu / $name] Menu"
+    return [title $tlinks]
+}
+
+# menuitem name text   
+#
+# name   - The name of the menu item
+# text   - The page text.
+#
+# Page Definition Proc: Defines a menu item page, defining the 
+# parent/child links properly.
 
 proc menuitem {name text} {
     lassign [name2path /menu / $name] parent slug
 
-    set tlinks [name2pathlinks /menu / $name]
-
     page $parent $slug $name \
-        "<mktitle small {Menu Item} [list $tlinks] {}>\n\n$text"
+        "<menuitemtitle [list $name]>\n\n$text"
+}
+
+# menuitemtitle name
+#
+# name  - The menu item name
+#
+# Returns a full menu item title.
+
+macroproc menuitemtitle {name} {
+    set tlinks [name2pathlinks /menu / $name]
+    return [mktitle small {Menu Item} $tlinks {}]
 }
 
 #=======================================================================

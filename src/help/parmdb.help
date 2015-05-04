@@ -55,15 +55,25 @@ proc parmpage {parm itemtype} {
 
     if {$itemtype eq "subset"} {
         set title "$parm.*"
-        set tlinks [name2pathlinks /parmdb . $parm].*
     } else {
         set title $parm
+    }
+
+
+    page $parent $slug $title "<parmtext $parm $itemtype>"
+}
+
+macroproc parmtext {parm itemtype} {
+    # FIRST, get the title.
+    if {$itemtype eq "subset"} {
+        set tlinks [name2pathlinks /parmdb . $parm].*
+    } else {
         set tlinks [name2pathlinks /parmdb . $parm]
     }
 
-    set toplink "<link \"/parmdb\" \"Model Parameter\">"
+    set toplink [link /parmdb "Model Parameter"]
 
-    set text "<mktitle small {$toplink} {$tlinks} {}>\n\n"
+    set text "[mktitle small $toplink $tlinks {}]\n\n"
 
     if {$itemtype ne "subset"} {
         append text \
@@ -75,10 +85,10 @@ proc parmpage {parm itemtype} {
     append text "<p>"
 
     if {$itemtype eq "subset"} {
-        append text "\n<childlinks>"
+        append text "\n[childlinks]"
     }
 
-    page $parent $slug $title $text
+    return $text
 }
 
 # parmpages

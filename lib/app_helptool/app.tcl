@@ -166,13 +166,14 @@ snit::type app {
         # files.
         set compiler [interp create -safe]
 
-        $compiler alias page    $type Compiler_page
-        $compiler alias alias   $type Compiler_alias
-        $compiler alias include $type Compiler_include
-        $compiler alias image   $type Compiler_image
-        $compiler alias macro   $type Compiler_macro
-        $compiler alias super   $type Compiler_super
-        $compiler alias object  $type Compiler_object
+        $compiler alias page       $type Compiler_page
+        $compiler alias alias      $type Compiler_alias
+        $compiler alias include    $type Compiler_include
+        $compiler alias image      $type Compiler_image
+        $compiler alias macro      $type Compiler_macro
+        $compiler alias macroproc  $type Compiler_macroproc
+        $compiler alias super      $type Compiler_super
+        $compiler alias object     $type Compiler_object
     }
 
 
@@ -411,6 +412,19 @@ snit::type app {
 
     typemethod Compiler_macro {name args} {
         mac eval [list template $name {*}$args]
+    }
+
+    # Compiler_macroproc name arglist body
+    #
+    # name      A name for this fragment
+    # arglist   Macro arguments
+    # body      Proc body
+    #
+    # Defines a proc that can be used as a macro in page bodies.  
+    # It is essentially a normal proc.
+
+    typemethod Compiler_macroproc {name arglist body} {
+        mac eval [list proc $name $arglist $body]
     }
 
     # Compiler_super args

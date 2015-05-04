@@ -134,3 +134,50 @@ macro parmdb {parm {link ""}} {
     set path "/parmdb/[string tolower [string map $replist $parm]]"
 } {[cref $path $link]}
 
+# splitname name sep
+#
+# name  - A name to be split
+# sep   - The separator character
+#
+# Down-cases the name; splits it on the separator character; and in
+# the result tokens, removes punctuation and replaces whitespace with
+# "_".  Returns the split tokens.
+
+macroproc splitname {name sep} {
+    set tokens [split [string tolower $name] $sep]
+
+    foreach token $tokens {
+        lappend result [string map {" " _ . "" : "" / "" ( "" ) ""} $token]
+    }
+
+    return $result
+}
+
+# name2pathlinks root sep name
+#
+# root   - The root of the path, e.g., "/menu"
+# name   - The name of the entity.
+# sep    - The separator character in the name, e.g., "/", ".", or ":".
+#
+# Converts a name containing path components into a series of links
+# terminated by the final component of the name as plain text.
+#
+# Whitespace in the name is replaced with "_", and non-separator
+# punctuation is removed.
+
+macroproc name2pathlinks {root sep name} {
+    set hTokens [split $name $sep]
+    set pTokens [splitname $name $sep]
+
+    set path $root
+    set nameWithLinks ""
+
+    foreach htok [lrange $hTokens 0 end-1] ptok [lrange $pTokens 0 end-1] {
+        append path "/$ptok"
+        append nameWithLinks "<a href=\"$path\">$htok</a>$sep"
+    }
+
+    append nameWithLinks [lindex $hTokens end]
+
+    return $nameWithLinks
+}

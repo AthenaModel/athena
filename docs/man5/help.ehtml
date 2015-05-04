@@ -89,6 +89,19 @@ for details.<p>
 The difference between macros and <iref proc>s is that macros can
 appear in page bodies, whereas <iref proc>s cannot.<p>
 
+<defitem macroproc {macroproc <i>name arglist</i> <i>body</i>}>
+
+Defines a document-specific macro that can be used in the body of
+subsequent pages.  The <iref macro> is essentially a
+standard proc that can appear in page text; it is called and 
+replaced with its return value.<p>
+
+The difference between macros and <iref proc>s is that macros can
+appear in page bodies, whereas <iref proc>s cannot.<p>
+
+The difference between macroprocs and normal macros is that macroprocs
+simply return their expanded value; they don't have a template string.<p>
+
 <defitem object {object <i>name script</i>}>
 
 Defines an object called <i>name</i> given an

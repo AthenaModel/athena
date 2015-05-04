@@ -40,10 +40,21 @@ proc tab {name text} {
     lassign [name2path /tab / $name] parent slug
     
     set title "$name Tab"
-    set tlinks "[name2pathlinks /tab / $name] Tab"
 
     page $parent $slug $title \
-        "<title $tlinks>\n\n$text"
+        "<tabtitle [list $name]>\n\n$text"
+}
+
+# tabtitle name
+#
+# name     The name of the tab
+#
+# Returns a formatted page title.
+
+macroproc tabtitle {name} {
+    set tlinks "[name2pathlinks /tab / $name] Tab"
+
+    return [title $tlinks]
 }
 
 macro control.filterbox {} {

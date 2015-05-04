@@ -40,29 +40,39 @@ proc prefpage {parm itemtype} {
 
     if {$itemtype eq "subset"} {
         set title "$parm.*"
-        set tlinks [name2pathlinks /prefs . $parm].*
     } else {
         set title $parm
+    }
+
+    page $parent $slug $title "<preftext $parm $itemtype>"
+}
+
+macroproc preftext {parm itemtype} {
+    # FIRST, get the title.
+    if {$itemtype eq "subset"} {
+        set tlinks [name2pathlinks /prefs . $parm].*
+    } else {
         set tlinks [name2pathlinks /prefs . $parm]
     }
 
-    set toplink "<a href=\"/prefs\">User Preference</a>"
+    set toplink [link /prefs "User Preference"]
 
-    set text "<mktitle small {$toplink} {$tlinks} {}>\n\n"
+    set text "[mktitle small $toplink $tlinks {}]\n\n"
 
     if {$itemtype ne "subset"} {
         append text \
        "Default value: [super ::projectlib::prefs getdefault $parm]<p>\n\n"
     }
 
-    append text [super ::projectlib::prefs docstring $parm]
+    set docstring [super ::projectlib::prefs docstring $parm]
+    append text [string map {& &amp; < &lt; > &gt;} $docstring]
     append text "<p>"
 
     if {$itemtype eq "subset"} {
-        append text "\n<childlinks>"
+        append text "\n[childlinks]"
     }
 
-    page $parent $slug $title $text
+    return $text
 }
 
 

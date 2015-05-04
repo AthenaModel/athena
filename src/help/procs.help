@@ -58,31 +58,3 @@ proc name2path {root sep name} {
     return [list $parent $slug]
 }
 
-# name2pathlinks root sep name
-#
-# root   - The root of the path, e.g., "/menu"
-# name   - The name of the entity.
-# sep    - The separator character in the name, e.g., "/", ".", or ":".
-#
-# Converts a name containing path components into a series of links
-# terminated by the final component of the name as plain text.
-#
-# Whitespace in the name is replaced with "_", and non-separator
-# punctuation is removed.
-
-proc name2pathlinks {root sep name} {
-    set hTokens [split $name $sep]
-    set pTokens [splitname $name $sep]
-
-    set path $root
-    set nameWithLinks ""
-
-    foreach htok [lrange $hTokens 0 end-1] ptok [lrange $pTokens 0 end-1] {
-        append path "/$ptok"
-        append nameWithLinks "<link \"$path\" $htok>$sep"
-    }
-
-    append nameWithLinks [lindex $hTokens end]
-
-    return $nameWithLinks
-}
