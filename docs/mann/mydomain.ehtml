@@ -1,29 +1,29 @@
-<manpage {projectlib(n) myserver(n)} "Basic myserver(i) Server">
+<manpage {projectlib(n) mydomain(n)} "Basic mydomain(i) Handler">
 
 <section SYNOPSIS>
 
 <pre>
 package require projectlib <version>
-namespace import ::projectlib::myserver
+namespace import ::projectlib::mydomain
 </pre>
 
 <itemlist>
 
 <section DESCRIPTION>
 
-myserver(n) is a basic <xref myserver(i)> implementation.
-The application creates an instance of myserver(n) and registers
+mydomain(n) is a basic <xref mydomain(i)> implementation.
+The application creates an instance of mydomain(n) and registers
 resources and resource handlers with it; it then registers the
 instance with <xref myagent(n)>.  At that point, <xref myagent(n)>
 clients like <xref mybrowser(n)> can query it.<p>
 
-The only resources known to a newly created myserver(n) are
+The only resources known to a newly created mydomain(n) are
 <code>/urlhelp</code> and <code>/urlhelp/{url}</code>, which are used
 to browse the set of resources known to the server.<p>
 
 <section "CONTENT TYPES">
 
-By default, myserver(n) serves only the following content types<p>
+By default, mydomain(n) serves only the following content types<p>
 
 <deflist ctypes>
 
@@ -32,32 +32,36 @@ By default, myserver(n) serves only the following content types<p>
 HTML text.<p>
 
 However, registered resource handlers can provide content in any
-desired form; myserver(n) doesn't care.<p>
+desired form; mydomain(n) doesn't care.<p>
 
 </deflist>
 
 <section "COMMANDS">
 
-myserver(n) provides the following commands for use by the
+mydomain(n) provides the following commands for use by the
 application.<p>
 
 <deflist commands>
 
-<defitem myserver {myserver <i>name</i> ?<i>option value...</i>?}>
+<defitem mydomain {mydomain <i>name</i> ?<i>option value...</i>?}>
 
-Creates a new instance of myserver(n) called <i>name</i>; returns the
+Creates a new instance of mydomain(n) called <i>name</i>; returns the
 fully-qualified command name.<p>
 
-Instances of myserver(n) take the following options:<p>
+Instances of mydomain(n) take the following options:<p>
 
 <deflist options>
+<defopt {-domain <i domain>}>
+<b Required.>  Specifies the object's domain, which must be a single
+folder name beginning with "/", e.g., "<tt /app>" or "<tt /help>".<p>
+
 <defopt {-logcmd <i>cmd</i>}>
 Defines a command prefix to be called with three additional arguments
 when the instance wishes to write to the debugging log: a verbosity
 level, a module name, and a log message.  Note that <i>cmd</i> will
 often be a <xref mars:logger(n)> instances.<p>
 
-The most important thing logged by myserver(n) are the requested URLs
+The most important thing logged by mydomain(n) are the requested URLs
 and the time (in microseconds) required to produce the content.<p>
 
 </deflist options>
@@ -67,7 +71,7 @@ and the time (in microseconds) required to produce the content.<p>
 
 <section "INSTANCE COMMANDS">
 
-Instances of myserver(n) provide the following subcommands for use by
+Instances of mydomain(n) provide the following subcommands for use by
 the application.<p>
 
 <deflist instance>
@@ -77,9 +81,13 @@ the application.<p>
 Given a resource type name, <i>rtype</i>, returns a list of the
 available content types.<p>
 
+<defitem domain {$server domain}>
+
+Returns the object's <tt -domain>.<p>
+
 <defitem get {$server get <i>url</i> ?<i>contentTypes</i>?}>
 
-<b>From <xref myserver(i)>:</b> Retrieves the <i>url</i> from the
+<b>From <xref mydomain(i)>:</b> Retrieves the <i>url</i> from the
 server.  If the <i>url</i> cannot be retrieved for any reason, the
 server throws an error with error code <b>NOTFOUND</b>; the error
 message is a human-readable message explaining why the resource cannot

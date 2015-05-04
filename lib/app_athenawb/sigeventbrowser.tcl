@@ -36,7 +36,7 @@ snit::widgetadaptor sigeventbrowser {
         installhull using mybrowser            \
             -toolbar      no                   \
             -sidebar      no                   \
-            -home         my://app/sigevents   \
+            -home         /app/sigevents   \
             -hyperlinkcmd {::app show}         \
             -messagecmd   {::app puts}         \
             -reloadon {

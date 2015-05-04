@@ -8,7 +8,7 @@
 # DESCRIPTION:
 #    app_sim(n), appserver(sim) module: Attitude Drivers
 #
-#    my://app/drivers/...
+#    /app/drivers/...
 #
 #-----------------------------------------------------------------------
 
@@ -67,7 +67,7 @@ appserver module DRIVERS {
             GROUP BY dtype
             ORDER BY dtype
         } {
-            set url /drivers/$dtype
+            set url /app/drivers/$dtype
 
             dict set result $url label $dtype
             dict set result $url listIcon ::projectgui::icon::blackheart12
@@ -102,7 +102,8 @@ appserver module DRIVERS {
         ht title "Attitude Drivers ($label)"
 
         # NEXT, get summary statistics
-        adb eval {
+        # TBD: Consider using a temporary in-memory SQLite db
+        adb rdb eval {
             DROP TABLE IF EXISTS temp_report_driver_contribs;
 
             CREATE TEMPORARY TABLE temp_report_driver_contribs AS
@@ -139,7 +140,7 @@ appserver module DRIVERS {
             -default "No drivers found." \
             -align   RLLRLL
 
-        adb eval {
+        adb rdb eval {
             DROP TABLE temp_report_driver_contribs;
         }
 

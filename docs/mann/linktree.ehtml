@@ -12,7 +12,7 @@ namespace import ::projectgui::*
 <section DESCRIPTION>
 
 The linktree(n) widget displays a tree of links, each with an icon
-and label.  The top-level set of links is read from a <xref myserver(i)>
+and label.  The top-level set of links is read from a <xref mydomain(i)>
 URL returning a <b>tcl/linkdict</b> given the <code>-url</code>.  The
 widget will follow these links recursively until the entire tree is
 built.<p>

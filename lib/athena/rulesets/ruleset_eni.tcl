@@ -163,7 +163,7 @@
         dict with fdict {}
 
         $ht putln "Civilian group\n"
-        $ht link my://app/group/$g $g
+        $ht link /app/group/$g $g
         $ht putln "received ENI services at an actual level of"
         $ht putln "[format %.2f $actual], that is, at"
         $ht putln "[string trim [percent $actual]] of the saturation level"
@@ -192,7 +192,7 @@
 
         if {$controller ne ""} {
             $ht putln "actor "
-            $ht link my://app/actor/$controller $controller
+            $ht link /app/actor/$controller $controller
             $ht put "."
         } else {
             $ht putln "no actor."

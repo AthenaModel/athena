@@ -1,4 +1,4 @@
-<manpage {projectlib(n) helpserver(n)} "help(5) myserver(i) Server">
+<manpage {projectlib(n) helpserver(n)} "help(5) mydomain(i) Server">
 
 <section SYNOPSIS>
 
@@ -11,7 +11,7 @@ namespace import ::projectlib::helpserver
 
 <section DESCRIPTION>
 
-helpserver(n) is a <xref myserver(i)> implementation designed for
+helpserver(n) is a <xref mydomain(i)> implementation designed for
 browsing <xref help(5)> help files.
 The application creates an instance of helpserver(n), specifying a
 help database using the <code>-helpdb</code> option, and registers the
@@ -20,7 +20,7 @@ clients like <xref mybrowser(n)> can query it.<p>
 
 The resources known to the server are listed under <xref RESOURCES>;
 they can also be seen by querying the server's 
-<code>/urlhelp</code> resource.<p>
+<code>/<i domain>/urlhelp</code> resource.<p>
 
 <subsection "Searching">
 
@@ -28,7 +28,7 @@ A page URL can include a query in the usual way, delimited with a
 question mark, e.g.,<p>
 
 <pre>
-    /?my search text
+    /<i domain>/?my search text
 </pre>
 
 A query can be added to any page URL; however, the page path is
@@ -55,11 +55,11 @@ returned is a dictionary of links to the page's children, if any.<p>
 <section "RESOURCES">
 
 In addition to the standard resources provided by
-<xref myserver(n)>, helpserver(n) provides the following:<p>
+<xref mydomain(n)>, helpserver(n) provides the following:<p>
 
 <deflist resources>
 
-<defitem / {/}>
+<defitem / {/<i domain>/}>
 
 This is the main help page; lower level pages can be referenced by
 adding on to the path in the usual way.  The <b>text/html</b> content type
@@ -69,7 +69,7 @@ dictionary of links to the child pages, if any.<p>
 If the URL contains a query, the help database will be searched.  See
 <xref Searching> for details.
 
-<defitem /image {/image/<i>name</i>}>
+<defitem /image {/<i domain>/image/<i>name</i>}>
 
 Returns the <b>tk/image</b> resources compiled into the help database
 with the given name.<p>
@@ -92,6 +92,12 @@ helpserver(n) has the following option:<p>
 
 <deflist options>
 
+<defopt {-domain <i>domain</i>}>
+
+The help server's folder in the application's URL tree.  It must begin
+with a "/" and consist of a single folder name.  Defaults to "/help".
+All help resources are accessed at URLs beginning with this name.<p>
+
 <defopt {-helpdb <i>database</i>}>
 
 Specifies the <xref help(5)> database to query, expressed as an
@@ -101,7 +107,7 @@ Specifies the <xref help(5)> database to query, expressed as an
 
 Specifies a <i>command</i> that will be called for each returned
 <b>text/html</b> help page.  It take one argument, the "udict" passed
-to the <xref myserver(n)> content handler, and returns a snippet of
+to the <xref mydomain(n)> content handler, and returns a snippet of
 HTML text to be inserted at the top of the HTML page.<p>
 
 </deflist options>
@@ -123,7 +129,7 @@ available content types.<p>
 
 <defitem get {$server get <i>url</i> ?<i>contentTypes</i>?}>
 
-<b>From <xref myserver(i)>:</b> Retrieves the <i>url</i> from the
+<b>From <xref mydomain(i)>:</b> Retrieves the <i>url</i> from the
 server.  If the <i>url</i> cannot be retrieved for any reason, the
 server throws an error with error code <b>NOTFOUND</b>; the error
 message is a human-readable message explaining why the resource cannot

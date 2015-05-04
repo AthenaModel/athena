@@ -8,7 +8,7 @@
 # DESCRIPTION:
 #    app_sim(n), appserver(sim) module: Econ Model Reports
 #
-#    my://app/econ/...
+#    /app/econ/...
 #
 #-----------------------------------------------------------------------
 
@@ -77,7 +77,7 @@ appserver module ECON {
             consideration.  This is done by filling in the cells in the Social
             Accounting Matrix on the SAM tab.<p>
 
-            See <a href="my://help/tab/economics/samexample">here</a> for an
+            See <a href="/help/tab/economics/samexample">here</a> for an
             example of a SAM for a simple economy that can be used as a 
             quick start guide.<p>
     
@@ -125,7 +125,7 @@ appserver module ECON {
             Actors expend money while executing tactics as part of their 
             strategy.  The allocation of money to sectors is controlled on
             a tactic by tactic basis.  See the 
-            <a href="my://help/parmdb/econ/shares">econ.shares.*</a> family
+            <a href="/help/parmdb/econ/shares">econ.shares.*</a> family
             of parameters to define how actors allocate money to the economy 
             during strategy execution.<p>
         }
@@ -151,13 +151,13 @@ appserver module ECON {
     
             <ul>
               <li> <b>CONSUMP</b> - Adjust the 
-                   <a href="my://help/parmdb/dam/consump/expectf">
+                   <a href="/help/parmdb/dam/consump/expectf">
                    expectations factor</a> and the 
-                   <a href="my://help/parmdb/dam/consump/povfrac">
+                   <a href="/help/parmdb/dam/consump/povfrac">
                    poverty fraction</a> to alter the behavior of the
                    consumption model.
               <li> <b>UNEMP</b> - Adjust the
-                   <a href="my://help/parmdb/demog/playboxur">
+                   <a href="/help/parmdb/demog/playboxur">
                    playbox unemployment rate</a> to alter the behavior of
                    the unemployment model.
             </ul><p>

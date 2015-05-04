@@ -1,0 +1,224 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    myagent.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Tcltest test suite for projectlib(n), myagent(n)
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+ 
+# Import tcltest(n)
+namespace import ::tcltest::*
+ 
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+source ../../lib/projectlib/pkgModules.tcl
+namespace import ::projectlib::*
+
+#-------------------------------------------------------------------
+# Set up the test environment
+
+# errcall cmd...
+#
+# Calls the command, expecting an error, and returns the
+# error code and result.
+
+proc errcall {args} {
+    set code [catch {
+        uplevel 1 $args
+    } result opts]
+
+    if {!$code} {
+        error "Expected error, got ok"
+    }
+
+    return "[dict get $opts -errorcode] $result"
+}
+
+# setup
+
+proc setup {} {
+    mydomain appdomain -domain /app
+
+    appdomain register /test/{value} {test/(.+)} \
+        text/plain ::plain_Test \
+        text/html  ::html_Test \
+        "Return the test {value}."
+    myagent register appdomain
+
+    myagent agent 
+}
+
+# cleanup
+
+proc cleanup {} {
+    rename agent ""
+    rename appdomain ""
+}
+
+# plain_Test udict matchArray
+#
+# Return the inputs as plain text.
+
+proc plain_Test {udict matchArray} {
+    upvar 1 $matchArray ""
+
+    dict with udict {
+        return "$url $(1)"
+    }
+}
+
+# html_Test udict matchArray
+#
+# Return the inputs as HTML
+
+proc html_Test {udict matchArray} {
+    upvar 1 $matchArray ""
+
+    dict with udict {
+        return "<tt>$url $(1)</tt>"
+    }
+}
+
+#-------------------------------------------------------------------
+# resolve
+
+test resolve-1.1 {server-relative base} -body {
+    myagent resolve /foo/bar ""
+} -result {/foo/bar}
+
+test resolve-1.2 {base with scheme} -body {
+    myagent resolve my:/foo/bar ""
+} -result {my:/foo/bar}
+
+test resolve-1.3 {removes host notation in base} -body {
+    # This is an artifact of the implementation; but since
+    # mydomains are now mydomains, we don't want host notation.
+    # This serves to point out that this is expected behavior.
+    myagent resolve my://foo/bar ""
+} -result {my:/foo/bar}
+
+test resolve-2.1 {server-relative url} -body {
+    myagent resolve /foo/bar /this/that
+} -result {/this/that}
+
+test resolve-2.2 {url with scheme} -body {
+    myagent resolve my:/foo/bar gui:/this/that
+} -result {gui:/this/that}
+
+test resolve-2.3 {removes host notation in url} -body {
+    # This is an artifact of the implementation; but since
+    # mydomains are now mydomains, we don't want host notation.
+    # This serves to point out that this is expected behavior.
+    myagent resolve /foo/bar gui://this/that
+} -result {gui:/this/that}
+
+test resolve-3.1 {url is fragment} -body {
+    myagent resolve /foo/bar #subtopic
+} -result {/foo/bar#subtopic}
+
+test resolve-3.2 {url is query} -body {
+    myagent resolve /foo/bar ?query
+} -result {/foo/bar?query}
+
+test resolve-3.3 {url is relative path} -body {
+    myagent resolve /foo/bar baz/quux
+} -result {/foo/bar/baz/quux}
+
+#-------------------------------------------------------------------
+# find
+
+test find-1.1 {URL syntax error} -setup {
+    setup
+} -body {
+    errcall agent find this:/that:/
+} -cleanup {
+    cleanup
+} -result {NOTFOUND Error in URL: unknown scheme 'this' in 'this:/that:/'}
+
+test find-1.2 {scheme not my:} -setup {
+    setup
+} -body {
+    errcall agent find gui:/foo
+} -cleanup {
+    cleanup
+} -result {NOTFOUND Error in URL: unsupported scheme 'gui' in 'gui:/foo'}
+
+test find-1.3 {host syntax} -setup {
+    setup
+} -body {
+    errcall agent find my://nohost/foo
+} -cleanup {
+    cleanup
+} -result {NOTFOUND Error in URL: unsupported host 'nohost' in 'my://nohost/foo'}
+
+test find-1.4 {domain not found} -setup {
+    setup
+} -body {
+    errcall agent find my:/nodomain/foo
+} -cleanup {
+    cleanup
+} -result {NOTFOUND Error in URL: unsupported domain '/nodomain' in 'my:/nodomain/foo'}
+
+test find-2.1 {simple URL with scheme} -setup {
+    setup
+} -body {
+    agent find my:/app/foo/bar
+} -cleanup {
+    cleanup
+} -result {/app my:///app/foo/bar}
+
+test find-2.2 {simple URL without scheme} -setup {
+    setup
+} -body {
+    agent find /app/foo/bar
+} -cleanup {
+    cleanup
+} -result {/app my:///app/foo/bar}
+
+test find-2.3 {URL with query and fragment} -setup {
+    setup
+} -body {
+    agent find /app/foo/bar?this=that#downhere
+} -cleanup {
+    cleanup
+} -result {/app my:///app/foo/bar?this=that}
+
+#-------------------------------------------------------------------
+# get
+
+# get uses find for validation, so we don't need to test all possible
+# url errors.
+test get-1.1 {invalid url} -setup {
+    setup
+} -body {
+    errcall agent get /nodomain/foo
+} -cleanup {
+    cleanup
+} -result {NOTFOUND Error in URL: unsupported domain '/nodomain' in '/nodomain/foo'}
+
+test get-2.1 {Exact content type} -setup {
+    setup
+} -body {
+    agent get /app/test/mydata text/html
+} -cleanup {
+    cleanup
+} -result {url my:///app/test/mydata content {<tt>my:///app/test/mydata mydata</tt>} contentType text/html}
+
+#-------------------------------------------------------------------
+# Cleanup
+
+cleanupTests

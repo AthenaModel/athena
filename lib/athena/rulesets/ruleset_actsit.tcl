@@ -90,10 +90,10 @@ oo::class create ::athena::ruleset_actsit {
 
         # NEXT, produce the narrative detail.
         $ht putln "Group "
-        $ht link my://app/group/$g $g
+        $ht link /app/group/$g $g
         $ht putln "is performing the $a activity"
         $ht putln "in neighborhood\n"
-        $ht link my://app/nbhood/$n $n
+        $ht link /app/nbhood/$n $n
         $ht putln "with $personnel effective personnel."
         $ht putln "yielding [string trim [percent $coverage]] coverage."
         $ht para

@@ -585,7 +585,24 @@ namespace eval ::athena_test::tests:: {
     } -cleanup {
         cleanup
     } -result {safe eval error: not authorized}
+
+    proc testsafe {} {
+        tdb safe eval {
+            SELECT g FROM civgroups
+        } {
+            return "returning"
+        }
+        error "didn't return"
+    }
     
+    test safe-1.4 {Can return from within eval loop} -setup {
+        ted create SHIA SUNN KURD
+    } -body {
+        testsafe
+    } -cleanup {
+        cleanup
+    } -result {returning}
+
 
     #-------------------------------------------------------------------
     # Cleanup

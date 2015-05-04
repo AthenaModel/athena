@@ -1731,13 +1731,19 @@ snit::type ::athena::athenadb {
     method safe {subcommand args} {
         $rdb authorizer [myproc SafeRdbAuthorizer]
 
-        try {
+        set code [catch {
             uplevel 1 [list $self $subcommand {*}$args]
-        } on error {result eopts} {
+        } result eopts]
+
+        $rdb authorizer ""
+
+        if {$code == 1} {
             return {*}$eopts "safe $subcommand error: $result"
-        } finally {
-            $rdb authorizer ""
+        } elseif {$code > 0} {
+            return -code $code $result
         }
+
+        return $result
     }
 
     # SafeRdbAuthorizer op args
@@ -1830,10 +1836,10 @@ snit::type ::athena::athenadb {
     #
     # Translates the args into 
     #
-    #   <a href="my://app/$etype/$name">$name</a>
+    #   <a href="/app/$etype/$name">$name</a>
 
     proc EntityLink {etype name} {
-        return "<a href=\"my://app/$etype/$name\">$name</a>"
+        return "<a href=\"/app/$etype/$name\">$name</a>"
     }
 
     # YesNo value

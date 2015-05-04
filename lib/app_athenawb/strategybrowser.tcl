@@ -1138,7 +1138,7 @@ snit::widget strategybrowser {
         if {$info(block) eq ""} {
             $otab show ""
         } else {
-            $otab show "my://app/bean/[$info(block) id]"
+            $otab show "/app/bean/[$info(block) id]"
         }
     }
 

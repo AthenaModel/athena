@@ -8,8 +8,8 @@
 # DESCRIPTION:
 #    app_sim(n), appserver(sim) module: Group Entities
 #
-#    my://app/groups/...
-#    my://app/group/...
+#    /app/groups/...
+#    /app/group/...
 #
 #-----------------------------------------------------------------------
 
@@ -356,13 +356,13 @@ appserver module GROUPS {
         }
         
         ht putln "$data(longname) ($g) resides in neighborhood "
-        ht link  /nbhood/$data(n) "$nb(longname) ($data(n))"
+        ht link  /app/nbhood/$data(n) "$nb(longname) ($data(n))"
         ht put   " and has a population of [commafmt $population]."
         ht putln "The group's housing status is $data(housing)."
 
         ht putln "The group's belief system is "
         set bsysname [adb bsys system cget $data(bsid) -name]
-        ht link my://app/bsystem/$data(bsid) "\"$bsysname ($data(bsid))\"."
+        ht link /app/bsystem/$data(bsid) "\"$bsysname ($data(bsid))\"."
 
         if {!$nb(local)} {
             ht putln {
@@ -437,7 +437,7 @@ appserver module GROUPS {
                 ht putln "$g "
                 ht putif {$vrel_c > $vrelMin} "favors" "does not favor"
                 ht put   " actor "
-                ht link /actor/$controller $controller
+                ht link /app/actor/$controller $controller
                 ht put   ", who is in control of neighborhood $data(n)."
             }
 
@@ -660,7 +660,7 @@ appserver module GROUPS {
             ht put   "abstract service listed.   The actual level of "
             ht put   "service can be changed by using the SERVICE tactic "
             ht put   "with the "
-            ht link  /agent/SYSTEM SYSTEM
+            ht link  /app/agent/SYSTEM SYSTEM
             ht put   " agent.  The needs and expectations factors will "
             ht put   "be calculated after the scenario is locked."
             ht para
@@ -798,7 +798,7 @@ appserver module GROUPS {
         # General information
         ht putln "$data(longname) ($g) is a force group of type"
         ht putln "$data(forcetype) belonging to actor "
-        ht link /actor/$data(a) $data(a)
+        ht link /app/actor/$data(a) $data(a)
         ht put ".  It is "
 
         if {!$data(local)} {
@@ -862,7 +862,7 @@ appserver module GROUPS {
                         set longname [adb nbhood get $n longname]
                         ht tr {
                             ht td left { 
-                                ht link my://app/nbhood/$n "$n: $longname" 
+                                ht link /app/nbhood/$n "$n: $longname" 
                             }
                             ht td right { ht put $pers }
                             ht td right { ht put $nall }

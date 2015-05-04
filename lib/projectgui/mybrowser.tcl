@@ -59,9 +59,6 @@ snit::widget ::projectgui::mybrowser {
     delegate option -shrink to hv
     delegate option -zoom   to hv
 
-
-    delegate option -defaultserver to agent
-
     # -home
     #
     # The home URL
@@ -416,7 +413,6 @@ snit::widget ::projectgui::mybrowser {
     method HoverCmd {otype text} {
         if {$otype eq "href"} {
             set text [$agent resolve $info(base) $text]
-
             callwith $options(-messagecmd) "Link: $text"
         }
     }

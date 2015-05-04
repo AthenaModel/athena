@@ -155,14 +155,6 @@ snit::widget ::projectgui::linktree {
         # NEXT, create the agent
         install agent using myagent ${selfns}::agent \
             -contenttypes tcl/linkdict
-
-        # NEXT, parse the -url to get the default server
-        array set parts [uri::split $options(-url)]
-
-        if {$parts(host) ne ""} {
-            $agent configure \
-                -defaultserver $parts(host)
-        }
     }
 
     # ItemSelected

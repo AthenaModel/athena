@@ -214,7 +214,7 @@
             SELECT * FROM curses WHERE curse_id=$curse_id
         } curse {}
 
-        $ht link my://app/curse/$curse_id "CURSE $curse_id"
+        $ht link /app/curse/$curse_id "CURSE $curse_id"
         $ht put ": $curse(longname)"
         $ht para
     }

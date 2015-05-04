@@ -112,19 +112,19 @@
         dict with fdict {}
 
         $ht putln "Civilian group "
-        $ht link my://app/group/$g $g's
+        $ht link /app/group/$g $g's
         $ht putln "mood has changed by more than "
         $ht put "[my parm dam.MOOD.threshold] points"
         $ht putln "since the last shift in the control of"
         $ht putln "neighborhood "
-        $ht link my://app/nbhood/$n $n
+        $ht link /app/nbhood/$n $n
         $ht put "."
         $ht putln "$g's mood was [format %.1f $moodThen],"
         $ht putln "and is now [format %.1f $moodNow]."
         $ht putln "Neighborhood $n has been "
         if {$controller ne ""} {
             $ht putln "controlled by actor "
-            $ht link my://app/actor/$controller $controller
+            $ht link /app/actor/$controller $controller
         } else {
             $ht putln "without a controller"
         }

@@ -496,9 +496,9 @@ oo::define ::athena::tactic {
 
         $ht page "Agent [my agent], Detail for Tactic [my id] in Block $block_id"
         $ht putln "<b>Agent "
-        $ht link my://app/agent/[my agent] [my agent]
+        $ht link /app/agent/[my agent] [my agent]
         $ht put ", Tactic [my id] in "
-        $ht link my://app/bean/$block_id "Block $block_id"
+        $ht link /app/bean/$block_id "Block $block_id"
         $ht put "</b>"
         $ht hr
         $ht para

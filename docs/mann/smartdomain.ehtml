@@ -17,10 +17,10 @@ smartdomain(n); the subclass defines specific URLs and handler methods
 for them.  The URLs can contain place-holder variables, which will be
 automatically matched and provided to the handlers.<p>
 
-<b TBD:> Eventually we will rearchitect <xref myserver(n)> to be a 
+<b TBD:> Eventually we will rearchitect <xref mydomain(n)> to be a 
 simple server that serves up <xref smartdomain(n)> content; then one
 smartdomain(n) instance can be used with both <xref ahttpd(n)> and 
-<xref myserver(n)>.  That work has not yet been done.<p>
+<xref mydomain(n)>.  That work has not yet been done.<p>
 
 A smartdomain is associated with a particular server domain, i.e., with a
 subtree of the server's file system: e.g, "<tt /my/subdomain>" or 
@@ -75,9 +75,9 @@ Instances of smartdomain(n) provide the following subcommands.<p>
 Installs the smartdomain for use with <xref ahttpd(n)>, which should 
 already be initialized.<p>
 
-<defitem myserver {<i obj> myserver <i name>}>
+<defitem mydomain {<i obj> mydomain <i name>}>
 
-Installs the smartdomain for use with the named <xref myserver(n)>.
+Installs the smartdomain for use with the named <xref mydomain(n)>.
 <b TBD: Not yet implemented.><p>
 
 <defitem query {<i obj> query}>

@@ -1,4 +1,4 @@
-<manpage {projectlib(n) rdbserver(n)} "Database Introspection myserver(i) Server">
+<manpage {projectlib(n) rdbserver(n)} "Database Introspection mydomain(i) Server">
 
 <section SYNOPSIS>
 
@@ -11,7 +11,7 @@ namespace import ::projectlib::rdbserver
 
 <section DESCRIPTION>
 
-rdbserver(n) is a <xref myserver(i)> implementation designed for
+rdbserver(n) is a <xref mydomain(i)> implementation designed for
 developer introspection of SQLite3 databases.
 The application creates an instance of rdbserver(n), specifying a
 database using the <code>-rdb</code> option, and registers the
@@ -29,7 +29,7 @@ All rdbserver(n) data has the content type <b>text/html</b>.<p>
 <section "RESOURCES">
 
 In addition to the standard resources provided by
-<xref myserver(n)>, rdbserver(n) provides the following:<p>
+<xref mydomain(n)>, rdbserver(n) provides the following:<p>
 
 <deflist resources>
 
@@ -113,7 +113,7 @@ available content types.<p>
 
 <defitem get {$server get <i>url</i> ?<i>contentTypes</i>?}>
 
-<b>From <xref myserver(i)>:</b> Retrieves the <i>url</i> from the
+<b>From <xref mydomain(i)>:</b> Retrieves the <i>url</i> from the
 server.  If the <i>url</i> cannot be retrieved for any reason, the
 server throws an error with error code <b>NOTFOUND</b>; the error
 message is a human-readable message explaining why the resource cannot

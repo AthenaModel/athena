@@ -8,7 +8,7 @@
 # DESCRIPTION:
 #    app_sim(n), appserver(sim) module: Object Types
 #
-#    my://app/objects/...
+#    /app/objects/...
 #
 #    The purpose of these URLs is to provide the top-level set of links
 #    to navigate the tree of simulation objects in Athena (e.g., to 
@@ -34,107 +34,107 @@ appserver module OBJECTS {
     #               label
 
     typevariable objectInfo {
-        /topics {
+        /app/topics {
             label    "Topics of Belief"
             listIcon ::projectgui::icon::topic12
         }
 
-        /bsystems {
+        /app/bsystems {
             label    "Belief Systems"
             listIcon ::projectgui::icon::bsystem12
         }
 
-        /actors {
+        /app/actors {
             label    "Actors"
             listIcon ::projectgui::icon::actor12
         }
 
-        /agents {
+        /app/agents {
             label    "Agents"
             listIcon ::projectgui::icon::actor12
         }
 
-        /caps   {
+        /app/caps   {
             label    "CAPs"
             listIcon ::projectgui::icon::cap12
         }
 
-        /econ   {
+        /app/econ   {
             label    "Econ"
             listIcon ::projectgui::icon::dollar12
         }
 
-        /ioms   {
+        /app/ioms   {
             label    "IOMs"
             listIcon ::projectgui::icon::message12
         }
 
-        /hooks {
+        /app/hooks {
             label    "Semantic Hooks"
             listIcon ::projectgui::icon::hook12
         }
 
-        /groups {
+        /app/groups {
             label    "Groups"
             listIcon ::projectgui::icon::group12
         }
 
-        /groups/civ {
+        /app/groups/civ {
             label    "Civ. Groups"
             listIcon ::projectgui::icon::civgroup12
         }
 
-        /groups/frc {
+        /app/groups/frc {
             label    "Force Groups"
             listIcon ::projectgui::icon::frcgroup12
         }
 
-        /groups/org {
+        /app/groups/org {
             label    "Org. Groups"
             listIcon ::projectgui::icon::orggroup12
         }
 
-        /nbhoods {
+        /app/nbhoods {
             label    "Neighborhoods"
             listIcon ::projectgui::icon::nbhood12
         }
 
-        /plants {
+        /app/plants {
             label   "Infrastructure"
             listIcon ::projectgui::icon::plant12
         }
 
-        /overview {
+        /app/overview {
             label "Overview"
             listIcon ::projectgui::icon::eye12
         }
 
-        /parmdb {
+        /app/parmdb {
             label "Model Parameters"
             listIcon ::marsgui::icon::pencil12
         }
 
-        /combats {
+        /app/combats {
             label "Combat"
             listIcon ::projectgui::icon::cannon12
         }
 
-        /curses {
+        /app/curses {
             label    "CURSEs"
             listIcon ::projectgui::icon::blueheart12
         }
 
-        /drivers {
+        /app/drivers {
             label    "Drivers"
             listIcon ::projectgui::icon::blackheart12
         }
 
-        /firings {
+        /app/firings {
             label    "Rule Firings"
             listIcon ::projectgui::icon::orangeheart12
         }
 
-        /contribs {
+        /app/contribs {
             label    "Contributions"
             listIcon ::projectgui::icon::heart12
         }
@@ -172,26 +172,26 @@ appserver module OBJECTS {
 
         # FIRST, handle subsets
         set subset {
-            /overview
-            /bsystems
-            /topics
-            /actors 
-            /agents
-            /nbhoods 
-            /groups/civ 
-            /groups/frc 
-            /groups/org
-            /combats
-            /plants
-            /curses
-            /drivers
-            /firings
-            /contribs
-            /econ
-            /caps
-            /hooks
-            /ioms
-            /parmdb
+            /app/overview
+            /app/bsystems
+            /app/topics
+            /app/actors 
+            /app/agents
+            /app/nbhoods 
+            /app/groups/civ 
+            /app/groups/frc 
+            /app/groups/org
+            /app/combats
+            /app/plants
+            /app/curses
+            /app/drivers
+            /app/firings
+            /app/contribs
+            /app/econ
+            /app/caps
+            /app/hooks
+            /app/ioms
+            /app/parmdb
         }
 
         foreach otype $subset {

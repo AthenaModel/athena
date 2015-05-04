@@ -85,6 +85,12 @@ snit::type ::projectlib::htools {
 
     option -cssfile
 
+    # -domain
+    #
+    # The domain prefix for iref links.
+
+    option -domain
+
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -648,6 +654,17 @@ snit::type ::projectlib::htools {
         $self put "<a href=\"$url\">$label</a>"
     }
 
+    # iref suffix label
+    #
+    # suffix - A suffix within this domain
+    # label  - A text label
+    #
+    # Formats and returns an HTML link to another page in this domain.
+
+    method iref {suffix label} {
+        $self put "<a href=\"$options(-domain)$suffix\">$label</a>"
+    }
+
     # linklist ?options...? links
     #
     # links  - A list of links and labels
@@ -1025,7 +1042,7 @@ snit::type ::projectlib::htools {
     # This command inserts a "Pages:" controller with a (carefully pruned)
     # list of page numbers, as one sees on search web pages when the 
     # search returns too many results to display at once.  It is intended
-    # for use on myserver(n) pages that use a query dictionary, e.g.,
+    # for use on mydomain(n) pages that use a query dictionary, e.g.,
     # the URL ends with "?parm=value+parm=value...".
     #
     # The qdict parameter contains the current query dictionary; it may be

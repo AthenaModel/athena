@@ -844,51 +844,51 @@ snit::widget appwin {
             -label       "Help Contents"           \
             -underline   0                         \
             -accelerator "F1"                      \
-            -command     [list app show my://help]
+            -command     [list app show /help]
 
-        bind $win <F1> [list app show my://help]
+        bind $win <F1> [list app show /help]
 
         $helpmenu add command                           \
             -label       "Application Menus"            \
             -underline   0                              \
-            -command     [list app show my://help/menu]
+            -command     [list app show /help/menu]
 
         $helpmenu add command                    \
             -label       "Application Tabs"      \
             -underline   0                       \
-            -command     [list app show my://help/tab]
+            -command     [list app show /help/tab]
 
         $helpmenu add command                    \
             -label       "Orders"                \
             -underline   0                       \
-            -command     [list app show my://help/order]
+            -command     [list app show /help/order]
 
         $helpmenu add command                    \
             -label       "Display Variables"     \
             -underline   0                       \
-            -command     [list app show my://help/var]
+            -command     [list app show /help/var]
 
         $helpmenu add command                    \
             -label       "Executive Commands"    \
             -underline   0                       \
-            -command     [list app show my://help/command]
+            -command     [list app show /help/command]
 
         $helpmenu add command                    \
             -label       "Model Parameters"      \
             -underline   0                       \
-            -command     [list app show my://help/parmdb]
+            -command     [list app show /help/parmdb]
 
         $helpmenu add separator
 
         $helpmenu add command                    \
             -label       "Release Notes"         \
             -underline   0                       \
-            -command     [list app show my://help/release]
+            -command     [list app show /help/release]
 
         $helpmenu add command                    \
             -label       "About Athena"          \
             -underline   0                       \
-            -command     [list app show my://help/about]
+            -command     [list app show /help/about]
 
 
     }

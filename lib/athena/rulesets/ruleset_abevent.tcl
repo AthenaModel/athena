@@ -94,7 +94,7 @@ oo::class create ::athena::ruleset_abevent {
         $ht putln "An abstract event of type [my name]"
 
         $ht putln "has occurred in neighborhood\n"
-        $ht link my://app/nbhood/$n $n
+        $ht link /app/nbhood/$n $n
         $ht put " with $pcov coverage."
 
         $ht para
@@ -226,9 +226,9 @@ oo::class create ::athena::ruleset_abevent {
         set pcov [string trim [percent $coverage]]
 
         $ht putln "Group "
-        $ht link my://app/group/$g $g
+        $ht link /app/group/$g $g
         $ht putln "is demonstrating in neighborhood\n"
-        $ht link my://app/nbhood/$n $n
+        $ht link /app/nbhood/$n $n
         $ht put " with $pcov coverage."
 
         $ht para

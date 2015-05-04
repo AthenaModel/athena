@@ -8,7 +8,7 @@
 # DESCRIPTION:
 #    app_sim(n), appserver(sim) module: Overview Pages
 #
-#    my://app/overview/...
+#    /app/overview/...
 #
 #-----------------------------------------------------------------------
 
@@ -49,19 +49,19 @@ appserver module OVERVIEW {
 
     proc /overview:linkdict {udict matchArray} {
         return {
-            /sigevents?start=RUN { 
+            /app/sigevents?start=RUN { 
                 label "Sig. Events: Recent" 
                 listIcon ::projectgui::icon::eye12
             }
-            /sigevents { 
+            /app/sigevents { 
                 label "Sig. Events: All" 
                 listIcon ::projectgui::icon::eye12
             }
-            /overview/deployment { 
+            /app/overview/deployment { 
                 label "Personnel Deployment" 
                 listIcon ::projectgui::icon::eye12
             }
-            /nbhoods/prox { 
+            /app/nbhoods/prox { 
                 label "Neighborhood Proximities" 
                 listIcon ::projectgui::icon::eye12
             }

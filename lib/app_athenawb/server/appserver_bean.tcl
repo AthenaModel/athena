@@ -8,7 +8,7 @@
 # DESCRIPTION:
 #    app_sim(n), appserver(sim) module: Beans
 #
-#    my://app/bean/{id}
+#    /app/bean/{id}
 #
 #    Each bean class can provide an "html" method which produces 
 #    content.
@@ -75,7 +75,7 @@ appserver module BEAN {
         ht hr
         ht form -autosubmit 1
         ht label page_size "Page Size:"
-        ht input page_size enum $page_size -src enum/pagesize -content tcl/enumdict
+        ht input page_size enum $page_size -src /app/enum/pagesize -content tcl/enumdict
         ht /form
         ht hr
         ht para
@@ -119,17 +119,17 @@ appserver module BEAN {
 
                 ht tr {
                     ht td center { 
-                        ht link my://app/bean/$id $id 
+                        ht link /app/bean/$id $id 
                     }
                     ht td left { 
                         ht put "<tt>[info object class $bean]</tt>"
                     }
                     ht td left { 
-                        ht link my://app/bean/$id "<tt>$bean</tt>"
+                        ht link /app/bean/$id "<tt>$bean</tt>"
                     }
                     ht td left {
                         if {$parent ne ""} {
-                            ht link my://app/bean/[$parent id] "<tt>$parent</tt>"
+                            ht link /app/bean/[$parent id] "<tt>$parent</tt>"
                         } else {
                             ht put "n/a"
                         }

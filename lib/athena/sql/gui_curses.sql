@@ -27,9 +27,9 @@ SELECT curse_id                                        AS curse_id,
        longname                                        AS longname, 
        cause                                           AS cause,
        pair(longname, curse_id)                        AS fancy,
-       'my://app/curse/' || curse_id                   AS url,
-       link('my://app/curse/' || curse_id, curse_id)   AS link,
-       link('my://app/curse/' || curse_id, longname)   AS longlink,
+       '/app/curse/' || curse_id                   AS url,
+       link('/app/curse/' || curse_id, curse_id)   AS link,
+       link('/app/curse/' || curse_id, longname)   AS longlink,
        longname || ' (s: ' || s || 
                     ' p: ' || p ||
                     ' q: ' || q || ')'                 AS narrative,

@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    app_sim(n): Run-time Database myserver(i) Server
+#    app_sim(n): Run-time Database mydomain(i) Server
 #
 #    This is an object that presents a unified view of the data resources
 #    contained in an SQLite3 database.  It's intended more developer
@@ -28,18 +28,20 @@ namespace eval ::projectlib:: {
 }
 
 #-----------------------------------------------------------------------
-# myserver type
+# mydomain type
 
 snit::type ::projectlib::rdbserver {
     #-------------------------------------------------------------------
     # Components
 
-    component server ;# myserver(n) instance
+    component server ;# mydomain(n) instance
     component ht     ;# htools(n) instance
     component rdb    ;# The -rdb
 
     #-------------------------------------------------------------------
     # Options
+
+    delegate option -domain to server
 
     # -rdb
     #
@@ -64,7 +66,8 @@ snit::type ::projectlib::rdbserver {
 
     constructor {args} {
         # FIRST, create the server
-        set server [myserver ${selfns}::server]
+        set server [mydomain ${selfns}::server \
+            -domain [from args -domain /rdb]]
 
         # NEXT, create the htools buffer.
         install ht using htools ${selfns}::ht \
@@ -163,14 +166,17 @@ snit::type ::projectlib::rdbserver {
         set subset $(1)
         set pattern [dict get $udict query]
 
+        set rootSchema  [$server domain]/schema/
+        set rootContent [$server domain]/content/
+
         set main {
             SELECT type, 
                    name, 
                    "Persistent",
                    CASE WHEN type IN ('table', 'view')
-                   THEN link('/schema/' || name, 'Schema') || ', ' ||
-                        link('/content/' || name, 'Content')
-                   ELSE link('/schema/' || name, 'Schema') END
+                   THEN link($rootSchema  || name, 'Schema') || ', ' ||
+                        link($rootContent || name, 'Content')
+                   ELSE link($rootSchema  || name, 'Schema') END
             FROM sqlite_master
             WHERE name NOT GLOB 'sqlite_*'
             AND   type != 'index'
@@ -182,9 +188,9 @@ snit::type ::projectlib::rdbserver {
                    name, 
                    "Temporary",
                    CASE WHEN type IN ('table', 'view')
-                   THEN link('/schema/' || name, 'Schema') || ', ' ||
-                        link('/content/' || name, 'Content')
-                   ELSE link('/schema/' || name, 'Schema') END
+                   THEN link($rootSchema  || name, 'Schema') || ', ' ||
+                        link($rootContent || name, 'Content')
+                   ELSE link($rootSchema  || name, 'Schema') END
             FROM sqlite_temp_master
             WHERE name NOT GLOB 'sqlite_*'
             AND   type != 'index'
@@ -257,6 +263,7 @@ snit::type ::projectlib::rdbserver {
         upvar 1 $matchArray ""
 
         set name $(1)
+        set domain [$server domain]
 
         $rdb eval {
             SELECT sql,type FROM sqlite_master
@@ -270,15 +277,16 @@ snit::type ::projectlib::rdbserver {
 
                 if {$type in {table view}} {
                     $ht linkbar [list \
-                                     /content/$name "View Content"       \
-                                     /              "Database Overview"]
+                        $domain/content/$name "View Content"       \
+                        $domain/              "Database Overview"]
                 } else {
-                    $ht linkbar {/ "Database Overview"}
+                    $ht linkbar [list $domain/ "Database Overview"]
                 }
                              
                 $ht pre $sql
             }
 
+            # This return isn't returning from this routine!
             return [$ht get]
         }
 
@@ -350,7 +358,7 @@ snit::type ::projectlib::rdbserver {
         $ht para
 
         # NEXT, get output stats
-        set items [rdb onecolumn "SELECT count(*) FROM $name"]
+        set items [$rdb onecolumn "SELECT count(*) FROM $name"]
      
         if {$page_size eq "ALL"} {
             set page_size $items
@@ -387,6 +395,7 @@ snit::type ::projectlib::rdbserver {
     # Public Methods
 
     delegate method ctypes    to server
+    delegate method domain    to server
     delegate method resources to server
 
 
@@ -396,7 +405,7 @@ snit::type ::projectlib::rdbserver {
     # contentType - The list of accepted content types.  Wildcards are
     #               allowed, e.g., text/*, */*
     #
-    # This is a simple wrapper around the myserver(n)'s get that
+    # This is a simple wrapper around the mydomain(n)'s get that
     # ensures that the -rdb is defined.
 
     method get {url {contentTypes ""}} {

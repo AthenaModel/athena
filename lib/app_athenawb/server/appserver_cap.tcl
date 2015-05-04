@@ -8,8 +8,8 @@
 # DESCRIPTION:
 #    app_sim(n), appserver(sim) module: CAPs
 #
-#    my://app/caps
-#    my://app/cap/{k}
+#    /app/caps
+#    /app/cap/{k}
 #
 #-----------------------------------------------------------------------
 

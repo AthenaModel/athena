@@ -8,7 +8,7 @@
 # DESCRIPTION:
 #    app_sim(n), appserver(sim) module: Contributions to Attitude Curves
 #
-#    my://app/contribs/...
+#    /app/contribs/...
 #
 #-----------------------------------------------------------------------
 
@@ -84,31 +84,31 @@ appserver module CONTRIBS {
 
     proc /contribs:linkdict {udict matchArray} {
         return {
-            /contribs/coop { 
+            /app/contribs/coop { 
                 label "Cooperation" 
                 listIcon ::projectgui::icon::heart12
             }
-            /contribs/hrel { 
+            /app/contribs/hrel { 
                 label "Horizontal Relationships" 
                 listIcon ::projectgui::icon::heart12
             }
-            /contribs/mood { 
+            /app/contribs/mood { 
                 label "Group Mood" 
                 listIcon ::projectgui::icon::heart12
             }
-            /contribs/nbcoop { 
+            /app/contribs/nbcoop { 
                 label "Neighborhood Cooperation" 
                 listIcon ::projectgui::icon::heart12
             }
-            /contribs/nbmood { 
+            /app/contribs/nbmood { 
                 label "Neighborhood Mood" 
                 listIcon ::projectgui::icon::heart12
             }
-            /contribs/sat { 
+            /app/contribs/sat { 
                 label "Satisfaction" 
                 listIcon ::projectgui::icon::heart12
             }
-            /contribs/vrel { 
+            /app/contribs/vrel { 
                 label "Vertical Relationships" 
                 listIcon ::projectgui::icon::heart12
             }
@@ -126,31 +126,31 @@ appserver module CONTRIBS {
 
             ht ul {
                 ht li {
-                    ht link /contribs/coop "Cooperation"
+                    ht link /app/contribs/coop "Cooperation"
                 }
 
                 ht li {
-                    ht link /contribs/hrel "Horizontal Relationships"
+                    ht link /app/contribs/hrel "Horizontal Relationships"
                 }
 
                 ht li {
-                    ht link /contribs/mood "Civilian Group Mood"
+                    ht link /app/contribs/mood "Civilian Group Mood"
                 }
                 
                 ht li {
-                    ht link /contribs/nbcoop "Neighborhood Cooperation"
+                    ht link /app/contribs/nbcoop "Neighborhood Cooperation"
                 }
                 
                 ht li {
-                    ht link /contribs/nbmood "Neighborhood Mood"
+                    ht link /app/contribs/nbmood "Neighborhood Mood"
                 }
                 
                 ht li {
-                    ht link /contribs/sat "Satisfaction"
+                    ht link /app/contribs/sat "Satisfaction"
                 }
                 
                 ht li {
-                    ht link /contribs/vrel "Vertical Relationships"
+                    ht link /app/contribs/vrel "Vertical Relationships"
                 }
             }
         }
@@ -216,19 +216,19 @@ appserver module CONTRIBS {
         ht hr
         ht form
         ht label f "Civ. Group:"
-        ht input f enum $f -src groups/civ
+        ht input f enum $f -src /app/groups/civ
         ht label g "Frc. Group:"
-        ht input g enum $g -src groups/frc
+        ht input g enum $g -src /app/groups/frc
         ht label top "Show:"
-        ht input top enum $top -src enum/topitems -content tcl/enumdict
+        ht input top enum $top -src /app/enum/topitems -content tcl/enumdict
         ht para
         ht label start 
         ht put "Time Interval &mdash; "
-        ht link my://help/term/timespec "From:"
+        ht link /help/term/timespec "From:"
         ht /label
         ht input start text $start -size 12
         ht label end
-        ht link my://help/term/timespec "To:"
+        ht link /help/term/timespec "To:"
         ht /label
         ht input end text $end -size 12
         ht submit
@@ -343,19 +343,19 @@ appserver module CONTRIBS {
         ht hr
         ht form
         ht label f "Of Group:"
-        ht input f enum $f -src groups
+        ht input f enum $f -src /app/groups
         ht label g "With Group:"
-        ht input g enum $g -src groups
+        ht input g enum $g -src /app/groups
         ht label top "Show:"
-        ht input top enum $top -src enum/topitems -content tcl/enumdict
+        ht input top enum $top -src /app/enum/topitems -content tcl/enumdict
         ht para
         ht label start 
         ht put "Time Interval &mdash; "
-        ht link my://help/term/timespec "From:"
+        ht link /help/term/timespec "From:"
         ht /label
         ht input start text $start -size 12
         ht label end
-        ht link my://help/term/timespec "To:"
+        ht link /help/term/timespec "To:"
         ht /label
         ht input end text $end -size 12
         ht submit
@@ -464,17 +464,17 @@ appserver module CONTRIBS {
         ht hr
         ht form
         ht label g "Group:"
-        ht input g enum $g -src groups/civ
+        ht input g enum $g -src /app/groups/civ
         ht label top "Show:"
-        ht input top enum $top -src enum/topitems -content tcl/enumdict
+        ht input top enum $top -src /app/enum/topitems -content tcl/enumdict
         ht para
         ht label start 
         ht put "Time Interval &mdash; "
-        ht link my://help/term/timespec "From:"
+        ht link /help/term/timespec "From:"
         ht /label
         ht input start text $start -size 12
         ht label end
-        ht link my://help/term/timespec "To:"
+        ht link /help/term/timespec "To:"
         ht /label
         ht input end text $end -size 12
         ht submit
@@ -584,19 +584,19 @@ appserver module CONTRIBS {
         ht hr
         ht form
         ht label n "Neighborhood:"
-        ht input n enum $n -src nbhoods
+        ht input n enum $n -src /app/nbhoods
         ht label g "Frc. Group:"
-        ht input g enum $g -src groups/frc
+        ht input g enum $g -src /app/groups/frc
         ht label top "Show:"
-        ht input top enum $top -src enum/topitems -content tcl/enumdict
+        ht input top enum $top -src /app/enum/topitems -content tcl/enumdict
         ht para
         ht label start 
         ht put "Time Interval &mdash; "
-        ht link my://help/term/timespec "From:"
+        ht link /help/term/timespec "From:"
         ht /label
         ht input start text $start -size 12
         ht label end
-        ht link my://help/term/timespec "To:"
+        ht link /help/term/timespec "To:"
         ht /label
         ht input end text $end -size 12
         ht submit
@@ -718,17 +718,17 @@ appserver module CONTRIBS {
         ht hr
         ht form
         ht label n "Neighborhood:"
-        ht input n enum $n -src nbhoods
+        ht input n enum $n -src /app/nbhoods
         ht label top "Show:"
-        ht input top enum $top -src enum/topitems -content tcl/enumdict
+        ht input top enum $top -src /app/enum/topitems -content tcl/enumdict
         ht para
         ht label start 
         ht put "Time Interval &mdash; "
-        ht link my://help/term/timespec "From:"
+        ht link /help/term/timespec "From:"
         ht /label
         ht input start text $start -size 12
         ht label end
-        ht link my://help/term/timespec "To:"
+        ht link /help/term/timespec "To:"
         ht /label
         ht input end text $end -size 12
         ht submit
@@ -850,19 +850,19 @@ appserver module CONTRIBS {
         ht hr
         ht form
         ht label g "Group:"
-        ht input g enum $g -src groups/civ
+        ht input g enum $g -src /app/groups/civ
         ht label c "Concern:"
-        ht input c enum $c -src enum/concerns
+        ht input c enum $c -src /app/enum/concerns
         ht label top "Show:"
-        ht input top enum $top -src enum/topitems -content tcl/enumdict
+        ht input top enum $top -src /app/enum/topitems -content tcl/enumdict
         ht para
         ht label start 
         ht put "Time Interval &mdash; "
-        ht link my://help/term/timespec "From:"
+        ht link /help/term/timespec "From:"
         ht /label
         ht input start text $start -size 12
         ht label end
-        ht link my://help/term/timespec "To:"
+        ht link /help/term/timespec "To:"
         ht /label
         ht input end text $end -size 12
         ht submit
@@ -976,19 +976,19 @@ appserver module CONTRIBS {
         ht hr
         ht form
         ht label g "Of Group:"
-        ht input g enum $g -src groups
+        ht input g enum $g -src /app/groups
         ht label a "With Actor:"
         ht input a enum $a -src actors
         ht label top "Show:"
-        ht input top enum $top -src enum/topitems -content tcl/enumdict
+        ht input top enum $top -src /app/enum/topitems -content tcl/enumdict
         ht para
         ht label start 
         ht put "Time Interval &mdash; "
-        ht link my://help/term/timespec "From:"
+        ht link /help/term/timespec "From:"
         ht /label
         ht input start text $start -size 12
         ht label end
-        ht link my://help/term/timespec "To:"
+        ht link /help/term/timespec "To:"
         ht /label
         ht input end text $end -size 12
         ht submit
@@ -1167,7 +1167,7 @@ appserver module CONTRIBS {
                 set the model parameter
             }
 
-            ht link "my://app/parmdb?$histparm" <b>$histparm</b>
+            ht link "/app/parmdb?$histparm" <b>$histparm</b>
 
             ht putln "to on, and re-run the scenario."
             ht para

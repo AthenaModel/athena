@@ -118,16 +118,16 @@ oo::class create ::athena::ruleset_absit {
                 $ht putln "is ongoing"
             } 
             $ht putln "in neighborhood\n"
-            $ht link my://app/nbhood/$n $n
+            $ht link /app/nbhood/$n $n
             $ht put " with $pcov coverage."
         } else {
             $ht putln "has been resolved"
             if {$resolver ne "NONE"} {
                 $ht putln "by group "
-                $ht link my://app/group/$resolver $resolver
+                $ht link /app/group/$resolver $resolver
             }
             $ht putln "in neighborhood "
-            $ht link my://app/nbhood/$n $n
+            $ht link /app/nbhood/$n $n
             $ht put "."
         }
 

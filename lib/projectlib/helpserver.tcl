@@ -6,7 +6,7 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    app_sim(n): help(5) Database myserver(i) Server
+#    app_sim(n): help(5) Database mydomain(i) Server
 #
 #    This is an object that serves help pages and images from a 
 #    help(5) help database.
@@ -27,17 +27,21 @@ namespace eval ::projectlib:: {
 }
 
 #-----------------------------------------------------------------------
-# myserver type
+# mydomain type
 
 snit::type ::projectlib::helpserver {
     #-------------------------------------------------------------------
     # Components
 
-    component server ;# myserver(n) instance
+    component server ;# mydomain(n) instance
     component hdb    ;# The help database handle
 
     #-------------------------------------------------------------------
     # Options
+
+    # -domain
+
+    delegate option -domain to server
 
     # -helpdb
     #
@@ -70,6 +74,7 @@ snit::type ::projectlib::helpserver {
 
     constructor {args} {
         # FIRST, get the options
+        set domain [from args -domain /help]
         $self configurelist $args
 
         if {$options(-helpdb) eq ""} {
@@ -77,7 +82,8 @@ snit::type ::projectlib::helpserver {
         }
 
         # NEXT, create the server
-        install server using myserver ${selfns}::server
+        install server using mydomain ${selfns}::server \
+            -domain $domain
 
         # NEXT, register the resources
         $server register /image/{name} {image/(.+)} \
@@ -123,7 +129,7 @@ snit::type ::projectlib::helpserver {
 
         $self CheckForHelpFile
 
-        set path /[dict get $udict path]
+        set path /[dict get $udict suffix]
 
         # FIRST, if we have it cached, just return it.
         if {[info exists imageCache($path)]} {
@@ -165,7 +171,7 @@ snit::type ::projectlib::helpserver {
         }
 
         # NEXT, return the page.
-        set path /[dict get $udict path]
+        set path /[dict get $udict suffix]
 
         $hdb eval {
             SELECT title, alias, text FROM helpdb_pages WHERE path=$path
@@ -194,7 +200,6 @@ snit::type ::projectlib::helpserver {
         $self CheckForHelpFile
 
         set query [dict get $udict query]
-        set host [dict get $udict host]
 
         # FIRST, is the query a page title?
         $hdb eval {
@@ -229,12 +234,10 @@ snit::type ::projectlib::helpserver {
             set out "<b>Search results for '$query':</b><p>\n<dl>\n"
 
             foreach {path title snippet} $found {
-                if {$host eq ""} {
-                    set url $path
-                } else {
-                    set url "my://$host$path"
-                }
+                set url $path
 
+                # Not including domain; it's translated properly
+                # by 'get'.
                 append out "<dt><a href=\"$url\">$title</a></dt>\n"
                 append out "<dd>$snippet<p></dd>\n\n"
             }
@@ -280,7 +283,7 @@ snit::type ::projectlib::helpserver {
 
         $self CheckForHelpFile
 
-        set parent /[dict get $udict path]
+        set parent /[dict get $udict suffix]
 
         if {![$hdb exists {
             SELECT * FROM helpdb_pages WHERE path=$parent
@@ -303,8 +306,8 @@ snit::type ::projectlib::helpserver {
                 set icon ::marsgui::icon::folder12
             }
 
-            dict set result $path label $title
-            dict set result $path listIcon $icon
+            dict set result [$server domain]/$path label $title
+            dict set result [$server domain]/$path listIcon $icon
         }
 
         return $result
@@ -326,7 +329,30 @@ snit::type ::projectlib::helpserver {
     # Public Methods
 
     delegate method ctypes    to server
-    delegate method get       to server
+    delegate method domain    to server
     delegate method resources to server
+
+    # get url ?contentTypes?
+    #
+    # url         - The URL of the resource to get.
+    # contentType - The list of accepted content types.  Wildcards are
+    #               allowed, e.g., text/*, */*
+    #
+    # This is a simple wrapper around the mydomain(n)'s get that
+    # ensures that the -rdb is defined.
+
+    method get {url {contentTypes ""}} {
+        
+        set rdict [$server get $url $contentTypes]
+
+        if {[dict get $rdict contentType] eq "text/html"} {
+            dict set map " href=\"/" " href=\"[$server domain]/"
+            dict set map " src=\"/"  " src=\"[$server domain]/"
+            dict set rdict content \
+                [string map $map [dict get $rdict content]]
+        }
+
+        return $rdict
+    }
 }
 

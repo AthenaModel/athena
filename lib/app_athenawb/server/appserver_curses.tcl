@@ -9,7 +9,7 @@
 #    app_sim(n), appserver(sim) module: 
 #        Complex User-defined Role-based Situations and Events (CURSEs)
 #
-#    my://app/curses/...
+#    /app/curses/...
 #
 #-----------------------------------------------------------------------
 

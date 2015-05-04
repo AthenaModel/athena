@@ -3,16 +3,16 @@
 </head>
 
 <body>
-<img src="/docs/Athena_logo_small.png" align="right">
+<img src="/app/docs/Athena_logo_small.png" align="right">
 <h1>Welcome to Athena V[kiteinfo version]</h1>
 
 Use this browser to examine Athena
-<a href="/actors">actors</a>,
-<a href="/nbhoods">neighborhoods</a>, and
-<a href="/groups">groups</a> in detail.  Select actors, etc., in the
+<a href="/app/actors">actors</a>,
+<a href="/app/nbhoods">neighborhoods</a>, and
+<a href="/app/groups">groups</a> in detail.  Select actors, etc., in the
 object tree to the left.  You may also browse the
-<a href="my://help">help pages</a> via the
-<a href="my://help/menu/help">Help Menu</a> or via the help tree to
+<a href="/help">help pages</a> via the
+<a href="/help/menu/help">Help Menu</a> or via the help tree to
 the left (click on the "?" tab).<p>
 
 Navigate as you would in a web browser.<p>

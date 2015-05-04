@@ -8,8 +8,8 @@
 # DESCRIPTION:
 #    app_sim(n), appserver(sim) module: Semantic Hooks
 #
-#    my://app/hooks
-#    my://app/hook/{hook_id}
+#    /app/hooks
+#    /app/hook/{hook_id}
 #
 #-----------------------------------------------------------------------
 

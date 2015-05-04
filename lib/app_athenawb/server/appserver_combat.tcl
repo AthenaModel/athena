@@ -9,7 +9,7 @@
 #    app_sim(n), appserver(sim) module: 
 #        Combat
 #
-#    my://app/combat/...
+#    /app/combat/...
 #
 #-----------------------------------------------------------------------
 
@@ -110,7 +110,7 @@ appserver module COMBAT {
                         set longname [adb frcgroup get $f longname]
 
                         ht tr {
-                            ht td left { ht link my://app/group/$f $f }
+                            ht td left { ht link /app/group/$f $f }
                             ht td right { ht put $casf }
                             ht td right { ht put $casg }
                             ht td right { ht put $civcas }

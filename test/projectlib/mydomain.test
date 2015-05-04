@@ -1,13 +1,13 @@
 # -*-Tcl-*-
 #-----------------------------------------------------------------------
 # TITLE:
-#    myserver.test
+#    mydomain.test
 #
 # AUTHOR:
 #    Will Duquette
 #
 # DESCRIPTION:
-#    Tcltest test suite for projectlib(n), myserver(n)
+#    Tcltest test suite for projectlib(n), mydomain(n)
 #
 #-----------------------------------------------------------------------
 
@@ -51,7 +51,7 @@ proc errcall {args} {
 # setup
 
 proc setup {{flag ""}} {
-    myserver server
+    mydomain server -domain /app
 
     if {$flag eq "-register"} {
         server register /test/{value} {test/(.+)} \
@@ -134,10 +134,18 @@ test register-1.2 {Added content types} -setup {
 #-------------------------------------------------------------------
 # get
 
-test get-1.1 {NOTFOUND} -setup {
+test get-1.1 {NOTFOUND, wrong domain} -setup {
     setup -register
 } -body {
     errcall server get /dummy
+} -cleanup {
+    cleanup
+} -result {NOTFOUND URL incorrectly sent to this domain.}
+
+test get-1.2 {NOTFOUND, unknown resource} -setup {
+    setup -register
+} -body {
+    errcall server get /app/dummy
 } -cleanup {
     cleanup
 } -result {NOTFOUND Resource not found or not compatible with this application.}
@@ -145,26 +153,26 @@ test get-1.1 {NOTFOUND} -setup {
 test get-2.1 {Exact content type} -setup {
     setup -register
 } -body {
-    server get /test/mydata text/html
+    server get /app/test/mydata text/html
 } -cleanup {
     cleanup
-} -result {url /test/mydata content {<tt>/test/mydata mydata</tt>} contentType text/html}
+} -result {url /app/test/mydata content {<tt>/app/test/mydata mydata</tt>} contentType text/html}
 
 test get-2.2 {Preferred content type} -setup {
     setup -register
 } -body {
-    server get /test/mydata
+    server get /app/test/mydata
 } -cleanup {
     cleanup
-} -result {url /test/mydata content {/test/mydata mydata} contentType text/plain}
+} -result {url /app/test/mydata content {/app/test/mydata mydata} contentType text/plain}
 
 test get-2.3 {Wildcard content type} -setup {
     setup -register
 } -body {
-    server get /test/mydata */html
+    server get /app/test/mydata */html
 } -cleanup {
     cleanup
-} -result {url /test/mydata content {<tt>/test/mydata mydata</tt>} contentType text/html}
+} -result {url /app/test/mydata content {<tt>/app/test/mydata mydata</tt>} contentType text/html}
 
 #-------------------------------------------------------------------
 # Built-in Content
@@ -172,7 +180,7 @@ test get-2.3 {Wildcard content type} -setup {
 test content-1.1 {/urlhelp} -setup {
     setup -register
 } -body {
-    set cdict [server get /urlhelp]
+    set cdict [server get /app/urlhelp]
 
     dict with cdict {
         if {$content ne ""} {
@@ -183,12 +191,12 @@ test content-1.1 {/urlhelp} -setup {
     set cdict
 } -cleanup {
     cleanup
-} -result {url /urlhelp content {{content elided}} contentType text/html}
+} -result {url /app/urlhelp content {{content elided}} contentType text/html}
 
 test content-1.2 {/urlhelp/{path}} -setup {
     setup -register
 } -body {
-    set cdict [server get /urlhelp/urlhelp]
+    set cdict [server get /app/urlhelp/app/urlhelp]
 
     dict with cdict {
         if {$content ne ""} {
@@ -199,7 +207,7 @@ test content-1.2 {/urlhelp/{path}} -setup {
     set cdict
 } -cleanup {
     cleanup
-} -result {url /urlhelp/urlhelp content {{content elided}} contentType text/html}
+} -result {url /app/urlhelp/app/urlhelp content {{content elided}} contentType text/html}
 
 
 #-------------------------------------------------------------------

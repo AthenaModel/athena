@@ -1,4 +1,4 @@
-<manpage {myserver(i)} "my:// Server Interface">
+<manpage {mydomain(i)} "my:// Domain Handler Interface">
 
 <section SYNOPSIS>
 
@@ -6,14 +6,17 @@
 
 <section DESCRIPTION>
 
-A myserver(i) object is an object that can serve application data
+A mydomain(i) object is an object that can serve application data
 (often HTML text) to the GUI given one of a number of supported
-"my:" URLs.  As such, it is conceptually similar to an HTTP server;
-however, it resides within the application and serves data back to the
-application.<p>
+"my:" URLs.  As such, it is conceptually similar to a domain handler
+for an HTTP server; however, it resides within the application and 
+serves data back to the application.  The notion is that all of the
+application's data resides in a file system rooted at "/", and that
+a mydomain object handles a top-level folder, e.g., "/app" or "/help".<p>
 
-The purpose of a myserver(i) is to provide a single namespace for all
-important data in the application, so as to provide:<p>
+The purpose of a set of mydomain(i) objects is to provide a 
+single namespace for all important data in the application, so as to 
+provide:<p>
 
 <ul>
   <li> One-stop shopping for GUI data queries.
@@ -25,29 +28,37 @@ operations for data update may be added, in line with the REST
 architecture.<p>
 
 Clients will usually use an instance of <xref myagent(n)> to query a
-myserver(i).<p>
+mydomain(i).<p>
 
 <subsection "URL Syntax">
 
-The server names all resources by means of URLs with the scheme "my:".
-The syntax of "my:" URLs is identical to that of "http:" URLs, except
-that the username, port, and password fields are ignored:<p>
+The mydomain(i) file system can be accessed by URLs using the 
+"my:" scheme; however, it is more typical to simply use
+server-relative URLs.  In otherwords, the following URLs are 
+equivalent, and the first is preferred:<p>
 
 <pre>
-    my://{server}/{path}?{query}#{fragment}
+    /{domain}/{suffix}?{query}#{fragment}
+    my:/{domain}/{suffix}?{query}#{fragment}
+    my:///{domain}/{suffix}?{query}#{fragment}
 </pre>
 
-A myserver(i) is entitled to presume that it is given URLs with the
-scheme "my" and the proper <i>server</i> name, which are really the
-domain of the <xref myagent(n)> used to query the server.<p>
+The syntax is the same as that for "http:" URLs, but the host, port,
+and other fields are never used.  It is an error to include a host,
+for historical reasons; the other fields are simply ignored if present.<p>
 
-The myserver(i) will take note of the <i>path</i>, and may choose to
+A mydomain(i) is entitled to presume that it is given URLs that 
+begin with the proper <i domain> name, which is the object's own
+domain of responsibility.  It is the <xref myagent(n)>'s responsibility
+to dispatch URLs to the proper domain handler<p>
+
+The mydomain(i) will take note of the <i>path</i>, and may choose to
 look at the <i>query</i>; it will always ignore the <i>fragment</i>,
-which is also the responsibility of the <xref myagent(n)>.<p>
+which is the responsibility of the <xref myagent(n)>.<p>
 
 <section "SUBCOMMANDS">
 
-Each <xref myserver(i)> ensemble must implement at least the following
+Each <xref mydomain(i)> ensemble must implement at least the following
 subcommands.
 
 <deflist subcommands>
@@ -100,17 +111,17 @@ The returned content itself.
 
 <section "STANDARD URLS">
 
-Each myserver(i) should accept the following URLs:<p>
+Each mydomain(i) should accept the following URLs:<p>
 
 <deflist urls>
 
-<defitem urlhelp {/urlhelp}>
+<defitem urlhelp {/<i domain>/urlhelp}>
 
 This URL should return a <b>text/html</b> page documenting the
 server's URL schema.  The entry for each resource should include the
 content types available for that resource.<p>
 
-<defitem urlhelp/path {/urlhelp/<i>path</i>}>
+<defitem urlhelp/path {/<i domain>/urlhelp/<i>path</i>}>
 
 This URL should return a <b>text/html</b> page documenting the
 resource given by <i>path</i>, in the same format as <iref urlhelp>.<p>

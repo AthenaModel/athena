@@ -520,7 +520,7 @@ snit::widget cursebrowser {
     
     method SanityCheck {} {
         if {[adb curse checker] ne "OK"} {
-            app show my://app/sanity/curse
+            app show /app/sanity/curse
         }
     }
 

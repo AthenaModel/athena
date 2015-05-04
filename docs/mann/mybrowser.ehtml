@@ -1,4 +1,4 @@
-<manpage {projectgui(n) mybrowser(n)} "myserver(i) Browser Widget">
+<manpage {projectgui(n) mybrowser(n)} "mydomain(i) Browser Widget">
 
 <section SYNOPSIS>
 
@@ -12,7 +12,7 @@ namespace import ::projectgui::*
 <section DESCRIPTION>
 
 The mybrowser(n) widget is a web-browser-like widget for browsing
-the contents of <xref myserver(i)> servers.<p>
+the contents of <xref mydomain(i)> servers.<p>
 
 <subsection "Content Types">
 
@@ -112,7 +112,7 @@ its value is used as the button text.<p>
 
 <subsection "Chromeless HTML Panes">
 
-A mybrowser(n) widget can also be used to display myserver(n) pages purely
+A mybrowser(n) widget can also be used to display mydomain(n) pages purely
 the control of the application, i.e., as a way to implement browsers for
 specific pieces of data.  The involves turning off the "chrome" (the toolbar
 the sidebar), possibly setting the -home URL to a desired page, and 

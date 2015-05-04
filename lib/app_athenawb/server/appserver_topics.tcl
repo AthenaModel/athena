@@ -8,8 +8,8 @@
 # DESCRIPTION:
 #    app_sim(n), appserver(sim) module: Belief system topics
 #
-#    my://app/topics
-#    my://app/topic/{topic_id}
+#    /app/topics
+#    /app/topic/{topic_id}
 #
 #-----------------------------------------------------------------------
 
@@ -51,7 +51,7 @@ appserver module topic {
         set result [dict create]
 
         foreach tid [adb bsys topic ids] {
-            set url my://app/topic/$tid
+            set url /app/topic/$tid
             set name [adb bsys topic cget $tid -name]
             dict set result $url label "$name ($tid)"
             dict set result $url listIcon ::projectgui::icon::topic12
@@ -72,7 +72,7 @@ appserver module topic {
         ht title "Topics of Belief"
 
         ht putln "The "
-        ht link my://app/bsystems "belief systems"
+        ht link /app/bsystems "belief systems"
         ht putln { 
             of the actors and groups in the
             scenario refer to the following topics of belief:
@@ -93,8 +93,8 @@ appserver module topic {
 
                 # NEXT, format row.
                 ht tr {
-                    ht td center { ht link my://app/topic/$tid $tid         }
-                    ht td left   { ht link my://app/topic/$tid $tdata(name) }
+                    ht td center { ht link /app/topic/$tid $tid         }
+                    ht td left   { ht link /app/topic/$tid $tdata(name) }
                     ht td center { ht put $tdata(aflag)                     }
                     ht td right  { ht put $tdata(hc)                        }
                 }
@@ -155,9 +155,9 @@ appserver module topic {
         }
 
         ht putln "used in the definition of "
-        ht link my://app/hooks "semantic hooks"
+        ht link /app/hooks "semantic hooks"
         ht putln "for use in "
-        ht link my://app/ioms "information operation messages (IOMS)"
+        ht link /app/ioms "information operation messages (IOMS)"
         ht put "."
 
         ht para
@@ -181,11 +181,11 @@ appserver module topic {
                 # NEXT, format row.
                 ht tr {
                     ht td left { 
-                        ht link my://app/system/$sid $sdata(name) 
+                        ht link /app/system/$sid $sdata(name) 
                     }
 
                     ht td right { 
-                        ht link my://app/system/$sid $sid 
+                        ht link /app/system/$sid $sid 
                     }
                     ht td left {
                         set ptext $bdata(textpos)
@@ -217,7 +217,7 @@ appserver module topic {
         ht subtitle "Semantic Hooks" hooks
 
         ht putln "This topic is used in the definition of the following "
-        ht link my://app/hooks "semantic hooks"
+        ht link /app/hooks "semantic hooks"
         ht put "."
         ht para
 

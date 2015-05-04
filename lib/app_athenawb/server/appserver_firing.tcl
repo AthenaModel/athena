@@ -8,8 +8,8 @@
 # DESCRIPTION:
 #    app_sim(n), appserver(sim) module: firings
 #
-#    my://app/firings
-#    my://app/firing/{id}
+#    /app/firings
+#    /app/firing/{id}
 #
 #-----------------------------------------------------------------------
 
@@ -66,7 +66,7 @@ appserver module firing {
             FROM rule_firings
             ORDER BY ruleset
         } {
-            set url /firings/$ruleset
+            set url /app/firings/$ruleset
 
             dict set result $url label $ruleset
             dict set result $url listIcon ::projectgui::icon::orangeheart12
@@ -157,14 +157,14 @@ appserver module firing {
         ht hr
         ht form -autosubmit 1
         ht label page_size "Page Size:"
-        ht input page_size enum $page_size -src enum/pagesize -content tcl/enumdict
+        ht input page_size enum $page_size -src /app/enum/pagesize -content tcl/enumdict
         ht label start 
         ht put "Time Interval &mdash; "
-        ht link my://help/term/timespec "From:"
+        ht link /help/term/timespec "From:"
         ht /label
         ht input start text $start -size 12
         ht label end
-        ht link my://help/term/timespec "To:"
+        ht link /help/term/timespec "To:"
         ht /label
         ht input end text $end -size 12
         ht submit

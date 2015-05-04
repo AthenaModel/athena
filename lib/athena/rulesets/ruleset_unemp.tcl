@@ -89,10 +89,10 @@
         set upc [format %.1f $upc]
 
         $ht putln "Unemployment in neighborhood\n"
-        $ht link my://app/nbhood/$n $n
+        $ht link /app/nbhood/$n $n
         $ht putln "is at a level of $upc% unemployed persons per capita;"
         $ht putln "this affects civilian group\n"
-        $ht link my://app/group/$g $g
+        $ht link /app/group/$g $g
         $ht putln "with an Unemployment Attitude Factor (UAF) of"
         $ht putln "[format %.2f $uaf]."
         $ht para
