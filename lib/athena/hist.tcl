@@ -155,12 +155,13 @@ snit::type ::athena::hist {
         # Neighborhood history
         $adb eval {
             INSERT INTO hist_nbhood(t,n,a,nbmood,volatility,nbpop,
-                                    nbsecurity)
+                                    ur,nbsecurity)
             SELECT $t AS t, n, 
                    C.controller AS a, 
                    U.nbmood, 
                    F.volatility, 
                    D.population,
+                   D.ur,
                    F.security
             FROM uram_n    AS U
             JOIN force_n   AS F USING (n)

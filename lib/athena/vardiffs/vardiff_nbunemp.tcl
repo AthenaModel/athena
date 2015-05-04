@@ -1,26 +1,26 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#   vardiff_unemp.tcl
+#   vardiff_nbunemp.tcl
 #
 # AUTHOR:
 #   Dave Hanks
 #
 # DESCRIPTION:
-#   athena(n) variable differences: unemp
+#   athena(n) variable differences: unemp.n
 #
 #-----------------------------------------------------------------------
 
-oo::class create ::athena::vardiff::unemp {
+oo::class create ::athena::vardiff::nbunemp {
     superclass ::athena::vardiff
-    meta type     unemp
+    meta type     unemp.n
     meta category economic
 
-    constructor {comp_ val1_ val2_} {
-        next $comp_ "" $val1_ $val2_
+    constructor {comp_ val1_ val2_ n_} {
+        next $comp_ [list n $n_] $val1_ $val2_
     }
 
     method significant {} {
-        set lim 10.0 ;# TBD: Need parameter
+        set lim 15.0 ;# TBD: Need parameter
 
         expr {[my score] >= $lim}
     }

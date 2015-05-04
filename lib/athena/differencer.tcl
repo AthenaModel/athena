@@ -340,6 +340,29 @@ snit::type ::athena::differencer {
         } {
             $comp add gdp $gdp1 $gdp2
         }
+
+        # NEXT, Playbox unemployment rate
+        $cdb eval {
+            SELECT H1.ur      AS ur1,
+                   H2.ur      AS ur2
+            FROM s1.hist_econ AS H1
+            JOIN s2.hist_econ AS H2
+            ON (H1.t=$t1 AND H2.t=$t2)
+        } {
+            $comp add unemp $ur1 $ur2
+        }
+
+        # NEXT, Nbhood unemployment rate
+        $cdb eval {
+            SELECT H1.n       AS n,
+                   H1.ur      AS ur1,
+                   H2.ur      AS ur2
+            FROM s1.hist_nbhood AS H1
+            JOIN s2.hist_nbhood AS H2
+            ON (H1.n = H2.n AND H1.t=$t1 AND H2.t=$t2)
+        } {
+            $comp add nbunemp $ur1 $ur2 $n
+        }
     }
 }
 

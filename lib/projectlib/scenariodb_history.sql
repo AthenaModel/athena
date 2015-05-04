@@ -29,6 +29,7 @@ CREATE TABLE hist_nbhood (
     volatility INTEGER,    -- Volatility of neighborhood
     nbpop      INTEGER,    -- Civilian population of neighborhood
     nbsecurity INTEGER,    -- Average civilian security in neighborhood
+    ur         DOUBLE,     -- Unemployment rate (%) in a neighborhood
 
     PRIMARY KEY (t,n)
 );
@@ -47,6 +48,10 @@ FROM hist_nbhood;
 
 CREATE VIEW hist_npop AS 
 SELECT t, n, nbpop AS population 
+FROM hist_nbhood;
+
+CREATE VIEW hist_nbur AS
+SELECT t, n, ur 
 FROM hist_nbhood;
 
 CREATE TABLE hist_nbgroup (
