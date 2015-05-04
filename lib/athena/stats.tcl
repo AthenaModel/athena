@@ -61,7 +61,7 @@ snit::type ::athena::stats {
 
         # NEXT, compute composite mood 
         foreach {bsid glist} [array get glists] {
-            set mood [$self moodByGroups $glist $t]
+            set mood [$self moodbygroups $glist $t]
             lappend rlist $bsid $mood
         }
         
@@ -86,7 +86,7 @@ snit::type ::athena::stats {
 
         set glist [$adb eval "SELECT g FROM $table"]
 
-        return [$self moodByGroups $glist $t]
+        return [$self moodbygroups $glist $t]
     }
 
     # satbybsys t clist
@@ -113,7 +113,7 @@ snit::type ::athena::stats {
         }
 
         foreach {bsid glist} [array get glists] {
-            set sat [$self satByGroups $glist $clist $t]
+            set sat [$self satbygroups $glist $clist $t]
             lappend rlist $bsid $sat
         }
 
@@ -143,7 +143,7 @@ snit::type ::athena::stats {
         }
 
         foreach {n glist} [array get glists] {
-            set sat [$self satByGroups $glist $clist $t]
+            set sat [$self satbygroups $glist $clist $t]
             lappend rlist $n $sat
         }
 
@@ -170,13 +170,10 @@ snit::type ::athena::stats {
 
         set glist [$adb eval "SELECT g FROM $table"]
 
-        return [$self satByGroups $glist $clist $t]
+        return [$self satbygroups $glist $clist $t]
     }
 
-    #--------------------------------------------------------------------
-    # Helper Methods
-
-    # moodByGroups grps t
+    # moodbygroups grps t
     #
     # grps    - a list of civilian groups
     # t       - a time at which to compute composite mood 
@@ -185,7 +182,7 @@ snit::type ::athena::stats {
     # mood for the specified time to create a composite mood. It is 
     # assumed that the list of groups contains CIV groups only.
 
-    method moodByGroups {grps t} {
+    method moodbygroups {grps t} {
         # FIRST, create SQL for the list of groups
         set glist "('[join $grps {', '}]')"
 
@@ -206,7 +203,20 @@ snit::type ::athena::stats {
         return $mood
     }
 
-    method satByGroups {grps concerns t} {
+    # satbygroups grps concerns t
+    #
+    # grps        - A list of one or more civilian groups
+    # concerns    - A list of one or more concerns
+    # t           - A simulation time
+    #
+    # This method takes a list of civilian groups and a list of concerns
+    # and rolls up satisfaction at the specified time to create a composite
+    # satisfaction.  Normally, this would be used with one concern, but it 
+    # doesn't have to be.  If all concerns are specified then this method 
+    # should return the exact same result as moodbygroups above.  In that case,
+    # it would be better to use moodbygroups instead of this method.
+
+    method satbygroups {grps concerns t} {
         # FIRST, create SQL for the list of groups and concerns
         set glist "('[join $grps {', '}]')"
         set clist "('[join $concerns {', '}]')"
