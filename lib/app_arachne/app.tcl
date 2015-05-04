@@ -119,6 +119,10 @@ snit::type app {
         set domains(/scenario) [/scenario new]
         set domains(/debug)    [/debug new]     ;# TBD: If -debug
 
+        set helpdb [appdir join docs athena.helpdb]
+        set domains(/help)     \
+            [::projectlib::helpdomain new /help "Athena Help" $helpdb]
+
         # NEXT, start the server if desired.
         if {!$info(test)} {
             $type StartServer

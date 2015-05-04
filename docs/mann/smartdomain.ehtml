@@ -80,6 +80,9 @@ already be initialized.<p>
 Installs the smartdomain for use with the named <xref mydomain(n)>.
 <b TBD: Not yet implemented.><p>
 
+<defitem domain {<i obj> domain}>
+Returns the domain's domain, e.g., "/secenario".<p>
+
 <defitem query {<i obj> query}>
 
 For use in URL handlers.  Returns the raw query string from the request.<p>

@@ -197,7 +197,7 @@ oo::class create ::projectlib::smartdomain {
             }
         }
 
-        append pattern "/(.*)\$"
+        append pattern "(/.*)\$"
 
         return $pattern
     }
@@ -336,6 +336,14 @@ oo::class create ::projectlib::smartdomain {
 
     #-------------------------------------------------------------------
     # Tools for use in domain handlers 
+
+    # domain
+    #
+    # Returns the domain URL
+
+    method domain {} {
+        return $info(domain)
+    }
 
     # redirect url
     #

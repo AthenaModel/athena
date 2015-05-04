@@ -73,6 +73,7 @@ audio/x-wav                    wav
 image/gif                      gif GIF        
 image/ief                      ief             
 image/jpeg                     jpeg jpg jpe
+image/png                      png
 image/tiff                     tiff tif        
 image/x-cmu-raster             ras
 image/x-portable-anymap        pnm             
