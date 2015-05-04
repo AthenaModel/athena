@@ -921,7 +921,7 @@ snit::type ::projectlib::htools {
     # Adds an in-line <img>.
 
     method image {name {align ""}} {
-        $self put "<img src=\"/image/$name\" align=\"$align\">"
+        $self put "<img src=\"/app/image/$name\" align=\"$align\">"
     }
 
     # object url ?options...?
