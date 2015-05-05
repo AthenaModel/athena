@@ -95,17 +95,36 @@ oo::class create /scenario {
         hb /ul
     }
 
-    # ScenarioTable
+    # ScenarioTable ?-radio name?
     #
     # Adds a table of the existing scenarios to the page.
+    # If -radio is given, the first column contains radio buttons
+    # with the given name.
 
-    method ScenarioTable {} {
-        hb table -headers {
+    method ScenarioTable {args} {
+        # FIRST, get the options
+        set rparm ""
+
+        foroption opt args -all {
+            -radio { set rparm [lshift args] }
+        }
+
+        # NEXT, get the headers.
+        set headers {
             "ID" "Name" "Original Source" "State" "Tick" "Week"
-        } {
+        }
+
+        if {$rparm ne ""} {
+            set headers [linsert $headers 0 ""]
+        }
+
+        hb table -headers $headers {
             foreach case [case names] {
                 set cdict [case metadata $case]
                 hb tr {
+                    if {$rparm ne ""} {
+                        hb td-with { hb radio $rparm $case }
+                    }
                     hb td-with { 
                         hb putln <b>
                         hb iref /$case $case
@@ -137,9 +156,11 @@ smarturl /scenario /index.html {
     hb para
 
     hb hr
-    hb iref /new.html "New Scenario"
+    hb iref /new.html "New"
     hb put " | "
-    hb iref /import.html "Import Scenario"
+    hb iref /import.html "Import"
+    hb put " | "
+    hb iref /clone.html "Clone"
     hb hr
 
     hb putln "The following scenarios are loaded ("
@@ -250,24 +271,89 @@ smarturl /scenario /new.json {
     return [js ok [case new $id $longname]]
 }
 
-smarturl /scenario /clone.json {
-    Clones existing scenario {id} as a new scenario, assigning
-    it an id and longname.  If {newid} is given, it must be an 
-    existing scenario other than {id}; the clone will replace
-    the previous state of scenario {newid}.  Otherwise, a 
-    {newid} will be chosen automatically.
-    If {longname} is given, the scenario will be given the new
-    name.  On success, returns a list ["OK", "{newid}"].
+smarturl /scenario /clone.html {
+    Presents a page that allows the user to clone a scenario.<p>
+
+    If {op} is "clone", then scenario {source} is cloned as a new scenario
+    and assigned an ID and long name, and the server redirects to the 
+    scenario index.  If {target} is given, it must be the ID of an
+    existing scenario; the scenario's contents will be replaced with the 
+    cloned data.  If {longname} is given, the cloned scenario will be given 
+    the new long name.<p>
+
+    If {op} is "", the page displays the information and form needed
+    to clone a scenario, including a list of the available scenario. 
+    The parameters may be submitted to the same page, or to 
+    the JSON interface.<p>
 } {
-    qdict prepare id       -required -tolower -in [case names]
-    qdict prepare newid    -tolower -in [case names]
+    # FIRST, get the query parameters
+    qdict prepare op -in {clone}
+    qdict prepare source -required -tolower -in [case names]
+    qdict prepare target -tolower -in [case names]
+    qdict prepare longname
+    qdict assign op source target longname
+
+    qdict checkon target {
+        if {$target eq $source} {
+            qdict reject target "Cannot clone scenario to itself"
+        }            
+    }
+
+
+    # NEXT, clone the scenario if the parms are OK and we were 
+    # so requested.
+    if {$op eq "clone" && [qdict ok]} {
+        case clone $source $target $longname
+        my redirect /scenario/index.html
+    }
+
+    # NEXT, set up a form
+    hb page "Clone Scenario"
+    hb h1 "Clone Scenario"
+
+    if {$op eq "clone" && ![qdict ok]} {
+        my ErrorList "Could not clone a scenario:"
+        hb hr
+    }
+
+    hb form
+    hb hidden op clone
+    hb label longname "Long Name:"
+    hb entry longname -size 15
+    hb label target "Replacing:"
+    hb enumlong target [linsert [case namedict] 0 "" ""]
+    hb submit "Clone"
+    hb submit -formaction [my domain]/clone.json "JSON"
+
+    hb para
+    hb putln "Available for Cloning:"
+    hb para
+
+    my ScenarioTable -radio source
+    hb /form
+
+    return [hb /page]
+}
+
+
+smarturl /scenario /clone.json {
+    Clones existing scenario {source} as a new scenario, assigning
+    it an id and longname.  If {target} is given, it must be an 
+    existing scenario other than {source}; the clone will replace
+    the previous state of scenario {target}.  Otherwise, a 
+    {target} will be chosen automatically.
+    If {longname} is given, the scenario will be given the new
+    name.  On success, returns a list ["OK", "{target}"].
+} {
+    qdict prepare source    -required -tolower -in [case names]
+    qdict prepare target    -tolower -in [case names]
     qdict prepare longname
 
-    qdict assign id newid longname
+    qdict assign source target longname
 
-    qdict checkon newid {
-        if {$newid eq $id} {
-            qdict reject newid "Cannot clone scenario to itself"
+    qdict checkon target {
+        if {$target eq $source} {
+            qdict reject target "Cannot clone scenario to itself"
         }            
     }
 
@@ -277,7 +363,7 @@ smarturl /scenario /clone.json {
 
 
     # NEXT, create it.
-    return [js ok [case clone $id $newid $longname]]
+    return [js ok [case clone $source $target $longname]]
 }
 
 smarturl /scenario /import.html {
