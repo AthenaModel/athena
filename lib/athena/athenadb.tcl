@@ -509,12 +509,8 @@ snit::type ::athena::athenadb {
 
     method DefineTempSchema {} {
         # FIRST, define SQL functions
-        # TBD: qsecurity should be added to scenariodb(n).
-        # TBD: moneyfmt should be added to sqldocument(n).
         $rdb function locked               [mymethod Locked]
         $rdb function mgrs                 [mymethod Mgrs]
-        $rdb function qsecurity            ::projectlib::qsecurity
-        $rdb function moneyfmt             ::marsutil::moneyfmt
         $rdb function mklinks              [list ::link html]
         $rdb function uram_gamma           [mymethod UramGamma]
         $rdb function sigline              [mymethod Sigline]
