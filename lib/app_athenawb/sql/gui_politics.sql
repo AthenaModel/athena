@@ -8,7 +8,7 @@
 -- DESCRIPTION:
 --    SQL Schema: Application-specific views, Politics area
 --
---    This file is loaded by scenario.tcl!
+--    This file is loaded by app.tcl!
 --
 --    GUI views translate the internal data formats of the scenariodb(n)
 --    tables into presentation format.  They are defined here instead of
@@ -21,6 +21,7 @@
 -- POLITICS VIEWS
 
 -- gui_supports: Support of one actor by another in neighborhoods.
+
 CREATE TEMPORARY VIEW gui_supports AS
 SELECT NA.n                                             AS n,
        N.link                                           AS nlink,
@@ -39,6 +40,7 @@ SELECT NA.n                                             AS n,
 FROM supports_na AS NA
 JOIN gui_nbhoods AS N ON (NA.n = N.n)
 JOIN gui_actors  AS A ON (A.a = NA.a);
+
 
 -- gui_agents: Data about agents for Detail Browsing
 CREATE TEMPORARY VIEW gui_agents AS

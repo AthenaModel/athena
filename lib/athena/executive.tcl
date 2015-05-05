@@ -1372,7 +1372,7 @@ snit::type ::athena::executive {
 
         set count [$adb onecolumn "
             SELECT count(*)
-            FROM gui_supports
+            FROM fmt_supports
             WHERE a=\$a AND supports=\$b and n IN $inClause
         "]
 

@@ -250,6 +250,9 @@ snit::type app {
         if {[llength $argv] == 1} {
             app open [file normalize [lindex $argv 0]]
         } else {
+            # Define workbench specific SQL 
+            $type DefineTempSchema
+
             # This makes sure that the notifier events are sent that
             # initialize the user interface.
             adb dbsync
@@ -874,6 +877,8 @@ snit::type app {
         # NEXT, create a new, blank scenario
         ::adb reset
 
+        # Define workbench specific SQL 
+        $type DefineTempSchema
 
         app puts "New scenario created"
 
@@ -914,6 +919,9 @@ snit::type app {
 
         # NEXT, log it.
         log normal app "Open Scenario: $filename"
+
+        # Define workbench specific SQL 
+        $type DefineTempSchema
 
         app puts "Opened Scenario [file tail $filename]"
 
@@ -1060,6 +1068,26 @@ snit::type app {
         }
 
         adb unlock -rebase
+    }
+
+    # DefineTempSchema
+    #
+    # Reads in workbench specific temporary SQL views for use by the GUI 
+
+    typemethod DefineTempSchema {} {
+        $type AdbEvalFile gui_politics.sql       ;# Politics Area
+        $type AdbEvalFile gui_infrastructure.sql ;# Infrastructure Area
+    }
+
+    # AdbEvalFile
+    #
+    # filename   - An SQL file in the sql/ subdirectory
+    #
+    # Helper method that brings temporary workbench SQL views from filename 
+    # into the database
+
+    typemethod AdbEvalFile {filename} {
+        adb rdb eval [readfile [file join $::app_athenawb::library sql $filename]]
     }
 
     #-------------------------------------------------------------------
