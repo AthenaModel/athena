@@ -1157,6 +1157,17 @@ oo::class create ::projectlib::htmlbuffer {
         my tagln /select
     }
 
+    # radio name ?options? value
+    #
+    # name    - Name of the collection of radio inputs
+    # options - Attribute options
+    # value   - Value for this input
+
+    method radio {name args} {
+        set value [my PopOdd args]
+        my tagln input -type radio -name $name -value $value {*}$args
+    }
+
 
     #-------------------------------------------------------------------
     # SQL Queries

@@ -741,6 +741,15 @@ attributes.  The keys and values in the <i namedict> become both the
 values and labels for the <tag option> elements within the 
 <tag select> element.<p>
 
+<defitem radio {<i obj> radio <i name> ?<i options...>? <i value>}>
+
+Creates one of a set of radio buttons called <i name>, with value
+<i value>, i.e., an <tag input> element of type <tt radio>.  Any options 
+and their values are converted to element attributes.<p>
+
+This command produces only the radio button itself; it is up to the caller
+to label it in some way.<p>
+
 <defitem hidden {<i obj> hidden <i name value> ?<i options...>?}>
 
 Adds a "hidden" <tag input> with the given <i name> and <i value>

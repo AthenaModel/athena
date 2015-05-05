@@ -173,11 +173,19 @@ smarturl /scenario /index.json {
 # Scenario Management
 
 smarturl /scenario /new.html {
-    Creates a new, empty scenario, assigning it an id and longname.
-    If {id} is given, it must be an existing scenario; the 
+    Presents a page that allows the user to create a new, empty 
+    scenario.<p>
+
+    If {op} is "new", then a new scenario is created and assigned
+    an ID and long name, and the server redirects to the scenario
+    index.  If {id} is given, it must be an existing scenario; the 
     scenario's contents will be reset to the empty state.
     If {longname} is given, the scenario will be given the new
-    name.  On success, redirects to scenario index.
+    name.<p>
+
+    If {op} is "", the page displays the information and form needed
+    to create a new scenario.  The parameters may be submitted to the
+    same page, or to the JSON interface.<p>
 } {
     # FIRST, get the query parameters
     qdict prepare op -in {new}
@@ -271,6 +279,104 @@ smarturl /scenario /clone.json {
     # NEXT, create it.
     return [js ok [case clone $id $newid $longname]]
 }
+
+smarturl /scenario /import.html {
+    Presents a page that allows the user to import a scenario
+    from disk.<p>
+
+    If {op} is "import", then {filename} is imported as a new scenario
+    and assigned an ID and long name, and the server redirects to the 
+    scenario index.  If {id} is given, it must be an existing scenario; the 
+    scenario's contents will be replaced with the imported data.
+    If {longname} is given, the scenario will be given the new
+    name.<p>
+
+    If {op} is "", the page displays the information and form needed
+    to import a scenario, including a list of the available scenario
+    files. The parameters may be submitted to the same page, or to 
+    the JSON interface.<p>
+} {
+    # FIRST, get the query parameters
+    qdict prepare op -in {import}
+    qdict prepare filename -required
+    qdict prepare id -tolower -in [case names]
+    qdict prepare longname
+    qdict assign op filename id longname
+
+    # NEXT, create a new scenario if the parms are OK and we were 
+    # so requested.
+    if {$op eq "import" && [qdict ok]} {
+        try {
+            set theID [case import $filename $id $longname]
+            set status ok
+        } trap {SCENARIO IMPORT} {result} {
+            qdict reject filename $result
+            set status error
+        }
+
+        # Note: exits the method.
+        if {$status eq "ok"} {
+            my redirect /scenario/index.html
+        }
+    }
+
+    # NEXT, set up a form
+    hb page "Import Scenario"
+    hb h1 "Import Scenario"
+
+    if {$op eq "import" && ![qdict ok]} {
+        my ErrorList "Could not import a scenario:"
+        hb hr
+    }
+
+    hb form
+    hb hidden op import
+    hb label longname "Long Name:"
+    hb entry longname -size 15
+    hb label id "Replacing:"
+    hb enumlong id [linsert [case namedict] 0 "" ""]
+    hb submit "Import"
+    hb submit -formaction [my domain]/import.json "JSON"
+
+    hb para
+    hb putln "Available for Import:"
+    hb para
+
+    set filenames [glob \
+                    -nocomplain \
+                    -tails      \
+                    -directory [case scenariodir] \
+                    *.adb *.tcl]
+
+    if {[llength $filenames] == 0} {
+        hb putln "No files found."
+    } else {
+        hb table -headers {"" "File Name" "Size" "Last Modified"} {
+            foreach name $filenames {
+                set fullname [case scenariodir $name]
+                hb tr {
+                    hb td-with {hb radio filename $name}
+                    hb td $name
+                    hb td [file size $fullname]
+                    hb td [clock format [file mtime $fullname]]
+                }
+            }
+        }
+    }
+
+
+    hb /form
+    hb para
+
+    hb hr
+
+    hb h2 "Existing Scenarios"
+
+    my ScenarioTable
+
+    return [hb /page]
+}
+
 
 smarturl /scenario /import.json {
     Imports scenario {filename} and loads it into memory.
