@@ -87,6 +87,20 @@ snit::type case {
         return $cases(names)
     }
 
+    # namedict
+    #
+    # Returns a dictionary of case names and long names.
+
+    typemethod namedict {} {
+        set namedict [dict create]
+
+        foreach name $cases(names) {
+            dict set namedict $name "$name: $cases(longname-$name)"
+        }
+        
+        return $namedict
+    }
+
     # exists id
     #
     # id  - A case ID

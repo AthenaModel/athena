@@ -50,6 +50,14 @@ oo::class create /scenario {
 
     #-------------------------------------------------------------------
     # Utility Methods.
+
+    # qdictdump
+    #
+    # Outputs the qdict contents and OK flag to stdout, for debugging.
+
+    method qdictdump {} {
+        puts "qdict ok? [qdict ok]: <[qdict parms]>"
+    }
     
     # dictpre dict
     #
@@ -61,7 +69,59 @@ oo::class create /scenario {
             hb field-with "<b>$key</b>:" { hb pre $value }
         }
         hb /record
-    }    
+    }
+
+    # ErrorList message
+    #
+    # message - An overall error message
+    #
+    # Formats the qdict errors under the overall message.
+
+    method ErrorList {message} {
+        hb putln ""
+        hb span -class error $message
+        hb para
+
+        hb ul
+
+        foreach {parm msg} [qdict errors] {
+            set value [dict get [qdict parms] $parm]
+            hb li
+            hb put $parm: 
+            hb span -class error " $msg, \"$value\""
+            hb /li
+        }
+
+        hb /ul
+    }
+
+    # ScenarioTable
+    #
+    # Adds a table of the existing scenarios to the page.
+
+    method ScenarioTable {} {
+        hb table -headers {
+            "ID" "Name" "Original Source" "State" "Tick" "Week"
+        } {
+            foreach case [case names] {
+                set cdict [case metadata $case]
+                hb tr {
+                    hb td-with { 
+                        hb putln <b>
+                        hb iref /$case $case
+                        hb put </b>
+                    }
+                    hb td [dict get $cdict longname]
+                    hb td [dict get $cdict source]
+                    hb td [dict get $cdict state]
+                    hb td [dict get $cdict tick]
+                    hb td [dict get $cdict week]
+                }
+            }
+        }
+        hb para
+    }
+
 }
     
 
@@ -74,6 +134,13 @@ smarturl /scenario /index.html {
 } {
     hb page "Scenarios"
     hb h1 "Scenarios"
+    hb para
+
+    hb hr
+    hb iref /new.html "New Scenario"
+    hb put " | "
+    hb iref /import.html "Import Scenario"
+    hb hr
 
     hb putln "The following scenarios are loaded ("
     hb iref /index.json json
@@ -81,26 +148,8 @@ smarturl /scenario /index.html {
 
     hb para
 
-    hb table -headers {
-        "ID" "Name" "Original Source" "State" "Tick" "Week"
-    } {
-        foreach case [case names] {
-            set cdict [case metadata $case]
-            hb tr {
-                hb td-with { 
-                    hb putln <b>
-                    hb iref /$case $case
-                    hb put </b>
-                }
-                hb td [dict get $cdict longname]
-                hb td [dict get $cdict source]
-                hb td [dict get $cdict state]
-                hb td [dict get $cdict tick]
-                hb td [dict get $cdict week]
-            }
-        }
-    }
-    hb para
+    my ScenarioTable
+
 
     return [hb /page]
 }
@@ -130,27 +179,48 @@ smarturl /scenario /new.html {
     If {longname} is given, the scenario will be given the new
     name.  On success, redirects to scenario index.
 } {
+    # FIRST, get the query parameters
+    qdict prepare op -in {new}
     qdict prepare id -tolower -in [case names]
     qdict prepare longname
-    qdict assign id longname
+    qdict assign op id longname
 
-    if {![qdict ok]} {
-        hb page "New Scenario"
-        hb h1 "New Scenario"
+    # NEXT, create a new scenario if the parms are OK and we were 
+    # so requested.
+    if {$op eq "new" && [qdict ok]} {
+        case new $id $longname
 
-        my dictpre [qdict parms]
-
-        hb putln "Cannot create a new scenario:"
-        hb para
-        my dictpre [qdict errors]
-        return [hb /page]
+        # Note: exits the method.
+        my redirect /scenario/index.html
     }
 
-    # NEXT, create it.
-    case new $id $longname
+    # NEXT, set up a form
+    hb page "New Scenario"
+    hb h1 "New Scenario"
 
-    my redirect /scenario/index.html
-    return
+    if {![qdict ok]} {
+        my ErrorList "Could not create a new scenario:"
+        hb hr
+    }
+
+    hb form
+    hb hidden op new
+    hb label longname "Long Name:"
+    hb entry longname -size 15
+    hb label id "Replacing:"
+    hb enumlong id [linsert [case namedict] 0 "" ""]
+    hb submit "New Scenario"
+    hb submit -formaction [my domain]/new.json "JSON"
+    hb /form
+    hb para
+
+    hb hr
+
+    hb h2 "Existing Scenarios"
+
+    my ScenarioTable
+
+    return [hb /page]
 }
 
 smarturl /scenario /new.json {
