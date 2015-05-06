@@ -103,10 +103,28 @@ oo::class create /scenario {
 
     method ScenarioTable {args} {
         # FIRST, get the options
-        set rparm ""
+        set rparm     ""
+        set omissions {}
 
         foroption opt args -all {
             -radio { set rparm [lshift args] }
+            -omit  { set omissions [lshift args]}
+        }
+
+        # NEXT, get the list of scenarios.
+        # TBD: Need a filter method
+        set cases [list]
+
+        foreach case [case names] {
+            if {$case ni $omissions} {
+                lappend cases $case
+            }
+        }
+
+        if {[llength $cases] == 0} {
+            hb putln "There are no available scenarios."
+            hb para
+            return
         }
 
         # NEXT, get the headers.
@@ -121,7 +139,7 @@ oo::class create /scenario {
         # NEXT, format the table.
 
         hb table -headers $headers {
-            foreach case [case names] {
+            foreach case $cases {
                 set cdict [case metadata $case]
                 hb tr {
                     if {$rparm ne ""} {
@@ -214,6 +232,8 @@ smarturl /scenario /index.html {
     hb iref /import.html "Import"
     hb put " | "
     hb iref /export.html "Export"
+    hb put " | "
+    hb iref /remove.html "Remove"
     hb hr
 
     hb putln "The following scenarios are loaded ("
@@ -624,16 +644,84 @@ smarturl /scenario /export.json {
     return [js ok $theFileName]
 }
 
-smarturl /scenario /delete.json {
-    Deletes scenario {id} from the current session.
-    On success, returns a list ["OK", "{message}"].
+smarturl /scenario /remove.html {
+    Presents a page that allows the user to remove a scenario from
+    the session.<p>
+
+    If {op} is "remove", then scenario {id} is removed from the 
+    session.<p>
+
+    The page displays the information and form needed
+    to remove a loaded scenario, including a list of the 
+    available scenarios.
+    The parameters may be submitted to the same page, or to 
+    the JSON interface.<p>
+} {
+    # FIRST, get the query parameters
+    qdict prepare op -in {remove}
+    qdict prepare id -required -tolower -in [case names]
+    qdict assign op id 
+
+    if {$id eq "case00"} {
+        qdict reject id "Cannot remove the base case"
+    }
+
+
+    # NEXT, remove the scenario if the parms are OK and we were 
+    # so requested.
+    if {$op eq "remove" && [qdict ok]} {
+        case remove $id
+    }
+
+    # NEXT, set up a form
+    hb page "Remove Scenario"
+    hb h1 "Remove Scenario"
+
+    if {$op eq "remove"} {
+        if {[qdict ok]} {
+            hb putln "Removed scenario $id from the session."
+        } else {
+            my ErrorList "Could not remove the scenario:"
+        }
+        hb para
+        hb hr
+        hb para
+    }
+
+    if {[llength [case names]] == 1} {
+        hb putln {
+            <b>There are no remaining scenarios that can be
+            removed.</b>
+        }
+    } else {
+        hb form
+        hb hidden op remove
+        hb submit "Remove"
+        hb submit -formaction [my domain]/remove.json "JSON"
+
+        hb para
+        hb putln "Select a Scenario to Remove:"
+        hb para
+
+        my ScenarioTable -radio id -omit case00
+        hb /form
+    }
+
+
+    return [hb /page]
+}
+
+
+smarturl /scenario /remove.json {
+    Removes scenario {id} from the current session; export it first
+    if you wish to keep the data.  On success, returns a list ["OK", "{message}"].
 } {
     qdict prepare id -required -tolower -in [case names]
 
     qdict assign id
    
     if {$id eq "case00"} {
-        qdict reject id "Cannot delete the base case"
+        qdict reject id "Cannot remove the base case"
     }
 
 
@@ -642,7 +730,7 @@ smarturl /scenario /delete.json {
     }
 
     # NEXT, create it.
-    case delete $id
+    case remove $id
     return [js ok "Deleted $id"]
 }
 
