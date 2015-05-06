@@ -320,8 +320,8 @@ snit::type ::athena::exporter {
         # NEXT, CAPs
         SectionHeader $f "Communication Asset Packages (CAPs)"
         $self FromRDB $f CAP:CREATE    {SELECT * FROM caps} {nlist glist}
-        $self FromRDB $f CAP:NBCOV:SET {SELECT * FROM gui_cap_kn_nonzero}
-        $self FromRDB $f CAP:PEN:SET   {SELECT * FROM gui_capcov_nonzero}
+        $self FromRDB $f CAP:NBCOV:SET {SELECT * FROM fmt_cap_kn_nonzero}
+        $self FromRDB $f CAP:PEN:SET   {SELECT * FROM fmt_capcov_nonzero}
         
         # NEXT, Hooks
         SectionHeader $f "Semantic Hooks"
@@ -336,12 +336,12 @@ snit::type ::athena::exporter {
         $self FromRDB $f IOM:CREATE {SELECT * FROM ioms}
         $self FromRDB $f IOM:STATE  {SELECT * FROM ioms WHERE state != 'normal'}
 
-        $self FromRDB $f PAYLOAD:COOP:CREATE {SELECT * FROM gui_payloads_COOP} longname
-        $self FromRDB $f PAYLOAD:HREL:CREATE {SELECT * FROM gui_payloads_HREL} longname
-        $self FromRDB $f PAYLOAD:SAT:CREATE  {SELECT * FROM gui_payloads_SAT}  longname
-        $self FromRDB $f PAYLOAD:VREL:CREATE {SELECT * FROM gui_payloads_VREL} longname
+        $self FromRDB $f PAYLOAD:COOP:CREATE {SELECT * FROM fmt_payloads_COOP} longname
+        $self FromRDB $f PAYLOAD:HREL:CREATE {SELECT * FROM fmt_payloads_HREL} longname
+        $self FromRDB $f PAYLOAD:SAT:CREATE  {SELECT * FROM fmt_payloads_SAT}  longname
+        $self FromRDB $f PAYLOAD:VREL:CREATE {SELECT * FROM fmt_payloads_VREL} longname
         $self FromRDB $f PAYLOAD:STATE {
-            SELECT * FROM gui_payloads WHERE state != 'normal'
+            SELECT * FROM fmt_payloads WHERE state != 'normal'
         }
 
         # NEXT, Strategies

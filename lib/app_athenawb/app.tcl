@@ -1075,8 +1075,10 @@ snit::type app {
     # Reads in workbench specific temporary SQL views for use by the GUI 
 
     typemethod DefineTempSchema {} {
+        $type AdbEvalFile gui_info.sql           ;# Information Area
         $type AdbEvalFile gui_politics.sql       ;# Politics Area
         $type AdbEvalFile gui_infrastructure.sql ;# Infrastructure Area
+        $type AdbEvalFile gui_application.sql    ;# Workbench app Area
     }
 
     # AdbEvalFile

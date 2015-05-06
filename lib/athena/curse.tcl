@@ -125,7 +125,7 @@ snit::type ::athena::curse {
     # parm       - A curses column name
     #
     # Retrieves a row dictionary, or a particular column value, from
-    # gui_ioms.
+    # gui_curses.
     #
     # NOTE: This is unusual; usually, [get] would retrieve from the
     # base table.  But we need the narrative, which is computed

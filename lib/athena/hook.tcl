@@ -71,7 +71,7 @@ snit::type ::athena::hook {
 
     method get {hook_id {parm ""}} {
         # FIRST, get the data
-        $adb eval {SELECT * FROM gui_hooks WHERE hook_id=$hook_id} row {
+        $adb eval {SELECT * FROM fmt_hooks WHERE hook_id=$hook_id} row {
             if {$parm ne ""} {
                 return $row($parm)
             } else {

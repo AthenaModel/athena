@@ -24,10 +24,10 @@
 CREATE TEMPORARY VIEW gui_actors AS
 SELECT a                                               AS id,
        a                                               AS a,
-       '/app/actor/' || a                          AS url,
+       '/app/actor/' || a                              AS url,
        pair(longname, a)                               AS fancy,
-       link('/app/actor/' || a, a)                 AS link,
-       link('/app/actor/' || a, pair(longname, a)) AS longlink,
+       link('/app/actor/' || a, a)                     AS link,
+       link('/app/actor/' || a, pair(longname, a))     AS longlink,
        longname                                        AS longname,
        bsid                                            AS bsid,
        bsysname(bsid)                                  AS bsysname,
@@ -61,35 +61,35 @@ FROM actors_view;
 
 -- gui_neighborhoods: Neighborhood data collected from all over
 CREATE TEMPORARY VIEW gui_nbhoods AS
-SELECT N.n                                                    AS id,
-       N.n                                                    AS n,
+SELECT N.n                                                AS id,
+       N.n                                                AS n,
        '/app/nbhood/' || N.n                              AS url,
-       pair(N.longname, N.n)                                  AS fancy,
+       pair(N.longname, N.n)                              AS fancy,
        link('/app/nbhood/' || N.n, N.n)                   AS link,
        link('/app/nbhood/' || N.n, pair(N.longname, N.n)) AS longlink,
-       N.longname                                             AS longname,
-       CASE N.local WHEN 1 THEN 'YES' ELSE 'NO' END           AS local,
-       N.urbanization                                         AS urbanization,
+       N.longname                                         AS longname,
+       CASE N.local WHEN 1 THEN 'YES' ELSE 'NO' END       AS local,
+       N.urbanization                                     AS urbanization,
        CASE WHEN locked()
         THEN COALESCE(C.controller, 'NONE')
         ELSE COALESCE(N.controller, 'NONE')
-       END                                                    AS controller,
-       COALESCE(C.since, 0)                                   AS since_ticks,
-       timestr(COALESCE(C.since, 0))                          AS since,
-       format('%4.1f',N.pcf)                                  AS pcf,
-       N.stacking_order                                       AS stacking_order,
-       N.obscured_by                                          AS obscured_by,
-       mgrs(N.refpoint)                                       AS refpoint,
-       mgrs(N.polygon)                                        AS polygon,
-       COALESCE(F.volatility,0)                               AS volatility,
-       PN.pop                                                 AS population,
-       COALESCE(D.subsistence,0)                              AS subsistence,
-       COALESCE(D.consumers,0)                                AS consumers,
-       COALESCE(D.labor_force,0)                              AS labor_force,
-       COALESCE(D.unemployed,0)                               AS unemployed,
+       END                                                AS controller,
+       COALESCE(C.since, 0)                               AS since_ticks,
+       timestr(COALESCE(C.since, 0))                      AS since,
+       format('%4.1f',N.pcf)                              AS pcf,
+       N.stacking_order                                   AS stacking_order,
+       N.obscured_by                                      AS obscured_by,
+       mgrs(N.refpoint)                                   AS refpoint,
+       mgrs(N.polygon)                                    AS polygon,
+       COALESCE(F.volatility,0)                           AS volatility,
+       PN.pop                                             AS population,
+       COALESCE(D.subsistence,0)                          AS subsistence,
+       COALESCE(D.consumers,0)                            AS consumers,
+       COALESCE(D.labor_force,0)                          AS labor_force,
+       COALESCE(D.unemployed,0)                           AS unemployed,
        -- TBD: These should be "nbmood", not "mood".
-       format('%.3f',COALESCE(UN.nbmood0, 0.0))               AS mood0,
-       format('%.3f',COALESCE(UN.nbmood, 0.0))                AS mood
+       format('%.3f',COALESCE(UN.nbmood0, 0.0))           AS mood0,
+       format('%.3f',COALESCE(UN.nbmood, 0.0))            AS mood
 FROM nbhoods              AS N
 LEFT OUTER JOIN demog_n   AS D  USING (n)
 LEFT OUTER JOIN force_n   AS F  USING (n)
@@ -117,20 +117,20 @@ WHERE MN.m != MN.n;
 
 -- gui_groups: Data common to all groups
 CREATE TEMPORARY VIEW gui_groups AS
-SELECT g                                                 AS id,
-       g                                                 AS g,
+SELECT g                                             AS id,
+       g                                             AS g,
        '/app/group/' || g                            AS url,
-       pair(longname, g)                                 AS fancy,
+       pair(longname, g)                             AS fancy,
        link('/app/group/' || g, g)                   AS link,
        link('/app/group/' || g, pair(longname, g))   AS longlink,
-       gtype                                             AS gtype,
+       gtype                                         AS gtype,
        link('/app/groups/' || lower(gtype), gtype)   AS gtypelink,
-       longname                                          AS longname,
-       bsid                                              AS bsid,
-       color                                             AS color,
-       demeanor                                          AS demeanor,
-       moneyfmt(cost)                                    AS cost,
-       a                                                 AS a
+       longname                                      AS longname,
+       bsid                                          AS bsid,
+       color                                         AS color,
+       demeanor                                      AS demeanor,
+       moneyfmt(cost)                                AS cost,
+       a                                             AS a
 FROM groups;
 
 

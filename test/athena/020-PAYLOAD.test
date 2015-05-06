@@ -259,7 +259,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         ted order PAYLOAD:COOP:CREATE $P2
 
-        ted querylist {SELECT * FROM gui_payloads_COOP}
+        ted querylist {SELECT * FROM fmt_payloads_COOP}
     } -cleanup {
         cleanup
     } -result {
@@ -354,7 +354,7 @@ mag           2.0
     } -body {
         ted order PAYLOAD:COOP:UPDATE id {IOM2 1} g BLUE mag 10.0
 
-        ted querylist {SELECT * FROM gui_payloads_COOP}
+        ted querylist {SELECT * FROM fmt_payloads_COOP}
     } -cleanup {
         cleanup
     } -result {
@@ -442,7 +442,7 @@ mag           10.0
     } -body {
         ted order PAYLOAD:HREL:CREATE $P2
 
-        ted querylist {SELECT * FROM gui_payloads_HREL}
+        ted querylist {SELECT * FROM fmt_payloads_HREL}
     } -cleanup {
         cleanup
     } -result {
@@ -537,7 +537,7 @@ mag           2.0
     } -body {
         ted order PAYLOAD:HREL:UPDATE id {IOM2 1} g BLUE mag 10.0
 
-        ted querylist {SELECT * FROM gui_payloads_HREL}
+        ted querylist {SELECT * FROM fmt_payloads_HREL}
     } -cleanup {
         cleanup
     } -result {
@@ -625,7 +625,7 @@ mag           10.0
     } -body {
         ted order PAYLOAD:SAT:CREATE $P4
 
-        ted querylist {SELECT * FROM gui_payloads_SAT}
+        ted querylist {SELECT * FROM fmt_payloads_SAT}
     } -cleanup {
         cleanup
     } -result {
@@ -720,7 +720,7 @@ mag           5.0
     } -body {
         ted order PAYLOAD:SAT:UPDATE id {IOM2 1} c AUT mag 10.0
 
-        ted querylist {SELECT * FROM gui_payloads_SAT}
+        ted querylist {SELECT * FROM fmt_payloads_SAT}
     } -cleanup {
         cleanup
     } -result {
@@ -808,7 +808,7 @@ mag           10.0
     } -body {
         ted order PAYLOAD:VREL:CREATE $P6
 
-        ted querylist {SELECT * FROM gui_payloads_VREL}
+        ted querylist {SELECT * FROM fmt_payloads_VREL}
     } -cleanup {
         cleanup
     } -result {
@@ -903,7 +903,7 @@ mag           5.0
     } -body {
         ted order PAYLOAD:VREL:UPDATE id {IOM2 1} a JOE mag 10.0
 
-        ted querylist {SELECT * FROM gui_payloads_VREL}
+        ted querylist {SELECT * FROM fmt_payloads_VREL}
     } -cleanup {
         cleanup
     } -result {

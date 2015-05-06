@@ -529,11 +529,11 @@ snit::type ::athena::athenadb {
         $self RdbEvalFile gui_attitude.sql       ;# Attitude Area
         $self RdbEvalFile gui_econ.sql           ;# Economics Area
         $self RdbEvalFile gui_ground.sql         ;# Ground Area
-        $self RdbEvalFile gui_info.sql           ;# Information Area
+        $self RdbEvalFile fmt_info.sql           ;# Information Area
         $self RdbEvalFile gui_curses.sql         ;# User-defined CURSEs Area
         $self RdbEvalFile gui_combat.sql         ;# Combat 
+        $self RdbEvalFile fmt_entities.sql       ;# Library specific Area
         $self RdbEvalFile fmt_politics.sql       ;# Politics Area
-        $self RdbEvalFile gui_application.sql    ;# Application Views
     }
 
     # RdbEvalFile filename

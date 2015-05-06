@@ -29,15 +29,12 @@ SELECT NA.n                                             AS n,
        NA.a                                             AS a,
        A.link                                           AS alink,
        A.longlink                                       AS alonglink,
-       CASE WHEN NA.supports = NA.a   THEN 'SELF'
-            WHEN NA.supports IS NULL  THEN 'NONE'
-            ELSE NA.supports 
-            END                                         AS supports,
-       CASE WHEN NA.supports = NA.a   THEN 'SELF'
-            WHEN NA.supports IS NULL  THEN 'NONE'
-            ELSE link('/app/actor/' || NA.supports, NA.supports)
+       NA.supports                                      AS supports,
+       CASE WHEN NA.supports NOT IN ('SELF', 'NONE')
+            THEN link('/app/actor/' || NA.supports, NA.supports)
+            ELSE NA.supports
             END                                         AS supports_link
-FROM supports_na AS NA
+FROM fmt_supports AS NA
 JOIN gui_nbhoods AS N ON (NA.n = N.n)
 JOIN gui_actors  AS A ON (A.a = NA.a);
 
