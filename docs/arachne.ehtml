@@ -210,10 +210,10 @@ returns an index of data about each scenario: the scenario's ID string,
 state, current simulation time, and so forth.  The JSON output is formatted
 as a list of objects.<p>
 
-<def {/scenario/<i name>/order.{html,json}}>
+<def {/scenario/<i case>/order.{html,json}}>
 
 These URLs are used to send an Athena order to a scenario whose ID is 
-<i name>.  The order is sent as the URL query.  The query parameters
+<i case>.  The order is sent as the URL query.  The query parameters
 are the same as the Athena order parameters, plus the <tt order_> parameter
 which specifies the order's name.<p>
 
@@ -236,10 +236,10 @@ code, "OK", "REJECT", or "ERROR".<p>
      element is a stack trace.<p>
 </ul>
 
-<def {/scenario/<i name>/script.{html,json}}>
+<def {/scenario/<i case>/script.{html,json}}>
 
 These URLs are used to send executive scripts to a scenario whose ID is
-<i name>.  The HTML version presents a web form with a <tag textarea>
+<i case>.  The HTML version presents a web form with a <tag textarea>
 for entry of a script, and an "Execute" button.  Pressing "Execute" sends
 the script, URL-encoded, as the value of the <tt script> query parameter
 and reloads the page.  The script and the result value are displayed, and

@@ -66,7 +66,7 @@ snit::type case {
 
     typemethod clear {} {
         foreach id $cases(names) {
-            $type delete $id
+            $type remove $id
         }
 
         array unset cases

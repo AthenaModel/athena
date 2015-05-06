@@ -305,13 +305,13 @@ namespace eval ::athena_test::tests:: {
     } -result {export23.tcl 1}
 
     #-------------------------------------------------------------------
-    # delete
+    # remove
 
-    test delete-1.1 {Can delete} -setup {
+    test remove-1.1 {Can remove} -setup {
         set id [case new]
     } -body {
         set sdb [case get $id]
-        case delete $id
+        case remove $id
         list \
             [info commands $sdb] \
             [expr {$id in [case names]}]
