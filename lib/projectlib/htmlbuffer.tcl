@@ -1127,16 +1127,27 @@ oo::class create ::projectlib::htmlbuffer {
 
     # enum name ?options? list
     #
-    # options  - Attribute options
+    # options  - Attribute options, plus below
     # list     - List of choices
+    #
+    # Special Options:
+    #
+    # -selected value   - Indicates that the <option> with the
+    #                     given value is to be selected initially.
     #
     # Inserts a <select> element into the current form.
 
     method enum {name args} {
         set list [my PopOdd args]
+        set selected [optval args -selected]
+
         my tagln select -name $name {*}$args
         foreach item $list {
-            my wrapln option -value $item $item 
+            if {$item eq $selected} {
+                my wrapln option -value $item -selected "" $item
+            } else {
+                my wrapln option -value $item $item 
+            }
         }
         my tagln /select
     }
@@ -1150,9 +1161,15 @@ oo::class create ::projectlib::htmlbuffer {
 
     method enumlong {name args} {
         set namedict [my PopOdd args]
+        set selected [optval args -selected]
+
         my tagln select -name $name {*}$args
         foreach {item longname} $namedict {
-            my wrapln option -value $item $longname 
+            if {$item eq $selected} {
+                my wrapln option -value $item -selected "" $longname
+            } else {
+                my wrapln option -value $item $longname
+            }
         }
         my tagln /select
     }
@@ -1290,9 +1307,14 @@ oo::class create ::projectlib::htmlbuffer {
         while {[llength $optlist] > 0} {
             set opt [lshift optlist]
 
-            set opt [string trimleft $opt -]
+            set attr [string trimleft $opt -]
+            set value [lshift optlist]
 
-            my put " $opt=\"[lshift optlist]\""
+            if {$value ne ""} {
+                my put " $attr=\"$value\""
+            } else {
+                my put " $attr"
+            }
         }
     }
 

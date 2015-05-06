@@ -71,24 +71,30 @@ oo::class create /scenario {
         hb /record
     }
 
-    # ErrorList message
+    # ErrorList message ?errdict?
     #
     # message - An overall error message
+    # errdict - A dictionary of parameter names and error messages.
     #
-    # Formats the qdict errors under the overall message.
+    # Formats the parameter errors under the overall message.  errdict
+    # defaults to [qdict errors]
 
-    method ErrorList {message} {
+    method ErrorList {message {errdict ""}} {
         hb putln ""
         hb span -class error $message
         hb para
 
         hb ul
 
-        foreach {parm msg} [qdict errors] {
-            set value [dict get [qdict parms] $parm]
+        if {[dict size $errdict] == 0} {
+            set errdict [qdict errors]
+        }
+
+        foreach {parm msg} $errdict {
             hb li
             hb put $parm: 
-            hb span -class error " $msg, \"$value\""
+
+            hb span -class error " $msg, \"[qdict get $parm]\""
             hb /li
         }
 
@@ -263,8 +269,8 @@ smarturl /scenario /index.json {
     return [js dictab $table]
 }
 
-#-------------------------------------------------------------------
-# Scenario Management
+#-----------------------------------------------------------------------
+# New Scenario
 
 smarturl /scenario /new.html {
     Presents a page that allows the user to create a new, empty 
@@ -343,6 +349,10 @@ smarturl /scenario /new.json {
     # NEXT, create it.
     return [js ok [case new $id $longname]]
 }
+
+#-----------------------------------------------------------------------
+# Clone Scenario
+
 
 smarturl /scenario /clone.html {
     Presents a page that allows the user to clone a scenario.<p>
@@ -438,6 +448,9 @@ smarturl /scenario /clone.json {
     # NEXT, create it.
     return [js ok [case clone $source $target $longname]]
 }
+
+#-----------------------------------------------------------------------
+# Import Scenario
 
 smarturl /scenario /import.html {
     Presents a page that allows the user to import a scenario
@@ -547,6 +560,9 @@ smarturl /scenario /import.json {
     return [js ok $theID]
 }
 
+#-----------------------------------------------------------------------
+# Export Scenario
+
 smarturl /scenario /export.html {
     Presents a page that allows the user to export a scenario.<p>
 
@@ -644,6 +660,9 @@ smarturl /scenario /export.json {
     return [js ok $theFileName]
 }
 
+#-----------------------------------------------------------------------
+# Remove Scenario
+
 smarturl /scenario /remove.html {
     Presents a page that allows the user to remove a scenario from
     the session.<p>
@@ -734,6 +753,9 @@ smarturl /scenario /remove.json {
     return [js ok "Deleted $id"]
 }
 
+#-----------------------------------------------------------------------
+# Compare scenarios (prototype)
+
 smarturl /scenario /diff.json {
     Compares scenario {id2} with scenario {id1} looking 
     for significant differents in the outputs.  If {id2} is
@@ -807,10 +829,15 @@ smarturl /scenario /diff.json {
 # Order Handling
 
 smarturl /scenario /{name}/order.html {
-    Accepts an order and its parameters.
-    The query parameters are the order name as <tt>order_</tt>
-    and the order-specific parameters as indicated in the on-line
-    help.  The result of the order is returned as HTML text.<p>
+    Allows the user to select an order and view its order form.
+    If {order_} is given, the page tries to send the order, and 
+    displays an order form.  Error messages are displayed in the
+    order form.  The other query parameters are the order parameters.<p>
+
+    <b>TBD:</b> Ultimately, we should recast this as a page that 
+    requires an {order_} and a {url} to redirect to on success.  Then
+    an actor page (say) could have a button that goes to the order form
+    for that URL and return afterwards.<p>
 } {
     # FIRST, do we have the scenario?
     set name [string tolower $name]
@@ -819,41 +846,71 @@ smarturl /scenario /{name}/order.html {
         throw NOTFOUND "No such scenario: \"$name\""
     }
 
-    hb page "Order Result: '$name' scenario"
-    hb h1 "Order Result: '$name' scenario"
+    # NEXT, begin the page
+    hb page "Scenario '$name': Order Selection"
+    hb h1 "Scenario '$name': Order Selection"
 
+    # NEXT, set up the order form
+    hb putln "Select an order and press 'Select' to see its order form."
     hb para
 
-    # NEXT, send the order.
-    try {
-        my dictpre [qdict parms]
-        hb para
-        hb hr
-        set result [case send $name [namespace current]::qdict]
-    } trap REJECT {result} {
-        hb h3 "Rejected"
-        my dictpre $result
-        return [hb /page]
-    } on error {result eopts} {
-        hb h3 "Unexpected Application Error:"
-        hb putln $result
-        hb para
-        hb pre [dict get $eopts -errorinfo]
+    set order_ [qdict prepare order_]
 
-        return [hb /page]
+    hb form -action [my domain]/$name/order.html
+    hb enum order_ -selected $order_ [lsort [athena::orders names]]
+    hb submit "Select"
+    hb /form
+    hb para
+
+
+    if {$order_ ne "" && $order_ in [athena::orders names]} {
+        hb h2 $order_
+
+        # FIRST, send the order and let's see what happens.
+        try {
+            set result [case send $name [namespace current]::qdict]
+            hb putln "Order $order_ was accepted."
+                hb para
+            if {$result ne ""} {
+                hb putln "Result:"
+                hb pre $result
+                hb para
+            }
+            set result ""
+        } trap REJECT {result} {
+            if {[dict exists $result *]} {
+                hb span "Error, [dict get $result *]"
+                hb para
+            }
+        }
+
+        hb form 
+        hb hidden order_ $order_
+        hb table -headers {"Parameter" "Value"} {
+            foreach parm [athena::orders parms $order_] {
+                hb tr {
+                    hb td-with { hb label $parm "$parm:" }
+                    hb td-with {
+                        hb entry $parm -size 40 -value [qdict get $parm]
+                        if {[dict exists $result $parm]} {
+                            hb br
+                            hb span -class error [dict get $result $parm]
+                        }
+                    }
+                }
+            }
+        }
+
+        hb submit "Send"
+        hb submit -formaction [my domain]/$name/order.json "JSON"
+        hb /form
+
     }
 
-    # NEXT, we were successful!
-
-    if {$result eq ""} {
-        hb h3 "Accepted"
-    } else {
-        hb h3 "Accepted"
-        hb pre $result
-    }
 
     return [hb /page]
 }
+
 
 smarturl /scenario /{name}/order.json {
     Accepts an order and its parameters.

@@ -728,9 +728,18 @@ the input's width in characters.<p>
 
 Creates a pulldown list of items by adding
 a <tag select> with the given <i name> to the current 
-<iref form>. Any options and their values are converted to element 
-attributes.  The items in the <i list> become both the labels and
+<iref form>. The items in the <i list> become both the labels and
 values for the <tag option> elements within the <tag select> element.<p>
+
+Options and their values are converted to element 
+attributes, with these exceptions:<p>
+
+<deflist options>
+<defopt {-selected <i item>}>
+Indicates that the named <i item> is to be initially selected.<p>
+
+</deflist options>
+
 
 <defitem enumlong {<i obj> enumlong <i name> ?<i options...>? <i namedict>}>
 
@@ -740,6 +749,15 @@ a <tag select> with the given <i name> to the current
 attributes.  The keys and values in the <i namedict> become both the 
 values and labels for the <tag option> elements within the 
 <tag select> element.<p>
+
+Options and their values are converted to element 
+attributes, with these exceptions:<p>
+
+<deflist options>
+<defopt {-selected <i key>}>
+Indicates that the named <i key> is to be initially selected.<p>
+
+</deflist options>
 
 <defitem radio {<i obj> radio <i name> ?<i options...>? <i value>}>
 
