@@ -101,7 +101,7 @@ oo::class create /scenario {
         hb /ul
     }
 
-    # ScenarioTable ?-radio name?
+    # ScenarioTable ?-radio name? ?-cases list? ?-omit list?
     #
     # Adds a table of the existing scenarios to the page.
     # If -radio is given, the first column contains radio buttons
@@ -111,21 +111,25 @@ oo::class create /scenario {
         # FIRST, get the options
         set rparm     ""
         set omissions {}
+        set cases     [case names]
 
         foroption opt args -all {
-            -radio { set rparm [lshift args] }
-            -omit  { set omissions [lshift args]}
+            -radio { set rparm     [lshift args] }
+            -cases { set cases     [lshift args] }
+            -omit  { set omissions [lshift args] }
         }
 
         # NEXT, get the list of scenarios.
         # TBD: Need a filter method
-        set cases [list]
+        set caselist [list]
 
-        foreach case [case names] {
+        foreach case $cases {
             if {$case ni $omissions} {
-                lappend cases $case
+                lappend caselist $case
             }
         }
+
+        set cases $caselist
 
         if {[llength $cases] == 0} {
             hb putln "There are no available scenarios."
@@ -216,6 +220,64 @@ oo::class create /scenario {
             }
         }
     }
+
+    # ValidateCase case
+    #
+    # If case is not a valid case, throws NOTFOUND.
+
+    method ValidateCase {case} {
+        # FIRST, do we have the scenario?
+        set case [string tolower $case]
+
+        if {$case ni [case names]} {
+            throw NOTFOUND "No such scenario: \"$case\""
+        }
+
+        return $case
+    }
+
+    # MainNavBar
+    #
+    # Returns a navigation bar for the toplevel pages
+
+    method MainNavBar {} {
+        hb hr
+        hb xref /index.html "Home"
+        hb put " | "
+        hb iref /index.html "Scenarios"
+        hb put " | "
+        hb iref /new.html "New"
+        hb put " | "
+        hb iref /clone.html "Clone"
+        hb put " | "
+        hb iref /import.html "Import"
+        hb put " | "
+        hb iref /export.html "Export"
+        hb put " | "
+        hb iref /remove.html "Remove"
+        hb hr
+        hb para
+    }
+
+    # CaseNavBar
+    #
+    # Returns a navigation bar for the scenario pages
+
+    method CaseNavBar {case} {
+        hb hr
+        hb xref /index.html "Home"
+        hb put " | "
+        hb iref /index.html "Scenarios"
+        hb put " | "
+        hb iref /$case/index.html "Case"
+        hb put " | "
+        hb iref /$case/order.html "Orders"
+        hb put " | "
+        hb iref /$case/script.html "Scripts"
+        hb hr
+        hb para
+    }
+
 }
     
 
@@ -230,17 +292,8 @@ smarturl /scenario /index.html {
     hb h1 "Scenarios"
     hb para
 
-    hb hr
-    hb iref /new.html "New"
-    hb put " | "
-    hb iref /clone.html "Clone"
-    hb put " | "
-    hb iref /import.html "Import"
-    hb put " | "
-    hb iref /export.html "Export"
-    hb put " | "
-    hb iref /remove.html "Remove"
-    hb hr
+    my MainNavBar
+    hb para
 
     hb putln "The following scenarios are loaded ("
     hb iref /index.json json
@@ -305,6 +358,8 @@ smarturl /scenario /new.html {
     # NEXT, set up a form
     hb page "New Scenario"
     hb h1 "New Scenario"
+
+    my MainNavBar
 
     if {![qdict ok]} {
         my ErrorList "Could not create a new scenario:"
@@ -393,6 +448,8 @@ smarturl /scenario /clone.html {
     # NEXT, set up a form
     hb page "Clone Scenario"
     hb h1 "Clone Scenario"
+
+    my MainNavBar
 
     if {$op eq "clone" && ![qdict ok]} {
         my ErrorList "Could not clone a scenario:"
@@ -496,6 +553,8 @@ smarturl /scenario /import.html {
     hb page "Import Scenario"
     hb h1 "Import Scenario"
 
+    my MainNavBar
+
     if {$op eq "import" && ![qdict ok]} {
         my ErrorList "Could not import a scenario:"
         hb hr
@@ -596,6 +655,8 @@ smarturl /scenario /export.html {
     hb page "Export Scenario"
     hb h1 "Export Scenario"
 
+    my MainNavBar
+
     if {$op eq "export"} {
         if {[qdict ok]} {
             hb putln "Exported scenario $id to the scenario directory" \
@@ -695,6 +756,8 @@ smarturl /scenario /remove.html {
     # NEXT, set up a form
     hb page "Remove Scenario"
     hb h1 "Remove Scenario"
+
+    my MainNavBar
 
     if {$op eq "remove"} {
         if {[qdict ok]} {
@@ -825,10 +888,40 @@ smarturl /scenario /diff.json {
     return [js ok $hud]
 }
 
-#-------------------------------------------------------------------
+#=======================================================================
+# Scenario-specific pages
+#
+# Pages related to particular parts of a scenario will be in other
+# files; this section has the general mechanism pages.
+
+smarturl /scenario /{case}/index.html {
+    Displays information about scenario {case}.  
+} {
+    # TBD: I'd like a better API for this.  
+    #
+    # * It's like what we do with qdict, but there's no general 
+    #   instrastructure for it.
+    # * It's like normal validation, but results in NOTFOUND.
+    # * Should we add placeholder vars to the qdict?
+    # * Should we add a "udict" for url placeholders only?
+    #   * And then it could have a NOTFOUND option.
+    set case [my ValidateCase $case]
+
+    hb page "Scenario '$case': Overview"
+    hb h1 "Scenario '$case': Overview"
+
+    my CaseNavBar $case
+
+    hb h2 "Scenario Metadata"
+    my ScenarioTable -cases $case
+
+    return [hb /page]
+}
+
+#-----------------------------------------------------------------------
 # Order Handling
 
-smarturl /scenario /{name}/order.html {
+smarturl /scenario /{case}/order.html {
     Allows the user to select an order and view its order form.
     If {order_} is given, the page tries to send the order, and 
     displays an order form.  Error messages are displayed in the
@@ -839,16 +932,13 @@ smarturl /scenario /{name}/order.html {
     an actor page (say) could have a button that goes to the order form
     for that URL and return afterwards.<p>
 } {
-    # FIRST, do we have the scenario?
-    set name [string tolower $name]
+    set case [my ValidateCase $case]
 
-    if {$name ni [case names]} {
-        throw NOTFOUND "No such scenario: \"$name\""
-    }
+    # FIRST, begin the page
+    hb page "Scenario '$case': Order Selection"
+    hb h1 "Scenario '$case': Order Selection"
 
-    # NEXT, begin the page
-    hb page "Scenario '$name': Order Selection"
-    hb h1 "Scenario '$name': Order Selection"
+    my CaseNavBar $case
 
     # NEXT, set up the order form
     hb putln "Select an order and press 'Select' to see its order form."
@@ -856,7 +946,7 @@ smarturl /scenario /{name}/order.html {
 
     set order_ [qdict prepare order_]
 
-    hb form -action [my domain]/$name/order.html
+    hb form -action [my domain]/$case/order.html
     hb enum order_ -selected $order_ [lsort [athena::orders names]]
     hb submit "Select"
     hb /form
@@ -868,7 +958,7 @@ smarturl /scenario /{name}/order.html {
 
         # FIRST, send the order and let's see what happens.
         try {
-            set result [case send $name [namespace current]::qdict]
+            set result [case send $case [namespace current]::qdict]
             hb putln "Order $order_ was accepted."
                 hb para
             if {$result ne ""} {
@@ -902,7 +992,7 @@ smarturl /scenario /{name}/order.html {
         }
 
         hb submit "Send"
-        hb submit -formaction [my domain]/$name/order.json "JSON"
+        hb submit -formaction [my domain]/$case/order.json "JSON"
         hb /form
 
     }
@@ -912,7 +1002,7 @@ smarturl /scenario /{name}/order.html {
 }
 
 
-smarturl /scenario /{name}/order.json {
+smarturl /scenario /{case}/order.json {
     Accepts an order and its parameters.
     The query parameters are the order name as <tt>order_</tt>
     and the order-specific parameters as indicated in the on-line
@@ -921,15 +1011,15 @@ smarturl /scenario /{name}/order.json {
     information.<p>
 } {
     # FIRST, do we have the scenario?
-    set name [string tolower $name]
+    set case [string tolower $case]
 
-    if {$name ni [case names]} {
-        throw NOTFOUND "No such scenario: \"$name\""
+    if {$case ni [case names]} {
+        throw NOTFOUND "No such scenario: \"$case\""
     }
 
     # NEXT, send the order.
     try {
-        set result [case send $name [namespace current]::qdict]
+        set result [case send $case [namespace current]::qdict]
     } trap REJECT {result} {
         return [js reject $result]
     } on error {result eopts} {
@@ -943,22 +1033,20 @@ smarturl /scenario /{name}/order.json {
 #-------------------------------------------------------------------
 # Script Handling
 
-smarturl /scenario /{name}/script.html {
+smarturl /scenario /{case}/script.html {
     Accepts a Tcl script and attempts to
     execute it in the named scenario's executive interpreter.
     The result of running the script is returned.  The
     script should be the value of the <tt>script</tt> 
     query parameter, and should be URL-encoded.
 } {
-    hb page "Script Entry: '$name' scenario"
-    hb h1 "Script Entry: '$name' scenario"
+    set case [my ValidateCase $case]
 
-    # FIRST, do we have the scenario?
-    set name [string tolower $name]
+    # FIRST, begin the page
+    hb page "Scenario '$case': Script Entry"
+    hb h1 "Scenario '$case': Script Entry"
 
-    if {$name ni [case names]} {
-        throw NOTFOUND "No such scenario: \"$name\""
-    }
+    my CaseNavBar $case
 
     # NEXT, set up the entry form.
     hb form -smarturl /scenario /post
@@ -980,7 +1068,7 @@ smarturl /scenario /{name}/script.html {
     # NEXT, send the order.
     if {$script ne ""} {
         try {
-            set result [case with $name executive eval $script]
+            set result [case with $case executive eval $script]
         } on error {result eopts} {
             hb h3 "Error in Script:"
 
@@ -1005,7 +1093,7 @@ smarturl /scenario /{name}/script.html {
 }
 
 
-smarturl /scenario /{name}/script.json {
+smarturl /scenario /{case}/script.json {
     Accepts a Tcl script as a POST query, and attempts to
     execute it in the named scenario's executive interpreter.
     The query data should be just the script itself with a
@@ -1013,17 +1101,17 @@ smarturl /scenario /{name}/script.json {
     is returned in JSON format.
 } {
     # FIRST, do we have the scenario?
-    set name [string tolower $name]
+    set case [string tolower $case]
 
-    if {$name ni [case names]} {
-        throw NOTFOUND "No such scenario: \"$name\""
+    if {$case ni [case names]} {
+        throw NOTFOUND "No such scenario: \"$case\""
     }
 
     set script [my query]
 
     # NEXT, evaluate the script.
     try {
-        set result [case with $name executive eval $script]
+        set result [case with $case executive eval $script]
     } on error {result eopts} {
         return [js error $result [dict get $eopts -errorinfo]]
     }
