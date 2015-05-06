@@ -66,7 +66,7 @@ snit::type case {
 
     typemethod clear {} {
         foreach id $cases(names) {
-            $type delete $id
+            $type remove $id
         }
 
         array unset cases
@@ -85,6 +85,20 @@ snit::type case {
 
     typemethod names {} {
         return $cases(names)
+    }
+
+    # namedict
+    #
+    # Returns a dictionary of case names and long names.
+
+    typemethod namedict {} {
+        set namedict [dict create]
+
+        foreach name $cases(names) {
+            dict set namedict $name "$name: $cases(longname-$name)"
+        }
+        
+        return $namedict
     }
 
     # exists id
@@ -368,14 +382,14 @@ snit::type case {
         return [file tail $fullname]
     }
 
-    # delete id
+    # remove id
     #
     # id   - A case ID
     #
     # Destroys the case object and its log, and removes any related data
     # from disk.
 
-    typemethod delete {id} {
+    typemethod remove {id} {
         case with $id destroy
 
         array unset cases(*-$id)

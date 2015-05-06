@@ -1,8 +1,5 @@
 # TODO.md - Athena TODO List
 
-- Athenawb(1):
-  - Tk images are not displaying properly in appserver pages.
-    - E.g., pencil icon in parmdb page.
 - Projectlib(n)
   - Tests for parmdict(n), smartdomain(n)
 - Athena(n)
@@ -22,25 +19,6 @@
   - What should the htdocs directory look like?
   - Write arachne(1) man page, referencing I/F doc.
   - Write athena_log(1) man page.
-- Significant Outputs:
-  - All history variable base names should be unique, e.g., nbsecurity.n rather
-    than security.n.
-  - If possible, the column names in the hist_* table should match the 
-    variable base name.  (But don't break old post-processors.)
-  - `::athena::athena compare` is the command to compare two scenarios. 
-    - Returns an ::athena::comparison object.
-    - Knowledge of how to do output and input comparisons resides in 
-      athena/compare.tcl.
-  - Comparison objects:
-    - Provide comparison data in a variety of forms.
-    - Can ask individual vardiff objects for causal chain info.
-    - Each vardiff object knows how to determine its potentially significant
-      inputs, and how to score them, and is responsible for drilling down.
-      - Scores must be saved at the vardiff level. 
-  - Comparisons should be provided to front end in JSON form
-    - Raw data, not cooked narrative (unless they ask for it).
-  - vardiff records provide simple Tcl dictionaries.
-- Causal Chains
 
 
 - Document athena(n)

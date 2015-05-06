@@ -76,6 +76,10 @@ parameters.<p>
 If no errors have been discovered, this command returns an empty 
 dictionary.<p>
 
+<defitem get {<i obj> get <i parm>}>
+
+Returns the value of <i parm> if <i parm> is defined, and "" otherwise.<p>
+
 <defitem ok {<i obj> ok}>
 
 Returns 1 if no parameter errors have been discovered, and 0 otherwise.<p>

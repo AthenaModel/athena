@@ -68,6 +68,21 @@ oo::class create ::projectlib::parmdict {
         return $parms
     }
 
+    # get parm
+    #
+    # parm  - A parameter name
+    #
+    # Returns the parameter's value, or the "" if the parameter is 
+    # not defined.
+
+    method get {parm} {
+        if {[dict exists $parms $parm]} {
+            return [dict get $parms $parm]
+        } else {
+            return ""
+        }
+    }
+
     # errors
     #
     # Returns the error dictionary: a dictionary of parameter names
