@@ -118,6 +118,8 @@ oo::class create /scenario {
             set headers [linsert $headers 0 ""]
         }
 
+        # NEXT, format the table.
+
         hb table -headers $headers {
             foreach case [case names] {
                 set cdict [case metadata $case]
@@ -141,6 +143,55 @@ oo::class create /scenario {
         hb para
     }
 
+    # FileTable ?-radio name?
+    #
+    # Adds a table of files in the -scenariodir to the page.
+    # If -radio is given, the first column contains radio buttons
+    # with the given name.
+
+    method FileTable {args} {
+        # FIRST, get the options
+        set rparm ""
+
+        foroption opt args -all {
+            -radio { set rparm [lshift args] }
+        }
+
+        # NEXT, get the headers.
+        set headers {
+            "File Name" "Size" "Last Modified"
+        }
+
+        if {$rparm ne ""} {
+            set headers [linsert $headers 0 ""]
+        }
+
+        # NEXT, get the files from the -scenariodir.
+        set filenames [glob \
+                        -nocomplain \
+                        -tails      \
+                        -directory [case scenariodir] \
+                        *.adb *.tcl]
+
+        # NEXT, format the table.
+        if {[llength $filenames] == 0} {
+            hb putln "No files found."
+        } else {
+            hb table -headers $headers {
+                foreach name $filenames {
+                    set fullname [case scenariodir $name]
+                    hb tr {
+                        if {$rparm ne ""} {
+                            hb td-with {hb radio $rparm $name}
+                        }
+                        hb td $name
+                        hb td [file size $fullname]
+                        hb td [clock format [file mtime $fullname]]
+                    }
+                }
+            }
+        }
+    }
 }
     
 
@@ -158,9 +209,11 @@ smarturl /scenario /index.html {
     hb hr
     hb iref /new.html "New"
     hb put " | "
+    hb iref /clone.html "Clone"
+    hb put " | "
     hb iref /import.html "Import"
     hb put " | "
-    hb iref /clone.html "Clone"
+    hb iref /export.html "Export"
     hb hr
 
     hb putln "The following scenarios are loaded ("
@@ -428,28 +481,7 @@ smarturl /scenario /import.html {
     hb putln "Available for Import:"
     hb para
 
-    set filenames [glob \
-                    -nocomplain \
-                    -tails      \
-                    -directory [case scenariodir] \
-                    *.adb *.tcl]
-
-    if {[llength $filenames] == 0} {
-        hb putln "No files found."
-    } else {
-        hb table -headers {"" "File Name" "Size" "Last Modified"} {
-            foreach name $filenames {
-                set fullname [case scenariodir $name]
-                hb tr {
-                    hb td-with {hb radio filename $name}
-                    hb td $name
-                    hb td [file size $fullname]
-                    hb td [clock format [file mtime $fullname]]
-                }
-            }
-        }
-    }
-
+    my FileTable -radio filename
 
     hb /form
     hb para
@@ -494,6 +526,76 @@ smarturl /scenario /import.json {
 
     return [js ok $theID]
 }
+
+smarturl /scenario /export.html {
+    Presents a page that allows the user to export a scenario.<p>
+
+    If {op} is "export", then scenario {id} is exported to the given
+    {filename} in the -scenariodir.<p>
+
+    The page displays the information and form needed
+    to export a scenario, including a list of the available scenarios
+    and a list of the files in the -scenariodir.
+    The parameters may be submitted to the same page, or to 
+    the JSON interface.<p>
+} {
+    # FIRST, get the query parameters
+    qdict prepare op -in {export}
+    qdict prepare id -required -tolower -in [case names]
+    qdict prepare filename -required 
+    qdict assign op id filename
+
+
+    # NEXT, clone the scenario if the parms are OK and we were 
+    # so requested.
+    if {$op eq "export" && [qdict ok]} {
+        try {
+            set theFileName [case export $id $filename]
+        } trap {SCENARIO EXPORT} {result} {
+            qdict reject filename $result
+        }
+    }
+
+    # NEXT, set up a form
+    hb page "Export Scenario"
+    hb h1 "Export Scenario"
+
+    if {$op eq "export"} {
+        if {[qdict ok]} {
+            hb putln "Exported scenario $id to the scenario directory" \
+                " as '$filename'."
+        } else {
+            my ErrorList "Could not export the scenario:"
+        }
+        hb para
+        hb hr
+        hb para
+    }
+
+    hb form
+    hb hidden op export
+    hb label filename "File Name:"
+    hb entry filename -size 20
+    hb put " (.adb or .tcl) "
+    hb submit "Export"
+    hb submit -formaction [my domain]/export.json "JSON"
+
+    hb para
+    hb putln "Select a Scenario to Export:"
+    hb para
+
+    my ScenarioTable -radio id
+    hb /form
+
+    hb para
+
+    hb h2 "Saved Scenarios:"
+
+    my FileTable
+
+    return [hb /page]
+}
+
 
 smarturl /scenario /export.json {
     Exports scenario {id} to the <tt>-scenariodir</tt> as
