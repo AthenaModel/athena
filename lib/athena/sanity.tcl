@@ -47,16 +47,42 @@ snit::type ::athena::sanity {
     #-------------------------------------------------------------------
     # On-lock Sanity check
 
-    # onlock newcheck
+    # onlock
+    #
+    # Does a sanity check of the model and returns a list of failure
+    # records.  Each record has three keys:
+    #
+    # code     - A code identifying the kind of failure
+    # entity   - An entity reference, e.g., "nbhood" or "group/BLUE"
+    # message  - A human-readable error message.
+    #
+    # If no problems are found, the returned list is empty.
+
+    method onlock {} {
+        try {
+            set f [::projectlib::dictlist new {code entity message}]
+
+            $self OnLockChecker $f
+
+            # $adb iom checker $f 
+            # $adb curse checker $f
+            # $adb strategy checker $f 
+            # $adb econ checker $f
+
+            return [$f dicts]
+        } finally {
+            $f destroy
+        }
+    }
+
+    # OnLockCheck f
+    #
+    # f   - A dictlist for accumulating failure records.
     #
     # Does the sanity check, and returns a list of failure records.
-    # (If the scenario is sane, the list will be empty.)  Each record
-    # is a dictionary with three fields, "code", "entity", and "message";
-    # see the `fail` method, above, for details.
+    # (If the scenario is sane, the list will be empty.)
 
-    method {onlock newcheck} {} {
-        set f [::projectlib::dictlist new {code entity message}]
-
+    method OnLockCheck {f} {
         # At least one neighborhood
         if {[llength [$adb nbhood names]] == 0} {
             $f add nbhood.none nbhood "No neighborhoods are defined."
@@ -156,43 +182,22 @@ snit::type ::athena::sanity {
             }
         }
 
-        set result [$f dicts]
-        $f destroy
-
-        return $result
+        return
     }
 
 
-    # onlock check
-    #
-    # Does a sanity check of the model: can we lock the scenario?
-    #
-    # Returns an esanity value:
-    #
-    # OK      - Model is sane; go ahead and lock.
-    # WARNING - Problems were found and disabled; scenario can be locked.
-    # ERROR   - Problems were found and must be fixed.
 
-    method {onlock check} {} {
-        set ht [htools %AUTO%]
-
-        set sev [$self DoOnLockCheck $ht]
-
-        $ht destroy
-
-        return $sev
-    }
-
-    # onlock report ht
+    # onlock_report ht
     # 
     # ht   - An htools buffer.
     #
+    # OBSOLETE!
     # Computes the sanity check, and formats the results into the 
     # ht buffer for inclusion in an HTML page.  This command can
     # presume that the buffer is already initialized and ready to
     # receive the data.
 
-    method {onlock report} {ht} {
+    method onlock_report {ht} {
         # FIRST, do a check and find out what kind of problems we have.
         set severity [$self onlock check]
 
@@ -225,256 +230,6 @@ snit::type ::athena::sanity {
         $self DoOnLockCheck $ht
     }
 
-    # onlock text
-    #
-    # Returns the onlock report text.
-
-    method {onlock text} {} {
-        set ht [htools %AUTO%]
-        $self onlock report $ht
-        set text [$ht get]
-        $ht destroy
-
-        return $text
-    }
-
-    # DoOnLockCheck ht
-    #
-    # ht   - An htools buffer
-    #
-    # Does the on-lock sanity check, and returns an esanity value
-    # indicating the status.  Any warnings or errors are written into
-    # the buffer.
-
-    method DoOnLockCheck {ht} {
-        # FIRST, presume that the model is sane.
-        set sev OK
-
-        # NEXT, call each of the on-lock checkers
-        savemax sev [$self ScenarioOnLockChecker $ht] 
-        savemax sev [$adb iom checker $ht] 
-        savemax sev [$adb curse checker $ht]
-        savemax sev [$adb strategy checker $ht] 
-        savemax sev [$adb econ checker $ht]
-
-        # NEXT, return the severity
-        return $sev
-    }
-
-
-    # ScenarioOnLockChecker ht
-    #
-    # ht   - An htools buffer
-    #
-    # Does the sanity check, and returns an esanity value, writing
-    # any errors into the buffer.
-    #
-    # This routine detects only ERRORs, not WARNINGs.
-
-    method ScenarioOnLockChecker {ht} {
-        # FIRST, presume that the model is sane.
-        set sev OK
-
-        # NEXT, push a buffer onto the stack, for the problems.
-        $ht push
-
-        $ht subtitle "Scenario Constraints"
-
-        $ht putln "The following problems were found:"
-        $ht para
-
-        $ht dl
-
-        # NEXT, Require at least one neighborhood:
-        if {[llength [$adb nbhood names]] == 0} {
-            set sev ERROR
-
-            $ht dlitem "<b>Error: No neighborhoods are defined.</b>" {
-                At least one neighborhood is required.
-                Create neighborhoods on the 
-                <a href="gui:/tab/viewer">Map</a> tab.
-            }
-        }
-
-        # NEXT, verify that neighborhoods are properly stacked
-        $adb eval {
-            SELECT n, obscured_by FROM nbhoods
-            WHERE obscured_by != ''
-        } {
-            set sev ERROR
-
-            $ht dlitem "<b>Error: Neighborhood Stacking Error.</b>" "
-                Neighborhood $n is obscured by neighborhood $obscured_by.
-                Fix the stacking order on the 
-                <a href=\"gui:/tab/nbhoods\">Neighborhoods/Neighborhoods</a>
-                tab.
-            "
-        }
-
-        # NEXT, Require at least one force group
-        if {[llength [$adb frcgroup names]] == 0} {
-            set sev ERROR
-
-            $ht dlitem "<b>Error: No force groups are defined.</b>" {
-                At least one force group is required.  Create force
-                groups on the 
-                <a href="gui:/tab/frcgroups">Groups/FrcGroups</a> tab.
-            }
-        }
-
-        # NEXT, Require that each force group has an actor
-        set names [$adb eval {SELECT g FROM frcgroups_view WHERE a IS NULL}]
-
-        if {[llength $names] > 0} {
-            set sev ERROR
-
-            $ht dlitem "<b>Error: Some force groups have no owner.</b>" "
-                The following force groups have no owning actor:
-                [join $names {, }].  Assign owning actors to force
-                groups on the 
-                <a href=\"gui:/tab/frcgroups\">Groups/FrcGroups</a>
-                tab.
-            "
-        }
-
-        # NEXT, Require that each ORG group has an actor
-        set names [$adb eval {SELECT g FROM orggroups_view WHERE a IS NULL}]
-
-        if {[llength $names] > 0} {
-            set sev ERROR
-
-            $ht dlitem "<b>Error: Some organization groups have no owner.</b>" "
-                The following organization groups have no owning actor:
-                [join $names {, }].  Assign owning actors to
-                organization groups on the 
-                <a href=\"gui:/tab/orggroups\">Groups/OrgGroups</a>
-                tab.
-            "
-        }
-
-        # NEXT, Require that each CAP has an actor
-        set names [$adb eval {SELECT k FROM caps WHERE owner IS NULL}]
-
-        if {[llength $names] > 0} {
-            set sev ERROR
-
-            $ht dlitem \
-                "<b>Error: Some Communication Asset Packages (CAPs) have no
-            owner.</b>" "
-                The following CAPs have no owning actor:
-                [join $names {, }].  Assign owning actors to CAPs on the
-                <a href=\"gui:/tab/caps\">Info/CAPs</a> tab.
-            "
-        }
-                
-        # NEXT, Require at least one civ group
-        if {[llength [$adb civgroup names]] == 0} {
-            set sev ERROR
-
-            $ht dlitem "<b>Error: No civilian groups are defined.</b>" {
-                At least one civilian group is required.  Create civilian
-                groups on the 
-                <a href="gui:/tab/civgroups">Groups/CivGroups</a>
-                tab.
-            }
-        }
-
-        # NEXT, require that there are people in the civ groups
-        set basepop [$adb eval {
-            SELECT total(basepop) FROM civgroups
-        }]
-
-        if {$basepop == 0} {
-            set sev ERROR
-
-            $ht dlitem "<b>Error: No civilian population.</b>" {
-                No civilian group has a base population greater
-                than 0.
-            }
-        }
-
-        # NEXT, collect data on groups and neighborhoods
-        $adb eval {
-            SELECT g,n FROM civgroups
-        } {
-            lappend gInN($n)  $g
-        }
-
-        # NEXT, Every neighborhood must have at least one group
-        # TBD: Is this really required?  Can we insist, instead,
-        # that at least one neighborhood must have a group?
-        foreach n [$adb nbhood names] {
-            if {![info exists gInN($n)]} {
-                set sev ERROR
-
-                $ht dlitem "<b>Error: Neighborhood has no residents</b>" "
-                    Neighborhood $n contains no civilian groups;
-                    at least one is required.  Create civilian
-                    groups and assign them to neighborhoods
-                    on the 
-                    <a href=\"gui:/tab/civgroups\">Groups/CivGroups</a>
-                    tab.
-                "
-            }
-        }
-
-
-        # NEXT, there must be at least 1 local consumer; and hence, there
-        # must be at least one local civ group with sa_flag=0.
-
-        if {![$adb exists {
-            SELECT sa_flag 
-            FROM civgroups JOIN nbhoods USING (n)
-            WHERE local AND NOT sa_flag
-        }]} {
-            set sev ERROR
-
-            $ht dlitem "<b>Error: No consumers in local economy</b>" {
-                There are no consumers in the local economy.  At least
-                one civilian group in some "local" neighborhood
-                needs to have non-subsistence
-                population.  Add or edit civilian groups on the
-                <a href="gui:/tab/civgroups">Groups/CivGroups</a>
-                tab.
-            }
-        }
-
-        # NEXT, there cannot be any GOODS production infrastructure allocated
-        # to non-local neighborhoods
-
-        set localn [$adb nbhood local names]
-
-        $adb eval {
-            SELECT n, a FROM plants_shares
-        } {
-
-            if {$n ni $localn} {
-                set sev ERROR
-
-                $ht dlitem \
-                    "<b>Error: GOODS Infrastructure in non-local nbhood</b>" "
-                    There is GOODS production infrastructure allocated to $n, 
-                    which is a non-local neighborhood.  Only local 
-                    neighborhoods can contain GOODS production infrastructure.
-                    Delete or edit infrastructure allocation on the
-                    <a href=\"gui:/tab/plants\">Infrastructure/GOODS Plants</a>
-                    tab.
-                "
-            }
-        }
-
-        $ht /dl
-
-        # NEXT, we only have content if there were errors.
-        set html [$ht pop]
-
-        if {$sev ne "OK"} {
-            $ht put $html
-        }
-
-        # NEXT, return the result
-        return $sev
-    }
 
     #-------------------------------------------------------------------
     # On-Tick Sanity Check

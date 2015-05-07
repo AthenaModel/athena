@@ -3,6 +3,12 @@
 - Projectlib(n)
   - Tests for parmdict(n), smartdomain(n)
 - Athena(n)
+  - Sanity Checking
+    - There are errors and warnings.
+    - On explicit check, you get both errors and warnings.
+    - On lock, you check only errors
+    - Flags passed to the sanity checker
+      - -strict: Do -strict checking, i.e., include warnings
   - Optimize athena(n) creation, reset, load.  It's way slow.
   - Group athenadb(n) predicates under "is", e.g., "is busy".
   - Finish athena(n) man page!!!!!!!
