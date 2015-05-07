@@ -45,7 +45,7 @@ snit::widgetadaptor coopbrowser {
 
     typevariable modes -array {
         scenario {
-            -view gui_coop_view
+            -view gui_coop
             -layout {
                 { f        "Of Group"                         }
                 { g        "With Group"                       }

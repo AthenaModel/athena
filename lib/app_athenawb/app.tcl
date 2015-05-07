@@ -1076,6 +1076,8 @@ snit::type app {
 
     typemethod DefineTempSchema {} {
         $type AdbEvalFile gui_scenario.sql       ;# Scenario Entities
+        $type AdbEvalFile gui_attitude.sql       ;# Attitude Area
+        $type AdbEvalFile gui_econ.sql           ;# Economics Area
         $type AdbEvalFile gui_info.sql           ;# Information Area
         $type AdbEvalFile gui_curses.sql         ;# User-defined CURSEs Area
         $type AdbEvalFile gui_politics.sql       ;# Politics Area

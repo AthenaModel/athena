@@ -525,8 +525,7 @@ snit::type ::athena::athenadb {
 
         # NEXT, define the GUI Views
         $self RdbEvalFile fmt_scenario.sql       ;# Scenario Entities
-        $self RdbEvalFile gui_attitude.sql       ;# Attitude Area
-        $self RdbEvalFile gui_econ.sql           ;# Economics Area
+        $self RdbEvalFile fmt_attitude.sql       ;# Attitude Area
         $self RdbEvalFile fmt_ground.sql         ;# Ground Area
         $self RdbEvalFile fmt_info.sql           ;# Information Area
         $self RdbEvalFile fmt_curses.sql         ;# User-defined CURSEs Area
@@ -1637,7 +1636,7 @@ snit::type ::athena::athenadb {
         }]
 
         $uram load hrel {*}[$rdb eval {
-            SELECT f, g, current, base, nat FROM gui_hrel_base_view
+            SELECT f, g, current, base, nat FROM fmt_hrel_base_view
             ORDER BY f, g
         }]
 
