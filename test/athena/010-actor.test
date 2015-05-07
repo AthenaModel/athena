@@ -514,14 +514,14 @@ budget            10.0
         income_graft     0.00
         income_pop       0.00
         income_world     0.00
-        link             {<a href="my://app/actor/JOE">JOE</a>}
-        longlink         {<a href="my://app/actor/JOE">JOE: Joe the Actor</a>}
+        link             {<a href="/app/actor/JOE">JOE</a>}
+        longlink         {<a href="/app/actor/JOE">JOE: Joe the Actor</a>}
         longname         {Joe the Actor}
         pretty_am_flag   No
         shares_black_nr  0
         supports         SELF
         supports_link    SELF
-        url              my://app/actor/JOE
+        url              /app/actor/JOE
     }
 
     #-------------------------------------------------------------------

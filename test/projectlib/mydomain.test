@@ -193,22 +193,6 @@ test content-1.1 {/urlhelp} -setup {
     cleanup
 } -result {url /app/urlhelp content {{content elided}} contentType text/html}
 
-test content-1.2 {/urlhelp/{path}} -setup {
-    setup -register
-} -body {
-    set cdict [server get /app/urlhelp/app/urlhelp]
-
-    dict with cdict {
-        if {$content ne ""} {
-            set content "{content elided}"
-        }
-    }
-
-    set cdict
-} -cleanup {
-    cleanup
-} -result {url /app/urlhelp/app/urlhelp content {{content elided}} contentType text/html}
-
 
 #-------------------------------------------------------------------
 # Cleanup

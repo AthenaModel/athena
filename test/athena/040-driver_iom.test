@@ -226,11 +226,11 @@ IOM-1-1 vrel       SHIA     JOE
     } -cleanup {
         cleanup
     } -result {
-Actor <a href="my://app/actor/JOE">JOE</a>
-broadcast <a href="my://app/iom/IOM1">IOM1</a>
-via <a href="my://app/cap/CBS">CBS</a>
-as <a href="my://app/actor/BOB">BOB</a>,
-ultimately reaching group <a href="my://app/group/SHIA">SHIA</a>
+Actor <a href="/app/actor/JOE">JOE</a>
+broadcast <a href="/app/iom/IOM1">IOM1</a>
+via <a href="/app/cap/CBS">CBS</a>
+as <a href="/app/actor/BOB">BOB</a>,
+ultimately reaching group <a href="/app/group/SHIA">SHIA</a>
 with a coverage of 
 80%.<p>
 

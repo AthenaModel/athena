@@ -209,10 +209,10 @@ UNEMP-1-1 SUNN AUT
         cleanup
     } -result {
 Unemployment in neighborhood
-<a href="my://app/nbhood/NB1">NB1</a>
+<a href="/app/nbhood/NB1">NB1</a>
 is at a level of 2.4% unemployed persons per capita;
 this affects civilian group
-<a href="my://app/group/SHIA">SHIA</a>
+<a href="/app/group/SHIA">SHIA</a>
 with an Unemployment Attitude Factor (UAF) of
 1.00.<p>
     }

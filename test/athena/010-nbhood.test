@@ -829,7 +829,7 @@ NB2 2
         subsistence    0
         unemployed     0
         urbanization   URBAN
-        url            my://app/nbhood/NB1
+        url            /app/nbhood/NB1
         volatility     0
     }
 

@@ -408,7 +408,7 @@ base_personnel  1000
         longname       Haliburton
         orgtype        CTR
         personnel      0
-        url            my://app/group/HAL
+        url            /app/group/HAL
     }
 
     #-------------------------------------------------------------------

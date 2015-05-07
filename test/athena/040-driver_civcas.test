@@ -405,7 +405,7 @@ CIVCAS-3-1 JOE SUNN
     } -cleanup {
         cleanup
     } -result {
-Civilian group <a href="my://app/group/SHIA">SHIA</a>
+Civilian group <a href="/app/group/SHIA">SHIA</a>
 took a total of 100 casualties this week
 from incidents of all kinds.
 The Z-curve multiplier is
@@ -428,10 +428,10 @@ The Z-curve multiplier is
     } -cleanup {
         cleanup
     } -result {
-Civilian group <a href="my://app/group/SHIA">SHIA</a>
+Civilian group <a href="/app/group/SHIA">SHIA</a>
 took a total of 50 casualties this week
 as collateral damage in incidents in which
-<a href="my://app/group/BLUE">BLUE</a>
+<a href="/app/group/BLUE">BLUE</a>
 was involved.
 The Z-curve multiplier for cooperation is
 <i>mult</i>=1.50.
@@ -454,11 +454,11 @@ The Z-curve multiplier for horiz. relationship is
     } -cleanup {
         cleanup
     } -result {
-Civilian group <a href="my://app/group/SHIA">SHIA</a>
+Civilian group <a href="/app/group/SHIA">SHIA</a>
 took a total of 50 casualties this week
 as collateral damage in incidents in which
 force groups owned by
-<a href="my://app/actor/JOE">JOE</a>
+<a href="/app/actor/JOE">JOE</a>
 were involved.
 The Z-curve multiplier is
 <i>mult</i>=1.50.<p>

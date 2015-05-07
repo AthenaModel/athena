@@ -169,10 +169,10 @@ namespace eval ::athena_test::tests:: {
     } -cleanup {
         cleanup
     } -result {
-Group <a href="my://app/group/BLUE">BLUE</a>
+Group <a href="/app/group/BLUE">BLUE</a>
 is performing the CONSTRUCT activity
 in neighborhood
-<a href="my://app/nbhood/NB1">NB1</a>
+<a href="/app/nbhood/NB1">NB1</a>
 with 2000 effective personnel.
 yielding 100% coverage.<p>
 
@@ -192,10 +192,10 @@ Note: The coverage function is 20/1000
     } -cleanup {
         cleanup
     } -result {
-Group <a href="my://app/group/BLUE">BLUE</a>
+Group <a href="/app/group/BLUE">BLUE</a>
 is performing the CONSTRUCT activity
 in neighborhood
-<a href="my://app/nbhood/NB1">NB1</a>
+<a href="/app/nbhood/NB1">NB1</a>
 with 2000 effective personnel.
 yielding 100% coverage.<p>
 

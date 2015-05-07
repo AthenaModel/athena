@@ -69,31 +69,31 @@ namespace eval ::athena_test::tests:: {
     # get
 
     test get-1.1 {Retrieves content} -body {
-        expr {[dict get [appserver get /] content] ne ""}
+        expr {[dict get [appserver get /app] content] ne ""}
     } -result {1}
 
     test get-1.2 {Returns URL} -body {
-        dict get [appserver get my://app/actors] url
-    } -result {my://app/actors}
+        dict get [appserver get /app/actors] url
+    } -result {/app/actors}
 
     test get-1.3 {Retrieves preferred ctype if no ctype given} -body {
-        dict get [appserver get /actors] contentType
+        dict get [appserver get /app/actors] contentType
     } -result {tcl/linkdict}
 
     test get-1.4 {Retrieves desired ctype if ctype given} -body {
-        dict get [appserver get /actors text/html] contentType
+        dict get [appserver get /app/actors text/html] contentType
     } -result {text/html}
 
     test get-1.5 {Desired ctype can contain wild cards} -body {
-        dict get [appserver get /actors text/*] contentType
+        dict get [appserver get /app/actors text/*] contentType
     } -result {text/html}
 
     test get-1.6 {NOTFOUND if resource is unknown} -body {
-        errcatch appserver get /nonesuch
+        errcatch appserver get /app/nonesuch
     } -result {NOTFOUND Resource not found or not compatible with this application.}
 
     test get-1.7 {NOTFOUND if required content type is unavailable} -body {
-        errcatch appserver get /actors text/nonesuch
+        errcatch appserver get /app/actors text/nonesuch
     } -result {NOTFOUND Content-type unavailable: text/nonesuch}
 }
 

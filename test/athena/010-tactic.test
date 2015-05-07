@@ -277,7 +277,7 @@ namespace eval ::athena_test::tests:: {
         id         *
         mode       ALL
         name       T*
-        narrative  {Demobilize all of group <a href="my://app/group/BLUE">BLUE</a>'s undeployed personnel.}
+        narrative  {Demobilize all of group <a href="/app/group/BLUE">BLUE</a>'s undeployed personnel.}
         parent     *
         percent    0
         personnel  0

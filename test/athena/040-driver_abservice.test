@@ -1095,7 +1095,7 @@ TRANSPORT-1-4 SUNN JOE
         cleanup
     } -result {
 Civilian group
-<a href="my://app/group/SHIA">SHIA</a>
+<a href="/app/group/SHIA">SHIA</a>
 received ENERGY services at an actual level of
 0.80, that is, at
 80% of the saturation level
@@ -1104,8 +1104,8 @@ of service.  Group SHIA requires a level of at least
 0.70.<p>
 
 Actor
-<a href="my://app/actor/JOE">JOE</a>
-is in control of the neighborhood, so <a href="my://app/group/SHIA">SHIA</a>
+<a href="/app/actor/JOE">JOE</a>
+is in control of the neighborhood, so <a href="/app/group/SHIA">SHIA</a>
 's relationship with JOE is affected.<p>
 
 The case is therefore E+, that is, SHIA received
@@ -1136,7 +1136,7 @@ These values led to the following rule set inputs:<p>
         cleanup
     } -result {
 Civilian group
-<a href="my://app/group/SHIA">SHIA</a>
+<a href="/app/group/SHIA">SHIA</a>
 received WATER services at an actual level of
 0.80, that is, at
 80% of the saturation level
@@ -1145,8 +1145,8 @@ of service.  Group SHIA requires a level of at least
 0.70.<p>
 
 Actor
-<a href="my://app/actor/JOE">JOE</a>
-is in control of the neighborhood, so <a href="my://app/group/SHIA">SHIA</a>
+<a href="/app/actor/JOE">JOE</a>
+is in control of the neighborhood, so <a href="/app/group/SHIA">SHIA</a>
 's relationship with JOE is affected.<p>
 
 The case is therefore E+, that is, SHIA received
@@ -1177,7 +1177,7 @@ These values led to the following rule set inputs:<p>
         cleanup
     } -result {
 Civilian group
-<a href="my://app/group/SHIA">SHIA</a>
+<a href="/app/group/SHIA">SHIA</a>
 received TRANSPORT services at an actual level of
 0.80, that is, at
 80% of the saturation level
@@ -1186,8 +1186,8 @@ of service.  Group SHIA requires a level of at least
 0.70.<p>
 
 Actor
-<a href="my://app/actor/JOE">JOE</a>
-is in control of the neighborhood, so <a href="my://app/group/SHIA">SHIA</a>
+<a href="/app/actor/JOE">JOE</a>
+is in control of the neighborhood, so <a href="/app/group/SHIA">SHIA</a>
 's relationship with JOE is affected.<p>
 
 The case is therefore E+, that is, SHIA received

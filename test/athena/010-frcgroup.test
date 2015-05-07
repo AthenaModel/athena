@@ -479,7 +479,7 @@ local           1
         personnel      0
         pretty_local   No
         training       PROFICIENT
-        url            my://app/group/BLUE
+        url            /app/group/BLUE
     }
 
 
