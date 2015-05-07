@@ -73,6 +73,10 @@ Returns the list of dictionaries.<p>
 Uses <xref kite:dictab(n)> to format the list.  The options are as for
 the <xref kite:dictab(n)> subcommand of the same name.<p>
 
+<defitem keys {<i obj> keys}>
+
+Returns the list of keys.<p>
+
 <defitem set {<i obj> set <i list>}>
 
 Sets the list of dictionaries.<p>

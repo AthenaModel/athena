@@ -142,4 +142,13 @@ oo::class create ::projectlib::dictlist {
     method format {args} {
         kiteutils::dictab format $dicts {*}$args
     }
+
+    # keys
+    #
+    # Returns the key names.
+
+    method keys {} {
+        return $keys
+    }
+
 }
