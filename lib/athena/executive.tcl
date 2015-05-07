@@ -1352,7 +1352,7 @@ snit::type ::athena::executive {
 
         if {[llength $args] == 0} {
             if {[$adb exists {
-                SELECT supports FROM gui_actors
+                SELECT supports FROM fmt_actors
                 WHERE a=$a AND supports=$b
             }]} {
                 return 1

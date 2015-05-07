@@ -165,7 +165,7 @@ namespace eval ::athena_test::tests:: {
     } -body {
         ted order INJECT:COOP:CREATE $I2
 
-        ted querylist {SELECT * FROM gui_injects_COOP}
+        ted querylist {SELECT * FROM fmt_injects_COOP}
     } -cleanup {
         cleanup
     } -result {
@@ -187,7 +187,7 @@ mag         2.0
     } -body {
         ted order INJECT:COOP:CREATE {*}$I2 ftype EXISTING gtype EXISTING
 
-        ted querylist {SELECT * FROM gui_injects_COOP}
+        ted querylist {SELECT * FROM fmt_injects_COOP}
     } -cleanup {
         cleanup
     } -result {
@@ -284,7 +284,7 @@ mag         2.0
     } -body {
         ted order INJECT:COOP:UPDATE id {C2 1} f @C9 g @F9 mag 10.0
 
-        ted querylist {SELECT * FROM gui_injects_COOP}
+        ted querylist {SELECT * FROM fmt_injects_COOP}
     } -cleanup {
         cleanup
     } -result {
@@ -365,7 +365,7 @@ mag         10.0
     } -body {
         ted order INJECT:HREL:CREATE $I2
 
-        ted querylist {SELECT * FROM gui_injects_HREL}
+        ted querylist {SELECT * FROM fmt_injects_HREL}
     } -cleanup {
         cleanup
     } -result {
@@ -451,7 +451,7 @@ mag         2.0
     } -body {
         ted order INJECT:HREL:UPDATE id {C2 1} f @C9 g @F9 mag 10.0
 
-        ted querylist {SELECT * FROM gui_injects_HREL}
+        ted querylist {SELECT * FROM fmt_injects_HREL}
     } -cleanup {
         cleanup
     } -result {
@@ -532,7 +532,7 @@ mag         10.0
     } -body {
         ted order INJECT:SAT:CREATE $I4
 
-        ted querylist {SELECT * FROM gui_injects_SAT}
+        ted querylist {SELECT * FROM fmt_injects_SAT}
     } -cleanup {
         cleanup
     } -result {
@@ -618,7 +618,7 @@ mag         5.0
     } -body {
         ted order INJECT:SAT:UPDATE id {C2 1} g @C9 c AUT mag 10.0
 
-        ted querylist {SELECT * FROM gui_injects_SAT}
+        ted querylist {SELECT * FROM fmt_injects_SAT}
     } -cleanup {
         cleanup
     } -result {
@@ -708,7 +708,7 @@ mag         10.0
     } -body {
         ted order INJECT:VREL:CREATE $I6
 
-        ted querylist {SELECT * FROM gui_injects_VREL}
+        ted querylist {SELECT * FROM fmt_injects_VREL}
     } -cleanup {
         cleanup
     } -result {
@@ -794,7 +794,7 @@ mag         5.0
     } -body {
         ted order INJECT:VREL:UPDATE id {C2 1} g @C9 a @F9 mag 10.0
 
-        ted querylist {SELECT * FROM gui_injects_VREL}
+        ted querylist {SELECT * FROM fmt_injects_VREL}
     } -cleanup {
         cleanup
     } -result {

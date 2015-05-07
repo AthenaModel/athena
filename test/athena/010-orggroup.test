@@ -403,12 +403,9 @@ base_personnel  1000
         g              HAL
         gtype          ORG
         id             HAL
-        link           *
-        longlink       *
         longname       Haliburton
         orgtype        CTR
         personnel      0
-        url            my://app/group/HAL
     }
 
     #-------------------------------------------------------------------

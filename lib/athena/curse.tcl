@@ -132,7 +132,7 @@ snit::type ::athena::curse {
     # dynamically.
 
     method get {curse_id {parm ""}} {
-        return [dbget $adb gui_curses curse_id $curse_id $parm]
+        return [dbget $adb fmt_curses curse_id $curse_id $parm]
     }
 
     # normal names

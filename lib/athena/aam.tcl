@@ -185,7 +185,7 @@ snit::type ::athena::aam {
                    D.personnel     AS pers,
                    D.n             AS n,
                    D.g             AS g
-            FROM gui_frcgroups AS F
+            FROM fmt_frcgroups AS F
             JOIN deploy_ng     AS D ON (D.g=F.g)
             JOIN nbhoods       AS N ON (D.n=N.n)
             WHERE D.personnel > 0

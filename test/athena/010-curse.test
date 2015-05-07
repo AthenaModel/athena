@@ -540,10 +540,7 @@ state     disabled
         fancy     {C1: Curse One}
         cause     UNIQUE
         longname  {Curse One}
-        longlink  {<a href="my://app/curse/C1">Curse One</a>}
-        link      {<a href="my://app/curse/C1">C1</a>}
         curse_id  C1
-        url       my://app/curse/C1
     }
 
     test get-1.2 {get column} -setup {

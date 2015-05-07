@@ -245,29 +245,29 @@ snit::type ::athena::exporter {
         # link back to actors not yet created.
         SectionHeader $f "Base Entities: Actors"
 
-        $self FromRDB $f ACTOR:CREATE   {SELECT * FROM gui_actors} supports
-        $self FromRDB $f ACTOR:SUPPORTS {SELECT * FROM gui_actors}
+        $self FromRDB $f ACTOR:CREATE   {SELECT * FROM fmt_actors} supports
+        $self FromRDB $f ACTOR:SUPPORTS {SELECT * FROM fmt_actors}
 
         # NEXT, Neighborhoods
         SectionHeader $f "Base Entities: Neighborhoods"
 
         $self FromRDB $f NBHOOD:CREATE {
-            SELECT * FROM gui_nbhoods ORDER BY stacking_order
+            SELECT * FROM fmt_nbhoods ORDER BY stacking_order
         }
 
-        $self FromRDB $f NBREL:UPDATE {SELECT * FROM gui_nbrel_mn}
+        $self FromRDB $f NBREL:UPDATE {SELECT * FROM fmt_nbrel_mn}
 
         # NEXT, Civilian Groups
         SectionHeader $f "Base Entities: Civilian Groups"
-        $self FromRDB $f CIVGROUP:CREATE {SELECT * FROM gui_civgroups}
+        $self FromRDB $f CIVGROUP:CREATE {SELECT * FROM fmt_civgroups}
 
         # NEXT, Force Groups
         SectionHeader $f "Base Entities: Force Groups"
-        $self FromRDB $f FRCGROUP:CREATE {SELECT * FROM gui_frcgroups}
+        $self FromRDB $f FRCGROUP:CREATE {SELECT * FROM fmt_frcgroups}
 
         # NEXT, Organization Groups
         SectionHeader $f "Base Entities: Organization Groups"
-        $self FromRDB $f ORGGROUP:CREATE {SELECT * FROM gui_orggroups}
+        $self FromRDB $f ORGGROUP:CREATE {SELECT * FROM fmt_orggroups}
 
         # NEXT, Attitudes
         SectionHeader $f "Attitudes"
@@ -314,7 +314,7 @@ snit::type ::athena::exporter {
         } {longname gtype atype}
 
         $self FromRDB $f INJECT:STATE {
-            SELECT * FROM gui_injects WHERE state != 'normal'
+            SELECT * FROM fmt_injects WHERE state != 'normal'
         }
 
         # NEXT, CAPs

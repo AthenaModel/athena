@@ -1095,7 +1095,7 @@ snit::type ::athena::inject {
 
     meta form {
         rcc "Inject:" -for id
-        dbkey id -context yes -table gui_injects_COOP \
+        dbkey id -context yes -table fmt_injects_COOP \
             -keys {curse_id inject_num} \
             -loadcmd {$order_ keyload id {f g mag mode}}
 
@@ -1267,7 +1267,7 @@ snit::type ::athena::inject {
 
     meta form {
         rcc "Inject:" -for id
-        dbkey id -context yes -table gui_injects_HREL \
+        dbkey id -context yes -table fmt_injects_HREL \
             -keys {curse_id inject_num} \
             -loadcmd {$order_ keyload id {f g mag mode}}
 
@@ -1419,7 +1419,7 @@ snit::type ::athena::inject {
 
     meta form {
         rcc "Inject:" -for id
-        dbkey id -context yes -table gui_injects_SAT \
+        dbkey id -context yes -table fmt_injects_SAT \
             -keys {curse_id inject_num} \
             -loadcmd {$order_ keyload id {g c mode mag}}
 
@@ -1573,7 +1573,7 @@ snit::type ::athena::inject {
 
     meta form {
         rcc "Inject:" -for id
-        dbkey id -context yes -table gui_injects_VREL \
+        dbkey id -context yes -table fmt_injects_VREL \
             -keys {curse_id inject_num} \
             -loadcmd {$order_ keyload id {g a mode mag}}
 
