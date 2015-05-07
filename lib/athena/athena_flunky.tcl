@@ -113,6 +113,37 @@ oo::class create ::athena::athena_flunky {
         next $name $adb {*}$args
     }
 
+    # check name ?parm value...?
+    #
+    # name - An order name
+    # args - A dictionary of order parameters and values
+    #
+    # Validates the order parameters without executing it.
+    # Returns "" on success, and throws REJECT on error.
+
+    method check {name args} {
+        set o [my make $name]
+
+        set parmdict [dict create]
+        foreach {parm value} $args {
+            if {$parm in [$o parms]} {
+                dict set parmdict $parm $value
+            }
+        }
+
+        $o setdict $parmdict
+
+        try {
+            if {[$o valid]} {
+                return ""
+            }
+
+            throw REJECT [$o errdict]
+        } finally {
+            $o destroy
+        }
+    }
+
     # execute mode order
     #
     # Wraps the order_flunky "execute" method.  Adds RDB transactions

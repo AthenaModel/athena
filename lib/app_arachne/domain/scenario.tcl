@@ -945,9 +945,11 @@ smarturl /scenario /{case}/order.html {
     hb putln "Select an order and press 'Select' to see its order form."
     hb para
 
-    set order_ [qdict prepare order_]
+    qdict prepare op -in {send}
+    qdict prepare order_ -toupper
+    qdict assign op order_
 
-    hb form -action [my domain]/$case/order.html
+    hb form
     hb enum order_ -selected $order_ [lsort [athena::orders names]]
     hb submit "Select"
     hb /form
@@ -959,15 +961,22 @@ smarturl /scenario /{case}/order.html {
 
         # FIRST, send the order and let's see what happens.
         try {
-            set result [case send $case [namespace current]::qdict]
-            hb putln "Order $order_ was accepted."
+            if {$op eq "send"} {
+                set result [case send $case [namespace current]::qdict]
+                hb putln "Order $order_ was accepted."
                 hb para
-            if {$result ne ""} {
-                hb putln "Result:"
-                hb pre $result
-                hb para
+
+                if {$result ne ""} {
+                    hb putln "Result:"
+                    hb pre $result
+                    hb para
+                }
+                set result ""
+            } else {
+                qdict remove order_
+                case with $case order check $order_ {*}[qdict parms] 
+                set result ""
             }
-            set result ""
         } trap REJECT {result} {
             if {[dict exists $result *]} {
                 hb span "Error, [dict get $result *]"
@@ -976,6 +985,7 @@ smarturl /scenario /{case}/order.html {
         }
 
         hb form 
+        hb hidden op send
         hb hidden order_ $order_
         hb table -headers {"Parameter" "Value"} {
             foreach parm [athena::orders parms $order_] {
@@ -992,10 +1002,11 @@ smarturl /scenario /{case}/order.html {
             }
         }
 
+        # TBD: It would be nice to have a Check button, or to check
+        # automatically on change.
         hb submit "Send"
         hb submit -formaction [my domain]/$case/order.json "JSON"
         hb /form
-
     }
 
 

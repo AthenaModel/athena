@@ -263,6 +263,7 @@ snit::type ::athena::athena {
     delegate method {order available}       to adb as {order available}
     delegate method {order canredo}         to adb as {order canredo}
     delegate method {order canundo}         to adb as {order canundo}
+    delegate method {order check}           to adb as {order check}
     delegate method {order class}           to adb as {order class}
     delegate method {order make}            to adb as {order make}
     delegate method {order monitor}         to adb as {order monitor}
