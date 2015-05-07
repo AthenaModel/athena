@@ -1,0 +1,95 @@
+<manpage {projectlib(n) dictlist(n)} "dictlist(i) Dictionary List Buffer">
+
+<section SYNOPSIS>
+
+<pre>
+package require projectlib <version>
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+dictlist(n) is a tool for building up lists of dictionaries, and for
+converting them to various forms (i.e., JSON).<p>
+
+<section "COMMANDS">
+
+<tt ::projectlib::dictlist> is an <tt oo::class>.  It provides the 
+following commands.<p>
+
+<deflist commands>
+
+<defitem "dictlist create" {dictlist create <i name> <i spec>}>
+
+Creates a new instance of dictlist(n) with the given command <i name>.
+The instance is for building a list of dictionaries, each of which
+matches the <i spec>.  At this time, the <i spec> is simply an ordered
+list of the names of the valid dictionary keys.<p>
+
+<defitem "dictlist new" {dictlist new ?<i spec>?}>
+
+Like <iref dictlist create>, but creates an instance with
+an arbitrary name, returning the name.<p>
+
+</deflist commands>
+
+
+<section "INSTANCE COMMANDS">
+
+Instances of dictlist(n) provide the following subcommands.<p>
+
+<deflist instance>
+
+<defitem add {<i obj> add <i value....>}>
+
+Creates a new dictionary, matching the values on the command line to the
+keys one-for-one.  If there are fewer values than keys, the remaining keys
+are assigned the value "".  It's an error if there are fewer keys than 
+values.  The dictionary is appended to the list.<p>
+
+<defitem addwith {<i obj> addwith ?<i key value...>?}>
+
+Creates a new dictionary with empty values, and then applies the given
+keys and values.  The keys may be specified with a leading "-"; it will
+be stripped automatically.  It's an error to pass an invalid key.  The
+resulting dictionary is appended to the list.<p>
+
+<defitem append {<i obj> append <i dict>}>
+
+Appends the <i dict> to the list.  The <i dict> is assume to match
+the object's <i spec>.<p>
+
+<defitem clear {<i obj> clear}>
+
+Resets the object's content to the empty list.<p>
+
+<defitem dicts {<i obj> dicts}>
+
+Returns the list of dictionaries.<p>
+
+<defitem format {<i obj> format ?<i options...>?}>
+
+Uses <xref kite:dictab(n)> to format the list.  The options are as for
+the <xref kite:dictab(n)> subcommand of the same name.<p>
+
+<defitem set {<i obj> set <i list>}>
+
+Sets the list of dictionaries.<p>
+
+</deflist instance>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package, based on <xref mars:order(n)>'s validation commands.<p>
+
+</manpage>
+
+
+
+
+

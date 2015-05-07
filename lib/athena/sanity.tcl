@@ -47,21 +47,6 @@ snit::type ::athena::sanity {
     #-------------------------------------------------------------------
     # On-lock Sanity check
 
-    # fail code entity message
-    #
-    # code     - A code that identifies the kind of error
-    # entity   - A URL fragment that identifies the entity exhibiting
-    #            the error, e.g., "nbhood" (for all neighborhoods) 
-    #            or "group/BLUE".
-    # message  - A human readable message.
-    #
-    # Adds the failure to the list.
-
-    method fail {code entity message} {
-        lappend trans(failures) \
-            [dict create code $code entity $entity message $message]
-    }
-
     # onlock newcheck
     #
     # Does the sanity check, and returns a list of failure records.
@@ -70,11 +55,11 @@ snit::type ::athena::sanity {
     # see the `fail` method, above, for details.
 
     method {onlock newcheck} {} {
-        set trans(failures) [list]
+        set f [::projectlib::dictlist new {code entity message}]
 
         # At least one neighborhood
         if {[llength [$adb nbhood names]] == 0} {
-            $self fail nbhood.none nbhood "No neighborhoods are defined."
+            $f add nbhood.none nbhood "No neighborhoods are defined."
         }
 
         # Neighborhoods are properly stacked
@@ -82,36 +67,36 @@ snit::type ::athena::sanity {
             SELECT n, obscured_by FROM nbhoods
             WHERE obscured_by != ''
         } {
-            $self fail nbhood.obscured nbhood/$n \
+            $f add nbhood.obscured nbhood/$n \
     "Neighborhood's reference point is obscured by another neighborhood."
         }
 
         # At least one force group
         if {[llength [$adb frcgroup names]] == 0} {
-            $self fail frcgroup.none group "No force groups are defined."
+            $f add frcgroup.none group "No force groups are defined."
         }
 
         # Each force group has an owning actor
         $adb eval {SELECT g FROM frcgroups_view WHERE a IS NULL} {
-            $self fail frcgroup.notowned group/$g \
+            $f add frcgroup.notowned group/$g \
                 "Force group has no owning actor."
         }
 
         # Each ORG group has an owning actor
         $adb eval {SELECT g FROM orggroups_view WHERE a IS NULL} {
-            $self fail orggroup.notowned group/$g \
+            $f add orggroup.notowned group/$g \
                 "Organization group has no owning actor."
         }
 
         # Each CAP has an owning actor
         $adb eval {SELECT k FROM caps WHERE owner IS NULL} {
-            $self fail cap.notowned cap/$k \
+            $f add cap.notowned cap/$k \
                 "Communications Asset Package (CAP) has no owning actor."            
         }
 
         # At least one civ group
         if {[llength [$adb civgroup names]] == 0} {
-            $self fail civgroup.none group "No civilian groups are defined."
+            $f add civgroup.none group "No civilian groups are defined."
         }
 
         # Population exceeds 0
@@ -120,7 +105,7 @@ snit::type ::athena::sanity {
         }]
 
         if {$basepop == 0} {
-            $self fail civgroup.pop group \
+            $f add civgroup.pop group \
                 "No civilian group has a base population greater than 0."
         }
 
@@ -136,7 +121,7 @@ snit::type ::athena::sanity {
         # that at least one neighborhood must have a group?
         foreach n [$adb nbhood names] {
             if {![info exists gInN($n)]} {
-                $self fail nbhood.empty nbhood/$n \
+                $f add nbhood.empty nbhood/$n \
                     "Neighborhood has no civilian groups."
             }
         }
@@ -150,7 +135,7 @@ snit::type ::athena::sanity {
             FROM civgroups JOIN nbhoods USING (n)
             WHERE local AND NOT sa_flag
         }]} {
-            $self fail econ.noconsumers group \
+            $f add econ.noconsumers group \
                 [normalize {
                     No consumers in local economy.  At least one civilian
                     group must be in a "local" neighborhood, must have
@@ -166,12 +151,15 @@ snit::type ::athena::sanity {
             SELECT DISTINCT n FROM plants_shares
         } {
             if {$n ni $localn} {
-                $self fail plants.nonlocal nbhood/$n \
+                $f add plants.nonlocal nbhood/$n \
            "GOODS Infrastructure (plants) present in non-local nbhood."
             }
         }
 
-        return $trans(failures)
+        set result [$f dicts]
+        $f destroy
+
+        return $result
     }
 
 
