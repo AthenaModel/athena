@@ -89,8 +89,8 @@ namespace eval ::athena_test::tests:: {
     } -result {text/html}
 
     test get-1.6 {NOTFOUND if resource is unknown} -body {
-        errcatch appserver get /app/nonesuch
-    } -result {NOTFOUND Resource not found or not compatible with this application.}
+        errcatch appserver get /nonesuch
+    } -result {NOTFOUND URL incorrectly sent to this domain.}
 
     test get-1.7 {NOTFOUND if required content type is unavailable} -body {
         errcatch appserver get /app/actors text/nonesuch

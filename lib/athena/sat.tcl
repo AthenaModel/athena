@@ -128,7 +128,7 @@ snit::type ::athena::sat {
 
     meta form {
         rcc "Curve:" -for id
-        dbkey id -table gui_sat_view -keys {g c} -labels {"Grp" "Con"} \
+        dbkey id -table fmt_sat_view -keys {g c} -labels {"Grp" "Con"} \
             -loadcmd {$order_ keyload id *}
 
         rcc "Baseline:" -for base
@@ -176,7 +176,7 @@ snit::type ::athena::sat {
 
     meta form {
         rcc "Curves:" -for id
-        dbmulti ids -table gui_sat_view -key id \
+        dbmulti ids -table fmt_sat_view -key id \
             -loadcmd {$order_ multiload ids *}
 
         rcc "Baseline:" -for base

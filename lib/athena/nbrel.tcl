@@ -116,7 +116,7 @@ snit::type ::athena::nbrel {
 
     meta form {
         rcc "Neighborhood:" -for id
-        dbkey id -table gui_nbrel_mn -keys {m n} -labels {"Of" "With"} \
+        dbkey id -table fmt_nbrel_mn -keys {m n} -labels {"Of" "With"} \
             -loadcmd {$order_ keyload id *}
 
         rcc "Proximity:" -for proximity
@@ -156,7 +156,7 @@ snit::type ::athena::nbrel {
 
     meta form {
         rcc "IDs:" -for ids
-        dbmulti ids -table gui_nbrel_mn -key id \
+        dbmulti ids -table fmt_nbrel_mn -key id \
             -loadcmd {$order_ multiload ids *}
 
         rcc "Proximity:" -for proximity

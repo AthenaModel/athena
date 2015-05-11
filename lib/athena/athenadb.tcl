@@ -236,6 +236,14 @@ snit::type ::athena::athenadb {
     option -executivecmd \
         -readonly yes
 
+    # -tempsqlfiles filelist
+    #
+    # A list of files that contain temporary SQL views to be read.  This
+    # typically contains views needed by the Athena workbench GUI.
+
+    option -tempsqlfiles \
+        -default ""
+
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -509,12 +517,7 @@ snit::type ::athena::athenadb {
 
     method DefineTempSchema {} {
         # FIRST, define SQL functions
-        # TBD: qsecurity should be added to scenariodb(n).
-        # TBD: moneyfmt should be added to sqldocument(n).
         $rdb function locked               [mymethod Locked]
-        $rdb function mgrs                 [mymethod Mgrs]
-        $rdb function qsecurity            ::projectlib::qsecurity
-        $rdb function moneyfmt             ::marsutil::moneyfmt
         $rdb function mklinks              [list ::link html]
         $rdb function uram_gamma           [mymethod UramGamma]
         $rdb function sigline              [mymethod Sigline]
@@ -528,17 +531,19 @@ snit::type ::athena::athenadb {
         $rdb function hook_narrative       [list $hook hook_narrative]
         $rdb function service              [mymethod Service]
 
-        # NEXT, define the GUI Views
-        $self RdbEvalFile gui_scenario.sql       ;# Scenario Entities
-        $self RdbEvalFile gui_attitude.sql       ;# Attitude Area
-        $self RdbEvalFile gui_econ.sql           ;# Economics Area
-        $self RdbEvalFile gui_ground.sql         ;# Ground Area
-        $self RdbEvalFile gui_info.sql           ;# Information Area
-        $self RdbEvalFile gui_curses.sql         ;# User-defined CURSEs Area
-        $self RdbEvalFile gui_combat.sql         ;# Combat 
-        $self RdbEvalFile gui_politics.sql       ;# Politics Area
-        $self RdbEvalFile gui_infrastructure.sql ;# Infrastructure Area
-        $self RdbEvalFile gui_application.sql    ;# Application Views
+        # NEXT, define the Formatted Views
+        $self RdbEvalFile fmt_scenario.sql       ;# Scenario Entities
+        $self RdbEvalFile fmt_attitude.sql       ;# Attitude Area
+        $self RdbEvalFile fmt_ground.sql         ;# Ground Area
+        $self RdbEvalFile fmt_info.sql           ;# Information Area
+        $self RdbEvalFile fmt_curses.sql         ;# User-defined CURSEs Area
+        $self RdbEvalFile fmt_entities.sql       ;# Library specific Area
+        $self RdbEvalFile fmt_politics.sql       ;# Politics Area
+
+        # NEXT, read any temp SQL specified in the option
+        foreach sqlfile $options(-tempsqlfiles) {
+            $rdb eval [readfile $sqlfile]
+        }
     }
 
     # RdbEvalFile filename
@@ -1643,12 +1648,12 @@ snit::type ::athena::athenadb {
         }]
 
         $uram load hrel {*}[$rdb eval {
-            SELECT f, g, current, base, nat FROM gui_hrel_base_view
+            SELECT f, g, current, base, nat FROM fmt_hrel_base_view
             ORDER BY f, g
         }]
 
         $uram load vrel {*}[$rdb eval {
-            SELECT g, a, current, base, nat FROM gui_vrel_base_view
+            SELECT g, a, current, base, nat FROM fmt_vrel_base_view
             ORDER BY g, a
         }]
 
@@ -1772,27 +1777,6 @@ snit::type ::athena::athenadb {
 
     method Locked {} {
         $self locked
-    }
-
-    # Mgrs args
-    #
-    # args    map coordinates of one or more points as a flat list
-    #
-    # Returns a list of one or more map reference strings corrresponding
-    # to the coords
-
-    method Mgrs {args} {
-        set result [list]
-
-        if {[llength $args] == 1} {
-            set args [lindex $args 0]
-        }
-
-        foreach {lat lon} $args {
-            lappend result [latlong tomgrs [list $lat $lon]]
-        }
-
-        return $result
     }
 
     # UramGamma ctype

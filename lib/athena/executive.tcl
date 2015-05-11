@@ -1352,7 +1352,7 @@ snit::type ::athena::executive {
 
         if {[llength $args] == 0} {
             if {[$adb exists {
-                SELECT supports FROM gui_actors
+                SELECT supports FROM fmt_actors
                 WHERE a=$a AND supports=$b
             }]} {
                 return 1
@@ -1372,7 +1372,7 @@ snit::type ::athena::executive {
 
         set count [$adb onecolumn "
             SELECT count(*)
-            FROM gui_supports
+            FROM fmt_supports
             WHERE a=\$a AND supports=\$b and n IN $inClause
         "]
 

@@ -203,7 +203,7 @@ dynaform fieldtype alias orggroup enum -listcmd {$adb_ orggroup names}
 
 # payload: Pick a payload by its ID.
 dynaform fieldtype alias payload dbkey \
-    -table gui_payloads \
+    -table fmt_payloads \
     -keys  {iom_id payload_num}
 
 # percent: Pick a percentage.

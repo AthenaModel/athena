@@ -134,7 +134,7 @@ oo::class create ::athena::ruleset_abevent {
     method liking {g n} {
         return [[my adb] eval {
             SELECT C.g AS f
-            FROM gui_civgroups AS C
+            FROM fmt_civgroups AS C
             JOIN uram_hrel AS U ON (U.f = C.g)
             WHERE U.g = $g 
             AND   C.n = $n
@@ -150,7 +150,7 @@ oo::class create ::athena::ruleset_abevent {
     method disliking {g n} {
         return [[my adb] eval {
             SELECT C.g AS f
-            FROM gui_civgroups AS C
+            FROM fmt_civgroups AS C
             JOIN uram_hrel AS U ON (U.f = C.g)
             WHERE U.g = $g 
             AND   C.n = $n
