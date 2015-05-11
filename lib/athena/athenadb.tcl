@@ -529,7 +529,6 @@ snit::type ::athena::athenadb {
         $self RdbEvalFile fmt_ground.sql         ;# Ground Area
         $self RdbEvalFile fmt_info.sql           ;# Information Area
         $self RdbEvalFile fmt_curses.sql         ;# User-defined CURSEs Area
-        $self RdbEvalFile gui_combat.sql         ;# Combat 
         $self RdbEvalFile fmt_entities.sql       ;# Library specific Area
         $self RdbEvalFile fmt_politics.sql       ;# Politics Area
     }
@@ -1641,7 +1640,7 @@ snit::type ::athena::athenadb {
         }]
 
         $uram load vrel {*}[$rdb eval {
-            SELECT g, a, current, base, nat FROM gui_vrel_base_view
+            SELECT g, a, current, base, nat FROM fmt_vrel_base_view
             ORDER BY g, a
         }]
 

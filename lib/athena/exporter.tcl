@@ -273,12 +273,12 @@ snit::type ::athena::exporter {
         SectionHeader $f "Attitudes"
         $self FromRDB $f COOP:UPDATE   {SELECT * FROM fmt_coop_override}
         $self FromRDB $f HREL:OVERRIDE {SELECT * FROM fmt_hrel_override_view}
-        $self FromRDB $f SAT:UPDATE    {SELECT * FROM gui_sat_override_view}
-        $self FromRDB $f VREL:OVERRIDE {SELECT * FROM gui_vrel_override_view}
+        $self FromRDB $f SAT:UPDATE    {SELECT * FROM fmt_sat_override_view}
+        $self FromRDB $f VREL:OVERRIDE {SELECT * FROM fmt_vrel_override_view}
 
         # NEXT, Absits
         SectionHeader $f "Abstract Situations"
-        $self FromRDB $f ABSIT:CREATE {SELECT * FROM gui_absits}
+        $self FromRDB $f ABSIT:CREATE {SELECT * FROM fmt_absits}
 
         # NEXT, Economics
         SectionHeader $f "Economics: SAM Inputs"

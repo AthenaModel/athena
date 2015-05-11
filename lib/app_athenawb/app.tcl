@@ -1083,6 +1083,8 @@ snit::type app {
         $type AdbEvalFile gui_politics.sql       ;# Politics Area
         $type AdbEvalFile gui_infrastructure.sql ;# Infrastructure Area
         $type AdbEvalFile gui_application.sql    ;# Workbench app Area
+        $type AdbEvalFile gui_combat.sql         ;# Combat 
+        $type AdbEvalFile gui_ground.sql         ;# Ground Area 
     }
 
     # AdbEvalFile

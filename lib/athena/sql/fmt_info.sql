@@ -163,7 +163,7 @@ FROM fmt_payloads
 WHERE payload_type='SAT';
        
 
--- gui_payloads_VREL: All VREL payloads
+-- fmt_payloads_VREL: All VREL payloads
 CREATE TEMPORARY VIEW fmt_payloads_VREL AS
 SELECT id             AS id, 
        iom_id         AS iom_id,

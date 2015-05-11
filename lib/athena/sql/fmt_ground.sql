@@ -39,7 +39,7 @@ WHERE active;
 -- ABSTRACT SITUATIONS VIEWS
 
 -- gui_absits: All abstract situations
-CREATE TEMPORARY VIEW gui_absits AS
+CREATE TEMPORARY VIEW fmt_absits AS
 SELECT s                                              AS id,
        s || ' -- ' || stype || ' in '|| n             AS longid,
        s                                              AS s,
@@ -58,104 +58,19 @@ SELECT s                                              AS id,
 FROM absits;
 
 -- gui_absits subview: absits in INITIAL state
-CREATE TEMPORARY VIEW gui_absits_initial AS
-SELECT * FROM gui_absits
+CREATE TEMPORARY VIEW fmt_absits_initial AS
+SELECT * FROM fmt_absits
 WHERE state = 'INITIAL';
 
 -- gui_absits subview: ONGOING 
-CREATE TEMPORARY VIEW gui_absits_ongoing AS
-SELECT * FROM gui_absits
+CREATE TEMPORARY VIEW fmt_absits_ongoing AS
+SELECT * FROM fmt_absits
 WHERE state = 'ONGOING';
 
 -- gui_absits subview: RESOLVED 
-CREATE TEMPORARY VIEW gui_absits_resolved AS
-SELECT * FROM gui_absits
+CREATE TEMPORARY VIEW fmt_absits_resolved AS
+SELECT * FROM fmt_absits
 WHERE state = 'RESOLVED';
-
-------------------------------------------------------------------------
--- SERVICES MODELS VIEWS
-
--- gui_service_sg: Provision of services to civilian groups
-CREATE TEMPORARY VIEW gui_service_sg AS
-SELECT g                                           AS id,
-       g                                           AS g,
-       s                                           AS s,
-       -- TBD: fix url, links when moved
-       g                                         AS url,
-       fancy                                       AS fancy,
-       g                                        AS link,
-       g                                    AS longlink,
-       n                                           AS n,
-       population                                  AS population,
-       sat_funding                                 AS saturation_funding,
-       required                                    AS required,
-       percent(required)                           AS pct_required,
-       moneyfmt(funding)                           AS funding,
-       actual                                      AS actual,
-       percent(actual)                             AS pct_actual,
-       expected                                    AS expected,
-       percent(expected)                           AS pct_expected,
-       format('%.2f', needs)                       AS needs,
-       format('%.2f', expectf)                     AS expectf
-FROM service_sg
-JOIN fmt_civgroups USING (g)
-ORDER BY g;
-
--- gui_abservice:  in PREP, the actual and required LOS for abstract
--- services
-CREATE TEMPORARY VIEW gui_abservice AS
-SELECT CG.g                                              AS g,
-       -- TBD: Fix glink when moved
-       CG.g                                           AS glink,
-       CG.n                                              AS n,
-       CG.population                                     AS population,
-       --TBD: Add link to the neighborhood back in!!!
-       --N.link                                            AS nlink,
-       N.n                                               AS nlink,
-       N.urbanization                                    AS urb,
-       S.s                                               AS s,
-       percent(service(S.s, 'ACTUAL',   N.urbanization)) AS pct_act,
-       percent(service(S.s, 'REQUIRED', N.urbanization)) AS pct_req
-FROM fmt_civgroups AS CG 
-JOIN abservice     AS S
-JOIN fmt_nbhoods   AS N USING (n)
-ORDER BY CG.g;
-
--- gui_service_ga: Provision of ENI services to civilian groups
--- by particular actors.
-CREATE TEMPORARY VIEW gui_service_ga AS
-SELECT G.g                                         AS g,
-       -- TBD: Fix url and links when moved
-       G.g                                       AS gurl,
-       G.fancy                                     AS gfancy,
-       G.g                                      AS glink,
-       G.g                                  AS glonglink,
-       A.a                                         AS a,
-       -- TBD: Add url, link and longlink back!!!
-       -- A.url                                       AS aurl,
-       A.fancy                                       AS aurl,
-       A.fancy                                     AS afancy,
-       -- A.link                                      AS alink,
-       -- A.longlink                                  AS alonglink,
-       A.fancy                                      AS alink,
-       A.fancy                                  AS alonglink,
-       N.n                                         AS n,
-       N.fancy                                     AS fancy,
-       -- TBD: Add url, link and longlink back!!!!
-       -- N.url                                       AS nurl,
-       -- N.link                                      AS nlink,
-       -- N.longlink                                  AS nlonglink,
-       N.fancy                                       AS nurl,
-       N.fancy                                     AS nlink,
-       N.fancy                                  AS nlonglink,
-       funding                                     AS numeric_funding,
-       moneyfmt(GA.funding)                        AS funding,
-       GA.credit                                   AS credit,
-       percent(GA.credit)                          AS pct_credit
-FROM service_ga    AS GA
-JOIN fmt_civgroups AS G ON (GA.g = G.g)
-JOIN fmt_actors    AS A ON (GA.a = A.a)
-JOIN fmt_nbhoods   AS N ON (G.n = N.n);
 
 -----------------------------------------------------------------------
 -- End of File

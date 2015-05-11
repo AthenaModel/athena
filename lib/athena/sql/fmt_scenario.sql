@@ -52,7 +52,7 @@ FROM actors_view;
 ------------------------------------------------------------------------
 -- NEIGHBORHOODS
 
--- gui_neighborhoods: Neighborhood data collected from all over
+-- fmt_neighborhoods: Neighborhood data collected from all over
 CREATE TEMPORARY VIEW fmt_nbhoods AS
 SELECT N.n                                                AS id,
        N.n                                                AS n,

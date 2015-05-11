@@ -248,7 +248,7 @@ SHIA JOE 0.7  1         0.5
     #-------------------------------------------------------------------
     # vrel_base_view
     #
-    # The gui_vrel_base_view is implemented in scenariodb_attitude.sql 
+    # The fmt_vrel_base_view is implemented in scenariodb_attitude.sql 
     # and gui_attitude.sql, not in vrel.tcl,
     # so perhaps it doesn't belong here; on the other hand, it pulls
     # together affinities from the bsystem with relationship overrides
@@ -257,7 +257,7 @@ SHIA JOE 0.7  1         0.5
     test vrel_base_view-1.1 {Defaults to 1.0 for owned groups} -setup {
         ted create JOE BLUE SHIA
     } -body {
-        ted query {SELECT * FROM gui_vrel_base_view ORDER BY g,a}
+        ted query {SELECT * FROM fmt_vrel_base_view ORDER BY g,a}
     } -cleanup {
         cleanup
     } -result {
@@ -272,7 +272,7 @@ SHIA CIV   1           JOE 1     0.0 0.0  0         0.0     0
     } -body {
         tdb vrel create $V1
         tdb vrel create {id {BLUE JOE} base 0.25 hist_flag 0 current 0.0}
-        ted query {SELECT * FROM gui_vrel_base_view ORDER BY g,a}
+        ted query {SELECT * FROM fmt_vrel_base_view ORDER BY g,a}
     } -cleanup {
         cleanup
     } -result {
@@ -286,7 +286,7 @@ SHIA CIV   1           JOE 1     0.0 0.5  0         0.5     1
         ted create JOE BLUE SHIA
     } -body {
         tdb vrel create {id {BLUE JOE} base 0.25 hist_flag 1 current 0.4}
-        ted query {SELECT * FROM gui_vrel_base_view ORDER BY g,a}
+        ted query {SELECT * FROM fmt_vrel_base_view ORDER BY g,a}
     } -cleanup {
         cleanup
     } -result {
