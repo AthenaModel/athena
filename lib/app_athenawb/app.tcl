@@ -129,7 +129,7 @@ snit::type app {
                 }
                 
                 default {
-                    app exist "Unknown option: \"$opt\"\n[app usage]"
+                    app exit "Unknown option: \"$opt\"\n[app usage]"
                 }
             }
         }
@@ -472,7 +472,7 @@ snit::type app {
                                 '%' is replaced with '/'.
 
             See athena(1) for more information.
-        }
+        }]
     }
 
     # Type Method: NotifierTrace

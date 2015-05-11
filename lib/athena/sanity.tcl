@@ -12,11 +12,39 @@
 #    whether the scenario can be locked, and the "ontick" sanity 
 #    check, which determines whether simulation execution can proceed.
 #
-#    NOTE: The strategy sanity check is performed by strategy.tcl.
+#    Some checks are done by other modules, called from here.
 #
 #-----------------------------------------------------------------------
 
 snit::type ::athena::sanity {
+    #-------------------------------------------------------------------
+    # Lookup Tables
+
+    # failureKeys: dictlist record spec
+    #
+    # severity - error|warning
+    # code     - A code identifying the specific check
+    # entity   - An entity reference, e.g., "nbhood" or "group/BLUE"
+    # message  - A human-readable error message.
+
+    typevariable failureKeys {
+        severity
+        code 
+        entity 
+        message
+    }
+
+    #-------------------------------------------------------------------
+    # Type Methods
+
+    # flist
+    #
+    # Returns a dictlist(n) object in which to accumulate failures.
+    
+    typemethod flist {} {
+        return [::projectlib::dictlist new $failureKeys]
+    }
+
     #-------------------------------------------------------------------
     # Components
 
@@ -47,20 +75,17 @@ snit::type ::athena::sanity {
     #-------------------------------------------------------------------
     # On-lock Sanity check
 
-    # onlock
+    # onlock ?-warnings?
     #
     # Does a sanity check of the model and returns a list of failure
-    # records.  Each record has three keys:
-    #
-    # code     - A code identifying the kind of failure
-    # entity   - An entity reference, e.g., "nbhood" or "group/BLUE"
-    # message  - A human-readable error message.
-    #
-    # If no problems are found, the returned list is empty.
+    # records.  If no problems are found, the returned list is empty.
+    # Failures can have severity=warning or error.  By default, only
+    # errors are returned; if -warnings is given, then warnings are 
+    # included as well.
 
-    method onlock {} {
+    method onlock {{opt ""}} {
         try {
-            set f [::projectlib::dictlist new {code entity message}]
+            set f [sanity flist]
 
             $self OnLockChecker $f
 
@@ -69,23 +94,32 @@ snit::type ::athena::sanity {
             # $adb strategy checker $f 
             # $adb econ checker $f
 
-            return [$f dicts]
+            if {$opt eq "-warnings"} {
+                return [$f dicts]
+            } else {
+                return [$f find severity error]
+            }
         } finally {
             $f destroy
         }
     }
 
-    # OnLockCheck f
+    # FilterFailures f opt
+    #
+    # f     - a dictlist of failures
+    # opt
+
+    # OnLockChecker f
     #
     # f   - A dictlist for accumulating failure records.
     #
     # Does the sanity check, and returns a list of failure records.
     # (If the scenario is sane, the list will be empty.)
 
-    method OnLockCheck {f} {
+    method OnLockChecker {f} {
         # At least one neighborhood
         if {[llength [$adb nbhood names]] == 0} {
-            $f add nbhood.none nbhood "No neighborhoods are defined."
+            $f add error nbhood.none nbhood "No neighborhoods are defined."
         }
 
         # Neighborhoods are properly stacked
@@ -93,36 +127,36 @@ snit::type ::athena::sanity {
             SELECT n, obscured_by FROM nbhoods
             WHERE obscured_by != ''
         } {
-            $f add nbhood.obscured nbhood/$n \
+            $f add error nbhood.obscured nbhood/$n \
     "Neighborhood's reference point is obscured by another neighborhood."
         }
 
         # At least one force group
         if {[llength [$adb frcgroup names]] == 0} {
-            $f add frcgroup.none group "No force groups are defined."
+            $f add error frcgroup.none group "No force groups are defined."
         }
 
         # Each force group has an owning actor
         $adb eval {SELECT g FROM frcgroups_view WHERE a IS NULL} {
-            $f add frcgroup.notowned group/$g \
+            $f add error frcgroup.notowned group/$g \
                 "Force group has no owning actor."
         }
 
         # Each ORG group has an owning actor
         $adb eval {SELECT g FROM orggroups_view WHERE a IS NULL} {
-            $f add orggroup.notowned group/$g \
+            $f add error orggroup.notowned group/$g \
                 "Organization group has no owning actor."
         }
 
         # Each CAP has an owning actor
         $adb eval {SELECT k FROM caps WHERE owner IS NULL} {
-            $f add cap.notowned cap/$k \
+            $f add error cap.notowned cap/$k \
                 "Communications Asset Package (CAP) has no owning actor."            
         }
 
         # At least one civ group
         if {[llength [$adb civgroup names]] == 0} {
-            $f add civgroup.none group "No civilian groups are defined."
+            $f add error civgroup.none group "No civilian groups are defined."
         }
 
         # Population exceeds 0
@@ -131,7 +165,7 @@ snit::type ::athena::sanity {
         }]
 
         if {$basepop == 0} {
-            $f add civgroup.pop group \
+            $f add error civgroup.pop group \
                 "No civilian group has a base population greater than 0."
         }
 
@@ -147,7 +181,7 @@ snit::type ::athena::sanity {
         # that at least one neighborhood must have a group?
         foreach n [$adb nbhood names] {
             if {![info exists gInN($n)]} {
-                $f add nbhood.empty nbhood/$n \
+                $f add error nbhood.empty nbhood/$n \
                     "Neighborhood has no civilian groups."
             }
         }
@@ -161,7 +195,7 @@ snit::type ::athena::sanity {
             FROM civgroups JOIN nbhoods USING (n)
             WHERE local AND NOT sa_flag
         }]} {
-            $f add econ.noconsumers group \
+            $f add error econ.noconsumers group \
                 [normalize {
                     No consumers in local economy.  At least one civilian
                     group must be in a "local" neighborhood, must have
@@ -177,7 +211,7 @@ snit::type ::athena::sanity {
             SELECT DISTINCT n FROM plants_shares
         } {
             if {$n ni $localn} {
-                $f add plants.nonlocal nbhood/$n \
+                $f add error plants.nonlocal nbhood/$n \
            "GOODS Infrastructure (plants) present in non-local nbhood."
             }
         }

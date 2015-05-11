@@ -21,7 +21,7 @@ oo::class create ::projectlib::dictlist {
     #-------------------------------------------------------------------
     # Variables
 
-    variable keys    ;# The names of the required keys
+    variable defdict ;# The default dictionary value
     variable dicts   ;# The actual list of dicts
 
     #-------------------------------------------------------------------
@@ -36,7 +36,10 @@ oo::class create ::projectlib::dictlist {
     # of keys.
 
     constructor {spec_} {
-        set keys $spec_
+        foreach item $spec_ {
+            lassign $item key value
+            dict set defdict $key $value
+        }
         set dicts [list]
     }
 
@@ -70,6 +73,10 @@ oo::class create ::projectlib::dictlist {
     # the keys get the empty string; if it is too long, that's an error.
 
     method add {args} {
+        set dict $defdict
+
+        set keys [lrange [my keys] 0 [llength $args]-1]
+
         foreach key $keys value $args {
             if {$key eq ""} {
                 error "value with no matching key"
@@ -93,7 +100,7 @@ oo::class create ::projectlib::dictlist {
     # an error if "-key" doesn't match a defined key.
 
     method addwith {args} {
-        set dict [lzipper $keys]
+        set dict $defdict
 
         while {[llength $args] > 0} {
             set key [string trimleft [lshift args] -]
@@ -148,7 +155,38 @@ oo::class create ::projectlib::dictlist {
     # Returns the key names.
 
     method keys {} {
-        return $keys
+        return [dict keys $defdict]
     }
+
+    # find key value ?key value...?
+    #
+    # key   - One of the dictionary keys
+    # value - A value
+    #
+    # Returns a list of the dicts that match the keys and values.
+
+    method find {args} {
+        set result [list]
+        foreach dict $dicts {
+            set found 1
+            foreach {k v} $args {
+                if {[dict get $dict $k] ne $v} {
+                    set found 0
+                    break
+                }
+            }
+
+            if {$found} {
+                lappend result $dict
+            }
+        }
+
+        return $result
+    }
+
+
+
+
+
 
 }

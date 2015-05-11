@@ -108,6 +108,19 @@ test add-1.4 {add too many} -setup {
     cleanup
 } -result {value with no matching key}
 
+test add-1.5 {defaults are used} -setup {
+    ::projectlib::dictlist create dl {
+        {a 7}
+        {b 8}
+        {c 9}
+    }
+} -body {
+    dl add
+    lindex [dl dicts] 0
+} -cleanup {
+    cleanup
+} -result {a 7 b 8 c 9}
+
 #-------------------------------------------------------------------
 # addwith
 
@@ -148,6 +161,19 @@ test addwith-1.4 {add unknown key} -setup {
     cleanup
 } -result {invalid key: "nonesuch"}
 
+test addwith-1.5 {defaults are used} -setup {
+    ::projectlib::dictlist create dl {
+        {a 7}
+        {b 8}
+        {c 9}
+    }
+} -body {
+    dl addwith
+    lindex [dl dicts] 0
+} -cleanup {
+    cleanup
+} -result {a 7 b 8 c 9}
+
 #-------------------------------------------------------------------
 # size
 #
@@ -179,7 +205,7 @@ test set-1.1 {set list} -setup {
 #-------------------------------------------------------------------
 # format
 
-test set-1.1 {set list} -setup {
+test format-1.1 {format list} -setup {
     setup
 } -body {
     dl add 1 2 3
@@ -195,8 +221,56 @@ a  b  c
 }
 
 
+#-------------------------------------------------------------------
+# find
 
+test find-1.1 {find entries, no keys} -setup {
+    setup
+} -body {
+    dl add this 1 2
+    dl add that 3 4
+    dl add this 5 6
 
+    dl find
+} -cleanup {
+    cleanup
+} -result {{a this b 1 c 2} {a that b 3 c 4} {a this b 5 c 6}}
+
+test find-1.2 {find entries, one key} -setup {
+    setup
+} -body {
+    dl add this 1 2
+    dl add that 3 4
+    dl add this 5 6
+
+    dl find a this
+} -cleanup {
+    cleanup
+} -result {{a this b 1 c 2} {a this b 5 c 6}}
+
+test find-1.3 {find entries, two keys} -setup {
+    setup
+} -body {
+    dl add this 1 2
+    dl add that 3 4
+    dl add this 5 6
+
+    dl find a this c 2
+} -cleanup {
+    cleanup
+} -result {{a this b 1 c 2}}
+
+test find-1.4 {find nothing} -setup {
+    setup
+} -body {
+    dl add this 1 2
+    dl add that 3 4
+    dl add this 5 6
+
+    dl find a theother
+} -cleanup {
+    cleanup
+} -result {}
 
 #-------------------------------------------------------------------
 # Cleanup

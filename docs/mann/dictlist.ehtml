@@ -24,8 +24,21 @@ following commands.<p>
 
 Creates a new instance of dictlist(n) with the given command <i name>.
 The instance is for building a list of dictionaries, each of which
-matches the <i spec>.  At this time, the <i spec> is simply an ordered
-list of the names of the valid dictionary keys.<p>
+matches the <i spec>.<p>
+
+Each entry in the spec is a list of two items, the key name and the 
+default value of the key.  If the default value is omitted, the key's
+default value is the empty string.  The following code creates a dictlist
+whose entries will have three keys: <tt this> and <tt theother>, which default to the empty string, and <tt that>, which defaults to the number "5".<p>
+
+<example>
+set dl [dictlist create mylist {
+    this
+    {that 5}
+    theother
+}]
+
+</example>
 
 <defitem "dictlist new" {dictlist new ?<i spec>?}>
 
@@ -67,6 +80,15 @@ Resets the object's content to the empty list.<p>
 <defitem dicts {<i obj> dicts}>
 
 Returns the list of dictionaries.<p>
+
+<defitem find {<i obj> find <i key value> ?<i key value...>?}>
+
+Returns a list of the items in the dict list that exactly match the
+given keys and values.<p>
+
+<b TBD:> One could easily define a family of these: "glob" and "regexp" for
+glob and regexp matches, and "findone", "globone", and "regexpone" for
+finding the first item in the list, a la SQLite's "onecolumn" command.<p>
 
 <defitem format {<i obj> format ?<i options...>?}>
 
