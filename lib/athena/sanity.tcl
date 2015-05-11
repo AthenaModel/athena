@@ -91,8 +91,8 @@ snit::type ::athena::sanity {
 
             # $adb iom checker $f 
             # $adb curse checker $f
-            # $adb strategy checker $f 
-            # $adb econ checker $f
+            $adb strategy checker $f 
+            $adb econ checker $f
 
             if {$opt eq "-warnings"} {
                 return [$f dicts]

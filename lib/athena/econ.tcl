@@ -126,45 +126,20 @@ snit::type ::athena::econ {
     #-------------------------------------------------------------------
     # Sanity Check
 
-    # checker ?ht?
+    # checker f
     #
-    # ht - An htools buffer
+    # f   - A sanity failure dictlist; see sanity.tcl
     #
-    # Computes the sanity check, and formats the results into the buffer
-    # for inclusion indo an HTML page. Returns an esanity value, either
-    # OK or WARNING.
+    # Computes the sanity check, and places the results in the failure
+    # list.
 
-    method checker {{ht ""}} {
-        # FIRST, if econ is disabled, always return OK
+    method checker {f} {
+        # FIRST, if econ is disabled there's nothing to check.
         if {$info(state) eq "DISABLED"} {
-            return OK
+            return
         }
 
         # NEXT, perform the checks and return status
-        set edict [$self DoSanityCheck]
-
-        if {[dict size $edict] == 0} {
-            return OK
-        }
-
-        if {$ht ne ""} {
-            $self DoSanityReport $ht $edict
-        }
-
-        return ERROR
-    }
-
-    # DoSanityCheck
-    #
-    # Performs a sanity check on the various parts of the econ module. 
-    # This primarily checks key cells in the SAM to see if there is data
-    # that just doesn't make sense. Problems are reported back in a
-    # dict, if there are any.
-
-    method DoSanityCheck {} {
-        set edict [dict create]
-
-
         array set cells [$sam get]
 
         let URfrac {$cells(BaseUR) / 100.0}
@@ -174,62 +149,62 @@ snit::type ::athena::econ {
         # FIRST, turbulence cannot be greater than the unemployment rate
         if {$URfrac < $turFrac} {
             set pct [format "%.1f%%" [expr {$turFrac * 100.0}]]
-            dict append edict BaseUR \
+            $f add error econ.BaseUR econ/sam/BaseUR \
                 "The unemployment rate, $cells(BaseUR)%, must be greater than or equal to $pct (demog.turFrac)."
         }
 
         # NEXT, per capita demand for goods must be reasonable
         if {$cells(BA.goods.pop) < 1.0} {
-            dict append edict BA.goods.pop \
+            $f add error econ.BA.goods.pop econ/sam/BA.goods.pop \
                 "Annual per capita demand for goods is less than 1 goods basket."
         }
 
         # NEXT, base consumers must not be too low.
         if {$cells(BaseConsumers) < 100} {
-            dict append edict BaseConsumers \
+            $f add error econ.BaseConsumers econ/sam/BaseConsumers \
                 "Base number of consumers must not be less than 100."
         }
 
         # NEXT, no base prices can be zero.
         if {$cells(BP.goods) == 0.0} {
-            dict append edict BP.goods \
+            $f add error econ.BP.goods econ/sam/BP.goods \
                 "Base price of goods must not be zero."
         }
 
         if {$cells(BP.black) == 0.0} {
-            dict append edict BP.black \
+            $f add error econ.BP.black econ/sam/BP.black \
                 "Base price in black market must not be zero."
         }
 
         if {$cells(BP.pop) == 0.0} {
-            dict append edict BP.pop \
+            $f add error econ.BP.pop econ/sam/BP.pop \
                 "Base price in the pop sector must not be zero."
         }
 
         # The goods sector and pop sectors must have revenue and expenditures,
         # otherwise what's the point
         if {$cells(BREV.goods) == 0.0} {
-            dict append edict BREV.goods \
+            $f add error econ.BREV.goods econ/sam/BREV.goods \
                 "There must be revenue in the goods sector."
         }
 
         if {$cells(BREV.pop) == 0.0} {
-            dict append edict BREV.pop \
+            $f add error econ.BREV.pop econ/sam/BREV.pop \
                 "There must be revenue in the pop sector."
         }
 
         if {$cells(BEXP.goods) == 0.0} {
-            dict append edict BEXP.goods \
+            $f add error econ.BEXP.goods econ/sam/BEXP.goods \
                 "There must be expenditures in the goods sector."
         }
 
         if {$cells(BEXP.pop) == 0.0} {
-            dict append edict BEXP.pop \
+            $f add error econ.BEXP.pop econ/sam/BEXP.pop \
                 "There must be expenditures in the pop sector."
         }
 
         if {$cells(XT.pop.goods) == 0.0} {
-            dict append edict BX.pop.goods \
+            $f add error econ.BX.pop.goods econ/sam/BX.pop.goods \
                 "There must be a money flow from the goods sector to the pop sector."
         }
 
@@ -240,7 +215,7 @@ snit::type ::athena::econ {
         let f_goods {$cells(f.goods.goods) + $cells(f.pop.goods)}
 
         if {![Within $f_goods 1.0 0.001]} {
-            dict append edict f.goods \
+            $f add error econ.f.goods econ/sam/econ.f.goods \
                 "The Cobb-Douglas coefficients in the goods column do not sum to 1.0"
         }
 
@@ -251,7 +226,7 @@ snit::type ::athena::econ {
         }
 
         if {![Within $f_pop 1.0 0.001]} {
-            dict append edict f.pop \
+            $f add error econ.f.pop econ/sam/econ.f.pop \
                 "The Cobb-Douglas coefficients in the pop column do not sum to 1.0"
         }
 
@@ -262,12 +237,12 @@ snit::type ::athena::econ {
         }
 
         if {$f_region > 1.0} {
-            dict append edict f.region \
+            $f add error econ.f.region econ/sam/econ.f.region \
                 "The Cobb-Douglas coefficients in the region column sum to a number > 1.0"
         }
 
         if {$cells(BNR.black) < 0.0} {
-            dict append edict NR.black \
+            $f add error econ.NR.black econ/sam/econ.NR.black \
                 "Net Rev. in the black sector is negative. Either the feedstock price is too high or the unit price is too low."
         }
 
@@ -283,6 +258,8 @@ snit::type ::athena::econ {
     #
     # This method takes any errors from the sanity check and formats
     # them for output to the htools buffer.
+    #
+    # TBD: Move this to appserver_sanity.
 
     method DoSanityReport {ht edict} {
         $ht subtitle "Econ Model Warnings/Errors"

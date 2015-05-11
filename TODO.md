@@ -4,11 +4,42 @@
   - Tests for parmdict(n), smartdomain(n)
 - Athena(n)
   - Sanity Checking
-    - There are errors and warnings.
-    - On explicit check, you get both errors and warnings.
-    - On lock, you check only errors
-    - Flags passed to the sanity checker
-      - -strict: Do -strict checking, i.e., include warnings
+    - Conclusions
+      - Most checkers should return the severity, as now.
+      - The htools buffer is replaced with the dictlist.
+      - The prose gets moved to appserver, etc.
+      - Where multiple errors can be defined per entity, make them 
+        individual failure records.
+    - Checkers are used where?
+      - "adb sanity onlock check"
+        - Used by app_athenawb/app.tcl
+      - "adb econ check"
+        - Used by sanity.tcl
+      - "adb strategy check{er}"
+        - Used by strategybrowser.tcl
+        - Used by appserver_agent.tcl
+        - Used by appserver_sanity.tcl
+        - Used by sanity.tcl
+      - "adb curse checker" => OK or WARNING
+        - Used by cursebrowser.tcl
+        - Used by appserver_sanity.tcl
+        - Used by sanity.tcl
+      - "adb inject checker" => OK or WARNING
+        - Not used by appserver_sanity.tcl, included in curse results
+        - curse.tcl
+      - "adb iom checker" OK or WARNING
+        - Used by iombrowser.tcl
+        - Used by appserver_sanity.tcl
+        - Used by sanity.tcl
+      - "adb payload checker"  => OK or WARNING
+        - Not used by appserver_sanity.tcl, included in iom results
+        - Used by iom.tcl
+      - "adb hook checker"
+        - Used by appserver_sanity.tcl
+        - But there isn't any such command.  WTF!
+    - Before Merge:
+      - Move prose from checking modules to appserver_sanity.tcl
+      - Remove old routines from checking modules.
   - Optimize athena(n) creation, reset, load.  It's way slow.
   - Group athenadb(n) predicates under "is", e.g., "is busy".
   - Finish athena(n) man page!!!!!!!
