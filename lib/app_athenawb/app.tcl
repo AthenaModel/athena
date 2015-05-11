@@ -220,17 +220,13 @@ snit::type app {
         # NEXT, enable notifier(n) tracing
         notifier trace [myproc NotifierTrace]
 
-        # NEXT, specify temp SQL files
-        foreach file $guiviews {
-            lappend tempsqlfiles [file join $::app_athenawb::library sql $file]
-        }
-
         # NEXT, Create the working scenario RDB and initialize simulation
         # components
         athena create ::adb \
             -logdir       [workdir join log scenario]            \
             -executivecmd [mytypemethod DefineExecutiveCommands] \
-            -tempsqlfiles $tempsqlfiles
+            -tempsqlfiles \
+                [lmap x $guiviews {file join $::app_athenawb::library sql $x}]
 
         notifier bind ::adb <NewLog> ::app [mytypemethod NewScenarioLog]
 
