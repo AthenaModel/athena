@@ -67,6 +67,7 @@ snit::type ::athena::athena {
     delegate option -scratch      to adb
     delegate option -logdir       to adb
     delegate option -executivecmd to adb
+    delegate option -tempsqlfiles to adb
 
     #-------------------------------------------------------------------
     # Constructor
@@ -81,7 +82,8 @@ snit::type ::athena::athena {
             -subject      [from args -subject $self]   \
             -adbfile      [from args -adbfile ""]      \
             -executivecmd [from args -executivecmd ""] \
-            -logdir       [from args -logdir ""]
+            -logdir       [from args -logdir ""]       \
+            -tempsqlfiles [from args -tempsqlfiles ""]
 
         # NEXT, handle any additional options.
         $self configurelist $args

@@ -236,6 +236,14 @@ snit::type ::athena::athenadb {
     option -executivecmd \
         -readonly yes
 
+    # -tempsqlfiles filelist
+    #
+    # A list of files that contain temporary SQL views to be read.  This
+    # typically contains views needed by the Athena workbench GUI.
+
+    option -tempsqlfiles \
+        -default ""
+
     #-------------------------------------------------------------------
     # Instance Variables
 
@@ -523,7 +531,7 @@ snit::type ::athena::athenadb {
         $rdb function hook_narrative       [list $hook hook_narrative]
         $rdb function service              [mymethod Service]
 
-        # NEXT, define the GUI Views
+        # NEXT, define the Formatted Views
         $self RdbEvalFile fmt_scenario.sql       ;# Scenario Entities
         $self RdbEvalFile fmt_attitude.sql       ;# Attitude Area
         $self RdbEvalFile fmt_ground.sql         ;# Ground Area
@@ -531,6 +539,11 @@ snit::type ::athena::athenadb {
         $self RdbEvalFile fmt_curses.sql         ;# User-defined CURSEs Area
         $self RdbEvalFile fmt_entities.sql       ;# Library specific Area
         $self RdbEvalFile fmt_politics.sql       ;# Politics Area
+
+        # NEXT, read any temp SQL specified in the option
+        foreach sqlfile $options(-tempsqlfiles) {
+            $rdb eval [readfile $sqlfile]
+        }
     }
 
     # RdbEvalFile filename

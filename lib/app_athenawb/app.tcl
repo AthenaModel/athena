@@ -78,6 +78,21 @@ snit::type app {
         userMode normal
     }
 
+    # List of temporary SQL files to be read by athenadb
+
+    typevariable guiviews {
+        gui_scenario.sql
+        gui_attitude.sql
+        gui_econ.sql
+        gui_info.sql
+        gui_curses.sql
+        gui_politics.sql
+        gui_infrastructure.sql
+        gui_application.sql
+        gui_combat.sql
+        gui_ground.sql
+    }
+
 
     #-------------------------------------------------------------------
     # Group: Application Initialization
@@ -205,11 +220,17 @@ snit::type app {
         # NEXT, enable notifier(n) tracing
         notifier trace [myproc NotifierTrace]
 
+        # NEXT, specify temp SQL files
+        foreach file $guiviews {
+            lappend tempsqlfiles [file join $::app_athenawb::library sql $file]
+        }
+
         # NEXT, Create the working scenario RDB and initialize simulation
         # components
         athena create ::adb \
             -logdir       [workdir join log scenario]            \
-            -executivecmd [mytypemethod DefineExecutiveCommands]
+            -executivecmd [mytypemethod DefineExecutiveCommands] \
+            -tempsqlfiles $tempsqlfiles
 
         notifier bind ::adb <NewLog> ::app [mytypemethod NewScenarioLog]
 
@@ -250,8 +271,6 @@ snit::type app {
         if {[llength $argv] == 1} {
             app open [file normalize [lindex $argv 0]]
         } else {
-            # Define workbench specific SQL 
-            $type DefineTempSchema
 
             # This makes sure that the notifier events are sent that
             # initialize the user interface.
@@ -877,9 +896,6 @@ snit::type app {
         # NEXT, create a new, blank scenario
         ::adb reset
 
-        # Define workbench specific SQL 
-        $type DefineTempSchema
-
         app puts "New scenario created"
 
         # NEXT, Resync the app with the RDB.
@@ -911,9 +927,6 @@ snit::type app {
                 $result
             }
             return
-        } finally {
-            # Define workbench specific SQL 
-            $type DefineTempSchema
         }
 
         # NEXT, set the current working directory to the scenario
@@ -1068,34 +1081,6 @@ snit::type app {
         }
 
         adb unlock -rebase
-    }
-
-    # DefineTempSchema
-    #
-    # Reads in workbench specific temporary SQL views for use by the GUI 
-
-    typemethod DefineTempSchema {} {
-        $type AdbEvalFile gui_scenario.sql       ;# Scenario Entities
-        $type AdbEvalFile gui_attitude.sql       ;# Attitude Area
-        $type AdbEvalFile gui_econ.sql           ;# Economics Area
-        $type AdbEvalFile gui_info.sql           ;# Information Area
-        $type AdbEvalFile gui_curses.sql         ;# User-defined CURSEs Area
-        $type AdbEvalFile gui_politics.sql       ;# Politics Area
-        $type AdbEvalFile gui_infrastructure.sql ;# Infrastructure Area
-        $type AdbEvalFile gui_application.sql    ;# Workbench app Area
-        $type AdbEvalFile gui_combat.sql         ;# Combat 
-        $type AdbEvalFile gui_ground.sql         ;# Ground Area 
-    }
-
-    # AdbEvalFile
-    #
-    # filename   - An SQL file in the sql/ subdirectory
-    #
-    # Helper method that brings temporary workbench SQL views from filename 
-    # into the database
-
-    typemethod AdbEvalFile {filename} {
-        adb rdb eval [readfile [file join $::app_athenawb::library sql $filename]]
     }
 
     #-------------------------------------------------------------------
