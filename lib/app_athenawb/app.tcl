@@ -911,6 +911,9 @@ snit::type app {
                 $result
             }
             return
+        } finally {
+            # Define workbench specific SQL 
+            $type DefineTempSchema
         }
 
         # NEXT, set the current working directory to the scenario
@@ -919,9 +922,6 @@ snit::type app {
 
         # NEXT, log it.
         log normal app "Open Scenario: $filename"
-
-        # Define workbench specific SQL 
-        $type DefineTempSchema
 
         app puts "Opened Scenario [file tail $filename]"
 
