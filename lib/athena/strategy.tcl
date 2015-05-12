@@ -368,20 +368,24 @@ snit::type ::athena::strategy_manager {
     #-------------------------------------------------------------------
     # Strategy Sanity Check
 
-    # check
+    # checker ?f?
+    #
+    # f    - If given, a sanity.tcl failure dictlist object
     #
     # Performs the sanity check for all strategies, marking failing
     # blocks, tactics, and conditions as "invalid".
     #
     # Returns 1 if problems were found, and 0 otherwise.
-    
-    method check {} {
+    #
+    # If f is given, a record is created for each problem.
+
+    method checker {{f ""}} {
         set flag 0
 
         foreach agent [$adb agent names] {
             set s [$self getname $agent]
 
-            if {[dict size [$s check]] > 0} {
+            if {[dict size [$s check $f]] > 0} {
                 set flag 1
             }
         }
@@ -399,8 +403,10 @@ snit::type ::athena::strategy_manager {
     # Computes the sanity check, and formats the results into the buffer
     # for inclusion into an HTML page.  Returns an esanity value, either
     # OK or WARNING.
+    #
+    # TBD: Obsolete.  Remove when we're done.
 
-    method checker {{ht ""}} {
+    method oldchecker {{ht ""}} {
         # FIRST, check each strategy, saving results into a dictionary
         # by strategy name.
 
@@ -651,7 +657,9 @@ oo::class create ::athena::strategy {
     }
 
 
-    # check
+    # check ?f?
+    #
+    # f    - If given, a sanity.tcl failure dictlist object
     #
     # Sanity checks the strategy's blocks.  Returns a dictionary
     #
@@ -660,8 +668,11 @@ oo::class create ::athena::strategy {
     #
     # The dictionary will be empty if there are no sanity check failures.
     # Blocks that are disabled are skipped.
+    # 
+    # If f is given, a record is created for each problem.
 
-    method check {} {
+
+    method check {{f ""}} {
         set result [dict create]
 
         foreach block [my blocks] {
@@ -669,7 +680,7 @@ oo::class create ::athena::strategy {
                 continue
             }
 
-            set bcheck [$block check]
+            set bcheck [$block check $f]
 
             if {[dict size $bcheck] > 0} {
                 dict set result $block $bcheck

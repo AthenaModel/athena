@@ -627,7 +627,9 @@ oo::class create ::athena::block {
     #-------------------------------------------------------------------
     # Operations
 
-    # check
+    # check ?f?
+    #
+    # f    - If given, a sanity.tcl failure record dictlist object.
     #
     # Sanity checks the block's conditions and tactics, returning a 
     # nested dictionary of error messages.  Skips disabled conditions
@@ -643,8 +645,10 @@ oo::class create ::athena::block {
     #
     # If the block's state is not "disabled", it will be set to 
     # normal or invalid.
+    #
+    # Any problems found will be added to f, if it is given.
 
-    method check {} {
+    method check {{f ""}} {
         set result [dict create]
 
         foreach cond [my conditions] {
@@ -652,7 +656,7 @@ oo::class create ::athena::block {
                 continue
             }
 
-            set errdict [$cond check]
+            set errdict [$cond check $f]
             if {[dict size $errdict] > 0} {
                 dict set result conditions $cond $errdict
             }
@@ -663,7 +667,7 @@ oo::class create ::athena::block {
                 continue
             }
 
-            set errdict [$tactic check]
+            set errdict [$tactic check $f]
             if {[dict size $errdict] > 0} {
                 dict set result tactics $tactic $errdict
             }
