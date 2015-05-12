@@ -4,6 +4,28 @@
   - Tests for parmdict(n), smartdomain(n)
 - Athena(n)
   - Sanity Checking
+    - On pressing Check:
+      - Strategy Browser
+        - Does strategy sanity check
+        - strategy.tcl sends <Check>
+        - browser reloads, displaying results of check
+          - Browser automatically displays results no matter how check was
+            requested.
+        - Detail browser page is NOT loaded
+      - Curse Browser
+        - Does curse sanity check
+        - curse.tcl does NOT send <Check>
+        - Browser does not automatically reload, displaying results
+        - Detail browser page is loaded
+      - IOM Browser
+        - Does iom sanity check
+        - iom.tcl does NOT send <Check>
+        - Browser does not automatically reload, displaying results
+        - Detail browser page is loaded
+      - Hook Browser
+        - Has no check button
+        - hook.tcl provides no check
+        - sanity/hook is a useless page.      
     - Conclusions
       - Most checkers should return the severity, as now.
       - The htools buffer is replaced with the dictlist.
