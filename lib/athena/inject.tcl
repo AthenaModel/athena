@@ -88,41 +88,38 @@ snit::type ::athena::inject {
     #-------------------------------------------------------------------
     # Sanity Check
 
-    # checker ?ht?
+    # checker ?f?
     #
-    # ht - An htools buffer
+    # f    - If given, a sanity.tcl failure dictlist object
     #
-    # Computes the sanity check, and formats the results into the buffer
-    # for inclusion into an HTML page.  Returns an esanity value, either
-    # OK or WARNING.
+    # Computes the sanity check, returning an esanity value, either
+    # OK or WARNING.  If f is given, every error is added to it.
     #
     # Note: This checker is called from [iom checker], not from
     # [sanity *].
 
-    method checker {{ht ""}} {
-        set edict [$self DoSanityCheck]
+    method checker {{f ""}} {
+        set edict [$self DoSanityCheck $f]
 
         if {[dict size $edict] == 0} {
             return OK
         }
 
-        if {$ht ne ""} {
-            $self DoSanityReport $ht $edict
-        }
-
         return WARNING
     }
 
-    # DoSanityCheck
+    # DoSanityCheck ?f?
+    #
+    # f    - If given, a sanity.tcl failure dictlist object
     #
     # This routine does the actual sanity check, marking the inject
     # records in the RDB and putting error messages in a 
     # nested dictionary, curse_id -> inject_num -> errmsg.
     #
     # Returns the dictionary, which will be empty if there were no
-    # errors.
+    # errors.  If f is given, every error is added to it.
 
-    method DoSanityCheck {} {
+    method DoSanityCheck {{f ""}} {
         # FIRST, create the empty error dictionary.
         set edict [dict create]
 
@@ -147,6 +144,13 @@ snit::type ::athena::inject {
             if {$result ne ""} {
                 dict set edict $row(curse_id) $row(inject_num) $result
                 lappend badlist $row(curse_id) $row(inject_num)
+
+                if {$f ne ""} {
+                    $f add warning \
+                        inject.$row(inject_type) \
+                        inject/$row(curse_id)/$row(inject_num) \
+                        $result
+                }
             }
         }
 
