@@ -12,7 +12,9 @@
 #   Dave Hanks
 #
 # DESCRIPTION:
-#   /scenario: The smartdomain(n) for scenario data.
+#   This set of URLs are defined with the context of the /scenario 
+#   smartdomain(n) and return data related to actors found within a
+#   particular Arachne case.
 #
 #   Additional URLs are defined in domain/scenario_*.tcl.
 #
@@ -21,35 +23,96 @@
 #-------------------------------------------------------------------
 # General Content
 
-smarturl /scenario /{name}/actor/index.html {
-    Displays a list of actor entities, with links to the actual actors.
+smarturl /scenario /{case}/actor/index.html {
+    Displays a list of actor entities for <i>case</i>, with links to 
+    the actual actors.
 } {
-    # FIRST, do we have the scenario?
-    set name [string tolower $name]
+    # FIRST, validate scenario
+    set case [my ValidateCase $case]
 
-    if {$name ni [case names]} {
-        throw NOTFOUND "No such scenario: \"$name\""
-    }
+    hb page "Scenario '$case': Actors"
+    hb h1 "Scenario '$case': Actors"
 
-    hb page "Actors"
-    hb h1 "Actors"
-
-    hb para
+    my CaseNavBar $case
 
     hb table -headers {
-        "ID"
+        "ID" "Name" "Belief System" "Supports" "Income, $/week" "Funding Type"
+        "On Hand, $"
     } {
-        foreach actor [case with $name actor names] {
+        foreach actor [case with $case actor names] {
+            set adict [case with $case actor view $actor]
+            dict with adict {}
             hb tr {
-                hb td [case with $name actor get $actor longname]
+                hb td-with {
+                    hb iref /$case/actor/$id/index.html "$id"
+                }
+                hb td $longname
+                hb td $bsysname
+                hb td $supports
+                hb td $income
+                hb td $atype
+                hb td $cash_on_hand
             }
         }
     }
+
     hb para
 
     return [hb /page]
 }
 
+smarturl /scenario /{case}/actor/index.json {
+    Returns a JSON list of actor entities in the <i>case</i> specified.
+} {
+    set case [my ValidateCase $case]
+
+    set table [list]
+
+    foreach a [case with $case actor names] {
+        set adict [case with $case actor view $a]
+        dict set adict url "/scenario/$case/actor/$a/index.json"
+
+        lappend table $adict
+    }
+
+    return [js dictab $table]
+}
+
+smarturl /scenario /{case}/actor/{a}/index.html {
+    Displays data for a particular actor <i>a</i> in scenario <i>case</i>.
+} {
+    set case [my ValidateCase $case]
+
+    
+    if {$a ni [case with $case actor names]} {
+        throw NOTFOUND "No such actor: \"$a\""
+    }
+
+    set name [case with $case actor get $a longname]
+
+    hb page "Scenario '$case': Actor: $a"
+    hb h1 "Scenario '$case': Actor: $a"
+
+    my CaseNavBar $case 
+
+    hb para
+    return [hb /page]
+}
+
+smarturl /scenario /{case}/actor/{a}/index.json {
+    Returns JSON list of actor data for scenario <i>case</i> and actor 
+    <i>a</i>.
+} {
+    set case [my ValidateCase $case]
+
+    if {$a ni [case with $case actor names]} {
+        throw NOTFOUND "No such actor: \"$a\""
+    }
+
+    set adict [case with $case actor view $a]
+
+    return [js dictab [list $adict]]
+}
 
 
 

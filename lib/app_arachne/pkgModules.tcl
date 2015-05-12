@@ -51,7 +51,9 @@ source [file join $::app_arachne::library case.tcl            ]
 source [file join $::app_arachne::library js.tcl              ]
 
 # Smart domain handlers
-source [file join $::app_arachne::library domain debug.tcl          ]
-source [file join $::app_arachne::library domain scenario.tcl       ]
-source [file join $::app_arachne::library domain scenario_actor.tcl ]
+source [file join $::app_arachne::library domain debug.tcl             ]
+source [file join $::app_arachne::library domain scenario.tcl          ]
+source [file join $::app_arachne::library domain scenario_actor.tcl    ]
+source [file join $::app_arachne::library domain scenario_civgroup.tcl ]
+source [file join $::app_arachne::library domain scenario_frcgroup.tcl ]
 
