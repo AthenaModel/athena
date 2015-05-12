@@ -33,17 +33,9 @@ appserver module SANITY {
             text/html [myproc /sanity/ontick:html]          \
             "Simulation On-Tick sanity check report."
 
-        appserver register /sanity/hook {sanity/hook/?} \
-            text/html [myproc /sanity/hook:html]        \
-            "Sanity check report for Semantic Hooks."
-
         appserver register /sanity/iom {sanity/iom/?} \
             text/html [myproc /sanity/iom:html]       \
             "Sanity check report for IOMs and their payloads."
-
-        appserver register /sanity/strategy {sanity/strategy/?} \
-            text/html [myproc /sanity/strategy:html]            \
-            "Sanity check report for actor strategies."
 
         appserver register /sanity/curse {sanity/curse/?} \
             text/html [myproc /sanity/curse:html]            \
@@ -74,8 +66,40 @@ appserver module SANITY {
 
             ht para
             
-            adb sanity onlock report ::appserver::ht
+            set f   [athena::sanity flist]
+            set sev [adb sanity onlock $f]
+
+            switch -- $sev {
+                OK {
+                    ht putln {
+                        No problems were found; the scenario may be
+                        locked and time may be advanced.
+                    }
+                }
+                WARNING {
+                    ht putln {
+                        The scenario may be locked and time may be advanced,
+                        but the following problems were found and should
+                        be fixed.
+                    }
+
+                    FormatFailureList $f
+                }
+                ERROR {
+                    ht putln "<b>The scenario cannot be locked.</b>"
+                    ht putln {
+                        Entries marked "error" in the following list must
+                        be fixed before the scenario can be locked.
+                    }
+
+                    FormatFailureList $f
+                }
+            }
+
+            ht para
         }
+
+        $f destroy
 
         return [ht get]
     }
@@ -119,31 +143,6 @@ appserver module SANITY {
     }
 
     #-------------------------------------------------------------------
-    # /sanity/hook:   Hook sanity checks
-    #
-    # No match parameters
-
-    # /sanity/hook:html udict matchArray
-    #
-    # Formats the semantic hook sanity check report for
-    # /sanity/hook.  Note that sanity is checked by the 
-    # "hook sanity report" command; this command simply reports on the
-    # results.
-
-    proc /sanity/hook:html {udict matchArray} {
-        ht page "Sanity Check: Semantic Hook Topics" {
-            ht title "Semantic Hooks" "Sanity Check"
-
-            if {[adb hook checker ::appserver::ht] eq "OK"} {
-                ht putln "No problems were found."
-                ht para
-            }
-        }
-
-        return [ht get]
-    }
-
-    #-------------------------------------------------------------------
     # /sanity/iom: IOM sanity check reports
     #
     # No match parameters
@@ -168,32 +167,6 @@ appserver module SANITY {
         return [ht get]
     }
 
-
-    #-------------------------------------------------------------------
-    # /sanity/strategy:  Strategy Sanity Check reports
-    #
-    # No match parameters
-
-    # /sanity/strategy:html udict matchArray
-    #
-    # Formats the strategy sanity check report for
-    # /sanity/strategy.  Note that sanity is checked by the
-    # "strategy sanity report" command; this command simply reports on the
-    # results.
-
-    proc /sanity/strategy:html {udict matchArray} {
-        ht page "Sanity Check: Actors' Strategies" {
-            ht title "Actors' Strategies" "Sanity Check"
-            
-            if {[adb strategy checker ::appserver::ht] eq "OK"} {
-                ht putln "No problems were found."
-                ht para
-            }
-        }
-
-        return [ht get]
-    }
-
     #-------------------------------------------------------------------
     # /sanity/curse: CURSE sanity check reports
     #
@@ -208,7 +181,7 @@ appserver module SANITY {
 
     proc /sanity/curse:html {udict matchArray} {
         ht page "Sanity Check: CURSEs" {
-            ht title "CURSEs" "Sanity Check"
+        ht title "CURSEs" "Sanity Check"
             
             if {[adb curse checker ::appserver::ht] eq "OK"} {
                 ht putln "No problems were found."
@@ -217,6 +190,40 @@ appserver module SANITY {
         }
 
         return [ht get]
+    }
+
+    #-------------------------------------------------------------------
+    # Helpers
+
+    # FormatFailureList f
+    #
+    # f   - A [sanity flist] object
+    #
+    # formats the failure list as a table.
+
+    proc FormatFailureList {f} {
+        ht table {"Severity" "Code" "Entity" "Message"} {
+            foreach dict [$f dicts] {
+                dict with dict {}
+
+                ht tr {
+                    ht td left { 
+                        if {$severity eq "error"} {
+                            set cls error
+                        } else {
+                            set cls ""
+                        }
+
+                        ht span $cls {
+                            ht put [esanity longname $severity] 
+                        }
+                    }
+                    ht td left { ht put $code                        }
+                    ht td left { ht link /app/$entity $entity        }
+                    ht td left { ht put $message                     }
+                }
+            }
+        }
     }
 
 }

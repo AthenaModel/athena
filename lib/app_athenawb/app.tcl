@@ -987,7 +987,7 @@ snit::type app {
         require {[adb idle] && [adb unlocked]} \
             "The scenario cannot be locked in this state."
 
-        set sev [adb sanity onlock check]
+        set sev [adb sanity onlock]
  
         if {$sev eq "WARNING"} {
             app show /app/sanity/onlock

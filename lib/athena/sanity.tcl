@@ -75,39 +75,53 @@ snit::type ::athena::sanity {
     #-------------------------------------------------------------------
     # On-lock Sanity check
 
-    # onlock ?-warnings?
+    # onlock ?f?
     #
-    # Does a sanity check of the model and returns a list of failure
-    # records.  If no problems are found, the returned list is empty.
-    # Failures can have severity=warning or error.  By default, only
-    # errors are returned; if -warnings is given, then warnings are 
-    # included as well.
+    # f    - If given, a [sanity flist] object
+    #
+    # Does a sanity check of the model.  Returns OK, WARNING, or ERROR,
+    # depending on the maximum severity level of any found problems.
+    # If f is given, problems are added to it.
 
-    method onlock {{opt ""}} {
+    method onlock {{flist ""}} {
+        set f [::athena::sanity flist]
+
         try {
-            set f [sanity flist]
-
             $self OnLockChecker $f
-
-            $adb iom checker $f 
+            $adb iom checker $f
             $adb curse checker $f
-            $adb strategy checker $f 
+            $adb strategy checker $f
             $adb econ checker $f
 
-            if {$opt eq "-warnings"} {
-                return [$f dicts]
-            } else {
-                return [$f find severity error]
+            if {$flist ne ""} {
+                $flist set [$f dicts]
             }
+
+            return [$self GetSeverity $f]
         } finally {
             $f destroy
         }
     }
 
-    # FilterFailures f opt
+    # GetSeverity f
     #
-    # f     - a dictlist of failures
-    # opt
+    # f   - A [sanity flist] object.
+    #
+    # Determines the severity based on the content of the flist.
+
+    method GetSeverity {f} {
+        set sev OK
+
+        foreach dict [$f dicts] {
+            set dsev [dict get $dict severity]
+            if {[esanity gt $dsev $sev]} {
+                set sev [string toupper $dsev]
+            }
+        }
+
+        return $sev
+    }
+
 
     # OnLockChecker f
     #
@@ -218,52 +232,6 @@ snit::type ::athena::sanity {
 
         return
     }
-
-
-
-    # onlock_report ht
-    # 
-    # ht   - An htools buffer.
-    #
-    # OBSOLETE!
-    # Computes the sanity check, and formats the results into the 
-    # ht buffer for inclusion in an HTML page.  This command can
-    # presume that the buffer is already initialized and ready to
-    # receive the data.
-
-    method onlock_report {ht} {
-        # FIRST, do a check and find out what kind of problems we have.
-        set severity [$self onlock check]
-
-        # NEXT, put an appropriate message at the top of the page.  
-        # If we are OK, there's no need to add anything else.
-
-        if {$severity eq "OK"} {
-            $ht putln "No problems were found."
-            return
-        } elseif {$severity eq "WARNING"} {
-            $ht putln {
-                <b>The on-lock sanity check has failed with one or more
-                warnings</b>, as listed below.  Athena has marked the problem
-                objects (e.g., tactics, IOM payloads, etc.) invalid;
-                the scenario can be locked, but in a degraded state.
-            }
-
-            $ht para
-        } else {
-            $ht putln {
-                <b>The on-lock sanity check has failed with one or more
-                serious errors,</b> as listed below.  Therefore, the 
-                scenario cannot be locked.  Fix the errors, and try again.
-            }
-
-            $ht para
-        }
-
-        # NEXT, redo the checks, recording all of the problems.
-        $self DoOnLockCheck $ht
-    }
-
 
     #-------------------------------------------------------------------
     # On-Tick Sanity Check
