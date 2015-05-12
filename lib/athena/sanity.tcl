@@ -75,15 +75,14 @@ snit::type ::athena::sanity {
     #-------------------------------------------------------------------
     # On-lock Sanity check
 
-    # onlock ?f?
+    # onlock
     #
-    # f    - If given, a [sanity flist] object
-    #
-    # Does a sanity check of the model.  Returns OK, WARNING, or ERROR,
+    # Does a sanity check of the model.  Returns a list of two items
+    # {OK|WARNING|ERROR failurelist}, where the failure list is a 
+    # list of failure dictionaries (see above).
     # depending on the maximum severity level of any found problems.
-    # If f is given, problems are added to it.
 
-    method onlock {{flist ""}} {
+    method onlock {} {
         set f [::athena::sanity flist]
 
         try {
@@ -93,11 +92,7 @@ snit::type ::athena::sanity {
             $adb strategy checker $f
             $adb econ checker $f
 
-            if {$flist ne ""} {
-                $flist set [$f dicts]
-            }
-
-            return [$self GetSeverity $f]
+            return [list [$self GetSeverity $f] [$f dicts]]
         } finally {
             $f destroy
         }

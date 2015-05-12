@@ -66,10 +66,9 @@ appserver module SANITY {
 
             ht para
             
-            set f   [athena::sanity flist]
-            set sev [adb sanity onlock $f]
+            lassign [adb sanity onlock] severity flist
 
-            switch -- $sev {
+            switch -- $severity {
                 OK {
                     ht putln {
                         No problems were found; the scenario may be
@@ -83,7 +82,7 @@ appserver module SANITY {
                         be fixed.
                     }
 
-                    FormatFailureList $f
+                    FormatFailureList $flist
                 }
                 ERROR {
                     ht putln "<b>The scenario cannot be locked.</b>"
@@ -92,14 +91,13 @@ appserver module SANITY {
                         be fixed before the scenario can be locked.
                     }
 
-                    FormatFailureList $f
+                    FormatFailureList $flist
                 }
+                default { error "Unknown severity: \"$severity\""}
             }
 
             ht para
         }
-
-        $f destroy
 
         return [ht get]
     }
@@ -117,29 +115,52 @@ appserver module SANITY {
     # results.
 
     proc /sanity/ontick:html {udict matchArray} {
-        ht page "Sanity Check: On-Tick" {
-            ht title "On-Tick" "Sanity Check"
+        ht page "Sanity Check: On-Tick"
+        ht title "On-Tick" "Sanity Check"
 
+        ht putln {
+            Athena checks the scenario's sanity before
+            advancing time at each time tick.
+        }
+
+        ht para
+
+        if {[adb state] eq "PREP"} {
             ht putln {
-                Athena checks the scenario's sanity before
-                advancing time at each time tick.
+                This check cannot be performed until after the scenario
+                is locked.
             }
 
             ht para
-
-            if {[adb state] ne "PREP"} {
-                adb sanity ontick report ::appserver::ht
-            } else {
-                ht putln {
-                    This check cannot be performed until after the scenario
-                    is locked.
-                }
-
-                ht para
-            }
+            return [ht /page]
         }
 
-        return [ht get]
+
+        lassign [adb sanity ontick] severity flist
+
+        switch -- $severity {
+            OK {
+                ht putln {
+                    No problems were found; the scenario may be
+                    locked and time may continue to advance.
+                }
+                ht para
+            }
+            ERROR {
+                ht putln "<b>Time cannot be advanced.</b>"
+                ht putln {
+                    The following problems prevent time from
+                    advancing.
+                }
+                ht para
+
+                FormatFailureList $flist
+            }
+            default { error "Unknown severity: \"$severity\""}
+        }
+
+
+        return [ht /page]
     }
 
     #-------------------------------------------------------------------
@@ -157,10 +178,26 @@ appserver module SANITY {
     proc /sanity/iom:html {udict matchArray} {
         ht page "Sanity Check: IOMs" {
             ht title "IOMs" "Sanity Check"
-            
-            if {[adb iom checker ::appserver::ht] eq "OK"} {
-                ht putln "No problems were found."
-                ht para
+
+            lassign [adb iom checker] severity flist
+
+            switch -- $severity {
+                OK {
+                    ht putln "No problems were found."
+                    ht para
+                }
+                WARNING {
+                    $ht putln {
+                        <b>One or more IOMs failed their sanity checks
+                        and have been marked invalid.  Please fix or 
+                        delete them.<p>
+
+                        The specific problems are as follows:<p>
+                    }
+
+                    FormatFailureList $flist
+                }
+                default { error "Unknown severity: \"$severity\""}
             }
         }
 
@@ -181,11 +218,27 @@ appserver module SANITY {
 
     proc /sanity/curse:html {udict matchArray} {
         ht page "Sanity Check: CURSEs" {
-        ht title "CURSEs" "Sanity Check"
-            
-            if {[adb curse checker ::appserver::ht] eq "OK"} {
-                ht putln "No problems were found."
-                ht para
+            ht title "CURSEs" "Sanity Check"
+
+            lassign [adb curse checker] severity flist
+
+            switch -- $severity {
+                OK {
+                    ht putln "No problems were found."
+                    ht para
+                }
+                WARNING {
+                    $ht putln {
+                        <b>One or more CURSEs failed their sanity checks
+                        and have been marked invalid.  Please fix or 
+                        delete them.<p>
+
+                        The specific problems are as follows:<p>
+                    }
+
+                    FormatFailureList $flist
+                }
+                default { error "Unknown severity: \"$severity\""}
             }
         }
 
@@ -195,15 +248,15 @@ appserver module SANITY {
     #-------------------------------------------------------------------
     # Helpers
 
-    # FormatFailureList f
+    # FormatFailureList flist
     #
-    # f   - A [sanity flist] object
+    # flist  - A list of sanity failure dictionaries.
     #
-    # formats the failure list as a table.
+    # Formats the failure list as a table.
 
-    proc FormatFailureList {f} {
+    proc FormatFailureList {flist} {
         ht table {"Severity" "Code" "Entity" "Message"} {
-            foreach dict [$f dicts] {
+            foreach dict $flist {
                 dict with dict {}
 
                 ht tr {
