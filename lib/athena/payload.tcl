@@ -84,41 +84,38 @@ snit::type ::athena::payload {
     #-------------------------------------------------------------------
     # Sanity Check
 
-    # checker ?ht?
+    # checker ?f?
     #
-    # ht - An htools buffer
+    # f    - If given, a sanity.tcl failure dictlist object
     #
-    # Computes the sanity check, and formats the results into the buffer
-    # for inclusion into an HTML page.  Returns an esanity value, either
-    # OK or WARNING.
+    # Computes the sanity check, and returns an esanity value, either
+    # OK or WARNING.  If f is given, any failures are added to it.
     #
     # Note: This checker is called from [iom checker], not from
     # [sanity *].
 
-    method checker {{ht ""}} {
-        set edict [$self DoSanityCheck]
+    method checker {{f ""}} {
+        set edict [$self DoSanityCheck $f]
 
         if {[dict size $edict] == 0} {
             return OK
         }
 
-        if {$ht ne ""} {
-            $self DoSanityReport $ht $edict
-        }
-
         return WARNING
     }
 
-    # DoSanityCheck
+    # DoSanityCheck f
+    #
+    # f    - If given, a sanity.tcl failure dictlist object
     #
     # This routine does the actual sanity check, marking the payload
     # records in the RDB and putting error messages in a 
     # nested dictionary, iom_id -> payload_num -> errmsg.
     #
     # Returns the dictionary, which will be empty if there were no
-    # errors.
+    # errors.  If f is not "", any failures will be added to it.
 
-    method DoSanityCheck {} {
+    method DoSanityCheck {f} {
         # FIRST, create the empty error dictionary.
         set edict [dict create]
 
@@ -143,6 +140,13 @@ snit::type ::athena::payload {
             if {$result ne ""} {
                 dict set edict $row(iom_id) $row(payload_num) $result
                 lappend badlist $row(iom_id) $row(payload_num)
+
+                if {$f ne ""} {
+                    $f add warning \
+                        payload.$row(payload_type) \
+                        payload/$row(iom_id)/$row(payload_num) \
+                        $result
+                }
             }
         }
 

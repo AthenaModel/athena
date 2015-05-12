@@ -192,33 +192,30 @@ snit::type ::athena::iom {
     #-------------------------------------------------------------------
     # Sanity Check
 
-    # checker ?ht?
+    # checker ?f?
     #
-    # ht - An htools buffer
+    # f    - If given, a sanity.tcl failure dictlist object
     #
-    # Computes the sanity check, and formats the results into the buffer
-    # for inclusion into an HTML page.  Returns an esanity value, either
-    # OK or WARNING.
+    # Computes the sanity check, and returns an esanity value, either
+    # OK or WARNING.  If f is given, any failures are added to it.
 
-    method checker {{ht ""}} {
+    method checker {{f ""}} {
         # FIRST, do the payload check.
-        set psev [$adb payload checker $ht]
+        set psev [$adb payload checker $f]
         assert {$psev ne "ERROR"}
 
-        set edict [$self DoSanityCheck]
+        set edict [$self DoSanityCheck $f]
 
         if {$psev eq "OK" && [dict size $edict] == 0} {
             return OK
-        }
-
-        if {$ht ne ""} {
-            $self DoSanityReport $ht $edict
         }
         
         return WARNING
     }
 
-    # DoSanityCheck
+    # DoSanityCheck f
+    #
+    # f    - If given, a sanity.tcl failure dictlist object
     #
     # This routine does the actual sanity check, marking the IOM
     # records in the RDB and putting error messages in a 
@@ -229,9 +226,13 @@ snit::type ::athena::iom {
     # run.
     #
     # Returns the dictionary, which will be empty if there were no
-    # errors.
+    # errors.  If f is not "", any failures will be added to it.
 
-    method DoSanityCheck {} {
+    method DoSanityCheck {f} {
+        if {$f eq ""} {
+            set f echo
+        }
+
         # FIRST, create the empty error dictionary.
         set edict [dict create]
 
@@ -259,6 +260,9 @@ snit::type ::athena::iom {
             if {$num == 0} {
                 dict lappend edict $iom_id "IOM has no valid payloads."
                 ladd badlist $iom_id
+
+                $f add warning iom.nopayloads iom/$iom_id \
+                    "IOM has no valid payloads."
             }
         }
 
@@ -270,6 +274,9 @@ snit::type ::athena::iom {
         } {
             dict lappend edict $iom_id "IOM has no semantic hook."
             ladd badlist $iom_id
+
+            $f add warning iom.nohook iom/$iom_id \
+                "IOM has no semantic hook."
         }
 
         # IOMs with hooks with no valid hook_topics
@@ -285,6 +292,9 @@ snit::type ::athena::iom {
                 dict lappend edict $iom_id \
                     "IOM's semantic hook has no valid topics."
                 ladd badlist $iom_id
+
+                $f add warning iom.notopics iom/$iom_id \
+                    "IOM's semantic hook has no valid topics."
             }
         }
         

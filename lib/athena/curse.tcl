@@ -334,7 +334,7 @@ snit::type ::athena::curse {
         return WARNING
     }
 
-    # DoSanityCheck ?f?
+    # DoSanityCheck f
     #
     # f    - If given, a sanity.tcl failure dictlist object
     #

@@ -89,7 +89,7 @@ snit::type ::athena::sanity {
 
             $self OnLockChecker $f
 
-            # $adb iom checker $f 
+            $adb iom checker $f 
             $adb curse checker $f
             $adb strategy checker $f 
             $adb econ checker $f
