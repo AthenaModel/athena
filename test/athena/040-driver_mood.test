@@ -231,14 +231,14 @@ MOOD-1-2 SHIA JOE  has control
     } -cleanup {
         cleanup
     } -result {
-Civilian group <a href="my://app/group/SHIA">SHIA's</a>
+Civilian group <a href="/app/group/SHIA">SHIA's</a>
 mood has changed by more than 5.0 points
 since the last shift in the control of
-neighborhood <a href="my://app/nbhood/N1">N1</a>.
+neighborhood <a href="/app/nbhood/N1">N1</a>.
 SHIA's mood was 50.0,
 and is now 30.0.
 Neighborhood N1 has been 
-controlled by actor <a href="my://app/actor/JOE">JOE</a>
+controlled by actor <a href="/app/actor/JOE">JOE</a>
 since 2000W11.<p>
     }
     
@@ -260,10 +260,10 @@ since 2000W11.<p>
     } -cleanup {
         cleanup
     } -result {
-Civilian group <a href="my://app/group/SHIA">SHIA's</a>
+Civilian group <a href="/app/group/SHIA">SHIA's</a>
 mood has changed by more than 5.0 points
 since the last shift in the control of
-neighborhood <a href="my://app/nbhood/N1">N1</a>.
+neighborhood <a href="/app/nbhood/N1">N1</a>.
 SHIA's mood was 50.0,
 and is now 30.0.
 Neighborhood N1 has been 

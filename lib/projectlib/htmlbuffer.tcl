@@ -203,6 +203,7 @@ oo::class create ::projectlib::htmlbuffer {
 
     # tag tag ?options...?
     #
+    # tag     - An HTML tag name
     # options - Tcl-style option list
     #
     # Puts the tag into the buffer, converting the options to attributes.
@@ -222,6 +223,7 @@ oo::class create ::projectlib::htmlbuffer {
 
     # tagln tag ?options...?
     #
+    # tag     - An HTML tag name
     # options - Tcl-style option list
     #
     # Like tag, but begins on a new line.
@@ -232,9 +234,11 @@ oo::class create ::projectlib::htmlbuffer {
         my put ">"
     }
 
-    # wrap tag text ?options...?
+    # wrap tag ?options...? text 
     #
+    # tag     - An HTML tag name
     # options - Tcl-style option list
+    # text    - The text to wrap in the tag
     #
     # Puts the tag into the buffer, wrapping the given text, and 
     # converting the options to attributes.  E.g., 
@@ -245,19 +249,23 @@ oo::class create ::projectlib::htmlbuffer {
     #
     #    <title>My Title</title>
 
-    method wrap {tag text args} {
+    method wrap {tag args} {
+        set text [my PopOdd args]
         my tag $tag {*}$args
         my put $text
         my put </$tag>
     }
 
-    # wrapln tag text ?options...?
+    # wrapln tag ?options...? text 
     #
+    # tag     - An HTML tag name
     # options - Tcl-style option list
+    # text    - The text to wrap in the tag
     #
     # Like wrap, but begins on a new line.
 
-    method wrapln {tag text args} {
+    method wrapln {tag args} {
+        set text [my PopOdd args]
         my tagln $tag {*}$args
         my put $text
         my put </$tag>
@@ -358,8 +366,7 @@ oo::class create ::projectlib::htmlbuffer {
     # Returns an HTML H1 title.
 
     method h1 {args} {
-        set title [my PopOdd args]
-        my wrapln h1 $title {*}$args
+        my wrapln h1 {*}$args
     }
 
     # h2 ?options? title
@@ -367,11 +374,10 @@ oo::class create ::projectlib::htmlbuffer {
     # options - Attribute options
     # title   - A title string
     #
-    # Returns an HTML H1 title.
+    # Returns an HTML H2 title.
 
     method h2 {args} {
-        set title [my PopOdd args]
-        my wrapln h2 $title {*}$args
+        my wrapln h2 {*}$args
     }
 
     # h3 ?options? title
@@ -379,11 +385,10 @@ oo::class create ::projectlib::htmlbuffer {
     # options - Attribute options
     # title   - A title string
     #
-    # Returns an HTML H1 title.
+    # Returns an HTML H3 title.
 
     method h3 {args} {
-        set title [my PopOdd args]
-        my wrapln h3 $title {*}$args
+        my wrapln h3 {*}$args
     }
 
     # h4 ?options? title
@@ -391,11 +396,10 @@ oo::class create ::projectlib::htmlbuffer {
     # options - Attribute options
     # title   - A title string
     #
-    # Returns an HTML H1 title.
+    # Returns an HTML H4 title.
 
     method h4 {args} {
-        set title [my PopOdd args]
-        my wrapln h4 $title {*}$args
+        my wrapln h4 {*}$args
     }
 
     # h5 ?options? title
@@ -403,11 +407,10 @@ oo::class create ::projectlib::htmlbuffer {
     # options - Attribute options
     # title   - A title string
     #
-    # Returns an HTML H1 title.
+    # Returns an HTML H5 title.
 
     method h5 {args} {
-        set title [my PopOdd args]
-        my wrapln h5 $title {*}$args
+        my wrapln h5 {*}$args
     }
 
     # h6 ?options? title
@@ -415,11 +418,10 @@ oo::class create ::projectlib::htmlbuffer {
     # options - Attribute options
     # title   - A title string
     #
-    # Returns an HTML H1 title.
+    # Returns an HTML H6 title.
 
     method h6 {args} {
-        set title [my PopOdd args]
-        my wrapln h6 $title {*}$args
+        my wrapln h6 {*}$args
     }
 
 
@@ -465,7 +467,7 @@ oo::class create ::projectlib::htmlbuffer {
         set text [my PopOdd args]
 
         if {$text ne ""} {
-            my wrap pre [my escape $text] {*}$args
+            my wrap pre {*}$args $text
         } else {
             my tag pre {*}$args
         }
@@ -506,7 +508,7 @@ oo::class create ::projectlib::htmlbuffer {
         set text [my PopOdd args]
 
         if {$text ne ""} {
-            my wrap span $text {*}$args
+            my wrap span {*}$args $text 
         } else {
             my tag span {*}$args
         }
@@ -549,7 +551,7 @@ oo::class create ::projectlib::htmlbuffer {
     method xref {url args} {
         set label [my PopOdd args label]
 
-        my wrap a $label -href $url {*}$args
+        my wrap a -href $url {*}$args $label 
     }
 
     # iref suffix ?options? label
@@ -657,7 +659,7 @@ oo::class create ::projectlib::htmlbuffer {
         set text [my PopOdd args]
 
         if {$text ne ""} {
-            my wrapln li $text {*}$args
+            my wrapln li {*}$args $text 
         } else {
             my tagln li {*}$args
         }
@@ -727,7 +729,7 @@ oo::class create ::projectlib::htmlbuffer {
         set text [my PopOdd args]
 
         if {$text ne ""} {
-            my wrapln dt $text {*}$args
+            my wrapln dt {*}$args $text
         } else {
             my tagln dt {*}$args
         }
@@ -754,7 +756,7 @@ oo::class create ::projectlib::htmlbuffer {
         set text [my PopOdd args]
 
         if {$text ne ""} {
-            my wrapln dd $text {*}$args
+            my wrapln dd {*}$args $text 
         } else {
             my tagln dd {*}$args
         }
@@ -825,7 +827,7 @@ oo::class create ::projectlib::htmlbuffer {
         if {[llength $headers] > 0} {
             my tagln tr -class header -align left
             foreach header $headers {
-                my wrapln th $header -align left
+                my wrapln th -align left $header 
             }
             my /tr
         }
@@ -904,7 +906,7 @@ oo::class create ::projectlib::htmlbuffer {
         set align [optval args -align left]
 
         if {$text ne ""} {
-            my wrapln td $text -align $align {*}$args
+            my wrapln td -align $align {*}$args $text 
         } else {
             my tagln td {*}$args
         }
@@ -1058,7 +1060,7 @@ oo::class create ::projectlib::htmlbuffer {
         set text [my PopOdd args]
 
         if {$text ne ""} {
-            my wrapln label $text -for $name {*}$args
+            my wrapln label -for $name {*}$args $text
         } else {
             my tagln label -for $name {*}$args
         }
@@ -1084,7 +1086,7 @@ oo::class create ::projectlib::htmlbuffer {
     method textarea {name args} {
         set text [my PopOdd args]
 
-        my wrapln textarea $text -name $name {*}$args
+        my wrapln textarea -name $name {*}$args $text 
     }
 
     # submit ?options? ?label?
@@ -1122,6 +1124,67 @@ oo::class create ::projectlib::htmlbuffer {
     method hidden {name value args} {
         my tagln input -type hidden -name $name -value $value {*}$args
     }
+
+    # enum name ?options? list
+    #
+    # options  - Attribute options, plus below
+    # list     - List of choices
+    #
+    # Special Options:
+    #
+    # -selected value   - Indicates that the <option> with the
+    #                     given value is to be selected initially.
+    #
+    # Inserts a <select> element into the current form.
+
+    method enum {name args} {
+        set list [my PopOdd args]
+        set selected [optval args -selected]
+
+        my tagln select -name $name {*}$args
+        foreach item $list {
+            if {$item eq $selected} {
+                my wrapln option -value $item -selected "" $item
+            } else {
+                my wrapln option -value $item $item 
+            }
+        }
+        my tagln /select
+    }
+
+    # enumlong name ?options? namedict
+    #
+    # options  - Attribute options
+    # namedict - List of choices and labels
+    #
+    # Inserts a <select> element into the current form.
+
+    method enumlong {name args} {
+        set namedict [my PopOdd args]
+        set selected [optval args -selected]
+
+        my tagln select -name $name {*}$args
+        foreach {item longname} $namedict {
+            if {$item eq $selected} {
+                my wrapln option -value $item -selected "" $longname
+            } else {
+                my wrapln option -value $item $longname
+            }
+        }
+        my tagln /select
+    }
+
+    # radio name ?options? value
+    #
+    # name    - Name of the collection of radio inputs
+    # options - Attribute options
+    # value   - Value for this input
+
+    method radio {name args} {
+        set value [my PopOdd args]
+        my tagln input -type radio -name $name -value $value {*}$args
+    }
+
 
     #-------------------------------------------------------------------
     # SQL Queries
@@ -1244,9 +1307,14 @@ oo::class create ::projectlib::htmlbuffer {
         while {[llength $optlist] > 0} {
             set opt [lshift optlist]
 
-            set opt [string trimleft $opt -]
+            set attr [string trimleft $opt -]
+            set value [lshift optlist]
 
-            my put " $opt=\"[lshift optlist]\""
+            if {$value ne ""} {
+                my put " $attr=\"$value\""
+            } else {
+                my put " $attr"
+            }
         }
     }
 

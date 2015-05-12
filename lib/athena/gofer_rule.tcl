@@ -378,7 +378,7 @@ oo::class create ::athena::gofer_rule {
 
     method nonempty {glist} {
         array set pop [$adb eval {
-            SELECT g, population FROM gui_civgroups
+            SELECT g, population FROM fmt_civgroups
         }]
 
         set result [list]

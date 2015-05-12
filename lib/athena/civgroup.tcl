@@ -187,7 +187,7 @@ snit::type ::athena::civgroup {
     # Retrieves a view dictionary for the group.
 
     method view {g {tag ""}} {
-        return [dbget $adb gui_civgroups g $g]
+        return [dbget $adb fmt_civgroups g $g]
     }
 
     # check lfp/sa_flag lfp sa_flag

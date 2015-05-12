@@ -379,7 +379,7 @@ snit::type ::athena::unit {
 
     meta form {
         rcc "Unit" -for u
-        dbkey u -table gui_units -keys u \
+        dbkey u -table fmt_units -keys u \
             -loadcmd {$order_ keyload u *}
 
         rcc "Location" -for location

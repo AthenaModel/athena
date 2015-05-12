@@ -115,7 +115,7 @@ snit::type ::athena::actor {
     # Retrieves a view dictionary for the actor.
 
     method view {a {tag ""}} {
-        return [dbget $adb gui_actors a $a]
+        return [dbget $adb fmt_actors a $a]
     }
 
 
@@ -531,7 +531,7 @@ snit::type ::athena::actor {
         # Use explicit width so that long labels don't wrap.  Ugh!
         rc "Select Actor:" -for a -width 2in
         c
-        dbkey a -table gui_actors -keys a \
+        dbkey a -table fmt_actors -keys a \
             -loadcmd {$order_ keyload a *} 
         
         rcc "Long Name:" -for longname
@@ -629,7 +629,7 @@ snit::type ::athena::actor {
 
     meta form {
         rcc "Select Actor:" -for a
-        dbkey a -table gui_actors -keys a \
+        dbkey a -table fmt_actors -keys a \
             -loadcmd {$order_ keyload a *} 
 
         selector atype -invisible yes {
@@ -706,7 +706,7 @@ snit::type ::athena::actor {
 
     meta form {
         rcc "Select Actor:" -for a
-        dbkey a -table gui_actors -keys a \
+        dbkey a -table fmt_actors -keys a \
             -loadcmd {$order_ keyload a *} 
         
         rcc "Supports:" -for supports

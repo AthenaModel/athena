@@ -245,40 +245,40 @@ snit::type ::athena::exporter {
         # link back to actors not yet created.
         SectionHeader $f "Base Entities: Actors"
 
-        $self FromRDB $f ACTOR:CREATE   {SELECT * FROM gui_actors} supports
-        $self FromRDB $f ACTOR:SUPPORTS {SELECT * FROM gui_actors}
+        $self FromRDB $f ACTOR:CREATE   {SELECT * FROM fmt_actors} supports
+        $self FromRDB $f ACTOR:SUPPORTS {SELECT * FROM fmt_actors}
 
         # NEXT, Neighborhoods
         SectionHeader $f "Base Entities: Neighborhoods"
 
         $self FromRDB $f NBHOOD:CREATE {
-            SELECT * FROM gui_nbhoods ORDER BY stacking_order
+            SELECT * FROM fmt_nbhoods ORDER BY stacking_order
         }
 
-        $self FromRDB $f NBREL:UPDATE {SELECT * FROM gui_nbrel_mn}
+        $self FromRDB $f NBREL:UPDATE {SELECT * FROM fmt_nbrel_mn}
 
         # NEXT, Civilian Groups
         SectionHeader $f "Base Entities: Civilian Groups"
-        $self FromRDB $f CIVGROUP:CREATE {SELECT * FROM gui_civgroups}
+        $self FromRDB $f CIVGROUP:CREATE {SELECT * FROM fmt_civgroups}
 
         # NEXT, Force Groups
         SectionHeader $f "Base Entities: Force Groups"
-        $self FromRDB $f FRCGROUP:CREATE {SELECT * FROM gui_frcgroups}
+        $self FromRDB $f FRCGROUP:CREATE {SELECT * FROM fmt_frcgroups}
 
         # NEXT, Organization Groups
         SectionHeader $f "Base Entities: Organization Groups"
-        $self FromRDB $f ORGGROUP:CREATE {SELECT * FROM gui_orggroups}
+        $self FromRDB $f ORGGROUP:CREATE {SELECT * FROM fmt_orggroups}
 
         # NEXT, Attitudes
         SectionHeader $f "Attitudes"
-        $self FromRDB $f COOP:UPDATE   {SELECT * FROM gui_coop_override_view}
-        $self FromRDB $f HREL:OVERRIDE {SELECT * FROM gui_hrel_override_view}
-        $self FromRDB $f SAT:UPDATE    {SELECT * FROM gui_sat_override_view}
-        $self FromRDB $f VREL:OVERRIDE {SELECT * FROM gui_vrel_override_view}
+        $self FromRDB $f COOP:UPDATE   {SELECT * FROM fmt_coop_override}
+        $self FromRDB $f HREL:OVERRIDE {SELECT * FROM fmt_hrel_override_view}
+        $self FromRDB $f SAT:UPDATE    {SELECT * FROM fmt_sat_override_view}
+        $self FromRDB $f VREL:OVERRIDE {SELECT * FROM fmt_vrel_override_view}
 
         # NEXT, Absits
         SectionHeader $f "Abstract Situations"
-        $self FromRDB $f ABSIT:CREATE {SELECT * FROM gui_absits}
+        $self FromRDB $f ABSIT:CREATE {SELECT * FROM fmt_absits}
 
         # NEXT, Economics
         SectionHeader $f "Economics: SAM Inputs"
@@ -314,14 +314,14 @@ snit::type ::athena::exporter {
         } {longname gtype atype}
 
         $self FromRDB $f INJECT:STATE {
-            SELECT * FROM gui_injects WHERE state != 'normal'
+            SELECT * FROM fmt_injects WHERE state != 'normal'
         }
 
         # NEXT, CAPs
         SectionHeader $f "Communication Asset Packages (CAPs)"
         $self FromRDB $f CAP:CREATE    {SELECT * FROM caps} {nlist glist}
-        $self FromRDB $f CAP:NBCOV:SET {SELECT * FROM gui_cap_kn_nonzero}
-        $self FromRDB $f CAP:PEN:SET   {SELECT * FROM gui_capcov_nonzero}
+        $self FromRDB $f CAP:NBCOV:SET {SELECT * FROM fmt_cap_kn_nonzero}
+        $self FromRDB $f CAP:PEN:SET   {SELECT * FROM fmt_capcov_nonzero}
         
         # NEXT, Hooks
         SectionHeader $f "Semantic Hooks"
@@ -336,12 +336,12 @@ snit::type ::athena::exporter {
         $self FromRDB $f IOM:CREATE {SELECT * FROM ioms}
         $self FromRDB $f IOM:STATE  {SELECT * FROM ioms WHERE state != 'normal'}
 
-        $self FromRDB $f PAYLOAD:COOP:CREATE {SELECT * FROM gui_payloads_COOP} longname
-        $self FromRDB $f PAYLOAD:HREL:CREATE {SELECT * FROM gui_payloads_HREL} longname
-        $self FromRDB $f PAYLOAD:SAT:CREATE  {SELECT * FROM gui_payloads_SAT}  longname
-        $self FromRDB $f PAYLOAD:VREL:CREATE {SELECT * FROM gui_payloads_VREL} longname
+        $self FromRDB $f PAYLOAD:COOP:CREATE {SELECT * FROM fmt_payloads_COOP} longname
+        $self FromRDB $f PAYLOAD:HREL:CREATE {SELECT * FROM fmt_payloads_HREL} longname
+        $self FromRDB $f PAYLOAD:SAT:CREATE  {SELECT * FROM fmt_payloads_SAT}  longname
+        $self FromRDB $f PAYLOAD:VREL:CREATE {SELECT * FROM fmt_payloads_VREL} longname
         $self FromRDB $f PAYLOAD:STATE {
-            SELECT * FROM gui_payloads WHERE state != 'normal'
+            SELECT * FROM fmt_payloads WHERE state != 'normal'
         }
 
         # NEXT, Strategies

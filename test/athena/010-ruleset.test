@@ -142,7 +142,7 @@ signature  NB1 BLUE
 
         pprint [ht get] 
     } -result {
-Civilian group <a href="my://app/group/SHIA">SHIA</a>
+Civilian group <a href="/app/group/SHIA">SHIA</a>
 took a total of 100 casualties this week
 from incidents of all kinds.
 The Z-curve multiplier is

@@ -78,6 +78,21 @@ snit::type app {
         userMode normal
     }
 
+    # List of temporary SQL files to be read by athenadb
+
+    typevariable guiviews {
+        gui_scenario.sql
+        gui_attitude.sql
+        gui_econ.sql
+        gui_info.sql
+        gui_curses.sql
+        gui_politics.sql
+        gui_infrastructure.sql
+        gui_application.sql
+        gui_combat.sql
+        gui_ground.sql
+    }
+
 
     #-------------------------------------------------------------------
     # Group: Application Initialization
@@ -209,7 +224,9 @@ snit::type app {
         # components
         athena create ::adb \
             -logdir       [workdir join log scenario]            \
-            -executivecmd [mytypemethod DefineExecutiveCommands]
+            -executivecmd [mytypemethod DefineExecutiveCommands] \
+            -tempsqlfiles \
+                [lmap x $guiviews {file join $::app_athenawb::library sql $x}]
 
         notifier bind ::adb <NewLog> ::app [mytypemethod NewScenarioLog]
 
@@ -250,6 +267,7 @@ snit::type app {
         if {[llength $argv] == 1} {
             app open [file normalize [lindex $argv 0]]
         } else {
+
             # This makes sure that the notifier events are sent that
             # initialize the user interface.
             adb dbsync
@@ -873,7 +891,6 @@ snit::type app {
 
         # NEXT, create a new, blank scenario
         ::adb reset
-
 
         app puts "New scenario created"
 

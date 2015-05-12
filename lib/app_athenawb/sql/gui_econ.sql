@@ -46,7 +46,7 @@ WHERE N.local;
 
 -- gui_econ_g: Civilian group economic data
 CREATE TEMPORARY VIEW gui_econ_g AS
-SELECT * FROM gui_civgroups 
+SELECT * FROM fmt_civgroups 
 JOIN nbhoods USING (n)
 WHERE nbhoods.local;
 

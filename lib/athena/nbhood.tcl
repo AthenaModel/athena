@@ -157,7 +157,7 @@ snit::type ::athena::nbhood {
     # Retrieves a view dictionary for the neighborhood.
 
     method view {n {tag ""}} {
-        return [dbget $adb gui_nbhoods n $n]
+        return [dbget $adb fmt_nbhoods n $n]
     }
 
     # namedict
@@ -939,7 +939,7 @@ snit::type ::athena::nbhood {
     
     meta form {
         rcc "Select Neighborhood:" -for n
-        dbkey n -table gui_nbhoods -keys n \
+        dbkey n -table fmt_nbhoods -keys n \
             -loadcmd {$order_ keyload n *}
         
         rcc "Long Name:" -for longname
@@ -1066,7 +1066,7 @@ snit::type ::athena::nbhood {
     
     meta form {
         rcc "Neighborhoods:" -for ids
-        dbmulti ids -table gui_nbhoods -key id -context yes \
+        dbmulti ids -table fmt_nbhoods -key id -context yes \
             -loadcmd {$order_ multiload ids *}
 
         rcc "Local Neighborhood?" -for local

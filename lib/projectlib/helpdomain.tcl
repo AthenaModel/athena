@@ -185,6 +185,7 @@ oo::class create ::projectlib::helpdomain {
 
         hb page "Search Results"
         hb h1 "Search Results"
+        my NavBar /
 
         if {[llength $found] == 0} {
             hb putln "No pages match '<code>$query</code>'."
@@ -238,6 +239,10 @@ oo::class create ::projectlib::helpdomain {
     method NavBar {suffix} {
         hb hr
 
+        hb form 
+        hb xref /index.html Home
+        hb put " / "
+
         hb xref [my domain]/index.html [string trimleft [my domain] /]
 
 
@@ -254,6 +259,11 @@ oo::class create ::projectlib::helpdomain {
             hb put " / "
             hb xref $url $folder 
         }
+
+        hb put "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+        hb entry search -size 15
+        hb submit "Search"
+        hb /form
 
         hb hr
         hb para

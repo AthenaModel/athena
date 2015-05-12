@@ -137,7 +137,7 @@ snit::type ::athena::coop {
 
     meta form {
         rcc "Curve:" -for id
-        dbkey id -table gui_coop_view -keys {f g} -labels {"Of" "With"} \
+        dbkey id -table fmt_coop -keys {f g} -labels {"Of" "With"} \
             -loadcmd {$order_ keyload id *}
 
         rcc "Baseline:" -for base
@@ -184,7 +184,7 @@ snit::type ::athena::coop {
 
     meta form {
         rcc "IDs:" -for ids
-        dbmulti ids -table gui_coop_view -key id \
+        dbmulti ids -table fmt_coop -key id \
             -loadcmd {$order_ multiload ids *}
 
         rcc "Baseline:" -for base

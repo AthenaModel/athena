@@ -465,7 +465,7 @@ ENI-1-4 SUNN JOE credit=M, has control
         cleanup
     } -result {
 Civilian group
-<a href="my://app/group/SHIA">SHIA</a>
+<a href="/app/group/SHIA">SHIA</a>
 received ENI services at an actual level of
 0.80, that is, at
 80% of the saturation level
@@ -481,7 +481,7 @@ These values led to the following rule set inputs:<p>
 <i>needs</i> = 0.00<p>
 
 Group SHIA's neighborhood was controlled by
-actor <a href="my://app/actor/JOE">JOE</a>.<p>
+actor <a href="/app/actor/JOE">JOE</a>.<p>
     }
     
     test detail-1.2 {detail, no controller} -setup {
@@ -504,7 +504,7 @@ actor <a href="my://app/actor/JOE">JOE</a>.<p>
         cleanup
     } -result {
 Civilian group
-<a href="my://app/group/SHIA">SHIA</a>
+<a href="/app/group/SHIA">SHIA</a>
 received ENI services at an actual level of
 0.70, that is, at
 70% of the saturation level

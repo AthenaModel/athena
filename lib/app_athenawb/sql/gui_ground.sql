@@ -8,7 +8,7 @@
 -- DESCRIPTION:
 --    SQL Schema: Application-specific views, Ground area
 --
---    This file is loaded by scenario.tcl!
+--    This file is loaded by app.tcl!
 --
 --    GUI views translate the internal data formats of the scenariodb(n)
 --    tables into presentation format.  They are defined here instead of
@@ -34,7 +34,6 @@ SELECT n || ' ' || g || ' ' || a     AS id,
 FROM activity_nga
 WHERE nominal > 0
 ORDER BY n,g,a;
-
 
 -- gui_security: group security in neighborhoods, along with force 
 -- statistics.
@@ -63,58 +62,28 @@ LEFT OUTER JOIN force_civg USING (g)
 WHERE personnel > 0
 ORDER BY n, g;
 
-
--- gui_units: All active units.
+-- gui_units: All active units
 CREATE TEMPORARY VIEW gui_units AS
-SELECT u                                                AS id,
-       u                                                AS u,
-       tactic_id                                        AS tactic_id,
-       n                                                AS n,
-       g                                                AS g,
-       gtype                                            AS gtype,
-       a                                                AS a,
-       personnel                                        AS personnel,
-       mgrs(location)                                   AS location
-FROM units
-WHERE active;
-
+SELECT * FROM fmt_units;
 
 ------------------------------------------------------------------------
 -- ABSTRACT SITUATIONS VIEWS
 
 -- gui_absits: All abstract situations
 CREATE TEMPORARY VIEW gui_absits AS
-SELECT s                                              AS id,
-       s || ' -- ' || stype || ' in '|| n             AS longid,
-       s                                              AS s,
-       state                                          AS state,
-       stype                                          AS stype,
-       n                                              AS n,
-       format('%6.4f',coverage)                       AS coverage,
-       timestr(ts)                                    AS ts,
-       mgrs(location)                                 AS location,
-       resolver                                       AS resolver,
-       rduration                                      AS rduration,
-       timestr(tr)                                    AS tr,
-       inception                                      AS inception,
-       -- Null for g since it's deprecated
-       NULL                                           AS g
-FROM absits;
+SELECT * FROM fmt_absits;
 
 -- gui_absits subview: absits in INITIAL state
 CREATE TEMPORARY VIEW gui_absits_initial AS
-SELECT * FROM gui_absits
-WHERE state = 'INITIAL';
+SELECT * FROM fmt_absits_initial;
 
 -- gui_absits subview: ONGOING 
 CREATE TEMPORARY VIEW gui_absits_ongoing AS
-SELECT * FROM gui_absits
-WHERE state = 'ONGOING';
+SELECT * FROM fmt_absits_ongoing;
 
 -- gui_absits subview: RESOLVED 
 CREATE TEMPORARY VIEW gui_absits_resolved AS
-SELECT * FROM gui_absits
-WHERE state = 'RESOLVED';
+SELECT * FROM fmt_absits_resolved;
 
 ------------------------------------------------------------------------
 -- SERVICES MODELS VIEWS
@@ -157,8 +126,8 @@ SELECT CG.g                                              AS g,
        percent(service(S.s, 'ACTUAL',   N.urbanization)) AS pct_act,
        percent(service(S.s, 'REQUIRED', N.urbanization)) AS pct_req
 FROM gui_civgroups AS CG 
-JOIN abservice AS S
-JOIN gui_nbhoods AS N USING (n)
+JOIN abservice     AS S
+JOIN gui_nbhoods   AS N USING (n)
 ORDER BY CG.g;
 
 -- gui_service_ga: Provision of ENI services to civilian groups

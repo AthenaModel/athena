@@ -22,23 +22,26 @@
 
 -- gui_combat: Combat
 CREATE TEMPORARY VIEW gui_combat AS
-SELECT B.n                           AS n,
-       N.longname                    AS longname,
+SELECT B.n                       AS n,
+       N.longname                AS longname,
        '/app/combat/' || B.n     AS url,
-        pair(longname, B.n)          AS fancy
+        pair(longname, B.n)      AS fancy
 FROM hist_aam_battle AS B
 JOIN nbhoods AS N ON (N.n=B.n)
 GROUP BY B.n;
 
 -- gui_battle: AAM battle data
 CREATE TEMPORARY VIEW gui_battle AS
-SELECT N.longlink                                       AS nlink,
+SELECT N.n                                        AS nlink,
+       -- TBD: Fix up longlink when moved to workbench
        B.f                                              AS f,
        B.g                                              AS g,
-       F.longlink                                       AS longlink_f,
-       G.longlink                                       AS longlink_g,
-       F.link                                           AS link_f,
-       G.link                                           AS link_g,
+
+       -- TBD: Fix up links when moved to workbench
+       F.g                                       AS longlink_f,
+       G.g                                       AS longlink_g,
+       F.g                                          AS link_f,
+       G.g                                          AS link_g,
        F.a                                              AS a_f,
        G.a                                              AS a_g,
        B.t                                              AS t,
@@ -60,21 +63,24 @@ SELECT N.longlink                                       AS nlink,
        B.civc_f                                         AS civc_f,
        B.civc_g                                         AS civc_g 
 FROM hist_aam_battle AS B
-JOIN gui_groups  AS F ON (B.f=F.g)
-JOIN gui_groups  AS G ON (B.g=G.g)
-JOIN gui_nbhoods AS N ON (B.n=N.n);
+JOIN fmt_groups  AS F ON (B.f=F.g)
+JOIN fmt_groups  AS G ON (B.g=G.g)
+JOIN fmt_nbhoods AS N ON (B.n=N.n);
 
 -- gui_battle_f: AAM battle data from f's point of view; use this
 -- view with a WHERE clause on f to get all data from that groups 
 -- point of view.
 CREATE TEMPORARY VIEW gui_battle_f AS
-SELECT N.longlink AS nlink,
+SELECT N.n    AS nlink,
+       -- TBD: Fix up nlink when moved to workbench
        B.f        AS f,
        B.g        AS g,
-       F.longlink AS longlink_f,
-       G.longlink AS longlink_g,
-       F.link     AS link_f,
-       G.link     AS link_g,
+
+       -- TBD: Fix up links when moved to workbench
+       F.g AS longlink_f,
+       G.g AS longlink_g,
+       F.g     AS link_f,
+       G.g     AS link_g,
        F.a        AS a_f,
        G.a        AS a_g,
        B.t        AS t,
@@ -94,7 +100,7 @@ SELECT N.longlink AS nlink,
        B.civc_f   AS civc_f,
        B.civc_g   AS civc_g
 FROM hist_aam_battle_fview AS B
-JOIN gui_groups  AS F ON (B.f=F.g)
-JOIN gui_groups  AS G ON (B.g=G.g)
-JOIN gui_nbhoods AS N ON (B.n=N.n);
+JOIN fmt_groups  AS F ON (B.f=F.g)
+JOIN fmt_groups  AS G ON (B.g=G.g)
+JOIN fmt_nbhoods AS N ON (B.n=N.n);
 

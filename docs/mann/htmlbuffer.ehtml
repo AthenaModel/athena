@@ -331,18 +331,18 @@ Adds the named HTML <i tag> to the buffer.  If <i options> are given,
 they should have the usual Tcl syntax; they will be converted into
 tag attributes.<p>
 
-<defitem tagln {<i obj> tag <i tag> ?<i options...>?}>
+<defitem tagln {<i obj> tagln <i tag> ?<i options...>?}>
 
 Like <iref tag>, but begins on a new line.<p>
 
-<defitem wrap {<i obj> wrap <i tag text> ?<i options...>?}>
+<defitem wrap {<i obj> wrap <i tag> ?<i options...>? <i text>}>
 
 Adds the named HTML <i tag>, followed by the <i text>, followed by
 the appropriate closing tag.  If <i options> are given,
 they should have the usual Tcl syntax; they will be converted into
 tag attributes on the opening tag..<p>
 
-<defitem wrapln {<i obj> wrapln <i tag text> ?<i options...>?}>
+<defitem wrapln {<i obj> wrapln <i tag> ?<i options...>? <i text>}>
 
 Like <iref wrap>, but begins on a new line.<p>
 
@@ -723,6 +723,50 @@ Adds a "text" <tag input> with the given <i name> to the current
 <iref form>.  Any options and their values are converted to element 
 attributes; in particular, the <tt -size> option can be used to set
 the input's width in characters.<p>
+
+<defitem enum {<i obj> enum <i name> ?<i options...>? <i list>}>
+
+Creates a pulldown list of items by adding
+a <tag select> with the given <i name> to the current 
+<iref form>. The items in the <i list> become both the labels and
+values for the <tag option> elements within the <tag select> element.<p>
+
+Options and their values are converted to element 
+attributes, with these exceptions:<p>
+
+<deflist options>
+<defopt {-selected <i item>}>
+Indicates that the named <i item> is to be initially selected.<p>
+
+</deflist options>
+
+
+<defitem enumlong {<i obj> enumlong <i name> ?<i options...>? <i namedict>}>
+
+Creates a pulldown list of items by adding
+a <tag select> with the given <i name> to the current 
+<iref form>. Any options and their values are converted to element 
+attributes.  The keys and values in the <i namedict> become both the 
+values and labels for the <tag option> elements within the 
+<tag select> element.<p>
+
+Options and their values are converted to element 
+attributes, with these exceptions:<p>
+
+<deflist options>
+<defopt {-selected <i key>}>
+Indicates that the named <i key> is to be initially selected.<p>
+
+</deflist options>
+
+<defitem radio {<i obj> radio <i name> ?<i options...>? <i value>}>
+
+Creates one of a set of radio buttons called <i name>, with value
+<i value>, i.e., an <tag input> element of type <tt radio>.  Any options 
+and their values are converted to element attributes.<p>
+
+This command produces only the radio button itself; it is up to the caller
+to label it in some way.<p>
 
 <defitem hidden {<i obj> hidden <i name value> ?<i options...>?}>
 

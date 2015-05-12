@@ -143,7 +143,7 @@ snit::type ::athena::absit {
     # Retrieves a view dictionary for the absit.
 
     method view {s {tag ""}} {
-        return [dbget $adb gui_absits s $s]
+        return [dbget $adb fmt_absits s $s]
     }
 
 
@@ -742,7 +742,7 @@ snit::type ::athena::absit {
 
     meta form {
         rcc "Situation:" -for s
-        dbkey s -table gui_absits_initial -keys s -dispcols longid
+        dbkey s -table fmt_absits_initial -keys s -dispcols longid
     }
 
     meta parmtags {
@@ -774,7 +774,7 @@ snit::type ::athena::absit {
 
     meta form {
         rcc "Situation:" -for s
-        dbkey s -table gui_absits_initial -keys s -dispcols longid \
+        dbkey s -table fmt_absits_initial -keys s -dispcols longid \
             -loadcmd {$order_ keyload s *}
 
         rcc "Neighborhood:" -for n
@@ -902,7 +902,7 @@ snit::type ::athena::absit {
 
     meta form {
         rcc "Situation:" -for s
-        dbkey s -table gui_absits -keys s -dispcols longid \
+        dbkey s -table fmt_absits -keys s -dispcols longid \
             -loadcmd {$order_ keyload s *}
 
         rcc "Resolved By:" -for resolver
