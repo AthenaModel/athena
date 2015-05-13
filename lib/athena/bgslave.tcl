@@ -112,7 +112,7 @@ snit::type ::athena::bgslave {
             sdb log newlog advance
             sdb advance -ticks $weeks -tickcmd [mytypemethod TickCmd]
             sdb savetemp $info(syncfile)
-            $type progress COMPLETE $weeks $weeks
+            $type progress [sdb sim stopreason] $weeks $weeks
         } on error {result eopts} {
             $type error $result $eopts
         }
@@ -124,7 +124,7 @@ snit::type ::athena::bgslave {
     # complete until we've saved the results.
 
     typemethod TickCmd {tag i n} {
-        if {$tag ne "COMPLETE"} {
+        if {$tag ni {"COMPLETE" "FAILURE"}} {
             $type progress $tag $i $n
         }
     }
