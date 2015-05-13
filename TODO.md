@@ -3,6 +3,7 @@
 - Projectlib(n)
   - Tests for parmdict(n), smartdomain(n)
 - Athena(n)
+  - bgerrors are being displayed in the log on one line.  How come?
   - Sanity Checking
     - On pressing Check:
       - Strategy Browser
@@ -14,18 +15,12 @@
         - Detail browser page is NOT loaded
       - Curse Browser
         - Does curse sanity check
-        - curse.tcl does NOT send <Check>
-        - Browser does not automatically reload, displaying results
         - Detail browser page is loaded
+        - Ultimately, this should work the way the strategy browser does.
       - IOM Browser
         - Does iom sanity check
-        - iom.tcl does NOT send <Check>
-        - Browser does not automatically reload, displaying results
         - Detail browser page is loaded
-      - Hook Browser
-        - Has no check button
-        - hook.tcl provides no check
-        - sanity/hook is a useless page.      
+        - Ultimately, this should work the way the strategy browser does.
     - Conclusions
       - Most checkers should return the severity, as now.
       - The htools buffer is replaced with the dictlist.
@@ -40,7 +35,6 @@
       - "adb strategy check{er}"
         - Used by strategybrowser.tcl
         - Used by appserver_agent.tcl
-        - Used by appserver_sanity.tcl
         - Used by sanity.tcl
       - "adb curse checker" => OK or WARNING
         - Used by cursebrowser.tcl

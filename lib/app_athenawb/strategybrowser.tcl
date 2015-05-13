@@ -1018,9 +1018,9 @@ snit::widget strategybrowser {
     # results.
 
     method BListCheckStrategies {} {
-        set failed [adb strategy check]
+        lassign [adb strategy check] sev
 
-        if {$failed} {
+        if {$sev ne "OK"} {
             set msg "at least one problem was found"
         } else {
             set msg "no problems found"

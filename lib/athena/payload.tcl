@@ -84,42 +84,18 @@ snit::type ::athena::payload {
     #-------------------------------------------------------------------
     # Sanity Check
 
-    # checker ?f?
+    # checker f
     #
-    # f    - If given, a sanity.tcl failure dictlist object
+    # f    - A failurelist object
     #
-    # Computes the sanity check, and returns an esanity value, either
-    # OK or WARNING.  If f is given, any failures are added to it.
+    # Computes the sanity check, adding failures to the failure list
+    # object.
     #
     # Note: This checker is called from [iom checker], not from
     # [sanity *].
 
-    method checker {{f ""}} {
-        set edict [$self DoSanityCheck $f]
-
-        if {[dict size $edict] == 0} {
-            return OK
-        }
-
-        return WARNING
-    }
-
-    # DoSanityCheck f
-    #
-    # f    - If given, a sanity.tcl failure dictlist object
-    #
-    # This routine does the actual sanity check, marking the payload
-    # records in the RDB and putting error messages in a 
-    # nested dictionary, iom_id -> payload_num -> errmsg.
-    #
-    # Returns the dictionary, which will be empty if there were no
-    # errors.  If f is not "", any failures will be added to it.
-
-    method DoSanityCheck {f} {
-        # FIRST, create the empty error dictionary.
-        set edict [dict create]
-
-        # NEXT, clear the invalid states, since we're going to 
+    method checker {f} {
+        # FIRST, clear the invalid states, since we're going to 
         # recompute them.
 
         $adb eval {
@@ -138,15 +114,12 @@ snit::type ::athena::payload {
             set result [$self $ptype check [array get row]]
 
             if {$result ne ""} {
-                dict set edict $row(iom_id) $row(payload_num) $result
                 lappend badlist $row(iom_id) $row(payload_num)
 
-                if {$f ne ""} {
-                    $f add warning \
-                        payload.$row(payload_type) \
-                        payload/$row(iom_id)/$row(payload_num) \
-                        $result
-                }
+                $f add warning \
+                    payload.$row(payload_type) \
+                    payload/$row(iom_id)/$row(payload_num) \
+                    $result
             }
         }
 
@@ -160,55 +133,8 @@ snit::type ::athena::payload {
         }
 
         $adb notify payload <Check>
-
-        return $edict
     }
 
-
-    # DoSanityReport ht edict
-    #
-    # ht        - An htools buffer to receive a report.
-    # edict     - A dictionary iom_id->payload_num->errmsg
-    #
-    # Writes HTML text of the results of the sanity check to the ht
-    # buffer.  This routine assumes that there are errors.
-
-    method DoSanityReport {ht edict} {
-        # FIRST, Build the report
-        $ht subtitle "IOM Payload Constraints"
-
-        $ht putln {
-            Certain IOM payloads failed their checks and have been 
-            marked invalid in the
-        }
-        
-        $ht link gui:/tab/ioms "IOM Browser"
-
-        $ht put ".  Please fix them or delete them."
-        $ht para
-
-        dict for {iom_id idict} $edict {
-            array set idata [$adb iom get $iom_id]
-
-            $ht putln "<b>IOM $iom_id: $idata(longname)</b>"
-            $ht ul
-
-            dict for {payload_num errmsg} $idict {
-                set pdict [$self get [list $iom_id $payload_num]]
-
-                dict with pdict {
-                    $ht li
-                    $ht put "Payload #$payload_num: $narrative"
-                    $ht br
-                    $ht putln "==> <font color=red>Warning: $errmsg</font>"
-                }
-            }
-            
-            $ht /ul
-        }
-
-        return
-    }
 
     #===================================================================
     # payload Instance: Modification and Query Interace

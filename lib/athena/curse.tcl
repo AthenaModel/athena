@@ -313,47 +313,45 @@ snit::type ::athena::curse {
     #-------------------------------------------------------------------
     # Sanity Check
 
-    # checker ?f?
+    # check
     #
-    # f    - If given, a sanity.tcl failure dictlist object
-    #
-    # Computes the sanity check, and returns an esanity value, either
-    # OK or WARNING.  If f is given, any failures are added to it.
+    # Computes the sanity check, returing OK or WARNING.
 
-    method checker {{f ""}} {
-        # FIRST, do the inject check.
-        set psev [$adb inject checker $f]
-        assert {$psev ne "ERROR"}
-
-        set edict [$self DoSanityCheck $f]
-
-        if {$psev eq "OK" && [dict size $edict] == 0} {
-            return OK
+    method check {} {
+        try {
+            set f [failurelist new]
+            $self checker $f
+            return [list [$f severity] [$f dicts]]
+        } finally {
+            $f destroy
         }
+    }
 
-        return WARNING
+
+    # checker f
+    #
+    # f    - A failurelist object
+    #
+    # Computes the sanity check, adding failures to f.
+
+    method checker {f} {
+        $adb inject checker $f
+        $self DoSanityCheck $f
+
+        $adb notify curse <Check>
     }
 
     # DoSanityCheck f
     #
-    # f    - If given, a sanity.tcl failure dictlist object
+    # f    - A failurelist object.
     #
     # This routine does the actual sanity check, marking the CURSE
-    # records in the RDB and putting error messages in a 
-    # nested dictionary, curse_id -> msglist.  Note that a single
-    # CURSE can have multiple messages.
-    #
+    # records in the RDB and adding failures to the failure list.
     # It is assumed that the inject checker has already been
     # run.
-    #
-    # Returns the dictionary, which will be empty if there were no
-    # errors.  If f is not "", any failures will be added to it.
 
     method DoSanityCheck {f} {
-        # FIRST, create the empty error dictionary.
-        set edict [dict create]
-
-        # NEXT, clear the invalid states, since we're going to 
+        # FIRST, clear the invalid states, since we're going to 
         # recompute them.
 
         $adb eval {
@@ -375,13 +373,9 @@ snit::type ::athena::curse {
             GROUP BY C.curse_id
         } {
             if {$num == 0} {
-                dict lappend edict $curse_id "CURSE has no valid injects."
                 ladd badlist $curse_id
-
-                if {$f ne ""} {
-                    $f add warning curse.noinjects curse/$curse_id \
-                        "CURSE has no valid injects."
-                }
+                $f add warning curse.noinjects curse/$curse_id \
+                    "CURSE has no valid injects."
             }
         }
 
@@ -393,53 +387,7 @@ snit::type ::athena::curse {
                 WHERE curse_id=$curse_id
             }
         }
-
-        $adb notify curse <Check>
-
-        return $edict
     }
-
-
-    # DoSanityReport ht edict
-    #
-    # ht        - An htools buffer to receive a report.
-    # edict     - A dictionary iom_id->msglist
-    #
-    # Writes HTML text of the results of the sanity check to the ht
-    # buffer.  This routine assumes that there are errors.
-
-    method DoSanityReport {ht edict} {
-        # FIRST, Build the report
-        $ht subtitle "CURSE Constraints"
-
-        $ht putln {
-            One or more CURSEs failed their checks and have been 
-            marked invalid in the
-        }
-        
-        $ht link gui:/tab/curses "CURSE Browser"
-
-        $ht put ".  Please fix them or delete them."
-        $ht para
-
-        dict for {curse_id msglist} $edict {
-            array set cdata [$self get $curse_id]
-
-            $ht ul
-            $ht li 
-            $ht put "<b>CURSE $curse_id: $cdata(longname)</b>"
-
-            foreach errmsg $msglist {
-                $ht br
-                $ht putln "==> <font color=red>Warning: $errmsg</font>"
-            }
-            
-            $ht /ul
-        }
-
-        return
-    }
-
 
     #-------------------------------------------------------------------
     # Mutators

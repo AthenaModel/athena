@@ -79,7 +79,7 @@ appserver module SANITY {
                     ht putln {
                         The scenario may be locked and time may be advanced,
                         but the following problems were found and should
-                        be fixed.
+                        be ultimately be fixed.
                     }
 
                     FormatFailureList $flist
@@ -87,8 +87,10 @@ appserver module SANITY {
                 ERROR {
                     ht putln "<b>The scenario cannot be locked.</b>"
                     ht putln {
-                        Entries marked "error" in the following list must
-                        be fixed before the scenario can be locked.
+                        Entries marked "Error" in the following list must
+                        be fixed before the scenario can be locked.  Entries
+                        marked "Warning" will not affect the run, but 
+                        should be resolved in the long run. 
                     }
 
                     FormatFailureList $flist
@@ -179,7 +181,7 @@ appserver module SANITY {
         ht page "Sanity Check: IOMs" {
             ht title "IOMs" "Sanity Check"
 
-            lassign [adb iom checker] severity flist
+            lassign [adb iom check] severity flist
 
             switch -- $severity {
                 OK {
@@ -187,7 +189,7 @@ appserver module SANITY {
                     ht para
                 }
                 WARNING {
-                    $ht putln {
+                    ht putln {
                         <b>One or more IOMs failed their sanity checks
                         and have been marked invalid.  Please fix or 
                         delete them.<p>
@@ -220,7 +222,7 @@ appserver module SANITY {
         ht page "Sanity Check: CURSEs" {
             ht title "CURSEs" "Sanity Check"
 
-            lassign [adb curse checker] severity flist
+            lassign [adb curse chec] severity flist
 
             switch -- $severity {
                 OK {
@@ -228,7 +230,7 @@ appserver module SANITY {
                     ht para
                 }
                 WARNING {
-                    $ht putln {
+                    ht putln {
                         <b>One or more CURSEs failed their sanity checks
                         and have been marked invalid.  Please fix or 
                         delete them.<p>

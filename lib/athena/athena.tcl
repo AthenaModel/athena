@@ -197,7 +197,7 @@ snit::type ::athena::athena {
     delegate method {civgroup validate}     to adb as {civgroup validate}
     delegate method {civgroup view}         to adb as {civgroup view}
 
-    delegate method {curse checker}         to adb as {curse checker}
+    delegate method {curse check}           to adb as {curse check}
     delegate method {curse exists}          to adb as {curse exists}
     delegate method {curse get}             to adb as {curse get}
     delegate method {curse namedict}        to adb as {curse namedict}
@@ -234,13 +234,12 @@ snit::type ::athena::athena {
     delegate method {hook topic validate}   to adb as {hook topic validate}
     delegate method {hook validate}         to adb as {hook validate}
 
-    delegate method {inject checker}        to adb as {inject checker}
     delegate method {inject exists}         to adb as {inject exists}
     delegate method {inject get}            to adb as {inject get}
     delegate method {inject typenames}      to adb as {inject typenames}
     delegate method {inject validate}       to adb as {inject validate}
 
-    delegate method {iom checker}           to adb as {iom checker}
+    delegate method {iom check}             to adb as {iom check}
     delegate method {iom exists}            to adb as {iom exists}
     delegate method {iom get}               to adb as {iom get}
     delegate method {iom namedict}          to adb as {iom namedict}
@@ -295,7 +294,6 @@ snit::type ::athena::athena {
     delegate method {parm nondefaults}      to adb as {parm nondefaults}
     delegate method {parm save}             to adb as {parm save}
 
-    delegate method {payload checker}       to adb as {payload checker}
     delegate method {payload exists}        to adb as {payload exists}
     delegate method {payload get}           to adb as {payload get}
     delegate method {payload typenames}     to adb as {payload typenames}
@@ -311,7 +309,6 @@ snit::type ::athena::athena {
     delegate method {service levels}        to adb as {service levels}
 
     delegate method {strategy getname}      to adb as {strategy getname}
-    delegate method {strategy checker}      to adb as {strategy checker}
     delegate method {strategy check}        to adb as {strategy check}
 
     delegate method {stats moodbybsys}      to adb as {stats moodbybsys}

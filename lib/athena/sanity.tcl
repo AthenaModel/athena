@@ -18,46 +18,9 @@
 
 snit::type ::athena::sanity {
     #-------------------------------------------------------------------
-    # Lookup Tables
-
-    # failureKeys: dictlist record spec
-    #
-    # severity - error|warning
-    # code     - A code identifying the specific check
-    # entity   - An entity reference, e.g., "nbhood" or "group/BLUE"
-    # message  - A human-readable error message.
-
-    typevariable failureKeys {
-        severity
-        code 
-        entity 
-        message
-    }
-
-    #-------------------------------------------------------------------
-    # Type Methods
-
-    # flist
-    #
-    # Returns a dictlist(n) object in which to accumulate failures.
-    
-    typemethod flist {} {
-        return [::projectlib::dictlist new $failureKeys]
-    }
-
-    #-------------------------------------------------------------------
     # Components
 
     component adb ;# The athenadb(n) instance
-
-    #-------------------------------------------------------------------
-    # Instance variables
-
-    # Transient data used while sanity check
-    variable trans -array {
-        failures {}
-    }
-    
 
     #-------------------------------------------------------------------
     # Constructor
@@ -78,12 +41,12 @@ snit::type ::athena::sanity {
     # onlock
     #
     # Does a sanity check of the model.  Returns a list of two items
-    # {OK|WARNING|ERROR failurelist}, where the failure list is a 
-    # list of failure dictionaries (see above).
-    # depending on the maximum severity level of any found problems.
+    # {OK|WARNING|ERROR flist}, where the flist is a 
+    # list of failure dictionaries as accumulated in a 
+    # failurelist object.
 
     method onlock {} {
-        set f [::athena::sanity flist]
+        set f [failurelist new]
 
         try {
             $self OnLockChecker $f
@@ -92,30 +55,12 @@ snit::type ::athena::sanity {
             $adb strategy checker $f
             $adb econ checker $f
 
-            return [list [$self GetSeverity $f] [$f dicts]]
+            return [list [$f severity] [$f dicts]]
         } finally {
             $f destroy
         }
     }
 
-    # GetSeverity f
-    #
-    # f   - A [sanity flist] object.
-    #
-    # Determines the severity based on the content of the flist.
-
-    method GetSeverity {f} {
-        set sev OK
-
-        foreach dict [$f dicts] {
-            set dsev [dict get $dict severity]
-            if {[esanity gt $dsev $sev]} {
-                set sev [string toupper $dsev]
-            }
-        }
-
-        return $sev
-    }
 
 
     # OnLockChecker f

@@ -128,7 +128,7 @@ snit::type ::athena::econ {
 
     # checker f
     #
-    # f   - A sanity failure dictlist; see sanity.tcl
+    # f   - A failurelist object
     #
     # Computes the sanity check, and places the results in the failure
     # list.
@@ -247,35 +247,6 @@ snit::type ::athena::econ {
         }
 
         $adb notify econ <Check>
-
-        return $edict
-    }
-
-    # DoSanityReport ht edict
-    #
-    # ht    - an htools(n) buffer
-    # edict - a dictionary of errors to be formatted for HTML output
-    #
-    # This method takes any errors from the sanity check and formats
-    # them for output to the htools buffer.
-    #
-    # TBD: Move this to appserver_sanity.
-
-    method DoSanityReport {ht edict} {
-        $ht subtitle "Econ Model Warnings/Errors"
-
-        $ht putln "Certain cells in the SAM have problems. This is likely "
-        $ht putln "due to incorrect data being entered in the SAM. Details "
-        $ht putln "are below."
-
-        $ht para
-
-        dict for {cell errmsg} $edict {
-            $ht br
-            $ht putln "$cell ==> $errmsg"
-        }
-
-        return
     }
 
     # disable

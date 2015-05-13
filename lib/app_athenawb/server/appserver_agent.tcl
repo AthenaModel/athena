@@ -35,11 +35,6 @@ appserver module AGENT {
                 includes agent attributes.
             }
 
-        # TBD: We'll put this back in the /sanity tree eventually
-        appserver register /agents/sanity {agents/sanity/?} \
-            text/html [myproc /agents/sanity:html]            \
-            "Sanity check report for agent strategies."
-
         appserver register /agent/{agent} {agent/(\w+)/?} \
             text/html [myproc /agent:html]            \
             "Index page for agent {agent}'s strategy."
@@ -309,31 +304,5 @@ appserver module AGENT {
         }
 
         ht para
-    }
-    
-
-    #-------------------------------------------------------------------
-    # /agents/sanity:  Strategy Sanity Check reports
-    #
-    # No match parameters
-
-    # /agents/sanity:html udict matchArray
-    #
-    # Formats the strategy sanity check report for
-    # /agents/sanity.  Note that sanity is checked by the
-    # "strategy checker" command; this command simply reports on the
-    # results.
-
-    proc /agents/sanity:html {udict matchArray} {
-        ht page "Sanity Check: Agents' Strategies" {
-            ht title "Agents' Strategies" "Sanity Check"
-            
-            if {[adb strategy checker ::appserver::ht] eq "OK"} {
-                ht putln "No problems were found."
-                ht para
-            }
-        }
-
-        return [ht get]
     }
 }

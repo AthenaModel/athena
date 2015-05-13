@@ -989,32 +989,9 @@ snit::type app {
 
         lassign [adb sanity onlock] sev
  
-        if {$sev eq "WARNING"} {
-            app show /app/sanity/onlock
-
-            set answer \
-                [messagebox popup \
-                     -title         "On-lock Sanity Check Failed"    \
-                     -icon          warning                          \
-                     -buttons       {ok "Continue" cancel "Cancel"}  \
-                     -default       cancel                           \
-                     -ignoretag     onlock_check_failed              \
-                     -ignoredefault ok                               \
-                     -parent        [app topwin]                     \
-                     -message       [normalize {
-                     The on-lock sanity check failed with warnings; 
-                     one or more simulation objects are invalid.  See the 
-                     Detail Browser for details.  Press "Cancel" and
-                     fix the problems, or press "Continue" to 
-                     go ahead and lock the scenario, in which 
-                     case the invalid simulation objects will be 
-                     ignored as the simulation runs.
-                 }]]
-
-            if {$answer eq "cancel"} {
-                return
-            }
-        } elseif {$sev eq "ERROR"} {
+        # Don't worry about warnings; warnings are only generated for
+        # entities that will not affect the current run.
+        if {$sev eq "ERROR"} {
             app show /app/sanity/onlock
             return
         }
