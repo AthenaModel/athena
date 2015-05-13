@@ -87,7 +87,7 @@ snit::type ::athena::sanity {
 
         # At least one force group
         if {[llength [$adb frcgroup names]] == 0} {
-            $f add error frcgroup.none group "No force groups are defined."
+            $f add error frcgroup.none group/frc "No force groups are defined."
         }
 
         # Each force group has an owning actor
@@ -110,7 +110,7 @@ snit::type ::athena::sanity {
 
         # At least one civ group
         if {[llength [$adb civgroup names]] == 0} {
-            $f add error civgroup.none group "No civilian groups are defined."
+            $f add error civgroup.none group/civ "No civilian groups are defined."
         }
 
         # Population exceeds 0
@@ -119,7 +119,7 @@ snit::type ::athena::sanity {
         }]
 
         if {$basepop == 0} {
-            $f add error civgroup.pop group \
+            $f add error civgroup.pop group/civ \
                 "No civilian group has a base population greater than 0."
         }
 
@@ -149,7 +149,7 @@ snit::type ::athena::sanity {
             FROM civgroups JOIN nbhoods USING (n)
             WHERE local AND NOT sa_flag
         }]} {
-            $f add error econ.noconsumers group \
+            $f add error econ.noconsumers group/civ \
                 [normalize {
                     No consumers in local economy.  At least one civilian
                     group must be in a "local" neighborhood, must have

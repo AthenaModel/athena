@@ -17,6 +17,27 @@
 
 appserver module SANITY {
     #-------------------------------------------------------------------
+    # Type Variables
+
+    # entityUrls: dictionary of GUI URLs by entity patterns
+
+    typevariable entityUrls {
+        block/*      gui:/tab/strategy
+        condition/*  gui:/tab/strategy
+        curse/*      gui:/tab/curses
+        econ/sam/*   gui:/tab/econsam
+        group/civ    gui:/tab/civgroups
+        group/frc    gui:/tab/frcgroups
+        inject/*     gui:/tab/curses
+        iom/*        gui:/tab/ioms
+        nbhood       gui:/tab/nbhoods
+        nbhood/*     gui:/tab/nbhoods
+        payload/*    gui:/tab/ioms
+        strategy/*   gui:/tab/strategy
+        tactic/*     gui:/tab/strategy
+    }
+    
+    #-------------------------------------------------------------------
     # Public methods
 
     # init
@@ -260,6 +281,7 @@ appserver module SANITY {
         ht table {"Severity" "Code" "Entity" "Message"} {
             foreach dict $flist {
                 dict with dict {}
+                set elink [GetEntityLink $entity]
 
                 ht tr {
                     ht td left { 
@@ -273,12 +295,26 @@ appserver module SANITY {
                             ht put [esanity longname $severity] 
                         }
                     }
-                    ht td left { ht put $code                        }
-                    ht td left { ht link /app/$entity $entity        }
-                    ht td left { ht put $message                     }
+                    ht td left { ht put $code           }
+                    ht td left { ht link $elink $entity }
+                    ht td left { ht put $message        }
                 }
             }
         }
+    }
+
+    # GetEntityLink entity
+    #
+    # Returns an appropriate link for the named entity.
+
+    proc GetEntityLink {entity} {
+        dict for {pattern url} $entityUrls {
+            if {[string match $pattern $entity]} {
+                return $url
+            }
+        }
+
+        return "/app/$entity"
     }
 
 }
