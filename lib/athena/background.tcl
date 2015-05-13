@@ -150,6 +150,7 @@ snit::type ::athena::background {
 
         if {$tag eq "ERROR"} {
             $adb busy clear
+            error "Error in background thread:" $info(bgerror)
         } else {
             $adb loadtemp $info(syncfile)
             $adb busy clear
@@ -212,10 +213,10 @@ snit::type ::athena::background {
     # Handles errors from the slave.
 
     method _error {msg errinfo} {
-        $self $info(completionCB) ERROR
+        $adb log error slave "$msg\n$errinfo"
+        set info(bgerror) $errinfo
+        after idle [list $self $info(completionCB) ERROR]
         set info(completionCB) ""
-        return -code error -errorinfo $errinfo \
-            "Error in background thread: $msg"
     }
     
     #-------------------------------------------------------------------

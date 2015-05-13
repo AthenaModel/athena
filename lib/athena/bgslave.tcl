@@ -108,6 +108,7 @@ snit::type ::athena::bgslave {
         # in a transaction
 
         try {
+            error "Simulated Slave Error"
             sdb loadtemp $info(syncfile)
             sdb log newlog advance
             sdb advance -ticks $weeks -tickcmd [mytypemethod TickCmd]
@@ -162,7 +163,10 @@ snit::type ::athena::bgslave {
     # Passes the error along to the master.
 
     typemethod error {msg eopts} {
-        $type master _error $msg [dict get $eopts -errorinfo]
+        set errinfo [dict get $eopts -errorinfo]
+        sdb log error slave "$msg\n$errinfo"
+
+        $type master _error $msg $errinfo
     } 
 
     # master subcommand ?args...?
