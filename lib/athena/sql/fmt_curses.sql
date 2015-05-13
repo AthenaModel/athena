@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------
 -- TITLE:
---    gui_curses.sql
+--    fmt_curses.sql
 --
 -- AUTHOR:
 --    Dave Hanks
@@ -10,9 +10,9 @@
 --
 --    This file is loaded by scenario.tcl!
 --
---    GUI views translate the internal data formats of the scenariodb(n)
+--    Formatted views translate the internal data formats of the scenariodb(n)
 --    tables into presentation format.  They are defined here instead of
---    in scenariodb(n) so that they can contain application-specific
+--    in scenariodb(n) so that they can contain library-specific
 --    SQL functions.
 --
 ------------------------------------------------------------------------
@@ -21,22 +21,20 @@
 ------------------------------------------------------------------------
 -- Complex User-defined Role-based Situations and Events (CURSE) views
 
--- gui_curses: All CURSEs
-CREATE TEMPORARY VIEW gui_curses AS
-SELECT curse_id                                        AS curse_id,
-       longname                                        AS longname, 
-       cause                                           AS cause,
-       pair(longname, curse_id)                        AS fancy,
-       '/app/curse/' || curse_id                   AS url,
-       link('/app/curse/' || curse_id, curse_id)   AS link,
-       link('/app/curse/' || curse_id, longname)   AS longlink,
+-- fmt_curses: All CURSEs
+CREATE TEMPORARY VIEW fmt_curses AS
+SELECT curse_id                             AS curse_id,
+       longname                             AS longname, 
+       cause                                AS cause,
+       pair(longname, curse_id)             AS fancy,
        longname || ' (s: ' || s || 
                     ' p: ' || p ||
-                    ' q: ' || q || ')'                 AS narrative,
-       state                                           AS state
+                    ' q: ' || q || ')'      AS narrative,
+       state                                AS state
 FROM curses;
 
-CREATE TEMPORARY VIEW gui_injects AS
+-- fmt_injects: All CURSE injects
+CREATE TEMPORARY VIEW fmt_injects AS
 SELECT curse_id || ' ' || inject_num        AS id,
        curse_id                             AS curse_id,
        inject_num                           AS inject_num,
@@ -63,62 +61,62 @@ SELECT curse_id || ' ' || inject_num        AS id,
        format('%.1f',mag)                   AS mag
 FROM curse_injects;
 
-CREATE TEMPORARY VIEW gui_injects_SAT AS
-SELECT curse_id || ' ' || inject_num        AS id,
+-- fmt_injects_SAT: CURSE satisfacton injects
+CREATE TEMPORARY VIEW fmt_injects_SAT AS
+SELECT id                                   AS id,
        curse_id                             AS curse_id,
        inject_num                           AS inject_num,
        mode                                 AS mode,
-       CASE WHEN mode = 'p'
-       THEN 'persistent' ELSE 'transient' 
-       END                                  AS longmode,
+       longmode                             AS longmode,
        narrative                            AS narrative,
        state                                AS state,
        g                                    AS g,
        c                                    AS c,
-       format('%.1f',mag)                   AS mag
-FROM curse_injects;
+       mag                                  AS mag
+FROM fmt_injects
+WHERE inject_type='SAT';
 
-CREATE TEMPORARY VIEW gui_injects_COOP AS
-SELECT curse_id || ' ' || inject_num        AS id,
+-- fmt_injects_COOP: CURSE cooperation injects
+CREATE TEMPORARY VIEW fmt_injects_COOP AS
+SELECT id                                   AS id,
        curse_id                             AS curse_id,
        inject_num                           AS inject_num,
        mode                                 AS mode,
-       CASE WHEN mode = 'p'
-       THEN 'persistent' ELSE 'transient' 
-       END                                  AS longmode,
+       longmode                             AS longmode,
        narrative                            AS narrative,
        state                                AS state,
        f                                    AS f,
        g                                    AS g,
-       format('%.1f',mag)                   AS mag
-FROM curse_injects;
+       mag                                  AS mag
+FROM fmt_injects
+WHERE inject_type='COOP';
 
-CREATE TEMPORARY VIEW gui_injects_VREL AS
-SELECT curse_id || ' ' || inject_num        AS id,
+-- fmt_injects_VREL: CURSE vert. relationship injects
+CREATE TEMPORARY VIEW fmt_injects_VREL AS
+SELECT id                                   AS id,
        curse_id                             AS curse_id,
        inject_num                           AS inject_num,
        mode                                 AS mode,
-       CASE WHEN mode = 'p'
-       THEN 'persistent' ELSE 'transient' 
-       END                                  AS longmode,
+       longmode                             AS longmode,
        narrative                            AS narrative,
        state                                AS state,
        g                                    AS g,
        a                                    AS a,
-       format('%.1f',mag)                   AS mag
-FROM curse_injects;
+       mag                                  AS mag
+FROM fmt_injects
+WHERE inject_type='VREL';
 
-CREATE TEMPORARY VIEW gui_injects_HREL AS
-SELECT curse_id || ' ' || inject_num        AS id,
+-- fmt_injects_HREL: CURSE horiz. relationship injects
+CREATE TEMPORARY VIEW fmt_injects_HREL AS
+SELECT id                                   AS id,
        curse_id                             AS curse_id,
        inject_num                           AS inject_num,
        mode                                 AS mode,
-       CASE WHEN mode = 'p'
-       THEN 'persistent' ELSE 'transient' 
-       END                                  AS longmode,
+       longmode                             AS longmode,
        narrative                            AS narrative,
        state                                AS state,
        f                                    AS f,
        g                                    AS g,
-       format('%.1f',mag)                   AS mag
-FROM curse_injects;
+       mag                                  AS mag
+FROM fmt_injects
+WHERE inject_type='HREL';

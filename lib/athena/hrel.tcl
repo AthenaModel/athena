@@ -236,7 +236,7 @@ snit::type ::athena::hrel {
 
     meta form {
         rcc "Groups:" -for id
-        dbkey id -table gui_hrel_view -keys {f g} -labels {Of With} \
+        dbkey id -table fmt_hrel_view -keys {f g} -labels {Of With} \
             -loadcmd {$order_ keyload id *}
 
         rcc "Baseline:" -for base
@@ -287,7 +287,7 @@ snit::type ::athena::hrel {
 
     meta form {
         rcc "IDs:" -for ids
-        dbmulti ids -table gui_hrel_view -key id \
+        dbmulti ids -table fmt_hrel_view -key id \
             -loadcmd {$order_ multiload ids *}
 
         rcc "Baseline:" -for base

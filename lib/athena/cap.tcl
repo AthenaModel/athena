@@ -633,7 +633,7 @@ snit::type ::athena::cap {
 
     meta form {
         rcc "Select CAP:" -for k
-        dbkey k -table gui_caps -keys k \
+        dbkey k -table fmt_caps -keys k \
             -loadcmd {$order_ keyload k *}
 
         rcc "Long Name:" -for longname
@@ -684,7 +684,7 @@ snit::type ::athena::cap {
 
     meta form {
         rcc "CAPs:" -for ids
-        dbmulti ids -table gui_caps -key k \
+        dbmulti ids -table fmt_caps -key k \
             -loadcmd {$order_ multiload ids *}
 
         rcc "Owning Actor:" -for owner
@@ -735,7 +735,7 @@ snit::type ::athena::cap {
 
     meta form {
         rcc "Select CAP:" -for k
-        dbkey k -table gui_caps -keys k \
+        dbkey k -table fmt_caps -keys k \
             -loadcmd {$order_ keyload k *}
 
         rcc "Capacity:" -for capacity
@@ -776,7 +776,7 @@ snit::type ::athena::cap {
 
     meta form {
         rcc "CAPs:" -for ids 
-        dbmulti ids -table gui_caps -key k \
+        dbmulti ids -table fmt_caps -key k \
             -loadcmd {$order_ multiload ids *}
 
         rcc "Capacity:" -for capacity
@@ -819,7 +819,7 @@ snit::type ::athena::cap {
 
     meta form {
         rcc "CAP/Nbhood:" -for id
-        dbkey id -table gui_cap_kn -keys {k n} -labels {Of In} \
+        dbkey id -table fmt_cap_kn -keys {k n} -labels {Of In} \
             -loadcmd {$order_ keyload id *}
 
         rcc "Coverage:" -for nbcov
@@ -861,7 +861,7 @@ snit::type ::athena::cap {
 
     meta form {
         rcc "IDs:" -for ids
-        dbmulti ids -table gui_cap_kn -key id \
+        dbmulti ids -table fmt_cap_kn -key id \
             -loadcmd {$order_ multiload ids *}
 
         rcc "Coverage:" -for nbcov
@@ -908,7 +908,7 @@ snit::type ::athena::cap {
 
     meta form {
         rcc "CAP/Group:" -for id
-        dbkey id -table gui_capcov -keys {k g} -labels {Of Into} \
+        dbkey id -table fmt_capcov -keys {k g} -labels {Of Into} \
             -loadcmd {$order_ keyload id *}
 
         rcc "Penetration:" -for pen
@@ -950,7 +950,7 @@ snit::type ::athena::cap {
 
     meta form {
         rcc "IDs:" -for ids
-        dbmulti ids -table gui_capcov -key id \
+        dbmulti ids -table fmt_capcov -key id \
             -loadcmd {$order_ multiload ids *}
 
         rcc "Penetration:" -for pen

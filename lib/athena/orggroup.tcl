@@ -115,7 +115,7 @@ snit::type ::athena::orggroup {
     # Retrieves a view dictionary for the group.
 
     method view {g {tag ""}} {
-        return [dbget $adb gui_orggroups g $g]
+        return [dbget $adb fmt_orggroups g $g]
     }
 
     #-------------------------------------------------------------------
@@ -348,7 +348,7 @@ snit::type ::athena::orggroup {
 
     meta form {
         rcc "Group:" -for g
-        dbkey g -table gui_orggroups -keys g \
+        dbkey g -table fmt_orggroups -keys g \
             -loadcmd {$order_ keyload g *}
 
         rcc "Long Name:" -for longname
@@ -411,7 +411,7 @@ snit::type ::athena::orggroup {
 
     meta form {
         rcc "Groups:" -for ids
-        dbmulti ids -table gui_orggroups -key g \
+        dbmulti ids -table fmt_orggroups -key g \
             -loadcmd {$order_ multiload ids *}
 
         rcc "Owning Actor:" -for a    

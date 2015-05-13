@@ -625,7 +625,7 @@ snit::type ::athena::payload {
 
     meta form {
         rcc "Payload:" -for id
-        dbkey id -context yes -table gui_payloads_COOP \
+        dbkey id -context yes -table fmt_payloads_COOP \
             -keys {iom_id payload_num} \
             -loadcmd {$order_ keyload id {g mag}}
 
@@ -704,7 +704,7 @@ snit::type ::athena::payload {
 
     meta form {
         rcc "Payload:" -for id
-        dbkey id -context yes -table gui_payloads_HREL \
+        dbkey id -context yes -table fmt_payloads_HREL \
             -keys {iom_id payload_num} \
             -loadcmd {$order_ keyload id {g mag}}
 
@@ -783,7 +783,7 @@ snit::type ::athena::payload {
 
     meta form {
         rcc "Payload:" -for id
-        dbkey id -context yes -table gui_payloads_SAT \
+        dbkey id -context yes -table fmt_payloads_SAT \
             -keys {iom_id payload_num} \
             -loadcmd {$order_ keyload id {c mag}}
 
@@ -862,7 +862,7 @@ snit::type ::athena::payload {
 
     meta form {
         rcc "Payload:" -for id
-        dbkey id -context yes -table gui_payloads_VREL \
+        dbkey id -context yes -table fmt_payloads_VREL \
             -keys {iom_id payload_num} \
             -loadcmd {$order_ keyload id {a mag}}
 

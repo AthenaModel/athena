@@ -811,9 +811,7 @@ NB2 2
         fancy          *
         id             NB1
         labor_force    0
-        link           *
         local          YES
-        longlink       *
         longname       Here
         mood           0.000
         mood0          0.000
@@ -829,7 +827,6 @@ NB2 2
         subsistence    0
         unemployed     0
         urbanization   URBAN
-        url            /app/nbhood/NB1
         volatility     0
     }
 

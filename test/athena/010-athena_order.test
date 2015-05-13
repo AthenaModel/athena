@@ -98,7 +98,7 @@ namespace eval ::athena_test::tests:: {
         setup SAT:UPDATE:MULTI
     } -body {
         dict set idict ftype [$order dynaform]
-        dict set idict table gui_sat_view
+        dict set idict table fmt_sat_view
         dict set idict key   id
 
         ted pdicts [$order multiload ids * $idict {{SHIA AUT} {SUNN CUL}}]

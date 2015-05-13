@@ -120,7 +120,7 @@ snit::type ::athena::iom {
     method get {iom_id {parm ""}} {
         # FIRST, get the data
         $adb eval {
-            SELECT * FROM gui_ioms 
+            SELECT * FROM fmt_ioms 
             WHERE iom_id=$iom_id
         } row {
             if {$parm eq ""} {

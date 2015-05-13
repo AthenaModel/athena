@@ -247,18 +247,18 @@ SHIA BLUE 0.7  1         0.6
     } -result {SHIA BLUE}
 
     #-------------------------------------------------------------------
-    # gui_hrel_base_view
+    # fmt_hrel_base_view
     #
-    # The gui_hrel_base_view is implemented in scenariodb_attitude.sql
-    # and gui_attitude.sql, not in hrel.tcl,
+    # The fmt_hrel_base_view is implemented in scenariodb_attitude.sql
+    # and fmt_attitude.sql, not in hrel.tcl,
     # so perhaps it doesn't belong here; on the other hand, it pulls
     # together affinities from bsys with relationship overrides
     # from hrel_fg, and it ought to be tested somewhere.
 
-    test gui_hrel_base_view-1.1 {Defaults to 1.0 and 0.0} -setup {
+    test fmt_hrel_base_view-1.1 {Defaults to 1.0 and 0.0} -setup {
         ted create SHIA BLUE
     } -body {
-        ted query {SELECT * FROM gui_hrel_base_view ORDER BY f,g}
+        ted query {SELECT * FROM fmt_hrel_base_view ORDER BY f,g}
     } -cleanup {
         cleanup
     } -result {
@@ -270,11 +270,11 @@ SHIA CIV   BLUE FRC   0.0 0.0  0         0.0     0
 SHIA CIV   SHIA CIV   1.0 1.0  0         1.0     0        
     }
 
-    test gui_hrel_base_view-1.2 {hrel_fg overrides bsystem values} -setup {
+    test fmt_hrel_base_view-1.2 {hrel_fg overrides bsystem values} -setup {
         ted create SHIA BLUE
     } -body {
         tdb hrel create $H1 
-        ted query {SELECT * FROM gui_hrel_base_view ORDER BY f,g}
+        ted query {SELECT * FROM fmt_hrel_base_view ORDER BY f,g}
     } -cleanup {
         cleanup
     } -result {
@@ -286,12 +286,12 @@ SHIA CIV   BLUE FRC   0.0 0.5  0         0.5     1
 SHIA CIV   SHIA CIV   1.0 1.0  0         1.0     0        
     }
 
-    test gui_hrel_base_view-1.3 {hrel_fg overrides hist_flag, current} -setup {
+    test fmt_hrel_base_view-1.3 {hrel_fg overrides hist_flag, current} -setup {
         ted create SHIA BLUE
     } -body {
         tdb hrel create $H1 
         tdb hrel update {id {SHIA BLUE} hist_flag 1 current 0.2}
-        ted query {SELECT * FROM gui_hrel_base_view ORDER BY f,g}
+        ted query {SELECT * FROM fmt_hrel_base_view ORDER BY f,g}
     } -cleanup {
         cleanup
     } -result {

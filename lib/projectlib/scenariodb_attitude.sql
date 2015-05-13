@@ -192,7 +192,7 @@ CREATE TABLE vrel_ga (
 -- vertical relationships for each group and actor: the belief system
 -- IDs (bsids) and any overrides from vrel_ga.  Note that the 
 -- relationship of a group with its owning actor defaults to 1.0.
--- The final word is in the temporary view gui_vrel_base_view,
+-- The final word is in the temporary view fmt_vrel_base_view,
 -- because a function is required to compute the affinities.
 --
 -- Note that base and current will be NULL if they are not overridden.

@@ -606,8 +606,6 @@ upc        10.0
         id             SHIA
         labor_force    {}
         lfp            60
-        link           {<a href="/app/group/SHIA">SHIA</a>}
-        longlink       {<a href="/app/group/SHIA">SHIA: Shia</a>}
         longname       Shia
         mood           0.000
         mood0          0.000
@@ -627,7 +625,6 @@ upc        10.0
         unemployed     {}
         upc            0.0
         ur             0.0
-        url            /app/group/SHIA
     }
 
     #-------------------------------------------------------------------

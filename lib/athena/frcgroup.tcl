@@ -117,7 +117,7 @@ snit::type ::athena::frcgroup {
     # Retrieves a view dictionary for the group.
 
     method view {g {tag ""}} {
-        return [dbget $adb gui_frcgroups g $g]
+        return [dbget $adb fmt_frcgroups g $g]
     }
 
 
@@ -421,7 +421,7 @@ snit::type ::athena::frcgroup {
 
     meta form {
         rcc "Group:" -for g
-        dbkey g -table gui_frcgroups -keys g \
+        dbkey g -table fmt_frcgroups -keys g \
             -loadcmd {$order_ keyload g *}
 
         rcc "Long Name:" -for longname
@@ -496,7 +496,7 @@ snit::type ::athena::frcgroup {
 
     meta form {
         rcc "Groups:" -for ids
-        dbmulti ids -table gui_frcgroups -key g \
+        dbmulti ids -table fmt_frcgroups -key g \
             -loadcmd {$order_ multiload ids *}
 
         rcc "Owning Actor:" -for a    

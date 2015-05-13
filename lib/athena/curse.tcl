@@ -125,14 +125,14 @@ snit::type ::athena::curse {
     # parm       - A curses column name
     #
     # Retrieves a row dictionary, or a particular column value, from
-    # gui_ioms.
+    # gui_curses.
     #
     # NOTE: This is unusual; usually, [get] would retrieve from the
     # base table.  But we need the narrative, which is computed
     # dynamically.
 
     method get {curse_id {parm ""}} {
-        return [dbget $adb gui_curses curse_id $curse_id $parm]
+        return [dbget $adb fmt_curses curse_id $curse_id $parm]
     }
 
     # normal names

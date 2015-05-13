@@ -467,19 +467,16 @@ local           1
         cost           0.00
         demeanor       AVERAGE
         equip_level    BEST
-        fancy          *
+        fancy          {BLUE: US Army}
         forcetype      REGULAR
         g              BLUE
         gtype          FRC
         id             BLUE
-        link           *
         local          0
-        longlink       *
-        longname       *
+        longname       {US Army}
         personnel      0
         pretty_local   No
         training       PROFICIENT
-        url            /app/group/BLUE
     }
 
 
