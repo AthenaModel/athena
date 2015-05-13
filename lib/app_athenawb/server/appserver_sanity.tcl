@@ -25,6 +25,7 @@ appserver module SANITY {
         block/*      gui:/tab/strategy
         condition/*  gui:/tab/strategy
         curse/*      gui:/tab/curses
+        econ         gui:/tab/econcontrol
         econ/sam/*   gui:/tab/econsam
         group/civ    gui:/tab/civgroups
         group/frc    gui:/tab/frcgroups

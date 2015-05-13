@@ -353,10 +353,11 @@ snit::type ::athena::sim {
 
         # NEXT, pause if checks failed or the stop time is met.
         set stopping 0
-
-        if {[$adb sanity ontick check] != "OK"} {
+        lassign [$adb sanity ontick] sev
+        if {$sev != "OK"} {
             set info(reason) FAILURE
             set stopping 1
+            $adb log warning sim "On-tick sanity check failed"
 
             $adb notify "" <InsaneOnTick>
         }

@@ -61,8 +61,6 @@ snit::type ::athena::sanity {
         }
     }
 
-
-
     # OnLockChecker f
     #
     # f   - A dictlist for accumulating failure records.
@@ -176,148 +174,46 @@ snit::type ::athena::sanity {
     #-------------------------------------------------------------------
     # On-Tick Sanity Check
 
-    # ontick check
+    # ontick
     #
-    # Does a sanity check of the model: can we advance time at this tick?
-    # 
-    # Returns an esanity value:
-    #
-    # OK      - Model is sane; go ahead and advance time.
-    # WARNING - Problems were found and disabled; time can be advanced.
-    # ERROR   - Serious problems were found; time cannot be advanced.
+    # Does a sanity check of the model.  Returns a list of two items
+    # {OK|WARNING|ERROR flist}, where the flist is a 
+    # list of failure dictionaries as accumulated in a 
+    # failurelist object.
 
-    method {ontick check} {} {
-        set ht [htools %AUTO%]
+    method ontick {} {
+        set f [failurelist new]
 
-        set flag [$self DoOnTickCheck $ht]
+        try {
+            $self OnTickChecker $f
 
-        $ht destroy
-
-        return $flag
-    }
-
-
-    # ontick report ht
-    # 
-    # ht   - An htools buffer.
-    #
-    # Computes the sanity check, and formats the results into the 
-    # ht buffer for inclusion in an HTML page.  This command can
-    # presume that the buffer is already initialized and ready to
-    # receive the data.
-
-    method {ontick report} {ht} {
-        # FIRST, do a check and find out what kind of problems we have.
-        set severity [$self ontick check]
-
-        # NEXT, put an appropriate message at the top of the page.  
-        # If we are OK, there's no need to add anything else.
-
-        if {$severity eq "OK"} {
-            $ht putln "No problems were found."
-            return
-        } elseif {$severity eq "WARNING"} {
-            $ht putln {
-                <b>The on-tick sanity check has failed with one or more
-                warnings</b>, as listed below.  Athena has marked the problem
-                objects (e.g., tactics, IOM payloads, etc.) invalid;
-                time can be advanced, but in a degraded state.
-            }
-
-            $ht para
-        } else {
-            $ht putln {
-                <b>The on-tick sanity check has failed with one or more
-                serious errors,</b> as listed below.  Therefore, 
-                time cannot be advanced.
-            }
-
-            $ht para
+            return [list [$f severity] [$f dicts]]
+        } finally {
+            $f destroy
         }
-
-        # NEXT, redo the checks, recording all of the problems.
-        
-        $self DoOnTickCheck $ht
     }
 
-    # ontick text
+    # OnTickChecker f
     #
-    # Returns the ontick report text.
-
-    method {ontick text} {} {
-        set ht [htools %AUTO%]
-        $self ontick report $ht
-        set text [$ht get]
-        $ht destroy
-
-        return $text
-    }
-
-    # DoOnTickCheck ht
+    # f    - A failurelist object
     #
-    # ht   - An htools buffer
-    #
-    # Does the on-tick sanity check, and returns an esanity value
-    # indicating the status.  Any warnings or errors are written into
-    # the buffer.
-
-    method DoOnTickCheck {ht} {
-        # FIRST, presume that the model is sane.
-        set sev OK
-
-        # NEXT, call each of the on-lock checkers
-        savemax sev [$self EconOnTickChecker $ht] 
-
-        # NEXT, return the severity
-        return $sev
-    }
-
-    # EconOnTickChecker ht
-    #
-    # ht   - An htools buffer
-    #
-    # Does the sanity check, and returns an esanity value, writing
-    # the report into the buffer.  This routine detects only ERRORs.
-    #
+    # Does the sanity check, adding failures to the list.
     # TBD: This routine should probably live in econ.tcl.
 
-    method EconOnTickChecker {ht} {
+    method OnTickChecker {f} {
         # FIRST, if the econ model is disabled, there are no errors to
         # find.
         if {[$adb econ state] eq "DISABLED"} {
             return OK
         }
 
-        # NEXT, presume that the model is sane.
-        set sev OK
-
-        # NEXT, push a buffer onto the stack, for the problems.
-        $ht push
-
-        # NEXT, Some help for the reader
-        $ht subtitle "Economic On-Tick Constraints</b>" 
-        $ht putln {
-            One or more of Athena's economic on-tick sanity checks has 
-            failed; the entries below give complete details.  These checks
-            involve the economic model; hence, disabling the 
-            the Econ model on the <a href="gui:/tab/econ/control">Control</a>
-            tab will allow the simulation to proceed at the cost of ignoring
-            the economy.
-        }
-        
-        $ht para
-
-        $ht dl
-
-        # NEXT, Check econ CGE convergence.
+        # NEXT, do checks
         if {![$adb econ ok]} {
-            set sev ERROR
-
-            $ht dlitem "<b>Error: Economy: Diverged</b>" {
-                The economic model uses a system of equations called
-                a CGE.  The system of equations could not be solved.
-                This might be an error in the CGE; alternatively, the
-                economy might really be in chaos.
+            $f add error econ.diverged econ {
+                Economy: diverged. The economic model uses a system of 
+                equations called a CGE.  The system of equations could 
+                not be solved. This might be an error in the CGE; 
+                alternatively, the economy might really be in chaos.
             }
         }
 
@@ -326,12 +222,10 @@ snit::type ::athena::sanity {
         array set start [$adb econ getstart]
 
         if {$cells(Out::SUM.QS) == 0.0} {
-            set sev ERROR
-
-            $ht dlitem "<b>Error: Economy: Zero Production</b>" {
-                The economy has converged to the zero point, i.e., there
-                is no consumption or production, and hence no economy.
-                Enter 
+            $f add error econ.zeroprod econ {
+                Economy: Zero production. The economy has converged to the zero 
+                point, i.e., there is no consumption or production, and 
+                hence no economy. Enter 
                 <tt><a href="/help/command/dump/econ.html">dump econ In</a></tt>
                 at the CLI to see the current 
                 inputs to the economy; it's likely that there are no
@@ -340,43 +234,34 @@ snit::type ::athena::sanity {
         }
 
         if {!$cells(Out::FLAG.QS.NONNEG)} {
-            set sev ERROR
-
-            $ht dlitem "<b>Error: Economy: Negative Quantity Supplied</b>" {
+            $f add error econ.negsupp econ {
+                Economy: Negative quantity supplied.
                 One of the QS.i cells has a negative value; this implies
                 an error in the CGE.  Enter 
                 <tt><a href="/help/command/dump/econ.html">dump econ</a></tt>
                 at the CLI to
                 see the full list of CGE outputs.  Consider disabling
-                the economic model on the
-                <a href="my:/gui/tab/econ/control.html">Econ/Control tab</a> 
-                since it is clearly malfunctioning.
+                the economic model since it is clearly malfunctioning.
             }
         }
 
         if {!$cells(Out::FLAG.P.POS)} {
-            set sev ERROR
-
-            $ht dlitem "<b>Error: Economy: Non-Positive Prices</b>" {
+            $f add error econ.negprice econ {
+                Economy: non-positive prices.
                 One of the P.i price cells is negative or zero; this implies
                 an error in the CGE.  Enter 
                 <tt><a href="/help/command/dump/econ.html">dump econ</a></tt>
                 at the CLI to
                 see the full list of CGE outputs.  Consider disabling
-                the economic model on the
-                <a href="my:/gui/tab/econ/control.html">Econ/Control tab</a> 
-                since it is clearly malfunctioning.
+                the economic model since it is clearly malfunctioning.
             }
         }
 
         set limit [$adb parm get econ.check.MinConsumerFrac]
 
-        if {
-            $cells(In::Consumers) < $limit * $start(In::Consumers)
-        } {
-            set sev ERROR
-
-            $ht dlitem "<b>Error: Number of consumers has declined alarmingly</b>" "
+        if {$cells(In::Consumers) < $limit * $start(In::Consumers)} {
+            $f add error econ.popdrop econ "
+                Economy: Number of consumers has declined alarmingly.
                 The current number of consumers in the local economy,
                 $cells(In::Consumers),
                 is less than 
@@ -390,13 +275,9 @@ snit::type ::athena::sanity {
 
         set limit [$adb parm get econ.check.MinLaborFrac]
 
-        if {
-            $cells(In::LF) < $limit * $start(In::LF)
-        } {
-            set sev ERROR
-
-            $ht dlitem "<b>Error: Number of workers has declined
-            alarmingly</b>" "
+        if {$cells(In::LF) < $limit * $start(In::LF)} {
+            $f add error econ.workerdrop econ "
+                Error: Number of workers has declined alarmingly
                 The current number of workers in the local labor force,
                 $cells(In::LF), 
                 is less than
@@ -411,9 +292,8 @@ snit::type ::athena::sanity {
         set limit [$adb parm get econ.check.MaxUR]
 
         if {$cells(Out::UR) > $limit} {
-            set sev ERROR
-
-            $ht dlitem "<b>Error: Unemployment skyrockets</b>" "
+            $f add error econ.urup econ "
+                Error: Unemployment skyrockets.
                 The unemployment rate, 
                 [format {%.1f%%,} $cells(Out::UR)]
                 exceeds the limit of 
@@ -426,12 +306,9 @@ snit::type ::athena::sanity {
 
         set limit [$adb parm get econ.check.MinDgdpFrac]
 
-        if {
-            $cells(Out::DGDP) < $limit * $start(Out::DGDP)
-        } {
-            set sev ERROR
-
-            $ht dlitem "<b>Error: DGDP Plummets</b>" "
+        if {$cells(Out::DGDP) < $limit * $start(Out::DGDP)} {
+            $f add error econ.dgdpdrop econ "
+                Error: DGDP Plummets.
                 The Deflated Gross Domestic Product (DGDP),
                 \$[moneyfmt $cells(Out::DGDP)],
                 is less than 
@@ -446,12 +323,9 @@ snit::type ::athena::sanity {
         set min [$adb parm get econ.check.MinCPI]
         set max [$adb parm get econ.check.MaxCPI]
 
-        if {$cells(Out::CPI) < $min || 
-            $cells(Out::CPI) > $max
-        } {
-            set sev ERROR
-
-            $ht dlitem "<b>Error: CPI beyond limits</b>" "
+        if {$cells(Out::CPI) < $min || $cells(Out::CPI) > $max} {
+            $f add error econ.cpi econ "
+                Error: CPI beyond limits</b>
                 The Consumer Price Index (CPI), 
                 [format {%4.2f,} $cells(Out::CPI)]
                 is outside the expected range of
@@ -463,39 +337,7 @@ snit::type ::athena::sanity {
                 model parameters.
             "
         }
-
-        $ht /dl
-
-        # NEXT, we only have content if there were errors.
-        set html [$ht pop]
-
-        if {$sev ne "OK"} {
-            $ht put $html
-        }
-        
-
-        # NEXT, return the result
-        return $sev
     }
-
-    #-------------------------------------------------------------------
-    # Helper Routines
-
-    # savemax varname errsym
-    #
-    # varname   - A variable containing an esanity value
-    # errsym    - An esanity value
-    #
-    # Sets the variable to the more severe of the two esanity values.
-
-    proc savemax {varname errsym} {
-        upvar 1 $varname maxsym
-
-        if {[esanity gt $errsym $maxsym]} {
-            set maxsym $errsym
-        }
-    }
-
 }
 
 
