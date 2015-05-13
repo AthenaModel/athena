@@ -35,11 +35,25 @@ smarturl /scenario /{case}/actor/index.html {
 
     my CaseNavBar $case
 
+    set actors [case with $case actor names]
+
+    if {[llength $actors] == 0} {
+        hb h2 "<b>None defined.</b>"
+        hb para
+        return [hb /page]
+    }
+
+    hb putln "The following actors are in this scenario ("
+    hb iref /$case/actor/index.json json
+    hb put )
+
+    hb para
+
     hb table -headers {
-        "ID" "Name" "Belief System" "Supports" "Income, $/week" "Funding Type"
-        "On Hand, $"
+        "<br>ID" "<br>Name" "Belief<br>System" "<br>Supports" 
+        "Income,<br>$/week" "Funding<br>Type" "Cash<br>On Hand, $"
     } {
-        foreach actor [case with $case actor names] {
+        foreach actor $actors {
             set adict [case with $case actor view $actor]
             dict with adict {}
             hb tr {
@@ -92,6 +106,12 @@ smarturl /scenario /{case}/actor/{a}/index.html {
 
     hb page "Scenario '$case': Actor: $a"
     hb h1 "Scenario '$case': Actor: $a"
+
+    hb putln "Click for "
+    hb iref /$case/actor/$a/index.json "json"
+    hb put "."
+
+    hb para
 
     my CaseNavBar $case 
 

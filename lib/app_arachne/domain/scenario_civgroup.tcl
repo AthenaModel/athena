@@ -35,24 +35,37 @@ smarturl /scenario /{case}/civgroup/index.html {
 
     my CaseNavBar $case
 
+    set civgroups [case with $case civgroup names]
+
+    if {[llength $civgroups] == 0} {
+        hb h2 "<b>None defined.</b>"
+        hb para
+        return [hb /page]
+    }
+
+    hb putln "The following civilian groups are in this scenario ("
+    hb iref /$case/civgroup/index.json json
+    hb put )
+
+    hb para
+
     hb table -headers {
         "<br>ID" "<br>Name" "<br>Neighborhood" "<br>Population" 
         "Subsistence<br>Agriculture"
     } {
-        foreach civgroup [case with $case civgroup names] {
+        foreach civgroup $civgroups {
             set cdict [case with $case civgroup view $civgroup]
             dict with cdict {}
-            # TBD: Add local flag from nbhood entity
-            #      Update nbhood ID to URL link when URL is defined
             hb tr {
                 hb td-with {
                     hb iref /$case/civgroup/$id/index.html "$id"
                 }
                 hb td $longname
-                hb td $n
+                hb td-with {
+                    hb iref /$case/nbhood/$n/index.html "$n"
+                }
                 hb td $population 
                 hb td $pretty_sa_flag
-                hb td 
             }
         }
     }
@@ -96,6 +109,12 @@ smarturl /scenario /{case}/civgroup/{g}/index.html {
     hb page "Scenario '$case': Civilian Group: $g"
     hb h1 "Scenario '$case': Civilian Group: $g"
 
+    hb putln "Click for "
+    hb iref /$case/civgroup/$g/index.json "json"
+    hb put "."
+
+    hb para
+
     my CaseNavBar $case 
 
     hb para
@@ -113,6 +132,9 @@ smarturl /scenario /{case}/civgroup/{g}/index.json {
     }
 
     set cdict [case with $case civgroup view $g]
+
+    set n [dict get $cdict n]
+    dict set cdict n_link "/scenario/$case/nbhood/$n/index"
 
     return [js dictab [list $cdict]]
 }

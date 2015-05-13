@@ -35,10 +35,26 @@ smarturl /scenario /{case}/frcgroup/index.html {
 
     my CaseNavBar $case
 
+    set frcgroups [case with $case frcgroup names]
+
+    if {[llength $frcgroups] == 0} {
+        hb h2 "<b>None defined.</b>"
+        hb para
+        return [hb /page]
+    }
+
+    hb putln "The following force groups are in this scenario ("
+    hb iref /$case/frcgroup/index.json json
+    hb put )
+
+    hb para
+
     hb table -headers {
-        "<br>ID" "<br>Name"
+        "<br>ID" "<br>Name" "<br>Owner" "Force<br>Type" "<br>Local"
+        "Training<br>Level" "Equipment<br>Level" "Base<br>Personnel"
+        "<br>Demeanor" "Cost,<br>\$/person/week" 
     } {
-        foreach frcgroup [case with $case frcgroup names] {
+        foreach frcgroup $frcgroups {
             set fdict [case with $case frcgroup view $frcgroup]
             dict with fdict {}
             hb tr {
@@ -46,6 +62,16 @@ smarturl /scenario /{case}/frcgroup/index.html {
                     hb iref /$case/frcgroup/$id/index.html "$id"
                 }
                 hb td $longname
+                hb td-with {
+                    hb iref /$case/actor/$a/index.html "$a"
+                }
+                hb td $forcetype
+                hb td $pretty_local
+                hb td $training 
+                hb td $equip_level
+                hb td $base_personnel
+                hb td $demeanor 
+                hb td $cost
             }
         }
     }
@@ -65,6 +91,8 @@ smarturl /scenario /{case}/frcgroup/index.json {
     foreach g [case with $case frcgroup names] {
         set fdict [case with $case frcgroup view $g]
         dict set fdict url "/scenario/$case/frcgroup/$g/index.json"
+        set a [dict get $fdict a]
+        dict set a_link "/scenario/$case/actor/$a/index"
 
         lappend table $fdict
     }
@@ -88,6 +116,12 @@ smarturl /scenario /{case}/frcgroup/{g}/index.html {
     hb page "Scenario '$case': Force Group: $g"
     hb h1 "Scenario '$case': Force Group: $g"
 
+    hb putln "Click for "
+    hb iref /$case/frcgroup/$g/index.json "json"
+    hb put "."
+
+    hb para
+
     my CaseNavBar $case 
 
     hb para
@@ -105,6 +139,7 @@ smarturl /scenario /{case}/frcgroup/{g}/index.json {
     }
 
     set fdict [case with $case frcgroup view $g]
+    dict set fdict alink /$case/actor/$a/index
 
     return [js dictab [list $fdict]]
 }

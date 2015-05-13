@@ -273,6 +273,8 @@ oo::class create /scenario {
         hb put " | "
         hb iref /$case/actor/index.html "Actors"
         hb put " | "
+        hb iref /$case/nbhood/index.html "Neighborhoods"
+        hb put " | "
         hb iref /$case/civgroup/index.html "Civilian Groups"
         hb put " | "
         hb iref /$case/frcgroup/index.html "Force Groups"
@@ -285,7 +287,6 @@ oo::class create /scenario {
     }
 
 }
-    
 
 #-------------------------------------------------------------------
 # General Content
