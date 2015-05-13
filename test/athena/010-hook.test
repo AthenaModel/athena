@@ -321,11 +321,11 @@ position  0.9
     } -match dict -result {
         fancy     {PUPG: Puppies are good}
         hook_id   PUPG
-        link      {<a href="my://app/hook/PUPG">PUPG</a>}
-        longlink  {<a href="my://app/hook/PUPG">PUPG: Puppies are good</a>}
+        link      {<a href="/app/hook/PUPG">PUPG</a>}
+        longlink  {<a href="/app/hook/PUPG">PUPG: Puppies are good</a>}
         longname  {Puppies are good}
         narrative {Puppies are good: No position on any topics}
-        url       my://app/hook/PUPG
+        url       /app/hook/PUPG
     }
 
     test get-1.2 {Get an attribute} -setup {
@@ -416,7 +416,7 @@ position  0.9
         cleanup
     } -match dict -result {
         fancy        {1: TBD}
-        hlink        {<a href="my://app/hook/PUPG">PUPG</a>}
+        hlink        {<a href="/app/hook/PUPG">PUPG</a>}
         hook_id      PUPG
         id           {PUPG 1}
         narrative    {Passionately For TBD}

@@ -175,7 +175,7 @@ namespace eval ::athena_test::tests:: {
     } -result {
 An abstract event of type ACCIDENT
 has occurred in neighborhood
-<a href="my://app/nbhood/NB1">NB1</a> with 50% coverage.<p>
+<a href="/app/nbhood/NB1">NB1</a> with 50% coverage.<p>
     }
     
 
@@ -292,9 +292,9 @@ t rule     aut   cul   qol   sft
     } -cleanup {
         cleanup
     } -result {
-Group <a href="my://app/group/SHIA">SHIA</a>
+Group <a href="/app/group/SHIA">SHIA</a>
 is demonstrating in neighborhood
-<a href="my://app/nbhood/NB1">NB1</a> with 50% coverage.<p>
+<a href="/app/nbhood/NB1">NB1</a> with 50% coverage.<p>
     }
 
 

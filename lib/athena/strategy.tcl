@@ -548,37 +548,21 @@ oo::class create ::athena::strategy {
     }
 
 
-    # check ?f?
+    # checker f
     #
-    # f    - If given, a sanity.tcl failure dictlist object
+    # f    - A failurelist object
     #
-    # Sanity checks the strategy's blocks.  Returns a dictionary
-    #
-    # $block -> conditions -> $condition -> $var -> $errmsg
-    #        -> tactics    -> $tactic    -> $var -> $errmsg
-    #
-    # The dictionary will be empty if there are no sanity check failures.
-    # Blocks that are disabled are skipped.
-    # 
-    # If f is given, a record is created for each problem.
+    # Sanity checks the strategy's blocks, adding failures to the list.
 
 
-    method check {{f ""}} {
-        set result [dict create]
-
+    method check {f} {
         foreach block [my blocks] {
             if {[$block state] eq "disabled"} {
                 continue
             }
 
-            set bcheck [$block check $f]
-
-            if {[dict size $bcheck] > 0} {
-                dict set result $block $bcheck
-            }
+            $block check $f
         }
-
-        return $result
     }
 
     # execute

@@ -339,15 +339,15 @@ CONSUMP-2-2 SHIA JOE
         cleanup
     } -result {
 Civilian group
-<a href="my://app/group/SHIA">SHIA</a>
+<a href="/app/group/SHIA">SHIA</a>
 is consuming goods at a rate of
 10.5 baskets per week;
 the group expects to consume at a rate of
 12.5 baskets per week.
 15% of the group is living in poverty.
-Actor <a href="my://app/actor/JOE">JOE</a>
+Actor <a href="/app/actor/JOE">JOE</a>
 is in control of neighborhood
-<a href="my://app/nbhood/NB1">NB1</a>.<p>
+<a href="/app/nbhood/NB1">NB1</a>.<p>
 
 These conditions lead to the following rule set inputs:<p>
 
@@ -375,7 +375,7 @@ These conditions lead to the following rule set inputs:<p>
         cleanup
     } -result {
 Civilian group
-<a href="my://app/group/SHIA">SHIA</a>
+<a href="/app/group/SHIA">SHIA</a>
 is consuming goods at a rate of
 10.5 baskets per week;
 the group expects to consume at a rate of
@@ -383,7 +383,7 @@ the group expects to consume at a rate of
 15% of the group is living in poverty.
 No actor
 is in control of neighborhood
-<a href="my://app/nbhood/NB1">NB1</a>.<p>
+<a href="/app/nbhood/NB1">NB1</a>.<p>
 
 These conditions lead to the following rule set inputs:<p>
 

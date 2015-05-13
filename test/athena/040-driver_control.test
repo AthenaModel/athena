@@ -442,10 +442,10 @@ CONTROL-2-1 SUNN JOE  V.ga=INDIFF, gained control
     } -cleanup {
         cleanup
     } -result {
-Actor <a href="my://app/actor/BOB">BOB</a>
+Actor <a href="/app/actor/BOB">BOB</a>
 has taken control of neighborhood
-<a href="my://app/nbhood/NB1">NB1</a>
-from <a href="my://app/actor/JOE">JOE</a>.<p>
+<a href="/app/nbhood/NB1">NB1</a>
+from <a href="/app/actor/JOE">JOE</a>.<p>
     }
     
     test detail-1.2 {detail, a only} -setup {
@@ -462,9 +462,9 @@ from <a href="my://app/actor/JOE">JOE</a>.<p>
     } -cleanup {
         cleanup
     } -result {
-Actor <a href="my://app/actor/JOE">JOE</a>
+Actor <a href="/app/actor/JOE">JOE</a>
 has lost control of neighborhood
-<a href="my://app/nbhood/NB1">NB1</a>,
+<a href="/app/nbhood/NB1">NB1</a>,
 which is now in a state of chaos.<p>
     }
 
@@ -482,9 +482,9 @@ which is now in a state of chaos.<p>
     } -cleanup {
         cleanup
     } -result {
-Actor <a href="my://app/actor/BOB">BOB</a>
+Actor <a href="/app/actor/BOB">BOB</a>
 has taken control of neighborhood
-<a href="my://app/nbhood/NB1">NB1</a><p>
+<a href="/app/nbhood/NB1">NB1</a><p>
     }
 
 

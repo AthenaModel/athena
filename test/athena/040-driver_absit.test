@@ -223,7 +223,7 @@ namespace eval ::athena_test::tests:: {
 An abstract situation of type DISEASE
 has begun
 in neighborhood
-<a href="my://app/nbhood/NB1">NB1</a> with 100% coverage.<p>
+<a href="/app/nbhood/NB1">NB1</a> with 100% coverage.<p>
     }
     
     test detail-1.2 {detail text, ongoing} -setup {
@@ -243,7 +243,7 @@ in neighborhood
 An abstract situation of type DISEASE
 is ongoing
 in neighborhood
-<a href="my://app/nbhood/NB1">NB1</a> with 100% coverage.<p>
+<a href="/app/nbhood/NB1">NB1</a> with 100% coverage.<p>
     }
     
     test detail-1.3 {detail text, resolved by local} -setup {
@@ -262,8 +262,8 @@ in neighborhood
     } -result {
 An abstract situation of type DISEASE
 has been resolved
-by group <a href="my://app/group/TAL">TAL</a>
-in neighborhood <a href="my://app/nbhood/NB1">NB1</a>.<p>
+by group <a href="/app/group/TAL">TAL</a>
+in neighborhood <a href="/app/nbhood/NB1">NB1</a>.<p>
     }
 
 

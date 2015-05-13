@@ -629,7 +629,7 @@ oo::class create ::athena::block {
 
     # check ?f?
     #
-    # f    - If given, a sanity.tcl failure record dictlist object.
+    # f    - A failurelist object
     #
     # Sanity checks the block's conditions and tactics, returning a 
     # nested dictionary of error messages.  Skips disabled conditions

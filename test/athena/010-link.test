@@ -46,7 +46,7 @@ namespace eval ::athena_test::tests:: {
 
     test html-1.1 {translate links to html} -body {
         link html {Actor {actor:JOE} owns group {group:BLUE}.}
-    } -result {Actor <a href="my://app/actor/JOE">JOE</a> owns group <a href="my://app/group/BLUE">BLUE</a>.}
+    } -result {Actor <a href="/app/actor/JOE">JOE</a> owns group <a href="/app/group/BLUE">BLUE</a>.}
     
     #-------------------------------------------------------------------
     # text

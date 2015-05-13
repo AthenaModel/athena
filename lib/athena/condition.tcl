@@ -364,7 +364,7 @@ oo::define ::athena::condition {
     
     # check ?f?
     #
-    # f    - If given, a sanity.tcl failure dictlist object
+    # f    - A failurelist object
     #
     # Sanity checks the condition, returning a dict of variable names
     # and error strings:

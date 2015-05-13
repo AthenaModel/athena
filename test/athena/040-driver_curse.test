@@ -355,7 +355,7 @@ CURSE-1-1 coop  SUNN BLUE
     } -cleanup {
         cleanup
     } -result {
-<a href="my://app/curse/C5">CURSE C5</a>: C5<p>
+<a href="/app/curse/C5">CURSE C5</a>: C5<p>
     }
     
 

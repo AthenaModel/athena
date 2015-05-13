@@ -543,16 +543,10 @@ oo::define ::athena::tactic {
 
     # check ?f?
     #
-    # f    - If given, a sanity.tcl failure dictlist object
+    # f    - A failurelist object
     #
-    # Sanity checks the tactic, returning a dict of variable names
-    # and error strings:
-    #
-    #   $var -> $errmsg 
-    #
-    # If the dict is empty, there are no problems.
-    #
-    # If f is given, a record is created for each problem.
+    # Sanity checks the tactic, adding failures to the list, and 
+    # returning an error dictionary.
 
     method check {{f ""}} {
         set errdict [my SanityCheck [dict create]]
