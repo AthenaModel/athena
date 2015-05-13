@@ -148,12 +148,18 @@ snit::type ::athena::background {
     method AdvanceComplete {tag} {
         set info(tickCmd) ""
 
-        if {$tag eq "COMPLETE"} {
+        if {$tag eq "ERROR"} {
+            $adb busy clear
+        } else {
             $adb loadtemp $info(syncfile)
             $adb busy clear
             $adb dbsync
-        } else {
-            $adb busy clear
+        }
+
+        # A failure indicates that the on-tick sanity check failed.
+        # Notify the application.
+        if {$tag eq "FAILURE"} {
+            $adb notify "" <InsaneOnTick>
         }
     }
 
@@ -192,7 +198,7 @@ snit::type ::athena::background {
             $adb progress [expr {double($i)/double($n)}] 
         }
 
-        if {$tag eq "COMPLETE"} {
+        if {$tag in {"COMPLETE" "FAILURE"}} {
             $self $info(completionCB) $tag
             set info(completionCB) ""
         }

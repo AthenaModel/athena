@@ -43,7 +43,7 @@ snit::type ::athena::sim {
     # basetime  - The time at which a run started.
     # reason    - A code indicating why the run stopped:
     # 
-    #             OK        - Normal termination
+    #             COMPLETE  - Normal termination
     #             FAILURE   - On-tick sanity check failure
     #             ""        - Abnormal
 
@@ -124,7 +124,7 @@ snit::type ::athena::sim {
     #
     # returns the reason why the sim returned from RUNNING to PAUSED:
     #
-    # OK       - Normal termination
+    # COMPLETE - Normal termination
     # FAILURE  - on-tick sanity check failure
     # ""       - No reason assigned, hence an unexpected error.
     #            Use [catch] to get these.
