@@ -95,4 +95,5 @@ source [file join $::projectlib::library helpdomain.tcl     ]
 source [file join $::projectlib::library scratchdir.tcl     ]
 source [file join $::projectlib::library parmdict.tcl       ]
 source [file join $::projectlib::library worker.tcl         ]
+source [file join $::projectlib::library dictlist.tcl       ]
 

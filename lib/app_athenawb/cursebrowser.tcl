@@ -519,7 +519,8 @@ snit::widget cursebrowser {
     # Allows the user to check the sanity of the existing injectss. 
     
     method SanityCheck {} {
-        if {[adb curse checker] ne "OK"} {
+        lassign [adb curse check] sev
+        if {$sev ne "OK"} {
             app show /app/sanity/curse
         }
     }

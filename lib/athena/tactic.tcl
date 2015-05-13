@@ -541,20 +541,27 @@ oo::define ::athena::tactic {
     # Subclasses will usually need to override the SanityCheck, narrative,
     # obligate, and ExecuteTactic methods.
 
-    # check
+    # check ?f?
     #
-    # Sanity checks the tactic, returning a dict of variable names
-    # and error strings:
+    # f    - A failurelist object
     #
-    #   $var -> $errmsg 
-    #
-    # If the dict is empty, there are no problems.
+    # Sanity checks the tactic, adding failures to the list, and 
+    # returning an error dictionary.
 
-    method check {} {
+    method check {{f ""}} {
         set errdict [my SanityCheck [dict create]]
 
         if {[dict size $errdict] > 0} {
             my set state invalid
+
+            if {$f ne ""} {
+                dict for {parm msg} $errdict {
+                    $f add error \
+                        tactic.[my typename].$parm \
+                        tactic/[my fullname]       \
+                        $msg
+                }
+            }
         } elseif {$state eq "invalid"} {
             my set state normal
         }

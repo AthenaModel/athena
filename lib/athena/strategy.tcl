@@ -370,136 +370,33 @@ snit::type ::athena::strategy_manager {
 
     # check
     #
-    # Performs the sanity check for all strategies, marking failing
-    # blocks, tactics, and conditions as "invalid".
-    #
-    # Returns 1 if problems were found, and 0 otherwise.
-    
+    # Computes the sanity check, returing OK or WARNING.
+
     method check {} {
-        set flag 0
+        try {
+            set f [failurelist new]
+            $self checker $f
+            return [list [$f severity] [$f dicts]]
+        } finally {
+            $f destroy
+        }
+    }
 
+    # checker f
+    #
+    # f    - A failurelist object
+    #
+    # Computes the sanity check, adding failures to f.
+
+    method checker {f} {
         foreach agent [$adb agent names] {
             set s [$self getname $agent]
 
-            if {[dict size [$s check]] > 0} {
-                set flag 1
-            }
+            $s check $f
         }
 
         # NEXT, notify the application that a check has been done.
         $adb notify strategy <Check>
-
-        return $flag
-    }
-
-    # checker ?ht?
-    #
-    # ht - An htools buffer
-    #
-    # Computes the sanity check, and formats the results into the buffer
-    # for inclusion into an HTML page.  Returns an esanity value, either
-    # OK or WARNING.
-
-    method checker {{ht ""}} {
-        # FIRST, check each strategy, saving results into a dictionary
-        # by strategy name.
-
-        set result [dict create]
-
-        foreach agent [$adb agent names] {
-            set s [$self getname $agent]
-
-            set scheck [$s check]
-
-            if {[dict size $scheck] > 0} {
-                dict set result $s $scheck
-            }
-        }
-
-        # NEXT, notify the application that a check has been done.
-        $adb notify strategy <Check>
-
-        # NEXT, if no problems were found, we're OK.
-        if {[dict size $result] == 0} {
-            return OK
-        }
-
-        # NEXT, create a report if request.
-        if {$ht ne ""} {
-            $self DoSanityReport $ht $result
-        }
-
-        # NEXT, strategy sanity check failures are now errors; the
-        # user needs to either fix or disable any problem entities.
-        return ERROR
-    }
-
-    # DoSanityReport ht errdict
-    #
-    # ht        - An htools buffer to receive a report.
-    # errdict   - A dictionary of errors by strategy.
-    #
-    # The sdict has this structure:
-    #
-    # $strategy -> $block -> conditions -> $condition -> $var -> $errmsg
-    #                     -> tactics    -> $tactic    -> $var -> $errmsg
-    #
-    # Writes HTML text of the results of the sanity check to the ht
-    # buffer.
-
-    method DoSanityReport {ht errdict} {
-        # FIRST, a header
-        $ht putln {
-            The following conditions and tactics have failed their 
-            sanity checks and have been marked invalid.  You must fix 
-            them or disable them (or their containing block) 
-            in order to lock the scenario.
-        }
-        $ht para
-
-        # NEXT, show errors by agent and block
-        foreach a [lsort [dict keys $errdict]] {
-            set sdict [dict get $errdict $a] 
-            dict for {block bdict} $sdict {
-                $ht subtitle "Agent [$a agent], Block [$block id]: [$block get intent]"
-
-                $ht ul {
-                    if {[dict exists $bdict conditions]} {
-                        $self DoReportEntry $ht "Condition" \
-                            [dict get $bdict conditions]
-                    }
-
-                    if {[dict exists $bdict tactics]} {
-                        $self DoReportEntry $ht "Tactic" \
-                            [dict get $bdict tactics]
-                    }
-                }
-                $ht para
-            }
-        }
-    }
-
-    # DoReportEntry ht label ctdict
-    #
-    # ht     - An htools buffer to receive a report
-    # label  - Label for the kind of entity
-    # ctdict - A dictionary of errors by condition or tactic
-    #
-    # The ctdict has this structure:
-    #
-    #   $condition/$tactic -> $var -> $errmsg
-
-    method DoReportEntry {ht label ctdict} {
-        dict for {bean vdict} $ctdict {
-            $ht li 
-            $ht put "$label: [$bean id], [$bean narrative]"
-
-            dict for {var msg} $vdict {
-                $ht br
-                $ht putln "==> <font color=red><tt>$var</tt>: $msg</font>"
-            }
-            $ht para
-        }
     }
 
     #-------------------------------------------------------------------
@@ -651,32 +548,21 @@ oo::class create ::athena::strategy {
     }
 
 
-    # check
+    # checker f
     #
-    # Sanity checks the strategy's blocks.  Returns a dictionary
+    # f    - A failurelist object
     #
-    # $block -> conditions -> $condition -> $var -> $errmsg
-    #        -> tactics    -> $tactic    -> $var -> $errmsg
-    #
-    # The dictionary will be empty if there are no sanity check failures.
-    # Blocks that are disabled are skipped.
+    # Sanity checks the strategy's blocks, adding failures to the list.
 
-    method check {} {
-        set result [dict create]
 
+    method check {f} {
         foreach block [my blocks] {
             if {[$block state] eq "disabled"} {
                 continue
             }
 
-            set bcheck [$block check]
-
-            if {[dict size $bcheck] > 0} {
-                dict set result $block $bcheck
-            }
+            $block check $f
         }
-
-        return $result
     }
 
     # execute

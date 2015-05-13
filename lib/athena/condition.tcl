@@ -362,7 +362,9 @@ oo::define ::athena::condition {
         my set metflag ""
     }
     
-    # check
+    # check ?f?
+    #
+    # f    - A failurelist object
     #
     # Sanity checks the condition, returning a dict of variable names
     # and error strings:
@@ -372,13 +374,25 @@ oo::define ::athena::condition {
     # If the dict is empty, there are no problems.
     # If the subclass has possible sanity check failures, it should
     # override SanityCheck.
+    #
+    # If f is given, a record is created for each problem that was found.
 
-    method check {} {
+
+    method check {{f ""}} {
         set errdict [my SanityCheck [dict create]]
 
         if {[dict size $errdict] > 0} {
             my set state invalid
             my set metflag ""
+
+            if {$f ne ""} {
+                dict for {parm msg} $errdict {
+                    $f add error \
+                        condition.[my typename].$parm \
+                        condition/[my fullname]       \
+                        $msg
+                }
+            }
         } elseif {$state eq "invalid"} {
             my set state normal
         }

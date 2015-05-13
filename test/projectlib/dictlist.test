@@ -1,0 +1,285 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    dictlist.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Tcltest test suite for projectlib(n) dictlist(n)
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2 
+    eval ::tcltest::configure $argv
+}
+
+# Import tcltest(n)
+namespace import ::tcltest::*
+ 
+#-----------------------------------------------------------------------
+# Load the package to be tested
+
+source ../../lib/projectlib/pkgModules.tcl
+namespace import ::projectlib::*
+
+#-------------------------------------------------------------------
+# Set up the test environment
+ 
+proc pprint {text} {
+    return "\n$text\n"
+}
+
+proc setup {} {
+    ::projectlib::dictlist create dl {a b c}
+}
+
+proc cleanup {} {
+    dl destroy
+}
+
+
+#-------------------------------------------------------------------
+# creation
+
+test creation-1.1 {initialize size and list} -setup {
+    setup
+} -body {
+    list [dl size] [dl dicts] [dl keys]
+} -cleanup {
+    cleanup
+} -result {0 {} {a b c}}
+
+#-------------------------------------------------------------------
+# append
+
+test append-1.1 {can append} -setup {
+    setup
+} -body {
+    dl append {a 1 b 2 c 3}
+    dl append {a 4 b 5 c 6}
+    list [dl size] [dl dicts]
+} -cleanup {
+    cleanup
+} -result {2 {{a 1 b 2 c 3} {a 4 b 5 c 6}}}
+
+#-------------------------------------------------------------------
+# add
+
+test add-1.1 {add empty} -setup {
+    setup
+} -body {
+    dl add
+    lindex [dl dicts] 0
+} -cleanup {
+    cleanup
+} -result {a {} b {} c {}}
+
+test add-1.2 {add some} -setup {
+    setup
+} -body {
+    dl add 1 2
+    lindex [dl dicts] 0
+} -cleanup {
+    cleanup
+} -result {a 1 b 2 c {}}
+
+test add-1.3 {add all} -setup {
+    setup
+} -body {
+    dl add 1 2 3
+    lindex [dl dicts] 0
+} -cleanup {
+    cleanup
+} -result {a 1 b 2 c 3}
+
+test add-1.4 {add too many} -setup {
+    setup
+} -body {
+    dl add 1 2 3 4
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {value with no matching key}
+
+test add-1.5 {defaults are used} -setup {
+    ::projectlib::dictlist create dl {
+        {a 7}
+        {b 8}
+        {c 9}
+    }
+} -body {
+    dl add
+    lindex [dl dicts] 0
+} -cleanup {
+    cleanup
+} -result {a 7 b 8 c 9}
+
+#-------------------------------------------------------------------
+# addwith
+
+test addwith-1.1 {add empty} -setup {
+    setup
+} -body {
+    dl addwith
+    lindex [dl dicts] 0
+} -cleanup {
+    cleanup
+} -result {a {} b {} c {}}
+
+test addwith-1.2 {add some} -setup {
+    setup
+} -body {
+    dl addwith b 2 c 3
+    lindex [dl dicts] 0
+} -cleanup {
+    cleanup
+} -result {a {} b 2 c 3}
+
+test addwith-1.3 {add some with option syntax} -setup {
+    setup
+} -body {
+    dl addwith -b 2 -c 3
+    lindex [dl dicts] 0
+} -cleanup {
+    cleanup
+} -result {a {} b 2 c 3}
+
+test addwith-1.4 {add unknown key} -setup {
+    setup
+} -body {
+    dl addwith -nonesuch 1
+} -returnCodes {
+    error
+} -cleanup {
+    cleanup
+} -result {invalid key: "nonesuch"}
+
+test addwith-1.5 {defaults are used} -setup {
+    ::projectlib::dictlist create dl {
+        {a 7}
+        {b 8}
+        {c 9}
+    }
+} -body {
+    dl addwith
+    lindex [dl dicts] 0
+} -cleanup {
+    cleanup
+} -result {a 7 b 8 c 9}
+
+#-------------------------------------------------------------------
+# size
+#
+# This is tested in creation-* and append-*
+
+#-------------------------------------------------------------------
+# dicts
+#
+# This is tested throughout
+
+#-------------------------------------------------------------------
+# keys
+#
+# This is tested in creation-*
+
+#-------------------------------------------------------------------
+# set
+
+test set-1.1 {set list} -setup {
+    setup
+} -body {
+    dl set {{a 1 b 2 c 3} {a 4 b 5 c 6}}
+    list [dl size] [dl dicts]
+} -cleanup {
+    cleanup
+} -result {2 {{a 1 b 2 c 3} {a 4 b 5 c 6}}}
+
+
+#-------------------------------------------------------------------
+# format
+
+test format-1.1 {format list} -setup {
+    setup
+} -body {
+    dl add 1 2 3
+    dl add 4 5 6
+    pprint [dl format -headers]
+} -cleanup {
+    cleanup
+} -result {
+a  b  c
+-  -  -
+1  2  3
+4  5  6
+}
+
+
+#-------------------------------------------------------------------
+# find
+
+test find-1.1 {find entries, no keys} -setup {
+    setup
+} -body {
+    dl add this 1 2
+    dl add that 3 4
+    dl add this 5 6
+
+    dl find
+} -cleanup {
+    cleanup
+} -result {{a this b 1 c 2} {a that b 3 c 4} {a this b 5 c 6}}
+
+test find-1.2 {find entries, one key} -setup {
+    setup
+} -body {
+    dl add this 1 2
+    dl add that 3 4
+    dl add this 5 6
+
+    dl find a this
+} -cleanup {
+    cleanup
+} -result {{a this b 1 c 2} {a this b 5 c 6}}
+
+test find-1.3 {find entries, two keys} -setup {
+    setup
+} -body {
+    dl add this 1 2
+    dl add that 3 4
+    dl add this 5 6
+
+    dl find a this c 2
+} -cleanup {
+    cleanup
+} -result {{a this b 1 c 2}}
+
+test find-1.4 {find nothing} -setup {
+    setup
+} -body {
+    dl add this 1 2
+    dl add that 3 4
+    dl add this 5 6
+
+    dl find a theother
+} -cleanup {
+    cleanup
+} -result {}
+
+#-------------------------------------------------------------------
+# Cleanup
+
+cleanupTests
+
+
+
+
+
+
+

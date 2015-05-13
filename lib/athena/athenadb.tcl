@@ -927,7 +927,7 @@ snit::type ::athena::athenadb {
     # Returns 1 if the scenario is sane and can be locked, and 0 otherwise.
 
     method canlock {} {
-        set sev [$sanity onlock check]
+       lassign [$sanity onlock] sev
 
         expr {$sev ni {"ERROR" "WARNING"}}
     }

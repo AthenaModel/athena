@@ -77,7 +77,7 @@ snit::widget iombrowser {
         bind $win <Map> [mymethod MapWindow]
 
         # Reload the content on various notifier events.
-        notifier bind ::adb     <Sync>     $self [mymethod ReloadOnEvent]
+        notifier bind ::adb     <Sync>        $self [mymethod ReloadOnEvent]
         notifier bind ::adb     <Tick>        $self [mymethod ReloadOnEvent]
         notifier bind ::adb.iom <Check>       $self [mymethod ReloadOnEvent]
         notifier bind ::adb     <hooks>       $self [mymethod ReloadOnEvent]
@@ -505,7 +505,8 @@ snit::widget iombrowser {
     # Allows the user to check the sanity of the existing payloads. 
     
     method SanityCheck {} {
-        if {[adb iom checker] ne "OK"} {
+        lassign [adb iom check] sev
+        if {$sev ne "OK"} {
             app show /app/sanity/iom
         }
     }

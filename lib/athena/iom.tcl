@@ -192,50 +192,45 @@ snit::type ::athena::iom {
     #-------------------------------------------------------------------
     # Sanity Check
 
-    # checker ?ht?
+    # check
     #
-    # ht - An htools buffer
-    #
-    # Computes the sanity check, and formats the results into the buffer
-    # for inclusion into an HTML page.  Returns an esanity value, either
-    # OK or WARNING.
+    # Computes the sanity check, returing OK or WARNING.
 
-    method checker {{ht ""}} {
-        # FIRST, do the payload check.
-        set psev [$adb payload checker $ht]
-        assert {$psev ne "ERROR"}
-
-        set edict [$self DoSanityCheck]
-
-        if {$psev eq "OK" && [dict size $edict] == 0} {
-            return OK
+    method check {} {
+        try {
+            set f [failurelist new]
+            $self checker $f
+            return [list [$f severity] [$f dicts]]
+        } finally {
+            $f destroy
         }
-
-        if {$ht ne ""} {
-            $self DoSanityReport $ht $edict
-        }
-        
-        return WARNING
     }
 
-    # DoSanityCheck
+    # checker f
     #
-    # This routine does the actual sanity check, marking the IOM
-    # records in the RDB and putting error messages in a 
-    # nested dictionary, iom_id -> msglist.  Note that a single
-    # IOM can have multiple messages.
+    # f    - A failurelist object
+    #
+    # Computes the sanity check, adding failures to f.
+
+    method checker {f} {
+        $adb payload checker $f
+        $self DoSanityCheck $f
+
+        $adb notify iom <Check>
+    }
+
+    # DoSanityCheck f
+    #
+    # f    - If given, a sanity.tcl failure dictlist object
+    #
+    # This routine does the actual sanity check, adding any
+    # failures to f.
     #
     # It is assumed that the payload checker has already been
     # run.
-    #
-    # Returns the dictionary, which will be empty if there were no
-    # errors.
 
-    method DoSanityCheck {} {
-        # FIRST, create the empty error dictionary.
-        set edict [dict create]
-
-        # NEXT, clear the invalid states, since we're going to 
+    method DoSanityCheck {f} {
+        # FIRST, clear the invalid states, since we're going to 
         # recompute them.
 
         $adb eval {
@@ -257,8 +252,9 @@ snit::type ::athena::iom {
             GROUP BY I.iom_id
         } {
             if {$num == 0} {
-                dict lappend edict $iom_id "IOM has no valid payloads."
                 ladd badlist $iom_id
+                $f add warning iom.nopayloads iom/$iom_id \
+                    "IOM has no valid payloads."
             }
         }
 
@@ -268,8 +264,9 @@ snit::type ::athena::iom {
             FROM ioms 
             WHERE hook_id IS NULL
         } {
-            dict lappend edict $iom_id "IOM has no semantic hook."
             ladd badlist $iom_id
+            $f add warning iom.nohook iom/$iom_id \
+                "IOM has no semantic hook."
         }
 
         # IOMs with hooks with no valid hook_topics
@@ -282,9 +279,10 @@ snit::type ::athena::iom {
             GROUP BY iom_id
         } {
             if {$num == 0} {
-                dict lappend edict $iom_id \
-                    "IOM's semantic hook has no valid topics."
                 ladd badlist $iom_id
+
+                $f add warning iom.notopics iom/$iom_id \
+                    "IOM's semantic hook has no valid topics."
             }
         }
         
@@ -297,51 +295,6 @@ snit::type ::athena::iom {
                 WHERE iom_id=$iom_id
             }
         }
-
-        $adb notify iom <Check>
-
-        return $edict
-    }
-
-
-    # DoSanityReport ht edict
-    #
-    # ht        - An htools buffer to receive a report.
-    # edict     - A dictionary iom_id->msglist
-    #
-    # Writes HTML text of the results of the sanity check to the ht
-    # buffer.  This routine assumes that there are errors.
-
-    method DoSanityReport {ht edict} {
-        # FIRST, Build the report
-        $ht subtitle "IOM Constraints"
-
-        $ht putln {
-            One or more IOMs failed their checks and have been 
-            marked invalid in the
-        }
-        
-        $ht link gui:/tab/ioms "IOM Browser"
-
-        $ht put ".  Please fix them or delete them."
-        $ht para
-
-        dict for {iom_id msglist} $edict {
-            array set idata [$self get $iom_id]
-
-            $ht ul
-            $ht li 
-            $ht put "<b>IOM $iom_id: $idata(longname)</b>"
-
-            foreach errmsg $msglist {
-                $ht br
-                $ht putln "==> <font color=red>Warning: $errmsg</font>"
-            }
-            
-            $ht /ul
-        }
-
-        return
     }
 
 
