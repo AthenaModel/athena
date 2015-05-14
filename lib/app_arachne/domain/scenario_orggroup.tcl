@@ -81,9 +81,13 @@ smarturl /scenario /{case}/orggroup/index.json {
         set odict [case with $case orggroup view $g]
         dict set odict url "/scenario/$case/oprggroup/$g/index.json"
         set a [dict get $odict a]
-        dict set odict a_link "/scenario/$case/actor/$a/index"
+        if {$a ne ""} {
+            dict set odict a_link "/scenario/$case/actor/$a/index"
+        } else {
+            dict set odict a_link ""
+        }
 
-        lappend table $fdict
+        lappend table $odict
     }
 
     return [js dictab $table]
@@ -127,6 +131,13 @@ smarturl /scenario /{case}/orggroup/{g}/index.json {
     }
 
     set odict [case with $case orggroup view $g]
+
+    set a [dict get $odict a]
+    if {$a ne ""} {
+        dict set odict a_link /$case/actor/$a/index
+    } else {
+        dict set odict a_link ""
+    }
 
     return [js dictab [list $odict]]
 }
