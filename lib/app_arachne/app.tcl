@@ -115,6 +115,9 @@ snit::type app {
 
         $type InitializeBaseCase $adbfile $script
 
+        # NEXT, enable proper threaded error handling.
+        ::athena::background init
+
         # NEXT, define the domains.
         set domains(/scenario) [/scenario new]
         set domains(/debug)    [/debug new]     ;# TBD: If -debug

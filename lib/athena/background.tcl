@@ -24,6 +24,30 @@
 
 snit::type ::athena::background {
     #-------------------------------------------------------------------
+    # Type Methods
+
+    # init
+    #
+    # Arranges for errors in -async thread::send calls to be handled
+    # by bgerror in the main thread.  This should be called once
+    # in the main thread.
+    typemethod init {} {
+        # Arrange for threaded errors to be handled by bgerror in the
+        # event loop.
+        thread::errorproc ::athena::background::ThreadErrorHandler
+    }
+
+    proc ThreadErrorHandler {thread_id errinfo} {
+        if {$thread_id eq [thread::id]} {
+            set errmsg "Error in -async script sent to main thread"
+        } else {
+            set errmsg "Error in -async script sent to slave thread $thread_id"
+        }
+
+        after 1 [list error $errmsg $errinfo]
+    }
+    
+    #-------------------------------------------------------------------
     # Components
 
     component adb       ;# The athenadb(n) instance
@@ -150,7 +174,6 @@ snit::type ::athena::background {
 
         if {$tag eq "ERROR"} {
             $adb busy clear
-            error "Error in background thread:" $info(bgerror)
         } else {
             $adb loadtemp $info(syncfile)
             $adb busy clear
@@ -213,10 +236,10 @@ snit::type ::athena::background {
     # Handles errors from the slave.
 
     method _error {msg errinfo} {
-        $adb log error slave "$msg\n$errinfo"
-        set info(bgerror) $errinfo
-        after idle [list $self $info(completionCB) ERROR]
+        $adb log error slave $errinfo
+        $self $info(completionCB) ERROR
         set info(completionCB) ""
+        after 1 [list error "Error in background thread:" $errinfo]
     }
     
     #-------------------------------------------------------------------
