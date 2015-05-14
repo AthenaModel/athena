@@ -271,6 +271,8 @@ oo::class create /scenario {
         hb put " | "
         hb iref /$case/index.html "Case"
         hb put " | "
+        hb iref /$case/sanity/onlock.html "Sanity"
+        hb put " | "
         hb iref /$case/order.html "Orders"
         hb put " | "
         hb iref /$case/script.html "Scripts"
@@ -278,6 +280,46 @@ oo::class create /scenario {
         hb para
     }
 
+    # FormatFailureList case flist
+    #
+    # flist  - A list of sanity failure dictionaries.
+    #
+    # Formats the failure list as a table.
+
+    method FormatFailureList {case flist} {
+        hb table -headers {"Severity" "Code" "Entity" "Message"} {
+            foreach dict $flist {
+                dict with dict {}
+                set elink [my GetEntityLink $case $entity]
+
+                hb tr {
+                    hb td-with { 
+                        if {$severity eq "error"} {
+                            set cls error
+                        } else {
+                            set cls ""
+                        }
+
+                        hb span -class $cls [esanity longname $severity]
+                    }
+                    hb td      $code
+                    hb td-with { hb iref $elink $entity }
+                    hb td      $message
+                }
+            }
+        }
+    }
+
+    # GetEntityLink case entity
+    #
+    # case    - A scenario case ID
+    # entity  - An entity reference
+    #
+    # Returns an appropriate iref link for the named entity.
+
+    method GetEntityLink {case entity} {
+        return  /$case/$entity/index.html
+    }
 }
     
 
@@ -918,6 +960,91 @@ smarturl /scenario /{case}/index.html {
 
     return [hb /page]
 }
+
+#-----------------------------------------------------------------------
+# Sanity Checking
+
+smarturl /scenario /{case}/sanity/onlock.html {
+    Displays a sanity check for scenario {case}.  
+} {
+    set case [my ValidateCase $case]
+
+    hb page "Scenario '$case': Sanity Check, On Lock"
+    hb h1 "Scenario '$case': Sanity Check, On Lock"
+
+    my CaseNavBar $case
+
+    hb putln {
+        Athena checks the scenario's sanity before
+        allowing the user to lock the scenario and begin
+        simulation.
+    }
+
+    hb put "("
+    hb iref /$case/sanity/onlock.json json
+    hb put ")"
+
+    hb para
+    
+    lassign [case with $case sanity onlock] severity flist
+
+    switch -- $severity {
+        OK {
+            hb putln {
+                No problems were found; the scenario may be
+                locked and time may be advanced.
+            }
+        }
+        WARNING {
+            hb putln {
+                The scenario may be locked and time may be advanced,
+                but the following problems were found and should
+                be ultimately be fixed.
+            }
+
+            hb para
+
+            my FormatFailureList $case $flist
+        }
+        ERROR {
+            hb putln "<b>The scenario cannot be locked.</b>"
+            hb putln {
+                Entries marked "Error" in the following list must
+                be fixed before the scenario can be locked.  Entries
+                marked "Warning" will not affect the run, but 
+                should be resolved in the long run. 
+            }
+
+            hb para
+
+            my FormatFailureList $case $flist
+        }
+        default { error "Unknown severity: \"$severity\""}
+    }
+
+    hb para
+
+
+    return [hb /page]
+}
+
+smarturl /scenario /{case}/sanity/onlock.json {
+    Performs an on-lock sanity check for the scenario, and returns the 
+    list of failure records.  If the list is empty, there were no 
+    problems.  If the list contains a record with a "severity" of
+    "error", then the scenario cannot be locked.  The JSON result
+    is a list of failure objects.
+} {
+    set case [my ValidateCase $case]
+
+    # FIRST, do the check.
+    lassign [case with $case sanity onlock] severity flist
+
+    # NEXT, send it out!
+    return [js dictab $flist]
+}
+
+
 
 #-----------------------------------------------------------------------
 # Order Handling
