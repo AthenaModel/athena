@@ -364,7 +364,7 @@ snit::type ::athena::sim {
 
         if {[$adb clock now] >= $info(stoptime)} {
             $adb log normal sim "Stop time reached"
-            set info(reason) "OK"
+            set info(reason) "COMPLETE"
             set stopping 1
         }
 

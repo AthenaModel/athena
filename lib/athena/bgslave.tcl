@@ -162,7 +162,10 @@ snit::type ::athena::bgslave {
     # Passes the error along to the master.
 
     typemethod error {msg eopts} {
-        $type master _error $msg [dict get $eopts -errorinfo]
+        set errinfo [dict get $eopts -errorinfo]
+        sdb log error slave $errinfo
+
+        $type master _error $msg $errinfo
     } 
 
     # master subcommand ?args...?
