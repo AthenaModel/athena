@@ -87,6 +87,9 @@ smarturl /scenario /{case}/civgroup/index.json {
         set cdict [case with $case civgroup view $g]
         dict set cdict url "/scenario/$case/civgroup/$g/index.json"
 
+        set n [dict get $cdict n]
+        dict set cdict n_link "/scenario/$case/nbhood/$n/index"
+
         lappend table $cdict
     }
 

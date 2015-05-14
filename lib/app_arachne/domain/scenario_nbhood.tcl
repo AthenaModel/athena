@@ -89,7 +89,7 @@ smarturl /scenario /{case}/nbhood/index.json {
         set ndict [case with $case nbhood view $n]
         dict set ndict url "/scenario/$case/nbhood/$n/index.json"
         set controller [dict get $ndict controller]
-        if {$controller ne "SELF"} {
+        if {$controller ne "NONE"} {
             dict set ndict controller_link \
                 "/scenario/$case/actor/$controller/index" 
         } else {
@@ -141,7 +141,8 @@ smarturl /scenario /{case}/nbhood/{n}/index.json {
 
     set ndict [case with $case nbhood view $n]
 
-    if {[dict get $ndict controller] != "NONE"} {
+    set controller [dict get $ndict controller]
+    if {$controller != "NONE"} {
         dict set ndict controller_link "/scenario/$case/actor/$controller/index"
     } else {
         dict set ndict controller_link ""

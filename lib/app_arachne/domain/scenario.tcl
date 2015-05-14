@@ -279,6 +279,8 @@ oo::class create /scenario {
         hb put " | "
         hb iref /$case/frcgroup/index.html "Force Groups"
         hb put " | "
+        hb iref /$case/orggroup/index.html "Organization Groups"
+        hb put " | "
         hb iref /$case/order.html "Orders"
         hb put " | "
         hb iref /$case/script.html "Scripts"

@@ -92,7 +92,7 @@ smarturl /scenario /{case}/frcgroup/index.json {
         set fdict [case with $case frcgroup view $g]
         dict set fdict url "/scenario/$case/frcgroup/$g/index.json"
         set a [dict get $fdict a]
-        dict set a_link "/scenario/$case/actor/$a/index"
+        dict set fdict a_link "/scenario/$case/actor/$a/index"
 
         lappend table $fdict
     }
@@ -108,7 +108,7 @@ smarturl /scenario /{case}/frcgroup/{g}/index.html {
 
     
     if {$g ni [case with $case frcgroup names]} {
-        throw NOTFOUND "No such FRC group: \"$a\""
+        throw NOTFOUND "No such FRC group: \"$g\""
     }
 
     set name [case with $case frcgroup get $g longname]
@@ -139,7 +139,9 @@ smarturl /scenario /{case}/frcgroup/{g}/index.json {
     }
 
     set fdict [case with $case frcgroup view $g]
-    dict set fdict alink /$case/actor/$a/index
+
+    set a [dict get $fdict a]
+    dict set fdict a_link /$case/actor/$a/index
 
     return [js dictab [list $fdict]]
 }

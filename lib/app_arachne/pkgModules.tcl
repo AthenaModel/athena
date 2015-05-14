@@ -57,4 +57,5 @@ source [file join $::app_arachne::library domain scenario_actor.tcl    ]
 source [file join $::app_arachne::library domain scenario_civgroup.tcl ]
 source [file join $::app_arachne::library domain scenario_frcgroup.tcl ]
 source [file join $::app_arachne::library domain scenario_nbhood.tcl   ]
+source [file join $::app_arachne::library domain scenario_orggroup.tcl ]
 
