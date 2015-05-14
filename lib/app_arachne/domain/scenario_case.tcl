@@ -26,14 +26,6 @@
 smarturl /scenario /{case}/index.html {
     Displays information about scenario {case}.  
 } {
-    # TBD: I'd like a better API for this.  
-    #
-    # * It's like what we do with qdict, but there's no general 
-    #   instrastructure for it.
-    # * It's like normal validation, but results in NOTFOUND.
-    # * Should we add placeholder vars to the qdict?
-    # * Should we add a "udict" for url placeholders only?
-    #   * And then it could have a NOTFOUND option.
     set case [my ValidateCase $case]
 
     hb page "Scenario '$case': Overview"
@@ -41,8 +33,71 @@ smarturl /scenario /{case}/index.html {
 
     my CaseNavBar $case
 
+    set op [qdict prepare op -in {lock unlock}]
+
+    if {![qdict ok]} {
+        my ErrorList "Could not perform operation:" [qdict errors]
+    } else {
+        switch -- $op {
+            lock {
+                if {[case with $case isbusy] || [case with $case locked]} {
+                    hb putln "Cannot lock this scenario at this time."
+                } else {
+                    lassign [case with $case sanity onlock] severity
+
+                    if {$severity ne "OK"} {
+                        my redirect /scenario/$case/sanity/onlock.html
+                    }
+                    case with $case lock
+
+                    hb putln "Locked scenario."
+                }
+                hb para
+            }
+            unlock {
+                if {[case with $case isbusy] || [case with $case unlocked]} {
+                    hb putln "Cannot unlock this scenario at this time."
+                } else {
+                    case with $case unlock
+                    hb putln "Unlocked scenario."
+                }
+            }
+        }
+    }
+
+
+
     hb h2 "Scenario Metadata"
     my ScenarioTable -cases $case
+
+
+    if {[case with $case idle]} {
+        hb h2 "Operations"
+
+        hb ul
+
+        hb li-with {
+            hb form
+            hb hidden op lock
+            hb submit Lock
+            hb /form
+        }
+        hb li-with { 
+            hb form
+            hb hidden op unlock
+            hb submit Unlock
+            hb /form
+        }
+        hb li-with {
+            hb form
+            hb hidden op advance
+            hb submit Advance
+            hb putln "TBD: Need weeks"
+            hb /form                
+        }
+
+        hb /ul
+    }
 
     return [hb /page]
 }
