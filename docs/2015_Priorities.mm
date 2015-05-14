@@ -1,7 +1,54 @@
-<map version="0.9.0">
+<map version="freeplane 1.2.0">
 <!--To view this file, download free mind mapping software Freeplane from http://freeplane.sourceforge.net -->
-<node TEXT="Priorities" ID="ID_917868165" CREATED="1430414716360" MODIFIED="1430414721586">
-<hook NAME="MapStyle" zoom="1.5" max_node_width="600"/>
+<node TEXT="Priorities" ID="ID_917868165" CREATED="1430414716360" MODIFIED="1430414721586"><hook NAME="MapStyle" zoom="1.5">
+
+<map_styles>
+<stylenode LOCALIZED_TEXT="styles.root_node">
+<stylenode LOCALIZED_TEXT="styles.predefined" POSITION="right">
+<stylenode LOCALIZED_TEXT="default" MAX_WIDTH="600" COLOR="#000000" STYLE="as_parent">
+<font NAME="SansSerif" SIZE="10" BOLD="false" ITALIC="false"/>
+</stylenode>
+<stylenode LOCALIZED_TEXT="defaultstyle.details"/>
+<stylenode LOCALIZED_TEXT="defaultstyle.note"/>
+<stylenode LOCALIZED_TEXT="defaultstyle.floating">
+<edge STYLE="hide_edge"/>
+<cloud COLOR="#f0f0f0" SHAPE="ROUND_RECT"/>
+</stylenode>
+</stylenode>
+<stylenode LOCALIZED_TEXT="styles.user-defined" POSITION="right">
+<stylenode LOCALIZED_TEXT="styles.topic" COLOR="#18898b" STYLE="fork">
+<font NAME="Liberation Sans" SIZE="10" BOLD="true"/>
+</stylenode>
+<stylenode LOCALIZED_TEXT="styles.subtopic" COLOR="#cc3300" STYLE="fork">
+<font NAME="Liberation Sans" SIZE="10" BOLD="true"/>
+</stylenode>
+<stylenode LOCALIZED_TEXT="styles.subsubtopic" COLOR="#669900">
+<font NAME="Liberation Sans" SIZE="10" BOLD="true"/>
+</stylenode>
+<stylenode LOCALIZED_TEXT="styles.important">
+<icon BUILTIN="yes"/>
+</stylenode>
+</stylenode>
+<stylenode LOCALIZED_TEXT="styles.AutomaticLayout" POSITION="right">
+<stylenode LOCALIZED_TEXT="AutomaticLayout.level.root" COLOR="#000000">
+<font SIZE="18"/>
+</stylenode>
+<stylenode LOCALIZED_TEXT="AutomaticLayout.level,1" COLOR="#0033ff">
+<font SIZE="16"/>
+</stylenode>
+<stylenode LOCALIZED_TEXT="AutomaticLayout.level,2" COLOR="#00b439">
+<font SIZE="14"/>
+</stylenode>
+<stylenode LOCALIZED_TEXT="AutomaticLayout.level,3" COLOR="#990000">
+<font SIZE="12"/>
+</stylenode>
+<stylenode LOCALIZED_TEXT="AutomaticLayout.level,4" COLOR="#111111">
+<font SIZE="10"/>
+</stylenode>
+</stylenode>
+</stylenode>
+</map_styles>
+</hook>
 <node TEXT="Debugging" POSITION="right" ID="ID_145491900" CREATED="1430414741349" MODIFIED="1430414746906">
 <node TEXT="Mod Loading" ID="ID_1343875839" CREATED="1430414855893" MODIFIED="1430414869436">
 <icon BUILTIN="button_ok"/>
@@ -12,8 +59,8 @@
 <node TEXT="Code Search" ID="ID_813820593" CREATED="1430414858725" MODIFIED="1430414869436">
 <icon BUILTIN="button_ok"/>
 </node>
-<node TEXT="Debugging Log" ID="ID_1578787083" CREATED="1430414862476" MODIFIED="1430415773034">
-<icon BUILTIN="full-1"/>
+<node TEXT="Debugging Log" ID="ID_1578787083" CREATED="1430414862476" MODIFIED="1431641133725">
+<icon BUILTIN="button_ok"/>
 </node>
 </node>
 <node TEXT="Athena(n)" POSITION="right" ID="ID_953032289" CREATED="1430414785578" MODIFIED="1430414790118">
@@ -23,12 +70,12 @@
 <node TEXT="Threaded background operations" ID="ID_344728551" CREATED="1430418916519" MODIFIED="1430418924812">
 <icon BUILTIN="button_ok"/>
 </node>
-<node TEXT="Split GUI Views" ID="ID_1123064797" CREATED="1430414872861" MODIFIED="1430415952562">
-<icon BUILTIN="hourglass"/>
+<node TEXT="Split GUI Views" ID="ID_1123064797" CREATED="1430414872861" MODIFIED="1431638061726">
+<icon BUILTIN="button_ok"/>
 <node TEXT="WB vs Athena(n)" ID="ID_430366936" CREATED="1430414883136" MODIFIED="1430414890455"/>
 </node>
-<node TEXT="Structured sanity check data" ID="ID_844747552" CREATED="1430415052331" MODIFIED="1430415782394">
-<icon BUILTIN="full-1"/>
+<node TEXT="Structured sanity check data" ID="ID_844747552" CREATED="1430415052331" MODIFIED="1431638077273">
+<icon BUILTIN="button_ok"/>
 </node>
 <node TEXT="Causality Drill Down" ID="ID_252964895" CREATED="1430416587224" MODIFIED="1430416600628">
 <icon BUILTIN="full-1"/>
@@ -74,8 +121,8 @@
 <node TEXT="Clone" ID="ID_1182197409" CREATED="1430415207296" MODIFIED="1430415215255">
 <icon BUILTIN="button_ok"/>
 </node>
-<node TEXT="Sanity Check" ID="ID_802503364" CREATED="1430415044187" MODIFIED="1430416094171">
-<icon BUILTIN="full-1"/>
+<node TEXT="Sanity Check" ID="ID_802503364" CREATED="1430415044187" MODIFIED="1431638142399">
+<icon BUILTIN="button_ok"/>
 </node>
 <node TEXT="Lock" ID="ID_351405374" CREATED="1430415002165" MODIFIED="1430416088944">
 <icon BUILTIN="full-1"/>
