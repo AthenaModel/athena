@@ -1086,7 +1086,17 @@ smarturl /scenario /{case}/order.html {
     if {$order_ ne "" && $order_ in [athena::orders names]} {
         hb h2 $order_
 
-        # FIRST, send the order and let's see what happens.
+        # FIRST, fill in the default values.
+        set o [case with $case order make $order_]
+        set defaults [$o defaults]
+        $o destroy
+
+        set currentParms [dict keys [qdict parms]]
+        dict for {parm def} $defaults {
+            qdict prepare $parm -default $def
+        }
+
+        # NEXT, send the order and let's see what happens.
         try {
             if {$op eq "send"} {
                 set result [case send $case [namespace current]::qdict]
@@ -1111,6 +1121,7 @@ smarturl /scenario /{case}/order.html {
             }
         }
 
+        # NEXT, set up the form. 
         hb form 
         hb hidden op send
         hb hidden order_ $order_
