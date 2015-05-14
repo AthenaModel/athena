@@ -24,6 +24,11 @@
 
 snit::type ::athena::background {
     #-------------------------------------------------------------------
+    # Type Variables
+
+
+    
+    #-------------------------------------------------------------------
     # Type Methods
 
     # init
@@ -33,8 +38,10 @@ snit::type ::athena::background {
     # in the main thread.
     typemethod init {} {
         # Arrange for threaded errors to be handled by bgerror in the
-        # event loop.
-        thread::errorproc ::athena::background::ThreadErrorHandler
+        # event loop, unless some other provision has been made.
+        if {[thread::errorproc] eq ""} {
+            thread::errorproc ::athena::background::ThreadErrorHandler
+        }
     }
 
     proc ThreadErrorHandler {thread_id errinfo} {
@@ -86,6 +93,10 @@ snit::type ::athena::background {
 
         # NEXT, create and remember the syncfile name.
         set info(syncfile) [workdir join slave.adb]
+
+        # NEXT, initialize threaded error handling if it hasn't 
+        # already been done.
+        $type init
     }
 
 

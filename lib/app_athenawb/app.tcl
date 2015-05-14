@@ -230,9 +230,6 @@ snit::type app {
 
         notifier bind ::adb <NewLog> ::app [mytypemethod NewScenarioLog]
 
-        # NEXT, prepare for handling background thread errors
-        athena::background init
-
         # NEXT, configure and initialize other application modules.
         view init
 
