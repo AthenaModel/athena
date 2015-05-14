@@ -70,6 +70,23 @@ smarturl /scenario /{case}/index.html {
     hb h2 "Scenario Metadata"
     my ScenarioTable -cases $case
 
+    set weekdict {
+        1   "1 week"
+        2   "2 weeks"
+        3   "3 weeks"
+        4   "4 weeks"
+        5   "5 weeks"
+        6   "6 weeks"
+        7   "7 weeks"
+        8   "8 weeks"
+        10  "10 weeks"
+        12  "12 weeks"
+        24  "24 weeks"
+        36  "36 weeks"
+        48  "48 weeks"
+        52  "1 year"
+        104 "2 years"
+    }
 
     if {[case with $case idle]} {
         hb h2 "Operations"
@@ -77,22 +94,24 @@ smarturl /scenario /{case}/index.html {
         hb ul
 
         hb li-with {
-            hb form
-            hb hidden op lock
-            hb submit Lock
-            hb /form
+            hb iref /$case/index.html?op=lock Lock
+            hb put " ("
+            hb iref /$case/lock.json json
+            hb put ")"
         }
         hb li-with { 
-            hb form
-            hb hidden op unlock
-            hb submit Unlock
-            hb /form
+            hb iref /$case/index.html?op=unlock Unlock
+            hb put " ("
+            hb iref /$case/unlock.json json
+            hb put ")"
         }
         hb li-with {
             hb form
             hb hidden op advance
+            hb label weeks "Weeks:"
+            hb enumlong weeks -selected 1 $weekdict 
             hb submit Advance
-            hb putln "TBD: Need weeks"
+            hb submit -formaction [my domain]/$case/advance.json "JSON"
             hb /form                
         }
 
