@@ -43,63 +43,25 @@ smarturl /scenario /{case}/index.html {
             # ALL DONE
         }
 
-        switch -- $op {
-            advance {
-                if {[case with $case isbusy] || [case with $case unlocked]} {
-                    my status {
-                        hb putln \
-                        "Cannot advance time, scenario is busy or unlocked."
-                    }
-                    my redirect /scenario/$case/index.html
-                } 
-
-                case with $case advance \
-                    -ticks $weeks \
-                    -mode background
-
-                my status {
-                    hb putln "Advancing time in background."
+        try {
+            switch -- $op {
+                advance {
+                    case advance $case $weeks
+                    my status { hb putln "Advancing time." }
+                }
+                lock {
+                    case lock $case
+                    my status { hb putln "Scenario is locked." }
+                }
+                unlock {
+                    case unlock $case
+                    my status { hb putln "Scenario is unlocked." }
                 }
             }
-            lock {
-                if {[case with $case isbusy] || [case with $case locked]} {
-                    my status {
-                        hb putln \
-                            "Cannot lock scenario, scenario is busy or already locked."
-                    }
-                    # ALL DONE
-                    my redirect /scenario/$case/index.html
-                }
-
-                lassign [case with $case sanity onlock] severity
-
-                if {$severity ne "OK"} {
-                    my redirect /scenario/$case/sanity/onlock.html
-                    # ALL DONE
-                }
-
-                case with $case lock
-
-                my status {
-                    hb putln "Locked scenario."
-                }
-            }
-            unlock {
-                if {[case with $case isbusy] || [case with $case unlocked]} {
-                    my status {
-                        hb putln \
-            "Cannot unlock scenario, scenario is busy or already unlocked."
-                    }
-                    my redirect /scenario/$case/index.html
-                    # ALL DONE
-                }
-
-                case with $case unlock
-
-                my status {
-                    hb putln "Unlocked scenario."
-                }
-            }
+        } trap {SCENARIO NOTSANE} {result} {
+            my redirect [my domain $case sanity onlock.html]
+        } trap SCENARIO {result} {
+            my status { hb span -class error $result }
         }
 
         my redirect /scenario/$case/index.html
@@ -174,6 +136,68 @@ smarturl /scenario /{case}/index.html {
     hb /ul
 
     return [hb /page]
+}
+
+#-----------------------------------------------------------------------
+# lock.json
+
+smarturl /scenario /{case}/lock.json {
+    Locks scenario {case} if it is unlocked.  On success, returns a list 
+    <pre>["OK", ""]</pre>, and on failure returns a list
+    <pre>["ERROR","message",""]
+} {
+    set case [my ValidateCase $case]
+
+    try {
+        case lock $case
+        return [js ok ""]
+    } trap SCENARIO {result} {
+        return [js error $result]
+    }
+}
+
+#-----------------------------------------------------------------------
+# unlock.json
+
+smarturl /scenario /{case}/unlock.json {
+    Unlocks scenario {case} if it is locked.  On success, returns a list 
+    <pre>["OK", ""]</pre>, and on failure returns a list
+    <pre>["ERROR","message",""]
+} {
+    set case [my ValidateCase $case]
+
+    try {
+        case unlock $case
+        return [js ok ""]
+    } trap SCENARIO {result} {
+        return [js error $result]
+    }
+}
+
+#-----------------------------------------------------------------------
+# advance.json
+
+smarturl /scenario /{case}/advance.json {
+    Asks for an advance of simulation time in scenario {case} by {weeks}, 
+    locking the scenario if necessary.  The scenario will be <b>BUSY</b> 
+    until the time advance is complete.  On success, returns a list 
+    <pre>["OK", ""]</pre>, and on failure returns a list
+    <pre>["ERROR","message",""]
+} {
+    set case [my ValidateCase $case]
+
+    set weeks [qdict prepare weeks -default 1 -with {ipositive validate}]
+
+    if {![qdict ok]} {
+        return [js reject [qdict errors]]
+    }
+
+    try {
+        case advance $case $weeks
+        return [js ok ""]
+    } trap SCENARIO {result} {
+        return [js error $result]
+    }
 }
 
 #-----------------------------------------------------------------------

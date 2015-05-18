@@ -339,7 +339,7 @@ oo::class create ::projectlib::smartdomain {
     #-------------------------------------------------------------------
     # Tools for use in domain handlers 
 
-    # domain ?components?
+    # domain ?components...?
     #
     # Returns the domain URL
 
