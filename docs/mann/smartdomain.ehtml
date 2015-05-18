@@ -83,6 +83,15 @@ Installs the smartdomain for use with the named <xref mydomain(n)>.
 <defitem domain {<i obj> domain}>
 Returns the domain's domain, e.g., "/secenario".<p>
 
+<defitem hmethod {<i obj> hmethod}>
+
+For use in URL handlers.  Returns the HTTP method, <b GET> or <b POST>.<p>
+
+<defitem hurl {<i obj> hurl}>
+
+For use in URL handlers.  Returns the requested URL as a server-relative
+URL, minus any query string or fragment.<p>
+
 <defitem query {<i obj> query}>
 
 For use in URL handlers.  Returns the raw query string from the request.<p>

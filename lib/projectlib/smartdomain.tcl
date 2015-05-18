@@ -273,7 +273,9 @@ oo::class create ::projectlib::smartdomain {
         # sanitized for the handler.  Be nice to have a better way to
         # do this, as well.
         upvar #0 ::ahttpd::Httpd$sock data
-        set trans(query) $data(query)
+        set trans(query)   $data(query)
+        set trans(hmethod) $data(proto)
+        set trans(url)     $data(url)
 
         # NEXT, parse the query data into a dictionary.
         # TBD: This will need to be generalized for mydomain use.
@@ -337,12 +339,16 @@ oo::class create ::projectlib::smartdomain {
     #-------------------------------------------------------------------
     # Tools for use in domain handlers 
 
-    # domain
+    # domain ?components?
     #
     # Returns the domain URL
 
-    method domain {} {
-        return $info(domain)
+    method domain {args} {
+        if {[llength $args] > 0} {
+            return $info(domain)/[join $args /]
+        } else {
+            return $info(domain)
+        }
     }
 
     # redirect url
@@ -363,6 +369,22 @@ oo::class create ::projectlib::smartdomain {
     
     method query {} {
         return $trans(query) 
+    }
+
+    # hmethod
+    #
+    # Returns the HTTP method, GET or POST.
+    
+    method hmethod {} {
+        return $trans(hmethod)
+    }
+
+    # hurl 
+    #
+    # Returns the server-relative URL, minus query, for this request.
+
+    method hurl {} {
+        return $trans(url)
     }
 
     #-------------------------------------------------------------------

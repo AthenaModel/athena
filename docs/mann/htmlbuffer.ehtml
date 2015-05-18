@@ -362,11 +362,20 @@ Clears the buffer and adds the standard HTML header boilerplate:<p>
      is set.<p>
 <li> A <tag style>...<tag /style> block is included if the 
      <tt -styles> option is set.<p>
-<li> If <i options> are given, they become attributes of the 
-     <tag body> tag.<p>
 <li> The <tt -headercmd> (if any) is called; it may include the
      <i title> at the top of the body of the page.<p>
 </ul>
+
+The command takes the following options; any options not included in this 
+list are automatically converted into attributes on the <tag body> tag.<p>
+
+<deflist options>
+<defopt {-refreshafter <i seconds>}>
+
+If given, the page will automatically refresh itself after the specified
+number of seconds.<p>
+
+</deflist options>
 
 
 <defitem /page {<i obj> /page}>

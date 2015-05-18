@@ -24,48 +24,96 @@
 # files; this section has the general mechanism pages.
 
 smarturl /scenario /{case}/index.html {
-    Displays information about scenario {case}.  
+    Displays information about scenario {case}.
 } {
+    # FIRST, get the URL placeholder variables
     set case [my ValidateCase $case]
 
-    hb page "Scenario '$case': Overview"
-    hb h1 "Scenario '$case': Overview"
+    # NEXT, carry out any given operation.
+    if {[my hmethod] eq "POST"} {
+        my status clear
+        set op    [qdict prepare op -required -in {advance lock unlock}]
+        set weeks [qdict prepare weeks -default 1 -with {ipositive validate}]
 
-    my CaseNavBar $case
+        if {![qdict ok]} {
+            my status {
+                my ErrorList "Could not perform operation:" [qdict errors]
+            }
+            my redirect /scenario/$case/index.html
+            # ALL DONE
+        }
 
-    set op [qdict prepare op -in {lock unlock}]
-
-    if {![qdict ok]} {
-        my ErrorList "Could not perform operation:" [qdict errors]
-    } else {
         switch -- $op {
+            advance {
+                if {[case with $case isbusy] || [case with $case unlocked]} {
+                    my status {
+                        hb putln \
+                        "Cannot advance time, scenario is busy or unlocked."
+                    }
+                    my redirect /scenario/$case/index.html
+                } 
+
+                case with $case advance \
+                    -ticks $weeks \
+                    -mode background
+
+                my status {
+                    hb putln "Advancing time in background."
+                }
+            }
             lock {
                 if {[case with $case isbusy] || [case with $case locked]} {
-                    hb putln "Cannot lock this scenario at this time."
-                } else {
-                    lassign [case with $case sanity onlock] severity
-
-                    if {$severity ne "OK"} {
-                        my redirect /scenario/$case/sanity/onlock.html
+                    my status {
+                        hb putln \
+                            "Cannot lock scenario, scenario is busy or already locked."
                     }
-                    case with $case lock
+                    # ALL DONE
+                    my redirect /scenario/$case/index.html
+                }
 
+                lassign [case with $case sanity onlock] severity
+
+                if {$severity ne "OK"} {
+                    my redirect /scenario/$case/sanity/onlock.html
+                    # ALL DONE
+                }
+
+                case with $case lock
+
+                my status {
                     hb putln "Locked scenario."
                 }
-                hb para
             }
             unlock {
                 if {[case with $case isbusy] || [case with $case unlocked]} {
-                    hb putln "Cannot unlock this scenario at this time."
-                } else {
-                    case with $case unlock
+                    my status {
+                        hb putln \
+            "Cannot unlock scenario, scenario is busy or already unlocked."
+                    }
+                    my redirect /scenario/$case/index.html
+                    # ALL DONE
+                }
+
+                case with $case unlock
+
+                my status {
                     hb putln "Unlocked scenario."
                 }
             }
         }
+
+        my redirect /scenario/$case/index.html
+        # ALL DONE        
     }
 
 
+    hb page "Scenario '$case': Overview" \
+        -refreshafter [my RefreshIfBusy $case]
+    hb h1 "Scenario '$case': Overview"
+
+    my CaseNavBar $case
+
+    my status
 
     hb h2 "Scenario Metadata"
     my ScenarioTable -cases $case
@@ -88,35 +136,42 @@ smarturl /scenario /{case}/index.html {
         104 "2 years"
     }
 
-    if {[case with $case idle]} {
-        hb h2 "Operations"
+    hb h2 "Operations"
 
-        hb ul
-
-        hb li-with {
-            hb iref /$case/index.html?op=lock Lock
-            hb put " ("
-            hb iref /$case/lock.json json
-            hb put ")"
-        }
-        hb li-with { 
-            hb iref /$case/index.html?op=unlock Unlock
-            hb put " ("
-            hb iref /$case/unlock.json json
-            hb put ")"
-        }
-        hb li-with {
-            hb form
-            hb hidden op advance
-            hb label weeks "Weeks:"
-            hb enumlong weeks -selected 1 $weekdict 
-            hb submit Advance
-            hb submit -formaction [my domain]/$case/advance.json "JSON"
-            hb /form                
-        }
-
-        hb /ul
+    hb putln {
+        Note: We show all operations whether they are currently
+        allowed or not so that we can test the JSON interface's
+        error handling.
     }
+    hb para
+
+    hb ul
+
+    hb li-with {
+        hb form -method post 
+        hb hidden op lock
+        hb submit Lock
+        hb submit -formaction [my domain]/$case/lock.json "JSON"
+        hb /form
+    }
+    hb li-with { 
+        hb form -method post 
+        hb hidden op unlock
+        hb submit Unlock
+        hb submit -formaction [my domain]/$case/unlock.json "JSON"
+        hb /form
+    }
+    hb li-with {
+        hb form -method post
+        hb hidden op advance
+        hb label weeks "Weeks:"
+        hb enumlong weeks -selected 1 $weekdict 
+        hb submit Advance
+        hb submit -formaction [my domain]/$case/advance.json "JSON"
+        hb /form                
+    }
+
+    hb /ul
 
     return [hb /page]
 }
