@@ -292,6 +292,51 @@ namespace eval ::athena_test::tests:: {
     } -result {{case00 case01} case00}
 
     #-------------------------------------------------------------------
+    # /scenario/{name}/sanity/onlock.json
+
+
+    test sanity_onlock.json-1.1 {No such scenario} -body {
+        ted get /nonesuch/sanity/onlock.json
+    } -result {NOTFOUND {No such scenario: "nonesuch"}}
+
+    test sanity/onlock.json-2.1 {OK: sanity/onlock accepted} -body {
+        ted get /case00/sanity/onlock.json
+    } -cleanup {
+        cleanup
+    } -result {[
+  {
+    "severity": "error",
+    "code": "nbhood.none",
+    "entity": "nbhood",
+    "message": "No neighborhoods are defined."
+  },
+  {
+    "severity": "error",
+    "code": "frcgroup.none",
+    "entity": "group\/frc",
+    "message": "No force groups are defined."
+  },
+  {
+    "severity": "error",
+    "code": "civgroup.none",
+    "entity": "group\/civ",
+    "message": "No civilian groups are defined."
+  },
+  {
+    "severity": "error",
+    "code": "civgroup.pop",
+    "entity": "group\/civ",
+    "message": "No civilian group has a base population greater than 0."
+  },
+  {
+    "severity": "error",
+    "code": "econ.noconsumers",
+    "entity": "group\/civ",
+    "message": "No consumers in local economy. At least one civilian group must be in a \"local\" neighborhood, must have base population greater than 0, and must not live by subsistence agriculture."
+  }
+]}
+
+    #-------------------------------------------------------------------
     # /scenario/{name}/order.json
     #
     # Note: most of the functionality is in the [case send] command,

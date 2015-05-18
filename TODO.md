@@ -15,7 +15,6 @@
   - Missing Operations:
     - Lock/Unlock/Time Advance
     - HTML I/F to control toplevel operations
-    - Many, many .json queries
   - What should the htdocs directory look like?
   - Write arachne(1) man page, referencing I/F doc.
   - Write athena_log(1) man page.

@@ -55,15 +55,21 @@ smarturl /scenario /{case}/frcgroup/index.html {
         "<br>Demeanor" "Cost,<br>\$/person/week" 
     } {
         foreach frcgroup $frcgroups {
-            set fdict [case with $case frcgroup view $frcgroup]
+            set fdict [case with $case frcgroup view $frcgroup web]
             dict with fdict {}
+            append url ".html"
             hb tr {
                 hb td-with {
-                    hb iref /$case/frcgroup/$id/index.html "$id"
+                    hb iref "/$case/$url" "$id"
                 }
                 hb td $longname
                 hb td-with {
-                    hb iref /$case/actor/$a/index.html "$a"
+                    if {$a_link ne ""} {
+                        append a_link ".html"
+                        hb iref "/$case/$a_link" "$a"
+                    } else {
+                        hb put ""
+                    }
                 }
                 hb td $forcetype
                 hb td $pretty_local
@@ -89,14 +95,14 @@ smarturl /scenario /{case}/frcgroup/index.json {
     set table [list]
 
     foreach g [case with $case frcgroup names] {
-        set fdict [case with $case frcgroup view $g]
-        dict set fdict url "/scenario/$case/frcgroup/$g/index.json"
-        set a [dict get $fdict a]
-        if {$a ne ""} {
-            dict set fdict a_link "/scenario/$case/actor/$a/index"
-        } else {
-            dict set fdict a_link ""
+        set fdict [case with $case frcgroup view $g web]
+        set url [dict get $fdict url]
+        set a_link [dict get $fdict a_link]
 
+        # NEXT, format URLs properly
+        dict set fdict url "/scenario/$case/$url"
+        if {$a_link ne ""} {
+            dict set fdict a_link "/scenario/$case/$a_link"
         }
 
         lappend table $fdict
@@ -121,6 +127,7 @@ smarturl /scenario /{case}/frcgroup/{g}/index.html {
     hb page "Scenario '$case': Force Group: $g"
     hb h1 "Scenario '$case': Force Group: $g"
 
+    # NEXT, the only content for now is a link to JSON data
     hb putln "Click for "
     hb iref /$case/frcgroup/$g/index.json "json"
     hb put "."
@@ -143,14 +150,16 @@ smarturl /scenario /{case}/frcgroup/{g}/index.json {
         throw NOTFOUND "No such FRC group: \"$g\""
     }
 
-    set fdict [case with $case frcgroup view $g]
+    set fdict [case with $case frcgroup view $g web]
+    set url [dict get $fdict url]
+    set a_link [dict get $fdict a_link]
 
-    set a [dict get $fdict a]
-    if {$a ne ""} {
-        dict set fdict a_link /$case/actor/$a/index
-    } else {
-        dict set fdict a_link ""
-    }
+    # NEXT, format URLs properly
+    dict set fdict url "/scenario/$case/$url"
+
+    if {$a_link ne ""} {
+        dict set fdict a_link "/scenario/$case/$a_link"
+    } 
 
     return [js dictab [list $fdict]]
 }

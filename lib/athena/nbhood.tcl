@@ -152,12 +152,19 @@ snit::type ::athena::nbhood {
     # view n ?tag?
     #
     # n    - A neighborhood
-    # tag  - A view tag (unused)
+    # tag  - A view tag
     #
-    # Retrieves a view dictionary for the neighborhood.
+    # Retrieves a view dictionary for the neighborhood.  If tag is
+    # supplied it is prepended to '_nbhoods' and that is usesd as the
+    # SQL table for lookup; the formatted view is used by default
 
     method view {n {tag ""}} {
-        return [dbget $adb fmt_nbhoods n $n]
+        if {$tag eq ""} {
+            set table fmt_nbhoods
+        } else {
+            append table $tag _nbhoods
+        }
+        return [dbget $adb $table n $n]
     }
 
     # namedict

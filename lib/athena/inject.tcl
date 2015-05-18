@@ -88,45 +88,18 @@ snit::type ::athena::inject {
     #-------------------------------------------------------------------
     # Sanity Check
 
-    # checker ?ht?
+    # checker f
     #
-    # ht - An htools buffer
+    # f    - A failurelist object
     #
-    # Computes the sanity check, and formats the results into the buffer
-    # for inclusion into an HTML page.  Returns an esanity value, either
-    # OK or WARNING.
+    # Computes the sanity check, adding failures to the failure list
+    # object.
     #
-    # Note: This checker is called from [iom checker], not from
+    # Note: This checker is called from [curse checker], not from
     # [sanity *].
 
-    method checker {{ht ""}} {
-        set edict [$self DoSanityCheck]
-
-        if {[dict size $edict] == 0} {
-            return OK
-        }
-
-        if {$ht ne ""} {
-            $self DoSanityReport $ht $edict
-        }
-
-        return WARNING
-    }
-
-    # DoSanityCheck
-    #
-    # This routine does the actual sanity check, marking the inject
-    # records in the RDB and putting error messages in a 
-    # nested dictionary, curse_id -> inject_num -> errmsg.
-    #
-    # Returns the dictionary, which will be empty if there were no
-    # errors.
-
-    method DoSanityCheck {} {
-        # FIRST, create the empty error dictionary.
-        set edict [dict create]
-
-        # NEXT, clear the invalid states, since we're going to 
+    method checker {f} {
+        # FIRST, clear the invalid states, since we're going to 
         # recompute them.
 
         $adb eval {
@@ -145,8 +118,12 @@ snit::type ::athena::inject {
             set result [$self $itype check [array get row]]
 
             if {$result ne ""} {
-                dict set edict $row(curse_id) $row(inject_num) $result
                 lappend badlist $row(curse_id) $row(inject_num)
+
+                $f add warning \
+                    inject.$row(inject_type) \
+                    inject/$row(curse_id)/$row(inject_num) \
+                    $result
             }
         }
 
@@ -158,59 +135,7 @@ snit::type ::athena::inject {
                 WHERE curse_id=$curse_id AND inject_num=$inject_num 
             }
         }
-
-        $adb notify inject <Check>
-
-        return $edict
     }
-
-
-    # DoSanityReport ht edict
-    #
-    # ht        - An htools buffer to receive a report.
-    # edict     - A dictionary curse_id->inject_num->errmsg
-    #
-    # Writes HTML text of the results of the sanity check to the ht
-    # buffer.  This routine assumes that there are errors.
-
-    method DoSanityReport {ht edict} {
-
-        # FIRST, Build the report
-        $ht subtitle "CURSE Inject Constraints"
-
-        $ht putln {
-            Certain CURSE injects failed their checks and have been 
-            marked invalid in the
-        }
-        
-        $ht link gui:/tab/curses "CURSE Browser"
-
-        $ht put ".  Please fix them or delete them."
-        $ht para
-
-        dict for {curse_id cdict} $edict {
-            array set cdata [$adb curse get $curse_id]
-
-            $ht putln "<b>CURSE $curse_id: $cdata(longname)</b>"
-            $ht ul
-
-            dict for {inject_num errmsg} $cdict {
-                set idict [$self get [list $curse_id $inject_num]]
-
-                dict with idict {
-                    $ht li
-                    $ht put "Inject #$inject_num: $narrative"
-                    $ht br
-                    $ht putln "==> <font color=red>Warning: $errmsg</font>"
-                }
-            }
-            
-            $ht /ul
-        }
-
-        return
-    }
-
 
     #===================================================================
     # inject Instance: Modification and Query Interace

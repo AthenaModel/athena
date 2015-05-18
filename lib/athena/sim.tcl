@@ -43,7 +43,7 @@ snit::type ::athena::sim {
     # basetime  - The time at which a run started.
     # reason    - A code indicating why the run stopped:
     # 
-    #             OK        - Normal termination
+    #             COMPLETE  - Normal termination
     #             FAILURE   - On-tick sanity check failure
     #             ""        - Abnormal
 
@@ -124,7 +124,7 @@ snit::type ::athena::sim {
     #
     # returns the reason why the sim returned from RUNNING to PAUSED:
     #
-    # OK       - Normal termination
+    # COMPLETE - Normal termination
     # FAILURE  - on-tick sanity check failure
     # ""       - No reason assigned, hence an unexpected error.
     #            Use [catch] to get these.
@@ -353,17 +353,18 @@ snit::type ::athena::sim {
 
         # NEXT, pause if checks failed or the stop time is met.
         set stopping 0
-
-        if {[$adb sanity ontick check] != "OK"} {
+        lassign [$adb sanity ontick] sev
+        if {$sev != "OK"} {
             set info(reason) FAILURE
             set stopping 1
+            $adb log warning sim "On-tick sanity check failed"
 
             $adb notify "" <InsaneOnTick>
         }
 
         if {[$adb clock now] >= $info(stoptime)} {
             $adb log normal sim "Stop time reached"
-            set info(reason) "OK"
+            set info(reason) "COMPLETE"
             set stopping 1
         }
 

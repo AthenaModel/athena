@@ -43,6 +43,12 @@ snit::type case {
         names {}
     }
 
+    # List of temporary SQL files to be read by athenadb
+
+    typevariable webviews {
+        web_scenario.sql
+    }
+
     #-------------------------------------------------------------------
     # Initialization
 
@@ -219,8 +225,11 @@ snit::type case {
             app log normal $id "Reset case $id"
         } else {
             set sdb [athena new \
-                        -subject $id \
-                        -logdir [scratchdir join log $id]]
+                        -subject $id                      \
+                        -logdir [scratchdir join log $id] \
+                        -tempsqlfiles   [lmap x $webviews {
+                            file join $::app_arachne::library sql $x
+                        }]]
 
             lappend cases(names)    $id
             set cases(longname-$id) [DefaultLongname $id]
@@ -297,7 +306,11 @@ snit::type case {
         }
 
         # NEXT, make sure we can load the filename.
-        set sdb [athena new -subject $theID]
+        set sdb [athena new         \
+                    -subject $theID \
+                    -tempsqlfiles   [lmap x $webviews {
+                        file join $::app_arachne::library sql $x
+                    }]]
 
         if {$ext eq ".adb"} {
             try {

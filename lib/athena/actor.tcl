@@ -110,12 +110,19 @@ snit::type ::athena::actor {
     # view a ?tag?
     #
     # a    - An actor
-    # tag  - A view tag (ignored)
+    # tag  - A view tag 
     #
-    # Retrieves a view dictionary for the actor.
+    # Retrieves a view dictionary for the actor. If tag is supplied,
+    # it is prepended to the string _actors and assumed to be an SQL
+    # table or view that is present in the db.
 
     method view {a {tag ""}} {
-        return [dbget $adb fmt_actors a $a]
+        if {$tag eq ""} {
+            set table fmt_actors
+        } else {
+            append table $tag _actors
+        }
+        return [dbget $adb $table a $a]
     }
 
 

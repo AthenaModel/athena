@@ -110,12 +110,19 @@ snit::type ::athena::orggroup {
     # view g ?tag?
     #
     # g    - A group 
-    # tag  - A view tag (unused)
+    # tag  - A view tag 
     #
-    # Retrieves a view dictionary for the group.
+    # Retrieves a view dictionary for the group. If tag is suppied it is
+    # prepended to '_orggroups' and that is used as the SQL table for lookup.
+    # Otherwise the formatted view is used by default.
 
     method view {g {tag ""}} {
-        return [dbget $adb fmt_orggroups g $g]
+        if {$tag eq ""} {
+            set table fmt_orggroups
+        } else {
+            append table $tag _orggroups
+        }
+        return [dbget $adb $table g $g]
     }
 
     #-------------------------------------------------------------------

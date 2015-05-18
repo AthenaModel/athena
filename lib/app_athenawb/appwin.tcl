@@ -406,7 +406,6 @@ snit::widget appwin {
                         {v  7 yes}
                         {c  9 yes}
                         {m  0 yes}
-                        {v2 0 no }
                     } -parsecmd ::appwin::LogParser
             }
         }

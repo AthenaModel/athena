@@ -49,20 +49,23 @@ smarturl /scenario /{case}/civgroup/index.html {
 
     hb para
 
+    # NEXT, a minimal amount of data, the JSON URL return will have it all
     hb table -headers {
         "<br>ID" "<br>Name" "<br>Neighborhood" "<br>Population" 
         "Subsistence<br>Agriculture"
     } {
         foreach civgroup $civgroups {
-            set cdict [case with $case civgroup view $civgroup]
+            set cdict [case with $case civgroup view $civgroup web]
             dict with cdict {}
+            append url ".html"
+            append n_link ".html"
             hb tr {
                 hb td-with {
-                    hb iref /$case/civgroup/$id/index.html "$id"
+                    hb iref "/$case/$url" "$id"
                 }
                 hb td $longname
                 hb td-with {
-                    hb iref /$case/nbhood/$n/index.html "$n"
+                    hb iref "/$case/$n_link" "$n"
                 }
                 hb td $population 
                 hb td $pretty_sa_flag
@@ -84,11 +87,13 @@ smarturl /scenario /{case}/civgroup/index.json {
     set table [list]
 
     foreach g [case with $case civgroup names] {
-        set cdict [case with $case civgroup view $g]
-        dict set cdict url "/scenario/$case/civgroup/$g/index.json"
+        set cdict [case with $case civgroup view $g web]
+        set url [dict get $cdict url]
+        set n_link [dict get $cdict n_link]
 
-        set n [dict get $cdict n]
-        dict set cdict n_link "/scenario/$case/nbhood/$n/index"
+        # NEXT, format URLs properly
+        dict set cdict url "/scenario/$case/$url"
+        dict set cdict n_link "/scenario/$case/$n_link"
 
         lappend table $cdict
     }
@@ -112,6 +117,7 @@ smarturl /scenario /{case}/civgroup/{g}/index.html {
     hb page "Scenario '$case': Civilian Group: $g"
     hb h1 "Scenario '$case': Civilian Group: $g"
 
+    # NEXT, only content for now is a link to the JSON
     hb putln "Click for "
     hb iref /$case/civgroup/$g/index.json "json"
     hb put "."
@@ -134,10 +140,13 @@ smarturl /scenario /{case}/civgroup/{g}/index.json {
         throw NOTFOUND "No such CIV group: \"$g\""
     }
 
-    set cdict [case with $case civgroup view $g]
+    set cdict [case with $case civgroup view $g web]
+    set url    [dict get $cdict url] 
+    set n_link [dict get $cdict n_link]
 
-    set n [dict get $cdict n]
-    dict set cdict n_link "/scenario/$case/nbhood/$n/index"
+    # NEXT, format URLs properly
+    dict set cdict url    "/scenario/$case/$url"
+    dict set cdict n_link "/scenario/$case/$n_link"
 
     return [js dictab [list $cdict]]
 }

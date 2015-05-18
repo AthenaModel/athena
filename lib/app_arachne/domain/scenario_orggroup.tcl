@@ -50,16 +50,24 @@ smarturl /scenario /{case}/orggroup/index.html {
     hb para
 
     hb table -headers {
-        "<br>ID" "<br>Name" 
+        "ID" "Name" "Owner"
     } {
         foreach orggroup $orggroups {
-            set odict [case with $case orggroup view $orggroup]
+            set odict [case with $case orggroup view $orggroup web]
             dict with odict {}
             hb tr {
                 hb td-with {
                     hb iref /$case/orggroup/$id/index.html "$id"
                 }
                 hb td $longname
+                hb td-with {
+                    if {$a_link ne ""} {
+                        append a_link ".html"
+                        hb iref "/$case/$a_link" "$a"
+                    } else {
+                        hb put ""
+                    }
+                }
             }
         }
     }
@@ -78,13 +86,14 @@ smarturl /scenario /{case}/orggroup/index.json {
     set table [list]
 
     foreach g [case with $case orggroup names] {
-        set odict [case with $case orggroup view $g]
-        dict set odict url "/scenario/$case/oprggroup/$g/index.json"
-        set a [dict get $odict a]
-        if {$a ne ""} {
-            dict set odict a_link "/scenario/$case/actor/$a/index"
-        } else {
-            dict set odict a_link ""
+        set odict [case with $case orggroup view $g web]
+        set url    [dict get $odict url]
+        set a_link [dict get $odict a_link]
+
+        # NEXT, format URLs properly
+        dict set odict url "/scenario/$case/$url"
+        if {$a_link ne ""} {
+            dict set odict a_link "/scenario/$case/$a_link"
         }
 
         lappend table $odict
@@ -130,14 +139,15 @@ smarturl /scenario /{case}/orggroup/{g}/index.json {
         throw NOTFOUND "No such FRC group: \"$g\""
     }
 
-    set odict [case with $case orggroup view $g]
+    set odict [case with $case orggroup view $g web]
+    set url    [dict get $odict url]
+    set a_link [dict get $odict a_link]
 
-    set a [dict get $odict a]
-    if {$a ne ""} {
-        dict set odict a_link /$case/actor/$a/index
-    } else {
-        dict set odict a_link ""
-    }
+    # NEXT, format URLs properly
+    dict set odict url "/scenario/$case/$url"
+    if {$a_link ne ""} {
+        dict set odict a_link "/scenario/$case/$a_link"
+    } 
 
     return [js dictab [list $odict]]
 }

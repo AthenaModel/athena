@@ -182,12 +182,19 @@ snit::type ::athena::civgroup {
     # view g ?tag?
     #
     # g    - A group in the neighborhood
-    # tag  - A view tag (unused)
+    # tag  - A view tag 
     #
-    # Retrieves a view dictionary for the group.
+    # Retrieves a view dictionary for the group. If tag is supplied it is
+    # prepended to '_civgroups' and that is used as the SQL view for lookup.
+    # By default the formatted view is used.
 
     method view {g {tag ""}} {
-        return [dbget $adb fmt_civgroups g $g]
+        if {$tag eq ""} {
+            set table fmt_civgroups
+        } else {
+            append table $tag _civgroups
+        }
+        return [dbget $adb $table g $g]
     }
 
     # check lfp/sa_flag lfp sa_flag

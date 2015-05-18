@@ -426,7 +426,7 @@ Begins a <tag span>.  If <i options> are given, they are converted
 into tag attributes.  If the <i text> is given, it is added to the buffer
 and the span is terminated with <tag /span>.<p>
 
-<defitem span-with {<i obj> span ?<i options...>? <i body>}>
+<defitem span-with {<i obj> span-with ?<i options...>? <i body>}>
 
 Adds a complete <tag span> element.  If <i options> are given, they are converted
 into tag attributes.  The <i body> is executed as a script that will 

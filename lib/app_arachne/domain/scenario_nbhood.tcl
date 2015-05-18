@@ -54,14 +54,23 @@ smarturl /scenario /{case}/nbhood/index.html {
         "Subsistence" "Consumers" "Labor Force" "Unemployed"
     } {
         foreach nbhood $nbhoods {
-            set ndict [case with $case nbhood view $nbhood]
+            set ndict [case with $case nbhood view $nbhood web]
             dict with ndict {}
+            append url ".html"
             hb tr {
                 hb td-with {
-                    hb iref /$case/nbhood/$id/index.html "$id"
+                    hb iref "/$case/$url" "$id"
                 }
                 hb td $longname
                 hb td $local 
+                hb td-with {
+                    if {$controller_link ne ""} {
+                        append controller_link ".html"
+                        hb iref "/$case/$controller_link" "$controller"
+                    } else {
+                        hb put $controller
+                    }
+                }
                 hb td $controller
                 hb td $urbanization
                 hb td $population
@@ -86,14 +95,13 @@ smarturl /scenario /{case}/nbhood/index.json {
     set table [list]
 
     foreach n [case with $case nbhood names] {
-        set ndict [case with $case nbhood view $n]
-        dict set ndict url "/scenario/$case/nbhood/$n/index.json"
-        set controller [dict get $ndict controller]
-        if {$controller ne "NONE"} {
-            dict set ndict controller_link \
-                "/scenario/$case/actor/$controller/index" 
-        } else {
-            dict set ndict controller_link ""
+        set ndict [case with $case nbhood view $n web]
+        set url             [dict get $ndict url] 
+        set controller_link [dict get $ndict controller_link]
+
+        dict set ndict url "/scenario/$case/$url"
+        if {$controller_link ne ""} {
+            dict set ndict controller_link "/scenario/$case/$controller_link"
         }
 
         lappend table $ndict
@@ -139,13 +147,14 @@ smarturl /scenario /{case}/nbhood/{n}/index.json {
         throw NOTFOUND "No such neighborhood: \"$n\""
     }
 
-    set ndict [case with $case nbhood view $n]
+    set ndict [case with $case nbhood view $n web]
 
-    set controller [dict get $ndict controller]
-    if {$controller != "NONE"} {
-        dict set ndict controller_link "/scenario/$case/actor/$controller/index"
-    } else {
-        dict set ndict controller_link ""
+    set url [dict get $ndict url]
+    dict set ndict url "/scenario/$case/$url"
+
+    set controller_link [dict get $ndict controller_link]
+    if {$controller_link != ""} {
+        dict set ndict controller_link "/scenario/$case/$controller_link"
     }
 
     return [js dictab [list $ndict]]

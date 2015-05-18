@@ -55,6 +55,61 @@ oo::class create /debug {
     method dummy {} {
         # TBD: dummy method, to test mods.
     }
+
+    # DebugNavBar 
+    #
+    # Debugging Navigation Bar
+
+    method DebugNavBar {} {
+        hb hr
+        hb xref /index.html "Home"
+        hb put " | "
+        hb iref /index.html "Debug"
+        hb put " | "
+        hb iref /mods.html "Mods"
+        hb hr
+        hb para
+    }
+
+
+    # FormatLog logname logfile
+    #
+    # logname   - The log name, e.g., case00
+    # logfile   - A logger(n) logfile, as used by Athena.
+    #
+    # Formats the log file for display
+
+    method FormatLog {logname logfile} {
+        # FIRST, Is this a scenario log?
+        set gotWeek [string match "case*" $logname]
+
+        # NEXT, set up the headres.
+        set headers {
+            "Wallclock Time" "Level" "Component" "Message"            
+        }
+
+        if {$gotWeek} {
+            set headers [linsert $headers 1 "Week"]
+        }
+
+        # NEXT, read the log
+        set lines [split [readfile $logfile] \n]
+
+        # NEXT, format it.
+        hb table -headers $headers {
+            foreach line $lines {
+                hb tr
+                hb td -style {width: 20ch} "<tt>[lindex $line 0]</tt>"
+                if {$gotWeek} {
+                    hb td "<tt>[lindex $line 4]</tt>"
+                }
+                hb td "<tt>[lindex $line 1]</tt>"
+                hb td "<tt>[lindex $line 2]</tt>"
+                hb td "<tt>[lindex $line 3]</tt>"
+                hb /tr
+            }
+        }
+    }
 }
 
 #-------------------------------------------------------------------
@@ -67,6 +122,8 @@ smarturl /debug /index.html {
     hb page "Debugging"
     hb h1 "Debugging"
 
+    my DebugNavBar
+
     hb putln "The following tools are available:"
     hb para
 
@@ -74,7 +131,72 @@ smarturl /debug /index.html {
         hb li-with {
             hb iref /mods.html "Software Mods"
         }
+
+        hb li-with {
+            hb xref /scenario/urlschema.html "URL Schema: /scenario"
+        }
+
+        hb li-with {
+            hb iref /urlschema.html "URL Schema: [my domain]"
+        }
+
+        set lognames [glob \
+                        -nocomplain \
+                        -directory [scratchdir join log] \
+                        -tails \
+                        *]
+
+        foreach logname $lognames {
+            hb li-with {
+                hb iref /log/$logname/index.html "Log: $logname"
+            }
+        }
     }
+
+    return [hb /page]
+}
+
+# /log/{logname}/index.html
+smarturl /debug /log/{logname}/index.html {
+    Displays the contents of the most recent log file in the given log.
+} {
+    hb page "Log: $logname"
+    hb h1   "Log: $logname"
+
+    my DebugNavBar
+
+    set logdir [scratchdir join log $logname]
+
+    if {![file isdirectory $logdir]} {
+        throw NOTFOUND "Log $logdir is no longer available"
+    }
+
+    set logfiles [lsort [glob -nocomplain -directory $logdir -tails *.log]]
+
+    if {[llength $logfiles] == 0} {
+        hb putln "The log is empty."
+        return [hb /page]
+    }
+
+    # NEXT, let them select a log.
+    set logfile [qdict prepare logfile -default [lindex $logfiles end]]
+
+    hb form
+    hb label logfile "Log File:"
+    hb enum logfile -selected $logfile $logfiles
+    hb submit "Select"
+    hb /form
+
+    hb form
+    hb hidden logfile ""
+    hb submit "Latest"
+    hb /form
+
+    hb para
+
+    hb h2 "File: $logfile"
+
+    my FormatLog $logname [scratchdir join log $logname $logfile]
 
     return [hb /page]
 }
@@ -86,6 +208,8 @@ smarturl /debug /mods.html {
 } {
     hb page "Software Mods"
     hb h1 "Software Mods"
+
+    my DebugNavBar
 
     switch -- [qdict prepare op -tolower] {
         reload {
@@ -161,4 +285,7 @@ smarturl /debug /mods.html {
 
     return [hb /page]
 }
+
+
+
 

@@ -49,20 +49,30 @@ smarturl /scenario /{case}/actor/index.html {
 
     hb para
 
+    # NEXT, build a table of minimal information, it's more important
+    # to have robust information in the JSON return.
     hb table -headers {
         "<br>ID" "<br>Name" "Belief<br>System" "<br>Supports" 
         "Income,<br>$/week" "Funding<br>Type" "Cash<br>On Hand, $"
     } {
         foreach actor $actors {
-            set adict [case with $case actor view $actor]
+            set adict [case with $case actor view $actor web]
             dict with adict {}
+            append url ".html"
             hb tr {
                 hb td-with {
-                    hb iref /$case/actor/$id/index.html "$id"
+                    hb iref "/$case/$url" "$id"
                 }
                 hb td $longname
                 hb td $bsysname
-                hb td $supports
+                hb td-with {
+                    if {$supports_link ne ""} {
+                        append supports_link ".html"
+                        hb iref "/$case/$supports_link" "$supports"
+                    } else {
+                        hb put $supports
+                    }
+                }
                 hb td $income
                 hb td $atype
                 hb td $cash_on_hand
@@ -83,8 +93,15 @@ smarturl /scenario /{case}/actor/index.json {
     set table [list]
 
     foreach a [case with $case actor names] {
-        set adict [case with $case actor view $a]
-        dict set adict url "/scenario/$case/actor/$a/index.json"
+        set adict [case with $case actor view $a web]
+        set url           [dict get $adict url] 
+        set supports_link [dict get $adict supports_link]
+
+        # NEXT, format URLs properly
+        dict set adict url "/scenario/$case/$url"
+        if {$supports_link ne ""} {
+            dict set adict supports_link "/scenario/$case/$supports_link"
+        }
 
         lappend table $adict
     }
@@ -107,6 +124,7 @@ smarturl /scenario /{case}/actor/{a}/index.html {
     hb page "Scenario '$case': Actor: $a"
     hb h1 "Scenario '$case': Actor: $a"
 
+    # NEXT, the only content for now is a link to the JSON
     hb putln "Click for "
     hb iref /$case/actor/$a/index.json "json"
     hb put "."
@@ -129,7 +147,17 @@ smarturl /scenario /{case}/actor/{a}/index.json {
         throw NOTFOUND "No such actor: \"$a\""
     }
 
-    set adict [case with $case actor view $a]
+    set adict [case with $case actor view $a web]
+    set url           [dict get $adict url]
+    set supports_link [dict get $adict supports_link]
+
+    # NEXT, format URLs properly for use by another application
+    dict set adict url  "/scenario/$case/$url"
+
+    if {$supports_link ne ""} {
+        dict set adict supports_link "/scenario/$case/$supports_link"
+
+    }
 
     return [js dictab [list $adict]]
 }
