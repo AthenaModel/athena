@@ -73,6 +73,11 @@ oo::class create ::projectlib::smartdomain {
             -domain $domain
 
         ::projectlib::parmdict create qdict
+
+        proc req {parm} {
+            my variable trans
+            return $trans($parm)
+        }
     }
 
     #-------------------------------------------------------------------
@@ -116,8 +121,7 @@ oo::class create ::projectlib::smartdomain {
     # regexp's, e.g., /actor/(\w+)/index.html.
     #
     # The suffix will be handled by the method of the same name, which
-    # will be called with one argument for each matched variable and
-    # a dictionary of query data as parsed by ncgi.
+    # will be called with one argument for each matched variable.
 
     method url {suffix docstring} {
         # FIRST, turn it into a matching pattern; this will throw
@@ -274,7 +278,7 @@ oo::class create ::projectlib::smartdomain {
         # do this, as well.
         upvar #0 ::ahttpd::Httpd$sock data
         set trans(query)   $data(query)
-        set trans(hmethod) $data(proto)
+        set trans(method)  $data(proto)
         set trans(url)     $data(url)
 
         # NEXT, parse the query data into a dictionary.
@@ -327,7 +331,9 @@ oo::class create ::projectlib::smartdomain {
         }
 
         # NEXT, get the query data.
-        set trans(query) $query
+        set trans(query)  $query
+        set trans(method) $op
+        set trans(url)    [my domain $suffix]
 
         if {$op ne "POST"} {
             qdict setdict $query
@@ -361,30 +367,6 @@ oo::class create ::projectlib::smartdomain {
 
     method redirect {url} {
         throw [list HTTPD_REDIRECT $url] "Redirect to $url"
-    }
-
-    # query
-    #
-    # Returns the raw query string.
-    
-    method query {} {
-        return $trans(query) 
-    }
-
-    # hmethod
-    #
-    # Returns the HTTP method, GET or POST.
-    
-    method hmethod {} {
-        return $trans(hmethod)
-    }
-
-    # hurl 
-    #
-    # Returns the server-relative URL, minus query, for this request.
-
-    method hurl {} {
-        return $trans(url)
     }
 
     #-------------------------------------------------------------------

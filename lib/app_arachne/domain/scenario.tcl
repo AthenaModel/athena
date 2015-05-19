@@ -70,12 +70,12 @@ oo::class create /scenario {
     method status {{body ""}} {
         # FIRST, handle special cases.
         if {$body eq ""} {
-            if {[info exists statusCache([my hurl])]} {
-                hb putln $statusCache([my hurl])
+            if {[info exists statusCache([req url])]} {
+                hb putln $statusCache([req url])
             }
             return
         } elseif {$body eq "clear"} {
-            unset -nocomplain statusCache([my hurl])
+            unset -nocomplain statusCache([req url])
             return
         }
 
@@ -83,7 +83,7 @@ oo::class create /scenario {
         try {
             hb push
             uplevel 1 $body
-            set statusCache([my hurl]) [hb get]
+            set statusCache([req url]) [hb get]
         } finally {
             hb pop
         }

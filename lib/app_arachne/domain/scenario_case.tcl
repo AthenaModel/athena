@@ -30,7 +30,7 @@ smarturl /scenario /{case}/index.html {
     set case [my ValidateCase $case]
 
     # NEXT, carry out any given operation.
-    if {[my hmethod] eq "POST"} {
+    if {[req method] eq "POST"} {
         my status clear
         set op    [qdict prepare op -required -in {advance lock unlock}]
         set weeks [qdict prepare weeks -default 1 -with {ipositive validate}]
@@ -39,7 +39,7 @@ smarturl /scenario /{case}/index.html {
             my status {
                 my ErrorList "Could not perform operation:" [qdict errors]
             }
-            my redirect /scenario/$case/index.html
+            my redirect [req url]
             # ALL DONE
         }
 
@@ -64,7 +64,7 @@ smarturl /scenario /{case}/index.html {
             my status { hb span -class error $result }
         }
 
-        my redirect /scenario/$case/index.html
+        my redirect [req url]
         # ALL DONE        
     }
 

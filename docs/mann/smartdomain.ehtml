@@ -83,19 +83,6 @@ Installs the smartdomain for use with the named <xref mydomain(n)>.
 <defitem domain {<i obj> domain}>
 Returns the domain's domain, e.g., "/secenario".<p>
 
-<defitem hmethod {<i obj> hmethod}>
-
-For use in URL handlers.  Returns the HTTP method, <b GET> or <b POST>.<p>
-
-<defitem hurl {<i obj> hurl}>
-
-For use in URL handlers.  Returns the requested URL as a server-relative
-URL, minus any query string or fragment.<p>
-
-<defitem query {<i obj> query}>
-
-For use in URL handlers.  Returns the raw query string from the request.<p>
-
 <defitem redirect {<i obj> redirect <i url>}>
 
 Redirects the requester to the given <i url> by throwing HTTPD_REDIRECT.<p>
@@ -197,18 +184,27 @@ general terms, and document any place-holders.<p>
 smartdomain(n) defines the following component objects for use by 
 URL handlers:<p>
 
-<topiclist>
-<topic {<b hb>}>
+<deflist components>
+<defitem hb {hb <i subcommand> ?<i args...>?}>
 An instance of <xref htmlbuffer(n)> which can be used to generate
 HTML output.<p>
-</topic>
 
-<topic {<b qdict>}>
+<defitem qdict {qdict <i subcommand> ?<i args...>?}>
 An instance of <xref parmdict(n)> which will contain any parsed
 query parameters and their values.<p>
-</topic>
 
-</topiclist>
+<defitem req {req <i parm>}>
+A command that returns data about the request being processed.  
+The <i parm> may be one of the following:<p>
+
+<ul>
+<li> <b method>: The HTTP method being used, <b GET> or <b POST>.
+<li> <b query>: The full query string from the URL.
+<li> <b url>: The full server-relative URL being handled, not including
+any query or fragment.
+</ul>
+
+</deflist components>
 
 <section AUTHOR>
 
