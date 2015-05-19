@@ -27,7 +27,7 @@ smarturl /scenario /{case}/actor/index.html {
     Displays a list of actor entities for <i>case</i>, with links to 
     the actual actors.
 } {
-    # FIRST, validate scenario
+    # FIRST, validate actor
     set case [my ValidateCase $case]
 
     hb page "Scenario '$case': Actors"
@@ -58,7 +58,6 @@ smarturl /scenario /{case}/actor/index.html {
         foreach actor $actors {
             set adict [case with $case actor view $actor web]
             dict with adict {}
-            append url ".html"
             hb tr {
                 hb td-with {
                     hb iref "/$case/$url" "$id"
@@ -66,9 +65,8 @@ smarturl /scenario /{case}/actor/index.html {
                 hb td $longname
                 hb td $bsysname
                 hb td-with {
-                    if {$supports_link ne ""} {
-                        append supports_link ".html"
-                        hb iref "/$case/$supports_link" "$supports"
+                    if {$supports_url ne ""} {
+                        hb iref "/$case/$supports_url" "$supports"
                     } else {
                         hb put $supports
                     }
@@ -94,13 +92,14 @@ smarturl /scenario /{case}/actor/index.json {
 
     foreach a [case with $case actor names] {
         set adict [case with $case actor view $a web]
-        set url           [dict get $adict url] 
-        set supports_link [dict get $adict supports_link]
+
+        dict with adict {}
 
         # NEXT, format URLs properly
-        dict set adict url "/scenario/$case/$url"
-        if {$supports_link ne ""} {
-            dict set adict supports_link "/scenario/$case/$supports_link"
+        dict set adict url [my domain $case $qid "index.json"]
+        if {$supports_qid ne ""} {
+            dict set adict supports_url \
+                [my domain $case $supports_qid "index.json"]
         }
 
         lappend table $adict
@@ -112,12 +111,8 @@ smarturl /scenario /{case}/actor/index.json {
 smarturl /scenario /{case}/actor/{a}/index.html {
     Displays data for a particular actor <i>a</i> in scenario <i>case</i>.
 } {
-    set case [my ValidateCase $case]
-
-    
-    if {$a ni [case with $case actor names]} {
-        throw NOTFOUND "No such actor: \"$a\""
-    }
+    # FIRST, validate case and actor
+    set a [my ValidateActor $case $a]
 
     set name [case with $case actor get $a longname]
 
@@ -141,23 +136,21 @@ smarturl /scenario /{case}/actor/{a}/index.json {
     Returns JSON list of actor data for scenario <i>case</i> and actor 
     <i>a</i>.
 } {
-    set case [my ValidateCase $case]
-
-    if {$a ni [case with $case actor names]} {
-        throw NOTFOUND "No such actor: \"$a\""
-    }
+    # FIRST, validate case and actor 
+    set a [my ValidateActor $case $a]
 
     set adict [case with $case actor view $a web]
-    set url           [dict get $adict url]
-    set supports_link [dict get $adict supports_link]
 
-    # NEXT, format URLs properly for use by another application
-    dict set adict url  "/scenario/$case/$url"
+    set qid          [dict get $adict qid]
+    set supports_qid [dict get $adict supports_qid]
 
-    if {$supports_link ne ""} {
-        dict set adict supports_link "/scenario/$case/$supports_link"
-
+    # NEXT, format URLs properly
+    dict set adict url [my domain $case $qid "index.json"]
+    if {$supports_qid ne ""} {
+        dict set adict supports_url \
+            [my domain $case $supports_qid "index.json"]
     }
+
 
     return [js dictab [list $adict]]
 }

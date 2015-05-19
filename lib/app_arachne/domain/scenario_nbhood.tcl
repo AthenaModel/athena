@@ -56,7 +56,6 @@ smarturl /scenario /{case}/nbhood/index.html {
         foreach nbhood $nbhoods {
             set ndict [case with $case nbhood view $nbhood web]
             dict with ndict {}
-            append url ".html"
             hb tr {
                 hb td-with {
                     hb iref "/$case/$url" "$id"
@@ -64,14 +63,12 @@ smarturl /scenario /{case}/nbhood/index.html {
                 hb td $longname
                 hb td $local 
                 hb td-with {
-                    if {$controller_link ne ""} {
-                        append controller_link ".html"
-                        hb iref "/$case/$controller_link" "$controller"
+                    if {$controller_url ne ""} {
+                        hb iref "/$case/$controller_url" "$controller"
                     } else {
                         hb put $controller
                     }
                 }
-                hb td $controller
                 hb td $urbanization
                 hb td $population
                 hb td $subsistence 
@@ -96,12 +93,13 @@ smarturl /scenario /{case}/nbhood/index.json {
 
     foreach n [case with $case nbhood names] {
         set ndict [case with $case nbhood view $n web]
-        set url             [dict get $ndict url] 
-        set controller_link [dict get $ndict controller_link]
+        set qid            [dict get $ndict qid]
+        set controller_qid [dict get $ndict controller_qid]
 
-        dict set ndict url "/scenario/$case/$url"
-        if {$controller_link ne ""} {
-            dict set ndict controller_link "/scenario/$case/$controller_link"
+        dict set ndict url [my domain $case $qid "index.json"]
+        if {$controller_qid ne ""} {
+            dict set ndict controller_url \
+                [my domain $case $controller_qid "index.json"]
         }
 
         lappend table $ndict
@@ -113,12 +111,7 @@ smarturl /scenario /{case}/nbhood/index.json {
 smarturl /scenario /{case}/nbhood/{n}/index.html {
     Displays data for a particular actor <i>a</i> in scenario <i>case</i>.
 } {
-    set case [my ValidateCase $case]
-
-    
-    if {$n ni [case with $case nbhood names]} {
-        throw NOTFOUND "No such neighborhood: \"$n\""
-    }
+    set n [my ValidateNbhood $case $n]
 
     set name [case with $case nbhood get $n longname]
 
@@ -141,20 +134,18 @@ smarturl /scenario /{case}/nbhood/{n}/index.json {
     Returns JSON list of actor data for scenario <i>case</i> and neighborhood 
     <i>n</i>.
 } {
-    set case [my ValidateCase $case]
-
-    if {$n ni [case with $case nbhood names]} {
-        throw NOTFOUND "No such neighborhood: \"$n\""
-    }
+    set n [my ValidateNbhood $case $n]
 
     set ndict [case with $case nbhood view $n web]
 
-    set url [dict get $ndict url]
-    dict set ndict url "/scenario/$case/$url"
+    set qid            [dict get $ndict url]
+    set controller_qid [dict get $ndict controller_qid]
 
-    set controller_link [dict get $ndict controller_link]
-    if {$controller_link != ""} {
-        dict set ndict controller_link "/scenario/$case/$controller_link"
+    dict set ndict url [my domain $case $qid "index.json"]
+
+    if {$controller_qid != ""} {
+        dict set ndict controller_url \
+            [my domain $case $controller_qid "index.json"]
     }
 
     return [js dictab [list $ndict]]

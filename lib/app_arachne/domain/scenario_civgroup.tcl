@@ -57,15 +57,13 @@ smarturl /scenario /{case}/civgroup/index.html {
         foreach civgroup $civgroups {
             set cdict [case with $case civgroup view $civgroup web]
             dict with cdict {}
-            append url ".html"
-            append n_link ".html"
             hb tr {
                 hb td-with {
                     hb iref "/$case/$url" "$id"
                 }
                 hb td $longname
                 hb td-with {
-                    hb iref "/$case/$n_link" "$n"
+                    hb iref "/$case/$n_url" "$n"
                 }
                 hb td $population 
                 hb td $pretty_sa_flag
@@ -88,12 +86,12 @@ smarturl /scenario /{case}/civgroup/index.json {
 
     foreach g [case with $case civgroup names] {
         set cdict [case with $case civgroup view $g web]
-        set url [dict get $cdict url]
-        set n_link [dict get $cdict n_link]
+        set qid   [dict get $cdict qid]
+        set n_qid [dict get $cdict n_qid]
 
         # NEXT, format URLs properly
-        dict set cdict url "/scenario/$case/$url"
-        dict set cdict n_link "/scenario/$case/$n_link"
+        dict set cdict url    [my domain $case $qid "index.json"]
+        dict set cdict n_url  [my domain $case $n_qid "index.json"]
 
         lappend table $cdict
     }
@@ -105,12 +103,7 @@ smarturl /scenario /{case}/civgroup/{g}/index.html {
     Displays data for a particular civilian group <i>g</i> in scenario
     <i>case</i>.
 } {
-    set case [my ValidateCase $case]
-
-    
-    if {$g ni [case with $case civgroup names]} {
-        throw NOTFOUND "No such CIV group: \"$a\""
-    }
+    set g [my ValidateGroup $case $g CIV]
 
     set name [case with $case civgroup get $g longname]
 
@@ -134,19 +127,15 @@ smarturl /scenario /{case}/civgroup/{g}/index.json {
     Returns JSON list of civilian group data for scenario <i>case</i> and 
     group <i>g</i>.
 } {
-    set case [my ValidateCase $case]
-
-    if {$g ni [case with $case civgroup names]} {
-        throw NOTFOUND "No such CIV group: \"$g\""
-    }
+    set g [my ValidateGroup $case $g CIV]
 
     set cdict [case with $case civgroup view $g web]
-    set url    [dict get $cdict url] 
-    set n_link [dict get $cdict n_link]
+    set qid   [dict get $cdict url] 
+    set n_qid [dict get $cdict n_qid]
 
     # NEXT, format URLs properly
-    dict set cdict url    "/scenario/$case/$url"
-    dict set cdict n_link "/scenario/$case/$n_link"
+    dict set cdict url   [my domain $case $qid   "index.json"]
+    dict set cdict n_url [my domain $case $n_qid "index.json"]
 
     return [js dictab [list $cdict]]
 }

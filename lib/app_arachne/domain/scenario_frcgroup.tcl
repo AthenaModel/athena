@@ -57,16 +57,14 @@ smarturl /scenario /{case}/frcgroup/index.html {
         foreach frcgroup $frcgroups {
             set fdict [case with $case frcgroup view $frcgroup web]
             dict with fdict {}
-            append url ".html"
             hb tr {
                 hb td-with {
                     hb iref "/$case/$url" "$id"
                 }
                 hb td $longname
                 hb td-with {
-                    if {$a_link ne ""} {
-                        append a_link ".html"
-                        hb iref "/$case/$a_link" "$a"
+                    if {$a_url ne ""} {
+                        hb iref "/$case/$a_url" "$a"
                     } else {
                         hb put ""
                     }
@@ -96,13 +94,13 @@ smarturl /scenario /{case}/frcgroup/index.json {
 
     foreach g [case with $case frcgroup names] {
         set fdict [case with $case frcgroup view $g web]
-        set url [dict get $fdict url]
-        set a_link [dict get $fdict a_link]
+        set qid   [dict get $fdict qid]
+        set a_qid [dict get $fdict a_qid]
 
         # NEXT, format URLs properly
-        dict set fdict url "/scenario/$case/$url"
-        if {$a_link ne ""} {
-            dict set fdict a_link "/scenario/$case/$a_link"
+        dict set fdict url [my domain $case $qid "index.json"]
+        if {$a_qid ne ""} {
+            dict set fdict a_url [my domain $case $a_qid "index.json"]
         }
 
         lappend table $fdict
@@ -115,12 +113,7 @@ smarturl /scenario /{case}/frcgroup/{g}/index.html {
     Displays data for a particular force group <i>g</i> in scenario 
     <i>case</i>.
 } {
-    set case [my ValidateCase $case]
-
-    
-    if {$g ni [case with $case frcgroup names]} {
-        throw NOTFOUND "No such FRC group: \"$g\""
-    }
+    set g [my ValidateGroup $case $g FRC]
 
     set name [case with $case frcgroup get $g longname]
 
@@ -144,21 +137,17 @@ smarturl /scenario /{case}/frcgroup/{g}/index.json {
     Returns JSON list of force group data for scenario <i>case</i> and 
     group <i>g</i>.
 } {
-    set case [my ValidateCase $case]
-
-    if {$g ni [case with $case frcgroup names]} {
-        throw NOTFOUND "No such FRC group: \"$g\""
-    }
+    set g [my ValidateGroup $case $g FRC]
 
     set fdict [case with $case frcgroup view $g web]
-    set url [dict get $fdict url]
-    set a_link [dict get $fdict a_link]
+    set qid   [dict get $fdict qid]
+    set a_qid [dict get $fdict a_qid]
 
     # NEXT, format URLs properly
-    dict set fdict url "/scenario/$case/$url"
+    dict set fdict url [my domain $case $qid "index.json"]
 
-    if {$a_link ne ""} {
-        dict set fdict a_link "/scenario/$case/$a_link"
+    if {$a_qid ne ""} {
+        dict set fdict a_url [my domain $case $a_qid "index.json"]
     } 
 
     return [js dictab [list $fdict]]
