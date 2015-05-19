@@ -1,23 +1,25 @@
 # TODO.md - Athena TODO List
 
-- Projectlib(n)
-  - Tests for parmdict(n), smartdomain(n)
-- Athena(n)
-  - Optimize athena(n) creation, reset, load.  It's way slow.
-  - Group athenadb(n) predicates under "is", e.g., "is busy".
-  - Finish athena(n) man page!!!!!!!
+- Arachne Scenario Operations: lock, unlock, advance
+  - Add "weeks" control for "advance", and make it work.
+  - Add "json" pages for lock, unlock, advance.
+    - lock.json should return ['severity','flist'], where it's "ok" on "ok".
+  - Make the controls look a little nicer.
 - Arachne
   - Consider smartdomain look ups using a dict tree: split the url into
     components and just follow them down the tree, accumulating place
     holders as you go.  See if that's faster.
   - Fix scenario name in Arachne's export .tcl file.  It depends on last 
     export, and it shouldn't.
-  - Missing Operations:
-    - Lock/Unlock/Time Advance
-    - HTML I/F to control toplevel operations
   - What should the htdocs directory look like?
   - Write arachne(1) man page, referencing I/F doc.
   - Write athena_log(1) man page.
+- Projectlib(n)
+  - Tests for parmdict(n), smartdomain(n)
+- Athena(n)
+  - Optimize athena(n) creation, reset, load.  It's way slow.
+  - Group athenadb(n) predicates under "is", e.g., "is busy".
+  - Finish athena(n) man page!!!!!!!
 
 
 - Document athena(n)

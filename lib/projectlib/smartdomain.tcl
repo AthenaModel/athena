@@ -73,6 +73,11 @@ oo::class create ::projectlib::smartdomain {
             -domain $domain
 
         ::projectlib::parmdict create qdict
+
+        proc req {parm} {
+            my variable trans
+            return $trans($parm)
+        }
     }
 
     #-------------------------------------------------------------------
@@ -116,8 +121,7 @@ oo::class create ::projectlib::smartdomain {
     # regexp's, e.g., /actor/(\w+)/index.html.
     #
     # The suffix will be handled by the method of the same name, which
-    # will be called with one argument for each matched variable and
-    # a dictionary of query data as parsed by ncgi.
+    # will be called with one argument for each matched variable.
 
     method url {suffix docstring} {
         # FIRST, turn it into a matching pattern; this will throw
@@ -273,7 +277,9 @@ oo::class create ::projectlib::smartdomain {
         # sanitized for the handler.  Be nice to have a better way to
         # do this, as well.
         upvar #0 ::ahttpd::Httpd$sock data
-        set trans(query) $data(query)
+        set trans(query)   $data(query)
+        set trans(method)  $data(proto)
+        set trans(url)     $data(url)
 
         # NEXT, parse the query data into a dictionary.
         # TBD: This will need to be generalized for mydomain use.
@@ -325,7 +331,9 @@ oo::class create ::projectlib::smartdomain {
         }
 
         # NEXT, get the query data.
-        set trans(query) $query
+        set trans(query)  $query
+        set trans(method) $op
+        set trans(url)    [my domain $suffix]
 
         if {$op ne "POST"} {
             qdict setdict $query
@@ -337,12 +345,16 @@ oo::class create ::projectlib::smartdomain {
     #-------------------------------------------------------------------
     # Tools for use in domain handlers 
 
-    # domain
+    # domain ?components...?
     #
     # Returns the domain URL
 
-    method domain {} {
-        return $info(domain)
+    method domain {args} {
+        if {[llength $args] > 0} {
+            return $info(domain)/[join $args /]
+        } else {
+            return $info(domain)
+        }
     }
 
     # redirect url
@@ -355,14 +367,6 @@ oo::class create ::projectlib::smartdomain {
 
     method redirect {url} {
         throw [list HTTPD_REDIRECT $url] "Redirect to $url"
-    }
-
-    # query
-    #
-    # Returns the raw query string.
-    
-    method query {} {
-        return $trans(query) 
     }
 
     #-------------------------------------------------------------------

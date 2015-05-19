@@ -22,6 +22,12 @@ oo::class create /scenario {
     superclass ::projectlib::smartdomain
 
     #-------------------------------------------------------------------
+    # Variables
+
+    variable statusCache  ;# Array of status strings by URL.
+    
+
+    #-------------------------------------------------------------------
     # Constructor
 
     constructor {} {
@@ -49,6 +55,42 @@ oo::class create /scenario {
     }
 
     #-------------------------------------------------------------------
+    # Status Methods
+    
+    # status ?body?
+    #
+    # body   - A Tcl script.
+    #
+    # If body is given, the command calls it and accumulates operation 
+    # status HTML in the buffer, and saving it for this URL.  
+    # If the body is the single word "clear", clears the saved
+    # status instead.  If the body is not given, outputs the saved
+    # status to the buffer.
+
+    method status {{body ""}} {
+        # FIRST, handle special cases.
+        if {$body eq ""} {
+            if {[info exists statusCache([req url])]} {
+                hb putln $statusCache([req url])
+            }
+            return
+        } elseif {$body eq "clear"} {
+            unset -nocomplain statusCache([req url])
+            return
+        }
+
+        # NEXT, accumulate status
+        try {
+            hb push
+            uplevel 1 $body
+            set statusCache([req url]) [hb get]
+        } finally {
+            hb pop
+        }
+    }
+    
+
+    #-------------------------------------------------------------------
     # Utility Methods.
 
     # qdictdump
@@ -71,7 +113,38 @@ oo::class create /scenario {
         hb /record
     }
 
-    # ErrorList message ?errdict?
+    # RefreshIfBusy ?case?
+    #
+    # case   - A case name
+    #
+    # Returns the auto-refresh interval if the given case is busy,
+    # and "" otherwise. If no case is given, returns the auto-refresh
+    # interval if any loaded case is busy.
+
+    method RefreshIfBusy {{case ""}} {
+        set interval 1 ;# Interval in seconds
+
+        # FIRST, handle the specified case
+        if {$case ne ""} {
+            if {[case with $case isbusy]} {
+                return $interval
+            } else {
+                return ""
+            }
+        }
+
+        # NEXT, handle all cases.
+        foreach case [case names] {
+            if {[case with $case isbusy]} {
+                return $interval
+            }
+        }
+
+        return ""
+
+    }
+
+    # ErrorList message errdict
     #
     # message - An overall error message
     # errdict - A dictionary of parameter names and error messages.
@@ -147,22 +220,38 @@ oo::class create /scenario {
         }
 
         # NEXT, format the table.
+        set autoReload 0
 
         hb table -headers $headers {
             foreach case $cases {
                 set cdict [case metadata $case]
+
+                if {[case with $case isbusy]} {
+                    set progress [case with $case progress]
+                    if {[string is double -strict $progress]} {
+                        set progress \
+                            [format "%.1f%%" [expr {100*$progress}]]
+                    }
+                } else {
+                    set progress ""
+                }
+
+
                 hb tr {
                     if {$rparm ne ""} {
                         hb td-with { hb radio $rparm $case }
                     }
                     hb td-with { 
                         hb putln <b>
-                        hb iref /$case $case
+                        hb iref /$case/index.html $case
                         hb put </b>
                     }
                     hb td [dict get $cdict longname]
                     hb td [dict get $cdict source]
-                    hb td [dict get $cdict state]
+                    hb td-with {
+                        set state [dict get $cdict state]
+                        hb put "$state $progress"
+                    }
                     hb td [dict get $cdict tick]
                     hb td [dict get $cdict week]
                 }

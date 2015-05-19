@@ -24,27 +24,180 @@
 # files; this section has the general mechanism pages.
 
 smarturl /scenario /{case}/index.html {
-    Displays information about scenario {case}.  
+    Displays information about scenario {case}.
 } {
-    # TBD: I'd like a better API for this.  
-    #
-    # * It's like what we do with qdict, but there's no general 
-    #   instrastructure for it.
-    # * It's like normal validation, but results in NOTFOUND.
-    # * Should we add placeholder vars to the qdict?
-    # * Should we add a "udict" for url placeholders only?
-    #   * And then it could have a NOTFOUND option.
+    # FIRST, get the URL placeholder variables
     set case [my ValidateCase $case]
 
-    hb page "Scenario '$case': Overview"
+    # NEXT, carry out any given operation.
+    if {[req method] eq "POST"} {
+        my status clear
+        set op    [qdict prepare op -required -in {advance lock unlock}]
+        set weeks [qdict prepare weeks -default 1 -with {ipositive validate}]
+
+        if {![qdict ok]} {
+            my status {
+                my ErrorList "Could not perform operation:" [qdict errors]
+            }
+            my redirect [req url]
+            # ALL DONE
+        }
+
+        try {
+            switch -- $op {
+                advance {
+                    case advance $case $weeks
+                    my status { hb putln "Advancing time." }
+                }
+                lock {
+                    case lock $case
+                    my status { hb putln "Scenario is locked." }
+                }
+                unlock {
+                    case unlock $case
+                    my status { hb putln "Scenario is unlocked." }
+                }
+            }
+        } trap {SCENARIO NOTSANE} {result} {
+            my redirect [my domain $case sanity onlock.html]
+        } trap SCENARIO {result} {
+            my status { hb span -class error $result }
+        }
+
+        my redirect [req url]
+        # ALL DONE        
+    }
+
+
+    hb page "Scenario '$case': Overview" \
+        -refreshafter [my RefreshIfBusy $case]
     hb h1 "Scenario '$case': Overview"
 
     my CaseNavBar $case
 
+    my status
+
     hb h2 "Scenario Metadata"
     my ScenarioTable -cases $case
 
+    set weekdict {
+        1   "1 week"
+        2   "2 weeks"
+        3   "3 weeks"
+        4   "4 weeks"
+        5   "5 weeks"
+        6   "6 weeks"
+        7   "7 weeks"
+        8   "8 weeks"
+        10  "10 weeks"
+        12  "12 weeks"
+        24  "24 weeks"
+        36  "36 weeks"
+        48  "48 weeks"
+        52  "1 year"
+        104 "2 years"
+    }
+
+    hb h2 "Operations"
+
+    hb putln {
+        Note: We show all operations whether they are currently
+        allowed or not so that we can test the JSON interface's
+        error handling.
+    }
+    hb para
+
+    hb ul
+
+    hb li-with {
+        hb form -method post 
+        hb hidden op lock
+        hb submit Lock
+        hb submit -formaction [my domain]/$case/lock.json "JSON"
+        hb /form
+    }
+    hb li-with { 
+        hb form -method post 
+        hb hidden op unlock
+        hb submit Unlock
+        hb submit -formaction [my domain]/$case/unlock.json "JSON"
+        hb /form
+    }
+    hb li-with {
+        hb form -method post
+        hb hidden op advance
+        hb label weeks "Weeks:"
+        hb enumlong weeks -selected 1 $weekdict 
+        hb submit Advance
+        hb submit -formaction [my domain]/$case/advance.json "JSON"
+        hb /form                
+    }
+
+    hb /ul
+
     return [hb /page]
+}
+
+#-----------------------------------------------------------------------
+# lock.json
+
+smarturl /scenario /{case}/lock.json {
+    Locks scenario {case} if it is unlocked.  On success, returns a list 
+    <pre>["OK", ""]</pre>, and on failure returns a list
+    <pre>["ERROR","message",""]
+} {
+    set case [my ValidateCase $case]
+
+    try {
+        case lock $case
+        return [js ok ""]
+    } trap SCENARIO {result} {
+        return [js error $result]
+    }
+}
+
+#-----------------------------------------------------------------------
+# unlock.json
+
+smarturl /scenario /{case}/unlock.json {
+    Unlocks scenario {case} if it is locked.  On success, returns a list 
+    <pre>["OK", ""]</pre>, and on failure returns a list
+    <pre>["ERROR","message",""]
+} {
+    set case [my ValidateCase $case]
+
+    try {
+        case unlock $case
+        return [js ok ""]
+    } trap SCENARIO {result} {
+        return [js error $result]
+    }
+}
+
+#-----------------------------------------------------------------------
+# advance.json
+
+smarturl /scenario /{case}/advance.json {
+    Asks for an advance of simulation time in scenario {case} by {weeks}, 
+    locking the scenario if necessary.  The scenario will be <b>BUSY</b> 
+    until the time advance is complete.  On success, returns a list 
+    <pre>["OK", ""]</pre>, and on failure returns a list
+    <pre>["ERROR","message",""]
+} {
+    set case [my ValidateCase $case]
+
+    set weeks [qdict prepare weeks -default 1 -with {ipositive validate}]
+
+    if {![qdict ok]} {
+        return [js reject [qdict errors]]
+    }
+
+    try {
+        case advance $case $weeks
+        return [js ok ""]
+    } trap SCENARIO {result} {
+        return [js error $result]
+    }
 }
 
 #-----------------------------------------------------------------------
