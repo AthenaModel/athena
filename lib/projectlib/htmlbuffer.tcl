@@ -293,7 +293,7 @@ oo::class create ::projectlib::htmlbuffer {
     # page title ?options?
     #
     # title   - Title of HTML page
-    # options - Options for the <body> tag
+    # options - Options, mostly for the <body> tag
     #
     # Adds the standard HTML header boilerplate and clears the
     # buffer stack.  The page <title> is set as given, but no
@@ -313,10 +313,15 @@ oo::class create ::projectlib::htmlbuffer {
     # If the buffer -headercmd option is set, it is passed the buffer 
     # and the title.  Any output will appear after the <body> tag.
     #
-    # Any options passed to the command are converted into 
-    # <body> tag attributes.
+    # The following options are handled specially.  Any additional
+    # options are converted into <body> tag attributes.
+    #
+    # -refreshafter seconds    - The page will automatically reload after
+    #                            the specified number of seconds.
 
     method page {title args} {
+        set refreshAfter [optval args -refreshafter ""]
+
         my clear
 
         my putln <html>
@@ -330,6 +335,10 @@ oo::class create ::projectlib::htmlbuffer {
         if {$options(-styles) ne ""} {
             # TBD: Handling of defaultStyles!
             my wrapln style $options(-styles)
+        }
+
+        if {$refreshAfter ne ""} {
+            my tagln meta -http-equiv refresh -content $refreshAfter
         }
 
         my putln </head>

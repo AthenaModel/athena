@@ -409,6 +409,65 @@ snit::type case {
         ldelete cases(names) $id
     }
 
+    # lock case 
+    #
+    # Attempts to lock the scenario with the given ID, throwing
+    # SCENARIO LOCK on error.
+
+    typemethod lock {case} {
+        if {[case with $case isbusy]} {
+            throw {SCENARIO BUSY} "Cannot lock; scenario is busy."
+        }
+
+        if {[case with $case unlocked]} {
+            lassign [case with $case sanity onlock] severity
+
+            if {$severity ne "OK"} {
+                throw {SCENARIO NOTSANE} "Cannot lock; sanity checks failed."
+            }
+
+            case with $case lock
+        }     
+    }
+
+    # unlock case 
+    #
+    # Attempts to unlock the scenario with the given ID, throwing
+    # SCENARIO UNLOCK on error.
+
+    typemethod unlock {case} {
+        if {[case with $case isbusy]} {
+            throw {SCENARIO BUSY} "Cannot unlock; scenario is busy."
+        }
+
+        if {[case with $case locked]} {
+            case with $case unlock
+        }     
+    }
+
+    # advance case weeks
+    #
+    # case   - The scenario's case ID
+    # weeks  - The number of weeks to advance time.
+    # 
+    # Starts time advancing in the background.
+
+    typemethod advance {case weeks} {
+        if {[case with $case isbusy]} {
+            throw {SCENARIO BUSY} \
+                "Cannot advance time; scenario is already busy."
+        }
+
+        if {[case with $case unlocked]} {
+            case lock $case
+        }
+
+        case with $case advance \
+            -mode  background \
+            -ticks $weeks
+
+        return
+    }
 
     
     #-------------------------------------------------------------------
