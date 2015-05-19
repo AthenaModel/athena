@@ -112,12 +112,19 @@ snit::type ::athena::frcgroup {
     # view g ?tag?
     #
     # g    - A force group
-    # tag  - A view tag (unused)
+    # tag  - A view tag 
     #
-    # Retrieves a view dictionary for the group.
+    # Retrieves a view dictionary for the group; uses the formatted view by
+    # default otherwise it prepends the tag to '_frcgroups' and uses that
+    # as the SQL table for the lookup.
 
     method view {g {tag ""}} {
-        return [dbget $adb fmt_frcgroups g $g]
+        if {$tag eq ""} {
+            set table fmt_frcgroups
+        } else {
+            append table $tag _frcgroups
+        }
+        return [dbget $adb $table g $g]        
     }
 
 

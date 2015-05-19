@@ -25,6 +25,7 @@ CREATE TEMPORARY VIEW fmt_actors AS
 SELECT a                                               AS id,
        a                                               AS a,
        pair(longname, a)                               AS fancy,
+       'actor/' || a                                   AS qid,
        longname                                        AS longname,
        bsid                                            AS bsid,
        bsysname(bsid)                                  AS bsysname,
@@ -32,7 +33,9 @@ SELECT a                                               AS id,
             WHEN supports IS NULL  THEN 'NONE'
             ELSE supports 
             END                                        AS supports,
-       atype                                           AS atype,
+       CASE WHEN supports IN (a, NULL) THEN ''
+            ELSE 'actor/' || supports 
+            END                                        AS supports_qid,       atype                                           AS atype,
        auto_maintain                                   AS auto_maintain,
        CASE auto_maintain WHEN 1 THEN 'Yes' 
                                  ELSE 'No' END         AS pretty_am_flag,
@@ -57,13 +60,14 @@ CREATE TEMPORARY VIEW fmt_nbhoods AS
 SELECT N.n                                                AS id,
        N.n                                                AS n,
        pair(N.longname, N.n)                              AS fancy,
+       'nbhood/' || N.n                                   AS qid,
        N.longname                                         AS longname,
        CASE N.local WHEN 1 THEN 'YES' ELSE 'NO' END       AS local,
        N.urbanization                                     AS urbanization,
        CASE WHEN locked()
         THEN COALESCE(C.controller, 'NONE')
         ELSE COALESCE(N.controller, 'NONE')
-       END                                                AS controller,
+       END                                                AS controller,       
        COALESCE(C.since, 0)                               AS since_ticks,
        timestr(COALESCE(C.since, 0))                      AS since,
        format('%4.1f',N.pcf)                              AS pcf,
@@ -121,12 +125,14 @@ CREATE TEMPORARY VIEW fmt_civgroups AS
 SELECT G.id                                            AS id,
        G.g                                             AS g,
        G.fancy                                         AS fancy,
+       'civgroup/' || G.g                              AS qid,
        G.gtype                                         AS gtype,
        G.longname                                      AS longname,
        G.color                                         AS color,
        G.demeanor                                      AS demeanor,
        CG.basepop                                      AS basepop,
        CG.n                                            AS n,
+       'nbhood/' || CG.n                               AS n_qid,
        G.bsid                                          AS bsid,
        bsysname(G.bsid)                                AS bsysname,
        CASE CG.sa_flag WHEN 1 THEN 'Yes' ELSE 'No' END AS pretty_sa_flag,
@@ -170,6 +176,7 @@ CREATE TEMPORARY VIEW fmt_frcgroups AS
 SELECT G.id                                             AS id,
        G.g                                              AS g,
        G.fancy                                          AS fancy,
+       'frcgroup/' || G.id                              AS qid,
        G.gtype                                          AS gtype,
        G.longname                                       AS longname,
        G.color                                          AS color,
@@ -177,6 +184,10 @@ SELECT G.id                                             AS id,
        coalesce(P.personnel, 0)                         AS personnel,
        G.cost                                           AS cost,
        G.a                                              AS a,
+       CASE WHEN G.a != ''
+            THEN 'actor/' || G.a
+            ELSE ''
+            END                                         AS a_qid,
        F.forcetype                                      AS forcetype,
        F.training                                       AS training,
        F.equip_level                                    AS equip_level,
@@ -193,6 +204,7 @@ CREATE TEMPORARY VIEW fmt_orggroups AS
 SELECT G.id                                             AS id,
        G.g                                              AS g,
        G.fancy                                          AS fancy,
+       'orggroup/' || G.id                              AS qid,
        G.gtype                                          AS gtype,
        G.longname                                       AS longname,
        G.color                                          AS color,
@@ -200,6 +212,10 @@ SELECT G.id                                             AS id,
        coalesce(P.personnel, 0)                         AS personnel,
        G.cost                                           AS cost,
        G.a                                              AS a,
+       CASE WHEN G.a != ''
+            THEN 'actor/' || G.a
+            ELSE ''
+            END                                         AS a_qid,
        O.orgtype                                        AS orgtype,
        O.base_personnel                                 AS base_personnel
 FROM fmt_groups  AS G

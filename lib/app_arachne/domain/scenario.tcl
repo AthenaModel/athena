@@ -325,6 +325,80 @@ oo::class create /scenario {
         return $case
     }
 
+    # ValidateActor case a 
+    #
+    # Validates that a is a valid actor in the case, throws not
+    # found if case or actor is invalid.
+
+    method ValidateActor {case a} {
+        # FIRST, validate case
+        set case [my ValidateCase $case]
+
+        set a [string toupper $a]
+
+        if {$a ni [case with $case actor names]} {
+            throw NOTFOUND "No such actor: \"$a\""
+        }
+
+        return $a
+    }
+
+    # ValidateNbhood case n
+    #
+    # Validate that n is a valid neighborhood in the case, throws not
+    # found if case or n is invalid.
+
+    method ValidateNbhood {case n} {
+        # FIRST, validate case
+        set case [my ValidateCase $case]
+
+        set n [string toupper $n]
+
+        if {$n ni [case with $case nbhood names]} {
+            throw NOTFOUND "No such nbhood: \"$n\""
+        }
+
+        return $n
+    }
+
+    # ValidateGroup case g
+    #
+    # Validates that g is a valid CIV, FRC or ORG group in the case,
+    # throws not found if the case or g is invalid.
+
+    method ValidateGroup {case g gtype} {
+        # FIRST, validate case
+        set case [my ValidateCase $case]
+
+        set g [string toupper $g]
+
+        switch -exact -- $gtype {
+            CIV {
+                if {$g ni [case with $case civgroup names]} {
+                    throw NOTFOUND "No such CIV group: \"$g\""
+                }
+            }
+
+            FRC {
+                if {$g ni [case with $case frcgroup names]} {
+                    throw NOTFOUND "No such FRC group: \"$g\""
+                }
+            }
+
+            ORG {
+                if {$g ni [case with $case orggroup names]} {
+                    throw NOTFOUND "No such ORG group: \"$g\""
+                }
+            }
+
+            default {
+                error "Unknown gtype: \"$gtype\""
+            }
+        }
+    
+        return $g
+    }
+
     # MainNavBar
     #
     # Returns a navigation bar for the toplevel pages
@@ -359,6 +433,16 @@ oo::class create /scenario {
         hb iref /index.html "Scenarios"
         hb put " | "
         hb iref /$case/index.html "Case"
+        hb put " | "
+        hb iref /$case/actor/index.html "Actors"
+        hb put " | "
+        hb iref /$case/nbhood/index.html "Neighborhoods"
+        hb put " | "
+        hb iref /$case/civgroup/index.html "Civilian Groups"
+        hb put " | "
+        hb iref /$case/frcgroup/index.html "Force Groups"
+        hb put " | "
+        hb iref /$case/orggroup/index.html "Organization Groups"
         hb put " | "
         hb iref /$case/sanity/onlock.html "Sanity"
         hb put " | "
@@ -410,7 +494,6 @@ oo::class create /scenario {
         return  /$case/$entity/index.html
     }
 }
-    
 
 #-------------------------------------------------------------------
 # General Content
