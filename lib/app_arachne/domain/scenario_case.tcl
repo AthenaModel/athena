@@ -486,7 +486,7 @@ smarturl /scenario /{case}/script.json {
 } {
     set case [my ValidateCase $case]
 
-    set script [my query]
+    set script [req query]
 
     # NEXT, evaluate the script.
     try {
