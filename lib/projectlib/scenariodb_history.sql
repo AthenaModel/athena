@@ -15,6 +15,14 @@
 --
 ------------------------------------------------------------------------
 
+-- History master
+-- This is meta data information for all history tables.
+
+CREATE TABLE hist_master (
+    table_name  TEXT PRIMARY KEY,
+    key_cols    TEXT
+);
+
 -- The following tables contain simulation history data for
 -- "after-action analysis".  The tables are grouped by index; e.g.,
 -- the hist_civg table contains civilian group outputs over time.

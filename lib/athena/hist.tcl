@@ -32,6 +32,11 @@ snit::type ::athena::hist {
 
     constructor {adb_} {
         set adb $adb_
+
+        $adb eval {
+            INSERT INTO hist_master(table_name,key_cols)
+            VALUES('hist_nbmood','t n');
+        }
     }
 
     #-------------------------------------------------------------------

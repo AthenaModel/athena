@@ -499,4 +499,13 @@ smarturl /scenario /{case}/script.json {
     return [js ok $result]
 }
 
+smarturl /scenario /{case}/history.json {
+    Test URL for writing history to JSON 
+} {
+    set case [my ValidateCase $case]
+
+    set table "hist_nbmood"
+
+    return [js dictab [list $table]]
+}
 
