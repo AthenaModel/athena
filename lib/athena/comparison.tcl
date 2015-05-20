@@ -46,39 +46,39 @@ snit::type ::athena::comparison {
     # CheckCompatibility
     #
     # Determine whether the two scenarios are sufficiently similar that
-    # comparison is meaningful.  Throws "SCENARIO INCOMPARABLE" if the
+    # comparison is meaningful.  Throws "ATHENA INCOMPARABLE" if the
     # two scenarios cannot be meaningfully compared.
     #
     # TBD: The current set of checks is preliminary.
 
     method CheckCompatibility {} {
         if {![lequal [$s1 nbhood names] [$s2 nbhood names]]} {
-            throw {SCENARIO INCOMPARABLE} \
+            throw {ATHENA INCOMPARABLE} \
                 "Scenarios not comparable: different neighborhoods."
         }
 
         if {![lequal [$s1 actor names] [$s2 actor names]]} {
-            throw {SCENARIO INCOMPARABLE} \
+            throw {ATHENA INCOMPARABLE} \
                 "Scenarios not comparable: different actors."
         }
 
         if {![lequal [$s1 civgroup names] [$s2 civgroup names]]} {
-            throw {SCENARIO INCOMPARABLE} \
+            throw {ATHENA INCOMPARABLE} \
                 "Scenarios not comparable: different civilian groups."
         }
 
         if {![lequal [$s1 frcgroup names] [$s2 frcgroup names]]} {
-            throw {SCENARIO INCOMPARABLE} \
+            throw {ATHENA INCOMPARABLE} \
                 "Scenarios not comparable: different force groups."
         }
 
         if {![lequal [$s1 orggroup names] [$s2 orggroup names]]} {
-            throw {SCENARIO INCOMPARABLE} \
+            throw {ATHENA INCOMPARABLE} \
                 "Scenarios not comparable: different organization groups."
         }
 
         if {![lequal [$s1 bsys system namedict] [$s2 bsys system namedict]]} {
-            throw {SCENARIO INCOMPARABLE} \
+            throw {ATHENA INCOMPARABLE} \
                 "Scenarios not comparable: different belief systems."
         }
     }

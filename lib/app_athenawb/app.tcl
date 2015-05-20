@@ -909,7 +909,7 @@ snit::type app {
         # FIRST, try to open the scenario.
         try {
             ::adb load $filename
-        } trap {SCENARIO OPEN} {result} {
+        } trap {ATHENA LOAD} {result} {
             # At least have an empty scenario.
             ::adb reset
             
@@ -954,7 +954,7 @@ snit::type app {
         # NEXT, save the scenario to disk.
         try {
             adb save $filename
-        } trap {SCENARIO SAVE} {result eopts} {
+        } trap {ATHENA SAVE} {result eopts} {
             log warning scenario "Could not save: $result"
             log error scenario [dict get $eopts -errorinfo]
             app error {

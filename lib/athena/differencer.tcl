@@ -38,7 +38,7 @@ snit::type ::athena::differencer {
     #   -t1   - The sim time for the first scenario.
     #   -t2   - The sim time for the second scenario 
     #
-    # Throws {SCENARIO INCOMPARABLE} if the two scenarios are not 
+    # Throws {ATHENA INCOMPARABLE} if the two scenarios are not 
     # compatible.
 
     typemethod diff {s1 args} {
@@ -55,7 +55,7 @@ snit::type ::athena::differencer {
             set t2 [$s1 clock now]
 
             if {$t1 == $t2} {
-                error "Trivial comparison: scenario with itself at t=0"
+                error "Trivial: scenario with itself at t=0"
             }
         } else {
             # Find the latest time they have in common

@@ -85,7 +85,7 @@ tool define COMPARE {
         # NEXT, look for differences
         try {
             set comp [athena diff $s1 $s2]
-        } trap {SCENARIO INCOMPARABLE} {result} {
+        } trap {ATHENA INCOMPARABLE} {result} {
             throw FATAL $result
         }
 
@@ -122,9 +122,11 @@ tool define COMPARE {
         }
 
         # NEXT, load the file.
+        set s [athena create %AUTO%]
+
         try {
-            set s [athena create %AUTO% -adbfile $adbfile]
-        } trap {SCENARIO OPEN} {result} {
+            $s load $adbfile
+        } trap {ATHENA LOAD} {result} {
             throw FATAL "Could not load $adbfile:\n$result"
         }
 

@@ -146,7 +146,7 @@ snit::type app {
             if {$adbfile ne ""} {
                 case import case00 $adbfile                
             }
-        } trap {SCENARIO OPEN} {result} {
+        } trap {ATHENA LOAD} {result} {
             throw FATAL "Could not import $adbfile:\n$result"
         }
 

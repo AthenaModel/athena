@@ -100,7 +100,7 @@ The following options may be used:<p>
 
 If the <i filename> isn't the empty string, it specifies the name of 
 an <tt .adb> scenario file to load.  If the named file cannot be loaded, 
-athena(n) will throw "<tt SCENARIO OPEN>".<p>
+athena(n) will throw "<tt ATHENA LOAD>".<p>
 
 Note that this option is read-only after the object is created.<p>
 
@@ -149,6 +149,9 @@ simulation times) for significant differences, and returns a
 By default, the command compares <i s1> at time 0 with itself at its latest
 simulation time.  If both scenarios are given, it compares <i s1> with
 <i s2> at the latest simulation time they have in common.<p>
+
+Throws <b ATHENA INCOMPARABLE> if the two scenarios cannot reasonably be 
+compared.<p>
 
 The options are as follows:<p>
 
@@ -265,6 +268,9 @@ has ever been loaded or saved.<p>
 
 Advances simulation time, provided that the scenario is <iref locked> and
 <iref idle>.  With no options, advances time by one tick.<p>
+
+Throws <b ATHENA BUSY> if the scenario <iref isbusy> and 
+<b ATHENA UNLOCKED> if the scenario is not <iref locked>.<p>
 
 The options are as follows:<p>
 
@@ -1008,11 +1014,17 @@ If the client depends on <xref "NOTIFIER EVENTS"> to keep its user interface
 in sync with the scenario, it should call <iref dbsync> after calling 
 <iref load>.<p>
 
+Throws <b ATHENA BUSY> if the scenario <iref isbusy>, and <b ATHENA LOAD>
+if the scenario file could not be loaded.<p>
+
 <defitem lock {<i obj> lock}>
 
 Locks the scenario, if the scenario is <iref idle> and <iref unlocked>
 and <iref canlock>.  The simulation time can only be advanced while the
 scenario is locked.<p>
+
+Throws <b ATHENA BUSY> if the scenario is busy, and <b ATHENA NOTSANE>
+if the scenario fails its on-lock sanity check.<p>
 
 <defitem locked {<i obj> locked}>
 
@@ -1167,6 +1179,8 @@ If the client depends on <xref "NOTIFIER EVENTS"> to keep its user interface
 in sync with the scenario, it should call <iref dbsync> after calling 
 <iref load>.<p>
 
+Throws <b ATHENA BUSY> if the scenario <iref isbusy>.<p>
+
 <defitem sanity {<i obj> sanity <i subcommand> ?<i args...>?}>
 
 TBD: Sanity-checking module; fill this in.<p>
@@ -1178,7 +1192,7 @@ adding the "<tt .adb>" extension if necessary.  If no <i filename> is
 given but the <iref adbfile> name is known, the <iref adbfile> name is
 used.  The scenario is marked saved.<p>
 
-On failure, throws "<tt SCENARIO SAVE>".<p>
+On failure, throws "<tt ATHENA SAVE>".<p>
 
 <defitem state {<i obj> state}>
 
@@ -1203,6 +1217,8 @@ time in weeks at which the simulation will stop and return to the
 
 Unlocks the scenario, if the scenario is <iref idle> and <iref locked>.
 The scenario can only be edited while it is unlocked.<p>
+
+Throws <b ATHENA BUSY> if the scenario <iref isbusy>.<p>
 
 <defitem unlocked {<i obj> unlocked}>
 

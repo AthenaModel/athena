@@ -753,8 +753,8 @@ smarturl /scenario /import.html {
         try {
             set theID [case import $filename $case $longname]
             set status ok
-        } trap {SCENARIO IMPORT} {result} {
-            qdict reject filename $result
+        } trap ARACHNE {result} {
+            qdict reject filename "Could not import \"$filename\": $result"
             set status error
         }
 
@@ -826,8 +826,8 @@ smarturl /scenario /import.json {
     # NEXT, try to import it.
     try {
         set theID [case import $filename $case $longname]
-    } trap {SCENARIO IMPORT} {result} {
-        qdict reject filename $result
+    } trap ARACHNE {result} {
+        qdict reject filename "Could not import \"$filename\": $result"
         return [js reject [qdict errors]]
     }
 
@@ -861,8 +861,8 @@ smarturl /scenario /export.html {
     if {$op eq "export" && [qdict ok]} {
         try {
             set theFileName [case export $case $filename]
-        } trap {SCENARIO EXPORT} {result} {
-            qdict reject filename $result
+        } trap ARACHNE {result} {
+            qdict reject filename "Could not export to \"$filename\": $result"
         }
     }
 
@@ -928,8 +928,8 @@ smarturl /scenario /export.json {
     # NEXT, try to export it.
     try {
         set theFileName [case export $case $filename]
-    } trap {SCENARIO EXPORT} {result} {
-        qdict reject filename $result
+    } trap ARACHNE {result} {
+        qdict reject filename "Could not export to \"$filename\": $result"
         return [js reject [qdict errors]]
     }
 

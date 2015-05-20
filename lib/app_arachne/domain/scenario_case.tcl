@@ -46,21 +46,22 @@ smarturl /scenario /{case}/index.html {
         try {
             switch -- $op {
                 advance {
-                    case advance $case $weeks
+                    case with $case lock
+                    case with $case advance -mode background -ticks $weeks
                     my status { hb putln "Advancing time." }
                 }
                 lock {
-                    case lock $case
+                    case with $case lock
                     my status { hb putln "Scenario is locked." }
                 }
                 unlock {
-                    case unlock $case
+                    case with $case unlock
                     my status { hb putln "Scenario is unlocked." }
                 }
             }
-        } trap {SCENARIO NOTSANE} {result} {
+        } trap {ATHENA NOTSANE} {result} {
             my redirect [my domain $case sanity onlock.html]
-        } trap SCENARIO {result} {
+        } trap ATHENA {result} {
             my status { hb span -class error $result }
         }
 
@@ -149,9 +150,9 @@ smarturl /scenario /{case}/lock.json {
     set case [my ValidateCase $case]
 
     try {
-        case lock $case
+        case with $case lock
         return [js ok ""]
-    } trap SCENARIO {result} {
+    } trap ATHENA {result} {
         return [js error $result]
     }
 }
@@ -167,9 +168,9 @@ smarturl /scenario /{case}/unlock.json {
     set case [my ValidateCase $case]
 
     try {
-        case unlock $case
+        case with $case unlock
         return [js ok ""]
-    } trap SCENARIO {result} {
+    } trap ATHENA {result} {
         return [js error $result]
     }
 }
@@ -193,9 +194,9 @@ smarturl /scenario /{case}/advance.json {
     }
 
     try {
-        case advance $case $weeks
+        case with $case advance -mode background -ticks $weeks
         return [js ok ""]
-    } trap SCENARIO {result} {
+    } trap ATHENA {result} {
         return [js error $result]
     }
 }
