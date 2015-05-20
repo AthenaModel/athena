@@ -820,6 +820,7 @@ NB2 2
         pcf            *
         polygon        *
         population     0.0
+        qid            nbhood/NB1
         refpoint       31NBB7743810598
         since          2012W01
         since_ticks    0

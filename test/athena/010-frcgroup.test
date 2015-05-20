@@ -462,12 +462,13 @@ local           1
         cleanup
     } -match dictglob -result {
         a              JOE
+        a_qid          actor/JOE
         base_personnel 5000
         color          {#f00001}
         cost           0.00
         demeanor       AVERAGE
         equip_level    BEST
-        fancy          {BLUE: US Army}
+        fancy          *
         forcetype      REGULAR
         g              BLUE
         gtype          FRC
@@ -476,6 +477,7 @@ local           1
         longname       {US Army}
         personnel      0
         pretty_local   No
+        qid            frcgroup/BLUE
         training       PROFICIENT
     }
 

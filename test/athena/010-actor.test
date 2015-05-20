@@ -497,7 +497,7 @@ budget            10.0
         ted pdicts [tdb actor view JOE]
     } -cleanup {
         cleanup
-    } -match dict -result {
+    } -match dictglob -result {
         a                JOE
         atype            INCOME
         auto_maintain    0
@@ -506,7 +506,7 @@ budget            10.0
         budget           0.00
         cash_on_hand     0.00
         cash_reserve     200,000
-        fancy            {JOE: Joe the Actor}
+        fancy            *
         id               JOE
         income           10,000
         income_black_tax 0.00
@@ -516,8 +516,10 @@ budget            10.0
         income_world     0.00
         longname         {Joe the Actor}
         pretty_am_flag   No
+        qid              actor/JOE
         shares_black_nr  0
         supports         SELF
+        supports_qid     {}
     }
 
     #-------------------------------------------------------------------
