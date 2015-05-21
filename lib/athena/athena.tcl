@@ -177,6 +177,7 @@ snit::type ::athena::athena {
     delegate method {bsys belief validate}  to adb as {bsys belief validate}
     delegate method {bsys belief isdefault} to adb as {bsys belief isdefault}
     delegate method {bsys playbox cget}     to adb as {bsys playbox cget}
+    delegate method {bsys playbox view}     to adb as {bsys playbox view}
     delegate method {bsys system cget}      to adb as {bsys system cget}
     delegate method {bsys system exists}    to adb as {bsys system exists}
     delegate method {bsys system ids}       to adb as {bsys system ids}

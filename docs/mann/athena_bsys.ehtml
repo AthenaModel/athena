@@ -1,0 +1,200 @@
+<manpage {athena(n) athena_bsys(n)} "Athena Belief System Component">
+
+<section SYNOPSIS>
+
+<pre>
+package require athena <version>
+namespace import ::athena::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+This man page describes a component of the <xref athena(n)> package that 
+gives access to the scenario's belief systems.<p>
+
+The component is accessible as a subcommand of the <xref athena(n)> and
+<xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
+from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
+<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+
+<section "COMMANDS">
+
+<subsection "Public Subcommands">
+
+The <tt><i adb> bsys</tt> command takes the following subcommands,
+where <i adb> is an instance of <xref athena(n)>.<p>
+
+<deflist bsys>
+
+<defitem "affinity" {<i adb> bsys affinity <i sid1 sid2>}>
+Returns the belief system <i sid1>'s affinity for belief system
+<i sid2>.  Affinity is a number between -1.0 and 1.0.<p>
+
+<defitem "belief" {<i adb> bsys belief <i subcommand> ?<i args>?}>
+
+This command is used to query the beliefs in a belief system.  The
+subcommands are as follows:<p>
+
+<deflist bsys belief>
+
+<defitem "belief view" {<i adb> bsys belief view <i sid tid>}>
+Returns a dictionary of information about system <i sid>'s belief about
+topic <i tid>.<p>
+
+<defitem "belief validate" {<i adb> bsys belief validate <i bid>}>
+
+Validates <i bid> as an {<i sid tid>} pair for this scenario.  Returns
+the <i bid>, or throws <b INVALID> on failure.<p>
+
+<defitem "belief isdefault" {<i adb> bsys belief isdefault <i bid>}>
+
+Returns 1 if belief <i bid> has its default value, and 0 otherwise, where
+<i bid> is a valid {<i sid tid>} pair.<p>
+
+</deflist bsys belief>
+
+
+<defitem "playbox" {<i adb> bsys playbox <i subcommand> ?<i args>?}>
+
+This command is used to query information about the beliefs of the entire
+playbox.<p>
+
+<deflist bsys playbox>
+
+<defitem "playbox cget" {<i adb> bsys playbox cget <i option>}>
+
+Returns the value of the named option.  Options include:<p>
+
+<deflist options>
+
+<defopt {-gamma <i value>}> 
+This is the playbox "commonality" dial; it
+controls the degree of implicit commonality among the entities in the
+playbox, that is, the number of implicit topics about which there is
+general (and passionate) agreement in the playbox. If <tt -gamma> is 0,
+there is no implicit commonality; only explicit topics are considered. If
+<tt -gamma> is 1.0 there are as many implicit topics as explicit topics; if
+0.5, half as many; if 2.0, twice as many. The value must be no less than
+0.0; default is 1.0.     
+</deflist options>
+
+<defitem "playbox view" {<i adb> bsys playbox view}>
+
+Returns a dictionary of the playbox data with the values formatted for
+display.<p>
+
+
+</deflist bsys playbox>
+
+<defitem "system" {<i adb> bsys system <i subcommand> ?<i args>?}>
+
+This command is used to query information about entire belief systems.<p>
+
+<deflist bsys system>
+<defitem "system cget" {<i adb> bsys system cget <i sid option>}>
+Retrieves the value of the given <i option> for belief system <i sid>.
+Valid options are as follows:<p>
+
+<deflist options>
+<defopt {-name name}>
+This is the name of the belief system, for display to the user. 
+Names must be unique across belief systems. The default name is 
+"System sid".<p>
+
+<defopt {-commonality value}>
+This is the belief system "commonality" dial; it specifies the extent of
+the system's participation in the dominant culture in the playbox. If 1.0,
+the system shares all of the implicit cultural commonality; if 0.0, none of
+it. Defaults to 1.0. Note that the effect of this option depends on the
+playbox <tt -gamma> value; see <iref playbox cget>.<p>
+
+</deflist options>
+
+<defitem "system exists" {<i adb> bsys system exists <i sid>}>
+Returns 1 if the belief system exists, and 0 otherwise.<p>
+
+<defitem "system ids" {<i adb> bsys system ids}>
+Returns a list of the IDs of the defined belief systems.<p>
+
+<defitem "system inuse" {<i adb> bsys system inuse <i sid>}>
+Returns 1 if the given belief system is assigned to at least one
+actor or group, and 0 otherwise.<p>
+
+<defitem "system validate" {<i adb> bsys system validate <i sid>}>
+
+Returns <i sid> if it is a valid belief system ID, and throws 
+<b INVALID> otherwise.<p>
+
+<defitem "system view" {<i adb> bsys system view <i sid>}>
+
+Returns a dictionary of the system's data with the values formatted for
+display.<p>
+
+
+</deflist bsys system>
+
+<defitem "topic" {<i adb> bsys topic <i subcommand> ?<i args>?}>
+
+<deflist bsys topic>
+
+<defitem "topic cget" {<i adb> bsys topic cget <i tid option>}>
+Retrieves the value of the given <i option> for belief topic <i tid>.
+Valid options are as follows:<p>
+
+<deflist options>
+<defopt {-name name}>
+This is the name of the belief topic, for display to the user. 
+Names must be unique across belief topics. The default name is 
+"Topic <i tid>".<p>
+
+<defopt {-affinity <i flag>}>
+Specifies a numeric flag, 0 or 1. If 1 (the default), then beliefs on this 
+topic will be included in the computation of affinity; if 0, then it will
+be excluded.<p>
+
+<defopt {-relevance <i fraction>}>
+
+Specifies the relevance of the topic as a fraction from 0.0 to 1.0 (the 
+default). Positions on a topic have decreasing effect as the topic's 
+relevance declines.<p>
+
+</deflist options>
+
+<defitem "topic exists" {<i adb> bsys topic exists <i tid>}>
+Returns 1 if the belief topic exists, and 0 otherwise.<p>
+
+<defitem "topic ids" {<i adb> bsys topic ids}>
+Returns a list of the IDs of the defined belief topics.<p>
+
+<defitem "topic inuse" {<i adb> bsys topic inuse <i tid>}>
+Returns 1 if the given belief topic is assigned to at least one
+semantic hook, and 0 otherwise.  See <xref athena_hook(n)>.<p>
+
+<defitem "topic validate" {<i adb> bsys topic validate <i tid>}>
+
+Returns <i tid> if it is a valid belief topic ID, and throws 
+<b INVALID> otherwise.<p>
+
+<defitem "topic view" {<i adb> bsys topic view <i tid>}>
+
+Returns a dictionary of the topic's data with the values formatted for
+display.<p>
+
+</deflist bsys topic>
+
+</deflist bsys>
+
+<subsection "Private Subcommands">
+
+The <tt><i adb> bsys</tt> command takes the following subcommands, where
+where <i adb> is an instance of <xref athenadb(n)>.<p>
+
+TBD: None yet documented.<p>
+
+<section AUTHOR>
+
+Will Duquette, Dave Hanks.<p>
+
+</manpage>

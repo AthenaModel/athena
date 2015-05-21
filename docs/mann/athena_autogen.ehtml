@@ -1,0 +1,250 @@
+<manpage {athena(n) athena_autogen(n)} "Athena Scenario Auto-Generation Component">
+
+<section SYNOPSIS>
+
+<pre>
+package require athena <version>
+namespace import ::athena::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+This man page describes a component of the <xref athena(n)> package
+used to automatically generate entire scenarios or parts of scenarios
+as an aid to testing and optimization.<p>
+
+The component is accessible as a subcommand of the <xref athena(n)> and
+<xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
+from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
+<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+
+<section "COMMANDS">
+
+<subsection "Public Subcommands">
+
+The <tt><i adb> autogen</tt> command takes the following subcommands, 
+where <i adb> is an instance of <xref athena(n)>.<p>
+
+<deflist commands>
+
+<defitem scenario {<i adb> autogen scenario <i options...>}>
+
+Creates a scenario with a default number of each of Athena's entities
+or, if any of the options are supplied, the number of entities 
+requested by the user. If the <i>-nostrategy</i> flag is supplied then
+no tactics are created, otherwise a default set of tactics are created 
+for each actor.<p>
+
+The available options are:<p>
+
+<deflist options>
+
+<defopt {-nb <i>n</i>}>
+Specifies the number of neighborhoods to create. Each neighborhood is
+a 10x10 pixel square. Neighborhoods are laid out in strips starting at
+the top of the map. Defaults to 10.<p>
+
+<defopt {-actors <i>n</i>}>
+Specifies the number of actors to create. Defaults to 3.<p>
+
+<defopt {-frcg <i>n</i>}>
+Specifies the number of force groups to create. As they are created,
+the force group type is cycled through each possible type. Each force 
+group is given a base personnel of 100000. Defaults to 3.<p>
+
+<defopt {-civg <i>n</i>}>
+Specifies the number of civilian groups to create per neighborhood. The 
+last group in each neighborhood is created with the subsistence 
+agriculture flag set to true. The different types of housing are 
+cycled through as each group is created. The exception to this are 
+subsistence agriculture groups, which are always  
+<code>AT_HOME</code>.  The population of every group in a neighborhood 
+is some non-negative multiple of 10000. Thus, the first group in a 
+neighborhood has a base population of zero and each group created 
+after has a base population of 10000 more than the previous group.
+Defaults to 6.<p>
+
+<defopt {-orgg <i>n</i>}>
+Specifies the number of organization groups to create. As groups are
+created, the organization type is cycled through. Each group has a 
+base personnel of 100000. Defaults to 2.<p>
+
+<defopt {-topics <i>n</i>}>
+Specifies the number of belief system topics to create.  Each actor and
+civilian group is given its own belief system, and assigned a belief 
+for each topic.  The beliefs
+assigned are cycled through four possibilities comprised of a position
+and emphasis pair. They are:
+
+<ul>
+<li><b>Passionately For</b> and <b>Agreement--Strong</b>
+<li><b>Passionately For</b> and <b>Disagreement--Extreme</b>
+<li><b>Passionately Against</b> and <b>Agreement--Strong</b>
+<li><b>Passionately Against</b> and <b>Disagreement--Extreme</b>
+</ul>
+
+Note that if 4 topics are requested then all actors and
+civilians will have identical belief systems resulting in affinities of
+1 between all entity pairs. Defaults to 3.<p>
+
+<defopt {-nostrategy}>
+If specified, no tactics are employed by any actor.<p>
+
+</deflist options>
+
+To create a scenario with 8 neighborhoods and the default number of
+entities for all others, enter<p>
+
+<pre>
+    autogen scenario -nb 8
+</pre>
+
+To create a scenario with no tactics for any actor, enter<p>
+
+<pre>
+    autogen scenario -nostrategy
+</pre>
+
+<defitem actors {<i adb> autogen actors ?<i num>?}>
+
+Automatically generates the requested number of actors provided that
+no actors already exist.  If no argument is supplied, three actors are
+created.<p>
+
+<defitem nbhoods {<i adb> autogen nbhoods ?<i num>?}>
+
+Automatically generates the requested number of neighborhoods 
+subject to certain constraints. Each neighborhood is
+a 10x10 pixel square. Neighborhoods are laid out in strips starting at
+the top of the map. If no argument is supplied, 
+ten neighborhoods are created. The constraints are as follows:<p> 
+
+<ul>
+<li> No neighborhoods exist
+<li> At least one actor exists
+</ul><p>
+
+<defitem civgroups {<i adb> autogen civgroups ?<i num>?}>
+
+Automatically generates the requested number of civilian groups per
+neighborhood. The last group in each neighborhood is created with 
+the subsistence agriculture flag set to true. The different types 
+of housing are cycled through as each group is created. The exception
+to this are subsistence agriculture groups, which are
+always <code>AT_HOME</code>. The population of every group in a 
+neighborhood is some non-negative multiple of 10000. Thus, the first
+group in a neighborhood has a base population of zero and each group 
+created after has a base population of 10000 more than the previous 
+group.  If no argument is supplied, six groups per neighborhood are 
+created.<p>
+
+The creation of civilian groups is subject to the following constraints:<p> 
+
+<ul>
+<li> Neighborhoods must exist
+<li> No civilian groups exist
+</ul><p>
+
+<defitem frcgroups {<i adb> autogen frcgroups ?<i num>?}>
+
+Specifies the number of force groups to create. As they are created,
+force group type is cycled through each possible type. Each force 
+group is given a base personnel of 100000.  If no argument is supplied, 
+three groups are created. <p>
+
+The creation of force groups is subject to the following constraints:<p> 
+
+<ul>
+<li> At least one actor must exist
+<li> No force groups exist
+</ul><p>
+
+<defitem orggroups {<i adb> autogen orggroups ?<i num>?}>
+
+Specifies the number of organization groups to create. As they are created,
+organization group type is cycled through each possible type. Each
+group is given a base personnel of 100000.  If no argument is supplied, 
+three groups are created. <p>
+
+The creation of organization groups is subject to the following 
+constraints:<p> 
+
+<ul>
+<li> At least one actor must exist
+<li> No force groups exist
+</ul><p>
+
+<defitem bsystem {<i adb> autogen bsystem ?<i num>?}>
+
+Specifies the number of belief system topics to create.  Each actor and
+civilian group is given its own belief system, and is assigned a belief 
+for each topic.  The beliefs
+assigned are cycled through four possibilities comprised of a position
+and emphasis pair. They are:
+
+<ul>
+<li><b>Passionately For</b> and <b>Agreement--Strong</b>
+<li><b>Passionately For</b> and <b>Disagreement--Extreme</b>
+<li><b>Passionately Against</b> and <b>Agreement--Strong</b>
+<li><b>Passionately Against</b> and <b>Disagreement--Extreme</b>
+</ul>
+
+If no argument is supplied, three topics are created.<p>
+
+Creation of a belief system is subject to the following constraints. 
+The constraints are as follows:<p> 
+
+<ul>
+<li> At least one actor must exist
+<li> Civilian groups must exist
+<li> No topics exist
+</ul><p>
+
+
+<defitem assign {<i adb> autogen assign ?<i options>?}>
+
+This command automatically generates one or more 
+ASSIGN tactics for force or organization groups
+that belong to the specified owner.  By default all activities are
+assigned in turn for each neighborhood.  For each tactic created,
+100 personnel are specified to be doing the activity.  The list
+of available options are:<p>
+
+<deflist options>
+
+<defopt {-frcg <i>glist</i>}>
+List of force groups owned by owner that should be assigned activities.
+Defaults to all force groups owned by the owner.<p>
+
+<defopt {-orgg <i>glist</i>}>
+List of organization groups owned by owner that should be assigned
+activities. Defaults to all organization groups owned by owner.<p>
+
+<defopt {-nbhoods <i>nlist</i>}>
+List of neighborhoods that activities should be assigned in.  Defaults
+to all neighborhoods.<p>
+
+<defopt {-frcact <i>alist</i>}>
+List of force activities that should be assigned, in turn, to each
+force group in each neighborhood.  Defaults to all force activities.<p>
+
+<defopt {-orgact <i>alist</i>}>
+List of organization activities that should be assigned, in turn, to each
+organization group in each neighborhood.  Defaults to all organization
+activities.<p>
+
+</deflist options>
+
+
+</deflist commands>
+
+<subsection "Private Subcommands">
+
+None defined.<p>
+
+<section AUTHOR>
+
+Will Duquette, Dave Hanks.<p>
+</manpage>

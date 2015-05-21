@@ -1,0 +1,75 @@
+<manpage {athena(n) athena_agent(n)} "Athena Agent Component">
+
+<section SYNOPSIS>
+
+<pre>
+package require athena <version>
+namespace import ::athena::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+This man page describes a component of the <xref athena(n)> package used
+to retrieve information about agents.  Agents
+are entities that have strategies, and include all actors plus the 
+"SYSTEM" agent, which is used to control actions not dependent on
+particular actors.<p>
+
+The component is accessible as a subcommand of the <xref athena(n)> and
+<xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
+from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
+<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+
+<section "COMMANDS">
+
+<subsection "Public Subcommands">
+
+The <tt><i adb> agent</tt> command takes the following subcommands,
+where <i adb> is an instance of <xref athena(n)>.<p>
+
+<deflist commands>
+
+<defitem exists {<i adb> agent <i agent_id>}>
+Returns 1 if there is an agent with ID <i agent_id>, and 0 otherwise.<p>
+
+<defitem names {<i adb> agent names}>
+Returns a list of agent IDs for all agents in the scenario.<p>
+
+<defitem stats {<i adb> agent stats <i agent_id>}>
+Returns a dictionary of statistics about the specified agent's strategy:<p>
+
+<ul>
+<li> <b blocks>: The total number of blocks
+<li> <b conditions>: The total number of conditions
+<li> <b tactics>: The total number of tactics
+</ul><p>
+
+<defitem tactictypes {<i adb> agent tactictypes <i agent_id>}>
+
+Returns a list of the names of the tactic types that this agent is
+allowed to use.<p>
+
+<defitem type {<i adb> agent type <i agent_id>}>
+
+Returns the type of this agent, either <b system> or <b actor>.<p>
+
+<defitem validate {<i adb> agent validate <i agent_id>}>
+
+Validates <i agent_id> as an agent ID, returning it if it is valid and
+throwing <b INVALID> otherwise.<p>
+
+</deflist commands>
+
+<subsection "Private Subcommands">
+
+The <tt><i adb> agent</tt> command takes the following subcommands,
+where <i adb> is an instance of <xref athena(n)>.<p>
+
+TBD: None yet documented.<p>
+
+<section AUTHOR>
+
+Will Duquette, Dave Hanks.<p>
+</manpage>
