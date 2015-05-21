@@ -308,47 +308,26 @@ can in theory be locked, and 0 otherwise.<p>
 
 <defitem civgroup {<i adb> civgroup <i subcommand> ?<i args...>?}>
 
-This command gives access to the civilian groups in the scenario.<p>
-
-<deflist civgroup>
-
-<defitem "civgroup exists" {<i adb> civgroup exists TBD}>
-<defitem "civgroup get" {<i adb> civgroup get TBD}>
-<defitem "civgroup local" {<i adb> civgroup local TBD}>
-<defitem "civgroup namedict" {<i adb> civgroup namedict TBD}>
-<defitem "civgroup names" {<i adb> civgroup names TBD}>
-<defitem "civgroup validate" {<i adb> civgroup validate TBD}>
-<defitem "civgroup view" {<i adb> civgroup view TBD}>
-
-</deflist civgroup>
-
+This command gives access to the civilian groups in the scenario;
+see <xref athena_civgroup(n)> for the subcommands.<p>
 
 <defitem clock {<i adb> clock <i subcommand> ?<i args...>?}>
 
-TBD: Fill this in.  Refer to <xref weekclock(n)>.  
-Consider exposing only certain subcommands.<p>
+Provides access to the simulation clock, which is an instance of
+<xref weekclock(n)>; see that man page for the subcommands.  
+Clients should refrain from modifying the clock directly.<p>
 
 <defitem contribs {<i adb> contribs <i subcommand> ?<i args...>?}>
 
-TBD: Access to URAM contribs ensemble.  Fill this in.
+Provides access to <xref uram(n)>'s <xref uram(n) contribs> subcommand,
+which is used for computing contributions to curves and moods by 
+attitude drivers.  See the <xref uram(n)> man page for details.<p>
 
 <defitem curse {<i adb> curse <i subcommand> ?<i args...>?}>
 
 This command gives access to the CURSEs in the scenario.  A
 CURSE is a scenario-specific rule set triggered by the CURSE
-tactic.s<p>
-
-<deflist curse>
-
-<defitem "curse checker" {<i adb> curse checker TBD}>
-<defitem "curse exists" {<i adb> curse exists TBD}>
-<defitem "curse get" {<i adb> curse get TBD}>
-<defitem "curse namedict" {<i adb> curse namedict TBD}>
-<defitem "curse names" {<i adb> curse names TBD}>
-<defitem "curse normal" {<i adb> curse normal TBD}>
-<defitem "curse validate" {<i adb> curse validate TBD}>
-
-</deflist curse>
+tactics.  See <xref athena_curse(n)> for the subcommands.<p>
 
 <defitem dbsync {<i adb> dbsync}>
 
@@ -363,19 +342,9 @@ more about the notifier events sent by the library.<p>
 
 <defitem econ {<i adb> econ <i subcommand> ?<i args...>?}>
 
-This command gives access to the economic model in the scenario.<p>
+This command gives access to the economic model in the scenario.
+See <xref athena_econ(n)> for the subcommands.<p>
 
-<deflist econ>
-
-<defitem "econ state" {<i adb> econ state TBD}>
-<defitem "econ report" {<i adb> econ report TBD}>
-<defitem "econ hist" {<i adb> econ hist TBD}>
-<defitem "econ getcge" {<i adb> econ getcge TBD}>
-<defitem "econ getsam" {<i adb> econ getsam TBD}>
-<defitem "econ enable" {<i adb> econ enable TBD}>
-<defitem "econ disable" {<i adb> econ disable TBD}>
-
-</deflist econ>
 
 
 <defitem enter {<i obj> enter <i options...>}>

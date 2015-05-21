@@ -1,0 +1,78 @@
+<manpage {athena(n) athena_econ(n)} "Athena Economics Component">
+
+<section SYNOPSIS>
+
+<pre>
+package require athena <version>
+namespace import ::athena::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+This man page describes a component of the <xref athena(n)> package
+that provides access to the scenario's economic information.<p>
+
+The component is accessible as a subcommand of the <xref athena(n)> and
+<xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
+from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
+<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+
+<section "COMMANDS">
+
+<subsection "Public Subcommands">
+
+The <tt><i adb> econ</tt> command takes the following subcommands,
+where <i adb> is an instance of <xref athena(n)>.<p>
+
+<deflist econ>
+
+<defitem "disable" {<i adb> econ disable}>
+Disables the economic model.  The scenario must be unlocked and idle.<p>
+
+<defitem "enable" {<i adb> econ enable}>
+Enables the economic model.  The scenario must be unlocked and idle.<p>
+
+<defitem "getcge" {<i adb> econ getcge}>
+Returns the <xref cellmodel(n)> object containing the economic model's
+CGE equations.  Modifying or destroying the object will damage the 
+scenario. <b TBD>: We should probably change how this works.<p>
+
+<defitem "getsam" {<i adb> econ getsam ?flag?}>
+By default, returns the <xref cellmodel(n)> object containing the 
+economic model's SAM equations.  Modifying or destroying the object will 
+damage the scenario. <b TBD>: We should probably change how this works.<p>
+
+If <i flag> is given and true, the command creates a new <xref cellmodel(n)>
+containing the SAM equations, with default initial values, and returns it.
+It is the caller's responsibility to destroy the new cellmodel(n).<p>
+
+<defitem "gethist" {<i adb> econ gethist}>
+
+Returns economic history parameters.  <b TBD:> ???.<p>
+
+<defitem "report" {<i adb> econ report <i ht>}>
+
+Given an instance of <xref htools(n)>, formats an HTML report of the 
+current state of the economic model.<p>
+
+<defitem "state" {<i adb> econ state}>
+Returns the current state, <b ENABLED> or <b DISABLED>.<p>
+
+</deflist econ>
+
+</deflist commands>
+
+<subsection "Private Subcommands">
+
+The <tt><i adb> econ</tt> command takes the following subcommands, where
+where <i adb> is an instance of <xref athenadb(n)>.<p>
+
+TBD: None yet documented.<p>
+
+<section AUTHOR>
+
+Will Duquette, Dave Hanks.<p>
+
+</manpage>

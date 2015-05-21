@@ -1,0 +1,90 @@
+<manpage {athena(n) athena_civgroup(n)} "Athena Civilian Groups Component">
+
+<section SYNOPSIS>
+
+<pre>
+package require athena <version>
+namespace import ::athena::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+This man page describes a component of the <xref athena(n)> package
+that provides access to the scenario's civilian groups.<p>
+
+The component is accessible as a subcommand of the <xref athena(n)> and
+<xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
+from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
+<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+
+<section "COMMANDS">
+
+<subsection "Public Subcommands">
+
+The <tt><i adb> civgroup</tt> command takes the following subcommands,
+where <i adb> is an instance of <xref athena(n)>.<p>
+
+<deflist civgroup>
+
+<defitem "exists" {<i adb> civgroup exists <i g>}>
+
+Returns 1 if there is a civilian group called <i g>, and 0 otherwise.<p>
+
+<defitem "get" {<i adb> civgroup get <i g> ?<i parm>?}>
+
+By default, returns a dictionary of information about group <i g>,
+as read from the <b civgroups_view>.  If <i parm> is given, returns
+the value of the <i parm>.<p>
+
+<defitem "local" {<i adb> civgroup local <i subcommand> ?<i args...>?}>
+
+Returns information about the "local" civilian groups, i.e., those living
+in "local" neighborhoods.<p>
+
+<deflist local>
+<defitem "local namedict" {<i adb> civgroup local namedict}>
+Returns an ID/longname dictionary of the names of the "local" 
+civilian group.<p>
+
+<defitem "local names" {<i adb> civgroup local names}>
+returns a list of the IDs of the "local" civilian groups.<p>
+
+<defitem "local validate" {<i adb> civgroup local validate <i g>}>
+Validates group ID <i g>, returning <i g> if <i g> is a "local"
+civilian group and throwing <b INVALID> otherwise.<p>
+
+</deflist local>
+
+<defitem "namedict" {<i adb> civgroup namedict}>
+Returns an ID/longname dictionary of the civilian group names.<p>
+
+<defitem "names" {<i adb> civgroup names}>
+returns a list of the IDs of the civilian groups.<p>
+
+<defitem "validate" {<i adb> civgroup validate <i g>}>
+Validates group ID <i g>, returning <i g> if valid and throwing
+<b INVALID> otherwise.<p>
+
+<defitem "view" {<i adb> civgroup view <i g> ?<i tag>?}>
+
+Returns a dictionary of formatted information about group <i g>, retrieved
+by reading the SQL <b><i tag>_civgroups</b> view.  If <i tag> is not 
+given, uses <b>fmt_civgroups</b>.<p>
+
+
+</deflist civgroup>
+
+<subsection "Private Subcommands">
+
+The <tt><i adb> civgroup</tt> command takes the following subcommands, where
+where <i adb> is an instance of <xref athenadb(n)>.<p>
+
+TBD: None yet documented.<p>
+
+<section AUTHOR>
+
+Will Duquette, Dave Hanks.<p>
+
+</manpage>

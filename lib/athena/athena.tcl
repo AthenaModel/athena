@@ -106,7 +106,6 @@ snit::type ::athena::athena {
     delegate method busy                    to adb
     delegate method canlock                 to adb
     delegate method clock                   to adb
-    delegate method getclock                to adb as {component clock}
     delegate method contribs                to adb as {aram contribs}
     delegate method dbsync                  to adb
     delegate method enter                   to adb
@@ -114,6 +113,7 @@ snit::type ::athena::athena {
     delegate method executive               to adb
     delegate method exists                  to adb as {safe exists}
     delegate method export                  to adb
+    delegate method getclock                to adb as {component clock}
     delegate method gofer                   to adb
     delegate method halt                    to adb as {sim halt} ;# TBD
     delegate method idle                    to adb

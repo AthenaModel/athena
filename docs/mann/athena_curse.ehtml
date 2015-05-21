@@ -1,0 +1,74 @@
+<manpage {athena(n) athena_curse(n)} "Athena CURSE Component">
+
+<section SYNOPSIS>
+
+<pre>
+package require athena <version>
+namespace import ::athena::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+This man page describes a component of the <xref athena(n)> package
+that provides access to the scenario's CURSE entities.  A CURSE is a
+Complex User-defined Role-based Situation or Event, i.e., a magic
+attitude driver used to model events and situations not included in
+Athena's normal rule base.<p>
+
+The component is accessible as a subcommand of the <xref athena(n)> and
+<xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
+from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
+<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+
+<section "COMMANDS">
+
+<subsection "Public Subcommands">
+
+The <tt><i adb> curse</tt> command takes the following subcommands,
+where <i adb> is an instance of <xref athena(n)>.<p>
+
+<deflist curse>
+
+<defitem "check" {<i adb> curse check}>
+
+Computes a sanity check for the set of curses, returning a list of two
+elements, <tt>{<i code> <i flist>}</tt>, where the <i code> is <b OK> or
+<b WARNING>, and <i flist> is a list of sanity check failure records.
+If the <i code> is <b OK>, the list of failures will be empty.<p>
+
+<defitem "exists" {<i adb> curse exists <i curse_id>}>
+
+Returns 1 if there is a CURSE called <i curse_id>, and 0 otherwise.<p>
+
+<defitem "get" {<i adb> curse get <i curse_id> ?<i parm>?}>
+
+By default, returns a dictionary of information about CURSE <i curse_id>,
+as read from <b fmt_curses>.  If <i parm> is given, returns
+the value of the <i parm>.<p>
+
+<defitem "namedict" {<i adb> curse namedict}>
+Returns an ID/longname dictionary of the CURSE names.<p>
+
+<defitem "names" {<i adb> curse names}>
+returns a list of the IDs of the CURSEs.<p>
+
+<defitem "validate" {<i adb> curse validate <i curse_id>}>
+Validates ID <i curse_id>, returning <i curse_id> if valid and throwing
+<b INVALID> otherwise.<p>
+
+</deflist curse>
+
+<subsection "Private Subcommands">
+
+The <tt><i adb> curse</tt> command takes the following subcommands, where
+where <i adb> is an instance of <xref athenadb(n)>.<p>
+
+TBD: None yet documented.<p>
+
+<section AUTHOR>
+
+Will Duquette, Dave Hanks.<p>
+
+</manpage>
