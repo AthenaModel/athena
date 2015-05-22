@@ -236,6 +236,8 @@ snit::type ::athena::athena {
     delegate method {hook topic validate}   to adb as {hook topic validate}
     delegate method {hook validate}         to adb as {hook validate}
 
+    delegate method {hist vars}             to adb as {hist vars}
+
     delegate method {inject exists}         to adb as {inject exists}
     delegate method {inject get}            to adb as {inject get}
     delegate method {inject typenames}      to adb as {inject typenames}

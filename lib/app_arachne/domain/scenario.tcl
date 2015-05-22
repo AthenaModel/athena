@@ -113,6 +113,180 @@ oo::class create /scenario {
         hb /record
     }
 
+    # GetHistForm var case
+    #
+    # var   - a history variable that has a smarturl defined 
+    # case  - an Arachne case
+    #
+    # Thie method puts start and end time entries (which are common to
+    # all history queries) into a form along with a "Get" button with
+    # a form action base on the case and var supplied.
+
+    method GetHistForm {var case} {
+        hb para
+        hb putln "Select start and end times or leave blank for all history."
+        hb para
+        hb label t1 "Start Time:"
+        hb entry t1 -size 8
+        hb label t2 "End Time:"
+        hb entry t2 -size 8
+        hb para 
+        hb submit -formaction [my domain]/$case/history/$var/index.json "JSON"
+    }
+
+    # NbhoodForm case
+    #
+    # case   - an Arachne case
+    #
+    # This method creates a dropdown menu containing all the Neighborhoods
+    # defined in the case provided.  It prepends "ALL" to the list and
+    # sets that as the default.
+
+    method NbhoodForm {case} {
+        set nbhoods [lsort [case with $case nbhood names]]
+
+        hb putln "Select a neighborhood or 'ALL'."
+        hb para
+
+        hb enum nbhood -selected ALL [list ALL {*}$nbhoods]
+    }
+
+    # ValidateTimes
+    #
+    # This method validates two qdict time parameters that are assumed to
+    # be present.  This validation is true for all history queries.
+
+    method ValidateTimes {} {
+        # FIRST, basic validations
+        set t1 [qdict prepare t1 -toupper -default 0 -with {iticks validate}]
+        set t2 [qdict prepare t2 -toupper -default end]
+
+        if {![qdict ok]} {
+            return 0
+        }
+        
+        # NEXT t2 must be greater than or equal to t1 if it is not "end"
+        qdict checkon t2 {
+            if {$t2 ne "end"} {
+                iticks validate $t2
+
+                if {$t2 < $t1} {
+                    qdict reject t2 "t2 must be >= t1"
+                }
+            }
+        }
+
+        if {![qdict ok]} {
+            return 0
+        }
+
+        return 1        
+    }
+
+    # NbhoodVarHtml case var 
+    #
+    # case   - an Arachne case
+    # var    - a history variable with nbhood for the key
+    #
+    # This method generates a form for a nbhood history variable so the
+    # user can pick a neighborhood (or ALL) and start and end times to
+    # extract the data.
+
+    method NbhoodVarHtml {case var} {
+        set case [my ValidateCase $case]
+
+        # FIRST, begin the page
+        hb page "Scenario '$case': History for [string toupper $var]"
+        hb h1 "Scenario '$case': History for [string toupper $var]"
+
+        my CaseNavBar $case
+
+        hb form
+
+        my NbhoodForm $case
+        my GetHistForm $var $case
+
+        hb /form
+
+        return [hb /page]        
+    }
+
+    # UnsupportedVarHtml case var
+    #
+    # This is just a placeholder for history variables that do not yet
+    # have a form defined.
+
+    method UnsupportedVarHtml {case var} {
+        # FIRST, begin the page
+        hb page "Scenario '$case': History for [string toupper $var]"
+        hb h1 "Scenario '$case': History for [string toupper $var]"
+
+        my CaseNavBar $case
+        
+        hb h2 "$var is not supported."
+
+        return [hb /page]        
+    }
+
+    # NbhoodVarJson case var
+    #
+    # case   - an Arachne case
+    # var    - a history variable with nbhood for the key
+    #
+    # This method extracts history data from the case for a particular nbhood 
+    # variable and returns it as a list of JSON objects by writing it to
+    # a file and then redirecting the browser to that file.
+    
+    method NbhoodVarJson {case var} {
+        set nbhoods [list ALL {*}[case with $case nbhood names]]
+        set nbhood [qdict prepare nbhood -toupper -default ALL -in $nbhoods]
+
+        # NEXT, validate time parms
+        if {![my ValidateTimes]} {
+            return [js reject [qdict errors]]
+        }
+
+        set t1 [qdict get t1]
+        set t2 [qdict get t2]
+
+        if {$t2 eq "end"} {
+            set t2 [case with $case clock now]
+        }
+
+        set path [appdir join htdocs]
+
+        # NEXT, construct the file name 
+        set fname [file join $path \
+            [join [list $case $var $nbhood $t1 $t2] "_"]]
+
+        append fname ".json"
+
+        append table "hist_" $var
+
+        # NEXT, construct the query
+        set query "SELECT * FROM $table "
+        set wlist [list]
+        if {$nbhood ne "ALL"} {
+            append wlist "n='$nbhood'"
+        }
+
+        lappend wlist "t>=$t1"
+        lappend wlist "t<=$t2"
+
+        set wClause "WHERE "
+        append wClause [join $wlist " AND "]
+
+        append query $wClause
+
+        try {
+            case with $case query $query -mode json -filename $fname
+        } on error {result eopts} {
+            return [js error $result [dict get $eopts -errorinfo]]
+        }
+
+        my redirect "/[file tail $fname]"        
+    }
+
     # RefreshIfBusy ?case?
     #
     # case   - A case name
@@ -445,6 +619,8 @@ oo::class create /scenario {
         hb iref /$case/orggroup/index.html "Organization Groups"
         hb put " | "
         hb iref /$case/sanity/onlock.html "Sanity"
+        hb put " | "
+        hb iref /$case/history/index.html "History"
         hb put " | "
         hb iref /$case/order.html "Orders"
         hb put " | "
