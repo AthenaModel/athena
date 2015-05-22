@@ -116,16 +116,12 @@ snit::type ::athena::athena {
     delegate method getclock                to adb as {component clock}
     delegate method gofer                   to adb
     delegate method halt                    to adb as {sim halt} ;# TBD
-    delegate method idle                    to adb
     delegate method interrupt               to adb
-    delegate method interruptible           to adb
     delegate method is                      to adb
-    delegate method isbusy                  to adb
     delegate method load                    to adb
     delegate method loadtemp                to adb
     delegate method log                     to adb
     delegate method lock                    to adb
-    delegate method locked                  to adb
     delegate method onecolumn               to adb as {safe onecolumn}
     delegate method paste                   to adb
     delegate method progress                to adb
@@ -140,8 +136,6 @@ snit::type ::athena::athena {
     delegate method state                   to adb
     delegate method statetext               to adb
     delegate method unlock                  to adb
-    delegate method unlocked                to adb
-    delegate method unsaved                 to adb
     delegate method version                 to adb
 
     delegate method {absit exists}          to adb as {absit exists}

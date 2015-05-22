@@ -1832,7 +1832,7 @@ snit::type ::athena::executive {
     # scenario if necessary.
 
     method Advance {weeks} {
-        if {[$adb unlocked]} {
+        if {[$adb is unlocked]} {
             $adb lock
         }
 
@@ -2093,7 +2093,7 @@ snit::type ::athena::executive {
         }
 
         # NEXT, the normal export can only be done during PREP.
-        if {[$adb locked]} {
+        if {[$adb is locked]} {
             error "Cannot export while the scenario is locked."
         }
 

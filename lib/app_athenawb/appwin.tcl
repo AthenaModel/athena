@@ -1503,7 +1503,7 @@ snit::widget appwin {
         # FIRST, we can only create a new scenario if we're idle.
         # The menu item will be unavailable in this case, but we might
         # still get here via a hot-key.
-        if {![adb idle]} {
+        if {![adb is idle]} {
             return
         }
 
@@ -1524,7 +1524,7 @@ snit::widget appwin {
         # FIRST, we can only open a new scenario if we're idle.
         # The menu item will be unavailable in this case, but we might
         # still get here via a hot-key.
-        if {![adb idle]} {
+        if {![adb is idle]} {
             return
         }
 
@@ -1558,7 +1558,7 @@ snit::widget appwin {
         # FIRST, we can only save a new scenario if we're idle.
         # The menu item will be unavailable in this case, but we might
         # still get here via a hot-key.
-        if {![adb idle]} {
+        if {![adb is idle]} {
             return
         }
 
@@ -1591,7 +1591,7 @@ snit::widget appwin {
         # FIRST, we can only save a scenario if we're idle.
         # The menu item will be unavailable in this case, but we might
         # still get here via a hot-key.
-        if {![adb idle]} {
+        if {![adb is idle]} {
             return
         }
 
@@ -1842,7 +1842,7 @@ snit::widget appwin {
     # cancelled.
 
     method SaveUnsavedData {} {
-        if {[adb unsaved]} {
+        if {[adb is unsaved]} {
             # FIRST, deiconify the window, this gives the message box
             # a parent to popup over.
             wm deiconify $win
@@ -1947,7 +1947,7 @@ snit::widget appwin {
     method RunPause {} {
         if {[adb state] eq "RUNNING"} {
             adb interrupt
-        } elseif {[adb idle]} {
+        } elseif {[adb is idle]} {
             set ticks [dict get $durations [$simtools.duration get]]
             set bgticks [prefs get app.bgticks]
 
@@ -1984,7 +1984,7 @@ snit::widget appwin {
     # Locks or unlocks the scenario, depending on state.
 
     method PrepLock {} {
-        if {[adb isbusy]} {
+        if {[adb is busy]} {
             messagebox popup \
                 -parent $win \
                 -icon   info \
@@ -1998,7 +1998,7 @@ snit::widget appwin {
 
         # FIRST, if we're unlocked then lock; but if we're locked
         # then verify before unlocking.
-        if {[adb unlocked]} {
+        if {[adb is unlocked]} {
             app lock
             return
         }
@@ -2100,7 +2100,7 @@ snit::widget appwin {
         set info(simstate) [adb statetext]
 
         # NEXT, update the window mode
-        if {[adb unlocked]} {
+        if {[adb is unlocked]} {
             $self SetMode scenario
         } else {
             $self SetMode simulation
