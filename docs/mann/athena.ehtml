@@ -32,47 +32,47 @@ following diagram (athena(n) subcommands are shown in blue):<p>
 
 <img src="athenadb_state.png"><p>
 
-First, the scenario may be <iref locked> or <iref unlocked>.  While
-<iref unlocked>, the scenario may be edited freely.  When the scenario
-is <iref locked>, the models are initialized and many inputs become
-frozen until the scenario is <iref unlocked> again.<p>
+First, the scenario may be <iref is locked> or <iref is unlocked>.  While
+<iref is unlocked>, the scenario may be edited freely.  When the scenario
+<iref is locked>, the models are initialized and many inputs become
+frozen until the scenario <iref is unlocked> again.<p>
 
-Second, the scenario may be <iref idle> or <iref busy>.  While it is
-<iref idle> it is waiting in the event loop for user input.  While it
-<iref isbusy>, it is performing some long-running task; the user interface
+Second, the scenario may be <iref is idle> or <iref busy>.  While it is
+<iref is idle> it is waiting in the event loop for user input.  While it
+<iref is busy>, it is performing some long-running task; the user interface
 might be responsive, but input (i.e., orders) cannot be accepted.<p>
 
-Third, any such task can be <iref interruptible> or 
-non-<iref interruptible>.  Interruptible tasks can be terminated in the 
+Third, any such task can be <iref is interruptible> or 
+non-<iref is interruptible>.  Interruptible tasks can be terminated in the 
 middle; other tasks must run to completion.<p>
 
 This leads to the following four states:<p>
 
 <topiclist>
 <topic {<b PREP>}>
-Scenario preparation.  The scenario is <iref idle> and <iref unlocked>,
+Scenario preparation.  The scenario <iref is idle> and <iref is unlocked>,
 and most orders can be used to edit the scenario.
 </topic>
 
 <topic {<b PAUSED>}>
-The scenario is <iref idle> and <iref locked>; simulation time can be
+The scenario <iref is idle> and <iref is locked>; simulation time can be
 advanced.
 </topic>
 
 <topic {<b BUSY>}>
-The scenario <iref isbusy> with a non-<iref interruptible> task.
+The scenario <iref is busy> with a non-<iref is interruptible> task.
 </topic>
 
 <topic {<b RUNNING>}>
-The scenario <iref isbusy> with an <iref interruptible> task.
+The scenario <iref is busy> with an <iref is interruptible> task.
 </topic>
 </topiclist><p>
 
 The lock state is set using <iref lock> and <iref unlock>.<p>
 
 The busy state is set using <iref busy>, which also indicates whether 
-the task is <iref interruptible> or not.  At present, 
-<iref interruptible> tasks are terminated by <iref interrupt>.  Progress
+the task <iref is interruptible> or not.  At present, 
+<iref is interruptible> tasks are terminated by <iref interrupt>.  Progress
 in a busy task is indicated to the user via the <iref progress> 
 subcommand.<p>
 
@@ -201,11 +201,11 @@ has ever been loaded or saved.<p>
 
 <defitem advance {<i obj> advance ?<i options...>?}>
 
-Advances simulation time, provided that the scenario is <iref locked> and
-<iref idle>.  With no options, advances time by one tick.<p>
+Advances simulation time, provided that the scenario <iref is locked> and
+<iref is idle>.  With no options, advances time by one tick.<p>
 
-Throws <b ATHENA BUSY> if the scenario <iref isbusy> and 
-<b ATHENA UNLOCKED> if the scenario is not <iref locked>.<p>
+Throws <b ATHENA BUSY> if the scenario <iref is busy> and 
+<b ATHENA UNLOCKED> if the scenario is not <iref is locked>.<p>
 
 The options are as follows:<p>
 
@@ -217,18 +217,18 @@ The execution mode: <b blocking> (the default), <b foreground>, or
 
 When <b blocking>, the command returns after it has advanced 
 time the specified number of ticks.  The time advance is not 
-<iref interruptible>.<p>
+<iref is interruptible>.<p>
 
 When running in the <b foreground>, the command returns after executing
-one tick.  The scenario <iref isbusy>, and successive ticks are executed 
+one tick.  The scenario <iref is busy>, and successive ticks are executed 
 in the context of the Tcl event loop.  The process is 
-<iref interruptible>, but if the UI will block during each tick.<p>
+<iref is interruptible>, but if the UI will block during each tick.<p>
 
-When running in the <b background>, the scenario <iref isbusy> and the 
+When running in the <b background>, the scenario <iref is busy> and the 
 entire process is handed over to a background thread.  Running in the
 background has a higher start-up and completion cost, but leaves the
 foreground thread responsive as the process runs.  At present, 
-background runs are not <iref interruptible>, though this may change.<p>
+background runs are not <iref is interruptible>, though this may change.<p>
 
 <defopt {-ticks <i ticks>}>
 Specifies the number of ticks to advance time.<p>
@@ -281,28 +281,28 @@ See <xref athena_bsys(n)> for the subcommands.<p>
 
 This command manages the scenario's "busy" state.  When the scenario is
 undertaking some long-running task in the context of the event loop, 
-it will mark itself <iref isbusy>; this prevents orders from being accepted 
+it will mark itself <iref is busy>; this prevents orders from being accepted 
 and the scenario from being changed until the task is complete.
 It has the following subcommands:<p>
 
 <deflist busy>
 <defitem "busy clear" {<i obj> busy clear}>
-Clears the busy state; the scenario will be <iref idle>.<p>
+Clears the busy state; the scenario will be <iref is idle>.<p>
 
 <defitem "busy set" {<i obj> busy set <i busytext> ?<i pausecmd>?}>
 Sets the busy state.  The <i busytext> is a brief statement of the
 task, e.g., "Running until 2014W01" or "Wizard".  If the <i pausecmd>
 is given, it is a command to call to pause or interrupt the task; the
-task is then <iref interruptible> by the <iref interrupt> order.  Otherwise,
+task is then <iref is interruptible> by the <iref interrupt> order.  Otherwise,
 the task is not interruptible and must run to completion.<p>
 
-While the scenario <iref isbusy>, the task will often use <iref progress>
+While the scenario <iref is busy>, the task will often use <iref progress>
 to keep the user informed as to its progress.<p>
 </deflist busy>
 
 <defitem canlock {<i obj> canlock}>
 
-Returns 1 if the scenario passess the on-lock sanity check, and hence
+Returns 1 if the scenario passes the on-lock sanity check, and hence
 can in theory be locked, and 0 otherwise.<p>
 
 
@@ -344,8 +344,6 @@ more about the notifier events sent by the library.<p>
 
 This command gives access to the economic model in the scenario.
 See <xref athena_econ(n)> for the subcommands.<p>
-
-
 
 <defitem enter {<i obj> enter <i options...>}>
 
@@ -401,51 +399,30 @@ database, returning 1 if the <i query> would return one or more
 rows, and 0 otherwise.  Queries that attempt to write to the RDB will be
 rejected.<p>
 
-<defitem export {<i adb> export TBD}>
+<defitem export {<i adb> export <i subcommand> ?<i args...>?}>
 
-Exports a scenario as an order script.  TBD: fill in details.<p>
+Exports a scenario as an order script.  See
+<xref athena_export(n)> for the subcommands.<p>
 
 <defitem frcgroup {<i adb> frcgroup <i subcommand> ?<i args...>?}>
 
-This command gives access to the force groups in the scenario.<p>
-
-<deflist frcgroup>
-
-<defitem "frcgroup exists" {<i adb> frcgroup exists TBD}>
-<defitem "frcgroup get" {<i adb> frcgroup get TBD}>
-<defitem "frcgroup namedict" {<i adb> frcgroup namedict TBD}>
-<defitem "frcgroup names" {<i adb> frcgroup names TBD}>
-<defitem "frcgroup validate" {<i adb> frcgroup validate TBD}>
-<defitem "frcgroup view" {<i adb> frcgroup view TBD}>
-
-</deflist frcgroup>
-
+This command gives access to the force groups in the scenario;
+see <xref athena_frcgroup(n)> for the subcommands.<p>
 
 <defitem getclock {<i adb> getclock}>
 
 Returns the scenario's <xref weekclock(n)> object, so that it can be 
 passed to other library modules (e.g., <xref logger(n)>).<p>
 
-<defitem gofer {<i adb> gofer TBD}>
+<defitem gofer {<i adb> gofer <i subcommand> ?<i args...>?}>
 
-TBD: Interface to gofers; write a separate man page.<p>
+Interface to gofers; see <xref athena_gofer(n)> for the subcommands
+and an explanation of what gofers are.<p>
 
 <defitem group {<i adb> group <i subcommand> ?<i args...>?}>
 
 This command gives access to the groups (of all three kinds) in the 
-scenario.<p>
-
-<deflist group>
-
-<defitem "group exists" {<i adb> group exists TBD}>
-<defitem "group get" {<i adb> group get TBD}>
-<defitem "group namedict" {<i adb> group namedict TBD}>
-<defitem "group names" {<i adb> group names TBD}>
-<defitem "group validate" {<i adb> group validate TBD}>
-<defitem "group view" {<i adb> group view TBD}>
-
-</deflist group>
-
+scenario.  See <xref athena_group(n)> for the subcommands.<p>
 
 <defitem halt {<i adb> halt}>
 
@@ -455,66 +432,25 @@ athena(n) throws an unexpected error while advancing time.<p>
 
 <defitem hook {<i adb> hook <i subcommand> ?<i args...>?}>
 
-This command gives access to the semantic hooks in the scenario.<p>
-
-<deflist hook>
-
-<defitem "hook exists" {<i adb> hook exists TBD}>
-<defitem "hook namedict" {<i adb> hook namedict TBD}>
-<defitem "hook names" {<i adb> hook names TBD}>
-<defitem "hook topic" {<i adb> hook topic TBD}>
-<defitem "hook validate" {<i adb> hook validate TBD}>
-
-</deflist hook>
-
-<defitem idle {<i obj> idle}>
-
-Returns 1 if the scenario is idle, i.e., is ready to accept user input,
-and 0 otherwise; see <xref "Scenario States">.<p>
+This command gives access to the semantic hooks in the scenario;
+see <xref athena_hook(n)> for the subcommands.<p>
 
 <defitem inject {<i adb> inject <i subcommand> ?<i args...>?}>
 
-This command gives access to the Information Ops Message (IOM) injects
-in the scenario.<p>
-
-<deflist inject>
-
-<defitem "inject checker" {<i adb> inject checker TBD}>
-<defitem "inject exists" {<i adb> inject exists TBD}>
-<defitem "inject get" {<i adb> inject get TBD}>
-<defitem "inject typenames" {<i adb> inject typenames TBD}>
-<defitem "inject validate" {<i adb> inject validate TBD}>
-
-</deflist inject>
+This command gives access to the CURSE injects
+in the scenario.  See <xref athena_inject(n)> for the subcommands.<p>
 
 <defitem interrupt {<i obj> interrupt}>
 
-If the scenario <iref isbusy> with a task that is <iref interruptible>,
+If the scenario <iref is busy> with a task that <iref is interruptible>,
 this command will attempt to interrupt it, causing it to terminate 
 prematurely; see <iref busy set> for how to specify that the scenario
 is doing an interruptible task.<p>
 
-<defitem interruptible {<i obj> interruptible}>
-
-Returns 1 if the scenario <iref isbusy> with an interruptible task,
-and 0 otherwise.<p>
-
 <defitem iom {<i adb> iom <i subcommand> ?<i args...>?}>
 
 This command gives access to the Information Ops Message (IOM) objects
-in the scenario.<p>
-
-<deflist iom>
-
-<defitem "iom checker" {<i adb> iom checker TBD}>
-<defitem "iom exists" {<i adb> iom exists TBD}>
-<defitem "iom get" {<i adb> iom get TBD}>
-<defitem "iom namedict" {<i adb> iom namedict TBD}>
-<defitem "iom names" {<i adb> iom names TBD}>
-<defitem "iom normal" {<i adb> iom normal TBD}>
-<defitem "iom validate" {<i adb> iom validate TBD}>
-
-</deflist iom>
+in the scenario; see <xref athena_iom(n)> for the subcommands.<p>
 
 <defitem is {<i obj> is <i predicate>}>
 
@@ -523,43 +459,67 @@ predicates are as follows:<p>
 
 <deflist is>
 <defitem "is advanced" {<i obj> is advanced}>
-Returns 1 if the scenario is <iref locked> and its simulation time has
+Returns 1 if the scenario <iref is locked> and its simulation time has
 been advanced.<p>
 
-</deflist>
-
-<defitem isbusy {<i obj> isbusy}>
+<defitem "is busy" {<i obj> is busy}>
 
 Returns 1 if the scenario is busy, i.e., is performing a task and 
 cannot accept user orders, and 0 otherwise; see <xref "Scenario States">.<p>
+
+<defitem "is idle" {<i obj> is idle}>
+
+Returns 1 if the scenario is idle, i.e., is ready to accept user input,
+and 0 otherwise; see <xref "Scenario States">.<p>
+
+<defitem "is interruptible" {<i obj> is interruptible}>
+
+Returns 1 if the scenario <iref is busy> with an interruptible task,
+and 0 otherwise.<p>
+
+<defitem "is locked" {<i obj> is locked}>
+
+Returns 1 if the scenario is "locked", initialized and ready for a time
+advance, and 0 otherwise; see <xref "Scenario States">.<p>
+
+<defitem "is unlocked" {<i obj> is unlocked}>
+
+Returns 1 if the scenario is "unlocked", ready for editing, and 0
+otherwise; see <xref "Scenario States">.<p>
+
+<defitem "is unsaved" {<i obj> is unsaved}>
+
+Returns 1 if there is unsaved scenario data, and 0 otherwise.<p>
+
+</deflist is>
 
 <defitem load {<i obj> load <i filename>}>
 
 Loads the scenario from the named <tt *.adb> file into this scenario
 object, throwing away any previous data.  The scenario must be
-<iref idle>.  Afterwards, the scenario will be <i locked> or 
+<iref is idle>.  Afterwards, the scenario will be <i locked> or 
 <i unlocked> depending on the loaded data.<p>
 
 If the client depends on <xref "NOTIFIER EVENTS"> to keep its user interface
 in sync with the scenario, it should call <iref dbsync> after calling 
 <iref load>.<p>
 
-Throws <b ATHENA BUSY> if the scenario <iref isbusy>, and <b ATHENA LOAD>
+Throws <b ATHENA BUSY> if the scenario <iref is busy>, and <b ATHENA LOAD>
 if the scenario file could not be loaded.<p>
 
 <defitem lock {<i obj> lock}>
 
-Locks the scenario, if the scenario is <iref idle> and <iref unlocked>
+Locks the scenario, if the scenario <iref is idle> and <iref is unlocked>
 and <iref canlock>.  The simulation time can only be advanced while the
 scenario is locked.<p>
 
 Throws <b ATHENA BUSY> if the scenario is busy, and <b ATHENA NOTSANE>
 if the scenario fails its on-lock sanity check.<p>
 
-<defitem locked {<i obj> locked}>
+<defitem nbhood {<i adb> nbhood <i subcommand> ?<i args...>?}>
 
-Returns 1 if the scenario is "locked", initialized and ready for a time
-advance, and 0 otherwise; see <xref "Scenario States">.<p>
+This command gives access to the neighborhood objects
+in the scenario; see <xref athena_nbhood(n)> for the subcommands.<p>
 
 <defitem onecolumn {<i adb> onecolumn <i query>}>
 
@@ -607,13 +567,13 @@ with the given <i block_id>.<p>
 <defitem progress {<i obj> progress ?<i value>?}>
 
 Sets and queries the current progress value.  Progress is set while the
-scenario <iref isbusy>; see <iref busy set>.  The <i value> may take three
+scenario <iref is busy>; see <iref busy set>.  The <i value> may take three
 forms:<p>
 
 <topiclist>
 <topic {<b user>}>
 The user is in control of the scenario.  This would be the case when the
-scenario is <i idle> and it <iref isbusy> with something like a wizard GUI,
+scenario is <i idle> and it <iref is busy> with something like a wizard GUI,
 where normal order entry is suspended until the wizard is closed.
 </topic>
 
@@ -703,13 +663,13 @@ in debugging and test; use it with care.<p>
 <defitem reset {<i obj> reset}>
 
 Resets the scenario back to its initial empty state.  It will be 
-<iref idle> and <i unlocked>.<p>
+<iref is idle> and <i unlocked>.<p>
 
 If the client depends on <xref "NOTIFIER EVENTS"> to keep its user interface
 in sync with the scenario, it should call <iref dbsync> after calling 
 <iref load>.<p>
 
-Throws <b ATHENA BUSY> if the scenario <iref isbusy>.<p>
+Throws <b ATHENA BUSY> if the scenario <iref is busy>.<p>
 
 <defitem sanity {<i obj> sanity <i subcommand> ?<i args...>?}>
 
@@ -727,14 +687,14 @@ On failure, throws "<tt ATHENA SAVE>".<p>
 <defitem state {<i obj> state}>
 
 Returns the scenario's state, which depends on whether or not it is
-<iref idle> and whether or not it is <iref locked>.  The states are
+<iref is idle> and whether or not it <iref is locked>.  The states are
 <b PREP>, <b PAUSED>, <b BUSY>, and <b RUNNING>; see 
 <xref "Scenario States"> for more details.<p>
 
 <defitem statetext {<i obj> statetext}>
 
 Returns a human-readable string that derives from the current 
-<iref state>.  If the scenario <iref isbusy>, the string is simply
+<iref state>.  If the scenario <iref is busy>, the string is simply
 the <i busytext> passes to <iref busy set>.<p>
 
 <defitem stoptime {<i obj> stoptime}>
@@ -745,19 +705,10 @@ time in weeks at which the simulation will stop and return to the
 
 <defitem unlock {<i obj> unlock}>
 
-Unlocks the scenario, if the scenario is <iref idle> and <iref locked>.
+Unlocks the scenario, if the scenario <iref is idle> and <iref is locked>.
 The scenario can only be edited while it is unlocked.<p>
 
-Throws <b ATHENA BUSY> if the scenario <iref isbusy>.<p>
-
-<defitem unlocked {<i obj> unlocked}>
-
-Returns 1 if the scenario is "unlocked", ready for editing, and 0
-otherwise; see <xref "Scenario States">.<p>
-
-<defitem unsaved {<i obj> unsaved}>
-
-Returns 1 if there is unsaved scenario data, and 0 otherwise.<p>
+Throws <b ATHENA BUSY> if the scenario <iref is busy>.<p>
 
 <defitem version {<i obj> version}>
 

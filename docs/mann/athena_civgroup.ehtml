@@ -49,7 +49,7 @@ Returns an ID/longname dictionary of the names of the "local"
 civilian group.<p>
 
 <defitem "local names" {<i adb> civgroup local names}>
-returns a list of the IDs of the "local" civilian groups.<p>
+Returns a list of the IDs of the "local" civilian groups.<p>
 
 <defitem "local validate" {<i adb> civgroup local validate <i g>}>
 Validates group ID <i g>, returning <i g> if <i g> is a "local"
@@ -61,7 +61,7 @@ civilian group and throwing <b INVALID> otherwise.<p>
 Returns an ID/longname dictionary of the civilian group names.<p>
 
 <defitem "names" {<i adb> civgroup names}>
-returns a list of the IDs of the civilian groups.<p>
+Returns a list of the IDs of the civilian groups.<p>
 
 <defitem "validate" {<i adb> civgroup validate <i g>}>
 Validates group ID <i g>, returning <i g> if valid and throwing
