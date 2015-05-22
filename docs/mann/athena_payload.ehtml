@@ -1,0 +1,69 @@
+<manpage {athena(n) athena_payload(n)} "Athena IOM Payload Component">
+
+<section SYNOPSIS>
+
+<pre>
+package require athena <version>
+namespace import ::athena::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+This man page describes a component of the <xref athena(n)> package
+that provides access to the scenario's IOM payload entities.  An IOM 
+is an Information Operations Message used to affect civilian attitudes.
+A payload is a part of an IOM that is 
+responsible for updating a particular attitude curve or set of curves
+in a particular way.<p>
+
+A payload is identified by an {<i iom_id> <i payload_num>} pair.<p>
+
+The component is accessible as a subcommand of the <xref athena(n)> and
+<xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
+from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
+<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+
+<section "COMMANDS">
+
+<subsection "Public Subcommands">
+
+The <tt><i adb> payload</tt> command takes the following subcommands,
+where <i adb> is an instance of <xref athena(n)>.<p>
+
+<deflist curse>
+
+<defitem "exists" {<i adb> payload exists <i id>}>
+
+Returns 1 if there is a payload with the given <i id>, where
+<i id> is an {<i iom_id> <i payload_num>} pair, and 0 otherwise.<p>
+
+<defitem "get" {<i adb> payload get <i id> ?<i parm>?}>
+
+By default, returns a dictionary of information about the payload
+with the given <i id>.  If <i parm> is given, returns
+the value of the <i parm>.<p>
+
+<defitem "typenames" {<i adb> payload typenames}>
+There are several distinct payload types; this returns a list of
+the type names.<p>
+
+<defitem "validate" {<i adb> payload validate <i id>}>
+Validates ID <i id>, returning the <i id> if valid and throwing
+<b INVALID> otherwise.<p>
+
+</deflist curse>
+
+<subsection "Private Subcommands">
+
+The <tt><i adb> payload</tt> command takes the following subcommands, where
+where <i adb> is an instance of <xref athenadb(n)>.<p>
+
+TBD: None yet documented.<p>
+
+<section AUTHOR>
+
+Will Duquette, Dave Hanks.<p>
+
+</manpage>

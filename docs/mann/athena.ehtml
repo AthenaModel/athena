@@ -199,7 +199,7 @@ Returns the name of the <tt .adb> file loaded on creation, if any, or
 the <tt .adb> file name last used for saving, or "" if no <tt .adb> file
 has ever been loaded or saved.<p>
 
-<defitem advance {<i obj> advance ?<i options...>?}>
+<defitem advance {<i adb> advance ?<i options...>?}>
 
 Advances simulation time, provided that the scenario <iref is locked> and
 <iref is idle>.  With no options, advances time by one tick.<p>
@@ -277,7 +277,7 @@ allows the application to query and manipulate beans.  See
 This command gives access to the belief systems in the scenario.
 See <xref athena_bsys(n)> for the subcommands.<p>
 
-<defitem busy {<i obj> busy <i subcommand> ?<i args...>?}>
+<defitem busy {<i adb> busy <i subcommand> ?<i args...>?}>
 
 This command manages the scenario's "busy" state.  When the scenario is
 undertaking some long-running task in the context of the event loop, 
@@ -286,10 +286,10 @@ and the scenario from being changed until the task is complete.
 It has the following subcommands:<p>
 
 <deflist busy>
-<defitem "busy clear" {<i obj> busy clear}>
+<defitem "busy clear" {<i adb> busy clear}>
 Clears the busy state; the scenario will be <iref is idle>.<p>
 
-<defitem "busy set" {<i obj> busy set <i busytext> ?<i pausecmd>?}>
+<defitem "busy set" {<i adb> busy set <i busytext> ?<i pausecmd>?}>
 Sets the busy state.  The <i busytext> is a brief statement of the
 task, e.g., "Running until 2014W01" or "Wizard".  If the <i pausecmd>
 is given, it is a command to call to pause or interrupt the task; the
@@ -300,7 +300,7 @@ While the scenario <iref is busy>, the task will often use <iref progress>
 to keep the user informed as to its progress.<p>
 </deflist busy>
 
-<defitem canlock {<i obj> canlock}>
+<defitem canlock {<i adb> canlock}>
 
 Returns 1 if the scenario passes the on-lock sanity check, and hence
 can in theory be locked, and 0 otherwise.<p>
@@ -345,7 +345,7 @@ more about the notifier events sent by the library.<p>
 This command gives access to the economic model in the scenario.
 See <xref athena_econ(n)> for the subcommands.<p>
 
-<defitem enter {<i obj> enter <i options...>}>
+<defitem enter {<i adb> enter <i options...>}>
 
 If Tk is loaded, then this command is used to pop up Tk order dialogs.  If
 Tk is not loaded, it throws an error. The options are as follows:<p>
@@ -440,7 +440,7 @@ see <xref athena_hook(n)> for the subcommands.<p>
 This command gives access to the CURSE injects
 in the scenario.  See <xref athena_inject(n)> for the subcommands.<p>
 
-<defitem interrupt {<i obj> interrupt}>
+<defitem interrupt {<i adb> interrupt}>
 
 If the scenario <iref is busy> with a task that <iref is interruptible>,
 this command will attempt to interrupt it, causing it to terminate 
@@ -452,48 +452,48 @@ is doing an interruptible task.<p>
 This command gives access to the Information Ops Message (IOM) objects
 in the scenario; see <xref athena_iom(n)> for the subcommands.<p>
 
-<defitem is {<i obj> is <i predicate>}>
+<defitem is {<i adb> is <i predicate>}>
 
 Returns 1 if the <i predicate> is true and 0 otherwise.  The valid
 predicates are as follows:<p>
 
 <deflist is>
-<defitem "is advanced" {<i obj> is advanced}>
+<defitem "is advanced" {<i adb> is advanced}>
 Returns 1 if the scenario <iref is locked> and its simulation time has
 been advanced.<p>
 
-<defitem "is busy" {<i obj> is busy}>
+<defitem "is busy" {<i adb> is busy}>
 
 Returns 1 if the scenario is busy, i.e., is performing a task and 
 cannot accept user orders, and 0 otherwise; see <xref "Scenario States">.<p>
 
-<defitem "is idle" {<i obj> is idle}>
+<defitem "is idle" {<i adb> is idle}>
 
 Returns 1 if the scenario is idle, i.e., is ready to accept user input,
 and 0 otherwise; see <xref "Scenario States">.<p>
 
-<defitem "is interruptible" {<i obj> is interruptible}>
+<defitem "is interruptible" {<i adb> is interruptible}>
 
 Returns 1 if the scenario <iref is busy> with an interruptible task,
 and 0 otherwise.<p>
 
-<defitem "is locked" {<i obj> is locked}>
+<defitem "is locked" {<i adb> is locked}>
 
 Returns 1 if the scenario is "locked", initialized and ready for a time
 advance, and 0 otherwise; see <xref "Scenario States">.<p>
 
-<defitem "is unlocked" {<i obj> is unlocked}>
+<defitem "is unlocked" {<i adb> is unlocked}>
 
 Returns 1 if the scenario is "unlocked", ready for editing, and 0
 otherwise; see <xref "Scenario States">.<p>
 
-<defitem "is unsaved" {<i obj> is unsaved}>
+<defitem "is unsaved" {<i adb> is unsaved}>
 
 Returns 1 if there is unsaved scenario data, and 0 otherwise.<p>
 
 </deflist is>
 
-<defitem load {<i obj> load <i filename>}>
+<defitem load {<i adb> load <i filename>}>
 
 Loads the scenario from the named <tt *.adb> file into this scenario
 object, throwing away any previous data.  The scenario must be
@@ -507,7 +507,20 @@ in sync with the scenario, it should call <iref dbsync> after calling
 Throws <b ATHENA BUSY> if the scenario <iref is busy>, and <b ATHENA LOAD>
 if the scenario file could not be loaded.<p>
 
-<defitem lock {<i obj> lock}>
+<defitem loadtemp {<i adb> loadtemp <i filename>}>
+
+Reloads the scenario from a temporary file.  When running tasks in the
+background, <xref athena(n)> saves the scenario to a temporary file, which
+is given to the background thread.  The background thread does its work and
+saves the results to the temporary file, which is then reloaded by the main
+thread.  The <iref savetemp> command is used to save the temporary file,
+and this command is used to load it again.<p>
+
+If the client depends on <xref "NOTIFIER EVENTS"> to keep its user interface
+in sync with the scenario, it should call <iref dbsync> after calling 
+<iref load>.<p>
+
+<defitem lock {<i adb> lock}>
 
 Locks the scenario, if the scenario <iref is idle> and <iref is unlocked>
 and <iref canlock>.  The simulation time can only be advanced while the
@@ -515,6 +528,11 @@ scenario is locked.<p>
 
 Throws <b ATHENA BUSY> if the scenario is busy, and <b ATHENA NOTSANE>
 if the scenario fails its on-lock sanity check.<p>
+
+<defitem log {<i adb> log <i subcommand args...>}>
+
+This command gives access to the scenario's log component, an instance
+of <xref mars:logger(n)>.  See that man page for the subcommands.<p>
 
 <defitem nbhood {<i adb> nbhood <i subcommand> ?<i args...>?}>
 
@@ -530,41 +548,62 @@ Queries that attempt to modify the RDB will be rejected.<p>
 <defitem order {<i adb> order <i subcommand> ?<i args...>?}>
 
 This command gives access to the scenario's <xref mars:order_flunky(n)>
-object.<p>
+object.  Athena customizes the object somewhat; see
+<xref athena_order(n)> for the subcommands.<p>
 
-The subcommands are TBD.<p>
+<defitem orggroup {<i adb> orggroup <i subcommand> ?<i args...>?}>
 
+This command gives access to the organizations groups in the scenario;
+see <xref athena_orggroup(n)> for the subcommands.<p>
 
-<defitem paste {<i obj> paste <i subcommand> ?<i args...>?}>
+<defitem parm {<i adb> parm <i subcommand> ?<i args...>?}>
+
+This component gives access to the scenario's model parameters;
+see <xref athena_parm(n)> for the subcommands.<p>
+
+<defitem paste {<i adb> paste <i subcommand> ?<i args...>?}>
 
 Pastes copied items into scenario, where the subcommand determines the 
 kind of item to paste.  In each case, the paste is done as a sequence of 
 grouped orders, and will be undone and redone as a group.<p>
 
-TBD: specify how you get copysets.<p>
+Each subcommand defines its own notion of a <i copy set>, a set of one 
+or more items to paste.  For each of the existing subcommands, a 
+copy set is a list of copied beans, each copied using the
+<xref bean(n)> <xref bean(n) copydata> command.<p> 
 
 The available subcommands are as follows:<p>
 
 <deflist paste>
 
-<defitem "paste block" {<i obj> paste block <i agent copysets>}>
+<defitem "paste block" {<i adb> paste block <i agent copysets>}>
 
 Pastes <i copysets>, a list of copied strategy blocks, into the strategy
 owned by the named <i agent>.<p>
 
-<defitem "paste condition" {<i obj> paste condition <i block_id copysets>}>
+<defitem "paste condition" {<i adb> paste condition <i block_id copysets>}>
 
 Pastes <i copysets>, a list of copied conditions, into the strategy block
 with the given <i block_id>.<p>
 
-<defitem "paste tactic" {<i obj> paste tactic <i block_id copysets>}>
+<defitem "paste tactic" {<i adb> paste tactic <i block_id copysets>}>
 
 Pastes <i copysets>, a list of copied tactics, into the strategy block
 with the given <i block_id>.<p>
 
 </deflist paste>
 
-<defitem progress {<i obj> progress ?<i value>?}>
+<defitem payload {<i adb> payload <i subcommand> ?<i args...>?}>
+
+This command gives access to the IOM payloads
+in the scenario.  See <xref athena_payload(n)> for the subcommands.<p>
+
+<defitem plant {<i adb> plant <i subcommand> ?<i args...>?}>
+
+This command gives access to the infrastructure plants 
+in the scenario.  See <xref athena_plant(n)> for the subcommands.<p>
+
+<defitem progress {<i adb> progress ?<i value>?}>
 
 Sets and queries the current progress value.  Progress is set while the
 scenario <iref is busy>; see <iref busy set>.  The <i value> may take three
@@ -594,7 +633,7 @@ of these messages instead of automatically, which would give the user
 more feedback.<p>
 
 
-<defitem ptype {<i obj> ptype <i subcommand> ?<i args...>?}>
+<defitem ptype {<i adb> ptype <i subcommand> ?<i args...>?}>
 
 Parameter type validation subcommands.  This is exposed because it is used by
 the Athena Workbench's "view" mechanism.  Ultimately, that should be replaced 
@@ -613,7 +652,7 @@ The following options may be used:<p>
 
 <deflist query>
 
-<defopt {-mode mc|list|csv}>
+<defopt {-mode mc|list|csv|json}>
 
 Specifies the output mode; the default is <b>mc</b>, multicolumn.<p>
 
@@ -629,6 +668,9 @@ record's field names are values are formatted neatly in parallel columns.<p>
 When <tt -mode> is <b>csv</b>, the output is in CSV (comma-separated value)
 format, one record per line, beginning with a header record of column labels.
 Non-numeric values are enclosed in double-quotes.<p>
+
+When <tt -mode> is <b>json</b>, the output is a JSON list of objects, one
+object per row.<p>
 
 <defopt {-labels <i>list</i>}>
 
@@ -652,15 +694,32 @@ repeated values in a column are skipped.  That is, if a column
 contains identical values in consecutive rows, the column will be
 blank in all but the first of the rows.  Defaults to "0".<p>
 
+<defopt {-channel <i chan>}>
+
+If this option is given, the output is written to output channel
+<i chan> (e.g., <b stdout>) and the command returns nothing.<p>
+
+<defopt {-filename <i filename>}>
+
+If this option is given, the output is written to the named file
+and the command returns nothing.  Note that this option overrides
+<tt -channel>.<p>
+
 </deflist query>
 
 <defitem rdb {<i adb> rdb <i subcommand> ?<i args...>?}>
 
 This command gives full read/write access to the Run-Time Database (RDB),
 a <xref scenariodb(n)> object.  Its write capability is intended for use
-in debugging and test; use it with care.<p>
+in debugging and test, and for the creation of temporary tables; 
+use it with care.<p>
 
-<defitem reset {<i obj> reset}>
+<defitem rdbfile {<i adb> rdbfile}>
+
+Returns the name of the SQLite file containing the scenario's 
+Run-Time Database (RDB).<p>
+
+<defitem reset {<i adb> reset}>
 
 Resets the scenario back to its initial empty state.  It will be 
 <iref is idle> and <i unlocked>.<p>
@@ -671,11 +730,42 @@ in sync with the scenario, it should call <iref dbsync> after calling
 
 Throws <b ATHENA BUSY> if the scenario <iref is busy>.<p>
 
-<defitem sanity {<i obj> sanity <i subcommand> ?<i args...>?}>
+<defitem ruleset {<i adb> ruleset <i subcommand> ?<i args...>?}>
 
-TBD: Sanity-checking module; fill this in.<p>
+This command gives access to information about the scenario's
+attitude rule sets.  See <xref athena_ruleset(n)> for the subcommands.<p>
 
-<defitem save {<i obj> save ?<i filename>?}>
+
+<defitem sanity {<i adb> sanity <i subcommand>}>
+
+<deflist sanity>
+
+<defitem "sanity onlock" {<i adb> sanity onlock}>
+
+Performs an "on-lock" sanity check, determining whether or not the 
+scenario can be locked so that time can advance.  Returns a list of
+two items, {<i severity>, <i flist>}, where <i severity> is one of
+<b OK>, <b WARNING>, or <b ERROR>.  In the latter two cases, the 
+<i flist> is a list of sanity check failure records, each of which
+identifies a problem and the entity which has it.  Entities are
+identified by their qualified entity IDs (QIDs).<p>
+
+If the <i severity> is <b ERROR>, then there are problems that must
+be fixed before the scenario is locked.  If the <i severity> is
+<b WARNING>, then the problems are with entities (e.g., CURSEs or
+IOMs) that are not currently in use by any tactic, and hence cannot
+affect any results; the scenario may be locked and time may be advanced.<p>
+
+<defitem "sanity ontick" {<i adb> sanity ontick}>
+
+Performs an "on-tick" sanity check.  This is called before each 
+tick to make sure that it is safe for time to advance.  It returns the
+same kind of data as <iref sanity onlock>; however, the severity will
+always be either <b OK> or <b ERROR>.<p>
+
+</deflist sanity>
+
+<defitem save {<i adb> save ?<i filename>?}>
 
 Saves the scenario to disk as an <tt .adb> file called <i filename>,
 adding the "<tt .adb>" extension if necessary.  If no <i filename> is
@@ -684,33 +774,60 @@ used.  The scenario is marked saved.<p>
 
 On failure, throws "<tt ATHENA SAVE>".<p>
 
-<defitem state {<i obj> state}>
+<defitem savetemp {<i adb> savetemp <i filename>}>
+
+Saves the scenario to a temporary file.  When running tasks in the
+background, <xref athena(n)> saves the scenario to a temporary file, which
+is given to the background thread.  The background thread does its work and
+saves the results to the temporary file, which is then reloaded by the main
+thread.  This command is used to save the temporary file,
+and the <iref loadtemp> command is used to load it again.<p>
+
+<defitem service {<i adb> service <i subcommand> ?<i args...>?}>
+
+This command gives access to information about the scenario's
+civilian services models.  See <xref athena_service(n)> for the 
+subcommands.<p>
+
+<defitem state {<i adb> state}>
 
 Returns the scenario's state, which depends on whether or not it is
 <iref is idle> and whether or not it <iref is locked>.  The states are
 <b PREP>, <b PAUSED>, <b BUSY>, and <b RUNNING>; see 
 <xref "Scenario States"> for more details.<p>
 
-<defitem statetext {<i obj> statetext}>
+<defitem statetext {<i adb> statetext}>
 
 Returns a human-readable string that derives from the current 
 <iref state>.  If the scenario <iref is busy>, the string is simply
 the <i busytext> passes to <iref busy set>.<p>
 
-<defitem stoptime {<i obj> stoptime}>
+<defitem stats {<i adb> stats <i subcommand> ?<i args...>?}>
 
-While the <i state> is <b RUNNING>, this method returns the simulation
-time in weeks at which the simulation will stop and return to the 
-<b PAUSED> state.<p>
+Computes statistics from the scenario's simulation history after
+time has been advanced.  See <xref athena_stats(n)> for the 
+subcommands.<p>
 
-<defitem unlock {<i obj> unlock}>
+<defitem strategy {<i adb> strategy <i subcommand> ?<i args...>?}>
+
+This command gives access to information about the strategies of the
+scenario's agents.  See <xref athena_strategy(n)> for the 
+subcommands.<p>
+
+<defitem unit {<i adb> unit <i subcommand> ?<i args...>?}>
+
+This command gives access to information about the units of the
+scenario's groups.  See <xref athena_unit(n)> for the 
+subcommands.<p>
+
+<defitem unlock {<i adb> unlock}>
 
 Unlocks the scenario, if the scenario <iref is idle> and <iref is locked>.
 The scenario can only be edited while it is unlocked.<p>
 
 Throws <b ATHENA BUSY> if the scenario <iref is busy>.<p>
 
-<defitem version {<i obj> version}>
+<defitem version {<i adb> version}>
 
 Returns the version number of the <xref athena(n)> library.<p>
 
