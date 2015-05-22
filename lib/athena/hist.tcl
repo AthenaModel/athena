@@ -17,6 +17,41 @@
 
 snit::type ::athena::hist {
     #-------------------------------------------------------------------
+    # Type variables
+
+    # histVars
+    #
+    # Array of history variables and their keys. These correspond to the 
+    # hist_* tables.
+
+    typevariable histVars -array {
+        control      {n}
+        nbmood       {n}
+        volatility   {n}
+        npop         {n}
+        nbur         {n}
+        security     {n g}
+        deploy_ng    {n g}
+        mood         {g}
+        pop          {g}
+        sat          {g c}
+        nbsat        {n c}
+        coop         {f g}
+        hrel         {f g}
+        vrel         {g a}
+        nbcoop       {n g}
+        aam_battle   {n f g}
+        econ         {}
+        plant_na     {n a}
+        plant_n      {n}
+        plant_a      {a}
+        support      {n a}
+        flow         {f g}
+        service_sg   {s g}
+        activity_nga {n g a}
+    }
+
+    #-------------------------------------------------------------------
     # Components
 
     component adb  ;# The athenadb(n) instance
@@ -32,11 +67,6 @@ snit::type ::athena::hist {
 
     constructor {adb_} {
         set adb $adb_
-
-        $adb eval {
-            INSERT INTO hist_master(table_name,key_cols)
-            VALUES('hist_nbmood','t n');
-        }
     }
 
     #-------------------------------------------------------------------
@@ -279,5 +309,13 @@ snit::type ::athena::hist {
                 "
             }
         }
+    }
+
+    # vars
+    #
+    # Returns available history variables and their keys
+    
+    method vars {} {
+        return [array get histVars]
     }
 }
