@@ -1,10 +1,5 @@
 # TODO.md - Athena TODO List
 
-- Arachne Scenario Operations: lock, unlock, advance
-  - Add "weeks" control for "advance", and make it work.
-  - Add "json" pages for lock, unlock, advance.
-    - lock.json should return ['severity','flist'], where it's "ok" on "ok".
-  - Make the controls look a little nicer.
 - Arachne
   - Consider smartdomain look ups using a dict tree: split the url into
     components and just follow them down the tree, accumulating place

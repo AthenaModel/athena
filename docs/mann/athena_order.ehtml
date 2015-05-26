@@ -1,0 +1,161 @@
+<manpage {athena(n) athena_order(n)} "Athena Order Flunky Component">
+
+<section SYNOPSIS>
+
+<pre>
+package require athena <version>
+namespace import ::athena::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+This man page describes a component of the <xref athena(n)> package that
+is responsible for executing and managing simulation orders.  The
+actual work is done by a subclass of the <xref mars:order_flunky(n)>
+class; most of the subcommands are identical, though the Athena class
+adds a few capabilities.<p>
+
+The component is accessible as a subcommand of the <xref athena(n)> and
+<xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
+from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
+<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+
+<section "Order States">
+
+The <xref mars:order(n)> order processing scheme defines the notion of an
+<i order state>, which is a symbolic constant representing some broad
+state of the application.  Different orders can be available in different
+states.<p>
+
+In <xref athena(n)>, the order states track the scenario states (e.g.,
+<b PREP>, <b PAUSED>) with a single addition, <b TACTIC>, which is used
+to mark those orders that can safely be used from the 
+EXECUTIVE tactic.<p>
+
+<section "COMMANDS">
+
+<subsection "Public Subcommands">
+
+The <tt><i adb> order</tt> command takes the following subcommands,
+where <i adb> is an instance of <xref athena(n)>.<p>
+
+<deflist commands>
+
+<defitem "available" {<i adb> order available <i name>}>
+
+Returns 1 if the named order exists and is available in the current
+order state.<p>
+
+
+<defitem "canredo" {<i adb> order canredo}>
+
+Returns 1 if there's anything on the redo stack to redo.<p>
+
+<defitem "canundo" {<i adb> order canundo}>
+
+Returns 1 if there's anything on the undo stack to undo.<p>
+
+<defitem "check" {<i adb> order check <i name> ?<i parm value...>?}>
+Validates a set of order parameters and values for the named order,
+without actually executing the order.<p>
+
+<defitem "class" {<i adb> order class <i name>}>
+
+Returns the full TclOO class name of the named order.<p>
+
+<defitem "make" {<i adb> order make <i name args...>}>
+Creates and returns an instance of the named order, passing 
+the <i args> to the order's constructor.<p>
+
+<defitem "monitor" {<i adb> order monitor ?<i flag>?}>
+Sets and queries the order flunky's monitor flag.  When the flag is true,
+any run-time database changes made by an executing order are monitored 
+by the scenario's <xref mars:sqldocument(n)> object and the relevant
+<xref mars:notifier(n)> events are sent.  When the flag is false, no 
+such monitoring is done.<p>
+
+<defitem "names" {<i adb> order names}>
+
+Returns a list of the names of the orders known to the order flunky, i.e.,
+all orders defined by <xref athena(n)>.<p>
+
+<defitem "redotext" {<i adb> order redotext}>
+Returns a narrative string corresponding to the order or transaction 
+on the top of the redo stack, or "" if none.<p>
+
+<defitem "reset" {<i adb> order reset}>
+Clears the undo and redo stacks.  This should be done whenever the 
+order state changes.<p>
+
+<defitem "redo" {<i adb> order redo}>
+Redoes the previously undone order or transaction, 
+provided that <iref canredo> is true.<p>
+
+<defitem "send" {<i adb> order send <i mode name> ?<i option value...>?}>
+Creates an instance of order <i name>, initializing it with the order
+parameters included on the command line in <i option>/<i value> notation,
+validates it, and executes with the given <i mode>, which should be one
+of <b gui>, <b normal>, or <b private>.  If the <i mode> is <b gui> or
+<b normal>, the order will be placed on the undo stack and the redo stack
+will be cleared; if the <i mode> is <b private>, the undo and redo stacks
+will not be affected.<p>
+
+If the order is rejected, this command throws <b REJECT> with a detailed
+human-readable error message.<p>
+
+<defitem "senddict" {<i adb> order senddict <i mode name parmdict>}>
+
+Creates an instance of order <i name>, initializing it with the order
+parameters included in the <i parmdict>, and executes with the given
+<i mode>, which is just as for the <iref send> command.<p>
+
+If the order is rejected, this command throws <b REJECT> with an
+error dictionary, as returned by <xref mars:order(n)>'s 
+<xref mars:order(n) errdict> method.<p>
+
+
+<defitem "transactions" {<i adb> order transactions <i flag>}>
+Sets and queries the order flunky's transactions flag.  If the flag
+is enabled, each order is executed within an <xref mars:sqldocument(n)>
+transaction.  If the order mutator throws an error, the underlying 
+database will be rolled-back.  Note that this doesn't affect orders
+that mutate in-memory state.<p>
+
+<defitem "transaction" {<i adb> order transaction <i narrative script>}>
+
+Executes the <i script> as an "order transaction".  The <i script>
+is a Tcl script that sends a set of orders intended to be treated as a
+single atomic unit; the transaction will be undone and redone as a unit.
+The <i narrative> is used for the transaction's <iref undotext> and 
+<iref redotext>.  Note that this kind of "transaction" is entirely 
+distinct from the SQL transactions controlled by <iref transactions>.<p>
+
+
+<defitem "undotext" {<i adb> order undotext}>
+Returns a narrative string corresponding to the order or transaction
+on the top of the undo stack, or "" if none.<p>
+
+<defitem "undo" {<i adb> order undo}>
+Undoes the previously executed order or transaction, 
+provided that <iref canundo> is true, and pushes it onto the redo stack.<p>
+
+<defitem "validate" {<i adb> order validate <i name>}>
+Validates the order <i name>, returning it in canonical form if it is valid
+and throwing <b INVALID> otherwise.<p>
+
+</deflist commands>
+
+<subsection "Private Subcommands">
+
+The <tt><i adb> order</tt> command takes the following subcommands, where
+where <i adb> is an instance of <xref athenadb(n)>.<p>
+
+TBD: None yet documented.<p>
+
+<section AUTHOR>
+
+Will Duquette, Dave Hanks.<p>
+
+</manpage>

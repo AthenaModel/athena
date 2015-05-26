@@ -1,0 +1,71 @@
+<manpage {athena(n) athena_frcgroup(n)} "Athena Force Groups Component">
+
+<section SYNOPSIS>
+
+<pre>
+package require athena <version>
+namespace import ::athena::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+This man page describes a component of the <xref athena(n)> package
+that provides access to the scenario's force groups.<p>
+
+The component is accessible as a subcommand of the <xref athena(n)> and
+<xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
+from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
+<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+
+<section "COMMANDS">
+
+<subsection "Public Subcommands">
+
+The <tt><i adb> frcgroup</tt> command takes the following subcommands,
+where <i adb> is an instance of <xref athena(n)>.<p>
+
+<deflist frcgroup>
+
+<defitem "exists" {<i adb> frcgroup exists <i g>}>
+
+Returns 1 if there is a force group called <i g>, and 0 otherwise.<p>
+
+<defitem "get" {<i adb> frcgroup get <i g> ?<i parm>?}>
+
+By default, returns a dictionary of information about group <i g>,
+as read from the <b frcgroups_view>.  If <i parm> is given, returns
+the value of the <i parm>.<p>
+
+<defitem "namedict" {<i adb> frcgroup namedict}>
+Returns an ID/longname dictionary of the force group names.<p>
+
+<defitem "names" {<i adb> frcgroup names}>
+Returns a list of the IDs of the force groups.<p>
+
+<defitem "validate" {<i adb> frcgroup validate <i g>}>
+Validates group ID <i g>, returning <i g> if valid and throwing
+<b INVALID> otherwise.<p>
+
+<defitem "view" {<i adb> frcgroup view <i g> ?<i tag>?}>
+
+Returns a dictionary of formatted information about group <i g>, retrieved
+by reading the SQL <b><i tag>_frcgroups</b> view.  If <i tag> is not 
+given, uses <b>fmt_frcgroups</b>.<p>
+
+
+</deflist frcgroup>
+
+<subsection "Private Subcommands">
+
+The <tt><i adb> frcgroup</tt> command takes the following subcommands, where
+where <i adb> is an instance of <xref athenadb(n)>.<p>
+
+TBD: None yet documented.<p>
+
+<section AUTHOR>
+
+Will Duquette, Dave Hanks.<p>
+
+</manpage>

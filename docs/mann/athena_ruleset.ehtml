@@ -1,0 +1,60 @@
+<manpage {athena(n) athena_ruleset(n)} "Athena Rule Set Component">
+
+<section SYNOPSIS>
+
+<pre>
+package require athena <version>
+namespace import ::athena::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+This man page describes a component of the <xref athena(n)> package.<p>
+
+The component is accessible as a subcommand of the <xref athena(n)> and
+<xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
+from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
+<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+
+<section "COMMANDS">
+
+<subsection "Public Subcommands">
+
+The <tt><i adb> ruleset</tt> command takes the following subcommands,
+where <i adb> is an instance of <xref athena(n)>.<p>
+
+<deflist commands>
+
+<defitem "detail" {<i adb> ruleset detail <i setname fdict ht>}>
+Given a rule set name and firing dictionary <i fdict>, writes 
+a detail message about the rule firing into <xref htools(n)> buffer
+<i ht>.<p>
+
+<defitem "get" {<i adb> ruleset get <i setname signature>}>
+Given a rule set name and the signature of a particular firing, returns
+the attitude driver ID for that firing.<p>
+
+<defitem "narrative" {<i adb> ruleset narrative <i setname fdict>}>
+Given a rule set name and firing dictionary <i fdict>, returns a
+short narrative string for the rule firing.<p>
+
+<defitem "rulename" {<i adb> ruleset rulename <i rule>}>
+Given a short rule name, e.g., "CIVCAS-1-1", returns the full
+rule name.<p>
+
+</deflist commands>
+
+<subsection "Private Subcommands">
+
+The <tt><i adb> ruleset</tt> command takes the following subcommands, where
+where <i adb> is an instance of <xref athenadb(n)>.<p>
+
+TBD: None yet documented.<p>
+
+<section AUTHOR>
+
+Will Duquette, Dave Hanks.<p>
+
+</manpage>

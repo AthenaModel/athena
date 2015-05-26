@@ -707,10 +707,10 @@ snit::type ted {
 
         # NEXT, we must not be busy on cleanup.  Any activities
         # that set the busy flag should complete before cleanup.
-        assert {[tdb idle]}
+        assert {[tdb is idle]}
 
         # NEXT, if we're locked, unlock.
-        if {[tdb locked]} {
+        if {[tdb is locked]} {
             tdb unlock
         }
 

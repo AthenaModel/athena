@@ -1,0 +1,83 @@
+<manpage {athena(n) athena_hook(n)} "Athena Semantic Hook Component">
+
+<section SYNOPSIS>
+
+<pre>
+package require athena <version>
+namespace import ::athena::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+This man page describes a component of the <xref athena(n)> package
+that provides access to the scenario's semantic hooks.  A semantic hook
+is a set of beliefs about topics used to attract civilians to accept
+an information operations message (IOM); see <xref athena_bsys(n)> and
+<xref athena_iom(n)>.<p>
+
+The component is accessible as a subcommand of the <xref athena(n)> and
+<xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
+from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
+<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+
+<section "COMMANDS">
+
+<subsection "Public Subcommands">
+
+The <tt><i adb> hook</tt> command takes the following subcommands,
+where <i adb> is an instance of <xref athena(n)>.<p>
+
+<deflist hook>
+
+<defitem "get" {<i adb> hook get <i hook_id> ?<i parm>?}>
+
+By default, returns a dictionary of information about group <i hook_id>,
+as read from the <b fmt_hooks> view.  If <i parm> is given, returns
+the value of the <i parm>.<p>
+
+<defitem "namedict" {<i adb> hook namedict}>
+Returns an ID/longname dictionary of the semantic hook names.<p>
+
+<defitem "names" {<i adb> hook names}>
+Returns a list of the IDs of the semantic hooks.<p>
+
+<defitem "topic" {<i adb> hook topic <i subcommand> ?<i args...>?}>
+
+Returns information about the belief system topics used in a semantic
+hook.s<p>
+
+<deflist topic>
+<defitem "topic exists" {<i adb> hook topic exists <i id>}>
+Returns 1 if <i id> represents an existing {<i hook_id> <i topic_id>} pair,
+i.e., if hook <i hook_id> includes topic <i topic_id>, and 0 otherwise.<p>
+
+<defitem "topic get" {<i adb> hook topic get <i id>}>
+Given an existing {<i hook_id> <i topic_id>} pair, 
+returns a dictionary of information about the hook's position on the topic.<p>
+
+<defitem "topic validate" {<i adb> hook topic validate <i id>}>
+Validates a {<i hook_id> <i topic_id>} pair, returning it if it is valid
+and throwing <b INVALID> otherwise.<p>
+
+</deflist topic>
+
+<defitem "validate" {<i adb> hook validate <i hook_id>}>
+Validates the <i hook_id>, returning it if valid and throwing
+<b INVALID> otherwise.<p>
+
+</deflist hook>
+
+<subsection "Private Subcommands">
+
+The <tt><i adb> hook</tt> command takes the following subcommands, where
+where <i adb> is an instance of <xref athenadb(n)>.<p>
+
+TBD: None yet documented.<p>
+
+<section AUTHOR>
+
+Will Duquette, Dave Hanks.<p>
+
+</manpage>

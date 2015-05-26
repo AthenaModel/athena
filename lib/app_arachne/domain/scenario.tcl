@@ -126,7 +126,7 @@ oo::class create /scenario {
 
         # FIRST, handle the specified case
         if {$case ne ""} {
-            if {[case with $case isbusy]} {
+            if {[case with $case is busy]} {
                 return $interval
             } else {
                 return ""
@@ -135,7 +135,7 @@ oo::class create /scenario {
 
         # NEXT, handle all cases.
         foreach case [case names] {
-            if {[case with $case isbusy]} {
+            if {[case with $case is busy]} {
                 return $interval
             }
         }
@@ -226,7 +226,7 @@ oo::class create /scenario {
             foreach case $cases {
                 set cdict [case metadata $case]
 
-                if {[case with $case isbusy]} {
+                if {[case with $case is busy]} {
                     set progress [case with $case progress]
                     if {[string is double -strict $progress]} {
                         set progress \
@@ -1061,7 +1061,7 @@ smarturl /scenario /diff.json {
 
     if {![$s1 is advanced]} {
         qdict reject id1 "Time has not been advanced"
-    } elseif {[$s1 isbusy]} {
+    } elseif {[$s1 is busy]} {
         qdict reject id1 "Scenario is busy; please wait."
     }
 
@@ -1070,7 +1070,7 @@ smarturl /scenario /diff.json {
 
         if {![$s2 is advanced]} {
             qdict reject id2 "Time has not been advanced"
-        } elseif {[$s2 isbusy]} {
+        } elseif {[$s2 is busy]} {
             qdict reject id2 "Scenario is busy; please wait."
         }
     } else {

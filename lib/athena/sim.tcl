@@ -231,7 +231,7 @@ snit::type ::athena::sim {
     # will pause even when blocking if called in the tickcmd.
 
     method advance {mode ticks {tickcmd ""}} {
-        assert {[$adb idle] && [$adb locked]}
+        assert {[$adb is idle] && [$adb is locked]}
 
         # FIRST, clear the stop reason.
         set info(reason) ""
@@ -297,7 +297,7 @@ snit::type ::athena::sim {
             }
         } on error {result eopts} {
             # We halted; return to idle and rethrow
-            if {[$adb isbusy]} {
+            if {[$adb is busy]} {
                 $adb busy clear
             }
             return {*}$eopts $result
@@ -506,7 +506,7 @@ snit::type ::athena::sim {
     # Returns a checkpoint of the non-RDB simulation data.
 
     method checkpoint {{option ""}} {
-        assert {[$adb idle]}
+        assert {[$adb is idle]}
 
         if {$option eq "-saved"} {
             set info(changed) 0

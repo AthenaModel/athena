@@ -329,7 +329,7 @@ snit::type appserver {
     # adds a disclaimer to the output.
 
     proc locked {{option ""}} {
-        if {[adb locked]} {
+        if {[adb is locked]} {
             return 1
         } else {
             if {$option ne ""} {

@@ -1,0 +1,62 @@
+<manpage {athena(n) athena_group(n)} "Athena Groups Component">
+
+<section SYNOPSIS>
+
+<pre>
+package require athena <version>
+namespace import ::athena::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+This man page describes a component of the <xref athena(n)> package
+that provides access to all of the scenario's groups, of whatever type.<p>
+
+The component is accessible as a subcommand of the <xref athena(n)> and
+<xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
+from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
+<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+
+<section "COMMANDS">
+
+<subsection "Public Subcommands">
+
+The <tt><i adb> group</tt> command takes the following subcommands,
+where <i adb> is an instance of <xref athena(n)>.<p>
+
+<deflist group>
+
+<defitem "exists" {<i adb> group exists <i g>}>
+
+Returns 1 if there is a group called <i g>, and 0 otherwise.<p>
+
+<defitem "gtype" {<i adb> group gtype <i g>}>
+
+Returns the type of group <i g>, one of <b CIV>, <b FRC>, or <b ORG>.<p>
+
+<defitem "namedict" {<i adb> group namedict}>
+Returns an ID/longname dictionary of the group names.<p>
+
+<defitem "names" {<i adb> group names}>
+Returns a list of the IDs of the groups.<p>
+
+<defitem "validate" {<i adb> group validate <i g>}>
+Validates group ID <i g>, returning <i g> if valid and throwing
+<b INVALID> otherwise.<p>
+
+</deflist group>
+
+<subsection "Private Subcommands">
+
+The <tt><i adb> group</tt> command takes the following subcommands, where
+where <i adb> is an instance of <xref athenadb(n)>.<p>
+
+TBD: None yet documented.<p>
+
+<section AUTHOR>
+
+Will Duquette, Dave Hanks.<p>
+
+</manpage>

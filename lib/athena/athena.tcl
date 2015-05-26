@@ -106,7 +106,6 @@ snit::type ::athena::athena {
     delegate method busy                    to adb
     delegate method canlock                 to adb
     delegate method clock                   to adb
-    delegate method getclock                to adb as {component clock}
     delegate method contribs                to adb as {aram contribs}
     delegate method dbsync                  to adb
     delegate method enter                   to adb
@@ -114,18 +113,15 @@ snit::type ::athena::athena {
     delegate method executive               to adb
     delegate method exists                  to adb as {safe exists}
     delegate method export                  to adb
+    delegate method getclock                to adb as {component clock}
     delegate method gofer                   to adb
     delegate method halt                    to adb as {sim halt} ;# TBD
-    delegate method idle                    to adb
     delegate method interrupt               to adb
-    delegate method interruptible           to adb
     delegate method is                      to adb
-    delegate method isbusy                  to adb
     delegate method load                    to adb
     delegate method loadtemp                to adb
-    delegate method log                     to adb
     delegate method lock                    to adb
-    delegate method locked                  to adb
+    delegate method log                     to adb
     delegate method onecolumn               to adb as {safe onecolumn}
     delegate method paste                   to adb
     delegate method progress                to adb
@@ -140,8 +136,6 @@ snit::type ::athena::athena {
     delegate method state                   to adb
     delegate method statetext               to adb
     delegate method unlock                  to adb
-    delegate method unlocked                to adb
-    delegate method unsaved                 to adb
     delegate method version                 to adb
 
     delegate method {absit exists}          to adb as {absit exists}
@@ -177,6 +171,7 @@ snit::type ::athena::athena {
     delegate method {bsys belief validate}  to adb as {bsys belief validate}
     delegate method {bsys belief isdefault} to adb as {bsys belief isdefault}
     delegate method {bsys playbox cget}     to adb as {bsys playbox cget}
+    delegate method {bsys playbox view}     to adb as {bsys playbox view}
     delegate method {bsys system cget}      to adb as {bsys system cget}
     delegate method {bsys system exists}    to adb as {bsys system exists}
     delegate method {bsys system ids}       to adb as {bsys system ids}
@@ -248,9 +243,6 @@ snit::type ::athena::athena {
     delegate method {iom names}             to adb as {iom names}
     delegate method {iom normal}            to adb as {iom normal}
     delegate method {iom validate}          to adb as {iom validate}
-
-    delegate method {master advance}        to adb as {master advance}
-    delegate method {master shutdown}       to adb as {master shutdown}
 
     delegate method {nbhood bbox}           to adb as {nbhood bbox}
     delegate method {nbhood exists}         to adb as {nbhood exists}

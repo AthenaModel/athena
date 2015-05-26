@@ -1,0 +1,77 @@
+<manpage {athena(n) athena_absit(n)} "Athena Abstract Situation Component">
+
+<section SYNOPSIS>
+
+<pre>
+package require athena <version>
+namespace import ::athena::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+This man page describes a component of the <xref athena(n)> package that
+is used to manage and access abstract situation entities.<p>
+
+The component is accessible as a subcommand of the <xref athena(n)> and
+<xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
+from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
+<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+
+<section "COMMANDS">
+
+<subsection "Public Subcommands">
+
+The <tt><i adb> absit</tt> command takes the following subcommands,
+where <i adb> is an instance of <xref athena(n)>.<p>
+
+<deflist commands>
+
+<defitem exists {<i adb> absit exists <i s>}>
+
+Returns 1 if there is an absit with ID <i s>, and 0 otherwise.<p>
+
+<defitem get {<i adb> absit get <i s> ?<i parm>?}>
+
+By default, returns a dictionary of information about the absit with
+ID <i s> (the dictionary is consistent with the <tt absits> SQL table).
+If <i parm> is given, it returns the value of that entry in the dict.<p>
+
+<defitem isinitial {<i adb> absit isinitial <i s>}>
+
+Returns 1 if absit <i s> is in the initial state, and 0 otherwise.<p>
+
+<defitem islive {<i adb> absit islive <i s>}>
+
+Returns 1 if absit <i s> is "live", i.e., it has not been resolved,
+and 0 otherwise.<p>
+
+<defitem names {<i adb> absit names}>
+Returns a list of the IDs of the existing absits.<p>
+
+<defitem validate {<i adb> absit validate <i s>}>
+Validates <i s> as an absit ID, returning it if it is valid and
+throwing <b INVALID> otherwise.<p>
+
+<defitem view {<i adb> absit view <i s> ?<i tag>?}>
+
+By default, returns a dictionary of information about the absit with
+ID <i s>, consistent with the <tt fmt_absits> SQL view.  The <i tag>
+allows the command to tailor its output for different output formats
+(e.g., html); at present it is ignored.<p>
+
+</deflist commands>
+
+<subsection "Private Subcommands">
+
+The <tt><i adb> absit</tt> command takes the following subcommands,
+where <i adb> is an instance of <xref athenadb(n)>.<p>
+
+TBD: None yet defined.<p>
+
+<section AUTHOR>
+
+Will Duquette, Dave Hanks.<p>
+</manpage>
+    

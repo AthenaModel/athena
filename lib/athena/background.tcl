@@ -147,7 +147,7 @@ snit::type ::athena::background {
     # get an error.  Assumes that the scenario is locked.
 
     method advance {ticks {tickcmd ""}} {
-        assert {[$adb locked] && [$adb idle]}
+        assert {[$adb is locked] && [$adb is idle]}
 
         $adb log normal background "advance $ticks $tickcmd"
 

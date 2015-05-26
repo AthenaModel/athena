@@ -607,7 +607,7 @@ snit::type ::athena::athenadb {
 
         # FIRST, unlock the scenario if it is locked; this
         # will reinitialize modules like URAM.
-        if {[$self locked]} {
+        if {[$self is locked]} {
             $self unlock
         }
 
@@ -811,24 +811,6 @@ snit::type ::athena::athenadb {
         return
     }
 
-    # unsaved
-    #
-    # Returns 1 if there are unsaved changes, and 0 otherwise.
-
-    method unsaved {} {
-        if {[$rdb unsaved]} {
-            return 1
-        }
-
-        dict for {name command} $info(saveables) {
-            if {[{*}$command changed]} {
-                return 1
-            }
-        }
-
-        return 0
-    }
-
     # marksaved
     #
     # Marks everything saved, whether it is or not.
@@ -942,7 +924,7 @@ snit::type ::athena::athenadb {
     method lock {} {
         $self RequireIdle
 
-        if {[$self locked]} {
+        if {[$self is locked]} {
             return
         }
         
@@ -990,7 +972,7 @@ snit::type ::athena::athenadb {
     method unlock {{opt ""}} {
         $self RequireIdle
 
-        if {[$self unlocked]} {
+        if {[$self is unlocked]} {
             return
         }
 
@@ -1063,7 +1045,7 @@ snit::type ::athena::athenadb {
     # pausecmd; the scenario is now idle.
 
     method {busy clear} {} {
-        require {[$self isbusy]} "Scenario is already idle"
+        require {[$self is busy]} "Scenario is already idle"
         set info(busytext) ""
         set info(pausecmd) ""
 
@@ -1122,7 +1104,7 @@ snit::type ::athena::athenadb {
     # is not interruptible.
 
     method interrupt {} {
-        require {[$self interruptible]} "No interruptible process is running"
+        require {[$self is interruptible]} "No interruptible process is running"
         $self log normal athenadb "Interrupting busy process"
         {*}$info(pausecmd)
         return
@@ -1166,8 +1148,6 @@ snit::type ::athena::athenadb {
 
     #-------------------------------------------------------------------
     # Predicates
-    #
-    # TBD: Eventually, all predicates will be grouped under "is".
     
     # is advanced
     #
@@ -1178,11 +1158,11 @@ snit::type ::athena::athenadb {
     }
 
 
-    # locked
+    # is locked
     #
     # Returns 1 if the scenario is locked, and 0 otherwise.
 
-    method locked {} {
+    method {is locked} {} {
         if {$cpinfo(locked)} {
             return 1
         } else {
@@ -1190,11 +1170,11 @@ snit::type ::athena::athenadb {
         }
     }
 
-    # unlocked
+    # is unlocked
     #
     # Returns 1 if the scenario is unlocked, and 0 otherwise.
 
-    method unlocked {} {
+    method {is unlocked} {} {
         if {!$cpinfo(locked)} {
             return 1
         } else {
@@ -1202,31 +1182,51 @@ snit::type ::athena::athenadb {
         }
     }
 
-    # idle
+    # is idle
     #
     # Returns 1 if the scenario is idle, with nothing in process,
     # and 0 otherwise.
 
-    method idle {} {
+    method {is idle} {} {
         expr {$info(busytext) eq ""}
     }
     
-    # isbusy
+    # is busy
     #
     # Returns 1 if the scenario is busy, and 0 otherwise.
 
-    method isbusy {} {
+    method {is busy} {} {
         expr {$info(busytext) ne ""}
     }
 
-    # interruptible
+    # is interruptible
     #
     # Returns 1 if the scenario is busy and the process is interruptible,
     # and 0 otherwise.
 
-    method interruptible {} {
-        expr {[$self isbusy] && $info(pausecmd) ne ""}
+    method {is interruptible} {} {
+        expr {[$self is busy] && $info(pausecmd) ne ""}
     }
+
+    # is unsaved
+    #
+    # Returns 1 if there are unsaved changes, and 0 otherwise.
+
+    method {is unsaved} {} {
+        if {[$rdb unsaved]} {
+            return 1
+        }
+
+        dict for {name command} $info(saveables) {
+            if {[{*}$command changed]} {
+                return 1
+            }
+        }
+
+        return 0
+    }
+
+
 
     #-------------------------------------------------------------------
     # Advance time (run)
@@ -1692,7 +1692,7 @@ snit::type ::athena::athenadb {
     # Returns a checkpoint of the non-RDB simulation data.
 
     method checkpoint {{option ""}} {
-        assert {[$self idle]}
+        assert {[$self is idle]}
 
         if {$option eq "-saved"} {
             set info(changed) 0
@@ -1736,7 +1736,7 @@ snit::type ::athena::athenadb {
     # Throws ATHENA BUSY if the scenario is busy.
 
     method RequireIdle {} {
-        if {[$self isbusy]} {
+        if {[$self is busy]} {
             throw {ATHENA BUSY} "Scenario is busy."
         }
     }
@@ -1746,7 +1746,7 @@ snit::type ::athena::athenadb {
     # Throws ATHENA LOCKED if the scenario is locked.
 
     method RequireUnlocked {} {
-        if {[$self locked]} {
+        if {[$self is locked]} {
             throw {ATHENA LOCKED} "Scenario is locked."
         }
     }
@@ -1756,7 +1756,7 @@ snit::type ::athena::athenadb {
     # Throws ATHENA UNLOCKED if the scenario is unlocked.
 
     method RequireLocked {} {
-        if {[$self unlocked]} {
+        if {[$self is unlocked]} {
             throw {ATHENA UNLOCKED} "Scenario is unlocked."
         }
     }
@@ -1826,7 +1826,7 @@ snit::type ::athena::athenadb {
     # Returns 1 if the scenario is locked, and 0 otherwise.
 
     method Locked {} {
-        $self locked
+        $self is locked
     }
 
     # UramGamma ctype

@@ -1,0 +1,58 @@
+<manpage {athena(n) athena_unit(n)} "Athena Units Component">
+
+<section SYNOPSIS>
+
+<pre>
+package require athena <version>
+namespace import ::athena::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+This man page describes a component of the <xref athena(n)> package
+that provides access to the scenario's units: entities representing
+geographic subdivisions of a group's personnel.<p>
+
+The component is accessible as a subcommand of the <xref athena(n)> and
+<xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
+from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
+<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+
+<section "COMMANDS">
+
+<subsection "Public Subcommands">
+
+The <tt><i adb> unit</tt> command takes the following subcommands,
+where <i adb> is an instance of <xref athena(n)>.<p>
+
+<deflist unit>
+
+<defitem "get" {<i adb> unit get <i u> ?<i parm>?}>
+
+By default, returns a dictionary of information about unit <i u>,
+as read from the <b units> table.  If <i parm> is given, returns
+the value of the <i parm>.<p>
+
+<defitem "names" {<i adb> unit names}>
+Returns a list of the IDs of the existing units.<p>
+
+<defitem "validate" {<i adb> unit validate <i u>}>
+Validates unit name <i u>, returning <i u> if valid and throwing
+<b INVALID> otherwise.<p>
+
+</deflist unit>
+
+<subsection "Private Subcommands">
+
+The <tt><i adb> unit</tt> command takes the following subcommands, where
+where <i adb> is an instance of <xref athenadb(n)>.<p>
+
+TBD: None yet documented.<p>
+
+<section AUTHOR>
+
+Will Duquette, Dave Hanks.<p>
+
+</manpage>
