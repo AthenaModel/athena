@@ -8,14 +8,14 @@
 # DESCRIPTION:
 #   athena(n) history variable differences: control.n.
 #
-#   A value is the name of an actor controlling the neighborhood, or
+#   A value is the name of the actor controlling the neighborhood, or
 #   "" if none.
 #
 #-----------------------------------------------------------------------
 
 oo::class create ::athena::vardiff::control {
     superclass ::athena::vardiff
-    meta type     control.n
+    meta type     control
     meta category political
 
     constructor {comp_ val1_ val2_ n_} {

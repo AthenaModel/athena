@@ -8,13 +8,15 @@
 # DESCRIPTION:
 #   athena(n) variable differences: pbmood.set
 #
-#   Two sets of playbox mood are supported: local and all
+#   The value is the average mood of the civilian groups in the playbox,
+#   across one of two sets: "all" civilian groups, and "local" groups,
+#   those residing in local neighborhoods.
 #
 #-----------------------------------------------------------------------
 
 oo::class create ::athena::vardiff::pbmood {
     superclass ::athena::vardiff
-    meta type     pbmood.set
+    meta type     pbmood
     meta category social
 
     constructor {comp_ val1_ val2_ set_} {

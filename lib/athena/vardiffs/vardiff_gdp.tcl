@@ -8,6 +8,8 @@
 # DESCRIPTION:
 #   athena(n) variable differences: gdp
 #
+#   A value is the GDP from the economic model, in dollars.
+#
 #-----------------------------------------------------------------------
 
 oo::class create ::athena::vardiff::gdp {

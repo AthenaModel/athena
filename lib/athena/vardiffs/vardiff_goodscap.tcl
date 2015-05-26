@@ -8,11 +8,13 @@
 # DESCRIPTION:
 #   athena(n) variable differences: goodscap.n
 #
+#   A value is the GOODS production capacity of neighborhood n, in
+#   dollars.
 #-----------------------------------------------------------------------
 
 oo::class create ::athena::vardiff::goodscap {
     superclass ::athena::vardiff
-    meta type     goodscap.n
+    meta type     goodscap
     meta category economic
 
     constructor {comp_ val1_ val2_ n_} {

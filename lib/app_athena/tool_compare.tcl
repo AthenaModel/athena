@@ -102,7 +102,7 @@ tool define COMPARE {
         puts ""
 
         # NEXT, output to console.
-        puts [$comp diffs $opts(-format)]
+        puts [$comp diffs $opts(-format) -toplevel]
 
         $comp destroy
     }

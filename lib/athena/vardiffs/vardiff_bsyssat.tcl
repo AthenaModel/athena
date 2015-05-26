@@ -8,11 +8,14 @@
 # DESCRIPTION:
 #   athena(n) variable differences: bsyssat.b.c
 #
+#   A value is a composite satisfaction with concern c across civilian 
+#   groups having belief system b.
+#
 #-----------------------------------------------------------------------
 
 oo::class create ::athena::vardiff::bsyssat {
     superclass ::athena::vardiff
-    meta type     bsyssat.b.c
+    meta type     bsyssat
     meta category social
 
     constructor {comp_ val1_ val2_ b_ c_} {

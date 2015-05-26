@@ -12,7 +12,7 @@
 
 oo::class create ::athena::vardiff {
     meta type *          ;# Type is undefined; subclasses should override.
-    meta category "???"  ;# Pmesii category is undefined; subclasses should
+    meta category "???"  ;# PMESII category is undefined; subclasses should
                           # override.
 
     variable comp    ;# comparison object
@@ -47,7 +47,7 @@ oo::class create ::athena::vardiff {
         set prefix [lindex [split [my type] .] 0]
 
         dict for {key val} $keydict {
-            append prefix .$val
+            append prefix /$val
         }
         return $prefix
     }
@@ -113,7 +113,7 @@ oo::class create ::athena::vardiff {
         return [my format $val2]
     }
 
-    # fmt val
+    # format val
     #
     # val   - A value of the variable's type
     #
@@ -184,5 +184,17 @@ oo::class create ::athena::vardiff {
         dict set result score    [my score]
 
         return $result
+    }
+
+    # diffs
+    #
+    # Computes vardiffs for significant differences in variable
+    # inputs, adding them to the comparison object, and returns
+    # a list of them.
+    #
+    # Subclasses this override this if necessary.
+
+    method diffs {} {
+        return
     }
 }

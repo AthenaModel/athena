@@ -8,11 +8,13 @@
 # DESCRIPTION:
 #   athena(n) variable differences: vrel.g.a
 #
+#   A value is the vertical relationship of group g with actor a.
+#
 #-----------------------------------------------------------------------
 
 oo::class create ::athena::vardiff::vrel {
     superclass ::athena::vardiff
-    meta type     vrel.g.a
+    meta type     vrel
     meta category social
 
     constructor {comp_ val1_ val2_ g_ a_} {

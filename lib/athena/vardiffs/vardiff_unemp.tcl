@@ -8,6 +8,8 @@
 # DESCRIPTION:
 #   athena(n) variable differences: unemp
 #
+#   A value is the unemployment rate for the playbox, as a percentage.
+#
 #-----------------------------------------------------------------------
 
 oo::class create ::athena::vardiff::unemp {

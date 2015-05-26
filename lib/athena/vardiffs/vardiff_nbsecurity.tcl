@@ -8,11 +8,14 @@
 # DESCRIPTION:
 #   athena(n) history variable differences: nbsecurity.n
 #
+#   A value is the average security of all civilian groups resident in
+#   neighborhood n.
+#
 #-----------------------------------------------------------------------
 
 oo::class create ::athena::vardiff::nbsecurity {
     superclass ::athena::vardiff
-    meta type     nbsecurity.n
+    meta type     nbsecurity
     meta category political
 
     constructor {comp_ val1_ val2_ n_} {

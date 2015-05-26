@@ -8,11 +8,13 @@
 # DESCRIPTION:
 #   athena(n) history variable differences: support.n.a
 #
+#   A value is the support of neighborhood n for actor a.
+#
 #-----------------------------------------------------------------------
 
 oo::class create ::athena::vardiff::support {
     superclass ::athena::vardiff
-    meta type     support.n.a
+    meta type     support
     meta category political
 
     constructor {comp_ val1_ val2_ n_ a_} {

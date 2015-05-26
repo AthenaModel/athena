@@ -8,11 +8,13 @@
 # DESCRIPTION:
 #   athena(n) variable differences: sat.g.c
 #
+#   A value is civilian group g's satisfaction with concern c.
+#
 #-----------------------------------------------------------------------
 
 oo::class create ::athena::vardiff::sat {
     superclass ::athena::vardiff
-    meta type     sat.g.c
+    meta type     sat
     meta category social
 
     constructor {comp_ val1_ val2_ g_ c_} {

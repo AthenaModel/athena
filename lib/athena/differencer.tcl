@@ -143,9 +143,9 @@ snit::type ::athena::differencer {
             JOIN s2.hist_nbhood  AS H2 
             ON (H1.n = H2.n AND H1.t=$t1 AND H2.t=$t2);
         } {
-            $comp add nbsecurity $nbsec1  $nbsec2  $n
-            $comp add control    $a1      $a2      $n
-            $comp add nbmood     $nbmood1 $nbmood2 $n
+            $comp addtop nbsecurity $nbsec1  $nbsec2  $n
+            $comp addtop control    $a1      $a2      $n
+            $comp addtop nbmood     $nbmood1 $nbmood2 $n
         }
 
         # NEXT, satisfaction by nbhood and concern
@@ -159,7 +159,7 @@ snit::type ::athena::differencer {
             set d1 [lindex $ddict 0]
             set d2 [lindex $ddict 1]
             foreach {n1 sat1} [dict get $d1] {n2 sat2} [dict get $d2] {
-                $comp add nbsat $sat1 $sat2 $n1 $c
+                $comp addtop nbsat $sat1 $sat2 $n1 $c
             }
         }
     }
@@ -185,7 +185,7 @@ snit::type ::athena::differencer {
             JOIN s2.hist_civg   AS H2
             ON (H1.g = H2.g AND H1.t=$t1 AND H2.t=$t2);
         } {
-            $comp add mood $mood1 $mood2 $g 
+            $comp addtop mood $mood1 $mood2 $g 
         }
 
         # NEXT, CIV satisfaction by group and concern
@@ -198,7 +198,7 @@ snit::type ::athena::differencer {
             JOIN s2.hist_sat    AS H2
             ON (H1.g = H2.g AND H1.c = H2.c AND H1.t=$t1 AND H2.t=$t2)
         } {
-            $comp add sat $sat1 $sat2 $g $c
+            $comp addtop sat $sat1 $sat2 $g $c
         }
 
         # NEXT, CIV satisfaction by belief system and concern
@@ -215,7 +215,7 @@ snit::type ::athena::differencer {
             set d2 [lindex $ddict 1]
             foreach {bsid1 sat1} [dict get $d1] {bsid2 sat2} [dict get $d2] {
                 set bsname "B$bsid1"
-                $comp add bsyssat $sat1 $sat2 $bsname $c
+                $comp addtop bsyssat $sat1 $sat2 $bsname $c
             }
         }
 
@@ -223,7 +223,7 @@ snit::type ::athena::differencer {
         foreach c {AUT CUL SFT QOL} {
             set ps1 [$comp s1 stats pbsat $t1 $c]
             set ps2 [$comp s2 stats pbsat $t2 $c]
-            $comp add pbsat $ps1 $ps2 $c local
+            $comp addtop pbsat $ps1 $ps2 $c local
         }
 
         # NEXT, CIV mood by belief system
@@ -232,14 +232,14 @@ snit::type ::athena::differencer {
 
         foreach {bsid1 mood1} [dict get $mbs1] {bsid2 mood2} [dict get $mbs2] {
             set bsname "B$bsid1"
-            $comp add bsysmood $mood1 $mood2 $bsname
+            $comp addtop bsysmood $mood1 $mood2 $bsname
         }
 
         # NEXT, playbox mood (local CIV groups)
         set pbm1 [$comp s1 stats pbmood $t1]
         set pbm2 [$comp s2 stats pbmood $t2]
 
-        $comp add pbmood $pbm1 $pbm2 local
+        $comp addtop pbmood $pbm1 $pbm2 local
 
         # NEXT, vertical relationship 
         $cdb eval {
@@ -252,7 +252,7 @@ snit::type ::athena::differencer {
             ON (H1.g = H2.g AND H1.a = H2.a AND H1.t=$t1 AND H2.t=$t2)
 
         } {
-            $comp add vrel $vrel1 $vrel2 $g $a
+            $comp addtop vrel $vrel1 $vrel2 $g $a
         }
     }
 
@@ -298,11 +298,11 @@ snit::type ::athena::differencer {
                 dict set i2 $n $a $influence2
             }
 
-            $comp add support $support1 $support2 $n $a
+            $comp addtop support $support1 $support2 $n $a
         }
 
         foreach n [$comp s1 nbhood names] {
-            $comp add influence [dict get $i1 $n] [dict get $i2 $n] $n
+            $comp addtop influence [dict get $i1 $n] [dict get $i2 $n] $n
         }
     }
 
@@ -327,7 +327,7 @@ snit::type ::athena::differencer {
             JOIN s2.hist_plant_n AS H2
             ON (H1.n = H2.n AND H1.t=$t1 AND H2.t=$t2)
         } {
-            $comp add goodscap $cap1 $cap2 $n
+            $comp addtop goodscap $cap1 $cap2 $n
         }
 
         # NEXT, GDP
@@ -338,7 +338,7 @@ snit::type ::athena::differencer {
             JOIN s2.hist_econ AS H2
             ON (H1.t=$t1 AND H2.t=$t2)
         } {
-            $comp add gdp $gdp1 $gdp2
+            $comp addtop gdp $gdp1 $gdp2
         }
 
         # NEXT, Playbox unemployment rate
@@ -349,7 +349,7 @@ snit::type ::athena::differencer {
             JOIN s2.hist_econ AS H2
             ON (H1.t=$t1 AND H2.t=$t2)
         } {
-            $comp add unemp $ur1 $ur2
+            $comp addtop unemp $ur1 $ur2
         }
 
         # NEXT, Nbhood unemployment rate
@@ -361,7 +361,7 @@ snit::type ::athena::differencer {
             JOIN s2.hist_nbhood AS H2
             ON (H1.n = H2.n AND H1.t=$t1 AND H2.t=$t2)
         } {
-            $comp add nbunemp $ur1 $ur2 $n
+            $comp addtop nbunemp $ur1 $ur2 $n
         }
     }
 }

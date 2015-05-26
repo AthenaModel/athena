@@ -9,7 +9,21 @@
 #   athena(n): Scenario Comparison class
 #
 #   A comparison object records the results of comparing two scenarios
-#   (or the same scenario at different times).
+#   (or the same scenario at different times).  
+#
+#   The initial comparison looks for significant differences between
+#   the two scenarios, and records them as a series of "vardiff" objects.
+#   These objects are catalogued by "vartype", e.g., "nbmood", and by 
+#   name, "nbmood.N1".
+#
+#   Then, the comparison object can be asked to provide a causal chain
+#   for a particular variable.  It will drill down, looking for
+#   explanations of the difference in that particular variable; these
+#   explanations take the form of vardiffs for the inputs to the variable,
+#   and vardiffs on the inputs to those inputs, until we can go no 
+#   farther.  Each vardiff is catalogued like its predecessors, and the
+#   tree of significant inputs to a particular vardiff can be traced
+#   by querying the vardiff.
 #
 #-----------------------------------------------------------------------
 
@@ -17,11 +31,12 @@ snit::type ::athena::comparison {
     #-------------------------------------------------------------------
     # Instance Variables
     
-    variable s1         ;# Scenario 1
-    variable t1         ;# Time 1
-    variable s2         ;# Scenario 2
-    variable t2         ;# Time 2
-    variable diffs {}   ;# Dictionary of differences by vartype
+    variable s1           ;# Scenario 1
+    variable t1           ;# Time 1
+    variable s2           ;# Scenario 2
+    variable t2           ;# Time 2
+    variable byname {}    ;# Dictionary of differences by varname
+    variable toplevel {}  ;# List of toplevel vardiff objects. 
 
     #-------------------------------------------------------------------
     # Constructor
@@ -31,7 +46,8 @@ snit::type ::athena::comparison {
         set t1 $t1_
         set s2 $s2_
         set t2 $t2_
-        set diffs [dict create]
+        set byname   [dict create]
+        set toplevel [list]
 
         if {$s1 ne $s2} {
             $self CheckCompatibility
@@ -83,6 +99,31 @@ snit::type ::athena::comparison {
         }
     }
 
+    # addtop vartype val1 val2 keys...
+    #
+    # vartype  - An output variable type.
+    # val1     - The value from s1/t1
+    # val2     - The value from s2/t2
+    # keys...  - Key values for the vardiff class
+    #
+    # Given a vardiff type and a pair of values, saves a significant output
+    # diff if the difference between the two values is significant.  
+    #
+    # Returns the diff if it was significant, and "" otherwise. 
+
+    method addtop {vartype val1 val2 args} {
+        # FIRST, get the diff
+        set diff [$self add $vartype $val1 $val2 {*}$args]
+
+        # NEXT, if it was significant, remember that it was a toplevel
+        # vardiff.
+        if {$diff ne ""} {
+            ladd toplevel $diff
+        }
+
+        return $diff
+    }
+
     # add vartype val1 val2 keys...
     #
     # vartype  - An output variable type.
@@ -90,25 +131,41 @@ snit::type ::athena::comparison {
     # val2     - The value from s2/t2
     # keys...  - Key values for the vardiff class
     #
-    # Adds the diff to the differences, or throws it away if it isn't
-    # significant.  If val1 and val2 are "eq", identical, then the
-    # difference is presumed to be insignificant.
+    # Determines if the difference is significant, and returns a vardiff
+    # object if so.  If the vardiff already exists, returns the existing
+    # object rather than saving a new one.
+    #
+    # If val1 and val2 are "eq", identical, then the difference is 
+    # presumed to be insignificant.  Otherwise, it is left up to the
+    # vartype.
 
     method add {vartype val1 val2 args} {
-        # FIRST, exclude identical values.
+        # FIRST, exclude identical values; they can never be significant.
         if {$val1 eq $val2} {
-            return
+            return ""
         }
 
-        # NEXT, create a vardiff object; keep it if the difference
-        # proves to be significant, and otherwise throw it away.
+        # NEXT, create a vardiff object.
         set diff [::athena::vardiff::$vartype new $self $val1 $val2 {*}$args]
 
-        if {[$diff significant]} {
-            dict lappend diffs [$diff type] $diff
-        } else {
+        # NEXT, if we've already got this vardiff, return the old copy.
+        set name [$diff name]
+
+        if {[dict exists $byname $name]} {
             $diff destroy
+            return [dict get $byname $name]
         }
+
+        # NEXT, if it's insignificant, destroy it and return nothing.
+        if {![$diff significant]} {
+            $diff destroy
+            return ""
+        }
+
+        # NEXT, it's significant and hadn't existed previously; save 
+        # and return it.
+        dict set byname [$diff name] $diff
+        return $diff
     }
 
 
@@ -117,13 +174,16 @@ snit::type ::athena::comparison {
     # Resets the differences.
 
     method reset {} {
-        dict for {vartype difflist} $diffs {
-            foreach diff $difflist {
-                $diff destroy
-            }
+        dict for {varname diff} $byname {
+            $diff destroy
         }
-        set diffs [dict create]
+        set byname   [dict create]
+        set toplevel [list]
     }
+
+    #-------------------------------------------------------------------
+    # Queries
+    
 
     # t1
     #
@@ -165,16 +225,58 @@ snit::type ::athena::comparison {
         }
     }
 
+    # list ?-toplevel?
+    #
+    # Returns a list of the known vardiffs.  If -toplevel is given, only
+    # topleve vardiffs (i.e., significant outputs) are included.
+
+    method list {{opt -toplevel}} {
+        if {$opt eq "-toplevel"} {
+            return $toplevel
+        } else {
+            return [dict values $byname]
+        }        
+    }
+
+    # getdiff name
+    #
+    # name   - A vardiff object name
+    #
+    # Returns the vardiff object given its name.  It's an error if
+    # there is no vardiff with that name.
+
+    method getdiff {name} {
+        return [dict get byname $name]
+    }
+
+    # getbytype ?-toplevel?
+    #
+    # Returns a dictionary of lists of vardiffs vardiffs by 
+    # vartype.  If -toplevel is given, only toplevel vardiffs are
+    # included.
+
+    method getbytype {{opt ""}} {
+        set result [dict create]
+
+        foreach diff [$self list $opt] {
+            dict lappend result [$diff type] $diff
+        }
+
+        return $result
+    }
+
     #-------------------------------------------------------------------
     # Output of Diffs
     
-    # diffs dump
+    # diffs dump ?-toplevel?
     #
     # Returns a monotext formatted table of the differences.
+    # If -toplevel is given, only toplevel vardiffs are
+    # included.
 
-    method {diffs dump} {} {
+    method {diffs dump} {{opt ""}} {
         set table [list]
-        dict for {vartype difflist} $diffs {
+        dict for {vartype difflist} [$self getbytype $opt] {
             foreach diff [$self SortByScore $difflist] {
                 dict set row Variable   [$diff name]
                 dict set row A          [$diff fmt1]
@@ -189,22 +291,22 @@ snit::type ::athena::comparison {
         return [dictab format $table -headers]
     }
 
-    # diffs json
+    # diffs json ?-toplevel?
     #
     # Returns the differences formatted as JSON. 
 
-    method {diffs json} {} {
-        return [huddle jsondump [$self diffs huddle]]
+    method {diffs json} {{opt ""}} {
+        return [huddle jsondump [$self diffs huddle $opt]]
     }
 
-    # diffs huddle
+    # diffs huddle ?-toplevel?
     #
     # Returns the differences formatted as a huddle(n) object.
 
-    method {diffs huddle} {} {
+    method {diffs huddle} {{opt ""}} {
         set hud [huddle list]
 
-        dict for {vartype difflist} $diffs {
+        dict for {vartype difflist} [$self getbytype $opt] {
             foreach diff [$self SortByScore $difflist] {
                 set hvar [huddle compile dict [$diff view]]
                 huddle append hud $hvar
@@ -236,7 +338,4 @@ snit::type ::athena::comparison {
             return 0
         }
     }
-
-
-
 }

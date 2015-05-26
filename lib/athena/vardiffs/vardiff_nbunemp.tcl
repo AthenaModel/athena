@@ -6,13 +6,15 @@
 #   Dave Hanks
 #
 # DESCRIPTION:
-#   athena(n) variable differences: unemp.n
+#   athena(n) variable differences: nbunemp.n
+#
+#   A value is the unemployment rate in neighborhood n, as a percentage.
 #
 #-----------------------------------------------------------------------
 
 oo::class create ::athena::vardiff::nbunemp {
     superclass ::athena::vardiff
-    meta type     unemp.n
+    meta type     nbunemp
     meta category economic
 
     constructor {comp_ val1_ val2_ n_} {

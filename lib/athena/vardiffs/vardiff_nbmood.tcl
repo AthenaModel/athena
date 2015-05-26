@@ -8,11 +8,14 @@
 # DESCRIPTION:
 #   athena(n) variable differences: nbmood.n
 #
+#   A value is the mood of the civilian groups residing in 
+#   neighborhood n.
+#
 #-----------------------------------------------------------------------
 
 oo::class create ::athena::vardiff::nbmood {
     superclass ::athena::vardiff
-    meta type     nbmood.n
+    meta type     nbmood
     meta category social
 
     constructor {comp_ val1_ val2_ n_} {

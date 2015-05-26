@@ -8,11 +8,13 @@
 # DESCRIPTION:
 #   athena(n) variable differences: mood.g
 #
+#   A value is the mood of group g.
+#
 #-----------------------------------------------------------------------
 
 oo::class create ::athena::vardiff::mood {
     superclass ::athena::vardiff
-    meta type     mood.g
+    meta type     mood
     meta category social
 
     constructor {comp_ val1_ val2_ g_} {

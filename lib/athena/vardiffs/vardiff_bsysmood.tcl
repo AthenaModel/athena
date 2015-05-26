@@ -8,11 +8,13 @@
 # DESCRIPTION:
 #   athena(n) variable differences: bsysmood.b
 #
+#   A value is the mood of those civilian groups having belief system b.
+#
 #-----------------------------------------------------------------------
 
 oo::class create ::athena::vardiff::bsysmood {
     superclass ::athena::vardiff
-    meta type     bsysmood.b
+    meta type     bsysmood
     meta category social
 
     constructor {comp_ val1_ val2_ b_} {
