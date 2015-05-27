@@ -53,10 +53,10 @@ require html 1.4.3
 require base64 2.4.2
 require kiteutils 0.4.8 -local
 require kitedocs 0.4.8 -local
-require marsutil 3.0.18 -local
-require marsgui 3.0.18 -local
-require simlib 3.0.18 -local
-require Marsbin 3.0.18 -local
+require marsutil 3.0.17 -local
+require marsgui 3.0.17 -local
+require simlib 3.0.17 -local
+require Marsbin 3.0.17 -local
 
 # External Files
 xfile docs/aag.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aag-20141010.docx

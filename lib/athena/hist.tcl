@@ -25,29 +25,29 @@ snit::type ::athena::hist {
     # hist_* tables.
 
     typevariable histVars -array {
+        econ         {}
         control      {n}
         nbmood       {n}
         volatility   {n}
         npop         {n}
         nbur         {n}
-        security     {n g}
-        deploy_ng    {n g}
+        plant_n      {n}
         mood         {g}
         pop          {g}
+        plant_a      {a}
+        security     {n g}
+        deploy_ng    {n g}
+        nbcoop       {n g}
         sat          {g c}
         nbsat        {n c}
         coop         {f g}
         hrel         {f g}
         vrel         {g a}
-        nbcoop       {n g}
-        aam_battle   {n f g}
-        econ         {}
         plant_na     {n a}
-        plant_n      {n}
-        plant_a      {a}
         support      {n a}
         flow         {f g}
         service_sg   {s g}
+        aam_battle   {n f g}
         activity_nga {n g a}
     }
 
@@ -225,7 +225,7 @@ snit::type ::athena::hist {
             JOIN demog_g   AS D USING (g);
         }
 
-        if {[$adb parm get hist.plant]} {
+        if {[$adb parm get hist.plant] && [$adb econ state] eq "ENABLED"} {
             set gpp [money validate [$adb parm get plant.bktsPerYear.goods]]
 
             $adb eval {
@@ -234,6 +234,7 @@ snit::type ::athena::hist {
                 FROM plants_na;
             }
         }
+        
         if {[$adb parm get hist.support]} {
             $adb eval {
                 INSERT INTO hist_support(t,n,a,direct_support,support,influence)
@@ -314,7 +315,7 @@ snit::type ::athena::hist {
     # vars
     #
     # Returns available history variables and their keys
-    
+
     method vars {} {
         return [array get histVars]
     }

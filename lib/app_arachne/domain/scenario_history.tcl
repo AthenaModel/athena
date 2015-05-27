@@ -61,20 +61,87 @@ smarturl /scenario /{case}/history/index.json {
 }
 
 smarturl /scenario /{case}/history/{var}/index.html {
-    Retrieves history from {case} for neighborhood control.
+    Retrieves history request form for {case} for history 
+    variable {var}.
 } {
     switch -exact -- $var {
         control    -
         nbmood     -
-        volatility -
-        plant_n    -
+        nbur       -
         npop       -
-        nbur {
-            return [my NbhoodVarHtml $case $var]
+        plant_n    -
+        volatility {
+            return [my NbhoodHistHtml $case $var]
+        }
+
+        mood -
+        pop    {
+            return [my GroupHistHtml $case $var -gtypes CIV]
+        }
+
+        plant_na -
+        support  {
+            return [my NbhoodActorHistHtml $case $var]
+        } 
+
+        aam_battle {
+            return [my BattleHistHtml $case]
+        }
+
+        activity_nga {
+            return [my ActivityHistHtml $case]
+        }
+
+        coop {
+            return [my GroupsHistHtml $case $var -gtypes1 CIV -gtypes2 FRC]
+        }
+
+        deploy_ng {
+            return [my NbhoodGroupHistHtml $case $var -gtypes {FRC ORG}]
+        }
+
+        econ {
+            return [my EconHistHtml $case]
+        }
+
+        flow {
+            return [my GroupsHistHtml $case $var -gtypes1 CIV -gtypes2 CIV]
+        }
+
+        hrel {
+            return [my GroupsHistHtml $case $var]
+        }
+
+        nbcoop {
+            return [my NbhoodGroupHistHtml $case $var -gtypes FRC]
+        }
+
+        nbsat {
+            return [my NbhoodHistHtml $case $var -concerns 1]
+        }
+
+        plant_a {
+            return [my ActorHistHtml $case $var]
+        }
+
+        sat {
+            return [my GroupHistHtml $case $var -gtypes CIV -concerns 1]
+        }
+
+        security {
+            return [my NbhoodGroupHistHtml $case $var]
+        }
+
+        service_sg {
+            return [my ServiceHistHtml $case]
+        }
+
+        vrel {
+            return [my VrelHistHtml $case]
         }
 
         default {
-            return [my UnsupportedVarHtml $case $var]
+            return [my UnsupportedHistHtml $case $var]
         }        
     }
 }
@@ -85,11 +152,77 @@ smarturl /scenario /{case}/history/{var}/index.json {
     switch -exact -- $var {
         control    -
         nbmood     -
-        volatility -
-        plant_n    -
+        nbur       -
         npop       -
-        nbur {
-            my NbhoodVarJson $case $var
+        plant_n    -
+        volatility {
+            my NbhoodHistJson $case $var
+        }
+
+        mood -
+        pop    {
+            my NbhoodGroupHistJson $case $var -gtypes CIV
+        }
+
+        plant_na -
+        support  {
+            my NbhoodActorHistJson $case $var
+        }
+
+        aam_battle {
+            my BattleHistJson $case
+        }
+
+        activity_nga {
+            my ActivityHistJson $case
+        }
+
+        coop {
+            my GroupsHistJson $case $var -gtypes1 CIV -gtypes2 FRC
+        }
+
+        deploy_ng {
+            my NbhoodGroupHistJson $case $var -gtypes {FRC ORG}
+        }
+
+        econ {
+            my EconHistJson $case
+        }
+
+        flow {
+            my GroupsHistJson $case $var -gtypes1 CIV -gtypes2 CIV
+        }
+
+        hrel {
+            my GroupsHistJson $case $var
+        }
+
+        nbcoop {
+            my NbhoodGroupHistJson $case $var -gtypes FRC
+        }
+
+        nbsat {
+            my NbhoodHistJson $case $var -concerns 1
+        }
+
+        plant_a {
+            my ActorHistJson $case $var
+        }
+
+        sat {
+            my GroupHistJson $case $var -gtypes CIV -concerns 1
+        }
+
+        security {
+            my NbhoodGroupHistJson $case $var
+        }
+
+        service_sg {
+            my ServiceHistJson $case
+        }
+
+        vrel {
+            my VrelHistJson $case
         }
 
         default {

@@ -159,6 +159,7 @@ snit::type ::athena::athena {
     delegate method {actor validate}        to adb as {actor validate}
     delegate method {actor view}            to adb as {actor view}
     
+    delegate method {activity names}        to adb as {activity names}
     
     delegate method {agent exists}          to adb as {agent exists}
     delegate method {agent names}           to adb as {agent names}
