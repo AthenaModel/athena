@@ -81,6 +81,19 @@ signficant) as a top-level significant output.  Note that a variable
 can be both a top-level significant output and a significant input to
 another variable.<p>
 
+<defitem contribs {<i obj> contribs <i subcommand> <i keys...>}>
+
+Determines contributions by driver for the curve indicated by the 
+subcommand and keys (e.g., <tt mood> and a civilian group name; 
+see <xref mars:uram(n)>'s <xref mars:uram(n) contrib> subcommand).
+Returns a flat list <tt>{<i drid> <i val1> <i val2> ...}</tt> of the
+contributions made by the driver in each scenario.<p>
+
+The driver ID used, <i drid>, is an ID consisting of the driver's type
+(the rule set name) and signature tokens joined together with "/", e.g.,
+"ENI/SUNN" (effect of ENI on group SUNN) or "PATROL/NB1/BLUE" (effect of
+patrolling by force group BLUE in neighborhood NB1).<p>
+
 <defitem diffs {<i obj> diffs <i subcommand> ?<i args...>?}>
 
 Asks for the set of significant differences; the <i subcommand> determines
@@ -109,6 +122,13 @@ output includes only the top-level differences.<p>
 
 </deflist diffs>
 
+<defitem explain {<i obj> explain <i varname>}>
+
+Computes an explanation of the significant difference in variable
+<i varname>. <b TBD>: prototype code.  At present, it simply drills
+one level down on the variable and returns the significant inputs, if 
+any.  If the named variable isn't significant, returns nothing.<p>
+
 <defitem getbytype {<i obj> getbytype ?-toplevel?}>
 
 Returns a dictionary of lists of the known <xref vardiff(n)> objects
@@ -117,8 +137,8 @@ output includes only the top-level differences.<p>
 
 <defitem getdiff {<i obj> getdiff <i name>}>
 
-Given a variable name, returns the variable's <xref vardiff(n)> object.
-It's an error if the variable has no <xref vardiff(n)> in the comparison.<p>
+Given a variable name, returns the variable's <xref vardiff(n)> object,
+or "" if none.<p>
 
 <defitem list {<i obj> list ?-toplevel?}>
 

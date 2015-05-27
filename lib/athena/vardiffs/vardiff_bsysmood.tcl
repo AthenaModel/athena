@@ -22,7 +22,7 @@ oo::class create ::athena::vardiff::bsysmood {
     }
 
     method significant {} {
-        set lim 20.0 ;# TBD: Need parameter
+        set lim [athena::compdb get [my type].limit]
 
         expr {[my score] >= $lim}
     }

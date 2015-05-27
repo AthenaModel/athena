@@ -42,7 +42,10 @@ snit::type ::athena::differencer {
     # compatible.
 
     typemethod diff {s1 args} {
-        # FIRST, get the scenarios.
+        # FIRST, initialize the compdb(n) module, just in case.
+        athena::compdb init
+
+        # NEXT, get the scenarios.
         if {![string match "-*" [lindex $args 0]]} {
             set s2 [lshift args]
         } else {
@@ -97,41 +100,25 @@ snit::type ::athena::differencer {
     # Queries history to identify significant outputs.
 
     typemethod FindDiffs {comp} {
-        set cdb [sqldocument %AUTO -readonly yes]
-        $cdb open :memory:
-
-        set db1 [$comp s1 rdbfile]
-        set db2 [$comp s2 rdbfile]
-        set t1  [$comp t1]
-        set t2  [$comp t2]
-
-        $cdb eval {
-            ATTACH $db1 AS s1;
-            ATTACH $db2 AS s2;
-        }
-
-        $type CompareNbhoodOutputs    $comp $cdb
-        $type CompareAttitudeOutputs  $comp $cdb
-        $type ComparePoliticalOutputs $comp $cdb
-        $type CompareEconomicOutputs  $comp $cdb
-
-        $cdb destroy
+        $type CompareNbhoodOutputs    $comp
+        $type CompareAttitudeOutputs  $comp
+        $type ComparePoliticalOutputs $comp
+        $type CompareEconomicOutputs  $comp
     }
 
-    # CompareNbhoodOutputs comp cdb
+    # CompareNbhoodOutputs comp
     #
     # comp   - A comparison object
-    # cdb    - The comparison sqldocument(n)
     #
     # This method compares neighborhood specific data for two scenarios
     # or one scenario at different times.
 
-    typemethod CompareNbhoodOutputs {comp cdb} {
+    typemethod CompareNbhoodOutputs {comp} {
         set t1 [$comp t1]
         set t2 [$comp t2]
 
         # FIRST, mood, security and control by nbhood
-        $cdb eval {
+        $comp eval {
             SELECT H1.n          AS n,
                    H1.nbsecurity AS nbsec1,
                    H1.a          AS a1,
@@ -164,7 +151,7 @@ snit::type ::athena::differencer {
         }
     }
 
-    # CompareAttitudeOutputs comp cdb
+    # CompareAttitudeOutputs comp
     #
     # comp    - A comparison object
     # cdb     - The comparison sqldocument(n)
@@ -172,12 +159,12 @@ snit::type ::athena::differencer {
     # This method compares attitudes of civilian groups for two scenarios
     # or one scenario at different times.
 
-    typemethod CompareAttitudeOutputs {comp cdb} {
+    typemethod CompareAttitudeOutputs {comp} {
         set t1 [$comp t1]
         set t2 [$comp t2]
 
         # FIRST, CIV mood by group
-        $cdb eval {
+        $comp eval {
             SELECT H1.g         AS g,
                    H1.mood      AS mood1,
                    H2.mood      AS mood2
@@ -189,7 +176,7 @@ snit::type ::athena::differencer {
         }
 
         # NEXT, CIV satisfaction by group and concern
-        $cdb eval {
+        $comp eval {
             SELECT H1.g         AS g,
                    H1.c         AS c,
                    H1.sat       AS sat1,
@@ -242,7 +229,7 @@ snit::type ::athena::differencer {
         $comp addtop pbmood $pbm1 $pbm2 local
 
         # NEXT, vertical relationship 
-        $cdb eval {
+        $comp eval {
             SELECT H1.g    AS g,
                    H1.a    AS a,
                    H1.vrel AS vrel1,
@@ -256,7 +243,7 @@ snit::type ::athena::differencer {
         }
     }
 
-    # ComparePoliticalOutputs comp cdb
+    # ComparePoliticalOutputs comp
     # 
     # comp    - A comparison object
     # cdb     - A comparison sqldocument(n)
@@ -264,7 +251,7 @@ snit::type ::athena::differencer {
     # This method compares certain political outputs for two scenarios
     # or for one scenario at different times.
 
-    typemethod ComparePoliticalOutputs {comp cdb} {
+    typemethod ComparePoliticalOutputs {comp} {
         set t1 [$comp t1]
         set t2 [$comp t2]
 
@@ -278,7 +265,7 @@ snit::type ::athena::differencer {
         }
 
         # NEXT, influence and support by neighborhood and actor
-        $cdb eval {
+        $comp eval {
             SELECT H1.n         AS n,
                    H1.a         AS a,
                    H1.support   AS support1,
@@ -302,11 +289,11 @@ snit::type ::athena::differencer {
         }
 
         foreach n [$comp s1 nbhood names] {
-            $comp addtop influence [dict get $i1 $n] [dict get $i2 $n] $n
+            $comp addtop nbinfluence [dict get $i1 $n] [dict get $i2 $n] $n
         }
     }
 
-    # CompareEconomicOutputs comp cdb
+    # CompareEconomicOutputs comp
     #
     # comp    - A comparison object
     # cdb     - A comparsion sqldocument(n)
@@ -314,12 +301,12 @@ snit::type ::athena::differencer {
     # This method compares certain economic model outputs for two
     # scenarios or for one scenario at different times.
     
-    typemethod CompareEconomicOutputs {comp cdb} {
+    typemethod CompareEconomicOutputs {comp} {
         set t1 [$comp t1]
         set t2 [$comp t2]
 
         # FIRST, GOODS production capacity by nbhood
-        $cdb eval {
+        $comp eval {
             SELECT H1.n         AS n,
                    H1.cap       AS cap1,
                    H2.cap       AS cap2
@@ -331,7 +318,7 @@ snit::type ::athena::differencer {
         }
 
         # NEXT, GDP
-        $cdb eval {
+        $comp eval {
             SELECT H1.dgdp     AS gdp1,
                    H2.dgdp     AS gdp2
             FROM s1.hist_econ AS H1
@@ -342,7 +329,7 @@ snit::type ::athena::differencer {
         }
 
         # NEXT, Playbox unemployment rate
-        $cdb eval {
+        $comp eval {
             SELECT H1.ur      AS ur1,
                    H2.ur      AS ur2
             FROM s1.hist_econ AS H1
@@ -353,7 +340,7 @@ snit::type ::athena::differencer {
         }
 
         # NEXT, Nbhood unemployment rate
-        $cdb eval {
+        $comp eval {
             SELECT H1.n       AS n,
                    H1.ur      AS ur1,
                    H2.ur      AS ur2

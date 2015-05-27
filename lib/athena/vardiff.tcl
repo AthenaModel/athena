@@ -15,10 +15,12 @@ oo::class create ::athena::vardiff {
     meta category "???"  ;# PMESII category is undefined; subclasses should
                           # override.
 
-    variable comp    ;# comparison object
-    variable keydict ;# Key dictionary
-    variable val1    ;# Value from case 1
-    variable val2    ;# Value from case 2
+    variable comp     ;# comparison object
+    variable keydict  ;# Key dictionary
+    variable val1     ;# Value from case 1
+    variable val2     ;# Value from case 2
+    variable gotdiffs ;# 1 if we've computed diffs, and 0 otherwise.
+    variable diffs    ;# List of vardiffs of significant inputs.
 
     # constructor comp_ keydict_ val1_ val2_
     #
@@ -32,10 +34,12 @@ oo::class create ::athena::vardiff {
     # Saves the inputs into instance variables.
 
     constructor {comp_ keydict_ val1_ val2_} {
-        set comp    $comp_
-        set keydict $keydict_
-        set val1    $val1_
-        set val2    $val2_
+        set comp     $comp_
+        set keydict  $keydict_
+        set val1     $val1_
+        set val2     $val2_
+        set gotdiffs 0
+        set diffs    [list]
     }
 
     # name
@@ -191,10 +195,43 @@ oo::class create ::athena::vardiff {
     # Computes vardiffs for significant differences in variable
     # inputs, adding them to the comparison object, and returns
     # a list of them.
-    #
-    # Subclasses this override this if necessary.
 
     method diffs {} {
+        if {!$gotdiffs} {
+            my FindDiffs
+            set gotdiffs 1
+        }
+
+        return $diffs
+    }
+
+    # FindDiffs
+    #
+    # Subclasses should override this if drilling down is possible.
+
+    method FindDiffs {} {
         return
     }
+
+
+    # diffadd vartype val1 val2 keys...
+    #
+    # vartype  - A vardiff type.
+    # val1     - The value from s1/t1
+    # val2     - The value from s2/t2
+    # keys...  - Key values for the vardiff class
+    #
+    # Given a vardiff type and a pair of values, saves a significant output
+    # diff if the difference between the two values is significant.  
+    #
+    # Returns the diff if it was significant, and "" otherwise. 
+
+    method diffadd {vartype val1 val2 args} {
+        set diff [$comp add $vartype $val1 $val2 {*}$args]
+
+        if {$diff ne ""} {
+            ladd diffs $diff
+        }
+    }
+
 }

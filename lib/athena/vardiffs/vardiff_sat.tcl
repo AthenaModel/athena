@@ -22,7 +22,7 @@ oo::class create ::athena::vardiff::sat {
     }
 
     method significant {} {
-        set lim 25.0 ;# TBD: Need parameter
+        set lim [athena::compdb get [my type].limit]
 
         expr {[my score] >= $lim}
     }
@@ -37,5 +37,24 @@ oo::class create ::athena::vardiff::sat {
 
     method score {} {
         format "%.1f" [next]
+    }
+
+    #-------------------------------------------------------------------
+    # Input Differences
+
+
+    method FindDiffs {} {
+        variable comp
+
+        set g [my key g]
+        set c [my key c]
+
+        # FIRST, get the contributions
+        foreach {drid val1 val2} [$comp contribs sat $g $c] {
+            my diffadd driversat $val1 $val2 $g $c $drid
+        }
+
+        # NEXT, for SFT only, get security changes.
+        # TBD: No vardiff for group security yet.
     }
 }

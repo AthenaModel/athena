@@ -1,0 +1,52 @@
+<manpage compdb(5) "Athena Scenario Comparison Parameter Definitions">
+
+<section SYNOPSIS>
+
+<expand [project tclsh {
+    package require athena
+    ::athena::compdb init
+    ::athena::compdb manlinks
+}]>
+
+<section DESCRIPTION>
+
+compdb(5) defines the parameters that govern the comparison of two
+<xref athena(n)> scenarios.<p>
+
+<xref compdb(n)> handles compdb(5) files using the <xref mars:parmset(n)>
+mechanism.  A valid file consists of zero or more parameter settings,
+each of which has this basic syntax,<p>
+
+<pre>parm <i>name</i> <i>value</i></pre><p>
+
+where <i>value</i> must be quoted if it contains whitespace.  See
+<xref mars:parmset(n)> for more details.<p>
+
+<section PARAMETERS>
+
+The valid parameters are as follows:<p>
+<expand [project tclsh {
+    package require athena
+    ::athena::compdb init
+    ::athena::compdb manpage
+}]>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+
+
+
+
+
+

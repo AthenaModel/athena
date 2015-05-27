@@ -139,6 +139,13 @@ See <xref "NOTIFIER EVENTS"> for more details.<p>
 
 </deflist options>
 
+<defitem "athena compdb" {athena compdb <i subcommand> ?<i args...>?}>
+
+Provides access to the parameters that govern the scenario comparisons
+performed by <iref athena diff>.  See <xref compdb(5)> for the parameters
+and <xref compdb(n)> for the subcommands.<p>
+
+
 <defitem "athena diff" {athena diff <i s1> ?<i s2>? ?<i options...>?}>
 
 Compares two scenarios (or one scenario with itself at different 

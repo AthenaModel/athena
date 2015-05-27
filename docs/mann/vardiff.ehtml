@@ -81,20 +81,33 @@ the formatted values are symbolic and the raw values are numeric, this
 might return something like "<tt><i val1> vs. <i val2></tt>".  Defaults
 to "<tt>n/a</tt>".<p>
 
+<defitem diffadd {<i obj> diffadd <i vartype val1 val2 keys...>}>
+Given a vardiff(n) type, a pair of values, and the variable keys, checks
+whether the two values are significantly different and if so saves a
+vardiff object for them.  This is intended to be used each subclass's
+<iref FindDiffs> method.<p>
+
 <defitem different {<i obj> different}>
 
 Returns 1 if <iref val1> and <iref val2> are different, i.e., not <b eq>.<p>
 
 <defitem diffs {<i obj> diffs}>
 
-<b Subclasses should override this method as needed.>
 Compares the inputs to the variable across the two scenarios,
-and returns a list of vardiff objects representing the significant 
-differences.  The differences are also added to the <xref comparison(n)>
+and returns a (possibly empty) list of vardiff objects representing 
+the significant differences.  The differences are also added to the 
+<xref comparison(n)> object.<p>
+
+The results are cached and returned on subsequent calls.<p>
+
+<defitem FindDiffs {<i obj> FindDiffs}>
+
+<b Private. Subclasses should override this method as needed.>
+Compares the inputs to the variable across the two scenarios,
+and adds possible differences using <iref diffadd>.
+The differences are also added to the <xref comparison(n)>
 object.  This is used when drilling down to provide an explanation of 
 a particular difference.<p>
-
-By default, returns the empty list.<p>
 
 <defitem fmt1 {<i obj> fmt1}>
 
@@ -108,7 +121,7 @@ Returns the formatted value of the variable in the second scenario.<p>
 
 <b Subclasses should override this method as needed.>
 Given a <i value> of the variable's type, formats it for display.  By 
-default, returns <i value> unchanged.
+default, returns <i value> unchanged.<p>
 
 <defitem key {<i obj> key <i name>}>
 

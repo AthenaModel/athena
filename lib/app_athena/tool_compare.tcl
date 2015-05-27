@@ -35,6 +35,8 @@ tool define COMPARE {
     Options:
 
     -format dump|json  - Output format
+    -vars list         - List of variable names to explain.
+    -set parm=value    - Set a compdb(5) parameter value.
 } {
     #-------------------------------------------------------------------
     # Execution 
@@ -61,16 +63,31 @@ tool define COMPARE {
         # options
         array set opts {
             -format dump
+            -vars   {}
         }
 
-        foroption opt argv -all {
-            -format {
-                set opts(-format) [lshift argv]
-                if {$opts(-format) ni {dump json}} {
-                    throw FATAL \
-                        "Invalid -format value, \"$opts(-format)\""
+        athena compdb init
+        try {
+            foroption opt argv -all {
+                -format {
+                    set opts(-format) [lshift argv]
+                    if {$opts(-format) ni {dump json}} {
+                        throw INVALID \
+                            "Invalid -format value, \"$opts(-format)\""
+                    }
                 }
-            }
+                -vars {
+                    set opts(-vars) [lshift argv]
+                }
+                -set {
+                    lassign [split [lshift argv] =] parm value
+                    athena compdb validate $parm
+                    athena compdb set $parm $value
+                    puts "$parm = $value"
+                }
+            }            
+        } on error {result} {
+            throw FATAL $result
         }
 
         # NEXT, get the scenario objects.
@@ -85,6 +102,10 @@ tool define COMPARE {
         # NEXT, look for differences
         try {
             set comp [athena diff $s1 $s2]
+
+            foreach var $opts(-vars) {
+                $comp explain $var
+            }
         } trap {ATHENA INCOMPARABLE} {result} {
             throw FATAL $result
         }
@@ -93,6 +114,8 @@ tool define COMPARE {
         set t1 [$comp t1]
         set t2 [$comp t2]
 
+        puts ""
+        
         if {$s1 eq $s2} {
             puts "Differences in $fname1 between week $t1 and week $t2:"
         } else {
@@ -102,7 +125,7 @@ tool define COMPARE {
         puts ""
 
         # NEXT, output to console.
-        puts [$comp diffs $opts(-format) -toplevel]
+        puts [$comp diffs $opts(-format)]
 
         $comp destroy
     }

@@ -1,5 +1,8 @@
 # TODO.md - Athena TODO List
 
+- Compdb(n):
+  - Use *.active in differencer, FindDiffs, to control whether comparisons
+    are done.
 - Arachne
   - Consider smartdomain look ups using a dict tree: split the url into
     components and just follow them down the tree, accumulating place

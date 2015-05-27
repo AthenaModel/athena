@@ -23,7 +23,7 @@ oo::class create ::athena::vardiff::nbsecurity {
     }
 
     method significant {} {
-        set lim 20 ;# TBD: Need parm
+        set lim [athena::compdb get [my type].limit]
 
         set sym1 [qsecurity name [my val1]]
         set sym2 [qsecurity name [my val2]]

@@ -22,7 +22,7 @@ oo::class create ::athena::vardiff::mood {
     }
 
     method significant {} {
-        set lim 20.0 ;# TBD: Need parameter
+        set lim [athena::compdb get [my type].limit]
 
         expr {[my score] >= $lim}
     }
@@ -37,5 +37,45 @@ oo::class create ::athena::vardiff::mood {
 
     method score {} {
         format "%.1f" [next]
+    }
+
+    #-------------------------------------------------------------------
+    # Input Differences
+    
+
+    method FindDiffs {} {
+        variable comp
+
+        set g [my key g]
+
+        # FIRST, get the satisfaction inputs.
+        $comp eval {
+            SELECT H1.c    AS c,
+                   H1.sat  AS sat1,
+                   H2.sat  AS sat2
+            FROM s1.hist_sat_raw AS H1
+            JOIN s2.hist_sat_raw AS H2
+            ON (H1.g = H2.g AND H1.c = H2.c AND H1.t = t1() AND H2.t = t2())
+            WHERE H1.g = $g;
+        } {
+            my diffadd sat $sat1 $sat2 $g $c
+        }
+
+        # NEXT, get the population inputs
+        $comp eval {
+            SELECT H1.population AS pop1,
+                   H2.population AS pop2
+            FROM s1.hist_civg AS H1
+            JOIN s2.hist_civg AS H2
+            ON (H1.g = H2.g AND H1.t = t1() AND H2.t = t2())
+            WHERE H1.g = $g;
+        } {
+            my diffadd population $pop1 $pop2 $g
+        }
+
+        # NEXT, get the contributions
+        foreach {drid val1 val2} [$comp contribs mood $g] {
+            my diffadd drivermood $val1 $val2 $g $drid
+        }
     }
 }

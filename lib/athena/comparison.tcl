@@ -35,6 +35,7 @@ snit::type ::athena::comparison {
     variable t1           ;# Time 1
     variable s2           ;# Scenario 2
     variable t2           ;# Time 2
+    variable cdb          ;# Comparison database
     variable byname {}    ;# Dictionary of differences by varname
     variable toplevel {}  ;# List of toplevel vardiff objects. 
 
@@ -42,23 +43,46 @@ snit::type ::athena::comparison {
     # Constructor
     
     constructor {s1_ t1_ s2_ t2_} {
+        # FIRST, save the constructor arguments.
         set s1 $s1_
         set t1 $t1_
         set s2 $s2_
         set t2 $t2_
-        set byname   [dict create]
-        set toplevel [list]
 
+        # NEXT, make sure comparison is possible.
         if {$s1 ne $s2} {
             $self CheckCompatibility
         }
+
+
+        # NEXT, create the CDB.
+        set cdb [sqldocument %AUTO -readonly yes]
+        $cdb open :memory:
+        $cdb function t1 [mymethod t1]
+        $cdb function t2 [mymethod t2]
+
+        set db1 [$s1 rdbfile]
+        set db2 [$s2 rdbfile]
+
+        $cdb eval {
+            ATTACH $db1 AS s1;
+            ATTACH $db2 AS s2;            
+        }
+
+        # NEXT, initialize the vardiff cache.
+        set byname   [dict create]
+        set toplevel [list]
     }
 
     destructor {
         # Destroy the difference objects.
         $self reset
+        catch {$cdb destroy}
     }
 
+    #-------------------------------------------------------------------
+    # Private Routines
+    
     # CheckCompatibility
     #
     # Determine whether the two scenarios are sufficiently similar that
@@ -98,6 +122,12 @@ snit::type ::athena::comparison {
                 "Scenarios not comparable: different belief systems."
         }
     }
+
+    #-------------------------------------------------------------------
+    # Public Methods
+
+    delegate method eval to cdb
+    
 
     # addtop vartype val1 val2 keys...
     #
@@ -182,6 +212,28 @@ snit::type ::athena::comparison {
     }
 
     #-------------------------------------------------------------------
+    # Explain a variable
+
+    # explain varname
+    #
+    # varname    - A vardiff name
+    #
+    # Drills down to explain the difference in the varname.
+    #
+    # TBD: For now, one level of drill down!
+
+    method explain {varname} {
+        set diff [$self getdiff $varname]
+
+        if {$diff ne ""} {
+            return [$diff diffs]
+        } else {
+            return [list]
+        }
+    }
+    
+
+    #-------------------------------------------------------------------
     # Queries
     
 
@@ -242,11 +294,14 @@ snit::type ::athena::comparison {
     #
     # name   - A vardiff object name
     #
-    # Returns the vardiff object given its name.  It's an error if
-    # there is no vardiff with that name.
+    # Returns the vardiff object given its name, or "" if none.
 
     method getdiff {name} {
-        return [dict get byname $name]
+        if {[dict exists $byname $name]}{
+            return [dict get $byname $name]
+        } else {
+            return ""
+        }
     }
 
     # getbytype ?-toplevel?
@@ -260,6 +315,59 @@ snit::type ::athena::comparison {
 
         foreach diff [$self list $opt] {
             dict lappend result [$diff type] $diff
+        }
+
+        return $result
+    }
+
+    # contribs sub keys...
+    #
+    # Calls the contribs command for both scenarios, retrieving the
+    # contributions for the given contribs subcommand (e.g., mood)
+    # and the given keys.  Looks up the DRID for each driver.  Returns
+    # a flat list {drid val1 val2 ...}, where the value is 0 if the
+    # driver is undefined for one scenario.
+
+    method contribs {sub args} {
+        # FIRST, get the scenario 1 contribs
+        $s1 contribs $sub {*}$args -start 0 -end $t1
+
+        $s1 eval {
+            SELECT driver_id, contrib, dtype, signature
+            FROM uram_contribs AS U
+            JOIN drivers AS D
+            ON (U.driver = D.driver_id)
+        } {
+            set drid $dtype/[join $signature /]
+            set c($drid) $contrib
+        }
+
+        # NEXT, get the scenario 2 contribs
+        $s2 contribs $sub {*}$args -start 0 -end $t2
+
+        $s2 eval {
+            SELECT driver_id, contrib, dtype, signature
+            FROM uram_contribs AS U
+            JOIN drivers AS D
+            ON (U.driver = D.driver_id)
+        } {
+            set drid $dtype/[join $signature /]
+            if {[info exists c($drid)]} {
+                lappend c($drid) $contrib                
+            }  else {
+                set c($drid) [list 0.0 $contrib]
+            }
+        }
+
+        # NEXT, build and return the list
+        set result [list]
+
+        foreach drid [array names c] {
+            if {[llength $c($drid)] == 2} {
+                lappend result $drid {*}$c($drid)
+            } else {
+                lappend result $drid $c($drid) 0.0
+            }
         }
 
         return $result

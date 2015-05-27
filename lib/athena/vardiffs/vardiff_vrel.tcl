@@ -22,7 +22,7 @@ oo::class create ::athena::vardiff::vrel {
     }
 
     method significant {} {
-        set lim 0.2 ;# TBD: Need parameter
+        set lim [athena::compdb get [my type].limit]
 
         expr {[my score] >= $lim}
     }
