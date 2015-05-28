@@ -18,670 +18,636 @@
 #-----------------------------------------------------------------------
 oo::define /scenario {
 
-    # HistoryBanner case var
-    #
-    # case    - an Arachne case
-    # var     - a history variable
-    #
-    # This method generate boilerplate common to all history request
-    # pages.
-
-    method HistoryBanner {case var} {
-        set case [my ValidateCase $case]
-
-        # FIRST, begin the page
-        hb page "Scenario '$case': History for [string toupper $var]"
-        hb h1 "Scenario '$case': History for [string toupper $var]"
-
-        my CaseNavBar $case
+    metadict histvar {
+        plant_a      HistActor
+        control      HistNbhood
+        nbmood       HistNbhood
+        nbur         HistNbhood
+        npop         HistNbhood
+        plant_n      HistNbhood
+        volatility   HistNbhood 
+        mood         HistCivGroup
+        pop          HistCivGroup
+        sat          HistSat
+        deploy_ng    HistDeployNg
+        nbcoop       HistNbCoop
+        security     HistSecurity
+        coop         HistCoop
+        flow         HistFlow
+        plant_na     HistNbhoodActor
+        support      HistNbhoodActor
+        hrel         HistHrel
+        nbsat        HistNbSat
+        service_sg   HistService
+        vrel         HistVrel
+        econ         HistEcon
+        aam_battle   HistBattle 
+        activity_nga HistActivity
     }
 
-    # HistActorHtml case var
+    # HistActor content case var
     #
+    # content - html | json
     # case   - an Arachne case
     # var    - a history variable with an actor for the key
     #
     # This method generates a history request page for an Athena history
-    # variable indexed by actor.
+    # variable keyed to actor.
 
-    method HistActorHtml {case var} {
-        my HistoryBanner $case $var
+    method HistActor {content case var} {
+        if {$content eq "html"} {
+            hb form {
+                my ActorForm $case
+                hb para
+                my TimeSpanForm $case $var
+            }
+        } else {
+            set actors [list  ALL {*}[case with $case actor names]]
+            set a [qdict prepare a -toupper -default ALL -in $actors]
 
-        hb form 
+            # NEXT, validate time parms
+            if {![my ValidateTimes]} {
+                return [js reject [qdict errors]]
+            }
 
-        my ActorForm $case
-        hb para
-        my TimeSpanForm $case $var
-               
-        hb /form
-
-        return [hb /page]        
+            # NEXT, get JSON and redirect
+            my JSONQuery $case $var {a}            
+        }       
     }
 
-    # HistActorJson case var
+    # HistNbhood content case var
     #
-    # case   - an Arachne case
-    # var    - a history variable with actor for the key
+    # content - html | json
+    # case    - an Arachne case
+    # var     - a history variable with nbhood for the key
     #
-    # This method extracts pertinent data from the qdict and validates it.
-    # If it's valid, history data is extracted and returned as JSON.
+    # This method either generates an HTML form for a nbhood history variable
+    # or returns the history as JSON.
 
-    method HistActorJson {case var} {
-        set actors [list  ALL {*}[case with $case actor names]]
-        set a [qdict prepare a -toupper -default ALL -in $actors]
+    method HistNbhood {content case var} {
+        if {$content eq "html"} {
+            hb form {
+                my NbhoodForm $case
+                hb para
+                my TimeSpanForm $case $var
+            }
+        } else {
+            # NEXT, validate nbhood
+            set nbhoods [list ALL {*}[case with $case nbhood names]]
+            set n [qdict prepare n -toupper -default ALL -in $nbhoods]
+            lappend keys n
 
-        # NEXT, validate time parms
-        if {![my ValidateTimes]} {
-            return [js reject [qdict errors]]
-        }
+            # NEXT, validate time parms
+            if {![my ValidateTimes]} {
+                return [js reject [qdict errors]]
+            }
 
-        # NEXT, get JSON and redirect
-        my JSONQuery $case $var {a}             
+            # NEXT, construct the query
+            my JSONQuery $case $var n             
+        }        
     }
 
-    # HistNbhoodHtml case var ?args?
+    # HistNbSat content case var
     #
-    # case   - an Arachne case
-    # var    - a history variable with nbhood for the key
-    # args   - optional args
+    # content - html | json
+    # case    - an Arachne case
+    # var     - a history variable with nbhood for the key
     #
-    # This method generates a form for a nbhood history variable so the
-    # user can pick a neighborhood (or ALL) and start and end times to
-    # extract the data.  If the -concerns option is set to 1, a "concerns"
-    # form is output.
+    # This method either generates an HTML form for a nbhood sat history 
+    # variable or returns the history as JSON.
 
-    method HistNbhoodHtml {case var args} {
-        set concerns 0
+    method HistNbSat {content case var} {
+        if {$content eq "html"} {
+            hb form {
+                my NbhoodForm $case
+                hb para
+                my ConcernForm
+                hb para
+                my TimeSpanForm $case $var
+            }
+        } else {
+            # NEXT, validate nbhood
+            set nbhoods [list ALL {*}[case with $case nbhood names]]
+            set n [qdict prepare n -toupper -default ALL -in $nbhoods]
+            lappend keys n
 
-        foroption opt args -all {
-            -concerns { set concerns [lshift args] }
-        } 
-
-        my HistoryBanner $case $var
-
-        hb form
-
-        my NbhoodForm $case
-        hb para
-
-        if {$concerns} {
-            my ConcernForm
-            hb para
-        }
-
-        my TimeSpanForm $case $var
-
-        hb /form
-
-        return [hb /page]        
-    }
-
-    # HistNbhoodJson case var args
-    #
-    # case   - an Arachne case
-    # var    - a history variable with nbhood (and maybe concern) for key(s).
-    # args   - optional arguments
-    #
-    # This method extracts pertinent data from the qdict and validates it.
-    # If it's valid, history data is extracted and returned as JSON.
-    #
-    # Options:
-    #   -concerns  - set to 1, concerns are part of the qdict 
-
-    method HistNbhoodJson {case var args} {
-        set concerns 0
-
-        foroption opt args -all {
-            -concerns { set concerns [lshift args] }
-        }   
-
-        # NEXT, validate nbhood
-        set nbhoods [list ALL {*}[case with $case nbhood names]]
-        set n [qdict prepare n -toupper -default ALL -in $nbhoods]
-        lappend keys n
-
-        # NEXT, validate concern, if needed
-        if {$concerns} {
             set concerns [list ALL AUT CUL SFT QOL]
             set c [qdict prepare c -toupper -default ALL -in $concerns]
-            lappend keys c
-        }
 
-        # NEXT, validate time parms
-        if {![my ValidateTimes]} {
-            return [js reject [qdict errors]]
-        }
+            # NEXT, validate time parms
+            if {![my ValidateTimes]} {
+                return [js reject [qdict errors]]
+            }
 
-        # NEXT, construct the query
-        my JSONQuery $case $var $keys        
+            # NEXT, construct the query
+            my JSONQuery $case $var {n c}
+        }
     }
 
-    # HistNbhoodGroupHtml case var ?args?
+    # HistCivGroup content case var args
     #
+    # content - html | json
+    # case    - an Arachne case
+    # var     - a history variable
+    #
+    # This method either generates an HTML form for a CIV group history 
+    # variable or returns the history as JSON.
+
+    method HistCivGroup {content case var} {
+        if {$content eq "html"} {
+            hb form {
+                my GroupForm $case -gtypes CIV
+                hb para
+                my TimeSpanForm $case $var
+            }
+        } else {
+            set groups [list  ALL {*}[case with $case group names CIV]]
+            set g [qdict prepare g -toupper -default ALL -in $groups]
+
+            # NEXT, validate time parms
+            if {![my ValidateTimes]} {
+                return [js reject [qdict errors]]
+            }
+
+            # NEXT, get JSON and redirect
+            my JSONQuery $case $var g            
+        }  
+    }
+
+    # HistSat content case var args
+    #
+    # content - html | json
+    # case    - an Arachne case
+    # var     - a history variable
+    #
+    # This method either generates an HTML form for satisfaction history 
+    # or returns the history as JSON.
+
+    method HistSat {content case var} {
+        if {$content eq "html"} {
+            hb form {
+                my GroupForm $case -gtypes CIV
+                hb para
+                my ConcernForm
+                hb para
+                my TimeSpanForm $case $var
+            }
+        } else {
+            set groups [list  ALL {*}[case with $case group names CIV]]
+            set g [qdict prepare g -toupper -default ALL -in $groups]
+
+            set concerns [list ALL AUT CUL SFT QOL]
+            set c [qdict prepare c -toupper -default ALL -in $concerns]
+
+            # NEXT, validate time parms
+            if {![my ValidateTimes]} {
+                return [js reject [qdict errors]]
+            }
+
+            # NEXT, get JSON and redirect
+            my JSONQuery $case $var {g c}            
+        }          
+    }
+
+    # HistNbhoodGroupHtml content case var
+    #
+    # content - html | json
     # case    - an Arachne case
     # var     - a history variable with nbhood and group for the key
-    # args    - optional arguments
     #
-    # This method generates a form for inputting data to retrieve history
-    # for a variable that is keyed on nbhood and group.  For example, 
-    # neighborhood security is a variable that would have this form to get
-    # security by nbhood and group.  The -gtypes option can be used to
-    # specify which group types should be included in the groups dropdown
-    # menu. The default for -gtypes is all group types.
+    # This method either generates an HTML form for deployment history 
+    # or returns the history as JSON.
 
-    method HistNbhoodGroupHtml {case var args} {
-        # FIRST get the options
-        set gtypes {CIV FRC ORG}
+    method HistDeployNg {content case var} {
+        if {$content eq "html"} {
+            hb form {
+                my NbhoodForm $case
+                hb para
+                my GroupForm $case -gtypes {FRC ORG}
+                hb para
+                my TimeSpanForm $case $var
+            }
+        } else {
+            # NEXT, validate nbhood and group
+            set nbhoods [list ALL {*}[case with $case nbhood names]]
+            set n [qdict prepare n -toupper -default ALL -in $nbhoods]
 
-        foroption opt args -all {
-            -gtypes   { set gtypes   [lshift args] }
+            set groups [list  ALL {*}[case with $case group names {FRC ORG}]]
+            set g [qdict prepare g -toupper -default ALL -in $groups]
+
+            # NEXT, validate time parms
+            if {![my ValidateTimes]} {
+                return [js reject [qdict errors]]
+            }
+
+            # NEXT, get JSON and redirect
+            my JSONQuery $case $var {n g}            
         }
-
-        my HistoryBanner $case $var
-
-        hb form
-
-        my NbhoodForm $case
-        hb para
-        my GroupForm $case -gtypes $gtypes
-        hb para
-        my TimeSpanForm $case $var
-
-        hb /form
-
-        return [hb /page]
     }
 
-    # HistNbhoodGroupJson case var args
+    # HistNbCoop content case var
     #
-    # case   - an Arachne case
-    # var    - a history variable with nbhood and group for key(s).
-    # args   - optional arguments
+    # content - html | json
+    # case    - an Arachne case
+    # var     - a history variable with nbhood for the key
     #
-    # This method extracts pertinent data from the qdict and validates it.
-    # If it's valid, history data is extracted and returned as JSON.
-    #
-    # Options:
-    #   -gtypes  - list of group types to validate agains, defaults to all types 
+    # This method either generates an HTML form for nbhood coop history 
+    # or returns the history as JSON.
 
-    method HistNbhoodGroupJson {case var args} {
-        # FIRST get the options
-        set gtypes {CIV FRC ORG}
+    method HistNbCoop {content case var} {
+        if {$content eq "html"} {
+            hb form {
+                my NbhoodForm $case
+                hb para
+                my GroupForm $case -gtypes FRC
+                hb para
+                my TimeSpanForm $case $var
+            }
+        } else {
+            # NEXT, validate nbhood and group
+            set nbhoods [list ALL {*}[case with $case nbhood names]]
+            set n [qdict prepare n -toupper -default ALL -in $nbhoods]
 
-        foroption opt args -all {
-            -gtypes   { set gtypes   [lshift args] }
-        }   
+            set groups [list  ALL {*}[case with $case group names FRC]]
+            set g [qdict prepare g -toupper -default ALL -in $groups]
 
-        # NEXT, validate nbhood and group
-        set nbhoods [list ALL {*}[case with $case nbhood names]]
-        set n [qdict prepare n -toupper -default ALL -in $nbhoods]
+            # NEXT, validate time parms
+            if {![my ValidateTimes]} {
+                return [js reject [qdict errors]]
+            }
 
-        set groups [list  ALL {*}[case with $case group names $gtypes]]
-        set g [qdict prepare g -toupper -default ALL -in $groups]
-
-        # NEXT, validate time parms
-        if {![my ValidateTimes]} {
-            return [js reject [qdict errors]]
+            # NEXT, get JSON and redirect
+            my JSONQuery $case $var {n g}            
         }
-
-        # NEXT, get JSON and redirect
-        my JSONQuery $case $var {n g}
     }
 
-    # HistNbhoodActorHtml case var
+    # HistSecurity content case var
     #
+    # content - html | json
+    # case    - an Arachne case
+    # var     - a history variable with nbhood for the key
+    #
+    # This method either generates an HTML form for security history 
+    # or returns the history as JSON.
+
+    method HistSecurity {content case var} {
+        if {$content eq "html"} {
+            hb form {
+                my NbhoodForm $case
+                hb para
+                my GroupForm $case -gtypes {CIV FRC ORG}
+                hb para
+                my TimeSpanForm $case $var
+            }
+        } else {
+            # NEXT, validate nbhood and group
+            set nbhoods [list ALL {*}[case with $case nbhood names]]
+            set n [qdict prepare n -toupper -default ALL -in $nbhoods]
+
+            set groups [list ALL {*}[case with $case group names {CIV FRC ORG}]]
+            set g [qdict prepare g -toupper -default ALL -in $groups]
+
+            # NEXT, validate time parms
+            if {![my ValidateTimes]} {
+                return [js reject [qdict errors]]
+            }
+
+            # NEXT, get JSON and redirect
+            my JSONQuery $case $var {n g}            
+        }
+    }
+
+    # HistNbhoodActor content case var
+    #
+    # content - html | json 
     # case    - an Arachne case
     # var     - a history variable 
     #
-    # This method creates a history request page for history variables keyed
-    # on neighborhood and actor.
+    # This method either generates an HTML form for history by nbhood and 
+    # actor or returns the history as JSON.
 
-    method HistNbhoodActorHtml {case var} {
-        my HistoryBanner $case $var
+    method HistNbhoodActor {content case var} {
+        if {$content eq "html"} {
+            hb form {
+                my NbhoodForm $case
+                hb para
+                my ActorForm $case
+                hb para
+                my TimeSpanForm $case $var
+            }
+        } else {
+            set actors [list  ALL {*}[case with $case actor names]]
+            set a [qdict prepare a -toupper -default ALL -in $actors]
 
-        hb form
+            # NEXT, validate nbhood
+            set nbhoods [list ALL {*}[case with $case nbhood names]]
+            set n [qdict prepare n -toupper -default ALL -in $nbhoods]
 
-        my NbhoodForm $case
-        hb para
-        my ActorForm $case
-        hb para
-        my TimeSpanForm $case $var
+            # NEXT, validate time parms
+            if {![my ValidateTimes]} {
+                return [js reject [qdict errors]]
+            }
 
-        hb /form
-
-        return [hb /page]   
+            # NEXT, get JSON and redirect
+            my JSONQuery $case $var {n a}             
+        }   
     }
 
-    # HistNbhoodActorJson case var args
+
+    # HistCoop case var
     #
-    # case   - an Arachne case
-    # var    - a history variable with nbhood and actor for key(s).
-    #
-    # This method extracts pertinent data from the qdict and validates it.
-    # If it's valid, history data is extracted and returned as JSON.
-
-    method HistNbhoodActorJson {case var} {
-        set actors [list  ALL {*}[case with $case actor names]]
-        set a [qdict prepare a -toupper -default ALL -in $actors]
-
-        # NEXT, validate nbhood
-        set nbhoods [list ALL {*}[case with $case nbhood names]]
-        set n [qdict prepare n -toupper -default ALL -in $nbhoods]
-
-        # NEXT, validate time parms
-        if {![my ValidateTimes]} {
-            return [js reject [qdict errors]]
-        }
-
-        # NEXT, get JSON and redirect
-        my JSONQuery $case $var {n a}            
-    }
-
-    # HistGroupHtml case var args
-    #
-    # case   - an Arachne case
-    # var    - a history variable
-    # args   - optional args
-    #
-    # This method creates a history request page for history variables keyed
-    # on group.  If the -gtypes option is specified, only those group types
-    # are included in the dropdown menu.  The default for -gtypes is all
-    # group types.  If the -concerns option is set to 1, then a "concerns"
-    # menu is included.
-
-    method HistGroupHtml {case var args} {
-        # FIRST get the options
-        set gtypes   {CIV FRC ORG}
-        set concerns 0
-
-        foroption opt args -all {
-            -gtypes   { set gtypes   [lshift args] }
-            -concerns { set concerns [lshift args] }
-        }      
-
-        my HistoryBanner $case $var
-
-        hb form
-        my GroupForm $case -gtypes $gtypes
-        hb para
-
-        if {$concerns} {
-            my ConcernForm
-            hb para
-        }
-
-        my TimeSpanForm $case $var
-
-        hb /form
-
-        return [hb /page]        
-    }
-
-    # HistGroupJson case var args
-    #
-    # case   - an Arachne case
-    # var    - a history variable with nbhood and group for key(s).
-    # args   - optional arguments
-    #
-    # This method extracts pertinent data from the qdict and validates it.
-    # If it's valid, history data is extracted and returned as JSON.
-    #
-    # Options:
-    #   -gtypes   - list of group types, defaults to all types
-    #   -concerns - flag indicating whether concerns are part of the request 
-
-    method HistGroupJson {case var args} {
-        # FIRST get the options
-        set gtypes   {CIV FRC ORG}
-        set concerns 0
-
-        foroption opt args -all {
-            -gtypes   { set gtypes   [lshift args] }
-            -concerns { set concerns [lshift args] }
-        }        
-
-        set groups [list  ALL {*}[case with $case group names $gtypes]]
-        set g [qdict prepare g -toupper -default ALL -in $groups]
-        lappend keys g
-
-        if {$concerns} {
-            set concerns [list ALL AUT CUL SFT QOL]
-            set c [qdict prepare c -toupper -default ALL -in $concerns]
-            lappend keys c
-        }
-
-        # NEXT, validate time parms
-        if {![my ValidateTimes]} {
-            return [js reject [qdict errors]]
-        }
-
-        # NEXT, get JSON and redirect
-        my JSONQuery $case $var $keys        
-    }
-
-    # HistGroupsHtml case var args
-    #
+    # content - html | json
     # case    - an Arachne case
     # var     - a history variable
-    # args    - optional arguments
     #
-    # This method creates two group dropdown menus.  Optional args specify
-    # which group types should be included in the menus.  The default is
-    # all group types.
+    # This method either generates an HTML form for cooperation history
+    # or returns the history as JSON.
 
-    method HistGroupsHtml {case var args} {
-        set gtypes1 {CIV FRC ORG}
-        set gtypes2 {CIV FRC ORG}
+    method HistCoop {content case var} {
+        if {$content eq "html"} {
+            hb form {
+                my GroupForm $case -var f -gtypes CIV
+                hb para
+                my GroupForm $case -var g -gtypes FRC
+                hb para
+                my TimeSpanForm $case $var
+            }
+        } else {
+            set groups1 [list  ALL {*}[case with $case group names CIV]]
+            set f [qdict prepare f -toupper -default ALL -in $groups1]
 
-        foroption opt args -all {
-            -gtypes1 { set gtypes1 [lshift args] }
-            -gtypes2 { set gtypes2 [lshift args] }
-        } 
+            set groups2 [list  ALL {*}[case with $case group names FRC]]
+            set g [qdict prepare g -toupper -default ALL -in $groups2]
 
-        my HistoryBanner $case $var
+            # NEXT, validate time parms
+            if {![my ValidateTimes]} {
+                return [js reject [qdict errors]]
+            }
 
-        hb form
-        my GroupForm $case -var f -gtypes $gtypes1
-        hb para
-        my GroupForm $case -var g -gtypes $gtypes2
-        hb para
-        my TimeSpanForm $case $var
-
-        hb /form
-
-        return [hb /page] 
-    }
-
-    # HistGroupsJson case var args
-    #
-    # case   - an Arachne case
-    # var    - a history variable with two groups as keys 
-    # args   - optional arguments
-    #
-    # This method extracts pertinent data from the qdict and validates it.
-    # If it's valid, history data is extracted and returned as JSON.
-    #
-    # Options:
-    #   -gtypes1 - list of group types for first key, defaults to all types
-    #   -gtypes2 - list of group types for second key, default to all types 
-
-    method HistGroupsJson {case var args} {
-        # FIRST get the options
-        set gtypes1 {CIV FRC ORG}
-        set gtypes2 {CIV FRC ORG}
-
-        foroption opt args -all {
-            -gtypes1   { set gtypes1 [lshift args] }
-            -gtypes2   { set gtypes2 [lshift args] }
-        }        
-
-        set groups1 [list  ALL {*}[case with $case group names $gtypes1]]
-        set f [qdict prepare f -toupper -default ALL -in $groups1]
-
-        set groups2 [list  ALL {*}[case with $case group names $gtypes2]]
-        set g [qdict prepare g -toupper -default ALL -in $groups2]
-
-        # NEXT, validate time parms
-        if {![my ValidateTimes]} {
-            return [js reject [qdict errors]]
+            # NEXT, get JSON and redirect
+            my JSONQuery $case $var {f g}             
         }
-
-        # NEXT, get JSON and redirect
-        my JSONQuery $case $var {f g}       
     }
 
-    # HistVrelHtml case
+    # HistHrel content case var
     #
-    # case   - an Arachne case
-    # 
-    # This method returns a history request page for vertical relationship
-
-    method HistVrelHtml {case} {
-        my HistoryBanner $case "vrel"
-
-        hb form
-
-        my GroupForm $case
-        hb para
-        my ActorForm $case
-        hb para
-        my TimeSpanForm $case "vrel"
-
-        hb /form
-
-        return [hb /page]
-    }
-
-    # HistVrelJson case
-    #
-    # case  - an Arachne case
-    #
-    # This method extracts vertical relationship data from history and 
-    # returns it as JSON.
-
-    method HistVrelJson {case} {
-        set gtypes {CIV FRC ORG}
-
-        set groups [list  ALL {*}[case with $case group names $gtypes]]
-        set g [qdict prepare g -toupper -default ALL -in $groups]
-
-        set actors [list  ALL {*}[case with $case actor names]]
-        set a [qdict prepare a -toupper -default ALL -in $actors]
-
-        # NEXT, validate time parms
-        if {![my ValidateTimes]} {
-            return [js reject [qdict errors]]
-        }
-
-        # NEXT, get JSON and redirect
-        my JSONQuery $case "vrel" {g a}  
-    }
-
-    # HistEconHtml case
-    #
-    # case  - an Arachne case
-    #
-    # This method returns a history request page for econ history
-
-    method HistEconHtml {case} {
-        my HistoryBanner $case "econ"
-
-        hb form
-
-        my TimeSpanForm $case "econ"
-
-        hb /form
-
-        return [hb /page]        
-    }
-
-    # HistEconJson case
-    #
-    # case  - an Arachne case
-    #
-    # This method extracts econ history and returns it as JSON.
-    
-    method HistEconJson {case} {
-        # FIRST, validate time parms, that's all there is
-        if {![my ValidateTimes]} {
-            return [js reject [qdict errors]]
-        }
-
-        # NEXT, get JSON and redirect
-        my JSONQuery $case "econ" ""         
-    }
-
-    # HistBattleHtml case
-    #
+    # content - html | json
     # case    - an Arachne case
+    # var     - a history variable with nbhood for the key
     #
-    # This method returns a history request page for AAM battle history
+    # This method either generates an HTML form for horiz. relationshop 
+    # history or returns the history as JSON.
 
-    method HistBattleHtml {case} {
-        my HistoryBanner $case "aam battle"
+    method HistHrel {content case var} {
+        if {$content eq "html"} {
+            hb form {
+                my GroupForm $case -var f 
+                hb para
+                my GroupForm $case -var g 
+                hb para
+                my TimeSpanForm $case $var
+            }
+        } else {
+            set groups1 [list  ALL {*}[case with $case group names]]
+            set f [qdict prepare f -toupper -default ALL -in $groups1]
 
-        hb form 
+            set groups2 [list  ALL {*}[case with $case group names]]
+            set g [qdict prepare g -toupper -default ALL -in $groups2]
 
-        my NbhoodForm $case
-        hb para
-        my GroupForm $case -var f -gtypes FRC
-        hb para
-        my GroupForm $case -var g -gtypes FRC
-        hb para
+            # NEXT, validate time parms
+            if {![my ValidateTimes]} {
+                return [js reject [qdict errors]]
+            }
 
-        my TimeSpanForm $case "aam_battle"
-
-        hb /form
-
-        return [hb /page]      
-    }
-
-    # HistBattleJson case
-    #
-    # case  - an Arachne case
-    #
-    # This method extracts AAM battle history and returns it as JSON.
-
-    method HistBattleJson {case} {
-        set gtypes {FRC}
-
-        # NEXT, validate nbhood and group
-        set nbhoods [list ALL {*}[case with $case nbhood names]]
-        set n [qdict prepare n -toupper -default ALL -in $nbhoods]
-
-        set groups [list  ALL {*}[case with $case group names $gtypes]]
-        set f [qdict prepare f -toupper -default ALL -in $groups]
-
-        set groups [list  ALL {*}[case with $case group names $gtypes]]
-        set g [qdict prepare g -toupper -default ALL -in $groups]
-
-        # NEXT, validate time parms
-        if {![my ValidateTimes]} {
-            return [js reject [qdict errors]]
+            # NEXT, get JSON and redirect
+            my JSONQuery $case $var {f g}             
         }
-
-        # NEXT, get JSON and redirect
-        my JSONQuery $case "aam_battle" {n f g}  
     }
 
-    # HistActivityHtml case
+    # HistFlow content case var
     #
-    # case   - an Arachne case
+    # content - html | json
+    # case    - an Arachne case
+    # var     - a history variable with nbhood for the key
     #
-    # This method returns a history request page for group activities.
+    # This method either generates an HTML form for population flow history 
+    # or returns the history as JSON.
 
-    method HistActivityHtml {case} {
-        my HistoryBanner $case "activity"
+    method HistFlow {content case var} {
+        if {$content eq "html"} {
+            hb form {
+                my GroupForm $case -var f -gtypes CIV
+                hb para
+                my GroupForm $case -var g -gtypes CIV
+                hb para
+                my TimeSpanForm $case $var
+            }
+        } else {
+            set groups1 [list  ALL {*}[case with $case group names CIV]]
+            set f [qdict prepare f -toupper -default ALL -in $groups1]
 
+            set groups2 [list  ALL {*}[case with $case group names CIV]]
+            set g [qdict prepare g -toupper -default ALL -in $groups2]
+
+            # NEXT, validate time parms
+            if {![my ValidateTimes]} {
+                return [js reject [qdict errors]]
+            }
+
+            # NEXT, get JSON and redirect
+            my JSONQuery $case $var {f g}             
+        }
+    }
+
+    # HistVrel content case var
+    #
+    # content - html | json
+    # case    - an Arachne case
+    # var     - not used
+    # 
+    # This method either generates an HTML form for vert. relationship history 
+    # or returns the history as JSON.
+
+    method HistVrel {content case var} {
+        if {$content eq "html"} {
+            hb form {
+                my GroupForm $case
+                hb para
+                my ActorForm $case
+                hb para
+                my TimeSpanForm $case "vrel"
+            }
+        } else {
+            set groups [list  ALL {*}[case with $case group names]]
+            set g [qdict prepare g -toupper -default ALL -in $groups]
+
+            set actors [list  ALL {*}[case with $case actor names]]
+            set a [qdict prepare a -toupper -default ALL -in $actors]
+
+            # NEXT, validate time parms
+            if {![my ValidateTimes]} {
+                return [js reject [qdict errors]]
+            }
+
+            # NEXT, get JSON and redirect
+            my JSONQuery $case "vrel" {g a}
+        }
+    }
+
+    # HistEcon content case var
+    #
+    # content - html | json 
+    # case    - an Arachne case
+    # var     - not used
+    #
+    # This method either generates an HTML form for econ history 
+    # or returns the history as JSON.
+
+    method HistEcon {content case var} {
+        if {$content eq "html"} {
+            hb form {
+                my TimeSpanForm $case "econ"
+            }
+        } else {
+            if {![my ValidateTimes]} {
+                return [js reject [qdict errors]]
+            }
+
+            # NEXT, get JSON and redirect
+            my JSONQuery $case "econ" ""
+        }
+    }
+
+    # HistBattle content case var
+    #
+    # content - html | json
+    # case    - an Arachne case
+    # var     - not used
+    #
+    # This method either generates an HTML form for battle history 
+    # or returns the history as JSON.
+
+    method HistBattle {content case var} {
+        if {$content eq "html"} {
+            hb form {
+                my NbhoodForm $case
+                hb para
+                my GroupForm $case -var f -gtypes FRC
+                hb para
+                my GroupForm $case -var g -gtypes FRC
+                hb para
+
+                my TimeSpanForm $case "aam_battle"
+            }
+        } else {
+            # NEXT, validate nbhood and group
+            set nbhoods [list ALL {*}[case with $case nbhood names]]
+            set n [qdict prepare n -toupper -default ALL -in $nbhoods]
+
+            set groups [list  ALL {*}[case with $case group names FRC]]
+            set f [qdict prepare f -toupper -default ALL -in $groups]
+
+            set groups [list  ALL {*}[case with $case group names FRC]]
+            set g [qdict prepare g -toupper -default ALL -in $groups]
+
+            # NEXT, validate time parms
+            if {![my ValidateTimes]} {
+                return [js reject [qdict errors]]
+            }
+
+            # NEXT, get JSON and redirect
+            my JSONQuery $case "aam_battle" {n f g}
+        }
+    }
+
+    # HistActivity content case var
+    #
+    # content - html | json
+    # case    - an Arachne case
+    # var     - not used
+    #
+    # This method either generates an HTML form for group activity history 
+    # or returns the history as JSON.
+
+    method HistActivity {content case var} {
         set alist [case with $case activity names]
         set alist [list ALL {*}$alist]
 
-        hb form 
+        if {$content eq "html"} {
+            hb form {
+                my NbhoodForm $case
+                hb para
+                my GroupForm $case -gtypes {FRC ORG}
+                hb para    
+                hb putln "Select an activity or 'ALL'."
+                hb para
+                hb enum a -selected ALL $alist
+                hb para
+                my TimeSpanForm $case "activity_nga"
+            }
+        } else {
+            # NEXT, validate nbhood and group
+            set nbhoods [list ALL {*}[case with $case nbhood names]]
+            set n [qdict prepare n -toupper -default ALL -in $nbhoods]
 
-        my NbhoodForm $case
-        hb para
-        my GroupForm $case -gtypes {FRC ORG}
-        hb para    
-        hb putln "Select an activity or 'ALL'."
-        hb para
-        hb enum a -selected ALL $alist
-        hb para
-        my TimeSpanForm $case "activity_nga"
+            set groups [list  ALL {*}[case with $case group names {FRC ORG}]]
+            set g [qdict prepare g -toupper -default ALL -in $groups]
 
-        hb /form
+            set a [qdict prepare a -toupper -default ALL -in $alist]
 
-        return [hb /page]      
+            # NEXT, validate time parms
+            if {![my ValidateTimes]} {
+                return [js reject [qdict errors]]
+            }
+
+            # NEXT, get JSON and redirect
+            my JSONQuery $case "activity_nga" {n g a} 
+        }     
     }
 
-    # HistActivityJson case
+    # HistService content case var
     #
-    # case  - an Arachne case
+    # content - html | json
+    # case    - an Arachne case
+    # var     - not used
     #
-    # This method extracts group activity from history and returns it as
-    # JSON.
+    # This method either generates an HTML form for ENI and abstract service
+    # history or returns the history as JSON.
 
-    method HistActivityJson {case} {
-        # NEXT, validate nbhood and group
-        set nbhoods [list ALL {*}[case with $case nbhood names]]
-        set n [qdict prepare n -toupper -default ALL -in $nbhoods]
-
-        set groups [list  ALL {*}[case with $case group names {FRC ORG}]]
-        set g [qdict prepare g -toupper -default ALL -in $groups]
-
-        set alist [list ALL {*}[case with $case activity names]]
-        set a [qdict prepare a -toupper -default ALL -in $alist]
-
-        # NEXT, validate time parms
-        if {![my ValidateTimes]} {
-            return [js reject [qdict errors]]
-        }
-
-        # NEXT, get JSON and redirect
-        my JSONQuery $case "activity_nga" {n g a}      
-    }
-
-    # HistServiceHtml case
-    #
-    # case   - an Arachne case
-    #
-    # This method returns a history request page for ENI and abstract
-    # services.
-
-    method HistServiceHtml {case} {
-        my HistoryBanner $case "service"
-
+    method HistService {content case var} {
         set slist [list ALL ENERGY ENI TRANSPORT WATER]
+        if {$content eq "html"} {
+            hb form {
+                hb putln "Select a service or 'ALL'."
+                hb para
+                hb enum s -selected ALL $slist
+                hb para
+                my GroupForm $case -gtypes CIV
+                hb para
+                my TimeSpanForm $case "service_sg"
+            }
+        } else {
+            set s [qdict prepare s -toupper -default ALL -in $slist]
 
-        hb form 
+            set groups [list  ALL {*}[case with $case group names CIV]]
+            set g [qdict prepare g -toupper -default ALL -in $groups]
 
-        hb putln "Select a service or 'ALL'."
-        hb para
-        hb enum s -selected ALL $slist
-        hb para
-        my GroupForm $case -gtypes CIV
-        hb para
-        my TimeSpanForm $case "service_sg"
+            # NEXT, validate time parms
+            if {![my ValidateTimes]} {
+                return [js reject [qdict errors]]
+            }
 
-        hb /form
-
-        return [hb /page]
-    }
-
-    # HistServiceJson case
-    #
-    # case  - an Arachne case
-    #
-    # This method extracts ENI and abstract service data from history and 
-    # returns it as JSON.
-
-    method HistServiceJson {case} {
-        set gtypes {CIV}
-
-        set slist [list ALL ENI ENERGY TRANSPORT WATER]
-        set s [qdict prepare s -toupper -default ALL -in $slist]
-
-        set groups [list  ALL {*}[case with $case group names $gtypes]]
-        set g [qdict prepare g -toupper -default ALL -in $groups]
-
-        # NEXT, validate time parms
-        if {![my ValidateTimes]} {
-            return [js reject [qdict errors]]
-        }
-
-        # NEXT, get JSON and redirect
-        my JSONQuery $case "service_sg" {s g}  
+            # NEXT, get JSON and redirect
+            my JSONQuery $case "service_sg" {s g}
+        }  
     }
 
     # HistUndefinedHtml case var
     #
     # Returns an HTML page for undefined variables.
 
-    method HistUndefinedHtml {case var} {
-        my HistoryBanner $case $var
-        
+    method HistUndefinedHtml {case var} {        
         hb h2 "$var is not defined."
-
-        return [hb /page]        
     }
 
     # JSONQuery case var keys
@@ -757,6 +723,10 @@ smarturl /scenario /{case}/history/index.html {
 } {
     set case [my ValidateCase $case]
 
+    qdict prepare op -in {get}
+    qdict prepare histvar_ -tolower
+    qdict assign op histvar_
+
     # FIRST, begin the page
     hb page "Scenario '$case': History Variables"
     hb h1 "Scenario '$case': History Variables"
@@ -766,10 +736,6 @@ smarturl /scenario /{case}/history/index.html {
     hb putln "Select a history variable and press 'Select'."
     hb para
 
-    qdict prepare op -in {get}
-    qdict prepare histvar_ -tolower
-    qdict assign op histvar_
-
     set hvars [case with $case hist vars]
     hb form
     hb enum histvar_ -selected $histvar_ [lsort [dict keys $hvars]]
@@ -778,7 +744,9 @@ smarturl /scenario /{case}/history/index.html {
     hb para
 
     if {$histvar_ ne "" && $histvar_ in $hvars} {
-        my redirect [my domain $case history $histvar_ index.html]
+        hb h2 $histvar_
+        set handler [my histvar $histvar_]
+        my $handler html $case $histvar_
     }
 
     return [hb /page]
@@ -799,169 +767,28 @@ smarturl /scenario /{case}/history/{var}/index.html {
     Retrieves history request form for {case} for history 
     variable {var}.
 } {
-    switch -exact -- $var {
-        control    -
-        nbmood     -
-        nbur       -
-        npop       -
-        plant_n    -
-        volatility {
-            return [my HistNbhoodHtml $case $var]
-        }
+    set case [my ValidateCase $case]
 
-        mood -
-        pop    {
-            return [my HistGroupHtml $case $var -gtypes CIV]
-        }
+    # FIRST, begin the page
+    hb page "Scenario '$case': History Variable: $var"
+    hb h1 "Scenario '$case': History Variable: $var"
 
-        plant_na -
-        support  {
-            return [my HistNbhoodActorHtml $case $var]
-        } 
+    my CaseNavBar $case
 
-        aam_battle {
-            return [my HistBattleHtml $case]
-        }
-
-        activity_nga {
-            return [my HistActivityHtml $case]
-        }
-
-        coop {
-            return [my HistGroupsHtml $case $var -gtypes1 CIV -gtypes2 FRC]
-        }
-
-        deploy_ng {
-            return [my HistNbhoodGroupHtml $case $var -gtypes {FRC ORG}]
-        }
-
-        econ {
-            return [my HistEconHtml $case]
-        }
-
-        flow {
-            return [my HistGroupsHtml $case $var -gtypes1 CIV -gtypes2 CIV]
-        }
-
-        hrel {
-            return [my HistGroupsHtml $case $var]
-        }
-
-        nbcoop {
-            return [my HistNbhoodGroupHtml $case $var -gtypes FRC]
-        }
-
-        nbsat {
-            return [my HistNbhoodHtml $case $var -concerns 1]
-        }
-
-        plant_a {
-            return [my HistActorHtml $case $var]
-        }
-
-        sat {
-            return [my HistGroupHtml $case $var -gtypes CIV -concerns 1]
-        }
-
-        security {
-            return [my HistNbhoodGroupHtml $case $var]
-        }
-
-        service_sg {
-            return [my HistServiceHtml $case]
-        }
-
-        vrel {
-            return [my HistVrelHtml $case]
-        }
-
-        default {
-            return [my HistUndefinedHtml $case $var]
-        }        
+    try {
+        set handler [my histvar $var]
+        my $handler html $case $var 
+    } on error {result eopts} {
+        my HistUndefinedHtml $case $var
     }
+
+    return [hb /page]
 }
 
 smarturl /scenario /{case}/history/{var}/index.json {
     Retrieves history from {case} for history variable {var}.
 } {
-    switch -exact -- $var {
-        control    -
-        nbmood     -
-        nbur       -
-        npop       -
-        plant_n    -
-        volatility {
-            my HistNbhoodJson $case $var
-        }
-
-        mood -
-        pop    {
-            my HistNbhoodGroupJson $case $var -gtypes CIV
-        }
-
-        plant_na -
-        support  {
-            my HistNbhoodActorJson $case $var
-        }
-
-        aam_battle {
-            my HistBattleJson $case
-        }
-
-        activity_nga {
-            my HistActivityJson $case
-        }
-
-        coop {
-            my HistGroupsJson $case $var -gtypes1 CIV -gtypes2 FRC
-        }
-
-        deploy_ng {
-            my HistNbhoodGroupJson $case $var -gtypes {FRC ORG}
-        }
-
-        econ {
-            my HistEconJson $case
-        }
-
-        flow {
-            my HistGroupsJson $case $var -gtypes1 CIV -gtypes2 CIV
-        }
-
-        hrel {
-            my HistGroupsJson $case $var
-        }
-
-        nbcoop {
-            my HistNbhoodGroupJson $case $var -gtypes FRC
-        }
-
-        nbsat {
-            my HistNbhoodJson $case $var -concerns 1
-        }
-
-        plant_a {
-            my HistActorJson $case $var
-        }
-
-        sat {
-            my HistGroupJson $case $var -gtypes CIV -concerns 1
-        }
-
-        security {
-            my HistNbhoodGroupJson $case $var
-        }
-
-        service_sg {
-            my HistServiceJson $case
-        }
-
-        vrel {
-            my HistVrelJson $case
-        }
-
-        default {
-            return [js error "$var not supported" ""]
-        }
-    }
+    set handler [my histvar $var]
+    my $handler json $case $var
 }
+

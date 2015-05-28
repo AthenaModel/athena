@@ -210,7 +210,6 @@ oo::class create /scenario {
         hb enum c -selected ALL [list ALL AUT CUL SFT QOL]        
     }
 
-
     # ValidateTimes
     #
     # This method validates two qdict time parameters (t1 and t2) that are
