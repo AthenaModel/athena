@@ -1036,15 +1036,24 @@ oo::class create ::projectlib::htmlbuffer {
     #
     # TBD: We'll add specific commands for the input tags we need.
 
-    # form ?options? 
+    # form ?options? ?body?
     #
     # options  - Attribute Options
+    # body     - A script
     #
     # Adds a <form> element.  The options are converted into 
     # attribute names and values without error checking.
+    # If the script is given, it is executed and the "</form>"
+    # tag is inserted automatically.
 
     method form {args} {
+        set body [my PopOdd args]
         my tagln form {*}$args
+
+        if {$body ne ""} {
+            uplevel 1 $body
+            my /form
+        }
     }
 
     # /form

@@ -579,15 +579,15 @@ smarturl /scenario /new.html {
         hb hr
     }
 
-    hb form
-    hb hidden op new
-    hb label longname "Long Name:"
-    hb entry longname -size 15
-    hb label case "Replacing:"
-    hb enumlong case [linsert [case namedict] 0 "" ""]
-    hb submit "New Scenario"
-    hb submit -formaction [my domain]/new.json "JSON"
-    hb /form
+    hb form {
+        hb hidden op new
+        hb label longname "Long Name:"
+        hb entry longname -size 15
+        hb label case "Replacing:"
+        hb enumlong case [linsert [case namedict] 0 "" ""]
+        hb submit "New Scenario"
+        hb submit -formaction [my domain]/new.json "JSON"
+    }
     hb para
 
     hb hr
