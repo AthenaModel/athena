@@ -335,7 +335,7 @@ snit::type app {
         statecontroller ::cond::lockedAndIdle -events {
             ::adb <State>
         } -condition {
-            [::adb locked] && [::adb idle]
+            [::adb is locked] && [::adb is idle]
         }
 
 
@@ -366,7 +366,7 @@ snit::type app {
         statecontroller ::cond::simIsStable -events {
             ::adb <State>
         } -condition {
-            [::adb idle]
+            [::adb is idle]
         }
 
         # Simulation state is PREP or PAUSED
@@ -909,7 +909,7 @@ snit::type app {
         # FIRST, try to open the scenario.
         try {
             ::adb load $filename
-        } trap {SCENARIO OPEN} {result} {
+        } trap {ATHENA LOAD} {result} {
             # At least have an empty scenario.
             ::adb reset
             
@@ -945,7 +945,7 @@ snit::type app {
     # Saves the current scenario using the existing name.
 
     typemethod save {{filename ""}} {
-        require {[adb idle]} "The scenario cannot be saved in this state."
+        require {[adb is idle]} "The scenario cannot be saved in this state."
 
         # FIRST, notify the simulation that we're saving, so other
         # modules can prepare.
@@ -954,7 +954,7 @@ snit::type app {
         # NEXT, save the scenario to disk.
         try {
             adb save $filename
-        } trap {SCENARIO SAVE} {result eopts} {
+        } trap {ATHENA SAVE} {result eopts} {
             log warning scenario "Could not save: $result"
             log error scenario [dict get $eopts -errorinfo]
             app error {
@@ -1001,7 +1001,7 @@ snit::type app {
     # Locks the scenario; displays sanity check failures.
 
     typemethod lock {} {
-        require {[adb idle] && [adb unlocked]} \
+        require {[adb is idle] && [adb is unlocked]} \
             "The scenario cannot be locked in this state."
 
         lassign [adb sanity onlock] sev
@@ -1029,7 +1029,7 @@ snit::type app {
     # Rebases the app, unlocking it and returning it to the prep state.
 
     typemethod rebase {} {
-        require {[adb locked] && [adb idle]} \
+        require {[adb is locked] && [adb is idle]} \
             "The scenario cannot be rebased in this state."
 
         set answer \

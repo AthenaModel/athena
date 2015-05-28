@@ -395,6 +395,7 @@ base_personnel  1000
         cleanup
     } -match dictglob -result {
         a              JOE
+        a_qid          actor/JOE
         base_personnel 2000
         color          {#000002}
         cost           0.00
@@ -406,6 +407,7 @@ base_personnel  1000
         longname       Haliburton
         orgtype        CTR
         personnel      0
+        qid            orggroup/HAL
     }
 
     #-------------------------------------------------------------------

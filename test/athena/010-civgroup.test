@@ -593,12 +593,12 @@ upc        10.0
         attrition      {}
         basepop        1000
         bsid           1
-        bsysname       {Neutral (1)}
+        bsysname       *
         color          {#c00001}
         consumers      {}
         demeanor       AVERAGE
         eloc           0.0
-        fancy          {SHIA: Shia}
+        fancy          *
         g              SHIA
         gtype          CIV
         hist_flag      0
@@ -610,15 +610,17 @@ upc        10.0
         mood           0.000
         mood0          0.000
         n              NB1
+        n_qid          nbhood/NB1
         pop_cr         0.0
         population     1000
         povfrac        0.0
         povpct         0.0
         pretty_sa_flag No
-        req_funding    *
+        qid            civgroup/SHIA
+        req_funding    240.00
         rloc           0.0
         sa_flag        0
-        sat_funding    *
+        sat_funding    400.00
         subsistence    {}
         tc             0.0
         uaf            0.00

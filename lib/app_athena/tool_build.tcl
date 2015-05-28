@@ -59,7 +59,7 @@ tool define BUILD {
             puts "Loading scenario: $infile"
             try {
                 sdb load $infile
-            } trap {SCENARIO OPEN} {result} {
+            } trap {ATHENA LOAD} {result} {
                 throw FATAL "Could not load $infile:\n$result"
             }
         }
@@ -110,7 +110,7 @@ tool define BUILD {
 
         try {
             sdb save $outfile
-        } trap {SCENARIO SAVE} {result} {
+        } trap {ATHENA SAVE} {result} {
             throw FATAL "Could not save $outfile:\n$result"
         }
     }

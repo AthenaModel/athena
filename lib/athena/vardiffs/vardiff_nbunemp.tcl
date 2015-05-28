@@ -6,13 +6,15 @@
 #   Dave Hanks
 #
 # DESCRIPTION:
-#   athena(n) variable differences: unemp.n
+#   athena(n) variable differences: nbunemp.n
+#
+#   A value is the unemployment rate in neighborhood n, as a percentage.
 #
 #-----------------------------------------------------------------------
 
 oo::class create ::athena::vardiff::nbunemp {
     superclass ::athena::vardiff
-    meta type     unemp.n
+    meta type     nbunemp
     meta category economic
 
     constructor {comp_ val1_ val2_ n_} {
@@ -20,7 +22,7 @@ oo::class create ::athena::vardiff::nbunemp {
     }
 
     method significant {} {
-        set lim 15.0 ;# TBD: Need parameter
+        set lim [athena::compdb get [my type].limit]
 
         expr {[my score] >= $lim}
     }

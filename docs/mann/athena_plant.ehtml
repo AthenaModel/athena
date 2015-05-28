@@ -1,0 +1,71 @@
+<manpage {athena(n) athena_plant(n)} "Athena Plant Component">
+
+<section SYNOPSIS>
+
+<pre>
+package require athena <version>
+namespace import ::athena::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+This man page describes a component of the <xref athena(n)> package that
+provides access to the GOODS production infrastructure, which is measured
+in "plants".<p>
+
+The component is accessible as a subcommand of the <xref athena(n)> and
+<xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
+from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
+<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+
+<section "COMMANDS">
+
+<subsection "Public Subcommands">
+
+The <tt><i adb> plant</tt> command takes the following subcommands,
+where <i adb> is an instance of <xref athena(n)>.<p>
+
+<deflist commands>
+
+<defitem "capacity" {<i adb> plant capacity <i subcommand> ?<i args...>?}>
+
+Returns the output capacity of some set of plant infrastructure.<p>
+
+<deflist capacity>
+
+<defitem "capacity total" {<i adb> plant capacity total}>
+
+Returns the total output capacity in "GOODS baskets" of all GOODS 
+production plants in the playbox.<p>
+
+<defitem "capacity n" {<i adb> plant capacity n <i n>}>
+
+Returns the total output capacity in "GOODS baskets" of all GOODS 
+production plants in neighborhood <i n>.<p>
+
+<defitem "capacity a" {<i adb> plant capacity a <i a>}>
+
+Returns the total output capacity in "GOODS baskets" of all GOODS 
+production plants owned by agent <i a>.<p>
+
+</deflist capacity>
+
+
+
+</deflist commands>
+
+<subsection "Private Subcommands">
+
+The <tt><i adb> plant</tt> command takes the following subcommands, where
+where <i adb> is an instance of <xref athenadb(n)>.<p>
+
+TBD: None yet documented.<p>
+
+<section AUTHOR>
+
+Will Duquette, Dave Hanks.<p>
+
+</manpage>
+

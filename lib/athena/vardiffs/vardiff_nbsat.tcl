@@ -12,7 +12,7 @@
 
 oo::class create ::athena::vardiff::nbsat {
     superclass ::athena::vardiff
-    meta type     nbsat.n.c
+    meta type     nbsat
     meta category social
 
     constructor {comp_ val1_ val2_ n_ c_} {
@@ -20,7 +20,7 @@ oo::class create ::athena::vardiff::nbsat {
     }
 
     method significant {} {
-        set lim 20.0 ;# TBD: Need parameter
+        set lim [athena::compdb get [my type].limit]
 
         expr {[my score] >= $lim}
     }

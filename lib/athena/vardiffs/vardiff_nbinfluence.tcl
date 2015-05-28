@@ -1,12 +1,12 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#   vardiff_influence.tcl
+#   vardiff_nbinfluence.tcl
 #
 # AUTHOR:
 #   Will Duquette
 #
 # DESCRIPTION:
-#   athena(n) history variable differences: influence.n.*
+#   athena(n) history variable differences: nbinfluence.n
 #
 #   The value is a dictionary of actors and their influences in the
 #   the neighborhood; it includes only actors whose influence is positive.
@@ -15,9 +15,9 @@
 #
 #-----------------------------------------------------------------------
 
-oo::class create ::athena::vardiff::influence {
+oo::class create ::athena::vardiff::nbinfluence {
     superclass ::athena::vardiff
-    meta type     influence.n.*
+    meta type     nbinfluence
     meta category political
 
     constructor {comp_ val1_ val2_ n_} {

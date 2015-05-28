@@ -75,15 +75,15 @@ namespace eval ::athena_test::tests:: {
 
     test constructor-1.1 {Initial state} -body {
         list \
-            [tdb adbfile]   \
-            [tdb clock now] \
-            [tdb idle]      \
-            [tdb isbusy]    \
-            [tdb interruptible] \
-            [tdb unlocked]  \
-            [tdb locked]    \
-            [tdb state]     \
-            [tdb statetext] \
+            [tdb adbfile]          \
+            [tdb clock now]        \
+            [tdb is idle]          \
+            [tdb is busy]          \
+            [tdb is interruptible] \
+            [tdb is unlocked]      \
+            [tdb is locked]        \
+            [tdb state]            \
+            [tdb statetext]        \
             [tdb tkloaded]
     } -result {{} 0 1 0 0 1 0 PREP Prep 0}
 
@@ -109,10 +109,10 @@ namespace eval ::athena_test::tests:: {
     } -result {1}
     
     #-------------------------------------------------------------------
-    # lock/locked/unlocked
+    # lock/is locked/is unlocked
 
     test lock-1.1 {initially unlocked} -body {
-        list [tdb locked] [tdb unlocked]
+        list [tdb is locked] [tdb is unlocked]
     } -cleanup {
         cleanup
     } -result {0 1}
@@ -120,40 +120,36 @@ namespace eval ::athena_test::tests:: {
     test lock-1.2 {must be idle} -setup {
         tdb busy set "Busy busy busy"
     } -body {
-        tdb lock
-    } -returnCodes {
-        error
+        codecatch tdb lock
     } -cleanup {
         tdb busy clear
         cleanup
-    } -result {Scenario is busy or locked}
+    } -result {{ATHENA BUSY} {Scenario is busy.}}
 
     test lock-1.3 {sanity check must pass} -body {
         codecatch tdb lock
     } -cleanup {
         cleanup
-    } -result {{SCENARIO LOCK} {Sanity check failed; cannot lock.}}
+    } -result {{ATHENA NOTSANE} {Scenario sanity check failed.}}
 
 
     test lock-1.4 {can lock} -setup {
         ted create NB1 BLUE SHIA
     } -body {
         tdb lock
-        list [tdb locked] [tdb unlocked]
+        list [tdb is locked] [tdb is unlocked]
     } -cleanup {
         cleanup
     } -result {1 0}
 
-    test lock-1.5 {cannot lock while locked} -setup {
+    test lock-1.5 {lock is no-op if already locked.} -setup {
         ted create NB1 BLUE SHIA
         tdb lock
     } -body {
         tdb lock
-    } -returnCodes {
-        error
     } -cleanup {
         cleanup
-    } -result {Scenario is busy or locked}
+    } -result {}
 
     test lock-1.6 {Saves a snapshot} -setup {
         ted create NB1 BLUE SHIA
@@ -206,28 +202,24 @@ namespace eval ::athena_test::tests:: {
     test unlock-1.1 {must be idle} -setup {
         tdb busy set "Busy busy busy"
     } -body {
-        tdb unlock
-    } -returnCodes {
-        error
+        codecatch tdb unlock
     } -cleanup {
         tdb busy clear
         cleanup
-    } -result {Scenario is busy or unlocked}
+    } -result {{ATHENA BUSY} {Scenario is busy.}}
 
-    test unlock-1.2 {must be locked} -body {
+    test unlock-1.2 {no-op if unlocked} -body {
         tdb unlock
-    } -returnCodes {
-        error
     } -cleanup {
         cleanup
-    } -result {Scenario is busy or unlocked}
+    } -result {}
 
     test unlock-1.3 {can unlock} -setup {
         ted create NB1 BLUE SHIA
         tdb lock
     } -body {
         tdb unlock
-        list [tdb locked] [tdb unlocked]
+        list [tdb is locked] [tdb is unlocked]
     } -cleanup {
         cleanup
     } -result {0 1}
@@ -262,14 +254,14 @@ namespace eval ::athena_test::tests:: {
     # busy/isbusy
 
     test busy-1.1 {Initially idle} -body {
-        list [tdb idle] [tdb isbusy]
+        list [tdb is idle] [tdb is busy]
     } -cleanup {
         cleanup
     } -result {1 0}
 
     test busy-1.2 {Can become busy} -body {
         tdb busy set "Busy Now"
-        list [tdb idle] [tdb isbusy]
+        list [tdb is idle] [tdb is busy]
     } -cleanup {
         tdb busy clear
         cleanup
@@ -279,7 +271,7 @@ namespace eval ::athena_test::tests:: {
         tdb busy set "Busy Now"
     } -body {
         tdb busy clear
-        list [tdb idle] [tdb isbusy]
+        list [tdb is idle] [tdb is busy]
     } -cleanup {
         cleanup
     } -result {1 0}
@@ -360,14 +352,14 @@ namespace eval ::athena_test::tests:: {
     # state/statetext
 
     test state-1.1 {idle, unlocked} -body {
-        list [tdb idle] [tdb unlocked] [tdb state] [tdb statetext]
+        list [tdb is idle] [tdb is unlocked] [tdb state] [tdb statetext]
     } -result {1 1 PREP Prep}
 
     test state-1.2 {idle, locked} -setup {
         ted create NB1 BLUE SHIA
         tdb lock
     } -body {
-        list [tdb idle] [tdb unlocked] [tdb state] [tdb statetext]
+        list [tdb is idle] [tdb is unlocked] [tdb state] [tdb statetext]
     } -cleanup {
         cleanup
     } -result {1 0 PAUSED Paused}
@@ -375,7 +367,7 @@ namespace eval ::athena_test::tests:: {
     test state-1.3 {unlocked, busy, not interruptible} -setup {
         tdb busy set "Busy Busy Busy"
     } -body {
-        list [tdb idle] [tdb unlocked] [tdb state] [tdb statetext]
+        list [tdb is idle] [tdb is unlocked] [tdb state] [tdb statetext]
     } -cleanup {
         tdb busy clear
         cleanup
@@ -384,7 +376,7 @@ namespace eval ::athena_test::tests:: {
     test state-1.4 {unlocked, busy, interruptible} -setup {
         tdb busy set "Busy Busy Busy" bogusPauseCmd
     } -body {
-        list [tdb idle] [tdb unlocked] [tdb state] [tdb statetext]
+        list [tdb is idle] [tdb is unlocked] [tdb state] [tdb statetext]
     } -cleanup {
         tdb busy clear
         cleanup
@@ -395,7 +387,7 @@ namespace eval ::athena_test::tests:: {
         tdb lock
         tdb busy set "Busy Busy Busy"
     } -body {
-        list [tdb idle] [tdb unlocked] [tdb state] [tdb statetext]
+        list [tdb is idle] [tdb is unlocked] [tdb state] [tdb statetext]
     } -cleanup {
         tdb busy clear
         cleanup
@@ -406,7 +398,7 @@ namespace eval ::athena_test::tests:: {
         tdb lock
         tdb busy set "Busy Busy Busy" bogusPauseCmd
     } -body {
-        list [tdb idle] [tdb unlocked] [tdb state] [tdb statetext]
+        list [tdb is idle] [tdb is unlocked] [tdb state] [tdb statetext]
     } -cleanup {
         tdb busy clear
         cleanup
@@ -416,13 +408,13 @@ namespace eval ::athena_test::tests:: {
     # interruptible
     
     test interruptible-1.1 {idle} -body {
-        tdb interruptible
+        tdb is interruptible
     } -result {0}
 
     test interruptible-1.2 {busy, no pause cmd} -setup {
         tdb busy set "Busy Busy Busy"
     } -body {
-        tdb interruptible
+        tdb is interruptible
     } -cleanup {
         tdb busy clear
         cleanup
@@ -431,7 +423,7 @@ namespace eval ::athena_test::tests:: {
     test interruptible-1.3 {busy, pause cmd} -setup {
         tdb busy set "Busy Busy Busy" bogusPauseCmd
     } -body {
-        tdb interruptible
+        tdb is interruptible
     } -cleanup {
         tdb busy clear
         cleanup
@@ -445,21 +437,17 @@ namespace eval ::athena_test::tests:: {
     test advance-1.1 {cannot advance if already busy} -setup {
         tdb busy set "Busy busy busy"
     } -body {
-        tdb advance
-    } -returnCodes {
-        error
+        codecatch {tdb advance}
     } -cleanup {
         tdb busy clear
         cleanup
-    } -result {Scenario is busy or unlocked}
+    } -result {{ATHENA BUSY} {Scenario is busy.}}
 
     test advance-1.2 {cannot advance if unlocked} -body {
-        tdb advance
-    } -returnCodes {
-        error
+        codecatch tdb advance
     } -cleanup {
         cleanup
-    } -result {Scenario is busy or unlocked}
+    } -result {{ATHENA UNLOCKED} {Scenario is unlocked.}}
 
     test advance-1.3 {Run for 1 week} -setup {
         ted create NB1 BLUE SHIA

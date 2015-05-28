@@ -8,11 +8,14 @@
 # DESCRIPTION:
 #   athena(n) variable differences: nbmood.n
 #
+#   A value is the mood of the civilian groups residing in 
+#   neighborhood n.
+#
 #-----------------------------------------------------------------------
 
 oo::class create ::athena::vardiff::nbmood {
     superclass ::athena::vardiff
-    meta type     nbmood.n
+    meta type     nbmood
     meta category social
 
     constructor {comp_ val1_ val2_ n_} {
@@ -20,7 +23,7 @@ oo::class create ::athena::vardiff::nbmood {
     }
 
     method significant {} {
-        set lim 15.0 ;# TBD: Need parameter
+        set lim [athena::compdb get [my type].limit]
 
         expr {[my score] >= $lim}
     }

@@ -148,6 +148,49 @@ snit::type ::athena::ruleset_manager {
         return $new_id
     }
 
+
+    # qid setname signature
+    #
+    # Returns the driver's QID.
+
+    method qid {setname signature} {
+        return "driver/$setname/[join $signature /]"
+    }
+
+    # id2qid id
+    #
+    # id   - A Driver ID
+    #
+    # Given the driver ID, return the qualified entity ID.
+    # Returns "" if there is no such driver.
+
+    method id2qid {id} {
+        $adb eval {
+            SELECT setname, signature
+            FROM drivers
+            WHERE driver_id = $id
+        } {
+            return [$self qid $setname $signature]
+        }
+
+        return ""
+    }
+
+    # qid2id qid
+    #
+    # qid   - A Driver QID
+    #
+    # Given the driver QID, return the numeric ID.
+    # Returns "" if there is no such driver.
+
+    method qid2id {qid} {
+        set tokens [split [string toupper $qid] /]
+        set setname [lindex $tokens 1]
+        set signature [lrange $tokens 2 end]
+
+        return [$self get $setname $signature]
+    }
+
     # rulename rule
     #
     # rule - A ruleset rule, e.g., CIVCAS-1-1

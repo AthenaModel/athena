@@ -280,22 +280,22 @@ snit::type case {
     # longname  - A longname, or ""
     #
     # Attempts to import the scenario into the application.  Throws
-    # SCENARIO IMPORT on failure.
+    # ARACHNE * on failure.
 
     typemethod import {filename id {longname ""}} {
         # FIRST, validate the inputs
         if {[file tail $filename] ne $filename} {
-            throw {SCENARIO IMPORT} "Not a bare file name"
+            throw {ARACHNE BADNAME} "Not a bare file name"
         }
 
         set ext [file extension $filename]
         if {$ext ni {.adb .tcl}} {
-            throw {SCENARIO IMPORT} "Cannot import files of type \"$ext\""
+            throw {ARACHNE BADTYPE} "Cannot import files of type \"$ext\""
         }
 
         set filename [case scenariodir $filename]
         if {![file isfile $filename]} {
-            throw {SCENARIO IMPORT} "No such scenario is available."
+            throw {ARACHNE NOFILE} "No such scenario is available."
         }
 
         # NEXT, get the ID
@@ -315,16 +315,16 @@ snit::type case {
         if {$ext eq ".adb"} {
             try {
                 $sdb load $filename
-            } trap {SCENARIO OPEN} {result} {
+            } trap {ATHENA LOAD} {result} {
                 $sdb destroy
-                throw {SCENARIO IMPORT} $result
+                throw {ARACHNE IMPORT} $result
             }
         } else {
             try {
                 $sdb executive call $filename
             } on error {result} {
                 $sdb destroy
-                throw {SCENARIO IMPORT} "Script error: $result"
+                throw {ARACHNE IMPORT} "Script error: $result"
             }
         }
 
@@ -358,13 +358,13 @@ snit::type case {
     #
     # Exports the scenario into the scenario directory under the given
     # name and file type.  If there is no file type, appends ".adb".
-    # Throws SCENARIO EXPORT on failure.  Returns the bare save file
+    # Throws ARACHNE * on failure.  Returns the bare save file
     # name.
 
     typemethod export {id filename} {
         # FIRST, validate the inputs
         if {[file tail $filename] ne $filename} {
-            throw {SCENARIO EXPORT} "Not a bare file name"
+            throw {ARACHNE BADNAME} "Not a bare file name"
         }
 
         set ext [file extension $filename]
@@ -375,7 +375,7 @@ snit::type case {
         }
 
         if {$ext ni {.adb .tcl}} {
-            throw {SCENARIO EXPORT} "Cannot export files of type \"$ext\""
+            throw {ARACHNE BADTYPE} "Cannot export files of type \"$ext\""
         }
 
 
@@ -389,7 +389,7 @@ snit::type case {
                 default { error "Unknown file type: \"$ext\""}
             }
         } trap {SCENARIO SAVE} {result} {
-            throw {SCENARIO EXPORT} $result
+            throw {ARACHNE EXPORT} $result
         }
 
         return [file tail $fullname]
@@ -407,66 +407,6 @@ snit::type case {
 
         array unset cases(*-$id)
         ldelete cases(names) $id
-    }
-
-    # lock case 
-    #
-    # Attempts to lock the scenario with the given ID, throwing
-    # SCENARIO LOCK on error.
-
-    typemethod lock {case} {
-        if {[case with $case isbusy]} {
-            throw {SCENARIO BUSY} "Cannot lock; scenario is busy."
-        }
-
-        if {[case with $case unlocked]} {
-            lassign [case with $case sanity onlock] severity
-
-            if {$severity ne "OK"} {
-                throw {SCENARIO NOTSANE} "Cannot lock; sanity checks failed."
-            }
-
-            case with $case lock
-        }     
-    }
-
-    # unlock case 
-    #
-    # Attempts to unlock the scenario with the given ID, throwing
-    # SCENARIO UNLOCK on error.
-
-    typemethod unlock {case} {
-        if {[case with $case isbusy]} {
-            throw {SCENARIO BUSY} "Cannot unlock; scenario is busy."
-        }
-
-        if {[case with $case locked]} {
-            case with $case unlock
-        }     
-    }
-
-    # advance case weeks
-    #
-    # case   - The scenario's case ID
-    # weeks  - The number of weeks to advance time.
-    # 
-    # Starts time advancing in the background.
-
-    typemethod advance {case weeks} {
-        if {[case with $case isbusy]} {
-            throw {SCENARIO BUSY} \
-                "Cannot advance time; scenario is already busy."
-        }
-
-        if {[case with $case unlocked]} {
-            case lock $case
-        }
-
-        case with $case advance \
-            -mode  background \
-            -ticks $weeks
-
-        return
     }
 
     

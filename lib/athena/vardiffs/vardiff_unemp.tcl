@@ -8,6 +8,8 @@
 # DESCRIPTION:
 #   athena(n) variable differences: unemp
 #
+#   A value is the unemployment rate for the playbox, as a percentage.
+#
 #-----------------------------------------------------------------------
 
 oo::class create ::athena::vardiff::unemp {
@@ -20,7 +22,7 @@ oo::class create ::athena::vardiff::unemp {
     }
 
     method significant {} {
-        set lim 10.0 ;# TBD: Need parameter
+        set lim [athena::compdb get [my type].limit]
 
         expr {[my score] >= $lim}
     }

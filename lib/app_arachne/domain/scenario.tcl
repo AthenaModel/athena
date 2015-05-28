@@ -258,7 +258,7 @@ oo::class create /scenario {
 
         # FIRST, handle the specified case
         if {$case ne ""} {
-            if {[case with $case isbusy]} {
+            if {[case with $case is busy]} {
                 return $interval
             } else {
                 return ""
@@ -267,7 +267,7 @@ oo::class create /scenario {
 
         # NEXT, handle all cases.
         foreach case [case names] {
-            if {[case with $case isbusy]} {
+            if {[case with $case is busy]} {
                 return $interval
             }
         }
@@ -358,7 +358,7 @@ oo::class create /scenario {
             foreach case $cases {
                 set cdict [case metadata $case]
 
-                if {[case with $case isbusy]} {
+                if {[case with $case is busy]} {
                     set progress [case with $case progress]
                     if {[string is double -strict $progress]} {
                         set progress \
@@ -713,15 +713,15 @@ smarturl /scenario /new.html {
         hb hr
     }
 
-    hb form
-    hb hidden op new
-    hb label longname "Long Name:"
-    hb entry longname -size 15
-    hb label case "Replacing:"
-    hb enumlong case [linsert [case namedict] 0 "" ""]
-    hb submit "New Scenario"
-    hb submit -formaction [my domain]/new.json "JSON"
-    hb /form
+    hb form {
+        hb hidden op new
+        hb label longname "Long Name:"
+        hb entry longname -size 15
+        hb label case "Replacing:"
+        hb enumlong case [linsert [case namedict] 0 "" ""]
+        hb submit "New Scenario"
+        hb submit -formaction [my domain]/new.json "JSON"
+    }
     hb para
 
     hb hr
@@ -887,8 +887,8 @@ smarturl /scenario /import.html {
         try {
             set theID [case import $filename $case $longname]
             set status ok
-        } trap {SCENARIO IMPORT} {result} {
-            qdict reject filename $result
+        } trap ARACHNE {result} {
+            qdict reject filename "Could not import \"$filename\": $result"
             set status error
         }
 
@@ -960,8 +960,8 @@ smarturl /scenario /import.json {
     # NEXT, try to import it.
     try {
         set theID [case import $filename $case $longname]
-    } trap {SCENARIO IMPORT} {result} {
-        qdict reject filename $result
+    } trap ARACHNE {result} {
+        qdict reject filename "Could not import \"$filename\": $result"
         return [js reject [qdict errors]]
     }
 
@@ -995,8 +995,8 @@ smarturl /scenario /export.html {
     if {$op eq "export" && [qdict ok]} {
         try {
             set theFileName [case export $case $filename]
-        } trap {SCENARIO EXPORT} {result} {
-            qdict reject filename $result
+        } trap ARACHNE {result} {
+            qdict reject filename "Could not export to \"$filename\": $result"
         }
     }
 
@@ -1062,8 +1062,8 @@ smarturl /scenario /export.json {
     # NEXT, try to export it.
     try {
         set theFileName [case export $case $filename]
-    } trap {SCENARIO EXPORT} {result} {
-        qdict reject filename $result
+    } trap ARACHNE {result} {
+        qdict reject filename "Could not export to \"$filename\": $result"
         return [js reject [qdict errors]]
     }
 
@@ -1195,7 +1195,7 @@ smarturl /scenario /diff.json {
 
     if {![$s1 is advanced]} {
         qdict reject id1 "Time has not been advanced"
-    } elseif {[$s1 isbusy]} {
+    } elseif {[$s1 is busy]} {
         qdict reject id1 "Scenario is busy; please wait."
     }
 
@@ -1204,7 +1204,7 @@ smarturl /scenario /diff.json {
 
         if {![$s2 is advanced]} {
             qdict reject id2 "Time has not been advanced"
-        } elseif {[$s2 isbusy]} {
+        } elseif {[$s2 is busy]} {
             qdict reject id2 "Scenario is busy; please wait."
         }
     } else {

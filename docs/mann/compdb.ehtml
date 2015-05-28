@@ -1,0 +1,56 @@
+<manpage {athena(n) compdb(n)} "Athena Scenario Comparison Parameter Database">
+
+<section SYNOPSIS>
+
+<pre>
+package require athena <version>
+namespace import ::athena::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+compdb(n) manages the Athena scenario comparison parameter database: the
+collection of parameters that govern how scenarios are compared, and how
+large differences have to be to be considered significant.
+At base, the parameter database is a <xref mars:parmset(n)> with some
+added capabilities.<p>
+
+The full set of parameters is defined in <xref compdb(5)>.<p>
+
+<section "COMMANDS">
+
+compdb(n) provides the following subcommands for use by the application,
+along with all of the subcommands provided by the underlying
+<xref mars:parmset(n)>.<p>
+
+<deflist commands>
+
+<defitem validate {compdb validate <i parm>}>
+
+Throws <b INVALID> if <i parm> isn't a defined parameter; otherwise
+returns parameter name in canonical form.<p>
+
+<defitem nondefaults {compdb nondefaults ?<i pattern>?}>
+
+Returns a list of the names of the parameters with non-default values.
+If <i pattern> is given, it is a glob-style wildcard pattern; only
+names that match the pattern are included in the result.<p>
+
+</deflist commands>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+<section HISTORY>
+
+Original package.
+
+</manpage>
+
+
+
+
+

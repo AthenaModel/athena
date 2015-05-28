@@ -94,7 +94,7 @@ Makes a direct request to the domain handler for the given
 <b GET> or <b POST>; on <b GET>, the <i query> will be parsed as a 
 dictionary of query parms and values and passed to the handler. On
 <b POST> it will not be.  The full query string can always be retrieved
-using <iref query>.<p>
+using <iref req>.<p>
 
 <defitem url {<i obj> url <i suffix docstring>}>
 

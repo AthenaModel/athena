@@ -63,7 +63,7 @@ snit::type ::athena::autogen {
     # omitted.
 
     method scenario {args} {
-        require {[$adb idle] && [$adb unlocked]} "Not in scenario prep"
+        require {[$adb is idle] && [$adb is unlocked]} "Not in scenario prep"
 
         # FIRST, default options
         array set opts {
@@ -186,7 +186,7 @@ snit::type ::athena::autogen {
     # all error checking passes.
 
     method actors {{num 3}} {
-        require {[$adb idle] && [$adb unlocked]} "Not in scenario prep"
+        require {[$adb is idle] && [$adb is unlocked]} "Not in scenario prep"
 
         # FIRST, no actors can exist currently
         if {[llength [$adb actor names]] > 0} {
@@ -213,7 +213,7 @@ snit::type ::athena::autogen {
     # all error checking passes.
 
     method nbhoods {{num 10}} {
-        require {[$adb idle] && [$adb unlocked]} \
+        require {[$adb is idle] && [$adb is unlocked]} \
             "Not in scenario prep"
 
         # FIRST, no nbhoods can exists and we must already have actors
@@ -250,7 +250,7 @@ snit::type ::athena::autogen {
     # each neighborhood provided all error checking passes.
 
     method civgroups {{num 6}} {
-        require {[$adb idle] && [$adb unlocked]} "Not in scenario prep"
+        require {[$adb is idle] && [$adb is unlocked]} "Not in scenario prep"
 
         # FIRST, there must already be neighborhoods and no CIV groups
         if {[llength [$adb nbhood names]] == 0} {
@@ -281,7 +281,7 @@ snit::type ::athena::autogen {
     # provided all error checking passes.
 
     method orggroups {{num 2}} {
-        require {[$adb idle] && [$adb unlocked]} "Not in scenario prep"
+        require {[$adb is idle] && [$adb is unlocked]} "Not in scenario prep"
 
         # FIRST, there can be no ORG groups and we must have actor(s)
         if {[llength [$adb orggroup names]] > 0} {
@@ -312,7 +312,7 @@ snit::type ::athena::autogen {
     # provided all error checking passes.
 
     method frcgroups {{num 3}} {
-        require {[$adb idle] && [$adb unlocked]} "Not in scenario prep"
+        require {[$adb is idle] && [$adb is unlocked]} "Not in scenario prep"
 
         # FIRST, there must be no FRC groups and at least one actor
         if {[llength [$adb frcgroup names]] > 0} {
@@ -343,7 +343,7 @@ snit::type ::athena::autogen {
     # of topics provided all error checking passes.
 
     method bsystem {{num 3}} {
-        require {[$adb idle] && [$adb unlocked]} "Not in scenario prep"
+        require {[$adb is idle] && [$adb is unlocked]} "Not in scenario prep"
 
         # FIRST, there must be no topics and we must have CIV groups and
         # actors defined
@@ -387,7 +387,7 @@ snit::type ::athena::autogen {
     #    -nbhoods  Neighborhoods to consider when creating tactics or "ALL"
 
     method strategy {args} {
-        require {[$adb idle] && [$adb unlocked]} "Not in scenario prep"
+        require {[$adb is idle] && [$adb is unlocked]} "Not in scenario prep"
 
         # FIRST, default options
         array set opts {

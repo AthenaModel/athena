@@ -686,10 +686,12 @@ The following commands are used to build HTML forms.<p>
 <deflist forms>
 
 
-<defitem form {<i obj> form ?<i>options...</i>?}>
+<defitem form {<i obj> form ?<i>options...</i>? ?<i body>?}>
 
 Begins an HTML <tag form> element; any options and
-their values are converted into element attributes.<p>
+their values are converted into element attributes.  If the <i body>
+is given, it will be executed as a Tcl script and the <tag /form> tag
+will be added automatically.<p>
 
 By default, submitting the form will reload the same page with the form's 
 parameters as the query.  To load a different page, specify the URL explicitly

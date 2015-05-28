@@ -216,19 +216,19 @@ namespace eval ::athena_test::tests:: {
         codecatch case import "dir/file.adb" ""
     } -cleanup {
         cleanup
-    } -result {{SCENARIO IMPORT} {Not a bare file name}}
+    } -result {{ARACHNE BADNAME} {Not a bare file name}}
 
     test import-1.2 {invalid file type} -body {
         codecatch case import "file.doc" ""
     } -cleanup {
         cleanup
-    } -result {{SCENARIO IMPORT} {Cannot import files of type ".doc"}}
+    } -result {{ARACHNE BADTYPE} {Cannot import files of type ".doc"}}
 
     test import-1.3 {unavailable scenario} -body {
         codecatch case import "test2.adb" ""
     } -cleanup {
         cleanup
-    } -result {{SCENARIO IMPORT} {No such scenario is available.}}
+    } -result {{ARACHNE NOFILE} {No such scenario is available.}}
 
     test import-2.1 {import new .adb} -body {
         set id [case import "test1.adb" ""]
@@ -272,13 +272,13 @@ namespace eval ::athena_test::tests:: {
         codecatch case export case00 "dir/file.adb"
     } -cleanup {
         cleanup
-    } -result {{SCENARIO EXPORT} {Not a bare file name}}
+    } -result {{ARACHNE BADNAME} {Not a bare file name}}
 
     test export-1.2 {invalid file type} -body {
         codecatch case export case00 "file.doc"
     } -cleanup {
         cleanup
-    } -result {{SCENARIO EXPORT} {Cannot export files of type ".doc"}}
+    } -result {{ARACHNE BADTYPE} {Cannot export files of type ".doc"}}
 
     test export-2.1 {export .adb} -body {
         set filename [case export case00 export21.adb]

@@ -1,0 +1,64 @@
+<manpage {athena(n) athena_bean(n)} "Athena Bean Component">
+
+<section SYNOPSIS>
+
+<pre>
+package require athena <version>
+namespace import ::athena::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+This man page describes a component of the <xref athena(n)> package used
+to retrieve data about the scenario's <xref bean(n)> objects.<p>
+
+The component is accessible as a subcommand of the <xref athena(n)> and
+<xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
+from both <xref athena(n)> and <xref athenadb(n)>, and
+<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+
+<section "COMMANDS">
+
+<subsection "Public Subcommands">
+
+The <tt><i adb> ${1}</tt> command takes the following subcommands, where
+<i adb> is an instance of <xref athena(n)>.<p>
+
+<deflist commands>
+
+<defitem get {<i adb> bean get <i id>}>
+
+Returns the bean object with the given <i id>.  It is an error if no
+such bean exists in the scenario.<p>
+
+<defitem has {<i adb> bean has <i id>}>
+Returns 1 if the scenario has a bean object with the given ID, and 0
+otherwise.<p>
+
+<defitem ids {<i adb> bean ids ?<i cls>?}>
+
+By default, returns a list of the IDs of all beans in the scenario.  
+If <i cls> is given, returns a list of the IDs of the beans that belong
+to that class or its subclasses.  For example, passing 
+class <tt ::athena::tactic> will return the IDs of all tactic beans.<p>
+
+<defitem view {<i adb> bean view <i id> ?<i tag>?}>
+
+Returns a view dictionary for the bean with the given <i id>.  The
+<i tag> is used to tailor the information in specific ways; most beans
+support the <b text> and <b html> tags.<p>
+
+</deflist commands>
+
+<subsection "Private Subcommands">
+
+The <tt><i adb> bean</tt> command takes the same subcommands as 
+<xref beanpot(n)>, where <i adb> is 
+an instance of <xref athenadb(n)>.<p>
+
+<section AUTHOR>
+
+Will Duquette, Dave Hanks.<p>
+</manpage>

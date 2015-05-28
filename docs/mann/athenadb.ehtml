@@ -187,6 +187,8 @@ itself to a temporary file, run some process on the contents of that file
 (i.e., in another thread) and load the results, while setting the 
 <iref unsaved> flag properly and not changing the user's <iref adbfile>.<p>
 
+On error, throws <b ATHENA LOAD>.<p>
+
 <defitem log {<i obj> log <i level component message>}>
 
 Adds a message to the scenario's log by passing the arguments to the
@@ -291,7 +293,7 @@ Saves the scenario to disk as an <tt .adb> file called <i filename>.
 Any existing file of the same name is deleted.  The state of the 
 loaded scenario is completely unchanged.<p>
 
-On failure, throws "<tt SCENARIO SAVE>".<p>
+On failure, throws "<tt ATHENA SAVE>".<p>
 
 <defitem schema {<i obj> schema ...}>
 This command is delegated to the underlying <xref scenariodb(n)> object.<p>

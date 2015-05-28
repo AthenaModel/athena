@@ -8,11 +8,13 @@
 # DESCRIPTION:
 #   athena(n) variable differences: goodscap.n
 #
+#   A value is the GOODS production capacity of neighborhood n, in
+#   dollars.
 #-----------------------------------------------------------------------
 
 oo::class create ::athena::vardiff::goodscap {
     superclass ::athena::vardiff
-    meta type     goodscap.n
+    meta type     goodscap
     meta category economic
 
     constructor {comp_ val1_ val2_ n_} {
@@ -20,7 +22,7 @@ oo::class create ::athena::vardiff::goodscap {
     }
 
     method significant {} {
-        set lim 0.2 ;# TBD: Need parameter
+        set lim [athena::compdb get [my type].limit]
 
         expr {[my score] >= $lim}
     }
@@ -30,11 +32,14 @@ oo::class create ::athena::vardiff::goodscap {
     }
 
     method context {} {
-        format "%.1f%%" [expr {100.0*([my val2]-[my val1])/[my val1]}]
+        format "%.1f%%" [my score]
     }
 
     method score {} {
-        let score {abs([my val2]-[my val1])/[my val1]}
+        my variable val1
+        my variable val2 
+
+        let score {100.0*abs(double($val2)-$val2)/max($val1, $val2)}
         format "%.2f" $score
     }
 }

@@ -1934,7 +1934,7 @@
         if {[$adb econ state] eq "DISABLED"} {
             # IF econ disabled return 0.00
             return 0.00
-        } elseif {![$adb locked]} {
+        } elseif {![$adb is locked]} {
             # If the scenario is NOT locked, return 0.00
             return 0.00
         } else {
@@ -2372,7 +2372,7 @@
         if {[$adb econ state] eq "DISABLED"} {
             # IF econ disabled return 0.00
             return 0.00
-        } elseif {![$adb locked]} {
+        } elseif {![$adb is locked]} {
             # If the scenario is NOT locked, return 0.00
             return 0.00
         } else {

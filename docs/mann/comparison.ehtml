@@ -62,9 +62,37 @@ The values <i val1> and <i val2>
 are the values of a variable of the given <i vartype> from 
 <i s1>@<i t1> and <i s2>@<i t2>.  The <i keys...> are the key values for
 the specific variable/<xref vardiff(n)> subclass.  For example, the key
-value for the <tt nbsecurity.n> variable is a neighborhood name, and the
-key values for the <tt support.n.a> variable are a neighborhood name and
-an actor name.<p>
+value for the <tt>nbsecurity/<i n></tt> variable is a neighborhood name, and the
+key values for the <tt>support/<i n>/<i a></tt> variable are a 
+neighborhood name and an actor name.<p>
+
+Returns the resulting <xref vardiff(n)> instance, or "" if the variable
+wasn't significant.  Note that if the same variable is checked multiple
+times, the previously saved instance will be returned the second and
+subsequent times.<p>
+
+<defitem addtop {<i obj> addtop vartype val1 val2 keys...}>
+
+<b>This command is used when populating the object; clients should rarely
+if ever need it.</b><p>
+
+This command is identical to <iref add>, but marks the variable (if 
+signficant) as a top-level significant output.  Note that a variable
+can be both a top-level significant output and a significant input to
+another variable.<p>
+
+<defitem contribs {<i obj> contribs <i subcommand> <i keys...>}>
+
+Determines contributions by driver for the curve indicated by the 
+subcommand and keys (e.g., <tt mood> and a civilian group name; 
+see <xref mars:uram(n)>'s <xref mars:uram(n) contrib> subcommand).
+Returns a flat list <tt>{<i drid> <i val1> <i val2> ...}</tt> of the
+contributions made by the driver in each scenario.<p>
+
+The driver ID used, <i drid>, is an ID consisting of the driver's type
+(the rule set name) and signature tokens joined together with "/", e.g.,
+"ENI/SUNN" (effect of ENI on group SUNN) or "PATROL/NB1/BLUE" (effect of
+patrolling by force group BLUE in neighborhood NB1).<p>
 
 <defitem diffs {<i obj> diffs <i subcommand> ?<i args...>?}>
 
@@ -73,23 +101,50 @@ the output format.<p>
 
 <deflist diffs>
 
-<defitem "diffs dump" {<i obj> diffs dump}>
+<defitem "diffs dump" {<i obj> diffs dump ?-toplevel?}>
 
 Returns a dump of the signicant differences as a simple text table.  This
-format is usually used for debugging.<p>
+format is usually used for debugging.  If <tt -toplevel> is given, the
+output includes only the top-level differences.<p>
 
-<defitem "diffs huddle" {<i obj> diffs huddle}>
+<defitem "diffs huddle" {<i obj> diffs huddle ?-toplevel?}>
 
 Returns a dump of the signicant differences as a huddle(n) list containing
 difference records.  This dump can be included into a larger huddle(n)
-object for conversion to JSON.<p>
+object for conversion to JSON.  If <tt -toplevel> is given, the
+output includes only the top-level differences.<p>
 
-<defitem "diffs json" {<i obj> diffs json}>
+<defitem "diffs json" {<i obj> diffs json ?-toplevel?}>
 
 Returns a dump of the signicant differences as a JSON list containing
-difference records.<p>
+difference records.  If <tt -toplevel> is given, the
+output includes only the top-level differences.<p>
 
 </deflist diffs>
+
+<defitem explain {<i obj> explain <i varname>}>
+
+Computes an explanation of the significant difference in variable
+<i varname>. <b TBD>: prototype code.  At present, it simply drills
+one level down on the variable and returns the significant inputs, if 
+any.  If the named variable isn't significant, returns nothing.<p>
+
+<defitem getbytype {<i obj> getbytype ?-toplevel?}>
+
+Returns a dictionary of lists of the known <xref vardiff(n)> objects
+by variable type.  If <tt -toplevel> is given, the
+output includes only the top-level differences.<p>
+
+<defitem getdiff {<i obj> getdiff <i name>}>
+
+Given a variable name, returns the variable's <xref vardiff(n)> object,
+or "" if none.<p>
+
+<defitem list {<i obj> list ?-toplevel?}>
+
+Returns a list of the <xref vardiff(n)> objects that have been added to the
+comparison.  If <tt -toplevel> is given, the
+output includes only the top-level differences.<p>
 
 <defitem reset {<i obj> reset}>
 

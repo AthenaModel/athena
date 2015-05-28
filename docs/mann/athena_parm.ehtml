@@ -1,0 +1,75 @@
+<manpage {athena(n) athena_parm(n)} "Athena Model Parameter Component">
+
+<section SYNOPSIS>
+
+<pre>
+package require athena <version>
+namespace import ::athena::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+This man page describes a component of the <xref athena(n)> package
+that gives access to the scenario's model parameter database.<p>
+
+The component is accessible as a subcommand of the <xref athena(n)> and
+<xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
+from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
+<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+
+<section "COMMANDS">
+
+<subsection "Public Subcommands">
+
+The <tt><i adb> parm</tt> command takes the following subcommands,
+where <i adb> is an instance of <xref athena(n)>.<p>
+
+<deflist commands>
+
+<defitem "docstring" {<i adb> parm docstring <i name>}>
+Returns the documentation string for the named parameter.<p>
+
+<defitem "get" {<i adb> parm get <i name>}>
+Returns the current value of the named parameter.<p>
+
+<defitem "getdefault" {<i adb> parm getdefault <i name>}>
+Returns the default value of the named parameter.<p>
+
+<defitem "islocked" {<i adb> parm islocked <i name>}>
+Returns 1 if the named parameter is locked, and 0 otherwise.<p>
+
+<defitem "list" {<i adb> parm list ?<i pattern>?}>
+Returns a list of the names of the parameters whose names match the 
+<i pattern>, with their values, in human-readable form.  Note that
+the result is also a valid Tcl dictionary.<p>
+
+<defitem "names" {<i adb> parm names ?<i pattern>?}>
+
+Returns a list of the names of the parameters whose names match
+the <i pattern>.<p>
+
+<defitem "nondefaults" {<i adb> parm nondefaults ?<i pattern>?}>
+Returns a list of the names of the parameters with non-default
+values.  If <i pattern> is given, it is a glob-style wildcard pattern;
+only names that match the pattern are included in the result.<p>
+
+<defitem "save" {<i adb> parm save <i filename>}>
+
+Saves the current set of parameter values to the named file.<p>
+
+</deflist commands>
+
+<subsection "Private Subcommands">
+
+When <i adb> is an instance of <xref athenadb(n)>, the
+<tt><i adb> parm</tt> subcommand is directly implemented by an
+instance of <xref parmdb(n)>.  See that man page for the subcommands.<p>
+
+
+<section AUTHOR>
+
+Will Duquette, Dave Hanks.<p>
+
+</manpage>
