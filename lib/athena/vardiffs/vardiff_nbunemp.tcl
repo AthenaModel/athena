@@ -21,7 +21,7 @@ oo::class create ::athena::vardiff::nbunemp {
         next $comp_ [list n $n_] $val1_ $val2_
     }
 
-    method significant {} {
+    method IsSignificant {} {
         set lim [athena::compdb get [my type].limit]
 
         expr {[my score] >= $lim}

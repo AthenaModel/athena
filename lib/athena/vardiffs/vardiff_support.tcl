@@ -33,7 +33,7 @@ oo::class create ::athena::vardiff::support {
     }
 
 
-    method significant {} {
+    method IsSignificant {} {
         set lim [athena::compdb get [my type].limit]
 
         expr {[my score] >= $lim}

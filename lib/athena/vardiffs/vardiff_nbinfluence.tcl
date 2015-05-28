@@ -24,7 +24,7 @@ oo::class create ::athena::vardiff::nbinfluence {
         next $comp_ [list n $n_] $val1_ $val2_
     }
 
-    method significant {} {
+    method IsSignificant {} {
         expr {[my fmt1] ne [my fmt2]}
     }
 

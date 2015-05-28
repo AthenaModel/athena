@@ -22,7 +22,7 @@ oo::class create ::athena::vardiff::nbsecurity {
         next $comp_ [list n $n_] $val1_ $val2_
     }
 
-    method significant {} {
+    method IsSignificant {} {
         set lim [athena::compdb get [my type].limit]
 
         set sym1 [qsecurity name [my val1]]

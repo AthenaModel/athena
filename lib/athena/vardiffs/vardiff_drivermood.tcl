@@ -29,7 +29,7 @@ oo::class create ::athena::vardiff::drivermood {
         return [format %.1f $val]
     }
 
-    method significant {} {
+    method IsSignificant {} {
         set lim [athena::compdb get [my type].limit]
 
         expr {[my score] >= $lim}

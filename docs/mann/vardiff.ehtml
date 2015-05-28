@@ -154,9 +154,15 @@ output.<p>
 
 <defitem significant {<i obj> significant}>
 
+If the variable type's <xref compdb(5)> <tt><i vartype>.active</tt>
+parameter is on, then returns 1 if the difference <iref IsSignificant>,
+and 0 otherwise.  If the parameter is off, returns 0.<p>
+
+<defitem IsSignificant {<i obj> IsSignificant}>
+
 <b Subclasses should override this method as needed.>
-Returns 1 if <iref val1> and <iref val2> are significantly different,
-and 0 otherwise.  By default, any difference is signficant.<p> 
+The is the subclass's significance test; by default it returns 1 if
+<iref val1> and <iref val2> are not identical.<p> 
 
 <defitem val1 {<i obj> val1}>
 

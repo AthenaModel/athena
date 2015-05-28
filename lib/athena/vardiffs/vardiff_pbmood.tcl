@@ -23,7 +23,7 @@ oo::class create ::athena::vardiff::pbmood {
         next $comp_ [list set $set_] $val1_ $val2_
     }
 
-    method significant {} {
+    method IsSignificant {} {
         set lim [athena::compdb get [my type].limit]
 
         expr {[my score] >= $lim}

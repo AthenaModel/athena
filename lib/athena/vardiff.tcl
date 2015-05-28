@@ -160,11 +160,24 @@ oo::class create ::athena::vardiff {
     # significant
     #
     # Returns 1 if val1 is significantly different than val2, and 0
-    # otherwise.  By default, two values are significantly different
-    # if they are trivally different.  Subclasses should override this
-    # accordingly.
+    # otherwise.  If the vartype's "active" flag is false, then 
+    # returns 0.
     
     method significant {} {
+        if {[athena::compdb get [my type].active]} {
+            return [my IsSignificant]
+        } else {
+            return 0
+        }
+    }
+
+    # IsSignificant
+    #
+    # Subclasses override this to define their own significance tests.
+    # By default, a difference is significant if the two values are
+    # not identical.
+
+    method IsSignificant {} {
         my different
     }
 
