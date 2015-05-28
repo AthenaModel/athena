@@ -31,7 +31,6 @@ package require Thread
 
 # -kite-require-start ADD EXTERNAL DEPENDENCIES
 package require projectlib
-package require huddle 0.1.5
 # -kite-require-end
 
 namespace import ::projectlib::*
