@@ -37,6 +37,17 @@ SPAN.error {
     color: #C7001B;
 }
 
+/* Text Span Classes */
+
+SPAN.tiny {
+    font-size: 0.875em;
+}
+
+SPAN.tinyb {
+    font-weight: bold;
+    font-size: 0.875em;
+}
+
 /* Table Formatting Classes: "pretty" 
  * Border around the outside, even/odd striping, no internal
  * border lines.

@@ -506,6 +506,128 @@ oo::class create /scenario {
 
         return $text
     }
+
+    #---------------------------------------------------------------
+    # pager
+    #
+    # TBD: This will move to hb when it's done.
+
+    # pager qparms page pages
+    #
+    # qparms  - The current query parameter dictionary
+    # page    - The page currently displayed
+    # pages   - The total number of pages
+    #
+    # This command inserts a "Pages:" controller with a (carefully pruned)
+    # list of page numbers, as one sees on search web pages when the 
+    # search returns too many results to display at once.  The links
+    # include all of the query parameters.
+    #
+    # The page number will be included in these URLs as a query
+    # parameter, "page=<num>".  
+    #
+    # If the number of pages is less than 2, no output will appear.
+
+    method pager {qparms page pages} {
+        # FIRST, no pager unless it's needed.
+        if {$pages <= 1} {
+            return
+        }
+
+        # NEXT, begin formatting
+        hb span -class tinyb "Page: "
+
+        if {$page > 1} {
+            my PageLink $qparms [expr {$page - 1}] "Prev"
+        } else {
+            hb span -class tiny "Prev"
+        }
+        hb put " "
+
+        foreach i [my PageSequence $page $pages] {
+            if {$i == $page} {
+                hb span -class tinyb $i
+            } elseif {$i eq "..."} {
+                hb span -class tiny $i
+            } else {
+                my PageLink $qparms $i
+            }
+
+            hb put " "
+        }
+
+        if {$page < $pages} {
+            my PageLink $qparms [expr {$page + 1}] "Next"
+        } else {
+            hb span -class tiny "Next"
+        }
+
+        hb para
+    }
+
+    # PageSequence page pages 
+    #
+    # page    - A page number, 1 to N
+    # pages   - The total number of pages N 
+    #
+    # Returns a list of ordered page numbers, possibly with "...".
+
+    method PageSequence {page pages} {
+        set result [list]
+        set last 0
+
+        for {set i 1} {$i <= $pages} {incr i} {
+            if {$i <= 3 || 
+                $i >= $pages - 2 ||
+                ($i >= $page - 2 && $i <= $page + 2)
+            } {
+                if {$i - 1 != $last} {
+                    lappend result "..."
+                }
+                lappend result $i
+                set last $i                
+            }
+        }
+
+        return $result
+    }
+
+    # PageLink qparms page ?label?
+    #
+    # qparms   - The current query dictionary
+    # page    - The page to link to
+    # label   - The link label; defaults to the page number.
+    #
+    # Creates a link to the named page.
+
+    method PageLink {qparms page {label ""}} {
+        if {$label eq ""} {
+            set label $page
+        }
+
+        dict set qparms page $page
+
+        hb span -class tiny
+        hb xref "?[my QueryEncode $qparms]" $label
+        hb /span
+    }
+
+    # QueryEncode dict
+    #
+    # dict  - A dictionary or query parameters.
+    #
+    # Encodes the dictionary as a URL query
+    
+    method QueryEncode {dict} {
+        set result ""
+        dict for {k v} $dict {
+            lappend result "$k=[ncgi::encode $v]"
+        }
+
+        return [join $result &]
+    }
+
+    
 }
 
 #-------------------------------------------------------------------

@@ -69,7 +69,7 @@ oo::define /scenario {
         append query "LIMIT $pagesize OFFSET $offset"
 
         # NEXT, insert the pager
-        # hb pager [qdict parms] $page $pages
+        my pager [qdict parms] $page $pages
 
         hb push
 
@@ -104,7 +104,7 @@ oo::define /scenario {
 
         hb para
 
-        # hb pager [qdict parms] $page $pages
+        my pager [qdict parms] $page $pages
 
         hb para
     }
