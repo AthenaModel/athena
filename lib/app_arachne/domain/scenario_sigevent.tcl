@@ -35,41 +35,24 @@ oo::define /scenario {
         # FIRST, get the query parms.
         qdict assign pagesize page
 
-        # NEXT, get the number of pages in the output
-        set query "SELECT count(*) FROM fmt_sigevents"
+        # NEXT, get the page statistics
+        set items [case with $case onecolumn {
+            SELECT count(*) FROM fmt_sigevents
+        }]
 
-        set items [case with $case onecolumn $query]
-
-        # TBD: mighb want a maximum size for ALL.
-        # TBD: the code for computing the number of pages and the
-        # offset should probably go elsewhere.
-        if {$pagesize eq "ALL"} {
-            set pagesize $items
-            let pages 1
-        } else {
-            let pages {entier(ceil(double($items)/$pagesize))}
-        }
-
-        # NEXT, don't ask for an invalid page
-        if {$page > $pages} {
-            set page 1
-        }
-
-        let offset {($page - 1)*$pagesize}
+        lassign [hb pagestats $items $pagesize $page] \
+            page pages offset limitClause
 
         # NEXT, get the real query
-        set query {
+        set query "
             SELECT level, t, week, component, narrative 
             FROM fmt_sigevents
             ORDER BY t DESC, event_id
-        }
-
-        # TBD: This could be added automatically to a longer query.
-        # Consider "pagedquery" command
-        append query "LIMIT $pagesize OFFSET $offset"
+            $limitClause
+        "
 
         # NEXT, insert the pager
-        my pager [qdict parms] $page $pages
+        hb pager $page $pages [qdict parms]
 
         hb push
 
@@ -104,7 +87,7 @@ oo::define /scenario {
 
         hb para
 
-        my pager [qdict parms] $page $pages
+        hb pager $page $pages [qdict parms]
 
         hb para
     }
@@ -130,8 +113,11 @@ smarturl /scenario /{case}/sigevent/index.html {
 
     my CaseNavBar $case
 
-    hb form {
-        hb enumlong pagesize -selected $pagesize [epagesize deflist]
+    hb form -id pageform {
+        hb enumlong pagesize \
+            -selected $pagesize \
+            -onchange {document.getElementById('pageform').submit();} \
+            [epagesize deflist]
         # TBD: Add time interval
         hb submit
     }

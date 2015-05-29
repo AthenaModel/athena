@@ -607,11 +607,11 @@ snit::type ::projectlib::typewrapper {
 # Page Sizes for paged mydomain tables
 
 ::marsutil::enum ::projectlib::epagesize {
-    ALL "All items"
     10  "10 items per page"
     20  "20 items per page"
     50  "50 items per page"
     100 "100 items per page"
+    200 "200 items per page"
 } -noindex
 
 #-------------------------------------------------------------------

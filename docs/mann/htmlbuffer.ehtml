@@ -291,11 +291,6 @@ stack. Note that this is done automatically by the <iref /page> command.<p>
 Sets the value of one or more of the object's
 options.<p>
 
-<defitem escape {<i obj> escape <i text>}>
-
-Escapes any "&lt;", "&gt;", and "&amp;" characters in the input so that
-they display as such rather than appearing to be HTML markup.<p>
-
 <defitem get {<i obj> get}>
 
 Returns the content from the buffer at the top of the stack.<p>
@@ -462,8 +457,23 @@ into element attributes.<p>
 
 Adds an <tag a> link to the server-local URL formed by adding the
 <i suffix> to the buffer's <tt -domain>.  The
-<i label> string is the link text.  Any options are converted
+<i label> string is the link text.    The following option may be 
+used; any other options are converted
 into element attributes.<p>
+
+<deflist options>
+
+<defopt {-qparms <i dict>}>
+Given a dictionary of query parameters, formats it as a valid URL query
+string and appends it to the URL.<p>
+
+</deflist options>
+
+<defitem qref {<i obj> qref <i qparms> ?<i options...>? <i label>}>
+
+Adds an <tag a> link back to the same page, using the specified set
+of query parameters, which are formatted as a valid URL query.  Any 
+other options are converted into element attributes.<p>
 
 <defitem ximg {<i obj> ximg <i url> ?<i options...>?}>
 
@@ -474,8 +484,17 @@ into element attributes.<p>
 <defitem xref {<i obj> xref <i url> ?<i options...>? <i label>}>
 
 Adds an <tag a> link to the given external or server-local <i url>
-using the <i label> string as the link text.  Any options are converted
+using the <i label> string as the link text.  The following option may be 
+used; any other options are converted
 into element attributes.<p>
+
+<deflist options>
+
+<defopt {-qparms <i dict>}>
+Given a dictionary of query parameters, formats it as a valid URL query
+string and appends it to the URL.<p>
+
+</deflist options>
 
 </deflist links>
 
@@ -635,6 +654,39 @@ Returns the number of <iref tr> calls made for the most recent
 to avoid including a table if it has no rows of data.<p>
 
 </deflist tables>
+
+<subsection "Paging">
+
+The following commands can be used to control the paging of long
+query results, especially tables.<p>
+
+<deflist paging>
+
+<defitem pagestats {<i obj> pagestats <i numitems pagesize> ?<i page>?}>
+
+Computes statistics required for paging a long query, where <i numitems>
+is the total size of the result set, <i pagesize> is the maximum number
+of items to display on one page, and <i page> is the index of the desired
+page, from 1 to <i n>.<p>
+
+Returns a list "<tt>{<i page pages offset limitClause>}</tt>", where
+<i page> is the page number, clamped between 1 and the number of pages,
+<i pages> is the number of pages, <i offset> is the item index of the
+first item on <i page>, and <i limitClause> is an SQL "LIMIT/OFFSET" 
+clause.<p>
+
+<defitem pager {<i obj> pager <i page pages qparms>}>
+
+Outputs a "pager" control, which will allow the user to select particular
+pages and to go to the next and previous pages. The <i page> is the
+number of the currently displayed page, <i pages> is the total number 
+of pages, and <i qparms> is a dictionary of query parameters to be 
+included in the page links.<p>
+
+If the number of pages is fewer than 2, then no control is output.<p>
+
+
+</deflist paging>
 
 <subsection "Records">
 
@@ -859,6 +911,23 @@ set.<p>
 </deflist options>
 
 </deflist queries>
+
+<subsection "Helper Commands">
+
+The following helper commands are available.<p>
+
+<deflist helper>
+<defitem asquery {<i obj> asquery <i dict>}>
+
+Formats a dictionary of query parameters as a URL query string, 
+complete with initial "?".<p>
+
+<defitem escape {<i obj> escape <i text>}>
+
+Escapes any "&lt;", "&gt;", and "&amp;" characters in the input so that
+they display as such rather than appearing to be HTML markup.<p>
+
+</deflist helper>
 
 <section AUTHOR>
 
