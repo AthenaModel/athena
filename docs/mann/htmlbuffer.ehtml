@@ -757,6 +757,9 @@ The action URL can be absolute, relative to the current page, or "" to simply
 reload the current page.  Note that any query in the <i>url</i> will be 
 ignored.<p>
 
+<defopt {-id <i form>}>
+Names the form.<p>
+
 <defopt {-method <i>method</i>}>
 By default, the form is sent using an HTTP "<tt get>" request.  This option
 can be used to request a different HTTP method, e.g., "<tt post>".<p>
@@ -798,6 +801,10 @@ Options and their values are converted to element
 attributes, with these exceptions:<p>
 
 <deflist options>
+<defopt {-autosubmit <i form>}>
+When a different item is selected, automatically submit the named
+form.<p>
+
 <defopt {-selected <i item>}>
 Indicates that the named <i item> is to be initially selected.<p>
 
@@ -817,6 +824,10 @@ Options and their values are converted to element
 attributes, with these exceptions:<p>
 
 <deflist options>
+<defopt {-autosubmit <i form>}>
+When a different item is selected, automatically submit the named
+form.<p>
+
 <defopt {-selected <i key>}>
 Indicates that the named <i key> is to be initially selected.<p>
 

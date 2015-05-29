@@ -1179,14 +1179,21 @@ oo::class create ::projectlib::htmlbuffer {
     #
     # Special Options:
     #
+    # -autosubmit flag  - If given and true, autosubmit on input.
     # -selected value   - Indicates that the <option> with the
     #                     given value is to be selected initially.
     #
     # Inserts a <select> element into the current form.
 
     method enum {name args} {
-        set list [my PopOdd args]
-        set selected [optval args -selected]
+        set list       [my PopOdd args list]
+        set autosubmit [optval args -autosubmit ""]
+        set selected   [optval args -selected]
+
+        if {$autosubmit ne ""} {
+            lappend args \
+                -oninput document.getElementById('$autosubmit').submit();
+        }
 
         my tagln select -name $name {*}$args
         foreach item $list {
@@ -1204,11 +1211,24 @@ oo::class create ::projectlib::htmlbuffer {
     # options  - Attribute options
     # namedict - List of choices and labels
     #
+    # Special Options:
+    #
+    # -autosubmit form  - If given, autosubmit the named
+    #                     form on input.
+    # -selected value   - Indicates that the <option> with the
+    #                     given value is to be selected initially.
+    #
     # Inserts a <select> element into the current form.
 
     method enumlong {name args} {
-        set namedict [my PopOdd args]
-        set selected [optval args -selected]
+        set namedict   [my PopOdd args namedict]
+        set autosubmit [optval args -autosubmit ""]
+        set selected   [optval args -selected]
+
+        if {$autosubmit ne ""} {
+            lappend args \
+                -oninput document.getElementById('$autosubmit').submit();
+        }
 
         my tagln select -name $name {*}$args
         foreach {item longname} $namedict {

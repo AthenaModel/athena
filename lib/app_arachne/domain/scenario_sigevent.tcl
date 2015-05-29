@@ -129,16 +129,16 @@ smarturl /scenario /{case}/sigevent/index.html {
     my CaseNavBar $case
 
     hb form -id pageform {
-        hb enumlong pagesize \
-            -selected $pagesize \
-            -onchange {document.getElementById('pageform').submit();} \
+        hb enumlong pagesize       \
+            -selected $pagesize    \
+            -autosubmit pageform   \
             [epagesize deflist]
         my enumtick start $case    \
             -label    "From Week:" \
             -selected $start
-        my enumtick end $case \
-            -extras   NOW        \
-            -label    "To Week:" \
+        my enumtick end $case      \
+            -extras   NOW          \
+            -label    "To Week:"   \
             -selected $end
         hb submit
     }

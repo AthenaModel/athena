@@ -538,7 +538,7 @@ oo::class create /scenario {
             lappend items $t
         }
 
-        hb enum $name -selected $selected $items
+        hb enum $name -selected $selected {*}$args $items
 
     }
 
