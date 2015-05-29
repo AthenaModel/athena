@@ -517,6 +517,8 @@ snit::type ::athena::athenadb {
 
     method DefineTempSchema {} {
         # FIRST, define SQL functions
+        # TBD: The "link"-related functions need to be revised to
+        # work with QIDs.
         $rdb function locked               [mymethod Locked]
         $rdb function mklinks              [list ::link html]
         $rdb function uram_gamma           [mymethod UramGamma]
@@ -539,6 +541,7 @@ snit::type ::athena::athenadb {
         $self RdbEvalFile fmt_curses.sql         ;# User-defined CURSEs Area
         $self RdbEvalFile fmt_entities.sql       ;# Library specific Area
         $self RdbEvalFile fmt_politics.sql       ;# Politics Area
+        $self RdbEvalFile fmt_sigevents.sql      ;# Sig. Events
 
         # NEXT, read any temp SQL specified in the option
         foreach sqlfile $options(-tempsqlfiles) {

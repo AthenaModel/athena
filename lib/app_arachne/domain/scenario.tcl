@@ -493,6 +493,19 @@ oo::class create /scenario {
     method GetEntityLink {case entity} {
         return  /$case/$entity/index.html
     }
+
+    # withlinks case text
+    #
+    # Looks for links of the form '{etype:name}' and replaces them
+    # with entity links.
+
+    method withlinks {case text} {
+        regsub -all -- {{(\w+):(\w+)}} $text \
+            [format {<a href="%s/\1/\2/index.html">\2</a>} [my domain $case]] \
+            text
+
+        return $text
+    }
 }
 
 #-------------------------------------------------------------------
