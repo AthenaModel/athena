@@ -507,6 +507,42 @@ oo::class create /scenario {
         return $text
     }
 
+    # enumtick name case ?options...?
+    #
+    # name    - The input name
+    # case    - The scenario ID
+    # options - Attribute options
+    # label   - The label to precede the control or "".
+    #
+    # Adds an enum input for a time tick.
+    #
+    # -extras list       - Extra values to add to the beginning of 
+    #                      the list of ticks.
+    # -selected value    - The initially selected value
+    # -label text        - Text for a label to precede the control.
+
+    method enumtick {name case args} {
+        set label    [optval args -label    ""]
+        set selected [optval args -selected ""]
+        set extras   [optval args -extras   {}]
+
+        if {$label ne ""} {
+            hb label $name $label
+            hb put " "
+        }
+
+        set items $extras
+        set start [case with $case clock cget -tick0]
+        set end   [case with $case clock now]
+        for {set t $start} {$t <= $end} {incr t} {
+            lappend items $t
+        }
+
+        hb enum $name -selected $selected $items
+
+    }
+
+
     
 }
 
