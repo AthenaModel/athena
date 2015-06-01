@@ -541,13 +541,13 @@ oo::class create /scenario {
     # Returns a navigation bar for the scenario pages
 
     method CaseNavBar {case} {
-<<<<<<< HEAD
         hb linkbar {
             hb xref /index.html "Home"
             hb iref /index.html "Scenarios"
             hb iref /$case/index.html "Case"
             hb iref /$case/sanity/onlock.html "Sanity"
             hb iref /$case/order.html "Orders"
+            hb iref /$case/history/index.html "History"
             hb iref /$case/script.html "Scripts"
             hb xref /help/index.html "Help"
             hb br
@@ -558,34 +558,12 @@ oo::class create /scenario {
             hb iref /$case/orggroup/index.html "Org Groups"
             hb iref /$case/sigevent/index.html "Sig Events"
         }
-=======
-        hb hr
-        hb xref /index.html "Home"
-        hb put " | "
-        hb iref /index.html "Scenarios"
-        hb put " | "
-        hb iref /$case/index.html "Case"
-        hb put " | "
-        hb iref /$case/actor/index.html "Actors"
-        hb put " | "
-        hb iref /$case/nbhood/index.html "Neighborhoods"
-        hb put " | "
-        hb iref /$case/civgroup/index.html "Civilian Groups"
-        hb put " | "
-        hb iref /$case/frcgroup/index.html "Force Groups"
-        hb put " | "
-        hb iref /$case/orggroup/index.html "Organization Groups"
-        hb put " | "
-        hb iref /$case/sanity/onlock.html "Sanity"
-        hb put " | "
-        hb iref /$case/history/index.html "History"
         hb put " | "
         hb iref /$case/order.html "Orders"
         hb put " | "
         hb iref /$case/script.html "Scripts"
         hb hr
         hb para
->>>>>>> master
     }
 
     # FormatFailureList case flist
