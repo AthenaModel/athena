@@ -766,9 +766,9 @@ smarturl /scenario /{case}/history/index.html {
 
     # FIRST, begin the page
     hb page "Scenario '$case': History Variables"
-    hb h1 "Scenario '$case': History Variables"
-
     my CaseNavBar $case
+
+    hb h1 "Scenario '$case': History Variables"
 
     hb putln "Select a history variable and press 'Select'."
     hb para
@@ -815,9 +815,9 @@ smarturl /scenario /{case}/history/{var}/index.html {
 
     # FIRST, begin the page
     hb page "Scenario '$case': History Variable: $var"
-    hb h1 "Scenario '$case': History Variable: $var"
-
     my CaseNavBar $case
+
+    hb h1 "Scenario '$case': History Variable: $var"
 
     set handler [my histvar $var]
     my $handler html $case $var 
