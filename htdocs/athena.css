@@ -176,7 +176,7 @@ DIV.linkbar {
   margin: 0;
   padding: 0px 8px;
 }
-SPAN.linktext { color: white; text-decoration: none; padding: 6px 12px; }
+DIV.linkbar span { color: white; text-decoration: none; padding: 6px 12px; }
 DIV.linkbar a { color: white; text-decoration: none; padding: 6px 12px; }
 DIV.linkbar a:visited { color: white; }
 DIV.linkbar a:hover { color: #000099; background: white; }

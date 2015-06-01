@@ -389,6 +389,17 @@ formatted HTML.<p>
 
 Adds a <tag br> tag to the buffer, followed by a newline.<p>
 
+<defitem div {<i obj> div ?<i options...>? ?<i body>?}>
+
+Begins a <tag div>.  If <i options> are given, they are converted
+into tag attributes.  If the <i body> is given, it is executed as a 
+script that will presumably add additional content, and the 
+<tag /div> tag is added automatically.<p>
+
+<defitem /div {<i obj> /div}>
+
+Terminates a <tag div>.<p>
+
 <defitem h1 {<i obj> h1 ?<i options>? <i title>}>
 <defitem h2 {<i obj> h2 ?<i options>? <i title>}>
 <defitem h3 {<i obj> h3 ?<i options>? <i title>}>
@@ -468,6 +479,13 @@ Given a dictionary of query parameters, formats it as a valid URL query
 string and appends it to the URL.<p>
 
 </deflist options>
+
+<defitem linkbar {<i obj> linkbar <i body>}>
+
+Adds a linkbar to the top of the page.  The <i body> is a script to
+be executed in the caller's context; it will presumably add links
+to the bar.  If boilerplate text is desired, it should be wrapped
+in a <tag span> tag to pick up the "linkbar" CSS styles.<p>
 
 <defitem qref {<i obj> qref <i qparms> ?<i options...>? <i label>}>
 

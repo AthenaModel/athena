@@ -546,18 +546,21 @@ oo::class create ::projectlib::htmlbuffer {
     }
     export /span
 
-    # div ?options? body
+    # div ?options? ?body?
     #
     # body    - A script to execute
     #
-    # Defines a <div> block.  The body is executed, and the </div> tag
-    # is added automatically.
+    # Defines a <div> block.  If given, the body is executed and 
+    # the </div> tag is added automatically.
    
     method div {args} {
-        set body [my PopOdd args body]
-        my tag div {*}$args
-        uplevel 1 $body
-        my /div
+        set body [my PopOdd args]
+        my tagln div {*}$args
+        
+        if {$body ne ""} {
+            uplevel 1 $body
+            my /div
+        }
     }
 
     # /div
@@ -1582,6 +1585,29 @@ oo::class create ::projectlib::htmlbuffer {
         }
     }
 
+    #-------------------------------------------------------------------
+    # Link Bar
+
+    # linkbar body
+    #
+    # body - A script creating a number of links
+    #
+    # Link labels will be colored appropriately automatically;
+    # other text should be wrap in a <span> element.
+
+    method linkbar {body} {
+        my table -width 100% -class linkbar
+        my tr -class "" -valign bottom
+        my td -align left
+        my div -class linkbar
+        uplevel 1 $body
+        my /div
+        my /td
+        my /tr
+        my /table
+        my para
+    }
+    
 
     #===================================================================
     # NOT PROCESSED YET
@@ -1589,29 +1615,6 @@ oo::class create ::projectlib::htmlbuffer {
     # Old code from htools(n) that we'll probably want eventually.
 
     if 0 {
-        # linkbar linkdict
-        # 
-        # linkdict   - A dictionary of URLs and labels
-        #
-        # Displays the links in a horizontal bar.
-
-        method linkbar {linkdict} {
-            my hr
-            set count 0
-
-            foreach {link label} $linkdict {
-                if {$count > 0} {
-                   my put " | "
-                }
-
-                my link $link $label
-
-                incr count
-            }
-
-            my hr
-            my para
-        }
 
 
         # linklist ?options...? links

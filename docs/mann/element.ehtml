@@ -1,0 +1,45 @@
+<manpage {athena(n) element(n)} "Athena Web Elements">
+
+<section SYNOPSIS>
+
+<pre>
+package require athena <version>
+namespace import ::athena::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+The element(n) module defines certain standard HTML elements used 
+across multiple <xref smartdomain(n)> subclasses.<p>
+
+<section "COMMANDS">
+
+comparison(n) provides the following commands:<p>
+
+<deflist commands>
+
+<defitem "element header" {element header <i appname>}>
+
+Returns a standard HTML page header, to be inserted at the top of
+the page's <tag body> element (or in a <xref smartdomain(n)>'s 
+<tt htmlHeader> method).  The <i appname> is the application
+name; it will be inserted in the header.<p>
+
+<defitem "element footer" {element footer}>
+
+Returns a standard HTML page footer, to be inserted at the bottom of
+the page's <tag body> element.
+
+</deflist commands>
+<section AUTHOR>
+
+Will Duquette<p>
+
+</manpage>
+
+
+
+
+

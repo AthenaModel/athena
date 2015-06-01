@@ -75,24 +75,14 @@ oo::class create ::projectlib::helpdomain {
     # Header and Footer
 
     method htmlHeader {hb title} {
-        hb tagln a -href "/index.html"
-        hb ximg /images/Athena_logo_tiny.png -class logo
-        hb tag /a
-        hb div -class tagline {
-            hb putln "Athena Regional Stability Simulation"
-            hb br
-            hb putln "Arachne v[app version]"
-            hb br
-            hb putln "Better than BOGSAT!"
-        }
-        hb para
+        # TBD: We'll need to set the appname using an option
+        # once we use this in the workbench as well.
+        # Or parameterize athena::element.
+        hb putln [athena::element header Arachne]
     }
 
     method htmlFooter {hb} {
-        $hb hr
-        $hb span -class tinyi \
-            "Athena [app version] - [clock format [clock seconds]]"
-        $hb para
+        hb putln [athena::element footer]
     }
 
     #-------------------------------------------------------------------
@@ -247,10 +237,7 @@ oo::class create ::projectlib::helpdomain {
     # Adds a navigation bar to the parent items.
 
     method NavBar {suffix} {
-        hb table -width 100% -class linkbar
-        hb tr -class "" -valign bottom
-        hb td -align left
-        hb div -class linkbar {
+        hb linkbar {
             hb form
             hb xref /index.html Home
 
@@ -259,7 +246,7 @@ oo::class create ::projectlib::helpdomain {
             set parents {}
             foreach folder [split [string trimleft $suffix /] /] {
                 if {[file extension $folder] eq ".html"} {
-                    hb span -class linktext " / [file rootname $folder]"
+                    hb span " / [file rootname $folder]"
                     continue
                 }
 
@@ -274,11 +261,6 @@ oo::class create ::projectlib::helpdomain {
             hb submit "Search"
             hb /form
         }
-
-        hb /td
-        hb /tr
-        hb /table
-        hb para
     }
 
     

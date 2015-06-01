@@ -46,6 +46,13 @@ snit::type ::athena::athena {
         return [$type create %AUTO% {*}$args]
     }
 
+    # version
+    #
+    # Returns the package version.
+
+    typemethod version {} {
+        return [package present athena]
+    }
 
 
     #-------------------------------------------------------------------

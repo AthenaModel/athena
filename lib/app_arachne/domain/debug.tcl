@@ -39,24 +39,11 @@ oo::class create /debug {
     # Header and Footer
 
     method htmlHeader {hb title} {
-        hb tagln a -href "/index.html"
-        hb ximg /images/Athena_logo_tiny.png -class logo
-        hb tag /a
-        hb div -class tagline {
-            hb putln "Athena Regional Stability Simulation"
-            hb br
-            hb putln "Arachne v[app version]"
-            hb br
-            hb putln "Better than BOGSAT!"
-        }
-        hb para
+        hb putln [athena::element header Arachne]
     }
 
     method htmlFooter {hb} {
-        $hb hr
-        $hb span -class tinyi \
-            "Athena Arachne [app version] - [clock format [clock seconds]]"
-        $hb para
+        hb putln [athena::element footer]
     }
 
     #-------------------------------------------------------------------
@@ -71,19 +58,12 @@ oo::class create /debug {
     # Debugging Navigation Bar
 
     method DebugNavBar {} {
-        hb table -width 100% -class linkbar
-        hb tr -class "" -valign bottom
-        hb td -align left
-        hb div -class linkbar {
+        hb linkbar {
             hb xref /index.html "Home"
             hb iref /index.html "Debug"
             hb iref /mods.html "Mods"
             hb xref /help/index.html "Help"
         }
-        hb /td
-        hb /tr
-        hb /table
-        hb para
     }
 
 

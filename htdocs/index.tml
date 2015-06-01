@@ -5,14 +5,7 @@
 
 <body>
 
-<a href="/index.html"><img src="/images/Athena_logo_tiny.png" class="logo"></a>
-<div class="tagline">
-Athena Regional Stability Simulation<br> 
-
-Arachne [app version]<br> 
-
-Better than BOGSAT!
-</div><p>
+[athena::element header Arachne]
 
 <table cellpadding="5" width="100%" class="linkbar">
 <tr class="oddrow" valign="top" class valign="bottom">
@@ -30,8 +23,7 @@ Better than BOGSAT!
 <li> <a href="arachne.html">Arachne Interface Specification</a>
 </ul>
 
-<hr>
-<span class="tinyi">Athena [app version] - [clock format [clock seconds]]</span><p> 
+[athena::element footer]
 
 </body>
 </html>

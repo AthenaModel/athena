@@ -44,24 +44,11 @@ oo::class create /scenario {
     # Header and Footer
 
     method htmlHeader {hb title} {
-        hb tagln a -href "/index.html"
-        hb ximg /images/Athena_logo_tiny.png -class logo
-        hb tag /a
-        hb div -class tagline {
-            hb putln "Athena Regional Stability Simulation"
-            hb br
-            hb putln "Arachne v[app version]"
-            hb br
-            hb putln "Better than BOGSAT!"
-        }
-        hb para
+        hb putln [athena::element header Arachne]
     }
 
     method htmlFooter {hb} {
-        $hb hr
-        $hb span -class tinyi \
-            "Athena Arachne [app version] - [clock format [clock seconds]]"
-        $hb para
+        hb putln [athena::element footer]
     }
 
     #-------------------------------------------------------------------
@@ -414,10 +401,7 @@ oo::class create /scenario {
     # Returns a navigation bar for the toplevel pages
 
     method MainNavBar {} {
-        hb table -width 100% -class linkbar
-        hb tr -class "" -valign bottom
-        hb td -align left
-        hb div -class linkbar {
+        hb linkbar {
             hb xref /index.html "Home"
             hb iref /index.html "Scenarios"
             hb iref /new.html "New"
@@ -427,10 +411,6 @@ oo::class create /scenario {
             hb iref /remove.html "Remove"
             hb xref /help/index.html "Help"
         }
-        hb /td
-        hb /tr
-        hb /table
-        hb para
     }
 
     # CaseNavBar
@@ -438,10 +418,7 @@ oo::class create /scenario {
     # Returns a navigation bar for the scenario pages
 
     method CaseNavBar {case} {
-        hb table -width 100% -class linkbar
-        hb tr -class "" -valign bottom
-        hb td -align left
-        hb div -class linkbar {
+        hb linkbar {
             hb xref /index.html "Home"
             hb iref /index.html "Scenarios"
             hb iref /$case/index.html "Case"
@@ -457,10 +434,6 @@ oo::class create /scenario {
             hb iref /$case/orggroup/index.html "Org Groups"
             hb iref /$case/sigevent/index.html "Sig Events"
         }
-        hb /td
-        hb /tr
-        hb /table
-        hb para
     }
 
     # FormatFailureList case flist
