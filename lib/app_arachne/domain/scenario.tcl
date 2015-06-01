@@ -44,13 +44,23 @@ oo::class create /scenario {
     # Header and Footer
 
     method htmlHeader {hb title} {
-        $hb h1 -style "background: red;" \
-            "&nbsp;Arachne: Athena Regional Stability Simulation"   
+        hb tagln a -href "/index.html"
+        hb ximg /images/Athena_logo_tiny.png -class logo
+        hb tag /a
+        hb div -class tagline {
+            hb putln "Athena Regional Stability Simulation"
+            hb br
+            hb putln "Arachne v[app version]"
+            hb br
+            hb putln "Better than BOGSAT!"
+        }
+        hb para
     }
 
     method htmlFooter {hb} {
         $hb hr
-        $hb putln "Athena Arachne [app version] - [clock format [clock seconds]]"
+        $hb span -class tinyi \
+            "Athena Arachne [app version] - [clock format [clock seconds]]"
         $hb para
     }
 
@@ -404,21 +414,21 @@ oo::class create /scenario {
     # Returns a navigation bar for the toplevel pages
 
     method MainNavBar {} {
-        hb hr
-        hb xref /index.html "Home"
-        hb put " | "
-        hb iref /index.html "Scenarios"
-        hb put " | "
-        hb iref /new.html "New"
-        hb put " | "
-        hb iref /clone.html "Clone"
-        hb put " | "
-        hb iref /import.html "Import"
-        hb put " | "
-        hb iref /export.html "Export"
-        hb put " | "
-        hb iref /remove.html "Remove"
-        hb hr
+        hb table -width 100% -class linkbar
+        hb tr -class "" -valign bottom
+        hb td -align left
+        hb div -class linkbar {
+            hb xref /index.html "Home"
+            hb iref /index.html "Scenarios"
+            hb iref /new.html "New"
+            hb iref /clone.html "Clone"
+            hb iref /import.html "Import"
+            hb iref /export.html "Export"
+            hb iref /remove.html "Remove"
+        }
+        hb /td
+        hb /tr
+        hb /table
         hb para
     }
 
@@ -427,29 +437,28 @@ oo::class create /scenario {
     # Returns a navigation bar for the scenario pages
 
     method CaseNavBar {case} {
-        hb hr
-        hb xref /index.html "Home"
-        hb put " | "
-        hb iref /index.html "Scenarios"
-        hb put " | "
-        hb iref /$case/index.html "Case"
-        hb put " | "
-        hb iref /$case/actor/index.html "Actors"
-        hb put " | "
-        hb iref /$case/nbhood/index.html "Neighborhoods"
-        hb put " | "
-        hb iref /$case/civgroup/index.html "Civilian Groups"
-        hb put " | "
-        hb iref /$case/frcgroup/index.html "Force Groups"
-        hb put " | "
-        hb iref /$case/orggroup/index.html "Organization Groups"
-        hb put " | "
-        hb iref /$case/sanity/onlock.html "Sanity"
-        hb put " | "
-        hb iref /$case/order.html "Orders"
-        hb put " | "
-        hb iref /$case/script.html "Scripts"
-        hb hr
+        hb table -width 100% -class linkbar
+        hb tr -class "" -valign bottom
+        hb td -align left
+        hb div -class linkbar {
+            hb xref /index.html "Home"
+            hb iref /index.html "Scenarios"
+            hb iref /$case/index.html "Case"
+            hb iref /$case/sanity/onlock.html "Sanity"
+            hb iref /$case/order.html "Orders"
+            hb iref /$case/script.html "Scripts"
+            hb xref /help/index.html "Help"
+            hb br
+            hb iref /$case/actor/index.html "Actors"
+            hb iref /$case/nbhood/index.html "Neighborhoods"
+            hb iref /$case/civgroup/index.html "Civ Groups"
+            hb iref /$case/frcgroup/index.html "Frc Groups"
+            hb iref /$case/orggroup/index.html "Org Groups"
+            hb iref /$case/sigevent/index.html "Sig Events"
+        }
+        hb /td
+        hb /tr
+        hb /table
         hb para
     }
 
@@ -554,11 +563,11 @@ smarturl /scenario /index.html {
     controls.
 } {
     hb page "Scenarios"
+    my MainNavBar
+
     hb h1 "Scenarios"
     hb para
 
-    my MainNavBar
-    hb para
 
     hb putln "The following scenarios are loaded ("
     hb iref /index.json json
@@ -615,9 +624,9 @@ smarturl /scenario /new.html {
 
     # NEXT, set up a form
     hb page "New Scenario"
-    hb h1 "New Scenario"
-
     my MainNavBar
+
+    hb h1 "New Scenario"
 
     if {$op eq "new"} {
         if {[qdict ok]} {
@@ -713,9 +722,9 @@ smarturl /scenario /clone.html {
 
     # NEXT, set up a form
     hb page "Clone Scenario"
-    hb h1 "Clone Scenario"
-
     my MainNavBar
+
+    hb h1 "Clone Scenario"
 
     if {$op eq "clone" && ![qdict ok]} {
         my ErrorList "Could not clone a scenario:"
@@ -817,9 +826,9 @@ smarturl /scenario /import.html {
 
     # NEXT, set up a form
     hb page "Import Scenario"
-    hb h1 "Import Scenario"
-
     my MainNavBar
+
+    hb h1 "Import Scenario"
 
     if {$op eq "import" && ![qdict ok]} {
         my ErrorList "Could not import a scenario:"
@@ -919,9 +928,9 @@ smarturl /scenario /export.html {
 
     # NEXT, set up a form
     hb page "Export Scenario"
-    hb h1 "Export Scenario"
-
     my MainNavBar
+
+    hb h1 "Export Scenario"
 
     if {$op eq "export"} {
         if {[qdict ok]} {
@@ -1021,9 +1030,9 @@ smarturl /scenario /remove.html {
 
     # NEXT, set up a form
     hb page "Remove Scenario"
-    hb h1 "Remove Scenario"
-
     my MainNavBar
+
+    hb h1 "Remove Scenario"
 
     if {$op eq "remove"} {
         if {[qdict ok]} {

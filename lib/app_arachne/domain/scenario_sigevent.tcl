@@ -124,9 +124,9 @@ smarturl /scenario /{case}/sigevent/index.html {
 
     # NEXT, begin the page
     hb page "Significant Events: $case"
-    hb h1 "Significant Events: $case"
-
     my CaseNavBar $case
+
+    hb h1 "Significant Events: $case"
 
     hb form -id pageform {
         hb enumlong pagesize       \

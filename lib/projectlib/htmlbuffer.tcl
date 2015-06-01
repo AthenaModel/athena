@@ -546,6 +546,29 @@ oo::class create ::projectlib::htmlbuffer {
     }
     export /span
 
+    # div ?options? body
+    #
+    # body    - A script to execute
+    #
+    # Defines a <div> block.  The body is executed, and the </div> tag
+    # is added automatically.
+   
+    method div {args} {
+        set body [my PopOdd args body]
+        my tag div {*}$args
+        uplevel 1 $body
+        my /div
+    }
+
+    # /div
+    #
+    # Ends a <div> block
+    
+    method /div {} {
+        my putln </div>
+    }
+    export /div
+
     #-------------------------------------------------------------------
     # <a href> links
 
@@ -865,7 +888,10 @@ oo::class create ::projectlib::htmlbuffer {
         if {[llength $headers] > 0} {
             my tagln tr -class header -align left
             foreach header $headers {
-                my wrapln th -align left $header 
+                my tagln th -align left
+                my span -style "font-weight: normal" $header
+                my tag /th
+                # my wrapln th -align left $header 
             }
             my /tr
         }

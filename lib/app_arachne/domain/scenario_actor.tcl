@@ -31,9 +31,9 @@ smarturl /scenario /{case}/actor/index.html {
     set case [my ValidateCase $case]
 
     hb page "Scenario '$case': Actors"
-    hb h1 "Scenario '$case': Actors"
-
     my CaseNavBar $case
+
+    hb h1 "Scenario '$case': Actors"
 
     set actors [case with $case actor names]
 
@@ -117,6 +117,8 @@ smarturl /scenario /{case}/actor/{a}/index.html {
     set name [case with $case actor get $a longname]
 
     hb page "Scenario '$case': Actor: $a"
+    my CaseNavBar $case 
+
     hb h1 "Scenario '$case': Actor: $a"
 
     # NEXT, the only content for now is a link to the JSON
@@ -125,8 +127,6 @@ smarturl /scenario /{case}/actor/{a}/index.html {
     hb put "."
 
     hb para
-
-    my CaseNavBar $case 
 
     hb para
     return [hb /page]

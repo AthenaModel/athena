@@ -75,13 +75,23 @@ oo::class create ::projectlib::helpdomain {
     # Header and Footer
 
     method htmlHeader {hb title} {
-        $hb h1 -style "background: red;" \
-            "&nbsp;Arachne: $dbtitle"   
+        hb tagln a -href "/index.html"
+        hb ximg /images/Athena_logo_tiny.png -class logo
+        hb tag /a
+        hb div -class tagline {
+            hb putln "Athena Regional Stability Simulation"
+            hb br
+            hb putln "Arachne v[app version]"
+            hb br
+            hb putln "Better than BOGSAT!"
+        }
+        hb para
     }
 
     method htmlFooter {hb} {
         $hb hr
-        $hb putln "Athena Arachne [app version] - [clock format [clock seconds]]"
+        $hb span -class tinyi \
+            "Athena [app version] - [clock format [clock seconds]]"
         $hb para
     }
 
@@ -237,35 +247,37 @@ oo::class create ::projectlib::helpdomain {
     # Adds a navigation bar to the parent items.
 
     method NavBar {suffix} {
-        hb hr
+        hb table -width 100% -class linkbar
+        hb tr -class "" -valign bottom
+        hb td -align left
+        hb div -class linkbar {
+            hb form
+            hb xref /index.html Home
 
-        hb form 
-        hb xref /index.html Home
-        hb put " / "
+            hb xref [my domain]/index.html [string trimleft Help /]
 
-        hb xref [my domain]/index.html [string trimleft [my domain] /]
+            set parents {}
+            foreach folder [split [string trimleft $suffix /] /] {
+                if {[file extension $folder] eq ".html"} {
+                    hb span -class linktext " / [file rootname $folder]"
+                    continue
+                }
 
+                lappend parents $folder
 
-        set parents {}
-        foreach folder [split [string trimleft $suffix /] /] {
-            if {[file extension $folder] eq ".html"} {
-                hb put " / " [file rootname $folder]
-                continue
+                set url [my domain]/[join $parents /].html 
+                hb xref $url " / $folder" 
             }
 
-            lappend parents $folder
-
-            set url [my domain]/[join $parents /].html 
-            hb put " / "
-            hb xref $url $folder 
+            hb put "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+            hb entry search -size 15
+            hb submit "Search"
+            hb /form
         }
 
-        hb put "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-        hb entry search -size 15
-        hb submit "Search"
-        hb /form
-
-        hb hr
+        hb /td
+        hb /tr
+        hb /table
         hb para
     }
 
