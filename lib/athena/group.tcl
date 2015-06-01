@@ -44,11 +44,18 @@ snit::type ::athena::group {
     #
     # Returns the list of neighborhood names
 
-    method names {} {
-        set names [$adb eval {
+    method names {{gtypes ""}} {
+        set wClause ""
+        if {[llength $gtypes] > 0} {
+            set wClause "WHERE gtype IN ('" 
+            append wClause [join $gtypes "' ,'"] "')"
+        }
+        
+        set names [$adb eval "
             SELECT g FROM groups 
+            $wClause
             ORDER BY g
-        }]
+        "]
     }
 
     # namedict

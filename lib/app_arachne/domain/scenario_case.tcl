@@ -500,4 +500,3 @@ smarturl /scenario /{case}/script.json {
     return [js ok $result]
 }
 
-
