@@ -425,6 +425,7 @@ oo::class create /scenario {
             hb iref /import.html "Import"
             hb iref /export.html "Export"
             hb iref /remove.html "Remove"
+            hb xref /help/index.html "Help"
         }
         hb /td
         hb /tr

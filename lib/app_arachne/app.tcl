@@ -177,7 +177,7 @@ snit::type app {
         # ::tls::init -tls1 1 -tls1.1 0 -tls1.2 0 -ssl2 0 -ssl3 0
 
         # FIRST, create a web server log
-        ahttpd init \
+        ahttpd init -allowtml \
             -port       $info(port)             \
             -secureport ""                      \
             -logcmd     [$type newlog ahttpd]   \
