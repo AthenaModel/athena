@@ -219,13 +219,13 @@ oo::class create /scenario {
         # FIRST, basic validations
         set t1 [qdict prepare t1 -toupper -default 0 -with {iticks validate}]
         set t2 [qdict prepare t2 -toupper -default end]
-
-        if {![qdict ok]} {
-            return 0
-        }
         
         # NEXT t2 must be greater than or equal to t1 if it is not "end"
         qdict checkon t2 {
+            if {[qdict badparm t1]} {
+                return
+            }
+
             if {$t2 ne "end"} {
                 iticks validate $t2
 
@@ -234,15 +234,7 @@ oo::class create /scenario {
                 }
             }
         }
-
-        if {![qdict ok]} {
-            return 0
-        }
-
-        return 1        
     }
-
-
 
     # RefreshIfBusy ?case?
     #

@@ -45,6 +45,16 @@ oo::define /scenario {
         activity_nga HistActivity
     }
 
+    method ValidateVar {case var} {
+        set var [string tolower $var]
+
+        if {$var ni [dict keys [my histvar]]} {
+            throw NOTFOUND "No such history variable: $var"
+        }
+
+        return $var
+    }
+
     # HistActor content case var
     #
     # content - html | json
@@ -66,7 +76,9 @@ oo::define /scenario {
             set a [qdict prepare a -toupper -default ALL -in $actors]
 
             # NEXT, validate time parms
-            if {![my ValidateTimes]} {
+            my ValidateTimes
+
+            if {![qdict ok]} {
                 return [js reject [qdict errors]]
             }
 
@@ -98,7 +110,9 @@ oo::define /scenario {
             lappend keys n
 
             # NEXT, validate time parms
-            if {![my ValidateTimes]} {
+            my ValidateTimes
+
+            if {![qdict ok]} {
                 return [js reject [qdict errors]]
             }
 
@@ -135,7 +149,9 @@ oo::define /scenario {
             set c [qdict prepare c -toupper -default ALL -in $concerns]
 
             # NEXT, validate time parms
-            if {![my ValidateTimes]} {
+            my ValidateTimes
+
+            if {![qdict ok]} {
                 return [js reject [qdict errors]]
             }
 
@@ -165,7 +181,9 @@ oo::define /scenario {
             set g [qdict prepare g -toupper -default ALL -in $groups]
 
             # NEXT, validate time parms
-            if {![my ValidateTimes]} {
+            my ValidateTimes
+
+            if {![qdict ok]} {
                 return [js reject [qdict errors]]
             }
 
@@ -200,7 +218,9 @@ oo::define /scenario {
             set c [qdict prepare c -toupper -default ALL -in $concerns]
 
             # NEXT, validate time parms
-            if {![my ValidateTimes]} {
+            my ValidateTimes
+
+            if {![qdict ok]} {
                 return [js reject [qdict errors]]
             }
 
@@ -236,7 +256,9 @@ oo::define /scenario {
             set g [qdict prepare g -toupper -default ALL -in $groups]
 
             # NEXT, validate time parms
-            if {![my ValidateTimes]} {
+            my ValidateTimes
+
+            if {![qdict ok]} {
                 return [js reject [qdict errors]]
             }
 
@@ -272,7 +294,9 @@ oo::define /scenario {
             set g [qdict prepare g -toupper -default ALL -in $groups]
 
             # NEXT, validate time parms
-            if {![my ValidateTimes]} {
+            my ValidateTimes
+
+            if {![qdict ok]} {
                 return [js reject [qdict errors]]
             }
 
@@ -308,7 +332,9 @@ oo::define /scenario {
             set g [qdict prepare g -toupper -default ALL -in $groups]
 
             # NEXT, validate time parms
-            if {![my ValidateTimes]} {
+            my ValidateTimes
+
+            if {![qdict ok]} {
                 return [js reject [qdict errors]]
             }
 
@@ -344,7 +370,9 @@ oo::define /scenario {
             set n [qdict prepare n -toupper -default ALL -in $nbhoods]
 
             # NEXT, validate time parms
-            if {![my ValidateTimes]} {
+            my ValidateTimes
+
+            if {![qdict ok]} {
                 return [js reject [qdict errors]]
             }
 
@@ -380,7 +408,9 @@ oo::define /scenario {
             set g [qdict prepare g -toupper -default ALL -in $groups2]
 
             # NEXT, validate time parms
-            if {![my ValidateTimes]} {
+            my ValidateTimes
+
+            if {![qdict ok]} {
                 return [js reject [qdict errors]]
             }
 
@@ -415,7 +445,9 @@ oo::define /scenario {
             set g [qdict prepare g -toupper -default ALL -in $groups2]
 
             # NEXT, validate time parms
-            if {![my ValidateTimes]} {
+            my ValidateTimes
+
+            if {![qdict ok]} {
                 return [js reject [qdict errors]]
             }
 
@@ -450,7 +482,9 @@ oo::define /scenario {
             set g [qdict prepare g -toupper -default ALL -in $groups2]
 
             # NEXT, validate time parms
-            if {![my ValidateTimes]} {
+            my ValidateTimes
+
+            if {![qdict ok]} {
                 return [js reject [qdict errors]]
             }
 
@@ -485,7 +519,9 @@ oo::define /scenario {
             set a [qdict prepare a -toupper -default ALL -in $actors]
 
             # NEXT, validate time parms
-            if {![my ValidateTimes]} {
+            my ValidateTimes
+
+            if {![qdict ok]} {
                 return [js reject [qdict errors]]
             }
 
@@ -509,7 +545,10 @@ oo::define /scenario {
                 my TimeSpanForm $case "econ"
             }
         } else {
-            if {![my ValidateTimes]} {
+            # NEXT, validate time parms
+            my ValidateTimes
+
+            if {![qdict ok]} {
                 return [js reject [qdict errors]]
             }
 
@@ -551,7 +590,9 @@ oo::define /scenario {
             set g [qdict prepare g -toupper -default ALL -in $groups]
 
             # NEXT, validate time parms
-            if {![my ValidateTimes]} {
+            my ValidateTimes
+
+            if {![qdict ok]} {
                 return [js reject [qdict errors]]
             }
 
@@ -596,7 +637,9 @@ oo::define /scenario {
             set a [qdict prepare a -toupper -default ALL -in $alist]
 
             # NEXT, validate time parms
-            if {![my ValidateTimes]} {
+            my ValidateTimes
+
+            if {![qdict ok]} {
                 return [js reject [qdict errors]]
             }
 
@@ -633,21 +676,15 @@ oo::define /scenario {
             set g [qdict prepare g -toupper -default ALL -in $groups]
 
             # NEXT, validate time parms
-            if {![my ValidateTimes]} {
+            my ValidateTimes
+
+            if {![qdict ok]} {
                 return [js reject [qdict errors]]
             }
 
             # NEXT, get JSON and redirect
             my JSONQuery $case "service_sg" {s g}
         }  
-    }
-
-    # HistUndefinedHtml case var
-    #
-    # Returns an HTML page for undefined variables.
-
-    method HistUndefinedHtml {case var} {        
-        hb h2 "$var is not defined."
     }
 
     # JSONQuery case var keys
@@ -709,7 +746,7 @@ oo::define /scenario {
 
         # NEXT, extract data and redirect
         try {
-            case with $case query $query -mode json -filename $filename
+            case with $case query $query -mode jsonok -filename $filename
         } on error {result eopts} {
             return [js error $result [dict get $eopts -errorinfo]]
         }
@@ -743,11 +780,17 @@ smarturl /scenario /{case}/history/index.html {
     hb /form
     hb para
 
-    if {$histvar_ ne "" && $histvar_ in $hvars} {
-        hb h2 $histvar_
-        set handler [my histvar $histvar_]
-        my $handler html $case $histvar_
-    }
+    set vars [case with $case hist vars]
+
+    if {$histvar_ ne ""} {
+        if {$histvar_ ni [dict keys [my histvar]]} {
+            hb h3 "Error: $histvar_ not a valid history variable."
+        } else {
+            hb h2 $histvar_
+            set handler [my histvar $histvar_]
+            my $handler html $case $histvar_
+        }
+    } 
 
     return [hb /page]
 }
@@ -758,7 +801,7 @@ smarturl /scenario /{case}/history/index.json {
 } {
     set case [my ValidateCase $case]
 
-    set hud [huddle compile dict [case with $case hist vars]]
+    set hud [huddle compile dict [case with $case hist vars]]       
 
     return [js ok $hud]
 }
@@ -768,6 +811,7 @@ smarturl /scenario /{case}/history/{var}/index.html {
     variable {var}.
 } {
     set case [my ValidateCase $case]
+    set var [my ValidateVar $case $var]
 
     # FIRST, begin the page
     hb page "Scenario '$case': History Variable: $var"
@@ -775,12 +819,8 @@ smarturl /scenario /{case}/history/{var}/index.html {
 
     my CaseNavBar $case
 
-    try {
-        set handler [my histvar $var]
-        my $handler html $case $var 
-    } on error {result eopts} {
-        my HistUndefinedHtml $case $var
-    }
+    set handler [my histvar $var]
+    my $handler html $case $var 
 
     return [hb /page]
 }
@@ -788,6 +828,10 @@ smarturl /scenario /{case}/history/{var}/index.html {
 smarturl /scenario /{case}/history/{var}/index.json {
     Retrieves history from {case} for history variable {var}.
 } {
+
+    set case [my ValidateCase $case]
+    set var [my ValidateVar $case $var]
+
     set handler [my histvar $var]
     my $handler json $case $var
 }
