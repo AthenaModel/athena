@@ -155,6 +155,8 @@ snit::type ::athena::athena {
     delegate method {actor view}            to adb as {actor view}
     
     delegate method {activity names}        to adb as {activity names}
+    delegate method {activity frc names}    to adb as {activity frc names}
+    delegate method {activity org names}    to adb as {activity org names}
     
     delegate method {agent exists}          to adb as {agent exists}
     delegate method {agent names}           to adb as {agent names}

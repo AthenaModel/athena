@@ -25,30 +25,29 @@ snit::type ::athena::hist {
     # hist_* tables.
 
     typevariable histVars -array {
-        econ         {}
-        control      {n}
-        nbmood       {n}
-        volatility   {n}
-        npop         {n}
-        nbur         {n}
-        plant_n      {n}
-        mood         {g}
-        pop          {g}
-        plant_a      {a}
-        security     {n g}
-        deploy_ng    {n g}
-        nbcoop       {n g}
-        sat          {g c}
-        nbsat        {n c}
-        coop         {f g}
-        hrel         {f g}
-        vrel         {g a}
-        plant_na     {n a}
-        support      {n a}
-        flow         {f g}
-        service_sg   {s g}
         aam_battle   {n f g}
         activity_nga {n g a}
+        control      {n}
+        coop         {f g}
+        deploy_ng    {n g}
+        econ         {}
+        flow         {f g}
+        hrel         {f g}
+        mood         {g}
+        nbmood       {n}
+        nbsat        {n c}
+        nbur         {n}
+        npop         {n}
+        plant_a      {a}
+        plant_n      {n}
+        plant_na     {n a}
+        pop          {g}
+        sat          {g c}
+        security     {n g}
+        service_sg   {s g}
+        support      {n a}
+        volatility   {n}
+        vrel         {g a}
     }
 
     #-------------------------------------------------------------------
@@ -234,7 +233,7 @@ snit::type ::athena::hist {
                 FROM plants_na;
             }
         }
-        
+
         if {[$adb parm get hist.support]} {
             $adb eval {
                 INSERT INTO hist_support(t,n,a,direct_support,support,influence)
