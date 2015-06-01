@@ -13,6 +13,10 @@ is an incomplete prototype.<p>
 
 <changelog>
 
+<change 6/1/2015 Update will>
+Updates on the RESTful API, prior to June engineering delivery.<p>
+</change>
+
 <change 4/10/2015 Update will>
 Added details about the RESTful API.  Also, Arachne is no longer 
 intended for non-server batch runs; <xref athena(1)>'s "build" subcommand
@@ -62,13 +66,17 @@ run as part of the "Web Athena" back end:<p>
 <li> Arachne runs on a cloud node, with an instance of Arachne for each
      user session.
 <li> The node runs 64-bit Linux (this is negotiable).
-<li> Arachne is invoked by the back end software on need.
-<li> Arachne communicates with the back end software by means of its 
-     command line and RESTful HTTP interface.
-<li> Arachne is insulated from the outside network by the enclosing back
-     end software (so as to minimize potential security issues).
-<li> The enclosing software handles file management, i.e., archiving of 
-     Athena scenario results.
+<li> Arachne is invoked on the node by a wrapper provided by the 
+     web-development team.
+<li> The wrapper communicates with Arachne by means of its 
+     command line and its RESTful HTTP interface.
+<li> Arachne is insulated from the outside network by the wrapper 
+     (so as to minimize potential security issues).  In other words,
+     the wrapper serves as a proxy server between Arachne and the
+     front end.
+<li> The wrapper handles file management, i.e., it is responsible
+     for copying user scenario data to and from the scenario archive,
+     whereever that might be.
 </ul>
 
 <section overview.name "Why Arachne?">
@@ -85,7 +93,7 @@ Arachne is installed as a Linux executable called <b><tt arachne></b>.
 It runs as a server with a RESTful web interface.<p>
 
 To run Arachne simply invoke it, optionally specifying the HTTP 
-<tt -port>, <tt -public>, and <tt -heartbeatfile>.  Arachne will load 
+<tt -port> and other options.  Arachne will load 
 any <tt -scenario> and execute any <tt -script> for its "base" case, 
 and then wait for instructions via HTTP.<p>
 
@@ -116,18 +124,12 @@ HTTP requests, it will GET the
 specified URL approximately every <tt -heartbeat> seconds.  This allows the 
 enclosing web application to be sure that it is alive.<p>
 
-<def {-public}>
-
-<b Not Yet Implemented.> 
-By default, Arachne only accepts HTTP requests from the local host.  If
-this option is given, Arachne will accept HTTP requests from other hosts.<p>
-
 <def {-port <i portid>}>
 
 Specifies the port ID at which Arachne should listen for HTTP requests.
 Defaults to port 8080.
 <b TBD:> Ultimately, Arachne will accept only HTTPS request; at present,
-we are waiting on a bug fix in the Tcl TLS package, so we list for 
+we are waiting on a bug fix in the Tcl TLS package, so we listen for 
 normal HTTP requests.<p>
 
 <def {-scenariodir <i dirpath>}>
@@ -136,11 +138,12 @@ export Athena scenario (.adb) files and scenario script (.tcl) files at
 run-time.  The larger application can stage and retrieve files using
 this directory.<p>
 
-<def {-scenario <i filepath>}>
+<def {-scenario <i filename>}>
 
 Specifies the path to an Athena scenario (.adb) file to load at start-up
 as Arachne's base case, "<tt case00>".  It is usual to begin with a base 
-scenario and then run excursions from it via the RESTful API.<p>
+scenario and then run excursions from it via the RESTful API.  The 
+<i filename> must be a bare filename in the <tt -scenariodir>.<p>
 
 If no <tt -scenario> is specified, then Arachne creates an empty scenario
 for "<tt case00>".<p>
@@ -151,14 +154,7 @@ Specifies the path to an Athena script (.tcl) file to load into the
 base case at start-up. Any <tt -scenario> is loaded into "<tt case00>" 
 first.<p> 
 
-<b TBD:> The RESTful interface is importing scenario files and scenario
-scripts interchangeably, based on the file type.  The 
-<tt -scenario>/<tt -script> option pair is mostly of use for batch
-processing, for which Arachne no longer responsible; perhaps we should 
-remove <tt -script> and let <tt -scenario> be either a .adb or .tcl 
-file.<p>
-
-<def {-noweb}>
+<def {-test}>
 
 If this option is specified, Arachne will halt immediately after loading the
 <tt -scenario> and executing the <tt -script>.  This is provided as an
@@ -166,18 +162,78 @@ aid to testing.<p>
 
 </deflist options>
 
+<section scenario "Scenario Management">
+
+Arachne allows the client to work with multiple scenarios at one time.
+The expected use case is that one scenario will be the "base case" and
+the others will be excursions from that base case; but while Arachne
+facilitates this pattern it does not require it, and the loaded scenarios
+can be entirely unrelated.<p>
+
+<section scenario.caseid "Scenario Case IDs">
+
+Each scenario has a symbolic "case ID" and a human-readable "long name".
+The case IDs are strings matching the pattern "<tt>case<i nn></tt>", 
+where <i nn> is a number from "00" to "99" (or larger).  
+Case IDs are assigned automatically as scenarios are created, cloned, or
+imported.  The long name may be set to any desired string.<p>
+
+The base case would typically be scenario <tt case00>, which is created
+automatically when Arachne is invoked.<p>
+
+<section scenario.staging "Scenario Staging">
+
+Arachne does not know the details of how users' scenario files will be 
+stored or accessed in the cloud.  Consequently, all scenario data is
+staged through Arachne's "scenario directory".  The scenario directory
+may contain Athena scenarios as scenario files (".adb") or as 
+executive script files (".tcl").<p>
+
+Scenarios to be used in Arachne should be copied to the scenario directory
+and then <b imported> into a running instance of Arachne using the
+<tt /scenario/import.{json,html}> URL.  On import, the client can specify
+the scenario's long name.  The newly imported scenario will have a new
+case ID, or alternatively, it can be imported over an existing case ID.<p>
+
+Similarly, a scenario to be saved to the closed must be <b exported> to the 
+scenario directory using the <tt /scenario/export.{json,html}> URL.  The
+client specifies the file name to use, and is then responsible for
+storing the file in the cloud.<p>
+
+<section scenario.create "Creating Scenarios">
+
+In addition to importing scenarios, they can also be created within 
+Arachne.  The client can create a <b new> empty scenario using
+<tt /scenario/new.{json,html}>, and can <b clone> an existing scenario
+using <tt /scenario/clone.{json,html}>.<p>
+
+<section scenario.modify "Modifying Scenarios">
+
+Once a scenario has been created, cloned, or imported it can be modified
+by sending it orders using <tt>/scenario/<i case>/order.{html,json}</tt>
+or executive scripts using <tt>/scenario/<i case>/script.{html,json}</tt>.<p>
+
+<section scenario.other "Other Operations">
+
+Finally, scenarios can be sanity checked, locked, advanced in time, 
+queried, and unlocked using the remaining 
+<tt /scenario> domain URLs; see <xref restapi.scenario>.<p>
+
+
 <section restapi "RESTful API">
 
-When Arachne is run with the <tt -port> command line option, it will 
-initialize its RESTful HTTP interface, which can be accessed at 
-<tt>https://127.0.0.1:<i portid></tt>.<p>  
+<section restapi.overview "Overview">
 
-By default, the HTTP interface can only be accessed from the local host.
-If the <tt -public> option is given, then the HTTP interface
-can be accessed from other hosts on the network.<p>
+Arachne's RESTful HTTP interface is accessed at
+<tt>http://127.0.0.1:<i portid>/</tt>.  The <i portid> is set using
+the <tt -port> command line option, and defaults to port 8080.<p>
 
-The set of URLs and HTTP operations supported by Arachne is <b TBD>, but
-will certainly allow:<p>
+The HTTP interface can only be accessed from the local host, i.e.,
+by the wrapper software, because Arachne doesn't support any kind
+of user authentication.<p>
+
+The set of URLs and HTTP operations supported by Arachne is still 
+<b TBD>, but will certainly allow all of the following:<p>
 
 <ul>
 <li> Controlling scenario execution.
@@ -191,89 +247,108 @@ will certainly allow:<p>
      chains of causality. 
 </ul> 
 
-Most requests will be GET requests; scripts will generally be sent using 
-POST.  However, Arachne isn't terribly concerned about the request type.<p>
+Normal requests should be sent as GET requests; form submissions
+should be sent using POST.<p>
 
 Information will be returned to the client as HTML or JSON text.  At
 present, we assume that the front-end will do most of its own presentation,
-and that the HTML will primarily be for debugging.  The return type will
-be indicated by the file extension on the URL, ".html" or ".json".<p>
+and that the HTML will primarily be for debugging.  The return type of
+a URL is indicated by the file extension on the URL, e.g., 
+".html" or ".json".<p>
 
-<section restapi.ref "API Reference">
+<section restapi.help "/help Domain">
 
-<deflist urls>
+We have made the Athena Workbench's on-line help database available via
+the Arachne server because it contains quite of bit of information that
+will be useful to the front-end developer, including order definitions
+and executive script documentation.  Ultimately we plan to provide an
+Arachne-specific help database.<p>
 
-<def {/scenario/index.{html,json}}>
+The root of the help pages is at 
+<tt><link /help/index.html /help/index.html></tt>.<p>
 
-Arachne will work with multiple Athena scenarios at one time.  This URL
-returns an index of data about each scenario: the scenario's ID string,
-state, current simulation time, and so forth.  The JSON output is formatted
-as a list of objects.<p>
+The <tt /help> domain supports full text search; to make use of it, use 
+the URL<p>
 
-<def {/scenario/<i case>/order.{html,json}}>
+<example>/help/?search=<i target></example>
 
-These URLs are used to send an Athena order to a scenario whose ID is 
-<i case>.  The order is sent as the URL query.  The query parameters
-are the same as the Athena order parameters, plus the <tt order_> parameter
-which specifies the order's name.<p>
+In fact, this query string can be used on any page in the <tt /help> 
+domain.<p>
 
-The JSON result is a list of two or three elements.  The first element is a
+<section restapi.scenario "/scenario Domain">
+
+Most of Arachne's URLs reside in the <tt scenario> domain.  Top-level
+functionality hangs directly from <tt /scenario>; for example, 
+<link /scenario/index.html /scenario/index.html> lists all of the currently
+loaded scenarios.<p>
+
+URLs specific to a particular scenario appear in the 
+<tt>/scenario/<i case>/</tt> subdomain, where <i case> the scenario's
+"case ID".<p>
+
+For a complete list of URLs in this domain, with documentation, see 
+<tt><link /scenario/urlschema.html /scenario/urlschema.html></tt>.<p>
+
+<section restapi.json "JSON Conventions">
+
+All URLs that return JSON content end in a file name with extension
+"<tt .json>".  In many cases, the result is simply the JSON object or 
+list.  
+
+In cases where error returns are possible (e.g., when using
+the JSON interface to perform some action, or when invalid query 
+parameters are sent) the JSON result is a list of 
+two or three elements.  The first element is a
 code, "OK", "REJECT", or "ERROR".<p>
 
 <ul>
-<li>  If the code is "OK", the order was
-      accepted; the second element is the order's result string, which is 
-      typically empty.<p>
+<li>  If the code is "OK", the request was
+      accepted; the second element is the request's result string, 
+      which is often empty, but may be a JSON return value.  Look up the
+      particular URL in the 
+      <link /scenario/urlschema.html "URL Schema"> for specifics.<p>
 
-<li> If the code is "REJECT", the order was rejected.  The second 
+<li> If the code is "REJECT", the request was rejected.  The second 
      element is a JSON object with one field for each problem parameter
-     in the order.  The field names are parameter names (or "*" for errors
-     affecting the whole order); the field values are error messages for
-     display to the user.<p>
+     in the request.  The field names are parameter names (or "*" for 
+     errors affecting the whole request); the field values are error 
+     messages for display to the user.<p>
 
 <li> If the code is "ERROR", there was an unexpected error while executing
-     the order.  The second element is an error message, and the third
-     element is a stack trace.<p>
-</ul>
-
-<def {/scenario/<i case>/script.{html,json}}>
-
-These URLs are used to send executive scripts to a scenario whose ID is
-<i case>.  The HTML version presents a web form with a <tag textarea>
-for entry of a script, and an "Execute" button.  Pressing "Execute" sends
-the script, URL-encoded, as the value of the <tt script> query parameter
-and reloads the page.  The script and the result value are displayed, and
-the user can then enter and execute another script.<p>
-
-The JSON version accepts the script as POST data in with a content-type of
-<tt text/plain>.  (This can be changed, if desired.)  The script is 
-executed, and the result returned to the client in JSON format.   
-
-The JSON result is a list of two or three elements.  The first element is a
-code, "OK" or "ERROR".<p>
-
-<ul>
-<li>  If the code is "OK", the executed successfully; the second element 
-      is the script's result string.<p>
-
-<li> If the code is "ERROR", there was an error while executing
-     the script; this usually indicates a problem with the script itself.
-     The second element is an error message, and the third
-     element is a stack trace.<p>
+     the request.  The second element is an error message, and the third
+     element is a TCL stack trace.<p>
 </ul>
 
 
-</deflist urls>
+<section orders "Athena Order Definitions">
+
+The RESTful interface allows Athena orders to be sent to a particular
+scenario; thus, the order definitions are part of the 
+interface specification.  We already have high-quality documentation of
+all Athena orders as on-line help in the Athena Workbench; for now,
+we are making this same help database available through Arachne's web 
+interface, at <tt><link /help/index.html /help/index.html></tt>.<p>
+
+In time, we hope to provide a help database tailored to the Arachne 
+user.  In addition, the Athena Workbench has a sophisticated set of
+infrastructure for creating interactive data entry forms from order
+definitions.  At present, this infrastructure only works with TK GUIs,
+not with web UIs.  We plan to extend this "dynaform" infrastructure to 
+work with web forms as well, so as to reduce the burden on the web
+developers and to make order modifications in the back-end 
+require minimal (or zero) changes to the front-end.<p>
 
 <section script "Athena Script Commands">
 
 The RESTful interface allows executive scripts to be sent to a particular
 scenario and executed by it; thus, the executive commands are part of the 
 interface specification.  We already have high-quality documentation of
-the executive commands as on-line help in the Athena Workbench; our 
-plan for now is make this help database available through Arachne's
-web interface.  The web developer can then invoke Arachne and browse
-its help.<p>
+the executive commands as on-line help in the Athena Workbench; for now,
+we are making this same help database available through Arachne's 
+web interface, at <tt><link /help/index.html /help/index.html></tt>.<p>
+
+In time, we hope to provide a help database tailored to the 
+Arachne user.<p>
 
 </document>
 
