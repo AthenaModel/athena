@@ -103,6 +103,16 @@ snit::type app {
         scratchdir init $scratchdir
         scratchdir clear
 
+        # NEXT, purge any JSON files from htdocs/temp
+        set filenames [glob \
+                        -nocomplain \
+                        -directory [appdir join htdocs temp] \
+                        *.json]
+
+        foreach f $filenames {
+            file delete -force -- $f
+        }  
+
         # NEXT, initialize the application log
         $type newlog app
 

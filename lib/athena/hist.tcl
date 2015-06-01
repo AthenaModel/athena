@@ -17,6 +17,40 @@
 
 snit::type ::athena::hist {
     #-------------------------------------------------------------------
+    # Type variables
+
+    # histVars
+    #
+    # Array of history variables and their keys. These correspond to the 
+    # hist_* tables.
+
+    typevariable histVars -array {
+        aam_battle   {n f g}
+        activity_nga {n g a}
+        control      {n}
+        coop         {f g}
+        deploy_ng    {n g}
+        econ         {}
+        flow         {f g}
+        hrel         {f g}
+        mood         {g}
+        nbmood       {n}
+        nbsat        {n c}
+        nbur         {n}
+        npop         {n}
+        plant_a      {a}
+        plant_n      {n}
+        plant_na     {n a}
+        pop          {g}
+        sat          {g c}
+        security     {n g}
+        service_sg   {s g}
+        support      {n a}
+        volatility   {n}
+        vrel         {g a}
+    }
+
+    #-------------------------------------------------------------------
     # Components
 
     component adb  ;# The athenadb(n) instance
@@ -190,7 +224,7 @@ snit::type ::athena::hist {
             JOIN demog_g   AS D USING (g);
         }
 
-        if {[$adb parm get hist.plant]} {
+        if {[$adb parm get hist.plant] && [$adb econ state] eq "ENABLED"} {
             set gpp [money validate [$adb parm get plant.bktsPerYear.goods]]
 
             $adb eval {
@@ -199,6 +233,7 @@ snit::type ::athena::hist {
                 FROM plants_na;
             }
         }
+
         if {[$adb parm get hist.support]} {
             $adb eval {
                 INSERT INTO hist_support(t,n,a,direct_support,support,influence)
@@ -274,5 +309,13 @@ snit::type ::athena::hist {
                 "
             }
         }
+    }
+
+    # vars
+    #
+    # Returns available history variables and their keys
+
+    method vars {} {
+        return [array get histVars]
     }
 }

@@ -199,6 +199,11 @@ Each athena(n) instance has the following subcommands:<p>
 This command gives access to the abstract situations in the scenario.
 See <xref athena_absit(n)>.<p>
 
+<defitem activity {<i adb> activity <i subcommand> ?<i args...>?}>
+
+This command gives access to the FRC and ORG group activities in the scenario.
+See <xref athena_activity(n)>.<p>
+
 <defitem actor {<i adb> actor <i subcommand> ?<i args...>?}>
 
 This command gives access to the actors in the scenario.  See
@@ -440,6 +445,11 @@ scenario.  See <xref athena_group(n)> for the subcommands.<p>
 Returns athena(n) to the <b PAUSED> state if it is in the 
 <b RUNNING> state.  The application can use this if 
 athena(n) throws an unexpected error while advancing time.<p>
+
+<defitem hist {<i adb> hist <i subcommand> ?<i args...>?}>
+
+This command gives access to data related to the history of an athena run.
+see <xref athena_hist(n)> for the subcommands.<p>
 
 <defitem hook {<i adb> hook <i subcommand> ?<i args...>?}>
 

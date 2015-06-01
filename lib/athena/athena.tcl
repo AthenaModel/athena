@@ -161,6 +161,9 @@ snit::type ::athena::athena {
     delegate method {actor validate}        to adb as {actor validate}
     delegate method {actor view}            to adb as {actor view}
     
+    delegate method {activity names}        to adb as {activity names}
+    delegate method {activity frc names}    to adb as {activity frc names}
+    delegate method {activity org names}    to adb as {activity org names}
     
     delegate method {agent exists}          to adb as {agent exists}
     delegate method {agent names}           to adb as {agent names}
@@ -238,6 +241,8 @@ snit::type ::athena::athena {
     delegate method {hook topic get}        to adb as {hook topic get}
     delegate method {hook topic validate}   to adb as {hook topic validate}
     delegate method {hook validate}         to adb as {hook validate}
+
+    delegate method {hist vars}             to adb as {hist vars}
 
     delegate method {inject exists}         to adb as {inject exists}
     delegate method {inject get}            to adb as {inject get}

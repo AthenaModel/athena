@@ -25,6 +25,7 @@ oo::class create /scenario {
     # Variables
 
     variable statusCache  ;# Array of status strings by URL.
+    variable fcounter     ;# File counter for temp files 
     
 
     #-------------------------------------------------------------------
@@ -32,6 +33,8 @@ oo::class create /scenario {
 
     constructor {} {
         next /scenario
+
+        set fcounter 0
 
         # FIRST, configure the HTML buffer
         hb configure \
@@ -108,6 +111,126 @@ oo::class create /scenario {
             hb field-with "<b>$key</b>:" { hb pre $value }
         }
         hb /record
+    }
+
+    # TimeSpanForm var case
+    #
+    # var   - a history variable that has a smarturl defined 
+    # case  - an Arachne case
+    #
+    # Thie method puts start and end time entries (which are common to
+    # all history queries) into a form along with a "JSON" button with
+    # a form action to retrieve the history as JSON.
+
+    method TimeSpanForm {case var} {
+        hb putln "Select start and end times or leave blank for all history."
+        hb para
+        hb label t1 "Start Time:"
+        hb entry t1 -size 8
+        hb label t2 "End Time:"
+        hb entry t2 -size 8
+        hb para 
+        hb submit -formaction [my domain]/$case/history/$var/index.json "JSON"
+    }
+
+    # NbhoodForm case
+    #
+    # case   - an Arachne case
+    #
+    # This method creates a dropdown menu containing all the Neighborhoods
+    # defined in the case provided.  It prepends "ALL" to the list and
+    # sets that as the default.
+
+    method NbhoodForm {case} {
+        set nbhoods [lsort [case with $case nbhood names]]
+
+        hb putln "Select a neighborhood or 'ALL'."
+        hb para
+
+        hb enum n -selected ALL [list ALL {*}$nbhoods]
+    }
+
+    # GroupForm case ?args?
+    #
+    # case   - an Arachne case
+    # args   - optional arguments
+    #
+    # This method creates a dropdown menu containing groups defined in
+    # the case provided. The options are as follows:
+    #
+    #    -var      Variable to associate with the selection, defaults to 'g'
+    #    -gtypes   List of group types to include, defaults to all types 
+
+    method GroupForm {case args} {
+        # FIRST get the options
+        set gtypes {CIV FRC ORG}
+        set var    g
+
+        foroption opt args -all {
+            -gtypes { set gtypes [lshift args] }
+            -var    { set var    [lshift args] }
+        }         
+
+        set glist [case with $case group names $gtypes]
+        set lbl [join $gtypes " or "]
+
+        hb putln "Select a $lbl group or 'ALL'."
+        hb para
+
+        hb enum $var -selected ALL [list ALL {*}$glist]
+    }
+
+    # ActorForm   case
+    #
+    # case   - an Arachne case
+    #
+    # This method creates a dropdown menu containing actors defined in
+    # the case provided.
+
+    method ActorForm {case} {
+        set alist [case with $case actor names]
+
+        hb putln "Select an actor or 'ALL'."
+        hb para
+
+        hb enum a -selected ALL [list ALL {*}$alist]
+    }
+
+    # ConcernForm  
+    #
+    # Creates a dropdown menu of concerns, it's the same for all cases.
+
+    method ConcernForm {} {
+        hb putln "Select a concern or 'ALL'."
+        hb para
+
+        hb enum c -selected ALL [list ALL AUT CUL SFT QOL]        
+    }
+
+    # ValidateTimes
+    #
+    # This method validates two qdict time parameters (t1 and t2) that are
+    # assumed to be present.  
+
+    method ValidateTimes {} {
+        # FIRST, basic validations
+        set t1 [qdict prepare t1 -toupper -default 0 -with {iticks validate}]
+        set t2 [qdict prepare t2 -toupper -default end]
+        
+        # NEXT t2 must be greater than or equal to t1 if it is not "end"
+        qdict checkon t2 {
+            if {[qdict badparm t1]} {
+                return
+            }
+
+            if {$t2 ne "end"} {
+                iticks validate $t2
+
+                if {$t2 < $t1} {
+                    qdict reject t2 "t2 must be >= t1"
+                }
+            }
+        }
     }
 
     # RefreshIfBusy ?case?
@@ -418,6 +541,7 @@ oo::class create /scenario {
     # Returns a navigation bar for the scenario pages
 
     method CaseNavBar {case} {
+<<<<<<< HEAD
         hb linkbar {
             hb xref /index.html "Home"
             hb iref /index.html "Scenarios"
@@ -434,6 +558,34 @@ oo::class create /scenario {
             hb iref /$case/orggroup/index.html "Org Groups"
             hb iref /$case/sigevent/index.html "Sig Events"
         }
+=======
+        hb hr
+        hb xref /index.html "Home"
+        hb put " | "
+        hb iref /index.html "Scenarios"
+        hb put " | "
+        hb iref /$case/index.html "Case"
+        hb put " | "
+        hb iref /$case/actor/index.html "Actors"
+        hb put " | "
+        hb iref /$case/nbhood/index.html "Neighborhoods"
+        hb put " | "
+        hb iref /$case/civgroup/index.html "Civilian Groups"
+        hb put " | "
+        hb iref /$case/frcgroup/index.html "Force Groups"
+        hb put " | "
+        hb iref /$case/orggroup/index.html "Organization Groups"
+        hb put " | "
+        hb iref /$case/sanity/onlock.html "Sanity"
+        hb put " | "
+        hb iref /$case/history/index.html "History"
+        hb put " | "
+        hb iref /$case/order.html "Orders"
+        hb put " | "
+        hb iref /$case/script.html "Scripts"
+        hb hr
+        hb para
+>>>>>>> master
     }
 
     # FormatFailureList case flist

@@ -1,0 +1,56 @@
+<manpage {athena(n) athena_hist(n)} "Athena Run History Component">
+
+<section SYNOPSIS>
+
+<pre>
+package require athena <version>
+namespace import ::athena::*
+</pre>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+This man page describes a component of the <xref athena(n)> package that
+is used to access the list of output history variables available for query 
+after a run of the Athena simulation.  Since the history is stored 
+in SQL tables, accessing the history itself is best accomplished by using
+Athena's built in SQL query capability directly on the saved database.<p>
+
+The component is accessible as a subcommand of the <xref athena(n)> and
+<xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
+from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
+<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+
+<section "COMMANDS">
+
+<subsection "Public Subcommands">
+
+The <tt><i adb> hist</tt> command takes the following subcommands,
+where <i adb> is an instance of <xref athena(n)>.<p>
+
+<deflist commands>
+
+<defitem vars {<i adb> hist vars}>
+
+Returns the entire list of history variables and their keys for access to
+history data. These can be used when constructing an SQL query for the history.  
+For example, one of the returned variable/keys pair is <code security {n g}> 
+indicating that there is a history table called <code hist_security> that 
+contains the history of security by neighborhood and group.  The keys to use,
+if desired, in an SQL query for that history are <b n> and <b g>.<p> 
+
+</deflist commands>
+
+<subsection "Private Subcommands">
+
+The <tt><i adb> hist</tt> command takes the following subcommands,
+where <i adb> is an instance of <xref athenadb(n)>.<p>
+
+TBD: None yet defined.<p>
+
+<section AUTHOR>
+
+Will Duquette, Dave Hanks.<p>
+</manpage>
+    

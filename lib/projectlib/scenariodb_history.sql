@@ -360,7 +360,7 @@ CREATE TABLE hist_service_sg (
     expectf            REAL,
     needs              REAL,
 
-    PRIMARY KEY (t,g,s)
+    PRIMARY KEY (t,s,g)
 );
 
 CREATE TABLE hist_activity_nga (
