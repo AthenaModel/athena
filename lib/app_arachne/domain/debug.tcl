@@ -39,14 +39,11 @@ oo::class create /debug {
     # Header and Footer
 
     method htmlHeader {hb title} {
-        $hb h1 -style "background: red;" \
-            "&nbsp;Arachne: Athena Regional Stability Simulation"
+        hb putln [athena::element header Arachne]
     }
 
     method htmlFooter {hb} {
-        $hb hr
-        $hb putln "Athena Arachne [app version] - [clock format [clock seconds]]"
-        $hb para
+        hb putln [athena::element footer]
     }
 
     #-------------------------------------------------------------------
@@ -61,14 +58,12 @@ oo::class create /debug {
     # Debugging Navigation Bar
 
     method DebugNavBar {} {
-        hb hr
-        hb xref /index.html "Home"
-        hb put " | "
-        hb iref /index.html "Debug"
-        hb put " | "
-        hb iref /mods.html "Mods"
-        hb hr
-        hb para
+        hb linkbar {
+            hb xref /index.html "Home"
+            hb iref /index.html "Debug"
+            hb iref /mods.html "Mods"
+            hb xref /help/index.html "Help"
+        }
     }
 
 
@@ -120,18 +115,14 @@ smarturl /debug /index.html {
     Index of debugging tools.
 } {
     hb page "Debugging"
-    hb h1 "Debugging"
-
     my DebugNavBar
+
+    hb h1 "Debugging"
 
     hb putln "The following tools are available:"
     hb para
 
     hb ul {
-        hb li-with {
-            hb iref /mods.html "Software Mods"
-        }
-
         hb li-with {
             hb xref /scenario/urlschema.html "URL Schema: /scenario"
         }
@@ -161,9 +152,9 @@ smarturl /debug /log/{logname}/index.html {
     Displays the contents of the most recent log file in the given log.
 } {
     hb page "Log: $logname"
-    hb h1   "Log: $logname"
-
     my DebugNavBar
+
+    hb h1   "Log: $logname"
 
     set logdir [scratchdir join log $logname]
 
@@ -207,9 +198,9 @@ smarturl /debug /mods.html {
     and also allows the developer to find the code to mod.
 } {
     hb page "Software Mods"
-    hb h1 "Software Mods"
-
     my DebugNavBar
+
+    hb h1 "Software Mods"
 
     switch -- [qdict prepare op -tolower] {
         reload {

@@ -16,7 +16,6 @@
 #
 #-----------------------------------------------------------------------
 
-
 #=======================================================================
 # Scenario-specific pages
 #
@@ -72,9 +71,9 @@ smarturl /scenario /{case}/index.html {
 
     hb page "Scenario '$case': Overview" \
         -refreshafter [my RefreshIfBusy $case]
-    hb h1 "Scenario '$case': Overview"
-
     my CaseNavBar $case
+
+    hb h1 "Scenario '$case': Overview"
 
     my status
 
@@ -210,9 +209,9 @@ smarturl /scenario /{case}/sanity/onlock.html {
     set case [my ValidateCase $case]
 
     hb page "Scenario '$case': Sanity Check, On Lock"
-    hb h1 "Scenario '$case': Sanity Check, On Lock"
-
     my CaseNavBar $case
+
+    hb h1 "Scenario '$case': Sanity Check, On Lock"
 
     hb putln {
         Athena checks the scenario's sanity before
@@ -304,9 +303,9 @@ smarturl /scenario /{case}/order.html {
 
     # FIRST, begin the page
     hb page "Scenario '$case': Order Selection"
-    hb h1 "Scenario '$case': Order Selection"
-
     my CaseNavBar $case
+
+    hb h1 "Scenario '$case': Order Selection"
 
     # NEXT, set up the order form
     hb putln "Select an order and press 'Select' to see its order form."
@@ -429,9 +428,9 @@ smarturl /scenario /{case}/script.html {
 
     # FIRST, begin the page
     hb page "Scenario '$case': Script Entry"
-    hb h1 "Scenario '$case': Script Entry"
-
     my CaseNavBar $case
+
+    hb h1 "Scenario '$case': Script Entry"
 
     # NEXT, set up the entry form.
     hb form -smarturl /scenario /post

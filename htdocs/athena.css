@@ -37,17 +37,51 @@ SPAN.error {
     color: #C7001B;
 }
 
+/* Text Span Classes */
+
+SPAN.tiny {
+    font-size: 0.875em;
+}
+
+SPAN.tinyb {
+    font-weight: bold;
+    font-size: 0.875em;
+}
+
+SPAN.tinyi {
+    font-style: italic;
+    font-size: 0.875em;
+}
+
+
+/* Page Header */
+IMG.logo { 
+    position:absolute;
+    margin:3px; border: 0;
+}
+
+DIV.tagline {
+    font-family: Verdana, sans-serif;
+    float:right;
+    text-align:right;
+    font-style:italic;
+    width:300px;
+    margin:12px;
+    margin-top:58px;
+}
+
+
 /* Table Formatting Classes: "pretty" 
  * Border around the outside, even/odd striping, no internal
  * border lines.
  */
 TABLE.pretty {
+    font-weight: normal;
     border: 1px solid black;
     border-spacing: 0;
 }
 
 TABLE.pretty TR.header {
-    font-weight: bold;
     color: white;
     background-color: #000099;
 }
@@ -119,8 +153,31 @@ TR.topicname {
 
 
 BODY {
+    margin: auto;
+    padding: 8px 1%;
     color: black;
     background: white;
-    margin-left: 1%;
-    margin-right: 1%;
+    font-family: Verdana, sans-serif;
 }
+
+/* Linkbars */
+
+TABLE.linkbar {
+  clear: both;
+  border-radius: 8px;
+  background: #000099;
+  padding: 0px;
+  margin: 0px;
+  cell-spacing: 0px;
+}    
+DIV.linkbar {
+  text-align: left;
+  line-height: 1.6em;
+  margin: 0;
+  padding: 0px 8px;
+}
+DIV.linkbar span { color: white; text-decoration: none; padding: 6px 12px; }
+DIV.linkbar a { color: white; text-decoration: none; padding: 6px 12px; }
+DIV.linkbar a:visited { color: white; }
+DIV.linkbar a:hover { color: #000099; background: white; }
+

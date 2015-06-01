@@ -31,9 +31,9 @@ smarturl /scenario /{case}/nbhood/index.html {
     set case [my ValidateCase $case]
 
     hb page "Scenario '$case': Neighborhoods"
-    hb h1 "Scenario '$case': Neighborhoods"
-
     my CaseNavBar $case
+
+    hb h1 "Scenario '$case': Neighborhoods"
 
     set nbhoods [case with $case nbhood names]
 
@@ -116,6 +116,8 @@ smarturl /scenario /{case}/nbhood/{n}/index.html {
     set name [case with $case nbhood get $n longname]
 
     hb page "Scenario '$case': Neighborhood: $n"
+    my CaseNavBar $case 
+
     hb h1 "Scenario '$case': Neighborhood: $n"
 
     hb putln "Click for "
@@ -123,8 +125,6 @@ smarturl /scenario /{case}/nbhood/{n}/index.html {
     hb put "."
 
     hb para
-
-    my CaseNavBar $case 
 
     hb para
     return [hb /page]

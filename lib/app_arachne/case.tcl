@@ -43,7 +43,8 @@ snit::type case {
         names {}
     }
 
-    # List of temporary SQL files to be read by athenadb
+    # webviews: List of temporary SQL files to be read by athenadb
+    # Variable is initialized by init.
 
     typevariable webviews {
         web_scenario.sql
@@ -224,12 +225,7 @@ snit::type case {
             case with $id reset
             app log normal $id "Reset case $id"
         } else {
-            set sdb [athena new \
-                        -subject $id                      \
-                        -logdir [scratchdir join log $id] \
-                        -tempsqlfiles   [lmap x $webviews {
-                            file join $::app_arachne::library sql $x
-                        }]]
+            set sdb [$type NewScenario $id]
 
             lappend cases(names)    $id
             set cases(longname-$id) [DefaultLongname $id]
@@ -306,11 +302,7 @@ snit::type case {
         }
 
         # NEXT, make sure we can load the filename.
-        set sdb [athena new         \
-                    -subject $theID \
-                    -tempsqlfiles   [lmap x $webviews {
-                        file join $::app_arachne::library sql $x
-                    }]]
+        set sdb [$type NewScenario $theID]
 
         if {$ext eq ".adb"} {
             try {
@@ -349,6 +341,25 @@ snit::type case {
         set cases(source-$id) [file tail $filename]
 
         return $theID
+    }
+
+    # NewScenario case
+    #
+    # case  - The case ID.
+    #
+    # Creates a new, configured instance of athena(n).
+
+    typemethod NewScenario {case} {
+        set viewlist [lmap x $webviews {
+            file join $::app_arachne::library sql $x
+        }]
+
+        set sdb [athena new \
+            -subject      $case                       \
+            -logdir       [scratchdir join log $case] \
+            -tempsqlfiles [lmap x $webviews {
+                              file join $::app_arachne::library sql $x
+                          }]]
     }
 
     # export id filename
@@ -445,7 +456,6 @@ snit::type case {
     proc DefaultLongname {id} {
         set num [string range $id 4 end]
         return "Scenario #$num"
-    }
-    
+    }    
 }
 

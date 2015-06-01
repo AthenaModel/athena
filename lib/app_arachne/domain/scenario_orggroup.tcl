@@ -33,8 +33,6 @@ smarturl /scenario /{case}/orggroup/index.html {
     hb page "Scenario '$case': Organization Groups"
     hb h1 "Scenario '$case': Organization Groups"
 
-    my CaseNavBar $case
-
     set orggroups [case with $case orggroup names]
 
     if {[llength $orggroups] == 0} {
@@ -111,6 +109,8 @@ smarturl /scenario /{case}/orggroup/{g}/index.html {
     set name [case with $case orggroup get $g longname]
 
     hb page "Scenario '$case': Organization Group: $g"
+    my CaseNavBar $case
+
     hb h1 "Scenario '$case': Organization Group: $g"
 
     hb putln "Click for "
@@ -118,8 +118,6 @@ smarturl /scenario /{case}/orggroup/{g}/index.html {
     hb put "."
 
     hb para
-
-    my CaseNavBar $case 
 
     hb para
     return [hb /page]

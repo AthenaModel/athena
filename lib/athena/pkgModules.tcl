@@ -77,6 +77,7 @@ source [file join $::athena::library sanity.tcl                      ]
 source [file join $::athena::library sigevent.tcl                    ]
 source [file join $::athena::library sim.tcl                         ]
 source [file join $::athena::library stats.tcl                       ]
+source [file join $::athena::library element.tcl                     ]
 
 # Editable Entities
 source [file join $::athena::library absit.tcl                       ]
@@ -213,6 +214,9 @@ source [file join $::athena::library vardiffs vardiff_sat.tcl        ]
 source [file join $::athena::library vardiffs vardiff_support.tcl    ]
 source [file join $::athena::library vardiffs vardiff_unemp.tcl      ]
 source [file join $::athena::library vardiffs vardiff_vrel.tcl       ]
+
+# Global Utilities
+source [file join $::athena::library element.tcl                     ]
 
 
 # Tk Code (loaded only if Tk is already present)

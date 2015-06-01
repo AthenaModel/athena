@@ -132,6 +132,13 @@ Converts the parameter's value to upper case.<p>
 
 Converts the parameter's value to lower case.<p>
 
+<defopt {-type <i vtype>}>
+
+Validates the parameter's value using the named validation type, saving
+the return value.  If the command throws INVALID, the parameter
+will be rejected.  Note that "<tt>-type <i mytype></tt>" is equivalent
+to "<tt>-with {<i mytype> validate}</tt>.<p>
+
 <defopt {-with <i cmd>}>
 
 Passes the parameter's value to the <i cmd> as an additional argument,

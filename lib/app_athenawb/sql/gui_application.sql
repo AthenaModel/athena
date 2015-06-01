@@ -40,10 +40,10 @@ CREATE TEMPORARY VIEW gui_sigevents AS
 SELECT event_id                                        AS event_id,
        level                                           AS level,
        t                                               AS t,
-       timestr(t)                                      AS week,
+       week                                            AS week,
        component                                       AS component,
        mklinks(narrative)                              AS narrative
-FROM sigevents;
+FROM fmt_sigevents;
 
 
 -- gui_sigevents_wtag: significant events with tags.
@@ -51,11 +51,11 @@ CREATE TEMPORARY VIEW gui_sigevents_wtag AS
 SELECT event_id                                        AS event_id,
        level                                           AS level,
        t                                               AS t,
-       timestr(t)                                      AS week,
+       week                                            AS week,
        component                                       AS component,
        mklinks(narrative)                              AS narrative,
        tag                                             AS tag
-FROM sigevents_view;
+FROM fmt_sigevents_wtag;
      
 ------------------------------------------------------------------------
 -- SCRIPTS VIEWS

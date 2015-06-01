@@ -75,14 +75,14 @@ oo::class create ::projectlib::helpdomain {
     # Header and Footer
 
     method htmlHeader {hb title} {
-        $hb h1 -style "background: red;" \
-            "&nbsp;Arachne: $dbtitle"   
+        # TBD: We'll need to set the appname using an option
+        # once we use this in the workbench as well.
+        # Or parameterize athena::element.
+        hb putln [athena::element header Arachne]
     }
 
     method htmlFooter {hb} {
-        $hb hr
-        $hb putln "Athena Arachne [app version] - [clock format [clock seconds]]"
-        $hb para
+        hb putln [athena::element footer]
     }
 
     #-------------------------------------------------------------------
@@ -237,36 +237,30 @@ oo::class create ::projectlib::helpdomain {
     # Adds a navigation bar to the parent items.
 
     method NavBar {suffix} {
-        hb hr
+        hb linkbar {
+            hb form
+            hb xref /index.html Home
 
-        hb form 
-        hb xref /index.html Home
-        hb put " / "
+            hb xref [my domain]/index.html [string trimleft Help /]
 
-        hb xref [my domain]/index.html [string trimleft [my domain] /]
+            set parents {}
+            foreach folder [split [string trimleft $suffix /] /] {
+                if {[file extension $folder] eq ".html"} {
+                    hb span " / [file rootname $folder]"
+                    continue
+                }
 
+                lappend parents $folder
 
-        set parents {}
-        foreach folder [split [string trimleft $suffix /] /] {
-            if {[file extension $folder] eq ".html"} {
-                hb put " / " [file rootname $folder]
-                continue
+                set url [my domain]/[join $parents /].html 
+                hb xref $url " / $folder" 
             }
 
-            lappend parents $folder
-
-            set url [my domain]/[join $parents /].html 
-            hb put " / "
-            hb xref $url $folder 
+            hb put "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+            hb entry search -size 15
+            hb submit "Search"
+            hb /form
         }
-
-        hb put "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-        hb entry search -size 15
-        hb submit "Search"
-        hb /form
-
-        hb hr
-        hb para
     }
 
     

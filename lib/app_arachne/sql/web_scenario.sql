@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------
 -- TITLE:
---    gui_scenario.sql
+--    web_scenario.sql
 --
 -- AUTHOR:
 --    Will Duquette
@@ -8,7 +8,7 @@
 -- DESCRIPTION:
 --    SQL Schema: Application-specific views, Scenario Data
 --
---    This file is loaded by app.tcl!
+--    This file is loaded by case.tcl!
 --
 --    GUI views translate the internal data formats of the scenariodb(n)
 --    tables into presentation format.  They are defined here instead of

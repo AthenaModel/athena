@@ -8,6 +8,10 @@
       calls SignificanceCheck only if the $vartype.active parameter is
       true.
 - Arachne
+  - htdocs/index.html should be a template, so we can insert the
+    version number.
+  - Need a standard set of web elements for use across domains.
+    - E.g., standard page header.
   - Consider smartdomain look ups using a dict tree: split the url into
     components and just follow them down the tree, accumulating place
     holders as you go.  See if that's faster.

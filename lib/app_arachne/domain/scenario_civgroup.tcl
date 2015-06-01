@@ -31,9 +31,9 @@ smarturl /scenario /{case}/civgroup/index.html {
     set case [my ValidateCase $case]
 
     hb page "Scenario '$case': Civilian Groups"
-    hb h1 "Scenario '$case': Civilian Groups"
-
     my CaseNavBar $case
+
+    hb h1 "Scenario '$case': Civilian Groups"
 
     set civgroups [case with $case civgroup names]
 
@@ -108,6 +108,8 @@ smarturl /scenario /{case}/civgroup/{g}/index.html {
     set name [case with $case civgroup get $g longname]
 
     hb page "Scenario '$case': Civilian Group: $g"
+    my CaseNavBar $case 
+
     hb h1 "Scenario '$case': Civilian Group: $g"
 
     # NEXT, only content for now is a link to the JSON
@@ -116,8 +118,6 @@ smarturl /scenario /{case}/civgroup/{g}/index.html {
     hb put "."
 
     hb para
-
-    my CaseNavBar $case 
 
     hb para
     return [hb /page]

@@ -56,7 +56,6 @@ snit::type app {
 
     typemethod init {argv} {
         appdir init
-        set result ""
 
         # FIRST, load the mods
         try {
@@ -82,11 +81,8 @@ snit::type app {
                 set info(port) [lshift argv]
             }
             -scenario { 
-                set adbfile [file normalize [lshift argv]]
+                set adbfile [lshift argv]
 
-                if {![file isfile $adbfile]} {
-                    throw FATAL "-scenario does not exist: \"$adbfile\""
-                }
             }
             -scratchdir {
                 set scratchdir [file normalize [lshift argv]]
@@ -137,6 +133,8 @@ snit::type app {
         if {!$info(test)} {
             $type StartServer
             set result vwait
+        } else {
+            set result ""
         }
 
         return $result
@@ -154,9 +152,11 @@ snit::type app {
 
         try {
             if {$adbfile ne ""} {
-                case import case00 $adbfile                
+                case import $adbfile case00                
             }
-        } trap {ATHENA LOAD} {result} {
+        } trap ATHENA {result} {
+            throw FATAL "Could not import $adbfile:\n$result"
+        } trap ARACHNE {result} {
             throw FATAL "Could not import $adbfile:\n$result"
         }
 
@@ -187,7 +187,7 @@ snit::type app {
         # ::tls::init -tls1 1 -tls1.1 0 -tls1.2 0 -ssl2 0 -ssl3 0
 
         # FIRST, create a web server log
-        ahttpd init \
+        ahttpd init -allowtml \
             -port       $info(port)             \
             -secureport ""                      \
             -logcmd     [$type newlog ahttpd]   \

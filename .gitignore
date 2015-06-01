@@ -13,6 +13,7 @@ teapot.txt
 /docs/*.html
 /docs/*/*.html
 /htdocs/arachne.html
+/htdocs/index.html
 *.docx
 *.pptx
 *.xlsx

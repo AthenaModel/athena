@@ -47,14 +47,11 @@ oo::class create /scenario {
     # Header and Footer
 
     method htmlHeader {hb title} {
-        $hb h1 -style "background: red;" \
-            "&nbsp;Arachne: Athena Regional Stability Simulation"   
+        hb putln [athena::element header Arachne]
     }
 
     method htmlFooter {hb} {
-        $hb hr
-        $hb putln "Athena Arachne [app version] - [clock format [clock seconds]]"
-        $hb para
+        hb putln [athena::element footer]
     }
 
     #-------------------------------------------------------------------
@@ -527,22 +524,16 @@ oo::class create /scenario {
     # Returns a navigation bar for the toplevel pages
 
     method MainNavBar {} {
-        hb hr
-        hb xref /index.html "Home"
-        hb put " | "
-        hb iref /index.html "Scenarios"
-        hb put " | "
-        hb iref /new.html "New"
-        hb put " | "
-        hb iref /clone.html "Clone"
-        hb put " | "
-        hb iref /import.html "Import"
-        hb put " | "
-        hb iref /export.html "Export"
-        hb put " | "
-        hb iref /remove.html "Remove"
-        hb hr
-        hb para
+        hb linkbar {
+            hb xref /index.html "Home"
+            hb iref /index.html "Scenarios"
+            hb iref /new.html "New"
+            hb iref /clone.html "Clone"
+            hb iref /import.html "Import"
+            hb iref /export.html "Export"
+            hb iref /remove.html "Remove"
+            hb xref /help/index.html "Help"
+        }
     }
 
     # CaseNavBar
@@ -550,6 +541,24 @@ oo::class create /scenario {
     # Returns a navigation bar for the scenario pages
 
     method CaseNavBar {case} {
+<<<<<<< HEAD
+        hb linkbar {
+            hb xref /index.html "Home"
+            hb iref /index.html "Scenarios"
+            hb iref /$case/index.html "Case"
+            hb iref /$case/sanity/onlock.html "Sanity"
+            hb iref /$case/order.html "Orders"
+            hb iref /$case/script.html "Scripts"
+            hb xref /help/index.html "Help"
+            hb br
+            hb iref /$case/actor/index.html "Actors"
+            hb iref /$case/nbhood/index.html "Neighborhoods"
+            hb iref /$case/civgroup/index.html "Civ Groups"
+            hb iref /$case/frcgroup/index.html "Frc Groups"
+            hb iref /$case/orggroup/index.html "Org Groups"
+            hb iref /$case/sigevent/index.html "Sig Events"
+        }
+=======
         hb hr
         hb xref /index.html "Home"
         hb put " | "
@@ -576,6 +585,7 @@ oo::class create /scenario {
         hb iref /$case/script.html "Scripts"
         hb hr
         hb para
+>>>>>>> master
     }
 
     # FormatFailureList case flist
@@ -618,6 +628,57 @@ oo::class create /scenario {
     method GetEntityLink {case entity} {
         return  /$case/$entity/index.html
     }
+
+    # withlinks case text
+    #
+    # Looks for links of the form '{etype:name}' and replaces them
+    # with entity links.
+
+    method withlinks {case text} {
+        regsub -all -- {{(\w+):(\w+)}} $text \
+            [format {<a href="%s/\1/\2/index.html">\2</a>} [my domain $case]] \
+            text
+
+        return $text
+    }
+
+    # enumtick name case ?options...?
+    #
+    # name    - The input name
+    # case    - The scenario ID
+    # options - Attribute options
+    # label   - The label to precede the control or "".
+    #
+    # Adds an enum input for a time tick.
+    #
+    # -extras list       - Extra values to add to the beginning of 
+    #                      the list of ticks.
+    # -selected value    - The initially selected value
+    # -label text        - Text for a label to precede the control.
+
+    method enumtick {name case args} {
+        set label    [optval args -label    ""]
+        set selected [optval args -selected ""]
+        set extras   [optval args -extras   {}]
+
+        if {$label ne ""} {
+            hb label $name $label
+            hb put " "
+        }
+
+        set items $extras
+        set start [case with $case clock cget -tick0]
+        set end   [case with $case clock now]
+        for {set t $start} {$t <= $end} {incr t} {
+            lappend items $t
+        }
+
+        hb enum $name -selected $selected {*}$args $items
+
+    }
+
+
+    
 }
 
 #-------------------------------------------------------------------
@@ -628,11 +689,11 @@ smarturl /scenario /index.html {
     controls.
 } {
     hb page "Scenarios"
+    my MainNavBar
+
     hb h1 "Scenarios"
     hb para
 
-    my MainNavBar
-    hb para
 
     hb putln "The following scenarios are loaded ("
     hb iref /index.json json
@@ -689,9 +750,9 @@ smarturl /scenario /new.html {
 
     # NEXT, set up a form
     hb page "New Scenario"
-    hb h1 "New Scenario"
-
     my MainNavBar
+
+    hb h1 "New Scenario"
 
     if {$op eq "new"} {
         if {[qdict ok]} {
@@ -787,9 +848,9 @@ smarturl /scenario /clone.html {
 
     # NEXT, set up a form
     hb page "Clone Scenario"
-    hb h1 "Clone Scenario"
-
     my MainNavBar
+
+    hb h1 "Clone Scenario"
 
     if {$op eq "clone" && ![qdict ok]} {
         my ErrorList "Could not clone a scenario:"
@@ -891,9 +952,9 @@ smarturl /scenario /import.html {
 
     # NEXT, set up a form
     hb page "Import Scenario"
-    hb h1 "Import Scenario"
-
     my MainNavBar
+
+    hb h1 "Import Scenario"
 
     if {$op eq "import" && ![qdict ok]} {
         my ErrorList "Could not import a scenario:"
@@ -993,9 +1054,9 @@ smarturl /scenario /export.html {
 
     # NEXT, set up a form
     hb page "Export Scenario"
-    hb h1 "Export Scenario"
-
     my MainNavBar
+
+    hb h1 "Export Scenario"
 
     if {$op eq "export"} {
         if {[qdict ok]} {
@@ -1095,9 +1156,9 @@ smarturl /scenario /remove.html {
 
     # NEXT, set up a form
     hb page "Remove Scenario"
-    hb h1 "Remove Scenario"
-
     my MainNavBar
+
+    hb h1 "Remove Scenario"
 
     if {$op eq "remove"} {
         if {[qdict ok]} {

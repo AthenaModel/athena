@@ -192,6 +192,13 @@ oo::class create ::projectlib::parmdict {
                 -tolower {
                     set value [string tolower $value]
                 }
+                -type {
+                    set vtype [lshift args]
+
+                    my checkon $parm {
+                        set value [{*}$vtype validate $value]
+                    }
+                }
                 -with {
                     set checker [lshift args]
 

@@ -546,6 +546,32 @@ oo::class create ::projectlib::htmlbuffer {
     }
     export /span
 
+    # div ?options? ?body?
+    #
+    # body    - A script to execute
+    #
+    # Defines a <div> block.  If given, the body is executed and 
+    # the </div> tag is added automatically.
+   
+    method div {args} {
+        set body [my PopOdd args]
+        my tagln div {*}$args
+        
+        if {$body ne ""} {
+            uplevel 1 $body
+            my /div
+        }
+    }
+
+    # /div
+    #
+    # Ends a <div> block
+    
+    method /div {} {
+        my putln </div>
+    }
+    export /div
+
     #-------------------------------------------------------------------
     # <a href> links
 
@@ -555,12 +581,22 @@ oo::class create ::projectlib::htmlbuffer {
     # options   - Attribute options
     # label     - The label to display.
     #
-    # Produces an <a href="...">...</a> tag.
+    # Produces an <a href="...">...</a> tag.  In addition to normal
+    # attribute options, the following is also available:
+    #
+    # -qparms   - A dictionary of query parameters.
 
     method xref {url args} {
         set label [my PopOdd args label]
+        set qparms [optval args -qparms ""]
 
-        my wrap a -href $url {*}$args $label 
+        if {[dict size $qparms] != 0} {
+            set query [my asquery $qparms]
+        } else {
+            set query ""
+        }
+
+        my wrap a -href $url$query {*}$args $label 
     }
 
     # iref suffix ?options? label
@@ -569,9 +605,28 @@ oo::class create ::projectlib::htmlbuffer {
     #             URL.  Must begin with "/".
     # options   - Attribute options
     # label     - The label to display.
+    #
+    # Produces an <a href="...">...</a> tag linking to a page in the
+    # same domain.  In addition to normal
+    # attribute options, the following is also available:
+    #
+    # -qparms   - A dictionary of query parameters.
 
     method iref {suffix args} {
         my xref $options(-domain)$suffix {*}$args
+    }
+
+    # qref qparms ?options? label
+    #
+    # qparms    - A dictionary of query parameters.
+    # options   - Attribute options
+    # label     - The label to display.
+    #
+    # Produces an <a href="...">...</a> tag linking to the same page
+    # with the given query parameters.
+
+    method qref {qparms args} {
+        my xref [my asquery $qparms] {*}$args
     }
 
     # ximg url ?options?
@@ -836,7 +891,10 @@ oo::class create ::projectlib::htmlbuffer {
         if {[llength $headers] > 0} {
             my tagln tr -class header -align left
             foreach header $headers {
-                my wrapln th -align left $header 
+                my tagln th -align left
+                my span -style "font-weight: normal" $header
+                my tag /th
+                # my wrapln th -align left $header 
             }
             my /tr
         }
@@ -1150,14 +1208,21 @@ oo::class create ::projectlib::htmlbuffer {
     #
     # Special Options:
     #
+    # -autosubmit flag  - If given and true, autosubmit on input.
     # -selected value   - Indicates that the <option> with the
     #                     given value is to be selected initially.
     #
     # Inserts a <select> element into the current form.
 
     method enum {name args} {
-        set list [my PopOdd args]
-        set selected [optval args -selected]
+        set list       [my PopOdd args list]
+        set autosubmit [optval args -autosubmit ""]
+        set selected   [optval args -selected]
+
+        if {$autosubmit ne ""} {
+            lappend args \
+                -oninput document.getElementById('$autosubmit').submit();
+        }
 
         my tagln select -name $name {*}$args
         foreach item $list {
@@ -1175,11 +1240,24 @@ oo::class create ::projectlib::htmlbuffer {
     # options  - Attribute options
     # namedict - List of choices and labels
     #
+    # Special Options:
+    #
+    # -autosubmit form  - If given, autosubmit the named
+    #                     form on input.
+    # -selected value   - Indicates that the <option> with the
+    #                     given value is to be selected initially.
+    #
     # Inserts a <select> element into the current form.
 
     method enumlong {name args} {
-        set namedict [my PopOdd args]
-        set selected [optval args -selected]
+        set namedict   [my PopOdd args namedict]
+        set autosubmit [optval args -autosubmit ""]
+        set selected   [optval args -selected]
+
+        if {$autosubmit ne ""} {
+            lappend args \
+                -oninput document.getElementById('$autosubmit').submit();
+        }
 
         my tagln select -name $name {*}$args
         foreach {item longname} $namedict {
@@ -1299,10 +1377,162 @@ oo::class create ::projectlib::htmlbuffer {
         }
     }
 
+    #-------------------------------------------------------------------
+    # pager
+    #
+    # Paging of tables and other large data sets.
+
+    # pagestats numitems pagesize ?page?
+    #
+    # numitems - The number of items total
+    # pagesize - The number of items to display on one page
+    # page     - The number of the requested page, 1 to n.
+    #            Defaults to 1.
+    #
+    # Computes the SQL "OFFSET" for paging through a query.  
+    # Returns a list {page pages offset limitClause},
+    # where page is the actual page number, pages is the total number
+    # of pages, offset is the offset of the first item on the selected
+    # page, and limitClause is an SQL "LIMIT/OFFSET" clause.
+
+    method pagestats {numitems pagesize {page 1}} {
+        # FIRST, compute the number of pages.
+        let pages {entier(ceil(double($numitems)/$pagesize))}
+
+        # NEXT, constrain the requested page.
+        if {$page < 1} {
+            set page 1
+        } elseif {$page > $pages} {
+            set page $pages
+        }
+
+        # NEXT, compute the offset
+        let offset {($page - 1)*$pagesize}
+
+        set limit "LIMIT $pagesize OFFSET $offset"
+
+        return [list $page $pages $offset $limit]
+    }
+
+    # pager qparms page pages
+    #
+    # qparms  - The current query parameter dictionary
+    # page    - The page currently displayed
+    # pages   - The total number of pages
+    #
+    # This command inserts a "Pages:" controller with a (carefully pruned)
+    # list of page numbers, as one sees on search web pages when the 
+    # search returns too many results to display at once.  The links
+    # include all of the query parameters.
+    #
+    # The page number will be included in these URLs as a query
+    # parameter, "page=<num>".  
+    #
+    # If the number of pages is less than 2, no output will appear.
+
+    method pager {page pages qparms} {
+        # FIRST, no pager unless it's needed.
+        if {$pages <= 1} {
+            return
+        }
+
+        # NEXT, begin formatting
+        my span -class tinyb "Page: "
+
+        if {$page > 1} {
+            my PageLink $qparms [expr {$page - 1}] "Prev"
+        } else {
+            my span -class tiny "Prev"
+        }
+        my put " "
+
+        foreach i [my PageSequence $page $pages] {
+            if {$i == $page} {
+                my span -class tinyb $i
+            } elseif {$i eq "..."} {
+                my span -class tiny $i
+            } else {
+                my PageLink $qparms $i
+            }
+
+            my put " "
+        }
+
+        if {$page < $pages} {
+            my PageLink $qparms [expr {$page + 1}] "Next"
+        } else {
+            my span -class tiny "Next"
+        }
+
+        my para
+    }
+
+    # PageSequence page pages 
+    #
+    # page    - A page number, 1 to N
+    # pages   - The total number of pages N 
+    #
+    # Returns a list of ordered page numbers, possibly with "...".
+
+    method PageSequence {page pages} {
+        set result [list]
+        set last 0
+
+        for {set i 1} {$i <= $pages} {incr i} {
+            if {$i <= 3 || 
+                $i >= $pages - 2 ||
+                ($i >= $page - 2 && $i <= $page + 2)
+            } {
+                if {$i - 1 != $last} {
+                    lappend result "..."
+                }
+                lappend result $i
+                set last $i                
+            }
+        }
+
+        return $result
+    }
+
+    # PageLink qparms page ?label?
+    #
+    # qparms   - The current query dictionary
+    # page    - The page to link to
+    # label   - The link label; defaults to the page number.
+    #
+    # Creates a link to the named page.
+
+    method PageLink {qparms page {label ""}} {
+        if {$label eq ""} {
+            set label $page
+        }
+
+        dict set qparms page $page
+
+        my span -class tiny
+        my qref $qparms $label
+        my /span
+    }
+
     
 
     #-------------------------------------------------------------------
     # Helper Commands
+
+    # asquery dict
+    #
+    # dict  - A dictionary of query parameters.
+    #
+    # Encodes the dictionary as a URL query, including the initial "?".
+    
+    method asquery {dict} {
+        set result ""
+        dict for {k v} $dict {
+            lappend result "$k=[ncgi::encode $v]"
+        }
+
+        return "?[join $result &]"
+    }
 
     # escape text
     #
@@ -1355,6 +1585,29 @@ oo::class create ::projectlib::htmlbuffer {
         }
     }
 
+    #-------------------------------------------------------------------
+    # Link Bar
+
+    # linkbar body
+    #
+    # body - A script creating a number of links
+    #
+    # Link labels will be colored appropriately automatically;
+    # other text should be wrap in a <span> element.
+
+    method linkbar {body} {
+        my table -width 100% -class linkbar
+        my tr -class "" -valign bottom
+        my td -align left
+        my div -class linkbar
+        uplevel 1 $body
+        my /div
+        my /td
+        my /tr
+        my /table
+        my para
+    }
+    
 
     #===================================================================
     # NOT PROCESSED YET
@@ -1362,59 +1615,6 @@ oo::class create ::projectlib::htmlbuffer {
     # Old code from htools(n) that we'll probably want eventually.
 
     if 0 {
-        # linkbar linkdict
-        # 
-        # linkdict   - A dictionary of URLs and labels
-        #
-        # Displays the links in a horizontal bar.
-
-        method linkbar {linkdict} {
-            my hr
-            set count 0
-
-            foreach {link label} $linkdict {
-                if {$count > 0} {
-                   my put " | "
-                }
-
-                my link $link $label
-
-                incr count
-            }
-
-            my hr
-            my para
-        }
-
-        # tiny text
-        #
-        # text - A text string
-        #
-        # Sets the text in tiny font.
-
-        method tiny {text} {
-            my put "<font size=2>$text</font>"
-        }
-
-        # tinyb text
-        #
-        # text - A text string
-        #
-        # Sets the text in tiny bold.
-
-        method tinyb {text} {
-            my put "<font size=2><b>$text</b></font>"
-        }
-
-        # tinyi text
-        #
-        # text - A text string
-        #
-        # Puts the text in tiny italics.
-
-        method tinyi {text} {
-            my put "<font size=2><i>$text</i></font>"
-        }
 
 
         # linklist ?options...? links
@@ -1467,109 +1667,6 @@ oo::class create ::projectlib::htmlbuffer {
             }
         }
 
-        #-------------------------------------------------------------------
-        # Output Paging
-
-        # pager qdict page pages
-        #
-        # qdict   - The current query dictionary
-        # page    - The page currently displayed
-        # pages   - The total number of pages
-        #
-        # This command inserts a "Pages:" controller with a (carefully pruned)
-        # list of page numbers, as one sees on search web pages when the 
-        # search returns too many results to display at once.  It is intended
-        # for use on mydomain(n) pages that use a query dictionary, e.g.,
-        # the URL ends with "?parm=value+parm=value...".
-        #
-        # The qdict parameter contains the current query dictionary; it may be
-        # empty.  The parameters contained in it will be put in the URL that
-        # the page numbers link to.
-        #
-        # The page number will be included in these URLs as a query
-        # parameter, "page=<num>".  
-        #
-        # If the number of pages is less than 2, no output will appear.
-
-        method pager {qdict page pages} {
-            if {$pages <= 1} {
-                return
-            }
-
-            my tinyb "Page: "
-
-            if {$page > 1} {
-                my PageLink $qdict [expr {$page - 1}] "Prev"
-                my put " "
-            } else {
-                my put "Prev "
-            }
-
-            foreach i [my PageSequence $page $pages] {
-                if {$i == $page} {
-                    my put "<b>$i</b>"
-                } elseif {$i eq "..."} {
-                    my put $i
-                } else {
-                    my PageLink $qdict $i
-                }
-
-                my put " "
-            }
-
-            if {$page < $pages} {
-                my PageLink $qdict [expr {$page + 1}] "Next"
-            } else {
-                my put "Next"
-            }
-
-            my para
-        }
-
-        # PageSequence page pages 
-        #
-        # page    - A page number, 1 to N
-        # pages   - The total number of pages N 
-        #
-        # Returns a list of ordered page numbers, possibly with "...".
-
-        method PageSequence {page pages} {
-            set result [list]
-            set last 0
-
-            for {set i 1} {$i <= $pages} {incr i} {
-                if {$i <= 3 || 
-                    $i >= $pages - 2 ||
-                    ($i >= $page - 2 && $i <= $page + 2)
-                } {
-                    if {$i - 1 != $last} {
-                        lappend result "..."
-                    }
-                    lappend result $i
-                    set last $i                
-                }
-            }
-
-            return $result
-        }
-
-        # PageLink qdict page ?label?
-        #
-        # qdict   - The current query dictionary
-        # page    - The page to link to
-        # label   - The link label; defaults to the page number.
-        #
-        # Creates a link to the named page.
-
-        method PageLink {qdict page {label ""}} {
-            if {$label eq ""} {
-                set label $page
-            }
-
-            dict set qdict page $page
-
-            my link "?[urlquery fromdict $qdict]" $label
-        }        
     }
 
 }

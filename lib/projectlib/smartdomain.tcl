@@ -394,6 +394,9 @@ oo::class create ::projectlib::smartdomain {
 
         set title "URL Schema Help: $info(domain)" 
         hb page $title
+        hb linkbar {
+            hb xref /index.html Home
+        }
         hb h1 $title
 
         hb putln "The following URLs are defined within this domain."
