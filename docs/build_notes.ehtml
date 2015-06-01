@@ -2,6 +2,55 @@
 
 <h2>Build Notes</h2>
 
+<h3>Build 6.3.0a10, 1 June 2015</h3>
+
+This build contains the latest addition to the family of applications that 
+use the athena(n) library: Arachne.  Arachne is a webserver that provides
+access to web pages to create, update, query and run an instance of athena
+by way of a standard web browser (ie. Chrome, Firefox, etc...).  There is
+also a number of bug fixes.<p>
+
+<ul>
+<li> Issue #221: Arachne: HTML interface improvements, including paging of large queries Arachne 
+<li> Issue #219: vardiff(n): honor the $vartype.active compdb(5) parameter
+<li> Issue #218: htmbuffer(n): form blocks
+<li> Issue #216: Arachne hist
+<li> Issue #215: Difference drill-down architecture, part 
+<li> Issue #213: athena(n): Difference drill down architecture
+<li> Issue #211: athena(n): "is" predicates
+<li> Issue #210: athena(n): Component man pages 
+<li> Issue #209: athena(n): Standard error codes Arachne 
+<li> Issue #208: Test suite failures related to 'qid'
+<li> Issue #207: app_arachne: /scenario/{case}/script.json Arachne 
+<li> Issue #206: Arachne: check/lock/advance/unlock Arachne 
+<li> Issue #204: Arachne actors
+<li> Issue #203: arachne: Debugging Log Display Arachne
+<li> Issue #202: arachne: populate order form Arachne 
+<li> Issue #201: arachne: on-lock sanity checking Arachne
+<li> Issue #200: Thread Error Handling 
+<li> Issue #199: Bgslave error handling
+<li> Issue #198: bgerror: setting actor budget to "" 
+<li> Issue #197: On tick sanity check is ignored when advancing time in the background 
+<li> Issue #195: Structured Sanity Check Data enhancement 
+<li> Issue #194: Workbench log shows stack traces on one line
+<li> Issue #189: arachne: /scenario/{case}/order.html, don't send order to check parms
+<li> Issue #188: Arachne Test Interface Arachne
+<li> Issue #186: New sql views
+<li> Issue #185: helpdomain(n): home link, search box 
+<li> Issue #184: helpdomain(n): smartdomain for serving helpdb pages.
+<li> Issue #183: htools(n): Tk images are not being found 
+<li> Issue #182: helperserver(n): Help URLs should include file extension
+<li> Issue #177: smartdomain(n): Simply smartdomain(n) API
+<li> Issue #176: arachne(1): Athena web spinner Arachne 
+<li> Issue #174: athenawb(1): CLI history still vanishes 
+<li> Issue #173: Items disappearing after Athena runs in background 
+<li> Issue #171: Added bsysmood.b and mood.g vardiffs
+<li> Issue #168: projectlib(n): mod loader 
+<li> Issue #146: athena(1) no longer needs a batch mode. 
+<li> Issue #137: Athena Help: misformatted page headers
+</ul>
+
+
 <h3>Build 6.3.0a9, 28 April 2015</h3>
 
 This build contains a fix to a significant bug and a minor refactor to how
