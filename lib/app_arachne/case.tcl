@@ -46,7 +46,9 @@ snit::type case {
     # webviews: List of temporary SQL files to be read by athenadb
     # Variable is initialized by init.
 
-    typevariable webviews 
+    typevariable webviews {
+        web_scenario.sql
+    }
 
     #-------------------------------------------------------------------
     # Initialization
@@ -60,9 +62,6 @@ snit::type case {
     typemethod init {scenarioDir} {
         # FIRST, get the initialization options.
         set info(scenarioDir) $scenarioDir
-
-        # NEXT, set webviews
-        set webviews [glob [file join $::app_arachne::library sql *.sql]]
 
         # NEXT, add an empty base case
         $type clear
@@ -351,10 +350,16 @@ snit::type case {
     # Creates a new, configured instance of athena(n).
 
     typemethod NewScenario {case} {
+        set viewlist [lmap x $webviews {
+            file join $::app_arachne::library sql $x
+        }]
+
         set sdb [athena new \
             -subject      $case                       \
             -logdir       [scratchdir join log $case] \
-            -tempsqlfiles $webviews]
+            -tempsqlfiles [lmap x $webviews {
+                              file join $::app_arachne::library sql $x
+                          }]]
     }
 
     # export id filename
