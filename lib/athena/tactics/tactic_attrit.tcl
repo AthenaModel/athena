@@ -235,7 +235,7 @@
                 rcc "Group:" -for f
                 group f 
 
-                when {$f in [::civgroup names]} {
+                when {$f in [$adb_ civgroup names]} {
                     rcc "Responsible Group:" -for g1
                     enum g1 -listcmd {$adb_ ptype frcg+none names} -defvalue NONE
 
