@@ -349,13 +349,15 @@ smarturl /scenario /{case}/order.html {
                 }
                 set result ""
             } else {
-                qdict remove order_
-                case with $case order check $order_ {*}[qdict parms] 
+                case check $case [namespace current]::qdict
                 set result ""
             }
         } trap REJECT {result} {
             if {[dict exists $result *]} {
-                hb span "Error, [dict get $result *]"
+                hb span -class error "Error, [dict get $result *]"
+                hb para
+            } elseif {[dict exists $result order_]} {
+                hb span -class error "Error, [dict get $result order_]"
                 hb para
             }
         }
