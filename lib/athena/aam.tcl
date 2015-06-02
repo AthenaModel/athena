@@ -47,6 +47,16 @@ snit::type ::athena::aam {
 
     constructor {adb_} {
         set adb $adb_
+
+        # FIRST, initialize the force multiplier denominator
+        set urb   [$adb parm get aam.FRC.urbcas.URBAN]
+        set civc  [$adb parm get aam.FRC.civconcern.NONE]
+        set elvl  [$adb parm get aam.FRC.equiplevel.BEST]
+        set ftype [$adb parm get aam.FRC.forcetype.REGULAR]
+        set tlvl  [$adb parm get aam.FRC.discipline.PROFICIENT]
+        set dem   [$adb parm get aam.FRC.demeanor.AVERAGE]
+
+        let frcmultD {$urb * $civc * $elvl * $ftype * $tlvl * $dem}
     }
 
     #------------------------------------------------------------------
@@ -101,7 +111,8 @@ snit::type ::athena::aam {
     }
 
     method start {} {
-        # FIRST, compute force group multiplier denominator
+        # FIRST, compute force group multiplier denominator, the parms
+        # may have changed value
         set urb   [$adb parm get aam.FRC.urbcas.URBAN]
         set civc  [$adb parm get aam.FRC.civconcern.NONE]
         set elvl  [$adb parm get aam.FRC.equiplevel.BEST]
