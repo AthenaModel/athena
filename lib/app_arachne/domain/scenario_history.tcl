@@ -714,18 +714,7 @@ oo::define /scenario {
         }
 
         # NEXT, determine temp file name
-        incr fcounter
-        set fname "temp$fcounter"
-
-        # NEXT, file extension and full path
-        append fname ".json"
-
-        if {![file exists [appdir join htdocs temp]]} {
-            file mkdir [appdir join htdocs temp]
-        }
-
-        set path [appdir join htdocs temp]
-        set filename [file join $path $fname]
+        set filename [/temp namegen ".json"]
 
         # NEXT, the time range
         set t1 [qdict get t1]
