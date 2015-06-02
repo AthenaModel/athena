@@ -13,7 +13,7 @@ is an incomplete prototype.<p>
 
 <changelog>
 
-<change 6/1/2015 Update will>
+<change 6/2/2015 Update will>
 Updates on the RESTful API, prior to June engineering delivery.<p>
 </change>
 
@@ -299,7 +299,7 @@ In cases where error returns are possible (e.g., when using
 the JSON interface to perform some action, or when invalid query 
 parameters are sent) the JSON result is a list of 
 two or three elements.  The first element is a
-code, "OK", "REJECT", or "ERROR".<p>
+code, "OK", "ERROR", "REJECT", or "EXCEPTION".<p>
 
 <ul>
 <li>  If the code is "OK", the request was
@@ -308,13 +308,19 @@ code, "OK", "REJECT", or "ERROR".<p>
       particular URL in the 
       <link /scenario/urlschema.html "URL Schema"> for specifics.<p>
 
-<li> If the code is "REJECT", the request was rejected.  The second 
+<li> If the code is "REJECT", the request was rejected because of input
+     errors.  The second 
      element is a JSON object with one field for each problem parameter
-     in the request.  The field names are parameter names (or "*" for 
-     errors affecting the whole request); the field values are error 
-     messages for display to the user.<p>
+     in the request.  The field names are query parameter names 
+     (or "*" for errors affecting the whole request); the field values 
+     are error messages for display to the user.<p>
 
-<li> If the code is "ERROR", there was an unexpected error while executing
+<li> If the code is "ERROR", there was an error while processing
+     the request.  The second element is an error message.  An "ERROR"
+     usually implies that the input parameters were OK but the request
+     could not be performed successfully for some other reason.<p>
+
+<li> If the code is "EXCEPTION", there was an unexpected error while executing
      the request.  The second element is an error message, and the third
      element is a TCL stack trace.<p>
 </ul>
