@@ -57,7 +57,7 @@ snit::type ::ahttpd::redirect {
         set thispage [ncgi::urlStub]
         set thisurl [httpd selfUrl $thispage]
         set newurl [uri::resolve $thisurl $newurl]
-        $type to $newurl
+        $type goto $newurl
     }
 
     #-------------------------------------------------------------------

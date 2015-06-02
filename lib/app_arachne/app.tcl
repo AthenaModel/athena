@@ -194,6 +194,9 @@ snit::type app {
             -docroot    [appdir join htdocs]
 
         # NEXT, Add content
+        tempdomain create /temp /temp
+        puts "Temp Directory: [/temp tempdir]"
+
         foreach domain [array names domains] {
             $domains($domain) ahttpd
         }

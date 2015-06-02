@@ -87,7 +87,6 @@ snit::type ::ahttpd::dirlist {
             set tmlext [template tmlext]
 
             if {$tmlext eq [file extension $newest]} {
-                puts "Looking for newest"
                 set newest [file root $newest]$tmlext
             }
             return [doc handle $prefix $newest $suffix $sock]
