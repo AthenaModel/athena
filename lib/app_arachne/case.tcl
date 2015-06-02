@@ -156,6 +156,30 @@ snit::type case {
         tailcall $cases(sdb-$id) {*}$args
     }
 
+    # check id pdict
+    #
+    # id     - A case ID
+    # pdict  - An order parmdict(n) object, including "order_"
+    #
+    # Checks the order for validity.  Can throw REJECT.
+
+    typemethod check {id pdict} {
+        set sdb [case get $id]
+
+        $pdict prepare order_ -required -toupper \
+            -with [mytypemethod OrderIsAvailable $sdb]
+
+        if {![$pdict ok]} {
+            throw REJECT [$pdict errors]
+        }
+
+        $pdict assign order_
+        $pdict remove order_
+        $sdb order check $order_ {*}[$pdict parms] 
+
+        return
+    } 
+
     # send id pdict
     #
     # id     - A case ID
@@ -167,7 +191,7 @@ snit::type case {
         set sdb [case get $id]
 
         $pdict prepare order_ -required -toupper \
-            -with [list $sdb order validate]
+            -with [mytypemethod OrderIsAvailable $sdb]
 
         if {![$pdict ok]} {
             throw REJECT [$pdict errors]
@@ -184,6 +208,24 @@ snit::type case {
 
         return [$sdb order senddict normal $order [$pdict parms]]
     } 
+
+    # OrderIsAvailable sdb name
+    #
+    # sdb   - The scenario object
+    # name  - An order name
+    #
+    # Validates that the order name is known and that the named order
+    # is available to the scenario.
+
+    typemethod OrderIsAvailable {sdb name} {
+        set name [$sdb order validate $name]
+
+        if {![$sdb order available $name]} {
+            throw INVALID "Order $name is not available in state [$sdb state]."
+        }
+
+        return $name
+    }
 
     # metadata id ?parm?
     #
