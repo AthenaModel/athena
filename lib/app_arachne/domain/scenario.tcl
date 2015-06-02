@@ -680,9 +680,10 @@ smarturl /scenario /index.html {
     hb para
 
 
-    hb putln "The following scenarios are loaded ("
-    hb iref /index.json json
-    hb put )
+    hb putln "The following scenarios are loaded."
+    hb form {
+        my jsonbutton /index.json /index.html
+    }
 
     hb para
 
@@ -854,7 +855,7 @@ smarturl /scenario /clone.html {
     hb label target "Replacing:"
     hb enumlong target [linsert [case namedict] 0 "" ""]
     hb submit "Clone"
-    hb submit -formaction [my domain]/clone.json "JSON"
+    my jsonbutton /clone.json /clone.html
 
     hb para
     hb putln "Available for Cloning:"
@@ -964,7 +965,7 @@ smarturl /scenario /import.html {
     hb label case "Replacing:"
     hb enumlong case [linsert [case namedict] 0 "" ""]
     hb submit "Import"
-    hb submit -formaction [my domain]/import.json "JSON"
+    my jsonbutton /import.json /import.html
 
     hb para
     hb putln "Available for Import:"
@@ -1077,7 +1078,7 @@ smarturl /scenario /export.html {
     hb entry filename -size 20
     hb put " (.adb or .tcl) "
     hb submit "Export"
-    hb submit -formaction [my domain]/export.json "JSON"
+    my jsonbutton /export.json /export.html
 
     hb para
     hb putln "Select a Scenario to Export:"
@@ -1183,7 +1184,7 @@ smarturl /scenario /remove.html {
         hb form
         hb hidden op remove
         hb submit "Remove"
-        hb submit -formaction [my domain]/remove.json "JSON"
+        my jsonbutton /remove.json /remove.html
 
         hb para
         hb putln "Select a Scenario to Remove:"
@@ -1315,7 +1316,7 @@ smarturl /scenario /json.html {
     hb linkbar {
         hb xref "/" "Home"
         if {$backto ne ""} {
-            hb xref $backto "Back"
+            hb xref $backto "Finish"
         }
     }
 
@@ -1324,11 +1325,19 @@ smarturl /scenario /json.html {
     if {![qdict ok]} {
         my ErrorList "Could not retrieve JSON data"
     } else {
+        hb putln "Do not use the back arrow; instead, click 'Finish'."
+        hb para
+
         hb putln "Request:"
         append jsonurl [hb asquery [qdict parms]]
         hb pre -class example $jsonurl
 
+        hb putln "Query Parameters:"
+        hb pre -class example [qdict parms]
+
         hb hr
+
+        hb putln "JSON Result:"
         hb pre -class example -id jsonresult {
             Waiting for response....
         }
