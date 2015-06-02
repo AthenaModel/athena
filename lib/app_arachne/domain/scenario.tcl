@@ -650,7 +650,19 @@ oo::class create /scenario {
 
     }
 
+    # jsonbutton request backto
+    #
+    # request   - The iref of a JSON request URL
+    # backto    - The iref of another /scenario URL to return to.
+    #
+    # Adds hidden form fields jsonurl and backto to the current form,
+    # followed by a JSON button that loads json.html.
 
+    method jsonbutton {request backto} {
+        hb hidden jsonurl [my domain]$request
+        hb hidden backto  [my domain]$backto
+        hb submit -formaction [my domain]/json.html "JSON"
+    }
     
 }
 
@@ -746,7 +758,7 @@ smarturl /scenario /new.html {
         hb label case "Replacing:"
         hb enumlong case [linsert [case namedict] 0 "" ""]
         hb submit "New Scenario"
-        hb submit -formaction [my domain]/new.json "JSON"
+        my jsonbutton /new.json /new.html
     }
     hb para
 
@@ -1283,6 +1295,61 @@ smarturl /scenario /diff.json {
     $comp destroy
 
     return [js ok $hud]
+}
+
+#-----------------------------------------------------------------------
+# Compare scenarios (prototype)
+
+smarturl /scenario /json.html {
+    Given query parameter "jsonurl", retrieves the data at the URL
+    and displays it in a textarea.  "backto" is the URL to return to.
+    TBD: Needs to include the query parameters in the jsonurl
+    (Or they need to be included to begin with.)
+} {
+    qdict prepare jsonurl -required
+    qdict prepare backto 
+    qdict assign jsonurl backto
+
+    hb page "JSON Result"
+    hb linkbar {
+        hb xref "/" "Home"
+        if {$backto ne ""} {
+            hb xref $backto "Back"
+        }
+    }
+
+    hb h1 "JSON Result"
+
+    if {![qdict ok]} {
+        my ErrorList "Could not retrieve JSON data"
+    } else {
+        hb putln "Request:"
+        hb pre -class example $jsonurl
+    }
+
+    hb hr
+    hb pre -class example -id jsonresult {
+        Waiting for response....
+    }
+
+    hb tag script
+    hb putln [format {
+        var url = "%s";
+        var xmlhttp = new XMLHttpRequest();
+
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                document.getElementById("jsonresult").innerHTML =
+                    xmlhttp.responseText;
+            }            
+        }
+        xmlhttp.open("GET", url, true);
+        xmlhttp.send();
+
+    } $jsonurl]
+    hb tag /script
+
+    return [hb /page]
 }
 
 
