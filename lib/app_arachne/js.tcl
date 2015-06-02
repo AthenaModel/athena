@@ -29,7 +29,7 @@ snit::type js {
     #
     # result   - A string
     #
-    # Formats a JSON operation result message.
+    # Formats a JSON "OK" result message.
 
     typemethod ok {result} {
         set hud [huddle list]
@@ -46,7 +46,7 @@ snit::type js {
     #
     # result   - A dictionary, as one argument or multiple
     #
-    # Formats a JSON operation result message.
+    # Formats a JSON "REJECT" result message.
 
     typemethod reject {args} {
         if {[llength $args] eq 1} {
@@ -59,16 +59,29 @@ snit::type js {
         return [huddle jsondump $hud]
     }
 
-    # error message ?stackTrace?
+    # error message
     #
     # message     - The error message
-    # stackTrace  - If given, a Tcl stack trace
     #
-    # Formats a JSON operation result message.
+    # Formats a JSON "ERROR" result message.
 
-    typemethod error {message {stackTrace ""}} {
+    typemethod error {message} {
         set hud [huddle list]
-        huddle append hud ERROR \
+        huddle append hud ERROR [huddle compile string $message]
+
+        return [huddle jsondump $hud]
+    }
+
+    # exception message stackTrace
+    #
+    # message     - The error message
+    # stackTrace  - A Tcl stack trace
+    #
+    # Formats a JSON "EXCEPTION" result message.
+
+    typemethod exception {message stackTrace} {
+        set hud [huddle list]
+        huddle append hud EXCEPTION \
             [huddle compile string $message] \
             [huddle compile string $stackTrace]
 

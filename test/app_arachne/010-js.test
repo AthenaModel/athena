@@ -1,0 +1,132 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-js.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    app_arachne(1): JSON return protocol
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athenawb(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    proc setup {} {
+        # TBD
+    }
+
+
+    
+    #-------------------------------------------------------------------
+    # ok
+
+    test ok-1.1 {string message} -body {
+        js ok "Sample Message"
+    } -result {[
+  "OK",
+  "Sample Message"
+]}
+
+    test ok-1.2 {huddle object} -body {
+        set hud [huddle compile dict {A 1}]
+        js ok $hud
+    } -result {[
+  "OK",
+  {"A": 1}
+]}
+    
+    #-------------------------------------------------------------------
+    # reject
+
+    test reject-1.1 {reject with errdict} -body {
+        js reject {
+            this "Is bad"
+            that "Also bad"
+        }
+    } -result {[
+  "REJECT",
+  {
+    "this": "Is bad",
+    "that": "Also bad"
+  }
+]}
+
+ 
+    #-------------------------------------------------------------------
+    # error
+
+    test error-1.1 {string message} -body {
+        js error "Sample Error"
+    } -result {[
+  "ERROR",
+  "Sample Error"
+]}
+
+    #-------------------------------------------------------------------
+    # exception
+
+    test exception-1.1 {string message} -body {
+        js exception "Sample Error" "Stack Trace"
+    } -result {[
+  "EXCEPTION",
+  "Sample Error",
+  "Stack Trace"
+]}
+
+    #-------------------------------------------------------------------
+    # dictab
+
+    test dictab-1.1 {empty list} -body {
+        normalize [js dictab {}]
+    } -result {[ ]}
+
+    test dictab-1.2 {empty list} -body {
+        js dictab {
+            {A 1 B 2}
+            {A 3 B 4}
+        }
+    } -result {[
+  {
+    "A": 1,
+    "B": 2
+  },
+  {
+    "A": 3,
+    "B": 4
+  }
+]}
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    ::tcltest::cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+

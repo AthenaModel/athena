@@ -1,18 +1,13 @@
 # -*-Tcl-*-
 #-----------------------------------------------------------------------
 # TITLE:
-#    020-scenario.test
+#    020-case.test
 #
 # AUTHOR:
 #    Will Duquette
 #
 # DESCRIPTION:
-#    app_arachne(1): Scenario Management URLs
-#
-#    This test suite tests the handlers for these URLs:
-#
-#    /scenario/*.{html,json}
-#    /scenario/{name}/*.{html,json}.
+#    app_arachne(1): Scenario Management ("case") module
 #
 #-----------------------------------------------------------------------
 
