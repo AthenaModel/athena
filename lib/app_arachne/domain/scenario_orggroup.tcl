@@ -31,6 +31,8 @@ smarturl /scenario /{case}/orggroup/index.html {
     set case [my ValidateCase $case]
 
     hb page "Scenario '$case': Organization Groups"
+    my CaseNavBar $case
+    
     hb h1 "Scenario '$case': Organization Groups"
 
     set orggroups [case with $case orggroup names]

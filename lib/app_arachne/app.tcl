@@ -196,6 +196,7 @@ snit::type app {
         # NEXT, Add content
         tempdomain create /temp /temp
         puts "Temp Directory: [/temp tempdir]"
+        app log normal app "Temp Directory: [/temp tempdir]"
 
         foreach domain [array names domains] {
             $domains($domain) ahttpd

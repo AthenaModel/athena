@@ -558,11 +558,6 @@ oo::class create /scenario {
             hb iref /$case/orggroup/index.html "Org Groups"
             hb iref /$case/sigevent/index.html "Sig Events"
         }
-        hb put " | "
-        hb iref /$case/order.html "Orders"
-        hb put " | "
-        hb iref /$case/script.html "Scripts"
-        hb hr
         hb para
     }
 
