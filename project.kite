@@ -13,8 +13,19 @@ app athena -apptype exe -exclude {
     ctext
     marsgui
 }
+
+app arachne -apptype exe -exclude {
+    Img
+    BWidget
+    Tktable
+    treectrl
+    tablelist
+    Tkhtml
+    ctext
+    marsgui
+}
+
 app athenawb -apptype exe -gui
-app arachne -apptype exe
 app athena_log -apptype kit -gui
 app cellide -apptype exe -gui
 app helptool -apptype kit -gui

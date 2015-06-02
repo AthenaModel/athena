@@ -2,9 +2,11 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Athena"
-#define MyAppVersion "6.3.0a9"
+#define MyWebName "Arachne"
+#define MyAppVersion "6.3.0a10"
 #define MyAppPublisher "Jet Propulsion Laboratory, California Institute of Technology"
 #define MyAppExeName "athenawb.exe"
+#define MyWebExeName "arachne.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -39,6 +41,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]             
 Source: "..\bin\athenawb-{#MyAppVersion}-win32-ix86.exe"; DestDir: "{app}"; DestName: "athenawb.exe"; Flags: ignoreversion
+Source: "..\bin\arachne-{#MyAppVersion}-win32-ix86.exe"; DestDir: "{app}"; DestName: "arachne.exe"; Flags: ignoreversion
 Source: "..\docs\build_notes.html"; DestDir: "{app}\docs"; Flags: ignoreversion 
 Source: "..\docs\index.html"; DestDir: "{app}\docs"; Flags: ignoreversion 
 Source: "..\docs\*.png"; DestDir: "{app}\docs"; Flags: ignoreversion 
@@ -47,6 +50,10 @@ Source: "..\docs\man1\athenawb.html"; DestDir: "{app}\docs\man1"; Flags: ignorev
 Source: "..\docs\*.docx"; DestDir: "{app}\docs\dev"; Flags: ignoreversion 
 Source: "..\docs\*.pptx"; DestDir: "{app}\docs\dev"; Flags: ignoreversion skipifsourcedoesntexist
 Source: "..\docs\*.pdf"; DestDir: "{app}\docs\dev"; Flags: ignoreversion skipifsourcedoesntexist
+Source: "..\htdocs\*"; DestDir: "{app}\htdocs"; Flags: ignoreversion skipifsourcedoesntexist
+Source: "..\htdocs\data\*"; DestDir: "{app}\htdocs\data"; Flags: ignoreversion skipifsourcedoesntexist
+Source: "..\htdocs\data\subdir\*"; DestDir: "{app}\htdocs\data\subdir"; Flags: ignoreversion skipifsourcedoesntexist
+Source: "..\htdocs\images\*"; DestDir: "{app}\htdocs\images"; Flags: ignoreversion skipifsourcedoesntexist
 Source: "..\maps\*.png"; DestDir: "{app}\maps"; Flags: ignoreversion skipifsourcedoesntexist
 Source: "..\maps\*.tif"; DestDir: "{app}\maps"; Flags: ignoreversion skipifsourcedoesntexist
 Source: "..\data\polygons\*.npf"; DestDir: "{app}\data\polygons"; Flags: ignoreversion
@@ -59,6 +66,7 @@ Name: "{userdocs}\Athena"
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{userdocs}\Athena"
+Name: "{group}\{#MyWebname}"; Filename: "{app}\{#MyWebExeName}"; WorkingDir: "{userdocs}\Athena"
 Name: "{group}\Athena Documentation"; Filename: "{app}\docs\index.html"
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{userdocs}\Athena"; Tasks: desktopicon
