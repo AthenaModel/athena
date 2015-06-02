@@ -504,12 +504,12 @@ snit::widget appwin {
         grid propagate $win off
 
         # NEXT, Prepare to receive notifier events.
-        notifier bind ::adb      <Sync>          $self [mymethod reload]
-        notifier bind ::scenario <ScenarioSaved> $self [mymethod reload]
-        notifier bind ::adb      <State>         $self [mymethod SimState]
-        notifier bind ::adb      <Progress>      $self [mymethod SimProgress]
-        notifier bind ::adb      <Time>          $self [mymethod SimTime]
-        notifier bind ::app      <Prefs>         $self [mymethod AppPrefs]
+        notifier bind ::adb  <Sync>          $self [mymethod reload]
+        notifier bind ::adb  <State>         $self [mymethod SimState]
+        notifier bind ::adb  <Progress>      $self [mymethod SimProgress]
+        notifier bind ::adb  <Time>          $self [mymethod SimTime]
+        notifier bind ::app  <ScenarioSaved> $self [mymethod reload]
+        notifier bind ::app  <Prefs>         $self [mymethod AppPrefs]
 
         # NEXT, Prepare to receive window events
         bind $viewer <<Unit-1>>       [mymethod Unit-1   %d]

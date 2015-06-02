@@ -949,7 +949,7 @@ snit::type app {
 
         # FIRST, notify the simulation that we're saving, so other
         # modules can prepare.
-        notifier send ::scenario <Saving>
+        notifier send $type <Saving>
 
         # NEXT, save the scenario to disk.
         try {
