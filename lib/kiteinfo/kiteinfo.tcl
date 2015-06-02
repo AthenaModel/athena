@@ -39,7 +39,7 @@ namespace eval ::kiteinfo:: {
         xfiles {docs/aag.docx docs/aug.docx docs/rules.pptx docs/mag.docx}
         reqver-json 1.3.3
         local-Tkhtml 0
-        apps {athena athenawb arachne athena_log cellide helptool}
+        apps {athena arachne athenawb athena_log cellide helptool}
         gui-arachne 0
         gui-athena_log 1
         local-html 0
@@ -65,8 +65,8 @@ namespace eval ::kiteinfo:: {
 }}
         reqver-kiteutils 0.4.8
         reqver-fileutil 1.14
-        icon-athenawb {}
         icon-arachne {}
+        icon-athenawb {}
         url-docs/mag.docx https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20140826.docx
         local-marsutil 1
         reqver-marsgui 3.0.17
@@ -176,7 +176,16 @@ namespace eval ::kiteinfo:: {
         reqver-Tkhtml 3.0
         requires {snit comm Img BWidget Tktable treectrl sqlite3 tablelist textutil::expander textutil::adjust Tkhtml uri fileutil ctext tls tdom struct::set huddle json md5 counter ncgi html base64 kiteutils kitedocs marsutil marsgui simlib Marsbin}
         icon-athena_log {}
-        exclude-arachne {}
+        exclude-arachne {
+    Img
+    BWidget
+    Tktable
+    treectrl
+    tablelist
+    Tkhtml
+    ctext
+    marsgui
+}
         clean-help {make clean}
         poc William.H.Duquette@jpl.nasa.gov
         srcs help
@@ -185,7 +194,7 @@ namespace eval ::kiteinfo:: {
         reqver-Marsbin 3.0.17
         local-kiteutils 1
         local-textutil::expander 0
-        version 6.3.0a10
+        version 6.3.0a11
         reqver-Img 1.4.1
     }
 

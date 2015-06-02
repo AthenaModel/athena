@@ -433,7 +433,7 @@ smarturl /scenario /{case}/script.html {
     hb h1 "Scenario '$case': Script Entry"
 
     # NEXT, set up the entry form.
-    hb form -smarturl /scenario /post
+    hb form -method post 
     hb textarea script -rows 10 -cols 60
     hb para
     hb submit "Execute"
