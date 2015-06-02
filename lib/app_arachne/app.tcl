@@ -194,7 +194,7 @@ snit::type app {
             -docroot    [appdir join htdocs]
 
         # NEXT, Add content
-        tempdomain create /temp /temp
+        tempdomain create ::/temp /temp
         puts "Temp Directory: [/temp tempdir]"
         app log normal app "Temp Directory: [/temp tempdir]"
 
