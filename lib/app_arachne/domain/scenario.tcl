@@ -1303,12 +1303,13 @@ smarturl /scenario /diff.json {
 smarturl /scenario /json.html {
     Given query parameter "jsonurl", retrieves the data at the URL
     and displays it in a textarea.  "backto" is the URL to return to.
-    TBD: Needs to include the query parameters in the jsonurl
-    (Or they need to be included to begin with.)
 } {
     qdict prepare jsonurl -required
     qdict prepare backto 
     qdict assign jsonurl backto
+    qdict remove jsonurl
+    qdict remove backto
+
 
     hb page "JSON Result"
     hb linkbar {
@@ -1324,30 +1325,31 @@ smarturl /scenario /json.html {
         my ErrorList "Could not retrieve JSON data"
     } else {
         hb putln "Request:"
+        append jsonurl [hb asquery [qdict parms]]
         hb pre -class example $jsonurl
-    }
 
-    hb hr
-    hb pre -class example -id jsonresult {
-        Waiting for response....
-    }
-
-    hb tag script
-    hb putln [format {
-        var url = "%s";
-        var xmlhttp = new XMLHttpRequest();
-
-        xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                document.getElementById("jsonresult").innerHTML =
-                    xmlhttp.responseText;
-            }            
+        hb hr
+        hb pre -class example -id jsonresult {
+            Waiting for response....
         }
-        xmlhttp.open("GET", url, true);
-        xmlhttp.send();
 
-    } $jsonurl]
-    hb tag /script
+        hb tag script
+        hb putln [format {
+            var url = "%s";
+            var xmlhttp = new XMLHttpRequest();
+
+            xmlhttp.onreadystatechange = function() {
+                if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                    document.getElementById("jsonresult").innerHTML =
+                        xmlhttp.responseText;
+                }            
+            }
+            xmlhttp.open("GET", url, true);
+            xmlhttp.send();
+
+        } $jsonurl]
+        hb tag /script
+    }
 
     return [hb /page]
 }

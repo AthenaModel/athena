@@ -1,10 +1,17 @@
 # TODO.md - Athena TODO List
 
 - Arachne
-  - Need to extend the OK/REJECT/ERROR protocol.  We have two kinds of
-    ERROR: those that represent unexpected errors in Arachne, and those
-    that represent errors while performing an action that aren't simply
-    input errors.  Figure this out, and revise arachne.ehtml.
+  - Display of JSON results in HTML page
+    - I have a sample of AJAX-style request, in branch json-result-display
+      - However, reloading the result page sends the request a second time.
+    - What's wanted: A button that:
+      - Retrieves a form's parameters
+      - Assembles the relevant JSON request
+      - Requests it
+      - Puts the result in a JSON Result box.
+    - This solves the above problem; however:
+      - Other data on the page won't get updated properly.  Ooooh, it gets
+        complicated!
   - Consider smartdomain look ups using a dict tree: split the url into
     components and just follow them down the tree, accumulating place
     holders as you go.  See if that's faster.
