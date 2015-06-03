@@ -67,6 +67,7 @@ snit::type ted {
         rule_inputs
         sigevents
         sigevent_tags
+        sr_service
         stance_fg
         stance_nfg
         units

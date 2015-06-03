@@ -247,7 +247,7 @@ snit::type ::projectlib::scenariodb {
 
     # schemaID - The schema version ID, which is saved in
     # the database using the user_version pragma.
-    typevariable schemaID 4
+    typevariable schemaID 5
 
     # Version Table
     #
@@ -258,6 +258,7 @@ snit::type ::projectlib::scenariodb {
         2 "Athena 2.1"
         3 "Athena 6.1 or prior"
         4 "Athena 6.2"
+        5 "Athena 6.3"
     }
 
     # checkschema tempdb
