@@ -23,7 +23,7 @@
 #-------------------------------------------------------------------
 # General Content
 
-smarturl /scenario /{case}/actor/index.html {
+smarturl /scenario /{case}/actors/index.html {
     Displays a list of actor entities for <i>case</i>, with links to 
     the actual actors.
 } {
@@ -44,7 +44,7 @@ smarturl /scenario /{case}/actor/index.html {
     }
 
     hb putln "The following actors are in this scenario ("
-    hb iref /$case/actor/index.json json
+    hb iref /$case/actors/index.json json
     hb put )
 
     hb para
@@ -83,7 +83,7 @@ smarturl /scenario /{case}/actor/index.html {
     return [hb /page]
 }
 
-smarturl /scenario /{case}/actor/index.json {
+smarturl /scenario /{case}/actors/index.json {
     Returns a JSON list of actor entities in the <i>case</i> specified.
 } {
     set case [my ValidateCase $case]
