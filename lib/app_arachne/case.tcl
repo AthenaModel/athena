@@ -130,7 +130,6 @@ snit::type case {
         return $id
     }
 
-
     # get id
     #
     # id - A case name

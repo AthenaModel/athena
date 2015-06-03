@@ -121,6 +121,16 @@ snit::type ted {
         $sdb destroy
     }
 
+    # with script
+    # 
+    # script   - a script to evaluate
+    #
+    # This method executes the given script in the base case scenario.
+
+    typemethod with {script} {
+        set sdb [case get case00]
+        $sdb executive eval $script
+    }
 
     # mkscript scenario
     #
