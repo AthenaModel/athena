@@ -161,8 +161,8 @@ oo::class create ::projectlib::helpdomain {
             FROM helpdb_pages 
             WHERE lower(title)=lower($query)
         } {
-            puts "Redirecting to [my domain]$url"
             my redirect "[my domain]$url"
+            # END
         }
 
 
