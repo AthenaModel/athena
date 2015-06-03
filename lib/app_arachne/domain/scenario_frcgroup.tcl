@@ -23,7 +23,7 @@
 #-------------------------------------------------------------------
 # General Content
 
-smarturl /scenario /{case}/frcgroup/index.html {
+smarturl /scenario /{case}/groups/frc/index.html {
     Displays a list of force group entities for <i>case</i>, with links 
     to the actual groups.
 } {
@@ -44,7 +44,7 @@ smarturl /scenario /{case}/frcgroup/index.html {
     }
 
     hb putln "The following force groups are in this scenario ("
-    hb iref /$case/frcgroup/index.json json
+    hb iref /$case/groups/frc/index.json json
     hb put )
 
     hb para
@@ -85,7 +85,7 @@ smarturl /scenario /{case}/frcgroup/index.html {
     return [hb /page]
 }
 
-smarturl /scenario /{case}/frcgroup/index.json {
+smarturl /scenario /{case}/groups/frc/index.json {
     Returns a JSON list of force group entities in the <i>case</i> specified.
 } {
     set case [my ValidateCase $case]
@@ -108,52 +108,5 @@ smarturl /scenario /{case}/frcgroup/index.json {
 
     return [js dictab $table]
 }
-
-smarturl /scenario /{case}/frcgroup/{g}/index.html {
-    Displays data for a particular force group <i>g</i> in scenario 
-    <i>case</i>.
-} {
-    set g [my ValidateGroup $case $g FRC]
-
-    set name [case with $case frcgroup get $g longname]
-
-    hb page "Scenario '$case': Force Group: $g"
-    my CaseNavBar $case 
-
-    hb h1 "Scenario '$case': Force Group: $g"
-
-    # NEXT, the only content for now is a link to JSON data
-    hb putln "Click for "
-    hb iref /$case/frcgroup/$g/index.json "json"
-    hb put "."
-
-    hb para
-
-    hb para
-    return [hb /page]
-}
-
-smarturl /scenario /{case}/frcgroup/{g}/index.json {
-    Returns JSON list of force group data for scenario <i>case</i> and 
-    group <i>g</i>.
-} {
-    set g [my ValidateGroup $case $g FRC]
-
-    set fdict [case with $case frcgroup view $g web]
-    set qid   [dict get $fdict qid]
-    set a_qid [dict get $fdict a_qid]
-
-    # NEXT, format URLs properly
-    dict set fdict url [my domain $case $qid "index.json"]
-
-    if {$a_qid ne ""} {
-        dict set fdict a_url [my domain $case $a_qid "index.json"]
-    } 
-
-    return [js dictab [list $fdict]]
-}
-
-
-
 
 

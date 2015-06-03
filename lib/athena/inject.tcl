@@ -861,7 +861,7 @@ snit::type ::athena::inject {
     # This order dialog isn't usually used.
 
     meta title "Delete Inject"
-    meta sendstates {PREP PAUSED}
+    meta sendstates PREP
 
     meta parmlist {id}
 
@@ -888,7 +888,7 @@ snit::type ::athena::inject {
 ::athena::orders define INJECT:STATE {
     meta title "Set Inject State"
 
-    meta sendstates {PREP PAUSED}
+    meta sendstates PREP
 
     meta parmlist {id state}
 

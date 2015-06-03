@@ -656,7 +656,7 @@ snit::type ::athena::absit {
 
 ::athena::orders define ABSIT:CREATE {
     meta title "Create Abstract Situation"
-    meta sendstates {PREP PAUSED TACTIC}
+    meta sendstates {PREP TACTIC}
 
     meta parmlist {
         n
@@ -737,7 +737,7 @@ snit::type ::athena::absit {
 
 ::athena::orders define ABSIT:DELETE {
     meta title      "Delete Abstract Situation"
-    meta sendstates {PREP PAUSED}
+    meta sendstates PREP
     meta parmlist   {s}
 
     meta form {
@@ -767,7 +767,7 @@ snit::type ::athena::absit {
 
 ::athena::orders define ABSIT:UPDATE {
     meta title      "Update Abstract Situation"
-    meta sendstates {PREP PAUSED TACTIC} 
+    meta sendstates {PREP TACTIC} 
     meta parmlist {
         s n stype coverage inception resolver rduration
     }
@@ -893,7 +893,7 @@ snit::type ::athena::absit {
 
 ::athena::orders define ABSIT:RESOLVE {
     meta title "Resolve Abstract Situation"
-    meta sendstates {PREP PAUSED TACTIC}
+    meta sendstates {PREP TACTIC}
 
     meta defaults {
         s        ""

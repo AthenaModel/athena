@@ -23,7 +23,7 @@
 #-------------------------------------------------------------------
 # General Content
 
-smarturl /scenario /{case}/orggroup/index.html {
+smarturl /scenario /{case}/groups/org/index.html {
     Displays a list of organization group entities for <i>case</i>, with links 
     to the actual groups.
 } {
@@ -44,7 +44,7 @@ smarturl /scenario /{case}/orggroup/index.html {
     }
 
     hb putln "The following organization groups are in this scenario ("
-    hb iref /$case/orggroup/index.json json
+    hb iref /$case/groups/org/index.json json
     hb put )
 
     hb para
@@ -77,7 +77,7 @@ smarturl /scenario /{case}/orggroup/index.html {
     return [hb /page]
 }
 
-smarturl /scenario /{case}/orggroup/index.json {
+smarturl /scenario /{case}/groups/org/index.json {
     Returns a JSON list of organization group entities in the <i>case</i> 
     specified.
 } {
@@ -101,50 +101,6 @@ smarturl /scenario /{case}/orggroup/index.json {
 
     return [js dictab $table]
 }
-
-smarturl /scenario /{case}/orggroup/{g}/index.html {
-    Displays data for a particular organization group <i>g</i> in scenario 
-    <i>case</i>.
-} {
-    set g [my ValidateGroup $case $g ORG]
-
-    set name [case with $case orggroup get $g longname]
-
-    hb page "Scenario '$case': Organization Group: $g"
-    my CaseNavBar $case
-
-    hb h1 "Scenario '$case': Organization Group: $g"
-
-    hb putln "Click for "
-    hb iref /$case/orggroup/$g/index.json "json"
-    hb put "."
-
-    hb para
-
-    hb para
-    return [hb /page]
-}
-
-smarturl /scenario /{case}/orggroup/{g}/index.json {
-    Returns JSON list of organization group data for scenario <i>case</i> and 
-    group <i>g</i>.
-} {
-    set g [my ValidateGroup $case $g ORG]
-
-    set odict [case with $case orggroup view $g web]
-    set qid   [dict get $odict qid]
-    set a_qid [dict get $odict a_qid]
-
-    # NEXT, format URLs properly
-    dict set odict url [my domain $case $qid "index.json"]
-    if {$a_qid ne ""} {
-        dict set odict a_url [my domain $case $a_qid "index.json"]
-    } 
-
-    return [js dictab [list $odict]]
-}
-
-
 
 
 

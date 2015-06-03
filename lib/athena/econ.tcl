@@ -1876,7 +1876,7 @@ snit::type ::athena::econ {
 
 ::athena::orders define ECON:CGE:UPDATE {
     meta title "Update CGE Cell Value"
-    meta sendstates {PAUSED TACTIC}
+    meta sendstates TACTIC
 
     meta parmlist {id val}
 
@@ -1905,7 +1905,7 @@ snit::type ::athena::econ {
 
 ::athena::orders define ECON:UPDATE:REMRATE {
     meta title "Update Remittance Change Rate"
-    meta sendstates {PAUSED TACTIC}
+    meta sendstates TACTIC
 
     meta parmlist {val}
 
