@@ -697,7 +697,7 @@ oo::define /scenario {
         try {
             case with $case query $query -mode jsonok -filename $filename
         } on error {result eopts} {
-            return [js error $result [dict get $eopts -errorinfo]]
+            return [js exception $result [dict get $eopts -errorinfo]]
         }
 
         my redirect "/temp/[file tail $filename]" 

@@ -402,14 +402,13 @@ oo::class create ::projectlib::smartdomain {
         hb putln "The following URLs are defined within this domain."
         hb para
         hb hr
-        hb form
-        hb label sort "Sort by URL"
-        # TBD: Need to support radio buttons, or perhaps a pulldown.
-        hb putln "<input type=radio name=sort value=url $urlcheck>"
-        hb putln "or Match Order"
-        hb putln "<input type=radio name=sort value=def $defcheck>"
-        hb submit "Refresh"
-        hb /form
+        hb form -id sortform {
+            hb label sort "Sort:"
+            hb enumlong sort -autosubmit sortform -selected $sort {
+                url "Alphabetically by URL"
+                def "In order of definition"
+            }
+        }
         hb hr
         hb para
 

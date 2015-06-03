@@ -409,7 +409,7 @@ smarturl /scenario /{case}/order.json {
     } trap REJECT {result} {
         return [js reject $result]
     } on error {result eopts} {
-        return [js error $result [dict get $eopts -errorinfo]]
+        return [js exception $result [dict get $eopts -errorinfo]]
     }
 
     # NEXT, we were successful!
@@ -494,7 +494,7 @@ smarturl /scenario /{case}/script.json {
     try {
         set result [case with $case executive eval $script]
     } on error {result eopts} {
-        return [js error $result [dict get $eopts -errorinfo]]
+        return [js exception $result [dict get $eopts -errorinfo]]
     }
 
     # NEXT, we were successful!

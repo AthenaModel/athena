@@ -682,6 +682,7 @@ smarturl /scenario /index.html {
 
 smarturl /scenario /index.json {
     Returns a JSON list of scenario metadata objects.
+    TBD: Help link.
 } {
     set table [list]
 
@@ -704,9 +705,9 @@ smarturl /scenario /new.html {
 
     If {op} is "new", then a new scenario is created and assigned
     an ID and long name, and the server redirects to the scenario
-    index.  If {target} is given, it must be an existing scenario; the 
-    scenario's contents will be reset to the empty state.  Otherwise,
-    a new scenario ID will be generated.
+    index.  If {target} is given, it must be an existing case ID; 
+    that scenario's contents will be reset to the empty state.  
+    Otherwise, a new scenario ID will be generated.
     If {longname} is given, the scenario will be given the new
     name.<p>
 
@@ -760,12 +761,16 @@ smarturl /scenario /new.html {
 
 smarturl /scenario /new.json {
     Creates a new, empty scenario, assigning it an id and longname.
-    If {target} is given, it must be an existing scenario; the 
-    scenario's contents will be reset to the empty state.
+    If {target} is given, it must be the case ID of an existing 
+    scenario; the scenario's contents will be reset to the empty state.
     If {longname} is given, the scenario will be given the new
     name.  On success, returns a list 
-    <pre>["OK", "{case}"]</pre>, where the <i>case</i> is 
-    either <i>target</i> or a newly generated case ID.
+    <pre class="example">
+    ["OK", "{case}"]
+    </pre>
+
+    where the <i>case</i> is either the selected <i>target</i> or a 
+    newly generated case ID.
 } {
     qdict prepare case -tolower -in [case names]
     qdict prepare longname
@@ -855,9 +860,15 @@ smarturl /scenario /clone.json {
     it an id and longname.  If {target} is given, it must be an 
     existing scenario other than {source}; the clone will replace
     the previous state of scenario {target}.  Otherwise, a 
-    {target} will be chosen automatically.
+    case ID will be chosen automatically.
     If {longname} is given, the scenario will be given the new
-    name.  On success, returns a list ["OK", "{target}"].
+    name.  On success, returns a list 
+    <pre class="example">
+    ["OK", "{case}"]
+    </pre>
+
+    where the <i>case</i> is either the selected <i>target</i> or a 
+    newly generated case ID.
 } {
     qdict prepare source    -required -tolower -in [case names]
     qdict prepare target    -tolower -in [case names]
@@ -969,8 +980,13 @@ smarturl /scenario /import.json {
     the scenario will replace the existing scenario with that 
     ID; otherwise a new ID will be assigned.  
     If the {longname} is given, the scenario will
-    be assigned that name.  On success, returns a list
-    ["OK", "{case}"].
+    be assigned that name.  On success, returns a list 
+    <pre class="example">
+    ["OK", "{case}"]
+    </pre>
+
+    where the <i>case</i> is either the selected <i>target</i> or a 
+    newly generated case ID.
 } {
     qdict prepare filename -required
     qdict prepare case -tolower -in [case names]
@@ -1073,8 +1089,10 @@ smarturl /scenario /export.json {
     {filename}.  The file type may be "<tt>.adb</tt>" for a
     standard Athena scenario file or "<tt>.tcl</tt>" for a
     scenario script.  If no file type is given, "<tt>.adb</tt>"
-    is assumed.  On success, returns a list
-    ["OK", "{filename}"].
+    is assumed.   On success, returns a list 
+    <pre class="example">
+    ["OK", "{filename}"]
+    </pre>
 } {
     qdict prepare case -required -tolower -in [case names]
     qdict prepare filename -required
@@ -1170,7 +1188,10 @@ smarturl /scenario /remove.html {
 
 smarturl /scenario /remove.json {
     Removes scenario {case} from the current session; export it first
-    if you wish to keep the data.  On success, returns a list ["OK", "{message}"].
+    if you wish to keep the data.  On success, returns a list 
+    <pre class="example">
+    ["OK", "{message}"]
+    </pre>
 } {
     qdict prepare case -required -tolower -in [case names]
 
@@ -1194,6 +1215,8 @@ smarturl /scenario /remove.json {
 # Compare scenarios (prototype)
 
 smarturl /scenario /diff.json {
+    <b>TBD: This URL is a prototype, and will be reimplemented
+    differently. Don't use it!</b>
     Compares scenario {id2} with scenario {id1} looking 
     for significant differents in the outputs.  If {id2} is
     omitted, compares scenario {id1} at time 0 with itself
