@@ -183,12 +183,12 @@ oo::class create ::projectlib::helpdomain {
                 "Error in search term: \"$query\""
         }
 
-        hb page "Search Results"
-        hb h1 "Search Results"
+        hb page "Help Search Results"
         my NavBar /
+        hb h1 "Help Search Results"
 
         if {[llength $found] == 0} {
-            hb putln "No pages match '<code>$query</code>'."
+            hb putln "No help pages match '<code>$query</code>'."
             hb para
         } else {
             hb putln "<b>Search results for '$query':</b><p>"
