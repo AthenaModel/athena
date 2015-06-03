@@ -39,6 +39,26 @@ subcommands are as follows:<p>
 
 <deflist bsys belief>
 
+<defitem "belief cget" {<i adb> bsys belief cget <i option>}>
+
+Returns the value of the named option.  Options include:<p>
+
+<deflist options>
+
+<defopt {-position <i>number</i>}>
+
+Retrieves the system's position with respect to the topic, a real number
+from -1.0 to +1.0. Defaults to 0.0. The client can use 
+<xref mars:simtypes(n) qposition> to format position values.<p>
+
+<defopt {-emphasis <i>number</i>}>
+
+Retrieves the system's emphasis on agreement or disagreement with respect
+to this topic, where 0.0 represents a complete emphasis on disagreement and
+1.0 represents a complete emphasis on agreement. The default is 0.5. The
+client can use <xref mars:simtypes(n) qemphasis> to format emphasis values.<p>
+</deflist options>
+
 <defitem "belief view" {<i adb> bsys belief view <i sid tid>}>
 Returns a dictionary of information about system <i sid>'s belief about
 topic <i tid>.<p>

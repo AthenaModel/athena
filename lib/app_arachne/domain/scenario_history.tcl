@@ -674,7 +674,7 @@ oo::define /scenario {
         }
 
         # NEXT, determine temp file name
-        set filename [/temp namegen ".json"]
+        set filename [app namegen ".json"]
 
         # NEXT, the time range
         set t1 [qdict get t1]

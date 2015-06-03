@@ -178,6 +178,7 @@ snit::type ::athena::athena {
     delegate method {bean view}             to adb as {bean view}
 
     delegate method {bsys affinity}         to adb as {bsys affinity}
+    delegate method {bsys belief cget}      to adb as {bsys belief cget}
     delegate method {bsys belief view}      to adb as {bsys belief view}
     delegate method {bsys belief validate}  to adb as {bsys belief validate}
     delegate method {bsys belief isdefault} to adb as {bsys belief isdefault}

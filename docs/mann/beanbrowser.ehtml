@@ -240,6 +240,11 @@ is called; if <b>-silent</b> is given, however, it is not.<p>
 Returns a list of the row indices of the selected rows, or the empty list
 if no rows are selected.  See also <iref uid curselection>.<p>
 
+<b NOTE:> Unlike <iref uid curselection>, this command returns row 
+indices for all rows the underlying Tablelist considers to be 
+selected, even if they are currently hidden, i.e., even if their
+<tt -hide> option is set.<p>
+
 <defitem editwinpath {<i>win</i> editwinpath}>
 
 This method is delegated to the underlying tablelist(n), and retrieves
@@ -340,6 +345,12 @@ The <b>-displaycmd</b> will be called.<p>
 
 Returns a list of the UIDs of the selected rows, or the empty list
 if no rows are selected.  See also <iref curselection>.<p>
+
+<b NOTE:> Unlike <iref curselection>, this command returns only UIDs
+associated with visible rows, i.e., those for which the <tt -hide> option 
+is not set.  Hidden rows (e.g., those filtered out using the 
+filter box) are never included, even if the underlying Tablelist 
+considers them selected.<p>
 
 <defitem {uid delete} {<i>win</i> uid delete <i>uid</i>}>
 

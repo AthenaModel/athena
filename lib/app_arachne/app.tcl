@@ -26,13 +26,15 @@ snit::type app {
     #
     # port        - The port on which to listen to http requests.
     # secureport  - The port on which to listen to https requests.
-    # web         - 1 if Arachne should start the web server, and 0 
+    # test        - 1 if Arachne should start the web server, and 0 
     #               otherwise.
+    # tempdir     - Temporary directory path
 
     typevariable info -array {
         port         8080
         secureport   8081
         test         0
+        tempdir      ""
     }
 
     # logs array: Logs by log name
@@ -103,18 +105,11 @@ snit::type app {
         scratchdir init $scratchdir
         scratchdir clear
 
-        # NEXT, purge any JSON files from htdocs/temp
-        set filenames [glob \
-                        -nocomplain \
-                        -directory [appdir join htdocs temp] \
-                        *.json]
-
-        foreach f $filenames {
-            file delete -force -- $f
-        }  
-
         # NEXT, initialize the application log
         $type newlog app
+
+        # NEXT, initialize the temp directory.
+        $type InitTempDir
 
         # NEXT, add the base case scenario.
         case init $scenariodir
@@ -172,6 +167,68 @@ snit::type app {
     }
 
     #-------------------------------------------------------------------
+    # Temp Directory
+
+    # InitTempDir
+    #
+    # Initializes the temp directory, which we use to cache large
+    # queries until they've been served.
+
+    typemethod InitTempDir {} {
+        set counter 0
+        set temproot [::fileutil::tempdir]
+
+        while {1} {
+            set rnd [expr {round(rand()*10**8)}]
+
+            set info(tempdir) [file join $temproot $rnd]
+
+            if {![file exists $info(tempdir)]} {
+                file mkdir $info(tempdir)
+                break
+            }
+        }
+
+        puts "Temp Directory: [$type tempdir]"
+        $type log normal app "Temp Directory: [$type tempdir]"
+
+    }
+ 
+    # tempdir
+    #
+    # Returns the name of the temp directory
+
+    typemethod tempdir {} {
+        return $info(tempdir)
+    }
+
+    # namegen ftype
+    #
+    # ftype   - The file type, e.g., ".json"
+    #
+    # Returns the name of a new file in the tempdir.
+
+    typemethod namegen {ftype} {
+        set name [$type GetTempFileName $ftype]
+
+        while {[file exists $name]} {
+            set name [$type GetTempFileName $ftype]
+        }
+
+        return $name
+    }
+
+    # GetTempFileName ftype
+    #
+    # Returns a new name in the tempdir by incrementing the counter.
+
+    typemethod GetTempFileName {ftype} {
+        set name "temp[incr counter]$ftype"
+        return [file join $info(tempdir) $name]        
+    }
+
+
+    #-------------------------------------------------------------------
     # Web Server
 
     # StartServer
@@ -194,9 +251,7 @@ snit::type app {
             -docroot    [appdir join htdocs]
 
         # NEXT, Add content
-        tempdomain create ::/temp /temp
-        puts "Temp Directory: [/temp tempdir]"
-        app log normal app "Temp Directory: [/temp tempdir]"
+        ahttpd::doc addroot /temp [$type tempdir] 
 
         foreach domain [array names domains] {
             $domains($domain) ahttpd

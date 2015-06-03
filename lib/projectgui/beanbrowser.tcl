@@ -846,7 +846,9 @@ snit::widget ::projectgui::beanbrowser {
         set uids [$tlist getcolumns $cindex]
 
         foreach row [$tlist curselection] {
-            lappend result [lindex $uids $row]
+            if {![$tlist rowcget $row -hide]} {
+                lappend result [lindex $uids $row]
+            }
         }
 
         return $result
