@@ -62,5 +62,4 @@ source [file join $::app_arachne::library domain scenario_group.tcl    ]
 source [file join $::app_arachne::library domain scenario_nbhood.tcl   ]
 source [file join $::app_arachne::library domain scenario_orggroup.tcl ]
 source [file join $::app_arachne::library domain scenario_sigevent.tcl ]
-source [file join $::app_arachne::library domain tempdomain.tcl        ]
 
