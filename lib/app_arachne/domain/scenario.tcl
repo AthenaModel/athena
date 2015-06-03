@@ -486,34 +486,14 @@ oo::class create /scenario {
     # Validates that g is a valid CIV, FRC or ORG group in the case,
     # throws not found if the case or g is invalid.
 
-    method ValidateGroup {case g gtype} {
+    method ValidateGroup {case g} {
         # FIRST, validate case
         set case [my ValidateCase $case]
 
         set g [string toupper $g]
 
-        switch -exact -- $gtype {
-            CIV {
-                if {$g ni [case with $case civgroup names]} {
-                    throw NOTFOUND "No such CIV group: \"$g\""
-                }
-            }
-
-            FRC {
-                if {$g ni [case with $case frcgroup names]} {
-                    throw NOTFOUND "No such FRC group: \"$g\""
-                }
-            }
-
-            ORG {
-                if {$g ni [case with $case orggroup names]} {
-                    throw NOTFOUND "No such ORG group: \"$g\""
-                }
-            }
-
-            default {
-                error "Unknown gtype: \"$gtype\""
-            }
+        if {![case with $case group exists $g]} {
+            throw NOTFOUND "No such group: \"$g\""
         }
     
         return $g
@@ -551,11 +531,11 @@ oo::class create /scenario {
             hb iref /$case/script.html "Scripts"
             hb xref /help/index.html "Help"
             hb br
-            hb iref /$case/actor/index.html "Actors"
-            hb iref /$case/nbhood/index.html "Neighborhoods"
-            hb iref /$case/civgroup/index.html "Civ Groups"
-            hb iref /$case/frcgroup/index.html "Frc Groups"
-            hb iref /$case/orggroup/index.html "Org Groups"
+            hb iref /$case/actors/index.html "Actors"
+            hb iref /$case/nbhoods/index.html "Neighborhoods"
+            hb iref /$case/groups/civ/index.html "Civ Groups"
+            hb iref /$case/groups/frc/index.html "Frc Groups"
+            hb iref /$case/groups/org/index.html "Org Groups"
             hb iref /$case/sigevent/index.html "Sig Events"
         }
         hb para

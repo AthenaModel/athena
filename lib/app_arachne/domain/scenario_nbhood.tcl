@@ -23,7 +23,7 @@
 #-------------------------------------------------------------------
 # General Content
 
-smarturl /scenario /{case}/nbhood/index.html {
+smarturl /scenario /{case}/nbhoods/index.html {
     Displays a list of neighborhood entities for <i>case</i>, with links to 
     the actual neighborhoods.
 } {
@@ -44,7 +44,7 @@ smarturl /scenario /{case}/nbhood/index.html {
     }
 
     hb putln "The following neighborhoods are in this scenario ("
-    hb iref /$case/nbhood/index.json json
+    hb iref /$case/nbhoods/index.json json
     hb put )
 
     hb para
@@ -84,7 +84,7 @@ smarturl /scenario /{case}/nbhood/index.html {
     return [hb /page]
 }
 
-smarturl /scenario /{case}/nbhood/index.json {
+smarturl /scenario /{case}/nbhoods/index.json {
     Returns a JSON list of nbhood entities in the <i>case</i> specified.
 } {
     set case [my ValidateCase $case]

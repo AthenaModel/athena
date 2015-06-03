@@ -23,7 +23,7 @@
 #-------------------------------------------------------------------
 # General Content
 
-smarturl /scenario /{case}/civgroup/index.html {
+smarturl /scenario /{case}/groups/civ/index.html {
     Displays a list of civilian group entities for <i>case</i>, with links 
     to the actual groups.
 } {
@@ -44,7 +44,7 @@ smarturl /scenario /{case}/civgroup/index.html {
     }
 
     hb putln "The following civilian groups are in this scenario ("
-    hb iref /$case/civgroup/index.json json
+    hb iref /$case/groups/civ/index.json json
     hb put )
 
     hb para
@@ -76,7 +76,7 @@ smarturl /scenario /{case}/civgroup/index.html {
     return [hb /page]
 }
 
-smarturl /scenario /{case}/civgroup/index.json {
+smarturl /scenario /{case}/groups/civ/index.json {
     Returns a JSON list of civilian group entities in the <i>case</i> 
     specified.
 } {
@@ -98,49 +98,6 @@ smarturl /scenario /{case}/civgroup/index.json {
 
     return [js dictab $table]
 }
-
-smarturl /scenario /{case}/civgroup/{g}/index.html {
-    Displays data for a particular civilian group <i>g</i> in scenario
-    <i>case</i>.
-} {
-    set g [my ValidateGroup $case $g CIV]
-
-    set name [case with $case civgroup get $g longname]
-
-    hb page "Scenario '$case': Civilian Group: $g"
-    my CaseNavBar $case 
-
-    hb h1 "Scenario '$case': Civilian Group: $g"
-
-    # NEXT, only content for now is a link to the JSON
-    hb putln "Click for "
-    hb iref /$case/civgroup/$g/index.json "json"
-    hb put "."
-
-    hb para
-
-    hb para
-    return [hb /page]
-}
-
-smarturl /scenario /{case}/civgroup/{g}/index.json {
-    Returns JSON list of civilian group data for scenario <i>case</i> and 
-    group <i>g</i>.
-} {
-    set g [my ValidateGroup $case $g CIV]
-
-    set cdict [case with $case civgroup view $g web]
-    set qid   [dict get $cdict url] 
-    set n_qid [dict get $cdict n_qid]
-
-    # NEXT, format URLs properly
-    dict set cdict url   [my domain $case $qid   "index.json"]
-    dict set cdict n_url [my domain $case $n_qid "index.json"]
-
-    return [js dictab [list $cdict]]
-}
-
-
 
 
 
