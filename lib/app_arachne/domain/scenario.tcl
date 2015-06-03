@@ -1329,11 +1329,22 @@ smarturl /scenario /json.html {
         hb para
 
         hb putln "Request:"
-        append jsonurl [hb asquery [qdict parms]]
+
+        if {[dict size [qdict parms]] > 0} {
+            append jsonurl [hb asquery [qdict parms]]
+        }
         hb pre -class example $jsonurl
 
         hb putln "Query Parameters:"
-        hb pre -class example [qdict parms]
+
+        if {[dict size [qdict parms]] == 0} {
+            hb put " None"
+            hb para
+        } else {
+            hb pre -class example 
+            hb putln [qdict parms]
+            hb /pre
+        }
 
         hb hr
 
@@ -1355,7 +1366,6 @@ smarturl /scenario /json.html {
             }
             xmlhttp.open("GET", url, true);
             xmlhttp.send();
-
         } $jsonurl]
         hb tag /script
     }
