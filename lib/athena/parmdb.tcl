@@ -2242,7 +2242,7 @@ snit::type ::athena::parmdb {
 
 ::athena::orders define PARM:IMPORT {
     meta title      "Import Parameter File"
-    meta sendstates {PREP PAUSED}
+    meta sendstates PREP
     meta parmlist   {filename}
 
     method _validate {} {
@@ -2276,7 +2276,7 @@ snit::type ::athena::parmdb {
 
 ::athena::orders define PARM:RESET {
     meta title      "Reset Parameters to Defaults"
-    meta sendstates {PREP PAUSED}
+    meta sendstates PREP
     meta parmlist   {}
 
     method _validate {} {}
@@ -2300,7 +2300,7 @@ snit::type ::athena::parmdb {
 
 ::athena::orders define PARM:SET {
     meta title      "Set Parameter Value"
-    meta sendstates {PREP PAUSED}
+    meta sendstates PREP
     meta parmlist   {parm value}
 
     meta form {

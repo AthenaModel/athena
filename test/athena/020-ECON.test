@@ -190,7 +190,7 @@ namespace eval ::athena_test::tests:: {
         ted create BLUE SHIA KURD
         ted lock
     } -body {
-        ted order -reject ECON:CGE:UPDATE {}
+        ted order -tactic -reject ECON:CGE:UPDATE {}
     } -cleanup {
         cleanup
     } -result {
@@ -203,7 +203,7 @@ namespace eval ::athena_test::tests:: {
         ted create BLUE SHIA KURD
         ted lock
     } -body {
-        ted order -reject ECON:CGE:UPDATE \
+        ted order -tactic -reject ECON:CGE:UPDATE \
             id NONESUCH val 100000
     } -cleanup {
         cleanup
@@ -216,7 +216,7 @@ namespace eval ::athena_test::tests:: {
         ted create BLUE SHIA KURD
         ted lock
     } -body {
-        ted order -reject ECON:CGE:UPDATE \
+        ted order -tactic -reject ECON:CGE:UPDATE \
             id BPF.world.black val -1
     } -cleanup {
         cleanup
@@ -229,7 +229,7 @@ namespace eval ::athena_test::tests:: {
         ted create BLUE SHIA KURD
         ted lock
     } -body {
-        ted order ECON:CGE:UPDATE id BPF.world.black val 10000
+        ted order -tactic ECON:CGE:UPDATE id BPF.world.black val 10000
     } -cleanup {
         cleanup
     } -result {}
@@ -240,7 +240,7 @@ namespace eval ::athena_test::tests:: {
         ted lock
     } -body {
         ted notifier bind ::tdb.econ <CgeUpdate>
-        ted order ECON:CGE:UPDATE id BPF.world.black val 10000
+        ted order -tactic ECON:CGE:UPDATE id BPF.world.black val 10000
         ted notifier received
     } -cleanup {
         cleanup
@@ -254,7 +254,7 @@ namespace eval ::athena_test::tests:: {
         ted create BLUE SHIA KURD
         ted lock
 
-        ted order ECON:CGE:UPDATE {
+        ted order -tactic ECON:CGE:UPDATE {
             id  BPF.world.black
             val 100000
         }
@@ -277,7 +277,7 @@ namespace eval ::athena_test::tests:: {
         ted create BLUE SHIA KURD
         ted lock
     } -body {
-        ted order -reject ECON:UPDATE:REMRATE {}
+        ted order -tactic -reject ECON:UPDATE:REMRATE {}
     } -cleanup {
         cleanup
     } -result {
@@ -289,7 +289,7 @@ namespace eval ::athena_test::tests:: {
         ted create BLUE SHIA KURD
         ted lock
     } -body {
-        ted order ECON:UPDATE:REMRATE val 5.0
+        ted order -tactic ECON:UPDATE:REMRATE val 5.0
     } -cleanup {
         cleanup
     } -result {}
@@ -300,7 +300,7 @@ namespace eval ::athena_test::tests:: {
         ted lock
     } -body {
         ted notifier bind ::tdb.econ <CgeUpdate>
-        ted order ECON:UPDATE:REMRATE val 5.0
+        ted order -tactic ECON:UPDATE:REMRATE val 5.0
         ted notifier received
     } -cleanup {
         cleanup
@@ -314,7 +314,7 @@ namespace eval ::athena_test::tests:: {
         ted create BLUE SHIA KURD
         ted lock
 
-        ted order ECON:UPDATE:REMRATE val 5.0
+        ted order -tactic ECON:UPDATE:REMRATE val 5.0
     } -body {
         ted notifier bind ::tdb.econ <CgeUpdate>
         tdb order undo

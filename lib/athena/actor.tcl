@@ -627,7 +627,7 @@ snit::type ::athena::actor {
 
 ::athena::orders define ACTOR:INCOME {
     meta title      "Update Actor Income"
-    meta sendstates {PREP PAUSED TACTIC}
+    meta sendstates {PREP TACTIC}
 
     meta parmlist {
         a atype income_goods shares_black_nr income_black_tax income_pop
@@ -707,7 +707,7 @@ snit::type ::athena::actor {
 
 ::athena::orders define ACTOR:SUPPORTS {
     meta title      "Update Actor Supports"
-    meta sendstates {PREP PAUSED TACTICS}
+    meta sendstates {PREP TACTIC}
 
     meta parmlist {a supports}
 

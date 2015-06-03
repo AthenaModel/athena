@@ -317,7 +317,7 @@ snit::type ::athena::map {
 
 ::athena::orders define MAP:GEOREF {
     meta title "Geo-reference Map Image"
-    meta sendstates {PREP PAUSED}
+    meta sendstates PREP
 
     meta parmlist {
         ulat 
@@ -374,7 +374,7 @@ snit::type ::athena::map {
 
 ::athena::orders define MAP:IMPORT:FILE {
     meta title "Import Map From File"
-    meta sendstates {PREP PAUSED}
+    meta sendstates PREP
 
     # NOTE: Dialog is not usually used.  Could define a "filepicker"
     # -editcmd, though.

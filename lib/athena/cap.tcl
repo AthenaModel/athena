@@ -726,7 +726,7 @@ snit::type ::athena::cap {
 
 ::athena::orders define CAP:CAPACITY {
     meta title "Set CAP Capacity"
-    meta sendstates {PREP PAUSED TACTIC}
+    meta sendstates {PREP TACTIC}
 
     meta parmlist {
         k 
@@ -767,7 +767,7 @@ snit::type ::athena::cap {
 
 ::athena::orders define CAP:CAPACITY:MULTI {
     meta title "Set Multiple CAP Capacities"
-    meta sendstates {PREP PAUSED TACTIC}
+    meta sendstates {PREP TACTIC}
 
     meta parmlist {
         ids
@@ -810,7 +810,7 @@ snit::type ::athena::cap {
 
 ::athena::orders define CAP:NBCOV:SET {
     meta title "Set CAP Neighborhood Coverage"
-    meta sendstates {PREP PAUSED TACTIC}
+    meta sendstates {PREP TACTIC}
 
     meta parmlist {
         id
@@ -852,7 +852,7 @@ snit::type ::athena::cap {
 
 ::athena::orders define CAP:NBCOV:SET:MULTI {
     meta title "Set Multiple CAP Neighborhood Coverages"
-    meta sendstates {PREP PAUSED TACTIC}
+    meta sendstates {PREP TACTIC}
 
     meta parmlist {
         ids
@@ -899,7 +899,7 @@ snit::type ::athena::cap {
 
 ::athena::orders define CAP:PEN:SET {
     meta title "Set CAP Group Penetration"
-    meta sendstates {PREP PAUSED TACTIC}
+    meta sendstates {PREP TACTIC}
 
     meta parmlist {
         id
@@ -941,7 +941,7 @@ snit::type ::athena::cap {
 
 ::athena::orders define CAP:PEN:SET:MULTI {
     meta title "Set Multiple CAP Group Penetrations"
-    meta sendstates {PREP PAUSED TACTIC}
+    meta sendstates {PREP TACTIC}
 
     meta parmlist {
         ids

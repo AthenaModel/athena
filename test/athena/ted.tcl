@@ -789,7 +789,7 @@ snit::type ted {
         }
     }
 
-    # order ?-reject? name parmdict
+    # order ?-reject? ?-tactic? name parmdict
     #
     # name       A simulation order
     # parmdict   The order's parameter dictionary, as a single
@@ -799,12 +799,13 @@ snit::type ted {
     # the result. If "-reject" is used, expects the order to be rejected.
 
     typemethod order {args} {
-        # FIRST, is -reject specified?
-        if {[lindex $args 0] eq "-reject"} {
-            lshift args
-            set rejectFlag 1
-        } else {
-            set rejectFlag 0
+        # FIRST, get the options
+        set rejectFlag 0
+        set tacticFlag 0
+
+        foroption opt args {
+            -reject { set rejectFlag 1 }
+            -tactic { set tacticFlag 1 }
         }
 
         # NEXT, get the order name
@@ -821,7 +822,14 @@ snit::type ted {
 
         # NEXT, send the order
         try {
+            set oldState [tdb order state]
+
+            if {$tacticFlag} {
+                tdb order state TACTIC
+            }
+
             tdb order transactions off
+
             if {$rejectFlag} {
                 set code [catch {
                     tdb order senddict normal $order $parmdict
@@ -847,6 +855,7 @@ snit::type ted {
                 tdb order senddict normal $order $parmdict
             }
         } finally {
+            tdb order state $oldState
             tdb order transactions on
         }
     }
