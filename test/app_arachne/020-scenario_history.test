@@ -1,0 +1,117 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    020-scenario_history.test
+#
+# AUTHOR:
+#    Will Duquette
+#    Dave Hanks
+#
+# DESCRIPTION:
+#    app_arachne(1): Scenario History Variable URLs
+#
+#    This test suite tests the handlers for these URLs:
+#
+#    /scenario/{case}/history/*.{html,json}
+#    /scenario/{case}/history/{var}/*.{html,json}.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athenawb(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    proc setup {ticks} {
+        ted with {autogen scenario -actors 1 -nb 2 -frcg 1 -civg 2 -orgg 1}
+        ted advance $ticks
+        # TBD
+    }
+
+    proc cleanup {} {
+       ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # History URLs
+
+    test history.html-1.1 {all histvars HTML} -setup {
+    } -body {
+        ted get /case00/history/index.html
+    } -cleanup {
+        ted cleanup
+    } -match glob -result {*'case00': History Variables*}
+
+    test history.json-1.1 {all histvars JSON} -setup {
+    } -body {
+        ted get /case00/history/index.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {
+[
+  "OK",
+  {
+    "sat": "g c",
+    "flow": "f g",
+    "vrel": "g a",
+    "volatility": "n",
+    "control": "n",
+    "coop": "f g",
+    "deploy_ng": "n g",
+    "hrel": "f g",
+    "plant_n": "n",
+    "support": "n a",
+    "plant_na": "n a",
+    "econ": "",
+    "npop": "n",
+    "pop": "g",
+    "plant_a": "a",
+    "security": "n g",
+    "service_sg": "s g",
+    "aam_battle": "n f g",
+    "activity_nga": "n g a",
+    "mood": "g",
+    "nbmood": "n",
+    "nbur": "n"
+  }
+]}    
+
+    test histvar.json-1.1 {sat} -setup {
+        setup 2
+    } -body {
+        ted get /case00/history/index.json
+    } -cleanup {
+        ted cleanup
+    } -result {
+
+    }
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    ::tcltest::cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+

@@ -1,0 +1,552 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    020-scenario_group.test
+#
+# AUTHOR:
+#    Will Duquette
+#    Dave Hanks
+#
+# DESCRIPTION:
+#    app_arachne(1): Scenario Group Object URLs
+#
+#    This test suite tests the handlers for these URLs:
+#
+#    /scenario/{case}/group/*.{html,json}
+#    /scenario/{case}/group/{name}/*.{html,json}.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athenawb(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    proc setup {scenario what args} {
+        # TBD
+    }
+
+    proc cleanup {} {
+       ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # Group URLs
+
+    test group.html-1.1 {all groups HTML} -setup {
+        ted with {autogen actors 1}
+        ted with {autogen nbhoods 2}
+        ted with {autogen civgroups 1}
+        ted with {autogen orggroups 2}
+        ted with {autogen frcgroups 1}
+    } -body {
+        ted get /case00/group/index.html
+    } -cleanup {
+        ted cleanup
+    } -match glob -result {*'case00': Groups*}
+
+    test group.json-1.1 {all groups JSON} -setup {
+        ted with {autogen actors 1}
+        ted with {autogen nbhoods 2}
+        ted with {autogen civgroups 1}
+        ted with {autogen orggroups 2}
+        ted with {autogen frcgroups 1}
+    } -body {
+        ted get /case00/group/index.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {
+[
+  {
+    "fancy": "C0000",
+    "a": "",
+    "url": "\/scenario\/case00\/group\/C0000\/index.json",
+    "demeanor": "AVERAGE",
+    "id": "C0000",
+    "qid": "group\/C0000",
+    "g": "C0000",
+    "gtype": "CIV",
+    "longname": "C0000",
+    "cost": 0.00,
+    "bsid": 1,
+    "a_url": "",
+    "a_qid": "",
+    "color": "#45DD11"
+  },
+  {
+    "fancy": "C0001",
+    "a": "",
+    "url": "\/scenario\/case00\/group\/C0001\/index.json",
+    "demeanor": "AVERAGE",
+    "id": "C0001",
+    "qid": "group\/C0001",
+    "g": "C0001",
+    "gtype": "CIV",
+    "longname": "C0001",
+    "cost": 0.00,
+    "bsid": 1,
+    "a_url": "",
+    "a_qid": "",
+    "color": "#45DD11"
+  },
+  {
+    "fancy": "F00",
+    "a": "A00",
+    "url": "\/scenario\/case00\/group\/F00\/index.json",
+    "demeanor": "AVERAGE",
+    "id": "F00",
+    "qid": "group\/F00",
+    "g": "F00",
+    "gtype": "FRC",
+    "longname": "F00",
+    "cost": "1,000.00",
+    "bsid": "",
+    "a_url": "\/scenario\/case00\/actor\/A00\/index.json",
+    "a_qid": "actor\/A00",
+    "color": "#AA7744"
+  },
+  {
+    "fancy": "O00",
+    "a": "A00",
+    "url": "\/scenario\/case00\/group\/O00\/index.json",
+    "demeanor": "AVERAGE",
+    "id": "O00",
+    "qid": "group\/O00",
+    "g": "O00",
+    "gtype": "ORG",
+    "longname": "O00",
+    "cost": "1,000.00",
+    "bsid": "",
+    "a_url": "\/scenario\/case00\/actor\/A00\/index.json",
+    "a_qid": "actor\/A00",
+    "color": "#B200B3"
+  },
+  {
+    "fancy": "O01",
+    "a": "A00",
+    "url": "\/scenario\/case00\/group\/O01\/index.json",
+    "demeanor": "AVERAGE",
+    "id": "O01",
+    "qid": "group\/O01",
+    "g": "O01",
+    "gtype": "ORG",
+    "longname": "O01",
+    "cost": "1,000.00",
+    "bsid": "",
+    "a_url": "\/scenario\/case00\/actor\/A00\/index.json",
+    "a_qid": "actor\/A00",
+    "color": "#B200B3"
+  }
+]}
+
+    #-------------------------------------------------------------------
+    # CIV group URLs
+
+    test civgroup.html-1.1 {all civgroups HTML} -setup {
+        ted with {autogen actors 1}
+        ted with {autogen nbhoods 2}
+        ted with {autogen civgroups 1}
+    } -body {
+        ted get /case00/group/civ.html
+    } -cleanup {
+        ted cleanup
+    } -match glob -result {*'case00': Civilian*}    
+
+    test civgroup.html-1.2 {one civgroup HTML} -setup {
+        ted with {autogen actors 1}
+        ted with {autogen nbhoods 2}
+        ted with {autogen civgroups 1}
+    } -body {
+        ted get /case00/group/C0000/index.html
+    } -cleanup {
+        ted cleanup
+    } -match glob -result {*'case00': Civilian Group: C0000*}
+
+    test civgroup.json-1.1 {all civgroups JSON} -setup {
+        ted with {autogen actors 1}
+        ted with {autogen nbhoods 2}
+        ted with {autogen civgroups 1}
+    } -body {
+        ted get /case00/group/civ.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {
+[
+  {
+    "subsistence": "",
+    "povfrac": 0.0,
+    "hist_flag": 0,
+    "fancy": "C0000",
+    "unemployed": "",
+    "lfp": 60,
+    "bsysname": "Neutral (1)",
+    "basepop": 0,
+    "url": "\/scenario\/case00\/group\/C0000\/index.json",
+    "eloc": 0.0,
+    "population": 0,
+    "demeanor": "AVERAGE",
+    "povpct": 0.0,
+    "uaf": 0.00,
+    "pretty_sa_flag": "No",
+    "id": "C0000",
+    "labor_force": "",
+    "attrition": "",
+    "qid": "group\/C0000",
+    "mood0": 0.000,
+    "tc": 0.0,
+    "consumers": "",
+    "g": "C0000",
+    "n_url": "\/scenario\/case00\/nbhood\/N00\/index.json",
+    "rloc": 0.0,
+    "upc": 0.0,
+    "gtype": "CIV",
+    "longname": "C0000",
+    "sat_funding": "N\/A",
+    "req_funding": "N\/A",
+    "bsid": 1,
+    "pop_cr": 0.0,
+    "n_qid": "nbhood\/N00",
+    "housing": "AT_HOME",
+    "sa_flag": 0,
+    "n": "N00",
+    "mood": 0.000,
+    "aloc": 0.0,
+    "ur": 0.0,
+    "color": "#45DD11"
+  },
+  {
+    "subsistence": "",
+    "povfrac": 0.0,
+    "hist_flag": 0,
+    "fancy": "C0001",
+    "unemployed": "",
+    "lfp": 0,
+    "bsysname": "Neutral (1)",
+    "basepop": 0,
+    "url": "\/scenario\/case00\/group\/C0001\/index.json",
+    "eloc": 0.0,
+    "population": 0,
+    "demeanor": "AVERAGE",
+    "povpct": 0.0,
+    "uaf": 0.00,
+    "pretty_sa_flag": "Yes",
+    "id": "C0001",
+    "labor_force": "",
+    "attrition": "",
+    "qid": "group\/C0001",
+    "mood0": 0.000,
+    "tc": 0.0,
+    "consumers": "",
+    "g": "C0001",
+    "n_url": "\/scenario\/case00\/nbhood\/N01\/index.json",
+    "rloc": 0.0,
+    "upc": 0.0,
+    "gtype": "CIV",
+    "longname": "C0001",
+    "sat_funding": "N\/A",
+    "req_funding": "N\/A",
+    "bsid": 1,
+    "pop_cr": 0.0,
+    "n_qid": "nbhood\/N01",
+    "housing": "AT_HOME",
+    "sa_flag": 1,
+    "n": "N01",
+    "mood": 0.000,
+    "aloc": 0.0,
+    "ur": 0.0,
+    "color": "#45DD11"
+  }
+]}
+    
+test civgroup.json-1.2 {one civgroup JSON} -setup {
+        ted with {autogen actors 1}
+        ted with {autogen nbhoods 2}
+        ted with {autogen civgroups 1}
+    } -body {
+        ted get /case00/group/C0000/index.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {
+[{
+    "subsistence": "",
+    "povfrac": 0.0,
+    "hist_flag": 0,
+    "fancy": "C0000",
+    "unemployed": "",
+    "lfp": 60,
+    "bsysname": "Neutral (1)",
+    "basepop": 0,
+    "url": "\/scenario\/case00\/group\/C0000\/index.json",
+    "eloc": 0.0,
+    "population": 0,
+    "demeanor": "AVERAGE",
+    "povpct": 0.0,
+    "uaf": 0.00,
+    "pretty_sa_flag": "No",
+    "id": "C0000",
+    "labor_force": "",
+    "attrition": "",
+    "qid": "group\/C0000",
+    "mood0": 0.000,
+    "tc": 0.0,
+    "consumers": "",
+    "g": "C0000",
+    "n_url": "\/scenario\/case00\/nbhood\/N00\/index.json",
+    "rloc": 0.0,
+    "upc": 0.0,
+    "gtype": "CIV",
+    "longname": "C0000",
+    "sat_funding": "N\/A",
+    "req_funding": "N\/A",
+    "bsid": 1,
+    "pop_cr": 0.0,
+    "n_qid": "nbhood\/N00",
+    "housing": "AT_HOME",
+    "sa_flag": 0,
+    "n": "N00",
+    "mood": 0.000,
+    "aloc": 0.0,
+    "ur": 0.0,
+    "color": "#45DD11"
+  }]}
+
+    #-------------------------------------------------------------------
+    # FRC group URLs
+
+    test frcgroup.html-1.1 {all frcgroups HTML} -setup {
+        ted with {autogen actors 1}
+        ted with {autogen nbhoods 2}
+        ted with {autogen frcgroups 1}
+    } -body {
+        ted get /case00/group/frc.html
+    } -cleanup {
+        ted cleanup
+    } -match glob -result {*'case00': Force*}    
+
+    test frcgroup.html-1.2 {one frcgroup HTML} -setup {
+        ted with {autogen actors 1}
+        ted with {autogen nbhoods 2}
+        ted with {autogen frcgroups 1}
+    } -body {
+        ted get /case00/group/F00/index.html
+    } -cleanup {
+        ted cleanup
+    } -match glob -result {*'case00': Force Group: F00*}
+
+    test frcgroup.json-1.1 {all frcgroups JSON} -setup {
+        ted with {autogen actors 1}
+        ted with {autogen nbhoods 2}
+        ted with {autogen frcgroups 2}
+    } -body {
+        ted get /case00/group/frc.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {
+[
+  {
+    "forcetype": "REGULAR",
+    "fancy": "F00",
+    "a": "A00",
+    "pretty_local": "No",
+    "url": "\/scenario\/case00\/group\/F00\/index.json",
+    "equip_level": "GOOD",
+    "demeanor": "AVERAGE",
+    "training": "FULL",
+    "id": "F00",
+    "qid": "group\/F00",
+    "g": "F00",
+    "base_personnel": 100000,
+    "gtype": "FRC",
+    "longname": "F00",
+    "cost": "1,000.00",
+    "a_url": "\/scenario\/case00\/actor\/A00\/index.json",
+    "local": 0,
+    "a_qid": "actor\/A00",
+    "personnel": 0,
+    "color": "#AA7744"
+  },
+  {
+    "forcetype": "PARAMILITARY",
+    "fancy": "F01",
+    "a": "A00",
+    "pretty_local": "No",
+    "url": "\/scenario\/case00\/group\/F01\/index.json",
+    "equip_level": "GOOD",
+    "demeanor": "AVERAGE",
+    "training": "FULL",
+    "id": "F01",
+    "qid": "group\/F01",
+    "g": "F01",
+    "base_personnel": 100000,
+    "gtype": "FRC",
+    "longname": "F01",
+    "cost": "1,000.00",
+    "a_url": "\/scenario\/case00\/actor\/A00\/index.json",
+    "local": 0,
+    "a_qid": "actor\/A00",
+    "personnel": 0,
+    "color": "#AA7744"
+  }
+]}
+    
+test frcgroup.json-1.2 {one frcgroup JSON} -setup {
+        ted with {autogen actors 1}
+        ted with {autogen nbhoods 2}
+        ted with {autogen frcgroups 2}
+    } -body {
+        ted get /case00/group/F00/index.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {
+[{
+    "forcetype": "REGULAR",
+    "fancy": "F00",
+    "a": "A00",
+    "pretty_local": "No",
+    "url": "\/scenario\/case00\/group\/F00\/index.json",
+    "equip_level": "GOOD",
+    "demeanor": "AVERAGE",
+    "training": "FULL",
+    "id": "F00",
+    "qid": "group\/F00",
+    "g": "F00",
+    "base_personnel": 100000,
+    "gtype": "FRC",
+    "longname": "F00",
+    "cost": "1,000.00",
+    "a_url": "\/scenario\/case00\/actor\/A00\/index.json",
+    "local": 0,
+    "a_qid": "actor\/A00",
+    "personnel": 0,
+    "color": "#AA7744"
+  }]}
+
+    #-------------------------------------------------------------------
+    # ORG group URLs
+
+    test orggroup.html-1.1 {all orggroups HTML} -setup {
+        ted with {autogen actors 1}
+        ted with {autogen nbhoods 2}
+        ted with {autogen orggroups 1}
+    } -body {
+        ted get /case00/group/org.html
+    } -cleanup {
+        ted cleanup
+    } -match glob -result {*'case00': Organization*}    
+
+    test orggroup.html-1.2 {one orggroup HTML} -setup {
+        ted with {autogen actors 1}
+        ted with {autogen nbhoods 2}
+        ted with {autogen orggroups 1}
+    } -body {
+        ted get /case00/group/O00/index.html
+    } -cleanup {
+        ted cleanup
+    } -match glob -result {*'case00': Organization Group: O00*}
+
+    test orggroup.json-1.1 {all orggroups JSON} -setup {
+        ted with {autogen actors 1}
+        ted with {autogen nbhoods 2}
+        ted with {autogen orggroups 2}
+    } -body {
+        ted get /case00/group/org.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {
+[
+  {
+    "fancy": "O00",
+    "a": "A00",
+    "url": "\/scenario\/case00\/group\/O00\/index.json",
+    "demeanor": "AVERAGE",
+    "id": "O00",
+    "qid": "group\/O00",
+    "g": "O00",
+    "base_personnel": 100000,
+    "gtype": "ORG",
+    "longname": "O00",
+    "cost": "1,000.00",
+    "orgtype": "NGO",
+    "a_url": "\/scenario\/case00\/actor\/A00\/index.json",
+    "a_qid": "actor\/A00",
+    "personnel": 0,
+    "color": "#B200B3"
+  },
+  {
+    "fancy": "O01",
+    "a": "A00",
+    "url": "\/scenario\/case00\/group\/O01\/index.json",
+    "demeanor": "AVERAGE",
+    "id": "O01",
+    "qid": "group\/O01",
+    "g": "O01",
+    "base_personnel": 100000,
+    "gtype": "ORG",
+    "longname": "O01",
+    "cost": "1,000.00",
+    "orgtype": "IGO",
+    "a_url": "\/scenario\/case00\/actor\/A00\/index.json",
+    "a_qid": "actor\/A00",
+    "personnel": 0,
+    "color": "#B200B3"
+  }
+]}
+    
+test orggroup.json-1.2 {one orggroup JSON} -setup {
+        ted with {autogen actors 1}
+        ted with {autogen nbhoods 2}
+        ted with {autogen orggroups 2}
+    } -body {
+        ted get /case00/group/O00/index.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {
+[{
+    "fancy": "O00",
+    "a": "A00",
+    "url": "\/scenario\/case00\/group\/O00\/index.json",
+    "demeanor": "AVERAGE",
+    "id": "O00",
+    "qid": "group\/O00",
+    "g": "O00",
+    "base_personnel": 100000,
+    "gtype": "ORG",
+    "longname": "O00",
+    "cost": "1,000.00",
+    "orgtype": "NGO",
+    "a_url": "\/scenario\/case00\/actor\/A00\/index.json",
+    "a_qid": "actor\/A00",
+    "personnel": 0,
+    "color": "#B200B3"
+  }]}
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+
+    ::tcltest::cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+

@@ -128,8 +128,34 @@ snit::type ted {
     # This method executes the given script in the base case scenario.
 
     typemethod with {script} {
-        set sdb [case get case00]
-        $sdb executive eval $script
+        case with case00 executive eval $script
+    }
+
+    # advance ticks
+    # 
+    # ticks   - number of ticks to advance
+    #
+    # This method attempts to lock and advance the base case scenario. 
+    # Any errors that occur will bubble up.
+
+    typemethod advance {ticks} {
+        case with case00 lock
+        case with case00 advance -mode background -ticks $ticks
+    }
+
+    # redirect request
+    # 
+    # request   - a URL that is expected to cause a redirect 
+    #
+    # This method traps an HTTP redirect and handles it by returning the 
+    # content of the URL to which the request was redirected, usually a file.
+
+    typemethod redirect {request} {
+        try {
+            ted get $request
+        } trap HTTPD_REDIRECT {result eopts} {
+            puts "result= $result"
+        }
     }
 
     # mkscript scenario

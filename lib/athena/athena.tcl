@@ -233,6 +233,7 @@ snit::type ::athena::athena {
     delegate method {group namedict}        to adb as {group namedict}
     delegate method {group names}           to adb as {group names}
     delegate method {group validate}        to adb as {group validate}
+    delegate method {group view}            to adb as {group view}
 
     delegate method {hook get}              to adb as {hook get}
     delegate method {hook namedict}         to adb as {hook namedict}
