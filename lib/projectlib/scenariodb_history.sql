@@ -122,22 +122,6 @@ FROM hist_sat_raw AS HS
 JOIN uram_sat  AS U  USING (g,c)
 JOIN hist_civg AS HC USING (t,g);
 
--- hist_nbsat view: includes neighborhood for rollup by nbhood and
--- concern
-CREATE VIEW hist_nbsat AS
-SELECT HN.t          AS t,
-       HN.n          AS n,
-       HS.g          AS g,
-       HS.c          AS c,
-       HS.sat        AS sat,
-       HS.base       AS base,
-       HS.nat        AS nat,
-       U.saliency    AS saliency,
-       HN.personnel  AS population
-FROM hist_nbgroup AS HN
-JOIN hist_sat_raw AS HS USING (t,g)
-JOIN uram_sat     AS U  USING (g,c);
-
 CREATE TABLE hist_coop (
     -- History: coop.f.g
     t        INTEGER,

@@ -35,7 +35,6 @@ snit::type ::athena::hist {
         hrel         {f g}
         mood         {g}
         nbmood       {n}
-        nbsat        {n c}
         nbur         {n}
         npop         {n}
         plant_a      {a}

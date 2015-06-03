@@ -37,7 +37,6 @@ oo::define /scenario {
         plant_na     HistNbhoodActor
         support      HistNbhoodActor
         hrel         HistHrel
-        nbsat        HistNbSat
         service_sg   HistService
         vrel         HistVrel
         econ         HistEcon
@@ -119,45 +118,6 @@ oo::define /scenario {
             # NEXT, construct the query
             my JSONQuery $case $var n             
         }        
-    }
-
-    # HistNbSat content case var
-    #
-    # content - html | json
-    # case    - an Arachne case
-    # var     - a history variable with nbhood for the key
-    #
-    # This method either generates an HTML form for a nbhood sat history 
-    # variable or returns the history as JSON.
-
-    method HistNbSat {content case var} {
-        if {$content eq "html"} {
-            hb form {
-                my NbhoodForm $case
-                hb para
-                my ConcernForm
-                hb para
-                my TimeSpanForm $case $var
-            }
-        } else {
-            # NEXT, validate nbhood
-            set nbhoods [list ALL {*}[case with $case nbhood names]]
-            set n [qdict prepare n -toupper -default ALL -in $nbhoods]
-            lappend keys n
-
-            set concerns [list ALL AUT CUL SFT QOL]
-            set c [qdict prepare c -toupper -default ALL -in $concerns]
-
-            # NEXT, validate time parms
-            my ValidateTimes
-
-            if {![qdict ok]} {
-                return [js reject [qdict errors]]
-            }
-
-            # NEXT, construct the query
-            my JSONQuery $case $var {n c}
-        }
     }
 
     # HistCivGroup content case var args
