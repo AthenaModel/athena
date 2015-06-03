@@ -477,7 +477,7 @@ local           1
         longname       {US Army}
         personnel      0
         pretty_local   No
-        qid            frcgroup/BLUE
+        qid            group/BLUE
         training       PROFICIENT
     }
 

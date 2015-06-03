@@ -616,11 +616,11 @@ upc        10.0
         povfrac        0.0
         povpct         0.0
         pretty_sa_flag No
-        qid            civgroup/SHIA
-        req_funding    240.00
+        qid            group/SHIA
+        req_funding    N/A
         rloc           0.0
         sa_flag        0
-        sat_funding    400.00
+        sat_funding    N/A
         subsistence    {}
         tc             0.0
         uaf            0.00

@@ -407,7 +407,7 @@ base_personnel  1000
         longname       Haliburton
         orgtype        CTR
         personnel      0
-        qid            orggroup/HAL
+        qid            group/HAL
     }
 
     #-------------------------------------------------------------------
