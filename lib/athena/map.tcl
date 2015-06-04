@@ -421,13 +421,12 @@ snit::type ::athena::map {
     meta title "Import Map As Data"
     meta sendstates {PREP}
 
-    meta parmlist {data projtype width height ulat ulon llat llon}
+    meta parmlist {data width height ulat ulon llat llon}
 
     # NOTE: Dialog cannot easily be used. The format of the
     # image data is binary, it would be tough to cobble that together.
     meta form {
         text data
-        text projtype
         text width
         text height
         text ulat
@@ -438,14 +437,29 @@ snit::type ::athena::map {
 
     method _validate {} {
         my prepare data        -required
-        my prepare projtype    -required 
         my prepare width  -num -required -type ipositive
         my prepare height -num -required -type ipositive
         my prepare ulat   -num -required -type latpt
         my prepare ulon   -num -required -type longpt
         my prepare llat   -num -required -type latpt
         my prepare llon   -num -required -type longpt
-    }
+
+        my returnOnError
+
+        my checkon llat {
+            if {$parms(llat) >= $parms(ulat)} {
+                my reject llat \
+                    "Latitude of lower point must be < latitude of upper point"
+            }
+        }
+
+        my checkon llon {
+            if {$parms(llon) <= $parms(ulon)} {
+                my reject llon \
+            "Longitude of lower point must be > longitude of upper point"
+            }
+        }
+    } 
 
     method _execute {{flunky ""}} {
         my setundo [$adb map importd [array get parms]]

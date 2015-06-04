@@ -699,7 +699,18 @@ snit::widget mapviewer {
         } {
             # May not have an image
             if {$data ne ""} {
-                set mapimage [image create photo -format jpeg -data $data]                
+                try {
+                    set mapimage [image create photo -format jpeg -data $data]
+                } on error {result eopts} {
+                    messagebox popup \
+                        -parent  [app topwin]         \
+                        -icon    error                \
+                        -title   "Invalid Map Data"   \
+                        -message [normalize {
+                The data provided for map display cannot be made into a map
+                image. No image will be displayed.
+                        }]                
+                }                
             }
 
             # NEXT, create projection
