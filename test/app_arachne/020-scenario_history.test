@@ -43,7 +43,6 @@ namespace eval ::athena_test::tests:: {
     proc setup {ticks} {
         ted with {autogen scenario -actors 1 -nb 2 -frcg 1 -civg 2 -orgg 1}
         ted advance $ticks
-        # TBD
     }
 
     proc cleanup {} {
@@ -95,14 +94,242 @@ namespace eval ::athena_test::tests:: {
 ]}    
 
     test histvar.json-1.1 {sat} -setup {
-        setup 2
+        setup 1
     } -body {
-        ted get /case00/history/index.json
+        ted redirectf /case00/history/sat/index.json c AUT
     } -cleanup {
         ted cleanup
-    } -result {
+    } -match trim -result {
+["OK",
+[
+{
+  "saliency": 1.0,
+  "sat": 0.0,
+  "t": 0,
+  "population": 0,
+  "nat": 0.0,
+  "base": 0.0,
+  "c": "AUT",
+  "g": "C0000"
+},
+{
+  "saliency": 1.0,
+  "sat": 0.0,
+  "t": 0,
+  "population": 0,
+  "nat": 0.0,
+  "base": 0.0,
+  "c": "AUT",
+  "g": "C0001"
+},
+{
+  "saliency": 1.0,
+  "sat": 15.78308080808081,
+  "t": 0,
+  "population": 10000,
+  "nat": 0.0,
+  "base": 0.0,
+  "c": "AUT",
+  "g": "C0002"
+},
+{
+  "saliency": 1.0,
+  "sat": 4.4431818181818175,
+  "t": 0,
+  "population": 10000,
+  "nat": 0.0,
+  "base": 0.0,
+  "c": "AUT",
+  "g": "C0003"
+}
+]
+]}
 
-    }
+    test histvar.json-1.2 {flow} -setup {
+        setup 1
+    } -body {
+        ted redirectf /case00/history/flow/index.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {}
+
+    test histvar.json-1.3 {vrel} -setup {
+        setup 1
+    } -body {
+        ted redirectf /case00/history/vrel/index.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {}
+
+
+    test histvar.json-1.4 {volatility} -setup {
+        setup 1
+    } -body {
+        ted redirectf /case00/history/volatility/index.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {}
+
+
+    test histvar.json-1.5 {control} -setup {
+        setup 1
+    } -body {
+        ted redirectf /case00/history/control/index.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {}
+
+
+    test histvar.json-1.6 {coop} -setup {
+        setup 1
+    } -body {
+        ted redirectf /case00/history/coop/index.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {}
+
+
+    test histvar.json-1.7 {deploy_ng} -setup {
+        setup 1
+    } -body {
+        ted redirectf /case00/history/deploy_ng/index.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {}
+
+
+    test histvar.json-1.8 {hrel} -setup {
+        setup 1
+    } -body {
+        ted redirectf /case00/history/hrel/index.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {}
+
+
+    test histvar.json-1.9 {plant_n} -setup {
+        setup 1
+    } -body {
+        ted redirectf /case00/history/plant_n/index.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {}
+
+
+    test histvar.json-1.10 {support} -setup {
+        setup 1
+    } -body {
+        ted redirectf /case00/history/support/index.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {}
+
+
+    test histvar.json-1.11 {plant_na} -setup {
+        setup 1
+    } -body {
+        ted redirectf /case00/history/plant_na/index.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {}
+
+
+    test histvar.json-1.12 {econ} -setup {
+        setup 1
+    } -body {
+        ted redirectf /case00/history/econ/index.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {}
+
+
+    test histvar.json-1.13 {npop} -setup {
+        setup 1
+    } -body {
+        ted redirectf /case00/history/npop/index.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {}
+
+
+    test histvar.json-1.14 {pop} -setup {
+        setup 1
+    } -body {
+        ted redirectf /case00/history/pop/index.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {}
+
+
+    test histvar.json-1.15 {plant_a} -setup {
+        setup 1
+    } -body {
+        ted redirectf /case00/history/plant_a/index.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {}
+
+
+    test histvar.json-1.16 {security} -setup {
+        setup 1
+    } -body {
+        ted redirectf /case00/history/security/index.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {}
+
+
+    test histvar.json-1.17 {service_sg} -setup {
+        setup 1
+    } -body {
+        ted redirectf /case00/history/service_sg/index.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {}
+
+
+    test histvar.json-1.18 {aam_battle} -setup {
+        setup 1
+    } -body {
+        ted redirectf /case00/history/aam_battle/index.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {}
+
+
+    test histvar.json-1.19 {activity_nga} -setup {
+        setup 1
+    } -body {
+        ted redirectf /case00/history/activity_nga/index.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {}
+
+
+    test histvar.json-1.20 {mood} -setup {
+        setup 1
+    } -body {
+        ted redirectf /case00/history/mood/index.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {}
+
+
+    test histvar.json-1.21 {nbmood} -setup {
+        setup 1
+    } -body {
+        ted redirectf /case00/history/nbmood/index.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {}
+
+    test histvar.json-1.22 {nbur} -setup {
+        setup 1
+    } -body {
+        ted redirectf /case00/history/nbur/index.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {}
 
     #-------------------------------------------------------------------
     # Cleanup
