@@ -302,116 +302,44 @@ snit::type ::athena::unit {
     }
 
     #-------------------------------------------------------------------
-    # Mutators
-    #
-    # Mutators are used to implement orders that change the scenario in
-    # some way.  Mutators assume that their inputs are valid, and returns
-    # a script of one or more commands that will undo the change.  When
-    # a change cannot be undone, the mutator returns the empty string.
-
+    # Moving Units
 
     # move u location
     #
-    # u              The unit's ID
-    # location       A new location (map coords) or ""
+    # u         - The unit's ID
+    # location  - A new location as an MGRS grid ref or a lat/long
+    #               pair.  (Must be in same neighborhood.)
     #
-    # Moves a unit given the parms, which are presumed to be
-    # valid.
+    # Attempts to move a unit to a new location; throws an error if the
+    # location is invalid.  This is for use in positioning a unit within
+    # its neighborhood for GUI display; it has no effect on the simulation
+    # results.
 
     method move {u location} {
-        # FIRST, get the undo information
-        $adb eval {
-            SELECT location AS oldLocation FROM units
-            WHERE u=$u
-        } {}
+        # FIRST, validate the location.
+        if {[llength $location] == 1} {
+            set loc [refpoint validate $location]
+        } else {
+            set loc [latlong validate $location]
+        }
+        set nloc  [$adb nbhood find {*}$loc]
+        set nunit [$self get $u n]
 
-        # NEXT, Update the unit
-        $adb eval {
-            UPDATE units
-            SET location = $location
-            WHERE u=$u
+        if {$nloc ne $nunit} {
+            throw INVALID "Cannot remove unit from its neighborhood"
         }
 
-        # NEXT, Return the undo command
-        return [mymethod move $u $oldLocation]
-    }
-
-    # personnel u personnel
-    #
-    # u              The unit's ID
-    # personnel      The new number of personnel
-    #
-    # Sets the unit's personnel given the parms, which are presumed to be
-    # valid, and marks the unit active.  This is used only by the ATTRIT:*
-    # orders.
-
-    method personnel {u personnel} {
-        # FIRST, get the undo information
-        $adb eval {
-            SELECT personnel AS oldPersonnel FROM units
-            WHERE u=$u
-        } {}
-
-        # NEXT, Update the unit
-        $adb eval {
-            UPDATE units
-            SET   personnel = $personnel,
-                  active    = 1
-            WHERE u=$u
-        }
-
-        # NEXT, Return the undo command
-        return [mymethod personnel $u $oldPersonnel]
-    }
-}
-
-#-------------------------------------------------------------------
-# Orders: UNIT:*
-
-# UNIT:MOVE
-#
-# Moves an existing unit.
-
-::athena::orders define UNIT:MOVE {
-    meta title      "Move Unit"
-    meta sendstates {PREP PAUSED}
-    meta parmlist   {u location}
-
-    meta form {
-        rcc "Unit" -for u
-        dbkey u -table fmt_units -keys u \
-            -loadcmd {$order_ keyload u *}
-
-        rcc "Location" -for location
-        text location
-    }
-
-    meta parmtags {
-        location point
-    }
-
-    method _validate {} {
-        my prepare u          -toupper -required -type [list $adb unit]
-        my prepare location   -toupper -required -type refpoint
-    
-        my returnOnError
-    
-        my checkon location {
-            set n [$adb nbhood find {*}$parms(location)]
-    
-            if {$n ne [$adb unit get $parms(u) n]} {
-                my reject location "Cannot remove unit from its neighborhood"
+        # NEXT, Update the unit, monitoring so that RDB notifiers
+        # are sent.
+        $adb monitor script {
+            $adb eval {
+                UPDATE units
+                SET location = $loc
+                WHERE u=$u
             }
         }
     }
-
-    method _execute {{flunky ""}} {
-        lappend undo [$adb unit move $parms(u) $parms(location)]
-    
-        my setundo [join $undo \n]
-    }
 }
-
 
 
 

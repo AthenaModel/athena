@@ -150,6 +150,7 @@ snit::type ::athena::athena {
     delegate method {absit get}             to adb as {absit get}
     delegate method {absit isinitial}       to adb as {absit isinitial}
     delegate method {absit islive}          to adb as {absit islive}
+    delegate method {absit move}            to adb as {absit move}
     delegate method {absit names}           to adb as {absit names}
     delegate method {absit validate}        to adb as {absit validate}
     delegate method {absit view}            to adb as {absit view}
@@ -328,6 +329,7 @@ snit::type ::athena::athena {
     delegate method {stats pbmood}          to adb as {stats pbmood}
 
     delegate method {unit get}              to adb as {unit get}
+    delegate method {unit move}             to adb as {unit move}
     delegate method {unit names}            to adb as {unit names}
     delegate method {unit validate}         to adb as {unit validate}
 

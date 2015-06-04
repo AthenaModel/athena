@@ -468,9 +468,8 @@ tab "Physical" {
 tab "Physical/Map" {
     The Map tab contains the Athena Map Viewer, the primary means of
     visualizing Athena scenarios.  The Map Viewer is where 
-    <cref /order/nbhood neighborhoods> and <cref /order/unit units> are drawn,
-    <term absit>s are 
-    created and positioned, and group moods and other <cref /var/n>
+    <cref /order/nbhood neighborhoods>, <term unit>s, and <term absit>s 
+    are drawn, and group moods and other <cref /var/n>
     are visualized.  The
     browser controls are described <seebelow controls>.<p>
 

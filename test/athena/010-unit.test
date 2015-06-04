@@ -178,7 +178,7 @@ USAID/NB2 0         0
     } -result {SHIA/NB1 USAID/NB2}
 
     #-------------------------------------------------------------------
-    # mutate move
+    # move
 
     test move-1.1 {unit is moved} -setup {
         setup
@@ -192,83 +192,8 @@ USAID/NB2 0         0
     } -result {
 u        location 
 -------- -------- 
-BLUE/NB1 2 2      
+BLUE/NB1 2.0 2.0  
     }
-
-
-    test move-2.1 {undo undoes the change} -setup {
-        setup
-        tdb unit makebase
-    } -body {
-
-        set a [tdb unit get BLUE/NB1 location]
-        set undo [tdb unit move BLUE/NB1 {3 3}]
-        namespace eval :: $undo
-        set b [tdb unit get BLUE/NB1 location]
-
-        expr {$a eq $b}
-    } -cleanup {
-        cleanup
-    } -result {1}
-
-
-    #-------------------------------------------------------------------
-    # mutate personnel
-
-
-    test mutate_personnel-1.1 {unit is updated} -setup {
-        setup
-        tdb unit makebase
-    } -body {
-        tdb unit personnel BLUE/NB1 3
-
-        ted query {SELECT u,personnel FROM units WHERE active ORDER BY u}
-    } -cleanup {
-        cleanup
-    } -result {
-u         personnel 
---------- --------- 
-BLUE/NB1  3         
-SHIA/NB1  1000      
-USAID/NB2 100       
-    }
-
-
-    test mutate_personnel-1.2 {updated unit is active} -setup {
-        setup
-        tdb unit makebase
-        tdb unit reset
-    } -body {
-        tdb unit personnel BLUE/NB1 3
-
-        ted query {SELECT u,personnel,active FROM units ORDER BY u}
-    } -cleanup {
-        cleanup
-    } -result {
-u         personnel active 
---------- --------- ------ 
-BLUE/NB1  3         1      
-SHIA/NB1  0         0      
-USAID/NB2 0         0      
-    }
-
-    test mutate_personnel-2.1 {undo undoes the change} -setup {
-        setup
-        tdb unit makebase
-    } -body {
-
-        set a [tdb unit get BLUE/NB1 personnel]
-
-        set undo [tdb unit personnel BLUE/NB1 25]
-
-        namespace eval :: $undo
-
-        set b [tdb unit get BLUE/NB1 personnel]
-
-        expr {$a eq $b}
-    } -cleanup {
-        cleanup
-    } -result {1}
 
     #-------------------------------------------------------------------
     # names

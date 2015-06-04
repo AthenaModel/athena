@@ -47,6 +47,16 @@ Returns 1 if absit <i s> is in the initial state, and 0 otherwise.<p>
 Returns 1 if absit <i s> is "live", i.e., it has not been resolved,
 and 0 otherwise.<p>
 
+<defitem move {<i adb> absit move <i s location>}>
+
+Moves absit <i s> to the new <i location>, which must be in the same
+neighborhood.  The <i location> may be a lat/long pair in decimal 
+degrees, or an MGRS string.  Throws INVALID if the location is invalid
+or outside the situation's neighborhood.<p>
+
+<b NOTE:> Moving an absit has no effect on the simulation results, but 
+will affect how the absit is displayed on a map.<p>
+
 <defitem names {<i adb> absit names}>
 Returns a list of the IDs of the existing absits.<p>
 

@@ -35,9 +35,8 @@ page / order "Orders" {
     <title>
     The analyst communicates with Athena by means of <i>orders</i>.
     Most orders are sent by means of an order dialog; some are sent
-    implicitly.  For example, dragging a unit from one place to
-    another on the map implicitly sends the <cref /order/unit/move> 
-    order.  Order dialogs can be invoked in a number of ways, e.g., by
+    implicitly by the GUI.  Order dialogs can be invoked in a number 
+    of ways, e.g., by pressing a button in a browser or by 
     selecting an order from the <cref /menu/orders>.<p>
 
     Orders are grouped in the following categories:<p>
@@ -125,7 +124,6 @@ include order_hook.help       ;# Sort as "Semantic Hook"
 include order_sim.help
 include order_strategy.help
 include order_tactic.help
-include order_unit.help
 include order_vrel.help
 
 

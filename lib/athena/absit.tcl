@@ -518,36 +518,6 @@ snit::type ::athena::absit {
         return [list $adb ungrab $data] 
     }
 
-
-    # move parmdict
-    #
-    # parmdict     A dictionary of entity parms
-    #
-    #    s           - The situation ID
-    #    location    - A new location (map coords), or ""
-    #                  (Must be in same neighborhood.)
-    #
-    # Updates a situation given the parms, which are presumed to be
-    # valid.
-
-    method move {parmdict} {
-        dict with parmdict {}
-
-        # FIRST, get the undo information
-        set data [$adb grab absits {s=$s}]
-
-        # NEXT, update the situation
-        $adb eval {
-            UPDATE absits
-            SET stype     = nonempty($stype,     stype),
-                location  = nonempty($location,  location)
-            WHERE s=$s;
-        }
-
-        # NEXT, Return the undo command
-        return [list $adb ungrab $data] 
-    }
-
     # resolve parmdict
     #
     # parmdict     A dictionary of order parms
@@ -595,6 +565,49 @@ snit::type ::athena::absit {
             return $old(location)
         }
     }
+
+    #-------------------------------------------------------------------
+    # Absit Movement
+
+
+    # move s location
+    #
+    # s           - The situation ID
+    # location    - A new location as an MGRS grid ref or a lat/long
+    #               pair.  (Must be in same neighborhood.)
+    #
+    # Attempts to move an absit to a new location; throws an error if the
+    # location is invalid.  This is for use in positioning the absit within
+    # its neighborhood for GUI display; it has no effect on the simulation
+    # results.
+
+    method move {s location} {
+        # FIRST, validate the location.
+        if {[llength $location] == 1} {
+            set loc [refpoint validate $location]
+        } else {
+            set loc [latlong validate $location]
+        }
+        set nloc  [$adb nbhood find {*}$loc]
+        set nsit  [$self get $s n]
+
+        if {$nloc ne $nsit} {
+            throw INVALID "Cannot remove absit from its neighborhood"
+        }
+
+        # NEXT, update the situation, monitoring so that the 
+        # RDB notifiers are sent.
+        $adb monitor script {
+            $adb eval {
+                UPDATE absits
+                SET location = $loc
+                WHERE s=$s;
+            }
+        }
+    }
+
+
+    
 
     #-------------------------------------------------------------------
     # Order Helpers
@@ -842,50 +855,6 @@ snit::type ::athena::absit {
         my setundo [$adb absit update [array get parms]]
     }
 }
-
-
-# ABSIT:MOVE
-#
-# Moves an existing absit.
-
-::athena::orders define ABSIT:MOVE {
-    meta title      "Move Abstract Situation"
-    meta sendstates {PREP PAUSED}
-    meta parmlist   {s location}
-
-    meta parmtags {
-        s situation
-        location nbpoint
-    }
-
-    method _validate {} {
-        my prepare s  -required -type [list $adb absit]
-    
-        my returnOnError
-    
-        # NEXT, prepare the remaining parameters
-        my prepare location  -toupper  -required -type refpoint 
-    
-        my returnOnError
-    
-        # NEXT, validate the other parameters.  
-    
-        my checkon location {
-            set n [$adb nbhood find {*}$parms(location)]
-    
-            if {$n ne [$adb absit get $parms(s) n]} {
-                my reject location \
-                    "Cannot remove situation from its neighborhood"
-            }
-        }
-
-    }
-
-    method _execute {{flunky ""}} {
-        my setundo [$adb absit move [array get parms]]
-    }
-}
-
 
 # ABSIT:RESOLVE
 #

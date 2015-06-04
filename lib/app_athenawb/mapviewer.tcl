@@ -1421,20 +1421,18 @@ snit::widget mapviewer {
         switch -exact $icons(itype-$cid) {
             unit {
                 if {[catch {
-                    adb order senddict gui UNIT:MOVE [list  \
-                        u        $icons(sid-$cid)        \
-                        location [$canvas icon ref $cid]]
-                }]} {
+                    adb unit move $icons(sid-$cid) [$canvas icon ref $cid]
+                } result]} {
+                    app puts $result
                     $self UnitDrawSingle $icons(sid-$cid)
                 }
             }
 
             situation {
                 if {[catch {
-                    adb order senddict gui ABSIT:MOVE [list \
-                        s        $icons(sid-$cid)        \
-                        location [$canvas icon ref $cid]]
-                }]} {
+                    adb absit move $icons(sid-$cid) [$canvas icon ref $cid]
+                } result]} {
+                    app puts $result
                     $self AbsitDrawSingle $icons(sid-$cid)
                 }
             }

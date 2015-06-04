@@ -703,13 +703,6 @@ snit::widget appwin {
             [menuitem $submenu command "Rebase Scenario" \
                 -command [list app rebase]]
 
-        # Orders/Unit
-        set submenu [menu $ordersmenu.unit]
-        $ordersmenu add cascade -label "Unit" \
-            -underline 0 -menu $submenu
-        
-        $self AddOrder $submenu UNIT:MOVE
-
         # Orders/Situation
         set submenu [menu $ordersmenu.sit]
         $ordersmenu add cascade -label "Situation" \

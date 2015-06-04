@@ -184,26 +184,6 @@ order ABSIT:UPDATE "Update Abstract Situation" {
 
 #-----------------------------------------------------------------------
 
-order ABSIT:MOVE "Move Abstract Situation" {
-    <parmlist>
-
-    <parm s "Situation">
-    <b>Required.</b>  The numeric ID of any existing abstract
-    situation.
-    </parm>
-
-    <parm location "Location">
-    <b>Required.</b>  The location of the situation within its
-    neighborhood.  <b>Note:</b> the absit's location within the
-    neighborhood has no effect on model outputs.  The absit
-    cannot be moved out of its neighborhood using this order.
-    </parm>
-
-    </parmlist>
-
-    Moves an existing abstract situation from one place to another.
-}
-
 
 order ABSIT:RESOLVE "Resolve Abstract Situation" {
     <parmlist>
