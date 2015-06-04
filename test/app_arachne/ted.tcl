@@ -121,6 +121,50 @@ snit::type ted {
         $sdb destroy
     }
 
+    # with script
+    # 
+    # script   - a script to evaluate
+    #
+    # This method executes the given script in the base case scenario.
+
+    typemethod with {script} {
+        case with case00 executive eval $script
+    }
+
+    # advance ticks
+    # 
+    # ticks   - number of ticks to advance
+    #
+    # This method attempts to lock and advance the base case scenario. 
+    # Any errors that occur will bubble up.
+
+    typemethod advance {ticks} {
+        case with case00 lock
+        case with case00 advance -ticks $ticks
+    }
+
+    # redirectf request
+    # 
+    # suffix   - The url in the /scenario domain, e.g., /index.json
+    # args     - The query string, which is simply the dictionary
+    #
+    # This method traps an HTTP redirect that is expected to go to a file
+    # in the temp domain and returns the contents of that file
+
+    typemethod redirectf {suffix args} {
+        if {[llength $args] == 1} {
+            set query [lindex $args 0]
+        } else {
+            set query $args
+        }
+
+        try {
+            set result [$::app::domains(/scenario) request GET $suffix $query]
+        } trap HTTPD_REDIRECT {result eopts} {
+            set filename [file tail [lindex [dict get $eopts -errorcode] 1]]
+            tcltest::viewFile $filename [app tempdir]
+        }
+    }
 
     # mkscript scenario
     #
@@ -137,10 +181,10 @@ snit::type ted {
     #-------------------------------------------------------------------
     # Domain Requests
     
-    # get suffix ?query...?
+    # get suffix ?args...?
     #
     # suffix   - The url in the /scenario domain, e.g., /index.json
-    # query    - The query string, which is simply the dictionary
+    # args     - The query string, which is simply the dictionary
     #
     # Calls the scenario_domain handler directly as a GET request.
 

@@ -138,7 +138,7 @@ smarturl /scenario /{case}/nbhood/{n}/index.json {
 
     set ndict [case with $case nbhood view $n web]
 
-    set qid            [dict get $ndict url]
+    set qid            [dict get $ndict qid]
     set controller_qid [dict get $ndict controller_qid]
 
     dict set ndict url [my domain $case $qid "index.json"]

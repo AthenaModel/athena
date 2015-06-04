@@ -1,0 +1,188 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    020-scenario_nbhood.test
+#
+# AUTHOR:
+#    Will Duquette
+#    Dave Hanks
+#
+# DESCRIPTION:
+#    app_arachne(1): Scenario Nbhood Object URLs
+#
+#    This test suite tests the handlers for these URLs:
+#
+#    /scenario/{case}/nbhood/*.{html,json}
+#    /scenario/{case}/nbhood/{name}/*.{html,json}.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athenawb(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    proc setup {scenario what args} {
+        # TBD
+    }
+
+    proc cleanup {} {
+       ted cleanup
+    }
+
+    #-------------------------------------------------------------------
+    # Nbhood URLs
+
+    test nbhood.html-1.1 {all nbhoods HTML} -setup {
+        ted with {autogen actors 1}
+        ted with {autogen nbhoods 2}
+    } -body {
+        ted get /case00/nbhoods/index.html
+    } -cleanup {
+        ted cleanup
+    } -match glob -result {*'case00': Neighborhoods*}    
+
+    test nbhood.html-1.2 {one nbhood HTML} -setup {
+        ted with {autogen actors 1}
+        ted with {autogen nbhoods 2}
+    } -body {
+        ted get /case00/nbhood/N00/index.html
+    } -cleanup {
+        ted cleanup
+    } -match glob -result {*'case00': Neighborhood: N00*}
+
+    test nbhood.json-1.1 {all nbhoods JSON} -setup {
+        ted with {autogen actors 1}
+        ted with {autogen nbhoods 2}
+    } -body {
+        ted get /case00/nbhoods/index.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {
+[
+  {
+    "subsistence": 0,
+    "polygon": "38TNM0000049776 38TNM0496949778 38TNM0497245337 38TNM0000045335",
+    "controller_qid": "actor\/A00",
+    "volatility": 0,
+    "fancy": "N00",
+    "pcf":  1.0,
+    "unemployed": 0,
+    "since": "2012W01",
+    "url": "\/scenario\/case00\/nbhood\/N00\/index.json",
+    "population": 0.0,
+    "controller": "A00",
+    "id": "N00",
+    "labor_force": 0,
+    "qid": "nbhood\/N00",
+    "urbanization": "URBAN",
+    "mood0": 0.000,
+    "consumers": 0,
+    "stacking_order": 1,
+    "since_ticks": 0,
+    "obscured_by": "",
+    "longname": "N00",
+    "local": "YES",
+    "controller_url": "\/scenario\/case00\/actor\/A00\/index.json",
+    "n": "N00",
+    "mood": 0.000,
+    "refpoint": "38TNM0248547556"
+  },
+  {
+    "subsistence": 0,
+    "polygon": "38TNM0496949778 38TNM0993849783 38TNM0994445342 38TNM0497245337",
+    "controller_qid": "actor\/A00",
+    "volatility": 0,
+    "fancy": "N01",
+    "pcf":  1.0,
+    "unemployed": 0,
+    "since": "2012W01",
+    "url": "\/scenario\/case00\/nbhood\/N01\/index.json",
+    "population": 0.0,
+    "controller": "A00",
+    "id": "N01",
+    "labor_force": 0,
+    "qid": "nbhood\/N01",
+    "urbanization": "URBAN",
+    "mood0": 0.000,
+    "consumers": 0,
+    "stacking_order": 2,
+    "since_ticks": 0,
+    "obscured_by": "",
+    "longname": "N01",
+    "local": "YES",
+    "controller_url": "\/scenario\/case00\/actor\/A00\/index.json",
+    "n": "N01",
+    "mood": 0.000,
+    "refpoint": "38TNM0745647560"
+  }
+]}
+    
+test nbhood.json-1.2 {one nbhood JSON} -setup {
+        ted with {autogen actors 1}
+        ted with {autogen nbhoods 2}
+    } -body {
+        ted get /case00/nbhood/N00/index.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {
+[{
+    "subsistence": 0,
+    "polygon": "38TNM0000049776 38TNM0496949778 38TNM0497245337 38TNM0000045335",
+    "controller_qid": "actor\/A00",
+    "volatility": 0,
+    "fancy": "N00",
+    "pcf":  1.0,
+    "unemployed": 0,
+    "since": "2012W01",
+    "url": "\/scenario\/case00\/nbhood\/N00\/index.json",
+    "population": 0.0,
+    "controller": "A00",
+    "id": "N00",
+    "labor_force": 0,
+    "qid": "nbhood\/N00",
+    "urbanization": "URBAN",
+    "mood0": 0.000,
+    "consumers": 0,
+    "stacking_order": 1,
+    "since_ticks": 0,
+    "obscured_by": "",
+    "longname": "N00",
+    "local": "YES",
+    "controller_url": "\/scenario\/case00\/actor\/A00\/index.json",
+    "n": "N00",
+    "mood": 0.000,
+    "refpoint": "38TNM0248547556"
+  }]}
+
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+
+    ::tcltest::cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+

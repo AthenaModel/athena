@@ -50,6 +50,15 @@ FROM fmt_nbhoods;
 ------------------------------------------------------------------------
 -- GROUPS
 
+CREATE TEMPORARY VIEW web_groups AS
+SELECT *,
+       qid   || '/index.html'                      AS url,
+       CASE WHEN a_qid != ''
+            THEN a_qid || '/index.html'
+            ELSE ''
+            END                                    AS a_url
+FROM fmt_groups;
+
 -- web_civgroups: Civilian group data 
 CREATE TEMPORARY VIEW web_civgroups AS
 SELECT *,
