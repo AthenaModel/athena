@@ -233,7 +233,7 @@
                 nbhood n
 
                 rcc "Group:" -for f
-                group f 
+                enum f -listcmd {$adb_ civgroup gIn $n}
 
                 when {$f in [$adb_ civgroup names]} {
                     rcc "Responsible Group:" -for g1
