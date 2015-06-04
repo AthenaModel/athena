@@ -140,21 +140,29 @@ snit::type ted {
 
     typemethod advance {ticks} {
         case with case00 lock
-        case with case00 advance -mode background -ticks $ticks
+        case with case00 advance -ticks $ticks
     }
 
-    # redirect request
+    # redirectf request
     # 
-    # request   - a URL that is expected to cause a redirect 
+    # suffix   - The url in the /scenario domain, e.g., /index.json
+    # args     - The query string, which is simply the dictionary
     #
-    # This method traps an HTTP redirect and handles it by returning the 
-    # content of the URL to which the request was redirected, usually a file.
+    # This method traps an HTTP redirect that is expected to go to a file
+    # in the temp domain and returns the contents of that file
 
-    typemethod redirect {request} {
+    typemethod redirectf {suffix args} {
+        if {[llength $args] == 1} {
+            set query [lindex $args 0]
+        } else {
+            set query $args
+        }
+
         try {
-            ted get $request
+            set result [$::app::domains(/scenario) request GET $suffix $query]
         } trap HTTPD_REDIRECT {result eopts} {
-            puts "result= $result"
+            set filename [file tail [lindex [dict get $eopts -errorcode] 1]]
+            tcltest::viewFile $filename [app tempdir]
         }
     }
 
@@ -173,10 +181,10 @@ snit::type ted {
     #-------------------------------------------------------------------
     # Domain Requests
     
-    # get suffix ?query...?
+    # get suffix ?args...?
     #
     # suffix   - The url in the /scenario domain, e.g., /index.json
-    # query    - The query string, which is simply the dictionary
+    # args     - The query string, which is simply the dictionary
     #
     # Calls the scenario_domain handler directly as a GET request.
 
