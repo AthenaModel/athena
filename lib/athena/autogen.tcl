@@ -729,8 +729,9 @@ snit::type ::athena::autogen {
     # num  - number of nbhoods to create
     #
     # This method creates numn nbhoods called "Ni" where i is and
-    # integer from 0 to numn-1. Each nbhood is 10x10 pixels in size
-    # laid out in columns of 8. Actors are assigned as contollers
+    # integer from 0 to numn-1. Each nbhood is 100x100 pixels in size
+    # creating a new rows on the map as needed to fit in the width of the
+    # default map image. Actors are assigned as contollers
     # of each nbhood in turn. Nbhood proximity is HERE for nbhoods
     # that have i +/- 1 from the current nbhood, and FAR for all
     # others. Proximity is symmetric.
@@ -764,20 +765,20 @@ snit::type ::athena::autogen {
         for {set i 0} {$i < $num} {incr i} {
 
             # NEXT, start a new row if necessary
-            if {[expr {$i % 99}] == 0} {
+            if {[expr {$i % 9}] == 0} {
                 incr j
             }
 
             # NEXT, determine polygon coords in canvas space
-            let x1 {($i % 99) * 10.0}
-            let x2 {$x1 + 10.0}
-            let y1 {$j  * 10.0}
-            let y2 {$y1 + 10.0}
+            let x1 {(($i % 9) * 100.0) + 5.0}
+            let x2 {$x1 + 100.0}
+            let y1 {($j * 100.0)       + 5.0}
+            let y2 {$y1 + 100.0}
 
             # NEXT, reference point is in the center of the 10x10
             # square
             let refptx {($x1 + $x2) / 2.0}
-            let refpty {$y1 + 5.0}
+            let refpty {($y1 + $y2) / 2.0}
             
             # NEXT, convert to mapref strings
             set refpt [$proj c2ref 100.0 $refptx $refpty]

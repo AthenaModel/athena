@@ -205,7 +205,7 @@ command "autogen scenario" {
 
     <defopt {-nb <i>n</i>}>
     Specifies the number of neighborhoods to create. Each neighborhood is
-    a 10x10 pixel square. Neighborhoods are laid out in strips starting at
+    a 100x100 pixel square. Neighborhoods are laid out in strips starting at
     the top of the map. Defaults to 10.<p>
 
     <defopt {-actors <i>n</i>}>
