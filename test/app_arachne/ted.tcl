@@ -140,7 +140,7 @@ snit::type ted {
 
     typemethod advance {ticks} {
         case with case00 lock
-        case with case00 advance -ticks $ticks
+        case with case00 advance -mode blocking -ticks $ticks
     }
 
     # redirectf request
