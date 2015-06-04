@@ -46,6 +46,12 @@ snit::type app {
 
     typevariable domains -array {}
 
+    # counter
+    #
+    # File counter for temp file names
+
+    typevariable counter
+
     #-------------------------------------------------------------------
     # Initialization
 
@@ -209,13 +215,16 @@ snit::type app {
     # Returns the name of a new file in the tempdir.
 
     typemethod namegen {ftype} {
-        set name [$type GetTempFileName $ftype]
-
-        while {[file exists $name]} {
+        # for-loop is a safety valve
+        for {set i 0} {$i<1000} {incr i} {
             set name [$type GetTempFileName $ftype]
+
+            if {![file exists $name]} {
+                return $name
+            }
         }
 
-        return $name
+        throw FATAL "Could not generate temp file in [$type tempdir]"
     }
 
     # GetTempFileName ftype
