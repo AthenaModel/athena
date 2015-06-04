@@ -38,10 +38,15 @@
 
         # NEXT, look for and assess consumption
         [my adb] eval {
-            SELECT G.g, G.aloc, G.eloc, G.povfrac, C.n, N.controller AS a
-            FROM demog_g AS G
-            JOIN civgroups AS C USING (g)
-            JOIN control_n AS N USING (n)
+            SELECT G.g          AS g,
+                   G.aloc       AS aloc, 
+                   G.eloc       AS eloc, 
+                   G.povfrac    AS povfrac, 
+                   C.n          AS n, 
+                   N.controller AS a
+            FROM demog_g         AS G
+            JOIN local_civgroups AS C USING (g)
+            JOIN control_n       AS N USING (n)
             WHERE consumers > 0
         } row {
             # FIRST, get the data.
