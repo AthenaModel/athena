@@ -38,7 +38,7 @@ smarturl /scenario /{case}/groups/frc/index.html {
     set frcgroups [case with $case frcgroup names]
 
     if {[llength $frcgroups] == 0} {
-        hb h2 "<b>None defined.</b>"
+        hb putln "None defined."
         hb para
         return [hb /page]
     }

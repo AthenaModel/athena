@@ -38,7 +38,7 @@ smarturl /scenario /{case}/groups/civ/index.html {
     set civgroups [case with $case civgroup names]
 
     if {[llength $civgroups] == 0} {
-        hb h2 "<b>None defined.</b>"
+        hb putln "None defined."
         hb para
         return [hb /page]
     }

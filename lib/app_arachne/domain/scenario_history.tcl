@@ -733,7 +733,8 @@ smarturl /scenario /{case}/history/index.html {
 
     if {$histvar_ ne ""} {
         if {$histvar_ ni [dict keys [my histvar]]} {
-            hb h3 "Error: $histvar_ not a valid history variable."
+            hb span -class error \
+                "Error: $histvar_ not a valid history variable."
         } else {
             hb h2 $histvar_
             set handler [my histvar $histvar_]

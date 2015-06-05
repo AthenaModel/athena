@@ -38,7 +38,7 @@ smarturl /scenario /{case}/nbhoods/index.html {
     set nbhoods [case with $case nbhood names]
 
     if {[llength $nbhoods] == 0} {
-        hb h2 "<b>None defined.</b>"
+        hb putln "None defined."
         hb para
         return [hb /page]
     }
