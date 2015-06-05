@@ -36,7 +36,7 @@ smarturl /scenario /{case}/group/index.html {
     set groups [case with $case group names]
 
     if {[llength $groups] == 0} {
-        hb h2 "<b>None defined.</b>"
+        hb putln "None defined."
         hb para
         return [hb /page]
     }
@@ -185,7 +185,7 @@ smarturl /scenario /{case}/group/civ.html {
     set civgroups [case with $case civgroup names]
 
     if {[llength $civgroups] == 0} {
-        hb h2 "<b>None defined.</b>"
+        hb putln "None defined."
         hb para
         return [hb /page]
     }
@@ -264,7 +264,7 @@ smarturl /scenario /{case}/group/frc.html {
     set frcgroups [case with $case frcgroup names]
 
     if {[llength $frcgroups] == 0} {
-        hb h2 "<b>None defined.</b>"
+        hb putln "None defined."
         hb para
         return [hb /page]
     }
@@ -353,7 +353,7 @@ smarturl /scenario /{case}/group/org.html {
     set orggroups [case with $case orggroup names]
 
     if {[llength $orggroups] == 0} {
-        hb h2 "<b>None defined.</b>"
+        hb putln "None defined."
         hb para
         return [hb /page]
     }
