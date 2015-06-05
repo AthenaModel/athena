@@ -39,7 +39,7 @@ namespace eval ::athena_test::tests:: {
     # Import tcltest(n)
     namespace import ::tcltest::*
 
-    proc setup {} {
+    proc setup {scenario what args} {
         # TBD
     }
 
@@ -386,6 +386,7 @@ namespace eval ::athena_test::tests:: {
     test script.html-1.1 {No such scenario} -body {
         ted get /nonesuch/script.html
     } -result {NOTFOUND {No such scenario: "nonesuch"}}
+
 
     #-------------------------------------------------------------------
     # Cleanup

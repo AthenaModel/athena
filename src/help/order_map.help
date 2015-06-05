@@ -30,8 +30,8 @@ order MAP:IMPORT+FILE "Import Map From File" {
     <parmlist>
 
     <parm filename "Map File">
-    <b>Required.</b>  The name of a GIF, JPEG, or PNG image to be used
-    as the map background.
+    <b>Required.</b>  The name of a GIF, JPEG, TIFF, GeoTIFF or PNG image 
+    to be used as the map background.
     </parm>
     </parmlist>
 
@@ -53,12 +53,6 @@ order MAP:IMPORT+DATA "Import Map As Data" {
 
     <parm data  "Map Data">
     <b>Required.</b> Binary data representing the image of a map.
-    </parm>
-
-    <parm projtype  "Projection Type">
-    <b>Required.</b> Map projection type. The only type recognized by
-    Athena at this time is RECT, which is an equirectangular projection
-    used by the MGRS.
     </parm>
 
     <parm width "Width">

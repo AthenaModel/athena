@@ -83,8 +83,9 @@ namespace eval ::athena_test::tests:: {
         tdb parm set dam.UNEMP.active no
         tdb eval {DELETE FROM drivers}
         
-        # NEXT, create the entities
-        ted create JOE BOB DAVE NB1 NB2 TAL SHIA SUNN KURD
+        # NEXT, create the entities, NOT_LOCALS should not show up in
+        # rule firings
+        ted create JOE BOB DAVE NB1 NB2 TAL SHIA SUNN KURD NOT_LOCALS
         
         # NEXT, lock, so that URAM is ready to receive inputs.  Disable
         # CONSUMP so that it does nothing on lock.

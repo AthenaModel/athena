@@ -1,0 +1,152 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    020-scenario_actor.test
+#
+# AUTHOR:
+#    Will Duquette
+#    Dave Hanks
+#
+# DESCRIPTION:
+#    app_arachne(1): Scenario Actor Object URLs
+#
+#    This test suite tests the handlers for these URLs:
+#
+#    /scenario/{case}/actor/*.{html,json}
+#    /scenario/{case}/actor/{name}/*.{html,json}.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athenawb(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    proc setup {scenario what args} {
+        # TBD
+    }
+
+    proc cleanup {} {
+       ted cleanup
+    }
+
+
+    #-------------------------------------------------------------------
+    # Actor URLs
+
+    test actor.html-1.1 {all actors HTML} -setup {
+        ted with {autogen actors 1}
+    } -body {
+        ted get /case00/actors/index.html
+    } -cleanup {
+        ted cleanup
+    } -match glob -result {*'case00': Actors*}    
+
+    test actor.html-1.2 {one actor HTML} -setup {
+        ted with {autogen actors 1}
+    } -body {
+        ted get /case00/actor/A00/index.html
+    } -cleanup {
+        ted cleanup
+    } -match glob -result {*'case00': Actor: A00*}
+
+    test actor.json-1.1 {all actors JSON} -setup {
+        ted with {autogen actors 1}
+    } -body {
+        ted get /case00/actors/index.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {
+[{
+    "supports": "SELF",
+    "income_pop": 0.00,
+    "a": "A00",
+    "fancy": "A00",
+    "auto_maintain": 0,
+    "cash_reserve": 0.00,
+    "bsysname": "Neutral (1)",
+    "url": "\/scenario\/case00\/actor\/A00\/index.json",
+    "income": 0.00,
+    "budget": 0.00,
+    "atype": "INCOME",
+    "id": "A00",
+    "qid": "actor\/A00",
+    "shares_black_nr": 0,
+    "longname": "A00",
+    "supports_url": "",
+    "income_world": 0.00,
+    "bsid": 1,
+    "income_black_tax": 0.00,
+    "cash_on_hand": "500.000B",
+    "supports_qid": "",
+    "income_graft": 0.00,
+    "income_goods": 0.00,
+    "pretty_am_flag": "No"
+  }]}
+    
+test actor.json-1.2 {one actor JSON} -setup {
+        ted with {autogen actors 1}
+    } -body {
+        ted get /case00/actor/A00/index.json
+    } -cleanup {
+        ted cleanup
+    } -match trim -result {
+[{
+    "supports": "SELF",
+    "income_pop": 0.00,
+    "a": "A00",
+    "fancy": "A00",
+    "auto_maintain": 0,
+    "cash_reserve": 0.00,
+    "bsysname": "Neutral (1)",
+    "url": "\/scenario\/case00\/actor\/A00\/index.json",
+    "income": 0.00,
+    "budget": 0.00,
+    "atype": "INCOME",
+    "id": "A00",
+    "qid": "actor\/A00",
+    "shares_black_nr": 0,
+    "longname": "A00",
+    "supports_url": "",
+    "income_world": 0.00,
+    "bsid": 1,
+    "income_black_tax": 0.00,
+    "cash_on_hand": "500.000B",
+    "supports_qid": "",
+    "income_graft": 0.00,
+    "income_goods": 0.00,
+    "pretty_am_flag": "No"
+  }]}
+
+
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+
+    ::tcltest::cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+

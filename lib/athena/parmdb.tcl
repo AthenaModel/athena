@@ -220,11 +220,11 @@ snit::type ::athena::parmdb {
             MEDIUM 0.75
             HIGH   0.5
         } {
-            $ps define aam.FRC.civconcern.$name ::simlib::rfraction $value "
+            $ps define aam.FRC.civconcern.$name ::athena::rminfrac $value "
                 Dial that determines the effect a force group has with a 
                 concern for civilian casualties of $name to cause attrition to
-                a force group that it is actively fighting.  Set to 0.0,
-                the group will not cause attrition.
+                a force group that it is actively fighting.  Must be set to 
+                no less than 0.01.
             "
         }
 

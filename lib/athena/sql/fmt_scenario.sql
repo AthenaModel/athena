@@ -117,7 +117,11 @@ SELECT g                                             AS id,
        color                                         AS color,
        demeanor                                      AS demeanor,
        moneyfmt(cost)                                AS cost,
-       a                                             AS a
+       a                                             AS a,
+       CASE WHEN a != ''
+            THEN 'actor/' || a
+            ELSE ''
+            END                                      AS a_qid
 FROM groups;
 
 
@@ -185,10 +189,7 @@ SELECT G.id                                             AS id,
        coalesce(P.personnel, 0)                         AS personnel,
        G.cost                                           AS cost,
        G.a                                              AS a,
-       CASE WHEN G.a != ''
-            THEN 'actor/' || G.a
-            ELSE ''
-            END                                         AS a_qid,
+       G.a_qid                                          AS a_qid,
        F.forcetype                                      AS forcetype,
        F.training                                       AS training,
        F.equip_level                                    AS equip_level,
@@ -213,10 +214,7 @@ SELECT G.id                                             AS id,
        coalesce(P.personnel, 0)                         AS personnel,
        G.cost                                           AS cost,
        G.a                                              AS a,
-       CASE WHEN G.a != ''
-            THEN 'actor/' || G.a
-            ELSE ''
-            END                                         AS a_qid,
+       G.a_qid                                          AS a_qid,
        O.orgtype                                        AS orgtype,
        O.base_personnel                                 AS base_personnel
 FROM fmt_groups  AS G

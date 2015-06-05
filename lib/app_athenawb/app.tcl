@@ -865,7 +865,7 @@ snit::type app {
                         -icon warning             \
                         -message $msg             \
                         -parent [app topwin]      \
-                        -title  $title            \
+                        -title  "Econ Disabled"   \
                         -buttons {ok "Ok" browser "Go To Detail Browser"}]
 
        if {$answer eq "browser"} {

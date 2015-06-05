@@ -92,8 +92,14 @@ snit::type ::wnbhood::wizard {
             wdb destroy
         }
 
-        # Reset the sim state, if necessary.
-        adb busy clear
+        # Clear busy only if we are busy
+        # The finish method will have already cleared the busy state if
+        # the "Finish" button was pressed. This handles all other cases
+        # (ie. window closing without finishing)
+        if {[adb is busy]} {
+            adb busy clear
+        }
+
     }
 
     #-------------------------------------------------------------------

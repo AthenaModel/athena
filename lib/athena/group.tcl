@@ -91,7 +91,6 @@ snit::type ::athena::group {
         return $g
     }
 
-
     # exists get
     #
     # g      - A group
@@ -102,6 +101,23 @@ snit::type ::athena::group {
         return [dbexists $adb groups g $g]
     }
 
+    # view g ?tag?
+    #
+    # g    - A group in the neighborhood
+    # tag  - A view tag 
+    #
+    # Retrieves a view dictionary for the group. If tag is supplied it is
+    # prepended to '_groups' and that is used as the SQL view for lookup.
+    # By default the formatted view is used.
+
+    method view {g {tag ""}} {
+        if {$tag eq ""} {
+            set table fmt_groups
+        } else {
+            append table $tag _groups
+        }
+        return [dbget $adb $table g $g]
+    }
 
     # gtype g
     #
