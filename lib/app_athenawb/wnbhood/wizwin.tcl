@@ -47,7 +47,7 @@ snit::widget ::wnbhood::wizwin {
 
     constructor {args} {
         # FIRST, enter the wizard state.  We are in process.
-        adb busy "Wizard"
+        adb busy set "Wizard"
 
         # NEXT, withdraw the hull widget until it's populated.
         wm withdraw $win
