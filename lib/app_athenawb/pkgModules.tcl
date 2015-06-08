@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide app_athenawb 6.3.0a11
+package provide app_athenawb 6.3.0a12
 # -kite-provide-end
 
 #-----------------------------------------------------------------------
@@ -27,7 +27,7 @@ package provide app_athenawb 6.3.0a11
 
 # -kite-require-start ADD EXTERNAL DEPENDENCIES
 package require projectlib
-package require -exact athena 6.3.0a11
+package require -exact athena 6.3.0a12
 package require ctext 3.3
 package require projectgui
 
