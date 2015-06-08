@@ -2,6 +2,49 @@
 
 <h2>Build Notes</h2>
 
+<h3>Build 6.3.0a11, 8 June 2015</h3>
+
+This build contains a whole host of bug fixes mainly to Arachne.  This build
+also contains the "athena.exe" executable for running Athena in batch mode.<p>
+
+<ul>
+<li> Issue #245: ted(n) should block on advance 
+<li> Issue #242: Arachne inconsistent header sizes 
+<li> Issue #241: arachne: refactor tempdomain into app.tcl 
+<li> Issue #238: arachne: Improved JSON Results display 
+<li> Issue #236: Arachne Remove Scenario is confusing 
+<li> Issue #233: Search Results title appears behind Athena logo 
+<li> Issue #232: help message written to arachne.exe command line 
+<li> Issue #231: athena(n): Many orders are available while PAUSED. 
+<li> Issue #230: bgerror: AAM has uninitialized variable 
+<li> Issue #228: Deleting a neighborhood in paused state causes error message 
+<li> Issue #227: athena(n): Dynaform for Attrit Tactic is confusing 
+<li> Issue #226: scenario history should use /temp domain 
+<li> Issue #225: aam.* model parameters need to be added to Detail browser sidebar 
+<li> Issue #224: Arachne scenario / scripts page displays an error Arachne 
+<li> Issue #223: Arachne scenario / org groups page layout issue Arachne 
+<li> Issue #222: Strategy Overview subtab displays an unexpected error 
+<li> Issue #217: arachne: /temp domain Arachne 
+<li> Issue #214: Magic Attrit dialog bgerror 
+<li> Issue #196: displayed filename not updating on save 
+<li> Issue #192: Econ Model failing to solve causes bgerror 
+<li> Issue #190: Bogus map data causes bgerror 
+<li> Issue #180: Civconcern force multipliers set to 0 cause bgerror 
+<li> Issue #179: Non-geo referenced map can cause bgerror 
+<li> Issue #172: Belief system change position or emphasis bgerror 
+<li> Issue #144: `autogen scenario` leaves neighborhoods off of the map 
+<li> Issue #139: New scenario undo bgerror 
+<li> Issue #125: select all in a filter ignores the filter 
+<li> Issue #77: Copyright date on installer needs to be updated 
+<li> Issue #76: Incompatible scenario message needs to be updated 
+<li> Issue #54: Consumption rules should not apply to non-local groups 
+<li> Issue #51: debugger should recognize TclOO 
+<li> Issue #39: Remove "bookmarks" from Athena 
+<li> Issue #34: model parameter help pages 
+<li> Issue #6: Physical/Map tab help page needs to be updated. 
+</ul><p>
+
+
 <h3>Build 6.3.0a10, 1 June 2015</h3>
 
 This build contains the latest addition to the family of applications that 

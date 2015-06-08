@@ -41,6 +41,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]             
 Source: "..\bin\athenawb-{#MyAppVersion}-win32-ix86.exe"; DestDir: "{app}"; DestName: "athenawb.exe"; Flags: ignoreversion
+Source: "..\bin\athena-{#MyAppVersion}-win32-ix86.exe"; DestDir: "{app}"; DestName: "athena.exe"; Flags: ignoreversion
 Source: "..\bin\arachne-{#MyAppVersion}-win32-ix86.exe"; DestDir: "{app}"; DestName: "arachne.exe"; Flags: ignoreversion
 Source: "..\docs\build_notes.html"; DestDir: "{app}\docs"; Flags: ignoreversion 
 Source: "..\docs\index.html"; DestDir: "{app}\docs"; Flags: ignoreversion 
