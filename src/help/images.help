@@ -70,10 +70,13 @@ image button_unlockprep  "Button: Unlock Prep"         img/button_unlockprep.png
 image button_x           "Button: X"                   img/button_x.png
 image control_addressbar "Control: Address Bar"        img/control_addressbar.png
 image control_affinity   "Control: Affinity Flag"      img/control_affinity.png
+image control_civicon    "Control: CIV Icons"          img/control_civicon.png
 image control_dbsidebar  "Control: Sidebar"            img/control_dbsidebar.png
 image control_emphasis   "Control: Emphasis"           img/control_emphasis.png
 image control_filltype   "Control: Fill Type"          img/control_filltype.png
+image control_frcicon    "Control: FRC Icons"          img/control_frcicon.png
 image control_fromtime   "Control: From Time"          img/control_fromtime.png
+image control_iconnames  "Control: Icon Names"         img/control_iconnames.png
 image control_nfilter    "Control: Nbhood Filter"      img/control_nfilter.png
 image control_gfilter    "Control: Group Filter"       img/control_gfilter.png
 image control_hotlist    "Control: Hot List"           img/control_hotlist.png
@@ -85,6 +88,7 @@ image control_logsrch    "Control: Log Up/Down"        img/control_logsrch.png
 image control_logcnt     "Control: Log Count"          img/control_logcnt.png
 image control_logvcr     "Control: Log VCR"            img/control_logvcr.png
 image control_mapref     "Control: Map Ref"            img/control_mapref.png
+image control_orgicon    "Control: ORG Icons"          img/control_orgicon.png
 image control_pcommon    "Control: Playbox Common."    img/control_pcommon.png
 image control_position   "Control: Position"           img/control_position.png
 image control_scommon    "Control: Commonality"        img/control_scommon.png

@@ -501,24 +501,6 @@ tab "Physical/Map" {
     Alternatively, use the scroll bars.
     </topic>
 
-    <topic [image button_location]>
-    Press this button to enable location-entry mode, i.e., to enter a
-    <term mapref> into an order dialog or the CLI.<p>
-
-    It is rarely necessary to select this mode explicitly, as the
-    order dialogs select it automatically when the current order field
-    expects a <term mapref>. 
-    </topic>
-
-    <topic [image button_poly]>
-    Press this button to enable polygon-entry mode, i.e., to enter a
-    polygon (defined by a list of <term mapref>s) into an order
-    dialog or the CLI.<p>
-
-    It is rarely necessary to select this mode explicitly, as the
-    order dialogs select it automatically when the current order field
-    expects a polygon.
-    </topic>
 
     <topic [image button_nbhood]>
     Press this button to pop up the 
@@ -531,21 +513,33 @@ tab "Physical/Map" {
     dialog.  Alternatively, right-click on the map and select
     <cref /order/absit/create> from the context
     menu--this will pop up the order dialog with the selected location
-    already filled in.
+    already filled in.<p>
+
+    This button also appears in the visualization toolbar at the top to toggle
+    the appearance of abstract situation icons.
     </topic>
 
     <topic [image control_mapref]>
-    This control shows the <term mapref> of the location under the
-    mouse pointer.
+    This control shows the <term mapref> and lat/long pair of the location 
+    under the mouse pointer. 
     </topic>
 
-    <topic [image button_extmap]>
-    Map reference strings address a square region; if the map in use
-    is not a square, there is a strip of unused space on the
-    righthand-side or along the bottom.  If this button is selected,
-    this excess space is available as a place to position units or to
-    draw neighborhoods for remote regions.  Otherwise, all objects
-    must be on the map proper.
+    <topic [image control_civicon]>
+    This control toggles the appearance of civilian unit icons.
+    </topic>
+
+    <topic [image control_frcicon]>
+    This control toggles the appearance of force unit icons.
+    </topic>
+
+    <topic [image control_orgicon]>
+    This control toggles the appearance of organization unit icons.
+    </topic>
+
+    <topic [image control_iconnames]>
+    This control toggles the appearance of unit names. When unit names are 
+    off, the unit icons are considerably smaller which may make the overall
+    map displayless cluttered.
     </topic>
 
     <topic [image button_nbfill]>
