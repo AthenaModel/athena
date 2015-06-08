@@ -76,11 +76,11 @@ namespace eval ::athena_test::tests:: {
         ted get /case00/nbhoods/index.json
     } -cleanup {
         ted cleanup
-    } -match trim -result {
+    } -match jsonglob -result {
 [
   {
     "subsistence": 0,
-    "polygon": "38TNM0000049776 38TNM0496949778 38TNM0497245337 38TNM0000045335",
+    "polygon": "*",
     "controller_qid": "actor\/A00",
     "volatility": 0,
     "fancy": "N00",
@@ -104,11 +104,11 @@ namespace eval ::athena_test::tests:: {
     "controller_url": "\/scenario\/case00\/actor\/A00\/index.json",
     "n": "N00",
     "mood": 0.000,
-    "refpoint": "38TNM0248547556"
+    "refpoint": "*"
   },
   {
     "subsistence": 0,
-    "polygon": "38TNM0496949778 38TNM0993849783 38TNM0994445342 38TNM0497245337",
+    "polygon": "*",
     "controller_qid": "actor\/A00",
     "volatility": 0,
     "fancy": "N01",
@@ -132,7 +132,7 @@ namespace eval ::athena_test::tests:: {
     "controller_url": "\/scenario\/case00\/actor\/A00\/index.json",
     "n": "N01",
     "mood": 0.000,
-    "refpoint": "38TNM0745647560"
+    "refpoint": "*"
   }
 ]}
     
@@ -143,10 +143,10 @@ test nbhood.json-1.2 {one nbhood JSON} -setup {
         ted get /case00/nbhood/N00/index.json
     } -cleanup {
         ted cleanup
-    } -match trim -result {
+    } -match jsonglob -result {
 [{
     "subsistence": 0,
-    "polygon": "38TNM0000049776 38TNM0496949778 38TNM0497245337 38TNM0000045335",
+    "polygon": "*",
     "controller_qid": "actor\/A00",
     "volatility": 0,
     "fancy": "N00",
@@ -170,7 +170,7 @@ test nbhood.json-1.2 {one nbhood JSON} -setup {
     "controller_url": "\/scenario\/case00\/actor\/A00\/index.json",
     "n": "N00",
     "mood": 0.000,
-    "refpoint": "38TNM0248547556"
+    "refpoint": "*"
   }]}
 
 

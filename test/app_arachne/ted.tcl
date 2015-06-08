@@ -13,6 +13,7 @@
 #-----------------------------------------------------------------------
 
 package require snit
+package require json
 
 #-----------------------------------------------------------------------
 # ted
@@ -78,6 +79,8 @@ snit::type ted {
         ::tcltest::customMatch indict   [mytypemethod MatchInDict]
         ::tcltest::customMatch dictglob [mytypemethod MatchDictGlob]
         ::tcltest::customMatch trim     [mytypemethod MatchTrim]
+        ::tcltest::customMatch json     [mytypemethod MatchJson]
+        ::tcltest::customMatch jsonglob [mytypemethod MatchJsonGlob]
         ::tcltest::customMatch norm     [mytypemethod MatchNorm]
 
 
@@ -399,6 +402,36 @@ snit::type ted {
         return 1
     }
 
+    # MatchJson ejson ajson
+    #
+    # ejson    - Expected JSON result
+    # ajson    - Actual JSON result
+    #
+    # TclTest custom match algorithm for JSON:
+    # ajson must have the same number of objects as ejson, which are
+    # converted to a list of dictionaries.  Ted's MatchDict is then
+    # used to compare the resulting dictionaries.
+
+    typemethod MatchJson {ejson ajson} {
+        # FIRST convert JSON to lists of dicts
+        set elist [::json::json2dict $ejson]
+        set alist [::json::json2dict $ajson]
+
+        # NEXT, lengths of list different means failure
+        if {[llength $elist] != [llength $alist]} {
+            return 0
+        }
+
+        # NEXT, check each dict using MatchDict
+        foreach edict $elist adict $alist {
+            if {![ted MatchDict $edict $adict]} {
+                return 0
+            }
+        }
+
+        return 1
+    }
+
     # MatchInDict edict adict
     #
     # edict    - Expected result dictionary
@@ -452,6 +485,37 @@ snit::type ted {
 
         return 1
     }
+    
+    # MatchJsonGlob ejson ajson
+    #
+    # ejson    - Expected JSON result
+    # ajson    - Actual JSON result
+    #
+    # TclTest custom match algorithm for JSON:
+    # ajson must have the same number of objects as ejson, which are
+    # converted to a list of dictionaries.  Ted's MatchDictGlob is then
+    # used to compare the resulting dictionaries using glob matching.
+
+    typemethod MatchJsonGlob {ejson ajson} {
+        # FIRST convert JSON to lists of dicts
+        set elist [::json::json2dict $ejson]
+        set alist [::json::json2dict $ajson]
+
+        # NEXT, lengths of list different means failure
+        if {[llength $elist] != [llength $alist]} {
+            return 0
+        }
+
+        # NEXT, check each dict using MatchDict
+        foreach edict $elist adict $alist {
+            if {![ted MatchDictGlob $edict $adict]} {
+                return 0
+            }
+        }
+
+        return 1
+    }
+
 
 }
 
