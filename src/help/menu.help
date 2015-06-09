@@ -141,8 +141,43 @@ menuitem "File/Import Map From File..." {
 
 menuitem "File/Import Map From WMS..." {
     Imports an image file from a Web Map Service (WMS) server using
-    Athena's integrated <cref /wms "WMS client">. The image
-    is automatically geo-referenced.
+    Athena's integrated WMS client. The image
+    is automatically geo-referenced.<p>
+
+    Athena includes a WMS client that can be used to configure the map
+    background using maps from an Open GIS compliant Web Map Service.<p>
+
+    The client is launched from the 
+    <cref /menu/file/import_map_from_wms "Import Map From WMS..."> menu
+    item under the <cref /menu/file "File"> menu.<p>
+
+    Once launched the client will connect to a known web map service by 
+    default which is found at:<p>
+
+    <code>http://demo.cubewerx.com/demo/cubeserv/simple</code><p>
+
+    This WMS server is adequate for use in importing geo-referenced maps
+    into Athena.<p>
+
+    Retrieving a map from the server involves selecting available map 
+    layers by using the "Select Layers" button and then drawing
+    a bounding box around the area of interest. Pressing the "Get Map"
+    button retrieve's the appropriate map from the WMS server.<p>
+
+    The resolution of the map is completely determined by the behavior of
+    the server. However, successive bounding boxes can be drawn in order
+    to drill down to a particular area of the world.<p>
+
+    Once satisfied with the layers and region selected, pressing the "Ok"
+    button in the lower right will send the map and it's projection 
+    information to the Athena scenario currently loaded.  If importing the
+    map will cause existing neighborhoods to no longer be shown in their
+    entirety, the user is warned before setting the map.  Importing a map
+    into a scenario that contains neighborhoods that are not within the 
+    bounds of the map will require the user to redraw neighborhoods.<p>
+
+    The WMS client keeps a stack of previously requested maps.  Right clicking
+    the mouse in the map will traverse the stack of maps in reverse order.
 }
 
 menu "File/Parameters" {
@@ -254,6 +289,25 @@ menu "Orders" {
     orders, which are used to build the scenario and control its
     execution.  See the <cref /order> documentation for complete
     information on Athena's orders.<p>
+}
+
+#=======================================================================
+# Wizard Menu
+
+menu "Wizard" {
+    This menu provides access to Athena's wizards, GUI tools used to 
+    automate the creation of parts of Athena scenarios, often based on
+    data available from other sources.<p>
+
+    The currently available wizards are as follows:<p>
+
+    <childlinks>
+}
+
+menuitem "Wizard/Neighborhood Ingestion..." {
+    This is a prototype wizard that reads a hierarchy of neighborhood 
+    polygons from KML files and allows the user to pick and choose which 
+    should be included as neighborhoods in Athena.
 }
 
 

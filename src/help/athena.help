@@ -36,7 +36,6 @@ page "" "" "Athena Help" {
     <li> <cref /tab>
     <li> <cref /order>
     <li> <cref /gofer>
-    <li> <cref /wizard>
     <li> <cref /var>
     <li> <cref /command>
     <li> <cref /function>
@@ -51,6 +50,9 @@ page "" "" "Athena Help" {
 page / changelog "Change Log" {
     <title>
     <changelog>
+    <change 6/9/2015 New whd>
+    Changes for interim release of Athena 6.3.x.
+    </change>
     <change 10/7/2014 New whd>
     Final changes for Athena 6.2.
     </change>
@@ -108,14 +110,54 @@ page / release "Release Notes" {
     The <i>Athena Users's Guide</i> gives a complete list of 
     changes for Athena V<version>. Here is a summary:<p>
 
-    <b>Athena 6.2</b><p>
+    <h3>Athena 6.3</h3>
+
+    <ul>
+    <li> Athena includes a new attrition model supporting 
+         Lanchester-based attrition between arbitrary force groups in 
+         combat.
+    <li> Actors can now provide three infrastructure-based services
+         to the civilian groups: energy, water, and transport.  The 
+         current model focusses on levels of service and civilian
+         reactions, as for the ENI services model; the infrastructure 
+         remains unmodeled.  The new services replace the NOWATER,
+         POWEROUT, and TRANSPORT abstract situations.
+    <li> All maps used in Athena must now be geo-referenced.
+    <li> Athena's internals have been re-architected to allow Athena's
+         code to be used in multiple applications, and to allow a single
+         application to load multiple scenarios.
+    <li> Athena now supports three distinct applications:
+         <ul>
+         <li> <b Athena Workbench>: This is the classic Athena GUI.
+         <li> <b Athena Command-line Tool>: This is a tool for working with
+              Athena scenarios from the operating system's terminal window.
+              It replaces Athena 6.2's <tt athena_batch> executable, but
+              provides other features.  See the <tt athena(1)> man page.
+         <li> <b Arachne>: Arachne provides an HTTP-based API for creating,
+              manipulating, and querying Athena scenarios; it is intended
+              to support a single Athena user-session as part of the 
+              back-end of an Athena web application.  See the 
+              <i Arachne Interface Specification> in the Athena
+              documentation set.
+         </ul>
+    <li> The prototype intel ingestion wizard has been removed from the
+         production software.
+    </ul>
+
+    <b NOTE:> The scenario database schema has changed slightly between 
+    Athena 6.2 and Athena 6.3.  To transfer scenarios, it will be necessary 
+    to save them as order scripts in Athena 6.2 and import them into 
+    Athena 6.3.  Athena 6.1 scenarios can be handled similarly, but 
+    the scripts will require hand-editing; see below.<p>
+
+    <h3>Athena 6.2</h3>
 
     <ul>
     <li> Belief Systems are now assigned to civilian groups and actors;
          multiple groups and actors can share a single belief system.
     <li> The <tab Social/Beliefs> is now simpler and easier 
          to use.
-    <li> Athena now includes two <cref /wizard wizards>, to aid in
+    <li> Athena now includes two <menu "Wizard" wizards>, to aid in
          building scenarios.
     <li> Environment situations are now called abstract situations.
     <li> There are a number of new tactics; in particular, the
@@ -129,7 +171,7 @@ page / release "Release Notes" {
     as is.  At a minimum it will be necessary to strip out the BSYSTEM:*
     orders and rebuild the belief systems by hand.<p>
 
-    <b>Athena 6.1</b><p>
+    <h3>Athena 6.1</h3>
 
     <ul>
     <li> The user interface and documentation are now organized around the 
@@ -166,8 +208,6 @@ page / release "Release Notes" {
 #======================================================================
 # The following sections are in separate files
 
-include wms.help
-include wizard.help
 include object.help
 include menu.help
 include tab.help
