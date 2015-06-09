@@ -700,7 +700,18 @@ $ git pull
 </step>
 
 <step>
-If needed, update <tt project.kite> to reflect new Kite or Mars version for
+Inspect the <tt xfile> statements in the <tt project.kite> file, and 
+update them if necessary to pull in the correct versions of the 
+<i Athena Analyst's Guide> and other documents.
+</step/>
+<pre>
+$ vim project.kite
+$ kite info
+</pre>
+</step>
+
+<step>
+If needed, update <tt project.kite> to reflect new Kite or Mars versions for
 each of the relevant libraries.<p>
 </step/>
 <pre>
@@ -718,6 +729,7 @@ version is "6.3.1a5"
 $ kite info
 </pre>
 </step>
+
 
 <step>
 Update the build notes file with a description of the changes, and
