@@ -1,3 +1,27 @@
+#-----------------------------------------------------------------------
+# TITLE:
+#   domain/index.tcl
+#
+# PROJECT:
+#   athena - Athena Regional Stability Simulation
+#
+# PACKAGE:
+#   app_arachne(n): Arachne Implementation Package
+#
+# AUTHOR:
+#   Will Duquette
+#
+# DESCRIPTION:
+#   /index.html: A direct URL for the main index page.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# FIRST, define the domain.
+
+proc /index.html {} {
+    return [subst -nobackslashes -novariables {
+
 <html><head>
 <title>Arachne: Main Index</title>
 <link rel="stylesheet" href="/athena.css">
@@ -27,3 +51,7 @@
 
 </body>
 </html>
+
+    }]    
+}
+

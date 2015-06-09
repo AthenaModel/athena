@@ -127,7 +127,12 @@ snit::type ::ahttpd::fallback {
             # Preserve query data when bouncing among pages.
             # TBD: Need better interface to Httpd$sock
             upvar #0 ::ahttpd::Httpd$sock data
-            set url $prefix/[string trimleft $suffix /~]
+            if {$prefix eq "/"} {
+                set url $prefix[string trimleft $suffix /~]
+            } else {
+                set url $prefix/[string trimleft $suffix /~]
+            }
+
             if {[info exist data(query)] && [string length $data(query)]} {
                 append url ? $data(query)
             }

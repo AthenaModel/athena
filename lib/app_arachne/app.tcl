@@ -260,7 +260,8 @@ snit::type app {
             -docroot    [appdir join htdocs]
 
         # NEXT, Add content
-        ahttpd::doc addroot /temp [$type tempdir] 
+        ahttpd::direct url /index.html ::/index.html
+        ahttpd::doc addroot /temp [$type tempdir]
 
         foreach domain [array names domains] {
             $domains($domain) ahttpd
