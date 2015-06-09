@@ -204,7 +204,7 @@ snit::type ::athena::aam {
             # Civilian casualty multipliers
             set Cf [$adb parm get aam.civcas.forcetype.$frctype]
             set Ct [$adb parm get aam.civcas.discipline.$tlvl]
-            set Cu [$adb parm get aam.civcas.$urb]
+            set Cu [$adb parm get aam.civcas.urbanization.$urb]
 
             let civcasMult($n,$g) {$Cf * $Ct * $Cu}
 

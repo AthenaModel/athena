@@ -296,18 +296,25 @@ snit::type ::athena::parmdb {
             if they are too high.
         }
 
+        $ps subset aam.civcas.urbanization {
+            Parameters that effect the number of casualties taken by civilian
+            groups due to different neighborhood urbanization.  Typically, the
+            more built up a neighborhood, the higher the density of civilians
+            and, thus, the more civilian casualties there are.
+        }
+
         foreach urb [eurbanization names] {
-            $ps define aam.civcas.$urb ::simlib::rfraction 1.0 "
+            $ps define aam.civcas.urbanization.$urb ::simlib::rfraction 1.0 "
                 For civilian groups in a neighborhood with an urbanization
                 of $urb, a multiplier that effects the number of casualties
                 suffered by the groups in that neighborhood.
             "
         }
 
-        $ps setdefault aam.civcas.ISOLATED 0.3
-        $ps setdefault aam.civcas.RURAL    0.3
-        $ps setdefault aam.civcas.SUBURBAN 0.8
-        $ps setdefault aam.civcas.URBAN    1.0
+        $ps setdefault aam.civcas.urbanization.ISOLATED 0.3
+        $ps setdefault aam.civcas.urbanization.RURAL    0.3
+        $ps setdefault aam.civcas.urbanization.SUBURBAN 0.8
+        $ps setdefault aam.civcas.urbanization.URBAN    1.0
 
         $ps subset aam.civcas.forcetype {
             Parameters that effect the number of casualties taken by
