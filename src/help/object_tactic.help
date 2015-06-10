@@ -1464,12 +1464,12 @@ object tactic_hide {
     noun "HIDE tactic"
 
     overview {
-        This <term tactic> is used to have a force group owned by an actor
-        hide in one or more neighborhoods.  Once combat begins during
-        a tick, hiding force groups have a lower number of personnel 
-        involved in the fight.  Exactly how many fewer depends on a 
-        number of things such as the urbanization of the neighborhood and 
-        whether the group is performing any activities.
+        This <term tactic> is used to try to conceal personnel in an actor's
+        force group from combat in one or more neighborhoods.  Once combat
+        begins during a tick, hiding force groups have a lower number of
+        personnel involved in the fight.  Exactly how many fewer depends 
+        on a number of things such as the urbanization of the neighborhood
+        and whether the group is performing any activities.
     }
 
     include tactic_ -attrs id
