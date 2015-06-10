@@ -513,7 +513,7 @@ snit::type ::athena::security_model {
     method ComputeVolatility {} {
         $adb eval {
             SELECT force_ng.n                   AS n,
-                   total(enemy*force)           AS conflicts,
+                   total(enemy*noncrim_force)   AS conflicts,
                    total_force                  AS total_force
             FROM force_ng JOIN force_n USING (n) JOIN nbhoods USING (n)
             WHERE force_ng.own_force > 0
