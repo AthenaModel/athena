@@ -12,5 +12,5 @@
 #-------------------------------------------------------------------------
 
 # -kite-ifneeded-start  DO NOT EDIT THIS BLOCK BY HAND
-package ifneeded ahttpd 6.3.0a12 [list source [file join $dir pkgModules.tcl]]
+package ifneeded ahttpd 6.3.0a13 [list source [file join $dir pkgModules.tcl]]
 # -kite-ifneeded-end
