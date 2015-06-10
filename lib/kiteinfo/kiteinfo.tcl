@@ -19,7 +19,7 @@ namespace eval ::kiteinfo:: {
     variable kiteInfo
 
     array set kiteInfo {
-        url-docs/aug.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aug-20141028.docx
+        url-docs/aug.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aug-20150610.docx
         reqver-Tktable 2.11
         apptype-athena exe
         exclude-athenawb {}
@@ -85,7 +85,7 @@ namespace eval ::kiteinfo:: {
 }
         reqver-textutil::adjust 0.7
         gui-cellide 1
-        url-docs/rules.pptx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/rules-20141010.pptx
+        url-docs/rules.pptx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/rules-20150609.pptx
         reqver-tls 1.6.4
         icon-helptool {}
         force-arachne 0
@@ -121,7 +121,7 @@ namespace eval ::kiteinfo:: {
         reqver-counter 2.0
         gui-athena 0
         gui-athenawb 1
-        url-docs/aag.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aag-20141010.docx
+        url-docs/aag.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aag-20150610.docx
         local-base64 0
         local-sqlite3 0
         force-athena 0
