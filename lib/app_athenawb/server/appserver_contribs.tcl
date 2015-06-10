@@ -978,7 +978,7 @@ appserver module CONTRIBS {
         ht label g "Of Group:"
         ht input g enum $g -src /app/groups
         ht label a "With Actor:"
-        ht input a enum $a -src actors
+        ht input a enum $a -src /app/actors
         ht label top "Show:"
         ht input top enum $top -src /app/enum/topitems -content tcl/enumdict
         ht para
@@ -1173,7 +1173,7 @@ appserver module CONTRIBS {
             ht para
         }
 
-        ht object plot/time?start=$start+end=$end+vars=[join $vars ,] \
+        ht object /app/plot/time?start=$start+end=$end+vars=[join $vars ,] \
             -width  100% \
             -height 3in
         ht para
@@ -1212,7 +1212,7 @@ appserver module CONTRIBS {
             append query "LIMIT $top"
         }
 
-        adb eval $query
+        adb rdb eval $query
 
         # NEXT, get the total contribution to this curve in this
         # time window.
@@ -1238,9 +1238,11 @@ appserver module CONTRIBS {
                    sigline                            AS "Signature"
             FROM temp_contribs
             JOIN gui_drivers ON (driver = driver_id);
-
-            DROP TABLE temp_contribs;
         }  -default "None known." -align "RRRLL"
+
+        adb rdb eval {
+            DROP TABLE temp_contribs;
+        }
 
         ht para
 
