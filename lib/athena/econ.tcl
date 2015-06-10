@@ -482,6 +482,20 @@ snit::type ::athena::econ {
         # NEXT, no longer using any historical values
         set histdata(hist_flag) 0
 
+        # NEXT, reset info array
+        array set info {
+            changed    0
+            status     ok
+            cellModel  {}
+            page       {}
+            prevDP     0
+            weekDP     0
+            AGDP       0
+        }
+
+        # NEXT, set econ state to DISABLED
+        $self setstate DISABLED
+
         $adb notify econ <SyncSheet> 
     }
 

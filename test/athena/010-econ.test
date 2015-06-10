@@ -108,6 +108,17 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -result {1}
 
+    test reset-1.1 {reset disables econ} -setup {
+        tdb econ setstate ENABLED
+    } -body {
+        set a [tdb econ state]
+        tdb econ reset
+        set b [tdb econ state]
+        list $a $b
+    } -cleanup {
+        cleanup
+    } -result {ENABLED DISABLED}
+
     #-------------------------------------------------------------------
     # Cleanup
 
