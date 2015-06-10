@@ -2,6 +2,20 @@
 
 <h2>Build Notes</h2>
 
+<h3>Build 6.3.0a12, 10 June 2015</h3>
+
+This build contains a few more bug fixes and some documentation updates to the 
+AAG, AUG and Rules Doc.<p>
+
+<ul>
+<li> Issue #253: Athena Help Update for June Delivery 
+<li> Issue #252: Old version number on Arachne home page
+<li> Issue #251: uram.factors.* help pages have visible html tags
+<li> Issue #250: ted(n) needs better JSON matching
+<li> Issue #249: Volatility equation needs to be changed
+<li> Issue #248: parmdb(5): aam.civcas.* needs an aam.civcas.urbanization.* subset.
+</ul>
+
 <h3>Build 6.3.0a11, 8 June 2015</h3>
 
 This build contains a whole host of bug fixes mainly to Arachne.  This build
