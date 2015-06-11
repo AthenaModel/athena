@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html ng-app="arachne">
+<head>
+<link rel="stylesheet" type="text/css" href="/athena.css">
+</head>
+<body ng-controller="ArachneController as arachne">
+<div ng-include="'/template/header.html'"></div>
+<div ng-include="'/template/mainnav.html'"></div>
+
+<h1>Active Scenarios</h1>
+
+<table cellpadding="5" class="pretty" ng-controller="ScenarioListController as slist">
+<tr class="header" align="left">
+<th align="left"><span style="font-weight: normal">ID</span></th>
+<th align="left"><span style="font-weight: normal">Name</span></th>
+<th align="left"><span style="font-weight: normal">Original Source</span></th>
+<th align="left"><span style="font-weight: normal">State</span></th>
+<th align="left"><span style="font-weight: normal">Tick</span></th>
+<th align="left"><span style="font-weight: normal">Week</span></th></tr>
+
+<!-- How to set class to oddrow/evenrow? -->
+<tr ng-class-even="'evenrow'" ng-class-odd="'oddrow'" valign="top" ng-repeat="scenario in slist.scenarios">
+<td align="left">
+<b><a ng-href="/scenario/{{scenario.id}}/index.html">{{scenario.id}}</a></b></td>
+<td align="left">{{scenario.longname}}</td>
+<td align="left">{{scenario.source}}</td>
+<td align="left">{{scenario.state}}</td>
+<td align="left">{{scenario.tick}}</td>
+<td align="left">{{scenario.week}}</td>
+</tr>
+</table>
+
+<script type="text/javascript" src="js/tps/angular.min.js"></script>
+<script type="text/javascript" src="js/app.js"></script>
+</body>
+</html>
