@@ -5,8 +5,27 @@
 </head>
 <body ng-controller="ArachneController as arachne">
 <div ng-include="'/template/header.html'"></div>
-<div ng-include="'/template/mainnav.html'"></div>
 
+<section ng-controller="MainTabController as maintab">
+<table cellpadding="5" width="100%" class="linkbar">
+<tr class="oddrow" valign="top" class valign="bottom">
+<td>
+<div class="linkbar">
+<a href ng-click="maintab.setTab('home')">Home</a>
+<a href ng-click="maintab.setTab('scenarios')">Scenarios</a>
+<a href ng-click="maintab.setTab('new')">New</a>
+<a href ng-click="maintab.setTab('clone')">Clone</a>
+<a href ng-click="maintab.setTab('import')">Import</a>
+<a href ng-click="maintab.setTab('export')">Export</a>
+<a href ng-click="maintab.setTab('remove')">Remove</a>
+<a href ng-click="maintab.setTab('help')">Help</a>
+</div></td></tr>
+</table>
+<div ng-show="maintab.isSet('home')">
+  <h1>Home</h1>
+</div>
+
+<div ng-show="maintab.isSet('scenarios')">
 <h1>Active Scenarios</h1>
 
 <table cellpadding="5" class="pretty" ng-controller="ScenarioListController as slist">
@@ -29,6 +48,34 @@
 <td align="left">{{scenario.week}}</td>
 </tr>
 </table>
+</div>
+
+<div ng-show="maintab.isSet('new')">
+  <h1>New Scenario</h1>
+</div>
+
+<div ng-show="maintab.isSet('clone')">
+  <h1>Clone</h1>
+</div>
+
+<div ng-show="maintab.isSet('import')">
+  <h1>Import</h1>
+</div>
+
+<div ng-show="maintab.isSet('export')">
+  <h1>Export</h1>
+</div>
+
+<div ng-show="maintab.isSet('remove')">
+  <h1>Remove</h1>
+</div>
+
+<div ng-show="maintab.isSet('help')">
+  <h1>Help</h1>
+</div>
+
+</section>
+
 
 <script type="text/javascript" src="js/tps/angular.min.js"></script>
 <script type="text/javascript" src="js/app.js"></script>
