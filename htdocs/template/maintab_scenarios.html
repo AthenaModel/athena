@@ -1,0 +1,27 @@
+<h1>Active Scenarios</h1>
+<div ng-controller="ScenarioListController as slist">
+<table cellpadding="5" class="pretty">
+<tr class="header" align="left">
+<th ng-show="slist.allowSelection()"></th>
+<th align="left"><span style="font-weight: normal">ID</span></th>
+<th align="left"><span style="font-weight: normal">Name</span></th>
+<th align="left"><span style="font-weight: normal">Original Source</span></th>
+<th align="left"><span style="font-weight: normal">State</span></th>
+<th align="left"><span style="font-weight: normal">Tick</span></th>
+<th align="left"><span style="font-weight: normal">Week</span></th></tr>
+
+<tr ng-class-even="'evenrow'" ng-class-odd="'oddrow'" valign="top" ng-repeat="scenario in slist.scenarios">
+<td align="left" ng-show="slist.allowSelection()">
+<input type="radio" name="source" ng-model="slist.selectedCase" ng-value="scenario.id">
+</td>    
+<td align="left">
+<b><a ng-href="/scenario/{{scenario.id}}/index.html">{{scenario.id}}</a></b></td>
+<td align="left">{{scenario.longname}}</td>
+<td align="left">{{scenario.source}}</td>
+<td align="left">{{scenario.state}}</td>
+<td align="left">{{scenario.tick}}</td>
+<td align="left">{{scenario.week}}</td>
+</tr>
+</table>
+<p>Selected Case: {{slist.selectedCase}}</p>
+</div>

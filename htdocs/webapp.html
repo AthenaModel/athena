@@ -6,74 +6,31 @@
 <body ng-controller="ArachneController as arachne">
 <div ng-include="'/template/header.html'"></div>
 
-<section ng-controller="MainTabController as maintab">
+<section ng-controller="MainTabController as tab">
 <table cellpadding="5" width="100%" class="linkbar">
 <tr class="oddrow" valign="top" class valign="bottom">
 <td>
 <div class="linkbar">
-<a href ng-click="maintab.setTab('home')">Home</a>
-<a href ng-click="maintab.setTab('scenarios')">Scenarios</a>
-<a href ng-click="maintab.setTab('new')">New</a>
-<a href ng-click="maintab.setTab('clone')">Clone</a>
-<a href ng-click="maintab.setTab('import')">Import</a>
-<a href ng-click="maintab.setTab('export')">Export</a>
-<a href ng-click="maintab.setTab('remove')">Remove</a>
-<a href ng-click="maintab.setTab('help')">Help</a>
+<a href ng-click="tab.setTab('home')">Home</a>
+<a href ng-click="tab.setTab('scenarios')">Scenarios</a>
+<a href ng-click="tab.setTab('new')">New</a>
+<a href ng-click="tab.setTab('clone')">Clone</a>
+<a href ng-click="tab.setTab('import')">Import</a>
+<a href ng-click="tab.setTab('export')">Export</a>
+<a href ng-click="tab.setTab('remove')">Remove</a>
+<a href ng-click="tab.setTab('help')">Help</a>
 </div></td></tr>
 </table>
-<div ng-show="maintab.isSet('home')">
-  <h1>Home</h1>
-</div>
 
-<div ng-show="maintab.isSet('scenarios')">
-<h1>Active Scenarios</h1>
+<div ng-show="tab.isSet('home')"      ng-include="'/template/maintab_home.html'"></div>
+<div ng-show="tab.isSet('scenarios')" ng-include="'/template/maintab_scenarios.html'"></div>
 
-<table cellpadding="5" class="pretty" ng-controller="ScenarioListController as slist">
-<tr class="header" align="left">
-<th align="left"><span style="font-weight: normal">ID</span></th>
-<th align="left"><span style="font-weight: normal">Name</span></th>
-<th align="left"><span style="font-weight: normal">Original Source</span></th>
-<th align="left"><span style="font-weight: normal">State</span></th>
-<th align="left"><span style="font-weight: normal">Tick</span></th>
-<th align="left"><span style="font-weight: normal">Week</span></th></tr>
-
-<!-- How to set class to oddrow/evenrow? -->
-<tr ng-class-even="'evenrow'" ng-class-odd="'oddrow'" valign="top" ng-repeat="scenario in slist.scenarios">
-<td align="left">
-<b><a ng-href="/scenario/{{scenario.id}}/index.html">{{scenario.id}}</a></b></td>
-<td align="left">{{scenario.longname}}</td>
-<td align="left">{{scenario.source}}</td>
-<td align="left">{{scenario.state}}</td>
-<td align="left">{{scenario.tick}}</td>
-<td align="left">{{scenario.week}}</td>
-</tr>
-</table>
-</div>
-
-<div ng-show="maintab.isSet('new')">
-  <h1>New Scenario</h1>
-</div>
-
-<div ng-show="maintab.isSet('clone')">
-  <h1>Clone</h1>
-</div>
-
-<div ng-show="maintab.isSet('import')">
-  <h1>Import</h1>
-</div>
-
-<div ng-show="maintab.isSet('export')">
-  <h1>Export</h1>
-</div>
-
-<div ng-show="maintab.isSet('remove')">
-  <h1>Remove</h1>
-</div>
-
-<div ng-show="maintab.isSet('help')">
-  <h1>Help</h1>
-</div>
-
+<div ng-show="tab.isSet('new')">    <h1>New Scenario</h1> </div>
+<div ng-show="tab.isSet('clone')">  <h1>Clone</h1>        </div>
+<div ng-show="tab.isSet('import')"> <h1>Import</h1>       </div>
+<div ng-show="tab.isSet('export')"> <h1>Export</h1>       </div>
+<div ng-show="tab.isSet('remove')"> <h1>Remove</h1>       </div>
+<div ng-show="tab.isSet('help')">   <h1>Help</h1>         </div>
 </section>
 
 
