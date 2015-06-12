@@ -19,6 +19,7 @@ app.controller('MainTabController', function() {
     };
 });
 
+// TBD: This should be its own module.
 app.controller('ScenarioListController', ['$http', function($http) {
     var that = this;
 
@@ -29,6 +30,7 @@ app.controller('ScenarioListController', ['$http', function($http) {
         message: ""
     };
     this.scenarios = [];
+    this.selectedCase = ''
 
     // Functions
 
@@ -74,25 +76,35 @@ app.controller('ScenarioListController', ['$http', function($http) {
         return op === this.status.op && this.jsonData !== '';
     };
 
-
-
-    // Requesting a new scenario.  How do we make the
-    this.newScenario = function() {
-        var query = {
-            case: this.replacing,
+    // Brand new scenario
+    this.opNew = function() {
+        this.createScenario('new', {
+            case:     this.replacing,
             longname: this.newLongname
-        };
+        });
+    };
 
+    // Cloning a scenario.
+    this.opClone = function() {
+        this.createScenario('clone', {
+            source:   this.selectedCase,
+            target:   this.replacing,
+            longname: this.newLongname
+        });
+    };
+
+    // Creating a scenario.
+    this.createScenario = function(op, query) {
         $http({
-            url:    "/scenario/new.json",
+            url:    "/scenario/" + op + ".json",
             method: "GET",
             params: query
         }).success(function(data) {
             that.retrieveAll();
-            that.setStatus('new',data);
+            that.setStatus(op,data);
             that.status.message = 'Created new scenario "' + data[1] + '".';
         }).failure(function() {
-            that.setStatus('new',['error','Could not retrieve data']);
+            that.setStatus(op, ['error','Could not retrieve data']);
         });
     };
 

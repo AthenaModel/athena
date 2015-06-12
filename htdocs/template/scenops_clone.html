@@ -1,5 +1,7 @@
-<h1>Create New Scenario</h1>
+<h1>Clone a Scenario</h1>
+
 <form>
+<!-- Most of this is shared with "New". -->
 <label for="longname">Long Name:</label>
 <input type="text" name="longname" size="15" ng-model="slist.newLongname">
 <label for="case">Replacing:</label>
@@ -10,15 +12,24 @@
 </option>
 </select>
 
-<button type="button" ng-click="slist.opNew()">New Scenario</button> 
+<button type="button" ng-click="slist.opClone()" 
+        ng-disabled="slist.selectedCase === ''">
+Clone Scenario
+</button> 
 </form>
 <hr>
 
+<p ng-show="slist.selectedCase === ''">
+<span class="error">
+Select a scenario to clone from the list above.
+</span>
+</p>
+
 <!-- Show the JSON response -->
-<div ng-show="slist.gotData('new')">
+<div ng-show="slist.gotData('clone')">
 <h4>Result</h4>
-<p ng-show="slist.isOK('new')">{{slist.status.message}}</p>
-<p ng-show="slist.isError('new')">
+<p ng-show="slist.isOK('clone')">{{slist.status.message}}</p>
+<p ng-show="slist.isError('clone')">
 <span class="error">{{slist.status.message}}</span>
 </p>
 

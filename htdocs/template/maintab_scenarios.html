@@ -24,6 +24,8 @@
 </tr>
 </table>
 
+<p></p>
+
 <!-- Scenario Management Tabs -->
 <section ng-controller="ScenarioOpsController as ops">
 <table cellpadding="5" class="linkbar">
@@ -42,7 +44,7 @@
 
 <div ng-show="ops.isSet('import')" ng-include="'/template/scenops_import.html'"></div>
 <div ng-show="ops.isSet('new')"    ng-include="'/template/scenops_new.html'"></div>
-<div ng-show="ops.isSet('clone')">  <h1>Clone</h1>        </div>
+<div ng-show="ops.isSet('clone')"  ng-include="'/template/scenops_clone.html'"></div>
 <div ng-show="ops.isSet('export')"> <h1>Export</h1>       </div>
 <div ng-show="ops.isSet('remove')"> <h1>Remove</h1>       </div>
 </section>
