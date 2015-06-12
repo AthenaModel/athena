@@ -38,6 +38,9 @@ app.controller('ScenarioListController', ['$http', function($http) {
     this.retrieveAll = function () {
         $http.get('/scenario/index.json').success(function(data) {
             that.scenarios = data;
+            if (!that.gotCase(that.selectedCase)) {
+                that.selectedCase = '';
+            }
         });
     };
 
@@ -58,7 +61,7 @@ app.controller('ScenarioListController', ['$http', function($http) {
         } else {
             this.status.ok = false;
             this.status.message = data[1];
-        };
+        }
 
         this.resetQuery();
     };
@@ -74,6 +77,16 @@ app.controller('ScenarioListController', ['$http', function($http) {
 
     this.gotData = function(op) {
         return op === this.status.op && this.jsonData !== '';
+    };
+
+    this.gotCase = function(caseid) {
+        var scen;
+        for (scen in this.scenarios) {
+            if (scen.name === caseid) {
+                return true;
+            }
+        }
+        return false;
     };
 
     // Brand new scenario
@@ -93,13 +106,32 @@ app.controller('ScenarioListController', ['$http', function($http) {
         });
     };
 
+    // Removing a scenario.
+    this.opRemove = function() {
+        var url    = "/scenario/remove.json";
+        var params = {
+            params: {
+                case: this.selectedCase
+            }
+        };
+
+        $http.get(url, params).success(function(data) {
+            var caseid = that.selectedCase;
+
+            that.retrieveAll();
+            that.setStatus('remove',data);
+            that.status.message = 'Removed scenario: "' + caseid + '".';
+        }).failure(function() {
+            that.setStatus('remove', ['error','Could not retrieve data']);
+        });
+    };
+
     // Creating a scenario.
     this.createScenario = function(op, query) {
-        $http({
-            url:    "/scenario/" + op + ".json",
-            method: "GET",
-            params: query
-        }).success(function(data) {
+        var url    = "/scenario/" + op + ".json";
+        var params = {params: query};
+
+        $http.get(url, params).success(function(data) {
             that.retrieveAll();
             that.setStatus(op,data);
             that.status.message = 'Created new scenario "' + data[1] + '".';
@@ -110,7 +142,6 @@ app.controller('ScenarioListController', ['$http', function($http) {
 
     // Initialization
     this.retrieveAll();
-    this.resetQuery();
 }]);
 
 app.controller('ScenarioOpsController', function() {

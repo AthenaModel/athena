@@ -1,0 +1,39 @@
+
+<h1>Remove a Scenario</h1>
+
+<p>This operation removes a scenario from the Arachne session.  Be sure
+to export the scenario data if you want to keep it!</p>
+
+<form>
+<button type="button" ng-click="slist.opRemove()" 
+        ng-disabled="slist.selectedCase === '' || slist.selectedCase === 'case00'">
+Remove Scenario
+</button> {{slist.selectedCase}}
+</form>
+<hr>
+
+<p ng-show="slist.selectedCase === ''">
+<span class="error">
+Select the scenario to remove from the list above.
+</span>
+</p>
+
+<p ng-show="slist.selectedCase === 'case00'">
+<span class="error">
+The base case cannot be removed.  
+Select the scenario to remove from the list above.
+</span>
+</p>
+
+<div ng-show="slist.gotData('remove')">
+<h4>Result</h4>
+<p ng-show="slist.isOK('remove')">{{slist.status.message}}</p>
+<p ng-show="slist.isError('remove')">
+<span class="error">{{slist.status.message}}</span>
+</p>
+
+<h4>JSON Result</h4>
+<pre class="example">
+{{slist.jsonData}}
+</pre>
+</div>
