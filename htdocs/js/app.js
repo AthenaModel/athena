@@ -22,23 +22,94 @@ app.controller('MainTabController', function() {
 app.controller('ScenarioListController', ['$http', function($http) {
     var that = this;
 
-    // Select a scenario?
-    this.selectFlag = true;
-    this.allowSelection = function() {
-        if (arguments.length > 0) {
-            this.selectFlag = arguments[0];
-        }
-        return this.selectFlag;
-    };
-    this.selectedCase = "case00";
-
     // Get the list of scenarios
-    that.scenarios = [];
+    this.status = {
+        op: "",
+        ok: true,
+        message: ""
+    };
+    this.scenarios = [];
 
-    $http.get('/scenario/index.json').success(function(data) {
-      that.scenarios = data;
-    });
+    // Functions
+
+    // Getting the list of scenarios
+    this.retrieveAll = function () {
+        $http.get('/scenario/index.json').success(function(data) {
+            that.scenarios = data;
+        });
+    };
+
+    // Reset Query Parms
+    this.resetQuery = function() {
+        this.newLongname = '';
+        this.replacing   = '';
+    };
+
+    // Set status
+    this.setStatus = function(op, data) {
+        this.status.op = op;
+        this.jsonData = data;
+
+        if (data[0] === 'OK') {
+            this.status.ok = true;
+            this.status.message = "Operation completed successfully.";
+        } else {
+            this.status.ok = false;
+            this.status.message = data[1];
+        };
+
+        this.resetQuery();
+    };
+
+    // isOK: handled a particular operation successfully.
+    this.isOK = function(op) {
+        return op === this.status.op && this.status.ok;
+    };
+
+    this.isError = function(op) {
+        return op === this.status.op && !this.status.ok;
+    };
+
+    this.gotData = function(op) {
+        return op === this.status.op && this.jsonData !== '';
+    };
+
+
+
+    // Requesting a new scenario.  How do we make the
+    this.newScenario = function() {
+        var query = {
+            case: this.replacing,
+            longname: this.newLongname
+        };
+
+        $http({
+            url:    "/scenario/new.json",
+            method: "GET",
+            params: query
+        }).success(function(data) {
+            that.retrieveAll();
+            that.setStatus('new',data);
+            that.status.message = 'Created new scenario "' + data[1] + '".';
+        }).failure(function() {
+            that.setStatus('new',['error','Could not retrieve data']);
+        });
+    };
+
+    // Initialization
+    this.retrieveAll();
+    this.resetQuery();
 }]);
+
+app.controller('ScenarioOpsController', function() {
+    this.tab = 'import';
+    this.setTab = function(which) {
+        this.tab = which;
+    };
+    this.isSet = function(tab) {
+        return this.tab === tab;
+    };
+});
 
 
 }());  // End of Module

@@ -2,7 +2,7 @@
 <div ng-controller="ScenarioListController as slist">
 <table cellpadding="5" class="pretty">
 <tr class="header" align="left">
-<th ng-show="slist.allowSelection()"></th>
+<th></th>
 <th align="left"><span style="font-weight: normal">ID</span></th>
 <th align="left"><span style="font-weight: normal">Name</span></th>
 <th align="left"><span style="font-weight: normal">Original Source</span></th>
@@ -11,7 +11,7 @@
 <th align="left"><span style="font-weight: normal">Week</span></th></tr>
 
 <tr ng-class-even="'evenrow'" ng-class-odd="'oddrow'" valign="top" ng-repeat="scenario in slist.scenarios">
-<td align="left" ng-show="slist.allowSelection()">
+<td align="left">
 <input type="radio" name="source" ng-model="slist.selectedCase" ng-value="scenario.id">
 </td>    
 <td align="left">
@@ -23,5 +23,28 @@
 <td align="left">{{scenario.week}}</td>
 </tr>
 </table>
-<p>Selected Case: {{slist.selectedCase}}</p>
+
+<!-- Scenario Management Tabs -->
+<section ng-controller="ScenarioOpsController as ops">
+<table cellpadding="5" class="linkbar">
+<tr class="oddrow" valign="top" class valign="bottom">
+<td>
+<div class="linkbar">
+<!-- TBD: Can these be done with an attribute directive taking "import" as
+  -- an argument somehow? -->
+<a href ng-click="ops.setTab('import')" ng-class="{ active: ops.isSet('import') }">Import</a>
+<a href ng-click="ops.setTab('new')"    ng-class="{ active: ops.isSet('new') }">New</a>
+<a href ng-click="ops.setTab('clone')"  ng-class="{ active: ops.isSet('clone') }">Clone</a>
+<a href ng-click="ops.setTab('export')" ng-class="{ active: ops.isSet('export') }">Export</a>
+<a href ng-click="ops.setTab('remove')" ng-class="{ active: ops.isSet('remove') }">Remove</a>
+</div></td></tr>
+</table>
+
+<div ng-show="ops.isSet('import')" ng-include="'/template/scenops_import.html'"></div>
+<div ng-show="ops.isSet('new')"    ng-include="'/template/scenops_new.html'"></div>
+<div ng-show="ops.isSet('clone')">  <h1>Clone</h1>        </div>
+<div ng-show="ops.isSet('export')"> <h1>Export</h1>       </div>
+<div ng-show="ops.isSet('remove')"> <h1>Remove</h1>       </div>
+</section>
+
 </div>

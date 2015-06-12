@@ -1,0 +1,31 @@
+<h1>Create New Scenario</h1>
+<form>
+<label for="longname">Long Name:</label>
+<input type="text" name="longname" size="15" ng-model="slist.newLongname">
+<label for="case">Replacing:</label>
+<select name="case" ng-model="slist.replacing">
+<option value selected></option>
+<option ng-repeat="scenario in slist.scenarios" value="{{scenario.id}}">
+{{scenario.id}}: {{scenario.longname}}
+</option>
+</select>
+
+<button type="button" ng-click="slist.newScenario()">New Scenario</button> 
+</form>
+<hr>
+
+<!-- Show the JSON response -->
+<div ng-show="slist.gotData('new')">
+<h4>Result</h4>
+<p ng-show="slist.isOK('new')">{{slist.status.message}}</p>
+<p ng-show="slist.isError('new')">
+<span class="error">{{slist.status.message}}</span>
+</p>
+
+<h4>JSON Result</h4>
+<pre class="example">
+{{slist.jsonData}}
+</pre>
+</div>
+
+

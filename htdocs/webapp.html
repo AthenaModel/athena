@@ -11,25 +11,15 @@
 <tr class="oddrow" valign="top" class valign="bottom">
 <td>
 <div class="linkbar">
-<a href ng-click="tab.setTab('home')">Home</a>
-<a href ng-click="tab.setTab('scenarios')">Scenarios</a>
-<a href ng-click="tab.setTab('new')">New</a>
-<a href ng-click="tab.setTab('clone')">Clone</a>
-<a href ng-click="tab.setTab('import')">Import</a>
-<a href ng-click="tab.setTab('export')">Export</a>
-<a href ng-click="tab.setTab('remove')">Remove</a>
-<a href ng-click="tab.setTab('help')">Help</a>
+<a href ng-click="tab.setTab('home')" ng-class="{ active: tab.isSet('home') }">Home</a>
+<a href ng-click="tab.setTab('scenarios')" ng-class="{ active: tab.isSet('scenarios') }">Scenarios</a>
+<a href ng-click="tab.setTab('help')" ng-class="{ active: tab.isSet('help') }">Help</a>
 </div></td></tr>
 </table>
 
 <div ng-show="tab.isSet('home')"      ng-include="'/template/maintab_home.html'"></div>
 <div ng-show="tab.isSet('scenarios')" ng-include="'/template/maintab_scenarios.html'"></div>
 
-<div ng-show="tab.isSet('new')">    <h1>New Scenario</h1> </div>
-<div ng-show="tab.isSet('clone')">  <h1>Clone</h1>        </div>
-<div ng-show="tab.isSet('import')"> <h1>Import</h1>       </div>
-<div ng-show="tab.isSet('export')"> <h1>Export</h1>       </div>
-<div ng-show="tab.isSet('remove')"> <h1>Remove</h1>       </div>
 <div ng-show="tab.isSet('help')">   <h1>Help</h1>         </div>
 </section>
 
