@@ -1,17 +1,17 @@
 # TODO.md - Athena TODO List
 
+- Angular Web App
+  - Most of the scenario operations are now implemented in webapp.html.
+    - Import and Export require files.json, the content of the scenarios
+      directory.
+  - ScenarioListController should probably be MainController or something,
+    and go in its own module.
+  - All of the existing Javascript code and the I/F with the .html files
+    should be examined and possibly refactored.
+  - Also need arachne.json, with metadata about Arachne (e.g., version).
+  - I'm thinking that the scenario links should take you to a distinct 
+    app on a different page.
 - Arachne
-  - Display of JSON results in HTML page
-    - I have a sample of AJAX-style request, in branch json-result-display
-      - However, reloading the result page sends the request a second time.
-    - What's wanted: A button that:
-      - Retrieves a form's parameters
-      - Assembles the relevant JSON request
-      - Requests it
-      - Puts the result in a JSON Result box.
-    - This solves the above problem; however:
-      - Other data on the page won't get updated properly.  Ooooh, it gets
-        complicated!
   - Consider smartdomain look ups using a dict tree: split the url into
     components and just follow them down the tree, accumulating place
     holders as you go.  See if that's faster.
