@@ -27,7 +27,7 @@ package provide app_athena_log 6.3.0a13
 
 # -kite-require-start ADD EXTERNAL DEPENDENCIES
 package require projectlib
-package require marsgui 3.0.18
+package require marsgui 3.0.19
 # -kite-require-end
 
 namespace import ::projectlib::* marsgui::*

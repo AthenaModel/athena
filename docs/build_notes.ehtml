@@ -2,6 +2,20 @@
 
 <h2>Build Notes</h2>
 
+<h3>Build 6.3.0a13, 15 June 2015</h3>
+
+This build contains a single bug fix (#256) reported from version 6.3.0.a12 
+and a few older ones that were not associated with milestone builds and, thus,
+were not listed in the builds in which they were actually fixed.<p>
+
+<ul>
+<li> Issue #256: athena(n): `econ reset` doesn't reset in-memory data 
+<li> Issue #255: Contributions tables are broken
+<li> Issue #243: athena(n): Remove UNIT:MOVE and ABSIT:MOVE orders 
+<li> Issue #235: arachne: JSON return protocol 
+<li> Issue #229: nbsat should not be listed as a history variable 
+</ul>
+
 <h3>Build 6.3.0a12, 10 June 2015</h3>
 
 This build contains a few more bug fixes and some documentation updates to the 
