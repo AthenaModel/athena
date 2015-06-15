@@ -138,8 +138,9 @@ smarturl /debug /index.html {
                         *]
 
         foreach logname $lognames {
+            set folder [string map {.bg _bg} $logname]
             hb li-with {
-                hb iref /log/$logname/index.html "Log: $logname"
+                hb iref /log/$folder/index.html "Log: $logname"
             }
         }
     }
@@ -151,6 +152,13 @@ smarturl /debug /index.html {
 smarturl /debug /log/{logname}/index.html {
     Displays the contents of the most recent log file in the given log.
 } {
+    # FIRST, the log name might be a ".bg" log, in which case we need
+    # to fix up the name.
+    if {[string match "*_bg" $logname]} {
+        set logname [string map {_bg .bg} $logname]
+    }
+
+    # NEXT, display the log.
     hb page "Log: $logname"
     my DebugNavBar
 
