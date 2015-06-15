@@ -1,6 +1,47 @@
 <h1>Import Scenario</h1>
 
-<p>
-<b>TBD:</b> We need a .json request to get the information about the 
-scenarios available for import.
+<form>
+<label for="longname">Long Name:</label>
+<input type="text" name="longname" size="15" ng-model="slist.newLongname">
+<label for="case">Replacing:</label>
+<select name="case" ng-model="slist.replacing">
+<option value selected></option>
+<option ng-repeat="scenario in slist.scenarios" value="{{scenario.id}}">
+{{scenario.id}}: {{scenario.longname}}
+</option>
+</select>
+
+<button type="button" ng-click="slist.opImport()"
+        ng-disabled="slist.selectedFile === ''">
+Import Scenario
+</button> 
+</form>
+<hr>
+
+<!-- Show the response message -->
+<!-- TBD: This should be a custom element with a parameter, 'import' -->
+<div ng-show="slist.gotData('import')">
+<h4>Result</h4>
+<p ng-show="slist.isOK('import')">{{slist.status.message}}</p>
+<p ng-show="slist.isError('import')">
+<span class="error">{{slist.status.message}}</span>
 </p>
+<ul ng-show="slist.isRejected('import')">
+<li ng-repeat="(key, value) in slist.status.message">
+{{key}}: <span class="error">{{value}}</span>
+</li>
+</ul>
+</div>
+
+<p>Available for import:</p>
+
+<div ng-include="'/templates/scenfile_table.html'"></div>
+</form>
+
+<!-- Show the JSON response -->
+<div ng-show="slist.gotData('import')">
+<h4>JSON Result</h4>
+<pre class="example">
+{{slist.jsonData}}
+</pre>
+</div>

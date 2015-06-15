@@ -1,0 +1,29 @@
+<!-- scenfile_table.html: 
+  --
+  -- A table of scenario files from the scenario file directory.
+  -- It is intended to be included in a form controlled by the 
+  -- ScenarioListController as slist, and defines a radio button called 
+  -- scenfile, mapped to slist.selectedFile.
+  -->
+
+<div>
+
+<p ng-hide="slist.files.length">None.</p>
+
+<table cellpadding="5" class="pretty" ng-show="slist.files.length">
+<tr class="header" align="left">
+<th align="left"><span style="font-weight: normal"></th>
+<th align="left"><span style="font-weight: normal">File Name</span></th>
+<th align="left"><span style="font-weight: normal">Size</span></th>
+<th align="left"><span style="font-weight: normal">Last Modified</span></th></tr>
+
+<tr ng-class-even="'evenrow'" ng-class-odd="'oddrow'" valign="top" ng-repeat="file in slist.files">
+<td align="left">
+<input type="radio" name="scenfile" ng-model="slist.selectedFile" ng-value="file.name">
+</td>    
+<td align="left">{{file.name}}</td>
+<td align="left">{{file.size}}</td>
+<td align="left">{{file.mtime | date:'MMM d, y h:mm:ss a'}}</td>
+</tr>
+</table>
+</div>
