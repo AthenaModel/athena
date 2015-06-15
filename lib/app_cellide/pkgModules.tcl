@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide app_cellide 6.3.0a13
+package provide app_cellide 6.3.0a14
 # -kite-provide-end
 
 #-----------------------------------------------------------------------
