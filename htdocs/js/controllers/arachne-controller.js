@@ -2,7 +2,20 @@
 'use strict';
 
 angular.module('arachne')
-.controller('ArachneController', function() {
-    this.version = 'v6.X.YaZ';
-});
+.controller('ArachneController', ['$http', function($http) {
+    var controller = this;
+    this.meta = {
+        version: 'v6.X.YaZ'
+    };
+
+    // Functions
+    this.version = function() {
+        return this.meta.version;
+    };
+
+    // Retrieve metadata
+    $http.get('/meta.json').success(function(data) {
+        controller.meta = data;
+    });
+}]);
 
