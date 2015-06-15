@@ -4,7 +4,7 @@
 <link rel="stylesheet" type="text/css" href="/athena.css">
 </head>
 <body ng-controller="ArachneController as arachne">
-<div ng-include="'/template/header.html'"></div>
+<div ng-include="'/templates/header.html'"></div>
 
 <section ng-controller="MainTabController as tab">
 <table cellpadding="5" width="100%" class="linkbar">
@@ -17,8 +17,8 @@
 </div></td></tr>
 </table>
 
-<div ng-show="tab.isSet('home')"      ng-include="'/template/maintab_home.html'"></div>
-<div ng-show="tab.isSet('scenarios')" ng-include="'/template/maintab_scenarios.html'"></div>
+<div ng-show="tab.isSet('home')"      ng-include="'/templates/maintab_home.html'"></div>
+<div ng-show="tab.isSet('scenarios')" ng-include="'/templates/maintab_scenarios.html'"></div>
 
 <div ng-show="tab.isSet('help')">   <h1>Help</h1>         </div>
 </section>
