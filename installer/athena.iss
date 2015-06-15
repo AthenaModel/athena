@@ -3,7 +3,7 @@
 
 #define MyAppName "Athena"
 #define MyWebName "Arachne"
-#define MyAppVersion "6.3.0a12"
+#define MyAppVersion "6.3.0a13"
 #define MyAppPublisher "Jet Propulsion Laboratory, California Institute of Technology"
 #define MyAppExeName "athenawb.exe"
 #define MyWebExeName "arachne.exe"
