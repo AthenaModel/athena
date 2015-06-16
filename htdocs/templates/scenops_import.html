@@ -27,10 +27,11 @@ Import Scenario
 <span class="error">{{slist.status.message}}</span>
 </p>
 <ul ng-show="slist.isRejected('import')">
-<li ng-repeat="(key, value) in slist.status.message">
+<li ng-repeat="(key, value) in slist.status.errors">
 {{key}}: <span class="error">{{value}}</span>
 </li>
 </ul>
+
 </div>
 
 <p>Available for import:</p>

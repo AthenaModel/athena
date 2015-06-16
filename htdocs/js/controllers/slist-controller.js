@@ -9,7 +9,8 @@ angular.module('arachne')
     this.status = {
         op:      '',
         code:    'OK',
-        message: ''
+        message: '',     // Error message
+        errors:  {}      // Parameter Errors
     };
     this.scenarios = [];
     this.selectedCase = '';
@@ -81,13 +82,16 @@ angular.module('arachne')
         this.jsonData = data;
 
         this.status.code = data[0];
+        this.status.message = '';
+        this.status.errors = null;
 
+        // TBD: Handle all four cases, with stack trace on EXCEPTION
         switch(this.status.code) {
             case 'OK':
                 this.status.message = "Operation completed successfully.";
                 break;
             case 'REJECT':
-                this.status.message = data[1];
+                this.status.errors = data[1];
                 break;
             case 'ERROR':
                 this.status.message = data[1];
