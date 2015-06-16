@@ -52,8 +52,6 @@ angular.module('arachne')
         return false;
     };
 
-
-
     // Getting the list of scenario files
     this.retrieveFiles = function () {
         $http.get('/scenario/files.json').success(function(data) {
@@ -79,6 +77,7 @@ angular.module('arachne')
     this.resetQuery = function() {
         this.newLongname = '';
         this.replacing   = '';
+        this.exportFilename = '';
     };
 
     // Set status
@@ -113,27 +112,6 @@ angular.module('arachne')
         this.resetQuery();
     };
 
-    // isOK: handled a particular operation successfully.
-    this.isOK = function(op) {
-        return op === this.status.op && this.status.code === 'OK';
-    };
-
-    this.isRejected = function(op) {
-        return op === this.status.op && this.status.code === 'REJECT';
-    };
-
-    this.isException = function(op) {
-        return op === this.status.op && this.status.code === 'EXCEPTION';
-    };
-
-    this.isError = function(op) {
-        return op === this.status.op && this.status.code === 'ERROR';
-    };
-
-    this.gotData = function(op) {
-        return op === this.status.op && this.status.data !== '';
-    };
-
     this.jsonData = function(op) {
         if (op === this.status.op && this.status.data !== '') {
             return this.status.data;
@@ -148,6 +126,37 @@ angular.module('arachne')
             filename: this.selectedFile,
             case:     this.replacing,
             longname: this.newLongname
+        });
+    };
+
+
+    // Exporting a scenario.
+    this.canExport = function () {
+        return this.selectedCase !== '' && this.exportFilename !== '';
+    };
+
+    this.opExport = function() {
+        var url    = "/scenario/export.json";
+        var params = {
+            params: {
+                case: this.selectedCase,
+                filename: this.exportFilename
+            }
+        };
+
+        $http.get(url, params).success(function(data) {
+            var caseid = controller.selectedCase;
+            var filename = controller.exportFilename
+
+            controller.retrieveFiles();
+            controller.setStatus('export',data);
+            if (data[0] === 'OK') {
+                controller.status.message = 
+                    'Exported scenario: "' + caseid + '" as "' +
+                    filename + '".';
+            }
+        }).error(function() {
+            controller.setStatus('export', ['error','Could not retrieve data']);
         });
     };
 

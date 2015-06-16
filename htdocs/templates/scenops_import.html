@@ -15,8 +15,14 @@
         ng-disabled="slist.selectedFile === ''">
 Import Scenario
 </button> 
-</form>
-<hr>
+
+
+<p ng-show="slist.selectedFile === ''">
+<span class="error">
+Select the scenario file to import from the list below.
+</span>
+</p>
+
 
 <!-- Show the operation result -->
 <ar-result op="import" result="slist.status"></ar-result>

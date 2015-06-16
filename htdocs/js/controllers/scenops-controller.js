@@ -3,7 +3,7 @@
 
 angular.module('arachne')
 .controller('ScenarioOpsController', function() {
-    this.tab = 'import';
+    this.tab = 'new';
     this.setTab = function(which) {
         this.tab = which;
     };

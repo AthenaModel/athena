@@ -1,0 +1,28 @@
+<h1>Export Scenario</h1>
+
+<form>
+<label for="longname">File Name:</label>
+<input type="text" name="filename" size="15" ng-model="slist.exportFilename">
+
+<button type="button" ng-click="slist.opExport()"
+        ng-disabled="!slist.canExport()">
+Export Scenario
+</button> 
+</form>
+
+<p ng-show="slist.selectedCase === ''">
+<span class="error">
+Select the scenario to export from the list above.
+</span>
+</p>
+
+<!-- Show the operation result -->
+<ar-result op="export" result="slist.status"></ar-result>
+
+<p>Existing Scenario Files:</p>
+
+<!-- TBD: Be nice if the selection button was disabled. -->
+<div ng-include="'/templates/scenfile_table.html'"></div>
+
+<!-- Show the JSON response -->
+<ar-example header="JSON Result" content="{{slist.jsonData('export')}}"></ar-example>

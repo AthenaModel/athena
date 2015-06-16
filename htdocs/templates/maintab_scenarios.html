@@ -34,18 +34,18 @@
 <div class="linkbar">
 <!-- TBD: Can these be done with an attribute directive taking "import" as
   -- an argument somehow? -->
-<a href ng-click="ops.setTab('import')" ng-class="{ active: ops.isSet('import') }">Import</a>
 <a href ng-click="ops.setTab('new')"    ng-class="{ active: ops.isSet('new') }">New</a>
 <a href ng-click="ops.setTab('clone')"  ng-class="{ active: ops.isSet('clone') }">Clone</a>
+<a href ng-click="ops.setTab('import')" ng-class="{ active: ops.isSet('import') }">Import</a>
 <a href ng-click="ops.setTab('export')" ng-class="{ active: ops.isSet('export') }">Export</a>
 <a href ng-click="ops.setTab('remove')" ng-class="{ active: ops.isSet('remove') }">Remove</a>
 </div></td></tr>
 </table>
 
-<div ng-show="ops.isSet('import')" ng-include="'/templates/scenops_import.html'"></div>
 <div ng-show="ops.isSet('new')"    ng-include="'/templates/scenops_new.html'"></div>
 <div ng-show="ops.isSet('clone')"  ng-include="'/templates/scenops_clone.html'"></div>
-<div ng-show="ops.isSet('export')"> <h1>Export</h1>       </div>
+<div ng-show="ops.isSet('import')" ng-include="'/templates/scenops_import.html'"></div>
+<div ng-show="ops.isSet('export')" ng-include="'/templates/scenops_export.html'"></div>
 <div ng-show="ops.isSet('remove')" ng-include="'/templates/scenops_remove.html'"></div>
 </section>
 
