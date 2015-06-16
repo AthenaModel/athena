@@ -3,20 +3,25 @@
 
 angular.module('arachne')
 .controller('ScenarioListController', ['$http', function($http) {
-    var controller = this;
+    var controller = this;   // For use in callbacks
 
-    // Get the list of scenarios
+    // Status Record: data from JSON requests that return status.
     this.status = {
-        op:      '',
-        code:    'OK',
+        op:      '',     // Last operation we did.
+        data:    [],     // Raw JSON data
+        code:    'OK',   // Status Code
         message: '',     // Error message
-        errors:  {}      // Parameter Errors
+        errors:  {},     // Parameter Errors by parameter name
+        stack:   ''      // Tcl Stack Trace
     };
-    this.scenarios = [];
-    this.selectedCase = '';
 
-    this.files = [];
-    this.selectedFile = '';
+    // Context Data
+    this.scenarios = []; // List of loaded scenarios
+    this.files = [];     // List of available scenario files
+
+    // User Selections
+    this.selectedCase = '';   // Case ID selected in case list, or ''
+    this.selectedFile = '';   // File name selected in file list, or ''
 
 
     // Functions
@@ -78,12 +83,12 @@ angular.module('arachne')
 
     // Set status
     this.setStatus = function(op, data) {
-        this.status.op = op;
-        this.jsonData = data;
-
-        this.status.code = data[0];
-        this.status.message = '';
-        this.status.errors = null;
+        this.status.op         = op;
+        this.status.data       = data;
+        this.status.code       = data[0];
+        this.status.message    = '';
+        this.status.errors     = null;
+        this.status.stackTrace = '';
 
         // TBD: Handle all four cases, with stack trace on EXCEPTION
         switch(this.status.code) {
@@ -96,7 +101,11 @@ angular.module('arachne')
             case 'ERROR':
                 this.status.message = data[1];
                 break;
+            case 'EXCEPTION':
+                this.status.message = data[1];
+                this.status.stackTrace = data[2];
             default:
+                this.status.code = 'ERROR';
                 this.status.message = "Unexpected response: " + data;
                 break;
         } 
@@ -113,19 +122,21 @@ angular.module('arachne')
         return op === this.status.op && this.status.code === 'REJECT';
     };
 
+    this.isException = function(op) {
+        return op === this.status.op && this.status.code === 'EXCEPTION';
+    };
+
     this.isError = function(op) {
-        return op === this.status.op 
-            && this.status.code !== 'OK' 
-            && this.status.code !== 'REJECT';
+        return op === this.status.op && this.status.code === 'ERROR';
     };
 
     this.gotData = function(op) {
-        return op === this.status.op && this.jsonData !== '';
+        return op === this.status.op && this.status.data !== '';
     };
 
-    this.getData = function(op) {
-        if (op === this.status.op && this.jsonData !== '') {
-            return this.jsonData;
+    this.jsonData = function(op) {
+        if (op === this.status.op && this.status.data !== '') {
+            return this.status.data;
         } else {
             return null;
         }

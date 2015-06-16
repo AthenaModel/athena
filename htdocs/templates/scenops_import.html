@@ -19,8 +19,7 @@ Import Scenario
 <hr>
 
 <!-- Show the response message -->
-<!-- TBD: This should be a custom element with a parameter, 'import' -->
-<div ng-show="slist.gotData('import')">
+<div ng-show="slist.jsonData('import')">
 <h4>Result</h4>
 <p ng-show="slist.isOK('import')">{{slist.status.message}}</p>
 <p ng-show="slist.isError('import')">
@@ -31,7 +30,10 @@ Import Scenario
 {{key}}: <span class="error">{{value}}</span>
 </li>
 </ul>
-
+<div ng-show="slist.isException('import')">
+<span class="error">{{slist.status.message}}</span>
+<ar-example header="Stack Trace" content={{slist.status.stackTrace}}></ar-example>
+</div>
 </div>
 
 <p>Available for import:</p>
@@ -40,4 +42,4 @@ Import Scenario
 </form>
 
 <!-- Show the JSON response -->
-<ar-example header="JSON Result" content="{{slist.getData('import')}}"></ar-example>
+<ar-example header="JSON Result" content="{{slist.jsonData('import')}}"></ar-example>
