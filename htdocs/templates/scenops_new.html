@@ -21,11 +21,8 @@
 <p ng-show="slist.isError('new')">
 <span class="error">{{slist.status.message}}</span>
 </p>
-
-<h4>JSON Result</h4>
-<pre class="example">
-{{slist.jsonData}}
-</pre>
 </div>
 
+<!-- Show the JSON response -->
+<ar-example header="JSON Result" content="{{slist.getData('new')}}"></ar-example>
 

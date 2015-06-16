@@ -119,6 +119,14 @@ angular.module('arachne')
         return op === this.status.op && this.jsonData !== '';
     };
 
+    this.getData = function(op) {
+        if (op === this.status.op && this.jsonData !== '') {
+            return this.jsonData;
+        } else {
+            return null;
+        }
+    };
+
     // Import Scenario
     this.opImport = function() {
         this.createScenario('import', {
@@ -162,7 +170,7 @@ angular.module('arachne')
             if (data[0] === 'OK') {
                 controller.status.message = 'Removed scenario: "' + caseid + '".';
             }
-        }).failure(function() {
+        }).error(function() {
             controller.setStatus('remove', ['error','Could not retrieve data']);
         });
     };
@@ -178,7 +186,7 @@ angular.module('arachne')
             if (data[0] === 'OK') {
                 controller.status.message = 'Created new scenario "' + data[1] + '".';
             }
-        }).failure(function() {
+        }).error(function() {
             controller.setStatus(op, ['error','Could not retrieve data']);
         });
     };

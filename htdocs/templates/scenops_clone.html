@@ -32,11 +32,9 @@ Select the scenario to clone from the list above.
 <p ng-show="slist.isError('clone')">
 <span class="error">{{slist.status.message}}</span>
 </p>
-
-<h4>JSON Result</h4>
-<pre class="example">
-{{slist.jsonData}}
-</pre>
 </div>
+
+<!-- Show the JSON response -->
+<ar-example header="JSON Result" content="{{slist.getData('clone')}}"></ar-example>
 
 

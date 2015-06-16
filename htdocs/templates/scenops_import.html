@@ -39,11 +39,4 @@ Import Scenario
 </form>
 
 <!-- Show the JSON response -->
-<div ng-show="slist.gotData('import')">
-<h4>JSON Result</h4>
-<pre class="example">
-{{slist.jsonData}}
-</pre>
-</div>
-
-<ar-json controller="slist" op="import"></ar-json>
+<ar-example header="JSON Result" content="{{slist.getData('import')}}"></ar-example>
