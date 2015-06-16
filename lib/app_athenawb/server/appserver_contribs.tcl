@@ -775,8 +775,8 @@ appserver module CONTRIBS {
             "
         }
 
-
-        PutPlot hist.nbmood $start_ $end_ $vars
+        # nbmood is always available
+        PutPlot "" $start_ $end_ $vars
 
         # NEXT, Get the drivers for this time period.
         adb contribs nbmood $n \
@@ -1151,7 +1151,7 @@ appserver module CONTRIBS {
 
     # PutPlot histparm start end vars
     #
-    # histparm - hist.* parm governing whether data is available
+    # histparm - hist.* parm governing whether data is available, if exists 
     # start    - Start time in ticks
     # end      - End time in ticks
     # vars     - List of time series display variables
@@ -1159,7 +1159,7 @@ appserver module CONTRIBS {
     # Adds a plot of the listed variables to the ht buffer.
 
     proc PutPlot {histparm start end vars} {
-        if {![adb parm get $histparm]} {
+        if {$histparm ne "" && ![adb parm get $histparm]} {
             ht putln {
                 <b>Note:</b> Athena is not currently saving some or
                 all of the historical data required for the following 
