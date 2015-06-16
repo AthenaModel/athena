@@ -1,14 +1,12 @@
 # TODO.md - Athena TODO List
 
 - Angular Web App
-  - Most of the scenario operations are now implemented in webapp.html.
-    - Import and Export require files.json, the content of the scenarios
-      directory.
-  - ScenarioListController should probably be MainController or something,
-    and go in its own module.
-  - All of the existing Javascript code and the I/F with the .html files
-    should be examined and possibly refactored.
-  - Also need arachne.json, with metadata about Arachne (e.g., version).
+  - Use bootstrap CSS?
+  - How to structure the other features?
+    - Double toolbar works for scenarios, because the list of scenarios
+      is front and center.
+    - What if a major area has several things to display?  How do we 
+      display that?
   - I'm thinking that the scenario links should take you to a distinct 
     app on a different page.
 - Arachne
