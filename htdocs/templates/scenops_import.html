@@ -18,23 +18,8 @@ Import Scenario
 </form>
 <hr>
 
-<!-- Show the response message -->
-<div ng-show="slist.jsonData('import')">
-<h4>Result</h4>
-<p ng-show="slist.isOK('import')">{{slist.status.message}}</p>
-<p ng-show="slist.isError('import')">
-<span class="error">{{slist.status.message}}</span>
-</p>
-<ul ng-show="slist.isRejected('import')">
-<li ng-repeat="(key, value) in slist.status.errors">
-{{key}}: <span class="error">{{value}}</span>
-</li>
-</ul>
-<div ng-show="slist.isException('import')">
-<span class="error">{{slist.status.message}}</span>
-<ar-example header="Stack Trace" content={{slist.status.stackTrace}}></ar-example>
-</div>
-</div>
+<!-- Show the operation result -->
+<ar-result op="import" result="slist.status"></ar-result>
 
 <p>Available for import:</p>
 

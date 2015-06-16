@@ -1,0 +1,21 @@
+<!-- ar-result element -->
+<div ng-show="result.op === op && result.data">
+
+<h4 ng-show="header">{{header}}</h4>
+
+<p ng-show="result.code === 'OK'">{{result.message}}</p>
+
+<p ng-show="result.code === 'ERROR'">
+<span class="error">{{result.message}}</span>
+</p>
+
+<ul ng-show="result.code === 'REJECT'">
+<li ng-repeat="(parm, message) in result.errors">
+{{parm}}: <span class="error">{{message}}</span>
+</li>
+</ul>
+<div ng-show="result.code === 'EXCEPTION'">
+<span class="error">{{result.message}}</span>
+<ar-example header="Stack Trace" content={{result.stackTrace}}></ar-example>
+</div>
+</div>
