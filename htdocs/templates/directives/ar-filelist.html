@@ -1,0 +1,22 @@
+<!-- ar-filelist.html: 
+  --
+  -- A table of files.
+  -->
+
+<div>
+
+<p ng-hide="files.length">None.</p>
+
+<table cellpadding="5" class="pretty" ng-show="files.length">
+<tr class="header" align="left">
+<th align="left"><span style="font-weight: normal">File Name</span></th>
+<th align="left"><span style="font-weight: normal">Size</span></th>
+<th align="left"><span style="font-weight: normal">Last Modified</span></th></tr>
+
+<tr ng-class-even="'evenrow'" ng-class-odd="'oddrow'" valign="top" ng-repeat="file in files">
+<td align="left">{{file.name}}</td>
+<td align="left">{{file.size}}</td>
+<td align="left">{{file.mtime | date:'MMM d, y h:mm:ss a'}}</td>
+</tr>
+</table>
+</div>

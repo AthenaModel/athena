@@ -20,9 +20,7 @@ Select the scenario to export from the list above.
 <ar-result op="export" result="slist.status"></ar-result>
 
 <p>Existing Scenario Files:</p>
-
-<!-- TBD: Be nice if the selection button was disabled. -->
-<div ng-include="'/templates/scenfile_table.html'"></div>
+<ar-filelist files="slist.files"></ar-filelist>
 
 <!-- Show the JSON response -->
 <ar-example header="JSON Result" content="{{slist.jsonData('export')}}"></ar-example>
