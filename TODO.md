@@ -1,14 +1,11 @@
 # TODO.md - Athena TODO List
 
 - Angular Web App
-  - Use bootstrap CSS?
-  - How to structure the other features?
-    - Double toolbar works for scenarios, because the list of scenarios
-      is front and center.
-    - What if a major area has several things to display?  How do we 
-      display that?
-  - I'm thinking that the scenario links should take you to a distinct 
-    app on a different page.
+  - Merge ScenarioListController into ArachneController.
+  - See if we can easily make each of the scenario operations a
+    distinct controller, linked to the ArachneController.
+  - Look into using Routes and Views
+  - Figure out how to add Case pages.
   - Handling help would require a .json interface to the help.
 - Arachne
   - Consider smartdomain look ups using a dict tree: split the url into
