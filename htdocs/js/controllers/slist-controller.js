@@ -19,9 +19,11 @@ angular.module('arachne')
     this.scenarios = []; // List of loaded scenarios
     this.files = [];     // List of available scenario files
 
-    // User Selections
+    // User Variables
     this.selectedCase = '';   // Case ID selected in case list, or ''
     this.selectedFile = '';   // File name selected in file list, or ''
+    this.replacing    = '';   // Case to replace on new, clone, import
+    this.newLongname  = '';   // Long name for new case
 
 
     // Functions
@@ -89,7 +91,6 @@ angular.module('arachne')
         this.status.errors     = null;
         this.status.stackTrace = '';
 
-        // TBD: Handle all four cases, with stack trace on EXCEPTION
         switch(this.status.code) {
             case 'OK':
                 this.status.message = "Operation completed successfully.";
@@ -169,6 +170,10 @@ angular.module('arachne')
     };
 
     // Cloning a scenario.
+    this.canClone = function () {
+        return this.selectedCase !== '';
+    };
+
     this.opClone = function() {
         this.createScenario('clone', {
             source:   this.selectedCase,
@@ -178,6 +183,10 @@ angular.module('arachne')
     };
 
     // Removing a scenario.
+    this.canRemove = function () {
+        return this.selectedCase !== '' && this.selectedCase !== 'case00';
+    };
+
     this.opRemove = function() {
         var url    = "/scenario/remove.json";
         var params = {

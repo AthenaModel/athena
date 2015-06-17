@@ -1,36 +1,36 @@
-<h1>Import Scenario</h1>
+<h2>Import a Scenario</h2>
 
-<form>
-<label for="longname">Long Name:</label>
-<input type="text" name="longname" size="15" ng-model="slist.newLongname">
-<label for="case">Replacing:</label>
-<select name="case" ng-model="slist.replacing">
-<option value selected></option>
-<option ng-repeat="scenario in slist.scenarios" value="{{scenario.id}}">
-{{scenario.id}}: {{scenario.longname}}
-</option>
-</select>
+<form class="form-inline">
+  <div class="form-group">
+    <label for="longname">Long Name:</label>
+    <input type="text" name="longname" class="form-control" size="15" ng-model="slist.newLongname">
+  </div>
 
-<button type="button" ng-click="slist.opImport()"
-        ng-disabled="slist.selectedFile === ''">
-Import Scenario
-</button> 
+  <div class="form-group">
+    <label for="case">Replacing:</label>
+    <select id="case" class="form-control" ng-model="slist.replacing">
+      <option value selected></option>
+      <option ng-repeat="scenario in slist.scenarios" value="{{scenario.id}}">
+        {{scenario.id}}: {{scenario.longname}}
+      </option>
+    </select>
+  </div>
+
+  <button class="btn btn-default" type="button" ng-click="slist.opImport()"
+          ng-disabled="slist.selectedFile === ''">
+  Import Scenario
+  </button> 
 
 
-<p ng-show="slist.selectedFile === ''">
-<span class="error">
-Select the scenario file to import from the list below.
-</span>
-</p>
+  <h4>Available for import:</h4>
+
+  <div ng-include="'/templates/scenfile_table.html'"></div>
+</form>
 
 
 <!-- Show the operation result -->
 <ar-result op="import" result="slist.status"></ar-result>
 
-<p>Available for import:</p>
-
-<div ng-include="'/templates/scenfile_table.html'"></div>
-</form>
 
 <!-- Show the JSON response -->
 <ar-example header="JSON Result" content="{{slist.jsonData('import')}}"></ar-example>

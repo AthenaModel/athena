@@ -1,27 +1,30 @@
-<h1>Clone a Scenario</h1>
+<h2>Clone a Scenario</h2>
 
-<form>
-<!-- Most of this is shared with "New". -->
-<label for="longname">Long Name:</label>
-<input type="text" name="longname" size="15" ng-model="slist.newLongname">
-<label for="case">Replacing:</label>
-<select name="case" ng-model="slist.replacing">
-<option value selected></option>
-<option ng-repeat="scenario in slist.scenarios" value="{{scenario.id}}">
-{{scenario.id}}: {{scenario.longname}}
-</option>
-</select>
+<form class="form-inline">
+  <div class="form-group">
+    <label for="longname">Long Name:</label>
+    <input type="text" name="longname" class="form-control" size="15" ng-model="slist.newLongname">
+  </div>
 
-<button type="button" ng-click="slist.opClone()" 
-        ng-disabled="slist.selectedCase === ''">
-Clone Scenario
-</button> 
+  <div class="form-group">
+    <label for="case">Replacing:</label>
+    <select id="case" class="form-control" ng-model="slist.replacing">
+      <option value selected></option>
+      <option ng-repeat="scenario in slist.scenarios" value="{{scenario.id}}">
+        {{scenario.id}}: {{scenario.longname}}
+      </option>
+    </select>
+  </div>
+
+  <!-- Use canClone() -->
+  <button class="btn btn-default" type="button" ng-click="slist.opClone()" 
+          ng-disabled="!slist.canClone()">
+  Clone Scenario
+  </button> 
 </form>
 
-<p ng-show="slist.selectedCase === ''">
-<span class="error">
+<p style="padding-top: 5px;" class="text-warning" ng-show="!slist.canClone()">
 Select the scenario to clone from the list above.
-</span>
 </p>
 
 <!-- Show the operation result -->

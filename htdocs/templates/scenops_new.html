@@ -1,16 +1,24 @@
-<h1>Create New Scenario</h1>
-<form>
-<label for="longname">Long Name:</label>
-<input type="text" name="longname" size="15" ng-model="slist.newLongname">
-<label for="case">Replacing:</label>
-<select name="case" ng-model="slist.replacing">
-<option value selected></option>
-<option ng-repeat="scenario in slist.scenarios" value="{{scenario.id}}">
-{{scenario.id}}: {{scenario.longname}}
-</option>
-</select>
+<h2>Create a New Scenario</h2>
 
-<button type="button" ng-click="slist.opNew()">New Scenario</button> 
+<form class="form-inline">
+  <div class="form-group">
+    <label for="longname">Long Name:</label>
+    <input type="text" name="longname" class="form-control" size="15" ng-model="slist.newLongname">
+  </div>
+
+  <div class="form-group">
+    <label for="case">Replacing:</label>
+    <select id="case" class="form-control" ng-model="slist.replacing">
+      <option value selected></option>
+      <option ng-repeat="scenario in slist.scenarios" value="{{scenario.id}}">
+        {{scenario.id}}: {{scenario.longname}}
+      </option>
+    </select>
+  </div>
+
+  <button class="btn btn-default" type="button" ng-click="slist.opNew()">
+    New Scenario
+  </button> 
 </form>
 
 <!-- Show the operation result -->

@@ -9,6 +9,7 @@
       display that?
   - I'm thinking that the scenario links should take you to a distinct 
     app on a different page.
+  - Handling help would require a .json interface to the help.
 - Arachne
   - Consider smartdomain look ups using a dict tree: split the url into
     components and just follow them down the tree, accumulating place
