@@ -12,5 +12,5 @@
 #-------------------------------------------------------------------------
 
 # -kite-ifneeded-start  DO NOT EDIT THIS BLOCK BY HAND
-package ifneeded app_athena_log 6.3.0a14 [list source [file join $dir pkgModules.tcl]]
+package ifneeded app_athena_log 6.3.0 [list source [file join $dir pkgModules.tcl]]
 # -kite-ifneeded-end

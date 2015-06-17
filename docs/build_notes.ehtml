@@ -2,6 +2,16 @@
 
 <h2>Build Notes</h2>
 
+<h3>Build 6.3.0, 17 June 2015</h3>
+
+This build is the release candidate for Athena 6.3 and contains only two
+small bug fixes.<p>
+
+<ul>
+<li> Issue #258: Arachne /debug/log/{case}.bg/index.html page displays error
+<li> Issue #257: Neighborhood Mood Contributions page displays error
+</ul>
+
 <h3>Build 6.3.0a13, 15 June 2015</h3>
 
 This build contains a single bug fix (#256) reported from version 6.3.0.a12 
