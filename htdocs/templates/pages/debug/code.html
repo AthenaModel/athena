@@ -11,10 +11,10 @@ class name and an instance method name to search for instance methods.
     <label class="sr-only" for="cmdline">Command Line</label>
     <div class="input-group">
         <input type="text" class="form-control" id="cmdline" 
-               placeholder="Command Line" model="cmdline">
+               placeholder="Command Line" ng-model="page.cmdline">
         <span class="input-group-btn">
           <button type="button" class="btn btn-primary" 
-                  ng-click="codeSearch(cmdline)">
+                  ng-click="page.codeSearch()">
             Search
           </button>
         </span>
@@ -23,6 +23,8 @@ class name and an instance method name to search for instance methods.
 </form>
 
 <h4>Result</h4>
-<pre class>
-{{page.cmdfound}}
+
+<p ng-show="page.found.cmdline">Command Line: <code>{{page.found.cmdline}}</code></p>
+<pre class="pre-scrollable">
+{{page.found.code}}
 </pre>

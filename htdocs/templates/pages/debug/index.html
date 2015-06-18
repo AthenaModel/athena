@@ -8,17 +8,17 @@ The following tools are available for debugging Arachne.
 <section>
 <nav>
 <ul class="nav nav-tabs">
-  <li ng-class="{ active: active('code') }">
-    <a href ng-click="setTab('code')">Code</a>
+  <li ng-class="{ active: page.active('code') }">
+    <a href ng-click="page.setTab('code')">Code</a>
   </li>
-  <li ng-class="{ active: active('mods') }">
-    <a href ng-click="setTab('mods')">Mods</a>
+  <li ng-class="{ active: page.active('mods') }">
+    <a href ng-click="page.setTab('mods')">Mods</a>
   </li>
 </ul>
 </nav>
 
-<div ng-show="active('code')"  ng-include="'/templates/pages/debug/code.html'"></div>
-<div ng-show="active('mods')" ng-include="'/templates/pages/debug/mods.html'"></div>
+<div ng-show="page.active('code')"  ng-include="'/templates/pages/debug/code.html'"></div>
+<div ng-show="page.active('mods')" ng-include="'/templates/pages/debug/mods.html'"></div>
 </section>
 
 </ar-mainpage>

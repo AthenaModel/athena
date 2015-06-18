@@ -1,8 +1,8 @@
 # TODO.md - Athena TODO List
 
 - Angular Web App
-  - Look into using Routes and Views
-    - This is next.
+  - Got code search working, but errors in .json handlers seem to return
+    "success" with something other than real data.  Track this down!
   - Figure out how to add Case pages.
   - Move ScenarioListController stuff to a service.
   - Handling help would require a .json interface to the help.

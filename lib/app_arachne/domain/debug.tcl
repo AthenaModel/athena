@@ -276,6 +276,21 @@ smarturl /debug /mods.html {
     return [hb /page]
 }
 
+# /code.json
+smarturl /debug /code.json {
+    Searches for the cmdline.  Returns a JSON list consisting of the
+    requested cmdline and the code that was found.  If no code was
+    found, the second item will be the empty string.
+} {
+    set cmdline [qdict prepare cmdline]
+
+    set found [join [cmdinfo getcode $cmdline -related] "\n\n"]
+
+    set hud [huddle list]
+    huddle append hud [huddle compile string $cmdline]
+    huddle append hud [huddle compile string $found]
+    return [huddle jsondump $hud]
+}
 
 
 
