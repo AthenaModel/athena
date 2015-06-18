@@ -1,3 +1,16 @@
 body {
   padding-top: 50px;
 }
+
+/*
+ * Row with equal height columns: for use with bootstrap grids.;
+ * --------------------------------------------------
+ */
+.row-eq-height {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display:         flex;
+}
+
+
