@@ -2,7 +2,7 @@
 
 <h1>Active Scenarios</h1>
 
-<div ng-controller="ScenarioListController as slist">
+<div ng-controller="ScenariosIndexController as page">
 
 <!-- I'd like to make this scroll -->
 <table class="table table-striped table-hover">
@@ -16,9 +16,9 @@
 <th>Week</th>
 </tr>
 
-<tr ng-repeat="scenario in slist.scenarios">
+<tr ng-repeat="scenario in page.scenarios">
 <td align="left">
-<input type="radio" name="source" ng-model="slist.selectedCase" ng-value="scenario.id">
+<input type="radio" name="source" ng-model="page.selectedCase" ng-value="scenario.id">
 </td>    
 <td><b><a ng-href="/scenario/{{scenario.id}}/index.html">{{scenario.id}}</a></b></td>
 <td>{{scenario.longname}}</td>
@@ -56,11 +56,11 @@
 </ul>
 </nav>
 
-<div ng-show="ops.isSet('new')"    ng-include="'/templates/scenops_new.html'"></div>
-<div ng-show="ops.isSet('clone')"  ng-include="'/templates/scenops_clone.html'"></div>
-<div ng-show="ops.isSet('import')" ng-include="'/templates/scenops_import.html'"></div>
-<div ng-show="ops.isSet('export')" ng-include="'/templates/scenops_export.html'"></div>
-<div ng-show="ops.isSet('remove')" ng-include="'/templates/scenops_remove.html'"></div>
+<div ng-show="ops.isSet('new')"    ng-include="'/templates/pages/scenarios/new.html'"></div>
+<div ng-show="ops.isSet('clone')"  ng-include="'/templates/pages/scenarios/clone.html'"></div>
+<div ng-show="ops.isSet('import')" ng-include="'/templates/pages/scenarios/import.html'"></div>
+<div ng-show="ops.isSet('export')" ng-include="'/templates/pages/scenarios/export.html'"></div>
+<div ng-show="ops.isSet('remove')" ng-include="'/templates/pages/scenarios/remove.html'"></div>
 </section>
 
 </div>

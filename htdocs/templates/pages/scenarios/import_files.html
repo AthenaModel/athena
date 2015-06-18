@@ -1,25 +1,25 @@
-<!-- scenfile_table.html: 
+<!-- import_files.html: 
   --
   -- A table of scenario files from the scenario file directory.
   -- It is intended to be included in a form controlled by the 
-  -- ScenarioListController as slist, and defines a radio button called 
-  -- scenfile, mapped to slist.selectedFile.
+  -- ScenariosIndexController as page, and defines a radio button called 
+  -- scenfile, mapped to page.selectedFile.
   -->
 
 <div>
 
-<p ng-hide="slist.files.length">None.</p>
+<p ng-hide="page.files.length">None.</p>
 
-<table class="table table-striped table-hover" ng-show="slist.files.length">
+<table class="table table-striped table-hover" ng-show="page.files.length">
 <tr>
 <th><span></th>
 <th><span>File Name</span></th>
 <th><span>Size</span></th>
 <th><span>Last Modified</span></th></tr>
 
-<tr ng-repeat="file in slist.files">
+<tr ng-repeat="file in page.files">
 <td>
-<input type="radio" name="scenfile" ng-model="slist.selectedFile" ng-value="file.name">
+<input type="radio" name="scenfile" ng-model="page.selectedFile" ng-value="file.name">
 </td>    
 <td>{{file.name}}</td>
 <td>{{file.size}}</td>

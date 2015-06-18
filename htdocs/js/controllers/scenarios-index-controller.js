@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('arachne')
-.controller('ScenarioListController', ['$http', function($http) {
+.controller('ScenariosIndexController', ['$http', function($http) {
     var controller = this;   // For use in callbacks
 
     // Status Record: data from JSON requests that return status.

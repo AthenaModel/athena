@@ -1,0 +1,36 @@
+<h2>Import a Scenario</h2>
+
+<form class="form-inline">
+  <div class="form-group">
+    <label for="longname">Long Name:</label>
+    <input type="text" name="longname" class="form-control" size="15" ng-model="page.newLongname">
+  </div>
+
+  <div class="form-group">
+    <label for="case">Replacing:</label>
+    <select id="case" class="form-control" ng-model="page.replacing">
+      <option value selected></option>
+      <option ng-repeat="scenario in page.scenarios" value="{{scenario.id}}">
+        {{scenario.id}}: {{scenario.longname}}
+      </option>
+    </select>
+  </div>
+
+  <button class="btn btn-default" type="button" ng-click="page.opImport()"
+          ng-disabled="page.selectedFile === ''">
+  Import Scenario
+  </button> 
+
+
+  <h4>Available for import:</h4>
+
+  <div ng-include="'/templates/pages/scenarios/import_files.html'"></div>
+</form>
+
+
+<!-- Show the operation result -->
+<ar-result op="import" result="page.status"></ar-result>
+
+
+<!-- Show the JSON response -->
+<ar-example header="JSON Result" content="{{page.jsonData('import')}}"></ar-example>
