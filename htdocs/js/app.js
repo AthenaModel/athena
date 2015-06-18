@@ -1,4 +1,4 @@
 // app.js
 'use strict';
 
-angular.module('arachne', [ ]);
+angular.module('arachne', ['ngRoute']);
