@@ -5,9 +5,9 @@ angular.module("arachne")
     return {
         restrict: "E",
         templateUrl: "templates/directives/ar-mainpage.html",
+        transclude: true,
         scope: {
-            sidebar: "@",
-            content: "@"
+            sidebar: "@"  // The sidebar template's URL
         }
     };
 });
