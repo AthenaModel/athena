@@ -221,29 +221,28 @@ smarturl /debug /mods.html {
     if {[llength $table] == 0} {
         hb putln "No mods have been loaded or applied."
         hb para
-        return [hb /page]
-    }
+    } else {
+        set t [clock format [mod modtime]]
 
-    set t [clock format [mod modtime]]
-
-    hb putln "The following mods were loaded at $t "
-    hb iref /mods.html?op=reload "(Reload)"
-    hb put ":"
-    hb para
-    hb table -headers {
-        "Package" "Version" "Mod#" "Title" "Mod File"
-    } {
-        foreach row $table {
-            hb tr {
-                hb td [dict get $row package] 
-                hb td [dict get $row version] 
-                hb td [dict get $row num    ] 
-                hb td [dict get $row title  ] 
-                hb td [dict get $row modfile] 
+        hb putln "The following mods were loaded at $t "
+        hb iref /mods.html?op=reload "(Reload)"
+        hb put ":"
+        hb para
+        hb table -headers {
+            "Package" "Version" "Mod#" "Title" "Mod File"
+        } {
+            foreach row $table {
+                hb tr {
+                    hb td [dict get $row package] 
+                    hb td [dict get $row version] 
+                    hb td [dict get $row num    ] 
+                    hb td [dict get $row title  ] 
+                    hb td [dict get $row modfile] 
+                }
             }
         }
+        hb para
     }
-    hb para
 
     # Code Search
     hb hr

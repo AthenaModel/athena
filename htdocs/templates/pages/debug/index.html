@@ -1,0 +1,24 @@
+<ar-mainpage sidebar="/templates/pages/debug/sidebar.html">
+<h1>Debugging</h1>
+
+<p class="text-info">
+The following tools are available for debugging Arachne.
+</p>
+
+<section>
+<nav>
+<ul class="nav nav-tabs">
+  <li ng-class="{ active: active('code') }">
+    <a href ng-click="setTab('code')">Code</a>
+  </li>
+  <li ng-class="{ active: active('mods') }">
+    <a href ng-click="setTab('mods')">Mods</a>
+  </li>
+</ul>
+</nav>
+
+<div ng-show="active('code')"  ng-include="'/templates/pages/debug/code.html'"></div>
+<div ng-show="active('mods')" ng-include="'/templates/pages/debug/mods.html'"></div>
+</section>
+
+</ar-mainpage>
