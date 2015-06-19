@@ -23,10 +23,13 @@ angular.module('arachne')
         this.found.cmdline = this.cmdline;
         this.cmdline = '';
         $http.get('/debug/code.json', {
-            params: {cmdline: this.cmdline}
+            params: {cmdline: this.found.cmdline}
         }).success(function(data) {
-            console.log("Got: "+data);
-            controller.found.code = data[1];
+            if (data[1] !== '') {
+                controller.found.code = data[1];
+            } else {
+                controller.found.code = "No matching code found."
+            }
         }).error(function(data) {
             controller.found.code = '';
         });

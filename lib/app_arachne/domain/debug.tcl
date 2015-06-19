@@ -284,7 +284,11 @@ smarturl /debug /code.json {
 } {
     set cmdline [qdict prepare cmdline]
 
-    set found [join [cmdinfo getcode $cmdline -related] "\n\n"]
+    if {$cmdline ne ""} {
+        set found [join [cmdinfo getcode $cmdline -related] "\n\n"]    
+    } else {
+        set found ""
+    }
 
     set hud [huddle list]
     huddle append hud [huddle compile string $cmdline]
