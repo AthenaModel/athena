@@ -1,2 +1,37 @@
 <h2>Software Mods</h2>
 
+<p class="text-info">
+Software mods are a way to inject bug fixes or debugging code into 
+Arachne at start-up or on request.  Mods must be placed in the 
+<tt>/mods</tt> directory in the Arachne application directory in proper
+mod format; mods cannot be loaded over the network.
+</p>
+
+<h4>Loaded Mods</h4>
+
+<p ng-hide="page.mods">No mods have been loaded.</p>
+
+<table ng-show="page.mods" class="table table-striped table-hover">
+<tr>
+<th>Package</th>
+<th>Version</th>
+<th>Mod#</th>
+<th>Title</th>
+<th>Mod File</th>
+<th>Load Time</th>
+</tr>
+
+<tr ng-repeat="mod in page.mods">
+<td>{{mod.package}}</td>
+<td><tt>{{mod.version}}</tt></td>
+<td>{{mod.num}}</td>
+<td>{{mod.title}}</td>
+<td>{{mod.modfile}}</td>
+<td>{{mod.modtime | date:'MMM d, y h:mm:ss a' }}</td>
+</tr>
+</table>
+
+<button class="button btn-primary" type="button" ng-click="page.retrieveMods(true)">
+Reload Mods
+</button>
+

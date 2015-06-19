@@ -296,17 +296,25 @@ smarturl /debug /code.json {
     return [huddle jsondump $hud]
 }
 
-# /bogus.json
-smarturl /debug /bogus.json {
-    Bogus error
+# /mods.json
+smarturl /debug /mods.json {
+    Returns a JSON array of Arachne mod records.  If the "op" parameter
+    is "reload", tries to reload the mods.
 } {
-    error "Bogus JSON Server Error"
-}
+    set op [qdict prepare op]
 
-# /bogus.html
-smarturl /debug /bogus.html {
-    Bogus error
-} {
-    error "Bogus HTML Server Error"
+    if {$op eq "reload"} {
+        mod load
+        mod apply
+    }
+
+    set table [list]
+    set t [mod modtime]
+
+    foreach modrec [mod list] {
+        dict set modrec modtime [expr {1000*$t}]
+        lappend table $modrec
+    }
+    return [js dictab $table]
 }
 

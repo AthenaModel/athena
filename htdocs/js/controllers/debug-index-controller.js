@@ -4,19 +4,43 @@
 angular.module('arachne')
 .controller('DebugIndexController', ['$http', function($http) {
     var controller = this;
-    var tab = 'code';
 
-    this.cmdline = '';
-    this.found = {
-        cmdline: '',
-        code:    ''
-    };
+    //-------------------------------------------
+    // Tab Management
+
+    var tab = 'code';
 
     this.setTab = function(which) {
         tab = which;
     };
     this.active = function(which) {
         return tab === which;
+    };
+
+    //--------------------------------------------
+    // Mods
+
+    this.mods = [];     // List of loaded mods
+
+    this.retrieveMods = function (reloadFlag) {
+        var url = '/debug/mods.json';
+
+        if (reloadFlag) {
+            url += '?op=reload';
+        }
+
+        $http.get(url).success(function(data) {
+            controller.mods = data;
+        });
+    };
+
+    //--------------------------------------------
+    // Code Search
+
+    this.cmdline = '';
+    this.found = {
+        cmdline: '',
+        code:    ''
     };
 
     this.codeSearch = function() {
@@ -34,4 +58,9 @@ angular.module('arachne')
             controller.found.code = '';
         });
     };
+
+    //--------------------------------------------
+    // Initialization
+
+    this.retrieveMods();
 }]);
