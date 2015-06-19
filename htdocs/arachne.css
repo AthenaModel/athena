@@ -13,4 +13,10 @@ body {
   display:         flex;
 }
 
+/* For sidebar column */
+.sidebar {
+   border-right: 1px solid black; 
+   margin-top: 5px; 
+   min-height: 1024px; 
+}
 

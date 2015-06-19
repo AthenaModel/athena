@@ -1,2 +1,21 @@
-<p>Athena<br>
-Side bar....</p>
+<h4>Log Areas</h4>
+
+<ul class="list-unstyled" style="margin-top: 10px; margin-left: 10px;">
+  <li ng-repeat="area in page.logAreas()">
+    <a href ng-click="page.setArea(area)">
+        {{area}}
+    </a>
+  </li>
+</ul>
+
+<div ng-show="page.logArea !== ''">
+<h4>Logs: {{page.logArea}}</h4>
+
+<ul class="list-unstyled" style="margin-top: 10px; margin-left: 10px;">
+  <li ng-repeat="file in page.logFiles()">
+    <a href ng-click="page.setFile(file)">
+        {{file}}
+    </a>
+  </li>
+</ul>
+</div>

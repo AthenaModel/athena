@@ -1,24 +1,17 @@
-<ar-mainpage sidebar="/templates/pages/debug/sidebar.html">
-<h1>Debugging</h1>
+<!-- Debug Index File
+  -- This doesn't use ar-mainpage, because ar-mainpage prevents the sidebar
+  -- from seeing the page controller.  There might be a way to use 
+  -- directives for this purpose, but I've not figured out what it is.
+  -->
+<div class="container-fluid">
+  <div class="row row-eq-height">
+    <div class="col-xs-2" style="border-right: 1px solid black; margin-top: 5px; min-height: 1024px;">
+      <div ng-include="'/templates/pages/debug/sidebar.html'"></div>
+    </div>
+    <div class="col-xs-10">
+      <div ng-include="'/templates/pages/debug/content.html'"></div>
+    </div>
+  </div><!-- /.row -->
+</div> <!-- .container-fluid>
 
-<p class="text-info">
-The following tools are available for debugging Arachne.
-</p>
 
-<section>
-<nav>
-<ul class="nav nav-tabs">
-  <li ng-class="{ active: page.active('code') }">
-    <a href ng-click="page.setTab('code')">Code</a>
-  </li>
-  <li ng-class="{ active: page.active('mods') }">
-    <a href ng-click="page.setTab('mods')">Mods</a>
-  </li>
-</ul>
-</nav>
-
-<div ng-show="page.active('code')"  ng-include="'/templates/pages/debug/code.html'"></div>
-<div ng-show="page.active('mods')" ng-include="'/templates/pages/debug/mods.html'"></div>
-</section>
-
-</ar-mainpage>

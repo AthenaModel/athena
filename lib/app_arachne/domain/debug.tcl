@@ -318,3 +318,26 @@ smarturl /debug /mods.json {
     return [js dictab $table]
 }
 
+# /logs.json
+smarturl /debug /logs.json {
+    Returns a JSON object with one field per log directory; the
+    field name is the bare log directory name, and the value is the
+    list of available log files in that directory.
+} {
+    set areas [glob \
+                -nocomplain \
+                -directory [scratchdir join log] \
+                -tails \
+                *]
+
+    set hud [huddle create]
+
+    foreach area [lsort $areas] {
+        set dir [scratchdir join log $area]
+        set logfiles [lsort [glob -nocomplain -directory $dir -tails *.log]]
+
+        huddle set hud $area [huddle compile list $logfiles]
+    }
+
+    return [huddle jsondump $hud]
+}
