@@ -52,11 +52,11 @@ snit::type ::ahttpd::ahttpd {
         -allowsubst   0
         -debug        0
         -docroot      {}
-        -errorpage    "/error.html"
+        -errorpage    ""
         -host         {}
         -ipaddr       127.0.0.1
         -logcmd       ""
-        -notfoundpage "/notfound.html"
+        -notfoundpage ""
         -port         8080
         -secureport   8081
         -webmaster    "Brian.J.Kahovec@jpl.nasa.gov"

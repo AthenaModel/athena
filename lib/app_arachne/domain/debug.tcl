@@ -296,5 +296,17 @@ smarturl /debug /code.json {
     return [huddle jsondump $hud]
 }
 
+# /bogus.json
+smarturl /debug /bogus.json {
+    Bogus error
+} {
+    error "Bogus JSON Server Error"
+}
 
+# /bogus.html
+smarturl /debug /bogus.html {
+    Bogus error
+} {
+    error "Bogus HTML Server Error"
+}
 
