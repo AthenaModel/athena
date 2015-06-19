@@ -111,7 +111,7 @@ snit::type ::projectlib::mod {
         }
 
         # NEXT, it's an error if the versions don't match.
-        if {$ver ne [package present $pkg]} {
+        if {$ver ne "*" && $ver ne [package present $pkg]} {
             throw {MODERROR LOAD} \
                 "Package version mismatch, expected [package present $pkg], got mod $pkg $ver $num \"$title\""
         }

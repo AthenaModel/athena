@@ -42,7 +42,8 @@ The arguments indicate that the mod is supposed update a particular
 <i version> of a particular Tcl <i package>.  If the named package is
 not loaded into memory the mod is ignored.  If the loaded version of the
 package differs from the <i version> number given here, the mod will be
-rejected with an error.<p>
+rejected with an error.  (If the stated <i version> is "*" then the mod
+be loaded against any version; this usage is intended only for debugging.)<p>
 
 Note that the <iref mod load> command assumes that each modded package
 has a namespace with precisely the same name as the package.<p>
