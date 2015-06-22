@@ -1,0 +1,16 @@
+<h1>Case {{caseId}}: Nbhoods</h1>
+
+<table class="table table-striped table-hover">
+<tr>
+<th><br>ID</th>
+<th><br>Name</th>
+
+</tr>
+</div>
+
+<tr ng-repeat="nbhood in page.nbhoods">
+<td><b><a href="/scenario/{{caseId}}/nbhood/{{nbhood.n}}/index.html">{{nbhood.n}}</a></b></td>
+<td>{{nbhood.longname}}</td>
+</tr>
+</table>
+

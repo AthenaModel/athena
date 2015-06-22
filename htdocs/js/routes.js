@@ -6,10 +6,11 @@ angular.module('arachne')
     $routeProvider.when('/home', {
         templateUrl: 'templates/pages/home/index.html'
     })
+
     .when('/', {
         templateUrl: 'templates/pages/home/index.html'
     })
-    
+
     .when('/scenarios', {
         templateUrl: 'templates/pages/scenarios/index.html'
     })
@@ -22,6 +23,12 @@ angular.module('arachne')
 
     .when('/help', {
         templateUrl: 'templates/pages/help/index.html'
+    })
+
+    .when('/scenarios/:caseId', {
+        templateUrl: 'templates/pages/case/index.html',
+        controller: 'CaseController',
+        controllerAs: 'page'
     })
 
     .otherwise( { redirectTo: '/' });
