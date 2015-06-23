@@ -16,31 +16,61 @@ angular.module('arachne')
 	    };
 
         // Object storage
-		this.actors    = [] ;
-		this.nbhoods   = [] ;
+		this.actors    = []    ; // List of actors in case
+		this.nbhoods   = []    ; // List of nbhoods in case
+		this.groups    = []    ; // List of groups by gtype in case
+
+		// Model interface
+		this.gtypes    = ['CIV', 'FRC', 'ORG', 'ALL'];
+		this.gtype     = 'ALL';
 
         // store case ID from route for use by page
-		$scope.caseId = $routeParams.caseId;
+		this.caseId = $routeParams.caseId;
 
         // Data retrieval
-		this.retrieveActors = function () {
-	        $http.get('/scenario/' + $scope.caseId + '/actors/index.json')
+		this.getActors = function () {
+	        $http.get('/scenario/' + this.caseId + '/actors/index.json')
 	            .success(function(data) {
 	                controller.actors = data;
 	        });
         };
 
-		this.retrieveNbhoods = function () {
-	        $http.get('/scenario/' + $scope.caseId + '/nbhoods/index.json')
+		this.getNbhoods = function () {
+	        $http.get('/scenario/' + this.caseId + '/nbhoods/index.json')
 	            .success(function(data) {
 	                controller.nbhoods = data;
 	        });
         };
 
+        this.getGroups = function () { 
+            var url ;      	
+        	switch (this.gtype) {
+        		case 'ALL' :
+        		    url = '/scenario/' + this.caseId + '/group/index.json' ;
+			        break;
+			    case 'CIV' :
+			        url = '/scenario/' + this.caseId + '/group/civ.json' ;
+			        break;
+			    case 'FRC' :
+			        url = '/scenario/' + this.caseId + '/group/frc.json' ;
+			        break;
+			    case 'ORG' :
+			        url = '/scenario/' + this.caseId + '/group/org.json' ;
+			        break;
+			    default :
+			        url = '/scenario/' + this.caseId + '/group/index.json' ;
+			}
+			
+	        $http.get(url).success(function(data) {
+	            controller.groups = data;
+	        });
+		};
+
         // Refresh
         this.refresh = function () {
-            this.retrieveActors();
-            this.retrieveNbhoods();
+            this.getActors();
+            this.getNbhoods();
+            this.getGroups('ALL');
         }
 
 		this.refresh();

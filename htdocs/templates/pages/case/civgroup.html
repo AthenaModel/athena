@@ -1,0 +1,24 @@
+<h1>Case {{page.caseId}}: Civilian Groups</h1>
+
+<table class="table table-striped table-hover">
+<tr>
+<th><br>ID</th>
+<th><br>Name</th>
+<th><br>Neighborhood</th>
+<th><br>Population</th>
+<th>Subsistence<br>Agriculture</th>
+</tr>
+
+<tr ng-repeat="group in page.groups">
+	<td><b>
+	<a href="#/scenario/{{page.caseId}}/{{group.qid}}/">{{group.g}}</a>
+	</b></td>
+	<td>{{group.longname}}</td>
+	<td><b>
+	<a href="#/scenario/{{page.caseId}}/{{group.n_qid}}/">{{group.n}}</a>
+	</b></td>
+	<td>{{group.population}}</td>
+	<td>{{group.pretty_sa_flag}}</td>
+</tr>
+</table>
+

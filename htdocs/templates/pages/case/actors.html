@@ -1,4 +1,4 @@
-<h1>Case {{caseId}}: Actors</h1>
+<h1>Case {{page.caseId}}: Actors</h1>
 
 <table class="table table-striped table-hover">
 <tr>
@@ -10,10 +10,9 @@
 <th>Funding<br>Type</th>
 <th>Cash<br>On Hand, $</th>
 </tr>
-</div>
 
 <tr ng-repeat="actor in page.actors">
-<td><b><a href="/scenario/{{caseId}}/actor/{{actor.a}}/index.html">{{actor.a}}</a></b></td>
+<td><b><a href="#/scenario/{{caseId}}/{{actor.qid}}/">{{actor.a}}</a></b></td>
 <td>{{actor.longname}}</td>
 <td>{{actor.bsysname}}</td>
 <td>{{actor.supports}}</td>

@@ -1,5 +1,5 @@
 <ar-mainpage sidebar="/templates/pages/case/sidebar.html">
-<h1>Case: {{caseId}}</h1>
+<h1>Case: {{page.caseId}}</h1>
 
 <nav>
 <ul class="nav nav-tabs">
@@ -10,21 +10,15 @@
     <a href ng-click="page.setTab('nbhoods')">Neighborhoods</a>
   </li>
 
-  <li ng-class="{ active: page.isSet('civgroups') }">
-    <a href ng-click="page.setTab('civgroups')">Civ. Groups</a>
+  <li ng-class="{ active: page.isSet('groups') }">
+    <a href ng-click="page.setTab('groups')">Groups</a>
   </li>
 
-  <li ng-class="{ active: page.isSet('frcgroups') }">
-    <a href ng-click="page.setTab('frcgroups')">Frc. Groups</a>
-  </li>
-
-  <li ng-class="{ active: page.isSet('orggroups') }">
-    <a href ng-click="page.setTab('orggroups')">Org. Groups</a>
-  </li>
 </ul>
 </nav>
 
 <div ng-show="page.isSet('actors')"    ng-include="'/templates/pages/case/actors.html'"></div>
 <div ng-show="page.isSet('nbhoods')"  ng-include="'/templates/pages/case/nbhoods.html'"></div>
+<div ng-show="page.isSet('groups')"  ng-include="'/templates/pages/case/groups.html'"></div>
 
 </ar-mainpage>

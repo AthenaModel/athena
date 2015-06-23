@@ -1,0 +1,23 @@
+<h1>Case {{page.caseId}}: Organization Groups</h1>
+
+<table class="table table-striped table-hover">
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Owner</th>
+<th>Personnel</th>
+</tr>
+
+<tr ng-repeat="group in page.groups">
+	<td><b>
+	<a href="#/scenario/{{page.caseId}}/{{group.qid}}/">{{group.g}}</a>
+	</b></td>
+	<td>{{group.longname}}</td>
+	<td>
+	  <a ng-if="group.a_qid !== ''" href="#/scenario/{{page.caseId}}/{{group.a_qid}}/">{{group.a}}</a>
+	  <span ng-if="group.a_qid === ''">None</span>
+	 </td>
+	<td>{{group.personnel}}</td>
+</tr>
+</table>
+

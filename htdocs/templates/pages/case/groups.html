@@ -1,0 +1,12 @@
+
+<br>
+<label>Group Type:
+<select ng-model="page.gtype" ng-options="gt for gt in page.gtypes" ng-change="page.getGroups()"></select>
+</label>
+
+<div ng-show="page.gtype === 'ALL'" ng-include="'/templates/pages/case/group.html'"></div>
+<div ng-show="page.gtype === 'CIV'" ng-include="'/templates/pages/case/civgroup.html'"></div>
+<div ng-show="page.gtype === 'FRC'" ng-include="'/templates/pages/case/frcgroup.html'"></div>
+<div ng-show="page.gtype === 'ORG'" ng-include="'/templates/pages/case/orggroup.html'"></div>
+
+

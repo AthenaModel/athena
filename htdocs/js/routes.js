@@ -31,5 +31,11 @@ angular.module('arachne')
         controllerAs: 'page'
     })
 
+    .when('/scenario/:caseId/:objectType/:objectId', {
+        templateUrl: 'templates/pages/case/index.html',
+        controller: 'CaseController',
+        controllerAs: 'page'
+    })
+
     .otherwise( { redirectTo: '/' });
 });

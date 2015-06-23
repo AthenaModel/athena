@@ -1,0 +1,18 @@
+<h1>Case {{page.caseId}}: All Groups</h1>
+
+<table class="table table-striped table-hover">
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Group Type</th>
+</tr>
+
+<tr ng-repeat="group in page.groups">
+	<td><b>
+	<a href="#/scenario/{{page.caseId}}/{{group.qid}}/">{{group.g}}</a>
+	</b></td>
+	<td>{{group.longname}}</td>
+	<td>{{group.gtype}}</td>
+</tr>
+</table>
+
