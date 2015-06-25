@@ -2,12 +2,19 @@
 'use strict';
 
 angular.module('arachne')
-.controller('ScenarioOpsController', function() {
-    this.tab = 'new';
+.controller('ScenarioOpsController', ['LastTab', function(LastTab) {
+	// Tab control 
+	// Initialize last tab service to 'new'
+	if (!LastTab.get('scenario')) {
+		// This registers this set of tabs with the service
+		LastTab.set('scenario', 'new');
+	}
+
     this.setTab = function(which) {
-        this.tab = which;
+    	LastTab.set('scenario', which);
     };
+
     this.isSet = function(tab) {
-        return this.tab === tab;
+        return LastTab.get('scenario') === tab;
     };
-});
+}]);

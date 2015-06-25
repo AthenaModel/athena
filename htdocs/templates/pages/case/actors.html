@@ -12,7 +12,7 @@
 </tr>
 
 <tr ng-repeat="actor in page.actors">
-<td><b><a href="#/scenario/{{caseId}}/{{actor.qid}}/">{{actor.a}}</a></b></td>
+<td><b><a href="#/scenario/{{page.caseId}}/{{actor.qid}}/">{{actor.a}}</a></b></td>
 <td>{{actor.longname}}</td>
 <td>{{actor.bsysname}}</td>
 <td>{{actor.supports}}</td>
@@ -22,3 +22,4 @@
 </tr>
 </table>
 
+<ar-example header="JSON Result" content="{{page.actors}}"></ar-example>

@@ -32,8 +32,8 @@ angular.module('arachne')
     })
 
     .when('/scenario/:caseId/:objectType/:objectId', {
-        templateUrl: 'templates/pages/case/index.html',
-        controller: 'CaseController',
+        templateUrl: 'templates/pages/case/object.html',
+        controller: 'ObjectController',
         controllerAs: 'page'
     })
 

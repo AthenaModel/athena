@@ -2,17 +2,26 @@
 'use strict';
 
 angular.module('arachne')
-.controller('CaseController', ['$scope', '$routeParams', '$http',
-	function($scope, $routeParams, $http) {
+.controller('CaseController', ['$routeParams', '$http', 'LastTab',
+	function(routeParams, http, LastTab) {
 		var controller = this;
 
-		// Tab control
-	    this.tab = 'actors';
+        // store case ID from route for use by page
+		this.caseId = routeParams.caseId;
+
+		// Tab control, initialize last tab service to 'actors'
+		if (!LastTab.get(this.caseId)) {
+			// This registers this set of tabs with the service
+			LastTab.set(this.caseId, 'actors');
+		}
+
+        // 
 	    this.setTab = function(which) {
-	        this.tab = which;
+	    	LastTab.set(this.caseId, which);
 	    };
+
 	    this.isSet = function(tab) {
-	        return this.tab === tab;
+	        return LastTab.get(this.caseId) === tab;
 	    };
 
         // Object storage
@@ -24,19 +33,17 @@ angular.module('arachne')
 		this.gtypes    = ['CIV', 'FRC', 'ORG', 'ALL'];
 		this.gtype     = 'ALL';
 
-        // store case ID from route for use by page
-		this.caseId = $routeParams.caseId;
 
         // Data retrieval
 		this.getActors = function () {
-	        $http.get('/scenario/' + this.caseId + '/actors/index.json')
+	        http.get('/scenario/' + this.caseId + '/actors/index.json')
 	            .success(function(data) {
 	                controller.actors = data;
 	        });
         };
 
 		this.getNbhoods = function () {
-	        $http.get('/scenario/' + this.caseId + '/nbhoods/index.json')
+	        http.get('/scenario/' + this.caseId + '/nbhoods/index.json')
 	            .success(function(data) {
 	                controller.nbhoods = data;
 	        });
@@ -61,7 +68,7 @@ angular.module('arachne')
 			        url = '/scenario/' + this.caseId + '/group/index.json' ;
 			}
 			
-	        $http.get(url).success(function(data) {
+	        http.get(url).success(function(data) {
 	            controller.groups = data;
 	        });
 		};

@@ -17,7 +17,7 @@
 
 <tr ng-repeat="nbhood in page.nbhoods">
 <td><b>
-<a href="#/scenario/{{caseId}}/{{nbhood.qid}}/">{{nbhood.n}}</a>
+<a href="#/scenario/{{page.caseId}}/{{nbhood.qid}}/">{{nbhood.n}}</a>
 </b></td>
 <td>{{nbhood.longname}}</td>
 <td>{{nbhood.local}}</td>
@@ -31,3 +31,4 @@
 </tr>
 </table>
 
+<ar-example header="JSON Result" content="{{page.nbhoods}}"></ar-example>
