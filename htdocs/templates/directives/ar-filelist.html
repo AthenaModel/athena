@@ -1,0 +1,22 @@
+<!-- ar-filelist.html: 
+  --
+  -- A table of files.
+  -->
+
+<div>
+
+<p ng-hide="files.length">None.</p>
+
+<table class="table table-striped table-hover" ng-show="files.length">
+<tr>
+<th>File Name</th>
+<th>Size</th>
+<th>Last Modified</th></tr>
+
+<tr ng-repeat="file in files">
+<td>{{file.name}}</td>
+<td>{{file.size}}</td>
+<td>{{file.mtime | date:'MMM d, y h:mm:ss a'}}</td>
+</tr>
+</table>
+</div>

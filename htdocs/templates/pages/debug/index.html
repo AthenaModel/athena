@@ -1,0 +1,17 @@
+<!-- Debug Index File
+  -- This doesn't use ar-mainpage, because ar-mainpage prevents the sidebar
+  -- from seeing the page controller.  There might be a way to use 
+  -- directives for this purpose, but I've not figured out what it is.
+  -->
+<div class="container-fluid">
+  <div class="row row-eq-height">
+    <div class="col-xs-2" style="border-right: 1px solid black; margin-top: 5px; min-height: 1024px;">
+      <div ng-include="'/templates/pages/debug/sidebar.html'"></div>
+    </div>
+    <div class="col-xs-10">
+      <div ng-include="'/templates/pages/debug/content.html'"></div>
+    </div>
+  </div><!-- /.row -->
+</div> <!-- .container-fluid>
+
+

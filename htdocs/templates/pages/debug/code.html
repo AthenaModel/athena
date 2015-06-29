@@ -1,0 +1,29 @@
+<h2>Code Search</h2>
+
+<p class="text-info">
+Enter a Tcl command line into the field below to search for the actual 
+command that will be executed.  You may also enter a Snit type or TclOO
+class name and an instance method name to search for instance methods.
+</p>
+
+<form>
+  <div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" id="cmdline" 
+               placeholder="Command Line" ng-model="page.cmdline">
+        <span class="input-group-btn">
+          <button type="submit" class="btn btn-primary" 
+                  ng-click="page.codeSearch()">
+            Search
+          </button>
+        </span>
+    </div>
+  </div>
+</form>
+
+<h4>Result</h4>
+
+<p ng-show="page.found.cmdline">Command Line: <code>{{page.found.cmdline}}</code></p>
+<pre class="pre-scrollable">
+{{page.found.code}}
+</pre>

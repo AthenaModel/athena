@@ -17,6 +17,10 @@
 #
 #-----------------------------------------------------------------------
 
+namespace eval ::projectlib:: {
+    namespace export dictlist
+}
+
 oo::class create ::projectlib::dictlist {
     #-------------------------------------------------------------------
     # Variables

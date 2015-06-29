@@ -229,29 +229,28 @@ smarturl /debug /mods.html {
     if {[llength $table] == 0} {
         hb putln "No mods have been loaded or applied."
         hb para
-        return [hb /page]
-    }
+    } else {
+        set t [clock format [mod modtime]]
 
-    set t [clock format [mod modtime]]
-
-    hb putln "The following mods were loaded at $t "
-    hb iref /mods.html?op=reload "(Reload)"
-    hb put ":"
-    hb para
-    hb table -headers {
-        "Package" "Version" "Mod#" "Title" "Mod File"
-    } {
-        foreach row $table {
-            hb tr {
-                hb td [dict get $row package] 
-                hb td [dict get $row version] 
-                hb td [dict get $row num    ] 
-                hb td [dict get $row title  ] 
-                hb td [dict get $row modfile] 
+        hb putln "The following mods were loaded at $t "
+        hb iref /mods.html?op=reload "(Reload)"
+        hb put ":"
+        hb para
+        hb table -headers {
+            "Package" "Version" "Mod#" "Title" "Mod File"
+        } {
+            foreach row $table {
+                hb tr {
+                    hb td [dict get $row package] 
+                    hb td [dict get $row version] 
+                    hb td [dict get $row num    ] 
+                    hb td [dict get $row title  ] 
+                    hb td [dict get $row modfile] 
+                }
             }
         }
+        hb para
     }
-    hb para
 
     # Code Search
     hb hr
@@ -285,6 +284,68 @@ smarturl /debug /mods.html {
     return [hb /page]
 }
 
+# /code.json
+smarturl /debug /code.json {
+    Searches for the cmdline.  Returns a JSON list consisting of the
+    requested cmdline and the code that was found.  If no code was
+    found, the second item will be the empty string.
+} {
+    set cmdline [qdict prepare cmdline]
 
+    if {$cmdline ne ""} {
+        set found [join [cmdinfo getcode $cmdline -related] "\n\n"]    
+    } else {
+        set found ""
+    }
 
+    set hud [huddle list]
+    huddle append hud [huddle compile string $cmdline]
+    huddle append hud [huddle compile string $found]
+    return [huddle jsondump $hud]
+}
 
+# /mods.json
+smarturl /debug /mods.json {
+    Returns a JSON array of Arachne mod records.  If the "op" parameter
+    is "reload", tries to reload the mods.
+} {
+    set op [qdict prepare op]
+
+    if {$op eq "reload"} {
+        mod load
+        mod apply
+    }
+
+    set table [list]
+    set t [mod modtime]
+
+    foreach modrec [mod list] {
+        dict set modrec modtime [expr {1000*$t}]
+        lappend table $modrec
+    }
+    return [js dictab $table]
+}
+
+# /logs.json
+smarturl /debug /logs.json {
+    Returns a JSON object with one field per log directory; the
+    field name is the bare log directory name, and the value is the
+    list of available log files in that directory.
+} {
+    set areas [glob \
+                -nocomplain \
+                -directory [scratchdir join log] \
+                -tails \
+                *]
+
+    set hud [huddle create]
+
+    foreach area [lsort $areas] {
+        set dir [scratchdir join log $area]
+        set logfiles [lsort [glob -nocomplain -directory $dir -tails *.log]]
+
+        huddle set hud $area [huddle compile list $logfiles]
+    }
+
+    return [huddle jsondump $hud]
+}

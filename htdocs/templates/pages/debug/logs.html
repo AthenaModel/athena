@@ -1,0 +1,33 @@
+<h2>Debugging Logs</h2>
+
+<p class="text-info">
+Arachne produces a number of debugging logs as it executes.  Select the
+desired log in the sidebar.
+</p>
+
+<p>Selected area and file:</p>
+<ul>
+<li>Area: {{page.logArea}}
+<li>File: {{page.logFile}}
+</ul>
+
+<p>
+TBD: Obviously, this isn't done. We retrieve the metadata about the 
+available log files, and display it in the sidebar; and by clicking in
+the sidebar we come back to the Logs tab and show that we've selected
+a particular log area and file.  But we still need the following:
+</p>
+
+<ul>
+<li> An Arachne .json request for retrieving log entries.</li>
+<li> To retrieve the selected log entries in showLog().</li>
+<li> To display the retrieved log entries in a table for the given "area"
+     and file.
+    <ul>
+    <li> Possibly with pagination.
+    <li> One page could be a screen-full, or we could do one page per 
+         log file.
+    </ul></li>
+<li> A refresh button, to reload log metadata and the latest log for
+     the selected log area.</li>
+</ul>

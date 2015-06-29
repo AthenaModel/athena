@@ -52,6 +52,7 @@ source [file join $::app_arachne::library js.tcl                       ]
 
 # Smart domain handlers
 source [file join $::app_arachne::library domain index.tcl             ]
+source [file join $::app_arachne::library domain meta.tcl              ]
 source [file join $::app_arachne::library domain debug.tcl             ]
 source [file join $::app_arachne::library domain scenario.tcl          ]
 source [file join $::app_arachne::library domain scenario_case.tcl     ]

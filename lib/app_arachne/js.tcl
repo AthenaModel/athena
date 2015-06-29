@@ -106,6 +106,17 @@ snit::type js {
 
         return [huddle jsondump $hud]
     }
+
+    # list list
+    #
+    # list   - A list of simple strings.
+    #
+    # Formats the list as a JSON array of strings.
+
+    typemethod list {list} {
+        set hud [huddle compile list $list]        
+        return  [huddle jsondump $hud]
+    }
     
 
 }

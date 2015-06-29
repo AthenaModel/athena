@@ -1,0 +1,32 @@
+
+<h2>Remove a Scenario</h2>
+
+<p class="text-warning">This operation removes a scenario from the 
+Arachne session.  Be sure to export the scenario data if you want to 
+keep it!</p>
+
+<div>
+<button class="btn btn-default" type="button" ng-click="page.opRemove()" 
+        ng-disabled="!page.canRemove()">
+Remove Scenario
+</button>
+<span ng-show="page.canRemove()">
+Press to remove scenario "{{page.selectedCase}}".
+</span>
+
+<span class="text-warning" ng-show="page.selectedCase === ''">
+Select the scenario to remove from the list above.
+</span>
+
+<span class="text-warning" ng-show="page.selectedCase === 'case00'">
+The base case cannot be removed.  
+Select the scenario to remove from the list above.
+</span>
+</div>
+
+
+<!-- Show the operation result -->
+<ar-result op="remove" result="page.status"></ar-result>
+
+<!-- Show the JSON response -->
+<ar-example header="JSON Result" content="{{page.jsonData('remove')}}"></ar-example>

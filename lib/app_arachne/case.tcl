@@ -258,6 +258,7 @@ snit::type case {
     # or replaces an existing scenario with a new empty one.
 
     typemethod new {{id ""} {longname ""}} {
+        app log normal $id "case new ($id) ($longname)"
         if {$id eq ""} {
             set id [NextID]
         }

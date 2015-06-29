@@ -689,6 +689,30 @@ smarturl /scenario /index.json {
     return [js dictab $table]
 }
 
+smarturl /scenario /files.json {
+    Returns a JSON list of scenario file objects.
+} {
+    set table [dictlist new {name size mtime}]
+
+    set filenames [glob \
+                        -nocomplain \
+                        -directory [case scenariodir] \
+                        *.adb *.tcl]
+
+    foreach filename [lsort -dictionary $filenames] {
+        $table add \
+            [file tail $filename] \
+            [file size $filename] \
+            [expr {1000*[file mtime $filename]}]
+    }
+
+    try {
+        return [js dictab [$table dicts]]
+    } finally {
+        $table destroy        
+    }
+}
+
 #-----------------------------------------------------------------------
 # New Scenario
 

@@ -1,0 +1,36 @@
+<h1>Case {{page.caseId}}: Force Groups</h1>
+
+<table class="table table-striped table-hover">
+<tr>
+<th><br>ID</th>
+<th><br>Name</th>
+<th><br>Owner</th>
+<th>Force<br>Type</th>
+<th><br>Local</th>
+<th>Training<br>Level</th>
+<th>Equipment<br>Level</th>
+<th>Base<br>Personnel</th>
+<th><br>Demeanor</th>
+<th>Cost,<br>$/person/week</th>
+</tr>
+
+<tr ng-repeat="group in page.groups">
+	<td><b>
+	<a href="#/scenario/{{page.caseId}}/{{group.qid}}/">{{group.g}}</a>
+	</b></td>
+	<td>{{group.longname}}</td>
+	<td>
+	  <a ng-if="group.a_qid !== ''" href="#/scenario/{{page.caseId}}/{{group.a_qid}}/">{{group.a}}</a>
+	  <span ng-if="group.a_qid === ''">None</span>
+	 </td>
+	<td>{{group.longname}}</td>
+	<td>{{group.pretty_local}}</td>
+	<td>{{group.training}}</td>
+	<td>{{group.equip_level}}</td>
+	<td>{{group.base_personnel}}</td>
+	<td>{{group.demeanor}}</td>
+	<td>{{group.cost}}</td>
+</tr>
+</table>
+
+<ar-example header="JSON Result" content="{{page.groups}}"></ar-example>

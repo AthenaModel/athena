@@ -261,6 +261,7 @@ snit::type app {
 
         # NEXT, Add content
         ahttpd::direct url /index.html ::/index.html
+        ahttpd::direct url /meta.json ::/meta.json
         ahttpd::doc addroot /temp [$type tempdir]
 
         foreach domain [array names domains] {

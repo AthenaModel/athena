@@ -1,0 +1,34 @@
+<h1>Case {{page.caseId}}: Nbhoods</h1>
+
+<table class="table table-striped table-hover">
+<tr>
+<th><br>ID</th>
+<th><br>Name</th>
+<th><br>Local</th>
+<th><br>Controller</th>
+<th><br>Urbanization</th>
+<th><br>Population</th>
+<th><br>Subsistence</th>
+<th><br>Consumers</th>
+<th>Labor<br>Force</th>
+<th><br>Unemployed</th>
+
+</tr>
+
+<tr ng-repeat="nbhood in page.nbhoods">
+<td><b>
+<a href="#/scenario/{{page.caseId}}/{{nbhood.qid}}/">{{nbhood.n}}</a>
+</b></td>
+<td>{{nbhood.longname}}</td>
+<td>{{nbhood.local}}</td>
+<td>{{nbhood.controller}}</td>
+<td>{{nbhood.urbanization}}</td>
+<td>{{nbhood.population}}</td>
+<td>{{nbhood.subsistence}}</td>
+<td>{{nbhood.consumers}}</td>
+<td>{{nbhood.labor_force}}</td>
+<td>{{nbhood.unemployed}}</td>
+</tr>
+</table>
+
+<ar-example header="JSON Result" content="{{page.nbhoods}}"></ar-example>

@@ -14,6 +14,7 @@ teapot.txt
 /docs/*/*.html
 /htdocs/arachne.html
 /htdocs/index.html
+/mods/testmod.tcl
 *.docx
 *.pptx
 *.xlsx

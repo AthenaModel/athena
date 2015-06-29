@@ -1,0 +1,27 @@
+<h2>Export a Scenario</h2>
+
+<form class="form-inline">
+  <div class="form-group">
+    <label for="filename">File Name:</label>
+    <input type="text" name="filename" class="form-control" size="15" ng-model="page.exportFilename">
+  </div>
+
+  <button type="button" class="btn btn-default" ng-click="page.opExport()"
+          ng-disabled="!page.canExport()">
+    Export Scenario
+  </button> 
+</form>
+
+<p class="text-warning" style="padding-top: 5px;" 
+   ng-show="page.selectedCase === ''">
+Select the scenario to export from the list above.
+</p>
+
+<h4>Existing Scenario Files:</h4>
+<ar-filelist files="page.files"></ar-filelist>
+
+<!-- Show the operation result -->
+<ar-result op="export" result="page.status"></ar-result>
+
+<!-- Show the JSON response -->
+<ar-example header="JSON Result" content="{{page.jsonData('export')}}"></ar-example>
