@@ -38,4 +38,19 @@ oo::class create ::athena::vardiff::vrel {
     method score {} {
         format "%.1f" [next]
     }
+
+    #-------------------------------------------------------------------
+    # Input Differences
+
+    method FindDiffs {} {
+        variable comp
+
+        set g [my key g]
+        set a [my key a]
+
+        # FIRST, get the contributions
+        foreach {drid val1 val2} [$comp contribs vrel $g $a] {
+            my diffadd drivervrel $val1 $val2 $g $a $drid
+        }
+    }
 }

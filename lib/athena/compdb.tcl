@@ -94,6 +94,12 @@ snit::type ::athena::compdb {
             difference, in satisfaction points.
         }
 
+        # drivervrel
+        $ps define drivervrel.limit ::athena::compdb::dlimit 0.05 {
+            Significant difference limit: minimum absolute
+            difference, as a relationship delta.
+        }
+
         # gdp
         $ps define gdp.limit ::athena::compdb::dlimit 20.0 {
             Significant difference limit: minimum absolute percentage
