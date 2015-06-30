@@ -38,6 +38,21 @@ JOIN s1.civgroups_view AS G
 JOIN s1.nbhoods        AS N
      ON (N.n = G.n);
 
+-- comp_nbgroup: combines hist_nbgroup tables
+CREATE TEMPORARY VIEW comp_nbgroup AS
+SELECT H1.n         AS n,
+       H1.g         AS g,
+       G.gtype      AS gtype,
+       H1.personnel AS personnel1,
+       H1.security  AS security1,
+       H2.personnel AS personnel2,
+       H2.security  AS security2
+FROM s1.hist_nbgroup AS H1
+JOIN s2.hist_nbgroup AS H2
+     ON (H1.n = H2.n AND H1.g = H2.g AND H1.t = t1() AND H2.t = t2())
+JOIN s1.groups AS G
+     ON (G.g = H1.g);
+
 -- comp_sat: combines hist_sat_raw tables
 CREATE TEMPORARY VIEW comp_sat AS
 SELECT H1.g             AS g,
@@ -59,6 +74,19 @@ JOIN s1.civgroups_view AS G
 JOIN s1.nbhoods        AS N
      ON (N.n = G.n);
 
+-- comp_vrel: combines hist_vrel tables
+CREATE TEMPORARY VIEW comp_vrel AS
+SELECT H1.g             AS g,
+       H1.a             AS a,
+       H1.vrel          AS vrel1,
+       H1.base          AS base1,
+       H1.nat           AS nat1,
+       H2.vrel          AS vrel2,
+       H2.base          AS base2,
+       H2.nat           AS nat2
+FROM s1.hist_vrel   AS H1
+JOIN s2.hist_vrel   AS H2
+     ON (H1.g = H2.g AND H1.a = H2.a AND H1.t = t1() AND H2.t = t2());
 
 -----------------------------------------------------------------------
 -- End of File

@@ -157,6 +157,12 @@ snit::type ::athena::compdb {
             difference, in satisfaction points.
         }
 
+        # personnel
+        $ps define personnel.limit ::athena::compdb::dlimit 5.0 {
+            Significant difference limit: minimum absolute
+            percentage change, in percentage points.
+        }
+
         # population
         $ps define population.limit ::athena::compdb::dlimit 5.0 {
             Significant difference limit: minimum absolute
@@ -167,6 +173,12 @@ snit::type ::athena::compdb {
         $ps define sat.limit ::athena::compdb::dlimit 25.0 {
             Significant difference limit: minimum absolute
             difference, in satisfaction points.
+        }
+
+        # security
+        $ps define security.limit ::athena::compdb::ilimit 25 {
+            Significant difference limit: minimum absolute
+            difference, in security points.
         }
 
         # support

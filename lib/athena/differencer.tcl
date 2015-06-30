@@ -220,14 +220,7 @@ snit::type ::athena::differencer {
 
         # NEXT, vertical relationship 
         $comp eval {
-            SELECT H1.g    AS g,
-                   H1.a    AS a,
-                   H1.vrel AS vrel1,
-                   H2.vrel AS vrel2
-            FROM s1.hist_vrel AS H1
-            JOIN s2.hist_vrel AS H2
-            ON (H1.g = H2.g AND H1.a = H2.a AND H1.t=$t1 AND H2.t=$t2)
-
+            SELECT g, a, vrel1, vrel2 FROM comp_vrel
         } {
             $comp addtop vrel $vrel1 $vrel2 $g $a
         }
