@@ -124,8 +124,16 @@ angular.module('arachne')
     };
 
     this.showLog = function() {
-        // TBD: Retrieve the desired log.
-        this.logEntries = [];
+        var url = '/debug/log/index.json?logarea=' + this.logArea;
+        if (this.logFile) {
+            url = url + '&logfile=' + this.logFile;
+        }
+
+        console.log(url);
+        $http.get(url).success(function(data) {
+            controller.logEntries = data;
+            console.log(data);
+        })       
     }
 
     //--------------------------------------------

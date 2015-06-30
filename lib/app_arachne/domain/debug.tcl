@@ -66,6 +66,13 @@ oo::class create /debug {
         }
     }
 
+    # LogToJson logname logfile 
+    #
+    # logname   - The log name, e.g., case00
+    # logfile   - A logger(n) logfile, as used by Athena.
+    #
+    # Formats the log file for JSON output
+
     method LogToJson {logname logfile} {
         # FIRST, Is this a scenario log?
         set gotWeek [string match "case*" $logname]
@@ -79,23 +86,37 @@ oo::class create /debug {
 
         try {
             # NEXT, prepare JSON output
-            puts -nonewline $f "\[\"OK\",\n"
+            puts -nonewline $f "\["
+
+            set first 1
 
             # NEXT, output log as JSON to temp file
             foreach line $lines {
-                set data(wallclock_time) [lindex $line 0]
-                set data(level)          [lindex $line 1]
-                set data(component)      [lindex $line 2]
-                set data(message)        [lindex $line 3]
+                # NEXT, if no data, no output
+                if {[llength $line] == 0} {
+                    continue
+                }
+
+                # NEXT, deal with commas between objects
+                if {!$first} {
+                    puts -nonewline $f ",\n"
+                }
+
+                set data(wallclock) [lindex $line 0]
+                set data(level)     [lindex $line 1]
+                set data(component) [lindex $line 2]
+                set data(message)   [lindex $line 3]
                 if {$gotWeek} {
-                    set data(week)       [lindex $line 4]
+                    set data(week)  [lindex $line 4]
                 }
                 set datadict [huddle create {*}[array get data]]
                 puts -nonewline $f [huddle jsondump $datadict]
+
+                set first 0
             }
             
             # NEXT, end JSON output
-            puts -nonewline $f "\n]\n]\n"
+            puts -nonewline $f "]\n"
         } finally {
             catch {close $f}
         }
@@ -103,14 +124,14 @@ oo::class create /debug {
         return $filename
     }
 
-    # FormatLog logname logfile
+    # LogToHtml logname logfile
     #
     # logname   - The log name, e.g., case00
     # logfile   - A logger(n) logfile, as used by Athena.
     #
     # Formats the log file for display
 
-    method FormatLog {logname logfile} {
+    method LogToHtml {logname logfile} {
         # FIRST, Is this a scenario log?
         set gotWeek [string match "case*" $logname]
 
@@ -231,14 +252,21 @@ smarturl /debug /log/{logname}/index.html {
 
     hb h2 "File: $logfile"
 
-    my FormatLog $logname [scratchdir join log $logname $logfile]
+    my LogToHtml $logname [scratchdir join log $logname $logfile]
 
     return [hb /page]
 }
 
+# /log/{logname}/index.json
 smarturl /debug /log/{logname}/index.json {
     Returns the contents of the requested logfile in JSON format.
 } {
+    # FIRST, the log name might be a ".bg" log, in which case we need
+    # to fix up the name.
+    if {[string match "*_bg" $logname]} {
+        set logname [string map {_bg .bg} $logname]
+    }
+
     set logdir [scratchdir join log $logname]
 
     if {![file isdirectory $logdir]} {
@@ -254,7 +282,42 @@ smarturl /debug /log/{logname}/index.json {
     # NEXT, requested logfile or most recent
     set logfile [qdict prepare logfile -default [lindex $logfiles end]]
 
+    # NEXT, convert to JSON, write to file and redirect
     set fname [my LogToJson $logname [scratchdir join log $logname $logfile]]
+    my redirect "/temp/[file tail $fname]" 
+}
+
+# /log/{logname}/index.json
+smarturl /debug /log/index.json {
+    Returns the contents of the requested logfile for the requested
+    area in JSON format. If no logfile is supplied, the first one is
+    default.
+} {
+
+    set logarea [qdict prepare logarea -required]
+ 
+    if {![qdict ok]} {
+        return [js reject [qdict errors]]
+    }
+
+    set logdir [scratchdir join log $logarea]
+
+    if {![file isdirectory $logdir]} {
+        throw NOTFOUND "Log $logdir is no longer available"
+    }
+
+    set logfiles [lsort [glob -nocomplain -directory $logdir -tails *.log]]
+
+    # TBD, probably should just return an empty list
+    if {[llength $logfiles] == 0} { 
+        return [js ok ""]
+    }
+
+    # NEXT, requested logfile or most recent
+    set logfile [qdict prepare logfile -default [lindex $logfiles end]]
+
+    # NEXT, convert to JSON, write to file and redirect
+    set fname [my LogToJson $logarea [scratchdir join log $logarea $logfile]]
     my redirect "/temp/[file tail $fname]" 
 }
 
