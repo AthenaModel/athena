@@ -37,6 +37,26 @@ snit::type ::athena::stats {
     #-------------------------------------------------------------------
     # Public Methods
 
+    # groupsbybys 
+    #
+    # This method returns a list of groups by belief system.  It's possible
+    # that an empty list corresponds to a belief system.
+
+    method groupsbybsys {} {
+        # FIRST, get the belief system IDs
+        set bsids [$adb bsys system ids]
+        array set glists [lzipper $bsids]
+
+        # NEXT, build array of groups by belief system
+        $adb eval {
+            SELECT g, bsid FROM civgroups_view
+        } {
+            lappend glists($bsid) $g
+        }
+
+        return [array get glists]
+    }
+
     # moodbybsys  t
     #
     # t   - a time in history
@@ -48,19 +68,13 @@ snit::type ::athena::stats {
     method moodbybsys {t} {
         # FIRST, get the belief system IDs
         set bsids [$adb bsys system ids]
-        array set glists [lzipper $bsids]
 
         set rlist [list]
 
-        # NEXT, build array of groups by belief system
-        $adb eval {
-            SELECT g, bsid FROM civgroups_view
-        } {
-            lappend glists($bsid) $g
-        }
+        set glists [$self groupsbybsys]
 
         # NEXT, compute composite mood 
-        foreach {bsid glist} [array get glists] {
+        foreach {bsid glist} $glists {
             set mood [$self moodbygroups $glist $t]
             lappend rlist $bsid $mood
         }
@@ -101,18 +115,12 @@ snit::type ::athena::stats {
     method satbybsys {t clist} {
         # FIRST, get the belief system IDs
         set bsids [$adb bsys system ids]
-        array set glists [lzipper $bsids]
 
         set rlist [list]
 
-        # NEXT, build array of groups by belief system
-        $adb eval {
-            SELECT g, bsid FROM civgroups_view
-        } {
-            lappend glists($bsid) $g
-        }
+        set glists [$self groupsbybsys]
 
-        foreach {bsid glist} [array get glists] {
+        foreach {bsid glist} $glists {
             set sat [$self satbygroups $glist $clist $t]
             lappend rlist $bsid $sat
         }

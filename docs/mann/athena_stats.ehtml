@@ -30,6 +30,9 @@ where <i adb> is an instance of <xref athena(n)>.<p>
 
 <deflist commands>
 
+<defitem "groupsbybsys" {<i adb> stats groupsbybsys}>
+Returns a dictionary of groups by belief system id.<p>
+
 <defitem "moodbybsys" {<i adb> stats moodbybsys <i t>}>
 Computes a roll-up of mood by group and belief system and returns a
 dictionary of composite mood by belief system ID at time <i t>.<p>
