@@ -36,4 +36,29 @@ oo::class create ::athena::vardiff::nbsat {
     method score {} {
         format "%.1f" [next]
     }
+
+    #-------------------------------------------------------------------
+    # Input Differences
+    
+    method FindDiffs {} {
+        variable comp
+
+        set n [my key n]
+        set c [my key c]
+
+        # FIRST, get the satisfaction inputs.
+        $comp eval {
+            SELECT g, sat1, sat2 FROM comp_sat WHERE n = $n AND c = $c
+        } {
+            my diffadd sat $sat1 $sat2 $g $c
+        }
+
+        # NEXT, get the population inputs
+        $comp eval {
+            SELECT g, pop1, pop2 FROM comp_civg WHERE n = $n
+        } {
+            my diffadd population $pop1 $pop2 $g
+        }
+    }
+
 }

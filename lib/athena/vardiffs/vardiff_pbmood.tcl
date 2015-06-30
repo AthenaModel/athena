@@ -40,4 +40,28 @@ oo::class create ::athena::vardiff::pbmood {
     method score {} {
         format "%.1f" [next]
     }
+
+    #-------------------------------------------------------------------
+    # Input Differences
+    
+
+    method FindDiffs {} {
+        variable comp
+
+        set local [expr {[my key set] eq "local"}]
+
+        # FIRST, get the satisfaction inputs.
+        $comp eval {
+            SELECT g, c, sat1, sat2 FROM comp_sat WHERE local = $local
+        } {
+            my diffadd sat $sat1 $sat2 $g $c
+        }
+
+        # NEXT, get the population inputs
+        $comp eval {
+            SELECT g, pop1, pop2 FROM comp_civg WHERE local = $local
+        } {
+            my diffadd population $pop1 $pop2 $g
+        }
+    }
 }

@@ -69,6 +69,8 @@ snit::type ::athena::comparison {
             ATTACH $db2 AS s2;            
         }
 
+        $cdb eval [readfile [appdir join lib athena sql comparison.sql]]
+
         # NEXT, initialize the vardiff cache.
         set byname   [dict create]
         set toplevel [list]
@@ -126,7 +128,8 @@ snit::type ::athena::comparison {
     #-------------------------------------------------------------------
     # Public Methods
 
-    delegate method eval to cdb
+    delegate method eval  to cdb
+    delegate method query to cdb
     
 
     # addtop vartype val1 val2 keys...
@@ -297,7 +300,7 @@ snit::type ::athena::comparison {
     # Returns the vardiff object given its name, or "" if none.
 
     method getdiff {name} {
-        if {[dict exists $byname $name]}{
+        if {[dict exists $byname $name]} {
             return [dict get $byname $name]
         } else {
             return ""

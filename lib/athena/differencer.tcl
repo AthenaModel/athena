@@ -165,25 +165,15 @@ snit::type ::athena::differencer {
 
         # FIRST, CIV mood by group
         $comp eval {
-            SELECT H1.g         AS g,
-                   H1.mood      AS mood1,
-                   H2.mood      AS mood2
-            FROM s1.hist_civg   AS H1
-            JOIN s2.hist_civg   AS H2
-            ON (H1.g = H2.g AND H1.t=$t1 AND H2.t=$t2);
+            SELECT g, mood1, mood2 FROM comp_civg
         } {
             $comp addtop mood $mood1 $mood2 $g 
         }
 
         # NEXT, CIV satisfaction by group and concern
         $comp eval {
-            SELECT H1.g         AS g,
-                   H1.c         AS c,
-                   H1.sat       AS sat1,
-                   H2.sat       AS sat2
-            FROM s1.hist_sat    AS H1
-            JOIN s2.hist_sat    AS H2
-            ON (H1.g = H2.g AND H1.c = H2.c AND H1.t=$t1 AND H2.t=$t2)
+            SELECT g, c, sat1, sat2
+            FROM comp_sat;
         } {
             $comp addtop sat $sat1 $sat2 $g $c
         }
