@@ -23,5 +23,15 @@ angular.module('arachne')
             var obj = {'name' : name, 'last' : currtab};
             tab.push(obj);
         }
+
+        remove: function(name) {
+            //Removing one that doesn't exist is a no-op
+            for (var i=0; i<tab.length; i++) {
+                if (tab[i].name === name) {
+                    tab.splice(i,1);
+                    return;
+                }
+            }            
+        }
     };
 });

@@ -66,6 +66,42 @@ oo::class create /debug {
         }
     }
 
+    method LogToJson {logname logfile} {
+        # FIRST, Is this a scenario log?
+        set gotWeek [string match "case*" $logname]
+
+        # NEXT, read the log
+        set lines [split [readfile $logfile] \n]
+
+        # NEXT, determine temp file name
+        set filename [app namegen ".json"]
+        set f [open $filename w]
+
+        try {
+            # NEXT, prepare JSON output
+            puts -nonewline $f "\[\"OK\",\n"
+
+            # NEXT, output log as JSON to temp file
+            foreach line $lines {
+                set data(wallclock_time) [lindex $line 0]
+                set data(level)          [lindex $line 1]
+                set data(component)      [lindex $line 2]
+                set data(message)        [lindex $line 3]
+                if {$gotWeek} {
+                    set data(week)       [lindex $line 4]
+                }
+                set datadict [huddle create {*}[array get data]]
+                puts -nonewline $f [huddle jsondump $datadict]
+            }
+            
+            # NEXT, end JSON output
+            puts -nonewline $f "\n]\n]\n"
+        } finally {
+            catch {close $f}
+        }
+
+        return $filename
+    }
 
     # FormatLog logname logfile
     #
@@ -90,7 +126,7 @@ oo::class create /debug {
         # NEXT, read the log
         set lines [split [readfile $logfile] \n]
 
-        # NEXT, format it.
+        # NEXT, format it.        
         hb table -headers $headers {
             foreach line $lines {
                 hb tr
@@ -198,6 +234,28 @@ smarturl /debug /log/{logname}/index.html {
     my FormatLog $logname [scratchdir join log $logname $logfile]
 
     return [hb /page]
+}
+
+smarturl /debug /log/{logname}/index.json {
+    Returns the contents of the requested logfile in JSON format.
+} {
+    set logdir [scratchdir join log $logname]
+
+    if {![file isdirectory $logdir]} {
+        throw NOTFOUND "Log $logdir is no longer available"
+    }
+
+    set logfiles [lsort [glob -nocomplain -directory $logdir -tails *.log]]
+
+    if {[llength $logfiles] == 0} { 
+        return [js ok ""]
+    }
+
+    # NEXT, requested logfile or most recent
+    set logfile [qdict prepare logfile -default [lindex $logfiles end]]
+
+    set fname [my LogToJson $logname [scratchdir join log $logname $logfile]]
+    my redirect "/temp/[file tail $fname]" 
 }
 
 # /mods.html
