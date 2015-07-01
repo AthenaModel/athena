@@ -126,6 +126,10 @@ smarturl /debug /index.html {
         hb li-with {
             hb xref /scenario/urlschema.html "URL Schema: /scenario"
         }
+        
+        hb li-with {
+            hb xref /comparison/urlschema.html "URL Schema: /comparison"
+        }
 
         hb li-with {
             hb iref /urlschema.html "URL Schema: [my domain]"

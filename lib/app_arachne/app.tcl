@@ -124,7 +124,8 @@ snit::type app {
         $type InitializeBaseCase $adbfile $script
 
         # NEXT, define the domains.
-        set domains(/scenario) [/scenario new]
+        set domains(/scenario)   [/scenario new]
+        set domains(/comparison) [/comparison new]
         set domains(/debug)    [/debug new]     ;# TBD: If -debug
 
         set helpdb [appdir join docs athena.helpdb]
