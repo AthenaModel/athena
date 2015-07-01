@@ -56,7 +56,7 @@ snit::type ::athena::comparison {
 
 
         # NEXT, create the CDB.
-        set cdb [sqldocument %AUTO -readonly yes]
+        set cdb [sqldocument ${selfns}::cdb -readonly yes]
         $cdb open :memory:
         $cdb function t1 [mymethod t1]
         $cdb function t2 [mymethod t2]
@@ -69,7 +69,7 @@ snit::type ::athena::comparison {
             ATTACH $db2 AS s2;            
         }
 
-        $cdb eval [readfile [appdir join lib athena sql comparison.sql]]
+        $cdb eval [readfile [file join $::athena::library sql comparison.sql]]
 
         # NEXT, initialize the vardiff cache.
         set byname   [dict create]
@@ -79,7 +79,6 @@ snit::type ::athena::comparison {
     destructor {
         # Destroy the difference objects.
         $self reset
-        catch {$cdb destroy}
     }
 
     #-------------------------------------------------------------------
@@ -238,7 +237,6 @@ snit::type ::athena::comparison {
 
     #-------------------------------------------------------------------
     # Queries
-    
 
     # t1
     #

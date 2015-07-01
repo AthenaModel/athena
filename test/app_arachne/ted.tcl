@@ -99,6 +99,7 @@ snit::type ted {
     
     typemethod cleanup {} {
         # FIRST, reset scenarios to empty.
+        comp clear
         case clear
     }
 

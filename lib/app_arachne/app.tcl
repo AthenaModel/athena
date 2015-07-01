@@ -117,8 +117,9 @@ snit::type app {
         # NEXT, initialize the temp directory.
         $type InitTempDir
 
-        # NEXT, add the base case scenario.
+        # NEXT, initialize other application modules.
         case init $scenariodir
+        comp init
 
         $type InitializeBaseCase $adbfile $script
 
