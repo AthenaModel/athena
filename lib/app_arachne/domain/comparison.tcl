@@ -82,15 +82,43 @@ smarturl /comparison /index.json {
 
 smarturl /comparison /new.json {
     Create a new comparison for the case with ID {case1} or for a 
-    pair of cases {case1} and {case2}.
+    pair of cases {case1} and {case2}.  On success, returns
+    <tt>['ok',<i>metadata</i>]</tt>, where <i>metadata</i> is the
+    metadata object for the new comparison.
 } {
-    # TBD
+    qdict prepare case1 -required -tolower -in [case names]
+    qdict prepare case2           -tolower -in [case names]
+
+    qdict assign case1 case2
+
+    if {![qdict ok]} {
+        return [js reject [qdict errors]]
+    }
+
+    try {
+        set id [comp new $case1 $case2]
+    } trap ARACHNE {result} {
+        return [js error $result]
+    }
+
+    set hud [huddle compile dict [comp metadata $id]]
+    return [js ok $hud]
 }
 
 smarturl /comparison /remove.json {
-    Removes a comparison given its {comp} ID.
+    Removes a comparison given its {comp} ID.  On success, returns
+    <tt>['ok', '<i>message</i>']</tt>.
 } {
-    # TBD
+    qdict prepare comp -required -tolower -in [comp names]
+    qdict assign comp
+
+    if {![qdict ok]} {
+        return [js reject [qdict errors]]
+    }
+
+    comp remove $comp
+
+    return [js ok "Deleted comparison $comp."]
 }
 
 smarturl /comparison /{comp}/index.json {
@@ -101,7 +129,7 @@ smarturl /comparison /{comp}/index.json {
 } {
     set comp [my ValidateComp $comp]
 
-    # TBD
+    return [huddle jsondump [comp with $comp diffs huddle]]
 }
 
 smarturl /comparison /{comp}/outputs.json {
@@ -113,7 +141,8 @@ smarturl /comparison /{comp}/outputs.json {
     chain for a single output, use /comparison/{comp}/chain.json.
 } {
     set comp [my ValidateComp $comp]
-    # TBD
+
+    return [js error "Not implemented yet"]
 }
 
 smarturl /comparison /{comp}/chain.json {
@@ -124,7 +153,8 @@ smarturl /comparison /{comp}/chain.json {
     /comparison/{comp}/index.json.
 } {
     set comp [my ValidateComp $comp]
-    # TBD
+
+    return [js error "Not implemented yet"]
 }
 
 smarturl /comparison /{comp}/explain.json {

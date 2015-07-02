@@ -193,6 +193,18 @@ snit::type ted {
     # Calls the scenario_domain handler directly as a GET request.
 
     typemethod get {suffix args} {
+        return [$type getx /scenario $suffix {*}$args]
+    }
+
+    # getx domain suffix ?args...?
+    #
+    # domain   - The smartdomain object, e.g., /scenario
+    # suffix   - The url in the domain, e.g., /index.json
+    # args     - The query string, which is simply the dictionary
+    #
+    # Calls the domain handler directly as a GET request.
+
+    typemethod getx {domain suffix args} {
         if {[llength $args] == 1} {
             set query [lindex $args 0]
         } else {
@@ -200,7 +212,7 @@ snit::type ted {
         }
 
         try {
-            set result [$::app::domains(/scenario) request GET $suffix $query]
+            set result [$::app::domains($domain) request GET $suffix $query]
         } trap HTTPD_REDIRECT {result eopts} {
             # The error code includes the URL
             return [dict get $eopts -errorcode]
@@ -220,6 +232,7 @@ snit::type ted {
     # and parses a JSON return value.
 
     typemethod getjson {suffix args} {
+        return [$type getjsonx /scenario $suffix {*}$args]
         if {[llength $args] == 1} {
             set query [lindex $args 0]
         } else {
@@ -238,6 +251,33 @@ snit::type ted {
         return [json::json2dict $result]
     }
 
+    # getjsonx domain suffix ?query...?
+    #
+    # domain   - The smartdomain object, e.g., /scenario
+    # suffix   - The url in the domain, e.g., /index.json
+    # query    - The query string, which is simply the dictionary
+    #
+    # Calls the domain handler directly as a GET request,
+    # and parses a JSON return value.
+
+    typemethod getjsonx {domain suffix args} {
+        if {[llength $args] == 1} {
+            set query [lindex $args 0]
+        } else {
+            set query $args
+        }
+
+        try {
+            set result [$::app::domains($domain) request GET $suffix $query]
+        } trap HTTPD_REDIRECT {result eopts} {
+            # The error code includes the URL
+            return [dict get $eopts -errorcode]
+        } trap NOTFOUND {result} {
+            return [list NOTFOUND $result]
+        }
+
+        return [json::json2dict $result]
+    }
 
     # post suffix ?query?
     #
