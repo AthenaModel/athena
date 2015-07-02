@@ -138,7 +138,7 @@ namespace eval ::athena_test::tests:: {
         ted getjsonx /comparison /new.json case1 case00
     } -cleanup {
         cleanup
-    } -match norm -result {OK {id comp00 longname {case00 @ 0 vs. case00 @ 1} case1 case00 case2 case00 t1 0 t2 1}}
+    } -match norm -result {OK {id comp00 longname {case00 @ 0 vs. case00 @ 1} case1 case00 case2 case00 t1 0 t2 1} {}}
 
     test new.json-2.2 {OK, two cases} -setup {
         advance case00
@@ -148,7 +148,19 @@ namespace eval ::athena_test::tests:: {
         ted getjsonx /comparison /new.json case1 case00 case2 case01
     } -cleanup {
         cleanup
-    } -match norm -result {OK {id comp00 longname {case00 @ 1 vs. case01 @ 1} case1 case00 case2 case01 t1 1 t2 1}}
+    } -match norm -result {OK {id comp00 longname {case00 @ 1 vs. case01 @ 1} case1 case00 case2 case01 t1 1 t2 1} {}}
+
+    test new.json-2.3 {Get outputs} -setup {
+        advance case00 30
+    } -body {
+        set list [ted getjsonx /comparison /new.json case1 case00]
+        set a [lindex $list 2]
+        set b [ted getjsonx /comparison /comp00/index.json]
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
 
     #-------------------------------------------------------------------
     # /comparison/remove.json

@@ -83,8 +83,10 @@ smarturl /comparison /index.json {
 smarturl /comparison /new.json {
     Create a new comparison for the case with ID {case1} or for a 
     pair of cases {case1} and {case2}.  On success, returns
-    <tt>['ok',<i>metadata</i>]</tt>, where <i>metadata</i> is the
-    metadata object for the new comparison.
+    <tt>['ok', <i>metadata</i>, <i>outputs</i>]</tt>, where 
+    <i>metadata</i> is the metadata object for the new comparison, and
+    <i>outputs</i> is the same list of "vardiff" objects returned by
+    /comparison/{comp}/outputs.json.
 } {
     qdict prepare case1 -required -tolower -in [case names]
     qdict prepare case2           -tolower -in [case names]
@@ -101,8 +103,8 @@ smarturl /comparison /new.json {
         return [js error $result]
     }
 
-    set hud [huddle compile dict [comp metadata $id]]
-    return [js ok $hud]
+    set meta [huddle compile dict [comp metadata $id]]
+    return [js ok $meta [comp with $id diffs huddle]]
 }
 
 smarturl /comparison /remove.json {
