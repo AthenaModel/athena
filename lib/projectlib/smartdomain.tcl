@@ -61,6 +61,7 @@ oo::class create ::projectlib::smartdomain {
         set patterns [dict create]
 
         my url /urlschema.html {This description.}
+        my url /urlschema.json {URL schema for this domain.}
 
         set trans(query) ""
 
@@ -434,6 +435,26 @@ oo::class create ::projectlib::smartdomain {
         }
 
         return [hb /page]
+    }
+
+    # /urlschema.json
+    #
+    # Returns a JSON array with an entry for each URL in the domain.
+    # Each entry has two fields, "url" and "doc".  The "doc" is a
+    # snippet of HTML.
+
+    method /urlschema.json {} {
+        set mapping [list \{ <i> \} </i>]
+        set hud [huddle list]
+
+        foreach suffix [dict values $patterns] {
+            set dict [dict create]
+            dict set dict url "$info(domain)[string map $mapping $suffix]"
+            dict set dict doc [string map $mapping $info(docstring-$suffix)]
+            huddle append hud [huddle compile dict $dict]
+        }
+
+        return [huddle jsondump $hud]
     }
     
 }
